@@ -92,5 +92,7 @@ notebooks/R/.Rhistory
 .Rproj.user
 
 # data files
-data/
+data/text
+data/chromedriver
+data/cpi/**.csv
 logs/
