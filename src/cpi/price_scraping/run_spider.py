@@ -5,6 +5,7 @@ Convenience script to run Scrapy spiders with common configurations.
 
 import sys
 import logging
+import os
 from pathlib import Path
 
 from scrapy.crawler import CrawlerProcess
@@ -113,6 +114,11 @@ def run_all_spiders(**kwargs):
 if __name__ == "__main__":
     import argparse
 
+    # Change to the script's directory so Scrapy can find scrapy.cfg
+    script_dir = Path(__file__).parent.absolute()
+    os.chdir(script_dir)
+    logger.info(f"Working directory: {os.getcwd()}")
+
     parser = argparse.ArgumentParser(description="Run Scrapy spiders")
     parser.add_argument("spider", nargs="?", help="Spider name to run")
     parser.add_argument(
@@ -125,7 +131,7 @@ if __name__ == "__main__":
         "--concurrent", type=int, default=8, help="Concurrent requests"
     )
     parser.add_argument(
-        "--output-dir", default="data", help="Output directory for data"
+        "--output-dir", default="data/cpi/price_scraping", help="Output directory for data"
     )
     parser.add_argument(
         "--limit", type=int, help="Limit number of pages to crawl"
@@ -137,11 +143,21 @@ if __name__ == "__main__":
     if not args.all and not args.spider:
         parser.error("Either provide a spider name or use --all flag")
 
+    # Convert output directory to absolute path if it's relative
+    # This ensures output goes to the correct location regardless of where the script is called from
+    output_dir = Path(args.output_dir)
+    if not output_dir.is_absolute():
+        # If relative path, make it relative to the project root (parent of script directory)
+        project_root = script_dir.parent.parent.parent  # src/cpi/price_scraping -> project root
+        output_dir = project_root / output_dir
+    
+    logger.info(f"Output directory: {output_dir}")
+
     # Build settings dict
     settings_override = {
         "DOWNLOAD_DELAY": args.delay,
         "CONCURRENT_REQUESTS": args.concurrent,
-        "OUTPUT_DIR": args.output_dir,
+        "OUTPUT_DIR": str(output_dir),
     }
 
     if args.limit:

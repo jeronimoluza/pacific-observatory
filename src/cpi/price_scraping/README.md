@@ -58,34 +58,35 @@ scrapy crawl mh_online -s OUTPUT_DIR=data/custom_output
 
 ### Using the run_spider.py Script
 
-The `run_spider.py` script provides a convenient interface with common options:
+The `run_spider.py` script provides a convenient interface with common options. **Note:** Run from the project root directory.
 
 ```bash
-# Basic run
-python run_spider.py mh_online
+# Basic run (outputs to data/cpi/price_scraping/{country}/{spider_name}/raw_items/)
+poetry run python src/cpi/price_scraping/run_spider.py mh_online
 
 # With custom delay (seconds)
-python run_spider.py mh_online --delay 3
+poetry run python src/cpi/price_scraping/run_spider.py mh_online --delay 3
 
 # With concurrent request limit
-python run_spider.py mh_online --concurrent 4
+poetry run python src/cpi/price_scraping/run_spider.py mh_online --concurrent 4
 
 # With page limit
-python run_spider.py mh_online --limit 100
+poetry run python src/cpi/price_scraping/run_spider.py mh_online --limit 100
 
-# With custom output directory
-python run_spider.py mh_online --output-dir data/mh_online
+# With custom output directory (relative to project root)
+poetry run python src/cpi/price_scraping/run_spider.py mh_online --output-dir data/custom_output
 
 # Combine options
-python run_spider.py mh_online --delay 3 --concurrent 4 --limit 50
+poetry run python src/cpi/price_scraping/run_spider.py mh_online --delay 3 --concurrent 4 --limit 50
 ```
 
 ## Output
 
-Scraped data is saved to the `data/` directory in JSONL format (one JSON object per line):
+Scraped data is saved in JSONL format (one JSON object per line) organized by country and spider:
 
-- **Filename format:** `mh_online_YYYYMMDD_HHMMSS.jsonl`
-- **Location:** `data/mh_online_20240115_103000.jsonl`
+- **Directory structure:** `data/cpi/price_scraping/{country}/{spider_name}/raw_items/`
+- **Filename format:** `{spider_name}_YYYYMMDD_HHMMSS.jsonl`
+- **Example location:** `data/cpi/price_scraping/fiji/mh_online/raw_items/mh_online_20251119_132552.jsonl`
 
 Example output:
 ```json
