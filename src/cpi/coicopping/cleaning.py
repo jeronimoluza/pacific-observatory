@@ -210,3 +210,5 @@ if __name__ == "__main__":
     # Show sample of cleaned data
     print("\nSample of cleaned data:")
     print(df_cleaned[["source", "product_name"]].head(10))
+
+    df_cleaned.product_name.to_csv("cleaned_product_names.csv", index=False)
