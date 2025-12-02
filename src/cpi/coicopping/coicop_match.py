@@ -15,6 +15,7 @@ The workflow:
 import sys
 from pathlib import Path
 from typing import Optional
+import unicodedata
 
 import pandas as pd
 import re
@@ -36,15 +37,17 @@ except ImportError:
 
 def clean_product_only(product_name: str) -> str:
     """
-    Clean product name by removing all strings contained in () or [].
+    Clean product name by removing parentheses/brackets and converting accented letters.
 
-    Removes parentheses and brackets along with their contents.
+    Steps:
+    1. Remove all strings contained in () or []
+    2. Convert accented letters to their non-accented versions (e.g., é → e, ñ → n)
 
     Args:
         product_name: The product name to clean.
 
     Returns:
-        Product name with parentheses/brackets and their contents removed.
+        Product name with parentheses/brackets removed and accents normalized.
     """
     if not isinstance(product_name, str):
         return product_name
@@ -54,6 +57,11 @@ def clean_product_only(product_name: str) -> str:
 
     # Remove content in square brackets: [...]
     cleaned = re.sub(r"\[[^\]]*\]", "", cleaned)
+
+    # Convert accented letters to non-accented versions
+    # Normalize to NFD (decomposed form), then encode to ASCII ignoring non-ASCII characters
+    cleaned = unicodedata.normalize('NFD', cleaned)
+    cleaned = cleaned.encode('ascii', 'ignore').decode('utf-8')
 
     # Clean up extra whitespace
     cleaned = " ".join(cleaned.split())
