@@ -1,8 +1,29 @@
 import re
+import nltk
+
+# Download nltk stopwords if not already available
+try:
+    from nltk.corpus import stopwords
+    STOPWORDS = set(stopwords.words("english"))
+except LookupError:
+    nltk.download('stopwords')
+    from nltk.corpus import stopwords
+    STOPWORDS = set(stopwords.words("english"))
 
 # Define units once - used across all regex patterns and extraction logic
 COUNT_UNITS = ['can', 'cans', 'ct', 'pack', 'packs', 'piece', 'pieces', 'pk', 'pc', 'pcs', 'box', 'boxes', 'jar', 'jars', 'bag', 'bags']
 AMOUNT_UNITS = ['g', 'gm', 'kg', 'lb', 'lbs', 'oz', 'ml', 'mls', 'l', 'litre', 'ltrs', 'ltr', 'gallon', 'gal', 'm', 'cm']
+
+# Size-related words to remove
+SIZE_WORDS = ['size', 'xl', 'large', 'medium', 'sz', 'small', 'xlong', 'approx', 'aprox']
+
+# Additional packaging/count words to remove
+ADDITIONAL_UNITS = ['case', 'carton', 'bunch']
+
+# Extend STOPWORDS with size words, additional units, and count units
+STOPWORDS.update(SIZE_WORDS)
+STOPWORDS.update(ADDITIONAL_UNITS)
+STOPWORDS.update(COUNT_UNITS)
 
 # Build regex patterns from unit lists
 COUNT_UNITS_PATTERN = '|'.join(COUNT_UNITS)

@@ -19,29 +19,18 @@ from typing import Optional
 import pandas as pd
 import re
 
-# Import nltk stopwords before local regex module to avoid naming conflict
-import nltk
-try:
-    from nltk.corpus import stopwords
-    # Load English stopwords from nltk
-    STOPWORDS = set(stopwords.words("english"))
-except:
-    # Download stopwords if not already available
-    nltk.download('stopwords')
-    from nltk.corpus import stopwords
-    STOPWORDS = set(stopwords.words("english"))
 
 # Handle both relative and direct execution
 try:
     from .loading import load_price_scraping_data
     from .cleaning import clean_product_names, clean_special_characters
-    from .regex_config import AMOUNT_REGEX, UNITS_REGEX, PER_KG_REGEX, PER_EACH_REGEX, COUNT_UNITS
+    from .regex_config import AMOUNT_REGEX, UNITS_REGEX, PER_KG_REGEX, PER_EACH_REGEX, COUNT_UNITS, STOPWORDS
 except ImportError:
     # Direct execution: add parent directory to path
     sys.path.insert(0, str(Path(__file__).parent))
     from loading import load_price_scraping_data
     from cleaning import clean_product_names, clean_special_characters
-    from regex_config import AMOUNT_REGEX, UNITS_REGEX, PER_KG_REGEX, PER_EACH_REGEX, COUNT_UNITS
+    from regex_config import AMOUNT_REGEX, UNITS_REGEX, PER_KG_REGEX, PER_EACH_REGEX, COUNT_UNITS, STOPWORDS
 
 
 
@@ -162,14 +151,12 @@ def create_product_with_category(product_only: str, category: str) -> str:
 
 def clean_product_w_cat(text: str) -> str:
     """
-    Clean product_w_cat strings by removing words with numbers, single characters, stopwords, size words, and count units.
+    Clean product_w_cat strings by removing words with numbers, single characters, and stopwords.
 
     Cleaning steps (in order):
     1. Remove all words that contain any numbers (e.g., "123", "8x24s", "1235sw2", "92777a", "412w")
     2. Remove all words with len(word) == 1 (e.g., "x", "o", "c")
-    3. Remove all stopwords (e.g., "or", "in", "and")
-    4. Remove size-related words (e.g., "size", "xl", "large", "medium", "sz", "small", "xlong", "approx", "aprox")
-    5. Remove count units (e.g., "can", "cans", "pack", "packs", "piece", "pieces", "box", "boxes", "jar", "jars", "bag", "bags", "case", "carton", "bunch")
+    3. Remove all stopwords (includes nltk stopwords, size words, count units, and additional packaging words)
 
     Args:
         text: The product_w_cat string to clean.
@@ -179,15 +166,6 @@ def clean_product_w_cat(text: str) -> str:
     """
     if not isinstance(text, str):
         return text
-
-    # Size-related words to remove
-    SIZE_WORDS = {"size", "xl", "large", "medium", "sz", "small", "xlong", "approx", "aprox"}
-
-    # Additional packaging/count words to remove
-    ADDITIONAL_UNITS = {"case", "carton", "bunch"}
-
-    # Combine count units from regex_config with additional units
-    ALL_COUNT_UNITS = set(COUNT_UNITS) | ADDITIONAL_UNITS
 
     # Split text into words
     words = text.split()
@@ -202,16 +180,8 @@ def clean_product_w_cat(text: str) -> str:
         if len(word) == 1:
             continue
 
-        # Step 3: Skip if word is a stopword (case-insensitive)
+        # Step 3: Skip if word is in STOPWORDS (includes nltk stopwords + size words + count units + additional units)
         if word.lower() in STOPWORDS:
-            continue
-
-        # Step 4: Skip if word is a size-related word (case-insensitive)
-        if word.lower() in SIZE_WORDS:
-            continue
-
-        # Step 5: Skip if word is a count unit (case-insensitive)
-        if word.lower() in ALL_COUNT_UNITS:
             continue
 
         # Keep the word if it passes all filters
