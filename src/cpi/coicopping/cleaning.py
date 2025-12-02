@@ -9,6 +9,7 @@ and contains lists of strings to remove from product names.
 """
 
 import json
+import re
 from pathlib import Path
 from typing import Optional
 
@@ -68,6 +69,38 @@ def clean_product_name(product_name: str, strings_to_remove: list) -> str:
         cleaned = cleaned.replace(string.lower(), "")
 
     # Clean up extra whitespace that may result from removals
+    cleaned = " ".join(cleaned.split())
+
+    return cleaned
+
+
+def clean_special_characters(text: str) -> str:
+    """
+    Clean special characters from text by replacing them with ", ".
+
+    Replaces any non-alphanumeric character (except spaces) with ", ".
+    Then cleans up multiple consecutive ", " into single ", ".
+    Finally, removes any leading/trailing ", " and extra whitespace.
+
+    Args:
+        text: The text to clean.
+
+    Returns:
+        Text with special characters replaced by ", " and cleaned up.
+    """
+    if not isinstance(text, str):
+        return text
+
+    # Replace any non-alphanumeric character (except spaces) with ", "
+    cleaned = re.sub(r"[^a-zA-Z0-9\s]", ", ", text)
+
+    # Replace multiple consecutive ", " with single ", "
+    cleaned = re.sub(r"(, )+", ", ", cleaned)
+
+    # Remove leading/trailing ", "
+    cleaned = cleaned.strip(", ")
+
+    # Clean up extra whitespace
     cleaned = " ".join(cleaned.split())
 
     return cleaned

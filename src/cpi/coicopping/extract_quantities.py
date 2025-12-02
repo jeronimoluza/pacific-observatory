@@ -5,16 +5,18 @@ This module reads price scraping data, cleans product names, and extracts
 quantity information (amount and units) from the cleaned product names.
 
 The extraction uses regex patterns to identify:
-- Amounts: g, gm, kg, lb, oz, ml, mls, l, litre, ltrs, ltr, gallon, gal, m, cm
-- Units: can, cans, pack, packs, piece, pieces, pcs
+- Amount (weight/volume): g, gm, kg, lb, oz, ml, mls, l, litre, ltrs, ltr, gallon, gal, m, cm
+- Units (count): can, cans, pack, packs, piece, pieces, pcs
 
 Special cases:
 - If per_kg_regex matches: amount = "1 kg", units = NaN
 - If per_each_regex matches: amount = NaN, units = "1"
-- If no regex matches: amount = NaN, units = NaN
+- If no quantity specified: amount = NaN, units = "1" (default unit is 1)
+
+Example:
+- "maltesers fun size share pack chocolate 11 pack 132g" → amount = "132 g", units = "11 pack"
 """
 
-import re
 import sys
 from pathlib import Path
 from typing import Optional, Tuple
@@ -32,18 +34,7 @@ except ImportError:
     from cleaning import clean_product_names
 
 
-# Regex patterns for quantity extraction
-QUANTITY_REGEX = re.compile(
-    r"(\d+(?:\.\d+)?)\s*(?:-\s*(\d+(?:\.\d+)?))?\s*(g|gm|kg|lb|oz|ml|mls|l|litre|ltrs|ltr|gallon|gal|m|cm|can|cans|pack|packs|piece|pieces|pcs)\b",
-    re.IGNORECASE
-)
-
-# Regex to find "(per/kg)" or "(per kg)" variations
-PER_KG_REGEX = re.compile(r'\(per\s*/\s*kg\)|\(per\s*kg\)', re.IGNORECASE)
-
-# Regex to find "(per/each)" or "(per each)" variations
-PER_EACH_REGEX = re.compile(r'\(per\s*/\s*each\)|\(per\s*each\)', re.IGNORECASE)
-
+from regex import AMOUNT_REGEX, UNITS_REGEX, PER_KG_REGEX, PER_EACH_REGEX
 
 def extract_amount_and_units(product_name: str) -> Tuple[Optional[str], Optional[str]]:
     """
@@ -56,36 +47,55 @@ def extract_amount_and_units(product_name: str) -> Tuple[Optional[str], Optional
         Tuple of (amount, units) where each can be a string or NaN.
         
     Logic:
-        - If quantity_regex matches: extract amount and units
-        - Else if per_kg_regex matches: amount = "1 kg", units = NaN
-        - Else if per_each_regex matches: amount = NaN, units = "1"
-        - Else: amount = NaN, units = NaN
+        - Extract amount (weight/volume): g, gm, kg, lb, oz, ml, mls, l, litre, ltrs, ltr, gallon, gal, m, cm
+        - Extract units (count): can, cans, pack, packs, piece, pieces, pcs
+        - If per_kg_regex matches: amount = "1 kg", units = NaN
+        - If per_each_regex matches: amount = NaN, units = "1"
+        - If no quantity specified: amount = NaN, units = "1" (default unit is 1)
     """
     if not isinstance(product_name, str):
-        return None, None
+        return None, "1"
 
-    # Try to find quantity pattern (amount + unit)
-    matches = QUANTITY_REGEX.findall(product_name)
-    if matches:
+    amount = None
+    units = None
+
+    # Try to find amount pattern (weight/volume)
+    amount_matches = AMOUNT_REGEX.findall(product_name)
+    if amount_matches:
         # Use the first match found
-        value1, value2, unit = matches[0]
+        value1, value2, unit = amount_matches[0]
         if value2:
             # It's a range, use the first value
             amount = f"{value1} {unit}"
         else:
             amount = f"{value1} {unit}"
-        return amount, None
+
+    # Try to find units pattern (count)
+    units_matches = UNITS_REGEX.findall(product_name)
+    if units_matches:
+        # Use the first match found
+        value1, value2, unit = units_matches[0]
+        if value2:
+            # It's a range, use the first value
+            units = value1
+        else:
+            units = value1
 
     # Check for per_kg pattern
     if PER_KG_REGEX.search(product_name):
-        return "1 kg", None
+        amount = "1 kg"
+        units = None
 
     # Check for per_each pattern
     if PER_EACH_REGEX.search(product_name):
-        return None, "1"
+        amount = None
+        units = "1"
 
-    # No match found
-    return None, None
+    # If no quantity specified, default units to "1"
+    if units is None:
+        units = "1"
+
+    return amount, units
 
 
 def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
@@ -104,6 +114,7 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
         - source
         - country
         - product_url
+        - url_hash
     """
     # Load raw price scraping data
     df = load_price_scraping_data(project_root)
@@ -121,7 +132,7 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
         df = df.rename(columns={'url': 'product_url'})
 
     # Select and order the required columns
-    required_columns = ['product_name', 'price', 'amount', 'units', 'source', 'country', 'product_url']
+    required_columns = ['product_name', 'price', 'amount', 'units', 'source', 'country', 'product_url', "url_hash"]
 
     # Check if all required columns exist
     missing_columns = [col for col in required_columns if col not in df.columns]
