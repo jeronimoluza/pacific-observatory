@@ -19,17 +19,57 @@ from typing import Optional
 import pandas as pd
 import re
 
+# Import nltk stopwords before local regex module to avoid naming conflict
+import nltk
+try:
+    from nltk.corpus import stopwords
+    # Load English stopwords from nltk
+    STOPWORDS = set(stopwords.words("english"))
+except:
+    # Download stopwords if not already available
+    nltk.download('stopwords')
+    from nltk.corpus import stopwords
+    STOPWORDS = set(stopwords.words("english"))
+
 # Handle both relative and direct execution
 try:
     from .loading import load_price_scraping_data
     from .cleaning import clean_product_names, clean_special_characters
+    from .regex_config import AMOUNT_REGEX, UNITS_REGEX, PER_KG_REGEX, PER_EACH_REGEX, COUNT_UNITS
 except ImportError:
     # Direct execution: add parent directory to path
     sys.path.insert(0, str(Path(__file__).parent))
     from loading import load_price_scraping_data
     from cleaning import clean_product_names, clean_special_characters
+    from regex_config import AMOUNT_REGEX, UNITS_REGEX, PER_KG_REGEX, PER_EACH_REGEX, COUNT_UNITS
 
-from regex import AMOUNT_REGEX, UNITS_REGEX, PER_KG_REGEX, PER_EACH_REGEX
+
+
+def clean_product_only(product_name: str) -> str:
+    """
+    Clean product name by removing all strings contained in () or [].
+
+    Removes parentheses and brackets along with their contents.
+
+    Args:
+        product_name: The product name to clean.
+
+    Returns:
+        Product name with parentheses/brackets and their contents removed.
+    """
+    if not isinstance(product_name, str):
+        return product_name
+
+    # Remove content in parentheses: (...)
+    cleaned = re.sub(r"\([^)]*\)", "", product_name)
+
+    # Remove content in square brackets: [...]
+    cleaned = re.sub(r"\[[^\]]*\]", "", cleaned)
+
+    # Clean up extra whitespace
+    cleaned = " ".join(cleaned.split())
+
+    return cleaned
 
 
 def remove_amounts_and_quantities(product_name: str) -> str:
@@ -120,6 +160,69 @@ def create_product_with_category(product_only: str, category: str) -> str:
     return f"{product_only}; {cleaned_cat}"
 
 
+def clean_product_w_cat(text: str) -> str:
+    """
+    Clean product_w_cat strings by removing words with numbers, single characters, stopwords, size words, and count units.
+
+    Cleaning steps (in order):
+    1. Remove all words that contain any numbers (e.g., "123", "8x24s", "1235sw2", "92777a", "412w")
+    2. Remove all words with len(word) == 1 (e.g., "x", "o", "c")
+    3. Remove all stopwords (e.g., "or", "in", "and")
+    4. Remove size-related words (e.g., "size", "xl", "large", "medium", "sz", "small", "xlong", "approx", "aprox")
+    5. Remove count units (e.g., "can", "cans", "pack", "packs", "piece", "pieces", "box", "boxes", "jar", "jars", "bag", "bags", "case", "carton", "bunch")
+
+    Args:
+        text: The product_w_cat string to clean.
+
+    Returns:
+        Cleaned product_w_cat string with words separated by spaces.
+    """
+    if not isinstance(text, str):
+        return text
+
+    # Size-related words to remove
+    SIZE_WORDS = {"size", "xl", "large", "medium", "sz", "small", "xlong", "approx", "aprox"}
+
+    # Additional packaging/count words to remove
+    ADDITIONAL_UNITS = {"case", "carton", "bunch"}
+
+    # Combine count units from regex_config with additional units
+    ALL_COUNT_UNITS = set(COUNT_UNITS) | ADDITIONAL_UNITS
+
+    # Split text into words
+    words = text.split()
+    cleaned_words = []
+
+    for word in words:
+        # Step 1: Skip if word contains any digit
+        if any(char.isdigit() for char in word):
+            continue
+
+        # Step 2: Skip if word is single character
+        if len(word) == 1:
+            continue
+
+        # Step 3: Skip if word is a stopword (case-insensitive)
+        if word.lower() in STOPWORDS:
+            continue
+
+        # Step 4: Skip if word is a size-related word (case-insensitive)
+        if word.lower() in SIZE_WORDS:
+            continue
+
+        # Step 5: Skip if word is a count unit (case-insensitive)
+        if word.lower() in ALL_COUNT_UNITS:
+            continue
+
+        # Keep the word if it passes all filters
+        cleaned_words.append(word)
+
+    # Join cleaned words back together
+    cleaned_text = " ".join(cleaned_words)
+
+    return cleaned_text
+
+
 def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.DataFrame:
     """
     Load price scraping data and prepare it for COICOP matching.
@@ -154,6 +257,9 @@ def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.Data
     # Clean product names (source-specific cleaning)
     df = clean_product_names(df, project_root)
 
+    # Clean product names by removing content in parentheses and brackets
+    df["product_name"] = df["product_name"].apply(clean_product_only)
+
     # Remove amounts and quantities from product names
     df["product_only"] = df["product_name"].apply(remove_amounts_and_quantities)
 
@@ -163,12 +269,19 @@ def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.Data
     # Create product_w_cat combining product_only and cleaned category
     if "category" in df.columns:
         df["product_w_cat"] = df.apply(
-            lambda row: create_product_with_category(row["product_only"], row["category"]),
+            lambda row: (
+                create_product_with_category(row["product_only"], row["category"])
+                if pd.notna(row["category"]) and str(row["category"]).strip()
+                else row["product_only"]
+            ),
             axis=1,
         )
     else:
         # If no category column, product_w_cat is same as product_only
         df["product_w_cat"] = df["product_only"]
+
+    # Clean product_w_cat by removing numbers, single characters, and stopwords
+    df["product_w_cat"] = df["product_w_cat"].apply(clean_product_w_cat)
 
     # Rename 'url' to 'product_url' if it exists
     if "url" in df.columns and "product_url" not in df.columns:

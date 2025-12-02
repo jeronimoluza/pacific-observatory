@@ -76,32 +76,25 @@ def clean_product_name(product_name: str, strings_to_remove: list) -> str:
 
 def clean_special_characters(text: str) -> str:
     """
-    Clean special characters from text by replacing them with ", ".
+    Clean special characters from text by replacing them with spaces.
 
-    Replaces any non-alphanumeric character (except spaces) with ", ".
-    Then cleans up multiple consecutive ", " into single ", ".
-    Finally, removes any leading/trailing ", " and extra whitespace.
+    Replaces any non-alphanumeric character (except spaces) with " ".
+    Then cleans up extra whitespace by stripping and joining words.
 
     Args:
         text: The text to clean.
 
     Returns:
-        Text with special characters replaced by ", " and cleaned up.
+        Text with special characters replaced by spaces and cleaned up.
     """
     if not isinstance(text, str):
         return text
 
-    # Replace any non-alphanumeric character (except spaces) with ", "
-    cleaned = re.sub(r"[^a-zA-Z0-9\s]", ", ", text)
+    # Replace any non-alphanumeric character (except spaces) with " "
+    cleaned = re.sub(r"[^a-zA-Z0-9\s]", " ", text)
 
-    # Replace multiple consecutive ", " with single ", "
-    cleaned = re.sub(r"(, )+", ", ", cleaned)
-
-    # Remove leading/trailing ", "
-    cleaned = cleaned.strip(", ")
-
-    # Clean up extra whitespace
-    cleaned = " ".join(cleaned.split())
+    # Clean up extra whitespace by stripping each word and joining
+    cleaned = " ".join(word.strip() for word in cleaned.split())
 
     return cleaned
 
