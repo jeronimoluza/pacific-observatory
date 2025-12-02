@@ -261,6 +261,10 @@ def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.Data
     # Clean product_w_cat by removing numbers, single characters, and stopwords
     df["product_w_cat"] = df["product_w_cat"].apply(clean_product_w_cat)
 
+    df['product_only'] = df['product_w_cat'].apply(
+        lambda x: x.split(';')[0]
+    )
+
     # Rename 'url' to 'product_url' if it exists
     if "url" in df.columns and "product_url" not in df.columns:
         df = df.rename(columns={"url": "product_url"})
