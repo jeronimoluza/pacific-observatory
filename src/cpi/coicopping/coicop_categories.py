@@ -78,59 +78,58 @@ def parse_keywords_list(keywords_str: str) -> List[str]:
     return cleaned_items
 
 
-def load_and_process_coicop(excel_path: Path) -> pd.DataFrame:
+def load_and_process_coicop(excel_path: Path, digit_level: int = 2) -> pd.DataFrame:
     """
     Load Excel file and process COICOP data.
     
-    Filters for rows with exactly 3 dots in the code column,
+    Filters for rows with exactly digit_level dots in the code column,
     combines includes and alsoIncludes into keywords,
-    and parses keywords into lists.
+    parses keywords into lists, and creates an "all_info" column
+    combining title, includes, and alsoIncludes for embedding/matching.
     
     Args:
         excel_path: Path to the COICOP Excel file
+        digit_level: Number of dots in COICOP code (digit level)
         
     Returns:
-        Processed DataFrame
+        Processed DataFrame with columns: code, title, includes, alsoIncludes, 
+        excludes, keywords_list, all_info
     """
     print(f"Loading Excel file from {excel_path}...")
     df = pd.read_excel(excel_path)
     
     print(f"Total rows in Excel: {len(df)}")
     
-    # Filter for rows with exactly 3 dots in the code column
-    df = df[df['code'].astype(str).str.count(r'\.') == 3].copy()
-    print(f"Rows with exactly 3 dots in code: {len(df)}")
+    # Filter for rows with exactly digit_level dots in the code column
+    df = df[df['code'].astype(str).str.count(r'\.') == digit_level].copy()
+    print(f"Rows with exactly {digit_level} dots in code: {len(df)}")
     
     # Select required columns
-    required_cols = ['code', 'title', 'includes', 'alsoIncludes', 'excludes']
+    required_cols = ['code', "intro", 'title', 'includes', 'alsoIncludes', 'excludes']
     df = df[required_cols].copy()
     
-    # Combine includes and alsoIncludes into keywords
+    # Create "keywords" column combining intro, includes, and alsoIncludes
+    # This is used for embedding and fuzzy matching
     df['keywords'] = df.apply(
-        lambda row: (
-            (str(row['includes']).strip() if pd.notna(row['includes']) else '') + 
-            ' ' + 
-            (str(row['alsoIncludes']).strip() if pd.notna(row['alsoIncludes']) else '')
-        ).strip(),
+        lambda row: ' '.join(filter(None, [
+            str(row['intro']).strip() if pd.notna(row['intro']) else '',
+            str(row['includes']).strip() if pd.notna(row['includes']) else '',
+            str(row['alsoIncludes']).strip() if pd.notna(row['alsoIncludes']) else ''
+        ])),
         axis=1
     )
-    
-    # Parse keywords into lists and clean
-    df['keywords_list'] = df['keywords'].apply(parse_keywords_list)
-    
-    # Drop the intermediate keywords column if not needed
-    df = df.drop(columns=['keywords'])
     
     return df
 
 
-def get_coicop_categories(data_dir: Path = None) -> pd.DataFrame:
+def get_coicop_categories(data_dir: Path = None, digit_level: int = 3) -> pd.DataFrame:
     """
     Main function to download (if needed) and process COICOP categories.
     
     Args:
         data_dir: Directory where coicop_categories.xlsx is stored.
                  Defaults to data/cpi/coicopping relative to project root.
+        digit_level: Number of dots in COICOP code (digit level). Defaults to 3.
         
     Returns:
         Processed DataFrame with COICOP categories
@@ -145,7 +144,7 @@ def get_coicop_categories(data_dir: Path = None) -> pd.DataFrame:
     excel_path = download_coicop_excel(data_dir)
     
     # Load and process
-    df = load_and_process_coicop(excel_path)
+    df = load_and_process_coicop(excel_path, digit_level=digit_level)
     
     return df
 
@@ -161,3 +160,4 @@ if __name__ == "__main__":
         print(f"\nCode: {row['code']}")
         print(f"Title: {row['title']}")
         print(f"Keywords list: {row['keywords_list']}")
+    df.to_csv("coicop_categories.csv", index=False)
