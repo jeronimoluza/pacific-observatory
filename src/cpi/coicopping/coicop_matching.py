@@ -190,27 +190,29 @@ def format_gemini_prompt(batch_products: List[str], coicop_context: pd.DataFrame
         keywords = row['keywords'] if pd.notna(row['keywords']) else ""  # Truncate for brevity
         coicop_ref += f"{code} | {title} | {keywords}\n"
     
-    # Create products list
+    # Create products list with explicit mapping
     products_text = "PRODUCTS TO CLASSIFY:\n"
     for i, product in enumerate(batch_products, 1):
         products_text += f"{i}. {product}\n"
     
-    prompt = f"""Using LLM mode (no creating any Python script), classify each product from the products list according to the COICOP categories.
+    prompt = f"""Classify each product from the products list according to the COICOP categories.
 
 {coicop_ref}
 
 {products_text}
 
-For each product, determine the most appropriate COICOP code and title based on the keywords and descriptions.
+For each product, determine the most appropriate COICOP code based on the keywords and descriptions.
 
-Output ONLY a CSV format with these columns: product_w_cat, code, title
+Output ONLY a CSV format with these columns: product_w_cat, code
 Do NOT include any other text, explanations, or markdown formatting.
-Output format example:
-product_w_cat,code,title
-"half meter tube; pantry confectionery","01.1.8.9","Other sugar confectionery and desserts n.e.c. (ND)"
-"product name","code","category title"
+IMPORTANT: The product_w_cat column MUST contain the EXACT product string from the input list above.
 
-Start the CSV output immediately with the header row."""
+Output format example:
+product_w_cat,code
+"half meter tube; pantry confectionery","01.1.8.9"
+"shortbread fingers; pantry biscuit cookies","01.1.1.3"
+
+Start the CSV output immediately with the header row. Include all products from the list."""
     
     return prompt
 
@@ -280,6 +282,14 @@ def classify_products_with_gemini(
             batch_results = parse_gemini_response(response_text)
             all_results.extend(batch_results)
             
+            # Debug: Show response details if batch is empty
+            if len(batch_results) == 0:
+                print(f"⚠ Batch {batch_num + 1}: No valid results parsed.")
+                print(f"  Response preview (first 300 chars):\n{response_text[:300]}")
+                # Check if header is present
+                first_line = response_text.split('\n')[0] if response_text else ""
+                print(f"  First line: {first_line}")
+            
             print(f"✓ Batch {batch_num + 1}: Classified {len(batch_results)} products")
             
         except Exception as e:
@@ -305,7 +315,7 @@ def parse_gemini_response(response_text: str) -> List[Dict[str, str]]:
         response_text: Raw response text from Gemini (should be CSV format)
         
     Returns:
-        List of dictionaries with product_w_cat, code, title
+        List of dictionaries with product_w_cat, code
     """
     results = []
     
@@ -317,26 +327,49 @@ def parse_gemini_response(response_text: str) -> List[Dict[str, str]]:
     
     response_text = response_text.strip()
     
-    # Parse CSV
-    try:
-        reader = csv.DictReader(io.StringIO(response_text))
-        for row in reader:
-            if row and any(row.values()):  # Skip empty rows
-                # Safely get and strip values, handling None
-                product_w_cat = row.get('product_w_cat')
-                code = row.get('code')
-                title = row.get('title')
+    # Handle truncated responses by removing incomplete last row
+    # If the last line doesn't end with a quote, it's likely truncated
+    lines = response_text.split('\n')
+    if lines and not lines[-1].rstrip().endswith('"'):
+        # Last row is incomplete, remove it
+        lines = lines[:-1]
+        response_text = '\n'.join(lines)
+    
+    # Parse CSV with custom logic to handle inconsistent quoting
+    lines = response_text.split('\n')
+    
+    # Skip header if present
+    start_idx = 0
+    if lines and lines[0].startswith('product_w_cat'):
+        start_idx = 1
+    
+    # Track seen products to avoid duplicates
+    seen = set()
+    
+    # Parse each line manually to handle inconsistent quoting
+    for line in lines[start_idx:]:
+        line = line.strip()
+        if not line:
+            continue
+        
+        try:
+            # Use csv reader to parse individual line
+            row_data = list(csv.reader([line]))[0]
+            
+            if len(row_data) >= 2:
+                product_w_cat = row_data[0].strip() if row_data[0] else None
+                code = row_data[1].strip() if row_data[1] else None
                 
-                # Only add if we have all required fields
-                if product_w_cat and code and title:
+                # Only add if we have both fields and haven't seen this product before
+                if product_w_cat and code and product_w_cat not in seen:
+                    seen.add(product_w_cat)
                     results.append({
-                        'product_w_cat': product_w_cat.strip() if isinstance(product_w_cat, str) else '',
-                        'code': code.strip() if isinstance(code, str) else '',
-                        'title': title.strip() if isinstance(title, str) else ''
+                        'product_w_cat': product_w_cat,
+                        'code': code
                     })
-    except Exception as e:
-        print(f"Warning: Failed to parse CSV response: {e}")
-        print(f"Response text:\n{response_text[:500]}")
+        except Exception as e:
+            # Skip lines that can't be parsed
+            pass
     
     return results
 
@@ -344,6 +377,7 @@ def parse_gemini_response(response_text: str) -> List[Dict[str, str]]:
 def generate_final_output(
     products_input_df: pd.DataFrame,
     classification_results_df: pd.DataFrame,
+    coicop_categories_df: pd.DataFrame,
     project_root: Optional[Path] = None
 ) -> pd.DataFrame:
     """
@@ -351,7 +385,8 @@ def generate_final_output(
     
     Args:
         products_input_df: Original products with url_hash and product_w_cat
-        classification_results_df: Classification results with code and title
+        classification_results_df: Classification results with product_w_cat and code
+        coicop_categories_df: COICOP categories with code and title
         project_root: Optional project root path
         
     Returns:
@@ -370,6 +405,13 @@ def generate_final_output(
     merged = products_input_df.merge(
         classification_results_df,
         on='product_w_cat',
+        how='left'
+    )
+    
+    # Merge with COICOP categories to get titles
+    merged = merged.merge(
+        coicop_categories_df[['code', 'title']],
+        on='code',
         how='left'
     )
     
@@ -421,7 +463,6 @@ def run_coicop_matching(project_root: Optional[Path] = None) -> None:
         # Step 2: Create products input
         df_products_input = create_products_input_csv(project_root)
         
-        raise
         # Step 3: Classify with Gemini
         df_classifications = classify_products_with_gemini(
             df_products_input,
@@ -433,6 +474,7 @@ def run_coicop_matching(project_root: Optional[Path] = None) -> None:
         df_final = generate_final_output(
             df_products_input,
             df_classifications,
+            df_coicop,
             project_root
         )
         

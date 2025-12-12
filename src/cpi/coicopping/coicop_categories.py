@@ -131,6 +131,9 @@ def load_and_process_coicop(excel_path: Path, digit_level: int = 4) -> pd.DataFr
         
         # Remove leading/trailing semicolons and spaces
         text = text.strip(', ').strip()
+
+        text = text.replace(', , ', ', ')
+        text = text.replace('.,', '.')
         
         return text
     
