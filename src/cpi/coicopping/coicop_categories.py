@@ -78,7 +78,7 @@ def parse_keywords_list(keywords_str: str) -> List[str]:
     return cleaned_items
 
 
-def load_and_process_coicop(excel_path: Path, digit_level: int = 2) -> pd.DataFrame:
+def load_and_process_coicop(excel_path: Path, digit_level: int = 4) -> pd.DataFrame:
     """
     Load Excel file and process COICOP data.
     
@@ -100,8 +100,9 @@ def load_and_process_coicop(excel_path: Path, digit_level: int = 2) -> pd.DataFr
     
     print(f"Total rows in Excel: {len(df)}")
     
-    # Filter for rows with exactly digit_level dots in the code column
-    df = df[df['code'].astype(str).str.count(r'\.') == digit_level].copy()
+    # Filter for rows with exactly digit_level - 1 dots in the code column
+    n_dots = digit_level - 1
+    df = df[df['code'].astype(str).str.count(r'\.') == n_dots].copy()
     print(f"Rows with exactly {digit_level} dots in code: {len(df)}")
     
     # Select required columns
@@ -123,14 +124,14 @@ def load_and_process_coicop(excel_path: Path, digit_level: int = 2) -> pd.DataFr
     return df
 
 
-def get_coicop_categories(data_dir: Path = None, digit_level: int = 3) -> pd.DataFrame:
+def get_coicop_categories(data_dir: Path = None, digit_level: int = 4) -> pd.DataFrame:
     """
     Main function to download (if needed) and process COICOP categories.
     
     Args:
         data_dir: Directory where coicop_categories.xlsx is stored.
                  Defaults to data/cpi/coicopping relative to project root.
-        digit_level: Number of dots in COICOP code (digit level). Defaults to 3.
+        digit_level: Number of dots in COICOP code (digit level). Defaults to 4.
         
     Returns:
         Processed DataFrame with COICOP categories
@@ -162,3 +163,5 @@ if __name__ == "__main__":
         print(f"Title: {row['title']}")
         print(f"Keywords list: {row['keywords_list']}")
     df.to_csv("coicop_categories.csv", index=False)
+    df_no_services = df[~df['code'].str.endswith(' (S)')]
+    df_no_services.to_csv("coicop_categories_no_services.csv", index=False)
