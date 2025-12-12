@@ -18,7 +18,7 @@ AMOUNT_UNITS = ['g', 'gm', 'kg', 'lb', 'lbs', 'oz', 'ml', 'mls', 'l', 'litre', '
 SIZE_WORDS = ['size', 'xl', 'large', 'medium', 'sz', 'small', 'xlong', 'approx', 'aprox']
 
 # Additional packaging/count words to remove
-ADDITIONAL_UNITS = ['case', 'carton', 'bunch']
+ADDITIONAL_UNITS = ['case', 'carton', 'bunch', 'assorted', "assortment"]
 
 # Extend STOPWORDS with size words, additional units, and count units
 STOPWORDS.update(SIZE_WORDS)

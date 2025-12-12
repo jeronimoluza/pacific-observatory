@@ -118,6 +118,7 @@ def load_and_process_coicop(excel_path: Path, digit_level: int = 2) -> pd.DataFr
         ])),
         axis=1
     )
+    # df['keywords'] = df['title'].str.replace(' (ND)', '')
     
     return df
 

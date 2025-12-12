@@ -1,14 +1,14 @@
-"""Match products to COICOP categories using fuzzy matching with multiple algorithms.
+"""Train a BERT model to classify products to COICOP categories.
 
-This module performs fuzzy matching of product names (product_w_cat) against
-COICOP category keywords using multiple fuzzy matching algorithms.
+This module trains a pretrained BERT model to predict COICOP codes and titles
+from product names (product_w_cat).
 
 Workflow:
-1. Load COICOP categories and create keywords column (lowercase, normalized, no stopwords)
-2. Prepare matching data (product_w_cat, url_hash)
-3. For each product_w_cat, apply all fuzzy matching algorithms
-4. For each algorithm, select the highest scoring match
-5. Output results with predictions from all algorithms
+1. Load and combine classification.csv and mis_classed1.csv
+2. Create train/test/validation splits
+3. Fine-tune pretrained BERT model
+4. Evaluate on train, test, and validation sets
+5. Report accuracy metrics
 """
 
 import sys
@@ -16,300 +16,380 @@ from pathlib import Path
 from typing import Optional, List, Dict, Tuple
 import unicodedata
 import re
+import json
+from datetime import datetime
 
 import pandas as pd
-from thefuzz import process
-from thefuzz import fuzz
+import numpy as np
+import torch
+from torch.utils.data import Dataset, DataLoader
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 from tqdm import tqdm
-
-# Handle both relative and direct execution
-try:
-    from .coicop_categories import get_coicop_categories
-    from .prestep import prepare_coicop_matching_data
-    from .regex_config import STOPWORDS
-except ImportError:
-    sys.path.insert(0, str(Path(__file__).parent))
-    from coicop_categories import get_coicop_categories
-    from prestep import prepare_coicop_matching_data
-    from regex_config import STOPWORDS
+import warnings
+warnings.filterwarnings('ignore')
 
 
-def normalize_text(text: str) -> str:
-    """
-    Normalize text for keyword creation.
+class ProductCoicopsDataset(Dataset):
+    """PyTorch Dataset for product-to-COICOP classification."""
     
-    Steps (in order):
-    1. Remove x000d encoding artifacts
-    2. Convert to lowercase
-    3. Remove accents (é → e, ñ → n, etc.)
-    4. Remove special characters and numbers (keep only letters and spaces)
-    5. Remove stopwords
-    6. Clean up extra whitespace
+    def __init__(self, texts: List[str], labels: List[int], tokenizer, max_length: int = 128):
+        """
+        Args:
+            texts: List of product names
+            labels: List of label indices
+            tokenizer: BERT tokenizer
+            max_length: Maximum sequence length
+        """
+        self.texts = texts
+        self.labels = labels
+        self.tokenizer = tokenizer
+        self.max_length = max_length
+    
+    def __len__(self):
+        return len(self.texts)
+    
+    def __getitem__(self, idx):
+        text = self.texts[idx]
+        label = self.labels[idx]
+        
+        encoding = self.tokenizer(
+            text,
+            max_length=self.max_length,
+            padding='max_length',
+            truncation=True,
+            return_tensors='pt'
+        )
+        
+        return {
+            'input_ids': encoding['input_ids'].squeeze(),
+            'attention_mask': encoding['attention_mask'].squeeze(),
+            'labels': torch.tensor(label, dtype=torch.long)
+        }
+
+
+def load_and_combine_data(
+    classification_path: Path
+) -> pd.DataFrame:
+    """
+    Load training data from full_classification.csv.
     
     Args:
-        text: Text to normalize
+        classification_path: Path to full_classification.csv
         
     Returns:
-        Normalized text
+        DataFrame with product_w_cat, code, and title columns
     """
-    if not isinstance(text, str):
-        return ""
+    print("Loading training data...")
+    df = pd.read_csv(classification_path)
     
-    # Step 1: Remove x000d encoding artifacts
-    text = re.sub(r'_x000D_', '', text)
+    # Keep only required columns and remove duplicates
+    df = df[['product_w_cat', 'code', 'title']].drop_duplicates()
     
-    # Step 2: Lowercase
-    text = text.lower()
+    print(f"✓ Loaded {len(df)} unique samples from {classification_path.name}")
     
-    # Step 3: Remove accents (normalize to NFD, then remove combining characters)
-    text = unicodedata.normalize('NFD', text)
-    text = ''.join(char for char in text if unicodedata.category(char) != 'Mn')
-    
-    # Step 4: Remove special characters and numbers (keep only letters and spaces)
-    text = re.sub(r'[^a-z\s]', ' ', text)
-    
-    # Step 5: Split into words and remove stopwords
-    words = text.split()
-    words = [word for word in words if word and word not in STOPWORDS]
-    
-    # Step 6: Clean up extra whitespace
-    text = ' '.join(words)
-    
-    return text
-
-
-def create_coicop_keywords(coicop_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Create keywords column from all_info for each COICOP category.
-    
-    Applies normalize_text() to all_info column and creates a "keywords" column.
-    
-    Args:
-        coicop_df: DataFrame with COICOP categories (must have 'all_info' column)
-        
-    Returns:
-        DataFrame with 'code', 'title', and 'keywords' columns
-    """
-    df = coicop_df[['code', 'title', 'keywords']].copy()
-    df['keywords'] = df['keywords'].apply(normalize_text)
-    df = df[['code', 'title', 'keywords']]
-    
-    print(f"✓ Created keywords for {len(df)} COICOP categories")
     return df
 
 
-def fuzzy_match_with_algorithm(
-    product_w_cat: str,
-    coicop_keywords_list: List[str],
-    scorer
-) -> Tuple[Optional[str], int]:
+def create_label_encoders(df: pd.DataFrame) -> Tuple[LabelEncoder, LabelEncoder, Dict, Dict]:
     """
-    Fuzzy match a product against COICOP keywords using a specific algorithm.
+    Create label encoders for codes and titles.
     
     Args:
-        product_w_cat: Product name to match
-        coicop_keywords_list: List of COICOP keywords to match against
-        scorer: Fuzzy matching algorithm (e.g., fuzz.ratio, fuzz.token_set_ratio)
+        df: DataFrame with code and title columns
         
     Returns:
-        Tuple of (best_keyword, best_score) or (None, 0) if no match
+        Tuple of (code_encoder, title_encoder, code_to_idx, title_to_idx)
     """
-    product_w_cat = normalize_text(product_w_cat)
-    if not isinstance(product_w_cat, str) or not product_w_cat.strip():
-        return None, 0
+    code_encoder = LabelEncoder()
+    title_encoder = LabelEncoder()
     
-    if not coicop_keywords_list:
-        return None, 0
+    code_encoder.fit(df['code'].unique())
+    title_encoder.fit(df['title'].unique())
     
-    # Use process.extractOne to find best match with specific scorer
-    match_result = process.extractOne(
-        product_w_cat,
-        coicop_keywords_list,
-        scorer=scorer
+    code_to_idx = {code: idx for idx, code in enumerate(code_encoder.classes_)}
+    title_to_idx = {title: idx for idx, title in enumerate(title_encoder.classes_)}
+    
+    print(f"✓ Created encoders: {len(code_to_idx)} unique codes, {len(title_to_idx)} unique titles")
+    
+    return code_encoder, title_encoder, code_to_idx, title_to_idx
+
+
+def split_data(
+    df: pd.DataFrame,
+    train_ratio: float = 0.7,
+    test_ratio: float = 0.15,
+    val_ratio: float = 0.15,
+    random_state: int = 42
+) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    Split data into train, test, and validation sets.
+    
+    Args:
+        df: DataFrame to split
+        train_ratio: Proportion for training (default 0.7)
+        test_ratio: Proportion for testing (default 0.15)
+        val_ratio: Proportion for validation (default 0.15)
+        random_state: Random seed
+        
+    Returns:
+        Tuple of (train_df, test_df, val_df)
+    """
+    # First split: train + test vs validation
+    train_test_df, val_df = train_test_split(
+        df,
+        test_size=val_ratio,
+        random_state=random_state
     )
     
-    if match_result is None:
-        return None, 0
+    # Second split: train vs test
+    train_df, test_df = train_test_split(
+        train_test_df,
+        test_size=test_ratio / (train_ratio + test_ratio),
+        random_state=random_state
+    )
     
-    matched_keyword, score = match_result
-    return matched_keyword, score
+    print(f"✓ Data split:")
+    print(f"  - Train: {len(train_df)} samples ({len(train_df)/len(df)*100:.1f}%)")
+    print(f"  - Test: {len(test_df)} samples ({len(test_df)/len(df)*100:.1f}%)")
+    print(f"  - Validation: {len(val_df)} samples ({len(val_df)/len(df)*100:.1f}%)")
+    
+    return train_df, test_df, val_df
 
 
-def match_product_with_all_algorithms(
-    product_w_cat: str,
-    coicop_df: pd.DataFrame
-) -> Dict[str, Tuple[str, str, int]]:
+def compute_metrics(eval_pred):
+    """Compute accuracy metric for evaluation."""
+    predictions, labels = eval_pred
+    predictions = np.argmax(predictions, axis=1)
+    return {'accuracy': accuracy_score(labels, predictions)}
+
+
+def train_bert_model(
+    train_df: pd.DataFrame,
+    test_df: pd.DataFrame,
+    val_df: pd.DataFrame,
+    code_to_idx: Dict,
+    title_to_idx: Dict,
+    model_name: str = "bert-base-uncased",
+    num_epochs: int = 3,
+    batch_size: int = 16,
+    learning_rate: float = 2e-5,
+    output_dir: str = "./bert_coicop_model"
+) -> Tuple[AutoModelForSequenceClassification, AutoTokenizer, Dict]:
     """
-    Match a product against COICOP categories using all available algorithms.
-    
-    For each algorithm, finds the best matching COICOP category and returns
-    (title, code, score) for that algorithm.
+    Train BERT model for code prediction.
     
     Args:
-        product_w_cat: Product name to match
-        coicop_df: DataFrame with COICOP categories (must have 'code', 'title', 'keywords' columns)
+        train_df: Training data
+        test_df: Test data
+        val_df: Validation data
+        code_to_idx: Code to index mapping
+        title_to_idx: Title to index mapping
+        model_name: Pretrained model name
+        num_epochs: Number of training epochs
+        batch_size: Batch size
+        learning_rate: Learning rate
+        output_dir: Output directory for model
         
     Returns:
-        Dictionary with algorithm names as keys and (title, code, score) tuples as values
+        Tuple of (model, tokenizer, results_dict)
     """
-    if not isinstance(product_w_cat, str) or not product_w_cat.strip():
-        return {}
+    print(f"\nTraining BERT model ({model_name})...")
     
-    # List of all available fuzzy matching algorithms
-    algorithms = {
-        'ratio': fuzz.ratio,
-        'partial_ratio': fuzz.partial_ratio,
-        'token_sort_ratio': fuzz.token_sort_ratio,
-        'token_set_ratio': fuzz.token_set_ratio,
-        'partial_token_sort_ratio': fuzz.partial_token_sort_ratio,
+    # Load tokenizer and model
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    num_labels = len(code_to_idx)
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_name,
+        num_labels=num_labels
+    )
+    
+    # Prepare datasets
+    train_texts = train_df['product_w_cat'].tolist()
+    train_labels = [code_to_idx[code] for code in train_df['code']]
+    
+    test_texts = test_df['product_w_cat'].tolist()
+    test_labels = [code_to_idx[code] for code in test_df['code']]
+    
+    val_texts = val_df['product_w_cat'].tolist()
+    val_labels = [code_to_idx[code] for code in val_df['code']]
+    
+    train_dataset = ProductCoicopsDataset(train_texts, train_labels, tokenizer)
+    test_dataset = ProductCoicopsDataset(test_texts, test_labels, tokenizer)
+    val_dataset = ProductCoicopsDataset(val_texts, val_labels, tokenizer)
+    
+    # Training arguments
+    training_args = TrainingArguments(
+        output_dir=output_dir,
+        num_train_epochs=num_epochs,
+        per_device_train_batch_size=batch_size,
+        per_device_eval_batch_size=batch_size,
+        learning_rate=learning_rate,
+        weight_decay=0.01,
+        logging_steps=50,
+        eval_strategy="epoch",
+        save_strategy="epoch",
+        load_best_model_at_end=True,
+        metric_for_best_model="eval_accuracy",
+        push_to_hub=False,
+        seed=42
+    )
+    
+    # Trainer
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=val_dataset,
+        tokenizer=tokenizer,
+        compute_metrics=compute_metrics
+    )
+    
+    # Train
+    print("Starting training...")
+    trainer.train()
+    
+    # Evaluate on all sets
+    print("\nEvaluating model...")
+    
+    train_predictions = trainer.predict(train_dataset)
+    train_preds = np.argmax(train_predictions.predictions, axis=1)
+    train_accuracy = np.mean(train_preds == np.array(train_labels))
+    
+    test_predictions = trainer.predict(test_dataset)
+    test_preds = np.argmax(test_predictions.predictions, axis=1)
+    test_accuracy = np.mean(test_preds == np.array(test_labels))
+    
+    val_predictions = trainer.predict(val_dataset)
+    val_preds = np.argmax(val_predictions.predictions, axis=1)
+    val_accuracy = np.mean(val_preds == np.array(val_labels))
+    
+    results = {
+        'train_accuracy': float(train_accuracy),
+        'test_accuracy': float(test_accuracy),
+        'val_accuracy': float(val_accuracy),
+        'num_labels': num_labels,
+        'train_samples': len(train_df),
+        'test_samples': len(test_df),
+        'val_samples': len(val_df),
+        'model_name': model_name,
+        'timestamp': datetime.now().isoformat()
     }
     
-    results = {}
+    print(f"\n✓ Training complete!")
+    print(f"  - Train Accuracy: {train_accuracy:.4f}")
+    print(f"  - Test Accuracy: {test_accuracy:.4f}")
+    print(f"  - Validation Accuracy: {val_accuracy:.4f}")
     
-    for algo_name, scorer in algorithms.items():
-        best_score = 0
-        best_code = None
-        best_title = None
+    return model, tokenizer, results
+
+
+def save_results(
+    results: Dict,
+    code_to_idx: Dict,
+    title_to_idx: Dict,
+    output_dir: str = "./bert_coicop_model"
+) -> None:
+    """
+    Save results and mappings to JSON files.
+    
+    Args:
+        results: Results dictionary
+        code_to_idx: Code to index mapping
+        title_to_idx: Title to index mapping
+        output_dir: Output directory
+    """
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    
+    # Save results
+    results_file = output_path / "training_results.json"
+    with open(results_file, 'w') as f:
+        json.dump(results, f, indent=2)
+    print(f"✓ Results saved to {results_file}")
+    
+    # Save mappings
+    mappings = {
+        'code_to_idx': code_to_idx,
+        'title_to_idx': title_to_idx,
+        'idx_to_code': {str(v): k for k, v in code_to_idx.items()},
+        'idx_to_title': {str(v): k for k, v in title_to_idx.items()}
+    }
+    mappings_file = output_path / "label_mappings.json"
+    with open(mappings_file, 'w') as f:
+        json.dump(mappings, f, indent=2)
+    print(f"✓ Mappings saved to {mappings_file}")
+
+
+def run_bert_training(
+    classification_path: Optional[Path] = None,
+    num_epochs: int = 3,
+    batch_size: int = 16,
+    learning_rate: float = 2e-5,
+    output_dir: str = "./bert_coicop_model"
+) -> Dict:
+    """
+    Main function to run BERT training pipeline.
+    
+    Args:
+        classification_path: Path to full_classification.csv
+        num_epochs: Number of training epochs
+        batch_size: Batch size
+        learning_rate: Learning rate
+        output_dir: Output directory for model
         
-        # Iterate through each COICOP category
-        for _, row in coicop_df.iterrows():
-            code = row['code']
-            title = row['title']
-            keywords = row['keywords']
-            
-            # Skip if keywords is empty
-            if not isinstance(keywords, str) or not keywords.strip():
-                continue
-            
-            # Split keywords into list for matching
-            keywords_list = keywords.split()
-            
-            # Fuzzy match against this category's keywords
-            matched_keyword, score = fuzzy_match_with_algorithm(
-                product_w_cat,
-                keywords_list,
-                scorer
-            )
-            
-            # Track best match for this algorithm
-            if score > best_score:
-                best_score = score
-                best_code = code
-                best_title = title
-        
-        # Store result for this algorithm
-        if best_code is not None:
-            results[algo_name] = (best_title, best_code, best_score)
+    Returns:
+        Dictionary with training results
+    """
+    # Default path
+    if classification_path is None:
+        classification_path = Path("full_classification.csv")
+    
+    # Load data
+    df = load_and_combine_data(classification_path)
+    
+    # Create label encoders
+    code_encoder, title_encoder, code_to_idx, title_to_idx = create_label_encoders(df)
+    
+    # Split data
+    train_df, test_df, val_df = split_data(df)
+    
+    # Train model
+    model, tokenizer, results = train_bert_model(
+        train_df, test_df, val_df,
+        code_to_idx, title_to_idx,
+        num_epochs=num_epochs,
+        batch_size=batch_size,
+        learning_rate=learning_rate,
+        output_dir=output_dir
+    )
+    
+    # Save results
+    save_results(results, code_to_idx, title_to_idx, output_dir)
     
     return results
 
 
-def match_products_to_coicop_multi_algorithm(
-    products_df: pd.DataFrame,
-    coicop_df: pd.DataFrame
-) -> pd.DataFrame:
-    """
-    Match all products to COICOP categories using multiple algorithms.
-    
-    For each product, applies all fuzzy matching algorithms and creates columns
-    for each algorithm's predictions.
-    
-    Args:
-        products_df: DataFrame with products (must have 'product_w_cat' column)
-        coicop_df: DataFrame with COICOP categories
-        
-    Returns:
-        DataFrame with product_w_cat and prediction columns for each algorithm
-    """
-    df = products_df[['product_w_cat']].copy()
-    
-    # Get unique products for matching
-    unique_products = df['product_w_cat'].unique()
-    print(f"Matching {len(unique_products)} unique products against COICOP categories...")
-    
-    # Match each unique product
-    all_results = {}
-    for product in tqdm(unique_products, desc="Matching products"):
-        if not isinstance(product, str) or not product.strip():
-            all_results[product] = {}
-            continue
-        
-        algo_results = match_product_with_all_algorithms(product, coicop_df)
-        all_results[product] = algo_results
-    
-    # Create result columns for each algorithm
-    algorithms = ['ratio', 'partial_ratio', 'token_sort_ratio', 'token_set_ratio', 'partial_token_sort_ratio']
-    
-    for algo in algorithms:
-        col_name = f'predicted_{algo}'
-        df[col_name] = df['product_w_cat'].apply(
-            lambda x: (
-                f"{all_results[x][algo][0]}; {all_results[x][algo][1]}"
-                if algo in all_results.get(x, {})
-                else None
-            )
-        )
-    
-    print(f"✓ Matching complete. Results shape: {df.shape}")
-    
-    return df
-
-
-def run_coicop_matching(
-    project_root: Optional[Path] = None,
-    digit_level: int = 3
-) -> pd.DataFrame:
-    """
-    Main function to run the complete COICOP matching workflow with multiple algorithms.
-    
-    Steps:
-    1. Load COICOP categories at specified digit level
-    2. Create keywords column (normalized, no stopwords)
-    3. Prepare product matching data
-    4. Match products using all fuzzy matching algorithms
-    5. Return results with predictions from all algorithms
-    
-    Args:
-        project_root: Optional project root path
-        digit_level: COICOP digit level (number of dots in code)
-        
-    Returns:
-        DataFrame with product_w_cat and algorithm predictions
-    """
-    print(f"Loading COICOP categories at digit level {digit_level}...")
-    coicop_df = get_coicop_categories(digit_level=digit_level)
-    print(f"✓ Loaded {len(coicop_df)} COICOP categories at digit level {digit_level}")
-    
-    print("Creating keywords column...")
-    coicop_df = create_coicop_keywords(coicop_df)
-    coicop_df.to_csv("coicop_categories.csv", index=False)
-    
-    print("Preparing product matching data...")
-    products_df = prepare_coicop_matching_data(project_root)
-    print(f"✓ Prepared {len(products_df)} products")
-    
-    print("Starting multi-algorithm fuzzy matching...")
-    results_df = match_products_to_coicop_multi_algorithm(products_df, coicop_df)
-    
-    print(f"✓ Matching complete. Results shape: {results_df.shape}")
-    
-    return results_df
-
-
 if __name__ == "__main__":
-    # Parameter: digit level (number of dots in COICOP code)
-    digit_level = 3
+    # Run BERT training
+    results = run_bert_training(
+        classification_path=Path("full_classification.csv"),
+        num_epochs=5,
+        batch_size=16,
+        learning_rate=2e-5,
+        output_dir="./bert_coicop_model"
+    )
     
-    # Run matching
-    results = run_coicop_matching(digit_level=digit_level)
-    
-    # Display results
-    print(f"\nMatching Results:")
-    print(f"Total rows: {len(results)}")
-    print(f"Columns: {results.columns.tolist()}")
-    print(f"\nFirst 10 rows:")
-    print(results.head(10))
-    
-    # Save results
-    results.to_csv("coicop_matching_results.csv", index=False)
-    print(f"\nResults saved to coicop_matching_results.csv")
+    print("\n" + "="*60)
+    print("BERT TRAINING SUMMARY")
+    print("="*60)
+    print(f"Train Accuracy:      {results['train_accuracy']:.4f}")
+    print(f"Test Accuracy:       {results['test_accuracy']:.4f}")
+    print(f"Validation Accuracy: {results['val_accuracy']:.4f}")
+    print(f"Number of Labels:    {results['num_labels']}")
+    print(f"Train Samples:       {results['train_samples']}")
+    print(f"Test Samples:        {results['test_samples']}")
+    print(f"Val Samples:         {results['val_samples']}")
+    print("="*60)
