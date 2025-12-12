@@ -111,15 +111,37 @@ def load_and_process_coicop(excel_path: Path, digit_level: int = 4) -> pd.DataFr
     
     # Create "keywords" column combining intro, includes, and alsoIncludes
     # This is used for embedding and fuzzy matching
+    def clean_keywords(text):
+        """Clean keywords by removing _x000D_ and converting bullets to semicolons."""
+        if not text or pd.isna(text):
+            return ''
+        
+        text = str(text).strip()
+        
+        # Remove _x000D_ encoding
+        text = text.replace('_x000D_', ', ')
+        
+        # Replace bullet points (* followed by space) with semicolon separator
+        # Handle both "* item" and newline + "* item" patterns
+        text = text.replace('\n* ', ', ')
+        text = text.replace('* ', ', ')
+        
+        # Clean up multiple spaces
+        text = ' '.join(text.split())
+        
+        # Remove leading/trailing semicolons and spaces
+        text = text.strip(', ').strip()
+        
+        return text
+    
     df['keywords'] = df.apply(
-        lambda row: ' '.join(filter(None, [
-            str(row['intro']).strip() if pd.notna(row['intro']) else '',
-            str(row['includes']).strip() if pd.notna(row['includes']) else '',
-            str(row['alsoIncludes']).strip() if pd.notna(row['alsoIncludes']) else ''
+        lambda row: ', '.join(filter(None, [
+            clean_keywords(row['intro']) if pd.notna(row['intro']) else '',
+            clean_keywords(row['includes']) if pd.notna(row['includes']) else '',
+            clean_keywords(row['alsoIncludes']) if pd.notna(row['alsoIncludes']) else ''
         ])),
         axis=1
     )
-    # df['keywords'] = df['title'].str.replace(' (ND)', '')
     
     return df
 
