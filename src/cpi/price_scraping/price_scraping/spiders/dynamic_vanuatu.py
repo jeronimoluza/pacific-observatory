@@ -10,6 +10,7 @@ from urllib.parse import urljoin
 import logging
 
 from price_scraping.utils import SelectorExtractor
+from price_scraping.selectors import get_selectors
 
 logger = logging.getLogger(__name__)
 
@@ -26,17 +27,7 @@ class DynamicVanuatuSpider(CrawlSpider):
     country = "vanuatu"
 
     # CSS selector fallbacks for product fields
-    SELECTORS = {
-        "product_name": [
-            "div.product__section-content h1[class='product__section-title product-title']::text",
-        ],
-        "price": [
-            "div.product__section-content span[class='price-item price-item--regular']::text",
-        ],
-        "product_id": [
-            "span#variantSku::text",
-        ],
-    }
+    SELECTORS = get_selectors("dynamic_vanuatu")
 
     # Rules for following links and extracting data
     rules = (

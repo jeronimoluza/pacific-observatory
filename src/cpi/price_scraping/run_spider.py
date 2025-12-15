@@ -6,6 +6,8 @@ Convenience script to run Scrapy spiders with common configurations.
 import sys
 import logging
 import os
+import json
+import hashlib
 from pathlib import Path
 
 from scrapy.crawler import CrawlerProcess
@@ -111,6 +113,111 @@ def run_all_spiders(**kwargs):
         sys.exit(1)
 
 
+def load_scraped_items(output_dir: Path, spider_name: str, country: str) -> list:
+    """
+    Load all scraped items from JSONL files for a spider.
+    
+    Args:
+        output_dir: Base output directory
+        spider_name: Name of the spider
+        country: Country code for directory structure
+        
+    Returns:
+        List of items from all JSONL files
+    """
+    items = []
+    spider_dir = output_dir / country / spider_name / "raw_items"
+    
+    if not spider_dir.exists():
+        logger.warning(f"No raw items directory found at {spider_dir}")
+        return items
+    
+    # Load all JSONL files
+    for jsonl_file in spider_dir.glob("*.jsonl"):
+        try:
+            with open(jsonl_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.strip():
+                        items.append(json.loads(line))
+            logger.info(f"Loaded {len(items)} items from {jsonl_file}")
+        except Exception as e:
+            logger.error(f"Error loading {jsonl_file}: {e}")
+    
+    return items
+
+
+def get_spider_country(spider_name: str) -> str:
+    """
+    Get the country code for a spider.
+    
+    Args:
+        spider_name: Name of the spider
+        
+    Returns:
+        Country code
+    """
+    spider_countries = {
+        "rbpatel": "fiji",
+        "mh_online": "fiji",
+        "aldi_au": "australia",
+        "food_pro": "papua_new_guinea",
+        "molisi": "tonga",
+        "samoa_market": "samoa",
+        "dynamic_vanuatu": "vanuatu",
+    }
+    return spider_countries.get(spider_name, "unknown")
+
+
+def run_wayback_scraping(spider_name: str, output_dir: Path, from_date: str):
+    """
+    Run wayback machine scraping for a spider.
+    
+    Args:
+        spider_name: Name of the spider
+        output_dir: Base output directory
+        from_date: End timestamp for wayback snapshots (YYYY-MM-DD format)
+    """
+    try:
+        from price_scraping.wayback_scraper import WaybackScraper
+        
+        logger.info(f"Starting wayback machine scraping for {spider_name}")
+        logger.info(f"Looking for snapshots up to {from_date}")
+        
+        # Get country code
+        country = get_spider_country(spider_name)
+        
+        # Load scraped items
+        items = load_scraped_items(output_dir, spider_name, country)
+        if not items:
+            logger.error(f"No items found for {spider_name} in {output_dir / country / spider_name / 'raw_items'}")
+            return
+        
+        logger.info(f"Loaded {len(items)} items for wayback scraping")
+        
+        # Run wayback scraper
+        scraper = WaybackScraper(spider_name, output_dir, from_date)
+        stats = scraper.run_scrape_wayback(items, country)
+        
+        # Log summary
+        logger.info("=" * 60)
+        logger.info("WAYBACK MACHINE SCRAPING SUMMARY")
+        logger.info("=" * 60)
+        logger.info(f"Total items: {stats['total_items']}")
+        logger.info(f"Unique URLs: {stats['unique_urls']}")
+        logger.info(f"Successful scrapes: {stats['successful_scrapes']}")
+        logger.info(f"Failed scrapes: {stats['failed_scrapes']}")
+        logger.info(f"Total snapshots: {stats['total_snapshots']}")
+        logger.info("=" * 60)
+        
+    except ImportError as e:
+        logger.error(f"Failed to import wayback scraper: {e}")
+        logger.error("Make sure waybackpy is installed: pip install waybackpy")
+        sys.exit(1)
+    except Exception as e:
+        logger.error(f"Error during wayback scraping: {e}")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -136,12 +243,22 @@ if __name__ == "__main__":
     parser.add_argument(
         "--limit", type=int, help="Limit number of pages to crawl"
     )
+    parser.add_argument(
+        "--scrape-wayback", action="store_true", help="Scrape wayback machine archives"
+    )
+    parser.add_argument(
+        "--from", dest="from_date", help="End timestamp for wayback snapshots (YYYY-MM-DD format)"
+    )
 
     args = parser.parse_args()
 
     # Validate arguments
     if not args.all and not args.spider:
         parser.error("Either provide a spider name or use --all flag")
+    
+    # Validate wayback arguments
+    if args.scrape_wayback and not args.from_date:
+        parser.error("--from argument is required when using --scrape-wayback")
 
     # Convert output directory to absolute path if it's relative
     # This ensures output goes to the correct location regardless of where the script is called from
@@ -153,18 +270,33 @@ if __name__ == "__main__":
     
     logger.info(f"Output directory: {output_dir}")
 
-    # Build settings dict
-    settings_override = {
-        "DOWNLOAD_DELAY": args.delay,
-        "CONCURRENT_REQUESTS": args.concurrent,
-        "OUTPUT_DIR": str(output_dir),
-    }
-
-    if args.limit:
-        settings_override["CLOSESPIDER_PAGECOUNT"] = args.limit
-
-    # Run spider(s)
-    if args.all:
-        run_all_spiders(**settings_override)
+    # If wayback scraping is requested, skip normal spider execution
+    if args.scrape_wayback:
+        if args.all:
+            # Get all spider names
+            from scrapy.utils.project import get_project_settings as get_settings
+            temp_settings = get_settings()
+            from scrapy.crawler import CrawlerRunner
+            runner = CrawlerRunner(temp_settings)
+            spider_names = runner.spider_loader.list()
+            
+            for spider_name in spider_names:
+                run_wayback_scraping(spider_name, output_dir, args.from_date)
+        else:
+            run_wayback_scraping(args.spider, output_dir, args.from_date)
     else:
-        run_spider(args.spider, **settings_override)
+        # Build settings dict
+        settings_override = {
+            "DOWNLOAD_DELAY": args.delay,
+            "CONCURRENT_REQUESTS": args.concurrent,
+            "OUTPUT_DIR": str(output_dir),
+        }
+
+        if args.limit:
+            settings_override["CLOSESPIDER_PAGECOUNT"] = args.limit
+
+        # Run spider(s)
+        if args.all:
+            run_all_spiders(**settings_override)
+        else:
+            run_spider(args.spider, **settings_override)

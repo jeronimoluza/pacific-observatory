@@ -10,6 +10,7 @@ from urllib.parse import urljoin
 import logging
 
 from price_scraping.utils import SelectorExtractor
+from price_scraping.selectors import get_selectors
 
 logger = logging.getLogger(__name__)
 
@@ -26,20 +27,7 @@ class FoodProSpider(CrawlSpider):
     country = "papua_new_guinea"
 
     # CSS selector fallbacks for product fields
-    SELECTORS = {
-        "product_name": [
-            "div[class='summary entry-summary'] h2[itemprop='name']::text",
-        ],
-        "price": [
-            "div[class='summary entry-summary'] p.price span[class='woocommerce-Price-amount amount'] bdi::text",
-        ],
-        "category": [
-            "div[class='summary entry-summary'] span.posted_in a::text",
-        ],
-        "description": [
-            "div[class='summary entry-summary'] div[class='woocommerce-product-details__short-description'] p::text",
-        ],
-    }
+    SELECTORS = get_selectors("food_pro")
 
     # Rules for following links and extracting data
     rules = (

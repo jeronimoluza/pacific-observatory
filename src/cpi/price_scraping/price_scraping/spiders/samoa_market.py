@@ -10,6 +10,7 @@ from urllib.parse import urljoin
 import logging
 
 from price_scraping.utils import SelectorExtractor
+from price_scraping.selectors import get_selectors
 
 logger = logging.getLogger(__name__)
 
@@ -26,17 +27,7 @@ class SamoaMarketSpider(CrawlSpider):
     country = "samoa"
 
     # CSS selector fallbacks for product fields
-    SELECTORS = {
-        "product_name": [
-            "article#main-product h1.m5::text",
-        ],
-        "price": [
-            "article#main-product p[class*='f8pr-price s1pr price']::text",
-        ],
-        "product_id": [
-            "article#main-product div.f8pr-codes p::text",
-        ],
-    }
+    SELECTORS = get_selectors("samoa_market")
 
     # Rules for following links and extracting data
     rules = (

@@ -10,6 +10,7 @@ from urllib.parse import urljoin
 import logging
 
 from price_scraping.utils import SelectorExtractor
+from price_scraping.selectors import get_selectors
 
 logger = logging.getLogger(__name__)
 
@@ -26,20 +27,7 @@ class MolisiSpider(CrawlSpider):
     country = "tonga"
 
     # CSS selector fallbacks for product fields
-    SELECTORS = {
-        "product_name": [
-            "div.primary_block h1[itemprop='name']::text",
-        ],
-        "price": [
-            "div.box-info-product span[class='price']::text",
-        ],
-        "category": [
-            "ol[class='breadcrumb'] li a span::text",
-        ],
-        "product_id": [
-            "p#product_reference meta[itemprop='sku']::attr(content)",
-        ],
-    }
+    SELECTORS = get_selectors("molisi")
 
     # Rules for following links and extracting data
     rules = (

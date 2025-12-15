@@ -10,6 +10,7 @@ from urllib.parse import urljoin
 import logging
 
 from price_scraping.utils import SelectorExtractor
+from price_scraping.selectors import get_selectors
 
 logger = logging.getLogger(__name__)
 
@@ -26,20 +27,7 @@ class AldiAustraliaSpider(CrawlSpider):
     country = "australia"
 
     # CSS selector fallbacks for product fields
-    SELECTORS = {
-        "product_name": [
-            "h1.product-details__title::text",
-        ],
-        "details": [
-            "span.product-details__unit-of-measurement::text"
-        ],
-        "category": [
-            "div.breadcrumbs__items a::text",
-        ],
-        "price": [
-            "span.base-price__regular span::text",
-        ],
-    }
+    SELECTORS = get_selectors("aldi_au")
 
     # Rules for following links and extracting data
     rules = (
