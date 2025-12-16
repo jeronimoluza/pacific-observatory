@@ -35,9 +35,12 @@ SPIDER_SELECTORS = {
         ],
         "category": [
             "nav[class='woocommerce-breadcrumb'] ul li a::text",
+            "ul[class='breadcrumb'] li a span::text",
         ],
         "product_id": [
             "span[class='sku']::text",
+            "li[class='meta-sku'] span[class='meta-value']::text",
+
         ],
     },
     "aldi_au": {
