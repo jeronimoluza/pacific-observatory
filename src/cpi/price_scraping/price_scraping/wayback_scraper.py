@@ -15,7 +15,10 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 from waybackpy import WaybackMachineCDXServerAPI
 
-from .selectors import get_selectors
+import time
+import random
+
+from .selectors import get_selectors, extract_with_fallback
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +26,7 @@ logger = logging.getLogger(__name__)
 class WaybackScraper:
     """Scrapes historical product data from Wayback Machine archives."""
     
-    USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     
     def __init__(self, spider_name: str, output_dir: Path, from_date: str):
         """
@@ -44,9 +47,30 @@ class WaybackScraper:
         """Generate hash for URL."""
         return hashlib.md5(url.encode()).hexdigest()
     
+    def _get_existing_url_hashes(self, country: str) -> set:
+        """
+        Get set of URL hashes that already have saved wayback data.
+        
+        Args:
+            country: Country code for directory structure
+            
+        Returns:
+            Set of existing URL hashes
+        """
+        wayback_dir = self.output_dir / country / self.spider_name / "wayback_machine_data"
+        existing_hashes = set()
+        
+        if wayback_dir.exists():
+            for json_file in wayback_dir.glob("*.json"):
+                # Extract hash from filename (e.g., "b9f46c47a99e6b42b9cf70700e05b8f5.json")
+                url_hash = json_file.stem
+                existing_hashes.add(url_hash)
+        
+        return existing_hashes
+    
     def _extract_data_from_html(self, html_content: str, url: str) -> Dict[str, Any]:
         """
-        Extract product data from HTML using spider selectors.
+        Extract product data from HTML using spider selectors with fallback support.
         
         Args:
             html_content: HTML content to parse
@@ -59,37 +83,7 @@ class WaybackScraper:
         extracted = {}
         
         for field, selector_list in self.selectors.items():
-            value = None
-            for selector in selector_list:
-                try:
-                    # Handle ::text and ::attr() pseudo-elements
-                    if '::text' in selector:
-                        clean_selector = selector.replace('::text', '')
-                        elements = soup.select(clean_selector)
-                        if elements:
-                            texts = [el.get_text(strip=True) for el in elements]
-                            value = texts[0] if texts else None
-                            if value:
-                                break
-                    elif '::attr(' in selector:
-                        attr_match = selector.split('::attr(')[1].rstrip(')')
-                        clean_selector = selector.split('::attr(')[0]
-                        elements = soup.select(clean_selector)
-                        if elements:
-                            value = elements[0].get(attr_match)
-                            if value:
-                                break
-                    else:
-                        # Regular CSS selector
-                        elements = soup.select(selector)
-                        if elements:
-                            value = elements[0].get_text(strip=True)
-                            if value:
-                                break
-                except Exception as e:
-                    logger.debug(f"Error extracting {field} with selector {selector}: {e}")
-                    continue
-            
+            value = extract_with_fallback(soup, selector_list)
             if value:
                 extracted[field] = value
         
@@ -130,7 +124,7 @@ class WaybackScraper:
             HTML content or None if fetch fails
         """
         try:
-            response = requests.get(wayback_url, timeout=10, headers={'User-Agent': self.USER_AGENT})
+            response = requests.get(wayback_url, timeout=120, headers={'User-Agent': self.USER_AGENT})
             response.raise_for_status()
             return response.text
         except Exception as e:
@@ -239,18 +233,25 @@ class WaybackScraper:
                 seen_hashes.add(url_hash)
                 unique_items.append((item['url'], url_hash))
         
+        # Get existing URL hashes to skip
+        existing_hashes = self._get_existing_url_hashes(country)
+        items_to_scrape = [(url, url_hash) for url, url_hash in unique_items if url_hash not in existing_hashes]
+        
         logger.info(f"Processing {len(unique_items)} unique URLs from {len(items)} total items")
+        logger.info(f"Skipping {len(unique_items) - len(items_to_scrape)} URLs that already have saved data")
+        logger.info(f"Scraping {len(items_to_scrape)} new URLs")
         
         stats = {
             "total_items": len(items),
             "unique_urls": len(unique_items),
+            "skipped_urls": len(unique_items) - len(items_to_scrape),
             "successful_scrapes": 0,
             "failed_scrapes": 0,
             "total_snapshots": 0,
         }
         
         # Scrape wayback data for each unique URL
-        for url, url_hash in tqdm(unique_items, desc="Scraping wayback machine"):
+        for url, url_hash in tqdm(items_to_scrape, desc="Scraping wayback machine"):
             try:
                 wayback_data = self.scrape_product_history(url, url_hash)
                 if wayback_data:
@@ -262,5 +263,7 @@ class WaybackScraper:
             except Exception as e:
                 logger.error(f"Error scraping wayback data for {url}: {e}")
                 stats["failed_scrapes"] += 1
+            
+            time.sleep(random.uniform(2.5, 5.0))
         
         return stats

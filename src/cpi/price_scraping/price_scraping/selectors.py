@@ -1,18 +1,25 @@
 """
 Centralized CSS selectors for all spiders.
 This module exports selectors for each spider to be reused in wayback machine scraping.
+Supports fallback selectors - tries each selector in order until one returns data.
 """
+
+from typing import Optional, List, Any
+from bs4 import BeautifulSoup
 
 SPIDER_SELECTORS = {
     "rbpatel": {
         "product_name": [
             "main#main div.product-main h1::text",
+            "main#main div.product-essential h1::text",
         ],
         "price": [
             "div.product-main span[class='woocommerce-Price-amount amount'] bdi::text",
+            "div.product-essential span[class='woocommerce-Price-amount amount'] bdi::text"
         ],
         "category": [
             "div.product-main span.posted_in a::text",
+            "div.product-essential span.posted_in a::text",
         ],
         "product_id": [
             "span[class='sku']::text",
@@ -116,3 +123,49 @@ def get_selectors(spider_name: str) -> dict:
     if spider_name not in SPIDER_SELECTORS:
         raise KeyError(f"Spider '{spider_name}' not found in selectors. Available spiders: {list(SPIDER_SELECTORS.keys())}")
     return SPIDER_SELECTORS[spider_name]
+
+
+def extract_with_fallback(soup: BeautifulSoup, selector_list: List[str]) -> Optional[str]:
+    """
+    Extract data from HTML using fallback selectors.
+    Tries each selector in order until one returns data.
+    
+    Args:
+        soup: BeautifulSoup object of the HTML content
+        selector_list: List of CSS selectors to try in order
+        
+    Returns:
+        Extracted text value or None if no selector returns data
+    """
+    for selector in selector_list:
+        try:
+            # Handle ::text pseudo-element
+            if '::text' in selector:
+                clean_selector = selector.replace('::text', '')
+                elements = soup.select(clean_selector)
+                if elements:
+                    texts = [el.get_text(strip=True) for el in elements]
+                    value = texts[0] if texts else None
+                    if value:
+                        return value
+            # Handle ::attr() pseudo-element
+            elif '::attr(' in selector:
+                attr_match = selector.split('::attr(')[1].rstrip(')')
+                clean_selector = selector.split('::attr(')[0]
+                elements = soup.select(clean_selector)
+                if elements:
+                    value = elements[0].get(attr_match)
+                    if value:
+                        return value
+            # Regular CSS selector
+            else:
+                elements = soup.select(selector)
+                if elements:
+                    value = elements[0].get_text(strip=True)
+                    if value:
+                        return value
+        except Exception:
+            # Continue to next selector on error
+            continue
+    
+    return None
