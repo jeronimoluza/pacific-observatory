@@ -674,3 +674,42 @@ class CSVStorage:
                 f"Failed to load URLs from {file_path}: {e}"
             )
             return None
+
+    def get_existing_thumbnail_urls(
+        self, country: str, newspaper: str
+    ) -> set:
+        """
+        Get set of existing thumbnail URLs from urls.csv file.
+
+        Args:
+            country: Country code
+            newspaper: Newspaper name
+
+        Returns:
+            Set of existing thumbnail URLs (as strings)
+        """
+        import pandas as pd
+        
+        # Get newspaper directory
+        newspaper_dir = self.get_newspaper_dir(country, newspaper)
+
+        # Check for urls.csv file
+        filename = "urls.csv"
+        file_path = newspaper_dir / filename
+
+        if not file_path.exists():
+            logger.info(f"No existing URLs file found: {file_path}")
+            return set()
+
+        try:
+            # Read CSV file and extract URLs
+            df = pd.read_csv(file_path, encoding="utf-8")
+            urls = set(df["url"].astype(str).unique())
+            logger.info(f"Found {len(urls)} existing thumbnail URLs from urls.csv")
+            return urls
+
+        except Exception as e:
+            logger.error(
+                f"Failed to get existing thumbnail URLs from {file_path}: {e}"
+            )
+            return set()
