@@ -182,16 +182,21 @@ class WaybackScraper:
                 logger.warning(f"Curl failed for {url}: {result.stderr}")
                 return []
             
+            if result.stdout.strip() == "[]":
+                logger.debug(f"No snapshots found for {url}")
+                return []
+            
             # Parse JSON response
             try:
                 data = json.loads(result.stdout)
             except json.JSONDecodeError as e:
-                logger.warning(f"Failed to parse CDX API response for {url}: {e}")
+                logger.debug(f"Failed to parse CDX API response for {url}: {e}")
                 return []
             
-            # CDX API JSON format: 
+            # CDX API returns empty array [] when no snapshots found
+            # CDX API JSON format with snapshots: 
             # First row is header: ["urlkey", "timestamp", "original", "mimetype", "statuscode", "digest", "length"]
-            # Subsequent rows are data
+            # Subsequent rows are data (need at least header + 1 data row)
             if not data or len(data) < 2:
                 logger.debug(f"No snapshots found for {url}")
                 return []
@@ -332,7 +337,6 @@ class WaybackScraper:
                 # Fetch new snapshots
                 try:
                     snapshots = self._fetch_wayback_snapshots(url)
-                    time.sleep(random.uniform(10, 15))
                     # Save snapshots regardless of whether they're empty or not
                     # This prevents re-fetching URLs that have no snapshots
                     self._save_snapshots(url_hash, snapshots, country)
