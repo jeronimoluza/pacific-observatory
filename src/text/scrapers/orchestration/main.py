@@ -18,22 +18,7 @@ import os
 import sys
 from pathlib import Path
 
-from text.scrapers.orchestration.utils import (
-    setup_logging,
-    get_project_paths,
-    get_default_configs_dir,
-)
-from text.scrapers.orchestration.discovery import (
-    get_available_scrapers,
-    get_available_countries,
-)
-from text.scrapers.orchestration.run_scraper import run_scraper_by_name
-from text.scrapers.orchestration.run_multiple import run_all_scrapers
-
-# Set up the data folder path
-os.environ["DATA_FOLDER_PATH"] = "data/text"
-
-# Add the src directory to Python path for imports
+# noqa: E402 - Add the src directory to Python path for imports
 script_dir = Path(__file__).resolve().parent  # orchestration/
 scrapers_dir = script_dir.parent  # scrapers/
 text_dir = scrapers_dir.parent  # text/
@@ -41,6 +26,25 @@ src_dir = text_dir.parent  # src/
 
 if str(src_dir) not in sys.path:
     sys.path.insert(0, str(src_dir))
+
+# Set up the data folder path
+os.environ["DATA_FOLDER_PATH"] = "data/text"
+
+from text.scrapers.orchestration.utils import (  # noqa: E402
+    setup_logging,
+    get_project_paths,
+    get_default_configs_dir,
+)
+from text.scrapers.orchestration.discovery import (  # noqa: E402
+    get_available_scrapers,
+    get_available_countries,
+)
+from text.scrapers.orchestration.run_scraper import (  # noqa: E402
+    run_scraper_by_name,
+)
+from text.scrapers.orchestration.run_multiple import (  # noqa: E402
+    run_all_scrapers,
+)
 
 # Get project paths
 paths = get_project_paths()
@@ -92,14 +96,13 @@ def main():
         epilog="""
 Examples:
   # Single scraper
-  python src/text/scrapers/orchestration/main.py sibc                                # Run SIBC scraper (full mode)
-  python src/text/scrapers/orchestration/main.py sibc --update                       # Run SIBC scraper (update mode)
-  python src/text/scrapers/orchestration/main.py sibc --urls-from-scratch False      # Use cached URLs from urls.csv
+  python src/text/scrapers/orchestration/main.py sibc                                # Run SIBC scraper (update mode - default)
+  python src/text/scrapers/orchestration/main.py sibc --full                         # Run SIBC scraper (full mode - discover URLs from scratch)
+  python src/text/scrapers/orchestration/main.py sibc --download-urls-only           # Only download article URLs, don't scrape articles
   python src/text/scrapers/orchestration/main.py sibc --no-save                      # Run without saving results
 
   # Multi-scraper runner
-  python src/text/scrapers/orchestration/main.py --run-all                           # Run all scrapers in parallel
-  python src/text/scrapers/orchestration/main.py --run-all --urls-from-scratch False # Run all with cached URLs
+  python src/text/scrapers/orchestration/main.py --run-all                           # Run all scrapers in parallel (update mode)
   python src/text/scrapers/orchestration/main.py --run-all --sequential              # Run all scrapers sequentially
   python src/text/scrapers/orchestration/main.py --run-all --dry-run                 # Preview what would run
 
@@ -164,17 +167,15 @@ Examples:
     )
 
     parser.add_argument(
-        "--update",
-        default=True,
+        "--full",
         action="store_true",
-        help="Run in update mode (scrape URLs but skip articles that already exist in news.jsonl)",
+        help="Run in full mode (discover URLs from scratch and scrape all articles). Default is update mode.",
     )
 
     parser.add_argument(
-        "--urls-from-scratch",
-        type=lambda x: x.lower() in ("true", "1", "yes"),
-        default=True,
-        help="Discover URLs from scratch (True) or load from urls.csv (False). Default: True",
+        "--download-urls-only",
+        action="store_true",
+        help="Only download article URLs to urls.csv, don't scrape article content.",
     )
 
     # Logging options
@@ -208,7 +209,7 @@ Examples:
             project_root=project_root,
             sequential=args.sequential,
             dry_run=args.dry_run,
-            urls_from_scratch=args.urls_from_scratch,
+            full_mode=args.full,
         )
         sys.exit(0 if success else 1)
 
@@ -227,8 +228,8 @@ Examples:
             run_scraper_by_name(
                 newspaper_name=args.newspaper,
                 country=args.country,
-                update_mode=args.update,
-                urls_from_scratch=args.urls_from_scratch,
+                full_mode=args.full,
+                download_urls_only=args.download_urls_only,
                 configs_dir=get_default_configs_dir(),
                 project_root=project_root,
                 storage_dir=args.storage_dir,

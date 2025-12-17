@@ -35,8 +35,8 @@ async def run_single_scraper(
     config_path: Path,
     storage_dir: Optional[Path] = None,
     save_results: bool = True,
-    update_mode: bool = False,
-    urls_from_scratch: bool = True,
+    full_mode: bool = False,
+    download_urls_only: bool = False,
     project_root: Optional[Path] = None,
 ) -> dict:
     """
@@ -46,8 +46,8 @@ async def run_single_scraper(
         config_path: Path to the newspaper configuration file
         storage_dir: Optional custom storage directory
         save_results: Whether to save results to disk
-        update_mode: Whether to run in update mode (skip existing articles)
-        urls_from_scratch: Whether to discover URLs from scratch (True) or load from urls.csv (False)
+        full_mode: Whether to run in full mode (discover URLs from scratch and scrape all)
+        download_urls_only: Whether to only download URLs without scraping articles
         project_root: Project root directory for automatic log file generation
 
     Returns:
@@ -59,9 +59,7 @@ async def run_single_scraper(
     try:
         # Create scraper from config file
         logger.info(f"Loading scraper configuration from: {config_path}")
-        scraper = create_scraper_from_file(
-            config_path, urls_from_scratch=urls_from_scratch
-        )
+        scraper = create_scraper_from_file(config_path)
 
         # Set up per-scraper log file if project_root is provided
         if project_root:
@@ -79,24 +77,24 @@ async def run_single_scraper(
             storage = CSVStorage(storage_dir)
 
         # Run the scraping operation
-        if update_mode:
+        if download_urls_only:
             logger.info(
-                f"Starting UPDATE scrape for {scraper.name} ({scraper.country})"
+                f"Starting URLS ONLY scrape for {scraper.name} ({scraper.country})"
             )
-        elif urls_from_scratch:
+        elif full_mode:
             logger.info(f"Starting FULL scrape for {scraper.name} ({scraper.country})")
         else:
             logger.info(
-                f"Starting scrape FROM URLS for {scraper.name} ({scraper.country})"
+                f"Starting UPDATE scrape for {scraper.name} ({scraper.country})"
             )
         start_time = datetime.now()
 
-        if update_mode:
-            results = await scraper.run_update_scrape()
-        elif urls_from_scratch:
+        if download_urls_only:
+            results = await scraper.run_urls_only()
+        elif full_mode:
             results = await scraper.run_full_scrape()
         else:
-            results = await scraper.run_scrape_from_urls()
+            results = await scraper.run_update_scrape()
 
         end_time = datetime.now()
         duration = end_time - start_time
@@ -155,8 +153,8 @@ async def run_single_scraper(
 async def run_scraper_by_name(
     newspaper_name: str,
     country: str = None,
-    update_mode: bool = False,
-    urls_from_scratch: bool = True,
+    full_mode: bool = False,
+    download_urls_only: bool = False,
     configs_dir: Path = None,
     project_root: Path = None,
     **kwargs,
@@ -167,8 +165,8 @@ async def run_scraper_by_name(
     Args:
         newspaper_name: Name of the newspaper to scrape
         country: Optional country filter
-        update_mode: Whether to run in update mode (skip existing articles)
-        urls_from_scratch: Whether to discover URLs from scratch (True) or load from urls.csv (False)
+        full_mode: Whether to run in full mode (discover URLs from scratch and scrape all)
+        download_urls_only: Whether to only download URLs without scraping articles
         configs_dir: Directory containing config files
         project_root: Project root directory for relative path display
         **kwargs: Additional arguments for the scraper
@@ -210,8 +208,8 @@ async def run_scraper_by_name(
             config_path=config_path,
             storage_dir=kwargs.get("storage_dir"),
             save_results=not kwargs.get("no_save", False),
-            update_mode=update_mode,
-            urls_from_scratch=urls_from_scratch,
+            full_mode=full_mode,
+            download_urls_only=download_urls_only,
             project_root=project_root,
         )
 
@@ -302,12 +300,11 @@ def run_sequential_group_cli(
         try:
             logging.info(f"Starting {country}/{newspaper}...")
 
-            # Run the scraper
+            # Run the scraper (default is update mode, so no flags needed)
             success, results = asyncio.run(
                 run_scraper_by_name(
                     newspaper_name=newspaper,
                     country=country,
-                    update_mode=True,
                     configs_dir=project_root / "src" / "text" / "scrapers" / "configs",
                     project_root=project_root,
                 )
