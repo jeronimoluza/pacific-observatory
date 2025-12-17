@@ -15,7 +15,6 @@ from typing import List, Dict, Optional, Any, Union
 from urllib.parse import urljoin, urlparse
 import httpx
 from .client_http import AsyncHttpClient
-from .client_browser import BrowserClient
 from .listing_strategies import create_listing_strategy, ApiStrategy
 from .models import (
     ThumbnailRecord,
@@ -67,7 +66,6 @@ class NewspaperScraper:
         # Initialize client based on configuration
         self.client_type = self.config.client
         self._http_client: Optional[AsyncHttpClient] = None
-        self._browser_client: Optional[BrowserClient] = None
 
         # Initialize listing strategy
         self.listing_strategy = create_listing_strategy(
@@ -129,14 +127,35 @@ class NewspaperScraper:
 
         return self._http_client
 
-    def _get_browser_client(self) -> BrowserClient:
-        """Get or create browser client."""
-        if self._browser_client is None:
-            self._browser_client = BrowserClient(
-                headless=True, timeout=20.0, page_load_timeout=30.0
+    def _check_early_stop(self, batch_urls: List[str], existing_urls: Optional[set]) -> bool:
+        """
+        Check if batch should trigger early stopping.
+        
+        Early stopping occurs when all URLs in a batch already exist in the
+        existing_urls set, indicating no new content to scrape.
+        
+        Args:
+            batch_urls: List of URLs discovered in current batch
+            existing_urls: Set of existing URLs to check against
+            
+        Returns:
+            True if early stopping should be triggered, False otherwise
+        """
+        if not existing_urls or not batch_urls:
+            return False
+        
+        new_urls_in_batch = [url for url in batch_urls if url not in existing_urls]
+        if not new_urls_in_batch:
+            logger.info(
+                f"Early stop: All {len(batch_urls)} URLs in batch already exist in urls.csv. "
+                "Stopping thumbnail discovery."
             )
-
-        return self._browser_client
+            return True
+        else:
+            logger.info(
+                f"Batch has {len(new_urls_in_batch)} new URLs out of {len(batch_urls)}"
+            )
+            return False
 
     async def discover_and_scrape_thumbnails(
         self, existing_urls: Optional[set] = None
@@ -222,20 +241,10 @@ class NewspaperScraper:
                         logger.error(f"Failed to create ThumbnailRecord from API data: {e}")
                         logger.error(f"Data: {thumb_data}")
                 
-                # Check for early stopping: if all batch URLs are already in existing_urls
-                if existing_urls and batch_urls:
-                    new_urls_in_batch = [url for url in batch_urls if url not in existing_urls]
-                    if not new_urls_in_batch:
-                        logger.info(
-                            f"Early stop: All {len(batch_urls)} URLs in batch already exist in urls.csv. "
-                            "Stopping thumbnail discovery."
-                        )
-                        early_stop = True
-                        break
-                    else:
-                        logger.info(
-                            f"Batch has {len(new_urls_in_batch)} new URLs out of {len(batch_urls)}"
-                        )
+                # Check for early stopping
+                if self._check_early_stop(batch_urls, existing_urls):
+                    early_stop = True
+                    break
                 
                 logger.info(f"Processed API batch: {len(result_batch)} thumbnails")
                 continue
@@ -276,20 +285,10 @@ class NewspaperScraper:
                             logger.error(f"Failed to create ThumbnailRecord: {e}")
                             logger.error(f"Data: {thumb_data}")
 
-            # Check for early stopping: if all batch URLs are already in existing_urls
-            if existing_urls and batch_urls:
-                new_urls_in_batch = [url for url in batch_urls if url not in existing_urls]
-                if not new_urls_in_batch:
-                    logger.info(
-                        f"Early stop: All {len(batch_urls)} URLs in batch already exist in urls.csv. "
-                        "Stopping thumbnail discovery."
-                    )
-                    early_stop = True
-                    break
-                else:
-                    logger.info(
-                        f"Batch has {len(new_urls_in_batch)} new URLs out of {len(batch_urls)}"
-                    )
+            # Check for early stopping
+            if self._check_early_stop(batch_urls, existing_urls):
+                early_stop = True
+                break
 
             logger.info(
                 f"Processed batch: {len(result_batch)} pages, {len(thumbnails)} total thumbnails"
@@ -1177,6 +1176,7 @@ class NewspaperScraper:
                     new_thumbnails, early_stop = await self.discover_and_scrape_thumbnails(
                         existing_urls=existing_thumbnail_urls if existing_thumbnail_urls else None
                     )
+                    print(new_thumbnails)
                     # Merge new discoveries with existing thumbnails
                     discovered_urls_set = {str(t.url) for t in new_thumbnails}
                     for thumb in existing_thumbnails:

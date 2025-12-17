@@ -755,14 +755,27 @@ CLEANING_FUNCTIONS = {
 
 def get_cleaning_func(function_name: str):
     """
-    Get a cleaning function by name.
+    Get a cleaning function by name with validation.
     
     Args:
         function_name: Name of the cleaning function
         
     Returns:
-        Cleaning function or None if not found
+        Cleaning function
+        
+    Raises:
+        ValueError: If cleaning function name is not found in registry
     """
+    if not function_name:
+        return None
+    
+    if function_name not in CLEANING_FUNCTIONS:
+        available_funcs = ', '.join(sorted(CLEANING_FUNCTIONS.keys()))
+        raise ValueError(
+            f"Unknown cleaning function: '{function_name}'. "
+            f"Available functions: {available_funcs}"
+        )
+    
     return CLEANING_FUNCTIONS.get(function_name)
 
 

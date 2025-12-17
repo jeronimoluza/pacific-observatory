@@ -254,6 +254,7 @@ class NewspaperConfig(BaseModel):
         """Validate listing configuration has required fields."""
         if 'type' not in v:
             raise ValueError('Listing configuration must specify a type')
-        if v['type'] not in ['pagination', 'archive', 'api']:
-            raise ValueError('Listing type must be one of: pagination, archive, category, search')
+        valid_types = {'pagination', 'archive', 'api', 'category', 'search'}
+        if v['type'] not in valid_types:
+            raise ValueError(f"Listing type must be one of: {', '.join(sorted(valid_types))}")
         return v
