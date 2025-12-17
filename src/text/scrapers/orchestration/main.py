@@ -176,7 +176,7 @@ Examples:
     parser.add_argument(
         "--urls-from-scratch",
         type=lambda x: x.lower() in ('true', '1', 'yes'),
-        default=True,
+        default=False,
         help="Discover URLs from scratch (True) or load from urls.csv (False). Default: True",
     )
 

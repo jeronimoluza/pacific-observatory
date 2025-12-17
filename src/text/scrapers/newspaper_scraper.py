@@ -41,7 +41,7 @@ class NewspaperScraper:
     other site-specific parameters.
     """
 
-    def __init__(self, config: Dict[str, Any], urls_from_scratch: bool = True):
+    def __init__(self, config: Dict[str, Any], urls_from_scratch: bool = False):
         """
         Initialize the newspaper scraper with configuration.
 
@@ -925,38 +925,34 @@ class NewspaperScraper:
             # Reset prefetched articles for this run
             self.prefetched_articles = []
 
-            # Step 2: Discover and scrape thumbnails (or load from cache)
+            # Step 2: Discover and scrape thumbnails
             if self.urls_from_scratch:
-                # Full discovery from scratch with early stopping
-                new_thumbnails, early_stop = await self.discover_and_scrape_thumbnails(
-                    existing_urls=existing_thumbnail_urls if existing_thumbnail_urls else None
-                )
-                
-                # If early stop occurred, merge with existing thumbnails
-                if early_stop and existing_thumbnail_urls:
-                    logger.info("Early stop occurred - loading existing thumbnails from urls.csv")
-                    existing_thumbnails = self._storage.load_urls_from_csv(
-                        self.country, self.name
-                    )
-                    if existing_thumbnails:
-                        new_urls_set = {str(t.url) for t in new_thumbnails}
-                        for thumb in existing_thumbnails:
-                            if str(thumb.url) not in new_urls_set:
-                                new_thumbnails.append(thumb)
-                        logger.info(
-                            f"Merged thumbnails: {len(new_thumbnails)} total"
-                        )
-                thumbnails = new_thumbnails
-                logger.info(f"Discovered {len(thumbnails)} thumbnails")
+                # Full discovery from scratch - ignore urls.csv, no early stopping
+                logger.info("urls_from_scratch=True: Discovering all thumbnails from scratch, ignoring urls.csv")
+                thumbnails, _ = await self.discover_and_scrape_thumbnails(existing_urls=None)
+                logger.info(f"Discovered {len(thumbnails)} thumbnails from scratch")
             else:
-                # Try to load from urls.csv, fall back to discovery if not available
-                thumbnails = self._storage.load_urls_from_csv(self.country, self.name)
-                if thumbnails is None:
-                    logger.info("urls.csv not found. Falling back to full thumbnail discovery.")
-                    thumbnails, _ = await self.discover_and_scrape_thumbnails()
-                    logger.info(f"Discovered {len(thumbnails)} thumbnails")
+                # Load existing urls.csv and discover new thumbnails with early stopping
+                logger.info("urls_from_scratch=False: Loading existing urls.csv and discovering new thumbnails")
+                existing_thumbnails = self._storage.load_urls_from_csv(self.country, self.name)
+                
+                if existing_thumbnails:
+                    logger.info(f"Loaded {len(existing_thumbnails)} existing thumbnails from urls.csv")
+                    # Discover new thumbnails with early stopping when batch is all known
+                    new_thumbnails, early_stop = await self.discover_and_scrape_thumbnails(
+                        existing_urls=existing_thumbnail_urls if existing_thumbnail_urls else None
+                    )
+                    # Merge new discoveries with existing thumbnails
+                    discovered_urls_set = {str(t.url) for t in new_thumbnails}
+                    for thumb in existing_thumbnails:
+                        if str(thumb.url) not in discovered_urls_set:
+                            new_thumbnails.append(thumb)
+                    thumbnails = new_thumbnails
+                    logger.info(f"Merged: {len(thumbnails)} total thumbnails ({len(new_thumbnails) - len(existing_thumbnails)} new)")
                 else:
-                    logger.info(f"Loaded {len(thumbnails)} thumbnails from urls.csv")
+                    logger.info("urls.csv not found. Discovering all thumbnails from scratch")
+                    thumbnails, _ = await self.discover_and_scrape_thumbnails(existing_urls=None)
+                    logger.info(f"Discovered {len(thumbnails)} thumbnails")
 
             # Apply max_articles limit if set
             if (
@@ -1067,7 +1063,7 @@ class NewspaperScraper:
                         "existing_articles_skipped": skipped_count,
                         "articles_scraped": new_articles_count,
                         "articles_failed": new_articles_failed,
-                        "total_articles_after_update": len(existing_urls)
+                        "total_articles_after_update": len(existing_article_urls)
                         + new_articles_count,
                         "failed_urls": len(self.failed_urls),
                         "failed_news": len(self.failed_news),
@@ -1156,19 +1152,42 @@ class NewspaperScraper:
             self._saved_files["articles"] = csv_path
             logger.info(f"Initialized CSV file for streaming writes: {csv_path}")
 
-            # Step 1: Try to load URLs from urls.csv
-            thumbnails = self._storage.load_urls_from_csv(self.country, self.name)
+            # Step 1: Load existing URLs for article filtering
+            existing_article_urls = self._storage.get_existing_article_urls(
+                self.country, self.name
+            )
+            existing_thumbnail_urls = self._storage.get_existing_thumbnail_urls(
+                self.country, self.name
+            )
             
-            if thumbnails is None:
-                # Fall back to full discovery if urls.csv doesn't exist
-                logger.info(
-                    f"urls.csv not found for {self.name}. Falling back to full thumbnail discovery."
-                )
-                thumbnails, _ = await self.discover_and_scrape_thumbnails()
+            # Step 2: Discover and scrape thumbnails
+            if self.urls_from_scratch:
+                # Full discovery from scratch - ignore urls.csv, no early stopping
+                logger.info("urls_from_scratch=True: Discovering all thumbnails from scratch, ignoring urls.csv")
+                thumbnails, _ = await self.discover_and_scrape_thumbnails(existing_urls=None)
+                logger.info(f"Discovered {len(thumbnails)} thumbnails from scratch")
             else:
-                logger.info(
-                    f"Loaded {len(thumbnails)} URLs from urls.csv"
-                )
+                # Load existing urls.csv and discover new thumbnails with early stopping
+                logger.info("urls_from_scratch=False: Loading existing urls.csv and discovering new thumbnails")
+                existing_thumbnails = self._storage.load_urls_from_csv(self.country, self.name)
+                
+                if existing_thumbnails:
+                    logger.info(f"Loaded {len(existing_thumbnails)} existing thumbnails from urls.csv")
+                    # Discover new thumbnails with early stopping when batch is all known
+                    new_thumbnails, early_stop = await self.discover_and_scrape_thumbnails(
+                        existing_urls=existing_thumbnail_urls if existing_thumbnail_urls else None
+                    )
+                    # Merge new discoveries with existing thumbnails
+                    discovered_urls_set = {str(t.url) for t in new_thumbnails}
+                    for thumb in existing_thumbnails:
+                        if str(thumb.url) not in discovered_urls_set:
+                            new_thumbnails.append(thumb)
+                    thumbnails = new_thumbnails
+                    logger.info(f"Merged: {len(thumbnails)} total thumbnails ({len(new_thumbnails) - len(existing_thumbnails)} new)")
+                else:
+                    logger.info("urls.csv not found. Discovering all thumbnails from scratch")
+                    thumbnails, _ = await self.discover_and_scrape_thumbnails(existing_urls=None)
+                    logger.info(f"Discovered {len(thumbnails)} thumbnails")
 
             # Apply max_articles limit if set
             if (

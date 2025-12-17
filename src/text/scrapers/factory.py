@@ -75,7 +75,7 @@ def validate_config(config: Dict[str, Any]) -> NewspaperConfig:
         raise
 
 
-def create_scraper_from_config(config: Dict[str, Any], urls_from_scratch: bool = True) -> NewspaperScraper:
+def create_scraper_from_config(config: Dict[str, Any], urls_from_scratch: bool = False) -> NewspaperScraper:
     """
     Create a NewspaperScraper instance from a configuration dictionary.
     
@@ -99,7 +99,7 @@ def create_scraper_from_config(config: Dict[str, Any], urls_from_scratch: bool =
     return scraper
 
 
-def create_scraper_from_file(config_path: Union[str, Path], urls_from_scratch: bool = True) -> NewspaperScraper:
+def create_scraper_from_file(config_path: Union[str, Path], urls_from_scratch: bool = False) -> NewspaperScraper:
     """
     Create a NewspaperScraper instance from a YAML configuration file.
     
@@ -226,7 +226,7 @@ def create_scraper(
     country: Optional[str] = None,
     config_path: Optional[Union[str, Path]] = None,
     config_dict: Optional[Dict[str, Any]] = None,
-    urls_from_scratch: bool = True
+    urls_from_scratch: bool = False
 ) -> NewspaperScraper:
     """
     Convenience function to create a scraper with flexible input options.

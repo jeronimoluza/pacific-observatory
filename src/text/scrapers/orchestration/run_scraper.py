@@ -36,7 +36,7 @@ async def run_single_scraper(
     storage_dir: Optional[Path] = None,
     save_results: bool = True,
     update_mode: bool = False,
-    urls_from_scratch: bool = True,
+    urls_from_scratch: bool = False,
     project_root: Optional[Path] = None,
 ) -> dict:
     """
@@ -160,7 +160,7 @@ async def run_scraper_by_name(
     newspaper_name: str,
     country: str = None,
     update_mode: bool = False,
-    urls_from_scratch: bool = True,
+    urls_from_scratch: bool = False,
     configs_dir: Path = None,
     project_root: Path = None,
     **kwargs,

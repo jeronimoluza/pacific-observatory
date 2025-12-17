@@ -22,7 +22,7 @@ def run_scraper_subprocess(
     log_dir: Path,
     project_root: Path,
     dry_run: bool = False,
-    urls_from_scratch: bool = True,
+    urls_from_scratch: bool = False,
 ) -> Optional[subprocess.Popen]:
     """
     Run a single scraper as a subprocess with nohup.
@@ -325,7 +325,7 @@ def run_multi_country_group_sequential(
     log_dir: Path,
     project_root: Path,
     dry_run: bool = False,
-    urls_from_scratch: bool = True,
+    urls_from_scratch: bool = False,
 ) -> List[Dict[str, any]]:
     """
     Run a multi-country newspaper group sequentially.
@@ -363,7 +363,7 @@ def run_all_scrapers(
     project_root: Path,
     sequential: bool = False,
     dry_run: bool = False,
-    urls_from_scratch: bool = True,
+    urls_from_scratch: bool = False,
 ) -> bool:
     """
     Run all newspaper scrapers with intelligent parallel/sequential execution.
