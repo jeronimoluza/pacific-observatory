@@ -7,10 +7,9 @@ base_url: "https://www.philstar.com/"
 # Listing discovery configuration
 # This scraper covers multiple Pacific countries using tag-based pagination
 listing:
-  type: "pagination"
-  url_template: "https://www.philstar.com/lazy_section.php?page={num}&sid=28&pubid=1&last=2482322&last_date=1761321600&last_trend=&exceed=1&article="
-  start_page: 1
-  batch_size: 10
+  type: "follow_link"
+  start_url: "https://www.philstar.com/lazy_section.php?sid=28&pubid=3"
+  follow_selector: "div.next a::attr(href)"
 
 # Client configuration
 client: "http"
