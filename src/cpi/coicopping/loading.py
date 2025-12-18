@@ -28,7 +28,7 @@ def get_price_scraping_root(project_root: Optional[Path] = None) -> Path:
     if project_root is None:
         # Infer from this file's location: src/cpi/coicopping/loading.py
         project_root = Path(__file__).parent.parent.parent.parent
-    
+
     return project_root / "data" / "cpi" / "price_scraping"
 
 
@@ -47,34 +47,34 @@ def load_price_scraping_data(project_root: Optional[Path] = None) -> pd.DataFram
         DataFrame with all price data and metadata columns (country, source, filename).
     """
     root_dir = get_price_scraping_root(project_root)
-    
+
     if not root_dir.exists():
         raise FileNotFoundError(f"Price scraping directory not found: {root_dir}")
-    
+
     all_data = []
-    
+
     # Iterate through country directories
     for country_dir in sorted(root_dir.iterdir()):
         if not country_dir.is_dir():
             continue
-        
+
         country = country_dir.name
-        
+
         # Iterate through source directories
         for source_dir in sorted(country_dir.iterdir()):
             if not source_dir.is_dir():
                 continue
-            
+
             source = source_dir.name
             raw_items_dir = source_dir / "raw_items"
-            
+
             if not raw_items_dir.exists():
                 continue
-            
+
             # Iterate through JSONL files
             for jsonl_file in sorted(raw_items_dir.glob("*.jsonl")):
                 filename = jsonl_file.name
-                
+
                 # Read JSONL file
                 records = []
                 with open(jsonl_file, "r", encoding="utf-8") as f:
@@ -87,15 +87,17 @@ def load_price_scraping_data(project_root: Optional[Path] = None) -> pd.DataFram
                                 record["filename"] = filename
                                 records.append(record)
                             except json.JSONDecodeError as e:
-                                print(f"Warning: Failed to parse line in {jsonl_file}: {e}")
+                                print(
+                                    f"Warning: Failed to parse line in {jsonl_file}: {e}"
+                                )
                                 continue
-                
+
                 if records:
                     all_data.extend(records)
-    
+
     if not all_data:
         raise ValueError("No price scraping data found")
-    
+
     df = pd.DataFrame(all_data)
     return df
 

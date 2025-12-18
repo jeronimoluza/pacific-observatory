@@ -25,14 +25,25 @@ import re
 try:
     from .loading import load_price_scraping_data
     from .cleaning import clean_product_names, clean_special_characters
-    from .regex_config import AMOUNT_REGEX, UNITS_REGEX, PER_KG_REGEX, PER_EACH_REGEX, COUNT_UNITS, STOPWORDS
+    from .regex_config import (
+        AMOUNT_REGEX,
+        UNITS_REGEX,
+        PER_KG_REGEX,
+        PER_EACH_REGEX,
+        STOPWORDS,
+    )
 except ImportError:
     # Direct execution: add parent directory to path
     sys.path.insert(0, str(Path(__file__).parent))
     from loading import load_price_scraping_data
     from cleaning import clean_product_names, clean_special_characters
-    from regex_config import AMOUNT_REGEX, UNITS_REGEX, PER_KG_REGEX, PER_EACH_REGEX, COUNT_UNITS, STOPWORDS
-
+    from regex_config import (
+        AMOUNT_REGEX,
+        UNITS_REGEX,
+        PER_KG_REGEX,
+        PER_EACH_REGEX,
+        STOPWORDS,
+    )
 
 
 def clean_product_only(product_name: str) -> str:
@@ -60,8 +71,8 @@ def clean_product_only(product_name: str) -> str:
 
     # Convert accented letters to non-accented versions
     # Normalize to NFD (decomposed form), then encode to ASCII ignoring non-ASCII characters
-    cleaned = unicodedata.normalize('NFD', cleaned)
-    cleaned = cleaned.encode('ascii', 'ignore').decode('utf-8')
+    cleaned = unicodedata.normalize("NFD", cleaned)
+    cleaned = cleaned.encode("ascii", "ignore").decode("utf-8")
 
     # Clean up extra whitespace
     cleaned = " ".join(cleaned.split())
@@ -261,9 +272,7 @@ def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.Data
     # Clean product_w_cat by removing numbers, single characters, and stopwords
     df["product_w_cat"] = df["product_w_cat"].apply(clean_product_w_cat)
 
-    df['product_only'] = df['product_w_cat'].apply(
-        lambda x: x.split(';')[0]
-    )
+    df["product_only"] = df["product_w_cat"].apply(lambda x: x.split(";")[0])
 
     # Rename 'url' to 'product_url' if it exists
     if "url" in df.columns and "product_url" not in df.columns:
@@ -277,8 +286,10 @@ if __name__ == "__main__":
     df = prepare_coicop_matching_data()
     print(f"Prepared {len(df)} products for COICOP matching")
     print(f"\nColumns: {df.columns.tolist()}")
-    print(f"\nFirst 10 rows:")
+    print("\nFirst 10 rows:")
     print(df[["product_name", "product_only", "product_w_cat"]].head(10))
-    print(f"\nData types:")
+    print("\nData types:")
     print(df.dtypes)
-    df[["product_name", "product_only", "category", "product_w_cat"]].to_csv("coicop_matching_data.csv", index=False)
+    df[["product_name", "product_only", "category", "product_w_cat"]].to_csv(
+        "coicop_matching_data.csv", index=False
+    )

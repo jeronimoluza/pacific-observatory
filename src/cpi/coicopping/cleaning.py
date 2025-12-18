@@ -38,7 +38,9 @@ def get_string_cleaning_config(project_root: Optional[Path] = None) -> dict:
     config_file = Path(__file__).parent / "string_cleaning.json"
 
     if not config_file.exists():
-        raise FileNotFoundError(f"String cleaning configuration not found: {config_file}")
+        raise FileNotFoundError(
+            f"String cleaning configuration not found: {config_file}"
+        )
 
     with open(config_file, "r", encoding="utf-8") as f:
         config = json.load(f)
@@ -64,7 +66,7 @@ def clean_product_name(product_name: str, strings_to_remove: list) -> str:
 
     # Convert to lowercase for case-insensitive matching
     cleaned = product_name.lower()
-    
+
     for string in strings_to_remove:
         cleaned = cleaned.replace(string.lower(), "")
 
@@ -99,13 +101,15 @@ def clean_special_characters(text: str) -> str:
     return cleaned
 
 
-def clean_product_names(df: pd.DataFrame, project_root: Optional[Path] = None) -> pd.DataFrame:
+def clean_product_names(
+    df: pd.DataFrame, project_root: Optional[Path] = None
+) -> pd.DataFrame:
     """
     Clean product names in a dataframe based on source-specific cleaning rules.
 
     Expects the dataframe to have 'product_name' and 'source' columns.
     Applies source-specific cleaning rules from string_cleaning.json.
-    
+
     For samoa_market source, also applies product filtering via clean_samoa_market().
 
     Args:
@@ -131,7 +135,7 @@ def clean_product_names(df: pd.DataFrame, project_root: Optional[Path] = None) -
     # Create a copy to avoid modifying the original dataframe
     df_cleaned = df.copy()
 
-    df_cleaned['product_name'] = df_cleaned['product_name'].str.lower()
+    df_cleaned["product_name"] = df_cleaned["product_name"].str.lower()
 
     # Apply source-specific cleaning rules
     for idx, row in df_cleaned.iterrows():
@@ -151,11 +155,10 @@ def clean_product_names(df: pd.DataFrame, project_root: Optional[Path] = None) -
     if samoa_market_mask.any():
         samoa_market_data = df_cleaned[samoa_market_mask]
         samoa_market_cleaned = clean_samoa_market(samoa_market_data)
-        
+
         # Update samoa_market rows with filtered data
         df_cleaned = pd.concat(
-            [df_cleaned[~samoa_market_mask], samoa_market_cleaned],
-            ignore_index=True
+            [df_cleaned[~samoa_market_mask], samoa_market_cleaned], ignore_index=True
         )
 
     return df_cleaned
@@ -169,7 +172,7 @@ def clean_samoa_market(df: pd.DataFrame) -> pd.DataFrame:
     - "birthday combo #"
     - "aiga combo "
     - "voucher \"redeem at ah liki wholesale\""
-    
+
     Also removes all bracketed text [...] that contains the word "avail".
 
     Args:
@@ -183,7 +186,7 @@ def clean_samoa_market(df: pd.DataFrame) -> pd.DataFrame:
         KeyError: If 'product_name' column is missing.
     """
     import re
-    
+
     if "product_name" not in df.columns:
         raise KeyError("DataFrame must contain 'product_name' column")
 
@@ -197,7 +200,9 @@ def clean_samoa_market(df: pd.DataFrame) -> pd.DataFrame:
     mask_keep = ~(
         product_names_lower.str.contains("birthday combo #", na=False)
         | product_names_lower.str.contains("aiga combo ", na=False)
-        | product_names_lower.str.contains('voucher "redeem at ah liki wholesale"', na=False)
+        | product_names_lower.str.contains(
+            'voucher "redeem at ah liki wholesale"', na=False
+        )
     )
 
     # Filter dataframe to remove unwanted product types
@@ -209,12 +214,16 @@ def clean_samoa_market(df: pd.DataFrame) -> pd.DataFrame:
         if not isinstance(product_name, str):
             return product_name
         # Pattern: [anything containing 'avail' (case-insensitive)]
-        cleaned = re.sub(r'\[[^\]]*avail[^\]]*\]', '', product_name, flags=re.IGNORECASE)
+        cleaned = re.sub(
+            r"\[[^\]]*avail[^\]]*\]", "", product_name, flags=re.IGNORECASE
+        )
         # Clean up extra whitespace
         cleaned = " ".join(cleaned.split())
         return cleaned
 
-    df_filtered["product_name"] = df_filtered["product_name"].apply(remove_avail_brackets)
+    df_filtered["product_name"] = df_filtered["product_name"].apply(
+        remove_avail_brackets
+    )
 
     return df_filtered
 
@@ -228,7 +237,7 @@ if __name__ == "__main__":
     print(f"Loaded {len(df)} records")
     print(f"Columns: {df.columns.tolist()}")
 
-    df['og_names'] = df['product_name']
+    df["og_names"] = df["product_name"]
     # Clean product names
     df_cleaned = clean_product_names(df)
     print(f"\nCleaned {len(df_cleaned)} records")

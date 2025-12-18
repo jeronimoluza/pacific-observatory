@@ -7,7 +7,6 @@ import sys
 import logging
 import os
 import json
-import hashlib
 from pathlib import Path
 
 from scrapy.crawler import CrawlerProcess
@@ -26,21 +25,20 @@ logger = logging.getLogger(__name__)
 def get_available_spiders():
     """
     Discover all available spiders in the project.
-    
+
     Returns:
         List of spider names
     """
     from scrapy.utils.project import get_project_settings
     from scrapy.crawler import CrawlerRunner
-    from twisted.internet import reactor
-    
+
     settings = get_project_settings()
     runner = CrawlerRunner(settings)
-    
+
     spiders = []
     for spider_cls in runner.spider_loader.list():
         spiders.append(spider_cls)
-    
+
     return spiders
 
 
@@ -92,18 +90,20 @@ def run_all_spiders(**kwargs):
     try:
         # Get all available spiders
         from scrapy.utils.project import get_project_settings as get_settings
+
         temp_settings = get_settings()
         from scrapy.crawler import CrawlerRunner
+
         runner = CrawlerRunner(temp_settings)
         spider_names = runner.spider_loader.list()
-        
+
         logger.info(f"Found {len(spider_names)} spiders: {', '.join(spider_names)}")
-        
+
         # Add all spiders to the process
         for spider_name in spider_names:
             logger.info(f"Scheduling spider: {spider_name}")
             process.crawl(spider_name)
-        
+
         # Run all spiders
         logger.info("Starting all spiders...")
         process.start()
@@ -116,43 +116,43 @@ def run_all_spiders(**kwargs):
 def load_scraped_items(output_dir: Path, spider_name: str, country: str) -> list:
     """
     Load all scraped items from JSONL files for a spider.
-    
+
     Args:
         output_dir: Base output directory
         spider_name: Name of the spider
         country: Country code for directory structure
-        
+
     Returns:
         List of items from all JSONL files
     """
     items = []
     spider_dir = output_dir / country / spider_name / "raw_items"
-    
+
     if not spider_dir.exists():
         logger.warning(f"No raw items directory found at {spider_dir}")
         return items
-    
+
     # Load all JSONL files
     for jsonl_file in spider_dir.glob("*.jsonl"):
         try:
-            with open(jsonl_file, 'r', encoding='utf-8') as f:
+            with open(jsonl_file, "r", encoding="utf-8") as f:
                 for line in f:
                     if line.strip():
                         items.append(json.loads(line))
             logger.info(f"Loaded {len(items)} items from {jsonl_file}")
         except Exception as e:
             logger.error(f"Error loading {jsonl_file}: {e}")
-    
+
     return items
 
 
 def get_spider_country(spider_name: str) -> str:
     """
     Get the country code for a spider.
-    
+
     Args:
         spider_name: Name of the spider
-        
+
     Returns:
         Country code
     """
@@ -171,7 +171,7 @@ def get_spider_country(spider_name: str) -> str:
 def run_wayback_scraping(spider_name: str, output_dir: Path, from_date: str):
     """
     Run wayback machine scraping for a spider.
-    
+
     Args:
         spider_name: Name of the spider
         output_dir: Base output directory
@@ -179,25 +179,27 @@ def run_wayback_scraping(spider_name: str, output_dir: Path, from_date: str):
     """
     try:
         from price_scraping.wayback_scraper import WaybackScraper
-        
+
         logger.info(f"Starting wayback machine scraping for {spider_name}")
         logger.info(f"Looking for snapshots up to {from_date}")
-        
+
         # Get country code
         country = get_spider_country(spider_name)
-        
+
         # Load scraped items
         items = load_scraped_items(output_dir, spider_name, country)
         if not items:
-            logger.error(f"No items found for {spider_name} in {output_dir / country / spider_name / 'raw_items'}")
+            logger.error(
+                f"No items found for {spider_name} in {output_dir / country / spider_name / 'raw_items'}"
+            )
             return
-        
+
         logger.info(f"Loaded {len(items)} items for wayback scraping")
-        
+
         # Run wayback scraper
         scraper = WaybackScraper(spider_name, output_dir, from_date)
         stats = scraper.run_scrape_wayback(items, country)
-        
+
         # Log summary
         logger.info("=" * 60)
         logger.info("WAYBACK MACHINE SCRAPING SUMMARY")
@@ -208,7 +210,7 @@ def run_wayback_scraping(spider_name: str, output_dir: Path, from_date: str):
         logger.info(f"Failed scrapes: {stats['failed_scrapes']}")
         logger.info(f"Total snapshots: {stats['total_snapshots']}")
         logger.info("=" * 60)
-        
+
     except ImportError as e:
         logger.error(f"Failed to import wayback scraper: {e}")
         logger.error("Make sure waybackpy is installed: pip install waybackpy")
@@ -228,26 +230,24 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Run Scrapy spiders")
     parser.add_argument("spider", nargs="?", help="Spider name to run")
-    parser.add_argument(
-        "--all", action="store_true", help="Run all available spiders"
-    )
+    parser.add_argument("--all", action="store_true", help="Run all available spiders")
     parser.add_argument(
         "--delay", type=float, default=2, help="Download delay in seconds"
     )
+    parser.add_argument("--concurrent", type=int, default=8, help="Concurrent requests")
     parser.add_argument(
-        "--concurrent", type=int, default=8, help="Concurrent requests"
+        "--output-dir",
+        default="data/cpi/price_scraping",
+        help="Output directory for data",
     )
-    parser.add_argument(
-        "--output-dir", default="data/cpi/price_scraping", help="Output directory for data"
-    )
-    parser.add_argument(
-        "--limit", type=int, help="Limit number of pages to crawl"
-    )
+    parser.add_argument("--limit", type=int, help="Limit number of pages to crawl")
     parser.add_argument(
         "--scrape-wayback", action="store_true", help="Scrape wayback machine archives"
     )
     parser.add_argument(
-        "--from", dest="from_date", help="End timestamp for wayback snapshots (YYYY-MM-DD format)"
+        "--from",
+        dest="from_date",
+        help="End timestamp for wayback snapshots (YYYY-MM-DD format)",
     )
 
     args = parser.parse_args()
@@ -255,7 +255,7 @@ if __name__ == "__main__":
     # Validate arguments
     if not args.all and not args.spider:
         parser.error("Either provide a spider name or use --all flag")
-    
+
     # Validate wayback arguments
     if args.scrape_wayback and not args.from_date:
         parser.error("--from argument is required when using --scrape-wayback")
@@ -265,9 +265,11 @@ if __name__ == "__main__":
     output_dir = Path(args.output_dir)
     if not output_dir.is_absolute():
         # If relative path, make it relative to the project root (parent of script directory)
-        project_root = script_dir.parent.parent.parent  # src/cpi/price_scraping -> project root
+        project_root = (
+            script_dir.parent.parent.parent
+        )  # src/cpi/price_scraping -> project root
         output_dir = project_root / output_dir
-    
+
     logger.info(f"Output directory: {output_dir}")
 
     # If wayback scraping is requested, skip normal spider execution
@@ -275,11 +277,13 @@ if __name__ == "__main__":
         if args.all:
             # Get all spider names
             from scrapy.utils.project import get_project_settings as get_settings
+
             temp_settings = get_settings()
             from scrapy.crawler import CrawlerRunner
+
             runner = CrawlerRunner(temp_settings)
             spider_names = runner.spider_loader.list()
-            
+
             for spider_name in spider_names:
                 run_wayback_scraping(spider_name, output_dir, args.from_date)
         else:

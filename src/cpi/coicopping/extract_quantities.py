@@ -43,6 +43,51 @@ from regex_config import (
     COUNT_UNITS,
     AMOUNT_UNITS,
 )
+from unit_conversions import UNIT_CONVERSIONS
+
+
+def parse_price(price_str) -> Optional[float]:
+    """
+    Parse a price string to extract the numeric value as a float.
+
+    Handles formats like:
+    - "$18.91 NZD Incl. VAGST"
+    - "$20.99"
+    - "15.00 K"
+    - "18.91"
+    - Already numeric values
+
+    Args:
+        price_str: The price value (string or numeric).
+
+    Returns:
+        The price as a float, or None if parsing fails.
+    """
+    import re
+
+    # If already a float or int, return as float
+    if isinstance(price_str, (int, float)):
+        return float(price_str) if not pd.isna(price_str) else None
+
+    # If not a string, return None
+    if not isinstance(price_str, str):
+        return None
+
+    # Remove common currency symbols and text
+    cleaned = price_str.strip()
+
+    # Extract the first numeric value (with optional decimal)
+    match = re.search(r"[\d,]+\.?\d*", cleaned)
+    if not match:
+        return None
+
+    # Get the matched number and remove commas
+    number_str = match.group().replace(",", "")
+
+    try:
+        return float(number_str)
+    except (ValueError, TypeError):
+        return None
 
 
 def extract_amount_and_units(product_name: str) -> Tuple[Optional[str], Optional[str]]:
@@ -167,6 +212,91 @@ def extract_amount_and_units(product_name: str) -> Tuple[Optional[str], Optional
     return amount, units
 
 
+def calculate_unit_value(
+    price, amount: Optional[str], units: Optional[str]
+) -> Optional[float]:
+    """
+    Calculate the unit value (price per kg, lt, or mt) for a product.
+
+    Logic:
+        1. Parse the price string to extract numeric value
+        2. Parse the amount string to extract numeric value and unit (e.g., "100 g" -> 100, "g")
+        3. Convert the amount to standard units (kg, lt, mt) using UNIT_CONVERSIONS
+        4. Parse the units string to get the count (e.g., "6" -> 6)
+        5. Calculate: unit_value = price / (converted_amount * count)
+        6. If no convertible amount unit, calculate: unit_value = price / count
+
+    Args:
+        price: The product price (string or numeric).
+        amount: The amount string (e.g., "100 g", "1 kg", "500 ml") or None.
+        units: The units count string (e.g., "6", "1") or None.
+
+    Returns:
+        The unit value (price per kg/lt/mt) or price per unit if no amount, or None if invalid.
+        Returns as float (e.g., 10.00 not $10.00).
+    """
+    import re
+
+    # Parse price to float
+    price_float = parse_price(price)
+
+    # Handle invalid price
+    if price_float is None or price_float <= 0:
+        return None
+
+    # Parse units count (default to 1)
+    try:
+        count = int(float(units)) if units and not pd.isna(units) else 1
+        if count <= 0:
+            count = 1
+    except (ValueError, TypeError):
+        count = 1
+
+    # If no amount, unit_value = price / count
+    if amount is None or pd.isna(amount) or amount == "":
+        return float(price_float / count)
+
+    # Parse amount string to extract numeric value and unit
+    amount_match = re.match(r"(\d+(?:\.\d+)?)\s*([a-zA-Z]+)?", str(amount).strip())
+    if not amount_match:
+        return float(price_float / count)
+
+    amount_value_str, amount_unit = amount_match.groups()
+
+    try:
+        amount_value = float(amount_value_str)
+        if amount_value <= 0:
+            return float(price_float / count)
+    except (ValueError, TypeError):
+        return float(price_float / count)
+
+    # If no unit found, unit_value = price / count
+    if not amount_unit:
+        return float(price_float / count)
+
+    # Convert to standard unit (kg, lt, mt)
+    amount_unit_lower = amount_unit.lower()
+    if amount_unit_lower not in UNIT_CONVERSIONS:
+        # Unknown unit, just return price / count
+        return float(price_float / count)
+
+    conversion_factor, standard_unit = UNIT_CONVERSIONS[amount_unit_lower]
+
+    # Convert amount to standard unit
+    converted_amount = amount_value * conversion_factor
+
+    # Total amount = converted_amount * count
+    total_amount = converted_amount * count
+
+    if total_amount <= 0:
+        return None
+
+    # unit_value = price / total_amount (price per kg, lt, or mt)
+    unit_value = float(price_float / total_amount)
+
+    return unit_value
+
+
 def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
     """
     Load price scraping data, clean product names, and extract quantities.
@@ -180,6 +310,7 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
         - price
         - amount
         - units
+        - unit_value (price per kg, lt, or mt; or price/units if no amount)
         - source
         - country
         - product_url
@@ -196,6 +327,12 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
         lambda x: pd.Series(extract_amount_and_units(x))
     )
 
+    # Calculate unit_value (price per kg, lt, or mt)
+    df["unit_value"] = df.apply(
+        lambda row: calculate_unit_value(row["price"], row["amount"], row["units"]),
+        axis=1,
+    ).astype("float64")
+
     # Rename 'url' to 'product_url' if it exists
     if "url" in df.columns and "product_url" not in df.columns:
         df = df.rename(columns={"url": "product_url"})
@@ -206,6 +343,7 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
         "price",
         "amount",
         "units",
+        "unit_value",
         "source",
         "country",
         "product_url",
@@ -236,4 +374,6 @@ if __name__ == "__main__":
     print("\nAmount and units distribution:")
     print(f"Amount value counts:\n{df['amount'].value_counts().head(10)}")
     print(f"\nUnits value counts:\n{df['units'].value_counts().head(10)}")
+    print("\nUnit value statistics:")
+    print(df["unit_value"].describe())
     df.to_csv("quantities.csv", index=False)

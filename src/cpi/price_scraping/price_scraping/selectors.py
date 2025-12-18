@@ -4,7 +4,7 @@ This module exports selectors for each spider to be reused in wayback machine sc
 Supports fallback selectors - tries each selector in order until one returns data.
 """
 
-from typing import Optional, List, Any
+from typing import Optional, List
 from bs4 import BeautifulSoup
 
 SPIDER_SELECTORS = {
@@ -15,7 +15,7 @@ SPIDER_SELECTORS = {
         ],
         "price": [
             "div.product-main span[class='woocommerce-Price-amount amount'] bdi::text",
-            "div.product-essential span[class='woocommerce-Price-amount amount'] bdi::text"
+            "div.product-essential span[class='woocommerce-Price-amount amount'] bdi::text",
         ],
         "category": [
             "div.product-main span.posted_in a::text",
@@ -40,16 +40,13 @@ SPIDER_SELECTORS = {
         "product_id": [
             "span[class='sku']::text",
             "li[class='meta-sku'] span[class='meta-value']::text",
-
         ],
     },
     "aldi_au": {
         "product_name": [
             "h1.product-details__title::text",
         ],
-        "details": [
-            "span.product-details__unit-of-measurement::text"
-        ],
+        "details": ["span.product-details__unit-of-measurement::text"],
         "category": [
             "div.breadcrumbs__items a::text",
         ],
@@ -113,38 +110,42 @@ SPIDER_SELECTORS = {
 def get_selectors(spider_name: str) -> dict:
     """
     Get CSS selectors for a specific spider.
-    
+
     Args:
         spider_name: Name of the spider (e.g., 'rbpatel', 'mh_online')
-    
+
     Returns:
         Dictionary of selectors for the spider
-    
+
     Raises:
         KeyError: If spider name is not found
     """
     if spider_name not in SPIDER_SELECTORS:
-        raise KeyError(f"Spider '{spider_name}' not found in selectors. Available spiders: {list(SPIDER_SELECTORS.keys())}")
+        raise KeyError(
+            f"Spider '{spider_name}' not found in selectors. Available spiders: {list(SPIDER_SELECTORS.keys())}"
+        )
     return SPIDER_SELECTORS[spider_name]
 
 
-def extract_with_fallback(soup: BeautifulSoup, selector_list: List[str]) -> Optional[str]:
+def extract_with_fallback(
+    soup: BeautifulSoup, selector_list: List[str]
+) -> Optional[str]:
     """
     Extract data from HTML using fallback selectors.
     Tries each selector in order until one returns data.
-    
+
     Args:
         soup: BeautifulSoup object of the HTML content
         selector_list: List of CSS selectors to try in order
-        
+
     Returns:
         Extracted text value or None if no selector returns data
     """
     for selector in selector_list:
         try:
             # Handle ::text pseudo-element
-            if '::text' in selector:
-                clean_selector = selector.replace('::text', '')
+            if "::text" in selector:
+                clean_selector = selector.replace("::text", "")
                 elements = soup.select(clean_selector)
                 if elements:
                     texts = [el.get_text(strip=True) for el in elements]
@@ -152,9 +153,9 @@ def extract_with_fallback(soup: BeautifulSoup, selector_list: List[str]) -> Opti
                     if value:
                         return value
             # Handle ::attr() pseudo-element
-            elif '::attr(' in selector:
-                attr_match = selector.split('::attr(')[1].rstrip(')')
-                clean_selector = selector.split('::attr(')[0]
+            elif "::attr(" in selector:
+                attr_match = selector.split("::attr(")[1].rstrip(")")
+                clean_selector = selector.split("::attr(")[0]
                 elements = soup.select(clean_selector)
                 if elements:
                     value = elements[0].get(attr_match)
@@ -170,5 +171,5 @@ def extract_with_fallback(soup: BeautifulSoup, selector_list: List[str]) -> Opti
         except Exception:
             # Continue to next selector on error
             continue
-    
+
     return None

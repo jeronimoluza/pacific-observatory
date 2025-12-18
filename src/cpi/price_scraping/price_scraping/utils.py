@@ -151,12 +151,13 @@ class SelectorExtractor:
                         return result.strip()
                     # Handle stripping for lists
                     elif method == "getall" and strip and isinstance(result, list):
-                        return [item.strip() if isinstance(item, str) else item for item in result]
+                        return [
+                            item.strip() if isinstance(item, str) else item
+                            for item in result
+                        ]
                     return result
             except Exception as e:
-                self.logger.debug(
-                    f"{field_name}: selector {i} failed with error: {e}"
-                )
+                self.logger.debug(f"{field_name}: selector {i} failed with error: {e}")
                 continue
 
         self.logger.warning(
