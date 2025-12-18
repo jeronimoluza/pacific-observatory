@@ -84,6 +84,24 @@ def group_by_newspaper(
     return single_country, multi_country
 
 
+def group_by_country(configs: List[Dict[str, str]]) -> Dict[str, List[Dict[str, str]]]:
+    """
+    Group configurations by country.
+
+    Args:
+        configs: List of config dictionaries from discover_configs()
+
+    Returns:
+        Dictionary mapping country names to lists of config dictionaries
+        Example: {"solomon_islands": [config1, config2], "fiji": [config3]}
+    """
+    country_groups = defaultdict(list)
+    for config in configs:
+        country_groups[config["country"]].append(config)
+
+    return dict(country_groups)
+
+
 def get_available_scrapers(configs_dir: Path) -> Dict[str, List[str]]:
     """
     Get all available newspaper scrapers organized by country.

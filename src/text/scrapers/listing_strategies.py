@@ -822,6 +822,9 @@ class FollowLinkStrategy(ListingStrategy):
                 retrieved_thumbnails = sum(
                     len(result.data) for result in successful_results
                 )
+                if not retrieved_thumbnails:
+                    logger.info(f"No thumbnails found on {current_url}.")
+                    break
                 logger.debug(
                     f"Page {pages_processed + 1}: Found {retrieved_thumbnails} thumbnails"
                 )
