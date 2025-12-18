@@ -25,6 +25,7 @@ class FoodProSpider(CrawlSpider):
     allowed_domains = ["fpr.com.pg"]
     start_urls = ["https://fpr.com.pg/shop/"]
     country = "papua_new_guinea"
+    currency = "K"
 
     # CSS selector fallbacks for product fields
     SELECTORS = get_selectors("food_pro")
@@ -50,9 +51,7 @@ class FoodProSpider(CrawlSpider):
         extractor = SelectorExtractor(response, logger)
 
         # Extract product information using fallback selectors
-        product_name = extractor.extract(
-            "product_name", self.SELECTORS["product_name"]
-        )
+        product_name = extractor.extract("product_name", self.SELECTORS["product_name"])
         price = extractor.extract("price", self.SELECTORS["price"])
         # Format price to "K 17.00" format by removing extra whitespace
         if price:
@@ -69,6 +68,7 @@ class FoodProSpider(CrawlSpider):
             yield {
                 "product_name": product_name,
                 "price": price,
+                "currency": self.currency,
                 "category": " > ".join(category) if category else None,
                 "description": description,
                 "url": url,

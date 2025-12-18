@@ -25,6 +25,7 @@ class SamoaMarketSpider(CrawlSpider):
     allowed_domains = ["samoamarket.com"]
     start_urls = ["https://samoamarket.com/collections/wholesale"]
     country = "samoa"
+    currency = "NZD"
 
     # CSS selector fallbacks for product fields
     SELECTORS = get_selectors("samoa_market")
@@ -58,9 +59,7 @@ class SamoaMarketSpider(CrawlSpider):
         extractor = SelectorExtractor(response, logger)
 
         # Extract product information using fallback selectors
-        product_name = extractor.extract(
-            "product_name", self.SELECTORS["product_name"]
-        )
+        product_name = extractor.extract("product_name", self.SELECTORS["product_name"])
         price = extractor.extract("price", self.SELECTORS["price"])
         product_id = extractor.extract("product_id", self.SELECTORS["product_id"])
         url = response.url
@@ -69,7 +68,8 @@ class SamoaMarketSpider(CrawlSpider):
             yield {
                 "product_id": product_id,
                 "product_name": product_name,
-                "price": price.replace('Incl.', "NZD Incl."),
+                "price": price.replace("Incl.", "NZD Incl."),
+                "currency": self.currency,
                 "url": url,
                 "scraped_at": response.headers.get("Date", "").decode("utf-8"),
             }

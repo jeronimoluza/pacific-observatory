@@ -34,7 +34,16 @@ except ImportError:
     from cleaning import clean_product_names
 
 
-from regex_config import AMOUNT_REGEX, UNITS_REGEX, X_SEPARATOR_REGEX, PER_KG_REGEX, PER_EACH_REGEX, COUNT_UNITS, AMOUNT_UNITS
+from regex_config import (
+    AMOUNT_REGEX,
+    UNITS_REGEX,
+    X_SEPARATOR_REGEX,
+    PER_KG_REGEX,
+    PER_EACH_REGEX,
+    COUNT_UNITS,
+    AMOUNT_UNITS,
+)
+
 
 def extract_amount_and_units(product_name: str) -> Tuple[Optional[str], Optional[str]]:
     """
@@ -45,7 +54,7 @@ def extract_amount_and_units(product_name: str) -> Tuple[Optional[str], Optional
 
     Returns:
         Tuple of (amount, units) where each can be a string or NaN.
-        
+
     Logic:
         1. Check for per_kg pattern first: amount = "1 kg", units = None
         2. Check for per_each pattern: amount = None, units = "1"
@@ -169,16 +178,25 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
     df = clean_product_names(df, project_root)
 
     # Extract amount and units
-    df[['amount', 'units']] = df['product_name'].apply(
+    df[["amount", "units"]] = df["product_name"].apply(
         lambda x: pd.Series(extract_amount_and_units(x))
     )
 
     # Rename 'url' to 'product_url' if it exists
-    if 'url' in df.columns and 'product_url' not in df.columns:
-        df = df.rename(columns={'url': 'product_url'})
+    if "url" in df.columns and "product_url" not in df.columns:
+        df = df.rename(columns={"url": "product_url"})
 
     # Select and order the required columns
-    required_columns = ['product_name', 'price', 'amount', 'units', 'source', 'country', 'product_url', "url_hash"]
+    required_columns = [
+        "product_name",
+        "price",
+        "amount",
+        "units",
+        "source",
+        "country",
+        "product_url",
+        "url_hash",
+    ]
 
     # Check if all required columns exist
     missing_columns = [col for col in required_columns if col not in df.columns]
@@ -197,10 +215,11 @@ if __name__ == "__main__":
     df = extract_quantities()
     print(f"Extracted quantities for {len(df)} products")
     print(f"\nColumns: {df.columns.tolist()}")
-    print(f"\nFirst 10 rows:")
+    print("\nFirst 10 rows:")
     print(df.head(10))
-    print(f"\nData types:")
+    print("\nData types:")
     print(df.dtypes)
-    print(f"\nAmount and units distribution:")
+    print("\nAmount and units distribution:")
     print(f"Amount value counts:\n{df['amount'].value_counts().head(10)}")
     print(f"\nUnits value counts:\n{df['units'].value_counts().head(10)}")
+    df.to_csv("quantities.csv", index=False)

@@ -25,6 +25,7 @@ class MolisiSpider(CrawlSpider):
     allowed_domains = ["molisi.to"]
     start_urls = ["https://molisi.to/"]
     country = "tonga"
+    currency = "T"
 
     # CSS selector fallbacks for product fields
     SELECTORS = get_selectors("molisi")
@@ -50,9 +51,7 @@ class MolisiSpider(CrawlSpider):
         extractor = SelectorExtractor(response, logger)
 
         # Extract product information using fallback selectors
-        product_name = extractor.extract(
-            "product_name", self.SELECTORS["product_name"]
-        )
+        product_name = extractor.extract("product_name", self.SELECTORS["product_name"])
         price = extractor.extract("price", self.SELECTORS["price"])
         category = extractor.extract(
             "category", self.SELECTORS["category"], method="getall"
@@ -65,6 +64,7 @@ class MolisiSpider(CrawlSpider):
                 "product_id": product_id,
                 "product_name": product_name,
                 "price": price,
+                "currency": self.currency,
                 "category": " > ".join(category) if category else None,
                 "url": url,
                 "scraped_at": response.headers.get("Date", "").decode("utf-8"),

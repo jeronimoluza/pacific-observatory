@@ -25,6 +25,7 @@ class DynamicVanuatuSpider(CrawlSpider):
     allowed_domains = ["retail.dynamicvanuatu.com"]
     start_urls = ["https://retail.dynamicvanuatu.com/collections/all-products"]
     country = "vanuatu"
+    currency = "VNT"
 
     # CSS selector fallbacks for product fields
     SELECTORS = get_selectors("dynamic_vanuatu")
@@ -58,9 +59,7 @@ class DynamicVanuatuSpider(CrawlSpider):
         extractor = SelectorExtractor(response, logger)
 
         # Extract product information using fallback selectors
-        product_name = extractor.extract(
-            "product_name", self.SELECTORS["product_name"]
-        )
+        product_name = extractor.extract("product_name", self.SELECTORS["product_name"])
         price = extractor.extract("price", self.SELECTORS["price"])
         product_id = extractor.extract("product_id", self.SELECTORS["product_id"])
         url = response.url
@@ -69,7 +68,8 @@ class DynamicVanuatuSpider(CrawlSpider):
             yield {
                 "product_id": product_id,
                 "product_name": product_name,
-                "price": price.replace('Incl.', "NZD Incl."),
+                "price": price.replace("Incl.", "NZD Incl."),
+                "currency": self.currency,
                 "url": url,
                 "scraped_at": response.headers.get("Date", "").decode("utf-8"),
             }

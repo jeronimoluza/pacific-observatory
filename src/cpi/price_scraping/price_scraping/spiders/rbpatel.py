@@ -25,6 +25,7 @@ class RbpatelSpider(CrawlSpider):
     allowed_domains = ["rbpatel.com.fj"]
     start_urls = ["https://rbpatel.com.fj/shop/"]
     country = "fiji"
+    currency = "FJ"
 
     # CSS selector fallbacks for product fields
     SELECTORS = get_selectors("rbpatel")
@@ -50,9 +51,7 @@ class RbpatelSpider(CrawlSpider):
         extractor = SelectorExtractor(response, logger)
 
         # Extract product information using fallback selectors
-        product_name = extractor.extract(
-            "product_name", self.SELECTORS["product_name"]
-        )
+        product_name = extractor.extract("product_name", self.SELECTORS["product_name"])
         price = extractor.extract("price", self.SELECTORS["price"])
         category = extractor.extract(
             "category", self.SELECTORS["category"], method="getall"
@@ -65,6 +64,7 @@ class RbpatelSpider(CrawlSpider):
                 "product_id": product_id,
                 "product_name": product_name,
                 "price": price,
+                "currency": self.currency,
                 "category": " > ".join(category) if category else None,
                 "url": url,
                 "scraped_at": response.headers.get("Date", "").decode("utf-8"),
