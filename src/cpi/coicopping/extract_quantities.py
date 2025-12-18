@@ -127,24 +127,38 @@ def extract_amount_and_units(product_name: str) -> Tuple[Optional[str], Optional
         amount_matches = AMOUNT_REGEX.findall(product_name)
         if amount_matches:
             # Use the first match found
-            value1, value2, unit = amount_matches[0]
-            if value2:
-                # It's a range, use the first value
-                amount = f"{value1} {unit}"
-            else:
-                amount = f"{value1} {unit}"
+            # Pattern: (range_val1, range_val2, range_unit) | (single_val, single_unit)
+            (
+                range_val1,
+                range_val2,
+                range_unit,
+                single_val,
+                single_unit,
+            ) = amount_matches[0]
+            if range_val1 and range_val2:
+                # It's a range (e.g., "9-15kg" or "9kg-15kg"), use the average rounded down
+                avg_value = int((float(range_val1) + float(range_val2)) / 2)
+                amount = f"{avg_value} {range_unit}"
+            elif single_val:
+                # Single value (e.g., "9kg")
+                amount = f"{single_val} {single_unit}"
 
     # Try to find units pattern (count) if not already found
     if units is None:
         units_matches = UNITS_REGEX.findall(product_name)
         if units_matches:
             # Use the first match found
-            value1, value2, unit = units_matches[0]
-            if value2:
-                # It's a range, use the first value
-                units = value1
-            else:
-                units = value1
+            # Pattern: (range_val1, range_val2, range_unit) | (single_val, single_unit)
+            range_val1, range_val2, range_unit, single_val, single_unit = units_matches[
+                0
+            ]
+            if range_val1 and range_val2:
+                # It's a range (e.g., "6-10 pack" or "6 pack-10 pack"), use the average rounded down
+                avg_value = int((float(range_val1) + float(range_val2)) / 2)
+                units = str(avg_value)
+            elif single_val:
+                # Single value (e.g., "6 pack")
+                units = single_val
 
     # If no quantity specified, default units to "1"
     if units is None:
