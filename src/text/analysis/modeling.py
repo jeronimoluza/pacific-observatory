@@ -129,7 +129,7 @@ def prepare_epu_data(countries):
 
 
 def prepare_cpi(countries_slugs):
-    from cpi import get_cpi_data
+    from src.cpi.imf_data import get_cpi_data
 
     countries = pd.read_csv(CPI_DATA_ROOT / "_countries.csv")
     countries = countries[countries["slug"].isin(countries_slugs)]
