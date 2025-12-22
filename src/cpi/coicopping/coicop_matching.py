@@ -23,6 +23,7 @@ try:
         load_and_process_coicop,
     )
     from .prestep import prepare_coicop_matching_data
+    from .extract_quantities import extract_quantities
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent))
     from coicop_categories import (
@@ -30,6 +31,7 @@ except ImportError:
         load_and_process_coicop,
     )
     from prestep import prepare_coicop_matching_data
+    from extract_quantities import extract_quantities
 
 
 def get_project_root(current_file: Path = None) -> Path:
@@ -236,7 +238,7 @@ def classify_products_with_gemini(
     products_input_df: pd.DataFrame,
     coicop_no_services_df: pd.DataFrame,
     project_root: Optional[Path] = None,
-    batch_size: int = 2000,
+    batch_size: int = 200,
 ) -> pd.DataFrame:
     """
     Classify products using Gemini 2.0 Flash in batches.
@@ -245,7 +247,7 @@ def classify_products_with_gemini(
         products_input_df: DataFrame with url_hash and product_w_cat
         coicop_no_services_df: COICOP categories (without services)
         project_root: Optional project root path
-        batch_size: Number of products per batch (default 2000)
+        batch_size: Number of products per batch (default 200)
 
     Returns:
         DataFrame with url_hash, product_w_cat, code, title
@@ -474,6 +476,19 @@ def run_coicop_matching(project_root: Optional[Path] = None) -> None:
     if project_root is None:
         project_root = get_project_root()
 
+    data_dir = project_root / "data" / "cpi" / "coicopping"
+    gemini_classification_path = data_dir / "gemini_classification.csv"
+
+    # Check if gemini_classification.csv already exists
+    if gemini_classification_path.exists():
+        print("\n" + "=" * 70)
+        print("✓ gemini_classification.csv already exists")
+        print("=" * 70)
+        print("Skipping COICOP matching workflow")
+        print(f"File location: {gemini_classification_path}")
+        print("=" * 70 + "\n")
+        return
+
     try:
         # Step 1: Download and process COICOP data
         df_coicop, df_coicop_no_services = download_and_save_coicop_data(project_root)
@@ -510,4 +525,50 @@ def run_coicop_matching(project_root: Optional[Path] = None) -> None:
 
 
 if __name__ == "__main__":
-    run_coicop_matching()
+    project_root = get_project_root()
+    data_dir = project_root / "data" / "cpi" / "coicopping"
+
+    # Run COICOP matching workflow
+    run_coicop_matching(project_root)
+
+    # Extract quantities from price scraping data
+    print("\n" + "=" * 70)
+    print("Extracting quantities from price scraping data...")
+    print("=" * 70)
+    df_quantities = extract_quantities(project_root)
+    print(f"✓ Extracted quantities for {len(df_quantities)} products")
+
+    # Load gemini_classification.csv
+    gemini_classification_path = data_dir / "gemini_classification.csv"
+    if gemini_classification_path.exists():
+        print("\nLoading gemini_classification.csv...")
+        df_gemini = pd.read_csv(gemini_classification_path)
+        print(f"✓ Loaded {len(df_gemini)} classified products")
+
+        # Merge quantities with gemini_classification using url_hash
+        print("\nMerging quantities with COICOP classifications...")
+        df_quantities_indexed = df_quantities.set_index("url_hash")
+        df_gemini_indexed = df_gemini.set_index("url_hash")
+
+        # Join on url_hash
+        df_merged = df_quantities_indexed.join(df_gemini_indexed, how="left")
+        df_merged = df_merged.reset_index()
+
+        print(f"✓ Merged data: {len(df_merged)} records")
+
+        # Save to CSV
+        output_path = data_dir / "unit_values_w_categories.csv"
+        df_merged.to_csv(output_path, index=False)
+        print(f"✓ Saved to {output_path}")
+
+        # Print summary
+        print("\nMerged data summary:")
+        print(f"  - Total records: {len(df_merged)}")
+        print(f"  - Columns: {df_merged.columns.tolist()}")
+        print("\nFirst few rows:")
+        print(df_merged.head(10))
+    else:
+        print(
+            f"\n⚠ gemini_classification.csv not found at {gemini_classification_path}"
+        )
+        print("Skipping merge step")

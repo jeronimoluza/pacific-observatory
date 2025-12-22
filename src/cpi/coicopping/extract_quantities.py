@@ -25,12 +25,13 @@ import pandas as pd
 
 # Handle both relative and direct execution
 try:
-    from .loading import load_price_scraping_data
+    # from .loading import load_price_scraping_data
+    from .prestep import prepare_coicop_matching_data
     from .cleaning import clean_product_names
 except ImportError:
     # Direct execution: add parent directory to path
     sys.path.insert(0, str(Path(__file__).parent))
-    from loading import load_price_scraping_data
+    from prestep import prepare_coicop_matching_data
     from cleaning import clean_product_names
 
 
@@ -317,7 +318,8 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
         - url_hash
     """
     # Load raw price scraping data
-    df = load_price_scraping_data(project_root)
+    # df = load_price_scraping_data(project_root)
+    df = prepare_coicop_matching_data(project_root)
 
     # Clean product names
     df = clean_product_names(df, project_root)
@@ -340,7 +342,9 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
     # Select and order the required columns
     required_columns = [
         "product_name",
+        "product_w_cat",
         "price",
+        "currency",
         "amount",
         "units",
         "unit_value",
@@ -348,6 +352,7 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
         "country",
         "product_url",
         "url_hash",
+        "scraped_at",
     ]
 
     # Check if all required columns exist
