@@ -364,6 +364,7 @@ class WaybackScraper:
                 url, url_hash = input_queue.get(timeout=1)
 
                 if url is None:  # Sentinel value to stop worker
+                    input_queue.task_done()
                     break
 
                 # Try to load existing snapshots first
@@ -399,6 +400,7 @@ class WaybackScraper:
                     output_queue.put((url_hash, []))
 
                 pbar_fetch.update(1)
+                input_queue.task_done()
 
                 # Rate limiting for snapshot fetching
                 # time.sleep(random.uniform(10, 20))
@@ -407,8 +409,6 @@ class WaybackScraper:
                 continue
             except Exception as e:
                 logger.error(f"Error in snapshot fetcher worker: {e}")
-            finally:
-                input_queue.task_done()
 
     def _parser_worker(
         self,

@@ -238,7 +238,7 @@ def classify_products_with_gemini(
     products_input_df: pd.DataFrame,
     coicop_no_services_df: pd.DataFrame,
     project_root: Optional[Path] = None,
-    batch_size: int = 200,
+    batch_size: int = 750,
 ) -> pd.DataFrame:
     """
     Classify products using Gemini 2.0 Flash in batches.
@@ -247,7 +247,7 @@ def classify_products_with_gemini(
         products_input_df: DataFrame with url_hash and product_w_cat
         coicop_no_services_df: COICOP categories (without services)
         project_root: Optional project root path
-        batch_size: Number of products per batch (default 200)
+        batch_size: Number of products per batch (default 500)
 
     Returns:
         DataFrame with url_hash, product_w_cat, code, title
@@ -263,7 +263,7 @@ def classify_products_with_gemini(
         project_root = get_project_root()
 
     print("\n" + "=" * 70)
-    print("STEP 3: Classify products with Gemini 2.0 Flash")
+    print("STEP 3: Classify products with Gemini 2.5 Flash")
     print("=" * 70)
 
     # Setup API
@@ -299,7 +299,7 @@ def classify_products_with_gemini(
 
         # Call Gemini API
         try:
-            model = genai.GenerativeModel("gemini-2.5-flash-lite")
+            model = genai.GenerativeModel("gemini-2.5-flash")
             response = model.generate_content(prompt)
             response_text = response.text
 
@@ -550,8 +550,10 @@ if __name__ == "__main__":
         df_quantities_indexed = df_quantities.set_index("url_hash")
         df_gemini_indexed = df_gemini.set_index("url_hash")
 
-        # Join on url_hash
-        df_merged = df_quantities_indexed.join(df_gemini_indexed, how="left")
+        # Join on url_hash with suffix to handle overlapping columns
+        df_merged = df_quantities_indexed.join(
+            df_gemini_indexed, how="left", rsuffix="_gemini"
+        )
         df_merged = df_merged.reset_index()
 
         print(f"✓ Merged data: {len(df_merged)} records")
