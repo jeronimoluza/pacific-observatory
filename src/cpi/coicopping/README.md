@@ -1,268 +1,375 @@
-# COICOP Matching with Gemini 2.0 Flash
+# COICOP Classification Workflow
 
-This module provides an end-to-end workflow for classifying products into COICOP (Classification of Individual Consumption According to Purpose) categories using Google's Gemini 2.0 Flash model.
+## Overview
 
-## Workflow Overview
+This module implements a complete pipeline for classifying supermarket products into COICOP (Classification of Individual Consumption According to Purpose) categories. The workflow processes:
 
-The `coicop_matching.py` script orchestrates a 4-step process:
+1. **Scrapy scraped data**: Weekly collection of current supermarket product data
+2. **Wayback Machine data**: Historical product data from archived URLs
 
-1. **Download & Process COICOP Data**: Downloads the COICOP 2018 Excel file from UN Stats and saves processed CSVs
-2. **Prepare Product Input**: Creates `products_input.csv` from price scraping data with `url_hash` and `product_w_cat` columns
-3. **Classify with Gemini**: Uses Gemini 2.0 Flash to classify products in batches of 2000
-4. **Generate Final Output**: Creates `gemini_classification.csv` with classification results
+Both data sources are assumed to be available (see `src/cpi/price_scraping` for scraping pipeline).
 
-## Output Files
+The pipeline then:
+- Cleans and normalizes product names and quantities
+- Extracts amount, units, and calculates unit values
+- Classifies products into COICOP categories using Google Generative AI (Gemini)
+- Produces final time-series product data for CPI analysis
 
-All output files are saved to `data/cpi/coicopping/`:
+## Data Flow
 
-- **coicop_categories.csv** - Full COICOP categories (code, title, keywords, etc.)
-- **coicop_categories_no_services.csv** - COICOP categories excluding services (ending with ' (S)')
-- **products_input.csv** - Unique products with url_hash and product_w_cat
-- **gemini_classification.csv** - Final classifications with columns:
-  - `url_hash` - Hash of product URL
-  - `product_w_cat` - Product name with category
-  - `code` - COICOP code (e.g., "01.1.8.9")
-  - `title` - COICOP category title
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ INPUT DATA                                                      │
+├─────────────────────────────────────────────────────────────────┤
+│ Scrapy Items (JSONL)          │ Wayback Items (JSON)            │
+│ - product_name                │ - product_name                  │
+│ - price                       │ - price                         │
+│ - currency                    │ - currency                      │
+│ - category                    │ - category (optional)           │
+│ - url                         │ - wayback_url                   │
+│ - scraped_at (timestamp)      │ - wayback_timestamp             │
+│ - url_hash (MD5)              │ - url_hash (MD5)                │
+│ - product_id                  │ - product_id                    │
+└─────────────────────────────────────────────────────────────────┘
+                                ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 1: LOAD & MERGE DATA                                       │
+│ (loading.py)                                                    │
+├─────────────────────────────────────────────────────────────────┤
+│ - Load all JSONL files from data/cpi/price_scraping/            │
+│ - Combine scrapy and wayback data                               │
+│ - Add metadata: country, source, filename                       │
+│ - Add date column (scraped_at or wayback_timestamp)             │
+│ Output: Combined DataFrame with all items                       │
+└─────────────────────────────────────────────────────────────────┘
+                                ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 2: CLEAN & PREPARE DATA                                    │
+│ (cleaning.py, prestep.py)                                       │
+├─────────────────────────────────────────────────────────────────┤
+│ - Remove parentheses/brackets from product names                │
+│ - Remove accents (é → e, ñ → n)                                 │
+│ - Extract product_only (remove quantities: "250ml", "6 pack")   │
+│ - Clean category names (lowercase, remove "Home" prefix)        │
+│ - Create product_w_cat: "{product_only}; {category}"            │
+│ Output: Cleaned product names and categories                    │
+└─────────────────────────────────────────────────────────────────┘
+                                ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 3: EXTRACT QUANTITIES                                      │
+│ (extract_quantities.py)                                         │
+├─────────────────────────────────────────────────────────────────┤
+│ - Extract amount (weight/volume): 250ml, 1kg, etc.              │
+│ - Extract units (count): 6 pack, 12 cans, etc.                  │
+│ - Calculate unit_value: price per kg/liter/mt                   │
+│ Output: amount, units, unit_value columns                       │
+└─────────────────────────────────────────────────────────────────┘
+                                ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 4: CLASSIFY WITH COICOP                                    │
+│ (coicop_matching.py)                                            │
+├─────────────────────────────────────────────────────────────────┤
+│ 4a. Download COICOP categories (4-digit level)                  │
+│ 4b. Group by url_hash, keep latest product_w_cat               │
+│ 4c. Classify unclassified products with Gemini AI               │
+│     - Batch processing (600 products per batch)                 │
+│     - Maps product_w_cat → coicop_code & coicop_title           │
+│ 4d. Mark unclassified items (if classification fails)           │
+│ Output: url_hash, product_w_cat, coicop_code, coicop_title      │
+└─────────────────────────────────────────────────────────────────┘
+                                ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ STEP 5: MERGE & FINALIZE                                        │
+│ (extract_quantities.py - merge_quantities_with_gemini)          │
+├─────────────────────────────────────────────────────────────────┤
+│ - Merge quantities with COICOP classifications                  │
+│ - Add date column (scraped_at or wayback_timestamp)             │
+│ - Sort by url_hash and date                                     │
+│ Output: Final time-series product data                          │
+└─────────────────────────────────────────────────────────────────┘
+                                ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ FINAL OUTPUT                                                    │
+│ data/cpi/analysis/all_countries_supermarket_prices.csv          │
+├─────────────────────────────────────────────────────────────────┤
+│ One row per product per date (time series)                      │
+│ Sorted by: url_hash, date                                       │
+│ Ready for: Price analysis, CPI calculation                      │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-## Setup Requirements
+## Input Data Formats
 
-### 1. Install Google Generative AI Library
+### Scrapy Items (JSONL)
+Located in: `data/cpi/price_scraping/{country}/{source}/raw_items/{source}_YYYYMMDD_HHMMSS.jsonl`
+
+```json
+{
+  "product_id": "6710000390",
+  "product_name": "POTATOES TABLE 60/80 KG",
+  "price": "1.40",
+  "category": "Home > Fruits & Vegetables > Imported Vegetables",
+  "url": "https://mh.com.fj/product/potatoes-table-60-80-kg/",
+  "scraped_at": "Wed, 05 Nov 2025 13:09:00 GMT",
+  "url_hash": "cd2add3dac0ec9e87033dd906a22a196",
+  "currency": "FJ"
+}
+```
+
+### Wayback Items (JSON)
+Located in: `data/cpi/price_scraping/{country}/{source}/wayback_machine_data/items/{url_hash}.json`
+
+```json
+[
+  {
+    "wayback_url": "https://web.archive.org/web/20210924153110/https://www.mh.com.fj/product/punjas-chillie-powder-50g/",
+    "wayback_timestamp": "20210924153110",
+    "url_hash": "0b58b1c78532e2477dfcab7bc3378f69",
+    "scraped_at": "2025-12-22T13:11:02.570624",
+    "product_name": "PUNJAS CHILLIE POWDER 50G",
+    "price": "$1.50",
+    "product_id": "5831001050"
+  }
+]
+```
+
+## Output Schema
+
+### Final Output: `all_countries_supermarket_prices.csv`
+
+| Column | Type | Description | Source |
+|--------|------|-------------|--------|
+| `url_hash` | string | MD5 hash of product URL (unique identifier) | Input |
+| `product_name` | string | Cleaned product name (lowercase, no accents) | Cleaned |
+| `product_w_cat` | string | Product name with category: "{product_only}; {category}" | Cleaned |
+| `price` | float | Original product price | Input |
+| `currency` | string | Currency code (FJ, USD, AUD, etc.) | Input |
+| `amount` | float | Extracted quantity value (e.g., 250 for "250ml") | Extracted |
+| `units` | string | Extracted unit type (e.g., "ml", "pack", "1" for no unit) | Extracted |
+| `unit_value` | float | Price per standard unit (kg, liter, or mt) | Calculated |
+| `coicop_code` | string | 4-digit COICOP classification code (e.g., "01.1.8.9") | Classified |
+| `coicop_title` | string | COICOP category title (e.g., "Chocolate confectionery") | Classified |
+| `source` | string | Data source (spider name: mh_online, aldi_au, etc.) | Input |
+| `country` | string | Country code (fiji, samoa, vanuatu, etc.) | Input |
+| `product_url` | string | Original product URL | Input |
+| `date` | string | Timestamp (YYYY-MM-DD HH:MM:SS format) | Derived |
+| `product_id` | string | Original product ID from source | Input |
+| `wayback` | int | 1 if from Wayback Machine, 0 if not | Derived |
+
+**Notes:**
+- **One row per product per date**: Each unique url_hash appears multiple times (once per scrape date)
+- **Time series**: Sorted by url_hash and date to track price evolution
+- **Unclassified products**: Have `coicop_code` and `coicop_title` as NaN if classification failed
+- **Date derivation**:
+  - Scrapy items: Use `scraped_at` timestamp
+  - Wayback items: Convert `wayback_timestamp` (YYYYMMDDHHMMSS) to YYYY-MM-DD HH:MM:SS
+
+## Processing Steps
+
+### 1. Load Data (`loading.py`)
+
+Loads all scrapy and wayback items from the price scraping directory structure.
 
 ```bash
-pip install google-generativeai
+python -c "from src.cpi.coicopping.loading import load_price_scraping_data; df = load_price_scraping_data(); print(f'Loaded {len(df)} items')"
 ```
 
-Or add to your project dependencies:
+### 2. Clean & Prepare (`prestep.py`)
 
-```bash
-poetry add google-generativeai
-```
+Cleans product names and creates product-category combinations for classification.
 
-### 2. Get Google API Key
+**Key functions:**
+- `clean_product_names()`: Remove hardcoded strings from string_cleaning.json
+- `remove_amounts_and_quantities()`: Remove "250ml", "6 pack", etc.
+- `clean_product_only()`: Remove parentheses, normalize accents
+- `clean_category()`: Lowercase, remove "Home" prefix
+- `create_product_with_category()`: Combine product and category
+- `clean_product_w_cat()`: Remove numbers, single chars, stopwords
 
-1. Visit: https://aistudio.google.com/apikey
-2. Create a new API key
-3. Copy the key
+**Output columns:**
+- `product_name`: Cleaned product name
+- `product_only`: Product name without quantities
+- `product_w_cat`: Product + category for classification
 
-### 3. Set Environment Variable
+### 3. Extract Quantities (`extract_quantities.py`)
 
-**macOS/Linux:**
+Extracts amount, units, and calculates unit values using regex patterns.
 
-```bash
-# Option 1: Set for current session
-export GOOGLE_API_KEY='your-api-key-here'
+**Extraction logic:**
+- **Amount**: Weight/volume (g, kg, ml, l, etc.)
+- **Units**: Count (pack, can, piece, etc.)
+- **Unit value**: Calculated as `price / (amount * count)` converted to standard unit (kg, liter, mt)
 
-# Option 2: Set permanently in shell profile
-echo "export GOOGLE_API_KEY='your-api-key-here'" >> ~/.zshrc
-source ~/.zshrc
-```
+**Special cases:**
+- If "per kg" pattern found: amount = "1 kg", units = NaN
+- If "per each" pattern found: amount = NaN, units = "1"
+- If no quantity found: amount = NaN, units = "1" (default)
 
-**Windows (PowerShell):**
+**Output columns:**
+- `amount`: Extracted quantity value
+- `units`: Extracted unit type
+- `unit_value`: Price per standard unit
 
-```powershell
-$env:GOOGLE_API_KEY='your-api-key-here'
-```
+### 4. Classify with COICOP (`coicop_matching.py`)
 
-**Or pass directly when running:**
+Uses Google Generative AI (Gemini) to classify products into COICOP categories.
 
-```bash
-GOOGLE_API_KEY='your-api-key-here' python src/cpi/coicopping/coicop_matching.py
-```
+**Workflow:**
+1. Download COICOP 2018 categories (4-digit level) from UN Stats
+2. Load existing classifications from `gemini_classification.csv` (if present)
+3. Group by url_hash, keep latest product_w_cat
+4. Identify new/unclassified products (url_hash not in gemini_classification.csv)
+5. Batch classify new products with Gemini (600 products per batch)
+6. Append new classifications to `gemini_classification.csv`
+7. Merge all classifications back to original data
+
+**Incremental Classification:**
+- Only classifies url_hash entries not already in `gemini_classification.csv`
+- Appends new classifications to existing file
+- If `gemini_classification.csv` doesn't exist, all url_hash are classified
+- Avoids redundant API calls for previously classified products
+
+**Classification:**
+- Maps `product_w_cat` → `coicop_code` (e.g., "01.1.8.9")
+- Retrieves `coicop_title` from COICOP reference
+- Marks unclassified items as NaN
+
+**Output columns:**
+- `coicop_code`: 4-digit COICOP code
+- `coicop_title`: COICOP category title
+
+### 5. Merge & Finalize (`extract_quantities.py`)
+
+Merges quantities with COICOP classifications and prepares final output.
+
+**Final steps:**
+- Merge quantities DataFrame with gemini_classification.csv
+- Sort by url_hash and date
+- Save to `data/cpi/analysis/all_countries_supermarket_prices.csv`
 
 ## Usage
 
-### Basic Usage
+### Run Complete Workflow
 
-From the project root directory:
-
-```bash
-python src/cpi/coicopping/coicop_matching.py
-```
-
-### With API Key
+The main orchestration script runs all steps automatically:
 
 ```bash
-GOOGLE_API_KEY='your-api-key-here' python src/cpi/coicopping/coicop_matching.py
+cd /path/to/pacific-observatory
+poetry run python src/cpi/coicopping/main.py
 ```
 
-### Programmatic Usage
+**What it does:**
+1. Loads all price scraping data (scrapy JSONL + wayback JSON)
+2. Cleans and prepares product names
+3. Extracts quantities (amount, units, unit_value)
+4. Classifies products with COICOP using Gemini AI
+5. Merges classifications with quantity data
+6. Saves final output to `data/cpi/analysis/all_countries_supermarket_prices.csv`
 
-```python
-from src.cpi.coicopping.coicop_matching import run_coicop_matching
-from pathlib import Path
+**Options:**
 
-# Run with default project root
-run_coicop_matching()
+```bash
+# Skip classification step (use existing gemini_classification.csv)
+poetry run python src/cpi/coicopping/main.py --skip-classification
 
-# Or specify custom project root
-project_root = Path('/path/to/project')
-run_coicop_matching(project_root)
+# Run with debug logging
+poetry run python src/cpi/coicopping/main.py --log-level DEBUG
+
+# Get help
+poetry run python src/cpi/coicopping/main.py --help
 ```
 
-## Workflow Details
+### Run Individual Steps
 
-### Step 1: Download and Process COICOP Data
-
-- Downloads COICOP 2018 Excel from UN Stats (if not already present)
-- Processes to digit level 4 (e.g., "01.1.8.9")
-- Saves full categories and categories without services
-- Creates "keywords" column combining intro, includes, and alsoIncludes
-
-### Step 2: Create Products Input
-
-- Loads price scraping data using `prepare_coicop_matching_data()`
-- Extracts `url_hash` and `product_w_cat` columns
-- Deduplicates by product_w_cat (keeps first occurrence)
-- Saves to `products_input.csv`
-
-### Step 3: Classify with Gemini
-
-- Loads COICOP categories without services as context
-- Processes products in batches of 2000
-- For each batch:
-  - Formats prompt with COICOP reference and product list
-  - Calls Gemini 2.0 Flash API
-  - Parses CSV response with code and title
-- Handles API errors gracefully (continues with next batch)
-
-### Step 4: Generate Final Output
-
-- Merges product input with classification results
-- Deduplicates by url_hash and product_w_cat
-- Saves final output with all required columns
-- Prints summary statistics
-
-## Prompt Format
-
-The prompt sent to Gemini follows this structure:
-
-```
-Using LLM mode (no creating any Python script), classify each product from the products list according to the COICOP categories.
-
-COICOP CATEGORIES REFERENCE:
-Code | Title | Keywords
-...
-
-PRODUCTS TO CLASSIFY:
-1. product_w_cat_1
-2. product_w_cat_2
-...
-
-For each product, determine the most appropriate COICOP code and title based on the keywords and descriptions.
-
-Output ONLY a CSV format with these columns: product_w_cat, code, title
-Do NOT include any other text, explanations, or markdown formatting.
+**Step 1: Load Data**
+```bash
+python -c "from src.cpi.coicopping.loading import load_price_scraping_data; df = load_price_scraping_data(); print(f'Loaded {len(df)} items')"
 ```
 
-## Expected Output Format
-
-The Gemini response is expected to be CSV format:
-
-```csv
-product_w_cat,code,title
-"half meter tube; pantry confectionery","01.1.8.9","Other sugar confectionery and desserts n.e.c. (ND)"
-"product name","code","category title"
+**Step 2: Clean & Prepare**
+```bash
+python -c "from src.cpi.coicopping.prestep import prepare_coicop_matching_data; df = prepare_coicop_matching_data(); print(f'Prepared {len(df)} products')"
 ```
+
+**Step 3: Extract Quantities**
+```bash
+python -c "from src.cpi.coicopping.extract_quantities import extract_quantities; df = extract_quantities(); print(f'Extracted {len(df)} products')"
+```
+
+**Step 4: COICOP Classification**
+```bash
+python -c "from src.cpi.coicopping.coicop_matching import run_coicop_matching; run_coicop_matching()"
+```
+
+**Step 5: Merge & Finalize**
+```bash
+python src/cpi/coicopping/extract_quantities.py
+```
+
+## Configuration Files
+
+### `regex_config.py`
+Defines regex patterns for quantity extraction:
+- `AMOUNT_REGEX`: Weight/volume patterns
+- `UNITS_REGEX`: Count patterns
+- `X_SEPARATOR_REGEX`: Patterns with "x" separator (e.g., "28 x 6pack")
+- `PER_KG_REGEX`: Per kilogram patterns
+- `PER_EACH_REGEX`: Per each patterns
+
+### `unit_conversions.py`
+Defines conversion factors for standardizing units to kg, liter, or mt.
+
+## Intermediate Files
+
+Generated during processing:
+
+| File | Location | Purpose |
+|------|----------|---------|
+| `coicop_categories.csv` | `data/cpi/coicopping/` | All COICOP categories (4-digit) |
+| `coicop_categories_no_services.csv` | `data/cpi/coicopping/` | COICOP categories excluding services |
+| `products_input.csv` | `data/cpi/coicopping/` | Unique products to classify |
+| `gemini_classification.csv` | `data/cpi/coicopping/` | Classification results (url_hash, product_w_cat, code, title) |
+| `unit_values_w_categories.csv` | `data/cpi/coicopping/` | Merged quantities with COICOP (intermediate) |
 
 ## Error Handling
 
-The script includes robust error handling:
+### Unclassified Products
+If a product fails to classify with Gemini:
+- `coicop_code` and `coicop_title` are marked as NaN
+- Product is included in final output for manual review
+- Can be reclassified in future runs
 
-- **Missing API Key**: Provides detailed setup instructions
-- **Missing google-generativeai**: Instructs to install the library
-- **API Failures**: Logs error and continues with next batch
-- **CSV Parsing Errors**: Logs warning with response preview
-- **Missing Columns**: Validates required columns and lists available ones
-
-## Performance Notes
-
-- **Batch Size**: 2000 products per batch (configurable)
-- **API Calls**: One call per batch
-- **Processing Time**: Depends on number of products and API response time
-- **Cost**: Uses Gemini 2.0 Flash (check Google's pricing)
-
-## Troubleshooting
-
-### "GOOGLE_API_KEY environment variable not set"
-
-Set the environment variable as described in Setup section.
-
-### "google-generativeai library not installed"
-
-Install with: `pip install google-generativeai`
-
-### "No products were successfully classified"
-
-Check:
-- API key is valid
-- Internet connection is working
-- Gemini API is accessible
-- Check console output for specific batch errors
-
-### CSV Parsing Errors
-
-The script logs warnings if Gemini's response doesn't parse correctly. Check:
-- Gemini is returning CSV format
-- No markdown code blocks in response
-- Column names match: product_w_cat, code, title
-
-## Data Flow Diagram
-
-```
-coicop_categories.xlsx (UN Stats)
-    ↓
-download_coicop_excel()
-    ↓
-load_and_process_coicop()
-    ↓
-coicop_categories.csv + coicop_categories_no_services.csv
-    ↓
-prepare_coicop_matching_data() [from price scraping data]
-    ↓
-products_input.csv (url_hash, product_w_cat)
-    ↓
-classify_products_with_gemini() [batches of 2000]
-    ↓
-Gemini 2.0 Flash API
-    ↓
-parse_gemini_response()
-    ↓
-generate_final_output()
-    ↓
-gemini_classification.csv (url_hash, product_w_cat, code, title)
-```
-
-## Functions Reference
-
-### Main Entry Point
-
-- `run_coicop_matching(project_root=None)` - Orchestrates the complete workflow
-
-### Step Functions
-
-- `download_and_save_coicop_data(project_root=None)` - Steps 1
-- `create_products_input_csv(project_root=None)` - Step 2
-- `classify_products_with_gemini(products_input_df, coicop_no_services_df, project_root=None, batch_size=2000)` - Step 3
-- `generate_final_output(products_input_df, classification_results_df, project_root=None)` - Step 4
-
-### Utility Functions
-
-- `setup_google_api_key()` - Validates and returns API key
-- `format_gemini_prompt(batch_products, coicop_context)` - Creates prompt
-- `parse_gemini_response(response_text)` - Parses CSV response
-- `get_project_root(current_file=None)` - Gets project root directory
+### Missing Data
+- **Missing amount/units**: Default to units = "1"
+- **Missing category**: Product name used alone for classification
+- **Missing price**: unit_value cannot be calculated (NaN)
 
 ## Dependencies
 
-- `pandas` - Data manipulation
-- `google-generativeai` - Gemini API access
-- Standard library: `os`, `sys`, `json`, `csv`, `io`, `pathlib`, `typing`
+- `pandas`: Data manipulation
+- `google-generativeai`: Gemini API for classification
+- `requests`: Download COICOP Excel from UN Stats
 
-## Notes
+## Environment Variables
 
-- The script reuses existing COICOP Excel file if already downloaded
-- Products are deduplicated by product_w_cat (keeps first occurrence)
-- Final output is deduplicated by url_hash and product_w_cat
-- All file paths are relative to project root
-- Batch processing allows handling large product datasets
-- API errors in one batch don't stop the entire workflow
+**Required for COICOP classification:**
+```bash
+export GOOGLE_API_KEY='your-api-key-here'
+```
+
+Get your API key from: https://aistudio.google.com/apikey
+
+## Next Steps
+
+After generating `all_countries_supermarket_prices.csv`:
+1. Use for **price analysis** (trend analysis, inflation tracking)
+2. Generate **Consumer Price Index (CPI)** by COICOP category
+3. Track **price evolution** over time by product
+4. Identify **price anomalies** and outliers
+
+## References
+
+- **COICOP 2018**: https://unstats.un.org/unsd/classifications/Econ/Download/
+- **Google Generative AI**: https://ai.google.dev/
+- **Wayback Machine API**: https://archive.org/help/wayback_api.php
+- **Price Scraping Pipeline**: See `src/cpi/price_scraping` for Scrapy and Wayback scraping implementation

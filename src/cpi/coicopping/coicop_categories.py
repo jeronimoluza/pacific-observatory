@@ -105,9 +105,12 @@ def load_and_process_coicop(excel_path: Path, digit_level: int = 4) -> pd.DataFr
     df = df[df["code"].astype(str).str.count(r"\.") == n_dots].copy()
     print(f"Rows with exactly {digit_level} dots in code: {len(df)}")
 
-    # Select required columns
+    # Select required columns and rename to standard names
     required_cols = ["code", "intro", "title", "includes", "alsoIncludes", "excludes"]
     df = df[required_cols].copy()
+
+    # Rename to standard column names used throughout the workflow
+    df = df.rename(columns={"code": "coicop_code", "title": "coicop_title"})
 
     # Create "keywords" column combining intro, includes, and alsoIncludes
     # This is used for embedding and fuzzy matching
@@ -197,9 +200,9 @@ if __name__ == "__main__":
     print(f"\nTotal processed rows: {len(df)}")
     print("\nSample keywords_list:")
     for idx, row in df.head(3).iterrows():
-        print(f"\nCode: {row['code']}")
-        print(f"Title: {row['title']}")
+        print(f"\nCode: {row['coicop_code']}")
+        print(f"Title: {row['coicop_title']}")
         print(f"Keywords list: {row['keywords_list']}")
     df.to_csv("coicop_categories.csv", index=False)
-    df_no_services = df[~df["code"].str.endswith(" (S)")]
+    df_no_services = df[~df["coicop_code"].str.endswith(" (S)")]
     df_no_services.to_csv("coicop_categories_no_services.csv", index=False)

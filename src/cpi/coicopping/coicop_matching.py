@@ -23,7 +23,7 @@ try:
         load_and_process_coicop,
     )
     from .prestep import prepare_coicop_matching_data
-    from .extract_quantities import extract_quantities
+    from .extract_quantities import extract_and_merge_quantities
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent))
     from coicop_categories import (
@@ -31,7 +31,7 @@ except ImportError:
         load_and_process_coicop,
     )
     from prestep import prepare_coicop_matching_data
-    from extract_quantities import extract_quantities
+    from extract_quantities import extract_and_merge_quantities
 
 
 def get_project_root(current_file: Path = None) -> Path:
@@ -116,13 +116,13 @@ def download_and_save_coicop_data(
 
     # Save full categories (only code, title, keywords columns)
     csv_path = data_dir / "coicop_categories.csv"
-    df[["code", "title", "keywords"]].to_csv(csv_path, index=False)
+    df[["coicop_code", "coicop_title", "keywords"]].to_csv(csv_path, index=False)
     print(f"✓ Saved to {csv_path}")
 
-    # Save categories without services (only code, title, keywords columns)
-    df_no_services = df[~df["code"].str.endswith(" (S)")].copy()
+    # Save categories without services (only coicop_code, coicop_title, keywords columns)
+    df_no_services = df[~df["coicop_code"].str.endswith(" (S)")].copy()
     csv_no_services_path = data_dir / "coicop_categories_no_services.csv"
-    df_no_services[["code", "title", "keywords"]].to_csv(
+    df_no_services[["coicop_code", "coicop_title", "keywords"]].to_csv(
         csv_no_services_path, index=False
     )
     print(
@@ -132,14 +132,18 @@ def download_and_save_coicop_data(
     return df, df_no_services
 
 
-def create_products_input_csv(project_root: Optional[Path] = None) -> pd.DataFrame:
+def create_products_input_csv(
+    df_prepared: Optional[pd.DataFrame] = None, project_root: Optional[Path] = None
+) -> pd.DataFrame:
     """
-    Create products_input.csv from prepare_coicop_matching_data().
+    Create products_input.csv from prepared product data.
 
     Extracts url_hash and product_w_cat columns and saves to:
     data/cpi/coicopping/products_input.csv
 
     Args:
+        df_prepared: Optional pre-prepared DataFrame from prepare_coicop_matching_data().
+                    If None, will call prepare_coicop_matching_data() internally.
         project_root: Optional project root path
 
     Returns:
@@ -149,13 +153,19 @@ def create_products_input_csv(project_root: Optional[Path] = None) -> pd.DataFra
         project_root = get_project_root()
 
     data_dir = project_root / "data" / "cpi" / "coicopping"
+    data_dir.mkdir(parents=True, exist_ok=True)
 
     print("\n" + "=" * 70)
-    print("STEP 2: Create products_input.csv")
+    print("Creating products_input.csv")
     print("=" * 70)
 
-    print("\nPreparing product data...")
-    df_products = prepare_coicop_matching_data(project_root)
+    # Use provided DataFrame or prepare data
+    if df_prepared is None:
+        print("\nPreparing product data...")
+        df_products = prepare_coicop_matching_data(project_root)
+    else:
+        print("\nUsing pre-prepared product data...")
+        df_products = df_prepared
 
     print(f"✓ Prepared {len(df_products)} products")
 
@@ -200,8 +210,8 @@ def format_gemini_prompt(
     coicop_ref += "-" * 100 + "\n"
 
     for idx, row in coicop_context.iterrows():
-        code = row["code"]
-        title = row["title"]
+        code = row["coicop_code"]
+        title = row["coicop_title"]
         keywords = (
             row["keywords"] if pd.notna(row["keywords"]) else ""
         )  # Truncate for brevity
@@ -238,7 +248,7 @@ def classify_products_with_gemini(
     products_input_df: pd.DataFrame,
     coicop_no_services_df: pd.DataFrame,
     project_root: Optional[Path] = None,
-    batch_size: int = 750,
+    batch_size: int = 600,
 ) -> pd.DataFrame:
     """
     Classify products using Gemini 2.0 Flash in batches.
@@ -299,7 +309,8 @@ def classify_products_with_gemini(
 
         # Call Gemini API
         try:
-            model = genai.GenerativeModel("gemini-2.5-flash")
+            model = genai.GenerativeModel("gemini-3-flash-preview")
+            # model = genai.GenerativeModel("gemini-2.5-flash")
             response = model.generate_content(prompt)
             response_text = response.text
 
@@ -388,7 +399,9 @@ def parse_gemini_response(response_text: str) -> List[Dict[str, str]]:
                 # Only add if we have both fields and haven't seen this product before
                 if product_w_cat and code and product_w_cat not in seen:
                     seen.add(product_w_cat)
-                    results.append({"product_w_cat": product_w_cat, "code": code})
+                    results.append(
+                        {"product_w_cat": product_w_cat, "coicop_code": code}
+                    )
         except Exception:
             # Skip lines that can't be parsed
             pass
@@ -430,11 +443,16 @@ def generate_final_output(
 
     # Merge with COICOP categories to get titles
     merged = merged.merge(
-        coicop_categories_df[["code", "title"]], on="code", how="left"
+        coicop_categories_df[["coicop_code", "coicop_title"]],
+        on="coicop_code",
+        how="left",
     )
 
-    # Select final columns
-    final_df = merged[["url_hash", "product_w_cat", "code", "title"]].copy()
+    # Select final columns and rename to match README specification
+    final_df = merged[
+        ["url_hash", "product_w_cat", "coicop_code", "coicop_title"]
+    ].copy()
+    # final_df = final_df.rename(columns={"coicop_code": "code", "coicop_title": "title"})
 
     # Remove duplicates (keep first)
     final_df = final_df.drop_duplicates(
@@ -449,8 +467,8 @@ def generate_final_output(
     print(f"✓ Saved to {output_path}")
 
     # Print summary
-    classified = final_df[final_df["code"].notna()].shape[0]
-    unclassified = final_df[final_df["code"].isna()].shape[0]
+    classified = final_df[final_df["coicop_code"].notna()].shape[0]
+    unclassified = final_df[final_df["coicop_code"].isna()].shape[0]
 
     print("\nSummary:")
     print(f"  - Total records: {len(final_df)}")
@@ -460,17 +478,24 @@ def generate_final_output(
     return final_df
 
 
-def run_coicop_matching(project_root: Optional[Path] = None) -> None:
+def run_coicop_matching(
+    df_prepared: Optional[pd.DataFrame] = None, project_root: Optional[Path] = None
+) -> None:
     """
     Main orchestration function for the complete COICOP matching workflow.
 
-    Workflow:
+    Implements incremental classification:
     1. Download COICOP Excel and save CSVs
-    2. Create products_input.csv
-    3. Classify with Gemini 2.0 Flash (batches of 2000)
-    4. Generate final gemini_classification.csv
+    2. Load existing classifications from gemini_classification.csv (if present)
+    3. Create products_input.csv
+    4. Identify new/unclassified products (url_hash not in gemini_classification.csv)
+    5. Batch classify new products with Gemini (600 products per batch)
+    6. Append new classifications to gemini_classification.csv
+    7. Merge all classifications back to original data
 
     Args:
+        df_prepared: Optional pre-prepared DataFrame from prepare_coicop_matching_data().
+                    If None, will call prepare_coicop_matching_data() internally.
         project_root: Optional project root path
     """
     if project_root is None:
@@ -479,33 +504,96 @@ def run_coicop_matching(project_root: Optional[Path] = None) -> None:
     data_dir = project_root / "data" / "cpi" / "coicopping"
     gemini_classification_path = data_dir / "gemini_classification.csv"
 
-    # Check if gemini_classification.csv already exists
-    if gemini_classification_path.exists():
-        print("\n" + "=" * 70)
-        print("✓ gemini_classification.csv already exists")
-        print("=" * 70)
-        print("Skipping COICOP matching workflow")
-        print(f"File location: {gemini_classification_path}")
-        print("=" * 70 + "\n")
-        return
-
     try:
         # Step 1: Download and process COICOP data
         df_coicop, df_coicop_no_services = download_and_save_coicop_data(project_root)
 
-        # Step 2: Create products input
-        df_products_input = create_products_input_csv(project_root)
+        # Step 2: Create products input (all products from current data)
+        df_products_input = create_products_input_csv(df_prepared, project_root)
 
-        # Step 3: Classify with Gemini
-        df_classifications = classify_products_with_gemini(
-            df_products_input, df_coicop_no_services, project_root
+        # Step 3: Load existing classifications (if file exists)
+        existing_classifications = None
+        if gemini_classification_path.exists():
+            print("\n" + "=" * 70)
+            print("Loading existing classifications...")
+            print("=" * 70)
+            existing_classifications = pd.read_csv(gemini_classification_path)
+            print(f"✓ Loaded {len(existing_classifications)} existing classifications")
+
+            # Get set of already classified url_hash values
+            existing_url_hashes = set(existing_classifications["url_hash"].unique())
+            print(
+                f"✓ Found {len(existing_url_hashes)} unique url_hash entries already classified"
+            )
+
+            # Identify new products (url_hash not in existing classifications)
+            new_products_mask = ~df_products_input["url_hash"].isin(existing_url_hashes)
+            df_new_products = df_products_input[new_products_mask].copy()
+
+            if len(df_new_products) == 0:
+                print("\n" + "=" * 70)
+                print("✓ No new products to classify")
+                print("=" * 70)
+                print("All products already have classifications")
+                print(f"File location: {gemini_classification_path}")
+                print("=" * 70 + "\n")
+                return
+
+            print(f"\n✓ Identified {len(df_new_products)} new products to classify")
+            print(f"  - Total products: {len(df_products_input)}")
+            print(
+                f"  - Already classified: {len(df_products_input) - len(df_new_products)}"
+            )
+            print(f"  - New to classify: {len(df_new_products)}")
+
+            # Use only new products for classification
+            df_to_classify = df_new_products
+        else:
+            print("\n" + "=" * 70)
+            print("No existing classifications found")
+            print("=" * 70)
+            print("Classifying all products...")
+            df_to_classify = df_products_input
+
+        # Step 4: Classify new products with Gemini
+        print("\n" + "=" * 70)
+        print("Classifying products with Gemini AI")
+        print("=" * 70)
+        df_new_classifications = classify_products_with_gemini(
+            df_to_classify, df_coicop_no_services, project_root
         )
 
-        # Step 4: Generate final output
-        df_final = generate_final_output(
-            df_products_input, df_classifications, df_coicop, project_root
+        # Step 5: Generate output with proper column names
+        df_new_final = generate_final_output(
+            df_to_classify, df_new_classifications, df_coicop, project_root
         )
-        print(df_final.head(5))
+
+        # Step 6: Append to existing or create new file
+        if existing_classifications is not None:
+            print("\n" + "=" * 70)
+            print("Appending new classifications to existing file")
+            print("=" * 70)
+
+            # Combine existing and new classifications
+            df_combined = pd.concat(
+                [existing_classifications, df_new_final], ignore_index=True
+            )
+
+            # Remove duplicates (keep first occurrence)
+            df_combined = df_combined.drop_duplicates(
+                subset=["url_hash", "product_w_cat"], keep="first"
+            )
+
+            # Save combined classifications
+            df_combined.to_csv(gemini_classification_path, index=False)
+            print(f"✓ Saved {len(df_combined)} total classifications")
+            print(f"  - Previous: {len(existing_classifications)}")
+            print(f"  - New: {len(df_new_final)}")
+            print(f"  - Total: {len(df_combined)}")
+        else:
+            # No existing file, just save the new classifications
+            df_new_final.to_csv(gemini_classification_path, index=False)
+            print(f"\n✓ Saved {len(df_new_final)} classifications to new file")
 
         print("\n" + "=" * 70)
         print("✓ COICOP matching workflow completed successfully!")
@@ -531,46 +619,15 @@ if __name__ == "__main__":
     # Run COICOP matching workflow
     run_coicop_matching(project_root)
 
-    # Extract quantities from price scraping data
-    print("\n" + "=" * 70)
-    print("Extracting quantities from price scraping data...")
-    print("=" * 70)
-    df_quantities = extract_quantities(project_root)
-    print(f"✓ Extracted quantities for {len(df_quantities)} products")
-
-    # Load gemini_classification.csv
+    # Extract quantities and merge with COICOP classifications
     gemini_classification_path = data_dir / "gemini_classification.csv"
+    df_merged = extract_and_merge_quantities(
+        project_root=project_root,
+        gemini_classification_path=gemini_classification_path,
+    )
+
+    # Save merged data to CSV if gemini_classification.csv exists
     if gemini_classification_path.exists():
-        print("\nLoading gemini_classification.csv...")
-        df_gemini = pd.read_csv(gemini_classification_path)
-        print(f"✓ Loaded {len(df_gemini)} classified products")
-
-        # Merge quantities with gemini_classification using url_hash
-        print("\nMerging quantities with COICOP classifications...")
-        df_quantities_indexed = df_quantities.set_index("url_hash")
-        df_gemini_indexed = df_gemini.set_index("url_hash")
-
-        # Join on url_hash with suffix to handle overlapping columns
-        df_merged = df_quantities_indexed.join(
-            df_gemini_indexed, how="left", rsuffix="_gemini"
-        )
-        df_merged = df_merged.reset_index()
-
-        print(f"✓ Merged data: {len(df_merged)} records")
-
-        # Save to CSV
         output_path = data_dir / "unit_values_w_categories.csv"
         df_merged.to_csv(output_path, index=False)
         print(f"✓ Saved to {output_path}")
-
-        # Print summary
-        print("\nMerged data summary:")
-        print(f"  - Total records: {len(df_merged)}")
-        print(f"  - Columns: {df_merged.columns.tolist()}")
-        print("\nFirst few rows:")
-        print(df_merged.head(10))
-    else:
-        print(
-            f"\n⚠ gemini_classification.csv not found at {gemini_classification_path}"
-        )
-        print("Skipping merge step")

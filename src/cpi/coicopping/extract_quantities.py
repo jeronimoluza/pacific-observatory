@@ -298,11 +298,15 @@ def calculate_unit_value(
     return unit_value
 
 
-def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
+def extract_quantities(
+    df_prepared: Optional[pd.DataFrame] = None, project_root: Optional[Path] = None
+) -> pd.DataFrame:
     """
-    Load price scraping data, clean product names, and extract quantities.
+    Extract quantities from prepared product data.
 
     Args:
+        df_prepared: Optional pre-prepared DataFrame from prepare_coicop_matching_data().
+                    If None, will call prepare_coicop_matching_data() internally.
         project_root: Optional project root path. If None, infers from this file's location.
 
     Returns:
@@ -317,12 +321,13 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
         - product_url
         - url_hash
     """
-    # Load raw price scraping data
-    # df = load_price_scraping_data(project_root)
-    df = prepare_coicop_matching_data(project_root)
-
-    # Clean product names
-    df = clean_product_names(df, project_root)
+    # Use provided DataFrame or prepare data
+    if df_prepared is None:
+        df = prepare_coicop_matching_data(project_root)
+        df = clean_product_names(df, project_root)
+    else:
+        # Data is already prepared and cleaned
+        df = df_prepared.copy()
 
     # Extract amount and units
     df[["amount", "units"]] = df["product_name"].apply(
@@ -352,8 +357,16 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
         "country",
         "product_url",
         "url_hash",
+        "date",
         "scraped_at",
+        "wayback",
     ]
+
+    # Add optional columns if they exist
+    optional_columns = ["product_id"]
+    for col in optional_columns:
+        if col in df.columns:
+            required_columns.append(col)
 
     # Check if all required columns exist
     missing_columns = [col for col in required_columns if col not in df.columns]
@@ -367,10 +380,120 @@ def extract_quantities(project_root: Optional[Path] = None) -> pd.DataFrame:
     return df_result
 
 
+def merge_quantities_with_gemini(
+    df_quantities: pd.DataFrame,
+    gemini_classification_path: Path,
+) -> pd.DataFrame:
+    """
+    Merge quantities DataFrame with COICOP classifications from gemini_classification.csv.
+
+    Merges on url_hash and product_w_cat keys, adds date column, and sorts by url_hash and date.
+
+    Args:
+        df_quantities: DataFrame with extracted quantities
+        gemini_classification_path: Path to gemini_classification.csv file
+
+    Returns:
+        Merged DataFrame with COICOP classifications sorted by url_hash and date,
+        or original df_quantities if file doesn't exist
+    """
+    if not gemini_classification_path.exists():
+        print(
+            f"\n⚠ gemini_classification.csv not found at {gemini_classification_path}"
+        )
+        print("Skipping merge step")
+        # Add empty COICOP columns
+        df_quantities["coicop_code"] = None
+        df_quantities["coicop_title"] = None
+        return df_quantities
+
+    print("\nLoading gemini_classification.csv...")
+    df_gemini = pd.read_csv(gemini_classification_path)
+    print(f"✓ Loaded {len(df_gemini)} classified products")
+
+    # Merge quantities with gemini_classification using url_hash
+    # This ensures all items (scrapy and wayback) with the same url_hash get the same classification
+    print("\nMerging quantities with COICOP classifications...")
+    print("  Merge key: url_hash")
+
+    # Group by url_hash and keep first classification (most recent)
+    # This handles cases where same url_hash has multiple product_w_cat values
+    df_gemini_unique = df_gemini.drop_duplicates(subset=["url_hash"], keep="first")
+    print(f"  Using {len(df_gemini_unique)} unique url_hash classifications")
+
+    # Merge on url_hash only to ensure all items with same url_hash get classified
+    df_merged = df_quantities.merge(
+        df_gemini_unique[["url_hash", "coicop_code", "coicop_title"]],
+        on="url_hash",
+        how="left",
+        suffixes=("", "_gemini"),
+    )
+
+    print(f"✓ Merged data: {len(df_merged)} records")
+
+    # Sort by url_hash and date (date should already exist from loading.py)
+    if "date" in df_merged.columns:
+        # Convert to timezone-naive to avoid comparison issues
+        # Handle both tz-aware and tz-naive timestamps
+        df_merged["date"] = pd.to_datetime(df_merged["date"], utc=True).dt.tz_localize(
+            None
+        )
+        df_merged = df_merged.sort_values(by=["url_hash", "date"], na_position="last")
+        print("✓ Sorted by url_hash and date")
+    else:
+        print("⚠ Warning: 'date' column not found, skipping sort")
+
+    # Print summary
+    classified = df_merged["coicop_code"].notna().sum()
+    unclassified = df_merged["coicop_code"].isna().sum()
+    print("\nMerge summary:")
+    print(f"  - Total records: {len(df_merged)}")
+    print(f"  - Classified: {classified}")
+    print(f"  - Unclassified: {unclassified}")
+
+    return df_merged
+
+
+def extract_and_merge_quantities(
+    project_root: Optional[Path] = None,
+    gemini_classification_path: Optional[Path] = None,
+) -> pd.DataFrame:
+    """
+    Extract quantities from price scraping data and merge with COICOP classifications.
+
+    Args:
+        project_root: Optional project root path. If None, infers from this file's location.
+        gemini_classification_path: Optional path to gemini_classification.csv. If None, skips merge.
+
+    Returns:
+        DataFrame with extracted quantities, optionally merged with COICOP classifications
+    """
+    print("\n" + "=" * 70)
+    print("Extracting quantities from price scraping data...")
+    print("=" * 70)
+
+    df_quantities = extract_quantities(project_root)
+    print(f"✓ Extracted quantities for {len(df_quantities)} products")
+
+    if gemini_classification_path is None:
+        return df_quantities
+
+    return merge_quantities_with_gemini(df_quantities, gemini_classification_path)
+
+
 if __name__ == "__main__":
-    # Example usage
-    df = extract_quantities()
-    print(f"Extracted quantities for {len(df)} products")
+    # Get project root
+    project_root = Path(__file__).parent.parent.parent.parent
+    data_dir = project_root / "data" / "cpi" / "coicopping"
+    gemini_classification_path = data_dir / "gemini_classification.csv"
+
+    # Extract quantities and merge with COICOP classifications
+    df = extract_and_merge_quantities(
+        project_root=project_root,
+        gemini_classification_path=gemini_classification_path,
+    )
+
+    print(f"\n✓ Final dataset: {len(df)} products")
     print(f"\nColumns: {df.columns.tolist()}")
     print("\nFirst 10 rows:")
     print(df.head(10))
@@ -381,4 +504,8 @@ if __name__ == "__main__":
     print(f"\nUnits value counts:\n{df['units'].value_counts().head(10)}")
     print("\nUnit value statistics:")
     print(df["unit_value"].describe())
-    df.to_csv("quantities.csv", index=False)
+
+    # Save to CSV
+    output_path = data_dir / "unit_values_w_categories.csv"
+    df.to_csv(output_path, index=False)
+    print(f"\n✓ Saved to {output_path}")
