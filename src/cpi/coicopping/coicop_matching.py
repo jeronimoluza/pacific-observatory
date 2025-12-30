@@ -179,9 +179,10 @@ def create_products_input_csv(
 
     df_input = df_products[required_cols].copy()
 
-    # Remove duplicates (keep first occurrence)
-    df_input = df_input.drop_duplicates(subset=["product_w_cat"], keep="first")
-    print(f"✓ After deduplication: {len(df_input)} unique products")
+    # Remove duplicates by url_hash (keep first occurrence)
+    # This ensures each unique url_hash gets classified
+    df_input = df_input.drop_duplicates(subset=["url_hash"], keep="first")
+    print(f"✓ After deduplication: {len(df_input)} unique url_hash entries")
 
     # Save to CSV
     csv_path = data_dir / "products_input.csv"
