@@ -63,7 +63,7 @@ where:
 * $w_{\text{FAFH}}$ = weight of "Food Away from Home" (4.3%)
 * $w_{\text{adjusted},k}$ = adjusted weight for category $k$ (normalized to sum to 100%)
 
-Categories with higher original expenditure shares receive proportionally more of the reallocated weight, reflecting that "Food Away from Home" is a substitute for home-prepared food across all categories. The adjusted weights are then normalized to sum to exactly 100%.
+Categories with higher original expenditure shares receive proportionally more of the reallocated weight, reflecting that "Food Away from Home" is a substitute for home-prepared food across all categories. The adjusted weights are then normalized to sum to exactly 100% and are used directly in the Young Index formula. See [redistribute_weights.py](./redistribute_weights.py) for the implementation.
 
 ## Weights Table
 
@@ -89,7 +89,7 @@ The table below shows the original HIES 2019-20 expenditure weights and the prop
 
 ### 1. Elementary Aggregates (EA)
 
-Elementary aggregates are defined at the **01.1.x level** for food (e.g. *Cereals and cereal products – 01.1.1*, *Live animals, and meat and other parts of slaughtered land animals – 01.1.2*, etc.), and at the **01.2.x level** for beverages (e.g. *Fruit and vegetable juices – 01.2.1*, *Coffee and coffee substitutes – 01.2.2*, etc.).
+Elementary aggregates are defined at the *3-digit COICOP level* for food (e.g. *Cereals and cereal products – 01.1.1*, *Live animals, and meat and other parts of slaughtered land animals – 01.1.2*, etc.), and at the *3-digit COICOP level* for beverages (e.g. *Fruit and vegetable juices – 01.2.1*, *Coffee and coffee substitutes – 01.2.2*, etc.), computed from price data initially classified at the *4-digit COICOP level*.
 
 All varieties within an EA are equally weighted. This approach is used because detailed weights to aggregate from the 01.1.1.x level (e.g. *Bread – 01.1.1.3*) to the 01.1.1 (*Cereals and cereal products*) level are not available. Following the [IMF Consumer Price Index Manual](https://data.imf.org/en/datasets/IMF.STA:CPI), the 01.1.x level is used as the elementary aggregate when such granular weights are unavailable.
 
@@ -111,17 +111,17 @@ $$
 r_{i,t} = \frac{\bar{p}_{i,t}}{\bar{p}_{i,0}}
 $$
 
-**Matched Sample Rule**: Only include articles in the monthly EA calculation if they have **valid prices in both the current month $t$ and the reference month (November 2025)**. Articles missing in either period are excluded from that month's calculation.
+**Matched Sample Rule**: Only include articles in the monthly EA calculation if they have **existing prices in both the current month $t$ and the reference month (November 2025)**. Articles missing in either period are excluded from that month's calculation.
 
 #### Step 3: Imputation for Missing Articles
 
-If an article is missing a price in a given month (but has prices in the reference month), impute its monthly price based on the **average price change of other articles in the same COICOP category**:
+If an article is missing a price in a given month (but has prices in the reference month), impute its monthly price based on the **average price change of other articles in the same 3-digit COICOP category**:
 
 $$
 \bar{p}_{i,t}^{\text{imputed}} = \bar{p}_{i,0} \times \overline{r}_{c,t}
 $$
 
-where $\overline{r}_{c,t}$ is the **average price relative** of all articles with matched prices in COICOP category $c$ for month $t$:
+where $\overline{r}_{c,t}$ is the **average price relative** of all articles with matched prices in the same 3-digit COICOP category $c$ for month $t$:
 
 $$
 \overline{r}_{c,t} = \frac{1}{m_t} \sum_{i \in c, \text{matched}} r_{i,t}
