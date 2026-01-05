@@ -279,32 +279,39 @@ poetry run python src/cpi/coicopping/main.py --log-level DEBUG
 poetry run python src/cpi/coicopping/main.py --help
 ```
 
-### Run Individual Steps
+### Final Steps: Reclassify Unclassified Products
 
-**Step 1: Load Data**
+After the initial classification run, some products may remain unclassified (marked as NaN in `coicop_code` and `coicop_title`). This can happen when product descriptions are unclear or ambiguous.
+
+**Re-run Classification:**
+
+Use `reclassify_missing.py` to attempt classification of previously unclassified products:
+
 ```bash
-python -c "from src.cpi.coicopping.loading import load_price_scraping_data; df = load_price_scraping_data(); print(f'Loaded {len(df)} items')"
+poetry run python src/cpi/coicopping/reclassify_missing.py
 ```
 
-**Step 2: Clean & Prepare**
+**What it does:**
+- Identifies products with missing COICOP classifications (NaN values)
+- Attempts to classify them using Gemini AI
+- Updates `gemini_classification.csv` with new classifications
+- Can be run multiple times as the Gemini API allows
+
+**Important Notes:**
+- Some products may never be classified if their descriptions are too vague or unclear
+- Each run consumes Gemini API quota
+- Products with unclear descriptions should be reviewed manually if needed
+- The final output will still include unclassified products for manual review
+
+**After Reclassification:**
+
+Once you've run `reclassify_missing.py`, re-run the main workflow to regenerate the final output with updated classifications:
+
 ```bash
-python -c "from src.cpi.coicopping.prestep import prepare_coicop_matching_data; df = prepare_coicop_matching_data(); print(f'Prepared {len(df)} products')"
+poetry run python src/cpi/coicopping/main.py
 ```
 
-**Step 3: Extract Quantities**
-```bash
-python -c "from src.cpi.coicopping.extract_quantities import extract_quantities; df = extract_quantities(); print(f'Extracted {len(df)} products')"
-```
-
-**Step 4: COICOP Classification**
-```bash
-python -c "from src.cpi.coicopping.coicop_matching import run_coicop_matching; run_coicop_matching()"
-```
-
-**Step 5: Merge & Finalize**
-```bash
-python src/cpi/coicopping/extract_quantities.py
-```
+This will merge the newly classified products with the quantity data and update `data/cpi/analysis/all_countries_supermarket_prices.csv` with the latest classifications.
 
 ## Configuration Files
 

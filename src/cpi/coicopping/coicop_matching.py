@@ -274,7 +274,7 @@ def classify_products_with_gemini(
         project_root = get_project_root()
 
     print("\n" + "=" * 70)
-    print("STEP 3: Classify products with Gemini 2.5 Flash")
+    print("STEP 3: Classify products with Gemini AI")
     print("=" * 70)
 
     # Setup API
