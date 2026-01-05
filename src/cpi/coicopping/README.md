@@ -367,6 +367,27 @@ After generating `all_countries_supermarket_prices.csv`:
 3. Track **price evolution** over time by product
 4. Identify **price anomalies** and outliers
 
+## Changelog
+
+### Product Name & Category Consistency (Latest)
+
+**Modification**: Enhanced `load_price_scraping_data()` in `loading.py` to ensure product name and category consistency across scrapy and wayback data.
+
+**What Changed**:
+- Groups scrapy items by `url_hash` and retrieves the **last (latest) occurrence** for both `product_name` and `category`
+- Creates two mapping dictionaries: `product_name_mapping` and `category_mapping`
+- Applies these mappings to all wayback machine data, replacing their `product_name` and `category` with the latest scrapy values
+
+**Rationale**:
+- **Prevents quantity extraction disruptions**: Product names and categories can change over time in scrapy data. By using the latest values consistently across all wayback historical data, we ensure that quantity extraction logic doesn't encounter conflicting product identities for the same URL
+- **Maintains time-series integrity**: When analyzing price evolution through wayback data, the product identity must remain stable. This change ensures `url_hash` always maps to a single, consistent product name and category across all time periods
+- **Improves unit value price tracking**: Since product names/categories are now constant for each `url_hash`, the extraction of quantity changes (amount, units, unit_value) won't be confused by product metadata variations, allowing accurate tracking of price per unit over time
+
+**Implementation Details**:
+- Uses vectorized pandas operations with boolean masks for efficiency
+- Only overwrites wayback data where scrapy data exists; gracefully handles missing data
+- Logs mapping creation and application for transparency
+
 ## References
 
 - **COICOP 2018**: https://unstats.un.org/unsd/classifications/Econ/Download/

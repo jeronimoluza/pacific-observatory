@@ -261,6 +261,11 @@ def load_price_scraping_data(project_root: Optional[Path] = None) -> pd.DataFram
 
     Applies currency mapping from scrapy data to wayback data for each country/source combination.
 
+    Ensures product_name and category consistency by using the latest scrapy values for all wayback data:
+    - Groups scrapy items by url_hash and keeps the last occurrence for product_name and category
+    - Creates mapping dictionaries from these latest values
+    - Applies these mappings to wayback data to replace product_name and category
+
     Args:
         project_root: Optional project root path. If None, infers from this file's location.
 
@@ -276,9 +281,6 @@ def load_price_scraping_data(project_root: Optional[Path] = None) -> pd.DataFram
     currency_mapping = {}
     if not df_scrapy.empty:
         currency_mapping = get_currency_mapping(df_scrapy)
-        logger.info(
-            f"Created currency mapping for {len(currency_mapping)} country/source combinations"
-        )
 
     # Load wayback data with currency mapping applied
     df_wayback = load_wayback_data(project_root, currency_mapping=currency_mapping)
@@ -294,6 +296,53 @@ def load_price_scraping_data(project_root: Optional[Path] = None) -> pd.DataFram
         logger.info("No wayback data found, using scrapy data only")
         df = df_scrapy
     else:
+        # Create product_name and category mappings from latest scrapy items per url_hash
+        logger.info(
+            "Creating product_name and category mappings from latest scrapy items..."
+        )
+
+        # Group by url_hash and get the last (latest) occurrence for product_name
+        product_name_mapping = {}
+        if "url_hash" in df_scrapy.columns and "product_name" in df_scrapy.columns:
+            for url_hash, group in df_scrapy.groupby("url_hash"):
+                latest_product_name = group["product_name"].iloc[-1]
+                if pd.notna(latest_product_name):
+                    product_name_mapping[url_hash] = latest_product_name
+
+        logger.info(
+            f"Created product_name mapping for {len(product_name_mapping)} url_hash values"
+        )
+
+        # Group by url_hash and get the last (latest) occurrence for category
+        category_mapping = {}
+        if "url_hash" in df_scrapy.columns and "category" in df_scrapy.columns:
+            for url_hash, group in df_scrapy.groupby("url_hash"):
+                latest_category = group["category"].iloc[-1]
+                if pd.notna(latest_category):
+                    category_mapping[url_hash] = latest_category
+
+        logger.info(
+            f"Created category mapping for {len(category_mapping)} url_hash values"
+        )
+
+        # Apply mappings to wayback data
+        if not df_wayback.empty and "url_hash" in df_wayback.columns:
+            # Apply product_name mapping
+            if product_name_mapping:
+                mask = df_wayback["url_hash"].isin(product_name_mapping.keys())
+                df_wayback.loc[mask, "product_name"] = df_wayback.loc[
+                    mask, "url_hash"
+                ].map(product_name_mapping)
+
+            # Apply category mapping
+            if category_mapping:
+                mask = df_wayback["url_hash"].isin(category_mapping.keys())
+                df_wayback.loc[mask, "category"] = df_wayback.loc[mask, "url_hash"].map(
+                    category_mapping
+                )
+
+            logger.info("Applied product_name and category mappings to wayback data")
+
         # Combine both
         df = pd.concat([df_scrapy, df_wayback], ignore_index=True)
         logger.info(
@@ -319,11 +368,6 @@ def load_price_scraping_data(project_root: Optional[Path] = None) -> pd.DataFram
     logger.info(
         f"Added date column: {df['date'].notna().sum()} records with valid dates"
     )
-
-    # Log currency coverage
-    if "currency" in df.columns:
-        currency_coverage = df["currency"].notna().sum()
-        logger.info(f"Total records with currency: {currency_coverage}/{len(df)}")
 
     df = df.dropna(subset=["price"])
     return df
