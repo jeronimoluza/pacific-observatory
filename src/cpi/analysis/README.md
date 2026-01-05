@@ -14,27 +14,139 @@ This project builds a **consumer price index (CPI)** using historical retail pri
 
 The objective is to produce transparent, reproducible price indices consistent with official statistical practice, while leveraging granular price data.
 
----
-
 ## Data Sources
 
 ### 1. Price Data
 
-* Historical prices for individual product varieties
+* Web-scraped historical prices for individual product varieties
 * Each observation is:
 
   * Time-stamped
-  * Classified to a **COICOP variety / elementary aggregate**
+  * Classified to a **COICOP 4-digit level variety** (eg. *Bread – 01.1.1.3*)
 * Prices are matched over time at the variety level
+
+#### Aggregation from 4-Digit to 3-Digit COICOP Level
+
+Price data are initially classified at the **4-digit COICOP level** (e.g., *Cereals – 01.1.1.1*, *Flour of cereals – 01.1.1.2*, *Bread and bakery products – 01.1.1.3*, etc.). However, HIES expenditure weights are available only at the **3-digit COICOP level** (e.g., *Cereals and cereal products – 01.1.1*).
+
+To align data with available weights, all 4-digit varieties are aggregated to their corresponding 3-digit parent category. For example:
+
+| 4-Digit COICOP Code | 4-Digit Description | 3-Digit COICOP Code | 3-Digit Description |
+|---|---|---|---|
+| 01.1.1.1 | Cereals (ND) | 01.1.1 | Cereals and cereal products |
+| 01.1.1.2 | Flour of cereals (ND) | 01.1.1 | Cereals and cereal products |
+| 01.1.1.3 | Bread and bakery products (ND) | 01.1.1 | Cereals and cereal products |
+| 01.1.1.4 | Breakfast cereals (ND) | 01.1.1 | Cereals and cereal products |
+| 01.1.1.5 | Macaroni, noodles, couscous and similar pasta products (ND) | 01.1.1 | Cereals and cereal products |
+| 01.1.1.6 | Other milled cereals and grain (ND) | 01.1.1 | Cereals and cereal products |
+
+All elementary aggregate indices computed at the 4-digit level are mapped to their 3-digit parent category for the next aggregation step.
 
 ### 2. Weights
 
 * **Fiji Household Income and Expenditure Survey (HIES) 2019-20**
 * Source: [Fiji Bureau of Statistics – HIES](https://www.statsfiji.gov.fj/census-surveys/household-income-and-expenditure-survey/)
-* Provides expenditure shares by COICOP category
+* Provides expenditure shares by COICOP category at the **3-digit level**
 * Expenditure shares from 2019-20 are applied directly to 2025 price indices using the **Young Index** approach (see below)
 
----
+#### Weight Adjustment for "Food Away from Home"
+
+"Food Away from Home" (4.3% of total expenditure) is not included in the CPI. Its weight is **proportionally redistributed** to the remaining food categories based on their original expenditure shares. This preserves the relative importance of each category.
+
+**Redistribution Formula:**
+$$
+w_{\text{adjusted},k} = w_{\text{original},k} \times \left(1 + \frac{w_{\text{FAFH}}}{100}\right) = w_{\text{original},k} \times 1.043
+$$
+
+where:
+* $w_{\text{original},k}$ = original HIES 2019-20 expenditure weight for category $k$
+* $w_{\text{FAFH}}$ = weight of "Food Away from Home" (4.3%)
+* $w_{\text{adjusted},k}$ = adjusted weight for category $k$ (normalized to sum to 100%)
+
+Categories with higher original expenditure shares receive proportionally more of the reallocated weight, reflecting that "Food Away from Home" is a substitute for home-prepared food across all categories. The adjusted weights are then normalized to sum to exactly 100%.
+
+## Weights Table
+
+The table below shows the original HIES 2019-20 expenditure weights and the proportionally adjusted weights after redistributing the "Food Away from Home" weight.
+
+| Food Breakdown | HIES 2019-20 Expenditure Weights | Proportionally Adjusted Weights | COICOP Code |
+|---|---|---|---|
+| Vegetables | 22.3% | 23.3% | 01.1.7 |
+| Cereals | 17.8% | 18.6% | 01.1.1 |
+| Meats | 16.6% | 17.35% | 01.1.2 |
+| Seafood | 11.5% | 12.02% | 01.1.3 |
+| Dairy | 6.3% | 6.58% | 01.1.4 |
+| Oils | 5.2% | 5.43% | 01.1.5 |
+| Sugars | 4.4% | 4.6% | 01.1.8 |
+| Food Away from Home | 4.3% | – | – |
+| Fruits | 4.1% | 4.28% | 01.1.6 |
+| Other foods | 3.8% | 3.97% | 01.1.9 |
+| Beverages | 3.7% | 3.87% | 01.2 |
+
+*Source: [Fiji Household Income and Expenditure Survey (HIES) 2019-20](https://www.statsfiji.gov.fj/download/113/hies-2019-20/3847/2019-20_household_income_and_expenditure_survey.pdf), page 51*
+
+## Methodology
+
+### 1. Elementary Aggregates (EA)
+
+Elementary aggregates are defined at the **01.1.x level** for food (e.g. *Cereals and cereal products – 01.1.1*, *Live animals, and meat and other parts of slaughtered land animals – 01.1.2*, etc.), and at the **01.2.x level** for beverages (e.g. *Fruit and vegetable juices – 01.2.1*, *Coffee and coffee substitutes – 01.2.2*, etc.).
+
+All varieties within an EA are equally weighted. This approach is used because detailed weights to aggregate from the 01.1.1.x level (e.g. *Bread – 01.1.1.3*) to the 01.1.1 (*Cereals and cereal products*) level are not available. Following the [IMF Consumer Price Index Manual](https://data.imf.org/en/datasets/IMF.STA:CPI), the 01.1.x level is used as the elementary aggregate when such granular weights are unavailable.
+
+#### Step 1: Monthly Price Averaging by Article
+
+For each article (identified by `url_hash`), compute the **monthly average price**:
+
+$$
+\bar{p}_{i,t} = \frac{1}{n_t} \sum_{j=1}^{n_t} p_{i,j,t}
+$$
+
+where $p_{i,j,t}$ are individual price observations for article $i$ in month $t$, and $n_t$ is the number of observations in that month.
+
+#### Step 2: Price Relatives with Matched Sample
+
+For each article $i$ in an elementary aggregate, compute the **price relative** relative to the reference month (November 2025):
+
+$$
+r_{i,t} = \frac{\bar{p}_{i,t}}{\bar{p}_{i,0}}
+$$
+
+**Matched Sample Rule**: Only include articles in the monthly EA calculation if they have **valid prices in both the current month $t$ and the reference month (November 2025)**. Articles missing in either period are excluded from that month's calculation.
+
+#### Step 3: Imputation for Missing Articles
+
+If an article is missing a price in a given month (but has prices in the reference month), impute its monthly price based on the **average price change of other articles in the same COICOP category**:
+
+$$
+\bar{p}_{i,t}^{\text{imputed}} = \bar{p}_{i,0} \times \overline{r}_{c,t}
+$$
+
+where $\overline{r}_{c,t}$ is the **average price relative** of all articles with matched prices in COICOP category $c$ for month $t$:
+
+$$
+\overline{r}_{c,t} = \frac{1}{m_t} \sum_{i \in c, \text{matched}} r_{i,t}
+$$
+
+The imputed price is then used to calculate the price relative for that article: $r_{i,t}^{\text{imputed}} = \frac{\bar{p}_{i,t}^{\text{imputed}}}{\bar{p}_{i,0}}$
+
+#### Step 4: Jevons Index Aggregation
+
+Aggregate all price relatives (both matched and imputed) within an elementary aggregate using the **Jevons index** (geometric mean):
+
+$$
+J_{EA,t} = \exp\left(\frac{1}{n}\sum_{i=1}^{n}\ln r_{i,t}\right)
+$$
+
+where $n$ is the total number of articles in the elementary aggregate (including those with imputed prices).
+
+
+### 2. Higher-Level Aggregation
+
+Elementary aggregate indices (01.1.x level and 01.2.x level) are combined into higher COICOP levels (e.g., *Food and non-alcoholic beverages – 01*) using **HIES expenditure weights**:
+
+$$
+I_{c,t} = \sum_{k \in c} w_k \cdot J_{k,t}
+$$
 
 ## Base Year and Sample Refresh
 
@@ -59,60 +171,7 @@ where:
 * $w_{2019-20,k}$ = expenditure share for category $k$ from the 2019-20 HIES (unchanged)
 * $J_{k,t}$ = Jevons index for category $k$ at time $t$ (with 2025 as base = 100)
 
-**Rationale**: Rather than attempting to "price-update" the 2019-20 weights using the sparse and potentially unreliable 2020 price observations, we apply the 2019-20 expenditure shares directly to the 2025 price indices. This avoids introducing additional measurement error and is consistent with IMF guidance on weight handling when historical price data is limited.
-
----
-
-## Methodology
-
-### 1. Elementary Aggregates (EA)
-
-Elementary aggregates are defined at the **01.1.x level** for food (e.g. *Cereals and cereal products – 01.1.1*, *Live animals, and meat and other parts of slaughtered land animals – 01.1.2*, etc.), and at the **01.2.x level** for beverages (e.g. *Fruit and vegetable juices – 01.2.1.0, *Coffee and coffee substitutes – 01.2.2.0, etc.).
-
-For each elementary aggregate:
-
-1. Collect all product varieties classified to each COICOP category
-2. Compute price relatives for each variety:
-   $$
-   r_{i,t} = \frac{p_{i,t}}{p_{i,0}}
-   $$
-
-3. Aggregate using the **Jevons index** (geometric mean of price relatives):
-   $$
-   J_{EA,t} = \exp\left(\frac{1}{n}\sum_{i=1}^{n}\ln r_{i,t}\right)
-   $$
-
-All varieties within an EA are equally weighted. This approach is used because detailed weights to aggregate from the 01.1.1.x level (e.g. *Bread – 01.1.1.3*) to the 01.1.1 level are not available. Following the [IMF Consumer Price Index Manual](https://data.imf.org/en/datasets/IMF.STA:CPI), the 01.1.x level is used as the elementary aggregate when such granular weights are unavailable.
-
----
-
-### 2. Higher-Level Aggregation
-
-Elementary aggregate indices (01.1.x level and 01.2.x level) are combined into higher COICOP levels (e.g. *Food and non-alcoholic beverages – 01) using **HIES expenditure weights**:
-
-$$
-I_{c,t} = \sum_{k \in c} w_k \cdot J_{k,t}
-$$
-
----
-
-## Weights
-
-The weights are based on the 2019-20 HIES expenditure weights. "Food Away from Home" is not included in the CPI, and its weight will be equally distributed to the remaining categories.
-
-| Food Breakdown | Expenditure Weights | COICOP Code |
-|---|---|---|
-| Vegetables | 22.3% | 01.1.7 |
-| Cereals | 17.8% | 01.1.1 |
-| Meats | 16.6% | 01.1.2 |
-| Seafood | 11.5% | 01.1.3 |
-| Dairy | 6.3% | 01.1.4 |
-| Oils | 5.2% | 01.1.5 |
-| Sugars | 4.4% | 01.1.8 |
-| Food Away from Home | 4.3% | – |
-| Fruits | 4.1% | 01.1.6 |
-| Other foods | 3.8% | 01.1.9 |
-| Beverages | 3.7% | 01.2 |
+Rather than attempting to "price-update" the 2019-20 weights using the sparse and potentially unreliable 2020 price observations, we apply the 2019-20 expenditure shares directly to the 2025 price indices. This avoids introducing additional measurement error and is consistent with IMF guidance on weight handling when historical price data is limited.
 
 ## Output
 
@@ -124,16 +183,12 @@ Time series of price indices by:
 
 All indices are expressed relative to a fixed base period (2025 = 100)
 
----
-
 ## Notes and Limitations
 
 * The index is **experimental** and not an official CPI
 * Retail price coverage may not fully represent household consumption
 * Substitution is captured **within** elementary aggregates, but not **between** them
 * Results depend on the quality and granularity of COICOP classification
-
----
 
 ## References
 

@@ -103,7 +103,7 @@ def load_and_process_coicop(excel_path: Path, digit_level: int = 4) -> pd.DataFr
     # Filter for rows with exactly digit_level - 1 dots in the code column
     n_dots = digit_level - 1
     df = df[df["code"].astype(str).str.count(r"\.") == n_dots].copy()
-    print(f"Rows with exactly {digit_level} dots in code: {len(df)}")
+    print(f"Rows with {digit_level}-digit level codes: {len(df)}")
 
     # Select required columns and rename to standard names
     required_cols = ["code", "intro", "title", "includes", "alsoIncludes", "excludes"]
