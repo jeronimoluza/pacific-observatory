@@ -40,7 +40,7 @@ To align data with available weights, all 4-digit varieties are aggregated to th
 | 01.1.1.5 | Macaroni, noodles, couscous and similar pasta products (ND) | 01.1.1 | Cereals and cereal products |
 | 01.1.1.6 | Other milled cereals and grain (ND) | 01.1.1 | Cereals and cereal products |
 
-All elementary aggregate indices computed at the 4-digit level are mapped to their 3-digit parent category for the next aggregation step.
+All articles classified at the 4-digit COICOP level are mapped to their 3-digit parent category for the computation of the Jevons index at the variety level.
 
 ### 2. Weights
 
@@ -89,9 +89,14 @@ The table below shows the original HIES 2019-20 expenditure weights and the prop
 
 ### 1. Elementary Aggregates (EA)
 
-Elementary aggregates are defined at the *3-digit COICOP level* for food (e.g. *Cereals and cereal products – 01.1.1*, *Live animals, and meat and other parts of slaughtered land animals – 01.1.2*, etc.), and at the *3-digit COICOP level* for beverages (e.g. *Fruit and vegetable juices – 01.2.1*, *Coffee and coffee substitutes – 01.2.2*, etc.), computed from price data initially classified at the *4-digit COICOP level*.
+Elementary aggregates (EAs) are defined at the **3-digit COICOP level**:
 
-All varieties within an EA are equally weighted. This approach is used because detailed weights to aggregate from the 01.1.1.x level (e.g. *Bread – 01.1.1.3*) to the 01.1.1 (*Cereals and cereal products*) level are not available. Following the [IMF Consumer Price Index Manual](https://data.imf.org/en/datasets/IMF.STA:CPI), the 01.1.x level is used as the elementary aggregate when such granular weights are unavailable.
+* **Food**: *Cereals and cereal products – 01.1.1*, *Live animals and meat – 01.1.2*, etc.
+* **Beverages**: *Fruit and vegetable juices – 01.2.1*, *Coffee and coffee substitutes – 01.2.2*, etc.
+
+Articles are classified at the 4-digit level but mapped to their 3-digit parent category, where the Jevons index is computed at the variety level.
+
+All varieties within an EA are equally weighted because detailed weights to disaggregate from the 3-digit level (e.g., *01.1.1 – Cereals and cereal products*) to the 4-digit level (e.g., *01.1.1.3 – Bread*) are not available. Following the [IMF Consumer Price Index Manual](https://data.imf.org/en/datasets/IMF.STA:CPI), the 3-digit level is used as the elementary aggregate when such granular weights are unavailable.
 
 #### Step 1: Monthly Price Averaging by Article
 
@@ -159,9 +164,9 @@ The index uses **2025 as the price base year** rather than 2019-20. This choice 
 
 **November 2025 as Sample Refresh Period**: November 2025 marks the beginning of systematic web scraping. This period is treated as the **sample refresh point**, where the product variety sample is identified and locked for ongoing price tracking. This ensures we track the most relevant, currently available products moving forward, rather than attempting to reconstruct historical prices for potentially obsolete items from 2020.
 
-### Connecting 2019-20 Weights to 2025 Prices: The Young Index
+### Connecting 2019-20 Weights to November 2025 Prices: The Young Index
 
-To link the 2019-20 HIES expenditure weights to the 2025 price base, we use the **Young Index** approach:
+To link the 2019-20 HIES expenditure weights to the November 2025 price base, we use the **Young Index** approach:
 
 $$
 I_{\text{Young},t} = \sum_{k} w_{2019-20,k} \cdot J_{k,t}
@@ -169,7 +174,7 @@ $$
 
 where:
 * $w_{2019-20,k}$ = expenditure share for category $k$ from the 2019-20 HIES (unchanged)
-* $J_{k,t}$ = Jevons index for category $k$ at time $t$ (with 2025 as base = 100)
+* $J_{k,t}$ = Jevons index for category $k$ at time $t$ (with November 2025 as base = 100)
 
 Rather than attempting to "price-update" the 2019-20 weights using the sparse and potentially unreliable 2020 price observations, we apply the 2019-20 expenditure shares directly to the 2025 price indices. This avoids introducing additional measurement error and is consistent with IMF guidance on weight handling when historical price data is limited.
 
@@ -181,7 +186,7 @@ Time series of price indices by:
 * **Elementary Aggregate indices** (01.1.x level): Individual Jevons indices for each food subcategory (e.g., Cereals, Meats, Vegetables, Seafood, Dairy, Oils, Fruits, Sugars, Other foods, and Beverages)
 * **Elementary Aggregate indices multiplied by their weights**: Weighted contribution of each elementary aggregate to the overall Food and non-alcoholic beverages CPI
 
-All indices are expressed relative to a fixed base period (2025 = 100)
+All indices are expressed relative to a fixed base period (November 2025 = 100)
 
 ## Notes and Limitations
 
