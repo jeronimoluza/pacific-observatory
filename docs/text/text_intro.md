@@ -6,7 +6,7 @@ New analytical techniques have increased the role of non-traditional data source
 
 The East Asia and Pacific region hosts a substantial corpus of accessible English-based content from newspapers and international news platforms, providing an opportunity to generate timely, comprehensive indicators of economic and political trends. Specifically, local news outlets from East Asia and Pacific countries, complemented by regional sources such as the Pacific Islands News Association (PINA), ABC Australia (ABC AU), and Radio New Zealand (RNZ), were selected due to their robust coverage and reliability. We used web-scraping techniques to extract articles from the selected sources, before organizing the contents into structured datasets.
 
-**Table 1: News Sources by Country**
+### Table 1: News Sources by Country
 
 | Country | Newspaper/Media Source | Number of Articles | From |
 |---------|------------------------|--------------------|----|
@@ -59,7 +59,7 @@ One of the most influential applications of exploiting text data in economics is
 
 The construction of the EPU index follows a systematic approach where a news article must meet three criteria by containing at least one keyword from economic, policy, and uncertainty categories. Once the relevant news articles are identified, the EPU index is constructed through the following steps:
 
-**Table 2: EPU Index Keywords**
+### Table 2: EPU Index Keywords
 
 | Category      | Words |
 | ----------- | ----------- |
@@ -105,7 +105,7 @@ Once we have obtained the EPU index for each country and period, we use the resu
 
 ### Country-Specific Models
 
-We use a training set of seven countries to evaluate the performance of the country-specific models. These are China, Fiji, Indonesia, Japan, Lao, Samoa, Solomon Islands, and Tonga. At the country level, Japan achieves the lowest RMSE at 0.11, indicating that the model’s predictions deviate by approximately 0.11 percentage points from the actual inflation values. Countries with the highest accuracy are Lao, Indonesia, and Samoa, achieving accuracies of 0.95, 0.88, and 0.84, respectively. Inflation volatility and the rapid alternation between deflation and inflation amongst countries reduce prediction accuracy. 
+We use a training set of seven countries to evaluate the performance of the country-specific models. These are China, Fiji, Indonesia, Japan, Lao, Samoa, Solomon Islands, and Tonga. At the country level, Japan achieves the lowest RMSE at 0.11, indicating that the model’s predictions deviate by approximately 0.11 percentage points from the actual inflation values. Countries with the highest accuracy are Lao, Indonesia, and Samoa, achieving accuracies of 0.95, 0.88, and 0.84, respectively. Inflation volatility and the rapid alternation between deflation and inflation amongst countries reduce prediction accuracy.
 
 <div>
 <iframe src="../interactive/text/train_predictions_pic.html"
@@ -127,8 +127,7 @@ frameborder="0" marginwidth="0" marginheight="0" width="800" height="433"></ifra
 
 Future work will involve the development of a methodology that can interpolate quarterly CPI data to monthly values, bring lagged CPI data to the same time frequency as the EPU index, and generate inflation predictions on countries with no inflation data.
 
-**Table 3: IMF CPI Data Availability by Country**
-
+### Table 3: IMF CPI Data Availability by Country
 
 | Country Name     | ISO3   | Frequency   | Last Reported   |
 |:-----------------|:-------|:------------|:----------------|
