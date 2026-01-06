@@ -68,6 +68,7 @@ All articles classified at the 4-digit COICOP level are mapped to their 3-digit 
 "Food Away from Home" (4.3% of total expenditure) is not included in the CPI. Its weight is **proportionally redistributed** to the remaining food categories based on their original expenditure shares. This preserves the relative importance of each category.
 
 **Redistribution Formula:**
+
 $$
 w_{\text{adjusted},k} = w_{\text{original},k} \times \left(1 + \frac{w_{\text{FAFH}}}{100}\right) = w_{\text{original},k} \times 1.043
 $$
