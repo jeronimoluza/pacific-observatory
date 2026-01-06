@@ -13,7 +13,7 @@ from typing import List, Dict, Optional
 from collections import defaultdict
 
 # Import discovery functions from dedicated module
-from text.scrapers.orchestration.discovery import discover_configs, group_by_newspaper
+from text.scrapers.orchestration.discovery import discover_configs, group_by_country
 from text.scrapers.orchestration.utils import create_progress_display
 
 
@@ -22,7 +22,7 @@ def run_scraper_subprocess(
     log_dir: Path,
     project_root: Path,
     dry_run: bool = False,
-    urls_from_scratch: bool = True,
+    full_mode: bool = False,
 ) -> Optional[subprocess.Popen]:
     """
     Run a single scraper as a subprocess with nohup.
@@ -32,7 +32,7 @@ def run_scraper_subprocess(
         log_dir: Base directory for logs
         project_root: Project root directory
         dry_run: If True, print command without executing
-        urls_from_scratch: Whether to discover URLs from scratch (True) or load from urls.csv (False)
+        full_mode: Whether to run in full mode (discover URLs from scratch)
 
     Returns:
         Popen object if started, None if dry_run or error
@@ -56,10 +56,11 @@ def run_scraper_subprocess(
         "python",
         str(project_root / "src" / "text" / "scrapers" / "orchestration" / "main.py"),
         newspaper,
-        "--update",
-        "--urls-from-scratch",
-        str(urls_from_scratch),
     ]
+
+    # Add --full flag if in full mode (default is update mode)
+    if full_mode:
+        cmd.append("--full")
 
     if dry_run:
         print(f"[DRY RUN] Would execute: {' '.join(cmd)}")
@@ -338,7 +339,7 @@ def run_multi_country_group_sequential(
     log_dir: Path,
     project_root: Path,
     dry_run: bool = False,
-    urls_from_scratch: bool = True,
+    full_mode: bool = False,
 ) -> List[Dict[str, any]]:
     """
     Run a multi-country newspaper group sequentially.
@@ -351,7 +352,7 @@ def run_multi_country_group_sequential(
         log_dir: Base directory for logs
         project_root: Project root directory
         dry_run: If True, print command without executing
-        urls_from_scratch: Whether to discover URLs from scratch (True) or load from urls.csv (False)
+        full_mode: Whether to run in full mode (discover URLs from scratch)
 
     Returns:
         List of result dictionaries
@@ -363,7 +364,7 @@ def run_multi_country_group_sequential(
     for config in group:
         print(f"      Starting {config['country']}/{config['newspaper']}...")
         process = run_scraper_subprocess(
-            config, log_dir, project_root, dry_run, urls_from_scratch
+            config, log_dir, project_root, dry_run, full_mode
         )
         if process:
             # Wait for this scraper to complete before starting the next one
@@ -378,20 +379,21 @@ def run_all_scrapers(
     project_root: Path,
     sequential: bool = False,
     dry_run: bool = False,
-    urls_from_scratch: bool = True,
+    full_mode: bool = False,
 ) -> bool:
     """
-    Run all newspaper scrapers with intelligent parallel/sequential execution.
+    Run all newspaper scrapers with country-level sequential execution.
 
-    Single-country newspapers run in parallel.
-    Multi-country newspapers run sequentially in separate processes to avoid interference.
+    Loops over countries sequentially, and within each country runs all
+    newspapers in parallel. This reduces memory usage compared to running
+    all scrapers globally in parallel.
 
     Args:
         configs_dir: Path to the configs directory
         project_root: Project root directory
         sequential: If True, run all scrapers sequentially (for debugging)
         dry_run: If True, print what would be executed without running
-        urls_from_scratch: Whether to discover URLs from scratch (True) or load from urls.csv (False)
+        full_mode: Whether to run in full mode (discover URLs from scratch)
 
     Returns:
         True if all scrapers succeeded, False if any failed
@@ -409,11 +411,13 @@ def run_all_scrapers(
 
     print(f"   Found {len(configs)} scraper configuration(s)")
 
-    # Group by newspaper to handle multi-country cases
-    single_country, multi_country = group_by_newspaper(configs)
+    # Group by country for sequential country processing
+    configs_by_country = group_by_country(configs)
+    countries = sorted(configs_by_country.keys())
 
-    print(f"   - {len(single_country)} single-country newspapers")
-    print(f"   - {len(multi_country)} multi-country newspaper groups")
+    print(f"   - {len(countries)} countries")
+    for country in countries:
+        print(f"      • {country}: {len(configs_by_country[country])} newspaper(s)")
 
     # Set up log directory
     log_dir = project_root / "logs"
@@ -422,237 +426,68 @@ def run_all_scrapers(
     if dry_run:
         print("\n[DRY RUN MODE - No scrapers will actually run]\n")
 
-    parallel_processes = []
-    sequential_processes = []
     all_results = []
 
-    # Run single-country newspapers (can run in parallel)
-    if single_country:
+    # Process each country sequentially
+    for country_idx, country in enumerate(countries, 1):
+        country_configs = configs_by_country[country]
+        print(f"\n{'─' * 60}")
         print(
-            f"\n🚀 Starting {len(single_country)} single-country scraper(s) in parallel..."
+            f"🌍 [{country_idx}/{len(countries)}] Processing {country} ({len(country_configs)} newspaper(s))"
         )
+        print(f"{'─' * 60}")
 
         if sequential:
-            # Debug mode: run everything sequentially
-            for config in single_country:
+            # Debug mode: run all newspapers in this country sequentially
+            for config in country_configs:
                 print(f"   Starting {config['country']}/{config['newspaper']}...")
                 process = run_scraper_subprocess(
-                    config, log_dir, project_root, dry_run, urls_from_scratch
+                    config, log_dir, project_root, dry_run, full_mode
                 )
                 if process:
-                    results = monitor_processes([process])
+                    results = monitor_processes([process], use_progress=False)
                     all_results.extend(results)
         else:
-            # Parallel mode: start all at once
-            for config in single_country:
-                print(f"   Starting {config['country']}/{config['newspaper']}...")
+            # Normal mode: run all newspapers in this country in parallel
+            country_processes = []
+            for config in country_configs:
+                print(f"   Starting {config['newspaper']}...")
                 process = run_scraper_subprocess(
-                    config, log_dir, project_root, dry_run, urls_from_scratch
+                    config, log_dir, project_root, dry_run, full_mode
                 )
                 if process:
-                    parallel_processes.append(process)
+                    country_processes.append(process)
 
-    # Run multi-country newspapers in separate sequential processes
-    if multi_country and not sequential:
-        print(
-            f"\n🔗 Starting {len(multi_country)} multi-country newspaper group(s) in separate processes..."
-        )
-
-        for group in multi_country:
-            newspaper_name = group[0]["newspaper"]
-            print(
-                f"\n   Launching sequential process for: {newspaper_name} ({len(group)} countries)"
-            )
-
-            # Create group config string for CLI argument
-            group_config_str = ";".join(
-                [f"{cfg['country']},{cfg['newspaper']}" for cfg in group]
-            )
-
-            if not dry_run:
-                # Launch a subprocess using the run_scraper module
-                # This process runs independently and doesn't block parallel execution
-                run_scraper_path = (
-                    project_root
-                    / "src"
-                    / "text"
-                    / "scrapers"
-                    / "orchestration"
-                    / "run_scraper.py"
+            # Wait for all newspapers in this country to complete before moving to next country
+            if country_processes and not dry_run:
+                print(
+                    f"\n   🔄 Waiting for {len(country_processes)} scraper(s) in {country}..."
                 )
-                cmd = [
-                    "poetry",
-                    "run",
-                    "python",
-                    str(run_scraper_path),
-                    "--group",
-                    group_config_str,
-                    "--project-root",
-                    str(project_root),
-                    "--log-dir",
-                    str(log_dir),
-                ]
-
-                try:
-                    # Start the sequential group process in the background
-                    # Suppress stdout/stderr - all output goes to log files
-                    process = subprocess.Popen(
-                        cmd,
-                        cwd=str(project_root),
-                        start_new_session=True,
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL,
-                    )
-                    process.newspaper_group = newspaper_name
-                    sequential_processes.append(process)
-                    print(f"      ✓ Sequential process started (PID: {process.pid})")
-                except Exception as e:
-                    print(f"      ❌ Failed to start sequential process: {e}")
-            else:
-                # Dry run: just show what would happen
-                for config in group:
-                    print(
-                        f"      [Sequential] Would run: {config['country']}/{config['newspaper']}"
-                    )
-
-    elif multi_country and sequential:
-        # Debug mode: run multi-country groups sequentially in main process
-        print(
-            f"\n🔗 Processing {len(multi_country)} multi-country newspaper group(s) sequentially..."
-        )
-        for group in multi_country:
-            group_results = run_multi_country_group_sequential(
-                group, log_dir, project_root, dry_run, urls_from_scratch
-            )
-            all_results.extend(group_results)
-
-    # Monitor all processes (parallel + sequential) in unified display
-    if (parallel_processes or sequential_processes) and not dry_run:
-        total_count = len(parallel_processes) + len(sequential_processes)
-        print(f"\n🔄 Monitoring {total_count} scraper(s)...")
-        if sequential_processes:
-            print("   (Multi-country newspapers run sequentially - output in logs)\n")
-        else:
-            print()
-
-        # Create unified progress display
-        progress, console = create_progress_display()
-
-        # Track all processes and their tasks
-        task_map = {}  # process -> task_id
-        process_types = {}  # process -> 'parallel' or 'sequential'
-
-        with progress:
-            # Add parallel processes
-            for process in parallel_processes:
-                task_id = progress.add_task(
-                    "[yellow]Running...",
-                    country=process.country,
-                    newspaper=process.newspaper,
-                    total=100,
-                    completed=0,
+                country_results = monitor_processes(
+                    country_processes, use_progress=True
                 )
-                task_map[process] = task_id
-                process_types[process] = "parallel"
+                all_results.extend(country_results)
 
-            # Add sequential group processes
-            for process in sequential_processes:
-                newspaper_group = getattr(process, "newspaper_group", "unknown")
-                task_id = progress.add_task(
-                    "[yellow]Running...",
-                    country="multi-country",
-                    newspaper=newspaper_group,
-                    total=100,
-                    completed=0,
+                # Print country summary
+                success_count = sum(
+                    1 for r in country_results if r["status"] == "success"
                 )
-                task_map[process] = task_id
-                process_types[process] = "sequential"
+                warning_count = sum(
+                    1 for r in country_results if r["status"] == "warning"
+                )
+                failed_count = sum(
+                    1 for r in country_results if r["status"] == "failed"
+                )
+                print(
+                    f"   ✓ {country} complete: {success_count} success, {warning_count} warnings, {failed_count} failed"
+                )
 
-            # Monitor all processes together
-            all_processes = parallel_processes + sequential_processes
-            remaining = list(all_processes)
-
-            while remaining:
-                for process in remaining[:]:
-                    task_id = task_map[process]
-                    process_type = process_types[process]
-                    retcode = process.poll()
-
-                    if retcode is not None:
-                        # Process finished
-                        if process_type == "parallel":
-                            # Parallel process - parse log for detailed status
-                            country = process.country
-                            newspaper = process.newspaper
-                            log_file = process.log_file
-
-                            if hasattr(process, "log_handle"):
-                                process.log_handle.close()
-
-                            status = parse_log_status(log_file, retcode)
-
-                            result = {
-                                "country": country,
-                                "newspaper": newspaper,
-                                "log_file": log_file,
-                                "exit_code": retcode,
-                                "status": status,
-                            }
-                            all_results.append(result)
-
-                            # Update progress with detailed status
-                            if status == "success":
-                                progress.update(
-                                    task_id,
-                                    description="[green]✅ Completed",
-                                    completed=100,
-                                )
-                            elif status == "warning":
-                                progress.update(
-                                    task_id,
-                                    description="[yellow]⚠️  Completed (warnings)",
-                                    completed=100,
-                                )
-                            else:
-                                progress.update(
-                                    task_id, description="[red]❌ Failed", completed=100
-                                )
-                        else:
-                            # Sequential process - simple exit code check
-                            if retcode == 0:
-                                progress.update(
-                                    task_id,
-                                    description="[green]✅ Completed",
-                                    completed=100,
-                                )
-                            else:
-                                progress.update(
-                                    task_id, description="[red]❌ Failed", completed=100
-                                )
-
-                        remaining.remove(process)
-                    else:
-                        # Still running - update progress bar
-                        current = progress.tasks[task_id].completed
-                        if current < 90:
-                            # Slower increment for sequential (they take longer)
-                            increment = 1 if process_type == "sequential" else 2
-                            progress.update(
-                                task_id, completed=min(current + increment, 90)
-                            )
-
-                if remaining:
-                    time.sleep(2.0)
-
-    # Print summary
+    # Print final summary
     if not dry_run and all_results:
         summarize_results(all_results)
     elif dry_run:
         print("\n[DRY RUN COMPLETE]")
-    else:
-        print("\n⚠️  No results to summarize (sequential groups run independently)")
-        print("   Check individual log files for multi-country newspaper results.")
 
-    # Return success if no failures in monitored processes
+    # Return success if no failures
     failed_count = sum(1 for r in all_results if r["status"] == "failed")
     return failed_count == 0

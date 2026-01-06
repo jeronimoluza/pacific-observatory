@@ -37,8 +37,8 @@ repos:
         name: codespell
         description: Checks for common misspellings in text files
         additional_dependencies: [tomli]
-        exclude: ^notebooks/.*\.ipynb$
-        args: ["--ignore-words-list=gost,GOST"]
+        exclude: ^notebooks/.*\.(ipynb|csv|json)$
+        args: ["--ignore-words-list=gost,GOST,fpr,ND,Tre,THA"]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.2.1
     hooks:

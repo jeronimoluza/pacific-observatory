@@ -74,15 +74,12 @@ def validate_config(config: Dict[str, Any]) -> NewspaperConfig:
         raise
 
 
-def create_scraper_from_config(
-    config: Dict[str, Any], urls_from_scratch: bool = True
-) -> NewspaperScraper:
+def create_scraper_from_config(config: Dict[str, Any]) -> NewspaperScraper:
     """
     Create a NewspaperScraper instance from a configuration dictionary.
 
     Args:
         config: Configuration dictionary
-        urls_from_scratch: Whether to discover URLs from scratch (True) or load from urls.csv (False)
 
     Returns:
         NewspaperScraper instance
@@ -94,21 +91,18 @@ def create_scraper_from_config(
     validate_config(config)
 
     # Create and return the scraper
-    scraper = NewspaperScraper(config, urls_from_scratch=urls_from_scratch)
+    scraper = NewspaperScraper(config)
     logger.info(f"Created scraper for {scraper.name} ({scraper.country})")
 
     return scraper
 
 
-def create_scraper_from_file(
-    config_path: Union[str, Path], urls_from_scratch: bool = True
-) -> NewspaperScraper:
+def create_scraper_from_file(config_path: Union[str, Path]) -> NewspaperScraper:
     """
     Create a NewspaperScraper instance from a YAML configuration file.
 
     Args:
         config_path: Path to the YAML configuration file
-        urls_from_scratch: Whether to discover URLs from scratch (True) or load from urls.csv (False)
 
     Returns:
         NewspaperScraper instance
@@ -125,7 +119,7 @@ def create_scraper_from_file(
     config["_config_path"] = str(Path(config_path).absolute())
 
     # Create and return the scraper
-    return create_scraper_from_config(config, urls_from_scratch=urls_from_scratch)
+    return create_scraper_from_config(config)
 
 
 def find_config_files(
@@ -231,7 +225,6 @@ def create_scraper(
     country: Optional[str] = None,
     config_path: Optional[Union[str, Path]] = None,
     config_dict: Optional[Dict[str, Any]] = None,
-    urls_from_scratch: bool = True,
 ) -> NewspaperScraper:
     """
     Convenience function to create a scraper with flexible input options.
@@ -241,7 +234,6 @@ def create_scraper(
         country: Country code (for auto-finding config file)
         config_path: Explicit path to configuration file
         config_dict: Configuration dictionary (bypasses file loading)
-        urls_from_scratch: Whether to discover URLs from scratch (True) or load from urls.csv (False)
 
     Returns:
         NewspaperScraper instance
@@ -252,15 +244,11 @@ def create_scraper(
     """
     if config_dict:
         # Create from dictionary
-        return create_scraper_from_config(
-            config_dict, urls_from_scratch=urls_from_scratch
-        )
+        return create_scraper_from_config(config_dict)
 
     elif config_path:
         # Create from explicit file path
-        return create_scraper_from_file(
-            config_path, urls_from_scratch=urls_from_scratch
-        )
+        return create_scraper_from_file(config_path)
 
     elif newspaper:
         # Auto-find config file
@@ -278,9 +266,7 @@ def create_scraper(
                 f"Multiple config files found for '{newspaper}', using first: {config_files[0]}"
             )
 
-        return create_scraper_from_file(
-            config_files[0], urls_from_scratch=urls_from_scratch
-        )
+        return create_scraper_from_file(config_files[0])
 
     else:
         raise ValueError(

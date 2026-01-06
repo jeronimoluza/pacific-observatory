@@ -37,13 +37,12 @@ class NewspaperScraper:
     other site-specific parameters.
     """
 
-    def __init__(self, config: Dict[str, Any], urls_from_scratch: bool = True):
+    def __init__(self, config: Dict[str, Any]):
         """
         Initialize the newspaper scraper with configuration.
 
         Args:
             config: Configuration dictionary (validated against NewspaperConfig)
-            urls_from_scratch: Whether to discover URLs from scratch (True) or load from urls.csv (False)
         """
         # Validate configuration
         self.config = NewspaperConfig(**config)
@@ -56,9 +55,6 @@ class NewspaperScraper:
         # Store limits from config
         self.max_pages = self.config.max_pages
         self.max_articles = self.config.max_articles
-
-        # Store URL discovery preference
-        self.urls_from_scratch = urls_from_scratch
 
         # Initialize client based on configuration
         self.client_type = self.config.client
@@ -773,9 +769,8 @@ class NewspaperScraper:
         """
         Run an update scraping operation with streaming CSV writes.
 
-        This mode scrapes all URLs but only processes articles that don't already exist
-        in the news.csv file, making it efficient for incremental updates.
-        New articles are streamed to CSV as they are scraped.
+        This mode discovers thumbnails batch by batch and stops when an entire batch
+        of thumbnails is already in the existing articles. Only new articles are scraped.
 
         Returns:
             Dictionary with scraping results and statistics
@@ -787,59 +782,191 @@ class NewspaperScraper:
             existing_urls = self._storage.get_existing_article_urls(
                 self.country, self.name
             )
-            logger.info(f"Found {len(existing_urls)} existing articles to skip")
+            logger.info(f"Found {len(existing_urls)} existing articles")
 
             # Reset prefetched articles for this run
             self.prefetched_articles = []
 
-            # Step 2: Discover and scrape thumbnails (or load from cache)
-            if self.urls_from_scratch:
-                # Full discovery from scratch
-                thumbnails = await self.discover_and_scrape_thumbnails()
-                logger.info(f"Discovered {len(thumbnails)} thumbnails")
-            else:
-                # Try to load from urls.csv, fall back to discovery if not available
-                thumbnails = self._storage.load_urls_from_csv(self.country, self.name)
-                if thumbnails is None:
-                    logger.info(
-                        "urls.csv not found. Falling back to full thumbnail discovery."
-                    )
-                    thumbnails = await self.discover_and_scrape_thumbnails()
-                    logger.info(f"Discovered {len(thumbnails)} thumbnails")
-                else:
-                    logger.info(f"Loaded {len(thumbnails)} thumbnails from urls.csv")
-
-            # Apply max_articles limit if set
-            if self.max_articles is not None and len(thumbnails) > self.max_articles:
-                logger.info(
-                    f"Truncating thumbnails from {len(thumbnails)} to {self.max_articles} based on max_articles config"
-                )
-                thumbnails = thumbnails[: self.max_articles]
-
-            # Step 3: Filter thumbnails to only include new articles
-            new_thumbnails = []
+            # Step 2: Discover thumbnails batch by batch, stopping when all are already scraped
+            client = self._get_http_client()
+            thumbnail_selector = self.thumbnail_selectors.container
+            all_thumbnails: List[ThumbnailRecord] = []
+            new_thumbnails: List[ThumbnailRecord] = []
             skipped_count = 0
-            new_prefetched_articles: List[ArticleRecord] = []
-            prefetched_by_url = {
-                str(article.url): article for article in self.prefetched_articles
-            }
+            stop_discovery = False
 
-            for thumbnail in thumbnails:
-                thumbnail_url = str(thumbnail.url)
-                if thumbnail_url not in existing_urls:
-                    new_thumbnails.append(thumbnail)
-                    if thumbnail_url in prefetched_by_url:
-                        new_prefetched_articles.append(prefetched_by_url[thumbnail_url])
+            # Get the record filter function if it's configured
+            record_filter_func_name = self.config.cleaning.get("record_filter")
+            record_filter_func = (
+                get_cleaning_func(record_filter_func_name)
+                if record_filter_func_name
+                else None
+            )
+
+            async for result_batch in self.listing_strategy.discover_and_scrape(
+                client, self.base_url, thumbnail_selector
+            ):
+                batch_thumbnails: List[ThumbnailRecord] = []
+                batch_new_count = 0
+
+                # Handle API strategy's direct return of dicts
+                if isinstance(self.listing_strategy, ApiStrategy):
+                    for thumb_data in result_batch:
+                        try:
+                            # Apply record filter if it exists
+                            if record_filter_func and not record_filter_func(
+                                thumb_data
+                            ):
+                                continue
+
+                            # Handle URL construction from API data
+                            if thumb_data.get("url"):
+                                thumb_data["url"] = clean_url(
+                                    thumb_data["url"], self.base_url
+                                )
+                            elif "url" not in thumb_data or not thumb_data["url"]:
+                                url_template = self.config.listing.get(
+                                    "url_construction_template"
+                                )
+                                if url_template:
+                                    thumb_data["url"] = url_template.format(
+                                        **thumb_data
+                                    )
+
+                            # Optionally build ArticleRecord directly from API data if 'body' exists
+                            if thumb_data.get("body"):
+                                article_dict = {
+                                    "url": thumb_data["url"],
+                                    "title": thumb_data.get("title", ""),
+                                    "date": thumb_data.get("date", ""),
+                                    "body": thumb_data.get("body", ""),
+                                    "tags": thumb_data.get("tags", []),
+                                    "source": self.name,
+                                    "country": self.country,
+                                }
+                                cleaning_config = self.config.cleaning or {}
+                                if cleaning_config:
+                                    article_dict = apply_cleaning(
+                                        article_dict, cleaning_config, self.base_url
+                                    )
+                                try:
+                                    article = ArticleRecord(**article_dict)
+                                    self.prefetched_articles.append(article)
+                                except Exception as e:
+                                    logger.error(
+                                        f"Failed to create ArticleRecord from API data: {e}"
+                                    )
+
+                            thumbnail = ThumbnailRecord(**thumb_data)
+                            batch_thumbnails.append(thumbnail)
+
+                            # Check if this thumbnail is new
+                            if str(thumbnail.url) not in existing_urls:
+                                batch_new_count += 1
+
+                        except Exception as e:
+                            logger.error(
+                                f"Failed to create ThumbnailRecord from API data: {e}"
+                            )
+                    logger.info(f"Processed API batch: {len(result_batch)} thumbnails")
+
                 else:
-                    skipped_count += 1
+                    # Existing logic for HTML-based strategies
+                    for result in result_batch:
+                        if not result.success:
+                            self._add_failed_url(
+                                url=result.url,
+                                status_code=result.status_code,
+                                error=result.error,
+                                stage="thumbnail_listing",
+                            )
+                            continue
+
+                        thumbnail_elements = result.data
+                        if not thumbnail_elements:
+                            logger.warning(f"No thumbnails found on {result.url}")
+                            continue
+
+                        for thumb_elem in thumbnail_elements:
+                            thumb_data = extract_thumbnail_data_from_element(
+                                thumb_elem,
+                                str(result.url),
+                                self.thumbnail_selectors,
+                                self.base_url,
+                                self.config.cleaning,
+                            )
+                            if thumb_data:
+                                try:
+                                    thumbnail = ThumbnailRecord(**thumb_data)
+                                    batch_thumbnails.append(thumbnail)
+
+                                    # Check if this thumbnail is new
+                                    if str(thumbnail.url) not in existing_urls:
+                                        batch_new_count += 1
+
+                                except Exception as e:
+                                    logger.error(
+                                        f"Failed to create ThumbnailRecord: {e}"
+                                    )
+
+                    logger.info(
+                        f"Processed batch: {len(result_batch)} pages, {len(batch_thumbnails)} thumbnails"
+                    )
+
+                # Add batch thumbnails to totals
+                for thumb in batch_thumbnails:
+                    all_thumbnails.append(thumb)
+                    thumb_url = str(thumb.url)
+                    if thumb_url not in existing_urls:
+                        new_thumbnails.append(thumb)
+                    else:
+                        skipped_count += 1
+
+                # Check if entire batch is already scraped - stop discovery
+                if batch_thumbnails and batch_new_count == 0:
+                    logger.info(
+                        f"Entire batch of {len(batch_thumbnails)} thumbnails already scraped. Stopping discovery."
+                    )
+                    stop_discovery = True
+                    break
+
+                logger.info(
+                    f"Batch: {batch_new_count} new, {len(batch_thumbnails) - batch_new_count} existing. "
+                    f"Total: {len(new_thumbnails)} new thumbnails so far."
+                )
+
+            if not stop_discovery:
+                logger.info(
+                    f"Discovery complete. Total: {len(all_thumbnails)} thumbnails"
+                )
 
             logger.info(
                 f"Filtered thumbnails: {len(new_thumbnails)} new, {skipped_count} already exist"
             )
 
-            # Step 4: Stream new articles directly to CSV
+            # Apply max_articles limit if set
+            if (
+                self.max_articles is not None
+                and len(new_thumbnails) > self.max_articles
+            ):
+                logger.info(
+                    f"Truncating new thumbnails from {len(new_thumbnails)} to {self.max_articles} based on max_articles config"
+                )
+                new_thumbnails = new_thumbnails[: self.max_articles]
+
+            # Step 3: Stream new articles directly to CSV
             new_articles_count = 0
             new_articles_failed = 0
+
+            # Filter prefetched articles to only include new ones
+            new_prefetched_articles: List[ArticleRecord] = []
+            prefetched_by_url = {
+                str(article.url): article for article in self.prefetched_articles
+            }
+            for thumb in new_thumbnails:
+                thumb_url = str(thumb.url)
+                if thumb_url in prefetched_by_url:
+                    new_prefetched_articles.append(prefetched_by_url[thumb_url])
 
             # Stream prefetched articles directly to CSV
             if new_prefetched_articles:
@@ -870,7 +997,7 @@ class NewspaperScraper:
 
             # Save thumbnails (all discovered thumbnails, not just new ones)
             saved_path = self._storage.save_thumbnails_as_urls(
-                thumbnails, self.country, self.name
+                all_thumbnails, self.country, self.name
             )
             if saved_path:
                 self._saved_files["urls"] = saved_path
@@ -882,13 +1009,13 @@ class NewspaperScraper:
             if csv_path.exists():
                 self._saved_files["articles"] = csv_path
 
-            # Compile results - ensure all HttpUrl objects are converted to strings
+            # Compile results
             try:
                 logger.info("Creating update results dictionary...")
 
                 # Serialize thumbnails for metadata
                 serialized_thumbnails = []
-                for i, thumb in enumerate(thumbnails):
+                for i, thumb in enumerate(all_thumbnails):
                     try:
                         serialized_thumb = self._storage.serialize_for_json(
                             thumb.model_dump()
@@ -913,7 +1040,7 @@ class NewspaperScraper:
                     "country": self.country,
                     "mode": "update",
                     "statistics": {
-                        "thumbnails_found": len(thumbnails),
+                        "thumbnails_found": len(all_thumbnails),
                         "existing_articles_skipped": skipped_count,
                         "articles_scraped": new_articles_count,
                         "articles_failed": new_articles_failed,
@@ -924,7 +1051,6 @@ class NewspaperScraper:
                     },
                     "data": {
                         "thumbnails": serialized_thumbnails,
-                        # Note: new articles are now streamed to CSV
                         "new_articles": "(streamed to CSV)",
                     },
                     "errors": serialized_errors,
@@ -985,36 +1111,21 @@ class NewspaperScraper:
             # Ensure error results are also JSON serializable
             return self._storage.serialize_for_json(error_results)
 
-    async def run_scrape_from_urls(self) -> Dict[str, Any]:
+    async def run_urls_only(self) -> Dict[str, Any]:
         """
-        Run scraping using pre-loaded URLs from urls.csv file.
+        Run URL discovery only, without scraping article content.
 
-        This mode skips the expensive thumbnail discovery phase and uses
-        cached URLs from a previous scrape. Falls back to full discovery
-        if urls.csv doesn't exist.
+        This mode discovers all article URLs and saves them to urls.csv,
+        but does not proceed to scrape the actual article content.
 
         Returns:
-            Dictionary with scraping results and statistics
+            Dictionary with discovery results and statistics
         """
-        logger.info(f"Starting scrape from URLs for {self.name} ({self.country})")
+        logger.info(f"Starting URL-only discovery for {self.name} ({self.country})")
 
         try:
-            # Initialize CSV file with headers before scraping
-            csv_path = self._storage.initialize_csv(self.country, self.name)
-            self._saved_files["articles"] = csv_path
-            logger.info(f"Initialized CSV file for streaming writes: {csv_path}")
-
-            # Step 1: Try to load URLs from urls.csv
-            thumbnails = self._storage.load_urls_from_csv(self.country, self.name)
-
-            if thumbnails is None:
-                # Fall back to full discovery if urls.csv doesn't exist
-                logger.info(
-                    f"urls.csv not found for {self.name}. Falling back to full thumbnail discovery."
-                )
-                thumbnails = await self.discover_and_scrape_thumbnails()
-            else:
-                logger.info(f"Loaded {len(thumbnails)} URLs from urls.csv")
+            # Discover and scrape thumbnails (URLs)
+            thumbnails = await self.discover_and_scrape_thumbnails()
 
             # Apply max_articles limit if set
             if self.max_articles is not None and len(thumbnails) > self.max_articles:
@@ -1022,24 +1133,6 @@ class NewspaperScraper:
                     f"Truncating thumbnails from {len(thumbnails)} to {self.max_articles} based on max_articles config"
                 )
                 thumbnails = thumbnails[: self.max_articles]
-
-            # Step 2: Build articles with streaming CSV writes
-            articles_stats = {}
-            if self.prefetched_articles:
-                logger.info(
-                    f"Using {len(self.prefetched_articles)} prefetched articles from API JSON; skipping HTML article scraping"
-                )
-                # Stream write prefetched articles to CSV
-                for article in self.prefetched_articles:
-                    self._storage.append_article(article, self.country, self.name)
-                articles_stats = {
-                    "articles_scraped": len(self.prefetched_articles),
-                    "articles_failed": 0,
-                    "total_attempted": len(self.prefetched_articles),
-                }
-            else:
-                # Scrape articles with streaming writes
-                articles_stats = await self.scrape_articles(thumbnails)
 
             # Compile results - serialize thumbnails for metadata
             try:
@@ -1055,7 +1148,6 @@ class NewspaperScraper:
                         serialized_thumbnails.append(serialized_thumb)
                     except Exception as e:
                         logger.error(f"Failed to serialize thumbnail {i}: {e}")
-                        logger.error(f"Thumbnail type: {type(thumb)}")
                         raise
 
                 # Serialize failed URLs
@@ -1065,25 +1157,22 @@ class NewspaperScraper:
                     )
                 except Exception as e:
                     logger.error(f"Failed to serialize failed_urls: {e}")
-                    logger.error(f"Failed URLs count: {len(self.failed_urls)}")
                     raise
 
                 results = {
                     "success": True,
                     "newspaper": self.name,
                     "country": self.country,
-                    "mode": "from_urls",
+                    "mode": "urls_only",
                     "statistics": {
                         "thumbnails_found": len(thumbnails),
-                        "articles_scraped": articles_stats.get("articles_scraped", 0),
-                        "articles_failed": articles_stats.get("articles_failed", 0),
+                        "articles_scraped": 0,
+                        "articles_failed": 0,
                         "failed_urls": len(self.failed_urls),
-                        "failed_news": len(self.failed_news),
                     },
                     "data": {
                         "thumbnails": serialized_thumbnails,
-                        # Note: articles are now in CSV, not in memory
-                        "articles": "(streamed to CSV)",
+                        "articles": "(not scraped - urls_only mode)",
                     },
                     "errors": serialized_errors,
                 }
@@ -1094,7 +1183,7 @@ class NewspaperScraper:
                 logger.error(f"Failed to create results dictionary: {e}")
                 raise
 
-            # Save failed URLs and news if any - let storage handle serialization
+            # Save failed URLs if any
             if self.failed_urls:
                 saved_path = self._storage.save_failed_urls(
                     self.failed_urls, self.country, self.name
@@ -1102,17 +1191,10 @@ class NewspaperScraper:
                 if saved_path:
                     self._saved_files["failed_urls"] = saved_path
 
-            if self.failed_news:
-                saved_path = self._storage.save_failed_news(
-                    self.failed_news, self.country, self.name
-                )
-                if saved_path:
-                    self._saved_files["failed_news"] = saved_path
-
-            # Save metadata - let storage handle serialization
+            # Save metadata
             try:
                 saved_path = self._storage.save_metadata(
-                    results, self.country, self.name, metadata_type="from_urls"
+                    results, self.country, self.name, metadata_type="urls_only"
                 )
                 if saved_path:
                     self._saved_files["metadata"] = saved_path
@@ -1121,23 +1203,22 @@ class NewspaperScraper:
                 raise
 
             logger.info(
-                f"Scraping from URLs completed for {self.name}: {articles_stats.get('articles_scraped', 0)} articles scraped"
+                f"URL-only discovery completed for {self.name}: {len(thumbnails)} URLs found"
             )
             return results
 
         except Exception as e:
-            logger.error(f"Scraping from URLs failed for {self.name}: {e}")
+            logger.error(f"URL-only discovery failed for {self.name}: {e}")
             error_results = {
                 "success": False,
                 "newspaper": self.name,
                 "country": self.country,
-                "mode": "from_urls",
+                "mode": "urls_only",
                 "error": str(e),
                 "statistics": {
                     "thumbnails_found": len(self.scraped_thumbnails),
                     "articles_scraped": 0,
                     "failed_urls": len(self.failed_urls),
-                    "failed_news": len(self.failed_news),
                 },
             }
             # Ensure error results are also JSON serializable
