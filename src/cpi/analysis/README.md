@@ -14,6 +14,20 @@ This project builds a **consumer price index (CPI)** using historical retail pri
 
 The objective is to produce transparent, reproducible price indices consistent with official statistical practice, while leveraging granular price data.
 
+## Quick Start
+
+To construct and validate the CPI:
+
+```bash
+# Build the CPI
+poetry run python src/cpi/analysis/pipeline.py --country fiji --reference-month 2025-11
+
+# Compare with IMF data
+poetry run python src/cpi/analysis/comparison.py --country-code FJI --start-period 2024 --end-period 2026
+```
+
+See the [Execution](#execution) section below for full documentation and options.
+
 ## Data Sources
 
 ### 1. Price Data
@@ -194,6 +208,65 @@ All indices are expressed relative to a fixed base period (November 2025 = 100)
 * Retail price coverage may not fully represent household consumption
 * Substitution is captured **within** elementary aggregates, but not **between** them
 * Results depend on the quality and granularity of COICOP classification
+
+## Execution
+
+### Running the CPI Pipeline
+
+To construct the CPI from price data:
+
+```bash
+poetry run python src/cpi/analysis/pipeline.py \
+  --country fiji \
+  --reference-month 2025-11 \
+  --output-dir data/cpi/analysis/output
+```
+
+**Arguments:**
+- `--country`: Country to filter data for (default: fiji)
+- `--reference-month`: Reference month for base period, format YYYY-MM (default: 2025-11)
+- `--output-dir`: Directory for output files (default: data/cpi/analysis/output)
+- `--price-data`: Path to price data CSV (default: data/cpi/analysis/all_countries_supermarket_prices.csv)
+- `--include-article-details`: Include article-level price relatives in output (optional)
+
+**Output files:**
+- `fiji_division_01_cpi.csv` – Main CPI index time series
+- `fiji_ea_indices.csv` – Elementary aggregate indices
+- `fiji_weighted_contributions.csv` – Weighted contributions by category
+- `fiji_cpi_summary.txt` – Summary statistics and metadata
+- `fiji_article_relatives.csv` – (optional) Article-level price relatives
+
+### Comparing with IMF Data
+
+To compare the constructed CPI with official IMF data (2024-2026):
+
+```bash
+poetry run python src/cpi/analysis/comparison.py \
+  --constructed-cpi data/cpi/analysis/output/fiji_division_01_cpi.csv \
+  --country-code FJI \
+  --coicop CP01 \
+  --start-period 2024 \
+  --end-period 2026 \
+  --output-dir data/cpi/analysis/output
+```
+
+**Arguments:**
+- `--constructed-cpi`: Path to constructed Division 01 CPI CSV (default: data/cpi/analysis/output/fiji_division_01_cpi.csv)
+- `--country-code`: ISO 3-letter country code for IMF data (default: FJI)
+- `--coicop`: COICOP code (default: CP01 for Division 01)
+- `--start-period`: Start year for IMF data (default: 2024)
+- `--end-period`: End year for IMF data (default: 2026)
+- `--output-dir`: Output directory for comparison results (default: data/cpi/analysis/output)
+
+**Validation Metrics Computed:**
+- **Month-over-Month (MoM) Inflation**: Pearson correlation, RMSE, bias, MAE
+- **Year-over-Year (YoY) Inflation**: Same metrics for annual changes
+- **3-Month Rolling Average**: Smoothed MoM inflation metrics
+- **Lead-Lag Analysis**: Correlation at lags -2 to +2 months with p-values
+
+**Output files:**
+- `cpi_comparison.csv` – Merged IMF and constructed CPI with inflation rates
+- `comparison_metrics.txt` – Detailed validation metrics and lead-lag analysis
 
 ## References
 
