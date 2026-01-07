@@ -136,6 +136,7 @@ def generate_continous_df(
 
 def load_topics_words(
     additional_name: Union[str, None] = None,
+    language: str = "en",
 ) -> Dict[str, Union[List[str], Dict[str, List[str]]]]:
     """
     Load topic words from the topics_words.json configuration file.
@@ -143,6 +144,8 @@ def load_topics_words(
     Args:
         additional_name (Union[str, None]): Optional name of additional topic category
             (e.g., 'job', 'inflation'). If provided, returns only that category's terms.
+        language (str): Language code (e.g., 'en', 'km', 'zh'). Defaults to 'en' for English.
+            If the language is not found in the config, falls back to 'en'.
 
     Returns:
         Dict containing:
@@ -161,15 +164,33 @@ def load_topics_words(
     with open(config_path, "r", encoding="utf-8") as f:
         topics_data = json.load(f)
 
-    if additional_name is None:
-        return topics_data
+    # Check if the config is language-keyed (new format) or flat (old format)
+    # New format: {"en": {"economic": [...], ...}, "km": {...}, ...}
+    # Old format: {"economic": [...], "policy": [...], ...}
+    is_language_keyed = language in topics_data or "en" in topics_data
+
+    if is_language_keyed:
+        # Use requested language, fall back to 'en' if not found
+        if language in topics_data:
+            lang_data = topics_data[language]
+        elif "en" in topics_data:
+            lang_data = topics_data["en"]
+        else:
+            # Old format - use as-is
+            lang_data = topics_data
     else:
-        if additional_name not in topics_data.get("additional_terms", {}):
+        # Old format (flat structure) - use as-is
+        lang_data = topics_data
+
+    if additional_name is None:
+        return lang_data
+    else:
+        if additional_name not in lang_data.get("additional_terms", {}):
             raise KeyError(
-                f"additional_name '{additional_name}' not found in topics_words.json. "
-                f"Available options: {list(topics_data.get('additional_terms', {}).keys())}"
+                f"additional_name '{additional_name}' not found in topics_words.json for language '{language}'. "
+                f"Available options: {list(lang_data.get('additional_terms', {}).keys())}"
             )
-        return topics_data["additional_terms"][additional_name]
+        return lang_data["additional_terms"][additional_name]
 
 
 def generate_news_statistics_table(country_folder: Path) -> str:

@@ -51,6 +51,7 @@ class NewspaperScraper:
         self.name = self.config.name
         self.country = self.config.country
         self.base_url = str(self.config.base_url)
+        self.language = self.config.language or "en"
 
         # Store limits from config
         self.max_pages = self.config.max_pages
@@ -184,6 +185,7 @@ class NewspaperScraper:
                                 "tags": thumb_data.get("tags", []),
                                 "source": self.name,
                                 "country": self.country,
+                                "language": self.language,
                             }
                             # Apply cleaning if configured
                             cleaning_config = self.config.cleaning or {}
@@ -583,6 +585,7 @@ class NewspaperScraper:
                             "tags": article_content.get("tags", []),
                             "source": self.name,
                             "country": self.country,
+                            "language": self.language,
                         }
 
                         # Apply cleaning functions to article data if configured
@@ -843,6 +846,7 @@ class NewspaperScraper:
                                     "tags": thumb_data.get("tags", []),
                                     "source": self.name,
                                     "country": self.country,
+                                    "language": self.language,
                                 }
                                 cleaning_config = self.config.cleaning or {}
                                 if cleaning_config:

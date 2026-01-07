@@ -67,6 +67,10 @@ class ArticleRecord(BaseModel):
     )
     source: str = Field(..., description="Name of the news source")
     country: str = Field(..., description="Country identifier (can be any string)")
+    language: Optional[str] = Field(
+        default="en",
+        description="Language code for the article content (e.g., 'en', 'km', 'zh'). Defaults to 'en' for English.",
+    )
 
     @field_validator("title", "body", "source")
     @classmethod
@@ -225,6 +229,12 @@ class NewspaperConfig(BaseModel):
     )
     retry_seconds: Optional[float] = Field(
         default=2.0, description="Wait time in seconds between retry attempts"
+    )
+
+    # Language configuration
+    language: Optional[str] = Field(
+        default="en",
+        description="Language code for the newspaper content (e.g., 'en', 'km', 'zh'). Defaults to 'en' for English.",
     )
 
     # Test/debug options

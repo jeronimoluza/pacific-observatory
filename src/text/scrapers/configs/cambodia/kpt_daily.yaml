@@ -3,6 +3,7 @@
 name: "Kampuchea Thmey Daily"
 country: "cambodia"
 base_url: "https://www.kampucheathmey.com/"
+language: "km"
 
 # Listing discovery configuration
 listing:

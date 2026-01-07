@@ -131,15 +131,33 @@ class CSVStorage:
             "tags",
             "source",
             "country",
+            "language",
             "_scraped_at",
         ]
 
-        # Write headers to file
-        with open(file_path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=headers)
-            writer.writeheader()
+        # Write headers to file with explicit flush
+        try:
+            with open(file_path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=headers)
+                writer.writeheader()
+                f.flush()  # Ensure headers are written to disk
 
-        logger.info(f"Initialized CSV file: {file_path}")
+            # Verify headers were written
+            with open(file_path, "r", encoding="utf-8") as f:
+                first_line = f.readline().strip()
+                expected_header = ",".join(headers)
+                if first_line != expected_header:
+                    logger.error(
+                        f"Header mismatch! Expected: {expected_header}, Got: {first_line}"
+                    )
+                    raise ValueError(
+                        f"CSV headers not written correctly to {file_path}"
+                    )
+
+            logger.info(f"Initialized CSV file: {file_path}")
+        except Exception as e:
+            logger.error(f"Failed to initialize CSV file {file_path}: {e}")
+            raise
 
         # Track that headers have been written
         key = self._get_streaming_key(country, newspaper)
@@ -188,8 +206,19 @@ class CSVStorage:
             "tags",
             "source",
             "country",
+            "language",
             "_scraped_at",
         ]
+
+        # Ensure file exists with headers
+        file_exists = file_path.exists()
+        if not file_exists:
+            # File doesn't exist, create it with headers
+            with open(file_path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=headers)
+                writer.writeheader()
+                f.flush()
+            logger.info(f"Created CSV file with headers: {file_path}")
 
         # Convert article to dictionary
         article_dict = article.model_dump()

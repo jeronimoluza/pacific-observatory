@@ -49,16 +49,34 @@ Last modified:
 """
 
 import os
-from typing import List, Union
+from typing import List, Union, Dict
 import pandas as pd
 import numpy as np
 from .utils import is_in_word_list, generate_continous_df, load_topics_words
 
-# Load topic words from configuration file
-_topics_data = load_topics_words()
+# Default English topic words (loaded at module level for backward compatibility)
+_topics_data = load_topics_words(language="en")
 ECON_LIST = _topics_data["economic"]
 POLICY_LIST = _topics_data["policy"]
 UNCERTAINTY_LIST = _topics_data["uncertainty"]
+
+
+def get_terms_for_language(language: str = "en") -> Dict[str, List[str]]:
+    """
+    Load topic words for a specific language.
+
+    Args:
+        language: Language code (e.g., 'en', 'km', 'zh'). Defaults to 'en'.
+
+    Returns:
+        Dictionary with 'economic', 'policy', 'uncertainty' term lists.
+    """
+    topics_data = load_topics_words(language=language)
+    return {
+        "economic": topics_data.get("economic", ECON_LIST),
+        "policy": topics_data.get("policy", POLICY_LIST),
+        "uncertainty": topics_data.get("uncertainty", UNCERTAINTY_LIST),
+    }
 
 
 class EPU:
@@ -189,9 +207,33 @@ class EPU:
             newspaper = fp.parent.name.replace(country, "").strip("_")
             source = f"{country}_{newspaper}"
             raw = self.process_data(fp, subset_condition=subset_condition)
+
+            # Detect language from data, default to 'en' if not present
+            if "language" in raw.columns and not raw["language"].isna().all():
+                # Use the most common language in this file
+                file_language = (
+                    raw["language"].mode().iloc[0]
+                    if len(raw["language"].mode()) > 0
+                    else "en"
+                )
+            else:
+                file_language = "en"
+
+            # Get terms for the detected language
+            if file_language != "en":
+                lang_terms = get_terms_for_language(file_language)
+                econ_terms = lang_terms["economic"]
+                policy_terms = lang_terms["policy"]
+                uncertainty_terms = lang_terms["uncertainty"]
+            else:
+                # Use instance terms (which default to English)
+                econ_terms = self.econ_terms
+                policy_terms = self.policy_terms
+                uncertainty_terms = self.uncertainty_terms
+
             for col, terms in zip(
                 ["econ", "policy", "uncertain"],
-                [self.econ_terms, self.policy_terms, self.uncertainty_terms],
+                [econ_terms, policy_terms, uncertainty_terms],
             ):
                 if terms is not None:
                     raw[col] = (
@@ -202,7 +244,7 @@ class EPU:
 
             raw["epu"] = (raw.econ) & (raw.policy) & (raw.uncertain)
 
-            # Check for additional terms categoty
+            # Check for additional terms category
             if self.additional_terms:
                 raw["additional"] = (
                     raw["body"]
