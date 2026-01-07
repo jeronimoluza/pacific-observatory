@@ -13,6 +13,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def clean_kosmo_body(body: str) -> str:
+    body = body.replace(
+        " – KOSMO! ONLINE Hak cipta terpelihara © 2026 Media Mulia Sdn Bhd 201801030285 (1292311-H) Satu lagi produk Media Mulia Sdn.",
+        "",
+    )
+    remove_keys = [
+        " – KOSMO! ONLINE",
+    ]
+    paragraphs = [p.strip() for p in re.split(r"\.", body) if p.strip()]
+    for key in remove_keys:
+        paragraphs = [p for p in paragraphs if not p.startswith(key)]
+    # join back together
+    body = ". ".join(paragraphs)
+    return body
+
+
 def clean_the_independent_body(body: str) -> str:
     body = body.replace("/TISG ", "")
     if "Read also: " in body:
@@ -790,6 +806,7 @@ CLEANING_FUNCTIONS = {
     "clean_ann_body": clean_ann_body,
     "clean_laotian_times_body": clean_laotian_times_body,
     "clean_the_independent_body": clean_the_independent_body,
+    "clean_kosmo_body": clean_kosmo_body,
 }
 
 
