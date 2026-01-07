@@ -1,16 +1,19 @@
-# Tempo English Configuration
+# Kompas Configuration
 
-name: "Tempo"
+name: "Kompas"
 country: "indonesia"
-base_url: "https://en.tempo.co"
+base_url: "https://kompas.com/"
+language: "indo"
 
 # Listing discovery configuration - using archive strategy for date-based URLs
 listing:
-  type: "archive"
-  url_template: "https://en.tempo.co/index/{year}-{month}-{day}/news"
-  start_date: "2003-07-21"
+  type: "paginated_archive"
+  start_url: "https://indeks.kompas.com/?site=nasional&date={year}-{month}-{day}"
+  url_template: "https://indeks.kompas.com/?site=nasional&date={year}-{month}-{day}&page={num}"
+  start_date: "2013-05-30"
   date_format: "daily"    # Generate URLs for each day
   batch_size: 10
+  start_page: 2
 
 # Client configuration
 client: "http"  # Use HTTP client (not browser-based)
@@ -33,16 +36,12 @@ headers:
 # CSS selectors for data extraction (structured)
 selectors:
   thumbnail:
-    container: "main.main-left article.text-card"
-    title: "h2.title::text"
-    url: "h2.title a::attr(href)"
+    container: "div.articleItem"
+    title: "h2.articleTitle::text"
+    url: "a.article-link::attr(href)"
   article:
-    body: "div.detail-in"
-    date:
-      - "meta[property='article:published_time']::attr(content)"
-      - "meta[property='article:published time']::attr(content)"
-      - "meta[property='article:publishedtime']::attr(content)"
-    tags: "div.box-tag-detail a::text"
+    body: "div[class='clearfix'] p"
+    date: "meta[name='content_PublishedDate']::attr(content)"
 
 # Data cleaning configuration
 cleaning:

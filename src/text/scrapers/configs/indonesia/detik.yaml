@@ -1,16 +1,19 @@
-# Tempo English Configuration
+# Detik Configuration
 
-name: "Tempo"
+name: "Detik"
 country: "indonesia"
-base_url: "https://en.tempo.co"
+base_url: "https://news.detik.com/"
+language: "indo"
 
 # Listing discovery configuration - using archive strategy for date-based URLs
 listing:
-  type: "archive"
-  url_template: "https://en.tempo.co/index/{year}-{month}-{day}/news"
-  start_date: "2003-07-21"
+  type: "paginated_archive"
+  start_url: "https://news.detik.com/berita/indeks?date={month}%2F{day}%2F{year}"
+  url_template: "https://news.detik.com/berita/indeks?page={num}&date={month}/{day}/{year}"
+  start_date: "2004-03-28"
   date_format: "daily"    # Generate URLs for each day
   batch_size: 10
+  start_page: 2
 
 # Client configuration
 client: "http"  # Use HTTP client (not browser-based)
@@ -33,16 +36,13 @@ headers:
 # CSS selectors for data extraction (structured)
 selectors:
   thumbnail:
-    container: "main.main-left article.text-card"
-    title: "h2.title::text"
-    url: "h2.title a::attr(href)"
+    container: "div.media__text"
+    title: "h3.media__title::text"
+    url: "a::attr(href)"
   article:
-    body: "div.detail-in"
-    date:
-      - "meta[property='article:published_time']::attr(content)"
-      - "meta[property='article:published time']::attr(content)"
-      - "meta[property='article:publishedtime']::attr(content)"
-    tags: "div.box-tag-detail a::text"
+    body: "div[class='detail__body-text itp_bodycontent'] p"
+    date: "meta[itemprop='datePublished']::attr(content)"
+    tags: "div[class='detail__body-tag mgt-16'] a::text"
 
 # Data cleaning configuration
 cleaning:
