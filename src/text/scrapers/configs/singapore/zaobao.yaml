@@ -1,0 +1,48 @@
+# Zaobao Configuration
+
+name: "Zaobao"
+country: "singapore"
+base_url: "https://www.zaobao.com.sg"
+language: chinese_simplified
+
+# Listing discovery configuration using API strategy
+listing:
+  type: "api"
+  url_template: "https://www.zaobao.com.sg/_plat/api/v2/page-content/news/singapore?page={page}"
+  pagination_type: "page"
+  page_start: 1
+  page_step: 1
+  json_paths:
+    collection: "response.articles"  # Array of articles in the JSON response
+    title: "title"
+    url: "href"
+    date: "timestamp"
+
+# Client configuration
+client: "http"
+concurrency: 20
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# CSS selectors for data extraction (for article content)
+selectors:
+  thumbnail:
+    # Not used for API strategy - data comes from JSON
+    container: "filler"
+    title: "filler"
+    url: "filler"
+    date: filler
+  article:
+    body: "div.articleBody p"
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null

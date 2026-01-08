@@ -34,9 +34,15 @@ class ThumbnailRecord(BaseModel):
     @field_validator("date", mode="before")
     @classmethod
     def parse_date(cls, v: Any) -> Optional[str]:
-        """Parse various date formats into YYYY-MM-DD format."""
+        """Parse various date formats into YYYY-MM-DD format, including Unix timestamps."""
         if v is None:
             return None
+        if isinstance(v, int):
+            # Unix timestamp
+            try:
+                return datetime.fromtimestamp(v).date().isoformat()
+            except (ValueError, OSError):
+                return None
         if isinstance(v, date):
             return v.isoformat()
         if isinstance(v, datetime):
@@ -103,7 +109,13 @@ class ArticleRecord(BaseModel):
     @field_validator("date", mode="before")
     @classmethod
     def parse_date(cls, v: Any) -> str:
-        """Parse various date formats into YYYY-MM-DD format."""
+        """Parse various date formats into YYYY-MM-DD format, including Unix timestamps."""
+        if isinstance(v, int):
+            # Unix timestamp
+            try:
+                return datetime.fromtimestamp(v).date().isoformat()
+            except (ValueError, OSError):
+                return ""
         if isinstance(v, date):
             return v.isoformat()
         if isinstance(v, datetime):

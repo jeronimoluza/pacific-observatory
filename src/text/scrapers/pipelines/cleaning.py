@@ -148,15 +148,16 @@ def clean_sibc_date(date_str: str) -> str:
     return handle_mixed_dates(date_str)
 
 
-def handle_mixed_dates(date_str: str) -> str:
+def handle_mixed_dates(date_str: str | int) -> str:
     """
     Handle mixed date formats and normalize them with robust cleaning.
 
     This function handles various date formats and common formatting issues
     found in scraped content, including prefixes, suffixes, and extra text.
+    Also handles Unix timestamps (as int or str).
 
     Args:
-        date_str: Date string in various formats
+        date_str: Date string in various formats, or Unix timestamp (int or str)
 
     Returns:
         Normalized date string in YYYY-MM-DD format
@@ -164,8 +165,20 @@ def handle_mixed_dates(date_str: str) -> str:
     if not date_str:
         return ""
 
-    # Initial cleanup
-    cleaned = date_str.strip()
+    # Handle Unix timestamps (int or numeric string)
+    if isinstance(date_str, int):
+        try:
+            return datetime.fromtimestamp(date_str).strftime("%Y-%m-%d")
+        except (ValueError, OSError):
+            return ""
+
+    # Check if string is a numeric Unix timestamp
+    cleaned = str(date_str).strip()
+    if cleaned.isdigit() or (cleaned.startswith("-") and cleaned[1:].isdigit()):
+        try:
+            return datetime.fromtimestamp(int(cleaned)).strftime("%Y-%m-%d")
+        except (ValueError, OSError):
+            pass  # Fall through to regular date parsing
 
     # Remove common prefixes and suffixes that appear in scraped dates
     # This handles cases like "- September 24, 2025", "• Sep 24, 2025", "| Date: ..."
