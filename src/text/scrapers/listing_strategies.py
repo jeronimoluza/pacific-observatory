@@ -58,7 +58,8 @@ class PaginationStrategy(ListingStrategy):
         - url_template: URL template with {num} placeholder
         - start_page: Starting page number (default: 1)
         - batch_size: Number of pages to check per batch (default: 5)
-        - start_url: Optional initial URL to scrape before pagination (default: None)
+        - start_url: Optional initial URL(s) to scrape before pagination.
+                     Can be a single URL string or a list of URLs. (default: None)
         """
         super().__init__(config, max_pages)
 
@@ -71,7 +72,15 @@ class PaginationStrategy(ListingStrategy):
         self.start_page = config.get("start_page", 1)
         self.step = config.get("step", 1)
         self.batch_size = config.get("batch_size", 5)
-        self.start_url = config.get("start_url", None)
+
+        # Handle start_url as either a single URL or a list of URLs
+        start_url_config = config.get("start_url", None)
+        if start_url_config is None:
+            self.start_urls = []
+        elif isinstance(start_url_config, str):
+            self.start_urls = [start_url_config]
+        else:
+            self.start_urls = list(start_url_config)
 
         for template in self.url_templates:
             if "{num}" not in template:
@@ -116,12 +125,14 @@ class PaginationStrategy(ListingStrategy):
         Yields:
             Lists of ScrapingResult objects containing thumbnail data
         """
-        # Handle start_url if provided
-        if self.start_url:
-            logger.info(f"Starting with initial URL scraping: {self.start_url}")
-            # Scrape the start_url first
+        # Handle start_urls if provided (can be single URL or list)
+        if self.start_urls:
+            logger.info(
+                f"Starting with initial URL scraping: {len(self.start_urls)} URL(s)"
+            )
+            # Scrape all start_urls first
             start_results = await client.scrape_urls(
-                [self.start_url], thumbnail_selector
+                self.start_urls, thumbnail_selector
             )
             successful_start_results = [
                 result for result in start_results if result.success
@@ -129,11 +140,11 @@ class PaginationStrategy(ListingStrategy):
 
             if successful_start_results:
                 logger.info(
-                    f"Successfully scraped start URL: {len(successful_start_results)} results"
+                    f"Successfully scraped start URLs: {len(successful_start_results)} results from {len(self.start_urls)} URL(s)"
                 )
                 yield successful_start_results
             else:
-                logger.warning(f"Failed to scrape start URL: {self.start_url}")
+                logger.warning(f"Failed to scrape start URLs: {self.start_urls}")
 
         current_page = self.start_page
 

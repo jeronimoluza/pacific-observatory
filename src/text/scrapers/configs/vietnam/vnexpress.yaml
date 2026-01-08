@@ -1,0 +1,48 @@
+# VNExpress Configuration
+
+name: "VNExpress"
+country: "vietnam"
+base_url: "https://www.vnexpress.net/"
+language: "vietnamese"
+
+# Listing discovery configuration
+listing:
+  type: "pagination"
+  start_url:
+    - "https://vnexpress.net/thoi-su"
+    - "https://vnexpress.net/kinh-doanh"
+  url_template:
+    - "https://vnexpress.net/thoi-su-p{num}"
+    - "https://vnexpress.net/kinh-doanh-p{num}"
+  start_page: 2 # Starts from page 0 in the old script
+  batch_size: 10
+
+# Client configuration
+client: "http"
+concurrency: 10
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: article[class='item-news item-news-common thumb-left']
+    title: "h3.title-news"
+    url: "h3.title-news a::attr(href)"
+  article:
+    date: meta[itemprop="datePublished"]::attr(content)
+    body:
+      - div.sidebar-1 p
+      - article.fck_detail p
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null
