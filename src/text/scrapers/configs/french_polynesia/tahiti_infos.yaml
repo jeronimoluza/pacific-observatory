@@ -1,0 +1,43 @@
+# Tahiti Infos Configuration
+
+name: "Tahiti Infos"
+country: "french_polynesia"
+base_url: "https://www.tahiti-infos.com/"
+language: fr
+
+# Listing discovery configuration
+listing:
+  type: "pagination"
+  start_url: "https://www.tahiti-infos.com/Actualite-de-Tahiti-et-ses-iles_r14.html?&order="
+  url_template: "https://www.tahiti-infos.com/Actualite-de-Tahiti-et-ses-iles_r14.html?start={num}&order="
+  start_page: 10
+  step: 10
+  batch_size: 10
+
+# Client configuration
+client: "http"
+concurrency: 10
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: div h3.titre_article
+    title: "a::text"
+    url: "a::attr(href)"
+    date: span.date_article
+  article:
+    body: "div.texte div[class='access firstletter']"
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null
