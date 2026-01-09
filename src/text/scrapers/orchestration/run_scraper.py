@@ -35,8 +35,7 @@ async def run_single_scraper(
     config_path: Path,
     storage_dir: Optional[Path] = None,
     save_results: bool = True,
-    full_mode: bool = False,
-    download_urls_only: bool = False,
+    mode: str = "default",
     project_root: Optional[Path] = None,
 ) -> dict:
     """
@@ -46,8 +45,7 @@ async def run_single_scraper(
         config_path: Path to the newspaper configuration file
         storage_dir: Optional custom storage directory
         save_results: Whether to save results to disk
-        full_mode: Whether to run in full mode (discover URLs from scratch and scrape all)
-        download_urls_only: Whether to only download URLs without scraping articles
+        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
         project_root: Project root directory for automatic log file generation
 
     Returns:
@@ -76,25 +74,21 @@ async def run_single_scraper(
         if save_results:
             storage = CSVStorage(storage_dir)
 
-        # Run the scraping operation
-        if download_urls_only:
-            logger.info(
-                f"Starting URLS ONLY scrape for {scraper.name} ({scraper.country})"
-            )
-        elif full_mode:
-            logger.info(f"Starting FULL scrape for {scraper.name} ({scraper.country})")
-        else:
-            logger.info(
-                f"Starting UPDATE scrape for {scraper.name} ({scraper.country})"
-            )
+        # Run the scraping operation based on mode
+        mode_display = mode.upper().replace("_", "-")
+        logger.info(
+            f"Starting {mode_display} mode for {scraper.name} ({scraper.country})"
+        )
         start_time = datetime.now()
 
-        if download_urls_only:
-            results = await scraper.run_urls_only()
-        elif full_mode:
-            results = await scraper.run_full_scrape()
-        else:
-            results = await scraper.run_update_scrape()
+        if mode == "discover":
+            results = await scraper.run_discover()
+        elif mode == "discover_full":
+            results = await scraper.run_discover_full()
+        elif mode == "resume":
+            results = await scraper.run_resume()
+        else:  # default
+            results = await scraper.run_default()
 
         end_time = datetime.now()
         duration = end_time - start_time
@@ -153,8 +147,7 @@ async def run_single_scraper(
 async def run_scraper_by_name(
     newspaper_name: str,
     country: str = None,
-    full_mode: bool = False,
-    download_urls_only: bool = False,
+    mode: str = "default",
     configs_dir: Path = None,
     project_root: Path = None,
     **kwargs,
@@ -165,8 +158,7 @@ async def run_scraper_by_name(
     Args:
         newspaper_name: Name of the newspaper to scrape
         country: Optional country filter
-        full_mode: Whether to run in full mode (discover URLs from scratch and scrape all)
-        download_urls_only: Whether to only download URLs without scraping articles
+        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
         configs_dir: Directory containing config files
         project_root: Project root directory for relative path display
         **kwargs: Additional arguments for the scraper
@@ -208,8 +200,7 @@ async def run_scraper_by_name(
             config_path=config_path,
             storage_dir=kwargs.get("storage_dir"),
             save_results=not kwargs.get("no_save", False),
-            full_mode=full_mode,
-            download_urls_only=download_urls_only,
+            mode=mode,
             project_root=project_root,
         )
 
@@ -219,9 +210,17 @@ async def run_scraper_by_name(
 
             stats = results.get("statistics", {})
             print("📊 Statistics:")
-            print(f"   Articles scraped: {stats.get('articles_scraped', 0)}")
-            print(f"   Thumbnails found: {stats.get('thumbnails_found', 0)}")
-            print(f"   Failed URLs: {stats.get('failed_urls', 0)}")
+            # Display relevant stats based on mode
+            if "new_urls_discovered" in stats:
+                print(f"   New URLs discovered: {stats.get('new_urls_discovered', 0)}")
+            if "urls_discovered" in stats:
+                print(f"   URLs discovered: {stats.get('urls_discovered', 0)}")
+            if "articles_scraped" in stats:
+                print(f"   Articles scraped: {stats.get('articles_scraped', 0)}")
+            if "pending_articles" in stats:
+                print(f"   Pending articles: {stats.get('pending_articles', 0)}")
+            if "failed_urls" in stats:
+                print(f"   Failed URLs: {stats.get('failed_urls', 0)}")
 
             if "timing" in results:
                 duration = results["timing"]["duration_seconds"]
@@ -253,6 +252,7 @@ def run_sequential_group_cli(
     group_configs: List[Dict[str, str]],
     project_root: Path,
     log_dir: Path,
+    mode: str = "default",
 ):
     """
     CLI entry point for running a multi-country newspaper group sequentially.
@@ -264,6 +264,7 @@ def run_sequential_group_cli(
         group_configs: List of config dictionaries with 'country' and 'newspaper' keys
         project_root: Project root directory
         log_dir: Base log directory
+        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
 
     Returns:
         Exit code (0 for success, 1 for any failures)
@@ -300,11 +301,12 @@ def run_sequential_group_cli(
         try:
             logging.info(f"Starting {country}/{newspaper}...")
 
-            # Run the scraper (default is update mode, so no flags needed)
+            # Run the scraper with the specified mode
             success, results = asyncio.run(
                 run_scraper_by_name(
                     newspaper_name=newspaper,
                     country=country,
+                    mode=mode,
                     configs_dir=project_root / "src" / "text" / "scrapers" / "configs",
                     project_root=project_root,
                 )

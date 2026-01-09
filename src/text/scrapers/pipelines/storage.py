@@ -724,3 +724,167 @@ class CSVStorage:
         except Exception as e:
             logger.error(f"Failed to load URLs from {file_path}: {e}")
             return None
+
+    def get_existing_urls(self, country: str, newspaper: str) -> set:
+        """
+        Load existing URLs from urls.csv for stopping rule checks.
+
+        Args:
+            country: Country code
+            newspaper: Newspaper name
+
+        Returns:
+            Set of existing URL strings, empty set if file doesn't exist
+        """
+        import pandas as pd
+
+        # Get newspaper directory
+        newspaper_dir = self.get_newspaper_dir(country, newspaper)
+
+        # Check for urls.csv file
+        filename = "urls.csv"
+        file_path = newspaper_dir / filename
+
+        if not file_path.exists():
+            logger.info(f"No urls.csv file found: {file_path}")
+            return set()
+
+        try:
+            # Read CSV file and extract URLs
+            df = pd.read_csv(file_path, encoding="utf-8")
+            urls = set(df["url"].astype(str).unique())
+            logger.info(f"Loaded {len(urls)} existing URLs from urls.csv")
+            return urls
+
+        except Exception as e:
+            logger.error(f"Failed to get existing URLs from {file_path}: {e}")
+            return set()
+
+    def append_thumbnails_to_urls(
+        self,
+        thumbnails: List[ThumbnailRecord],
+        country: str,
+        newspaper: str,
+    ) -> Optional[Path]:
+        """
+        Append new thumbnails to existing urls.csv with deduplication.
+
+        Args:
+            thumbnails: List of ThumbnailRecord objects to append
+            country: Country code
+            newspaper: Newspaper name
+
+        Returns:
+            Path to the urls.csv file, or None if no thumbnails provided
+        """
+        import pandas as pd
+
+        if not thumbnails:
+            return None
+
+        # Get newspaper directory
+        newspaper_dir = self.get_newspaper_dir(country, newspaper)
+        newspaper_dir.mkdir(parents=True, exist_ok=True)
+
+        # File path
+        filename = "urls.csv"
+        file_path = newspaper_dir / filename
+
+        # Convert new thumbnails to DataFrame
+        new_data = []
+        for thumbnail in thumbnails:
+            thumb_data = {
+                "url": str(thumbnail.url),
+                "title": thumbnail.title,
+                "date": thumbnail.date,
+            }
+            new_data.append(thumb_data)
+        new_df = pd.DataFrame(new_data)
+
+        # Load existing data if file exists
+        if file_path.exists():
+            try:
+                existing_df = pd.read_csv(file_path, encoding="utf-8")
+                # Merge and deduplicate by URL (keep first occurrence)
+                combined_df = pd.concat([existing_df, new_df], ignore_index=True)
+                combined_df = combined_df.drop_duplicates(subset=["url"], keep="first")
+                logger.info(
+                    f"Merged {len(new_df)} new URLs with {len(existing_df)} existing. "
+                    f"Total after dedup: {len(combined_df)}"
+                )
+            except Exception as e:
+                logger.warning(f"Failed to load existing urls.csv, overwriting: {e}")
+                combined_df = new_df
+        else:
+            combined_df = new_df
+            logger.info(f"Creating new urls.csv with {len(combined_df)} URLs")
+
+        # Save to CSV
+        combined_df.to_csv(file_path, index=False, encoding="utf-8")
+        logger.info(f"Saved {len(combined_df)} URLs to {file_path}")
+
+        return file_path
+
+    def ensure_urls_csv_from_news(self, country: str, newspaper: str) -> bool:
+        """
+        Create urls.csv from news.csv if urls.csv does NOT exist.
+
+        IMPORTANT: Only creates urls.csv if it does not already exist.
+        Never overwrites existing urls.csv to preserve pending URLs.
+
+        Args:
+            country: Country code
+            newspaper: Newspaper name
+
+        Returns:
+            True if urls.csv was created, False if it already existed or news.csv doesn't exist
+        """
+        import pandas as pd
+
+        # Get newspaper directory
+        newspaper_dir = self.get_newspaper_dir(country, newspaper)
+
+        urls_path = newspaper_dir / "urls.csv"
+        news_path = newspaper_dir / "news.csv"
+
+        # If urls.csv already exists, do nothing
+        if urls_path.exists():
+            logger.info(f"urls.csv already exists: {urls_path}")
+            return False
+
+        # If news.csv doesn't exist, nothing to create from
+        if not news_path.exists():
+            logger.info(f"No news.csv to create urls.csv from: {news_path}")
+            return False
+
+        try:
+            # Read news.csv and extract url, title, date columns
+            news_df = pd.read_csv(news_path, encoding="utf-8")
+
+            # Check required columns exist
+            required_cols = ["url", "title", "date"]
+            missing_cols = [col for col in required_cols if col not in news_df.columns]
+            if missing_cols:
+                logger.error(f"news.csv missing required columns: {missing_cols}")
+                return False
+
+            # Extract only the columns needed for urls.csv
+            urls_df = news_df[["url", "title", "date"]].copy()
+
+            # Deduplicate by URL
+            urls_df = urls_df.drop_duplicates(subset=["url"], keep="first")
+
+            # Ensure directory exists
+            newspaper_dir.mkdir(parents=True, exist_ok=True)
+
+            # Save to urls.csv
+            urls_df.to_csv(urls_path, index=False, encoding="utf-8")
+            logger.info(
+                f"Created urls.csv from news.csv with {len(urls_df)} URLs: {urls_path}"
+            )
+
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to create urls.csv from news.csv: {e}")
+            return False

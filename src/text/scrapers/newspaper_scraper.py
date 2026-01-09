@@ -948,6 +948,13 @@ class NewspaperScraper:
                 f"Filtered thumbnails: {len(new_thumbnails)} new, {skipped_count} already exist"
             )
 
+            # Save thumbnails (all discovered thumbnails, not just new ones)
+            saved_path = self._storage.save_thumbnails_as_urls(
+                all_thumbnails, self.country, self.name
+            )
+            if saved_path:
+                self._saved_files["urls"] = saved_path
+
             # Apply max_articles limit if set
             if (
                 self.max_articles is not None
@@ -998,13 +1005,6 @@ class NewspaperScraper:
                 )
             elif not new_prefetched_articles:
                 logger.info("No new articles to scrape")
-
-            # Save thumbnails (all discovered thumbnails, not just new ones)
-            saved_path = self._storage.save_thumbnails_as_urls(
-                all_thumbnails, self.country, self.name
-            )
-            if saved_path:
-                self._saved_files["urls"] = saved_path
 
             # Mark articles file as saved (already streamed)
             csv_path = (
@@ -1282,3 +1282,609 @@ class NewspaperScraper:
             self._browser_client.close_driver()
 
         # HTTP client cleanup is handled automatically by httpx
+
+    async def _discover_thumbnails_incremental(
+        self,
+        existing_urls: set,
+        check_existing: bool = True,
+    ) -> List[ThumbnailRecord]:
+        """
+        Discover thumbnails with all stopping rules.
+
+        Args:
+            existing_urls: Set of URLs already in urls.csv
+            check_existing: If True, stop when batch is in existing_urls (Rule 4)
+
+        Returns:
+            List of newly discovered ThumbnailRecord objects
+        """
+        client = self._get_http_client()
+        thumbnail_selector = self.thumbnail_selectors.container
+        all_thumbnails: List[ThumbnailRecord] = []
+        previous_batch_data = None
+
+        # Get the record filter function if it's configured
+        record_filter_func_name = self.config.cleaning.get("record_filter")
+        record_filter_func = (
+            get_cleaning_func(record_filter_func_name)
+            if record_filter_func_name
+            else None
+        )
+
+        async for result_batch in self.listing_strategy.discover_and_scrape(
+            client, self.base_url, thumbnail_selector
+        ):
+            batch_thumbnails: List[ThumbnailRecord] = []
+
+            # Handle API strategy's direct return of dicts
+            if isinstance(self.listing_strategy, ApiStrategy):
+                for thumb_data in result_batch:
+                    try:
+                        # Apply record filter if it exists
+                        if record_filter_func and not record_filter_func(thumb_data):
+                            continue
+
+                        # Handle URL construction from API data
+                        if thumb_data.get("url"):
+                            thumb_data["url"] = clean_url(
+                                thumb_data["url"], self.base_url
+                            )
+                        elif "url" not in thumb_data or not thumb_data["url"]:
+                            url_template = self.config.listing.get(
+                                "url_construction_template"
+                            )
+                            if url_template:
+                                thumb_data["url"] = url_template.format(**thumb_data)
+
+                        # Optionally build ArticleRecord directly from API data if 'body' exists
+                        if thumb_data.get("body"):
+                            article_dict = {
+                                "url": thumb_data["url"],
+                                "title": thumb_data.get("title", ""),
+                                "date": thumb_data.get("date", ""),
+                                "body": thumb_data.get("body", ""),
+                                "tags": thumb_data.get("tags", []),
+                                "source": self.name,
+                                "country": self.country,
+                                "language": self.language,
+                            }
+                            cleaning_config = self.config.cleaning or {}
+                            if cleaning_config:
+                                article_dict = apply_cleaning(
+                                    article_dict, cleaning_config, self.base_url
+                                )
+                            try:
+                                article = ArticleRecord(**article_dict)
+                                self.prefetched_articles.append(article)
+                            except Exception as e:
+                                logger.error(
+                                    f"Failed to create ArticleRecord from API data: {e}"
+                                )
+
+                        thumbnail = ThumbnailRecord(**thumb_data)
+                        batch_thumbnails.append(thumbnail)
+
+                    except Exception as e:
+                        logger.error(
+                            f"Failed to create ThumbnailRecord from API data: {e}"
+                        )
+                logger.info(f"Processed API batch: {len(result_batch)} items")
+
+            else:
+                # Existing logic for HTML-based strategies
+                for result in result_batch:
+                    if not result.success:
+                        self._add_failed_url(
+                            url=result.url,
+                            status_code=result.status_code,
+                            error=result.error,
+                            stage="thumbnail_listing",
+                        )
+                        continue
+
+                    thumbnail_elements = result.data
+                    if not thumbnail_elements:
+                        continue
+
+                    for thumb_elem in thumbnail_elements:
+                        thumb_data = extract_thumbnail_data_from_element(
+                            thumb_elem,
+                            str(result.url),
+                            self.thumbnail_selectors,
+                            self.base_url,
+                            self.config.cleaning,
+                        )
+                        if thumb_data:
+                            try:
+                                thumbnail = ThumbnailRecord(**thumb_data)
+                                batch_thumbnails.append(thumbnail)
+                            except Exception as e:
+                                logger.error(f"Failed to create ThumbnailRecord: {e}")
+
+                logger.info(
+                    f"Processed batch: {len(result_batch)} pages, {len(batch_thumbnails)} thumbnails"
+                )
+
+            # Rule 1: 404/error - handled by listing_strategy (no successful results)
+            # Rule 2: Empty thumbnails batch
+            if not batch_thumbnails:
+                logger.info("Empty batch. Stopping discovery.")
+                break
+
+            # Rule 3: Identical batch data
+            batch_data = [thumb.model_dump() for thumb in batch_thumbnails]
+            if previous_batch_data is not None and batch_data == previous_batch_data:
+                logger.info("Identical batch data. Stopping discovery.")
+                break
+
+            # Rule 4: Batch already in urls.csv (only if check_existing=True)
+            if check_existing and existing_urls:
+                batch_urls = {str(thumb.url) for thumb in batch_thumbnails}
+                if batch_urls.issubset(existing_urls):
+                    logger.info("Batch already in urls.csv. Stopping discovery.")
+                    break
+
+            # Add to results
+            all_thumbnails.extend(batch_thumbnails)
+            previous_batch_data = batch_data
+
+        logger.info(f"Total thumbnails discovered: {len(all_thumbnails)}")
+        return all_thumbnails
+
+    async def run_discover(self) -> Dict[str, Any]:
+        """
+        Incremental URL discovery mode.
+
+        Behavior:
+        1. Ensure urls.csv exists (create from news.csv if needed)
+        2. Load existing URLs from urls.csv
+        3. Discover thumbnails batch-by-batch
+        4. Apply stopping rules (404, empty, identical, batch in urls.csv)
+        5. Append new URLs to urls.csv (deduplicated)
+        6. NO article scraping
+
+        Returns:
+            Dictionary with discovery results and statistics
+        """
+        logger.info(f"Starting DISCOVER mode for {self.name} ({self.country})")
+
+        try:
+            # Step 1: Ensure urls.csv exists
+            created = self._storage.ensure_urls_csv_from_news(self.country, self.name)
+            if created:
+                logger.info("Created urls.csv from existing news.csv")
+
+            # Step 2: Load existing URLs from urls.csv
+            existing_urls = self._storage.get_existing_urls(self.country, self.name)
+            logger.info(f"Loaded {len(existing_urls)} existing URLs from urls.csv")
+
+            # Reset prefetched articles
+            self.prefetched_articles = []
+
+            # Step 3 & 4: Discover thumbnails with stopping rules
+            new_thumbnails = await self._discover_thumbnails_incremental(
+                existing_urls=existing_urls,
+                check_existing=True,  # Apply Rule 4
+            )
+
+            # Step 5: Append new URLs to urls.csv (deduplicated)
+            if new_thumbnails:
+                saved_path = self._storage.append_thumbnails_to_urls(
+                    new_thumbnails, self.country, self.name
+                )
+                if saved_path:
+                    self._saved_files["urls"] = saved_path
+                logger.info(f"Appended {len(new_thumbnails)} new URLs to urls.csv")
+            else:
+                logger.info("No new URLs discovered")
+
+            # Compile results
+            results = {
+                "success": True,
+                "newspaper": self.name,
+                "country": self.country,
+                "mode": "discover",
+                "statistics": {
+                    "existing_urls": len(existing_urls),
+                    "new_urls_discovered": len(new_thumbnails),
+                    "total_urls_after": len(existing_urls) + len(new_thumbnails),
+                    "articles_scraped": 0,
+                    "failed_urls": len(self.failed_urls),
+                },
+            }
+
+            # Save metadata
+            self._storage.save_metadata(
+                results, self.country, self.name, metadata_type="discover"
+            )
+
+            logger.info(
+                f"DISCOVER mode completed: {len(new_thumbnails)} new URLs found"
+            )
+            return results
+
+        except Exception as e:
+            logger.error(f"DISCOVER mode failed for {self.name}: {e}")
+            return {
+                "success": False,
+                "newspaper": self.name,
+                "country": self.country,
+                "mode": "discover",
+                "error": str(e),
+            }
+
+    async def run_discover_full(self) -> Dict[str, Any]:
+        """
+        Full URL discovery mode.
+
+        Behavior:
+        1. Discover ALL thumbnails (no urls.csv stopping rule)
+        2. Apply stopping rules (404, empty, identical) - NOT Rule 4
+        3. OVERWRITE urls.csv with all discovered URLs
+        4. NO article scraping
+
+        Returns:
+            Dictionary with discovery results and statistics
+        """
+        logger.info(f"Starting DISCOVER-FULL mode for {self.name} ({self.country})")
+
+        try:
+            # Reset prefetched articles
+            self.prefetched_articles = []
+
+            # Discover ALL thumbnails (no Rule 4 - don't check existing)
+            all_thumbnails = await self._discover_thumbnails_incremental(
+                existing_urls=set(),  # Empty set - don't check
+                check_existing=False,  # Disable Rule 4
+            )
+
+            # Apply max_articles limit if set
+            if (
+                self.max_articles is not None
+                and len(all_thumbnails) > self.max_articles
+            ):
+                logger.info(
+                    f"Truncating thumbnails from {len(all_thumbnails)} to {self.max_articles}"
+                )
+                all_thumbnails = all_thumbnails[: self.max_articles]
+
+            # OVERWRITE urls.csv with all discovered URLs
+            if all_thumbnails:
+                saved_path = self._storage.save_thumbnails_as_urls(
+                    all_thumbnails, self.country, self.name
+                )
+                if saved_path:
+                    self._saved_files["urls"] = saved_path
+                logger.info(f"Saved {len(all_thumbnails)} URLs to urls.csv (overwrite)")
+            else:
+                logger.warning("No URLs discovered")
+
+            # Compile results
+            results = {
+                "success": True,
+                "newspaper": self.name,
+                "country": self.country,
+                "mode": "discover_full",
+                "statistics": {
+                    "urls_discovered": len(all_thumbnails),
+                    "articles_scraped": 0,
+                    "failed_urls": len(self.failed_urls),
+                },
+            }
+
+            # Save metadata
+            self._storage.save_metadata(
+                results, self.country, self.name, metadata_type="discover_full"
+            )
+
+            logger.info(
+                f"DISCOVER-FULL mode completed: {len(all_thumbnails)} URLs found"
+            )
+            return results
+
+        except Exception as e:
+            logger.error(f"DISCOVER-FULL mode failed for {self.name}: {e}")
+            return {
+                "success": False,
+                "newspaper": self.name,
+                "country": self.country,
+                "mode": "discover_full",
+                "error": str(e),
+            }
+
+    async def run_resume(self) -> Dict[str, Any]:
+        """
+        Resume article scraping mode.
+
+        Behavior:
+        1. Ensure urls.csv exists (create from news.csv if needed)
+        2. Load URLs from urls.csv
+        3. Load existing article URLs from news.csv
+        4. Identify pending articles: urls.csv - news.csv
+        5. Scrape pending articles
+        6. Append to news.csv
+        7. NO discovery
+
+        Returns:
+            Dictionary with scraping results and statistics
+        """
+        logger.info(f"Starting RESUME mode for {self.name} ({self.country})")
+
+        try:
+            # Step 1: Ensure urls.csv exists
+            created = self._storage.ensure_urls_csv_from_news(self.country, self.name)
+            if created:
+                logger.info("Created urls.csv from existing news.csv")
+
+            # Step 2: Load URLs from urls.csv
+            thumbnails = self._storage.load_urls_from_csv(self.country, self.name)
+            if thumbnails is None:
+                logger.warning("No urls.csv found. Nothing to resume.")
+                return {
+                    "success": True,
+                    "newspaper": self.name,
+                    "country": self.country,
+                    "mode": "resume",
+                    "statistics": {
+                        "urls_in_csv": 0,
+                        "existing_articles": 0,
+                        "pending_articles": 0,
+                        "articles_scraped": 0,
+                    },
+                }
+
+            logger.info(f"Loaded {len(thumbnails)} URLs from urls.csv")
+
+            # Step 3: Load existing article URLs from news.csv
+            existing_article_urls = self._storage.get_existing_article_urls(
+                self.country, self.name
+            )
+            logger.info(
+                f"Found {len(existing_article_urls)} existing articles in news.csv"
+            )
+
+            # Step 4: Identify pending articles
+            pending_thumbnails = [
+                thumb
+                for thumb in thumbnails
+                if str(thumb.url) not in existing_article_urls
+            ]
+            logger.info(f"Pending articles to scrape: {len(pending_thumbnails)}")
+
+            if not pending_thumbnails:
+                logger.info("No pending articles to scrape")
+                return {
+                    "success": True,
+                    "newspaper": self.name,
+                    "country": self.country,
+                    "mode": "resume",
+                    "statistics": {
+                        "urls_in_csv": len(thumbnails),
+                        "existing_articles": len(existing_article_urls),
+                        "pending_articles": 0,
+                        "articles_scraped": 0,
+                    },
+                }
+
+            # Apply max_articles limit if set
+            if (
+                self.max_articles is not None
+                and len(pending_thumbnails) > self.max_articles
+            ):
+                logger.info(
+                    f"Truncating pending from {len(pending_thumbnails)} to {self.max_articles}"
+                )
+                pending_thumbnails = pending_thumbnails[: self.max_articles]
+
+            # Step 5 & 6: Scrape pending articles (appends to news.csv)
+            scrape_stats = await self.scrape_articles(pending_thumbnails)
+
+            # Mark articles file as saved
+            csv_path = (
+                self._storage.get_newspaper_dir(self.country, self.name) / "news.csv"
+            )
+            if csv_path.exists():
+                self._saved_files["articles"] = csv_path
+
+            # Compile results
+            results = {
+                "success": True,
+                "newspaper": self.name,
+                "country": self.country,
+                "mode": "resume",
+                "statistics": {
+                    "urls_in_csv": len(thumbnails),
+                    "existing_articles": len(existing_article_urls),
+                    "pending_articles": len(pending_thumbnails),
+                    "articles_scraped": scrape_stats.get("articles_scraped", 0),
+                    "articles_failed": scrape_stats.get("articles_failed", 0),
+                    "failed_news": len(self.failed_news),
+                },
+            }
+
+            # Save failed news if any
+            if self.failed_news:
+                self._storage.save_failed_news(
+                    self.failed_news, self.country, self.name
+                )
+
+            # Save metadata
+            self._storage.save_metadata(
+                results, self.country, self.name, metadata_type="resume"
+            )
+
+            logger.info(
+                f"RESUME mode completed: {scrape_stats.get('articles_scraped', 0)} articles scraped"
+            )
+            return results
+
+        except Exception as e:
+            logger.error(f"RESUME mode failed for {self.name}: {e}")
+            return {
+                "success": False,
+                "newspaper": self.name,
+                "country": self.country,
+                "mode": "resume",
+                "error": str(e),
+            }
+
+    async def run_default(self) -> Dict[str, Any]:
+        """
+        Default smart update mode.
+
+        Behavior:
+        1. Ensure urls.csv exists (create from news.csv if needed)
+        2. Load existing URLs from urls.csv
+        3. Discover thumbnails batch-by-batch with stopping rules
+        4. Append new URLs to urls.csv (deduplicated)
+        5. Load existing article URLs from news.csv
+        6. Identify pending articles: urls.csv - news.csv
+        7. Scrape pending articles
+        8. Append to news.csv
+
+        Returns:
+            Dictionary with discovery and scraping results
+        """
+        logger.info(f"Starting DEFAULT mode for {self.name} ({self.country})")
+
+        try:
+            # Step 1: Ensure urls.csv exists
+            created = self._storage.ensure_urls_csv_from_news(self.country, self.name)
+            if created:
+                logger.info("Created urls.csv from existing news.csv")
+
+            # Step 2: Load existing URLs from urls.csv
+            existing_urls = self._storage.get_existing_urls(self.country, self.name)
+            logger.info(f"Loaded {len(existing_urls)} existing URLs from urls.csv")
+
+            # Reset prefetched articles
+            self.prefetched_articles = []
+
+            # Step 3: Discover thumbnails with stopping rules
+            new_thumbnails = await self._discover_thumbnails_incremental(
+                existing_urls=existing_urls,
+                check_existing=True,  # Apply Rule 4
+            )
+
+            # Step 4: Append new URLs to urls.csv (deduplicated)
+            if new_thumbnails:
+                saved_path = self._storage.append_thumbnails_to_urls(
+                    new_thumbnails, self.country, self.name
+                )
+                if saved_path:
+                    self._saved_files["urls"] = saved_path
+                logger.info(f"Appended {len(new_thumbnails)} new URLs to urls.csv")
+
+            # Step 5: Load existing article URLs from news.csv
+            existing_article_urls = self._storage.get_existing_article_urls(
+                self.country, self.name
+            )
+            logger.info(f"Found {len(existing_article_urls)} existing articles")
+
+            # Step 6: Identify pending articles (all urls.csv - news.csv)
+            # Reload urls.csv to get complete list including newly added
+            all_thumbnails = self._storage.load_urls_from_csv(self.country, self.name)
+            if all_thumbnails is None:
+                all_thumbnails = []
+
+            pending_thumbnails = [
+                thumb
+                for thumb in all_thumbnails
+                if str(thumb.url) not in existing_article_urls
+            ]
+            logger.info(f"Pending articles to scrape: {len(pending_thumbnails)}")
+
+            # Handle prefetched articles from API
+            articles_from_api = 0
+            if self.prefetched_articles:
+                # Filter to only new prefetched articles
+                new_prefetched = [
+                    article
+                    for article in self.prefetched_articles
+                    if str(article.url) not in existing_article_urls
+                ]
+                if new_prefetched:
+                    logger.info(
+                        f"Writing {len(new_prefetched)} prefetched articles from API"
+                    )
+                    for article in new_prefetched:
+                        self._storage.append_article(article, self.country, self.name)
+                        articles_from_api += 1
+
+                # Remove prefetched URLs from pending
+                prefetched_urls = {str(a.url) for a in self.prefetched_articles}
+                pending_thumbnails = [
+                    t for t in pending_thumbnails if str(t.url) not in prefetched_urls
+                ]
+
+            # Apply max_articles limit if set
+            if (
+                self.max_articles is not None
+                and len(pending_thumbnails) > self.max_articles
+            ):
+                logger.info(
+                    f"Truncating pending from {len(pending_thumbnails)} to {self.max_articles}"
+                )
+                pending_thumbnails = pending_thumbnails[: self.max_articles]
+
+            # Step 7 & 8: Scrape pending articles
+            scrape_stats = {"articles_scraped": 0, "articles_failed": 0}
+            if pending_thumbnails:
+                scrape_stats = await self.scrape_articles(pending_thumbnails)
+
+            total_scraped = scrape_stats.get("articles_scraped", 0) + articles_from_api
+
+            # Mark articles file as saved
+            csv_path = (
+                self._storage.get_newspaper_dir(self.country, self.name) / "news.csv"
+            )
+            if csv_path.exists():
+                self._saved_files["articles"] = csv_path
+
+            # Compile results
+            results = {
+                "success": True,
+                "newspaper": self.name,
+                "country": self.country,
+                "mode": "default",
+                "statistics": {
+                    "existing_urls": len(existing_urls),
+                    "new_urls_discovered": len(new_thumbnails),
+                    "existing_articles": len(existing_article_urls),
+                    "articles_scraped": total_scraped,
+                    "articles_failed": scrape_stats.get("articles_failed", 0),
+                    "failed_urls": len(self.failed_urls),
+                    "failed_news": len(self.failed_news),
+                },
+            }
+
+            # Save failed URLs and news if any
+            if self.failed_urls:
+                self._storage.save_failed_urls(
+                    self.failed_urls, self.country, self.name
+                )
+            if self.failed_news:
+                self._storage.save_failed_news(
+                    self.failed_news, self.country, self.name
+                )
+
+            # Save metadata
+            self._storage.save_metadata(
+                results, self.country, self.name, metadata_type="default"
+            )
+
+            logger.info(
+                f"DEFAULT mode completed: {len(new_thumbnails)} new URLs, "
+                f"{total_scraped} articles scraped"
+            )
+            return results
+
+        except Exception as e:
+            logger.error(f"DEFAULT mode failed for {self.name}: {e}")
+            return {
+                "success": False,
+                "newspaper": self.name,
+                "country": self.country,
+                "mode": "default",
+                "error": str(e),
+            }

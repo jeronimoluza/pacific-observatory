@@ -95,24 +95,28 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Single scraper
-  python src/text/scrapers/orchestration/main.py sibc                                # Run SIBC scraper (update mode - default)
-  python src/text/scrapers/orchestration/main.py sibc --full                         # Run SIBC scraper (full mode - discover URLs from scratch)
-  python src/text/scrapers/orchestration/main.py sibc --download-urls-only           # Only download article URLs, don't scrape articles
-  python src/text/scrapers/orchestration/main.py sibc --no-save                      # Run without saving results
+  # Default mode: discover new URLs + scrape pending articles
+  python src/text/scrapers/orchestration/main.py sibc
+
+  # Discover mode: discover new URLs only (no scraping)
+  python src/text/scrapers/orchestration/main.py sibc --discover
+
+  # Discover-full mode: discover ALL URLs (overwrite urls.csv)
+  python src/text/scrapers/orchestration/main.py sibc --discover-full
+
+  # Resume mode: scrape pending articles from urls.csv (no discovery)
+  python src/text/scrapers/orchestration/main.py sibc --resume
 
   # Multi-scraper runner
-  python src/text/scrapers/orchestration/main.py --run-all                           # Run all scrapers in parallel (update mode)
+  python src/text/scrapers/orchestration/main.py --run-all                           # Run all scrapers (default mode)
+  python src/text/scrapers/orchestration/main.py --run-all --discover                # Discover URLs for all scrapers
+  python src/text/scrapers/orchestration/main.py --run-all --resume                  # Resume scraping for all scrapers
   python src/text/scrapers/orchestration/main.py --run-all --sequential              # Run all scrapers sequentially
   python src/text/scrapers/orchestration/main.py --run-all --dry-run                 # Preview what would run
 
   # List available scrapers
   python src/text/scrapers/orchestration/main.py --list-scrapers                     # List all available scrapers
   python src/text/scrapers/orchestration/main.py --list-countries                    # List all countries
-
-  # Automation (for future use)
-  # Add to crontab: 0 2 * * * cd /path/to/project && poetry run python src/text/scrapers/orchestration/main.py --run-all
-  # Or use systemd timer, Airflow DAG, or GitHub Actions workflow
         """,
     )
 
@@ -167,15 +171,21 @@ Examples:
     )
 
     parser.add_argument(
-        "--full",
+        "--discover",
         action="store_true",
-        help="Run in full mode (discover URLs from scratch and scrape all articles). Default is update mode.",
+        help="Discover new URLs and append to urls.csv (no article scraping)",
     )
 
     parser.add_argument(
-        "--download-urls-only",
+        "--discover-full",
         action="store_true",
-        help="Only download article URLs to urls.csv, don't scrape article content.",
+        help="Discover ALL URLs and overwrite urls.csv (no article scraping)",
+    )
+
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Skip discovery, scrape pending articles from urls.csv",
     )
 
     # Logging options
@@ -193,6 +203,30 @@ Examples:
     # Set up logging
     setup_logging(args.log_level, args.log_file)
 
+    # Validate mutually exclusive mode flags
+    mode_flags = [
+        getattr(args, "discover", False),
+        getattr(args, "discover_full", False),
+        getattr(args, "resume", False),
+    ]
+    if sum(mode_flags) > 1:
+        parser.error(
+            "Only one of --discover, --discover-full, --resume can be specified"
+        )
+
+    # Determine mode from args
+    def get_mode_from_args(args) -> str:
+        if getattr(args, "discover", False):
+            return "discover"
+        elif getattr(args, "discover_full", False):
+            return "discover_full"
+        elif getattr(args, "resume", False):
+            return "resume"
+        else:
+            return "default"
+
+    mode = get_mode_from_args(args)
+
     # Handle list commands
     if args.list_scrapers:
         list_available_scrapers()
@@ -209,7 +243,7 @@ Examples:
             project_root=project_root,
             sequential=args.sequential,
             dry_run=args.dry_run,
-            full_mode=args.full,
+            mode=mode,
         )
         sys.exit(0 if success else 1)
 
@@ -228,8 +262,7 @@ Examples:
             run_scraper_by_name(
                 newspaper_name=args.newspaper,
                 country=args.country,
-                full_mode=args.full,
-                download_urls_only=args.download_urls_only,
+                mode=mode,
                 configs_dir=get_default_configs_dir(),
                 project_root=project_root,
                 storage_dir=args.storage_dir,

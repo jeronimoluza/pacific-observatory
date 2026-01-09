@@ -22,7 +22,7 @@ def run_scraper_subprocess(
     log_dir: Path,
     project_root: Path,
     dry_run: bool = False,
-    full_mode: bool = False,
+    mode: str = "default",
 ) -> Optional[subprocess.Popen]:
     """
     Run a single scraper as a subprocess with nohup.
@@ -32,7 +32,7 @@ def run_scraper_subprocess(
         log_dir: Base directory for logs
         project_root: Project root directory
         dry_run: If True, print command without executing
-        full_mode: Whether to run in full mode (discover URLs from scratch)
+        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
 
     Returns:
         Popen object if started, None if dry_run or error
@@ -58,9 +58,14 @@ def run_scraper_subprocess(
         newspaper,
     ]
 
-    # Add --full flag if in full mode (default is update mode)
-    if full_mode:
-        cmd.append("--full")
+    # Add mode flag if not default
+    if mode == "discover":
+        cmd.append("--discover")
+    elif mode == "discover_full":
+        cmd.append("--discover-full")
+    elif mode == "resume":
+        cmd.append("--resume")
+    # default mode: no flag needed
 
     if dry_run:
         print(f"[DRY RUN] Would execute: {' '.join(cmd)}")
@@ -339,7 +344,7 @@ def run_multi_country_group_sequential(
     log_dir: Path,
     project_root: Path,
     dry_run: bool = False,
-    full_mode: bool = False,
+    mode: str = "default",
 ) -> List[Dict[str, any]]:
     """
     Run a multi-country newspaper group sequentially.
@@ -352,7 +357,7 @@ def run_multi_country_group_sequential(
         log_dir: Base directory for logs
         project_root: Project root directory
         dry_run: If True, print command without executing
-        full_mode: Whether to run in full mode (discover URLs from scratch)
+        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
 
     Returns:
         List of result dictionaries
@@ -363,9 +368,7 @@ def run_multi_country_group_sequential(
     results = []
     for config in group:
         print(f"      Starting {config['country']}/{config['newspaper']}...")
-        process = run_scraper_subprocess(
-            config, log_dir, project_root, dry_run, full_mode
-        )
+        process = run_scraper_subprocess(config, log_dir, project_root, dry_run, mode)
         if process:
             # Wait for this scraper to complete before starting the next one
             group_results = monitor_processes([process])
@@ -379,7 +382,7 @@ def run_all_scrapers(
     project_root: Path,
     sequential: bool = False,
     dry_run: bool = False,
-    full_mode: bool = False,
+    mode: str = "default",
 ) -> bool:
     """
     Run all newspaper scrapers with country-level sequential execution.
@@ -393,7 +396,7 @@ def run_all_scrapers(
         project_root: Project root directory
         sequential: If True, run all scrapers sequentially (for debugging)
         dry_run: If True, print what would be executed without running
-        full_mode: Whether to run in full mode (discover URLs from scratch)
+        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
 
     Returns:
         True if all scrapers succeeded, False if any failed
@@ -442,7 +445,7 @@ def run_all_scrapers(
             for config in country_configs:
                 print(f"   Starting {config['country']}/{config['newspaper']}...")
                 process = run_scraper_subprocess(
-                    config, log_dir, project_root, dry_run, full_mode
+                    config, log_dir, project_root, dry_run, mode
                 )
                 if process:
                     results = monitor_processes([process], use_progress=False)
@@ -453,7 +456,7 @@ def run_all_scrapers(
             for config in country_configs:
                 print(f"   Starting {config['newspaper']}...")
                 process = run_scraper_subprocess(
-                    config, log_dir, project_root, dry_run, full_mode
+                    config, log_dir, project_root, dry_run, mode
                 )
                 if process:
                     country_processes.append(process)

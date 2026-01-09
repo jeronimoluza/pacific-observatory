@@ -12,13 +12,13 @@ listing:
   url_template: "https://news.detik.com/berita/indeks?page={num}&date={month}/{day}/{year}"
   start_date: "2004-03-28"
   date_format: "daily"    # Generate URLs for each day
-  batch_size: 10
+  batch_size: 40
   start_page: 2
 
 # Client configuration
 client: "http"  # Use HTTP client (not browser-based)
-concurrency: 2  # Maximum concurrent requests (conservative for older site)
-rate_limit: 3 # Minimum delay between requests in seconds (5 req/sec max)
+concurrency: 5  # Maximum concurrent requests (conservative for older site)
+rate_limit: 1 # Minimum delay between requests in seconds (5 req/sec max)
 retries: 1       # Number of retry attempts for failed requests
 retry_seconds: 2.0  # Wait time in seconds between retry attempts
 
