@@ -116,6 +116,12 @@ SPIDER_SELECTORS = {
         ],
         "details": ["span.size::text"],
     },
+    "kioskana": {
+        "product_name": ["div#primary h1.entry-title::text"],
+        "price": [
+            "div#primary p.price span[class='woocommerce-Price-amount amount'] bdi::text"
+        ],
+    },
 }
 
 
