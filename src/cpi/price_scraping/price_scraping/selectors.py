@@ -116,10 +116,15 @@ SPIDER_SELECTORS = {
         ],
         "details": ["span.size::text"],
     },
-    "kioskana": {
-        "product_name": ["div#primary h1.entry-title::text"],
+    "hypermart": {
+        "product_name": [
+            "div.content_det h1::text",
+        ],
         "price": [
-            "div#primary p.price span[class='woocommerce-Price-amount amount'] bdi::text"
+            "div.content_det h2::text",
+        ],
+        "category": [
+            "div.breadcrumbs a::text",
         ],
     },
 }

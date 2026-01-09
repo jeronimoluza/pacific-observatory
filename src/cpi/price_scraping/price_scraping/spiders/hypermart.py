@@ -1,6 +1,6 @@
 """
-Spider for scraping Kioskana (Indonesia) - https://kioskana.com/
-Extracts product information including prices, categories, store locations, and URLs.
+Spider for scraping Hypermart (Indonesia) - https://shop.hypermart.co.id/
+Extracts product information including prices, categories, and URLs.
 """
 
 import scrapy
@@ -15,46 +15,45 @@ from price_scraping.selectors import get_selectors
 logger = logging.getLogger(__name__)
 
 
-class KioskanaSpider(CrawlSpider):
+class HypermartSpider(CrawlSpider):
     """
-    CrawlSpider for Kioskana (Indonesia) - https://kioskana.com/
+    CrawlSpider for Hypermart (Indonesia).
     Discovers product pages and extracts price data.
     """
 
-    name = "kioskana"
-    allowed_domains = ["kioskana.com"]
-    start_urls = ["https://www.kioskana.com/"]
+    name = "hypermart"
+    allowed_domains = ["shop.hypermart.co.id"]
+    start_urls = ["https://shop.hypermart.co.id/hypermart/"]
     country = "indonesia"
     currency = "IDR"
 
     # CSS selector fallbacks for product fields
-    SELECTORS = get_selectors("kioskana")
+    SELECTORS = get_selectors("hypermart")
 
     # Rules for following links and extracting data
     rules = (
-        # Rule 1: Follow main category pages
-        # Examples: /collections/all
+        # Rule 1: Follow category pages
+        # Examples: /hypermart/category/D1-GROCERY
         Rule(
             LinkExtractor(
-                allow=r"/product-category/[^/]+/$",
-                deny=r"(cart|checkout|account|login|search|page)",
+                allow=r"/hypermart/category/[^/\?]+$",
+                deny=r"(cart|checkout|account|login|search)",
             ),
             follow=True,
         ),
-        # Rule 2: Follow subcategory pages
-        # Examples: /product-category/home-garden/benih-tanaman/
+        # Rule 2: Follow pagination within categories
+        # Examples: /hypermart/category/D1-GROCERY?st=20, ?st=40, ?st=60
         Rule(
             LinkExtractor(
-                allow=r"/product-category/[^/]+/[^/]+/$",
-                deny=r"(cart|checkout|account|login|search|page)",
+                allow=r"/hypermart/category/[^/]+\?st=\d+",
             ),
             follow=True,
         ),
         # Rule 3: Extract product pages
-        # Examples: /product/kioskana-cooling-element-1-pc-for-shipping-fresh-and-frozen-items/
+        # Examples: /hypermart/product/HYPERMART-VALUE-PLUS-BUBUK-LADA-HITAM-REFILL-60-GR-36369887
         Rule(
             LinkExtractor(
-                allow=r"/product/[^/]+/$",
+                allow=r"/hypermart/product/[^/]+$",
                 deny=r"(cart|checkout|account|login|search)",
             ),
             callback="parse_product",
@@ -74,10 +73,13 @@ class KioskanaSpider(CrawlSpider):
         price = extractor.extract("price", self.SELECTORS["price"])
 
         url = response.url
-
+        category = extractor.extract(
+            "category", self.SELECTORS["category"], method="getall"
+        )
         if product_name and price:
             yield {
                 "product_name": product_name,
+                "category": " > ".join(category) if category else None,
                 "price": price,
                 "currency": self.currency,
                 "url": url,
