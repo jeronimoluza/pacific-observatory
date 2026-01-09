@@ -104,6 +104,18 @@ SPIDER_SELECTORS = {
             "span#variantSku::text",
         ],
     },
+    "pickaroo": {
+        "product_name": [
+            "h1[class='mt-2 product-name']::text",
+        ],
+        "price": [
+            "div.price::text",
+        ],
+        "category": [
+            "div.breadcrumb a::text",
+        ],
+        "details": ["span.size::text"],
+    },
 }
 
 
