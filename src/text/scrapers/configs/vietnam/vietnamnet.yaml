@@ -13,11 +13,11 @@ listing:
     - "https://vietnamnet.vn/chinh-tri-page{num}"
     - "https://vietnamnet.vn/thoi-su-page{num}"
   start_page: 0 # Starts from page 0 in the old script
-  batch_size: 10
+  batch_size: 20
 
 # Client configuration
 client: "http"
-concurrency: 10
+concurrency: 20
 rate_limit: 0.2
 retries: 3
 retry_seconds: 2.0
@@ -28,11 +28,13 @@ headers:
 # CSS selectors for data extraction
 selectors:
   thumbnail:
-    container:
-      - div[class='verticalPost__main']
-      - div[class='horizontalPost__main']
-    title: "h3[class='verticalPost__main-title vnn-title title-bold'] a"
-    url: "h3[class='verticalPost__main-title vnn-title title-bold'] a::attr(href)"
+    container: div[class='horizontalPost__main']
+    title:
+      - "h3[class='verticalPost__main-title vnn-title title-bold'] a"
+      - "h3[class='horizontalPost__main-title vnn-title title-bold'] a"
+    url:
+      - "h3[class='verticalPost__main-title vnn-title title-bold'] a::attr(href)"
+      - "h3[class='horizontalPost__main-title vnn-title title-bold'] a::attr(href)"
   article:
     date: div.bread-crumb-detail__time
     body: div#maincontent p
@@ -42,5 +44,5 @@ cleaning:
   date: "handle_mixed_dates"
 
 # Test/debug options
-max_pages: 4
-max_articles: 40
+max_pages: null
+max_articles: null
