@@ -25,12 +25,14 @@ headers:
 # CSS selectors for data extraction
 selectors:
   thumbnail:
-    container: article.story
+    container: div.timeline > article.story
     title: "h2.story__heading::text"
     url: "h2.story__heading a::attr(href)"
   article:
     date: meta[property="article:published_time"]::attr(content)
-    body: div#abody p
+    body:
+      - div#abody p
+      - div#abody
 
 # Data cleaning configuration
 cleaning:

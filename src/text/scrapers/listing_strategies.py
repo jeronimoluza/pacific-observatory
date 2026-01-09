@@ -154,7 +154,7 @@ class PaginationStrategy(ListingStrategy):
 
         batch_number = 1
         total_pages_processed = 0
-        previous_batch_urls = set()
+        previous_batch_data = None
 
         while True:
             # Respect max_pages limit if set
@@ -176,7 +176,6 @@ class PaginationStrategy(ListingStrategy):
 
             # Generate batch of page URLs
             batch_urls = self.generate_page_urls(current_page, pages_to_fetch)
-            current_batch_urls = set(batch_urls)
 
             # Log batch start
             logger.info(
@@ -207,10 +206,18 @@ class PaginationStrategy(ListingStrategy):
                 )
                 break
 
-            # Check if current batch URLs are the same as previous batch
-            if current_batch_urls == previous_batch_urls:
+            # Extract the actual scraped data for comparison
+            current_batch_data = [
+                result.data for result in successful_results if result.success
+            ]
+
+            # Check if current batch data is the same as previous batch (duplicate content)
+            if (
+                previous_batch_data is not None
+                and current_batch_data == previous_batch_data
+            ):
                 logger.info(
-                    f"Batch {batch_number}: Batch URLs identical to previous batch. Stopping pagination."
+                    f"Batch {batch_number}: Batch data identical to previous batch (same thumbnails repeated). Stopping pagination."
                 )
                 break
 
@@ -231,8 +238,8 @@ class PaginationStrategy(ListingStrategy):
                     f"Batch {batch_number}: Found {len(successful_results)}/{self.batch_size} pages. Might be near end of pagination."
                 )
 
-            # Store current batch URLs for next iteration comparison
-            previous_batch_urls = current_batch_urls
+            # Store current batch data for next iteration comparison
+            previous_batch_data = current_batch_data
 
             # Move to next batch
             current_page += self.batch_size * self.step
