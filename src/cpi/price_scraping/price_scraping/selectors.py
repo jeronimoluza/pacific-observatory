@@ -127,6 +127,17 @@ SPIDER_SELECTORS = {
             "div.breadcrumbs a::text",
         ],
     },
+    "horizon_farms": {
+        "product_name": [
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "meta[property='product:price:amount']::attr(content)",
+        ],
+        "details": [
+            "meta[property='og:description']::attr(content)",
+        ],
+    },
 }
 
 
