@@ -48,8 +48,60 @@ def coicop_4digit_to_3digit(coicop_code: str) -> str:
     elif len(parts) == 3:
         # Already 3-digit
         return coicop_code
+
+
+def coicop_to_2digit(coicop_code: str) -> str:
+    """
+    Map COICOP code to its 2-digit parent category.
+
+    Examples:
+        '01.1.1.3' -> '01.1'
+        '01.1.2.5' -> '01.1'
+        '01.2.1' -> '01.2'
+        '01.1' -> '01.1' (already 2-digit, unchanged)
+
+    Args:
+        coicop_code: COICOP code string (e.g., '01.1.1.3')
+
+    Returns:
+        2-digit COICOP code (e.g., '01.1')
+    """
+    if pd.isna(coicop_code):
+        return None
+
+    parts = str(coicop_code).split(".")
+    if len(parts) >= 2:
+        # Take first 2 parts
+        return ".".join(parts[:2])
     else:
-        # 2-digit or less (e.g., '01.2')
+        # Less than 2 parts, return as-is
+        return coicop_code
+
+
+def coicop_to_1digit(coicop_code: str) -> str:
+    """
+    Map COICOP code to its 1-digit division (top-level category).
+
+    Examples:
+        '01.1.1.3' -> '01'
+        '01.1.2.5' -> '01'
+        '02.1.1' -> '02'
+        '01' -> '01' (already 1-digit, unchanged)
+
+    Args:
+        coicop_code: COICOP code string (e.g., '01.1.1.3')
+
+    Returns:
+        1-digit COICOP code (e.g., '01')
+    """
+    if pd.isna(coicop_code):
+        return None
+
+    parts = str(coicop_code).split(".")
+    if len(parts) >= 1:
+        # Take first part only
+        return parts[0]
+    else:
         return coicop_code
 
 
