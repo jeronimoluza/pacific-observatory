@@ -107,3 +107,5 @@ After implementation is tested and verified working, perform cleanup:
 - `src/text/scrapers/orchestration/run_scraper.py` (Phase 3)
 - `src/text/scrapers/orchestration/main.py` (Phase 4)
 - `src/text/scrapers/orchestration/run_multiple.py` (Phase 5)
+
+New additions: added follow_redirect=True to client_http.py and max_redirects=5

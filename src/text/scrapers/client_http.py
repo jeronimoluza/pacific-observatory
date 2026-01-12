@@ -42,6 +42,8 @@ class AsyncHttpClient:
         rate_limit: float = 0.1,  # Minimum delay between requests
         retries: int = 3,  # Number of retry attempts
         retry_seconds: float = 2.0,  # Wait time between retries
+        follow_redirects: bool = True,
+        max_redirects: int = 5,
     ):
         """
         Initialize the AsyncHttpClient.
@@ -56,6 +58,8 @@ class AsyncHttpClient:
             rate_limit: Minimum delay between requests (politeness)
             retries: Number of retry attempts for failed requests
             retry_seconds: Wait time in seconds between retry attempts
+            follow_redirects: Whether to follow redirects
+            max_redirects: Maximum number of redirects to follow
         """
         if parser not in ["html.parser", "xpath"]:
             raise ValueError("Invalid parser. Use 'html.parser' or 'xpath'.")
@@ -135,8 +139,7 @@ class AsyncHttpClient:
                         url,
                         headers=self.headers,
                         timeout=self.timeout,
-                        follow_redirects=True,
-                        max_redirects=5,
+                        follow_redirects=self.follow_redirects,
                     )
                     response.raise_for_status()
                     return response.content, response.status_code
