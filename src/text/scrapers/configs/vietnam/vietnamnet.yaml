@@ -37,7 +37,9 @@ selectors:
       - "h3[class='horizontalPost__main-title vnn-title title-bold'] a::attr(href)"
   article:
     date: div.bread-crumb-detail__time
-    body: div#maincontent p
+    body:
+    - "div#maincontent p"
+    - "div#maincontent::text"
 
 # Data cleaning configuration
 cleaning:
