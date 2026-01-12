@@ -132,9 +132,12 @@ class AsyncHttpClient:
             for attempt in range(retry_count + 1):
                 try:
                     response = await client.get(
-                        url, headers=self.headers, timeout=self.timeout
+                        url,
+                        headers=self.headers,
+                        timeout=self.timeout,
+                        follow_redirects=True,
+                        max_redirects=5,
                     )
-
                     response.raise_for_status()
                     return response.content, response.status_code
 
