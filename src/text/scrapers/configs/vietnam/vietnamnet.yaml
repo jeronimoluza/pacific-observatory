@@ -39,7 +39,7 @@ selectors:
     date: div.bread-crumb-detail__time
     body:
     - "div#maincontent p"
-    - div[class='maincontent main-content content-full-image content-full-image-v1']
+    - div[class*="maincontent"], div[class*="main-content"] div[class*= 'content-full-image content-full-image-v1']
 
 # Data cleaning configuration
 cleaning:
