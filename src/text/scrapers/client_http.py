@@ -73,6 +73,9 @@ class AsyncHttpClient:
         self.retry_seconds = retry_seconds
         self.cookies = cookies
 
+        self.follow_redirects = follow_redirects
+        self.max_redirects = max_redirects
+
         # Default headers - merge with custom headers (custom takes precedence)
         default_headers = {
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
