@@ -510,10 +510,10 @@ def generate_html(
     """
 
     # Generate column headers (COICOP Category as first column, then countries/sources)
-    country_headers = "<th>COICOP Category</th>" + "".join(
+    country_headers = "<th>COICOP Category (Code)</th>" + "".join(
         f"<th>{col}</th>" for col in country_columns_l2
     )
-    source_headers = "<th>COICOP Category</th>" + "".join(
+    source_headers = "<th>COICOP Category (Code)</th>" + "".join(
         f"<th>{col}</th>" for col in source_columns_l2
     )
 
