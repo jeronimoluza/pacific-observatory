@@ -531,11 +531,11 @@ def generate_html(
                 <div class="radio-group">
                     <strong>Level:</strong>
                     <label>
-                        <input type="radio" name="country-level" value="l1">
+                        <input type="radio" name="country-level" value="l1" checked>
                         Level 1
                     </label>
                     <label>
-                        <input type="radio" name="country-level" value="l2" checked>
+                        <input type="radio" name="country-level" value="l2">
                         Level 2
                     </label>
                     <label>
@@ -573,11 +573,11 @@ def generate_html(
                 <div class="radio-group">
                     <strong>Level:</strong>
                     <label>
-                        <input type="radio" name="source-level" value="l1">
+                        <input type="radio" name="source-level" value="l1" checked>
                         Level 1
                     </label>
                     <label>
-                        <input type="radio" name="source-level" value="l2" checked>
+                        <input type="radio" name="source-level" value="l2">
                         Level 2
                     </label>
                     <label>
