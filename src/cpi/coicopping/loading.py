@@ -14,7 +14,6 @@ from pathlib import Path
 from typing import Optional
 
 import pandas as pd
-from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -191,10 +190,6 @@ def load_wayback_data(
             if not json_files:
                 continue
 
-            logger.info(
-                f"Loading {len(json_files)} wayback files from {country}/{source}"
-            )
-
             # Get currency for this country/source combination
             currency = None
             if currency_mapping and (country, source) in currency_mapping:
@@ -204,9 +199,7 @@ def load_wayback_data(
                 )
 
             # Load all JSON files
-            for json_file in tqdm(
-                json_files, desc=f"Loading {country}/{source} wayback"
-            ):
+            for json_file in json_files:
                 try:
                     with open(json_file, "r", encoding="utf-8") as f:
                         snapshots = json.load(f)

@@ -184,6 +184,12 @@ def create_products_input_csv(
     df_input = df_input.drop_duplicates(subset=["url_hash"], keep="first")
     print(f"✓ After deduplication: {len(df_input)} unique url_hash entries")
 
+    # Remove duplicates by product_w_cat (keep first occurrence)
+    # This ensures each unique product name gets classified,
+    # avoiding unnecessary Gemini calls
+    df_input = df_input.drop_duplicates(subset=["product_w_cat"], keep="first")
+    print(f"✓ After deduplication: {len(df_input)} unique product_w_cat entries")
+
     # Save to CSV
     csv_path = data_dir / "products_input.csv"
     df_input.to_csv(csv_path, index=False)
@@ -248,17 +254,24 @@ Start the CSV output immediately with the header row. Include all products from 
 def classify_products_with_gemini(
     products_input_df: pd.DataFrame,
     coicop_no_services_df: pd.DataFrame,
+    coicop_categories_df: pd.DataFrame,
+    existing_classifications: Optional[pd.DataFrame] = None,
     project_root: Optional[Path] = None,
     batch_size: int = 600,
 ) -> pd.DataFrame:
     """
     Classify products using Gemini 2.0 Flash in batches.
 
+    After each batch is classified, it is immediately appended to gemini_classification.csv.
+    This allows stopping the process at any point without losing classified batches.
+
     Args:
         products_input_df: DataFrame with url_hash and product_w_cat
         coicop_no_services_df: COICOP categories (without services)
+        coicop_categories_df: Full COICOP categories with titles
+        existing_classifications: Optional existing classifications DataFrame
         project_root: Optional project root path
-        batch_size: Number of products per batch (default 500)
+        batch_size: Number of products per batch (default 600)
 
     Returns:
         DataFrame with url_hash, product_w_cat, code, title
@@ -272,6 +285,9 @@ def classify_products_with_gemini(
 
     if project_root is None:
         project_root = get_project_root()
+
+    data_dir = project_root / "data" / "cpi" / "coicopping"
+    gemini_classification_path = data_dir / "gemini_classification.csv"
 
     print("\n" + "=" * 70)
     print("STEP 3: Classify products with Gemini AI")
@@ -317,7 +333,6 @@ def classify_products_with_gemini(
 
             # Parse CSV response
             batch_results = parse_gemini_response(response_text)
-            all_results.extend(batch_results)
 
             # Debug: Show response details if batch is empty
             if len(batch_results) == 0:
@@ -326,8 +341,59 @@ def classify_products_with_gemini(
                 # Check if header is present
                 first_line = response_text.split("\n")[0] if response_text else ""
                 print(f"  First line: {first_line}")
+            else:
+                print(
+                    f"✓ Batch {batch_num + 1}: Classified {len(batch_results)} products"
+                )
 
-            print(f"✓ Batch {batch_num + 1}: Classified {len(batch_results)} products")
+                # Immediately process and append this batch to CSV
+                batch_df = pd.DataFrame(batch_results)
+
+                # Get the products from this batch to merge with url_hash
+                batch_products_df = products_input_df[
+                    products_input_df["product_w_cat"].isin(batch_df["product_w_cat"])
+                ].copy()
+
+                # Merge batch results with url_hash
+                batch_merged = batch_products_df.merge(
+                    batch_df, on="product_w_cat", how="left"
+                )
+
+                # Merge with COICOP categories to get titles
+                batch_merged = batch_merged.merge(
+                    coicop_categories_df[["coicop_code", "coicop_title"]],
+                    on="coicop_code",
+                    how="left",
+                )
+
+                # Select final columns
+                batch_final = batch_merged[
+                    ["url_hash", "product_w_cat", "coicop_code", "coicop_title"]
+                ].copy()
+
+                # Remove duplicates
+                batch_final = batch_final.drop_duplicates(
+                    subset=["url_hash", "product_w_cat"], keep="first"
+                )
+
+                # Append to CSV file immediately
+                if gemini_classification_path.exists():
+                    # Append to existing file
+                    batch_final.to_csv(
+                        gemini_classification_path, mode="a", header=False, index=False
+                    )
+                    print(
+                        f"  → Appended {len(batch_final)} records to {gemini_classification_path.name}"
+                    )
+                else:
+                    # Create new file with header
+                    batch_final.to_csv(gemini_classification_path, index=False)
+                    print(
+                        f"  → Created {gemini_classification_path.name} with {len(batch_final)} records"
+                    )
+
+                # Also keep in memory for final return
+                all_results.extend(batch_results)
 
         except Exception as e:
             print(f"✗ Error processing batch {batch_num + 1}: {e}")
@@ -340,6 +406,7 @@ def classify_products_with_gemini(
 
     results_df = pd.DataFrame(all_results)
     print(f"\n✓ Total classified: {len(results_df)} products")
+    print(f"✓ All batches have been saved to {gemini_classification_path}")
 
     return results_df
 
@@ -557,44 +624,38 @@ def run_coicop_matching(
             df_to_classify = df_products_input
 
         # Step 4: Classify new products with Gemini
+        # Note: Each batch is now immediately appended to gemini_classification.csv
         print("\n" + "=" * 70)
         print("Classifying products with Gemini AI")
         print("=" * 70)
         df_new_classifications = classify_products_with_gemini(
-            df_to_classify, df_coicop_no_services, project_root
+            df_to_classify,
+            df_coicop_no_services,
+            df_coicop,
+            existing_classifications,
+            project_root,
         )
+        print(df_new_classifications.head())
 
-        # Step 5: Generate output with proper column names
-        df_new_final = generate_final_output(
-            df_to_classify, df_new_classifications, df_coicop, project_root
-        )
+        # Batches have already been appended to CSV during classification
+        # Print final summary
+        print("\n" + "=" * 70)
+        print("Classification complete")
+        print("=" * 70)
 
-        # Step 6: Append to existing or create new file
-        if existing_classifications is not None:
-            print("\n" + "=" * 70)
-            print("Appending new classifications to existing file")
-            print("=" * 70)
-
-            # Combine existing and new classifications
-            df_combined = pd.concat(
-                [existing_classifications, df_new_final], ignore_index=True
-            )
-
-            # Remove duplicates (keep first occurrence)
-            df_combined = df_combined.drop_duplicates(
-                subset=["url_hash", "product_w_cat"], keep="first"
-            )
-
-            # Save combined classifications
-            df_combined.to_csv(gemini_classification_path, index=False)
-            print(f"✓ Saved {len(df_combined)} total classifications")
-            print(f"  - Previous: {len(existing_classifications)}")
-            print(f"  - New: {len(df_new_final)}")
-            print(f"  - Total: {len(df_combined)}")
+        if gemini_classification_path.exists():
+            final_count = len(pd.read_csv(gemini_classification_path))
+            if existing_classifications is not None:
+                newly_added = final_count - len(existing_classifications)
+                print(f"✓ Total classifications in file: {final_count}")
+                print(f"  - Previous: {len(existing_classifications)}")
+                print(f"  - Newly added: {newly_added}")
+            else:
+                print(f"✓ Total classifications in file: {final_count}")
         else:
-            # No existing file, just save the new classifications
-            df_new_final.to_csv(gemini_classification_path, index=False)
-            print(f"\n✓ Saved {len(df_new_final)} classifications to new file")
+            print(
+                "⚠ Warning: No classifications were saved (all batches may have failed)"
+            )
 
         print("\n" + "=" * 70)
         print("✓ COICOP matching workflow completed successfully!")
