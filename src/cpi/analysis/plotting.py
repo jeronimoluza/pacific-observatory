@@ -63,9 +63,26 @@ def create_country_coicop_pivot(coverage_coicop_l2_country, labels):
     df = coverage_coicop_l2_country.copy()
     df["Country"] = df["country"].apply(lambda x: get_country_label(x, labels))
 
-    # Pivot: COICOP titles as rows, countries as columns, n_items as values
+    # Create combined index with title and code
+    # Determine which code column to use based on available columns
+    code_col = None
+    if "coicop_1digit" in df.columns:
+        code_col = "coicop_1digit"
+    elif "coicop_2digit" in df.columns:
+        code_col = "coicop_2digit"
+    elif "coicop_3digit" in df.columns:
+        code_col = "coicop_3digit"
+
+    if code_col:
+        df["coicop_display"] = (
+            df["coicop_title"] + " (" + df[code_col].astype(str) + ")"
+        )
+    else:
+        df["coicop_display"] = df["coicop_title"]
+
+    # Pivot: COICOP titles with codes as rows, countries as columns, n_items as values
     pivot = df.pivot_table(
-        index="coicop_title",
+        index="coicop_display",
         columns="Country",
         values="n_items",
         aggfunc="sum",
@@ -98,9 +115,26 @@ def create_source_coicop_pivot(coverage_coicop_l2_country_source, labels):
     df["Country"] = df["country"].apply(lambda x: get_country_label(x, labels))
     df["Source_Country"] = df["Source"] + " (" + df["Country"] + ")"
 
-    # Pivot: COICOP titles as rows, source-country as columns, n_items as values
+    # Create combined index with title and code
+    # Determine which code column to use based on available columns
+    code_col = None
+    if "coicop_1digit" in df.columns:
+        code_col = "coicop_1digit"
+    elif "coicop_2digit" in df.columns:
+        code_col = "coicop_2digit"
+    elif "coicop_3digit" in df.columns:
+        code_col = "coicop_3digit"
+
+    if code_col:
+        df["coicop_display"] = (
+            df["coicop_title"] + " (" + df[code_col].astype(str) + ")"
+        )
+    else:
+        df["coicop_display"] = df["coicop_title"]
+
+    # Pivot: COICOP titles with codes as rows, source-country as columns, n_items as values
     pivot = df.pivot_table(
-        index="coicop_title",
+        index="coicop_display",
         columns="Source_Country",
         values="n_items",
         aggfunc="sum",
@@ -359,7 +393,7 @@ def generate_html(
 
         function updateTableTitle(elementId, level, isPercent, tableType) {{
             const levelText = level === 'l1' ? '1' : (level === 'l2' ? '2' : '3');
-            const viewText = isPercent ? 'Percentage of items' : 'Number of items';
+            const viewText = isPercent ? 'Percentage of items' : 'Number of unique items';
             const byText = tableType === 'country' ? 'by country' : 'by source';
             const percentDetail = isPercent ? ` (% of ${{tableType}} total)` : '';
 
@@ -523,10 +557,9 @@ def generate_html(
             </div>
         </div>
 
-        <!-- By COICOP × Country Table -->
+        <!-- By COICOP by Country Table -->
         <div class="section">
-            <h2>COICOP × Country</h2>
-            <p id="country-title" class="table-subtitle">Number of items in each COICOP level 2 category by country</p>
+            <h2>COICOP by Country</h2>
             <div class="controls">
                 <div class="radio-group">
                     <strong>Level:</strong>
@@ -555,6 +588,7 @@ def generate_html(
                     </label>
                 </div>
             </div>
+            <p id="country-title" class="table-subtitle">Number of unique items in each COICOP level 1 category by country</p>
             <div class="table-wrapper">
                 <table id="country-table" class="data-table">
                     <thead>
@@ -565,10 +599,9 @@ def generate_html(
             </div>
         </div>
 
-        <!-- By COICOP × Source Table -->
+        <!-- By COICOP by Source Table -->
         <div class="section">
-            <h2>COICOP × Source</h2>
-            <p id="source-title" class="table-subtitle">Number of items in each COICOP level 2 category by source</p>
+            <h2>COICOP by Source</h2>
             <div class="controls">
                 <div class="radio-group">
                     <strong>Level:</strong>
@@ -597,6 +630,7 @@ def generate_html(
                     </label>
                 </div>
             </div>
+            <p id="source-title" class="table-subtitle">Number of unique items in each COICOP level 1 category by source</p>
             <div class="table-wrapper">
                 <table id="source-table" class="data-table">
                     <thead>
