@@ -532,11 +532,11 @@ def generate_html(
         <!-- Overview Metrics -->
         <div class="metrics">
             <div class="metric-card">
-                <div class="metric-label">Items</div>
+                <div class="metric-label">Unique Items</div>
                 <div class="metric-value">{summary['n_items']:,}</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Observations</div>
+                <div class="metric-label">Registers</div>
                 <div class="metric-value">{summary['n_obs']:,}</div>
             </div>
             <div class="metric-card">
@@ -548,11 +548,12 @@ def generate_html(
                 <div class="metric-value">{summary['n_sources']}</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Min Date</div>
+                <div class="metric-label">Oldest Date</div>
+                <div style="font-size: 0.75em; font-style: italic; color: #999; margin-top: 4px;">From Wayback Machine</div>
                 <div class="metric-value" style="font-size: 1.2em;">{summary['min_date']}</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Max Date</div>
+                <div class="metric-label">Updated On</div>
                 <div class="metric-value" style="font-size: 1.2em;">{summary['max_date']}</div>
             </div>
         </div>
@@ -657,7 +658,7 @@ def main():
     # Define paths
     PROJECT_ROOT = Path(__file__).resolve().parents[3]
     REPORT_DIR = PROJECT_ROOT / "data/cpi/analysis/reports/latest"
-    OUTPUT_DIR = PROJECT_ROOT / "src/cpi/analysis/dashboard"
+    OUTPUT_DIR = PROJECT_ROOT / "src/cpi/plotting/outputs"
     OUTPUT_FILE = OUTPUT_DIR / "index.html"
 
     # Ensure output directory exists
