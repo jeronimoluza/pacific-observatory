@@ -164,6 +164,9 @@ def get_spider_country(spider_name: str) -> str:
         "molisi": "tonga",
         "samoa_market": "samoa",
         "dynamic_vanuatu": "vanuatu",
+        "horizon_farms": "japan",
+        "hypermart": "indonesia",
+        "pickaroo": "philippines",
     }
     return spider_countries.get(spider_name, "unknown")
 
