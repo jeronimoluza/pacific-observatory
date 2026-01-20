@@ -138,6 +138,11 @@ SPIDER_SELECTORS = {
             "meta[property='og:description']::attr(content)",
         ],
     },
+    "aeon_online": {
+        "product_name": ["div.detail_info h1.title::text"],
+        "price": ["div.detail_info span.khr-price::text"],
+        "category": ["nav[aria-label='Breadcrumb'] ol li a::text"],
+    },
 }
 
 

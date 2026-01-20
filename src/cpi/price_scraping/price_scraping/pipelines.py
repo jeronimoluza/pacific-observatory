@@ -8,6 +8,8 @@ from datetime import datetime
 from pathlib import Path
 import json
 
+import scrapy
+
 logger = logging.getLogger(__name__)
 
 
