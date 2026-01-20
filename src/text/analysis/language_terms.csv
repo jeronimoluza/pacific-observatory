@@ -1,0 +1,793 @@
+﻿Category,English term,Language,Script,Translation / search tokens (local),Confidence,Notes
+Economic,economy,Chinese (Simplified),Hans,经济,High,
+Economic,economic,Chinese (Simplified),Hans,经济的 | 经济,High,
+Economic,economics,Chinese (Simplified),Hans,经济学,High,
+Economic,business,Chinese (Simplified),Hans,商业 | 生意,High,
+Economic,finance,Chinese (Simplified),Hans,金融 | 财政,High,
+Economic,financial,Chinese (Simplified),Hans,金融的 | 财务的,High,
+Policy,government,Chinese (Simplified),Hans,政府,High,
+Policy,governmental,Chinese (Simplified),Hans,政府的,High,
+Policy,authorities,Chinese (Simplified),Hans,当局 | 有关部门,High,
+Policy,minister,Chinese (Simplified),Hans,部长 | 大臣,High,
+Policy,ministry,Chinese (Simplified),Hans,部 | 部门,High,
+Policy,parliament,Chinese (Simplified),Hans,议会 | 国会,High,
+Policy,parliamentary,Chinese (Simplified),Hans,议会的 | 国会的,High,
+Policy,tax,Chinese (Simplified),Hans,税 | 税收,High,
+Policy,regulation,Chinese (Simplified),Hans,规定 | 监管 | 管理条例,High,
+Policy,legislation,Chinese (Simplified),Hans,立法 | 法律制定,High,
+Policy,central bank,Chinese (Simplified),Hans,中央银行,High,
+Policy,imf,Chinese (Simplified),Hans,IMF | 国际货币基金组织,High,
+Policy,international monetary fund,Chinese (Simplified),Hans,国际货币基金组织,High,
+Policy,world bank,Chinese (Simplified),Hans,世界银行,High,
+Uncertainty,uncertain,Chinese (Simplified),Hans,不确定的,High,
+Uncertainty,uncertainty,Chinese (Simplified),Hans,不确定性,High,
+Uncertainty,uncertainties,Chinese (Simplified),Hans,不确定性 | 不确定因素,High,
+Uncertainty,unknown,Chinese (Simplified),Hans,未知的 | 不明的,High,
+Uncertainty,unstable,Chinese (Simplified),Hans,不稳定的,High,
+Uncertainty,unsure,Chinese (Simplified),Hans,不确定 | 拿不准,High,
+Uncertainty,undetermined,Chinese (Simplified),Hans,未确定的,High,
+Uncertainty,risky,Chinese (Simplified),Hans,有风险的 | 冒险的,High,
+Uncertainty,risk,Chinese (Simplified),Hans,风险,High,
+Uncertainty,not certain,Chinese (Simplified),Hans,不确定 | 并不确定,High,
+Uncertainty,non-reliable,Chinese (Simplified),Hans,不可靠的,High,
+Uncertainty,fluctuations,Chinese (Simplified),Hans,波动 | 起伏,High,
+Uncertainty,unpredictable,Chinese (Simplified),Hans,不可预测的,High,
+Economic,economy,Chinese (Traditional),Hant,經濟,High,
+Economic,economic,Chinese (Traditional),Hant,經濟的 | 經濟,High,
+Economic,economics,Chinese (Traditional),Hant,經濟學,High,
+Economic,business,Chinese (Traditional),Hant,商業 | 生意,High,
+Economic,finance,Chinese (Traditional),Hant,金融 | 財政,High,
+Economic,financial,Chinese (Traditional),Hant,金融的 | 財務的,High,
+Policy,government,Chinese (Traditional),Hant,政府,High,
+Policy,governmental,Chinese (Traditional),Hant,政府的,High,
+Policy,authorities,Chinese (Traditional),Hant,當局 | 有關部門,High,
+Policy,minister,Chinese (Traditional),Hant,部長 | 大臣,High,
+Policy,ministry,Chinese (Traditional),Hant,部 | 部門,High,
+Policy,parliament,Chinese (Traditional),Hant,議會 | 國會,High,
+Policy,parliamentary,Chinese (Traditional),Hant,議會的 | 國會的,High,
+Policy,tax,Chinese (Traditional),Hant,稅 | 稅收,High,
+Policy,regulation,Chinese (Traditional),Hant,規定 | 監管 | 管理條例,High,
+Policy,legislation,Chinese (Traditional),Hant,立法 | 法律制定,High,
+Policy,central bank,Chinese (Traditional),Hant,中央銀行,High,
+Policy,imf,Chinese (Traditional),Hant,IMF | 國際貨幣基金組織,High,
+Policy,international monetary fund,Chinese (Traditional),Hant,國際貨幣基金組織,High,
+Policy,world bank,Chinese (Traditional),Hant,世界銀行,High,
+Uncertainty,uncertain,Chinese (Traditional),Hant,不確定的,High,
+Uncertainty,uncertainty,Chinese (Traditional),Hant,不確定性,High,
+Uncertainty,uncertainties,Chinese (Traditional),Hant,不確定性 | 不確定因素,High,
+Uncertainty,unknown,Chinese (Traditional),Hant,未知的 | 不明的,High,
+Uncertainty,unstable,Chinese (Traditional),Hant,不穩定的,High,
+Uncertainty,unsure,Chinese (Traditional),Hant,不確定 | 拿不準,High,
+Uncertainty,undetermined,Chinese (Traditional),Hant,未確定的,High,
+Uncertainty,risky,Chinese (Traditional),Hant,有風險的 | 冒險的,High,
+Uncertainty,risk,Chinese (Traditional),Hant,風險,High,
+Uncertainty,not certain,Chinese (Traditional),Hant,不確定 | 並不確定,High,
+Uncertainty,non-reliable,Chinese (Traditional),Hant,不可靠的,High,
+Uncertainty,fluctuations,Chinese (Traditional),Hant,波動 | 起伏,High,
+Uncertainty,unpredictable,Chinese (Traditional),Hant,不可預測的,High,
+Economic,economy,Japanese,Jpan,経済,High,
+Economic,economic,Japanese,Jpan,経済の | 経済的,High,
+Economic,economics,Japanese,Jpan,経済学,High,
+Economic,business,Japanese,Jpan,ビジネス | 事業,High,
+Economic,finance,Japanese,Jpan,金融 | 財政,High,
+Economic,financial,Japanese,Jpan,金融の | 財務の,High,
+Policy,government,Japanese,Jpan,政府,High,
+Policy,governmental,Japanese,Jpan,政府の | 官の,High,
+Policy,authorities,Japanese,Jpan,当局 | 主管当局,High,
+Policy,minister,Japanese,Jpan,大臣,High,
+Policy,ministry,Japanese,Jpan,省 | 省庁,High,
+Policy,parliament,Japanese,Jpan,国会 | 議会,High,
+Policy,parliamentary,Japanese,Jpan,国会の | 議会の,High,
+Policy,tax,Japanese,Jpan,税 | 税金,High,
+Policy,regulation,Japanese,Jpan,規制 | 規則,High,
+Policy,legislation,Japanese,Jpan,立法 | 法律,High,
+Policy,central bank,Japanese,Jpan,中央銀行,High,
+Policy,imf,Japanese,Jpan,IMF | 国際通貨基金,High,
+Policy,international monetary fund,Japanese,Jpan,国際通貨基金,High,
+Policy,world bank,Japanese,Jpan,世界銀行,High,
+Uncertainty,uncertain,Japanese,Jpan,不確かな | 不確実な,High,
+Uncertainty,uncertainty,Japanese,Jpan,不確実性 | 不透明感,High,
+Uncertainty,uncertainties,Japanese,Jpan,不確実性 | 不確定要素,High,
+Uncertainty,unknown,Japanese,Jpan,未知の | 不明な,High,
+Uncertainty,unstable,Japanese,Jpan,不安定な,High,
+Uncertainty,unsure,Japanese,Jpan,確信がない | はっきりしない,High,
+Uncertainty,undetermined,Japanese,Jpan,未決定の | 未確定の,High,
+Uncertainty,risky,Japanese,Jpan,リスクの高い | 危険な,High,
+Uncertainty,risk,Japanese,Jpan,リスク | 危険,High,
+Uncertainty,not certain,Japanese,Jpan,確かではない,High,
+Uncertainty,non-reliable,Japanese,Jpan,信頼できない | 信用できない,High,
+Uncertainty,fluctuations,Japanese,Jpan,変動 | 振れ,High,
+Uncertainty,unpredictable,Japanese,Jpan,予測できない | 予測不可能な,High,
+Economic,economy,Korean,Kore,경제,High,
+Economic,economic,Korean,Kore,경제의 | 경제적인,High,
+Economic,economics,Korean,Kore,경제학,High,
+Economic,business,Korean,Kore,비즈니스 | 사업,High,
+Economic,finance,Korean,Kore,금융 | 재정,High,
+Economic,financial,Korean,Kore,금융의 | 재무의 | 재정의,High,
+Policy,government,Korean,Kore,정부,High,
+Policy,governmental,Korean,Kore,정부의,High,
+Policy,authorities,Korean,Kore,당국 | 관계 당국,High,
+Policy,minister,Korean,Kore,장관,High,
+Policy,ministry,Korean,Kore,부 | 부처,High,
+Policy,parliament,Korean,Kore,국회 | 의회,High,
+Policy,parliamentary,Korean,Kore,국회의 | 의회의,High,
+Policy,tax,Korean,Kore,세금 | 조세,High,
+Policy,regulation,Korean,Kore,규제 | 규정,High,
+Policy,legislation,Korean,Kore,입법 | 법률 제정,High,
+Policy,central bank,Korean,Kore,중앙은행,High,
+Policy,imf,Korean,Kore,IMF | 국제통화기금,High,
+Policy,international monetary fund,Korean,Kore,국제통화기금,High,
+Policy,world bank,Korean,Kore,세계은행,High,
+Uncertainty,uncertain,Korean,Kore,불확실한,High,
+Uncertainty,uncertainty,Korean,Kore,불확실성,High,
+Uncertainty,uncertainties,Korean,Kore,불확실성 | 불확실 요인,High,
+Uncertainty,unknown,Korean,Kore,미지의 | 알 수 없는,High,
+Uncertainty,unstable,Korean,Kore,불안정한,High,
+Uncertainty,unsure,Korean,Kore,확신이 없는,High,
+Uncertainty,undetermined,Korean,Kore,미정의,High,
+Uncertainty,risky,Korean,Kore,위험한 | 리스크가 큰,High,
+Uncertainty,risk,Korean,Kore,위험 | 리스크,High,
+Uncertainty,not certain,Korean,Kore,확실하지 않은,High,
+Uncertainty,non-reliable,Korean,Kore,신뢰할 수 없는 | 믿을 수 없는,High,
+Uncertainty,fluctuations,Korean,Kore,변동 | 등락,High,
+Uncertainty,unpredictable,Korean,Kore,예측 불가능한,High,
+Economic,economy,Thai,Thai,เศรษฐกิจ,High,
+Economic,economic,Thai,Thai,ทางเศรษฐกิจ | เศรษฐกิจ,High,
+Economic,economics,Thai,Thai,เศรษฐศาสตร์,High,
+Economic,business,Thai,Thai,ธุรกิจ,High,
+Economic,finance,Thai,Thai,การเงิน | การคลัง,High,
+Economic,financial,Thai,Thai,ทางการเงิน | ด้านการเงิน,High,
+Policy,government,Thai,Thai,รัฐบาล,High,
+Policy,governmental,Thai,Thai,ของรัฐบาล | ภาครัฐ,High,
+Policy,authorities,Thai,Thai,ทางการ | หน่วยงานที่เกี่ยวข้อง | เจ้าหน้าที่,High,
+Policy,minister,Thai,Thai,รัฐมนตรี,High,
+Policy,ministry,Thai,Thai,กระทรวง,High,
+Policy,parliament,Thai,Thai,รัฐสภา,High,
+Policy,parliamentary,Thai,Thai,ของรัฐสภา,High,
+Policy,tax,Thai,Thai,ภาษี,High,
+Policy,regulation,Thai,Thai,กฎระเบียบ | การกำกับดูแล,High,
+Policy,legislation,Thai,Thai,กฎหมาย | การออกกฎหมาย,High,
+Policy,central bank,Thai,Thai,ธนาคารกลาง,High,
+Policy,imf,Thai,Thai,IMF | กองทุนการเงินระหว่างประเทศ,High,
+Policy,international monetary fund,Thai,Thai,กองทุนการเงินระหว่างประเทศ,High,
+Policy,world bank,Thai,Thai,ธนาคารโลก,High,
+Uncertainty,uncertain,Thai,Thai,ไม่แน่นอน,High,
+Uncertainty,uncertainty,Thai,Thai,ความไม่แน่นอน,High,
+Uncertainty,uncertainties,Thai,Thai,ความไม่แน่นอน | ปัจจัยไม่แน่นอน,High,
+Uncertainty,unknown,Thai,Thai,ไม่ทราบ | ที่ไม่รู้,High,
+Uncertainty,unstable,Thai,Thai,ไม่มั่นคง | ไม่เสถียร,High,
+Uncertainty,unsure,Thai,Thai,ไม่แน่ใจ,High,
+Uncertainty,undetermined,Thai,Thai,ยังไม่กำหนด | ไม่ได้ตัดสินใจ,High,
+Uncertainty,risky,Thai,Thai,เสี่ยง | มีความเสี่ยง,High,
+Uncertainty,risk,Thai,Thai,ความเสี่ยง,High,
+Uncertainty,not certain,Thai,Thai,ไม่แน่นอน | ไม่แน่ชัด,High,
+Uncertainty,non-reliable,Thai,Thai,ไม่น่าเชื่อถือ,High,
+Uncertainty,fluctuations,Thai,Thai,ความผันผวน | การแกว่งตัว,High,
+Uncertainty,unpredictable,Thai,Thai,คาดเดาไม่ได้ | ไม่สามารถคาดการณ์ได้,High,
+Economic,economy,Vietnamese,Latn,kinh tế,High,
+Economic,economic,Vietnamese,Latn,kinh tế | thuộc kinh tế,High,
+Economic,economics,Vietnamese,Latn,kinh tế học,High,
+Economic,business,Vietnamese,Latn,kinh doanh | thương mại | doanh nghiệp,High,
+Economic,finance,Vietnamese,Latn,tài chính,High,
+Economic,financial,Vietnamese,Latn,tài chính | thuộc tài chính,High,
+Policy,government,Vietnamese,Latn,chính phủ,High,
+Policy,governmental,Vietnamese,Latn,thuộc chính phủ | nhà nước,High,
+Policy,authorities,Vietnamese,Latn,nhà chức trách | cơ quan chức năng,High,
+Policy,minister,Vietnamese,Latn,bộ trưởng,High,
+Policy,ministry,Vietnamese,Latn,bộ | bộ ngành,High,
+Policy,parliament,Vietnamese,Latn,quốc hội | nghị viện,High,
+Policy,parliamentary,Vietnamese,Latn,thuộc quốc hội | nghị viện,High,
+Policy,tax,Vietnamese,Latn,thuế,High,
+Policy,regulation,Vietnamese,Latn,quy định | quy chế | điều tiết,High,
+Policy,legislation,Vietnamese,Latn,pháp luật | lập pháp | luật pháp,High,
+Policy,central bank,Vietnamese,Latn,ngân hàng trung ương,High,
+Policy,imf,Vietnamese,Latn,IMF | Quỹ Tiền tệ Quốc tế,High,
+Policy,international monetary fund,Vietnamese,Latn,Quỹ Tiền tệ Quốc tế,High,
+Policy,world bank,Vietnamese,Latn,Ngân hàng Thế giới,High,
+Uncertainty,uncertain,Vietnamese,Latn,không chắc chắn | bất định,High,
+Uncertainty,uncertainty,Vietnamese,Latn,sự không chắc chắn | tính bất định,High,
+Uncertainty,uncertainties,Vietnamese,Latn,sự không chắc chắn | những bất định,High,
+Uncertainty,unknown,Vietnamese,Latn,không rõ | chưa biết,High,
+Uncertainty,unstable,Vietnamese,Latn,bất ổn | không ổn định,High,
+Uncertainty,unsure,Vietnamese,Latn,không chắc | không chắc chắn,High,
+Uncertainty,undetermined,Vietnamese,Latn,chưa xác định,High,
+Uncertainty,risky,Vietnamese,Latn,rủi ro | đầy rủi ro,High,
+Uncertainty,risk,Vietnamese,Latn,rủi ro,High,
+Uncertainty,not certain,Vietnamese,Latn,không chắc chắn,High,
+Uncertainty,non-reliable,Vietnamese,Latn,không đáng tin cậy,High,
+Uncertainty,fluctuations,Vietnamese,Latn,biến động | dao động,High,
+Uncertainty,unpredictable,Vietnamese,Latn,khó lường | không thể dự đoán,High,
+Economic,economy,Indonesian,Latn,ekonomi | perekonomian,High,
+Economic,economic,Indonesian,Latn,ekonomi | ekonomis,High,
+Economic,economics,Indonesian,Latn,ilmu ekonomi | ekonomi,High,
+Economic,business,Indonesian,Latn,bisnis | usaha,High,
+Economic,finance,Indonesian,Latn,keuangan | finansial,High,
+Economic,financial,Indonesian,Latn,keuangan | finansial,High,
+Policy,government,Indonesian,Latn,pemerintah,High,
+Policy,governmental,Indonesian,Latn,pemerintahan | pemerintah,High,
+Policy,authorities,Indonesian,Latn,otoritas | pihak berwenang,High,
+Policy,minister,Indonesian,Latn,menteri,High,
+Policy,ministry,Indonesian,Latn,kementerian,High,
+Policy,parliament,Indonesian,Latn,parlemen | DPR,High,
+Policy,parliamentary,Indonesian,Latn,parlementer,High,
+Policy,tax,Indonesian,Latn,pajak,High,
+Policy,regulation,Indonesian,Latn,regulasi | peraturan | ketentuan,High,
+Policy,legislation,Indonesian,Latn,perundang-undangan | legislasi | undang-undang,High,
+Policy,central bank,Indonesian,Latn,bank sentral,High,
+Policy,imf,Indonesian,Latn,IMF | Dana Moneter Internasional,High,
+Policy,international monetary fund,Indonesian,Latn,Dana Moneter Internasional,High,
+Policy,world bank,Indonesian,Latn,Bank Dunia,High,
+Uncertainty,uncertain,Indonesian,Latn,tidak pasti,High,
+Uncertainty,uncertainty,Indonesian,Latn,ketidakpastian,High,
+Uncertainty,uncertainties,Indonesian,Latn,ketidakpastian | berbagai ketidakpastian,High,
+Uncertainty,unknown,Indonesian,Latn,tidak diketahui | tak dikenal,High,
+Uncertainty,unstable,Indonesian,Latn,tidak stabil | labil,High,
+Uncertainty,unsure,Indonesian,Latn,tidak yakin | ragu,High,
+Uncertainty,undetermined,Indonesian,Latn,belum ditentukan,High,
+Uncertainty,risky,Indonesian,Latn,berisiko,High,
+Uncertainty,risk,Indonesian,Latn,risiko,High,
+Uncertainty,not certain,Indonesian,Latn,tidak pasti,High,
+Uncertainty,non-reliable,Indonesian,Latn,tidak dapat diandalkan | tidak terpercaya,High,
+Uncertainty,fluctuations,Indonesian,Latn,fluktuasi | naik turun | volatilitas,High,
+Uncertainty,unpredictable,Indonesian,Latn,tidak dapat diprediksi,High,
+Economic,economy,Malay,Latn,ekonomi,High,
+Economic,economic,Malay,Latn,ekonomi | ekonomik,High,
+Economic,economics,Malay,Latn,ekonomi | ilmu ekonomi,High,
+Economic,business,Malay,Latn,perniagaan | bisnes,High,
+Economic,finance,Malay,Latn,kewangan,High,
+Economic,financial,Malay,Latn,kewangan | finansial,High,
+Policy,government,Malay,Latn,kerajaan,High,
+Policy,governmental,Malay,Latn,kerajaan | pentadbiran,High,
+Policy,authorities,Malay,Latn,pihak berkuasa | pihak berwajib,High,
+Policy,minister,Malay,Latn,menteri,High,
+Policy,ministry,Malay,Latn,kementerian,High,
+Policy,parliament,Malay,Latn,parlimen,High,
+Policy,parliamentary,Malay,Latn,parlimen | berparlimen,High,
+Policy,tax,Malay,Latn,cukai,High,
+Policy,regulation,Malay,Latn,peraturan | regulasi,High,
+Policy,legislation,Malay,Latn,perundangan | undang-undang | legislasi,High,
+Policy,central bank,Malay,Latn,bank pusat | bank sentral,High,
+Policy,imf,Malay,Latn,IMF | Tabung Kewangan Antarabangsa,High,
+Policy,international monetary fund,Malay,Latn,Tabung Kewangan Antarabangsa,High,
+Policy,world bank,Malay,Latn,Bank Dunia,High,
+Uncertainty,uncertain,Malay,Latn,tidak pasti,High,
+Uncertainty,uncertainty,Malay,Latn,ketidakpastian,High,
+Uncertainty,uncertainties,Malay,Latn,ketidakpastian,High,
+Uncertainty,unknown,Malay,Latn,tidak diketahui,High,
+Uncertainty,unstable,Malay,Latn,tidak stabil,High,
+Uncertainty,unsure,Malay,Latn,ragu-ragu | tidak pasti,High,
+Uncertainty,undetermined,Malay,Latn,belum ditentukan,High,
+Uncertainty,risky,Malay,Latn,berisiko,High,
+Uncertainty,risk,Malay,Latn,risiko,High,
+Uncertainty,not certain,Malay,Latn,tidak pasti,High,
+Uncertainty,non-reliable,Malay,Latn,tidak boleh dipercayai | tidak boleh diharap,High,
+Uncertainty,fluctuations,Malay,Latn,turun naik | fluktuasi,High,
+Uncertainty,unpredictable,Malay,Latn,tidak dapat diramal,High,
+Economic,economy,Khmer,Khmr,សេដ្ឋកិច្ច,Medium,
+Economic,economic,Khmer,Khmr,សេដ្ឋកិច្ច,Medium,
+Economic,economics,Khmer,Khmr,សេដ្ឋកិច្ចវិទ្យា | សេដ្ឋកិច្ចសាស្ត្រ,Medium,
+Economic,business,Khmer,Khmr,អាជីវកម្ម | ពាណិជ្ជកម្ម,Medium,
+Economic,finance,Khmer,Khmr,ហិរញ្ញវត្ថុ,Medium,
+Economic,financial,Khmer,Khmr,ហិរញ្ញវត្ថុ | ផ្នែកហិរញ្ញវត្ថុ,Medium,
+Policy,government,Khmer,Khmr,រដ្ឋាភិបាល,Medium,
+Policy,governmental,Khmer,Khmr,រដ្ឋាភិបាល | នៃរដ្ឋាភិបាល,Medium,
+Policy,authorities,Khmer,Khmr,អាជ្ញាធរ,Medium,
+Policy,minister,Khmer,Khmr,រដ្ឋមន្ត្រី,Medium,
+Policy,ministry,Khmer,Khmr,ក្រសួង,Medium,
+Policy,parliament,Khmer,Khmr,រដ្ឋសភា | សភា,Medium,
+Policy,parliamentary,Khmer,Khmr,នៃរដ្ឋសភា | សភា,Medium,
+Policy,tax,Khmer,Khmr,ពន្ធ,Medium,
+Policy,regulation,Khmer,Khmr,បទបញ្ជា | បទប្បញ្ញត្តិ | ការកំណត់,Medium,
+Policy,legislation,Khmer,Khmr,ច្បាប់ | នីតិបញ្ញត្តិ,Medium,
+Policy,central bank,Khmer,Khmr,ធនាគារកណ្ដាល,Medium,
+Policy,imf,Khmer,Khmr,IMF | មូលនិធិរូបិយវត្ថុអន្តរជាតិ,Medium,
+Policy,international monetary fund,Khmer,Khmr,មូលនិធិរូបិយវត្ថុអន្តរជាតិ,Medium,
+Policy,world bank,Khmer,Khmr,ធនាគារពិភពលោក,Medium,
+Uncertainty,uncertain,Khmer,Khmr,មិនប្រាកដ | មិនច្បាស់,Medium,
+Uncertainty,uncertainty,Khmer,Khmr,ភាពមិនប្រាកដ | ភាពមិនច្បាស់,Medium,
+Uncertainty,uncertainties,Khmer,Khmr,ភាពមិនប្រាកដ | កត្តាមិនប្រាកដ,Medium,
+Uncertainty,unknown,Khmer,Khmr,មិនដឹង | មិនស្គាល់,Medium,
+Uncertainty,unstable,Khmer,Khmr,អស្ថិរភាព | មិនស្ថេរភាព,Medium,
+Uncertainty,unsure,Khmer,Khmr,មិនប្រាកដ | មិនច្បាស់,Medium,
+Uncertainty,undetermined,Khmer,Khmr,មិនទាន់កំណត់,Medium,
+Uncertainty,risky,Khmer,Khmr,មានហានិភ័យ,Medium,
+Uncertainty,risk,Khmer,Khmr,ហានិភ័យ,Medium,
+Uncertainty,not certain,Khmer,Khmr,មិនប្រាកដ,Medium,
+Uncertainty,non-reliable,Khmer,Khmr,មិនអាចទុកចិត្តបាន | មិនគួរជឿ,Medium,
+Uncertainty,fluctuations,Khmer,Khmr,ការប្រែប្រួល | ការឡើងចុះ,Medium,
+Uncertainty,unpredictable,Khmer,Khmr,មិនអាចព្យាករណ៍បាន | មិនអាចទស្សន៍ទាយបាន,Medium,
+Economic,economy,Lao,Laoo,ເສດຖະກິດ,Medium,
+Economic,economic,Lao,Laoo,ທາງເສດຖະກິດ | ເສດຖະກິດ,Medium,
+Economic,economics,Lao,Laoo,ເສດຖະສາດ,Medium,
+Economic,business,Lao,Laoo,ທຸລະກິດ,Medium,
+Economic,finance,Lao,Laoo,ການເງິນ,Medium,
+Economic,financial,Lao,Laoo,ທາງການເງິນ | ການເງິນ,Medium,
+Policy,government,Lao,Laoo,ລັດຖະບານ,Medium,
+Policy,governmental,Lao,Laoo,ຂອງລັດຖະບານ | ພາກລັດ,Medium,
+Policy,authorities,Lao,Laoo,ທາງການ | ເຈົ້າໜ້າທີ່,Medium,
+Policy,minister,Lao,Laoo,ລັດຖະມົນຕີ,Medium,
+Policy,ministry,Lao,Laoo,ກະຊວງ,Medium,
+Policy,parliament,Lao,Laoo,ລັດສະພາ,Medium,
+Policy,parliamentary,Lao,Laoo,ຂອງລັດສະພາ,Medium,
+Policy,tax,Lao,Laoo,ພາສີ,Medium,
+Policy,regulation,Lao,Laoo,ລະບຽບ | ກົດລະບຽບ,Medium,
+Policy,legislation,Lao,Laoo,ກົດໝາຍ | ນິຕິບັນຍັດ,Medium,
+Policy,central bank,Lao,Laoo,ທະນາຄານກາງ,Medium,
+Policy,imf,Lao,Laoo,IMF | ກອງທຶນການເງິນລະຫວ່າງປະເທດ,Medium,
+Policy,international monetary fund,Lao,Laoo,ກອງທຶນການເງິນລະຫວ່າງປະເທດ,Medium,
+Policy,world bank,Lao,Laoo,ທະນາຄານໂລກ,Medium,
+Uncertainty,uncertain,Lao,Laoo,ບໍ່ແນ່ນອນ,Medium,
+Uncertainty,uncertainty,Lao,Laoo,ຄວາມບໍ່ແນ່ນອນ,Medium,
+Uncertainty,uncertainties,Lao,Laoo,ຄວາມບໍ່ແນ່ນອນ,Medium,
+Uncertainty,unknown,Lao,Laoo,ບໍ່ຮູ້ | ບໍ່ທຣາບ,Medium,
+Uncertainty,unstable,Lao,Laoo,ບໍ່ສະຖຽນ | ບໍ່ມັ້ນຄົງ,Medium,
+Uncertainty,unsure,Lao,Laoo,ບໍ່ແນ່ໃຈ,Medium,
+Uncertainty,undetermined,Lao,Laoo,ຍັງບໍ່ກຳນົດ,Medium,
+Uncertainty,risky,Lao,Laoo,ສ່ຽງ | ມີຄວາມສ່ຽງ,Medium,
+Uncertainty,risk,Lao,Laoo,ຄວາມສ່ຽງ,Medium,
+Uncertainty,not certain,Lao,Laoo,ບໍ່ແນ່ນອນ,Medium,
+Uncertainty,non-reliable,Lao,Laoo,ບໍ່ໜ້າເຊື່ອຖື,Medium,
+Uncertainty,fluctuations,Lao,Laoo,ຄວາມຜັນຜວນ | ຂຶ້ນລົງ,Medium,
+Uncertainty,unpredictable,Lao,Laoo,ຄາດເດົາບໍ່ໄດ້,Medium,
+Economic,economy,Mongolian,Cyrl,эдийн засаг,Medium,
+Economic,economic,Mongolian,Cyrl,эдийн засгийн,Medium,
+Economic,economics,Mongolian,Cyrl,эдийн засаг | эдийн засгийн ухаан,Medium,
+Economic,business,Mongolian,Cyrl,бизнес | худалдаа | аж ахуй,Medium,
+Economic,finance,Mongolian,Cyrl,санхүү,Medium,
+Economic,financial,Mongolian,Cyrl,санхүүгийн,Medium,
+Policy,government,Mongolian,Cyrl,засгийн газар,Medium,
+Policy,governmental,Mongolian,Cyrl,төрийн | засгийн газрын,Medium,
+Policy,authorities,Mongolian,Cyrl,эрх баригчид | эрх бүхий байгууллага,Medium,
+Policy,minister,Mongolian,Cyrl,сайд,Medium,
+Policy,ministry,Mongolian,Cyrl,яам,Medium,
+Policy,parliament,Mongolian,Cyrl,парламент | Улсын Их Хурал,Medium,
+Policy,parliamentary,Mongolian,Cyrl,парламентын,Medium,
+Policy,tax,Mongolian,Cyrl,татвар,Medium,
+Policy,regulation,Mongolian,Cyrl,журам | зохицуулалт,Medium,
+Policy,legislation,Mongolian,Cyrl,хууль тогтоомж | хууль тогтоох,Medium,
+Policy,central bank,Mongolian,Cyrl,төв банк,Medium,
+Policy,imf,Mongolian,Cyrl,IMF | Олон улсын валютын сан,Medium,
+Policy,international monetary fund,Mongolian,Cyrl,Олон улсын валютын сан,Medium,
+Policy,world bank,Mongolian,Cyrl,Дэлхийн банк,Medium,
+Uncertainty,uncertain,Mongolian,Cyrl,тодорхойгүй,Medium,
+Uncertainty,uncertainty,Mongolian,Cyrl,тодорхойгүй байдал,Medium,
+Uncertainty,uncertainties,Mongolian,Cyrl,тодорхойгүй байдал | тодорхойгүй зүйлс,Medium,
+Uncertainty,unknown,Mongolian,Cyrl,үл мэдэгдэх | мэдэгдэхгүй,Medium,
+Uncertainty,unstable,Mongolian,Cyrl,тогтворгүй,Medium,
+Uncertainty,unsure,Mongolian,Cyrl,эргэлзээтэй | итгэлгүй,Medium,
+Uncertainty,undetermined,Mongolian,Cyrl,тогтоогдоогүй | тодорхойлоогүй,Medium,
+Uncertainty,risky,Mongolian,Cyrl,эрсдэлтэй,Medium,
+Uncertainty,risk,Mongolian,Cyrl,эрсдэл,Medium,
+Uncertainty,not certain,Mongolian,Cyrl,тодорхой бус,Medium,
+Uncertainty,non-reliable,Mongolian,Cyrl,найдвартай бус,Medium,
+Uncertainty,fluctuations,Mongolian,Cyrl,хэлбэлзэл | савлагаа,Medium,
+Uncertainty,unpredictable,Mongolian,Cyrl,таамаглашгүй | урьдчилан таамаглах боломжгүй,Medium,
+Economic,economy,Tamil,Taml,பொருளாதாரம்,Medium,
+Economic,economic,Tamil,Taml,பொருளாதார,Medium,
+Economic,economics,Tamil,Taml,பொருளாதாரவியல்,Medium,
+Economic,business,Tamil,Taml,வணிகம் | தொழில்,Medium,
+Economic,finance,Tamil,Taml,நிதி | நிதியியல்,Medium,
+Economic,financial,Tamil,Taml,நிதி சார்ந்த | நிதியியல் | நிதி,Medium,
+Policy,government,Tamil,Taml,அரசு,Medium,
+Policy,governmental,Tamil,Taml,அரசின் | அரசு சார்ந்த,Medium,
+Policy,authorities,Tamil,Taml,அதிகாரிகள் | தொடர்புடைய அதிகாரிகள்,Medium,
+Policy,minister,Tamil,Taml,அமைச்சர்,Medium,
+Policy,ministry,Tamil,Taml,அமைச்சகம்,Medium,
+Policy,parliament,Tamil,Taml,பாராளுமன்றம்,Medium,
+Policy,parliamentary,Tamil,Taml,பாராளுமன்றத் | பாராளுமன்றத்தின்,Medium,
+Policy,tax,Tamil,Taml,வரி,Medium,
+Policy,regulation,Tamil,Taml,விதிமுறை | ஒழுங்குமுறை,Medium,
+Policy,legislation,Tamil,Taml,சட்டம் | சட்டமுறை | சட்டம் இயற்றுதல்,Medium,
+Policy,central bank,Tamil,Taml,மத்திய வங்கி,Medium,
+Policy,imf,Tamil,Taml,IMF | சர்வதேச நாணய நிதியம்,Medium,
+Policy,international monetary fund,Tamil,Taml,சர்வதேச நாணய நிதியம்,Medium,
+Policy,world bank,Tamil,Taml,உலக வங்கி,Medium,
+Uncertainty,uncertain,Tamil,Taml,நிச்சயமற்ற,Medium,
+Uncertainty,uncertainty,Tamil,Taml,நிச்சயமின்மை | உறுதியின்மை,Medium,
+Uncertainty,uncertainties,Tamil,Taml,நிச்சயமின்மை | உறுதியின்மை,Medium,
+Uncertainty,unknown,Tamil,Taml,தெரியாத | அறியப்படாத,Medium,
+Uncertainty,unstable,Tamil,Taml,நிலையற்ற,Medium,
+Uncertainty,unsure,Tamil,Taml,உறுதி இல்லாத | சந்தேகமான,Medium,
+Uncertainty,undetermined,Tamil,Taml,நிர்ணயிக்கப்படாத | தீர்மானிக்கப்படாத,Medium,
+Uncertainty,risky,Tamil,Taml,ஆபத்தான | அபாயகரமான,Medium,
+Uncertainty,risk,Tamil,Taml,ஆபத்து | அபாயம்,Medium,
+Uncertainty,not certain,Tamil,Taml,உறுதி இல்லை | நிச்சயம் இல்லை,Medium,
+Uncertainty,non-reliable,Tamil,Taml,நம்பகமற்ற | நம்ப முடியாத,Medium,
+Uncertainty,fluctuations,Tamil,Taml,ஏற்ற இறக்கம் | அலைச்சல்,Medium,
+Uncertainty,unpredictable,Tamil,Taml,கணிக்க முடியாத,Medium,
+Economic,economy,French,Latn,économie,High,
+Economic,economic,French,Latn,économique,High,
+Economic,economics,French,Latn,sciences économiques | économie,High,
+Economic,business,French,Latn,affaires | entreprise,High,
+Economic,finance,French,Latn,finance | finances,High,
+Economic,financial,French,Latn,financier | financière,High,
+Policy,government,French,Latn,gouvernement,High,
+Policy,governmental,French,Latn,gouvernemental | publique,High,
+Policy,authorities,French,Latn,autorités,High,
+Policy,minister,French,Latn,ministre,High,
+Policy,ministry,French,Latn,ministère,High,
+Policy,parliament,French,Latn,parlement,High,
+Policy,parliamentary,French,Latn,parlementaire,High,
+Policy,tax,French,Latn,impôt | taxe,High,
+Policy,regulation,French,Latn,réglementation | régulation,High,
+Policy,legislation,French,Latn,législation,High,
+Policy,central bank,French,Latn,banque centrale,High,
+Policy,imf,French,Latn,FMI | Fonds monétaire international,High,
+Policy,international monetary fund,French,Latn,Fonds monétaire international,High,
+Policy,world bank,French,Latn,Banque mondiale,High,
+Uncertainty,uncertain,French,Latn,incertain,High,
+Uncertainty,uncertainty,French,Latn,incertitude,High,
+Uncertainty,uncertainties,French,Latn,incertitudes,High,
+Uncertainty,unknown,French,Latn,inconnu | inconnue,High,
+Uncertainty,unstable,French,Latn,instable,High,
+Uncertainty,unsure,French,Latn,pas sûr | incertain,High,
+Uncertainty,undetermined,French,Latn,indéterminé,High,
+Uncertainty,risky,French,Latn,risqué,High,
+Uncertainty,risk,French,Latn,risque,High,
+Uncertainty,not certain,French,Latn,pas certain,High,
+Uncertainty,non-reliable,French,Latn,peu fiable | non fiable,High,
+Uncertainty,fluctuations,French,Latn,fluctuations,High,
+Uncertainty,unpredictable,French,Latn,imprévisible,High,
+Economic,economy,Filipino/Tagalog,Latn,ekonomiya,Medium,
+Economic,economic,Filipino/Tagalog,Latn,pang-ekonomiya | ekonomiko,Medium,
+Economic,economics,Filipino/Tagalog,Latn,ekonomiks | agham pang-ekonomiya,Medium,
+Economic,business,Filipino/Tagalog,Latn,negosyo | kalakalan,Medium,
+Economic,finance,Filipino/Tagalog,Latn,pananalapi | pinansiya,Medium,
+Economic,financial,Filipino/Tagalog,Latn,pinansyal | pang-pinansyal,Medium,
+Policy,government,Filipino/Tagalog,Latn,pamahalaan | gobyerno,Medium,
+Policy,governmental,Filipino/Tagalog,Latn,pampamahalaan | panggobyerno,Medium,
+Policy,authorities,Filipino/Tagalog,Latn,mga awtoridad | kinauukulan,Medium,
+Policy,minister,Filipino/Tagalog,Latn,ministro | kalihim,Medium,
+Policy,ministry,Filipino/Tagalog,Latn,ministeryo | kagawaran,Medium,
+Policy,parliament,Filipino/Tagalog,Latn,parlamento | kongreso,Medium,
+Policy,parliamentary,Filipino/Tagalog,Latn,parlamentaryo,Medium,
+Policy,tax,Filipino/Tagalog,Latn,buwis,Medium,
+Policy,regulation,Filipino/Tagalog,Latn,regulasyon | alituntunin,Medium,
+Policy,legislation,Filipino/Tagalog,Latn,batas | lehislasyon,Medium,
+Policy,central bank,Filipino/Tagalog,Latn,bangko sentral,Medium,
+Policy,imf,Filipino/Tagalog,Latn,IMF | Pandaigdigang Pondo sa Pananalapi | Pandaigdigang Pondo ng Pananalapi,Medium,
+Policy,international monetary fund,Filipino/Tagalog,Latn,Pandaigdigang Pondo sa Pananalapi | Pandaigdigang Pondo ng Pananalapi,Medium,
+Policy,world bank,Filipino/Tagalog,Latn,Bangko ng Daigdig | World Bank,Medium,
+Uncertainty,uncertain,Filipino/Tagalog,Latn,hindi tiyak | di-tiyak,Medium,
+Uncertainty,uncertainty,Filipino/Tagalog,Latn,kawalang-katiyakan,Medium,
+Uncertainty,uncertainties,Filipino/Tagalog,Latn,mga kawalang-katiyakan,Medium,
+Uncertainty,unknown,Filipino/Tagalog,Latn,hindi alam | di-kilala,Medium,
+Uncertainty,unstable,Filipino/Tagalog,Latn,hindi matatag,Medium,
+Uncertainty,unsure,Filipino/Tagalog,Latn,hindi sigurado | nag-aalinlangan,Medium,
+Uncertainty,undetermined,Filipino/Tagalog,Latn,hindi pa natitiyak | hindi pa natutukoy,Medium,
+Uncertainty,risky,Filipino/Tagalog,Latn,mapanganib | may panganib,Medium,
+Uncertainty,risk,Filipino/Tagalog,Latn,panganib | risgo,Medium,
+Uncertainty,not certain,Filipino/Tagalog,Latn,hindi tiyak,Medium,
+Uncertainty,non-reliable,Filipino/Tagalog,Latn,hindi maaasahan,Medium,
+Uncertainty,fluctuations,Filipino/Tagalog,Latn,pagbabagu-bago | pag-akyat at pagbaba,Medium,
+Uncertainty,unpredictable,Filipino/Tagalog,Latn,hindi mahulaan,Medium,
+Economic,economy,Hindi,Deva,अर्थव्यवस्था,Medium,
+Economic,economic,Hindi,Deva,आर्थिक,Medium,
+Economic,economics,Hindi,Deva,अर्थशास्त्र,Medium,
+Economic,business,Hindi,Deva,व्यापार | व्यवसाय,Medium,
+Economic,finance,Hindi,Deva,वित्त,Medium,
+Economic,financial,Hindi,Deva,वित्तीय,Medium,
+Policy,government,Hindi,Deva,सरकार,Medium,
+Policy,governmental,Hindi,Deva,सरकारी,Medium,
+Policy,authorities,Hindi,Deva,अधिकारी | प्राधिकरण,Medium,
+Policy,minister,Hindi,Deva,मंत्री,Medium,
+Policy,ministry,Hindi,Deva,मंत्रालय,Medium,
+Policy,parliament,Hindi,Deva,संसद,Medium,
+Policy,parliamentary,Hindi,Deva,संसदीय,Medium,
+Policy,tax,Hindi,Deva,कर,Medium,
+Policy,regulation,Hindi,Deva,विनियमन | नियम,Medium,
+Policy,legislation,Hindi,Deva,विधान | कानून | विधायी,Medium,
+Policy,central bank,Hindi,Deva,केंद्रीय बैंक,Medium,
+Policy,imf,Hindi,Deva,IMF | अंतर्राष्ट्रीय मुद्रा कोष,Medium,
+Policy,international monetary fund,Hindi,Deva,अंतर्राष्ट्रीय मुद्रा कोष,Medium,
+Policy,world bank,Hindi,Deva,विश्व बैंक,Medium,
+Uncertainty,uncertain,Hindi,Deva,अनिश्चित,Medium,
+Uncertainty,uncertainty,Hindi,Deva,अनिश्चितता,Medium,
+Uncertainty,uncertainties,Hindi,Deva,अनिश्चितताएँ,Medium,
+Uncertainty,unknown,Hindi,Deva,अज्ञात,Medium,
+Uncertainty,unstable,Hindi,Deva,अस्थिर,Medium,
+Uncertainty,unsure,Hindi,Deva,निश्चित नहीं | अनिश्चित,Medium,
+Uncertainty,undetermined,Hindi,Deva,अनिर्धारित,Medium,
+Uncertainty,risky,Hindi,Deva,जोखिमभरा | जोखिमपूर्ण,Medium,
+Uncertainty,risk,Hindi,Deva,जोखिम,Medium,
+Uncertainty,not certain,Hindi,Deva,निश्चित नहीं,Medium,
+Uncertainty,non-reliable,Hindi,Deva,अविश्वसनीय | भरोसेमंद नहीं,Medium,
+Uncertainty,fluctuations,Hindi,Deva,उतार-चढ़ाव | परिवर्तन,Medium,
+Uncertainty,unpredictable,Hindi,Deva,अप्रत्याशित | अनुमान से बाहर,Medium,
+Economic,economy,Māori,Latn,ōhanga,Medium,
+Economic,economic,Māori,Latn,ā-ōhanga | ōhanga,Medium,
+Economic,economics,Māori,Latn,ōhanga | ngā mahi ōhanga,Medium,
+Economic,business,Māori,Latn,pakihi,Medium,
+Economic,finance,Māori,Latn,pūtea | tahua,Medium,
+Economic,financial,Māori,Latn,ā-pūtea | pūtea,Medium,
+Policy,government,Māori,Latn,kāwanatanga,Medium,
+Policy,governmental,Māori,Latn,ā-kāwanatanga,Medium,
+Policy,authorities,Māori,Latn,ngā mana | mana whakahaere,Medium,
+Policy,minister,Māori,Latn,minita,Medium,
+Policy,ministry,Māori,Latn,manatū,Medium,
+Policy,parliament,Māori,Latn,Pāremata,Medium,
+Policy,parliamentary,Māori,Latn,ā-Pāremata,Medium,
+Policy,tax,Māori,Latn,tāke,Medium,
+Policy,regulation,Māori,Latn,ture | whakaritenga,Medium,
+Policy,legislation,Māori,Latn,ture | kaupapa ture,Medium,
+Policy,central bank,Māori,Latn,pēke pokapū | pūtea matua,Medium,
+Policy,imf,Māori,Latn,IMF | International Monetary Fund,Medium,
+Policy,international monetary fund,Māori,Latn,International Monetary Fund | IMF,Medium,
+Policy,world bank,Māori,Latn,Pēke o te Ao | World Bank,Medium,
+Uncertainty,uncertain,Māori,Latn,rangirua | kāore i te tino mōhio,Medium,
+Uncertainty,uncertainty,Māori,Latn,rangirua | kore mārama | āwangawanga,Medium,
+Uncertainty,uncertainties,Māori,Latn,rangirua | āwangawanga,Medium,
+Uncertainty,unknown,Māori,Latn,kāore i mōhiotia,Medium,
+Uncertainty,unstable,Māori,Latn,kāore i te pūmau | kāore i te mautu,Medium,
+Uncertainty,unsure,Māori,Latn,kāore i te tino mōhio,Medium,
+Uncertainty,undetermined,Māori,Latn,kāore anō kia whakatauria,Medium,
+Uncertainty,risky,Māori,Latn,mōrearea | tūraru,Medium,
+Uncertainty,risk,Māori,Latn,mōrearea | tūraru,Medium,
+Uncertainty,not certain,Māori,Latn,kāore i te tino mārama,Medium,
+Uncertainty,non-reliable,Māori,Latn,kāore e taea te whakawhirinaki,Medium,
+Uncertainty,fluctuations,Māori,Latn,rerekētanga | pikinga/hekinga,Medium,
+Uncertainty,unpredictable,Māori,Latn,kāore e taea te matapae,Medium,
+Economic,economy,Samoan,Latn,tamaoaiga,Medium,
+Economic,economic,Samoan,Latn,fa'a-tamaoaiga | tamaoaiga,Medium,
+Economic,economics,Samoan,Latn,tamaoaiga | su'esu'ega o le tamaoaiga,Medium,
+Economic,business,Samoan,Latn,pisinisi | fefa'ataua'iga,Medium,
+Economic,finance,Samoan,Latn,tupe | fa'atupega,Medium,
+Economic,financial,Samoan,Latn,fa'atupega | tupe,Medium,
+Policy,government,Samoan,Latn,malo | faigamalo,Medium,
+Policy,governmental,Samoan,Latn,a le malo,Medium,
+Policy,authorities,Samoan,Latn,pulega | ofisa | 'aufaigaluega a le malo,Medium,
+Policy,minister,Samoan,Latn,minisita,Medium,
+Policy,ministry,Samoan,Latn,matagaluega,Medium,
+Policy,parliament,Samoan,Latn,palemene | Fono,Medium,
+Policy,parliamentary,Samoan,Latn,fa'a-palemene | a le palemene,Medium,
+Policy,tax,Samoan,Latn,lafoga,Medium,
+Policy,regulation,Samoan,Latn,tulafono faatonutonu | fa'atonuga | tulafono,Medium,
+Policy,legislation,Samoan,Latn,tulafono | fa'atulafonoina,Medium,
+Policy,central bank,Samoan,Latn,faletupe tutotonu,Medium,
+Policy,imf,Samoan,Latn,IMF | International Monetary Fund,Medium,
+Policy,international monetary fund,Samoan,Latn,International Monetary Fund | IMF,Medium,
+Policy,world bank,Samoan,Latn,Faletupe o le Lalolagi | World Bank,Medium,
+Uncertainty,uncertain,Samoan,Latn,lē mautinoa | le mautonu,Medium,
+Uncertainty,uncertainty,Samoan,Latn,lē mautinoa | le mautonu,Medium,
+Uncertainty,uncertainties,Samoan,Latn,tulaga le mautonu | lē mautinoa,Medium,
+Uncertainty,unknown,Samoan,Latn,lē iloa | e le iloa,Medium,
+Uncertainty,unstable,Samoan,Latn,lē mautu | lē tumau,Medium,
+Uncertainty,unsure,Samoan,Latn,lē mautinoa,Medium,
+Uncertainty,undetermined,Samoan,Latn,e le'i fuafuaina | e le'i faamautuina,Medium,
+Uncertainty,risky,Samoan,Latn,lamatia | e iai le lamatiaga,Medium,
+Uncertainty,risk,Samoan,Latn,lamatiaga,Medium,
+Uncertainty,not certain,Samoan,Latn,lē mautinoa,Medium,
+Uncertainty,non-reliable,Samoan,Latn,lē fa'atuatuaina,Medium,
+Uncertainty,fluctuations,Samoan,Latn,fesuiaiga | suiga,Medium,
+Uncertainty,unpredictable,Samoan,Latn,e le mafai ona valoia | e lē iloa muamua,Medium,
+Economic,economy,Tongan,Latn,ʻekonomika,Medium,
+Economic,economic,Tongan,Latn,fakaʻekonomika | ʻekonomika,Medium,
+Economic,economics,Tongan,Latn,ʻekonomika,Medium,
+Economic,business,Tongan,Latn,pisinisi | fefakatauʻaki,Medium,
+Economic,finance,Tongan,Latn,paʻanga | fainasi,Medium,
+Economic,financial,Tongan,Latn,faka-paʻanga | paʻanga,Medium,
+Policy,government,Tongan,Latn,puleʻanga,Medium,
+Policy,governmental,Tongan,Latn,ʻa e puleʻanga,Medium,
+Policy,authorities,Tongan,Latn,ngāahi maʻu mafai | otoriti,Medium,
+Policy,minister,Tongan,Latn,minisita,Medium,
+Policy,ministry,Tongan,Latn,matagaluega | minisitelii,Medium,
+Policy,parliament,Tongan,Latn,Fale Alea | palamen,Medium,
+Policy,parliamentary,Tongan,Latn,ʻa e Fale Alea,Medium,
+Policy,tax,Tongan,Latn,tukuhau,Medium,
+Policy,regulation,Tongan,Latn,ngāahi tuʻutuʻuni | lao,Medium,
+Policy,legislation,Tongan,Latn,lao | ngaahi lao,Medium,
+Policy,central bank,Tongan,Latn,pangikē puleʻanga | central bank,Medium,
+Policy,imf,Tongan,Latn,IMF | International Monetary Fund,Medium,
+Policy,international monetary fund,Tongan,Latn,International Monetary Fund | IMF,Medium,
+Policy,world bank,Tongan,Latn,World Bank | Wol Bank,Medium,
+Uncertainty,uncertain,Tongan,Latn,taʻe pau | ʻikai fakapapauʻi,Medium,
+Uncertainty,uncertainty,Tongan,Latn,taʻe pau,Medium,
+Uncertainty,uncertainties,Tongan,Latn,taʻe pau,Medium,
+Uncertainty,unknown,Tongan,Latn,ʻikai ʻiloa,Medium,
+Uncertainty,unstable,Tongan,Latn,ʻikai mautu,Medium,
+Uncertainty,unsure,Tongan,Latn,ʻikai fakapapauʻi,Medium,
+Uncertainty,undetermined,Tongan,Latn,ʻikai fakapapauʻi | ʻikai ʻilo yet,Medium,
+Uncertainty,risky,Tongan,Latn,fakatuʻutāmaki | risky,Medium,
+Uncertainty,risk,Tongan,Latn,tuʻutāmaki | risk,Medium,
+Uncertainty,not certain,Tongan,Latn,ʻikai pau,Medium,
+Uncertainty,non-reliable,Tongan,Latn,ʻikai falalaʻanga,Medium,
+Uncertainty,fluctuations,Tongan,Latn,heke mo hiki | liliu,Medium,
+Uncertainty,unpredictable,Tongan,Latn,ʻikai lava ʻo matapae,Medium,
+Economic,economy,Tok Pisin,Latn,ekonomi,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economic,Tok Pisin,Latn,ekonomik,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economics,Tok Pisin,Latn,ekonomi,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,business,Tok Pisin,Latn,bisnis | wok bisnis,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,finance,Tok Pisin,Latn,fainens | mani,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,financial,Tok Pisin,Latn,bilong mani | fainens,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,government,Tok Pisin,Latn,gavman,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,governmental,Tok Pisin,Latn,bilong gavman,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,authorities,Tok Pisin,Latn,ol otoriti | ol gavman ofisa,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,minister,Tok Pisin,Latn,minista,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,ministry,Tok Pisin,Latn,ministri | dipatmen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliament,Tok Pisin,Latn,palamen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliamentary,Tok Pisin,Latn,palamen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,tax,Tok Pisin,Latn,takis,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,regulation,Tok Pisin,Latn,lo | rul | regulesen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,legislation,Tok Pisin,Latn,lo | lo bilong palamen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,central bank,Tok Pisin,Latn,sentral benk | central bank,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,imf,Tok Pisin,Latn,IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,international monetary fund,Tok Pisin,Latn,International Monetary Fund | IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,world bank,Tok Pisin,Latn,Wol Bank | World Bank,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertain,Tok Pisin,Latn,i no sua | no klia,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainty,Tok Pisin,Latn,no klia | no sua,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainties,Tok Pisin,Latn,ol no klia,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unknown,Tok Pisin,Latn,i no save | i no klia,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unstable,Tok Pisin,Latn,i no stabil | i no strong,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unsure,Tok Pisin,Latn,i no sua,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,undetermined,Tok Pisin,Latn,i no yet,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risky,Tok Pisin,Latn,i gat risk | risky,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risk,Tok Pisin,Latn,risk,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,not certain,Tok Pisin,Latn,i no sua,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,non-reliable,Tok Pisin,Latn,i no inap long trastim,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,fluctuations,Tok Pisin,Latn,senis antap-daun | fluktuesen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unpredictable,Tok Pisin,Latn,i no inap long predik,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economy,Bislama,Latn,ekonomi,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economic,Bislama,Latn,ekonomik,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economics,Bislama,Latn,ekonomik | ekonomi,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,business,Bislama,Latn,bisnis,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,finance,Bislama,Latn,faenans | mani,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,financial,Bislama,Latn,blong mani | faenans,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,government,Bislama,Latn,gavman,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,governmental,Bislama,Latn,blong gavman,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,authorities,Bislama,Latn,ol otoriti | gavman,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,minister,Bislama,Latn,minista,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,ministry,Bislama,Latn,ministri | dipatmen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliament,Bislama,Latn,Palamen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliamentary,Bislama,Latn,blong Palamen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,tax,Bislama,Latn,takis,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,regulation,Bislama,Latn,rul | loa | regulasen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,legislation,Bislama,Latn,loa | loa we Palamen i mekem,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,central bank,Bislama,Latn,Sentrul Bank | Bank Sentral,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,imf,Bislama,Latn,IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,international monetary fund,Bislama,Latn,International Monetary Fund | IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,world bank,Bislama,Latn,Wol Bank | World Bank,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertain,Bislama,Latn,i no sua | i no klia,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainty,Bislama,Latn,i no sua | i no klia,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainties,Bislama,Latn,sam no klia,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unknown,Bislama,Latn,i no save,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unstable,Bislama,Latn,i no stabil,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unsure,Bislama,Latn,i no sua,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,undetermined,Bislama,Latn,i no stap yet,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risky,Bislama,Latn,i gat risk | risky,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risk,Bislama,Latn,risk,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,not certain,Bislama,Latn,i no sua,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,non-reliable,Bislama,Latn,i no save trastem,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,fluctuations,Bislama,Latn,change antap mo daon | fluktuesen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unpredictable,Bislama,Latn,i no save predik,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economy,Solomon Islands Pijin,Latn,ekonomi,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economic,Solomon Islands Pijin,Latn,ekonomik,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economics,Solomon Islands Pijin,Latn,ekonomi,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,business,Solomon Islands Pijin,Latn,bisnis,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,finance,Solomon Islands Pijin,Latn,finance | mani,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,financial,Solomon Islands Pijin,Latn,bilong mani | finance,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,government,Solomon Islands Pijin,Latn,gavman,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,governmental,Solomon Islands Pijin,Latn,bilong gavman,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,authorities,Solomon Islands Pijin,Latn,otoriti | olketa ofisa,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,minister,Solomon Islands Pijin,Latn,minista,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,ministry,Solomon Islands Pijin,Latn,ministri | dipatmen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliament,Solomon Islands Pijin,Latn,palamen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliamentary,Solomon Islands Pijin,Latn,bilong palamen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,tax,Solomon Islands Pijin,Latn,takis,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,regulation,Solomon Islands Pijin,Latn,rul | loa,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,legislation,Solomon Islands Pijin,Latn,loa,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,central bank,Solomon Islands Pijin,Latn,sentral bank,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,imf,Solomon Islands Pijin,Latn,IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,international monetary fund,Solomon Islands Pijin,Latn,International Monetary Fund | IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,world bank,Solomon Islands Pijin,Latn,World Bank | Wol Bank,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertain,Solomon Islands Pijin,Latn,no sua | no klia,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainty,Solomon Islands Pijin,Latn,no klia,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainties,Solomon Islands Pijin,Latn,ol no klia,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unknown,Solomon Islands Pijin,Latn,no save,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unstable,Solomon Islands Pijin,Latn,no stabil,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unsure,Solomon Islands Pijin,Latn,no sua,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,undetermined,Solomon Islands Pijin,Latn,no disaid yet,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risky,Solomon Islands Pijin,Latn,risky | garem risk,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risk,Solomon Islands Pijin,Latn,risk,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,not certain,Solomon Islands Pijin,Latn,no sua,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,non-reliable,Solomon Islands Pijin,Latn,no trustem,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,fluctuations,Solomon Islands Pijin,Latn,senis antap-daon | fluktuesen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unpredictable,Solomon Islands Pijin,Latn,no save predik,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economy,Palauan,Latn,keizai,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economic,Palauan,Latn,keizai | economic,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economics,Palauan,Latn,keizai,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,business,Palauan,Latn,kirel | business,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,finance,Palauan,Latn,mechesang | finance,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,financial,Palauan,Latn,mechesang | financial,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,government,Palauan,Latn,kabelment,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,governmental,Palauan,Latn,kabelment | governmental,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,authorities,Palauan,Latn,otoriti | authorities,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,minister,Palauan,Latn,minister | minisita,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,ministry,Palauan,Latn,ministry | dipatmen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliament,Palauan,Latn,Olbiil Era Kelulau | parliament,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliamentary,Palauan,Latn,Olbiil Era Kelulau | parliamentary,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,tax,Palauan,Latn,tenget | melenget,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,regulation,Palauan,Latn,regulation | law | rul,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,legislation,Palauan,Latn,law | legislation,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,central bank,Palauan,Latn,central bank | bank sentral,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,imf,Palauan,Latn,IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,international monetary fund,Palauan,Latn,International Monetary Fund | IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,world bank,Palauan,Latn,World Bank,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertain,Palauan,Latn,omai er a rengul | uncertain,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainty,Palauan,Latn,omai er a rengul | uncertainty,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainties,Palauan,Latn,uncertainties | omai er a rengul,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unknown,Palauan,Latn,unknown | (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unstable,Palauan,Latn,unstable | (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unsure,Palauan,Latn,omai er a rengul,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,undetermined,Palauan,Latn,undetermined | (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risky,Palauan,Latn,risky | risk,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risk,Palauan,Latn,risk,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,not certain,Palauan,Latn,omai er a rengul,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,non-reliable,Palauan,Latn,non-reliable | (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,fluctuations,Palauan,Latn,fluctuations | (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unpredictable,Palauan,Latn,unpredictable | (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economy,Marshallese,Latn,ekonomi,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economic,Marshallese,Latn,ekonomik,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economics,Marshallese,Latn,ekonomi,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,business,Marshallese,Latn,bizinis | business,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,finance,Marshallese,Latn,finans | bajet,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,financial,Marshallese,Latn,finans,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,government,Marshallese,Latn,kien | Kien M̧ajeļ,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,governmental,Marshallese,Latn,bilong kien | government (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,authorities,Marshallese,Latn,authorities (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,minister,Marshallese,Latn,minister (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,ministry,Marshallese,Latn,ministry (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliament,Marshallese,Latn,Nitijela,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliamentary,Marshallese,Latn,Nitijela (adj) | parliamentary (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,tax,Marshallese,Latn,owōj,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,regulation,Marshallese,Latn,regulation (loan) | law (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,legislation,Marshallese,Latn,legislation (loan) | law (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,central bank,Marshallese,Latn,central bank (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,imf,Marshallese,Latn,IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,international monetary fund,Marshallese,Latn,International Monetary Fund | IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,world bank,Marshallese,Latn,World Bank,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertain,Marshallese,Latn,jab lukkuun,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainty,Marshallese,Latn,jab lukkuun,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainties,Marshallese,Latn,jab lukkuun,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unknown,Marshallese,Latn,unknown (loan) | jabwe (?),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unstable,Marshallese,Latn,bōbōroro,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unsure,Marshallese,Latn,jab lukkuun,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,undetermined,Marshallese,Latn,undetermined (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risky,Marshallese,Latn,risky | garem risk,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risk,Marshallese,Latn,risk,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,not certain,Marshallese,Latn,jab lukkuun,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,non-reliable,Marshallese,Latn,non-reliable (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,fluctuations,Marshallese,Latn,fluctuations (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unpredictable,Marshallese,Latn,unpredictable (loan),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economy,iTaukei (Fijian),Latn,bula vakailavo,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economic,iTaukei (Fijian),Latn,vakailavo | (related: bula vakailavo),Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,economics,iTaukei (Fijian),Latn,vakadidike ni bula vakailavo,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,business,iTaukei (Fijian),Latn,bisinisi | veivoli,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,finance,iTaukei (Fijian),Latn,ilavo | vakailavo,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Economic,financial,iTaukei (Fijian),Latn,vakailavo | ni ilavo,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,government,iTaukei (Fijian),Latn,matanitu,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,governmental,iTaukei (Fijian),Latn,ni matanitu | vakamatanitu,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,authorities,iTaukei (Fijian),Latn,otoriti | o ira na lewa,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,minister,iTaukei (Fijian),Latn,minisita | minisitiri,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,ministry,iTaukei (Fijian),Latn,tabana | minisitiri,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliament,iTaukei (Fijian),Latn,Palimedi | Palamen,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,parliamentary,iTaukei (Fijian),Latn,ni palimedi,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,tax,iTaukei (Fijian),Latn,ivakacavacava | vakacavacava,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,regulation,iTaukei (Fijian),Latn,lawa | ivakarau | rul,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,legislation,iTaukei (Fijian),Latn,lawa | lawa ni matanitu,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,central bank,iTaukei (Fijian),Latn,central bank | Reserve Bank,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,imf,iTaukei (Fijian),Latn,IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,international monetary fund,iTaukei (Fijian),Latn,International Monetary Fund | IMF,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Policy,world bank,iTaukei (Fijian),Latn,World Bank,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertain,iTaukei (Fijian),Latn,sega ni matata | sega ni vakadeitaki,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainty,iTaukei (Fijian),Latn,veilecayaki | sega ni matata,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,uncertainties,iTaukei (Fijian),Latn,veilecayaki,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unknown,iTaukei (Fijian),Latn,sega ni kilai | sega ni kila,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unstable,iTaukei (Fijian),Latn,sega ni dei | sega ni mautu,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unsure,iTaukei (Fijian),Latn,sega ni kila | sega ni vakadeitaki,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,undetermined,iTaukei (Fijian),Latn,sega ni vakadeitaki | sega ni tuvatuva,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risky,iTaukei (Fijian),Latn,ririkotaki | risky,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,risk,iTaukei (Fijian),Latn,risk | leqa,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,not certain,iTaukei (Fijian),Latn,sega ni matata,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,non-reliable,iTaukei (Fijian),Latn,sega ni nuitaki | sega ni rawa ni vakabauti,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,fluctuations,iTaukei (Fijian),Latn,veisau | senis antap-daun,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.
+Uncertainty,unpredictable,iTaukei (Fijian),Latn,sega ni rawa ni kilai rawa | sega ni rawa ni vakadikevi,Low,Includes loanwords/variants; recommend validation with native speaker or in-corpus sampling.

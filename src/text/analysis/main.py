@@ -1,17 +1,20 @@
 import sys
 from pathlib import Path
 
-import matplotlib.pyplot as plt
-import pandas as pd
-from tqdm import tqdm
+# Setup path before imports
+_PROJECT_ROOT = Path(__file__).resolve().parents[3]
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
-from src.text.analysis.epu import EPU
-from src.text.analysis.sentiment import calculate_sentiment
-from src.text.analysis.utils import generate_continous_df, load_topics_words
+import matplotlib.pyplot as plt  # noqa: E402
+import pandas as pd  # noqa: E402
+from tqdm import tqdm  # noqa: E402
 
-PROJECT_ROOT = Path(__file__).resolve().parents[3]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+from src.text.analysis.epu import EPU  # noqa: E402
+from src.text.analysis.sentiment import calculate_sentiment  # noqa: E402
+from src.text.analysis.utils import generate_continous_df, load_topics_words  # noqa: E402
+
+PROJECT_ROOT = _PROJECT_ROOT
 
 DATA_ROOT = PROJECT_ROOT / "data" / "text"
 # EXCLUDED_COUNTRIES = {"marshall_islands", "tonga"}
@@ -132,7 +135,7 @@ def get_sentiment(
 
 if __name__ == "__main__":
     cutoff = "2020-12-31"
-    subset_condition = "date >= '2015-01-01' and date < '2025-10-01'"
+    subset_condition = "date >= '2015-01-01' and date <= '2025-12-31'"
 
     additional_terms_keys = ["inflation", "job"]
     # Load additional terms from topics_words.json
@@ -142,6 +145,7 @@ if __name__ == "__main__":
     additional_terms_inflation = load_topics_words(additional_name="inflation")
     additional_name_inflation = "inflation"
     plot = False
+    skip_sentiment = True  # VADER only supports English
     for country in tqdm(country_dirs):
         get_epu(
             country,
@@ -149,12 +153,13 @@ if __name__ == "__main__":
             subset_condition,
             plot=plot,
         )
-        get_sentiment(
-            country,
-            cutoff,
-            subset_condition,
-            plot=plot,
-        )
+        if not skip_sentiment:
+            get_sentiment(
+                country,
+                cutoff,
+                subset_condition,
+                plot=plot,
+            )
         for names in additional_terms_keys:
             additional_terms = load_topics_words(additional_name=names)
             additional_name = names
@@ -167,11 +172,12 @@ if __name__ == "__main__":
                 additional_name=additional_name,
             )
 
-            get_sentiment(
-                country,
-                cutoff,
-                subset_condition,
-                plot=plot,
-                additional_terms=additional_terms,
-                additional_name=additional_name,
-            )
+            if not skip_sentiment:
+                get_sentiment(
+                    country,
+                    cutoff,
+                    subset_condition,
+                    plot=plot,
+                    additional_terms=additional_terms,
+                    additional_name=additional_name,
+                )
