@@ -22,21 +22,34 @@ This section assess the feasibility of using AIS data to derive high-frequency a
 :::
 
 :::{grid-item-card}
+:link: ./ais/ais_intro
+:link-type: doc
+
+Text Analytics
+^^^
+Sentiment analysis and topic modeling from news sources to monitor economic uncertainty.
+:::
+
+:::{grid-item-card}
+:link: ./text/text_intro
+:link-type: doc
+
+:::{grid-item-card}
+:link: ./cpi/cpi_intro
+:link-type: doc
+
+Consumer Price Index (CPI)
+^^^
+Web scraping on supermarket prices to fill gaps in the Consumer Price Index (CPI).
+:::
+
+:::{grid-item-card}
 :link: ./tourism/intro
 :link-type: doc
 
 Aviation Statistics
 ^^^
 Monitor tourism recovery and fill gaps in visitors data through aviation statistics.
-:::
-
-:::{grid-item-card}
-:link: ./text/intro
-:link-type: doc
-
-Text Analytics
-^^^
-Sentiment analysis and topic modeling from news sources to monitor economic uncertainty.
 :::
 
 :::{grid-item-card}
@@ -49,7 +62,7 @@ Travel time analysis to study accessibility and connectivity in the Pacific.
 :::
 
 :::{grid-item-card}
-:link: ntl/ch1_intro
+:link: ./ntl/ch1_intro
 :link-type: doc
 
 Nighttime Lights Applications
@@ -64,7 +77,7 @@ Nighttime Lights Applications
 Market Prices Imputation
 ^^^
 - A machine learning imputation method to fill gaps in food prices from markets in Papua New Guinea, which follows the estimation from [here](https://openknowledge.worldbank.org/handle/10986/36778).
-- The machine learning imputation code is available [here](https://github.com/worldbank/Food-Price-Estimation). 
+- The machine learning imputation code is available [here](https://github.com/worldbank/Food-Price-Estimation).
 :::
 
 :::{grid-item-card}
@@ -74,8 +87,8 @@ Market Prices Imputation
 Climate and Agriculture Monitoring
 ^^^
 
-- Monitor crop productivity and seasonality through vegetation indices. 
-- Develop a sub-national database of climate indicators.  
+- Monitor crop productivity and seasonality through vegetation indices.
+- Develop a sub-national database of climate indicators.
 :::
 
 :::{grid-item-card}

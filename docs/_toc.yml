@@ -9,6 +9,17 @@ parts:
       - file: ais/ais_hhi
       - file: ais/ais_emissions
       - file: ais/ais_fishing
+  - caption: Text
+    chapters:
+      - file: text/text_intro
+      - url: https://worldbank.github.io/pacific-observatory/interactive/text/text_presentation.slides
+        title: Text Presentation
+  - caption: Consumer Price Index (CPI)
+    chapters:
+      - file: cpi/cpi_intro
+      - file: cpi/cpi_data
+      - file: cpi/cpi_results
+      - file: cpi/cpi_dashboard
   - caption: Tourism
     chapters:
       - file: tourism/intro
@@ -29,11 +40,6 @@ parts:
       - file: tourism/other_models
       - file: tourism/discussion
       - file: tourism/references
-  - caption: Text
-    chapters:
-      - file: text/text_intro
-      - url: https://worldbank.github.io/pacific-observatory/interactive/text/text_presentation.slides
-        title: Text Presentation
   - caption: Market Access
     chapters:
       - file: access/access_intro

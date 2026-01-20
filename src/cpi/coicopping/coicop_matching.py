@@ -117,7 +117,7 @@ def download_and_save_coicop_data(
     # Save full categories (only code, title, keywords columns)
     csv_path = data_dir / "coicop_categories.csv"
     df[["coicop_code", "coicop_title", "keywords"]].to_csv(csv_path, index=False)
-    print(f"✓ Saved to {csv_path}")
+    print(f"✓ Saved to {str(csv_path)}")
 
     # Save categories without services (only coicop_code, coicop_title, keywords columns)
     df_no_services = df[~df["coicop_code"].str.endswith(" (S)")].copy()
@@ -126,14 +126,15 @@ def download_and_save_coicop_data(
         csv_no_services_path, index=False
     )
     print(
-        f"✓ Saved {len(df_no_services)} categories (without services) to {csv_no_services_path}"
+        f"✓ Saved {len(df_no_services)} categories (without services) to {str(csv_no_services_path)}"
     )
 
     return df, df_no_services
 
 
 def create_products_input_csv(
-    df_prepared: Optional[pd.DataFrame] = None, project_root: Optional[Path] = None
+    df_prepared: Optional[pd.DataFrame] = None,
+    project_root: Optional[Path] = None,
 ) -> pd.DataFrame:
     """
     Create products_input.csv from prepared product data.
@@ -368,7 +369,12 @@ def classify_products_with_gemini(
 
                 # Select final columns
                 batch_final = batch_merged[
-                    ["url_hash", "product_w_cat", "coicop_code", "coicop_title"]
+                    [
+                        "url_hash",
+                        "product_w_cat",
+                        "coicop_code",
+                        "coicop_title",
+                    ]
                 ].copy()
 
                 # Remove duplicates
@@ -380,7 +386,10 @@ def classify_products_with_gemini(
                 if gemini_classification_path.exists():
                     # Append to existing file
                     batch_final.to_csv(
-                        gemini_classification_path, mode="a", header=False, index=False
+                        gemini_classification_path,
+                        mode="a",
+                        header=False,
+                        index=False,
                     )
                     print(
                         f"  → Appended {len(batch_final)} records to {gemini_classification_path.name}"
@@ -547,7 +556,8 @@ def generate_final_output(
 
 
 def run_coicop_matching(
-    df_prepared: Optional[pd.DataFrame] = None, project_root: Optional[Path] = None
+    df_prepared: Optional[pd.DataFrame] = None,
+    project_root: Optional[Path] = None,
 ) -> None:
     """
     Main orchestration function for the complete COICOP matching workflow.
