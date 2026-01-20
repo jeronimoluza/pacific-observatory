@@ -138,10 +138,42 @@ SPIDER_SELECTORS = {
             "meta[property='og:description']::attr(content)",
         ],
     },
-    "aeon_online": {
-        "product_name": ["div.detail_info h1.title::text"],
-        "price": ["div.detail_info span.khr-price::text"],
-        "category": ["nav[aria-label='Breadcrumb'] ol li a::text"],
+    "makro": {
+        "product_name": [
+            "h1.font-20.mb-1::text",
+            "h1.product-name::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span.text-danger.font-20::text",
+            "div.price span::text",
+        ],
+        "details": [
+            "div.product-description::text",
+        ],
+    },
+    "thai_huot": {
+        "product_name": [
+            "div.product-detail h2::text",
+            "div.product-info h2::text",
+            "h1.product-title::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "div.product-detail span.price::text",
+            "div.product-info span.price::text",
+            "span.product-price::text",
+            "div.price::text",
+        ],
+        "category": [
+            "nav.breadcrumb a::text",
+            "div.breadcrumb a::text",
+            "ul.breadcrumb li a::text",
+        ],
+        "product_id": [
+            "span.sku::text",
+            "span.product-sku::text",
+        ],
     },
 }
 

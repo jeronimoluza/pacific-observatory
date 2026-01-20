@@ -61,6 +61,18 @@ def run_spider(spider_name: str, **kwargs):
     process = CrawlerProcess(settings)
 
     try:
+        # Check if spider is active before running
+        from scrapy.crawler import CrawlerRunner
+
+        runner = CrawlerRunner(settings)
+        spider_cls = runner.spider_loader.load(spider_name)
+
+        if hasattr(spider_cls, "active") and not spider_cls.active:
+            logger.warning(
+                f"Spider {spider_name} is inactive (active=False). Skipping."
+            )
+            return
+
         logger.info(f"Starting spider: {spider_name}")
         process.crawl(spider_name)
         process.start()
@@ -99,13 +111,31 @@ def run_all_spiders(**kwargs):
 
         logger.info(f"Found {len(spider_names)} spiders: {', '.join(spider_names)}")
 
-        # Add all spiders to the process
-        for spider_name in spider_names:
-            logger.info(f"Scheduling spider: {spider_name}")
-            process.crawl(spider_name)
+        # Filter out inactive spiders and add active ones to the process
+        active_spiders = []
+        inactive_spiders = []
 
-        # Run all spiders
-        logger.info("Starting all spiders...")
+        for spider_name in spider_names:
+            spider_cls = runner.spider_loader.load(spider_name)
+            if hasattr(spider_cls, "active") and not spider_cls.active:
+                inactive_spiders.append(spider_name)
+                logger.info(f"Skipping inactive spider: {spider_name}")
+            else:
+                active_spiders.append(spider_name)
+                logger.info(f"Scheduling spider: {spider_name}")
+                process.crawl(spider_name)
+
+        if inactive_spiders:
+            logger.info(
+                f"Skipped {len(inactive_spiders)} inactive spiders: {', '.join(inactive_spiders)}"
+            )
+
+        if not active_spiders:
+            logger.warning("No active spiders to run")
+            return
+
+        # Run all active spiders
+        logger.info(f"Starting {len(active_spiders)} active spiders...")
         process.start()
         logger.info("All spiders completed successfully")
     except Exception as e:
@@ -167,6 +197,10 @@ def get_spider_country(spider_name: str) -> str:
         "horizon_farms": "japan",
         "hypermart": "indonesia",
         "pickaroo": "philippines",
+        "delishop_asia": "cambodia",
+        "aeon_online": "cambodia",
+        "makro": "cambodia",
+        "thai_huot": "cambodia",
     }
     return spider_countries.get(spider_name, "unknown")
 
