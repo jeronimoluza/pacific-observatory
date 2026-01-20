@@ -142,6 +142,11 @@ PER_EACH_REGEX = re.compile(
 
 # Keywords that indicate promotional or bundle products
 PROMOTION_KEYWORDS = [
+    "2 in 1",
+    "3 in 1",
+    "4 in 1",
+    "5 in 1",
+    "6 in 1",
     "bundle",
     "combo",
     "deal",

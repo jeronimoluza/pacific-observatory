@@ -25,12 +25,12 @@ The East Asia and Pacific region hosts a substantial corpus of accessible Englis
 | | Japan Today | 4,500 | 2012-09-27 |
 | | The Asahi Shimbun | 11,473 | 2020-04-16 |
 | Lao | Kosmo | 102,721 | 2020-07-10 |
-| | Kpl | 15,832 | 2014-06-13 |
+| | KPL | 15,832 | 2014-06-13 |
 | | Pasaxon | 1,237 | 2023-09-26 |
 | | The Laotian Times | 8,843 | 2016-06-03 |
 | Malaysia | Malay Mail | 226,294 | 2013-06-18 |
 | Marshall Islands | MI Journal | 1,629 | 2015-01-02 |
-| Mongolia | Dnn | 13,560 | 2014-05-03 |
+| Mongolia | DNN | 13,560 | 2014-05-03 |
 | | UB Post | 465 | 2016-10-08 |
 | New Caledonia | Les Nouvelles Caledoniennes | 704 | 2025-08-12 |
 | New Zealand | New Zealand Herald | 19,508 | 2025-06-10 |
