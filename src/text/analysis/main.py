@@ -1,4 +1,5 @@
 import sys
+import time
 from pathlib import Path
 
 # Setup path before imports
@@ -8,7 +9,6 @@ if str(_PROJECT_ROOT) not in sys.path:
 
 import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd  # noqa: E402
-from tqdm import tqdm  # noqa: E402
 
 from src.text.analysis.epu import EPU  # noqa: E402
 from src.text.analysis.sentiment import calculate_sentiment  # noqa: E402
@@ -146,13 +146,43 @@ if __name__ == "__main__":
     additional_name_inflation = "inflation"
     plot = False
     skip_sentiment = True  # VADER only supports English
-    for country in tqdm(country_dirs):
-        get_epu(
-            country,
-            cutoff,
-            subset_condition,
-            plot=plot,
-        )
+
+    total_countries = len(country_dirs)
+    start_time = time.time()
+
+    print(f"\n{'='*60}")
+    print(f"EPU Analysis - Processing {total_countries} countries")
+    print(f"{'='*60}\n")
+
+    for i, country in enumerate(country_dirs):
+        country_start = time.time()
+
+        # Calculate ETA
+        elapsed = time.time() - start_time
+        if i > 0:
+            avg_per_country = elapsed / i
+            remaining = (total_countries - i) * avg_per_country
+            eta_min = int(remaining // 60)
+            eta_sec = int(remaining % 60)
+            eta_str = f"ETA: {eta_min}m {eta_sec}s"
+        else:
+            eta_str = "ETA: calculating..."
+
+        print(f"\n[{i+1}/{total_countries}] {country.name} - {eta_str}")
+        print(f"  News files: {list(country.glob('*/news.csv'))}")
+        try:
+            get_epu(
+                country,
+                cutoff,
+                subset_condition,
+                plot=plot,
+            )
+            print("  ✓ Base EPU completed")
+        except Exception as e:
+            print(f"  ✗ Base EPU FAILED: {e}")
+            print(f"    Skipping {country.name} due to error")
+            continue
+
         if not skip_sentiment:
             get_sentiment(
                 country,
@@ -163,14 +193,18 @@ if __name__ == "__main__":
         for names in additional_terms_keys:
             additional_terms = load_topics_words(additional_name=names)
             additional_name = names
-            get_epu(
-                country,
-                cutoff,
-                subset_condition,
-                plot=plot,
-                additional_terms=additional_terms,
-                additional_name=additional_name,
-            )
+            try:
+                get_epu(
+                    country,
+                    cutoff,
+                    subset_condition,
+                    plot=plot,
+                    additional_terms=additional_terms,
+                    additional_name=additional_name,
+                )
+                print(f"  ✓ EPU ({names}) completed")
+            except Exception as e:
+                print(f"  ✗ EPU ({names}) FAILED: {e}")
 
             if not skip_sentiment:
                 get_sentiment(
@@ -181,3 +215,11 @@ if __name__ == "__main__":
                     additional_terms=additional_terms,
                     additional_name=additional_name,
                 )
+
+        country_elapsed = time.time() - country_start
+        print(f"  Done in {country_elapsed:.1f}s")
+
+    total_elapsed = time.time() - start_time
+    print(f"\n{'='*60}")
+    print(f"Completed in {total_elapsed/60:.1f} minutes")
+    print(f"{'='*60}")

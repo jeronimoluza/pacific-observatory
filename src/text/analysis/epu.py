@@ -158,6 +158,16 @@ class EPU:
                         "date" column converted to datetime, and a new "ym" column added.
         """
         df = pd.read_csv(filepath, encoding="utf-8")
+
+        # Validate required columns exist
+        required_cols = ["date", "body"]
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        if missing_cols:
+            raise ValueError(
+                f"File {filepath} missing required columns: {missing_cols}. "
+                f"Available columns: {df.columns.tolist()}"
+            )
+
         df = df.drop_duplicates()
         df = df[~df.date.isna()].reset_index(drop=True)
         if subset_condition is not None:

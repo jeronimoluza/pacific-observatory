@@ -17,6 +17,7 @@ COUNT_UNITS = [
     "can",
     "cans",
     "ct",
+    "count",
     "pack",
     "packs",
     "piece",
@@ -30,6 +31,28 @@ COUNT_UNITS = [
     "jars",
     "bag",
     "bags",
+    "roll",
+    "rolls",
+    "sheet",
+    "sheets",
+    "tablet",
+    "tablets",
+    "capsule",
+    "capsules",
+    "sachet",
+    "sachets",
+    "stick",
+    "sticks",
+    "bar",
+    "bars",
+    "bottle",
+    "bottles",
+    "tube",
+    "tubes",
+    "serving",
+    "servings",
+    "dose",
+    "doses",
 ]
 AMOUNT_UNITS = [
     "g",
@@ -112,3 +135,188 @@ PER_KG_REGEX = re.compile(r"\(?\s*per\s*/?\s*kg\s*\)?", re.IGNORECASE)
 PER_EACH_REGEX = re.compile(
     r"\(?\s*per\s*/?\s*(?:each|ea)\b\s*\)?|\(\s*each\s*\)", re.IGNORECASE
 )
+
+# =============================================================================
+# PROMOTION AND BUNDLE DETECTION
+# =============================================================================
+
+# Keywords that indicate promotional or bundle products
+PROMOTION_KEYWORDS = [
+    "bundle",
+    "combo",
+    "deal",
+    # "carton" removed - often refers to packaging, not promotions
+    "bulk",
+    "bonus",
+    # Note: "free" is handled specially with false positive detection
+    "free",
+    "promo",
+    # "special" removed - too common in product names
+    "offer",
+    "save",
+    "value pack",
+    "multi-pack",
+    "multipack",
+    "family pack",
+    # "economy" removed - often a product line, not promotion
+    # "mega" removed - often a brand name or size descriptor
+    # "jumbo" removed - often a size descriptor, not promotion
+    "twin pack",
+    "twin-pack",
+    "triple pack",
+    "triple-pack",
+]
+
+# Regex patterns for promotional products
+PROMOTION_PATTERNS = [
+    r"\bbuy\s+\d+\s+get\s+\d+\b",  # "buy 2 get 1"
+    r"\d+\s+for\s+\$?\d+",  # "3 for $10"
+    r"\bget\s+\d+\s+free\b",  # "get 1 free"
+    r"\b\d+%\s*off\b",  # "20% off"
+    r"\bsave\s+\$?\d+",  # "save $5"
+    r"\+\s*\d+\s*%?\s*(?:extra|free|bonus)\b",  # "+50% extra"
+    r"\bextra\s+\d+\s*%?\b",  # "extra 50%"
+]
+
+# Compile promotion patterns
+PROMOTION_PATTERNS_COMPILED = [re.compile(p, re.IGNORECASE) for p in PROMOTION_PATTERNS]
+
+# =============================================================================
+# ADDITIVE PATTERNS (bonus quantities)
+# =============================================================================
+
+# Patterns that indicate additive/bonus quantities
+ADDITIVE_PATTERNS = [
+    r"\+\s*\d+(?:\.\d+)?\s*(?:g|gm|kg|ml|mls|l|oz|lb)\b",  # "+50g", "+ 100ml"
+    r"\bbonus\s+\d+(?:\.\d+)?\s*(?:g|gm|kg|ml|mls|l|oz|lb)?\b",  # "bonus 50g"
+    r"\bextra\s+\d+(?:\.\d+)?\s*(?:g|gm|kg|ml|mls|l|oz|lb|%)\b",  # "extra 100g"
+    r"\bfree\s+\d+(?:\.\d+)?\s*(?:g|gm|kg|ml|mls|l|oz|lb)?\b",  # "free 50g"
+    r"\+\s*\d+\s*%\s*(?:free|extra|bonus|more)?\b",  # "+25% free"
+    r"\b\d+(?:\.\d+)?\s*%\s*(?:free|extra|bonus|more)\b",  # "25% extra"
+]
+
+# =============================================================================
+# RANGE PATTERN
+# =============================================================================
+
+# Generic range pattern for detecting ranges in product names
+RANGE_PATTERN = r"\d+(?:\.\d+)?\s*-\s*\d+(?:\.\d+)?\s*(?:g|gm|kg|ml|mls|l|oz|lb|pack|packs|pc|pcs|piece|pieces)?\b"
+
+# =============================================================================
+# FOOD COUNT KEYWORDS
+# =============================================================================
+
+# Keywords that indicate food items typically sold by count (eggs, bread, etc.)
+# These are used to determine if count-only products should be classified as resolved
+FOOD_COUNT_KEYWORDS = [
+    # Eggs
+    "egg",
+    "eggs",
+    # Bread and baked goods
+    "bread",
+    "loaf",
+    "loaves",
+    "bun",
+    "buns",
+    # Note: "roll/rolls" removed - too ambiguous (bread rolls vs paper rolls)
+    # "bread rolls" will still match on "bread"
+    "bagel",
+    "bagels",
+    "croissant",
+    "croissants",
+    "muffin",
+    "muffins",
+    "donut",
+    "donuts",
+    "doughnut",
+    "doughnuts",
+    "pastry",
+    "pastries",
+    "scone",
+    "scones",
+    # Fruits (commonly sold by count)
+    "apple",
+    "apples",
+    "orange",
+    "oranges",
+    "banana",
+    "bananas",
+    "avocado",
+    "avocados",
+    "lemon",
+    "lemons",
+    "lime",
+    "limes",
+    "mango",
+    "mangoes",
+    "mangos",
+    "coconut",
+    "coconuts",
+    "pineapple",
+    "pineapples",
+    "papaya",
+    "papayas",
+    "watermelon",
+    "watermelons",
+    "melon",
+    "melons",
+    "kiwi",
+    "kiwis",
+    "peach",
+    "peaches",
+    "pear",
+    "pears",
+    "plum",
+    "plums",
+    "grapefruit",
+    "grapefruits",
+    # Vegetables (commonly sold by count)
+    "onion",
+    "onions",
+    "potato",
+    "potatoes",
+    "tomato",
+    "tomatoes",
+    "cucumber",
+    "cucumbers",
+    "lettuce",
+    "cabbage",
+    "cabbages",
+    "corn",
+    "eggplant",
+    "eggplants",
+    "pepper",
+    "peppers",
+    "capsicum",
+    "capsicums",
+    "carrot",
+    "carrots",
+    "garlic",
+    "head",  # head of lettuce/cabbage
+    # Other food items
+    "pie",
+    "pies",
+    "cake",
+    "cakes",
+    "cookie",
+    "cookies",
+    "biscuit",
+    "biscuits",
+    "tart",
+    "tarts",
+    "pizza",
+    "pizzas",
+    "wrap",
+    "wraps",
+    "tortilla",
+    "tortillas",
+    "burger",
+    "burgers",
+    "patty",
+    "patties",
+    "sausage",
+    "sausages",
+    "chicken",  # whole chicken
+    "turkey",
+    "duck",
+]

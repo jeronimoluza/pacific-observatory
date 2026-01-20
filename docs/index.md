@@ -22,17 +22,13 @@ This section assess the feasibility of using AIS data to derive high-frequency a
 :::
 
 :::{grid-item-card}
-:link: ./ais/ais_intro
+:link: ./text/text_intro
 :link-type: doc
 
 Text Analytics
 ^^^
 Sentiment analysis and topic modeling from news sources to monitor economic uncertainty.
 :::
-
-:::{grid-item-card}
-:link: ./text/text_intro
-:link-type: doc
 
 :::{grid-item-card}
 :link: ./cpi/cpi_intro

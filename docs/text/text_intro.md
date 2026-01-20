@@ -10,47 +10,65 @@ The East Asia and Pacific region hosts a substantial corpus of accessible Englis
 
 | Country | Newspaper/Media Source | Number of Articles | From |
 |---------|------------------------|--------------------|----|
-| Cambodia | Khmer Times | 69,680 | 1970-01-01 |
-| China | China Daily | 10,512 | 2014-03-28 |
-| | People's Daily Online | 3,442 | 2024-09-13 |
-| Fiji | Fiji Sun | 63,880 | 2008-05-27 |
-| Indonesia | Antara | 10,886 | 2025-09-23 |
-| | Jakarta Post | 1,635 | 2025-02-24 |
+| Cambodia | Kampuchea Thmey Daily | 51,269 | 2017-07-25 |
+| | Khmer Times | 70,314 | 1970-01-01 |
+| China | Caixin Global | 4,495 | 2010-01-05 |
+| | China Daily | 10,561 | 2014-03-28 |
+| | People's Daily Online | 4,098 | 2024-09-13 |
+| Fiji | Fiji Sun | 64,031 | 2008-05-27 |
+| French Polynesia | Tahiti Infos | 50,235 | 2010-03-25 |
+| Indonesia | Antara | 17,446 | 2025-09-23 |
+| | Detik | 83,338 | 2024-07-23 |
+| | Jakarta Post | 1,920 | 2025-02-24 |
 | | Tempo | 77,615 | 2003-07-21 |
-| Japan | Japan News | 51,555 | 2022-04-29 |
+| Japan | Japan News | 52,123 | 2022-04-29 |
 | | Japan Today | 4,500 | 2012-09-27 |
-| | The Asahi Shimbun | 11,399 | 2020-04-16 |
-| Lao | The Laotian Times | 8,687 | 2016-06-03 |
-| Malaysia | Malay Mail | 225,506 | 2013-06-18 |
-| Marshall Islands | MI Journal | 1,620 | 2015-01-02 |
-| Mongolia | UB Post | 462 | 2016-10-08 |
-| New Zealand | New Zealand Herald | 16,802 | 2025-06-10 |
-| Pacific | Australian Broadcasting Corporation (ABC AU) | 25,468 | 2003-02-19 |
-| | PINA | 39,176 | 2011-11-19 |
-| | Radio New Zealand (RNZ) | 53,118 | 2007-06-17 |
-| Palau | Island Times | 10,094 | 2016-06-03 |
-| Papua New Guinea | PNG Business News | 3,498 | 2019-05-24 |
-| | Post Courier | 52,768 | 2015-12-16 |
-| Philippines | Asia News Network | 3,067 | 2018-04-03 |
-| | Inquirer | 50,685 | 1998-10-07 |
-| | Philippine Star | 220 | 2025-10-11 |
-| Samoa | Samoa Observer | 77,557 | 2012-01-01 |
-| Singapore | The Independent | 1,885 | 2022-10-17 |
-| | The Straits Times | 9,789 | 2024-09-15 |
+| | The Asahi Shimbun | 11,473 | 2020-04-16 |
+| Lao | Kosmo | 102,721 | 2020-07-10 |
+| | Kpl | 15,832 | 2014-06-13 |
+| | Pasaxon | 1,237 | 2023-09-26 |
+| | The Laotian Times | 8,843 | 2016-06-03 |
+| Malaysia | Malay Mail | 226,294 | 2013-06-18 |
+| Marshall Islands | MI Journal | 1,629 | 2015-01-02 |
+| Mongolia | Dnn | 13,560 | 2014-05-03 |
+| | UB Post | 465 | 2016-10-08 |
+| New Caledonia | Les Nouvelles Caledoniennes | 704 | 2025-08-12 |
+| New Zealand | New Zealand Herald | 19,508 | 2025-06-10 |
+| Pacific | Australian Broadcasting Corporation (ABC AU) | 25,328 | 2003-02-19 |
+| | PINA | 49,968 | 2011-11-19 |
+| | Radio New Zealand (RNZ) | 47,726 | 2007-06-17 |
+| Palau | Island Times | 10,120 | 2016-06-03 |
+| Papua New Guinea | PNG Business News | 3,517 | 2019-05-24 |
+| | Post Courier | 53,271 | 2015-12-16 |
+| | Wantok | 912 | 2020-06-18 |
+| Philippines | Abante | 27,690 | 2020-05-12 |
+| | Asia News Network | 3,094 | 2018-04-03 |
+| | Inquirer | 51,135 | 1998-10-07 |
+| | Philippine Star | 856 | 2024-12-22 |
+| Samoa | Samoa Observer | 77,608 | 2012-01-01 |
+| Singapore | The Independent | 1,982 | 2022-10-17 |
+| | The Straits Times | 10,820 | 2024-09-15 |
 | | Today Online | 616 | 2024-04-13 |
-| Solomon Islands | SIBC | 10,916 | 2013-12-14 |
-| | Solomon Star | 34,109 | 2014-04-10 |
+| | Zaobao | 9,846 | 2024-11-29 |
+| Solomon Islands | SIBC | 10,989 | 2013-12-14 |
+| | Solomon Star | 34,274 | 2014-04-10 |
 | | Solomon Times | 22,976 | 2007-04-14 |
-| | The Island Sun | 10,301 | 2017-09-01 |
-| South Korea | The Korea Herald | 12,431 | 2025-05-05 |
-| | The Korea Times | 94,323 | 2006-12-07 |
-| Thailand | Nation Thailand | 13,854 | 2024-04-22 |
-| Tonga | Matangi Tonga Online | 40,481 | 1997-11-04 |
-| Vanuatu | Vanuatu Daily Post | 35,333 | 2014-04-08 |
+| | The Island Sun | 10,304 | 2017-09-01 |
+| South Korea | Hankyoreh | 10,017 | 2025-07-08 |
+| | Joongang | 47,952 | 2023-12-12 |
+| | The Korea Herald | 18,765 | 2025-05-05 |
+| | The Korea Times | 94,601 | 2006-12-07 |
+| | Yonhap News Agency | 1,500 | 2026-01-04 |
+| Thailand | Matichon | 74,525 | 2020-05-03 |
+| | Nation Thailand | 15,864 | 2024-04-22 |
+| Tonga | Matangi Tonga Online | 40,517 | 1997-11-04 |
+| Vanuatu | Vanuatu Daily Post | 35,561 | 2014-04-08 |
 | | Vanuatu Business Review (VBR) | 577 | 2020-04-27 |
-| Vietnam | Tuoi Tre | 36,564 | 1970-01-01 |
-| | Vietnam News | 38,577 | 2004-06-21 |
-| **Total** | | **1,292,472** | |
+| Vietnam | Dan Tri | 1,186 | 2025-10-02 |
+| | Tuoi Tre | 36,982 | 1970-01-01 |
+| | Vietnam News | 38,878 | 2004-06-21 |
+| | Vietnamnet | 130,548 | 2004-01-21 |
+| **Total** | | **1,950,624** | |
 
 ## Methods
 
@@ -86,15 +104,6 @@ The EPU index can also be computed for news sources related to specific policy t
 
 <div>
 <iframe src="../interactive/text/epu_topics_pic.html"
-frameborder="0" marginwidth="0" marginheight="0" width="800" height="433"></iframe>
-</div>
-
-### Economic Policy Sentiment
-
-We use the EPU to filter news articles that align with the economic and policy categories for targeted sentiment analysis. The sentiment analysis uses VADER (Valence Aware Dictionary and sEntiment Reasoner), a rule-based model that handles social media and news text (Hutto and Gilbert, 2014). VADER calculates the sentiment score S based on the sum of lexical features (positive, neutral, and negative words). The final sentiment score S ranges between -1 (most negative) and +1 (most positive), with neutral scores around 0.
-
-<div>
-<iframe src="../interactive/text/sentiment_pic.html"
 frameborder="0" marginwidth="0" marginheight="0" width="800" height="433"></iframe>
 </div>
 

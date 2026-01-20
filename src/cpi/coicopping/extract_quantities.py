@@ -13,6 +13,13 @@ Special cases:
 - If per_each_regex matches: amount = NaN, units = "1"
 - If no quantity specified: amount = NaN, units = "1" (default unit is 1)
 
+New in standardized unit price system:
+- Multi-candidate extraction: captures ALL quantity expressions
+- Usability classification: classifies each product into one of 7 statuses
+- Confidence scoring: assigns confidence score [0, 1] to each extraction
+- Promotion detection: flags promotional/bundle products
+- No silent fallbacks: unresolved products have unit_value=None
+
 Example:
 - "maltesers fun size share pack chocolate 11 pack 132g" → amount = "132 g", units = "11 pack"
 """
@@ -45,6 +52,16 @@ from regex_config import (
     AMOUNT_UNITS,
 )
 from unit_conversions import UNIT_CONVERSIONS
+
+# Import new standardized unit price modules
+from quantity_candidates import extract_all_candidates
+from usability_classifier import (
+    classify_usability,
+    get_standard_unit,
+    UsabilityStatus,
+)
+from confidence_scoring import calculate_confidence
+from promotion_detection import detect_promotion
 
 
 def parse_price(price_str) -> Optional[float]:
@@ -214,29 +231,53 @@ def extract_amount_and_units(product_name: str) -> Tuple[Optional[str], Optional
 
 
 def calculate_unit_value(
-    price, amount: Optional[str], units: Optional[str]
+    price,
+    amount: Optional[str],
+    units: Optional[str],
+    usability_status: Optional[str] = None,
 ) -> Optional[float]:
     """
     Calculate the unit value (price per kg, lt, or mt) for a product.
 
+    IMPORTANT: This function now respects usability_status. Products that are
+    not resolved (UNRESOLVED, PROMOTION_OR_BUNDLE, AMBIGUOUS_QUANTITY, UNIT_ONLY_NON_FOOD)
+    will return None to avoid silent fallback behavior.
+
     Logic:
-        1. Parse the price string to extract numeric value
-        2. Parse the amount string to extract numeric value and unit (e.g., "100 g" -> 100, "g")
-        3. Convert the amount to standard units (kg, lt, mt) using UNIT_CONVERSIONS
-        4. Parse the units string to get the count (e.g., "6" -> 6)
-        5. Calculate: unit_value = price / (converted_amount * count)
-        6. If no convertible amount unit, calculate: unit_value = price / count
+        1. Check usability_status - return None for non-resolved products
+        2. Parse the price string to extract numeric value
+        3. Parse the amount string to extract numeric value and unit (e.g., "100 g" -> 100, "g")
+        4. Convert the amount to standard units (kg, lt, mt) using UNIT_CONVERSIONS
+        5. Parse the units string to get the count (e.g., "6" -> 6)
+        6. Calculate: unit_value = price / (converted_amount * count)
+        7. For count-only food products: unit_value = price / count
 
     Args:
         price: The product price (string or numeric).
         amount: The amount string (e.g., "100 g", "1 kg", "500 ml") or None.
         units: The units count string (e.g., "6", "1") or None.
+        usability_status: The usability classification status. If provided and not
+                         resolved, returns None instead of computing a fallback value.
 
     Returns:
         The unit value (price per kg/lt/mt) or price per unit if no amount, or None if invalid.
         Returns as float (e.g., 10.00 not $10.00).
+        Returns None for non-resolved products to avoid silent fallbacks.
     """
     import re
+
+    # Check usability status - return None for non-resolved products
+    # This prevents silent fallback behavior
+    resolved_statuses = {
+        UsabilityStatus.RESOLVED_MASS.value,
+        UsabilityStatus.RESOLVED_VOLUME.value,
+        UsabilityStatus.RESOLVED_LENGTH.value,
+        UsabilityStatus.RESOLVED_COUNT_FOOD.value,
+    }
+
+    if usability_status is not None and usability_status not in resolved_statuses:
+        # Non-resolved product - do not compute unit value
+        return None
 
     # Parse price to float
     price_float = parse_price(price)
@@ -253,33 +294,39 @@ def calculate_unit_value(
     except (ValueError, TypeError):
         count = 1
 
-    # If no amount, unit_value = price / count
-    if amount is None or pd.isna(amount) or amount == "":
+    # For count-only food products (RESOLVED_COUNT_FOOD), unit_value = price / count
+    if usability_status == UsabilityStatus.RESOLVED_COUNT_FOOD.value:
         return float(price_float / count)
+
+    # If no amount, return None (no silent fallback for resolved mass/volume/length)
+    if amount is None or pd.isna(amount) or amount == "":
+        # Only return price/count if explicitly resolved as count food
+        # Otherwise, this shouldn't happen for resolved mass/volume/length
+        return None
 
     # Parse amount string to extract numeric value and unit
     amount_match = re.match(r"(\d+(?:\.\d+)?)\s*([a-zA-Z]+)?", str(amount).strip())
     if not amount_match:
-        return float(price_float / count)
+        return None
 
     amount_value_str, amount_unit = amount_match.groups()
 
     try:
         amount_value = float(amount_value_str)
         if amount_value <= 0:
-            return float(price_float / count)
+            return None
     except (ValueError, TypeError):
-        return float(price_float / count)
+        return None
 
-    # If no unit found, unit_value = price / count
+    # If no unit found, return None
     if not amount_unit:
-        return float(price_float / count)
+        return None
 
     # Convert to standard unit (kg, lt, mt)
     amount_unit_lower = amount_unit.lower()
     if amount_unit_lower not in UNIT_CONVERSIONS:
-        # Unknown unit, just return price / count
-        return float(price_float / count)
+        # Unknown unit - return None (no silent fallback)
+        return None
 
     conversion_factor, standard_unit = UNIT_CONVERSIONS[amount_unit_lower]
 
@@ -298,11 +345,75 @@ def calculate_unit_value(
     return unit_value
 
 
+def _extract_with_new_system(row: pd.Series) -> pd.Series:
+    """
+    Extract quantities using the new standardized system.
+
+    This function performs multi-candidate extraction, classification,
+    and confidence scoring for a single product row.
+
+    Args:
+        row: DataFrame row with at least 'product_name' column.
+             Optionally 'coicop_code' for food detection.
+
+    Returns:
+        Series with: amount, units, usability_status, confidence_score,
+                    standard_unit, n_candidates, has_promotion, rejection_reason
+    """
+    product_name = row.get("product_name", "")
+    coicop_code = row.get("coicop_code", None)
+
+    # Extract all candidates
+    extraction_result = extract_all_candidates(product_name)
+
+    # Check for per_kg and per_each patterns first (backward compatibility)
+    if isinstance(product_name, str):
+        if PER_KG_REGEX.search(product_name):
+            extraction_result.raw_amount = "1 kg"
+            extraction_result.raw_units = None
+        elif PER_EACH_REGEX.search(product_name):
+            extraction_result.raw_amount = None
+            extraction_result.raw_units = "1"
+
+    # Classify usability
+    usability_status, rejection_reason = classify_usability(
+        extraction_result, product_name, coicop_code
+    )
+
+    # Calculate confidence
+    confidence_score = calculate_confidence(extraction_result, usability_status)
+
+    # Get standard unit
+    standard_unit = get_standard_unit(extraction_result, usability_status)
+
+    # Check for promotion
+    has_promotion, _ = detect_promotion(product_name)
+
+    return pd.Series(
+        {
+            "amount": extraction_result.raw_amount,
+            "units": extraction_result.raw_units
+            if extraction_result.raw_units
+            else "1",
+            "usability_status": usability_status.value,
+            "confidence_score": confidence_score,
+            "standard_unit": standard_unit,
+            "n_candidates": extraction_result.n_candidates,
+            "has_promotion": has_promotion,
+            "rejection_reason": rejection_reason,
+        }
+    )
+
+
 def extract_quantities(
     df_prepared: Optional[pd.DataFrame] = None, project_root: Optional[Path] = None
 ) -> pd.DataFrame:
     """
-    Extract quantities from prepared product data.
+    Extract quantities from prepared product data using the standardized unit price system.
+
+    This function now uses multi-candidate extraction, usability classification,
+    and confidence scoring to provide high-quality unit prices suitable for
+    inflation monitoring and cross-country analysis.
 
     Args:
         df_prepared: Optional pre-prepared DataFrame from prepare_coicop_matching_data().
@@ -315,7 +426,13 @@ def extract_quantities(
         - price
         - amount
         - units
-        - unit_value (price per kg, lt, or mt; or price/units if no amount)
+        - unit_value (price per kg, lt, mt, or per unit; None for non-resolved)
+        - usability_status (classification: resolved_mass, resolved_volume, etc.)
+        - confidence_score (0-1 confidence in extraction)
+        - standard_unit (kg, lt, mt, count, or None)
+        - n_candidates (number of quantity expressions found)
+        - has_promotion (boolean: promotional product detected)
+        - rejection_reason (why not resolved, for diagnostics)
         - source
         - country
         - product_url
@@ -329,14 +446,21 @@ def extract_quantities(
         # Data is already prepared and cleaned
         df = df_prepared.copy()
 
-    # Extract amount and units
-    df[["amount", "units"]] = df["product_name"].apply(
-        lambda x: pd.Series(extract_amount_and_units(x))
-    )
+    # Extract quantities using the new standardized system
+    new_columns = df.apply(_extract_with_new_system, axis=1)
 
-    # Calculate unit_value (price per kg, lt, or mt)
+    # Merge new columns into the DataFrame
+    df = pd.concat([df, new_columns], axis=1)
+
+    # Calculate unit_value respecting usability status
+    # Only resolved products get a unit_value; others get None
     df["unit_value"] = df.apply(
-        lambda row: calculate_unit_value(row["price"], row["amount"], row["units"]),
+        lambda row: calculate_unit_value(
+            row["price"],
+            row["amount"],
+            row["units"],
+            row["usability_status"],
+        ),
         axis=1,
     ).astype("float64")
 
@@ -344,7 +468,7 @@ def extract_quantities(
     if "url" in df.columns and "product_url" not in df.columns:
         df = df.rename(columns={"url": "product_url"})
 
-    # Select and order the required columns
+    # Select and order the required columns (including new columns)
     required_columns = [
         "product_name",
         "product_w_cat",
@@ -353,6 +477,12 @@ def extract_quantities(
         "amount",
         "units",
         "unit_value",
+        "usability_status",
+        "confidence_score",
+        "standard_unit",
+        "n_candidates",
+        "has_promotion",
+        "rejection_reason",
         "source",
         "country",
         "product_url",
@@ -443,13 +573,34 @@ def merge_quantities_with_gemini(
     else:
         print("⚠ Warning: 'date' column not found, skipping sort")
 
-    # Print summary
+    # Print merge summary
     classified = df_merged["coicop_code"].notna().sum()
     unclassified = df_merged["coicop_code"].isna().sum()
     print("\nMerge summary:")
     print(f"  - Total records: {len(df_merged)}")
     print(f"  - Classified: {classified}")
     print(f"  - Unclassified: {unclassified}")
+
+    # Print usability status distribution
+    if "usability_status" in df_merged.columns:
+        print("\nUsability status distribution:")
+        status_counts = df_merged["usability_status"].value_counts()
+        for status, count in status_counts.items():
+            pct = count / len(df_merged) * 100
+            print(f"  - {status}: {count} ({pct:.1f}%)")
+
+        # Calculate resolved rate
+        resolved_statuses = [
+            "resolved_mass",
+            "resolved_volume",
+            "resolved_length",
+            "resolved_count_food",
+        ]
+        resolved_count = df_merged[
+            df_merged["usability_status"].isin(resolved_statuses)
+        ].shape[0]
+        resolved_pct = resolved_count / len(df_merged) * 100
+        print(f"\n  Total resolved: {resolved_count} ({resolved_pct:.1f}%)")
 
     return df_merged
 

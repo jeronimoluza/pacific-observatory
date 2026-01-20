@@ -97,11 +97,11 @@ def run_complete_workflow(
     print(f"  - Wayback records: {len(df_prepared[df_prepared['wayback'] == 1])}")
     print(f"  - Columns: {df_prepared.columns.tolist()}")
 
-    # STEP 2: Extract quantities
+    # STEP 2: Extract quantities (with standardized unit price system)
     print("\n" + "=" * 80)
-    print("STEP 2: Extract quantities")
+    print("STEP 2: Extract quantities (Standardized Unit Price System)")
     print("=" * 80)
-    logger.info("Extracting quantities (amount, units, unit_value)...")
+    logger.info("Extracting quantities with multi-candidate extraction...")
     # Pass prepared data to avoid re-preparing
     df_quantities = extract_quantities(
         df_prepared=df_prepared, project_root=project_root
@@ -110,6 +110,37 @@ def run_complete_workflow(
     print(f"  - Records with amount: {df_quantities['amount'].notna().sum()}")
     print(f"  - Records with units: {df_quantities['units'].notna().sum()}")
     print(f"  - Records with unit_value: {df_quantities['unit_value'].notna().sum()}")
+
+    # Print usability status distribution
+    print("\n  Usability status distribution:")
+    status_counts = df_quantities["usability_status"].value_counts()
+    for status, count in status_counts.items():
+        pct = count / len(df_quantities) * 100
+        print(f"    - {status}: {count} ({pct:.1f}%)")
+
+    # Calculate resolved rate
+    resolved_statuses = [
+        "resolved_mass",
+        "resolved_volume",
+        "resolved_length",
+        "resolved_count_food",
+    ]
+    resolved_count = df_quantities[
+        df_quantities["usability_status"].isin(resolved_statuses)
+    ].shape[0]
+    resolved_pct = resolved_count / len(df_quantities) * 100
+    print(f"\n  Total resolved: {resolved_count} ({resolved_pct:.1f}%)")
+
+    # Print promotion detection summary
+    promo_count = df_quantities["has_promotion"].sum()
+    print(f"  Products flagged as promotional: {promo_count}")
+
+    # Print confidence score distribution
+    print("\n  Confidence score statistics:")
+    print(f"    - Mean: {df_quantities['confidence_score'].mean():.2f}")
+    print(f"    - Median: {df_quantities['confidence_score'].median():.2f}")
+    print(f"    - Min: {df_quantities['confidence_score'].min():.2f}")
+    print(f"    - Max: {df_quantities['confidence_score'].max():.2f}")
 
     # STEP 3: Classify with COICOP (if not skipped)
     if not skip_classification:
@@ -139,7 +170,7 @@ def run_complete_workflow(
     # Use the merge_quantities_with_gemini function as specified in README
     df_final = merge_quantities_with_gemini(df_quantities, gemini_classification_path)
 
-    # Select final columns
+    # Select final columns (including new standardized unit price columns)
     final_columns = [
         "url_hash",
         "product_name",
@@ -149,6 +180,12 @@ def run_complete_workflow(
         "amount",
         "units",
         "unit_value",
+        "usability_status",
+        "confidence_score",
+        "standard_unit",
+        "n_candidates",
+        "has_promotion",
+        "rejection_reason",
         "coicop_code",
         "coicop_title",
         "source",
@@ -183,6 +220,67 @@ def run_complete_workflow(
     print(f"Records with amount: {df_final['amount'].notna().sum()}")
     print(f"Records with unit_value: {df_final['unit_value'].notna().sum()}")
     print(f"Date range: {df_final['date'].min()} to {df_final['date'].max()}")
+
+    # Print standardized unit price system metrics
+    print("\n" + "-" * 40)
+    print("STANDARDIZED UNIT PRICE METRICS")
+    print("-" * 40)
+    if "usability_status" in df_final.columns:
+        # Usability status distribution
+        print("\nUsability Status Distribution:")
+        status_counts = df_final["usability_status"].value_counts()
+        for status, count in status_counts.items():
+            pct = count / len(df_final) * 100
+            print(f"  {status}: {count} ({pct:.1f}%)")
+
+        # Calculate resolved rate (PRD success metric)
+        resolved_statuses = [
+            "resolved_mass",
+            "resolved_volume",
+            "resolved_length",
+            "resolved_count_food",
+        ]
+        resolved_count = df_final[
+            df_final["usability_status"].isin(resolved_statuses)
+        ].shape[0]
+        resolved_pct = resolved_count / len(df_final) * 100
+        print(f"\n  TOTAL RESOLVED: {resolved_count} ({resolved_pct:.1f}%)")
+
+        # Food products resolved rate (target: >= 30%)
+        if "coicop_code" in df_final.columns:
+            food_products = df_final[
+                df_final["coicop_code"].str.startswith("01", na=False)
+            ]
+            if len(food_products) > 0:
+                food_resolved = food_products[
+                    food_products["usability_status"].isin(resolved_statuses)
+                ].shape[0]
+                food_resolved_pct = food_resolved / len(food_products) * 100
+                print(
+                    f"  Food products resolved: {food_resolved}/{len(food_products)} ({food_resolved_pct:.1f}%)"
+                )
+                if food_resolved_pct >= 30:
+                    print("  ✓ PRD Target Met: >= 30% food products resolved")
+                else:
+                    print(f"  ⚠ PRD Target Not Met: {food_resolved_pct:.1f}% < 30%")
+
+    if "has_promotion" in df_final.columns:
+        promo_count = df_final["has_promotion"].sum()
+        print(f"\nPromotional products detected: {promo_count}")
+
+    if "confidence_score" in df_final.columns:
+        print("\nConfidence Score Statistics:")
+        print(f"  Mean: {df_final['confidence_score'].mean():.3f}")
+        print(f"  Median: {df_final['confidence_score'].median():.3f}")
+        print(
+            f"  High confidence (>= 0.75): {(df_final['confidence_score'] >= 0.75).sum()}"
+        )
+        print(
+            f"  Medium confidence (0.50-0.74): {((df_final['confidence_score'] >= 0.50) & (df_final['confidence_score'] < 0.75)).sum()}"
+        )
+        print(
+            f"  Low confidence (< 0.50): {(df_final['confidence_score'] < 0.50).sum()}"
+        )
 
     print("\n" + "=" * 80)
     print("✓ WORKFLOW COMPLETE!")
