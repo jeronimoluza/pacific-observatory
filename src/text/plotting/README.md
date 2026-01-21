@@ -15,9 +15,9 @@ This folder contains standalone HTML plots generated from `interactive.py` data 
 
 ### Generate HTML Files
 
-Run the generator script:
+Run the generator script from the project root:
 ```bash
-python interactive.py
+poetry run python src/text/plotting/interactive.py
 ```
 
 This will create 5 standalone HTML files in the current directory.

@@ -778,6 +778,34 @@ def normalize_date(date_str: str) -> str:
     return handle_mixed_dates(date_str)
 
 
+def handle_unix_timestamp_ms(timestamp: int | str) -> str:
+    """
+    Convert Unix timestamp in milliseconds to YYYY-MM-DD format.
+
+    Args:
+        timestamp: Unix timestamp in milliseconds (int or str)
+
+    Returns:
+        Normalized date string in YYYY-MM-DD format
+    """
+    if not timestamp:
+        return ""
+
+    try:
+        # Convert to int if string
+        if isinstance(timestamp, str):
+            timestamp = int(timestamp)
+
+        # Convert milliseconds to seconds
+        timestamp_seconds = timestamp / 1000
+
+        # Convert to datetime and format
+        return datetime.fromtimestamp(timestamp_seconds).strftime("%Y-%m-%d")
+    except (ValueError, OSError, TypeError) as e:
+        logger.error(f"Error converting Unix timestamp {timestamp}: {e}")
+        return ""
+
+
 def join_body_list(body_text_list: list) -> str:
     """
     Join body text from a list of strings.
@@ -802,6 +830,7 @@ CLEANING_FUNCTIONS = {
     "clean_solomon_times_content": clean_solomon_times_content,
     "clean_solomon_times_tags": clean_solomon_times_tags,
     "handle_mixed_dates": handle_mixed_dates,
+    "handle_unix_timestamp_ms": handle_unix_timestamp_ms,
     "normalize_date": normalize_date,
     "clean_html_text": clean_html_text,
     "normalize_tags": normalize_tags,

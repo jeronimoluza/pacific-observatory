@@ -1,25 +1,37 @@
+# Pre-commit hooks for Pacific Observatory
 # See https://pre-commit.com for more information
-# See https://pre-commit.com/hooks.html for more hooks
+# Install with: pre-commit install
+# Run manually: pre-commit run --all-files
 
 ci:
   autofix_prs: false
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit.com hooks
+  autoupdate_schedule: weekly
 
 # Skip notebooks everywhere; run hooks on docs markdown
 exclude: ^.*\.ipynb$
 
 repos:
+  # Basic file checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
+        args: [--unsafe]  # Allow custom tags in YAML configs
       - id: check-added-large-files
+        args: [--maxkb=500]
       - id: check-ast
       - id: check-json
+      - id: check-merge-conflict
+      - id: debug-statements
       - id: detect-aws-credentials
         args: [--allow-missing-credentials]
       - id: detect-private-key
+
+  # Ruff for linting and formatting (fast, replaces flake8/black/isort)
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.2.1
     hooks:
@@ -30,3 +42,12 @@ repos:
       - id: ruff-format
         types_or: [python, pyi, jupyter]
         exclude: ^notebooks/.*\.ipynb$
+
+  # Security checks
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.7
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml, -r, src/text]
+        additional_dependencies: ["bandit[toml]"]
+        exclude: tests/

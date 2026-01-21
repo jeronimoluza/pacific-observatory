@@ -41,7 +41,7 @@ selectors:
 
 # Data cleaning configuration
 cleaning:
-  date: "handle_mixed_dates"
+  date: "handle_unix_timestamp_ms"
 
 # Test/debug options
 max_pages: null

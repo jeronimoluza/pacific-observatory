@@ -1,0 +1,52 @@
+# Test configuration for unit testing
+# This config uses all supported features to test parsing
+
+name: test_newspaper
+country: test_country
+language: en
+base_url: https://test-newspaper.example.com
+active: true
+
+# Client configuration
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+timeout: 30
+
+# Listing configuration
+listing:
+  type: pagination
+  start_url: /news
+  page_param: page
+  start_page: 1
+  max_pages: 100
+
+# Thumbnail selectors
+thumbnails:
+  container: article.news-item
+  title: h2.article-title
+  link: a.article-link
+  date: span.article-date
+  excerpt: p.article-excerpt
+  image: img.article-thumbnail
+
+# Article selectors
+article:
+  title: h1.article-title
+  body: div.article-body
+  date: time.publish-date
+  author: span.author
+  category: span.category
+
+# Cleaning functions
+cleaning:
+  date: handle_mixed_dates
+  title: null
+  body: null
+
+# Optional authentication
+auth:
+  cookies: false
+  headers:
+    User-Agent: "Mozilla/5.0 (compatible; TestBot/1.0)"
