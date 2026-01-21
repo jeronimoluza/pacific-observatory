@@ -218,3 +218,30 @@ def is_resolved(status: UsabilityStatus) -> bool:
         True if the product is resolved and suitable for unit price calculation
     """
     return status in RESOLVED_STATUSES
+
+
+def get_extraction_tier(status: UsabilityStatus) -> Optional[int]:
+    """
+    Get the extraction tier for a status.
+
+    Tiers from design document:
+    - Tier 1: Weight/Volume (kg, L, g, ml, etc.)
+    - Tier 2: Count (pcs, dozen, pack, etc.)
+    - Tier 3: Per-item fallback
+
+    Args:
+        status: The usability status
+
+    Returns:
+        1, 2, or 3 for resolved statuses; None for excluded statuses
+    """
+    if isinstance(status, str):
+        status = UsabilityStatus(status)
+
+    tier_map = {
+        UsabilityStatus.RESOLVED_WEIGHT_VOLUME: 1,
+        UsabilityStatus.RESOLVED_COUNT: 2,
+        UsabilityStatus.RESOLVED_PER_ITEM: 3,
+        UsabilityStatus.PENDING_REVIEW: 3,  # Treated as Tier 3
+    }
+    return tier_map.get(status)
