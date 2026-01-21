@@ -114,15 +114,12 @@ def classify_usability(
     """
     Classify the usability of a product based on its quantity extraction.
 
-    Decision tree:
-    1. Promotion detected → PROMOTION_OR_BUNDLE
-    2. Multiple conflicting quantities → AMBIGUOUS_QUANTITY
-    3. Resolved with mass unit → RESOLVED_MASS
-    4. Resolved with volume unit → RESOLVED_VOLUME
-    5. Resolved with length unit → RESOLVED_LENGTH
-    6. Count-based AND food (COICOP 01.x or food keywords) → RESOLVED_COUNT_FOOD
-    7. Count-based AND not food → UNIT_ONLY_NON_FOOD
-    8. Otherwise → UNRESOLVED
+    Decision tree from design document:
+    1. Promotion detected → PROMOTION_OR_BUNDLE (exclude)
+    2. Tier 1: Weight/Volume found → RESOLVED_WEIGHT_VOLUME
+    3. Tier 2: Count found → RESOLVED_COUNT
+    4. Tier 3: No quantity → RESOLVED_PER_ITEM (include with quantity=1)
+    5. Contradiction check → CONTRADICTORY (exclude)
 
     Args:
         extraction_result: The quantity extraction result
@@ -131,9 +128,9 @@ def classify_usability(
 
     Returns:
         Tuple of (UsabilityStatus, rejection_reason) where rejection_reason
-        explains why a product was not resolved (or None if resolved)
+        explains exclusion (or None if included)
     """
-    # Step 1: Check for promotions/bundles
+    # Step 1: Check for promotions/bundles FIRST (per design doc flow)
     is_promo, promo_type = detect_promotion(product_name)
     if is_promo:
         return UsabilityStatus.PROMOTION_OR_BUNDLE, f"promotion_detected:{promo_type}"
@@ -146,56 +143,33 @@ def classify_usability(
     ):
         return UsabilityStatus.PROMOTION_OR_BUNDLE, "bundle_product_detected"
 
-    # Step 2: Check for ambiguous/conflicting quantities
+    # Step 5 (done early): Check for contradictory signals
     if extraction_result.has_conflicting_quantities:
-        return UsabilityStatus.AMBIGUOUS_QUANTITY, "multiple_conflicting_quantities"
+        return UsabilityStatus.CONTRADICTORY, "multiple_conflicting_quantities"
 
-    # Also flag if there are multiple candidates with additive patterns
     if extraction_result.has_additive_pattern and extraction_result.n_candidates > 1:
         return (
-            UsabilityStatus.AMBIGUOUS_QUANTITY,
+            UsabilityStatus.CONTRADICTORY,
             "additive_pattern_with_multiple_candidates",
         )
 
-    # Step 3-5: Check for resolved mass/volume/length
+    # Step 2: Tier 1 - Weight/Volume
     primary = extraction_result.primary_candidate
+    if primary and primary.candidate_type in ("mass", "volume", "length"):
+        return UsabilityStatus.RESOLVED_WEIGHT_VOLUME, None
 
-    if primary:
-        if primary.candidate_type == "mass":
-            return UsabilityStatus.RESOLVED_MASS, None
-        elif primary.candidate_type == "volume":
-            return UsabilityStatus.RESOLVED_VOLUME, None
-        elif primary.candidate_type == "length":
-            return UsabilityStatus.RESOLVED_LENGTH, None
-
-    # Step 6-7: Check for count-based products
+    # Step 3: Tier 2 - Count
     count_candidates = [
         c for c in extraction_result.candidates if c.candidate_type == "count"
     ]
+    if count_candidates or (
+        extraction_result.raw_units and extraction_result.raw_units != "1"
+    ):
+        return UsabilityStatus.RESOLVED_COUNT, None
 
-    if count_candidates or extraction_result.raw_units not in (None, "1"):
-        # Has count information - check if it's food
-        # Priority: 1) COICOP code (authoritative), 2) keyword fallback
-        coicop_is_food = is_food_coicop(coicop_code)
-
-        if coicop_is_food is True:
-            # COICOP says it's food - trust it
-            return UsabilityStatus.RESOLVED_COUNT_FOOD, None
-        elif coicop_is_food is False:
-            # COICOP says it's NOT food - trust it
-            return UsabilityStatus.UNIT_ONLY_NON_FOOD, "count_only_non_food_product"
-        else:
-            # No COICOP code - use keyword fallback
-            if contains_food_keywords(product_name):
-                return UsabilityStatus.RESOLVED_COUNT_FOOD, None
-            else:
-                return UsabilityStatus.UNIT_ONLY_NON_FOOD, "count_only_non_food_product"
-
-    # Step 8: Unresolved
-    if extraction_result.n_candidates == 0:
-        return UsabilityStatus.UNRESOLVED, "no_quantity_found"
-    else:
-        return UsabilityStatus.UNRESOLVED, "unable_to_determine_standard_unit"
+    # Step 4: Tier 3 - Per-Item Fallback
+    # Per design doc: "Products are compared item-to-item over time without unit normalization"
+    return UsabilityStatus.RESOLVED_PER_ITEM, None
 
 
 def get_standard_unit(
