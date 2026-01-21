@@ -1,0 +1,20 @@
+{
+  "global": [
+    "promo", "promotion", "bundle", "combo", "special offer",
+    "buy 1 get 1", "b1g1", "bogo", "value pack", "multi-pack",
+    "free", "bonus", "save", "deal", "2 in 1", "3 in 1",
+    "4 in 1", "5 in 1", "6 in 1", "bulk", "multipack",
+    "family pack", "twin pack", "twin-pack", "triple pack", "triple-pack"
+  ],
+  "source_specific": {
+    "samoa_market": ["special combo"],
+    "mh_online": ["weekly special"],
+    "thai_huot": [],
+    "aeon_online": [],
+    "aldi_au": [],
+    "rbpatel": [],
+    "food_pro": [],
+    "molisi": [],
+    "dynamic_vanuatu": []
+  }
+}
