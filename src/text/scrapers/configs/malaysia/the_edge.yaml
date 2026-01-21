@@ -45,7 +45,7 @@ selectors:
     url: "filler"
     date: "filler"
   article:
-    body: "div.newsTextDataWrapInner p::text"  # Extract all paragraph text from article
+    body: "div.newsTextDataWrapInner p"  # Extract all paragraph text from article
     tags: "filler"  # Tags come from API
 
 # Data cleaning configuration
