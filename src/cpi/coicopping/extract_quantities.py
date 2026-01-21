@@ -15,8 +15,8 @@ Special cases:
 
 New in standardized unit price system:
 - Multi-candidate extraction: captures ALL quantity expressions
-- Usability classification: classifies each product into one of 7 statuses
-- Confidence scoring: assigns confidence score [0, 1] to each extraction
+- Usability classification: classifies each product into tiered statuses
+- Extraction tiers: Tier 1 (weight/volume), Tier 2 (count), Tier 3 (per-item)
 - Promotion detection: flags promotional/bundle products
 - No silent fallbacks: unresolved products have unit_value=None
 
@@ -58,9 +58,9 @@ from quantity_candidates import extract_all_candidates
 from usability_classifier import (
     classify_usability,
     get_standard_unit,
+    get_extraction_tier,
     UsabilityStatus,
 )
-from confidence_scoring import calculate_confidence
 from promotion_detection import detect_promotion
 
 
@@ -269,10 +269,10 @@ def calculate_unit_value(
     # Check usability status - return None for non-resolved products
     # This prevents silent fallback behavior
     resolved_statuses = {
-        UsabilityStatus.RESOLVED_MASS.value,
-        UsabilityStatus.RESOLVED_VOLUME.value,
-        UsabilityStatus.RESOLVED_LENGTH.value,
-        UsabilityStatus.RESOLVED_COUNT_FOOD.value,
+        UsabilityStatus.RESOLVED_WEIGHT_VOLUME.value,
+        UsabilityStatus.RESOLVED_COUNT.value,
+        UsabilityStatus.RESOLVED_PER_ITEM.value,
+        UsabilityStatus.PENDING_REVIEW.value,
     }
 
     if usability_status is not None and usability_status not in resolved_statuses:
@@ -294,8 +294,12 @@ def calculate_unit_value(
     except (ValueError, TypeError):
         count = 1
 
-    # For count-only food products (RESOLVED_COUNT_FOOD), unit_value = price / count
-    if usability_status == UsabilityStatus.RESOLVED_COUNT_FOOD.value:
+    # For per-item products (Tier 3), unit_value = price
+    if usability_status == UsabilityStatus.RESOLVED_PER_ITEM.value:
+        return float(price_float)
+
+    # For count products (Tier 2), unit_value = price / count
+    if usability_status == UsabilityStatus.RESOLVED_COUNT.value:
         return float(price_float / count)
 
     # If no amount, return None (no silent fallback for resolved mass/volume/length)
@@ -349,16 +353,17 @@ def _extract_with_new_system(row: pd.Series) -> pd.Series:
     """
     Extract quantities using the new standardized system.
 
-    This function performs multi-candidate extraction, classification,
-    and confidence scoring for a single product row.
+    This function performs multi-candidate extraction and classification
+    for a single product row.
 
     Args:
         row: DataFrame row with at least 'product_name' column.
              Optionally 'coicop_code' for food detection.
 
     Returns:
-        Series with: amount, units, usability_status, confidence_score,
-                    standard_unit, n_candidates, has_promotion, rejection_reason
+        Series with: amount, units, usability_status, extraction_tier,
+                    standard_unit, n_candidates, has_promotion, rejection_reason,
+                    pending_review
     """
     product_name = row.get("product_name", "")
     coicop_code = row.get("coicop_code", None)
@@ -380,9 +385,6 @@ def _extract_with_new_system(row: pd.Series) -> pd.Series:
         extraction_result, product_name, coicop_code
     )
 
-    # Calculate confidence
-    confidence_score = calculate_confidence(extraction_result, usability_status)
-
     # Get standard unit
     standard_unit = get_standard_unit(extraction_result, usability_status)
 
@@ -396,11 +398,12 @@ def _extract_with_new_system(row: pd.Series) -> pd.Series:
             if extraction_result.raw_units
             else "1",
             "usability_status": usability_status.value,
-            "confidence_score": confidence_score,
+            "extraction_tier": get_extraction_tier(usability_status),
             "standard_unit": standard_unit,
             "n_candidates": extraction_result.n_candidates,
             "has_promotion": has_promotion,
             "rejection_reason": rejection_reason,
+            "pending_review": False,  # TODO: implement review flagging logic
         }
     )
 
@@ -411,9 +414,9 @@ def extract_quantities(
     """
     Extract quantities from prepared product data using the standardized unit price system.
 
-    This function now uses multi-candidate extraction, usability classification,
-    and confidence scoring to provide high-quality unit prices suitable for
-    inflation monitoring and cross-country analysis.
+    This function now uses multi-candidate extraction and usability classification
+    to provide high-quality unit prices suitable for inflation monitoring and
+    cross-country analysis.
 
     Args:
         df_prepared: Optional pre-prepared DataFrame from prepare_coicop_matching_data().
@@ -427,12 +430,13 @@ def extract_quantities(
         - amount
         - units
         - unit_value (price per kg, lt, mt, or per unit; None for non-resolved)
-        - usability_status (classification: resolved_mass, resolved_volume, etc.)
-        - confidence_score (0-1 confidence in extraction)
+        - usability_status (classification: resolved_weight_volume, resolved_count, etc.)
+        - extraction_tier (1, 2, or 3 indicating extraction quality tier)
         - standard_unit (kg, lt, mt, count, or None)
         - n_candidates (number of quantity expressions found)
         - has_promotion (boolean: promotional product detected)
         - rejection_reason (why not resolved, for diagnostics)
+        - pending_review (boolean: flagged for manual review)
         - source
         - country
         - product_url
@@ -478,11 +482,12 @@ def extract_quantities(
         "units",
         "unit_value",
         "usability_status",
-        "confidence_score",
+        "extraction_tier",
         "standard_unit",
         "n_candidates",
         "has_promotion",
         "rejection_reason",
+        "pending_review",
         "source",
         "country",
         "product_url",
@@ -591,10 +596,9 @@ def merge_quantities_with_gemini(
 
         # Calculate resolved rate
         resolved_statuses = [
-            "resolved_mass",
-            "resolved_volume",
-            "resolved_length",
-            "resolved_count_food",
+            "resolved_weight_volume",
+            "resolved_count",
+            "resolved_per_item",
         ]
         resolved_count = df_merged[
             df_merged["usability_status"].isin(resolved_statuses)
