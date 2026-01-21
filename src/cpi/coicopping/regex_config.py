@@ -73,7 +73,6 @@ AMOUNT_UNITS = [
     "cm",
     "ft",
     "feet",
-    "in",
     "inch",
     "inches",
 ]
@@ -181,6 +180,8 @@ PROMOTION_PATTERNS = [
     r"\bsave\s+\$?\d+",  # "save $5"
     r"\+\s*\d+\s*%?\s*(?:extra|free|bonus)\b",  # "+50% extra"
     r"\bextra\s+\d+\s*%?\b",  # "extra 50%"
+    r"\b\d+\s+in\s+1\b",  # "2 in 1", "3 in 1", "7 in 1"
+    r"\b\d+in1\b",  # "2in1", "3in1", "7in1"
 ]
 
 # Compile promotion patterns
