@@ -179,30 +179,43 @@ def get_standard_unit(
     """
     Get the standard unit for a product based on its extraction and status.
 
-    Standard units:
-    - Mass: 'kg'
-    - Volume: 'lt'
-    - Length: 'mt'
+    Standard units per design document:
+    - Weight/Volume: 'kg' or 'L' (based on primary candidate)
     - Count: 'count'
+    - Per-item: 'item'
 
     Args:
         extraction_result: The quantity extraction result
         usability_status: The usability classification
 
     Returns:
-        Standard unit string or None if not resolved
+        Standard unit string or None if excluded
     """
+    if isinstance(usability_status, str):
+        usability_status = UsabilityStatus(usability_status)
+
     if usability_status not in RESOLVED_STATUSES:
         return None
 
-    if usability_status == UsabilityStatus.RESOLVED_MASS:
-        return "kg"
-    elif usability_status == UsabilityStatus.RESOLVED_VOLUME:
-        return "lt"
-    elif usability_status == UsabilityStatus.RESOLVED_LENGTH:
-        return "mt"
-    elif usability_status == UsabilityStatus.RESOLVED_COUNT_FOOD:
+    if usability_status == UsabilityStatus.RESOLVED_WEIGHT_VOLUME:
+        primary = extraction_result.primary_candidate
+        if primary:
+            if primary.candidate_type == "mass":
+                return "kg"
+            elif primary.candidate_type == "volume":
+                return "L"
+            elif primary.candidate_type == "length":
+                return "m"
+        return "kg"  # Default for weight/volume
+
+    elif usability_status == UsabilityStatus.RESOLVED_COUNT:
         return "count"
+
+    elif usability_status in (
+        UsabilityStatus.RESOLVED_PER_ITEM,
+        UsabilityStatus.PENDING_REVIEW,
+    ):
+        return "item"
 
     return None
 
