@@ -6,13 +6,12 @@ quality and type of quantity information extracted. The classification
 determines whether a product's unit price can be reliably calculated.
 
 Classification statuses:
-- RESOLVED_MASS: Product has a clear mass-based quantity (e.g., "500g", "1kg")
-- RESOLVED_VOLUME: Product has a clear volume-based quantity (e.g., "1L", "500ml")
-- RESOLVED_COUNT_FOOD: Food product sold by count (e.g., "6 eggs", "12 rolls")
+- RESOLVED_WEIGHT_VOLUME: Tier 1 match (kg, L, g, ml, etc.)
+- RESOLVED_COUNT: Tier 2 match (pcs, dozen, pack, etc.)
+- RESOLVED_PER_ITEM: Tier 3 fallback (no quantity detected)
+- CONTRADICTORY: Conflicting quantities found
 - PROMOTION_OR_BUNDLE: Product is promotional/bundle (excluded from unit price)
-- AMBIGUOUS_QUANTITY: Multiple conflicting quantities found
-- UNIT_ONLY_NON_FOOD: Count-only non-food product (e.g., "4 pack batteries")
-- UNRESOLVED: Cannot determine reliable quantity
+- PENDING_REVIEW: Flagged for manual review (still included provisionally)
 """
 
 from enum import Enum
@@ -24,24 +23,37 @@ from regex_config import FOOD_COUNT_KEYWORDS
 
 
 class UsabilityStatus(str, Enum):
-    """Usability classification for products."""
+    """Usability classification for products.
 
-    RESOLVED_MASS = "resolved_mass"
-    RESOLVED_VOLUME = "resolved_volume"
-    RESOLVED_LENGTH = "resolved_length"
-    RESOLVED_COUNT_FOOD = "resolved_count_food"
+    Status model from design document:
+    - resolved_weight_volume: Tier 1 match (kg, L, g, ml, etc.)
+    - resolved_count: Tier 2 match (pcs, dozen, pack, etc.)
+    - resolved_per_item: Tier 3 fallback (no quantity detected)
+    - contradictory: Conflicting quantities found
+    - promotion_or_bundle: Promotion keyword matched
+    - pending_review: Flagged for manual review (still included provisionally)
+    """
+
+    RESOLVED_WEIGHT_VOLUME = "resolved_weight_volume"
+    RESOLVED_COUNT = "resolved_count"
+    RESOLVED_PER_ITEM = "resolved_per_item"
+    CONTRADICTORY = "contradictory"
     PROMOTION_OR_BUNDLE = "promotion_or_bundle"
-    AMBIGUOUS_QUANTITY = "ambiguous_quantity"
-    UNIT_ONLY_NON_FOOD = "unit_only_non_food"
-    UNRESOLVED = "unresolved"
+    PENDING_REVIEW = "pending_review"
 
 
-# Statuses that indicate a resolved (usable) product
+# Statuses that indicate a resolved (usable) product for index inclusion
 RESOLVED_STATUSES = {
-    UsabilityStatus.RESOLVED_MASS,
-    UsabilityStatus.RESOLVED_VOLUME,
-    UsabilityStatus.RESOLVED_LENGTH,
-    UsabilityStatus.RESOLVED_COUNT_FOOD,
+    UsabilityStatus.RESOLVED_WEIGHT_VOLUME,
+    UsabilityStatus.RESOLVED_COUNT,
+    UsabilityStatus.RESOLVED_PER_ITEM,
+    UsabilityStatus.PENDING_REVIEW,  # Included provisionally
+}
+
+# Statuses that exclude products from the index
+EXCLUDED_STATUSES = {
+    UsabilityStatus.CONTRADICTORY,
+    UsabilityStatus.PROMOTION_OR_BUNDLE,
 }
 
 
