@@ -16,7 +16,9 @@ Examples of bundles:
 - "Twin pack" (when context suggests promotional)
 """
 
+import json
 import re
+from pathlib import Path
 from typing import Optional, Tuple
 
 from regex_config import (
@@ -24,6 +26,61 @@ from regex_config import (
     PROMOTION_PATTERNS_COMPILED,
     ADDITIVE_PATTERNS,
 )
+
+
+def load_promotion_keywords(project_root: Optional[Path] = None) -> dict:
+    """
+    Load promotion keywords from config/promotion_keywords.json.
+
+    Args:
+        project_root: Project root path. If None, infers from file location.
+
+    Returns:
+        Dict with 'global' and 'source_specific' keyword lists
+    """
+    if project_root is None:
+        # Config is in src/cpi/coicopping/config/ relative to this file
+        config_path = Path(__file__).parent / "config" / "promotion_keywords.json"
+    else:
+        config_path = (
+            project_root
+            / "src"
+            / "cpi"
+            / "coicopping"
+            / "config"
+            / "promotion_keywords.json"
+        )
+
+    if config_path.exists():
+        with open(config_path) as f:
+            return json.load(f)
+
+    # Fallback to hardcoded defaults (from PROMOTION_KEYWORDS constant)
+    return {"global": list(PROMOTION_KEYWORDS), "source_specific": {}}
+
+
+def get_keywords_for_source(
+    source: Optional[str] = None, project_root: Optional[Path] = None
+) -> set:
+    """
+    Get combined promotion keywords for a specific source.
+
+    Args:
+        source: Source name (e.g., 'samoa_market'). If None, returns global only.
+        project_root: Project root path.
+
+    Returns:
+        Set of all applicable keywords (global + source-specific)
+    """
+    config = load_promotion_keywords(project_root)
+    keywords = set(kw.lower() for kw in config.get("global", []))
+
+    if source and source in config.get("source_specific", {}):
+        source_keywords = config["source_specific"][source]
+        keywords.update(kw.lower() for kw in source_keywords)
+
+    return keywords
+
 
 # Phrases that contain promotion keywords but are NOT promotions
 # These are product descriptions, not promotional indicators
@@ -78,12 +135,18 @@ def _contains_false_positive_phrase(product_lower: str, keyword: str) -> bool:
     return False
 
 
-def detect_promotion(product_name: str) -> Tuple[bool, Optional[str]]:
+def detect_promotion(
+    product_name: str,
+    source: Optional[str] = None,
+    project_root: Optional[Path] = None,
+) -> Tuple[bool, Optional[str]]:
     """
     Detect if a product name indicates a promotional or bundle product.
 
     Args:
         product_name: The product name to analyze
+        source: Source name (e.g., 'samoa_market') for source-specific keywords
+        project_root: Project root path for loading config
 
     Returns:
         Tuple of (is_promotion, promotion_type) where:
@@ -95,8 +158,11 @@ def detect_promotion(product_name: str) -> Tuple[bool, Optional[str]]:
 
     product_lower = product_name.lower()
 
+    # Get keywords from JSON config (global + source-specific)
+    keywords = get_keywords_for_source(source, project_root)
+
     # Check for promotion keywords (with false positive filtering)
-    for keyword in PROMOTION_KEYWORDS:
+    for keyword in keywords:
         if keyword in product_lower:
             # Check if this is a false positive
             if not _contains_false_positive_phrase(product_lower, keyword):
