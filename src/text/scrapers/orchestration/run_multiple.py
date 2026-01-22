@@ -405,7 +405,7 @@ def parse_log_status(log_file: Path, exit_code: int) -> str:
         return "failed"
 
 
-def summarize_results(results: List[Dict[str, any]]):
+def summarize_results(results: List[Dict[str, Any]]):
     """
     Print a compact summary table of scraper results.
 
