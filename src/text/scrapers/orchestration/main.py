@@ -159,6 +159,13 @@ Examples:
         help="Print what would be executed without actually running (use with --run-all)",
     )
 
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=600,
+        help="Timeout in seconds for each scraper (default: 600 = 10 minutes, use with --run-all)",
+    )
+
     # Scraping options
     parser.add_argument(
         "--storage-dir", type=Path, help="Custom storage directory for results"
@@ -238,14 +245,19 @@ Examples:
 
     # Handle run-all command
     if args.run_all:
-        success = run_all_scrapers(
+        results = run_all_scrapers(
             configs_dir=get_default_configs_dir(),
             project_root=project_root,
             sequential=args.sequential,
             dry_run=args.dry_run,
             mode=mode,
+            timeout_per_scraper=args.timeout,
         )
-        sys.exit(0 if success else 1)
+        # Exit with failure if any scraper failed or timed out
+        failed_count = sum(
+            1 for r in results if r.get("status") in ["failed", "timeout"]
+        )
+        sys.exit(0 if failed_count == 0 else 1)
 
     # Validate newspaper argument
     if not args.newspaper:

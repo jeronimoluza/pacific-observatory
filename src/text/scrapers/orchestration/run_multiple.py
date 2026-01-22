@@ -7,14 +7,18 @@ in parallel, with intelligent handling of multi-country newspapers.
 
 import subprocess
 import time
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Import discovery functions from dedicated module
 from text.scrapers.orchestration.discovery import discover_configs, group_by_country
 from text.scrapers.orchestration.utils import create_progress_display
+
+logger = logging.getLogger(__name__)
 
 
 def run_scraper_subprocess(
@@ -98,6 +102,114 @@ def run_scraper_subprocess(
         print(f"❌ Failed to start {country}/{newspaper}: {e}")
         log_handle.close()
         return None
+
+
+def run_scraper_with_timeout(
+    config: Dict[str, str],
+    log_dir: Path,
+    project_root: Path,
+    timeout_seconds: int = 600,
+    dry_run: bool = False,
+    mode: str = "default",
+) -> Dict[str, any]:
+    """
+    Run a single scraper with timeout handling.
+
+    This function wraps run_scraper_subprocess and monitors the process,
+    killing it if it exceeds the timeout threshold.
+
+    Args:
+        config: Configuration dictionary with 'country', 'newspaper', 'config_path'
+        log_dir: Base directory for logs
+        project_root: Project root directory
+        timeout_seconds: Maximum seconds to allow scraper to run (default: 600 = 10 minutes)
+        dry_run: If True, print command without executing
+        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
+
+    Returns:
+        Dictionary with keys:
+            - newspaper: str
+            - country: str
+            - status: str ("success", "failed", "timeout")
+            - duration_seconds: float
+            - error_msg: str (optional, for failed/timeout cases)
+            - log_file: Path (optional)
+    """
+    country = config["country"]
+    newspaper = config["newspaper"]
+    start_time = time.time()
+
+    # Start the subprocess
+    process = run_scraper_subprocess(config, log_dir, project_root, dry_run, mode)
+
+    # If process failed to start
+    if process is None:
+        duration = time.time() - start_time
+        return {
+            "newspaper": newspaper,
+            "country": country,
+            "status": "failed",
+            "duration_seconds": duration,
+            "error_msg": "Failed to start subprocess",
+        }
+
+    # Poll the process until completion or timeout
+    while True:
+        retcode = process.poll()
+
+        # Process has completed
+        if retcode is not None:
+            duration = time.time() - start_time
+
+            # Close log handle
+            if hasattr(process, "log_handle"):
+                process.log_handle.close()
+
+            # Determine status from log file
+            log_file = process.log_file
+            status = parse_log_status(log_file, retcode)
+
+            return {
+                "newspaper": newspaper,
+                "country": country,
+                "status": status,
+                "duration_seconds": duration,
+                "log_file": log_file,
+                "exit_code": retcode,
+            }
+
+        # Check if timeout exceeded
+        elapsed = time.time() - start_time
+        if elapsed >= timeout_seconds:
+            # Close log handle before killing
+            if hasattr(process, "log_handle"):
+                try:
+                    process.log_handle.close()
+                except Exception as e:
+                    logger.warning(f"Failed to close log handle: {e}")
+
+            # Terminate the process
+            try:
+                process.terminate()
+                # Give it a moment to terminate gracefully
+                time.sleep(1)
+                # If still running, force kill
+                if process.poll() is None:
+                    process.kill()
+            except Exception as e:
+                logger.warning(f"Failed to kill process {country}/{newspaper}: {e}")
+
+            duration = time.time() - start_time
+            return {
+                "newspaper": newspaper,
+                "country": country,
+                "status": "timeout",
+                "duration_seconds": duration,
+                "error_msg": f"Timeout after {timeout_seconds} seconds",
+            }
+
+        # Sleep before next poll
+        time.sleep(1)
 
 
 def monitor_processes(
@@ -313,12 +425,14 @@ def summarize_results(results: List[Dict[str, any]]):
             "success": "✅",
             "warning": "⚠️",
             "failed": "❌",
+            "timeout": "⏱️",
         }.get(result["status"], "❓")
 
         status_text = {
             "success": "Completed successfully",
             "warning": "Completed with warnings",
             "failed": "Failed (see log)",
+            "timeout": "Timeout exceeded",
         }.get(result["status"], "Unknown status")
 
         country = result["country"]
@@ -332,9 +446,10 @@ def summarize_results(results: List[Dict[str, any]]):
     success = status_counts.get("success", 0)
     warnings = status_counts.get("warning", 0)
     failed = status_counts.get("failed", 0)
+    timeout = status_counts.get("timeout", 0)
 
     print(
-        f"Total: {total} | Success: {success} | Warnings: {warnings} | Failed: {failed}"
+        f"Total: {total} | Success: {success} | Warnings: {warnings} | Failed: {failed} | Timeout: {timeout}"
     )
     print("─" * 60)
 
@@ -383,7 +498,8 @@ def run_all_scrapers(
     sequential: bool = False,
     dry_run: bool = False,
     mode: str = "default",
-) -> bool:
+    timeout_per_scraper: int = 600,
+) -> List[Dict]:
     """
     Run all newspaper scrapers with country-level sequential execution.
 
@@ -397,9 +513,10 @@ def run_all_scrapers(
         sequential: If True, run all scrapers sequentially (for debugging)
         dry_run: If True, print what would be executed without running
         mode: Scraping mode - "default", "discover", "discover_full", or "resume"
+        timeout_per_scraper: Maximum seconds per scraper before timeout (default: 600)
 
     Returns:
-        True if all scrapers succeeded, False if any failed
+        List of result dictionaries with status information
     """
     print("🌊 Pacific Observatory - Multi-Scraper Runner")
     print("=" * 60)
@@ -444,31 +561,71 @@ def run_all_scrapers(
             # Debug mode: run all newspapers in this country sequentially
             for config in country_configs:
                 print(f"   Starting {config['country']}/{config['newspaper']}...")
-                process = run_scraper_subprocess(
-                    config, log_dir, project_root, dry_run, mode
-                )
-                if process:
-                    results = monitor_processes([process], use_progress=False)
-                    all_results.extend(results)
+                if not dry_run:
+                    result = run_scraper_with_timeout(
+                        config,
+                        log_dir,
+                        project_root,
+                        timeout_per_scraper,
+                        dry_run,
+                        mode,
+                    )
+                    all_results.append(result)
         else:
-            # Normal mode: run all newspapers in this country in parallel
-            country_processes = []
-            for config in country_configs:
-                print(f"   Starting {config['newspaper']}...")
-                process = run_scraper_subprocess(
-                    config, log_dir, project_root, dry_run, mode
-                )
-                if process:
-                    country_processes.append(process)
-
-            # Wait for all newspapers in this country to complete before moving to next country
-            if country_processes and not dry_run:
+            # Normal mode: run all newspapers in this country in parallel using ThreadPoolExecutor
+            if not dry_run:
                 print(
-                    f"\n   🔄 Waiting for {len(country_processes)} scraper(s) in {country}..."
+                    f"\n   🔄 Running {len(country_configs)} scraper(s) in {country} (timeout: {timeout_per_scraper}s)..."
                 )
-                country_results = monitor_processes(
-                    country_processes, use_progress=True
-                )
+
+                # Use ThreadPoolExecutor to run scrapers in parallel
+                with ThreadPoolExecutor(max_workers=len(country_configs)) as executor:
+                    # Submit all tasks
+                    future_to_config = {
+                        executor.submit(
+                            run_scraper_with_timeout,
+                            config,
+                            log_dir,
+                            project_root,
+                            timeout_per_scraper,
+                            dry_run,
+                            mode,
+                        ): config
+                        for config in country_configs
+                    }
+
+                    # Collect results as they complete
+                    country_results = []
+                    for future in as_completed(future_to_config):
+                        config = future_to_config[future]
+                        try:
+                            result = future.result()
+                            country_results.append(result)
+
+                            # Print status as each completes
+                            status_icon = {
+                                "success": "✅",
+                                "warning": "⚠️",
+                                "failed": "❌",
+                                "timeout": "⏱️",
+                            }.get(result["status"], "❓")
+                            print(
+                                f"   {status_icon} {config['country']}/{config['newspaper']} - {result['status']}"
+                            )
+                        except Exception as e:
+                            logger.error(
+                                f"Error running {config['country']}/{config['newspaper']}: {e}"
+                            )
+                            country_results.append(
+                                {
+                                    "newspaper": config["newspaper"],
+                                    "country": config["country"],
+                                    "status": "failed",
+                                    "duration_seconds": 0,
+                                    "error_msg": str(e),
+                                }
+                            )
+
                 all_results.extend(country_results)
 
                 # Print country summary
@@ -481,9 +638,16 @@ def run_all_scrapers(
                 failed_count = sum(
                     1 for r in country_results if r["status"] == "failed"
                 )
-                print(
-                    f"   ✓ {country} complete: {success_count} success, {warning_count} warnings, {failed_count} failed"
+                timeout_count = sum(
+                    1 for r in country_results if r["status"] == "timeout"
                 )
+                print(
+                    f"   ✓ {country} complete: {success_count} success, {warning_count} warnings, {failed_count} failed, {timeout_count} timeout"
+                )
+            else:
+                # Dry run mode - just print what would be executed
+                for config in country_configs:
+                    print(f"   [DRY RUN] Would start {config['newspaper']}...")
 
     # Print final summary
     if not dry_run and all_results:
@@ -491,6 +655,5 @@ def run_all_scrapers(
     elif dry_run:
         print("\n[DRY RUN COMPLETE]")
 
-    # Return success if no failures
-    failed_count = sum(1 for r in all_results if r["status"] == "failed")
-    return failed_count == 0
+    # Return list of results
+    return all_results
