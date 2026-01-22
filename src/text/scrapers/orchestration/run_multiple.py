@@ -18,6 +18,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from text.scrapers.orchestration.discovery import discover_configs, group_by_country
 from text.scrapers.orchestration.utils import create_progress_display
 from text.scrapers.orchestration.summary import format_run_summary
+from text.scrapers.orchestration.failure_log import write_failure_log
 
 logger = logging.getLogger(__name__)
 
@@ -660,6 +661,15 @@ def run_all_scrapers(
         # Generate and print summary
         summary = format_run_summary(all_results, total_duration)
         print("\n" + summary)
+
+        # Write failure log
+        failure_log_path = project_root / "data" / "text" / "last_run_failures.json"
+        write_failure_log(all_results, failure_log_path)
+
+        # Notify user if failures occurred
+        failures = [r for r in all_results if r.get("status") in ["failed", "timeout"]]
+        if failures:
+            print(f"\n📝 Failure details saved to: {failure_log_path}")
     elif dry_run:
         print("\n[DRY RUN COMPLETE]")
 
