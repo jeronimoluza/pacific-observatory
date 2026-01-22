@@ -135,12 +135,13 @@ def run_complete_workflow(
     promo_count = df_quantities["has_promotion"].sum()
     print(f"  Products flagged as promotional: {promo_count}")
 
-    # Print confidence score distribution
-    print("\n  Confidence score statistics:")
-    print(f"    - Mean: {df_quantities['confidence_score'].mean():.2f}")
-    print(f"    - Median: {df_quantities['confidence_score'].median():.2f}")
-    print(f"    - Min: {df_quantities['confidence_score'].min():.2f}")
-    print(f"    - Max: {df_quantities['confidence_score'].max():.2f}")
+    # Print extraction tier distribution
+    print("\n  Extraction tier distribution:")
+    tier_counts = df_quantities["extraction_tier"].value_counts().sort_index()
+    for tier, count in tier_counts.items():
+        pct = count / len(df_quantities) * 100
+        tier_desc = {1: "Weight/Volume", 2: "Count", 3: "Per-item"}.get(tier, "Unknown")
+        print(f"    - Tier {tier} ({tier_desc}): {count} ({pct:.1f}%)")
 
     # STEP 3: Classify with COICOP (if not skipped)
     if not skip_classification:
@@ -181,11 +182,12 @@ def run_complete_workflow(
         "units",
         "unit_value",
         "usability_status",
-        "confidence_score",
+        "extraction_tier",
         "standard_unit",
         "n_candidates",
         "has_promotion",
         "rejection_reason",
+        "pending_review",
         "coicop_code",
         "coicop_title",
         "source",
@@ -268,19 +270,21 @@ def run_complete_workflow(
         promo_count = df_final["has_promotion"].sum()
         print(f"\nPromotional products detected: {promo_count}")
 
-    if "confidence_score" in df_final.columns:
-        print("\nConfidence Score Statistics:")
-        print(f"  Mean: {df_final['confidence_score'].mean():.3f}")
-        print(f"  Median: {df_final['confidence_score'].median():.3f}")
-        print(
-            f"  High confidence (>= 0.75): {(df_final['confidence_score'] >= 0.75).sum()}"
-        )
-        print(
-            f"  Medium confidence (0.50-0.74): {((df_final['confidence_score'] >= 0.50) & (df_final['confidence_score'] < 0.75)).sum()}"
-        )
-        print(
-            f"  Low confidence (< 0.50): {(df_final['confidence_score'] < 0.50).sum()}"
-        )
+    if "extraction_tier" in df_final.columns:
+        print("\nExtraction Tier Statistics:")
+        tier_counts = df_final["extraction_tier"].value_counts().sort_index()
+        for tier, count in tier_counts.items():
+            pct = count / len(df_final) * 100
+            tier_desc = {1: "Weight/Volume", 2: "Count", 3: "Per-item"}.get(
+                tier, "Excluded"
+            )
+            print(f"  Tier {tier} ({tier_desc}): {count} ({pct:.1f}%)")
+        # Count excluded (None tier)
+        excluded = df_final["extraction_tier"].isna().sum()
+        if excluded > 0:
+            print(
+                f"  Excluded (no tier): {excluded} ({excluded / len(df_final) * 100:.1f}%)"
+            )
 
     print("\n" + "=" * 80)
     print("✓ WORKFLOW COMPLETE!")
