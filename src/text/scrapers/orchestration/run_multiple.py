@@ -10,7 +10,7 @@ import time
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -111,7 +111,7 @@ def run_scraper_with_timeout(
     timeout_seconds: int = 600,
     dry_run: bool = False,
     mode: str = "default",
-) -> Dict[str, any]:
+) -> Dict[str, Any]:
     """
     Run a single scraper with timeout handling.
 
@@ -181,20 +181,27 @@ def run_scraper_with_timeout(
         # Check if timeout exceeded
         elapsed = time.time() - start_time
         if elapsed >= timeout_seconds:
-            # Close log handle before killing
+            # Write timeout message to log before closing
             if hasattr(process, "log_handle"):
                 try:
+                    process.log_handle.write(
+                        f"\nTIMEOUT: Process killed after {timeout_seconds} seconds\n"
+                    )
+                    process.log_handle.flush()
                     process.log_handle.close()
                 except Exception as e:
-                    logger.warning(f"Failed to close log handle: {e}")
+                    logger.warning(
+                        f"Failed to write timeout message or close log handle: {e}"
+                    )
 
             # Terminate the process
             try:
                 process.terminate()
                 # Give it a moment to terminate gracefully
-                time.sleep(1)
-                # If still running, force kill
-                if process.poll() is None:
+                try:
+                    process.wait(timeout=1)
+                except subprocess.TimeoutExpired:
+                    # If still running after 1 second, force kill
                     process.kill()
             except Exception as e:
                 logger.warning(f"Failed to kill process {country}/{newspaper}: {e}")
@@ -206,6 +213,7 @@ def run_scraper_with_timeout(
                 "status": "timeout",
                 "duration_seconds": duration,
                 "error_msg": f"Timeout after {timeout_seconds} seconds",
+                "log_file": process.log_file if hasattr(process, "log_file") else None,
             }
 
         # Sleep before next poll
@@ -216,7 +224,7 @@ def monitor_processes(
     processes: List[subprocess.Popen],
     check_interval: float = 2.0,
     use_progress: bool = True,
-) -> List[Dict[str, any]]:
+) -> List[Dict[str, Any]]:
     """
     Monitor running processes and report when they complete.
 
@@ -460,7 +468,7 @@ def run_multi_country_group_sequential(
     project_root: Path,
     dry_run: bool = False,
     mode: str = "default",
-) -> List[Dict[str, any]]:
+) -> List[Dict[str, Any]]:
     """
     Run a multi-country newspaper group sequentially.
 
@@ -527,7 +535,7 @@ def run_all_scrapers(
 
     if not configs:
         print("❌ No configurations found.")
-        return False
+        return []
 
     print(f"   Found {len(configs)} scraper configuration(s)")
 
@@ -579,7 +587,9 @@ def run_all_scrapers(
                 )
 
                 # Use ThreadPoolExecutor to run scrapers in parallel
-                with ThreadPoolExecutor(max_workers=len(country_configs)) as executor:
+                with ThreadPoolExecutor(
+                    max_workers=min(len(country_configs), 10)
+                ) as executor:
                     # Submit all tasks
                     future_to_config = {
                         executor.submit(
@@ -613,7 +623,7 @@ def run_all_scrapers(
                                 f"   {status_icon} {config['country']}/{config['newspaper']} - {result['status']}"
                             )
                         except Exception as e:
-                            logger.error(
+                            logger.exception(
                                 f"Error running {config['country']}/{config['newspaper']}: {e}"
                             )
                             country_results.append(
