@@ -8,17 +8,56 @@ in parallel, with intelligent handling of multi-country newspapers.
 import subprocess
 import time
 import logging
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional, Any
-from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Import discovery functions from dedicated module
 from text.scrapers.orchestration.discovery import discover_configs, group_by_country
 from text.scrapers.orchestration.utils import create_progress_display
+from text.scrapers.orchestration.summary import format_run_summary
 
 logger = logging.getLogger(__name__)
+
+
+def extract_article_count_from_log(log_file: Path) -> int:
+    """
+    Extract article count from log file.
+
+    Searches for patterns like:
+    - "Scraped 123 articles from"
+    - "123 articles scraped"
+
+    Args:
+        log_file: Path to log file
+
+    Returns:
+        Number of articles scraped, or 0 if extraction fails
+    """
+    try:
+        if not log_file.exists():
+            return 0
+
+        log_content = log_file.read_text()
+
+        # Try patterns in order of specificity
+        patterns = [
+            r"Scraped (\d+) articles from",  # "Scraped 123 articles from"
+            r"(\d+) articles scraped",  # "123 articles scraped"
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, log_content)
+            if match:
+                return int(match.group(1))
+
+        return 0
+
+    except Exception as e:
+        logger.warning(f"Failed to extract article count from log: {e}")
+        return 0
 
 
 def run_scraper_subprocess(
@@ -169,7 +208,8 @@ def run_scraper_with_timeout(
             log_file = process.log_file
             status = parse_log_status(log_file, retcode)
 
-            return {
+            # Extract article count if successful
+            result = {
                 "newspaper": newspaper,
                 "country": country,
                 "status": status,
@@ -177,6 +217,13 @@ def run_scraper_with_timeout(
                 "log_file": log_file,
                 "exit_code": retcode,
             }
+
+            # Add article count for successful runs
+            if status == "success":
+                articles_scraped = extract_article_count_from_log(log_file)
+                result["articles_scraped"] = articles_scraped
+
+            return result
 
         # Check if timeout exceeded
         elapsed = time.time() - start_time
@@ -405,63 +452,6 @@ def parse_log_status(log_file: Path, exit_code: int) -> str:
         return "failed"
 
 
-def summarize_results(results: List[Dict[str, Any]]):
-    """
-    Print a compact summary table of scraper results.
-
-    Args:
-        results: List of result dictionaries from monitor_processes()
-    """
-    if not results:
-        print("\nNo results to summarize.")
-        return
-
-    # Count statuses
-    status_counts = defaultdict(int)
-    for result in results:
-        status_counts[result["status"]] += 1
-
-    # Print header
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print("\n" + "─" * 60)
-    print(f"SCRAPER SUMMARY ({timestamp})")
-    print("─" * 60)
-
-    # Print each result
-    for result in sorted(results, key=lambda x: (x["country"], x["newspaper"])):
-        status_icon = {
-            "success": "✅",
-            "warning": "⚠️",
-            "failed": "❌",
-            "timeout": "⏱️",
-        }.get(result["status"], "❓")
-
-        status_text = {
-            "success": "Completed successfully",
-            "warning": "Completed with warnings",
-            "failed": "Failed (see log)",
-            "timeout": "Timeout exceeded",
-        }.get(result["status"], "Unknown status")
-
-        country = result["country"]
-        newspaper = result["newspaper"]
-
-        print(f"{status_icon} {country:20s} / {newspaper:20s} {status_text}")
-
-    # Print totals
-    print("─" * 60)
-    total = len(results)
-    success = status_counts.get("success", 0)
-    warnings = status_counts.get("warning", 0)
-    failed = status_counts.get("failed", 0)
-    timeout = status_counts.get("timeout", 0)
-
-    print(
-        f"Total: {total} | Success: {success} | Warnings: {warnings} | Failed: {failed} | Timeout: {timeout}"
-    )
-    print("─" * 60)
-
-
 def run_multi_country_group_sequential(
     group: List[Dict[str, str]],
     log_dir: Path,
@@ -528,6 +518,9 @@ def run_all_scrapers(
     """
     print("🌊 Pacific Observatory - Multi-Scraper Runner")
     print("=" * 60)
+
+    # Track run start time for summary
+    run_start_time = time.time()
 
     # Discover all configurations
     print("\n🔍 Discovering configurations...")
@@ -661,7 +654,12 @@ def run_all_scrapers(
 
     # Print final summary
     if not dry_run and all_results:
-        summarize_results(all_results)
+        # Calculate total duration
+        total_duration = int(time.time() - run_start_time)
+
+        # Generate and print summary
+        summary = format_run_summary(all_results, total_duration)
+        print("\n" + summary)
     elif dry_run:
         print("\n[DRY RUN COMPLETE]")
 
