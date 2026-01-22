@@ -139,16 +139,19 @@ def minimal_config() -> Dict[str, Any]:
         "listing": {
             "type": "pagination",
             "start_url": "/news",
-            "page_param": "page",
+            "url_template": "/news?page={num}",
+            "start_page": 1,
         },
-        "thumbnails": {
-            "container": "article",
-            "title": "h2",
-            "link": "a",
-        },
-        "article": {
-            "title": "h1",
-            "body": "div.content",
+        "selectors": {
+            "thumbnail": {
+                "container": "article",
+                "title": "h2",
+                "url": "a",
+            },
+            "article": {
+                "title": "h1",
+                "body": "div.content",
+            },
         },
     }
 
