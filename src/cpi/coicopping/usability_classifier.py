@@ -258,3 +258,37 @@ def get_extraction_tier(status: UsabilityStatus) -> Optional[int]:
         UsabilityStatus.PENDING_REVIEW: 3,  # Treated as Tier 3
     }
     return tier_map.get(status)
+
+
+# Backward compatibility: map old statuses to new
+OLD_TO_NEW_STATUS = {
+    "resolved_mass": UsabilityStatus.RESOLVED_WEIGHT_VOLUME,
+    "resolved_volume": UsabilityStatus.RESOLVED_WEIGHT_VOLUME,
+    "resolved_length": UsabilityStatus.RESOLVED_WEIGHT_VOLUME,
+    "resolved_count_food": UsabilityStatus.RESOLVED_COUNT,
+    "promotion_or_bundle": UsabilityStatus.PROMOTION_OR_BUNDLE,
+    "ambiguous_quantity": UsabilityStatus.CONTRADICTORY,
+    "unit_only_non_food": UsabilityStatus.RESOLVED_PER_ITEM,  # Now included
+    "unresolved": UsabilityStatus.RESOLVED_PER_ITEM,  # Now included
+}
+
+
+def migrate_status(old_status: str) -> UsabilityStatus:
+    """
+    Migrate an old status value to the new status model.
+
+    Args:
+        old_status: Status string from old system
+
+    Returns:
+        New UsabilityStatus enum value
+    """
+    if old_status in OLD_TO_NEW_STATUS:
+        return OLD_TO_NEW_STATUS[old_status]
+
+    # Try to parse as new status
+    try:
+        return UsabilityStatus(old_status)
+    except ValueError:
+        # Unknown status - default to per-item
+        return UsabilityStatus.RESOLVED_PER_ITEM
