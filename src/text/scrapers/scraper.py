@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 import httpx
 from .client_http import AsyncHttpClient
 from .client_browser import BrowserClient
-from .listing_strategies import create_listing_strategy, ApiStrategy
+from .strategies import create_listing_strategy, ApiStrategy
 from .models import (
     ThumbnailRecord,
     ArticleRecord,
