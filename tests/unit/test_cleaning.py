@@ -23,6 +23,15 @@ from text.scrapers.pipelines.cleaning import (
 )
 
 
+def test_cleaning_imports_after_split():
+    """Test that cleaning functions still import correctly after package split."""
+    from text.scrapers.pipelines.cleaning import get_cleaning_func
+    from text.scrapers.pipelines.cleaning import apply_cleaning
+
+    assert get_cleaning_func is not None
+    assert apply_cleaning is not None
+
+
 class TestHandleMixedDates:
     """Tests for the handle_mixed_dates function."""
 
