@@ -20,7 +20,7 @@ For backward compatibility, you can still import the main classes:
 # Import main classes for backward compatibility
 from .client_http import AsyncHttpClient
 from .client_browser import BrowserClient
-from .newspaper_scraper import NewspaperScraper
+from .scraper import NewspaperScraper
 from .models import ThumbnailRecord, ArticleRecord, NewspaperConfig
 from .factory import create_scraper, create_scraper_from_file
 from .pipelines.storage import CSVStorage

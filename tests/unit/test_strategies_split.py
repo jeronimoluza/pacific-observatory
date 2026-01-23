@@ -94,34 +94,18 @@ def test_create_strategy_factory_works():
     assert isinstance(strategy, PaginatedArchiveStrategy)
 
 
-def test_backwards_compatibility_import():
-    """Test that old imports still work (with deprecation warning)."""
-    import sys
+def test_backwards_compatibility_removed():
+    """Test that old deprecated imports have been removed."""
+    import pytest
 
-    # Remove the module if already imported to ensure we capture the warning
-    if "text.scrapers.listing_strategies" in sys.modules:
-        del sys.modules["text.scrapers.listing_strategies"]
-
-    import warnings
-
-    with warnings.catch_warnings(record=True) as w:
-        warnings.simplefilter("always")
-
-        # Import from old location
+    # Verify that importing from old location raises ModuleNotFoundError
+    with pytest.raises(ModuleNotFoundError, match="listing_strategies"):
         from text.scrapers.listing_strategies import (
             create_listing_strategy,
             PaginationStrategy,
         )
 
-        # Verify deprecation warning was raised
-        assert len(w) >= 1, f"Expected at least 1 warning, got {len(w)}"
-        # Find the deprecation warning
-        deprecation_warnings = [
-            warning for warning in w if issubclass(warning.category, DeprecationWarning)
-        ]
-        assert len(deprecation_warnings) >= 1, "No DeprecationWarning found"
-        assert "deprecated" in str(deprecation_warnings[0].message).lower()
+    # Verify that the new imports work correctly
 
-        # Verify the imports still work
-        assert create_listing_strategy is not None
-        assert PaginationStrategy is not None
+    assert create_listing_strategy is not None
+    assert PaginationStrategy is not None

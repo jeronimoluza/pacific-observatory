@@ -9,7 +9,7 @@ import yaml
 from pathlib import Path
 from typing import Dict, Any, Optional, Union, List
 import logging
-from .newspaper_scraper import NewspaperScraper
+from .scraper import NewspaperScraper
 from .models import NewspaperConfig
 
 logger = logging.getLogger(__name__)
