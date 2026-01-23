@@ -97,26 +97,27 @@ def main():
 Examples:
   # Default mode: discover new URLs + scrape pending articles
   python src/text/scrapers/orchestration/main.py sibc
-
-  # Discover mode: discover new URLs only (no scraping)
-  python src/text/scrapers/orchestration/main.py sibc --discover
-
-  # Discover-full mode: discover ALL URLs (overwrite urls.csv)
-  python src/text/scrapers/orchestration/main.py sibc --discover-full
+  python src/text/scrapers/orchestration/main.py sibc --update
 
   # Resume mode: scrape pending articles from urls.csv (no discovery)
   python src/text/scrapers/orchestration/main.py sibc --resume
 
+  # Full discovery mode: discover ALL URLs (overwrite urls.csv, no scraping)
+  python src/text/scrapers/orchestration/main.py sibc --full-discovery
+
+  # Full from scratch: discover ALL URLs + scrape everything
+  python src/text/scrapers/orchestration/main.py sibc --full-from-scratch
+
   # Multi-scraper runner
-  python src/text/scrapers/orchestration/main.py --run-all                           # Run all scrapers (default mode)
-  python src/text/scrapers/orchestration/main.py --run-all --discover                # Discover URLs for all scrapers
-  python src/text/scrapers/orchestration/main.py --run-all --resume                  # Resume scraping for all scrapers
-  python src/text/scrapers/orchestration/main.py --run-all --sequential              # Run all scrapers sequentially
-  python src/text/scrapers/orchestration/main.py --run-all --dry-run                 # Preview what would run
+  python src/text/scrapers/orchestration/main.py --run-all
+  python src/text/scrapers/orchestration/main.py --run-all --resume
+  python src/text/scrapers/orchestration/main.py --run-all --full-discovery
+  python src/text/scrapers/orchestration/main.py --run-all --sequential
+  python src/text/scrapers/orchestration/main.py --run-all --dry-run
 
   # List available scrapers
-  python src/text/scrapers/orchestration/main.py --list-scrapers                     # List all available scrapers
-  python src/text/scrapers/orchestration/main.py --list-countries                    # List all countries
+  python src/text/scrapers/orchestration/main.py --list-scrapers
+  python src/text/scrapers/orchestration/main.py --list-countries
         """,
     )
 
@@ -177,22 +178,58 @@ Examples:
         help="Don't save results to disk (dry run)",
     )
 
-    parser.add_argument(
-        "--discover",
-        action="store_true",
-        help="Discover new URLs and append to urls.csv (no article scraping)",
-    )
+    # === Run Mode Flags ===
+    # These 4 flags control what the scraper does (mutually exclusive)
 
     parser.add_argument(
-        "--discover-full",
-        action="store_true",
-        help="Discover ALL URLs and overwrite urls.csv (no article scraping)",
+        "--update",
+        action="store_const",
+        const="update",
+        dest="mode",
+        help="Discover new URLs + scrape only new articles (default Friday run)",
     )
 
     parser.add_argument(
         "--resume",
-        action="store_true",
-        help="Skip discovery, scrape pending articles from urls.csv",
+        action="store_const",
+        const="resume",
+        dest="mode",
+        help="Use existing urls.csv + scrape pending articles (no discovery)",
+    )
+
+    parser.add_argument(
+        "--full-discovery",
+        action="store_const",
+        const="full_discovery",
+        dest="mode",
+        help="Discover ALL URLs + overwrite urls.csv (no scraping)",
+    )
+
+    parser.add_argument(
+        "--full-from-scratch",
+        action="store_const",
+        const="full_from_scratch",
+        dest="mode",
+        help="Discover ALL URLs + scrape everything (nuclear option)",
+    )
+
+    # === Backwards Compatibility Flags (DEPRECATED) ===
+    # Keep old flags for backwards compatibility but mark as deprecated
+
+    parser.add_argument(
+        "--discover",
+        action="store_const",
+        const="update",
+        dest="mode",
+        help="[DEPRECATED] Use --update instead. Discover new URLs + scrape new articles",
+    )
+
+    parser.add_argument(
+        "--discover-full",
+        action="store_const",
+        const="full_discovery",
+        dest="mode",
+        help="[DEPRECATED] Use --full-discovery instead. Discover ALL URLs (overwrite urls.csv)",
     )
 
     # Logging options
@@ -205,34 +242,16 @@ Examples:
 
     parser.add_argument("--log-file", type=Path, help="Log file path")
 
+    # Set default mode
+    parser.set_defaults(mode="update")
+
     args = parser.parse_args()
 
     # Set up logging
     setup_logging(args.log_level, args.log_file)
 
-    # Validate mutually exclusive mode flags
-    mode_flags = [
-        getattr(args, "discover", False),
-        getattr(args, "discover_full", False),
-        getattr(args, "resume", False),
-    ]
-    if sum(mode_flags) > 1:
-        parser.error(
-            "Only one of --discover, --discover-full, --resume can be specified"
-        )
-
-    # Determine mode from args
-    def get_mode_from_args(args) -> str:
-        if getattr(args, "discover", False):
-            return "discover"
-        elif getattr(args, "discover_full", False):
-            return "discover_full"
-        elif getattr(args, "resume", False):
-            return "resume"
-        else:
-            return "default"
-
-    mode = get_mode_from_args(args)
+    # Get mode from args (defaults to "update" if not specified)
+    mode = getattr(args, "mode", "update")
 
     # Handle list commands
     if args.list_scrapers:

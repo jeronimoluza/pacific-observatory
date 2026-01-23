@@ -49,8 +49,10 @@ def mode_from_string(mode_str: str) -> ScrapeMode:
         "discover": ScrapeMode.UPDATE,  # discover is an alias for update
         "discover-full": ScrapeMode.FULL_DISCOVERY,
         "full-discovery": ScrapeMode.FULL_DISCOVERY,
+        "full_discovery": ScrapeMode.FULL_DISCOVERY,  # underscore variant
         "full": ScrapeMode.FULL_FROM_SCRATCH,
         "full-scrape": ScrapeMode.FULL_FROM_SCRATCH,
+        "full_from_scratch": ScrapeMode.FULL_FROM_SCRATCH,  # underscore variant
     }
 
     if mode_str not in mode_map:
