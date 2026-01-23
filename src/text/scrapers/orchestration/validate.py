@@ -13,11 +13,266 @@ Usage:
 import argparse
 import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import Any, Dict, List, Tuple
 import yaml
+import httpx
+from bs4 import BeautifulSoup
 
 # Add parent directories to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
+
+
+def validate_yaml_syntax(config_path: Path) -> Dict[str, Any]:
+    """
+    Validate YAML file syntax.
+
+    Args:
+        config_path: Path to YAML configuration file
+
+    Returns:
+        Dictionary with:
+        - valid (bool): Whether YAML is valid
+        - errors (list): List of error messages
+        - config (dict): Parsed config if valid
+    """
+    errors = []
+    config = None
+
+    try:
+        if not config_path.exists():
+            errors.append(f"File not found: {config_path}")
+            return {"valid": False, "errors": errors}
+
+        with open(config_path) as f:
+            config = yaml.safe_load(f)
+
+        if config is None:
+            errors.append("Config file is empty")
+            return {"valid": False, "errors": errors}
+
+    except yaml.YAMLError as e:
+        errors.append(f"YAML syntax error: {e}")
+        return {"valid": False, "errors": errors}
+    except Exception as e:
+        errors.append(f"Error reading file: {e}")
+        return {"valid": False, "errors": errors}
+
+    return {"valid": True, "errors": [], "config": config}
+
+
+def validate_required_fields(config: Dict) -> Dict[str, Any]:
+    """
+    Check for required fields in configuration.
+
+    Args:
+        config: Configuration dictionary
+
+    Returns:
+        Dictionary with:
+        - valid (bool): Whether all required fields are present
+        - errors (list): List of missing field errors
+    """
+    errors = []
+    required_fields = ["name", "country", "base_url", "listing", "selectors"]
+
+    for field in required_fields:
+        if field not in config:
+            errors.append(f"Missing required field: {field}")
+
+    return {"valid": len(errors) == 0, "errors": errors}
+
+
+def validate_url_reachable(url: str, timeout: int = 5) -> Dict[str, Any]:
+    """
+    Test if URL is reachable.
+
+    Args:
+        url: URL to test
+        timeout: Request timeout in seconds
+
+    Returns:
+        Dictionary with:
+        - reachable (bool): Whether URL is accessible
+        - status_code (int): HTTP status code if reachable
+        - error (str): Error message if not reachable
+    """
+    try:
+        with httpx.Client(timeout=timeout, follow_redirects=True) as client:
+            response = client.get(url)
+
+            if response.status_code == 200:
+                return {
+                    "reachable": True,
+                    "status_code": response.status_code,
+                    "error": None,
+                }
+            else:
+                return {
+                    "reachable": False,
+                    "status_code": response.status_code,
+                    "error": f"HTTP {response.status_code}",
+                }
+
+    except httpx.ConnectError as e:
+        return {
+            "reachable": False,
+            "status_code": None,
+            "error": f"Connection error: {str(e)}",
+        }
+    except httpx.TimeoutException as e:
+        return {
+            "reachable": False,
+            "status_code": None,
+            "error": f"Timeout error: {str(e)}",
+        }
+    except Exception as e:
+        return {
+            "reachable": False,
+            "status_code": None,
+            "error": f"Error: {str(e)}",
+        }
+
+
+def validate_selectors_find_content(config: Dict, sample_url: str) -> Dict[str, Any]:
+    """
+    Test if selectors can find content on a sample page.
+
+    Args:
+        config: Configuration dictionary with selectors
+        sample_url: URL to test selectors against
+
+    Returns:
+        Dictionary with:
+        - valid (bool): Whether selectors found content
+        - found_count (int): Number of elements found
+        - selector (str): Selector that was tested
+        - error (str): Error message if validation failed
+    """
+    # Check if config has selectors
+    if "selectors" not in config:
+        return {
+            "valid": False,
+            "found_count": 0,
+            "selector": None,
+            "error": "No selectors found in config",
+        }
+
+    # Get thumbnail container selector
+    thumbnail_selectors = config["selectors"].get("thumbnail", {})
+    container_selector = thumbnail_selectors.get("container")
+
+    if not container_selector:
+        return {
+            "valid": False,
+            "found_count": 0,
+            "selector": None,
+            "error": "No thumbnail container selector found",
+        }
+
+    # Try to fetch the page and find elements
+    try:
+        with httpx.Client(timeout=10, follow_redirects=True) as client:
+            response = client.get(sample_url)
+
+            if response.status_code != 200:
+                return {
+                    "valid": False,
+                    "found_count": 0,
+                    "selector": container_selector,
+                    "error": f"Page returned status {response.status_code}",
+                }
+
+            # Parse HTML and find elements
+            soup = BeautifulSoup(response.text, "html.parser")
+            elements = soup.select(container_selector)
+
+            return {
+                "valid": len(elements) > 0,
+                "found_count": len(elements),
+                "selector": container_selector,
+                "error": None
+                if len(elements) > 0
+                else "No elements found with selector",
+            }
+
+    except Exception as e:
+        return {
+            "valid": False,
+            "found_count": 0,
+            "selector": container_selector,
+            "error": f"Error fetching page: {str(e)}",
+        }
+
+
+def validate_config_comprehensive(config_path: Path) -> Dict[str, Any]:
+    """
+    Run comprehensive validation checks on a configuration file.
+
+    Args:
+        config_path: Path to configuration file
+
+    Returns:
+        Dictionary with:
+        - overall_valid (bool): Whether all validations passed
+        - sections (dict): Results from each validation section
+    """
+    sections = {}
+    overall_valid = True
+
+    # 1. Validate YAML syntax
+    syntax_result = validate_yaml_syntax(config_path)
+    sections["syntax"] = syntax_result
+
+    if not syntax_result["valid"]:
+        overall_valid = False
+        # If syntax is invalid, we can't proceed with other checks
+        return {
+            "overall_valid": False,
+            "sections": sections,
+        }
+
+    config = syntax_result["config"]
+
+    # 2. Validate required fields
+    fields_result = validate_required_fields(config)
+    sections["required_fields"] = fields_result
+
+    if not fields_result["valid"]:
+        overall_valid = False
+
+    # 3. Validate base URL reachability (optional check - doesn't fail overall)
+    if "base_url" in config:
+        url_result = validate_url_reachable(config["base_url"])
+        sections["base_url"] = url_result
+        # Note: URL unreachability is a warning, not a failure
+
+    # 4. Check cleaning functions
+    warnings = []
+    if "cleaning" in config:
+        try:
+            from text.scrapers.pipelines.cleaning import get_cleaning_func
+
+            for field_name, func_name in config["cleaning"].items():
+                if func_name:
+                    try:
+                        cleaning_func = get_cleaning_func(func_name)
+                        if cleaning_func is None:
+                            warnings.append(
+                                f"Cleaning function '{func_name}' not found (will use defaults)"
+                            )
+                    except Exception:
+                        warnings.append(
+                            f"Cleaning function '{func_name}' not found (will use defaults)"
+                        )
+        except ImportError:
+            warnings.append("Could not import cleaning module to validate functions")
+
+    sections["warnings"] = warnings
+
+    return {
+        "overall_valid": overall_valid,
+        "sections": sections,
+    }
 
 
 def validate_schema(config: dict, config_path: Path) -> List[Tuple[str, str]]:
@@ -270,16 +525,15 @@ def validate_config(config_path: Path, live: bool = False) -> bool:
 
 
 def main():
-    """Main entry point for the validation CLI."""
+    """Main validation CLI entry point."""
     parser = argparse.ArgumentParser(
         description="Validate newspaper scraper configuration files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   %(prog)s configs/fiji/fiji_sun.yaml          # Validate single file
-  %(prog)s configs/fiji/fiji_sun.yaml --live   # With connectivity test
+  %(prog)s configs/fiji/fiji_sun.yaml -v       # Verbose output with details
   %(prog)s --all                               # Validate all configs
-  %(prog)s --all --live                        # All configs with connectivity
         """,
     )
 
@@ -291,9 +545,10 @@ Examples:
     )
 
     parser.add_argument(
-        "--live",
+        "--verbose",
+        "-v",
         action="store_true",
-        help="Test connectivity to the target website",
+        help="Verbose output with detailed information",
     )
 
     parser.add_argument(
@@ -312,7 +567,7 @@ Examples:
     args = parser.parse_args()
 
     if args.all:
-        # Validate all configs
+        # Validate all configs using comprehensive validation
         configs_dir = args.configs_dir
         if not configs_dir.exists():
             print(f"Error: Configs directory not found: {configs_dir}")
@@ -326,29 +581,85 @@ Examples:
             sys.exit(1)
 
         print(f"Validating {len(config_files)} configuration files...")
+        print()
 
         passed = 0
         failed = 0
 
         for config_path in sorted(config_files):
-            if validate_config(config_path, live=args.live):
+            report = validate_config_comprehensive(config_path)
+
+            # Brief summary for each file
+            status_symbol = "✓" if report["overall_valid"] else "✗"
+            print(
+                f"{status_symbol} {config_path.stem}: {'PASS' if report['overall_valid'] else 'FAIL'}"
+            )
+
+            if report["overall_valid"]:
                 passed += 1
             else:
                 failed += 1
 
-        print("\n" + "=" * 50)
+                # Show errors in non-verbose mode for failures
+                if not args.verbose:
+                    for section_name, section_data in report["sections"].items():
+                        if isinstance(section_data, dict) and not section_data.get(
+                            "valid", True
+                        ):
+                            for error in section_data.get("errors", []):
+                                print(f"    - {error}")
+
+        print()
+        print("=" * 50)
         print(f"Summary: {passed} passed, {failed} failed")
 
         sys.exit(0 if failed == 0 else 1)
 
     elif args.config:
-        # Validate single config
+        # Validate single config with comprehensive validation
         if not args.config.exists():
             print(f"Error: Config file not found: {args.config}")
             sys.exit(1)
 
-        success = validate_config(args.config, live=args.live)
-        sys.exit(0 if success else 1)
+        print(f"Validating: {args.config}")
+        print()
+
+        report = validate_config_comprehensive(args.config)
+
+        # Print report with checkmarks and X marks
+        for section_name, section_data in report["sections"].items():
+            if section_name == "warnings":
+                for warning in section_data:
+                    print(f"⚠  Warning: {warning}")
+            elif section_name == "base_url":
+                # Special handling for base_url (reachability check)
+                if section_data.get("reachable"):
+                    print(f"✓ {section_name}: OK (HTTP {section_data['status_code']})")
+                else:
+                    print(
+                        f"⚠  {section_name}: {section_data.get('error', 'Unreachable')}"
+                    )
+                    if args.verbose and section_data.get("error"):
+                        print(f"  - {section_data['error']}")
+            elif isinstance(section_data, dict):
+                if section_data.get("valid", True):
+                    print(f"✓ {section_name}: OK")
+                else:
+                    print(f"✗ {section_name}: FAILED")
+                    for error in section_data.get("errors", []):
+                        print(f"  - {error}")
+
+        print()
+        if report["overall_valid"]:
+            if report["sections"].get("warnings"):
+                print("Validation passed with warnings")
+                return 0
+            else:
+                print("Validation passed")
+                return 0
+        else:
+            print("Validation failed")
+            return 1
 
     else:
         parser.print_help()
