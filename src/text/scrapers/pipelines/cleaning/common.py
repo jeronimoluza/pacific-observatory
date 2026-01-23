@@ -301,6 +301,15 @@ def handle_unix_timestamp_ms(timestamp: int | str) -> str:
     if not timestamp:
         return ""
 
+    # If already a formatted date string (YYYY-MM-DD), return as-is (idempotent)
+    if (
+        isinstance(timestamp, str)
+        and len(timestamp) == 10
+        and timestamp[4] == "-"
+        and timestamp[7] == "-"
+    ):
+        return timestamp
+
     try:
         # Convert to int if string
         if isinstance(timestamp, str):

@@ -37,7 +37,6 @@ from typing import List, Optional, Dict, Any
 from contextlib import contextmanager
 
 from .logging_config import get_logger
-from .events import ScrapeEvent
 
 logger = get_logger(__name__)
 
@@ -491,65 +490,6 @@ class RunTracker:
             logger.info(f"Cleaned up {deleted} runs older than {days} days")
 
         return deleted
-
-
-class DatabaseEventHandler:
-    """
-    Event handler that records events to the run tracker database.
-
-    Usage:
-        tracker = RunTracker()
-        emitter = EventEmitter()
-        emitter.on("*", DatabaseEventHandler(tracker))
-    """
-
-    def __init__(self, tracker: RunTracker):
-        self.tracker = tracker
-        self._run_id: Optional[str] = None
-
-    def __call__(self, event: ScrapeEvent) -> None:
-        if event.event_type == "run_started":
-            run = self.tracker.start_run(
-                newspaper=event.newspaper,
-                country=event.country,
-                mode=event.details.get("mode", "unknown"),
-                config_hash=event.details.get("config_hash"),
-            )
-            self._run_id = run.run_id
-
-        elif event.event_type == "urls_discovered":
-            if self._run_id:
-                self.tracker.update_run(
-                    self._run_id,
-                    articles_found=event.details.get("count", 0),
-                )
-
-        elif event.event_type == "article_scraped":
-            if self._run_id:
-                self.tracker.record_article(
-                    self._run_id,
-                    url=event.details.get("url", ""),
-                    status="success",
-                )
-
-        elif event.event_type == "article_failed":
-            if self._run_id:
-                self.tracker.record_article(
-                    self._run_id,
-                    url=event.details.get("url", ""),
-                    status="failed",
-                    error_type=event.details.get("error_type"),
-                )
-
-        elif event.event_type == "run_completed":
-            if self._run_id:
-                self.tracker.complete_run(
-                    self._run_id,
-                    status=event.details.get("status", "unknown"),
-                    articles_scraped=event.details.get("articles_scraped"),
-                    articles_failed=event.details.get("articles_failed"),
-                    error_message=event.details.get("error_message"),
-                )
 
 
 def compute_config_hash(config_path: Path) -> str:

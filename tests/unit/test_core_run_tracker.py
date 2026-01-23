@@ -12,10 +12,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 from text.core.run_tracker import (
     RunTracker,
     ScraperRun,
-    DatabaseEventHandler,
     compute_config_hash,
 )
-from text.core.events import ScrapeEvent, EventEmitter
 
 
 @pytest.fixture
@@ -314,68 +312,6 @@ class TestRunTracker:
         assert deleted == 1
 
         assert tracker.get_run(run.run_id) is None
-
-
-class TestDatabaseEventHandler:
-    """Tests for the DatabaseEventHandler class."""
-
-    def test_handles_run_lifecycle(self, tracker):
-        """DatabaseEventHandler should handle run lifecycle events."""
-        emitter = EventEmitter()
-        handler = DatabaseEventHandler(tracker)
-        emitter.on("*", handler)
-
-        # Emit run_started
-        emitter.emit(
-            ScrapeEvent(
-                event_type="run_started",
-                newspaper="fiji_sun",
-                country="fiji",
-                run_id="test",
-                details={"mode": "update"},
-            )
-        )
-
-        # Emit urls_discovered
-        emitter.emit(
-            ScrapeEvent(
-                event_type="urls_discovered",
-                newspaper="fiji_sun",
-                country="fiji",
-                run_id="test",
-                details={"count": 50},
-            )
-        )
-
-        # Emit article events
-        for i in range(3):
-            emitter.emit(
-                ScrapeEvent(
-                    event_type="article_scraped",
-                    newspaper="fiji_sun",
-                    country="fiji",
-                    run_id="test",
-                    details={"url": f"https://example.com/{i}"},
-                )
-            )
-
-        # Emit run_completed
-        emitter.emit(
-            ScrapeEvent(
-                event_type="run_completed",
-                newspaper="fiji_sun",
-                country="fiji",
-                run_id="test",
-                details={"status": "success", "articles_scraped": 3},
-            )
-        )
-
-        # Verify database state
-        runs = tracker.get_recent_runs(hours=1)
-        assert len(runs) == 1
-        assert runs[0].newspaper == "fiji_sun"
-        assert runs[0].articles_found == 50
-        assert runs[0].status == "success"
 
 
 class TestComputeConfigHash:

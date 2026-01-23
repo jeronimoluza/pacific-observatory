@@ -189,6 +189,13 @@ class NewspaperScraper:
                             if url_template:
                                 thumb_data["url"] = url_template.format(**thumb_data)
 
+                        # Apply cleaning to thumbnail data before creating record
+                        cleaning_config = self.config.cleaning or {}
+                        if cleaning_config:
+                            thumb_data = apply_cleaning(
+                                thumb_data, cleaning_config, self.base_url
+                            )
+
                         # Optionally build ArticleRecord directly from API data if 'body' exists
                         if thumb_data.get("body"):
                             article_dict = {
@@ -201,12 +208,7 @@ class NewspaperScraper:
                                 "country": self.country,
                                 "language": self.language,
                             }
-                            # Apply cleaning if configured
-                            cleaning_config = self.config.cleaning or {}
-                            if cleaning_config:
-                                article_dict = apply_cleaning(
-                                    article_dict, cleaning_config, self.base_url
-                                )
+                            # Cleaning already applied to thumb_data above
                             try:
                                 article = ArticleRecord(**article_dict)
                                 self.prefetched_articles.append(article)

@@ -200,9 +200,9 @@ class URLTracker:
         if file_path.exists():
             try:
                 existing_df = pd.read_csv(file_path, encoding="utf-8")
-                # Merge and deduplicate by URL (keep first occurrence)
+                # Merge and deduplicate by URL (keep last occurrence to update old entries)
                 combined_df = pd.concat([existing_df, new_df], ignore_index=True)
-                combined_df = combined_df.drop_duplicates(subset=["url"], keep="first")
+                combined_df = combined_df.drop_duplicates(subset=["url"], keep="last")
                 logger.info(
                     f"Merged {len(new_df)} new URLs with {len(existing_df)} existing. "
                     f"Total after dedup: {len(combined_df)}"

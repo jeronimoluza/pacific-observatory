@@ -29,7 +29,6 @@ if str(PROJECT_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
 # Now safe to import local modules
-from text.core.events import EventEmitter  # noqa: E402
 from text.core.logging_config import configure_logging  # noqa: E402
 from text.core.run_tracker import RunTracker  # noqa: E402
 
@@ -225,12 +224,6 @@ def temp_db() -> Generator[Path, None, None]:
 def run_tracker(temp_db) -> RunTracker:
     """Create a run tracker with a temporary database."""
     return RunTracker(db_path=temp_db)
-
-
-@pytest.fixture
-def event_emitter() -> EventEmitter:
-    """Create a fresh event emitter for testing."""
-    return EventEmitter()
 
 
 # =============================================================================
