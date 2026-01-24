@@ -175,6 +175,62 @@ class NewspaperScraper:
             else:
                 field_metric.successful += 1
 
+    def _process_api_thumbnail(
+        self, thumb_data: Dict[str, Any], existing_urls: Optional[set] = None
+    ) -> Optional[ThumbnailRecord]:
+        """
+        Process a single API thumbnail: clean, validate, track metrics.
+
+        This is the single point of truth for API thumbnail processing.
+        Used by all scrape modes (UPDATE, RESUME, FULL).
+
+        Args:
+            thumb_data: Raw thumbnail data from API
+            existing_urls: Set of URLs already scraped (optional)
+
+        Returns:
+            ThumbnailRecord or None if filtered/invalid
+        """
+        from pydantic import ValidationError
+        from .pipelines.cleaning import apply_cleaning, get_cleaning_func
+        from .pipelines.cleaning.common import clean_url
+
+        # Apply record filter if configured
+        record_filter_func_name = (
+            self.config.cleaning.get("record_filter") if self.config.cleaning else None
+        )
+        if record_filter_func_name:
+            record_filter_func = get_cleaning_func(record_filter_func_name)
+            if record_filter_func and not record_filter_func(thumb_data):
+                return None
+
+        # Clean URL - ensure it's absolute
+        if thumb_data.get("url"):
+            thumb_data["url"] = clean_url(thumb_data["url"], self.base_url)
+        elif "url" not in thumb_data or not thumb_data["url"]:
+            # URL construction from template if needed
+            url_template = self.config.listing.get("url_construction_template")
+            if url_template:
+                thumb_data["url"] = url_template.format(**thumb_data)
+
+        # Apply cleaning - CRITICAL STEP that was missing in UPDATE mode
+        cleaning_config = self.config.cleaning or {}
+        if cleaning_config:
+            thumb_data = apply_cleaning(thumb_data, cleaning_config, self.base_url)
+
+        # Track metrics BEFORE creating record
+        self._track_extraction(thumb_data, stage="thumbnail")
+
+        # Create ThumbnailRecord
+        try:
+            thumbnail = ThumbnailRecord(**thumb_data)
+            return thumbnail
+        except ValidationError as e:
+            self.metrics.articles_failed += 1
+            logger.error(f"Invalid thumbnail data: {e}")
+            logger.debug(f"Data: {thumb_data}")
+            return None
+
     # ==========================================================================
     # Original methods (prefixed with _original_ for Phase 1)
     # These will be migrated to orchestrators in Phase 2
