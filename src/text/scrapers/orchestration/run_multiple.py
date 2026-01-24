@@ -20,7 +20,11 @@ from text.scrapers.orchestration.discovery import discover_configs, group_by_cou
 from text.scrapers.orchestration.utils import create_progress_display
 from text.scrapers.orchestration.summary import format_run_summary
 from text.scrapers.orchestration.failure_log import write_failure_log
-from text.scrapers.observability import ScraperMetrics
+from text.scrapers.observability import (
+    ScraperMetrics,
+    print_multi_run_summary,
+    save_multi_run_manifest,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -566,6 +570,7 @@ def run_all_scrapers(
 
     # Track run start time for summary
     run_start_time = time.time()
+    multi_run_start_time = datetime.utcnow()
 
     # Discover all configurations
     print("\n🔍 Discovering configurations...")
@@ -716,6 +721,21 @@ def run_all_scrapers(
             print(f"\n📝 Failure details saved to: {failure_log_path}")
     elif dry_run:
         print("\n[DRY RUN COMPLETE]")
+
+    # Collect manifests and print multi-run summary
+    if not dry_run and all_results:
+        logger.info("Collecting run manifests...")
+        all_metrics = collect_run_manifests(configs)
+
+        # Print aggregate summary
+        print_multi_run_summary(all_metrics)
+
+        # Save multi-run manifest
+        completed_at = datetime.utcnow()
+        manifest_path = save_multi_run_manifest(
+            all_metrics, multi_run_start_time, completed_at
+        )
+        print(f"Run details: {manifest_path}")
 
     # Return list of results
     return all_results
