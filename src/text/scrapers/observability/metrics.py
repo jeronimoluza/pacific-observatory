@@ -6,12 +6,30 @@ Provides in-memory aggregation of extraction quality metrics.
 
 import json
 import logging
+import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List
 
 logger = logging.getLogger(__name__)
+
+
+def _sanitize_name(name: str) -> str:
+    """
+    Sanitize a name for use in filesystem paths.
+
+    Matches CSVStorage._sanitize_name() to ensure consistency.
+
+    Args:
+        name: Name to sanitize
+
+    Returns:
+        Sanitized name safe for filesystem use
+    """
+    # Replace spaces with underscores and remove special characters
+    sanitized = re.sub(r"[^\w\-_.]", "_", name.replace(" ", "_").lower())
+    return sanitized.strip("_")
 
 
 @dataclass
@@ -115,12 +133,16 @@ def save_run_manifest(metrics: ScraperMetrics, newspaper: str, country: str) -> 
 
     Args:
         metrics: ScraperMetrics to save
-        newspaper: Newspaper name
-        country: Country code
+        newspaper: Newspaper name (will be sanitized to match data folder)
+        country: Country code (will be sanitized to match data folder)
 
     Returns:
         Path to saved manifest file
     """
+    # Sanitize names to match data folder structure (e.g., "Caixin Global" -> "caixin_global")
+    country = _sanitize_name(country)
+    newspaper = _sanitize_name(newspaper)
+
     # Create directory structure
     manifest_dir = Path(f"logs/text/{country}/{newspaper}/individual")
     manifest_dir.mkdir(parents=True, exist_ok=True)
@@ -204,8 +226,12 @@ def save_multi_run_manifest(
     # Build manifest paths
     newspaper_manifests = []
     for metrics in all_metrics:
+        # Sanitize names to match actual folder structure
+        country = _sanitize_name(metrics.country)
+        newspaper = _sanitize_name(metrics.newspaper)
+
         manifest_path_str = (
-            f"logs/text/{metrics.country}/{metrics.newspaper}/individual/"
+            f"logs/text/{country}/{newspaper}/individual/"
             f"{metrics.started_at.strftime('%Y%m%d_%H%M%S')}.json"
         )
         newspaper_manifests.append(manifest_path_str)

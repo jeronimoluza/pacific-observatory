@@ -87,8 +87,9 @@ def run_scraper_subprocess(
     Returns:
         Popen object if started, None if dry_run or error
     """
-    country = config["country"]
-    newspaper = config["newspaper"]
+    # Sanitize names to match data folder structure (e.g., "Caixin Global" -> "caixin_global")
+    country = _sanitize_name(config["country"])
+    newspaper = _sanitize_name(config["newspaper"])
 
     # Create log directory structure: logs/text/{country}/{newspaper}/execution_logs/
     log_file = Path(
@@ -495,6 +496,19 @@ def run_multi_country_group_sequential(
     return results
 
 
+def _sanitize_name(name: str) -> str:
+    """
+    Sanitize a name for use in filesystem paths.
+
+    Matches CSVStorage._sanitize_name() to ensure consistency.
+    """
+    import re
+
+    # Replace spaces with underscores and remove special characters
+    sanitized = re.sub(r"[^\w\-_.]", "_", name.replace(" ", "_").lower())
+    return sanitized.strip("_")
+
+
 def collect_run_manifests(
     newspaper_configs: List[Dict[str, str]],
 ) -> List[ScraperMetrics]:
@@ -510,8 +524,9 @@ def collect_run_manifests(
     manifests = []
 
     for config in newspaper_configs:
-        country = config["country"]
-        newspaper = config["newspaper"]
+        # Sanitize names to match actual folder structure (e.g., "Caixin Global" -> "caixin_global")
+        country = _sanitize_name(config["country"])
+        newspaper = _sanitize_name(config["newspaper"])
 
         manifest_dir = Path(f"logs/text/{country}/{newspaper}/individual")
 
