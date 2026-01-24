@@ -9,6 +9,7 @@ import subprocess
 import time
 import logging
 import re
+import json
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional, Any
@@ -19,6 +20,7 @@ from text.scrapers.orchestration.discovery import discover_configs, group_by_cou
 from text.scrapers.orchestration.utils import create_progress_display
 from text.scrapers.orchestration.summary import format_run_summary
 from text.scrapers.orchestration.failure_log import write_failure_log
+from text.scrapers.observability import ScraperMetrics
 
 logger = logging.getLogger(__name__)
 
@@ -487,6 +489,50 @@ def run_multi_country_group_sequential(
             results.extend(group_results)
 
     return results
+
+
+def collect_run_manifests(
+    newspaper_configs: List[Dict[str, str]],
+) -> List[ScraperMetrics]:
+    """
+    Collect run manifests from all newspapers that just ran.
+
+    Args:
+        newspaper_configs: List of newspaper config dicts with 'country' and 'newspaper' keys
+
+    Returns:
+        List of ScraperMetrics loaded from manifests
+    """
+    manifests = []
+
+    for config in newspaper_configs:
+        country = config["country"]
+        newspaper = config["newspaper"]
+
+        manifest_dir = Path(f"logs/text/{country}/{newspaper}/individual")
+
+        # Skip if no manifests exist yet
+        if not manifest_dir.exists():
+            logger.warning(f"No manifests found for {newspaper}")
+            continue
+
+        # Get most recent manifest
+        manifest_files = list(manifest_dir.glob("*.json"))
+        if not manifest_files:
+            logger.warning(f"No manifest files in {manifest_dir}")
+            continue
+
+        latest_manifest = max(manifest_files, key=lambda p: p.stat().st_mtime)
+
+        # Load and parse
+        try:
+            manifest_data = json.loads(latest_manifest.read_text())
+            metrics = ScraperMetrics.from_dict(manifest_data)
+            manifests.append(metrics)
+        except Exception as e:
+            logger.error(f"Failed to load manifest {latest_manifest}: {e}")
+
+    return manifests
 
 
 def run_all_scrapers(
