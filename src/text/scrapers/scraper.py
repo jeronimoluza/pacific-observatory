@@ -150,6 +150,31 @@ class NewspaperScraper:
 
         return self._browser_client
 
+    def _track_extraction(self, data: Dict[str, Any], stage: str) -> None:
+        """
+        Track field-level extraction quality in metrics.
+
+        For each field in the extracted data, records whether it was
+        successfully populated or empty/missing.
+
+        Args:
+            data: Dictionary of extracted fields
+            stage: Extraction stage ("thumbnail" or "article")
+        """
+        for field_name, value in data.items():
+            # Get or create field metric
+            field_metric = self.metrics.get_field_metric(field_name)
+            field_metric.total_extracted += 1
+
+            # Check if value is empty
+            if value is None or value == "" or value == []:
+                field_metric.empty += 1
+                logger.warning(
+                    f"Empty {field_name} in {stage}: {data.get('url', 'unknown')}"
+                )
+            else:
+                field_metric.successful += 1
+
     # ==========================================================================
     # Original methods (prefixed with _original_ for Phase 1)
     # These will be migrated to orchestrators in Phase 2
