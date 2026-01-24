@@ -126,3 +126,75 @@ def print_run_summary(metrics: ScraperMetrics) -> None:
             print(f"  • {warning}")
 
     print()  # Blank line at end
+
+
+def print_multi_run_summary(all_metrics: List[ScraperMetrics]) -> None:
+    """
+    Print aggregate summary for multiple scraper runs.
+
+    Args:
+        all_metrics: List of ScraperMetrics from multiple newspapers
+    """
+    if not all_metrics:
+        print("\n=== Multi-Scraper Run Complete ===")
+        print("No results collected.")
+        return
+
+    print("\n=== Multi-Scraper Run Complete ===\n")
+
+    # Calculate totals
+    total_newspapers = len(all_metrics)
+    total_articles = sum(m.articles_scraped for m in all_metrics)
+    total_failed = sum(m.articles_failed for m in all_metrics)
+    total_duration = sum(m.duration_seconds for m in all_metrics)
+
+    # Calculate success rate
+    total_attempted = total_articles + total_failed
+    if total_attempted > 0:
+        success_rate = (total_articles / total_attempted) * 100
+    else:
+        success_rate = 0
+
+    print(f"Total newspapers: {total_newspapers}")
+
+    # Duration
+    hours = int(total_duration / 3600)
+    minutes = int((total_duration % 3600) / 60)
+    if hours > 0:
+        print(f"Total duration: {hours}h {minutes}m")
+    else:
+        print(f"Total duration: {minutes}m")
+
+    print("\nOverall:")
+    print(f"  Articles scraped: {total_articles:,}")
+    if total_failed > 0:
+        print(f"  Articles failed:  {total_failed}")
+        print(f"  Success rate: {success_rate:.1f}%")
+
+    # Collect quality issues by severity
+    critical_issues = []
+    warnings = []
+
+    for metrics in all_metrics:
+        issues = detect_quality_issues(metrics)
+        if issues:
+            for issue in issues:
+                if "Critical" in issue or "ALL articles" in issue:
+                    critical_issues.append((metrics.newspaper, metrics.country, issue))
+                else:
+                    warnings.append((metrics.newspaper, metrics.country, issue))
+
+    # Print quality issues
+    if critical_issues or warnings:
+        total_issues = len(critical_issues) + len(warnings)
+        print(f"\nQuality Issues Found: {total_issues} newspapers\n")
+
+        for newspaper, country, issue in critical_issues:
+            print(f"  ✗ {newspaper} ({country})")
+            print(f"    • {issue}\n")
+
+        for newspaper, country, issue in warnings:
+            print(f"  ⚠ {newspaper} ({country})")
+            print(f"    • {issue}\n")
+
+    print()
