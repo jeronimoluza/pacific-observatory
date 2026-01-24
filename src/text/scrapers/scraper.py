@@ -927,14 +927,6 @@ class NewspaperScraper:
             skipped_count = 0
             stop_discovery = False
 
-            # Get the record filter function if it's configured
-            record_filter_func_name = self.config.cleaning.get("record_filter")
-            record_filter_func = (
-                get_cleaning_func(record_filter_func_name)
-                if record_filter_func_name
-                else None
-            )
-
             async for result_batch in self.listing_strategy.discover_and_scrape(
                 client, self.base_url, thumbnail_selector
             ):
@@ -944,44 +936,31 @@ class NewspaperScraper:
                 # Handle API strategy's direct return of dicts
                 if isinstance(self.listing_strategy, ApiStrategy):
                     for thumb_data in result_batch:
-                        try:
-                            # Apply record filter if it exists
-                            if record_filter_func and not record_filter_func(
-                                thumb_data
-                            ):
-                                continue
+                        # Use unified processing method
+                        thumbnail = self._process_api_thumbnail(
+                            thumb_data, existing_urls
+                        )
 
-                            # Handle URL construction from API data
-                            if thumb_data.get("url"):
-                                thumb_data["url"] = clean_url(
-                                    thumb_data["url"], self.base_url
-                                )
-                            elif "url" not in thumb_data or not thumb_data["url"]:
-                                url_template = self.config.listing.get(
-                                    "url_construction_template"
-                                )
-                                if url_template:
-                                    thumb_data["url"] = url_template.format(
-                                        **thumb_data
-                                    )
+                        if thumbnail:
+                            batch_thumbnails.append(thumbnail)
 
-                            # Optionally build ArticleRecord directly from API data if 'body' exists
+                            # Check if this thumbnail is new
+                            if str(thumbnail.url) not in existing_urls:
+                                batch_new_count += 1
+
+                            # Handle prefetched articles (full JSON from API)
                             if thumb_data.get("body"):
                                 article_dict = {
-                                    "url": thumb_data["url"],
-                                    "title": thumb_data.get("title", ""),
-                                    "date": thumb_data.get("date", ""),
+                                    "url": str(thumbnail.url),
+                                    "title": thumbnail.title,
+                                    "date": thumbnail.date or "",
                                     "body": thumb_data.get("body", ""),
                                     "tags": thumb_data.get("tags", []),
                                     "source": self.name,
                                     "country": self.country,
                                     "language": self.language,
                                 }
-                                cleaning_config = self.config.cleaning or {}
-                                if cleaning_config:
-                                    article_dict = apply_cleaning(
-                                        article_dict, cleaning_config, self.base_url
-                                    )
+                                # Note: cleaning already applied in _process_api_thumbnail
                                 try:
                                     article = ArticleRecord(**article_dict)
                                     self.prefetched_articles.append(article)
@@ -990,17 +969,6 @@ class NewspaperScraper:
                                         f"Failed to create ArticleRecord from API data: {e}"
                                     )
 
-                            thumbnail = ThumbnailRecord(**thumb_data)
-                            batch_thumbnails.append(thumbnail)
-
-                            # Check if this thumbnail is new
-                            if str(thumbnail.url) not in existing_urls:
-                                batch_new_count += 1
-
-                        except Exception as e:
-                            logger.error(
-                                f"Failed to create ThumbnailRecord from API data: {e}"
-                            )
                     logger.info(f"Processed API batch: {len(result_batch)} thumbnails")
 
                 else:
