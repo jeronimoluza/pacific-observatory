@@ -22,7 +22,7 @@ from .models import (
     ArticleRecord,
     NewspaperConfig,
 )
-from .pipelines.cleaning import apply_cleaning, get_cleaning_func, clean_url
+from .pipelines.cleaning import apply_cleaning
 from .pipelines.storage import CSVStorage
 from .parser import (
     extract_thumbnail_data_from_element,
@@ -247,59 +247,30 @@ class NewspaperScraper:
         thumbnails = []
         thumbnail_selector = self.thumbnail_selectors.container
 
-        # Get the record filter function if it's configured
-        record_filter_func_name = self.config.cleaning.get("record_filter")
-        record_filter_func = (
-            get_cleaning_func(record_filter_func_name)
-            if record_filter_func_name
-            else None
-        )
-
         async for result_batch in self.listing_strategy.discover_and_scrape(
             client, self.base_url, thumbnail_selector
         ):
             # Handle API strategy's direct return of dicts
             if isinstance(self.listing_strategy, ApiStrategy):
                 for thumb_data in result_batch:
-                    try:
-                        # Apply record filter if it exists
-                        if record_filter_func and not record_filter_func(thumb_data):
-                            continue
+                    # Use unified processing method
+                    thumbnail = self._process_api_thumbnail(thumb_data)
 
-                        # Handle URL construction from API data (e.g., from an 'id' field)
-                        # Ensure URL is absolute before creating the record
-                        if thumb_data.get("url"):
-                            thumb_data["url"] = clean_url(
-                                thumb_data["url"], self.base_url
-                            )
-                        # Handle URL construction from API data if URL is still missing
-                        elif "url" not in thumb_data or not thumb_data["url"]:
-                            url_template = self.config.listing.get(
-                                "url_construction_template"
-                            )
-                            if url_template:
-                                thumb_data["url"] = url_template.format(**thumb_data)
+                    if thumbnail:
+                        thumbnails.append(thumbnail)
 
-                        # Apply cleaning to thumbnail data before creating record
-                        cleaning_config = self.config.cleaning or {}
-                        if cleaning_config:
-                            thumb_data = apply_cleaning(
-                                thumb_data, cleaning_config, self.base_url
-                            )
-
-                        # Optionally build ArticleRecord directly from API data if 'body' exists
+                        # Handle prefetched articles
                         if thumb_data.get("body"):
                             article_dict = {
-                                "url": thumb_data["url"],
-                                "title": thumb_data.get("title", ""),
-                                "date": thumb_data.get("date", ""),
+                                "url": str(thumbnail.url),
+                                "title": thumbnail.title,
+                                "date": thumbnail.date or "",
                                 "body": thumb_data.get("body", ""),
                                 "tags": thumb_data.get("tags", []),
                                 "source": self.name,
                                 "country": self.country,
                                 "language": self.language,
                             }
-                            # Cleaning already applied to thumb_data above
                             try:
                                 article = ArticleRecord(**article_dict)
                                 self.prefetched_articles.append(article)
@@ -309,14 +280,7 @@ class NewspaperScraper:
                                 )
                                 logger.debug(f"Article data: {article_dict}")
 
-                        thumbnail = ThumbnailRecord(**thumb_data)
-                        thumbnails.append(thumbnail)
-                    except Exception as e:
-                        logger.error(
-                            f"Failed to create ThumbnailRecord from API data: {e}"
-                        )
-                        logger.error(f"Data: {thumb_data}")
-                logger.info(f"Processed API batch: {len(result_batch)} thumbnails")
+                logger.info(f"Processed API batch: {len(result_batch)} items")
                 continue
 
             # Existing logic for HTML-based strategies
