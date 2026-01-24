@@ -29,7 +29,6 @@ from text.scrapers.orchestration.utils import (
     get_scraper_log_path,
     add_file_handler_to_logger,
 )
-from text.core.run_tracker import RunTracker, compute_config_hash
 from text.scrapers.observability import print_run_summary, save_run_manifest
 
 
@@ -55,8 +54,6 @@ async def run_single_scraper(
     """
     logger = logging.getLogger(__name__)
     file_handler = None
-    tracker = RunTracker()
-    run = None
 
     try:
         # Create scraper from config file
@@ -77,16 +74,6 @@ async def run_single_scraper(
         storage = None
         if save_results:
             storage = CSVStorage(storage_dir)
-
-        # Start run tracking
-        config_hash = compute_config_hash(config_path)
-        run = tracker.start_run(
-            newspaper=scraper.name,
-            country=scraper.country,
-            mode=mode,
-            config_hash=config_hash,
-        )
-        logger.info(f"Started run tracking: {run.run_id[:8]}")
 
         # Run the scraping operation based on mode
         mode_display = mode.upper().replace("_", "-")
@@ -137,24 +124,6 @@ async def run_single_scraper(
         )
         logger.info(f"Run details: {manifest_path}")
 
-        # Complete run tracking
-        stats = results.get("statistics", {})
-        articles_scraped = stats.get("articles_scraped", 0)
-        articles_failed = stats.get("failed_urls", 0)
-        articles_found = stats.get(
-            "urls_discovered", stats.get("new_urls_discovered", 0)
-        )
-
-        if run:
-            tracker.update_run(run.run_id, articles_found=articles_found)
-            tracker.complete_run(
-                run.run_id,
-                status="success" if results["success"] else "failed",
-                articles_scraped=articles_scraped,
-                articles_failed=articles_failed,
-                error_message=results.get("error"),
-            )
-
         # Log summary
         if results["success"]:
             logger.info(
@@ -167,14 +136,6 @@ async def run_single_scraper(
 
     except Exception as e:
         logger.error(f"Error running scraper: {e}")
-
-        # Mark run as failed
-        if run:
-            tracker.complete_run(
-                run.run_id,
-                status="failed",
-                error_message=str(e),
-            )
 
         return {
             "success": False,
