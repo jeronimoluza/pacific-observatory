@@ -64,3 +64,65 @@ def detect_quality_issues(metrics: ScraperMetrics) -> List[str]:
                 )
 
     return warnings
+
+
+def print_run_summary(metrics: ScraperMetrics) -> None:
+    """
+    Print formatted run summary to console.
+
+    Displays article counts, field quality metrics, and warnings.
+
+    Args:
+        metrics: ScraperMetrics to format and display
+    """
+    print(f"\n=== Scrape Complete: {metrics.newspaper} ===\n")
+
+    # Article counts
+    print("Articles:")
+    print(f"  Discovered: {metrics.urls_discovered} URLs")
+    print(f"  Scraped:    {metrics.articles_scraped} articles")
+    if metrics.articles_failed > 0:
+        fail_pct = (
+            metrics.articles_failed
+            / (metrics.articles_scraped + metrics.articles_failed)
+        ) * 100
+        print(f"  Failed:     {metrics.articles_failed} articles ({fail_pct:.0f}%)")
+
+    # Duration
+    if metrics.duration_seconds > 0:
+        minutes = int(metrics.duration_seconds / 60)
+        seconds = int(metrics.duration_seconds % 60)
+        if minutes > 0:
+            print(f"\nDuration: {minutes}m {seconds}s")
+        else:
+            print(f"\nDuration: {seconds}s")
+
+    # Field quality
+    if metrics.field_metrics:
+        print("\nField Quality:")
+        # Sort fields for consistent output
+        for field_name in sorted(metrics.field_metrics.keys()):
+            field_metric = metrics.field_metrics[field_name]
+
+            if field_metric.total_extracted == 0:
+                continue
+
+            success_pct = field_metric.success_rate()
+            status = "✓" if success_pct > 90 else "✗"
+
+            print(
+                f"  {field_name}: {field_metric.successful}/{field_metric.total_extracted} "
+                f"{status} ({success_pct:.0f}%)"
+            )
+
+            if field_metric.empty > 0:
+                print(f"    └─ {field_metric.empty} empty")
+
+    # Quality warnings
+    warnings = detect_quality_issues(metrics)
+    if warnings:
+        print("\n⚠️  QUALITY ISSUES DETECTED:")
+        for warning in warnings:
+            print(f"  • {warning}")
+
+    print()  # Blank line at end
