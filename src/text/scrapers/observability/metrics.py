@@ -9,7 +9,7 @@ import logging
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -150,5 +150,79 @@ def save_run_manifest(metrics: ScraperMetrics, newspaper: str, country: str) -> 
     # Write JSON
     manifest_path.write_text(json.dumps(manifest, indent=2))
     logger.info(f"Saved run manifest to {manifest_path}")
+
+    return manifest_path
+
+
+def save_multi_run_manifest(
+    all_metrics: List[ScraperMetrics],
+    started_at: datetime,
+    completed_at: datetime,
+) -> Path:
+    """
+    Save aggregate manifest for multi-newspaper run.
+
+    Args:
+        all_metrics: List of ScraperMetrics from all newspapers
+        started_at: When the multi-run started
+        completed_at: When the multi-run completed
+
+    Returns:
+        Path to saved manifest file
+    """
+    from .formatters import detect_quality_issues
+
+    # Create directory
+    manifest_dir = Path("logs/text/multi_runs")
+    manifest_dir.mkdir(parents=True, exist_ok=True)
+
+    # Generate filename
+    timestamp = started_at.strftime("%Y%m%d_%H%M%S")
+    manifest_path = manifest_dir / f"{timestamp}.json"
+
+    # Calculate totals
+    total_articles = sum(m.articles_scraped for m in all_metrics)
+    total_failed = sum(m.articles_failed for m in all_metrics)
+
+    # Collect quality issues
+    quality_issues = []
+    for metrics in all_metrics:
+        issues = detect_quality_issues(metrics)
+        for issue in issues:
+            severity = (
+                "critical" if "Critical" in issue or "ALL" in issue else "warning"
+            )
+            quality_issues.append(
+                {
+                    "newspaper": metrics.newspaper,
+                    "country": metrics.country,
+                    "severity": severity,
+                    "issue": issue,
+                }
+            )
+
+    # Build manifest paths
+    newspaper_manifests = []
+    for metrics in all_metrics:
+        manifest_path_str = (
+            f"logs/text/{metrics.country}/{metrics.newspaper}/individual/"
+            f"{metrics.started_at.strftime('%Y%m%d_%H%M%S')}.json"
+        )
+        newspaper_manifests.append(manifest_path_str)
+
+    # Build manifest
+    manifest = {
+        "started_at": started_at.isoformat(),
+        "completed_at": completed_at.isoformat(),
+        "newspapers_run": len(all_metrics),
+        "total_articles_scraped": total_articles,
+        "total_failed": total_failed,
+        "quality_issues": quality_issues,
+        "newspaper_manifests": newspaper_manifests,
+    }
+
+    # Write
+    manifest_path.write_text(json.dumps(manifest, indent=2))
+    logger.info(f"Saved multi-run manifest to {manifest_path}")
 
     return manifest_path
