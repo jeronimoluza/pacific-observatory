@@ -30,6 +30,7 @@ from text.scrapers.orchestration.utils import (
     add_file_handler_to_logger,
 )
 from text.core.run_tracker import RunTracker, compute_config_hash
+from text.scrapers.observability import print_run_summary, save_run_manifest
 
 
 async def run_single_scraper(
@@ -121,6 +122,20 @@ async def run_single_scraper(
 
         # Clean up resources
         scraper.cleanup()
+
+        # Finalize metrics
+        scraper.metrics.duration_seconds = (
+            datetime.utcnow() - scraper.metrics.started_at
+        ).total_seconds()
+
+        # Print summary to console
+        print_run_summary(scraper.metrics)
+
+        # Save run manifest
+        manifest_path = save_run_manifest(
+            scraper.metrics, scraper.name, scraper.country
+        )
+        logger.info(f"Run details: {manifest_path}")
 
         # Complete run tracking
         stats = results.get("statistics", {})
