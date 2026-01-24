@@ -10,6 +10,7 @@ the original methods for now. Full migration will happen in Phase 2.
 
 import asyncio
 import logging
+from datetime import datetime
 from typing import List, Dict, Optional, Any
 from urllib.parse import urlparse
 import httpx
@@ -29,6 +30,7 @@ from .parser import (
 )
 from .discovery import DiscoveryOrchestrator
 from .extraction import ExtractionOrchestrator
+from .observability import ScraperMetrics
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +59,14 @@ class NewspaperScraper:
         self.country = self.config.country
         self.base_url = str(self.config.base_url)
         self.language = self.config.language or "en"
+
+        # Initialize metrics tracking
+        self.metrics = ScraperMetrics(
+            newspaper=self.name,
+            country=self.country,
+            mode="update",  # Will be set by run method
+            started_at=datetime.utcnow(),
+        )
 
         # Store limits from config
         self.max_pages = self.config.max_pages
