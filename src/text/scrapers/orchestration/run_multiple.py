@@ -84,13 +84,11 @@ def run_scraper_subprocess(
     country = config["country"]
     newspaper = config["newspaper"]
 
-    # Create log directory structure: logs/{country}/{newspaper}/
-    log_subdir = log_dir / country / newspaper
-    log_subdir.mkdir(parents=True, exist_ok=True)
-
-    # Generate timestamp for log file
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_file = log_subdir / f"{timestamp}.log"
+    # Create log directory structure: logs/text/{country}/{newspaper}/execution_logs/
+    log_file = Path(
+        f"logs/text/{country}/{newspaper}/execution_logs/{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    )
+    log_file.parent.mkdir(parents=True, exist_ok=True)
 
     # Build command
     # Use poetry run if available, otherwise direct python
