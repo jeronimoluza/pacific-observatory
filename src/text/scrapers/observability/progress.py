@@ -17,11 +17,16 @@ JSON format:
 """
 
 import json
+import logging
 import os
 import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+
+from .metrics import _sanitize_name
+
+logger = logging.getLogger(__name__)
 
 
 class ProgressReporter:
@@ -54,8 +59,8 @@ class ProgressReporter:
             newspaper: Newspaper name (e.g., "fiji_sun")
             base_path: Base directory for progress files. Defaults to "logs/text"
         """
-        self.country = country
-        self.newspaper = newspaper
+        self.country = _sanitize_name(country)
+        self.newspaper = _sanitize_name(newspaper)
         self.base_path = Path(base_path) if base_path else Path("logs/text")
 
         # Initialize state
@@ -108,8 +113,9 @@ class ProgressReporter:
                 json.dump(data, f, indent=2)
             # Atomic rename
             os.replace(temp_path, self.progress_path)
-        except Exception:
+        except Exception as e:
             # Clean up temp file on error
+            logger.warning(f"Failed to write progress file: {e}")
             if os.path.exists(temp_path):
                 os.unlink(temp_path)
             raise
@@ -124,8 +130,8 @@ class ProgressReporter:
         try:
             if self.progress_path.exists():
                 self.progress_path.unlink()
-        except OSError:
-            pass  # Ignore errors during cleanup
+        except OSError as e:
+            logger.warning(f"Failed to cleanup progress file: {e}")
 
 
 def read_progress(
@@ -145,7 +151,9 @@ def read_progress(
         Progress data as dict, or None if no progress file exists.
     """
     base = Path(base_path) if base_path else Path("logs/text")
-    progress_path = base / country / newspaper / "progress.json"
+    sanitized_country = _sanitize_name(country)
+    sanitized_newspaper = _sanitize_name(newspaper)
+    progress_path = base / sanitized_country / sanitized_newspaper / "progress.json"
 
     if not progress_path.exists():
         return None
@@ -153,7 +161,11 @@ def read_progress(
     try:
         with open(progress_path, "r") as f:
             return json.load(f)
-    except (json.JSONDecodeError, OSError):
+    except json.JSONDecodeError as e:
+        logger.warning(f"Failed to decode progress JSON for {newspaper}: {e}")
+        return None
+    except OSError as e:
+        logger.warning(f"Failed to read progress file for {newspaper}: {e}")
         return None
 
 
@@ -177,6 +189,7 @@ def is_scraper_stale(
         True if scraper is stale, False otherwise.
         Returns False if no progress file exists (scraper may still be starting).
     """
+    # Note: read_progress already sanitizes country and newspaper
     data = read_progress(country, newspaper, base_path)
 
     if data is None:
@@ -187,6 +200,7 @@ def is_scraper_stale(
         last_activity = datetime.fromisoformat(data["last_activity"])
         elapsed = (datetime.now() - last_activity).total_seconds()
         return elapsed > stale_threshold_seconds
-    except (KeyError, ValueError):
+    except (KeyError, ValueError) as e:
         # Invalid or missing timestamp - assume stale
+        logger.warning(f"Failed to parse timestamp for {newspaper}: {e}")
         return True
