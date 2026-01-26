@@ -18,7 +18,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # Import discovery functions from dedicated module
 from text.scrapers.orchestration.discovery import discover_configs, group_by_country
 from text.scrapers.orchestration.utils import create_progress_display
-from text.scrapers.orchestration.summary import format_run_summary
 from text.scrapers.orchestration.failure_log import write_failure_log
 from text.scrapers.observability import (
     ScraperMetrics,
@@ -583,8 +582,7 @@ def run_all_scrapers(
     print("🌊 Pacific Observatory - Multi-Scraper Runner")
     print("=" * 60)
 
-    # Track run start time for summary
-    run_start_time = time.time()
+    # Track run start time for manifest
     multi_run_start_time = datetime.utcnow()
 
     # Discover all configurations
@@ -719,13 +717,6 @@ def run_all_scrapers(
 
     # Print final summary
     if not dry_run and all_results:
-        # Calculate total duration
-        total_duration = int(time.time() - run_start_time)
-
-        # Generate and print summary
-        summary = format_run_summary(all_results, total_duration)
-        print("\n" + summary)
-
         # Write failure log
         failure_log_path = project_root / "data" / "text" / "last_run_failures.json"
         write_failure_log(all_results, failure_log_path)

@@ -11,6 +11,28 @@ from .metrics import ScraperMetrics
 logger = logging.getLogger(__name__)
 
 
+def format_duration(seconds: float) -> str:
+    """
+    Format duration in human-readable form.
+
+    Args:
+        seconds: Duration in seconds
+
+    Returns:
+        Formatted string like "2m 34s" or "1h 15m"
+    """
+    if seconds < 60:
+        return f"{int(seconds)}s"
+    elif seconds < 3600:
+        minutes = int(seconds // 60)
+        secs = int(seconds % 60)
+        return f"{minutes}m {secs}s"
+    else:
+        hours = int(seconds // 3600)
+        minutes = int((seconds % 3600) // 60)
+        return f"{hours}h {minutes}m"
+
+
 def detect_quality_issues(metrics: ScraperMetrics) -> List[str]:
     """
     Detect data quality issues from metrics.

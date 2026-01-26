@@ -12,6 +12,7 @@ from .metrics import (
     save_multi_run_manifest,
 )
 from .formatters import (
+    format_duration,
     print_run_summary,
     detect_quality_issues,
     print_multi_run_summary,
@@ -29,6 +30,7 @@ __all__ = [
     "save_run_manifest",
     "save_multi_run_manifest",
     # Formatters
+    "format_duration",
     "print_run_summary",
     "detect_quality_issues",
     "print_multi_run_summary",
