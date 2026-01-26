@@ -175,6 +175,51 @@ SPIDER_SELECTORS = {
             "span.product-sku::text",
         ],
     },
+    "rakuten": {
+        "product_name": [
+            "meta[property='og:title']::attr(content)",
+            "title::text",
+            "h1.item-name::text",
+            "span.item_name::text",
+        ],
+        "price": [
+            "meta[itemprop='price']::attr(content)",
+            "meta[itemprop='lowPrice']::attr(content)",
+            "meta[property='product:price:amount']::attr(content)",
+            "span.price2::text",
+            "span[itemprop='price']::text",
+        ],
+        "category": [
+            "div.sdRanking a::text",
+            "div.item-breadcrumb a::text",
+            "ul.breadcrumb li a::text",
+        ],
+        "product_id": [
+            "meta[property='product:retailer_item_id']::attr(content)",
+        ],
+    },
+    "yahoo_shopping": {
+        "product_name": [
+            "meta[property='og:title']::attr(content)",
+            "h1.elName::text",
+            "h1.ItemName::text",
+            "title::text",
+        ],
+        "price": [
+            "meta[property='product:price:amount']::attr(content)",
+            "span.elPriceNumber::text",
+            "span.ItemPrice::text",
+            "p.elPrice::text",
+        ],
+        "category": [
+            "ol.elBreadcrumb a::text",
+            "ul.elBreadcrumb a::text",
+            "div.ItemCategory a::text",
+        ],
+        "product_id": [
+            "meta[property='product:retailer_item_id']::attr(content)",
+        ],
+    },
 }
 
 
