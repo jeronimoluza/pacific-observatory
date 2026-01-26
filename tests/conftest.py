@@ -28,9 +28,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-# Now safe to import local modules
-from text.core.logging_config import configure_logging  # noqa: E402
-from text.core.run_tracker import RunTracker  # noqa: E402
+# Note: text.core module was removed in refactoring
+# Logging and RunTracker have been deprecated
 
 
 # =============================================================================
@@ -52,7 +51,9 @@ TEST_DATA_DIR = Path(__file__).parent / "data"
 @pytest.fixture(scope="session", autouse=True)
 def setup_logging():
     """Configure logging for tests with minimal output."""
-    configure_logging(log_level="WARNING", enable_file=False)
+    import logging
+
+    logging.basicConfig(level=logging.WARNING)
 
 
 @pytest.fixture(scope="session")
@@ -220,10 +221,7 @@ def temp_db() -> Generator[Path, None, None]:
         db_path.unlink()
 
 
-@pytest.fixture
-def run_tracker(temp_db) -> RunTracker:
-    """Create a run tracker with a temporary database."""
-    return RunTracker(db_path=temp_db)
+# RunTracker fixture removed - RunTracker has been deprecated
 
 
 # =============================================================================
