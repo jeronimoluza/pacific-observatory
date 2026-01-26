@@ -81,7 +81,7 @@ def run_scraper_subprocess(
         log_dir: Base directory for logs
         project_root: Project root directory
         dry_run: If True, print command without executing
-        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
+        mode: Scraping mode - "default", "update", "resume", "full_discovery", or "full_from_scratch"
 
     Returns:
         Popen object if started, None if dry_run or error
@@ -107,12 +107,14 @@ def run_scraper_subprocess(
     ]
 
     # Add mode flag if not default
-    if mode == "discover":
-        cmd.append("--discover")
-    elif mode == "discover_full":
-        cmd.append("--discover-full")
+    if mode == "update":
+        cmd.append("--update")
+    elif mode == "full_discovery":
+        cmd.append("--full-discovery")
     elif mode == "resume":
         cmd.append("--resume")
+    elif mode == "full_from_scratch":
+        cmd.append("--full-from-scratch")
     # default mode: no flag needed
 
     if dry_run:
@@ -168,7 +170,7 @@ def run_scraper_with_timeout(
         project_root: Project root directory
         timeout_seconds: Maximum seconds to allow scraper to run (default: 600 = 10 minutes)
         dry_run: If True, print command without executing
-        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
+        mode: Scraping mode - "default", "update", "resume", "full_discovery", or "full_from_scratch"
 
     Returns:
         Dictionary with keys:
@@ -475,7 +477,7 @@ def run_multi_country_group_sequential(
         log_dir: Base directory for logs
         project_root: Project root directory
         dry_run: If True, print command without executing
-        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
+        mode: Scraping mode - "default", "update", "resume", "full_discovery", or "full_from_scratch"
 
     Returns:
         List of result dictionaries
@@ -573,7 +575,7 @@ def run_all_scrapers(
         project_root: Project root directory
         sequential: If True, run all scrapers sequentially (for debugging)
         dry_run: If True, print what would be executed without running
-        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
+        mode: Scraping mode - "default", "update", "resume", "full_discovery", or "full_from_scratch"
         timeout_per_scraper: Maximum seconds per scraper before timeout (default: 600)
 
     Returns:

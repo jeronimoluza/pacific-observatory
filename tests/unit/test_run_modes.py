@@ -69,14 +69,6 @@ class TestModeFromString:
         """Test 'default' maps to UPDATE mode."""
         assert mode_from_string("default") == ScrapeMode.UPDATE
 
-    def test_mode_from_string_legacy_discover_alias(self):
-        """Test 'discover' maps to UPDATE mode (backwards compat)."""
-        assert mode_from_string("discover") == ScrapeMode.UPDATE
-
-    def test_mode_from_string_legacy_discover_full_alias(self):
-        """Test 'discover-full' maps to FULL_DISCOVERY mode (backwards compat)."""
-        assert mode_from_string("discover-full") == ScrapeMode.FULL_DISCOVERY
-
     def test_mode_from_string_legacy_full_alias(self):
         """Test 'full' maps to FULL_FROM_SCRATCH mode (backwards compat)."""
         assert mode_from_string("full") == ScrapeMode.FULL_FROM_SCRATCH
@@ -129,16 +121,16 @@ class TestCliModeMapping:
         for cli_string, expected_enum in cli_to_enum.items():
             assert mode_from_string(cli_string) == expected_enum
 
-    def test_backwards_compatible_modes(self):
+    def test_deprecated_modes_removed(self):
         """
-        Verify backwards compatibility with old mode flags.
+        Verify deprecated mode aliases have been removed.
 
-        Old flags should still work:
-        - --discover -> UPDATE (was incremental discovery)
-        - --discover-full -> FULL_DISCOVERY
+        Old flags that should no longer work:
+        - discover (use 'update' instead)
+        - discover-full (use 'full-discovery' instead)
         """
-        # Old discover flag should map to UPDATE
-        assert mode_from_string("discover") == ScrapeMode.UPDATE
+        with pytest.raises(ValueError, match="Unknown mode"):
+            mode_from_string("discover")
 
-        # Old discover-full flag should map to FULL_DISCOVERY
-        assert mode_from_string("discover-full") == ScrapeMode.FULL_DISCOVERY
+        with pytest.raises(ValueError, match="Unknown mode"):
+            mode_from_string("discover-full")

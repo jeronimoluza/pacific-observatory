@@ -213,25 +213,6 @@ Examples:
         help="Discover ALL URLs + scrape everything (nuclear option)",
     )
 
-    # === Backwards Compatibility Flags (DEPRECATED) ===
-    # Keep old flags for backwards compatibility but mark as deprecated
-
-    parser.add_argument(
-        "--discover",
-        action="store_const",
-        const="update",
-        dest="mode",
-        help="[DEPRECATED] Use --update instead. Discover new URLs + scrape new articles",
-    )
-
-    parser.add_argument(
-        "--discover-full",
-        action="store_const",
-        const="full_discovery",
-        dest="mode",
-        help="[DEPRECATED] Use --full-discovery instead. Discover ALL URLs (overwrite urls.csv)",
-    )
-
     # Logging options
     parser.add_argument(
         "--log-level",

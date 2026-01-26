@@ -46,8 +46,6 @@ def mode_from_string(mode_str: str) -> ScrapeMode:
         "update": ScrapeMode.UPDATE,
         "default": ScrapeMode.UPDATE,
         "resume": ScrapeMode.RESUME,
-        "discover": ScrapeMode.UPDATE,  # discover is an alias for update
-        "discover-full": ScrapeMode.FULL_DISCOVERY,
         "full-discovery": ScrapeMode.FULL_DISCOVERY,
         "full_discovery": ScrapeMode.FULL_DISCOVERY,  # underscore variant
         "full": ScrapeMode.FULL_FROM_SCRATCH,

@@ -29,7 +29,7 @@ def create_test_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("newspaper", nargs="?")
 
-    # New mode flags
+    # Mode flags
     parser.add_argument(
         "--update",
         action="store_const",
@@ -52,20 +52,6 @@ def create_test_parser():
         "--full-from-scratch",
         action="store_const",
         const="full_from_scratch",
-        dest="mode",
-    )
-
-    # Deprecated flags (backwards compatibility)
-    parser.add_argument(
-        "--discover",
-        action="store_const",
-        const="update",
-        dest="mode",
-    )
-    parser.add_argument(
-        "--discover-full",
-        action="store_const",
-        const="full_discovery",
         dest="mode",
     )
 
@@ -108,18 +94,6 @@ class TestCliModeArguments:
         args = parser.parse_args(["sibc", "--full-from-scratch"])
         assert args.mode == "full_from_scratch"
 
-    def test_deprecated_discover_flag_maps_to_update(self):
-        """Test deprecated --discover flag maps to 'update' mode."""
-        parser = create_test_parser()
-        args = parser.parse_args(["sibc", "--discover"])
-        assert args.mode == "update"
-
-    def test_deprecated_discover_full_flag_maps_to_full_discovery(self):
-        """Test deprecated --discover-full flag maps to 'full_discovery' mode."""
-        parser = create_test_parser()
-        args = parser.parse_args(["sibc", "--discover-full"])
-        assert args.mode == "full_discovery"
-
     def test_last_flag_wins_when_multiple_specified(self):
         """
         Test that when multiple mode flags are specified, the last one wins.
@@ -149,10 +123,14 @@ class TestCliModeArguments:
         parser.parse_args(["sibc", "--full-discovery"])
         parser.parse_args(["sibc", "--full-from-scratch"])
 
-    def test_backwards_compat_flags_still_work(self):
-        """Test that deprecated flags still work for backwards compatibility."""
+    def test_deprecated_flags_removed(self):
+        """Test that deprecated flags have been removed."""
+        import pytest
+
         parser = create_test_parser()
 
-        # Should not raise an error
-        parser.parse_args(["sibc", "--discover"])
-        parser.parse_args(["sibc", "--discover-full"])
+        # Deprecated flags should raise an error
+        with pytest.raises(SystemExit):
+            parser.parse_args(["sibc", "--discover"])
+        with pytest.raises(SystemExit):
+            parser.parse_args(["sibc", "--discover-full"])

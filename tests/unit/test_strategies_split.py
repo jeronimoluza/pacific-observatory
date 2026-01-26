@@ -96,16 +96,19 @@ def test_create_strategy_factory_works():
 
 def test_backwards_compatibility_removed():
     """Test that old deprecated imports have been removed."""
+    import importlib
+
     import pytest
 
     # Verify that importing from old location raises ModuleNotFoundError
     with pytest.raises(ModuleNotFoundError, match="listing_strategies"):
-        from text.scrapers.listing_strategies import (
-            create_listing_strategy,
-            PaginationStrategy,
-        )
+        importlib.import_module("text.scrapers.listing_strategies")
 
     # Verify that the new imports work correctly
+    from text.scrapers.strategies import (
+        create_listing_strategy as new_create_listing_strategy,
+        PaginationStrategy as NewPaginationStrategy,
+    )
 
-    assert create_listing_strategy is not None
-    assert PaginationStrategy is not None
+    assert new_create_listing_strategy is not None
+    assert NewPaginationStrategy is not None
