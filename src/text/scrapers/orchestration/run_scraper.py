@@ -29,7 +29,11 @@ from text.scrapers.orchestration.utils import (
     get_scraper_log_path,
     add_file_handler_to_logger,
 )
-from text.scrapers.observability import print_run_summary, save_run_manifest
+from text.scrapers.observability import (
+    print_run_summary,
+    save_run_manifest,
+    ProgressReporter,
+)
 
 
 async def run_single_scraper(
@@ -38,6 +42,7 @@ async def run_single_scraper(
     save_results: bool = True,
     mode: str = "default",
     project_root: Optional[Path] = None,
+    enable_progress: bool = True,
 ) -> dict:
     """
     Run a single newspaper scraper.
@@ -54,11 +59,28 @@ async def run_single_scraper(
     """
     logger = logging.getLogger(__name__)
     file_handler = None
+    progress_reporter = None
 
     try:
+        # Create progress reporter if enabled
+        if enable_progress and project_root:
+            import yaml
+
+            with open(config_path) as f:
+                config_data = yaml.safe_load(f)
+
+            progress_reporter = ProgressReporter(
+                country=config_data.get("country", "unknown"),
+                newspaper=config_data.get("name", "unknown"),
+                base_path=str(project_root / "logs" / "text"),
+            )
+            progress_reporter.update(phase="starting")
+
         # Create scraper from config file
         logger.info(f"Loading scraper configuration from: {config_path}")
-        scraper = create_scraper_from_file(config_path)
+        scraper = create_scraper_from_file(
+            config_path, progress_reporter=progress_reporter
+        )
 
         # Set up per-scraper log file if project_root is provided
         if project_root:
@@ -152,6 +174,10 @@ async def run_single_scraper(
             ),
         }
     finally:
+        # Clean up progress reporter if it was created
+        if progress_reporter:
+            progress_reporter.cleanup()
+
         # Clean up file handler if it was created
         if file_handler:
             file_handler.flush()  # Flush any buffered logs

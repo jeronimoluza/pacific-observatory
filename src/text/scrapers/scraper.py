@@ -11,8 +11,11 @@ the original methods for now. Full migration will happen in Phase 2.
 import asyncio
 import logging
 from datetime import datetime
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, TYPE_CHECKING
 from urllib.parse import urlparse
+
+if TYPE_CHECKING:
+    from .observability import ProgressReporter
 import httpx
 from .client_http import AsyncHttpClient
 from .client_browser import BrowserClient
@@ -44,7 +47,11 @@ class NewspaperScraper:
     other site-specific parameters.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(
+        self,
+        config: Dict[str, Any],
+        progress_reporter: Optional["ProgressReporter"] = None,
+    ):
         """
         Initialize the newspaper scraper with configuration.
 
@@ -98,6 +105,9 @@ class NewspaperScraper:
 
         # Initialize storage system
         self._storage = CSVStorage()
+
+        # Store progress reporter (can be None for single-scraper runs)
+        self.progress = progress_reporter
 
         # Initialize orchestrators
         self.discovery_orchestrator = DiscoveryOrchestrator(self)
@@ -724,6 +734,11 @@ class NewspaperScraper:
             Dictionary with scraping results and statistics
         """
         logger.info(f"Starting full scrape for {self.name} ({self.country})")
+        self.metrics.mode = "full_scrape"
+
+        # Update progress: discovering phase
+        if self.progress:
+            self.progress.update(phase="discovering")
 
         try:
             # Initialize CSV file with headers before scraping
@@ -741,6 +756,13 @@ class NewspaperScraper:
                     f"Truncating thumbnails from {len(thumbnails)} to {self.max_articles} based on max_articles config"
                 )
                 thumbnails = thumbnails[: self.max_articles]
+
+            # Update metrics for discovered URLs
+            self.metrics.urls_discovered = len(thumbnails)
+
+            # Update progress: scraping phase
+            if self.progress:
+                self.progress.update(phase="scraping", urls_found=len(thumbnails))
 
             # Step 3: Build articles with streaming CSV writes
             articles_stats = {}
@@ -838,6 +860,18 @@ class NewspaperScraper:
                 logger.error(f"Failed to save metadata: {e}")
                 raise
 
+            # Update metrics
+            self.metrics.articles_scraped = articles_stats.get("articles_scraped", 0)
+            self.metrics.articles_failed = articles_stats.get("articles_failed", 0)
+
+            # Update progress: completed phase
+            if self.progress:
+                self.progress.update(
+                    phase="completed",
+                    articles_scraped=articles_stats.get("articles_scraped", 0),
+                    articles_failed=articles_stats.get("articles_failed", 0),
+                )
+
             logger.info(
                 f"Scraping completed for {self.name}: {articles_stats.get('articles_scraped', 0)} articles scraped"
             )
@@ -845,6 +879,9 @@ class NewspaperScraper:
 
         except Exception as e:
             logger.error(f"Scraping failed for {self.name}: {e}")
+            # Update progress: failed phase
+            if self.progress:
+                self.progress.update(phase="failed")
             error_results = {
                 "success": False,
                 "newspaper": self.name,
@@ -1477,6 +1514,11 @@ class NewspaperScraper:
             Dictionary with discovery results and statistics
         """
         logger.info(f"Starting DISCOVER mode for {self.name} ({self.country})")
+        self.metrics.mode = "discover"
+
+        # Update progress: discovering phase
+        if self.progress:
+            self.progress.update(phase="discovering")
 
         try:
             # Step 1: Ensure urls.csv exists
@@ -1528,6 +1570,18 @@ class NewspaperScraper:
                 results, self.country, self.name, metadata_type="discover"
             )
 
+            # Update metrics
+            self.metrics.urls_discovered = len(new_thumbnails)
+
+            # Update progress: completed phase (no scraping in discover mode)
+            if self.progress:
+                self.progress.update(
+                    phase="completed",
+                    urls_found=len(new_thumbnails),
+                    articles_scraped=0,
+                    articles_failed=0,
+                )
+
             logger.info(
                 f"DISCOVER mode completed: {len(new_thumbnails)} new URLs found"
             )
@@ -1535,6 +1589,9 @@ class NewspaperScraper:
 
         except Exception as e:
             logger.error(f"DISCOVER mode failed for {self.name}: {e}")
+            # Update progress: failed phase
+            if self.progress:
+                self.progress.update(phase="failed")
             return {
                 "success": False,
                 "newspaper": self.name,
@@ -1557,6 +1614,11 @@ class NewspaperScraper:
             Dictionary with discovery results and statistics
         """
         logger.info(f"Starting DISCOVER-FULL mode for {self.name} ({self.country})")
+        self.metrics.mode = "discover_full"
+
+        # Update progress: discovering phase
+        if self.progress:
+            self.progress.update(phase="discovering")
 
         try:
             # Reset prefetched articles
@@ -1607,6 +1669,18 @@ class NewspaperScraper:
                 results, self.country, self.name, metadata_type="discover_full"
             )
 
+            # Update metrics
+            self.metrics.urls_discovered = len(all_thumbnails)
+
+            # Update progress: completed phase (no scraping in discover_full mode)
+            if self.progress:
+                self.progress.update(
+                    phase="completed",
+                    urls_found=len(all_thumbnails),
+                    articles_scraped=0,
+                    articles_failed=0,
+                )
+
             logger.info(
                 f"DISCOVER-FULL mode completed: {len(all_thumbnails)} URLs found"
             )
@@ -1614,6 +1688,9 @@ class NewspaperScraper:
 
         except Exception as e:
             logger.error(f"DISCOVER-FULL mode failed for {self.name}: {e}")
+            # Update progress: failed phase
+            if self.progress:
+                self.progress.update(phase="failed")
             return {
                 "success": False,
                 "newspaper": self.name,
@@ -1639,6 +1716,11 @@ class NewspaperScraper:
             Dictionary with scraping results and statistics
         """
         logger.info(f"Starting RESUME mode for {self.name} ({self.country})")
+        self.metrics.mode = "resume"
+
+        # Update progress: scraping phase (no discovery in resume mode)
+        if self.progress:
+            self.progress.update(phase="scraping")
 
         try:
             # Step 1: Ensure urls.csv exists
@@ -1743,6 +1825,19 @@ class NewspaperScraper:
                 results, self.country, self.name, metadata_type="resume"
             )
 
+            # Update metrics
+            self.metrics.articles_scraped = scrape_stats.get("articles_scraped", 0)
+            self.metrics.articles_failed = scrape_stats.get("articles_failed", 0)
+
+            # Update progress: completed phase
+            if self.progress:
+                self.progress.update(
+                    phase="completed",
+                    urls_found=len(pending_thumbnails),
+                    articles_scraped=scrape_stats.get("articles_scraped", 0),
+                    articles_failed=scrape_stats.get("articles_failed", 0),
+                )
+
             logger.info(
                 f"RESUME mode completed: {scrape_stats.get('articles_scraped', 0)} articles scraped"
             )
@@ -1750,6 +1845,9 @@ class NewspaperScraper:
 
         except Exception as e:
             logger.error(f"RESUME mode failed for {self.name}: {e}")
+            # Update progress: failed phase
+            if self.progress:
+                self.progress.update(phase="failed")
             return {
                 "success": False,
                 "newspaper": self.name,
@@ -1776,6 +1874,11 @@ class NewspaperScraper:
             Dictionary with discovery and scraping results
         """
         logger.info(f"Starting DEFAULT mode for {self.name} ({self.country})")
+        self.metrics.mode = "default"
+
+        # Update progress: discovering phase
+        if self.progress:
+            self.progress.update(phase="discovering")
 
         try:
             # Step 1: Ensure urls.csv exists
@@ -1804,6 +1907,13 @@ class NewspaperScraper:
                 if saved_path:
                     self._saved_files["urls"] = saved_path
                 logger.info(f"Appended {len(new_thumbnails)} new URLs to urls.csv")
+
+            # Update metrics for discovered URLs
+            self.metrics.urls_discovered = len(new_thumbnails)
+
+            # Update progress: scraping phase
+            if self.progress:
+                self.progress.update(phase="scraping", urls_found=len(new_thumbnails))
 
             # Step 5: Load existing article URLs from news.csv
             existing_article_urls = self._storage.get_existing_article_urls(
@@ -1903,6 +2013,18 @@ class NewspaperScraper:
                 results, self.country, self.name, metadata_type="default"
             )
 
+            # Update metrics
+            self.metrics.articles_scraped = total_scraped
+            self.metrics.articles_failed = scrape_stats.get("articles_failed", 0)
+
+            # Update progress: completed phase
+            if self.progress:
+                self.progress.update(
+                    phase="completed",
+                    articles_scraped=total_scraped,
+                    articles_failed=scrape_stats.get("articles_failed", 0),
+                )
+
             logger.info(
                 f"DEFAULT mode completed: {len(new_thumbnails)} new URLs, "
                 f"{total_scraped} articles scraped"
@@ -1911,6 +2033,9 @@ class NewspaperScraper:
 
         except Exception as e:
             logger.error(f"DEFAULT mode failed for {self.name}: {e}")
+            # Update progress: failed phase
+            if self.progress:
+                self.progress.update(phase="failed")
             return {
                 "success": False,
                 "newspaper": self.name,
