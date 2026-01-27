@@ -176,9 +176,13 @@ def reclassify_missing_classifications(
     # Step 6: Update missing rows with new classifications
     print("\n6. Updating missing rows with new classifications...")
 
-    # Merge new classifications back to missing rows
+    # Merge new classifications back to missing rows (including confidence if present)
+    merge_cols = ["product_w_cat", "coicop_code", "coicop_title"]
+    if "confidence" in df_new_classifications.columns:
+        merge_cols.append("confidence")
+
     df_missing_updated = df_missing.merge(
-        df_new_classifications[["product_w_cat", "coicop_code", "coicop_title"]],
+        df_new_classifications[merge_cols],
         on="product_w_cat",
         how="left",
         suffixes=("_old", ""),

@@ -540,6 +540,7 @@ def merge_quantities_with_gemini(
         # Add empty COICOP columns
         df_quantities["coicop_code"] = None
         df_quantities["coicop_title"] = None
+        df_quantities["confidence"] = None
         return df_quantities
 
     print("\nLoading gemini_classification.csv...")
@@ -557,8 +558,13 @@ def merge_quantities_with_gemini(
     print(f"  Using {len(df_gemini_unique)} unique url_hash classifications")
 
     # Merge on url_hash only to ensure all items with same url_hash get classified
+    # Include confidence column if it exists in the gemini classification
+    merge_cols = ["url_hash", "coicop_code", "coicop_title"]
+    if "confidence" in df_gemini_unique.columns:
+        merge_cols.append("confidence")
+
     df_merged = df_quantities.merge(
-        df_gemini_unique[["url_hash", "coicop_code", "coicop_title"]],
+        df_gemini_unique[merge_cols],
         on="url_hash",
         how="left",
         suffixes=("", "_gemini"),

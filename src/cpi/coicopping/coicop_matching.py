@@ -232,22 +232,36 @@ def format_gemini_prompt(
 
     prompt = f"""Classify each product from the products list according to the COICOP categories.
 
+CLASSIFICATION RULES:
+- Classify based on the primary intended use of the product.
+- If a product could belong to multiple categories, choose the one most commonly used for CPI classification.
+- Do NOT infer attributes that are not explicitly stated.
+- Do NOT translate the product text; classify directly from the original language.
+- Ignore brand names unless they imply product type.
+
 {coicop_ref}
 
 {products_text}
 
 For each product, determine the most appropriate COICOP code based on the keywords and descriptions.
 
-Output ONLY a CSV format with these columns: product_w_cat, code
-Do NOT include any other text, explanations, or markdown formatting.
-IMPORTANT: The product_w_cat column MUST contain the EXACT product string from the input list above.
+- The CSV MUST contain exactly these columns, in this order:
+  product_w_cat,code,confidence
+- The confidence column MUST be a numeric value between 0 and 1 (inclusive),
+  where higher values indicate higher classification confidence.
+
+All CSV fields must be quoted using double quotes.
 
 Output format example:
-product_w_cat,code
-"half meter tube; pantry confectionery","01.1.8.9"
-"shortbread fingers; pantry biscuit cookies","01.1.1.3"
+product_w_cat,code,confidence
+"half meter tube; pantry confectionery","01.1.8.9","0.94"
+"shortbread fingers; pantry biscuit cookies","01.1.1.3","0.91"
 
-Start the CSV output immediately with the header row. Include all products from the list."""
+If any required column is missing, the output is considered invalid.
+
+Start the CSV output immediately with the header row. Include all products from the list.
+Do NOT include any other text, explanations, or markdown formatting.
+IMPORTANT: The product_w_cat column MUST contain the EXACT product string from the input list above."""
 
     return prompt
 
@@ -367,13 +381,14 @@ def classify_products_with_gemini(
                     how="left",
                 )
 
-                # Select final columns
+                # Select final columns (including confidence)
                 batch_final = batch_merged[
                     [
                         "url_hash",
                         "product_w_cat",
                         "coicop_code",
                         "coicop_title",
+                        "confidence",
                     ]
                 ].copy()
 
@@ -428,7 +443,7 @@ def parse_gemini_response(response_text: str) -> List[Dict[str, str]]:
         response_text: Raw response text from Gemini (should be CSV format)
 
     Returns:
-        List of dictionaries with product_w_cat, code
+        List of dictionaries with product_w_cat, coicop_code, confidence
     """
     results = []
 
@@ -472,12 +487,26 @@ def parse_gemini_response(response_text: str) -> List[Dict[str, str]]:
             if len(row_data) >= 2:
                 product_w_cat = row_data[0].strip() if row_data[0] else None
                 code = row_data[1].strip() if row_data[1] else None
+                # Parse confidence (default to None if not present or invalid)
+                confidence = None
+                if len(row_data) >= 3 and row_data[2]:
+                    try:
+                        conf_val = float(row_data[2].strip())
+                        # Validate confidence is between 0 and 1
+                        if 0 <= conf_val <= 1:
+                            confidence = conf_val
+                    except (ValueError, TypeError):
+                        pass
 
-                # Only add if we have both fields and haven't seen this product before
+                # Only add if we have both required fields and haven't seen this product before
                 if product_w_cat and code and product_w_cat not in seen:
                     seen.add(product_w_cat)
                     results.append(
-                        {"product_w_cat": product_w_cat, "coicop_code": code}
+                        {
+                            "product_w_cat": product_w_cat,
+                            "coicop_code": code,
+                            "confidence": confidence,
+                        }
                     )
         except Exception:
             # Skip lines that can't be parsed
@@ -527,7 +556,7 @@ def generate_final_output(
 
     # Select final columns and rename to match README specification
     final_df = merged[
-        ["url_hash", "product_w_cat", "coicop_code", "coicop_title"]
+        ["url_hash", "product_w_cat", "coicop_code", "coicop_title", "confidence"]
     ].copy()
     # final_df = final_df.rename(columns={"coicop_code": "code", "coicop_title": "title"})
 
