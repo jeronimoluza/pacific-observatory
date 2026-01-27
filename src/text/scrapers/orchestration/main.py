@@ -163,8 +163,8 @@ Examples:
     parser.add_argument(
         "--timeout",
         type=int,
-        default=600,
-        help="Timeout in seconds for each scraper (default: 600 = 10 minutes, use with --run-all)",
+        default=120,
+        help="Stale timeout in seconds - kill scraper if no activity for this long (default: 120)",
     )
 
     # Scraping options
