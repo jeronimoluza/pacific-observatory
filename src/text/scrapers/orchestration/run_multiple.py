@@ -23,6 +23,7 @@ from text.scrapers.observability import (
     ScraperMetrics,
     print_multi_run_summary,
     save_multi_run_manifest,
+    is_scraper_stale,
 )
 
 logger = logging.getLogger(__name__)
@@ -150,6 +151,41 @@ def run_scraper_subprocess(
         return None
 
 
+def _kill_process_with_timeout(
+    process,
+    country: str,
+    newspaper: str,
+    start_time: float,
+    reason: str,
+) -> Dict[str, Any]:
+    """Kill a process and return timeout result."""
+    if hasattr(process, "log_handle"):
+        try:
+            process.log_handle.write(f"\nTIMEOUT: {reason}\n")
+            process.log_handle.flush()
+            process.log_handle.close()
+        except Exception:
+            pass
+
+    try:
+        process.terminate()
+        try:
+            process.wait(timeout=1)
+        except subprocess.TimeoutExpired:
+            process.kill()
+    except Exception:
+        pass
+
+    return {
+        "newspaper": newspaper,
+        "country": country,
+        "status": "timeout",
+        "duration_seconds": time.time() - start_time,
+        "error_msg": reason,
+        "log_file": getattr(process, "log_file", None),
+    }
+
+
 def run_scraper_with_timeout(
     config: Dict[str, str],
     log_dir: Path,
@@ -159,16 +195,17 @@ def run_scraper_with_timeout(
     mode: str = "default",
 ) -> Dict[str, Any]:
     """
-    Run a single scraper with timeout handling.
+    Run a single scraper with smart timeout handling.
 
     This function wraps run_scraper_subprocess and monitors the process,
-    killing it if it exceeds the timeout threshold.
+    using smart timeout logic that only kills scrapers if they're stale
+    (no recent activity), rather than killing after N seconds regardless.
 
     Args:
         config: Configuration dictionary with 'country', 'newspaper', 'config_path'
         log_dir: Base directory for logs
         project_root: Project root directory
-        timeout_seconds: Maximum seconds to allow scraper to run (default: 600 = 10 minutes)
+        timeout_seconds: Stale timeout - kill if no activity for this many seconds (default: 600)
         dry_run: If True, print command without executing
         mode: Scraping mode - "default", "update", "resume", "full_discovery", or "full_from_scratch"
 
@@ -232,43 +269,30 @@ def run_scraper_with_timeout(
 
             return result
 
-        # Check if timeout exceeded
         elapsed = time.time() - start_time
-        if elapsed >= timeout_seconds:
-            # Write timeout message to log before closing
-            if hasattr(process, "log_handle"):
-                try:
-                    process.log_handle.write(
-                        f"\nTIMEOUT: Process killed after {timeout_seconds} seconds\n"
-                    )
-                    process.log_handle.flush()
-                    process.log_handle.close()
-                except Exception as e:
-                    logger.warning(
-                        f"Failed to write timeout message or close log handle: {e}"
-                    )
 
-            # Terminate the process
-            try:
-                process.terminate()
-                # Give it a moment to terminate gracefully
-                try:
-                    process.wait(timeout=1)
-                except subprocess.TimeoutExpired:
-                    # If still running after 1 second, force kill
-                    process.kill()
-            except Exception as e:
-                logger.warning(f"Failed to kill process {country}/{newspaper}: {e}")
+        # Safety net: kill if exceeded max runtime (30 minutes)
+        max_runtime_seconds = 1800
+        if elapsed >= max_runtime_seconds:
+            return _kill_process_with_timeout(
+                process,
+                country,
+                newspaper,
+                start_time,
+                f"Max runtime exceeded ({max_runtime_seconds}s)",
+            )
 
-            duration = time.time() - start_time
-            return {
-                "newspaper": newspaper,
-                "country": country,
-                "status": "timeout",
-                "duration_seconds": duration,
-                "error_msg": f"Timeout after {timeout_seconds} seconds",
-                "log_file": process.log_file if hasattr(process, "log_file") else None,
-            }
+        # Smart timeout: check if scraper is stale (no recent activity)
+        if is_scraper_stale(
+            country, newspaper, timeout_seconds, project_root / "logs" / "text"
+        ):
+            return _kill_process_with_timeout(
+                process,
+                country,
+                newspaper,
+                start_time,
+                f"No activity for {timeout_seconds}s (stale)",
+            )
 
         # Sleep before next poll
         time.sleep(1)
