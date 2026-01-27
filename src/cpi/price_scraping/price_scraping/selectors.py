@@ -220,6 +220,27 @@ SPIDER_SELECTORS = {
             "meta[property='product:retailer_item_id']::attr(content)",
         ],
     },
+    "tiki": {
+        "product_name": [
+            "h1[class*='title']::text",
+            "h1.product-name::text",
+            "div.product-name::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "div.product-price__current-price::text",
+            "div[class*='price-discount__price']::text",
+            "span.product-price::text",
+            "div.price::text",
+            "meta[property='product:price:amount']::attr(content)",
+        ],
+        "category": [
+            "div[data-view-id='breadcrumb_container'] a.breadcrumb-item span::text",
+        ],
+        "product_id": [
+            "div[data-view-id='pdp_details_view']::attr(data-id)",
+        ],
+    },
 }
 
 
