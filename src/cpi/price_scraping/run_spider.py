@@ -21,6 +21,10 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+AVOID_SPIDERS = [
+    "aeon_online"  # API -> does not have wayback machine yet
+]
+
 
 def get_available_spiders():
     """
@@ -325,6 +329,8 @@ if __name__ == "__main__":
             spider_names = runner.spider_loader.list()
 
             for spider_name in spider_names:
+                if spider_name in AVOID_SPIDERS:
+                    continue
                 run_wayback_scraping(spider_name, output_dir, args.from_date)
         else:
             run_wayback_scraping(args.spider, output_dir, args.from_date)
