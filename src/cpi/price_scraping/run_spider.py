@@ -22,7 +22,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 AVOID_SPIDERS = [
-    "aeon_online"  # API -> does not have wayback machine yet
+    "aeon_online",  # API -> does not have wayback machine yet
+    "delishop_asia",  # API -> does not have wayback machine yet
 ]
 
 
