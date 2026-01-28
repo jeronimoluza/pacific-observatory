@@ -691,3 +691,182 @@ def outliers_unit_value_country_coicop_l3(
     )
 
     return outliers.reset_index(drop=True)
+
+
+def _outliers_uv_coicop_summary(df: pd.DataFrame, coicop_col: str) -> pd.DataFrame:
+    """
+    Compute outliers summary by COICOP level showing share of items and obs > p75.
+
+    Args:
+        df: Validated DataFrame
+        coicop_col: COICOP column name (e.g., 'coicop_1digit', 'coicop_2digit')
+
+    Returns:
+        DataFrame with coicop_Ndigit, n_items, n_obs, mean_uv, std_uv, share_items_uv_gt_p75, share_obs_uv_gt_p75, share_items_uv_gt_p9, share_obs_uv_gt_p9
+    """
+    records = []
+
+    for coicop_val, group_df in df.groupby(coicop_col):
+        n_items = group_df["url_hash"].nunique()
+        n_obs = len(group_df)
+        mean_uv = group_df["unit_value"].mean()
+        std_uv = group_df["unit_value"].std()
+
+        # Calculate p75 for this COICOP group
+        p75 = group_df["unit_value"].quantile(0.75)
+
+        # Items with any observation > p75
+        items_gt_p75 = group_df[group_df["unit_value"] > p75]["url_hash"].nunique()
+        share_items_uv_gt_p75 = items_gt_p75 / n_items if n_items > 0 else 0
+
+        # Observations > p75
+        obs_gt_p75 = (group_df["unit_value"] > p75).sum()
+        share_obs_uv_gt_p75 = obs_gt_p75 / n_obs if n_obs > 0 else 0
+
+        # Calculate p90 for this COICOP group
+        p90 = group_df["unit_value"].quantile(0.90)
+
+        # Items with any observation > p90
+        items_gt_p90 = group_df[group_df["unit_value"] > p90]["url_hash"].nunique()
+        share_items_uv_gt_p9 = items_gt_p90 / n_items if n_items > 0 else 0
+
+        # Observations > p90
+        obs_gt_p90 = (group_df["unit_value"] > p90).sum()
+        share_obs_uv_gt_p9 = obs_gt_p90 / n_obs if n_obs > 0 else 0
+
+        records.append(
+            {
+                coicop_col: coicop_val,
+                "n_items": n_items,
+                "n_obs": n_obs,
+                "mean_uv": mean_uv,
+                "std_uv": std_uv,
+                "share_items_uv_gt_p75": share_items_uv_gt_p75,
+                "share_obs_uv_gt_p75": share_obs_uv_gt_p75,
+                "share_items_uv_gt_p9": share_items_uv_gt_p9,
+                "share_obs_uv_gt_p9": share_obs_uv_gt_p9,
+            }
+        )
+
+    result = pd.DataFrame(records)
+    result = result.sort_values(coicop_col).reset_index(drop=True)
+    return result
+
+
+def outliers_uv_coicop_l1_overall(df: pd.DataFrame) -> pd.DataFrame:
+    """Outliers summary by COICOP level 1 (overall)."""
+    result = _outliers_uv_coicop_summary(df, "coicop_1digit")
+    result = _add_coicop_titles_to_result(result, "coicop_1digit", level=1)
+    return result
+
+
+def outliers_uv_coicop_l2_overall(df: pd.DataFrame) -> pd.DataFrame:
+    """Outliers summary by COICOP level 2 (overall)."""
+    result = _outliers_uv_coicop_summary(df, "coicop_2digit")
+    result = _add_coicop_titles_to_result(result, "coicop_2digit", level=2)
+    return result
+
+
+def outliers_uv_coicop_l3_overall(df: pd.DataFrame) -> pd.DataFrame:
+    """Outliers summary by COICOP level 3 (overall)."""
+    result = _outliers_uv_coicop_summary(df, "coicop_3digit")
+    result = _add_coicop_titles_to_result(result, "coicop_3digit", level=3)
+    return result
+
+
+def outliers_uv_coicop_l4_overall(df: pd.DataFrame) -> pd.DataFrame:
+    """Outliers summary by COICOP level 4 (overall)."""
+    result = _outliers_uv_coicop_summary(df, "coicop_code")
+    result = _add_coicop_titles_to_result(result, "coicop_code", level=4)
+    return result
+
+
+def _outliers_uv_coicop_country_summary(
+    df: pd.DataFrame, coicop_col: str
+) -> pd.DataFrame:
+    """
+    Compute outliers summary by country x COICOP level showing share of items and obs > p75.
+
+    Args:
+        df: Validated DataFrame
+        coicop_col: COICOP column name (e.g., 'coicop_1digit', 'coicop_2digit')
+
+    Returns:
+        DataFrame with country, coicop_Ndigit, n_items, n_obs, mean_uv, std_uv, share_items_uv_gt_p75, share_obs_uv_gt_p75, share_items_uv_gt_p9, share_obs_uv_gt_p9
+    """
+    records = []
+
+    for (country, coicop_val), group_df in df.groupby(["country", coicop_col]):
+        n_items = group_df["url_hash"].nunique()
+        n_obs = len(group_df)
+        mean_uv = group_df["unit_value"].mean()
+        std_uv = group_df["unit_value"].std()
+
+        # Calculate p75 for this country x COICOP group
+        p75 = group_df["unit_value"].quantile(0.75)
+
+        # Items with any observation > p75
+        items_gt_p75 = group_df[group_df["unit_value"] > p75]["url_hash"].nunique()
+        share_items_uv_gt_p75 = items_gt_p75 / n_items if n_items > 0 else 0
+
+        # Observations > p75
+        obs_gt_p75 = (group_df["unit_value"] > p75).sum()
+        share_obs_uv_gt_p75 = obs_gt_p75 / n_obs if n_obs > 0 else 0
+
+        # Calculate p90 for this country x COICOP group
+        p90 = group_df["unit_value"].quantile(0.90)
+
+        # Items with any observation > p90
+        items_gt_p90 = group_df[group_df["unit_value"] > p90]["url_hash"].nunique()
+        share_items_uv_gt_p9 = items_gt_p90 / n_items if n_items > 0 else 0
+
+        # Observations > p90
+        obs_gt_p90 = (group_df["unit_value"] > p90).sum()
+        share_obs_uv_gt_p9 = obs_gt_p90 / n_obs if n_obs > 0 else 0
+
+        records.append(
+            {
+                "country": country,
+                coicop_col: coicop_val,
+                "n_items": n_items,
+                "n_obs": n_obs,
+                "mean_uv": mean_uv,
+                "std_uv": std_uv,
+                "share_items_uv_gt_p75": share_items_uv_gt_p75,
+                "share_obs_uv_gt_p75": share_obs_uv_gt_p75,
+                "share_items_uv_gt_p9": share_items_uv_gt_p9,
+                "share_obs_uv_gt_p9": share_obs_uv_gt_p9,
+            }
+        )
+
+    result = pd.DataFrame(records)
+    result = result.sort_values(["country", coicop_col]).reset_index(drop=True)
+    return result
+
+
+def outliers_uv_coicop_l1_country(df: pd.DataFrame) -> pd.DataFrame:
+    """Outliers summary by country x COICOP level 1."""
+    result = _outliers_uv_coicop_country_summary(df, "coicop_1digit")
+    result = _add_coicop_titles_to_result(result, "coicop_1digit", level=1)
+    return result
+
+
+def outliers_uv_coicop_l2_country(df: pd.DataFrame) -> pd.DataFrame:
+    """Outliers summary by country x COICOP level 2."""
+    result = _outliers_uv_coicop_country_summary(df, "coicop_2digit")
+    result = _add_coicop_titles_to_result(result, "coicop_2digit", level=2)
+    return result
+
+
+def outliers_uv_coicop_l3_country(df: pd.DataFrame) -> pd.DataFrame:
+    """Outliers summary by country x COICOP level 3."""
+    result = _outliers_uv_coicop_country_summary(df, "coicop_3digit")
+    result = _add_coicop_titles_to_result(result, "coicop_3digit", level=3)
+    return result
+
+
+def outliers_uv_coicop_l4_country(df: pd.DataFrame) -> pd.DataFrame:
+    """Outliers summary by country x COICOP level 4."""
+    result = _outliers_uv_coicop_country_summary(df, "coicop_code")
+    result = _add_coicop_titles_to_result(result, "coicop_code", level=4)
+    return result

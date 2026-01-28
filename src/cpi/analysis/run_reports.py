@@ -45,6 +45,14 @@ if __name__ == "__main__" and __package__ is None:
         dist_unit_value_country_source,
         dist_unit_value_country_coicop_l3,
         outliers_unit_value_country_coicop_l3,
+        outliers_uv_coicop_l1_overall,
+        outliers_uv_coicop_l2_overall,
+        outliers_uv_coicop_l3_overall,
+        outliers_uv_coicop_l4_overall,
+        outliers_uv_coicop_l1_country,
+        outliers_uv_coicop_l2_country,
+        outliers_uv_coicop_l3_country,
+        outliers_uv_coicop_l4_country,
     )
 else:
     from .functions import (
@@ -74,6 +82,14 @@ else:
         dist_unit_value_country_source,
         dist_unit_value_country_coicop_l3,
         outliers_unit_value_country_coicop_l3,
+        outliers_uv_coicop_l1_overall,
+        outliers_uv_coicop_l2_overall,
+        outliers_uv_coicop_l3_overall,
+        outliers_uv_coicop_l4_overall,
+        outliers_uv_coicop_l1_country,
+        outliers_uv_coicop_l2_country,
+        outliers_uv_coicop_l3_country,
+        outliers_uv_coicop_l4_country,
     )
 
 
@@ -170,6 +186,14 @@ def run_reports(input_path: str, outdir: str, update_latest: bool = True):
         "dist_unit_value_country_source.csv": dist_unit_value_country_source,
         "dist_unit_value_country_coicop_l3.csv": dist_unit_value_country_coicop_l3,
         "outliers_unit_value_country_coicop_l3.csv": outliers_unit_value_country_coicop_l3,
+        "outliers_uv_coicop_l1_overall.csv": outliers_uv_coicop_l1_overall,
+        "outliers_uv_coicop_l2_overall.csv": outliers_uv_coicop_l2_overall,
+        "outliers_uv_coicop_l3_overall.csv": outliers_uv_coicop_l3_overall,
+        "outliers_uv_coicop_l4_overall.csv": outliers_uv_coicop_l4_overall,
+        "outliers_uv_coicop_l1_country.csv": outliers_uv_coicop_l1_country,
+        "outliers_uv_coicop_l2_country.csv": outliers_uv_coicop_l2_country,
+        "outliers_uv_coicop_l3_country.csv": outliers_uv_coicop_l3_country,
+        "outliers_uv_coicop_l4_country.csv": outliers_uv_coicop_l4_country,
     }
 
     # Generate and write reports

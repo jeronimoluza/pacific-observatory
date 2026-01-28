@@ -190,6 +190,7 @@ def run_complete_workflow(
         "pending_review",
         "coicop_code",
         "coicop_title",
+        "confidence",
         "source",
         "country",
         "product_url",
