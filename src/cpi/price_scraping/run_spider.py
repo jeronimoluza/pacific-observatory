@@ -201,6 +201,9 @@ def get_spider_country(spider_name: str) -> str:
         "aeon_online": "cambodia",
         "makro": "cambodia",
         "thai_huot": "cambodia",
+        "tiki": "vietnam",
+        "rakuten": "japan",
+        "yahoo_shopping": "japan",
     }
     return spider_countries.get(spider_name, "unknown")
 
