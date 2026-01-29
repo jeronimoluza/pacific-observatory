@@ -20,14 +20,16 @@ import pandas as pd
 
 # Handle both relative and direct execution
 try:
-    from .prestep import prepare_coicop_matching_data
-    from .extract_quantities import extract_quantities, merge_quantities_with_gemini
-    from .coicop_matching import run_coicop_matching
+    from .utils import get_project_root
+    from .data_preparation import prepare_coicop_matching_data
+    from .quantity import extract_quantities, merge_quantities_with_gemini
+    from .classification import run_coicop_matching, reclassify_missing_classifications
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent))
-    from prestep import prepare_coicop_matching_data
-    from extract_quantities import extract_quantities, merge_quantities_with_gemini
-    from coicop_matching import run_coicop_matching
+    from utils import get_project_root
+    from data_preparation import prepare_coicop_matching_data
+    from quantity import extract_quantities, merge_quantities_with_gemini
+    from classification import run_coicop_matching, reclassify_missing_classifications
 
 
 def setup_logging(level: str = "INFO") -> None:
@@ -41,13 +43,6 @@ def setup_logging(level: str = "INFO") -> None:
         level=getattr(logging, level.upper()),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
-
-
-def get_project_root(current_file: Path = None) -> Path:
-    """Get the project root directory."""
-    if current_file is None:
-        current_file = Path(__file__)
-    return current_file.parent.parent.parent.parent
 
 
 def run_complete_workflow(
@@ -174,6 +169,7 @@ def run_complete_workflow(
     # Select final columns (including new standardized unit price columns)
     final_columns = [
         "url_hash",
+        "product_name_original",
         "product_name",
         "product_w_cat",
         "price",
@@ -314,6 +310,9 @@ Examples:
   # Skip classification (use existing gemini_classification.csv)
   poetry run python src/cpi/coicopping/main.py --skip-classification
 
+  # Reclassify missing COICOP codes (ONLY runs reclassification)
+  poetry run python src/cpi/coicopping/main.py --reclassify-missing
+
   # Run with debug logging
   poetry run python src/cpi/coicopping/main.py --log-level DEBUG
         """,
@@ -323,6 +322,12 @@ Examples:
         "--skip-classification",
         action="store_true",
         help="Skip COICOP classification step (use existing gemini_classification.csv)",
+    )
+
+    parser.add_argument(
+        "--reclassify-missing",
+        action="store_true",
+        help="Reclassify missing COICOP codes in gemini_classification.csv (ONLY runs reclassification)",
     )
 
     parser.add_argument(
@@ -340,9 +345,14 @@ Examples:
 
     # Run workflow
     try:
-        df_final = run_complete_workflow(
-            skip_classification=args.skip_classification,
-        )
+        if args.reclassify_missing:
+            # Only run reclassification
+            reclassify_missing_classifications()
+        else:
+            # Run complete workflow
+            df_final = run_complete_workflow(
+                skip_classification=args.skip_classification,
+            )
     except Exception as e:
         logging.error(f"Workflow failed: {e}", exc_info=True)
         sys.exit(1)

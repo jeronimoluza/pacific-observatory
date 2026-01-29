@@ -16,6 +16,48 @@ from typing import Optional
 import pandas as pd
 
 
+def parse_price(price_str) -> Optional[float]:
+    """
+    Parse a price string to extract the numeric value as a float.
+
+    Handles formats like:
+    - "$18.91 NZD Incl. VAGST"
+    - "$20.99"
+    - "15.00 K"
+    - "18.91"
+    - Already numeric values
+
+    Args:
+        price_str: The price value (string or numeric).
+
+    Returns:
+        The price as a float, or None if parsing fails.
+    """
+    # If already a float or int, return as float
+    if isinstance(price_str, (int, float)):
+        return float(price_str) if not pd.isna(price_str) else None
+
+    # If not a string, return None
+    if not isinstance(price_str, str):
+        return None
+
+    # Remove common currency symbols and text
+    cleaned = price_str.strip()
+
+    # Extract the first numeric value (with optional decimal)
+    match = re.search(r"[\d,]+\.?\d*", cleaned)
+    if not match:
+        return None
+
+    # Get the matched number and remove commas
+    number_str = match.group().replace(",", "")
+
+    try:
+        return float(number_str)
+    except (ValueError, TypeError):
+        return None
+
+
 def get_string_cleaning_config(project_root: Optional[Path] = None) -> dict:
     """
     Load the string cleaning configuration from string_cleaning.json.
@@ -35,7 +77,7 @@ def get_string_cleaning_config(project_root: Optional[Path] = None) -> dict:
         # Infer from this file's location: src/cpi/coicopping/cleaning.py
         project_root = Path(__file__).parent.parent.parent.parent
 
-    config_file = Path(__file__).parent / "string_cleaning.json"
+    config_file = Path(__file__).parent / "config" / "string_cleaning.json"
 
     if not config_file.exists():
         raise FileNotFoundError(
@@ -81,6 +123,7 @@ def clean_special_characters(text: str) -> str:
     Clean special characters from text by replacing them with spaces.
 
     Replaces any non-alphanumeric character (except spaces) with " ".
+    Preserves Unicode letters and numbers from all languages.
     Then cleans up extra whitespace by stripping and joining words.
 
     Args:
@@ -89,15 +132,14 @@ def clean_special_characters(text: str) -> str:
     Returns:
         Text with special characters replaced by spaces and cleaned up.
     """
+
     if not isinstance(text, str):
         return text
 
-    # Replace any non-alphanumeric character (except spaces) with " "
-    cleaned = re.sub(r"[^a-zA-Z0-9\s]", " ", text)
+    # Keep Unicode letters/numbers, replace punctuation with spaces
+    cleaned = re.sub(r"[^\w\s]", " ", text, flags=re.UNICODE)
 
-    # Clean up extra whitespace by stripping each word and joining
-    cleaned = " ".join(word.strip() for word in cleaned.split())
-
+    cleaned = " ".join(cleaned.split())
     return cleaned
 
 

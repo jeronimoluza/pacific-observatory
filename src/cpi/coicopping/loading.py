@@ -52,7 +52,6 @@ def get_currency_mapping(df_scrapy: pd.DataFrame) -> dict:
     currency_mapping = {}
 
     if df_scrapy.empty or "currency" not in df_scrapy.columns:
-        logger.warning("No currency data found in scrapy data")
         return currency_mapping
 
     # Group by country and source, find most common currency
@@ -62,13 +61,6 @@ def get_currency_mapping(df_scrapy: pd.DataFrame) -> dict:
         if len(currency_counts) > 0:
             most_common_currency = currency_counts.index[0]
             currency_mapping[(country, source)] = most_common_currency
-            logger.debug(
-                f"Currency mapping: {country}/{source} → {most_common_currency}"
-            )
-
-    logger.info(
-        f"Created currency mapping for {len(currency_mapping)} country/source combinations"
-    )
     return currency_mapping
 
 
@@ -194,9 +186,6 @@ def load_wayback_data(
             currency = None
             if currency_mapping and (country, source) in currency_mapping:
                 currency = currency_mapping[(country, source)]
-                logger.debug(
-                    f"Applying currency {currency} to {country}/{source} wayback data"
-                )
 
             # Load all JSON files
             for json_file in json_files:
@@ -235,11 +224,6 @@ def load_wayback_data(
 
     df = pd.DataFrame(all_data)
     logger.info(f"Loaded {len(df)} wayback records")
-
-    # Log currency coverage
-    if "currency" in df.columns:
-        currency_coverage = df["currency"].notna().sum()
-        logger.info(f"Wayback records with currency: {currency_coverage}/{len(df)}")
 
     return df
 

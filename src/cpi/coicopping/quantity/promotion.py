@@ -21,7 +21,7 @@ import re
 from pathlib import Path
 from typing import Optional, Tuple
 
-from regex_config import (
+from .regex import (
     PROMOTION_KEYWORDS,
     PROMOTION_PATTERNS_COMPILED,
     ADDITIVE_PATTERNS,

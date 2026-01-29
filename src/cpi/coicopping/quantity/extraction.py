@@ -30,19 +30,16 @@ from typing import Optional, Tuple
 
 import pandas as pd
 
-# Handle both relative and direct execution
+# Import functions from parent package
 try:
-    # from .loading import load_price_scraping_data
-    from .prestep import prepare_coicop_matching_data
-    from .cleaning import clean_product_names
+    from ..cleaning import parse_price, clean_product_names
+    from ..data_preparation import prepare_coicop_matching_data
 except ImportError:
-    # Direct execution: add parent directory to path
-    sys.path.insert(0, str(Path(__file__).parent))
-    from prestep import prepare_coicop_matching_data
-    from cleaning import clean_product_names
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    from cleaning import parse_price, clean_product_names
+    from data_preparation import prepare_coicop_matching_data
 
-
-from regex_config import (
+from .regex import (
     AMOUNT_REGEX,
     UNITS_REGEX,
     X_SEPARATOR_REGEX,
@@ -51,61 +48,17 @@ from regex_config import (
     COUNT_UNITS,
     AMOUNT_UNITS,
 )
-from unit_conversions import UNIT_CONVERSIONS
+from .conversions import UNIT_CONVERSIONS
 
 # Import new standardized unit price modules
-from quantity_candidates import extract_all_candidates
-from usability_classifier import (
+from .candidates import extract_all_candidates
+from .usability import (
     classify_usability,
     get_standard_unit,
     get_extraction_tier,
     UsabilityStatus,
 )
-from promotion_detection import detect_promotion
-
-
-def parse_price(price_str) -> Optional[float]:
-    """
-    Parse a price string to extract the numeric value as a float.
-
-    Handles formats like:
-    - "$18.91 NZD Incl. VAGST"
-    - "$20.99"
-    - "15.00 K"
-    - "18.91"
-    - Already numeric values
-
-    Args:
-        price_str: The price value (string or numeric).
-
-    Returns:
-        The price as a float, or None if parsing fails.
-    """
-    import re
-
-    # If already a float or int, return as float
-    if isinstance(price_str, (int, float)):
-        return float(price_str) if not pd.isna(price_str) else None
-
-    # If not a string, return None
-    if not isinstance(price_str, str):
-        return None
-
-    # Remove common currency symbols and text
-    cleaned = price_str.strip()
-
-    # Extract the first numeric value (with optional decimal)
-    match = re.search(r"[\d,]+\.?\d*", cleaned)
-    if not match:
-        return None
-
-    # Get the matched number and remove commas
-    number_str = match.group().replace(",", "")
-
-    try:
-        return float(number_str)
-    except (ValueError, TypeError):
-        return None
+from .promotion import detect_promotion
 
 
 def extract_amount_and_units(product_name: str) -> Tuple[Optional[str], Optional[str]]:
@@ -474,6 +427,7 @@ def extract_quantities(
 
     # Select and order the required columns (including new columns)
     required_columns = [
+        "product_name_original",
         "product_name",
         "product_w_cat",
         "price",

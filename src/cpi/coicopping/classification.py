@@ -8,76 +8,40 @@ This module orchestrates the complete workflow:
 4. Generate final gemini_classification.csv with code and title mappings
 """
 
-import os
 import sys
-import csv
 from pathlib import Path
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, Tuple
 
 import pandas as pd
 
 # Handle both relative and direct execution
 try:
+    from .utils import get_project_root
+    from .gemini_client import (
+        setup_google_api_key,
+        format_gemini_prompt,
+        parse_gemini_response,
+    )
     from .coicop_categories import (
         download_coicop_excel,
         load_and_process_coicop,
     )
-    from .prestep import prepare_coicop_matching_data
+    from .data_preparation import prepare_coicop_matching_data
     from .extract_quantities import extract_and_merge_quantities
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent))
+    from utils import get_project_root
+    from gemini_client import (
+        setup_google_api_key,
+        format_gemini_prompt,
+        parse_gemini_response,
+    )
     from coicop_categories import (
         download_coicop_excel,
         load_and_process_coicop,
     )
-    from prestep import prepare_coicop_matching_data
+    from data_preparation import prepare_coicop_matching_data
     from extract_quantities import extract_and_merge_quantities
-
-
-def get_project_root(current_file: Path = None) -> Path:
-    """Get the project root directory."""
-    if current_file is None:
-        current_file = Path(__file__)
-    return current_file.parent.parent.parent.parent
-
-
-def setup_google_api_key() -> str:
-    """
-    Check if GOOGLE_API_KEY is set in environment variables.
-    If not, provide setup instructions and exit.
-
-    Returns:
-        The Google API key
-
-    Raises:
-        ValueError: If GOOGLE_API_KEY is not set
-    """
-    api_key = os.environ.get("GOOGLE_API_KEY")
-
-    if not api_key:
-        print("\n" + "=" * 70)
-        print("ERROR: GOOGLE_API_KEY environment variable not set")
-        print("=" * 70)
-        print("\nTo use Gemini 2.0 Flash for COICOP classification, you need to:")
-        print("\n1. Get your API key from: https://aistudio.google.com/apikey")
-        print("\n2. Set it as an environment variable:")
-        print("   - On macOS/Linux:")
-        print("     export GOOGLE_API_KEY='your-api-key-here'")
-        print("     python src/cpi/coicopping/coicop_matching.py")
-        print("\n   - Or set it in your shell profile (~/.zshrc, ~/.bash_profile):")
-        print("     echo \"export GOOGLE_API_KEY='your-api-key-here'\" >> ~/.zshrc")
-        print("     source ~/.zshrc")
-        print("\n   - On Windows (PowerShell):")
-        print("     $env:GOOGLE_API_KEY='your-api-key-here'")
-        print("     python src/cpi/coicopping/coicop_matching.py")
-        print("\n3. Or pass it directly:")
-        print(
-            "   GOOGLE_API_KEY='your-api-key-here' python src/cpi/coicopping/coicop_matching.py"
-        )
-        print("=" * 70 + "\n")
-        raise ValueError("GOOGLE_API_KEY environment variable not set")
-
-    return api_key
 
 
 def download_and_save_coicop_data(
@@ -197,73 +161,6 @@ def create_products_input_csv(
     print(f"✓ Saved to {csv_path}")
 
     return df_input
-
-
-def format_gemini_prompt(
-    batch_products: List[str], coicop_context: pd.DataFrame
-) -> str:
-    """
-    Format the prompt for Gemini 2.0 Flash classification.
-
-    Args:
-        batch_products: List of product_w_cat strings (up to 2000)
-        coicop_context: DataFrame with COICOP categories (code, title, keywords)
-
-    Returns:
-        Formatted prompt string
-    """
-    # Create COICOP reference text
-    coicop_ref = "COICOP CATEGORIES REFERENCE:\n"
-    coicop_ref += "Code | Title | Keywords\n"
-    coicop_ref += "-" * 100 + "\n"
-
-    for idx, row in coicop_context.iterrows():
-        code = row["coicop_code"]
-        title = row["coicop_title"]
-        keywords = (
-            row["keywords"] if pd.notna(row["keywords"]) else ""
-        )  # Truncate for brevity
-        coicop_ref += f"{code} | {title} | {keywords}\n"
-
-    # Create products list with explicit mapping
-    products_text = "PRODUCTS TO CLASSIFY:\n"
-    for i, product in enumerate(batch_products, 1):
-        products_text += f"{i}. {product}\n"
-
-    prompt = f"""Classify each product from the products list according to the COICOP categories.
-
-CLASSIFICATION RULES:
-- Classify based on the primary intended use of the product.
-- If a product could belong to multiple categories, choose the one most commonly used for CPI classification.
-- Do NOT infer attributes that are not explicitly stated.
-- Do NOT translate the product text; classify directly from the original language.
-- Ignore brand names unless they imply product type.
-
-{coicop_ref}
-
-{products_text}
-
-For each product, determine the most appropriate COICOP code based on the keywords and descriptions.
-
-- The CSV MUST contain exactly these columns, in this order:
-  product_w_cat,code,confidence
-- The confidence column MUST be a numeric value between 0 and 1 (inclusive),
-  where higher values indicate higher classification confidence.
-
-All CSV fields must be quoted using double quotes.
-
-Output format example:
-product_w_cat,code,confidence
-"half meter tube; pantry confectionery","01.1.8.9","0.94"
-"shortbread fingers; pantry biscuit cookies","01.1.1.3","0.91"
-
-If any required column is missing, the output is considered invalid.
-
-Start the CSV output immediately with the header row. Include all products from the list.
-Do NOT include any other text, explanations, or markdown formatting.
-IMPORTANT: The product_w_cat column MUST contain the EXACT product string from the input list above."""
-
-    return prompt
 
 
 def classify_products_with_gemini(
@@ -420,99 +317,40 @@ def classify_products_with_gemini(
                 all_results.extend(batch_results)
 
         except Exception as e:
-            print(f"✗ Error processing batch {batch_num + 1}: {e}")
-            # Continue with next batch
-            continue
+            error_msg = str(e).lower()
+            # Check for quota exceeded errors
+            if (
+                "quota" in error_msg
+                or "resource_exhausted" in error_msg
+                or "429" in error_msg
+            ):
+                print(f"\n✗ API quota exceeded at batch {batch_num + 1}/{num_batches}")
+                print(f"  Error: {e}")
+                print(
+                    "\n⚠ Stopping remaining batches to preserve existing classifications"
+                )
+                print(
+                    f"  Successfully classified {len(all_results)} products before quota limit"
+                )
+                # Break out of the loop to stop processing remaining batches
+                break
+            else:
+                print(f"✗ Error processing batch {batch_num + 1}: {e}")
+                # Continue with next batch for other errors
+                continue
 
     # Combine results
     if not all_results:
-        raise ValueError("No products were successfully classified")
+        print("\n⚠ Warning: No products were successfully classified")
+        print("  This may be due to API quota limits or other errors")
+        print("  Returning empty DataFrame")
+        return pd.DataFrame(columns=["product_w_cat", "coicop_code", "confidence"])
 
     results_df = pd.DataFrame(all_results)
     print(f"\n✓ Total classified: {len(results_df)} products")
     print(f"✓ All batches have been saved to {gemini_classification_path}")
 
     return results_df
-
-
-def parse_gemini_response(response_text: str) -> List[Dict[str, str]]:
-    """
-    Parse CSV response from Gemini.
-
-    Args:
-        response_text: Raw response text from Gemini (should be CSV format)
-
-    Returns:
-        List of dictionaries with product_w_cat, coicop_code, confidence
-    """
-    results = []
-
-    # Remove markdown code blocks if present
-    if response_text.startswith("```"):
-        response_text = response_text.split("```")[1]
-        if response_text.startswith("csv"):
-            response_text = response_text[3:]
-
-    response_text = response_text.strip()
-
-    # Handle truncated responses by removing incomplete last row
-    # If the last line doesn't end with a quote, it's likely truncated
-    lines = response_text.split("\n")
-    if lines and not lines[-1].rstrip().endswith('"'):
-        # Last row is incomplete, remove it
-        lines = lines[:-1]
-        response_text = "\n".join(lines)
-
-    # Parse CSV with custom logic to handle inconsistent quoting
-    lines = response_text.split("\n")
-
-    # Skip header if present
-    start_idx = 0
-    if lines and lines[0].startswith("product_w_cat"):
-        start_idx = 1
-
-    # Track seen products to avoid duplicates
-    seen = set()
-
-    # Parse each line manually to handle inconsistent quoting
-    for line in lines[start_idx:]:
-        line = line.strip()
-        if not line:
-            continue
-
-        try:
-            # Use csv reader to parse individual line
-            row_data = list(csv.reader([line]))[0]
-
-            if len(row_data) >= 2:
-                product_w_cat = row_data[0].strip() if row_data[0] else None
-                code = row_data[1].strip() if row_data[1] else None
-                # Parse confidence (default to None if not present or invalid)
-                confidence = None
-                if len(row_data) >= 3 and row_data[2]:
-                    try:
-                        conf_val = float(row_data[2].strip())
-                        # Validate confidence is between 0 and 1
-                        if 0 <= conf_val <= 1:
-                            confidence = conf_val
-                    except (ValueError, TypeError):
-                        pass
-
-                # Only add if we have both required fields and haven't seen this product before
-                if product_w_cat and code and product_w_cat not in seen:
-                    seen.add(product_w_cat)
-                    results.append(
-                        {
-                            "product_w_cat": product_w_cat,
-                            "coicop_code": code,
-                            "confidence": confidence,
-                        }
-                    )
-        except Exception:
-            # Skip lines that can't be parsed
-            pass
-
-    return results
 
 
 def generate_final_output(
@@ -711,6 +549,213 @@ def run_coicop_matching(
     except Exception as e:
         print(f"\n✗ Error in workflow: {e}")
         raise
+
+
+def reclassify_missing_classifications(
+    project_root: Path = None,
+    batch_size: int = 600,
+) -> None:
+    """
+    Reclassify products in gemini_classification.csv that are missing COICOP codes.
+
+    Args:
+        project_root: Optional project root path
+        batch_size: Number of products per batch (default 600)
+    """
+    if project_root is None:
+        project_root = get_project_root()
+
+    data_dir = project_root / "data" / "cpi" / "coicopping"
+    gemini_classification_path = data_dir / "gemini_classification.csv"
+
+    # Check if file exists
+    if not gemini_classification_path.exists():
+        print(f"\n✗ Error: {gemini_classification_path} not found")
+        print(
+            "Please run the main workflow first to generate gemini_classification.csv"
+        )
+        return
+
+    print("=" * 80)
+    print("RECLASSIFY MISSING COICOP CLASSIFICATIONS")
+    print("=" * 80)
+
+    # Step 1: Read gemini_classification.csv
+    print("\n1. Reading gemini_classification.csv...")
+    df_classifications = pd.read_csv(gemini_classification_path)
+    print(f"✓ Loaded {len(df_classifications)} total classifications")
+
+    # Step 2: Find rows without coicop_code and coicop_title
+    print("\n2. Finding rows without classifications...")
+    missing_mask = (
+        df_classifications["coicop_code"].isna()
+        | df_classifications["coicop_title"].isna()
+    )
+    df_missing = df_classifications[missing_mask].copy()
+    df_classified = df_classifications[~missing_mask].copy()
+
+    print(f"✓ Found {len(df_missing)} rows without classifications")
+    print(f"✓ Found {len(df_classified)} rows already classified")
+
+    if len(df_missing) == 0:
+        print("\n✓ All rows already have classifications. Nothing to do!")
+        return
+
+    # Step 3: Load COICOP categories
+    print("\n3. Loading COICOP categories...")
+    excel_path = data_dir / "coicop_categories.xlsx"
+    if not excel_path.exists():
+        print(f"✗ Error: {excel_path} not found")
+        print("Please run the main workflow first to download COICOP data")
+        return
+
+    df_coicop = load_and_process_coicop(excel_path, digit_level=4)
+    df_coicop_no_services = df_coicop[
+        ~df_coicop["coicop_code"].str.endswith(" (S)")
+    ].copy()
+    print(f"✓ Loaded {len(df_coicop_no_services)} COICOP categories (no services)")
+
+    # Step 4: Reclassify missing products
+    print(f"\n4. Reclassifying {len(df_missing)} products...")
+    try:
+        import google.generativeai as genai
+    except ImportError:
+        print("\n✗ ERROR: google-generativeai library not installed")
+        print("Install it with: pip install google-generativeai")
+        return
+
+    # Setup API
+    api_key = setup_google_api_key()
+    genai.configure(api_key=api_key)
+
+    # Prepare unique products to classify
+    unique_products = (
+        df_missing[["product_w_cat"]].drop_duplicates().reset_index(drop=True)
+    )
+    total_products = len(unique_products)
+    num_batches = (total_products + batch_size - 1) // batch_size
+
+    print(
+        f"\nClassifying {total_products} unique products in {num_batches} batches (batch size: {batch_size})"
+    )
+
+    all_results = []
+
+    for batch_num in range(num_batches):
+        start_idx = batch_num * batch_size
+        end_idx = min(start_idx + batch_size, total_products)
+        batch_products = unique_products.iloc[start_idx:end_idx][
+            "product_w_cat"
+        ].tolist()
+
+        print(
+            f"\nBatch {batch_num + 1}/{num_batches}: Processing {len(batch_products)} products..."
+        )
+
+        # Format prompt
+        prompt = format_gemini_prompt(batch_products, df_coicop_no_services)
+
+        # Call Gemini API
+        try:
+            model = genai.GenerativeModel("gemini-3-flash-preview")
+            response = model.generate_content(prompt)
+            response_text = response.text
+
+            # Parse CSV response
+            batch_results = parse_gemini_response(response_text)
+            all_results.extend(batch_results)
+
+            if len(batch_results) == 0:
+                print(f"⚠ Batch {batch_num + 1}: No valid results parsed.")
+                print(f"  Response preview (first 300 chars):\n{response_text[:300]}")
+
+            print(f"✓ Batch {batch_num + 1}: Classified {len(batch_results)} products")
+
+        except Exception as e:
+            error_msg = str(e).lower()
+            # Check for quota exceeded errors
+            if (
+                "quota" in error_msg
+                or "resource_exhausted" in error_msg
+                or "429" in error_msg
+            ):
+                print(f"\n✗ API quota exceeded at batch {batch_num + 1}/{num_batches}")
+                print(f"  Error: {e}")
+                print("\n⚠ Stopping remaining batches")
+                break
+            else:
+                print(f"✗ Error processing batch {batch_num + 1}: {e}")
+                continue
+
+    if not all_results:
+        print("\n✗ Error: No products were successfully classified")
+        return
+
+    df_new_classifications = pd.DataFrame(all_results)
+    print(f"\n✓ Total newly classified: {len(df_new_classifications)} products")
+
+    # Step 5: Merge with COICOP categories to get titles
+    print("\n5. Adding COICOP titles...")
+    df_new_classifications = df_new_classifications.merge(
+        df_coicop[["coicop_code", "coicop_title"]],
+        on="coicop_code",
+        how="left",
+    )
+
+    # Step 6: Update missing rows with new classifications
+    print("\n6. Updating missing rows with new classifications...")
+
+    # Merge new classifications back to missing rows (including confidence if present)
+    merge_cols = ["product_w_cat", "coicop_code", "coicop_title"]
+    if "confidence" in df_new_classifications.columns:
+        merge_cols.append("confidence")
+
+    df_missing_updated = df_missing.merge(
+        df_new_classifications[merge_cols],
+        on="product_w_cat",
+        how="left",
+        suffixes=("_old", ""),
+    )
+
+    # Drop old columns if they exist
+    cols_to_drop = [col for col in df_missing_updated.columns if col.endswith("_old")]
+    if cols_to_drop:
+        df_missing_updated = df_missing_updated.drop(columns=cols_to_drop)
+
+    # Step 7: Combine all rows
+    print("\n7. Combining all rows...")
+    df_final = pd.concat([df_classified, df_missing_updated], ignore_index=True)
+
+    # Remove duplicates (keep first)
+    df_final = df_final.drop_duplicates(
+        subset=["url_hash", "product_w_cat"], keep="first"
+    )
+
+    print(f"✓ Final dataframe: {len(df_final)} rows")
+
+    # Step 8: Save updated gemini_classification.csv
+    print("\n8. Saving updated gemini_classification.csv...")
+    df_final.to_csv(gemini_classification_path, index=False)
+    print(f"✓ Saved to {gemini_classification_path}")
+
+    # Print summary
+    still_missing = df_final["coicop_code"].isna().sum()
+    classified_count = df_final["coicop_code"].notna().sum()
+
+    print("\n" + "=" * 80)
+    print("SUMMARY")
+    print("=" * 80)
+    print(f"Total rows: {len(df_final)}")
+    print(f"Classified rows: {classified_count}")
+    print(f"Still missing: {still_missing}")
+
+    if still_missing > 0:
+        print(f"\n⚠ Warning: {still_missing} rows still missing classifications")
+        print("These products may have failed during API calls or parsing")
+    else:
+        print("\n✓ SUCCESS: All rows now have COICOP classifications!")
+
+    print("=" * 80)
 
 
 if __name__ == "__main__":

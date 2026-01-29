@@ -17,9 +17,9 @@ Classification statuses:
 from enum import Enum
 from typing import Optional, Tuple
 
-from quantity_candidates import QuantityExtractionResult
-from promotion_detection import detect_promotion, is_bundle_product
-from regex_config import FOOD_COUNT_KEYWORDS
+from .candidates import QuantityExtractionResult
+from .promotion import detect_promotion, is_bundle_product
+from .regex import FOOD_COUNT_KEYWORDS
 
 
 class UsabilityStatus(str, Enum):

@@ -16,7 +16,7 @@ import re
 from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
-from regex_config import (
+from .regex import (
     AMOUNT_UNITS,
     COUNT_UNITS,
     AMOUNT_REGEX,
@@ -25,7 +25,7 @@ from regex_config import (
     ADDITIVE_PATTERNS,
     RANGE_PATTERN,
 )
-from unit_conversions import UNIT_CONVERSIONS
+from .conversions import UNIT_CONVERSIONS
 
 
 @dataclass

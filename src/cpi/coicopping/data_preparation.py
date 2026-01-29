@@ -24,8 +24,8 @@ import re
 # Handle both relative and direct execution
 try:
     from .loading import load_price_scraping_data
-    from .cleaning import clean_product_names, clean_special_characters
-    from .regex_config import (
+    from .cleaning import clean_product_names, clean_special_characters, parse_price
+    from .quantity.regex import (
         AMOUNT_REGEX,
         UNITS_REGEX,
         PER_KG_REGEX,
@@ -36,8 +36,8 @@ except ImportError:
     # Direct execution: add parent directory to path
     sys.path.insert(0, str(Path(__file__).parent))
     from loading import load_price_scraping_data
-    from cleaning import clean_product_names, clean_special_characters
-    from regex_config import (
+    from cleaning import clean_product_names, clean_special_characters, parse_price
+    from quantity.regex import (
         AMOUNT_REGEX,
         UNITS_REGEX,
         PER_KG_REGEX,
@@ -48,31 +48,37 @@ except ImportError:
 
 def clean_product_only(product_name: str) -> str:
     """
-    Clean product name by removing parentheses/brackets and converting accented letters.
+    Clean product name by removing parentheses/brackets and normalizing accents
+    while preserving all language characters.
 
     Steps:
     1. Remove all strings contained in () or []
-    2. Convert accented letters to their non-accented versions (e.g., é → e, ñ → n)
+    2. Remove diacritics from Latin characters only (é → e, ñ → n)
+       while keeping non-Latin scripts intact.
 
     Args:
         product_name: The product name to clean.
 
     Returns:
-        Product name with parentheses/brackets removed and accents normalized.
+        Cleaned product name.
     """
     if not isinstance(product_name, str):
         return product_name
 
-    # Remove content in parentheses: (...)
+    # Remove content in parentheses (...)
     cleaned = re.sub(r"\([^)]*\)", "", product_name)
 
-    # Remove content in square brackets: [...]
+    # Remove content in square brackets [...]
     cleaned = re.sub(r"\[[^\]]*\]", "", cleaned)
 
-    # Convert accented letters to non-accented versions
-    # Normalize to NFD (decomposed form), then encode to ASCII ignoring non-ASCII characters
+    # Normalize to decomposed form
     cleaned = unicodedata.normalize("NFD", cleaned)
-    cleaned = cleaned.encode("ascii", "ignore").decode("utf-8")
+
+    # Remove combining marks (accents) ONLY
+    cleaned = "".join(ch for ch in cleaned if unicodedata.category(ch) != "Mn")
+
+    # Re-compose characters
+    cleaned = unicodedata.normalize("NFC", cleaned)
 
     # Clean up extra whitespace
     cleaned = " ".join(cleaned.split())
@@ -218,22 +224,25 @@ def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.Data
 
     Steps:
     1. Load raw price scraping data
-    2. Clean product names (source-specific cleaning)
-    3. Remove amounts and quantities → "product_only"
-    4. Clean "product_only" from special characters
-    5. Clean category names
-    6. Create "product_w_cat" combining product_only and cleaned category
+    2. Save original product_name as product_name_original
+    3. Clean product names (source-specific cleaning)
+    4. Parse and clean price column
+    5. Remove amounts and quantities → "product_only"
+    6. Clean "product_only" from special characters
+    7. Clean category names
+    8. Create "product_w_cat" combining product_only and cleaned category
 
     Args:
         project_root: Optional project root path. If None, infers from this file's location.
 
     Returns:
         DataFrame with columns:
+        - product_name_original (original before cleaning)
         - product_name (cleaned)
         - product_only (no quantities)
         - product_w_cat (product_only + category)
         - category (original)
-        - price
+        - price (cleaned numeric)
         - source
         - country
         - product_url (renamed from 'url' if exists)
@@ -243,8 +252,15 @@ def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.Data
     # Load raw price scraping data
     df = load_price_scraping_data(project_root)
 
+    # Save original product_name before any cleaning
+    df["product_name_original"] = df["product_name"].copy()
+
     # Clean product names (source-specific cleaning)
     df = clean_product_names(df, project_root)
+
+    # Parse and clean price column
+    if "price" in df.columns:
+        df["price"] = df["price"].apply(parse_price)
 
     # Clean product names by removing content in parentheses and brackets
     df["product_name"] = df["product_name"].apply(clean_product_only)
