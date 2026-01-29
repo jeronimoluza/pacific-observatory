@@ -56,9 +56,7 @@ def create_matched_pairs(df: pd.DataFrame) -> pd.DataFrame:
         lambda x: x.n if pd.notna(x) else None
     )
     # Filter to valid matches (any pair with non-null lagged values)
-    matched = df[(df["log_price_lag"].notna()) & (df["months_gap"] == 1)].copy()
-
-    # matched = df[df["log_price_lag"].notna()].copy()
+    matched = df[(df["log_price_lag"].notna()) & (df["months_gap"] <= 3)].copy()
 
     # Rename columns for clarity
     matched = matched.rename(
