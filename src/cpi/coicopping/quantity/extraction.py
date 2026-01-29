@@ -33,11 +33,9 @@ import pandas as pd
 # Import functions from parent package
 try:
     from ..cleaning import parse_price, clean_product_names
-    from ..data_preparation import prepare_coicop_matching_data
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent.parent))
     from cleaning import parse_price, clean_product_names
-    from data_preparation import prepare_coicop_matching_data
 
 from .regex import (
     AMOUNT_REGEX,
@@ -397,6 +395,12 @@ def extract_quantities(
     """
     # Use provided DataFrame or prepare data
     if df_prepared is None:
+        # Import locally to avoid circular dependency
+        try:
+            from ..data_preparation import prepare_coicop_matching_data
+        except ImportError:
+            from data_preparation import prepare_coicop_matching_data
+
         df = prepare_coicop_matching_data(project_root)
         df = clean_product_names(df, project_root)
     else:

@@ -27,7 +27,7 @@ try:
         load_and_process_coicop,
     )
     from .data_preparation import prepare_coicop_matching_data
-    from .extract_quantities import extract_and_merge_quantities
+    from .quantity.extraction import extract_and_merge_quantities
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent))
     from utils import get_project_root
@@ -41,7 +41,7 @@ except ImportError:
         load_and_process_coicop,
     )
     from data_preparation import prepare_coicop_matching_data
-    from extract_quantities import extract_and_merge_quantities
+    from quantity.extraction import extract_and_merge_quantities
 
 
 def download_and_save_coicop_data(
