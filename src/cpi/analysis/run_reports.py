@@ -133,7 +133,7 @@ def run_reports(
     print("✓ Added log_unit_value column")
 
     # Step 7: Create matched pairs
-    print("\n🔗 Creating matched pairs for consecutive months...")
+    print("\n🔗 Creating matched pairs across available months...")
     matched = create_matched_pairs(df)
     print(f"✓ Created {len(matched):,} matched pairs")
 

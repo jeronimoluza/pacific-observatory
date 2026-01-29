@@ -5,7 +5,11 @@ import pandas as pd
 
 def create_matched_pairs(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Create matched pairs of consecutive month observations for each product.
+    Create matched pairs of observations for each product across available months.
+
+    Designed for snapshot panel data (e.g., web-scraped prices with Wayback Machine
+    historical data) where products may not appear in consecutive months due to
+    scraping gaps and irregular data collection.
 
     Parameters
     ----------
@@ -23,13 +27,15 @@ def create_matched_pairs(df: pd.DataFrame) -> pd.DataFrame:
         - url_hash: Product identifier
         - year_month_t: Current period
         - year_month_t1: Previous period
+        - months_gap: Number of months between observations
         - log_price_t: Current log price
         - log_price_t1: Previous log price
         - country, coicop_1, coicop_2, coicop_3, coicop_4, extraction_tier
 
     Notes
     -----
-    Only creates pairs for consecutive months (no gaps).
+    Matches any available pairs for the same product, not just consecutive months.
+    The `months_gap` column indicates the time gap between observations.
     """
     # Filter out rows with missing log prices
     df = df[df["log_unit_value"].notna()].copy()
@@ -45,11 +51,14 @@ def create_matched_pairs(df: pd.DataFrame) -> pd.DataFrame:
     df["log_price_lag"] = df.groupby("url_hash")["log_unit_value"].shift(1)
     df["year_month_lag"] = df.groupby("url_hash")["year_month"].shift(1)
 
-    # Keep only consecutive months (difference of 1 period)
-    df["is_consecutive"] = (df["period"] - df["period_lag"]) == 1
+    # Compute months gap between observations
+    df["months_gap"] = (df["period"] - df["period_lag"]).apply(
+        lambda x: x.n if pd.notna(x) else None
+    )
+    # Filter to valid matches (any pair with non-null lagged values)
+    matched = df[(df["log_price_lag"].notna()) & (df["months_gap"] == 1)].copy()
 
-    # Filter to valid matches (consecutive months with non-null lagged values)
-    matched = df[df["is_consecutive"] & df["log_price_lag"].notna()].copy()
+    # matched = df[df["log_price_lag"].notna()].copy()
 
     # Rename columns for clarity
     matched = matched.rename(
@@ -61,11 +70,14 @@ def create_matched_pairs(df: pd.DataFrame) -> pd.DataFrame:
         }
     )
 
+    # Keep months_gap column for analysis
+
     # Select relevant columns
     keep_cols = [
         "url_hash",
         "year_month_t",
         "year_month_t1",
+        "months_gap",
         "log_price_t",
         "log_price_t1",
         "country",
