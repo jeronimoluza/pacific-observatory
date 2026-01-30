@@ -51,7 +51,6 @@ selectors:
 # Data cleaning configuration
 cleaning:
   date: "handle_unix_timestamp_ms"
-  body: "join_body_list"
 
 # Test/debug options
 max_pages: null  # Limit to 100 API requests (1000 articles)

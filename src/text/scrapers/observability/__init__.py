@@ -21,6 +21,7 @@ from .progress import (
     ProgressReporter,
     read_progress,
     is_scraper_stale,
+    clear_progress_file,
 )
 
 __all__ = [
@@ -38,4 +39,5 @@ __all__ = [
     "ProgressReporter",
     "read_progress",
     "is_scraper_stale",
+    "clear_progress_file",
 ]

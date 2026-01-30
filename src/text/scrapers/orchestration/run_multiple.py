@@ -30,6 +30,7 @@ from text.scrapers.observability import (
     read_progress,
     format_duration,
     detect_quality_issues,
+    clear_progress_file,
 )
 
 logger = logging.getLogger(__name__)
@@ -227,6 +228,17 @@ def run_scraper_with_timeout(
     country = config["country"]
     newspaper = config["newspaper"]
     start_time = time.time()
+
+    # Clear any stale progress file from previous runs BEFORE starting subprocess
+    # This prevents the new subprocess from being considered "stale" immediately
+    # due to an old progress file with an outdated last_activity timestamp
+    sanitized_country = _sanitize_name(country)
+    sanitized_newspaper = _sanitize_name(newspaper)
+    clear_progress_file(
+        sanitized_country,
+        sanitized_newspaper,
+        str(project_root / "logs" / "text"),
+    )
 
     # Start the subprocess
     process = run_scraper_subprocess(config, log_dir, project_root, dry_run, mode)
@@ -770,6 +782,11 @@ def run_country_parallel_with_display(
                     live.update(Text("\n".join(lines)))
                     time.sleep(0.5)
 
+            # Print all completed output after the Live context ends
+            # This ensures the last newspaper's completion status is displayed
+            for msg in completed_output:
+                print(msg)
+
         except Exception:
             # Fallback if Rich fails
             for newspaper, (future, start_time, config) in running.items():
@@ -796,6 +813,7 @@ def run_all_scrapers(
     dry_run: bool = False,
     mode: str = "default",
     timeout_per_scraper: int = 600,
+    exclude: List[str] = None,
 ) -> List[Dict]:
     """
     Run all newspaper scrapers with country-level sequential execution.
@@ -811,6 +829,7 @@ def run_all_scrapers(
         dry_run: If True, print what would be executed without running
         mode: Scraping mode - "default", "update", "resume", "full_discovery", or "full_from_scratch"
         timeout_per_scraper: Maximum seconds per scraper before timeout (default: 600)
+        exclude: List of newspaper names to exclude (case-insensitive)
 
     Returns:
         List of result dictionaries with status information
@@ -828,6 +847,15 @@ def run_all_scrapers(
     if not configs:
         print("❌ No configurations found.")
         return []
+
+    # Filter out excluded scrapers
+    if exclude:
+        exclude_set = {name.lower() for name in exclude}
+        original_count = len(configs)
+        configs = [c for c in configs if c["newspaper"].lower() not in exclude_set]
+        excluded_count = original_count - len(configs)
+        if excluded_count > 0:
+            print(f"   Excluded {excluded_count} scraper(s): {', '.join(exclude)}")
 
     print(f"   Found {len(configs)} scraper configuration(s)")
 

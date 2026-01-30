@@ -291,6 +291,11 @@ class NewspaperScraper:
                                 logger.debug(f"Article data: {article_dict}")
 
                 logger.info(f"Processed API batch: {len(result_batch)} items")
+
+                # Update progress after each API batch to keep progress file fresh
+                if self.progress:
+                    self.progress.update(urls_found=len(thumbnails))
+
                 continue
 
             # Existing logic for HTML-based strategies
@@ -329,6 +334,10 @@ class NewspaperScraper:
             logger.info(
                 f"Processed batch: {len(result_batch)} pages, {len(thumbnails)} total thumbnails"
             )
+
+            # Update progress after each batch to keep progress file fresh
+            if self.progress:
+                self.progress.update(urls_found=len(thumbnails))
 
         logger.info(f"Total thumbnails discovered and scraped: {len(thumbnails)}")
 
@@ -655,6 +664,12 @@ class NewspaperScraper:
                                 stage="article_content",
                             )
                             articles_failed += 1
+                            # Update progress periodically (every 10 articles or on failure)
+                            if self.progress and (i + 1) % 10 == 0:
+                                self.progress.update(
+                                    articles_scraped=articles_scraped,
+                                    articles_failed=articles_failed,
+                                )
                             continue
 
                         # Parse the HTML content
@@ -697,6 +712,14 @@ class NewspaperScraper:
                         # Stream write to CSV instead of accumulating in memory
                         self._storage.append_article(article, self.country, self.name)
                         articles_scraped += 1
+
+                        # Update progress periodically (every 10 articles)
+                        # This keeps the progress file fresh and prevents stale detection
+                        if self.progress and (i + 1) % 10 == 0:
+                            self.progress.update(
+                                articles_scraped=articles_scraped,
+                                articles_failed=articles_failed,
+                            )
 
                     except Exception as e:
                         logger.error(f"Failed to scrape article {thumbnail.url}: {e}")
@@ -1036,6 +1059,10 @@ class NewspaperScraper:
                     f"Batch: {batch_new_count} new, {len(batch_thumbnails) - batch_new_count} existing. "
                     f"Total: {len(new_thumbnails)} new thumbnails so far."
                 )
+
+                # Update progress after each batch to keep progress file fresh
+                if self.progress:
+                    self.progress.update(urls_found=len(all_thumbnails))
 
             if not stop_discovery:
                 logger.info(
@@ -1494,6 +1521,10 @@ class NewspaperScraper:
             # Add to results
             all_thumbnails.extend(batch_thumbnails)
             previous_batch_data = batch_data
+
+            # Update progress after each batch to keep progress file fresh
+            if self.progress:
+                self.progress.update(urls_found=len(all_thumbnails))
 
         logger.info(f"Total thumbnails discovered: {len(all_thumbnails)}")
         return all_thumbnails

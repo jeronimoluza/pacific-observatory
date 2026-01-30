@@ -6,6 +6,8 @@ Handles writing articles to CSV files in both batch and streaming modes.
 
 import csv
 import logging
+import shutil
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
@@ -13,6 +15,19 @@ from typing import List, Optional
 from ...models import ArticleRecord
 
 logger = logging.getLogger(__name__)
+
+# Canonical column order for all CSV files - single source of truth
+CSV_COLUMNS = [
+    "url",
+    "title",
+    "date",
+    "body",
+    "tags",
+    "source",
+    "country",
+    "language",
+    "_scraped_at",
+]
 
 
 class CSVWriter:
@@ -52,30 +67,17 @@ class CSVWriter:
         filename = "news.csv"
         file_path = newspaper_dir / filename
 
-        # Define CSV headers
-        headers = [
-            "url",
-            "title",
-            "date",
-            "body",
-            "tags",
-            "source",
-            "country",
-            "language",
-            "_scraped_at",
-        ]
-
         # Write headers to file with explicit flush
         try:
             with open(file_path, "w", newline="", encoding="utf-8") as f:
-                writer = csv.DictWriter(f, fieldnames=headers)
+                writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
                 writer.writeheader()
                 f.flush()  # Ensure headers are written to disk
 
             # Verify headers were written
             with open(file_path, "r", encoding="utf-8") as f:
                 first_line = f.readline().strip()
-                expected_header = ",".join(headers)
+                expected_header = ",".join(CSV_COLUMNS)
                 if first_line != expected_header:
                     logger.error(
                         f"Header mismatch! Expected: {expected_header}, Got: {first_line}"
@@ -118,25 +120,17 @@ class CSVWriter:
         filename = "news.csv"
         file_path = newspaper_dir / filename
 
-        # Define CSV headers in the correct order
-        headers = [
-            "url",
-            "title",
-            "date",
-            "body",
-            "tags",
-            "source",
-            "country",
-            "language",
-            "_scraped_at",
-        ]
-
-        # Ensure file exists with headers
+        # Ensure file exists with correct headers
         file_exists = file_path.exists()
-        if not file_exists:
+        if file_exists:
+            # Check existing headers and migrate if needed
+            existing_headers = self._read_csv_header(file_path)
+            if existing_headers != CSV_COLUMNS:
+                self._migrate_csv_headers(file_path, existing_headers, CSV_COLUMNS)
+        else:
             # File doesn't exist, create it with headers
             with open(file_path, "w", newline="", encoding="utf-8") as f:
-                writer = csv.DictWriter(f, fieldnames=headers)
+                writer = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
                 writer.writeheader()
                 f.flush()
             logger.info(f"Created CSV file with headers: {file_path}")
@@ -154,15 +148,15 @@ class CSVWriter:
         # Add timestamp
         article_dict["_scraped_at"] = timestamp.isoformat()
 
-        # Build row with only the fields in headers, in the correct order
+        # Build row with only the fields in CSV_COLUMNS, in the correct order
         row = {}
-        for header in headers:
-            row[header] = article_dict.get(header, "")
+        for col in CSV_COLUMNS:
+            row[col] = article_dict.get(col, "")
 
         # Append to CSV file
         with open(file_path, "a", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(
-                f, fieldnames=headers, restval="", extrasaction="ignore"
+                f, fieldnames=CSV_COLUMNS, restval="", extrasaction="ignore"
             )
             writer.writerow(row)
 
@@ -209,8 +203,13 @@ class CSVWriter:
             article_dict["url"] = str(article_dict["url"])
             data.append(article_dict)
 
-        # Create DataFrame and save to CSV
+        # Create DataFrame and save to CSV with explicit column order
         df = pd.DataFrame(data)
+        # Ensure all columns exist and are in canonical order
+        for col in CSV_COLUMNS:
+            if col not in df.columns:
+                df[col] = ""
+        df = df[CSV_COLUMNS]
         df.to_csv(file_path, index=None, encoding="utf-8")
 
         logger.info(f"Saved {len(articles)} articles to {file_path}")
@@ -311,3 +310,71 @@ class CSVWriter:
         except Exception as e:
             logger.error(f"Failed to get existing article URLs from {file_path}: {e}")
             return set()
+
+    def _read_csv_header(self, file_path: Path) -> List[str]:
+        """
+        Read the header row of an existing CSV file.
+
+        Args:
+            file_path: Path to the CSV file
+
+        Returns:
+            List of column names from the header row
+        """
+        with open(file_path, "r", encoding="utf-8") as f:
+            reader = csv.reader(f)
+            return next(reader)
+
+    def _migrate_csv_headers(
+        self, file_path: Path, old_headers: List[str], new_headers: List[str]
+    ) -> None:
+        """
+        Migrate CSV to have new header columns.
+
+        Adds missing columns with empty values. This handles the case where
+        an existing CSV has fewer columns than the current schema.
+
+        Args:
+            file_path: Path to the CSV file
+            old_headers: Current headers in the file
+            new_headers: Target headers (canonical column order)
+        """
+        logger.info(
+            f"Migrating CSV headers in {file_path}: {old_headers} -> {new_headers}"
+        )
+
+        # Create a mapping from old column positions to new positions
+        old_to_new_index = {}
+        for i, old_col in enumerate(old_headers):
+            if old_col in new_headers:
+                old_to_new_index[i] = new_headers.index(old_col)
+
+        # Read all rows and rewrite with new headers
+        rows = []
+        with open(file_path, "r", encoding="utf-8", newline="") as f:
+            reader = csv.reader(f)
+            next(reader)  # Skip old header
+            for row in reader:
+                # Create new row with empty values for missing columns
+                new_row = [""] * len(new_headers)
+                for old_idx, new_idx in old_to_new_index.items():
+                    if old_idx < len(row):
+                        new_row[new_idx] = row[old_idx]
+                rows.append(new_row)
+
+        # Write to temp file first, then atomically replace
+        temp_fd, temp_path = tempfile.mkstemp(suffix=".csv")
+        try:
+            with open(temp_fd, "w", encoding="utf-8", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(new_headers)
+                writer.writerows(rows)
+
+            # Atomically replace original file
+            shutil.move(temp_path, file_path)
+            logger.info(f"Successfully migrated {len(rows)} rows in {file_path}")
+        except Exception as e:
+            # Clean up temp file on error
+            if Path(temp_path).exists():
+                Path(temp_path).unlink()
+            raise e

@@ -165,8 +165,46 @@ def read_progress(
         logger.warning(f"Failed to decode progress JSON for {newspaper}: {e}")
         return None
     except OSError as e:
-        logger.warning(f"Failed to read progress file for {newspaper}: {e}")
+        # Only log if it's not a "file not found" error (which is expected during startup)
+        if e.errno != 2:  # errno 2 is "No such file or directory"
+            logger.warning(f"Failed to read progress file for {newspaper}: {e}")
         return None
+
+
+def clear_progress_file(
+    country: str,
+    newspaper: str,
+    base_path: Optional[str] = None,
+) -> bool:
+    """
+    Clear (delete) the progress file for a scraper.
+
+    This should be called before starting a new scraper subprocess to prevent
+    stale progress files from causing immediate timeout detection.
+
+    Args:
+        country: Country code (e.g., "fiji")
+        newspaper: Newspaper name (e.g., "fiji_sun")
+        base_path: Base directory for progress files. Defaults to "logs/text"
+
+    Returns:
+        True if file was deleted, False if it didn't exist or deletion failed.
+    """
+    base = Path(base_path) if base_path else Path("logs/text")
+    sanitized_country = _sanitize_name(country)
+    sanitized_newspaper = _sanitize_name(newspaper)
+    progress_path = base / sanitized_country / sanitized_newspaper / "progress.json"
+
+    if not progress_path.exists():
+        return False
+
+    try:
+        progress_path.unlink()
+        logger.debug(f"Cleared stale progress file for {newspaper}")
+        return True
+    except OSError as e:
+        logger.warning(f"Failed to clear progress file for {newspaper}: {e}")
+        return False
 
 
 def is_scraper_stale(

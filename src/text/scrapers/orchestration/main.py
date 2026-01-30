@@ -167,6 +167,13 @@ Examples:
         help="Stale timeout in seconds - kill scraper if no activity for this long (default: 120)",
     )
 
+    parser.add_argument(
+        "--exclude",
+        type=str,
+        default="",
+        help="Comma-separated list of newspaper names to exclude (e.g., --exclude detik,kosmo)",
+    )
+
     # Scraping options
     parser.add_argument(
         "--storage-dir", type=Path, help="Custom storage directory for results"
@@ -245,6 +252,15 @@ Examples:
 
     # Handle run-all command
     if args.run_all:
+        # Parse exclude list
+        exclude_list = []
+        if args.exclude:
+            exclude_list = [
+                name.strip().lower() for name in args.exclude.split(",") if name.strip()
+            ]
+            if exclude_list:
+                print(f"⏭️  Excluding scrapers: {', '.join(exclude_list)}")
+
         results = run_all_scrapers(
             configs_dir=get_default_configs_dir(),
             project_root=project_root,
@@ -252,6 +268,7 @@ Examples:
             dry_run=args.dry_run,
             mode=mode,
             timeout_per_scraper=args.timeout,
+            exclude=exclude_list,
         )
         # Exit with failure if any scraper failed or timed out
         failed_count = sum(

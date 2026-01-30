@@ -36,6 +36,19 @@ from text.scrapers.observability import (
 )
 
 
+def _sanitize_name(name: str) -> str:
+    """
+    Sanitize a name for use in filesystem paths.
+
+    Matches CSVStorage._sanitize_name() to ensure consistency.
+    """
+    import re
+
+    # Replace spaces with underscores and remove special characters
+    sanitized = re.sub(r"[^\w\-_.]", "_", name.replace(" ", "_").lower())
+    return sanitized.strip("_")
+
+
 async def run_single_scraper(
     config_path: Path,
     storage_dir: Optional[Path] = None,
@@ -70,8 +83,8 @@ async def run_single_scraper(
                 config_data = yaml.safe_load(f)
 
             progress_reporter = ProgressReporter(
-                country=config_data.get("country", "unknown"),
-                newspaper=config_data.get("name", "unknown"),
+                country=_sanitize_name(config_data.get("country", "unknown")),
+                newspaper=_sanitize_name(config_data.get("name", "unknown")),
                 base_path=str(project_root / "logs" / "text"),
             )
             progress_reporter.update(phase="starting")
@@ -174,9 +187,9 @@ async def run_single_scraper(
             ),
         }
     finally:
-        # Clean up progress reporter if it was created
-        if progress_reporter:
-            progress_reporter.cleanup()
+        # NOTE: Do NOT call progress_reporter.cleanup() here!
+        # The progress file must remain for the parent process to read metrics.
+        # Progress files are small and will be overwritten on next run.
 
         # Clean up file handler if it was created
         if file_handler:

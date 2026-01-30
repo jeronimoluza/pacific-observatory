@@ -45,7 +45,7 @@ selectors:
     url: "filler"
     date: filler
   article:
-    body: "filler"
+    body: "main div.payload-richtext"
     tags: "filler"
 
 # Data cleaning configuration
