@@ -277,7 +277,7 @@ def run_scraper_with_timeout(
 
         elapsed = time.time() - start_time
 
-        # Safety net: kill if exceeded max runtime (30 minutes)
+        # Safety net: kill if exceeded max runtime (2 hours)
         max_runtime_seconds = 7200
         if elapsed >= max_runtime_seconds:
             return _kill_process_with_timeout(
