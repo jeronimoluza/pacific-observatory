@@ -9,7 +9,7 @@ language: lao
 listing:
   type: "pagination"
   url_template: "https://pasaxon.org.la/khaosetthakit.html?page={num}"
-  start_page: 1
+  start_page: 0
   batch_size: 10
 
 # Client configuration
