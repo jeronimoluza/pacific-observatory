@@ -14,13 +14,14 @@ from text.scrapers.orchestration.run_multiple import run_scraper_with_timeout
 class TestRunScraperWithTimeout:
     """Tests for run_scraper_with_timeout function."""
 
+    @patch("text.scrapers.orchestration.run_multiple.is_scraper_stale")
     @patch("text.scrapers.orchestration.run_multiple.run_scraper_subprocess")
     @patch("time.time")
     @patch("time.sleep")
     def test_subprocess_timeout_kills_hanging_scraper(
-        self, mock_sleep, mock_time, mock_run_subprocess
+        self, mock_sleep, mock_time, mock_run_subprocess, mock_is_stale
     ):
-        """Test that a hanging process gets killed after timeout."""
+        """Test that a hanging process gets killed after timeout (stale detection)."""
         # Mock a hanging process that never completes
         mock_process = Mock()
         mock_process.poll.return_value = None  # Always returns None (still running)
@@ -30,14 +31,16 @@ class TestRunScraperWithTimeout:
 
         mock_run_subprocess.return_value = mock_process
 
+        # Mock is_scraper_stale to return True (scraper is stale/hung)
+        mock_is_stale.return_value = True
+
         # Mock time.time() to simulate timeout
-        # Start at 0, then jump past timeout threshold
-        # Need: start_time, elapsed check, final duration calc
+        # Start at 0, then elapsed check, then final duration calc in _kill_process_with_timeout
         mock_time.side_effect = [
-            0,
-            601,
-            602,
-        ]  # Start, elapsed check (timeout!), final duration
+            0,  # Start time
+            100,  # Elapsed check (< 1800, so doesn't hit max runtime)
+            601,  # Final duration calc in _kill_process_with_timeout
+        ]
 
         # Test config
         config = {
@@ -64,6 +67,9 @@ class TestRunScraperWithTimeout:
             config, log_dir, project_root, False, "default"
         )
 
+        # Verify is_scraper_stale was called
+        mock_is_stale.assert_called_once()
+
         # Verify log handle was closed before killing
         mock_process.log_handle.close.assert_called_once()
 
@@ -75,18 +81,19 @@ class TestRunScraperWithTimeout:
         assert result["newspaper"] == "sibc"
         assert result["country"] == "solomon_islands"
         assert "duration_seconds" in result
-        assert result["duration_seconds"] >= timeout_seconds
+        assert "stale" in result["error_msg"]
 
+    @patch("text.scrapers.orchestration.run_multiple.is_scraper_stale")
     @patch("text.scrapers.orchestration.run_multiple.run_scraper_subprocess")
     @patch("time.time")
     @patch("time.sleep")
     def test_subprocess_success_within_timeout(
-        self, mock_sleep, mock_time, mock_run_subprocess
+        self, mock_sleep, mock_time, mock_run_subprocess, mock_is_stale
     ):
         """Test that a successful process returns success before timeout."""
         # Mock a process that completes successfully
         mock_process = Mock()
-        # First two polls return None (running), third returns 0 (success)
+        # First poll returns None (running), second returns 0 (success)
         mock_process.poll.side_effect = [None, 0]
         mock_process.country = "solomon_islands"
         mock_process.newspaper = "sibc"
@@ -95,8 +102,13 @@ class TestRunScraperWithTimeout:
 
         mock_run_subprocess.return_value = mock_process
 
+        # Mock is_scraper_stale to return False (scraper is active)
+        mock_is_stale.return_value = False
+
         # Mock time.time() to simulate successful completion
-        mock_time.side_effect = [0, 1, 2]  # Start, first poll, second poll (completed)
+        # First poll: elapsed check, is_stale called, sleep
+        # Second poll: process done, duration calc
+        mock_time.side_effect = [0, 1, 2]  # Start, elapsed check, final duration
 
         # Test config
         config = {

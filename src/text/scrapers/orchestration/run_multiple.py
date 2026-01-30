@@ -13,7 +13,10 @@ import json
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional, Any
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
+
+from rich.live import Live
+from rich.text import Text
 
 # Import discovery functions from dedicated module
 from text.scrapers.orchestration.discovery import discover_configs, group_by_country
@@ -24,6 +27,9 @@ from text.scrapers.observability import (
     print_multi_run_summary,
     save_multi_run_manifest,
     is_scraper_stale,
+    read_progress,
+    format_duration,
+    detect_quality_issues,
 )
 
 logger = logging.getLogger(__name__)
@@ -534,6 +540,112 @@ def _sanitize_name(name: str) -> str:
     return sanitized.strip("_")
 
 
+def format_live_status(
+    country: str, newspaper: str, project_root: Path, start_time: float
+) -> str:
+    """
+    Format live status line for a running scraper.
+
+    Returns string like: "fiji/fiji_sun     [Discovering]  12 urls found (0m 34s)"
+    """
+    progress = read_progress(country, newspaper, str(project_root / "logs" / "text"))
+    elapsed = time.time() - start_time
+    elapsed_str = format_duration(elapsed)
+
+    # Format newspaper name with padding
+    name = f"{country}/{newspaper}"
+    name_padded = f"{name:<30}"
+
+    if progress is None:
+        return f"   {name_padded} [Starting]     (initializing...)"
+
+    phase = progress.get("phase", "unknown")
+
+    if phase == "discovering":
+        urls = progress.get("urls_found", 0)
+        return f"   {name_padded} [Discovering]  {urls} urls found ({elapsed_str})"
+    elif phase == "scraping":
+        articles = progress.get("articles_scraped", 0)
+        return f"   {name_padded} [Scraping]     {articles} articles ({elapsed_str})"
+    elif phase == "completed":
+        return f"   {name_padded} [Completed]    ({elapsed_str})"
+    elif phase == "failed":
+        return f"   {name_padded} [Failed]       ({elapsed_str})"
+    else:
+        return f"   {name_padded} [{phase}]       ({elapsed_str})"
+
+
+def format_completion_status(result: Dict[str, Any], project_root: Path) -> str:
+    """
+    Format completion status for a finished scraper.
+
+    Returns multi-line string like:
+       ✓ fiji/fiji_sun - Completed
+           14 new articles, 12 new urls, 0 quality warnings
+           Time: 2m 34s
+    """
+    country = result["country"]
+    newspaper = result["newspaper"]
+    status = result["status"]
+    duration = result.get("duration_seconds", 0)
+
+    name = f"{country}/{newspaper}"
+    duration_str = format_duration(duration)
+
+    # Get final counts from progress file
+    progress = read_progress(country, newspaper, str(project_root / "logs" / "text"))
+
+    articles = 0
+    urls = 0
+    if progress:
+        articles = progress.get("articles_scraped", 0)
+        urls = progress.get("urls_found", 0)
+
+    # Get quality warnings count from manifest
+    quality_warnings = 0
+    manifest_dir = project_root / "logs" / "text" / country / newspaper / "individual"
+    if manifest_dir.exists():
+        manifest_files = list(manifest_dir.glob("*.json"))
+        if manifest_files:
+            latest = max(manifest_files, key=lambda p: p.stat().st_mtime)
+            try:
+                manifest_data = json.loads(latest.read_text())
+                metrics = ScraperMetrics.from_dict(manifest_data)
+                quality_warnings = len(detect_quality_issues(metrics))
+            except Exception:
+                pass
+
+    # Format based on status
+    if status == "success":
+        icon = "✓"
+        status_text = "Completed"
+    elif status == "warning":
+        icon = "⚠"
+        status_text = "Completed with warnings"
+    elif status == "timeout":
+        icon = "⏱"
+        status_text = "Timeout"
+    else:
+        icon = "✗"
+        status_text = "Failed"
+
+    lines = [f"   {icon} {name} - {status_text}"]
+
+    if status in ("success", "warning"):
+        warning_text = (
+            f"{quality_warnings} quality warning{'s' if quality_warnings != 1 else ''}"
+        )
+        lines.append(f"       {articles} new articles, {urls} new urls, {warning_text}")
+    elif status == "timeout":
+        lines.append(f"       {result.get('error_msg', 'No activity detected')}")
+    elif status == "failed":
+        lines.append(f"       {result.get('error_msg', 'Unknown error')}")
+
+    lines.append(f"       Time: {duration_str}")
+
+    return "\n".join(lines)
+
+
 def collect_run_manifests(
     newspaper_configs: List[Dict[str, str]],
 ) -> List[ScraperMetrics]:
@@ -577,6 +689,104 @@ def collect_run_manifests(
             logger.error(f"Failed to load manifest {latest_manifest}: {e}")
 
     return manifests
+
+
+def run_country_parallel_with_display(
+    configs: List[Dict[str, str]],
+    log_dir: Path,
+    project_root: Path,
+    timeout_seconds: int,
+    mode: str,
+) -> List[Dict[str, Any]]:
+    """
+    Run scrapers for a country in parallel with live status display.
+    """
+    results = []
+    running = {}  # newspaper -> (future, start_time, config)
+    completed_output = []  # Completion messages to show
+
+    with ThreadPoolExecutor(max_workers=min(len(configs), 10)) as executor:
+        # Submit all tasks
+        for config in configs:
+            future = executor.submit(
+                run_scraper_with_timeout,
+                config,
+                log_dir,
+                project_root,
+                timeout_seconds,
+                False,
+                mode,
+            )
+            running[config["newspaper"]] = (future, time.time(), config)
+
+        # Monitor with live display
+        try:
+            with Live(refresh_per_second=2) as live:
+                while running:
+                    # Build display text
+                    lines = []
+
+                    # Show completed scrapers first
+                    for msg in completed_output:
+                        lines.append(msg)
+
+                    if completed_output and running:
+                        lines.append("")  # Separator
+
+                    # Show running scrapers
+                    for newspaper, (future, start_time, config) in list(
+                        running.items()
+                    ):
+                        if future.done():
+                            # Scraper finished
+                            try:
+                                result = future.result()
+                                results.append(result)
+                                completed_output.append(
+                                    format_completion_status(result, project_root)
+                                )
+                            except Exception as e:
+                                result = {
+                                    "newspaper": config["newspaper"],
+                                    "country": config["country"],
+                                    "status": "failed",
+                                    "duration_seconds": time.time() - start_time,
+                                    "error_msg": str(e),
+                                }
+                                results.append(result)
+                                completed_output.append(
+                                    format_completion_status(result, project_root)
+                                )
+                            del running[newspaper]
+                        else:
+                            # Still running - show live status
+                            country = _sanitize_name(config["country"])
+                            newspaper_san = _sanitize_name(config["newspaper"])
+                            status_line = format_live_status(
+                                country, newspaper_san, project_root, start_time
+                            )
+                            lines.append(status_line)
+
+                    live.update(Text("\n".join(lines)))
+                    time.sleep(0.5)
+
+        except Exception:
+            # Fallback if Rich fails
+            for newspaper, (future, start_time, config) in running.items():
+                try:
+                    result = future.result(timeout=timeout_seconds)
+                    results.append(result)
+                except Exception as e:
+                    results.append(
+                        {
+                            "newspaper": config["newspaper"],
+                            "country": config["country"],
+                            "status": "failed",
+                            "error_msg": str(e),
+                        }
+                    )
+
+    return results
 
 
 def run_all_scrapers(
@@ -662,62 +872,19 @@ def run_all_scrapers(
                     )
                     all_results.append(result)
         else:
-            # Normal mode: run all newspapers in this country in parallel using ThreadPoolExecutor
+            # Parallel mode with live display
             if not dry_run:
                 print(
                     f"\n   🔄 Running {len(country_configs)} scraper(s) in {country} (timeout: {timeout_per_scraper}s)..."
                 )
 
-                # Use ThreadPoolExecutor to run scrapers in parallel
-                with ThreadPoolExecutor(
-                    max_workers=min(len(country_configs), 10)
-                ) as executor:
-                    # Submit all tasks
-                    future_to_config = {
-                        executor.submit(
-                            run_scraper_with_timeout,
-                            config,
-                            log_dir,
-                            project_root,
-                            timeout_per_scraper,
-                            dry_run,
-                            mode,
-                        ): config
-                        for config in country_configs
-                    }
-
-                    # Collect results as they complete
-                    country_results = []
-                    for future in as_completed(future_to_config):
-                        config = future_to_config[future]
-                        try:
-                            result = future.result()
-                            country_results.append(result)
-
-                            # Print status as each completes
-                            status_icon = {
-                                "success": "✅",
-                                "warning": "⚠️",
-                                "failed": "❌",
-                                "timeout": "⏱️",
-                            }.get(result["status"], "❓")
-                            print(
-                                f"   {status_icon} {config['country']}/{config['newspaper']} - {result['status']}"
-                            )
-                        except Exception as e:
-                            logger.exception(
-                                f"Error running {config['country']}/{config['newspaper']}: {e}"
-                            )
-                            country_results.append(
-                                {
-                                    "newspaper": config["newspaper"],
-                                    "country": config["country"],
-                                    "status": "failed",
-                                    "duration_seconds": 0,
-                                    "error_msg": str(e),
-                                }
-                            )
-
+                country_results = run_country_parallel_with_display(
+                    country_configs,
+                    log_dir,
+                    project_root,
+                    timeout_per_scraper,
+                    mode,
+                )
                 all_results.extend(country_results)
 
                 # Print country summary
@@ -734,7 +901,7 @@ def run_all_scrapers(
                     1 for r in country_results if r["status"] == "timeout"
                 )
                 print(
-                    f"   ✓ {country} complete: {success_count} success, {warning_count} warnings, {failed_count} failed, {timeout_count} timeout"
+                    f"\n   ✓ {country} complete: {success_count} success, {warning_count} warnings, {failed_count} failed, {timeout_count} timeout"
                 )
             else:
                 # Dry run mode - just print what would be executed
