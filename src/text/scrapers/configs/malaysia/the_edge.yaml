@@ -43,14 +43,13 @@ selectors:
     container: "filler"
     title: "filler"
     url: "filler"
-    date: "filler"
   article:
     body: "div.newsTextDataWrapInner p"  # Extract all paragraph text from article
-    tags: "filler"  # Tags come from API
+    date: "meta[property='article:published_time']::attr(content)"
 
 # Data cleaning configuration
 cleaning:
-  date: "handle_unix_timestamp_ms"
+  date: "handle_mixed_dates"
 
 # Test/debug options
 max_pages: null  # Limit to 100 API requests (1000 articles)
