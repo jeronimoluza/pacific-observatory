@@ -1,0 +1,64 @@
+# The Edge Configuration
+# API-based pagination strategy
+
+name: "The Edge"
+country: "malaysia"
+base_url: "https://theedgemalaysia.com"
+
+# Listing discovery configuration using API strategy
+listing:
+  type: "api"
+  url_template: "https://theedgemalaysia.com/api/loadMoreCategories?offset={offset}&categories=malaysia"
+  pagination_type: "offset"
+  page_start: 0
+  page_step: 10
+  url_construction_template: "https://theedgemalaysia.com/node/{id}"
+  json_paths:
+    collection: "results"  # Array of articles in the JSON response
+    id: "nid"  # Article ID (node ID) used to construct URL
+    title: "title"
+    date: "created"  # Unix timestamp in milliseconds
+    body: null  # Not available in API response, needs scraping from article page
+    tags: "category"  # Category field contains tags
+
+# Client configuration
+client: "http"
+concurrency: 10
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  Accept: "application/json,text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Accept-Language: "en-US,en;q=0.9"
+  Referer: "https://theedgemalaysia.com/categories/malaysia"
+  Cache-Control: "no-cache"
+  Pragma: "no-cache"
+
+# CSS selectors for data extraction (for article content)
+selectors:
+  thumbnail:
+    # Not used for API strategy - data comes from JSON
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "div.newsTextDataWrapInner p"  # Extract all paragraph text from article
+    date: "meta[property='article:published_time']::attr(content)"
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null  # Limit to 100 API requests (1000 articles)
+max_articles: null  # No article limit
+
+# Site-specific notes:
+# - Uses JSON API for listing discovery (offset-based pagination)
+# - API returns 10 articles per request (offset increments by 10)
+# - Article date is Unix timestamp in milliseconds (created field)
+# - Article body needs to be scraped from individual article pages
+# - Tags/categories come from the API response (category field)
+# - Total articles available shown in "total" field of API response

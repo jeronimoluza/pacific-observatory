@@ -33,7 +33,7 @@ selectors:
   article:
     body: ".grid-x.margin-bottom-1.article-content"
     tags: "#content_with_sidebar > div:nth-child(1) > div:nth-child(1) > a > div"
-    
+
 
 # Data cleaning configuration
 cleaning:

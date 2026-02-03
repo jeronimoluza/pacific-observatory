@@ -7,9 +7,12 @@ and instantiate the appropriate scraper objects.
 
 import yaml
 from pathlib import Path
-from typing import Dict, Any, Optional, Union, List
+from typing import Dict, Any, Optional, Union, List, TYPE_CHECKING
 import logging
-from .newspaper_scraper import NewspaperScraper
+
+if TYPE_CHECKING:
+    from .observability import ProgressReporter
+from .scraper import NewspaperScraper
 from .models import NewspaperConfig
 
 logger = logging.getLogger(__name__)
@@ -97,12 +100,16 @@ def create_scraper_from_config(config: Dict[str, Any]) -> NewspaperScraper:
     return scraper
 
 
-def create_scraper_from_file(config_path: Union[str, Path]) -> NewspaperScraper:
+def create_scraper_from_file(
+    config_path: Union[str, Path],
+    progress_reporter: Optional["ProgressReporter"] = None,
+) -> NewspaperScraper:
     """
     Create a NewspaperScraper instance from a YAML configuration file.
 
     Args:
         config_path: Path to the YAML configuration file
+        progress_reporter: Optional progress reporter for live status tracking
 
     Returns:
         NewspaperScraper instance
@@ -118,8 +125,14 @@ def create_scraper_from_file(config_path: Union[str, Path]) -> NewspaperScraper:
     # Add the config file path to the configuration for reference
     config["_config_path"] = str(Path(config_path).absolute())
 
-    # Create and return the scraper
-    return create_scraper_from_config(config)
+    # Validate the configuration first
+    validate_config(config)
+
+    # Create and return the scraper with progress reporter
+    scraper = NewspaperScraper(config, progress_reporter=progress_reporter)
+    logger.info(f"Created scraper for {scraper.name} ({scraper.country})")
+
+    return scraper
 
 
 def find_config_files(

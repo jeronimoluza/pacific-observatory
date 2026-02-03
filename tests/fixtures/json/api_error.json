@@ -1,0 +1,8 @@
+{
+  "status": "error",
+  "error": {
+    "code": 429,
+    "message": "Rate limit exceeded. Please try again later.",
+    "retry_after": 60
+  }
+}

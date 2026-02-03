@@ -1,0 +1,51 @@
+{
+  "status": "success",
+  "data": {
+    "articles": [
+      {
+        "id": 12345,
+        "title": "Major Economic Policy Changes Announced",
+        "slug": "major-economic-policy-changes-announced",
+        "url": "/news/2024/01/economic-policy-changes",
+        "author": "John Reporter",
+        "date": "2024-01-15T10:30:00Z",
+        "category": "Economy",
+        "excerpt": "The government has announced significant changes to economic policy...",
+        "thumbnail": "/images/economy-thumb.jpg",
+        "content": "The government has announced significant changes to economic policy that will affect trade and investment across the region..."
+      },
+      {
+        "id": 12344,
+        "title": "Pacific Climate Summit Yields New Agreements",
+        "slug": "pacific-climate-summit-yields-new-agreements",
+        "url": "/news/2024/01/climate-summit-results",
+        "author": "Mary Environmental",
+        "date": "2024-01-14T14:00:00Z",
+        "category": "Environment",
+        "excerpt": "Leaders from across the Pacific region have agreed on new climate measures...",
+        "thumbnail": "/images/climate-thumb.jpg",
+        "content": "Leaders from across the Pacific region have agreed on new climate measures during the annual summit..."
+      },
+      {
+        "id": 12343,
+        "title": "Trade Negotiations Enter Final Phase",
+        "slug": "trade-negotiations-enter-final-phase",
+        "url": "/news/2024/01/trade-negotiations",
+        "author": "Bob Business",
+        "date": "2024-01-13T09:00:00Z",
+        "category": "Trade",
+        "excerpt": "Regional trade negotiations are entering their final phase...",
+        "thumbnail": "/images/trade-thumb.jpg",
+        "content": "Regional trade negotiations are entering their final phase with optimism from all parties involved..."
+      }
+    ],
+    "pagination": {
+      "current_page": 1,
+      "total_pages": 10,
+      "total_articles": 150,
+      "per_page": 15,
+      "next_page": "/api/articles?page=2",
+      "prev_page": null
+    }
+  }
+}

@@ -1,29 +1,39 @@
 """
-Generic newspaper scraper driven by configuration.
+Slim newspaper scraper orchestrator.
 
-This module provides a NewspaperScraper class that can scrape any newspaper
-based on a configuration dictionary, using the appropriate client and strategy.
+This module provides the main NewspaperScraper class that orchestrates
+discovery and extraction operations through specialized orchestrators.
+
+This is Phase 1 of the refactoring - the orchestrators delegate back to
+the original methods for now. Full migration will happen in Phase 2.
 """
 
 import asyncio
 import logging
-from typing import List, Dict, Optional, Any
+from datetime import datetime
+from typing import List, Dict, Optional, Any, TYPE_CHECKING
 from urllib.parse import urlparse
+
+if TYPE_CHECKING:
+    from .observability import ProgressReporter
 import httpx
 from .client_http import AsyncHttpClient
 from .client_browser import BrowserClient
-from .listing_strategies import create_listing_strategy, ApiStrategy
+from .strategies import create_listing_strategy, ApiStrategy
 from .models import (
     ThumbnailRecord,
     ArticleRecord,
     NewspaperConfig,
 )
-from .pipelines.cleaning import apply_cleaning, get_cleaning_func, clean_url
+from .pipelines.cleaning import apply_cleaning
 from .pipelines.storage import CSVStorage
 from .parser import (
     extract_thumbnail_data_from_element,
     extract_article_data_from_soup,
 )
+from .discovery import DiscoveryOrchestrator
+from .extraction import ExtractionOrchestrator
+from .observability import ScraperMetrics
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +47,11 @@ class NewspaperScraper:
     other site-specific parameters.
     """
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(
+        self,
+        config: Dict[str, Any],
+        progress_reporter: Optional["ProgressReporter"] = None,
+    ):
         """
         Initialize the newspaper scraper with configuration.
 
@@ -52,6 +66,14 @@ class NewspaperScraper:
         self.country = self.config.country
         self.base_url = str(self.config.base_url)
         self.language = self.config.language or "en"
+
+        # Initialize metrics tracking
+        self.metrics = ScraperMetrics(
+            newspaper=self.name,
+            country=self.country,
+            mode="update",  # Will be set by run method
+            started_at=datetime.utcnow(),
+        )
 
         # Store limits from config
         self.max_pages = self.config.max_pages
@@ -83,6 +105,13 @@ class NewspaperScraper:
 
         # Initialize storage system
         self._storage = CSVStorage()
+
+        # Store progress reporter (can be None for single-scraper runs)
+        self.progress = progress_reporter
+
+        # Initialize orchestrators
+        self.discovery_orchestrator = DiscoveryOrchestrator(self)
+        self.extraction_orchestrator = ExtractionOrchestrator(self)
 
     def _get_http_client(self) -> AsyncHttpClient:
         """Get or create HTTP client."""
@@ -131,7 +160,93 @@ class NewspaperScraper:
 
         return self._browser_client
 
-    async def discover_and_scrape_thumbnails(self) -> List[ThumbnailRecord]:
+    def _track_extraction(self, data: Dict[str, Any], stage: str) -> None:
+        """
+        Track field-level extraction quality in metrics.
+
+        For each field in the extracted data, records whether it was
+        successfully populated or empty/missing.
+
+        Args:
+            data: Dictionary of extracted fields
+            stage: Extraction stage ("thumbnail" or "article")
+        """
+        for field_name, value in data.items():
+            # Get or create field metric
+            field_metric = self.metrics.get_field_metric(field_name)
+            field_metric.total_extracted += 1
+
+            # Check if value is empty
+            if value is None or value == "" or value == []:
+                field_metric.empty += 1
+                logger.warning(
+                    f"Empty {field_name} in {stage}: {data.get('url', 'unknown')}"
+                )
+            else:
+                field_metric.successful += 1
+
+    def _process_api_thumbnail(
+        self, thumb_data: Dict[str, Any], existing_urls: Optional[set] = None
+    ) -> Optional[ThumbnailRecord]:
+        """
+        Process a single API thumbnail: clean, validate, track metrics.
+
+        This is the single point of truth for API thumbnail processing.
+        Used by all scrape modes (UPDATE, RESUME, FULL).
+
+        Args:
+            thumb_data: Raw thumbnail data from API
+            existing_urls: Set of URLs already scraped (optional)
+
+        Returns:
+            ThumbnailRecord or None if filtered/invalid
+        """
+        from pydantic import ValidationError
+        from .pipelines.cleaning import apply_cleaning, get_cleaning_func
+        from .pipelines.cleaning.common import clean_url
+
+        # Apply record filter if configured
+        record_filter_func_name = (
+            self.config.cleaning.get("record_filter") if self.config.cleaning else None
+        )
+        if record_filter_func_name:
+            record_filter_func = get_cleaning_func(record_filter_func_name)
+            if record_filter_func and not record_filter_func(thumb_data):
+                return None
+
+        # Clean URL - ensure it's absolute
+        if thumb_data.get("url"):
+            thumb_data["url"] = clean_url(thumb_data["url"], self.base_url)
+        elif "url" not in thumb_data or not thumb_data["url"]:
+            # URL construction from template if needed
+            url_template = self.config.listing.get("url_construction_template")
+            if url_template:
+                thumb_data["url"] = url_template.format(**thumb_data)
+
+        # Apply cleaning - CRITICAL STEP that was missing in UPDATE mode
+        cleaning_config = self.config.cleaning or {}
+        if cleaning_config:
+            thumb_data = apply_cleaning(thumb_data, cleaning_config, self.base_url)
+
+        # Track metrics BEFORE creating record
+        self._track_extraction(thumb_data, stage="thumbnail")
+
+        # Create ThumbnailRecord
+        try:
+            thumbnail = ThumbnailRecord(**thumb_data)
+            return thumbnail
+        except ValidationError as e:
+            self.metrics.articles_failed += 1
+            logger.error(f"Invalid thumbnail data: {e}")
+            logger.debug(f"Data: {thumb_data}")
+            return None
+
+    # ==========================================================================
+    # Original methods (prefixed with _original_ for Phase 1)
+    # These will be migrated to orchestrators in Phase 2
+    # ==========================================================================
+
+    async def _original_discover_and_scrape_thumbnails(self) -> List[ThumbnailRecord]:
         """
         Discover listing pages and scrape thumbnails, with smart caching and retry logic.
 
@@ -142,57 +257,30 @@ class NewspaperScraper:
         thumbnails = []
         thumbnail_selector = self.thumbnail_selectors.container
 
-        # Get the record filter function if it's configured
-        record_filter_func_name = self.config.cleaning.get("record_filter")
-        record_filter_func = (
-            get_cleaning_func(record_filter_func_name)
-            if record_filter_func_name
-            else None
-        )
-
         async for result_batch in self.listing_strategy.discover_and_scrape(
             client, self.base_url, thumbnail_selector
         ):
             # Handle API strategy's direct return of dicts
             if isinstance(self.listing_strategy, ApiStrategy):
                 for thumb_data in result_batch:
-                    try:
-                        # Apply record filter if it exists
-                        if record_filter_func and not record_filter_func(thumb_data):
-                            continue
+                    # Use unified processing method
+                    thumbnail = self._process_api_thumbnail(thumb_data)
 
-                        # Handle URL construction from API data (e.g., from an 'id' field)
-                        # Ensure URL is absolute before creating the record
-                        if thumb_data.get("url"):
-                            thumb_data["url"] = clean_url(
-                                thumb_data["url"], self.base_url
-                            )
-                        # Handle URL construction from API data if URL is still missing
-                        elif "url" not in thumb_data or not thumb_data["url"]:
-                            url_template = self.config.listing.get(
-                                "url_construction_template"
-                            )
-                            if url_template:
-                                thumb_data["url"] = url_template.format(**thumb_data)
+                    if thumbnail:
+                        thumbnails.append(thumbnail)
 
-                        # Optionally build ArticleRecord directly from API data if 'body' exists
+                        # Handle prefetched articles
                         if thumb_data.get("body"):
                             article_dict = {
-                                "url": thumb_data["url"],
-                                "title": thumb_data.get("title", ""),
-                                "date": thumb_data.get("date", ""),
+                                "url": str(thumbnail.url),
+                                "title": thumbnail.title,
+                                "date": thumbnail.date or "",
                                 "body": thumb_data.get("body", ""),
                                 "tags": thumb_data.get("tags", []),
                                 "source": self.name,
                                 "country": self.country,
                                 "language": self.language,
                             }
-                            # Apply cleaning if configured
-                            cleaning_config = self.config.cleaning or {}
-                            if cleaning_config:
-                                article_dict = apply_cleaning(
-                                    article_dict, cleaning_config, self.base_url
-                                )
                             try:
                                 article = ArticleRecord(**article_dict)
                                 self.prefetched_articles.append(article)
@@ -202,14 +290,12 @@ class NewspaperScraper:
                                 )
                                 logger.debug(f"Article data: {article_dict}")
 
-                        thumbnail = ThumbnailRecord(**thumb_data)
-                        thumbnails.append(thumbnail)
-                    except Exception as e:
-                        logger.error(
-                            f"Failed to create ThumbnailRecord from API data: {e}"
-                        )
-                        logger.error(f"Data: {thumb_data}")
-                logger.info(f"Processed API batch: {len(result_batch)} thumbnails")
+                logger.info(f"Processed API batch: {len(result_batch)} items")
+
+                # Update progress after each API batch to keep progress file fresh
+                if self.progress:
+                    self.progress.update(urls_found=len(thumbnails))
+
                 continue
 
             # Existing logic for HTML-based strategies
@@ -249,6 +335,10 @@ class NewspaperScraper:
                 f"Processed batch: {len(result_batch)} pages, {len(thumbnails)} total thumbnails"
             )
 
+            # Update progress after each batch to keep progress file fresh
+            if self.progress:
+                self.progress.update(urls_found=len(thumbnails))
+
         logger.info(f"Total thumbnails discovered and scraped: {len(thumbnails)}")
 
         # Save thumbnails to JSONL file
@@ -260,7 +350,7 @@ class NewspaperScraper:
 
         return thumbnails
 
-    async def discover_listing_urls(self) -> List[str]:
+    async def _original_discover_listing_urls(self) -> List[str]:
         """
         Discover listing page URLs using the configured strategy.
 
@@ -287,7 +377,7 @@ class NewspaperScraper:
         logger.info(f"Total listing URLs discovered: {len(all_urls)}")
         return all_urls
 
-    async def scrape_thumbnails_with_retry(
+    async def _original_scrape_thumbnails_with_retry(
         self, listing_urls: List[str]
     ) -> List[ThumbnailRecord]:
         """
@@ -499,6 +589,22 @@ class NewspaperScraper:
         self.scraped_thumbnails = thumbnails
         return thumbnails
 
+    async def discover_and_scrape_thumbnails(self) -> List[ThumbnailRecord]:
+        """Public method delegating to discovery orchestrator."""
+        return await self.discovery_orchestrator.discover_and_scrape_thumbnails()
+
+    async def discover_listing_urls(self) -> List[str]:
+        """Public method delegating to discovery orchestrator."""
+        return await self.discovery_orchestrator.discover_listing_urls()
+
+    async def scrape_thumbnails_with_retry(
+        self, listing_urls: List[str]
+    ) -> List[ThumbnailRecord]:
+        """Public method delegating to discovery orchestrator."""
+        return await self.discovery_orchestrator.scrape_thumbnails_with_retry(
+            listing_urls
+        )
+
     async def scrape_thumbnails(self, listing_urls: List[str]) -> List[ThumbnailRecord]:
         """
         Scrape thumbnail data from listing pages (legacy method without retry).
@@ -512,7 +618,7 @@ class NewspaperScraper:
         # Delegate to the retry version for consistency
         return await self.scrape_thumbnails_with_retry(listing_urls)
 
-    async def scrape_articles(
+    async def _original_scrape_articles(
         self, thumbnails: List[ThumbnailRecord]
     ) -> Dict[str, Any]:
         """
@@ -558,6 +664,12 @@ class NewspaperScraper:
                                 stage="article_content",
                             )
                             articles_failed += 1
+                            # Update progress periodically (every 10 articles or on failure)
+                            if self.progress and (i + 1) % 10 == 0:
+                                self.progress.update(
+                                    articles_scraped=articles_scraped,
+                                    articles_failed=articles_failed,
+                                )
                             continue
 
                         # Parse the HTML content
@@ -601,6 +713,14 @@ class NewspaperScraper:
                         self._storage.append_article(article, self.country, self.name)
                         articles_scraped += 1
 
+                        # Update progress periodically (every 10 articles)
+                        # This keeps the progress file fresh and prevents stale detection
+                        if self.progress and (i + 1) % 10 == 0:
+                            self.progress.update(
+                                articles_scraped=articles_scraped,
+                                articles_failed=articles_failed,
+                            )
+
                     except Exception as e:
                         logger.error(f"Failed to scrape article {thumbnail.url}: {e}")
                         articles_failed += 1
@@ -621,6 +741,12 @@ class NewspaperScraper:
             "total_attempted": len(thumbnails),
         }
 
+    async def scrape_articles(
+        self, thumbnails: List[ThumbnailRecord]
+    ) -> Dict[str, Any]:
+        """Public method delegating to extraction orchestrator."""
+        return await self.extraction_orchestrator.scrape_articles(thumbnails)
+
     async def run_full_scrape(self) -> Dict[str, Any]:
         """
         Run a complete scraping operation with streaming CSV writes.
@@ -631,6 +757,11 @@ class NewspaperScraper:
             Dictionary with scraping results and statistics
         """
         logger.info(f"Starting full scrape for {self.name} ({self.country})")
+        self.metrics.mode = "full_scrape"
+
+        # Update progress: discovering phase
+        if self.progress:
+            self.progress.update(phase="discovering")
 
         try:
             # Initialize CSV file with headers before scraping
@@ -648,6 +779,13 @@ class NewspaperScraper:
                     f"Truncating thumbnails from {len(thumbnails)} to {self.max_articles} based on max_articles config"
                 )
                 thumbnails = thumbnails[: self.max_articles]
+
+            # Update metrics for discovered URLs
+            self.metrics.urls_discovered = len(thumbnails)
+
+            # Update progress: scraping phase
+            if self.progress:
+                self.progress.update(phase="scraping", urls_found=len(thumbnails))
 
             # Step 3: Build articles with streaming CSV writes
             articles_stats = {}
@@ -745,6 +883,18 @@ class NewspaperScraper:
                 logger.error(f"Failed to save metadata: {e}")
                 raise
 
+            # Update metrics
+            self.metrics.articles_scraped = articles_stats.get("articles_scraped", 0)
+            self.metrics.articles_failed = articles_stats.get("articles_failed", 0)
+
+            # Update progress: completed phase
+            if self.progress:
+                self.progress.update(
+                    phase="completed",
+                    articles_scraped=articles_stats.get("articles_scraped", 0),
+                    articles_failed=articles_stats.get("articles_failed", 0),
+                )
+
             logger.info(
                 f"Scraping completed for {self.name}: {articles_stats.get('articles_scraped', 0)} articles scraped"
             )
@@ -752,6 +902,9 @@ class NewspaperScraper:
 
         except Exception as e:
             logger.error(f"Scraping failed for {self.name}: {e}")
+            # Update progress: failed phase
+            if self.progress:
+                self.progress.update(phase="failed")
             error_results = {
                 "success": False,
                 "newspaper": self.name,
@@ -798,14 +951,6 @@ class NewspaperScraper:
             skipped_count = 0
             stop_discovery = False
 
-            # Get the record filter function if it's configured
-            record_filter_func_name = self.config.cleaning.get("record_filter")
-            record_filter_func = (
-                get_cleaning_func(record_filter_func_name)
-                if record_filter_func_name
-                else None
-            )
-
             async for result_batch in self.listing_strategy.discover_and_scrape(
                 client, self.base_url, thumbnail_selector
             ):
@@ -815,44 +960,31 @@ class NewspaperScraper:
                 # Handle API strategy's direct return of dicts
                 if isinstance(self.listing_strategy, ApiStrategy):
                     for thumb_data in result_batch:
-                        try:
-                            # Apply record filter if it exists
-                            if record_filter_func and not record_filter_func(
-                                thumb_data
-                            ):
-                                continue
+                        # Use unified processing method
+                        thumbnail = self._process_api_thumbnail(
+                            thumb_data, existing_urls
+                        )
 
-                            # Handle URL construction from API data
-                            if thumb_data.get("url"):
-                                thumb_data["url"] = clean_url(
-                                    thumb_data["url"], self.base_url
-                                )
-                            elif "url" not in thumb_data or not thumb_data["url"]:
-                                url_template = self.config.listing.get(
-                                    "url_construction_template"
-                                )
-                                if url_template:
-                                    thumb_data["url"] = url_template.format(
-                                        **thumb_data
-                                    )
+                        if thumbnail:
+                            batch_thumbnails.append(thumbnail)
 
-                            # Optionally build ArticleRecord directly from API data if 'body' exists
+                            # Check if this thumbnail is new
+                            if str(thumbnail.url) not in existing_urls:
+                                batch_new_count += 1
+
+                            # Handle prefetched articles (full JSON from API)
                             if thumb_data.get("body"):
                                 article_dict = {
-                                    "url": thumb_data["url"],
-                                    "title": thumb_data.get("title", ""),
-                                    "date": thumb_data.get("date", ""),
+                                    "url": str(thumbnail.url),
+                                    "title": thumbnail.title,
+                                    "date": thumbnail.date or "",
                                     "body": thumb_data.get("body", ""),
                                     "tags": thumb_data.get("tags", []),
                                     "source": self.name,
                                     "country": self.country,
                                     "language": self.language,
                                 }
-                                cleaning_config = self.config.cleaning or {}
-                                if cleaning_config:
-                                    article_dict = apply_cleaning(
-                                        article_dict, cleaning_config, self.base_url
-                                    )
+                                # Note: cleaning already applied in _process_api_thumbnail
                                 try:
                                     article = ArticleRecord(**article_dict)
                                     self.prefetched_articles.append(article)
@@ -861,17 +993,6 @@ class NewspaperScraper:
                                         f"Failed to create ArticleRecord from API data: {e}"
                                     )
 
-                            thumbnail = ThumbnailRecord(**thumb_data)
-                            batch_thumbnails.append(thumbnail)
-
-                            # Check if this thumbnail is new
-                            if str(thumbnail.url) not in existing_urls:
-                                batch_new_count += 1
-
-                        except Exception as e:
-                            logger.error(
-                                f"Failed to create ThumbnailRecord from API data: {e}"
-                            )
                     logger.info(f"Processed API batch: {len(result_batch)} thumbnails")
 
                 else:
@@ -938,6 +1059,10 @@ class NewspaperScraper:
                     f"Batch: {batch_new_count} new, {len(batch_thumbnails) - batch_new_count} existing. "
                     f"Total: {len(new_thumbnails)} new thumbnails so far."
                 )
+
+                # Update progress after each batch to keep progress file fresh
+                if self.progress:
+                    self.progress.update(urls_found=len(all_thumbnails))
 
             if not stop_discovery:
                 logger.info(
@@ -1303,14 +1428,6 @@ class NewspaperScraper:
         all_thumbnails: List[ThumbnailRecord] = []
         previous_batch_data = None
 
-        # Get the record filter function if it's configured
-        record_filter_func_name = self.config.cleaning.get("record_filter")
-        record_filter_func = (
-            get_cleaning_func(record_filter_func_name)
-            if record_filter_func_name
-            else None
-        )
-
         async for result_batch in self.listing_strategy.discover_and_scrape(
             client, self.base_url, thumbnail_selector
         ):
@@ -1319,40 +1436,24 @@ class NewspaperScraper:
             # Handle API strategy's direct return of dicts
             if isinstance(self.listing_strategy, ApiStrategy):
                 for thumb_data in result_batch:
-                    try:
-                        # Apply record filter if it exists
-                        if record_filter_func and not record_filter_func(thumb_data):
-                            continue
+                    # Use unified processing method
+                    thumbnail = self._process_api_thumbnail(thumb_data)
 
-                        # Handle URL construction from API data
-                        if thumb_data.get("url"):
-                            thumb_data["url"] = clean_url(
-                                thumb_data["url"], self.base_url
-                            )
-                        elif "url" not in thumb_data or not thumb_data["url"]:
-                            url_template = self.config.listing.get(
-                                "url_construction_template"
-                            )
-                            if url_template:
-                                thumb_data["url"] = url_template.format(**thumb_data)
+                    if thumbnail:
+                        batch_thumbnails.append(thumbnail)
 
-                        # Optionally build ArticleRecord directly from API data if 'body' exists
+                        # Handle prefetched articles
                         if thumb_data.get("body"):
                             article_dict = {
-                                "url": thumb_data["url"],
-                                "title": thumb_data.get("title", ""),
-                                "date": thumb_data.get("date", ""),
+                                "url": str(thumbnail.url),
+                                "title": thumbnail.title,
+                                "date": thumbnail.date or "",
                                 "body": thumb_data.get("body", ""),
                                 "tags": thumb_data.get("tags", []),
                                 "source": self.name,
                                 "country": self.country,
                                 "language": self.language,
                             }
-                            cleaning_config = self.config.cleaning or {}
-                            if cleaning_config:
-                                article_dict = apply_cleaning(
-                                    article_dict, cleaning_config, self.base_url
-                                )
                             try:
                                 article = ArticleRecord(**article_dict)
                                 self.prefetched_articles.append(article)
@@ -1361,13 +1462,6 @@ class NewspaperScraper:
                                     f"Failed to create ArticleRecord from API data: {e}"
                                 )
 
-                        thumbnail = ThumbnailRecord(**thumb_data)
-                        batch_thumbnails.append(thumbnail)
-
-                    except Exception as e:
-                        logger.error(
-                            f"Failed to create ThumbnailRecord from API data: {e}"
-                        )
                 logger.info(f"Processed API batch: {len(result_batch)} items")
 
             else:
@@ -1428,6 +1522,10 @@ class NewspaperScraper:
             all_thumbnails.extend(batch_thumbnails)
             previous_batch_data = batch_data
 
+            # Update progress after each batch to keep progress file fresh
+            if self.progress:
+                self.progress.update(urls_found=len(all_thumbnails))
+
         logger.info(f"Total thumbnails discovered: {len(all_thumbnails)}")
         return all_thumbnails
 
@@ -1447,6 +1545,11 @@ class NewspaperScraper:
             Dictionary with discovery results and statistics
         """
         logger.info(f"Starting DISCOVER mode for {self.name} ({self.country})")
+        self.metrics.mode = "discover"
+
+        # Update progress: discovering phase
+        if self.progress:
+            self.progress.update(phase="discovering")
 
         try:
             # Step 1: Ensure urls.csv exists
@@ -1498,6 +1601,18 @@ class NewspaperScraper:
                 results, self.country, self.name, metadata_type="discover"
             )
 
+            # Update metrics
+            self.metrics.urls_discovered = len(new_thumbnails)
+
+            # Update progress: completed phase (no scraping in discover mode)
+            if self.progress:
+                self.progress.update(
+                    phase="completed",
+                    urls_found=len(new_thumbnails),
+                    articles_scraped=0,
+                    articles_failed=0,
+                )
+
             logger.info(
                 f"DISCOVER mode completed: {len(new_thumbnails)} new URLs found"
             )
@@ -1505,6 +1620,9 @@ class NewspaperScraper:
 
         except Exception as e:
             logger.error(f"DISCOVER mode failed for {self.name}: {e}")
+            # Update progress: failed phase
+            if self.progress:
+                self.progress.update(phase="failed")
             return {
                 "success": False,
                 "newspaper": self.name,
@@ -1527,6 +1645,11 @@ class NewspaperScraper:
             Dictionary with discovery results and statistics
         """
         logger.info(f"Starting DISCOVER-FULL mode for {self.name} ({self.country})")
+        self.metrics.mode = "discover_full"
+
+        # Update progress: discovering phase
+        if self.progress:
+            self.progress.update(phase="discovering")
 
         try:
             # Reset prefetched articles
@@ -1577,6 +1700,18 @@ class NewspaperScraper:
                 results, self.country, self.name, metadata_type="discover_full"
             )
 
+            # Update metrics
+            self.metrics.urls_discovered = len(all_thumbnails)
+
+            # Update progress: completed phase (no scraping in discover_full mode)
+            if self.progress:
+                self.progress.update(
+                    phase="completed",
+                    urls_found=len(all_thumbnails),
+                    articles_scraped=0,
+                    articles_failed=0,
+                )
+
             logger.info(
                 f"DISCOVER-FULL mode completed: {len(all_thumbnails)} URLs found"
             )
@@ -1584,6 +1719,9 @@ class NewspaperScraper:
 
         except Exception as e:
             logger.error(f"DISCOVER-FULL mode failed for {self.name}: {e}")
+            # Update progress: failed phase
+            if self.progress:
+                self.progress.update(phase="failed")
             return {
                 "success": False,
                 "newspaper": self.name,
@@ -1609,6 +1747,11 @@ class NewspaperScraper:
             Dictionary with scraping results and statistics
         """
         logger.info(f"Starting RESUME mode for {self.name} ({self.country})")
+        self.metrics.mode = "resume"
+
+        # Update progress: scraping phase (no discovery in resume mode)
+        if self.progress:
+            self.progress.update(phase="scraping")
 
         try:
             # Step 1: Ensure urls.csv exists
@@ -1713,6 +1856,19 @@ class NewspaperScraper:
                 results, self.country, self.name, metadata_type="resume"
             )
 
+            # Update metrics
+            self.metrics.articles_scraped = scrape_stats.get("articles_scraped", 0)
+            self.metrics.articles_failed = scrape_stats.get("articles_failed", 0)
+
+            # Update progress: completed phase
+            if self.progress:
+                self.progress.update(
+                    phase="completed",
+                    urls_found=len(pending_thumbnails),
+                    articles_scraped=scrape_stats.get("articles_scraped", 0),
+                    articles_failed=scrape_stats.get("articles_failed", 0),
+                )
+
             logger.info(
                 f"RESUME mode completed: {scrape_stats.get('articles_scraped', 0)} articles scraped"
             )
@@ -1720,6 +1876,9 @@ class NewspaperScraper:
 
         except Exception as e:
             logger.error(f"RESUME mode failed for {self.name}: {e}")
+            # Update progress: failed phase
+            if self.progress:
+                self.progress.update(phase="failed")
             return {
                 "success": False,
                 "newspaper": self.name,
@@ -1746,6 +1905,11 @@ class NewspaperScraper:
             Dictionary with discovery and scraping results
         """
         logger.info(f"Starting DEFAULT mode for {self.name} ({self.country})")
+        self.metrics.mode = "default"
+
+        # Update progress: discovering phase
+        if self.progress:
+            self.progress.update(phase="discovering")
 
         try:
             # Step 1: Ensure urls.csv exists
@@ -1774,6 +1938,13 @@ class NewspaperScraper:
                 if saved_path:
                     self._saved_files["urls"] = saved_path
                 logger.info(f"Appended {len(new_thumbnails)} new URLs to urls.csv")
+
+            # Update metrics for discovered URLs
+            self.metrics.urls_discovered = len(new_thumbnails)
+
+            # Update progress: scraping phase
+            if self.progress:
+                self.progress.update(phase="scraping", urls_found=len(new_thumbnails))
 
             # Step 5: Load existing article URLs from news.csv
             existing_article_urls = self._storage.get_existing_article_urls(
@@ -1873,6 +2044,18 @@ class NewspaperScraper:
                 results, self.country, self.name, metadata_type="default"
             )
 
+            # Update metrics
+            self.metrics.articles_scraped = total_scraped
+            self.metrics.articles_failed = scrape_stats.get("articles_failed", 0)
+
+            # Update progress: completed phase
+            if self.progress:
+                self.progress.update(
+                    phase="completed",
+                    articles_scraped=total_scraped,
+                    articles_failed=scrape_stats.get("articles_failed", 0),
+                )
+
             logger.info(
                 f"DEFAULT mode completed: {len(new_thumbnails)} new URLs, "
                 f"{total_scraped} articles scraped"
@@ -1881,6 +2064,9 @@ class NewspaperScraper:
 
         except Exception as e:
             logger.error(f"DEFAULT mode failed for {self.name}: {e}")
+            # Update progress: failed phase
+            if self.progress:
+                self.progress.update(phase="failed")
             return {
                 "success": False,
                 "newspaper": self.name,

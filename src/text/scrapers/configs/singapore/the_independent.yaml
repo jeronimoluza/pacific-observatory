@@ -7,7 +7,7 @@ base_url: "https://www.theindependent.sg"
 # Listing discovery configuration
 listing:
   type: "pagination"
-  url_template: 
+  url_template:
   - "https://theindependent.sg/news/singapore-politics/page/{num}/"
   - "https://theindependent.sg/news/features/page/{num}/"
   - "https://theindependent.sg/news/business/sg-economy/page/{num}/"
@@ -28,9 +28,9 @@ headers:
 
 selectors:
   thumbnail:
-    container: "div.td-ss-main-content h3[class='entry-title td-module-title']" 
-    title: "a::attr(title)"             
-    url: "a::attr(href)" 
+    container: "div.td-ss-main-content h3[class='entry-title td-module-title']"
+    title: "a::attr(title)"
+    url: "a::attr(href)"
   article:
     body: div[class='tdb-block-inner td-fix-index'] p
     date: "meta[itemprop='datePublished']::attr(content)"

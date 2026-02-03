@@ -282,7 +282,7 @@ run_scrapers = BashOperator(
 This interface uses the new config-driven scraping framework located in `src/text/scrapers/`. The framework provides:
 
 - **Async HTTP client** for high-performance scraping
-- **Dynamic pagination detection** 
+- **Dynamic pagination detection**
 - **Pydantic data validation**
 - **Modular, reusable components**
 - **YAML-based configuration**

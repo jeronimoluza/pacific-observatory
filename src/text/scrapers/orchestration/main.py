@@ -97,26 +97,27 @@ def main():
 Examples:
   # Default mode: discover new URLs + scrape pending articles
   python src/text/scrapers/orchestration/main.py sibc
-
-  # Discover mode: discover new URLs only (no scraping)
-  python src/text/scrapers/orchestration/main.py sibc --discover
-
-  # Discover-full mode: discover ALL URLs (overwrite urls.csv)
-  python src/text/scrapers/orchestration/main.py sibc --discover-full
+  python src/text/scrapers/orchestration/main.py sibc --update
 
   # Resume mode: scrape pending articles from urls.csv (no discovery)
   python src/text/scrapers/orchestration/main.py sibc --resume
 
+  # Full discovery mode: discover ALL URLs (overwrite urls.csv, no scraping)
+  python src/text/scrapers/orchestration/main.py sibc --full-discovery
+
+  # Full from scratch: discover ALL URLs + scrape everything
+  python src/text/scrapers/orchestration/main.py sibc --full-from-scratch
+
   # Multi-scraper runner
-  python src/text/scrapers/orchestration/main.py --run-all                           # Run all scrapers (default mode)
-  python src/text/scrapers/orchestration/main.py --run-all --discover                # Discover URLs for all scrapers
-  python src/text/scrapers/orchestration/main.py --run-all --resume                  # Resume scraping for all scrapers
-  python src/text/scrapers/orchestration/main.py --run-all --sequential              # Run all scrapers sequentially
-  python src/text/scrapers/orchestration/main.py --run-all --dry-run                 # Preview what would run
+  python src/text/scrapers/orchestration/main.py --run-all
+  python src/text/scrapers/orchestration/main.py --run-all --resume
+  python src/text/scrapers/orchestration/main.py --run-all --full-discovery
+  python src/text/scrapers/orchestration/main.py --run-all --sequential
+  python src/text/scrapers/orchestration/main.py --run-all --dry-run
 
   # List available scrapers
-  python src/text/scrapers/orchestration/main.py --list-scrapers                     # List all available scrapers
-  python src/text/scrapers/orchestration/main.py --list-countries                    # List all countries
+  python src/text/scrapers/orchestration/main.py --list-scrapers
+  python src/text/scrapers/orchestration/main.py --list-countries
         """,
     )
 
@@ -159,6 +160,20 @@ Examples:
         help="Print what would be executed without actually running (use with --run-all)",
     )
 
+    parser.add_argument(
+        "--timeout",
+        type=int,
+        default=120,
+        help="Stale timeout in seconds - kill scraper if no activity for this long (default: 120)",
+    )
+
+    parser.add_argument(
+        "--exclude",
+        type=str,
+        default="",
+        help="Comma-separated list of newspaper names to exclude (e.g., --exclude detik,kosmo)",
+    )
+
     # Scraping options
     parser.add_argument(
         "--storage-dir", type=Path, help="Custom storage directory for results"
@@ -170,22 +185,39 @@ Examples:
         help="Don't save results to disk (dry run)",
     )
 
-    parser.add_argument(
-        "--discover",
-        action="store_true",
-        help="Discover new URLs and append to urls.csv (no article scraping)",
-    )
+    # === Run Mode Flags ===
+    # These 4 flags control what the scraper does (mutually exclusive)
 
     parser.add_argument(
-        "--discover-full",
-        action="store_true",
-        help="Discover ALL URLs and overwrite urls.csv (no article scraping)",
+        "--update",
+        action="store_const",
+        const="update",
+        dest="mode",
+        help="Discover new URLs + scrape only new articles (default Friday run)",
     )
 
     parser.add_argument(
         "--resume",
-        action="store_true",
-        help="Skip discovery, scrape pending articles from urls.csv",
+        action="store_const",
+        const="resume",
+        dest="mode",
+        help="Use existing urls.csv + scrape pending articles (no discovery)",
+    )
+
+    parser.add_argument(
+        "--full-discovery",
+        action="store_const",
+        const="full_discovery",
+        dest="mode",
+        help="Discover ALL URLs + overwrite urls.csv (no scraping)",
+    )
+
+    parser.add_argument(
+        "--full-from-scratch",
+        action="store_const",
+        const="full_from_scratch",
+        dest="mode",
+        help="Discover ALL URLs + scrape everything (nuclear option)",
     )
 
     # Logging options
@@ -198,34 +230,16 @@ Examples:
 
     parser.add_argument("--log-file", type=Path, help="Log file path")
 
+    # Set default mode
+    parser.set_defaults(mode="update")
+
     args = parser.parse_args()
 
     # Set up logging
     setup_logging(args.log_level, args.log_file)
 
-    # Validate mutually exclusive mode flags
-    mode_flags = [
-        getattr(args, "discover", False),
-        getattr(args, "discover_full", False),
-        getattr(args, "resume", False),
-    ]
-    if sum(mode_flags) > 1:
-        parser.error(
-            "Only one of --discover, --discover-full, --resume can be specified"
-        )
-
-    # Determine mode from args
-    def get_mode_from_args(args) -> str:
-        if getattr(args, "discover", False):
-            return "discover"
-        elif getattr(args, "discover_full", False):
-            return "discover_full"
-        elif getattr(args, "resume", False):
-            return "resume"
-        else:
-            return "default"
-
-    mode = get_mode_from_args(args)
+    # Get mode from args (defaults to "update" if not specified)
+    mode = getattr(args, "mode", "update")
 
     # Handle list commands
     if args.list_scrapers:
@@ -238,14 +252,29 @@ Examples:
 
     # Handle run-all command
     if args.run_all:
-        success = run_all_scrapers(
+        # Parse exclude list
+        exclude_list = []
+        if args.exclude:
+            exclude_list = [
+                name.strip().lower() for name in args.exclude.split(",") if name.strip()
+            ]
+            if exclude_list:
+                print(f"⏭️  Excluding scrapers: {', '.join(exclude_list)}")
+
+        results = run_all_scrapers(
             configs_dir=get_default_configs_dir(),
             project_root=project_root,
             sequential=args.sequential,
             dry_run=args.dry_run,
             mode=mode,
+            timeout_per_scraper=args.timeout,
+            exclude=exclude_list,
         )
-        sys.exit(0 if success else 1)
+        # Exit with failure if any scraper failed or timed out
+        failed_count = sum(
+            1 for r in results if r.get("status") in ["failed", "timeout"]
+        )
+        sys.exit(0 if failed_count == 0 else 1)
 
     # Validate newspaper argument
     if not args.newspaper:
