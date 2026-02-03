@@ -1139,6 +1139,46 @@
       "கணிக்க முடியாத"
     ]
   },
+  "tetum": {
+    "economic": [
+      "ekonomia",
+      "ekonómiku",
+      "negósiu",
+      "finansa",
+      "finanseiru"
+    ],
+    "policy": [
+      "governu",
+      "governamentál",
+      "autoridade",
+      "autoridade sira",
+      "ministru",
+      "ministriu",
+      "parlamentu",
+      "parlamentár",
+      "impostu",
+      "regulamentu",
+      "lejislasaun",
+      "banku sentrál",
+      "IMF",
+      "Fundu Monetáriu Internasionál",
+      "World Bank"
+    ],
+    "uncertainty": [
+      "la certeza",
+      "incerteza",
+      "incerteza sira",
+      "deskoñesidu",
+      "la estável",
+      "dúvida",
+      "la determina",
+      "arriska",
+      "risku",
+      "la konfiável",
+      "mudansa-mudansa",
+      "la previzível"
+    ]
+  },
   "thai": {
     "economic": [
       "เศรษฐกิจ",
