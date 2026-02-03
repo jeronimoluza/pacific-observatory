@@ -9,10 +9,7 @@ Newspaper scraping and Economic Policy Uncertainty (EPU) analysis for the Pacifi
 poetry run python -m text.scrapers.orchestration.main fiji_sun
 
 # Scrape with update mode (only new articles)
-poetry run python -m text.scrapers.orchestration.main fiji_sun --mode update
-
-# Check scraper status
-poetry run python -m text.scrapers.orchestration.status
+poetry run python -m text.scrapers.orchestration.main fiji_sun --update
 
 # Run EPU analysis
 poetry run python -m text.analysis.main
@@ -22,13 +19,6 @@ poetry run python -m text.analysis.main
 
 ```
 src/text/
-├── core/                      # Core utilities and infrastructure
-│   ├── logging_config.py      # Structured logging
-│   ├── run_tracker.py         # SQLite run tracking
-│   ├── events.py              # Event emission system
-│   ├── errors.py              # Error hierarchy
-│   ├── circuit_breaker.py     # Resilience patterns
-│   └── checkpoints.py         # Checkpoint/resume system
 ├── scrapers/                  # Web scraping framework
 │   ├── newspaper_scraper.py   # Main scraper orchestrator
 │   ├── client_http.py         # Async HTTP client
@@ -65,7 +55,7 @@ src/text/
 poetry run python -m text.scrapers.orchestration.main fiji_sun
 
 # With mode (full, update, discover)
-poetry run python -m text.scrapers.orchestration.main fiji_sun --mode update
+poetry run python -m text.scrapers.orchestration.main fiji_sun --update
 
 # All newspapers in a country
 poetry run python -m text.scrapers.orchestration.main --country fiji
@@ -81,19 +71,7 @@ poetry run python -m text.scrapers.orchestration.main --list
 
 ```bash
 # Recent runs (last 24 hours)
-poetry run python -m text.scrapers.orchestration.status
-
-# Last N hours
-poetry run python -m text.scrapers.orchestration.status --hours 48
-
-# Only failures
-poetry run python -m text.scrapers.orchestration.status --failures
-
-# Specific newspaper
-poetry run python -m text.scrapers.orchestration.status --newspaper fiji_sun
-
-# Aggregate statistics
-poetry run python -m text.scrapers.orchestration.status --stats
+poetry run python -m text.scrapers.orchestration.check_database
 ```
 
 ### Validation
@@ -121,7 +99,6 @@ make test-integration  # Run integration tests
 make lint              # Run linters
 make format            # Format code
 make scrape NEWSPAPER=fiji_sun
-make status            # View scraper status
 make validate CONFIG=path/to/config.yaml
 ```
 
