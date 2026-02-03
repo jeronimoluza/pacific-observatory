@@ -1,0 +1,46 @@
+# The Dili Weekly Configuration
+
+name: "Dili Weekly"
+country: "timor_leste"
+base_url: "https://thediliweekly.com/"
+
+# Listing discovery configuration
+# This scraper covers multiple Pacific countries using tag-based pagination
+listing:
+  type: "pagination"
+  start_url: "https://thediliweekly.com/category/english-page/"
+  url_template: "https://thediliweekly.com/category/english-page/page/{num}/"
+  start_page: 2
+  batch_size: 10
+
+# Client configuration
+client: "http"
+concurrency: 10
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Accept-Language: "en-US,en;q=0.9"
+  Cache-Control: "no-cache"
+  Pragma: "no-cache"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: 'div.wpb_wrapper div.td-module-thumb'
+    title: "a::attr(title)"
+    url: "a::attr(href)"
+  article:
+    body: "div.td-post-content p"
+    date: "time[class='entry-date updated td-module-date']::attr(datetime)"
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null
