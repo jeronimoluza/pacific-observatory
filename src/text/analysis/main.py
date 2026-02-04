@@ -24,7 +24,7 @@ country_dirs = [
     entry
     for entry in DATA_ROOT.iterdir()
     if entry.is_dir() and entry.name not in EXCLUDED_COUNTRIES
-][:5]
+]
 
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "text"
 
