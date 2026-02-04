@@ -135,7 +135,7 @@ def get_sentiment(
 
 if __name__ == "__main__":
     cutoff = "2020-12-31"
-    subset_condition = "date >= '2015-01-01' and date <= '2025-12-31'"
+    subset_condition = "date >= '2015-01-01' and date <= '2026-01-31'"
 
     additional_terms_keys = ["inflation", "job"]
     # Load additional terms from topics_words.json
