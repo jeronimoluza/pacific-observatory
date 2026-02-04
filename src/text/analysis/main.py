@@ -45,7 +45,7 @@ def get_epu(
     country,
     cutoff,
     subset_condition,
-    plot=True,
+    plot=False,
     additional_terms=None,
     additional_name=None,
     calculate_extended_indices=True,
@@ -78,13 +78,16 @@ def get_epu(
         filename = f"{country_name}_epu.csv"
 
     if drop_intermediate_cols:
-        weighted_cols = [
-            col.replace("_weighted", "").replace("_share", "_index")
+        # Keep only final index columns (weighted versions, excluding intermediate z-scores)
+        final_index_cols = [
+            col
             for col in epu_stats.columns
-            if ("_weighted" in col) & ("_z_" not in col) & ("z_score_weighted")
+            if col.endswith("_weighted")
+            and "_z_" not in col
+            and col != "z_score_weighted"
         ]
-        keep_cols = ["date", "ym"] + weighted_cols
-        epu_stats = epu_stats[keep_cols].rename(columns={"epu": "EPU_index"})
+        keep_cols = ["date", "ym"] + final_index_cols
+        epu_stats = epu_stats[[c for c in keep_cols if c in epu_stats.columns]]
 
     epu_stats.to_csv(saved_folder / filename, encoding="utf-8", index=False)
 
@@ -184,7 +187,6 @@ if __name__ == "__main__":
             eta_str = "ETA: calculating..."
 
         print(f"\n[{i+1}/{total_countries}] {country.name} - {eta_str}")
-        print(f"  News files: {list(country.glob('*/news.csv'))}")
         try:
             get_epu(
                 country,

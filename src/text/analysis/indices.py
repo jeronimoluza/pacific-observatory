@@ -48,6 +48,9 @@ class IndexCalculator:
         Returns:
             DataFrame with breadth index columns added.
         """
+        # Defragment DataFrame to avoid performance warnings
+        epu_stats = epu_stats.copy()
+
         for category in ["E", "P", "U"]:
             # Calculate raw ratio per source
             ratio_cols = []
@@ -89,6 +92,9 @@ class IndexCalculator:
         Returns:
             DataFrame with intensity index columns added.
         """
+        # Defragment DataFrame to avoid performance warnings
+        epu_stats = epu_stats.copy()
+
         for category in ["E", "P", "U"]:
             # Calculate raw ratio per source
             ratio_cols = []
@@ -130,6 +136,9 @@ class IndexCalculator:
         Returns:
             DataFrame with pairwise index columns added.
         """
+        # Defragment DataFrame to avoid performance warnings
+        epu_stats = epu_stats.copy()
+
         for pair in ["EU", "PU", "EP"]:
             # Calculate raw ratio per source
             ratio_cols = []
