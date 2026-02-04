@@ -49,6 +49,7 @@ def get_epu(
     additional_terms=None,
     additional_name=None,
     calculate_extended_indices=True,
+    drop_intermediate_cols=True,
 ):
     country_name = country.name
     news_dirs = list(country.glob("*/news.csv"))
@@ -75,6 +76,15 @@ def get_epu(
         filename = f"{country_name}_epu_{additional_name}.csv"
     else:
         filename = f"{country_name}_epu.csv"
+
+    if drop_intermediate_cols:
+        weighted_cols = [
+            col.replace("_weighted", "").replace("_share", "_index")
+            for col in epu_stats.columns
+            if ("_weighted" in col) & ("_z_" not in col) & ("z_score_weighted")
+        ]
+        keep_cols = ["date", "ym"] + weighted_cols
+        epu_stats = epu_stats[keep_cols].rename(columns={"epu": "EPU_index"})
 
     epu_stats.to_csv(saved_folder / filename, encoding="utf-8", index=False)
 
