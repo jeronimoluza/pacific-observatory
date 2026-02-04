@@ -24,7 +24,7 @@ country_dirs = [
     entry
     for entry in DATA_ROOT.iterdir()
     if entry.is_dir() and entry.name not in EXCLUDED_COUNTRIES
-]
+][:5]
 
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "text"
 
@@ -48,6 +48,7 @@ def get_epu(
     plot=True,
     additional_terms=None,
     additional_name=None,
+    calculate_extended_indices=True,
 ):
     country_name = country.name
     news_dirs = list(country.glob("*/news.csv"))
@@ -58,8 +59,12 @@ def get_epu(
         additional_name=additional_name,
     )
     e.get_epu_category(subset_condition=subset_condition)
-    e.get_count_stats()
+    e.get_count_stats(calculate_extended=calculate_extended_indices)
     e.calculate_epu_score()
+
+    # Calculate extended indices (breadth, intensity, pairwise)
+    if calculate_extended_indices:
+        e.calculate_all_indices()
 
     epu_stats = e.epu_stats
     saved_folder = OUTPUT_DIR / f"{country_name}/epu/"

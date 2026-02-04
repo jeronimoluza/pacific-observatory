@@ -52,7 +52,12 @@ import os
 from typing import List, Union, Dict
 import pandas as pd
 import numpy as np
-from .utils import is_in_word_list, generate_continous_df, load_topics_words
+from .utils import (
+    is_in_word_list,
+    count_keywords_in_text,
+    generate_continous_df,
+    load_topics_words,
+)
 
 # Default English topic words (loaded at module level for backward compatibility)
 _topics_data = load_topics_words(language="en")
@@ -246,11 +251,19 @@ class EPU:
                 [econ_terms, policy_terms, uncertainty_terms],
             ):
                 if terms is not None:
+                    # Boolean presence
                     raw[col] = (
                         raw["body"].str.lower().apply(is_in_word_list, terms=terms)
                     )
+                    # Keyword counts for intensity calculations
+                    raw[f"{col}_count"] = (
+                        raw["body"]
+                        .str.lower()
+                        .apply(count_keywords_in_text, terms=terms)
+                    )
                 else:
                     raw[col] = True
+                    raw[f"{col}_count"] = 0
 
             raw["epu"] = (raw.econ) & (raw.policy) & (raw.uncertain)
 
@@ -284,6 +297,91 @@ class EPU:
         merged_df["ratio"] = merged_df["epu_count"] / merged_df["body_count"]
         return merged_df
 
+    def calculate_extended_counts(
+        self, file: pd.DataFrame, source: str
+    ) -> pd.DataFrame:
+        """
+        Calculate counts needed for breadth, intensity, and pairwise indices.
+
+        Returns DataFrame with per-source columns:
+        - {source}_A_total: total articles
+        - {source}_E_count, _P_count, _U_count: articles with >=1 keyword
+        - {source}_E_kwsum, _P_kwsum, _U_kwsum: sum of keywords (for intensity)
+        - {source}_EU_count, _PU_count, _EP_count: pairwise intersection counts
+
+        Args:
+            file: DataFrame with article data and boolean/count columns.
+            source: Source name prefix for columns.
+
+        Returns:
+            DataFrame with extended count columns grouped by 'ym'.
+        """
+        # Create pairwise boolean columns
+        file = file.copy()
+        file["eu"] = file["econ"] & file["uncertain"]
+        file["pu"] = file["policy"] & file["uncertain"]
+        file["ep"] = file["econ"] & file["policy"]
+
+        # Group by ym and aggregate counts
+        agg_dict = {
+            "body": "count",  # A_total
+            "econ": "sum",  # E_count
+            "policy": "sum",  # P_count
+            "uncertain": "sum",  # U_count
+            "eu": "sum",  # EU_count
+            "pu": "sum",  # PU_count
+            "ep": "sum",  # EP_count
+        }
+
+        grouped = file.groupby("ym").agg(agg_dict).reset_index()
+
+        # Calculate keyword sums (only for articles with presence)
+        # E_kwsum = sum of econ_count where econ == True
+        kwsum_e = (
+            file[file["econ"]]
+            .groupby("ym")["econ_count"]
+            .sum()
+            .reset_index()
+            .rename(columns={"econ_count": "E_kwsum"})
+        )
+        kwsum_p = (
+            file[file["policy"]]
+            .groupby("ym")["policy_count"]
+            .sum()
+            .reset_index()
+            .rename(columns={"policy_count": "P_kwsum"})
+        )
+        kwsum_u = (
+            file[file["uncertain"]]
+            .groupby("ym")["uncertain_count"]
+            .sum()
+            .reset_index()
+            .rename(columns={"uncertain_count": "U_kwsum"})
+        )
+
+        # Merge keyword sums
+        grouped = grouped.merge(kwsum_e, on="ym", how="left")
+        grouped = grouped.merge(kwsum_p, on="ym", how="left")
+        grouped = grouped.merge(kwsum_u, on="ym", how="left")
+        grouped = grouped.fillna(0)
+
+        # Rename columns with source prefix
+        rename_map = {
+            "body": f"{source}_A_total",
+            "econ": f"{source}_E_count",
+            "policy": f"{source}_P_count",
+            "uncertain": f"{source}_U_count",
+            "eu": f"{source}_EU_count",
+            "pu": f"{source}_PU_count",
+            "ep": f"{source}_EP_count",
+            "E_kwsum": f"{source}_E_kwsum",
+            "P_kwsum": f"{source}_P_kwsum",
+            "U_kwsum": f"{source}_U_kwsum",
+        }
+        grouped = grouped.rename(columns=rename_map)
+
+        return grouped
+
     def merge_data_frames(
         self, epu_stats: pd.DataFrame, new_df: pd.DataFrame, source: str
     ) -> pd.DataFrame:
@@ -305,17 +403,33 @@ class EPU:
         ]
         self.epu_stats["news_total"] = self.epu_stats[self.news_cols].sum(axis=1)
 
-    def get_count_stats(self):
+    def get_count_stats(self, calculate_extended: bool = True):
         """
         Aggregates news and EPU counts, calculates ratios, and prepares data for
         EPU score calculation.
+
+        Args:
+            calculate_extended: If True, also calculate extended counts for
+                breadth, intensity, and pairwise indices.
         """
+        extended_stats = pd.DataFrame()
+
         for source, file in self.raw_files:
             counts_df = self.calculate_news_and_epu_counts(file)
             ratios_df = self.calculate_ratios(counts_df)
             self.epu_stats = self.merge_data_frames(
                 self.epu_stats, ratios_df, source
             )  # .fillna(0)
+
+            # Calculate extended counts for breadth/intensity/pairwise indices
+            if calculate_extended:
+                extended_df = self.calculate_extended_counts(file, source)
+                if extended_stats.empty:
+                    extended_stats = extended_df
+                else:
+                    extended_stats = pd.merge(
+                        extended_stats, extended_df, how="outer", on="ym"
+                    )
 
         # Check for date integrity
         self.epu_stats["date"] = pd.to_datetime(self.epu_stats["ym"], format="mixed")
@@ -326,6 +440,22 @@ class EPU:
         self.epu_stats = generate_continous_df(
             self.epu_stats, self.min_date, self.max_date
         )
+
+        # Merge extended stats if calculated
+        if calculate_extended and not extended_stats.empty:
+            extended_stats["date"] = pd.to_datetime(
+                extended_stats["ym"], format="mixed"
+            )
+            extended_stats = generate_continous_df(
+                extended_stats, self.min_date, self.max_date
+            )
+            # Merge on date, drop duplicate ym columns
+            self.epu_stats = pd.merge(
+                self.epu_stats,
+                extended_stats.drop(columns=["ym"]),
+                on="date",
+                how="left",
+            )
 
         self._calculate_total_news()
         self.ratio_cols = [
@@ -392,3 +522,30 @@ class EPU:
             self.epu_stats[f"epu_{self.additional_name}"] = self.epu_stats[
                 "epu_weighted"
             ]
+
+    def calculate_all_indices(self) -> None:
+        """
+        Calculate all extended indices (breadth, intensity, pairwise).
+
+        Call after get_count_stats() with calculate_extended=True.
+
+        Adds the following columns to epu_stats:
+        - E_breadth_weighted, E_breadth_unweighted
+        - P_breadth_weighted, P_breadth_unweighted
+        - U_breadth_weighted, U_breadth_unweighted
+        - E_intensity_weighted, E_intensity_unweighted
+        - P_intensity_weighted, P_intensity_unweighted
+        - U_intensity_weighted, U_intensity_unweighted
+        - EU_share_weighted, EU_share_unweighted
+        - PU_share_weighted, PU_share_unweighted
+        - EP_share_weighted, EP_share_unweighted
+        """
+        from .indices import IndexCalculator
+
+        calc = IndexCalculator(self.cutoff)
+        sources = [col.replace("_body_count", "") for col in self.news_cols]
+
+        # Calculate and merge each index type
+        self.epu_stats = calc.calculate_breadth_indices(self.epu_stats, sources)
+        self.epu_stats = calc.calculate_intensity_indices(self.epu_stats, sources)
+        self.epu_stats = calc.calculate_pairwise_indices(self.epu_stats, sources)

@@ -29,6 +29,24 @@ def is_in_word_list(row: str, terms: list) -> bool:
     return bool(re.search(pattern, str(row), re.IGNORECASE))
 
 
+def count_keywords_in_text(text: str, terms: list) -> int:
+    """
+    Count total keyword occurrences in text (for intensity calculations).
+
+    Args:
+        text: Input text to search.
+        terms: List of keywords to count.
+
+    Returns:
+        Total count of keyword matches.
+    """
+    if not text or not terms:
+        return 0
+    pattern = r"\b(" + "|".join(re.escape(term) for term in terms) + r")\b"
+    matches = re.findall(pattern, str(text), re.IGNORECASE)
+    return len(matches)
+
+
 def sent_to_words(sentences: List[str]):
     """
     Converts sentences into a list of words, performing simple preprocessing.
