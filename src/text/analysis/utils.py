@@ -13,36 +13,60 @@ from gensim.utils import simple_preprocess
 import json
 from pathlib import Path
 
+# Languages where words flow without spaces (no \b word boundary)
+NON_SPACE_DELIMITED = frozenset(
+    {
+        "thai",
+        "km",
+        "lao",
+        "chinese_simplified",
+        "chinese_traditional",
+        "japanese",
+    }
+)
 
-def is_in_word_list(row: str, terms: list) -> bool:
+
+def _build_keyword_pattern(terms: list, language: str = "en") -> str:
+    """Build a regex pattern for keyword matching, respecting language word boundaries."""
+    escaped = "|".join(re.escape(term) for term in terms)
+    if language in NON_SPACE_DELIMITED:
+        return "(" + escaped + ")"
+    return r"\b(" + escaped + r")\b"
+
+
+def is_in_word_list(row: str, terms: list, language: str = "en") -> bool:
     """
     Check if any of the given terms are present in the input row.
 
     Args:
         row (str): The input row to search for terms in.
         terms (list): A list of terms to search for in the row.
+        language (str): Language code. For non-space-delimited languages,
+            word boundary matching (\\b) is omitted.
 
     Returns:
         bool: True if any of the terms are found in the row, False otherwise.
     """
-    pattern = r"\b(" + "|".join(re.escape(term) for term in terms) + r")\b"
+    pattern = _build_keyword_pattern(terms, language)
     return bool(re.search(pattern, str(row), re.IGNORECASE))
 
 
-def count_keywords_in_text(text: str, terms: list) -> int:
+def count_keywords_in_text(text: str, terms: list, language: str = "en") -> int:
     """
     Count total keyword occurrences in text (for intensity calculations).
 
     Args:
         text: Input text to search.
         terms: List of keywords to count.
+        language: Language code. For non-space-delimited languages,
+            word boundary matching (\\b) is omitted.
 
     Returns:
         Total count of keyword matches.
     """
     if not text or not terms:
         return 0
-    pattern = r"\b(" + "|".join(re.escape(term) for term in terms) + r")\b"
+    pattern = _build_keyword_pattern(terms, language)
     matches = re.findall(pattern, str(text), re.IGNORECASE)
     return len(matches)
 
