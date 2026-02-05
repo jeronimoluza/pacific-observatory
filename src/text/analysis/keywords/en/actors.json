@@ -1,0 +1,170 @@
+{
+  "imf": [
+    "imf",
+    "international monetary fund",
+    "imf program",
+    "imf agreement",
+    "imf deal",
+    "imf loan",
+    "imf bailout",
+    "imf mission",
+    "imf talks",
+    "imf negotiations"
+  ],
+  "world_bank": [
+    "world bank",
+    "world bank group",
+    "ibrd",
+    "ida",
+    "international bank for reconstruction and development",
+    "international development association",
+    "ifc",
+    "international finance corporation",
+    "world bank loan",
+    "world bank financing",
+    "world bank project"
+  ],
+  "central_bank": [
+    "central bank",
+    "monetary authority",
+    "reserve bank",
+    "national bank",
+    "central bankers",
+    "policy rate",
+    "benchmark rate",
+    "interest rate decision",
+    "rate decision",
+    "monetary authority decision"
+  ],
+  "finance_ministry": [
+    "finance ministry",
+    "ministry of finance",
+    "treasury",
+    "finance minister",
+    "treasury department",
+    "economic ministry",
+    "budget office",
+    "fiscal authority"
+  ],
+  "government": [
+    "government",
+    "administration",
+    "executive branch",
+    "cabinet",
+    "prime minister",
+    "president",
+    "presidential office",
+    "government officials",
+    "state authorities"
+  ],
+  "parliament": [
+    "parliament",
+    "congress",
+    "legislature",
+    "legislative body",
+    "lawmakers",
+    "members of parliament",
+    "mps",
+    "senators",
+    "deputies",
+    "house of representatives"
+  ],
+  "multilateral_development_bank": [
+    "development bank",
+    "multilateral development bank",
+    "regional development bank",
+    "african development bank",
+    "asian development bank",
+    "inter-american development bank",
+    "idb",
+    "adb",
+    "afdb",
+    "european bank for reconstruction and development",
+    "ebrd"
+  ],
+  "credit_rating_agency": [
+    "credit rating agency",
+    "rating agency",
+    "moody's",
+    "moody’s",
+    "standard and poor's",
+    "standard & poor's",
+    "s&p",
+    "fitch",
+    "credit downgrade",
+    "credit rating"
+  ],
+  "international_investors": [
+    "foreign investors",
+    "international investors",
+    "global investors",
+    "bondholders",
+    "creditors",
+    "institutional investors",
+    "portfolio investors",
+    "asset managers",
+    "hedge funds"
+  ],
+  "commercial_banks": [
+    "commercial banks",
+    "private banks",
+    "lenders",
+    "banking sector",
+    "local banks",
+    "foreign banks",
+    "bank consortium",
+    "banking groups"
+  ],
+  "state_owned_enterprises": [
+    "state-owned enterprise",
+    "state-owned company",
+    "public enterprise",
+    "public utility",
+    "state utility",
+    "national oil company",
+    "state energy company",
+    "public company"
+  ],
+  "labor_unions": [
+    "labor unions",
+    "trade unions",
+    "workers' unions",
+    "union leaders",
+    "labor organizations",
+    "workers organizations",
+    "collective bargaining",
+    "union protests"
+  ],
+  "international_organizations": [
+    "united nations",
+    "un",
+    "oecd",
+    "organisation for economic co-operation and development",
+    "ilo",
+    "international labour organization",
+    "who",
+    "world health organization",
+    "wto",
+    "world trade organization"
+  ],
+  "courts_judiciary": [
+    "courts",
+    "judiciary",
+    "supreme court",
+    "constitutional court",
+    "judicial system",
+    "judges",
+    "court ruling",
+    "legal system"
+  ],
+  "military_security": [
+    "military",
+    "armed forces",
+    "security forces",
+    "defense ministry",
+    "defence ministry",
+    "national security",
+    "armed conflict",
+    "security services"
+  ]
+}
