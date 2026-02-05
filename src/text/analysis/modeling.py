@@ -97,22 +97,11 @@ np.random.seed(123)
 def prepare_epu_data(countries):
     from data import (
         read_epu_files,
-        read_epu_topics_files,
-        read_sentiment_files,
         group_monthly,
     )
 
     epu = read_epu_files(EPU_DATA_ROOT, countries)
-    epu_topics = read_epu_topics_files(EPU_DATA_ROOT, TOPICS, countries)
-    sentiment = read_sentiment_files(EPU_DATA_ROOT, countries)
-
-    df = (
-        epu.set_index(["date", "country"])
-        .join(epu_topics.set_index(["date", "country"]))
-        .join(sentiment.set_index(["date", "country"]))
-        .reset_index()
-    )
-    df = group_monthly(df)
+    df = group_monthly(epu)
 
     df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d")
     # Create period variable (months since Jan 2015)
@@ -303,7 +292,7 @@ if __name__ == "__main__":
     feature_cols_base = [
         col
         for col in df.columns
-        if any(x in col for x in ["inflation_epu", "epu", "sentiment"])
+        if any(x in col for x in ["EPU_inflation_index", "EPU_job_index", "EPU_index"])
         and col.endswith("_ma3")
     ]
     feature_cols_base = [col for col in feature_cols_base if col in df.columns]
