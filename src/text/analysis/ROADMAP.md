@@ -176,3 +176,93 @@ The extended framework allows full decomposition of EPU movements into:
 - Economically framed uncertainty (E ∩ U)
 - Policy-driven uncertainty (P ∩ U)
 - Economic policy coverage (E ∩ P)
+
+## 6. Topic- / Actor-Conditioned Uncertainty (Attribution)
+
+To attribute sources of media-reported uncertainty to specific institutions, actors, or thematic domains, the framework is extended to construct **topic- and actor-conditioned uncertainty indices**. These indices measure the extent to which uncertainty coverage is associated with particular groups \( g \), where \( g \) may represent:
+
+- International institutions (e.g., IMF, World Bank)
+- Domestic institutions (e.g., central bank, government, parliament)
+- Thematic domains (e.g., inflation, labor, climate, public debt)
+
+This extension allows decomposition of aggregate uncertainty into institution- and topic-specific components, while remaining fully consistent with the shares-of-all-articles construction used throughout the system.
+
+---
+
+### 6.A Formal Definition (Consistent with the Core System)
+
+For any actor or topic group \( g \), define:
+
+- \( G_{n,t} \): number of articles containing ≥1 keyword for group \( g \)
+
+- \( (U \cap G)_{n,t} \): number of articles containing:
+  - ≥1 Uncertainty keyword
+  - AND ≥1 keyword for group \( g \)
+
+---
+
+### 6.B Absolute Conditioned Uncertainty (Agenda-Based)
+
+#### Actor/Topic-Conditioned Uncertainty Share
+
+\[
+U^{g,\,share}_{n,t}
+=
+\frac{(U \cap G)_{n,t}}{A_{n,t}}
+\]
+
+This measures:
+
+> The share of all news devoted to uncertainty related to actor or topic \( g \).
+
+This definition is fully consistent with the use of **shares of all articles** across the extended EPU framework.
+
+Examples:
+
+- \( U^{IMF,\,share}_{n,t} \): IMF-conditioned uncertainty
+- \( U^{CB,\,share}_{n,t} \): central bank–conditioned uncertainty
+- \( U^{Inflation,\,share}_{n,t} \): inflation-conditioned uncertainty
+- \( U^{Labor,\,share}_{n,t} \): labor-conditioned uncertainty
+
+These indices capture how salient each actor or topic is within the overall uncertainty-related news agenda.
+
+---
+
+### 6.C Framing-Based Version (Composition of Uncertainty)
+
+In addition to agenda-based attribution, a framing-based version will be constructed:
+
+\[
+U^{g \mid U}_{n,t}
+=
+\frac{(U \cap G)_{n,t}}{U_{n,t}}
+\]
+
+This measures:
+
+> Among all uncertainty-related articles, the fraction attributable to actor or topic \( g \).
+
+This is a **composition / framing attribution** measure, indicating how uncertainty is being framed across different actors or themes.
+
+While not required for headline indices, this measure is analytically valuable for:
+
+- Decomposing the sources of uncertainty
+- Identifying shifts in the institutional or thematic framing of uncertainty
+- Distinguishing between changes in overall uncertainty vs changes in what uncertainty is about
+
+---
+
+### 6.D Standardization, Aggregation, and Normalization
+
+Both agenda-based and framing-based conditioned uncertainty measures follow the same procedure as all other indices:
+
+1. Compute newspaper-time values
+2. Standardize by newspaper over a fixed reference period
+3. Aggregate standardized values across newspapers
+4. Normalize to a common baseline
+
+This ensures full comparability with:
+
+- Aggregate uncertainty (U_breadth, U_intensity)
+- Economic and policy uncertainty (EU, PU)
+- Actor- and topic-conditioned uncertainty (\( U \cap G \))
