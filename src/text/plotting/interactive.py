@@ -9,9 +9,6 @@ from pathlib import Path
 EXCLUDE_COUNTRIES = [
     # 'american_samoa', 'guam', 'malaysia', 'marshall_islands', 'palau',
     # 'south_korea', 'singapore', 'thailand', 'timor_leste', 'tuvalu', 'vanuatu'
-    "cambodia",
-    "thailand",
-    "singapore",
 ]
 
 # Countries to exclude from prediction visualizations
@@ -33,41 +30,16 @@ def fmt_country(c):
     return " ".join(w[0].upper() + w[1:] for w in c.split("_"))
 
 
-def load_epu(country, data_dir):
-    """Load EPU data and compute 3-month moving average"""
-    f = data_dir / f"{country}/epu/{country}_epu.csv"
+def load_epu_data(country, data_dir):
+    """Load all EPU data from consolidated epu.csv"""
+    f = data_dir / f"{country}/epu/epu.csv"
     if not f.exists():
         return None
     df = pd.read_csv(f)
     df["date"] = pd.to_datetime(df["date"], format="mixed")
-    df["epu_weighted_ma3"] = df["epu_weighted"].rolling(window=3).mean()
-    return df.sort_values("date")
-
-
-def load_epu_topics(country, topics, data_dir):
-    """Load topic-specific EPU data and compute 3-month moving average for each topic"""
-    df = None
-    for t in topics:
-        f = data_dir / f"{country}/epu/{country}_epu_{t}.csv"
-        if not f.exists():
-            continue
-        d = pd.read_csv(f)
-        d["date"] = pd.to_datetime(d["date"], format="mixed")
-        d[f"epu_{t}"] = d[f"epu_{t}"].rolling(window=3).mean()
-        if df is None:
-            df = d[["date", f"epu_{t}"]].copy()
-        else:
-            df = df.merge(d[["date", f"epu_{t}"]], on="date", how="outer")
-    return df.sort_values("date") if df is not None else None
-
-
-def load_sentiment(country, data_dir):
-    """Load sentiment analysis data for a country"""
-    f = data_dir / f"{country}/sentiment/{country}_sentiment.csv"
-    if not f.exists():
-        return None
-    df = pd.read_csv(f)
-    df["date"] = pd.to_datetime(df["date"], format="mixed")
+    for col in ["EPU_index", "EPU_inflation_index", "EPU_job_index"]:
+        if col in df.columns:
+            df[f"{col}_ma3"] = df[col].rolling(window=3).mean()
     return df.sort_values("date")
 
 
@@ -180,9 +152,9 @@ def gen_epu_html(countries, data_dir, out):
     """Generate EPU visualization with raw and 3-month moving average lines"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {
-        c: df_to_json(load_epu(c, data_dir))
+        c: df_to_json(load_epu_data(c, data_dir))
         for c in countries
-        if load_epu(c, data_dir) is not None
+        if load_epu_data(c, data_dir) is not None
     }
     if not all_data:
         return
@@ -202,8 +174,8 @@ def gen_epu_html(countries, data_dir, out):
 
             // Extract date labels and EPU values
             const labels = data.map(r => formatDate(r.date));
-            const epuWeighted = data.map(r => r.epu_weighted);
-            const epuMA3 = data.map(r => r.epu_weighted_ma3);
+            const epuWeighted = data.map(r => r.EPU_index);
+            const epuMA3 = data.map(r => r.EPU_index_ma3);
 
             // Get canvas context and destroy previous chart if exists
             const ctx = document.getElementById('chart').getContext('2d');
@@ -216,7 +188,7 @@ def gen_epu_html(countries, data_dir, out):
                     labels: labels,
                     datasets: [
                         {
-                            label: 'EPU Weighted',
+                            label: 'EPU',
                             data: epuWeighted,
                             borderColor: '#aacddd',
                             borderWidth: 1.5,
@@ -227,7 +199,7 @@ def gen_epu_html(countries, data_dir, out):
                             pointHoverRadius: 5
                         },
                         {
-                            label: 'EPU Weighted Moving Average',
+                            label: 'EPU (3-Month MA)',
                             data: epuMA3,
                             borderColor: '#1d77b2',
                             borderWidth: 3,
@@ -286,9 +258,9 @@ def gen_epu_topics_html(countries, topics, data_dir, out):
     """Generate topic-specific EPU visualization with multiple datasets"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {
-        c: df_to_json(load_epu_topics(c, topics, data_dir))
+        c: df_to_json(load_epu_data(c, data_dir))
         for c in countries
-        if load_epu_topics(c, topics, data_dir) is not None
+        if load_epu_data(c, data_dir) is not None
     }
     if not all_data:
         return
@@ -297,14 +269,17 @@ def gen_epu_topics_html(countries, topics, data_dir, out):
     colors = ["#00a37c", "#d95e10"]
     labels = [" ".join(w.capitalize() for w in t.split("_")) for t in topics]
 
+    # Column keys matching the consolidated epu.csv format
+    col_keys = [f"EPU_{t}_index_ma3" for t in topics]
+
     # Convert to JSON for embedding in JavaScript
-    topics_json = json.dumps(topics)
+    col_keys_json = json.dumps(col_keys)
     colors_json = json.dumps(colors)
     labels_json = json.dumps(labels)
 
     # JavaScript code for topic-based EPU chart rendering
     script = f"""
-        const topics = {topics_json};
+        const colKeys = {col_keys_json};
         const colors = {colors_json};
         const labels = {labels_json};
 
@@ -324,10 +299,10 @@ def gen_epu_topics_html(countries, topics, data_dir, out):
 
             // Build datasets dynamically for each topic
             const datasets = [];
-            topics.forEach((topic, index) => {{
+            colKeys.forEach((col, index) => {{
                 datasets.push({{
                     label: `${{labels[index]}} EPU`,
-                    data: data.map(r => r[`epu_${{topic}}`]),
+                    data: data.map(r => r[col]),
                     borderColor: colors[index],
                     borderWidth: 3,
                     fill: false,
@@ -392,108 +367,13 @@ def gen_epu_topics_html(countries, topics, data_dir, out):
     print(f"Created {out}")
 
 
-def gen_sentiment_html(countries, data_dir, out):
-    """Generate sentiment analysis visualization"""
-    countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
-    all_data = {
-        c: df_to_json(load_sentiment(c, data_dir))
-        for c in countries
-        if load_sentiment(c, data_dir) is not None
-    }
-    if not all_data:
-        return
-
-    # JavaScript code for sentiment chart rendering
-    script = """
-        // Format date from YYYY-MM-DD to YYYY-MM
-        function formatDate(d) {
-            const date = new Date(d);
-            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        }
-
-        // Render chart for selected country
-        function renderChart(country) {
-            const data = allData[country];
-            if (!data || !data.length) return;
-
-            // Extract date labels and sentiment scores
-            const labels = data.map(r => formatDate(r.date));
-            const sentimentScores = data.map(r => r.score);
-
-            // Get canvas context and destroy previous chart if exists
-            const ctx = document.getElementById('chart').getContext('2d');
-            if (currentChart) currentChart.destroy();
-
-            // Create new line chart with filled area
-            currentChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Sentiment Score',
-                            data: sentimentScores,
-                            borderColor: '#2aa8f7',
-                            backgroundColor: 'rgba(42, 168, 247, 0.1)',
-                            borderWidth: 3,
-                            fill: true,  // Fill area under line
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: { usePointStyle: true, padding: 15 }
-                        },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(0,0,0,0.8)',
-                            padding: 12
-                        }
-                    },
-                    scales: {
-                        x: { display: true, title: { display: true, text: 'Date' } },
-                        y: { display: true, title: { display: true, text: 'Sentiment Score' } }
-                    }
-                }
-            });
-        }
-
-        // Event listener: re-render chart when country selection changes
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-
-        // Initial chart render with first country
-        renderChart(document.getElementById('country-select').value);
-    """
-
-    with open(out, "w") as f:
-        f.write(
-            gen_html(
-                "Sentiment Analysis",
-                "News Sentiment Score Over Time",
-                "sentiment-chart",
-                all_data,
-                countries,
-                script,
-            )
-        )
-    print(f"Created {out}")
-
-
 def gen_news_html(countries, data_dir, out):
     """Generate news article count visualization"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {
-        c: df_to_json(load_epu(c, data_dir))
+        c: df_to_json(load_epu_data(c, data_dir))
         for c in countries
-        if load_epu(c, data_dir) is not None
+        if load_epu_data(c, data_dir) is not None
     }
     if not all_data:
         return
@@ -574,6 +454,232 @@ def gen_news_html(countries, data_dir, out):
                 "News Article Count",
                 "Number of Articles Scraped Per Month",
                 "news-chart",
+                all_data,
+                countries,
+                script,
+            )
+        )
+    print(f"Created {out}")
+
+
+def gen_breadth_html(countries, data_dir, out):
+    """Generate E/P/U breadth index comparison visualization"""
+    countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
+    all_data = {
+        c: df_to_json(load_epu_data(c, data_dir))
+        for c in countries
+        if load_epu_data(c, data_dir) is not None
+    }
+    if not all_data:
+        return
+
+    # JavaScript code for breadth chart rendering
+    script = """
+        // Format date from YYYY-MM-DD to YYYY-MM
+        function formatDate(d) {
+            const date = new Date(d);
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        // Render chart for selected country
+        function renderChart(country) {
+            const data = allData[country];
+            if (!data || !data.length) return;
+
+            // Extract date labels
+            const labels = data.map(r => formatDate(r.date));
+
+            // Get canvas context and destroy previous chart if exists
+            const ctx = document.getElementById('chart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            // Create new line chart with E/P/U breadth datasets
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Economic Breadth',
+                            data: data.map(r => r.E_breadth),
+                            borderColor: '#1d77b2',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Political Breadth',
+                            data: data.map(r => r.P_breadth),
+                            borderColor: '#d95e10',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Uncertainty Breadth',
+                            data: data.map(r => r.U_breadth),
+                            borderColor: '#00a37c',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { usePointStyle: true, padding: 15 }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        x: { display: true, title: { display: true, text: 'Date' } },
+                        y: { display: true, title: { display: true, text: 'Breadth Index' } }
+                    }
+                }
+            });
+        }
+
+        // Event listener: re-render chart when country selection changes
+        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
+
+        // Initial chart render with first country
+        renderChart(document.getElementById('country-select').value);
+    """
+
+    with open(out, "w") as f:
+        f.write(
+            gen_html(
+                "EPU Breadth Index",
+                "Economic, Political, and Uncertainty Breadth",
+                "breadth-chart",
+                all_data,
+                countries,
+                script,
+            )
+        )
+    print(f"Created {out}")
+
+
+def gen_intensity_html(countries, data_dir, out):
+    """Generate E/P/U intensity index comparison visualization"""
+    countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
+    all_data = {
+        c: df_to_json(load_epu_data(c, data_dir))
+        for c in countries
+        if load_epu_data(c, data_dir) is not None
+    }
+    if not all_data:
+        return
+
+    # JavaScript code for intensity chart rendering
+    script = """
+        // Format date from YYYY-MM-DD to YYYY-MM
+        function formatDate(d) {
+            const date = new Date(d);
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        // Render chart for selected country
+        function renderChart(country) {
+            const data = allData[country];
+            if (!data || !data.length) return;
+
+            // Extract date labels
+            const labels = data.map(r => formatDate(r.date));
+
+            // Get canvas context and destroy previous chart if exists
+            const ctx = document.getElementById('chart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            // Create new line chart with E/P/U intensity datasets
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Economic Intensity',
+                            data: data.map(r => r.E_intensity),
+                            borderColor: '#1d77b2',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Political Intensity',
+                            data: data.map(r => r.P_intensity),
+                            borderColor: '#d95e10',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Uncertainty Intensity',
+                            data: data.map(r => r.U_intensity),
+                            borderColor: '#00a37c',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { usePointStyle: true, padding: 15 }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        x: { display: true, title: { display: true, text: 'Date' } },
+                        y: { display: true, title: { display: true, text: 'Intensity Index' } }
+                    }
+                }
+            });
+        }
+
+        // Event listener: re-render chart when country selection changes
+        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
+
+        // Initial chart render with first country
+        renderChart(document.getElementById('country-select').value);
+    """
+
+    with open(out, "w") as f:
+        f.write(
+            gen_html(
+                "EPU Intensity Index",
+                "Economic, Political, and Uncertainty Intensity",
+                "intensity-chart",
                 all_data,
                 countries,
                 script,
@@ -803,8 +909,9 @@ if __name__ == "__main__":
     gen_epu_topics_html(
         countries, ["inflation", "job"], DATA_DIR, OUTPUT_DIR / "epu_topics_pic.html"
     )
-    gen_sentiment_html(countries, DATA_DIR, OUTPUT_DIR / "sentiment_pic.html")
     gen_news_html(countries, DATA_DIR, OUTPUT_DIR / "news_count_pic.html")
+    gen_breadth_html(countries, DATA_DIR, OUTPUT_DIR / "breadth_pic.html")
+    gen_intensity_html(countries, DATA_DIR, OUTPUT_DIR / "intensity_pic.html")
     gen_pred_html(countries, DATA_DIR, OUTPUT_DIR / "train_predictions_pic.html")
     gen_oob_pred_html(
         countries, DATA_DIR, OUTPUT_DIR / "out_of_bag_predictions_pic.html"
