@@ -49,6 +49,7 @@ Last modified:
 """
 
 import os
+import unicodedata
 from typing import List, Union, Dict
 import pandas as pd
 import numpy as np
@@ -179,6 +180,7 @@ class EPU:
             df = df.query(subset_condition).reset_index(drop=True)
 
         df["body"] = df["body"].replace("\n", "").str.lower()
+        df["body"] = df["body"].apply(lambda x: unicodedata.normalize("NFC", str(x)))
         df["date"] = pd.to_datetime(df["date"], format="mixed")
         df["ym"] = [str(d.year) + "-" + str(d.month) for d in df.date]
         return df
@@ -253,13 +255,17 @@ class EPU:
                 if terms is not None:
                     # Boolean presence
                     raw[col] = (
-                        raw["body"].str.lower().apply(is_in_word_list, terms=terms)
+                        raw["body"]
+                        .str.lower()
+                        .apply(is_in_word_list, terms=terms, language=file_language)
                     )
                     # Keyword counts for intensity calculations
                     raw[f"{col}_count"] = (
                         raw["body"]
                         .str.lower()
-                        .apply(count_keywords_in_text, terms=terms)
+                        .apply(
+                            count_keywords_in_text, terms=terms, language=file_language
+                        )
                     )
                 else:
                     raw[col] = True
@@ -272,7 +278,11 @@ class EPU:
                 raw["additional"] = (
                     raw["body"]
                     .str.lower()
-                    .apply(is_in_word_list, terms=self.additional_terms)
+                    .apply(
+                        is_in_word_list,
+                        terms=self.additional_terms,
+                        language=file_language,
+                    )
                 )
                 raw["epu"] = (raw.epu) & (raw.additional)
 
