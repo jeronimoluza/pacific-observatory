@@ -1,4 +1,4 @@
-.PHONY: help test test-unit test-integration lint format docs clean
+.PHONY: help test test-unit test-integration docs clean
 
 # Environment setup for module imports
 export PYTHONPATH := src
@@ -12,11 +12,6 @@ help:
 	@echo "  make test-unit         Run unit tests only"
 	@echo "  make test-integration  Run integration tests only"
 	@echo "  make test-cov          Run tests with coverage report"
-	@echo ""
-	@echo "Code Quality:"
-	@echo "  make lint              Run linters (flake8, mypy)"
-	@echo "  make format            Format code (black, isort)"
-	@echo "  make check             Run all checks (lint + test)"
 	@echo ""
 	@echo "Documentation:"
 	@echo "  make docs              Build documentation"
@@ -48,26 +43,6 @@ test-cov:
 	@echo "Coverage report: htmlcov/index.html"
 
 # =============================================================================
-# Code Quality
-# =============================================================================
-
-lint:
-	@echo "Running flake8..."
-	-poetry run flake8 src/text --max-line-length=100 --ignore=E501,W503
-	@echo ""
-	@echo "Running mypy..."
-	-poetry run mypy src/text --ignore-missing-imports
-
-format:
-	@echo "Running black..."
-	poetry run black src/text tests --line-length=100
-	@echo ""
-	@echo "Running isort..."
-	poetry run isort src/text tests --profile=black --line-length=100
-
-check: lint test
-
-# =============================================================================
 # Documentation
 # =============================================================================
 
@@ -75,8 +50,6 @@ docs:
 	poetry run jupyter-book clean docs
 	poetry run jupyter-book build docs
 	@echo "Documentation built: docs/_build/html/index.html"
-
-docs-open: docs
 	open docs/_build/html/index.html
 
 docs-clean:
@@ -107,10 +80,6 @@ clean:
 	rm -rf .coverage
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete
-
-clean-data:
-	@echo "This will delete all scraped data. Are you sure? [y/N]"
-	@read -r response && [ "$$response" = "y" ] && rm -rf data/text/*/ || echo "Aborted."
 
 # =============================================================================
 # Pre-commit
