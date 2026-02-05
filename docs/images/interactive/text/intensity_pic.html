@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Economic Policy Uncertainty Index</title>
+    <title>EPU Intensity Index</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -84,37 +84,44 @@
             const data = allData[country];
             if (!data || !data.length) return;
 
-            // Extract date labels and EPU values
+            // Extract date labels
             const labels = data.map(r => formatDate(r.date));
-            const epuWeighted = data.map(r => r.EPU_index);
-            const epuMA3 = data.map(r => r.EPU_index_ma3);
 
             // Get canvas context and destroy previous chart if exists
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
-            // Create new line chart with two datasets
+            // Create new line chart with E/P/U intensity datasets
             currentChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [
                         {
-                            label: 'EPU',
-                            data: epuWeighted,
-                            borderColor: '#aacddd',
-                            borderWidth: 1.5,
-                            borderDash: [5, 5],  // Dotted line
+                            label: 'Economic Intensity',
+                            data: data.map(r => r.E_intensity),
+                            borderColor: '#1d77b2',
+                            borderWidth: 2.5,
                             fill: false,
                             tension: 0.1,
                             pointRadius: 0,
                             pointHoverRadius: 5
                         },
                         {
-                            label: 'EPU (3-Month MA)',
-                            data: epuMA3,
-                            borderColor: '#1d77b2',
-                            borderWidth: 3,
+                            label: 'Political Intensity',
+                            data: data.map(r => r.P_intensity),
+                            borderColor: '#d95e10',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Uncertainty Intensity',
+                            data: data.map(r => r.U_intensity),
+                            borderColor: '#00a37c',
+                            borderWidth: 2.5,
                             fill: false,
                             tension: 0.1,
                             pointRadius: 0,
@@ -139,7 +146,7 @@
                     },
                     scales: {
                         x: { display: true, title: { display: true, text: 'Date' } },
-                        y: { display: true, title: { display: true, text: 'EPU Index' } }
+                        y: { display: true, title: { display: true, text: 'Intensity Index' } }
                     }
                 }
             });
