@@ -1,9 +1,9 @@
 # Kosmo Configuration
 
 name: "Kosmo"
-country: "lao"
+country: "malaysia"
 base_url: "https://www.kosmo.com.my/"
-language: "lao"
+language: "malay"
 
 # Listing discovery configuration
 listing:
