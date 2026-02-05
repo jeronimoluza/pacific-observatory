@@ -1,3 +1,4 @@
+import argparse
 import sys
 import time
 from pathlib import Path
@@ -7,148 +8,79 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[3]
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
-import matplotlib.pyplot as plt  # noqa: E402
-import pandas as pd  # noqa: E402
-
 from src.text.analysis.epu import EPU  # noqa: E402
-from src.text.analysis.sentiment import calculate_sentiment  # noqa: E402
-from src.text.analysis.utils import generate_continous_df, load_topics_words  # noqa: E402
+from src.text.analysis.utils import load_topics_words  # noqa: E402
 
 PROJECT_ROOT = _PROJECT_ROOT
 
 DATA_ROOT = PROJECT_ROOT / "data" / "text"
-# EXCLUDED_COUNTRIES = {"marshall_islands", "tonga"}
 EXCLUDED_COUNTRIES = {}
 
-country_dirs = [
-    entry
-    for entry in DATA_ROOT.iterdir()
-    if entry.is_dir() and entry.name not in EXCLUDED_COUNTRIES
-]
+country_dirs = sorted(
+    [
+        entry
+        for entry in DATA_ROOT.iterdir()
+        if entry.is_dir() and entry.name not in EXCLUDED_COUNTRIES
+    ]
+)
 
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "text"
 
 
-def plot_epu(epu_stats, country_name, saved_folder):
-    fig, ax = plt.subplots(figsize=(8, 6))
-    epu_stats.plot(x="date", y="epu_weighted", color="blue", ax=ax)
-    epu_stats.plot(x="date", y="epu_unweighted", color="lightgray", alpha=0.5, ax=ax)
+def process_country(country, cutoff, subset_condition, additional_terms_keys):
+    """
+    Process all EPU indices for a single country and output one CSV.
 
-    title = " ".join(n[0].upper() + n[1:] for n in country_name.split("_"))
-    ax.set_title(f"{title}'s EPU Score")
-    ax.set_xlabel("Date")
-
-    fig.savefig(saved_folder / f"{country_name}_epu.png")
-
-
-def get_epu(
-    country,
-    cutoff,
-    subset_condition,
-    plot=False,
-    additional_terms=None,
-    additional_name=None,
-    calculate_extended_indices=True,
-    drop_intermediate_cols=True,
-):
+    Returns DataFrame with columns:
+    - date, ym, news_total
+    - EPU_index (base)
+    - EPU_{topic}_index for each topic
+    - E/P/U_breadth, E/P/U_intensity, EU/PU/EP_index
+    """
     country_name = country.name
     news_dirs = list(country.glob("*/news.csv"))
-    e = EPU(
-        news_dirs,
-        cutoff=cutoff,
-        additional_terms=additional_terms,
-        additional_name=additional_name,
-    )
-    e.get_epu_category(subset_condition=subset_condition)
-    e.get_count_stats(calculate_extended=calculate_extended_indices)
-    e.calculate_epu_score()
 
-    # Calculate extended indices (breadth, intensity, pairwise)
-    if calculate_extended_indices:
-        e.calculate_all_indices()
+    # 1. Calculate base EPU with extended indices
+    e_base = EPU(news_dirs, cutoff=cutoff)
+    e_base.get_epu_category(subset_condition=subset_condition)
+    e_base.get_count_stats(calculate_extended=True)
+    e_base.calculate_epu_score()
+    e_base.calculate_all_indices()
 
-    epu_stats = e.epu_stats
-    saved_folder = OUTPUT_DIR / f"{country_name}/epu/"
+    # Extract base EPU and extended indices
+    result = e_base.epu_stats[["date", "ym", "news_total"]].copy()
+    result["EPU_index"] = e_base.epu_stats["epu_weighted"]
+
+    # Add breadth indices (weighted only)
+    for cat in ["E", "P", "U"]:
+        result[f"{cat}_breadth"] = e_base.epu_stats[f"{cat}_breadth_weighted"]
+        result[f"{cat}_intensity"] = e_base.epu_stats[f"{cat}_intensity_weighted"]
+
+    # Add pairwise indices (rename _share to _index)
+    for pair in ["EU", "PU", "EP"]:
+        result[f"{pair}_index"] = e_base.epu_stats[f"{pair}_share_weighted"]
+
+    # 2. Calculate topic-specific EPU indices (inflation, job)
+    for topic in additional_terms_keys:
+        additional_terms = load_topics_words(additional_name=topic)
+        e_topic = EPU(
+            news_dirs,
+            cutoff=cutoff,
+            additional_terms=additional_terms,
+            additional_name=topic,
+        )
+        e_topic.get_epu_category(subset_condition=subset_condition)
+        e_topic.get_count_stats(calculate_extended=False)
+        e_topic.calculate_epu_score()
+
+        result[f"EPU_{topic}_index"] = e_topic.epu_stats["epu_weighted"]
+
+    # 3. Save single output file
+    saved_folder = OUTPUT_DIR / country_name / "epu"
     saved_folder.mkdir(parents=True, exist_ok=True)
+    result.to_csv(saved_folder / "epu.csv", encoding="utf-8", index=False)
 
-    # Determine filename based on additional_name
-    if additional_name:
-        filename = f"{country_name}_epu_{additional_name}.csv"
-    else:
-        filename = f"{country_name}_epu.csv"
-
-    if drop_intermediate_cols:
-        # Keep only final index columns (weighted versions, excluding intermediate z-scores)
-        final_index_cols = [
-            col
-            for col in epu_stats.columns
-            if col.endswith("_weighted")
-            and "_z_" not in col
-            and col != "z_score_weighted"
-        ]
-        keep_cols = ["date", "ym"] + final_index_cols
-        epu_stats = epu_stats[[c for c in keep_cols if c in epu_stats.columns]]
-
-    epu_stats.to_csv(saved_folder / filename, encoding="utf-8", index=False)
-
-    if plot:
-        plot_epu(epu_stats, country_name, saved_folder)
-
-    return epu_stats
-
-
-def plot_sentiment(sent_df, country_name, saved_folder):
-    fig, ax = plt.subplots(figsize=(8, 6))
-    sent_df.plot(x="date", y="score", color="blue", ax=ax)
-
-    title = " ".join(n[0].upper() + n[1:] for n in country_name.split("_"))
-    ax.set_title(f"{title}'s Sentiment Score")
-    ax.set_xlabel("Date")
-
-    fig.savefig(saved_folder / f"{country_name}_sentiment.png")
-
-
-def get_sentiment(
-    country,
-    cutoff,
-    subset_condition,
-    plot=True,
-    additional_terms=None,
-    additional_name=None,
-):
-    country_name = country.name
-    news_dirs = list(country.glob("*/news.csv"))
-    e = EPU(
-        news_dirs,
-        cutoff=cutoff,
-        additional_terms=additional_terms,
-        additional_name=additional_name,
-    )
-    e.get_epu_category(subset_condition=subset_condition)
-
-    dfs = pd.DataFrame()
-    for _, df in e.raw_files:
-        df_select = df[["body", "date", "econ", "policy"]]
-        dfs = pd.concat([dfs, df_select], axis=0).reset_index(drop=True)
-
-    sent_df, sent_mean, sent_std = calculate_sentiment(dfs)
-
-    min_date = str(sent_df.date.min().date())
-    max_date = str(sent_df.date.max().date())
-
-    sent_df = generate_continous_df(sent_df, min_date, max_date, freq="MS")
-    sent_df["z_score"] = sent_df["score"].apply(lambda x: (x - sent_mean) / sent_std)
-
-    saved_folder = OUTPUT_DIR / f"{country_name}/sentiment/"
-    saved_folder.mkdir(parents=True, exist_ok=True)
-    sent_df.to_csv(
-        saved_folder / f"{country_name}_sentiment.csv",
-        encoding="utf-8",
-        index=False,
-    )
-
-    if plot:
-        plot_sentiment(sent_df, country_name, saved_folder)
+    return result
 
 
 if __name__ == "__main__":
@@ -156,14 +88,24 @@ if __name__ == "__main__":
     subset_condition = "date >= '2015-01-01' and date <= '2026-01-31'"
 
     additional_terms_keys = ["inflation", "job"]
-    # Load additional terms from topics_words.json
-    additional_terms_job = load_topics_words(additional_name="job")
-    additional_name_job = "job"
 
-    additional_terms_inflation = load_topics_words(additional_name="inflation")
-    additional_name_inflation = "inflation"
-    plot = False
-    skip_sentiment = True  # VADER only supports English
+    parser = argparse.ArgumentParser(description="EPU Analysis")
+    parser.add_argument(
+        "--country",
+        type=str,
+        default=None,
+        help="Process a single country (e.g. thailand). Default: all countries.",
+    )
+    args = parser.parse_args()
+
+    if args.country:
+        matched = [d for d in country_dirs if d.name == args.country]
+        if not matched:
+            available = [d.name for d in country_dirs]
+            print(f"Error: country '{args.country}' not found.")
+            print(f"Available countries: {', '.join(available)}")
+            sys.exit(1)
+        country_dirs = matched
 
     total_countries = len(country_dirs)
     start_time = time.time()
@@ -188,50 +130,17 @@ if __name__ == "__main__":
 
         print(f"\n[{i+1}/{total_countries}] {country.name} - {eta_str}")
         try:
-            get_epu(
+            process_country(
                 country,
                 cutoff,
                 subset_condition,
-                plot=plot,
+                additional_terms_keys,
             )
-            print("  ✓ Base EPU completed")
+            print("  ✓ EPU processing completed")
         except Exception as e:
-            print(f"  ✗ Base EPU FAILED: {e}")
+            print(f"  ✗ EPU processing FAILED: {e}")
             print(f"    Skipping {country.name} due to error")
             continue
-
-        if not skip_sentiment:
-            get_sentiment(
-                country,
-                cutoff,
-                subset_condition,
-                plot=plot,
-            )
-        for names in additional_terms_keys:
-            additional_terms = load_topics_words(additional_name=names)
-            additional_name = names
-            try:
-                get_epu(
-                    country,
-                    cutoff,
-                    subset_condition,
-                    plot=plot,
-                    additional_terms=additional_terms,
-                    additional_name=additional_name,
-                )
-                print(f"  ✓ EPU ({names}) completed")
-            except Exception as e:
-                print(f"  ✗ EPU ({names}) FAILED: {e}")
-
-            if not skip_sentiment:
-                get_sentiment(
-                    country,
-                    cutoff,
-                    subset_condition,
-                    plot=plot,
-                    additional_terms=additional_terms,
-                    additional_name=additional_name,
-                )
 
         country_elapsed = time.time() - country_start
         print(f"  Done in {country_elapsed:.1f}s")
