@@ -559,3 +559,65 @@ class EPU:
         self.epu_stats = calc.calculate_breadth_indices(self.epu_stats, sources)
         self.epu_stats = calc.calculate_intensity_indices(self.epu_stats, sources)
         self.epu_stats = calc.calculate_pairwise_indices(self.epu_stats, sources)
+
+    def calculate_group_uncertainty_counts(
+        self, groups: Dict[str, List[str]]
+    ) -> pd.DataFrame:
+        """
+        Calculate U∩G counts per source per month for each group.
+
+        Reuses self.raw_files (populated by get_epu_category) to detect
+        group keyword presence and compute intersection with uncertainty.
+
+        Args:
+            groups: Dict mapping group names to keyword lists.
+
+        Returns:
+            DataFrame with ym plus per-source columns:
+            {source}_UG_{group}_count, {source}_A_total, {source}_U_count
+        """
+        merged = pd.DataFrame()
+
+        for source, raw in self.raw_files:
+            # Detect language
+            if "language" in raw.columns and not raw["language"].isna().all():
+                file_language = (
+                    raw["language"].mode().iloc[0]
+                    if len(raw["language"].mode()) > 0
+                    else "en"
+                )
+            else:
+                file_language = "en"
+
+            agg_dict = {}
+            df = raw.copy()
+
+            for group_name, terms in groups.items():
+                col = f"has_{group_name}"
+                df[col] = df["body"].apply(
+                    is_in_word_list, terms=terms, language=file_language
+                )
+                ug_col = f"UG_{group_name}"
+                df[ug_col] = df["uncertain"] & df[col]
+                agg_dict[ug_col] = "sum"
+
+            agg_dict["body"] = "count"
+            agg_dict["uncertain"] = "sum"
+
+            grouped = df.groupby("ym").agg(agg_dict).reset_index()
+
+            rename_map = {
+                "body": f"{source}_A_total",
+                "uncertain": f"{source}_U_count",
+            }
+            for group_name in groups:
+                rename_map[f"UG_{group_name}"] = f"{source}_UG_{group_name}_count"
+
+            grouped = grouped.rename(columns=rename_map)
+
+            if merged.empty:
+                merged = grouped
+            else:
+                merged = pd.merge(merged, grouped, how="outer", on="ym")
+
+        return merged

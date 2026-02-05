@@ -253,9 +253,14 @@ class IndexCalculator:
         # Weighted: use newspaper weights
         df[f"{index_name}_z_weighted"] = 0.0
         for z_col in z_cols:
-            # Extract source name from z_col (format: {source}_{category}_{type}_z)
-            parts = z_col.rsplit("_", 3)  # Split from right
-            source = parts[0]
+            # Extract source name by matching against known sources
+            source = None
+            for s in sources:
+                if z_col.startswith(f"{s}_"):
+                    source = s
+                    break
+            if source is None:
+                continue
             weight_col = f"{source}_weights"
 
             if weight_col in df.columns:
@@ -290,4 +295,72 @@ class IndexCalculator:
             scaling_factor = 100 / mean_val
             df[output_name] = scaling_factor * df[z_col]
 
+        return df
+
+    def calculate_absolute_uncertainty_attribution(
+        self,
+        df: pd.DataFrame,
+        sources: List[str],
+        group_names: List[str],
+    ) -> pd.DataFrame:
+        """
+        Calculate absolute uncertainty attribution: (U ∩ G) / A per group.
+
+        Args:
+            df: DataFrame with per-source UG counts and A_total.
+            sources: List of source names.
+            group_names: List of group names.
+
+        Returns:
+            DataFrame with {group}_absolute_weighted columns added.
+        """
+        df = df.copy()
+        for g in group_names:
+            ratio_cols = []
+            for source in sources:
+                ug_col = f"{source}_UG_{g}_count"
+                total_col = f"{source}_A_total"
+                ratio_col = f"{source}_UG_{g}_abs_ratio"
+                if ug_col in df.columns and total_col in df.columns:
+                    df[ratio_col] = df[ug_col] / df[total_col]
+                    df[ratio_col] = df[ratio_col].replace([np.inf, -np.inf], np.nan)
+                    ratio_cols.append(ratio_col)
+            if ratio_cols:
+                df = self._standardize_aggregate_normalize(
+                    df, ratio_cols, sources, f"UG_{g}_abs"
+                )
+        return df
+
+    def calculate_framing_uncertainty_attribution(
+        self,
+        df: pd.DataFrame,
+        sources: List[str],
+        group_names: List[str],
+    ) -> pd.DataFrame:
+        """
+        Calculate framing uncertainty attribution: (U ∩ G) / U per group.
+
+        Args:
+            df: DataFrame with per-source UG counts and U_count.
+            sources: List of source names.
+            group_names: List of group names.
+
+        Returns:
+            DataFrame with {group}_framing_weighted columns added.
+        """
+        df = df.copy()
+        for g in group_names:
+            ratio_cols = []
+            for source in sources:
+                ug_col = f"{source}_UG_{g}_count"
+                u_col = f"{source}_U_count"
+                ratio_col = f"{source}_UG_{g}_frm_ratio"
+                if ug_col in df.columns and u_col in df.columns:
+                    df[ratio_col] = df[ug_col] / df[u_col]
+                    df[ratio_col] = df[ratio_col].replace([np.inf, -np.inf], np.nan)
+                    ratio_cols.append(ratio_col)
+            if ratio_cols:
+                df = self._standardize_aggregate_normalize(
+                    df, ratio_cols, sources, f"UG_{g}_frm"
+                )
         return df

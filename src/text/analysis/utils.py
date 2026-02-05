@@ -228,6 +228,31 @@ def load_topics_words(
         return topics_data[additional_name]
 
 
+def load_all_groups(
+    source_file: str = "topics", language: str = "en"
+) -> Dict[str, List[str]]:
+    """
+    Load all keyword groups from topics.json or actors.json.
+
+    Args:
+        source_file: Base name of the JSON file ('topics' or 'actors').
+        language: Language code. Falls back to 'en' if not found.
+
+    Returns:
+        Dict mapping group names to keyword lists.
+    """
+    keywords_dir = Path(__file__).parent / "keywords"
+    lang_dir = keywords_dir / language
+    filename = f"{source_file}.json"
+    if not (lang_dir / filename).exists():
+        lang_dir = keywords_dir / "en"
+    filepath = lang_dir / filename
+    if not filepath.exists():
+        raise FileNotFoundError(f"{filename} not found at {filepath}")
+    with open(filepath, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
 def generate_news_statistics_table(country_folder: Path) -> str:
     """
     Generate a markdown table with news statistics by country and newspaper/media source.
