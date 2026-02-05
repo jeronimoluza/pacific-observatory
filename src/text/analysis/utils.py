@@ -181,58 +181,51 @@ def load_topics_words(
     language: str = "en",
 ) -> Dict[str, Union[List[str], Dict[str, List[str]]]]:
     """
-    Load topic words from the topics_words.json configuration file.
+    Load topic words from per-language keyword files.
 
     Args:
         additional_name (Union[str, None]): Optional name of additional topic category
             (e.g., 'job', 'inflation'). If provided, returns only that category's terms.
         language (str): Language code (e.g., 'en', 'km', 'zh'). Defaults to 'en' for English.
-            If the language is not found in the config, falls back to 'en'.
+            If the language is not found, falls back to 'en'.
 
     Returns:
         Dict containing:
-        - If additional_name is None: All topics with keys 'economic', 'policy', 'uncertainty', 'additional_terms'
-        - If additional_name is provided: Only the specified additional_terms category
+        - If additional_name is None: Dict with keys 'economic', 'policy', 'uncertainty'
+        - If additional_name is provided: List of terms for that topic category
 
     Raises:
-        FileNotFoundError: If topics_words.json is not found.
-        KeyError: If additional_name is provided but not found in additional_terms.
+        FileNotFoundError: If keyword files are not found.
+        KeyError: If additional_name is provided but not found in topics.json.
     """
-    config_path = Path(__file__).parent / "topics_words.json"
-
-    if not config_path.exists():
-        raise FileNotFoundError(f"topics_words.json not found at {config_path}")
-
-    with open(config_path, "r", encoding="utf-8") as f:
-        topics_data = json.load(f)
-
-    # Check if the config is language-keyed (new format) or flat (old format)
-    # New format: {"en": {"economic": [...], ...}, "km": {...}, ...}
-    # Old format: {"economic": [...], "policy": [...], ...}
-    is_language_keyed = language in topics_data or "en" in topics_data
-
-    if is_language_keyed:
-        # Use requested language, fall back to 'en' if not found
-        if language in topics_data:
-            lang_data = topics_data[language]
-        elif "en" in topics_data:
-            lang_data = topics_data["en"]
-        else:
-            # Old format - use as-is
-            lang_data = topics_data
-    else:
-        # Old format (flat structure) - use as-is
-        lang_data = topics_data
+    keywords_dir = Path(__file__).parent / "keywords"
 
     if additional_name is None:
-        return lang_data
+        # Load EPU keywords
+        lang_dir = keywords_dir / language
+        if not lang_dir.exists():
+            lang_dir = keywords_dir / "en"
+        epu_path = lang_dir / "epu.json"
+        if not epu_path.exists():
+            raise FileNotFoundError(f"epu.json not found at {epu_path}")
+        with open(epu_path, "r", encoding="utf-8") as f:
+            return json.load(f)
     else:
-        if additional_name not in lang_data.get("additional_terms", {}):
+        # Load topic keywords (only English for now)
+        lang_dir = keywords_dir / language
+        if not (lang_dir / "topics.json").exists():
+            lang_dir = keywords_dir / "en"
+        topics_path = lang_dir / "topics.json"
+        if not topics_path.exists():
+            raise FileNotFoundError(f"topics.json not found at {topics_path}")
+        with open(topics_path, "r", encoding="utf-8") as f:
+            topics_data = json.load(f)
+        if additional_name not in topics_data:
             raise KeyError(
-                f"additional_name '{additional_name}' not found in topics_words.json for language '{language}'. "
-                f"Available options: {list(lang_data.get('additional_terms', {}).keys())}"
+                f"additional_name '{additional_name}' not found in {topics_path}. "
+                f"Available options: {list(topics_data.keys())}"
             )
-        return lang_data["additional_terms"][additional_name]
+        return topics_data[additional_name]
 
 
 def generate_news_statistics_table(country_folder: Path) -> str:

@@ -1,0 +1,47 @@
+{
+  "economic": [
+    "ekonomi",
+    "ekonomik",
+    "ilmu ekonomi",
+    "perniagaan",
+    "bisnes",
+    "kewangan",
+    "finansial"
+  ],
+  "policy": [
+    "kerajaan",
+    "pentadbiran",
+    "pihak berkuasa",
+    "pihak berwajib",
+    "menteri",
+    "kementerian",
+    "parlimen",
+    "berparlimen",
+    "cukai",
+    "peraturan",
+    "regulasi",
+    "perundangan",
+    "undang-undang",
+    "legislasi",
+    "bank pusat",
+    "bank sentral",
+    "IMF",
+    "Tabung Kewangan Antarabangsa",
+    "Bank Dunia"
+  ],
+  "uncertainty": [
+    "tidak pasti",
+    "ketidakpastian",
+    "tidak diketahui",
+    "tidak stabil",
+    "ragu-ragu",
+    "belum ditentukan",
+    "berisiko",
+    "risiko",
+    "tidak boleh dipercayai",
+    "tidak boleh diharap",
+    "turun naik",
+    "fluktuasi",
+    "tidak dapat diramal"
+  ]
+}

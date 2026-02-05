@@ -1,8 +1,8 @@
 """
-Convert language_terms.csv to topics_words.json format.
+Convert language_terms.csv into per-language keyword files.
 
 This script reads EPU terms from the CSV file and merges them with existing
-English terms in topics_words.json, creating a multi-language term dictionary.
+keyword files under keywords/{lang}/epu.json, preserving English topics.json.
 
 Usage:
     python src/text/analysis/convert_language_terms.py
@@ -14,7 +14,7 @@ from pathlib import Path
 
 ANALYSIS_DIR = Path(__file__).resolve().parent
 CSV_PATH = ANALYSIS_DIR / "language_terms.csv"
-JSON_PATH = ANALYSIS_DIR / "topics_words.json"
+KEYWORDS_DIR = ANALYSIS_DIR / "keywords"
 
 # Mapping from CSV language names to config codes
 LANGUAGE_MAPPING = {
@@ -75,10 +75,24 @@ def parse_terms(term_string: str) -> list[str]:
     return terms
 
 
-def load_existing_json() -> dict:
-    """Load existing topics_words.json file."""
-    with open(JSON_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+def load_existing_keywords() -> dict:
+    """Load existing per-language keyword files into {lang: {category: [terms]}} dict."""
+    all_data = {}
+    if not KEYWORDS_DIR.exists():
+        return all_data
+    for lang_dir in sorted(KEYWORDS_DIR.iterdir()):
+        if not lang_dir.is_dir():
+            continue
+        lang = lang_dir.name
+        epu_path = lang_dir / "epu.json"
+        if epu_path.exists():
+            with open(epu_path, "r", encoding="utf-8") as f:
+                all_data[lang] = json.load(f)
+        topics_path = lang_dir / "topics.json"
+        if topics_path.exists():
+            with open(topics_path, "r", encoding="utf-8") as f:
+                all_data.setdefault(lang, {})["additional_terms"] = json.load(f)
+    return all_data
 
 
 def load_csv_terms() -> dict:
@@ -125,8 +139,8 @@ def load_csv_terms() -> dict:
 
 def merge_and_save(existing: dict, new_terms: dict) -> dict:
     """
-    Merge new language terms with existing JSON structure.
-    Preserves English terms and additional_terms.
+    Merge new language terms with existing keywords and write per-language files.
+    Preserves English terms and topics.json.
     """
     # Start with English terms
     merged = {"en": existing.get("en", {})}
@@ -135,16 +149,35 @@ def merge_and_save(existing: dict, new_terms: dict) -> dict:
     for lang_code, categories in sorted(new_terms.items()):
         merged[lang_code] = categories
 
-    # Save to JSON
-    with open(JSON_PATH, "w", encoding="utf-8") as f:
-        json.dump(merged, f, ensure_ascii=False, indent=2)
+    # Write per-language files
+    for lang, lang_data in merged.items():
+        lang_dir = KEYWORDS_DIR / lang
+        lang_dir.mkdir(parents=True, exist_ok=True)
+
+        # EPU keywords
+        epu = {
+            k: lang_data[k]
+            for k in ("economic", "policy", "uncertainty")
+            if k in lang_data
+        }
+        with open(lang_dir / "epu.json", "w", encoding="utf-8") as f:
+            json.dump(epu, f, ensure_ascii=False, indent=2)
+            f.write("\n")
+
+        # Topics keywords (if present, e.g. English)
+        if "additional_terms" in lang_data:
+            with open(lang_dir / "topics.json", "w", encoding="utf-8") as f:
+                json.dump(
+                    lang_data["additional_terms"], f, ensure_ascii=False, indent=2
+                )
+                f.write("\n")
 
     return merged
 
 
 def main():
-    print(f"Loading existing JSON from {JSON_PATH}")
-    existing = load_existing_json()
+    print(f"Loading existing keywords from {KEYWORDS_DIR}")
+    existing = load_existing_keywords()
 
     print(f"Loading CSV terms from {CSV_PATH}")
     new_terms = load_csv_terms()
@@ -155,19 +188,19 @@ def main():
         total = sum(len(t) for t in terms.values())
         print(f"  - {lang_code}: {total} terms")
 
-    print("\nMerging and saving to JSON...")
+    print("\nMerging and saving keyword files...")
     merged = merge_and_save(existing, new_terms)
 
     print(f"\nFinal structure has {len(merged)} language entries:")
     for lang_code in merged.keys():
         if lang_code == "en":
-            print(f"  - {lang_code}: (preserved with additional_terms)")
+            print(f"  - {lang_code}: (preserved with topics.json)")
         else:
             terms = merged[lang_code]
             total = sum(len(t) for t in terms.values())
             print(f"  - {lang_code}: {total} terms")
 
-    print(f"\nSaved to {JSON_PATH}")
+    print(f"\nSaved to {KEYWORDS_DIR}")
 
 
 if __name__ == "__main__":

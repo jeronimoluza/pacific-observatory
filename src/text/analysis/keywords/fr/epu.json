@@ -1,0 +1,49 @@
+{
+  "economic": [
+    "économie",
+    "économique",
+    "sciences économiques",
+    "affaires",
+    "entreprise",
+    "finance",
+    "finances",
+    "financier",
+    "financière"
+  ],
+  "policy": [
+    "gouvernement",
+    "gouvernemental",
+    "publique",
+    "autorités",
+    "ministre",
+    "ministère",
+    "parlement",
+    "parlementaire",
+    "impôt",
+    "taxe",
+    "réglementation",
+    "régulation",
+    "législation",
+    "banque centrale",
+    "FMI",
+    "Fonds monétaire international",
+    "Banque mondiale"
+  ],
+  "uncertainty": [
+    "incertain",
+    "incertitude",
+    "incertitudes",
+    "inconnu",
+    "inconnue",
+    "instable",
+    "pas sûr",
+    "indéterminé",
+    "risqué",
+    "risque",
+    "pas certain",
+    "peu fiable",
+    "non fiable",
+    "fluctuations",
+    "imprévisible"
+  ]
+}

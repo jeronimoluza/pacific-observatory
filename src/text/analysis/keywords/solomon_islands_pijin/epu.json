@@ -1,0 +1,44 @@
+{
+  "economic": [
+    "ekonomi",
+    "ekonomik",
+    "bisnis",
+    "finance",
+    "mani",
+    "bilong mani"
+  ],
+  "policy": [
+    "gavman",
+    "bilong gavman",
+    "otoriti",
+    "olketa ofisa",
+    "minista",
+    "ministri",
+    "dipatmen",
+    "palamen",
+    "bilong palamen",
+    "takis",
+    "rul",
+    "loa",
+    "sentral bank",
+    "IMF",
+    "International Monetary Fund",
+    "World Bank",
+    "Wol Bank"
+  ],
+  "uncertainty": [
+    "no sua",
+    "no klia",
+    "ol no klia",
+    "no save",
+    "no stabil",
+    "no disaid yet",
+    "risky",
+    "garem risk",
+    "risk",
+    "no trustem",
+    "senis antap-daon",
+    "fluktuesen",
+    "no save predik"
+  ]
+}
