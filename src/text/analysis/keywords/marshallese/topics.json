@@ -1,0 +1,194 @@
+{
+  "economic_growth": [
+    "eddodo in ekonomik",
+    "eddodo",
+    "gdp",
+    "gross domestic product",
+    "kōjparok ekonomik",
+    "dik ekonomik",
+    "jorrāān ekonomik",
+    "bar eddodo ekonomik",
+    "jerbal in ekonomik",
+    "jāān eo an juon armej",
+    "lale ekonomik"
+  ],
+  "public_debt": [
+    "tōkelik in kien",
+    "tōkelik in aelōn̄",
+    "eḷap tōkelik",
+    "kōllā tōkelik",
+    "tōkelik emaron kōllā",
+    "ukōt tōkelik",
+    "jolōt tōkelik",
+    "jab kōllā tōkelik"
+  ],
+  "fiscal_policy": [
+    "kein kallib in jāān",
+    "kōjerbal jāān in kien",
+    "bajit",
+    "dik bajit",
+    "elōn̄ bajit",
+    "kanōj kadik kōjerbal",
+    "jipan̄ ekonomik",
+    "jāān in kien"
+  ],
+  "monetary_policy": [
+    "kein kallib in jāān",
+    "ret in intres",
+    "intres ret",
+    "policy rate",
+    "kaḷapḷapi ret",
+    "kadiki ret",
+    "jāān eo ej pād"
+  ],
+  "exchange_rate": [
+    "eksjenj ret",
+    "jāān",
+    "dik jāān",
+    "kaḷapḷapi jāān",
+    "foreign exchange",
+    "forex",
+    "tōḷā",
+    "dollar"
+  ],
+  "financial_stability": [
+    "jonak in jāān",
+    "jerbal in bank",
+    "apan̄ in bank",
+    "apan̄ in ekonomik",
+    "bank ej bōk",
+    "apan̄ in tōkelik"
+  ],
+  "trade": [
+    "wia jerbal",
+    "kōjerbal n̄an likin",
+    "kōjerbal jen likin",
+    "exports",
+    "imports",
+    "pālōns in wia jerbal",
+    "tariffs",
+    "customs",
+    "lōkjak in wia jerbal"
+  ],
+  "capital_flows": [
+    "tok in jāān",
+    "invest jen likin",
+    "foreign direct investment",
+    "fdi",
+    "jāān ej tok",
+    "jāān ej ilok",
+    "invest jen aelōn̄ ko jet"
+  ],
+  "labor_market": [
+    "makit in jerbal",
+    "jerbal",
+    "ejjelok jerbal",
+    "kōllā",
+    "salari",
+    "kanōj jolok jerbal",
+    "lewōj jerbal",
+    "jako jerbal"
+  ],
+  "inflation_prices": [
+    "kaḷapḷapi wōnān",
+    "inflation",
+    "wōnān elōn̄",
+    "wōnān in mour",
+    "consumer price index",
+    "cpi",
+    "wōnān in men̄a ko",
+    "kanōj wōnān",
+    "maroñ in wia"
+  ],
+  "energy": [
+    "enaji",
+    "oil",
+    "gas",
+    "fuel",
+    "elektrisiti",
+    "power",
+    "wōnān in enaji",
+    "dik enaji",
+    "enaji ekkā"
+  ],
+  "food_security": [
+    "mon̄ā",
+    "wōnān in mon̄ā",
+    "jonak in mon̄ā",
+    "dik mon̄ā",
+    "kaltivar",
+    "unin",
+    "rais",
+    "wit"
+  ],
+  "housing_real_estate": [
+    "em̧",
+    "bwidej",
+    "men̄a ṃōṃan",
+    "tōkelik in em̧",
+    "wōnān in em̧",
+    "renti em̧",
+    "makit in em̧",
+    "kōm̧m̧an em̧",
+    "wōnān in bwidej"
+  ],
+  "inequality_poverty": [
+    "jab iōñ",
+    "jab iōñ in jāān",
+    "ri-nana",
+    "jidik jāān",
+    "jonak in mour",
+    "jipan̄ armej",
+    "jipan̄ in kien",
+    "kōjerbal n̄an armej"
+  ],
+  "climate_environment": [
+    "mejatoto",
+    "ukōt mejatoto",
+    "kalōt ālkin",
+    "carbon",
+    "emission",
+    "apan̄ in jouj",
+    "ḷapḷap in dān",
+    "māle",
+    "kabōjrak kalōt"
+  ],
+  "infrastructure": [
+    "infrastruksa",
+    "iaḷ",
+    "transport",
+    "wob",
+    "airport",
+    "dān",
+    "jerbal in kien",
+    "invest n̄an infrastruksa"
+  ],
+  "political_stability": [
+    "jonak in politik",
+    "apan̄ in politik",
+    "protest",
+    "kwal̗ōk",
+    "ilikin ṃōj",
+    "politikal kraisis",
+    "apan̄ in kien",
+    "emejensi"
+  ],
+  "corruption_governance": [
+    "korapsen",
+    "eṃṃan kien",
+    "transparen",
+    "akaontabiliti",
+    "misjmanajmen",
+    "fraod",
+    "briberi",
+    "rul in loa"
+  ],
+  "external_shocks": [
+    "lal̗ōk in lal̗ap",
+    "kraisis in lal̗ap",
+    "apan̄ jen likin",
+    "apan̄ in komoditi",
+    "ekonomi in lal̗ap apan̄",
+    "makit in lal̗ap"
+  ]
+}

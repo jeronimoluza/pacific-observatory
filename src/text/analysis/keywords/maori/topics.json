@@ -1,0 +1,196 @@
+{
+  "economic_growth": [
+    "tipu ohanga",
+    "tipu",
+    "gdp",
+    "gross domestic product",
+    "whakawhānui ohanga",
+    "paheke ohanga",
+    "hekenga ohanga",
+    "whakaora ohanga",
+    "mahi ohanga",
+    "moni whiwhi mō ia tangata",
+    "tirohanga ohanga"
+  ],
+  "public_debt": [
+    "nama a te kāwanatanga",
+    "nama ā-motu",
+    "kawenga nama",
+    "utu nama",
+    "utu nama ā-motu",
+    "toitū o te nama",
+    "whakahou nama",
+    "whakakore nama",
+    "kore utu nama"
+  ],
+  "fiscal_policy": [
+    "kaupapahere ahumoni",
+    "whakapau moni a te kāwanatanga",
+    "tahua",
+    "tahua pūtea",
+    "takarepa tahua",
+    "tāpirihanga tahua",
+    "whakaiti whakapaunga",
+    "whakaoho ohanga",
+    "pūtea a te kāwanatanga"
+  ],
+  "monetary_policy": [
+    "kaupapahere ahumoni",
+    "pāpātanga huamoni",
+    "pāpātanga nama",
+    "policy rate",
+    "hiki i te pāpātanga",
+    "whakaheke i te pāpātanga",
+    "rauemi moni"
+  ],
+  "exchange_rate": [
+    "pāpātanga whakawhiti moni",
+    "moni",
+    "hekenga moni",
+    "pikinga moni",
+    "foreign exchange",
+    "forex",
+    "tāra",
+    "dollar"
+  ],
+  "financial_stability": [
+    "toitū ahumoni",
+    "rāngai pēke",
+    "raru pēke",
+    "raru ahumoni",
+    "hinga pēke",
+    "raru nama"
+  ],
+  "trade": [
+    "tauhokohoko",
+    "kaweake",
+    "kawemai",
+    "exports",
+    "imports",
+    "toenga tauhokohoko",
+    "takarepa tauhokohoko",
+    "tariffs",
+    "customs",
+    "kirimana tauhokohoko"
+  ],
+  "capital_flows": [
+    "rere o te moni",
+    "haumi mai tāwāhi",
+    "foreign direct investment",
+    "fdi",
+    "moni uru mai",
+    "moni rere atu",
+    "haumi mai i tāwāhi"
+  ],
+  "labor_market": [
+    "mākete mahi",
+    "mahi",
+    "kore mahi",
+    "utu mahi",
+    "utu ā-wiki",
+    "whakarēhita",
+    "tuku mahi",
+    "waihanga mahi",
+    "ngaro mahi"
+  ],
+  "inflation_prices": [
+    "pikinga utu",
+    "inflation",
+    "hiki utu",
+    "utu oranga",
+    "consumer price index",
+    "cpi",
+    "utu kiritaki",
+    "here utu",
+    "kaha hokohoko"
+  ],
+  "energy": [
+    "pūngao",
+    "hinu",
+    "kasa",
+    "penehīni",
+    "hiko",
+    "utu pūngao",
+    "iti pūngao",
+    "pūngao whakahou"
+  ],
+  "food_security": [
+    "kai",
+    "utu kai",
+    "haumarutanga kai",
+    "iti kai",
+    "ahuwhenua",
+    "hauhake",
+    "raihi",
+    "wīti"
+  ],
+  "housing_real_estate": [
+    "whare",
+    "whenua",
+    "rawa tūturu",
+    "mōkete",
+    "utu whare",
+    "rēti",
+    "mākete whare",
+    "hanga whare",
+    "utu whenua"
+  ],
+  "inequality_poverty": [
+    "ōritenga kore",
+    "ōritenga kore moni whiwhi",
+    "rawakore",
+    "moni whiwhi iti",
+    "paerewa oranga",
+    "ārai pāpori",
+    "āwhina pāpori",
+    "whakapaunga pāpori"
+  ],
+  "climate_environment": [
+    "āhuarangi",
+    "huringa āhuarangi",
+    "taiao",
+    "waro",
+    "tukunga",
+    "aituā ā-taiao",
+    "waipuke",
+    "tauraki",
+    "pānga taiao"
+  ],
+  "infrastructure": [
+    "hanganga",
+    "rori",
+    "waka",
+    "tauranga waka",
+    "taunga rererangi",
+    "wai",
+    "mahi a te kāwanatanga",
+    "haumi hanganga"
+  ],
+  "political_stability": [
+    "toitū tōrangapū",
+    "raruraru tōrangapū",
+    "porotēhi",
+    "whakaaturanga",
+    "pōti",
+    "raru tōrangapū",
+    "raru kāwanatanga",
+    "āhuatanga ohorere"
+  ],
+  "corruption_governance": [
+    "pūhore",
+    "kāwanatanga pai",
+    "māramatanga",
+    "haepapa",
+    "whakahaere hē",
+    "mākutu",
+    "ture tika"
+  ],
+  "external_shocks": [
+    "paheke ā-ao",
+    "raru ā-ao",
+    "pānga mai waho",
+    "pānga rawa",
+    "raru ahumoni ā-ao",
+    "mākete ā-ao"
+  ]
+}

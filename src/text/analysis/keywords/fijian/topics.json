@@ -1,0 +1,198 @@
+{
+  "economic_growth": [
+    "tubu vakailavo",
+    "tubu ni ekonomi",
+    "gdp",
+    "gross domestic product",
+    "tubu vakailavo levu",
+    "vakamalua ni ekonomi",
+    "buca ni ekonomi",
+    "ladevu ni ekonomi",
+    "cakacaka vakailavo",
+    "ilavo e rawata e dua",
+    "kilaka ni ekonomi"
+  ],
+  "public_debt": [
+    "dinau ni matanitu",
+    "dinau vakamatanitu",
+    "dinau levu ni matanitu",
+    "saumi dinau",
+    "saumi ni dinau",
+    "dinau e rawa ni sauma",
+    "vakadodonutaki ni dinau",
+    "vakacegui ni dinau",
+    "sega ni sauma na dinau"
+  ],
+  "fiscal_policy": [
+    "lawa ni ilavo",
+    "voli ni matanitu",
+    "vakayagataki ni matanitu",
+    "bajeti",
+    "leqa ni bajeti",
+    "tubu ni bajeti",
+    "leqa ni ilavo",
+    "vakasavasavataki",
+    "veivakatorocaketaki",
+    "ilavo ni matanitu"
+  ],
+  "monetary_policy": [
+    "lawa ni ilavo lalai",
+    "lave ni ilavo",
+    "lave ni dinau",
+    "policy rate",
+    "tubu ni lave",
+    "vakailavotaki",
+    "ilavo e tiko"
+  ],
+  "exchange_rate": [
+    "lave ni ilavo duavata",
+    "ilavo",
+    "buca ni ilavo",
+    "vakamalua ni ilavo",
+    "tubu ni ilavo",
+    "foreign exchange",
+    "forex",
+    "dola",
+    "dollar"
+  ],
+  "financial_stability": [
+    "tiko vinaka ni ilavo",
+    "cakacaka ni vale ni ilavo",
+    "leqa ni vale ni ilavo",
+    "leqa vakailavo",
+    "buca ni vale ni ilavo",
+    "leqa ni dinau",
+    "leqa ni ilavo"
+  ],
+  "trade": [
+    "veivoli",
+    "iyau e vakayagataka vanua tani",
+    "iyau mai vanua tani",
+    "exports",
+    "imports",
+    "leqa ni veivoli",
+    "tubu ni veivoli",
+    "tariffs",
+    "customs",
+    "veiyalayalati ni veivoli"
+  ],
+  "capital_flows": [
+    "curu ni ilavo",
+    "vakailavo mai vanua tani",
+    "foreign direct investment",
+    "fdi",
+    "curu ni ilavo mai",
+    "yaco tani ni ilavo",
+    "curu ni ilavo mai vanua tani"
+  ],
+  "labor_market": [
+    "makete ni cakacaka",
+    "cakacaka",
+    "sega ni cakacaka",
+    "isau",
+    "vakacegui ni cakacaka",
+    "vakacakacakataki",
+    "toso ni cakacaka",
+    "buca ni cakacaka"
+  ],
+  "inflation_prices": [
+    "tubu ni isau",
+    "inflation",
+    "tubu ni levu ni isau",
+    "isau ni bula",
+    "consumer price index",
+    "cpi",
+    "isau ni ivoli",
+    "vakadodonutaki ni isau",
+    "kaukauwa ni voli"
+  ],
+  "energy": [
+    "kaukauwa",
+    "waiwai",
+    "kerosene",
+    "penisini",
+    "livaliva",
+    "isau ni kaukauwa",
+    "leqa ni kaukauwa",
+    "kaukauwa savasava"
+  ],
+  "food_security": [
+    "kakana",
+    "isau ni kakana",
+    "tiko vinaka ni kakana",
+    "leqa ni kakana",
+    "teitei",
+    "soqoni",
+    "dovu",
+    "raisi",
+    "kumala"
+  ],
+  "housing_real_estate": [
+    "vale",
+    "qele",
+    "itikotiko",
+    "dinau ni vale",
+    "isau ni vale",
+    "voli vale",
+    "makete ni vale",
+    "tara vale",
+    "isau ni qele"
+  ],
+  "inequality_poverty": [
+    "sega ni tautauvata",
+    "sega ni tautauvata ni ilavo",
+    "dravudravua",
+    "ilavo e sega ni levu",
+    "ituvaki ni bula",
+    "veivuke ni matanitu",
+    "vukei ni bula",
+    "veivuke vakailavo"
+  ],
+  "climate_environment": [
+    "draki",
+    "veisau ni draki",
+    "yavutuvatu",
+    "lio ni draki",
+    "waluvu",
+    "mamaca",
+    "rerevaki ni draki",
+    "veivakacacani ni yavutuvatu"
+  ],
+  "infrastructure": [
+    "vakavolivoli",
+    "gaunisala",
+    "veilakoyaki",
+    "uafu",
+    "eapoti",
+    "wai",
+    "cakacaka ni matanitu",
+    "vakailavo ni vakavolivoli"
+  ],
+  "political_stability": [
+    "tiko vinaka vakapolotiki",
+    "veivakarusai vakapolotiki",
+    "toqai",
+    "veivakadinadinataki",
+    "veivakarusai",
+    "veidigidigi",
+    "leqa vakapolotiki",
+    "leqa ni matanitu"
+  ],
+  "corruption_governance": [
+    "veibeci",
+    "vakamatanitu vinaka",
+    "rarama ni cakacaka",
+    "vakadikevi vinaka",
+    "vakayagataki ca",
+    "veivakasavasavataki",
+    "dina vinaka ni cakacaka"
+  ],
+  "external_shocks": [
+    "vakamalua ni vuravura",
+    "leqa ni vuravura",
+    "leqa mai vanua tani",
+    "leqa ni iyau",
+    "leqa vakailavo ni vuravura",
+    "makete ni vuravura"
+  ]
+}

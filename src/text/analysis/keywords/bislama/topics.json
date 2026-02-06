@@ -1,0 +1,196 @@
+{
+  "economic_growth": [
+    "ekonomik gro",
+    "gro",
+    "gdp",
+    "gross domestic product",
+    "ekonomi i gro",
+    "ekonomi i slo",
+    "ekonomi i godaon",
+    "ekonomi i kambak",
+    "wok blong ekonomi",
+    "mane blong wan man",
+    "luk blong ekonomi"
+  ],
+  "public_debt": [
+    "deta blong gavman",
+    "deta blong kantri",
+    "bigfala deta",
+    "pem blong deta",
+    "deta we yumi save pem",
+    "jenisim deta",
+    "kataotem deta",
+    "no pem deta"
+  ],
+  "fiscal_policy": [
+    "polisi blong mane",
+    "spendem mane blong gavman",
+    "yusum mane blong gavman",
+    "bajet",
+    "sot blong bajet",
+    "bajet i gud",
+    "katem spendem",
+    "pusum ekonomi",
+    "mane blong gavman"
+  ],
+  "monetary_policy": [
+    "polisi blong mane",
+    "ret blong intres",
+    "intres ret",
+    "policy rate",
+    "apum ret",
+    "katem ret",
+    "mane we i stap"
+  ],
+  "exchange_rate": [
+    "eksjenj ret",
+    "mane",
+    "mane i godaon",
+    "mane i kam daon",
+    "mane i go antap",
+    "foreign exchange",
+    "forex",
+    "vatu",
+    "dola"
+  ],
+  "financial_stability": [
+    "ekonomi i stap stret",
+    "wok blong bangk",
+    "trabol blong bangk",
+    "trabol blong ekonomi",
+    "bangk i foldaon",
+    "trabol blong deta"
+  ],
+  "trade": [
+    "tred",
+    "ekspotem",
+    "impotem",
+    "exports",
+    "imports",
+    "balans blong tred",
+    "tariffs",
+    "customs",
+    "agrimen blong tred"
+  ],
+  "capital_flows": [
+    "flo blong mane",
+    "investmen blong narafala kantri",
+    "foreign direct investment",
+    "fdi",
+    "mane i kam insaed",
+    "mane i go aot",
+    "investmen blong afsea"
+  ],
+  "labor_market": [
+    "maket blong wok",
+    "wok",
+    "no gat wok",
+    "pei",
+    "salari",
+    "sakemaot",
+    "givim wok",
+    "lusim wok"
+  ],
+  "inflation_prices": [
+    "praes i go antap",
+    "inflation",
+    "praes i hae",
+    "kos blong laef",
+    "consumer price index",
+    "cpi",
+    "praes blong samting",
+    "kontrolem praes",
+    "pawa blong baem"
+  ],
+  "energy": [
+    "enaji",
+    "oel",
+    "gas",
+    "petrol",
+    "elektrisiti",
+    "paoa",
+    "praes blong enaji",
+    "sot blong enaji",
+    "klin enaji"
+  ],
+  "food_security": [
+    "kakae",
+    "praes blong kakae",
+    "kakae i stap sef",
+    "sot blong kakae",
+    "famaen",
+    "havest",
+    "raes",
+    "wit"
+  ],
+  "housing_real_estate": [
+    "haos",
+    "graon",
+    "properti",
+    "dinau blong haos",
+    "praes blong haos",
+    "rentim haos",
+    "maket blong haos",
+    "bildim haos",
+    "praes blong graon"
+  ],
+  "inequality_poverty": [
+    "no ikwol",
+    "no sem mane",
+    "pua",
+    "smol mane",
+    "fasin blong laef",
+    "proteksen blong pipol",
+    "help blong gavman",
+    "spendem mane blong pipol"
+  ],
+  "climate_environment": [
+    "klaemaet",
+    "klaemaet jenj",
+    "envaeromen",
+    "kabon",
+    "emisens",
+    "disasta",
+    "flooding",
+    "drae",
+    "afektem envaeromen"
+  ],
+  "infrastructure": [
+    "infrastraja",
+    "rod",
+    "transpot",
+    "wof",
+    "eapot",
+    "wota",
+    "wok blong gavman",
+    "investem long infrastraja"
+  ],
+  "political_stability": [
+    "politik i stap stret",
+    "trabol blong politik",
+    "protest",
+    "maej",
+    "eleksen",
+    "polotikal kraesis",
+    "trabol blong gavman",
+    "emajesi"
+  ],
+  "corruption_governance": [
+    "korapsen",
+    "gud gavnans",
+    "transparen",
+    "akaontabiliti",
+    "mismanajmen",
+    "fraod",
+    "bebi",
+    "rul blong loa"
+  ],
+  "external_shocks": [
+    "wol ekonomi i slo",
+    "wol kraesis",
+    "trabol i kam blong afsea",
+    "trabol blong komoditi",
+    "wol ekonomi trabol",
+    "wol maket"
+  ]
+}

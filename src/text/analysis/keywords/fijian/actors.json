@@ -1,0 +1,109 @@
+{
+  "imf": [
+    "imf",
+    "international monetary fund",
+    "porokaramu ni imf",
+    "veiyalayalati ni imf",
+    "dinau ni imf",
+    "bose ni imf"
+  ],
+  "world_bank": [
+    "world bank",
+    "vale ni ilavo ni vuravura",
+    "ibrd",
+    "ida",
+    "ifc",
+    "dinau ni world bank",
+    "cakacaka ni world bank"
+  ],
+  "central_bank": [
+    "reserve bank",
+    "vale ni ilavo ni matanitu",
+    "lave ni dinau",
+    "policy rate",
+    "saumi ni lave ni dinau"
+  ],
+  "finance_ministry": [
+    "tabacakacaka ni ilavo",
+    "minisitiri ni ilavo",
+    "minisita ni ilavo",
+    "ofisi ni bajeti"
+  ],
+  "government": [
+    "matanitu",
+    "kabinete",
+    "paraiminisita",
+    "peresitedi",
+    "liuliu ni matanitu",
+    "turaga ni matanitu"
+  ],
+  "parliament": [
+    "palimedi",
+    "vale ni bose",
+    "meba ni palimedi",
+    "meba ni bose",
+    "vunilawa"
+  ],
+  "multilateral_development_bank": [
+    "vale ni ilavo ni veivakatorocaketaki",
+    "asian development bank",
+    "adb",
+    "afdb",
+    "ebrd"
+  ],
+  "credit_rating_agency": [
+    "ira era vakatulewa na lave ni dinau",
+    "moody's",
+    "standard & poor's",
+    "s&p",
+    "fitch",
+    "credit rating"
+  ],
+  "international_investors": [
+    "dau vakailavo mai vanua tani",
+    "dau vakailavo ni vuravura",
+    "meca ni dinau",
+    "dau vakailavo ni kabani"
+  ],
+  "commercial_banks": [
+    "vale ni ilavo ni veivoli",
+    "vale ni ilavo",
+    "dau vakadina ni ilavo",
+    "vale ni ilavo ni vanua tani"
+  ],
+  "state_owned_enterprises": [
+    "kabani ni matanitu",
+    "kabani vakamatanitu",
+    "veiqaravi vakamatanitu",
+    "kabani ni kaukauwa ni matanitu"
+  ],
+  "labor_unions": [
+    "soqosoqo ni tamata cakacaka",
+    "liuliu ni soqosoqo",
+    "soqosoqo ni cakacaka",
+    "toqai ni soqosoqo"
+  ],
+  "international_organizations": [
+    "united nations",
+    "un",
+    "oecd",
+    "ilo",
+    "who",
+    "wto",
+    "pacific islands forum"
+  ],
+  "courts_judiciary": [
+    "vale ni lawa",
+    "lawa",
+    "vale ni lawa levu",
+    "cauravou ni lawa",
+    "saumi lawa"
+  ],
+  "military_security": [
+    "mataivalu",
+    "sotia",
+    "ovisa",
+    "tabacakacaka ni valu",
+    "tiko vinaka ni vanua"
+  ]
+}

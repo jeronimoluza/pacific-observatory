@@ -1,0 +1,106 @@
+{
+  "imf": [
+    "imf",
+    "international monetary fund",
+    "program bilong imf",
+    "agrimen bilong imf",
+    "dinau bilong imf",
+    "mison bilong imf"
+  ],
+  "world_bank": [
+    "world bank",
+    "wol benk",
+    "ibrd",
+    "ida",
+    "ifc",
+    "dinau bilong world bank",
+    "projek bilong world bank"
+  ],
+  "central_bank": [
+    "sentral benk",
+    "bank of papua new guinea",
+    "benk bilong gavman",
+    "policy rate",
+    "disisim bilong intres ret"
+  ],
+  "finance_ministry": [
+    "dipatmen bilong finans",
+    "minista bilong mani",
+    "ofis bilong baset"
+  ],
+  "government": [
+    "gavman",
+    "kabinet",
+    "praim minista",
+    "hed bilong stet",
+    "ofisa bilong gavman"
+  ],
+  "parliament": [
+    "palamen",
+    "memba bilong palamen",
+    "mp",
+    "memba"
+  ],
+  "multilateral_development_bank": [
+    "divelopmen benk",
+    "asian development bank",
+    "adb",
+    "afdb",
+    "ebrd"
+  ],
+  "credit_rating_agency": [
+    "ejens bilong kredit reting",
+    "moody's",
+    "standard & poor's",
+    "s&p",
+    "fitch",
+    "credit rating"
+  ],
+  "international_investors": [
+    "investoman bilong ausait",
+    "investoman bilong wol",
+    "man i givim dinau",
+    "bikpela investoman"
+  ],
+  "commercial_banks": [
+    "komersel benk",
+    "praivit benk",
+    "benk bilong kantri",
+    "benk bilong ausait"
+  ],
+  "state_owned_enterprises": [
+    "kampani bilong gavman",
+    "pablik kampani",
+    "sevis bilong gavman",
+    "enaji kampani bilong gavman"
+  ],
+  "labor_unions": [
+    "yunion bilong wokman",
+    "lida bilong yunion",
+    "oganaisesen bilong wokman",
+    "protes bilong yunion"
+  ],
+  "international_organizations": [
+    "united nations",
+    "un",
+    "oecd",
+    "ilo",
+    "who",
+    "wto",
+    "pacific islands forum"
+  ],
+  "courts_judiciary": [
+    "kot",
+    "suprim kot",
+    "jas",
+    "disisim bilong kot",
+    "lo"
+  ],
+  "military_security": [
+    "ami",
+    "difens fos",
+    "polis",
+    "difens dipatmen",
+    "nesenel sekuriti"
+  ]
+}

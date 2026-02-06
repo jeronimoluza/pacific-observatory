@@ -1,0 +1,192 @@
+{
+  "economic_growth": [
+    "klou el omekedong er a udoud",
+    "omekedong",
+    "gdp",
+    "gross domestic product",
+    "omekedong er a ekonomi",
+    "mesaul a ekonomi",
+    "mekngit a ekonomi",
+    "omesumech er a ekonomi",
+    "urreor er a ekonomi",
+    "udoud er a chad",
+    "omes er a ekonomi"
+  ],
+  "public_debt": [
+    "chutem er a chelid",
+    "chutem er a beluu",
+    "klou el chutem",
+    "lmuut er a chutem",
+    "chutem el kmo sebechel el lmuut",
+    "omesodel er a chutem",
+    "oltaut er a chutem",
+    "diak el lmuut er a chutem"
+  ],
+  "fiscal_policy": [
+    "llach er a udoud",
+    "omechar er a udoud er a chelid",
+    "bajit",
+    "mekesai a bajit",
+    "klou a bajit",
+    "mengitakl a omechar",
+    "olseobel er a ekonomi",
+    "udoud er a chelid"
+  ],
+  "monetary_policy": [
+    "llach er a udoud",
+    "omenged er a intres",
+    "intres ret",
+    "policy rate",
+    "omeklou er a ret",
+    "mengitakl er a ret",
+    "udoud el ngar"
+  ],
+  "exchange_rate": [
+    "omenged er a udoud",
+    "udoud",
+    "mekesai a udoud",
+    "omeklou a udoud",
+    "foreign exchange",
+    "forex",
+    "dola",
+    "dollar"
+  ],
+  "financial_stability": [
+    "ungil a chelsel a udoud",
+    "urreor er a bangk",
+    "rekil er a bangk",
+    "rekil er a ekonomi",
+    "bangk a mlo mekngit",
+    "rekil er a chutem"
+  ],
+  "trade": [
+    "blals",
+    "omengang el mo er a ikrel",
+    "omengang el mei er a ikrel",
+    "exports",
+    "imports",
+    "omenged er a blals",
+    "tariffs",
+    "customs",
+    "llach er a blals"
+  ],
+  "capital_flows": [
+    "rael er a udoud",
+    "omekudoud mai er a ikrel",
+    "foreign direct investment",
+    "fdi",
+    "udoud el mei",
+    "udoud el mo",
+    "omekudoud mai er a beluu er a ikrel"
+  ],
+  "labor_market": [
+    "blals er a urreor",
+    "urreor",
+    "diak a urreor",
+    "telungalek",
+    "omeruul",
+    "oltak er a urreor",
+    "olab el urreor",
+    "mechesang a urreor"
+  ],
+  "inflation_prices": [
+    "omeklou er a cheral",
+    "inflation",
+    "klou a cheral",
+    "cheral a klengar",
+    "consumer price index",
+    "cpi",
+    "cheral a klalo",
+    "llach er a cheral",
+    "klisichel a oba"
+  ],
+  "energy": [
+    "ngerel",
+    "oil",
+    "gas",
+    "fuel",
+    "oleker",
+    "cheral a ngerel",
+    "mekesai a ngerel",
+    "beches el ngerel"
+  ],
+  "food_security": [
+    "kall",
+    "cheral a kall",
+    "ungil a chelsel a kall",
+    "mekesai a kall",
+    "omelatel",
+    "kleim",
+    "beras",
+    "ongraol"
+  ],
+  "housing_real_estate": [
+    "blai",
+    "chutem",
+    "klalo",
+    "chutem er a blai",
+    "cheral a blai",
+    "omesarech a blai",
+    "blals er a blai",
+    "omeruul er a blai",
+    "cheral a chutem"
+  ],
+  "inequality_poverty": [
+    "diak el osisiu",
+    "diak el osisiu er a udoud",
+    "kesai a udoud",
+    "kekerei a udoud",
+    "chelsel a klengar",
+    "olseobel er a rechad",
+    "olseobel er a chelid",
+    "omechar er a rechad"
+  ],
+  "climate_environment": [
+    "eolt",
+    "omesodel er a eolt",
+    "chelebuul",
+    "carbon",
+    "emission",
+    "mekngit el tekoi",
+    "dalech",
+    "meched",
+    "mekngit er a chelebuul"
+  ],
+  "infrastructure": [
+    "infrastruksa",
+    "rael",
+    "omeketeket",
+    "uosel",
+    "eaport",
+    "ralm",
+    "urreor er a chelid",
+    "omekudoud er a infrastruksa"
+  ],
+  "political_stability": [
+    "ungil a chelsel a politik",
+    "rekil er a politik",
+    "protest",
+    "omekedecheduch",
+    "eleksen",
+    "rekil er a politik",
+    "rekil er a chelid",
+    "emergency"
+  ],
+  "corruption_governance": [
+    "koraps",
+    "ungil a omeruul",
+    "klemengelungel",
+    "akaontabiliti",
+    "diak el ungil a omeruul",
+    "mekngit el omeruul",
+    "llach"
+  ],
+  "external_shocks": [
+    "mesaul a beluulechad",
+    "rekil er a beluulechad",
+    "rekil mei er a ikrel",
+    "rekil er a klalo",
+    "ekonomi er a beluulechad a mekngit",
+    "blals er a beluulechad"
+  ]
+}

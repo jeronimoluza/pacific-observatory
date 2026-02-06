@@ -1,0 +1,194 @@
+{
+  "economic_growth": [
+    "tuputupu aʻe o le tamaoaiga",
+    "tuputupu aʻe",
+    "gdp",
+    "gross domestic product",
+    "faʻalauteleina o le tamaoaiga",
+    "faʻagesegese o le tamaoaiga",
+    "paʻu o le tamaoaiga",
+    "toe tuputupu aʻe o le tamaoaiga",
+    "galuega faaletamaoaiga",
+    "tupe maua a le tagata",
+    "vaʻaiga o le tamaoaiga"
+  ],
+  "public_debt": [
+    "aitalafu a le malo",
+    "aitalafu faalemalo",
+    "avega o le aitalafu",
+    "totogi aitalafu",
+    "mafai ona totogi le aitalafu",
+    "toe fuataʻiina o le aitalafu",
+    "faʻamagalo aitalafu",
+    "le totogi o le aitalafu"
+  ],
+  "fiscal_policy": [
+    "faiga faʻatupe a le malo",
+    "faʻaaluina o tupe a le malo",
+    "tupe faʻaaluina",
+    "paketi",
+    "avanoa o le paketi",
+    "sili aʻe le paketi",
+    "tipitipi tupe",
+    "fesoasoani faaletamaoaiga",
+    "tupe a le malo"
+  ],
+  "monetary_policy": [
+    "faiga faʻatupe",
+    "fua faʻatupe",
+    "fua o tului",
+    "policy rate",
+    "siʻitia le fua o tului",
+    "faʻaitiitia le fua o tului",
+    "tupe o loʻo iai"
+  ],
+  "exchange_rate": [
+    "fua o tupe",
+    "tupe",
+    "paʻu o le tupe",
+    "faʻaitiitia o le tupe",
+    "siʻitia o le tupe",
+    "foreign exchange",
+    "forex",
+    "tala",
+    "dollar"
+  ],
+  "financial_stability": [
+    "mautu o le tamaoaiga",
+    "pisinisi faletupe",
+    "faʻafitauli o faletupe",
+    "faʻafitauli faʻatupe",
+    "paʻu o le faletupe",
+    "faʻafitauli o le aitalafu"
+  ],
+  "trade": [
+    "fefaʻatauaʻiga",
+    "oloa auina atu",
+    "oloa aumai",
+    "exports",
+    "imports",
+    "paleni o fefaʻatauaʻiga",
+    "tariffs",
+    "customs",
+    "maliega tau fefaʻatauaʻiga"
+  ],
+  "capital_flows": [
+    "tafe o tupe",
+    "tupe mai fafo",
+    "foreign direct investment",
+    "fdi",
+    "tupe ulufale mai",
+    "tupe o alu i fafo",
+    "tupe teufaafaigaluega mai fafo"
+  ],
+  "labor_market": [
+    "maketi o galuega",
+    "galuega",
+    "leai ni galuega",
+    "totogi",
+    "faateʻaina",
+    "faafaigaluegaina",
+    "faia o galuega",
+    "leiloa galuega"
+  ],
+  "inflation_prices": [
+    "tau maualuga",
+    "inflation",
+    "siʻitia o tau",
+    "tau o le olaga",
+    "consumer price index",
+    "cpi",
+    "tau o oloa",
+    "pulea o tau",
+    "malosi o le faatauina"
+  ],
+  "energy": [
+    "malosi",
+    "suauʻu",
+    "kesi",
+    "penisini",
+    "eletise",
+    "tau o le malosi",
+    "leai o le malosi",
+    "malosi faʻafouina"
+  ],
+  "food_security": [
+    "meaai",
+    "tau o meaai",
+    "saogalemu o meaai",
+    "leai o meaai",
+    "faʻatoʻaga",
+    "seleselega",
+    "alaisa",
+    "saito"
+  ],
+  "housing_real_estate": [
+    "fale",
+    "fanua",
+    "meatotino",
+    "aitalafu fale",
+    "tau o fale",
+    "totogi fale",
+    "maketi o fale",
+    "fausiaina o fale",
+    "tau o fanua"
+  ],
+  "inequality_poverty": [
+    "le tutusa",
+    "le tutusa o tupe maua",
+    "mativa",
+    "tupe maua maualalo",
+    "tulaga o le olaga",
+    "puipuiga lautele",
+    "fesoasoani a le malo",
+    "tupe faʻaaluina mo tagata"
+  ],
+  "climate_environment": [
+    "tau",
+    "suiga o le tau",
+    "siʻosiʻomaga",
+    "kaponi",
+    "kasa",
+    "faʻalavelave faʻalenatura",
+    "lolo",
+    "lamala",
+    "aʻafiaga o le siʻosiʻomaga"
+  ],
+  "infrastructure": [
+    "atinaʻe faavae",
+    "auala",
+    "felauaiga",
+    "uafu",
+    "malae vaʻalele",
+    "vai",
+    "galuega a le malo",
+    "tupe teufaafaigaluega mo atinaʻe"
+  ],
+  "political_stability": [
+    "mautu faapolokiki",
+    "vevesi faapolokiki",
+    "tetee",
+    "faʻaaliga",
+    "palota",
+    "faʻafitauli faapolokiki",
+    "faʻafitauli a le malo",
+    "tulaga faʻapitoa"
+  ],
+  "corruption_governance": [
+    "faʻapipiʻi",
+    "pulega lelei",
+    "manino",
+    "tali atu",
+    "faʻaaogaina sese",
+    "tāuʻave sese",
+    "tulafono lelei"
+  ],
+  "external_shocks": [
+    "faʻagesegese o le lalolagi",
+    "faʻafitauli o le lalolagi",
+    "faʻalavelave mai fafo",
+    "faʻalavelave o oloa",
+    "faʻafitauli faaletupe o le lalolagi",
+    "maketi o le lalolagi"
+  ]
+}

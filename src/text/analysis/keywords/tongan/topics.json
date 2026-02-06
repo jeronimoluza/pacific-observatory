@@ -1,0 +1,190 @@
+{
+  "economic_growth": [
+    "tupu fakaeʻekonōmika",
+    "tupu",
+    "gdp",
+    "gross domestic product",
+    "fakalahi ʻo e ekonōmika",
+    "fakatuai ʻo e ekonōmika",
+    "holo ʻo e ekonōmika",
+    "toe tupu ʻo e ekonōmika",
+    "ngāue fakaeʻekonōmika",
+    "paʻanga hū mai ʻa e tokotaha",
+    "ʻamanaki ki he ekonōmika"
+  ],
+  "public_debt": [
+    "moʻua ʻa e puleʻanga",
+    "moʻua fakapuleʻanga",
+    "kavenga ʻo e moʻua",
+    "totongi moʻua",
+    "lava ke totongi e moʻua",
+    "toe fokotuʻutuʻu moʻua",
+    "fakamolemole moʻua",
+    "ʻikai totongi moʻua"
+  ],
+  "fiscal_policy": [
+    "tu'utu'uni fakapa'anga",
+    "fakamole ʻa e puleʻanga",
+    "ngāue fakamole",
+    "patiseti",
+    "masiva patiseti",
+    "lahi ʻo e patiseti",
+    "fakasiʻisiʻi ʻo e fakamole",
+    "tokoni fakaeʻekonōmika",
+    "paʻanga ʻa e puleʻanga"
+  ],
+  "monetary_policy": [
+    "tuʻutuʻuni fakapaʻanga",
+    "fua ʻo e totongi nō",
+    "fua fakamaketi",
+    "policy rate",
+    "hiki ʻo e fua nō",
+    "fakasiʻisiʻi ʻo e fua nō",
+    "paʻanga ʻoku ʻi ai"
+  ],
+  "exchange_rate": [
+    "fua paʻanga",
+    "paʻanga",
+    "holo ʻo e paʻanga",
+    "hiki ʻo e paʻanga",
+    "foreign exchange",
+    "forex",
+    "paʻanga tonga",
+    "tola"
+  ],
+  "financial_stability": [
+    "malu ʻo e paʻanga",
+    "ngāue fakapangikē",
+    "faingataʻa ʻo e pangikē",
+    "faingataʻa fakapaʻanga",
+    "holo ʻo e pangikē",
+    "faingataʻa ʻo e moʻua"
+  ],
+  "trade": [
+    "fefakatauʻaki",
+    "koloa ʻalu ki tuʻa",
+    "koloa hū mai",
+    "exports",
+    "imports",
+    "palanisi fefakatauʻaki",
+    "tariffs",
+    "customs",
+    "aleapau fefakatauʻaki"
+  ],
+  "capital_flows": [
+    "tafe ʻo e paʻanga",
+    "fakahū paʻanga mei tuʻapuleʻanga",
+    "foreign direct investment",
+    "fdi",
+    "paʻanga hū mai",
+    "paʻanga ʻalu atu",
+    "fakahū paʻanga mei muli"
+  ],
+  "labor_market": [
+    "maketi ngāue",
+    "ngāue",
+    "masiva ngāue",
+    "totongi ngāue",
+    "tukuange ngāue",
+    "ʻomi ngāue foʻou",
+    "mole ngāue"
+  ],
+  "inflation_prices": [
+    "hiki totongi",
+    "inflation",
+    "hiki ʻo e tau",
+    "totongi ʻo e moʻui",
+    "consumer price index",
+    "cpi",
+    "totongi koloa",
+    "puleʻi totongi",
+    "ivi fakatau"
+  ],
+  "energy": [
+    "ivi",
+    "lolo",
+    "keasi",
+    "penisini",
+    "ʻuhila",
+    "totongi ivi",
+    "masiva ivi",
+    "ivi fakafoʻou"
+  ],
+  "food_security": [
+    "meʻakai",
+    "totongi meʻakai",
+    "malu ʻo e meʻakai",
+    "masiva meʻakai",
+    "ngoue",
+    "ututu",
+    "laise",
+    "uite"
+  ],
+  "housing_real_estate": [
+    "fale",
+    "kelekele",
+    "koloa tuʻumaʻu",
+    "nō fale",
+    "totongi fale",
+    "totongi nofoʻanga",
+    "maketi fale",
+    "langa fale",
+    "totongi kelekele"
+  ],
+  "inequality_poverty": [
+    "ʻikai tatau",
+    "ʻikai tatau ʻo e paʻanga hū",
+    "masiva",
+    "paʻanga hū siʻi",
+    "tuʻunga moʻui",
+    "malu fakasōsiale",
+    "tokoni ʻa e puleʻanga",
+    "fakamole ki he kakai"
+  ],
+  "climate_environment": [
+    "ʻea",
+    "liliu ʻo e ʻea",
+    "ʻātakai",
+    "kāponi",
+    "fakaʻauha fakaenatula",
+    "lōmaki",
+    "mamaha",
+    "uesia ʻo e ʻātakai"
+  ],
+  "infrastructure": [
+    "ngaahi ʻinfalasitiakitua",
+    "hala",
+    "fefonongaʻaki",
+    "uofu",
+    "malaʻevakapuna",
+    "vai",
+    "ngāue ʻa e puleʻanga",
+    "fakahū paʻanga ki he ʻinfalasitiakitua"
+  ],
+  "political_stability": [
+    "tuʻumaʻu fakapolitikale",
+    "moveuveu fakapolitikale",
+    "ngaahi fakahohaʻa",
+    "palōti",
+    "faingataʻa fakapolitikale",
+    "faingataʻa ʻa e puleʻanga",
+    "tuʻunga fakatu'upau"
+  ],
+  "corruption_governance": [
+    "faihala",
+    "puleʻi lelei",
+    "ʻataʻatā",
+    "fakamatala ki ai",
+    "ngāueʻaki hala",
+    "ʻomai koloa",
+    "puleʻi lelei ʻo e lao"
+  ],
+  "external_shocks": [
+    "fakatuai ʻa māmani",
+    "faingataʻa ʻa māmani",
+    "uesia mei tuʻa",
+    "uesia ʻo e koloa",
+    "faingataʻa fakapaʻanga ʻa māmani",
+    "maketi fakamāmani"
+  ]
+}
