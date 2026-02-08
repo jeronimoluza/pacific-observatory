@@ -224,9 +224,11 @@ class NewspaperScraper:
                 thumb_data["url"] = url_template.format(**thumb_data)
 
         # Apply cleaning - CRITICAL STEP that was missing in UPDATE mode
+        # Update in-place so callers see cleaned values (e.g. body for prefetched articles)
         cleaning_config = self.config.cleaning or {}
         if cleaning_config:
-            thumb_data = apply_cleaning(thumb_data, cleaning_config, self.base_url)
+            cleaned = apply_cleaning(thumb_data, cleaning_config, self.base_url)
+            thumb_data.update(cleaned)
 
         # Track metrics BEFORE creating record
         self._track_extraction(thumb_data, stage="thumbnail")

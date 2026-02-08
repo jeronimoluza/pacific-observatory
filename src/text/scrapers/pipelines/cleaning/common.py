@@ -337,3 +337,28 @@ def join_body_list(body_text_list: list) -> str:
         Joined string
     """
     return " ".join([s.strip() for s in body_text_list])
+
+
+@register_cleaner
+def clean_wp_html_body(html_content: str) -> str:
+    """
+    Clean WordPress API HTML body content by stripping tags and normalizing whitespace.
+
+    Args:
+        html_content: Raw HTML string from WordPress content.rendered
+
+    Returns:
+        Plain text with HTML tags removed
+    """
+    if not html_content:
+        return ""
+
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup(html_content, "html.parser")
+    text = soup.get_text(separator=" ")
+
+    # Collapse whitespace
+    text = re.sub(r"\s+", " ", text)
+
+    return text.strip()

@@ -33,6 +33,7 @@ __all__ = [
     "normalize_date",
     "handle_unix_timestamp_ms",
     "join_body_list",
+    "clean_wp_html_body",
     # Country-specific cleaners
     "clean_kosmo_body",
     "clean_the_independent_body",
@@ -131,6 +132,7 @@ from .common import (  # noqa: E402
     normalize_date,
     handle_unix_timestamp_ms,
     join_body_list,
+    clean_wp_html_body,
 )
 
 from .malaysia import clean_kosmo_body  # noqa: E402
