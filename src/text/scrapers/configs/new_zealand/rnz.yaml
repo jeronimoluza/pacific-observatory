@@ -1,8 +1,8 @@
 # Radio New Zealand (RNZ) Pacific Configuration
 # Migrated from monolithic scraper: src/text/scrapers/newspapers/pacific/rnz.py
 
-name: "RNZ Samoa"
-country: "samoa"
+name: "RNZ"
+country: "new_zealand"
 base_url: "https://www.rnz.co.nz"
 
 # Listing discovery configuration
