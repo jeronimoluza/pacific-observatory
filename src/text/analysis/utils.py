@@ -6,12 +6,12 @@ Last modified:
 """
 
 import re
-import spacy
-from typing import List, Dict, Union
+from typing import List, Dict, Tuple, Union
+from functools import lru_cache
 import pandas as pd
-from gensim.utils import simple_preprocess
 import json
 from pathlib import Path
+import ahocorasick
 
 # Languages where words flow without spaces (no \b word boundary)
 NON_SPACE_DELIMITED = frozenset(
@@ -71,6 +71,94 @@ def count_keywords_in_text(text: str, terms: list, language: str = "en") -> int:
     return len(matches)
 
 
+def _build_automaton(terms: list) -> ahocorasick.Automaton:
+    """Build an Aho-Corasick automaton from a list of lowercased keywords."""
+    A = ahocorasick.Automaton()
+    for term in terms:
+        A.add_word(term.lower(), term.lower())
+    A.make_automaton()
+    return A
+
+
+@lru_cache(maxsize=256)
+def get_automaton(terms_tuple: tuple, language: str = "en") -> ahocorasick.Automaton:
+    """
+    Get a cached Aho-Corasick automaton for a set of terms.
+
+    Args:
+        terms_tuple: Tuple of keyword strings (must be tuple for hashability).
+        language: Language code (unused in automaton build, kept for cache key).
+
+    Returns:
+        Compiled Aho-Corasick automaton.
+    """
+    return _build_automaton(list(terms_tuple))
+
+
+def _is_word_boundary(text: str, start: int, end: int) -> bool:
+    """
+    Check if the match at text[start:end] falls on word boundaries.
+
+    Mimics regex \\b behaviour: the character immediately before start
+    and immediately after end-1 must not be alphanumeric/underscore.
+    """
+    if start > 0 and (text[start - 1].isalnum() or text[start - 1] == "_"):
+        return False
+    if end < len(text) and (text[end].isalnum() or text[end] == "_"):
+        return False
+    return True
+
+
+def match_keywords(text: str, terms: list, language: str = "en") -> Tuple[bool, int]:
+    """
+    Check keyword presence and count matches in a single pass using Aho-Corasick.
+
+    For space-delimited languages (English, French, etc.), word-boundary checks
+    are applied to each match. For non-space-delimited languages (Thai, Chinese,
+    Khmer, etc.), pure substring matching is used.
+
+    Args:
+        text: Input text to search (should already be lowercased).
+        terms: List of keywords to match.
+        language: Language code.
+
+    Returns:
+        Tuple of (has_any_match: bool, match_count: int).
+    """
+    if not text or not terms:
+        return (False, 0)
+
+    text_str = str(text)
+    automaton = get_automaton(tuple(terms), language)
+    check_boundaries = language not in NON_SPACE_DELIMITED
+
+    # Collect all valid matches as (start, end) tuples
+    matches = []
+    for end_idx, term in automaton.iter(text_str):
+        start_idx = end_idx - len(term) + 1
+        end_pos = end_idx + 1
+        if check_boundaries:
+            if not _is_word_boundary(text_str, start_idx, end_pos):
+                continue
+        matches.append((start_idx, end_pos))
+
+    if not matches:
+        return (False, 0)
+
+    # Resolve overlapping matches to mimic regex alternation behaviour:
+    # sort by start position, then by length descending (prefer longest),
+    # then greedily keep non-overlapping matches.
+    matches.sort(key=lambda m: (m[0], -(m[1] - m[0])))
+    count = 0
+    last_end = -1
+    for start, end in matches:
+        if start >= last_end:
+            count += 1
+            last_end = end
+
+    return (count > 0, count)
+
+
 def sent_to_words(sentences: List[str]):
     """
     Converts sentences into a list of words, performing simple preprocessing.
@@ -81,12 +169,14 @@ def sent_to_words(sentences: List[str]):
     Yields:
         A generator yielding lists of words extracted from each sentence after preprocessing.
     """
+    from gensim.utils import simple_preprocess
+
     for sentence in sentences:
         sentence = re.sub(r"\s", " ", sentence).strip()
         yield (simple_preprocess(str(sentence), deacc=True))
 
 
-def lemmatize_sent(sent, nlp, allowed_postags=["NOUN", "ADJ", "VERB", "ADV"]):
+def lemmatize_sent(sent, nlp, allowed_postags=["NOUN", "ADJ", "VERB", "ADV"]):  # noqa: B006
     """
     Lemmatizes words in a sentence based on allowed part-of-speech tags.
 
@@ -121,7 +211,7 @@ def preprocess_text(
     stopwords: List[str],
     bigram_mod,
     trigram_mod,
-    nlp: spacy.language.Language,
+    nlp,
 ):
     """
     Preprocesses texts by removing stopwords, applying bigram and trigram models, and lemmatizing.
@@ -136,6 +226,8 @@ def preprocess_text(
     Returns:
         A list of preprocessed and lemmatized texts.
     """
+    from gensim.utils import simple_preprocess
+
     texts_no_stopwords = [
         [word for word in simple_preprocess(str(doc)) if word not in stopwords]
         for doc in texts

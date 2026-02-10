@@ -54,8 +54,7 @@ from typing import List, Union, Dict
 import pandas as pd
 import numpy as np
 from .utils import (
-    is_in_word_list,
-    count_keywords_in_text,
+    match_keywords,
     generate_continous_df,
     load_topics_words,
 )
@@ -253,20 +252,12 @@ class EPU:
                 [econ_terms, policy_terms, uncertainty_terms],
             ):
                 if terms is not None:
-                    # Boolean presence
-                    raw[col] = (
-                        raw["body"]
-                        .str.lower()
-                        .apply(is_in_word_list, terms=terms, language=file_language)
+                    # Single-pass Aho-Corasick: boolean presence + keyword count
+                    results = raw["body"].apply(
+                        match_keywords, terms=terms, language=file_language
                     )
-                    # Keyword counts for intensity calculations
-                    raw[f"{col}_count"] = (
-                        raw["body"]
-                        .str.lower()
-                        .apply(
-                            count_keywords_in_text, terms=terms, language=file_language
-                        )
-                    )
+                    raw[col] = results.apply(lambda x: x[0])
+                    raw[f"{col}_count"] = results.apply(lambda x: x[1])
                 else:
                     raw[col] = True
                     raw[f"{col}_count"] = 0
@@ -275,15 +266,12 @@ class EPU:
 
             # Check for additional terms category
             if self.additional_terms:
-                raw["additional"] = (
-                    raw["body"]
-                    .str.lower()
-                    .apply(
-                        is_in_word_list,
-                        terms=self.additional_terms,
-                        language=file_language,
-                    )
+                results = raw["body"].apply(
+                    match_keywords,
+                    terms=self.additional_terms,
+                    language=file_language,
                 )
+                raw["additional"] = results.apply(lambda x: x[0])
                 raw["epu"] = (raw.epu) & (raw.additional)
 
             if "url" in raw.columns and raw["url"].isin(self.non_epu_urls).sum() > 0:
@@ -595,7 +583,9 @@ class EPU:
             for group_name, terms in groups.items():
                 col = f"has_{group_name}"
                 df[col] = df["body"].apply(
-                    is_in_word_list, terms=terms, language=file_language
+                    lambda text, t=terms, lang=file_language: match_keywords(
+                        text, t, lang
+                    )[0]
                 )
                 ug_col = f"UG_{group_name}"
                 df[ug_col] = df["uncertain"] & df[col]
