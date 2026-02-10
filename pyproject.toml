@@ -46,6 +46,7 @@ scraping = [
     "waybackpy (>=3.0.6,<4.0.0)",
     "scrapy-playwright (>=0.0.45,<0.0.46)",
     "pyahocorasick (>=2.3.0,<3.0.0)",
+    "googletrans (>=4.0.2,<5.0.0)",
 ]
 docs = [
     "docutils (==0.17.1)",
