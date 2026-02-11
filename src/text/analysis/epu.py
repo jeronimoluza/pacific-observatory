@@ -510,9 +510,11 @@ class EPU:
             ["weighted", "unweighted"],
             ["z_score_weighted", "z_score_unweighted"],
         ):
-            scaling_factor = 100 / (
-                self.epu_stats[self.epu_stats.date < self.cutoff][col].mean()
-            )
+            mean_val = self.epu_stats[self.epu_stats.date < self.cutoff][col].mean()
+            if mean_val == 0 or pd.isna(mean_val):
+                scaling_factor = np.nan
+            else:
+                scaling_factor = 100 / mean_val
             self.epu_stats[f"epu_{name}"] = scaling_factor * self.epu_stats[col]
 
         # Add additional_name column if provided

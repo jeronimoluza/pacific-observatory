@@ -1,108 +1,201 @@
 {
-  "imf": [
-    "imf",
-    "international monetary fund",
-    "polokalame a le imf",
-    "maliega ma le imf",
-    "aitalafu a le imf",
-    "misiona a le imf"
-  ],
-  "world_bank": [
-    "world bank",
-    "faletupe o le lalolagi",
-    "ibrd",
-    "ida",
-    "ifc",
-    "aitalafu a le world bank",
-    "poloketi a le world bank"
-  ],
-  "central_bank": [
-    "faletupe tutotonu",
-    "faletupe a le malo",
-    "fua faʻatupe",
-    "policy rate",
-    "filifilia o le fua o tului"
-  ],
-  "finance_ministry": [
-    "matagaluega o tupe",
-    "minisita o tupe",
-    "ofisa o le paketi"
-  ],
-  "government": [
-    "malo",
-    "pulega",
-    "kapeneta",
-    "palemia",
-    "ao o le malo",
-    "ofisa o le malo"
-  ],
-  "parliament": [
-    "fono a faipule",
-    "fono",
-    "faipule",
-    "sui o le fono"
-  ],
-  "multilateral_development_bank": [
-    "faletupe o le atinaʻe",
-    "asian development bank",
-    "adb",
-    "afdb",
-    "ebrd"
-  ],
-  "credit_rating_agency": [
-    "ofisa o le fuaina o aitalafu",
-    "moody's",
-    "standard & poor's",
-    "s&p",
-    "fitch",
-    "credit rating"
-  ],
-  "international_investors": [
-    "tupe teufaafaigaluega mai fafo",
-    "tupe teufaafaigaluega faavaomalo",
-    "tagata nofo aitalafu",
-    "kamupani tupe teufaafaigaluega"
-  ],
-  "commercial_banks": [
-    "faletupe fefaʻatauaʻiga",
-    "faletupe tumaoti",
-    "tagata nono tupe",
-    "faletupe i totonu o le atunuʻu",
-    "faletupe mai fafo"
-  ],
-  "state_owned_enterprises": [
-    "kamupani a le malo",
-    "faalapotopotoga a le malo",
-    "auaunaga a le malo",
-    "kamupani malosi a le malo"
-  ],
-  "labor_unions": [
-    "iuni a tagata faigaluega",
-    "taʻitaʻi o iuni",
-    "faalapotopotoga o tagata faigaluega",
-    "tetee a iuni"
-  ],
-  "international_organizations": [
-    "united nations",
-    "un",
-    "oecd",
-    "ilo",
-    "who",
-    "wto",
-    "pacific islands forum"
-  ],
-  "courts_judiciary": [
-    "faamasinoga",
-    "faamasinoga maualuga",
-    "faamasino",
-    "faaiuga a le faamasinoga",
-    "tulafono"
-  ],
-  "military_security": [
-    "militeri",
-    "leoleo",
-    "au puipui",
-    "matagaluega o le puipuiga",
-    "saogalemu o le atunuʻu"
-  ]
+  "imf": {
+    "IMF": "IMF",
+    "International Monetary Fund": "Faaputugatupe Faava o Malo",
+    "IMF program": "Polokalame IMF",
+    "IMF agreement": "Maliega IMF",
+    "IMF deal": "IMF feagaiga",
+    "IMF loan": "nonogatupe a le IMF",
+    "IMF bailout": "IMF laveai",
+    "IMF mission": "misiona a le IMF",
+    "IMF talks": "Talanoa IMF",
+    "IMF negotiations": "feutanaiga a le IMF"
+  },
+  "world_bank": {
+    "World Bank": "Faletupe o le Lalolagi",
+    "World Bank Group": "World Bank Group",
+    "IBRD": "IBRD",
+    "IDA": "IDA",
+    "International Bank for Reconstruction and Development": "Faletupe Faava o Malo mo le Toe Fausiaina ma le Atinae",
+    "International Development Association": "Asosi Atina'e Faava-o-malo",
+    "IFC": "IFC",
+    "International Finance Corporation": "Faalapotopotoga o Tupe Faava o Malo",
+    "World Bank loan": "nonogatupe a le Faletupe a le Lalolagi",
+    "World Bank financing": "Faatupeina o Faletupe a le Lalolagi",
+    "World Bank project": "Poloketi Faletupe a le Lalolagi"
+  },
+  "central_bank": {
+    "central bank": "faletupe tutotonu",
+    "monetary authority": "pulega tau tupe",
+    "reserve bank": "faletupe faaleoleo",
+    "national bank": "faletupe a le atunuu",
+    "central bankers": "faletupe tutotonu",
+    "policy rate": "fua faatatau o faiga faavae",
+    "benchmark rate": "fua fa'atatau",
+    "interest rate decision": "faaiuga o fua faatatau tului",
+    "rate decision": "faaiuga tau fua faatatau",
+    "monetary authority decision": "faaiuga pulega tau tupe"
+  },
+  "finance_ministry": {
+    "finance ministry": "matagaluega o tupe",
+    "ministry of finance": "matagaluega o tupe",
+    "treasury": "faleteuoloa",
+    "finance minister": "minisita o tupe",
+    "treasury department": "matagaluega o tupe",
+    "economic ministry": "matagaluega o le tamaoaiga",
+    "budget office": "ofisa o paketi",
+    "fiscal authority": "pulega tau tupe"
+  },
+  "government": {
+    "government": "malo",
+    "administration": "pulega",
+    "executive branch": "lala tau pulega",
+    "cabinet": "kapeneta",
+    "prime minister": "palemia",
+    "president": "peresitene",
+    "presidential office": "tofi peresetene",
+    "government officials": "ofisa o le malo",
+    "state authorities": "pulega a le setete"
+  },
+  "parliament": {
+    "parliament": "palemene",
+    "congress": "fono",
+    "legislature": "fono faitulafono",
+    "legislative body": "tino fai tulafono",
+    "lawmakers": "fai tulafono",
+    "members of parliament": "sui usufono o le palemene",
+    "senators": "senatoa",
+    "deputies": "sui usufono",
+    "MPs": "MPs",
+    "House of Representatives": "Maota o Sui"
+  },
+  "multilateral_development_bank": {
+    "development bank": "faletupe atinae",
+    "multilateral development bank": "faletupe atinae tele",
+    "regional development bank": "faletupe atinae faaitulagi",
+    "African Development Bank": "Faletupe o Atinae a Aferika",
+    "Asian Development Bank": "Faletupe o Atinae Asia",
+    "Inter-American Development Bank": "Inter-American Development Bank",
+    "IDB": "IDB",
+    "ADB": "ADB",
+    "AfDB": "AfDB",
+    "European Bank for Reconstruction and Development": "Faletupe a Europa mo le Toe Fausiaina ma Atinaʻe",
+    "EBRD": "EBRD"
+  },
+  "credit_rating_agency": {
+    "credit rating agency": "lala sooupu tau aitalafu",
+    "rating agency": "ofisa fa'avasega",
+    "moody's": "moody's",
+    "moody’s": "moody’s",
+    "standard and poor's": "standard and poor's",
+    "standard & poor's": "standard & poor's",
+    "credit downgrade": "fa'aleaga aitalafu",
+    "credit rating": "fa'ailoga aitalafu",
+    "S&P": "S&P",
+    "Fitch": "Fitch"
+  },
+  "international_investors": {
+    "foreign investors": "tagata fai tupe mai fafo",
+    "international investors": "tagata fa'apisinisi faavaomalo",
+    "global investors": "le aufaipisinisi o le lalolagi",
+    "bondholders": "tagata e umia aitalafu",
+    "creditors": "tagata aitalafu",
+    "institutional investors": "fa'alapotopotoga fa'apisinisi",
+    "portfolio investors": "teu tupe teu tupe",
+    "asset managers": "pule o aseta",
+    "hedge funds": "tupe puipui"
+  },
+  "commercial_banks": {
+    "commercial banks": "faletupe faapisinisi",
+    "private banks": "faletupe tumaoti",
+    "lenders": "tagata nono tupe",
+    "banking sector": "vaega o faletupe",
+    "local banks": "faletupe i le lotoifale",
+    "foreign banks": "faletupe i fafo",
+    "bank consortium": "faletupe consortium",
+    "banking groups": "vaega faletupe"
+  },
+  "state_owned_enterprises": {
+    "state-owned enterprise": "pisinisi a le malo",
+    "state-owned company": "kamupani a le malo",
+    "public enterprise": "pisinisi a le malo",
+    "public utility": "aoga lautele",
+    "state utility": "aoga a le setete",
+    "national oil company": "kamupani suauu a le atunuu",
+    "state energy company": "kamupani malosi a le setete",
+    "public company": "kamupani a le malo"
+  },
+  "labor_unions": {
+    "labor unions": "iuni faigaluega",
+    "trade unions": "fa'apotopotoga fa'apisinisi",
+    "workers' unions": "iuni a tagata faigaluega",
+    "union leaders": "taitai iuni",
+    "labor organizations": "faalapotopotoga a tagata faigaluega",
+    "workers organizations": "faalapotopotoga tagata faigaluega",
+    "collective bargaining": "fefa'ataua'iga fa'atasi",
+    "union protests": "tetee a le iuni"
+  },
+  "international_organizations": {
+    "United Nations": "Malo Aufaatasi",
+    "UN": "UN",
+    "OECD": "OECD",
+    "Organisation for Economic Co-operation and Development": "Faalapotopotoga mo le Galulue Faatasi ma le Atinae o le Tamaoaiga",
+    "ILO": "ILO",
+    "International Labour Organization": "Faalapotopotoga Faava-o-malo o Leipa",
+    "WHO": "WHO",
+    "World Health Organization": "WHO",
+    "WTO": "WTO",
+    "World Trade Organization": "Faalapotopotoga o Fefaatauaiga a le Lalolagi"
+  },
+  "courts_judiciary": {
+    "courts": "faamasinoga",
+    "judiciary": "faamasinoga",
+    "supreme court": "faamasinoga maualuga",
+    "constitutional court": "faamasinoga faavae",
+    "judicial system": "faiga fa'amasinoga",
+    "judges": "faamasino",
+    "court ruling": "faaiuga a le faamasinoga",
+    "legal system": "faiga fa'aletulafono"
+  },
+  "military_security": {
+    "military": "militeri",
+    "armed forces": "'au fa'aauupegaina",
+    "security forces": "puipuiga malu",
+    "defense ministry": "matagaluega o puipuiga",
+    "defence ministry": "matagaluega o puipuiga",
+    "national security": "saogalemu o le atunuu",
+    "armed conflict": "feteenaiga faaauupegaina",
+    "security services": "auaunaga tau puipuiga"
+  },
+  "us_government": {
+    "U.S. government": "Malo o Amerika",
+    "US government": "Malo o Amerika",
+    "United States government": "Malo o le Iunaite Setete",
+    "White House": "Maota Paepae",
+    "U.S. administration": "pulega a Amerika",
+    "US administration": "pulega a Amerika",
+    "U.S. Treasury": "US Treasury",
+    "US Treasury": "US Treasury",
+    "Department of Treasury": "Matagaluega o Tupe",
+    "U.S. Congress": "US Congress",
+    "US Congress": "US Congress",
+    "U.S. Trade Representative": "Sui Fefa'ataua'iga a Amerika",
+    "USTR": "USTR",
+    "Department of Commerce": "Matagaluega o Pisinisi"
+  },
+  "china_government": {
+    "Chinese government": "Malo Saina",
+    "China government": "Malo o Saina",
+    "Beijing": "Pekingi",
+    "State Council": "Fono a le Setete",
+    "People's Bank of China": "Faletupe a Tagata o Saina",
+    "PBOC": "PBOC",
+    "Ministry of Commerce of China": "Matagaluega o Pisinisi a Saina",
+    "MOFCOM": "MOFCOM",
+    "Communist Party of China": "Communist Party of Saina",
+    "CPC": "CPC",
+    "CCP": "CCP",
+    "National Development and Reform Commission": "Komisi o Atinae ma Toefuataiga a le Atunuu",
+    "NDRC": "NDRC"
+  }
 }

@@ -1,28 +1,28 @@
 {
   "imf": [
-    "imf",
-    "international monetary fund",
-    "imf program",
-    "imf agreement",
-    "imf deal",
-    "imf loan",
-    "imf bailout",
-    "imf mission",
-    "imf talks",
-    "imf negotiations"
+    "IMF",
+    "International Monetary Fund",
+    "IMF program",
+    "IMF agreement",
+    "IMF deal",
+    "IMF loan",
+    "IMF bailout",
+    "IMF mission",
+    "IMF talks",
+    "IMF negotiations"
   ],
   "world_bank": [
-    "world bank",
-    "world bank group",
-    "ibrd",
-    "ida",
-    "international bank for reconstruction and development",
-    "international development association",
-    "ifc",
-    "international finance corporation",
-    "world bank loan",
-    "world bank financing",
-    "world bank project"
+    "World Bank",
+    "World Bank Group",
+    "IBRD",
+    "IDA",
+    "International Bank for Reconstruction and Development",
+    "International Development Association",
+    "IFC",
+    "International Finance Corporation",
+    "World Bank loan",
+    "World Bank financing",
+    "World Bank project"
   ],
   "central_bank": [
     "central bank",
@@ -64,23 +64,23 @@
     "legislative body",
     "lawmakers",
     "members of parliament",
-    "mps",
+    "MPs",
     "senators",
     "deputies",
-    "house of representatives"
+    "House of Representatives"
   ],
   "multilateral_development_bank": [
     "development bank",
     "multilateral development bank",
     "regional development bank",
-    "african development bank",
-    "asian development bank",
-    "inter-american development bank",
-    "idb",
-    "adb",
-    "afdb",
-    "european bank for reconstruction and development",
-    "ebrd"
+    "African Development Bank",
+    "Asian Development Bank",
+    "Inter-American Development Bank",
+    "IDB",
+    "ADB",
+    "AfDB",
+    "European Bank for Reconstruction and Development",
+    "EBRD"
   ],
   "credit_rating_agency": [
     "credit rating agency",
@@ -89,8 +89,8 @@
     "moody’s",
     "standard and poor's",
     "standard & poor's",
-    "s&p",
-    "fitch",
+    "S&P",
+    "Fitch",
     "credit downgrade",
     "credit rating"
   ],
@@ -136,16 +136,16 @@
     "union protests"
   ],
   "international_organizations": [
-    "united nations",
-    "un",
-    "oecd",
-    "organisation for economic co-operation and development",
-    "ilo",
-    "international labour organization",
-    "who",
-    "world health organization",
-    "wto",
-    "world trade organization"
+    "United Nations",
+    "UN",
+    "OECD",
+    "Organisation for Economic Co-operation and Development",
+    "ILO",
+    "International Labour Organization",
+    "WHO",
+    "World Health Organization",
+    "WTO",
+    "World Trade Organization"
   ],
   "courts_judiciary": [
     "courts",
@@ -166,5 +166,36 @@
     "national security",
     "armed conflict",
     "security services"
+  ],
+  "us_government": [
+    "U.S. government",
+    "US government",
+    "United States government",
+    "White House",
+    "U.S. administration",
+    "US administration",
+    "U.S. Treasury",
+    "US Treasury",
+    "Department of Treasury",
+    "U.S. Congress",
+    "US Congress",
+    "U.S. Trade Representative",
+    "USTR",
+    "Department of Commerce"
+  ],
+  "china_government": [
+    "Chinese government",
+    "China government",
+    "Beijing",
+    "State Council",
+    "People's Bank of China",
+    "PBOC",
+    "Ministry of Commerce of China",
+    "MOFCOM",
+    "Communist Party of China",
+    "CPC",
+    "CCP",
+    "National Development and Reform Commission",
+    "NDRC"
   ]
 }

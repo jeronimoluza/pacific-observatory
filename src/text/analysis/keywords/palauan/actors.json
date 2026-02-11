@@ -1,106 +1,201 @@
 {
-  "imf": [
-    "imf",
-    "international monetary fund",
-    "program er a imf",
-    "llach er a imf",
-    "chutem er a imf",
-    "mison er a imf"
-  ],
-  "world_bank": [
-    "world bank",
-    "bangk er a beluulechad",
-    "ibrd",
-    "ida",
-    "ifc",
-    "chutem er a world bank",
-    "projek er a world bank"
-  ],
-  "central_bank": [
-    "sentral bangk",
-    "bangk er a chelid",
-    "policy rate",
-    "llach er a intres ret"
-  ],
-  "finance_ministry": [
-    "ministri er a udoud",
-    "minista er a udoud",
-    "ofis er a bajit"
-  ],
-  "government": [
-    "chelid",
-    "kabinet",
-    "president",
-    "elechedal a beluu",
-    "chad er a chelid"
-  ],
-  "parliament": [
-    "olbiil era kelulau",
-    "senate",
-    "house of delegates",
-    "senator",
-    "delegate"
-  ],
-  "multilateral_development_bank": [
-    "bangk er a omekedong",
-    "asian development bank",
-    "adb",
-    "afdb",
-    "ebrd"
-  ],
-  "credit_rating_agency": [
-    "rechad el omes er a chutem",
-    "moody's",
-    "standard & poor's",
-    "s&p",
-    "fitch",
-    "credit rating"
-  ],
-  "international_investors": [
-    "chad el omekudoud er a ikrel",
-    "chad el omekudoud er a beluulechad",
-    "chad el ousbech er a chutem",
-    "klou el chad el omekudoud"
-  ],
-  "commercial_banks": [
-    "komersel bangk",
-    "bangk",
-    "chad el olab a chutem",
-    "bangk er a beluu",
-    "bangk er a ikrel"
-  ],
-  "state_owned_enterprises": [
-    "kampani er a chelid",
-    "kampani er a beluu",
-    "olseobel er a chelid",
-    "ngerel kampani er a chelid"
-  ],
-  "labor_unions": [
-    "union er a chad er a urreor",
-    "chad el mengedecheduch er a union",
-    "rechad er a urreor",
-    "protest er a union"
-  ],
-  "international_organizations": [
-    "united nations",
-    "un",
-    "oecd",
-    "ilo",
-    "who",
-    "wto",
-    "pacific islands forum"
-  ],
-  "courts_judiciary": [
-    "kot",
-    "supreme court",
-    "judge",
-    "llach er a kot",
-    "loa"
-  ],
-  "military_security": [
-    "polis",
-    "bureau of public safety",
-    "security",
-    "chelsel a beluu el diak a mekngit"
-  ]
+  "imf": {
+    "IMF": "IMF",
+    "International Monetary Fund": "International Monetary Fund",
+    "IMF program": "program er a IMF",
+    "IMF agreement": "llach er a IMF",
+    "IMF deal": "chutem er a IMF",
+    "IMF loan": "chutem er a IMF",
+    "IMF bailout": "olseobel er a IMF",
+    "IMF mission": "misen er a IMF",
+    "IMF talks": "tekoi er a IMF",
+    "IMF negotiations": "omengedecheduch er a IMF"
+  },
+  "world_bank": {
+    "World Bank": "World Bank",
+    "World Bank Group": "World Bank Group",
+    "IBRD": "IBRD",
+    "IDA": "IDA",
+    "International Bank for Reconstruction and Development": "International Bank for Reconstruction and Development",
+    "International Development Association": "International Development Association",
+    "IFC": "IFC",
+    "International Finance Corporation": "International Finance Corporation",
+    "World Bank loan": "chutem er a World Bank",
+    "World Bank financing": "udoud er a World Bank",
+    "World Bank project": "urreor er a World Bank"
+  },
+  "central_bank": {
+    "central bank": "sentral bangk",
+    "monetary authority": "bangk er a chelid",
+    "reserve bank": "bangk er a chelid",
+    "national bank": "bangk er a beluu",
+    "central bankers": "rechad er a sentral bangk",
+    "policy rate": "ret er a llach",
+    "benchmark rate": "ret er a omenged",
+    "interest rate decision": "llach er a intres ret",
+    "rate decision": "llach er a ret",
+    "monetary authority decision": "llach er a otoriti er a udoud"
+  },
+  "finance_ministry": {
+    "finance ministry": "ministri er a udoud",
+    "ministry of finance": "minista er a udoud",
+    "treasury": "ofis er a bajit",
+    "finance minister": "minisita er a udoud",
+    "treasury department": "dipatmen er a udoud er a chelid",
+    "economic ministry": "ministri er a ekonomi",
+    "budget office": "ofis er a bajit",
+    "fiscal authority": "otoriti er a udoud er a chelid"
+  },
+  "government": {
+    "government": "chelid",
+    "administration": "kabinet",
+    "executive branch": "president",
+    "cabinet": "elechedal a beluu",
+    "prime minister": "chad er a chelid",
+    "president": "president",
+    "presidential office": "ofis er a president",
+    "government officials": "elechedal a chelid",
+    "state authorities": "otoriti er a chelid"
+  },
+  "parliament": {
+    "parliament": "olbiil era kelulau",
+    "congress": "senate",
+    "legislature": "house of delegates",
+    "legislative body": "rechad el omeruul er a llach",
+    "lawmakers": "rechad el omeruul er a llach",
+    "members of parliament": "rechad er a Olbiil Era Kelulau",
+    "MPs": "MPs",
+    "senators": "senator",
+    "deputies": "delegate",
+    "House of Representatives": "House of Delegates"
+  },
+  "multilateral_development_bank": {
+    "development bank": "bangk er a omekedong",
+    "multilateral development bank": "asian development bank",
+    "regional development bank": "adb",
+    "African Development Bank": "African Development Bank",
+    "Asian Development Bank": "Asian Development Bank",
+    "Inter-American Development Bank": "Inter-American Development Bank",
+    "IDB": "IDB",
+    "ADB": "ADB",
+    "AfDB": "AfDB",
+    "European Bank for Reconstruction and Development": "European Bank for Reconstruction and Development",
+    "EBRD": "EBRD"
+  },
+  "credit_rating_agency": {
+    "credit rating agency": "rechad el omes er a chutem",
+    "rating agency": "moody's",
+    "moody's": "moody's",
+    "moody’s": "moody’s",
+    "standard and poor's": "standard and poor's",
+    "standard & poor's": "standard & poor's",
+    "S&P": "S&P",
+    "Fitch": "Fitch",
+    "credit downgrade": "mekesai a kredit reting",
+    "credit rating": "kredit reting"
+  },
+  "international_investors": {
+    "foreign investors": "chad el omekudoud er a ikrel",
+    "international investors": "chad el omekudoud er a beluulechad",
+    "global investors": "chad el ousbech er a chutem",
+    "bondholders": "klou el chad el omekudoud",
+    "creditors": "chad el ousbech er a chutem",
+    "institutional investors": "rechad el omekudoud er a ureor",
+    "portfolio investors": "chad el omekudoud er a portfolio",
+    "asset managers": "chad el omes er a klalo",
+    "hedge funds": "klou el fan er a omekudoud"
+  },
+  "commercial_banks": {
+    "commercial banks": "komersel bangk",
+    "private banks": "bangk",
+    "lenders": "chad el olab a chutem",
+    "banking sector": "bangk er a beluu",
+    "local banks": "bangk er a ikrel",
+    "foreign banks": "bangk er a ikrel",
+    "bank consortium": "grup er a bangk",
+    "banking groups": "rechad er a bangk"
+  },
+  "state_owned_enterprises": {
+    "state-owned enterprise": "kampani er a chelid",
+    "state-owned company": "kampani er a beluu",
+    "public enterprise": "olseobel er a chelid",
+    "public utility": "ngerel kampani er a chelid",
+    "state utility": "olseobel er a chelid",
+    "national oil company": "kampani er a oil er a beluu",
+    "state energy company": "kampani er a ngerel er a chelid",
+    "public company": "kampani er a beluu"
+  },
+  "labor_unions": {
+    "labor unions": "union er a chad er a urreor",
+    "trade unions": "chad el mengedecheduch er a union",
+    "workers' unions": "rechad er a urreor",
+    "union leaders": "protest er a union",
+    "labor organizations": "rechad er a urreor",
+    "workers organizations": "rechad er a urreor",
+    "collective bargaining": "omengedecheduch er a grup er a urreor",
+    "union protests": "protest er a union"
+  },
+  "international_organizations": {
+    "United Nations": "United Nations",
+    "UN": "UN",
+    "OECD": "OECD",
+    "Organisation for Economic Co-operation and Development": "Organisation for Economic Co-operation and Development",
+    "ILO": "ILO",
+    "International Labour Organization": "International Labour Organization",
+    "WHO": "WHO",
+    "World Health Organization": "World Health Organization",
+    "WTO": "WTO",
+    "World Trade Organization": "World Trade Organization"
+  },
+  "courts_judiciary": {
+    "courts": "kot",
+    "judiciary": "supreme court",
+    "supreme court": "judge",
+    "constitutional court": "llach er a kot",
+    "judicial system": "loa",
+    "judges": "judge",
+    "court ruling": "llach er a kot",
+    "legal system": "ituvatuva er a llach"
+  },
+  "military_security": {
+    "military": "polis",
+    "armed forces": "bureau of public safety",
+    "security forces": "security",
+    "defense ministry": "chelsel a beluu el diak a mekngit",
+    "defence ministry": "ministri er a difens",
+    "national security": "chelsel a beluu el diak a mekngit",
+    "armed conflict": "mekemad el ngar er ngii a buum",
+    "security services": "olseobel er a security"
+  },
+  "us_government": {
+    "U.S. government": "chelid er a U.S.",
+    "US government": "chelid er a US",
+    "United States government": "chelid er a Amerika",
+    "White House": "White House",
+    "U.S. administration": "chelid er a U.S.",
+    "US administration": "chelid er a US",
+    "U.S. Treasury": "U.S. Treasury",
+    "US Treasury": "US Treasury",
+    "Department of Treasury": "dipatmen er a udoud er a chelid er a Amerika",
+    "U.S. Congress": "Kongres er a U.S.",
+    "US Congress": "Kongres er a US",
+    "U.S. Trade Representative": "chad er a blals er a U.S.",
+    "USTR": "USTR",
+    "Department of Commerce": "dipatmen er a komersel"
+  },
+  "china_government": {
+    "Chinese government": "chelid er a Saina",
+    "China government": "chelid er a Saina",
+    "Beijing": "Beijing",
+    "State Council": "kaunsel er a chelid er a Saina",
+    "People's Bank of China": "People's Bank of China",
+    "PBOC": "PBOC",
+    "Ministry of Commerce of China": "ministri er a komersel er a Saina",
+    "MOFCOM": "MOFCOM",
+    "Communist Party of China": "Komunis Parti er a Saina",
+    "CPC": "CPC",
+    "CCP": "CCP",
+    "National Development and Reform Commission": "komisen er a omekedong me a omesodel er a Saina",
+    "NDRC": "NDRC"
+  }
 }

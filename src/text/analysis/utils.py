@@ -268,6 +268,44 @@ def generate_continous_df(
         raise ValueError("cannot find `date` column in dataframe being checked.")
 
 
+def _resolve_keywords_dir(language: str, filename: str) -> Path:
+    """
+    Resolve the directory for a keyword file, preferring keywords_new/ over keywords/.
+
+    Lookup order:
+        1. keywords_new/{language}/{filename}
+        2. keywords/{language}/{filename}
+        3. keywords_new/en/{filename}
+        4. keywords/en/{filename}
+    """
+    base = Path(__file__).parent
+    for kw_dir_name in ("keywords_new", "keywords"):
+        lang_dir = base / kw_dir_name / language
+        if (lang_dir / filename).exists():
+            return lang_dir
+    # Fallback to English
+    for kw_dir_name in ("keywords_new", "keywords"):
+        en_dir = base / kw_dir_name / "en"
+        if (en_dir / filename).exists():
+            return en_dir
+    raise FileNotFoundError(
+        f"{filename} not found for language '{language}' in keywords_new/ or keywords/"
+    )
+
+
+def _extract_terms(value):
+    """
+    Extract a flat term list from a category value.
+
+    Handles both formats:
+        - list: ["term1", "term2"]  (English / legacy)
+        - dict: {"en_term": "translation", ...}  (new translated format)
+    """
+    if isinstance(value, dict):
+        return list(value.values())
+    return value
+
+
 def load_topics_words(
     additional_name: Union[str, None] = None,
     language: str = "en",
@@ -290,26 +328,15 @@ def load_topics_words(
         FileNotFoundError: If keyword files are not found.
         KeyError: If additional_name is provided but not found in topics.json.
     """
-    keywords_dir = Path(__file__).parent / "keywords"
-
     if additional_name is None:
-        # Load EPU keywords
-        lang_dir = keywords_dir / language
-        if not lang_dir.exists():
-            lang_dir = keywords_dir / "en"
+        lang_dir = _resolve_keywords_dir(language, "epu.json")
         epu_path = lang_dir / "epu.json"
-        if not epu_path.exists():
-            raise FileNotFoundError(f"epu.json not found at {epu_path}")
         with open(epu_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+            raw = json.load(f)
+        return {cat: _extract_terms(val) for cat, val in raw.items()}
     else:
-        # Load topic keywords (only English for now)
-        lang_dir = keywords_dir / language
-        if not (lang_dir / "topics.json").exists():
-            lang_dir = keywords_dir / "en"
+        lang_dir = _resolve_keywords_dir(language, "topics.json")
         topics_path = lang_dir / "topics.json"
-        if not topics_path.exists():
-            raise FileNotFoundError(f"topics.json not found at {topics_path}")
         with open(topics_path, "r", encoding="utf-8") as f:
             topics_data = json.load(f)
         if additional_name not in topics_data:
@@ -317,7 +344,7 @@ def load_topics_words(
                 f"additional_name '{additional_name}' not found in {topics_path}. "
                 f"Available options: {list(topics_data.keys())}"
             )
-        return topics_data[additional_name]
+        return _extract_terms(topics_data[additional_name])
 
 
 def load_all_groups(
@@ -333,16 +360,12 @@ def load_all_groups(
     Returns:
         Dict mapping group names to keyword lists.
     """
-    keywords_dir = Path(__file__).parent / "keywords"
-    lang_dir = keywords_dir / language
     filename = f"{source_file}.json"
-    if not (lang_dir / filename).exists():
-        lang_dir = keywords_dir / "en"
+    lang_dir = _resolve_keywords_dir(language, filename)
     filepath = lang_dir / filename
-    if not filepath.exists():
-        raise FileNotFoundError(f"{filename} not found at {filepath}")
     with open(filepath, "r", encoding="utf-8") as f:
-        return json.load(f)
+        raw = json.load(f)
+    return {group: _extract_terms(val) for group, val in raw.items()}
 
 
 def generate_news_statistics_table(country_folder: Path) -> str:

@@ -1,108 +1,201 @@
 {
-  "imf": [
-    "imf",
-    "international monetary fund",
-    "polokalama ʻa e imf",
-    "aleapau mo e imf",
-    "nō mei he imf",
-    "misiona ʻa e imf"
-  ],
-  "world_bank": [
-    "world bank",
-    "pangikē māmani",
-    "ibrd",
-    "ida",
-    "ifc",
-    "nō mei he world bank",
-    "poloseki ʻa e world bank"
-  ],
-  "central_bank": [
-    "pangikē pule",
-    "pangikē fakafonua",
-    "national reserve bank of tonga",
-    "fua fakapaʻanga",
-    "policy rate",
-    "tuʻutuʻuni fua nō"
-  ],
-  "finance_ministry": [
-    "potungāue paʻanga",
-    "minisitā paʻanga",
-    "ʻōfisi patiseti"
-  ],
-  "government": [
-    "puleʻanga",
-    "kapineti",
-    "palēmia",
-    "tuʻi",
-    "kau ʻōfisa puleʻanga"
-  ],
-  "parliament": [
-    "fale alea",
-    "kau fakafofonga",
-    "mēmipa ʻo e fale alea",
-    "kau nōpele"
-  ],
-  "multilateral_development_bank": [
-    "pangikē fakalakalaka",
-    "asian development bank",
-    "adb",
-    "afdb",
-    "ebrd"
-  ],
-  "credit_rating_agency": [
-    "kautaha fuaʻi moʻua",
-    "moody's",
-    "standard & poor's",
-    "s&p",
-    "fitch",
-    "credit rating"
-  ],
-  "international_investors": [
-    "kau fakahū paʻanga mei muli",
-    "kau fakahū paʻanga fakamāmani",
-    "kau maʻu nō",
-    "kau fakahū paʻanga lalahi"
-  ],
-  "commercial_banks": [
-    "pangikē fefakatauʻaki",
-    "pangikē tautaha",
-    "kau nō",
-    "pangikē fakafonua",
-    "pangikē mei muli"
-  ],
-  "state_owned_enterprises": [
-    "kautaha ʻa e puleʻanga",
-    "pisinisi fakapuleʻanga",
-    "ngāue fakafonua",
-    "kautaha ivi ʻa e puleʻanga"
-  ],
-  "labor_unions": [
-    "ʻiunioni ngāue",
-    "kau taki ʻo e ʻiunioni",
-    "kautaha ngāue",
-    "fakahohaʻa ʻa e ʻiunioni"
-  ],
-  "international_organizations": [
-    "united nations",
-    "un",
-    "oecd",
-    "ilo",
-    "who",
-    "wto",
-    "pacific islands forum"
-  ],
-  "courts_judiciary": [
-    "fakamaauʻanga",
-    "fakamaauʻanga lahi",
-    "fakamaau",
-    "tuʻutuʻuni ʻa e fakamaauʻanga",
-    "lao"
-  ],
-  "military_security": [
-    "kau tau",
-    "kau polisi",
-    "kau maluʻi",
-    "potungāue maluʻi",
-    "malu ʻo e fonua"
-  ]
+  "imf": {
+    "IMF": "IMF",
+    "International Monetary Fund": "International Monetary Fund",
+    "IMF program": "polokalama ʻa e IMF",
+    "IMF agreement": "aleapau ʻa e IMF",
+    "IMF deal": "nō mei he IMF",
+    "IMF loan": "nō mei he IMF",
+    "IMF bailout": "tokoni ʻa e IMF",
+    "IMF mission": "misiona ʻa e IMF",
+    "IMF talks": "talanoa ʻa e IMF",
+    "IMF negotiations": "alea mo e IMF"
+  },
+  "world_bank": {
+    "World Bank": "World Bank",
+    "World Bank Group": "World Bank Group",
+    "IBRD": "IBRD",
+    "IDA": "IDA",
+    "International Bank for Reconstruction and Development": "International Bank for Reconstruction and Development",
+    "International Development Association": "International Development Association",
+    "IFC": "IFC",
+    "International Finance Corporation": "International Finance Corporation",
+    "World Bank loan": "nō mei he World Bank",
+    "World Bank financing": "paʻanga mei he World Bank",
+    "World Bank project": "poloseki ʻa e World Bank"
+  },
+  "central_bank": {
+    "central bank": "pangikē pule",
+    "monetary authority": "pangikē fakafonua",
+    "reserve bank": "national reserve bank of tonga",
+    "national bank": "pangikē fakafonua",
+    "central bankers": "kau pangikē pule",
+    "policy rate": "fua fakapaʻanga",
+    "benchmark rate": "fua fakamaketi",
+    "interest rate decision": "tuʻutuʻuni fua nō",
+    "rate decision": "tuʻutuʻuni ʻo e fua",
+    "monetary authority decision": "tuʻutuʻuni ʻa e pule paʻanga"
+  },
+  "finance_ministry": {
+    "finance ministry": "potungāue paʻanga",
+    "ministry of finance": "minisitā paʻanga",
+    "treasury": "ʻōfisi patiseti",
+    "finance minister": "minisitā paʻanga",
+    "treasury department": "potungāue paʻanga ʻa e puleʻanga",
+    "economic ministry": "potungāue ʻekonōmika",
+    "budget office": "ʻōfisi patiseti",
+    "fiscal authority": "pule paʻanga ʻa e puleʻanga"
+  },
+  "government": {
+    "government": "puleʻanga",
+    "administration": "kapineti",
+    "executive branch": "palēmia",
+    "cabinet": "tuʻi",
+    "prime minister": "palēmia",
+    "president": "palesiteni",
+    "presidential office": "ʻōfisi ʻo e palēmia",
+    "government officials": "kau ʻōfisa puleʻanga",
+    "state authorities": "ngāahi pule ʻo e puleʻanga"
+  },
+  "parliament": {
+    "parliament": "fale alea",
+    "congress": "kau fakafofonga",
+    "legislature": "mēmipa ʻo e fale alea",
+    "legislative body": "sino fai lao",
+    "lawmakers": "kau fai lao",
+    "members of parliament": "mēmipa ʻo e Fale Alea",
+    "MPs": "MPs",
+    "senators": "kau nōpele",
+    "deputies": "kau fakafofonga",
+    "House of Representatives": "Fale ʻo e Kau Fakafofonga"
+  },
+  "multilateral_development_bank": {
+    "development bank": "pangikē fakalakalaka",
+    "multilateral development bank": "asian development bank",
+    "regional development bank": "adb",
+    "African Development Bank": "African Development Bank",
+    "Asian Development Bank": "Asian Development Bank",
+    "Inter-American Development Bank": "Inter-American Development Bank",
+    "IDB": "IDB",
+    "ADB": "ADB",
+    "AfDB": "AfDB",
+    "European Bank for Reconstruction and Development": "European Bank for Reconstruction and Development",
+    "EBRD": "EBRD"
+  },
+  "credit_rating_agency": {
+    "credit rating agency": "kautaha fuaʻi moʻua",
+    "rating agency": "moody's",
+    "moody's": "moody's",
+    "moody’s": "moody’s",
+    "standard and poor's": "standard and poor's",
+    "standard & poor's": "standard & poor's",
+    "S&P": "S&P",
+    "Fitch": "Fitch",
+    "credit downgrade": "holo ʻo e fuaʻi moʻua",
+    "credit rating": "fuaʻi moʻua"
+  },
+  "international_investors": {
+    "foreign investors": "kau fakahū paʻanga mei muli",
+    "international investors": "kau fakahū paʻanga fakamāmani",
+    "global investors": "kau maʻu nō",
+    "bondholders": "kau fakahū paʻanga lalahi",
+    "creditors": "kau maʻu nō",
+    "institutional investors": "kautaha fakahū paʻanga",
+    "portfolio investors": "kau fakahū paʻanga portfolio",
+    "asset managers": "kau puleʻi koloa",
+    "hedge funds": "paʻanga maluʻi"
+  },
+  "commercial_banks": {
+    "commercial banks": "pangikē fefakatauʻaki",
+    "private banks": "pangikē tautaha",
+    "lenders": "kau nō",
+    "banking sector": "pangikē fakafonua",
+    "local banks": "pangikē fakafonua",
+    "foreign banks": "pangikē mei muli",
+    "bank consortium": "kulupu pangikē",
+    "banking groups": "kulupu pangikē"
+  },
+  "state_owned_enterprises": {
+    "state-owned enterprise": "kautaha ʻa e puleʻanga",
+    "state-owned company": "pisinisi fakapuleʻanga",
+    "public enterprise": "ngāue fakafonua",
+    "public utility": "kautaha ivi ʻa e puleʻanga",
+    "state utility": "ngāue fakafonua",
+    "national oil company": "kautaha lolo ʻa e fonua",
+    "state energy company": "kautaha ivi ʻa e puleʻanga",
+    "public company": "kautaha fakapuleʻanga"
+  },
+  "labor_unions": {
+    "labor unions": "ʻiunioni ngāue",
+    "trade unions": "kau taki ʻo e ʻiunioni",
+    "workers' unions": "kautaha ngāue",
+    "union leaders": "fakahohaʻa ʻa e ʻiunioni",
+    "labor organizations": "kautaha ngāue",
+    "workers organizations": "kautaha ngāue",
+    "collective bargaining": "alea fakataha ʻa e kau ngāue",
+    "union protests": "fakahohoaʻa ʻa e ʻiunioni"
+  },
+  "international_organizations": {
+    "United Nations": "United Nations",
+    "UN": "UN",
+    "OECD": "OECD",
+    "Organisation for Economic Co-operation and Development": "Organisation for Economic Co-operation and Development",
+    "ILO": "ILO",
+    "International Labour Organization": "International Labour Organization",
+    "WHO": "WHO",
+    "World Health Organization": "World Health Organization",
+    "WTO": "WTO",
+    "World Trade Organization": "World Trade Organization"
+  },
+  "courts_judiciary": {
+    "courts": "fakamaauʻanga",
+    "judiciary": "fakamaauʻanga lahi",
+    "supreme court": "fakamaau",
+    "constitutional court": "tuʻutuʻuni ʻa e fakamaauʻanga",
+    "judicial system": "lao",
+    "judges": "fakamaau",
+    "court ruling": "tuʻutuʻuni ʻa e fakamaauʻanga",
+    "legal system": "founga fakalao"
+  },
+  "military_security": {
+    "military": "kau tau",
+    "armed forces": "kau polisi",
+    "security forces": "kau maluʻi",
+    "defense ministry": "potungāue maluʻi",
+    "defence ministry": "potungāue maluʻi",
+    "national security": "malu ʻo e fonua",
+    "armed conflict": "fepaki fakaʻame",
+    "security services": "ngāue maluʻi"
+  },
+  "us_government": {
+    "U.S. government": "puleʻanga ʻo ʻAmelika",
+    "US government": "puleʻanga ʻo ʻAmelika",
+    "United States government": "puleʻanga ʻo e ʻUnaiteti Siteiti",
+    "White House": "White House",
+    "U.S. administration": "puleʻanga ʻo ʻAmelika",
+    "US administration": "puleʻanga ʻo ʻAmelika",
+    "U.S. Treasury": "U.S. Treasury",
+    "US Treasury": "US Treasury",
+    "Department of Treasury": "potungāue paʻanga ʻo ʻAmelika",
+    "U.S. Congress": "Kongalesi ʻo ʻAmelika",
+    "US Congress": "Kongalesi ʻo ʻAmelika",
+    "U.S. Trade Representative": "fakafofonga fefakatauʻaki ʻo ʻAmelika",
+    "USTR": "USTR",
+    "Department of Commerce": "potungāue fefakatauʻaki"
+  },
+  "china_government": {
+    "Chinese government": "puleʻanga ʻo Siaina",
+    "China government": "puleʻanga ʻo Siaina",
+    "Beijing": "Beijing",
+    "State Council": "kaunisolo ʻa e puleʻanga ʻo Siaina",
+    "People's Bank of China": "People's Bank of China",
+    "PBOC": "PBOC",
+    "Ministry of Commerce of China": "potungāue fefakatauʻaki ʻo Siaina",
+    "MOFCOM": "MOFCOM",
+    "Communist Party of China": "Pāti Komiunisi ʻo Siaina",
+    "CPC": "CPC",
+    "CCP": "CCP",
+    "National Development and Reform Commission": "komisoni fakalakalaka mo e liliu ʻo Siaina",
+    "NDRC": "NDRC"
+  }
 }

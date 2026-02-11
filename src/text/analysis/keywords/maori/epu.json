@@ -1,48 +1,41 @@
 {
-  "economic": [
-    "ōhanga",
-    "ā-ōhanga",
-    "ngā mahi ōhanga",
-    "pakihi",
-    "pūtea",
-    "tahua",
-    "ā-pūtea"
-  ],
-  "policy": [
-    "kāwanatanga",
-    "ā-kāwanatanga",
-    "ngā mana",
-    "mana whakahaere",
-    "minita",
-    "manatū",
-    "Pāremata",
-    "ā-Pāremata",
-    "tāke",
-    "ture",
-    "whakaritenga",
-    "kaupapa ture",
-    "pēke pokapū",
-    "pūtea matua",
-    "IMF",
-    "International Monetary Fund",
-    "Pēke o te Ao",
-    "World Bank"
-  ],
-  "uncertainty": [
-    "rangirua",
-    "kāore i te tino mōhio",
-    "kore mārama",
-    "āwangawanga",
-    "kāore i mōhiotia",
-    "kāore i te pūmau",
-    "kāore i te mautu",
-    "kāore anō kia whakatauria",
-    "mōrearea",
-    "tūraru",
-    "kāore i te tino mārama",
-    "kāore e taea te whakawhirinaki",
-    "rerekētanga",
-    "pikinga/hekinga",
-    "kāore e taea te matapae"
-  ]
+  "economic": {
+    "economy": "ōhanga",
+    "economic": "ōhanga",
+    "business": "pakihi",
+    "finance": "pūtea",
+    "financial": "pūtea"
+  },
+  "policy": {
+    "government": "kāwanatanga",
+    "governmental": "kāwanatanga",
+    "authority": "mana",
+    "authorities": "mana",
+    "minister": "minita",
+    "ministry": "mahi minita",
+    "parliament": "paremata",
+    "parliamentary": "paremata",
+    "tax": "taake",
+    "regulation": "whakaritenga",
+    "legislation": "ture",
+    "central bank": "peeke pokapū",
+    "IMF": "IMF",
+    "International Monetary Fund": "Putea Moni o te Ao",
+    "World Bank": "Peeke o te Ao"
+  },
+  "uncertainty": {
+    "uncertain": "rangirua",
+    "uncertainty": "rangirua",
+    "uncertainties": "rangirua",
+    "unknown": "tē mōhiotia",
+    "unstable": "korekore",
+    "unsure": "kore mohio",
+    "undetermined": "kare i whakatau",
+    "risky": "mōrearea",
+    "risk": "mōrea",
+    "not certain": "kaore i tino mohio",
+    "non-reliable": "kore-whakapono",
+    "fluctuations": "rerekē haere",
+    "unpredictable": "ohorere"
+  }
 }

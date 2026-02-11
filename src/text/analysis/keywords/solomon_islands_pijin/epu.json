@@ -1,44 +1,41 @@
 {
-  "economic": [
-    "ekonomi",
-    "ekonomik",
-    "bisnis",
-    "finance",
-    "mani",
-    "bilong mani"
-  ],
-  "policy": [
-    "gavman",
-    "bilong gavman",
-    "otoriti",
-    "olketa ofisa",
-    "minista",
-    "ministri",
-    "dipatmen",
-    "palamen",
-    "bilong palamen",
-    "takis",
-    "rul",
-    "loa",
-    "sentral bank",
-    "IMF",
-    "International Monetary Fund",
-    "World Bank",
-    "Wol Bank"
-  ],
-  "uncertainty": [
-    "no sua",
-    "no klia",
-    "ol no klia",
-    "no save",
-    "no stabil",
-    "no disaid yet",
-    "risky",
-    "garem risk",
-    "risk",
-    "no trustem",
-    "senis antap-daon",
-    "fluktuesen",
-    "no save predik"
-  ]
+  "economic": {
+    "economy": "ekonomi",
+    "economic": "ekonomik",
+    "business": "bisnis",
+    "finance": "mani",
+    "financial": "blong mani"
+  },
+  "policy": {
+    "government": "gavman",
+    "governmental": "bilong gavman",
+    "authority": "otoriti",
+    "authorities": "olketa ofisa",
+    "minister": "minista",
+    "ministry": "ministri",
+    "parliament": "palamen",
+    "parliamentary": "blong palamen",
+    "tax": "takis",
+    "regulation": "rul",
+    "legislation": "loa",
+    "central bank": "sentral bangk",
+    "IMF": "IMF",
+    "International Monetary Fund": "International Monetary Fund",
+    "World Bank": "World Bank"
+  },
+  "uncertainty": {
+    "uncertain": "no sua",
+    "uncertainty": "no klia",
+    "uncertainties": "ol no klia",
+    "unknown": "no save",
+    "unstable": "no stabil",
+    "unsure": "no sua",
+    "undetermined": "no disaid yet",
+    "risky": "risky",
+    "risk": "risk",
+    "not certain": "no sua tumas",
+    "non-reliable": "no trustem",
+    "fluctuations": "senis antap-daon",
+    "unpredictable": "no save predik"
+  }
 }

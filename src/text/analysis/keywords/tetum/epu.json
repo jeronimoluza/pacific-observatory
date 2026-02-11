@@ -1,41 +1,41 @@
 {
-  "economic": [
-    "ekonomia",
-    "ekonómiku",
-    "negósiu",
-    "finansa",
-    "finanseiru"
-  ],
-  "policy": [
-    "governu",
-    "governamentál",
-    "autoridade",
-    "autoridade sira",
-    "ministru",
-    "ministriu",
-    "parlamentu",
-    "parlamentár",
-    "impostu",
-    "regulamentu",
-    "lejislasaun",
-    "banku sentrál",
-    "IMF",
-    "Fundu Monetáriu Internasionál",
-    "World Bank",
-    "Banku Mundiál"
-  ],
-  "uncertainty": [
-    "la certeza",
-    "incerteza",
-    "incerteza sira",
-    "deskoñesidu",
-    "la estável",
-    "dúvida",
-    "la determina",
-    "arriska",
-    "risku",
-    "la konfiável",
-    "mudansa-mudansa",
-    "la previzível"
-  ]
+  "economic": {
+    "economy": "ekonomia",
+    "economic": "Ekonomiku",
+    "business": "negosiu",
+    "finance": "finansa",
+    "financial": "finansiál"
+  },
+  "policy": {
+    "government": "governu",
+    "governmental": "governamentál",
+    "authority": "autoridade",
+    "authorities": "autoridade sira",
+    "minister": "ministru",
+    "ministry": "ministeriu",
+    "parliament": "parlamentu",
+    "parliamentary": "parlamentár",
+    "tax": "impostu",
+    "regulation": "regulamentu",
+    "legislation": "lejizlasaun",
+    "central bank": "banku sentrál",
+    "IMF": "IMF",
+    "International Monetary Fund": "Fundu Monetáriu Internasionál",
+    "World Bank": "Banku Mundial"
+  },
+  "uncertainty": {
+    "uncertain": "inserteza",
+    "uncertainty": "inserteza",
+    "uncertainties": "inserteza",
+    "unknown": "deskonese",
+    "unstable": "instável",
+    "unsure": "la",
+    "undetermined": "la determina",
+    "risky": "risku",
+    "risk": "risku",
+    "not certain": "la iha serteza",
+    "non-reliable": "labele konfiável",
+    "fluctuations": "flutuasaun",
+    "unpredictable": "imprevizível"
+  }
 }

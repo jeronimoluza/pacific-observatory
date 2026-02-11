@@ -1,106 +1,201 @@
 {
-  "imf": [
-    "imf",
-    "international monetary fund",
-    "program bilong imf",
-    "agrimen bilong imf",
-    "dinau bilong imf",
-    "mison bilong imf"
-  ],
-  "world_bank": [
-    "world bank",
-    "wol benk",
-    "ibrd",
-    "ida",
-    "ifc",
-    "dinau bilong world bank",
-    "projek bilong world bank"
-  ],
-  "central_bank": [
-    "sentral benk",
-    "bank of papua new guinea",
-    "benk bilong gavman",
-    "policy rate",
-    "disisim bilong intres ret"
-  ],
-  "finance_ministry": [
-    "dipatmen bilong finans",
-    "minista bilong mani",
-    "ofis bilong baset"
-  ],
-  "government": [
-    "gavman",
-    "kabinet",
-    "praim minista",
-    "hed bilong stet",
-    "ofisa bilong gavman"
-  ],
-  "parliament": [
-    "palamen",
-    "memba bilong palamen",
-    "mp",
-    "memba"
-  ],
-  "multilateral_development_bank": [
-    "divelopmen benk",
-    "asian development bank",
-    "adb",
-    "afdb",
-    "ebrd"
-  ],
-  "credit_rating_agency": [
-    "ejens bilong kredit reting",
-    "moody's",
-    "standard & poor's",
-    "s&p",
-    "fitch",
-    "credit rating"
-  ],
-  "international_investors": [
-    "investoman bilong ausait",
-    "investoman bilong wol",
-    "man i givim dinau",
-    "bikpela investoman"
-  ],
-  "commercial_banks": [
-    "komersel benk",
-    "praivit benk",
-    "benk bilong kantri",
-    "benk bilong ausait"
-  ],
-  "state_owned_enterprises": [
-    "kampani bilong gavman",
-    "pablik kampani",
-    "sevis bilong gavman",
-    "enaji kampani bilong gavman"
-  ],
-  "labor_unions": [
-    "yunion bilong wokman",
-    "lida bilong yunion",
-    "oganaisesen bilong wokman",
-    "protes bilong yunion"
-  ],
-  "international_organizations": [
-    "united nations",
-    "un",
-    "oecd",
-    "ilo",
-    "who",
-    "wto",
-    "pacific islands forum"
-  ],
-  "courts_judiciary": [
-    "kot",
-    "suprim kot",
-    "jas",
-    "disisim bilong kot",
-    "lo"
-  ],
-  "military_security": [
-    "ami",
-    "difens fos",
-    "polis",
-    "difens dipatmen",
-    "nesenel sekuriti"
-  ]
+  "imf": {
+    "IMF": "IMF",
+    "International Monetary Fund": "Intanesenel Moneteri Fan",
+    "IMF program": "IMF program",
+    "IMF agreement": "IMF agrimen",
+    "IMF deal": "IMF dil",
+    "IMF loan": "IMF lon",
+    "IMF bailout": "IMF beil",
+    "IMF mission": "IMF misin",
+    "IMF talks": "IMF toktok",
+    "IMF negotiations": "Ol toktok bilong IMF"
+  },
+  "world_bank": {
+    "World Bank": "Wol Benk",
+    "World Bank Group": "Wol Benk Grup",
+    "IBRD": "IBRD",
+    "IDA": "IDA",
+    "International Bank for Reconstruction and Development": "Intanesenel Benk bilong Rikonstraksen na Divelopmen",
+    "International Development Association": "Intanesenel Divelopmen Asosiesen",
+    "IFC": "IFC",
+    "International Finance Corporation": "Intanesenel Fainens Koporesen",
+    "World Bank loan": "Wol Benk dinau",
+    "World Bank financing": "Fainensing bilong Wol Benk",
+    "World Bank project": "Wol Benk projek"
+  },
+  "central_bank": {
+    "central bank": "sentrol benk",
+    "monetary authority": "mani atoriti",
+    "reserve bank": "risev benk",
+    "national bank": "nesenel benk",
+    "central bankers": "ol sentral benka",
+    "policy rate": "polisi reit",
+    "benchmark rate": "mak bilong mak",
+    "interest rate decision": "intres reit disisen",
+    "rate decision": "disisen",
+    "monetary authority decision": "disisen bilong mani atoriti"
+  },
+  "finance_ministry": {
+    "finance ministry": "fainens ministri",
+    "ministry of finance": "ministri bilong fainens",
+    "treasury": "treseri",
+    "finance minister": "fainens minista",
+    "treasury department": "treseri dipatmen",
+    "economic ministry": "ekonomik ministri",
+    "budget office": "baset opis",
+    "fiscal authority": "fiskal atoriti"
+  },
+  "government": {
+    "government": "gavman",
+    "administration": "edministresen",
+    "executive branch": "ekseketiv brens",
+    "cabinet": "kabot",
+    "prime minister": "praim minista",
+    "president": "presiden",
+    "presidential office": "presidensiel opis",
+    "government officials": "ol bikman bilong gavman",
+    "state authorities": "ol atoriti bilong stet"
+  },
+  "parliament": {
+    "parliament": "palamen",
+    "congress": "kongres",
+    "legislature": "lejisleta",
+    "legislative body": "bodi bilong lejisletiv",
+    "lawmakers": "ol memba",
+    "members of parliament": "memba bilong palamen",
+    "senators": "ol senata",
+    "deputies": "ol deputi",
+    "MPs": "MPs",
+    "House of Representatives": "Haus bilong ol Ripresentativ"
+  },
+  "multilateral_development_bank": {
+    "development bank": "divelopmen benk",
+    "multilateral development bank": "planti lain divelopmen benk",
+    "regional development bank": "rijinel divelopmen benk",
+    "African Development Bank": "Afrika Divelopmen Benk",
+    "Asian Development Bank": "Asian Divelopmen Benk",
+    "Inter-American Development Bank": "Inta-Ameriken Divelopmen Benk",
+    "IDB": "IDB",
+    "ADB": "ADB",
+    "AfDB": "AfDB",
+    "European Bank for Reconstruction and Development": "Yuropien Benk bilong Rikonstraksen na Divelopmen",
+    "EBRD": "EBRD"
+  },
+  "credit_rating_agency": {
+    "credit rating agency": "kredit reiting ejensi",
+    "rating agency": "ejensi bilong givim reiting",
+    "moody's": "moody's",
+    "moody’s": "moody’s",
+    "standard and poor's": "standard and poor's",
+    "standard & poor's": "standard & poor's",
+    "credit downgrade": "kredit daungred",
+    "credit rating": "kredit reiting",
+    "S&P": "S&P",
+    "Fitch": "Fitch"
+  },
+  "international_investors": {
+    "foreign investors": "ol investa bilong ol narapela kantri",
+    "international investors": "ol intanesenel investa",
+    "global investors": "ol global investa",
+    "bondholders": "ol bonholda",
+    "creditors": "ol kredita",
+    "institutional investors": "ol institusenel investa",
+    "portfolio investors": "ol investa bilong potfolio",
+    "asset managers": "ol aset menesa",
+    "hedge funds": "hed fan"
+  },
+  "commercial_banks": {
+    "commercial banks": "ol komesel benk",
+    "private banks": "ol praivet benk",
+    "lenders": "ol lain i givim dinau",
+    "banking sector": "benking sekta",
+    "local banks": "ol benk bilong ples",
+    "foreign banks": "ol benk bilong ol narapela kantri",
+    "bank consortium": "benk ​​konsotium",
+    "banking groups": "ol benking grup"
+  },
+  "state_owned_enterprises": {
+    "state-owned enterprise": "stet entaprais",
+    "state-owned company": "kampani bilong gavman",
+    "public enterprise": "pablik entaprais",
+    "public utility": "pablik yutiliti",
+    "state utility": "stet yutiliti",
+    "national oil company": "nesenel oil kampani",
+    "state energy company": "stet eneji kampani",
+    "public company": "pablik kampani"
+  },
+  "labor_unions": {
+    "labor unions": "ol yunion bilong ol wokman",
+    "trade unions": "ol tred yunion",
+    "workers' unions": "ol yunion bilong ol wokmanmeri",
+    "union leaders": "ol lida bilong yunion",
+    "labor organizations": "ol oganaisesen bilong wok",
+    "workers organizations": "ol wokmanmeri ogenaisesen",
+    "collective bargaining": "kolektiv bargening",
+    "union protests": "ol protes bilong yunion"
+  },
+  "international_organizations": {
+    "United Nations": "Yunaitet Nesens",
+    "UN": "UN",
+    "OECD": "OECD",
+    "Organisation for Economic Co-operation and Development": "Ogenaisesen bilong Ekonomik Ko-operesen na Divelopmen",
+    "ILO": "ILO",
+    "International Labour Organization": "Intanesenel Leba Ogenaisesen",
+    "WHO": "WHO",
+    "World Health Organization": "Wol Helt Ogenaisesen",
+    "WTO": "WTO",
+    "World Trade Organization": "Wol Tred Ogenaisesen"
+  },
+  "courts_judiciary": {
+    "courts": "ol kot",
+    "judiciary": "kot",
+    "supreme court": "nambawan kot",
+    "constitutional court": "konstitusenel kot",
+    "judicial system": "lo sistem",
+    "judges": "ol jas",
+    "court ruling": "rul bilong kot",
+    "legal system": "sistem bilong lo"
+  },
+  "military_security": {
+    "military": "militeri",
+    "armed forces": "ol ami",
+    "security forces": "ol sekyuriti fos",
+    "defense ministry": "difens ministri",
+    "defence ministry": "difens ministri",
+    "national security": "nesenel sekyuriti",
+    "armed conflict": "pait i gat ol samting bilong pait",
+    "security services": "ol sekyuriti sevis"
+  },
+  "us_government": {
+    "U.S. government": "Gavman bilong U.S.",
+    "US government": "Amerika gavman",
+    "United States government": "Gavman bilong Yunaitet Stets",
+    "White House": "Wait Haus",
+    "U.S. administration": "U.S. edministresen",
+    "US administration": "US edministresen",
+    "U.S. Treasury": "U.S. Treseri",
+    "US Treasury": "US Treseri",
+    "Department of Treasury": "Dipatmen bilong Treseri",
+    "U.S. Congress": "U.S. Kongres",
+    "US Congress": "Amerika Kongres",
+    "U.S. Trade Representative": "U.S. Tred Representativ",
+    "USTR": "USTR",
+    "Department of Commerce": "Dipatmen bilong Komes"
+  },
+  "china_government": {
+    "Chinese government": "Gavman bilong Saina",
+    "China government": "Saina gavman",
+    "Beijing": "Beijing",
+    "State Council": "Stet Kaunsil",
+    "People's Bank of China": "Ol lain Benk bilong Saina .",
+    "PBOC": "PBOC",
+    "Ministry of Commerce of China": "Ministri bilong Komes bilong Saina",
+    "MOFCOM": "MOFCOM",
+    "Communist Party of China": "Komyunis Pati bilong Saina",
+    "CPC": "CPC",
+    "CCP": "CCP",
+    "National Development and Reform Commission": "Nesenel Divelopmen na Rifom Komisin",
+    "NDRC": "NDRC"
+  }
 }

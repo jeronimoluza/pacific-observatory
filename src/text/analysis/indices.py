@@ -184,6 +184,9 @@ class IndexCalculator:
         Returns:
             DataFrame with standardized, aggregated, and normalized columns.
         """
+        # Defragment to avoid PerformanceWarning from repeated column inserts
+        df = df.copy()
+
         # Standardize each ratio column
         z_cols = []
         for ratio_col in ratio_cols:

@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import sys
 import time
 from pathlib import Path
@@ -12,6 +13,7 @@ if str(_PROJECT_ROOT) not in sys.path:
 
 from src.text.analysis.epu import EPU  # noqa: E402
 from src.text.analysis.indices import IndexCalculator  # noqa: E402
+from src.text.analysis.translate_keywords import translate_keywords  # noqa: E402
 from src.text.analysis.utils import (  # noqa: E402
     load_all_groups,
     generate_continous_df,
@@ -160,6 +162,10 @@ if __name__ == "__main__":
             print(f"Available countries: {', '.join(available)}")
             sys.exit(1)
         country_dirs = matched
+
+    # Ensure all keyword translations are up to date before analysis
+    print("\nChecking keyword translations...")
+    asyncio.run(translate_keywords())
 
     total_countries = len(country_dirs)
     start_time = time.time()

@@ -1,49 +1,41 @@
 {
-  "economic": [
-    "économie",
-    "économique",
-    "sciences économiques",
-    "affaires",
-    "entreprise",
-    "finance",
-    "finances",
-    "financier",
-    "financière"
-  ],
-  "policy": [
-    "gouvernement",
-    "gouvernemental",
-    "publique",
-    "autorités",
-    "ministre",
-    "ministère",
-    "parlement",
-    "parlementaire",
-    "impôt",
-    "taxe",
-    "réglementation",
-    "régulation",
-    "législation",
-    "banque centrale",
-    "FMI",
-    "Fonds monétaire international",
-    "Banque mondiale"
-  ],
-  "uncertainty": [
-    "incertain",
-    "incertitude",
-    "incertitudes",
-    "inconnu",
-    "inconnue",
-    "instable",
-    "pas sûr",
-    "indéterminé",
-    "risqué",
-    "risque",
-    "pas certain",
-    "peu fiable",
-    "non fiable",
-    "fluctuations",
-    "imprévisible"
-  ]
+  "economic": {
+    "economy": "économie",
+    "economic": "économique",
+    "business": "entreprise",
+    "finance": "finance",
+    "financial": "financier"
+  },
+  "policy": {
+    "government": "gouvernement",
+    "governmental": "gouvernemental",
+    "authority": "autorité",
+    "authorities": "autorités",
+    "minister": "ministre",
+    "ministry": "ministère",
+    "parliament": "parlement",
+    "parliamentary": "parlementaire",
+    "tax": "impôt",
+    "regulation": "règlement",
+    "legislation": "législation",
+    "central bank": "banque centrale",
+    "IMF": "IMF",
+    "International Monetary Fund": "Fonds monétaire international",
+    "World Bank": "Banque mondiale"
+  },
+  "uncertainty": {
+    "uncertain": "incertain",
+    "uncertainty": "incertitude",
+    "uncertainties": "incertitudes",
+    "unknown": "inconnu",
+    "unstable": "instable",
+    "unsure": "incertain",
+    "undetermined": "indéterminé",
+    "risky": "risqué",
+    "risk": "risque",
+    "not certain": "pas certain",
+    "non-reliable": "peu fiable",
+    "fluctuations": "fluctuations",
+    "unpredictable": "imprévisible"
+  }
 }

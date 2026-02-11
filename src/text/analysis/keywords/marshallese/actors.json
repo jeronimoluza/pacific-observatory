@@ -1,103 +1,201 @@
 {
-  "imf": [
-    "imf",
-    "international monetary fund",
-    "program in imf",
-    "lōkjak in imf",
-    "tōkelik in imf",
-    "mison in imf"
-  ],
-  "world_bank": [
-    "world bank",
-    "bank in lal̗ap",
-    "ibrd",
-    "ida",
-    "ifc",
-    "tōkelik in world bank",
-    "projek in world bank"
-  ],
-  "central_bank": [
-    "sentral bank",
-    "bank in kien",
-    "banking commission",
-    "policy rate",
-    "kōṃṃan kōn intres ret"
-  ],
-  "finance_ministry": [
-    "ministri in finans",
-    "minista in jāān",
-    "ofis in bajit"
-  ],
-  "government": [
-    "kien",
-    "kabinet",
-    "president",
-    "ofisa in kien"
-  ],
-  "parliament": [
-    "nitijela",
-    "senator",
-    "memba in nitijela"
-  ],
-  "multilateral_development_bank": [
-    "divelopmen bank",
-    "asian development bank",
-    "adb",
-    "afdb",
-    "ebrd"
-  ],
-  "credit_rating_agency": [
-    "ejens in kredit reting",
-    "moody's",
-    "standard & poor's",
-    "s&p",
-    "fitch",
-    "credit rating"
-  ],
-  "international_investors": [
-    "ri-invest jen likin",
-    "ri-invest in lal̗ap",
-    "ri-tōkelik",
-    "ri-invest elōn̄"
-  ],
-  "commercial_banks": [
-    "komersel bank",
-    "praivit bank",
-    "bank in aelōn̄",
-    "bank jen likin"
-  ],
-  "state_owned_enterprises": [
-    "kampani in kien",
-    "pablik kampani",
-    "jerbal in kien",
-    "enaji kampani in kien"
-  ],
-  "labor_unions": [
-    "union in ri-jerbal",
-    "lida in union",
-    "ōkanaijesen in ri-jerbal",
-    "protest in union"
-  ],
-  "international_organizations": [
-    "united nations",
-    "un",
-    "oecd",
-    "ilo",
-    "who",
-    "wto",
-    "pacific islands forum"
-  ],
-  "courts_judiciary": [
-    "kot",
-    "suprim kot",
-    "jaj",
-    "kōṃṃan in kot",
-    "loa"
-  ],
-  "military_security": [
-    "polis",
-    "marshall islands police",
-    "sekuriti",
-    "nesenel sekuriti"
-  ]
+  "imf": {
+    "IMF": "IMF",
+    "International Monetary Fund": "International Monetary Fund",
+    "IMF program": "program in IMF",
+    "IMF agreement": "lōkjak in IMF",
+    "IMF deal": "tōkelik jen IMF",
+    "IMF loan": "tōkelik in IMF",
+    "IMF bailout": "jipan̄ in IMF",
+    "IMF mission": "misen in IMF",
+    "IMF talks": "kōnono in IMF",
+    "IMF negotiations": "kōnono kōn IMF"
+  },
+  "world_bank": {
+    "World Bank": "World Bank",
+    "World Bank Group": "World Bank Group",
+    "IBRD": "IBRD",
+    "IDA": "IDA",
+    "International Bank for Reconstruction and Development": "International Bank for Reconstruction and Development",
+    "International Development Association": "International Development Association",
+    "IFC": "IFC",
+    "International Finance Corporation": "International Finance Corporation",
+    "World Bank loan": "tōkelik jen World Bank",
+    "World Bank financing": "jāān jen World Bank",
+    "World Bank project": "projek in World Bank"
+  },
+  "central_bank": {
+    "central bank": "sentral bank",
+    "monetary authority": "bank in kien",
+    "reserve bank": "banking commission",
+    "national bank": "bank in aelōn̄",
+    "central bankers": "ri-jerbal in sentral bank",
+    "policy rate": "ret in kein kallib",
+    "benchmark rate": "ret in kōtaan",
+    "interest rate decision": "kōṃṃan kōn intres ret",
+    "rate decision": "kōṃṃan kōn ret",
+    "monetary authority decision": "kōṃṃan in autōriti in jāān"
+  },
+  "finance_ministry": {
+    "finance ministry": "ministri in finans",
+    "ministry of finance": "minista in jāān",
+    "treasury": "ofis in bajit",
+    "finance minister": "minista in jāān",
+    "treasury department": "dipatmen in jāān in kien",
+    "economic ministry": "ministri in ekonomik",
+    "budget office": "ofis in bajit",
+    "fiscal authority": "autōriti in jāān in kien"
+  },
+  "government": {
+    "government": "kien",
+    "administration": "kabinet",
+    "executive branch": "president",
+    "cabinet": "ofisa in kien",
+    "prime minister": "praim minista",
+    "president": "president",
+    "presidential office": "ofis in president",
+    "government officials": "ofisa in kien",
+    "state authorities": "autōriti in kien"
+  },
+  "parliament": {
+    "parliament": "nitijela",
+    "congress": "senator",
+    "legislature": "memba in nitijela",
+    "legislative body": "bōdi in kōṃṃan loa",
+    "lawmakers": "ri-kōṃṃan loa",
+    "members of parliament": "memba in Nitijela",
+    "MPs": "MPs",
+    "senators": "senator",
+    "deputies": "deputi",
+    "House of Representatives": "House of Representatives"
+  },
+  "multilateral_development_bank": {
+    "development bank": "divelopmen bank",
+    "multilateral development bank": "asian development bank",
+    "regional development bank": "adb",
+    "African Development Bank": "African Development Bank",
+    "Asian Development Bank": "Asian Development Bank",
+    "Inter-American Development Bank": "Inter-American Development Bank",
+    "IDB": "IDB",
+    "ADB": "ADB",
+    "AfDB": "AfDB",
+    "European Bank for Reconstruction and Development": "European Bank for Reconstruction and Development",
+    "EBRD": "EBRD"
+  },
+  "credit_rating_agency": {
+    "credit rating agency": "ejens in kredit reting",
+    "rating agency": "moody's",
+    "moody's": "moody's",
+    "moody’s": "moody’s",
+    "standard and poor's": "standard and poor's",
+    "standard & poor's": "standard & poor's",
+    "S&P": "S&P",
+    "Fitch": "Fitch",
+    "credit downgrade": "kadik kredit reting",
+    "credit rating": "kredit reting"
+  },
+  "international_investors": {
+    "foreign investors": "ri-invest jen likin",
+    "international investors": "ri-invest in lal̗ap",
+    "global investors": "ri-tōkelik",
+    "bondholders": "ri-invest elōn̄",
+    "creditors": "ri-tōkelik",
+    "institutional investors": "ōkanaijesen ri-invest",
+    "portfolio investors": "ri-invest in portfolio",
+    "asset managers": "ri-lale men̄a",
+    "hedge funds": "elōn̄ fan in invest"
+  },
+  "commercial_banks": {
+    "commercial banks": "komersel bank",
+    "private banks": "praivit bank",
+    "lenders": "bank in aelōn̄",
+    "banking sector": "bank jen likin",
+    "local banks": "bank in aelōn̄",
+    "foreign banks": "bank jen likin",
+    "bank consortium": "bōd in bank",
+    "banking groups": "group in bank"
+  },
+  "state_owned_enterprises": {
+    "state-owned enterprise": "kampani in kien",
+    "state-owned company": "pablik kampani",
+    "public enterprise": "jerbal in kien",
+    "public utility": "enaji kampani in kien",
+    "state utility": "jerbal in kien",
+    "national oil company": "kampani in oil in aelōn̄",
+    "state energy company": "kampani in enaji in kien",
+    "public company": "pablik kampani"
+  },
+  "labor_unions": {
+    "labor unions": "union in ri-jerbal",
+    "trade unions": "lida in union",
+    "workers' unions": "ōkanaijesen in ri-jerbal",
+    "union leaders": "protest in union",
+    "labor organizations": "ōkanaijesen in ri-jerbal",
+    "workers organizations": "ōkanaijesen in ri-jerbal",
+    "collective bargaining": "kōnono in bōd in ri-jerbal",
+    "union protests": "protest in union"
+  },
+  "international_organizations": {
+    "United Nations": "United Nations",
+    "UN": "UN",
+    "OECD": "OECD",
+    "Organisation for Economic Co-operation and Development": "Organisation for Economic Co-operation and Development",
+    "ILO": "ILO",
+    "International Labour Organization": "International Labour Organization",
+    "WHO": "WHO",
+    "World Health Organization": "World Health Organization",
+    "WTO": "WTO",
+    "World Trade Organization": "World Trade Organization"
+  },
+  "courts_judiciary": {
+    "courts": "kot",
+    "judiciary": "suprim kot",
+    "supreme court": "jaj",
+    "constitutional court": "kōṃṃan in kot",
+    "judicial system": "loa",
+    "judges": "jaj",
+    "court ruling": "kōṃṃan in kot",
+    "legal system": "ituvatuva in loa"
+  },
+  "military_security": {
+    "military": "polis",
+    "armed forces": "marshall islands police",
+    "security forces": "sekuriti",
+    "defense ministry": "nesenel sekuriti",
+    "defence ministry": "ministri in difens",
+    "national security": "nesenel sekuriti",
+    "armed conflict": "tarinae kōn baam",
+    "security services": "jerbal in sekuriti"
+  },
+  "us_government": {
+    "U.S. government": "kien in U.S.",
+    "US government": "kien in US",
+    "United States government": "kien in Amerika",
+    "White House": "White House",
+    "U.S. administration": "kien in U.S.",
+    "US administration": "kien in US",
+    "U.S. Treasury": "U.S. Treasury",
+    "US Treasury": "US Treasury",
+    "Department of Treasury": "dipatmen in jāān in kien in Amerika",
+    "U.S. Congress": "Kongres in U.S.",
+    "US Congress": "Kongres in US",
+    "U.S. Trade Representative": "ri-wia jerbal in U.S.",
+    "USTR": "USTR",
+    "Department of Commerce": "dipatmen in komersel"
+  },
+  "china_government": {
+    "Chinese government": "kien in Jaina",
+    "China government": "kien in Jaina",
+    "Beijing": "Beijing",
+    "State Council": "kaunsel in kien in Jaina",
+    "People's Bank of China": "People's Bank of China",
+    "PBOC": "PBOC",
+    "Ministry of Commerce of China": "ministri in komersel in Jaina",
+    "MOFCOM": "MOFCOM",
+    "Communist Party of China": "Komunis Pati in Jaina",
+    "CPC": "CPC",
+    "CCP": "CCP",
+    "National Development and Reform Commission": "komisen in divelopmen im rifom in Jaina",
+    "NDRC": "NDRC"
+  }
 }

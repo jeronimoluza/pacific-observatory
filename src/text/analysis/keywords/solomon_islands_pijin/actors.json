@@ -1,105 +1,201 @@
 {
-  "imf": [
-    "imf",
-    "international monetary fund",
-    "program blong imf",
-    "agrimen blong imf",
-    "dinau blong imf",
-    "mison blong imf"
-  ],
-  "world_bank": [
-    "world bank",
-    "wol bangk",
-    "ibrd",
-    "ida",
-    "ifc",
-    "dinau blong world bank",
-    "projek blong world bank"
-  ],
-  "central_bank": [
-    "sentral bangk",
-    "central bank of solomon islands",
-    "bangk blong gavman",
-    "policy rate",
-    "disisen blong intres ret"
-  ],
-  "finance_ministry": [
-    "ministri blong faenans",
-    "minista blong mane",
-    "ofis blong bajet"
-  ],
-  "government": [
-    "gavman",
-    "kabinet",
-    "praem minista",
-    "govna jeneral",
-    "ofisa blong gavman"
-  ],
-  "parliament": [
-    "palamen",
-    "nasonal palamen",
-    "memba blong palamen",
-    "mp"
-  ],
-  "multilateral_development_bank": [
-    "divelopmen bangk",
-    "asian development bank",
-    "adb",
-    "afdb",
-    "ebrd"
-  ],
-  "credit_rating_agency": [
-    "ejens blong kredit reting",
-    "moody's",
-    "standard & poor's",
-    "s&p",
-    "fitch",
-    "credit rating"
-  ],
-  "international_investors": [
-    "investoman blong aotsaed",
-    "investoman blong wol",
-    "man wea hem givim dinau",
-    "bigfala investoman"
-  ],
-  "commercial_banks": [
-    "komersel bangk",
-    "praevet bangk",
-    "bangk blong kantri",
-    "bangk blong aotsaed"
-  ],
-  "state_owned_enterprises": [
-    "kampani blong gavman",
-    "pablik kampani",
-    "sevis blong gavman",
-    "enaji kampani blong gavman"
-  ],
-  "labor_unions": [
-    "iunion blong woka",
-    "lida blong iunion",
-    "oganaesesen blong woka",
-    "protest blong iunion"
-  ],
-  "international_organizations": [
-    "united nations",
-    "un",
-    "oecd",
-    "ilo",
-    "who",
-    "wto",
-    "pacific islands forum"
-  ],
-  "courts_judiciary": [
-    "kot",
-    "hae kot",
-    "jaj",
-    "disisen blong kot",
-    "loa"
-  ],
-  "military_security": [
-    "polis",
-    "royal solomon islands police force",
-    "sekuriti fos",
-    "nasonal sekuriti"
-  ]
+  "imf": {
+    "IMF": "IMF",
+    "International Monetary Fund": "International Monetary Fund",
+    "IMF program": "program blong IMF",
+    "IMF agreement": "agrimen blong IMF",
+    "IMF deal": "dil blong IMF",
+    "IMF loan": "dinau blong IMF",
+    "IMF bailout": "helpim blong IMF",
+    "IMF mission": "misen blong IMF",
+    "IMF talks": "toktok blong IMF",
+    "IMF negotiations": "toktok wetem IMF"
+  },
+  "world_bank": {
+    "World Bank": "World Bank",
+    "World Bank Group": "World Bank Group",
+    "IBRD": "IBRD",
+    "IDA": "IDA",
+    "International Bank for Reconstruction and Development": "International Bank for Reconstruction and Development",
+    "International Development Association": "International Development Association",
+    "IFC": "IFC",
+    "International Finance Corporation": "International Finance Corporation",
+    "World Bank loan": "dinau blong World Bank",
+    "World Bank financing": "mane blong World Bank",
+    "World Bank project": "projek blong World Bank"
+  },
+  "central_bank": {
+    "central bank": "sentral bangk",
+    "monetary authority": "central bank of solomon islands",
+    "reserve bank": "bangk blong gavman",
+    "national bank": "bangk blong kantri",
+    "central bankers": "olketa blong sentral bangk",
+    "policy rate": "ret blong polisi",
+    "benchmark rate": "ret blong makim",
+    "interest rate decision": "disisen blong intres ret",
+    "rate decision": "disisen blong ret",
+    "monetary authority decision": "disisen blong otoriti blong mane"
+  },
+  "finance_ministry": {
+    "finance ministry": "ministri blong faenans",
+    "ministry of finance": "minista blong mane",
+    "treasury": "ofis blong bajet",
+    "finance minister": "minista blong mane",
+    "treasury department": "dipatmen blong mane blong gavman",
+    "economic ministry": "ministri blong ekonomi",
+    "budget office": "ofis blong bajet",
+    "fiscal authority": "otoriti blong mane blong gavman"
+  },
+  "government": {
+    "government": "gavman",
+    "administration": "kabinet",
+    "executive branch": "praem minista",
+    "cabinet": "govna jeneral",
+    "prime minister": "praem minista",
+    "president": "president",
+    "presidential office": "ofis blong praem minista",
+    "government officials": "ofisa blong gavman",
+    "state authorities": "otoriti blong gavman"
+  },
+  "parliament": {
+    "parliament": "palamen",
+    "congress": "nasonal palamen",
+    "legislature": "memba blong palamen",
+    "legislative body": "bodi blong mekem loa",
+    "lawmakers": "olketa wea mekem loa",
+    "members of parliament": "memba blong palamen",
+    "MPs": "MPs",
+    "senators": "senator",
+    "deputies": "deputi",
+    "House of Representatives": "House of Representatives"
+  },
+  "multilateral_development_bank": {
+    "development bank": "divelopmen bangk",
+    "multilateral development bank": "asian development bank",
+    "regional development bank": "adb",
+    "African Development Bank": "African Development Bank",
+    "Asian Development Bank": "Asian Development Bank",
+    "Inter-American Development Bank": "Inter-American Development Bank",
+    "IDB": "IDB",
+    "ADB": "ADB",
+    "AfDB": "AfDB",
+    "European Bank for Reconstruction and Development": "European Bank for Reconstruction and Development",
+    "EBRD": "EBRD"
+  },
+  "credit_rating_agency": {
+    "credit rating agency": "ejens blong kredit reting",
+    "rating agency": "moody's",
+    "moody's": "moody's",
+    "moody’s": "moody’s",
+    "standard and poor's": "standard and poor's",
+    "standard & poor's": "standard & poor's",
+    "S&P": "S&P",
+    "Fitch": "Fitch",
+    "credit downgrade": "kredit reting hem go daon",
+    "credit rating": "kredit reting"
+  },
+  "international_investors": {
+    "foreign investors": "investoman blong aotsaed",
+    "international investors": "investoman blong wol",
+    "global investors": "man wea hem givim dinau",
+    "bondholders": "bigfala investoman",
+    "creditors": "man wea hem givim dinau",
+    "institutional investors": "oganaesesen investoman",
+    "portfolio investors": "investoman blong portfolio",
+    "asset managers": "man wea lukluk long samting",
+    "hedge funds": "bigfala fan blong invest"
+  },
+  "commercial_banks": {
+    "commercial banks": "komersel bangk",
+    "private banks": "praevet bangk",
+    "lenders": "bangk blong kantri",
+    "banking sector": "bangk blong aotsaed",
+    "local banks": "bangk blong kantri",
+    "foreign banks": "bangk blong aotsaed",
+    "bank consortium": "grup blong bangk",
+    "banking groups": "grup blong bangk"
+  },
+  "state_owned_enterprises": {
+    "state-owned enterprise": "kampani blong gavman",
+    "state-owned company": "pablik kampani",
+    "public enterprise": "sevis blong gavman",
+    "public utility": "enaji kampani blong gavman",
+    "state utility": "sevis blong gavman",
+    "national oil company": "kampani blong oel blong kantri",
+    "state energy company": "kampani blong enaji blong gavman",
+    "public company": "pablik kampani"
+  },
+  "labor_unions": {
+    "labor unions": "iunion blong woka",
+    "trade unions": "lida blong iunion",
+    "workers' unions": "oganaesesen blong woka",
+    "union leaders": "protest blong iunion",
+    "labor organizations": "oganaesesen blong woka",
+    "workers organizations": "oganaesesen blong woka",
+    "collective bargaining": "toktok blong grup blong woka",
+    "union protests": "protest blong iunion"
+  },
+  "international_organizations": {
+    "United Nations": "United Nations",
+    "UN": "UN",
+    "OECD": "OECD",
+    "Organisation for Economic Co-operation and Development": "Organisation for Economic Co-operation and Development",
+    "ILO": "ILO",
+    "International Labour Organization": "International Labour Organization",
+    "WHO": "WHO",
+    "World Health Organization": "World Health Organization",
+    "WTO": "WTO",
+    "World Trade Organization": "World Trade Organization"
+  },
+  "courts_judiciary": {
+    "courts": "kot",
+    "judiciary": "hae kot",
+    "supreme court": "jaj",
+    "constitutional court": "disisen blong kot",
+    "judicial system": "loa",
+    "judges": "jaj",
+    "court ruling": "disisen blong kot",
+    "legal system": "sistem blong loa"
+  },
+  "military_security": {
+    "military": "polis",
+    "armed forces": "royal solomon islands police force",
+    "security forces": "sekuriti fos",
+    "defense ministry": "nasonal sekuriti",
+    "defence ministry": "ministri blong difens",
+    "national security": "nasonal sekuriti",
+    "armed conflict": "faet wetem gan",
+    "security services": "sevis blong sekuriti"
+  },
+  "us_government": {
+    "U.S. government": "gavman blong U.S.",
+    "US government": "gavman blong US",
+    "United States government": "gavman blong Amerika",
+    "White House": "White House",
+    "U.S. administration": "gavman blong U.S.",
+    "US administration": "gavman blong US",
+    "U.S. Treasury": "U.S. Treasury",
+    "US Treasury": "US Treasury",
+    "Department of Treasury": "dipatmen blong mane blong gavman blong Amerika",
+    "U.S. Congress": "Kongres blong U.S.",
+    "US Congress": "Kongres blong US",
+    "U.S. Trade Representative": "man blong tred blong U.S.",
+    "USTR": "USTR",
+    "Department of Commerce": "dipatmen blong komersel"
+  },
+  "china_government": {
+    "Chinese government": "gavman blong Jaena",
+    "China government": "gavman blong Jaena",
+    "Beijing": "Beijing",
+    "State Council": "kaunsel blong gavman blong Jaena",
+    "People's Bank of China": "People's Bank of China",
+    "PBOC": "PBOC",
+    "Ministry of Commerce of China": "ministri blong komersel blong Jaena",
+    "MOFCOM": "MOFCOM",
+    "Communist Party of China": "Komunis Pati blong Jaena",
+    "CPC": "CPC",
+    "CCP": "CCP",
+    "National Development and Reform Commission": "komisen blong divelopmen an rifom blong Jaena",
+    "NDRC": "NDRC"
+  }
 }

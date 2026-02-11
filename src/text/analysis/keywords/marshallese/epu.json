@@ -1,29 +1,41 @@
 {
-  "economic": [
-    "ekonomi",
-    "ekonomik",
-    "bizinis",
-    "business",
-    "finans",
-    "bajet"
-  ],
-  "policy": [
-    "kien",
-    "Kien M̧ajeļ",
-    "bilong kien",
-    "Nitijela",
-    "Nitijela (adj)",
-    "owōj",
-    "IMF",
-    "International Monetary Fund",
-    "World Bank"
-  ],
-  "uncertainty": [
-    "jab lukkuun",
-    "jabwe (?)",
-    "bōbōroro",
-    "risky",
-    "garem risk",
-    "risk"
-  ]
+  "economic": {
+    "economy": "ekonomi",
+    "economic": "ekonomik",
+    "business": "bizinis",
+    "finance": "finans",
+    "financial": "kōn jāān"
+  },
+  "policy": {
+    "government": "kien",
+    "governmental": "Kien M̧ajeļ",
+    "authority": "autōriti",
+    "authorities": "ro rej kien",
+    "minister": "minista",
+    "ministry": "ministri",
+    "parliament": "Nitijela",
+    "parliamentary": "in Nitijela",
+    "tax": "owōj",
+    "regulation": "kein kallib",
+    "legislation": "loa",
+    "central bank": "sentral bank",
+    "IMF": "IMF",
+    "International Monetary Fund": "International Monetary Fund",
+    "World Bank": "World Bank"
+  },
+  "uncertainty": {
+    "uncertain": "jab lukkuun",
+    "uncertainty": "jabwe (?)",
+    "uncertainties": "bōbōroro",
+    "unknown": "jab jel̗ā",
+    "unstable": "jab tiljek",
+    "unsure": "jab lukkuun",
+    "undetermined": "jab kōṃṃan",
+    "risky": "garem risk",
+    "risk": "risk",
+    "not certain": "jab lukkuun jel̗ā",
+    "non-reliable": "jab maroñ tōmak",
+    "fluctuations": "ukōt ilān im tok",
+    "unpredictable": "jab maroñ lale m̧okta"
+  }
 }

@@ -1,109 +1,201 @@
 {
-  "imf": [
-    "imf",
-    "international monetary fund",
-    "porokaramu ni imf",
-    "veiyalayalati ni imf",
-    "dinau ni imf",
-    "bose ni imf"
-  ],
-  "world_bank": [
-    "world bank",
-    "vale ni ilavo ni vuravura",
-    "ibrd",
-    "ida",
-    "ifc",
-    "dinau ni world bank",
-    "cakacaka ni world bank"
-  ],
-  "central_bank": [
-    "reserve bank",
-    "vale ni ilavo ni matanitu",
-    "lave ni dinau",
-    "policy rate",
-    "saumi ni lave ni dinau"
-  ],
-  "finance_ministry": [
-    "tabacakacaka ni ilavo",
-    "minisitiri ni ilavo",
-    "minisita ni ilavo",
-    "ofisi ni bajeti"
-  ],
-  "government": [
-    "matanitu",
-    "kabinete",
-    "paraiminisita",
-    "peresitedi",
-    "liuliu ni matanitu",
-    "turaga ni matanitu"
-  ],
-  "parliament": [
-    "palimedi",
-    "vale ni bose",
-    "meba ni palimedi",
-    "meba ni bose",
-    "vunilawa"
-  ],
-  "multilateral_development_bank": [
-    "vale ni ilavo ni veivakatorocaketaki",
-    "asian development bank",
-    "adb",
-    "afdb",
-    "ebrd"
-  ],
-  "credit_rating_agency": [
-    "ira era vakatulewa na lave ni dinau",
-    "moody's",
-    "standard & poor's",
-    "s&p",
-    "fitch",
-    "credit rating"
-  ],
-  "international_investors": [
-    "dau vakailavo mai vanua tani",
-    "dau vakailavo ni vuravura",
-    "meca ni dinau",
-    "dau vakailavo ni kabani"
-  ],
-  "commercial_banks": [
-    "vale ni ilavo ni veivoli",
-    "vale ni ilavo",
-    "dau vakadina ni ilavo",
-    "vale ni ilavo ni vanua tani"
-  ],
-  "state_owned_enterprises": [
-    "kabani ni matanitu",
-    "kabani vakamatanitu",
-    "veiqaravi vakamatanitu",
-    "kabani ni kaukauwa ni matanitu"
-  ],
-  "labor_unions": [
-    "soqosoqo ni tamata cakacaka",
-    "liuliu ni soqosoqo",
-    "soqosoqo ni cakacaka",
-    "toqai ni soqosoqo"
-  ],
-  "international_organizations": [
-    "united nations",
-    "un",
-    "oecd",
-    "ilo",
-    "who",
-    "wto",
-    "pacific islands forum"
-  ],
-  "courts_judiciary": [
-    "vale ni lawa",
-    "lawa",
-    "vale ni lawa levu",
-    "cauravou ni lawa",
-    "saumi lawa"
-  ],
-  "military_security": [
-    "mataivalu",
-    "sotia",
-    "ovisa",
-    "tabacakacaka ni valu",
-    "tiko vinaka ni vanua"
-  ]
+  "imf": {
+    "IMF": "IMF",
+    "International Monetary Fund": "International Monetary Fund",
+    "IMF program": "porokaramu ni imf",
+    "IMF agreement": "veiyalayalati ni imf",
+    "IMF deal": "dinau ni imf",
+    "IMF loan": "bose ni imf",
+    "IMF bailout": "veivuke ni IMF",
+    "IMF mission": "misioni ni IMF",
+    "IMF talks": "veitalanoa ni IMF",
+    "IMF negotiations": "veivosaki ni IMF"
+  },
+  "world_bank": {
+    "World Bank": "World Bank",
+    "World Bank Group": "World Bank Group",
+    "IBRD": "IBRD",
+    "IDA": "IDA",
+    "International Bank for Reconstruction and Development": "International Bank for Reconstruction and Development",
+    "International Development Association": "International Development Association",
+    "IFC": "IFC",
+    "International Finance Corporation": "International Finance Corporation",
+    "World Bank loan": "dinau ni World Bank",
+    "World Bank financing": "vakailavo ni World Bank",
+    "World Bank project": "cakacaka ni World Bank"
+  },
+  "central_bank": {
+    "central bank": "reserve bank",
+    "monetary authority": "vale ni ilavo ni matanitu",
+    "reserve bank": "lave ni dinau",
+    "national bank": "vale ni ilavo ni vanua",
+    "central bankers": "liuliu ni vale ni ilavo",
+    "policy rate": "lave ni lawa",
+    "benchmark rate": "lave ni vakatautaki",
+    "interest rate decision": "tuvatuva ni lave ni dinau",
+    "rate decision": "tuvatuva ni lave",
+    "monetary authority decision": "tuvatuva ni vale ni ilavo ni matanitu"
+  },
+  "finance_ministry": {
+    "finance ministry": "tabacakacaka ni ilavo",
+    "ministry of finance": "minisitiri ni ilavo",
+    "treasury": "minisita ni ilavo",
+    "finance minister": "ofisi ni bajeti",
+    "treasury department": "tabacakacaka ni ilavo ni matanitu",
+    "economic ministry": "minisitiri ni bula vakailavo",
+    "budget office": "ofisi ni bajeti",
+    "fiscal authority": "lewenivanua ni ilavo ni matanitu"
+  },
+  "government": {
+    "government": "matanitu",
+    "administration": "kabinete",
+    "executive branch": "paraiminisita",
+    "cabinet": "peresitedi",
+    "prime minister": "liuliu ni matanitu",
+    "president": "turaga ni matanitu",
+    "presidential office": "ofisi ni peresitedi",
+    "government officials": "ivakalesilesi ni matanitu",
+    "state authorities": "lewenivanua ni matanitu"
+  },
+  "parliament": {
+    "parliament": "palimedi",
+    "congress": "vale ni bose",
+    "legislature": "meba ni palimedi",
+    "legislative body": "meba ni bose",
+    "lawmakers": "vunilawa",
+    "members of parliament": "meba ni palimedi",
+    "MPs": "MPs",
+    "senators": "meba ni palimedi",
+    "deputies": "meba lalai ni palimedi",
+    "House of Representatives": "House of Representatives"
+  },
+  "multilateral_development_bank": {
+    "development bank": "vale ni ilavo ni veivakatorocaketaki",
+    "multilateral development bank": "asian development bank",
+    "regional development bank": "adb",
+    "African Development Bank": "African Development Bank",
+    "Asian Development Bank": "Asian Development Bank",
+    "Inter-American Development Bank": "Inter-American Development Bank",
+    "IDB": "IDB",
+    "ADB": "ADB",
+    "AfDB": "AfDB",
+    "European Bank for Reconstruction and Development": "European Bank for Reconstruction and Development",
+    "EBRD": "EBRD"
+  },
+  "credit_rating_agency": {
+    "credit rating agency": "ira era vakatulewa na lave ni dinau",
+    "rating agency": "moody's",
+    "moody's": "moody's",
+    "moody’s": "moody’s",
+    "standard and poor's": "standard and poor's",
+    "standard & poor's": "standard & poor's",
+    "S&P": "S&P",
+    "Fitch": "Fitch",
+    "credit downgrade": "vakamalua ni lave ni dinau",
+    "credit rating": "lave ni dinau"
+  },
+  "international_investors": {
+    "foreign investors": "dau vakailavo mai vanua tani",
+    "international investors": "dau vakailavo ni vuravura",
+    "global investors": "meca ni dinau",
+    "bondholders": "dau vakailavo ni kabani",
+    "creditors": "dau vakadina ni ilavo",
+    "institutional investors": "soqosoqo dau vakailavo",
+    "portfolio investors": "dau vakailavo ni iyau",
+    "asset managers": "dau qarava na iyau",
+    "hedge funds": "soqosoqo levu ni vakailavo"
+  },
+  "commercial_banks": {
+    "commercial banks": "vale ni ilavo ni veivoli",
+    "private banks": "vale ni ilavo",
+    "lenders": "dau vakadina ni ilavo",
+    "banking sector": "vale ni ilavo ni vanua tani",
+    "local banks": "vale ni ilavo ni vanua",
+    "foreign banks": "vale ni ilavo mai vanua tani",
+    "bank consortium": "soqosoqo ni vale ni ilavo",
+    "banking groups": "mataveitokani ni vale ni ilavo"
+  },
+  "state_owned_enterprises": {
+    "state-owned enterprise": "kabani ni matanitu",
+    "state-owned company": "kabani vakamatanitu",
+    "public enterprise": "veiqaravi vakamatanitu",
+    "public utility": "kabani ni kaukauwa ni matanitu",
+    "state utility": "veiqaravi ni matanitu",
+    "national oil company": "kabani ni waiwai ni vanua",
+    "state energy company": "kabani ni kaukauwa ni matanitu",
+    "public company": "kabani vakamatanitu"
+  },
+  "labor_unions": {
+    "labor unions": "soqosoqo ni tamata cakacaka",
+    "trade unions": "liuliu ni soqosoqo",
+    "workers' unions": "soqosoqo ni cakacaka",
+    "union leaders": "toqai ni soqosoqo",
+    "labor organizations": "soqosoqo ni tamata cakacaka",
+    "workers organizations": "soqosoqo ni cakacaka",
+    "collective bargaining": "veivosaki vakasoqosoqo",
+    "union protests": "toqai ni soqosoqo"
+  },
+  "international_organizations": {
+    "United Nations": "United Nations",
+    "UN": "UN",
+    "OECD": "OECD",
+    "Organisation for Economic Co-operation and Development": "Organisation for Economic Co-operation and Development",
+    "ILO": "ILO",
+    "International Labour Organization": "International Labour Organization",
+    "WHO": "WHO",
+    "World Health Organization": "World Health Organization",
+    "WTO": "WTO",
+    "World Trade Organization": "World Trade Organization"
+  },
+  "courts_judiciary": {
+    "courts": "vale ni lawa",
+    "judiciary": "lawa",
+    "supreme court": "vale ni lawa levu",
+    "constitutional court": "cauravou ni lawa",
+    "judicial system": "saumi lawa",
+    "judges": "daunilewa",
+    "court ruling": "tuvatuva ni vale ni lawa",
+    "legal system": "ituvatuva ni lawa"
+  },
+  "military_security": {
+    "military": "mataivalu",
+    "armed forces": "sotia",
+    "security forces": "ovisa",
+    "defense ministry": "tabacakacaka ni valu",
+    "defence ministry": "tiko vinaka ni vanua",
+    "national security": "tiko vinaka ni vanua",
+    "armed conflict": "veivacu kei na dakai",
+    "security services": "veiqaravi ni tiko vinaka"
+  },
+  "us_government": {
+    "U.S. government": "matanitu ni U.S.",
+    "US government": "matanitu ni US",
+    "United States government": "matanitu ni Amerika",
+    "White House": "White House",
+    "U.S. administration": "liuliu ni matanitu ni U.S.",
+    "US administration": "liuliu ni matanitu ni US",
+    "U.S. Treasury": "U.S. Treasury",
+    "US Treasury": "US Treasury",
+    "Department of Treasury": "tabacakacaka ni ilavo ni matanitu",
+    "U.S. Congress": "vale ni bose ni U.S.",
+    "US Congress": "vale ni bose ni US",
+    "U.S. Trade Representative": "mata ni veivoli ni U.S.",
+    "USTR": "USTR",
+    "Department of Commerce": "tabacakacaka ni veivoli"
+  },
+  "china_government": {
+    "Chinese government": "matanitu ni Jaina",
+    "China government": "matanitu ni Jaina",
+    "Beijing": "Beijing",
+    "State Council": "bose ni matanitu ni Jaina",
+    "People's Bank of China": "People's Bank of China",
+    "PBOC": "PBOC",
+    "Ministry of Commerce of China": "minisitiri ni veivoli ni Jaina",
+    "MOFCOM": "MOFCOM",
+    "Communist Party of China": "Pati Komunisi ni Jaina",
+    "CPC": "CPC",
+    "CCP": "CCP",
+    "National Development and Reform Commission": "komisi ni veivakatorocaketaki kei na veisau ni Jaina",
+    "NDRC": "NDRC"
+  }
 }

@@ -1,49 +1,41 @@
 {
-  "economic": [
-    "ʻekonomika",
-    "fakaʻekonomika",
-    "pisinisi",
-    "fefakatauʻaki",
-    "paʻanga",
-    "fainasi",
-    "faka-paʻanga"
-  ],
-  "policy": [
-    "puleʻanga",
-    "ʻa e puleʻanga",
-    "ngāahi maʻu mafai",
-    "otoriti",
-    "minisita",
-    "matagaluega",
-    "minisitelii",
-    "Fale Alea",
-    "palamen",
-    "ʻa e Fale Alea",
-    "tukuhau",
-    "ngāahi tuʻutuʻuni",
-    "lao",
-    "ngaahi lao",
-    "pangikē puleʻanga",
-    "central bank",
-    "IMF",
-    "International Monetary Fund",
-    "World Bank",
-    "Wol Bank"
-  ],
-  "uncertainty": [
-    "taʻe pau",
-    "ʻikai fakapapauʻi",
-    "ʻikai ʻiloa",
-    "ʻikai mautu",
-    "ʻikai ʻilo yet",
-    "fakatuʻutāmaki",
-    "risky",
-    "tuʻutāmaki",
-    "risk",
-    "ʻikai pau",
-    "ʻikai falalaʻanga",
-    "heke mo hiki",
-    "liliu",
-    "ʻikai lava ʻo matapae"
-  ]
+  "economic": {
+    "economy": "ʻekonomika",
+    "economic": "fakaʻekonomika",
+    "business": "pisinisi",
+    "finance": "fefakatauʻaki",
+    "financial": "paʻanga"
+  },
+  "policy": {
+    "government": "puleʻanga",
+    "governmental": "ʻa e puleʻanga",
+    "authority": "ngāahi maʻu mafai",
+    "authorities": "otoriti",
+    "minister": "minisita",
+    "ministry": "potungāue",
+    "parliament": "Fale Alea",
+    "parliamentary": "ʻa e Fale Alea",
+    "tax": "tukuhau",
+    "regulation": "ngāahi tuʻutuʻuni",
+    "legislation": "lao",
+    "central bank": "pangikē pule",
+    "IMF": "IMF",
+    "International Monetary Fund": "International Monetary Fund",
+    "World Bank": "World Bank"
+  },
+  "uncertainty": {
+    "uncertain": "taʻe pau",
+    "uncertainty": "ʻikai fakapapauʻi",
+    "uncertainties": "ngaahi ʻikai fakapapauʻi",
+    "unknown": "ʻikai ʻiloa",
+    "unstable": "ʻikai mautu",
+    "unsure": "ʻikai pau",
+    "undetermined": "ʻikai fakapapauʻi",
+    "risky": "fakatuʻutāmaki",
+    "risk": "tuʻutāmaki",
+    "not certain": "ʻikai pau",
+    "non-reliable": "ʻikai falalaʻanga",
+    "fluctuations": "heke mo hiki",
+    "unpredictable": "liliu"
+  }
 }

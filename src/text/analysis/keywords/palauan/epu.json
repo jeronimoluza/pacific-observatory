@@ -1,49 +1,41 @@
 {
-  "economic": [
-    "keizai",
-    "economic",
-    "kirel",
-    "business",
-    "mechesang",
-    "finance",
-    "financial"
-  ],
-  "policy": [
-    "kabelment",
-    "governmental",
-    "otoriti",
-    "authorities",
-    "minister",
-    "minisita",
-    "ministry",
-    "dipatmen",
-    "Olbiil Era Kelulau",
-    "parliament",
-    "parliamentary",
-    "tenget",
-    "melenget",
-    "regulation",
-    "law",
-    "rul",
-    "legislation",
-    "central bank",
-    "bank sentral",
-    "IMF",
-    "International Monetary Fund",
-    "World Bank"
-  ],
-  "uncertainty": [
-    "omai er a rengul",
-    "uncertain",
-    "uncertainty",
-    "uncertainties",
-    "unknown",
-    "unstable",
-    "undetermined",
-    "risky",
-    "risk",
-    "non-reliable",
-    "fluctuations",
-    "unpredictable"
-  ]
+  "economic": {
+    "economy": "keizai",
+    "economic": "kirel a udoud",
+    "business": "bisnis",
+    "finance": "udoud",
+    "financial": "kirel a udoud"
+  },
+  "policy": {
+    "government": "kabelment",
+    "governmental": "er a chelid",
+    "authority": "otoriti",
+    "authorities": "rechad er a chelid",
+    "minister": "minisita",
+    "ministry": "ministri",
+    "parliament": "Olbiil Era Kelulau",
+    "parliamentary": "er a Olbiil Era Kelulau",
+    "tax": "tenget",
+    "regulation": "llach",
+    "legislation": "omeruul er a llach",
+    "central bank": "sentral bangk",
+    "IMF": "IMF",
+    "International Monetary Fund": "International Monetary Fund",
+    "World Bank": "World Bank"
+  },
+  "uncertainty": {
+    "uncertain": "omai er a rengul",
+    "uncertainty": "diak el medengei",
+    "uncertainties": "diak el medengei",
+    "unknown": "diak el medengelii",
+    "unstable": "diak el ungil a chelsel",
+    "unsure": "diak el sal medengei",
+    "undetermined": "diak el mla llach",
+    "risky": "ngar er ngii a rekil",
+    "risk": "rekil",
+    "not certain": "diak el sal medengei",
+    "non-reliable": "diak el sebechel el oumerang",
+    "fluctuations": "omesodel el mo er a bab me a eou",
+    "unpredictable": "diak el sebechel el medengei er a mong"
+  }
 }

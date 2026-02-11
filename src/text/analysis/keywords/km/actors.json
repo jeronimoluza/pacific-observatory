@@ -1,138 +1,201 @@
 {
-  "imf": [
-    "imf",
-    "មូលនិធិរូបិយវត្ថុអន្តរជាតិ",
-    "កម្មវិធី imf",
-    "កិច្ចព្រមព្រៀង imf",
-    "កម្ចី imf",
-    "បេសកកម្ម imf",
-    "ការចរចា imf"
-  ],
-  "world_bank": [
-    "world bank",
-    "ធនាគារពិភពលោក",
-    "ក្រុមធនាគារពិភពលោក",
-    "ibrd",
-    "ida",
-    "ifc",
-    "កម្ចីធនាគារពិភពលោក",
-    "គម្រោងធនាគារពិភពលោក"
-  ],
-  "central_bank": [
-    "ធនាគារកណ្តាល",
-    "ធនាគារជាតិ",
-    "អាជ្ញាធររូបិយវត្ថុ",
-    "អត្រាគោលនយោបាយ",
-    "សម្រេចចិត្តអត្រាការប្រាក់",
-    "អត្រាមូលដ្ឋាន"
-  ],
-  "finance_ministry": [
-    "ក្រសួងហិរញ្ញវត្ថុ",
-    "រតនាគារ",
-    "រដ្ឋមន្ត្រីហិរញ្ញវត្ថុ",
-    "នាយកដ្ឋានថវិកា",
-    "អាជ្ញាធរសារពើពន្ធ"
-  ],
-  "government": [
-    "រាជរដ្ឋាភិបាល",
-    "រដ្ឋបាល",
-    "គណៈរដ្ឋមន្ត្រី",
-    "នាយករដ្ឋមន្ត្រី",
-    "ប្រធានាធិបតី",
-    "មន្ត្រីរាជរដ្ឋាភិបាល",
-    "អាជ្ញាធររដ្ឋ"
-  ],
-  "parliament": [
-    "រដ្ឋសភា",
-    "សភាជាតិ",
-    "នីតិប្បញ្ញត្តិ",
-    "សមាជិកសភា",
-    "តំណាងរាស្ត្រ",
-    "ព្រឹទ្ធសភា",
-    "វិសោធនកម្ម"
-  ],
-  "multilateral_development_bank": [
-    "ធនាគារអភិវឌ្ឍន៍",
-    "ធនាគារអភិវឌ្ឍន៍ពហុភាគី",
-    "ធនាគារអភិវឌ្ឍន៍អាស៊ី",
-    "adb",
-    "ធនាគារអភិវឌ្ឍន៍អាហ្វ្រិក",
-    "afdb",
-    "ebrd"
-  ],
-  "credit_rating_agency": [
-    "ទីភ្នាក់ងារវាយតម្លៃឥណទាន",
-    "ទីភ្នាក់ងារវាយតម្លៃ",
-    "moody's",
-    "standard & poor's",
-    "s&p",
-    "fitch",
-    "ការបន្ទាបចំណាត់ថ្នាក់ឥណទាន",
-    "វាយតម្លៃឥណទាន"
-  ],
-  "international_investors": [
-    "វិនិយោគិនបរទេស",
-    "វិនិយោគិនអន្តរជាតិ",
-    "វិនិយោគិនសកល",
-    "អ្នកកាន់សញ្ញាបណ្ណ",
-    "ម្ចាស់បំណុល",
-    "វិនិយោគិនស្ថាប័ន",
-    "មូលនិធិការពារហានិភ័យ"
-  ],
-  "commercial_banks": [
-    "ធនាគារពាណិជ្ជ",
-    "ធនាគារឯកជន",
-    "អ្នកផ្តល់កម្ចី",
-    "វិស័យធនាគារ",
-    "ធនាគារក្នុងស្រុក",
-    "ធនាគារបរទេស",
-    "ក្រុមធនាគារ"
-  ],
-  "state_owned_enterprises": [
-    "សហគ្រាសរដ្ឋ",
-    "ក្រុមហ៊ុនរដ្ឋ",
-    "សហគ្រាសសាធារណៈ",
-    "សេវាសាធារណៈ",
-    "ក្រុមហ៊ុនថាមពលរដ្ឋ",
-    "ក្រុមហ៊ុនសាធារណៈ"
-  ],
-  "labor_unions": [
-    "សហជីព",
-    "សហជីពពលកម្ម",
-    "សហជីពកម្មករ",
-    "ថ្នាក់ដឹកនាំសហជីព",
-    "អង្គការពលកម្ម",
-    "ការចរចារួម",
-    "បាតុកម្មសហជីព"
-  ],
-  "international_organizations": [
-    "អង្គការសហប្រជាជាតិ",
-    "un",
-    "oecd",
-    "ilo",
-    "អង្គការពលកម្មអន្តរជាតិ",
-    "who",
-    "អង្គការសុខភាពពិភពលោក",
-    "wto",
-    "អង្គការពាណិជ្ជកម្មពិភពលោក"
-  ],
-  "courts_judiciary": [
-    "តុលាការ",
-    "អង្គចៅក្រម",
-    "តុលាការកំពូល",
-    "តុលាការរដ្ឋធម្មនុញ្ញ",
-    "ប្រព័ន្ធយុត្តិធម៌",
-    "ចៅក្រម",
-    "សាលក្រម",
-    "ប្រព័ន្ធច្បាប់"
-  ],
-  "military_security": [
-    "យោធា",
-    "កងកម្លាំងប្រដាប់អាវុធ",
-    "កងកម្លាំងសន្តិសុខ",
-    "ក្រសួងការពារជាតិ",
-    "សន្តិសុខជាតិ",
-    "ជម្លោះប្រដាប់អាវុធ",
-    "សេវាសន្តិសុខ"
-  ]
+  "imf": {
+    "IMF": "IMF",
+    "International Monetary Fund": "មូលនិធិរូបិយវត្ថុអន្តរជាតិ",
+    "IMF program": "កម្មវិធី IMF",
+    "IMF agreement": "កិច្ចព្រមព្រៀង IMF",
+    "IMF deal": "កិច្ចព្រមព្រៀង IMF",
+    "IMF loan": "ប្រាក់កម្ចី IMF",
+    "IMF bailout": "ថវិកាសង្គ្រោះរបស់ IMF",
+    "IMF mission": "បេសកកម្មរបស់ IMF",
+    "IMF talks": "ការពិភាក្សារបស់ IMF",
+    "IMF negotiations": "ការចរចារបស់ IMF"
+  },
+  "world_bank": {
+    "World Bank": "ធនាគារពិភពលោក",
+    "World Bank Group": "ក្រុមធនាគារពិភពលោក",
+    "IBRD": "IBRD",
+    "IDA": "IDA",
+    "International Bank for Reconstruction and Development": "ធនាគារអន្តរជាតិសម្រាប់ការកសាង និងអភិវឌ្ឍន៍ឡើងវិញ",
+    "International Development Association": "សមាគមអភិវឌ្ឍន៍អន្តរជាតិ",
+    "IFC": "IFC",
+    "International Finance Corporation": "សាជីវកម្មហិរញ្ញវត្ថុអន្តរជាតិ",
+    "World Bank loan": "កម្ចីធនាគារពិភពលោក",
+    "World Bank financing": "ហិរញ្ញប្បទានរបស់ធនាគារពិភពលោក",
+    "World Bank project": "គម្រោងធនាគារពិភពលោក"
+  },
+  "central_bank": {
+    "central bank": "ធនាគារកណ្តាល",
+    "monetary authority": "អាជ្ញាធររូបិយវត្ថុ",
+    "reserve bank": "ធនាគារបម្រុង",
+    "national bank": "ធនាគារជាតិ",
+    "central bankers": "ធនាគារកណ្តាល",
+    "policy rate": "អត្រាគោលនយោបាយ",
+    "benchmark rate": "អត្រាគោល",
+    "interest rate decision": "ការសម្រេចចិត្តអត្រាការប្រាក់",
+    "rate decision": "ការសម្រេចចិត្តអត្រា",
+    "monetary authority decision": "ការសម្រេចចិត្តរបស់អាជ្ញាធររូបិយវត្ថុ"
+  },
+  "finance_ministry": {
+    "finance ministry": "ក្រសួងហិរញ្ញវត្ថុ",
+    "ministry of finance": "ក្រសួងហិរញ្ញវត្ថុ",
+    "treasury": "រតនាគារ",
+    "finance minister": "រដ្ឋមន្ត្រីហិរញ្ញវត្ថុ",
+    "treasury department": "នាយកដ្ឋានរតនាគារ",
+    "economic ministry": "ក្រសួងសេដ្ឋកិច្ច",
+    "budget office": "ការិយាល័យថវិកា",
+    "fiscal authority": "អាជ្ញាធរសារពើពន្ធ"
+  },
+  "government": {
+    "government": "រដ្ឋាភិបាល",
+    "administration": "រដ្ឋបាល",
+    "executive branch": "សាខាប្រតិបត្តិ",
+    "cabinet": "គណៈរដ្ឋមន្ត្រី",
+    "prime minister": "នាយករដ្ឋមន្ត្រី",
+    "president": "ប្រធាន",
+    "presidential office": "ការិយាល័យប្រធានាធិបតី",
+    "government officials": "មន្ត្រីរដ្ឋាភិបាល",
+    "state authorities": "អាជ្ញាធររដ្ឋ"
+  },
+  "parliament": {
+    "parliament": "សភា",
+    "congress": "សមាជ",
+    "legislature": "នីតិបញ្ញត្តិ",
+    "legislative body": "ស្ថាប័ននីតិប្បញ្ញត្តិ",
+    "lawmakers": "សមាជិកសភា",
+    "members of parliament": "សមាជិកសភា",
+    "senators": "សមាជិកព្រឹទ្ធសភា",
+    "deputies": "តំណាងរាស្ត្រ",
+    "MPs": "MPs",
+    "House of Representatives": "សភាតំណាងរាស្រ្ត"
+  },
+  "multilateral_development_bank": {
+    "development bank": "ធនាគារអភិវឌ្ឍន៍",
+    "multilateral development bank": "ធនាគារអភិវឌ្ឍន៍ពហុភាគី",
+    "regional development bank": "ធនាគារអភិវឌ្ឍន៍តំបន់",
+    "African Development Bank": "ធនាគារអភិវឌ្ឍន៍អាហ្វ្រិក",
+    "Asian Development Bank": "ធនាគារអភិវឌ្ឍន៍អាស៊ី",
+    "Inter-American Development Bank": "ធនាគារអភិវឌ្ឍន៍អន្តរអាមេរិក",
+    "IDB": "IDB",
+    "ADB": "ADB",
+    "AfDB": "AfDB",
+    "European Bank for Reconstruction and Development": "ធនាគារអឺរ៉ុបសម្រាប់ការកសាង និងអភិវឌ្ឍន៍ឡើងវិញ",
+    "EBRD": "EBRD"
+  },
+  "credit_rating_agency": {
+    "credit rating agency": "ទីភ្នាក់ងារវាយតម្លៃឥណទាន",
+    "rating agency": "ទីភ្នាក់ងារវាយតម្លៃ",
+    "moody's": "moody's",
+    "moody’s": "moody’s",
+    "standard and poor's": "standard and poor's",
+    "standard & poor's": "standard & poor's",
+    "credit downgrade": "កម្រិតឥណទាន",
+    "credit rating": "ចំណាត់ថ្នាក់ឥណទាន",
+    "S&P": "S&P",
+    "Fitch": "Fitch"
+  },
+  "international_investors": {
+    "foreign investors": "វិនិយោគិនបរទេស",
+    "international investors": "វិនិយោគិនអន្តរជាតិ",
+    "global investors": "វិនិយោគិនសកល",
+    "bondholders": "ម្ចាស់បំណុល",
+    "creditors": "ម្ចាស់បំណុល",
+    "institutional investors": "វិនិយោគិនស្ថាប័ន",
+    "portfolio investors": "វិនិយោគិនផលប័ត្រ",
+    "asset managers": "អ្នកគ្រប់គ្រងទ្រព្យសកម្ម",
+    "hedge funds": "មូលនិធិការពារ"
+  },
+  "commercial_banks": {
+    "commercial banks": "ធនាគារពាណិជ្ជ",
+    "private banks": "ធនាគារឯកជន",
+    "lenders": "អ្នកអោយខ្ចី",
+    "banking sector": "វិស័យធនាគារ",
+    "local banks": "ធនាគារក្នុងស្រុក",
+    "foreign banks": "ធនាគារបរទេស",
+    "bank consortium": "សម្ព័ន្ធធនាគារ",
+    "banking groups": "ក្រុមធនាគារ"
+  },
+  "state_owned_enterprises": {
+    "state-owned enterprise": "សហគ្រាសរដ្ឋ",
+    "state-owned company": "ក្រុមហ៊ុនរដ្ឋ",
+    "public enterprise": "សហគ្រាសសាធារណៈ",
+    "public utility": "ឧបករណ៍ប្រើប្រាស់សាធារណៈ",
+    "state utility": "ឧបករណ៍ប្រើប្រាស់របស់រដ្ឋ",
+    "national oil company": "ក្រុមហ៊ុនប្រេងជាតិ",
+    "state energy company": "ក្រុមហ៊ុនថាមពលរដ្ឋ",
+    "public company": "ក្រុមហ៊ុនសាធារណៈ"
+  },
+  "labor_unions": {
+    "labor unions": "សហជីពការងារ",
+    "trade unions": "សហជីព",
+    "workers' unions": "សហជីពកម្មករ",
+    "union leaders": "មេដឹកនាំសហជីព",
+    "labor organizations": "អង្គការការងារ",
+    "workers organizations": "អង្គការកម្មករ",
+    "collective bargaining": "ការចរចារួម",
+    "union protests": "ការតវ៉ារបស់សហជីព"
+  },
+  "international_organizations": {
+    "United Nations": "អង្គការសហប្រជាជាតិ",
+    "UN": "UN",
+    "OECD": "OECD",
+    "Organisation for Economic Co-operation and Development": "អង្គការសម្រាប់កិច្ចសហប្រតិបត្តិការសេដ្ឋកិច្ច និងការអភិវឌ្ឍន៍",
+    "ILO": "ILO",
+    "International Labour Organization": "អង្គការពលកម្មអន្តរជាតិ",
+    "WHO": "WHO",
+    "World Health Organization": "អង្គការសុខភាពពិភពលោក",
+    "WTO": "WTO",
+    "World Trade Organization": "អង្គការពាណិជ្ជកម្មពិភពលោក"
+  },
+  "courts_judiciary": {
+    "courts": "តុលាការ",
+    "judiciary": "តុលាការ",
+    "supreme court": "តុលាការកំពូល",
+    "constitutional court": "តុលាការធម្មនុញ្ញ",
+    "judicial system": "ប្រព័ន្ធតុលាការ",
+    "judges": "ចៅក្រម",
+    "court ruling": "សេចក្តីសម្រេចរបស់តុលាការ",
+    "legal system": "ប្រព័ន្ធច្បាប់"
+  },
+  "military_security": {
+    "military": "យោធា",
+    "armed forces": "កងកម្លាំងប្រដាប់អាវុធ",
+    "security forces": "កងកម្លាំងសន្តិសុខ",
+    "defense ministry": "ក្រសួងការពារជាតិ",
+    "defence ministry": "ក្រសួងការពារជាតិ",
+    "national security": "សន្តិសុខជាតិ",
+    "armed conflict": "ជម្លោះប្រដាប់អាវុធ",
+    "security services": "សេវាសន្តិសុខ"
+  },
+  "us_government": {
+    "U.S. government": "រដ្ឋាភិបាលសហរដ្ឋអាមេរិក",
+    "US government": "រដ្ឋាភិបាលអាមេរិក",
+    "United States government": "រដ្ឋាភិបាលសហរដ្ឋអាមេរិក",
+    "White House": "សេតវិមាន",
+    "U.S. administration": "រដ្ឋបាលសហរដ្ឋអាមេរិក",
+    "US administration": "រដ្ឋបាលអាមេរិក",
+    "U.S. Treasury": "រតនាគារសហរដ្ឋអាមេរិក",
+    "US Treasury": "រតនាគារសហរដ្ឋអាមេរិក",
+    "Department of Treasury": "នាយកដ្ឋានរតនាគារ",
+    "U.S. Congress": "សភាសហរដ្ឋអាមេរិក",
+    "US Congress": "សភាអាមេរិក",
+    "U.S. Trade Representative": "តំណាងពាណិជ្ជកម្មអាមេរិក",
+    "USTR": "USTR",
+    "Department of Commerce": "នាយកដ្ឋានពាណិជ្ជកម្ម"
+  },
+  "china_government": {
+    "Chinese government": "រដ្ឋាភិបាលចិន",
+    "China government": "រដ្ឋាភិបាលចិន",
+    "Beijing": "ទីក្រុងប៉េកាំង",
+    "State Council": "ក្រុមប្រឹក្សារដ្ឋ",
+    "People's Bank of China": "ធនាគារប្រជាជនចិន",
+    "PBOC": "PBOC",
+    "Ministry of Commerce of China": "ក្រសួងពាណិជ្ជកម្មចិន",
+    "MOFCOM": "MOFCOM",
+    "Communist Party of China": "បក្សកុម្មុយនិស្តចិន",
+    "CPC": "CPC",
+    "CCP": "CCP",
+    "National Development and Reform Commission": "គណៈកម្មការកំណែទម្រង់ និងអភិវឌ្ឍន៍ជាតិ",
+    "NDRC": "NDRC"
+  }
 }
