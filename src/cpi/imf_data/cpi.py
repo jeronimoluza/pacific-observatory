@@ -155,6 +155,7 @@ def save_cpi_analysis_report(analysis: Dict, countries_df: pd.DataFrame):
 
     # Create DataFrame and print as markdown
     df = pd.DataFrame(report_data)
+    df.to_excel(DATA_ROOT / "imf" / "cpi_reports.xlsx", index=False)
     print(df.to_markdown(index=False))
 
 

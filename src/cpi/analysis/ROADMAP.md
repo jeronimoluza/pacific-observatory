@@ -21,7 +21,7 @@ The roadmap below structures the analysis from CPI-like core indicators to riche
 
 ---
 
-# Phase 1 — Core Monthly Inflation Indicators (Per Country)
+# Section 1 — Core Monthly Inflation Indicators (Per Country)
 
 **Goal:** Produce CPI-style, high-frequency inflation measures that are methodologically defensible and comparable across countries and COICOP levels.
 
@@ -60,11 +60,6 @@ At levels:
 - Monthly matched-model inflation series by COICOP level
 - Multiple estimators (mean, median, trimmed)
 
-**Possible Visualizations**
-- Line charts of inflation by category over time
-- Small multiples for COICOP 2 categories
-- Comparison of mean vs median inflation
-
 ---
 
 ## 1.2 Price Level Tracking (Log Unit Values)
@@ -97,11 +92,6 @@ Compute:
 - Monthly price level indices by category
 - Dispersion measures within categories
 
-**Possible Visualizations**
-- Median log price level time series
-- Boxplots of log prices by category and month
-- Heatmaps of price levels by category × time
-
 ---
 
 ## 1.3 Inflation Breadth & Diffusion
@@ -131,14 +121,9 @@ By:
 - Diffusion indices of inflation
 - Share of items with large price increases
 
-**Possible Visualizations**
-- Area charts of shares over time
-- Bar charts comparing categories
-- Heatmaps of diffusion by category × month
-
 ---
 
-# Phase 2 — Price Distributions, Tails & Market Stress
+# Section 2 — Price Distributions, Tails & Market Stress
 
 **Goal:** Capture inflation risk, tail behavior, and volatility beyond averages.
 
@@ -165,11 +150,6 @@ Compute:
 - Full distribution summaries of price changes
 - Tail risk indicators
 
-**Possible Visualizations**
-- Ridgeline plots of Δp distributions
-- Boxplots of Δp by category
-- Time series of P90 − P10 spread
-
 ---
 
 ## 2.2 Volatility Indices
@@ -195,11 +175,6 @@ MAD_Δp = median(|Δp − median(Δp)|)
 **Outputs**
 - Monthly volatility indices by category
 - Stress indicators
-
-**Possible Visualizations**
-- Volatility time series
-- Heatmaps of volatility by category × time
-- Event-style spike charts
 
 ---
 
@@ -230,14 +205,9 @@ hard_outlier: p < Q1 − 3*IQR or p > Q3 + 3*IQR
 - Outlier rates by category and month
 - Product-level anomaly flags
 
-**Possible Visualizations**
-- Time series of outlier shares
-- Scatter plots of p vs Δp with outliers highlighted
-- Tables of top anomalies
-
 ---
 
-# Phase 3 — Price Stickiness & Microstructure
+# Section 3 — Price Stickiness & Microstructure
 
 **Goal:** Measure nominal rigidity and price flexibility.
 
@@ -259,11 +229,6 @@ By category:
 **Outputs**
 - Price rigidity metrics by category
 - Spell duration distributions
-
-**Possible Visualizations**
-- Histograms of spell lengths
-- Kaplan–Meier survival curves
-- Bar charts of average spell length by category
 
 ---
 
@@ -290,13 +255,9 @@ avg_changes_per_product
 - Monthly price flexibility indicators
 - Frequency of repricing
 
-**Possible Visualizations**
-- Line charts of share_changed
-- Category comparison bar charts
-
 ---
 
-# Phase 4 — Product Entry, Exit & Assortment Dynamics
+# Section 4 — Product Entry, Exit & Assortment Dynamics
 
 **Goal:** Capture extensive margin dynamics ignored by CPI.
 
@@ -320,11 +281,6 @@ net_churn_t  = entry_rate_t − exit_rate_t
 - Entry, exit, and churn rates
 - Active product counts
 
-**Possible Visualizations**
-- Line charts of active products
-- Stacked area of entry vs exit
-- Churn heatmaps
-
 ---
 
 ## 4.2 Inflation via Product Replacement
@@ -347,13 +303,9 @@ price_entrants − price_continuers
 - Replacement-driven inflation indicators
 - Evidence of quality/variety effects
 
-**Possible Visualizations**
-- Boxplots of entrant vs continuer prices
-- Time series of entrant price premia
-
 ---
 
-# Phase 5 — Measurement Quality, Tier Sensitivity & Robustness
+# Section 5 — Measurement Quality, Tier Sensitivity & Robustness
 
 **Goal:** Quantify how core inflation results depend on measurement quality, and explicitly characterize uncertainty arising from heterogeneous extraction tiers.
 
@@ -419,13 +371,6 @@ share_increase_tier,c,t = mean_i∈tier (Δp_i,t > 0)
 - Tier-specific median price level series
 - Tier-specific diffusion indicators
 
-### Possible Visualizations
-
-- Multi-line charts of inflation by tier group
-- Side-by-side volatility panels by tier
-- Price level trends by tier
-- Stacked diffusion plots by tier
-
 ---
 
 ## 5.2 Tier Gaps & Measurement Uncertainty Bands
@@ -476,13 +421,6 @@ Define quality bands:
 - Tier-based inflation uncertainty bands
 - Tier gap time series by category
 - Category-level sensitivity rankings
-
-### Possible Visualizations
-
-- Fan charts of inflation with tier-based bands
-- Line charts of tier gaps over time
-- Bar charts ranking categories by tier sensitivity
-- Heatmaps of tier gaps by category × month
 
 ---
 
@@ -538,13 +476,6 @@ run within:
 - Category sensitivity scores to tier inclusion
 - Evidence of stress amplification in lower tiers
 
-### Possible Visualizations
-
-- Scatter plots of π_tier1 vs π_all
-- Category rankings by tier sensitivity
-- Volatility amplification charts (Tier 3 vs Tier 1)
-- Coefficient plots from tier indicator regressions
-
 ---
 
 ## 5.4 Quality-Adjusted Headline Inflation
@@ -574,15 +505,9 @@ At COICOP 1 and 2:
 - Multiple headline inflation series by quality definition
 - Quality-adjusted inflation ranges
 
-### Possible Visualizations
-
-- Fan charts of headline inflation
-- Overlay of conservative vs baseline vs inclusive inflation
-- Policy-style headline dashboard plots
-
 ---
 
-# Phase 6 — Cross-Country & External Drivers
+# Section 6 — Cross-Country & External Drivers
 
 **Goal:** Enable comparative and policy-relevant cross-country analysis.
 
@@ -608,10 +533,6 @@ By:
 - Relative food and goods price levels
 - Cross-country affordability indicators
 
-**Possible Visualizations**
-- Heatmaps of relative prices
-- Country ranking bar charts
-
 ---
 
 ## 6.2 Inflation Synchronization & Spillovers
@@ -631,10 +552,6 @@ Cross-correlations for leads/lags.
 - Synchronization matrices
 - Spillover indicators
 
-**Possible Visualizations**
-- Correlation heatmaps
-- Network graphs of spillovers
-
 ---
 
 ## 6.3 Exchange Rate Pass-Through (Optional)
@@ -653,7 +570,3 @@ By category.
 **Outputs**
 - FX pass-through elasticities
 - Tradables vs non-tradables sensitivity
-
-**Possible Visualizations**
-- Scatter plots of FX vs inflation
-- Coefficient bar charts by category
