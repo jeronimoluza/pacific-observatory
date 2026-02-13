@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>News Article Count</title>
+    <title>Pairwise Interaction Indices</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -84,27 +84,45 @@
             const data = allData[country];
             if (!data || !data.length) return;
 
-            // Extract date labels and article counts
+            // Extract date labels
             const labels = data.map(r => formatDate(r.date));
-            const newsCounts = data.map(r => r.news_total);
 
             // Get canvas context and destroy previous chart if exists
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
-            // Create new line chart with filled area
+            // Create new line chart with pairwise datasets
             currentChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [
                         {
-                            label: 'News Count',
-                            data: newsCounts,
-                            borderColor: '#2aa8f7',
-                            backgroundColor: 'rgba(42, 168, 247, 0.1)',
-                            borderWidth: 3,
-                            fill: true,  // Fill area under line
+                            label: 'Economic-Uncertainty (EU)',
+                            data: data.map(r => r.EU_index),
+                            borderColor: '#1d77b2',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Policy-Uncertainty (PU)',
+                            data: data.map(r => r.PU_index),
+                            borderColor: '#d95e10',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Economic-Policy (EP)',
+                            data: data.map(r => r.EP_index),
+                            borderColor: '#00a37c',
+                            borderWidth: 2.5,
+                            fill: false,
                             tension: 0.1,
                             pointRadius: 0,
                             pointHoverRadius: 5
@@ -128,7 +146,7 @@
                     },
                     scales: {
                         x: { display: true, title: { display: true, text: 'Date' } },
-                        y: { display: true, title: { display: true, text: 'Article Count' } }
+                        y: { display: true, title: { display: true, text: 'Pairwise Index' } }
                     }
                 }
             });
