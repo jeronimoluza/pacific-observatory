@@ -37,9 +37,27 @@ def load_epu_data(country, data_dir):
         return None
     df = pd.read_csv(f)
     df["date"] = pd.to_datetime(df["date"], format="mixed")
-    for col in ["EPU_index", "EPU_inflation_index", "EPU_job_index"]:
-        if col in df.columns:
-            df[f"{col}_ma3"] = df[col].rolling(window=3).mean()
+    df["EPU_index_ma3"] = df["EPU_index"].rolling(window=3).mean()
+    return df.sort_values("date")
+
+
+def load_topics_epu_data(country, data_dir):
+    """Load topic-specific EPU data from topics_epu.csv"""
+    f = data_dir / f"{country}/epu/topics_epu.csv"
+    if not f.exists():
+        return None
+    df = pd.read_csv(f)
+    df["date"] = pd.to_datetime(df["date"], format="mixed")
+    return df.sort_values("date")
+
+
+def load_attribution_data(country, data_dir, source_file):
+    """Load uncertainty attribution data (topics or actors)"""
+    f = data_dir / f"{country}/uncertainty_attribution/{source_file}.csv"
+    if not f.exists():
+        return None
+    df = pd.read_csv(f)
+    df["date"] = pd.to_datetime(df["date"], format="mixed")
     return df.sort_values("date")
 
 
@@ -143,6 +161,135 @@ def gen_html(title, subtitle, chart_id, all_data, countries, script_content):
         const allData = {json.dumps(all_data)};
         let currentChart = null;
         {script_content}
+    </script>
+</body>
+</html>"""
+
+
+def gen_html_multi_select(
+    title,
+    subtitle,
+    chart_id,
+    all_data,
+    countries,
+    items,
+    item_label,
+    default_checked,
+    script_content,
+):
+    """Generate standalone HTML page with Chart.js, country dropdown, and multi-select checkboxes"""
+    # Build country options, filtering out excluded countries
+    opts = "\n".join(
+        f'<option value="{c}">{fmt_country(c)}</option>'
+        for c in countries
+        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
+    )
+
+    # Build checkbox items
+    checkboxes = "\n".join(
+        f'<label class="chip"><input type="checkbox" value="{item}"'
+        f'{" checked" if item in default_checked else ""}>'
+        f'{fmt_country(item)}</label>'
+        for item in items
+    )
+
+    # CSS styling for responsive layout with multi-select
+    css_styles = """
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 15px;
+            background: #fff;
+        }
+        .controls {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9em;
+            cursor: pointer;
+            background: #fff;
+        }
+        select:hover { border-color: #667eea; }
+        select:focus { outline: 0; border-color: #667eea; }
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+            max-height: 120px;
+            overflow-y: auto;
+            padding: 4px 0;
+        }
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border: 1px solid #ddd;
+            border-radius: 16px;
+            font-size: 0.8em;
+            font-weight: 400;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s;
+        }
+        .chip:hover { border-color: #667eea; background: #f0f4ff; }
+        .chip input[type="checkbox"] { display: none; }
+        .chip:has(input:checked) {
+            background: #667eea;
+            color: #fff;
+            border-color: #667eea;
+        }
+        .chart-wrapper { position: relative; height: 350px; }
+    """
+
+    items_json = json.dumps(items)
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>{css_styles}</style>
+</head>
+<body>
+    <div class="controls">
+        <label for="country-select">Country:</label>
+        <select id="country-select">{opts}</select>
+    </div>
+    <div>
+        <label>{item_label}:</label>
+        <div class="chip-container" id="item-select">{checkboxes}</div>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="chart"></canvas>
+    </div>
+    <script>
+        const allData = {json.dumps(all_data)};
+        const allItems = {items_json};
+        let currentChart = null;
+
+        function getSelectedItems() {{
+            return Array.from(document.querySelectorAll('#item-select input:checked')).map(cb => cb.value);
+        }}
+
+        {script_content}
+
+        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value, getSelectedItems()));
+        document.getElementById('item-select').addEventListener('change', () => renderChart(document.getElementById('country-select').value, getSelectedItems()));
+        renderChart(document.getElementById('country-select').value, getSelectedItems());
     </script>
 </body>
 </html>"""
@@ -254,57 +401,78 @@ def gen_epu_html(countries, data_dir, out):
     print(f"Created {out}")
 
 
-def gen_epu_topics_html(countries, topics, data_dir, out):
-    """Generate topic-specific EPU visualization with multiple datasets"""
+def gen_epu_topics_html(countries, data_dir, out):
+    """Generate topic-specific EPU visualization with multi-select checkboxes"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
-    all_data = {
-        c: df_to_json(load_epu_data(c, data_dir))
-        for c in countries
-        if load_epu_data(c, data_dir) is not None
-    }
-    if not all_data:
+    all_data = {}
+    topics = None
+    for c in countries:
+        df = load_topics_epu_data(c, data_dir)
+        if df is not None:
+            all_data[c] = df_to_json(df)
+            if topics is None:
+                topics = [
+                    col.replace("EPU_", "").replace("_index", "")
+                    for col in df.columns
+                    if col.startswith("EPU_") and col.endswith("_index")
+                ]
+    if not all_data or not topics:
         return
 
-    # Define colors and labels for each topic
-    colors = ["#00a37c", "#d95e10"]
-    labels = [" ".join(w.capitalize() for w in t.split("_")) for t in topics]
-
-    # Column keys matching the consolidated epu.csv format
-    col_keys = [f"EPU_{t}_index_ma3" for t in topics]
-
-    # Convert to JSON for embedding in JavaScript
-    col_keys_json = json.dumps(col_keys)
-    colors_json = json.dumps(colors)
-    labels_json = json.dumps(labels)
+    # 22-color palette for topics
+    palette = [
+        "#1d77b2",
+        "#d95e10",
+        "#00a37c",
+        "#e7298a",
+        "#66a61e",
+        "#e6ab02",
+        "#7570b3",
+        "#a6761d",
+        "#666666",
+        "#1b9e77",
+        "#d62728",
+        "#9467bd",
+        "#8c564b",
+        "#17becf",
+        "#bcbd22",
+        "#ff7f0e",
+        "#2ca02c",
+        "#e377c2",
+        "#7f7f7f",
+        "#aec7e8",
+        "#ffbb78",
+        "#98df8a",
+    ]
+    palette_json = json.dumps(palette)
+    default_checked = ["inflation_prices", "trade", "fiscal_policy"]
 
     # JavaScript code for topic-based EPU chart rendering
     script = f"""
-        const colKeys = {col_keys_json};
-        const colors = {colors_json};
-        const labels = {labels_json};
+        const palette = {palette_json};
 
-        // Format date from YYYY-MM-DD to YYYY-MM
+        function fmtLabel(key) {{
+            return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }}
+
         function formatDate(d) {{
             const date = new Date(d);
             return `${{date.getFullYear()}}-${{String(date.getMonth() + 1).padStart(2, '0')}}`;
         }}
 
-        // Render chart for selected country
-        function renderChart(country) {{
+        function renderChart(country, selectedItems) {{
             const data = allData[country];
             if (!data || !data.length) return;
 
-            // Extract date labels
-            const labels_chart = data.map(r => formatDate(r.date));
-
-            // Build datasets dynamically for each topic
+            const labels = data.map(r => formatDate(r.date));
             const datasets = [];
-            colKeys.forEach((col, index) => {{
+            selectedItems.forEach((topic, i) => {{
+                const colKey = `EPU_${{topic}}_index`;
                 datasets.push({{
-                    label: `${{labels[index]}} EPU`,
-                    data: data.map(r => r[col]),
-                    borderColor: colors[index],
-                    borderWidth: 3,
+                    label: fmtLabel(topic) + ' EPU',
+                    data: data.map(r => r[colKey]),
+                    borderColor: palette[allItems.indexOf(topic) % palette.length],
+                    borderWidth: 2.5,
                     fill: false,
                     tension: 0.1,
                     pointRadius: 0,
@@ -312,31 +480,18 @@ def gen_epu_topics_html(countries, topics, data_dir, out):
                 }});
             }});
 
-            // Get canvas context and destroy previous chart if exists
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
-            // Create new line chart with topic datasets
             currentChart = new Chart(ctx, {{
                 type: 'line',
-                data: {{
-                    labels: labels_chart,
-                    datasets: datasets
-                }},
+                data: {{ labels: labels, datasets: datasets }},
                 options: {{
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {{
-                        legend: {{
-                            position: 'top',
-                            labels: {{ usePointStyle: true, padding: 15 }}
-                        }},
-                        tooltip: {{
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: 'rgba(0,0,0,0.8)',
-                            padding: 12
-                        }}
+                        legend: {{ position: 'top', labels: {{ usePointStyle: true, padding: 15 }} }},
+                        tooltip: {{ mode: 'index', intersect: false, backgroundColor: 'rgba(0,0,0,0.8)', padding: 12 }}
                     }},
                     scales: {{
                         x: {{ display: true, title: {{ display: true, text: 'Date' }} }},
@@ -345,22 +500,19 @@ def gen_epu_topics_html(countries, topics, data_dir, out):
                 }}
             }});
         }}
-
-        // Event listener: re-render chart when country selection changes
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-
-        // Initial chart render with first country
-        renderChart(document.getElementById('country-select').value);
     """
 
     with open(out, "w") as f:
         f.write(
-            gen_html(
+            gen_html_multi_select(
                 "Economic Policy Uncertainty by Topic",
                 "Topic-based EPU Analysis",
                 "epu-topics-chart",
                 all_data,
                 countries,
+                topics,
+                "Topics",
+                default_checked,
                 script,
             )
         )
@@ -688,6 +840,376 @@ def gen_intensity_html(countries, data_dir, out):
     print(f"Created {out}")
 
 
+def gen_pairwise_html(countries, data_dir, out):
+    """Generate EU/PU/EP pairwise interaction index visualization"""
+    countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
+    all_data = {
+        c: df_to_json(load_epu_data(c, data_dir))
+        for c in countries
+        if load_epu_data(c, data_dir) is not None
+    }
+    if not all_data:
+        return
+
+    # JavaScript code for pairwise chart rendering
+    script = """
+        // Format date from YYYY-MM-DD to YYYY-MM
+        function formatDate(d) {
+            const date = new Date(d);
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        // Render chart for selected country
+        function renderChart(country) {
+            const data = allData[country];
+            if (!data || !data.length) return;
+
+            // Extract date labels
+            const labels = data.map(r => formatDate(r.date));
+
+            // Get canvas context and destroy previous chart if exists
+            const ctx = document.getElementById('chart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            // Create new line chart with pairwise datasets
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Economic-Uncertainty (EU)',
+                            data: data.map(r => r.EU_index),
+                            borderColor: '#1d77b2',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Policy-Uncertainty (PU)',
+                            data: data.map(r => r.PU_index),
+                            borderColor: '#d95e10',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        },
+                        {
+                            label: 'Economic-Policy (EP)',
+                            data: data.map(r => r.EP_index),
+                            borderColor: '#00a37c',
+                            borderWidth: 2.5,
+                            fill: false,
+                            tension: 0.1,
+                            pointRadius: 0,
+                            pointHoverRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { usePointStyle: true, padding: 15 }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        x: { display: true, title: { display: true, text: 'Date' } },
+                        y: { display: true, title: { display: true, text: 'Pairwise Index' } }
+                    }
+                }
+            });
+        }
+
+        // Event listener: re-render chart when country selection changes
+        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
+
+        // Initial chart render with first country
+        renderChart(document.getElementById('country-select').value);
+    """
+
+    with open(out, "w") as f:
+        f.write(
+            gen_html(
+                "Pairwise Interaction Indices",
+                "EU, PU, and EP Pairwise Indices",
+                "pairwise-chart",
+                all_data,
+                countries,
+                script,
+            )
+        )
+    print(f"Created {out}")
+
+
+def gen_topic_attribution_html(countries, data_dir, out):
+    """Generate uncertainty attribution by topic with multi-select checkboxes"""
+    countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
+    all_data = {}
+    topics = None
+    for c in countries:
+        df = load_attribution_data(c, data_dir, "topics")
+        if df is not None:
+            all_data[c] = df_to_json(df)
+            if topics is None:
+                topics = sorted(
+                    set(
+                        col.replace("_absolute", "").replace("_framing", "")
+                        for col in df.columns
+                        if col.endswith("_absolute") or col.endswith("_framing")
+                    )
+                )
+    if not all_data or not topics:
+        return
+
+    # 22-color palette for topics
+    palette = [
+        "#1d77b2",
+        "#d95e10",
+        "#00a37c",
+        "#e7298a",
+        "#66a61e",
+        "#e6ab02",
+        "#7570b3",
+        "#a6761d",
+        "#666666",
+        "#1b9e77",
+        "#d62728",
+        "#9467bd",
+        "#8c564b",
+        "#17becf",
+        "#bcbd22",
+        "#ff7f0e",
+        "#2ca02c",
+        "#e377c2",
+        "#7f7f7f",
+        "#aec7e8",
+        "#ffbb78",
+        "#98df8a",
+    ]
+    palette_json = json.dumps(palette)
+    default_checked = ["economic_growth"]
+
+    # JavaScript code for topic attribution chart rendering
+    script = f"""
+        const palette = {palette_json};
+
+        function fmtLabel(key) {{
+            return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }}
+
+        function formatDate(d) {{
+            const date = new Date(d);
+            return `${{date.getFullYear()}}-${{String(date.getMonth() + 1).padStart(2, '0')}}`;
+        }}
+
+        function renderChart(country, selectedItems) {{
+            const data = allData[country];
+            if (!data || !data.length) return;
+
+            const labels = data.map(r => formatDate(r.date));
+            const datasets = [];
+            selectedItems.forEach((topic) => {{
+                const color = palette[allItems.indexOf(topic) % palette.length];
+                datasets.push({{
+                    label: fmtLabel(topic) + ' (Absolute)',
+                    data: data.map(r => r[topic + '_absolute']),
+                    borderColor: color,
+                    borderWidth: 2.5,
+                    fill: false,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                }});
+                datasets.push({{
+                    label: fmtLabel(topic) + ' (Framing)',
+                    data: data.map(r => r[topic + '_framing']),
+                    borderColor: color,
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                }});
+            }});
+
+            const ctx = document.getElementById('chart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {{
+                type: 'line',
+                data: {{ labels: labels, datasets: datasets }},
+                options: {{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {{
+                        legend: {{ position: 'top', labels: {{ usePointStyle: true, padding: 15 }} }},
+                        tooltip: {{ mode: 'index', intersect: false, backgroundColor: 'rgba(0,0,0,0.8)', padding: 12 }}
+                    }},
+                    scales: {{
+                        x: {{ display: true, title: {{ display: true, text: 'Date' }} }},
+                        y: {{ display: true, title: {{ display: true, text: 'Attribution Index' }} }}
+                    }}
+                }}
+            }});
+        }}
+    """
+
+    with open(out, "w") as f:
+        f.write(
+            gen_html_multi_select(
+                "Uncertainty Attribution by Topic",
+                "Absolute and Framing Attribution per Topic",
+                "topic-attr-chart",
+                all_data,
+                countries,
+                topics,
+                "Topics",
+                default_checked,
+                script,
+            )
+        )
+    print(f"Created {out}")
+
+
+def gen_actor_attribution_html(countries, data_dir, out):
+    """Generate uncertainty attribution by actor with multi-select checkboxes"""
+    countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
+    all_data = {}
+    actors = None
+    for c in countries:
+        df = load_attribution_data(c, data_dir, "actors")
+        if df is not None:
+            all_data[c] = df_to_json(df)
+            if actors is None:
+                actors = sorted(
+                    set(
+                        col.replace("_absolute", "").replace("_framing", "")
+                        for col in df.columns
+                        if col.endswith("_absolute") or col.endswith("_framing")
+                    )
+                )
+    if not all_data or not actors:
+        return
+
+    # 17-color palette for actors
+    palette = [
+        "#1d77b2",
+        "#d95e10",
+        "#00a37c",
+        "#e7298a",
+        "#66a61e",
+        "#e6ab02",
+        "#7570b3",
+        "#a6761d",
+        "#666666",
+        "#1b9e77",
+        "#d62728",
+        "#9467bd",
+        "#8c564b",
+        "#17becf",
+        "#bcbd22",
+        "#ff7f0e",
+        "#2ca02c",
+    ]
+    palette_json = json.dumps(palette)
+    default_checked = ["government"]
+
+    # JavaScript code for actor attribution chart rendering
+    script = f"""
+        const palette = {palette_json};
+
+        function fmtLabel(key) {{
+            return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }}
+
+        function formatDate(d) {{
+            const date = new Date(d);
+            return `${{date.getFullYear()}}-${{String(date.getMonth() + 1).padStart(2, '0')}}`;
+        }}
+
+        function renderChart(country, selectedItems) {{
+            const data = allData[country];
+            if (!data || !data.length) return;
+
+            const labels = data.map(r => formatDate(r.date));
+            const datasets = [];
+            selectedItems.forEach((actor) => {{
+                const color = palette[allItems.indexOf(actor) % palette.length];
+                datasets.push({{
+                    label: fmtLabel(actor) + ' (Absolute)',
+                    data: data.map(r => r[actor + '_absolute']),
+                    borderColor: color,
+                    borderWidth: 2.5,
+                    fill: false,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                }});
+                datasets.push({{
+                    label: fmtLabel(actor) + ' (Framing)',
+                    data: data.map(r => r[actor + '_framing']),
+                    borderColor: color,
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                }});
+            }});
+
+            const ctx = document.getElementById('chart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {{
+                type: 'line',
+                data: {{ labels: labels, datasets: datasets }},
+                options: {{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {{
+                        legend: {{ position: 'top', labels: {{ usePointStyle: true, padding: 15 }} }},
+                        tooltip: {{ mode: 'index', intersect: false, backgroundColor: 'rgba(0,0,0,0.8)', padding: 12 }}
+                    }},
+                    scales: {{
+                        x: {{ display: true, title: {{ display: true, text: 'Date' }} }},
+                        y: {{ display: true, title: {{ display: true, text: 'Attribution Index' }} }}
+                    }}
+                }}
+            }});
+        }}
+    """
+
+    with open(out, "w") as f:
+        f.write(
+            gen_html_multi_select(
+                "Uncertainty Attribution by Actor",
+                "Absolute and Framing Attribution per Actor",
+                "actor-attr-chart",
+                all_data,
+                countries,
+                actors,
+                "Actors",
+                default_checked,
+                script,
+            )
+        )
+    print(f"Created {out}")
+
+
 def gen_pred_html(countries, data_dir, out):
     """Generate inflation prediction vs actual visualization"""
     countries = sorted([c for c in countries if c not in EXCLUDE_PREDS])
@@ -906,12 +1428,17 @@ if __name__ == "__main__":
     countries = [d for d in os.listdir(DATA_DIR) if (DATA_DIR / d).is_dir()]
 
     gen_epu_html(countries, DATA_DIR, OUTPUT_DIR / "epu_pic.html")
-    gen_epu_topics_html(
-        countries, ["inflation", "job"], DATA_DIR, OUTPUT_DIR / "epu_topics_pic.html"
-    )
+    gen_epu_topics_html(countries, DATA_DIR, OUTPUT_DIR / "epu_topics_pic.html")
     gen_news_html(countries, DATA_DIR, OUTPUT_DIR / "news_count_pic.html")
     gen_breadth_html(countries, DATA_DIR, OUTPUT_DIR / "breadth_pic.html")
     gen_intensity_html(countries, DATA_DIR, OUTPUT_DIR / "intensity_pic.html")
+    gen_pairwise_html(countries, DATA_DIR, OUTPUT_DIR / "pairwise_pic.html")
+    gen_topic_attribution_html(
+        countries, DATA_DIR, OUTPUT_DIR / "topic_attribution_pic.html"
+    )
+    gen_actor_attribution_html(
+        countries, DATA_DIR, OUTPUT_DIR / "actor_attribution_pic.html"
+    )
     gen_pred_html(countries, DATA_DIR, OUTPUT_DIR / "train_predictions_pic.html")
     gen_oob_pred_html(
         countries, DATA_DIR, OUTPUT_DIR / "out_of_bag_predictions_pic.html"

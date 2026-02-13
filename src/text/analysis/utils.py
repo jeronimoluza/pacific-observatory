@@ -552,6 +552,11 @@ def generate_news_statistics_table(country_folder: Path) -> str:
     total_str = f"{total_articles:,}"
     lines.append(f"| **Total** | | **{total_str}** | |")
 
+    # Print summary counts
+    num_countries = len(sorted_countries)
+    num_sources = sum(len(v) for v in data_by_country.values())
+    print(f"Countries: {num_countries} | Sources (newspapers): {num_sources}")
+
     return "\n".join(lines)
 
 
