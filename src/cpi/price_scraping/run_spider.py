@@ -9,6 +9,7 @@ import os
 import json
 from pathlib import Path
 
+import pandas as pd
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 
@@ -213,23 +214,88 @@ def get_spider_country(spider_name: str) -> str:
     return spider_countries.get(spider_name, "unknown")
 
 
-def run_wayback_scraping(spider_name: str, output_dir: Path, from_date: str):
+def get_first_scrape_date(spider_name: str, output_dir: Path, country: str) -> str:
+    """
+    Get the first scrape date for a spider by finding earliest scraped_at timestamp.
+    Returns date one day before first scrape for wayback machine scraping.
+
+    Args:
+        spider_name: Name of the spider
+        output_dir: Base output directory
+        country: Country code for directory structure
+
+    Returns:
+        Date string in YYYY-MM-DD format (one day before first scrape), or None if no data
+    """
+    items = load_scraped_items(output_dir, spider_name, country)
+
+    if not items:
+        logger.warning(f"No scraped items found for {spider_name}")
+        return None
+
+    # Extract all scraped_at timestamps
+    timestamps = []
+    for item in items:
+        scraped_at = item.get("scraped_at")
+        if scraped_at:
+            try:
+                # Parse various date formats
+                # Examples: "Thu, 12 Feb 2026 22:03:15 GMT", "2026-02-12T22:03:15"
+                dt = pd.to_datetime(scraped_at)
+                # Convert to timezone-naive to avoid comparison issues
+                if dt.tzinfo is not None:
+                    dt = dt.tz_localize(None)
+                timestamps.append(dt)
+            except Exception as e:
+                logger.debug(f"Could not parse timestamp {scraped_at}: {e}")
+                continue
+
+    if not timestamps:
+        logger.warning(f"No valid timestamps found for {spider_name}")
+        return None
+
+    # Get earliest timestamp and subtract 1 day
+    earliest = min(timestamps)
+    from_date = earliest - pd.Timedelta(days=1)
+    from_date_str = from_date.strftime("%Y-%m-%d")
+
+    logger.info(
+        f"Auto-detected first scrape date for {spider_name}: {earliest.strftime('%Y-%m-%d')}"
+    )
+    logger.info(f"Setting wayback --from date to: {from_date_str}")
+
+    return from_date_str
+
+
+def run_wayback_scraping(spider_name: str, output_dir: Path, from_date: str = None):
     """
     Run wayback machine scraping for a spider.
 
     Args:
         spider_name: Name of the spider
         output_dir: Base output directory
-        from_date: End timestamp for wayback snapshots (YYYY-MM-DD format)
+        from_date: End timestamp for wayback snapshots (YYYY-MM-DD format).
+                   If None, auto-detects from first scrape date.
     """
     try:
         from price_scraping.wayback_scraper import WaybackScraper
 
-        logger.info(f"Starting wayback machine scraping for {spider_name}")
-        logger.info(f"Looking for snapshots up to {from_date}")
-
         # Get country code
         country = get_spider_country(spider_name)
+
+        # Auto-detect from_date if not provided
+        if from_date is None:
+            logger.info(f"Auto-detecting --from date for {spider_name}...")
+            from_date = get_first_scrape_date(spider_name, output_dir, country)
+            if from_date is None:
+                logger.error(
+                    f"Could not auto-detect --from date for {spider_name}. "
+                    f"No scraped data found or timestamps invalid."
+                )
+                return
+
+        logger.info(f"Starting wayback machine scraping for {spider_name}")
+        logger.info(f"Looking for snapshots up to {from_date}")
 
         # Load scraped items
         items = load_scraped_items(output_dir, spider_name, country)
@@ -292,7 +358,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--from",
         dest="from_date",
-        help="End timestamp for wayback snapshots (YYYY-MM-DD format)",
+        help="End timestamp for wayback snapshots (YYYY-MM-DD format). "
+        "If not provided, auto-detects from first scrape date (first scrape - 1 day).",
     )
 
     args = parser.parse_args()
@@ -301,9 +368,8 @@ if __name__ == "__main__":
     if not args.all and not args.spider:
         parser.error("Either provide a spider name or use --all flag")
 
-    # Validate wayback arguments
-    if args.scrape_wayback and not args.from_date:
-        parser.error("--from argument is required when using --scrape-wayback")
+    # Note: --from argument is now optional for wayback scraping
+    # If not provided, it will be auto-detected from first scrape date
 
     # Convert output directory to absolute path if it's relative
     # This ensures output goes to the correct location regardless of where the script is called from

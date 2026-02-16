@@ -16,19 +16,28 @@ from typing import Optional
 import pandas as pd
 
 
-def parse_price(price_str) -> Optional[float]:
+def parse_price(price_str, currency: Optional[str] = None) -> Optional[float]:
     """
     Parse a price string to extract the numeric value as a float.
+
+    Supports currency-specific formatting:
+    - IDR (Indonesian Rupiah): . = thousands separator, , = decimal separator
+      Examples: "Rp 27.000" → 27000.0, "Rp 1.234.567,50" → 1234567.50
+    - Other currencies: , = thousands separator, . = decimal separator
+      Examples: "$1,234.56" → 1234.56, "$20.99" → 20.99
 
     Handles formats like:
     - "$18.91 NZD Incl. VAGST"
     - "$20.99"
     - "15.00 K"
     - "18.91"
+    - "Rp 27.000" (IDR)
     - Already numeric values
 
     Args:
         price_str: The price value (string or numeric).
+        currency: Optional currency code (e.g., "IDR", "USD").
+                 If provided, uses currency-specific formatting rules.
 
     Returns:
         The price as a float, or None if parsing fails.
@@ -44,13 +53,36 @@ def parse_price(price_str) -> Optional[float]:
     # Remove common currency symbols and text
     cleaned = price_str.strip()
 
-    # Extract the first numeric value (with optional decimal)
-    match = re.search(r"[\d,]+\.?\d*", cleaned)
-    if not match:
-        return None
+    # Currency-specific parsing
+    if currency == "IDR":
+        # Indonesian Rupiah format: Rp 27.000,50 → 27000.50
+        # . is thousands separator, , is decimal separator
 
-    # Get the matched number and remove commas
-    number_str = match.group().replace(",", "")
+        # Remove Rp prefix and extra spaces
+        cleaned = re.sub(r"Rp\s*", "", cleaned, flags=re.IGNORECASE)
+
+        # Extract number with . as thousands and , as decimal
+        # Pattern matches: 27.000 or 1.234.567,50 or 27.000,50
+        match = re.search(r"[\d.]+,?\d*", cleaned)
+        if not match:
+            return None
+
+        number_str = match.group()
+        # Remove thousands separator (.)
+        number_str = number_str.replace(".", "")
+        # Convert decimal separator (,) to .
+        number_str = number_str.replace(",", ".")
+    else:
+        # Default format: $1,234.56 → 1234.56
+        # , is thousands separator, . is decimal separator
+
+        # Extract the first numeric value (with optional decimal)
+        match = re.search(r"[\d,]+\.?\d*", cleaned)
+        if not match:
+            return None
+
+        # Get the matched number and remove commas (thousands separator)
+        number_str = match.group().replace(",", "")
 
     try:
         return float(number_str)

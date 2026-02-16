@@ -258,9 +258,11 @@ def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.Data
     # Clean product names (source-specific cleaning)
     df = clean_product_names(df, project_root)
 
-    # Parse and clean price column
+    # Parse and clean price column (with currency-aware parsing)
     if "price" in df.columns:
-        df["price"] = df["price"].apply(parse_price)
+        df["price"] = df.apply(
+            lambda row: parse_price(row["price"], row.get("currency")), axis=1
+        )
 
     # Clean product names by removing content in parentheses and brackets
     df["product_name"] = df["product_name"].apply(clean_product_only)
