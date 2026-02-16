@@ -37,7 +37,6 @@ def load_epu_data(country, data_dir):
         return None
     df = pd.read_csv(f)
     df["date"] = pd.to_datetime(df["date"], format="mixed")
-    df["EPU_index_ma3"] = df["EPU_index"].rolling(window=3).mean()
     return df.sort_values("date")
 
 
@@ -100,101 +99,11 @@ def df_to_json(df):
     return data
 
 
-def gen_html(title, subtitle, chart_id, all_data, countries, script_content):
-    """Generate standalone HTML page with Chart.js visualization and country dropdown"""
-    # Build country options, filtering out excluded countries
-    opts = "\n".join(
-        f'<option value="{c}">{fmt_country(c)}</option>'
-        for c in countries
-        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
-    )
+# ---------------------------------------------------------------------------
+# CSS constants shared across templates
+# ---------------------------------------------------------------------------
 
-    # CSS styling for responsive layout
-    css_styles = """
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            padding: 15px;
-            background: #fff;
-        }
-        .controls {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        label {
-            font-weight: 600;
-            color: #333;
-            font-size: 0.95em;
-        }
-        select {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 0.9em;
-            cursor: pointer;
-            background: #fff;
-        }
-        select:hover { border-color: #667eea; }
-        select:focus { outline: 0; border-color: #667eea; }
-        .chart-wrapper { position: relative; height: 350px; }
-    """
-
-    return f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{title}</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <style>{css_styles}</style>
-</head>
-<body>
-    <div class="controls">
-        <label for="country-select">Country:</label>
-        <select id="country-select">{opts}</select>
-    </div>
-    <div class="chart-wrapper">
-        <canvas id="chart"></canvas>
-    </div>
-    <script>
-        const allData = {json.dumps(all_data)};
-        let currentChart = null;
-        {script_content}
-    </script>
-</body>
-</html>"""
-
-
-def gen_html_multi_select(
-    title,
-    subtitle,
-    chart_id,
-    all_data,
-    countries,
-    items,
-    item_label,
-    default_checked,
-    script_content,
-):
-    """Generate standalone HTML page with Chart.js, country dropdown, and multi-select checkboxes"""
-    # Build country options, filtering out excluded countries
-    opts = "\n".join(
-        f'<option value="{c}">{fmt_country(c)}</option>'
-        for c in countries
-        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
-    )
-
-    # Build checkbox items
-    checkboxes = "\n".join(
-        f'<label class="chip"><input type="checkbox" value="{item}"'
-        f'{" checked" if item in default_checked else ""}>'
-        f'{fmt_country(item)}</label>'
-        for item in items
-    )
-
-    # CSS styling for responsive layout with multi-select
-    css_styles = """
+_BASE_CSS = """
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -222,6 +131,45 @@ def gen_html_multi_select(
         }
         select:hover { border-color: #667eea; }
         select:focus { outline: 0; border-color: #667eea; }
+        .chart-wrapper { position: relative; height: 350px; }
+"""
+
+_TOGGLE_CSS = """
+        .toggle-group {
+            display: inline-flex;
+        }
+        .toggle-group label {
+            padding: 4px 12px;
+            border: 1px solid #ddd;
+            font-size: 0.82em;
+            font-weight: 400;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s;
+            margin-left: -1px;
+        }
+        .toggle-group label:first-child {
+            margin-left: 0;
+            border-radius: 16px 0 0 16px;
+        }
+        .toggle-group label:last-child {
+            border-radius: 0 16px 16px 0;
+        }
+        .toggle-group input[type="checkbox"] { display: none; }
+        .toggle-group label:has(input:checked) {
+            background: #667eea;
+            color: #fff;
+            border-color: #667eea;
+            z-index: 1;
+            position: relative;
+        }
+        .toggle-group label:hover:not(:has(input:checked)) {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+"""
+
+_CHIP_CSS = """
         .chip-container {
             display: flex;
             flex-wrap: wrap;
@@ -251,8 +199,179 @@ def gen_html_multi_select(
             color: #fff;
             border-color: #667eea;
         }
-        .chart-wrapper { position: relative; height: 350px; }
-    """
+"""
+
+_COMPUTE_MA_JS = """
+        function computeMA(values, w) {
+            if (w <= 1) return values.slice();
+            var result = [];
+            for (var i = 0; i < values.length; i++) {
+                if (i < w - 1) { result.push(null); continue; }
+                var sum = 0, count = 0;
+                for (var j = i - w + 1; j <= i; j++) {
+                    if (values[j] != null) { sum += values[j]; count++; }
+                }
+                result.push(count > 0 ? sum / count : null);
+            }
+            return result;
+        }
+
+        function getActiveWindows() {
+            return Array.from(document.querySelectorAll('input[name="ma-toggle"]:checked'))
+                   .map(cb => parseInt(cb.value));
+        }
+
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+        }
+
+        function buildMADatasets(rawValues, baseColor, seriesLabel) {
+            const windows = getActiveWindows();
+            const styleMap = {
+                1:  { dash: [5, 5], opacity: 0.35, width: 1.5, suffix: '(Raw)' },
+                3:  { dash: [],     opacity: 1.0,  width: 2.5, suffix: '(3-Mo MA)' },
+                6:  { dash: [],     opacity: 0.55, width: 2,   suffix: '(6-Mo MA)' },
+                12: { dash: [],     opacity: 0.35, width: 2,   suffix: '(12-Mo MA)' }
+            };
+            return windows.map(w => {
+                const s = styleMap[w];
+                return {
+                    label: seriesLabel + ' ' + s.suffix,
+                    data: computeMA(rawValues, w),
+                    borderColor: hexToRgba(baseColor, s.opacity),
+                    borderDash: s.dash,
+                    borderWidth: s.width,
+                    fill: false, tension: 0.1, pointRadius: 0, pointHoverRadius: 5
+                };
+            });
+        }
+"""
+
+_TOGGLE_HTML = """
+    <div class="controls">
+        <label>Smoothing:</label>
+        <div class="toggle-group">
+            <label><input type="checkbox" name="ma-toggle" value="1" checked>Raw</label>
+            <label><input type="checkbox" name="ma-toggle" value="3" checked>3-Mo MA</label>
+            <label><input type="checkbox" name="ma-toggle" value="6">6-Mo MA</label>
+            <label><input type="checkbox" name="ma-toggle" value="12">12-Mo MA</label>
+        </div>
+    </div>
+"""
+
+
+# ---------------------------------------------------------------------------
+# HTML template generators
+# ---------------------------------------------------------------------------
+
+
+def gen_html(title, subtitle, chart_id, all_data, countries, script_content):
+    """Generate standalone HTML page with Chart.js visualization and country dropdown"""
+    opts = "\n".join(
+        f'<option value="{c}">{fmt_country(c)}</option>'
+        for c in countries
+        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
+    )
+
+    css_styles = _BASE_CSS
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>{css_styles}</style>
+</head>
+<body>
+    <div class="controls">
+        <label for="country-select">Country:</label>
+        <select id="country-select">{opts}</select>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="chart"></canvas>
+    </div>
+    <script>
+        const allData = {json.dumps(all_data)};
+        let currentChart = null;
+        {script_content}
+    </script>
+</body>
+</html>"""
+
+
+def gen_html_with_radio(title, subtitle, chart_id, all_data, countries, script_content):
+    """Generate standalone HTML page with Chart.js, country dropdown, and MA radio toggle"""
+    opts = "\n".join(
+        f'<option value="{c}">{fmt_country(c)}</option>'
+        for c in countries
+        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
+    )
+
+    css_styles = _BASE_CSS + _TOGGLE_CSS
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>{css_styles}</style>
+</head>
+<body>
+    <div class="controls">
+        <label for="country-select">Country:</label>
+        <select id="country-select">{opts}</select>
+    </div>
+    {_TOGGLE_HTML}
+    <div class="chart-wrapper">
+        <canvas id="chart"></canvas>
+    </div>
+    <script>
+        const allData = {json.dumps(all_data)};
+        let currentChart = null;
+
+        {_COMPUTE_MA_JS}
+
+        {script_content}
+
+        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
+        document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventListener('change', () => renderChart(document.getElementById('country-select').value)));
+        renderChart(document.getElementById('country-select').value);
+    </script>
+</body>
+</html>"""
+
+
+def gen_html_multi_select(
+    title,
+    subtitle,
+    chart_id,
+    all_data,
+    countries,
+    items,
+    item_label,
+    default_checked,
+    script_content,
+):
+    """Generate standalone HTML page with Chart.js, country dropdown, and multi-select checkboxes"""
+    opts = "\n".join(
+        f'<option value="{c}">{fmt_country(c)}</option>'
+        for c in countries
+        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
+    )
+
+    checkboxes = "\n".join(
+        f'<label class="chip"><input type="checkbox" value="{item}"'
+        f'{" checked" if item in default_checked else ""}>'
+        f'{fmt_country(item)}</label>'
+        for item in items
+    )
+
+    css_styles = _BASE_CSS + _CHIP_CSS
 
     items_json = json.dumps(items)
 
@@ -295,8 +414,244 @@ def gen_html_multi_select(
 </html>"""
 
 
+def gen_html_multi_select_with_radio(
+    title,
+    subtitle,
+    chart_id,
+    all_data,
+    countries,
+    items,
+    item_label,
+    default_checked,
+    script_content,
+):
+    """Generate standalone HTML page with Chart.js, country dropdown, multi-select checkboxes, and MA radio toggle"""
+    opts = "\n".join(
+        f'<option value="{c}">{fmt_country(c)}</option>'
+        for c in countries
+        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
+    )
+
+    checkboxes = "\n".join(
+        f'<label class="chip"><input type="checkbox" value="{item}"'
+        f'{" checked" if item in default_checked else ""}>'
+        f'{fmt_country(item)}</label>'
+        for item in items
+    )
+
+    css_styles = _BASE_CSS + _TOGGLE_CSS + _CHIP_CSS
+
+    items_json = json.dumps(items)
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>{css_styles}</style>
+</head>
+<body>
+    <div class="controls">
+        <label for="country-select">Country:</label>
+        <select id="country-select">{opts}</select>
+    </div>
+    {_TOGGLE_HTML}
+    <div>
+        <label>{item_label}:</label>
+        <div class="chip-container" id="item-select">{checkboxes}</div>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="chart"></canvas>
+    </div>
+    <script>
+        const allData = {json.dumps(all_data)};
+        const allItems = {items_json};
+        let currentChart = null;
+
+        {_COMPUTE_MA_JS}
+
+        function getSelectedItems() {{
+            return Array.from(document.querySelectorAll('#item-select input:checked')).map(cb => cb.value);
+        }}
+
+        {script_content}
+
+        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value, getSelectedItems()));
+        document.getElementById('item-select').addEventListener('change', () => renderChart(document.getElementById('country-select').value, getSelectedItems()));
+        document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventListener('change', () => renderChart(document.getElementById('country-select').value, getSelectedItems())));
+        renderChart(document.getElementById('country-select').value, getSelectedItems());
+    </script>
+</body>
+</html>"""
+
+
+def gen_html_bump_chart(
+    title, subtitle, chart_id, all_data, countries, default_top_n, script_content
+):
+    """Generate standalone HTML page with Chart.js bump chart, country dropdown, Top N input, and date range slider"""
+    opts = "\n".join(
+        f'<option value="{c}">{fmt_country(c)}</option>'
+        for c in countries
+        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
+    )
+
+    css_styles = (
+        _BASE_CSS
+        + """
+        input[type="number"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9em;
+            width: 70px;
+        }
+        input[type="number"]:hover { border-color: #667eea; }
+        input[type="number"]:focus { outline: 0; border-color: #667eea; }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .slider-row label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+            white-space: nowrap;
+        }
+        #range-label {
+            font-size: 0.85em;
+            color: #555;
+            min-width: 140px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        #date-slider {
+            flex: 1;
+            min-width: 200px;
+        }
+        .noUi-connect {
+            background: #667eea !important;
+        }
+        .noUi-handle {
+            border-color: #667eea !important;
+            box-shadow: none !important;
+        }
+        .noUi-tooltip {
+            font-size: 0.75em;
+            padding: 2px 6px;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+        }
+    """
+    )
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <style>{css_styles}</style>
+</head>
+<body>
+    <div class="controls">
+        <label for="country-select">Country:</label>
+        <select id="country-select">{opts}</select>
+        <label for="topn-input">Top N:</label>
+        <input type="number" id="topn-input" value="{default_top_n}" min="1">
+    </div>
+    <div class="slider-row">
+        <label>Date Range:</label>
+        <span id="range-label">&mdash;</span>
+        <div id="date-slider"></div>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="chart"></canvas>
+    </div>
+    <script>
+        const allData = {json.dumps(all_data)};
+        let currentChart = null;
+        let sliderDates = [];
+        let slider = null;
+
+        function getTopN() {{ return parseInt(document.getElementById('topn-input').value) || {default_top_n}; }}
+
+        function formatYM(d) {{
+            const date = new Date(d);
+            return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+        }}
+
+        function getSliderRange() {{
+            if (!slider || !sliderDates.length) return {{ from: '', to: '' }};
+            const vals = slider.get().map(v => Math.round(v));
+            return {{ from: sliderDates[vals[0]], to: sliderDates[vals[1]] }};
+        }}
+
+        function initSlider(country) {{
+            const data = allData[country];
+            if (!data || !data.length) return;
+
+            sliderDates = data.map(r => r.date);
+            const maxIdx = sliderDates.length - 1;
+            const startIdx = Math.max(0, maxIdx - 5);
+
+            const el = document.getElementById('date-slider');
+            if (slider) {{ slider.destroy(); }}
+
+            slider = noUiSlider.create(el, {{
+                start: [startIdx, maxIdx],
+                connect: true,
+                step: 1,
+                range: {{ min: 0, max: maxIdx || 1 }},
+                tooltips: [
+                    {{ to: v => formatYM(sliderDates[Math.round(v)]) }},
+                    {{ to: v => formatYM(sliderDates[Math.round(v)]) }}
+                ]
+            }});
+
+            const rangeLabel = document.getElementById('range-label');
+            function updateLabel() {{
+                const vals = slider.get().map(v => Math.round(v));
+                rangeLabel.textContent = formatYM(sliderDates[vals[0]]) + '  \u2192  ' + formatYM(sliderDates[vals[1]]);
+            }}
+            updateLabel();
+
+            slider.on('update', function() {{
+                updateLabel();
+            }});
+            slider.on('change', function() {{
+                rerender();
+            }});
+        }}
+
+        {script_content}
+
+        function rerender() {{ renderChart(document.getElementById('country-select').value, getTopN()); }}
+        document.getElementById('country-select').addEventListener('change', function(e) {{
+            initSlider(e.target.value);
+            rerender();
+        }});
+        document.getElementById('topn-input').addEventListener('change', rerender);
+        initSlider(document.getElementById('country-select').value);
+        rerender();
+    </script>
+</body>
+</html>"""
+
+
+# ---------------------------------------------------------------------------
+# Plot generators
+# ---------------------------------------------------------------------------
+
+
 def gen_epu_html(countries, data_dir, out):
-    """Generate EPU visualization with raw and 3-month moving average lines"""
+    """Generate EPU visualization with smoothing radio toggle"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {
         c: df_to_json(load_epu_data(c, data_dir))
@@ -306,57 +661,26 @@ def gen_epu_html(countries, data_dir, out):
     if not all_data:
         return
 
-    # JavaScript code for EPU chart rendering
     script = """
-        // Format date from YYYY-MM-DD to YYYY-MM
         function formatDate(d) {
             const date = new Date(d);
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         }
 
-        // Render chart for selected country
         function renderChart(country) {
             const data = allData[country];
             if (!data || !data.length) return;
 
-            // Extract date labels and EPU values
             const labels = data.map(r => formatDate(r.date));
-            const epuWeighted = data.map(r => r.EPU_index);
-            const epuMA3 = data.map(r => r.EPU_index_ma3);
+            const epuRaw = data.map(r => r.EPU_index);
+            const datasets = buildMADatasets(epuRaw, '#1d77b2', 'EPU Index');
 
-            // Get canvas context and destroy previous chart if exists
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
-            // Create new line chart with two datasets
             currentChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'EPU',
-                            data: epuWeighted,
-                            borderColor: '#aacddd',
-                            borderWidth: 1.5,
-                            borderDash: [5, 5],  // Dotted line
-                            fill: false,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        },
-                        {
-                            label: 'EPU (3-Month MA)',
-                            data: epuMA3,
-                            borderColor: '#1d77b2',
-                            borderWidth: 3,
-                            fill: false,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        }
-                    ]
-                },
+                data: { labels: labels, datasets: datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -379,19 +703,13 @@ def gen_epu_html(countries, data_dir, out):
                 }
             });
         }
-
-        // Event listener: re-render chart when country selection changes
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-
-        // Initial chart render with first country
-        renderChart(document.getElementById('country-select').value);
     """
 
     with open(out, "w") as f:
         f.write(
-            gen_html(
+            gen_html_with_radio(
                 "Economic Policy Uncertainty Index",
-                "EPU Weighted and 3-Month Moving Average",
+                "EPU Index with Smoothing Options",
                 "epu-chart",
                 all_data,
                 countries,
@@ -402,7 +720,7 @@ def gen_epu_html(countries, data_dir, out):
 
 
 def gen_epu_topics_html(countries, data_dir, out):
-    """Generate topic-specific EPU visualization with multi-select checkboxes"""
+    """Generate topic-specific EPU visualization with multi-select checkboxes and smoothing radio"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {}
     topics = None
@@ -419,7 +737,6 @@ def gen_epu_topics_html(countries, data_dir, out):
     if not all_data or not topics:
         return
 
-    # 22-color palette for topics
     palette = [
         "#1d77b2",
         "#d95e10",
@@ -447,7 +764,6 @@ def gen_epu_topics_html(countries, data_dir, out):
     palette_json = json.dumps(palette)
     default_checked = ["inflation_prices", "trade", "fiscal_policy"]
 
-    # JavaScript code for topic-based EPU chart rendering
     script = f"""
         const palette = {palette_json};
 
@@ -468,16 +784,9 @@ def gen_epu_topics_html(countries, data_dir, out):
             const datasets = [];
             selectedItems.forEach((topic, i) => {{
                 const colKey = `EPU_${{topic}}_index`;
-                datasets.push({{
-                    label: fmtLabel(topic) + ' EPU',
-                    data: data.map(r => r[colKey]),
-                    borderColor: palette[allItems.indexOf(topic) % palette.length],
-                    borderWidth: 2.5,
-                    fill: false,
-                    tension: 0.1,
-                    pointRadius: 0,
-                    pointHoverRadius: 5
-                }});
+                const rawValues = data.map(r => r[colKey]);
+                const color = palette[allItems.indexOf(topic) % palette.length];
+                datasets.push(...buildMADatasets(rawValues, color, fmtLabel(topic) + ' EPU'));
             }});
 
             const ctx = document.getElementById('chart').getContext('2d');
@@ -504,7 +813,7 @@ def gen_epu_topics_html(countries, data_dir, out):
 
     with open(out, "w") as f:
         f.write(
-            gen_html_multi_select(
+            gen_html_multi_select_with_radio(
                 "Economic Policy Uncertainty by Topic",
                 "Topic-based EPU Analysis",
                 "epu-topics-chart",
@@ -530,28 +839,22 @@ def gen_news_html(countries, data_dir, out):
     if not all_data:
         return
 
-    # JavaScript code for news count chart rendering
     script = """
-        // Format date from YYYY-MM-DD to YYYY-MM
         function formatDate(d) {
             const date = new Date(d);
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         }
 
-        // Render chart for selected country
         function renderChart(country) {
             const data = allData[country];
             if (!data || !data.length) return;
 
-            // Extract date labels and article counts
             const labels = data.map(r => formatDate(r.date));
             const newsCounts = data.map(r => r.news_total);
 
-            // Get canvas context and destroy previous chart if exists
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
-            // Create new line chart with filled area
             currentChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -563,7 +866,7 @@ def gen_news_html(countries, data_dir, out):
                             borderColor: '#2aa8f7',
                             backgroundColor: 'rgba(42, 168, 247, 0.1)',
                             borderWidth: 3,
-                            fill: true,  // Fill area under line
+                            fill: true,
                             tension: 0.1,
                             pointRadius: 0,
                             pointHoverRadius: 5
@@ -593,10 +896,7 @@ def gen_news_html(countries, data_dir, out):
             });
         }
 
-        // Event listener: re-render chart when country selection changes
         document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-
-        // Initial chart render with first country
         renderChart(document.getElementById('country-select').value);
     """
 
@@ -615,7 +915,7 @@ def gen_news_html(countries, data_dir, out):
 
 
 def gen_breadth_html(countries, data_dir, out):
-    """Generate E/P/U breadth index comparison visualization"""
+    """Generate E/P/U breadth index comparison with smoothing radio toggle"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {
         c: df_to_json(load_epu_data(c, data_dir))
@@ -625,64 +925,29 @@ def gen_breadth_html(countries, data_dir, out):
     if not all_data:
         return
 
-    # JavaScript code for breadth chart rendering
     script = """
-        // Format date from YYYY-MM-DD to YYYY-MM
         function formatDate(d) {
             const date = new Date(d);
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         }
 
-        // Render chart for selected country
         function renderChart(country) {
             const data = allData[country];
             if (!data || !data.length) return;
 
-            // Extract date labels
             const labels = data.map(r => formatDate(r.date));
+            const datasets = [
+                ...buildMADatasets(data.map(r => r.E_breadth), '#1d77b2', 'Economic Breadth'),
+                ...buildMADatasets(data.map(r => r.P_breadth), '#d95e10', 'Political Breadth'),
+                ...buildMADatasets(data.map(r => r.U_breadth), '#00a37c', 'Uncertainty Breadth')
+            ];
 
-            // Get canvas context and destroy previous chart if exists
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
-            // Create new line chart with E/P/U breadth datasets
             currentChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Economic Breadth',
-                            data: data.map(r => r.E_breadth),
-                            borderColor: '#1d77b2',
-                            borderWidth: 2.5,
-                            fill: false,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        },
-                        {
-                            label: 'Political Breadth',
-                            data: data.map(r => r.P_breadth),
-                            borderColor: '#d95e10',
-                            borderWidth: 2.5,
-                            fill: false,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        },
-                        {
-                            label: 'Uncertainty Breadth',
-                            data: data.map(r => r.U_breadth),
-                            borderColor: '#00a37c',
-                            borderWidth: 2.5,
-                            fill: false,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        }
-                    ]
-                },
+                data: { labels: labels, datasets: datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -705,17 +970,11 @@ def gen_breadth_html(countries, data_dir, out):
                 }
             });
         }
-
-        // Event listener: re-render chart when country selection changes
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-
-        // Initial chart render with first country
-        renderChart(document.getElementById('country-select').value);
     """
 
     with open(out, "w") as f:
         f.write(
-            gen_html(
+            gen_html_with_radio(
                 "EPU Breadth Index",
                 "Economic, Political, and Uncertainty Breadth",
                 "breadth-chart",
@@ -728,7 +987,7 @@ def gen_breadth_html(countries, data_dir, out):
 
 
 def gen_intensity_html(countries, data_dir, out):
-    """Generate E/P/U intensity index comparison visualization"""
+    """Generate E/P/U intensity index comparison with smoothing radio toggle"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {
         c: df_to_json(load_epu_data(c, data_dir))
@@ -738,64 +997,29 @@ def gen_intensity_html(countries, data_dir, out):
     if not all_data:
         return
 
-    # JavaScript code for intensity chart rendering
     script = """
-        // Format date from YYYY-MM-DD to YYYY-MM
         function formatDate(d) {
             const date = new Date(d);
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         }
 
-        // Render chart for selected country
         function renderChart(country) {
             const data = allData[country];
             if (!data || !data.length) return;
 
-            // Extract date labels
             const labels = data.map(r => formatDate(r.date));
+            const datasets = [
+                ...buildMADatasets(data.map(r => r.E_intensity), '#1d77b2', 'Economic Intensity'),
+                ...buildMADatasets(data.map(r => r.P_intensity), '#d95e10', 'Political Intensity'),
+                ...buildMADatasets(data.map(r => r.U_intensity), '#00a37c', 'Uncertainty Intensity')
+            ];
 
-            // Get canvas context and destroy previous chart if exists
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
-            // Create new line chart with E/P/U intensity datasets
             currentChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Economic Intensity',
-                            data: data.map(r => r.E_intensity),
-                            borderColor: '#1d77b2',
-                            borderWidth: 2.5,
-                            fill: false,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        },
-                        {
-                            label: 'Political Intensity',
-                            data: data.map(r => r.P_intensity),
-                            borderColor: '#d95e10',
-                            borderWidth: 2.5,
-                            fill: false,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        },
-                        {
-                            label: 'Uncertainty Intensity',
-                            data: data.map(r => r.U_intensity),
-                            borderColor: '#00a37c',
-                            borderWidth: 2.5,
-                            fill: false,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        }
-                    ]
-                },
+                data: { labels: labels, datasets: datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -818,17 +1042,11 @@ def gen_intensity_html(countries, data_dir, out):
                 }
             });
         }
-
-        // Event listener: re-render chart when country selection changes
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-
-        // Initial chart render with first country
-        renderChart(document.getElementById('country-select').value);
     """
 
     with open(out, "w") as f:
         f.write(
-            gen_html(
+            gen_html_with_radio(
                 "EPU Intensity Index",
                 "Economic, Political, and Uncertainty Intensity",
                 "intensity-chart",
@@ -841,7 +1059,7 @@ def gen_intensity_html(countries, data_dir, out):
 
 
 def gen_pairwise_html(countries, data_dir, out):
-    """Generate EU/PU/EP pairwise interaction index visualization"""
+    """Generate EU/PU/EP pairwise interaction index with smoothing radio toggle"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {
         c: df_to_json(load_epu_data(c, data_dir))
@@ -851,64 +1069,29 @@ def gen_pairwise_html(countries, data_dir, out):
     if not all_data:
         return
 
-    # JavaScript code for pairwise chart rendering
     script = """
-        // Format date from YYYY-MM-DD to YYYY-MM
         function formatDate(d) {
             const date = new Date(d);
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         }
 
-        // Render chart for selected country
         function renderChart(country) {
             const data = allData[country];
             if (!data || !data.length) return;
 
-            // Extract date labels
             const labels = data.map(r => formatDate(r.date));
+            const datasets = [
+                ...buildMADatasets(data.map(r => r.EU_index), '#1d77b2', 'Economic-Uncertainty (EU)'),
+                ...buildMADatasets(data.map(r => r.PU_index), '#d95e10', 'Policy-Uncertainty (PU)'),
+                ...buildMADatasets(data.map(r => r.EP_index), '#00a37c', 'Economic-Policy (EP)')
+            ];
 
-            // Get canvas context and destroy previous chart if exists
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
-            // Create new line chart with pairwise datasets
             currentChart = new Chart(ctx, {
                 type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Economic-Uncertainty (EU)',
-                            data: data.map(r => r.EU_index),
-                            borderColor: '#1d77b2',
-                            borderWidth: 2.5,
-                            fill: false,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        },
-                        {
-                            label: 'Policy-Uncertainty (PU)',
-                            data: data.map(r => r.PU_index),
-                            borderColor: '#d95e10',
-                            borderWidth: 2.5,
-                            fill: false,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        },
-                        {
-                            label: 'Economic-Policy (EP)',
-                            data: data.map(r => r.EP_index),
-                            borderColor: '#00a37c',
-                            borderWidth: 2.5,
-                            fill: false,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        }
-                    ]
-                },
+                data: { labels: labels, datasets: datasets },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -931,17 +1114,11 @@ def gen_pairwise_html(countries, data_dir, out):
                 }
             });
         }
-
-        // Event listener: re-render chart when country selection changes
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-
-        // Initial chart render with first country
-        renderChart(document.getElementById('country-select').value);
     """
 
     with open(out, "w") as f:
         f.write(
-            gen_html(
+            gen_html_with_radio(
                 "Pairwise Interaction Indices",
                 "EU, PU, and EP Pairwise Indices",
                 "pairwise-chart",
@@ -954,26 +1131,16 @@ def gen_pairwise_html(countries, data_dir, out):
 
 
 def gen_topic_attribution_html(countries, data_dir, out):
-    """Generate uncertainty attribution by topic with multi-select checkboxes"""
+    """Generate uncertainty attribution by topic as a bump chart ranked by framing values"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {}
-    topics = None
     for c in countries:
         df = load_attribution_data(c, data_dir, "topics")
         if df is not None:
             all_data[c] = df_to_json(df)
-            if topics is None:
-                topics = sorted(
-                    set(
-                        col.replace("_absolute", "").replace("_framing", "")
-                        for col in df.columns
-                        if col.endswith("_absolute") or col.endswith("_framing")
-                    )
-                )
-    if not all_data or not topics:
+    if not all_data:
         return
 
-    # 22-color palette for topics
     palette = [
         "#1d77b2",
         "#d95e10",
@@ -999,9 +1166,7 @@ def gen_topic_attribution_html(countries, data_dir, out):
         "#98df8a",
     ]
     palette_json = json.dumps(palette)
-    default_checked = ["economic_growth"]
 
-    # JavaScript code for topic attribution chart rendering
     script = f"""
         const palette = {palette_json};
 
@@ -1014,36 +1179,52 @@ def gen_topic_attribution_html(countries, data_dir, out):
             return `${{date.getFullYear()}}-${{String(date.getMonth() + 1).padStart(2, '0')}}`;
         }}
 
-        function renderChart(country, selectedItems) {{
-            const data = allData[country];
-            if (!data || !data.length) return;
+        function renderChart(country, topN) {{
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
 
-            const labels = data.map(r => formatDate(r.date));
-            const datasets = [];
-            selectedItems.forEach((topic) => {{
-                const color = palette[allItems.indexOf(topic) % palette.length];
-                datasets.push({{
-                    label: fmtLabel(topic) + ' (Absolute)',
-                    data: data.map(r => r[topic + '_absolute']),
-                    borderColor: color,
-                    borderWidth: 2.5,
-                    fill: false,
-                    tension: 0.1,
-                    pointRadius: 0,
-                    pointHoverRadius: 5
-                }});
-                datasets.push({{
-                    label: fmtLabel(topic) + ' (Framing)',
-                    data: data.map(r => r[topic + '_framing']),
-                    borderColor: color,
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    fill: false,
-                    tension: 0.1,
-                    pointRadius: 0,
-                    pointHoverRadius: 5
-                }});
+            // Filter by date range using slider
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
+
+            // Discover all _framing columns
+            const framingKeys = Object.keys(data[0]).filter(k => k.endsWith('_framing'));
+            const items = framingKeys.map(k => k.replace('_framing', ''));
+
+            // Clamp topN
+            topN = Math.max(1, Math.min(topN, items.length));
+
+            // Rank items per month by framing value (descending: highest = rank 1)
+            const ranks = data.map(row => {{
+                const vals = items.map(item => ({{ item: item, value: row[item + '_framing'] || 0 }}));
+                vals.sort((a, b) => b.value - a.value);
+                const monthRanks = {{}};
+                vals.forEach((v, i) => {{ monthRanks[v.item] = i + 1; }});
+                return monthRanks;
             }});
+
+            // Select N items with the lowest average rank across the filtered range
+            const avgRanks = items.map(item => {{
+                const sum = ranks.reduce((s, mr) => s + mr[item], 0);
+                return {{ item: item, avg: sum / ranks.length }};
+            }});
+            avgRanks.sort((a, b) => a.avg - b.avg);
+            const visible = avgRanks.slice(0, topN).map(v => v.item).sort();
+            const labels = data.map(r => formatDate(r.date));
+            const datasets = visible.map((item, i) => ({{
+                label: fmtLabel(item),
+                data: ranks.map(mr => mr[item]),
+                borderColor: palette[i % palette.length],
+                borderWidth: 2.5,
+                fill: false,
+                tension: 0.1,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                _itemKey: item
+            }}));
 
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
@@ -1055,12 +1236,33 @@ def gen_topic_attribution_html(countries, data_dir, out):
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {{
-                        legend: {{ position: 'top', labels: {{ usePointStyle: true, padding: 15 }} }},
-                        tooltip: {{ mode: 'index', intersect: false, backgroundColor: 'rgba(0,0,0,0.8)', padding: 12 }}
+                        legend: {{
+                            position: 'top',
+                            labels: {{ usePointStyle: true, padding: 10, font: {{ size: 11 }} }}
+                        }},
+                        tooltip: {{
+                            mode: 'nearest',
+                            intersect: false,
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 12,
+                            callbacks: {{
+                                label: function(context) {{
+                                    const itemKey = context.dataset._itemKey;
+                                    const rank = context.raw;
+                                    const framingVal = data[context.dataIndex][itemKey + '_framing'];
+                                    return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (framingVal != null ? framingVal.toFixed(3) : 'N/A') + ')';
+                                }}
+                            }}
+                        }}
                     }},
                     scales: {{
                         x: {{ display: true, title: {{ display: true, text: 'Date' }} }},
-                        y: {{ display: true, title: {{ display: true, text: 'Attribution Index' }} }}
+                        y: {{
+                            display: true,
+                            title: {{ display: true, text: 'Rank' }},
+                            reverse: true,
+                            ticks: {{ stepSize: 1 }}
+                        }}
                     }}
                 }}
             }});
@@ -1069,15 +1271,13 @@ def gen_topic_attribution_html(countries, data_dir, out):
 
     with open(out, "w") as f:
         f.write(
-            gen_html_multi_select(
-                "Uncertainty Attribution by Topic",
-                "Absolute and Framing Attribution per Topic",
+            gen_html_bump_chart(
+                "Uncertainty Attribution by Topic (Ranked)",
+                "Topic Ranking by Framing Attribution",
                 "topic-attr-chart",
                 all_data,
                 countries,
-                topics,
-                "Topics",
-                default_checked,
+                10,
                 script,
             )
         )
@@ -1085,26 +1285,16 @@ def gen_topic_attribution_html(countries, data_dir, out):
 
 
 def gen_actor_attribution_html(countries, data_dir, out):
-    """Generate uncertainty attribution by actor with multi-select checkboxes"""
+    """Generate uncertainty attribution by actor as a bump chart ranked by framing values"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {}
-    actors = None
     for c in countries:
         df = load_attribution_data(c, data_dir, "actors")
         if df is not None:
             all_data[c] = df_to_json(df)
-            if actors is None:
-                actors = sorted(
-                    set(
-                        col.replace("_absolute", "").replace("_framing", "")
-                        for col in df.columns
-                        if col.endswith("_absolute") or col.endswith("_framing")
-                    )
-                )
-    if not all_data or not actors:
+    if not all_data:
         return
 
-    # 17-color palette for actors
     palette = [
         "#1d77b2",
         "#d95e10",
@@ -1125,9 +1315,7 @@ def gen_actor_attribution_html(countries, data_dir, out):
         "#2ca02c",
     ]
     palette_json = json.dumps(palette)
-    default_checked = ["government"]
 
-    # JavaScript code for actor attribution chart rendering
     script = f"""
         const palette = {palette_json};
 
@@ -1140,36 +1328,52 @@ def gen_actor_attribution_html(countries, data_dir, out):
             return `${{date.getFullYear()}}-${{String(date.getMonth() + 1).padStart(2, '0')}}`;
         }}
 
-        function renderChart(country, selectedItems) {{
-            const data = allData[country];
-            if (!data || !data.length) return;
+        function renderChart(country, topN) {{
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
 
-            const labels = data.map(r => formatDate(r.date));
-            const datasets = [];
-            selectedItems.forEach((actor) => {{
-                const color = palette[allItems.indexOf(actor) % palette.length];
-                datasets.push({{
-                    label: fmtLabel(actor) + ' (Absolute)',
-                    data: data.map(r => r[actor + '_absolute']),
-                    borderColor: color,
-                    borderWidth: 2.5,
-                    fill: false,
-                    tension: 0.1,
-                    pointRadius: 0,
-                    pointHoverRadius: 5
-                }});
-                datasets.push({{
-                    label: fmtLabel(actor) + ' (Framing)',
-                    data: data.map(r => r[actor + '_framing']),
-                    borderColor: color,
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    fill: false,
-                    tension: 0.1,
-                    pointRadius: 0,
-                    pointHoverRadius: 5
-                }});
+            // Filter by date range using slider
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
+
+            // Discover all _framing columns
+            const framingKeys = Object.keys(data[0]).filter(k => k.endsWith('_framing'));
+            const items = framingKeys.map(k => k.replace('_framing', ''));
+
+            // Clamp topN
+            topN = Math.max(1, Math.min(topN, items.length));
+
+            // Rank items per month by framing value (descending: highest = rank 1)
+            const ranks = data.map(row => {{
+                const vals = items.map(item => ({{ item: item, value: row[item + '_framing'] || 0 }}));
+                vals.sort((a, b) => b.value - a.value);
+                const monthRanks = {{}};
+                vals.forEach((v, i) => {{ monthRanks[v.item] = i + 1; }});
+                return monthRanks;
             }});
+
+            // Select N items with the lowest average rank across the filtered range
+            const avgRanks = items.map(item => {{
+                const sum = ranks.reduce((s, mr) => s + mr[item], 0);
+                return {{ item: item, avg: sum / ranks.length }};
+            }});
+            avgRanks.sort((a, b) => a.avg - b.avg);
+            const visible = avgRanks.slice(0, topN).map(v => v.item).sort();
+            const labels = data.map(r => formatDate(r.date));
+            const datasets = visible.map((item, i) => ({{
+                label: fmtLabel(item),
+                data: ranks.map(mr => mr[item]),
+                borderColor: palette[i % palette.length],
+                borderWidth: 2.5,
+                fill: false,
+                tension: 0.1,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                _itemKey: item
+            }}));
 
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
@@ -1181,12 +1385,33 @@ def gen_actor_attribution_html(countries, data_dir, out):
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {{
-                        legend: {{ position: 'top', labels: {{ usePointStyle: true, padding: 15 }} }},
-                        tooltip: {{ mode: 'index', intersect: false, backgroundColor: 'rgba(0,0,0,0.8)', padding: 12 }}
+                        legend: {{
+                            position: 'top',
+                            labels: {{ usePointStyle: true, padding: 10, font: {{ size: 11 }} }}
+                        }},
+                        tooltip: {{
+                            mode: 'nearest',
+                            intersect: false,
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            padding: 12,
+                            callbacks: {{
+                                label: function(context) {{
+                                    const itemKey = context.dataset._itemKey;
+                                    const rank = context.raw;
+                                    const framingVal = data[context.dataIndex][itemKey + '_framing'];
+                                    return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (framingVal != null ? framingVal.toFixed(3) : 'N/A') + ')';
+                                }}
+                            }}
+                        }}
                     }},
                     scales: {{
                         x: {{ display: true, title: {{ display: true, text: 'Date' }} }},
-                        y: {{ display: true, title: {{ display: true, text: 'Attribution Index' }} }}
+                        y: {{
+                            display: true,
+                            title: {{ display: true, text: 'Rank' }},
+                            reverse: true,
+                            ticks: {{ stepSize: 1 }}
+                        }}
                     }}
                 }}
             }});
@@ -1195,15 +1420,13 @@ def gen_actor_attribution_html(countries, data_dir, out):
 
     with open(out, "w") as f:
         f.write(
-            gen_html_multi_select(
-                "Uncertainty Attribution by Actor",
-                "Absolute and Framing Attribution per Actor",
+            gen_html_bump_chart(
+                "Uncertainty Attribution by Actor (Ranked)",
+                "Actor Ranking by Framing Attribution",
                 "actor-attr-chart",
                 all_data,
                 countries,
-                actors,
-                "Actors",
-                default_checked,
+                10,
                 script,
             )
         )
@@ -1221,29 +1444,23 @@ def gen_pred_html(countries, data_dir, out):
     if not all_data:
         return
 
-    # JavaScript code for inflation prediction chart rendering
     script = """
-        // Format date from YYYY-MM-DD to YYYY-MM
         function formatDate(d) {
             const date = new Date(d);
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         }
 
-        // Render chart for selected country
         function renderChart(country) {
             const data = allData[country];
             if (!data || !data.length) return;
 
-            // Extract date labels and inflation values
             const labels = data.map(r => formatDate(r.date));
             const predictedInflation = data.map(r => r.predicted_inflation);
             const actualInflation = data.map(r => r.actual_inflation);
 
-            // Get canvas context and destroy previous chart if exists
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
-            // Create new line chart comparing predicted vs actual inflation
             currentChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1252,7 +1469,7 @@ def gen_pred_html(countries, data_dir, out):
                         {
                             label: 'Predicted Inflation',
                             data: predictedInflation,
-                            borderColor: '#ff9a00',  // Orange
+                            borderColor: '#ff9a00',
                             borderWidth: 3,
                             fill: false,
                             tension: 0.1,
@@ -1262,7 +1479,7 @@ def gen_pred_html(countries, data_dir, out):
                         {
                             label: 'Actual Inflation',
                             data: actualInflation,
-                            borderColor: '#43a5e3',  // Blue
+                            borderColor: '#43a5e3',
                             borderWidth: 3,
                             fill: false,
                             tension: 0.1,
@@ -1294,10 +1511,7 @@ def gen_pred_html(countries, data_dir, out):
             });
         }
 
-        // Event listener: re-render chart when country selection changes
         document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-
-        // Initial chart render with first country
         renderChart(document.getElementById('country-select').value);
     """
 
@@ -1326,29 +1540,23 @@ def gen_oob_pred_html(countries, data_dir, out):
     if not all_data:
         return
 
-    # JavaScript code for out-of-bag inflation prediction chart rendering
     script = """
-        // Format date from YYYY-MM-DD to YYYY-MM
         function formatDate(d) {
             const date = new Date(d);
             return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
         }
 
-        // Render chart for selected country
         function renderChart(country) {
             const data = allData[country];
             if (!data || !data.length) return;
 
-            // Extract date labels and inflation values
             const labels = data.map(r => formatDate(r.date));
             const predictedInflation = data.map(r => r.predicted_inflation);
             const actualInflation = data.map(r => r.actual_inflation);
 
-            // Get canvas context and destroy previous chart if exists
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
 
-            // Create new line chart comparing predicted vs actual inflation
             currentChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1357,7 +1565,7 @@ def gen_oob_pred_html(countries, data_dir, out):
                         {
                             label: 'Predicted Inflation (OOB)',
                             data: predictedInflation,
-                            borderColor: '#ff6b6b',  // Red
+                            borderColor: '#ff6b6b',
                             borderWidth: 3,
                             fill: false,
                             tension: 0.1,
@@ -1367,7 +1575,7 @@ def gen_oob_pred_html(countries, data_dir, out):
                         {
                             label: 'Actual Inflation',
                             data: actualInflation,
-                            borderColor: '#43a5e3',  // Blue
+                            borderColor: '#43a5e3',
                             borderWidth: 3,
                             fill: false,
                             tension: 0.1,
@@ -1399,10 +1607,7 @@ def gen_oob_pred_html(countries, data_dir, out):
             });
         }
 
-        // Event listener: re-render chart when country selection changes
         document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-
-        // Initial chart render with first country
         renderChart(document.getElementById('country-select').value);
     """
 
