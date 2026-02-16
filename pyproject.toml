@@ -47,6 +47,7 @@ scraping = [
     "scrapy-playwright (>=0.0.45,<0.0.46)",
     "pyahocorasick (>=2.3.0,<3.0.0)",
     "googletrans (>=4.0.2,<5.0.0)",
+    "forex-python (>=1.9.2,<2.0.0)",
 ]
 docs = [
     "docutils (==0.17.1)",
