@@ -210,6 +210,20 @@ def get_spider_country(spider_name: str) -> str:
         "tiki": "vietnam",
         "rakuten": "japan",
         "yahoo_shopping": "japan",
+        # New spiders
+        "jianke": "china",
+        "pharmacy_111": "china",
+        "mannings": "hong_kong",
+        "citypharm": "mongolia",
+        "cosmed": "taiwan",
+        "k24klik": "indonesia",
+        "guardian_my": "malaysia",
+        "doctor_oncall": "malaysia",
+        "south_star_drug": "philippines",
+        "guardian_sg": "singapore",
+        "fairprice": "singapore",
+        "boots_th": "thailand",
+        "exta": "thailand",
     }
     return spider_countries.get(spider_name, "unknown")
 

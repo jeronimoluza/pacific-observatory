@@ -241,6 +241,210 @@ SPIDER_SELECTORS = {
             "div[data-view-id='pdp_details_view']::attr(data-id)",
         ],
     },
+    # --- China ---
+    "jianke": {
+        "product_name": [
+            "div.product-name h1::text",
+            "h1::text",
+            "meta[name='Keywords']::attr(content)",
+        ],
+        "price": [
+            "dl.bigPrice em::text",
+            "dl.assort em::text",
+            "span.price::text",
+        ],
+        "category": [
+            "div.crumb_p a::text",
+            "div.wid980.crumb_p a::text",
+        ],
+    },
+    "pharmacy_111": {
+        "product_name": [
+            ".productName::text",
+            "p.pro_name::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span.price::text",
+            "div.pro_price span.price::text",
+            "em.price::text",
+        ],
+        "category": [
+            "div.breadcrumb a::text",
+            "ol.breadcrumb li a::text",
+        ],
+    },
+    # --- Hong Kong ---
+    "mannings": {
+        "product_name": [
+            "h1.product-name::text",
+            "meta[property='og:title']::attr(content)",
+            "div.product-info h1::text",
+        ],
+        "price": [
+            "span.product-price::text",
+            "span[class*='price']::text",
+            "meta[property='product:price:amount']::attr(content)",
+        ],
+        "category": [
+            "ol.breadcrumb li a::text",
+            "div.breadcrumb a::text",
+            "nav.breadcrumb a::text",
+        ],
+    },
+    # --- Mongolia ---
+    "citypharm": {
+        "product_name": [
+            "h1[itemprop='name']::text",
+            "h1.te_product_name::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span[itemprop='price']::text",
+            "span.oe_price::text",
+            "h4.oe_price_h4 span::text",
+        ],
+        "category": [
+            "ol.breadcrumb li a::text",
+            "div.breadcrumb a::text",
+        ],
+    },
+    # --- Taiwan ---
+    "cosmed": {
+        "product_name": [
+            "h1.product-name::text",
+            "h1.product-title::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span.product-price::text",
+            "span.price::text",
+            "meta[property='product:price:amount']::attr(content)",
+        ],
+        "category": [
+            "ol.breadcrumb li a::text",
+            "div.breadcrumb a::text",
+        ],
+    },
+    # --- Indonesia ---
+    "k24klik": {
+        "product_name": [
+            "h1.product-name::text",
+            "h1.product-title::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span.product-price::text",
+            "span.price::text",
+            "div.price::text",
+        ],
+        "category": [
+            "ol.breadcrumb li a::text",
+            "div.breadcrumb a::text",
+        ],
+    },
+    # --- Malaysia ---
+    "guardian_my": {
+        "product_name": [
+            "h1.product-name::text",
+            "meta[property='og:title']::attr(content)",
+            "div.product-info h1::text",
+        ],
+        "price": [
+            "span.product-price::text",
+            "span[class*='price']::text",
+            "meta[property='product:price:amount']::attr(content)",
+        ],
+        "category": [
+            "ol.breadcrumb li a::text",
+            "div.breadcrumb a::text",
+        ],
+    },
+    "doctor_oncall": {
+        "product_name": [
+            "h1.product-name::text",
+            "h1.product-title::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span.product-price::text",
+            "span.price::text",
+            "div.price::text",
+        ],
+        "category": [
+            "ol.breadcrumb li a::text",
+            "div.breadcrumb a::text",
+        ],
+    },
+    # --- Philippines ---
+    "south_star_drug": {
+        "product_name": [
+            "h1.product__title::text",
+            "h1.product-single__title::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span.price-item.price-item--regular::text",
+            "span.price-item.price-item--sale::text",
+            "span.price-item::text",
+            "meta[property='og:price:amount']::attr(content)",
+        ],
+        "category": [
+            "nav.breadcrumbs a::text",
+            "div.breadcrumb a::text",
+            "ol.breadcrumb li a::text",
+        ],
+    },
+    # --- Singapore ---
+    "guardian_sg": {
+        "product_name": [
+            "h1.product-name::text",
+            "meta[property='og:title']::attr(content)",
+            "div.product-info h1::text",
+        ],
+        "price": [
+            "span.product-price::text",
+            "span[class*='price']::text",
+            "meta[property='product:price:amount']::attr(content)",
+        ],
+        "category": [
+            "ol.breadcrumb li a::text",
+            "div.breadcrumb a::text",
+        ],
+    },
+    # --- Thailand ---
+    "boots_th": {
+        "product_name": [
+            "h1.product-name::text",
+            "meta[property='og:title']::attr(content)",
+            "div.product-info h1::text",
+        ],
+        "price": [
+            "span.product-price::text",
+            "span[class*='price']::text",
+            "meta[property='product:price:amount']::attr(content)",
+        ],
+        "category": [
+            "ol.breadcrumb li a::text",
+            "div.breadcrumb a::text",
+        ],
+    },
+    "exta": {
+        "product_name": [
+            "h1.product_title::text",
+            "h1::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "p.price span.woocommerce-Price-amount bdi::text",
+            "span.woocommerce-Price-amount bdi::text",
+            "p.price::text",
+        ],
+        "category": [
+            "nav.woocommerce-breadcrumb a::text",
+            "div.breadcrumb a::text",
+        ],
+    },
 }
 
 
