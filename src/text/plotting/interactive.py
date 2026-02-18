@@ -938,7 +938,7 @@ def gen_breadth_html(countries, data_dir, out):
             const labels = data.map(r => formatDate(r.date));
             const datasets = [
                 ...buildMADatasets(data.map(r => r.E_breadth), '#1d77b2', 'Economic Breadth'),
-                ...buildMADatasets(data.map(r => r.P_breadth), '#d95e10', 'Political Breadth'),
+                ...buildMADatasets(data.map(r => r.P_breadth), '#d95e10', 'Policy Breadth'),
                 ...buildMADatasets(data.map(r => r.U_breadth), '#00a37c', 'Uncertainty Breadth')
             ];
 
@@ -976,7 +976,7 @@ def gen_breadth_html(countries, data_dir, out):
         f.write(
             gen_html_with_radio(
                 "EPU Breadth Index",
-                "Economic, Political, and Uncertainty Breadth",
+                "Economic, Policy, and Uncertainty Breadth",
                 "breadth-chart",
                 all_data,
                 countries,
@@ -1010,7 +1010,7 @@ def gen_intensity_html(countries, data_dir, out):
             const labels = data.map(r => formatDate(r.date));
             const datasets = [
                 ...buildMADatasets(data.map(r => r.E_intensity), '#1d77b2', 'Economic Intensity'),
-                ...buildMADatasets(data.map(r => r.P_intensity), '#d95e10', 'Political Intensity'),
+                ...buildMADatasets(data.map(r => r.P_intensity), '#d95e10', 'Policy Intensity'),
                 ...buildMADatasets(data.map(r => r.U_intensity), '#00a37c', 'Uncertainty Intensity')
             ];
 
@@ -1048,7 +1048,7 @@ def gen_intensity_html(countries, data_dir, out):
         f.write(
             gen_html_with_radio(
                 "EPU Intensity Index",
-                "Economic, Political, and Uncertainty Intensity",
+                "Economic, Policy, and Uncertainty Intensity",
                 "intensity-chart",
                 all_data,
                 countries,

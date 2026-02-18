@@ -531,7 +531,7 @@
       849 +                ...buildMADatasets(data.map(r => r.E_breadth),
           + '#1d77b2', 'Economic Breadth'),
       850 +                ...buildMADatasets(data.map(r => r.P_breadth),
-          + '#d95e10', 'Political Breadth'),
+          + '#d95e10', 'Policy Breadth'),
       851 +                ...buildMADatasets(data.map(r => r.U_breadth),
           + '#00a37c', 'Uncertainty Breadth')
       852 +            ];
@@ -558,7 +558,7 @@
       867 -                            pointHoverRadius: 5
       868 -                        },
       869 -                        {
-      870 -                            label: 'Political Breadth' + suffi
+      870 -                            label: 'Policy Breadth' + suffi
           -x,
       871 -                            data: computeMA(data.map(r => r.P_
           -breadth), w),
