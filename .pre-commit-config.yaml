@@ -22,7 +22,8 @@ repos:
       - id: check-yaml
         args: [--unsafe]  # Allow custom tags in YAML configs
       - id: check-added-large-files
-        args: [--maxkb=4000]
+        args: [--maxkb=2000]
+        exclude: ^docs/images/interactive/text
       - id: check-ast
       - id: check-json
       - id: check-merge-conflict

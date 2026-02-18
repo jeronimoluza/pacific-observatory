@@ -12,6 +12,7 @@ parts:
   - caption: Text
     chapters:
       - file: text/text_intro
+      - file: text/extension
       - url: https://worldbank.github.io/pacific-observatory/interactive/text/text_presentation.slides
         title: Text Presentation
   - caption: Consumer Price Index (CPI)

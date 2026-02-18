@@ -179,7 +179,7 @@
             const labels = data.map(r => formatDate(r.date));
             const datasets = [
                 ...buildMADatasets(data.map(r => r.E_intensity), '#1d77b2', 'Economic Intensity'),
-                ...buildMADatasets(data.map(r => r.P_intensity), '#d95e10', 'Political Intensity'),
+                ...buildMADatasets(data.map(r => r.P_intensity), '#d95e10', 'Policy Intensity'),
                 ...buildMADatasets(data.map(r => r.U_intensity), '#00a37c', 'Uncertainty Intensity')
             ];
 
