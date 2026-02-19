@@ -117,7 +117,7 @@ frameborder="0" marginwidth="0" marginheight="0" width="950" height="500"></ifra
 
 ### Topic-based EPU
 
-The EPU index can also be computed for news sources related to specific policy topics. To qualify, articles need to contain at least one keyword in each of the four criteria, namely (1) Economy, (2) Uncertainty, (3) Policy, and (4) Policy Topic - a list of terms for a specific theme (labor, inflation, climate, food security). Because the sample of articles that meet this refined criteria decreases, a topic-based EPU is constructed at the quarterly time frequency. The graphs below display quarterly EPU for jobs and inflation.
+The EPU index can also be computed for news sources related to specific policy topics. To qualify, articles need to contain at least one keyword in each of the four criteria, namely (1) Economy, (2) Uncertainty, (3) Policy, and (4) Policy Topic - a list of terms for a specific theme (labor, inflation, climate, food security). Because the sample of articles that meet this refined criteria decreases, a topic-based EPU is constructed at the quarterly time frequency.
 
 <div style="display:flex;justify-content:flex-start;width:950px;margin-bottom:4px;">
   <a href="../interactive/text/epu_topics_pic.html" target="_blank" style="font-size:0.8em;padding:3px 10px;border:1px solid #667eea;border-radius:4px;color:#667eea;text-decoration:none;">&#x2197; Open in new tab</a>
