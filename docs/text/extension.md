@@ -52,9 +52,12 @@ $$
 
 Share of all articles that contain at least one Uncertainty keyword. Measures the **breadth of uncertainty coverage** in the news agenda.
 
+<div style="display:flex;justify-content:flex-start;width:950px;margin-bottom:4px;">
+  <a href="../interactive/text/breadth_pic.html" target="_blank" style="font-size:0.8em;padding:3px 10px;border:1px solid #667eea;border-radius:4px;color:#667eea;text-decoration:none;">&#x2197; Open in new tab</a>
+</div>
 <div>
 <iframe src="../interactive/text/breadth_pic.html"
-frameborder="0" marginwidth="0" marginheight="0" width="800" height="500"></iframe>
+frameborder="0" marginwidth="0" marginheight="0" width="950" height="500"></iframe>
 </div>
 
 ---
@@ -94,9 +97,12 @@ $$
 
 Average number of Uncertainty keywords per Uncertainty article. Measures the **depth of uncertainty language**, conditional on uncertainty coverage.
 
+<div style="display:flex;justify-content:flex-start;width:950px;margin-bottom:4px;">
+  <a href="../interactive/text/intensity_pic.html" target="_blank" style="font-size:0.8em;padding:3px 10px;border:1px solid #667eea;border-radius:4px;color:#667eea;text-decoration:none;">&#x2197; Open in new tab</a>
+</div>
 <div>
 <iframe src="../interactive/text/intensity_pic.html"
-frameborder="0" marginwidth="0" marginheight="0" width="800" height="500"></iframe>
+frameborder="0" marginwidth="0" marginheight="0" width="950" height="500"></iframe>
 </div>
 
 ---
@@ -135,9 +141,12 @@ $$
 
 Captures **joint economic-policy coverage**—articles discussing both economic and policy topics, regardless of uncertainty.
 
+<div style="display:flex;justify-content:flex-start;width:950px;margin-bottom:4px;">
+  <a href="../interactive/text/pairwise_pic.html" target="_blank" style="font-size:0.8em;padding:3px 10px;border:1px solid #667eea;border-radius:4px;color:#667eea;text-decoration:none;">&#x2197; Open in new tab</a>
+</div>
 <div>
 <iframe src="../interactive/text/pairwise_pic.html"
-frameborder="0" marginwidth="0" marginheight="0" width="800" height="500"></iframe>
+frameborder="0" marginwidth="0" marginheight="0" width="950" height="500"></iframe>
 </div>
 
 ---
@@ -168,9 +177,12 @@ $$
 
 Among all uncertainty-related articles, the fraction attributable to topic $g$. This is a **composition measure**, indicating how uncertainty is being framed across different themes.
 
+<div style="display:flex;justify-content:flex-start;width:950px;margin-bottom:4px;">
+  <a href="../interactive/text/topic_attribution_pic.html" target="_blank" style="font-size:0.8em;padding:3px 10px;border:1px solid #667eea;border-radius:4px;color:#667eea;text-decoration:none;">&#x2197; Open in new tab</a>
+</div>
 <div>
 <iframe src="../interactive/text/topic_attribution_pic.html"
-frameborder="0" marginwidth="0" marginheight="0" width="800" height="750"></iframe>
+frameborder="0" marginwidth="0" marginheight="0" width="950" height="475"></iframe>
 </div>
 
 ### Actor-Conditioned Uncertainty
@@ -193,9 +205,12 @@ $$
 
 Among all uncertainty-related articles, the fraction attributable to a specific actor.
 
+<div style="display:flex;justify-content:flex-start;width:950px;margin-bottom:4px;">
+  <a href="../interactive/text/actor_attribution_pic.html" target="_blank" style="font-size:0.8em;padding:3px 10px;border:1px solid #667eea;border-radius:4px;color:#667eea;text-decoration:none;">&#x2197; Open in new tab</a>
+</div>
 <div>
 <iframe src="../interactive/text/actor_attribution_pic.html"
-frameborder="0" marginwidth="0" marginheight="0" width="800" height="750"></iframe>
+frameborder="0" marginwidth="0" marginheight="0" width="950" height="475"></iframe>
 </div>
 
 ---

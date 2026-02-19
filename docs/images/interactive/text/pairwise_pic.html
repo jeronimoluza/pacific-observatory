@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <title>Pairwise Interaction Indices</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            padding: 15px;
+            padding: 12px 20px;
             background: #fff;
+            max-width: 900px;
         }
         .controls {
             margin-bottom: 10px;
@@ -66,6 +69,46 @@
             border-color: #667eea;
             background: #f0f4ff;
         }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            overflow: visible;
+        }
+        .slider-row label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+            white-space: nowrap;
+        }
+        #range-label {
+            font-size: 0.85em;
+            color: #555;
+            min-width: 140px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        #date-slider {
+            flex: 1;
+            min-width: 200px;
+        }
+        .noUi-connect {
+            background: #667eea !important;
+        }
+        .noUi-handle {
+            border-color: #667eea !important;
+            box-shadow: none !important;
+        }
+        .noUi-tooltip {
+            font-size: 0.75em;
+            padding: 2px 6px;
+            background: #667eea;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+        }
 </style>
 </head>
 <body>
@@ -110,6 +153,13 @@
         </div>
     </div>
 
+
+    <div class="slider-row">
+        <label>Date Range:</label>
+        <span id="range-label">&mdash;</span>
+        <div id="date-slider"></div>
+    </div>
+
     <div class="chart-wrapper">
         <canvas id="chart"></canvas>
     </div>
@@ -145,23 +195,86 @@
         }
 
         function buildMADatasets(rawValues, baseColor, seriesLabel) {
-            const windows = getActiveWindows();
-            const styleMap = {
-                1:  { dash: [5, 5], opacity: 0.35, width: 1.5, suffix: '(Raw)' },
-                3:  { dash: [],     opacity: 1.0,  width: 2.5, suffix: '(3-Mo MA)' },
-                6:  { dash: [],     opacity: 0.55, width: 2,   suffix: '(6-Mo MA)' },
-                12: { dash: [],     opacity: 0.35, width: 2,   suffix: '(12-Mo MA)' }
+            const windows = getActiveWindows().sort((a, b) => a - b);
+            const suffixMap = {
+                1:  { dash: [5, 5], width: 1.5, suffix: '(Raw)' },
+                3:  { dash: [],     width: 2.5, suffix: '(3-Mo MA)' },
+                6:  { dash: [],     width: 2,   suffix: '(6-Mo MA)' },
+                12: { dash: [],     width: 2,   suffix: '(12-Mo MA)' }
             };
+            // MA opacity hierarchy: lowest MA = solid (1.0), each higher MA more transparent
+            const opacitySteps = [1.0, 0.55, 0.35, 0.2];
+            const maWindows = windows.filter(w => w !== 1);
             return windows.map(w => {
-                const s = styleMap[w];
+                const s = suffixMap[w];
+                let opacity;
+                if (w === 1) {
+                    opacity = 0.45; // Raw always fixed: dashed + semi-transparent
+                } else {
+                    const maIdx = maWindows.indexOf(w);
+                    opacity = opacitySteps[maIdx] !== undefined ? opacitySteps[maIdx] : 0.2;
+                }
                 return {
                     label: seriesLabel + ' ' + s.suffix,
                     data: computeMA(rawValues, w),
-                    borderColor: hexToRgba(baseColor, s.opacity),
+                    borderColor: hexToRgba(baseColor, opacity),
                     borderDash: s.dash,
                     borderWidth: s.width,
                     fill: false, tension: 0.1, pointRadius: 0, pointHoverRadius: 5
                 };
+            });
+        }
+
+
+
+        let sliderDates = [];
+        let slider = null;
+
+        function formatYM(d) {
+            const date = new Date(d);
+            return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+        }
+
+        function getSliderRange() {
+            if (!slider || !sliderDates.length) return { from: '', to: '' };
+            const vals = slider.get().map(v => Math.round(v));
+            return { from: sliderDates[vals[0]], to: sliderDates[vals[1]] };
+        }
+
+        function initSlider(country, defaultMonths) {
+            const data = allData[country];
+            if (!data || !data.length) return;
+
+            sliderDates = data.map(r => r.date);
+            const maxIdx = sliderDates.length - 1;
+            const startIdx = Math.max(0, maxIdx - (defaultMonths - 1));
+
+            const el = document.getElementById('date-slider');
+            if (slider) { slider.destroy(); }
+
+            slider = noUiSlider.create(el, {
+                start: [startIdx, maxIdx],
+                connect: true,
+                step: 1,
+                range: { min: 0, max: maxIdx || 1 },
+                tooltips: [
+                    { to: v => formatYM(sliderDates[Math.round(v)]) },
+                    { to: v => formatYM(sliderDates[Math.round(v)]) }
+                ]
+            });
+
+            const rangeLabel = document.getElementById('range-label');
+            function updateLabel() {
+                const vals = slider.get().map(v => Math.round(v));
+                rangeLabel.textContent = formatYM(sliderDates[vals[0]]) + '  →  ' + formatYM(sliderDates[vals[1]]);
+            }
+            updateLabel();
+
+            slider.on('update', function() {
+                updateLabel();
+            });
+            slider.on('change', function() {
+                rerender();
             });
         }
 
@@ -173,8 +286,14 @@
         }
 
         function renderChart(country) {
-            const data = allData[country];
-            if (!data || !data.length) return;
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
+
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
 
             const labels = data.map(r => formatDate(r.date));
             const datasets = [
@@ -213,9 +332,14 @@
         }
 
 
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-        document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventListener('change', () => renderChart(document.getElementById('country-select').value)));
-        renderChart(document.getElementById('country-select').value);
+        function rerender() { renderChart(document.getElementById('country-select').value); }
+        document.getElementById('country-select').addEventListener('change', function(e) {
+            initSlider(e.target.value, 24);
+            rerender();
+        });
+        document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventListener('change', rerender));
+        initSlider(document.getElementById('country-select').value, 24);
+        rerender();
     </script>
 </body>
 </html>

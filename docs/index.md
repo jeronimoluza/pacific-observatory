@@ -31,15 +31,6 @@ Sentiment analysis and topic modeling from news sources to monitor economic unce
 :::
 
 :::{grid-item-card}
-:link: ./cpi/cpi_intro
-:link-type: doc
-
-Consumer Price Index (CPI)
-^^^
-Web scraping on supermarket prices to fill gaps in the Consumer Price Index (CPI).
-:::
-
-:::{grid-item-card}
 :link: ./tourism/intro
 :link-type: doc
 
