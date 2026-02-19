@@ -107,8 +107,9 @@ _BASE_CSS = """
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            padding: 15px;
+            padding: 12px 20px;
             background: #fff;
+            max-width: 900px;
         }
         .controls {
             margin-bottom: 10px;
@@ -201,318 +202,13 @@ _CHIP_CSS = """
         }
 """
 
-_COMPUTE_MA_JS = """
-        function computeMA(values, w) {
-            if (w <= 1) return values.slice();
-            var result = [];
-            for (var i = 0; i < values.length; i++) {
-                if (i < w - 1) { result.push(null); continue; }
-                var sum = 0, count = 0;
-                for (var j = i - w + 1; j <= i; j++) {
-                    if (values[j] != null) { sum += values[j]; count++; }
-                }
-                result.push(count > 0 ? sum / count : null);
-            }
-            return result;
-        }
-
-        function getActiveWindows() {
-            return Array.from(document.querySelectorAll('input[name="ma-toggle"]:checked'))
-                   .map(cb => parseInt(cb.value));
-        }
-
-        function hexToRgba(hex, alpha) {
-            const r = parseInt(hex.slice(1, 3), 16);
-            const g = parseInt(hex.slice(3, 5), 16);
-            const b = parseInt(hex.slice(5, 7), 16);
-            return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
-        }
-
-        function buildMADatasets(rawValues, baseColor, seriesLabel) {
-            const windows = getActiveWindows();
-            const styleMap = {
-                1:  { dash: [5, 5], opacity: 0.35, width: 1.5, suffix: '(Raw)' },
-                3:  { dash: [],     opacity: 1.0,  width: 2.5, suffix: '(3-Mo MA)' },
-                6:  { dash: [],     opacity: 0.55, width: 2,   suffix: '(6-Mo MA)' },
-                12: { dash: [],     opacity: 0.35, width: 2,   suffix: '(12-Mo MA)' }
-            };
-            return windows.map(w => {
-                const s = styleMap[w];
-                return {
-                    label: seriesLabel + ' ' + s.suffix,
-                    data: computeMA(rawValues, w),
-                    borderColor: hexToRgba(baseColor, s.opacity),
-                    borderDash: s.dash,
-                    borderWidth: s.width,
-                    fill: false, tension: 0.1, pointRadius: 0, pointHoverRadius: 5
-                };
-            });
-        }
-"""
-
-_TOGGLE_HTML = """
-    <div class="controls">
-        <label>Smoothing:</label>
-        <div class="toggle-group">
-            <label><input type="checkbox" name="ma-toggle" value="1" checked>Raw</label>
-            <label><input type="checkbox" name="ma-toggle" value="3" checked>3-Mo MA</label>
-            <label><input type="checkbox" name="ma-toggle" value="6">6-Mo MA</label>
-            <label><input type="checkbox" name="ma-toggle" value="12">12-Mo MA</label>
-        </div>
-    </div>
-"""
-
-
-# ---------------------------------------------------------------------------
-# HTML template generators
-# ---------------------------------------------------------------------------
-
-
-def gen_html(title, subtitle, chart_id, all_data, countries, script_content):
-    """Generate standalone HTML page with Chart.js visualization and country dropdown"""
-    opts = "\n".join(
-        f'<option value="{c}">{fmt_country(c)}</option>'
-        for c in countries
-        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
-    )
-
-    css_styles = _BASE_CSS
-
-    return f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{title}</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <style>{css_styles}</style>
-</head>
-<body>
-    <div class="controls">
-        <label for="country-select">Country:</label>
-        <select id="country-select">{opts}</select>
-    </div>
-    <div class="chart-wrapper">
-        <canvas id="chart"></canvas>
-    </div>
-    <script>
-        const allData = {json.dumps(all_data)};
-        let currentChart = null;
-        {script_content}
-    </script>
-</body>
-</html>"""
-
-
-def gen_html_with_radio(title, subtitle, chart_id, all_data, countries, script_content):
-    """Generate standalone HTML page with Chart.js, country dropdown, and MA radio toggle"""
-    opts = "\n".join(
-        f'<option value="{c}">{fmt_country(c)}</option>'
-        for c in countries
-        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
-    )
-
-    css_styles = _BASE_CSS + _TOGGLE_CSS
-
-    return f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{title}</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <style>{css_styles}</style>
-</head>
-<body>
-    <div class="controls">
-        <label for="country-select">Country:</label>
-        <select id="country-select">{opts}</select>
-    </div>
-    {_TOGGLE_HTML}
-    <div class="chart-wrapper">
-        <canvas id="chart"></canvas>
-    </div>
-    <script>
-        const allData = {json.dumps(all_data)};
-        let currentChart = null;
-
-        {_COMPUTE_MA_JS}
-
-        {script_content}
-
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-        document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventListener('change', () => renderChart(document.getElementById('country-select').value)));
-        renderChart(document.getElementById('country-select').value);
-    </script>
-</body>
-</html>"""
-
-
-def gen_html_multi_select(
-    title,
-    subtitle,
-    chart_id,
-    all_data,
-    countries,
-    items,
-    item_label,
-    default_checked,
-    script_content,
-):
-    """Generate standalone HTML page with Chart.js, country dropdown, and multi-select checkboxes"""
-    opts = "\n".join(
-        f'<option value="{c}">{fmt_country(c)}</option>'
-        for c in countries
-        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
-    )
-
-    checkboxes = "\n".join(
-        f'<label class="chip"><input type="checkbox" value="{item}"'
-        f'{" checked" if item in default_checked else ""}>'
-        f'{fmt_country(item)}</label>'
-        for item in items
-    )
-
-    css_styles = _BASE_CSS + _CHIP_CSS
-
-    items_json = json.dumps(items)
-
-    return f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{title}</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <style>{css_styles}</style>
-</head>
-<body>
-    <div class="controls">
-        <label for="country-select">Country:</label>
-        <select id="country-select">{opts}</select>
-    </div>
-    <div>
-        <label>{item_label}:</label>
-        <div class="chip-container" id="item-select">{checkboxes}</div>
-    </div>
-    <div class="chart-wrapper">
-        <canvas id="chart"></canvas>
-    </div>
-    <script>
-        const allData = {json.dumps(all_data)};
-        const allItems = {items_json};
-        let currentChart = null;
-
-        function getSelectedItems() {{
-            return Array.from(document.querySelectorAll('#item-select input:checked')).map(cb => cb.value);
-        }}
-
-        {script_content}
-
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value, getSelectedItems()));
-        document.getElementById('item-select').addEventListener('change', () => renderChart(document.getElementById('country-select').value, getSelectedItems()));
-        renderChart(document.getElementById('country-select').value, getSelectedItems());
-    </script>
-</body>
-</html>"""
-
-
-def gen_html_multi_select_with_radio(
-    title,
-    subtitle,
-    chart_id,
-    all_data,
-    countries,
-    items,
-    item_label,
-    default_checked,
-    script_content,
-):
-    """Generate standalone HTML page with Chart.js, country dropdown, multi-select checkboxes, and MA radio toggle"""
-    opts = "\n".join(
-        f'<option value="{c}">{fmt_country(c)}</option>'
-        for c in countries
-        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
-    )
-
-    checkboxes = "\n".join(
-        f'<label class="chip"><input type="checkbox" value="{item}"'
-        f'{" checked" if item in default_checked else ""}>'
-        f'{fmt_country(item)}</label>'
-        for item in items
-    )
-
-    css_styles = _BASE_CSS + _TOGGLE_CSS + _CHIP_CSS
-
-    items_json = json.dumps(items)
-
-    return f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{title}</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <style>{css_styles}</style>
-</head>
-<body>
-    <div class="controls">
-        <label for="country-select">Country:</label>
-        <select id="country-select">{opts}</select>
-    </div>
-    {_TOGGLE_HTML}
-    <div>
-        <label>{item_label}:</label>
-        <div class="chip-container" id="item-select">{checkboxes}</div>
-    </div>
-    <div class="chart-wrapper">
-        <canvas id="chart"></canvas>
-    </div>
-    <script>
-        const allData = {json.dumps(all_data)};
-        const allItems = {items_json};
-        let currentChart = null;
-
-        {_COMPUTE_MA_JS}
-
-        function getSelectedItems() {{
-            return Array.from(document.querySelectorAll('#item-select input:checked')).map(cb => cb.value);
-        }}
-
-        {script_content}
-
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value, getSelectedItems()));
-        document.getElementById('item-select').addEventListener('change', () => renderChart(document.getElementById('country-select').value, getSelectedItems()));
-        document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventListener('change', () => renderChart(document.getElementById('country-select').value, getSelectedItems())));
-        renderChart(document.getElementById('country-select').value, getSelectedItems());
-    </script>
-</body>
-</html>"""
-
-
-def gen_html_bump_chart(
-    title, subtitle, chart_id, all_data, countries, default_top_n, script_content
-):
-    """Generate standalone HTML page with Chart.js bump chart, country dropdown, Top N input, and date range slider"""
-    opts = "\n".join(
-        f'<option value="{c}">{fmt_country(c)}</option>'
-        for c in countries
-        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
-    )
-
-    css_styles = (
-        _BASE_CSS
-        + """
-        input[type="number"] {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 0.9em;
-            width: 70px;
-        }
-        input[type="number"]:hover { border-color: #667eea; }
-        input[type="number"]:focus { outline: 0; border-color: #667eea; }
+_SLIDER_CSS = """
         .slider-row {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 10px;
+            overflow: visible;
         }
         .slider-row label {
             font-weight: 600;
@@ -546,8 +242,444 @@ def gen_html_bump_chart(
             border: none;
             border-radius: 4px;
         }
-    """
+"""
+
+_SLIDER_HTML = """
+    <div class="slider-row">
+        <label>Date Range:</label>
+        <span id="range-label">&mdash;</span>
+        <div id="date-slider"></div>
+    </div>
+"""
+
+_SLIDER_JS = """
+        let sliderDates = [];
+        let slider = null;
+
+        function formatYM(d) {
+            const date = new Date(d);
+            return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
+        }
+
+        function getSliderRange() {
+            if (!slider || !sliderDates.length) return { from: '', to: '' };
+            const vals = slider.get().map(v => Math.round(v));
+            return { from: sliderDates[vals[0]], to: sliderDates[vals[1]] };
+        }
+
+        function initSlider(country, defaultMonths) {
+            const data = allData[country];
+            if (!data || !data.length) return;
+
+            sliderDates = data.map(r => r.date);
+            const maxIdx = sliderDates.length - 1;
+            const startIdx = Math.max(0, maxIdx - (defaultMonths - 1));
+
+            const el = document.getElementById('date-slider');
+            if (slider) { slider.destroy(); }
+
+            slider = noUiSlider.create(el, {
+                start: [startIdx, maxIdx],
+                connect: true,
+                step: 1,
+                range: { min: 0, max: maxIdx || 1 },
+                tooltips: [
+                    { to: v => formatYM(sliderDates[Math.round(v)]) },
+                    { to: v => formatYM(sliderDates[Math.round(v)]) }
+                ]
+            });
+
+            const rangeLabel = document.getElementById('range-label');
+            function updateLabel() {
+                const vals = slider.get().map(v => Math.round(v));
+                rangeLabel.textContent = formatYM(sliderDates[vals[0]]) + '  \u2192  ' + formatYM(sliderDates[vals[1]]);
+            }
+            updateLabel();
+
+            slider.on('update', function() {
+                updateLabel();
+            });
+            slider.on('change', function() {
+                rerender();
+            });
+        }
+"""
+
+_COMPUTE_MA_JS = """
+        function computeMA(values, w) {
+            if (w <= 1) return values.slice();
+            var result = [];
+            for (var i = 0; i < values.length; i++) {
+                if (i < w - 1) { result.push(null); continue; }
+                var sum = 0, count = 0;
+                for (var j = i - w + 1; j <= i; j++) {
+                    if (values[j] != null) { sum += values[j]; count++; }
+                }
+                result.push(count > 0 ? sum / count : null);
+            }
+            return result;
+        }
+
+        function getActiveWindows() {
+            return Array.from(document.querySelectorAll('input[name="ma-toggle"]:checked'))
+                   .map(cb => parseInt(cb.value));
+        }
+
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+        }
+
+        function buildMADatasets(rawValues, baseColor, seriesLabel) {
+            const windows = getActiveWindows().sort((a, b) => a - b);
+            const suffixMap = {
+                1:  { dash: [5, 5], width: 1.5, suffix: '(Raw)' },
+                3:  { dash: [],     width: 2.5, suffix: '(3-Mo MA)' },
+                6:  { dash: [],     width: 2,   suffix: '(6-Mo MA)' },
+                12: { dash: [],     width: 2,   suffix: '(12-Mo MA)' }
+            };
+            // MA opacity hierarchy: lowest MA = solid (1.0), each higher MA more transparent
+            const opacitySteps = [1.0, 0.55, 0.35, 0.2];
+            const maWindows = windows.filter(w => w !== 1);
+            return windows.map(w => {
+                const s = suffixMap[w];
+                let opacity;
+                if (w === 1) {
+                    opacity = 0.45; // Raw always fixed: dashed + semi-transparent
+                } else {
+                    const maIdx = maWindows.indexOf(w);
+                    opacity = opacitySteps[maIdx] !== undefined ? opacitySteps[maIdx] : 0.2;
+                }
+                return {
+                    label: seriesLabel + ' ' + s.suffix,
+                    data: computeMA(rawValues, w),
+                    borderColor: hexToRgba(baseColor, opacity),
+                    borderDash: s.dash,
+                    borderWidth: s.width,
+                    fill: false, tension: 0.1, pointRadius: 0, pointHoverRadius: 5
+                };
+            });
+        }
+"""
+
+_TOGGLE_HTML = """
+    <div class="controls">
+        <label>Smoothing:</label>
+        <div class="toggle-group">
+            <label><input type="checkbox" name="ma-toggle" value="1" checked>Raw</label>
+            <label><input type="checkbox" name="ma-toggle" value="3" checked>3-Mo MA</label>
+            <label><input type="checkbox" name="ma-toggle" value="6">6-Mo MA</label>
+            <label><input type="checkbox" name="ma-toggle" value="12">12-Mo MA</label>
+        </div>
+    </div>
+"""
+
+
+# ---------------------------------------------------------------------------
+# HTML template generators
+# ---------------------------------------------------------------------------
+
+
+def gen_html(
+    title, subtitle, chart_id, all_data, countries, script_content, default_months=24
+):
+    """Generate standalone HTML page with Chart.js visualization, country dropdown, and date slider"""
+    opts = "\n".join(
+        f'<option value="{c}">{fmt_country(c)}</option>'
+        for c in countries
+        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
     )
+
+    css_styles = _BASE_CSS + _SLIDER_CSS
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <style>{css_styles}</style>
+</head>
+<body>
+    <div class="controls">
+        <label for="country-select">Country:</label>
+        <select id="country-select">{opts}</select>
+    </div>
+    {_SLIDER_HTML}
+    <div class="chart-wrapper">
+        <canvas id="chart"></canvas>
+    </div>
+    <script>
+        const allData = {json.dumps(all_data)};
+        let currentChart = null;
+
+        {_SLIDER_JS}
+
+        {script_content}
+
+        function rerender() {{ renderChart(document.getElementById('country-select').value); }}
+        document.getElementById('country-select').addEventListener('change', function(e) {{
+            initSlider(e.target.value, {default_months});
+            rerender();
+        }});
+        initSlider(document.getElementById('country-select').value, {default_months});
+        rerender();
+    </script>
+</body>
+</html>"""
+
+
+def gen_html_with_radio(
+    title, subtitle, chart_id, all_data, countries, script_content, default_months=24
+):
+    """Generate standalone HTML page with Chart.js, country dropdown, MA radio toggle, and date slider"""
+    opts = "\n".join(
+        f'<option value="{c}">{fmt_country(c)}</option>'
+        for c in countries
+        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
+    )
+
+    css_styles = _BASE_CSS + _TOGGLE_CSS + _SLIDER_CSS
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <style>{css_styles}</style>
+</head>
+<body>
+    <div class="controls">
+        <label for="country-select">Country:</label>
+        <select id="country-select">{opts}</select>
+    </div>
+    {_TOGGLE_HTML}
+    {_SLIDER_HTML}
+    <div class="chart-wrapper">
+        <canvas id="chart"></canvas>
+    </div>
+    <script>
+        const allData = {json.dumps(all_data)};
+        let currentChart = null;
+
+        {_COMPUTE_MA_JS}
+
+        {_SLIDER_JS}
+
+        {script_content}
+
+        function rerender() {{ renderChart(document.getElementById('country-select').value); }}
+        document.getElementById('country-select').addEventListener('change', function(e) {{
+            initSlider(e.target.value, {default_months});
+            rerender();
+        }});
+        document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventListener('change', rerender));
+        initSlider(document.getElementById('country-select').value, {default_months});
+        rerender();
+    </script>
+</body>
+</html>"""
+
+
+def gen_html_multi_select(
+    title,
+    subtitle,
+    chart_id,
+    all_data,
+    countries,
+    items,
+    item_label,
+    default_checked,
+    script_content,
+    default_months=24,
+):
+    """Generate standalone HTML page with Chart.js, country dropdown, multi-select checkboxes, and date slider"""
+    opts = "\n".join(
+        f'<option value="{c}">{fmt_country(c)}</option>'
+        for c in countries
+        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
+    )
+
+    checkboxes = "\n".join(
+        f'<label class="chip"><input type="checkbox" value="{item}"'
+        f'{" checked" if item in default_checked else ""}>'
+        f'{fmt_country(item)}</label>'
+        for item in items
+    )
+
+    css_styles = _BASE_CSS + _CHIP_CSS + _SLIDER_CSS
+
+    items_json = json.dumps(items)
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <style>{css_styles}</style>
+</head>
+<body>
+    <div class="controls">
+        <label for="country-select">Country:</label>
+        <select id="country-select">{opts}</select>
+    </div>
+    {_SLIDER_HTML}
+    <div>
+        <label>{item_label}:</label>
+        <div class="chip-container" id="item-select">{checkboxes}</div>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="chart"></canvas>
+    </div>
+    <script>
+        const allData = {json.dumps(all_data)};
+        const allItems = {items_json};
+        let currentChart = null;
+
+        {_SLIDER_JS}
+
+        function getSelectedItems() {{
+            return Array.from(document.querySelectorAll('#item-select input:checked')).map(cb => cb.value);
+        }}
+
+        {script_content}
+
+        function rerender() {{ renderChart(document.getElementById('country-select').value, getSelectedItems()); }}
+        document.getElementById('country-select').addEventListener('change', function(e) {{
+            initSlider(e.target.value, {default_months});
+            rerender();
+        }});
+        document.getElementById('item-select').addEventListener('change', rerender);
+        initSlider(document.getElementById('country-select').value, {default_months});
+        rerender();
+    </script>
+</body>
+</html>"""
+
+
+def gen_html_multi_select_with_radio(
+    title,
+    subtitle,
+    chart_id,
+    all_data,
+    countries,
+    items,
+    item_label,
+    default_checked,
+    script_content,
+    default_months=24,
+):
+    """Generate standalone HTML page with Chart.js, country dropdown, multi-select checkboxes, MA radio toggle, and date slider"""
+    opts = "\n".join(
+        f'<option value="{c}">{fmt_country(c)}</option>'
+        for c in countries
+        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
+    )
+
+    checkboxes = "\n".join(
+        f'<label class="chip"><input type="checkbox" value="{item}"'
+        f'{" checked" if item in default_checked else ""}>'
+        f'{fmt_country(item)}</label>'
+        for item in items
+    )
+
+    css_styles = _BASE_CSS + _TOGGLE_CSS + _CHIP_CSS + _SLIDER_CSS
+
+    items_json = json.dumps(items)
+
+    return f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{title}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <style>{css_styles}</style>
+</head>
+<body>
+    <div class="controls">
+        <label for="country-select">Country:</label>
+        <select id="country-select">{opts}</select>
+    </div>
+    {_TOGGLE_HTML}
+    {_SLIDER_HTML}
+    <div>
+        <label>{item_label}:</label>
+        <div class="chip-container" id="item-select">{checkboxes}</div>
+    </div>
+    <div class="chart-wrapper">
+        <canvas id="chart"></canvas>
+    </div>
+    <script>
+        const allData = {json.dumps(all_data)};
+        const allItems = {items_json};
+        let currentChart = null;
+
+        {_COMPUTE_MA_JS}
+
+        {_SLIDER_JS}
+
+        function getSelectedItems() {{
+            return Array.from(document.querySelectorAll('#item-select input:checked')).map(cb => cb.value);
+        }}
+
+        {script_content}
+
+        function rerender() {{ renderChart(document.getElementById('country-select').value, getSelectedItems()); }}
+        document.getElementById('country-select').addEventListener('change', function(e) {{
+            initSlider(e.target.value, {default_months});
+            rerender();
+        }});
+        document.getElementById('item-select').addEventListener('change', rerender);
+        document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventListener('change', rerender));
+        initSlider(document.getElementById('country-select').value, {default_months});
+        rerender();
+    </script>
+</body>
+</html>"""
+
+
+def gen_html_bump_chart(
+    title,
+    subtitle,
+    chart_id,
+    all_data,
+    countries,
+    default_top_n,
+    script_content,
+    default_months=24,
+):
+    """Generate standalone HTML page with Chart.js bump chart, country dropdown, Top N input, and date range slider"""
+    opts = "\n".join(
+        f'<option value="{c}">{fmt_country(c)}</option>'
+        for c in countries
+        if (c in all_data) and (c not in EXCLUDE_COUNTRIES)
+    )
+
+    _NUMBER_CSS = """
+        input[type="number"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9em;
+            width: 70px;
+        }
+        input[type="number"]:hover { border-color: #667eea; }
+        input[type="number"]:focus { outline: 0; border-color: #667eea; }
+    """
+
+    css_styles = _BASE_CSS + _NUMBER_CSS + _SLIDER_CSS
 
     return f"""<!DOCTYPE html>
 <html>
@@ -566,79 +698,29 @@ def gen_html_bump_chart(
         <label for="topn-input">Top N:</label>
         <input type="number" id="topn-input" value="{default_top_n}" min="1">
     </div>
-    <div class="slider-row">
-        <label>Date Range:</label>
-        <span id="range-label">&mdash;</span>
-        <div id="date-slider"></div>
-    </div>
+    {_SLIDER_HTML}
     <div class="chart-wrapper">
         <canvas id="chart"></canvas>
     </div>
     <script>
         const allData = {json.dumps(all_data)};
         let currentChart = null;
-        let sliderDates = [];
-        let slider = null;
 
         function getTopN() {{ return parseInt(document.getElementById('topn-input').value) || {default_top_n}; }}
 
-        function formatYM(d) {{
-            const date = new Date(d);
-            return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
-        }}
+        {_COMPUTE_MA_JS}
 
-        function getSliderRange() {{
-            if (!slider || !sliderDates.length) return {{ from: '', to: '' }};
-            const vals = slider.get().map(v => Math.round(v));
-            return {{ from: sliderDates[vals[0]], to: sliderDates[vals[1]] }};
-        }}
-
-        function initSlider(country) {{
-            const data = allData[country];
-            if (!data || !data.length) return;
-
-            sliderDates = data.map(r => r.date);
-            const maxIdx = sliderDates.length - 1;
-            const startIdx = Math.max(0, maxIdx - 5);
-
-            const el = document.getElementById('date-slider');
-            if (slider) {{ slider.destroy(); }}
-
-            slider = noUiSlider.create(el, {{
-                start: [startIdx, maxIdx],
-                connect: true,
-                step: 1,
-                range: {{ min: 0, max: maxIdx || 1 }},
-                tooltips: [
-                    {{ to: v => formatYM(sliderDates[Math.round(v)]) }},
-                    {{ to: v => formatYM(sliderDates[Math.round(v)]) }}
-                ]
-            }});
-
-            const rangeLabel = document.getElementById('range-label');
-            function updateLabel() {{
-                const vals = slider.get().map(v => Math.round(v));
-                rangeLabel.textContent = formatYM(sliderDates[vals[0]]) + '  \u2192  ' + formatYM(sliderDates[vals[1]]);
-            }}
-            updateLabel();
-
-            slider.on('update', function() {{
-                updateLabel();
-            }});
-            slider.on('change', function() {{
-                rerender();
-            }});
-        }}
+        {_SLIDER_JS}
 
         {script_content}
 
         function rerender() {{ renderChart(document.getElementById('country-select').value, getTopN()); }}
         document.getElementById('country-select').addEventListener('change', function(e) {{
-            initSlider(e.target.value);
+            initSlider(e.target.value, {default_months});
             rerender();
         }});
         document.getElementById('topn-input').addEventListener('change', rerender);
-        initSlider(document.getElementById('country-select').value);
+        initSlider(document.getElementById('country-select').value, {default_months});
         rerender();
     </script>
 </body>
@@ -668,8 +750,14 @@ def gen_epu_html(countries, data_dir, out):
         }
 
         function renderChart(country) {
-            const data = allData[country];
-            if (!data || !data.length) return;
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
+
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
 
             const labels = data.map(r => formatDate(r.date));
             const epuRaw = data.map(r => r.EPU_index);
@@ -777,8 +865,14 @@ def gen_epu_topics_html(countries, data_dir, out):
         }}
 
         function renderChart(country, selectedItems) {{
-            const data = allData[country];
-            if (!data || !data.length) return;
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
+
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
 
             const labels = data.map(r => formatDate(r.date));
             const datasets = [];
@@ -846,8 +940,14 @@ def gen_news_html(countries, data_dir, out):
         }
 
         function renderChart(country) {
-            const data = allData[country];
-            if (!data || !data.length) return;
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
+
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
 
             const labels = data.map(r => formatDate(r.date));
             const newsCounts = data.map(r => r.news_total);
@@ -895,9 +995,6 @@ def gen_news_html(countries, data_dir, out):
                 }
             });
         }
-
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-        renderChart(document.getElementById('country-select').value);
     """
 
     with open(out, "w") as f:
@@ -932,8 +1029,14 @@ def gen_breadth_html(countries, data_dir, out):
         }
 
         function renderChart(country) {
-            const data = allData[country];
-            if (!data || !data.length) return;
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
+
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
 
             const labels = data.map(r => formatDate(r.date));
             const datasets = [
@@ -1004,8 +1107,14 @@ def gen_intensity_html(countries, data_dir, out):
         }
 
         function renderChart(country) {
-            const data = allData[country];
-            if (!data || !data.length) return;
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
+
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
 
             const labels = data.map(r => formatDate(r.date));
             const datasets = [
@@ -1076,8 +1185,14 @@ def gen_pairwise_html(countries, data_dir, out):
         }
 
         function renderChart(country) {
-            const data = allData[country];
-            if (!data || !data.length) return;
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
+
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
 
             const labels = data.map(r => formatDate(r.date));
             const datasets = [
@@ -1130,7 +1245,9 @@ def gen_pairwise_html(countries, data_dir, out):
     print(f"Created {out}")
 
 
-def gen_topic_attribution_html(countries, data_dir, out):
+def gen_topic_attribution_html(
+    countries, data_dir, out, default_top_n=5, default_months=12
+):
     """Generate uncertainty attribution by topic as a bump chart ranked by framing values"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {}
@@ -1170,8 +1287,19 @@ def gen_topic_attribution_html(countries, data_dir, out):
     script = f"""
         const palette = {palette_json};
 
+        const LABEL_MAP = {{
+            'Imf': 'IMF',
+            'Us Government': 'US Government',
+            'Us China Trade War': 'US-China Trade War',
+            'Covid Pandemic': 'COVID-19 Pandemic',
+            'Inflation Prices': 'Inflation & Prices',
+            'Climate Environment': 'Climate & Environment',
+            'Corruption Governance': 'Corruption & Governance',
+            'Housing Real Estate': 'Housing & Real Estate',
+        }};
         function fmtLabel(key) {{
-            return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            const raw = key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            return LABEL_MAP[raw] || raw;
         }}
 
         function formatDate(d) {{
@@ -1191,40 +1319,67 @@ def gen_topic_attribution_html(countries, data_dir, out):
             if (!data.length) return;
 
             // Discover all _framing columns
-            const framingKeys = Object.keys(data[0]).filter(k => k.endsWith('_framing'));
+            const framingKeys = Object.keys(rawData[0]).filter(k => k.endsWith('_framing'));
             const items = framingKeys.map(k => k.replace('_framing', ''));
 
             // Clamp topN
             topN = Math.max(1, Math.min(topN, items.length));
 
-            // Rank items per month by framing value (descending: highest = rank 1)
-            const ranks = data.map(row => {{
-                const vals = items.map(item => ({{ item: item, value: row[item + '_framing'] || 0 }}));
+            // Compute 3-month MA of framing values for each item over the full series,
+            // then slice to the filtered window so MA uses context from before the window.
+            const fullDates = rawData.map(r => r.date);
+            const filterFrom = range.from || '';
+            const filterTo = range.to || '';
+            const smoothed = {{}};
+            items.forEach(item => {{
+                const fullVals = rawData.map(r => r[item + '_framing'] || 0);
+                const maVals = computeMA(fullVals, 3);
+                // Slice to the filtered window
+                const sliced = [];
+                rawData.forEach((r, idx) => {{
+                    if (filterFrom && r.date < filterFrom) return;
+                    if (filterTo && r.date > filterTo) return;
+                    sliced.push(maVals[idx]);
+                }});
+                smoothed[item] = sliced;
+            }});
+
+            // Select top-N items by highest mean smoothed framing over the slider window
+            const meanSmoothed = items.map(item => {{
+                const vals = smoothed[item].filter(v => v != null);
+                const mean = vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : 0;
+                return {{ item: item, mean: mean }};
+            }});
+            meanSmoothed.sort((a, b) => b.mean - a.mean);
+            const visible = meanSmoothed.slice(0, topN).map(v => v.item).sort();
+
+            // Rank only among the visible top-N items per month
+            const ranks = data.map((row, t) => {{
+                const vals = visible.map(item => ({{ item: item, value: smoothed[item][t] != null ? smoothed[item][t] : 0 }}));
                 vals.sort((a, b) => b.value - a.value);
                 const monthRanks = {{}};
                 vals.forEach((v, i) => {{ monthRanks[v.item] = i + 1; }});
                 return monthRanks;
             }});
 
-            // Select N items with the lowest average rank across the filtered range
-            const avgRanks = items.map(item => {{
-                const sum = ranks.reduce((s, mr) => s + mr[item], 0);
-                return {{ item: item, avg: sum / ranks.length }};
-            }});
-            avgRanks.sort((a, b) => a.avg - b.avg);
-            const visible = avgRanks.slice(0, topN).map(v => v.item).sort();
             const labels = data.map(r => formatDate(r.date));
-            const datasets = visible.map((item, i) => ({{
-                label: fmtLabel(item),
-                data: ranks.map(mr => mr[item]),
-                borderColor: palette[i % palette.length],
-                borderWidth: 2.5,
-                fill: false,
-                tension: 0.1,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                _itemKey: item
-            }}));
+            const datasets = visible.map((item, i) => {{
+                const color = palette[i % palette.length];
+                return {{
+                    label: fmtLabel(item),
+                    data: ranks.map(mr => mr[item]),
+                    borderColor: color,
+                    borderWidth: 2.5,
+                    fill: false,
+                    tension: 0,
+                    pointRadius: 5,
+                    pointBackgroundColor: color,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 1.5,
+                    pointHoverRadius: 7,
+                    _itemKey: item
+                }};
+            }});
 
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
@@ -1249,8 +1404,8 @@ def gen_topic_attribution_html(countries, data_dir, out):
                                 label: function(context) {{
                                     const itemKey = context.dataset._itemKey;
                                     const rank = context.raw;
-                                    const framingVal = data[context.dataIndex][itemKey + '_framing'];
-                                    return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (framingVal != null ? framingVal.toFixed(3) : 'N/A') + ')';
+                                    const smoothedVal = smoothed[itemKey][context.dataIndex];
+                                    return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (smoothedVal != null ? smoothedVal.toFixed(3) : 'N/A') + ')';
                                 }}
                             }}
                         }}
@@ -1259,7 +1414,7 @@ def gen_topic_attribution_html(countries, data_dir, out):
                         x: {{ display: true, title: {{ display: true, text: 'Date' }} }},
                         y: {{
                             display: true,
-                            title: {{ display: true, text: 'Rank' }},
+                            title: {{ display: true, text: 'Rank (smoothed)' }},
                             reverse: true,
                             ticks: {{ stepSize: 1 }}
                         }}
@@ -1277,14 +1432,17 @@ def gen_topic_attribution_html(countries, data_dir, out):
                 "topic-attr-chart",
                 all_data,
                 countries,
-                10,
+                default_top_n,
                 script,
+                default_months=default_months,
             )
         )
     print(f"Created {out}")
 
 
-def gen_actor_attribution_html(countries, data_dir, out):
+def gen_actor_attribution_html(
+    countries, data_dir, out, default_top_n=5, default_months=12
+):
     """Generate uncertainty attribution by actor as a bump chart ranked by framing values"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {}
@@ -1319,8 +1477,19 @@ def gen_actor_attribution_html(countries, data_dir, out):
     script = f"""
         const palette = {palette_json};
 
+        const LABEL_MAP = {{
+            'Imf': 'IMF',
+            'Us Government': 'US Government',
+            'Us China Trade War': 'US-China Trade War',
+            'Covid Pandemic': 'COVID-19 Pandemic',
+            'Inflation Prices': 'Inflation & Prices',
+            'Climate Environment': 'Climate & Environment',
+            'Corruption Governance': 'Corruption & Governance',
+            'Housing Real Estate': 'Housing & Real Estate',
+        }};
         function fmtLabel(key) {{
-            return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            const raw = key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+            return LABEL_MAP[raw] || raw;
         }}
 
         function formatDate(d) {{
@@ -1340,40 +1509,65 @@ def gen_actor_attribution_html(countries, data_dir, out):
             if (!data.length) return;
 
             // Discover all _framing columns
-            const framingKeys = Object.keys(data[0]).filter(k => k.endsWith('_framing'));
+            const framingKeys = Object.keys(rawData[0]).filter(k => k.endsWith('_framing'));
             const items = framingKeys.map(k => k.replace('_framing', ''));
 
             // Clamp topN
             topN = Math.max(1, Math.min(topN, items.length));
 
-            // Rank items per month by framing value (descending: highest = rank 1)
-            const ranks = data.map(row => {{
-                const vals = items.map(item => ({{ item: item, value: row[item + '_framing'] || 0 }}));
+            // Compute 3-month MA of framing values for each item over the full series,
+            // then slice to the filtered window so MA uses context from before the window.
+            const filterFrom = range.from || '';
+            const filterTo = range.to || '';
+            const smoothed = {{}};
+            items.forEach(item => {{
+                const fullVals = rawData.map(r => r[item + '_framing'] || 0);
+                const maVals = computeMA(fullVals, 3);
+                const sliced = [];
+                rawData.forEach((r, idx) => {{
+                    if (filterFrom && r.date < filterFrom) return;
+                    if (filterTo && r.date > filterTo) return;
+                    sliced.push(maVals[idx]);
+                }});
+                smoothed[item] = sliced;
+            }});
+
+            // Select top-N items by highest mean smoothed framing over the slider window
+            const meanSmoothed = items.map(item => {{
+                const vals = smoothed[item].filter(v => v != null);
+                const mean = vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : 0;
+                return {{ item: item, mean: mean }};
+            }});
+            meanSmoothed.sort((a, b) => b.mean - a.mean);
+            const visible = meanSmoothed.slice(0, topN).map(v => v.item).sort();
+
+            // Rank only among the visible top-N items per month
+            const ranks = data.map((row, t) => {{
+                const vals = visible.map(item => ({{ item: item, value: smoothed[item][t] != null ? smoothed[item][t] : 0 }}));
                 vals.sort((a, b) => b.value - a.value);
                 const monthRanks = {{}};
                 vals.forEach((v, i) => {{ monthRanks[v.item] = i + 1; }});
                 return monthRanks;
             }});
 
-            // Select N items with the lowest average rank across the filtered range
-            const avgRanks = items.map(item => {{
-                const sum = ranks.reduce((s, mr) => s + mr[item], 0);
-                return {{ item: item, avg: sum / ranks.length }};
-            }});
-            avgRanks.sort((a, b) => a.avg - b.avg);
-            const visible = avgRanks.slice(0, topN).map(v => v.item).sort();
             const labels = data.map(r => formatDate(r.date));
-            const datasets = visible.map((item, i) => ({{
-                label: fmtLabel(item),
-                data: ranks.map(mr => mr[item]),
-                borderColor: palette[i % palette.length],
-                borderWidth: 2.5,
-                fill: false,
-                tension: 0.1,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                _itemKey: item
-            }}));
+            const datasets = visible.map((item, i) => {{
+                const color = palette[i % palette.length];
+                return {{
+                    label: fmtLabel(item),
+                    data: ranks.map(mr => mr[item]),
+                    borderColor: color,
+                    borderWidth: 2.5,
+                    fill: false,
+                    tension: 0,
+                    pointRadius: 5,
+                    pointBackgroundColor: color,
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 1.5,
+                    pointHoverRadius: 7,
+                    _itemKey: item
+                }};
+            }});
 
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
@@ -1398,8 +1592,8 @@ def gen_actor_attribution_html(countries, data_dir, out):
                                 label: function(context) {{
                                     const itemKey = context.dataset._itemKey;
                                     const rank = context.raw;
-                                    const framingVal = data[context.dataIndex][itemKey + '_framing'];
-                                    return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (framingVal != null ? framingVal.toFixed(3) : 'N/A') + ')';
+                                    const smoothedVal = smoothed[itemKey][context.dataIndex];
+                                    return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (smoothedVal != null ? smoothedVal.toFixed(3) : 'N/A') + ')';
                                 }}
                             }}
                         }}
@@ -1408,7 +1602,7 @@ def gen_actor_attribution_html(countries, data_dir, out):
                         x: {{ display: true, title: {{ display: true, text: 'Date' }} }},
                         y: {{
                             display: true,
-                            title: {{ display: true, text: 'Rank' }},
+                            title: {{ display: true, text: 'Rank (smoothed)' }},
                             reverse: true,
                             ticks: {{ stepSize: 1 }}
                         }}
@@ -1426,8 +1620,9 @@ def gen_actor_attribution_html(countries, data_dir, out):
                 "actor-attr-chart",
                 all_data,
                 countries,
-                10,
+                default_top_n,
                 script,
+                default_months=default_months,
             )
         )
     print(f"Created {out}")
@@ -1451,8 +1646,14 @@ def gen_pred_html(countries, data_dir, out):
         }
 
         function renderChart(country) {
-            const data = allData[country];
-            if (!data || !data.length) return;
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
+
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
 
             const labels = data.map(r => formatDate(r.date));
             const predictedInflation = data.map(r => r.predicted_inflation);
@@ -1510,9 +1711,6 @@ def gen_pred_html(countries, data_dir, out):
                 }
             });
         }
-
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-        renderChart(document.getElementById('country-select').value);
     """
 
     with open(out, "w") as f:
@@ -1547,8 +1745,14 @@ def gen_oob_pred_html(countries, data_dir, out):
         }
 
         function renderChart(country) {
-            const data = allData[country];
-            if (!data || !data.length) return;
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
+
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
 
             const labels = data.map(r => formatDate(r.date));
             const predictedInflation = data.map(r => r.predicted_inflation);
@@ -1606,9 +1810,6 @@ def gen_oob_pred_html(countries, data_dir, out):
                 }
             });
         }
-
-        document.getElementById('country-select').addEventListener('change', e => renderChart(e.target.value));
-        renderChart(document.getElementById('country-select').value);
     """
 
     with open(out, "w") as f:
@@ -1639,10 +1840,18 @@ if __name__ == "__main__":
     gen_intensity_html(countries, DATA_DIR, OUTPUT_DIR / "intensity_pic.html")
     gen_pairwise_html(countries, DATA_DIR, OUTPUT_DIR / "pairwise_pic.html")
     gen_topic_attribution_html(
-        countries, DATA_DIR, OUTPUT_DIR / "topic_attribution_pic.html"
+        countries,
+        DATA_DIR,
+        OUTPUT_DIR / "topic_attribution_pic.html",
+        default_top_n=5,
+        default_months=12,
     )
     gen_actor_attribution_html(
-        countries, DATA_DIR, OUTPUT_DIR / "actor_attribution_pic.html"
+        countries,
+        DATA_DIR,
+        OUTPUT_DIR / "actor_attribution_pic.html",
+        default_top_n=5,
+        default_months=12,
     )
     gen_pred_html(countries, DATA_DIR, OUTPUT_DIR / "train_predictions_pic.html")
     gen_oob_pred_html(
