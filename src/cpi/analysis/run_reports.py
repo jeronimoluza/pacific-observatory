@@ -26,11 +26,24 @@ from src.cpi.analysis.core import (
     add_coicop_levels,
     create_matched_pairs,
     compute_price_changes,
+    convert_timezone,
+    build_fx_rate_table,
+    convert_to_usd,
 )
 from src.cpi.analysis.indicators import (
     aggregate_inflation,
     compute_price_levels,
     compute_diffusion,
+)
+from src.cpi.analysis.microstructure import (
+    compute_change_frequency,
+    compute_price_spells,
+    aggregate_spells,
+    classify_sticky_flexible,
+)
+from src.cpi.analysis.cross_country import (
+    compute_price_levels_usd,
+    compute_ppp_ratios,
 )
 
 
@@ -70,6 +83,17 @@ def parse_args():
         default=None,
         help="Filter by countries (e.g., --countries fiji samoa)",
     )
+    parser.add_argument(
+        "--skip-ppp",
+        action="store_true",
+        help="Skip PPP cross-country comparisons (avoids FX API calls)",
+    )
+    parser.add_argument(
+        "--fx-cache",
+        type=str,
+        default="data/cpi/analysis/fx_cache.csv",
+        help="Path to FX rate cache file (default: data/cpi/analysis/fx_cache.csv)",
+    )
     return parser.parse_args()
 
 
@@ -79,6 +103,8 @@ def run_reports(
     update_latest: bool = True,
     tiers: Optional[List[float]] = None,
     countries: Optional[List[str]] = None,
+    skip_ppp: bool = False,
+    fx_cache: str = "data/cpi/analysis/fx_cache.csv",
 ):
     """
     Generate all reports and write to timestamped directory.
@@ -89,6 +115,8 @@ def run_reports(
         update_latest: Whether to update the latest/ symlink/directory
         tiers: Optional list of extraction tiers to filter (e.g., [1.0, 2.0])
         countries: Optional list of countries to filter (e.g., ['fiji', 'samoa'])
+        skip_ppp: Whether to skip PPP cross-country comparisons
+        fx_cache: Path to FX rate cache file
     """
     print("=" * 70)
     print("CPI ANALYSIS - PHASE 1: CORE MONTHLY INFLATION INDICATORS")
@@ -142,6 +170,30 @@ def run_reports(
     matched = compute_price_changes(matched)
     print("✓ Added delta_p column")
 
+    # Step 8.5: Compute price spells (uses raw df, not matched pairs)
+    print("\n🔒 Computing price spells...")
+    spells = compute_price_spells(df)
+    print(
+        f"✓ Computed {len(spells):,} price spells across {spells['url_hash'].nunique():,} products"
+    )
+
+    # Step 8.6: PPP preparation (timezone conversion + FX rates)
+    if not skip_ppp:
+        print("\n💱 Preparing cross-country PPP comparisons...")
+
+        print("  • Converting timestamps to local timezones...")
+        df = convert_timezone(df)
+        print("  ✓ Added date_local and date_local_date columns")
+
+        print("  • Building FX rate table...")
+        fx_rates = build_fx_rate_table(df, cache_path=fx_cache)
+        print(f"  ✓ FX rate table: {len(fx_rates):,} rate observations")
+
+        print("  • Converting prices to USD...")
+        df = convert_to_usd(df, fx_rates)
+        n_converted = df["unit_value_usd"].notna().sum()
+        print(f"  ✓ Converted {n_converted:,} / {len(df):,} prices to USD")
+
     # Step 9: Generate reports for each COICOP level
     print("\n" + "=" * 70)
     print("GENERATING REPORTS BY COICOP LEVEL")
@@ -179,6 +231,43 @@ def run_reports(
         diffusion_df.to_csv(diffusion_path, index=False)
         print(f"    ✓ Saved to {diffusion_path.relative_to(output_dir)}")
 
+        # 9.4: Change frequency
+        print("  • Computing change frequency...")
+        freq_df = compute_change_frequency(matched, groupby_cols)
+        freq_path = level_dir / "change_frequency.csv"
+        freq_df.to_csv(freq_path, index=False)
+        print(f"    ✓ Saved to {freq_path.relative_to(output_dir)}")
+
+        # 9.5: Spell aggregation
+        print("  • Aggregating price spells...")
+        spell_groupby = ["country", coicop_col]
+        spells_agg = aggregate_spells(spells, spell_groupby)
+        spells_path = level_dir / "spells.csv"
+        spells_agg.to_csv(spells_path, index=False)
+        print(f"    ✓ Saved to {spells_path.relative_to(output_dir)}")
+
+        # 9.6: Sticky/flexible classification
+        print("  • Classifying sticky/flexible products...")
+        sticky_df = classify_sticky_flexible(spells, spell_groupby)
+        sticky_path = level_dir / "sticky_flexible.csv"
+        sticky_df.to_csv(sticky_path, index=False)
+        print(f"    ✓ Saved to {sticky_path.relative_to(output_dir)}")
+
+        # 9.7: PPP comparisons (if enabled)
+        if not skip_ppp:
+            print("  • Computing PPP price levels (USD)...")
+            ppp_groupby = ["country", coicop_col, "year_month"]
+            ppp_levels = compute_price_levels_usd(df, ppp_groupby)
+            ppp_levels_path = level_dir / "ppp_price_levels.csv"
+            ppp_levels.to_csv(ppp_levels_path, index=False)
+            print(f"    ✓ Saved to {ppp_levels_path.relative_to(output_dir)}")
+
+            print("  • Computing PPP ratios...")
+            ppp_ratios = compute_ppp_ratios(ppp_levels, ppp_groupby)
+            ppp_ratios_path = level_dir / "ppp_ratios.csv"
+            ppp_ratios.to_csv(ppp_ratios_path, index=False)
+            print(f"    ✓ Saved to {ppp_ratios_path.relative_to(output_dir)}")
+
     # Step 10: Update latest symlink/directory
     if update_latest:
         print("\n🔗 Updating latest/ directory...")
@@ -204,13 +293,21 @@ def run_reports(
             print("✓ Copied to latest/ (symlink not supported)")
 
     print("\n" + "=" * 70)
-    print("✅ PHASE 1 REPORTS COMPLETE")
+    print("✅ REPORTS COMPLETE")
     print("=" * 70)
     print(f"\n📂 Results saved to: {output_dir}")
     print("📊 Generated reports for COICOP levels 1-4")
     print("   • inflation.csv - Matched-model inflation indicators")
     print("   • price_levels.csv - Price level tracking")
     print("   • diffusion.csv - Breadth and diffusion indices")
+    print("   • change_frequency.csv - Price change frequency")
+    print("   • spells.csv - Price spell statistics")
+    print("   • sticky_flexible.csv - Sticky/flexible product classification")
+    if not skip_ppp:
+        print(
+            "   • ppp_price_levels.csv - USD price levels for cross-country comparison"
+        )
+        print("   • ppp_ratios.csv - PPP ratios relative to cross-country mean")
     print()
 
 
@@ -223,6 +320,8 @@ def main():
         update_latest=not args.no_latest,
         tiers=args.tiers,
         countries=args.countries,
+        skip_ppp=args.skip_ppp,
+        fx_cache=args.fx_cache,
     )
 
 
