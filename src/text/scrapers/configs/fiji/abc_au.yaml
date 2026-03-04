@@ -1,5 +1,4 @@
-# ABC AU (Australia) Pacific Configuration
-# Migrated from monolithic scraper: src/text/scrapers/newspapers/pacific/abc_au.py
+# ABC AU (Australia) Fiji Configuration
 
 name: "ABC AU Fiji"
 country: "fiji"
