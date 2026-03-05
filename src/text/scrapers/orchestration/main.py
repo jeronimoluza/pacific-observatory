@@ -118,6 +118,11 @@ Examples:
   # List available scrapers
   python src/text/scrapers/orchestration/main.py --list-scrapers
   python src/text/scrapers/orchestration/main.py --list-countries
+
+  # Run all abc_au and rnz scrapers for all countries (update mode by default)
+  python src/text/scrapers/orchestration/main.py --abc-rnz
+  python src/text/scrapers/orchestration/main.py --abc-rnz --full-from-scratch
+  python src/text/scrapers/orchestration/main.py --abc-rnz --dry-run
         """,
     )
 
@@ -146,6 +151,12 @@ Examples:
         "--run-all",
         action="store_true",
         help="Run all newspaper scrapers in parallel",
+    )
+
+    parser.add_argument(
+        "--abc-rnz",
+        action="store_true",
+        help="Run all abc_au and rnz scrapers for all countries sequentially (update mode by default)",
     )
 
     parser.add_argument(
@@ -249,6 +260,22 @@ Examples:
     if args.list_countries:
         list_countries()
         return
+
+    # Handle --abc-rnz command
+    if args.abc_rnz:
+        results = run_all_scrapers(
+            configs_dir=get_default_configs_dir(),
+            project_root=project_root,
+            sequential=True,
+            dry_run=args.dry_run,
+            mode=mode,
+            timeout_per_scraper=args.timeout,
+            include=["abc_au", "rnz"],
+        )
+        failed_count = sum(
+            1 for r in results if r.get("status") in ["failed", "timeout"]
+        )
+        sys.exit(0 if failed_count == 0 else 1)
 
     # Handle run-all command
     if args.run_all:

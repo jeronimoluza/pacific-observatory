@@ -814,6 +814,7 @@ def run_all_scrapers(
     mode: str = "default",
     timeout_per_scraper: int = 600,
     exclude: List[str] = None,
+    include: List[str] = None,
 ) -> List[Dict]:
     """
     Run all newspaper scrapers with country-level sequential execution.
@@ -830,6 +831,7 @@ def run_all_scrapers(
         mode: Scraping mode - "default", "update", "resume", "full_discovery", or "full_from_scratch"
         timeout_per_scraper: Maximum seconds per scraper before timeout (default: 600)
         exclude: List of newspaper names to exclude (case-insensitive)
+        include: List of newspaper names to include exclusively (case-insensitive); if None, all are included
 
     Returns:
         List of result dictionaries with status information
@@ -856,6 +858,12 @@ def run_all_scrapers(
         excluded_count = original_count - len(configs)
         if excluded_count > 0:
             print(f"   Excluded {excluded_count} scraper(s): {', '.join(exclude)}")
+
+    # Filter to only included scrapers
+    if include:
+        include_set = {name.lower() for name in include}
+        configs = [c for c in configs if c["newspaper"].lower() in include_set]
+        print(f"   Filtering to: {', '.join(include)}")
 
     print(f"   Found {len(configs)} scraper configuration(s)")
 
