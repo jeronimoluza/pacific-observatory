@@ -49,13 +49,11 @@ Last modified:
 """
 
 import os
-import unicodedata
 from typing import List, Union, Dict
 import pandas as pd
 import numpy as np
 from .utils import (
     match_keywords,
-    generate_continous_df,
     load_topics_words,
 )
 
@@ -120,6 +118,7 @@ class EPU:
         uncertainty_terms: list = UNCERTAINTY_LIST,
         additional_terms: Union[List, None] = None,
         additional_name: Union[str, None] = None,
+        daily_tail_start: Union[str, None] = None,
     ):
         if isinstance(filepath, str):
             self.filepath = [filepath]
@@ -136,52 +135,86 @@ class EPU:
         self.additional_name = additional_name
         self.raw_files = []
         self.cutoff = cutoff
+        self.daily_tail_start = daily_tail_start
         self.non_epu_urls = non_epu_urls if non_epu_urls is not None else []
         self.min_date = None
         self.max_date = None
         self.epu_stats = pd.DataFrame()
         self.stds = []
+        self.params = {}
         self.news_cols = []
         self.ratio_cols = []
         self.z_score_cols = []
 
     @staticmethod
     def process_data(
-        filepath: str, subset_condition: Union[str, None] = None
+        filepath: str,
+        subset_condition: Union[str, None] = None,
+        daily_tail_start: Union[str, None] = None,
     ) -> pd.DataFrame:
         """
         Reads a CSV file and processes the data.
 
         Args:
-            filename (str): The name of the CSV file.
+            filepath (str): The path to the CSV file.
             subset_condition (str): The conditions to pass on to df.query(), such as
                         "date >= 'YYYY-MM-DD'"
+            daily_tail_start (str): ISO date string (YYYY-MM-DD). Articles on or after
+                        this date get a daily ym (YYYY-MM-DD) instead of monthly
+                        (YYYY-M). Defaults to None (all monthly).
 
         Returns:
             pd.DataFrame: Processed DataFrame with the "Unnamed: 0" column dropped,
                         newline characters removed from the "news" column,
                         "date" column converted to datetime, and a new "ym" column added.
         """
-        df = pd.read_csv(filepath, encoding="utf-8")
+        # Only load columns needed downstream; gracefully handle files missing optional cols
+        _all_cols = pd.read_csv(filepath, encoding="utf-8", nrows=0).columns.tolist()
+        _want_cols = ["date", "body", "language", "url"]
+        usecols = [c for c in _want_cols if c in _all_cols]
 
         # Validate required columns exist
         required_cols = ["date", "body"]
-        missing_cols = [col for col in required_cols if col not in df.columns]
+        missing_cols = [col for col in required_cols if col not in _all_cols]
         if missing_cols:
             raise ValueError(
                 f"File {filepath} missing required columns: {missing_cols}. "
-                f"Available columns: {df.columns.tolist()}"
+                f"Available columns: {_all_cols}"
             )
 
+        df = pd.read_csv(filepath, encoding="utf-8", low_memory=False, usecols=usecols)
+
         df = df.drop_duplicates()
-        df = df[~df.date.isna()].reset_index(drop=True)
+        df = df[~df["date"].isna()].reset_index(drop=True)
         if subset_condition is not None:
             df = df.query(subset_condition).reset_index(drop=True)
 
-        df["body"] = df["body"].replace("\n", "").str.lower()
-        df["body"] = df["body"].apply(lambda x: unicodedata.normalize("NFC", str(x)))
-        df["date"] = pd.to_datetime(df["date"], format="mixed")
-        df["ym"] = [str(d.year) + "-" + str(d.month) for d in df.date]
+        df["body"] = (
+            df["body"]
+            .str.replace("\n", "", regex=False)
+            .str.lower()
+            .str.normalize("NFC")
+        )
+        df["date"] = pd.to_datetime(df["date"], format="mixed", errors="coerce")
+        df = df[~df["date"].isna()].reset_index(drop=True)
+
+        if daily_tail_start is not None:
+            tail_ts = pd.Timestamp(daily_tail_start)
+            is_tail = df["date"] >= tail_ts
+            df["ym"] = (
+                df["date"]
+                .dt.strftime("%Y-%m-%d")
+                .where(
+                    is_tail,
+                    df["date"].dt.year.astype(str)
+                    + "-"
+                    + df["date"].dt.month.astype(str),
+                )
+            )
+        else:
+            df["ym"] = (
+                df["date"].dt.year.astype(str) + "-" + df["date"].dt.month.astype(str)
+            )
         return df
 
     @staticmethod
@@ -210,19 +243,31 @@ class EPU:
         except KeyError as exc:
             print(f"Column '{column}': {exc}")
 
-    def get_epu_category(self, subset_condition=None):
+    def get_epu_category(
+        self, subset_condition=None, daily_tail_start=None, preloaded=None
+    ):
         """
         Reads the csv file that contains news and identifies the Economic/Policy/Uncertainty
         categories.
 
         Args:
             subset_condition (str): conditionals to pass to EPU().process_data()
+            preloaded (dict | None): optional mapping of str(filepath) -> pre-loaded DataFrame
+                (already filtered and processed). When provided for a file, skips disk read.
         """
         for fp in self.filepath:
             country = fp.parent.parent.name
             newspaper = fp.parent.name.replace(country, "").strip("_")
             source = f"{country}_{newspaper}"
-            raw = self.process_data(fp, subset_condition=subset_condition)
+            fp_key = str(fp)
+            if preloaded is not None and fp_key in preloaded:
+                raw = preloaded[fp_key].copy()
+            else:
+                raw = self.process_data(
+                    fp,
+                    subset_condition=subset_condition,
+                    daily_tail_start=daily_tail_start or self.daily_tail_start,
+                )
 
             # Detect language from data, default to 'en' if not present
             if "language" in raw.columns and not raw["language"].isna().all():
@@ -256,8 +301,10 @@ class EPU:
                     results = raw["body"].apply(
                         match_keywords, terms=terms, language=file_language
                     )
-                    raw[col] = results.apply(lambda x: x[0])
-                    raw[f"{col}_count"] = results.apply(lambda x: x[1])
+                    # Unpack tuples in one pass instead of two separate apply calls
+                    unpacked = list(results)
+                    raw[col] = [r[0] for r in unpacked]
+                    raw[f"{col}_count"] = [r[1] for r in unpacked]
                 else:
                     raw[col] = True
                     raw[f"{col}_count"] = 0
@@ -271,13 +318,30 @@ class EPU:
                     terms=self.additional_terms,
                     language=file_language,
                 )
-                raw["additional"] = results.apply(lambda x: x[0])
+                unpacked = list(results)
+                raw["additional"] = [r[0] for r in unpacked]
                 raw["epu"] = (raw.epu) & (raw.additional)
 
             if "url" in raw.columns and raw["url"].isin(self.non_epu_urls).sum() > 0:
                 raw.loc[raw.url.isin(self.non_epu_urls), "epu"] = False
 
-            self.raw_files.append((source, raw.copy()))
+            # Drop columns not needed downstream to reduce raw_files memory footprint
+            _keep_cols = [
+                "date",
+                "ym",
+                "body",
+                "econ",
+                "policy",
+                "uncertain",
+                "econ_count",
+                "policy_count",
+                "uncertain_count",
+                "epu",
+                "language",
+            ]
+            raw = raw[[c for c in _keep_cols if c in raw.columns]]
+
+            self.raw_files.append((source, raw))
 
     def calculate_news_and_epu_counts(self, file: pd.DataFrame) -> pd.DataFrame:
         """
@@ -401,6 +465,41 @@ class EPU:
         ]
         self.epu_stats["news_total"] = self.epu_stats[self.news_cols].sum(axis=1)
 
+    def _build_continuous_index(self, min_date, max_date) -> pd.DataFrame:
+        """
+        Build a hybrid monthly+daily continuous date index.
+
+        If daily_tail_start is set, generates monthly dates up to the month
+        before daily_tail_start, then daily dates from daily_tail_start to
+        max_date. Otherwise generates a purely monthly index.
+
+        Args:
+            min_date: Start of the date range.
+            max_date: End of the date range.
+
+        Returns:
+            DataFrame with a single 'date' column.
+        """
+        if self.daily_tail_start is not None:
+            tail_ts = pd.Timestamp(self.daily_tail_start)
+            # Monthly part: from min_date up to (not including) the tail month
+            monthly_end = tail_ts - pd.DateOffset(months=1)
+            if monthly_end >= pd.Timestamp(min_date):
+                monthly_dates = pd.date_range(
+                    start=min_date, end=monthly_end, freq="MS"
+                )
+            else:
+                monthly_dates = pd.DatetimeIndex([])
+            # Daily part: from tail_ts to max_date (guard against NaT when no tail articles)
+            if pd.isna(max_date) or pd.Timestamp(max_date) < tail_ts:
+                daily_dates = pd.DatetimeIndex([])
+            else:
+                daily_dates = pd.date_range(start=tail_ts, end=max_date, freq="D")
+            all_dates = monthly_dates.append(daily_dates)
+        else:
+            all_dates = pd.date_range(start=min_date, end=max_date, freq="MS")
+        return pd.DataFrame({"date": all_dates})
+
     def get_count_stats(self, calculate_extended: bool = True):
         """
         Aggregates news and EPU counts, calculates ratios, and prepares data for
@@ -435,18 +534,34 @@ class EPU:
             self.epu_stats.date.min(),
             self.epu_stats.date.max(),
         )
-        self.epu_stats = generate_continous_df(
-            self.epu_stats, self.min_date, self.max_date
-        )
+
+        # Build hybrid monthly+daily continuous index
+        dates_df = self._build_continuous_index(self.min_date, self.max_date)
+        self.epu_stats["date"] = pd.to_datetime(self.epu_stats["date"])
+        self.epu_stats = dates_df.merge(self.epu_stats, how="left", on="date").fillna(0)
+
+        # Recompute ym from date so it always reflects the correct daily/monthly format
+        if self.daily_tail_start is not None:
+            tail_ts = pd.Timestamp(self.daily_tail_start)
+            self.epu_stats["ym"] = self.epu_stats["date"].apply(
+                lambda d: d.strftime("%Y-%m-%d")
+                if d >= tail_ts
+                else str(d.year) + "-" + str(d.month)
+            )
+        else:
+            self.epu_stats["ym"] = self.epu_stats["date"].apply(
+                lambda d: str(d.year) + "-" + str(d.month)
+            )
 
         # Merge extended stats if calculated
         if calculate_extended and not extended_stats.empty:
             extended_stats["date"] = pd.to_datetime(
                 extended_stats["ym"], format="mixed"
             )
-            extended_stats = generate_continous_df(
-                extended_stats, self.min_date, self.max_date
-            )
+            ext_dates_df = self._build_continuous_index(self.min_date, self.max_date)
+            extended_stats = ext_dates_df.merge(
+                extended_stats, how="left", on="date"
+            ).fillna(0)
             # Merge on date, drop duplicate ym columns
             self.epu_stats = pd.merge(
                 self.epu_stats,
@@ -506,6 +621,7 @@ class EPU:
             updates the DataFrame with these scores.
         """
         self._calculate_z_score()
+        scaling_factors = {}
         for name, col in zip(
             ["weighted", "unweighted"],
             ["z_score_weighted", "z_score_unweighted"],
@@ -513,8 +629,10 @@ class EPU:
             mean_val = self.epu_stats[self.epu_stats.date < self.cutoff][col].mean()
             if mean_val == 0 or pd.isna(mean_val):
                 scaling_factor = np.nan
+                scaling_factors[name] = None
             else:
                 scaling_factor = 100 / mean_val
+                scaling_factors[name] = float(scaling_factor)
             self.epu_stats[f"epu_{name}"] = scaling_factor * self.epu_stats[col]
 
         # Add additional_name column if provided
@@ -522,6 +640,23 @@ class EPU:
             self.epu_stats[f"epu_{self.additional_name}"] = self.epu_stats[
                 "epu_weighted"
             ]
+
+        # Capture params for incremental reuse
+        ratio_stds = {}
+        for std_dict in self.stds:
+            ratio_stds.update(std_dict)
+        self.params = {
+            "ratio_stds": {
+                k: (
+                    float(v)
+                    if v is not None and not (isinstance(v, float) and np.isnan(v))
+                    else None
+                )
+                for k, v in ratio_stds.items()
+            },
+            "scaling_weighted": scaling_factors.get("weighted"),
+            "scaling_unweighted": scaling_factors.get("unweighted"),
+        }
 
     def calculate_all_indices(self) -> None:
         """
@@ -549,6 +684,75 @@ class EPU:
         self.epu_stats = calc.calculate_breadth_indices(self.epu_stats, sources)
         self.epu_stats = calc.calculate_intensity_indices(self.epu_stats, sources)
         self.epu_stats = calc.calculate_pairwise_indices(self.epu_stats, sources)
+
+        # Store calc so _collect_params can read stds/scaling_factors without re-running
+        self._extended_calc = calc
+
+    def _apply_stored_params(
+        self,
+        ratio_stds: dict,
+        scaling_weighted: float | None,
+        scaling_unweighted: float | None,
+    ) -> None:
+        """
+        Apply pre-computed σ and scaling factors to self.epu_stats instead of
+        recalculating them from pre-cutoff data.
+
+        Used in incremental mode after tail rows are appended to cached pre-tail stats.
+        Populates z_score columns, z_score_weighted/unweighted, epu_weighted/unweighted.
+        """
+        # Apply stored σ to ratio cols → z_score cols
+        for ratio_col in self.ratio_cols:
+            source_cat = ratio_col.replace("_ratio", "")
+            std = ratio_stds.get(source_cat)
+            z_col = f"{source_cat}_z_score"
+            ratio_vals = self.epu_stats[ratio_col].fillna(0)
+            if std is None:
+                self.epu_stats[z_col] = np.nan
+            elif std == 0:
+                fallback_std = ratio_vals.std()
+                if fallback_std == 0 or pd.isna(fallback_std):
+                    self.epu_stats[z_col] = 0.0
+                else:
+                    self.epu_stats[z_col] = ratio_vals / fallback_std
+            else:
+                self.epu_stats[z_col] = ratio_vals / std
+
+        self.z_score_cols = [
+            col for col in self.epu_stats.columns if col.endswith("z_score")
+        ]
+
+        # Weighted / unweighted z-score aggregates
+        self.epu_stats["z_score_unweighted"] = self.epu_stats[self.z_score_cols].mean(
+            axis=1, skipna=True
+        )
+        self.epu_stats["z_score_weighted"] = 0
+        for z_col in self.z_score_cols:
+            weight_col = z_col.replace("z_score", "weights")
+            if weight_col in self.epu_stats.columns:
+                self.epu_stats["z_score_weighted"] += (
+                    self.epu_stats[weight_col].multiply(self.epu_stats[z_col])
+                    if not pd.isna(self.epu_stats[z_col]).all()
+                    else 0
+                )
+
+        # Apply stored scaling factors
+        sf_w = scaling_weighted if scaling_weighted is not None else np.nan
+        sf_u = scaling_unweighted if scaling_unweighted is not None else np.nan
+        self.epu_stats["epu_weighted"] = sf_w * self.epu_stats["z_score_weighted"]
+        self.epu_stats["epu_unweighted"] = sf_u * self.epu_stats["z_score_unweighted"]
+
+        if self.additional_name:
+            self.epu_stats[f"epu_{self.additional_name}"] = self.epu_stats[
+                "epu_weighted"
+            ]
+
+        # Store params for later serialisation
+        self.params = {
+            "ratio_stds": ratio_stds,
+            "scaling_weighted": scaling_weighted,
+            "scaling_unweighted": scaling_unweighted,
+        }
 
     def calculate_group_uncertainty_counts(
         self, groups: Dict[str, List[str]]
@@ -579,23 +783,30 @@ class EPU:
             else:
                 file_language = "en"
 
+            # Accumulate new group columns in a dict; concat once to avoid fragmentation
+            new_cols: dict = {}
             agg_dict = {}
-            df = raw.copy()
 
             for group_name, terms in groups.items():
-                col = f"has_{group_name}"
-                df[col] = df["body"].apply(
+                ug_col = f"UG_{group_name}"
+                presence = raw["body"].apply(
                     lambda text, t=terms, lang=file_language: match_keywords(
                         text, t, lang
                     )[0]
                 )
-                ug_col = f"UG_{group_name}"
-                df[ug_col] = df["uncertain"] & df[col]
+                new_cols[ug_col] = raw["uncertain"] & presence
                 agg_dict[ug_col] = "sum"
 
             agg_dict["body"] = "count"
             agg_dict["uncertain"] = "sum"
 
+            df = pd.concat(
+                [
+                    raw[["ym", "body", "uncertain"]],
+                    pd.DataFrame(new_cols, index=raw.index),
+                ],
+                axis=1,
+            )
             grouped = df.groupby("ym").agg(agg_dict).reset_index()
 
             rename_map = {
