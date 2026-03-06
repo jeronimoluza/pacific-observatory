@@ -256,6 +256,8 @@ _SLIDER_JS = """
         let sliderDates = [];
         let slider = null;
 
+        function isDaily(r) { return r && typeof r.ym === 'string' && r.ym.split('-').length === 3; }
+
         function formatYM(d) {
             const date = new Date(d);
             return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
@@ -284,8 +286,8 @@ _SLIDER_JS = """
                 step: 1,
                 range: { min: 0, max: maxIdx || 1 },
                 tooltips: [
-                    { to: v => formatYM(sliderDates[Math.round(v)]) },
-                    { to: v => formatYM(sliderDates[Math.round(v)]) }
+                    { to: v => { const r = allData[country][Math.round(v)]; return r && isDaily(r) ? r.date : formatYM(sliderDates[Math.round(v)]); } },
+                    { to: v => { const r = allData[country][Math.round(v)]; return r && isDaily(r) ? r.date : formatYM(sliderDates[Math.round(v)]); } }
                 ]
             });
 
@@ -745,8 +747,8 @@ def gen_epu_html(countries, data_dir, out):
 
     script = """
         function formatDate(d) {
-            const date = new Date(d);
-            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            const parts = d.split('-');
+            return `${parts[0]}-${parts[1]}`;
         }
 
         function renderChart(country) {
@@ -759,9 +761,31 @@ def gen_epu_html(countries, data_dir, out):
             if (range.to) data = data.filter(r => r.date <= range.to);
             if (!data.length) return;
 
-            const labels = data.map(r => formatDate(r.date));
-            const epuRaw = data.map(r => r.EPU_index);
-            const datasets = buildMADatasets(epuRaw, '#1d77b2', 'EPU Index');
+            const monthlyData = data.filter(r => !isDaily(r));
+            const dailyData   = data.filter(r =>  isDaily(r) && r.EPU_index != null);
+
+            const monthlyLabels = monthlyData.map(r => formatDate(r.date));
+            const dailyLabels   = dailyData.map(r => r.date);
+            const labels = [...monthlyLabels, ...dailyLabels];
+
+            const datasets = buildMADatasets(monthlyData.map(r => r.EPU_index), '#1d77b2', 'EPU Index');
+
+            if (dailyData.length) {
+                const lastMonthly = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1].EPU_index : null;
+                const nBridge = Math.max(0, monthlyData.length - 1);
+                datasets.push({
+                    label: 'EPU Index (current month, daily)',
+                    data: [...Array(nBridge).fill(null), lastMonthly, ...dailyData.map(r => r.EPU_index)],
+                    borderColor: hexToRgba('#1d77b2', 0.8),
+                    borderDash: [4, 4],
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0,
+                    pointRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 4)],
+                    pointHoverRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 6)],
+                    pointBackgroundColor: '#1d77b2'
+                });
+            }
 
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
@@ -860,8 +884,8 @@ def gen_epu_topics_html(countries, data_dir, out):
         }}
 
         function formatDate(d) {{
-            const date = new Date(d);
-            return `${{date.getFullYear()}}-${{String(date.getMonth() + 1).padStart(2, '0')}}`;
+            const parts = d.split('-');
+            return `${{parts[0]}}-${{parts[1]}}`;
         }}
 
         function renderChart(country, selectedItems) {{
@@ -874,13 +898,34 @@ def gen_epu_topics_html(countries, data_dir, out):
             if (range.to) data = data.filter(r => r.date <= range.to);
             if (!data.length) return;
 
-            const labels = data.map(r => formatDate(r.date));
+            const monthlyData = data.filter(r => !isDaily(r));
+            const dailyData   = data.filter(r =>  isDaily(r) && selectedItems.some(t => r[`EPU_${{t}}_index`] != null));
+
+            const monthlyLabels = monthlyData.map(r => formatDate(r.date));
+            const dailyLabels   = dailyData.map(r => r.date);
+            const labels = [...monthlyLabels, ...dailyLabels];
+
             const datasets = [];
             selectedItems.forEach((topic, i) => {{
                 const colKey = `EPU_${{topic}}_index`;
-                const rawValues = data.map(r => r[colKey]);
                 const color = palette[allItems.indexOf(topic) % palette.length];
-                datasets.push(...buildMADatasets(rawValues, color, fmtLabel(topic) + ' EPU'));
+                datasets.push(...buildMADatasets(monthlyData.map(r => r[colKey]), color, fmtLabel(topic) + ' EPU'));
+                if (dailyData.length) {{
+                    const lastMonthly = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1][colKey] : null;
+                    const nBridge = Math.max(0, monthlyData.length - 1);
+                    datasets.push({{
+                        label: fmtLabel(topic) + ' EPU (current month, daily)',
+                        data: [...Array(nBridge).fill(null), lastMonthly, ...dailyData.map(r => r[colKey])],
+                        borderColor: hexToRgba(color, 0.8),
+                        borderDash: [4, 4],
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0,
+                        pointRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 4)],
+                        pointHoverRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 6)],
+                        pointBackgroundColor: color
+                    }});
+                }}
             }});
 
             const ctx = document.getElementById('chart').getContext('2d');
@@ -935,8 +980,8 @@ def gen_news_html(countries, data_dir, out):
 
     script = """
         function formatDate(d) {
-            const date = new Date(d);
-            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            const parts = d.split('-');
+            return `${parts[0]}-${parts[1]}`;
         }
 
         function renderChart(country) {
@@ -949,8 +994,42 @@ def gen_news_html(countries, data_dir, out):
             if (range.to) data = data.filter(r => r.date <= range.to);
             if (!data.length) return;
 
-            const labels = data.map(r => formatDate(r.date));
-            const newsCounts = data.map(r => r.news_total);
+            const monthlyData = data.filter(r => !isDaily(r));
+            const dailyData   = data.filter(r =>  isDaily(r) && r.news_total != null);
+
+            const monthlyLabels = monthlyData.map(r => formatDate(r.date));
+            const dailyLabels   = dailyData.map(r => r.date);
+            const labels = [...monthlyLabels, ...dailyLabels];
+
+            const datasets = [
+                {
+                    label: 'News Count',
+                    data: [...monthlyData.map(r => r.news_total), ...Array(dailyData.length).fill(null)],
+                    borderColor: '#2aa8f7',
+                    backgroundColor: 'rgba(42, 168, 247, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.1,
+                    pointRadius: 0,
+                    pointHoverRadius: 5
+                }
+            ];
+            if (dailyData.length) {
+                const lastMonthlyNews = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1].news_total : null;
+                const nBridgeNews = Math.max(0, monthlyData.length - 1);
+                datasets.push({
+                    label: 'News Count (current month, daily)',
+                    data: [...Array(nBridgeNews).fill(null), lastMonthlyNews, ...dailyData.map(r => r.news_total)],
+                    borderColor: 'rgba(42, 168, 247, 0.8)',
+                    borderDash: [4, 4],
+                    borderWidth: 2,
+                    fill: false,
+                    tension: 0,
+                    pointRadius: [...Array(nBridgeNews).fill(0), 0, ...dailyData.map(() => 4)],
+                    pointHoverRadius: [...Array(nBridgeNews).fill(0), 0, ...dailyData.map(() => 6)],
+                    pointBackgroundColor: '#2aa8f7'
+                });
+            }
 
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
@@ -959,19 +1038,7 @@ def gen_news_html(countries, data_dir, out):
                 type: 'line',
                 data: {
                     labels: labels,
-                    datasets: [
-                        {
-                            label: 'News Count',
-                            data: newsCounts,
-                            borderColor: '#2aa8f7',
-                            backgroundColor: 'rgba(42, 168, 247, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.1,
-                            pointRadius: 0,
-                            pointHoverRadius: 5
-                        }
-                    ]
+                    datasets: datasets
                 },
                 options: {
                     responsive: true,
@@ -1024,8 +1091,8 @@ def gen_breadth_html(countries, data_dir, out):
 
     script = """
         function formatDate(d) {
-            const date = new Date(d);
-            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            const parts = d.split('-');
+            return `${parts[0]}-${parts[1]}`;
         }
 
         function renderChart(country) {
@@ -1038,12 +1105,38 @@ def gen_breadth_html(countries, data_dir, out):
             if (range.to) data = data.filter(r => r.date <= range.to);
             if (!data.length) return;
 
-            const labels = data.map(r => formatDate(r.date));
-            const datasets = [
-                ...buildMADatasets(data.map(r => r.E_breadth), '#1d77b2', 'Economic Breadth'),
-                ...buildMADatasets(data.map(r => r.P_breadth), '#d95e10', 'Policy Breadth'),
-                ...buildMADatasets(data.map(r => r.U_breadth), '#00a37c', 'Uncertainty Breadth')
+            const monthlyData = data.filter(r => !isDaily(r));
+            const dailyData   = data.filter(r =>  isDaily(r) && (r.E_breadth != null || r.P_breadth != null || r.U_breadth != null));
+
+            const monthlyLabels = monthlyData.map(r => formatDate(r.date));
+            const dailyLabels   = dailyData.map(r => r.date);
+            const labels = [...monthlyLabels, ...dailyLabels];
+
+            const series = [
+                { key: 'E_breadth', color: '#1d77b2', label: 'Economic Breadth' },
+                { key: 'P_breadth', color: '#d95e10', label: 'Policy Breadth' },
+                { key: 'U_breadth', color: '#00a37c', label: 'Uncertainty Breadth' }
             ];
+            const datasets = [];
+            series.forEach(s => {
+                datasets.push(...buildMADatasets(monthlyData.map(r => r[s.key]), s.color, s.label));
+                if (dailyData.length) {
+                    const lastMonthly = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1][s.key] : null;
+                    const nBridge = Math.max(0, monthlyData.length - 1);
+                    datasets.push({
+                        label: s.label + ' (current month, daily)',
+                        data: [...Array(nBridge).fill(null), lastMonthly, ...dailyData.map(r => r[s.key])],
+                        borderColor: hexToRgba(s.color, 0.8),
+                        borderDash: [4, 4],
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0,
+                        pointRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 4)],
+                        pointHoverRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 6)],
+                        pointBackgroundColor: s.color
+                    });
+                }
+            });
 
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
@@ -1102,8 +1195,8 @@ def gen_intensity_html(countries, data_dir, out):
 
     script = """
         function formatDate(d) {
-            const date = new Date(d);
-            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            const parts = d.split('-');
+            return `${parts[0]}-${parts[1]}`;
         }
 
         function renderChart(country) {
@@ -1116,12 +1209,38 @@ def gen_intensity_html(countries, data_dir, out):
             if (range.to) data = data.filter(r => r.date <= range.to);
             if (!data.length) return;
 
-            const labels = data.map(r => formatDate(r.date));
-            const datasets = [
-                ...buildMADatasets(data.map(r => r.E_intensity), '#1d77b2', 'Economic Intensity'),
-                ...buildMADatasets(data.map(r => r.P_intensity), '#d95e10', 'Policy Intensity'),
-                ...buildMADatasets(data.map(r => r.U_intensity), '#00a37c', 'Uncertainty Intensity')
+            const monthlyData = data.filter(r => !isDaily(r));
+            const dailyData   = data.filter(r =>  isDaily(r) && (r.E_intensity != null || r.P_intensity != null || r.U_intensity != null));
+
+            const monthlyLabels = monthlyData.map(r => formatDate(r.date));
+            const dailyLabels   = dailyData.map(r => r.date);
+            const labels = [...monthlyLabels, ...dailyLabels];
+
+            const series = [
+                { key: 'E_intensity', color: '#1d77b2', label: 'Economic Intensity' },
+                { key: 'P_intensity', color: '#d95e10', label: 'Policy Intensity' },
+                { key: 'U_intensity', color: '#00a37c', label: 'Uncertainty Intensity' }
             ];
+            const datasets = [];
+            series.forEach(s => {
+                datasets.push(...buildMADatasets(monthlyData.map(r => r[s.key]), s.color, s.label));
+                if (dailyData.length) {
+                    const lastMonthly = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1][s.key] : null;
+                    const nBridge = Math.max(0, monthlyData.length - 1);
+                    datasets.push({
+                        label: s.label + ' (current month, daily)',
+                        data: [...Array(nBridge).fill(null), lastMonthly, ...dailyData.map(r => r[s.key])],
+                        borderColor: hexToRgba(s.color, 0.8),
+                        borderDash: [4, 4],
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0,
+                        pointRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 4)],
+                        pointHoverRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 6)],
+                        pointBackgroundColor: s.color
+                    });
+                }
+            });
 
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
@@ -1180,8 +1299,8 @@ def gen_pairwise_html(countries, data_dir, out):
 
     script = """
         function formatDate(d) {
-            const date = new Date(d);
-            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            const parts = d.split('-');
+            return `${parts[0]}-${parts[1]}`;
         }
 
         function renderChart(country) {
@@ -1194,12 +1313,38 @@ def gen_pairwise_html(countries, data_dir, out):
             if (range.to) data = data.filter(r => r.date <= range.to);
             if (!data.length) return;
 
-            const labels = data.map(r => formatDate(r.date));
-            const datasets = [
-                ...buildMADatasets(data.map(r => r.EU_index), '#1d77b2', 'Economic-Uncertainty (EU)'),
-                ...buildMADatasets(data.map(r => r.PU_index), '#d95e10', 'Policy-Uncertainty (PU)'),
-                ...buildMADatasets(data.map(r => r.EP_index), '#00a37c', 'Economic-Policy (EP)')
+            const monthlyData = data.filter(r => !isDaily(r));
+            const dailyData   = data.filter(r =>  isDaily(r) && (r.EU_index != null || r.PU_index != null || r.EP_index != null));
+
+            const monthlyLabels = monthlyData.map(r => formatDate(r.date));
+            const dailyLabels   = dailyData.map(r => r.date);
+            const labels = [...monthlyLabels, ...dailyLabels];
+
+            const series = [
+                { key: 'EU_index', color: '#1d77b2', label: 'Economic-Uncertainty (EU)' },
+                { key: 'PU_index', color: '#d95e10', label: 'Policy-Uncertainty (PU)' },
+                { key: 'EP_index', color: '#00a37c', label: 'Economic-Policy (EP)' }
             ];
+            const datasets = [];
+            series.forEach(s => {
+                datasets.push(...buildMADatasets(monthlyData.map(r => r[s.key]), s.color, s.label));
+                if (dailyData.length) {
+                    const lastMonthly = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1][s.key] : null;
+                    const nBridge = Math.max(0, monthlyData.length - 1);
+                    datasets.push({
+                        label: s.label + ' (current month, daily)',
+                        data: [...Array(nBridge).fill(null), lastMonthly, ...dailyData.map(r => r[s.key])],
+                        borderColor: hexToRgba(s.color, 0.8),
+                        borderDash: [4, 4],
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0,
+                        pointRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 4)],
+                        pointHoverRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 6)],
+                        pointBackgroundColor: s.color
+                    });
+                }
+            });
 
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
@@ -1302,25 +1447,27 @@ def gen_topic_attribution_html(
             return LABEL_MAP[raw] || raw;
         }}
 
-        function formatDate(d) {{
-            const date = new Date(d);
-            return `${{date.getFullYear()}}-${{String(date.getMonth() + 1).padStart(2, '0')}}`;
+        function formatDate(d, r) {{
+            if (r && isDaily(r)) return r.date;
+            const parts = d.split('-');
+            return `${{parts[0]}}-${{parts[1]}}`;
         }}
 
         function renderChart(country, topN) {{
             const rawData = allData[country];
             if (!rawData || !rawData.length) return;
 
-            // Filter by date range using slider
+            // Discover all _framing columns
+            const framingKeys = Object.keys(rawData[0]).filter(k => k.endsWith('_framing'));
+            const items = framingKeys.map(k => k.replace('_framing', ''));
+
+            // Filter by date range using slider, also drop null-placeholder daily rows
             const range = getSliderRange();
             let data = rawData;
             if (range.from) data = data.filter(r => r.date >= range.from);
             if (range.to) data = data.filter(r => r.date <= range.to);
+            data = data.filter(r => !isDaily(r) || items.some(item => r[item + '_framing'] != null));
             if (!data.length) return;
-
-            // Discover all _framing columns
-            const framingKeys = Object.keys(rawData[0]).filter(k => k.endsWith('_framing'));
-            const items = framingKeys.map(k => k.replace('_framing', ''));
 
             // Clamp topN
             topN = Math.max(1, Math.min(topN, items.length));
@@ -1353,7 +1500,7 @@ def gen_topic_attribution_html(
             meanSmoothed.sort((a, b) => b.mean - a.mean);
             const visible = meanSmoothed.slice(0, topN).map(v => v.item).sort();
 
-            // Rank only among the visible top-N items per month
+            // Rank only among the visible top-N items per data point
             const ranks = data.map((row, t) => {{
                 const vals = visible.map(item => ({{ item: item, value: smoothed[item][t] != null ? smoothed[item][t] : 0 }}));
                 vals.sort((a, b) => b.value - a.value);
@@ -1362,7 +1509,7 @@ def gen_topic_attribution_html(
                 return monthRanks;
             }});
 
-            const labels = data.map(r => formatDate(r.date));
+            const labels = data.map(r => formatDate(r.date, r));
             const datasets = visible.map((item, i) => {{
                 const color = palette[i % palette.length];
                 return {{
@@ -1372,11 +1519,13 @@ def gen_topic_attribution_html(
                     borderWidth: 2.5,
                     fill: false,
                     tension: 0,
-                    pointRadius: 5,
-                    pointBackgroundColor: color,
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 1.5,
-                    pointHoverRadius: 7,
+                    pointRadius: data.map(r => isDaily(r) ? 7 : 5),
+                    pointStyle: data.map(r => isDaily(r) ? 'rectRot' : 'circle'),
+                    pointBackgroundColor: data.map(r => isDaily(r) ? '#fff' : color),
+                    pointBorderColor: color,
+                    pointBorderWidth: data.map(r => isDaily(r) ? 2 : 1.5),
+                    pointHoverRadius: 8,
+                    segment: {{ borderDash: (ctx) => isDaily(data[ctx.p1DataIndex]) ? [4, 4] : [] }},
                     _itemKey: item
                 }};
             }});
@@ -1405,7 +1554,8 @@ def gen_topic_attribution_html(
                                     const itemKey = context.dataset._itemKey;
                                     const rank = context.raw;
                                     const smoothedVal = smoothed[itemKey][context.dataIndex];
-                                    return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (smoothedVal != null ? smoothedVal.toFixed(3) : 'N/A') + ')';
+                                    const daily = isDaily(data[context.dataIndex]);
+                                    return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (smoothedVal != null ? smoothedVal.toFixed(3) : 'N/A') + ')' + (daily ? ' [daily]' : '');
                                 }}
                             }}
                         }}
@@ -1492,25 +1642,27 @@ def gen_actor_attribution_html(
             return LABEL_MAP[raw] || raw;
         }}
 
-        function formatDate(d) {{
-            const date = new Date(d);
-            return `${{date.getFullYear()}}-${{String(date.getMonth() + 1).padStart(2, '0')}}`;
+        function formatDate(d, r) {{
+            if (r && isDaily(r)) return r.date;
+            const parts = d.split('-');
+            return `${{parts[0]}}-${{parts[1]}}`;
         }}
 
         function renderChart(country, topN) {{
             const rawData = allData[country];
             if (!rawData || !rawData.length) return;
 
-            // Filter by date range using slider
+            // Discover all _framing columns
+            const framingKeys = Object.keys(rawData[0]).filter(k => k.endsWith('_framing'));
+            const items = framingKeys.map(k => k.replace('_framing', ''));
+
+            // Filter by date range using slider, also drop null-placeholder daily rows
             const range = getSliderRange();
             let data = rawData;
             if (range.from) data = data.filter(r => r.date >= range.from);
             if (range.to) data = data.filter(r => r.date <= range.to);
+            data = data.filter(r => !isDaily(r) || items.some(item => r[item + '_framing'] != null));
             if (!data.length) return;
-
-            // Discover all _framing columns
-            const framingKeys = Object.keys(rawData[0]).filter(k => k.endsWith('_framing'));
-            const items = framingKeys.map(k => k.replace('_framing', ''));
 
             // Clamp topN
             topN = Math.max(1, Math.min(topN, items.length));
@@ -1541,7 +1693,7 @@ def gen_actor_attribution_html(
             meanSmoothed.sort((a, b) => b.mean - a.mean);
             const visible = meanSmoothed.slice(0, topN).map(v => v.item).sort();
 
-            // Rank only among the visible top-N items per month
+            // Rank only among the visible top-N items per data point
             const ranks = data.map((row, t) => {{
                 const vals = visible.map(item => ({{ item: item, value: smoothed[item][t] != null ? smoothed[item][t] : 0 }}));
                 vals.sort((a, b) => b.value - a.value);
@@ -1550,7 +1702,7 @@ def gen_actor_attribution_html(
                 return monthRanks;
             }});
 
-            const labels = data.map(r => formatDate(r.date));
+            const labels = data.map(r => formatDate(r.date, r));
             const datasets = visible.map((item, i) => {{
                 const color = palette[i % palette.length];
                 return {{
@@ -1560,11 +1712,13 @@ def gen_actor_attribution_html(
                     borderWidth: 2.5,
                     fill: false,
                     tension: 0,
-                    pointRadius: 5,
-                    pointBackgroundColor: color,
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 1.5,
-                    pointHoverRadius: 7,
+                    pointRadius: data.map(r => isDaily(r) ? 7 : 5),
+                    pointStyle: data.map(r => isDaily(r) ? 'rectRot' : 'circle'),
+                    pointBackgroundColor: data.map(r => isDaily(r) ? '#fff' : color),
+                    pointBorderColor: color,
+                    pointBorderWidth: data.map(r => isDaily(r) ? 2 : 1.5),
+                    pointHoverRadius: 8,
+                    segment: {{ borderDash: (ctx) => isDaily(data[ctx.p1DataIndex]) ? [4, 4] : [] }},
                     _itemKey: item
                 }};
             }});
@@ -1593,7 +1747,8 @@ def gen_actor_attribution_html(
                                     const itemKey = context.dataset._itemKey;
                                     const rank = context.raw;
                                     const smoothedVal = smoothed[itemKey][context.dataIndex];
-                                    return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (smoothedVal != null ? smoothedVal.toFixed(3) : 'N/A') + ')';
+                                    const daily = isDaily(data[context.dataIndex]);
+                                    return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (smoothedVal != null ? smoothedVal.toFixed(3) : 'N/A') + ')' + (daily ? ' [daily]' : '');
                                 }}
                             }}
                         }}
