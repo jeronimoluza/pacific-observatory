@@ -6,6 +6,23 @@ import pandas as pd
 
 from ..utils import get_session
 
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_wb_population",
+        "country": "All countries (ancillary)",
+        "source_name": "World Bank Total Population",
+        "url": "https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL",
+        "description": "Official multilateral institution (World Bank Open Data). Total population figures via a free documented REST API. Ancillary reference data used to compute per-capita subsidy values.",
+        "extraction_method": ["REST API"],
+        "products": ["Total population (ancillary reference data)"],
+        "frequency": "Annual",
+        "source_keys": [],
+        "publishes_on": "Annual",
+        "output": "population.csv",
+        "notes": "Paginated API; returns most recent value (mrv=1) for all countries. Note: API returns absolute values, not thousands-rounded values shown on website.",
+    },
+]
+
 _WB_API_URL = (
     "https://api.worldbank.org/v2/country/all/indicator/SP.POP.TOTL"
     "?format=json&mrv=1&per_page=500&page={page}"
