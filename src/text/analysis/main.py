@@ -65,9 +65,57 @@ def append_missing_months(
         return
 
     existing = pd.read_csv(path, encoding="utf-8")
+
+    # If the *schema* changed (new columns), rewrite the file even if there are
+    # no new rows to append. This matters when we add new topic indices but the
+    # underlying date coverage hasn't changed; plotting code discovers topics
+    # from CSV columns.
+    existing_cols = list(existing.columns)
+    new_cols = list(new_df.columns)
+    merged_cols = existing_cols + [c for c in new_cols if c not in existing_cols]
+    schema_changed = merged_cols != existing_cols
+    added_cols = [c for c in new_cols if c not in existing_cols]
+
     existing["date"] = pd.to_datetime(existing["date"])
     new_df = new_df.copy()
     new_df["date"] = pd.to_datetime(new_df["date"])
+
+    # Fill missing values for columns that already exist on disk.
+    # This is conservative: only fill existing NaNs from new_df; never overwrite
+    # existing non-null values.
+    fill_missing_cols = []
+    for c in new_cols:
+        if c in ("date", "ym"):
+            continue
+        if (
+            c in existing_cols
+            and existing[c].isna().any()
+            and not new_df[c].isna().all()
+        ):
+            fill_missing_cols.append(c)
+
+    cols_to_update = added_cols + fill_missing_cols
+    updated_columns = bool(cols_to_update)
+
+    if schema_changed:
+        existing = existing.reindex(columns=merged_cols)
+
+    if cols_to_update:
+        add_src = new_df[["date"] + cols_to_update].copy()
+        add_src = add_src.drop_duplicates(subset=["date"], keep="last")
+        existing = existing.merge(
+            add_src, on="date", how="left", suffixes=("", "__new")
+        )
+        for c in cols_to_update:
+            new_c = f"{c}__new"
+            if new_c in existing.columns:
+                if c in added_cols:
+                    existing[c] = existing[new_c]
+                else:
+                    existing[c] = existing[c].where(
+                        existing[c].notna(), existing[new_c]
+                    )
+                existing = existing.drop(columns=[new_c])
 
     rows_to_add_list = []
 
@@ -111,6 +159,9 @@ def append_missing_months(
             rows_to_add_list.append(rows_for_months)
 
     if not rows_to_add_list:
+        if schema_changed or updated_columns:
+            # No new rows, but ensure column updates are persisted.
+            existing.to_csv(path, index=False, encoding="utf-8")
         return
 
     rows_to_add = pd.concat(rows_to_add_list)
@@ -265,6 +316,46 @@ def _run_full_epu(news_dirs, cutoff, subset_condition, daily_tail_start, all_top
         topic_epus[topic_key] = e_topic
 
     return e_base, topic_epus, ug_counts_all
+
+
+def _run_full_topics_only(
+    news_dirs,
+    cutoff,
+    subset_condition,
+    daily_tail_start,
+    topics_subset: dict,
+):
+    """Compute full-history topic EPUs for a subset of topics.
+
+    Used to backfill new topics without re-running the full base pipeline.
+    Returns a dict: {topic_key: EPU instance}.
+    """
+    # Pre-read all articles once; shared across all topic EPUs
+    preloaded = {}
+    for fp in news_dirs:
+        try:
+            preloaded[str(fp)] = EPU.process_data(
+                fp, subset_condition=subset_condition, daily_tail_start=daily_tail_start
+            )
+        except Exception:
+            pass
+
+    topic_epus = {}
+    for topic_key, additional_terms in topics_subset.items():
+        e_topic = EPU(
+            news_dirs,
+            cutoff=cutoff,
+            additional_terms=additional_terms,
+            additional_name=topic_key,
+            daily_tail_start=daily_tail_start,
+        )
+        e_topic.get_epu_category(subset_condition=subset_condition, preloaded=preloaded)
+        e_topic.get_count_stats(calculate_extended=False)
+        e_topic.calculate_epu_score()
+        e_topic.raw_files = []  # free immediately
+        topic_epus[topic_key] = e_topic
+
+    return topic_epus
 
 
 def _run_incremental_epu(
@@ -617,8 +708,62 @@ def process_country(
 
     use_cache = params_path.exists() and cache_path.exists() and not recalculate_params
 
+    # Optional backfill when new topics are added to the keyword taxonomy.
+    # In that situation, existing params.json lacks σ/scaling for new topics,
+    # and existing outputs topics_epu.csv lacks historical values.
+    missing_topic_epus_full = {}
+    if use_cache:
+        params = json.loads(params_path.read_text(encoding="utf-8"))
+        have_topics = set((params.get("topics_epu") or {}).keys())
+        want_topics = set(all_topics.keys())
+        missing_topics = sorted(want_topics - have_topics)
+
+        if missing_topics:
+            print(
+                "  [cache] missing topic params; recomputing only missing topics: "
+                + ", ".join(missing_topics)
+            )
+
+            topics_subset = {k: all_topics[k] for k in missing_topics}
+            missing_topic_epus_full = _run_full_topics_only(
+                news_dirs,
+                cutoff,
+                subset_condition,
+                daily_tail_start,
+                topics_subset,
+            )
+
+            # Update params.json in place (add only missing topics)
+            params.setdefault("topics_epu", {})
+            for k, e_topic in missing_topic_epus_full.items():
+                params["topics_epu"][k] = e_topic.params
+
+            def _json_default(x):
+                return None if (isinstance(x, float) and np.isnan(x)) else x
+
+            params_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(params_path, "w", encoding="utf-8") as f:
+                json.dump(params, f, indent=2, default=_json_default)
+            print(f"  params.json updated with {len(missing_topics)} topics")
+
+            # Update cache with pre-tail topic index columns so incremental runs
+            # can carry a complete set of columns.
+            tail_ts = pd.Timestamp(daily_tail_start)
+            cache_df = pd.read_csv(cache_path, encoding="utf-8", low_memory=False)
+            cache_df["date"] = pd.to_datetime(cache_df["date"])
+            for k, e_topic in missing_topic_epus_full.items():
+                col = f"EPU_{k}_index"
+                topic_pre = e_topic.epu_stats[e_topic.epu_stats["date"] < tail_ts][
+                    ["date", "epu_weighted"]
+                ].rename(columns={"epu_weighted": col})
+                cache_df = cache_df.drop(columns=[col], errors="ignore")
+                cache_df = cache_df.merge(topic_pre, on="date", how="left")
+            cache_df.to_csv(cache_path, index=False, encoding="utf-8")
+            print(f"  epu_stats_cache.csv updated with {len(missing_topics)} topics")
+
     if use_cache:
         print("  [incremental] loading cache...")
+        # Reload params in case we just updated it.
         params = json.loads(params_path.read_text(encoding="utf-8"))
         cache = pd.read_csv(cache_path, encoding="utf-8", low_memory=False)
         cache["date"] = pd.to_datetime(cache["date"])
@@ -631,6 +776,11 @@ def process_country(
             params,
             cache,
         )
+
+        # If we recomputed any missing topics in full-history mode, use those
+        # EPU objects for output building so historical values can be backfilled.
+        if missing_topic_epus_full:
+            topic_epus.update(missing_topic_epus_full)
     else:
         print("  [full] running full EPU computation...")
         e_base, topic_epus, ug_counts_all = _run_full_epu(
@@ -746,9 +896,9 @@ if __name__ == "__main__":
     total_countries = len(country_dirs)
     start_time = time.time()
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"EPU Analysis - Processing {total_countries} countries")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     for i, country in enumerate(country_dirs):
         country_start = time.time()
@@ -764,7 +914,7 @@ if __name__ == "__main__":
         else:
             eta_str = "ETA: calculating..."
 
-        print(f"\n[{i+1}/{total_countries}] {country.name} - {eta_str}")
+        print(f"\n[{i + 1}/{total_countries}] {country.name} - {eta_str}")
         try:
             process_country(
                 country,
@@ -782,6 +932,6 @@ if __name__ == "__main__":
         print(f"  Done in {country_elapsed:.1f}s")
 
     total_elapsed = time.time() - start_time
-    print(f"\n{'='*60}")
-    print(f"Completed in {total_elapsed/60:.1f} minutes")
-    print(f"{'='*60}")
+    print(f"\n{'=' * 60}")
+    print(f"Completed in {total_elapsed / 60:.1f} minutes")
+    print(f"{'=' * 60}")

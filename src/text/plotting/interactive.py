@@ -511,8 +511,8 @@ def gen_html_multi_select(
 
     checkboxes = "\n".join(
         f'<label class="chip"><input type="checkbox" value="{item}"'
-        f'{" checked" if item in default_checked else ""}>'
-        f'{fmt_country(item)}</label>'
+        f"{' checked' if item in default_checked else ''}>"
+        f"{fmt_country(item)}</label>"
         for item in items
     )
 
@@ -590,8 +590,8 @@ def gen_html_multi_select_with_radio(
 
     checkboxes = "\n".join(
         f'<label class="chip"><input type="checkbox" value="{item}"'
-        f'{" checked" if item in default_checked else ""}>'
-        f'{fmt_country(item)}</label>'
+        f"{' checked' if item in default_checked else ''}>"
+        f"{fmt_country(item)}</label>"
         for item in items
     )
 
@@ -775,17 +775,24 @@ def gen_epu_html(countries, data_dir, out):
                 const nBridge = Math.max(0, monthlyData.length - 1);
                 datasets.push({
                     label: 'EPU Index (current month, daily)',
-                    data: [...Array(nBridge).fill(null), lastMonthly, ...dailyData.map(r => r.EPU_index)],
+                    data: [...Array(nBridge).fill(null), lastMonthly, ...dailyData.map(r => (r.EPU_index === 0 ? null : r.EPU_index))],
                     borderColor: hexToRgba('#1d77b2', 0.8),
                     borderDash: [4, 4],
                     borderWidth: 2,
                     fill: false,
                     tension: 0,
-                    pointRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 4)],
-                    pointHoverRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 6)],
+                    spanGaps: true,
+                    pointRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(r => (r.EPU_index === 0 ? 0 : 4))],
+                    pointHoverRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(r => (r.EPU_index === 0 ? 0 : 6))],
                     pointBackgroundColor: '#1d77b2'
                 });
             }
+
+            const allValues = [
+                ...monthlyData.map(r => r.EPU_index),
+                ...dailyData.map(r => r.EPU_index)
+            ].filter(v => v != null && v !== 0);
+            const yMax = allValues.length ? Math.max(...allValues) * 1.1 : undefined;
 
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
@@ -810,7 +817,7 @@ def gen_epu_html(countries, data_dir, out):
                     },
                     scales: {
                         x: { display: true, title: { display: true, text: 'Date' } },
-                        y: { display: true, title: { display: true, text: 'EPU Index' } }
+                        y: { display: true, title: { display: true, text: 'EPU Index' }, max: yMax }
                     }
                 }
             });
@@ -835,17 +842,18 @@ def gen_epu_topics_html(countries, data_dir, out):
     """Generate topic-specific EPU visualization with multi-select checkboxes and smoothing radio"""
     countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
     all_data = {}
-    topics = None
+    topics_set = set()
     for c in countries:
         df = load_topics_epu_data(c, data_dir)
         if df is not None:
             all_data[c] = df_to_json(df)
-            if topics is None:
-                topics = [
-                    col.replace("EPU_", "").replace("_index", "")
-                    for col in df.columns
-                    if col.startswith("EPU_") and col.endswith("_index")
-                ]
+            topics_set.update(
+                col.replace("EPU_", "").replace("_index", "")
+                for col in df.columns
+                if col.startswith("EPU_") and col.endswith("_index")
+            )
+
+    topics = sorted(topics_set)
     if not all_data or not topics:
         return
 
@@ -915,18 +923,28 @@ def gen_epu_topics_html(countries, data_dir, out):
                     const nBridge = Math.max(0, monthlyData.length - 1);
                     datasets.push({{
                         label: fmtLabel(topic) + ' EPU (current month, daily)',
-                        data: [...Array(nBridge).fill(null), lastMonthly, ...dailyData.map(r => r[colKey])],
+                        data: [...Array(nBridge).fill(null), lastMonthly, ...dailyData.map(r => (r[colKey] === 0 ? null : r[colKey]))],
                         borderColor: hexToRgba(color, 0.8),
                         borderDash: [4, 4],
                         borderWidth: 2,
                         fill: false,
                         tension: 0,
-                        pointRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 4)],
-                        pointHoverRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(() => 6)],
+                        spanGaps: true,
+                        pointRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(r => (r[colKey] === 0 ? 0 : 4))],
+                        pointHoverRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(r => (r[colKey] === 0 ? 0 : 6))],
                         pointBackgroundColor: color
                     }});
                 }}
             }});
+
+            const allTopicValues = selectedItems.flatMap(topic => {{
+                const colKey = `EPU_${{topic}}_index`;
+                return [
+                    ...monthlyData.map(r => r[colKey]),
+                    ...dailyData.map(r => r[colKey])
+                ];
+            }}).filter(v => v != null && v !== 0);
+            const yMax = allTopicValues.length ? Math.max(...allTopicValues) * 1.1 : undefined;
 
             const ctx = document.getElementById('chart').getContext('2d');
             if (currentChart) currentChart.destroy();
@@ -943,7 +961,7 @@ def gen_epu_topics_html(countries, data_dir, out):
                     }},
                     scales: {{
                         x: {{ display: true, title: {{ display: true, text: 'Date' }} }},
-                        y: {{ display: true, title: {{ display: true, text: 'EPU Index' }} }}
+                        y: {{ display: true, title: {{ display: true, text: 'EPU Index' }}, max: yMax }}
                     }}
                 }}
             }});
