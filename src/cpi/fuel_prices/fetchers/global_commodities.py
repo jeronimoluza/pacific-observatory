@@ -1,8 +1,8 @@
 """Global and EAP commodity oil/gasoline price fetchers.
 
 Four sources:
-  1. investing.com internal API (daily, best-effort — Cloudflare may block)
-  2. EIA Open Data API v2  (daily, requires EIA_API_KEY env var)
+  1. Investing.com internal API (daily, best-effort — Cloudflare may block)
+  2. EIA Open Data API v2 (daily, requires EIA_API_KEY env var)
   3. World Bank CMO Pink Sheet (monthly, no auth)
   4. IMF commodity prices via FRED API (monthly, requires FRED_API_KEY env var)
 """
@@ -15,6 +15,76 @@ from typing import Optional
 import pandas as pd
 
 from ..utils import get_session, make_hash, make_template
+
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_investing_commodities",
+        "country": "Global / EAP",
+        "source_name": "Investing.com Commodity Prices",
+        "url": "https://www.investing.com/commodities/",
+        "description": "Commercial platform (Investing.com). Internal undocumented REST API to retrieve daily historical commodity prices. Not an official public API.",
+        "extraction_method": ["Web scraping", "REST API"],
+        "products": [
+            "WTI Crude Oil",
+            "Brent Crude Oil",
+            "Gasoline RBOB",
+            "Dubai Crude Oil",
+            "Singapore Gasoil",
+        ],
+        "source_keys": ["global_investing_daily"],
+        "publishes_on": "Daily",
+        "notes": "WARNING: May be blocked by Cloudflare (403). Best-effort only.",
+    },
+    {
+        "fetcher_fn": "fetch_eia_spot_prices",
+        "country": "Global",
+        "source_name": "EIA Open Data API v2",
+        "url": "https://api.eia.gov/v2/petroleum/pri/spt/data/",
+        "description": "Official U.S. government (EIA). Documented public REST API for daily petroleum spot prices. Free API key required.",
+        "extraction_method": ["REST API"],
+        "products": [
+            "Brent Crude Oil Spot",
+            "WTI Crude Oil Spot",
+            "NY Harbor Gasoline Spot",
+        ],
+        "source_keys": ["global_eia_spot_daily"],
+        "publishes_on": "Daily",
+        "notes": "CRITICAL: Requires EIA_API_KEY environment variable (free registration at eia.gov/opendata). Returns empty DataFrame if key not set.",
+    },
+    {
+        "fetcher_fn": "fetch_wb_pink_sheet",
+        "country": "Global / EAP",
+        "source_name": "World Bank CMO Pink Sheet",
+        "url": "https://thedocs.worldbank.org/en/doc/18675f1d1639c7a34d463f59263ba0a2-0050012025/related/CMO-Historical-Data-Monthly.xlsx",
+        "description": "Official multilateral (World Bank Commodity Markets Outlook). Monthly historical commodity prices as a public Excel download. No authentication.",
+        "extraction_method": ["Excel download"],
+        "products": [
+            "Crude Oil Average",
+            "Brent Crude Oil",
+            "WTI Crude Oil",
+            "Dubai Crude Oil",
+        ],
+        "source_keys": ["global_wb_pinksheet"],
+        "publishes_on": "Monthly",
+        "notes": "Direct Excel download. URL may change with each edition; update if download fails.",
+    },
+    {
+        "fetcher_fn": "fetch_imf_fred_prices",
+        "country": "Global / EAP",
+        "source_name": "IMF Commodity Prices via FRED",
+        "url": "https://api.stlouisfed.org/fred/series/observations",
+        "description": "IMF primary commodity prices via St. Louis Fed FRED public REST API. Official data; free API key required.",
+        "extraction_method": ["REST API"],
+        "products": [
+            "WTI Crude Oil (IMF)",
+            "Brent Crude Oil (IMF)",
+            "Dubai Crude Oil (IMF)",
+        ],
+        "source_keys": ["global_imf_fred_monthly"],
+        "publishes_on": "Monthly",
+        "notes": "CRITICAL: Requires FRED_API_KEY environment variable (free registration at fredaccount.stlouisfed.org). Returns empty DataFrame if key not set.",
+    },
+]
 
 # ---------------------------------------------------------------------------
 # Shared commodity definitions

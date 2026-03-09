@@ -78,10 +78,10 @@ FETCHER_REGISTRY: dict[str, tuple] = {
     # Vietnam
     "vn_petrolimex_retail": (fetch_vn_petrolimex, date(2019, 12, 31), False),
     # Global & EAP commodity benchmarks → commodity_prices.csv
-    "global_investing_daily": (fetch_investing_commodities, date(2015, 1, 1), True),
-    "global_eia_spot_daily": (fetch_eia_spot_prices, date(2015, 1, 1), True),
-    "global_wb_pinksheet": (fetch_wb_pink_sheet, date(2000, 1, 1), True),
-    "global_imf_fred_monthly": (fetch_imf_fred_prices, date(2000, 1, 1), True),
+    "global_investing_daily": (fetch_investing_commodities, date(2015, 1, 1), False),
+    "global_eia_spot_daily": (fetch_eia_spot_prices, date(2015, 1, 1), False),
+    "global_wb_pinksheet": (fetch_wb_pink_sheet, date(2000, 1, 1), False),
+    "global_imf_fred_monthly": (fetch_imf_fred_prices, date(2000, 1, 1), False),
 }
 
 __all__ = ["FETCHER_REGISTRY"]
