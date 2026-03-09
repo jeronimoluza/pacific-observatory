@@ -313,9 +313,21 @@ class EPU:
 
             # Check for additional terms category
             if self.additional_terms:
+                # For topic-specific EPU, the "additional" keyword list must match
+                # the article language, just like the core E/P/U term lists.
+                # The canonical topic key is stored in self.additional_name.
+                additional_terms = self.additional_terms
+                if self.additional_name and file_language != "en":
+                    try:
+                        additional_terms = get_terms_for_language(
+                            file_language, additional_name=self.additional_name
+                        )
+                    except Exception:
+                        # Fall back to the provided list (usually English).
+                        additional_terms = self.additional_terms
                 results = raw["body"].apply(
                     match_keywords,
-                    terms=self.additional_terms,
+                    terms=additional_terms,
                     language=file_language,
                 )
                 unpacked = list(results)
@@ -544,9 +556,11 @@ class EPU:
         if self.daily_tail_start is not None:
             tail_ts = pd.Timestamp(self.daily_tail_start)
             self.epu_stats["ym"] = self.epu_stats["date"].apply(
-                lambda d: d.strftime("%Y-%m-%d")
-                if d >= tail_ts
-                else str(d.year) + "-" + str(d.month)
+                lambda d: (
+                    d.strftime("%Y-%m-%d")
+                    if d >= tail_ts
+                    else str(d.year) + "-" + str(d.month)
+                )
             )
         else:
             self.epu_stats["ym"] = self.epu_stats["date"].apply(
