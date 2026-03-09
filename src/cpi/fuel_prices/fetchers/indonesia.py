@@ -1,5 +1,27 @@
 """Indonesia OTO.com monthly fuel price fetcher."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_id_oto",
+        "country": "Indonesia",
+        "source_name": "OTO.com Monthly Fuel Prices",
+        "url": "https://www.oto.com/ajax/get-fuel-price-trends",
+        "description": "Commercial portal (OTO.com) aggregating Pertamina official prices. Public JSON AJAX endpoint; reflects Pertamina state-enterprise retail rates.",
+        "extraction_method": ["REST API"],
+        "products": [
+            "Pertalite (Gasoline Regular)",
+            "Pertamax (Gasoline Premium)",
+            "Pertamax Turbo (Gasoline Super Premium)",
+            "Dexlite (Diesel Premium)",
+            "Pertamina Dex (Diesel Super Premium)",
+        ],
+        "source_keys": ["id_oto_monthly_prices"],
+        "publishes_on": "Monthly (1st of month)",
+        "notes": "Public JSON API; no auth required. Fetches rolling 12-month + yearly data for 5 Pertamina fuel IDs. Price range IDR 3,000–30,000/L.",
+    },
+]
+
 from datetime import date, datetime, timedelta
 
 import pandas as pd

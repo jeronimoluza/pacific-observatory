@@ -1,5 +1,27 @@
 """Fiji FCCC Price Control Orders fetcher (PDF-based)."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_fj_fccc_orders",
+        "country": "Fiji",
+        "source_name": "FCCC Petroleum Price Control Orders",
+        "url": "https://fccc.gov.fj/petroleum/",
+        "description": "Official government regulator (Fiji Commerce Commission). Legally binding quarterly price control orders as PDFs.",
+        "extraction_method": ["Web scraping", "PDF parsing"],
+        "products": [
+            "Gasoline (Regular)",
+            "Gasoline (Premix)",
+            "Diesel",
+            "Kerosene",
+            "LPG",
+        ],
+        "source_keys": ["fj_fccc_order_prices"],
+        "publishes_on": "Quarterly",
+        "notes": "Discovers PDF links on FCCC website; parses PDFs with pdfplumber. CRITICAL: Requires pdfplumber installed. Price range FJD 1.0–5.0/L (LPG: 1.0–4.0/L).",
+    },
+]
+
 import io
 import re
 import time

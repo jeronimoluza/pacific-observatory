@@ -1,5 +1,21 @@
 """New Zealand MBIE weekly fuel price fetcher (full refresh)."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_nz_mbie_weekly",
+        "country": "New Zealand",
+        "source_name": "MBIE Weekly Fuel Price Monitoring",
+        "url": "https://www.mbie.govt.nz/assets/Data-Files/Energy/Weekly-fuel-price-monitoring/weekly-table.csv",
+        "description": "Official government (MBIE). Weekly fuel price monitoring as a public CSV direct download. Clean structured data; no auth required.",
+        "extraction_method": ["CSV download"],
+        "products": ["Gasoline (Regular Petrol)", "Gasoline (Premium 95R)", "Diesel"],
+        "source_keys": ["nz_mbie_weekly_fuel"],
+        "publishes_on": "Tuesday",
+        "notes": "Filters to Variable == 'Adjusted retail price'. Price in NZ c/L divided by 100. Range: 50–500 c/L.",
+    },
+]
+
 import io
 from datetime import date, timedelta
 

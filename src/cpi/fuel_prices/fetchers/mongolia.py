@@ -1,5 +1,57 @@
 """Mongolia fuel price fetchers — NSO 1212.mn API and data.mn HTML."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_mn_nso_weekly_aimag",
+        "country": "Mongolia",
+        "source_name": "NSO 1212.mn Aimag Weekly Prices",
+        "url": "https://data.1212.mn:443/api/v1/en/NSO/Economy, environment/Consumer Price Index/DT_NSO_0300_010V5.px",
+        "description": "Official government statistics (Mongolia National Statistics Office). Open data portal (1212.mn) providing weekly fuel prices by aimag via a JSON-stat2 API. Subnational coverage across 21 provinces.",
+        "extraction_method": "REST API (JSON-stat2)",
+        "products": [
+            "Petrol A-80 (Gasoline Regular)",
+            "Petrol A-92 (Gasoline Regular)",
+            "Diesel",
+        ],
+        "frequency": "Weekly",
+        "output": "Secondary CSV",
+        "notes": "POST request with JSON-stat2 payload; navigates dimensional structure to resolve (product × region × time) flat index. Price range MNT 1,000–10,000/L.",
+    },
+    {
+        "fetcher_fn": "fetch_mn_nso_weekly_aimag",
+        "country": "Mongolia",
+        "source_name": "NSO 1212.mn Aimag Weekly Prices",
+        "url": "https://data.1212.mn:443/api/v1/en/NSO/Economy, environment/Consumer Price Index/DT_NSO_0300_010V5.px",
+        "description": "Official (Mongolia National Statistics Office). Open data portal (1212.mn) with weekly fuel prices by aimag via JSON-stat2 API. 21 provinces.",
+        "extraction_method": ["REST API"],
+        "products": [
+            "Petrol A-80 (Gasoline Regular)",
+            "Petrol A-92 (Gasoline Regular)",
+            "Diesel",
+        ],
+        "source_keys": ["mn_nso_aimag_weekly_fuel"],
+        "publishes_on": "Weekly",
+        "notes": "POST request with JSON-stat2 payload; navigates dimensional (product × region × time) index. Price range MNT 1,000–10,000/L.",
+    },
+    {
+        "fetcher_fn": "fetch_mongolia_data_mn",
+        "country": "Mongolia",
+        "source_name": "data.mn Weekly Prices",
+        "url": "https://data.mn/en/data/weekly-gasoline-prices-aimags",
+        "description": "Independent Mongolian open data platform (data.mn). Republishes NSO fuel prices as HTML tables. Aimag-level + Ulaanbaatar city.",
+        "extraction_method": ["Web scraping"],
+        "products": ["Petrol A-92 (Gasoline)", "Diesel", "Petrol A-80 (Gasoline)"],
+        "source_keys": [
+            "mn_data_mn_a92_aimags",
+            "mn_data_mn_diesel_aimags",
+            "mn_data_mn_fuel_ulaanbaatar",
+        ],
+        "publishes_on": "Weekly",
+        "notes": "Scrapes three datasets: aimag gasoline, aimag diesel, and Ulaanbaatar fuel prices. Price range MNT 500–10,000/L.",
+    },
+]
+
 import re
 from datetime import date, timedelta
 

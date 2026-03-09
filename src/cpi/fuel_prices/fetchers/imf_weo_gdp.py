@@ -8,6 +8,22 @@ and returns the most recent year >= min_year for each country.
 Source: World Bank Open Data — https://data.worldbank.org/indicator/NY.GDP.PCAP.CD
 """
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_imf_weo_gdp",
+        "country": "All countries (ancillary)",
+        "source_name": "World Bank GDP per Capita",
+        "url": "https://api.worldbank.org/v2/country/all/indicator/NY.GDP.PCAP.CD",
+        "description": "Official multilateral (World Bank Open Data). GDP per capita current USD via free REST API. Ancillary reference for subsidy scatter chart.",
+        "extraction_method": ["REST API"],
+        "products": ["GDP per capita (ancillary)"],
+        "source_keys": [],
+        "publishes_on": "Annual",
+        "notes": "Returns most recent year >= 2022. Country reporting lag means most values are 1–2 years old.",
+    },
+]
+
 from pathlib import Path
 
 import pandas as pd

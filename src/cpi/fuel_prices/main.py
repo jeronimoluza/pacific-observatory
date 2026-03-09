@@ -204,8 +204,10 @@ def cmd_policy(args) -> None:
     out = DATA_DIR / "fuel_policy_overview.html"
     print("Loading policy data...")
     data = load_policy_data()
+    print("Loading fuel prices data...")
+    fuel_data = load_fuel_data()
     print(f"Generating HTML \u2192 {out}")
-    gen_policy_html(data, out)
+    gen_policy_html(data, fuel_data, out)
     print("Done.")
 
 

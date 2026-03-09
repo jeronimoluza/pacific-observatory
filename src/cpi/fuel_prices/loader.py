@@ -111,6 +111,59 @@ def load_fuel_data(
             df = df.drop_duplicates(subset="observation_hash")
     df["observation_date"] = pd.to_datetime(df["observation_date"])
 
+    # Philippines: drop RON 97 (premium gasoline not tracked in the dashboard)
+    ph_ron97_mask = (df["country"] == "Philippines") & (df["fuel_product"] == "RON 97")
+    if ph_ron97_mask.any():
+        df = df[~ph_ron97_mask].copy()
+
+    # Drop redundant GPP rows for Malaysia and Cambodia: country-specific sources
+    # (my_mof_weekly_petroleum, kh_ptt_monthly_prices) provide better coverage and
+    # canonical product names. GPP rows are only ~1 week of data, conflict with
+    # official source prices, and create spurious end-of-series spikes.
+    gpp_drop_mask = (
+        (df["country"] == "Malaysia")
+        & df["source_key"].str.startswith("gpp_MYS_", na=False)
+    ) | (
+        (df["country"] == "Cambodia")
+        & df["source_key"].str.startswith("gpp_KHM_", na=False)
+    )
+    if gpp_drop_mask.any():
+        df = df[~gpp_drop_mask].copy()
+
+    # Normalise Cambodia fuel_product names across sources so all diesel rows
+    # share one chip and all gasoline rows share one chip in the visualiser.
+    _KH_PRODUCT_REMAP = {
+        # source_key -> {old_product -> (new_product, new_quality_group)}
+        "kh_ptt_monthly_prices": {
+            "Super": ("Gasoline", "premium"),
+            "Regular": ("Gasoline", "regular"),
+        },
+        "kh_moc_fuel_notices": {
+            "Regular Gasoline": ("Gasoline", "regular"),
+            "Diesel": ("Diesel", "regular"),
+        },
+    }
+    # GPP Cambodia sources: rename to canonical names regardless of exact source_key suffix
+    _KH_GPP_PROD_REMAP = {
+        "Diesel (regular)": ("Diesel", "regular"),
+        "Gasoline (Octane-95)": ("Gasoline", "regular"),
+    }
+    for src_key, prod_map in _KH_PRODUCT_REMAP.items():
+        for old_prod, (new_prod, new_qg) in prod_map.items():
+            mask = (df["source_key"] == src_key) & (df["fuel_product"] == old_prod)
+            if mask.any():
+                df.loc[mask, "fuel_product"] = new_prod
+                df.loc[mask, "quality_group"] = new_qg
+
+    kh_gpp_mask = (df["country"] == "Cambodia") & (
+        df["source_key"].str.startswith("gpp_KHM_", na=False)
+    )
+    for old_prod, (new_prod, new_qg) in _KH_GPP_PROD_REMAP.items():
+        mask = kh_gpp_mask & (df["fuel_product"] == old_prod)
+        if mask.any():
+            df.loc[mask, "fuel_product"] = new_prod
+            df.loc[mask, "quality_group"] = new_qg
+
     # Malaysia: geography encoded in product name
     def fix_malaysia(row):
         prod = str(row["fuel_product"])

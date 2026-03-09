@@ -1,5 +1,30 @@
 """Vietnam Petrolimex retail price fetcher — OCR of price-table images."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_vn_petrolimex",
+        "country": "Vietnam",
+        "source_name": "Petrolimex Retail Price Announcements",
+        "url": "https://www.petrolimex.com.vn/ndi/thong-cao-bao-chi.html",
+        "description": "Semi-official (Petrolimex, Vietnam National Petroleum Group — state enterprise). Biweekly price adjustment press releases with price tables as JPG images, not text.",
+        "extraction_method": ["Web scraping", "OCR"],
+        "products": [
+            "Gasoline RON 95-V (Premium)",
+            "Gasoline RON 95-III (Premium)",
+            "E5 RON 92-II (Biofuel)",
+            "E10 RON 95-III (Biofuel)",
+            "Diesel 0.001S-V (Premium)",
+            "Diesel 0.05S-II (Regular)",
+            "Kerosene 2-K",
+            "Mazut 180cst (Fuel Oil)",
+        ],
+        "source_keys": ["vn_petrolimex_retail"],
+        "publishes_on": "Biweekly (1st and 15th of month)",
+        "notes": "CRITICAL: Requires Tesseract OCR installed (/opt/homebrew/bin/tesseract or system PATH). Scrapes paginated listing; OCRs embedded JPGs. Two price zones + national average. Temp files written to _vn_plx_tmp/. Price range VND 10,000–50,000/L.",
+    },
+]
+
 import re
 import shutil
 import subprocess

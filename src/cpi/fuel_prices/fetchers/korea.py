@@ -1,5 +1,21 @@
 """Korea Opinet weekly national average fuel price fetcher."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_kr_opinet_weekly",
+        "country": "Korea, Rep.",
+        "source_name": "Opinet Weekly National Average",
+        "url": "https://www.opinet.co.kr/user/doop/doopOilHistory.do",
+        "description": "Official (Opinet, Korea National Oil Corporation). Weekly national average retail prices. Korean-language web form interface.",
+        "extraction_method": ["Web scraping"],
+        "products": ["Gasoline (Regular, RON 91)", "Diesel", "Kerosene"],
+        "source_keys": ["kr_opinet_history_weekly"],
+        "publishes_on": "Monday",
+        "notes": "GET to establish session, then POST with form data; parses Korean-script HTML table headers. Date encoded as Korean week notation (e.g. 2014년03월1주). Price range KRW 500–5,000/L.",
+    },
+]
+
 import re
 from datetime import date, timedelta
 

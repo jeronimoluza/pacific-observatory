@@ -1,5 +1,33 @@
 """Australia fuel price fetchers: AIP Terminal Gate Prices + ACCC quarterly retail."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_au_aip_tgp",
+        "country": "Australia",
+        "source_name": "AIP Terminal Gate Prices",
+        "url": "http://www.aip.com.au/historical-ulp-and-diesel-tgp-data",
+        "description": "Official industry body (Australian Institute of Petroleum). Weekly wholesale terminal gate prices as Excel. 7 capital cities + national average.",
+        "extraction_method": ["Web scraping", "Excel download"],
+        "products": ["Gasoline (Regular)", "Diesel"],
+        "source_keys": ["au_aip_tgp_weekly"],
+        "publishes_on": "Friday",
+        "notes": "Scrapes AIP website to find AIP_TGP_Data_*.xlsx link, then parses Excel. Price range AUD 0.50–4.00/L.",
+    },
+    {
+        "fetcher_fn": "fetch_accc",
+        "country": "Australia",
+        "source_name": "ACCC Quarterly Retail Prices",
+        "url": "https://www.accc.gov.au/by-industry/petrol-and-fuel",
+        "description": "Official government regulator (ACCC). Quarterly retail price reports as web articles. Average across 5 largest cities.",
+        "extraction_method": ["Web scraping"],
+        "products": ["Gasoline (Regular)", "Diesel"],
+        "source_keys": ["au_accc_5largestcities_quarterly"],
+        "publishes_on": "Quarterly (Jan/Apr/Jul/Oct)",
+        "notes": "Extracts price via regex (c/L pattern) from article body text. Fetches up to 5 most recent quarterly reports.",
+    },
+]
+
 import io
 import re
 import time

@@ -1,5 +1,26 @@
 """Malaysia MOF weekly petroleum retail price fetcher."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_malaysia_mof",
+        "country": "Malaysia",
+        "source_name": "Ministry of Finance Weekly Petroleum Prices",
+        "url": "https://www.mof.gov.my/portal/en/news/press-release/retail-price",
+        "description": "Official government (Malaysia Ministry of Finance). Weekly retail petroleum prices via press releases. Covers Peninsular + East Malaysia.",
+        "extraction_method": ["Web scraping"],
+        "products": [
+            "Gasoline RON95 (Premium)",
+            "Gasoline RON97 (Super Premium)",
+            "Diesel (Peninsular)",
+            "Diesel (East Malaysia)",
+        ],
+        "source_keys": ["my_mof_weekly_petroleum"],
+        "publishes_on": "Wednesday",
+        "notes": "Effective date extracted from URL slug (English and Malay date patterns). Generates one row per day within each weekly window. Price range MYR 1.0–6.0/L.",
+    },
+]
+
 import re
 import time
 from datetime import date, timedelta

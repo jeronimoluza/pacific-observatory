@@ -1,5 +1,21 @@
 """Timor-Leste ANP daily fuel price fetcher."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_timor_anp",
+        "country": "Timor-Leste",
+        "source_name": "ANP Daily Fuel Price",
+        "url": "https://www.anp.tl/daily-fuel-price/",
+        "description": "Official government regulator (Autoridade Nacional do Petróleo). Daily station-level fuel prices as HTML table; official regulated prices. National average computed from station data.",
+        "extraction_method": ["Web scraping"],
+        "products": ["Gasoline (Regular Petrol)", "Diesel"],
+        "source_keys": ["tl_anp_daily_fuel_price"],
+        "publishes_on": "Daily",
+        "notes": "Only the current page is scraped — no historical scan. Date falls back to today() if not found on page. Price range USD 0.50–5.00/L.",
+    },
+]
+
 import re
 from datetime import date
 

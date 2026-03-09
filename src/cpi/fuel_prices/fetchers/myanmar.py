@@ -1,5 +1,26 @@
 """Myanmar GNLM weekly fuel reference price fetcher."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_myanmar_gnlm",
+        "country": "Myanmar",
+        "source_name": "Global New Light of Myanmar (GNLM)",
+        "url": "https://www.gnlm.com.mm/?s=fuel+price",
+        "description": "State-run newspaper (GNLM). Official government fuel reference prices embedded in news articles. No structured data or API.",
+        "extraction_method": ["Web scraping"],
+        "products": [
+            "Gasoline Octane 92 (Regular)",
+            "Gasoline Octane 95 (Premium)",
+            "Diesel",
+            "Diesel (Premium)",
+        ],
+        "source_keys": ["mm_gnlm_fuel_reference_prices"],
+        "publishes_on": "Weekly",
+        "notes": "Crawls search results for fuel articles; regex extracts prices from body text. Processes up to 30 candidate articles. Price range MMK 500–5,000/L.",
+    },
+]
+
 import re
 import time
 from datetime import date

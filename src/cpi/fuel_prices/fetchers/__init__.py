@@ -4,15 +4,18 @@ from datetime import date
 
 from .australia import fetch_accc, fetch_au_aip_tgp
 from .cambodia import fetch_kh_ptt
+from .china import fetch_cn_ndrc_max_retail_prices
 from .fiji import fetch_fj_fccc_orders
 from .indonesia import fetch_id_oto
 from .japan import fetch_jp_anre_excel
 from .korea import fetch_kr_opinet_weekly
-from .lao import fetch_lao
+from .lao import fetch_lao, fetch_lao_kpl
 from .malaysia import fetch_malaysia_mof
 from .mongolia import fetch_mn_nso_weekly_aimag, fetch_mongolia_data_mn
 from .myanmar import fetch_myanmar_gnlm
 from .new_zealand import fetch_nz_mbie_weekly
+from .singapore import fetch_sg_singstat_avg_retail_prices
+from .tonga import fetch_to_mted_petroleum_prices
 from .pacific_islands import (
     fetch_png_iccc,
     fetch_samoa_mof,
@@ -49,6 +52,7 @@ FETCHER_REGISTRY: dict[str, tuple] = {
     "kr_opinet_history_weekly": (fetch_kr_opinet_weekly, date(2014, 1, 1), False),
     # Lao
     "lao_state_fuel_oil_prices": (fetch_lao, date(2023, 1, 1), False),
+    "lao_kpl_fuel_notices": (fetch_lao_kpl, date(2025, 12, 1), False),
     # Malaysia
     "my_mof_weekly_petroleum": (fetch_malaysia_mof, date(2023, 1, 1), False),
     # Mongolia NSO
@@ -61,6 +65,18 @@ FETCHER_REGISTRY: dict[str, tuple] = {
     "mm_gnlm_fuel_reference_prices": (fetch_myanmar_gnlm, date(2024, 1, 1), False),
     # New Zealand
     "nz_mbie_weekly_fuel": (fetch_nz_mbie_weekly, date(2020, 1, 1), True),
+    # Singapore
+    "sg_singstat_avg_retail_prices_monthly": (
+        fetch_sg_singstat_avg_retail_prices,
+        date(2015, 1, 1),
+        False,
+    ),
+    # Tonga
+    "to_mted_petroleum_prices_monthly": (
+        fetch_to_mted_petroleum_prices,
+        date(2020, 1, 1),
+        False,
+    ),
     # Pacific Islands
     "pg_iccc_monthly_irp": (fetch_png_iccc, date(2023, 1, 1), False),
     "ws_mof_monthly_fuel_prices": (fetch_samoa_mof, date(2023, 1, 1), False),
@@ -75,6 +91,12 @@ FETCHER_REGISTRY: dict[str, tuple] = {
     "th_eppo_ngv_bangkok_2025": (fetch_thailand_eppo_ngv, date(2023, 1, 1), False),
     # Timor-Leste
     "tl_anp_daily_fuel_price": (fetch_timor_anp, date(2024, 1, 1), False),
+    # China
+    "cn_ndrc_max_retail_prices_biweekly": (
+        fetch_cn_ndrc_max_retail_prices,
+        date(2024, 1, 1),
+        False,
+    ),
     # Vietnam
     "vn_petrolimex_retail": (fetch_vn_petrolimex, date(2019, 12, 31), False),
     # Global & EAP commodity benchmarks → commodity_prices.csv

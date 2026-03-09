@@ -1,5 +1,63 @@
 """Thailand fuel price fetchers — EPPO P04 monthly retail and NGV retail."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_th_eppo_p04",
+        "country": "Thailand",
+        "source_name": "EPPO P04 Monthly Retail Petroleum",
+        "url": "https://www.eppo.go.th/epposite/images/Energy-Statistics/energyinformation/Energy_Statistics/Petroleum_Prices/P04.xls",
+        "description": "Official government source (Energy Policy and Planning Office, Ministry of Energy). Publishes monthly retail petroleum price statistics as a public XLS file (P04 table). Includes biofuel blends.",
+        "extraction_method": "Excel download (XLS)",
+        "products": [
+            "Gasoline 95 (ULG95)",
+            "Gasoline 91 (UGR91)",
+            "Kerosene",
+            "Diesel HSD",
+            "Diesel LSD",
+            "Gasohol E10",
+            "Gasohol E20",
+            "Gasohol E85",
+        ],
+        "frequency": "Monthly",
+        "output": "Secondary CSV",
+        "notes": "Direct XLS download; uses xlrd engine. Locates header row by scanning for product keywords. Dates encoded as MON-DD with year from preceding year-marker rows. Price range THB 10–200/L.",
+    },
+    {
+        "fetcher_fn": "fetch_th_eppo_p04",
+        "country": "Thailand",
+        "source_name": "EPPO P04 Monthly Retail Petroleum",
+        "url": "https://www.eppo.go.th/epposite/images/Energy-Statistics/energyinformation/Energy_Statistics/Petroleum_Prices/P04.xls",
+        "description": "Official government (EPPO/Ministry of Energy). Monthly retail petroleum stats as public XLS (P04 table). Includes biofuel blends.",
+        "extraction_method": ["Excel download"],
+        "products": [
+            "Gasoline 95 (ULG95)",
+            "Gasoline 91 (UGR91)",
+            "Kerosene",
+            "Diesel HSD",
+            "Diesel LSD",
+            "Gasohol E10",
+            "Gasohol E20",
+            "Gasohol E85",
+        ],
+        "source_keys": ["th_eppo_p04_monthly"],
+        "publishes_on": "Monthly",
+        "notes": "Direct XLS download; xlrd engine. Locates header row by scanning for product keywords. Dates encoded as MON-DD with year from preceding year-marker rows. Price range THB 10–200/L.",
+    },
+    {
+        "fetcher_fn": "fetch_thailand_eppo_ngv",
+        "country": "Thailand",
+        "source_name": "EPPO NGV Bangkok Retail Prices",
+        "url": "https://www.eppo.go.th/images/petroleum/price/retail-priceNGV/NGVPrice.xls",
+        "description": "Official government (EPPO/Ministry of Energy). Monthly NGV retail prices in Bangkok as public XLS file.",
+        "extraction_method": ["Excel download"],
+        "products": ["Natural Gas for Vehicles (NGV)"],
+        "source_keys": ["th_eppo_ngv_bangkok_2025"],
+        "publishes_on": "Monthly",
+        "notes": "Direct XLS download; auto-detects date and price columns. Bangkok only. Unit: kg. Price range THB 5–30/kg.",
+    },
+]
+
 import io
 import re
 from datetime import date, timedelta

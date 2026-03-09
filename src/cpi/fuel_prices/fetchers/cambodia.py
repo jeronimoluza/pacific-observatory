@@ -1,5 +1,33 @@
 """Cambodia fuel price fetchers: PTT Cambodia (canonical) + MOC notices."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_kh_ptt",
+        "country": "Cambodia",
+        "source_name": "PTT Cambodia Monthly Prices",
+        "url": "https://www.ptt.com.kh/products-and-services-oil-price",
+        "description": "PTT Cambodia (subsidiary of Thailand's state-owned PTT Group). Monthly retail pump prices as HTML tables.",
+        "extraction_method": ["Web scraping"],
+        "products": ["Gasoline (Super/Premium)", "Gasoline (Regular)", "Diesel"],
+        "source_keys": ["kh_ptt_monthly_prices"],
+        "publishes_on": "Monthly (start of month)",
+        "notes": "Iterates year-by-year; parses HTML price tables with multiple date-format fallbacks. Price range KHR 2,000–8,000/L.",
+    },
+    {
+        "fetcher_fn": "fetch_cambodia_moc",
+        "country": "Cambodia",
+        "source_name": "Ministry of Commerce Fuel Notices",
+        "url": "https://moc.gov.kh/kh/news/",
+        "description": "Official government (Cambodia Ministry of Commerce). Biweekly fuel price notices as news articles in Khmer script.",
+        "extraction_method": ["Web scraping"],
+        "products": ["Gasoline (Regular)", "Diesel"],
+        "source_keys": ["kh_moc_fuel_notices"],
+        "publishes_on": "Biweekly",
+        "notes": "Sequential scan of news article IDs from hardcoded ID 3035; detects fuel articles via Khmer-script keywords. Price range KHR 2,500–6,500/L.",
+    },
+]
+
 import re
 import time
 from datetime import date, timedelta

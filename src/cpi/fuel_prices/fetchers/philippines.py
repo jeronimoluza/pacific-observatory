@@ -1,5 +1,55 @@
 """Philippines DOE fuel price fetchers — national and Visayas regional."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_philippines_doe",
+        "country": "Philippines",
+        "source_name": "DOE National Retail Pump Prices",
+        "url": "https://doe.gov.ph/site/vfo/articles/group/liquid-fuels",
+        "description": "Official government source (Philippines Department of Energy). Publishes weekly national retail pump price reports as web articles and PDF attachments. Prices are officially monitored pump prices.",
+        "extraction_method": "Web scraping + PDF parsing (pdfplumber)",
+        "products": [
+            "Gasoline RON 91 (Regular)",
+            "Gasoline RON 95 (Premium)",
+            "Diesel Plus",
+            "Diesel",
+        ],
+        "frequency": "Weekly",
+        "output": "Primary CSV",
+        "notes": "Handles both HTML articles and PDF attachments; pdfplumber used for PDF content. CRITICAL: Requires pdfplumber installed. Processes up to 20 article links. Price range PHP 30–120/L.",
+    },
+    {
+        "fetcher_fn": "fetch_philippines_doe",
+        "country": "Philippines",
+        "source_name": "DOE National Retail Pump Prices",
+        "url": "https://doe.gov.ph/site/vfo/articles/group/liquid-fuels",
+        "description": "Official government (Philippines DOE). Weekly national retail pump prices as web articles and PDF attachments.",
+        "extraction_method": ["Web scraping", "PDF parsing"],
+        "products": [
+            "Gasoline RON 91 (Regular)",
+            "Gasoline RON 95 (Premium)",
+            "Diesel Plus",
+            "Diesel",
+        ],
+        "source_keys": ["ph_doe_retail_pump_prices"],
+        "publishes_on": "Tuesday",
+        "notes": "Handles HTML articles and PDF attachments; pdfplumber used for PDFs. CRITICAL: Requires pdfplumber installed. Processes up to 20 article links. Price range PHP 30–120/L.",
+    },
+    {
+        "fetcher_fn": "fetch_ph_doe_visayas",
+        "country": "Philippines",
+        "source_name": "DOE Visayas Regional Weekly Prices",
+        "url": "https://doe.gov.ph/site/vfo/articles/group/liquid-fuels?maincat=Retail%20Pump%20Prices&subcategory=Visayas%20Pump%20Prices",
+        "description": "Official government (Philippines DOE, Visayas). Weekly per-city pump price PDFs. More granular than national report.",
+        "extraction_method": ["Web scraping", "PDF parsing"],
+        "products": ["Gasoline RON 91/95/97/100", "Diesel Plus", "Diesel", "Kerosene"],
+        "source_keys": ["ph_doe_visayas_weekly"],
+        "publishes_on": "Tuesday",
+        "notes": "Extracts article metadata from __NUXT__ JS payload; downloads PDFs; pdfplumber parses per-city tables. CRITICAL: Requires pdfplumber installed.",
+    },
+]
+
 import io
 import re
 import time

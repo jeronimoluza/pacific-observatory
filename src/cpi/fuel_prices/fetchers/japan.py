@@ -1,5 +1,26 @@
 """Japan ANRE weekly petroleum price fetcher (local *s5.xlsx files)."""
 
+# ruff: noqa: E402
+SOURCE_META = [
+    {
+        "fetcher_fn": "fetch_jp_anre_excel",
+        "country": "Japan",
+        "source_name": "ANRE/METI Weekly Petroleum Survey",
+        "url": "https://www.enecho.meti.go.jp/statistics/petroleum_and_lpgas/pl007/",
+        "description": "Official government (ANRE/METI). Weekly national average retail prices published as Excel files. No programmatic download — manual file drop required.",
+        "extraction_method": ["Excel download"],
+        "products": [
+            "Gasoline (High-Octane/Premium)",
+            "Gasoline (Regular)",
+            "Diesel",
+            "Kerosene",
+        ],
+        "source_keys": ["jp_anre_weekly_petroleum_2026"],
+        "publishes_on": "Wednesday",
+        "notes": "CRITICAL: Excel files (*s5.xlsx) must be manually pre-downloaded from ANRE/METI into data/cpi/fuel_prices/japan_prices/. Kerosene price is per 18L can, divided by 18.",
+    },
+]
+
 from datetime import date, timedelta
 from pathlib import Path
 
