@@ -148,6 +148,45 @@ _CSS = """
     #loc-table th { font-weight: 600; background: #f7f7f7; }
     #loc-table tr.nat-avg-row td { font-weight: 600; }
     #loc-table tr:hover td { background: #f0f4ff; }
+    .slider-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+        overflow: visible;
+    }
+    .slider-row label {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95em;
+        white-space: nowrap;
+    }
+    #range-label {
+        font-size: 0.85em;
+        color: #555;
+        min-width: 200px;
+        text-align: center;
+        white-space: nowrap;
+    }
+    #date-slider {
+        flex: 1;
+        min-width: 200px;
+    }
+    .noUi-connect {
+        background: #667eea !important;
+    }
+    .noUi-handle {
+        border-color: #667eea !important;
+        box-shadow: none !important;
+    }
+    .noUi-tooltip {
+        font-size: 0.75em;
+        padding: 2px 6px;
+        background: #667eea;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+    }
 """
 
 
@@ -169,8 +208,31 @@ def df_to_json(df):
     return data
 
 
-def load_fuel_data(csv_path: Path) -> dict:
+# Countries whose data is fully replaced by the secondary source.
+# Primary-CSV rows for these countries are dropped when the secondary CSV exists.
+_SECONDARY_ONLY_COUNTRIES = {
+    "Australia",
+    "Fiji",
+    "Indonesia",
+    "Japan",
+    "Korea, Rep.",
+    "Mongolia",
+    "New Zealand",
+    "Philippines",
+    "Thailand",
+    "Vietnam",
+    "Viet Nam",
+}
+
+
+def load_fuel_data(csv_path: Path, secondary_path: Path | None = None) -> dict:
     df = pd.read_csv(csv_path, low_memory=False)
+    if secondary_path is not None and secondary_path.exists():
+        df2 = pd.read_csv(secondary_path, low_memory=False)
+        df = df[~df["country"].isin(_SECONDARY_ONLY_COUNTRIES)]
+        df = pd.concat([df, df2], ignore_index=True)
+        if "observation_hash" in df.columns:
+            df = df.drop_duplicates(subset="observation_hash")
     df["observation_date"] = pd.to_datetime(df["observation_date"])
 
     # Malaysia: geography encoded in product name
@@ -209,6 +271,25 @@ def load_fuel_data(csv_path: Path) -> dict:
         return "National"
 
     df["location"] = df.apply(make_location, axis=1)
+
+    # Normalize country names
+    df["country"] = df["country"].replace({"Viet Nam": "Vietnam"})
+
+    # Deduplicate rows that share the same (country, date, fuel_family, fuel_product,
+    # quality_group, location) but differ only by status (e.g. Final vs Provisional).
+    # Keep the highest-priority status so the chart shows a single clean line.
+    _STATUS_PRIORITY = {"Final": 0, "official": 1, "Published": 2, "Provisional": 3}
+    df["_status_rank"] = df["status"].map(_STATUS_PRIORITY).fillna(99)
+    _dedup_key = [
+        "country",
+        "observation_date",
+        "fuel_family",
+        "fuel_product",
+        "quality_group",
+        "location",
+    ]
+    df = df.sort_values("_status_rank").drop_duplicates(subset=_dedup_key, keep="first")
+    df = df.drop(columns="_status_rank")
 
     keep = [
         "country",
@@ -296,6 +377,62 @@ def gen_fuel_html(all_data: dict, out: Path):
 
         // ambiguousProds is a plain object {prodName: true} built per country
         var _ambiguousProds = {};
+
+        // Date slider state and functions
+        let sliderDates = [];
+        let slider = null;
+
+        function formatYM(d) {
+            const date = new Date(d);
+            return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+        }
+
+        function getSliderRange() {
+            if (!slider || !sliderDates.length) return { from: '', to: '' };
+            const vals = slider.get().map(v => Math.round(v));
+            return { from: sliderDates[vals[0]], to: sliderDates[vals[1]] };
+        }
+
+        function initSlider() {
+            var rows = getCountryRows();
+            if (!rows || !rows.length) return;
+
+            // Extract unique sorted dates
+            var dateSet = {};
+            rows.forEach(function(r) { dateSet[r.observation_date] = true; });
+            sliderDates = Object.keys(dateSet).sort();
+
+            const maxIdx = sliderDates.length - 1;
+            if (maxIdx < 0) return;
+
+            const el = document.getElementById('date-slider');
+            if (slider) { slider.destroy(); }
+
+            slider = noUiSlider.create(el, {
+                start: [0, maxIdx],
+                connect: true,
+                step: 1,
+                range: { min: 0, max: maxIdx || 1 },
+                tooltips: [
+                    { to: v => formatYM(sliderDates[Math.round(v)]) },
+                    { to: v => formatYM(sliderDates[Math.round(v)]) }
+                ]
+            });
+
+            const rangeLabel = document.getElementById('range-label');
+            function updateLabel() {
+                const vals = slider.get().map(v => Math.round(v));
+                rangeLabel.textContent = formatYM(sliderDates[vals[0]]) + '  \u2192  ' + formatYM(sliderDates[vals[1]]);
+            }
+            updateLabel();
+
+            slider.on('update', function() {
+                updateLabel();
+            });
+            slider.on('change', function() {
+                rerender();
+            });
+        }
 
         function chipLabel(key) {
             var parts       = key.split("|||");
@@ -437,6 +574,13 @@ def gen_fuel_html(all_data: dict, out: Path):
             if (!multiKeys.length) { sec.style.display = "none"; return; }
             sec.style.display = "";
 
+            // Update section label with the last updated price date
+            var allRows = window._countryRows || [];
+            var visRows = allRows.filter(function(r) { return multiKeys.includes(chipKey(r)); });
+            var lastDate = visRows.reduce(function(m, r) { return r.observation_date > m ? r.observation_date : m; }, "");
+            var secLabel = sec.querySelector(".section-label");
+            if (secLabel) secLabel.textContent = lastDate ? "Location Prices for " + lastDate : "Location Prices:";
+
             multiKeys.forEach(function(key, idx) {
                 var lel = document.createElement("label");
                 var rb  = document.createElement("input");
@@ -458,14 +602,15 @@ def gen_fuel_html(all_data: dict, out: Path):
             return {
                 label:            label,
                 data:             pts,
-                borderColor:      isGray ? "#cccccc" : color,
-                backgroundColor:  isGray ? "#cccccc" : color,
+                borderColor:      isGray ? "#e8e8e8" : color,
+                backgroundColor:  isGray ? "#e8e8e8" : color,
                 borderWidth:      isGray ? 1 : 1.8,
                 fill:             false,
                 tension:          0.1,
                 pointRadius:      0,
                 pointHoverRadius: isGray ? 3 : 5,
                 spanGaps:         false,
+                order:            isGray ? 2 : 1,
                 _isGray:          isGray,
             };
         }
@@ -562,6 +707,15 @@ def gen_fuel_html(all_data: dict, out: Path):
                 return selectedKeys.includes(chipKey(r));
             }});
 
+            // Apply date range filter
+            var range = getSliderRange();
+            if (range.from) {{
+                visibleRows = visibleRows.filter(function(r) {{ return r.observation_date >= range.from; }});
+            }}
+            if (range.to) {{
+                visibleRows = visibleRows.filter(function(r) {{ return r.observation_date <= range.to; }});
+            }}
+
             updateMeta(visibleRows);
             if (!visibleRows.length) {{ drawChart([], ""); rebuildLocToggles([]); return; }}
 
@@ -611,6 +765,7 @@ def gen_fuel_html(all_data: dict, out: Path):
 
         document.getElementById("country-select").addEventListener("change", function() {{
             rebuildChips();
+            initSlider();
             rerender();
         }});
         document.querySelectorAll('input[name="ma-toggle"]').forEach(function(r) {{
@@ -618,6 +773,7 @@ def gen_fuel_html(all_data: dict, out: Path):
         }});
 
         rebuildChips();
+        initSlider();
         rerender();
     """
 
@@ -628,6 +784,8 @@ def gen_fuel_html(all_data: dict, out: Path):
     <title>Fuel Prices — East Asia &amp; Pacific</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
     <style>{_CSS}</style>
 </head>
 <body>
@@ -641,6 +799,11 @@ def gen_fuel_html(all_data: dict, out: Path):
             <label><input type="radio" name="ma-toggle" value="raw" checked>Raw</label>
             <label><input type="radio" name="ma-toggle" value="ma">3-Mo MA</label>
         </div>
+    </div>
+    <div class="slider-row">
+        <label>Date Range:</label>
+        <span id="range-label">&mdash;</span>
+        <div id="date-slider"></div>
     </div>
     <div class="section-label">Fuel Family:</div>
     <div class="chip-container" id="axis-chips"></div>
@@ -666,7 +829,10 @@ def gen_fuel_html(all_data: dict, out: Path):
 def main():
     project_root = Path(__file__).resolve().parents[3]
     data_dir = project_root / "data" / "cpi" / "fuel_prices_pilot"
-    all_data = load_fuel_data(data_dir / "eap_fuel_prices_pilot_2.csv")
+    all_data = load_fuel_data(
+        data_dir / "eap_fuel_prices_pilot_2.csv",
+        data_dir / "eap_fuel_prices_secondary.csv",
+    )
     gen_fuel_html(all_data, data_dir / "fuel_prices.html")
 
 
