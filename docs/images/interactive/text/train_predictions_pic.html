@@ -12,7 +12,9 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             padding: 12px 20px;
             background: #fff;
-            max-width: 900px;
+            max-width: none;
+            width: 100%;
+            min-height: 100vh;
         }
         .controls {
             margin-bottom: 10px;
@@ -35,7 +37,17 @@
         }
         select:hover { border-color: #667eea; }
         select:focus { outline: 0; border-color: #667eea; }
-        .chart-wrapper { position: relative; height: 350px; }
+        .chart-wrapper { position: relative; height: 65vh; min-height: 360px; }
+        .plot-row {
+            display: flex;
+            gap: 14px;
+            align-items: stretch;
+            margin-top: 8px;
+        }
+        .plot-row .chart-wrapper { flex: 1; min-width: 0; }
+        @media (max-width: 760px) {
+            .plot-row { flex-direction: column; }
+        }
 
         .slider-row {
             display: flex;
@@ -58,15 +70,39 @@
             white-space: nowrap;
         }
         #date-slider {
-            flex: 1;
+            flex: 0 0 320px;
             min-width: 200px;
+            max-width: 320px;
+        }
+        @media (max-width: 760px) {
+            #date-slider {
+                flex: 1;
+                max-width: none;
+            }
         }
         .noUi-connect {
             background: #667eea !important;
         }
         .noUi-handle {
-            border-color: #667eea !important;
-            box-shadow: none !important;
+            border: 2px solid #667eea !important;
+            border-radius: 50% !important;
+            background: #fff !important;
+            box-shadow: 0 1px 4px rgba(102,126,234,0.35) !important;
+            cursor: ew-resize;
+        }
+        .noUi-horizontal .noUi-handle {
+            width: 18px;
+            height: 18px;
+            right: -9px;
+            top: -8px;
+        }
+        .noUi-handle:before,
+        .noUi-handle:after {
+            display: none !important;
+        }
+        .noUi-handle:hover {
+            background: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.2) !important;
         }
         .noUi-tooltip {
             font-size: 0.75em;
@@ -108,6 +144,8 @@
         let sliderDates = [];
         let slider = null;
 
+        function isDaily(r) { return r && typeof r.ym === 'string' && r.ym.split('-').length === 3; }
+
         function formatYM(d) {
             const date = new Date(d);
             return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
@@ -125,7 +163,11 @@
 
             sliderDates = data.map(r => r.date);
             const maxIdx = sliderDates.length - 1;
-            const startIdx = Math.max(0, maxIdx - (defaultMonths - 1));
+            const maxDate = new Date(sliderDates[maxIdx]);
+            const startDate = new Date(maxDate.getTime());
+            startDate.setMonth(startDate.getMonth() - Math.max(0, defaultMonths - 1));
+            let startIdx = sliderDates.findIndex(d => new Date(d) >= startDate);
+            if (startIdx < 0) startIdx = 0;
 
             const el = document.getElementById('date-slider');
             if (slider) { slider.destroy(); }
@@ -136,8 +178,8 @@
                 step: 1,
                 range: { min: 0, max: maxIdx || 1 },
                 tooltips: [
-                    { to: v => formatYM(sliderDates[Math.round(v)]) },
-                    { to: v => formatYM(sliderDates[Math.round(v)]) }
+                    { to: v => { const r = allData[country][Math.round(v)]; return r && isDaily(r) ? r.date : formatYM(sliderDates[Math.round(v)]); } },
+                    { to: v => { const r = allData[country][Math.round(v)]; return r && isDaily(r) ? r.date : formatYM(sliderDates[Math.round(v)]); } }
                 ]
             });
 
