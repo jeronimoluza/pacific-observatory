@@ -50,6 +50,16 @@ def load_topics_epu_data(country, data_dir):
     return df.sort_values("date")
 
 
+def load_actors_epu_data(country, data_dir):
+    """Load actor-specific EPU data from actors_epu.csv"""
+    f = data_dir / f"{country}/epu/actors_epu.csv"
+    if not f.exists():
+        return None
+    df = pd.read_csv(f)
+    df["date"] = pd.to_datetime(df["date"], format="mixed")
+    return df.sort_values("date")
+
+
 def load_attribution_data(country, data_dir, source_file):
     """Load uncertainty attribution data (topics or actors)"""
     f = data_dir / f"{country}/uncertainty_attribution/{source_file}.csv"
@@ -109,7 +119,9 @@ _BASE_CSS = """
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             padding: 12px 20px;
             background: #fff;
-            max-width: 900px;
+            max-width: none;
+            width: 100%;
+            min-height: 100vh;
         }
         .controls {
             margin-bottom: 10px;
@@ -132,7 +144,17 @@ _BASE_CSS = """
         }
         select:hover { border-color: #667eea; }
         select:focus { outline: 0; border-color: #667eea; }
-        .chart-wrapper { position: relative; height: 350px; }
+        .chart-wrapper { position: relative; height: 65vh; min-height: 360px; }
+        .plot-row {
+            display: flex;
+            gap: 14px;
+            align-items: stretch;
+            margin-top: 8px;
+        }
+        .plot-row .chart-wrapper { flex: 1; min-width: 0; }
+        @media (max-width: 760px) {
+            .plot-row { flex-direction: column; }
+        }
 """
 
 _TOGGLE_CSS = """
@@ -171,6 +193,40 @@ _TOGGLE_CSS = """
 """
 
 _CHIP_CSS = """
+        .chip-section {
+            margin-bottom: 10px;
+        }
+        .chip-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+        .chip-tools {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .chip-tools input[type="text"] {
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 16px;
+            font-size: 0.82em;
+            width: 160px;
+        }
+        .chip-tools input[type="text"]:hover { border-color: #667eea; }
+        .chip-tools input[type="text"]:focus { outline: 0; border-color: #667eea; }
+        .chip-tools button {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background: #fff;
+            font-size: 0.8em;
+            cursor: pointer;
+        }
+        .chip-tools button:hover { border-color: #667eea; background: #f0f4ff; }
         .chip-container {
             display: flex;
             flex-wrap: wrap;
@@ -180,12 +236,18 @@ _CHIP_CSS = """
             overflow-y: auto;
             padding: 4px 0;
         }
+        .chip-container.is-collapsed {
+            max-height: 0;
+            padding: 0;
+            margin-bottom: 0;
+            overflow: hidden;
+        }
         .chip {
             display: inline-flex;
             align-items: center;
             gap: 4px;
             padding: 4px 10px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--chip-color, #ddd);
             border-radius: 16px;
             font-size: 0.8em;
             font-weight: 400;
@@ -193,13 +255,86 @@ _CHIP_CSS = """
             user-select: none;
             transition: all 0.15s;
         }
-        .chip:hover { border-color: #667eea; background: #f0f4ff; }
+        .chip:hover { border-color: var(--chip-color, #667eea); background: rgba(102, 126, 234, 0.08); }
         .chip input[type="checkbox"] { display: none; }
         .chip:has(input:checked) {
-            background: #667eea;
+            background: var(--chip-color, #667eea);
             color: #fff;
-            border-color: #667eea;
+            border-color: var(--chip-color, #667eea);
         }
+        .legend-panel {
+            width: 260px;
+            height: 65vh;
+            min-height: 360px;
+            overflow-y: auto;
+            border-left: 1px solid #eee;
+            padding-left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        @media (max-width: 760px) {
+            .legend-panel {
+                width: 100%;
+                height: auto;
+                max-height: 160px;
+                border-left: 0;
+                border-top: 1px solid #eee;
+                padding-left: 0;
+                padding-top: 8px;
+            }
+        }
+        .legend-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 6px 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .legend-group:hover { border-color: #667eea; background: #f8faff; }
+        .legend-group.is-hidden { opacity: 0.5; }
+        .legend-title {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #333;
+        }
+        .legend-subitem {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-left: 12px;
+            font-size: 0.78em;
+            color: #555;
+        }
+        .legend-line {
+            width: 22px;
+            border-top: 2px solid #999;
+        }
+        .chart-tooltip {
+            position: absolute;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            padding: 8px 10px;
+            pointer-events: none;
+            font-size: 0.82em;
+            color: #222;
+            z-index: 10;
+            max-width: 260px;
+        }
+        .tooltip-title { font-weight: 700; margin-bottom: 6px; }
+        .tooltip-group { margin-bottom: 6px; }
+        .tooltip-group:last-child { margin-bottom: 0; }
+        .tooltip-group-title { font-weight: 600; }
+        .tooltip-table { width: 100%; border-collapse: collapse; }
+        .tooltip-table td { padding: 1px 0; }
+        .tooltip-group-title-row td { padding-top: 4px; font-weight: 600; }
+        .tooltip-indent { padding-left: 12px; }
+        .tooltip-val { text-align: right; font-variant-numeric: tabular-nums; }
 """
 
 _SLIDER_CSS = """
@@ -224,15 +359,39 @@ _SLIDER_CSS = """
             white-space: nowrap;
         }
         #date-slider {
-            flex: 1;
+            flex: 0 0 320px;
             min-width: 200px;
+            max-width: 320px;
+        }
+        @media (max-width: 760px) {
+            #date-slider {
+                flex: 1;
+                max-width: none;
+            }
         }
         .noUi-connect {
             background: #667eea !important;
         }
         .noUi-handle {
-            border-color: #667eea !important;
-            box-shadow: none !important;
+            border: 2px solid #667eea !important;
+            border-radius: 50% !important;
+            background: #fff !important;
+            box-shadow: 0 1px 4px rgba(102,126,234,0.35) !important;
+            cursor: ew-resize;
+        }
+        .noUi-horizontal .noUi-handle {
+            width: 18px;
+            height: 18px;
+            right: -9px;
+            top: -8px;
+        }
+        .noUi-handle:before,
+        .noUi-handle:after {
+            display: none !important;
+        }
+        .noUi-handle:hover {
+            background: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.2) !important;
         }
         .noUi-tooltip {
             font-size: 0.75em;
@@ -275,7 +434,11 @@ _SLIDER_JS = """
 
             sliderDates = data.map(r => r.date);
             const maxIdx = sliderDates.length - 1;
-            const startIdx = Math.max(0, maxIdx - (defaultMonths - 1));
+            const maxDate = new Date(sliderDates[maxIdx]);
+            const startDate = new Date(maxDate.getTime());
+            startDate.setMonth(startDate.getMonth() - Math.max(0, defaultMonths - 1));
+            let startIdx = sliderDates.findIndex(d => new Date(d) >= startDate);
+            if (startIdx < 0) startIdx = 0;
 
             const el = document.getElementById('date-slider');
             if (slider) { slider.destroy(); }
@@ -342,6 +505,7 @@ _COMPUTE_MA_JS = """
                 6:  { dash: [],     width: 2,   suffix: '(6-Mo MA)' },
                 12: { dash: [],     width: 2,   suffix: '(12-Mo MA)' }
             };
+            const variantMap = { 1: 'rawMonthly', 3: 'ma3', 6: 'ma6', 12: 'ma12' };
             // MA opacity hierarchy: lowest MA = solid (1.0), each higher MA more transparent
             const opacitySteps = [1.0, 0.55, 0.35, 0.2];
             const maWindows = windows.filter(w => w !== 1);
@@ -360,7 +524,8 @@ _COMPUTE_MA_JS = """
                     borderColor: hexToRgba(baseColor, opacity),
                     borderDash: s.dash,
                     borderWidth: s.width,
-                    fill: false, tension: 0.1, pointRadius: 0, pointHoverRadius: 5
+                    fill: false, tension: 0.1, pointRadius: 0, pointHoverRadius: 5,
+                    _variant: variantMap[w] || 'ma'
                 };
             });
         }
@@ -512,7 +677,7 @@ def gen_html_multi_select(
     checkboxes = "\n".join(
         f'<label class="chip"><input type="checkbox" value="{item}"'
         f"{' checked' if item in default_checked else ''}>"
-        f"{fmt_country(item)}</label>"
+        f'<span class="chip-label">{fmt_country(item)}</span></label>'
         for item in items
     )
 
@@ -591,13 +756,14 @@ def gen_html_multi_select_with_radio(
     checkboxes = "\n".join(
         f'<label class="chip"><input type="checkbox" value="{item}"'
         f"{' checked' if item in default_checked else ''}>"
-        f"{fmt_country(item)}</label>"
+        f'<span class="chip-label">{fmt_country(item)}</span></label>'
         for item in items
     )
 
     css_styles = _BASE_CSS + _TOGGLE_CSS + _CHIP_CSS + _SLIDER_CSS
 
     items_json = json.dumps(items)
+    default_items_json = json.dumps(default_checked)
 
     return f"""<!DOCTYPE html>
 <html>
@@ -614,18 +780,38 @@ def gen_html_multi_select_with_radio(
         <label for="country-select">Country:</label>
         <select id="country-select">{opts}</select>
     </div>
-    {_TOGGLE_HTML}
     {_SLIDER_HTML}
-    <div>
-        <label>{item_label}:</label>
+    <div class="controls">
+        <label>Smoothing:</label>
+        <div class="toggle-group">
+            <label><input type="checkbox" name="ma-toggle" value="1" checked>Raw</label>
+            <label><input type="checkbox" name="ma-toggle" value="3" checked>3-Mo MA</label>
+            <label><input type="checkbox" name="ma-toggle" value="6">6-Mo MA</label>
+            <label><input type="checkbox" name="ma-toggle" value="12">12-Mo MA</label>
+        </div>
+    </div>
+    <div class="chip-section" id="chip-section">
+        <div class="chip-header">
+            <label>{item_label}: <span id="selected-count">0</span> selected</label>
+            <div class="chip-tools">
+                <input type="text" id="item-search" placeholder="Search {item_label.lower()}" />
+                <button type="button" id="chip-toggle">Hide</button>
+                <button type="button" id="chip-default">Default</button>
+                <button type="button" id="chip-clear">Clear</button>
+            </div>
+        </div>
         <div class="chip-container" id="item-select">{checkboxes}</div>
     </div>
-    <div class="chart-wrapper">
-        <canvas id="chart"></canvas>
+    <div class="plot-row">
+        <div class="chart-wrapper">
+            <canvas id="chart"></canvas>
+        </div>
+        <div class="legend-panel" id="legend"></div>
     </div>
     <script>
         const allData = {json.dumps(all_data)};
         const allItems = {items_json};
+        const defaultItems = {default_items_json};
         let currentChart = null;
 
         {_COMPUTE_MA_JS}
@@ -636,6 +822,140 @@ def gen_html_multi_select_with_radio(
             return Array.from(document.querySelectorAll('#item-select input:checked')).map(cb => cb.value);
         }}
 
+        function updateSelectedCount() {{
+            const count = getSelectedItems().length;
+            const el = document.getElementById('selected-count');
+            if (el) el.textContent = count;
+        }}
+
+        let showAllChips = true;
+
+        function fmtChipLabel(raw) {{
+            const map = {{
+                gasoline: 'Gas',
+                natural_gas: 'Natural Gas',
+                imf: 'IMF',
+                us_government: 'US Government',
+                china_government: 'China Government',
+                multilateral_development_bank: 'Multilateral Dev. Bank',
+                credit_rating_agency: 'Credit Rating Agency',
+                state_owned_enterprises: 'State-Owned Enterprises',
+                international_organizations: 'International Organizations',
+                international_investors: 'International Investors',
+                courts_judiciary: 'Courts & Judiciary',
+                military_security: 'Military & Security',
+                labor_unions: 'Labor Unions',
+                central_bank: 'Central Bank',
+                finance_ministry: 'Finance Ministry',
+                world_bank: 'World Bank',
+                commercial_banks: 'Commercial Banks',
+                parliament: 'Parliament',
+                government: 'Government'
+            }};
+            if (map[raw]) return map[raw];
+            return raw.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }}
+
+        function applyChipFilters() {{
+            const q = (document.getElementById('item-search').value || '').toLowerCase().trim();
+            document.querySelectorAll('#item-select .chip').forEach(chip => {{
+                const input = chip.querySelector('input');
+                const labelEl = chip.querySelector('.chip-label');
+                const raw = input.value;
+                const label = fmtChipLabel(raw);
+                if (typeof getChipColor === 'function') {{
+                    const color = getChipColor(raw);
+                    if (color) chip.style.setProperty('--chip-color', color);
+                }}
+                if (labelEl) labelEl.textContent = label;
+                const txt = label.toLowerCase();
+                const isSelected = input.checked;
+                const match = !q || txt.indexOf(q) !== -1;
+                const visible = match && (showAllChips || isSelected);
+                chip.style.display = visible ? 'inline-flex' : 'none';
+            }});
+        }}
+
+        function setSelected(items) {{
+            const set = new Set(items);
+            document.querySelectorAll('#item-select input').forEach(cb => {{
+                cb.checked = set.has(cb.value);
+            }});
+            updateSelectedCount();
+            applyChipFilters();
+        }}
+
+        function setChipExpanded(expanded) {{
+            showAllChips = expanded;
+            const btn = document.getElementById('chip-toggle');
+            if (btn) btn.textContent = expanded ? 'Hide' : 'Show';
+            applyChipFilters();
+        }}
+
+        function updateLegend(chart) {{
+            const container = document.getElementById('legend');
+            if (!container || !chart) return;
+            container.innerHTML = '';
+            const groups = {{}};
+            const order = chart._groupOrder || [];
+            const variantOrder = ['ma3', 'ma6', 'ma12', 'rawMonthly', 'rawDaily'];
+            const variantLabels = {{
+                ma3: '3-Mo MA',
+                ma6: '6-Mo MA',
+                ma12: '12-Mo MA',
+                rawMonthly: 'Raw (monthly)',
+                rawDaily: 'Raw (daily)'
+            }};
+            chart.data.datasets.forEach((ds, i) => {{
+                const key = ds._legendGroup || ds.label || 'Series';
+                if (!groups[key]) {{
+                    groups[key] = {{
+                        label: ds._legendLabel || ds.label || key,
+                        datasets: []
+                    }};
+                }}
+                groups[key].datasets.push({{ ds, i }});
+            }});
+            const orderedKeys = order.length ? order.filter(k => groups[k]) : Object.keys(groups);
+            orderedKeys.forEach(key => {{
+                const group = groups[key];
+                const allVisible = group.datasets.every(d => chart.isDatasetVisible(d.i));
+                const groupEl = document.createElement('div');
+                groupEl.className = 'legend-group' + (allVisible ? '' : ' is-hidden');
+                const title = document.createElement('div');
+                title.className = 'legend-title';
+                title.textContent = group.label;
+                groupEl.appendChild(title);
+                const sorted = group.datasets.slice().sort((a, b) => {{
+                    const av = variantOrder.indexOf(a.ds._variant || '');
+                    const bv = variantOrder.indexOf(b.ds._variant || '');
+                    return (av === -1 ? 99 : av) - (bv === -1 ? 99 : bv);
+                }});
+                sorted.forEach(entry => {{
+                    const v = entry.ds._variant;
+                    if (!variantLabels[v]) return;
+                    const row = document.createElement('div');
+                    row.className = 'legend-subitem';
+                    const line = document.createElement('span');
+                    line.className = 'legend-line';
+                    line.style.borderTopColor = entry.ds.borderColor || '#999';
+                    line.style.borderTopStyle = entry.ds.borderDash && entry.ds.borderDash.length ? 'dashed' : 'solid';
+                    const label = document.createElement('span');
+                    label.textContent = variantLabels[v];
+                    row.appendChild(line);
+                    row.appendChild(label);
+                    groupEl.appendChild(row);
+                }});
+                groupEl.addEventListener('click', () => {{
+                    const nextVisible = !allVisible;
+                    group.datasets.forEach(d => chart.setDatasetVisibility(d.i, nextVisible));
+                    chart.update();
+                    updateLegend(chart);
+                }});
+                container.appendChild(groupEl);
+            }});
+        }}
+
         {script_content}
 
         function rerender() {{ renderChart(document.getElementById('country-select').value, getSelectedItems()); }}
@@ -643,9 +963,32 @@ def gen_html_multi_select_with_radio(
             initSlider(e.target.value, {default_months});
             rerender();
         }});
-        document.getElementById('item-select').addEventListener('change', rerender);
+        document.getElementById('item-select').addEventListener('change', function() {{
+            updateSelectedCount();
+            applyChipFilters();
+            rerender();
+        }});
+        document.getElementById('item-search').addEventListener('input', applyChipFilters);
+        document.getElementById('chip-default').addEventListener('click', function() {{
+            setSelected(defaultItems);
+            rerender();
+        }});
+        document.getElementById('chip-clear').addEventListener('click', function() {{
+            setSelected([]);
+            rerender();
+        }});
+        document.getElementById('chip-toggle').addEventListener('click', function(e) {{
+            const container = document.getElementById('item-select');
+            const isExpanded = !showAllChips;
+            setChipExpanded(isExpanded);
+        }});
+        if (allItems.length > 12) {{
+            setChipExpanded(false);
+        }}
         document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventListener('change', rerender));
         initSlider(document.getElementById('country-select').value, {default_months});
+        updateSelectedCount();
+        applyChipFilters();
         rerender();
     </script>
 </body>
@@ -882,18 +1225,109 @@ def gen_epu_topics_html(countries, data_dir, out):
         "#98df8a",
     ]
     palette_json = json.dumps(palette)
-    default_checked = ["inflation_prices", "trade", "fiscal_policy"]
+    default_checked = ["inflation_prices", "diesel", "oil", "natural_gas"]
 
     script = f"""
         const palette = {palette_json};
 
+        const VARIANT_ORDER = ['ma3', 'ma6', 'ma12', 'rawMonthly', 'rawDaily'];
+        const VARIANT_LABELS = {{
+            ma3: '3-Mo MA',
+            ma6: '6-Mo MA',
+            ma12: '12-Mo MA',
+            rawMonthly: 'Raw (monthly)',
+            rawDaily: 'Raw (daily)'
+        }};
+
+        function getChipColor(topic) {{
+            const idx = allItems.indexOf(topic);
+            return palette[idx % palette.length];
+        }}
+
         function fmtLabel(key) {{
+            const map = {{
+                gasoline: 'Gas',
+                natural_gas: 'Natural Gas'
+            }};
+            if (map[key]) return map[key];
             return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         }}
 
         function formatDate(d) {{
             const parts = d.split('-');
             return `${{parts[0]}}-${{parts[1]}}`;
+        }}
+
+        function formatValue(v) {{
+            if (v == null) return '-';
+            if (typeof v === 'number' && !isNaN(v)) return v.toFixed(2);
+            return v;
+        }}
+
+        function getTooltipEl() {{
+            let el = document.getElementById('chart-tooltip');
+            if (!el) {{
+                el = document.createElement('div');
+                el.id = 'chart-tooltip';
+                el.className = 'chart-tooltip';
+                document.body.appendChild(el);
+            }}
+            return el;
+        }}
+
+        function buildTooltipGroups(chart, dataIndex) {{
+            const groups = {{}};
+            const order = chart._groupOrder || [];
+            chart.data.datasets.forEach((ds, i) => {{
+                if (!chart.isDatasetVisible(i)) return;
+                const key = ds._legendGroup || ds.label || 'Series';
+                if (!groups[key]) {{
+                    groups[key] = {{ label: ds._legendLabel || ds.label || key, items: [] }};
+                }}
+                if (!VARIANT_LABELS[ds._variant]) return;
+                groups[key].items.push({{ variant: ds._variant, value: ds.data[dataIndex] }});
+            }});
+            const orderedKeys = order.length ? order.filter(k => groups[k]) : Object.keys(groups);
+            return orderedKeys.map(key => {{
+                const group = groups[key];
+                group.items.sort((a, b) => {{
+                    const av = VARIANT_ORDER.indexOf(a.variant);
+                    const bv = VARIANT_ORDER.indexOf(b.variant);
+                    return (av === -1 ? 99 : av) - (bv === -1 ? 99 : bv);
+                }});
+                return group;
+            }});
+        }}
+
+        function externalTooltipHandler(context) {{
+            const tooltip = context.tooltip;
+            const chart = context.chart;
+            const tooltipEl = getTooltipEl();
+
+            if (!tooltip || tooltip.opacity === 0) {{
+                tooltipEl.style.opacity = 0;
+                return;
+            }}
+
+            const dataIndex = tooltip.dataPoints && tooltip.dataPoints.length ? tooltip.dataPoints[0].dataIndex : null;
+            if (dataIndex == null) return;
+            const label = (tooltip.title && tooltip.title.length) ? tooltip.title[0] : '';
+            const groups = buildTooltipGroups(chart, dataIndex);
+
+            let html = `<div class="tooltip-title">${{label}}</div><table class="tooltip-table">`;
+            groups.forEach(group => {{
+                html += `<tr class="tooltip-group-title-row"><td colspan="2">${{group.label}}</td></tr>`;
+                group.items.forEach(item => {{
+                    html += `<tr class="tooltip-row"><td class="tooltip-indent">${{VARIANT_LABELS[item.variant]}}</td><td class="tooltip-val">${{formatValue(item.value)}}</td></tr>`;
+                }});
+            }});
+            html += `</table>`;
+            tooltipEl.innerHTML = html;
+
+            const rect = chart.canvas.getBoundingClientRect();
+            tooltipEl.style.opacity = 1;
+            tooltipEl.style.left = rect.left + window.pageXOffset + tooltip.caretX + 'px';
+            tooltipEl.style.top = rect.top + window.pageYOffset + tooltip.caretY + 'px';
         }}
 
         function renderChart(country, selectedItems) {{
@@ -917,7 +1351,14 @@ def gen_epu_topics_html(countries, data_dir, out):
             selectedItems.forEach((topic, i) => {{
                 const colKey = `EPU_${{topic}}_index`;
                 const color = palette[allItems.indexOf(topic) % palette.length];
-                datasets.push(...buildMADatasets(monthlyData.map(r => r[colKey]), color, fmtLabel(topic) + ' EPU'));
+                const seriesLabel = fmtLabel(topic) + ' EPU';
+                const maSets = buildMADatasets(monthlyData.map(r => r[colKey]), color, seriesLabel);
+                maSets.forEach(ds => {{
+                    ds._legendGroup = topic;
+                    ds._legendLabel = seriesLabel;
+                    ds._legendColor = color;
+                }});
+                datasets.push(...maSets);
                 if (dailyData.length) {{
                     const lastMonthly = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1][colKey] : null;
                     const nBridge = Math.max(0, monthlyData.length - 1);
@@ -932,7 +1373,11 @@ def gen_epu_topics_html(countries, data_dir, out):
                         spanGaps: true,
                         pointRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(r => (r[colKey] === 0 ? 0 : 4))],
                         pointHoverRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(r => (r[colKey] === 0 ? 0 : 6))],
-                        pointBackgroundColor: color
+                        pointBackgroundColor: color,
+                        _legendGroup: topic,
+                        _legendLabel: seriesLabel,
+                        _legendColor: color,
+                        _variant: 'rawDaily'
                     }});
                 }}
             }});
@@ -956,8 +1401,8 @@ def gen_epu_topics_html(countries, data_dir, out):
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {{
-                        legend: {{ position: 'top', labels: {{ usePointStyle: true, padding: 15 }} }},
-                        tooltip: {{ mode: 'index', intersect: false, backgroundColor: 'rgba(0,0,0,0.8)', padding: 12 }}
+                        legend: {{ display: false }},
+                        tooltip: {{ enabled: false, mode: 'index', intersect: false, external: externalTooltipHandler }}
                     }},
                     scales: {{
                         x: {{ display: true, title: {{ display: true, text: 'Date' }} }},
@@ -965,6 +1410,10 @@ def gen_epu_topics_html(countries, data_dir, out):
                     }}
                 }}
             }});
+            currentChart._groupOrder = selectedItems.slice();
+            if (typeof updateLegend === 'function') {{
+                updateLegend(currentChart);
+            }}
         }}
     """
 
@@ -980,6 +1429,269 @@ def gen_epu_topics_html(countries, data_dir, out):
                 "Topics",
                 default_checked,
                 script,
+                default_months=12,
+            )
+        )
+    print(f"Created {out}")
+
+
+def gen_epu_actors_html(countries, data_dir, out):
+    """Generate actor-specific EPU visualization with multi-select checkboxes"""
+    countries = sorted([c for c in countries if c not in EXCLUDE_COUNTRIES])
+    all_data = {}
+    actors = set()
+    for c in countries:
+        df = load_actors_epu_data(c, data_dir)
+        if df is not None:
+            all_data[c] = df_to_json(df)
+            for col in df.columns:
+                if col.startswith("EPU_") and col.endswith("_index"):
+                    actors.add(col[4:-6])
+    if not all_data:
+        return
+
+    actors = sorted(actors)
+    default_checked = [
+        "central_bank",
+        "parliament",
+        "government",
+        "world_bank",
+        "international_organizations",
+    ]
+    default_checked = [a for a in default_checked if a in actors]
+    if not default_checked:
+        default_checked = actors[:5]
+
+    palette = [
+        "#1d77b2",
+        "#d95e10",
+        "#00a37c",
+        "#e7298a",
+        "#66a61e",
+        "#e6ab02",
+        "#7570b3",
+        "#a6761d",
+        "#666666",
+        "#1b9e77",
+        "#d62728",
+        "#9467bd",
+        "#8c564b",
+        "#17becf",
+        "#bcbd22",
+        "#ff7f0e",
+        "#2ca02c",
+        "#e377c2",
+        "#7f7f7f",
+        "#aec7e8",
+        "#ffbb78",
+        "#98df8a",
+    ]
+    palette_json = json.dumps(palette)
+
+    script = f"""
+        const palette = {palette_json};
+
+        const VARIANT_ORDER = ['ma3', 'ma6', 'ma12', 'rawMonthly', 'rawDaily'];
+        const VARIANT_LABELS = {{
+            ma3: '3-Mo MA',
+            ma6: '6-Mo MA',
+            ma12: '12-Mo MA',
+            rawMonthly: 'Raw (monthly)',
+            rawDaily: 'Raw (daily)'
+        }};
+
+        function getChipColor(actor) {{
+            const idx = allItems.indexOf(actor);
+            return palette[idx % palette.length];
+        }}
+
+        function fmtLabel(key) {{
+            const map = {{
+                imf: 'IMF',
+                us_government: 'US Government',
+                china_government: 'China Government',
+            }};
+            if (map[key]) return map[key];
+            return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }}
+
+        function formatDate(d) {{
+            const parts = d.split('-');
+            return `${{parts[0]}}-${{parts[1]}}`;
+        }}
+
+        function formatValue(v) {{
+            if (v == null) return '-';
+            if (typeof v === 'number' && !isNaN(v)) return v.toFixed(2);
+            return v;
+        }}
+
+        function getTooltipEl() {{
+            let el = document.getElementById('chart-tooltip');
+            if (!el) {{
+                el = document.createElement('div');
+                el.id = 'chart-tooltip';
+                el.className = 'chart-tooltip';
+                document.body.appendChild(el);
+            }}
+            return el;
+        }}
+
+        function buildTooltipGroups(chart, dataIndex) {{
+            const groups = {{}};
+            const order = chart._groupOrder || [];
+            chart.data.datasets.forEach((ds, i) => {{
+                if (!chart.isDatasetVisible(i)) return;
+                const key = ds._legendGroup || ds.label || 'Series';
+                if (!groups[key]) {{
+                    groups[key] = {{ label: ds._legendLabel || ds.label || key, items: [] }};
+                }}
+                if (!VARIANT_LABELS[ds._variant]) return;
+                groups[key].items.push({{ variant: ds._variant, value: ds.data[dataIndex] }});
+            }});
+            const orderedKeys = order.length ? order.filter(k => groups[k]) : Object.keys(groups);
+            return orderedKeys.map(key => {{
+                const group = groups[key];
+                group.items.sort((a, b) => {{
+                    const av = VARIANT_ORDER.indexOf(a.variant);
+                    const bv = VARIANT_ORDER.indexOf(b.variant);
+                    return (av === -1 ? 99 : av) - (bv === -1 ? 99 : bv);
+                }});
+                return group;
+            }});
+        }}
+
+        function externalTooltipHandler(context) {{
+            const tooltip = context.tooltip;
+            const chart = context.chart;
+            const tooltipEl = getTooltipEl();
+
+            if (!tooltip || tooltip.opacity === 0) {{
+                tooltipEl.style.opacity = 0;
+                return;
+            }}
+
+            const dataIndex = tooltip.dataPoints && tooltip.dataPoints.length ? tooltip.dataPoints[0].dataIndex : null;
+            if (dataIndex == null) return;
+            const label = (tooltip.title && tooltip.title.length) ? tooltip.title[0] : '';
+            const groups = buildTooltipGroups(chart, dataIndex);
+
+            let html = `<div class="tooltip-title">${{label}}</div><table class="tooltip-table">`;
+            groups.forEach(group => {{
+                html += `<tr class="tooltip-group-title-row"><td colspan="2">${{group.label}}</td></tr>`;
+                group.items.forEach(item => {{
+                    html += `<tr class="tooltip-row"><td class="tooltip-indent">${{VARIANT_LABELS[item.variant]}}</td><td class="tooltip-val">${{formatValue(item.value)}}</td></tr>`;
+                }});
+            }});
+            html += `</table>`;
+            tooltipEl.innerHTML = html;
+
+            const rect = chart.canvas.getBoundingClientRect();
+            tooltipEl.style.opacity = 1;
+            tooltipEl.style.left = rect.left + window.pageXOffset + tooltip.caretX + 'px';
+            tooltipEl.style.top = rect.top + window.pageYOffset + tooltip.caretY + 'px';
+        }}
+
+        function renderChart(country, selectedItems) {{
+            const rawData = allData[country];
+            if (!rawData || !rawData.length) return;
+
+            const range = getSliderRange();
+            let data = rawData;
+            if (range.from) data = data.filter(r => r.date >= range.from);
+            if (range.to) data = data.filter(r => r.date <= range.to);
+            if (!data.length) return;
+
+            const monthlyData = data.filter(r => !isDaily(r));
+            const dailyData   = data.filter(r =>  isDaily(r) && selectedItems.some(a => r[`EPU_${{a}}_index`] != null));
+
+            const monthlyLabels = monthlyData.map(r => formatDate(r.date));
+            const dailyLabels   = dailyData.map(r => r.date);
+            const labels = [...monthlyLabels, ...dailyLabels];
+
+            const datasets = [];
+            selectedItems.forEach((actor, i) => {{
+                const colKey = `EPU_${{actor}}_index`;
+                const color = palette[allItems.indexOf(actor) % palette.length];
+                const seriesLabel = fmtLabel(actor) + ' EPU';
+                const maSets = buildMADatasets(monthlyData.map(r => r[colKey]), color, seriesLabel);
+                maSets.forEach(ds => {{
+                    ds._legendGroup = actor;
+                    ds._legendLabel = seriesLabel;
+                    ds._legendColor = color;
+                }});
+                datasets.push(...maSets);
+                if (dailyData.length) {{
+                    const lastMonthly = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1][colKey] : null;
+                    const nBridge = Math.max(0, monthlyData.length - 1);
+                    datasets.push({{
+                        label: fmtLabel(actor) + ' EPU (current month, daily)',
+                        data: [...Array(nBridge).fill(null), lastMonthly, ...dailyData.map(r => (r[colKey] === 0 ? null : r[colKey]))],
+                        borderColor: hexToRgba(color, 0.8),
+                        borderDash: [4, 4],
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0,
+                        spanGaps: true,
+                        pointRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(r => (r[colKey] === 0 ? 0 : 4))],
+                        pointHoverRadius: [...Array(nBridge).fill(0), 0, ...dailyData.map(r => (r[colKey] === 0 ? 0 : 6))],
+                        pointBackgroundColor: color,
+                        _legendGroup: actor,
+                        _legendLabel: seriesLabel,
+                        _legendColor: color,
+                        _variant: 'rawDaily'
+                    }});
+                }}
+            }});
+
+            const allActorValues = selectedItems.flatMap(actor => {{
+                const colKey = `EPU_${{actor}}_index`;
+                return [
+                    ...monthlyData.map(r => r[colKey]),
+                    ...dailyData.map(r => r[colKey])
+                ];
+            }}).filter(v => v != null && v !== 0);
+            const yMax = allActorValues.length ? Math.max(...allActorValues) * 1.1 : undefined;
+
+            const ctx = document.getElementById('chart').getContext('2d');
+            if (currentChart) currentChart.destroy();
+
+            currentChart = new Chart(ctx, {{
+                type: 'line',
+                data: {{ labels: labels, datasets: datasets }},
+                options: {{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {{
+                        legend: {{ display: false }},
+                        tooltip: {{ enabled: false, mode: 'index', intersect: false, external: externalTooltipHandler }}
+                    }},
+                    scales: {{
+                        x: {{ display: true, title: {{ display: true, text: 'Date' }} }},
+                        y: {{ display: true, title: {{ display: true, text: 'EPU Index' }}, max: yMax }}
+                    }}
+                }}
+            }});
+            currentChart._groupOrder = selectedItems.slice();
+            if (typeof updateLegend === 'function') {{
+                updateLegend(currentChart);
+            }}
+        }}
+    """
+
+    with open(out, "w") as f:
+        f.write(
+            gen_html_multi_select_with_radio(
+                "Economic Policy Uncertainty by Actor",
+                "Actor-based EPU Analysis",
+                "epu-actors-chart",
+                all_data,
+                countries,
+                actors,
+                "Actors",
+                default_checked,
+                script,
+                default_months=12,
             )
         )
     print(f"Created {out}")
@@ -2008,6 +2720,7 @@ if __name__ == "__main__":
 
     gen_epu_html(countries, DATA_DIR, OUTPUT_DIR / "epu_pic.html")
     gen_epu_topics_html(countries, DATA_DIR, OUTPUT_DIR / "epu_topics_pic.html")
+    gen_epu_actors_html(countries, DATA_DIR, OUTPUT_DIR / "epu_actors_pic.html")
     gen_news_html(countries, DATA_DIR, OUTPUT_DIR / "news_count_pic.html")
     gen_breadth_html(countries, DATA_DIR, OUTPUT_DIR / "breadth_pic.html")
     gen_intensity_html(countries, DATA_DIR, OUTPUT_DIR / "intensity_pic.html")
