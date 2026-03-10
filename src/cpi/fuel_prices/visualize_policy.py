@@ -539,8 +539,9 @@ def load_policy_data() -> dict:
         print(f"  [policy] EAP missing from population CSV: {sorted(missing_pop)}")
     if missing_gdp:
         print(f"  [policy] EAP missing from GDP CSV: {sorted(missing_gdp)}")
-    # Note: only China (CHN) currently has subsidy chips in Tab 1 table;
-    # _SUBSIDY_CHIP_EXCLUDE lists countries with no data yet.
+    # Note: Tab 1 subsidy chips are driven by the IMF Fossil Fuel Subsidies
+    # workbook (All_Implicit) per-product values: imf_value > 0 => Subsidised.
+    # Countries missing from the IMF sheet will simply show no subsidy chips.
 
     # --- Commodity series for Tab 1 ---
     comm_series: dict = {}
@@ -829,15 +830,49 @@ _CSS = """
     #fuel-country-select:hover, #fuel-country-select:focus { border-color: #667eea; outline: 0; }
     #fuel-range-label { font-size: 0.85em; color: #555; min-width: 200px; text-align: center; white-space: nowrap; }
     #fuel-date-slider { flex: 0 1 55%; min-width: 140px; max-width: 55%; }
-    #fuel-regime-badges {
-        display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap;
-        margin-left: 12px;
+    #fuel-regime-section {
+        margin: 8px 0 4px 0;
+        padding: 8px 10px;
     }
-    #fuel-regime-badges .regime-label-prefix {
-        font-size: 0.88em; color: #555; font-weight: 500; white-space: nowrap;
+    #fuel-regime-section .section-label { margin-top: 0; }
+    .fuel-regime-grid {
+        display: grid;
+        grid-template-columns: 140px 1fr 1fr;
+        gap: 0;
+        align-items: start;
+        border: 1px solid #e1e1e1;
+        border-radius: 4px;
+        overflow: hidden;
     }
-    #fuel-regime-badges .regime-badge {
-        font-size: 0.78em; padding: 3px 11px; font-weight: 600;
+    .fuel-regime-grid > div {
+        padding: 4px 6px;
+        border-top: 1px solid #e1e1e1;
+        border-left: 1px solid #e1e1e1;
+    }
+    .fuel-regime-grid > div:nth-child(-n+3) { border-top: none; }
+    .fuel-regime-grid > div:nth-child(3n+1) { border-left: none; }
+    .fuel-regime-grid .grid-header {
+        font-size: 0.82em;
+        font-weight: 700;
+        color: #555;
+        text-align: left;
+    }
+    .fuel-regime-grid .row-label {
+        font-size: 0.84em;
+        font-weight: 600;
+        color: #555;
+    }
+    .fuel-regime-cell {
+        min-height: 22px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+    }
+    .fuel-regime-cell .regime-badge {
+        font-size: 0.78em;
+        padding: 3px 10px;
+        font-weight: 600;
     }
     #fuel-meta-panel { font-size: 0.82em; color: #555; margin: 4px 0; line-height: 1.7; }
     #fuel-loc-table-section { margin-top: 14px; }
@@ -885,6 +920,7 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     colors_json = json.dumps(regime_colors)
     palette_json = json.dumps(PALETTE)
     fuel_data_json = json.dumps(fuel_data)
+    product_regimes_json = json.dumps(product_regimes)
     fuel_countries = sorted(fuel_data.keys())
     fuel_country_opts = "\n".join(
         f'<option value="{c}">{c}</option>' for c in fuel_countries
@@ -983,7 +1019,7 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
 
     <div class="chart-wrapper"><canvas id="comm-chart"></canvas></div>
 
-    <div class="section-label" style="margin-top:18px">EAP Country Pricing Regimes (2024)</div>
+    <div class="section-label" style="margin-top:18px">EAP Country Pricing Regimes (2024) &mdash; Subsidised = IMF implicit subsidy &gt; 0</div>
     <div class="regime-table-wrap">
         <table class="regime-table">
             <thead>
@@ -1027,7 +1063,6 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     <div class="ctrl-row">
         <span class="row-label">Country:</span>
         <select id="fuel-country-select">{fuel_country_opts}</select>
-        <div id="fuel-regime-badges"></div>
     </div>
     <div class="ctrl-row">
         <span class="row-label">Smoothing:</span>
@@ -1040,6 +1075,20 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
         <label>Date Range:</label>
         <span id="fuel-range-label">&mdash;</span>
         <div id="fuel-date-slider"></div>
+    </div>
+    <div id="fuel-regime-section" style="display:none">
+        <div class="section-label">Price Regimes:</div>
+        <div class="fuel-regime-grid">
+            <div></div>
+            <div class="grid-header">Subsidised</div>
+            <div class="grid-header">Not Subsidised</div>
+            <div class="row-label">Market Prices</div>
+            <div id="fuel-regime-market-sub" class="fuel-regime-cell"></div>
+            <div id="fuel-regime-market-nosub" class="fuel-regime-cell"></div>
+            <div class="row-label">Price Controlled</div>
+            <div id="fuel-regime-control-sub" class="fuel-regime-cell"></div>
+            <div id="fuel-regime-control-nosub" class="fuel-regime-cell"></div>
+        </div>
     </div>
     <div class="section-label">Fuel Family:</div>
     <div class="chip-container" id="fuel-axis-chips"></div>
@@ -1058,6 +1107,7 @@ const COMM_SERIES   = {comm_json};
 const SCATTER_DATA  = {scatter_json};
 const REGIME_COLORS = {colors_json};
 const PALETTE       = {palette_json};
+const PRODUCT_REGIMES = {product_regimes_json};
 const ALL_PRODUCTS  = {products_json};
 const EAP_ISOS      = new Set({eap_isos_json});
 
@@ -1783,12 +1833,19 @@ function rerenderFuel() {{
     if (range.from) visibleRows = visibleRows.filter(function(r) {{ return r.observation_date >= range.from; }});
     if (range.to)   visibleRows = visibleRows.filter(function(r) {{ return r.observation_date <= range.to; }});
     updateFuelMeta(visibleRows);
-    if (!visibleRows.length) {{ drawFuelChart([], ""); rebuildFuelLocToggles([]); return; }}
+    if (!visibleRows.length) {{
+        drawFuelChart([], "");
+        rebuildFuelLocToggles([]);
+        var section = document.getElementById('fuel-regime-section');
+        if (section) section.style.display = 'none';
+        return;
+    }}
     var firstRow  = visibleRows[0];
     var yLabel    = (firstRow.currency || "") + " / " + (firstRow.unit || "");
     var datasets  = [];
     var colorIdx  = 0;
     var multiKeys = [];
+    var keyColors = {{}};
     fuelLocDataStore = {{}};
     selectedKeys.forEach(function(key) {{
         var keyRows = visibleRows.filter(function(r) {{ return chipKey(r) === key; }});
@@ -1806,6 +1863,7 @@ function rerenderFuel() {{
         var color  = PALETTE[colorIdx % PALETTE.length];
         var serLbl = chipLabel(key);
         colorIdx++;
+        keyColors[key] = color;
         if (locs.length === 1) {{
             datasets.push(makeFuelDataset(serLbl, locMap[locs[0]], color, false));
         }} else {{
@@ -1820,33 +1878,86 @@ function rerenderFuel() {{
     }});
     drawFuelChart(datasets, yLabel);
     rebuildFuelLocToggles(multiKeys.filter(function(k) {{ return selectedKeys.includes(k); }}));
-    updateFuelRegimeBadges(document.getElementById("fuel-country-select").value);
+    updateFuelRegimeSection(document.getElementById("fuel-country-select").value, selectedKeys, keyColors);
 }}
 
-// ─── Tab 3 regime badges ───────────────────────────────────────────────────────────
-function updateFuelRegimeBadges(countryName) {{
-    const badgesEl = document.getElementById('fuel-regime-badges');
-    if (!badgesEl) return;
+// ─── Tab 3 price regime section ─────────────────────────────────────────────────
+function fuelBaseProduct(family) {{
+    if (!family) return null;
+    const f = String(family).toLowerCase();
+    if (f === 'gasoline') return 'Gasoline';
+    if (f === 'diesel') return 'Diesel';
+    if (f === 'lpg') return 'LPG';
+    if (f === 'kerosene') return 'Kerosene';
+    return null;
+}}
+
+function updateFuelRegimeSection(countryName, selectedKeys, keyColors) {{
+    const section = document.getElementById('fuel-regime-section');
+    const marketSub = document.getElementById('fuel-regime-market-sub');
+    const marketNoSub = document.getElementById('fuel-regime-market-nosub');
+    const controlSub = document.getElementById('fuel-regime-control-sub');
+    const controlNoSub = document.getElementById('fuel-regime-control-nosub');
+    if (!section || !marketSub || !marketNoSub || !controlSub || !controlNoSub) return;
+
     const d = SCATTER_DATA.find(x => x.country === countryName);
-    if (!d) {{ badgesEl.innerHTML = ''; return; }}
-    // Use Gasoline as default product for regime badge in Tab 3
-    const product = 'Gasoline';
-    const base = d.base_regime || 'Unknown';
-    const hasSub = d.imf_has_subsidy && d.imf_has_subsidy[product];
-    const baseColor = REGIME_COLORS[base] || '#aec7e8';
-    let html = '<span class="regime-label-prefix">Price Regime:</span>';
-    html += ' <span class="regime-badge" style="background:' + baseColor + '">' + base + '</span>';
-    if (hasSub && base !== 'Unknown') {{
-        html += ' <span class="regime-badge" style="background:#2196f3">Subsidised</span>';
+    if (!d) {{ section.style.display = 'none'; return; }}
+    const iso3 = d.wb_iso3 || '';
+    const perProd = PRODUCT_REGIMES[iso3] || {{}};
+    const subsidyMap = d.imf_has_subsidy || {{}};
+
+    const rows = window._fuelCountryRows || [];
+    const buckets = {{
+        marketSub: [],
+        marketNoSub: [],
+        controlSub: [],
+        controlNoSub: [],
+    }};
+    selectedKeys.forEach(function(key) {{
+        const row = rows.find(r => chipKey(r) === key);
+        if (!row) return;
+        const baseProd = fuelBaseProduct(row.fuel_family);
+        if (!baseProd) return;
+        const info = perProd[baseProd];
+        if (!info || !info.regime || info.regime === 'Unknown') return;
+        const entry = {{
+            key: key,
+            label: chipLabel(key),
+            color: keyColors[key] || '#666',
+        }};
+        const isSub = !!subsidyMap[baseProd];
+        if (info.regime === 'Market') {{
+            (isSub ? buckets.marketSub : buckets.marketNoSub).push(entry);
+        }} else if (info.regime === 'Price Control') {{
+            (isSub ? buckets.controlSub : buckets.controlNoSub).push(entry);
+        }}
+    }});
+
+    function renderCell(entries, el) {{
+        if (!entries.length) {{
+            el.innerHTML = '';
+            return;
+        }}
+        let html = '';
+        entries.forEach(function(e) {{
+            html += '<span class="regime-badge" style="background:' + e.color + '">' + e.label + '</span>';
+        }});
+        el.innerHTML = html;
     }}
-    badgesEl.innerHTML = html;
+
+    renderCell(buckets.marketSub, marketSub);
+    renderCell(buckets.marketNoSub, marketNoSub);
+    renderCell(buckets.controlSub, controlSub);
+    renderCell(buckets.controlNoSub, controlNoSub);
+
+    const total = buckets.marketSub.length + buckets.marketNoSub.length + buckets.controlSub.length + buckets.controlNoSub.length;
+    section.style.display = total ? '' : 'none';
 }}
 
 document.getElementById("fuel-country-select").addEventListener("change", function() {{
     rebuildFuelChips();
     initFuelSlider();
     rerenderFuel();
-    updateFuelRegimeBadges(this.value);
 }});
 document.querySelectorAll('input[name="fuel-ma-toggle"]').forEach(function(r) {{
     r.addEventListener("change", rerenderFuel);
@@ -1857,7 +1968,6 @@ buildKPI(ALL_PRODUCTS[0]);
 buildCommChips();
 initCommSlider();
 renderComm();
-updateFuelRegimeBadges(document.getElementById("fuel-country-select").value);
 </script>
 </body>
 </html>"""
