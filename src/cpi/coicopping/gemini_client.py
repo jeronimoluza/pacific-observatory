@@ -12,6 +12,23 @@ from typing import List, Dict
 import pandas as pd
 
 
+def _is_incomplete_trailing_csv_row(line: str) -> bool:
+    """Return True when a trailing CSV row appears truncated."""
+    stripped_line = line.rstrip()
+    if not stripped_line:
+        return False
+
+    if stripped_line.count('"') % 2 == 1:
+        return True
+
+    try:
+        row_data = next(csv.reader([line], strict=True))
+    except csv.Error:
+        return True
+
+    return len(row_data) < 2
+
+
 def setup_google_api_key() -> str:
     """
     Check if GOOGLE_API_KEY is set in environment variables.
@@ -121,11 +138,9 @@ def parse_gemini_response(response_text: str) -> List[Dict[str, str]]:
 
     response_text = response_text.strip()
 
-    # Handle truncated responses by removing incomplete last row
-    # If the last line doesn't end with a quote, it's likely truncated
+    # Handle truncated responses by removing only actually incomplete last rows
     lines = response_text.split("\n")
-    if lines and not lines[-1].rstrip().endswith('"'):
-        # Last row is incomplete, remove it
+    if lines and _is_incomplete_trailing_csv_row(lines[-1]):
         lines = lines[:-1]
         response_text = "\n".join(lines)
 

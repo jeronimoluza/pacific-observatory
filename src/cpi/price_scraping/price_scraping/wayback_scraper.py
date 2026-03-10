@@ -14,6 +14,7 @@ import threading
 import queue
 import time
 import subprocess
+from urllib.parse import urlencode
 
 import requests
 from bs4 import BeautifulSoup
@@ -174,11 +175,20 @@ class WaybackScraper:
         try:
             # Build CDX API query with end_timestamp filter
             # Use output=json to get structured data
-            cdx_url = f"https://web.archive.org/cdx/search/cdx?url={url}&output=json&filter=statuscode:200&sort=timestamp"
+            query_params = {
+                "url": url,
+                "output": "json",
+                "filter": "statuscode:200",
+                "sort": "timestamp",
+            }
             if self.from_date:
                 # Convert YYYY-MM-DD to YYYYMMDD format for CDX API
                 from_date_formatted = self.from_date.replace("-", "")
-                cdx_url += f"&to={from_date_formatted}"
+                query_params["to"] = from_date_formatted
+
+            cdx_url = (
+                f"https://web.archive.org/cdx/search/cdx?{urlencode(query_params)}"
+            )
 
             # Use curl to fetch CDX API response
             result = subprocess.run(
