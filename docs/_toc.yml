@@ -13,6 +13,7 @@ parts:
     chapters:
       - file: text/text_intro
       - file: text/extension
+      - file: text/dashboard
       - url: https://worldbank.github.io/pacific-observatory/interactive/text/text_presentation.slides
         title: Text Presentation
   - caption: Tourism
