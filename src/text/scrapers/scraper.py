@@ -1927,26 +1927,33 @@ class NewspaperScraper:
             self.prefetched_articles = []
 
             # Step 3: Discover thumbnails with stopping rules
-            new_thumbnails = await self._discover_thumbnails_incremental(
+            discovered_thumbnails = await self._discover_thumbnails_incremental(
                 existing_urls=existing_urls,
                 check_existing=True,  # Apply Rule 4
             )
 
+            # Filter to only newly discovered URLs in this run
+            newly_discovered = [
+                thumb
+                for thumb in discovered_thumbnails
+                if str(thumb.url) not in existing_urls
+            ]
+
             # Step 4: Append new URLs to urls.csv (deduplicated)
-            if new_thumbnails:
+            if newly_discovered:
                 saved_path = self._storage.append_thumbnails_to_urls(
-                    new_thumbnails, self.country, self.name
+                    newly_discovered, self.country, self.name
                 )
                 if saved_path:
                     self._saved_files["urls"] = saved_path
-                logger.info(f"Appended {len(new_thumbnails)} new URLs to urls.csv")
+                logger.info(f"Appended {len(newly_discovered)} new URLs to urls.csv")
 
             # Update metrics for discovered URLs
-            self.metrics.urls_discovered = len(new_thumbnails)
+            self.metrics.urls_discovered = len(newly_discovered)
 
             # Update progress: scraping phase
             if self.progress:
-                self.progress.update(phase="scraping", urls_found=len(new_thumbnails))
+                self.progress.update(phase="scraping", urls_found=len(newly_discovered))
 
             # Step 5: Load existing article URLs from news.csv
             existing_article_urls = self._storage.get_existing_article_urls(
@@ -1954,15 +1961,10 @@ class NewspaperScraper:
             )
             logger.info(f"Found {len(existing_article_urls)} existing articles")
 
-            # Step 6: Identify pending articles (all urls.csv - news.csv)
-            # Reload urls.csv to get complete list including newly added
-            all_thumbnails = self._storage.load_urls_from_csv(self.country, self.name)
-            if all_thumbnails is None:
-                all_thumbnails = []
-
+            # Step 6: Identify pending articles from newly discovered URLs only
             pending_thumbnails = [
                 thumb
-                for thumb in all_thumbnails
+                for thumb in newly_discovered
                 if str(thumb.url) not in existing_article_urls
             ]
             logger.info(f"Pending articles to scrape: {len(pending_thumbnails)}")
@@ -1970,11 +1972,13 @@ class NewspaperScraper:
             # Handle prefetched articles from API
             articles_from_api = 0
             if self.prefetched_articles:
+                newly_discovered_urls = {str(t.url) for t in newly_discovered}
                 # Filter to only new prefetched articles
                 new_prefetched = [
                     article
                     for article in self.prefetched_articles
                     if str(article.url) not in existing_article_urls
+                    and str(article.url) in newly_discovered_urls
                 ]
                 if new_prefetched:
                     logger.info(
@@ -1985,7 +1989,7 @@ class NewspaperScraper:
                         articles_from_api += 1
 
                 # Remove prefetched URLs from pending
-                prefetched_urls = {str(a.url) for a in self.prefetched_articles}
+                prefetched_urls = {str(a.url) for a in new_prefetched}
                 pending_thumbnails = [
                     t for t in pending_thumbnails if str(t.url) not in prefetched_urls
                 ]
@@ -2022,7 +2026,7 @@ class NewspaperScraper:
                 "mode": "default",
                 "statistics": {
                     "existing_urls": len(existing_urls),
-                    "new_urls_discovered": len(new_thumbnails),
+                    "new_urls_discovered": len(newly_discovered),
                     "existing_articles": len(existing_article_urls),
                     "articles_scraped": total_scraped,
                     "articles_failed": scrape_stats.get("articles_failed", 0),
@@ -2059,7 +2063,7 @@ class NewspaperScraper:
                 )
 
             logger.info(
-                f"DEFAULT mode completed: {len(new_thumbnails)} new URLs, "
+                f"DEFAULT mode completed: {len(newly_discovered)} new URLs, "
                 f"{total_scraped} articles scraped"
             )
             return results
