@@ -14,6 +14,7 @@ Usage:
 
 import asyncio
 import argparse
+import csv
 import os
 import sys
 from pathlib import Path
@@ -71,6 +72,76 @@ def list_available_scrapers():
             )
 
     print("\n" + "=" * 50)
+
+
+def show_status():
+    """CLI wrapper: Show status of all scraped data."""
+    data_dir = project_root / "data" / "text"
+    if not data_dir.exists():
+        print("❌ No data directory found at data/text")
+        return
+
+    rows = []
+    for csv_path in sorted(data_dir.glob("*/*/news.csv")):
+        country = csv_path.parts[-3]
+        source = csv_path.parts[-2]
+        count = 0
+        last_date = ""
+        last_scraped = ""
+        try:
+            with open(csv_path, newline="", encoding="utf-8") as f:
+                reader = csv.reader(f)
+                header = next(reader, None)
+                if header is None:
+                    continue
+                for row in reader:
+                    count += 1
+                    if len(row) > 2 and row[2]:
+                        last_date = row[2]
+                    if len(row) > 8 and row[8]:
+                        last_scraped = row[8][:10]
+        except Exception:
+            pass
+        rows.append((country, source, count, last_date or "—", last_scraped or "—"))
+
+    if not rows:
+        print("❌ No news.csv files found under data/text")
+        return
+
+    # Column widths
+    cw = max(len(r[0]) for r in rows)
+    sw = max(len(r[1]) for r in rows)
+    dw = 10
+    tw = 10
+    nw = 9
+
+    header_line = (
+        f"{'COUNTRY'.ljust(cw)}  {'SOURCE'.ljust(sw)}  {'ARTICLES'.rjust(nw)}"
+        f"  {'LAST DATE'.ljust(dw)}  {'LAST SCRAPED'.ljust(tw)}"
+    )
+    sep = "-" * len(header_line)
+
+    print("\n📊 Pacific Observatory - Scraper Status")
+    print(sep)
+    print(header_line)
+    print(sep)
+
+    current_country = None
+    for country, source, count, last_date, last_scraped in rows:
+        if current_country and country != current_country:
+            print()
+        current_country = country
+        print(
+            f"{country.ljust(cw)}  {source.ljust(sw)}  {str(count).rjust(nw)}"
+            f"  {last_date.ljust(dw)}  {last_scraped.ljust(tw)}"
+        )
+
+    print(sep)
+    total_articles = sum(r[2] for r in rows)
+    print(
+        f"Total: {len(rows)} sources across {len(set(r[0] for r in rows))} countries | {total_articles:,} articles"
+    )
+    print()
 
 
 def list_countries():
@@ -134,6 +205,12 @@ Examples:
     )
 
     # List options
+    parser.add_argument(
+        "--status",
+        action="store_true",
+        help="Show status of all scraped data (countries, sources, article counts, last updated)",
+    )
+
     parser.add_argument(
         "--list-scrapers",
         action="store_true",
@@ -253,6 +330,10 @@ Examples:
     mode = getattr(args, "mode", "update")
 
     # Handle list commands
+    if args.status:
+        show_status()
+        return
+
     if args.list_scrapers:
         list_available_scrapers()
         return
@@ -271,6 +352,43 @@ Examples:
             mode=mode,
             timeout_per_scraper=args.timeout,
             include=["abc_au", "rnz"],
+        )
+        failed_count = sum(
+            1 for r in results if r.get("status") in ["failed", "timeout"]
+        )
+        sys.exit(0 if failed_count == 0 else 1)
+
+    # Default behavior: run all scrapers sequentially by country
+    if (
+        not args.newspaper
+        and not args.country
+        and not args.run_all
+        and not args.list_scrapers
+        and not args.list_countries
+    ):
+        results = run_all_scrapers(
+            configs_dir=get_default_configs_dir(),
+            project_root=project_root,
+            sequential=True,
+            dry_run=args.dry_run,
+            mode=mode,
+            timeout_per_scraper=args.timeout,
+        )
+        failed_count = sum(
+            1 for r in results if r.get("status") in ["failed", "timeout"]
+        )
+        sys.exit(0 if failed_count == 0 else 1)
+
+    # Handle --country without a newspaper: run all scrapers for that country sequentially
+    if args.country and not args.newspaper:
+        results = run_all_scrapers(
+            configs_dir=get_default_configs_dir(),
+            project_root=project_root,
+            sequential=True,
+            dry_run=args.dry_run,
+            mode=mode,
+            timeout_per_scraper=args.timeout,
+            country_filter=args.country.lower(),
         )
         failed_count = sum(
             1 for r in results if r.get("status") in ["failed", "timeout"]
