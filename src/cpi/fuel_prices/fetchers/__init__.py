@@ -14,7 +14,10 @@ from .malaysia import fetch_malaysia_mof
 from .mongolia import fetch_mn_nso_weekly_aimag, fetch_mongolia_data_mn
 from .myanmar import fetch_myanmar_gnlm
 from .new_zealand import fetch_nz_mbie_weekly
-from .singapore import fetch_sg_singstat_avg_retail_prices
+from .singapore import (
+    fetch_sg_singstat_avg_retail_prices,
+    fetch_sg_spc_latest_pump_prices,
+)
 from .tonga import fetch_to_mted_petroleum_prices
 from .pacific_islands import (
     fetch_png_iccc,
@@ -69,6 +72,11 @@ FETCHER_REGISTRY: dict[str, tuple] = {
     "sg_singstat_avg_retail_prices_monthly": (
         fetch_sg_singstat_avg_retail_prices,
         date(2015, 1, 1),
+        False,
+    ),
+    "sg_spc_pump_prices_daily": (
+        fetch_sg_spc_latest_pump_prices,
+        date(2024, 1, 1),
         False,
     ),
     # Tonga

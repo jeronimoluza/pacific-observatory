@@ -25,13 +25,32 @@ SOURCE_META = [
         "source_keys": ["sg_singstat_avg_retail_prices_monthly"],
         "publishes_on": "Monthly",
         "notes": "Uses /api/doswebcontent/1/StatisticTableFileUpload/StatisticTable/<matrixNumber> to get the table UUID, then /Row/<uuid> to discover per-series rowdata JSON paths under /rowdata/*.json.",
-    }
+    },
+    {
+        "fetcher_fn": "fetch_sg_spc_latest_pump_prices",
+        "country": "Singapore",
+        "source_name": "SPC Latest Pump Prices",
+        "url": "https://www.spc.com.sg/our-business/spc-service-station/latest-pump-price/",
+        "description": "Daily pump prices for SPC service stations (Levo 98/95/92 and diesel) from SPC's official website.",
+        "extraction_method": ["Web scraping"],
+        "products": [
+            "Petrol 98 RON",
+            "Petrol 95 RON",
+            "Petrol 92 RON",
+            "Diesel",
+        ],
+        "source_keys": ["sg_spc_pump_prices_daily"],
+        "publishes_on": "Daily or irregular",
+        "notes": "Page reports latest pump prices before discounts; scraper reads data-price attributes and last updated timestamp.",
+    },
 ]
 
-from datetime import date, timedelta
+import re
+from datetime import date, datetime, timedelta
 from urllib.parse import urlparse
 
 import pandas as pd
+from bs4 import BeautifulSoup
 
 from ..utils import MONTH_MAP_EN, get_session, make_hash, make_template
 
@@ -41,6 +60,7 @@ _API_META = (
     "https://tablebuilder.singstat.gov.sg"
     "/api/doswebcontent/1/StatisticTableFileUpload/StatisticTable/M213761"
 )
+_SPC_URL = "https://www.spc.com.sg/our-business/spc-service-station/latest-pump-price/"
 
 
 _TMPL_SG = make_template(
@@ -54,6 +74,21 @@ _TMPL_SG = make_template(
     subnational_area="National",
     publication_frequency="monthly",
     observation_method="reported",
+)
+
+_TMPL_SG_SPC = make_template(
+    country="Singapore",
+    wb_iso3="SGP",
+    source_key="sg_spc_pump_prices_daily",
+    source_name="SPC Latest Pump Prices",
+    source_url=_SPC_URL,
+    source_type="compiled_web",
+    currency="SGD",
+    unit="L",
+    subnational_area="National",
+    publication_frequency="daily",
+    observation_method="reported",
+    tax_status="tax_inclusive",
 )
 
 
@@ -95,6 +130,13 @@ _PRODUCTS = {
     },
 }
 
+_SPC_PRODUCTS = [
+    ("Petrol 98 RON", "gasoline", "premium", 98),
+    ("Petrol 95 RON", "gasoline", "regular", 95),
+    ("Petrol 92 RON", "gasoline", "regular", 92),
+    ("Diesel", "diesel", "standard", None),
+]
+
 
 def _month_end(d: date) -> date:
     next_m = d.replace(day=28) + timedelta(days=4)
@@ -115,6 +157,21 @@ def _parse_period_key(key: str) -> date | None:
         return None
     try:
         return date(year, MONTH_MAP_EN[mon], 1)
+    except ValueError:
+        return None
+
+
+def _parse_spc_update_date(text: str) -> date | None:
+    match = re.search(r"Last updated on\s+(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})", text)
+    if not match:
+        return None
+    day = int(match.group(1))
+    mon = match.group(2).strip().lower()
+    year = int(match.group(3))
+    if mon not in MONTH_MAP_EN:
+        return None
+    try:
+        return date(year, MONTH_MAP_EN[mon], day)
     except ValueError:
         return None
 
@@ -208,4 +265,70 @@ def fetch_sg_singstat_avg_retail_prices(cutoff: date) -> pd.DataFrame:
             all_rows.append(row_out)
 
     print(f"  [sg_singstat] {len(all_rows)} rows fetched (cutoff {cutoff})")
+    return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
+
+
+def fetch_sg_spc_latest_pump_prices(cutoff: date) -> pd.DataFrame:
+    """Fetch SPC latest pump prices (Levo 98/95/92 + diesel)."""
+    print("  [sg_spc] Fetching SPC latest pump prices...")
+    print(f"  [sg_spc] Cutoff: {cutoff}")
+
+    session = get_session()
+
+    try:
+        resp = session.get(_SPC_URL, timeout=30)
+        resp.raise_for_status()
+    except Exception as e:
+        print(f"  [sg_spc] Could not fetch page: {e}")
+        return pd.DataFrame()
+
+    soup = BeautifulSoup(resp.content, "lxml")
+    update_text = ""
+    update_el = soup.find("div", class_=re.compile(r"latest-update-pump-price", re.I))
+    if update_el:
+        update_text = update_el.get_text(" ", strip=True)
+
+    obs_date = _parse_spc_update_date(update_text) or date.today()
+    if obs_date <= cutoff:
+        print(f"  [sg_spc] Date {obs_date} not newer than cutoff {cutoff}, skipping")
+        return pd.DataFrame()
+
+    price_nodes = soup.select("span.pump-price[data-price]")
+    prices = []
+    for node in price_nodes:
+        raw = node.get("data-price", "")
+        try:
+            val = float(str(raw).strip())
+        except (TypeError, ValueError):
+            continue
+        if 0.5 <= val <= 10.0:
+            prices.append(val)
+
+    if len(prices) < len(_SPC_PRODUCTS):
+        print("  [sg_spc] Missing pump price values on page")
+        return pd.DataFrame()
+
+    all_rows = []
+    note = update_text or f"Fetched {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}"
+    for idx, (prod_name, family, qg, ron) in enumerate(_SPC_PRODUCTS):
+        price = prices[idx]
+        row = _TMPL_SG_SPC.copy()
+        row.update(
+            {
+                "fuel_family": family,
+                "fuel_product": prod_name,
+                "quality_group": qg,
+                "octane_ron": ron,
+                "price_local": price,
+                "effective_from": str(obs_date),
+                "effective_to": str(obs_date),
+                "observation_date": str(obs_date),
+                "source_url": _SPC_URL,
+                "notes": note,
+            }
+        )
+        row["observation_hash"] = make_hash(row)
+        all_rows.append(row)
+
+    print(f"  [sg_spc] {len(all_rows)} rows fetched for {obs_date}")
     return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
