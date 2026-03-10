@@ -121,14 +121,28 @@ def load_fuel_data(
     # canonical product names. GPP rows are only ~1 week of data, conflict with
     # official source prices, and create spurious end-of-series spikes.
     gpp_drop_mask = (
-        (df["country"] == "Malaysia")
-        & df["source_key"].str.startswith("gpp_MYS_", na=False)
-    ) | (
-        (df["country"] == "Cambodia")
-        & df["source_key"].str.startswith("gpp_KHM_", na=False)
+        (
+            (df["country"] == "Malaysia")
+            & df["source_key"].str.startswith("gpp_MYS_", na=False)
+        )
+        | (
+            (df["country"] == "Cambodia")
+            & df["source_key"].str.startswith("gpp_KHM_", na=False)
+        )
+        | (
+            (df["country"] == "Lao PDR")
+            & df["source_key"].str.startswith("gpp_LAO_", na=False)
+        )
     )
     if gpp_drop_mask.any():
         df = df[~gpp_drop_mask].copy()
+
+    # Singapore: drop town_gas tariffs from fuel price visualizations
+    sg_town_gas_mask = (df["country"] == "Singapore") & (
+        df["fuel_family"] == "town_gas"
+    )
+    if sg_town_gas_mask.any():
+        df = df[~sg_town_gas_mask].copy()
 
     # Normalise Cambodia fuel_product names across sources so all diesel rows
     # share one chip and all gasoline rows share one chip in the visualiser.
