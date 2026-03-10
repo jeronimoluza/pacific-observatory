@@ -190,6 +190,7 @@ def _collect_params(
     cutoff: str,
     e_base: "EPU",
     topic_epus: dict,
+    actor_epus: dict,
     calc_topics: "IndexCalculator",
     calc_actors: "IndexCalculator",
     all_news_dfs: list,
@@ -262,6 +263,7 @@ def _collect_params(
         "source_weights": source_weights,
         "epu": e_base.params,
         "topics_epu": {k: v.params for k, v in topic_epus.items()},
+        "actors_epu": {k: v.params for k, v in actor_epus.items()},
         "extended": extended,
         "attribution": {
             "topics": _attr_params(calc_topics),
@@ -270,9 +272,11 @@ def _collect_params(
     }
 
 
-def _run_full_epu(news_dirs, cutoff, subset_condition, daily_tail_start, all_topics):
+def _run_full_epu(
+    news_dirs, cutoff, subset_condition, daily_tail_start, all_topics, all_actors
+):
     """
-    Run the full EPU pipeline (all articles). Returns (e_base, topic_epus, ug_counts_all).
+    Run the full EPU pipeline (all articles). Returns (e_base, topic_epus, actor_epus, ug_counts_all).
     ug_counts_all is a dict: {"topics": df, "actors": df} of raw UG counts pre-merged.
     """
     # Pre-read all articles once; share across base EPU and all topic EPUs
@@ -315,7 +319,61 @@ def _run_full_epu(news_dirs, cutoff, subset_condition, daily_tail_start, all_top
         e_topic.raw_files = []  # free immediately
         topic_epus[topic_key] = e_topic
 
-    return e_base, topic_epus, ug_counts_all
+    actor_epus = {}
+    for actor_key, additional_terms in all_actors.items():
+        e_actor = EPU(
+            news_dirs,
+            cutoff=cutoff,
+            additional_terms=additional_terms,
+            additional_name=actor_key,
+            daily_tail_start=daily_tail_start,
+        )
+        e_actor.get_epu_category(subset_condition=subset_condition, preloaded=preloaded)
+        e_actor.get_count_stats(calculate_extended=False)
+        e_actor.calculate_epu_score()
+        e_actor.raw_files = []  # free immediately
+        actor_epus[actor_key] = e_actor
+
+    return e_base, topic_epus, actor_epus, ug_counts_all
+
+
+def _run_full_actors_only(
+    news_dirs,
+    cutoff,
+    subset_condition,
+    daily_tail_start,
+    actors_subset: dict,
+):
+    """Compute full-history actor EPUs for a subset of actors.
+
+    Used to backfill new actors without re-running the full base pipeline.
+    Returns a dict: {actor_key: EPU instance}.
+    """
+    preloaded = {}
+    for fp in news_dirs:
+        try:
+            preloaded[str(fp)] = EPU.process_data(
+                fp, subset_condition=subset_condition, daily_tail_start=daily_tail_start
+            )
+        except Exception:
+            pass
+
+    actor_epus = {}
+    for actor_key, additional_terms in actors_subset.items():
+        e_actor = EPU(
+            news_dirs,
+            cutoff=cutoff,
+            additional_terms=additional_terms,
+            additional_name=actor_key,
+            daily_tail_start=daily_tail_start,
+        )
+        e_actor.get_epu_category(subset_condition=subset_condition, preloaded=preloaded)
+        e_actor.get_count_stats(calculate_extended=False)
+        e_actor.calculate_epu_score()
+        e_actor.raw_files = []  # free immediately
+        actor_epus[actor_key] = e_actor
+
+    return actor_epus
 
 
 def _run_full_topics_only(
@@ -359,13 +417,20 @@ def _run_full_topics_only(
 
 
 def _run_incremental_epu(
-    news_dirs, cutoff, subset_condition, daily_tail_start, all_topics, params, cache
+    news_dirs,
+    cutoff,
+    subset_condition,
+    daily_tail_start,
+    all_topics,
+    all_actors,
+    params,
+    cache,
 ):
     """
     Run the incremental EPU pipeline using cached pre-tail epu_stats.
     Only reads articles from the current month (date >= daily_tail_start).
     Applies stored σ and scaling factors from params instead of recalculating.
-    Returns (e_base, topic_epus, ug_counts_all).
+    Returns (e_base, topic_epus, actor_epus, ug_counts_all).
     """
     tail_condition = f"date >= '{daily_tail_start}'"
     combined_condition = (
@@ -478,7 +543,7 @@ def _run_incremental_epu(
     # ── Topic EPU: tail-only ────────────────────────────────────────────
     topic_epus = {}
 
-    for topic_key, additional_terms in all_topics.items():
+    for topic_key, additional_terms in all_topics.items():  # noqa: E501 (kept for symmetry)
         e_topic = EPU(
             news_dirs,
             cutoff=cutoff,
@@ -534,6 +599,65 @@ def _run_incremental_epu(
         )
         topic_epus[topic_key] = e_topic
 
+    # ── Actor EPU: tail-only ─────────────────────────────────────────────
+    actor_epus = {}
+
+    for actor_key, additional_terms in all_actors.items():
+        e_actor = EPU(
+            news_dirs,
+            cutoff=cutoff,
+            additional_terms=additional_terms,
+            additional_name=actor_key,
+            daily_tail_start=daily_tail_start,
+        )
+        e_actor.get_epu_category(
+            subset_condition=combined_condition, preloaded=preloaded
+        )
+        e_actor.get_count_stats(calculate_extended=False)
+
+        # Skeleton spine for zero-article actor tail
+        if e_actor.epu_stats.empty or e_actor.epu_stats["date"].max() < tail_ts:
+            _today = pd.Timestamp.today().normalize()
+            _daily_spine = pd.date_range(start=tail_ts, end=_today, freq="D")
+            e_actor.epu_stats = pd.DataFrame(
+                {
+                    "date": _daily_spine,
+                    "ym": [d.strftime("%Y-%m-%d") for d in _daily_spine],
+                    "news_total": 0,
+                }
+            )
+            e_actor.news_cols = []
+            e_actor.ratio_cols = []
+
+        # Prepend cache pre-tail rows
+        e_actor.epu_stats = (
+            pd.concat([pre_tail_cache, e_actor.epu_stats], ignore_index=True)
+            .sort_values("date")
+            .reset_index(drop=True)
+        )
+        e_actor.news_cols = [
+            c for c in e_actor.epu_stats.columns if c.endswith("_body_count")
+        ]
+        e_actor.ratio_cols = [
+            c for c in e_actor.epu_stats.columns if c.endswith("_ratio")
+        ]
+
+        # Recompute weights; NaN body_count (source absent in tail) → weight 0
+        _total = e_actor.epu_stats[e_actor.news_cols].sum(axis=1)
+        for _col in e_actor.news_cols:
+            _w = _col.replace("_body_count", "_weights")
+            e_actor.epu_stats[_w] = (
+                e_actor.epu_stats[_col].fillna(0).div(_total).fillna(0)
+            )
+
+        actor_params = params.get("actors_epu", {}).get(actor_key, {})
+        e_actor._apply_stored_params(
+            ratio_stds=actor_params.get("ratio_stds", {}),
+            scaling_weighted=actor_params.get("scaling_weighted"),
+            scaling_unweighted=actor_params.get("scaling_unweighted"),
+        )
+        actor_epus[actor_key] = e_actor
+
     # ── Attribution UG counts: tail-only ───────────────────────────────
     ug_counts_all = {}
 
@@ -574,19 +698,21 @@ def _run_incremental_epu(
 
         ug_counts_all[source_file] = combined_ug
 
-    return e_base, topic_epus, ug_counts_all
+    return e_base, topic_epus, actor_epus, ug_counts_all
 
 
 def _build_outputs(
     e_base,
     topic_epus,
+    actor_epus,
     ug_counts_all,
     cutoff,
     daily_tail_start,
     country_name,
     all_topics,
+    all_actors,
 ):
-    """Build and write all output CSVs from a computed e_base + topic_epus + ug_counts."""
+    """Build and write all output CSVs from a computed e_base + topic_epus + actor_epus + ug_counts."""
     epu_folder = OUTPUT_DIR / country_name / "epu"
     epu_folder.mkdir(parents=True, exist_ok=True)
 
@@ -626,6 +752,22 @@ def _build_outputs(
         topic_epu[f"EPU_{topic_key}_index"] = aligned[f"EPU_{topic_key}_index"].values
     append_missing_months(
         epu_folder / "topics_epu.csv", topic_epu, daily_tail_start=daily_tail_start
+    )
+
+    # ── actors_epu.csv ─────────────────────────────────────────────────
+    actor_epu = e_base.epu_stats[["date", "ym"]].copy()
+    for actor_key, e_actor in actor_epus.items():
+        aligned = pd.merge(
+            actor_epu[["date"]],
+            e_actor.epu_stats[["date", "epu_weighted"]].rename(
+                columns={"epu_weighted": f"EPU_{actor_key}_index"}
+            ),
+            on="date",
+            how="left",
+        )
+        actor_epu[f"EPU_{actor_key}_index"] = aligned[f"EPU_{actor_key}_index"].values
+    append_missing_months(
+        epu_folder / "actors_epu.csv", actor_epu, daily_tail_start=daily_tail_start
     )
 
     # ── uncertainty_attribution ────────────────────────────────────────
@@ -705,18 +847,22 @@ def process_country(
     today = pd.Timestamp.today()
     daily_tail_start = today.replace(day=1).strftime("%Y-%m-%d")
     all_topics = load_all_groups("topics")
+    all_actors = load_all_groups("actors")
 
     use_cache = params_path.exists() and cache_path.exists() and not recalculate_params
 
-    # Optional backfill when new topics are added to the keyword taxonomy.
-    # In that situation, existing params.json lacks σ/scaling for new topics,
-    # and existing outputs topics_epu.csv lacks historical values.
+    # Optional backfill when new topics or actors are added to the keyword taxonomy.
     missing_topic_epus_full = {}
+    missing_actor_epus_full = {}
     if use_cache:
         params = json.loads(params_path.read_text(encoding="utf-8"))
         have_topics = set((params.get("topics_epu") or {}).keys())
         want_topics = set(all_topics.keys())
         missing_topics = sorted(want_topics - have_topics)
+
+        have_actors = set((params.get("actors_epu") or {}).keys())
+        want_actors = set(all_actors.keys())
+        missing_actors = sorted(want_actors - have_actors)
 
         if missing_topics:
             print(
@@ -746,8 +892,7 @@ def process_country(
                 json.dump(params, f, indent=2, default=_json_default)
             print(f"  params.json updated with {len(missing_topics)} topics")
 
-            # Update cache with pre-tail topic index columns so incremental runs
-            # can carry a complete set of columns.
+            # Update cache with pre-tail topic index columns
             tail_ts = pd.Timestamp(daily_tail_start)
             cache_df = pd.read_csv(cache_path, encoding="utf-8", low_memory=False)
             cache_df["date"] = pd.to_datetime(cache_df["date"])
@@ -761,40 +906,92 @@ def process_country(
             cache_df.to_csv(cache_path, index=False, encoding="utf-8")
             print(f"  epu_stats_cache.csv updated with {len(missing_topics)} topics")
 
+        if missing_actors:
+            print(
+                "  [cache] missing actor params; recomputing only missing actors: "
+                + ", ".join(missing_actors)
+            )
+
+            actors_subset = {k: all_actors[k] for k in missing_actors}
+            missing_actor_epus_full = _run_full_actors_only(
+                news_dirs,
+                cutoff,
+                subset_condition,
+                daily_tail_start,
+                actors_subset,
+            )
+
+            # Update params.json in place (add only missing actors)
+            params.setdefault("actors_epu", {})
+            for k, e_actor in missing_actor_epus_full.items():
+                params["actors_epu"][k] = e_actor.params
+
+            def _json_default(x):  # noqa: F811
+                return None if (isinstance(x, float) and np.isnan(x)) else x
+
+            params_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(params_path, "w", encoding="utf-8") as f:
+                json.dump(params, f, indent=2, default=_json_default)
+            print(f"  params.json updated with {len(missing_actors)} actors")
+
+            # Update cache with pre-tail actor index columns
+            tail_ts = pd.Timestamp(daily_tail_start)
+            cache_df = pd.read_csv(cache_path, encoding="utf-8", low_memory=False)
+            cache_df["date"] = pd.to_datetime(cache_df["date"])
+            for k, e_actor in missing_actor_epus_full.items():
+                col = f"EPU_{k}_index"
+                actor_pre = e_actor.epu_stats[e_actor.epu_stats["date"] < tail_ts][
+                    ["date", "epu_weighted"]
+                ].rename(columns={"epu_weighted": col})
+                cache_df = cache_df.drop(columns=[col], errors="ignore")
+                cache_df = cache_df.merge(actor_pre, on="date", how="left")
+            cache_df.to_csv(cache_path, index=False, encoding="utf-8")
+            print(f"  epu_stats_cache.csv updated with {len(missing_actors)} actors")
+
     if use_cache:
         print("  [incremental] loading cache...")
         # Reload params in case we just updated it.
         params = json.loads(params_path.read_text(encoding="utf-8"))
         cache = pd.read_csv(cache_path, encoding="utf-8", low_memory=False)
         cache["date"] = pd.to_datetime(cache["date"])
-        e_base, topic_epus, ug_counts_all = _run_incremental_epu(
+        e_base, topic_epus, actor_epus, ug_counts_all = _run_incremental_epu(
             news_dirs,
             cutoff,
             subset_condition,
             daily_tail_start,
             all_topics,
+            all_actors,
             params,
             cache,
         )
 
-        # If we recomputed any missing topics in full-history mode, use those
+        # If we recomputed any missing topics/actors in full-history mode, use those
         # EPU objects for output building so historical values can be backfilled.
         if missing_topic_epus_full:
             topic_epus.update(missing_topic_epus_full)
+        if missing_actor_epus_full:
+            actor_epus.update(missing_actor_epus_full)
     else:
         print("  [full] running full EPU computation...")
-        e_base, topic_epus, ug_counts_all = _run_full_epu(
-            news_dirs, cutoff, subset_condition, daily_tail_start, all_topics
+        e_base, topic_epus, actor_epus, ug_counts_all = _run_full_epu(
+            news_dirs,
+            cutoff,
+            subset_condition,
+            daily_tail_start,
+            all_topics,
+            all_actors,
         )
 
     calc_topics_idx, calc_actors_idx = _build_outputs(
         e_base,
         topic_epus,
+        actor_epus,
         ug_counts_all,
         cutoff,
         daily_tail_start,
         country_name,
         all_topics,
+        all_actors,
     )
 
     # ── Write params.json + cache (full mode only) ─────────────────────
@@ -812,6 +1009,7 @@ def process_country(
             cutoff=cutoff,
             e_base=e_base,
             topic_epus=topic_epus,
+            actor_epus=actor_epus,
             calc_topics=calc_topics_idx,
             calc_actors=calc_actors_idx,
             all_news_dfs=all_news_dfs,
@@ -834,9 +1032,19 @@ def process_country(
         for topic_key, e_topic in topic_epus.items():
             col = f"EPU_{topic_key}_index"
             topic_pre = e_topic.epu_stats[e_topic.epu_stats["date"] < tail_ts][
-                "epu_weighted"
-            ]
-            cache_df[col] = topic_pre.values
+                ["date", "epu_weighted"]
+            ].rename(columns={"epu_weighted": col})
+            cache_df = cache_df.drop(columns=[col], errors="ignore")
+            cache_df = cache_df.merge(topic_pre, on="date", how="left")
+
+        # Add actor EPU columns
+        for actor_key, e_actor in actor_epus.items():
+            col = f"EPU_{actor_key}_index"
+            actor_pre = e_actor.epu_stats[e_actor.epu_stats["date"] < tail_ts][
+                ["date", "epu_weighted"]
+            ].rename(columns={"epu_weighted": col})
+            cache_df = cache_df.drop(columns=[col], errors="ignore")
+            cache_df = cache_df.merge(actor_pre, on="date", how="left")
 
         # Add UG count columns from both topics and actors
         for source_file in ("topics", "actors"):
