@@ -38,6 +38,18 @@ SOURCE_META = [
         "publishes_on": "Daily",
         "notes": "Fetches RSS for (Product=1,4) across Region=25 (North of River) and Region=26 (South of River). Converts cents/L to AUD/L and stores mean + station count in notes.",
     },
+    {
+        "fetcher_fn": "fetch_au_nsw_fuelcheck_history",
+        "country": "Australia",
+        "source_name": "NSW FuelCheck price history",
+        "url": "https://data.nsw.gov.au/data/dataset/fuel-check",
+        "description": "Official NSW government FuelCheck price history from Data.NSW (CKAN). Station-level prices with product codes.",
+        "extraction_method": ["CKAN API", "CSV/XLSX download"],
+        "products": ["Gasoline (E10/U91/P95/P98/E20/E85)", "Diesel", "LPG"],
+        "source_keys": ["au_nsw_fuelcheck_history"],
+        "publishes_on": "Monthly",
+        "notes": "Selects most recent machine-readable resource (prefers price_history_checks_*.csv). Converts cents/L to AUD/L when needed; station details stored in notes.",
+    },
 ]
 
 import io
@@ -473,4 +485,301 @@ def fetch_au_fuelwatch_perth(cutoff: date) -> pd.DataFrame:
         return pd.DataFrame()
 
     print(f"  [au_fuelwatch] {len(all_rows)} rows fetched")
+    return pd.DataFrame(all_rows)
+
+
+# ── NSW FuelCheck price history (CKAN) ───────────────────────────────────────
+
+_NSW_FUELCHECK_DATASET_URL = "https://data.nsw.gov.au/data/dataset/fuel-check"
+_NSW_FUELCHECK_PACKAGE_URL = (
+    "https://data.nsw.gov.au/data/api/3/action/package_show"
+    "?id=a97a46fc-2bdd-4b90-ac7f-0cb1e8d7ac3b"
+)
+
+_TMPL_AU_NSW_FUELCHECK = make_template(
+    country="Australia",
+    wb_iso3="AUS",
+    source_key="au_nsw_fuelcheck_history",
+    source_name="NSW FuelCheck price history",
+    source_url=_NSW_FUELCHECK_DATASET_URL,
+    currency="AUD",
+    unit="L",
+    subnational_area="New South Wales",
+    publication_frequency="monthly",
+    observation_method="reported",
+    source_type="official",
+)
+
+_FUELCHECK_CODE_MAP = {
+    "E10": {
+        "fuel_family": "gasoline",
+        "fuel_product": "E10",
+        "quality_group": "regular",
+        "octane_ron": 91,
+        "ethanol_pct": 10,
+    },
+    "U91": {
+        "fuel_family": "gasoline",
+        "fuel_product": "Unleaded 91",
+        "quality_group": "regular",
+        "octane_ron": 91,
+        "ethanol_pct": 0,
+    },
+    "P95": {
+        "fuel_family": "gasoline",
+        "fuel_product": "Premium 95",
+        "quality_group": "premium",
+        "octane_ron": 95,
+        "ethanol_pct": 0,
+    },
+    "P98": {
+        "fuel_family": "gasoline",
+        "fuel_product": "Premium 98",
+        "quality_group": "premium",
+        "octane_ron": 98,
+        "ethanol_pct": 0,
+    },
+    "E85": {
+        "fuel_family": "gasoline",
+        "fuel_product": "E85",
+        "quality_group": None,
+        "octane_ron": None,
+        "ethanol_pct": 85,
+    },
+    "E20": {
+        "fuel_family": "gasoline",
+        "fuel_product": "E20",
+        "quality_group": None,
+        "octane_ron": None,
+        "ethanol_pct": 20,
+    },
+    "DL": {
+        "fuel_family": "diesel",
+        "fuel_product": "Diesel",
+        "quality_group": "standard",
+        "octane_ron": None,
+        "ethanol_pct": None,
+    },
+    "LPG": {
+        "fuel_family": "lpg",
+        "fuel_product": "LPG",
+        "quality_group": "standard",
+        "octane_ron": None,
+        "ethanol_pct": None,
+    },
+}
+
+
+def _clean_text(val) -> str | None:
+    if val is None or (isinstance(val, float) and pd.isna(val)):
+        return None
+    text = str(val).strip()
+    return text if text else None
+
+
+def _format_postcode(val) -> str | None:
+    if val is None or (isinstance(val, float) and pd.isna(val)):
+        return None
+    if isinstance(val, (int, float)) and float(val).is_integer():
+        return str(int(val))
+    text = str(val).strip()
+    return text if text else None
+
+
+def _resource_format(resource: dict) -> str:
+    fmt = str(resource.get("format") or "").strip().lower()
+    if fmt:
+        return fmt
+    url = str(resource.get("url") or "")
+    if "." not in url:
+        return ""
+    ext = url.split("?")[0].rsplit(".", 1)[-1].lower()
+    return ext
+
+
+def _resource_timestamp(resource: dict):
+    for key in ("last_modified", "metadata_modified", "created"):
+        val = resource.get(key)
+        if val:
+            ts = pd.to_datetime(val, errors="coerce", utc=True)
+            if pd.isna(ts):
+                continue
+            return ts
+    return None
+
+
+def _pick_fuelcheck_resource(resources: list[dict]) -> dict | None:
+    candidates = [r for r in resources if _resource_format(r) in {"csv", "xlsx", "xls"}]
+    if not candidates:
+        return None
+
+    def is_price_history(r: dict) -> bool:
+        text = f"{r.get('name', '')} {r.get('url', '')}".lower()
+        return "price_history_checks" in text
+
+    csv_candidates = [r for r in candidates if _resource_format(r) == "csv"]
+    if csv_candidates:
+        pool = [r for r in csv_candidates if is_price_history(r)] or csv_candidates
+    else:
+        x_candidates = [r for r in candidates if _resource_format(r) in {"xlsx", "xls"}]
+        pool = [r for r in x_candidates if is_price_history(r)] or x_candidates
+
+    return max(
+        pool,
+        key=lambda r: _resource_timestamp(r) or pd.Timestamp(0, tz="UTC"),
+    )
+
+
+def fetch_au_nsw_fuelcheck_history(cutoff: date) -> pd.DataFrame:
+    """Fetch NSW FuelCheck station-level price history via CKAN."""
+    print("  [au_nsw_fuelcheck] Fetching NSW FuelCheck price history...")
+    print(f"  [au_nsw_fuelcheck] Cutoff: {cutoff}")
+
+    session = get_session()
+    try:
+        resp = session.get(_NSW_FUELCHECK_PACKAGE_URL, timeout=30)
+        resp.raise_for_status()
+        payload = resp.json()
+    except Exception as e:
+        print(f"  [au_nsw_fuelcheck] CKAN package_show error: {e}")
+        return pd.DataFrame()
+
+    result = payload.get("result") if isinstance(payload, dict) else None
+    resources = result.get("resources", []) if isinstance(result, dict) else []
+    resource = _pick_fuelcheck_resource(resources)
+    if not resource:
+        print("  [au_nsw_fuelcheck] No machine-readable resource found")
+        return pd.DataFrame()
+
+    resource_url = str(resource.get("url") or "").strip()
+    resource_format = _resource_format(resource)
+    if not resource_url:
+        print("  [au_nsw_fuelcheck] Resource URL missing")
+        return pd.DataFrame()
+
+    print(f"  [au_nsw_fuelcheck] Downloading: {resource_url}")
+    try:
+        res = session.get(resource_url, timeout=60)
+        res.raise_for_status()
+    except Exception as e:
+        print(f"  [au_nsw_fuelcheck] Download error: {e}")
+        return pd.DataFrame()
+
+    try:
+        if resource_format == "csv":
+            raw = pd.read_csv(io.BytesIO(res.content), low_memory=False)
+        else:
+            raw = pd.read_excel(io.BytesIO(res.content))
+    except Exception as e:
+        print(f"  [au_nsw_fuelcheck] Parse error: {e}")
+        return pd.DataFrame()
+
+    raw = pd.DataFrame(raw)
+    if raw.empty:
+        print("  [au_nsw_fuelcheck] Resource has no rows")
+        return pd.DataFrame()
+    if not isinstance(raw, pd.DataFrame):
+        print("  [au_nsw_fuelcheck] Resource did not parse into a table")
+        return pd.DataFrame()
+
+    col_lookup = {str(c).replace(" ", "").lower(): c for c in raw.columns}
+
+    def pick_col(*names: str) -> str | None:
+        for name in names:
+            key = name.replace(" ", "").lower()
+            if key in col_lookup:
+                return col_lookup[key]
+        return None
+
+    col_station = pick_col("ServiceStationName")
+    col_address = pick_col("Address")
+    col_suburb = pick_col("Suburb")
+    col_postcode = pick_col("Postcode")
+    col_brand = pick_col("Brand")
+    col_fuel = pick_col("FuelCode")
+    col_updated = pick_col("PriceUpdatedDate")
+    col_price = pick_col("Price")
+
+    required = [col_fuel, col_updated, col_price]
+    if any(c is None for c in required):
+        print("  [au_nsw_fuelcheck] Missing required columns in resource")
+        return pd.DataFrame()
+
+    raw["_obs_ts"] = pd.to_datetime(raw[col_updated], errors="coerce", utc=True)
+    raw["_obs_date"] = raw["_obs_ts"].dt.date
+    raw = raw.loc[raw["_obs_date"].notna()]
+    raw = raw.loc[raw["_obs_date"] > cutoff]
+    raw = raw.copy()
+
+    if raw.empty:
+        print("  [au_nsw_fuelcheck] No new rows after cutoff")
+        return pd.DataFrame()
+
+    all_rows: list[dict] = []
+
+    for _, row in raw.iterrows():
+        obs_date = row.get("_obs_date")
+        if obs_date is None or pd.isna(obs_date):
+            continue
+
+        try:
+            price_val = float(row[col_price])
+        except (TypeError, ValueError):
+            continue
+
+        if pd.isna(price_val) or price_val <= 0:
+            continue
+
+        if price_val >= 10:
+            price_val = price_val / 100.0
+
+        price_val = round(price_val, 4)
+        if not (0.5 <= price_val <= 4.0):
+            continue
+
+        fuel_code = _clean_text(row[col_fuel])
+        fuel_code = fuel_code.upper() if fuel_code else None
+        mapping = _FUELCHECK_CODE_MAP.get(fuel_code or "", {})
+
+        station = _clean_text(row[col_station]) if col_station else None
+        address = _clean_text(row[col_address]) if col_address else None
+        suburb = _clean_text(row[col_suburb]) if col_suburb else None
+        postcode = _format_postcode(row[col_postcode]) if col_postcode else None
+        brand = _clean_text(row[col_brand]) if col_brand else None
+
+        note_parts = []
+        if station:
+            note_parts.append(f"Station={station}")
+        if brand:
+            note_parts.append(f"Brand={brand}")
+        if address:
+            note_parts.append(f"Address={address}")
+        if postcode:
+            note_parts.append(f"Postcode={postcode}")
+        notes = "; ".join(note_parts) if note_parts else None
+
+        record = _TMPL_AU_NSW_FUELCHECK.copy()
+        record.update(
+            {
+                "fuel_family": mapping.get("fuel_family"),
+                "fuel_product": mapping.get("fuel_product") or fuel_code,
+                "quality_group": mapping.get("quality_group"),
+                "octane_ron": mapping.get("octane_ron"),
+                "ethanol_pct": mapping.get("ethanol_pct"),
+                "city": suburb,
+                "price_local": price_val,
+                "effective_from": str(obs_date),
+                "effective_to": str(obs_date),
+                "observation_date": str(obs_date),
+                "notes": notes,
+            }
+        )
+        record["observation_hash"] = make_hash(record)
+        all_rows.append(record)
+
+    if not all_rows:
+        print("  [au_nsw_fuelcheck] No valid rows extracted")
+        return pd.DataFrame()
+
+    print(f"  [au_nsw_fuelcheck] {len(all_rows)} rows fetched")
     return pd.DataFrame(all_rows)

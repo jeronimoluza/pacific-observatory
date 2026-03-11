@@ -2,7 +2,12 @@
 
 from datetime import date
 
-from .australia import fetch_accc, fetch_au_aip_tgp, fetch_au_fuelwatch_perth
+from .australia import (
+    fetch_accc,
+    fetch_au_aip_tgp,
+    fetch_au_fuelwatch_perth,
+    fetch_au_nsw_fuelcheck_history,
+)
 from .cambodia import fetch_cambodia_moc, fetch_kh_ptt
 from .china import fetch_cn_ndrc_max_retail_prices
 from .fiji import fetch_fj_fccc_orders
@@ -28,6 +33,7 @@ from .pacific_islands import (
 )
 from .philippines import fetch_ph_doe_visayas, fetch_philippines_doe
 from .thailand import (
+    fetch_th_bangchak_retail_history,
     fetch_th_eppo_p04,
     fetch_th_eppo_retail_daily,
     fetch_th_or_pttor_current_oil_price,
@@ -49,6 +55,11 @@ FETCHER_REGISTRY: dict[str, tuple] = {
     "au_aip_tgp_weekly": (fetch_au_aip_tgp, date(2015, 1, 1), True),
     "au_accc_5largestcities_quarterly": (fetch_accc, date(2019, 1, 1), False),
     "au_fuelwatch_perth_daily": (fetch_au_fuelwatch_perth, date(2024, 1, 1), False),
+    "au_nsw_fuelcheck_history": (
+        fetch_au_nsw_fuelcheck_history,
+        date(2024, 1, 1),
+        False,
+    ),
     # Cambodia
     "kh_ptt_monthly_prices": (fetch_kh_ptt, date(2020, 1, 1), False),
     "kh_moc_fuel_notices": (fetch_cambodia_moc, date(2024, 1, 1), False),
@@ -121,6 +132,11 @@ FETCHER_REGISTRY: dict[str, tuple] = {
         False,
     ),
     "th_eppo_ngv_bangkok_2025": (fetch_thailand_eppo_ngv, date(2023, 1, 1), False),
+    "th_bangchak_retail_history": (
+        fetch_th_bangchak_retail_history,
+        date(2015, 1, 1),
+        False,
+    ),
     # Timor-Leste
     "tl_anp_daily_fuel_price": (fetch_timor_anp, date(2024, 1, 1), False),
     # China

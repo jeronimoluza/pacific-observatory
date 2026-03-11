@@ -5,19 +5,23 @@ Usage:
     python -m src.cpi.fuel_prices fetch --source au_aip_tgp_weekly # one source
     python -m src.cpi.fuel_prices migrate                          # one-time fixes
     python -m src.cpi.fuel_prices visualize                        # regenerate HTML
+    python -m src.cpi.fuel_prices backfill-fuelcheck --overwrite    # full FuelCheck history
 """
 
 import argparse
 import sys
+from collections.abc import Callable
 from datetime import date
+from typing import cast
 
 import pandas as pd
 
-from .constants import COLUMNS, COMMODITY_CSV, PRIMARY_CSV, PROJECT_ROOT, SECONDARY_CSV
+from .constants import COLUMNS, PRIMARY_CSV, PROJECT_ROOT
 from .fetchers import FETCHER_REGISTRY
 from .fetchers.korea import fetch_kr_fuel_news_evidence
 from .fetchers.thailand import fetch_thailand_news_evidence
 from .fixes import run_all_fixes
+from .backfill_fuelcheck import backfill_nsw_fuelcheck
 from .loader import (
     get_cutoff,
     load_fuel_data,
@@ -25,6 +29,7 @@ from .loader import (
     read_fetch_state,
     write_fetch_state,
 )
+from .storage import source_csv_path
 from .visualize import gen_fuel_html
 from .visualize_policy import gen_policy_html, load_policy_data
 
@@ -65,7 +70,7 @@ _SECONDARY_SOURCES = {
 def _load_csv(path) -> pd.DataFrame:
     if path.exists():
         return pd.read_csv(path, low_memory=False)
-    return pd.DataFrame(columns=COLUMNS)
+    return pd.DataFrame(columns=pd.Index(COLUMNS))
 
 
 def _save_csv(df: pd.DataFrame, path) -> None:
@@ -78,7 +83,11 @@ def _save_csv(df: pd.DataFrame, path) -> None:
 
 
 def cmd_fetch(args) -> None:
-    """Fetch new data from one or all sources."""
+    """Fetch new data from one or all sources.
+
+    Writes per-source CSVs under:
+      data/cpi/fuel_prices/<country_slug>/<source_key>/observations.csv
+    """
     state = read_fetch_state()
 
     if args.source:
@@ -90,29 +99,26 @@ def cmd_fetch(args) -> None:
     else:
         keys_to_run = list(FETCHER_REGISTRY)
 
-    # Deduplicate: if multiple source keys share the same fetcher fn, run once.
-    seen_fns: set = set()
-    deduped_keys: list[str] = []
+    # Group by fetcher fn so shared fetchers run once.
+    fn_to_keys: dict[Callable[[date], pd.DataFrame], list[str]] = {}
     for sk in keys_to_run:
-        fn = FETCHER_REGISTRY[sk][0]
-        fn_id = id(fn)
-        if fn_id not in seen_fns:
-            seen_fns.add(fn_id)
-            deduped_keys.append(sk)
+        fn = cast(Callable[[date], pd.DataFrame], FETCHER_REGISTRY[sk][0])
+        fn_to_keys.setdefault(fn, []).append(sk)
 
-    df_primary = _load_csv(PRIMARY_CSV)
-    df_secondary = _load_csv(SECONDARY_CSV)
-    df_commodity = _load_csv(COMMODITY_CSV)
+    # Cache existing per-source CSVs within this run.
+    existing_cache: dict[str, pd.DataFrame] = {}
 
-    primary_changed = False
-    secondary_changed = False
-    commodity_changed = False
+    for fn, fn_keys in fn_to_keys.items():
+        # Use the earliest cutoff among keys sharing this fetcher to avoid missing
+        # rows for siblings.
+        cutoffs: list[date] = []
+        for sk in fn_keys:
+            _fn, fallback, _full_refresh = FETCHER_REGISTRY[sk]
+            cutoffs.append(get_cutoff(state, sk, fallback))
+        cutoff = min(cutoffs) if cutoffs else date(1900, 1, 1)
 
-    for sk in deduped_keys:
-        fn, fallback, full_refresh = FETCHER_REGISTRY[sk]
-        cutoff = get_cutoff(state, sk, fallback)
-
-        print(f"\n--- {sk} (cutoff: {cutoff}) ---")
+        keys_label = ", ".join(fn_keys)
+        print(f"\n--- {keys_label} (cutoff: {cutoff}) ---")
         try:
             new_df = fn(cutoff)
         except Exception as e:
@@ -123,69 +129,49 @@ def cmd_fetch(args) -> None:
             print("  No new rows")
             continue
 
-        # Determine target CSV
-        is_commodity = sk in _COMMODITY_SOURCES
-        is_secondary = sk in _SECONDARY_SOURCES
-        if is_commodity:
-            target_df = df_commodity
-        elif is_secondary:
-            target_df = df_secondary
-        else:
-            target_df = df_primary
+        if "country" not in new_df.columns:
+            new_df = new_df.copy()
+            new_df["country"] = "Unknown"
+        if "source_key" not in new_df.columns:
+            # Best-effort fallback: treat this fetch as belonging to the first key.
+            new_df = new_df.copy()
+            new_df["source_key"] = fn_keys[0]
 
-        # Full-refresh: drop stale rows for this source key before merging
-        if full_refresh and not target_df.empty and "source_key" in target_df.columns:
-            # Collect all source_keys from the new data (a single fetcher may return multiple)
-            new_source_keys = (
-                set(new_df["source_key"].dropna().unique())
-                if "source_key" in new_df.columns
-                else {sk}
-            )
-            target_df = target_df[~target_df["source_key"].isin(new_source_keys)].copy()
+        # Write each (country, source_key) group into its own CSV.
+        for key, grp in new_df.groupby(["country", "source_key"], dropna=False):
+            country_raw, sk_raw = cast(tuple[object, object], key)
+            country = str(country_raw) if country_raw is not None else "Unknown"
+            sk = str(sk_raw) if sk_raw is not None else fn_keys[0]
+            out_path = source_csv_path(country, sk)
+            cache_key = str(out_path)
 
-        merged = merge_new_rows(target_df, new_df)
+            if cache_key in existing_cache:
+                existing = existing_cache[cache_key]
+            else:
+                existing = _load_csv(out_path)
+                existing_cache[cache_key] = existing
 
-        if is_commodity:
-            df_commodity = merged
-            commodity_changed = True
-        elif is_secondary:
-            df_secondary = merged
-            secondary_changed = True
-        else:
-            df_primary = merged
-            primary_changed = True
+            full_refresh = False
+            if sk in FETCHER_REGISTRY:
+                full_refresh = bool(FETCHER_REGISTRY[sk][2])
+            if full_refresh:
+                existing = pd.DataFrame(columns=pd.Index(COLUMNS))
 
-        # Update fetch state with max observation_date from new rows
+            merged = merge_new_rows(existing, grp)
+            existing_cache[cache_key] = merged
+            _save_csv(merged, out_path)
+
+        # Update fetch state with max observation_date per source_key in new rows
         if "observation_date" in new_df.columns:
-            max_date_str = new_df["observation_date"].dropna().max()
-            if max_date_str:
+            for sk, sk_df in new_df.groupby("source_key"):
+                max_date_str = sk_df["observation_date"].dropna().max()
+                missing = pd.isna(max_date_str)
+                if max_date_str is None or (isinstance(missing, bool) and missing):
+                    continue
                 try:
-                    new_max = date.fromisoformat(str(max_date_str))
-                    state[sk] = new_max
-                    # Also update sibling source_keys that share this fetcher
-                    if "source_key" in new_df.columns:
-                        for sibling_sk in keys_to_run:
-                            if FETCHER_REGISTRY[sibling_sk][0] is fn:
-                                sibling_rows = new_df[
-                                    new_df["source_key"] == sibling_sk
-                                ]
-                                if not sibling_rows.empty:
-                                    sib_max = (
-                                        sibling_rows["observation_date"].dropna().max()
-                                    )
-                                    if sib_max:
-                                        state[sibling_sk] = date.fromisoformat(
-                                            str(sib_max)
-                                        )
+                    state[str(sk)] = date.fromisoformat(str(max_date_str))
                 except (ValueError, TypeError):
-                    pass
-
-    if primary_changed:
-        _save_csv(df_primary, PRIMARY_CSV)
-    if secondary_changed:
-        _save_csv(df_secondary, SECONDARY_CSV)
-    if commodity_changed:
-        _save_csv(df_commodity, COMMODITY_CSV)
+                    continue
 
     write_fetch_state(state)
     print("\nDone.")
@@ -272,6 +258,28 @@ def cmd_visualize(args) -> None:
     print("Done.")
 
 
+def cmd_backfill_fuelcheck(args) -> None:
+    """Download and write all NSW FuelCheck price history."""
+
+    def _parse_period(s: str | None) -> tuple[int, int] | None:
+        if not s:
+            return None
+        s = str(s).strip()
+        if not s:
+            return None
+        parts = s.split("-")
+        if len(parts) != 2:
+            raise ValueError("Expected YYYY-MM")
+        return int(parts[0]), int(parts[1])
+
+    out_path = backfill_nsw_fuelcheck(
+        overwrite=bool(args.overwrite),
+        from_period=_parse_period(getattr(args, "from_period", None)),
+        to_period=_parse_period(getattr(args, "to_period", None)),
+    )
+    print(f"Done. Wrote FuelCheck history → {out_path}")
+
+
 def main(argv=None) -> None:
     parser = argparse.ArgumentParser(
         prog="python -m src.cpi.fuel_prices",
@@ -289,6 +297,28 @@ def main(argv=None) -> None:
     # migrate
     p_migrate = sub.add_parser("migrate", help="Apply one-time data-quality fixes")
     p_migrate.set_defaults(func=cmd_migrate)
+
+    # fuelcheck backfill
+    p_fc = sub.add_parser(
+        "backfill-fuelcheck",
+        help="Backfill NSW FuelCheck monthly resources into one observations.csv",
+    )
+    p_fc.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite existing data/cpi/fuel_prices/australia/au_nsw_fuelcheck_history/observations.csv",
+    )
+    p_fc.add_argument(
+        "--from",
+        dest="from_period",
+        help="Only process periods >= YYYY-MM (disables resume skip)",
+    )
+    p_fc.add_argument(
+        "--to",
+        dest="to_period",
+        help="Only process periods <= YYYY-MM",
+    )
+    p_fc.set_defaults(func=cmd_backfill_fuelcheck)
 
     # visualize
     p_vis = sub.add_parser("visualize", help="Regenerate fuel_prices.html")

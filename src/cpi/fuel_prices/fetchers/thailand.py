@@ -99,6 +99,26 @@ SOURCE_META = [
         "publishes_on": "Monthly",
         "notes": "Direct XLS download; auto-detects date and price columns. Bangkok only. Unit: kg. Price range THB 5–30/kg.",
     },
+    {
+        "fetcher_fn": "fetch_th_bangchak_retail_history",
+        "country": "Thailand",
+        "source_name": "Bangchak historical retail oil prices",
+        "url": "https://www.bangchak.co.th/en/oilprice/historical",
+        "description": "Bangchak retail oil price history with change-date rows by product.",
+        "extraction_method": ["Playwright web scraping"],
+        "products": [
+            "Hi Premium Diesel S",
+            "Hi Diesel S",
+            "Hi Premium 97",
+            "Gasohol 95",
+            "Gasohol 91",
+            "E20",
+            "E85",
+        ],
+        "source_keys": ["th_bangchak_retail_history"],
+        "publishes_on": "Irregular",
+        "notes": "Uses historical price table with year dropdown; columns mapped by th.title attributes.",
+    },
 ]
 
 import io
@@ -263,6 +283,70 @@ _TH_NEWS_FEED_URL = (
     "https://www.eppo.go.th/index.php/th/petroleum/oil/status-oil-price"
     "?orders[publishUp]=publishUp&issearch=1&format=feed"
 )
+
+
+# ── Bangchak historical retail prices ────────────────────────────────────────
+
+_TH_BANGCHAK_HISTORY_URL = (
+    "https://www.bangchak.co.th/en/oilprice/historical?year={year}"
+)
+
+_TMPL_TH_BANGCHAK = make_template(
+    country="Thailand",
+    wb_iso3="THA",
+    source_key="th_bangchak_retail_history",
+    source_name="Bangchak historical retail oil prices",
+    source_url="https://www.bangchak.co.th/en/oilprice/historical",
+    currency="THB",
+    unit="L",
+    subnational_area="National",
+    publication_frequency="irregular",
+    observation_method="reported",
+    tax_status="tax_inclusive",
+)
+
+_TH_BANGCHAK_PRODUCT_MAP = {
+    "hi premium diesel s": {
+        "fuel_family": "diesel",
+        "fuel_product": "Hi Premium Diesel S",
+        "quality_group": "premium",
+    },
+    "hi diesel s": {
+        "fuel_family": "diesel",
+        "fuel_product": "Hi Diesel S",
+        "quality_group": "regular",
+    },
+    "hi premium 97 gasohol 95": {
+        "fuel_family": "gasoline",
+        "fuel_product": "Hi Premium 97",
+        "quality_group": "premium",
+        "octane_ron": 97,
+    },
+    "gasohol e85 s evo": {
+        "fuel_family": "gasoline",
+        "fuel_product": "E85",
+        "quality_group": "biofuel",
+        "ethanol_pct": 85,
+    },
+    "gasohol e20 s evo": {
+        "fuel_family": "gasoline",
+        "fuel_product": "E20",
+        "quality_group": "regular",
+        "ethanol_pct": 20,
+    },
+    "gasohol 91 s evo": {
+        "fuel_family": "gasoline",
+        "fuel_product": "Gasohol 91",
+        "quality_group": "regular",
+        "octane_ron": 91,
+    },
+    "gasohol 95 s evo": {
+        "fuel_family": "gasoline",
+        "fuel_product": "Gasohol 95",
+        "quality_group": "regular",
+        "octane_ron": 95,
+    },
+}
 
 
 # ── OR / PTTOR Current Oil Price (Daily) ──────────────────────────────────────
@@ -513,6 +597,22 @@ def _parse_price_value(text: str) -> float | None:
         return None
 
 
+def _parse_bangchak_date(text: str) -> date | None:
+    value = (text or "").strip()
+    if not value:
+        return None
+    for fmt in ("%d/%m/%Y", "%d/%m/%y"):
+        try:
+            return datetime.strptime(value, fmt).date()
+        except ValueError:
+            continue
+    return None
+
+
+def _normalize_bangchak_title(title: str) -> str:
+    return " ".join((title or "").strip().lower().split())
+
+
 def fetch_th_eppo_retail_daily(cutoff: date) -> pd.DataFrame:
     """Fetch Thailand EPPO current retail fuel prices from the daily page."""
     print("  [th_eppo_daily] Fetching Thailand EPPO retail daily prices...")
@@ -585,6 +685,129 @@ def fetch_th_eppo_retail_daily(cutoff: date) -> pd.DataFrame:
         return pd.DataFrame()
 
     print(f"  [th_eppo_daily] {len(rows)} rows fetched for {obs_date}")
+    return pd.DataFrame(rows)
+
+
+def fetch_th_bangchak_retail_history(cutoff: date) -> pd.DataFrame:
+    """Fetch Thailand Bangchak historical retail prices by year."""
+    print("  [th_bangchak] Fetching Bangchak historical retail prices...")
+    print(f"  [th_bangchak] Cutoff: {cutoff}")
+
+    try:
+        from playwright.sync_api import sync_playwright
+    except Exception as e:
+        print(f"  [th_bangchak] Playwright not available: {e}")
+        return pd.DataFrame()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        # Discover available years from the dropdown (site tends to limit to a
+        # fixed range like 2017..current).
+        try:
+            page.goto(
+                "https://www.bangchak.co.th/en/oilprice/historical", timeout=60_000
+            )
+            page.wait_for_timeout(1_500)
+            years = page.evaluate(
+                """() => {
+                    const sel = document.querySelector('select[name=year]');
+                    if (!sel) return [];
+                    return Array.from(sel.querySelectorAll('option'))
+                      .map(o => (o.textContent || '').trim())
+                      .map(t => parseInt(t, 10))
+                      .filter(n => Number.isFinite(n) && n >= 1900 && n <= 2100);
+                }"""
+            )
+        except Exception as e:
+            print(f"  [th_bangchak] Could not discover year options: {e}")
+            years = []
+
+        if not years:
+            years = list(range(cutoff.year, date.today().year + 1))
+
+        years = sorted(set(int(y) for y in years if int(y) >= cutoff.year))
+
+        rows: list[dict] = []
+        for year in years:
+            url = _TH_BANGCHAK_HISTORY_URL.format(year=year)
+            try:
+                page.goto(url, timeout=60_000)
+                page.wait_for_timeout(2_000)
+            except Exception as e:
+                print(f"  [th_bangchak] Page load error ({year}): {e}")
+                continue
+
+            try:
+                payload = page.evaluate(
+                    """() => {
+                        const tables = Array.from(document.querySelectorAll('table'));
+                        const table = tables.find(t => t.querySelector('thead th[title]'));
+                        if (!table) return { titles: [], rows: [] };
+                        const titleThs = Array.from(table.querySelectorAll('thead tr:nth-child(2) th[title]'));
+                        const titles = titleThs.map(th => (th.getAttribute('title') || '').trim()).filter(Boolean);
+                        const rows = Array.from(table.querySelectorAll('tbody tr')).map(tr =>
+                          Array.from(tr.querySelectorAll('th,td')).map(td => (td.textContent || '').trim())
+                        );
+                        return { titles, rows };
+                    }"""
+                )
+            except Exception as e:
+                print(f"  [th_bangchak] DOM extract error ({year}): {e}")
+                continue
+
+            titles = payload.get("titles") or []
+            body_rows = payload.get("rows") or []
+            if not titles or not body_rows:
+                print(f"  [th_bangchak] No table rows for {year}")
+                continue
+
+            col_map: dict[int, str] = {}
+            for i, title in enumerate(titles, start=1):
+                col_map[i] = _normalize_bangchak_title(str(title))
+
+            for cells in body_rows:
+                if not cells or len(cells) < 2:
+                    continue
+                obs_date = _parse_bangchak_date(str(cells[0]))
+                if obs_date is None or obs_date <= cutoff:
+                    continue
+
+                for col_idx, title_key in col_map.items():
+                    if col_idx >= len(cells):
+                        continue
+                    price = _parse_price_value(str(cells[col_idx]))
+                    if price is None or not (5 <= price <= 200):
+                        continue
+                    spec = _TH_BANGCHAK_PRODUCT_MAP.get(title_key)
+                    if spec is None:
+                        continue
+
+                    row = _TMPL_TH_BANGCHAK.copy()
+                    row.update(
+                        {
+                            "fuel_family": spec.get("fuel_family"),
+                            "fuel_product": spec.get("fuel_product"),
+                            "quality_group": spec.get("quality_group"),
+                            "octane_ron": spec.get("octane_ron"),
+                            "ethanol_pct": spec.get("ethanol_pct"),
+                            "price_local": round(price, 4),
+                            "effective_from": str(obs_date),
+                            "effective_to": str(obs_date),
+                            "observation_date": str(obs_date),
+                            "source_url": url,
+                        }
+                    )
+                    row["observation_hash"] = make_hash(row)
+                    rows.append(row)
+
+        browser.close()
+
+    if not rows:
+        print("  [th_bangchak] No new rows")
+        return pd.DataFrame()
+
+    print(f"  [th_bangchak] {len(rows)} rows fetched")
     return pd.DataFrame(rows)
 
 
