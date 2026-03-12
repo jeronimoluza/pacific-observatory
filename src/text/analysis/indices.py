@@ -16,9 +16,15 @@ All indices follow the same pipeline:
 4. Normalize to mean=100 over cutoff period
 """
 
+import warnings
 from typing import List
 import pandas as pd
 import numpy as np
+
+warnings.filterwarnings("ignore", category=pd.errors.PerformanceWarning)
+warnings.filterwarnings(
+    "ignore", message="Mean of empty slice", category=RuntimeWarning
+)
 
 
 class IndexCalculator:
@@ -32,6 +38,8 @@ class IndexCalculator:
             cutoff: Date string for standardization period (e.g., '2020-12-31').
         """
         self.cutoff = cutoff
+        self.stds: dict = {}
+        self.scaling_factors: dict = {}
 
     def calculate_breadth_indices(
         self, epu_stats: pd.DataFrame, sources: List[str]
@@ -48,9 +56,6 @@ class IndexCalculator:
         Returns:
             DataFrame with breadth index columns added.
         """
-        # Defragment DataFrame to avoid performance warnings
-        epu_stats = epu_stats.copy()
-
         for category in ["E", "P", "U"]:
             # Calculate raw ratio per source
             ratio_cols = []
@@ -92,9 +97,6 @@ class IndexCalculator:
         Returns:
             DataFrame with intensity index columns added.
         """
-        # Defragment DataFrame to avoid performance warnings
-        epu_stats = epu_stats.copy()
-
         for category in ["E", "P", "U"]:
             # Calculate raw ratio per source
             ratio_cols = []
@@ -136,9 +138,6 @@ class IndexCalculator:
         Returns:
             DataFrame with pairwise index columns added.
         """
-        # Defragment DataFrame to avoid performance warnings
-        epu_stats = epu_stats.copy()
-
         for pair in ["EU", "PU", "EP"]:
             # Calculate raw ratio per source
             ratio_cols = []
@@ -175,6 +174,9 @@ class IndexCalculator:
         """
         Apply standardization, aggregation, and normalization pipeline.
 
+        Accumulates all new columns in a single dict and performs one
+        pd.concat to avoid DataFrame fragmentation.
+
         Args:
             df: DataFrame with ratio columns.
             ratio_cols: List of ratio column names.
@@ -184,26 +186,72 @@ class IndexCalculator:
         Returns:
             DataFrame with standardized, aggregated, and normalized columns.
         """
-        # Defragment to avoid PerformanceWarning from repeated column inserts
-        df = df.copy()
+        z_cols = []
 
         # Standardize each ratio column
-        z_cols = []
         for ratio_col in ratio_cols:
             z_col = ratio_col.replace("_ratio", "_z")
-            df = self._standardize(df, ratio_col, z_col)
+            z_series, std = self._standardize_series(df[ratio_col], df)
+            df[z_col] = z_series.values
+            self.stds[ratio_col] = std
             z_cols.append(z_col)
 
-        # Aggregate across sources
-        df = self._aggregate(df, z_cols, sources, index_name)
+        # Aggregate (unweighted and weighted)
+        df[f"{index_name}_z_unweighted"] = df[z_cols].mean(axis=1, skipna=True)
+
+        weighted = np.zeros(len(df))
+        for z_col in z_cols:
+            source = next((s for s in sources if z_col.startswith(f"{s}_")), None)
+            if source is None:
+                continue
+            weight_col = f"{source}_weights"
+            if weight_col in df.columns:
+                weighted += np.nan_to_num(df[weight_col].values * df[z_col].values)
+        df[f"{index_name}_z_weighted"] = weighted
 
         # Normalize to mean=100
-        df = self._normalize(df, f"{index_name}_z_weighted", f"{index_name}_weighted")
-        df = self._normalize(
-            df, f"{index_name}_z_unweighted", f"{index_name}_unweighted"
-        )
+        for z_col_name, out_name in [
+            (f"{index_name}_z_weighted", f"{index_name}_weighted"),
+            (f"{index_name}_z_unweighted", f"{index_name}_unweighted"),
+        ]:
+            z_arr = df[z_col_name].values
+            if self.cutoff is not None:
+                mask = df["date"].values < np.datetime64(self.cutoff)
+                sub = z_arr[mask]
+                mean_val = (
+                    np.nanmean(sub)
+                    if len(sub) > 0 and not np.all(np.isnan(sub))
+                    else np.nan
+                )
+            else:
+                mean_val = np.nanmean(z_arr) if not np.all(np.isnan(z_arr)) else np.nan
+            if np.isnan(mean_val) or mean_val == 0:
+                df[out_name] = np.nan
+                scaling_factor = None
+            else:
+                scaling_factor = 100 / mean_val
+                df[out_name] = scaling_factor * z_arr
+            self.scaling_factors[out_name] = (
+                float(scaling_factor) if scaling_factor is not None else None
+            )
 
         return df
+
+    def _standardize_series(self, ratio_series: pd.Series, df: pd.DataFrame):
+        """
+        Compute z-score Series for a ratio column using the cutoff period std.
+
+        Returns:
+            Tuple of (z_series, std_float_or_None).
+        """
+        if self.cutoff is not None:
+            std = ratio_series[df["date"] < self.cutoff].std()
+        else:
+            std = ratio_series.std()
+
+        if std == 0 or pd.isna(std):
+            return pd.Series(np.nan, index=ratio_series.index), None
+        return ratio_series / std, float(std)
 
     def _standardize(
         self, df: pd.DataFrame, ratio_col: str, z_col: str
@@ -229,6 +277,7 @@ class IndexCalculator:
         else:
             df[z_col] = df[ratio_col] / std
 
+        self.stds[ratio_col] = float(std) if not pd.isna(std) else None
         return df
 
     def _aggregate(
@@ -294,11 +343,27 @@ class IndexCalculator:
 
         if mean_val == 0 or pd.isna(mean_val):
             df[output_name] = np.nan
+            scaling_factor = None
         else:
             scaling_factor = 100 / mean_val
             df[output_name] = scaling_factor * df[z_col]
 
+        self.scaling_factors[output_name] = (
+            float(scaling_factor) if scaling_factor is not None else None
+        )
         return df
+
+    def get_params(self) -> dict:
+        """
+        Return captured standardization parameters.
+
+        Returns:
+            Dict with 'ratio_stds' and 'scaling_factors' collected during computation.
+        """
+        return {
+            "ratio_stds": dict(self.stds),
+            "scaling_factors": dict(self.scaling_factors),
+        }
 
     def calculate_absolute_uncertainty_attribution(
         self,
