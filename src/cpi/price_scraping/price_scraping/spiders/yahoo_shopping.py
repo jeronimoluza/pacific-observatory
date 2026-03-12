@@ -19,6 +19,31 @@ from scrapy_playwright.page import PageMethod
 logger = logging.getLogger(__name__)
 
 
+def _abort_heavy_requests(request) -> bool:
+    """Best-effort: skip heavy assets to reduce timeouts."""
+    resource_type = getattr(request, "resource_type", None)
+    if resource_type in {"image", "media", "font", "stylesheet"}:
+        return True
+
+    url = getattr(request, "url", "") or ""
+    return any(
+        url.endswith(ext)
+        for ext in (
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".webp",
+            ".svg",
+            ".woff",
+            ".woff2",
+            ".ttf",
+            ".otf",
+            ".css",
+        )
+    )
+
+
 class YahooShoppingSpider(scrapy.Spider):
     """
     Spider for Yahoo Shopping (Japan).
@@ -68,7 +93,8 @@ class YahooShoppingSpider(scrapy.Spider):
                 "--no-sandbox",
             ],
         },
-        "PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT": 60000,
+        "PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT": 120000,
+        "PLAYWRIGHT_ABORT_REQUEST": _abort_heavy_requests,
         "DOWNLOAD_DELAY": 3,
         "RANDOMIZE_DOWNLOAD_DELAY": True,
         "CONCURRENT_REQUESTS": 2,
@@ -95,7 +121,8 @@ class YahooShoppingSpider(scrapy.Spider):
                     "playwright": True,
                     "playwright_include_page": False,
                     "playwright_page_goto_kwargs": {
-                        "wait_until": "networkidle",
+                        # networkidle tends to hang on Yahoo pages due to long-lived requests.
+                        "wait_until": "domcontentloaded",
                     },
                     "playwright_page_methods": [
                         PageMethod("wait_for_timeout", 3000),
@@ -125,7 +152,7 @@ class YahooShoppingSpider(scrapy.Spider):
         # Extract product cards from the listing page
         # Yahoo Shopping uses 'item' class for product cards
         product_cards = response.css(
-            "div.item, " "li.item, " "div[class*='item '], " "div.items > div"
+            "div.item, li.item, div[class*='item '], div.items > div"
         )
 
         items_found = 0
@@ -151,7 +178,7 @@ class YahooShoppingSpider(scrapy.Spider):
                     "playwright": True,
                     "playwright_include_page": False,
                     "playwright_page_goto_kwargs": {
-                        "wait_until": "networkidle",
+                        "wait_until": "domcontentloaded",
                     },
                     "playwright_page_methods": [
                         PageMethod("wait_for_timeout", 3000),

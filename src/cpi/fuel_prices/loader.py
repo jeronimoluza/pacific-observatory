@@ -7,6 +7,8 @@ from pathlib import Path
 import pandas as pd
 
 from .constants import (
+    COLUMNS,
+    DATA_DIR,
     FETCH_STATE_JSON,
     PRIMARY_CSV,
     SECONDARY_CSV,
@@ -97,19 +99,66 @@ def df_to_json(df: pd.DataFrame) -> list:
     return data
 
 
+def load_stored_observations(base_dir: Path = DATA_DIR) -> pd.DataFrame:
+    """Load all per-source `observations.csv` files under `base_dir`."""
+    frames: list[pd.DataFrame] = []
+    for path in sorted(base_dir.rglob("observations.csv")):
+        try:
+            df = pd.read_csv(path, low_memory=False)
+        except Exception as exc:
+            print(f"  [loader] WARNING: Could not read {path}: {exc}")
+            continue
+        if df.empty:
+            continue
+        df = df.copy()
+        df["_storage_path"] = str(path.relative_to(base_dir))
+        frames.append(df)
+
+    if not frames:
+        return pd.DataFrame(columns=pd.Index([*COLUMNS, "_storage_path"]))
+
+    combined = pd.concat(frames, ignore_index=True, sort=False)
+    for col in COLUMNS:
+        if col not in combined.columns:
+            combined[col] = None
+    return combined
+
+
 def load_fuel_data(
     csv_path: Path = PRIMARY_CSV,
     secondary_path: Path | None = SECONDARY_CSV,
 ) -> dict:
-    """Load and merge primary + secondary CSVs into a per-country dict for visualization."""
+    """Load and merge stored observations plus legacy CSVs for visualization."""
+    frames: list[pd.DataFrame] = []
+
     df = pd.read_csv(csv_path, low_memory=False)
+    df["_dataset_source"] = "legacy"
     if secondary_path is not None and secondary_path.exists():
         df2 = pd.read_csv(secondary_path, low_memory=False)
+        df2["_dataset_source"] = "legacy"
         df = df[~df["country"].isin(SECONDARY_ONLY_COUNTRIES)]
         df = pd.concat([df, df2], ignore_index=True)
         if "observation_hash" in df.columns:
             df = df.drop_duplicates(subset="observation_hash")
-    df["observation_date"] = pd.to_datetime(df["observation_date"])
+    frames.append(df)
+
+    df_obs = load_stored_observations()
+    if not df_obs.empty:
+        df_obs = df_obs[~df_obs["country"].isin(["Global", "EAP"])].copy()
+        df_obs["_dataset_source"] = "observations"
+        frames.append(df_obs)
+
+    df = pd.concat(frames, ignore_index=True, sort=False)
+    df["observation_date"] = pd.to_datetime(df["observation_date"], errors="coerce")
+    df = df.dropna(subset=["country", "observation_date", "fuel_family"])
+
+    df["_source_rank"] = (
+        df["_dataset_source"].map({"observations": 0, "legacy": 1}).fillna(9)
+    )
+    if "observation_hash" in df.columns:
+        df = df.sort_values(["_source_rank", "observation_date"]).drop_duplicates(
+            subset=["observation_hash"], keep="first"
+        )
 
     # Philippines: drop RON 97 (premium gasoline not tracked in the dashboard)
     ph_ron97_mask = (df["country"] == "Philippines") & (df["fuel_product"] == "RON 97")
@@ -226,8 +275,10 @@ def load_fuel_data(
         "quality_group",
         "location",
     ]
-    df = df.sort_values("_status_rank").drop_duplicates(subset=_dedup_key, keep="first")
-    df = df.drop(columns="_status_rank")
+    df = df.sort_values(["_source_rank", "_status_rank"]).drop_duplicates(
+        subset=_dedup_key, keep="first"
+    )
+    df = df.drop(columns=["_status_rank", "_source_rank"], errors="ignore")
 
     keep = [
         "country",

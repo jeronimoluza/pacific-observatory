@@ -17,14 +17,14 @@ SOURCE_META = [
     {
         "fetcher_fn": "fetch_kr_opinet_daily",
         "country": "Korea, Rep.",
-        "source_name": "Opinet Daily National Average (API)",
-        "url": "https://www.opinet.co.kr/api/avgRecentPrice.do",
-        "description": "Official (Opinet, Korea National Oil Corporation). Daily national average retail prices via Opinet open API.",
-        "extraction_method": ["API (JSON)"],
-        "products": ["Gasoline (Regular, RON 91)", "Diesel", "Kerosene"],
+        "source_name": "Opinet Daily Chart Averages",
+        "url": "https://www.opinet.co.kr/user/main/mainView.do",
+        "description": "Official (Opinet, Korea National Oil Corporation). Daily national plus regional averages extracted from the homepage time-series chart JSON endpoint.",
+        "extraction_method": ["Web scraping", "JSON endpoint"],
+        "products": ["Gasoline (Regular, RON 91)", "Diesel", "LPG"],
         "source_keys": ["kr_opinet_daily_avg"],
         "publishes_on": "Daily",
-        "notes": "Requires OPINET_API_KEY environment variable. Uses avgRecentPrice API; output rows are daily national averages.",
+        "notes": "Bootstraps a homepage session using the hidden opinet_key and calls /user/main/mainLineChartNewAjax.do with DIV_CD=D for each region. Captures National and regional daily averages.",
     },
     {
         "fetcher_fn": "fetch_kr_fuel_news_evidence",
@@ -68,8 +68,8 @@ _TMPL_KR_DAILY = make_template(
     country="Korea, Rep.",
     wb_iso3="KOR",
     source_key="kr_opinet_daily_avg",
-    source_name="Korea Opinet Daily National Average",
-    source_url="https://www.opinet.co.kr/api/avgRecentPrice.do",
+    source_name="Korea Opinet Daily Chart Averages",
+    source_url="https://www.opinet.co.kr/user/main/mainView.do",
     currency="KRW",
     unit="L",
     subnational_area="National",
@@ -85,11 +85,13 @@ _KR_PRODUCT_COLS = [
 
 _KR_OPINET_API_URL = "https://www.opinet.co.kr/api/avgRecentPrice.do"
 _KR_OPINET_API_KEY_ENV = "OPINET_API_KEY"
+_KR_OPINET_MAIN_URL = "https://www.opinet.co.kr/user/main/mainView.do"
+_KR_OPINET_MAIN_CHART_URL = "https://www.opinet.co.kr/user/main/mainLineChartNewAjax.do"
 
 _KR_OPINET_PRODUCT_CODES = {
     "B027": ("Regular Gasoline", "gasoline", "regular", 91),
     "D047": ("Diesel", "diesel", "regular", None),
-    "C004": ("Kerosene", "kerosene", "regular", None),
+    "K015": ("LPG", "lpg", "regular", None),
 }
 
 _KR_OPINET_PRODUCT_NAMES = {
@@ -97,8 +99,7 @@ _KR_OPINET_PRODUCT_NAMES = {
     "보통휘발유": "B027",
     "경유": "D047",
     "자동차용경유": "D047",
-    "실내등유": "C004",
-    "등유": "C004",
+    "LPG": "K015",
 }
 
 _KR_NEWS_RSS_ENV = "KOREA_FUEL_NEWS_RSS_URL"
@@ -140,6 +141,54 @@ def _parse_kr_price(value) -> float | None:
         return float(raw)
     except ValueError:
         return None
+
+
+def _bootstrap_kr_main_page(session) -> str | None:
+    """Return Opinet main-page HTML after posting the hidden opinet_key."""
+    try:
+        landing = session.get(_KR_OPINET_MAIN_URL, timeout=30)
+        landing.raise_for_status()
+    except Exception as e:
+        print(f"  [kr_opinet_daily] Landing page request failed: {e}")
+        return None
+
+    m = re.search(r"opinet_key\.value\s*=\s*'([^']+)'", landing.text)
+    if not m:
+        m = re.search(
+            r'name=["\']opinet_key["\'][^>]*value=["\']([^"\']+)["\']',
+            landing.text,
+        )
+    if not m:
+        print("  [kr_opinet_daily] Could not find opinet_key on landing page")
+        return None
+
+    try:
+        resp = session.post(
+            _KR_OPINET_MAIN_URL, data={"opinet_key": m.group(1)}, timeout=30
+        )
+        resp.raise_for_status()
+        return resp.text
+    except Exception as e:
+        print(f"  [kr_opinet_daily] Main page bootstrap failed: {e}")
+        return None
+
+
+def _parse_kr_sido_codes(main_html: str) -> list[tuple[str, str]]:
+    soup = BeautifulSoup(main_html, "lxml")
+    out: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for div in soup.select("#all_img_map div[id^='m_']"):
+        code_el = div.select_one(".accesskey")
+        name_el = div.select_one(".title")
+        if code_el is None or name_el is None:
+            continue
+        code = code_el.get_text(strip=True)
+        name = name_el.get_text(strip=True)
+        if not code or code in seen:
+            continue
+        seen.add(code)
+        out.append((code, name))
+    return out
 
 
 def fetch_kr_opinet_weekly(cutoff: date) -> pd.DataFrame:
@@ -259,81 +308,105 @@ def fetch_kr_opinet_weekly(cutoff: date) -> pd.DataFrame:
 
 
 def fetch_kr_opinet_daily(cutoff: date) -> pd.DataFrame:
-    """Fetch Korea Opinet daily national average prices via API."""
-    print("  [kr_opinet_daily] Fetching Korea Opinet daily averages...")
+    """Fetch Korea Opinet daily national + regional averages from chart JSON."""
+    print("  [kr_opinet_daily] Fetching Korea Opinet daily chart averages...")
     print(f"  [kr_opinet_daily] Cutoff: {cutoff}")
 
-    api_key = os.environ.get(_KR_OPINET_API_KEY_ENV)
-    if not api_key:
-        print("  [kr_opinet_daily] Missing OPINET_API_KEY; skipping daily fetch.")
-        return pd.DataFrame()
-
     session = get_session()
-    try:
-        resp = session.get(
-            _KR_OPINET_API_URL,
-            params={"out": "json", "code": api_key},
-            timeout=30,
-        )
-        resp.raise_for_status()
-    except Exception as e:
-        print(f"  [kr_opinet_daily] Request failed: {e}")
+    main_html = _bootstrap_kr_main_page(session)
+    if not main_html:
         return pd.DataFrame()
 
-    try:
-        payload = resp.json()
-    except ValueError as e:
-        print(f"  [kr_opinet_daily] JSON parse failed: {e}")
-        return pd.DataFrame()
-
-    items = payload.get("RESULT", {}).get("OIL", [])
-    if isinstance(items, dict):
-        items = list(items.values())
-
-    if not items:
-        print("  [kr_opinet_daily] No API rows returned")
+    sidos = _parse_kr_sido_codes(main_html)
+    if not sidos:
+        print("  [kr_opinet_daily] No SIDO codes found on main page")
         return pd.DataFrame()
 
     rows = []
-    today = date.today()
-    for item in items:
-        if not isinstance(item, dict):
-            continue
-        prod_code = (
-            item.get("PRODCD")
-            or item.get("OILCD")
-            or _KR_OPINET_PRODUCT_NAMES.get(item.get("PRODNM", "").strip())
-        )
-        prod_name = item.get("PRODNM") or item.get("PRODNAME")
-        spec = _KR_OPINET_PRODUCT_CODES.get(prod_code)
-        if not spec:
-            continue
+    seen_national: set[tuple[str, date]] = set()
+    for sido_code, sido_name in sidos:
+        for prod_code in ("B027", "D047", "K015"):
+            spec = _KR_OPINET_PRODUCT_CODES.get(prod_code)
+            if spec is None:
+                continue
+            try:
+                resp = session.post(
+                    _KR_OPINET_MAIN_CHART_URL,
+                    data={"DIV_CD": "D", "SIDO_CD": sido_code, "KNOC_PD_CD": prod_code},
+                    headers={
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Referer": _KR_OPINET_MAIN_URL,
+                        "Origin": "https://www.opinet.co.kr",
+                    },
+                    timeout=30,
+                )
+                resp.raise_for_status()
+                payload = resp.json()
+            except Exception as e:
+                print(
+                    f"  [kr_opinet_daily] Chart request failed for {sido_name} {prod_code}: {e}"
+                )
+                continue
 
-        price = _parse_kr_price(item.get("PRICE") or item.get("PRICE_KR"))
-        if price is None or not (500 <= price <= 5000):
-            continue
+            items = payload.get("result", {}).get("chartData", [])
+            if not isinstance(items, list):
+                continue
 
-        obs_date = _parse_kr_api_date(item.get("DATE") or item.get("DT")) or today
-        if obs_date <= cutoff:
-            continue
+            prod_label, family, qg, ron = spec
+            for item in items:
+                if not isinstance(item, dict):
+                    continue
+                obs_date = _parse_kr_api_date(
+                    item.get("STD_DT_FULL") or item.get("STD_DT")
+                )
+                if obs_date is None or obs_date <= cutoff:
+                    continue
 
-        prod_label, family, qg, ron = spec
-        row = _TMPL_KR_DAILY.copy()
-        row.update(
-            {
-                "fuel_family": family,
-                "fuel_product": prod_label,
-                "quality_group": qg,
-                "octane_ron": ron,
-                "price_local": round(price, 4),
-                "effective_from": str(obs_date),
-                "effective_to": str(obs_date),
-                "observation_date": str(obs_date),
-                "notes": prod_name or None,
-            }
-        )
-        row["observation_hash"] = make_hash(row)
-        rows.append(row)
+                nat_price = _parse_kr_price(item.get("PRICE"))
+                if nat_price is not None and 500 <= nat_price <= 5000:
+                    nat_key = (prod_code, obs_date)
+                    if nat_key not in seen_national:
+                        row = _TMPL_KR_DAILY.copy()
+                        row.update(
+                            {
+                                "fuel_family": family,
+                                "fuel_product": prod_label,
+                                "quality_group": qg,
+                                "octane_ron": ron,
+                                "subnational_area": "National",
+                                "price_local": round(nat_price, 4),
+                                "effective_from": str(obs_date),
+                                "effective_to": str(obs_date),
+                                "observation_date": str(obs_date),
+                                "source_url": _KR_OPINET_MAIN_URL,
+                                "notes": f"Opinet chart national average; SIDO query {sido_code}",
+                            }
+                        )
+                        row["observation_hash"] = make_hash(row)
+                        rows.append(row)
+                        seen_national.add(nat_key)
+
+                sido_price = _parse_kr_price(item.get("PRICE_SIDO"))
+                if sido_price is None or not (500 <= sido_price <= 5000):
+                    continue
+                row = _TMPL_KR_DAILY.copy()
+                row.update(
+                    {
+                        "fuel_family": family,
+                        "fuel_product": prod_label,
+                        "quality_group": qg,
+                        "octane_ron": ron,
+                        "subnational_area": sido_name,
+                        "price_local": round(sido_price, 4),
+                        "effective_from": str(obs_date),
+                        "effective_to": str(obs_date),
+                        "observation_date": str(obs_date),
+                        "source_url": _KR_OPINET_MAIN_URL,
+                        "notes": f"Opinet chart regional average; SIDO_CD={sido_code}",
+                    }
+                )
+                row["observation_hash"] = make_hash(row)
+                rows.append(row)
 
     if rows:
         print(f"  [kr_opinet_daily] {len(rows)} new rows")

@@ -24,12 +24,14 @@ try:
     from .data_preparation import prepare_coicop_matching_data
     from .quantity import extract_quantities, merge_quantities_with_gemini
     from .classification import run_coicop_matching, reclassify_missing_classifications
+    from .published_artifacts import write_supermarket_prices_shadow_artifact
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent))
     from utils import get_project_root
     from data_preparation import prepare_coicop_matching_data
     from quantity import extract_quantities, merge_quantities_with_gemini
     from classification import run_coicop_matching, reclassify_missing_classifications
+    from published_artifacts import write_supermarket_prices_shadow_artifact
 
 
 def setup_logging(level: str = "INFO") -> None:
@@ -203,6 +205,14 @@ def run_complete_workflow(
     output_dir.mkdir(parents=True, exist_ok=True)
     df_final.to_csv(output_path, index=False, encoding="utf-8")
     print(f"✓ Saved {len(df_final)} records to {output_path}")
+
+    shadow_result = write_supermarket_prices_shadow_artifact(
+        df_final,
+        project_root=project_root,
+        legacy_output_path=output_path,
+    )
+    print(f"✓ Shadow-wrote published artifact to {shadow_result['artifact_path']}")
+    print(f"✓ Wrote checks sidecar to {shadow_result['checks_path']}")
 
     # Print summary statistics
     print("\n" + "=" * 80)

@@ -1,30 +1,25 @@
-"""
-Spider for scraping Tiki.vn (Vietnam) - https://tiki.vn/
-Extracts product information including prices, categories, and URLs.
+"""Scrape Tiki.vn (Vietnam) - https://tiki.vn/
 
-Strategy:
-1. Start from main category pages
-2. Follow pagination and subcategory links
-3. Extract product data from listing pages (avoid individual product pages for efficiency)
+Listing-first crawl bounded to seeded retail branches.
+
+Rationale:
+- Tiki listing pages already contain sufficient name+price coverage.
+- Product-page crawling and broad category traversal cause scope explosion.
 """
 
-from scrapy.spiders import CrawlSpider, Rule
-from scrapy.linkextractors import LinkExtractor
-from urllib.parse import urljoin
 import logging
+import json
 import re
+from collections import defaultdict
+from urllib.parse import parse_qsl, urlencode, urljoin, urlparse
 
-from price_scraping.utils import SelectorExtractor
-from price_scraping.selectors import get_selectors
+import scrapy
 
 logger = logging.getLogger(__name__)
 
 
-class TikiSpider(CrawlSpider):
-    """
-    CrawlSpider for Tiki.vn (Vietnam).
-    Discovers product pages and extracts price data.
-    """
+class TikiSpider(scrapy.Spider):
+    """Bounded listing-first spider for Tiki.vn."""
 
     name = "tiki"
     allowed_domains = ["tiki.vn"]
@@ -46,49 +41,58 @@ class TikiSpider(CrawlSpider):
     currency = "VND"
     language = "vi"
 
-    # CSS selector fallbacks for product fields
-    SELECTORS = get_selectors("tiki")
+    MAX_PAGES_PER_BRANCH = 60
+    MAX_CONSECUTIVE_EMPTY_PAGES = 2
 
-    # Rules for following links and extracting data
-    rules = (
-        # Follow pagination links
-        Rule(
-            LinkExtractor(
-                allow=r"tiki\.vn/.+/c\d+\?page=\d+",
-            ),
-            callback="parse_listing",
-            follow=True,
-        ),
-        # Follow category links
-        Rule(
-            LinkExtractor(
-                allow=r"tiki\.vn/.+/c\d+",
-                deny=r"(cart|checkout|account|login|register|wishlist)",
-            ),
-            callback="parse_listing",
-            follow=True,
-        ),
-        # Follow product links
-        Rule(
-            LinkExtractor(
-                allow=r"tiki\.vn/.+-p\d+\.html",
-                deny=r"(cart|checkout|account|login|register|wishlist)",
-            ),
-            callback="parse_product",
-            follow=False,
-        ),
+    _DENY_PATH_PARTS = (
+        "cart",
+        "checkout",
+        "account",
+        "login",
+        "register",
+        "wishlist",
+        "bestsellers",
+        "khuyen-mai",
+        "flash-sale",
+        "deal",
+        "hot",
+        "sale",
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.scraped_product_ids = set()
+        self._allowed_root_slugs = {
+            self._root_slug_from_url(url)
+            for url in self.start_urls
+            if self._root_slug_from_url(url)
+        }
+        self._seen_listing_urls: set[str] = set()
+        self._empty_pages_by_branch: dict[str, int] = defaultdict(int)
+
+    def start_requests(self):
+        for url in self.start_urls:
+            root_slug = self._root_slug_from_url(url)
+            yield scrapy.Request(
+                url,
+                callback=self.parse_listing,
+                meta={
+                    "branch_root": root_slug,
+                    "branch_key": root_slug or url,
+                    "page": 1,
+                },
+            )
 
     def parse_listing(self, response):
         """
         Parse listing/category pages to extract product cards directly.
         This is more efficient than following individual product links.
         """
-        logger.info(f"Parsing listing page: {response.url}")
+        if response.url in self._seen_listing_urls:
+            return
+        self._seen_listing_urls.add(response.url)
+
+        logger.info("Parsing listing page: %s", response.url)
 
         # Try to extract products from listing cards
         product_cards = response.css(
@@ -106,7 +110,54 @@ class TikiSpider(CrawlSpider):
                 items_found += 1
                 yield item
 
-        logger.info(f"Found {items_found} products on listing page")
+        # Fallback: Tiki often embeds product cards only in __NEXT_DATA__ JSON.
+        if items_found == 0:
+            for item in self._parse_next_data_products(response):
+                items_found += 1
+                yield item
+
+        logger.info("Found %s products on listing page", items_found)
+
+        branch_key = response.meta.get("branch_key") or (
+            response.meta.get("branch_root") or response.url
+        )
+        page = response.meta.get("page", 1)
+
+        if items_found == 0:
+            self._empty_pages_by_branch[branch_key] += 1
+        else:
+            self._empty_pages_by_branch[branch_key] = 0
+
+        # Stop exploring a branch that is repeatedly non-productive.
+        if self._empty_pages_by_branch[branch_key] >= self.MAX_CONSECUTIVE_EMPTY_PAGES:
+            logger.info("Stopping branch %s after consecutive empty pages", branch_key)
+            return
+
+        # Follow subcategory links within the same intended root slug set.
+        for next_url in self._extract_category_links(response):
+            yield scrapy.Request(
+                next_url,
+                callback=self.parse_listing,
+                meta={
+                    "branch_root": response.meta.get("branch_root"),
+                    "branch_key": branch_key,
+                    "page": 1,
+                },
+            )
+
+        # Pagination: proceed sequentially to avoid crawling deep tails when yield stops.
+        if page < self.MAX_PAGES_PER_BRANCH:
+            next_page_url = self._next_page_url(response.url, page + 1)
+            if next_page_url:
+                yield scrapy.Request(
+                    next_page_url,
+                    callback=self.parse_listing,
+                    meta={
+                        "branch_root": response.meta.get("branch_root"),
+                        "branch_key": branch_key,
+                        "page": page + 1,
+                    },
+                )
 
     def _parse_product_card(self, card, response):
         """
@@ -149,8 +200,13 @@ class TikiSpider(CrawlSpider):
         # Clean price
         price = self._clean_price(price_text) if price_text else None
 
-        # Try to extract category from breadcrumb or URL
-        category = self._extract_category_from_url(response.url)
+        # Prefer stable branch category from the seeded root slug.
+        category = None
+        branch_root = response.meta.get("branch_root")
+        if branch_root:
+            category = branch_root.replace("-", " ").title()
+        if not category:
+            category = self._extract_category_from_url(response.url)
 
         if product_name and price:
             return {
@@ -166,50 +222,124 @@ class TikiSpider(CrawlSpider):
 
         return None
 
-    def parse_product(self, response):
-        """
-        Parse individual product page and extract relevant data.
-        """
-        # Extract product ID from URL
-        product_id_match = re.search(r"-p(\d+)\.html", response.url)
-        if not product_id_match:
-            logger.warning(f"Could not extract product ID from {response.url}")
+    def _parse_next_data_products(self, response):
+        next_data_raw = response.css("script#__NEXT_DATA__::text").get()
+        if not next_data_raw:
             return
 
-        product_id = product_id_match.group(1)
-
-        # Skip if already scraped
-        if product_id in self.scraped_product_ids:
+        try:
+            next_data = json.loads(next_data_raw)
+        except Exception:
             return
-        self.scraped_product_ids.add(product_id)
 
-        # Initialize extractor with fallback selectors
-        extractor = SelectorExtractor(response, logger)
+        # Known shape (2026-03): props.initialState.catalog.data is a list of products.
+        data = (
+            next_data.get("props", {})
+            .get("initialState", {})
+            .get("catalog", {})
+            .get("data")
+        )
+        if not isinstance(data, list):
+            return
 
-        # Extract product information using fallback selectors
-        product_name = extractor.extract("product_name", self.SELECTORS["product_name"])
-        price_text = extractor.extract("price", self.SELECTORS["price"])
-        category = extractor.extract(
-            "category", self.SELECTORS["category"], method="getall"
+        branch_root = response.meta.get("branch_root")
+        category = (
+            branch_root.replace("-", " ").title()
+            if branch_root
+            else self._extract_category_from_url(response.url)
         )
 
-        # Clean price
-        price = self._clean_price(price_text) if price_text else None
+        for prod in data:
+            if not isinstance(prod, dict):
+                continue
 
-        if product_name and price:
+            product_name = prod.get("name") or prod.get("title")
+            price_val = prod.get("price")
+            url_path = prod.get("url") or prod.get("url_path") or prod.get("short_url")
+            if not product_name or price_val is None or not url_path:
+                continue
+
+            product_url = urljoin(response.url, "/" + str(url_path).lstrip("/"))
+            product_id_match = re.search(r"-p(\d+)\.html", product_url)
+            if not product_id_match:
+                continue
+
+            product_id = product_id_match.group(1)
+            if product_id in self.scraped_product_ids:
+                continue
+            self.scraped_product_ids.add(product_id)
+
+            # Price may already be numeric in JSON.
+            price = (
+                self._clean_price(price_val)
+                if isinstance(price_val, str)
+                else str(price_val)
+            )
+            if not price:
+                continue
+
             yield {
-                "product_name": product_name,
-                "category": " > ".join(category) if category else None,
+                "product_name": str(product_name).strip(),
+                "category": category,
                 "price": price,
                 "currency": self.currency,
-                "url": response.url,
+                "url": product_url,
                 "product_id": product_id,
                 "language": self.language,
                 "scraped_at": response.headers.get("Date", b"").decode("utf-8"),
             }
-            logger.info(f"Scraped product: {product_name}")
-        else:
-            logger.warning(f"Could not extract product data from {response.url}")
+
+    def _root_slug_from_url(self, url: str) -> str | None:
+        parsed = urlparse(url)
+        parts = [p for p in parsed.path.split("/") if p]
+        return parts[0] if parts else None
+
+    def _is_denied_url(self, url: str) -> bool:
+        lowered = url.lower()
+        return any(part in lowered for part in self._DENY_PATH_PARTS)
+
+    def _extract_category_links(self, response) -> list[str]:
+        links = response.css("a::attr(href)").getall()
+        out: list[str] = []
+        for href in links:
+            if not href:
+                continue
+            if "-p" in href or href.endswith(".html"):
+                continue
+            abs_url = urljoin(response.url, href)
+            if "tiki.vn" not in abs_url:
+                continue
+            if self._is_denied_url(abs_url):
+                continue
+            # Must look like a category page: /{slug}/c{digits}
+            if not re.search(
+                r"/[^/]+/c\d+(?:\?.*)?$",
+                urlparse(abs_url).path
+                + ("?" + (urlparse(abs_url).query) if urlparse(abs_url).query else ""),
+            ):
+                continue
+            root_slug = self._root_slug_from_url(abs_url)
+            if self._allowed_root_slugs and root_slug not in self._allowed_root_slugs:
+                continue
+            out.append(abs_url.split("#", 1)[0])
+        return list(dict.fromkeys(out))
+
+    def _next_page_url(self, url: str, page: int) -> str | None:
+        if page <= 1:
+            return url
+
+        if self._is_denied_url(url):
+            return None
+
+        parsed = urlparse(url)
+        base = parsed._replace(query="").geturl()
+        query = [
+            (k, v)
+            for k, v in parse_qsl(parsed.query, keep_blank_values=True)
+            if k != "page"
+        ]
+        query.append(("page", str(page)))
+        return f"{base}?{urlencode(query)}"
 
     def _clean_price(self, price_str):
         """

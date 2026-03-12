@@ -30,8 +30,10 @@ SPIDER_SELECTORS = {
             "h1[class='product_title entry-title']::text",
         ],
         "price": [
-            "p.price ins span[class='woocommerce-Price-amount amount']::text",
-            "p.price span[class='woocommerce-Price-amount amount']::text",
+            "p.price ins span.woocommerce-Price-amount.amount bdi::text",
+            "p.price ins span.woocommerce-Price-amount.amount::text",
+            "p.price span.woocommerce-Price-amount.amount bdi::text",
+            "p.price span.woocommerce-Price-amount.amount::text",
         ],
         "category": [
             "nav[class='woocommerce-breadcrumb'] ul li a::text",
