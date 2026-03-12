@@ -813,8 +813,9 @@ def run_all_scrapers(
     dry_run: bool = False,
     mode: str = "default",
     timeout_per_scraper: int = 600,
-    exclude: List[str] = None,
-    include: List[str] = None,
+    exclude: Optional[List[str]] = None,
+    include: Optional[List[str]] = None,
+    country_filter: Optional[str] = None,
 ) -> List[Dict]:
     """
     Run all newspaper scrapers with country-level sequential execution.
@@ -849,6 +850,19 @@ def run_all_scrapers(
     if not configs:
         print("❌ No configurations found.")
         return []
+
+    # Filter to a specific country
+    if country_filter:
+        filtered = [
+            c for c in configs if c["country"].lower() == country_filter.lower()
+        ]
+        if not filtered:
+            available = sorted({c["country"] for c in configs})
+            print(f"❌ No scrapers found for country: '{country_filter}'")
+            print(f"   Available countries: {', '.join(available)}")
+            return []
+        configs = filtered
+        print(f"   Filtering to country: {country_filter}")
 
     # Filter out excluded scrapers
     if exclude:

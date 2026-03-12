@@ -7,8 +7,11 @@ import logging
 from datetime import datetime
 from pathlib import Path
 import json
+from typing import TextIO
 
-import scrapy
+from scrapy.exceptions import DropItem as ScrapyDropItem
+
+from price_scraping.raw_artifacts import write_raw_scrape_shadow_artifact
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +32,7 @@ class DuplicationPipeline:
         item["url_hash"] = url_hash
 
         if url_hash in self.seen_urls:
-            raise scrapy.exceptions.DropItem(f"Duplicate URL: {item['url']}")
+            raise ScrapyDropItem(f"Duplicate URL: {item['url']}")
 
         self.seen_urls.add(url_hash)
         return item
@@ -43,7 +46,8 @@ class JsonWriterPipeline:
     def __init__(self, output_dir):
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        self.file = None
+        self.file: TextIO | None = None
+        self.file_path = None
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -61,6 +65,7 @@ class JsonWriterPipeline:
         country_dir.mkdir(parents=True, exist_ok=True)
         filename = country_dir / f"{spider_name}_{timestamp}.jsonl"
         self.file = open(filename, "w", encoding="utf-8")
+        self.file_path = filename
         logger.info(f"Opened output file: {filename}")
 
     def close_spider(self, spider):
@@ -71,13 +76,28 @@ class JsonWriterPipeline:
             self.file.close()
             logger.info("Closed output file")
 
+        if self.file_path:
+            project_root = self.output_dir.parent.parent.parent
+            shadow_result = write_raw_scrape_shadow_artifact(
+                legacy_file_path=self.file_path,
+                project_root=project_root,
+                country=getattr(spider, "country", "unknown"),
+                spider_name=getattr(spider, "name", "unknown"),
+            )
+            logger.info("Shadow-wrote raw artifact: %s", shadow_result["artifact_path"])
+
     def process_item(self, item, spider):
         """
         Write item to JSON file.
         """
+        if self.file is None:
+            raise RuntimeError("Output file is not open")
+
+        file_handle = self.file
+
         line = json.dumps(dict(item), ensure_ascii=False) + "\n"
-        self.file.write(line)
-        self.file.flush()
+        file_handle.write(line)
+        file_handle.flush()
         return item
 
 

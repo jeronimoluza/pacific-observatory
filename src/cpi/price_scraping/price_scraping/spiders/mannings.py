@@ -26,6 +26,20 @@ CATEGORIES = {
     "Personal Care": "8859",
 }
 
+
+CATEGORY_CHILDREN_QUERY = """
+query GetCategoryChildren($categoryId: Int!) {
+  category(id: $categoryId) {
+    id
+    name
+    children {
+      id
+      name
+    }
+  }
+}
+"""
+
 PRODUCTS_QUERY = """
 query GetProducts($categoryId: String!, $pageSize: Int!, $currentPage: Int!) {
   products(
@@ -62,29 +76,76 @@ class ManningsSpider(scrapy.Spider):
     allowed_domains = ["www.mannings.com.hk"]
     country = "hong_kong"
     currency = "HKD"
+    # P0 hardening: GraphQL returns empty product sets in current environment.
+    # Keep the spider code for later fixing, but do not run it in bulk jobs.
+    active = False
+
+    def _request(self, body: dict, callback, meta: dict) -> scrapy.Request:
+        return scrapy.Request(
+            GRAPHQL_URL,
+            method="POST",
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body=json.dumps(body),
+            callback=callback,
+            meta=meta,
+        )
 
     def start_requests(self):
+        # Mannings does not always assign products directly to the parent category;
+        # fetch children and scrape each child category id.
         for cat_name, cat_id in CATEGORIES.items():
-            yield scrapy.Request(
-                GRAPHQL_URL,
-                method="POST",
-                headers={
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
+            yield self._request(
+                body={
+                    "query": CATEGORY_CHILDREN_QUERY,
+                    "operationName": "GetCategoryChildren",
+                    "variables": {"categoryId": int(cat_id)},
                 },
-                body=json.dumps(
-                    {
-                        "query": PRODUCTS_QUERY,
-                        "operationName": "GetProducts",
-                        "variables": {
-                            "categoryId": cat_id,
-                            "pageSize": PAGE_SIZE,
-                            "currentPage": 1,
-                        },
-                    }
-                ),
+                callback=self.parse_category_children,
+                meta={"parent_category": cat_name, "parent_category_id": cat_id},
+            )
+
+    def parse_category_children(self, response):
+        parent_name = response.meta["parent_category"]
+        parent_id = response.meta["parent_category_id"]
+
+        try:
+            data = json.loads(response.text)
+        except json.JSONDecodeError:
+            logger.error("Failed to parse JSON from %s", response.url)
+            return
+
+        category = (data.get("data") or {}).get("category") or {}
+        children = category.get("children") or []
+
+        # Fallback: if no children are returned, try the parent id directly.
+        targets: list[tuple[str, str]] = []
+        for child in children:
+            child_id = child.get("id")
+            child_name = child.get("name")
+            if child_id is None:
+                continue
+            label = f"{parent_name} > {child_name}" if child_name else parent_name
+            targets.append((label, str(child_id)))
+
+        if not targets:
+            targets = [(parent_name, parent_id)]
+
+        for label, cat_id in targets:
+            yield self._request(
+                body={
+                    "query": PRODUCTS_QUERY,
+                    "operationName": "GetProducts",
+                    "variables": {
+                        "categoryId": cat_id,
+                        "pageSize": PAGE_SIZE,
+                        "currentPage": 1,
+                    },
+                },
                 callback=self.parse_products,
-                meta={"category": cat_name, "category_id": cat_id, "page": 1},
+                meta={"category": label, "category_id": cat_id, "page": 1},
             )
 
     def parse_products(self, response):

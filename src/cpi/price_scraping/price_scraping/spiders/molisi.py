@@ -26,6 +26,8 @@ class MolisiSpider(CrawlSpider):
     start_urls = ["https://molisi.to/"]
     country = "tonga"
     currency = "T"
+    # P0 hardening: site currently returns 503 for all tested paths.
+    active = False
 
     # CSS selector fallbacks for product fields
     SELECTORS = get_selectors("molisi")
