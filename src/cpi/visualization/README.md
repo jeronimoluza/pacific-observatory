@@ -1,21 +1,24 @@
-## Interactive dashboard
+# CPI Visualization
 
-The dashboard (`plotting.py`) generates a standalone HTML file with Chart.js visualizations.
+Stage: `publish` inside `price_atlas`.
 
-Features:
+This folder holds standalone CPI coverage dashboards and tables built from structured report outputs.
 
-- Overview metrics (n_items, n_obs, n_countries, n_sources, date range)
-- Interactive tables with radio button controls:
-  - **COICOP Level**: Toggle between Level 1 (divisions), Level 2 (groups), Level 3 (classes)
-  - **View Mode**: Toggle between absolute counts and percentages
-- Two table views:
-  - COICOP × Country
-  - COICOP × Source
-- Dynamic titles that update based on selected options
+## Main Script
 
-Generate dashboard:
+- `src/cpi/visualization/plotting.py` - builds a standalone HTML dashboard from the latest CPI report outputs.
+- `src/cpi/visualization/tables.py` - generates markdown-ready coverage and quality tables.
+
+## Dashboard Inputs
+
+`plotting.py` expects the latest report bundle under `data/cpi/analysis/reports/latest/`, including summary and coverage CSVs.
+
+## Run
+
 ```bash
-poetry run python src/cpi/plotting/plotting.py
+poetry run python src/cpi/visualization/plotting.py
 ```
 
-Output: `src/cpi/plotting/dashboard/index.html`
+## Output
+
+The current script writes the dashboard to `src/cpi/plotting/outputs/index.html`.

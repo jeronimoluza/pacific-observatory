@@ -1,59 +1,27 @@
 """Backfill NSW FuelCheck historical resources.
 
-This is intentionally separate from the regular fetch pipeline because FuelCheck
-publishes monthly files (CSV/XLSX) and a full backfill can be large. We stream
-each monthly resource into the per-source observations file.
+This is intentionally separate from the regular update pipeline because
+FuelCheck publishes monthly files (CSV/XLSX) and a full backfill can be large.
+We stream each monthly resource into the per-source observations file.
 """
 
 from __future__ import annotations
 
-import io
 import json
-import re
-from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
 import pandas as pd
 
 from .constants import COLUMNS, FETCH_STATE_JSON
+from .fuelcheck_resources import (
+    DATASET_URL,
+    load_package_resources,
+    parse_resource_bytes,
+    pick_best_resources_per_period,
+)
 from .storage import source_csv_path
 from .utils import get_session, make_template
-
-
-_DATASET_URL = "https://data.nsw.gov.au/data/dataset/fuel-check"
-_PACKAGE_URL = (
-    "https://data.nsw.gov.au/data/api/3/action/package_show"
-    "?id=a97a46fc-2bdd-4b90-ac7f-0cb1e8d7ac3b"
-)
-
-
-_MONTHS = {
-    "jan": 1,
-    "january": 1,
-    "feb": 2,
-    "february": 2,
-    "mar": 3,
-    "march": 3,
-    "apr": 4,
-    "april": 4,
-    "may": 5,
-    "jun": 6,
-    "june": 6,
-    "jul": 7,
-    "july": 7,
-    "aug": 8,
-    "august": 8,
-    "sep": 9,
-    "sept": 9,
-    "september": 9,
-    "oct": 10,
-    "october": 10,
-    "nov": 11,
-    "november": 11,
-    "dec": 12,
-    "december": 12,
-}
 
 
 _FUEL_CODE_FIELDS = {
@@ -122,7 +90,7 @@ _TMPL = make_template(
     wb_iso3="AUS",
     source_key="au_nsw_fuelcheck_history",
     source_name="NSW FuelCheck price history",
-    source_url=_DATASET_URL,
+    source_url=DATASET_URL,
     currency="AUD",
     unit="L",
     subnational_area="New South Wales",
@@ -130,141 +98,6 @@ _TMPL = make_template(
     observation_method="reported",
     source_type="official",
 )
-
-
-@dataclass(frozen=True)
-class _Resource:
-    id: str
-    name: str
-    url: str
-    fmt: str
-    last_modified: str | None
-    year: int | None
-    month: int | None
-
-
-def _extract_period(text: str) -> tuple[int, int] | None:
-    s = (text or "").lower()
-
-    # e.g. feb2026 / feb_2026 / feb-2026 / pricehistorynov2016
-    m = re.search(
-        r"\b(?P<mon>jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)"
-        r"[\s_\-]*?(?P<year>20\d{2})\b",
-        s,
-    )
-    if m:
-        mon = _MONTHS[m.group("mon")]
-        return int(m.group("year")), mon
-
-    # e.g. september-2016
-    m = re.search(
-        r"\b(?P<mon>january|february|march|april|may|june|july|august|september|october|november|december)"
-        r"[\s_\-]*?(?P<year>20\d{2})\b",
-        s,
-    )
-    if m:
-        mon = _MONTHS[m.group("mon")]
-        return int(m.group("year")), mon
-
-    return None
-
-
-def _resource_fmt(resource: dict) -> str:
-    fmt = str(resource.get("format") or "").strip().lower()
-    if fmt:
-        # CKAN sometimes reports formats like "excel (.xlsx)".
-        if "csv" in fmt:
-            return "csv"
-        if "xlsx" in fmt:
-            return "xlsx"
-        if re.search(r"\bxls\b", fmt) or fmt.endswith(".xls"):
-            return "xls"
-        return fmt
-    url = str(resource.get("url") or "")
-    if "." not in url:
-        return ""
-    return url.split("?")[0].rsplit(".", 1)[-1].lower()
-
-
-def _is_price_history_resource(resource: dict) -> bool:
-    text = f"{resource.get('name', '')} {resource.get('url', '')}".lower()
-    return "price history" in text or "price_history" in text or "pricehistory" in text
-
-
-def _load_package_resources() -> list[_Resource]:
-    session = get_session()
-    resp = session.get(_PACKAGE_URL, timeout=45)
-    resp.raise_for_status()
-    payload = resp.json()
-    result = payload.get("result") if isinstance(payload, dict) else None
-    resources = result.get("resources", []) if isinstance(result, dict) else []
-
-    out: list[_Resource] = []
-    for r in resources:
-        fmt = _resource_fmt(r)
-        if fmt not in {"csv", "xlsx", "xls"}:
-            continue
-        if not _is_price_history_resource(r):
-            continue
-        rid = str(r.get("id") or "").strip() or str(r.get("url") or "").strip()
-        name = str(r.get("name") or "").strip()
-        url = str(r.get("url") or "").strip()
-        if not url:
-            continue
-        period = _extract_period(f"{name} {url}")
-        year, month = period if period else (None, None)
-        out.append(
-            _Resource(
-                id=rid,
-                name=name,
-                url=url,
-                fmt=fmt,
-                last_modified=(r.get("last_modified") or r.get("metadata_modified")),
-                year=year,
-                month=month,
-            )
-        )
-    return out
-
-
-def _pick_best_per_period(resources: list[_Resource]) -> list[_Resource]:
-    by_period: dict[tuple[int, int], list[_Resource]] = {}
-    no_period: list[_Resource] = []
-    for r in resources:
-        if r.year and r.month:
-            by_period.setdefault((r.year, r.month), []).append(r)
-        else:
-            no_period.append(r)
-
-    fmt_rank = {"csv": 0, "xlsx": 1, "xls": 2}
-
-    selected: list[_Resource] = []
-    for period, items in by_period.items():
-        items_sorted = sorted(
-            items,
-            key=lambda x: (
-                fmt_rank.get(x.fmt, 9),
-                # newest last_modified wins when format ties
-                str(x.last_modified or ""),
-            ),
-        )
-        selected.append(items_sorted[0])
-
-    # Keep unparseable period resources at the end (best-effort)
-    selected.extend(sorted(no_period, key=lambda x: str(x.last_modified or "")))
-    selected.sort(key=lambda x: (x.year or 9999, x.month or 99, x.name))
-    return selected
-
-
-def _parse_resource_bytes(content: bytes, fmt: str) -> pd.DataFrame:
-    if fmt == "csv":
-        bio = io.BytesIO(content)
-        try:
-            return pd.read_csv(bio, low_memory=False)
-        except UnicodeDecodeError:
-            bio.seek(0)
-            return pd.read_csv(bio, low_memory=False, encoding="latin-1")
-    return pd.read_excel(io.BytesIO(content))
 
 
 def _pick_col(df: pd.DataFrame, *names: str) -> str | None:
@@ -305,11 +138,16 @@ def _canonicalize(df: pd.DataFrame) -> pd.DataFrame:
 
     obs_ts = pd.to_datetime(df[col_updated], errors="coerce", utc=True)
     obs_date = obs_ts.dt.date
-    price = pd.to_numeric(df[col_price], errors="coerce")
+    raw_price = pd.to_numeric(df[col_price], errors="coerce")
+    price = pd.Series(
+        [
+            (float(value) / 100.0) if pd.notna(value) and float(value) >= 10 else value
+            for value in raw_price
+        ],
+        index=df.index,
+        dtype="float64",
+    )
     fuel_code = df[col_fuel].astype(str).str.strip().str.upper()
-
-    # cents/L to AUD/L heuristic
-    price = price.mask(price >= 10, price / 100.0)
 
     out = pd.DataFrame(index=df.index)
     out["country"] = _TMPL["country"]
@@ -401,7 +239,7 @@ def backfill_nsw_fuelcheck(
         except Exception:
             resume_after = None
 
-    resources = _pick_best_per_period(_load_package_resources())
+    resources = pick_best_resources_per_period(load_package_resources())
     if not resources:
         raise RuntimeError("No FuelCheck price history resources found")
 
@@ -439,7 +277,7 @@ def backfill_nsw_fuelcheck(
         print(f"  [fuelcheck_backfill] ({i}/{len(resources)}) {r.name} ({r.fmt})")
         resp = session.get(r.url, timeout=120)
         resp.raise_for_status()
-        raw = _parse_resource_bytes(resp.content, r.fmt)
+        raw = parse_resource_bytes(resp.content, r.fmt)
         if raw is None or raw.empty:
             continue
 

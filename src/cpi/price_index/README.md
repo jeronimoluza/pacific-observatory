@@ -2,6 +2,10 @@
 
 *(Fiji – Experimental Price Index)*
 
+Stage: `analyze` inside `price_atlas`.
+
+This folder turns enriched supermarket price data into CPI-style analytical outputs. See `src/cpi/README.md` for the broader price-atlas pipeline.
+
 ## Overview
 
 This project builds a **consumer price index (CPI)** using historical retail price data classified according to **COICOP**. Prices are aggregated following standard CPI methodology:
@@ -20,10 +24,10 @@ To construct and validate the CPI:
 
 ```bash
 # Build the CPI
-poetry run python src/cpi/analysis/pipeline.py --country fiji --reference-month 2025-11
+poetry run python src/cpi/price_index/pipeline.py --country fiji --reference-month 2025-11
 
 # Compare with IMF data
-poetry run python src/cpi/analysis/comparison.py --country-code FJI --start-period 2024 --end-period 2026
+poetry run python src/cpi/price_index/comparison.py --country-code FJI --start-period 2024 --end-period 2026
 ```
 
 See the [Execution](#execution) section below for full documentation and options.
@@ -217,7 +221,7 @@ All indices are expressed relative to a fixed base period (November 2025 = 100)
 To construct the CPI from price data:
 
 ```bash
-poetry run python src/cpi/analysis/pipeline.py \
+poetry run python src/cpi/price_index/pipeline.py \
   --country fiji \
   --reference-month 2025-11 \
   --output-dir data/cpi/analysis/output
@@ -242,7 +246,7 @@ poetry run python src/cpi/analysis/pipeline.py \
 To compare the constructed CPI with official IMF data (2024-2026):
 
 ```bash
-poetry run python src/cpi/analysis/comparison.py \
+poetry run python src/cpi/price_index/comparison.py \
   --constructed-cpi data/cpi/analysis/output/fiji_division_01_cpi.csv \
   --country-code FJI \
   --coicop CP01 \

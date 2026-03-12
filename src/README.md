@@ -1,34 +1,61 @@
 # Source Tree
 
-`src/` holds the working code for the repository. Keep navigation simple, start from the nearest runnable entry point, and prefer shipping code over growing planning docs.
+`src/` is the working home for Pacific Observatory pipelines. The shared mental model is simple: collect source material, normalize it into stable tables, enrich it with classifications and derived signals, analyze it into indicators, and publish outputs people can inspect or ship.
 
-## Main Areas
+This README is a human entry point. Start here to understand what lives in `src/`, what the main workflows are, and where to go next.
 
-- `text/` - newspaper scraping, storage, text analysis, and plotting.
-- `cpi/` - retailer price scraping, COICOP cleanup, CPI work, and fuel prices.
-- `tourism/` - tourism scraping, parsing, analysis, and plotting.
-- `docs/` - lightweight shared notes for how we work inside `src/`.
-- `Makefile` - text-oriented shortcuts such as `make help`, `make scrape`, and `make status`.
+## What Lives Here
 
-## Working Rules
+- `text/` - newspaper collection, article storage, text features, EPU analysis, and text-facing plots. Start with `src/text/README.md` and `src/text/docs/`.
+- `cpi/` - retailer prices, fuel prices, COICOP enrichment, CPI construction, and price outputs. This is the implementation base behind the public `price_atlas` surface. Start with `src/cpi/README.md`.
+- `tourism/` - tourism collection, parsing, analysis, and plotting.
+- `docs/` - shared human docs for the cross-cutting pipeline, public CLI shape, and working conventions.
+- `Makefile` - text-only convenience commands; useful for local text work, not a repo-wide CLI.
 
-- Start with the nearest README or active entry point, not a speculative plan.
-- Treat code, tests, scripts, and real outputs as the source of truth.
-- If a doc stops helping, trim it or delete it.
-- Avoid introducing new top-level structures until code actually moves.
-- Keep verification close to the area you changed.
+## Project Goals
 
-## Where To Start
+- Turn alternative data into usable indicators for Pacific Observatory work.
+- Keep raw collection, cleaned data, derived enrichment, analysis, and publication linked but not tangled.
+- Make the production-facing surface human and stable even when internal module boundaries keep evolving.
 
-- Text work: `src/text/README.md`
-- Price scraping: `src/cpi/price_scraping/`
-- COICOP and supermarket-price processing: `src/cpi/coicopping/`
-- CPI construction: `src/cpi/price_index/`
-- Fuel prices: `src/cpi/fuel_prices/`
-- Shared guidance: `src/docs/*.md`
+## Pipeline At A Glance
 
-## Verification
+1. `collect` - pull raw source material and preserve source evidence.
+2. `normalize` - turn source-specific outputs into stable schemas, ids, dates, and folder conventions.
+3. `enrich` - add classifications, quality signals, unit extraction, metadata, or derived text features.
+4. `analyze` - build indices, reports, and analytical tables.
+5. `publish` - generate dashboards, HTML, CSVs, and other shareable outputs.
 
-- Run the smallest relevant `--help`, test, or pipeline step for the code you touched.
-- After changing documented commands, update the nearest README or shared note in the same change.
-- Use `cd src && make help` only for the text-oriented Makefile surface.
+See `src/docs/PIPELINE.md` for the shared pipeline model.
+
+## Main Interactions
+
+The production-facing shared CLI should center on `po`:
+
+- `po text health`
+- `po text collect <newspaper>`
+- `po text analyze`
+- `po price_atlas update`
+- `po price_atlas enrich`
+- `po price_atlas analyze`
+- `po price_atlas publish`
+
+See `src/docs/CLI.md` for the shared command map. Use local docs near the code for deeper implementation details.
+
+## How We Work
+
+- Treat `jeronimoluza/main` as the production-facing worktree we keep closest to ready.
+- Use separate git worktrees for focused changes, experiments, or pipeline branches instead of mixing everything into one checkout.
+- Update the nearest README or local doc when a workflow, command, or output changes.
+- Keep shared docs human and cross-cutting; push detailed operational specifics down into local docs.
+- Prefer the smallest stage-specific check that proves the change.
+
+## Read Next
+
+- `src/docs/README.md`
+- `src/docs/PIPELINE.md`
+- `src/docs/CLI.md`
+- `src/cpi/README.md`
+- `src/text/README.md`
+- `src/text/docs/architecture.md`
+- `src/cpi/fuel_prices/README.md`

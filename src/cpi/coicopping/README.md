@@ -1,5 +1,9 @@
 # COICOP Classification Workflow
 
+Stage: `enrich` inside `price_atlas`.
+
+This folder turns collected supermarket price data into standardized, classified tables with unit values and COICOP labels. See `src/cpi/README.md` for the full pipeline map.
+
 ## Overview
 
 This module implements a complete pipeline for classifying supermarket products into COICOP (Classification of Individual Consumption According to Purpose) categories and extracting standardized unit prices. The workflow processes:

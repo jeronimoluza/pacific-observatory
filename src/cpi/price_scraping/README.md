@@ -2,6 +2,10 @@
 
 A Python-based web scraping pipeline for collecting daily price data from online retailers and reconstructing historical price series using the Wayback Machine.
 
+Stage: `collect` inside `price_atlas`.
+
+This folder owns retailer collection. It produces raw item snapshots that feed downstream normalization, enrichment, and analysis. See `src/cpi/README.md` for the full price-atlas map.
+
 ## Quick Start
 
 ### Prerequisites
