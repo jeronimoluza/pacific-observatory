@@ -99,6 +99,15 @@ Examples:
   python src/text/scrapers/orchestration/main.py sibc
   python src/text/scrapers/orchestration/main.py sibc --update
 
+  # Run all newspapers for one country
+  python src/text/scrapers/orchestration/main.py --country thailand
+  python src/text/scrapers/orchestration/main.py --country thailand --dry-run
+
+  # Run all scrapers across all countries (default behavior)
+  python src/text/scrapers/orchestration/main.py
+  python src/text/scrapers/orchestration/main.py --dry-run
+  python src/text/scrapers/orchestration/main.py --exclude abc_au,rnz
+
   # Resume mode: scrape pending articles from urls.csv (no discovery)
   python src/text/scrapers/orchestration/main.py sibc --resume
 
@@ -108,12 +117,9 @@ Examples:
   # Full from scratch: discover ALL URLs + scrape everything
   python src/text/scrapers/orchestration/main.py sibc --full-from-scratch
 
-  # Multi-scraper runner
-  python src/text/scrapers/orchestration/main.py --run-all
-  python src/text/scrapers/orchestration/main.py --run-all --resume
-  python src/text/scrapers/orchestration/main.py --run-all --full-discovery
-  python src/text/scrapers/orchestration/main.py --run-all --sequential
-  python src/text/scrapers/orchestration/main.py --run-all --dry-run
+  # Run all scrapers across all countries in resume/full-discovery modes
+  python src/text/scrapers/orchestration/main.py --resume
+  python src/text/scrapers/orchestration/main.py --full-discovery
 
   # List available scrapers
   python src/text/scrapers/orchestration/main.py --list-scrapers
@@ -130,7 +136,8 @@ Examples:
     parser.add_argument("newspaper", nargs="?", help="Name of the newspaper to scrape")
 
     parser.add_argument(
-        "--country", help="Country code filter (e.g., SB for Solomon Islands)"
+        "--country",
+        help="Run all scrapers for one country, or disambiguate a newspaper shared across countries",
     )
 
     # List options
@@ -146,13 +153,6 @@ Examples:
         help="List all available countries",
     )
 
-    # Multi-scraper runner options
-    parser.add_argument(
-        "--run-all",
-        action="store_true",
-        help="Run all newspaper scrapers in parallel",
-    )
-
     parser.add_argument(
         "--abc-rnz",
         action="store_true",
@@ -160,15 +160,9 @@ Examples:
     )
 
     parser.add_argument(
-        "--sequential",
-        action="store_true",
-        help="Force sequential execution (for debugging, use with --run-all)",
-    )
-
-    parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Print what would be executed without actually running (use with --run-all)",
+        help="Print what would be executed without actually running",
     )
 
     parser.add_argument(
@@ -182,7 +176,7 @@ Examples:
         "--exclude",
         type=str,
         default="",
-        help="Comma-separated list of newspaper names to exclude (e.g., --exclude detik,kosmo)",
+        help="Comma-separated list of newspaper names to exclude when running multiple scrapers",
     )
 
     # Scraping options
@@ -261,6 +255,14 @@ Examples:
         list_countries()
         return
 
+    exclude_list = []
+    if args.exclude:
+        exclude_list = [
+            name.strip().lower() for name in args.exclude.split(",") if name.strip()
+        ]
+        if exclude_list:
+            print(f"⏭️  Excluding scrapers: {', '.join(exclude_list)}")
+
     # Handle --abc-rnz command
     if args.abc_rnz:
         results = run_all_scrapers(
@@ -277,27 +279,34 @@ Examples:
         )
         sys.exit(0 if failed_count == 0 else 1)
 
-    # Handle run-all command
-    if args.run_all:
-        # Parse exclude list
-        exclude_list = []
-        if args.exclude:
-            exclude_list = [
-                name.strip().lower() for name in args.exclude.split(",") if name.strip()
-            ]
-            if exclude_list:
-                print(f"⏭️  Excluding scrapers: {', '.join(exclude_list)}")
-
+    # Default behavior: run all scrapers across all countries sequentially
+    if not args.newspaper and not args.country:
         results = run_all_scrapers(
             configs_dir=get_default_configs_dir(),
             project_root=project_root,
-            sequential=args.sequential,
+            sequential=True,
             dry_run=args.dry_run,
             mode=mode,
             timeout_per_scraper=args.timeout,
             exclude=exclude_list,
         )
-        # Exit with failure if any scraper failed or timed out
+        failed_count = sum(
+            1 for r in results if r.get("status") in ["failed", "timeout"]
+        )
+        sys.exit(0 if failed_count == 0 else 1)
+
+    # Handle --country without a newspaper: run all scrapers for that country sequentially
+    if args.country and not args.newspaper:
+        results = run_all_scrapers(
+            configs_dir=get_default_configs_dir(),
+            project_root=project_root,
+            sequential=True,
+            dry_run=args.dry_run,
+            mode=mode,
+            timeout_per_scraper=args.timeout,
+            country_filter=args.country.lower(),
+            exclude=exclude_list,
+        )
         failed_count = sum(
             1 for r in results if r.get("status") in ["failed", "timeout"]
         )
