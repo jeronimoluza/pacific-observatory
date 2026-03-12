@@ -11,8 +11,6 @@ from typing import TextIO
 
 from scrapy.exceptions import DropItem as ScrapyDropItem
 
-from price_scraping.raw_artifacts import write_raw_scrape_shadow_artifact
-
 logger = logging.getLogger(__name__)
 
 
@@ -75,16 +73,6 @@ class JsonWriterPipeline:
         if self.file:
             self.file.close()
             logger.info("Closed output file")
-
-        if self.file_path:
-            project_root = self.output_dir.parent.parent.parent
-            shadow_result = write_raw_scrape_shadow_artifact(
-                legacy_file_path=self.file_path,
-                project_root=project_root,
-                country=getattr(spider, "country", "unknown"),
-                spider_name=getattr(spider, "name", "unknown"),
-            )
-            logger.info("Shadow-wrote raw artifact: %s", shadow_result["artifact_path"])
 
     def process_item(self, item, spider):
         """

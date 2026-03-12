@@ -20,10 +20,6 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from .selectors import get_selectors, extract_with_fallback
-from .raw_artifacts import (
-    write_wayback_items_shadow_artifact,
-    write_wayback_snapshots_shadow_artifact,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -141,17 +137,6 @@ class WaybackScraper:
 
             logger.debug(f"Saved {len(snapshots)} snapshots to {snapshots_file}")
 
-            project_root = self.output_dir.parent.parent.parent
-            shadow_result = write_wayback_snapshots_shadow_artifact(
-                legacy_file_path=snapshots_file,
-                project_root=project_root,
-                country=country,
-                spider_name=self.spider_name,
-            )
-            logger.debug(
-                "Shadow-wrote raw wayback snapshots to %s",
-                shadow_result["artifact_path"],
-            )
             return snapshots_file
 
     def _extract_data_from_html(self, html_content: str, url: str) -> Dict[str, Any]:
@@ -546,17 +531,6 @@ class WaybackScraper:
 
             # logger.info(f"Saved parsed items to {output_file}")
 
-            project_root = self.output_dir.parent.parent.parent
-            shadow_result = write_wayback_items_shadow_artifact(
-                legacy_file_path=output_file,
-                project_root=project_root,
-                country=country,
-                spider_name=self.spider_name,
-            )
-            logger.debug(
-                "Shadow-wrote raw wayback items to %s",
-                shadow_result["artifact_path"],
-            )
             return output_file
 
     def run_scrape_wayback(
