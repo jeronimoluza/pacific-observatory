@@ -1,17 +1,28 @@
 """One-time data fix functions applied via `python -m src.cpi.fuel_prices migrate`."""
 
+import logging
+
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 
 def fix_australia_units(df: pd.DataFrame) -> pd.DataFrame:
-    """Convert AUDc (cents) -> AUD (dollars) by dividing price by 100."""
-    mask = df["currency"] == "AUDc"
+    """Convert AUDc (cents) -> AUD (dollars) by dividing price by 100.
+
+    Idempotency guard: only applies when price_local > 10 (already-fixed values
+    are ~1.4 AUD/L, so dividing again would not pass this threshold).
+    """
+    mask = (df["currency"] == "AUDc") & (df["price_local"] > 10)
     df.loc[mask, "price_local"] = df.loc[mask, "price_local"] / 100
     df.loc[mask, "currency"] = "AUD"
-    print(
-        f"  [fix_au] {mask.sum()} Australia AUDc rows -> AUD (÷100). "
-        f"Price range: {df.loc[mask, 'price_local'].min():.2f}–{df.loc[mask, 'price_local'].max():.2f}"
-    )
+    if mask.sum():
+        logger.info(
+            "[fix_au] %d Australia AUDc rows -> AUD (÷100). Price range: %.2f–%.2f",
+            mask.sum(),
+            df.loc[mask, "price_local"].min(),
+            df.loc[mask, "price_local"].max(),
+        )
     return df
 
 
@@ -40,8 +51,12 @@ def fix_quality_group(df: pd.DataFrame) -> pd.DataFrame:
         )
         if mask.sum():
             df.loc[mask, "quality_group"] = qg
-            print(
-                f"  [fix_qg] {mask.sum()} rows -> quality_group='{qg}' ({src}, /{prod_pat}/)"
+            logger.info(
+                "[fix_qg] %d rows -> quality_group='%s' (%s, /%s/)",
+                mask.sum(),
+                qg,
+                src,
+                prod_pat,
             )
 
     pert_mask = df["source_key"] == "id_pertamina_jakarta_2025_series"
@@ -58,24 +73,38 @@ def fix_quality_group(df: pd.DataFrame) -> pd.DataFrame:
         )
         if mask.sum():
             df.loc[mask, "quality_group"] = qg
-            print(
-                f"  [fix_qg] {mask.sum()} Pertamina rows -> quality_group='{qg}' (/{pat}/)"
+            logger.info(
+                "[fix_qg] %d Pertamina rows -> quality_group='%s' (/%s/)",
+                mask.sum(),
+                qg,
+                pat,
             )
 
     return df
 
 
 def fix_anre_kerosene_unit(df: pd.DataFrame) -> pd.DataFrame:
-    """Convert Japan ANRE kerosene from per-18L can to per-litre."""
-    mask = (df["unit"] == "18L") & (df["source_key"] == "jp_anre_weekly_petroleum_2025")
+    """Convert Japan ANRE kerosene from per-18L can to per-litre.
+
+    Idempotency guard: only applies when price_local > 500 (JPY/18L range is
+    ~2400-2700; already-fixed values are ~130-150 JPY/L).
+    """
+    mask = (
+        (df["unit"] == "18L")
+        & (df["source_key"] == "jp_anre_weekly_petroleum_2025")
+        & (df["price_local"] > 500)
+    )
     before = df.loc[mask, "price_local"].mean()
     df.loc[mask, "price_local"] = df.loc[mask, "price_local"] / 18
     df.loc[mask, "unit"] = "L"
     after = df.loc[mask, "price_local"].mean()
-    print(
-        f"  [fix_ker] {mask.sum()} ANRE kerosene rows: 18L->L (÷18). "
-        f"Mean price: {before:.1f}->{after:.1f} JPY/L"
-    )
+    if mask.sum():
+        logger.info(
+            "[fix_ker] %d ANRE kerosene rows: 18L->L (÷18). Mean price: %.1f->%.1f JPY/L",
+            mask.sum(),
+            before,
+            after,
+        )
     return df
 
 
@@ -115,7 +144,7 @@ def fix_fuel_family(df: pd.DataFrame) -> pd.DataFrame:
                 break
 
     if count:
-        print(f"  [fix_ff] Inferred fuel_family for {count} blank rows")
+        logger.info("[fix_ff] Inferred fuel_family for %d blank rows", count)
     return df
 
 
@@ -130,11 +159,15 @@ def fix_column_homogenization(df: pd.DataFrame) -> pd.DataFrame:
         if mask.sum():
             df.loc[mask, "quality_group"] = new_qg
             remap_total += mask.sum()
-            print(
-                f"  [fix_homog] {mask.sum()} rows: quality_group '{old_qg}' -> '{new_qg}' (family={family})"
+            logger.info(
+                "[fix_homog] %d rows: quality_group '%s' -> '%s' (family=%s)",
+                mask.sum(),
+                old_qg,
+                new_qg,
+                family,
             )
     if remap_total:
-        print(f"  [fix_homog] Total quality_group remapped: {remap_total} rows")
+        logger.info("[fix_homog] Total quality_group remapped: %d rows", remap_total)
 
     QG_INFER = [
         (r"(?i)^Premium Diesel$", "diesel", "premium"),
@@ -155,11 +188,15 @@ def fix_column_homogenization(df: pd.DataFrame) -> pd.DataFrame:
         if mask.sum():
             df.loc[mask, "quality_group"] = qg
             total += mask.sum()
-            print(
-                f"  [fix_homog] {mask.sum()} rows -> quality_group='{qg}' (family={family}, /{pat}/)"
+            logger.info(
+                "[fix_homog] %d rows -> quality_group='%s' (family=%s, /%s/)",
+                mask.sum(),
+                qg,
+                family,
+                pat,
             )
 
-    print(f"  [fix_homog] Total quality_group filled: {total} rows")
+    logger.info("[fix_homog] Total quality_group filled: %d rows", total)
     return df
 
 

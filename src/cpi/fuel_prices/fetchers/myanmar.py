@@ -1,4 +1,4 @@
-"""Myanmar GNLM weekly fuel reference price fetcher."""
+"""Myanmar fuel price fetchers — GNLM and Denko station prices."""
 
 # ruff: noqa: E402
 SOURCE_META = [
@@ -18,6 +18,23 @@ SOURCE_META = [
         "source_keys": ["mm_gnlm_fuel_reference_prices"],
         "publishes_on": "Weekly",
         "notes": "Crawls search results for fuel articles; regex extracts prices from body text. Processes up to 30 candidate articles. Price range MMK 500–5,000/L.",
+    },
+    {
+        "fetcher_fn": "fetch_myanmar_denko",
+        "country": "Myanmar",
+        "source_name": "Denko Myanmar — All Station Daily Fuel Rates",
+        "url": "https://denkomyanmar.com/all-denko-station-daily-fuel-rates/",
+        "description": "Denko Myanmar retail fuel station chain. Daily station-level pump prices across multiple divisions/states.",
+        "extraction_method": ["Playwright web scraping"],
+        "products": [
+            "Diesel",
+            "Premium Diesel",
+            "Gasoline Octane 92 (Regular)",
+            "Gasoline Octane 95 (Premium)",
+        ],
+        "source_keys": ["mm_denko_station_daily"],
+        "publishes_on": "Daily",
+        "notes": "Cloudflare-protected site — requires Playwright headless browser. Extracts daily price table with division/station granularity. Price range MMK 500–5,000/L.",
     },
 ]
 
@@ -198,4 +215,239 @@ def fetch_myanmar_gnlm(cutoff: date) -> pd.DataFrame:
         print(f"  [mm_gnlm] {len(all_rows)} new rows")
     else:
         print("  [mm_gnlm] No new rows")
+    return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
+
+
+# ── Denko Myanmar ─────────────────────────────────────────────────────────────
+
+_TMPL_MM_DENKO = make_template(
+    country="Myanmar",
+    wb_iso3="MMR",
+    source_key="mm_denko_station_daily",
+    source_name="Denko Myanmar — All Station Daily Fuel Rates",
+    source_url="https://denkomyanmar.com/all-denko-station-daily-fuel-rates/",
+    currency="MMK",
+    unit="L",
+    publication_frequency="daily",
+    observation_method="reported",
+    tax_status="tax_inclusive",
+)
+
+_DENKO_PRODUCTS = [
+    ("Diesel", "diesel", "regular", None),
+    ("Premium Diesel", "diesel", "premium", None),
+    ("Octane 92", "gasoline", "regular", 92),
+    ("Octane 95", "gasoline", "premium", 95),
+]
+
+_DENKO_URL = "https://denkomyanmar.com/all-denko-station-daily-fuel-rates/"
+
+_DENKO_DATE_RE = re.compile(
+    r"(?:Effective\s+on|as\s+of)\s+"
+    r"(January|February|March|April|May|June|July|August|September|October|November|December)"
+    r"\s+(\d{1,2}),?\s+(20\d{2})",
+    re.IGNORECASE,
+)
+
+
+def fetch_myanmar_denko(cutoff: date) -> pd.DataFrame:
+    """Fetch Denko Myanmar daily station-level fuel prices via Playwright."""
+    print("  [mm_denko] Fetching Denko Myanmar station prices...")
+    print(f"  [mm_denko] Cutoff: {cutoff}")
+
+    try:
+        from playwright.sync_api import sync_playwright
+    except Exception as e:
+        print(f"  [mm_denko] Playwright not available: {e}")
+        return pd.DataFrame()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(
+            headless=True,
+            args=["--disable-blink-features=AutomationControlled", "--no-sandbox"],
+        )
+        ctx = browser.new_context(
+            user_agent=(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/121.0.0.0 Safari/537.36"
+            ),
+            viewport={"width": 1920, "height": 1080},
+        )
+        page = ctx.new_page()
+        page.add_init_script(
+            'Object.defineProperty(navigator, "webdriver", {get: () => undefined})'
+        )
+
+        try:
+            page.goto(_DENKO_URL, timeout=60_000)
+            page.wait_for_timeout(8_000)  # Cloudflare challenge
+        except Exception as e:
+            print(f"  [mm_denko] Page load error: {e}")
+            browser.close()
+            return pd.DataFrame()
+
+        try:
+            payload = page.evaluate(
+                """() => {
+                    const body = document.body.innerText;
+                    const dateMatch = body.match(
+                        /(?:Effective\\s+on|as\\s+of)\\s+(January|February|March|April|May|June|July|August|September|October|November|December)\\s+(\\d{1,2}),?\\s+(20\\d{2})/i
+                    );
+                    const date_text = dateMatch ? dateMatch[0] : '';
+
+                    const table = document.querySelector('table');
+                    if (!table) return { date_text, headers: [], rows: [] };
+
+                    // Header row
+                    const headerRow = table.querySelector('thead tr') || table.querySelector('tr');
+                    const headers = Array.from(headerRow.querySelectorAll('th,td'))
+                        .map(c => (c.textContent || '').trim());
+                    const numCols = headers.length;
+
+                    // Flatten rowspan: build a 2D grid from tbody rows
+                    const trs = Array.from(table.querySelectorAll('tbody tr'));
+                    // spanTracker[col] = {text, remaining}
+                    const spanTracker = {};
+                    const rows = [];
+                    for (const tr of trs) {
+                        const cells = Array.from(tr.querySelectorAll('th,td'));
+                        const row = new Array(numCols).fill('');
+                        let cellIdx = 0;
+                        for (let col = 0; col < numCols; col++) {
+                            if (spanTracker[col] && spanTracker[col].remaining > 0) {
+                                row[col] = spanTracker[col].text;
+                                spanTracker[col].remaining--;
+                            } else if (cellIdx < cells.length) {
+                                const c = cells[cellIdx];
+                                const text = (c.textContent || '').trim();
+                                const rs = c.rowSpan || 1;
+                                row[col] = text;
+                                if (rs > 1) {
+                                    spanTracker[col] = { text, remaining: rs - 1 };
+                                }
+                                cellIdx++;
+                            }
+                        }
+                        if (row.some(v => v !== '')) rows.push(row);
+                    }
+
+                    return { date_text, headers, rows };
+                }"""
+            )
+        except Exception as e:
+            print(f"  [mm_denko] DOM extract error: {e}")
+            browser.close()
+            return pd.DataFrame()
+
+        browser.close()
+
+    # --- parse effective date ---
+    date_text = payload.get("date_text", "")
+    dm = _DENKO_DATE_RE.search(date_text)
+    if not dm:
+        print(f"  [mm_denko] Could not parse date from: {date_text!r}")
+        return pd.DataFrame()
+
+    month_num = MONTH_MAP_EN[dm.group(1).lower()]
+    day = int(dm.group(2))
+    year = int(dm.group(3))
+    try:
+        obs_date = date(year, month_num, day)
+    except ValueError:
+        print(f"  [mm_denko] Invalid date: {year}-{month_num}-{day}")
+        return pd.DataFrame()
+
+    if obs_date <= cutoff:
+        print(f"  [mm_denko] Date {obs_date} not newer than cutoff {cutoff}")
+        return pd.DataFrame()
+
+    # --- map header columns to product indices ---
+    headers = payload.get("headers", [])
+    body_rows = payload.get("rows", [])
+
+    col_map: dict[int, tuple] = {}  # col_idx → (prod_name, family, qg, ron)
+    for i, hdr in enumerate(headers):
+        hdr_lower = hdr.lower().strip()
+        if "octane 92" in hdr_lower:
+            col_map[i] = _DENKO_PRODUCTS[2]  # Octane 92
+        elif "octane 95" in hdr_lower:
+            col_map[i] = _DENKO_PRODUCTS[3]  # Octane 95
+        elif "premium" in hdr_lower or "premiun" in hdr_lower:
+            col_map[i] = _DENKO_PRODUCTS[1]  # Premium Diesel
+        elif hdr_lower == "diesel":
+            col_map[i] = _DENKO_PRODUCTS[0]  # Diesel
+
+    if not col_map:
+        print(f"  [mm_denko] Could not map product columns from headers: {headers}")
+        return pd.DataFrame()
+
+    # --- identify division and station columns ---
+    div_col = None
+    station_col = None
+    for i, hdr in enumerate(headers):
+        hdr_lower = hdr.lower().strip()
+        if "division" in hdr_lower or "state" in hdr_lower or "region" in hdr_lower:
+            div_col = i
+        elif "station" in hdr_lower:
+            station_col = i
+
+    # --- process rows (rowspan already flattened by JS) ---
+    all_rows: list[dict] = []
+
+    for cells in body_rows:
+        if not cells:
+            continue
+
+        division = ""
+        if div_col is not None and div_col < len(cells):
+            division = cells[div_col].strip()
+
+        station = ""
+        if station_col is not None and station_col < len(cells):
+            station = cells[station_col].strip()
+
+        if not station:
+            continue
+
+        for col_idx, (prod_name, family, qg, ron) in col_map.items():
+            if col_idx >= len(cells):
+                continue
+            price_text = cells[col_idx].strip().replace(",", "")
+            if not price_text:
+                continue
+            pm = re.search(r"(\d+(?:\.\d+)?)", price_text)
+            if not pm:
+                continue
+            try:
+                price = float(pm.group(1))
+                if not (500 <= price <= 5000):
+                    continue
+            except ValueError:
+                continue
+
+            r_row = _TMPL_MM_DENKO.copy()
+            r_row.update(
+                {
+                    "subnational_area": division,
+                    "city": station,
+                    "fuel_family": family,
+                    "fuel_product": prod_name,
+                    "quality_group": qg,
+                    "octane_ron": ron,
+                    "price_local": price,
+                    "effective_from": str(obs_date),
+                    "effective_to": str(obs_date),
+                    "observation_date": str(obs_date),
+                    "source_url": _DENKO_URL,
+                }
+            )
+            r_row["observation_hash"] = make_hash(r_row)
+            all_rows.append(r_row)
+
+    if all_rows:
+        stations = len({r["city"] for r in all_rows})
+        print(f"  [mm_denko] {obs_date}: {len(all_rows)} rows from {stations} stations")
+    else:
+        print("  [mm_denko] No new rows")
     return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()

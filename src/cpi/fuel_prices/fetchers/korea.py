@@ -26,25 +26,10 @@ SOURCE_META = [
         "publishes_on": "Daily",
         "notes": "Bootstraps a homepage session using the hidden opinet_key and calls /user/main/mainLineChartNewAjax.do with DIV_CD=D for each region. Captures National and regional daily averages.",
     },
-    {
-        "fetcher_fn": "fetch_kr_fuel_news_evidence",
-        "country": "Korea, Rep.",
-        "source_name": "Korea Fuel Price News (RSS)",
-        "url": "https://www.opinet.co.kr",
-        "description": "Track A news/article evidence for Korea fuel prices. RSS/Atom feed captured as raw evidence only.",
-        "extraction_method": ["RSS/Atom"],
-        "products": [],
-        "source_keys": ["kr_fuel_price_news"],
-        "publishes_on": "Daily or irregular",
-        "notes": "Requires KOREA_FUEL_NEWS_RSS_URL env var pointing to a news feed. Records are stored as evidence only; not mixed into price observations.",
-    },
 ]
 
-import os
 import re
-import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta
-from email.utils import parsedate_to_datetime
 
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -101,8 +86,6 @@ _KR_OPINET_PRODUCT_NAMES = {
     "자동차용경유": "D047",
     "LPG": "K015",
 }
-
-_KR_NEWS_RSS_ENV = "KOREA_FUEL_NEWS_RSS_URL"
 
 
 def _parse_kr_week_date(period_str: str) -> date | None:
@@ -413,59 +396,3 @@ def fetch_kr_opinet_daily(cutoff: date) -> pd.DataFrame:
     else:
         print("  [kr_opinet_daily] No new rows")
     return pd.DataFrame(rows) if rows else pd.DataFrame()
-
-
-def fetch_kr_fuel_news_evidence(max_items: int = 50) -> list[dict]:
-    """Fetch Korea fuel price news RSS/Atom metadata for Track A evidence."""
-    feed_url = os.environ.get(_KR_NEWS_RSS_ENV)
-    if not feed_url:
-        print("  [kr_news] Missing KOREA_FUEL_NEWS_RSS_URL; skipping news evidence.")
-        return []
-
-    session = get_session()
-    try:
-        resp = session.get(feed_url, timeout=30)
-        resp.raise_for_status()
-    except Exception as e:
-        print(f"  [kr_news] Could not fetch RSS feed: {e}")
-        return []
-
-    try:
-        root = ET.fromstring(resp.content)
-    except ET.ParseError as e:
-        print(f"  [kr_news] RSS parse error: {e}")
-        return []
-
-    items = root.findall(".//item")
-    records = []
-    fetched_at = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-    for item in items[:max_items]:
-        title = (item.findtext("title") or "").strip()
-        link = (item.findtext("link") or "").strip()
-        guid = (item.findtext("guid") or "").strip()
-        pub_raw = (item.findtext("pubDate") or "").strip()
-        desc = (item.findtext("description") or "").strip()
-
-        pub_date = None
-        if pub_raw:
-            try:
-                pub_date = parsedate_to_datetime(pub_raw).date().isoformat()
-            except Exception:
-                pub_date = None
-
-        records.append(
-            {
-                "country": "Korea, Rep.",
-                "source_key": "kr_fuel_price_news",
-                "source_name": "Korea Fuel Price News",
-                "source_url": feed_url,
-                "article_url": link or guid,
-                "title": title,
-                "published_date": pub_date,
-                "summary": desc or None,
-                "fetched_at": fetched_at,
-                "evidence_type": "news_article",
-            }
-        )
-
-    return records

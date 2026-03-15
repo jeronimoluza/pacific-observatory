@@ -24,7 +24,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from .constants import DATA_DIR, PRIMARY_CSV
+from .constants import DATA_DIR
 
 
 # ---------------------------------------------------------------------------
@@ -45,9 +45,11 @@ _GLOBAL_PRICE_RANGE = (0.01, 999.0)
 
 
 def _load_primary() -> pd.DataFrame:
-    if not PRIMARY_CSV.exists():
-        raise FileNotFoundError(f"Primary CSV not found: {PRIMARY_CSV}")
-    df = pd.read_csv(PRIMARY_CSV, low_memory=False)
+    from .process import load_stored_observations
+
+    df = load_stored_observations(DATA_DIR)
+    if df.empty:
+        raise FileNotFoundError(f"No per-source observations found under {DATA_DIR}")
     df["observation_date"] = pd.to_datetime(df["observation_date"], errors="coerce")
     return df
 
@@ -264,7 +266,7 @@ def run_audit(output_path: Path | None = None) -> tuple[list[str], str]:
 
     today = date.today().isoformat()
     sections.append(f"# OCR Audit Report\n\nGenerated: {today}\n")
-    sections.append(f"Primary CSV: `{PRIMARY_CSV}`  \nTotal rows: {len(df):,}\n")
+    sections.append(f"Data directory: `{DATA_DIR}`  \nTotal rows: {len(df):,}\n")
 
     # ---- Check 1: forward_filled ----------------------------------------
     ff_issues, ff_rows = _check_forward_filled(df)

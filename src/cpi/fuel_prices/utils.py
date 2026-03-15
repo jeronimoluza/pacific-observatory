@@ -5,11 +5,6 @@ from datetime import date, datetime
 
 import pandas as pd
 import requests
-import urllib3
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-SCRAPE_TS = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
 
 HEADERS = {
     "User-Agent": (
@@ -47,9 +42,17 @@ MONTH_MAP_EN = {
 }
 
 
+def get_scrape_ts() -> str:
+    """Return current UTC timestamp string — call per-fetch, not at import time."""
+    return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
+
+
 def make_hash(row: dict) -> str:
-    """Generate a SHA-256 observation_hash from key identifying fields."""
-    key = "|".join(
+    """Generate a SHA-256 observation_hash from key identifying fields.
+
+    Uses \\x00 as separator to prevent hash collisions from pipe-containing values.
+    """
+    key = "\x00".join(
         [
             str(row.get("country", "")),
             str(row.get("source_key", "")),
@@ -102,7 +105,7 @@ def make_template(**kwargs) -> dict:
         "source_name": None,
         "source_url": None,
         "source_type": "official",
-        "scrape_ts": SCRAPE_TS,
+        "scrape_ts": get_scrape_ts(),
         "effective_from": None,
         "effective_to": None,
         "observation_date": None,

@@ -15,16 +15,101 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-from .constants import DATA_DIR, COMMODITY_CSV, PALETTE
+from .constants import (
+    DATA_DIR,
+    IMF_SUBSIDIES_XLSB,
+    PALETTE,
+    WB_GDP_CSV,
+    WB_POPULATION_CSV,
+    WB_SUBSIDIES_CSV,
+)
 
-_SUBSIDIES_XLSX = DATA_DIR / "Subsidies 2010-2024.xlsx"  # legacy, not loaded
 _IMF_XLSB_URL = "https://www.imf.org/-/media/files/topics/energysubsidies/imffossilfuelsubsidiesdata.xlsb"
-_IMF_XLSB = DATA_DIR / "imffossilfuelsubsidiesdata.xlsb"
-_CONTROLS_CSV = DATA_DIR / "subsidies_price_controls_2024.csv"
-_PRIMARY_CSV = DATA_DIR / "eap_fuel_prices.csv"
-_SECONDARY_CSV = DATA_DIR / "eap_fuel_prices_secondary.csv"
-_POPULATION_CSV = DATA_DIR / "population.csv"
-_GDP_CSV = DATA_DIR / "gdp_per_capita.csv"
+_IMF_XLSB = IMF_SUBSIDIES_XLSB
+_CONTROLS_CSV = WB_SUBSIDIES_CSV
+_POPULATION_CSV = WB_POPULATION_CSV
+_GDP_CSV = WB_GDP_CSV
+
+# ── Per-country product lists for Tab 3 (edit to control which chips appear) ──
+COUNTRY_PRODUCTS: dict[str, list[str]] = {
+    "Australia": ["Unleaded 91", "Premium 95", "Premium 98", "E10", "Diesel", "LPG"],
+    "Cambodia": ["Regular", "Diesel", "Super"],
+    "China": ["Gasoline", "Diesel"],
+    "Fiji": [
+        "Motor Spirit",
+        "Diesel",
+        "Kerosene",
+        "Premix",
+        "Autogas",
+        "LPG",
+        "12 Kg Cylinder",
+        "4.5 Kg Cylinder",
+    ],
+    "Indonesia": [
+        "Pertalite",
+        "Pertamax",
+        "Pertamax Turbo",
+        "Pertamax Green 95",
+        "Pertamax di Pertashop",
+        "Biosolar",
+        "Biosolar Non-Subsidi",
+        "Dexlite",
+        "Pertamina Dex",
+    ],
+    "Japan": [
+        "Regular Gasoline",
+        "High-octane Gasoline",
+        "Diesel",
+        "Kerosene (retail)",
+        "Kerosene (delivery)",
+        "Kerosene (in-store)",
+    ],
+    "Korea, Rep.": ["Regular Gasoline", "Diesel", "Kerosene", "LPG"],
+    "Lao PDR": ["Gasoline 95", "Regular Gasoline", "Diesel"],
+    "Malaysia": ["RON95", "RON97", "Diesel"],
+    "Mongolia": ["Petrol A-92", "Petrol A-80", "Diesel"],
+    "Myanmar": ["Octane 92", "Octane 95", "Diesel", "Premium Diesel"],
+    "New Zealand": ["Regular Petrol", "Premium Petrol 95R", "Diesel"],
+    "Palau": ["Unleaded", "Super", "Diesel", "Kerosene", "LPG"],
+    "Papua New Guinea": ["Petrol", "Diesel", "Kerosene"],
+    "Philippines": ["RON 91", "RON 95", "RON 100", "Diesel", "Diesel Plus", "Kerosene"],
+    "Samoa": ["Petrol", "Diesel", "Kerosene"],
+    "Singapore": ["Petrol 92 RON", "Petrol 95 RON", "Petrol 98 RON", "Diesel", "LPG"],
+    "Solomon Islands": ["Petrol (PMS)", "Diesel (ADO)", "Propane LPG"],
+    "Thailand": [
+        "Gasoline 95",
+        "Gasohol 91",
+        "Gasohol 95",
+        "Gasohol E20",
+        "Gasohol E85",
+        "E20",
+        "E85",
+        "Super Power GSH95",
+        "Diesel",
+        "Diesel (HSD)",
+        "Diesel (LSD)",
+        "Premium Diesel",
+        "Hi Diesel S",
+        "Hi Premium Diesel S",
+        "Hi Premium 97",
+        "Kerosene",
+        "NGV retail price",
+    ],
+    "Timor-Leste": ["Petrol", "Diesel"],
+    "Tonga": ["Petrol", "Diesel", "Kerosene"],
+    "Vanuatu": ["Unleaded Petrol 95RON", "Low Sulphur Diesel 10PPM"],
+    "Vietnam": [
+        "E5 RON 92-II",
+        "E10 RON 95-III",
+        "RON 95-III",
+        "RON 95-V",
+        "Diesel 0.05S-II",
+        "Diesel 0.001S-V",
+        "Kerosene 2-K",
+        "Mazut 180cst-0.5S",
+        "Mazut N02B (3.5S)",
+    ],
+}
 
 # 5-category composite regime labels (base + subsidy flag)
 _REGIME_COLORS = {
@@ -173,11 +258,20 @@ def _parse_product_qualifier(
 
 
 def _load_commodity_data() -> pd.DataFrame:
-    """Load commodity_prices.csv and return relevant global benchmarks."""
-    if not COMMODITY_CSV.exists():
-        print(f"  [policy] WARNING: {COMMODITY_CSV} not found")
+    """Load commodity data from per-source observations (Global + EAP)."""
+    paths = [
+        DATA_DIR / "global" / "global_investing_daily" / "observations.csv",
+        DATA_DIR / "eap" / "global_investing_daily" / "observations.csv",
+    ]
+    frames = []
+    for p in paths:
+        if p.exists():
+            frames.append(pd.read_csv(p, low_memory=False))
+        else:
+            print(f"  [policy] WARNING: {p} not found")
+    if not frames:
         return pd.DataFrame()
-    df = pd.read_csv(COMMODITY_CSV, low_memory=False)
+    df = pd.concat(frames, ignore_index=True)
     df["observation_date"] = pd.to_datetime(df["observation_date"], errors="coerce")
     df = df.dropna(subset=["observation_date", "price_local"])
     df["price_local"] = pd.to_numeric(df["price_local"], errors="coerce")
@@ -287,21 +381,36 @@ def _load_regime_data() -> tuple[pd.DataFrame, dict[str, dict[str, dict]]]:
 
 
 def _load_eap_countries() -> pd.DataFrame:
-    """Return unique country/wb_iso3 pairs from primary + secondary CSVs.
+    """Return unique country/wb_iso3 pairs from source_registry.csv.
 
     Supplements with EAP countries from the regime CSV that have no fuel
     price data (e.g. KIR, MHL, FSM, NRU, PLW, TON, TUV).
     """
-    frames = []
-    for path in (_PRIMARY_CSV, _SECONDARY_CSV):
-        if path.exists():
-            df = pd.read_csv(path, usecols=["country", "wb_iso3"], low_memory=False)
-            frames.append(df)
-    if not frames:
-        combined = pd.DataFrame(columns=["country", "wb_iso3"])
+    registry_csv = DATA_DIR / "source_registry.csv"
+    if registry_csv.exists():
+        combined = pd.read_csv(registry_csv, low_memory=False)
+        if "country" in combined.columns and "wb_iso3" in combined.columns:
+            combined = combined[["country", "wb_iso3"]].drop_duplicates(
+                subset=["wb_iso3"]
+            )
+        else:
+            combined = pd.DataFrame(columns=["country", "wb_iso3"])
     else:
-        combined = pd.concat(frames, ignore_index=True)
-    # Normalise name variants, then deduplicate by iso3 (primary CSV wins)
+        # Fallback: scan per-source observations to build country list
+        from .process import load_stored_observations
+
+        all_obs = load_stored_observations(DATA_DIR)
+        if (
+            not all_obs.empty
+            and "country" in all_obs.columns
+            and "wb_iso3" in all_obs.columns
+        ):
+            combined = all_obs[["country", "wb_iso3"]].drop_duplicates(
+                subset=["wb_iso3"]
+            )
+        else:
+            combined = pd.DataFrame(columns=["country", "wb_iso3"])
+
     combined["country"] = combined["country"].replace({"Viet Nam": "Vietnam"})
     combined = combined.drop_duplicates(subset=["wb_iso3"]).reset_index(drop=True)
 
@@ -875,28 +984,7 @@ _CSS = """
         font-weight: 600;
     }
     #fuel-meta-panel { font-size: 0.82em; color: #555; margin: 4px 0; line-height: 1.7; }
-    #fuel-loc-table-section { margin-top: 14px; }
-    #fuel-loc-table-section .section-label { margin-bottom: 6px; }
-    #fuel-loc-table-toggles { display: flex; flex-wrap: wrap; gap: 0; margin-bottom: 10px; }
-    #fuel-loc-table-toggles label {
-        padding: 4px 12px; border: 1px solid #ddd; font-size: 0.82em;
-        cursor: pointer; user-select: none; transition: all 0.15s;
-        margin-left: -1px; white-space: nowrap;
-    }
-    #fuel-loc-table-toggles label:first-child { margin-left: 0; border-radius: 16px 0 0 16px; }
-    #fuel-loc-table-toggles label:last-child  { border-radius: 0 16px 16px 0; }
-    #fuel-loc-table-toggles label:only-child  { border-radius: 16px; }
-    #fuel-loc-table-toggles input[type="radio"] { display: none; }
-    #fuel-loc-table-toggles label:has(input:checked) {
-        background: #667eea; color: #fff; border-color: #667eea; z-index: 1; position: relative;
-    }
-    #fuel-loc-table-toggles label:hover:not(:has(input:checked)) { border-color: #667eea; background: #f0f4ff; }
-    #fuel-loc-table-wrap { overflow-x: auto; }
-    #fuel-loc-table { border-collapse: collapse; font-size: 0.82em; min-width: 260px; width: 100%; }
-    #fuel-loc-table th, #fuel-loc-table td { padding: 5px 12px; text-align: left; border-bottom: 1px solid #eee; }
-    #fuel-loc-table th { font-weight: 600; background: #f7f7f7; }
-    #fuel-loc-table tr.nat-avg-row td { font-weight: 600; }
-    #fuel-loc-table tr:hover td { background: #f0f4ff; }
+    /* fuel location table removed (no per-location rendering) */
 """
 
 
@@ -920,6 +1008,7 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     colors_json = json.dumps(regime_colors)
     palette_json = json.dumps(PALETTE)
     fuel_data_json = json.dumps(fuel_data)
+    country_products_json = json.dumps(COUNTRY_PRODUCTS)
     product_regimes_json = json.dumps(product_regimes)
     fuel_countries = sorted(fuel_data.keys())
     fuel_country_opts = "\n".join(
@@ -1094,11 +1183,7 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     <div class="chip-container" id="fuel-axis-chips"></div>
     <div id="fuel-meta-panel"></div>
     <div class="chart-wrapper"><canvas id="fuel-chart"></canvas></div>
-    <div id="fuel-loc-table-section" style="display:none">
-        <div class="section-label">Location Prices:</div>
-        <div id="fuel-loc-table-toggles"></div>
-        <div id="fuel-loc-table-wrap"></div>
-    </div>
+    <!-- location price table removed -->
 </div>
 
 <script>
@@ -1485,6 +1570,7 @@ function renderScatter() {{
 
 // ─── Tab 3: Country Fuel Prices ───────────────────────────────────────────────
 const FUEL_DATA = {fuel_data_json};
+const COUNTRY_PRODUCTS = {country_products_json};
 
 const LABELS = {{
     diesel: "Diesel", gasoline: "Gasoline", lpg: "LPG",
@@ -1494,64 +1580,15 @@ const LABELS = {{
     premix: "Premix", super_premium: "Super Premium",
     octane_95: "Premium",
 }};
+
 function lbl(v) {{ return (v && LABELS[v]) ? LABELS[v] : (v || "\u2014"); }}
 
-function chipKey(r) {{
-    return r.fuel_family + "|||" + (r.fuel_product || "") + "|||" + (r.quality_group || "");
-}}
-
-function cleanProdDisplay(prod) {{
-    var s = prod
-        .replace(/\s+average$/i, "")
-        .replace(/\(regular\)/gi, "(Regular)")
-        .replace(/\bgasoline\b/g, "Gasoline")
-        .replace(/\bdiesel\b/g, "Diesel")
-        .replace(/\bpetrol\b/g, "Petrol")
-        .trim();
-    return s.length ? s[0].toUpperCase() + s.slice(1) : s;
-}}
-
-function qualityRedundant(displayProd, q) {{
-    if (!q || !displayProd) return false;
-    var p = displayProd.toLowerCase();
-    if (q === "regular" && /regular|unleaded|low[\s-]sulphur|propane/.test(p)) return true;
-    if (q === "premium" && /premium|high[\s-]octane|octane[\s-]?9[0-9]|ron[\s-]?9[0-9]|95r/.test(p)) return true;
-    if (q === "super_premium" && /turbo|dex$/.test(p)) return true;
-    return false;
-}}
-
-function getAmbiguousProds(rows) {{
-    var prodFamilies = {{}};
-    rows.forEach(function(r) {{
-        var p = r.fuel_product || "";
-        if (!prodFamilies[p]) prodFamilies[p] = {{}};
-        prodFamilies[p][r.fuel_family] = true;
-    }});
-    var ambiguous = {{}};
-    Object.keys(prodFamilies).forEach(function(p) {{
-        if (Object.keys(prodFamilies[p]).length > 1) ambiguous[p] = true;
-    }});
-    return ambiguous;
+function chipKey(r){{
+    return r.fuel_product || r.series_key || "unknown";
 }}
 
 function chipLabel(key) {{
-    var parts       = key.split("|||");
-    var famRaw      = parts[0] || "";
-    var prodRaw     = parts[1] || "";
-    var qRaw        = parts[2] || "";
-    var displayProd = prodRaw ? cleanProdDisplay(prodRaw) : "";
-    var label;
-    if (displayProd) {{
-        label = _fuelAmbiguousProds[prodRaw]
-            ? lbl(famRaw) + " \u2013 " + displayProd
-            : displayProd;
-    }} else {{
-        label = lbl(famRaw);
-    }}
-    if (qRaw && !qualityRedundant(displayProd || label, qRaw)) {{
-        label += " (" + lbl(qRaw) + ")";
-    }}
-    return label;
+    return key || "\u2014";
 }}
 
 function computeMA90(points) {{
@@ -1607,7 +1644,6 @@ function formatYM(d) {{
     return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
 }}
 
-var _fuelAmbiguousProds = {{}};
 let fuelSliderDates = [];
 let fuelSlider = null;
 
@@ -1626,17 +1662,10 @@ function initFuelSlider() {{
     const maxIdx = fuelSliderDates.length - 1;
     if (maxIdx < 0) return;
 
-    // Default left handle: 1 year before the last data point
-    const lastDate = new Date(fuelSliderDates[maxIdx]);
-    lastDate.setFullYear(lastDate.getFullYear() - 1);
-    const oneYearBeforeLastStr = lastDate.toISOString().slice(0, 10);
-    let startIdx = fuelSliderDates.findIndex(d => d >= oneYearBeforeLastStr);
-    if (startIdx < 0) startIdx = 0;
-
     const el = document.getElementById('fuel-date-slider');
     if (fuelSlider) {{ fuelSlider.destroy(); }}
     fuelSlider = noUiSlider.create(el, {{
-        start: [startIdx, maxIdx],
+        start: [0, maxIdx],
         connect: true,
         step: 1,
         range: {{ min: 0, max: maxIdx || 1 }},
@@ -1656,7 +1685,6 @@ function initFuelSlider() {{
 }}
 
 function buildFuelChips(containerId, keys, rows) {{
-    _fuelAmbiguousProds = getAmbiguousProds(rows || []);
     var c = document.getElementById(containerId);
     c.innerHTML = "";
     keys.forEach(function(key) {{
@@ -1815,7 +1843,13 @@ function drawFuelChart(datasets, yLabel) {{
 }}
 
 function getFuelCountryRows() {{
-    return FUEL_DATA[document.getElementById("fuel-country-select").value] || [];
+    var country = document.getElementById("fuel-country-select").value;
+    var rows = FUEL_DATA[country] || [];
+    var allowed = COUNTRY_PRODUCTS[country];
+    if (allowed) {{
+        rows = rows.filter(function(r) {{ return allowed.includes(r.fuel_product); }});
+    }}
+    return rows;
 }}
 
 function rebuildFuelChips() {{
@@ -1835,7 +1869,8 @@ function rerenderFuel() {{
     updateFuelMeta(visibleRows);
     if (!visibleRows.length) {{
         drawFuelChart([], "");
-        rebuildFuelLocToggles([]);
+        var locSection = document.getElementById('fuel-loc-table-section');
+        if (locSection) locSection.style.display = 'none';
         var section = document.getElementById('fuel-regime-section');
         if (section) section.style.display = 'none';
         return;
@@ -1844,40 +1879,46 @@ function rerenderFuel() {{
     var yLabel    = (firstRow.currency || "") + " / " + (firstRow.unit || "");
     var datasets  = [];
     var colorIdx  = 0;
-    var multiKeys = [];
     var keyColors = {{}};
-    fuelLocDataStore = {{}};
     selectedKeys.forEach(function(key) {{
         var keyRows = visibleRows.filter(function(r) {{ return chipKey(r) === key; }});
         if (!keyRows.length) return;
-        var locMap = {{}};
-        keyRows.forEach(function(r) {{
-            var loc = r.location || "National";
-            if (!locMap[loc]) locMap[loc] = [];
-            locMap[loc].push({{ x: r.observation_date, y: r.price_local }});
-        }});
-        Object.keys(locMap).forEach(function(loc) {{
-            locMap[loc].sort(function(a, b) {{ return a.x.localeCompare(b.x); }});
-        }});
-        var locs   = Object.keys(locMap);
         var color  = PALETTE[colorIdx % PALETTE.length];
         var serLbl = chipLabel(key);
         colorIdx++;
         keyColors[key] = color;
-        if (locs.length === 1) {{
-            datasets.push(makeFuelDataset(serLbl, locMap[locs[0]], color, false));
-        }} else {{
-            fuelLocDataStore[key] = locMap;
-            multiKeys.push(key);
-            var avgPts = buildNationalAvg(locMap);
-            datasets.push(makeFuelDataset(serLbl + " (Nat. Avg.)", avgPts, color, false));
-            locs.sort().forEach(function(loc) {{
-                datasets.push(makeFuelDataset(serLbl + " \u2014 " + loc, locMap[loc], color, true));
+        // Per-date source-weighted location resolution
+        var byDate = {{}};
+        keyRows.forEach(function(r) {{
+            var d = r.observation_date;
+            if (!d || r.price_local == null) return;
+            var loc = (r.location || "").toLowerCase();
+            var isNat = loc === "national" || loc === "national average";
+            var sk = r.source_key || "_unknown";
+            if (!byDate[d]) byDate[d] = {{}};
+            if (!byDate[d][sk]) byDate[d][sk] = {{ nat: [], sub: [] }};
+            if (isNat) byDate[d][sk].nat.push(r.price_local);
+            else byDate[d][sk].sub.push(r.price_local);
+        }});
+        var avgPts = Object.keys(byDate).sort().map(function(d) {{
+            var sources = byDate[d];
+            var sourceAvgs = [];
+            Object.keys(sources).forEach(function(sk) {{
+                var s = sources[sk];
+                var prices = s.sub.length ? s.sub : s.nat;
+                if (!prices.length) return;
+                var sum = prices.reduce(function(a, v) {{ return a + v; }}, 0);
+                sourceAvgs.push(sum / prices.length);
             }});
-        }}
+            if (!sourceAvgs.length) return {{ x: d, y: null }};
+            var total = sourceAvgs.reduce(function(a, v) {{ return a + v; }}, 0);
+            return {{ x: d, y: total / sourceAvgs.length }};
+        }});
+        datasets.push(makeFuelDataset(serLbl, avgPts, color, false));
     }});
     drawFuelChart(datasets, yLabel);
-    rebuildFuelLocToggles(multiKeys.filter(function(k) {{ return selectedKeys.includes(k); }}));
+    var locSection = document.getElementById('fuel-loc-table-section');
+    if (locSection) locSection.style.display = 'none';
     updateFuelRegimeSection(document.getElementById("fuel-country-select").value, selectedKeys, keyColors);
 }}
 

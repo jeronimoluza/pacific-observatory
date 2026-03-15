@@ -6,13 +6,13 @@ SOURCE_META = [
         "fetcher_fn": "fetch_png_iccc",
         "country": "Papua New Guinea",
         "source_name": "ICCC Monthly Indicative Retail Prices",
-        "url": "https://iccc.gov.pg/category/fuel-prices/",
-        "description": "Official government regulator (ICCC). Monthly indicative retail prices for Port Moresby as news articles. No structured download.",
-        "extraction_method": ["Web scraping"],
+        "url": "https://iccc.gov.pg/prices-regulation/#fuel-prices",
+        "description": "Official government regulator (ICCC). Monthly indicative retail prices for Port Moresby published as WordPress posts with HTML tables.",
+        "extraction_method": ["REST API", "HTML table parsing"],
         "products": ["Gasoline (Regular Petrol)", "Diesel", "Kerosene"],
         "source_keys": ["pg_iccc_monthly_irp"],
         "publishes_on": "Monthly",
-        "notes": "Extracts month/year and prices via regex from article text. Port Moresby only. Processes up to 20 articles. Price range PGK 1.0–20.0/L.",
+        "notes": "Uses WP REST API to list and fetch posts. Parses HTML tables for current and previous month prices (toea converted to PGK). Port Moresby only. Price range PGK 1.0–20.0/L.",
     },
     {
         "fetcher_fn": "fetch_samoa_mof",
@@ -60,6 +60,7 @@ from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 
 from ..utils import MONTH_MAP_EN, get_session, make_hash, make_template
@@ -71,7 +72,7 @@ _TMPL_PNG = make_template(
     wb_iso3="PNG",
     source_key="pg_iccc_monthly_irp",
     source_name="Papua New Guinea ICCC Indicative Retail Fuel Prices",
-    source_url="https://iccc.gov.pg/category/fuel-prices/",
+    source_url="https://iccc.gov.pg/prices-regulation/#fuel-prices",
     currency="PGK",
     unit="L",
     subnational_area="Port Moresby",
@@ -81,132 +82,218 @@ _TMPL_PNG = make_template(
 )
 
 _PNG_PRODUCTS = [
-    ("Petrol", "gasoline", "regular", None, r"(?i)petrol|gasoline|mogas"),
-    ("Diesel", "diesel", "regular", None, r"(?i)diesel"),
-    ("Kerosene", "kerosene", "regular", None, r"(?i)kerosene|kero"),
+    ("Petrol", "gasoline", "regular", None),
+    ("Diesel", "diesel", "regular", None),
+    ("Kerosene", "kerosene", "regular", None),
 ]
+
+_PNG_DATE_RE = re.compile(
+    r"(\d{1,2})\s*(?:st|nd|rd|th)?\s+"
+    r"(January|February|March|April|May|June|July|August|September|October|November|December)"
+    r"\s+(20\d{2})",
+    re.IGNORECASE,
+)
+
+_WP_LIST_URL = (
+    "https://iccc.gov.pg/wp-json/wp/v2/posts"
+    "?categories=763309980&per_page=100&orderby=date&order=desc"
+    "&_fields=id,date,slug,title,link"
+)
+
+
+def _parse_png_table(html: str, article_link: str) -> list[dict]:
+    """Parse an ICCC article HTML table and return observation rows.
+
+    Each table has header row (product columns) then current-month and
+    previous-month price rows.  Prices are in toea (÷100 → PGK).
+    """
+    soup = BeautifulSoup(html, "lxml")
+    table = soup.find("table")
+    if table is None:
+        return []
+
+    tbody = table.find("tbody")
+    trs = (tbody if tbody else table).find_all("tr")
+    if len(trs) < 2:
+        return []
+
+    # --- header row: identify column indices for each product ---
+    header_cells = trs[0].find_all(["th", "td"])
+    col_map: dict[int, tuple] = {}  # col_idx → (prod_name, family, qg, ron)
+    for i, cell in enumerate(header_cells):
+        text = cell.get_text(separator=" ", strip=True).lower()
+        for prod_name, family, qg, ron in _PNG_PRODUCTS:
+            if prod_name.lower() in text:
+                col_map[i] = (prod_name, family, qg, ron)
+                break
+
+    if not col_map:
+        return []
+
+    rows: list[dict] = []
+
+    # --- data rows (row 1 = current month, row 2 = previous month) ---
+    for tr in trs[1:3]:
+        cells = tr.find_all(["th", "td"])
+        if not cells:
+            continue
+
+        # Parse date from the first cell text
+        first_text = cells[0].get_text(separator=" ", strip=True)
+        dm = _PNG_DATE_RE.search(first_text)
+        if not dm:
+            continue
+        day = int(dm.group(1))
+        month_num = MONTH_MAP_EN[dm.group(2).lower()]
+        year = int(dm.group(3))
+        try:
+            obs_date = date(year, month_num, day)
+        except ValueError:
+            continue
+
+        month_end = (obs_date.replace(day=28) + timedelta(days=4)).replace(
+            day=1
+        ) - timedelta(days=1)
+
+        for col_idx, (prod_name, family, qg, ron) in col_map.items():
+            if col_idx >= len(cells):
+                continue
+            price_text = cells[col_idx].get_text(separator=" ", strip=True)
+            # Extract numeric value (may be inside <strong> tags already flattened)
+            pm = re.search(r"([\d,]+(?:\.\d+)?)", price_text.replace(",", ""))
+            if not pm:
+                continue
+            try:
+                toea = float(pm.group(1))
+                price = toea / 100.0  # toea → PGK
+                if not (1.0 <= price <= 20.0):
+                    continue
+            except ValueError:
+                continue
+
+            r_row = _TMPL_PNG.copy()
+            r_row.update(
+                {
+                    "fuel_family": family,
+                    "fuel_product": prod_name,
+                    "quality_group": qg,
+                    "octane_ron": ron,
+                    "price_local": round(price, 4),
+                    "effective_from": str(obs_date),
+                    "effective_to": str(month_end),
+                    "observation_date": str(obs_date),
+                    "source_url": article_link,
+                }
+            )
+            r_row["observation_hash"] = make_hash(r_row)
+            rows.append(r_row)
+
+    return rows
+
+
+def _wp_get(session, url: str, max_retries: int = 3) -> requests.Response | None:
+    """GET with retry on 429."""
+    for attempt in range(max_retries):
+        try:
+            resp = session.get(url, timeout=30)
+            if resp.status_code == 429:
+                wait = int(resp.headers.get("Retry-After", 3 * (attempt + 1)))
+                print(f"  [png_iccc] Rate limited, waiting {wait}s...")
+                time.sleep(wait)
+                continue
+            return resp
+        except Exception as e:
+            print(f"  [png_iccc] Request error (attempt {attempt + 1}): {e}")
+            time.sleep(2)
+    return None
+
+
+def _wp_session() -> requests.Session:
+    """Session for ICCC WP REST API — minimal headers to avoid WAF blocks."""
+    s = requests.Session()
+    s.headers.update(
+        {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+            "Accept": "application/json",
+        }
+    )
+    return s
 
 
 def fetch_png_iccc(cutoff: date) -> pd.DataFrame:
-    """Fetch PNG ICCC monthly indicative retail fuel prices."""
-    print("  [png_iccc] Fetching PNG ICCC data...")
+    """Fetch PNG ICCC monthly indicative retail fuel prices via WP REST API."""
+    print("  [png_iccc] Fetching PNG ICCC data (WP REST API)...")
     print(f"  [png_iccc] Cutoff: {cutoff}")
 
-    session = get_session()
-    listing_url = "https://iccc.gov.pg/category/fuel-prices/"
+    session = _wp_session()
 
-    try:
-        resp = session.get(listing_url, timeout=30)
-        resp.raise_for_status()
-    except Exception as e:
-        print(f"  [png_iccc] Could not fetch listing: {e}")
-        return pd.DataFrame()
-
-    soup = BeautifulSoup(resp.content, "lxml")
-
-    article_links: list[str] = []
-    for a in soup.find_all("a", href=True):
-        href = a["href"]
-        if (
-            "iccc.gov.pg" in href
-            and "/fuel-price" in href
-            and href not in article_links
-        ):
-            article_links.append(href)
-        elif href.startswith("/") and "/fuel-price" in href:
-            full = "https://iccc.gov.pg" + href
-            if full not in article_links:
-                article_links.append(full)
-
-    for a in soup.find_all("a", href=True):
-        href = a["href"]
-        if "category/fuel-prices/page/" in href:
-            try:
-                r2 = session.get(href, timeout=20)
-                if r2.status_code == 200:
-                    s2 = BeautifulSoup(r2.content, "lxml")
-                    for a2 in s2.find_all("a", href=True):
-                        h2 = a2["href"]
-                        if (
-                            "iccc.gov.pg" in h2
-                            and "/fuel-price" in h2
-                            and h2 not in article_links
-                        ):
-                            article_links.append(h2)
-            except Exception:
-                pass
-
-    print(f"  [png_iccc] Found {len(article_links)} article links")
-    all_rows = []
-
-    for art_url in article_links[:20]:
+    # --- listing phase: paginate through WP posts ---
+    posts: list[dict] = []
+    page_num = 1
+    while True:
+        url = f"{_WP_LIST_URL}&page={page_num}"
+        resp = _wp_get(session, url)
+        if resp is None:
+            print(f"  [png_iccc] Listing page {page_num} failed after retries")
+            break
+        if resp.status_code == 400:
+            break  # past last page
         try:
-            r = session.get(art_url, timeout=20)
-            if r.status_code != 200:
-                continue
-            text = BeautifulSoup(r.content, "lxml").get_text(separator="\n")
-
-            obs_date = None
-            for month_name, month_num in MONTH_MAP_EN.items():
-                if len(month_name) < 4:
-                    continue
-                if month_name in text.lower():
-                    year_m = re.search(r"\b(20\d{2})\b", text)
-                    if year_m:
-                        try:
-                            obs_date = date(int(year_m.group(1)), month_num, 1)
-                            break
-                        except ValueError:
-                            pass
-
-            if obs_date is None or obs_date <= cutoff:
-                continue
-
-            rows_added = 0
-            for prod_name, family, qg, ron, prod_pat in _PNG_PRODUCTS:
-                m = re.search(
-                    rf"{prod_pat}[^\d]{{0,100}}([\d]+\.[\d]{{2,3}})",
-                    text,
-                    re.IGNORECASE | re.DOTALL,
-                )
-                if not m:
-                    continue
-                try:
-                    price = float(m.group(1))
-                    if not (1.0 <= price <= 20.0):
-                        continue
-                except ValueError:
-                    continue
-
-                month_end = (obs_date.replace(day=28) + timedelta(days=4)).replace(
-                    day=1
-                ) - timedelta(days=1)
-                r_row = _TMPL_PNG.copy()
-                r_row.update(
-                    {
-                        "fuel_family": family,
-                        "fuel_product": prod_name,
-                        "quality_group": qg,
-                        "octane_ron": ron,
-                        "price_local": price,
-                        "effective_from": str(obs_date),
-                        "effective_to": str(month_end),
-                        "observation_date": str(obs_date),
-                        "source_url": art_url,
-                    }
-                )
-                r_row["observation_hash"] = make_hash(r_row)
-                all_rows.append(r_row)
-                rows_added += 1
-
-            if rows_added:
-                print(f"  [png_iccc] {obs_date}: {rows_added} products")
+            resp.raise_for_status()
         except Exception as e:
-            print(f"  [png_iccc] Error {art_url}: {e}")
+            print(f"  [png_iccc] Listing page {page_num} error: {e}")
+            break
+
+        batch = resp.json()
+        if not batch:
+            break
+        posts.extend(batch)
+
+        total = int(resp.headers.get("X-WP-Total", len(posts)))
+        if len(posts) >= total:
+            break
+        page_num += 1
+        time.sleep(0.5)
+
+    print(f"  [png_iccc] Found {len(posts)} posts via WP API")
+    all_rows: list[dict] = []
+
+    # --- content phase: fetch each post and parse table ---
+    for post in posts:
+        post_id = post["id"]
+        article_link = post.get("link", "")
+        content_url = (
+            f"https://iccc.gov.pg/wp-json/wp/v2/posts/{post_id}"
+            f"?_fields=id,date,title,content"
+        )
+        r = _wp_get(session, content_url)
+        if r is None or r.status_code != 200:
+            time.sleep(0.5)
+            continue
+        try:
+            data = r.json()
+            html = data.get("content", {}).get("rendered", "")
+            if not html:
+                continue
+        except Exception as e:
+            print(f"  [png_iccc] Content parse error (id={post_id}): {e}")
+            continue
+
+        rows = _parse_png_table(html, article_link)
+        new_rows = [
+            r for r in rows if date.fromisoformat(r["observation_date"]) > cutoff
+        ]
+        if new_rows:
+            all_rows.extend(new_rows)
+            dates = {r["observation_date"] for r in new_rows}
+            print(
+                f"  [png_iccc] Post {post_id}: {len(new_rows)} rows ({', '.join(sorted(dates))})"
+            )
+
         time.sleep(0.3)
 
     if all_rows:
-        print(f"  [png_iccc] {len(all_rows)} new rows")
+        print(f"  [png_iccc] {len(all_rows)} total new rows")
     else:
         print("  [png_iccc] No new rows")
     return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()

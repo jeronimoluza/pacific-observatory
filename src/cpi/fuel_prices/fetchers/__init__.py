@@ -17,8 +17,8 @@ from .korea import fetch_kr_opinet_daily, fetch_kr_opinet_weekly
 from .lao import fetch_lao, fetch_lao_kpl
 from .malaysia import fetch_malaysia_mof
 from .mongolia import fetch_mn_nso_weekly_aimag, fetch_mongolia_data_mn
-from .myanmar import fetch_myanmar_gnlm
-from .new_zealand import fetch_nz_mbie_weekly
+from .myanmar import fetch_myanmar_denko, fetch_myanmar_gnlm
+from .new_zealand import fetch_nz_gaspy_stats_daily, fetch_nz_mbie_weekly
 from .singapore import (
     fetch_sg_singstat_avg_retail_prices,
     fetch_sg_spc_latest_pump_prices,
@@ -40,12 +40,7 @@ from .thailand import (
     fetch_thailand_eppo_ngv,
 )
 from .timor_leste import fetch_timor_anp
-from .global_commodities import (
-    fetch_imf_fred_prices,
-    fetch_investing_commodities,
-    fetch_eia_spot_prices,
-    fetch_wb_pink_sheet,
-)
+from .global_commodities import fetch_investing_commodities
 from .vietnam import fetch_vn_petrolimex
 
 # Registry: source_key → (fetch_fn, fallback_date, full_refresh)
@@ -90,8 +85,10 @@ FETCHER_REGISTRY: dict[str, tuple] = {
     "mn_data_mn_fuel_ulaanbaatar": (fetch_mongolia_data_mn, date(2023, 1, 1), False),
     # Myanmar
     "mm_gnlm_fuel_reference_prices": (fetch_myanmar_gnlm, date(2024, 1, 1), False),
+    "mm_denko_station_daily": (fetch_myanmar_denko, date(2025, 1, 1), True),
     # New Zealand
     "nz_mbie_weekly_fuel": (fetch_nz_mbie_weekly, date(2020, 1, 1), True),
+    "nz_gaspy_stats_daily": (fetch_nz_gaspy_stats_daily, date(2024, 1, 1), False),
     # Singapore
     "sg_singstat_avg_retail_prices_monthly": (
         fetch_sg_singstat_avg_retail_prices,
@@ -115,7 +112,7 @@ FETCHER_REGISTRY: dict[str, tuple] = {
         False,
     ),
     # Pacific Islands
-    "pg_iccc_monthly_irp": (fetch_png_iccc, date(2023, 1, 1), False),
+    "pg_iccc_monthly_irp": (fetch_png_iccc, date(2023, 1, 1), True),
     "ws_mof_monthly_fuel_prices": (fetch_samoa_mof, date(2023, 1, 1), False),
     "vu_doe_retail_petrol_diesel_2025": (fetch_vanuatu_doe, date(2023, 1, 1), False),
     "sb_price_control_petroleum_2025": (fetch_solomon_islands, date(2023, 1, 1), False),
@@ -149,9 +146,6 @@ FETCHER_REGISTRY: dict[str, tuple] = {
     "vn_petrolimex_retail": (fetch_vn_petrolimex, date(2019, 12, 31), False),
     # Global & EAP commodity benchmarks → commodity_prices.csv
     "global_investing_daily": (fetch_investing_commodities, date(2015, 1, 1), False),
-    "global_eia_spot_daily": (fetch_eia_spot_prices, date(2015, 1, 1), False),
-    "global_wb_pinksheet": (fetch_wb_pink_sheet, date(2000, 1, 1), False),
-    "global_imf_fred_monthly": (fetch_imf_fred_prices, date(2000, 1, 1), False),
 }
 
 __all__ = ["FETCHER_REGISTRY"]
