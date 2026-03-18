@@ -5,11 +5,19 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 DATA_DIR = PROJECT_ROOT / "data" / "cpi" / "fuel_prices"
-PRIMARY_CSV = DATA_DIR / "eap_fuel_prices.csv"
-SECONDARY_CSV = DATA_DIR / "eap_fuel_prices_secondary.csv"
-COMMODITY_CSV = DATA_DIR / "commodity_prices.csv"
+STAGED_DATA_DIR = PROJECT_ROOT / "data" / "cpi" / "fuel_prices_staged"
 FETCH_STATE_JSON = DATA_DIR / ".fetch_state.json"
+GLOBAL_DIR = DATA_DIR / "global"
+WB_GDP_CSV = GLOBAL_DIR / "worldbank" / "gdp_per_capita.csv"
+WB_POPULATION_CSV = GLOBAL_DIR / "worldbank" / "population.csv"
+WB_SUBSIDIES_CSV = GLOBAL_DIR / "worldbank" / "subsidies_price_controls.csv"
+IMF_SUBSIDIES_XLSB = GLOBAL_DIR / "imf" / "fossil_fuel_subsidies.xlsb"
+IMF_SUBSIDIES_XLSX = GLOBAL_DIR / "imf" / "subsidies_2010_2024.xlsx"
 JAPAN_DIR = DATA_DIR / "japan_prices"
+
+# Number of years of data embedded in the policy dashboard HTML.
+# Observations older than this cutoff are excluded before JSON serialization.
+DASHBOARD_HISTORY_YEARS = 3
 
 PALETTE = [
     "#1d77b2",
@@ -35,50 +43,141 @@ PALETTE = [
 ]
 
 COLUMNS = [
+    "observation_date",
     "country",
-    "wb_iso3",
     "subnational_area",
     "city",
-    "fuel_family",
+    "address",
     "fuel_product",
-    "quality_group",
-    "octane_ron",
-    "ethanol_pct",
-    "sulfur_standard",
-    "gas_type",
-    "delivery_type",
-    "consumer_segment",
     "price_local",
     "currency",
     "unit",
-    "tax_status",
     "source_key",
-    "source_name",
-    "source_url",
-    "source_type",
     "scrape_ts",
-    "effective_from",
-    "effective_to",
-    "observation_date",
-    "publication_frequency",
-    "observation_method",
-    "status",
-    "notes",
     "observation_hash",
 ]
 
-# Countries whose data is fully replaced by the secondary source in the visualizer.
-# Primary-CSV rows for these are dropped when the secondary CSV exists.
-SECONDARY_ONLY_COUNTRIES = {
-    "Australia",
-    "Fiji",
-    "Indonesia",
-    "Japan",
-    "Korea, Rep.",
-    "Mongolia",
-    "New Zealand",
-    "Philippines",
-    "Thailand",
-    "Vietnam",
-    "Viet Nam",
+ENRICHED_COLUMNS = COLUMNS + [
+    "fuel_family",
+    "fuel_product_standard",
+    "quality_group",
+    "location",
+    "series_key",
+    "series_label",
+]
+
+
+# ── Fuel product standardization map ─────────────────────────────────────────
+# Maps raw fuel_product strings to internal standard codes.
+FUEL_PRODUCT_MAP: dict[str, str | None] = {
+    "Unleaded 91": "gasoline_regular",
+    "RON 91": "gasoline_regular",
+    "Regular Gasoline": "gasoline_regular",
+    "Regular gasoline": "gasoline_regular",
+    "Petrol A-92": "gasoline_regular",
+    "Petrol A-80": "gasoline_regular",
+    "Octane 92": "gasoline_regular",
+    "Octane 95": "gasoline_midgrade",
+    "E5RON92": "gasoline_ethanol_low",
+    "Gasoline 95": "gasoline_midgrade",
+    "Petrol 95 RON": "gasoline_midgrade",
+    "Petrol 92 RON": "gasoline_regular",
+    "Premium 95": "gasoline_midgrade",
+    "Premium Petrol 95R": "gasoline_midgrade",
+    "RON95": "gasoline_midgrade",
+    "RON 95": "gasoline_midgrade",
+    "RON95-III": "gasoline_midgrade",
+    "RON 95-III": "gasoline_midgrade",
+    "RON 95-V": "gasoline_midgrade",
+    "E10 RON 95-III": "gasoline_ethanol_low",
+    "E5 RON 92-II": "gasoline_ethanol_low",
+    "RON97": "gasoline_premium",
+    "RON 97": "gasoline_premium",
+    "RON98": "gasoline_premium",
+    "Premium 98": "gasoline_premium",
+    "Hi Premium 97": "gasoline_premium",
+    "RON 100": "gasoline_premium",
+    "High-octane gasoline": "gasoline_premium",
+    "High-octane Gasoline": "gasoline_premium",
+    "Petrol 98 RON": "gasoline_premium",
+    "E10": "gasoline_ethanol_low",
+    "Gasohol 91": "gasoline_ethanol_low",
+    "Gasohol 95": "gasoline_ethanol_low",
+    "E20": "gasoline_ethanol_medium",
+    "Gasohol E20": "gasoline_ethanol_medium",
+    "E85": "gasoline_ethanol_high",
+    "Gasohol E85": "gasoline_ethanol_high",
+    "Pertalite": "gasoline_branded",
+    "Pertamax": "gasoline_branded",
+    "Pertamax Turbo": "gasoline_branded",
+    "Pertamax Green 95": "gasoline_branded",
+    "Pertamax di Pertashop": "gasoline_branded",
+    "Super": "gasoline_branded",
+    "Super Power GSH95": "gasoline_premium",
+    "Motor Spirit": "gasoline_branded",
+    "PDL": "gasoline_branded",
+    "Petrol (PMS)": "gasoline_regular",
+    "Unleaded": "gasoline_regular",
+    "Unleaded Petrol 95RON": "gasoline_midgrade",
+    "ULP 91 average": "gasoline_regular",
+    "Regular": "gasoline_regular",
+    "Regular Petrol": "gasoline_regular",
+    "Regular gasoline average": "gasoline_regular",
+    "Gasoline (standard)": "gasoline_regular",
+    "Gasoline (Octane-95)": "gasoline_midgrade",
+    "Gasoline": "gasoline_regular",
+    "Petrol": "gasoline_regular",
+    "Diesel": "diesel_standard",
+    "Diesel average": "diesel_standard",
+    "Diesel (regular)": "diesel_standard",
+    "Diesel (standard)": "diesel_standard",
+    "Diesel (HSD)": "diesel_standard",
+    "Diesel (ADO)": "diesel_standard",
+    "Diesel (East Malaysia)": "diesel_standard",
+    "Diesel (Peninsular Malaysia)": "diesel_standard",
+    "Hi Diesel S": "diesel_standard",
+    "Diesel Plus": "diesel_premium",
+    "DIESEL PLUS": "diesel_premium",
+    "Diesel (LSD)": "diesel_low_sulfur",
+    "Diesel 0.05S": "diesel_low_sulfur",
+    "Diesel 0.05S-II": "diesel_low_sulfur",
+    "Low Sulphur Diesel 10PPM": "diesel_ultra_low_sulfur",
+    "Diesel 0.001S-V": "diesel_ultra_low_sulfur",
+    "Premium Diesel": "diesel_premium",
+    "Hi Premium Diesel S": "diesel_premium",
+    "Pertamina Dex": "diesel_premium",
+    "Dexlite": "diesel_branded",
+    "Biosolar": "diesel_biodiesel",
+    "Biosolar Non-Subsidi": "diesel_biodiesel",
+    "B20": "diesel_biodiesel",
+    "Kerosene": "kerosene",
+    "Kerosene (delivery)": "kerosene",
+    "Kerosene (in-store)": "kerosene",
+    "Kerosene (retail)": "kerosene",
+    "Kerosene 2-K": "kerosene",
+    "12 Kg Cylinder": "lpg_household",
+    "4.5 Kg Cylinder": "lpg_household",
+    "LPG": "lpg_bulk",
+    "Bulk LPG": "lpg_bulk",
+    "Propane LPG": "lpg_bulk",
+    "Autogas": "lpg_autogas",
+    "CNG": "cng",
+    "LNG": "lng",
+    "NGV retail price": "ngv",
+    "EV": "electricity_ev",
+    "Mazut 180CST 3.5S": "fuel_oil_mazut",
+    "Mazut N02B (3.5S)": "fuel_oil_mazut",
+    "Mazut 180cst-0.5S": "fuel_oil_mazut",
+    "Premix": "premix",
+    "Ethanol prices": "gasoline_ethanol_low",
+    "Kerosene prices": "kerosene",
+    "LPG prices": "lpg_bulk",
+    "Unleaded 95": "gasoline_midgrade",
+    "Unleaded 98": "gasoline_premium",
+    "Unleaded 92": "gasoline_regular",
+    "92 Unleaded": "gasoline_regular",
+    "95 Unleaded": "gasoline_midgrade",
+    "98 Unleaded": "gasoline_premium",
+    "Super Diesel": "diesel_premium",
+    "NAN": None,
 }

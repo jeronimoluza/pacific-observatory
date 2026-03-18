@@ -71,33 +71,28 @@ def collect_all_meta() -> list[dict[str, Any]]:
 
 
 def _load_freshness_stats() -> dict[str, dict]:
-    """Load all three CSVs and compute per-source_key stats."""
+    """Load all per-source observations and compute per-source_key stats."""
     try:
         import pandas as pd
     except ImportError:
         print("  [sources] pandas not available — skipping freshness stats")
         return {}
 
-    from .constants import PRIMARY_CSV, SECONDARY_CSV, COMMODITY_CSV
+    from .process import load_stored_observations
+    from .constants import DATA_DIR
 
     stats: dict[str, dict] = {}
     today = date.today()
 
-    dfs = []
-    for path in (PRIMARY_CSV, SECONDARY_CSV, COMMODITY_CSV):
-        if path.exists():
-            try:
-                df = pd.read_csv(
-                    path, low_memory=False, parse_dates=["observation_date"]
-                )
-                dfs.append(df)
-            except Exception as e:
-                print(f"  [sources] Could not load {path.name}: {e}")
-
-    if not dfs:
+    all_df = load_stored_observations(DATA_DIR)
+    if all_df.empty:
         return {}
 
-    all_df = pd.concat(dfs, ignore_index=True)
+    if "observation_date" not in all_df.columns:
+        return {}
+    all_df["observation_date"] = pd.to_datetime(
+        all_df["observation_date"], errors="coerce"
+    )
 
     coverage_ts = pd.Timestamp(_COVERAGE_START)
 
@@ -664,9 +659,13 @@ def _load_ancillary_stats(data_dir: Path) -> dict[str, dict[str, int]]:
     except ImportError:
         return {}
 
+    from .constants import WB_GDP_CSV, WB_POPULATION_CSV
+
     stats: dict[str, dict[str, int]] = {}
-    for filename in ("population.csv", "gdp_per_capita.csv"):
-        path = data_dir / filename
+    for filename, path in [
+        ("gdp_per_capita.csv", WB_GDP_CSV),
+        ("population.csv", WB_POPULATION_CSV),
+    ]:
         if not path.exists():
             continue
         try:

@@ -75,7 +75,7 @@ _VN_PLX_PRODUCTS = [
 
 _VN_PLX_LISTING = "https://www.petrolimex.com.vn/ndi/thong-cao-bao-chi.html"
 _VN_PLX_BASE = "https://www.petrolimex.com.vn"
-_VN_PLX_SLUG_RE = re.compile(r"ngay-(\d{2})-(\d{2})-(\d{4})")
+_VN_PLX_SLUG_RE = re.compile(r"ngay-(\d{1,2})-(\d{1,2})-(\d{4})")
 _VN_PLX_PRICE_RE = re.compile(r"\b(\d{2,3}[.,]\d{3})\b")
 
 _TESSERACT_BIN = "/opt/homebrew/bin/tesseract"

@@ -5,11 +5,6 @@ from datetime import date, datetime
 
 import pandas as pd
 import requests
-import urllib3
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-SCRAPE_TS = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
 
 HEADERS = {
     "User-Agent": (
@@ -47,9 +42,17 @@ MONTH_MAP_EN = {
 }
 
 
+def get_scrape_ts() -> str:
+    """Return current UTC timestamp string — call per-fetch, not at import time."""
+    return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
+
+
 def make_hash(row: dict) -> str:
-    """Generate a SHA-256 observation_hash from key identifying fields."""
-    key = "|".join(
+    """Generate a SHA-256 observation_hash from key identifying fields.
+
+    Uses \\x00 as separator to prevent hash collisions from pipe-containing values.
+    """
+    key = "\x00".join(
         [
             str(row.get("country", "")),
             str(row.get("source_key", "")),
@@ -57,6 +60,7 @@ def make_hash(row: dict) -> str:
             str(row.get("fuel_product", "")),
             str(row.get("subnational_area", "")),
             str(row.get("city", "")),
+            str(row.get("address", "")),
             str(row.get("price_local", "")),
         ]
     )
@@ -79,37 +83,24 @@ def safe_last_date(df: pd.DataFrame, source_key: str, fallback: date) -> date:
 
 
 def make_template(**kwargs) -> dict:
-    """Build a row template dict for a new source not yet in df_existing."""
+    """Build a row template dict for a new observation row.
+
+    Only includes the 12 lean COLUMNS. Extra kwargs (e.g. fuel_family, source_name)
+    are accepted for convenience and will be present in the returned dict, but
+    save_fuel_csv() will drop them when writing to disk.
+    """
     defaults = {
+        "observation_date": None,
         "country": None,
-        "wb_iso3": None,
         "subnational_area": None,
         "city": None,
-        "fuel_family": None,
+        "address": None,
         "fuel_product": None,
-        "quality_group": None,
-        "octane_ron": None,
-        "ethanol_pct": None,
-        "sulfur_standard": None,
-        "gas_type": None,
-        "delivery_type": None,
-        "consumer_segment": "retail",
         "price_local": None,
         "currency": None,
         "unit": "L",
-        "tax_status": "tax_inclusive",
         "source_key": None,
-        "source_name": None,
-        "source_url": None,
-        "source_type": "official",
-        "scrape_ts": SCRAPE_TS,
-        "effective_from": None,
-        "effective_to": None,
-        "observation_date": None,
-        "publication_frequency": None,
-        "observation_method": "reported",
-        "status": "Final",
-        "notes": None,
+        "scrape_ts": get_scrape_ts(),
         "observation_hash": None,
     }
     defaults.update(kwargs)

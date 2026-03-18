@@ -1,48 +1,149 @@
-"""CSV loading, merging, deduplication, and fetch-state cache management."""
+"""Fetch-state cache, CSV helpers, and publish-time fuel data loader."""
 
 import json
-from datetime import date
+import logging
+from datetime import date, datetime, timezone
 from pathlib import Path
+from typing import TypedDict
 
 import pandas as pd
 
-from .constants import (
-    COLUMNS,
-    DATA_DIR,
-    FETCH_STATE_JSON,
-    PRIMARY_CSV,
-    SECONDARY_CSV,
-    SECONDARY_ONLY_COUNTRIES,
-)
+from .constants import COLUMNS, DATA_DIR, FETCH_STATE_JSON, STAGED_DATA_DIR
 from .utils import make_hash
 
+logger = logging.getLogger(__name__)
 
-# ── Fetch state (per-source cutoff cache) ─────────────────────────────────────
+
+# ── CSV helpers (absorbed from csv_store) ─────────────────────────────────────
 
 
-def read_fetch_state(path: Path = FETCH_STATE_JSON) -> dict[str, date]:
-    """Load .fetch_state.json; return dict of source_key -> last observation_date."""
+def load_fuel_csv(path: Path) -> pd.DataFrame:
+    """Load a fuel CSV, returning an empty schema-aligned frame if missing."""
+    if path.exists():
+        return pd.read_csv(path, low_memory=False)
+    return pd.DataFrame(columns=pd.Index(COLUMNS))
+
+
+def save_fuel_csv(df: pd.DataFrame, path: Path) -> None:
+    """Persist a fuel CSV using the canonical column order."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    for col in COLUMNS:
+        if col not in df.columns:
+            df[col] = None
+    df[COLUMNS].to_csv(path, index=False)
+    logger.info("Saved %d rows -> %s", len(df), path)
+
+
+# ── Fetch state v2 ────────────────────────────────────────────────────────────
+#
+# v1 format (legacy): { "source_key": "2026-01-01" }
+# v2 format:          { "source_key": { "last_data_date": "2026-01-01",
+#                                        "last_run_ts": "2026-03-16T10:23:00" } }
+#
+# last_data_date: max observation_date of data stored for this source.
+#                 Used as cutoff passed to fetch_fn on the next run.
+# last_run_ts:    ISO-8601 UTC datetime of when the fetcher last executed
+#                 (success, empty return, or exception).
+#                 Used for cadence skip decisions — NOT for cutoff calculation.
+
+
+class SourceState(TypedDict):
+    last_data_date: str | None  # ISO date string or None
+    last_run_ts: str | None  # ISO datetime string or None
+
+
+def _normalize_entry(value: object) -> SourceState:
+    """Normalize a v1 bare string or v2 object to SourceState."""
+    if isinstance(value, str):
+        return {"last_data_date": value, "last_run_ts": None}
+    if isinstance(value, dict):
+        return {
+            "last_data_date": value.get("last_data_date"),
+            "last_run_ts": value.get("last_run_ts"),
+        }
+    return {"last_data_date": None, "last_run_ts": None}
+
+
+def read_fetch_state(path: Path = FETCH_STATE_JSON) -> dict[str, SourceState]:
+    """Load .fetch_state.json; return dict of source_key → SourceState (v2).
+
+    Transparently migrates v1 bare-string entries to v2 objects.
+    """
     if not path.exists():
         return {}
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
-        return {k: date.fromisoformat(v) for k, v in raw.items()}
-    except Exception:
+        return {k: _normalize_entry(v) for k, v in raw.items()}
+    except (json.JSONDecodeError, OSError) as exc:
+        logger.warning("Could not read fetch state from %s: %s", path, exc)
         return {}
 
 
-def write_fetch_state(state: dict[str, date], path: Path = FETCH_STATE_JSON) -> None:
-    """Persist updated fetch state to .fetch_state.json."""
+def write_fetch_state(
+    state: dict[str, SourceState], path: Path = FETCH_STATE_JSON
+) -> None:
+    """Persist fetch state to .fetch_state.json in v2 format."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps({k: v.isoformat() for k, v in state.items()}, indent=2),
-        encoding="utf-8",
-    )
+    path.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
 
-def get_cutoff(state: dict[str, date], source_key: str, fallback: date) -> date:
-    """Return the stored cutoff for source_key, or fallback if not present."""
-    return state.get(source_key, fallback)
+def get_cutoff(state: dict[str, SourceState], source_key: str, fallback: date) -> date:
+    """Return the last_data_date for source_key, or fallback if not present."""
+    entry = state.get(source_key)
+    if entry is None:
+        return fallback
+    raw = entry.get("last_data_date")
+    if not raw:
+        return fallback
+    try:
+        return date.fromisoformat(str(raw))
+    except (ValueError, TypeError):
+        return fallback
+
+
+def get_last_run_ts(state: dict[str, SourceState], source_key: str) -> datetime | None:
+    """Return the last_run_ts for source_key as a UTC-aware datetime, or None."""
+    entry = state.get(source_key)
+    if entry is None:
+        return None
+    raw = entry.get("last_run_ts")
+    if not raw:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(raw))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except (ValueError, TypeError):
+        return None
+
+
+def set_last_run_ts(
+    state: dict[str, SourceState],
+    source_key: str,
+    ts: datetime | None = None,
+) -> None:
+    """Update last_run_ts for source_key in-place. Defaults to now (UTC)."""
+    if ts is None:
+        ts = datetime.now(tz=timezone.utc)
+    entry = state.get(source_key, {"last_data_date": None, "last_run_ts": None})
+    state[source_key] = {
+        "last_data_date": entry.get("last_data_date"),
+        "last_run_ts": ts.isoformat(),
+    }
+
+
+def set_last_data_date(
+    state: dict[str, SourceState],
+    source_key: str,
+    d: date,
+) -> None:
+    """Update last_data_date for source_key in-place (preserves last_run_ts)."""
+    entry = state.get(source_key, {"last_data_date": None, "last_run_ts": None})
+    state[source_key] = {
+        "last_data_date": d.isoformat(),
+        "last_run_ts": entry.get("last_run_ts"),
+    }
 
 
 # ── Row merging / deduplication ───────────────────────────────────────────────
@@ -62,10 +163,10 @@ def merge_new_rows(df_existing: pd.DataFrame, df_new: pd.DataFrame) -> pd.DataFr
     dupes = len(df_new) - len(df_unique)
 
     if df_unique.empty:
-        print(f"  All {len(df_new)} fetched rows are duplicates — no changes")
+        logger.info("All %d fetched rows are duplicates — no changes", len(df_new))
         return df_existing
 
-    print(f"  Appending {len(df_unique)} new rows ({dupes} duplicates dropped)")
+    logger.info("Appending %d new rows (%d duplicates dropped)", len(df_unique), dupes)
 
     for col in df_existing.columns:
         if col not in df_unique.columns:
@@ -78,223 +179,32 @@ def merge_new_rows(df_existing: pd.DataFrame, df_new: pd.DataFrame) -> pd.DataFr
     ).reset_index(drop=True)
 
 
-# ── Data loading (for visualization) ─────────────────────────────────────────
-
-
-def df_to_json(df: pd.DataFrame) -> list:
-    data = []
-    for _, row in df.iterrows():
-        r = {}
-        for col in df.columns:
-            v = row[col]
-            if pd.isna(v):
-                r[col] = None
-            elif isinstance(v, pd.Timestamp):
-                r[col] = v.strftime("%Y-%m-%d")
-            elif isinstance(v, (int, float)):
-                r[col] = float(v)
-            else:
-                r[col] = str(v)
-        data.append(r)
-    return data
-
-
-def load_stored_observations(base_dir: Path = DATA_DIR) -> pd.DataFrame:
-    """Load all per-source `observations.csv` files under `base_dir`."""
-    frames: list[pd.DataFrame] = []
-    for path in sorted(base_dir.rglob("observations.csv")):
-        try:
-            df = pd.read_csv(path, low_memory=False)
-        except Exception as exc:
-            print(f"  [loader] WARNING: Could not read {path}: {exc}")
-            continue
-        if df.empty:
-            continue
-        df = df.copy()
-        df["_storage_path"] = str(path.relative_to(base_dir))
-        frames.append(df)
-
-    if not frames:
-        return pd.DataFrame(columns=pd.Index([*COLUMNS, "_storage_path"]))
-
-    combined = pd.concat(frames, ignore_index=True, sort=False)
-    for col in COLUMNS:
-        if col not in combined.columns:
-            combined[col] = None
-    return combined
+# ── Publish-time loader ───────────────────────────────────────────────────────
 
 
 def load_fuel_data(
-    csv_path: Path = PRIMARY_CSV,
-    secondary_path: Path | None = SECONDARY_CSV,
+    *,
+    enriched_csv: Path | None = None,
 ) -> dict:
-    """Load and merge stored observations plus legacy CSVs for visualization."""
-    frames: list[pd.DataFrame] = []
+    """Load fuel series for publishing.
 
-    df = pd.read_csv(csv_path, low_memory=False)
-    df["_dataset_source"] = "legacy"
-    if secondary_path is not None and secondary_path.exists():
-        df2 = pd.read_csv(secondary_path, low_memory=False)
-        df2["_dataset_source"] = "legacy"
-        df = df[~df["country"].isin(SECONDARY_ONLY_COUNTRIES)]
-        df = pd.concat([df, df2], ignore_index=True)
-        if "observation_hash" in df.columns:
-            df = df.drop_duplicates(subset="observation_hash")
-    frames.append(df)
+    Reads from staged enriched CSV if available; otherwise builds from scratch
+    using process.build_enriched_frame.
+    """
+    from .process import build_enriched_frame, frame_to_country_series
 
-    df_obs = load_stored_observations()
-    if not df_obs.empty:
-        df_obs = df_obs[~df_obs["country"].isin(["Global", "EAP"])].copy()
-        df_obs["_dataset_source"] = "observations"
-        frames.append(df_obs)
+    if enriched_csv is None:
+        enriched_csv = STAGED_DATA_DIR / "enrich" / "retail_series_enriched.csv"
 
-    df = pd.concat(frames, ignore_index=True, sort=False)
-    df["observation_date"] = pd.to_datetime(df["observation_date"], errors="coerce")
-    df = df.dropna(subset=["country", "observation_date", "fuel_family"])
-
-    df["_source_rank"] = (
-        df["_dataset_source"].map({"observations": 0, "legacy": 1}).fillna(9)
-    )
-    if "observation_hash" in df.columns:
-        df = df.sort_values(["_source_rank", "observation_date"]).drop_duplicates(
-            subset=["observation_hash"], keep="first"
-        )
-
-    # Philippines: drop RON 97 (premium gasoline not tracked in the dashboard)
-    ph_ron97_mask = (df["country"] == "Philippines") & (df["fuel_product"] == "RON 97")
-    if ph_ron97_mask.any():
-        df = df[~ph_ron97_mask].copy()
-
-    # Drop redundant GPP rows for Malaysia and Cambodia: country-specific sources
-    # (my_mof_weekly_petroleum, kh_ptt_monthly_prices) provide better coverage and
-    # canonical product names. GPP rows are only ~1 week of data, conflict with
-    # official source prices, and create spurious end-of-series spikes.
-    gpp_drop_mask = (
-        (
-            (df["country"] == "Malaysia")
-            & df["source_key"].str.startswith("gpp_MYS_", na=False)
-        )
-        | (
-            (df["country"] == "Cambodia")
-            & df["source_key"].str.startswith("gpp_KHM_", na=False)
-        )
-        | (
-            (df["country"] == "Lao PDR")
-            & df["source_key"].str.startswith("gpp_LAO_", na=False)
-        )
-    )
-    if gpp_drop_mask.any():
-        df = df[~gpp_drop_mask].copy()
-
-    # Singapore: drop town_gas tariffs from fuel price visualizations
-    sg_town_gas_mask = (df["country"] == "Singapore") & (
-        df["fuel_family"] == "town_gas"
-    )
-    if sg_town_gas_mask.any():
-        df = df[~sg_town_gas_mask].copy()
-
-    # Normalise Cambodia fuel_product names across sources so all diesel rows
-    # share one chip and all gasoline rows share one chip in the visualiser.
-    _KH_PRODUCT_REMAP = {
-        # source_key -> {old_product -> (new_product, new_quality_group)}
-        "kh_ptt_monthly_prices": {
-            "Super": ("Gasoline", "premium"),
-            "Regular": ("Gasoline", "regular"),
-        },
-        "kh_moc_fuel_notices": {
-            "Regular Gasoline": ("Gasoline", "regular"),
-            "Diesel": ("Diesel", "regular"),
-        },
-    }
-    # GPP Cambodia sources: rename to canonical names regardless of exact source_key suffix
-    _KH_GPP_PROD_REMAP = {
-        "Diesel (regular)": ("Diesel", "regular"),
-        "Gasoline (Octane-95)": ("Gasoline", "regular"),
-    }
-    for src_key, prod_map in _KH_PRODUCT_REMAP.items():
-        for old_prod, (new_prod, new_qg) in prod_map.items():
-            mask = (df["source_key"] == src_key) & (df["fuel_product"] == old_prod)
-            if mask.any():
-                df.loc[mask, "fuel_product"] = new_prod
-                df.loc[mask, "quality_group"] = new_qg
-
-    kh_gpp_mask = (df["country"] == "Cambodia") & (
-        df["source_key"].str.startswith("gpp_KHM_", na=False)
-    )
-    for old_prod, (new_prod, new_qg) in _KH_GPP_PROD_REMAP.items():
-        mask = kh_gpp_mask & (df["fuel_product"] == old_prod)
-        if mask.any():
-            df.loc[mask, "fuel_product"] = new_prod
-            df.loc[mask, "quality_group"] = new_qg
-
-    # Malaysia: geography encoded in product name
-    def fix_malaysia(row):
-        prod = str(row["fuel_product"])
-        if " (East Malaysia)" in prod:
-            return pd.Series(
-                [prod.replace(" (East Malaysia)", "").strip(), "East Malaysia"]
+    if enriched_csv.exists():
+        df = pd.read_csv(enriched_csv, low_memory=False)
+        if "observation_date" in df.columns:
+            df["observation_date"] = pd.to_datetime(
+                df["observation_date"], errors="coerce"
             )
-        if " (Peninsular Malaysia)" in prod:
-            return pd.Series(
-                [
-                    prod.replace(" (Peninsular Malaysia)", "").strip(),
-                    "Peninsular Malaysia",
-                ]
-            )
-        return pd.Series([prod, None])
+        logger.info("Loading enriched fuel series from %s", enriched_csv)
+        return frame_to_country_series(df)
 
-    malaysia_mask = df["country"] == "Malaysia"
-    df.loc[malaysia_mask, ["fuel_product", "_my_loc"]] = (
-        df[malaysia_mask].apply(fix_malaysia, axis=1).values
-    )
-
-    def make_location(row):
-        my_loc = row.get("_my_loc")
-        if pd.notna(my_loc) and str(my_loc).strip():
-            return str(my_loc).strip()
-        city = row["city"]
-        sub = row["subnational_area"]
-        if pd.notna(city) and str(city).strip():
-            return str(city).strip()
-        if pd.notna(sub) and str(sub).strip():
-            if str(sub).strip().lower().startswith("national"):
-                return "National"
-            return str(sub).strip()
-        return "National"
-
-    df["location"] = df.apply(make_location, axis=1)
-    df["country"] = df["country"].replace({"Viet Nam": "Vietnam"})
-
-    _STATUS_PRIORITY = {"Final": 0, "official": 1, "Published": 2, "Provisional": 3}
-    df["_status_rank"] = df["status"].map(_STATUS_PRIORITY).fillna(99)
-    _dedup_key = [
-        "country",
-        "observation_date",
-        "fuel_family",
-        "fuel_product",
-        "quality_group",
-        "location",
-    ]
-    df = df.sort_values(["_source_rank", "_status_rank"]).drop_duplicates(
-        subset=_dedup_key, keep="first"
-    )
-    df = df.drop(columns=["_status_rank", "_source_rank"], errors="ignore")
-
-    keep = [
-        "country",
-        "observation_date",
-        "price_local",
-        "currency",
-        "unit",
-        "fuel_family",
-        "fuel_product",
-        "quality_group",
-        "location",
-    ]
-    df = df[keep].copy()
-    df = df.sort_values("observation_date")
-
-    result = {}
-    for country, grp in df.groupby("country"):
-        result[country] = df_to_json(grp)
-    return result
+    logger.info("Enriched CSV not found — building from scratch")
+    df = build_enriched_frame(collect_dir=DATA_DIR)
+    return frame_to_country_series(df)

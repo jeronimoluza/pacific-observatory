@@ -1,4 +1,4 @@
-"""Audit fuel price CSVs for schema, nulls, duplicates, and ranges.
+"""Audit fuel price per-source observations.csv files for schema, nulls, duplicates, and ranges.
 
 Run directly::
 
@@ -85,12 +85,7 @@ def audit_csvs(format: str = "md") -> dict[str, Path]:
     except ImportError as exc:
         raise RuntimeError("pandas is required for audit_csv") from exc
 
-    from .constants import DATA_DIR, PRIMARY_CSV, SECONDARY_CSV, COLUMNS
-
-    paths = {
-        "primary": PRIMARY_CSV,
-        "secondary": SECONDARY_CSV,
-    }
+    from .constants import DATA_DIR, COLUMNS
 
     required_cols = set(COLUMNS)
     critical_cols = [
@@ -104,30 +99,34 @@ def audit_csvs(format: str = "md") -> dict[str, Path]:
     ]
 
     report_lines: list[str] = []
-    report_lines.append("# Fuel prices CSV audit")
+    report_lines.append("# Fuel prices per-source audit")
     report_lines.append("")
     report_lines.append(f"Generated: {date.today().isoformat()}")
     report_lines.append("")
 
     summary_rows: list[list[str]] = []
+    total_files = 0
+    total_rows = 0
 
-    for label, path in paths.items():
-        if not path.exists():
-            summary_rows.append([label, "missing", "0", "0"])
-            continue
+    obs_files = sorted(DATA_DIR.rglob("observations.csv"))
+
+    for path in obs_files:
+        rel_path = path.relative_to(DATA_DIR)
+        label = str(rel_path.parent)
 
         df, date_info = _read_csv(path)
         n_rows = len(df)
         n_cols = len(df.columns)
+        total_files += 1
+        total_rows += n_rows
 
         missing_required = sorted(required_cols - set(df.columns))
-        extra_cols = sorted(set(df.columns) - required_cols)
 
         summary_rows.append(
             [label, str(n_rows), str(n_cols), str(len(missing_required))]
         )
 
-        report_lines.append(f"## {label.title()} CSV")
+        report_lines.append(f"## {label}")
         report_lines.append("")
         report_lines.append(f"Path: `{path}`")
         report_lines.append("")
@@ -139,12 +138,6 @@ def audit_csvs(format: str = "md") -> dict[str, Path]:
             )
         else:
             report_lines.append("- Missing required columns: none")
-        if extra_cols:
-            report_lines.append(
-                f"- Extra columns ({len(extra_cols)}): {', '.join(extra_cols)}"
-            )
-        else:
-            report_lines.append("- Extra columns: none")
         report_lines.append("")
 
         report_lines.append("### Nulls in critical fields")
@@ -205,21 +198,6 @@ def audit_csvs(format: str = "md") -> dict[str, Path]:
             date_rows.append([f"{col}_invalid", str(info["invalid"])])
             date_rows.append([f"{col}_missing", str(info["missing"])])
 
-        if "effective_from" in df.columns and "observation_date" in df.columns:
-            mask = df["effective_from"].notna() & df["observation_date"].notna()
-            outside = int(
-                (
-                    df.loc[mask, "observation_date"] < df.loc[mask, "effective_from"]
-                ).sum()
-            )
-            date_rows.append(["obs_before_effective_from", str(outside)])
-        if "effective_to" in df.columns and "observation_date" in df.columns:
-            mask = df["effective_to"].notna() & df["observation_date"].notna()
-            outside = int(
-                (df.loc[mask, "observation_date"] > df.loc[mask, "effective_to"]).sum()
-            )
-            date_rows.append(["obs_after_effective_to", str(outside)])
-
         report_lines.append(
             _table(["check", "count"], date_rows) or "- No date columns found"
         )
@@ -268,7 +246,9 @@ def audit_csvs(format: str = "md") -> dict[str, Path]:
 
     report_lines.insert(4, "## Summary")
     report_lines.insert(
-        5, _table(["csv", "rows", "columns", "missing_required"], summary_rows)
+        5,
+        f"Audited **{total_files}** per-source observation files, **{total_rows:,}** total rows.\n\n"
+        + _table(["source", "rows", "columns", "missing_required"], summary_rows),
     )
     report_lines.insert(6, "")
 
@@ -288,7 +268,9 @@ def audit_csvs(format: str = "md") -> dict[str, Path]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Audit fuel price CSV data quality")
+    parser = argparse.ArgumentParser(
+        description="Audit fuel price per-source data quality"
+    )
     parser.add_argument(
         "--format",
         choices=["md", "html", "both"],

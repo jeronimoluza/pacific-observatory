@@ -456,10 +456,6 @@ def fetch_au_fuelwatch_perth(cutoff: date) -> pd.DataFrame:
             if not (0.5 <= price <= 4.0):
                 continue
 
-            note = (
-                f"Mean of {len(prices_cpl)} stations; min={min(prices_cpl):.1f}cpl; "
-                f"max={max(prices_cpl):.1f}cpl"
-            )
             row = _TMPL_AU_FUELWATCH.copy()
             row.update(
                 {
@@ -474,7 +470,6 @@ def fetch_au_fuelwatch_perth(cutoff: date) -> pd.DataFrame:
                     "effective_to": str(obs_date),
                     "observation_date": str(obs_date),
                     "source_url": url,
-                    "notes": note,
                 }
             )
             row["observation_hash"] = make_hash(row)
@@ -597,47 +592,109 @@ def _resource_format(resource: dict) -> str:
     return ext
 
 
-def _resource_timestamp(resource: dict):
-    for key in ("last_modified", "metadata_modified", "created"):
-        val = resource.get(key)
-        if val:
-            ts = pd.to_datetime(val, errors="coerce", utc=True)
-            if pd.isna(ts):
-                continue
-            return ts
+_MONTHS_FULL = {
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "may": 5,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12,
+}
+_MONTHS_ABBR = {
+    "jan": 1,
+    "feb": 2,
+    "mar": 3,
+    "apr": 4,
+    "may": 5,
+    "jun": 6,
+    "jul": 7,
+    "aug": 8,
+    "sep": 9,
+    "oct": 10,
+    "nov": 11,
+    "dec": 12,
+}
+
+_CKAN_BROWSER_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/122.0.0.0 Safari/537.36"
+    )
+}
+
+
+def _parse_resource_month(resource: dict) -> date | None:
+    """Parse the reference month from a FuelCheck CKAN resource name or URL.
+
+    Handles two patterns:
+    - Full month in name: "FuelCheck Price History August 2021" → 2021-08-01
+    - Abbreviated month in filename: "price_history_checks_jul2024.csv" → 2024-07-01
+    """
+    name = str(resource.get("name") or "")
+
+    # Full month name at end of resource name field
+    m = re.search(r"\b(\w+)\s+(\d{4})\s*$", name, re.IGNORECASE)
+    if m:
+        month_num = _MONTHS_FULL.get(m.group(1).lower())
+        if month_num:
+            try:
+                return date(int(m.group(2)), month_num, 1)
+            except ValueError:
+                pass
+
+    # Abbreviated month in filename portion of URL
+    url = str(resource.get("url") or "")
+    fname = url.split("/")[-1].split("?")[0].lower()
+    m = re.search(r"([a-z]{3})(\d{4})", fname)
+    if m:
+        month_num = _MONTHS_ABBR.get(m.group(1))
+        if month_num:
+            try:
+                return date(int(m.group(2)), month_num, 1)
+            except ValueError:
+                pass
+
     return None
 
 
-def _pick_fuelcheck_resource(resources: list[dict]) -> dict | None:
-    candidates = [r for r in resources if _resource_format(r) in {"csv", "xlsx", "xls"}]
-    if not candidates:
-        return None
+def _read_fuelcheck_xlsx(content: bytes) -> pd.DataFrame:
+    """Read a FuelCheck XLSX file, auto-detecting the header row.
 
-    def is_price_history(r: dict) -> bool:
-        text = f"{r.get('name', '')} {r.get('url', '')}".lower()
-        return "price_history_checks" in text
-
-    csv_candidates = [r for r in candidates if _resource_format(r) == "csv"]
-    if csv_candidates:
-        pool = [r for r in csv_candidates if is_price_history(r)] or csv_candidates
-    else:
-        x_candidates = [r for r in candidates if _resource_format(r) in {"xlsx", "xls"}]
-        pool = [r for r in x_candidates if is_price_history(r)] or x_candidates
-
-    return max(
-        pool,
-        key=lambda r: _resource_timestamp(r) or pd.Timestamp(0, tz="UTC"),
-    )
+    Some files have a title row (and sometimes a blank row) before the
+    actual column headers:
+      - header at row 0: standard layout
+      - header at row 1: title in row 0
+      - header at row 2: title in row 0, blank in row 1
+    """
+    preview = pd.read_excel(io.BytesIO(content), header=None, nrows=4)
+    header_row = 0
+    for i in range(min(4, len(preview))):
+        vals = [str(v).strip() for v in preview.iloc[i].values]
+        if "FuelCode" in vals or "Price" in vals:
+            header_row = i
+            break
+    return pd.read_excel(io.BytesIO(content), header=header_row)
 
 
 def fetch_au_nsw_fuelcheck_history(cutoff: date) -> pd.DataFrame:
-    """Fetch NSW FuelCheck station-level price history via CKAN."""
+    """Fetch NSW FuelCheck station-level price history via CKAN (all monthly resources)."""
     print("  [au_nsw_fuelcheck] Fetching NSW FuelCheck price history...")
     print(f"  [au_nsw_fuelcheck] Cutoff: {cutoff}")
 
     session = get_session()
     try:
-        resp = session.get(_NSW_FUELCHECK_PACKAGE_URL, timeout=30)
+        resp = session.get(
+            _NSW_FUELCHECK_PACKAGE_URL,
+            timeout=30,
+            headers=_CKAN_BROWSER_HEADERS,
+        )
         resp.raise_for_status()
         payload = resp.json()
     except Exception as e:
@@ -646,140 +703,156 @@ def fetch_au_nsw_fuelcheck_history(cutoff: date) -> pd.DataFrame:
 
     result = payload.get("result") if isinstance(payload, dict) else None
     resources = result.get("resources", []) if isinstance(result, dict) else []
-    resource = _pick_fuelcheck_resource(resources)
-    if not resource:
-        print("  [au_nsw_fuelcheck] No machine-readable resource found")
+
+    # Collect all monthly resources whose reference month is >= cutoff
+    eligible: list[tuple[date, dict]] = []
+    for r in resources:
+        if _resource_format(r) not in {"csv", "xlsx", "xls"}:
+            continue
+        resource_month = _parse_resource_month(r)
+        if resource_month is None:
+            continue
+        if resource_month < cutoff:
+            continue
+        eligible.append((resource_month, r))
+
+    if not eligible:
+        print("  [au_nsw_fuelcheck] No resources found after cutoff")
         return pd.DataFrame()
 
-    resource_url = str(resource.get("url") or "").strip()
-    resource_format = _resource_format(resource)
-    if not resource_url:
-        print("  [au_nsw_fuelcheck] Resource URL missing")
-        return pd.DataFrame()
-
-    print(f"  [au_nsw_fuelcheck] Downloading: {resource_url}")
-    try:
-        res = session.get(resource_url, timeout=60)
-        res.raise_for_status()
-    except Exception as e:
-        print(f"  [au_nsw_fuelcheck] Download error: {e}")
-        return pd.DataFrame()
-
-    try:
-        if resource_format == "csv":
-            raw = pd.read_csv(io.BytesIO(res.content), low_memory=False)
-        else:
-            raw = pd.read_excel(io.BytesIO(res.content))
-    except Exception as e:
-        print(f"  [au_nsw_fuelcheck] Parse error: {e}")
-        return pd.DataFrame()
-
-    raw = pd.DataFrame(raw)
-    if raw.empty:
-        print("  [au_nsw_fuelcheck] Resource has no rows")
-        return pd.DataFrame()
-    if not isinstance(raw, pd.DataFrame):
-        print("  [au_nsw_fuelcheck] Resource did not parse into a table")
-        return pd.DataFrame()
-
-    col_lookup = {str(c).replace(" ", "").lower(): c for c in raw.columns}
-
-    def pick_col(*names: str) -> str | None:
-        for name in names:
-            key = name.replace(" ", "").lower()
-            if key in col_lookup:
-                return col_lookup[key]
-        return None
-
-    col_station = pick_col("ServiceStationName")
-    col_address = pick_col("Address")
-    col_suburb = pick_col("Suburb")
-    col_postcode = pick_col("Postcode")
-    col_brand = pick_col("Brand")
-    col_fuel = pick_col("FuelCode")
-    col_updated = pick_col("PriceUpdatedDate")
-    col_price = pick_col("Price")
-
-    required = [col_fuel, col_updated, col_price]
-    if any(c is None for c in required):
-        print("  [au_nsw_fuelcheck] Missing required columns in resource")
-        return pd.DataFrame()
-
-    raw["_obs_ts"] = pd.to_datetime(raw[col_updated], errors="coerce", utc=True)
-    raw["_obs_date"] = raw["_obs_ts"].dt.date
-    raw = raw.loc[raw["_obs_date"].notna()]
-    raw = raw.loc[raw["_obs_date"] > cutoff]
-    raw = raw.copy()
-
-    if raw.empty:
-        print("  [au_nsw_fuelcheck] No new rows after cutoff")
-        return pd.DataFrame()
+    eligible.sort(key=lambda x: x[0])
+    print(
+        f"  [au_nsw_fuelcheck] {len(eligible)} resources to download (cutoff: {cutoff})"
+    )
 
     all_rows: list[dict] = []
 
-    for _, row in raw.iterrows():
-        obs_date = row.get("_obs_date")
-        if obs_date is None or pd.isna(obs_date):
+    for resource_month, resource in eligible:
+        resource_url = str(resource.get("url") or "").strip()
+        resource_format = _resource_format(resource)
+        if not resource_url:
+            continue
+
+        print(
+            f"  [au_nsw_fuelcheck] Downloading {resource_month:%Y-%m}: {resource_url}"
+        )
+        try:
+            res = session.get(
+                resource_url,
+                timeout=120,
+                headers=_CKAN_BROWSER_HEADERS,
+            )
+            res.raise_for_status()
+        except Exception as e:
+            print(f"  [au_nsw_fuelcheck] Download error ({resource_month:%Y-%m}): {e}")
             continue
 
         try:
-            price_val = float(row[col_price])
-        except (TypeError, ValueError):
+            if resource_format == "csv":
+                raw = pd.read_csv(io.BytesIO(res.content), low_memory=False)
+            else:
+                raw = _read_fuelcheck_xlsx(res.content)
+        except Exception as e:
+            print(f"  [au_nsw_fuelcheck] Parse error ({resource_month:%Y-%m}): {e}")
             continue
 
-        if pd.isna(price_val) or price_val <= 0:
+        raw = pd.DataFrame(raw)
+        if raw.empty:
+            print(f"  [au_nsw_fuelcheck] {resource_month:%Y-%m}: empty resource")
             continue
 
-        if price_val >= 10:
-            price_val = price_val / 100.0
+        col_lookup = {str(c).replace(" ", "").lower(): c for c in raw.columns}
 
-        price_val = round(price_val, 4)
-        if not (0.5 <= price_val <= 4.0):
+        def pick_col(*names: str) -> str | None:
+            for name in names:
+                key = name.replace(" ", "").lower()
+                if key in col_lookup:
+                    return col_lookup[key]
+            return None
+
+        col_address = pick_col("Address")
+        col_suburb = pick_col("Suburb")
+        col_postcode = pick_col("Postcode")
+        col_fuel = pick_col("FuelCode")
+        col_updated = pick_col("PriceUpdatedDate")
+        col_price = pick_col("Price")
+
+        required = [col_fuel, col_updated, col_price]
+        if any(c is None for c in required):
+            print(
+                f"  [au_nsw_fuelcheck] {resource_month:%Y-%m}: missing required columns"
+            )
             continue
 
-        fuel_code = _clean_text(row[col_fuel])
-        fuel_code = fuel_code.upper() if fuel_code else None
-        mapping = _FUELCHECK_CODE_MAP.get(fuel_code or "", {})
+        raw["_obs_ts"] = pd.to_datetime(raw[col_updated], errors="coerce", utc=True)
+        raw["_obs_date"] = raw["_obs_ts"].dt.date
+        raw = raw.loc[raw["_obs_date"].notna()]
+        raw = raw.loc[raw["_obs_date"] > cutoff]
+        raw = raw.copy()
 
-        station = _clean_text(row[col_station]) if col_station else None
-        address = _clean_text(row[col_address]) if col_address else None
-        suburb = _clean_text(row[col_suburb]) if col_suburb else None
-        postcode = _format_postcode(row[col_postcode]) if col_postcode else None
-        brand = _clean_text(row[col_brand]) if col_brand else None
+        if raw.empty:
+            print(f"  [au_nsw_fuelcheck] {resource_month:%Y-%m}: no rows after cutoff")
+            continue
 
-        note_parts = []
-        if station:
-            note_parts.append(f"Station={station}")
-        if brand:
-            note_parts.append(f"Brand={brand}")
-        if address:
-            note_parts.append(f"Address={address}")
-        if postcode:
-            note_parts.append(f"Postcode={postcode}")
-        notes = "; ".join(note_parts) if note_parts else None
+        rows_this_resource = 0
+        for _, row in raw.iterrows():
+            obs_date = row.get("_obs_date")
+            if obs_date is None or pd.isna(obs_date):
+                continue
 
-        record = _TMPL_AU_NSW_FUELCHECK.copy()
-        record.update(
-            {
-                "fuel_family": mapping.get("fuel_family"),
-                "fuel_product": mapping.get("fuel_product") or fuel_code,
-                "quality_group": mapping.get("quality_group"),
-                "octane_ron": mapping.get("octane_ron"),
-                "ethanol_pct": mapping.get("ethanol_pct"),
-                "city": suburb,
-                "price_local": price_val,
-                "effective_from": str(obs_date),
-                "effective_to": str(obs_date),
-                "observation_date": str(obs_date),
-                "notes": notes,
-            }
-        )
-        record["observation_hash"] = make_hash(record)
-        all_rows.append(record)
+            try:
+                price_val = float(row[col_price])
+            except (TypeError, ValueError):
+                continue
+
+            if pd.isna(price_val) or price_val <= 0:
+                continue
+
+            if price_val >= 10:
+                price_val = price_val / 100.0
+
+            price_val = round(price_val, 4)
+            if not (0.5 <= price_val <= 4.0):
+                continue
+
+            fuel_code = _clean_text(row[col_fuel])
+            fuel_code = fuel_code.upper() if fuel_code else None
+            mapping = _FUELCHECK_CODE_MAP.get(fuel_code or "", {})
+
+            street = _clean_text(row[col_address]) if col_address else None
+            suburb = _clean_text(row[col_suburb]) if col_suburb else None
+            postcode = _format_postcode(row[col_postcode]) if col_postcode else None
+
+            # Build a full address string from available parts
+            addr_parts = [p for p in [street, suburb, postcode] if p]
+            full_address = ", ".join(addr_parts) if addr_parts else None
+
+            record = _TMPL_AU_NSW_FUELCHECK.copy()
+            record.update(
+                {
+                    "fuel_family": mapping.get("fuel_family"),
+                    "fuel_product": mapping.get("fuel_product") or fuel_code,
+                    "quality_group": mapping.get("quality_group"),
+                    "octane_ron": mapping.get("octane_ron"),
+                    "ethanol_pct": mapping.get("ethanol_pct"),
+                    "city": suburb,
+                    "address": full_address,
+                    "price_local": price_val,
+                    "effective_from": str(obs_date),
+                    "effective_to": str(obs_date),
+                    "observation_date": str(obs_date),
+                }
+            )
+            record["observation_hash"] = make_hash(record)
+            all_rows.append(record)
+            rows_this_resource += 1
+
+        print(f"  [au_nsw_fuelcheck] {resource_month:%Y-%m}: {rows_this_resource} rows")
+        time.sleep(0.5)
 
     if not all_rows:
         print("  [au_nsw_fuelcheck] No valid rows extracted")
         return pd.DataFrame()
 
-    print(f"  [au_nsw_fuelcheck] {len(all_rows)} rows fetched")
+    print(f"  [au_nsw_fuelcheck] Total: {len(all_rows)} rows fetched")
     return pd.DataFrame(all_rows)

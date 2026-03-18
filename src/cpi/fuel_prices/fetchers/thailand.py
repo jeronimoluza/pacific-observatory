@@ -126,7 +126,6 @@ import html
 import re
 import xml.etree.ElementTree as ET
 from datetime import date, datetime, timedelta
-from email.utils import parsedate_to_datetime
 from io import BytesIO
 
 import pandas as pd
@@ -278,12 +277,6 @@ _TH_RETAIL_PRODUCTS = [
         "quality_group": "premium",
     },
 ]
-
-_TH_NEWS_FEED_URL = (
-    "https://www.eppo.go.th/index.php/th/petroleum/oil/status-oil-price"
-    "?orders[publishUp]=publishUp&issearch=1&format=feed"
-)
-
 
 # ── Bangchak historical retail prices ────────────────────────────────────────
 
@@ -1050,53 +1043,3 @@ def fetch_thailand_eppo_ngv(cutoff: date) -> pd.DataFrame:
     if not all_rows:
         print("  [th_eppo_ngv] No new rows")
     return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
-
-
-def fetch_thailand_news_evidence(max_items: int = 50) -> list[dict]:
-    """Fetch Thailand EPPO oil price news RSS metadata for Track A evidence."""
-    session = get_session()
-    try:
-        resp = session.get(_TH_NEWS_FEED_URL, timeout=30)
-        resp.raise_for_status()
-    except Exception as e:
-        print(f"  [th_news] Could not fetch RSS feed: {e}")
-        return []
-
-    try:
-        root = ET.fromstring(resp.content)
-    except ET.ParseError as e:
-        print(f"  [th_news] RSS parse error: {e}")
-        return []
-
-    items = root.findall(".//item")
-    records = []
-    fetched_at = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
-    for item in items[:max_items]:
-        title = (item.findtext("title") or "").strip()
-        link = (item.findtext("link") or "").strip()
-        guid = (item.findtext("guid") or "").strip()
-        pub_raw = (item.findtext("pubDate") or "").strip()
-        desc = (item.findtext("description") or "").strip()
-        pub_date = None
-        if pub_raw:
-            try:
-                pub_date = parsedate_to_datetime(pub_raw).date().isoformat()
-            except Exception:
-                pub_date = None
-
-        records.append(
-            {
-                "country": "Thailand",
-                "source_key": "th_eppo_oil_price_status_news",
-                "source_name": "EPPO Oil Price Status News",
-                "source_url": _TH_NEWS_FEED_URL,
-                "article_url": link or guid,
-                "title": title,
-                "published_date": pub_date,
-                "summary": desc or None,
-                "fetched_at": fetched_at,
-                "evidence_type": "news_article",
-            }
-        )
-
-    return records
