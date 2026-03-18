@@ -1,4 +1,4 @@
-"""Australia fuel price fetchers: AIP Terminal Gate Prices + ACCC quarterly retail."""
+"""Australia fuel price fetchers: AIP Terminal Gate Prices + ACCC quarterly retail + FuelWatch historic."""
 
 # ruff: noqa: E402
 SOURCE_META = [
@@ -49,6 +49,18 @@ SOURCE_META = [
         "source_keys": ["au_nsw_fuelcheck_history"],
         "publishes_on": "Monthly",
         "notes": "Selects most recent machine-readable resource (prefers price_history_checks_*.csv). Converts cents/L to AUD/L when needed; station details stored in notes.",
+    },
+    {
+        "fetcher_fn": "fetch_au_fuelwatch_historic_csv",
+        "country": "Australia",
+        "source_name": "FuelWatch WA (Perth) Historic CSV",
+        "url": "https://warsydprdstafuelwatch.blob.core.windows.net/historical-reports/",
+        "description": "Western Australia government FuelWatch historic monthly CSVs from Azure Blob Storage. Station-level daily prices aggregated to Perth Metro regional means.",
+        "extraction_method": ["CSV download"],
+        "products": ["Unleaded", "Diesel"],
+        "source_keys": ["au_fuelwatch_perth_daily"],
+        "publishes_on": "Monthly (historic archive)",
+        "notes": "Downloads monthly CSV (FuelWatchRetail-MM-YYYY.csv). Filters to Perth Metro (North of River + South of River), ULP + Diesel. Aggregates station prices to daily mean. Converts cents/L to AUD/L.",
     },
 ]
 
@@ -855,4 +867,120 @@ def fetch_au_nsw_fuelcheck_history(cutoff: date) -> pd.DataFrame:
         return pd.DataFrame()
 
     print(f"  [au_nsw_fuelcheck] Total: {len(all_rows)} rows fetched")
+    return pd.DataFrame(all_rows)
+
+
+# ── FuelWatch (WA) historic CSV from Azure Blob Storage ──────────────────────
+
+_FUELWATCH_HISTORIC_URL = (
+    "https://warsydprdstafuelwatch.blob.core.windows.net"
+    "/historical-reports/FuelWatchRetail-03-2026.csv"
+)
+
+_FUELWATCH_CSV_PRODUCT_MAP = {
+    "ULP": ("Unleaded", "gasoline", "regular", None),
+    "Diesel": ("Diesel", "diesel", "regular", None),
+}
+
+_FUELWATCH_CSV_REGIONS = {"North of River", "South of River"}
+
+
+def fetch_au_fuelwatch_historic_csv(cutoff: date) -> pd.DataFrame:
+    """Fetch FuelWatch WA historic CSV and aggregate to daily Perth Metro means."""
+    print("  [au_fuelwatch_csv] Fetching FuelWatch historic CSV...")
+    print(f"  [au_fuelwatch_csv] Cutoff: {cutoff}")
+
+    session = get_session()
+    try:
+        resp = session.get(_FUELWATCH_HISTORIC_URL, timeout=120)
+        resp.raise_for_status()
+    except Exception as e:
+        print(f"  [au_fuelwatch_csv] Download error: {e}")
+        return pd.DataFrame()
+
+    try:
+        raw = pd.read_csv(io.BytesIO(resp.content), low_memory=False)
+    except Exception as e:
+        print(f"  [au_fuelwatch_csv] CSV parse error: {e}")
+        return pd.DataFrame()
+
+    if raw.empty:
+        print("  [au_fuelwatch_csv] Empty CSV")
+        return pd.DataFrame()
+
+    # Parse dates (DD/MM/YYYY format)
+    raw["_date"] = pd.to_datetime(
+        raw["PUBLISH_DATE"], format="%d/%m/%Y", errors="coerce"
+    )
+    raw = raw.dropna(subset=["_date"])
+    raw["_date_d"] = raw["_date"].dt.date
+
+    # Filter to dates after cutoff
+    raw = raw[raw["_date_d"] > cutoff]
+    if raw.empty:
+        print("  [au_fuelwatch_csv] No rows after cutoff")
+        return pd.DataFrame()
+
+    # Filter to Perth Metro regions
+    raw = raw[raw["AREA_DESCRIPTION"].isin(_FUELWATCH_CSV_REGIONS)]
+    if raw.empty:
+        print("  [au_fuelwatch_csv] No Perth Metro rows")
+        return pd.DataFrame()
+
+    # Filter to target products
+    raw = raw[raw["PRODUCT_DESCRIPTION"].isin(_FUELWATCH_CSV_PRODUCT_MAP)]
+    if raw.empty:
+        print("  [au_fuelwatch_csv] No ULP/Diesel rows")
+        return pd.DataFrame()
+
+    # Parse prices
+    raw["_price"] = pd.to_numeric(raw["PRODUCT_PRICE"], errors="coerce")
+    raw = raw.dropna(subset=["_price"])
+    raw = raw[raw["_price"] > 0]
+
+    # Group by (date, product, area) and compute mean price
+    grouped = (
+        raw.groupby(["_date_d", "PRODUCT_DESCRIPTION", "AREA_DESCRIPTION"])["_price"]
+        .mean()
+        .reset_index()
+    )
+
+    all_rows: list[dict] = []
+    for _, g in grouped.iterrows():
+        obs_date = g["_date_d"]
+        product = g["PRODUCT_DESCRIPTION"]
+        area = g["AREA_DESCRIPTION"]
+        mean_cpl = g["_price"]
+
+        prod_name, family, qg, ron = _FUELWATCH_CSV_PRODUCT_MAP[product]
+
+        # Convert cents/L to AUD/L
+        price = round(mean_cpl / 100.0, 4)
+        if not (0.5 <= price <= 4.0):
+            continue
+
+        row = _TMPL_AU_FUELWATCH.copy()
+        row.update(
+            {
+                "fuel_family": family,
+                "fuel_product": prod_name,
+                "quality_group": qg,
+                "octane_ron": ron,
+                "subnational_area": area,
+                "city": "Perth",
+                "price_local": price,
+                "effective_from": str(obs_date),
+                "effective_to": str(obs_date),
+                "observation_date": str(obs_date),
+                "source_url": _FUELWATCH_HISTORIC_URL,
+            }
+        )
+        row["observation_hash"] = make_hash(row)
+        all_rows.append(row)
+
+    if not all_rows:
+        print("  [au_fuelwatch_csv] No valid rows after aggregation")
+        return pd.DataFrame()
+
+    print(f"  [au_fuelwatch_csv] {len(all_rows)} rows fetched")
     return pd.DataFrame(all_rows)

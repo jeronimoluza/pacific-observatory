@@ -1,4 +1,4 @@
-"""Malaysia MOF weekly petroleum retail price fetcher."""
+"""Malaysia MOF weekly petroleum retail price fetcher + data.gov.my open data."""
 
 # ruff: noqa: E402
 SOURCE_META = [
@@ -19,8 +19,25 @@ SOURCE_META = [
         "publishes_on": "Wednesday",
         "notes": "Effective date extracted from URL slug (English and Malay date patterns). Generates one row per day within each weekly window. Price range MYR 1.0–6.0/L.",
     },
+    {
+        "fetcher_fn": "fetch_malaysia_datagovmy",
+        "country": "Malaysia",
+        "source_name": "data.gov.my Weekly Fuel Prices",
+        "url": "https://data.gov.my/data-catalogue/fuelprice",
+        "description": "Official Malaysia open data portal (data.gov.my). Weekly retail fuel prices from Ministry of Finance via structured CSV/parquet.",
+        "extraction_method": ["Parquet/CSV download"],
+        "products": [
+            "Gasoline RON95 (Premium)",
+            "Gasoline RON97 (Super Premium)",
+            "Diesel (Peninsular Malaysia)",
+        ],
+        "source_keys": ["my_datagovmy_weekly_fuelprice"],
+        "publishes_on": "Wednesday",
+        "notes": "Downloads parquet (preferred) or CSV from storage.data.gov.my. Filters series_type=level. Price range MYR 1.0–6.0/L. CC BY 4.0 license.",
+    },
 ]
 
+import io
 import re
 import time
 from datetime import date, timedelta
@@ -344,4 +361,127 @@ def fetch_malaysia_mof(cutoff: date) -> pd.DataFrame:
         print(f"  [mof] {len(all_rows)} new rows total")
     else:
         print("  [mof] No new rows")
+    return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
+
+
+# ── data.gov.my weekly fuel prices ───────────────────────────────────────────
+
+_DATAGOVMY_PARQUET_URL = "https://storage.data.gov.my/commodities/fuelprice.parquet"
+_DATAGOVMY_CSV_URL = "https://storage.data.gov.my/commodities/fuelprice.csv"
+
+_TMPL_MY_DATAGOVMY = make_template(
+    country="Malaysia",
+    wb_iso3="MYS",
+    source_key="my_datagovmy_weekly_fuelprice",
+    source_name="data.gov.my — Weekly Fuel Prices",
+    source_url="https://data.gov.my/data-catalogue/fuelprice",
+    currency="MYR",
+    unit="L",
+    subnational_area="National",
+    publication_frequency="weekly",
+    observation_method="reported",
+    tax_status="tax_inclusive",
+    source_type="official",
+)
+
+# (column_name, fuel_product, fuel_family, quality_group, octane_ron, subnational)
+_DATAGOVMY_PRODUCTS = [
+    ("ron95", "RON95", "gasoline", "premium", 95, "National"),
+    ("ron97", "RON97", "gasoline", "super_premium", 97, "National"),
+    (
+        "diesel",
+        "Diesel (Peninsular Malaysia)",
+        "diesel",
+        "regular",
+        None,
+        "Peninsular Malaysia",
+    ),
+]
+
+
+def fetch_malaysia_datagovmy(cutoff: date) -> pd.DataFrame:
+    """Fetch Malaysia weekly fuel prices from data.gov.my (parquet/CSV)."""
+    print("  [datagovmy] Fetching Malaysia data.gov.my fuel prices...")
+    print(f"  [datagovmy] Cutoff: {cutoff}")
+
+    session = get_session()
+    df = None
+
+    # Try parquet first
+    try:
+        resp = session.get(_DATAGOVMY_PARQUET_URL, timeout=60)
+        resp.raise_for_status()
+        df = pd.read_parquet(io.BytesIO(resp.content))
+        print("  [datagovmy] Loaded parquet successfully")
+    except Exception as e:
+        print(f"  [datagovmy] Parquet failed ({e}), trying CSV...")
+
+    # Fall back to CSV
+    if df is None:
+        try:
+            resp = session.get(_DATAGOVMY_CSV_URL, timeout=60)
+            resp.raise_for_status()
+            df = pd.read_csv(io.BytesIO(resp.content), low_memory=False)
+            print("  [datagovmy] Loaded CSV successfully")
+        except Exception as e:
+            print(f"  [datagovmy] CSV also failed: {e}")
+            return pd.DataFrame()
+
+    if df is None or df.empty:
+        print("  [datagovmy] Empty dataset")
+        return pd.DataFrame()
+
+    # Filter to level rows only (exclude change_weekly)
+    if "series_type" in df.columns:
+        df = df[df["series_type"] == "level"]
+
+    # Parse dates
+    df["_date"] = pd.to_datetime(df["date"], errors="coerce")
+    df = df.dropna(subset=["_date"])
+    df["_date_d"] = df["_date"].dt.date
+
+    # Filter to dates after cutoff
+    df = df[df["_date_d"] > cutoff]
+    if df.empty:
+        print("  [datagovmy] No rows after cutoff")
+        return pd.DataFrame()
+
+    print(f"  [datagovmy] {len(df)} date rows to process")
+
+    all_rows: list[dict] = []
+
+    for _, row in df.iterrows():
+        obs_date = row["_date_d"]
+        for col, prod_name, family, qg, ron, subnational in _DATAGOVMY_PRODUCTS:
+            if col not in row.index:
+                continue
+            try:
+                price = float(row[col])
+            except (ValueError, TypeError):
+                continue
+            if pd.isna(price) or not (1.0 <= price <= 6.0):
+                continue
+
+            r = _TMPL_MY_DATAGOVMY.copy()
+            r.update(
+                {
+                    "fuel_family": family,
+                    "fuel_product": prod_name,
+                    "quality_group": qg,
+                    "octane_ron": ron,
+                    "subnational_area": subnational,
+                    "price_local": round(price, 4),
+                    "effective_from": str(obs_date),
+                    "effective_to": str(obs_date),
+                    "observation_date": str(obs_date),
+                    "source_url": _DATAGOVMY_PARQUET_URL,
+                }
+            )
+            r["observation_hash"] = make_hash(r)
+            all_rows.append(r)
+
+    if all_rows:
+        print(f"  [datagovmy] {len(all_rows)} new rows total")
+    else:
+        print("  [datagovmy] No new rows")
     return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()

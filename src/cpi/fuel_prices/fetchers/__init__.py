@@ -11,6 +11,7 @@ import pandas as pd
 from .australia import (
     fetch_accc,
     fetch_au_aip_tgp,
+    fetch_au_fuelwatch_historic_csv,
     fetch_au_fuelwatch_perth,
     fetch_au_nsw_fuelcheck_history,
 )
@@ -25,7 +26,7 @@ from .indonesia import fetch_id_oto, fetch_id_pertamina_pengumuman
 from .japan import fetch_jp_anre_excel
 from .korea import fetch_kr_opinet_daily, fetch_kr_opinet_weekly
 from .lao import fetch_lao, fetch_lao_kpl
-from .malaysia import fetch_malaysia_mof
+from .malaysia import fetch_malaysia_datagovmy, fetch_malaysia_mof
 from .mongolia import fetch_mn_nso_weekly_aimag, fetch_mongolia_data_mn
 from .myanmar import fetch_myanmar_denko, fetch_myanmar_gnlm
 from .new_zealand import fetch_nz_gaspy_stats_daily, fetch_nz_mbie_weekly
@@ -111,6 +112,14 @@ FETCHER_REGISTRY: dict[str, FetcherConfig] = {
         homepage="https://data.nsw.gov.au/data/dataset/fuel-check",
         cadence="irregular",
     ),
+    "au_fuelwatch_perth_daily_historic": FetcherConfig(
+        fn=fetch_au_fuelwatch_historic_csv,
+        fallback_date=date(2026, 1, 1),
+        source_name="FuelWatch WA (Perth) Historic CSV",
+        country="Australia",
+        homepage="https://www.fuelwatch.wa.gov.au/retail/historic",
+        cadence="manual",
+    ),
     # ── Cambodia ──────────────────────────────────────────────────────────────
     "kh_ptt_monthly_prices": FetcherConfig(
         fn=fetch_kh_ptt,
@@ -166,7 +175,7 @@ FETCHER_REGISTRY: dict[str, FetcherConfig] = {
     ),
     "id_pertamina_pengumuman_non_subsidi": FetcherConfig(
         fn=fetch_id_pertamina_pengumuman,
-        fallback_date=date(2024, 1, 1),
+        fallback_date=date(2025, 3, 1),
         source_name="Pertamina Pengumuman Harga BBM Non-Subsidi",
         country="Indonesia",
         homepage="https://www.pertamina.com/pengumuman",
@@ -222,6 +231,14 @@ FETCHER_REGISTRY: dict[str, FetcherConfig] = {
         source_name="Malaysia Ministry of Finance — Weekly Petroleum Retail Prices",
         country="Malaysia",
         homepage="https://www.mof.gov.my/portal/en/news/press-release/retail-price",
+        cadence="weekly",
+    ),
+    "my_datagovmy_weekly_fuelprice": FetcherConfig(
+        fn=fetch_malaysia_datagovmy,
+        fallback_date=date(2017, 3, 1),
+        source_name="data.gov.my — Weekly Fuel Prices",
+        country="Malaysia",
+        homepage="https://data.gov.my/data-catalogue/fuelprice",
         cadence="weekly",
     ),
     # ── Mongolia ──────────────────────────────────────────────────────────────
