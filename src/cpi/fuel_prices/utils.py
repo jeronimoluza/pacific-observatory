@@ -60,6 +60,7 @@ def make_hash(row: dict) -> str:
             str(row.get("fuel_product", "")),
             str(row.get("subnational_area", "")),
             str(row.get("city", "")),
+            str(row.get("address", "")),
             str(row.get("price_local", "")),
         ]
     )
@@ -82,37 +83,24 @@ def safe_last_date(df: pd.DataFrame, source_key: str, fallback: date) -> date:
 
 
 def make_template(**kwargs) -> dict:
-    """Build a row template dict for a new source not yet in df_existing."""
+    """Build a row template dict for a new observation row.
+
+    Only includes the 12 lean COLUMNS. Extra kwargs (e.g. fuel_family, source_name)
+    are accepted for convenience and will be present in the returned dict, but
+    save_fuel_csv() will drop them when writing to disk.
+    """
     defaults = {
+        "observation_date": None,
         "country": None,
-        "wb_iso3": None,
         "subnational_area": None,
         "city": None,
-        "fuel_family": None,
+        "address": None,
         "fuel_product": None,
-        "quality_group": None,
-        "octane_ron": None,
-        "ethanol_pct": None,
-        "sulfur_standard": None,
-        "gas_type": None,
-        "delivery_type": None,
-        "consumer_segment": "retail",
         "price_local": None,
         "currency": None,
         "unit": "L",
-        "tax_status": "tax_inclusive",
         "source_key": None,
-        "source_name": None,
-        "source_url": None,
-        "source_type": "official",
         "scrape_ts": get_scrape_ts(),
-        "effective_from": None,
-        "effective_to": None,
-        "observation_date": None,
-        "publication_frequency": None,
-        "observation_method": "reported",
-        "status": "Final",
-        "notes": None,
         "observation_hash": None,
     }
     defaults.update(kwargs)

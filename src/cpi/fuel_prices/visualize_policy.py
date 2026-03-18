@@ -10,12 +10,14 @@ Two tabs:
 import html as _html
 import json
 import re
+from datetime import date, timedelta
 from pathlib import Path
 
 import pandas as pd
 import requests
 
 from .constants import (
+    DASHBOARD_HISTORY_YEARS,
     DATA_DIR,
     IMF_SUBSIDIES_XLSB,
     PALETTE,
@@ -40,10 +42,6 @@ COUNTRY_PRODUCTS: dict[str, list[str]] = {
         "Diesel",
         "Kerosene",
         "Premix",
-        "Autogas",
-        "LPG",
-        "12 Kg Cylinder",
-        "4.5 Kg Cylinder",
     ],
     "Indonesia": [
         "Pertalite",
@@ -61,10 +59,8 @@ COUNTRY_PRODUCTS: dict[str, list[str]] = {
         "High-octane Gasoline",
         "Diesel",
         "Kerosene (retail)",
-        "Kerosene (delivery)",
-        "Kerosene (in-store)",
     ],
-    "Korea, Rep.": ["Regular Gasoline", "Diesel", "Kerosene", "LPG"],
+    "Korea, Rep.": ["Regular Gasoline", "Diesel", "Kerosene"],
     "Lao PDR": ["Gasoline 95", "Regular Gasoline", "Diesel"],
     "Malaysia": ["RON95", "RON97", "Diesel"],
     "Mongolia": ["Petrol A-92", "Petrol A-80", "Diesel"],
@@ -95,6 +91,7 @@ COUNTRY_PRODUCTS: dict[str, list[str]] = {
         "Kerosene",
         "NGV retail price",
     ],
+    "Taiwan": ["Unleaded 92", "Unleaded 95", "Unleaded 98", "Super Diesel"],
     "Timor-Leste": ["Petrol", "Diesel"],
     "Tonga": ["Petrol", "Diesel", "Kerosene"],
     "Vanuatu": ["Unleaded Petrol 95RON", "Low Sulphur Diesel 10PPM"],
@@ -139,6 +136,23 @@ _SUBSIDY_TYPE_CODES = {3, 4, 5, 6, 7, 9}
 
 # ISO3 codes excluded from subsidy chips in Tab 1 (no data yet)
 _SUBSIDY_CHIP_EXCLUDE: set[str] = set()
+
+# Hardcoded product regimes for countries not in the WB subsidies CSV
+# (e.g. HKG and TWN are not EAP-classified in the World Bank dataset)
+_HARDCODED_PRODUCT_REGIMES: dict[str, dict[str, dict]] = {
+    "HKG": {
+        "Gasoline": {"regime": "Market", "subsidy": False},
+        "Diesel": {"regime": "Market", "subsidy": False},
+        "LPG": {"regime": "Market", "subsidy": False},
+        "Kerosene": {"regime": "Market", "subsidy": False},
+    },
+    "TWN": {
+        "Gasoline": {"regime": "Price Control", "subsidy": False},
+        "Diesel": {"regime": "Price Control", "subsidy": False},
+        "LPG": {"regime": "Price Control", "subsidy": False},
+        "Kerosene": {"regime": "Price Control", "subsidy": False},
+    },
+}
 
 # Country name normalization for GDP/pop CSV merges
 _COUNTRY_NAME_MAP: dict[str, str] = {
@@ -812,6 +826,9 @@ def load_policy_data() -> dict:
                 }
             )
 
+    # Apply hardcoded overrides for countries absent from the WB regime CSV
+    product_regimes.update(_HARDCODED_PRODUCT_REGIMES)
+
     return {
         "comm_series": comm_series,
         "eap_countries": eap_countries,
@@ -1003,14 +1020,159 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
 
     imf_raw_by_iso3 = data.get("imf_raw_by_iso3", {})
 
-    comm_json = json.dumps(comm_series)
-    scatter_json = json.dumps(scatter)
+    _FUEL_KEEP = {
+        "observation_date",
+        "price_local",
+        "location",
+        "source_key",
+        "fuel_product",
+        "series_key",
+        "fuel_family",
+        "currency",
+        "unit",
+    }
+
+    def _avg_stations(records: list[dict]) -> list[dict]:
+        """Collapse per-station rows into one averaged row per (date, product, source)."""
+        from collections import defaultdict
+
+        groups: dict = defaultdict(list)
+        first: dict = {}
+        for r in records:
+            key = (
+                r.get("observation_date"),
+                r.get("fuel_product"),
+                r.get("source_key"),
+            )
+            groups[key].append(r.get("price_local"))
+            if key not in first:
+                first[key] = r
+        out = []
+        for key, prices in groups.items():
+            valid = [p for p in prices if p is not None]
+            if not valid:
+                continue
+            rec = dict(first[key])
+            rec["price_local"] = round(sum(valid) / len(valid), 4)
+            rec["subnational_area"] = ""
+            rec["location"] = ""
+            out.append(rec)
+        return sorted(
+            out,
+            key=lambda r: (r.get("observation_date", ""), r.get("fuel_product", "")),
+        )
+
+    # Pre-process per-country before slimming.
+    # HK: exclude sparse GPP rows (they introduce a duplicate "Gasoline" chip), then
+    #     average the per-station Consumer Council data to one price per day.
+    _HK_STABLE_STATIONS = {"PetroChina"}
+    _hk_records = _avg_stations(
+        [
+            r
+            for r in fuel_data.get("Hong Kong", [])
+            if not r.get("source_key", "").startswith("gpp_")
+            and r.get("subnational_area") in _HK_STABLE_STATIONS
+        ]
+    )
+    # Mongolia: mn_data_mn_fuel_ulaanbaatar is stale (max 2025-12-31); switch to the
+    #           NSO aimag weekly source which is current and has real price variation.
+    _mn_records = [
+        r
+        for r in fuel_data.get("Mongolia", [])
+        if r.get("source_key") == "mn_nso_aimag_weekly_fuel"
+    ]
+    # Vietnam: keep only vn_petrolimex_retail National rows to avoid zone-mixing spikes.
+    #          GPP rows (sparse, different product name) are also excluded.
+    _vn_records = [
+        r
+        for r in fuel_data.get("Vietnam", [])
+        if r.get("source_key") == "vn_petrolimex_retail"
+        and r.get("location") == "National"
+    ]
+    # China: NDRC source stores prices in CNY/ton; convert to CNY/L using standard
+    # petroleum densities (No.92 gasoline ~0.7254 kg/L, No.0 diesel ~0.835 kg/L).
+    _CN_L_PER_TON = {"Gasoline": 1379.0, "Diesel": 1197.6}
+    _cn_records = []
+    for r in fuel_data.get("China", []):
+        if r.get("unit") == "ton" and r.get("fuel_product") in _CN_L_PER_TON:
+            rec = dict(r)
+            rec["price_local"] = round(
+                r["price_local"] / _CN_L_PER_TON[r["fuel_product"]], 4
+            )
+            rec["unit"] = "L"
+            _cn_records.append(rec)
+        else:
+            _cn_records.append(r)
+
+    # Thailand: exclude NGV source (unit=kg); rename a few Bangchak brand names
+    _TH_PRODUCT_MAP = {
+        "E20": "Gasohol E20",
+        "E85": "Gasohol E85",
+        "Hi Diesel S": "Diesel",
+    }
+    _th_records = []
+    for r in fuel_data.get("Thailand", []):
+        if r.get("source_key") == "th_eppo_ngv_bangkok_2025":
+            continue
+        fp = r.get("fuel_product")
+        if fp in _TH_PRODUCT_MAP:
+            rec = dict(r)
+            rec["fuel_product"] = _TH_PRODUCT_MAP[fp]
+            _th_records.append(rec)
+        else:
+            _th_records.append(r)
+
+    _preprocessed = {
+        **fuel_data,
+        "Hong Kong": _hk_records,
+        "Mongolia": _mn_records,
+        "Vietnam": _vn_records,
+        "China": _cn_records,
+        "Thailand": _th_records,
+    }
+
+    fuel_data_slim = {
+        country: [{k: r[k] for k in _FUEL_KEEP if k in r} for r in records]
+        for country, records in _preprocessed.items()
+    }
+
+    # Normalize Taiwan CPC product names ("92 Unleaded") to MOEA convention ("Unleaded 92")
+    _TW_RENAME = {
+        "92 Unleaded": "Unleaded 92",
+        "95 Unleaded": "Unleaded 95",
+        "98 Unleaded": "Unleaded 98",
+    }
+    for r in fuel_data_slim.get("Taiwan", []):
+        fp = r.get("fuel_product")
+        if fp in _TW_RENAME:
+            r["fuel_product"] = _TW_RENAME[fp]
+
+    # Trim both time-series to the last DASHBOARD_HISTORY_YEARS years.
+    # observation_date and comm point x values are already "%Y-%m-%d" strings,
+    # so lexicographic comparison works correctly.
+    _cutoff = (date.today() - timedelta(days=365 * DASHBOARD_HISTORY_YEARS)).strftime(
+        "%Y-%m-%d"
+    )
+    fuel_data_slim = {
+        country: [
+            r for r in records if str(r.get("observation_date", ""))[:10] >= _cutoff
+        ]
+        for country, records in fuel_data_slim.items()
+    }
+    comm_series = {
+        prod: {**series, "points": [p for p in series["points"] if p["x"] >= _cutoff]}
+        for prod, series in comm_series.items()
+    }
+
+    comm_json = json.dumps(json.dumps(comm_series))
+    scatter_json = json.dumps(json.dumps(scatter))
     colors_json = json.dumps(regime_colors)
     palette_json = json.dumps(PALETTE)
-    fuel_data_json = json.dumps(fuel_data)
+    fuel_data_json = json.dumps(json.dumps(fuel_data_slim))
     country_products_json = json.dumps(COUNTRY_PRODUCTS)
     product_regimes_json = json.dumps(product_regimes)
-    fuel_countries = sorted(fuel_data.keys())
+    _HIDDEN_COUNTRIES = {"Palau"}
+    fuel_countries = sorted(c for c in fuel_data.keys() if c not in _HIDDEN_COUNTRIES)
     fuel_country_opts = "\n".join(
         f'<option value="{c}">{c}</option>' for c in fuel_countries
     )
@@ -1153,13 +1315,6 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
         <span class="row-label">Country:</span>
         <select id="fuel-country-select">{fuel_country_opts}</select>
     </div>
-    <div class="ctrl-row">
-        <span class="row-label">Smoothing:</span>
-        <div class="toggle-group">
-            <label><input type="radio" name="fuel-ma-toggle" value="raw" checked>Raw</label>
-            <label><input type="radio" name="fuel-ma-toggle" value="ma">3-Mo MA</label>
-        </div>
-    </div>
     <div class="slider-row">
         <label>Date Range:</label>
         <span id="fuel-range-label">&mdash;</span>
@@ -1188,8 +1343,8 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
 
 <script>
 // ─── Data ────────────────────────────────────────────────────────────────────
-const COMM_SERIES   = {comm_json};
-const SCATTER_DATA  = {scatter_json};
+const COMM_SERIES   = JSON.parse({comm_json});
+const SCATTER_DATA  = JSON.parse({scatter_json});
 const REGIME_COLORS = {colors_json};
 const PALETTE       = {palette_json};
 const PRODUCT_REGIMES = {product_regimes_json};
@@ -1197,13 +1352,24 @@ const ALL_PRODUCTS  = {products_json};
 const EAP_ISOS      = new Set({eap_isos_json});
 
 // ─── Tab switching ────────────────────────────────────────────────────────────
-let fuelTabInitialized = false;
+let fuelTabInitialized    = false;
+let commTabInitialized    = false;
+let scatterTabInitialized = false;
 function switchTab(id, btn) {{
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     btn.classList.add('active');
-    if (id === 'tab2') renderScatter();
+    if (id === 'tab1' && !commTabInitialized) {{
+        commTabInitialized = true;
+        buildCommChips();
+        initCommSlider();
+        renderComm();
+    }}
+    if (id === 'tab2' && !scatterTabInitialized) {{
+        scatterTabInitialized = true;
+        renderScatter();
+    }}
     if (id === 'tab3' && !fuelTabInitialized) {{
         fuelTabInitialized = true;
         rebuildFuelChips();
@@ -1353,7 +1519,6 @@ function renderComm() {{
     const selected = getChecked('comm-chips');
     const range    = getSliderRange();
     const ctx = document.getElementById('comm-chart').getContext('2d');
-    if (commChart) commChart.destroy();
 
     const datasets = [];
     let colorIdx = 0;
@@ -1382,36 +1547,43 @@ function renderComm() {{
     const firstSeries = selected.length ? COMM_SERIES[selected[0]] : null;
     const yLabel = firstSeries ? (firstSeries.currency + '/' + firstSeries.unit) : '';
 
-    commChart = new Chart(ctx, {{
-        type: 'line',
-        data: {{ datasets }},
-        options: {{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {{
-                legend: {{ position: 'top', labels: {{ usePointStyle: true, padding: 14, font: {{ size: 11 }} }} }},
-                tooltip: {{
-                    mode: 'index', intersect: false,
-                    backgroundColor: 'rgba(0,0,0,0.82)', padding: 12,
-                    callbacks: {{
-                        title: items => items.length ? items[0].raw.x : '',
-                        label: item => {{
-                            const v = item.raw ? item.raw.y : null;
-                            return v == null ? null : datasets[item.datasetIndex].label + ': ' + v.toFixed(2);
+    if (!commChart) {{
+        commChart = new Chart(ctx, {{
+            type: 'line',
+            data: {{ datasets }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{
+                    legend: {{ position: 'top', labels: {{ usePointStyle: true, padding: 14, font: {{ size: 11 }} }} }},
+                    tooltip: {{
+                        mode: 'index', intersect: false,
+                        backgroundColor: 'rgba(0,0,0,0.82)', padding: 12,
+                        callbacks: {{
+                            title: items => items.length ? items[0].raw.x : '',
+                            label: item => {{
+                                const v = item.raw ? item.raw.y : null;
+                                return v == null ? null : item.dataset.label + ': ' + v.toFixed(2);
+                            }}
                         }}
                     }}
+                }},
+                scales: {{
+                    x: {{ type: 'time', time: {{ unit: 'month' }}, display: true, title: {{ display: true, text: 'Date' }} }},
+                    y: {{ display: true, title: {{ display: true, text: yLabel }} }}
                 }}
-            }},
-            scales: {{
-                x: {{ type: 'time', time: {{ unit: 'month' }}, display: true, title: {{ display: true, text: 'Date' }} }},
-                y: {{ display: true, title: {{ display: true, text: yLabel }} }}
             }}
-        }}
-    }});
+        }});
+    }} else {{
+        commChart.data.datasets = datasets;
+        commChart.options.scales.y.title.text = yLabel;
+        commChart.update('none');
+    }}
 }}
 
 // ─── Scatter chart ────────────────────────────────────────────────────────────
 let scatterChart = null;
+let _scatterProduct = '';
 
 function renderScatter() {{
     const productEl = document.querySelector('input[name="product-toggle"]:checked');
@@ -1471,105 +1643,113 @@ function renderScatter() {{
     const yMin = allY.length ? Math.pow(10, Math.log10(Math.min(...allY)) - yLogPad) : 0.5;
     const yMax = allY.length ? Math.pow(10, Math.log10(Math.max(...allY)) + yLogPad) : 1e5;
 
+    _scatterProduct = product;
     const ctx = document.getElementById('scatter-chart').getContext('2d');
-    if (scatterChart) scatterChart.destroy();
-    scatterChart = new Chart(ctx, {{
-        type: 'scatter',
-        data: {{ datasets }},
-        options: {{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {{
-                legend: {{ position: 'top', labels: {{ usePointStyle: true, padding: 12, font: {{ size: 11 }} }} }},
-                tooltip: {{
-                    callbacks: {{
-                        label: item => {{
-                            const m = item.raw._meta;
-                            const regime = compositeRegime(m, product);
-                            const hasSubsidy = m.subsidies && m.subsidies[product] != null && m.subsidies[product] > 0;
-                            let sub;
-                            if (hasSubsidy) {{
-                                sub = '$' + m.subsidies[product].toFixed(2);
-                            }} else if (regime === 'Market' || regime === 'Price Control') {{
-                                sub = 'no subsidies';
-                            }} else {{
-                                sub = 'no data';
+    if (!scatterChart) {{
+        scatterChart = new Chart(ctx, {{
+            type: 'scatter',
+            data: {{ datasets }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{
+                    legend: {{ position: 'top', labels: {{ usePointStyle: true, padding: 12, font: {{ size: 11 }} }} }},
+                    tooltip: {{
+                        callbacks: {{
+                            label: item => {{
+                                const m = item.raw._meta;
+                                const regime = compositeRegime(m, _scatterProduct);
+                                const hasSubsidy = m.subsidies && m.subsidies[_scatterProduct] != null && m.subsidies[_scatterProduct] > 0;
+                                let sub;
+                                if (hasSubsidy) {{
+                                    sub = '$' + m.subsidies[_scatterProduct].toFixed(2);
+                                }} else if (regime === 'Market' || regime === 'Price Control') {{
+                                    sub = 'no subsidies';
+                                }} else {{
+                                    sub = 'no data';
+                                }}
+                                const gdp = m.gdp_per_capita != null
+                                    ? '$' + Math.round(m.gdp_per_capita).toLocaleString()
+                                    : 'N/A';
+                                return [
+                                    m.country + ' (' + m.wb_iso3 + ')',
+                                    _scatterProduct + ' subsidy per capita: ' + sub,
+                                    'GDP per capita: ' + gdp,
+                                ];
                             }}
-                            const gdp = m.gdp_per_capita != null
-                                ? '$' + Math.round(m.gdp_per_capita).toLocaleString()
-                                : 'N/A';
-                            return [
-                                m.country + ' (' + m.wb_iso3 + ')',
-                                product + ' subsidy per capita: ' + sub,
-                                'GDP per capita: ' + gdp,
-                            ];
                         }}
-                    }}
+                    }},
                 }},
-            }},
-            scales: {{
-                x: {{
-                    type: 'logarithmic',
-                    display: true,
-                    title: {{ display: true, text: 'GDP per capita (USD, log scale)' }},
-                    ticks: {{
-                        callback: function(value) {{
-                            const log = Math.log10(value);
-                            if (Math.abs(log - Math.round(log)) < 0.01) {{
-                                const exp = Math.round(log);
-                                const sups = '\u2070\u00b9\u00b2\u00b3\u2074\u2075\u2076\u2077\u2078\u2079';
-                                const supStr = String(exp).split('').map(c => sups[+c]).join('');
-                                return '10' + supStr;
+                scales: {{
+                    x: {{
+                        type: 'logarithmic',
+                        display: true,
+                        title: {{ display: true, text: 'GDP per capita (USD, log scale)' }},
+                        ticks: {{
+                            callback: function(value) {{
+                                const log = Math.log10(value);
+                                if (Math.abs(log - Math.round(log)) < 0.01) {{
+                                    const exp = Math.round(log);
+                                    const sups = '\u2070\u00b9\u00b2\u00b3\u2074\u2075\u2076\u2077\u2078\u2079';
+                                    const supStr = String(exp).split('').map(c => sups[+c]).join('');
+                                    return '10' + supStr;
+                                }}
+                                return null;
                             }}
-                            return null;
                         }}
-                    }}
-                }},
-                y: {{
-                    type: 'logarithmic',
-                    display: true,
-                    min: yMin,
-                    max: yMax,
-                    title: {{ display: true, text: product + ' subsidy per capita (USD/person, log scale)' }},
-                    ticks: {{
-                        callback: function(value) {{
-                            const log = Math.log10(value);
-                            if (Math.abs(log - Math.round(log)) < 0.01) {{
-                                const exp = Math.round(log);
-                                const sups = '\u2070\u00b9\u00b2\u00b3\u2074\u2075\u2076\u2077\u2078\u2079';
-                                const supStr = String(exp).split('').map(c => sups[+c]).join('');
-                                return '10' + supStr;
+                    }},
+                    y: {{
+                        type: 'logarithmic',
+                        display: true,
+                        min: yMin,
+                        max: yMax,
+                        title: {{ display: true, text: _scatterProduct + ' subsidy per capita (USD/person, log scale)' }},
+                        ticks: {{
+                            callback: function(value) {{
+                                const log = Math.log10(value);
+                                if (Math.abs(log - Math.round(log)) < 0.01) {{
+                                    const exp = Math.round(log);
+                                    const sups = '\u2070\u00b9\u00b2\u00b3\u2074\u2075\u2076\u2077\u2078\u2079';
+                                    const supStr = String(exp).split('').map(c => sups[+c]).join('');
+                                    return '10' + supStr;
+                                }}
+                                return null;
                             }}
-                            return null;
                         }}
                     }}
                 }}
-            }}
-        }},
-        plugins: [{{
-            id: 'iso3labels',
-            afterDatasetsDraw(chart) {{
-                const ctx = chart.ctx;
-                chart.data.datasets.forEach((ds, di) => {{
-                    const meta = chart.getDatasetMeta(di);
-                    meta.data.forEach((pt, pi) => {{
-                        const m = ds.data[pi]._meta;
-                        if (!m) return;
-                        ctx.save();
-                        ctx.font = 'bold 11px sans-serif';
-                        ctx.fillStyle = '#333';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(m.wb_iso3, pt.x, pt.y - 14);
-                        ctx.restore();
+            }},
+            plugins: [{{
+                id: 'iso3labels',
+                afterDatasetsDraw(chart) {{
+                    const ctx = chart.ctx;
+                    chart.data.datasets.forEach((ds, di) => {{
+                        const meta = chart.getDatasetMeta(di);
+                        meta.data.forEach((pt, pi) => {{
+                            const m = ds.data[pi]._meta;
+                            if (!m || !EAP_ISOS.has(m.wb_iso3)) return;
+                            ctx.save();
+                            ctx.font = 'bold 11px sans-serif';
+                            ctx.fillStyle = '#333';
+                            ctx.textAlign = 'center';
+                            ctx.fillText(m.wb_iso3, pt.x, pt.y - 14);
+                            ctx.restore();
+                        }});
                     }});
-                }});
-            }}
-        }}]
-    }});
+                }}
+            }}]
+        }});
+    }} else {{
+        scatterChart.data.datasets = datasets;
+        scatterChart.options.scales.y.min = yMin;
+        scatterChart.options.scales.y.max = yMax;
+        scatterChart.options.scales.y.title.text = _scatterProduct + ' subsidy per capita (USD/person, log scale)';
+        scatterChart.update('none');
+    }}
 }}
 
 // ─── Tab 3: Country Fuel Prices ───────────────────────────────────────────────
-const FUEL_DATA = {fuel_data_json};
+const FUEL_DATA = JSON.parse({fuel_data_json});
 const COUNTRY_PRODUCTS = {country_products_json};
 
 const LABELS = {{
@@ -1589,33 +1769,6 @@ function chipKey(r){{
 
 function chipLabel(key) {{
     return key || "\u2014";
-}}
-
-function computeMA90(points) {{
-    var result = [];
-    for (var i = 0; i < points.length; i++) {{
-        var tEnd   = new Date(points[i].x).getTime();
-        var tStart = tEnd - 90 * 86400000;
-        var sum = 0, count = 0;
-        for (var j = i; j >= 0; j--) {{
-            var t = new Date(points[j].x).getTime();
-            if (t < tStart) break;
-            if (points[j].y != null) {{ sum += points[j].y; count++; }}
-        }}
-        result.push(count > 0 ? sum / count : null);
-    }}
-    return result;
-}}
-
-function isFuelMA() {{
-    var el = document.querySelector('input[name="fuel-ma-toggle"]:checked');
-    return el && el.value === "ma";
-}}
-
-function applyFuelMA(points) {{
-    if (!isFuelMA()) return points;
-    var smoothed = computeMA90(points);
-    return points.map(function(p, i) {{ return {{ x: p.x, y: smoothed[i] }}; }});
 }}
 
 function getCheckedValues(containerId) {{
@@ -1662,10 +1815,16 @@ function initFuelSlider() {{
     const maxIdx = fuelSliderDates.length - 1;
     if (maxIdx < 0) return;
 
+    const lastFuelDate = new Date(fuelSliderDates[maxIdx]);
+    const oneYearBeforeFuel = new Date(lastFuelDate);
+    oneYearBeforeFuel.setFullYear(oneYearBeforeFuel.getFullYear() - 1);
+    const defaultFuelStart = fuelSliderDates.findIndex(d => new Date(d) >= oneYearBeforeFuel);
+    const startIdx = defaultFuelStart >= 0 ? defaultFuelStart : 0;
+
     const el = document.getElementById('fuel-date-slider');
     if (fuelSlider) {{ fuelSlider.destroy(); }}
     fuelSlider = noUiSlider.create(el, {{
-        start: [0, maxIdx],
+        start: [startIdx, maxIdx],
         connect: true,
         step: 1,
         range: {{ min: 0, max: maxIdx || 1 }},
@@ -1760,7 +1919,7 @@ function rebuildFuelLocToggles(multiKeys) {{
 }}
 
 function makeFuelDataset(label, points, color, isGray) {{
-    var pts = applyFuelMA(points);
+    var pts = points;
     return {{
         label:            label,
         data:             pts,
@@ -1784,62 +1943,73 @@ function updateFuelMeta(rows) {{
     panel.innerHTML = "<strong>Date Range:</strong> " + dates[0] + " \u2013 " + dates[dates.length - 1];
 }}
 
+function computeFuelYScale(datasets, yLabel) {{
+    var allY = [];
+    datasets.forEach(function(ds) {{
+        (ds.data || []).forEach(function(pt) {{
+            if (pt && pt.y != null && !ds._isGray) allY.push(pt.y);
+        }});
+    }});
+    if (!allY.length) return {{ display: true, title: {{ display: true, text: yLabel }} }};
+    var yMin = Math.min.apply(null, allY);
+    var yMax = Math.max.apply(null, allY);
+    var pad = (yMax - yMin) * 0.05 || yMax * 0.05 || 1;
+    return {{
+        display: true,
+        title: {{ display: true, text: yLabel }},
+        min: Math.max(0, yMin - pad),
+        max: yMax + pad
+    }};
+}}
+
 function drawFuelChart(datasets, yLabel) {{
     var ctx = document.getElementById("fuel-chart").getContext("2d");
-    if (window.fuelChart) window.fuelChart.destroy();
-    if (!datasets.length) {{ window.fuelChart = null; return; }}
-    window.fuelChart = new Chart(ctx, {{
-        type: "line",
-        data: {{ datasets: datasets }},
-        options: {{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {{
-                legend: {{
-                    position: "top",
-                    labels: {{
-                        usePointStyle: true, padding: 14, font: {{ size: 11 }},
-                        filter: function(item) {{ return !datasets[item.datasetIndex]._isGray; }}
-                    }}
-                }},
-                tooltip: {{
-                    mode: "index", intersect: false,
-                    backgroundColor: "rgba(0,0,0,0.82)", padding: 12,
-                    filter: function(item) {{ return !datasets[item.datasetIndex]._isGray; }},
-                    callbacks: {{
-                        title: function(items) {{ return items.length ? items[0].raw.x : ""; }},
-                        label: function(item) {{
-                            var val = item.raw ? item.raw.y : null;
-                            if (val == null) return null;
-                            return datasets[item.datasetIndex].label + ": " + val.toFixed(2);
+    if (!datasets.length) {{
+        if (window.fuelChart) {{ window.fuelChart.destroy(); window.fuelChart = null; }}
+        return;
+    }}
+    var yScale = computeFuelYScale(datasets, yLabel);
+    if (!window.fuelChart) {{
+        window.fuelChart = new Chart(ctx, {{
+            type: "line",
+            data: {{ datasets: datasets }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{
+                    legend: {{
+                        position: "top",
+                        labels: {{
+                            usePointStyle: true, padding: 14, font: {{ size: 11 }},
+                            filter: function(item, data) {{ return !data.datasets[item.datasetIndex]._isGray; }}
+                        }}
+                    }},
+                    tooltip: {{
+                        mode: "index", intersect: false,
+                        backgroundColor: "rgba(0,0,0,0.82)", padding: 12,
+                        filter: function(item) {{ return !item.dataset._isGray; }},
+                        callbacks: {{
+                            title: function(items) {{ return items.length ? items[0].raw.x : ""; }},
+                            label: function(item) {{
+                                var val = item.raw ? item.raw.y : null;
+                                if (val == null) return null;
+                                return item.dataset.label + ": " + val.toFixed(2);
+                            }}
                         }}
                     }}
+                }},
+                scales: {{
+                    x: {{ type: "time", time: {{ unit: "month", tooltipFormat: "yyyy-MM-dd" }},
+                          display: true, title: {{ display: true, text: "Date" }} }},
+                    y: yScale
                 }}
-            }},
-            scales: {{
-                x: {{ type: "time", time: {{ unit: "month", tooltipFormat: "yyyy-MM-dd" }},
-                      display: true, title: {{ display: true, text: "Date" }} }},
-                y: (function() {{
-                    var allY = [];
-                    datasets.forEach(function(ds) {{
-                        (ds.data || []).forEach(function(pt) {{
-                            if (pt && pt.y != null && !ds._isGray) allY.push(pt.y);
-                        }});
-                    }});
-                    if (!allY.length) return {{ display: true, title: {{ display: true, text: yLabel }} }};
-                    var yMin = Math.min.apply(null, allY);
-                    var yMax = Math.max.apply(null, allY);
-                    var pad = (yMax - yMin) * 0.05 || yMax * 0.05 || 1;
-                    return {{
-                        display: true,
-                        title: {{ display: true, text: yLabel }},
-                        min: Math.max(0, yMin - pad),
-                        max: yMax + pad
-                    }};
-                }})()
             }}
-        }}
-    }});
+        }});
+    }} else {{
+        window.fuelChart.data.datasets = datasets;
+        window.fuelChart.options.scales.y = yScale;
+        window.fuelChart.update('none');
+    }}
 }}
 
 function getFuelCountryRows() {{
@@ -2000,15 +2170,14 @@ document.getElementById("fuel-country-select").addEventListener("change", functi
     initFuelSlider();
     rerenderFuel();
 }});
-document.querySelectorAll('input[name="fuel-ma-toggle"]').forEach(function(r) {{
-    r.addEventListener("change", rerenderFuel);
-}});
-
 // ─── Init ───────────────────────────────────────────────────────────────────────────
-buildKPI(ALL_PRODUCTS[0]);
-buildCommChips();
-initCommSlider();
-renderComm();
+requestAnimationFrame(() => {{
+    commTabInitialized = true;
+    buildKPI(ALL_PRODUCTS[0]);
+    buildCommChips();
+    initCommSlider();
+    renderComm();
+}});
 </script>
 </body>
 </html>"""

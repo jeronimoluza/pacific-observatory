@@ -2,8 +2,9 @@
 
 import json
 import logging
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
+from typing import TypedDict
 
 import pandas as pd
 
@@ -33,33 +34,116 @@ def save_fuel_csv(df: pd.DataFrame, path: Path) -> None:
     logger.info("Saved %d rows -> %s", len(df), path)
 
 
-# ── Fetch state (per-source cutoff cache) ─────────────────────────────────────
+# ── Fetch state v2 ────────────────────────────────────────────────────────────
+#
+# v1 format (legacy): { "source_key": "2026-01-01" }
+# v2 format:          { "source_key": { "last_data_date": "2026-01-01",
+#                                        "last_run_ts": "2026-03-16T10:23:00" } }
+#
+# last_data_date: max observation_date of data stored for this source.
+#                 Used as cutoff passed to fetch_fn on the next run.
+# last_run_ts:    ISO-8601 UTC datetime of when the fetcher last executed
+#                 (success, empty return, or exception).
+#                 Used for cadence skip decisions — NOT for cutoff calculation.
 
 
-def read_fetch_state(path: Path = FETCH_STATE_JSON) -> dict[str, date]:
-    """Load .fetch_state.json; return dict of source_key -> last observation_date."""
+class SourceState(TypedDict):
+    last_data_date: str | None  # ISO date string or None
+    last_run_ts: str | None  # ISO datetime string or None
+
+
+def _normalize_entry(value: object) -> SourceState:
+    """Normalize a v1 bare string or v2 object to SourceState."""
+    if isinstance(value, str):
+        return {"last_data_date": value, "last_run_ts": None}
+    if isinstance(value, dict):
+        return {
+            "last_data_date": value.get("last_data_date"),
+            "last_run_ts": value.get("last_run_ts"),
+        }
+    return {"last_data_date": None, "last_run_ts": None}
+
+
+def read_fetch_state(path: Path = FETCH_STATE_JSON) -> dict[str, SourceState]:
+    """Load .fetch_state.json; return dict of source_key → SourceState (v2).
+
+    Transparently migrates v1 bare-string entries to v2 objects.
+    """
     if not path.exists():
         return {}
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
-        return {k: date.fromisoformat(v) for k, v in raw.items()}
+        return {k: _normalize_entry(v) for k, v in raw.items()}
     except (json.JSONDecodeError, OSError) as exc:
         logger.warning("Could not read fetch state from %s: %s", path, exc)
         return {}
 
 
-def write_fetch_state(state: dict[str, date], path: Path = FETCH_STATE_JSON) -> None:
-    """Persist updated fetch state to .fetch_state.json."""
+def write_fetch_state(
+    state: dict[str, SourceState], path: Path = FETCH_STATE_JSON
+) -> None:
+    """Persist fetch state to .fetch_state.json in v2 format."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        json.dumps({k: v.isoformat() for k, v in state.items()}, indent=2),
-        encoding="utf-8",
-    )
+    path.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
 
-def get_cutoff(state: dict[str, date], source_key: str, fallback: date) -> date:
-    """Return the stored cutoff for source_key, or fallback if not present."""
-    return state.get(source_key, fallback)
+def get_cutoff(state: dict[str, SourceState], source_key: str, fallback: date) -> date:
+    """Return the last_data_date for source_key, or fallback if not present."""
+    entry = state.get(source_key)
+    if entry is None:
+        return fallback
+    raw = entry.get("last_data_date")
+    if not raw:
+        return fallback
+    try:
+        return date.fromisoformat(str(raw))
+    except (ValueError, TypeError):
+        return fallback
+
+
+def get_last_run_ts(state: dict[str, SourceState], source_key: str) -> datetime | None:
+    """Return the last_run_ts for source_key as a UTC-aware datetime, or None."""
+    entry = state.get(source_key)
+    if entry is None:
+        return None
+    raw = entry.get("last_run_ts")
+    if not raw:
+        return None
+    try:
+        dt = datetime.fromisoformat(str(raw))
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt
+    except (ValueError, TypeError):
+        return None
+
+
+def set_last_run_ts(
+    state: dict[str, SourceState],
+    source_key: str,
+    ts: datetime | None = None,
+) -> None:
+    """Update last_run_ts for source_key in-place. Defaults to now (UTC)."""
+    if ts is None:
+        ts = datetime.now(tz=timezone.utc)
+    entry = state.get(source_key, {"last_data_date": None, "last_run_ts": None})
+    state[source_key] = {
+        "last_data_date": entry.get("last_data_date"),
+        "last_run_ts": ts.isoformat(),
+    }
+
+
+def set_last_data_date(
+    state: dict[str, SourceState],
+    source_key: str,
+    d: date,
+) -> None:
+    """Update last_data_date for source_key in-place (preserves last_run_ts)."""
+    entry = state.get(source_key, {"last_data_date": None, "last_run_ts": None})
+    state[source_key] = {
+        "last_data_date": d.isoformat(),
+        "last_run_ts": entry.get("last_run_ts"),
+    }
 
 
 # ── Row merging / deduplication ───────────────────────────────────────────────

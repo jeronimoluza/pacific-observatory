@@ -5,7 +5,7 @@ Source:
 """
 
 import json
-from datetime import date
+from datetime import date, timedelta
 from typing import Optional
 
 import pandas as pd
@@ -103,6 +103,7 @@ _INVESTING_SLUGS: list[dict] = [
 # ---------------------------------------------------------------------------
 
 _INVESTING_BASE = "https://www.investing.com/commodities/"
+_INVESTING_API = "https://api.investing.com/api/financialdata/historical"
 _INVESTING_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -110,6 +111,13 @@ _INVESTING_HEADERS = {
     ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
+}
+_INVESTING_API_HEADERS = {
+    **_INVESTING_HEADERS,
+    "Accept": "application/json, text/plain, */*",
+    "Referer": "https://www.investing.com/",
+    "X-Requested-With": "XMLHttpRequest",
+    "Domain": "www.investing.com",
 }
 
 
@@ -129,7 +137,7 @@ def _extract_next_data(html: str) -> Optional[dict]:
 
 
 def _find_historical_rows(obj: object, depth: int = 0) -> list[dict]:
-    """Recursively find the historical data array in __NEXT_DATA__."""
+    """Recursively find the historical data array in __NEXT_DATA__ or API response."""
     if depth > 15:
         return []
     if isinstance(obj, dict):
@@ -149,8 +157,104 @@ def _find_historical_rows(obj: object, depth: int = 0) -> list[dict]:
     return []
 
 
+def _extract_instrument_id(obj: object, depth: int = 0) -> Optional[int]:
+    """Recursively search __NEXT_DATA__ for the investing.com numeric instrument ID.
+
+    Looks for ``pairId`` or ``instrumentId`` keys (in that priority order) since
+    those are investing.com-specific and unambiguous.  The generic ``id`` key is
+    intentionally skipped to avoid false positives.
+    """
+    if depth > 15:
+        return None
+    if isinstance(obj, dict):
+        for key in ("pairId", "instrumentId"):
+            val = obj.get(key)
+            if isinstance(val, int) and val > 0:
+                return val
+        for v in obj.values():
+            result = _extract_instrument_id(v, depth + 1)
+            if result:
+                return result
+    elif isinstance(obj, list):
+        for item in obj:
+            result = _extract_instrument_id(item, depth + 1)
+            if result:
+                return result
+    return None
+
+
+def _parse_price_rows(rows_data: list[dict], cutoff: date) -> list[dict]:
+    """Convert raw investing.com row dicts into ``{obs_date, price}`` entries."""
+    results = []
+    for entry in rows_data:
+        try:
+            raw_date = entry.get("rowDateTimestamp") or entry.get("rowDate")
+            obs_date = pd.to_datetime(raw_date).date()
+        except Exception:
+            continue
+        if obs_date <= cutoff:
+            continue
+        price_raw = entry.get("last_closeRaw") or entry.get("last_close")
+        try:
+            price = float(price_raw)
+        except (TypeError, ValueError):
+            continue
+        if price <= 0:
+            continue
+        results.append({"obs_date": obs_date, "price": price})
+    return results
+
+
+def _fetch_investing_api(
+    instrument_id: int, cutoff: date, slug: str, session
+) -> list[dict]:
+    """Attempt to fetch full history via the investing.com historical API.
+
+    Returns parsed ``{obs_date, price}`` rows, or an empty list on any failure.
+    """
+    params = {
+        "start-date": str(cutoff + timedelta(days=1)),
+        "end-date": str(date.today()),
+        "time-frame": "Daily",
+        "add-missing-rows": "false",
+    }
+    url = f"{_INVESTING_API}/{instrument_id}"
+    try:
+        resp = session.get(
+            url, params=params, headers=_INVESTING_API_HEADERS, timeout=30
+        )
+        if resp.status_code != 200:
+            print(
+                f"  [investing] API HTTP {resp.status_code} for {slug} (id={instrument_id})"
+            )
+            return []
+        api_data = resp.json()
+    except Exception as e:
+        print(f"  [investing] API error for {slug}: {e}")
+        return []
+
+    api_rows = _find_historical_rows(api_data)
+    if not api_rows:
+        print(f"  [investing] API returned no rows for {slug} (id={instrument_id})")
+        return []
+
+    results = _parse_price_rows(api_rows, cutoff)
+    print(f"  [investing] API returned {len(results)} rows for {slug}")
+    return results
+
+
 def _fetch_investing_series(slug: str, cutoff: date, session) -> list[dict]:
-    """Scrape historical data from the investing.com historical-data page."""
+    """Fetch historical data for one slug.
+
+    Stage 1 (API) — used when ``cutoff`` is more than 30 days in the past.
+      Extracts the instrument's numeric ID from ``__NEXT_DATA__`` and calls the
+      investing.com history API to retrieve the full date range.  Falls through
+      to Stage 2 on any failure.
+
+    Stage 2 (HTML fallback) — always available.
+      Returns the ~20 recent trading days embedded in the page's ``__NEXT_DATA__``.
+      This is sufficient for normal daily incremental updates.
+    """
     url = f"{_INVESTING_BASE}{slug}-historical-data"
     try:
         resp = session.get(url, timeout=30)
@@ -171,25 +275,22 @@ def _fetch_investing_series(slug: str, cutoff: date, session) -> list[dict]:
         print(f"  [investing] No historical rows found in page data for {slug}")
         return []
 
-    results = []
-    for entry in rows_data:
-        try:
-            raw_date = entry.get("rowDateTimestamp") or entry.get("rowDate")
-            obs_date = pd.to_datetime(raw_date).date()
-        except Exception:
-            continue
-        if obs_date <= cutoff:
-            continue
-        price_raw = entry.get("last_closeRaw") or entry.get("last_close")
-        try:
-            price = float(price_raw)
-        except (TypeError, ValueError):
-            continue
-        if price <= 0:
-            continue
-        results.append({"obs_date": obs_date, "price": price})
+    # Stage 1: attempt API for large historical backfills
+    if cutoff < date.today() - timedelta(days=30):
+        instrument_id = _extract_instrument_id(data)
+        if instrument_id:
+            print(
+                f"  [investing] Trying API for {slug} (id={instrument_id}, cutoff={cutoff})"
+            )
+            api_results = _fetch_investing_api(instrument_id, cutoff, slug, session)
+            if api_results:
+                return api_results
+            print(f"  [investing] API failed for {slug}, falling back to HTML rows")
+        else:
+            print(f"  [investing] No instrument ID found in page data for {slug}")
 
-    return results
+    # Stage 2: HTML fallback (~20 recent rows)
+    return _parse_price_rows(rows_data, cutoff)
 
 
 def fetch_investing_commodities(cutoff: date) -> pd.DataFrame:

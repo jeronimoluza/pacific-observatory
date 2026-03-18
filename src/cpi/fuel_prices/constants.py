@@ -15,6 +15,10 @@ IMF_SUBSIDIES_XLSB = GLOBAL_DIR / "imf" / "fossil_fuel_subsidies.xlsb"
 IMF_SUBSIDIES_XLSX = GLOBAL_DIR / "imf" / "subsidies_2010_2024.xlsx"
 JAPAN_DIR = DATA_DIR / "japan_prices"
 
+# Number of years of data embedded in the policy dashboard HTML.
+# Observations older than this cutoff are excluded before JSON serialization.
+DASHBOARD_HISTORY_YEARS = 3
+
 PALETTE = [
     "#1d77b2",
     "#d95e10",
@@ -39,36 +43,27 @@ PALETTE = [
 ]
 
 COLUMNS = [
+    "observation_date",
     "country",
-    "wb_iso3",
     "subnational_area",
     "city",
-    "fuel_family",
+    "address",
     "fuel_product",
-    "quality_group",
-    "octane_ron",
-    "ethanol_pct",
-    "sulfur_standard",
-    "gas_type",
-    "delivery_type",
-    "consumer_segment",
     "price_local",
     "currency",
     "unit",
-    "tax_status",
     "source_key",
-    "source_name",
-    "source_url",
-    "source_type",
     "scrape_ts",
-    "effective_from",
-    "effective_to",
-    "observation_date",
-    "publication_frequency",
-    "observation_method",
-    "status",
-    "notes",
     "observation_hash",
+]
+
+ENRICHED_COLUMNS = COLUMNS + [
+    "fuel_family",
+    "fuel_product_standard",
+    "quality_group",
+    "location",
+    "series_key",
+    "series_label",
 ]
 
 
@@ -179,27 +174,10 @@ FUEL_PRODUCT_MAP: dict[str, str | None] = {
     "LPG prices": "lpg_bulk",
     "Unleaded 95": "gasoline_midgrade",
     "Unleaded 98": "gasoline_premium",
+    "Unleaded 92": "gasoline_regular",
+    "92 Unleaded": "gasoline_regular",
+    "95 Unleaded": "gasoline_midgrade",
+    "98 Unleaded": "gasoline_premium",
+    "Super Diesel": "diesel_premium",
     "NAN": None,
-}
-
-# ── Publish-time ranking maps ─────────────────────────────────────────────────
-# Lower rank = higher priority (preferred source/status wins in dedup).
-
-# Status preference ranks
-_STATUS_RANK: dict[str, int] = {
-    "official": 0,
-    "final": 0,
-    "provisional": 1,
-    "preliminary": 2,
-    "estimated": 3,
-}
-
-# Australia-specific source preference ranks
-_AU_SOURCE_RANK: dict[str, int] = {
-    "au_fuelwatch_perth_daily": 0,
-    "au_nsw_fuelcheck_history": 0,
-    "au_accc_5largestcities_quarterly": 1,
-    "au_aip_tgp_weekly": 2,
-    "gpp_AUS_diesel_weekly": 9,
-    "gpp_AUS_gasoline_weekly": 9,
 }

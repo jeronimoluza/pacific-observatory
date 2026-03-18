@@ -4,10 +4,10 @@ Call order inside build_enriched_frame:
   _load_collected_observations → load per-source observations.csv files
   _apply_data_quality_rules   → drop bad products/sources, rename countries
   _normalize_products         → apply FUEL_PRODUCT_MAP (adds fuel_product_standard)
-  _derive_location            → Malaysia product parse + city/subnational fallback
-  _canonicalize               → series_key/series_label, AU product normalization
-  _deduplicate                → single combined pass: aggregate + source/status dedup
-  _monthly_rollup             → pre-cutoff monthly aggregation
+  _derive_fuel_family         → map fuel_product_standard → fuel_family
+  _derive_location            → Malaysia product parse + city/subnational/address fallback
+  _canonicalize               → quality_group extraction, series_key/series_label
+  _deduplicate                → single combined pass: aggregate + source dedup
 
 Public API:
   build_enriched_frame(collect_dir) → DataFrame
@@ -25,18 +25,25 @@ import re
 from pathlib import Path
 
 import pandas as pd
-from pandas.tseries.offsets import MonthEnd
 
 from .constants import (
-    _AU_SOURCE_RANK,
-    _STATUS_RANK,
     COLUMNS,
+    ENRICHED_COLUMNS,
     FUEL_PRODUCT_MAP,
     STAGED_DATA_DIR,
 )
-from .utils import make_hash
 
 logger = logging.getLogger(__name__)
+
+# ── Australia source preference ranks (lower = higher priority) ───────────────
+_AU_SOURCE_RANK: dict[str, int] = {
+    "au_fuelwatch_perth_daily": 0,
+    "au_nsw_fuelcheck_history": 0,
+    "au_accc_5largestcities_quarterly": 1,
+    "au_aip_tgp_weekly": 2,
+    "gpp_AUS_diesel_weekly": 9,
+    "gpp_AUS_gasoline_weekly": 9,
+}
 
 # ── Canonicalization regexes ──────────────────────────────────────────────────
 
@@ -63,37 +70,51 @@ _MY_LOCATION_RE = re.compile(
 
 # ── Dedup configuration ───────────────────────────────────────────────────────
 
-_MONTHLY_ROLLUP_CUTOFF = pd.Timestamp("2026-01-01")
 _DEDUP_KEY = ["country", "observation_date", "location", "fuel_product"]
-_STATUS_RANK_DEFAULT = 9
 
 # Columns used for intra-source location aggregation (averaging same-source duplicates)
 _AGG_GROUP_COLS = (
     "country",
-    "wb_iso3",
     "location",
     "fuel_family",
     "fuel_product",
     "series_key",
     "series_label",
-    "sulfur_standard",
-    "gas_type",
-    "delivery_type",
-    "consumer_segment",
+    "quality_group",
     "currency",
     "unit",
-    "tax_status",
     "source_key",
-    "source_name",
-    "source_url",
-    "source_type",
-    "effective_from",
-    "effective_to",
     "observation_date",
-    "publication_frequency",
-    "observation_method",
-    "status",
 )
+
+# ── Fuel family derivation map ────────────────────────────────────────────────
+
+_FAMILY_FROM_STANDARD: dict[str, str] = {
+    "gasoline_regular": "gasoline",
+    "gasoline_midgrade": "gasoline",
+    "gasoline_premium": "gasoline",
+    "gasoline_ethanol_low": "gasoline",
+    "gasoline_ethanol_medium": "gasoline",
+    "gasoline_ethanol_high": "gasoline",
+    "gasoline_branded": "gasoline",
+    "diesel_standard": "diesel",
+    "diesel_premium": "diesel",
+    "diesel_low_sulfur": "diesel",
+    "diesel_ultra_low_sulfur": "diesel",
+    "diesel_branded": "diesel",
+    "diesel_biodiesel": "diesel",
+    "kerosene": "kerosene",
+    "lpg_household": "lpg",
+    "lpg_bulk": "lpg",
+    "lpg_autogas": "lpg",
+    "cng": "natural_gas",
+    "ngv": "natural_gas",
+    "lng": "natural_gas",
+    "electricity_ev": "electricity",
+    "fuel_oil_mazut": "fuel_oil",
+    "premix": "gasoline",
+    "crude_oil": "crude_oil",
+}
 
 
 # ── Helper utilities ──────────────────────────────────────────────────────────
@@ -140,21 +161,26 @@ def _compute_source_rank(row: pd.Series) -> int:
         return _AU_SOURCE_RANK.get(source_key, 50)
     if source_key.startswith("gpp_"):
         return 90
-    source_type = str(row.get("source_type") or "").lower()
-    if source_type == "official":
-        return 10
-    if source_type == "industry":
-        return 20
-    return 50
+    return 10
 
 
 # ── Load stage ────────────────────────────────────────────────────────────────
 
+# Directory slugs whose observations.csv files are commodity/reference data, not fuel prices
+_COMMODITY_SLUGS = {"global", "eap"}
+
 
 def load_stored_observations(base_dir: Path) -> pd.DataFrame:
-    """Load all per-source observations.csv files recursively under base_dir."""
+    """Load all per-source observations.csv files recursively under base_dir.
+
+    Skips any path whose components include a directory starting with '_'
+    (e.g. _archive, _diagnostic_backups).
+    """
     frames: list[pd.DataFrame] = []
     for path in sorted(base_dir.rglob("observations.csv")):
+        rel_parts = path.relative_to(base_dir).parts
+        if any(part.startswith("_") for part in rel_parts):
+            continue
         try:
             obs = pd.read_csv(path, low_memory=False)
         except OSError as exc:
@@ -177,7 +203,7 @@ def load_stored_observations(base_dir: Path) -> pd.DataFrame:
 
 
 def _load_collected_observations(collect_dir: Path) -> pd.DataFrame:
-    """Load per-source observations, split into fuel and commodity frames."""
+    """Load per-source observations, excluding commodity sources."""
     all_obs = load_stored_observations(base_dir=collect_dir)
     if all_obs.empty:
         return pd.DataFrame(columns=pd.Index(COLUMNS))
@@ -188,6 +214,71 @@ def _load_collected_observations(collect_dir: Path) -> pd.DataFrame:
     return all_obs[~commodity_mask].copy()
 
 
+def _load_from_paths(paths: list[Path], collect_dir: Path) -> pd.DataFrame:
+    """Load full observations from a specific list of source paths."""
+    frames: list[pd.DataFrame] = []
+    for path in paths:
+        try:
+            obs = pd.read_csv(path, low_memory=False)
+        except OSError as exc:
+            logger.warning("Could not read %s: %s", path, exc)
+            continue
+        if obs.empty:
+            continue
+        obs = obs.copy()
+        obs["_storage_path"] = str(path.relative_to(collect_dir))
+        frames.append(obs)
+
+    if not frames:
+        return pd.DataFrame(columns=pd.Index(COLUMNS))
+
+    combined = pd.concat(frames, ignore_index=True, sort=False)
+    for col in COLUMNS:
+        if col not in combined.columns:
+            combined[col] = None
+    return combined
+
+
+def _find_dirty_countries(
+    collect_dir: Path,
+    enriched_mtime: float,
+) -> dict[str, list[Path]]:
+    """Scan source files for any modified after the enriched output was written.
+
+    Returns a dict mapping country name → list of source paths newer than enriched.
+    """
+    dirty: dict[str, list[Path]] = {}
+
+    for path in sorted(collect_dir.rglob("observations.csv")):
+        rel_parts = path.relative_to(collect_dir).parts
+        if any(part.startswith("_") for part in rel_parts):
+            continue
+        try:
+            slug_dir = rel_parts[0]
+        except IndexError:
+            continue
+        if slug_dir in _COMMODITY_SLUGS:
+            continue
+
+        if path.stat().st_mtime <= enriched_mtime:
+            continue
+
+        try:
+            df = pd.read_csv(path, usecols=["country"], nrows=1, low_memory=False)
+        except (OSError, ValueError) as exc:
+            logger.warning("Could not scan %s: %s", path, exc)
+            continue
+
+        if df.empty:
+            continue
+
+        country = df["country"].iloc[0]
+        if pd.notna(country):
+            dirty.setdefault(str(country), []).append(path)
+
+    return dirty
+
+
 # ── Data quality rules ────────────────────────────────────────────────────────
 
 
@@ -195,7 +286,8 @@ def _drop_untracked_products(df: pd.DataFrame) -> pd.DataFrame:
     mask = (df["country"] == "Philippines") & (df["fuel_product"] == "RON 97")
     if mask.any():
         df = df[~mask].copy()
-    mask = (df["country"] == "Singapore") & (df["fuel_family"] == "town_gas")
+    # Singapore CityEnergy town gas tariffs are utility billing, not motor fuel prices
+    mask = df["source_key"] == "sg_cityenergy_town_gas"
     if mask.any():
         df = df[~mask].copy()
     return df
@@ -268,62 +360,12 @@ def _normalize_country_products(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _dedup_overlapping_effective_dates(df: pd.DataFrame) -> pd.DataFrame:
-    """For NZ MBIE, keep only the row with the latest effective_from per (fuel_product, observation_date).
-
-    The MBIE CSV contains overlapping Final/Provisional rows for the same
-    observation_date.  The newer effective_from represents the current survey.
-    """
-    if df.empty or "effective_from" not in df.columns:
-        return df
-    nz_mbie_mask = df["source_key"] == "nz_mbie_weekly_fuel"
-    if not nz_mbie_mask.any():
-        return df
-    nz = df[nz_mbie_mask].copy()
-    rest = df[~nz_mbie_mask]
-    nz = nz.sort_values("effective_from", ascending=False)
-    nz = nz.drop_duplicates(subset=["fuel_product", "observation_date"], keep="first")
-    return pd.concat([rest, nz], ignore_index=True)
-
-
-def _drop_superseded_forward_fills(df: pd.DataFrame) -> pd.DataFrame:
-    """Drop forward_filled rows when a real source covers the same series.
-
-    For each (country, fuel_product), if forward_filled rows from one source
-    overlap with real observations from another source, drop the forward_filled
-    rows from the overlap period onward.  This prevents stale forward_fills
-    from interleaving with fresh weekly data (e.g. Vietnam Mazut).
-    """
-    if df.empty or "status" not in df.columns:
-        return df
-    ff_mask = df["status"] == "forward_filled"
-    if not ff_mask.any():
-        return df
-    real = df[~ff_mask]
-    ff = df[ff_mask]
-    drop_idx: list[int] = []
-    for (country, product), ff_group in ff.groupby(["country", "fuel_product"]):
-        real_group = real[
-            (real["country"] == country) & (real["fuel_product"] == product)
-        ]
-        if real_group.empty:
-            continue
-        real_min = real_group["observation_date"].min()
-        superseded = ff_group[ff_group["observation_date"] >= real_min]
-        drop_idx.extend(superseded.index.tolist())
-    if drop_idx:
-        df = df.drop(index=drop_idx).copy()
-    return df
-
-
 def _apply_data_quality_rules(df: pd.DataFrame) -> pd.DataFrame:
     """Drop untracked products/sources and apply canonical country names."""
     if df.empty:
         return df
     df = _drop_untracked_products(df)
     df = _drop_low_priority_sources(df)
-    df = _drop_superseded_forward_fills(df)
-    df = _dedup_overlapping_effective_dates(df)
     df = _normalize_country_products(df)
     df = _rename_countries(df)
     return df
@@ -357,6 +399,15 @@ def _normalize_products(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _derive_fuel_family(df: pd.DataFrame) -> pd.DataFrame:
+    """Derive fuel_family from fuel_product_standard."""
+    if df.empty or "fuel_product_standard" not in df.columns:
+        return df
+    df = df.copy()
+    df["fuel_family"] = df["fuel_product_standard"].map(_FAMILY_FROM_STANDARD)
+    return df
+
+
 # ── Location derivation ───────────────────────────────────────────────────────
 
 
@@ -369,28 +420,11 @@ def _parse_malaysia_location(product: str) -> tuple[str, str | None]:
     return product, None
 
 
-def _resolve_location(row: pd.Series) -> str:
-    my_loc = row.get("_my_loc")
-    if pd.notna(my_loc) and str(my_loc).strip():
-        return str(my_loc).strip()
-
-    city = row.get("city")
-    subnational = row.get("subnational_area")
-
-    if pd.notna(city) and str(city).strip():
-        return str(city).strip()
-
-    if pd.notna(subnational) and str(subnational).strip():
-        s = str(subnational).strip()
-        if s.lower().startswith("national"):
-            return "National"
-        return s
-
-    return "National"
-
-
 def _derive_location(df: pd.DataFrame) -> pd.DataFrame:
-    """Add canonical location column; parse Malaysia location from product name."""
+    """Add canonical location column; parse Malaysia location from product name.
+
+    Location priority: _my_loc (Malaysia) > address > city > subnational_area > "National"
+    """
     df = df.copy()
 
     malaysia_mask = df["country"] == "Malaysia"
@@ -401,7 +435,20 @@ def _derive_location(df: pd.DataFrame) -> pd.DataFrame:
     else:
         df["_my_loc"] = None
 
-    df["location"] = df.apply(_resolve_location, axis=1)
+    def _resolve(row: pd.Series) -> str:
+        my_loc = row.get("_my_loc")
+        if pd.notna(my_loc) and str(my_loc).strip():
+            return str(my_loc).strip()
+        for field in ("address", "city", "subnational_area"):
+            val = row.get(field)
+            if pd.notna(val) and str(val).strip():
+                s = str(val).strip()
+                if s.lower().startswith("national"):
+                    return "National"
+                return s
+        return "National"
+
+    df["location"] = df.apply(_resolve, axis=1)
     df = df.drop(columns=["_my_loc"], errors="ignore")
     return df
 
@@ -420,111 +467,30 @@ def _normalize_location_text(value: object) -> str | None:
     return text
 
 
-def _normalize_generic_product_and_quality(
-    row: pd.Series,
-) -> tuple[str | None, str | None]:
-    product = _clean_text(row.get("fuel_product"))
-    quality = _clean_text(row.get("quality_group"))
-    if quality is not None:
-        quality = quality.lower().replace("super premium", "super_premium")
-
-    if product is None:
-        return product, quality
-
-    match = _GENERIC_QUALIFIER_RE.match(product)
-    if match:
-        product = _clean_text(match.group("base"))
-        parsed_quality = match.group("qual").lower().replace("-", " ").replace("_", " ")
-        parsed_quality = parsed_quality.replace("super premium", "super_premium")
-        if quality is None:
-            quality = parsed_quality
-
-    if quality == "standard" and str(row.get("fuel_family") or "").lower() == "diesel":
-        quality = "regular"
-
-    return product, quality
-
-
-def _canonicalize_australia_row(row: pd.Series) -> pd.Series:
-    if str(row.get("country") or "") != "Australia":
-        return row
-
-    product = _clean_text(row.get("fuel_product")) or ""
-    family = str(row.get("fuel_family") or "").lower()
-
-    if _AU_PDL_RE.match(product):
-        row["fuel_family"] = "diesel"
-        row["fuel_product"] = "Premium Diesel"
-        row["quality_group"] = "premium"
-        return row
+def _series_fields(
+    family: str, standard: str, quality: str, product: str
+) -> tuple[str, str]:
+    """Derive (series_key, series_label) from fuel_family, fuel_product_standard, quality_group."""
+    family = family.strip().lower()
+    standard = standard.strip().lower()
+    quality = quality.strip().lower()
 
     if family == "diesel":
-        if _AU_DIESEL_RE.match(product) or product.lower() == "diesel":
-            row["fuel_product"] = "Diesel"
-            row["quality_group"] = "regular"
-            return row
-
-    if family == "gasoline":
-        if _AU_UNLEADED_RE.match(product):
-            row["fuel_product"] = "Unleaded 91"
-            row["quality_group"] = "regular"
-            if _is_missing(row.get("octane_ron")):
-                row["octane_ron"] = 91
-            if _is_missing(row.get("ethanol_pct")):
-                row["ethanol_pct"] = 0
-            return row
-        if _AU_P95_RE.match(product):
-            row["fuel_product"] = "Premium 95"
-            row["quality_group"] = "premium"
-            row["octane_ron"] = 95
-            return row
-        if _AU_P98_RE.match(product):
-            row["fuel_product"] = "Premium 98"
-            row["quality_group"] = "premium"
-            row["octane_ron"] = 98
-            return row
-        if _AU_E10_RE.match(product):
-            row["fuel_product"] = "E10"
-            row["quality_group"] = "regular"
-            if _is_missing(row.get("octane_ron")):
-                row["octane_ron"] = 91
-            if _is_missing(row.get("ethanol_pct")):
-                row["ethanol_pct"] = 10
-            return row
-        if _AU_E20_RE.match(product):
-            row["fuel_product"] = "E20"
-            if _is_missing(row.get("ethanol_pct")):
-                row["ethanol_pct"] = 20
-            return row
-        if _AU_E85_RE.match(product):
-            row["fuel_product"] = "E85"
-            if _is_missing(row.get("ethanol_pct")):
-                row["ethanol_pct"] = 85
-            return row
-
-    if family == "lpg" and _AU_LPG_RE.match(product):
-        row["fuel_product"] = "LPG"
-        row["quality_group"] = None
-
-    return row
-
-
-def _series_fields(row: pd.Series) -> tuple[str, str]:
-    family = str(row.get("fuel_family") or "").strip().lower()
-    quality = str(row.get("quality_group") or "").strip().lower()
-    product = str(row.get("fuel_product") or "").strip()
-    ethanol = _as_float(row.get("ethanol_pct"))
-    octane = _as_float(row.get("octane_ron"))
-
-    if family == "diesel":
-        if quality == "premium" or product == "Premium Diesel":
+        if quality == "premium" or standard in ("diesel_premium", "diesel_branded"):
             return "diesel|||premium", "Diesel - Premium"
         return "diesel|||regular", "Diesel - Regular"
 
     if family == "gasoline":
-        if ethanol is not None and ethanol >= 10:
+        if standard in (
+            "gasoline_ethanol_low",
+            "gasoline_ethanol_medium",
+            "gasoline_ethanol_high",
+        ):
             return "gasoline|||ethanol", "Gasoline - Ethanol Blend"
-        if quality == "premium" or (octane is not None and octane >= 95):
+        if quality == "premium" or standard in (
+            "gasoline_premium",
+            "gasoline_midgrade",
+        ):
             return "gasoline|||premium", "Gasoline - Premium"
         return "gasoline|||regular", "Gasoline - Regular"
 
@@ -541,12 +507,16 @@ def _series_fields(row: pd.Series) -> tuple[str, str]:
 
 
 def _canonicalize(df: pd.DataFrame) -> pd.DataFrame:
-    """Canonicalize product/location fields and derive series_key/series_label."""
+    """Canonicalize product/location fields and derive quality_group, series_key, series_label.
+
+    Fully vectorized — no iterrows().
+    """
     if df.empty:
         return df
 
     df = df.copy()
 
+    # Normalize location text fields
     if "location" in df.columns:
         df["location"] = df["location"].apply(_normalize_location_text)
     if "city" in df.columns:
@@ -554,20 +524,100 @@ def _canonicalize(df: pd.DataFrame) -> pd.DataFrame:
     if "subnational_area" in df.columns:
         df["subnational_area"] = df["subnational_area"].apply(_clean_text)
 
-    normalized = [
-        _normalize_generic_product_and_quality(row) for _, row in df.iterrows()
-    ]
-    df["fuel_product"] = [item[0] for item in normalized]
-    df["quality_group"] = [item[1] for item in normalized]
+    # Initialize quality_group (derived, not stored in raw schema)
+    df["quality_group"] = None
 
-    canonical_rows = [
-        _canonicalize_australia_row(row).to_dict() for _, row in df.iterrows()
-    ]
-    df = pd.DataFrame(canonical_rows, columns=df.columns)
+    # Pass 1: extract quality qualifier from product name suffix e.g. "Diesel (regular)"
+    product_str = df["fuel_product"].fillna("").astype(str)
+    match = product_str.str.extract(_GENERIC_QUALIFIER_RE, expand=True)
+    has_match = match["base"].notna()
+    if has_match.any():
+        df.loc[has_match, "fuel_product"] = match.loc[has_match, "base"].str.strip()
+        extracted_qual = (
+            match.loc[has_match, "qual"]
+            .str.lower()
+            .str.replace("super premium", "super_premium", regex=False)
+            .str.replace("super-premium", "super_premium", regex=False)
+        )
+        df.loc[has_match, "quality_group"] = extracted_qual
 
-    series_fields = [_series_fields(row) for _, row in df.iterrows()]
-    df["series_key"] = [item[0] for item in series_fields]
-    df["series_label"] = [item[1] for item in series_fields]
+    # Fix diesel "standard" → "regular"
+    diesel_standard = df.get("fuel_family", pd.Series(dtype=str)).eq("diesel") & (
+        df["quality_group"] == "standard"
+    )
+    if diesel_standard.any():
+        df.loc[diesel_standard, "quality_group"] = "regular"
+
+    # Pass 2: Australia-specific product canonicalization (vectorized)
+    au_mask = df["country"] == "Australia"
+    if au_mask.any():
+        product = df["fuel_product"].fillna("").astype(str)
+        family = (
+            df.get("fuel_family", pd.Series("", index=df.index))
+            .fillna("")
+            .astype(str)
+            .str.lower()
+        )
+
+        pdl = au_mask & product.str.match(_AU_PDL_RE, na=False)
+        df.loc[pdl, "fuel_product"] = "Premium Diesel"
+        df.loc[pdl, "quality_group"] = "premium"
+
+        au_diesel = au_mask & (family == "diesel")
+        diesel_match = au_diesel & (
+            product.str.match(_AU_DIESEL_RE, na=False)
+            | product.str.lower().eq("diesel")
+        )
+        df.loc[diesel_match, "fuel_product"] = "Diesel"
+        df.loc[diesel_match, "quality_group"] = "regular"
+
+        au_gas = au_mask & (family == "gasoline")
+
+        ulp = au_gas & product.str.match(_AU_UNLEADED_RE, na=False)
+        df.loc[ulp, "fuel_product"] = "Unleaded 91"
+        df.loc[ulp, "quality_group"] = "regular"
+
+        p95 = au_gas & product.str.match(_AU_P95_RE, na=False)
+        df.loc[p95, "fuel_product"] = "Premium 95"
+        df.loc[p95, "quality_group"] = "premium"
+
+        p98 = au_gas & product.str.match(_AU_P98_RE, na=False)
+        df.loc[p98, "fuel_product"] = "Premium 98"
+        df.loc[p98, "quality_group"] = "premium"
+
+        e10 = au_gas & product.str.match(_AU_E10_RE, na=False)
+        df.loc[e10, "fuel_product"] = "E10"
+        df.loc[e10, "quality_group"] = "regular"
+
+        e20 = au_gas & product.str.match(_AU_E20_RE, na=False)
+        df.loc[e20, "fuel_product"] = "E20"
+
+        e85 = au_gas & product.str.match(_AU_E85_RE, na=False)
+        df.loc[e85, "fuel_product"] = "E85"
+
+        lpg_au = au_mask & (family == "lpg") & product.str.match(_AU_LPG_RE, na=False)
+        df.loc[lpg_au, "fuel_product"] = "LPG"
+        df.loc[lpg_au, "quality_group"] = None
+
+    # Pass 3: derive series_key and series_label (vectorized via zip)
+    family_col = (
+        df.get("fuel_family", pd.Series("", index=df.index)).fillna("").astype(str)
+    )
+    standard_col = (
+        df.get("fuel_product_standard", pd.Series("", index=df.index))
+        .fillna("")
+        .astype(str)
+    )
+    quality_col = df["quality_group"].fillna("").astype(str)
+    product_col = df["fuel_product"].fillna("").astype(str)
+
+    series = [
+        _series_fields(f, s, q, p)
+        for f, s, q, p in zip(family_col, standard_col, quality_col, product_col)
+    ]
+    df["series_key"] = [item[0] for item in series]
+    df["series_label"] = [item[1] for item in series]
+
     return df
 
 
@@ -577,7 +627,7 @@ def _canonicalize(df: pd.DataFrame) -> pd.DataFrame:
 def _deduplicate(df: pd.DataFrame) -> pd.DataFrame:
     """Single combined dedup pass.
 
-    Step 1: Sort by (source_rank, status_rank) so groupby "first" picks best row.
+    Step 1: Sort by source_rank so groupby "first" picks best row.
     Step 2: Average price within same (source, location, date, series) — handles
             intra-source location normalization (e.g. INGLEBURN vs Ingleburn).
     Step 3: Sort again and drop_duplicates on DEDUP_KEY — picks best source
@@ -588,27 +638,14 @@ def _deduplicate(df: pd.DataFrame) -> pd.DataFrame:
 
     df = df.copy()
     df["_source_rank"] = df.apply(_compute_source_rank, axis=1)
-    df["_status_rank"] = (
-        df["status"]
-        .str.lower()
-        .map(_STATUS_RANK)
-        .fillna(_STATUS_RANK_DEFAULT)
-        .astype(int)
-        if "status" in df.columns
-        else 0
-    )
 
     # Step 1: sort so groupby "first" captures the best-ranked row
-    df = df.sort_values(["_source_rank", "_status_rank", "observation_date"])
+    df = df.sort_values(["_source_rank", "observation_date"])
 
     # Step 2: average prices within same (source, location, date, series)
     agg_cols = [c for c in _AGG_GROUP_COLS if c in df.columns]
     if agg_cols and "price_local" in df.columns:
-        pass_cols = [
-            c
-            for c in df.columns
-            if c not in set(agg_cols) | {"price_local", "observation_hash"}
-        ]
+        pass_cols = [c for c in df.columns if c not in set(agg_cols) | {"price_local"}]
         agg_map: dict[str, str] = {c: "first" for c in pass_cols}
         agg_map["price_local"] = "mean"
         df = df.groupby(agg_cols, dropna=False, as_index=False).agg(agg_map)
@@ -617,80 +654,41 @@ def _deduplicate(df: pd.DataFrame) -> pd.DataFrame:
     # Step 3: pick best source for each (country, date, location, series_key)
     dedup_key = [c for c in _DEDUP_KEY if c in df.columns]
     if len(dedup_key) >= 3:
-        df = df.sort_values(["_source_rank", "_status_rank"])
+        df = df.sort_values(["_source_rank"])
         df = df.drop_duplicates(subset=dedup_key, keep="first")
-
-    # Rehash after dedup
-    if "observation_hash" in df.columns:
-        df["observation_hash"] = df.apply(lambda row: make_hash(row.to_dict()), axis=1)
 
     return _strip_internal(df).reset_index(drop=True)
 
 
-# ── Monthly rollup ────────────────────────────────────────────────────────────
-
-
-def _first_non_null(values: pd.Series):
-    for v in values:
-        if pd.notna(v):
-            return v
-    return None
-
-
-def _monthly_rollup(
-    df: pd.DataFrame,
-    cutoff: pd.Timestamp = _MONTHLY_ROLLUP_CUTOFF,
-) -> pd.DataFrame:
-    """Roll up pre-cutoff observations to monthly grain."""
-    if df.empty or "observation_date" not in df.columns:
-        return df
-
-    df = df.copy()
-    df["observation_date"] = pd.to_datetime(df["observation_date"], errors="coerce")
-    older = df[df["observation_date"] < cutoff].copy()
-    newer = df[df["observation_date"] >= cutoff].copy()
-
-    if older.empty:
-        return df
-
-    older["_month_start"] = (
-        older["observation_date"].dt.to_period("M").dt.to_timestamp()
-    )
-
-    dedup_key = [
-        c for c in _DEDUP_KEY if c in older.columns and c != "observation_date"
-    ]
-    group_cols = dedup_key + ["_month_start"]
-
-    def _agg(group: pd.DataFrame) -> pd.Series:
-        row: dict[str, object | None] = {}
-        for col in group.columns:
-            if col in {
-                "observation_date",
-                "effective_from",
-                "effective_to",
-                "_month_start",
-            }:
-                continue
-            if col == "price_local":
-                row[col] = (
-                    float(group[col].mean()) if group[col].notna().any() else None
-                )
-            else:
-                row[col] = _first_non_null(group[col])
-
-        month_start = group["_month_start"].iloc[0]
-        month_end = (month_start + MonthEnd(1)).normalize()
-        row["observation_date"] = month_start
-        row["effective_from"] = month_start
-        row["effective_to"] = month_end
-        return pd.Series(row)
-
-    rolled = older.groupby(group_cols, dropna=False).apply(_agg).reset_index(drop=True)
-    return pd.concat([rolled, newer], ignore_index=True)
-
-
 # ── Public pipeline functions ─────────────────────────────────────────────────
+
+
+def _run_pipeline_stages(df: pd.DataFrame) -> pd.DataFrame:
+    """Run all enrichment stages on a raw DataFrame (with _storage_path present).
+
+    Returns a fully enriched, sorted DataFrame.
+    """
+    df["observation_date"] = pd.to_datetime(df["observation_date"], errors="coerce")
+    df = _strip_internal(df)
+    for col in COLUMNS:
+        if col not in df.columns:
+            df[col] = None
+
+    df = _apply_data_quality_rules(df)
+    df = _normalize_products(df)
+    df = _derive_fuel_family(df)
+    df = _derive_location(df)
+    df = _canonicalize(df)
+    df = _deduplicate(df)
+
+    sort_cols = [
+        c
+        for c in ["country", "observation_date", "fuel_product", "location"]
+        if c in df.columns
+    ]
+    if sort_cols:
+        df = df.sort_values(sort_cols).reset_index(drop=True)
+    return df
 
 
 def apply_data_quality_rules(df: pd.DataFrame) -> pd.DataFrame:
@@ -701,52 +699,105 @@ def apply_data_quality_rules(df: pd.DataFrame) -> pd.DataFrame:
 
 def build_enriched_frame(
     collect_dir: Path | None = None,
+    incremental: bool = True,
 ) -> pd.DataFrame:
     """Full pipeline: load → normalize → enrich → deduplicate.
 
-    Loads collected per-source observations, applies all data quality rules,
-    derives location, canonicalizes products, deduplicates, and returns a
-    publish-ready DataFrame.
+    Incremental mode (default):
+      1. Read observation_hash column from enriched.csv → enriched_hashes set
+      2. Scan all source files for hashes not in enriched_hashes → dirty countries
+      3. If no dirty countries: return cached enriched frame instantly
+      4. Load ALL source files for dirty countries (needed for correct cross-source dedup)
+      5. Re-enrich dirty countries; splice with clean rows from enriched cache
+
+    Pass incremental=False (or --full via CLI) to force a clean rebuild from all sources.
     """
     from .constants import DATA_DIR
+    from .storage import country_slug as _country_slug
 
     if collect_dir is None:
         collect_dir = DATA_DIR
 
-    df = _load_collected_observations(collect_dir)
-    if df.empty:
-        return pd.DataFrame(columns=pd.Index(COLUMNS))
+    enriched_path = STAGED_DATA_DIR / "enrich" / "retail_series_enriched.csv"
 
-    df["observation_date"] = pd.to_datetime(df["observation_date"], errors="coerce")
-    df = _strip_internal(df)
-    for col in COLUMNS:
-        if col not in df.columns:
-            df[col] = None
+    if incremental and enriched_path.exists():
+        enriched_mtime = enriched_path.stat().st_mtime
 
-    # Normalize
-    df = _apply_data_quality_rules(df)
-    df = _normalize_products(df)
+        # Scan source files for any modified after enriched output was written
+        dirty = _find_dirty_countries(collect_dir, enriched_mtime)
 
-    # Enrich
-    df = _derive_location(df)
-    df = _canonicalize(df)
+        if not dirty:
+            df_existing = pd.read_csv(enriched_path, low_memory=False)
+            df_existing["observation_date"] = pd.to_datetime(
+                df_existing["observation_date"], errors="coerce"
+            )
+            logger.info(
+                "Incremental build: no new sources, returning cached (%d rows)",
+                len(df_existing),
+            )
+            return df_existing
 
-    # Single dedup pass
-    df = _deduplicate(df)
+        dirty_countries = set(dirty.keys())
+        logger.info(
+            "Incremental build: re-enriching %d countries: %s",
+            len(dirty_countries),
+            sorted(dirty_countries),
+        )
 
-    # Monthly rollup for historical data
-    df = _monthly_rollup(df)
+        # Load full enriched cache to splice with
+        df_existing = pd.read_csv(enriched_path, low_memory=False)
+        df_existing["observation_date"] = pd.to_datetime(
+            df_existing["observation_date"], errors="coerce"
+        )
 
-    sort_cols = [
-        c
-        for c in ["country", "observation_date", "fuel_product", "location"]
-        if c in df.columns
-    ]
-    if sort_cols:
-        df = df.sort_values(sort_cols).reset_index(drop=True)
+        # Load ALL source files for dirty countries
+        dirty_paths: list[Path] = []
+        for country in dirty_countries:
+            slug = _country_slug(country)
+            dirty_paths.extend(sorted((collect_dir / slug).glob("*/observations.csv")))
+
+        df_to_enrich = _load_from_paths(dirty_paths, collect_dir)
+        if not df_to_enrich.empty:
+            df_to_enrich = df_to_enrich[
+                ~df_to_enrich["source_key"].str.startswith("global_", na=False)
+            ].copy()
+
+        if df_to_enrich.empty:
+            logger.info(
+                "Incremental build: no data loaded for dirty countries, returning cached"
+            )
+            return df_existing
+
+        # Enrich dirty slice, splice with clean rows
+        df_clean = df_existing[~df_existing["country"].isin(dirty_countries)].copy()
+        df_new = _run_pipeline_stages(df_to_enrich)
+
+        sort_cols = [
+            c
+            for c in ["country", "observation_date", "fuel_product", "location"]
+            if c in df_new.columns
+        ]
+        result = pd.concat([df_clean, df_new], ignore_index=True)
+        if sort_cols:
+            result = result.sort_values(sort_cols).reset_index(drop=True)
+
+        logger.info(
+            "build_enriched_frame (incremental): %d rows, %d countries, %d source_keys",
+            len(result),
+            result["country"].nunique() if "country" in result.columns else 0,
+            result["source_key"].nunique() if "source_key" in result.columns else 0,
+        )
+        return result
+
+    # Full build
+    df_raw = _load_collected_observations(collect_dir)
+    if df_raw.empty:
+        return pd.DataFrame(columns=pd.Index(ENRICHED_COLUMNS))
+
+    df = _run_pipeline_stages(df_raw)
 
     logger.info(
-        "build_enriched_frame: %d rows, %d countries, %d source_keys",
+        "build_enriched_frame (full): %d rows, %d countries, %d source_keys",
         len(df),
         df["country"].nunique() if "country" in df.columns else 0,
         df["source_key"].nunique() if "source_key" in df.columns else 0,
@@ -757,11 +808,37 @@ def build_enriched_frame(
 def materialize_outputs(
     staged_dir: Path = STAGED_DATA_DIR,
     collect_dir: Path | None = None,
+    incremental: bool = True,
 ) -> dict:
-    """Run full pipeline and write enriched CSV to staged_dir/enrich/."""
-    df = build_enriched_frame(collect_dir=collect_dir)
+    """Run pipeline and write enriched CSV to staged_dir/enrich/.
+
+    Pass incremental=False to force a full rebuild regardless of existing output.
+    Skips writing if incremental=True and no source files are newer than the output.
+    """
+    from .constants import DATA_DIR
+
+    if collect_dir is None:
+        collect_dir = DATA_DIR
 
     out_path = staged_dir / "enrich" / "retail_series_enriched.csv"
+
+    # Skip build + write entirely if output is up to date
+    if incremental and out_path.exists():
+        enriched_mtime = out_path.stat().st_mtime
+        dirty = _find_dirty_countries(collect_dir, enriched_mtime)
+        if not dirty:
+            row_count = sum(1 for _ in out_path.open()) - 1  # fast line count
+            logger.info("Build skipped — output is up to date (%d rows)", row_count)
+            return {"enriched_path": out_path, "enriched_rows": row_count}
+
+    df = build_enriched_frame(collect_dir=collect_dir, incremental=incremental)
+
+    # Ensure output contains exactly ENRICHED_COLUMNS in canonical order
+    for col in ENRICHED_COLUMNS:
+        if col not in df.columns:
+            df[col] = None
+    df = df[ENRICHED_COLUMNS]
+
     out_path.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(out_path, index=False)
     logger.info("Saved %d rows -> %s", len(df), out_path)
@@ -772,28 +849,32 @@ def materialize_outputs(
 # ── Publish-time serialization ────────────────────────────────────────────────
 
 
+def _clean_val(v: object) -> object:
+    try:
+        if pd.isna(v):
+            return None
+    except (TypeError, ValueError):
+        pass
+    if isinstance(v, bool):
+        return str(v)
+    if isinstance(v, (int, float)):
+        return float(v)
+    return str(v) if not isinstance(v, str) else v
+
+
 def frame_to_country_series(
     df: pd.DataFrame,
 ) -> dict[str, list[dict[str, object | None]]]:
     """Group enriched fuel rows into publish-ready per-country payloads."""
-
-    def _to_records(group: pd.DataFrame) -> list[dict[str, object | None]]:
-        records: list[dict[str, object | None]] = []
-        for _, row in group.iterrows():
-            record: dict[str, object | None] = {}
-            for col in group.columns:
-                val = row[col]
-                if pd.isna(val):
-                    record[col] = None
-                elif isinstance(val, pd.Timestamp):
-                    record[col] = val.strftime("%Y-%m-%d")
-                elif isinstance(val, (int, float)):
-                    record[col] = float(val)
-                else:
-                    record[col] = str(val)
-            records.append(record)
-        return records
+    out = df.copy()
+    for col in out.columns:
+        if pd.api.types.is_datetime64_any_dtype(out[col]):
+            out[col] = out[col].dt.strftime("%Y-%m-%d")
 
     return {
-        str(country): _to_records(group) for country, group in df.groupby("country")
+        str(country): [
+            {k: _clean_val(v) for k, v in rec.items()}
+            for rec in group.to_dict("records")
+        ]
+        for country, group in out.groupby("country")
     }
