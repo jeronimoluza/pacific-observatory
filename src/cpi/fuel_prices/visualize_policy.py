@@ -137,9 +137,15 @@ _SUBSIDY_TYPE_CODES = {3, 4, 5, 6, 7, 9}
 # ISO3 codes excluded from subsidy chips in Tab 1 (no data yet)
 _SUBSIDY_CHIP_EXCLUDE: set[str] = set()
 
-# Hardcoded product regimes for countries not in the WB subsidies CSV
-# (e.g. HKG and TWN are not EAP-classified in the World Bank dataset)
+# Hardcoded product regimes for countries missing from, or intentionally
+# overriding, the WB pricing-regime CSV.
 _HARDCODED_PRODUCT_REGIMES: dict[str, dict[str, dict]] = {
+    "MNG": {
+        "Gasoline": {"regime": "Price Control", "subsidy": False},
+        "Diesel": {"regime": "Price Control", "subsidy": False},
+        "LPG": {"regime": "Price Control", "subsidy": False},
+        "Kerosene": {"regime": "Price Control", "subsidy": False},
+    },
     "HKG": {
         "Gasoline": {"regime": "Market", "subsidy": False},
         "Diesel": {"regime": "Market", "subsidy": False},
@@ -153,6 +159,40 @@ _HARDCODED_PRODUCT_REGIMES: dict[str, dict[str, dict]] = {
         "Kerosene": {"regime": "Price Control", "subsidy": False},
     },
 }
+
+
+def _apply_hardcoded_regime_overrides(
+    out: pd.DataFrame, product_regimes: dict[str, dict[str, dict]]
+) -> tuple[pd.DataFrame, dict[str, dict[str, dict]]]:
+    """Apply hardcoded per-product overrides and sync row-level base regime when uniform."""
+    for iso3, per_product in _HARDCODED_PRODUCT_REGIMES.items():
+        product_regimes[iso3] = per_product
+
+        regime_values = [
+            str(info.get("regime"))
+            for info in per_product.values()
+            if isinstance(info, dict) and info.get("regime")
+        ]
+        subsidy_values = [
+            bool(info.get("subsidy"))
+            for info in per_product.values()
+            if isinstance(info, dict)
+        ]
+        if len(set(regime_values)) != 1 or len(set(subsidy_values)) != 1 or out.empty:
+            continue
+
+        mask = out["wb_iso3"] == iso3
+        if not mask.any():
+            continue
+
+        base_regime = regime_values[0]
+        subsidy_flag = subsidy_values[0]
+        out.loc[mask, "base_regime"] = base_regime
+        out.loc[mask, "subsidy_flag"] = subsidy_flag
+        out.loc[mask, "regime"] = base_regime + (" + Subsidies" if subsidy_flag else "")
+
+    return out, product_regimes
+
 
 # Country name normalization for GDP/pop CSV merges
 _COUNTRY_NAME_MAP: dict[str, str] = {
@@ -391,6 +431,7 @@ def _load_regime_data() -> tuple[pd.DataFrame, dict[str, dict[str, dict]]]:
 
         product_regimes[iso3] = merged
 
+    out, product_regimes = _apply_hardcoded_regime_overrides(out, product_regimes)
     return out.reset_index(drop=True), product_regimes
 
 
@@ -826,7 +867,7 @@ def load_policy_data() -> dict:
                 }
             )
 
-    # Apply hardcoded overrides for countries absent from the WB regime CSV
+    # Retain hardcoded per-product overrides even if regime loading changes upstream.
     product_regimes.update(_HARDCODED_PRODUCT_REGIMES)
 
     return {
@@ -1062,6 +1103,63 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
             key=lambda r: (r.get("observation_date", ""), r.get("fuel_product", "")),
         )
 
+    def _collapse_country_records(records: list[dict]) -> list[dict]:
+        """Pre-aggregate chart records to keep the standalone HTML lightweight.
+
+        Tab 3 no longer renders per-location tables, so we only need one averaged
+        row per (date, product, source) for charting. This avoids embedding a
+        huge station-level payload in the HTML.
+        """
+        from collections import defaultdict
+
+        grouped_prices: dict[tuple, list[float]] = defaultdict(list)
+        first_row: dict[tuple, dict] = {}
+
+        for r in records:
+            obs_date = str(r.get("observation_date", ""))[:10]
+            price = r.get("price_local")
+            if not obs_date or price is None:
+                continue
+            try:
+                price_f = float(price)
+            except (TypeError, ValueError):
+                continue
+
+            key = (
+                obs_date,
+                r.get("fuel_product"),
+                r.get("series_key"),
+                r.get("source_key"),
+                r.get("fuel_family"),
+                r.get("currency"),
+                r.get("unit"),
+            )
+            grouped_prices[key].append(price_f)
+            first_row.setdefault(key, r)
+
+        collapsed: list[dict] = []
+        for key, prices in grouped_prices.items():
+            rec = dict(first_row[key])
+            rec["observation_date"] = key[0]
+            rec["fuel_product"] = key[1]
+            rec["series_key"] = key[2]
+            rec["source_key"] = key[3]
+            rec["fuel_family"] = key[4]
+            rec["currency"] = key[5]
+            rec["unit"] = key[6]
+            rec["price_local"] = round(sum(prices) / len(prices), 4)
+            rec["location"] = "National"
+            collapsed.append(rec)
+
+        return sorted(
+            collapsed,
+            key=lambda r: (
+                str(r.get("observation_date", "")),
+                str(r.get("fuel_product", "")),
+                str(r.get("source_key", "")),
+            ),
+        )
+
     # Pre-process per-country before slimming.
     # HK: exclude sparse GPP rows (they introduce a duplicate "Gasoline" chip), then
     #     average the per-station Consumer Council data to one price per day.
@@ -1132,7 +1230,9 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     }
 
     fuel_data_slim = {
-        country: [{k: r[k] for k in _FUEL_KEEP if k in r} for r in records]
+        country: _collapse_country_records(
+            [{k: r[k] for k in _FUEL_KEEP if k in r} for r in records]
+        )
         for country, records in _preprocessed.items()
     }
 
@@ -1171,7 +1271,7 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     fuel_data_json = json.dumps(json.dumps(fuel_data_slim))
     country_products_json = json.dumps(COUNTRY_PRODUCTS)
     product_regimes_json = json.dumps(product_regimes)
-    _HIDDEN_COUNTRIES = {"Palau"}
+    _HIDDEN_COUNTRIES = {"Palau", "Timor-Leste"}
     fuel_countries = sorted(c for c in fuel_data.keys() if c not in _HIDDEN_COUNTRIES)
     fuel_country_opts = "\n".join(
         f'<option value="{c}">{c}</option>' for c in fuel_countries
@@ -1218,7 +1318,8 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
                 (imf_val is not None and imf_val > 0) if can_show_subsidy else False
             )
             bc = _BASE_COLORS.get(base, "#aec7e8")
-            cell_html = f'<span class="regime-badge" style="background:{bc}"{tooltip_attr}>{base}</span>'
+            base_label = "Price Controlled" if base == "Price Control" else base
+            cell_html = f'<span class="regime-badge" style="background:{bc}"{tooltip_attr}>{base_label}</span>'
             if subsidy:
                 cell_html += f' <span class="regime-badge" style="background:{_SUBSIDY_COLOR}">Subsidised</span>'
             prod_cells += f"<td>{cell_html}</td>"
@@ -2093,13 +2194,28 @@ function rerenderFuel() {{
 }}
 
 // ─── Tab 3 price regime section ─────────────────────────────────────────────────
-function fuelBaseProduct(family) {{
-    if (!family) return null;
-    const f = String(family).toLowerCase();
+function fuelBaseProduct(row) {{
+    const family = row && row.fuel_family;
+    const f = String(family || '').toLowerCase();
     if (f === 'gasoline') return 'Gasoline';
     if (f === 'diesel') return 'Diesel';
     if (f === 'lpg') return 'LPG';
     if (f === 'kerosene') return 'Kerosene';
+
+    const product = String((row && row.fuel_product) || '').toLowerCase();
+    if (!product) return null;
+    if (product.includes('diesel') || product.includes('gas oil')) return 'Diesel';
+    if (product.includes('kerosene') || product.includes('paraffin')) return 'Kerosene';
+    if (product.includes('lpg') || product.includes('liquefied petroleum')) return 'LPG';
+    if (
+        product.includes('gasoline')
+        || product.includes('petrol')
+        || product.includes('ron')
+        || product.includes('unleaded')
+        || product.includes('pertalite')
+        || product.includes('pertamax')
+        || product.includes('motor spirit')
+    ) return 'Gasoline';
     return null;
 }}
 
@@ -2127,7 +2243,7 @@ function updateFuelRegimeSection(countryName, selectedKeys, keyColors) {{
     selectedKeys.forEach(function(key) {{
         const row = rows.find(r => chipKey(r) === key);
         if (!row) return;
-        const baseProd = fuelBaseProduct(row.fuel_family);
+        const baseProd = fuelBaseProduct(row);
         if (!baseProd) return;
         const info = perProd[baseProd];
         if (!info || !info.regime || info.regime === 'Unknown') return;

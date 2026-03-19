@@ -221,7 +221,12 @@ def _wp_session() -> requests.Session:
 
 
 def fetch_png_iccc(cutoff: date) -> pd.DataFrame:
-    """Fetch PNG ICCC monthly indicative retail fuel prices via WP REST API."""
+    """Fetch PNG ICCC indicative retail fuel prices via WP REST API.
+
+    ICCC prices are state-controlled and published monthly. This fetcher
+    forward-fills each monthly price across daily observation dates from the
+    effective date through the end of the month (capped at today).
+    """
     print("  [png_iccc] Fetching PNG ICCC data (WP REST API)...")
     print(f"  [png_iccc] Cutoff: {cutoff}")
 
@@ -256,6 +261,7 @@ def fetch_png_iccc(cutoff: date) -> pd.DataFrame:
         time.sleep(0.5)
 
     print(f"  [png_iccc] Found {len(posts)} posts via WP API")
+    today = date.today()
     all_rows: list[dict] = []
 
     # --- content phase: fetch each post and parse table ---
@@ -279,15 +285,36 @@ def fetch_png_iccc(cutoff: date) -> pd.DataFrame:
             print(f"  [png_iccc] Content parse error (id={post_id}): {e}")
             continue
 
-        rows = _parse_png_table(html, article_link)
-        new_rows = [
-            r for r in rows if date.fromisoformat(r["observation_date"]) > cutoff
-        ]
-        if new_rows:
-            all_rows.extend(new_rows)
-            dates = {r["observation_date"] for r in new_rows}
+        monthly_rows = _parse_png_table(html, article_link)
+
+        # Forward-fill monthly rows to daily observations.
+        expanded: list[dict] = []
+        for r in monthly_rows:
+            try:
+                eff_from = date.fromisoformat(str(r.get("effective_from") or ""))
+                eff_to = date.fromisoformat(str(r.get("effective_to") or ""))
+            except Exception:
+                continue
+
+            fill_start = max(eff_from, cutoff + timedelta(days=1))
+            fill_end = min(eff_to, today)
+            if fill_end < fill_start:
+                continue
+
+            d = fill_start
+            while d <= fill_end:
+                rr = r.copy()
+                rr["observation_date"] = str(d)
+                rr["observation_hash"] = make_hash(rr)
+                expanded.append(rr)
+                d += timedelta(days=1)
+
+        if expanded:
+            all_rows.extend(expanded)
+            dates = {r["observation_date"] for r in expanded}
             print(
-                f"  [png_iccc] Post {post_id}: {len(new_rows)} rows ({', '.join(sorted(dates))})"
+                f"  [png_iccc] Post {post_id}: {len(expanded)} rows "
+                f"({min(dates)} to {max(dates)})"
             )
 
         time.sleep(0.3)
@@ -535,8 +562,18 @@ def fetch_samoa_mof(cutoff: date) -> pd.DataFrame:
     all_articles = _get_ws_article_urls(session)
     print(f"  [ws_mof] Found {len(all_articles)} fuel-price articles total")
 
-    new_articles = [(url, d) for url, d in all_articles if d > cutoff]
-    print(f"  [ws_mof] {len(new_articles)} articles newer than cutoff")
+    today = date.today()
+
+    # Samoa prices are published monthly and are state-controlled for the period.
+    # Forward-fill each month's price across daily observation dates.
+    # Include any month whose end date is newer than cutoff (not just obs_date).
+    def month_end(d: date) -> date:
+        return (d.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(
+            days=1
+        )
+
+    new_articles = [(url, d) for url, d in all_articles if month_end(d) > cutoff]
+    print(f"  [ws_mof] {len(new_articles)} articles with coverage after cutoff")
 
     if not new_articles:
         print("  [ws_mof] No new articles")
@@ -568,34 +605,40 @@ def fetch_samoa_mof(cutoff: date) -> pd.DataFrame:
             time.sleep(0.3)
             continue
 
-        month_end = (obs_date.replace(day=28) + timedelta(days=4)).replace(
-            day=1
-        ) - timedelta(days=1)
+        month_end_date = month_end(obs_date)
 
         rows_added = 0
         for key, prod_name, family, qg, ron, _match_re in _WS_PRODUCTS:
             if key not in prices:
                 continue
             price = prices[key]
-            r_row = _TMPL_WS.copy()
-            r_row.update(
-                {
-                    "fuel_family": family,
-                    "fuel_product": prod_name,
-                    "quality_group": qg,
-                    "octane_ron": ron,
-                    "price_local": price,
-                    "effective_from": str(obs_date),
-                    "effective_to": str(month_end),
-                    "observation_date": str(obs_date),
-                    "source_url": art_url,
-                }
-            )
-            r_row["observation_hash"] = make_hash(r_row)
-            all_rows.append(r_row)
-            rows_added += 1
+            fill_start = max(obs_date, cutoff + timedelta(days=1))
+            fill_end = min(month_end_date, today)
+            if fill_end < fill_start:
+                continue
 
-        print(f"  [ws_mof] {obs_date}: {rows_added} products — {prices}")
+            d = fill_start
+            while d <= fill_end:
+                r_row = _TMPL_WS.copy()
+                r_row.update(
+                    {
+                        "fuel_family": family,
+                        "fuel_product": prod_name,
+                        "quality_group": qg,
+                        "octane_ron": ron,
+                        "price_local": price,
+                        "effective_from": str(obs_date),
+                        "effective_to": str(month_end_date),
+                        "observation_date": str(d),
+                        "source_url": art_url,
+                    }
+                )
+                r_row["observation_hash"] = make_hash(r_row)
+                all_rows.append(r_row)
+                rows_added += 1
+                d += timedelta(days=1)
+
+        print(f"  [ws_mof] {obs_date}: {rows_added} daily rows — {prices}")
         time.sleep(0.5)
 
     _ws_remove_tmp_dir(tmp_dir)

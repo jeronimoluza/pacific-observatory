@@ -175,7 +175,7 @@ FETCHER_REGISTRY: dict[str, FetcherConfig] = {
     ),
     "id_pertamina_pengumuman_non_subsidi": FetcherConfig(
         fn=fetch_id_pertamina_pengumuman,
-        fallback_date=date(2025, 3, 1),
+        fallback_date=date(2023, 7, 31),
         source_name="Pertamina Pengumuman Harga BBM Non-Subsidi",
         country="Indonesia",
         homepage="https://www.pertamina.com/pengumuman",

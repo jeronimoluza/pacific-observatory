@@ -45,6 +45,7 @@ SOURCE_META = [
 ]
 
 import re
+from calendar import monthrange
 from datetime import date, datetime, timedelta
 
 import pandas as pd
@@ -111,7 +112,7 @@ _ID_MONTHS = {
 }
 
 _ID_MONTHS_REV = {v: k for k, v in _ID_MONTHS.items()}
-_ID_PERTAMINA_EARLIEST_KNOWN = date(2025, 3, 1)
+_ID_PERTAMINA_EARLIEST_KNOWN = date(2023, 8, 1)
 _ID_PERTAMINA_SPECIAL_URLS = {
     date(2025, 12, 1): [
         (
@@ -157,14 +158,16 @@ def _pertamina_default_url(eff_date: date) -> str:
 
 def _pertamina_url_priority(url: str) -> tuple[int, str]:
     url_l = url.lower()
-    if "all-zone" in url_l:
+    if "all-zone" in url_l or "semua-zona" in url_l:
         return (0, url)
     if "zona" not in url_l:
         return (1, url)
-    if "zona-1" in url_l:
+    if "zona-i" in url_l or "zona-1" in url_l:
         return (2, url)
-    if "zona-ii" in url_l:
+    if "zona-ii" in url_l or "zona-2" in url_l:
         return (3, url)
+    if "zona-iii" in url_l or "zona-3" in url_l:
+        return (4, url)
     return (9, url)
 
 
@@ -180,6 +183,10 @@ def _parse_id_slug_date(slug: str) -> date | None:
     try:
         return date(year, mon, day)
     except ValueError:
+        if day > monthrange(year, mon)[1] and (
+            "semua-zona" in slug.lower() or "all-zone" in slug.lower()
+        ):
+            return date(year, mon, 1)
         return None
 
 
@@ -258,6 +265,72 @@ def _load_pertamina_announcement(page, url: str) -> tuple[list[str], list[list[s
         page.wait_for_timeout(1_000)
 
     return [], []
+
+
+def _pertamina_has_full_coverage(url: str) -> bool:
+    url_l = url.lower()
+    return "all-zone" in url_l or "semua-zona" in url_l or "zona" not in url_l
+
+
+def _extract_pertamina_listing_candidates(page) -> list[tuple[date, str]]:
+    seen_urls: set[str] = set()
+    candidates: list[tuple[date, str]] = []
+
+    for a in page.locator("a[href]").all():
+        href = a.get_attribute("href") or ""
+        if "daftar-harga-bahan-bakar-khusus-non-subsidi" not in href:
+            continue
+
+        slug = href.split("/")[-1]
+        eff_date = _parse_id_slug_date(slug)
+        if not eff_date:
+            continue
+
+        url = href if href.startswith("http") else f"{_ID_PERTAMINA_NEWS_PREFIX}{slug}"
+        if url in seen_urls:
+            continue
+
+        seen_urls.add(url)
+        candidates.append((eff_date, url))
+
+    return candidates
+
+
+def _collect_pertamina_listing_candidates(
+    page, min_eff_date: date, max_pages: int = 60
+) -> list[tuple[date, str]]:
+    listing_candidates: list[tuple[date, str]] = []
+    seen_signatures: set[tuple[str, ...]] = set()
+    seen_urls: set[str] = set()
+
+    for _ in range(max_pages):
+        page.wait_for_timeout(2_500)
+        page_candidates = _extract_pertamina_listing_candidates(page)
+        signature = tuple(url for _, url in page_candidates)
+        if not page_candidates or signature in seen_signatures:
+            break
+
+        seen_signatures.add(signature)
+        for eff_date, url in page_candidates:
+            if url in seen_urls:
+                continue
+            seen_urls.add(url)
+            listing_candidates.append((eff_date, url))
+
+        if max(eff_date for eff_date, _ in page_candidates) < min_eff_date:
+            break
+
+        next_button = page.locator("button[aria-label='Selanjutnya']").first
+        if next_button.count() == 0:
+            break
+
+        try:
+            next_button.scroll_into_view_if_needed(timeout=5_000)
+            next_button.click(timeout=10_000)
+        except Exception:
+            break
+
+    return listing_candidates
 
 
 def fetch_id_oto(cutoff: date) -> pd.DataFrame:
@@ -387,21 +460,11 @@ def fetch_id_pertamina_pengumuman(cutoff: date) -> pd.DataFrame:
                 wait_until="networkidle",
                 timeout=60_000,
             )
-            page.wait_for_timeout(6_000)
-            links = page.locator("a[href]").all()
-            for a in links:
-                href = a.get_attribute("href") or ""
-                if "daftar-harga-bahan-bakar-khusus-non-subsidi" not in href:
-                    continue
-                slug = href.split("/")[-1]
-                eff_date = _parse_id_slug_date(slug)
-                if not eff_date:
-                    continue
-                url = (
-                    href
-                    if href.startswith("http")
-                    else f"{_ID_PERTAMINA_NEWS_PREFIX}{slug}"
-                )
+            listing_candidates = _collect_pertamina_listing_candidates(page, scan_start)
+            print(
+                f"  [id_pertamina] Listing yielded {len(listing_candidates)} candidate links"
+            )
+            for eff_date, url in listing_candidates:
                 add_candidate(eff_date, url)
         except Exception as e:
             print(f"  [id_pertamina] Pengumuman listing load error: {e}")
@@ -414,17 +477,20 @@ def fetch_id_pertamina_pengumuman(cutoff: date) -> pd.DataFrame:
                 add_candidate(d, extra_url)
             d = _next_month(d)
 
-        announcements: list[tuple[date, str, list[str], list[list[str]]]] = []
+        announcements: list[
+            tuple[date, list[tuple[str, list[str], list[list[str]]]]]
+        ] = []
         for eff_date in sorted(candidate_map):
             urls = sorted(candidate_map[eff_date], key=_pertamina_url_priority)
-            chosen: tuple[date, str, list[str], list[list[str]]] | None = None
+            loaded_pages: list[tuple[str, list[str], list[list[str]]]] = []
             for url in urls:
                 headers, rows = _load_pertamina_announcement(page, url)
                 if headers and rows:
-                    chosen = (eff_date, url, headers, rows)
-                    break
-            if chosen is not None:
-                announcements.append(chosen)
+                    loaded_pages.append((url, headers, rows))
+                    if _pertamina_has_full_coverage(url):
+                        break
+            if loaded_pages:
+                announcements.append((eff_date, loaded_pages))
 
         browser.close()
 
@@ -435,7 +501,7 @@ def fetch_id_pertamina_pengumuman(cutoff: date) -> pd.DataFrame:
     announcements.sort(key=lambda x: x[0])
     print(
         "  [id_pertamina] Announcements found: "
-        + ", ".join(d.strftime("%Y-%m-%d") for d, _, _, _ in announcements)
+        + ", ".join(d.strftime("%Y-%m-%d") for d, _ in announcements)
     )
 
     tmpl = make_template(
@@ -453,7 +519,7 @@ def fetch_id_pertamina_pengumuman(cutoff: date) -> pd.DataFrame:
     all_rows: list[dict] = []
 
     today = date.today()
-    for idx, (eff_date, url, headers, rows) in enumerate(announcements):
+    for idx, (eff_date, pages) in enumerate(announcements):
         next_eff_date = (
             announcements[idx + 1][0] if idx + 1 < len(announcements) else None
         )
@@ -466,43 +532,53 @@ def fetch_id_pertamina_pengumuman(cutoff: date) -> pd.DataFrame:
         if regime_end < fill_start:
             continue
 
-        header_map = []
-        for h in headers:
-            key = h.upper().strip()
-            header_map.append(_ID_PERTAMINA_HEADERS.get(key))
+        parsed_price_map: dict[
+            tuple[str, str, str, str, int | None], tuple[float, str]
+        ] = {}
+        for url, headers, rows in pages:
+            header_map = []
+            for h in headers:
+                key = h.upper().strip()
+                header_map.append(_ID_PERTAMINA_HEADERS.get(key))
 
-        parsed_prices: list[tuple[str, str, str, str, int | None, float]] = []
-        for cells in rows:
-            if not cells:
-                continue
-            wilayah = cells[0].strip() if cells else None
-            if not wilayah:
-                continue
-            for cell_idx, cell in enumerate(cells[1:], start=1):
-                if cell_idx >= len(header_map):
+            for cells in rows:
+                if not cells:
                     continue
-                meta = header_map[cell_idx]
-                if not meta:
+                wilayah = cells[0].strip() if cells else None
+                if not wilayah:
                     continue
-                price = _parse_idr_price(cell)
-                if price is None:
-                    continue
-                prod_name, family, qg, ron = meta
-                parsed_prices.append((wilayah, prod_name, family, qg, ron, price))
+                for cell_idx, cell in enumerate(cells[1:], start=1):
+                    if cell_idx >= len(header_map):
+                        continue
+                    meta = header_map[cell_idx]
+                    if not meta:
+                        continue
+                    price = _parse_idr_price(cell)
+                    if price is None:
+                        continue
+                    prod_name, family, qg, ron = meta
+                    key = (wilayah, prod_name, family, qg, ron)
+                    parsed_price_map.setdefault(key, (price, url))
+
+        parsed_prices = [
+            (*key, price, source_url)
+            for key, (price, source_url) in parsed_price_map.items()
+        ]
 
         if not parsed_prices:
             print(f"  [id_pertamina] No price rows parsed for {eff_date}")
             continue
 
         n_days = (regime_end - fill_start).days + 1
+        source_labels = ", ".join(dict.fromkeys(url for *_, url in parsed_prices))
         print(
             f"  [id_pertamina] Forward filling {n_days} days "
-            f"({fill_start} → {regime_end}) × {len(parsed_prices)} combos from {url}"
+            f"({fill_start} → {regime_end}) × {len(parsed_prices)} combos from {source_labels}"
         )
 
         d = fill_start
         while d <= regime_end:
-            for wilayah, prod_name, family, qg, ron, price in parsed_prices:
+            for wilayah, prod_name, family, qg, ron, price, source_url in parsed_prices:
                 r = tmpl.copy()
                 r.update(
                     {
@@ -515,7 +591,7 @@ def fetch_id_pertamina_pengumuman(cutoff: date) -> pd.DataFrame:
                         "effective_from": str(eff_date),
                         "effective_to": str(regime_end),
                         "observation_date": str(d),
-                        "source_url": url,
+                        "source_url": source_url,
                     }
                 )
                 r["observation_hash"] = make_hash(r)

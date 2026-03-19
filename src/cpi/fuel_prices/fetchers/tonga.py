@@ -257,31 +257,31 @@ def fetch_to_mted_petroleum_prices(cutoff: date) -> pd.DataFrame:
 
     session = get_session()
 
+    def _wp_get(params: dict, *, max_retries: int = 3) -> dict | None:
+        for attempt in range(max_retries):
+            try:
+                resp = session.get(_WP_API, params=params, timeout=60)
+                if resp.status_code != 200:
+                    return None
+                return resp.json()
+            except Exception as e:
+                wait = 2 * (attempt + 1)
+                print(f"  [to_mted] WP API request failed (attempt {attempt + 1}): {e}")
+                time.sleep(wait)
+        return None
+
     # Crawl WordPress posts that match petroleum price notices.
     per_page = 100
     page = 1
     posts: list[dict] = []
     while True:
-        try:
-            resp = session.get(
-                _WP_API,
-                params={
-                    "search": "petroleum",
-                    "per_page": per_page,
-                    "page": page,
-                },
-                timeout=30,
-            )
-        except Exception as e:
-            print(f"  [to_mted] WP API request failed: {e}")
-            break
-
-        if resp.status_code != 200:
-            break
-        try:
-            batch = resp.json()
-        except Exception:
-            batch = []
+        batch = _wp_get(
+            {
+                "search": "petroleum",
+                "per_page": per_page,
+                "page": page,
+            }
+        )
         if not batch:
             break
         posts.extend(batch)
@@ -292,6 +292,7 @@ def fetch_to_mted_petroleum_prices(cutoff: date) -> pd.DataFrame:
             break
         time.sleep(0.2)
 
+    today = date.today()
     candidates: list[tuple[date, str, str]] = []
     for p in posts:
         title = (p.get("title") or {}).get("rendered", "")
@@ -299,7 +300,10 @@ def fetch_to_mted_petroleum_prices(cutoff: date) -> pd.DataFrame:
         if not title or "price" not in title.lower():
             continue
         obs_date = _parse_obs_date_from_title(title)
-        if obs_date is None or obs_date <= cutoff:
+        if obs_date is None:
+            continue
+        eff_to = _month_end(obs_date)
+        if eff_to <= cutoff:
             continue
         content = (p.get("content") or {}).get("rendered", "")
         pdfs = _extract_pdf_urls_from_html(content)
@@ -337,29 +341,39 @@ def fetch_to_mted_petroleum_prices(cutoff: date) -> pd.DataFrame:
             continue
 
         eff_to = _month_end(obs_date)
+
+        # Prices are state-controlled for the month. Forward-fill daily observations.
+        fill_start = max(obs_date, cutoff + timedelta(days=1))
+        fill_end = min(eff_to, today)
+        if fill_end < fill_start:
+            continue
+
         for area, (petrol, ker, diesel) in area_prices.items():
             for fam, prod, qg, val in [
                 ("gasoline", "Petrol", "standard", petrol),
                 ("kerosene", "Kerosene", "standard", ker),
                 ("diesel", "Diesel", "standard", diesel),
             ]:
-                r = _TMPL_TO.copy()
-                r.update(
-                    {
-                        "subnational_area": area,
-                        "fuel_family": fam,
-                        "fuel_product": prod,
-                        "quality_group": qg,
-                        "price_local": val,
-                        "effective_from": str(obs_date),
-                        "effective_to": str(eff_to),
-                        "observation_date": str(obs_date),
-                        "source_url": post_url or pdf_url,
-                        "notes": f"Parsed from MTED PDF notice ({pdf_url}).",
-                    }
-                )
-                r["observation_hash"] = make_hash(r)
-                all_rows.append(r)
+                d = fill_start
+                while d <= fill_end:
+                    r = _TMPL_TO.copy()
+                    r.update(
+                        {
+                            "subnational_area": area,
+                            "fuel_family": fam,
+                            "fuel_product": prod,
+                            "quality_group": qg,
+                            "price_local": val,
+                            "effective_from": str(obs_date),
+                            "effective_to": str(eff_to),
+                            "observation_date": str(d),
+                            "source_url": post_url or pdf_url,
+                            "notes": f"Parsed from MTED PDF notice ({pdf_url}).",
+                        }
+                    )
+                    r["observation_hash"] = make_hash(r)
+                    all_rows.append(r)
+                    d += timedelta(days=1)
 
         time.sleep(0.3)
 
