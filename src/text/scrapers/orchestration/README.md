@@ -217,34 +217,46 @@ Enable: `sudo systemctl enable --now pacific-scrapers.timer`
 
 #### GitHub Actions
 
-Create `.github/workflows/scrapers.yml`:
+The repository now uses `.github/workflows/refresh-text.yml` for scheduled text refreshes. It is designed for a self-hosted runner with a persistent workspace so the ignored `data/text/` state survives between runs.
+
+Key details:
+
+- `runs-on: self-hosted` keeps incremental scraper state on disk.
+- `actions/checkout` uses `clean: false` so GitHub Actions does not delete ignored pipeline state.
+- The workflow runs scraping, analysis, plot generation, and a docs build before committing refreshed public artifacts from `outputs/text/` and `docs/images/interactive/text/`.
+
+Example structure:
+
 ```yaml
-name: Run Newspaper Scrapers
+name: Refresh Text Outputs
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM UTC
-  workflow_dispatch:  # Manual trigger
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
-  scrape:
-    runs-on: ubuntu-latest
+  refresh:
+    runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+        with:
+          clean: false
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Install Poetry
         run: pip install poetry
       - name: Install dependencies
-        run: poetry install
+        run: poetry install --with scraping,docs --no-interaction
       - name: Run scrapers
-        run: poetry run python src/text/scrapers/orchestration/main.py --run-all
-      - name: Upload logs
-        uses: actions/upload-artifact@v3
-        with:
-          name: scraper-logs
-          path: logs/
+        run: poetry run python -m text.scrapers.orchestration.main --run-all
+      - name: Run analysis
+        run: poetry run python -m text.analysis.main
+      - name: Rebuild published HTML assets
+        run: poetry run python src/text/plotting/interactive.py
+      - name: Verify docs build
+        run: poetry run jupyter-book clean docs && poetry run jupyter-book build docs
 ```
 
 #### Apache Airflow

@@ -10,8 +10,8 @@ listing:
   type: "api"
   url_template: "https://theedgemalaysia.com/api/loadMoreCategories?offset={offset}&categories=malaysia"
   pagination_type: "offset"
-  page_start: 0
-  page_step: 10
+  offset_start: 0
+  offset_step: 10
   url_construction_template: "https://theedgemalaysia.com/node/{id}"
   json_paths:
     collection: "results"  # Array of articles in the JSON response
@@ -49,7 +49,7 @@ selectors:
 
 # Data cleaning configuration
 cleaning:
-  date: "handle_mixed_dates"
+  date: "handle_unix_timestamp_ms_or_iso"
 
 # Test/debug options
 max_pages: null  # Limit to 100 API requests (1000 articles)

@@ -12,6 +12,15 @@ listing:
   url_template: "https://www.nzherald.co.nz/nz/{num}/"
   start_page: 2
   batch_size: 10
+  filters:
+    allow_domains:
+      - "www.nzherald.co.nz"
+      - "nzherald.co.nz"
+    deny_path_prefixes:
+      - "/video/"
+    deny_path_regex:
+      - "/watch-[^/]+/"
+      - "/sport-headlines-[^/]+/"
 
 # Client configuration
 client: "http"

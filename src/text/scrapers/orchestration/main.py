@@ -95,7 +95,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Default mode: discover new URLs + scrape pending articles
+  # Default mode (update): discover new URLs + scrape only newly discovered articles
   python src/text/scrapers/orchestration/main.py sibc
   python src/text/scrapers/orchestration/main.py sibc --update
 
@@ -198,7 +198,7 @@ Examples:
         action="store_const",
         const="update",
         dest="mode",
-        help="Discover new URLs + scrape only new articles (default Friday run)",
+        help="Discover new URLs + scrape only newly discovered articles (default Friday run)",
     )
 
     parser.add_argument(
@@ -212,7 +212,7 @@ Examples:
     parser.add_argument(
         "--full-discovery",
         action="store_const",
-        const="full_discovery",
+        const="discover_full",
         dest="mode",
         help="Discover ALL URLs + overwrite urls.csv (no scraping)",
     )
@@ -220,7 +220,7 @@ Examples:
     parser.add_argument(
         "--full-from-scratch",
         action="store_const",
-        const="full_from_scratch",
+        const="full_scrape",
         dest="mode",
         help="Discover ALL URLs + scrape everything (nuclear option)",
     )

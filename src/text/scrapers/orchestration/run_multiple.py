@@ -89,7 +89,7 @@ def run_scraper_subprocess(
         log_dir: Base directory for logs
         project_root: Project root directory
         dry_run: If True, print command without executing
-        mode: Scraping mode - "default", "update", "resume", "full_discovery", or "full_from_scratch"
+        mode: Scraping mode - "update", "default", "resume", "discover_full", or "full_scrape" (legacy aliases supported)
 
     Returns:
         Popen object if started, None if dry_run or error
@@ -115,15 +115,30 @@ def run_scraper_subprocess(
     ]
 
     # Add mode flag if not default
-    if mode == "update":
+    # Support both canonical mode names and legacy aliases.
+    mode_normalized = mode
+    if mode_normalized == "full_discovery":
+        mode_normalized = "discover_full"
+    elif mode_normalized == "full_from_scratch":
+        mode_normalized = "full_scrape"
+
+    if mode_normalized == "update":
         cmd.append("--update")
-    elif mode == "full_discovery":
+    elif mode_normalized == "discover_full":
         cmd.append("--full-discovery")
-    elif mode == "resume":
+    elif mode_normalized == "resume":
         cmd.append("--resume")
-    elif mode == "full_from_scratch":
+    elif mode_normalized == "full_scrape":
         cmd.append("--full-from-scratch")
-    # default mode: no flag needed
+    elif mode_normalized in ["default", "discover"]:
+        # default mode: no flag needed
+        # discover mode isn't exposed as a CLI flag today
+        pass
+    else:
+        raise ValueError(
+            "Unknown mode: "
+            f"{mode!r}. Supported: update, default, discover, discover_full, resume, full_scrape"
+        )
 
     if dry_run:
         print(f"[DRY RUN] Would execute: {' '.join(cmd)}")
@@ -214,7 +229,7 @@ def run_scraper_with_timeout(
         project_root: Project root directory
         timeout_seconds: Stale timeout - kill if no activity for this many seconds (default: 600)
         dry_run: If True, print command without executing
-        mode: Scraping mode - "default", "update", "resume", "full_discovery", or "full_from_scratch"
+        mode: Scraping mode - "update", "default", "resume", "discover_full", or "full_scrape" (legacy aliases supported)
 
     Returns:
         Dictionary with keys:

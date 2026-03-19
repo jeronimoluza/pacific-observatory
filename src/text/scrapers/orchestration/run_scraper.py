@@ -64,7 +64,7 @@ async def run_single_scraper(
         config_path: Path to the newspaper configuration file
         storage_dir: Optional custom storage directory
         save_results: Whether to save results to disk
-        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
+        mode: Scraping mode - "update", "default", "discover", "discover_full", "resume", or "full_scrape"
         project_root: Project root directory for automatic log file generation
 
     Returns:
@@ -117,14 +117,41 @@ async def run_single_scraper(
         )
         start_time = datetime.now()
 
-        if mode == "discover":
-            results = await scraper.run_discover()
-        elif mode == "discover_full":
-            results = await scraper.run_discover_full()
-        elif mode == "resume":
-            results = await scraper.run_resume()
-        else:  # default
+        # Normalize legacy mode names for compatibility
+        mode_normalized = mode
+        if mode_normalized == "full_discovery":
+            mode_normalized = "discover_full"
+        elif mode_normalized == "full_from_scratch":
+            mode_normalized = "full_scrape"
+
+        # Log actual dispatch target for debugging mismatched CLI/runner modes
+        dispatch_target = {
+            "update": "run_update_scrape",
+            "default": "run_default",
+            "discover": "run_discover",
+            "discover_full": "run_discover_full",
+            "resume": "run_resume",
+            "full_scrape": "run_full_scrape",
+        }.get(mode_normalized, "<unknown>")
+        logger.info(f"Dispatching mode={mode_normalized} -> {dispatch_target}")
+
+        if mode_normalized == "update":
+            results = await scraper.run_update_scrape()
+        elif mode_normalized == "default":
             results = await scraper.run_default()
+        elif mode_normalized == "discover":
+            results = await scraper.run_discover()
+        elif mode_normalized == "discover_full":
+            results = await scraper.run_discover_full()
+        elif mode_normalized == "resume":
+            results = await scraper.run_resume()
+        elif mode_normalized == "full_scrape":
+            results = await scraper.run_full_scrape()
+        else:
+            raise ValueError(
+                "Unknown mode: "
+                f"{mode!r}. Supported: update, default, discover, discover_full, resume, full_scrape"
+            )
 
         end_time = datetime.now()
         duration = end_time - start_time
@@ -212,7 +239,7 @@ async def run_scraper_by_name(
     Args:
         newspaper_name: Name of the newspaper to scrape
         country: Optional country filter
-        mode: Scraping mode - "default", "discover", "discover_full", or "resume"
+        mode: Scraping mode - "update", "default", "discover", "discover_full", "resume", or "full_scrape"
         configs_dir: Directory containing config files
         project_root: Project root directory for relative path display
         **kwargs: Additional arguments for the scraper

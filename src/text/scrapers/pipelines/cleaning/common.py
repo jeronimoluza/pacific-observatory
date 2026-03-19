@@ -326,6 +326,65 @@ def handle_unix_timestamp_ms(timestamp: int | str) -> str:
 
 
 @register_cleaner
+def handle_unix_timestamp_ms_or_iso(value: int | str) -> str:
+    """
+    Convert Unix timestamp in milliseconds (or seconds) OR ISO datetime strings to YYYY-MM-DD.
+
+    Accepts:
+    - Unix timestamps in ms (int or numeric string)
+    - Unix timestamps in seconds (int or numeric string)
+    - ISO datetime strings with timezone (e.g. 2026-03-18T08:00:00+08:00)
+
+    Args:
+        value: Timestamp or ISO datetime string
+
+    Returns:
+        Normalized date string in YYYY-MM-DD format
+    """
+    if not value:
+        return ""
+
+    if isinstance(value, str):
+        cleaned = value.strip()
+
+        # Numeric timestamp (string)
+        if cleaned.isdigit() or (cleaned.startswith("-") and cleaned[1:].isdigit()):
+            try:
+                numeric = int(cleaned)
+                # Treat 13+ digit values as milliseconds
+                if abs(numeric) >= 10**11:
+                    numeric = numeric / 1000
+                return datetime.fromtimestamp(numeric).strftime("%Y-%m-%d")
+            except (ValueError, OSError, TypeError) as e:
+                logger.error(f"Error converting Unix timestamp {value}: {e}")
+                return ""
+
+        # ISO datetime with timezone or 'Z'
+        if "T" in cleaned:
+            try:
+                normalized = cleaned.replace("Z", "+00:00")
+                return datetime.fromisoformat(normalized).strftime("%Y-%m-%d")
+            except ValueError:
+                pass
+
+        # Fallback to mixed date parsing
+        return handle_mixed_dates(cleaned)
+
+    # Numeric timestamp (int)
+    if isinstance(value, (int, float)):
+        try:
+            numeric = int(value)
+            if abs(numeric) >= 10**11:
+                numeric = numeric / 1000
+            return datetime.fromtimestamp(numeric).strftime("%Y-%m-%d")
+        except (ValueError, OSError, TypeError) as e:
+            logger.error(f"Error converting Unix timestamp {value}: {e}")
+            return ""
+
+    return handle_mixed_dates(str(value))
+
+
+@register_cleaner
 def join_body_list(body_text_list: list) -> str:
     """
     Join body text from a list of strings.
