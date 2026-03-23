@@ -34,7 +34,7 @@ _GDP_CSV = WB_GDP_CSV
 
 # ── Per-country product lists for Tab 3 (edit to control which chips appear) ──
 COUNTRY_PRODUCTS: dict[str, list[str]] = {
-    "Australia": ["Unleaded 91", "Premium 95", "Premium 98", "E10", "Diesel", "LPG"],
+    "Australia": ["Unleaded", "Premium 95", "Premium 98", "E10", "Diesel", "LPG"],
     "Cambodia": ["Regular", "Diesel", "Super"],
     "China": ["Gasoline", "Diesel"],
     "Fiji": [
@@ -65,7 +65,14 @@ COUNTRY_PRODUCTS: dict[str, list[str]] = {
     "Malaysia": ["RON95", "RON97", "Diesel"],
     "Mongolia": ["Petrol A-92", "Petrol A-80", "Diesel"],
     "Myanmar": ["Octane 92", "Octane 95", "Diesel", "Premium Diesel"],
-    "New Zealand": ["Regular Petrol", "Premium Petrol 95R", "Diesel"],
+    "New Zealand": [
+        "Regular Petrol",
+        "Premium Petrol 95R",
+        "Unleaded 91",
+        "Unleaded 95",
+        "Unleaded 98",
+        "Diesel",
+    ],
     "Palau": ["Unleaded", "Super", "Diesel", "Kerosene", "LPG"],
     "Papua New Guinea": ["Petrol", "Diesel", "Kerosene"],
     "Philippines": ["RON 91", "RON 95", "RON 100", "Diesel", "Diesel Plus", "Kerosene"],

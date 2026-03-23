@@ -19,6 +19,7 @@ Public API:
 
 from __future__ import annotations
 
+from datetime import date
 import logging
 import math
 import re
@@ -32,8 +33,36 @@ from .constants import (
     FUEL_PRODUCT_MAP,
     STAGED_DATA_DIR,
 )
+from .utils import make_hash
 
 logger = logging.getLogger(__name__)
+
+_COUNTRY_RENAME_MAP = {
+    "Viet Nam": "Vietnam",
+    "South Korea": "Korea, Rep.",
+    "Laos": "Lao PDR",
+}
+
+_STATE_CONTROLLED_COUNTRY_VARIANTS: dict[str, set[str]] = {
+    "Cambodia": {"Cambodia"},
+    "China": {"China"},
+    "Fiji": {"Fiji"},
+    "Indonesia": {"Indonesia"},
+    "Lao PDR": {"Lao PDR", "Laos"},
+    "Malaysia": {"Malaysia"},
+    "Mongolia": {"Mongolia"},
+    "Myanmar": {"Myanmar"},
+    "Papua New Guinea": {"Papua New Guinea"},
+    "Samoa": {"Samoa"},
+    "Taiwan": {"Taiwan", "Taiwan, China"},
+    "Vietnam": {"Vietnam", "Viet Nam"},
+}
+_STATE_CONTROLLED_COUNTRIES = set(_STATE_CONTROLLED_COUNTRY_VARIANTS)
+_COUNTRY_TO_STATE_CONTROLLED_CANONICAL = {
+    variant: canonical
+    for canonical, variants in _STATE_CONTROLLED_COUNTRY_VARIANTS.items()
+    for variant in variants
+}
 
 # ── Australia source preference ranks (lower = higher priority) ───────────────
 _AU_SOURCE_RANK: dict[str, int] = {
@@ -128,6 +157,33 @@ def _is_missing(value: object) -> bool:
     if isinstance(value, str):
         return value.strip().lower() in {"", "nan", "none"}
     return False
+
+
+def _today() -> date:
+    return date.today()
+
+
+def _canonical_country_name(value: object) -> str | None:
+    text = _clean_text(value)
+    if text is None:
+        return None
+    text = _COUNTRY_RENAME_MAP.get(text, text)
+    return _COUNTRY_TO_STATE_CONTROLLED_CANONICAL.get(text, text)
+
+
+def _country_variants(country: str) -> set[str]:
+    canonical = _canonical_country_name(country)
+    if canonical is None:
+        return set()
+    return set(_STATE_CONTROLLED_COUNTRY_VARIANTS.get(canonical, {canonical}))
+
+
+def _build_observation_hash(row: dict[str, object]) -> str:
+    payload = dict(row)
+    obs_date = payload.get("observation_date")
+    if isinstance(obs_date, pd.Timestamp):
+        payload["observation_date"] = obs_date.strftime("%Y-%m-%d")
+    return make_hash(payload)
 
 
 def _clean_text(value: object) -> str | None:
@@ -272,11 +328,46 @@ def _find_dirty_countries(
         if df.empty:
             continue
 
-        country = df["country"].iloc[0]
-        if pd.notna(country):
-            dirty.setdefault(str(country), []).append(path)
+        country = _canonical_country_name(df["country"].iloc[0])
+        if country is not None:
+            dirty.setdefault(country, []).append(path)
 
     return dirty
+
+
+def _find_stale_state_controlled_countries(
+    df: pd.DataFrame,
+    as_of: date | None = None,
+) -> set[str]:
+    if df.empty or "country" not in df.columns or "observation_date" not in df.columns:
+        return set()
+
+    check_date = pd.Timestamp(as_of or _today()).normalize()
+    work = df.copy()
+    work["_canonical_country"] = work["country"].map(_canonical_country_name)
+    work = work[work["_canonical_country"].isin(_STATE_CONTROLLED_COUNTRIES)].copy()
+    if work.empty:
+        return set()
+
+    work["observation_date"] = pd.to_datetime(work["observation_date"], errors="coerce")
+    work = work[work["observation_date"].notna()].copy()
+    if work.empty:
+        return set()
+
+    group_cols = [
+        c
+        for c in ["_canonical_country", "location", "fuel_product", "series_key"]
+        if c in work.columns
+    ]
+    if len(group_cols) < 4:
+        return set()
+
+    last_dates = work.groupby(group_cols, dropna=False)["observation_date"].max()
+    stale = last_dates[last_dates.dt.normalize() < check_date]
+    if stale.empty:
+        return set()
+
+    return set(stale.reset_index()["_canonical_country"].astype(str))
 
 
 # ── Data quality rules ────────────────────────────────────────────────────────
@@ -314,15 +405,7 @@ def _drop_low_priority_sources(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _rename_countries(df: pd.DataFrame) -> pd.DataFrame:
-    return df.assign(
-        country=df["country"].replace(
-            {
-                "Viet Nam": "Vietnam",
-                "South Korea": "Korea, Rep.",
-                "Laos": "Lao PDR",
-            }
-        )
-    )
+    return df.assign(country=df["country"].replace(_COUNTRY_RENAME_MAP))
 
 
 # Country-specific product name normalization (legacy → canonical)
@@ -336,6 +419,11 @@ _VN_PRODUCT_NORM: dict[str, str] = {
 _PH_PRODUCT_NORM: dict[str, str] = {
     "RON95": "RON 95",
     "DIESEL PLUS": "Diesel Plus",
+}
+
+_NZ_PRODUCT_NORM: dict[str, str] = {
+    "Unleaded 91": "Regular Petrol",
+    "Unleaded 95": "Premium Petrol 95R",
 }
 
 
@@ -355,6 +443,12 @@ def _normalize_country_products(df: pd.DataFrame) -> pd.DataFrame:
     if ph_mask.any():
         df.loc[ph_mask, "fuel_product"] = df.loc[ph_mask, "fuel_product"].replace(
             _PH_PRODUCT_NORM
+        )
+
+    nz_mask = df["country"] == "New Zealand"
+    if nz_mask.any():
+        df.loc[nz_mask, "fuel_product"] = df.loc[nz_mask, "fuel_product"].replace(
+            _NZ_PRODUCT_NORM
         )
 
     return df
@@ -574,7 +668,7 @@ def _canonicalize(df: pd.DataFrame) -> pd.DataFrame:
         au_gas = au_mask & (family == "gasoline")
 
         ulp = au_gas & product.str.match(_AU_UNLEADED_RE, na=False)
-        df.loc[ulp, "fuel_product"] = "Unleaded 91"
+        df.loc[ulp, "fuel_product"] = "Unleaded"
         df.loc[ulp, "quality_group"] = "regular"
 
         p95 = au_gas & product.str.match(_AU_P95_RE, na=False)
@@ -660,6 +754,85 @@ def _deduplicate(df: pd.DataFrame) -> pd.DataFrame:
     return _strip_internal(df).reset_index(drop=True)
 
 
+def _forward_fill_state_controlled_series(
+    df: pd.DataFrame,
+    as_of: date | None = None,
+) -> pd.DataFrame:
+    if df.empty:
+        return df
+
+    check_date = pd.Timestamp(as_of or _today()).normalize()
+    work = df.copy()
+    work["_canonical_country"] = work["country"].map(_canonical_country_name)
+
+    eligible = work[work["_canonical_country"].isin(_STATE_CONTROLLED_COUNTRIES)].copy()
+    ineligible = work[
+        ~work["_canonical_country"].isin(_STATE_CONTROLLED_COUNTRIES)
+    ].copy()
+    if eligible.empty:
+        return _strip_internal(df).reset_index(drop=True)
+
+    eligible["observation_date"] = pd.to_datetime(
+        eligible["observation_date"], errors="coerce"
+    )
+    eligible = eligible[eligible["observation_date"].notna()].copy()
+    if eligible.empty:
+        return _strip_internal(ineligible).reset_index(drop=True)
+
+    group_cols = [
+        c
+        for c in [
+            "_canonical_country",
+            "country",
+            "location",
+            "fuel_product",
+            "series_key",
+        ]
+        if c in eligible.columns
+    ]
+    expanded_rows: list[dict[str, object]] = []
+
+    for _, group in eligible.groupby(group_cols, dropna=False, sort=False):
+        ordered = (
+            group.sort_values(
+                ["observation_date", "_source_rank"]
+                if "_source_rank" in group.columns
+                else ["observation_date"]
+            )
+            .drop_duplicates(subset=["observation_date"], keep="last")
+            .reset_index(drop=True)
+        )
+        if ordered.empty:
+            continue
+
+        for idx, row in ordered.iterrows():
+            start = pd.Timestamp(row["observation_date"]).normalize()
+            next_start = None
+            if idx + 1 < len(ordered):
+                next_start = pd.Timestamp(
+                    ordered.iloc[idx + 1]["observation_date"]
+                ).normalize()
+
+            end = (
+                check_date
+                if next_start is None
+                else min(check_date, next_start - pd.Timedelta(days=1))
+            )
+            if end < start:
+                continue
+
+            base = row.to_dict()
+            for obs_date in pd.date_range(start, end, freq="D"):
+                item = dict(base)
+                item["observation_date"] = obs_date
+                item["observation_hash"] = _build_observation_hash(item)
+                expanded_rows.append(item)
+
+    expanded = pd.DataFrame(expanded_rows)
+    combined = pd.concat([ineligible, expanded], ignore_index=True, sort=False)
+    return _strip_internal(combined).reset_index(drop=True)
+
+
 # ── Public pipeline functions ─────────────────────────────────────────────────
 
 
@@ -680,6 +853,7 @@ def _run_pipeline_stages(df: pd.DataFrame) -> pd.DataFrame:
     df = _derive_location(df)
     df = _canonicalize(df)
     df = _deduplicate(df)
+    df = _forward_fill_state_controlled_series(df)
 
     sort_cols = [
         c
@@ -720,17 +894,20 @@ def build_enriched_frame(
 
     enriched_path = STAGED_DATA_DIR / "enrich" / "retail_series_enriched.csv"
 
-    if incremental and enriched_path.exists():
+    if incremental and collect_dir == DATA_DIR and enriched_path.exists():
         enriched_mtime = enriched_path.stat().st_mtime
+        df_existing = pd.read_csv(enriched_path, low_memory=False)
+        df_existing["observation_date"] = pd.to_datetime(
+            df_existing["observation_date"], errors="coerce"
+        )
 
         # Scan source files for any modified after enriched output was written
         dirty = _find_dirty_countries(collect_dir, enriched_mtime)
+        stale_countries = _find_stale_state_controlled_countries(df_existing)
+        for country in stale_countries:
+            dirty.setdefault(country, [])
 
         if not dirty:
-            df_existing = pd.read_csv(enriched_path, low_memory=False)
-            df_existing["observation_date"] = pd.to_datetime(
-                df_existing["observation_date"], errors="coerce"
-            )
             logger.info(
                 "Incremental build: no new sources, returning cached (%d rows)",
                 len(df_existing),
@@ -744,17 +921,16 @@ def build_enriched_frame(
             sorted(dirty_countries),
         )
 
-        # Load full enriched cache to splice with
-        df_existing = pd.read_csv(enriched_path, low_memory=False)
-        df_existing["observation_date"] = pd.to_datetime(
-            df_existing["observation_date"], errors="coerce"
-        )
-
         # Load ALL source files for dirty countries
         dirty_paths: list[Path] = []
         for country in dirty_countries:
-            slug = _country_slug(country)
-            dirty_paths.extend(sorted((collect_dir / slug).glob("*/observations.csv")))
+            for variant in _country_variants(country):
+                slug = _country_slug(variant)
+                dirty_paths.extend(
+                    sorted((collect_dir / slug).glob("*/observations.csv"))
+                )
+
+        dirty_paths = sorted(set(dirty_paths))
 
         df_to_enrich = _load_from_paths(dirty_paths, collect_dir)
         if not df_to_enrich.empty:
@@ -826,6 +1002,13 @@ def materialize_outputs(
     if incremental and out_path.exists():
         enriched_mtime = out_path.stat().st_mtime
         dirty = _find_dirty_countries(collect_dir, enriched_mtime)
+        df_existing = pd.read_csv(out_path, low_memory=False)
+        df_existing["observation_date"] = pd.to_datetime(
+            df_existing["observation_date"], errors="coerce"
+        )
+        stale_countries = _find_stale_state_controlled_countries(df_existing)
+        for country in stale_countries:
+            dirty.setdefault(country, [])
         if not dirty:
             row_count = sum(1 for _ in out_path.open()) - 1  # fast line count
             logger.info("Build skipped — output is up to date (%d rows)", row_count)
