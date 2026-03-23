@@ -71,8 +71,6 @@ class AsyncHttpClient:
         self.rate_limit = rate_limit
         self.retries = retries
         self.retry_seconds = retry_seconds
-        self.cookies = cookies
-
         self.follow_redirects = follow_redirects
         self.max_redirects = max_redirects
 
@@ -168,6 +166,7 @@ class AsyncHttpClient:
 
                     # Log detailed error information for non-404 errors
                     logger.error(f"HTTP {e.response.status_code} for {url}")
+
                     if (
                         attempt == retry_count
                     ):  # Only log retry exhaustion on final attempt
@@ -315,7 +314,9 @@ class AsyncHttpClient:
                     if isinstance(result, Exception):
                         all_results.append(
                             ScrapingResult(
-                                success=False, error=str(result), url=batch_urls[j]
+                                success=False,
+                                error=str(result),
+                                url=batch_urls[j],
                             )
                         )
                     else:

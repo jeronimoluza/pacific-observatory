@@ -587,10 +587,20 @@ def _build_dashboard_html(
             ma6: '6-Mo MA',
             ma12: '12-Mo MA',
             rawMonthly: 'Raw (monthly)',
-            rawDaily: 'Raw (daily)'
+            rawDaily: 'Raw (weekly/daily)'
         }};
 
         function isDaily(r) {{ return r && typeof r.ym === 'string' && r.ym.split('-').length === 3; }}
+
+        function getDayOfMonth(dateStr) {{
+            const parts = dateStr.split('-');
+            return parseInt(parts[2], 10);
+        }}
+
+        function getMonthKey(dateStr) {{
+            const parts = dateStr.split('-');
+            return parts[0] + '-' + parts[1];
+        }}
 
         function formatYM(d) {{
             const date = new Date(d);
@@ -620,6 +630,41 @@ def _build_dashboard_html(
                 result.push(count > 0 ? sum / count : null);
             }}
             return result;
+        }}
+
+        function computeAverage(values) {{
+            if (!values.length) return null;
+            const sum = values.reduce((s, v) => s + v, 0);
+            return sum / values.length;
+        }}
+
+        function buildDailyDisplay(dailyData) {{
+            if (!dailyData || !dailyData.length) return {{ labels: [], entries: [] }};
+            const monthKey = getMonthKey(dailyData[0].date);
+            const withDay = dailyData
+                .map(r => ({{ row: r, day: getDayOfMonth(r.date) }}))
+                .sort((a, b) => a.day - b.day);
+            const latestDay = Math.max.apply(null, withDay.map(d => d.day));
+            const entries = [];
+            const weeks = [
+                {{ key: 'W1', start: 1, end: 7 }},
+                {{ key: 'W2', start: 8, end: 14 }},
+                {{ key: 'W3', start: 15, end: 21 }},
+                {{ key: 'W4', start: 22, end: 29 }}
+            ];
+            weeks.forEach(week => {{
+                const rows = withDay.filter(d => d.day >= week.start && d.day <= week.end);
+                if (!rows.length) return;
+                if (latestDay >= week.end) {{
+                    entries.push({{ type: 'weekly', label: monthKey + '-' + week.key, rows: rows.map(r => r.row) }});
+                }} else {{
+                    rows.forEach(item => entries.push({{ type: 'daily', label: item.row.date, rows: [item.row] }}));
+                }}
+            }});
+            withDay.filter(d => d.day >= 30).forEach(item => {{
+                entries.push({{ type: 'daily', label: item.row.date, rows: [item.row] }});
+            }});
+            return {{ labels: entries.map(e => e.label), entries: entries }};
         }}
 
         function hexToRgba(hex, alpha) {{
@@ -766,7 +811,8 @@ def _build_dashboard_html(
                     groups[key] = {{ label: ds._legendLabel || ds.label || key, items: [] }};
                 }}
                 if (!VARIANT_LABELS[ds._variant]) return;
-                groups[key].items.push({{ variant: ds._variant, value: ds.data[dataIndex] }});
+                const pointType = ds._pointTypes ? ds._pointTypes[dataIndex] : null;
+                groups[key].items.push({{ variant: ds._variant, value: ds.data[dataIndex], pointType: pointType }});
             }});
             const orderedKeys = order.length ? order.filter(k => groups[k]) : Object.keys(groups);
             return orderedKeys.map(key => {{
@@ -797,7 +843,11 @@ def _build_dashboard_html(
                 html += '<tr class="tooltip-group-title-row"><td colspan="2">' + group.label + '</td></tr>';
                 group.items.forEach(item => {{
                     const val = (item.value == null) ? '-' : (typeof item.value === 'number' ? item.value.toFixed(2) : item.value);
-                    html += '<tr class="tooltip-row"><td class="tooltip-indent">' + VARIANT_LABELS[item.variant] + '</td><td class="tooltip-val">' + val + '</td></tr>';
+                    let variantLabel = VARIANT_LABELS[item.variant] || item.variant;
+                    if (item.variant === 'rawDaily' && item.pointType) {{
+                        variantLabel = item.pointType === 'weekly' ? 'Raw (weekly)' : 'Raw (daily)';
+                    }}
+                    html += '<tr class="tooltip-row"><td class="tooltip-indent">' + variantLabel + '</td><td class="tooltip-val">' + val + '</td></tr>';
                 }});
             }});
             html += '</table>';
@@ -832,17 +882,32 @@ def _build_dashboard_html(
 
                 const filterFrom = range.from || '';
                 const filterTo = range.to || '';
-                const smoothed = {{}};
+                const monthlyData = data.filter(r => !isDaily(r));
+                const dailyData = data.filter(r => isDaily(r));
+                const dailyDisplay = buildDailyDisplay(dailyData);
+                const displayEntries = monthlyData.map(r => ({{
+                    type: 'monthly',
+                    label: r.date.split('-')[0] + '-' + r.date.split('-')[1],
+                    rows: [r]
+                }})).concat(dailyDisplay.entries);
+                const dateToIndex = new Map(rawData.map((r, idx) => [r.date, idx]));
+                const smoothedFull = {{}};
                 items.forEach(item => {{
                     const fullVals = rawData.map(r => r[item + '_framing'] || 0);
-                    const maVals = computeMA(fullVals, 3);
-                    const sliced = [];
-                    rawData.forEach((r, idx) => {{
-                        if (filterFrom && r.date < filterFrom) return;
-                        if (filterTo && r.date > filterTo) return;
-                        sliced.push(maVals[idx]);
+                    smoothedFull[item] = computeMA(fullVals, 3);
+                }});
+                const smoothed = {{}};
+                items.forEach(item => {{
+                    smoothed[item] = displayEntries.map(entry => {{
+                        const vals = entry.rows
+                            .map(r => {{
+                                const idx = dateToIndex.get(r.date);
+                                return idx == null ? null : smoothedFull[item][idx];
+                            }})
+                            .filter(v => v != null);
+                        if (!vals.length) return null;
+                        return vals.reduce((s, v) => s + v, 0) / vals.length;
                     }});
-                    smoothed[item] = sliced;
                 }});
 
                 const meanSmoothed = items.map(item => {{
@@ -853,7 +918,7 @@ def _build_dashboard_html(
                 meanSmoothed.sort((a, b) => b.mean - a.mean);
                 const visible = meanSmoothed.slice(0, topN).map(v => v.item).sort();
 
-                const ranks = data.map((row, t) => {{
+                const ranks = displayEntries.map((entry, t) => {{
                     const vals = visible.map(item => ({{ item: item, value: smoothed[item][t] != null ? smoothed[item][t] : 0 }}));
                     vals.sort((a, b) => b.value - a.value);
                     const monthRanks = {{}};
@@ -861,11 +926,7 @@ def _build_dashboard_html(
                     return monthRanks;
                 }});
 
-                const labels = data.map(r => {{
-                    if (r && isDaily(r)) return r.date;
-                    const parts = r.date.split('-');
-                    return parts[0] + '-' + parts[1];
-                }});
+                const labels = displayEntries.map(entry => entry.label);
 
                 const labelMap = {{
                     'Imf': 'IMF',
@@ -891,13 +952,13 @@ def _build_dashboard_html(
                         borderWidth: 2.5,
                         fill: false,
                         tension: 0,
-                        pointRadius: data.map(r => isDaily(r) ? 7 : 5),
-                        pointStyle: data.map(r => isDaily(r) ? 'rectRot' : 'circle'),
-                        pointBackgroundColor: data.map(r => isDaily(r) ? '#fff' : color),
+                        pointRadius: displayEntries.map(entry => entry.type === 'daily' ? 7 : (entry.type === 'weekly' ? 6 : 5)),
+                        pointStyle: displayEntries.map(entry => entry.type === 'daily' ? 'rectRot' : (entry.type === 'weekly' ? 'rect' : 'circle')),
+                        pointBackgroundColor: displayEntries.map(entry => (entry.type === 'daily' || entry.type === 'weekly') ? '#fff' : color),
                         pointBorderColor: color,
-                        pointBorderWidth: data.map(r => isDaily(r) ? 2 : 1.5),
+                        pointBorderWidth: displayEntries.map(entry => (entry.type === 'daily' || entry.type === 'weekly') ? 2 : 1.5),
                         pointHoverRadius: 8,
-                        segment: {{ borderDash: (ctx) => isDaily(data[ctx.p1DataIndex]) ? [4, 4] : [] }},
+                        segment: {{ borderDash: (ctx) => ['daily', 'weekly'].includes(displayEntries[ctx.p1DataIndex].type) ? [4, 4] : [] }},
                         _itemKey: item
                     }};
                 }});
@@ -922,8 +983,9 @@ def _build_dashboard_html(
                                         const itemKey = context.dataset._itemKey;
                                         const rank = context.raw;
                                         const smoothedVal = smoothed[itemKey][context.dataIndex];
-                                        const daily = isDaily(data[context.dataIndex]);
-                                        return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (smoothedVal != null ? smoothedVal.toFixed(3) : 'N/A') + ')' + (daily ? ' [daily]' : '');
+                                        const entryType = displayEntries[context.dataIndex].type;
+                                        const suffix = entryType === 'daily' ? ' [daily]' : (entryType === 'weekly' ? ' [weekly]' : '');
+                                        return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (smoothedVal != null ? smoothedVal.toFixed(3) : 'N/A') + ')' + suffix;
                                     }}
                                 }}
                             }}
@@ -995,10 +1057,13 @@ def _build_dashboard_html(
                 if (!data.length) return;
                 const selectedItems = getSelectedItems();
                 const monthlyData = data.filter(r => !isDaily(r));
-                const dailyData = data.filter(r => isDaily(r) && selectedItems.some(i => r['EPU_' + i + '_index'] != null));
+                const dailyData = data
+                    .filter(r => isDaily(r) && selectedItems.some(i => r['EPU_' + i + '_index'] != null))
+                    .slice()
+                    .sort((a, b) => a.date.localeCompare(b.date));
+                const dailyDisplay = buildDailyDisplay(dailyData);
                 const monthlyLabels = monthlyData.map(r => r.date.split('-')[0] + '-' + r.date.split('-')[1]);
-                const dailyLabels = dailyData.map(r => r.date);
-                const labels = monthlyLabels.concat(dailyLabels);
+                const labels = monthlyLabels.concat(dailyDisplay.labels);
                 const datasets = [];
                 selectedItems.forEach(item => {{
                     const colKey = 'EPU_' + item + '_index';
@@ -1011,31 +1076,81 @@ def _build_dashboard_html(
                         ds._legendColor = color;
                     }});
                     datasets.push.apply(datasets, maSets);
-                    if (dailyData.length) {{
+                    if (dailyDisplay.entries.length) {{
                         const lastMonthly = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1][colKey] : null;
-                        const nBridge = Math.max(0, monthlyData.length - 1);
+                        const dailyValues = dailyDisplay.entries.map(entry => {{
+                            const vals = entry.rows
+                                .map(r => r[colKey])
+                                .filter(v => v != null && v !== 0);
+                            if (!vals.length) return null;
+                            return entry.type === 'weekly' ? computeAverage(vals) : vals[0];
+                        }});
+                        const dataPoints = [];
+                        const pointRadius = [];
+                        const pointHoverRadius = [];
+                        const pointStyle = [];
+                        const pointTypes = [];
+                        if (monthlyData.length > 0) {{
+                            const nBridge = monthlyData.length - 1;
+                            for (let i = 0; i < nBridge; i++) {{
+                                dataPoints.push(null);
+                                pointRadius.push(0);
+                                pointHoverRadius.push(0);
+                                pointStyle.push('circle');
+                                pointTypes.push(null);
+                            }}
+                            dataPoints.push(lastMonthly);
+                            pointRadius.push(0);
+                            pointHoverRadius.push(0);
+                            pointStyle.push('circle');
+                            pointTypes.push(null);
+                        }}
+                        dailyDisplay.entries.forEach((entry, idx) => {{
+                            const val = dailyValues[idx];
+                            const isWeekly = entry.type === 'weekly';
+                            dataPoints.push(val);
+                            if (val == null) {{
+                                pointRadius.push(0);
+                                pointHoverRadius.push(0);
+                            }} else {{
+                                pointRadius.push(isWeekly ? 5 : 4);
+                                pointHoverRadius.push(isWeekly ? 7 : 6);
+                            }}
+                            pointStyle.push(isWeekly ? 'rect' : 'circle');
+                            pointTypes.push(entry.type);
+                        }});
                         datasets.push({{
-                            label: fmtChipLabel(item) + ' EPU (current month, daily)',
-                            data: Array(nBridge).fill(null).concat([lastMonthly]).concat(dailyData.map(r => (r[colKey] === 0 ? null : r[colKey]))),
+                            label: fmtChipLabel(item) + ' EPU (current month)',
+                            data: dataPoints,
                             borderColor: hexToRgba(color, 0.8),
                             borderDash: [4, 4],
                             borderWidth: 2,
                             fill: false,
                             tension: 0,
                             spanGaps: true,
-                            pointRadius: Array(nBridge).fill(0).concat([0]).concat(dailyData.map(r => (r[colKey] === 0 ? 0 : 4))),
-                            pointHoverRadius: Array(nBridge).fill(0).concat([0]).concat(dailyData.map(r => (r[colKey] === 0 ? 0 : 6))),
+                            pointRadius: pointRadius,
+                            pointHoverRadius: pointHoverRadius,
+                            pointStyle: pointStyle,
                             pointBackgroundColor: color,
                             _legendGroup: item,
                             _legendLabel: seriesLabel,
                             _legendColor: color,
-                            _variant: 'rawDaily'
+                            _variant: 'rawDaily',
+                            _pointTypes: pointTypes
                         }});
                     }}
                 }});
                 const allVals = selectedItems.flatMap(item => {{
                     const colKey = 'EPU_' + item + '_index';
-                    return monthlyData.map(r => r[colKey]).concat(dailyData.map(r => r[colKey]));
+                    const monthlyVals = monthlyData.map(r => r[colKey]);
+                    const dailyVals = dailyDisplay.entries.map(entry => {{
+                        const vals = entry.rows
+                            .map(r => r[colKey])
+                            .filter(v => v != null && v !== 0);
+                        if (!vals.length) return null;
+                        return entry.type === 'weekly' ? computeAverage(vals) : vals[0];
+                    }});
+                    return monthlyVals.concat(dailyVals);
                 }}).filter(v => v != null && v !== 0);
                 const yMax = allVals.length ? Math.max.apply(null, allVals) * 1.1 : undefined;
                 const ctx = document.getElementById(cfg.chartId).getContext('2d');

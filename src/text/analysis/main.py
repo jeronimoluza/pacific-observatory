@@ -173,13 +173,19 @@ def append_missing_months(
 
 EXCLUDED_COUNTRIES = {}
 
-country_dirs = sorted(
-    [
-        entry
-        for entry in DATA_ROOT.iterdir()
-        if entry.is_dir() and entry.name not in EXCLUDED_COUNTRIES
-    ]
-)
+
+def _get_country_dirs(exclude_countries: set[str] | None = None) -> list[Path]:
+    excluded = {name.lower() for name in EXCLUDED_COUNTRIES}
+    if exclude_countries:
+        excluded |= {name.lower() for name in exclude_countries}
+    return sorted(
+        [
+            entry
+            for entry in DATA_ROOT.iterdir()
+            if entry.is_dir() and entry.name.lower() not in excluded
+        ]
+    )
+
 
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "text"
 CACHE_DIR = PROJECT_ROOT / "data" / "text" / "cache"
@@ -1086,7 +1092,25 @@ if __name__ == "__main__":
         default=False,
         help="Force recalculation of params.json even if it already exists.",
     )
+    parser.add_argument(
+        "--exclude-countries",
+        type=str,
+        default="",
+        help="Comma-separated list of country names to exclude from processing.",
+    )
     args = parser.parse_args()
+
+    exclude_countries = set()
+    if args.exclude_countries:
+        exclude_countries = {
+            name.strip().lower()
+            for name in args.exclude_countries.split(",")
+            if name.strip()
+        }
+        if exclude_countries:
+            print(f"⏭️  Excluding countries: {', '.join(sorted(exclude_countries))}")
+
+    country_dirs = _get_country_dirs(exclude_countries)
 
     if args.country:
         matched = [d for d in country_dirs if d.name == args.country]

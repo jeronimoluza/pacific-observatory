@@ -62,6 +62,12 @@ All site-specific configuration is externalized to YAML files, allowing new news
 - **Cookie Support** - Persistent session management for protected sites
 - **Header Customization** - User-Agent rotation and custom headers
 - **Cloudflare Handling** - Support for protected sites requiring browser sessions
+- **Paywalls** - Some sources intentionally ingest teaser text only (e.g., Frontier Myanmar via WordPress REST `excerpt.rendered`) and do not bypass subscription walls
+
+### Source Notes
+- **Myanmar Now** - Uses the WordPress embed API and stores teaser text from `excerpt.rendered`; `_fields` requests currently redirect to the homepage.
+- **ABC Myanmar / ABC Australia** - Myanmar uses a confirmed ABC topic API document ID; Australia currently uses the server-rendered `/news/australia` page because a matching public topicstories endpoint was not confirmed.
+- **KUAM / SBS** - Both are server-rendered HTML sources that fit existing selectors without browser automation.
 
 ## 📊 Data Flow
 

@@ -1,0 +1,43 @@
+# KUAM (Guam) Configuration
+# Uses the server-rendered news index. `?page={num}` currently repeats the first
+# page, so pagination effectively stops after the first unique batch.
+
+name: "KUAM"
+country: "guam"
+base_url: "https://www.kuam.com"
+
+listing:
+  type: "pagination"
+  url_template: "https://www.kuam.com/news?page={num}"
+  start_page: 1
+  batch_size: 1
+
+client: "http"
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "div.posts-reel.layout-list .list-item"
+    title: "h4 a::text"
+    url: "h4 a::attr(href)"
+    date: ".list-item-date::text"
+  article:
+    body: ".sc-content p"
+    date: "time::text"
+
+cleaning:
+  url: "clean_url"
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null
+
+# Site-specific notes:
+# - The `/news` page renders the latest posts directly in HTML under `.posts-reel.layout-list`.
+# - Story bodies live in `.sc-content p` on article pages.

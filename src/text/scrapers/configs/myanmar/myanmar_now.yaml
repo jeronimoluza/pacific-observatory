@@ -1,0 +1,51 @@
+# Myanmar Now (Myanmar) Configuration
+# Uses WordPress REST API in embed context for listing discovery.
+# The endpoint exposes teaser text via excerpt.rendered but not full body content.
+
+name: "Myanmar Now"
+country: "myanmar"
+base_url: "https://myanmar-now.org"
+language: "en"
+
+listing:
+  type: "api"
+  pagination_type: "page"
+  page_start: 1
+  page_step: 1
+  url_template: "https://myanmar-now.org/en/wp-json/wp/v2/posts?context=embed&per_page=100&page={page}"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "excerpt.rendered"
+
+client: "http"
+concurrency: 5
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+    date: filler
+  article:
+    body: "filler"
+    tags: "filler"
+
+cleaning:
+  date: "handle_mixed_dates"
+  body: "clean_wp_html_body"
+
+max_pages: null
+max_articles: null
+
+# Site-specific notes:
+# - `context=embed` is required; `_fields` requests redirect to the homepage.
+# - The API exposes teaser text via `excerpt.rendered`; full article bodies are not available in the API response.
+# - This source intentionally stores teaser text only.

@@ -1,7 +1,7 @@
-# ABC AU (Australia) Pacific Configuration
+# ABC AU (Australia) Guam Configuration
 # Migrated from monolithic scraper: src/text/scrapers/newspapers/pacific/abc_au.py
 
-name: "ABC AU Guam"
+name: "ABC Guam"
 country: "guam"
 base_url: "https://www.abc.net.au"
 

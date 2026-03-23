@@ -830,6 +830,7 @@ def run_all_scrapers(
     timeout_per_scraper: int = 600,
     exclude: Optional[List[str]] = None,
     include: Optional[List[str]] = None,
+    exclude_countries: Optional[List[str]] = None,
     country_filter: Optional[str] = None,
 ) -> List[Dict]:
     """
@@ -848,6 +849,7 @@ def run_all_scrapers(
         timeout_per_scraper: Maximum seconds per scraper before timeout (default: 600)
         exclude: List of newspaper names to exclude (case-insensitive)
         include: List of newspaper names to include exclusively (case-insensitive); if None, all are included
+        exclude_countries: List of country names to exclude (case-insensitive)
 
     Returns:
         List of result dictionaries with status information
@@ -878,6 +880,23 @@ def run_all_scrapers(
             return []
         configs = filtered
         print(f"   Filtering to country: {country_filter}")
+
+    # Filter out excluded countries
+    if exclude_countries:
+        exclude_country_set = {name.lower() for name in exclude_countries}
+        original_count = len(configs)
+        configs = [
+            c for c in configs if c["country"].lower() not in exclude_country_set
+        ]
+        excluded_count = original_count - len(configs)
+        if excluded_count > 0:
+            print(
+                "   Excluded "
+                f"{excluded_count} scraper(s) from countries: {', '.join(exclude_countries)}"
+            )
+        if not configs:
+            print("❌ No scrapers left after applying country exclusions.")
+            return []
 
     # Filter out excluded scrapers
     if exclude:

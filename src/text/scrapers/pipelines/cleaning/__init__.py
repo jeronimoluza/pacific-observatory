@@ -9,7 +9,7 @@ dynamic lookup by name.
 """
 
 import logging
-from typing import Any
+from typing import Any, Optional
 
 # Import registry functions first
 from .registry import get_cleaning_func, register_cleaner, get_all_registered_functions
@@ -35,6 +35,7 @@ __all__ = [
     "handle_unix_timestamp_ms_or_iso",
     "join_body_list",
     "clean_wp_html_body",
+    "clean_frontier_myanmar_body",
     # Country-specific cleaners
     "clean_kosmo_body",
     "clean_the_independent_body",
@@ -64,8 +65,8 @@ __all__ = [
 def apply_cleaning(
     data: Any,
     cleaning_config: dict,
-    base_url: str = None,
-    page_url: str = None,
+    base_url: Optional[str] = None,
+    page_url: Optional[str] = None,
     **kwargs,
 ) -> Any:
     """
@@ -156,6 +157,7 @@ from .solomon_islands import (  # noqa: E402
 )
 from .tonga import clean_matangi_url  # noqa: E402
 from .australia import filter_abc_au_articles  # noqa: E402
+from .myanmar import clean_frontier_myanmar_body  # noqa: E402
 
 # Legacy compatibility: Provide CLEANING_FUNCTIONS dict
 CLEANING_FUNCTIONS = get_all_registered_functions()

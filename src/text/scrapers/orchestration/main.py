@@ -107,6 +107,7 @@ Examples:
   python src/text/scrapers/orchestration/main.py
   python src/text/scrapers/orchestration/main.py --dry-run
   python src/text/scrapers/orchestration/main.py --exclude abc_au,rnz
+  python src/text/scrapers/orchestration/main.py --exclude-countries argentina,chile
 
   # Resume mode: scrape pending articles from urls.csv (no discovery)
   python src/text/scrapers/orchestration/main.py sibc --resume
@@ -177,6 +178,13 @@ Examples:
         type=str,
         default="",
         help="Comma-separated list of newspaper names to exclude when running multiple scrapers",
+    )
+
+    parser.add_argument(
+        "--exclude-countries",
+        type=str,
+        default="",
+        help="Comma-separated list of country names to exclude when running multiple scrapers",
     )
 
     # Scraping options
@@ -263,6 +271,16 @@ Examples:
         if exclude_list:
             print(f"⏭️  Excluding scrapers: {', '.join(exclude_list)}")
 
+    exclude_countries_list = []
+    if args.exclude_countries:
+        exclude_countries_list = [
+            name.strip().lower()
+            for name in args.exclude_countries.split(",")
+            if name.strip()
+        ]
+        if exclude_countries_list:
+            print(f"⏭️  Excluding countries: {', '.join(exclude_countries_list)}")
+
     # Handle --abc-rnz command
     if args.abc_rnz:
         results = run_all_scrapers(
@@ -273,6 +291,7 @@ Examples:
             mode=mode,
             timeout_per_scraper=args.timeout,
             include=["abc_au", "rnz"],
+            exclude_countries=exclude_countries_list,
         )
         failed_count = sum(
             1 for r in results if r.get("status") in ["failed", "timeout"]
@@ -289,6 +308,7 @@ Examples:
             mode=mode,
             timeout_per_scraper=args.timeout,
             exclude=exclude_list,
+            exclude_countries=exclude_countries_list,
         )
         failed_count = sum(
             1 for r in results if r.get("status") in ["failed", "timeout"]
@@ -306,6 +326,7 @@ Examples:
             timeout_per_scraper=args.timeout,
             country_filter=args.country.lower(),
             exclude=exclude_list,
+            exclude_countries=exclude_countries_list,
         )
         failed_count = sum(
             1 for r in results if r.get("status") in ["failed", "timeout"]

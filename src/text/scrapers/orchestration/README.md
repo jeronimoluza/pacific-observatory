@@ -36,6 +36,7 @@ poetry run python src/text/scrapers/orchestration/main.py --run-all
 - `--run-all` - Run all newspaper scrapers in parallel
 - `--sequential` - Force sequential execution (for debugging, use with --run-all)
 - `--dry-run` - Preview what would run without executing (use with --run-all)
+- `--exclude-countries <list>` - Skip countries in multi-scraper runs (comma-separated)
 
 ### Logging Options
 - `--log-level <level>` - Set logging level (DEBUG, INFO, WARNING, ERROR)
@@ -76,6 +77,9 @@ poetry run python src/text/scrapers/orchestration/main.py --run-all --sequential
 
 # Preview what would run without executing
 poetry run python src/text/scrapers/orchestration/main.py --run-all --dry-run
+
+# Skip countries in a full run
+poetry run python src/text/scrapers/orchestration/main.py --run-all --exclude-countries argentina,chile
 ```
 
 ## Adding New Scrapers
