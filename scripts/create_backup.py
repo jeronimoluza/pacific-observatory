@@ -15,19 +15,10 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 import zipfile
 from datetime import date
-from io import StringIO
 from pathlib import Path
-
-import pandas as pd
-from tqdm import tqdm
-
-# Add src/ to path so we can import the fetcher registry
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
-from cpi.fuel_prices.fetchers import FETCHER_REGISTRY, FetcherConfig  # noqa: E402
 
 # ── Repo layout ───────────────────────────────────────────────────────────────
 
@@ -35,20 +26,6 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 TEXT_ROOT = REPO_ROOT / "data" / "text"
 PRICE_SCRAPING_ROOT = REPO_ROOT / "data" / "cpi" / "price_scraping"
 FUEL_PRICES_ROOT = REPO_ROOT / "data" / "cpi" / "fuel_prices"
-
-RETAIL_COLUMNS = [
-    "url_hash",
-    "product_id",
-    "product_name",
-    "price",
-    "currency",
-    "category",
-    "source",
-    "country",
-    "date",
-    "wayback",
-]
-
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
@@ -82,7 +59,7 @@ def backup_text(zf: zipfile.ZipFile) -> int:
 
     count = 0
     warnings: list[str] = []
-    for csv_path in tqdm(csv_files, desc="text", unit="file"):
+    for csv_path in csv_files:
         try:
             rel = csv_path.relative_to(TEXT_ROOT)
             zf.write(csv_path, arcname=f"text/{rel}")
@@ -94,170 +71,46 @@ def backup_text(zf: zipfile.ZipFile) -> int:
     return count
 
 
-# ── Retail-prices section ─────────────────────────────────────────────────────
-
-
-def _load_raw_items(source_dir: Path, country: str, source: str) -> pd.DataFrame:
-    """Load live scrape JSONL files for one (country, source) pair."""
-    raw_items_dir = source_dir / "raw_items"
-    if not raw_items_dir.exists():
-        return pd.DataFrame()
-
-    records: list[dict] = []
-    for jsonl_path in sorted(raw_items_dir.glob("*.jsonl")):
-        with jsonl_path.open(encoding="utf-8") as fh:
-            for line in fh:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    rec = json.loads(line)
-                    rec["country"] = country
-                    rec["source"] = source
-                    rec["wayback"] = 0
-                    rec["date"] = rec.get("scraped_at")
-                    records.append(rec)
-                except json.JSONDecodeError:
-                    pass
-
-    return pd.DataFrame(records) if records else pd.DataFrame()
-
-
-def _load_wayback_items(source_dir: Path, country: str, source: str) -> pd.DataFrame:
-    """Load Wayback Machine JSON snapshot files for one (country, source) pair."""
-    wb_dir = source_dir / "wayback_machine_data" / "items"
-    if not wb_dir.exists():
-        return pd.DataFrame()
-
-    records: list[dict] = []
-    for json_path in sorted(wb_dir.glob("*.json")):
-        try:
-            with json_path.open(encoding="utf-8") as fh:
-                snapshots = json.load(fh)
-        except (json.JSONDecodeError, OSError):
-            continue
-        if not isinstance(snapshots, list):
-            continue
-        for snap in snapshots:
-            snap["country"] = country
-            snap["source"] = source
-            snap["wayback"] = 1
-            ts = snap.get("wayback_timestamp", "")
-            snap["date"] = ts if ts else snap.get("scraped_at")
-            if "url" not in snap and "wayback_url" in snap:
-                snap["url"] = snap["wayback_url"]
-            records.append(snap)
-
-    return pd.DataFrame(records) if records else pd.DataFrame()
-
-
-def _assemble_source_prices(
-    source_dir: Path, country: str, source: str
-) -> pd.DataFrame:
-    """Combine raw + wayback records for one source into a clean DataFrame."""
-    df_raw = _load_raw_items(source_dir, country, source)
-    df_wb = _load_wayback_items(source_dir, country, source)
-
-    if df_raw.empty and df_wb.empty:
-        return pd.DataFrame(columns=RETAIL_COLUMNS)
-
-    df = pd.concat([df_raw, df_wb], ignore_index=True)
-
-    for col in RETAIL_COLUMNS:
-        if col not in df.columns:
-            df[col] = None
-
-    return df[RETAIL_COLUMNS].copy()
-
-
 def backup_retail_prices(zf: zipfile.ZipFile) -> int:
-    """Assemble retail price CSVs from raw JSONL + wayback JSON and write to archive."""
-    if not PRICE_SCRAPING_ROOT.exists():
-        print("[retail-prices] Root not found, skipping.", file=sys.stderr)
+    """Copy the assembled supermarket prices CSV into the archive."""
+    retail_csv = PRICE_SCRAPING_ROOT / "all_countries_supermarket_prices.csv"
+    if not retail_csv.exists():
+        print("[retail-prices] CSV not found, skipping.", file=sys.stderr)
         return 0
 
-    source_dirs = [
-        (p.parent.name, p.name, p)
-        for p in sorted(PRICE_SCRAPING_ROOT.glob("*/*"))
-        if p.is_dir()
-    ]
-    print(f"[retail-prices] Found {len(source_dirs)} sources")
-
-    count = 0
-    warnings: list[str] = []
-    for country, source, source_dir in tqdm(
-        source_dirs, desc="retail-prices", unit="source"
-    ):
-        try:
-            df = _assemble_source_prices(source_dir, country, source)
-            if df.empty:
-                continue
-            arc_name = f"retail-prices/{country}/{source}/prices.csv"
-            buf = StringIO()
-            df.to_csv(buf, index=False)
-            zf.writestr(arc_name, buf.getvalue())
-            count += 1
-        except Exception as e:
-            warnings.append(f"  WARN [{country}/{source}]: {e}")
-    for w in warnings:
-        print(w, file=sys.stderr)
-    return count
+    try:
+        zf.write(
+            retail_csv, arcname="retail-prices/all_countries_supermarket_prices.csv"
+        )
+        print("[retail-prices] Added all_countries_supermarket_prices.csv")
+        return 1
+    except Exception as e:
+        print(f"  WARN [retail-prices]: {e}", file=sys.stderr)
+        return 0
 
 
 # ── Fuel-prices section ───────────────────────────────────────────────────────
-
-
-def _build_source_meta(source_key: str) -> dict:
-    """Build source metadata dict from FETCHER_REGISTRY, or minimal fallback."""
-    config: FetcherConfig | None = FETCHER_REGISTRY.get(source_key)
-    if config is None:
-        return {"source_key": source_key, "note": "not found in FETCHER_REGISTRY"}
-    return {
-        "source_key": source_key,
-        "source_name": config.source_name,
-        "country": config.country,
-        "homepage": config.homepage,
-        "cadence": config.cadence,
-        "full_refresh": config.full_refresh,
-        "fallback_date": config.fallback_date.isoformat(),
-    }
-
-
 def backup_fuel_prices(zf: zipfile.ZipFile) -> int:
-    """Copy fuel price observations and write source metadata into archive."""
-    if not FUEL_PRICES_ROOT.exists():
-        print("[fuel-prices] Root not found, skipping.", file=sys.stderr)
+    """Copy enriched fuel prices CSV into the archive."""
+    fuel_csv = (
+        REPO_ROOT
+        / "data"
+        / "cpi"
+        / "fuel_prices_staged"
+        / "enrich"
+        / "retail_series_enriched.csv"
+    )
+    if not fuel_csv.exists():
+        print("[fuel-prices] CSV not found, skipping.", file=sys.stderr)
         return 0
 
-    obs_files = [
-        p
-        for p in sorted(FUEL_PRICES_ROOT.glob("*/**/observations.csv"))
-        if not any(part.startswith("_") for part in p.parts)
-        and not p.parent.name.startswith("gpp_")
-    ]
-    print(f"[fuel-prices] Found {len(obs_files)} observation files")
-
-    count = 0
-    warnings: list[str] = []
-    for obs_path in tqdm(obs_files, desc="fuel-prices", unit="source"):
-        try:
-            rel_parts = obs_path.relative_to(FUEL_PRICES_ROOT).parts
-            country = rel_parts[0]
-            source = rel_parts[1]
-            arc_base = f"fuel-prices/{country}/{source}"
-
-            zf.write(obs_path, arcname=f"{arc_base}/observations.csv")
-            meta = _build_source_meta(source)
-            zf.writestr(
-                f"{arc_base}/source_meta.json",
-                json.dumps(meta, indent=2, default=str),
-            )
-            count += 1
-        except Exception as e:
-            warnings.append(f"  WARN [{obs_path}]: {e}")
-    for w in warnings:
-        print(w, file=sys.stderr)
-    return count
+    try:
+        zf.write(fuel_csv, arcname="fuel-prices/retail_series_enriched.csv")
+        print("[fuel-prices] Added retail_series_enriched.csv")
+        return 1
+    except Exception as e:
+        print(f"  WARN [fuel-prices]: {e}", file=sys.stderr)
+        return 0
 
 
 # ── Entry point ───────────────────────────────────────────────────────────────
