@@ -85,6 +85,7 @@ Spider for scraping [Site Name] - [URL]
 import scrapy
 import logging
 import re
+from datetime import datetime
 from scrapy_playwright.page import PageMethod
 
 logger = logging.getLogger(__name__)
@@ -176,6 +177,7 @@ class MySiteSpider(scrapy.Spider):
             "url": product_url,
             "product_id": product_id,
             "language": self.language,
+            "scraped_at_utc": datetime.utcnow().isoformat(),
         }
 ```
 

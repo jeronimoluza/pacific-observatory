@@ -218,39 +218,23 @@ def clean_product_w_cat(text: str) -> str:
     return cleaned_text
 
 
-def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.DataFrame:
+def prepare_coicop_matching_data_from_df(
+    df: pd.DataFrame,
+    project_root: Optional[Path] = None,
+) -> pd.DataFrame:
     """
-    Load price scraping data and prepare it for COICOP matching.
+    Prepare a provided dataframe for COICOP matching.
 
     Steps:
-    1. Load raw price scraping data
-    2. Save original product_name as product_name_original
-    3. Clean product names (source-specific cleaning)
-    4. Parse and clean price column
-    5. Remove amounts and quantities → "product_only"
-    6. Clean "product_only" from special characters
-    7. Clean category names
-    8. Create "product_w_cat" combining product_only and cleaned category
-
-    Args:
-        project_root: Optional project root path. If None, infers from this file's location.
-
-    Returns:
-        DataFrame with columns:
-        - product_name_original (original before cleaning)
-        - product_name (cleaned)
-        - product_only (no quantities)
-        - product_w_cat (product_only + category)
-        - category (original)
-        - price (cleaned numeric)
-        - source
-        - country
-        - product_url (renamed from 'url' if exists)
-        - url_hash
-        - And any other original columns
+    1. Save original product_name as product_name_original
+    2. Clean product names (source-specific cleaning)
+    3. Parse and clean price column
+    4. Remove amounts and quantities → "product_only"
+    5. Clean "product_only" from special characters
+    6. Clean category names
+    7. Create "product_w_cat" combining product_only and cleaned category
     """
-    # Load raw price scraping data
-    df = load_price_scraping_data(project_root)
+    df = df.copy()
 
     # Save original product_name before any cleaning
     df["product_name_original"] = df["product_name"].copy()
@@ -297,6 +281,25 @@ def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.Data
         df = df.rename(columns={"url": "product_url"})
 
     return df
+
+
+def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.DataFrame:
+    """
+    Load price scraping data and prepare it for COICOP matching.
+
+    Steps:
+    1. Load raw price scraping data
+    2. Save original product_name as product_name_original
+    3. Clean product names (source-specific cleaning)
+    4. Parse and clean price column
+    5. Remove amounts and quantities → "product_only"
+    6. Clean "product_only" from special characters
+    7. Clean category names
+    8. Create "product_w_cat" combining product_only and cleaned category
+    """
+    # Load raw price scraping data
+    df = load_price_scraping_data(project_root)
+    return prepare_coicop_matching_data_from_df(df, project_root)
 
 
 if __name__ == "__main__":

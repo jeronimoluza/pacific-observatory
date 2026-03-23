@@ -169,10 +169,10 @@ def classify_products_with_gemini(
     coicop_categories_df: pd.DataFrame,
     existing_classifications: Optional[pd.DataFrame] = None,
     project_root: Optional[Path] = None,
-    batch_size: int = 600,
+    batch_size: int = 2000,
 ) -> pd.DataFrame:
     """
-    Classify products using Gemini 2.0 Flash in batches.
+    Classify products using Gemini 3.0 Flash in batches.
 
     After each batch is classified, it is immediately appended to gemini_classification.csv.
     This allows stopping the process at any point without losing classified batches.

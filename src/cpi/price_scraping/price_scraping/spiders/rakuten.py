@@ -15,6 +15,7 @@ import scrapy
 import logging
 import re
 import json
+from datetime import datetime
 from scrapy_playwright.page import PageMethod
 
 logger = logging.getLogger(__name__)
@@ -314,6 +315,7 @@ class RakutenSpider(scrapy.Spider):
             "url": product_url or "",
             "product_id": product_id,
             "language": self.language,
+            "scraped_at_utc": datetime.utcnow().isoformat(),
         }
 
     def _parse_product_card_v2(self, card, category_name):
@@ -385,6 +387,7 @@ class RakutenSpider(scrapy.Spider):
             "url": product_url,
             "product_id": product_id,
             "language": self.language,
+            "scraped_at_utc": datetime.utcnow().isoformat(),
         }
 
     def _parse_dui_card(self, card, category_name):
@@ -436,6 +439,7 @@ class RakutenSpider(scrapy.Spider):
             "url": product_url,
             "product_id": product_id,
             "language": self.language,
+            "scraped_at_utc": datetime.utcnow().isoformat(),
         }
 
     def _parse_json_item(self, item, category_name):
@@ -505,6 +509,7 @@ class RakutenSpider(scrapy.Spider):
             "url": product_url or "",
             "product_id": product_id,
             "language": self.language,
+            "scraped_at_utc": datetime.utcnow().isoformat(),
         }
 
     def _clean_price(self, price_str):

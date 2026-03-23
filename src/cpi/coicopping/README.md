@@ -162,7 +162,7 @@ Located in: `data/cpi/price_scraping/{country}/{source}/wayback_machine_data/ite
 | `amount` | string | Extracted quantity value (e.g., "250 ml", "1 kg") | Extracted |
 | `units` | string | Extracted unit count (e.g., "6 pack", "1") | Extracted |
 | `unit_value` | float | Price per standard unit (kg, liter, or mt) | Calculated |
-| `usability_status` | string | Classification status (resolved_mass/volume/length/count_food, contradictory, promotion_or_bundle, pending_review) | Classified |
+| `usability_status` | string | Classification status (resolved_weight_volume, resolved_count, resolved_per_item, contradictory, promotion_or_bundle, pending_review) | Classified |
 | `extraction_tier` | int | Tier 1 (weight/volume), Tier 2 (count), Tier 3 (per-item), or None (excluded) | Classified |
 | `standard_unit` | string | Standard unit for unit_value (kg, L, mt, or count) | Derived |
 | `n_candidates` | int | Number of quantity candidates found | Extracted |
@@ -184,10 +184,9 @@ Located in: `data/cpi/price_scraping/{country}/{source}/wayback_machine_data/ite
 - **Time series**: Sorted by url_hash and date to track price evolution
 - **Unclassified products**: Have `coicop_code` and `coicop_title` as NaN if classification failed
 - **Usability statuses**:
-  - `resolved_mass`: Weight-based products (kg, g, lb, oz)
-  - `resolved_volume`: Volume-based products (L, ml, gal)
-  - `resolved_length`: Length-based products (m, cm, ft)
-  - `resolved_count_food`: Count-based food products (eggs, apples, etc.)
+  - `resolved_weight_volume`: Weight/volume-based products (kg, g, lb, oz, L, ml, gal, m, cm, ft)
+  - `resolved_count`: Count-based products (eggs, apples, packs, etc.)
+  - `resolved_per_item`: Per-item fallback (no quantity detected, unit_value = price)
   - `contradictory`: Multiple conflicting quantities found
   - `promotion_or_bundle`: Promotional/bundle products (excluded from unit price)
   - `pending_review`: Flagged for manual review (included provisionally)
@@ -319,6 +318,34 @@ The main orchestration script runs all steps automatically:
 ```bash
 cd /path/to/pacific-observatory
 poetry run python src/cpi/coicopping/main.py
+```
+
+### Incremental Stage Commands
+
+Each stage can now run independently. Daily runs should use the incremental stages to avoid reprocessing all data.
+
+```bash
+# 1) Load & prepare only new scraping files
+poetry run python -m src.cpi.coicopping.load
+
+# 2) Extract quantities for new rows only
+poetry run python -m src.cpi.coicopping.quantities
+
+# 3) Classify new products with Gemini (incremental)
+poetry run python -m src.cpi.coicopping.classify
+
+# 4) Merge quantities + classifications into final output
+poetry run python -m src.cpi.coicopping.merge
+```
+
+**Full rebuild options:**
+
+```bash
+# Rebuild prepared cache + manifest from scratch
+poetry run python -m src.cpi.coicopping.load --rebuild
+
+# Re-extract quantities for all rows
+poetry run python -m src.cpi.coicopping.quantities --reextract-all
 ```
 
 **What it does:**
@@ -505,10 +532,9 @@ The quantity extraction system implements a **multi-candidate extraction** appro
    - Stores `n_candidates` to track extraction complexity
 
 2. **Usability Classification**
-   - **resolved_mass**: Weight-based (kg, g, lb, oz) → unit_value per kg
-   - **resolved_volume**: Volume-based (L, ml, gal) → unit_value per liter
-   - **resolved_length**: Length-based (m, cm, ft) → unit_value per meter
-   - **resolved_count_food**: Count-based food items (eggs, apples) → unit_value per count
+   - **resolved_weight_volume**: Weight/volume/length-based (kg, g, lb, oz, L, ml, gal, m, cm, ft) → unit_value per kg/L/mt
+   - **resolved_count**: Count-based products (eggs, apples, packs) → unit_value per count
+   - **resolved_per_item**: Per-item fallback (no quantity detected) → unit_value = price
    - **contradictory**: Multiple conflicting quantities → excluded
    - **promotion_or_bundle**: Promotional keywords detected → excluded
    - **pending_review**: Flagged for manual review → included provisionally
@@ -545,24 +571,21 @@ From the main.py output, the system reports:
 STANDARDIZED UNIT PRICE METRICS
 ────────────────────────────────────────
 Usability Status Distribution:
-  resolved_mass: 15234 (45.2%)
-  resolved_volume: 8456 (25.1%)
-  resolved_count_food: 3421 (10.2%)
-  contradictory: 2134 (6.3%)
-  promotion_or_bundle: 1876 (5.6%)
-  pending_review: 2543 (7.6%)
+  resolved_weight_volume: 28659 (28.7%)
+  resolved_count: 1874 (1.9%)
+  resolved_per_item: 64759 (64.8%)
+  contradictory: 903 (0.9%)
+  promotion_or_bundle: 3805 (3.8%)
 
-  TOTAL RESOLVED: 27111 (80.5%)
-  Food products resolved: 8234/12456 (66.1%)
-  ✓ PRD Target Met: >= 30% food products resolved
+  TOTAL RESOLVED: 95292 (95.3%)
 
-Promotional products detected: 1876
+Promotional products detected: 3805
 
 Extraction Tier Statistics:
-  Tier 1 (Weight/Volume): 23690 (70.3%)
-  Tier 2 (Count): 3421 (10.2%)
-  Tier 3 (Per-item): 2543 (7.6%)
-  Excluded (no tier): 4010 (11.9%)
+  Tier 1 (Weight/Volume): 28659 (28.7%)
+  Tier 2 (Count): 1874 (1.9%)
+  Tier 3 (Per-item): 64759 (64.8%)
+  Excluded (no tier): 4708 (4.7%)
 ```
 
 ## Next Steps

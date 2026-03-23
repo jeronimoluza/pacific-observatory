@@ -21,17 +21,19 @@ import pandas as pd
 # Handle both relative and direct execution
 try:
     from .utils import get_project_root
-    from .data_preparation import prepare_coicop_matching_data
-    from .quantity import extract_quantities, merge_quantities_with_gemini
-    from .classification import run_coicop_matching, reclassify_missing_classifications
-    from .published_artifacts import write_supermarket_prices_shadow_artifact
+    from .classification import reclassify_missing_classifications
+    from .classify import run_classify
+    from .load import run_load
+    from .merge import run_merge
+    from .quantities import run_quantities
 except ImportError:
     sys.path.insert(0, str(Path(__file__).parent))
     from utils import get_project_root
-    from data_preparation import prepare_coicop_matching_data
-    from quantity import extract_quantities, merge_quantities_with_gemini
-    from classification import run_coicop_matching, reclassify_missing_classifications
-    from published_artifacts import write_supermarket_prices_shadow_artifact
+    from classification import reclassify_missing_classifications
+    from classify import run_classify
+    from load import run_load
+    from merge import run_merge
+    from quantities import run_quantities
 
 
 def setup_logging(level: str = "INFO") -> None:
@@ -72,149 +74,49 @@ def run_complete_workflow(
     if project_root is None:
         project_root = get_project_root()
 
-    data_dir = project_root / "data" / "cpi" / "coicopping"
-    output_dir = project_root / "data" / "cpi" / "analysis"
-    gemini_classification_path = data_dir / "gemini_classification.csv"
-    output_path = output_dir / "all_countries_supermarket_prices.csv"
-
     logger = logging.getLogger(__name__)
 
     print("=" * 80)
     print("COICOP CLASSIFICATION WORKFLOW")
     print("=" * 80)
 
-    # STEP 1: Load and prepare data
     print("\n" + "=" * 80)
     print("STEP 1: Load and prepare data")
     print("=" * 80)
-    logger.info("Loading price scraping data (scrapy + wayback) and preparing...")
-    df_prepared = prepare_coicop_matching_data(project_root)
-    print(f"✓ Loaded and prepared {len(df_prepared)} records")
-    print(f"  - Scrapy records: {len(df_prepared[df_prepared['wayback'] == 0])}")
-    print(f"  - Wayback records: {len(df_prepared[df_prepared['wayback'] == 1])}")
-    print(f"  - Columns: {df_prepared.columns.tolist()}")
+    logger.info("Running load stage...")
+    run_load(project_root)
 
-    # STEP 2: Extract quantities (with standardized unit price system)
     print("\n" + "=" * 80)
     print("STEP 2: Extract quantities (Standardized Unit Price System)")
     print("=" * 80)
-    logger.info("Extracting quantities with multi-candidate extraction...")
-    # Pass prepared data to avoid re-preparing
-    df_quantities = extract_quantities(
-        df_prepared=df_prepared, project_root=project_root
-    )
-    print(f"✓ Extracted quantities for {len(df_quantities)} records")
-    print(f"  - Records with amount: {df_quantities['amount'].notna().sum()}")
-    print(f"  - Records with units: {df_quantities['units'].notna().sum()}")
-    print(f"  - Records with unit_value: {df_quantities['unit_value'].notna().sum()}")
+    logger.info("Running quantities stage...")
+    run_quantities(project_root)
 
-    # Print usability status distribution
-    print("\n  Usability status distribution:")
-    status_counts = df_quantities["usability_status"].value_counts()
-    for status, count in status_counts.items():
-        pct = count / len(df_quantities) * 100
-        print(f"    - {status}: {count} ({pct:.1f}%)")
-
-    # Calculate resolved rate
-    resolved_statuses = [
-        "resolved_mass",
-        "resolved_volume",
-        "resolved_length",
-        "resolved_count_food",
-    ]
-    resolved_count = df_quantities[
-        df_quantities["usability_status"].isin(resolved_statuses)
-    ].shape[0]
-    resolved_pct = resolved_count / len(df_quantities) * 100
-    print(f"\n  Total resolved: {resolved_count} ({resolved_pct:.1f}%)")
-
-    # Print promotion detection summary
-    promo_count = df_quantities["has_promotion"].sum()
-    print(f"  Products flagged as promotional: {promo_count}")
-
-    # Print extraction tier distribution
-    print("\n  Extraction tier distribution:")
-    tier_counts = df_quantities["extraction_tier"].value_counts().sort_index()
-    for tier, count in tier_counts.items():
-        pct = count / len(df_quantities) * 100
-        tier_desc = {1: "Weight/Volume", 2: "Count", 3: "Per-item"}.get(tier, "Unknown")
-        print(f"    - Tier {tier} ({tier_desc}): {count} ({pct:.1f}%)")
-
-    # STEP 3: Classify with COICOP (if not skipped)
     if not skip_classification:
         print("\n" + "=" * 80)
         print("STEP 3: Classify with COICOP using Gemini AI")
         print("=" * 80)
-        logger.info("Running COICOP classification...")
-        # Pass prepared data to avoid re-preparing
-        run_coicop_matching(df_prepared=df_prepared, project_root=project_root)
-        print("✓ Classification complete")
+        logger.info("Running classify stage...")
+        run_classify(project_root)
     else:
         print("\n" + "=" * 80)
         print("STEP 3: SKIPPED - Using existing classifications")
         print("=" * 80)
-        if gemini_classification_path.exists():
-            print(f"✓ Using existing file: {gemini_classification_path}")
-        else:
-            print(f"⚠ Warning: {gemini_classification_path} not found")
-            print("  Continuing without classifications...")
 
-    # STEP 4: Merge & Finalize
     print("\n" + "=" * 80)
     print("STEP 4: Merge & Finalize")
     print("=" * 80)
-    logger.info("Merging quantities with COICOP classifications...")
+    logger.info("Running merge stage...")
+    df_final = run_merge(project_root)
 
-    # Use the merge_quantities_with_gemini function as specified in README
-    df_final = merge_quantities_with_gemini(df_quantities, gemini_classification_path)
-
-    # Select final columns (including new standardized unit price columns)
-    final_columns = [
-        "url_hash",
-        "product_name_original",
-        "product_name",
-        "product_w_cat",
-        "price",
-        "currency",
-        "amount",
-        "units",
-        "unit_value",
-        "usability_status",
-        "extraction_tier",
-        "standard_unit",
-        "n_candidates",
-        "has_promotion",
-        "rejection_reason",
-        "pending_review",
-        "coicop_code",
-        "coicop_title",
-        "confidence",
-        "source",
-        "country",
-        "product_url",
-        "date",
-        "product_id",
-        "wayback",
-    ]
-
-    # Only include columns that exist
-    available_columns = [col for col in final_columns if col in df_final.columns]
-    df_final = df_final[available_columns]
-
-    # Save to CSV
-    output_dir.mkdir(parents=True, exist_ok=True)
-    df_final.to_csv(output_path, index=False, encoding="utf-8")
-    print(f"✓ Saved {len(df_final)} records to {output_path}")
-
-    shadow_result = write_supermarket_prices_shadow_artifact(
-        df_final,
-        project_root=project_root,
-        legacy_output_path=output_path,
+    output_path = (
+        project_root
+        / "data"
+        / "cpi"
+        / "analysis"
+        / "all_countries_supermarket_prices.csv"
     )
-    print(f"✓ Shadow-wrote published artifact to {shadow_result['artifact_path']}")
-    print(f"✓ Wrote checks sidecar to {shadow_result['checks_path']}")
 
-    # Print summary statistics
     print("\n" + "=" * 80)
     print("SUMMARY STATISTICS")
     print("=" * 80)
@@ -230,19 +132,16 @@ def run_complete_workflow(
     print(f"Records with unit_value: {df_final['unit_value'].notna().sum()}")
     print(f"Date range: {df_final['date'].min()} to {df_final['date'].max()}")
 
-    # Print standardized unit price system metrics
     print("\n" + "-" * 40)
     print("STANDARDIZED UNIT PRICE METRICS")
     print("-" * 40)
     if "usability_status" in df_final.columns:
-        # Usability status distribution
         print("\nUsability Status Distribution:")
         status_counts = df_final["usability_status"].value_counts()
         for status, count in status_counts.items():
             pct = count / len(df_final) * 100
             print(f"  {status}: {count} ({pct:.1f}%)")
 
-        # Calculate resolved rate (PRD success metric)
         resolved_statuses = [
             "resolved_mass",
             "resolved_volume",
@@ -255,7 +154,6 @@ def run_complete_workflow(
         resolved_pct = resolved_count / len(df_final) * 100
         print(f"\n  TOTAL RESOLVED: {resolved_count} ({resolved_pct:.1f}%)")
 
-        # Food products resolved rate (target: >= 30%)
         if "coicop_code" in df_final.columns:
             food_products = df_final[
                 df_final["coicop_code"].str.startswith("01", na=False)
@@ -286,7 +184,6 @@ def run_complete_workflow(
                 tier, "Excluded"
             )
             print(f"  Tier {tier} ({tier_desc}): {count} ({pct:.1f}%)")
-        # Count excluded (None tier)
         excluded = df_final["extraction_tier"].isna().sum()
         if excluded > 0:
             print(

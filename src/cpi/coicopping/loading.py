@@ -10,12 +10,51 @@ adding country, source, and filename columns.
 
 import json
 import logging
+from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 import pandas as pd
+from zoneinfo import ZoneInfo
 
 logger = logging.getLogger(__name__)
+
+BA_TZ = ZoneInfo("America/Argentina/Buenos_Aires")
+UTC_TZ = ZoneInfo("UTC")
+
+
+def _to_utc_from_ba(dt: datetime) -> datetime:
+    localized = dt.replace(tzinfo=BA_TZ)
+    return localized.astimezone(UTC_TZ)
+
+
+def _parse_scraped_at_utc(scraped_at: str) -> Optional[str]:
+    if not scraped_at:
+        return None
+    try:
+        parsed = pd.to_datetime(scraped_at)
+    except Exception:
+        return None
+
+    if isinstance(parsed, pd.Timestamp):
+        parsed = parsed.to_pydatetime()
+
+    if not isinstance(parsed, datetime):
+        return None
+
+    return _to_utc_from_ba(parsed).isoformat()
+
+
+def _parse_filename_timestamp(filename: str) -> Optional[str]:
+    stem = Path(filename).stem
+    if len(stem) < 15:
+        return None
+    ts = stem[-15:]
+    try:
+        parsed = datetime.strptime(ts, "%Y%m%d_%H%M%S")
+    except Exception:
+        return None
+    return _to_utc_from_ba(parsed).isoformat()
 
 
 def get_price_scraping_root(project_root: Optional[Path] = None) -> Path:
@@ -64,7 +103,10 @@ def get_currency_mapping(df_scrapy: pd.DataFrame) -> dict:
     return currency_mapping
 
 
-def load_scrapy_data(project_root: Optional[Path] = None) -> pd.DataFrame:
+def load_scrapy_data(
+    project_root: Optional[Path] = None,
+    allowlist: Optional[set[str]] = None,
+) -> Tuple[pd.DataFrame, list[str]]:
     """
     Load scrapy JSONL files from raw_items directories.
 
@@ -72,15 +114,17 @@ def load_scrapy_data(project_root: Optional[Path] = None) -> pd.DataFrame:
         project_root: Optional project root path. If None, infers from this file's location.
 
     Returns:
-        DataFrame with scrapy data and metadata columns (country, source, filename).
+        Tuple of (DataFrame with scrapy data and metadata columns, processed file list).
     """
     root_dir = get_price_scraping_root(project_root)
 
     if not root_dir.exists():
         logger.warning(f"Price scraping directory not found: {root_dir}")
-        return pd.DataFrame()
+        result_df = pd.DataFrame()
+        return result_df, []
 
     all_data = []
+    processed_files: list[str] = []
 
     # Iterate through country directories
     for country_dir in sorted(root_dir.iterdir()):
@@ -102,6 +146,9 @@ def load_scrapy_data(project_root: Optional[Path] = None) -> pd.DataFrame:
 
             # Iterate through JSONL files
             for jsonl_file in sorted(raw_items_dir.glob("*.jsonl")):
+                rel_path = jsonl_file.relative_to(root_dir).as_posix()
+                if allowlist is not None and rel_path not in allowlist:
+                    continue
                 filename = jsonl_file.name
 
                 # Read JSONL file
@@ -115,6 +162,17 @@ def load_scrapy_data(project_root: Optional[Path] = None) -> pd.DataFrame:
                                 record["source"] = source
                                 record["filename"] = filename
                                 record["wayback"] = 0  # Mark as current data
+
+                                if "scraped_at_utc" not in record:
+                                    scraped_at_utc = _parse_scraped_at_utc(
+                                        record.get("scraped_at")
+                                    )
+                                    if not scraped_at_utc:
+                                        scraped_at_utc = _parse_filename_timestamp(
+                                            filename
+                                        )
+                                    if scraped_at_utc:
+                                        record["scraped_at_utc"] = scraped_at_utc
                                 records.append(record)
                             except json.JSONDecodeError as e:
                                 logger.warning(
@@ -124,20 +182,28 @@ def load_scrapy_data(project_root: Optional[Path] = None) -> pd.DataFrame:
 
                 if records:
                     all_data.extend(records)
+                processed_files.append(rel_path)
 
     if not all_data:
         logger.warning("No scrapy data found")
-        return pd.DataFrame()
+        result_df = pd.DataFrame()
+        return result_df, processed_files
 
     df = pd.DataFrame(all_data)
     logger.info(f"Loaded {len(df)} scrapy records")
-    return df
+    if "scraped_at_utc" in df.columns:
+        missing = df["scraped_at_utc"].isna().sum()
+        logger.info(f"scraped_at_utc missing: {missing}")
+    else:
+        logger.warning("scraped_at_utc column missing from scrapy data")
+    return df, processed_files
 
 
 def load_wayback_data(
     project_root: Optional[Path] = None,
     currency_mapping: Optional[dict] = None,
-) -> pd.DataFrame:
+    allowlist_dirs: Optional[set[str]] = None,
+) -> Tuple[pd.DataFrame, list[str]]:
     """
     Load wayback machine JSON files from wayback_machine_data/items directories.
 
@@ -149,15 +215,17 @@ def load_wayback_data(
                          If None, wayback data will not have currency applied.
 
     Returns:
-        DataFrame with wayback data and metadata columns (country, source, currency, wayback).
+        Tuple of (DataFrame with wayback data and metadata columns, processed dir list).
     """
     root_dir = get_price_scraping_root(project_root)
 
     if not root_dir.exists():
         logger.warning(f"Price scraping directory not found: {root_dir}")
-        return pd.DataFrame()
+        result_df = pd.DataFrame()
+        return result_df, []
 
     all_data = []
+    processed_dirs: list[str] = []
 
     # Iterate through country directories
     for country_dir in sorted(root_dir.iterdir()):
@@ -173,6 +241,10 @@ def load_wayback_data(
 
             source = source_dir.name
             wayback_items_dir = source_dir / "wayback_machine_data" / "items"
+            rel_dir = wayback_items_dir.relative_to(root_dir).as_posix()
+
+            if allowlist_dirs is not None and rel_dir not in allowlist_dirs:
+                continue
 
             if not wayback_items_dir.exists():
                 continue
@@ -181,6 +253,8 @@ def load_wayback_data(
             json_files = list(wayback_items_dir.glob("*.json"))
             if not json_files:
                 continue
+
+            processed_dirs.append(rel_dir)
 
             # Get currency for this country/source combination
             currency = None
@@ -220,11 +294,75 @@ def load_wayback_data(
 
     if not all_data:
         logger.warning("No wayback data found")
-        return pd.DataFrame()
+        result_df = pd.DataFrame()
+        return result_df, processed_dirs
 
     df = pd.DataFrame(all_data)
     logger.info(f"Loaded {len(df)} wayback records")
 
+    return df, processed_dirs
+
+
+def apply_latest_scrapy_mappings(
+    df_wayback: pd.DataFrame, df_scrapy: pd.DataFrame
+) -> pd.DataFrame:
+    if df_wayback.empty or df_scrapy.empty:
+        return df_wayback
+
+    product_name_mapping = {}
+    if "url_hash" in df_scrapy.columns and "product_name" in df_scrapy.columns:
+        for url_hash, group in df_scrapy.groupby("url_hash"):
+            latest_product_name = group["product_name"].iloc[-1]
+            if pd.notna(latest_product_name):
+                product_name_mapping[url_hash] = latest_product_name
+
+    category_mapping = {}
+    if "url_hash" in df_scrapy.columns and "category" in df_scrapy.columns:
+        for url_hash, group in df_scrapy.groupby("url_hash"):
+            latest_category = group["category"].iloc[-1]
+            if pd.notna(latest_category):
+                category_mapping[url_hash] = latest_category
+
+    if "url_hash" in df_wayback.columns:
+        if product_name_mapping:
+            mask = df_wayback["url_hash"].isin(list(product_name_mapping.keys()))
+            df_wayback.loc[mask, "product_name"] = df_wayback.loc[mask, "url_hash"].map(
+                product_name_mapping
+            )
+
+        if category_mapping:
+            mask = df_wayback["url_hash"].isin(list(category_mapping.keys()))
+            df_wayback.loc[mask, "category"] = df_wayback.loc[mask, "url_hash"].map(
+                category_mapping
+            )
+
+    return df_wayback
+
+
+def add_date_column(df: pd.DataFrame) -> pd.DataFrame:
+    def extract_date(row):
+        scraped_at_utc = row.get("scraped_at_utc")
+        if pd.notna(scraped_at_utc):
+            try:
+                return pd.to_datetime(scraped_at_utc, utc=True).tz_convert(None)
+            except Exception:
+                return pd.NaT
+        if pd.notna(row.get("wayback_timestamp")):
+            ts = str(row["wayback_timestamp"])
+            try:
+                return pd.to_datetime(ts, format="%Y%m%d%H%M%S")
+            except Exception:
+                return pd.NaT
+        if pd.notna(row.get("scraped_at")):
+            return pd.to_datetime(row["scraped_at"])
+        return pd.NaT
+
+    df = df.copy()
+    df["date"] = df.apply(extract_date, axis=1)
+    logger.info(
+        f"Added date column: {df['date'].notna().sum()} records with valid dates"
+    )
+    df = df.dropna(subset=["price"])
     return df
 
 
@@ -252,7 +390,7 @@ def load_price_scraping_data(project_root: Optional[Path] = None) -> pd.DataFram
     logger.info("Loading price scraping data...")
 
     # Load scrapy data first
-    df_scrapy = load_scrapy_data(project_root)
+    df_scrapy, _ = load_scrapy_data(project_root=project_root)
 
     # Create currency mapping from scrapy data
     currency_mapping = {}
@@ -260,7 +398,10 @@ def load_price_scraping_data(project_root: Optional[Path] = None) -> pd.DataFram
         currency_mapping = get_currency_mapping(df_scrapy)
 
     # Load wayback data with currency mapping applied
-    df_wayback = load_wayback_data(project_root, currency_mapping=currency_mapping)
+    df_wayback, _ = load_wayback_data(
+        project_root=project_root,
+        currency_mapping=currency_mapping,
+    )
 
     # Combine both datasets
     if df_scrapy.empty and df_wayback.empty:
@@ -273,52 +414,11 @@ def load_price_scraping_data(project_root: Optional[Path] = None) -> pd.DataFram
         logger.info("No wayback data found, using scrapy data only")
         df = df_scrapy
     else:
-        # Create product_name and category mappings from latest scrapy items per url_hash
         logger.info(
             "Creating product_name and category mappings from latest scrapy items..."
         )
-
-        # Group by url_hash and get the last (latest) occurrence for product_name
-        product_name_mapping = {}
-        if "url_hash" in df_scrapy.columns and "product_name" in df_scrapy.columns:
-            for url_hash, group in df_scrapy.groupby("url_hash"):
-                latest_product_name = group["product_name"].iloc[-1]
-                if pd.notna(latest_product_name):
-                    product_name_mapping[url_hash] = latest_product_name
-
-        logger.info(
-            f"Created product_name mapping for {len(product_name_mapping)} url_hash values"
-        )
-
-        # Group by url_hash and get the last (latest) occurrence for category
-        category_mapping = {}
-        if "url_hash" in df_scrapy.columns and "category" in df_scrapy.columns:
-            for url_hash, group in df_scrapy.groupby("url_hash"):
-                latest_category = group["category"].iloc[-1]
-                if pd.notna(latest_category):
-                    category_mapping[url_hash] = latest_category
-
-        logger.info(
-            f"Created category mapping for {len(category_mapping)} url_hash values"
-        )
-
-        # Apply mappings to wayback data
-        if not df_wayback.empty and "url_hash" in df_wayback.columns:
-            # Apply product_name mapping
-            if product_name_mapping:
-                mask = df_wayback["url_hash"].isin(product_name_mapping.keys())
-                df_wayback.loc[mask, "product_name"] = df_wayback.loc[
-                    mask, "url_hash"
-                ].map(product_name_mapping)
-
-            # Apply category mapping
-            if category_mapping:
-                mask = df_wayback["url_hash"].isin(category_mapping.keys())
-                df_wayback.loc[mask, "category"] = df_wayback.loc[mask, "url_hash"].map(
-                    category_mapping
-                )
-
-            logger.info("Applied product_name and category mappings to wayback data")
+        df_wayback = apply_latest_scrapy_mappings(df_wayback, df_scrapy)
+        logger.info("Applied product_name and category mappings to wayback data")
 
         # Combine both
         df = pd.concat([df_scrapy, df_wayback], ignore_index=True)
@@ -326,27 +426,7 @@ def load_price_scraping_data(project_root: Optional[Path] = None) -> pd.DataFram
             f"Combined {len(df_scrapy)} scrapy + {len(df_wayback)} wayback = {len(df)} total records"
         )
 
-    # Add date column (scraped_at or wayback_timestamp)
-    def extract_date(row):
-        """Extract date from scraped_at or wayback_timestamp."""
-        if pd.notna(row.get("wayback_timestamp")):
-            # Convert YYYYMMDDHHMMSS to datetime
-            ts = str(row["wayback_timestamp"])
-            try:
-                return pd.to_datetime(ts, format="%Y%m%d%H%M%S")
-            except Exception:
-                return pd.NaT
-        elif pd.notna(row.get("scraped_at")):
-            return pd.to_datetime(row["scraped_at"])
-        else:
-            return pd.NaT
-
-    df["date"] = df.apply(extract_date, axis=1)
-    logger.info(
-        f"Added date column: {df['date'].notna().sum()} records with valid dates"
-    )
-
-    df = df.dropna(subset=["price"])
+    df = add_date_column(df)
     return df
 
 

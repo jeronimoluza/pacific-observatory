@@ -14,6 +14,7 @@ data directly from listing pages where product cards show name, price, and URL.
 import scrapy
 import logging
 import re
+from datetime import datetime
 from scrapy_playwright.page import PageMethod
 
 logger = logging.getLogger(__name__)
@@ -245,6 +246,7 @@ class YahooShoppingSpider(scrapy.Spider):
             "url": product_url or "",
             "product_id": product_id,
             "language": self.language,
+            "scraped_at_utc": datetime.utcnow().isoformat(),
         }
 
     def _clean_price(self, price_str):

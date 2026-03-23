@@ -81,6 +81,9 @@ class JsonWriterPipeline:
         if self.file is None:
             raise RuntimeError("Output file is not open")
 
+        if "scraped_at_utc" not in item:
+            item["scraped_at_utc"] = datetime.utcnow().isoformat()
+
         file_handle = self.file
 
         line = json.dumps(dict(item), ensure_ascii=False) + "\n"

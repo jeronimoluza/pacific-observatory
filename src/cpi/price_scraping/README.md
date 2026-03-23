@@ -92,10 +92,12 @@ Scraped data is saved in JSONL format (one JSON object per line) organized by co
 - **Filename format:** `{spider_name}_YYYYMMDD_HHMMSS.jsonl`
 - **Example location:** `data/cpi/price_scraping/fiji/mh_online/raw_items/mh_online_20251119_132552.jsonl`
 
+Each item includes a UTC capture timestamp in `scraped_at_utc`. The legacy `scraped_at` remains for backward compatibility.
+
 Example output:
 ```json
-{"product_id": "12345", "product_name": "Product Name", "price": "10.99", "category": "Electronics > Computers", "url": "https://mh.com.fj/product/12345", "url_hash": "abc123...", "scraped_at": "2024-01-15 10:30:00"}
-{"product_id": "12346", "product_name": "Another Product", "price": "25.50", "category": "Electronics > Computers", "url": "https://mh.com.fj/product/12346", "url_hash": "def456...", "scraped_at": "2024-01-15 10:30:15"}
+{"product_id": "12345", "product_name": "Product Name", "price": "10.99", "category": "Electronics > Computers", "url": "https://mh.com.fj/product/12345", "url_hash": "abc123...", "scraped_at": "2024-01-15 10:30:00", "scraped_at_utc": "2024-01-15T13:30:00"}
+{"product_id": "12346", "product_name": "Another Product", "price": "25.50", "category": "Electronics > Computers", "url": "https://mh.com.fj/product/12346", "url_hash": "def456...", "scraped_at": "2024-01-15 10:30:15", "scraped_at_utc": "2024-01-15T13:30:15"}
 ```
 
 ## Project Overview
