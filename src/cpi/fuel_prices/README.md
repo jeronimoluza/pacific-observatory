@@ -28,6 +28,8 @@ poetry run python -m src.cpi.fuel_prices update --source au_aip_tgp_weekly
 poetry run python -m src.cpi.fuel_prices normalize
 poetry run python -m src.cpi.fuel_prices publish --target all
 poetry run python -m src.cpi.fuel_prices backfill-fuelcheck --overwrite
+python -m src.cpi.fuel_prices.gen_sources_html
+python -m src.cpi.fuel_prices.gen_sources_excel
 ```
 
 Backward-compatible aliases still exist:
@@ -48,6 +50,8 @@ Backward-compatible aliases still exist:
 - `data/cpi/fuel_prices_staged/compare/reconstruct_vs_baseline.md` - staged comparison report against the local baseline tables.
 - `data/cpi/fuel_prices/fuel_prices.html` - fuel price visualization.
 - `data/cpi/fuel_prices/fuel_policy_overview.html` - policy summary visualization.
+- `data/cpi/fuel_prices/data_sources.html` - browseable HTML source catalog from fetcher metadata plus source stats.
+- `data/cpi/fuel_prices/fuel_source_inventory.xlsx` - observed-source Excel inventory keyed by raw `retail_series_enriched.csv` `source_key` values.
 - `data/cpi/published/news_evidence/fuel_prices/` - published news-evidence sidecars.
 
 ## Code Layout
@@ -62,11 +66,13 @@ Backward-compatible aliases still exist:
 - `loader.py`, `storage.py`, `csv_store.py` - canonical loading and persistence helpers.
 - `visualize.py`, `visualize_policy.py` - publish artifacts.
 - `gen_sources_html.py` - data-source catalog generation.
+- `gen_sources_excel.py`, `source_inventory.py` - observed-source Excel export and shared source-inventory helpers.
 
 ## Notes
 
 - Per-source storage is the long-term canonical layout.
 - The legacy consolidated CSVs still exist, so `normalize` is currently a lightweight cleanup stage rather than a full rebuild.
 - The staged worktree keeps baseline outputs under `data/cpi/fuel_prices/` and targets new migration artifacts under `data/cpi/fuel_prices_staged/`.
+- `gen_sources_html.py` inventories fetcher metadata and freshness-style stats, while `gen_sources_excel.py` exports one row per observed raw `source_key` from `data/cpi/fuel_prices_staged/enrich/retail_series_enriched.csv`.
 - `Track A` is legacy wording; user-facing docs and commands now refer to `news evidence` instead.
 - Many older fetcher and visualization modules are still larger than the new 500-line target; treat that limit as the direction for touched files and future refactors.

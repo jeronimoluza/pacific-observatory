@@ -426,6 +426,10 @@ _NZ_PRODUCT_NORM: dict[str, str] = {
     "Unleaded 95": "Premium Petrol 95R",
 }
 
+_AU_PRODUCT_NORM: dict[str, str] = {
+    "Unleaded 91": "Unleaded",
+}
+
 
 def _normalize_country_products(df: pd.DataFrame) -> pd.DataFrame:
     """Normalize legacy product names to canonical names for Vietnam and Philippines."""
@@ -449,6 +453,12 @@ def _normalize_country_products(df: pd.DataFrame) -> pd.DataFrame:
     if nz_mask.any():
         df.loc[nz_mask, "fuel_product"] = df.loc[nz_mask, "fuel_product"].replace(
             _NZ_PRODUCT_NORM
+        )
+
+    au_mask = df["country"] == "Australia"
+    if au_mask.any():
+        df.loc[au_mask, "fuel_product"] = df.loc[au_mask, "fuel_product"].replace(
+            _AU_PRODUCT_NORM
         )
 
     return df

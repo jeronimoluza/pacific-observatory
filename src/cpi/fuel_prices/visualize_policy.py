@@ -1278,7 +1278,7 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     fuel_data_json = json.dumps(json.dumps(fuel_data_slim))
     country_products_json = json.dumps(COUNTRY_PRODUCTS)
     product_regimes_json = json.dumps(product_regimes)
-    _HIDDEN_COUNTRIES = {"Palau", "Timor-Leste"}
+    _HIDDEN_COUNTRIES = {"Palau"}
     fuel_countries = sorted(c for c in fuel_data.keys() if c not in _HIDDEN_COUNTRIES)
     fuel_country_opts = "\n".join(
         f'<option value="{c}">{c}</option>' for c in fuel_countries

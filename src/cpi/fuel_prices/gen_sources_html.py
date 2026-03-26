@@ -13,56 +13,12 @@ Output: data/cpi/fuel_prices/data_sources.html
 from __future__ import annotations
 
 import html as _html
-import importlib
 from datetime import date, timedelta
 from pathlib import Path
-from typing import Any
 
-# ---------------------------------------------------------------------------
-# Collect metadata from all fetcher modules
-# ---------------------------------------------------------------------------
-
-_FETCHER_MODULES = [
-    "src.cpi.fuel_prices.fetchers.australia",
-    "src.cpi.fuel_prices.fetchers.cambodia",
-    "src.cpi.fuel_prices.fetchers.fiji",
-    "src.cpi.fuel_prices.fetchers.global_commodities",
-    "src.cpi.fuel_prices.fetchers.imf_weo_gdp",
-    "src.cpi.fuel_prices.fetchers.indonesia",
-    "src.cpi.fuel_prices.fetchers.japan",
-    "src.cpi.fuel_prices.fetchers.korea",
-    "src.cpi.fuel_prices.fetchers.lao",
-    "src.cpi.fuel_prices.fetchers.malaysia",
-    "src.cpi.fuel_prices.fetchers.mongolia",
-    "src.cpi.fuel_prices.fetchers.myanmar",
-    "src.cpi.fuel_prices.fetchers.new_zealand",
-    "src.cpi.fuel_prices.fetchers.pacific_islands",
-    "src.cpi.fuel_prices.fetchers.philippines",
-    "src.cpi.fuel_prices.fetchers.thailand",
-    "src.cpi.fuel_prices.fetchers.timor_leste",
-    "src.cpi.fuel_prices.fetchers.vietnam",
-    "src.cpi.fuel_prices.fetchers.world_bank_population",
-]
+from .source_inventory import collect_all_meta
 
 _COVERAGE_START = date(2026, 1, 1)
-
-
-def collect_all_meta() -> list[dict[str, Any]]:
-    """Import every fetcher module and collect SOURCE_META entries."""
-    all_entries: list[dict[str, Any]] = []
-    for mod_name in _FETCHER_MODULES:
-        try:
-            mod = importlib.import_module(mod_name)
-            meta = getattr(mod, "SOURCE_META", None)
-            if meta is None:
-                print(f"  [sources] WARNING: no SOURCE_META in {mod_name}")
-                continue
-            for entry in meta:
-                entry.setdefault("_module", mod_name.split(".")[-1])
-            all_entries.extend(meta)
-        except Exception as exc:
-            print(f"  [sources] ERROR importing {mod_name}: {exc}")
-    return all_entries
 
 
 # ---------------------------------------------------------------------------
