@@ -467,10 +467,10 @@ FETCHER_REGISTRY: dict[str, FetcherConfig] = {
     # ── Timor-Leste ───────────────────────────────────────────────────────────
     "tl_anp_daily_fuel_price": FetcherConfig(
         fn=fetch_timor_anp,
-        fallback_date=date(2024, 1, 1),
+        fallback_date=date(2020, 1, 1),
         source_name="Timor-Leste ANP Daily Fuel Price",
         country="Timor-Leste",
-        homepage="https://www.anp.tl/daily-fuel-price/",
+        homepage="https://www.anp.tl/category/daily-fuel-price/",
         cadence="daily",
     ),
     # ── China ─────────────────────────────────────────────────────────────────
