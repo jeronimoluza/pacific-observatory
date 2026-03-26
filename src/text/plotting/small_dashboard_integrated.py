@@ -1365,7 +1365,14 @@ if __name__ == "__main__":
             )
 
     topics_items = sorted(topics_set)
-    topics_defaults = ["inflation_prices", "energy", "diesel", "oil", "natural_gas"]
+    topics_defaults = [
+        "inflation_prices",
+        "energy",
+        "diesel",
+        "oil",
+        "natural_gas",
+        "fuel_rationing",
+    ]
     topics_defaults = [t for t in topics_defaults if t in topics_items]
     if not topics_defaults:
         topics_defaults = topics_items[:5]
