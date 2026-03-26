@@ -834,7 +834,12 @@ def _build_outputs(
 
 
 def process_country(
-    country, cutoff: str, subset_condition: str, recalculate_params: bool = False
+    country,
+    cutoff: str,
+    subset_condition: str,
+    recalculate_params: bool = False,
+    redo_topics: set[str] | None = None,
+    redo_actors: set[str] | None = None,
 ):
     """
     Process all EPU and uncertainty attribution indices for a single country.
@@ -854,6 +859,103 @@ def process_country(
     daily_tail_start = today.replace(day=1).strftime("%Y-%m-%d")
     all_topics = load_all_groups("topics")
     all_actors = load_all_groups("actors")
+
+    # ── Redo branch: selectively recompute specific topics/actors ──────────
+    if redo_topics or redo_actors:
+        if not (params_path.exists() and cache_path.exists()):
+            raise RuntimeError(
+                f"No cache found for '{country_name}'. "
+                "Run without --redo-* first to build the initial cache."
+            )
+
+        params = json.loads(params_path.read_text(encoding="utf-8"))
+        cache_df = pd.read_csv(cache_path, encoding="utf-8", low_memory=False)
+        cache_df["date"] = pd.to_datetime(cache_df["date"])
+        tail_ts = pd.Timestamp(daily_tail_start)
+
+        if redo_topics:
+            topics_subset = {k: all_topics[k] for k in redo_topics}
+            print(f"  [redo] recomputing topics: {', '.join(sorted(redo_topics))}")
+            redo_topic_epus = _run_full_topics_only(
+                news_dirs, cutoff, subset_condition, daily_tail_start, topics_subset
+            )
+
+            # Overwrite params for redo'd topics
+            params.setdefault("topics_epu", {})
+            for k, e_topic in redo_topic_epus.items():
+                params["topics_epu"][k] = e_topic.params
+
+            # Patch cache: drop old column, merge fresh pre-tail values
+            for k, e_topic in redo_topic_epus.items():
+                col = f"EPU_{k}_index"
+                topic_pre = e_topic.epu_stats[e_topic.epu_stats["date"] < tail_ts][
+                    ["date", "epu_weighted"]
+                ].rename(columns={"epu_weighted": col})
+                cache_df = cache_df.drop(columns=[col], errors="ignore")
+                cache_df = cache_df.merge(topic_pre, on="date", how="left")
+
+            # Overwrite columns in topics_epu.csv
+            topics_csv = OUTPUT_DIR / country_name / "epu" / "topics_epu.csv"
+            if topics_csv.exists():
+                existing_csv = pd.read_csv(topics_csv, encoding="utf-8")
+                existing_csv["date"] = pd.to_datetime(existing_csv["date"])
+                for k, e_topic in redo_topic_epus.items():
+                    col = f"EPU_{k}_index"
+                    new_col_df = e_topic.epu_stats[["date", "epu_weighted"]].rename(
+                        columns={"epu_weighted": col}
+                    )
+                    existing_csv = existing_csv.drop(columns=[col], errors="ignore")
+                    existing_csv = existing_csv.merge(new_col_df, on="date", how="left")
+                existing_csv["date"] = existing_csv["date"].dt.strftime("%Y-%m-%d")
+                existing_csv.to_csv(topics_csv, index=False, encoding="utf-8")
+                print(f"  topics_epu.csv updated for: {', '.join(sorted(redo_topics))}")
+
+        if redo_actors:
+            actors_subset = {k: all_actors[k] for k in redo_actors}
+            print(f"  [redo] recomputing actors: {', '.join(sorted(redo_actors))}")
+            redo_actor_epus = _run_full_actors_only(
+                news_dirs, cutoff, subset_condition, daily_tail_start, actors_subset
+            )
+
+            # Overwrite params for redo'd actors
+            params.setdefault("actors_epu", {})
+            for k, e_actor in redo_actor_epus.items():
+                params["actors_epu"][k] = e_actor.params
+
+            # Patch cache: drop old column, merge fresh pre-tail values
+            for k, e_actor in redo_actor_epus.items():
+                col = f"EPU_{k}_index"
+                actor_pre = e_actor.epu_stats[e_actor.epu_stats["date"] < tail_ts][
+                    ["date", "epu_weighted"]
+                ].rename(columns={"epu_weighted": col})
+                cache_df = cache_df.drop(columns=[col], errors="ignore")
+                cache_df = cache_df.merge(actor_pre, on="date", how="left")
+
+            # Overwrite columns in actors_epu.csv
+            actors_csv = OUTPUT_DIR / country_name / "epu" / "actors_epu.csv"
+            if actors_csv.exists():
+                existing_csv = pd.read_csv(actors_csv, encoding="utf-8")
+                existing_csv["date"] = pd.to_datetime(existing_csv["date"])
+                for k, e_actor in redo_actor_epus.items():
+                    col = f"EPU_{k}_index"
+                    new_col_df = e_actor.epu_stats[["date", "epu_weighted"]].rename(
+                        columns={"epu_weighted": col}
+                    )
+                    existing_csv = existing_csv.drop(columns=[col], errors="ignore")
+                    existing_csv = existing_csv.merge(new_col_df, on="date", how="left")
+                existing_csv["date"] = existing_csv["date"].dt.strftime("%Y-%m-%d")
+                existing_csv.to_csv(actors_csv, index=False, encoding="utf-8")
+                print(f"  actors_epu.csv updated for: {', '.join(sorted(redo_actors))}")
+
+        # Write updated params.json and cache (once, after both topics and actors)
+        def _json_default_redo(x):
+            return None if (isinstance(x, float) and np.isnan(x)) else x
+
+        with open(params_path, "w", encoding="utf-8") as f:
+            json.dump(params, f, indent=2, default=_json_default_redo)
+        cache_df.to_csv(cache_path, index=False, encoding="utf-8")
+        print("  params.json and cache updated")
+        return
 
     use_cache = params_path.exists() and cache_path.exists() and not recalculate_params
 
@@ -1098,7 +1200,48 @@ if __name__ == "__main__":
         default="",
         help="Comma-separated list of country names to exclude from processing.",
     )
+    parser.add_argument(
+        "--redo-topic",
+        nargs="+",
+        default=None,
+        metavar="TOPIC",
+        help="Recompute full-history params and outputs for specific topic(s). "
+        "Requires an existing cache (run without --redo-* first).",
+    )
+    parser.add_argument(
+        "--redo-actor",
+        nargs="+",
+        default=None,
+        metavar="ACTOR",
+        help="Recompute full-history params and outputs for specific actor(s). "
+        "Requires an existing cache (run without --redo-* first).",
+    )
     args = parser.parse_args()
+
+    # Validate --redo-topic / --redo-actor keys early, before any country work
+    _valid_topics = set(load_all_groups("topics").keys())
+    _valid_actors = set(load_all_groups("actors").keys())
+
+    if args.redo_topic:
+        _unknown = set(args.redo_topic) - _valid_topics
+        if _unknown:
+            print(f"Error: unknown topic(s): {', '.join(sorted(_unknown))}")
+            print(f"Valid topics: {', '.join(sorted(_valid_topics))}")
+            sys.exit(1)
+
+    if args.redo_actor:
+        _unknown = set(args.redo_actor) - _valid_actors
+        if _unknown:
+            print(f"Error: unknown actor(s): {', '.join(sorted(_unknown))}")
+            print(f"Valid actors: {', '.join(sorted(_valid_actors))}")
+            sys.exit(1)
+
+    # --recalculate-params redoes everything; --redo-* are irrelevant in that case
+    redo_topics = None
+    redo_actors = None
+    if not args.recalculate_params:
+        redo_topics = set(args.redo_topic) if args.redo_topic else None
+        redo_actors = set(args.redo_actor) if args.redo_actor else None
 
     exclude_countries = set()
     if args.exclude_countries:
@@ -1153,6 +1296,8 @@ if __name__ == "__main__":
                 cutoff,
                 subset_condition,
                 recalculate_params=args.recalculate_params,
+                redo_topics=redo_topics,
+                redo_actors=redo_actors,
             )
             print("  ✓ EPU processing completed")
         except Exception as e:
