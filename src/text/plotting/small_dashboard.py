@@ -25,7 +25,7 @@ def _build_dashboard_html(topic_bump, topics_epu, actors_epu):
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Small Dashboard</title>
+    <title>Economic, Policy, and Uncertainty High-Frequency Dashboard</title>
     <style>
         :root {{
             --bg: #f6f7fb;
@@ -113,7 +113,7 @@ def _build_dashboard_html(topic_bump, topics_epu, actors_epu):
     <div class="shell">
         <div class="header">
             <div>
-                <div class="title">Small Dashboard</div>
+                <div class="title">Economic, Policy, and Uncertainty High-Frequency Dashboard</div>
                 <div class="subtitle">Uncertainty topics and EPU views</div>
             </div>
             <div class="tabs" role="tablist">

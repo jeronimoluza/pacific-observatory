@@ -184,7 +184,7 @@ def _build_dashboard_html(
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Small Dashboard</title>
+    <title>Economic, Policy, and Uncertainty High-Frequency Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
     <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
@@ -462,7 +462,7 @@ def _build_dashboard_html(
     <div class="shell">
         <div class="header">
             <div>
-                <div class="title">Small Dashboard</div>
+                <div class="title">Economic, Policy, and Uncertainty High-Frequency Dashboard</div>
                 <div class="subtitle">Uncertainty topics and EPU views</div>
             </div>
             <div class="tabs" role="tablist">
@@ -484,6 +484,7 @@ def _build_dashboard_html(
                     <span class="range-label" id="topic-range">-</span>
                     <div id="topic-slider" class="date-slider"></div>
                 </div>
+                <p style="margin: 6px 0 0; font-size: 0.85em; color: #667085;">The top N topics with the highest average uncertainty influence over the selected period are chosen first. They are then ranked against each other month by month, showing how their relative importance shifts over time.</p>
                 <div class="chart-wrapper">
                     <canvas id="topic-chart"></canvas>
                 </div>

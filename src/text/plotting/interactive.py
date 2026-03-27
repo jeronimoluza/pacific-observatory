@@ -986,6 +986,7 @@ def gen_html_bump_chart(
     default_top_n,
     script_content,
     default_months=24,
+    note=None,
 ):
     """Generate standalone HTML page with Chart.js bump chart, country dropdown, Top N input, and date range slider"""
     opts = "\n".join(
@@ -1026,6 +1027,7 @@ def gen_html_bump_chart(
         <input type="number" id="topn-input" value="{default_top_n}" min="1">
     </div>
     {_SLIDER_HTML}
+    {f'<p style="margin: 6px 0 0; font-size: 0.85em; color: #667085;">{note}</p>' if note else ''}
     <div class="chart-wrapper">
         <canvas id="chart"></canvas>
     </div>
@@ -2297,6 +2299,10 @@ def gen_topic_attribution_html(
                 default_top_n,
                 script,
                 default_months=default_months,
+                note=(
+                    "The top N topics with the highest average uncertainty influence over the selected period are chosen first. "
+                    "They are then ranked against each other month by month, showing how their relative importance shifts over time."
+                ),
             )
         )
     print(f"Created {out}")
