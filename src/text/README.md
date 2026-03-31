@@ -1,183 +1,61 @@
-# Text Module
+# src/text/
 
-Newspaper scraping and Economic Policy Uncertainty (EPU) analysis for the Pacific Observatory.
+Newspaper scraping and Economic Policy Uncertainty (EPU) analysis
+pipeline. Collects articles from newspapers, computes EPU indices
+and sentiment scores, and publishes interactive dashboards.
 
-## Quick Start
-
-```bash
-# Scrape a single newspaper
-poetry run python -m text.scrapers.orchestration.main fiji_sun
-
-# Scrape with update mode (only new articles)
-poetry run python -m text.scrapers.orchestration.main fiji_sun --update
-
-# Run EPU analysis
-poetry run python -m text.analysis.main
-```
-
-## Module Structure
+## Data Flow
 
 ```
-src/text/
-├── scrapers/                  # Web scraping framework
-│   ├── newspaper_scraper.py   # Main scraper orchestrator
-│   ├── client_http.py         # Async HTTP client
-│   ├── client_browser.py      # Selenium browser client
-│   ├── listing_strategies.py  # URL discovery strategies
-│   ├── parser.py              # HTML data extraction
-│   ├── factory.py             # Scraper factory
-│   ├── models.py              # Pydantic data models
-│   ├── configs/               # YAML newspaper configs
-│   ├── pipelines/             # Data processing
-│   │   ├── storage.py         # CSV storage
-│   │   └── cleaning.py        # Data cleaning functions
-│   └── orchestration/         # CLI and batch processing
-├── analysis/                  # EPU and text analysis
-│   ├── main.py                # Analysis entry point
-│   ├── epu.py                 # EPU index calculation
-│   ├── modeling.py            # LASSO regression
-│   └── sentiment.py           # Sentiment analysis
-└── plotting/                  # Interactive visualizations
+configs/{region}/{country}/{newspaper}.yaml  → Newspaper definitions
+scrapers/                                    → HTTP/browser clients, strategies
+         ↓
+collect.py                                   → Discover articles, dedup by URL, store
+         ↓
+data/text/{country}/{newspaper}/news.csv
+data/text/{country}/{newspaper}/urls.csv
+         ↓
+analysis/                                    → EPU index, sentiment, topic indices
+process.py                                   → Orchestrate analysis
+         ↓
+data/text/{country}/epu_index.csv
+         ↓
+publish.py                                   → Dashboards, regional charts
 ```
 
-## Documentation
+## Structure
 
-- [Adding a Newspaper](docs/adding_a_newspaper.md) - Step-by-step guide
-- [Config Schema](docs/config_schema.md) - YAML config reference
-- [Architecture](docs/architecture.md) - System overview
+```
+text/
+├── configs/               YAML newspaper configs by region/country
+│   ├── pacific/fiji/      Per-country newspaper configs
+│   ├── _examples/         Annotated template
+│   └── README.md
+├── scrapers/              Scraping framework
+│   ├── strategies/        Listing discovery (pagination, API, archive, etc.)
+│   ├── pipelines/         Storage (CSV, URLs, metadata)
+│   ├── client_http.py     Async HTTP client
+│   ├── client_browser.py  Selenium browser client
+│   └── README.md
+├── analysis/              EPU, sentiment, topic indices
+│   ├── keywords/          Per-language keyword sets
+│   └── README.md
+├── keywords/              Region-specific keyword overrides
+├── collect.py             Collect stage: scrape articles
+├── process.py             Build stage: compute indices
+└── publish.py             Publish stage: dashboards
+```
 
 ## Commands
 
-### Scraping
-
 ```bash
-# Single newspaper
-poetry run python -m text.scrapers.orchestration.main fiji_sun
-
-# With mode (full, update, discover)
-poetry run python -m text.scrapers.orchestration.main fiji_sun --update
-
-# All newspapers in a country
-poetry run python -m text.scrapers.orchestration.main --country fiji
-
-# All newspapers
-poetry run python -m text.scrapers.orchestration.main --run-all
-
-# List available scrapers
-poetry run python -m text.scrapers.orchestration.main --list
+po text collect                          # Scrape all newspapers
+po text collect --country fiji           # Scrape Fiji newspapers
+po text collect --source fiji_sun        # Scrape one newspaper
+po text build --country fiji             # Compute EPU for Fiji
+po text publish                          # Generate dashboards
 ```
 
-### Monitoring
+## Adding a New Newspaper
 
-```bash
-# Recent runs (last 24 hours)
-poetry run python -m text.scrapers.orchestration.check_database
-```
-
-### Validation
-
-```bash
-# Validate a config file
-poetry run python -m text.scrapers.orchestration.validate configs/fiji/fiji_sun.yaml
-```
-
-### Analysis
-
-```bash
-# Run EPU analysis for all countries
-poetry run python -m text.analysis.main
-
-# Specific country
-poetry run python -m text.analysis.main --country fiji
-```
-
-## Makefile Shortcuts
-
-```bash
-make test              # Run unit tests
-make test-integration  # Run integration tests
-make lint              # Run linters
-make format            # Format code
-make scrape NEWSPAPER=fiji_sun
-make validate CONFIG=path/to/config.yaml
-```
-
-## Data Directory
-
-Scraped data is stored in `data/text/`:
-
-```
-data/text/
-├── fiji/
-│   ├── fiji_sun/
-│   │   ├── news.csv        # Article data
-│   │   ├── urls.csv        # Discovered URLs
-│   │   ├── metadata.json   # Scrape metadata
-│   │   └── failed.csv      # Failed URLs
-│   └── fiji_times/
-│       └── ...
-├── cambodia/
-│   └── ...
-└── scraper_runs.db         # Run tracking database
-```
-
-## Configuration
-
-Newspapers are configured via YAML files in `src/text/scrapers/configs/`.
-
-See [Config Schema](docs/config_schema.md) for the full reference.
-
-Example:
-```yaml
-name: fiji_sun
-country: fiji
-language: en
-base_url: https://fijisun.com.fj
-
-client: http
-concurrency: 10
-rate_limit: 0.5
-
-listing:
-  type: pagination
-  start_url: /category/local-news
-  page_param: page
-
-thumbnails:
-  container: article.news-item
-  title: h2.title
-  link: a
-  date: span.date
-
-article:
-  title: h1.article-title
-  body: div.article-body
-  date: time.publish-date
-```
-
-## Testing
-
-```bash
-# Run all tests
-poetry run pytest
-
-# Run only unit tests
-poetry run pytest tests/unit -v
-
-# Run with coverage
-poetry run pytest --cov=src/text --cov-report=html
-
-# Run tests for a specific module
-poetry run pytest tests/unit/test_cleaning.py -v
-```
-
-## Development
-
-See the [Architecture](docs/architecture.md) documentation for an overview of the system design.
-
-When adding a new newspaper:
-1. Read [Adding a Newspaper](docs/adding_a_newspaper.md)
-2. Create a YAML config file
-3. Validate with `poetry run python -m text.scrapers.orchestration.validate`
-4. Test with a limited scrape
-5. Commit and document
+See [docs/text/HOW_TO_ADD_NEW_SCRAPER.md](../../docs/text/HOW_TO_ADD_NEW_SCRAPER.md)

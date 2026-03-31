@@ -1,0 +1,59 @@
+# Newspaper scraper configuration template.
+#
+# Copy this file to: src/text/configs/{region}/{country}/{newspaper_slug}.yaml
+#
+# See docs/text/HOW_TO_ADD_NEW_SCRAPER.md for the full guide.
+# See docs/text/YAML_CONFIG_REFERENCE.md for all available fields.
+
+name: "Newspaper Name"
+country: "country_slug"        # Must match countries.yaml slug
+base_url: "https://newspaper.example.com"
+language: "en"                 # ISO 639-1 language code
+
+# -- Listing discovery: how to find article URLs --
+listing:
+  type: "pagination"           # One of: pagination, api, archive, follow_link
+  url_template: "https://newspaper.example.com/news?page={num}"
+  start_page: 1
+  step: 1                     # Page increment
+
+  # For type: "api" (JSON endpoint), also set:
+  # pagination_type: "offset"  # or "page"
+  # json_paths:
+  #   collection: "data.articles"
+  #   total: "data.total"
+  #   url: "url"
+  #   title: "headline"
+  #   date: "published_at"
+
+# -- Client configuration --
+client: "http"                 # "http" (async) or "browser" (Selenium)
+concurrency: 5                 # Max parallel requests
+rate_limit: 0.5                # Min seconds between requests
+retries: 3
+retry_seconds: 2.0
+
+# -- Article extraction: CSS selectors for content --
+selectors:
+  thumbnail:                   # For listing pages
+    container: "article.item"
+    title: "h2 a::text"
+    url: "h2 a::attr(href)"
+    date: "time::attr(datetime)"
+  article:                     # For article pages
+    body:
+      - "article .content p"   # Primary selector
+      - "#article-body p"      # Fallback selector
+    date:
+      - "time::attr(datetime)"
+      - "meta[property='article:published_time']::attr(content)"
+    tags: ".tags a::text"
+
+# -- Optional data cleaning --
+# cleaning:
+#   date: "handle_mixed_dates"         # Callable for date normalization
+#   record_filter: "filter_articles"   # Callable to exclude irrelevant records
+
+# -- Limits (for testing; remove or set null for production) --
+# max_pages: 5
+# max_articles: 50

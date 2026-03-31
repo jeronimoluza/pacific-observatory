@@ -1,0 +1,32 @@
+# Supermarket price spider configuration template.
+#
+# Copy this file to: src/prices/configs/{region}/{country}/{retailer_slug}.yaml
+#
+# See docs/prices/HOW_TO_ADD_NEW_SPIDER.md for the full guide.
+
+name: "Retailer Name"
+country: "country_slug"        # Must match countries.yaml slug
+base_url: "https://retailer.example.com"
+currency: "FJD"                # ISO 4217
+
+# Spider class to use (under src/prices/scrapers/)
+spider: "generic_retailer"     # Or a custom spider class name
+
+# Category URLs to crawl
+categories:
+  - url: "https://retailer.example.com/groceries/fresh-produce"
+    name: "Fresh Produce"
+  - url: "https://retailer.example.com/groceries/dairy"
+    name: "Dairy"
+
+# CSS selectors for product extraction
+selectors:
+  product_list: ".product-grid .product-item"
+  name: ".product-title::text"
+  price: ".price-current::text"
+  unit_price: ".price-per-unit::text"  # optional
+  image: "img::attr(src)"             # optional
+
+# Rate limiting
+request_delay: 1.0             # Seconds between requests
+concurrent_requests: 2

@@ -1,0 +1,18 @@
+# Global settings — paths and defaults shared across all pipelines.
+#
+# Pipelines read these at startup via core.config.load_settings().
+# Override per-environment by setting PO_SETTINGS_FILE=/path/to/custom.yaml
+
+data_dir: data/
+logs_dir: logs/
+outputs_dir: outputs/
+
+ancillary_data:
+  dir: data/ancillary_data/
+  worldbank:
+    gdp_per_capita: worldbank/gdp_per_capita.csv
+    population: worldbank/population.csv
+    subsidies: worldbank/subsidies.csv
+  imf:
+    subsidies_xlsb: imf/subsidies.xlsb
+    subsidies_xlsx: imf/subsidies.xlsx

@@ -1,0 +1,38 @@
+# Fuel price source configuration template.
+#
+# Copy this file to: src/fuel/configs/{region}/{country_slug}.yaml
+# Then write a matching fetcher at: src/fuel/fetchers/{region}/{country_slug}.py
+#
+# See docs/fuel/HOW_TO_ADD_NEW_FETCHER.md for the full guide.
+# See docs/fuel/YAML_CONFIG_REFERENCE.md for all available fields.
+
+country: Country Name          # Human-readable name (must match countries.yaml)
+iso3: XXX                      # ISO 3166-1 alpha-3 code
+currency: USD                  # ISO 4217 currency code
+
+# Products define what fuel types this country tracks.
+# Keys are internal product slugs; values describe the product.
+products:
+  diesel_standard:
+    family: diesel             # One of: gasoline, diesel, lpg, kerosene, cng, electricity_ev
+    grade: standard            # Qualifier within family
+    series_key: diesel_standard  # Unique key for time series
+
+  gasoline_regular:
+    family: gasoline
+    grade: regular
+    series_key: gasoline_regular
+
+# Sources define where data comes from.
+# Each source maps to a fetcher function.
+sources:
+  xx_source_name:
+    module: region.country_slug       # Python module path under src/fuel/fetchers/
+    function: fetch_source_name       # Function name in that module
+    url: https://example.gov/prices   # Source homepage (for documentation)
+    description: "Weekly fuel prices from the Ministry of Energy"
+
+    # Map raw product names (as they appear in source) to product keys above
+    products:
+      "Diesel":           diesel_standard
+      "Regular Gasoline": gasoline_regular

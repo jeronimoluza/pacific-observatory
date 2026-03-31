@@ -1,0 +1,38 @@
+# Region definitions — groups countries for CLI filtering and directory layout.
+#
+# Usage:
+#   po fuel collect --region pacific
+#   po init --region middle_east
+#
+# To add a region:
+#   1. Add an entry below
+#   2. Run: po init --region <name>
+#   3. Add country entries to countries.yaml
+#   4. Create pipeline configs in src/{pipeline}/configs/{region}/
+
+pacific:
+  name: Pacific Island Countries
+  description: Pacific Observatory core region — PICs, PNG, and neighboring economies
+  countries:
+    - australia
+    - cambodia
+    - china
+    - fiji
+    - indonesia
+    - japan
+    - korea
+    - lao_pdr
+    - malaysia
+    - myanmar
+    - new_zealand
+    - papua_new_guinea
+    - philippines
+    - samoa
+    - singapore
+    - solomon_islands
+    - thailand
+    - timor_leste
+    - tonga
+    - tuvalu
+    - vanuatu
+    - vietnam
