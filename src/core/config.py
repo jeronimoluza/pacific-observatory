@@ -70,9 +70,11 @@ def discover_pipeline_configs(
             for part in path.relative_to(pipeline_configs_dir).parts
         ):
             continue
-        if region and path.parent.name != region:
+        rel_parts = path.relative_to(pipeline_configs_dir).parts
+        # Structure: {region}/{country}/{source}.yaml or {region}/{source}.yaml
+        if region and (len(rel_parts) < 2 or rel_parts[0] != region):
             continue
-        if country and path.stem != country:
+        if country and not any(p == country for p in rel_parts[:-1]):
             continue
         yamls.append(path)
     return yamls
