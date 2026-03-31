@@ -2,6 +2,25 @@
 
 All notable changes to the template-repo branch are documented here.
 
+## 2026-03-31 — EPU incremental fixes, publish pipeline, Ukrainian keywords
+
+### Fixed
+- **EPU incremental mode: extended indices always empty** — `get_count_stats(calculate_extended=False)` in `_run_incremental_epu` meant breadth/intensity/pairwise columns were never computed for tail rows. Changed to `True`.
+- **EPU incremental mode: new sources silently excluded** — newspapers added after the initial full run (e.g., ukrinform with 9.9k articles) were missing from cached params and ignored. Now detects new sources and forces full recompute.
+- **`--rebuild` wrote only last 2 months** — `append_missing_months` was used unconditionally, discarding full history on rebuild. Full mode now writes complete DataFrame directly.
+- **Cutoff predating data range produced all-NaN indices** — default cutoff `2020-12-31` with Ukraine data starting 2021-11 meant empty standardization period. Now requires explicit `--cutoff` appropriate to data range.
+
+### Added
+- **`po text build --rebuild`** — CLI flag to force recalculation of params.json and cache, wired through cli.py → process.py → main.py
+- **`po text publish --country`** — CLI flag to filter dashboard generation by country
+- **`publish.py` fully wired** — loads topic attribution, topics EPU, and actors EPU data from `outputs/text/`, calls `generate_dashboard()` with correct arguments. `po text publish --country ukraine` now produces `small_dashboard_integrated.html`.
+- **Verbose build output** — per-source article counts and date ranges, mode indicator (rebuild/auto), elapsed time per country
+- **Ukrainian keywords: fuel_rationing, armed_conflicts** — added missing topic translations to `keywords/ukrainian/topics.json`
+
+### Verified
+- `po text build --country ukraine --rebuild --cutoff 2025-12-31` — 88k articles, 5 sources, full history 2021-11 to 2026-03-31, all indices populated
+- `po text publish --country ukraine` — generates `outputs/text/small_dashboard_integrated.html` (182KB)
+
 ## 2026-03-31 — Text pipeline migration + ECA/Ukraine
 
 ### Added

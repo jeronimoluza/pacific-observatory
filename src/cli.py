@@ -129,21 +129,28 @@ def text_collect(
     default=None,
     help="Cutoff date for EPU standardization (YYYY-MM-DD)",
 )
-def text_build(region, country, yes, cutoff):
+@click.option(
+    "--rebuild",
+    is_flag=True,
+    default=False,
+    help="Force recalculation of params.json and cache.",
+)
+def text_build(region, country, yes, cutoff, rebuild):
     """Run EPU index calculation and analysis."""
     from text.process import run_build
 
-    run_build(region=region, country=country, yes=yes, cutoff=cutoff)
+    run_build(region=region, country=country, yes=yes, cutoff=cutoff, rebuild=rebuild)
 
 
 @text.command("publish")
 @_region_opt
+@_country_opt
 @_yes_opt
-def text_publish(region, yes):
+def text_publish(region, country, yes):
     """Generate EPU dashboards and charts."""
     from text.publish import run_publish
 
-    run_publish(region=region, yes=yes)
+    run_publish(region=region, country=country, yes=yes)
 
 
 # ── Prices subcommands ──────────────────────────────────────────────

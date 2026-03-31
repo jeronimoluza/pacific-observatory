@@ -466,7 +466,7 @@ def _run_incremental_epu(
     # ── Base EPU: tail-only articles ───────────────────────────────────
     e_base = EPU(news_dirs, cutoff=cutoff, daily_tail_start=daily_tail_start)
     e_base.get_epu_category(subset_condition=combined_condition, preloaded=preloaded)
-    e_base.get_count_stats(calculate_extended=False)
+    e_base.get_count_stats(calculate_extended=True)
 
     # If no tail articles, epu_stats is empty; inject a skeleton daily spine so
     # that daily rows are still written for the current month (with zeros/NaN).
@@ -723,10 +723,19 @@ def _build_outputs(
     country_name,
     all_topics,
     all_actors,
+    full_write=False,
 ):
     """Build and write all output CSVs from a computed e_base + topic_epus + actor_epus + ug_counts."""
     epu_folder = OUTPUT_DIR / country_name / "epu"
     epu_folder.mkdir(parents=True, exist_ok=True)
+
+    def _write_csv(path, df):
+        """Write full DataFrame on rebuild, or append incrementally."""
+        if full_write:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            df.to_csv(path, index=False, encoding="utf-8")
+        else:
+            append_missing_months(path, df, daily_tail_start=daily_tail_start)
 
     # ── epu.csv ────────────────────────────────────────────────────────
     result = e_base.epu_stats[["date", "ym", "news_total"]].copy()
@@ -745,9 +754,7 @@ def _build_outputs(
         result[f"{pair}_index"] = (
             e_base.epu_stats[col_p] if col_p in e_base.epu_stats.columns else np.nan
         )
-    append_missing_months(
-        epu_folder / "epu.csv", result, daily_tail_start=daily_tail_start
-    )
+    _write_csv(epu_folder / "epu.csv", result)
 
     # ── topics_epu.csv ─────────────────────────────────────────────────
     topic_epu = e_base.epu_stats[["date", "ym"]].copy()
@@ -762,9 +769,7 @@ def _build_outputs(
             how="left",
         )
         topic_epu[f"EPU_{topic_key}_index"] = aligned[f"EPU_{topic_key}_index"].values
-    append_missing_months(
-        epu_folder / "topics_epu.csv", topic_epu, daily_tail_start=daily_tail_start
-    )
+    _write_csv(epu_folder / "topics_epu.csv", topic_epu)
 
     # ── actors_epu.csv ─────────────────────────────────────────────────
     actor_epu = e_base.epu_stats[["date", "ym"]].copy()
@@ -778,9 +783,7 @@ def _build_outputs(
             how="left",
         )
         actor_epu[f"EPU_{actor_key}_index"] = aligned[f"EPU_{actor_key}_index"].values
-    append_missing_months(
-        epu_folder / "actors_epu.csv", actor_epu, daily_tail_start=daily_tail_start
-    )
+    _write_csv(epu_folder / "actors_epu.csv", actor_epu)
 
     # ── uncertainty_attribution ────────────────────────────────────────
     sources = [col.replace("_body_count", "") for col in e_base.news_cols]
@@ -830,11 +833,7 @@ def _build_outputs(
         attr_out = attr_df[[c for c in out_cols if c in attr_df.columns]]
         attr_folder = OUTPUT_DIR / country_name / "uncertainty_attribution"
         attr_folder.mkdir(parents=True, exist_ok=True)
-        append_missing_months(
-            attr_folder / f"{output_name}.csv",
-            attr_out,
-            daily_tail_start=daily_tail_start,
-        )
+        _write_csv(attr_folder / f"{output_name}.csv", attr_out)
 
     return calc_topics_idx, calc_actors_idx
 
@@ -865,6 +864,33 @@ def process_country(
     daily_tail_start = today.replace(day=1).strftime("%Y-%m-%d")
     all_topics = load_all_groups("topics")
     all_actors = load_all_groups("actors")
+
+    # ── Summary: article counts and date range per source ─────────────────
+    total_articles = 0
+    min_date_all, max_date_all = None, None
+    for fp in news_dirs:
+        try:
+            dates = pd.read_csv(fp, usecols=["date"], encoding="utf-8")["date"]
+            dates = pd.to_datetime(dates, format="mixed", errors="coerce").dropna()
+            n = len(dates)
+            total_articles += n
+            source_name = fp.parent.name
+            if n > 0:
+                lo, hi = dates.min(), dates.max()
+                print(f"  {source_name}: {n} articles ({lo.date()} to {hi.date()})")
+                min_date_all = lo if min_date_all is None else min(min_date_all, lo)
+                max_date_all = hi if max_date_all is None else max(max_date_all, hi)
+            else:
+                print(f"  {source_name}: 0 articles")
+        except Exception:
+            print(f"  {fp.parent.name}: unable to read")
+    if min_date_all is not None:
+        print(
+            f"  total: {total_articles} articles "
+            f"({min_date_all.date()} to {max_date_all.date()})"
+        )
+    else:
+        print(f"  total: {total_articles} articles")
 
     # ── Redo branch: selectively recompute specific topics/actors ──────────
     if redo_topics or redo_actors:
@@ -965,6 +991,24 @@ def process_country(
 
     use_cache = params_path.exists() and cache_path.exists() and not recalculate_params
 
+    # Detect new newspaper sources not present in cached params → force full recompute.
+    if use_cache:
+        params_check = json.loads(params_path.read_text(encoding="utf-8"))
+        cached_sources = set(params_check.get("sources", []))
+        # Derive current sources the same way EPU.get_epu_category does
+        current_sources = set()
+        for fp in news_dirs:
+            _country = fp.parent.parent.name
+            _newspaper = fp.parent.name.replace(_country, "").strip("_")
+            current_sources.add(f"{_country}_{_newspaper}")
+        new_sources = current_sources - cached_sources
+        if new_sources:
+            print(
+                f"  [cache] new sources detected: {', '.join(sorted(new_sources))}; "
+                "forcing full recompute"
+            )
+            use_cache = False
+
     # Optional backfill when new topics or actors are added to the keyword taxonomy.
     missing_topic_epus_full = {}
     missing_actor_epus_full = {}
@@ -1063,7 +1107,7 @@ def process_country(
             print(f"  epu_stats_cache.csv updated with {len(missing_actors)} actors")
 
     if use_cache:
-        print("  [incremental] loading cache...")
+        print(f"  [incremental] updating {daily_tail_start} onwards from cache...")
         # Reload params in case we just updated it.
         params = json.loads(params_path.read_text(encoding="utf-8"))
         cache = pd.read_csv(cache_path, encoding="utf-8", low_memory=False)
@@ -1086,7 +1130,10 @@ def process_country(
         if missing_actor_epus_full:
             actor_epus.update(missing_actor_epus_full)
     else:
-        print("  [full] running full EPU computation...")
+        print(
+            f"  [full] running full EPU computation over {total_articles} articles — "
+            "this may take a few minutes..."
+        )
         e_base, topic_epus, actor_epus, ug_counts_all = _run_full_epu(
             news_dirs,
             cutoff,
@@ -1106,6 +1153,7 @@ def process_country(
         country_name,
         all_topics,
         all_actors,
+        full_write=not use_cache,
     )
 
     # ── Write params.json + cache (full mode only) ─────────────────────
@@ -1218,9 +1266,15 @@ def run_analysis(
     total = len(country_dirs)
     start_time = time.time()
 
+    country_names = ", ".join(d.name for d in country_dirs)
+    mode_str = "rebuild" if recalculate_params else "auto"
     print(f"\n{'=' * 60}")
-    print(f"EPU Analysis - Processing {total} countries")
-    print(f"{'=' * 60}\n")
+    print(
+        f"EPU Analysis — {total} {'country' if total == 1 else 'countries'} ({mode_str})"
+    )
+    print(f"  Countries: {country_names}")
+    print(f"  Cutoff: {cutoff}")
+    print(f"{'=' * 60}")
 
     for i, country in enumerate(country_dirs):
         country_start = time.time()
@@ -1230,9 +1284,10 @@ def run_analysis(
             remaining = (total - i) * avg
             eta_str = f"ETA: {int(remaining // 60)}m {int(remaining % 60)}s"
         else:
-            eta_str = "ETA: calculating..."
+            eta_str = ""
 
-        print(f"\n[{i + 1}/{total}] {country.name} - {eta_str}")
+        eta_suffix = f" — {eta_str}" if eta_str else ""
+        print(f"\n[{i + 1}/{total}] {country.name}{eta_suffix}")
         try:
             process_country(
                 country,
@@ -1240,7 +1295,8 @@ def run_analysis(
                 subset_condition,
                 recalculate_params=recalculate_params,
             )
-            print("  done")
+            elapsed_country = time.time() - country_start
+            print(f"  done ({elapsed_country:.1f}s)")
         except Exception as e:
             print(f"  FAILED: {e}")
             print(f"    Skipping {country.name} due to error")
