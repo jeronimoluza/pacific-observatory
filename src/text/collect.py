@@ -138,9 +138,13 @@ def run_collect(
         try:
             scraper = create_scraper_from_file(str(entry["config_path"]))
 
-            # Override max_pages/max_articles if CLI flags set
+            # Override max_pages/max_articles if CLI flags set.
+            # Must also patch the listing_strategy since it captured
+            # max_pages at construction time from config.
             if max_pages is not None:
                 scraper.max_pages = max_pages
+                if hasattr(scraper, "listing_strategy") and scraper.listing_strategy:
+                    scraper.listing_strategy.max_pages = max_pages
             if max_articles is not None:
                 scraper.max_articles = max_articles
 
