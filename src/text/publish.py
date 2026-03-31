@@ -1,4 +1,27 @@
-"""Text publish stage: generate EPU dashboards and charts.
+"""Text publish stage: generate EPU dashboards and charts."""
 
-Stub — will be migrated from src/text/plotting/
-"""
+import click
+
+
+def run_publish(region=None, yes=False):
+    """Generate EPU dashboards."""
+    click.echo()
+    click.echo("  Text publish (dashboards)")
+    click.echo("  " + "-" * 40)
+    if region:
+        click.echo(f"  Region: {region}")
+    else:
+        click.echo("  All regions")
+    click.echo()
+
+    if not yes:
+        click.confirm("  Proceed?", abort=True)
+
+    try:
+        from text.plotting.small_dashboard_integrated import generate_dashboard
+
+        generate_dashboard()
+    except ImportError:
+        click.echo("  Plotting module not yet migrated. Skipping.")
+    except Exception as e:
+        click.echo(f"  Error: {e}")

@@ -96,9 +96,23 @@ def fuel_publish(region, yes):
 @_source_opt
 @_yes_opt
 @_dry_run_opt
-def text_collect(region, country, source, yes, dry_run):
+@click.option("--max-pages", type=int, default=None, help="Limit pages per newspaper")
+@click.option(
+    "--max-articles", type=int, default=None, help="Limit articles per newspaper"
+)
+def text_collect(region, country, source, yes, dry_run, max_pages, max_articles):
     """Scrape new articles from configured newspapers."""
-    click.echo("text collect: not yet migrated")
+    from text.collect import run_collect
+
+    run_collect(
+        region=region,
+        country=country,
+        source=source,
+        max_pages=max_pages,
+        max_articles=max_articles,
+        dry_run=dry_run,
+        yes=yes,
+    )
 
 
 @text.command("build")
@@ -107,7 +121,9 @@ def text_collect(region, country, source, yes, dry_run):
 @_yes_opt
 def text_build(region, country, yes):
     """Run EPU index calculation and analysis."""
-    click.echo("text build: not yet migrated")
+    from text.process import run_build
+
+    run_build(region=region, country=country, yes=yes)
 
 
 @text.command("publish")
@@ -115,7 +131,9 @@ def text_build(region, country, yes):
 @_yes_opt
 def text_publish(region, yes):
     """Generate EPU dashboards and charts."""
-    click.echo("text publish: not yet migrated")
+    from text.publish import run_publish
+
+    run_publish(region=region, yes=yes)
 
 
 # ── Prices subcommands ──────────────────────────────────────────────
