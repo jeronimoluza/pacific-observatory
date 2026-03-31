@@ -57,6 +57,10 @@ __all__ = [
     "clean_solomon_times_tags",
     "clean_matangi_url",
     "filter_abc_au_articles",
+    # Ukraine cleaners
+    "clean_ukrainska_pravda_date",
+    "clean_ukrainska_pravda_eng_date",
+    "clean_spaced_html",
     # Legacy compatibility
     "CLEANING_FUNCTIONS",
 ]
@@ -158,6 +162,11 @@ from .solomon_islands import (  # noqa: E402
 from .tonga import clean_matangi_url  # noqa: E402
 from .australia import filter_abc_au_articles  # noqa: E402
 from .myanmar import clean_frontier_myanmar_body  # noqa: E402
+from .ukraine import (  # noqa: E402
+    clean_ukrainska_pravda_date,
+    clean_ukrainska_pravda_eng_date,
+    clean_spaced_html,
+)
 
 # Legacy compatibility: Provide CLEANING_FUNCTIONS dict
 CLEANING_FUNCTIONS = get_all_registered_functions()
