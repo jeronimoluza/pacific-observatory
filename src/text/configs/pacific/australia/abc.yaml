@@ -1,0 +1,52 @@
+# ABC AU (Australia) Australia Configuration
+# Uses the ABC topicstories API for comprehensive Australia coverage.
+
+name: "ABC Australia"
+country: "australia"
+base_url: "https://www.abc.net.au"
+
+listing:
+  type: "api"
+  pagination_type: "offset"
+  offset_start: 0
+  offset_step: 100
+  url_template: "https://www.abc.net.au/news-web/api/loader/topicstories?name=PaginationArticles&documentId=6864&offset={offset}&size={size}"
+  json_paths:
+    collection: "paginated.collection"
+    total: "paginated.pagination.total"
+    url: "link"
+    title: "title"
+    date: "dates.firstPublished"
+    contentUri: "contentUri"
+
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body:
+      - '.ArticleRender_article__7i2EW p'
+      - '#content p'
+    date:
+      - "time::attr(datetime)"
+      - "[data-component='Dateline'] time::text"
+    tags: '[data-component="RelatedTopics"] a::text'
+
+cleaning:
+  record_filter: "filter_abc_au_articles"
+  url: "clean_url"
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null
+
+# Site-specific notes:
+# - Uses document ID 6864 from https://www.abc.net.au/news/topic/australia

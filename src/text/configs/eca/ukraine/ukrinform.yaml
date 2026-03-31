@@ -1,0 +1,44 @@
+# Ukrinform Configuration
+
+name: "Ukrinform"
+country: "ukraine"
+base_url: "https://www.ukrinform.net"
+language: "en"
+
+listing:
+  type: "pagination"
+  start_url: "https://www.ukrinform.net/block-lastnews"
+  url_template: "https://www.ukrinform.net/block-lastnews?page={num}"
+  start_page: 2
+  batch_size: 10
+
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Accept-Language: "en-US,en;q=0.9"
+
+selectors:
+  thumbnail:
+    container: "div[class='otherNews'] .restList > .rest, div[class='otherNews'] .restList > article"
+    title:
+      - "dl dd div a::text"
+      - "section h2 a::text"
+    url:
+      - "dl dd div a::attr(href)"
+      - "section h2 a::attr(href)"
+  article:
+    body: "div.newsText p"
+    date: ".newsDate time::attr(datetime)"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null
+stop_date: "2025-12-01"

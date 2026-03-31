@@ -1,0 +1,43 @@
+# Pasaxon Configuration
+
+name: "Pasaxon"
+country: "lao"
+base_url: "https://pasaxon.org.la/"
+language: lao
+
+# Listing discovery configuration
+listing:
+  type: "pagination"
+  url_template: "https://pasaxon.org.la/khaosetthakit.html?page={num}"
+  start_page: 0
+  batch_size: 10
+
+# Client configuration
+client: "http"
+concurrency: 10
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: div.timeline > article.story
+    title: "h2.story__heading::text"
+    url: "h2.story__heading a::attr(href)"
+  article:
+    date: meta[property="article:published_time"]::attr(content)
+    body:
+      - div#abody p
+      - div#abody
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null

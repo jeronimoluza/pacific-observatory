@@ -1,0 +1,42 @@
+# Wantok Niuspepa Configuration
+
+name: "Wantok"
+country: "papua_new_guinea"
+base_url: "https://wantokniuspepa.com/"
+language: tok_pisin
+
+# Listing discovery configuration
+listing:
+  type: "pagination"
+  url_template: "https://wantokniuspepa.com/index.php/wantok/nius?start={num}"
+  start_page: 0
+  step: 8
+  batch_size: 10
+
+# Client configuration
+client: "http"
+concurrency: 20
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: div[itemprop='blogPost']
+    title: div.page-header h2[itemprop='name']::text
+    url: p.readmore a::attr(href)
+    date: dd.published time::attr(datetime)
+  article:
+    body: div[itemprop='articleBody'] p
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null

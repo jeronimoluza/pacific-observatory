@@ -1,0 +1,46 @@
+# CamboJA News (Cambodia) Configuration
+# Uses WordPress REST API (wp/v2) for listing discovery and content extraction
+
+name: "CamboJA News"
+country: "cambodia"
+base_url: "https://cambojanews.com"
+language: "en"
+
+listing:
+  type: "api"
+  url_template: "https://cambojanews.com/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,title,content,link"
+  pagination_type: "page"
+  page_start: 1
+  page_step: 1
+  json_paths:
+    id: "id"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+    url: "link"
+
+client: "http"
+concurrency: 10
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+    date: "filler"
+  article:
+    body: "filler"
+    tags: "filler"
+
+cleaning:
+  date: "handle_mixed_dates"
+  body: "clean_wp_html_body"
+
+max_pages: null
+max_articles: null

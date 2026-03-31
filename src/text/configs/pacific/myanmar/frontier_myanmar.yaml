@@ -1,0 +1,50 @@
+# Frontier Myanmar (Myanmar) Configuration
+# Source: https://www.frontiermyanmar.net/en/
+# Strategy: WordPress REST API (teaser via excerpt.rendered; do not bypass paywall)
+
+name: "Frontier Myanmar"
+country: "myanmar"
+base_url: "https://www.frontiermyanmar.net"
+language: "en"
+
+listing:
+  type: "api"
+  pagination_type: "page"
+  page_start: 1
+  page_step: 1
+  # WordPress REST API; keep fields minimal for performance
+  url_template: "https://www.frontiermyanmar.net/en/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title,excerpt"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    # Teaser-only body; may include PMPro boilerplate that we remove via cleaning
+    body: "excerpt.rendered"
+
+client: "http"
+concurrency: 5
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    # Not used for API strategy - data comes from JSON
+    container: "filler"
+    title: "filler"
+    url: "filler"
+    date: filler
+  article:
+    # Not used when API provides `body` (prefetch mode)
+    body: "filler"
+    tags: "filler"
+
+cleaning:
+  date: "handle_mixed_dates"
+  body: "clean_frontier_myanmar_body"
+
+max_pages: null
+max_articles: null
