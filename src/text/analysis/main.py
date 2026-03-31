@@ -178,13 +178,19 @@ def _get_country_dirs(exclude_countries: set[str] | None = None) -> list[Path]:
     excluded = {name.lower() for name in EXCLUDED_COUNTRIES}
     if exclude_countries:
         excluded |= {name.lower() for name in exclude_countries}
-    return sorted(
-        [
-            entry
-            for entry in DATA_ROOT.iterdir()
-            if entry.is_dir() and entry.name.lower() not in excluded
-        ]
-    )
+
+    # Data layout: data/text/{region}/{country}/{newspaper}/
+    # Walk region subdirectories to find country dirs.
+    country_dirs = []
+    if not DATA_ROOT.exists():
+        return country_dirs
+    for region_dir in sorted(DATA_ROOT.iterdir()):
+        if not region_dir.is_dir() or region_dir.name.startswith((".", "_", "cache")):
+            continue
+        for country_dir in sorted(region_dir.iterdir()):
+            if country_dir.is_dir() and country_dir.name.lower() not in excluded:
+                country_dirs.append(country_dir)
+    return country_dirs
 
 
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "text"
@@ -1174,6 +1180,73 @@ def process_country(
 
         cache_df.to_csv(cache_path, index=False, encoding="utf-8")
         print(f"  epu_stats_cache.csv written ({len(cache_df)} rows)")
+
+
+def run_analysis(
+    countries: list[str] | None = None,
+    cutoff: str | None = None,
+    subset_condition: str | None = None,
+    recalculate_params: bool = False,
+):
+    """Run EPU analysis for a list of countries.
+
+    Parameters
+    ----------
+    countries : list of country name strings (e.g. ["ukraine"]). If None, all countries.
+    cutoff : date string for EPU standardization (default "2020-12-31").
+    subset_condition : pandas query filter (default "date >= '2015-01-01' and date <= '{today}'").
+    recalculate_params : force recalculation of params.json.
+    """
+    if cutoff is None:
+        cutoff = "2020-12-31"
+    if subset_condition is None:
+        today = pd.Timestamp.today().strftime("%Y-%m-%d")
+        subset_condition = f"date >= '2015-01-01' and date <= '{today}'"
+
+    country_dirs = _get_country_dirs()
+    if countries:
+        requested = {c.lower() for c in countries}
+        country_dirs = [d for d in country_dirs if d.name.lower() in requested]
+        if not country_dirs:
+            print(f"No matching country directories for: {', '.join(countries)}")
+            print(f"Available: {', '.join(d.name for d in _get_country_dirs())}")
+            return
+
+    print("\nChecking keyword translations...")
+    asyncio.run(translate_keywords())
+
+    total = len(country_dirs)
+    start_time = time.time()
+
+    print(f"\n{'=' * 60}")
+    print(f"EPU Analysis - Processing {total} countries")
+    print(f"{'=' * 60}\n")
+
+    for i, country in enumerate(country_dirs):
+        country_start = time.time()
+        elapsed = time.time() - start_time
+        if i > 0:
+            avg = elapsed / i
+            remaining = (total - i) * avg
+            eta_str = f"ETA: {int(remaining // 60)}m {int(remaining % 60)}s"
+        else:
+            eta_str = "ETA: calculating..."
+
+        print(f"\n[{i + 1}/{total}] {country.name} - {eta_str}")
+        try:
+            process_country(
+                country,
+                cutoff,
+                subset_condition,
+                recalculate_params=recalculate_params,
+            )
+            print("  done")
+        except Exception as e:
+            print(f"  FAILED: {e}")
+            print(f"    Skipping {country.name} due to error")
+            continue
+
+        print(f"  {time.time() - country_start:.1f}s")
 
 
 if __name__ == "__main__":

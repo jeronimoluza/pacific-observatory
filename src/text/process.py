@@ -9,7 +9,7 @@ from core.config import discover_pipeline_configs
 CONFIGS_DIR = Path(__file__).resolve().parent / "configs"
 
 
-def run_build(region=None, country=None, yes=False):
+def run_build(region=None, country=None, yes=False, cutoff=None):
     """Run EPU analysis for matching countries."""
     countries = set()
     configs = discover_pipeline_configs(CONFIGS_DIR, region=region, country=country)
@@ -28,6 +28,8 @@ def run_build(region=None, country=None, yes=False):
     click.echo("  Text build (EPU analysis)")
     click.echo("  " + "-" * 40)
     click.echo(f"  Countries: {', '.join(sorted(countries))}")
+    if cutoff:
+        click.echo(f"  Cutoff: {cutoff}")
     click.echo()
 
     if not yes:
@@ -36,7 +38,7 @@ def run_build(region=None, country=None, yes=False):
     try:
         from text.analysis.main import run_analysis
 
-        run_analysis(countries=list(countries))
+        run_analysis(countries=list(countries), cutoff=cutoff)
     except ImportError:
         click.echo("  Analysis module not yet migrated. Skipping.")
     except Exception as e:

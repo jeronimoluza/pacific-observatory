@@ -30,7 +30,11 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 package-mode = true
-packages = [{include = "src"}]
+packages = [
+    {include = "cli.py", from = "src"},
+    {include = "core", from = "src"},
+    {include = "text", from = "src"},
+]
 
 [dependency-groups]
 scraping = [

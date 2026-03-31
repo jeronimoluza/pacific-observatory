@@ -100,7 +100,10 @@ def fuel_publish(region, yes):
 @click.option(
     "--max-articles", type=int, default=None, help="Limit articles per newspaper"
 )
-def text_collect(region, country, source, yes, dry_run, max_pages, max_articles):
+@click.option("--rebuild", is_flag=True, help="Full re-scrape (bypass URL dedup)")
+def text_collect(
+    region, country, source, yes, dry_run, max_pages, max_articles, rebuild
+):
     """Scrape new articles from configured newspapers."""
     from text.collect import run_collect
 
@@ -112,6 +115,7 @@ def text_collect(region, country, source, yes, dry_run, max_pages, max_articles)
         max_articles=max_articles,
         dry_run=dry_run,
         yes=yes,
+        rebuild=rebuild,
     )
 
 
@@ -119,11 +123,17 @@ def text_collect(region, country, source, yes, dry_run, max_pages, max_articles)
 @_region_opt
 @_country_opt
 @_yes_opt
-def text_build(region, country, yes):
+@click.option(
+    "--cutoff",
+    type=str,
+    default=None,
+    help="Cutoff date for EPU standardization (YYYY-MM-DD)",
+)
+def text_build(region, country, yes, cutoff):
     """Run EPU index calculation and analysis."""
     from text.process import run_build
 
-    run_build(region=region, country=country, yes=yes)
+    run_build(region=region, country=country, yes=yes, cutoff=cutoff)
 
 
 @text.command("publish")

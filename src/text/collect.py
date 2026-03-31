@@ -5,10 +5,11 @@ import os
 from pathlib import Path
 
 import click
+import pandas as pd
 
 from core.config import discover_pipeline_configs
 from core.logging import setup_logger
-from core.state import read_state, write_state, set_checked, assess_source
+from core.state import read_state, write_state, set_checked
 
 logger = logging.getLogger(__name__)
 
@@ -18,27 +19,39 @@ DATA_BASE = Path("data/text")
 LOGS_BASE = Path("logs")
 
 
+def _source_stats(news_csv: Path) -> tuple[str, str]:
+    """Read article count and max date from a news.csv file."""
+    if not news_csv.exists():
+        return "—", "—"
+    try:
+        df = pd.read_csv(news_csv, usecols=["date"], dtype=str)
+        if df.empty:
+            return "0", "—"
+        count = str(len(df))
+        last = df["date"].dropna().max() or "—"
+        # Truncate to date portion if it's a full timestamp
+        if isinstance(last, str) and len(last) > 10:
+            last = last[:10]
+        return count, last
+    except Exception:
+        return "?", "?"
+
+
 def _build_plan(region=None, country=None, source=None):
-    """Discover configs and build execution plan with staleness info."""
+    """Discover configs and build execution plan with data stats."""
     configs = discover_pipeline_configs(CONFIGS_DIR, region=region, country=country)
     if source:
         configs = [c for c in configs if c.stem == source]
 
-    state = read_state(STATE_FILE)
     plan = []
     for config_path in configs:
         parts = config_path.relative_to(CONFIGS_DIR).parts
         cfg_region = parts[0] if len(parts) >= 3 else "unknown"
         cfg_country = parts[1] if len(parts) >= 3 else parts[0]
         newspaper = config_path.stem
-        source_key = newspaper
 
-        entry_state = state.get(source_key, {})
-        status = assess_source(
-            last_data_date=None,
-            note=entry_state.get("note"),
-        )
-        last_date = entry_state.get("last_data_date") or "never"
+        news_csv = DATA_BASE / cfg_region / cfg_country / newspaper / "news.csv"
+        article_count, last_date = _source_stats(news_csv)
 
         plan.append(
             {
@@ -46,38 +59,45 @@ def _build_plan(region=None, country=None, source=None):
                 "region": cfg_region,
                 "country": cfg_country,
                 "newspaper": newspaper,
-                "source_key": source_key,
-                "last_data_date": last_date,
-                "status": status,
+                "source_key": newspaper,
+                "article_count": article_count,
+                "last_date": last_date,
             }
         )
     return plan
 
 
-def display_plan(plan, max_pages=None, max_articles=None):
+def display_plan(plan, max_pages=None, max_articles=None, rebuild=False, region=None):
     """Show what collect will do."""
     if not plan:
         click.echo("No configs found matching filters.")
         return
 
+    # Descriptive header
+    scope = region or "all"
+    parts = [f"{len(plan)} newspapers", "newest -> oldest"]
+    if max_pages:
+        parts.append(f"{max_pages} pages max")
+    if max_articles:
+        parts.append(f"{max_articles} articles max")
+    header = f"Collecting {scope} articles ({', '.join(parts)})"
+
     click.echo()
-    click.echo("  Text collection")
-    click.echo("  " + "-" * 60)
-    click.echo(f"  {'Newspaper':<30} {'Country':<15} {'Latest':<12} Status")
-    click.echo("  " + "-" * 60)
+    click.echo(f"  {header}")
+    if rebuild:
+        click.echo("  WARNING: --rebuild will re-scrape and overwrite existing data")
+    click.echo("  " + "-" * 68)
+    click.echo(
+        f"  {'Newspaper':<30} {'Country':<15} {'Articles':>8}   {'Last date':<10}"
+    )
+    click.echo("  " + "-" * 68)
     for entry in plan:
         click.echo(
             f"  {entry['newspaper']:<30} "
             f"{entry['country']:<15} "
-            f"{entry['last_data_date']:<12} "
-            f"{entry['status']}"
+            f"{entry['article_count']:>8}   "
+            f"{entry['last_date']:<10}"
         )
-    click.echo()
-    click.echo(f"  {len(plan)} newspaper(s)")
-    if max_pages:
-        click.echo(f"  Limited to {max_pages} pages per newspaper")
-    if max_articles:
-        click.echo(f"  Limited to {max_articles} articles per newspaper")
     click.echo()
 
 
@@ -89,10 +109,17 @@ def run_collect(
     max_articles=None,
     dry_run=False,
     yes=False,
+    rebuild=False,
 ):
     """Run the text collect stage."""
     plan = _build_plan(region=region, country=country, source=source)
-    display_plan(plan, max_pages=max_pages, max_articles=max_articles)
+    display_plan(
+        plan,
+        max_pages=max_pages,
+        max_articles=max_articles,
+        rebuild=rebuild,
+        region=region,
+    )
 
     if not plan:
         return
@@ -148,8 +175,17 @@ def run_collect(
             if max_articles is not None:
                 scraper.max_articles = max_articles
 
-            source_logger.info("Starting collect for %s (%s/%s)", newspaper, rgn, ctry)
-            asyncio.run(scraper.run_default())
+            source_logger.info(
+                "Starting %s for %s (%s/%s)",
+                "rebuild" if rebuild else "collect",
+                newspaper,
+                rgn,
+                ctry,
+            )
+            if rebuild:
+                asyncio.run(scraper.run_full_scrape())
+            else:
+                asyncio.run(scraper.run_default())
 
             set_checked(state, entry["source_key"])
             source_logger.info("Done: %s", newspaper)

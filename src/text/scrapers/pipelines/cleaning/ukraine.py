@@ -23,6 +23,9 @@ def _clean_ukrainska_pravda_date(
 
     if date_str:
         normalized = " ".join(str(date_str).split())
+        # Strip author prefix: "Author Name— 31 March, 19:25" → "31 March, 19:25"
+        if "—" in normalized:
+            normalized = normalized.split("—", 1)[-1].strip()
         cleaned = handle_mixed_dates(normalized)
         if cleaned:
             return cleaned

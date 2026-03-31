@@ -390,6 +390,10 @@ class EPU:
         Returns:
             DataFrame with extended count columns grouped by 'ym'.
         """
+        # Skip empty files (0-row DataFrames lose columns on boolean indexing)
+        if file.empty:
+            return pd.DataFrame(columns=["ym"])
+
         # Create pairwise boolean columns
         file = file.copy()
         file["eu"] = file["econ"] & file["uncertain"]

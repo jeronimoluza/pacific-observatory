@@ -8,6 +8,7 @@ The package uses a registry system to auto-register cleaning functions, allowing
 dynamic lookup by name.
 """
 
+import inspect
 import logging
 from typing import Any, Optional
 
@@ -96,27 +97,21 @@ def apply_cleaning(
             cleaning_func = get_cleaning_func(function_name)
             if cleaning_func:
                 try:
-                    # Special handling for functions that need additional context
-                    if function_name == "clean_url" and base_url:
-                        cleaned_data[field_name] = cleaning_func(
-                            cleaned_data[field_name], base_url
-                        )
-                    elif function_name == "clean_solomon_times_date":
-                        # Pass page URL context for Solomon Times date extraction
-                        cleaned_data[field_name] = cleaning_func(
-                            cleaned_data[field_name],
-                            page_url=page_url,
-                            base_url=base_url,
-                            **kwargs,
-                        )
-                    elif function_name == "clean_matangi_url":
-                        cleaned_data[field_name] = cleaning_func(
-                            cleaned_data[field_name], base_url=base_url
-                        )
-                    else:
-                        cleaned_data[field_name] = cleaning_func(
-                            cleaned_data[field_name]
-                        )
+                    # Build context kwargs based on what the function accepts
+                    sig = inspect.signature(cleaning_func)
+                    params = sig.parameters
+                    extra = {}
+                    if "page_url" in params and page_url is not None:
+                        extra["page_url"] = page_url
+                    if "base_url" in params and base_url is not None:
+                        extra["base_url"] = base_url
+                    if any(
+                        p.kind == inspect.Parameter.VAR_KEYWORD for p in params.values()
+                    ):
+                        extra.update(kwargs)
+                    cleaned_data[field_name] = cleaning_func(
+                        cleaned_data[field_name], **extra
+                    )
                 except Exception as e:
                     logger.error(
                         f"Error applying cleaning function '{function_name}' to field '{field_name}': {e}"
