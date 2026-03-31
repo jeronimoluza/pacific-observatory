@@ -1,17 +1,21 @@
 """Text collect stage: scrape new articles from configured newspapers."""
 
 import logging
+import os
 from pathlib import Path
 
 import click
 
 from core.config import discover_pipeline_configs
+from core.logging import setup_logger
 from core.state import read_state, write_state, set_checked, assess_source
 
 logger = logging.getLogger(__name__)
 
 CONFIGS_DIR = Path(__file__).resolve().parent / "configs"
 STATE_FILE = Path("data/text/.state.json")
+DATA_BASE = Path("data/text")
+LOGS_BASE = Path("logs")
 
 
 def _build_plan(region=None, country=None, source=None):
@@ -34,7 +38,7 @@ def _build_plan(region=None, country=None, source=None):
             last_data_date=None,
             note=entry_state.get("note"),
         )
-        last_date = entry_state.get("last_data_date", "never")
+        last_date = entry_state.get("last_data_date") or "never"
 
         plan.append(
             {
@@ -113,7 +117,23 @@ def run_collect(
 
     for entry in plan:
         newspaper = entry["newspaper"]
-        click.echo(f"\n  --- {newspaper} ({entry['country']}) ---")
+        rgn = entry["region"]
+        ctry = entry["country"]
+        click.echo(f"\n  --- {newspaper} ({ctry}) ---")
+
+        # Set up per-source logging: logs/text/{region}/{country}/{newspaper}/
+        source_logger = setup_logger(
+            pipeline="text",
+            region=rgn,
+            country=ctry,
+            source=newspaper,
+            logs_dir=LOGS_BASE,
+        )
+
+        # Set data path: data/text/{region}/{country}/{newspaper}/
+        # CSVStorage reads DATA_FOLDER_PATH env var for its base dir
+        region_data_dir = str(DATA_BASE / rgn)
+        os.environ["DATA_FOLDER_PATH"] = region_data_dir
 
         try:
             scraper = create_scraper_from_file(str(entry["config_path"]))
@@ -124,13 +144,15 @@ def run_collect(
             if max_articles is not None:
                 scraper.max_articles = max_articles
 
-            asyncio.run(scraper.run())
+            source_logger.info("Starting collect for %s (%s/%s)", newspaper, rgn, ctry)
+            asyncio.run(scraper.run_default())
 
             set_checked(state, entry["source_key"])
+            source_logger.info("Done: %s", newspaper)
             click.echo(f"  Done: {newspaper}")
 
         except Exception as e:
-            logger.exception("Failed: %s", newspaper)
+            source_logger.exception("Failed: %s", newspaper)
             click.echo(f"  Failed: {newspaper} -- {e}")
             set_checked(state, entry["source_key"])
 
