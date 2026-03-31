@@ -1,0 +1,52 @@
+# Kompas Configuration
+
+name: "Kompas"
+country: "indonesia"
+base_url: "https://kompas.com/"
+language: "indo"
+
+# Listing discovery configuration - using archive strategy for date-based URLs
+listing:
+  type: "paginated_archive"
+  start_url: "https://indeks.kompas.com/?site=nasional&date={year}-{month}-{day}"
+  url_template: "https://indeks.kompas.com/?site=nasional&date={year}-{month}-{day}&page={num}"
+  start_date: "2013-05-30"
+  date_format: "daily"    # Generate URLs for each day
+  batch_size: 10
+  start_page: 2
+
+# Client configuration
+client: "http"  # Use HTTP client (not browser-based)
+concurrency: 2  # Maximum concurrent requests (conservative for older site)
+rate_limit: 3 # Minimum delay between requests in seconds (5 req/sec max)
+retries: 1       # Number of retry attempts for failed requests
+retry_seconds: 2.0  # Wait time in seconds between retry attempts
+
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.129 Safari/537.36"
+  Accept-Language: "en-US,en;q=0.9"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng;q=0.8"
+  Connection: "keep-alive"
+  Upgrade-Insecure-Requests: "1"
+  Referer: "https://www.google.com/"
+  Sec-Ch-Ua: '"Chromium";v="122", "Not(A:Brand";v="99"'
+  Sec-Ch-Ua-Mobile: "?0"
+  Sec-Ch-Ua-Platform: "macOS"
+
+# CSS selectors for data extraction (structured)
+selectors:
+  thumbnail:
+    container: "div.articleItem"
+    title: "h2.articleTitle::text"
+    url: "a.article-link::attr(href)"
+  article:
+    body: "div[class='clearfix'] p"
+    date: "meta[name='content_PublishedDate']::attr(content)"
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null

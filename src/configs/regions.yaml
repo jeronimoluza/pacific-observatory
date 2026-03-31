@@ -105,3 +105,12 @@ pacific:
       name: Vietnam
       iso3: VNM
       currency: VND
+
+eca:
+  name: Europe and Central Asia
+  description: ECA region countries
+  countries:
+    ukraine:
+      name: Ukraine
+      iso3: UKR
+      currency: UAH

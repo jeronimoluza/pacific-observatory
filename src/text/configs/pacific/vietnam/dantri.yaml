@@ -1,0 +1,52 @@
+# Dan Tri Configuration
+
+name: "Dan Tri"
+country: "vietnam"
+base_url: "https://www.dantri.com.vn/"
+language: "vietnamese"
+
+# Listing discovery configuration
+listing:
+  type: "pagination"
+  start_url:
+    - "https://dantri.com.vn/thoi-su.htm"
+    - "https://dantri.com.vn/noi-vu.htm"
+  url_template:
+    - "https://dantri.com.vn/thoi-su/trang-{num}.htm"
+    - "https://dantri.com.vn/noi-vu/trang-{num}.htm"
+  start_page: 2 # Starts from page 0 in the old script
+  batch_size: 10
+
+# Client configuration
+client: "http"
+concurrency: 10
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Referer: "https://www.dantri.com.vn/"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: div[class='article list'] div[class='article-content']
+    title: "h3.article-title a"
+    url: "h3.article-title a::attr(href)"
+  article:
+    date:
+      - time.author-time::attr(datetime)
+      - time.e-magazine__meta-item::attr(datetime)
+    body:
+      - div.singular-content p
+      - div.e-magazine__body p
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null

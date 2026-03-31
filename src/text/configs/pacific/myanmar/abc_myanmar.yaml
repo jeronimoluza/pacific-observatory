@@ -1,0 +1,49 @@
+# ABC AU (Australia) Myanmar Configuration
+
+name: "ABC Myanmar"
+country: "myanmar"
+base_url: "https://www.abc.net.au"
+
+listing:
+  type: "api"
+  pagination_type: "offset"
+  offset_start: 0
+  offset_step: 100
+  url_template: "https://www.abc.net.au/news-web/api/loader/topicstories?name=PaginationArticles&documentId=26436&offset={offset}&size={size}"
+  json_paths:
+    collection: "paginated.collection"
+    total: "paginated.pagination.total"
+    url: "link"
+    title: "title"
+    date: "dates.firstPublished"
+    contentUri: "contentUri"
+
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+    date: filler
+  article:
+    body:
+    - '.ArticleRender_article__7i2EW p'
+    - '#content p'
+    tags: '[data-component="RelatedTopics"] a'
+
+cleaning:
+  record_filter: "filter_abc_au_articles"
+  url: "clean_url"
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null
+
+# Site-specific notes:
+# - ABC topic page `https://www.abc.net.au/news/topic/myanmar` exposes content ID `26436`.

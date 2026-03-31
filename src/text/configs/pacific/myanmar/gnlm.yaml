@@ -1,0 +1,41 @@
+# Global New Light of Myanmar (Myanmar) Configuration
+
+name: "Global New Light of Myanmar"
+country: "myanmar"
+base_url: "https://www.gnlm.com.mm"
+language: "en"
+
+listing:
+  type: "pagination"
+  start_url: "https://www.gnlm.com.mm/category/national/"
+  url_template: "https://www.gnlm.com.mm/category/national/page/{num}/"
+  start_page: 2
+  batch_size: 10
+
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  Accept-Language: "en-US,en;q=0.9"
+  Referer: "https://www.gnlm.com.mm/"
+
+selectors:
+  thumbnail:
+    container: "article.col-md-6.archives-page"
+    title: "h4.post-title a::text"
+    url: "h4.post-title a::attr(href)"
+    date: ".post-date span::text"
+  article:
+    date: "li.post-date span::text"
+    body: "div.entry-content"
+
+cleaning:
+  date: "handle_mixed_dates"
+  body: "clean_wp_html_body"
+
+max_pages: null
+max_articles: null

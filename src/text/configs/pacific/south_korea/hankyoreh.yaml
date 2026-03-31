@@ -1,0 +1,43 @@
+# Hankyoreh Configuration
+
+name: "Hankyoreh"
+country: "south_korea"
+base_url: "https://www.hani.co.kr/"
+language: "korean"
+
+# Listing discovery configuration
+listing:
+  type: "pagination"
+  url_template:
+    - "https://www.hani.co.kr/arti/politics?page={num}"
+    - "https://www.hani.co.kr/arti/economy?page={num}"
+  start_page: 1 # Starts from page 0 in the old script
+  batch_size: 10
+
+# Client configuration
+client: "http"
+concurrency: 10
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: ul li.ArticleList_item___OGQO article
+    title: "div.BaseArticleCard_title__TVFqt"
+    url: "a::attr(href)"
+  article:
+    date: meta[name="article:published_time"]::attr(content)
+    body: div.article-text p
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null

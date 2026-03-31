@@ -1,0 +1,56 @@
+# DNN Configuration
+
+name: "DNN"
+country: "mongolia"
+base_url: "https://dnn.mn/"
+language: "mn"
+
+# Listing discovery configuration using API strategy
+listing:
+  type: "api"
+  url_template:
+  - "https://backend.dnn.mn/api/v1/public/article?page={page}&size=10&category_id=692ab2939a29e1dba0cf543a"
+  - "https://backend.dnn.mn/api/v1/public/article?page={page}&size=10&category_id=692ab2a59a29e1dba0cf543b"
+  pagination_type: "page"
+  page_start: 1
+  page_step: 1
+  url_construction_template: "https://dnn.mn/article/{id}"
+  json_paths:
+    collection: "list"  # Array of articles in the JSON response
+    id: "id"  # Article ID used to construct URL
+    title: "title"
+    date: "published_at"
+
+# Client configuration
+client: "http"
+concurrency: 10
+rate_limit: 0.2
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Accept-Language: "en-US,en;q=0.9"
+  Referer: "https://www.fijisun.com.fj/category/news/nation/"
+  Cache-Control: "no-cache"
+  Pragma: "no-cache"
+
+# CSS selectors for data extraction (for article content)
+selectors:
+  thumbnail:
+    # Not used for API strategy - data comes from JSON
+    container: "filler"
+    title: "filler"
+    url: "filler"
+    date: filler
+  article:
+    body: "div.prose p"
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null

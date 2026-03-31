@@ -1,0 +1,46 @@
+# Les Nouvelles Caledoniennes Configuration
+
+name: "Les Nouvelles Caledoniennes"
+country: "new_caledonia"
+base_url: "https://www.lnc.nc/"
+language: "fr"
+
+# Listing discovery configuration
+listing:
+  type: "pagination"
+  url_template: "https://www.lnc.nc/nouvelle-caledonie?page={num}"
+  start_page: 0
+  batch_size: 20
+
+# Client configuration
+client: "http"
+concurrency: 1
+rate_limit: 3
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Accept-Language: "en-US,en;q=0.9"
+  Referer: "https://www.lnc.nc/"
+  Cache-Control: "no-cache"
+  Pragma: "no-cache"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: div.field-title
+    title: "a::text"
+    url: "a::attr(href)"
+  article:
+    date: meta[property="article:published_time"]::attr(content)
+    body: div.field-items p
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null
