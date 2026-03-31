@@ -1,4 +1,4 @@
-"""Load cross-pipeline configuration: countries, regions, settings."""
+"""Load cross-pipeline configuration: regions (with countries), settings."""
 
 import logging
 from pathlib import Path
@@ -20,14 +20,22 @@ def _load_yaml(path: Path) -> dict:
         return yaml.safe_load(f) or {}
 
 
-def load_countries(configs_dir: Path = _CONFIGS_DIR) -> dict[str, dict]:
-    """Load countries.yaml → {slug: {name, iso3, region, currency}}."""
-    return _load_yaml(configs_dir / "countries.yaml")
-
-
 def load_regions(configs_dir: Path = _CONFIGS_DIR) -> dict[str, dict]:
-    """Load regions.yaml → {region_slug: {name, description, countries: [...]}}."""
+    """Load regions.yaml → {region_slug: {name, description, countries: {...}}}."""
     return _load_yaml(configs_dir / "regions.yaml")
+
+
+def load_countries(configs_dir: Path = _CONFIGS_DIR) -> dict[str, dict]:
+    """Flatten all countries from regions.yaml → {slug: {name, iso3, currency, region}}.
+
+    Each country dict gets a 'region' key injected from its parent region.
+    """
+    regions = load_regions(configs_dir)
+    countries = {}
+    for region_slug, region_data in regions.items():
+        for country_slug, country_data in region_data.get("countries", {}).items():
+            countries[country_slug] = {**country_data, "region": region_slug}
+    return countries
 
 
 def load_settings(configs_dir: Path = _CONFIGS_DIR) -> dict[str, Any]:
@@ -41,7 +49,7 @@ def countries_for_region(region: str, configs_dir: Path = _CONFIGS_DIR) -> list[
     entry = regions.get(region)
     if entry is None:
         raise ValueError(f"Unknown region: {region}. Known: {list(regions.keys())}")
-    return entry.get("countries", [])
+    return list(entry.get("countries", {}).keys())
 
 
 def discover_pipeline_configs(
