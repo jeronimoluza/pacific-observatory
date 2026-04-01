@@ -1,43 +1,33 @@
-# Kyiv Post Configuration
-
-name: "Kyiv Post"
-country: "ukraine"
-base_url: "https://www.kyivpost.com"
-language: "en"
-
+name: Kyiv Post
+language: en
+country: ukraine
+base_url: https://www.kyivpost.com
 listing:
-  type: "pagination"
-  start_url: "https://www.kyivpost.com/category/ukraine"
-  url_template: "https://www.kyivpost.com/category/ukraine?page={num}"
+  type: pagination
+  start_url: https://www.kyivpost.com/all-news
+  url_template: https://www.kyivpost.com/all-news?page={num}
   start_page: 2
-  batch_size: 10
-
-client: "http"
-concurrency: 5
-rate_limit: 0.5
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
 retries: 3
 retry_seconds: 2.0
-
 headers:
-  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-  Accept-Language: "en-US,en;q=0.9"
-
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: en-US,en;q=0.9
 selectors:
   thumbnail:
-    container: "#section-subcategory-posts div.post-row.post-regular"
-    title: "h2.title a::text"
-    url: "h2.title a::attr(href)"
+    container: li
+    title: a::text
+    url: a::attr(href)
   article:
-    body:
-      - "#post-content .entry.fr-view.text p"
-      - "#post-content section.entry p"
-    date: "meta[property='article:published_time']::attr(content)"
-    tags: ".post-label-and-topic a.label.mainlabel::text"
-
+    body: "div.post-content"
+    date: meta[property='article:published_time']::attr(content)
 cleaning:
-  date: "handle_mixed_dates"
-
+  date: handle_mixed_dates
 max_pages: null
 max_articles: null
-stop_date: "2025-12-01"
+stop_date: '2025-12-01'

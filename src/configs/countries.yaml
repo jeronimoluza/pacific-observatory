@@ -4,10 +4,46 @@
 # languages: list of keyword directory names in src/text/analysis/keywords/
 # used for EPU keyword matching. Source YAMLs override per-newspaper.
 
+albania:
+  name: Albania
+  iso3: ALB
+  currency: ALL
+  languages: [en]
+
+armenia:
+  name: Armenia
+  iso3: ARM
+  currency: AMD
+  languages: [en]
+
 australia:
   name: Australia
   iso3: AUS
   currency: AUD
+  languages: [en]
+
+azerbaijan:
+  name: Azerbaijan
+  iso3: AZE
+  currency: AZN
+  languages: [en]
+
+belarus:
+  name: Belarus
+  iso3: BLR
+  currency: BYN
+  languages: [en]
+
+bosnia_and_herzegovina:
+  name: Bosnia and Herzegovina
+  iso3: BIH
+  currency: BAM
+  languages: [en]
+
+bulgaria:
+  name: Bulgaria
+  iso3: BGR
+  currency: BGN
   languages: [en]
 
 cambodia:
@@ -22,6 +58,24 @@ china:
   currency: CNY
   languages: [en, chinese_simplified]
 
+croatia:
+  name: Croatia
+  iso3: HRV
+  currency: EUR
+  languages: [en]
+
+czech_republic:
+  name: Czech Republic
+  iso3: CZE
+  currency: CZK
+  languages: [en]
+
+estonia:
+  name: Estonia
+  iso3: EST
+  currency: EUR
+  languages: [en]
+
 fiji:
   name: Fiji
   iso3: FJI
@@ -34,10 +88,22 @@ french_polynesia:
   currency: XPF
   languages: [en, fr]
 
+georgia:
+  name: Georgia
+  iso3: GEO
+  currency: GEL
+  languages: [en]
+
 guam:
   name: Guam
   iso3: GUM
   currency: USD
+  languages: [en]
+
+hungary:
+  name: Hungary
+  iso3: HUN
+  currency: HUF
   languages: [en]
 
 indonesia:
@@ -52,17 +118,41 @@ japan:
   currency: JPY
   languages: [en, japanese]
 
-south_korea:
-  name: "Korea, Rep."
-  iso3: KOR
-  currency: KRW
-  languages: [en, korean]
+kazakhstan:
+  name: Kazakhstan
+  iso3: KAZ
+  currency: KZT
+  languages: [en]
+
+kosovo:
+  name: Kosovo
+  iso3: XKX
+  currency: EUR
+  languages: [en]
+
+kyrgyz_republic:
+  name: Kyrgyz Republic
+  iso3: KGZ
+  currency: KGS
+  languages: [en]
 
 lao_pdr:
   name: Lao PDR
   iso3: LAO
   currency: LAK
   languages: [en, lao]
+
+latvia:
+  name: Latvia
+  iso3: LVA
+  currency: EUR
+  languages: [en]
+
+lithuania:
+  name: Lithuania
+  iso3: LTU
+  currency: EUR
+  languages: [en]
 
 malaysia:
   name: Malaysia
@@ -76,11 +166,23 @@ marshall_islands:
   currency: USD
   languages: [en, marshallese]
 
+moldova:
+  name: Moldova
+  iso3: MDA
+  currency: MDL
+  languages: [en]
+
 mongolia:
   name: Mongolia
   iso3: MNG
   currency: MNT
   languages: [en, mn]
+
+montenegro:
+  name: Montenegro
+  iso3: MNE
+  currency: EUR
+  languages: [en]
 
 myanmar:
   name: Myanmar
@@ -100,6 +202,12 @@ new_zealand:
   currency: NZD
   languages: [en, maori]
 
+north_macedonia:
+  name: North Macedonia
+  iso3: MKD
+  currency: MKD
+  languages: [en]
+
 palau:
   name: Palau
   iso3: PLW
@@ -118,11 +226,35 @@ philippines:
   currency: PHP
   languages: [en, filipino]
 
+poland:
+  name: Poland
+  iso3: POL
+  currency: PLN
+  languages: [en]
+
+romania:
+  name: Romania
+  iso3: ROU
+  currency: RON
+  languages: [en]
+
+russian_federation:
+  name: Russian Federation
+  iso3: RUS
+  currency: RUB
+  languages: [en]
+
 samoa:
   name: Samoa
   iso3: WSM
   currency: WST
   languages: [en, samoan]
+
+serbia:
+  name: Serbia
+  iso3: SRB
+  currency: RSD
+  languages: [en]
 
 singapore:
   name: Singapore
@@ -130,11 +262,35 @@ singapore:
   currency: SGD
   languages: [en, chinese_simplified, malay, tamil]
 
+slovak_republic:
+  name: Slovak Republic
+  iso3: SVK
+  currency: EUR
+  languages: [en]
+
+slovenia:
+  name: Slovenia
+  iso3: SVN
+  currency: EUR
+  languages: [en]
+
 solomon_islands:
   name: Solomon Islands
   iso3: SLB
   currency: SBD
   languages: [en, solomon_islands_pijin]
+
+south_korea:
+  name: "Korea, Rep."
+  iso3: KOR
+  currency: KRW
+  languages: [en, korean]
+
+tajikistan:
+  name: Tajikistan
+  iso3: TJK
+  currency: TJS
+  languages: [en]
 
 thailand:
   name: Thailand
@@ -154,6 +310,18 @@ tonga:
   currency: TOP
   languages: [en, tongan]
 
+turkiye:
+  name: Türkiye
+  iso3: TUR
+  currency: TRY
+  languages: [en]
+
+turkmenistan:
+  name: Turkmenistan
+  iso3: TKM
+  currency: TMT
+  languages: [en]
+
 tuvalu:
   name: Tuvalu
   iso3: TUV
@@ -165,6 +333,12 @@ ukraine:
   iso3: UKR
   currency: UAH
   languages: [en, ukrainian]
+
+uzbekistan:
+  name: Uzbekistan
+  iso3: UZB
+  currency: UZS
+  languages: [en]
 
 vanuatu:
   name: Vanuatu

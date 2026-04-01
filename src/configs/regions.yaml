@@ -61,7 +61,55 @@ eap:
 eca:
   name: Europe & Central Asia
   subregions:
+    central_asia:
+      name: Central Asia
+      countries:
+        - kazakhstan
+        - kyrgyz_republic
+        - tajikistan
+        - turkmenistan
+        - uzbekistan
+    south_caucasus:
+      name: South Caucasus
+      countries:
+        - armenia
+        - azerbaijan
+        - georgia
     eastern_europe:
       name: Eastern Europe
       countries:
+        - belarus
+        - bulgaria
+        - moldova
+        - romania
         - ukraine
+    western_balkans:
+      name: Western Balkans
+      countries:
+        - albania
+        - bosnia_and_herzegovina
+        - kosovo
+        - montenegro
+        - north_macedonia
+        - serbia
+    central_europe:
+      name: Central Europe
+      countries:
+        - croatia
+        - czech_republic
+        - estonia
+        - hungary
+        - latvia
+        - lithuania
+        - poland
+        - slovak_republic
+        - slovenia
+    turkiye:
+      name: Türkiye
+      countries:
+        - turkiye
+    russian_federation:
+      name: Russian Federation
+      countries:
+        - russian_federation
+       
