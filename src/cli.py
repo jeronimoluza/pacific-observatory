@@ -103,13 +103,25 @@ def fuel_publish(region, subregion, yes):
 @_source_opt
 @_yes_opt
 @_dry_run_opt
+@click.option(
+    "--list", "list_sources", is_flag=True, help="List all sources with stats"
+)
 @click.option("--max-pages", type=int, default=None, help="Limit pages per newspaper")
 @click.option(
     "--max-articles", type=int, default=None, help="Limit articles per newspaper"
 )
 @click.option("--rebuild", is_flag=True, help="Full re-scrape (bypass URL dedup)")
 def text_collect(
-    region, subregion, country, source, yes, dry_run, max_pages, max_articles, rebuild
+    region,
+    subregion,
+    country,
+    source,
+    yes,
+    dry_run,
+    list_sources,
+    max_pages,
+    max_articles,
+    rebuild,
 ):
     """Scrape new articles from configured newspapers."""
     from text.collect import run_collect
@@ -124,6 +136,7 @@ def text_collect(
         dry_run=dry_run,
         yes=yes,
         rebuild=rebuild,
+        list_sources=list_sources,
     )
 
 

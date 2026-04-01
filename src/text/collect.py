@@ -60,6 +60,86 @@ def _source_stats(news_csv: Path) -> dict:
         return {k: "?" for k in empty}
 
 
+def _parse_article_count(raw: str) -> int:
+    """Convert article_count string to int, treating '—' and '?' as 0."""
+    try:
+        return int(raw)
+    except (ValueError, TypeError):
+        return 0
+
+
+def display_list(plan):
+    """Show source inventory grouped by region/subregion."""
+    if not plan:
+        click.echo("No configs found matching filters.")
+        return
+
+    from itertools import groupby
+
+    total_sources = len(plan)
+    total_articles = sum(_parse_article_count(e["article_count"]) for e in plan)
+    all_regions = set()
+    all_subregions = set()
+    all_countries = set()
+
+    # Sort for grouping: region → subregion → country → newspaper
+    plan_sorted = sorted(
+        plan, key=lambda e: (e["region"], e["subregion"], e["country"], e["newspaper"])
+    )
+
+    # Column widths
+    nw = max(25, max(len(e["newspaper"]) for e in plan) + 1)
+    cw = max(18, max(len(e["country"]) for e in plan) + 1)
+
+    click.echo()
+    click.echo(f"  Text Source Inventory ({total_sources} sources)")
+
+    for (rgn, subrgn), group in groupby(
+        plan_sorted, key=lambda e: (e["region"], e["subregion"])
+    ):
+        entries = list(group)
+        all_regions.add(rgn)
+        all_subregions.add((rgn, subrgn))
+        sub_countries = set()
+
+        click.echo()
+        click.echo(f"  {rgn} / {subrgn}")
+        w = cw + nw + 8 + 10 + 10 + 26 + 12
+        click.echo("  " + "─" * w)
+        click.echo(
+            f"  {'Country':<{cw}} {'Newspaper':<{nw}} {'Articles':>8}  "
+            f"{'Earliest':>10}  {'Coverage To':>11}  {'Last Scraped':<26}"
+        )
+        click.echo("  " + "─" * w)
+
+        for entry in entries:
+            sub_countries.add(entry["country"])
+            all_countries.add(entry["country"])
+            click.echo(
+                f"  {entry['country']:<{cw}} "
+                f"{entry['newspaper']:<{nw}} "
+                f"{entry['article_count']:>8}  "
+                f"{entry['earliest_date']:>10}  "
+                f"{entry['last_date']:>11}  "
+                f"{entry['last_updated']:<26}"
+            )
+
+        sub_articles = sum(_parse_article_count(e["article_count"]) for e in entries)
+        click.echo("  " + "─" * w)
+        click.echo(
+            f"  {len(sub_countries)} countries, {len(entries)} sources, "
+            f"{sub_articles:,} articles"
+        )
+
+    click.echo()
+    click.echo(
+        f"  Total: {len(all_regions)} regions, {len(all_subregions)} subregions, "
+        f"{len(all_countries)} countries, {total_sources} sources, "
+        f"{total_articles:,} articles"
+    )
+    click.echo()
+
+
 def _build_plan(region=None, subregion=None, country=None, source=None):
     """Discover configs and build execution plan with data stats."""
     configs = discover_pipeline_configs(
@@ -172,11 +252,17 @@ def run_collect(
     dry_run=False,
     yes=False,
     rebuild=False,
+    list_sources=False,
 ):
     """Run the text collect stage."""
     plan = _build_plan(
         region=region, subregion=subregion, country=country, source=source
     )
+
+    if list_sources:
+        display_list(plan)
+        return
+
     display_plan(
         plan,
         max_pages=max_pages,
