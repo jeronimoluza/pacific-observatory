@@ -20,14 +20,15 @@ headers:
   Accept-Language: en-US,en;q=0.9
 selectors:
   thumbnail:
-    container: div.articleList_cardWrapper__Tnyiy
+    container: "div[class*='articleList_cardWrapper']"
     title: a::text
     url: a::attr(href)
   article:
-    body: "div.layoutContainer p"
+    body: "div[class*='Text_textContainer'] p"
     date: meta[property='article:published_time']::attr(content)
+
 cleaning:
   date: handle_mixed_dates
+
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

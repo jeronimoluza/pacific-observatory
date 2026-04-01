@@ -24,10 +24,11 @@ selectors:
     title: a::text
     url: a::attr(href)
   article:
-    body: div#ng-root p
-    date: meta[property='article:published_time']::attr(content)
+    body: "#article-body p"
+    date: "script[type='application/ld+json']::text"
+
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
+
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

@@ -170,14 +170,20 @@ class PaginatedArchiveStrategy(ListingStrategy):
         Initialize paginated archive strategy.
 
         Expected config keys:
-        - start_url: URL template with date placeholders ({year}, {month}, {day})
-                     This is the first page for each date (page 1)
-        - url_template: URL template with date placeholders AND {num} for pagination
+        - start_url: URL template with date placeholders ({year}, {month}, {day} for
+                     daily/monthly modes; {date_from} and {date_to} for range mode).
+                     This is the first page for each date/window (page 1).
+        - url_template: URL template with date placeholders AND {num} for pagination.
         - start_date: Start date (YYYY-MM-DD format)
         - end_date: End date (YYYY-MM-DD format, optional - defaults to today)
-        - date_format: Date format for URL ('monthly' or 'daily')
+        - date_format: Date format for URL ('monthly', 'daily', or 'range')
         - start_page: Starting page number for pagination (default: 2, since start_url is page 1)
         - batch_size: Number of pages to check per batch (default: 5)
+
+        Additional keys for date_format 'range':
+        - range_days: Window width in days (required, must be a positive integer)
+        - range_date_format: strftime string for formatting {date_from}/{date_to} in URLs
+                             (default: '%d.%m.%Y')
         """
         super().__init__(config, max_pages)
 
@@ -197,6 +203,16 @@ class PaginatedArchiveStrategy(ListingStrategy):
         self.date_format = config.get("date_format", "daily")
         self.start_page = config.get("start_page", 2)
         self.batch_size = config.get("batch_size", 5)
+
+        # range mode: parse range_days and range_date_format
+        if self.date_format == "range":
+            range_days = config.get("range_days")
+            if not range_days or int(range_days) <= 0:
+                raise ValueError(
+                    "range_days is required and must be a positive integer for date_format 'range'"
+                )
+            self.range_days = int(range_days)
+            self.range_date_format = config.get("range_date_format", "%d.%m.%Y")
 
         # Parse start date and normalize based on date format
         self.start_date = datetime.strptime(config["start_date"], "%Y-%m-%d")
@@ -234,6 +250,8 @@ class PaginatedArchiveStrategy(ListingStrategy):
             required_placeholders = ["{year}", "{month}"]
         elif self.date_format == "daily":
             required_placeholders = ["{year}", "{month}", "{day}"]
+        elif self.date_format == "range":
+            required_placeholders = ["{date_from}", "{date_to}"]
 
         for placeholder in required_placeholders:
             if placeholder not in self.start_url_template:
@@ -249,6 +267,13 @@ class PaginatedArchiveStrategy(ListingStrategy):
             url = template.format(
                 year=date.year,
                 month=f"{date.month:02d}",
+                num=page_num if page_num is not None else "",
+            )
+        elif self.date_format == "range":
+            date_from = date - timedelta(days=self.range_days - 1)
+            url = template.format(
+                date_from=date_from.strftime(self.range_date_format),
+                date_to=date.strftime(self.range_date_format),
                 num=page_num if page_num is not None else "",
             )
         else:  # daily
@@ -267,6 +292,8 @@ class PaginatedArchiveStrategy(ListingStrategy):
                 return current_date.replace(year=current_date.year - 1, month=12)
             else:
                 return current_date.replace(month=current_date.month - 1)
+        elif self.date_format == "range":
+            return current_date - timedelta(days=self.range_days)
         else:  # daily
             return current_date - timedelta(days=1)
 

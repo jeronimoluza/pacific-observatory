@@ -2,32 +2,37 @@ name: Meduza
 language: ru
 country: russian_federation
 base_url: https://meduza.io
+
 listing:
   type: pagination
   start_url: https://meduza.io/
   url_template: https://meduza.io/?page={num}
   start_page: 2
   batch_size: 5
+
 client: http
 concurrency: 3
 rate_limit: 1.0
 retries: 3
 retry_seconds: 2.0
+
 headers:
   User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
     like Gecko) Chrome/131.0.0.0 Safari/537.36
   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
   Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+
 selectors:
   thumbnail:
     container: article
-    title: h2 a::text
-    url: h2 a::attr(href)
+    title: "h2 a::text"
+    url: "h2 a::attr(href)"
   article:
-    body: div.Layout-module-root p
-    date: meta[property='article:published_time']::attr(content)
+    body: "div[class*='GeneralMaterial-module-root'] p"
+    date: "script[type='application/ld+json']::text"
+
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
+
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'
