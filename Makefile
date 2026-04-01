@@ -1,92 +1,83 @@
-.PHONY: help test test-unit test-integration docs clean
+.PHONY: help dev install lint fmt check ci test test-unit test-integration test-cov docs docs-open
 
-# Environment setup for module imports
 export PYTHONPATH := src
 
-# Default target
-help:
-	@echo "Pacific Observatory - Development Commands"
-	@echo ""
-	@echo "Testing:"
-	@echo "  make test              Run all tests"
-	@echo "  make test-unit         Run unit tests only"
-	@echo "  make test-integration  Run integration tests only"
-	@echo "  make test-cov          Run tests with coverage report"
-	@echo ""
-	@echo "Documentation:"
-	@echo "  make docs              Build documentation"
-	@echo "  make docs-open         Open documentation in browser"
-	@echo "  make docs-clean        Clean documentation build"
-	@echo ""
-	@echo "Other:"
-	@echo "  make clean             Clean all generated files"
-	@echo "  make install           Install dependencies"
-	@echo "  make install-dev       Install dev dependencies"
-	@echo ""
-	@echo "Note: Text scraping commands are in src/Makefile"
+# Detect python command (python3 on Unix/macOS, python on Windows/Git Bash)
+PYTHON := $(shell python3 --version >/dev/null 2>&1 && echo python3 || echo python)
 
-# =============================================================================
-# Testing
-# =============================================================================
+# Cross-platform browser open
+OPEN := $(shell command -v open 2>/dev/null || command -v xdg-open 2>/dev/null || echo $(PYTHON) -m webbrowser)
 
-test:
-	poetry run pytest tests/ -v
-
-test-unit:
-	poetry run pytest tests/unit -v
-
-test-integration:
-	poetry run pytest tests/integration -v --tb=short
-
-test-cov:
-	poetry run pytest tests/ --cov=src/text --cov-report=html --cov-report=term-missing
-	@echo "Coverage report: htmlcov/index.html"
-
-# =============================================================================
-# Documentation
-# =============================================================================
-
-docs:
-	poetry run jupyter-book clean docs
-	poetry run jupyter-book build docs
-	@echo "Documentation built: docs/_build/html/index.html"
-	open docs/_build/html/index.html
-
-docs-clean:
-	poetry run jupyter-book clean docs
+# Auto-generated help from ## comments
+help: ## Show available commands
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 # =============================================================================
 # Installation
 # =============================================================================
 
-install:
-	poetry install
+dev: ## Set up full development environment (installs Poetry if missing)
+	@echo "→ Checking Python ($(PYTHON))..."
+	@$(PYTHON) --version
+	@echo "→ Checking Poetry..."
+	@command -v poetry >/dev/null 2>&1 || \
+		(echo "Poetry not found — installing via official installer..." && \
+		 curl -sSL https://install.python-poetry.org | $(PYTHON) - && \
+		 echo "" && \
+		 echo "  Poetry installed to ~/.local/bin (Unix) or %APPDATA%\\Python\\Scripts (Windows)." && \
+		 echo "  If the next step fails, restart your shell and re-run 'make dev'." && \
+		 echo "")
+	@poetry install --with dev
+	@poetry run pre-commit install
+	@echo ""
+	@echo "  Dev environment ready. Run 'make help' to see all commands."
+	@echo ""
 
-install-dev:
-	poetry install --with dev
-	poetry run pre-commit install
-
-# =============================================================================
-# Cleanup
-# =============================================================================
-
-clean:
-	rm -rf build/
-	rm -rf dist/
-	rm -rf *.egg-info/
-	rm -rf .pytest_cache/
-	rm -rf .mypy_cache/
-	rm -rf htmlcov/
-	rm -rf .coverage
-	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
-	find . -type f -name "*.pyc" -delete
+install: ## Install production dependencies only
+	@poetry install
 
 # =============================================================================
-# Pre-commit
+# Code quality
 # =============================================================================
 
-pre-commit-install:
-	poetry run pre-commit install
+lint: ## Check code with ruff (read-only)
+	@poetry run ruff check src/
 
-pre-commit-run:
-	poetry run pre-commit run --all-files
+fmt: ## Format and auto-fix code with ruff
+	@poetry run ruff format src/
+	@poetry run ruff check --fix src/
+
+check: ## Static analysis: mypy + bandit
+	@poetry run mypy src/ || true
+	@poetry run bandit -r src/text/ -q
+
+ci: lint test ## Full CI gate: lint + all tests
+
+# =============================================================================
+# Testing
+# =============================================================================
+
+test: ## Run all tests
+	@poetry run pytest tests/ -v
+
+test-unit: ## Run unit tests only
+	@poetry run pytest tests/unit -v
+
+test-integration: ## Run integration tests only
+	@poetry run pytest tests/integration -v --tb=short
+
+test-cov: ## Run tests with HTML coverage report (htmlcov/index.html)
+	@poetry run pytest tests/ --cov=src --cov-report=html --cov-report=term-missing
+
+# =============================================================================
+# Documentation
+# =============================================================================
+
+docs: ## Build documentation
+	@poetry run jupyter-book clean docs
+	@poetry run jupyter-book build docs
+	@echo "Built: docs/_build/html/index.html"
+
+docs-open: docs ## Build and open documentation in browser
+	@$(OPEN) docs/_build/html/index.html
