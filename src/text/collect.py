@@ -19,22 +19,45 @@ DATA_BASE = Path("data/text")
 LOGS_BASE = Path("logs")
 
 
-def _source_stats(news_csv: Path) -> tuple[str, str]:
-    """Read article count and max date from a news.csv file."""
+def _source_stats(news_csv: Path) -> dict:
+    """Read article count, date range, and file freshness from a news.csv file."""
+    empty = {
+        "article_count": "—",
+        "earliest_date": "—",
+        "last_date": "—",
+        "last_updated": "—",
+    }
     if not news_csv.exists():
-        return "—", "—"
+        return empty
     try:
         df = pd.read_csv(news_csv, usecols=["date"], dtype=str)
         if df.empty:
-            return "0", "—"
+            return {**empty, "article_count": "0"}
+        dates = df["date"].dropna()
         count = str(len(df))
-        last = df["date"].dropna().max() or "—"
-        # Truncate to date portion if it's a full timestamp
-        if isinstance(last, str) and len(last) > 10:
-            last = last[:10]
-        return count, last
+        earliest = (dates.min() or "—")[:10] if not dates.empty else "—"
+        last = (dates.max() or "—")[:10] if not dates.empty else "—"
+
+        # File modification time → "YYYY-MM-DD HH:MM (Xd Yh ago)"
+        from datetime import datetime, timezone
+
+        mtime = datetime.fromtimestamp(news_csv.stat().st_mtime, tz=timezone.utc)
+        delta = datetime.now(tz=timezone.utc) - mtime
+        days, hours = delta.days, delta.seconds // 3600
+        if days > 0:
+            ago = f"{days}d {hours}h ago"
+        else:
+            ago = f"{hours}h ago"
+        updated = f"{mtime.strftime('%Y-%m-%d %H:%M')} ({ago})"
+
+        return {
+            "article_count": count,
+            "earliest_date": earliest,
+            "last_date": last,
+            "last_updated": updated,
+        }
     except Exception:
-        return "?", "?"
+        return {k: "?" for k in empty}
 
 
 def _build_plan(region=None, subregion=None, country=None, source=None):
@@ -64,7 +87,7 @@ def _build_plan(region=None, subregion=None, country=None, source=None):
             / newspaper
             / "news.csv"
         )
-        article_count, last_date = _source_stats(news_csv)
+        stats = _source_stats(news_csv)
 
         plan.append(
             {
@@ -74,8 +97,7 @@ def _build_plan(region=None, subregion=None, country=None, source=None):
                 "country": cfg_country,
                 "newspaper": newspaper,
                 "source_key": newspaper,
-                "article_count": article_count,
-                "last_date": last_date,
+                **stats,
             }
         )
     return plan
@@ -100,19 +122,44 @@ def display_plan(plan, max_pages=None, max_articles=None, rebuild=False, region=
     click.echo(f"  {header}")
     if rebuild:
         click.echo("  WARNING: --rebuild will re-scrape and overwrite existing data")
-    click.echo("  " + "-" * 68)
+    # Compute newspaper column width from longest name (min 25)
+    nw = max(25, max(len(e["newspaper"]) for e in plan) + 1)
+    w = nw + 18 + 8 + 10 + 10 + 26 + 12  # col widths + spacing
+    click.echo("  " + "-" * w)
     click.echo(
-        f"  {'Newspaper':<30} {'Country':<15} {'Articles':>8}   {'Last date':<10}"
+        f"  {'Newspaper':<{nw}} {'Country':<18} {'Articles':>8}  "
+        f"{'Earliest':>10}  {'Last Date':>10}  {'Last Updated':<26}"
     )
-    click.echo("  " + "-" * 68)
+    click.echo("  " + "-" * w)
     for entry in plan:
         click.echo(
-            f"  {entry['newspaper']:<30} "
-            f"{entry['country']:<15} "
-            f"{entry['article_count']:>8}   "
-            f"{entry['last_date']:<10}"
+            f"  {entry['newspaper']:<{nw}} "
+            f"{entry['country']:<18} "
+            f"{entry['article_count']:>8}  "
+            f"{entry['earliest_date']:>10}  "
+            f"{entry['last_date']:>10}  "
+            f"{entry['last_updated']:<26}"
         )
     click.echo()
+
+
+def _print_source_summary(results):
+    """Print categorized outcome summary for a single source."""
+    stats = results.get("statistics", {})
+    lines = [
+        ("Thumbnails Discovered", stats.get("new_urls_discovered", 0)),
+        ("Articles Scraped", stats.get("articles_scraped", 0)),
+        ("Filtered (listing.filters)", stats.get("filtered_listing", 0)),
+        ("Warning (empty tags)", stats.get("warning_tags", 0)),
+        ("Warning (empty title)", stats.get("warning_title", 0)),
+        ("Failed (empty body)", stats.get("failed_body", 0)),
+        ("Failed (empty date)", stats.get("failed_date", 0)),
+        ("Failed (HTTP error)", stats.get("failed_http", 0)),
+    ]
+    for label, count in lines:
+        # Always show Thumbnails Discovered and Articles Scraped; skip zeros for the rest
+        if count or label in ("Thumbnails Discovered", "Articles Scraped"):
+            click.echo(f"  {label + ':':<30} {count:>5}")
 
 
 def run_collect(
@@ -157,6 +204,20 @@ def run_collect(
 
     import asyncio
 
+    import warnings
+
+    # Suppress scraper module logs from terminal — they use text.scrapers.* loggers
+    # which propagate to root's lastResort handler (WARNING+ to stderr).
+    # The po.text.{source} logger from setup_logger() is a separate hierarchy, unaffected.
+    _scraper_log = logging.getLogger("text")
+    _scraper_log.propagate = False
+    _scraper_log.addHandler(logging.NullHandler())
+    logging.getLogger("httpx").setLevel(logging.CRITICAL)
+    logging.getLogger("httpcore").setLevel(logging.CRITICAL)
+
+    # Suppress Python warnings from 3rd-party libs (BeautifulSoup XML, codec errors)
+    warnings.filterwarnings("ignore")
+
     state = read_state(STATE_FILE)
 
     for entry in plan:
@@ -175,6 +236,12 @@ def run_collect(
             source=newspaper,
             logs_dir=LOGS_BASE,
         )
+        # Silence setup_logger's StreamHandler — collect.py handles CLI output via click
+        for h in source_logger.handlers:
+            if isinstance(h, logging.StreamHandler) and not isinstance(
+                h, logging.FileHandler
+            ):
+                h.setLevel(logging.CRITICAL)
 
         # Set data path: data/text/{region}/{subregion}/{country}/{newspaper}/
         # CSVStorage reads DATA_FOLDER_PATH env var for its base dir
@@ -203,13 +270,13 @@ def run_collect(
                 ctry,
             )
             if rebuild:
-                asyncio.run(scraper.run_full_scrape())
+                results = asyncio.run(scraper.run_full_scrape())
             else:
-                asyncio.run(scraper.run_default())
+                results = asyncio.run(scraper.run_default())
 
             set_checked(state, entry["source_key"])
             source_logger.info("Done: %s", newspaper)
-            click.echo(f"  Done: {newspaper}")
+            _print_source_summary(results)
 
         except Exception as e:
             source_logger.exception("Failed: %s", newspaper)

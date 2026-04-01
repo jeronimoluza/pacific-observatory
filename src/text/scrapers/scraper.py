@@ -725,36 +725,42 @@ class NewspaperScraper:
             Dictionary with scraping statistics (articles_scraped, failed_count, etc.)
         """
         # Apply listing.filters to pending scrape as well (urls.csv can contain legacy junk)
+        filtered_listing = 0
         if self._listing_filters.enabled and thumbnails:
             before = len(thumbnails)
             thumbnails = [
                 t for t in thumbnails if self._is_url_allowed(t.url, stage="pending")
             ]
-            skipped = before - len(thumbnails)
-            if skipped:
-                logger.info(f"Skipping {skipped} pending URL(s) due to listing.filters")
+            filtered_listing = before - len(thumbnails)
+            if filtered_listing:
+                logger.info(
+                    f"Skipping {filtered_listing} pending URL(s) due to listing.filters"
+                )
             self._log_filter_stats(stage="pending")
+
+        # Also count discovery-phase filtered URLs
+        filtered_listing += self._filtered_url_counts.get("discovery", 0)
 
         article_urls = [str(thumb.url) for thumb in thumbnails]
         articles_scraped = 0
-        articles_failed = 0
+        failed_http = 0
+        failed_body = 0
+        failed_date = 0
+        warning_title = 0
+        warning_tags = 0
 
         if self.client_type == "http":
             client = self._get_http_client()
 
-            # Import tqdm for progress tracking
             from tqdm.asyncio import tqdm
 
-            # Scrape articles with tqdm progress bar
             logger.info(f"Scraping {len(article_urls)} articles...")
 
-            # Process with tqdm progress bar
             async with httpx.AsyncClient() as http_client:
                 for i, thumbnail in enumerate(
                     tqdm(thumbnails, desc="Scraping articles")
                 ):
                     try:
-                        # Fetch article page HTML content
                         content, status_code = await client.request_url(
                             http_client, str(thumbnail.url)
                         )
@@ -766,19 +772,18 @@ class NewspaperScraper:
                                 error="Failed to retrieve content",
                                 stage="article_content",
                             )
-                            articles_failed += 1
-                            # Update progress periodically (every 10 articles or on failure)
+                            failed_http += 1
                             if self.progress and (i + 1) % 10 == 0:
                                 self.progress.update(
                                     articles_scraped=articles_scraped,
-                                    articles_failed=articles_failed,
+                                    articles_failed=failed_http
+                                    + failed_body
+                                    + failed_date,
                                 )
                             continue
 
-                        # Parse the HTML content
                         soup = client.parse_content(content)
 
-                        # Extract article body and tags using the new extraction function
                         article_content = extract_article_data_from_soup(
                             soup,
                             str(thumbnail.url),
@@ -787,7 +792,6 @@ class NewspaperScraper:
                             self.config.cleaning,
                         )
 
-                        # Combine thumbnail data with extracted article content
                         article_data = {
                             "url": str(thumbnail.url),
                             "title": thumbnail.title,
@@ -803,44 +807,71 @@ class NewspaperScraper:
                             "language": self.language,
                         }
 
-                        # Apply cleaning functions to article data if configured
                         cleaning_config = self.config.cleaning
                         if cleaning_config:
                             article_data = apply_cleaning(
                                 article_data, cleaning_config, self.base_url
                             )
 
+                        # Validate required fields — skip articles with empty body or date
+                        body_val = (article_data.get("body") or "").strip()
+                        date_val = (article_data.get("date") or "").strip()
+
+                        if not body_val:
+                            failed_body += 1
+                            logger.debug(
+                                f"Skipping article (empty body): {thumbnail.url}"
+                            )
+                            continue
+
+                        if not date_val:
+                            failed_date += 1
+                            logger.debug(
+                                f"Skipping article (empty date): {thumbnail.url}"
+                            )
+                            continue
+
+                        # Track warnings for non-critical empty fields
+                        title_val = (article_data.get("title") or "").strip()
+                        tags_val = article_data.get("tags")
+                        if not title_val:
+                            warning_title += 1
+                        if not tags_val or tags_val == []:
+                            warning_tags += 1
+
                         article = ArticleRecord(**article_data)
 
-                        # Stream write to CSV instead of accumulating in memory
                         self._storage.append_article(article, self.country, self.name)
                         articles_scraped += 1
 
-                        # Update progress periodically (every 10 articles)
-                        # This keeps the progress file fresh and prevents stale detection
                         if self.progress and (i + 1) % 10 == 0:
                             self.progress.update(
                                 articles_scraped=articles_scraped,
-                                articles_failed=articles_failed,
+                                articles_failed=failed_http + failed_body + failed_date,
                             )
 
                     except Exception as e:
                         logger.error(f"Failed to scrape article {thumbnail.url}: {e}")
-                        articles_failed += 1
+                        failed_http += 1
 
         else:
             # Browser client implementation would go here
             pass
 
+        total_failed = failed_http + failed_body + failed_date
         logger.info(
             f"Scraped {articles_scraped} articles from {len(thumbnails)} thumbnails "
-            f"({articles_failed} failed)"
+            f"({total_failed} failed: {failed_http} HTTP, {failed_body} body, {failed_date} date)"
         )
 
-        # Return statistics instead of article list
         return {
             "articles_scraped": articles_scraped,
-            "articles_failed": articles_failed,
+            "filtered_listing": filtered_listing,
+            "failed_http": failed_http,
+            "failed_body": failed_body,
+            "failed_date": failed_date,
+            "warning_title": warning_title,
+            "warning_tags": warning_tags,
             "total_attempted": len(thumbnails),
         }
 
@@ -940,9 +971,14 @@ class NewspaperScraper:
                     "newspaper": self.name,
                     "country": self.country,
                     "statistics": {
-                        "thumbnails_found": len(thumbnails),
+                        "new_urls_discovered": len(thumbnails),
                         "articles_scraped": articles_stats.get("articles_scraped", 0),
-                        "articles_failed": articles_stats.get("articles_failed", 0),
+                        "filtered_listing": articles_stats.get("filtered_listing", 0),
+                        "failed_http": articles_stats.get("failed_http", 0),
+                        "failed_body": articles_stats.get("failed_body", 0),
+                        "failed_date": articles_stats.get("failed_date", 0),
+                        "warning_title": articles_stats.get("warning_title", 0),
+                        "warning_tags": articles_stats.get("warning_tags", 0),
                         "failed_urls": len(self.failed_urls),
                         "failed_news": len(self.failed_news),
                     },
@@ -1455,6 +1491,7 @@ class NewspaperScraper:
         Returns:
             List of newly discovered ThumbnailRecord objects
         """
+        print("  Discovering thumbnails...", flush=True)
         client = self._get_http_client()
         thumbnail_selector = self.thumbnail_selectors.container
         all_thumbnails: List[ThumbnailRecord] = []
@@ -2034,7 +2071,16 @@ class NewspaperScraper:
                 pending_thumbnails = pending_thumbnails[: self.max_articles]
 
             # Step 7 & 8: Scrape pending articles
-            scrape_stats = {"articles_scraped": 0, "articles_failed": 0}
+            scrape_stats = {
+                "articles_scraped": 0,
+                "filtered_listing": 0,
+                "failed_http": 0,
+                "failed_body": 0,
+                "failed_date": 0,
+                "warning_title": 0,
+                "warning_tags": 0,
+                "total_attempted": 0,
+            }
             if pending_thumbnails:
                 scrape_stats = await self.scrape_articles(pending_thumbnails)
 
@@ -2058,7 +2104,12 @@ class NewspaperScraper:
                     "new_urls_discovered": len(new_thumbnails),
                     "existing_articles": len(existing_article_urls),
                     "articles_scraped": total_scraped,
-                    "articles_failed": scrape_stats.get("articles_failed", 0),
+                    "filtered_listing": scrape_stats.get("filtered_listing", 0),
+                    "failed_http": scrape_stats.get("failed_http", 0),
+                    "failed_body": scrape_stats.get("failed_body", 0),
+                    "failed_date": scrape_stats.get("failed_date", 0),
+                    "warning_title": scrape_stats.get("warning_title", 0),
+                    "warning_tags": scrape_stats.get("warning_tags", 0),
                     "failed_urls": len(self.failed_urls),
                     "failed_news": len(self.failed_news),
                 },
