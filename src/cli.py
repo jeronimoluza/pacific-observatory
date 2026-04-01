@@ -1,15 +1,15 @@
 """Unified CLI entry point: `po`
 
 Usage:
-    po fuel collect [--region R] [--country C] [--source S] [-y] [--dry-run]
-    po fuel build   [--region R] [--country C] [-y]
-    po fuel publish [--region R] [-y]
-    po text collect [--region R] [--country C] [--source S] [-y] [--dry-run]
-    po text build   [--region R] [--country C] [-y]
-    po text publish [--region R] [-y]
-    po prices collect [--region R] [--country C] [-y] [--dry-run]
-    po prices build   [--region R] [--country C] [-y]
-    po prices publish [--region R] [-y]
+    po fuel collect [--region R] [--subregion S] [--country C] [--source S] [-y] [--dry-run]
+    po fuel build   [--region R] [--subregion S] [--country C] [-y]
+    po fuel publish [--region R] [--subregion S] [-y]
+    po text collect [--region R] [--subregion S] [--country C] [--source S] [-y] [--dry-run]
+    po text build   [--region R] [--subregion S] [--country C] [-y]
+    po text publish [--region R] [--subregion S] [-y]
+    po prices collect [--region R] [--subregion S] [--country C] [-y] [--dry-run]
+    po prices build   [--region R] [--subregion S] [--country C] [-y]
+    po prices publish [--region R] [--subregion S] [-y]
     po status
     po init --region <name>
 """
@@ -44,6 +44,9 @@ def prices():
 # ── Shared option decorators ────────────────────────────────────────
 
 _region_opt = click.option("--region", "-r", default=None, help="Filter by region slug")
+_subregion_opt = click.option(
+    "--subregion", default=None, help="Filter by subregion slug"
+)
 _country_opt = click.option(
     "--country", "-c", default=None, help="Filter by country slug"
 )
@@ -61,28 +64,31 @@ _dry_run_opt = click.option(
 
 @fuel.command("collect")
 @_region_opt
+@_subregion_opt
 @_country_opt
 @_source_opt
 @_yes_opt
 @_dry_run_opt
-def fuel_collect(region, country, source, yes, dry_run):
+def fuel_collect(region, subregion, country, source, yes, dry_run):
     """Fetch new fuel price observations from configured sources."""
     click.echo("fuel collect: not yet migrated")
 
 
 @fuel.command("build")
 @_region_opt
+@_subregion_opt
 @_country_opt
 @_yes_opt
-def fuel_build(region, country, yes):
+def fuel_build(region, subregion, country, yes):
     """Process raw observations into enriched dataset."""
     click.echo("fuel build: not yet migrated")
 
 
 @fuel.command("publish")
 @_region_opt
+@_subregion_opt
 @_yes_opt
-def fuel_publish(region, yes):
+def fuel_publish(region, subregion, yes):
     """Generate dashboards and HTML outputs."""
     click.echo("fuel publish: not yet migrated")
 
@@ -92,6 +98,7 @@ def fuel_publish(region, yes):
 
 @text.command("collect")
 @_region_opt
+@_subregion_opt
 @_country_opt
 @_source_opt
 @_yes_opt
@@ -102,13 +109,14 @@ def fuel_publish(region, yes):
 )
 @click.option("--rebuild", is_flag=True, help="Full re-scrape (bypass URL dedup)")
 def text_collect(
-    region, country, source, yes, dry_run, max_pages, max_articles, rebuild
+    region, subregion, country, source, yes, dry_run, max_pages, max_articles, rebuild
 ):
     """Scrape new articles from configured newspapers."""
     from text.collect import run_collect
 
     run_collect(
         region=region,
+        subregion=subregion,
         country=country,
         source=source,
         max_pages=max_pages,
@@ -121,6 +129,7 @@ def text_collect(
 
 @text.command("build")
 @_region_opt
+@_subregion_opt
 @_country_opt
 @_yes_opt
 @click.option(
@@ -135,22 +144,30 @@ def text_collect(
     default=False,
     help="Force recalculation of params.json and cache.",
 )
-def text_build(region, country, yes, cutoff, rebuild):
+def text_build(region, subregion, country, yes, cutoff, rebuild):
     """Run EPU index calculation and analysis."""
     from text.process import run_build
 
-    run_build(region=region, country=country, yes=yes, cutoff=cutoff, rebuild=rebuild)
+    run_build(
+        region=region,
+        subregion=subregion,
+        country=country,
+        yes=yes,
+        cutoff=cutoff,
+        rebuild=rebuild,
+    )
 
 
 @text.command("publish")
 @_region_opt
+@_subregion_opt
 @_country_opt
 @_yes_opt
-def text_publish(region, country, yes):
+def text_publish(region, subregion, country, yes):
     """Generate EPU dashboards and charts."""
     from text.publish import run_publish
 
-    run_publish(region=region, country=country, yes=yes)
+    run_publish(region=region, subregion=subregion, country=country, yes=yes)
 
 
 # ── Prices subcommands ──────────────────────────────────────────────
@@ -158,28 +175,31 @@ def text_publish(region, country, yes):
 
 @prices.command("collect")
 @_region_opt
+@_subregion_opt
 @_country_opt
 @_source_opt
 @_yes_opt
 @_dry_run_opt
-def prices_collect(region, country, source, yes, dry_run):
+def prices_collect(region, subregion, country, source, yes, dry_run):
     """Scrape supermarket prices from configured retailers."""
     click.echo("prices collect: not yet migrated")
 
 
 @prices.command("build")
 @_region_opt
+@_subregion_opt
 @_country_opt
 @_yes_opt
-def prices_build(region, country, yes):
+def prices_build(region, subregion, country, yes):
     """Classify products (COICOP) and construct CPI indices."""
     click.echo("prices build: not yet migrated")
 
 
 @prices.command("publish")
 @_region_opt
+@_subregion_opt
 @_yes_opt
-def prices_publish(region, yes):
+def prices_publish(region, subregion, yes):
     """Generate CPI dashboards."""
     click.echo("prices publish: not yet migrated")
 
