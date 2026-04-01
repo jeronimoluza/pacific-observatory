@@ -1,0 +1,41 @@
+{
+  "economic": {
+    "economy": "економіка",
+    "economic": "економічні",
+    "business": "бізнес",
+    "finance": "фінанси",
+    "financial": "фінансовий"
+  },
+  "policy": {
+    "government": "уряд",
+    "governmental": "урядовий",
+    "authority": "орган влади",
+    "authorities": "органи влади",
+    "minister": "міністр",
+    "ministry": "міністерство",
+    "parliament": "парламент",
+    "parliamentary": "парламентська",
+    "tax": "податок",
+    "regulation": "регулювання",
+    "legislation": "законодавство",
+    "central bank": "центральний банк",
+    "IMF": "IMF",
+    "International Monetary Fund": "Міжнародний валютний фонд",
+    "World Bank": "Світовий банк"
+  },
+  "uncertainty": {
+    "uncertain": "невизначений",
+    "uncertainty": "невизначеність",
+    "uncertainties": "невизначеності",
+    "unknown": "невідомий",
+    "unstable": "нестабільний",
+    "unsure": "невпевнений",
+    "undetermined": "невизначений",
+    "risky": "ризиковано",
+    "risk": "ризик",
+    "not certain": "не певний",
+    "non-reliable": "ненадійний",
+    "fluctuations": "коливання",
+    "unpredictable": "непередбачуваний"
+  }
+}

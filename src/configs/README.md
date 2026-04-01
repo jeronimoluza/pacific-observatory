@@ -7,24 +7,28 @@ for region/country metadata and shared settings.
 
 | File | Purpose |
 |------|---------|
-| `regions.yaml` | Regions and countries: slug, name, ISO3, currency, grouped by region |
+| `regions.yaml` | Topology tree: region → subregion → country slugs, with names at region/subregion levels |
+| `countries.yaml` | Flat properties: name, iso3, currency, languages per country slug |
 | `settings.yaml` | Data dirs, output dirs, ancillary data paths |
 
 ## How These Are Used
 
-- `core.config.load_regions()` reads `regions.yaml` → region-level data
-- `core.config.load_countries()` flattens `regions.yaml` → all countries across regions
-- `core.config.countries_for_region("pacific")` → list of country slugs in a region
-- `core.config.load_settings()` reads `settings.yaml`
-- Pipeline configs (`fuel/configs/`, `text/configs/`) reference country
-  slugs defined in `regions.yaml`
+- `core.config.load_regions()` reads `regions.yaml` → topology tree
+- `core.config.load_countries()` reads `countries.yaml` → flat country properties
+- `core.config.get_label(slug)` → display name for any region, subregion, or country
+- `core.config.get_country_path(slug)` → `(region, subregion, country)` tuple
+- `core.config.countries_for_region("eap")` → all country slugs in EAP
+- `core.config.countries_for_subregion("eap", "pacific_islands")` → country slugs in subregion
+- `core.config.resolve_subregion_region("pacific_islands")` → `"eap"`
+- `core.config.discover_pipeline_configs(dir, region, subregion, country)` → YAML paths
 
 ## Adding a Country
 
-1. Add entry under the appropriate region in `regions.yaml`
-2. Create pipeline-specific configs as needed
+1. Add slug to the appropriate subregion's `countries` list in `regions.yaml`
+2. Add properties entry in `countries.yaml` (name, iso3, currency, languages)
+3. Create pipeline-specific configs as needed
 
-## Adding a Region
+## Adding a Region or Subregion
 
-1. Add top-level entry to `regions.yaml` with name, description, countries
+1. Add to `regions.yaml` with `name` and structure
 2. Run `po init --region <name>` to scaffold pipeline directories

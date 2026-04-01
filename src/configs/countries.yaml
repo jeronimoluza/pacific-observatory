@@ -1,0 +1,179 @@
+# Country properties — flat file keyed by slug.
+# Topology (which region/subregion) lives in regions.yaml.
+#
+# languages: list of keyword directory names in src/text/analysis/keywords/
+# used for EPU keyword matching. Source YAMLs override per-newspaper.
+
+australia:
+  name: Australia
+  iso3: AUS
+  currency: AUD
+  languages: [en]
+
+cambodia:
+  name: Cambodia
+  iso3: KHM
+  currency: KHR
+  languages: [en, km]
+
+china:
+  name: China
+  iso3: CHN
+  currency: CNY
+  languages: [en, chinese_simplified]
+
+fiji:
+  name: Fiji
+  iso3: FJI
+  currency: FJD
+  languages: [en, fijian]
+
+french_polynesia:
+  name: French Polynesia
+  iso3: PYF
+  currency: XPF
+  languages: [en, fr]
+
+guam:
+  name: Guam
+  iso3: GUM
+  currency: USD
+  languages: [en]
+
+indonesia:
+  name: Indonesia
+  iso3: IDN
+  currency: IDR
+  languages: [en, indo]
+
+japan:
+  name: Japan
+  iso3: JPN
+  currency: JPY
+  languages: [en, japanese]
+
+south_korea:
+  name: "Korea, Rep."
+  iso3: KOR
+  currency: KRW
+  languages: [en, korean]
+
+lao_pdr:
+  name: Lao PDR
+  iso3: LAO
+  currency: LAK
+  languages: [en, lao]
+
+malaysia:
+  name: Malaysia
+  iso3: MYS
+  currency: MYR
+  languages: [en, malay]
+
+marshall_islands:
+  name: Marshall Islands
+  iso3: MHL
+  currency: USD
+  languages: [en, marshallese]
+
+mongolia:
+  name: Mongolia
+  iso3: MNG
+  currency: MNT
+  languages: [en, mn]
+
+myanmar:
+  name: Myanmar
+  iso3: MMR
+  currency: MMK
+  languages: [en]
+
+new_caledonia:
+  name: New Caledonia
+  iso3: NCL
+  currency: XPF
+  languages: [en, fr]
+
+new_zealand:
+  name: New Zealand
+  iso3: NZL
+  currency: NZD
+  languages: [en, maori]
+
+palau:
+  name: Palau
+  iso3: PLW
+  currency: USD
+  languages: [en, palauan]
+
+papua_new_guinea:
+  name: Papua New Guinea
+  iso3: PNG
+  currency: PGK
+  languages: [en, tok_pisin]
+
+philippines:
+  name: Philippines
+  iso3: PHL
+  currency: PHP
+  languages: [en, filipino]
+
+samoa:
+  name: Samoa
+  iso3: WSM
+  currency: WST
+  languages: [en, samoan]
+
+singapore:
+  name: Singapore
+  iso3: SGP
+  currency: SGD
+  languages: [en, chinese_simplified, malay, tamil]
+
+solomon_islands:
+  name: Solomon Islands
+  iso3: SLB
+  currency: SBD
+  languages: [en, solomon_islands_pijin]
+
+thailand:
+  name: Thailand
+  iso3: THA
+  currency: THB
+  languages: [en, thai]
+
+timor_leste:
+  name: Timor-Leste
+  iso3: TLS
+  currency: USD
+  languages: [en, tetum]
+
+tonga:
+  name: Tonga
+  iso3: TON
+  currency: TOP
+  languages: [en, tongan]
+
+tuvalu:
+  name: Tuvalu
+  iso3: TUV
+  currency: AUD
+  languages: [en]
+
+ukraine:
+  name: Ukraine
+  iso3: UKR
+  currency: UAH
+  languages: [en, ukrainian]
+
+vanuatu:
+  name: Vanuatu
+  iso3: VUT
+  currency: VUV
+  languages: [en, bislama, fr]
+
+vietnam:
+  name: Vietnam
+  iso3: VNM
+  currency: VND
+  languages: [en, vietnamese]

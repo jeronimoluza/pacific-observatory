@@ -119,6 +119,7 @@ class EPU:
         additional_terms: Union[List, None] = None,
         additional_name: Union[str, None] = None,
         daily_tail_start: Union[str, None] = None,
+        source_languages: Union[dict, None] = None,
     ):
         if isinstance(filepath, str):
             self.filepath = [filepath]
@@ -137,6 +138,7 @@ class EPU:
         self.cutoff = cutoff
         self.daily_tail_start = daily_tail_start
         self.non_epu_urls = non_epu_urls if non_epu_urls is not None else []
+        self.source_languages = source_languages or {}
         self.min_date = None
         self.max_date = None
         self.epu_stats = pd.DataFrame()
@@ -244,7 +246,10 @@ class EPU:
             print(f"Column '{column}': {exc}")
 
     def get_epu_category(
-        self, subset_condition=None, daily_tail_start=None, preloaded=None
+        self,
+        subset_condition=None,
+        daily_tail_start=None,
+        preloaded=None,
     ):
         """
         Reads the csv file that contains news and identifies the Economic/Policy/Uncertainty
@@ -255,7 +260,8 @@ class EPU:
             preloaded (dict | None): optional mapping of str(filepath) -> pre-loaded DataFrame
                 (already filtered and processed). When provided for a file, skips disk read.
         """
-        for fp in self.filepath:
+        total_files = len(self.filepath)
+        for file_idx, fp in enumerate(self.filepath):
             country = fp.parent.parent.name
             newspaper = fp.parent.name.replace(country, "").strip("_")
             source = f"{country}_{newspaper}"
@@ -269,9 +275,21 @@ class EPU:
                     daily_tail_start=daily_tail_start or self.daily_tail_start,
                 )
 
-            # Detect language from data, default to 'en' if not present
-            if "language" in raw.columns and not raw["language"].isna().all():
-                # Use the most common language in this file
+            # 6.3: Warn about NaN body rows and drop them
+            n_total = len(raw)
+            nan_body_mask = raw["body"].isna()
+            n_nan_body = int(nan_body_mask.sum())
+            if n_nan_body > 0:
+                print(
+                    f"  [{file_idx + 1}/{total_files}] {source}: dropping "
+                    f"{n_nan_body}/{n_total} rows with missing body"
+                )
+                raw = raw[~nan_body_mask].reset_index(drop=True)
+
+            # Resolve language: config-authoritative → column fallback → 'en'
+            if str(fp) in self.source_languages:
+                file_language = self.source_languages[str(fp)]
+            elif "language" in raw.columns and not raw["language"].isna().all():
                 file_language = (
                     raw["language"].mode().iloc[0]
                     if len(raw["language"].mode()) > 0
@@ -353,7 +371,7 @@ class EPU:
             ]
             raw = raw[[c for c in _keep_cols if c in raw.columns]]
 
-            self.raw_files.append((source, raw))
+            self.raw_files.append((source, raw, fp_key))
 
     def calculate_news_and_epu_counts(self, file: pd.DataFrame) -> pd.DataFrame:
         """
@@ -527,7 +545,7 @@ class EPU:
         """
         extended_stats = pd.DataFrame()
 
-        for source, file in self.raw_files:
+        for source, file, _fp_key in self.raw_files:
             counts_df = self.calculate_news_and_epu_counts(file)
             ratios_df = self.calculate_ratios(counts_df)
             self.epu_stats = self.merge_data_frames(
@@ -790,9 +808,11 @@ class EPU:
         """
         merged = pd.DataFrame()
 
-        for source, raw in self.raw_files:
-            # Detect language
-            if "language" in raw.columns and not raw["language"].isna().all():
+        for source, raw, fp_key in self.raw_files:
+            # Resolve language: config-authoritative → column fallback → 'en'
+            if fp_key in self.source_languages:
+                file_language = self.source_languages[fp_key]
+            elif "language" in raw.columns and not raw["language"].isna().all():
                 file_language = (
                     raw["language"].mode().iloc[0]
                     if len(raw["language"].mode()) > 0

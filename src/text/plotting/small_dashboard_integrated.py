@@ -76,20 +76,27 @@ def _build_dashboard_html(
     actors_data,
     actors_items,
     actors_defaults,
+    dropdown_options_html: str | None = None,
 ):
     topic_countries = sorted(topic_data.keys())
     topics_countries = sorted(topics_data.keys())
     actors_countries = sorted(actors_data.keys())
 
-    topic_options = "\n".join(
-        f'<option value="{c}">{fmt_country(c)}</option>' for c in topic_countries
-    )
-    topics_options = "\n".join(
-        f'<option value="{c}">{fmt_country(c)}</option>' for c in topics_countries
-    )
-    actors_options = "\n".join(
-        f'<option value="{c}">{fmt_country(c)}</option>' for c in actors_countries
-    )
+    if dropdown_options_html is not None:
+        # Use hierarchical options for all three dropdowns
+        topic_options = dropdown_options_html
+        topics_options = dropdown_options_html
+        actors_options = dropdown_options_html
+    else:
+        topic_options = "\n".join(
+            f'<option value="{c}">{fmt_country(c)}</option>' for c in topic_countries
+        )
+        topics_options = "\n".join(
+            f'<option value="{c}">{fmt_country(c)}</option>' for c in topics_countries
+        )
+        actors_options = "\n".join(
+            f'<option value="{c}">{fmt_country(c)}</option>' for c in actors_countries
+        )
 
     topic_palette = [
         "#1d77b2",
@@ -1337,6 +1344,122 @@ def generate_dashboard(
                 actors_defaults,
             )
         )
+    print(f"Created {dashboard_path}")
+
+
+def _build_hierarchical_options(tree: list) -> str:
+    """Build hierarchical <option> HTML from tree structure.
+
+    Regions are non-selectable optgroups (or aggregate entries).
+    Subregions get 1-level indent; countries get 2-level indent.
+    """
+    lines = []
+    for region_node in sorted(tree, key=lambda n: n["label"]):
+        # Region aggregate (if it has a data key, it's selectable)
+        rgn_val = f"region:{region_node['slug']}"
+        lines.append(f'<option value="{rgn_val}">{region_node["label"]}</option>')
+
+        for sub_node in sorted(
+            region_node.get("children", []), key=lambda n: n["label"]
+        ):
+            sub_val = f"subregion:{sub_node['slug']}"
+            sub_label = f"\u00a0\u00a0{sub_node['label']}"
+            lines.append(f'<option value="{sub_val}">{sub_label}</option>')
+
+            for ctry_node in sorted(
+                sub_node.get("children", []), key=lambda n: n["label"]
+            ):
+                ctry_val = ctry_node["slug"]
+                ctry_label = f"\u00a0\u00a0\u00a0\u00a0{ctry_node['label']}"
+                lines.append(f'<option value="{ctry_val}">{ctry_label}</option>')
+
+    return "\n".join(lines)
+
+
+def generate_dashboard_from_json(json_path):
+    """Generate EPU dashboard HTML from dashboard_data.json."""
+    import json
+
+    project_root = Path(__file__).resolve().parents[3]
+    output_dir = project_root / "outputs" / "text"
+
+    with open(json_path, encoding="utf-8") as f:
+        data = json.load(f)
+
+    units = data.get("units", {})
+    tree = data.get("tree", [])
+
+    # Build flat data dicts keyed by unit key (slug or "level:slug")
+    topic_data = {}
+    topics_data = {}
+    actors_data = {}
+    topics_set = set()
+    actors_set = set()
+
+    for key, unit in units.items():
+        attribution = unit.get("attribution", {})
+        if attribution.get("topics"):
+            topic_data[key] = attribution["topics"]
+
+        topics_csv = unit.get("topics")
+        if topics_csv:
+            topics_data[key] = topics_csv
+            for row in topics_csv[:1] if topics_csv else []:
+                for col in row:
+                    if col.startswith("EPU_") and col.endswith("_index"):
+                        topics_set.add(col[4:-6])
+
+        actors_csv = unit.get("actors")
+        if actors_csv:
+            actors_data[key] = actors_csv
+            for row in actors_csv[:1] if actors_csv else []:
+                for col in row:
+                    if col.startswith("EPU_") and col.endswith("_index"):
+                        actors_set.add(col[4:-6])
+
+    topics_items = sorted(topics_set)
+    topics_defaults = [
+        "inflation_prices",
+        "energy",
+        "diesel",
+        "oil",
+        "natural_gas",
+        "fuel_rationing",
+    ]
+    topics_defaults = [t for t in topics_defaults if t in topics_items] or topics_items[
+        :5
+    ]
+
+    actors_items = sorted(actors_set)
+    actors_defaults = [
+        "central_bank",
+        "parliament",
+        "government",
+        "world_bank",
+        "international_organizations",
+    ]
+    actors_defaults = [a for a in actors_defaults if a in actors_items] or actors_items[
+        :5
+    ]
+
+    # Build hierarchical dropdown options HTML
+    hier_options = _build_hierarchical_options(tree)
+
+    # Generate HTML with hierarchical dropdown
+    html = _build_dashboard_html(
+        topic_data,
+        topics_data,
+        topics_items,
+        topics_defaults,
+        actors_data,
+        actors_items,
+        actors_defaults,
+        dropdown_options_html=hier_options,
+    )
+
+    dashboard_path = output_dir / "small_dashboard_integrated.html"
+    with open(dashboard_path, "w", encoding="utf-8") as f:
+        f.write(html)
     print(f"Created {dashboard_path}")
 
 

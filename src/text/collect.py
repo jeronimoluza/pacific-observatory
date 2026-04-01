@@ -37,26 +37,40 @@ def _source_stats(news_csv: Path) -> tuple[str, str]:
         return "?", "?"
 
 
-def _build_plan(region=None, country=None, source=None):
+def _build_plan(region=None, subregion=None, country=None, source=None):
     """Discover configs and build execution plan with data stats."""
-    configs = discover_pipeline_configs(CONFIGS_DIR, region=region, country=country)
+    configs = discover_pipeline_configs(
+        CONFIGS_DIR, region=region, subregion=subregion, country=country
+    )
     if source:
         configs = [c for c in configs if c.stem == source]
 
     plan = []
     for config_path in configs:
         parts = config_path.relative_to(CONFIGS_DIR).parts
-        cfg_region = parts[0] if len(parts) >= 3 else "unknown"
-        cfg_country = parts[1] if len(parts) >= 3 else parts[0]
+        # Structure: {region}/{subregion}/{country}/{source}.yaml
+        cfg_region = parts[0] if len(parts) >= 4 else "unknown"
+        cfg_subregion = parts[1] if len(parts) >= 4 else "unknown"
+        cfg_country = (
+            parts[2] if len(parts) >= 4 else parts[1] if len(parts) >= 3 else parts[0]
+        )
         newspaper = config_path.stem
 
-        news_csv = DATA_BASE / cfg_region / cfg_country / newspaper / "news.csv"
+        news_csv = (
+            DATA_BASE
+            / cfg_region
+            / cfg_subregion
+            / cfg_country
+            / newspaper
+            / "news.csv"
+        )
         article_count, last_date = _source_stats(news_csv)
 
         plan.append(
             {
                 "config_path": config_path,
                 "region": cfg_region,
+                "subregion": cfg_subregion,
                 "country": cfg_country,
                 "newspaper": newspaper,
                 "source_key": newspaper,
@@ -103,6 +117,7 @@ def display_plan(plan, max_pages=None, max_articles=None, rebuild=False, region=
 
 def run_collect(
     region=None,
+    subregion=None,
     country=None,
     source=None,
     max_pages=None,
@@ -112,7 +127,9 @@ def run_collect(
     rebuild=False,
 ):
     """Run the text collect stage."""
-    plan = _build_plan(region=region, country=country, source=source)
+    plan = _build_plan(
+        region=region, subregion=subregion, country=country, source=source
+    )
     display_plan(
         plan,
         max_pages=max_pages,
@@ -145,22 +162,24 @@ def run_collect(
     for entry in plan:
         newspaper = entry["newspaper"]
         rgn = entry["region"]
+        subrgn = entry["subregion"]
         ctry = entry["country"]
         click.echo(f"\n  --- {newspaper} ({ctry}) ---")
 
-        # Set up per-source logging: logs/text/{region}/{country}/{newspaper}/
+        # Set up per-source logging: logs/text/{region}/{subregion}/{country}/{newspaper}/
         source_logger = setup_logger(
             pipeline="text",
             region=rgn,
+            subregion=subrgn,
             country=ctry,
             source=newspaper,
             logs_dir=LOGS_BASE,
         )
 
-        # Set data path: data/text/{region}/{country}/{newspaper}/
+        # Set data path: data/text/{region}/{subregion}/{country}/{newspaper}/
         # CSVStorage reads DATA_FOLDER_PATH env var for its base dir
-        region_data_dir = str(DATA_BASE / rgn)
-        os.environ["DATA_FOLDER_PATH"] = region_data_dir
+        subregion_data_dir = str(DATA_BASE / rgn / subrgn)
+        os.environ["DATA_FOLDER_PATH"] = subregion_data_dir
 
         try:
             scraper = create_scraper_from_file(str(entry["config_path"]))
@@ -176,10 +195,11 @@ def run_collect(
                 scraper.max_articles = max_articles
 
             source_logger.info(
-                "Starting %s for %s (%s/%s)",
+                "Starting %s for %s (%s/%s/%s)",
                 "rebuild" if rebuild else "collect",
                 newspaper,
                 rgn,
+                subrgn,
                 ctry,
             )
             if rebuild:

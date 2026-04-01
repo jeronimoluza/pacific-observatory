@@ -26,7 +26,7 @@ configs/
 2. Fill in selectors and listing config
 3. Test: `po text collect --source {newspaper} --dry-run`
 
-See [docs/text/HOW_TO_ADD_NEW_SCRAPER.md](../../../docs/text/HOW_TO_ADD_NEW_SCRAPER.md)
+See [HOW_TO_ADD_NEW_SCRAPER.md](../HOW_TO_ADD_NEW_SCRAPER.md)
 
 ## Discovery
 

@@ -1,116 +1,67 @@
-# Regions and countries — single source of truth for all pipelines.
+# Region and subregion topology — defines where countries sit in the
+# WB geographic hierarchy. Country properties live in countries.yaml.
 #
 # Usage:
-#   po fuel collect --region pacific
-#   po init --region middle_east
-#
-# To add a region:
-#   1. Add a top-level key below with name, description, and countries
-#   2. Run: po init --region <name>
-#   3. Create pipeline configs in src/{pipeline}/configs/{region}/
+#   po text collect --region eap
+#   po text build --subregion pacific_islands
+#   po init --region eca
 #
 # To add a country:
-#   1. Add it under the appropriate region's countries key
-#   2. Create pipeline-specific configs as needed
+#   1. Add slug to the appropriate subregion's countries list below
+#   2. Add properties entry in countries.yaml
+#   3. Create pipeline-specific configs as needed
+#
+# To add a subregion:
+#   1. Add under the appropriate region with name + countries list
+#
+# To add a region:
+#   1. Add top-level key with name + subregions
 
-pacific:
-  name: Pacific Island Countries
-  description: Pacific Observatory core region — PICs, PNG, and neighboring economies
-  countries:
-    australia:
-      name: Australia
-      iso3: AUS
-      currency: AUD
-    cambodia:
-      name: Cambodia
-      iso3: KHM
-      currency: KHR
-    china:
-      name: China
-      iso3: CHN
-      currency: CNY
-    fiji:
-      name: Fiji
-      iso3: FJI
-      currency: FJD
-    indonesia:
-      name: Indonesia
-      iso3: IDN
-      currency: IDR
-    japan:
-      name: Japan
-      iso3: JPN
-      currency: JPY
-    korea:
-      name: South Korea
-      iso3: KOR
-      currency: KRW
-    lao_pdr:
-      name: Lao PDR
-      iso3: LAO
-      currency: LAK
-    malaysia:
-      name: Malaysia
-      iso3: MYS
-      currency: MYR
-    myanmar:
-      name: Myanmar
-      iso3: MMR
-      currency: MMK
-    new_zealand:
-      name: New Zealand
-      iso3: NZL
-      currency: NZD
-    papua_new_guinea:
-      name: Papua New Guinea
-      iso3: PNG
-      currency: PGK
-    philippines:
-      name: Philippines
-      iso3: PHL
-      currency: PHP
-    samoa:
-      name: Samoa
-      iso3: WSM
-      currency: WST
-    singapore:
-      name: Singapore
-      iso3: SGP
-      currency: SGD
-    solomon_islands:
-      name: Solomon Islands
-      iso3: SLB
-      currency: SBD
-    thailand:
-      name: Thailand
-      iso3: THA
-      currency: THB
-    timor_leste:
-      name: Timor-Leste
-      iso3: TLS
-      currency: USD
-    tonga:
-      name: Tonga
-      iso3: TON
-      currency: TOP
-    tuvalu:
-      name: Tuvalu
-      iso3: TUV
-      currency: AUD
-    vanuatu:
-      name: Vanuatu
-      iso3: VUT
-      currency: VUV
-    vietnam:
-      name: Vietnam
-      iso3: VNM
-      currency: VND
+eap:
+  name: East Asia & Pacific
+  subregions:
+    east_asia:
+      name: East Asia
+      countries:
+        - china
+        - japan
+        - south_korea
+        - mongolia
+    pacific_islands:
+      name: Pacific Islands
+      countries:
+        - australia
+        - fiji
+        - french_polynesia
+        - guam
+        - marshall_islands
+        - new_caledonia
+        - new_zealand
+        - palau
+        - papua_new_guinea
+        - samoa
+        - solomon_islands
+        - tonga
+        - tuvalu
+        - vanuatu
+    southeast_asia:
+      name: Southeast Asia
+      countries:
+        - cambodia
+        - indonesia
+        - lao_pdr
+        - malaysia
+        - myanmar
+        - philippines
+        - singapore
+        - thailand
+        - timor_leste
+        - vietnam
 
 eca:
-  name: Europe and Central Asia
-  description: ECA region countries
-  countries:
-    ukraine:
-      name: Ukraine
-      iso3: UKR
-      currency: UAH
+  name: Europe & Central Asia
+  subregions:
+    eastern_europe:
+      name: Eastern Europe
+      countries:
+        - ukraine

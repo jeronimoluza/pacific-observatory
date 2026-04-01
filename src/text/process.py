@@ -9,13 +9,21 @@ from core.config import discover_pipeline_configs
 CONFIGS_DIR = Path(__file__).resolve().parent / "configs"
 
 
-def run_build(region=None, country=None, yes=False, cutoff=None, rebuild=False):
-    """Run EPU analysis for matching countries."""
+def run_build(
+    region=None, subregion=None, country=None, yes=False, cutoff=None, rebuild=False
+):
+    """Run EPU analysis for matching units (countries + aggregates)."""
+    # Resolve country list from configs for the display summary
     countries = set()
-    configs = discover_pipeline_configs(CONFIGS_DIR, region=region, country=country)
+    configs = discover_pipeline_configs(
+        CONFIGS_DIR, region=region, subregion=subregion, country=country
+    )
     for cfg in configs:
         parts = cfg.relative_to(CONFIGS_DIR).parts
-        if len(parts) >= 3:
+        # Structure: {region}/{subregion}/{country}/{source}.yaml
+        if len(parts) >= 4:
+            countries.add(parts[2])
+        elif len(parts) >= 3:
             countries.add(parts[1])
         elif len(parts) >= 2:
             countries.add(parts[0])
@@ -41,9 +49,12 @@ def run_build(region=None, country=None, yes=False, cutoff=None, rebuild=False):
         from text.analysis.main import run_analysis
 
         run_analysis(
-            countries=list(countries),
+            region=region,
+            subregion=subregion,
+            countries=list(countries) if country else None,
             cutoff=cutoff,
             recalculate_params=rebuild,
+            yes=yes,
         )
     except ImportError:
         click.echo("  Analysis module not yet migrated. Skipping.")
