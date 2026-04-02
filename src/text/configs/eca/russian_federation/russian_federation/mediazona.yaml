@@ -28,7 +28,7 @@ selectors:
     title: "h3.feed-item__title::text"
     url: "a[class*='feed-item__link']::attr(href)"
   article:
-    body: "div.mz-publish__text p"
+    body: ".mz-publish__text p"
     date: "script[type='application/ld+json']::text"
 
 cleaning:

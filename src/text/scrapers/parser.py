@@ -272,16 +272,22 @@ def extract_article_data_from_soup(
             date_result = extract_with_selector_fallback(
                 soup,
                 selectors.date,
-                first_only=True,
+                first_only=False,  # collect all matches so JSON-LD cleaners can search across scripts
             )
             if date_result["values"]:
-                date_value = date_result["values"][0]
-                if isinstance(date_value, str):
-                    data["date"] = date_value.strip()
-                elif hasattr(date_value, "get_text"):
-                    data["date"] = date_value.get_text(strip=True)
+                if date_result["extraction"] in {"text", "attr"}:
+                    # Join all text/attr values — allows regex cleaners to search multiple elements
+                    # (e.g. pages with multiple <script type="application/ld+json"> blocks)
+                    data["date"] = " ".join(
+                        v.strip() if isinstance(v, str) else str(v).strip()
+                        for v in date_result["values"]
+                    ).strip()
                 else:
-                    data["date"] = str(date_value).strip()
+                    date_elem = date_result["values"][0]
+                    if hasattr(date_elem, "get_text"):
+                        data["date"] = date_elem.get_text(strip=True)
+                    else:
+                        data["date"] = str(date_elem).strip()
             else:
                 logger.warning(
                     f"Article date selector '{selectors.date}' failed on {article_url}"

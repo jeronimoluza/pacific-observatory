@@ -24,10 +24,11 @@ def parse_date_from_jsonld(jsonld_text: str) -> str:
     if not jsonld_text:
         return ""
 
-    m = re.search(r'"datePublished"\s*:\s*"([^"]+)"', jsonld_text)
-    if not m:
-        return ""
-
     from .common import handle_mixed_dates
 
-    return handle_mixed_dates(m.group(1))
+    m = re.search(r'"datePublished"\s*:\s*"([^"]+)"', jsonld_text)
+    if m:
+        return handle_mixed_dates(m.group(1))
+
+    # Fallback: input may already be a clean date (double-cleaning scenario in scraper)
+    return handle_mixed_dates(jsonld_text.strip())

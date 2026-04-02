@@ -62,6 +62,8 @@ __all__ = [
     "clean_ukrainska_pravda_date",
     "clean_ukrainska_pravda_eng_date",
     "clean_spaced_html",
+    # Russian Federation cleaners
+    "parse_date_from_jsonld",
     # Legacy compatibility
     "CLEANING_FUNCTIONS",
 ]
@@ -162,6 +164,7 @@ from .ukraine import (  # noqa: E402
     clean_ukrainska_pravda_eng_date,
     clean_spaced_html,
 )
+from .russian_federation import parse_date_from_jsonld  # noqa: E402
 
 # Legacy compatibility: Provide CLEANING_FUNCTIONS dict
 CLEANING_FUNCTIONS = get_all_registered_functions()
