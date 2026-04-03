@@ -1,10 +1,14 @@
 """Generate standalone HTML fuel policy overview visualization.
 
-Two tabs:
+Four tabs:
   Tab 1 — Global Commodity Prices: Brent/WTI/Dubai/RBOB time-series +
            EAP country pricing-regime table.
   Tab 2 — Country Subsidies Comparison: scatter of subsidy per capita
            vs GDP per capita, coloured by pricing regime.
+  Tab 3 — Country Fuel Prices: per-country fuel product time-series with
+           regime information and day-to-day price change chart.
+  Tab 4 — Cross-Country Comparison: multi-country USD fuel price comparison
+           by fuel family with regional average benchmark line.
 """
 
 import bisect
@@ -1128,7 +1132,21 @@ _CSS = """
     #fuel-meta-panel {{ font-size: 0.88em; color: #555; margin: 4px 0; line-height: 1.7; }}
     /* fuel location table removed (no per-location rendering) */
     /* delta chart */
-    .delta-chart-wrapper {{ position: relative; height: 180px; margin-top: 12px; }}
+    .delta-chart-wrapper { position: relative; height: 180px; margin-top: 12px; }
+    /* Tab 4 — Cross-Country Comparison */
+    #compare-date-slider { flex: 0 1 55%; min-width: 140px; max-width: 55%; }
+    #compare-range-label { font-size: 0.85em; color: #555; min-width: 200px; text-align: center; white-space: nowrap; }
+    .compare-chart-wrapper { position: relative; height: 700px; margin-top: 8px; }
+    #compare-breakdown-toggle {
+        font-size: 0.82em; color: #667eea; cursor: pointer;
+        user-select: none; margin: 4px 0 2px 0; display: inline-block;
+    }
+    #compare-breakdown-toggle:hover { text-decoration: underline; }
+    #compare-product-breakdown {
+        font-size: 0.78em; color: #555; line-height: 1.7;
+        padding: 6px 10px; border: 1px solid #eee; border-radius: 4px;
+        margin-bottom: 8px; background: #fafafa;
+    }
 """
 
 
@@ -1369,6 +1387,41 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     products_json = json.dumps(products)
     _build_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
 
+    # --- Tab 4: fuel families with 3+ countries having USD data ---
+    _family_country_counts: dict[str, set[str]] = {}
+    for _country, _records in fuel_data_slim.items():
+        for _r in _records:
+            _ff = _r.get("fuel_family")
+            _unit = _r.get("unit")
+            if (
+                _ff
+                and _r.get("price_usd") is not None
+                and (_unit == "L" or (_ff == "lpg" and _unit == "kg"))
+            ):
+                _family_country_counts.setdefault(_ff, set()).add(_country)
+    _FAMILY_LABELS = {
+        "diesel": "Diesel",
+        "gasoline": "Gasoline",
+        "lpg": "LPG",
+        "kerosene": "Kerosene",
+        "natural_gas": "Natural Gas",
+        "fuel_oil": "Fuel Oil",
+        "electricity": "Electricity",
+        "crude_oil": "Crude Oil",
+    }
+    _available_families = [
+        (ff, _FAMILY_LABELS.get(ff, ff.title()))
+        for ff in _FAMILY_LABELS
+        if len(_family_country_counts.get(ff, set())) >= 2
+    ]
+    compare_family_radios_html = ""
+    for _ff_key, _ff_label in _available_families:
+        checked = "checked" if _ff_key == "diesel" else ""
+        compare_family_radios_html += (
+            f'<label><input type="radio" name="compare-family-toggle" value="{_ff_key}" '
+            f'{checked} onchange="setCompareFamily(this.value)">{_ff_label}</label>\n'
+        )
+
     # --- Regime table rows ---
     prod_headers = "".join(f"<th>{p}</th>" for p in table_products)
     # Colors for the two base regime chips
@@ -1446,6 +1499,7 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     <button class="tab-btn active" onclick="switchTab('tab1',this)">Commodity Prices</button>
     <button class="tab-btn"       onclick="switchTab('tab2',this)">Country Subsidies</button>
     <button class="tab-btn"       onclick="switchTab('tab3',this)">Country Fuel Prices</button>
+    <button class="tab-btn"       onclick="switchTab('tab4',this)">Cross-Country Comparison</button>
 </div>
 
 <!-- ===== TAB 1 ===== -->
@@ -1541,6 +1595,28 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     <!-- location price table removed -->
 </div>
 
+<!-- ===== TAB 4 ===== -->
+<div id="tab4" class="tab-pane">
+    <div class="ctrl-row">
+        <span class="row-label">Fuel:</span>
+        <div class="toggle-group">
+            {compare_family_radios_html}
+        </div>
+    </div>
+    <div class="ctrl-row">
+        <span class="row-label">Countries:</span>
+    </div>
+    <div class="chip-container" id="compare-country-chips"></div>
+    <div class="slider-row">
+        <label>Date Range:</label>
+        <span id="compare-range-label">&mdash;</span>
+        <div id="compare-date-slider"></div>
+    </div>
+    <span id="compare-breakdown-toggle" onclick="toggleCompareBreakdown()">&#9656; What products are included for each country?</span>
+    <div id="compare-product-breakdown" style="display:none"></div>
+    <div class="compare-chart-wrapper"><canvas id="compare-chart"></canvas></div>
+</div>
+
 <script>
 // ─── Data ────────────────────────────────────────────────────────────────────
 const COMM_SERIES   = JSON.parse({comm_json});
@@ -1555,6 +1631,7 @@ const EAP_ISOS      = new Set({eap_isos_json});
 let fuelTabInitialized    = false;
 let commTabInitialized    = false;
 let scatterTabInitialized = false;
+let compareTabInitialized = false;
 function switchTab(id, btn) {{
     document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1575,6 +1652,12 @@ function switchTab(id, btn) {{
         rebuildFuelChips();
         initFuelSlider();
         rerenderFuel();
+    }}
+    if (id === 'tab4' && !compareTabInitialized) {{
+        compareTabInitialized = true;
+        buildCompareCountryChips();
+        initCompareSlider();
+        rerenderCompare();
     }}
 }}
 
@@ -2453,6 +2536,321 @@ document.getElementById("fuel-country-select").addEventListener("change", functi
     initFuelSlider();
     rerenderFuel();
 }});
+
+// ─── Tab 4: Cross-Country Comparison ─────────────────────────────────────────
+let compareSliderDates = [];
+let compareSlider = null;
+
+function getCompareFamily() {{
+    var el = document.querySelector('input[name="compare-family-toggle"]:checked');
+    return el ? el.value : 'diesel';
+}}
+
+function compareUnitFilter(unit, family) {{
+    if (unit === 'L') return true;
+    if (family === 'lpg' && unit === 'kg') return true;
+    return false;
+}}
+
+function setCompareFamily() {{
+    buildCompareCountryChips();
+    initCompareSlider();
+    rerenderCompare();
+}}
+
+var COMPARE_DEFAULT_COUNTRIES = new Set([
+    'Australia', 'Cambodia', 'China', 'Fiji', 'Japan', 'Myanmar',
+    'New Zealand', 'Singapore', 'Taiwan', 'Thailand', 'Vietnam'
+]);
+
+function buildCompareCountryChips() {{
+    var family = getCompareFamily();
+    var container = document.getElementById('compare-country-chips');
+    container.innerHTML = '';
+    var countries = Object.keys(FUEL_DATA).sort().filter(function(country) {{
+        var allowed = COUNTRY_PRODUCTS[country];
+        return (FUEL_DATA[country] || []).some(function(r) {{
+            return r.fuel_family === family && compareUnitFilter(r.unit, family) && r.price_usd != null
+                && (!allowed || allowed.indexOf(r.fuel_product) !== -1);
+        }});
+    }});
+    countries.forEach(function(country) {{
+        var lel = document.createElement('label');
+        lel.className = 'chip';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.value = country;
+        cb.checked = COMPARE_DEFAULT_COUNTRIES.has(country);
+        cb.addEventListener('change', rerenderCompare);
+        lel.appendChild(cb);
+        lel.appendChild(document.createTextNode(country));
+        container.appendChild(lel);
+    }});
+}}
+
+function initCompareSlider() {{
+    var family = getCompareFamily();
+    var dateSet = {{}};
+    Object.keys(FUEL_DATA).forEach(function(country) {{
+        var allowed = COUNTRY_PRODUCTS[country];
+        (FUEL_DATA[country] || []).forEach(function(r) {{
+            if (r.fuel_family === family && compareUnitFilter(r.unit, family) && r.price_usd != null
+                && (!allowed || allowed.indexOf(r.fuel_product) !== -1)) {{
+                dateSet[r.observation_date] = true;
+            }}
+        }});
+    }});
+    compareSliderDates = Object.keys(dateSet).sort();
+    var maxIdx = compareSliderDates.length - 1;
+    if (maxIdx < 0) return;
+
+    // Default start to 2025-01-01
+    var defaultStart = 0;
+    for (var si = 0; si < compareSliderDates.length; si++) {{
+        if (compareSliderDates[si] >= '2025-01-01') {{ defaultStart = si; break; }}
+    }}
+
+    var el = document.getElementById('compare-date-slider');
+    if (compareSlider) {{ compareSlider.destroy(); }}
+    compareSlider = noUiSlider.create(el, {{
+        start: [defaultStart, maxIdx],
+        connect: true,
+        step: 1,
+        range: {{ min: 0, max: maxIdx || 1 }},
+        tooltips: [
+            {{ to: function(v) {{ return formatYM(compareSliderDates[Math.round(v)]); }} }},
+            {{ to: function(v) {{ return formatYM(compareSliderDates[Math.round(v)]); }} }}
+        ]
+    }});
+    var rangeLabel = document.getElementById('compare-range-label');
+    function updateCompareLabel() {{
+        var vals = compareSlider.get().map(function(v) {{ return Math.round(v); }});
+        rangeLabel.textContent = formatYM(compareSliderDates[vals[0]]) + '  \u2192  ' + formatYM(compareSliderDates[vals[1]]);
+    }}
+    updateCompareLabel();
+    compareSlider.on('update', function() {{ updateCompareLabel(); }});
+    compareSlider.on('change', function() {{ rerenderCompare(); }});
+}}
+
+function getCompareSliderRange() {{
+    if (!compareSlider || !compareSliderDates.length) return {{ from: '', to: '' }};
+    var vals = compareSlider.get().map(function(v) {{ return Math.round(v); }});
+    return {{ from: compareSliderDates[vals[0]], to: compareSliderDates[vals[1]] }};
+}}
+
+function getCompareSeries(family) {{
+    var result = {{}};
+    Object.keys(FUEL_DATA).forEach(function(country) {{
+        var allowed = COUNTRY_PRODUCTS[country];
+        var rows = (FUEL_DATA[country] || []).filter(function(r) {{
+            return r.fuel_family === family && compareUnitFilter(r.unit, family) && r.price_usd != null
+                && (!allowed || allowed.indexOf(r.fuel_product) !== -1);
+        }});
+        if (!rows.length) return;
+
+        // Group by fuel_product first, then build per-product date maps.
+        var byProduct = {{}};
+        var allDatesSet = {{}};
+        var LPG_KG_PER_L = 0.54;
+        rows.forEach(function(r) {{
+            var prod = r.fuel_product || '_';
+            if (!byProduct[prod]) byProduct[prod] = {{}};
+            // Normalize LPG to USD/kg: convert L prices using density ~0.54 kg/L
+            var price = r.price_usd;
+            if (family === 'lpg' && r.unit === 'L') price = price / LPG_KG_PER_L;
+            byProduct[prod][r.observation_date] = price;
+            allDatesSet[r.observation_date] = true;
+        }});
+        var sortedDates = Object.keys(allDatesSet).sort();
+        if (!sortedDates.length) return;
+
+        // Forward-fill each product across all dates, then average products per day.
+        var products = Object.keys(byProduct);
+        var lastVals = {{}};
+        var pts = [];
+        sortedDates.forEach(function(d) {{
+            var sum = 0, count = 0;
+            products.forEach(function(prod) {{
+                var v = byProduct[prod][d];
+                if (v != null) lastVals[prod] = v;
+                if (lastVals[prod] != null) {{ sum += lastVals[prod]; count++; }}
+            }});
+            if (count > 0) {{
+                pts.push({{ x: d, y: Math.round((sum / count) * 10000) / 10000 }});
+            }}
+        }});
+        result[country] = pts;
+    }});
+    return result;
+}}
+
+function computeRegionalAverage(allCountrySeries) {{
+    var allDates = new Set();
+    Object.values(allCountrySeries).forEach(function(pts) {{
+        pts.forEach(function(p) {{ allDates.add(p.x); }});
+    }});
+    var sortedDates = Array.from(allDates).sort();
+    if (!sortedDates.length) return [];
+
+    var startDate = new Date(sortedDates[0]);
+    var endDate = new Date(sortedDates[sortedDates.length - 1]);
+    var dailyDates = [];
+    for (var d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {{
+        dailyDates.push(d.toISOString().slice(0, 10));
+    }}
+
+    var countryDaily = {{}};
+    Object.keys(allCountrySeries).forEach(function(country) {{
+        var pts = allCountrySeries[country];
+        var dateMap = {{}};
+        pts.forEach(function(p) {{ dateMap[p.x] = p.y; }});
+        var filled = [];
+        var lastVal = null;
+        dailyDates.forEach(function(dd) {{
+            if (dateMap[dd] != null) lastVal = dateMap[dd];
+            filled.push(lastVal);
+        }});
+        countryDaily[country] = filled;
+    }});
+
+    var countries = Object.keys(countryDaily);
+    var avgPts = [];
+    dailyDates.forEach(function(dd, i) {{
+        var sum = 0, count = 0;
+        countries.forEach(function(c) {{
+            var val = countryDaily[c][i];
+            if (val != null) {{ sum += val; count++; }}
+        }});
+        if (count > 0) {{
+            avgPts.push({{ x: dd, y: Math.round((sum / count) * 10000) / 10000 }});
+        }}
+    }});
+    return avgPts;
+}}
+
+function drawCompareChart(datasets, avgDataset, family) {{
+    var ctx = document.getElementById('compare-chart').getContext('2d');
+    var allDatasets = datasets.slice();
+    if (avgDataset) allDatasets.push(avgDataset);
+
+    if (!allDatasets.length) {{
+        if (window.compareChart) {{ window.compareChart.destroy(); window.compareChart = null; }}
+        return;
+    }}
+
+    var yLabel = (family === 'lpg') ? 'USD / kg' : 'USD / L';
+    // Custom Y-scale: zoom to data range (don't force min=0)
+    var allY = [];
+    allDatasets.forEach(function(ds) {{
+        (ds.data || []).forEach(function(pt) {{
+            if (pt && pt.y != null && !ds._isGray) allY.push(pt.y);
+        }});
+    }});
+    var yScale;
+    if (!allY.length) {{
+        yScale = {{ display: true, title: {{ display: true, text: yLabel }} }};
+    }} else {{
+        var yMin = Math.min.apply(null, allY);
+        var yMax = Math.max.apply(null, allY);
+        var pad = (yMax - yMin) * 0.08 || yMax * 0.05 || 0.1;
+        yScale = {{
+            display: true,
+            title: {{ display: true, text: yLabel }},
+            min: yMin - pad,
+            max: yMax + pad
+        }};
+    }}
+    var opts = _makeLineChartOptions(yScale, true);
+    opts.plugins.legend.labels.filter = function(item, data) {{
+        return !data.datasets[item.datasetIndex]._isGray;
+    }};
+
+    if (!window.compareChart) {{
+        window.compareChart = new Chart(ctx, {{ type: 'line', data: {{ datasets: allDatasets }}, options: opts }});
+    }} else {{
+        window.compareChart.data.datasets = allDatasets;
+        window.compareChart.options.scales.y = yScale;
+        window.compareChart.update('none');
+    }}
+}}
+
+function toggleCompareBreakdown() {{
+    var panel = document.getElementById('compare-product-breakdown');
+    var toggle = document.getElementById('compare-breakdown-toggle');
+    if (panel.style.display === 'none') {{
+        panel.style.display = '';
+        toggle.innerHTML = '&#9662; What products are included for each country?';
+    }} else {{
+        panel.style.display = 'none';
+        toggle.innerHTML = '&#9656; What products are included for each country?';
+    }}
+}}
+
+function updateCompareBreakdown(family) {{
+    var panel = document.getElementById('compare-product-breakdown');
+    var items = [];
+    Object.keys(FUEL_DATA).sort().forEach(function(country) {{
+        var allowed = COUNTRY_PRODUCTS[country];
+        var products = {{}};
+        (FUEL_DATA[country] || []).forEach(function(r) {{
+            if (r.fuel_family === family && compareUnitFilter(r.unit, family) && r.price_usd != null
+                && (!allowed || allowed.indexOf(r.fuel_product) !== -1)) {{
+                products[r.fuel_product] = true;
+            }}
+        }});
+        var names = Object.keys(products).sort();
+        if (names.length > 0) {{
+            items.push('<b>' + country + ':</b> ' + names.join(', '));
+        }}
+    }});
+    panel.innerHTML = items.length ? items.join(' &nbsp;|&nbsp; ') : 'No data for this fuel family.';
+}}
+
+function rerenderCompare() {{
+    var family = getCompareFamily();
+    var selectedCountries = getCheckedValues('compare-country-chips');
+    var range = getCompareSliderRange();
+
+    var allSeries = getCompareSeries(family);
+
+    if (range.from || range.to) {{
+        var filtered = {{}};
+        Object.keys(allSeries).forEach(function(c) {{
+            filtered[c] = allSeries[c].filter(function(p) {{
+                return (!range.from || p.x >= range.from) && (!range.to || p.x <= range.to);
+            }});
+        }});
+        allSeries = filtered;
+    }}
+
+    var avgPts = computeRegionalAverage(allSeries);
+    var avgDataset = {{
+        label: 'Regional Average',
+        data: avgPts,
+        borderColor: '#bbb',
+        backgroundColor: '#bbb',
+        borderWidth: 2,
+        borderDash: [6, 4],
+        fill: false,
+        tension: 0.1,
+        pointRadius: 0,
+        pointHoverRadius: 3,
+        order: 2,
+        _isGray: true
+    }};
+
+    var datasets = [];
+    var colorIdx = 0;
+    selectedCountries.forEach(function(country) {{
+        var pts = allSeries[country];
+        if (!pts || !pts.length) return;
+        var color = PALETTE[colorIdx % PALETTE.length];
+        colorIdx++;
+        datasets.push(makeFuelDataset(country, pts, color, false));
+    }});
+
+    drawCompareChart(datasets, avgDataset, family);
+    updateCompareBreakdown(family);
+}}
 // ─── Init ───────────────────────────────────────────────────────────────────────────
 requestAnimationFrame(() => {{
     commTabInitialized = true;
