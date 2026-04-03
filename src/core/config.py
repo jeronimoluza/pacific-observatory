@@ -5,6 +5,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+import click
 import yaml
 
 logger = logging.getLogger(__name__)
@@ -171,6 +172,8 @@ def discover_pipeline_configs(
     Walks: {pipeline_configs_dir}/{region}/{subregion}/{country}/{source}.yaml
     Skips directories starting with _ (e.g. _examples/, _aggregate/).
     """
+    if not pipeline_configs_dir.exists():
+        return []
     yamls = []
     for path in sorted(pipeline_configs_dir.rglob("*.yaml")):
         rel_parts = path.relative_to(pipeline_configs_dir).parts
@@ -188,3 +191,97 @@ def discover_pipeline_configs(
             continue
         yamls.append(path)
     return yamls
+
+
+def parse_config_path(config_path: Path, base_dir: Path) -> tuple[str, str, str]:
+    """Return (region, subregion, country) from a pipeline config file path."""
+    parts = config_path.relative_to(base_dir).parts
+    region = parts[0] if len(parts) >= 4 else "unknown"
+    subregion = parts[1] if len(parts) >= 4 else "unknown"
+    country = parts[2] if len(parts) >= 4 else parts[1] if len(parts) >= 3 else parts[0]
+    return region, subregion, country
+
+
+# ── Slug validation ───────────────────────────────────────────────
+
+
+def make_slug_validator(kind: str):
+    """Return a Click option callback that validates region/subregion/country slugs."""
+    _hints = {
+        "region": "Run 'po list-regions' to see available regions, subregions, and countries.",
+        "subregion": "Run 'po list-regions' to see available subregions and their parent regions.",
+        "country": "Run 'po list-regions' to see available countries and where they belong.",
+    }
+    _index_key = {
+        "region": "region_names",
+        "subregion": "subregion_names",
+        "country": "country_to_path",
+    }
+
+    def callback(ctx, param, value):
+        if value is None:
+            return value
+        idx = _build_index()
+        if value not in idx[_index_key[kind]]:
+            raise click.BadParameter(f"unknown {kind} '{value}'. {_hints[kind]}")
+        return value
+
+    return callback
+
+
+# ── Region topology display ───────────────────────────────────────
+
+
+def _wrap_country_list(countries: list[str], max_width: int, indent: int) -> str:
+    """Join countries with ' · ', wrapping lines at max_width."""
+    if not countries:
+        return ""
+    lines = []
+    current_line = countries[0]
+    for c in countries[1:]:
+        candidate = current_line + " · " + c
+        if len(candidate) > max_width:
+            lines.append(current_line)
+            current_line = c
+        else:
+            current_line = candidate
+    lines.append(current_line)
+    return ("\n" + " " * indent).join(lines)
+
+
+def format_regions_table(configs_dir: Path = _CONFIGS_DIR) -> str:
+    """Format the region -> subregion -> country topology as a printable table."""
+    regions = load_regions(configs_dir)
+    lines = []
+    total_regions = 0
+    total_subregions = 0
+    total_countries = 0
+
+    rw, sw = 12, 22
+    col_start = 2 + rw + sw
+    lines.append(f"  {'Region':<{rw}}{'Subregion':<{sw}}Countries")
+    lines.append("  " + "─" * 80)
+
+    for region_slug, region_data in regions.items():
+        total_regions += 1
+        first_region = True
+        for sub_slug, sub_data in region_data.get("subregions", {}).items():
+            total_subregions += 1
+            countries = sub_data.get("countries", [])
+            total_countries += len(countries)
+
+            region_col = region_slug if first_region else ""
+            first_region = False
+            country_str = _wrap_country_list(countries, 60, col_start)
+            lines.append(f"  {region_col:<{rw}}{sub_slug:<{sw}}{country_str}")
+
+    lines.append("  " + "─" * 80)
+    lines.append(
+        f"  {total_regions} regions · {total_subregions} subregions · "
+        f"{total_countries} countries"
+    )
+    lines.append("")
+    lines.append(
+        "  Usage:  --region eap   --subregion eastern_europe   --country ukraine"
+    )
+    return "\n".join(lines)

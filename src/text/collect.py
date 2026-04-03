@@ -7,7 +7,7 @@ from pathlib import Path
 import click
 import pandas as pd
 
-from core.config import discover_pipeline_configs
+from core.config import discover_pipeline_configs, parse_config_path
 from core.logging import setup_logger
 from core.state import read_state, write_state, set_checked
 
@@ -26,6 +26,7 @@ def _source_stats(news_csv: Path) -> dict:
         "earliest_date": "—",
         "last_date": "—",
         "last_updated": "—",
+        "mtime": None,
     }
     if not news_csv.exists():
         return empty
@@ -55,9 +56,10 @@ def _source_stats(news_csv: Path) -> dict:
             "earliest_date": earliest,
             "last_date": last,
             "last_updated": updated,
+            "mtime": mtime,
         }
     except Exception:
-        return {k: "?" for k in empty}
+        return {**{k: "?" for k in empty}, "mtime": None}
 
 
 def _parse_article_count(raw: str) -> int:
@@ -68,75 +70,142 @@ def _parse_article_count(raw: str) -> int:
         return 0
 
 
-def display_list(plan):
-    """Show source inventory grouped by region/subregion."""
-    if not plan:
-        click.echo("No configs found matching filters.")
-        return
-
+def display_list(region=None, subregion=None, country=None, source=None):
+    """Show YAML-only source inventory grouped by subregion/country. No CSV reads."""
     from itertools import groupby
 
-    total_sources = len(plan)
-    total_articles = sum(_parse_article_count(e["article_count"]) for e in plan)
-    all_regions = set()
-    all_subregions = set()
-    all_countries = set()
+    configs = discover_pipeline_configs(
+        CONFIGS_DIR, region=region, subregion=subregion, country=country
+    )
+    if source:
+        configs = [c for c in configs if c.stem == source]
 
-    # Sort for grouping: region → subregion → country → newspaper
+    if not configs:
+        click.echo("No sources found matching filters.")
+        return
+
+    entries = []
+    for config_path in configs:
+        rgn, subrgn, ctry = parse_config_path(config_path, CONFIGS_DIR)
+        entries.append(
+            {
+                "region": rgn,
+                "subregion": subrgn,
+                "country": ctry,
+                "source_key": config_path.stem,
+            }
+        )
+
+    click.echo()
+    click.echo(f"  {len(entries)} configured sources")
+    click.echo("  A source is a configured newspaper. Use --source <key> to run one.")
+    click.echo()
+
+    entries_sorted = sorted(
+        entries, key=lambda e: (e["region"], e["subregion"], e["country"])
+    )
+    for (rgn, subrgn), group in groupby(
+        entries_sorted, key=lambda e: (e["region"], e["subregion"])
+    ):
+        click.echo(f"  {rgn} / {subrgn}")
+        for ctry, country_group in groupby(list(group), key=lambda e: e["country"]):
+            keys = [e["source_key"] for e in country_group]
+            click.echo(f"    {ctry}   {' · '.join(keys)}")
+        click.echo()
+
+    click.echo("  Run 'po text status' for article counts and freshness.")
+    click.echo("  Use --source <key> to run a single source.")
+    click.echo()
+
+
+def display_status(region=None, subregion=None, country=None, show_all=False):
+    """Show per-source health table with article counts and freshness."""
+    from datetime import datetime, timezone
+    from itertools import groupby
+
+    plan = _build_plan(region=region, subregion=subregion, country=country)
+    if not plan:
+        click.echo("No sources found matching filters.")
+        return
+
+    total = len(plan)
+    scraped = sum(1 for e in plan if e["article_count"] not in ("—", "?"))
+    total_articles = sum(_parse_article_count(e["article_count"]) for e in plan)
+    countries_count = len(set(e["country"] for e in plan))
+
+    if not show_all:
+        plan = [e for e in plan if e["article_count"] not in ("—", "?")]
+        if not plan:
+            click.echo(f"\n  No scraped sources found ({total} configured).")
+            click.echo("  Use --all to include unscraped sources.\n")
+            return
+
+    click.echo()
+    click.echo(
+        f"  Text Pipeline Status  ({total} sources · {scraped} scraped · "
+        f"{total_articles:,} articles · {countries_count} countries)"
+    )
+
     plan_sorted = sorted(
         plan, key=lambda e: (e["region"], e["subregion"], e["country"], e["newspaper"])
     )
-
-    # Column widths
     nw = max(25, max(len(e["newspaper"]) for e in plan) + 1)
     cw = max(18, max(len(e["country"]) for e in plan) + 1)
-
-    click.echo()
-    click.echo(f"  Text Source Inventory ({total_sources} sources)")
 
     for (rgn, subrgn), group in groupby(
         plan_sorted, key=lambda e: (e["region"], e["subregion"])
     ):
         entries = list(group)
-        all_regions.add(rgn)
-        all_subregions.add((rgn, subrgn))
-        sub_countries = set()
-
         click.echo()
         click.echo(f"  {rgn} / {subrgn}")
-        w = cw + nw + 8 + 10 + 10 + 26 + 12
+        w = cw + nw + 8 + 24 + 16 + 8
         click.echo("  " + "─" * w)
         click.echo(
             f"  {'Country':<{cw}} {'Newspaper':<{nw}} {'Articles':>8}  "
-            f"{'Earliest':>10}  {'Coverage To':>11}  {'Last Scraped':<26}"
+            f"{'Coverage':>22}  {'Last Scraped':<16}"
         )
         click.echo("  " + "─" * w)
 
+        sub_countries = set()
+        sub_articles = 0
         for entry in entries:
             sub_countries.add(entry["country"])
-            all_countries.add(entry["country"])
+            sub_articles += _parse_article_count(entry["article_count"])
+
+            e_date = entry["earliest_date"]
+            l_date = entry["last_date"]
+            if e_date != "—" and l_date != "—":
+                coverage = f"{e_date} → {l_date}"
+            else:
+                coverage = "—"
+
+            mtime = entry.get("mtime")
+            if mtime:
+                delta = datetime.now(tz=timezone.utc) - mtime
+                days, hours = delta.days, delta.seconds // 3600
+                last_scraped = f"{days}d {hours}h ago" if days > 0 else f"{hours}h ago"
+            else:
+                last_scraped = "never"
+
             click.echo(
                 f"  {entry['country']:<{cw}} "
                 f"{entry['newspaper']:<{nw}} "
                 f"{entry['article_count']:>8}  "
-                f"{entry['earliest_date']:>10}  "
-                f"{entry['last_date']:>11}  "
-                f"{entry['last_updated']:<26}"
+                f"{coverage:>22}  "
+                f"{last_scraped:<16}"
             )
 
-        sub_articles = sum(_parse_article_count(e["article_count"]) for e in entries)
         click.echo("  " + "─" * w)
         click.echo(
-            f"  {len(sub_countries)} countries, {len(entries)} sources, "
+            f"  {len(sub_countries)} countries · {len(entries)} sources · "
             f"{sub_articles:,} articles"
         )
 
-    click.echo()
-    click.echo(
-        f"  Total: {len(all_regions)} regions, {len(all_subregions)} subregions, "
-        f"{len(all_countries)} countries, {total_sources} sources, "
-        f"{total_articles:,} articles"
-    )
+    if not show_all and scraped < total:
+        click.echo(
+            f"\n  Showing {scraped} scraped sources of {total} configured. "
+            f"Use --all to include all."
+        )
     click.echo()
 
 
@@ -150,15 +219,10 @@ def _build_plan(region=None, subregion=None, country=None, source=None):
 
     plan = []
     for config_path in configs:
-        parts = config_path.relative_to(CONFIGS_DIR).parts
-        # Structure: {region}/{subregion}/{country}/{source}.yaml
-        cfg_region = parts[0] if len(parts) >= 4 else "unknown"
-        cfg_subregion = parts[1] if len(parts) >= 4 else "unknown"
-        cfg_country = (
-            parts[2] if len(parts) >= 4 else parts[1] if len(parts) >= 3 else parts[0]
+        cfg_region, cfg_subregion, cfg_country = parse_config_path(
+            config_path, CONFIGS_DIR
         )
         newspaper = config_path.stem
-
         news_csv = (
             DATA_BASE
             / cfg_region
@@ -255,13 +319,13 @@ def run_collect(
     list_sources=False,
 ):
     """Run the text collect stage."""
+    if list_sources:
+        display_list(region=region, subregion=subregion, country=country, source=source)
+        return
+
     plan = _build_plan(
         region=region, subregion=subregion, country=country, source=source
     )
-
-    if list_sources:
-        display_list(plan)
-        return
 
     display_plan(
         plan,
