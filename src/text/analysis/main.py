@@ -45,6 +45,57 @@ PROJECT_ROOT = _PROJECT_ROOT
 DATA_ROOT = PROJECT_ROOT / "data" / "text"
 
 
+def _consolidate_stale_daily(df: pd.DataFrame, daily_tail_start: str) -> pd.DataFrame:
+    """Consolidate daily-format rows for completed months into monthly rows.
+
+    When the daily tail advances to a new month, daily rows from the previous
+    tail month(s) become stale.  This function detects them (date < tail_ts
+    with YYYY-MM-DD format ``ym``) and replaces each month's daily rows with a
+    single monthly row (date = 1st of month, ym = "YYYY-M").
+
+    Aggregation: ``news_total`` is summed; all other numeric columns are
+    averaged.  This produces a close approximation of the true monthly EPU
+    value when a full month of daily observations is available.
+    """
+    if df.empty or "ym" not in df.columns:
+        return df
+
+    df = df.copy()
+    df["date"] = pd.to_datetime(df["date"])
+    tail_ts = pd.Timestamp(daily_tail_start)
+    is_pre_tail = df["date"] < tail_ts
+    is_daily_fmt = df["ym"].astype(str).str.count("-") >= 2
+    stale_mask = is_pre_tail & is_daily_fmt
+
+    if not stale_mask.any():
+        return df
+
+    stale = df[stale_mask].copy()
+    keep = df[~stale_mask].copy()
+
+    stale["_period"] = stale["date"].dt.to_period("M")
+    numeric_cols = [
+        c
+        for c in stale.columns
+        if c not in ("date", "ym", "_period")
+        and pd.api.types.is_numeric_dtype(stale[c])
+    ]
+
+    agg_dict = {c: ("sum" if c == "news_total" else "mean") for c in numeric_cols}
+    monthly = stale.groupby("_period").agg(agg_dict).reset_index()
+    monthly["date"] = monthly["_period"].dt.to_timestamp()
+    monthly["ym"] = (
+        monthly["date"].dt.year.astype(str) + "-" + monthly["date"].dt.month.astype(str)
+    )
+    monthly = monthly.drop(columns=["_period"]).reindex(columns=df.columns)
+
+    return (
+        pd.concat([keep, monthly], ignore_index=True)
+        .sort_values("date")
+        .reset_index(drop=True)
+    )
+
+
 def append_missing_months(
     path: Path,
     new_df: pd.DataFrame,
@@ -61,6 +112,8 @@ def append_missing_months(
     today = pd.Timestamp.today()
 
     if not path.exists():
+        if daily_tail_start is not None:
+            new_df = _consolidate_stale_daily(new_df, daily_tail_start)
         new_df.to_csv(path, index=False, encoding="utf-8")
         return
 
@@ -125,6 +178,10 @@ def append_missing_months(
     if daily_tail_start is not None:
         tail_ts = pd.Timestamp(daily_tail_start)
         existing = existing[existing["date"] < tail_ts]
+        # Consolidate stale daily rows from previous tail months into monthly
+        # aggregates.  This prevents daily rows from accumulating across month
+        # boundaries (e.g. March daily rows persisting into the April run).
+        existing = _consolidate_stale_daily(existing, daily_tail_start)
         new_daily = new_df[new_df["date"] >= tail_ts]
         if not new_daily.empty:
             rows_to_add_list.append(new_daily)
