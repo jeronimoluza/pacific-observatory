@@ -7,10 +7,11 @@ Two tabs:
            vs GDP per capita, coloured by pricing regime.
 """
 
+import bisect
 import html as _html
 import json
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -31,6 +32,9 @@ _IMF_XLSB = IMF_SUBSIDIES_XLSB
 _CONTROLS_CSV = WB_SUBSIDIES_CSV
 _POPULATION_CSV = WB_POPULATION_CSV
 _GDP_CSV = WB_GDP_CSV
+# FX cache copied from tooling/data/ancillary/forex/fx_cache.csv.
+# TODO: move tooling/src/tools/stats/forex.py here so rates auto-refresh via exchangerate.host API.
+_FX_CACHE_CSV = DATA_DIR / "global" / "forex" / "fx_cache.csv"
 
 # ── Per-country product lists for Tab 3 (edit to control which chips appear) ──
 COUNTRY_PRODUCTS: dict[str, list[str]] = {
@@ -665,6 +669,78 @@ def _load_gdp() -> pd.DataFrame:
     return df
 
 
+def _load_fx_rates() -> dict[str, list[tuple[str, float]]]:
+    """Load fx_cache.csv → {currency_iso: sorted [(date_str, rate_usd_to_local), …]}.
+
+    rate_usd_to_local: 1 USD = N local currency units, so price_usd = price_local / rate.
+    """
+    if not _FX_CACHE_CSV.exists():
+        print(
+            f"  [policy] WARNING: fx_cache not found at {_FX_CACHE_CSV} — USD mode unavailable"
+        )
+        return {}
+    df = pd.read_csv(_FX_CACHE_CSV, low_memory=False)
+    result: dict[str, list[tuple[str, float]]] = {}
+    for _, row in df.iterrows():
+        currency = str(row.get("currency_iso", "")).strip()
+        date_str = str(row.get("date", ""))[:10]
+        try:
+            rate = float(row["rate_usd_to_local"])
+        except (TypeError, ValueError):
+            continue
+        if currency and date_str and rate > 0:
+            result.setdefault(currency, []).append((date_str, rate))
+    for currency in result:
+        result[currency].sort(key=lambda x: x[0])
+    print(f"  [policy] Loaded FX rates for {len(result)} currencies")
+    return result
+
+
+def _nearest_fx_rate(
+    sorted_rates: list[tuple[str, float]], date_str: str
+) -> float | None:
+    """Return the FX rate for the nearest date to date_str (binary search)."""
+    dates = [d for d, _ in sorted_rates]
+    idx = bisect.bisect_left(dates, date_str)
+    if idx == 0:
+        return sorted_rates[0][1]
+    if idx >= len(sorted_rates):
+        return sorted_rates[-1][1]
+    before = sorted_rates[idx - 1]
+    after = sorted_rates[idx]
+    # Pick whichever date is closer
+    return before[1] if (date_str == before[0] or date_str < after[0]) else after[1]
+
+
+def _apply_usd_prices(
+    fuel_data_slim: dict[str, list[dict]],
+    fx_rates: dict[str, list[tuple[str, float]]],
+) -> None:
+    """Mutate fuel_data_slim in-place: add price_usd to every record (None if unknown)."""
+    if not fx_rates:
+        for records in fuel_data_slim.values():
+            for r in records:
+                r["price_usd"] = None
+        return
+    for records in fuel_data_slim.values():
+        for r in records:
+            currency = str(r.get("currency", "")).strip()
+            price_local = r.get("price_local")
+            date_str = str(r.get("observation_date", ""))[:10]
+            if price_local is None:
+                r["price_usd"] = None
+                continue
+            if currency == "USD":
+                r["price_usd"] = round(float(price_local), 6)
+                continue
+            sorted_rates = fx_rates.get(currency)
+            if not sorted_rates:
+                r["price_usd"] = None
+                continue
+            rate = _nearest_fx_rate(sorted_rates, date_str)
+            r["price_usd"] = round(float(price_local) / rate, 6) if rate else None
+
+
 # ---------------------------------------------------------------------------
 # Main data assembly
 # ---------------------------------------------------------------------------
@@ -952,6 +1028,7 @@ _CSS = """
     .noUi-tooltip {
         font-size: 0.75em; padding: 2px 6px; background: #667eea;
         color: #fff; border: none; border-radius: 4px;
+        bottom: auto !important; top: 120% !important;
     }
     /* Regime table */
     .regime-table-wrap { overflow-x: auto; margin-top: 14px; }
@@ -1048,8 +1125,10 @@ _CSS = """
         padding: 3px 10px;
         font-weight: 600;
     }
-    #fuel-meta-panel { font-size: 0.82em; color: #555; margin: 4px 0; line-height: 1.7; }
+    #fuel-meta-panel {{ font-size: 0.88em; color: #555; margin: 4px 0; line-height: 1.7; }}
     /* fuel location table removed (no per-location rendering) */
+    /* delta chart */
+    .delta-chart-wrapper {{ position: relative; height: 180px; margin-top: 12px; }}
 """
 
 
@@ -1254,6 +1333,10 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
         if fp in _TW_RENAME:
             r["fuel_product"] = _TW_RENAME[fp]
 
+    # Apply USD price conversion using cached FX rates.
+    _fx_rates = _load_fx_rates()
+    _apply_usd_prices(fuel_data_slim, _fx_rates)
+
     # Trim both time-series to the last DASHBOARD_HISTORY_YEARS years.
     # observation_date and comm point x values are already "%Y-%m-%d" strings,
     # so lexicographic comparison works correctly.
@@ -1284,6 +1367,7 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
         f'<option value="{c}">{c}</option>' for c in fuel_countries
     )
     products_json = json.dumps(products)
+    _build_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
 
     # --- Regime table rows ---
     prod_headers = "".join(f"<th>{p}</th>" for p in table_products)
@@ -1355,6 +1439,8 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
 </head>
 <body>
 <h1>Fuel Policy Overview &mdash; East Asia &amp; Pacific</h1>
+<div id="last-updated" style="font-size:0.88em;color:#888;margin:-4px 0 10px 0" data-utc="{_build_utc}"></div>
+<script>!function(){{var el=document.getElementById('last-updated'),u=el.dataset.utc;if(u){{var d=new Date(u+'Z');el.textContent='Last updated: '+d.toLocaleString(undefined,{{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}});}}}}();</script>
 
 <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('tab1',this)">Commodity Prices</button>
@@ -1422,6 +1508,10 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     <div class="ctrl-row">
         <span class="row-label">Country:</span>
         <select id="fuel-country-select">{fuel_country_opts}</select>
+        <div class="toggle-group" style="margin-left:12px">
+            <label><input type="radio" name="currency-toggle" value="local" checked onchange="setCurrency('local')">Local Currency</label>
+            <label><input type="radio" name="currency-toggle" value="usd" onchange="setCurrency('usd')">USD</label>
+        </div>
     </div>
     <div class="slider-row">
         <label>Date Range:</label>
@@ -1446,6 +1536,8 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     <div class="chip-container" id="fuel-axis-chips"></div>
     <div id="fuel-meta-panel"></div>
     <div class="chart-wrapper"><canvas id="fuel-chart"></canvas></div>
+    <div class="section-label" style="font-size:0.82em">Price Changes (day-to-day %)</div>
+    <div class="delta-chart-wrapper"><canvas id="fuel-delta-chart"></canvas></div>
     <!-- location price table removed -->
 </div>
 
@@ -1905,6 +1997,13 @@ function formatYM(d) {{
     return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
 }}
 
+let fuelCurrencyMode = 'local'; // 'local' | 'usd'
+
+function setCurrency(mode) {{
+    fuelCurrencyMode = mode;
+    rerenderFuel();
+}}
+
 let fuelSliderDates = [];
 let fuelSlider = null;
 
@@ -2048,7 +2147,7 @@ function updateFuelMeta(rows) {{
     var panel = document.getElementById("fuel-meta-panel");
     if (!rows || !rows.length) {{ panel.innerHTML = ""; return; }}
     var dates = rows.map(function(r) {{ return r.observation_date; }}).sort();
-    panel.innerHTML = "<strong>Date Range:</strong> " + dates[0] + " \u2013 " + dates[dates.length - 1];
+    panel.innerHTML = dates[0] + " \u2013 " + dates[dates.length - 1];
 }}
 
 function computeFuelYScale(datasets, yLabel) {{
@@ -2070,6 +2169,41 @@ function computeFuelYScale(datasets, yLabel) {{
     }};
 }}
 
+function _makeLineChartOptions(yScale, showLegend) {{
+    return {{
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {{
+            legend: {{
+                display: showLegend !== false,
+                position: "top",
+                labels: {{
+                    usePointStyle: true, padding: 14, font: {{ size: 11 }},
+                    filter: function(item, data) {{ return !data.datasets[item.datasetIndex]._isGray; }}
+                }}
+            }},
+            tooltip: {{
+                mode: "index", intersect: false,
+                backgroundColor: "rgba(0,0,0,0.82)", padding: 12,
+                filter: function(item) {{ return !item.dataset._isGray; }},
+                callbacks: {{
+                    title: function(items) {{ return items.length ? items[0].raw.x : ""; }},
+                    label: function(item) {{
+                        var val = item.raw ? item.raw.y : null;
+                        if (val == null) return null;
+                        return item.dataset.label + ": " + val.toFixed(2);
+                    }}
+                }}
+            }}
+        }},
+        scales: {{
+            x: {{ type: "time", time: {{ unit: "month", tooltipFormat: "yyyy-MM-dd" }},
+                  display: true, title: {{ display: true, text: "Date" }} }},
+            y: yScale
+        }}
+    }};
+}}
+
 function drawFuelChart(datasets, yLabel) {{
     var ctx = document.getElementById("fuel-chart").getContext("2d");
     if (!datasets.length) {{
@@ -2077,47 +2211,60 @@ function drawFuelChart(datasets, yLabel) {{
         return;
     }}
     var yScale = computeFuelYScale(datasets, yLabel);
+    var opts = _makeLineChartOptions(yScale, true);
     if (!window.fuelChart) {{
-        window.fuelChart = new Chart(ctx, {{
-            type: "line",
-            data: {{ datasets: datasets }},
-            options: {{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {{
-                    legend: {{
-                        position: "top",
-                        labels: {{
-                            usePointStyle: true, padding: 14, font: {{ size: 11 }},
-                            filter: function(item, data) {{ return !data.datasets[item.datasetIndex]._isGray; }}
-                        }}
-                    }},
-                    tooltip: {{
-                        mode: "index", intersect: false,
-                        backgroundColor: "rgba(0,0,0,0.82)", padding: 12,
-                        filter: function(item) {{ return !item.dataset._isGray; }},
-                        callbacks: {{
-                            title: function(items) {{ return items.length ? items[0].raw.x : ""; }},
-                            label: function(item) {{
-                                var val = item.raw ? item.raw.y : null;
-                                if (val == null) return null;
-                                return item.dataset.label + ": " + val.toFixed(2);
-                            }}
-                        }}
-                    }}
-                }},
-                scales: {{
-                    x: {{ type: "time", time: {{ unit: "month", tooltipFormat: "yyyy-MM-dd" }},
-                          display: true, title: {{ display: true, text: "Date" }} }},
-                    y: yScale
-                }}
-            }}
-        }});
+        window.fuelChart = new Chart(ctx, {{ type: "line", data: {{ datasets: datasets }}, options: opts }});
     }} else {{
         window.fuelChart.data.datasets = datasets;
         window.fuelChart.options.scales.y = yScale;
         window.fuelChart.update('none');
     }}
+}}
+
+function drawDeltaChart(deltaDatasets, yLabel) {{
+    var ctx = document.getElementById("fuel-delta-chart").getContext("2d");
+    if (!deltaDatasets.length) {{
+        if (window.fuelDeltaChart) {{ window.fuelDeltaChart.destroy(); window.fuelDeltaChart = null; }}
+        return;
+    }}
+    // Symmetric Y-axis centered on 0
+    var allY = [];
+    deltaDatasets.forEach(function(ds) {{
+        (ds.data || []).forEach(function(pt) {{
+            if (pt && pt.y != null) allY.push(Math.abs(pt.y));
+        }});
+    }});
+    var absMax = allY.length ? Math.max.apply(null, allY) : 5;
+    var pad = absMax * 0.15 || 1;
+    var yScale = {{
+        display: true,
+        title: {{ display: true, text: yLabel }},
+        min: -(absMax + pad),
+        max: absMax + pad,
+        grid: {{ color: function(ctx) {{ return ctx.tick.value === 0 ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.06)'; }} }}
+    }};
+    var opts = _makeLineChartOptions(yScale, false);
+    opts.plugins.legend.display = false;
+    if (!window.fuelDeltaChart) {{
+        window.fuelDeltaChart = new Chart(ctx, {{ type: "line", data: {{ datasets: deltaDatasets }}, options: opts }});
+    }} else {{
+        window.fuelDeltaChart.data.datasets = deltaDatasets;
+        window.fuelDeltaChart.options.scales.y = yScale;
+        window.fuelDeltaChart.update('none');
+    }}
+}}
+
+function computeDeltaDatasets(mainDatasets) {{
+    return mainDatasets.filter(function(ds) {{ return !ds._isGray; }}).map(function(ds) {{
+        var pts = (ds.data || []).filter(function(p) {{ return p && p.y != null; }});
+        var deltas = pts.map(function(p, i) {{
+            if (i === 0) return {{ x: p.x, y: null }};
+            var prev = pts[i - 1];
+            if (prev.y === 0 || prev.y == null) return {{ x: p.x, y: null }};
+            return {{ x: p.x, y: ((p.y - prev.y) / prev.y) * 100 }};
+        }});
+        return makeFuelDataset(ds.label, deltas, ds.borderColor, false);
+    }});
 }}
 
 function getFuelCountryRows() {{
@@ -2145,8 +2292,13 @@ function rerenderFuel() {{
     if (range.from) visibleRows = visibleRows.filter(function(r) {{ return r.observation_date >= range.from; }});
     if (range.to)   visibleRows = visibleRows.filter(function(r) {{ return r.observation_date <= range.to; }});
     updateFuelMeta(visibleRows);
+
+    var useUSD = fuelCurrencyMode === 'usd';
+    var priceField = useUSD ? 'price_usd' : 'price_local';
+
     if (!visibleRows.length) {{
         drawFuelChart([], "");
+        drawDeltaChart([], "");
         var locSection = document.getElementById('fuel-loc-table-section');
         if (locSection) locSection.style.display = 'none';
         var section = document.getElementById('fuel-regime-section');
@@ -2154,12 +2306,17 @@ function rerenderFuel() {{
         return;
     }}
     var firstRow  = visibleRows[0];
-    var yLabel    = (firstRow.currency || "") + " / " + (firstRow.unit || "");
+    var yLabel    = useUSD
+        ? "USD / " + (firstRow.unit || "L")
+        : (firstRow.currency || "") + " / " + (firstRow.unit || "");
     var datasets  = [];
     var colorIdx  = 0;
     var keyColors = {{}};
     selectedKeys.forEach(function(key) {{
         var keyRows = visibleRows.filter(function(r) {{ return chipKey(r) === key; }});
+        if (!keyRows.length) return;
+        // In USD mode, skip rows with no USD price
+        if (useUSD) keyRows = keyRows.filter(function(r) {{ return r.price_usd != null; }});
         if (!keyRows.length) return;
         var color  = PALETTE[colorIdx % PALETTE.length];
         var serLbl = chipLabel(key);
@@ -2169,14 +2326,15 @@ function rerenderFuel() {{
         var byDate = {{}};
         keyRows.forEach(function(r) {{
             var d = r.observation_date;
-            if (!d || r.price_local == null) return;
+            var price = r[priceField];
+            if (!d || price == null) return;
             var loc = (r.location || "").toLowerCase();
             var isNat = loc === "national" || loc === "national average";
             var sk = r.source_key || "_unknown";
             if (!byDate[d]) byDate[d] = {{}};
             if (!byDate[d][sk]) byDate[d][sk] = {{ nat: [], sub: [] }};
-            if (isNat) byDate[d][sk].nat.push(r.price_local);
-            else byDate[d][sk].sub.push(r.price_local);
+            if (isNat) byDate[d][sk].nat.push(price);
+            else byDate[d][sk].sub.push(price);
         }});
         var avgPts = Object.keys(byDate).sort().map(function(d) {{
             var sources = byDate[d];
@@ -2195,6 +2353,8 @@ function rerenderFuel() {{
         datasets.push(makeFuelDataset(serLbl, avgPts, color, false));
     }});
     drawFuelChart(datasets, yLabel);
+    var deltaDatasets = computeDeltaDatasets(datasets);
+    drawDeltaChart(deltaDatasets, "% change");
     var locSection = document.getElementById('fuel-loc-table-section');
     if (locSection) locSection.style.display = 'none';
     updateFuelRegimeSection(document.getElementById("fuel-country-select").value, selectedKeys, keyColors);

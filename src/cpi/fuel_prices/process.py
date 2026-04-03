@@ -381,26 +381,99 @@ def _drop_untracked_products(df: pd.DataFrame) -> pd.DataFrame:
     mask = df["source_key"] == "sg_cityenergy_town_gas"
     if mask.any():
         df = df[~mask].copy()
+    # Japan: jp_anre_weekly_petroleum_2025 is a redundant subset of the _2026 source
+    # with inconsistent product casing; drop it entirely.
+    mask = df["source_key"] == "jp_anre_weekly_petroleum_2025"
+    if mask.any():
+        df = df[~mask].copy()
+    # New Zealand: GPP rows are sparse and conflict with MBIE/Gaspy
+    mask = df["source_key"].str.startswith("gpp_NZL", na=False)
+    if mask.any():
+        df = df[~mask].copy()
+    # Myanmar: GPP rows are sparse and conflict with GNLM/Denko
+    mask = df["source_key"].str.startswith("gpp_MMR", na=False)
+    if mask.any():
+        df = df[~mask].copy()
     return df
 
 
 def _drop_low_priority_sources(df: pd.DataFrame) -> pd.DataFrame:
-    gpp_drop = (
-        (
-            (df["country"] == "Malaysia")
-            & df["source_key"].str.startswith("gpp_MYS_", na=False)
-        )
-        | (
-            (df["country"] == "Cambodia")
-            & df["source_key"].str.startswith("gpp_KHM_", na=False)
-        )
-        | (
-            (df["country"] == "Lao PDR")
-            & df["source_key"].str.startswith("gpp_LAO_", na=False)
-        )
+    """For state-controlled countries, keep only the best source per product.
+
+    Multiple sources for the same (country, fuel_product) interfere with
+    forward-fill, causing price jumps.  Two rules applied in order:
+
+    1. Drop GPP rows when a non-GPP source exists for the same country.
+    2. When multiple non-GPP sources compete for the same (country, product),
+       keep only the source with the most recent observation date.
+    """
+    if df.empty or "source_key" not in df.columns or "country" not in df.columns:
+        return df
+
+    canonical = df["country"].map(_canonical_country_name)
+    is_state_controlled = canonical.isin(_STATE_CONTROLLED_COUNTRIES)
+    is_gpp = df["source_key"].str.startswith("gpp_", na=False)
+
+    # Rule 1: drop GPP where an official source exists
+    countries_with_official = set(
+        df.loc[is_state_controlled & ~is_gpp, "country"].unique()
     )
-    if gpp_drop.any():
-        df = df[~gpp_drop].copy()
+    drop_mask = is_gpp & df["country"].isin(countries_with_official)
+    if drop_mask.any():
+        df = df[~drop_mask].copy()
+        is_state_controlled = is_state_controlled[df.index]
+
+    # Rule 2: for each (country, fuel_product), elect the source with the
+    # most recent observation as primary.  Drop secondary-source rows only
+    # for dates that the primary source already covers — this lets secondary
+    # sources fill historical gaps (e.g. OTO Pertalite pre-2025, MOEA Taiwan
+    # back to 2003) without conflicting with the primary on overlapping dates.
+    sc_df = df[is_state_controlled]
+    if sc_df.empty or "fuel_product" not in df.columns:
+        return df
+
+    obs_dates = pd.to_datetime(sc_df["observation_date"], errors="coerce")
+    latest_per_source = obs_dates.groupby(
+        [sc_df["country"], sc_df["fuel_product"], sc_df["source_key"]]
+    ).max()
+
+    if latest_per_source.empty:
+        return df
+
+    # For each (country, product), find the source with the latest observation
+    best_source = latest_per_source.groupby(level=[0, 1]).idxmax()
+    best_keys: set[tuple[str, str, str]] = set()
+    for idx in best_source:
+        if isinstance(idx, tuple) and len(idx) == 3:
+            best_keys.add(idx)
+
+    if not best_keys:
+        return df
+
+    # Build lookup: (country, product) → winning source_key
+    winner: dict[tuple[str, str], str] = {}
+    for country, product, source in best_keys:
+        winner[(country, product)] = source
+
+    # For each (country, product), collect the set of dates the winner covers
+    # then drop secondary-source rows only for those overlapping dates.
+    date_col_str = df["observation_date"].astype(str).str[:10]
+    redundant_mask = pd.Series(False, index=df.index)
+
+    for (country, product), winning_source in winner.items():
+        cp_mask = (
+            is_state_controlled
+            & (df["country"] == country)
+            & (df["fuel_product"] == product)
+        )
+        winner_dates = set(date_col_str[cp_mask & (df["source_key"] == winning_source)])
+        # Mark secondary-source rows that overlap with winner dates
+        secondary = cp_mask & (df["source_key"] != winning_source)
+        if secondary.any() and winner_dates:
+            redundant_mask |= secondary & date_col_str.isin(winner_dates)
+
+    if redundant_mask.any():
+        df = df[~redundant_mask].copy()
     return df
 
 
