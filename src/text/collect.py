@@ -70,6 +70,22 @@ def _parse_article_count(raw: str) -> int:
         return 0
 
 
+def _list_country_folders(country_dir: Path) -> list[str]:
+    """Return sorted child directory names for a country data folder."""
+    if not country_dir.exists():
+        return []
+    return sorted([p.name for p in country_dir.iterdir() if p.is_dir()])
+
+
+def _format_mismatch(entry: dict) -> str:
+    observed = entry.get("mismatch_observed") or []
+    observed_str = ", ".join(observed) if observed else "(none)"
+    return (
+        f"{entry['region']}/{entry['subregion']}/{entry['country']}: "
+        f"expected '{entry['data_folder_expected']}', found '{observed_str}'"
+    )
+
+
 def display_list(region=None, subregion=None, country=None, source=None):
     """Show YAML-only source inventory grouped by subregion/country. No CSV reads."""
     from itertools import groupby
@@ -132,13 +148,30 @@ def display_status(region=None, subregion=None, country=None, show_all=False):
     scraped = sum(1 for e in plan if e["article_count"] not in ("—", "?"))
     total_articles = sum(_parse_article_count(e["article_count"]) for e in plan)
     countries_count = len(set(e["country"] for e in plan))
+    mismatches = [e for e in plan if e.get("mismatch_observed")]
 
     if not show_all:
         plan = [e for e in plan if e["article_count"] not in ("—", "?")]
         if not plan:
+            if mismatches:
+                click.echo("\n  Warning: data folder name mismatches detected")
+                for entry in mismatches:
+                    click.echo(f"  - {_format_mismatch(entry)}")
             click.echo(f"\n  No scraped sources found ({total} configured).")
             click.echo("  Use --all to include unscraped sources.\n")
             return
+
+    if mismatches:
+        click.echo("\n  Warning: data folder name mismatches detected")
+        for entry in mismatches:
+            click.echo(f"  - {_format_mismatch(entry)}")
+        click.echo(
+            "  Rename folders manually under data/text/ to match config filenames."
+        )
+    if mismatches:
+        click.echo("\n  Warning: data folder name mismatches detected")
+        for entry in mismatches:
+            click.echo(f"  - {_format_mismatch(entry)}")
 
     click.echo()
     click.echo(
@@ -211,11 +244,32 @@ def display_status(region=None, subregion=None, country=None, show_all=False):
 
 def _build_plan(region=None, subregion=None, country=None, source=None):
     """Discover configs and build execution plan with data stats."""
+    from collections import defaultdict
+
     configs = discover_pipeline_configs(
         CONFIGS_DIR, region=region, subregion=subregion, country=country
     )
     if source:
         configs = [c for c in configs if c.stem == source]
+
+    configs_by_country = defaultdict(list)
+    for config_path in configs:
+        cfg_region, cfg_subregion, cfg_country = parse_config_path(
+            config_path, CONFIGS_DIR
+        )
+        configs_by_country[(cfg_region, cfg_subregion, cfg_country)].append(config_path)
+
+    country_folder_info = {}
+    for (cfg_region, cfg_subregion, cfg_country), paths in configs_by_country.items():
+        expected = {p.stem for p in paths}
+        country_dir = DATA_BASE / cfg_region / cfg_subregion / cfg_country
+        actual = _list_country_folders(country_dir)
+        extras = [name for name in actual if name not in expected]
+        country_folder_info[(cfg_region, cfg_subregion, cfg_country)] = {
+            "expected": expected,
+            "actual": actual,
+            "extras": extras,
+        }
 
     plan = []
     for config_path in configs:
@@ -232,6 +286,14 @@ def _build_plan(region=None, subregion=None, country=None, source=None):
             / "news.csv"
         )
         stats = _source_stats(news_csv)
+        folder_info = country_folder_info.get(
+            (cfg_region, cfg_subregion, cfg_country), {}
+        )
+        actual = folder_info.get("actual", [])
+        extras = folder_info.get("extras", [])
+        mismatch_observed = []
+        if actual and newspaper not in actual and extras:
+            mismatch_observed = extras
 
         plan.append(
             {
@@ -241,6 +303,8 @@ def _build_plan(region=None, subregion=None, country=None, source=None):
                 "country": cfg_country,
                 "newspaper": newspaper,
                 "source_key": newspaper,
+                "data_folder_expected": newspaper,
+                "mismatch_observed": mismatch_observed,
                 **stats,
             }
         )
@@ -252,6 +316,15 @@ def display_plan(plan, max_pages=None, max_articles=None, rebuild=False, region=
     if not plan:
         click.echo("No configs found matching filters.")
         return
+
+    mismatches = [e for e in plan if e.get("mismatch_observed")]
+    if mismatches:
+        click.echo("\n  Warning: data folder name mismatches detected")
+        for entry in mismatches:
+            click.echo(f"  - {_format_mismatch(entry)}")
+        click.echo(
+            "  Rename folders manually under data/text/ to match config filenames."
+        )
 
     # Descriptive header
     scope = region or "all"

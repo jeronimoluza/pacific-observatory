@@ -1,0 +1,33 @@
+name: Shafaq News
+language: en
+country: iraq
+base_url: https://www.shafaq.com
+
+listing:
+  type: pagination
+  start_url: "https://www.shafaq.com/en/Iraq"
+  url_template: "https://www.shafaq.com/en/Iraq?page={num}"
+  start_page: 2
+  step: 1
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: article
+    title: "h2::text"
+    url: "a::attr(href)"
+  article:
+    body: "div#newsDetails p"
+    date: "span#postDate::text"
+    tags: "div#articleTag a::text"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

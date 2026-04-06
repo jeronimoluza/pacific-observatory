@@ -1,0 +1,38 @@
+name: Rudaw English
+language: en
+country: iraq
+base_url: https://www.rudaw.net
+
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.rudaw.net/API/News/Listing/-8?Tag=&CurrentPage={page}&lang=English"
+  json_paths:
+    collection: "Data.CategoryNews.Articles"
+    url: Link
+    title: Title
+    date: AMPDateTime
+    body: BodyStripped
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "article p"
+    date: "span.article__time-stamp::text"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

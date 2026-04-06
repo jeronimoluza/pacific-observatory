@@ -1,0 +1,33 @@
+name: Naharnet
+language: en
+country: lebanon
+base_url: https://www.naharnet.com
+
+listing:
+  type: pagination
+  start_url: "https://www.naharnet.com/tags/lebanon?page=1&rss=1"
+  url_template: "https://www.naharnet.com/tags/lebanon?page={num}&rss=1"
+  start_page: 2
+  step: 1
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: article
+    title: "a.title::text"
+    url: "a.title::attr(href)"
+  article:
+    body: "div[itemprop='description'] p"
+    date: "abbr.timeago::attr(title)"
+    tags: ".tags a.tag::text"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

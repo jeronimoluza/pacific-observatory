@@ -21,6 +21,8 @@ from typing import List
 import pandas as pd
 import numpy as np
 
+from src.text.analysis.baseline import baseline_mask
+
 warnings.filterwarnings("ignore", category=pd.errors.PerformanceWarning)
 warnings.filterwarnings(
     "ignore", message="Mean of empty slice", category=RuntimeWarning
@@ -30,14 +32,16 @@ warnings.filterwarnings(
 class IndexCalculator:
     """Calculates standardized indices following EPU methodology."""
 
-    def __init__(self, cutoff: str):
+    def __init__(self, cutoff_start_date: str | None, cutoff_end_date: str | None):
         """
         Initialize the IndexCalculator.
 
         Args:
-            cutoff: Date string for standardization period (e.g., '2020-12-31').
+            cutoff_start_date: Inclusive baseline start date.
+            cutoff_end_date: Inclusive baseline end date.
         """
-        self.cutoff = cutoff
+        self.cutoff_start_date = cutoff_start_date
+        self.cutoff_end_date = cutoff_end_date
         self.stds: dict = {}
         self.scaling_factors: dict = {}
 
@@ -215,16 +219,15 @@ class IndexCalculator:
             (f"{index_name}_z_unweighted", f"{index_name}_unweighted"),
         ]:
             z_arr = df[z_col_name].values
-            if self.cutoff is not None:
-                mask = df["date"].values < np.datetime64(self.cutoff)
-                sub = z_arr[mask]
-                mean_val = (
-                    np.nanmean(sub)
-                    if len(sub) > 0 and not np.all(np.isnan(sub))
-                    else np.nan
-                )
-            else:
-                mean_val = np.nanmean(z_arr) if not np.all(np.isnan(z_arr)) else np.nan
+            mask = baseline_mask(
+                df["date"], self.cutoff_start_date, self.cutoff_end_date
+            ).to_numpy()
+            sub = z_arr[mask]
+            mean_val = (
+                np.nanmean(sub)
+                if len(sub) > 0 and not np.all(np.isnan(sub))
+                else np.nan
+            )
             if np.isnan(mean_val) or mean_val == 0:
                 df[out_name] = np.nan
                 scaling_factor = None
@@ -244,10 +247,9 @@ class IndexCalculator:
         Returns:
             Tuple of (z_series, std_float_or_None).
         """
-        if self.cutoff is not None:
-            std = ratio_series[df["date"] < self.cutoff].std()
-        else:
-            std = ratio_series.std()
+        std = ratio_series[
+            baseline_mask(df["date"], self.cutoff_start_date, self.cutoff_end_date)
+        ].std()
 
         if std == 0 or pd.isna(std):
             return pd.Series(np.nan, index=ratio_series.index), None
@@ -267,10 +269,10 @@ class IndexCalculator:
         Returns:
             DataFrame with z-score column added.
         """
-        if self.cutoff is not None:
-            std = df[df["date"] < self.cutoff][ratio_col].std()
-        else:
-            std = df[ratio_col].std()
+        std = df.loc[
+            baseline_mask(df["date"], self.cutoff_start_date, self.cutoff_end_date),
+            ratio_col,
+        ].std()
 
         if std == 0 or pd.isna(std):
             df[z_col] = np.nan
@@ -336,10 +338,10 @@ class IndexCalculator:
         Returns:
             DataFrame with normalized column added.
         """
-        if self.cutoff is not None:
-            mean_val = df[df["date"] < self.cutoff][z_col].mean()
-        else:
-            mean_val = df[z_col].mean()
+        mean_val = df.loc[
+            baseline_mask(df["date"], self.cutoff_start_date, self.cutoff_end_date),
+            z_col,
+        ].mean()
 
         if mean_val == 0 or pd.isna(mean_val):
             df[output_name] = np.nan

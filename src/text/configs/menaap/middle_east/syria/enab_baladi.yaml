@@ -1,0 +1,36 @@
+name: Enab Baladi English
+language: en
+country: syria
+base_url: https://english.enabbaladi.net
+
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://english.enabbaladi.net/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div#article-body p"
+    date: meta[itemprop='datePublished']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

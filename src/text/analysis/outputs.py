@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from src.text.analysis.baseline import baseline_mask
 from src.text.analysis.indices import IndexCalculator
 from src.text.analysis.utils import load_all_groups
 
@@ -46,6 +47,7 @@ def append_missing_months(
     new_df: pd.DataFrame,
     n_months: int = 2,
     daily_tail_start: str | None = None,
+    replace_from: str | None = None,
 ) -> None:
     """Append rows for periods not yet present in an existing CSV.
 
@@ -107,8 +109,13 @@ def append_missing_months(
 
     rows_to_add_list = []
 
-    # ── Daily tail: always replace the entire tail window ────────────
-    if daily_tail_start is not None:
+    if replace_from is not None:
+        replace_ts = pd.Timestamp(replace_from)
+        existing = existing[existing["date"] < replace_ts]
+        replacement_rows = new_df[new_df["date"] >= replace_ts]
+        if not replacement_rows.empty:
+            rows_to_add_list.append(replacement_rows)
+    elif daily_tail_start is not None:
         tail_ts = pd.Timestamp(daily_tail_start)
         existing = existing[existing["date"] < tail_ts]
         new_daily = new_df[new_df["date"] >= tail_ts]
@@ -116,20 +123,24 @@ def append_missing_months(
             rows_to_add_list.append(new_daily)
 
     # ── Past months: compare by calendar month period ────────────────
-    if daily_tail_start is not None:
+    if replace_from is not None:
+        existing_past = existing
+        missing_months = set()
+    elif daily_tail_start is not None:
         target_months = {
             (today - pd.DateOffset(months=i)).to_period("M")
             for i in range(1, n_months + 1)
         }
         existing_past = existing[existing["date"] < pd.Timestamp(daily_tail_start)]
+        existing_months = set(existing_past["date"].dt.to_period("M"))
+        missing_months = target_months - existing_months
     else:
         target_months = {
             (today - pd.DateOffset(months=i)).to_period("M") for i in range(n_months)
         }
         existing_past = existing
-
-    existing_months = set(existing_past["date"].dt.to_period("M"))
-    missing_months = target_months - existing_months
+        existing_months = set(existing_past["date"].dt.to_period("M"))
+        missing_months = target_months - existing_months
     if missing_months:
         past_new_df = (
             new_df
@@ -156,7 +167,8 @@ def append_missing_months(
 
 def collect_params(
     country_name: str,
-    cutoff: str,
+    cutoff_start_date: str | None,
+    cutoff_end_date: str | None,
     e_base,
     topic_epus: dict,
     actor_epus: dict,
@@ -165,15 +177,20 @@ def collect_params(
     all_news_dfs: list,
 ) -> dict:
     """Collect all standardization parameters into a single dict for params.json."""
-    cutoff_ts = pd.Timestamp(cutoff)
     n_pre = sum(
-        (df[df["date"] < cutoff_ts].shape[0] if "date" in df.columns else 0)
+        (
+            df[baseline_mask(df["date"], cutoff_start_date, cutoff_end_date)].shape[0]
+            if "date" in df.columns
+            else 0
+        )
         for df in all_news_dfs
     )
 
     sources = [col.replace("_body_count", "") for col in e_base.news_cols]
 
-    pre_cutoff_stats = e_base.epu_stats[e_base.epu_stats["date"] < cutoff_ts]
+    pre_cutoff_stats = e_base.epu_stats[
+        baseline_mask(e_base.epu_stats["date"], cutoff_start_date, cutoff_end_date)
+    ]
     source_weights = {}
     for src in sources:
         w_col = f"{src}_weights"
@@ -217,8 +234,9 @@ def collect_params(
         }
 
     return {
-        "cutoff": cutoff,
-        "n_articles_pre_cutoff": int(n_pre),
+        "cutoff_start_date": cutoff_start_date,
+        "cutoff_end_date": cutoff_end_date,
+        "n_articles_in_baseline": int(n_pre),
         "sources": sources,
         "source_weights": source_weights,
         "epu": e_base.params,
@@ -237,10 +255,12 @@ def build_outputs(
     topic_epus,
     actor_epus,
     ug_counts_all,
-    cutoff,
+    cutoff_start_date,
+    cutoff_end_date,
     daily_tail_start,
     country_name,
     full_write=False,
+    replace_from: str | None = None,
     output_dir: Path = None,
 ):
     """Build and write all output CSVs.
@@ -256,7 +276,12 @@ def build_outputs(
             path.parent.mkdir(parents=True, exist_ok=True)
             df.to_csv(path, index=False, encoding="utf-8")
         else:
-            append_missing_months(path, df, daily_tail_start=daily_tail_start)
+            append_missing_months(
+                path,
+                df,
+                daily_tail_start=daily_tail_start,
+                replace_from=replace_from,
+            )
 
     # ── epu.csv ──────────────────────────────────────────────────────
     result = e_base.epu_stats[["date", "ym", "news_total"]].copy()
@@ -307,8 +332,8 @@ def build_outputs(
 
     # ── uncertainty_attribution ───────────────────────────────────────
     sources = [col.replace("_body_count", "") for col in e_base.news_cols]
-    calc_topics_idx = IndexCalculator(cutoff)
-    calc_actors_idx = IndexCalculator(cutoff)
+    calc_topics_idx = IndexCalculator(cutoff_start_date, cutoff_end_date)
+    calc_actors_idx = IndexCalculator(cutoff_start_date, cutoff_end_date)
 
     for (source_file, output_name), calc in [
         (("topics", "topics"), calc_topics_idx),

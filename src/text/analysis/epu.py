@@ -52,6 +52,7 @@ import os
 from typing import List, Union, Dict
 import pandas as pd
 import numpy as np
+from .baseline import baseline_mask
 from .utils import (
     match_keywords,
     load_topics_words,
@@ -88,7 +89,8 @@ class EPU:
 
     Attributes:
         filepath (Union[str, List[str]]): Path(s) to the news data file(s).
-        cutoff (str): A cutoff date for calculating standard deviations.
+        cutoff_start_date (str): Inclusive baseline start date for standardization.
+        cutoff_end_date (str): Inclusive baseline end date for standardization.
         non_epu_urls (list): List of urls to be removed from identified epu news.
         econ_terms (list): List of terms related to the economy.
         policy_terms (list): List of terms related to policy.
@@ -102,7 +104,7 @@ class EPU:
         z_score_cols (list): List to store z-score columns.
 
     Example:
-        e = EPU(filepaths, cutoff='2020-12-31')
+        e = EPU(filepaths, cutoff_start_date='2020-01-01', cutoff_end_date='2020-12-31')
         e.get_epu_category(subset_condition="date >= '2015-01-01' and date < '2024-01-01'")
         e.get_count_stats()
         e.calculate_epu_score()
@@ -111,7 +113,8 @@ class EPU:
     def __init__(
         self,
         filepath: Union[str, List[str]],
-        cutoff: str,
+        cutoff_start_date: str | None,
+        cutoff_end_date: str | None,
         non_epu_urls: list = None,
         econ_terms: list = ECON_LIST,
         policy_terms: list = POLICY_LIST,
@@ -135,7 +138,8 @@ class EPU:
         self.additional_terms = additional_terms
         self.additional_name = additional_name
         self.raw_files = []
-        self.cutoff = cutoff
+        self.cutoff_start_date = cutoff_start_date
+        self.cutoff_end_date = cutoff_end_date
         self.daily_tail_start = daily_tail_start
         self.non_epu_urls = non_epu_urls if non_epu_urls is not None else []
         self.source_languages = source_languages or {}
@@ -624,10 +628,15 @@ class EPU:
         self.stds = []
         for ratio_col in self.ratio_cols:
             col = ratio_col.replace("_ratio", "")
-            if self.cutoff is not None:
-                std = self.epu_stats[self.epu_stats.date < self.cutoff][ratio_col].std()
-            else:
-                std = self.epu_stats[ratio_col].std()
+            window = self.epu_stats.loc[
+                baseline_mask(
+                    self.epu_stats["date"],
+                    self.cutoff_start_date,
+                    self.cutoff_end_date,
+                ),
+                ratio_col,
+            ]
+            std = window.std()
             self.stds.append({col: std})
             # self.epu_stats[f"{col}_z_score"] = self.epu_stats[ratio_col].div(
             #     std).fillna(0).replace([np.inf, -np.inf], 0)
@@ -662,7 +671,14 @@ class EPU:
             ["weighted", "unweighted"],
             ["z_score_weighted", "z_score_unweighted"],
         ):
-            mean_val = self.epu_stats[self.epu_stats.date < self.cutoff][col].mean()
+            mean_val = self.epu_stats.loc[
+                baseline_mask(
+                    self.epu_stats["date"],
+                    self.cutoff_start_date,
+                    self.cutoff_end_date,
+                ),
+                col,
+            ].mean()
             if mean_val == 0 or pd.isna(mean_val):
                 scaling_factor = np.nan
                 scaling_factors[name] = None
@@ -713,7 +729,7 @@ class EPU:
         """
         from .indices import IndexCalculator
 
-        calc = IndexCalculator(self.cutoff)
+        calc = IndexCalculator(self.cutoff_start_date, self.cutoff_end_date)
         sources = [col.replace("_body_count", "") for col in self.news_cols]
 
         # Calculate and merge each index type

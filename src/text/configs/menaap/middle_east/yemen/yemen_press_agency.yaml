@@ -1,0 +1,32 @@
+name: Yemen Press Agency
+language: en
+country: yemen
+base_url: https://en.ypagency.net
+
+listing:
+  type: pagination
+  start_url: "https://en.ypagency.net/category/world/"
+  url_template: "https://en.ypagency.net/category/world/page/{num}/"
+  start_page: 2
+  step: 1
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: article
+    title: "h2 a::text"
+    url: "h2 a::attr(href)"
+  article:
+    body: "div.entry-content.clearfix.single-post-content p"
+    date: "time::attr(datetime)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

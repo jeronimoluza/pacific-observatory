@@ -33,7 +33,8 @@ def _preload_articles(news_dirs, subset_condition, daily_tail_start):
 
 def _run_group_epus(
     news_dirs,
-    cutoff,
+    cutoff_start_date,
+    cutoff_end_date,
     daily_tail_start,
     groups,
     subset_condition,
@@ -51,7 +52,8 @@ def _run_group_epus(
     for group_key, additional_terms in groups.items():
         epu = EPU(
             news_dirs,
-            cutoff=cutoff,
+            cutoff_start_date=cutoff_start_date,
+            cutoff_end_date=cutoff_end_date,
             additional_terms=additional_terms,
             additional_name=group_key,
             daily_tail_start=daily_tail_start,
@@ -74,14 +76,22 @@ def _restore_from_cache(epu, tail_ts, pre_tail_cache):
     """
     if epu.epu_stats.empty or epu.epu_stats["date"].max() < tail_ts:
         _today = pd.Timestamp.today().normalize()
-        _daily_spine = pd.date_range(start=tail_ts, end=_today, freq="D")
-        epu.epu_stats = pd.DataFrame(
-            {
-                "date": _daily_spine,
-                "ym": [d.strftime("%Y-%m-%d") for d in _daily_spine],
-                "news_total": 0,
-            }
-        )
+        _spine = epu._build_continuous_index(tail_ts, _today)
+        if epu.daily_tail_start is not None:
+            daily_tail_ts = pd.Timestamp(epu.daily_tail_start)
+            _spine["ym"] = _spine["date"].apply(
+                lambda d: (
+                    d.strftime("%Y-%m-%d")
+                    if d >= daily_tail_ts
+                    else str(d.year) + "-" + str(d.month)
+                )
+            )
+        else:
+            _spine["ym"] = _spine["date"].apply(
+                lambda d: str(d.year) + "-" + str(d.month)
+            )
+        _spine["news_total"] = 0
+        epu.epu_stats = _spine
         epu.news_cols = []
         epu.ratio_cols = []
 
@@ -104,7 +114,8 @@ def _restore_from_cache(epu, tail_ts, pre_tail_cache):
 
 def _run_incremental_group_epus(
     news_dirs,
-    cutoff,
+    cutoff_start_date,
+    cutoff_end_date,
     daily_tail_start,
     groups,
     combined_condition,
@@ -126,7 +137,8 @@ def _run_incremental_group_epus(
     for key, additional_terms in groups.items():
         e = EPU(
             news_dirs,
-            cutoff=cutoff,
+            cutoff_start_date=cutoff_start_date,
+            cutoff_end_date=cutoff_end_date,
             additional_terms=additional_terms,
             additional_name=key,
             daily_tail_start=daily_tail_start,
@@ -147,7 +159,8 @@ def _run_incremental_group_epus(
 
 def run_full_epu(
     news_dirs,
-    cutoff,
+    cutoff_start_date,
+    cutoff_end_date,
     subset_condition,
     daily_tail_start,
     all_topics,
@@ -163,7 +176,8 @@ def run_full_epu(
 
     e_base = EPU(
         news_dirs,
-        cutoff=cutoff,
+        cutoff_start_date=cutoff_start_date,
+        cutoff_end_date=cutoff_end_date,
         daily_tail_start=daily_tail_start,
         source_languages=source_languages,
     )
@@ -182,7 +196,8 @@ def run_full_epu(
 
     topic_epus = _run_group_epus(
         news_dirs,
-        cutoff,
+        cutoff_start_date,
+        cutoff_end_date,
         daily_tail_start,
         all_topics,
         subset_condition,
@@ -191,7 +206,8 @@ def run_full_epu(
     )
     actor_epus = _run_group_epus(
         news_dirs,
-        cutoff,
+        cutoff_start_date,
+        cutoff_end_date,
         daily_tail_start,
         all_actors,
         subset_condition,
@@ -204,7 +220,8 @@ def run_full_epu(
 
 def run_full_groups_only(
     news_dirs,
-    cutoff,
+    cutoff_start_date,
+    cutoff_end_date,
     subset_condition,
     daily_tail_start,
     groups_subset,
@@ -218,7 +235,8 @@ def run_full_groups_only(
     preloaded = _preload_articles(news_dirs, subset_condition, daily_tail_start)
     return _run_group_epus(
         news_dirs,
-        cutoff,
+        cutoff_start_date,
+        cutoff_end_date,
         daily_tail_start,
         groups_subset,
         subset_condition,
@@ -229,8 +247,10 @@ def run_full_groups_only(
 
 def run_incremental_epu(
     news_dirs,
-    cutoff,
+    cutoff_start_date,
+    cutoff_end_date,
     subset_condition,
+    recompute_start,
     daily_tail_start,
     all_topics,
     all_actors,
@@ -240,11 +260,12 @@ def run_incremental_epu(
 ):
     """Run the incremental EPU pipeline using cached pre-tail epu_stats.
 
-    Only reads articles from the current month (date >= daily_tail_start).
+    Reads articles from the recompute window forward while keeping only the
+    current month as daily output.
     Applies stored sigma and scaling factors from params instead of recalculating.
     Returns (e_base, topic_epus, actor_epus, ug_counts_all).
     """
-    tail_condition = f"date >= '{daily_tail_start}'"
+    tail_condition = f"date >= '{recompute_start}'"
     combined_condition = (
         f"{subset_condition} and {tail_condition}"
         if subset_condition
@@ -256,14 +277,15 @@ def run_incremental_epu(
     # ── Base EPU: tail-only articles ────────────────────────────────
     e_base = EPU(
         news_dirs,
-        cutoff=cutoff,
+        cutoff_start_date=cutoff_start_date,
+        cutoff_end_date=cutoff_end_date,
         daily_tail_start=daily_tail_start,
         source_languages=source_languages,
     )
     e_base.get_epu_category(subset_condition=combined_condition, preloaded=preloaded)
     e_base.get_count_stats(calculate_extended=True)
 
-    tail_ts = pd.Timestamp(daily_tail_start)
+    tail_ts = pd.Timestamp(recompute_start)
     pre_tail_cache = cache[cache["date"] < tail_ts].copy()
     _restore_from_cache(e_base, tail_ts, pre_tail_cache)
 
@@ -280,7 +302,7 @@ def run_incremental_epu(
     tail_mask = e_base.epu_stats["date"] >= tail_ts
     tail_df = e_base.epu_stats[tail_mask].copy().reset_index(drop=True)
 
-    _calc = IndexCalculator(cutoff)
+    _calc = IndexCalculator(cutoff_start_date, cutoff_end_date)
     tail_df = _calc.calculate_breadth_indices(tail_df, sources)
     tail_df = _calc.calculate_intensity_indices(tail_df, sources)
     tail_df = _calc.calculate_pairwise_indices(tail_df, sources)
@@ -309,7 +331,8 @@ def run_incremental_epu(
     # ── Topic/Actor EPU: tail-only with cache restoration ──────────
     topic_epus = _run_incremental_group_epus(
         news_dirs,
-        cutoff,
+        cutoff_start_date,
+        cutoff_end_date,
         daily_tail_start,
         all_topics,
         combined_condition,
@@ -321,7 +344,8 @@ def run_incremental_epu(
     )
     actor_epus = _run_incremental_group_epus(
         news_dirs,
-        cutoff,
+        cutoff_start_date,
+        cutoff_end_date,
         daily_tail_start,
         all_actors,
         combined_condition,
@@ -342,12 +366,14 @@ def run_incremental_epu(
 
         if tail_ug.empty:
             _today = pd.Timestamp.today().normalize()
-            _daily_spine = pd.date_range(start=tail_ts, end=_today, freq="D")
-            tail_ug = pd.DataFrame(
-                {
-                    "date": _daily_spine,
-                    "ym": [d.strftime("%Y-%m-%d") for d in _daily_spine],
-                }
+            tail_ug = e_base._build_continuous_index(tail_ts, _today)
+            daily_tail_ts = pd.Timestamp(daily_tail_start)
+            tail_ug["ym"] = tail_ug["date"].apply(
+                lambda d: (
+                    d.strftime("%Y-%m-%d")
+                    if d >= daily_tail_ts
+                    else str(d.year) + "-" + str(d.month)
+                )
             )
 
         ug_cols = [

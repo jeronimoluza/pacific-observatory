@@ -1,0 +1,41 @@
+name: Saudi Gazette
+language: en
+country: saudi_arabia
+base_url: https://saudigazette.com.sa
+
+listing:
+  type: api
+  pagination_type: offset
+  offset_start: 0
+  offset_step: 20
+  url_template: "https://saudigazette.com.sa/api/pb/fetch-more-articles?sectionId=74&limit=20&offset={offset}"
+  json_paths:
+    collection: data
+    url: link
+    title: title
+    date: publish_time
+    body: body
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.body-div p"
+    date: meta[itemprop='datePublished']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

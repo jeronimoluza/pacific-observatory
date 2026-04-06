@@ -18,6 +18,14 @@ from src.text.analysis.outputs import (  # noqa: E402
     collect_params,
     json_default,
 )
+from src.text.analysis.baseline import (  # noqa: E402
+    baseline_mask,
+    cached_baseline_window,
+    cache_matches_baseline,
+    format_baseline_window,
+    has_modern_baseline_window,
+    source_key_for_news_path,
+)
 from src.text.analysis.runners import (  # noqa: E402
     run_full_epu,
     run_full_groups_only,
@@ -105,14 +113,16 @@ def _validate_news_files(news_dirs: list[Path], yes: bool = False) -> list[Path]
     return news_dirs
 
 
-def _check_cutoff_coherence(
-    news_dirs: list[Path], cutoff: str, yes: bool = False
+def _filter_sources_for_baseline(
+    news_dirs: list[Path],
+    cutoff_start_date: str | None,
+    cutoff_end_date: str | None,
+    yes: bool = False,
 ) -> list[Path]:
-    """Check if any source's data starts after the cutoff date.
+    """Filter out sources with no usable observations inside the baseline window.
 
     Returns the filtered list of news.csv paths (sources outside cutoff excluded).
     """
-    cutoff_ts = pd.Timestamp(cutoff)
     valid = []
     excluded = []
 
@@ -123,9 +133,14 @@ def _check_cutoff_coherence(
             if dates.empty:
                 excluded.append((fp, "no valid dates"))
                 continue
-            min_date = dates.min()
-            if min_date > cutoff_ts:
-                excluded.append((fp, f"data starts {min_date.date()}"))
+            in_window = dates[baseline_mask(dates, cutoff_start_date, cutoff_end_date)]
+            if in_window.empty:
+                excluded.append(
+                    (
+                        fp,
+                        f"no observations in baseline {format_baseline_window(cutoff_start_date, cutoff_end_date)}",
+                    )
+                )
             else:
                 valid.append(fp)
         except Exception:
@@ -134,21 +149,9 @@ def _check_cutoff_coherence(
     if excluded:
         for fp, reason in excluded:
             print(
-                f"  WARNING: '{fp.parent.name}' — {reason}, after cutoff {cutoff}. "
-                f"The standardization period has no data for this source, so its "
-                f"standard deviation cannot be computed. This source will be excluded "
-                f"from the index."
+                f"  WARNING: '{fp.parent.name}' — {reason}. "
+                "This source will be excluded from baseline standardization."
             )
-        msg = (
-            f"  Excluding {len(excluded)} source(s). "
-            f"Continue with {len(valid)} remaining?"
-        )
-        if not yes:
-            import click
-
-            click.confirm(msg, default=True, abort=True)
-        else:
-            print(msg + " (--yes)")
 
     return valid
 
@@ -272,6 +275,99 @@ def _discover_units(
     return units
 
 
+def preview_build_units(
+    region: str | None = None,
+    subregion: str | None = None,
+    countries: list[str] | None = None,
+    exclude_countries: set[str] | None = None,
+) -> list[dict]:
+    """Return the unit list that would be processed by run_analysis()."""
+    country_dirs = _get_country_dirs(exclude_countries)
+    if region:
+        country_dirs = [d for d in country_dirs if d.parent.parent.name == region]
+    if subregion:
+        country_dirs = [d for d in country_dirs if d.parent.name == subregion]
+    if countries:
+        requested = {c.lower() for c in countries}
+        country_dirs = [d for d in country_dirs if d.name.lower() in requested]
+    include_aggregates = not countries
+    return _discover_units(country_dirs, include_aggregates=include_aggregates)
+
+
+def _current_sources(news_dirs: list[Path]) -> set[str]:
+    """Return the canonical source set for a unit."""
+    return {source_key_for_news_path(fp) for fp in news_dirs}
+
+
+def _determine_recompute_start(output_dir: Path, current_tail_start: str) -> str:
+    """Detect whether stale prior-month daily rows must be replaced."""
+    csv_path = output_dir / "epu" / "epu.csv"
+    if not csv_path.exists():
+        return current_tail_start
+
+    try:
+        existing = pd.read_csv(csv_path, usecols=["date", "ym"], encoding="utf-8")
+    except Exception:
+        return current_tail_start
+
+    if existing.empty or "ym" not in existing.columns:
+        return current_tail_start
+
+    existing["date"] = pd.to_datetime(existing["date"], errors="coerce")
+    tail_ts = pd.Timestamp(current_tail_start)
+    stale_mask = (
+        (existing["ym"].astype(str).str.count("-") >= 2)
+        & existing["date"].notna()
+        & (existing["date"] < tail_ts)
+    )
+    stale_daily = existing[stale_mask]
+    if stale_daily.empty:
+        return current_tail_start
+
+    latest_daily = stale_daily["date"].max()
+    return latest_daily.replace(day=1).strftime("%Y-%m-%d")
+
+
+def _build_cache_df(e_base, topic_epus, actor_epus, ug_counts_all, tail_ts):
+    """Build the reusable pre-tail cache written after each successful build."""
+    cache_df = e_base.epu_stats[e_base.epu_stats["date"] < tail_ts].copy()
+
+    for topic_key, e_topic in topic_epus.items():
+        col = f"EPU_{topic_key}_index"
+        topic_pre = e_topic.epu_stats[e_topic.epu_stats["date"] < tail_ts][
+            ["date", "epu_weighted"]
+        ].rename(columns={"epu_weighted": col})
+        cache_df = cache_df.drop(columns=[col], errors="ignore")
+        cache_df = cache_df.merge(topic_pre, on="date", how="left")
+
+    for actor_key, e_actor in actor_epus.items():
+        col = f"EPU_{actor_key}_index"
+        actor_pre = e_actor.epu_stats[e_actor.epu_stats["date"] < tail_ts][
+            ["date", "epu_weighted"]
+        ].rename(columns={"epu_weighted": col})
+        cache_df = cache_df.drop(columns=[col], errors="ignore")
+        cache_df = cache_df.merge(actor_pre, on="date", how="left")
+
+    for source_file in ("topics", "actors"):
+        ug_raw = ug_counts_all[source_file]
+        if "date" not in ug_raw.columns:
+            ug_raw = ug_raw.copy()
+            ug_raw["date"] = pd.to_datetime(ug_raw["ym"], format="mixed")
+        ug_pre = ug_raw[ug_raw["date"] < tail_ts].copy()
+        ug_count_cols = [
+            c for c in ug_pre.columns if "_UG_" in c and c.endswith("_count")
+        ]
+        if ug_count_cols:
+            cache_df = pd.merge(
+                cache_df,
+                ug_pre[["date"] + ug_count_cols],
+                on="date",
+                how="left",
+            )
+
+    return cache_df
+
+
 # ── Redo helper ───────────────────────────────────────────────────────
 
 
@@ -279,7 +375,8 @@ def _redo_groups(
     group_type,
     groups_subset,
     news_dirs,
-    cutoff,
+    cutoff_start_date,
+    cutoff_end_date,
     subset_condition,
     daily_tail_start,
     params,
@@ -304,7 +401,8 @@ def _redo_groups(
     print(f"  [redo] recomputing {group_type}: {', '.join(sorted(groups_subset))}")
     redo_epus = run_full_groups_only(
         news_dirs,
-        cutoff,
+        cutoff_start_date,
+        cutoff_end_date,
         subset_condition,
         daily_tail_start,
         groups_subset,
@@ -352,7 +450,8 @@ def process_unit(
     news_dirs: list[Path],
     output_dir: Path,
     cache_dir: Path,
-    cutoff: str,
+    cutoff_start_date: str | None,
+    cutoff_end_date: str | None,
     subset_condition: str,
     recalculate_params: bool = False,
     redo_topics: set[str] | None = None,
@@ -375,7 +474,8 @@ def process_unit(
     cache_path = cache_dir / "epu_stats_cache.csv"
 
     today = pd.Timestamp.today()
-    daily_tail_start = today.replace(day=1).strftime("%Y-%m-%d")
+    current_tail_start = today.replace(day=1).strftime("%Y-%m-%d")
+    recompute_start = _determine_recompute_start(output_dir, current_tail_start)
     all_topics = load_all_groups("topics")
     all_actors = load_all_groups("actors")
 
@@ -411,10 +511,17 @@ def process_unit(
     if not news_dirs:
         print(f"  No valid news files for {name}. Skipping.")
         return
-    news_dirs = _check_cutoff_coherence(news_dirs, cutoff, yes=yes)
+    news_dirs = _filter_sources_for_baseline(
+        news_dirs,
+        cutoff_start_date=cutoff_start_date,
+        cutoff_end_date=cutoff_end_date,
+        yes=yes,
+    )
     if not news_dirs:
-        print(f"  All sources excluded for {name}. Skipping.")
+        print(f"  No valid baseline sources remain for {name}. Skipping.")
         return
+
+    current_sources = _current_sources(news_dirs)
 
     # ── Redo branch: selectively recompute specific topics/actors ────
     if redo_topics or redo_actors:
@@ -427,7 +534,7 @@ def process_unit(
         params = json.loads(params_path.read_text(encoding="utf-8"))
         cache_df = pd.read_csv(cache_path, encoding="utf-8", low_memory=False)
         cache_df["date"] = pd.to_datetime(cache_df["date"])
-        tail_ts = pd.Timestamp(daily_tail_start)
+        tail_ts = pd.Timestamp(current_tail_start)
 
         if redo_topics:
             topics_subset = {k: all_topics[k] for k in redo_topics}
@@ -435,9 +542,10 @@ def process_unit(
                 "topics",
                 topics_subset,
                 news_dirs,
-                cutoff,
+                cutoff_start_date,
+                cutoff_end_date,
                 subset_condition,
-                daily_tail_start,
+                current_tail_start,
                 params,
                 cache_df,
                 tail_ts,
@@ -451,9 +559,10 @@ def process_unit(
                 "actors",
                 actors_subset,
                 news_dirs,
-                cutoff,
+                cutoff_start_date,
+                cutoff_end_date,
                 subset_condition,
-                daily_tail_start,
+                current_tail_start,
                 params,
                 cache_df,
                 tail_ts,
@@ -473,17 +582,22 @@ def process_unit(
     params = None
     if use_cache:
         params = json.loads(params_path.read_text(encoding="utf-8"))
-        cached_sources = set(params.get("sources", []))
-        current_sources = set()
-        for fp in news_dirs:
-            _country = fp.parent.parent.name
-            _newspaper = fp.parent.name.replace(_country, "").strip("_")
-            current_sources.add(f"{_country}_{_newspaper}")
-        new_sources = current_sources - cached_sources
-        if new_sources:
+        if not has_modern_baseline_window(params):
+            print("  [cache] legacy cutoff params detected; forcing full recompute")
+            use_cache = False
+            params = None
+        elif not cache_matches_baseline(
+            params,
+            current_sources,
+            cutoff_start_date,
+            cutoff_end_date,
+        ):
+            cached_start, cached_end = cached_baseline_window(params)
             print(
-                f"  [cache] new sources detected: {', '.join(sorted(new_sources))}; "
-                "forcing full recompute"
+                "  [cache] params do not match requested baseline "
+                f"({format_baseline_window(cutoff_start_date, cutoff_end_date)}); "
+                f"cached window is {format_baseline_window(cached_start, cached_end)}. "
+                "Forcing full recompute"
             )
             use_cache = False
             params = None
@@ -502,7 +616,7 @@ def process_unit(
 
         # Read cache_df once for both backfill blocks
         cache_df = None
-        tail_ts = pd.Timestamp(daily_tail_start)
+        tail_ts = pd.Timestamp(current_tail_start)
 
         if missing_topics:
             print(
@@ -512,9 +626,10 @@ def process_unit(
             topics_subset = {k: all_topics[k] for k in missing_topics}
             missing_topic_epus_full = run_full_groups_only(
                 news_dirs,
-                cutoff,
+                cutoff_start_date,
+                cutoff_end_date,
                 subset_condition,
-                daily_tail_start,
+                current_tail_start,
                 topics_subset,
                 source_languages=source_languages,
             )
@@ -542,9 +657,10 @@ def process_unit(
             actors_subset = {k: all_actors[k] for k in missing_actors}
             missing_actor_epus_full = run_full_groups_only(
                 news_dirs,
-                cutoff,
+                cutoff_start_date,
+                cutoff_end_date,
                 subset_condition,
-                daily_tail_start,
+                current_tail_start,
                 actors_subset,
                 source_languages=source_languages,
             )
@@ -572,16 +688,18 @@ def process_unit(
             cache_df.to_csv(cache_path, index=False, encoding="utf-8")
 
     if use_cache:
-        print(f"  [incremental] updating {daily_tail_start} onwards from cache...")
+        print(f"  [incremental] updating {recompute_start} onwards from cache...")
         # Use in-memory params (already up to date after backfill).
         # Re-read cache from disk since backfill may have updated it.
         cache = pd.read_csv(cache_path, encoding="utf-8", low_memory=False)
         cache["date"] = pd.to_datetime(cache["date"])
         e_base, topic_epus, actor_epus, ug_counts_all = run_incremental_epu(
             news_dirs,
-            cutoff,
+            cutoff_start_date,
+            cutoff_end_date,
             subset_condition,
-            daily_tail_start,
+            recompute_start,
+            current_tail_start,
             all_topics,
             all_actors,
             params,
@@ -600,9 +718,10 @@ def process_unit(
         )
         e_base, topic_epus, actor_epus, ug_counts_all = run_full_epu(
             news_dirs,
-            cutoff,
+            cutoff_start_date,
+            cutoff_end_date,
             subset_condition,
-            daily_tail_start,
+            current_tail_start,
             all_topics,
             all_actors,
             source_languages=source_languages,
@@ -613,14 +732,16 @@ def process_unit(
         topic_epus,
         actor_epus,
         ug_counts_all,
-        cutoff,
-        daily_tail_start,
+        cutoff_start_date,
+        cutoff_end_date,
+        current_tail_start,
         country_name,
         full_write=not use_cache,
+        replace_from=recompute_start,
         output_dir=output_dir,
     )
 
-    # ── Write params.json + cache (full mode only) ───────────────────
+    # ── Write params.json on full mode, cache after every successful build ───
     if not use_cache:
         all_news_dfs = [
             pd.read_csv(fp, encoding="utf-8", usecols=["date"], low_memory=False)
@@ -632,7 +753,8 @@ def process_unit(
 
         params = collect_params(
             country_name=country_name,
-            cutoff=cutoff,
+            cutoff_start_date=cutoff_start_date,
+            cutoff_end_date=cutoff_end_date,
             e_base=e_base,
             topic_epus=topic_epus,
             actor_epus=actor_epus,
@@ -645,44 +767,11 @@ def process_unit(
             json.dump(params, f, indent=2, default=json_default)
         print(f"  params.json written to {params_path}")
 
-        tail_ts = pd.Timestamp(daily_tail_start)
-        cache_df = e_base.epu_stats[e_base.epu_stats["date"] < tail_ts].copy()
-
-        for topic_key, e_topic in topic_epus.items():
-            col = f"EPU_{topic_key}_index"
-            topic_pre = e_topic.epu_stats[e_topic.epu_stats["date"] < tail_ts][
-                ["date", "epu_weighted"]
-            ].rename(columns={"epu_weighted": col})
-            cache_df = cache_df.drop(columns=[col], errors="ignore")
-            cache_df = cache_df.merge(topic_pre, on="date", how="left")
-
-        for actor_key, e_actor in actor_epus.items():
-            col = f"EPU_{actor_key}_index"
-            actor_pre = e_actor.epu_stats[e_actor.epu_stats["date"] < tail_ts][
-                ["date", "epu_weighted"]
-            ].rename(columns={"epu_weighted": col})
-            cache_df = cache_df.drop(columns=[col], errors="ignore")
-            cache_df = cache_df.merge(actor_pre, on="date", how="left")
-
-        for source_file in ("topics", "actors"):
-            ug_raw = ug_counts_all[source_file]
-            if "date" not in ug_raw.columns:
-                ug_raw = ug_raw.copy()
-                ug_raw["date"] = pd.to_datetime(ug_raw["ym"], format="mixed")
-            ug_pre = ug_raw[ug_raw["date"] < tail_ts].copy()
-            ug_count_cols = [
-                c for c in ug_pre.columns if "_UG_" in c and c.endswith("_count")
-            ]
-            if ug_count_cols:
-                cache_df = pd.merge(
-                    cache_df,
-                    ug_pre[["date"] + ug_count_cols],
-                    on="date",
-                    how="left",
-                )
-
-        cache_df.to_csv(cache_path, index=False, encoding="utf-8")
-        print(f"  epu_stats_cache.csv written ({len(cache_df)} rows)")
+    tail_ts = pd.Timestamp(current_tail_start)
+    cache_df = _build_cache_df(e_base, topic_epus, actor_epus, ug_counts_all, tail_ts)
+    cache_path.parent.mkdir(parents=True, exist_ok=True)
+    cache_df.to_csv(cache_path, index=False, encoding="utf-8")
+    print(f"  epu_stats_cache.csv written ({len(cache_df)} rows)")
 
 
 # ── CLI entry point ──────────────────────────────────────────────────
@@ -692,7 +781,8 @@ def run_analysis(
     region: str | None = None,
     subregion: str | None = None,
     countries: list[str] | None = None,
-    cutoff: str | None = None,
+    cutoff_start_date: str | None = None,
+    cutoff_end_date: str | None = None,
     subset_condition: str | None = None,
     recalculate_params: bool = False,
     redo_topics: set[str] | None = None,
@@ -707,7 +797,8 @@ def run_analysis(
     region : filter to a single WB region slug (e.g. "eap").
     subregion : filter to a single subregion slug (e.g. "pacific_islands").
     countries : list of country slugs. If None, all countries.
-    cutoff : date string for EPU standardization (default "2020-12-31").
+    cutoff_start_date : inclusive baseline start date for standardization.
+    cutoff_end_date : inclusive baseline end date for standardization.
     subset_condition : pandas query filter.
     recalculate_params : force recalculation of params.json.
     redo_topics : set of topic keys to recompute full-history.
@@ -715,8 +806,6 @@ def run_analysis(
     exclude_countries : set of country names to exclude.
     yes : auto-confirm interactive prompts.
     """
-    if cutoff is None:
-        cutoff = "2020-12-31"
     if subset_condition is None:
         today = pd.Timestamp.today().strftime("%Y-%m-%d")
         subset_condition = f"date >= '2015-01-01' and date <= '{today}'"
@@ -759,7 +848,7 @@ def run_analysis(
     print(f"  Countries: {', '.join(u['name'] for u in country_units)}")
     if agg_units:
         print(f"  Aggregates: {', '.join(u['name'] for u in agg_units)}")
-    print(f"  Cutoff: {cutoff}")
+    print("  Baseline: " + format_baseline_window(cutoff_start_date, cutoff_end_date))
     print(f"{'=' * 60}")
 
     for i, unit in enumerate(units):
@@ -780,7 +869,8 @@ def run_analysis(
                 news_dirs=unit["news_dirs"],
                 output_dir=unit["output_dir"],
                 cache_dir=unit["cache_dir"],
-                cutoff=cutoff,
+                cutoff_start_date=cutoff_start_date,
+                cutoff_end_date=cutoff_end_date,
                 subset_condition=subset_condition,
                 recalculate_params=recalculate_params,
                 redo_topics=redo_topics,
@@ -803,6 +893,18 @@ if __name__ == "__main__":
         type=str,
         default=None,
         help="Process a single country (e.g. thailand). Default: all countries.",
+    )
+    parser.add_argument(
+        "--cutoff-start-date",
+        type=str,
+        default=None,
+        help="Inclusive baseline start date for standardization (YYYY-MM-DD).",
+    )
+    parser.add_argument(
+        "--cutoff-end-date",
+        type=str,
+        default=None,
+        help="Inclusive baseline end date for standardization (YYYY-MM-DD).",
     )
     parser.add_argument(
         "--recalculate-params",
@@ -868,6 +970,8 @@ if __name__ == "__main__":
 
     run_analysis(
         countries=[args.country] if args.country else None,
+        cutoff_start_date=args.cutoff_start_date,
+        cutoff_end_date=args.cutoff_end_date,
         recalculate_params=args.recalculate_params,
         redo_topics=redo_topics,
         redo_actors=redo_actors,

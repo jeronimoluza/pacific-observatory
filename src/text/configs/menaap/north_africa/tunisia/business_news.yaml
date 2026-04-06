@@ -1,0 +1,32 @@
+name: Business News
+language: fr
+country: tunisia
+base_url: https://www.businessnews.com.tn
+
+listing:
+  type: pagination
+  start_url: "https://www.businessnews.com.tn/category/dernieres-news/"
+  url_template: "https://www.businessnews.com.tn/category/dernieres-news/page/{num}/"
+  start_page: 2
+  step: 1
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: article
+    title: "h3 a::text"
+    url: "h3 a::attr(href)"
+  article:
+    body: ["div.elementor-widget-theme-post-content p", "div.entry-content p"]
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

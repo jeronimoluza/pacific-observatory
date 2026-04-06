@@ -1,0 +1,32 @@
+name: The Express Tribune
+language: en
+country: pakistan
+base_url: https://tribune.com.pk
+
+listing:
+  type: pagination
+  start_url: "https://tribune.com.pk/latest"
+  url_template: "https://tribune.com.pk/latest?page={num}"
+  start_page: 2
+  step: 1
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "ul.tedit-shortnews.listing-page li"
+    title: "a::text"
+    url: "a::attr(href)"
+  article:
+    body: "span.story-text p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null
