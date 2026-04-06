@@ -235,10 +235,16 @@ def text_collect(
 @_country_opt
 @_yes_opt
 @click.option(
-    "--cutoff",
+    "--cutoff-start-date",
     type=str,
     default=None,
-    help="Cutoff date for EPU standardization (YYYY-MM-DD)",
+    help="Inclusive baseline start date for EPU standardization (YYYY-MM-DD)",
+)
+@click.option(
+    "--cutoff-end-date",
+    type=str,
+    default=None,
+    help="Inclusive baseline end date for EPU standardization (YYYY-MM-DD)",
 )
 @click.option(
     "--rebuild",
@@ -246,7 +252,9 @@ def text_collect(
     default=False,
     help="Force recalculation of params.json and cache.",
 )
-def text_build(region, subregion, country, yes, cutoff, rebuild):
+def text_build(
+    region, subregion, country, yes, cutoff_start_date, cutoff_end_date, rebuild
+):
     """Run EPU index calculation and analysis."""
     from text.process import run_build
 
@@ -255,7 +263,8 @@ def text_build(region, subregion, country, yes, cutoff, rebuild):
         subregion=subregion,
         country=country,
         yes=yes,
-        cutoff=cutoff,
+        cutoff_start_date=cutoff_start_date,
+        cutoff_end_date=cutoff_end_date,
         rebuild=rebuild,
     )
 
