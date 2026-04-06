@@ -57,6 +57,28 @@ _FJ_PRODUCT_PATTERNS = [
 ]
 
 
+_MONTH_NAMES = "January|February|March|April|May|June|July|August|September|October|November|December"
+
+
+def _ocr_pdf(content: bytes) -> str:
+    """OCR a scanned PDF via pytesseract; returns extracted text."""
+    try:
+        import pdfplumber
+        import pytesseract
+    except ImportError:
+        print("  [fj_fccc] Scanned PDF needs OCR — pip install pytesseract pdfplumber")
+        return ""
+    pages = []
+    with pdfplumber.open(io.BytesIO(content)) as pdf:
+        for page in pdf.pages:
+            img = page.to_image(resolution=300)
+            pages.append(pytesseract.image_to_string(img.original, config="--psm 4"))
+    text = "\n".join(pages)
+    # Fix common OCR misread: | before month name → 1
+    text = re.sub(rf"\|\s*({_MONTH_NAMES})", r"1 \1", text, flags=re.IGNORECASE)
+    return text
+
+
 def _parse_fccc_pdf(content: bytes, pdf_url: str) -> list[dict]:
     """Parse an FCCC price control order PDF; return row dicts (no hashes)."""
     try:
@@ -72,10 +94,21 @@ def _parse_fccc_pdf(content: bytes, pdf_url: str) -> list[dict]:
         print(f"  [fj_fccc] pdfplumber error: {e}")
         return []
 
+    # Fallback to OCR for scanned/image-based PDFs
+    if not full_text.strip():
+        full_text = _ocr_pdf(content)
+        if not full_text.strip():
+            print(f"  [fj_fccc] No text extracted (even with OCR) from {pdf_url}")
+            return []
+
     eff_date = None
     for pat in [
-        r"effective\s+(?:from\s+)?(\d{1,2})\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(20\d{2})",
-        r"(\d{1,2})(?:st|nd|rd|th)?\s+(January|February|March|April|May|June|July|August|September|October|November|December)\s+(20\d{2})",
+        r"(?:effective|into\s+force)\s+(?:from\s+|on\s+)?(\d{{1,2}})\s+({months})\s+(20\d{{2}})".format(
+            months=_MONTH_NAMES
+        ),
+        r"(\d{{1,2}})(?:st|nd|rd|th)?\s+({months})\s+(20\d{{2}})".format(
+            months=_MONTH_NAMES
+        ),
     ]:
         m = re.search(pat, full_text, re.IGNORECASE)
         if m:
@@ -93,8 +126,19 @@ def _parse_fccc_pdf(content: bytes, pdf_url: str) -> list[dict]:
         print(f"  [fj_fccc] Could not parse effective date from {pdf_url}")
         return []
 
+    # Extract Schedule 1 Retail/Bulk section only (skip Drum Sale prices).
+    # Use the LAST "SCHEDULE 1" occurrence — earlier ones may be references
+    # in other legal notices within the same gazette.
+    sched1_matches = list(re.finditer(r"(?i)SCHEDULE\s+1\b", full_text))
+    if sched1_matches:
+        after_sched1 = full_text[sched1_matches[-1].start() :]
+        drum = re.search(r"(?i)drum\s+sale", after_sched1)
+        retail_text = after_sched1[: drum.start()] if drum else after_sched1
+    else:
+        retail_text = full_text
+
     rows = []
-    lines = full_text.split("\n")
+    lines = retail_text.split("\n")
     for prod_pat, prod_name, family, qg in _FJ_PRODUCT_PATTERNS:
         for i, line in enumerate(lines):
             if not re.search(prod_pat, line):

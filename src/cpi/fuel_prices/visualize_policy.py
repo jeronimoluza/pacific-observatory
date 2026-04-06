@@ -106,7 +106,7 @@ COUNTRY_PRODUCTS: dict[str, list[str]] = {
         "Kerosene",
         "NGV retail price",
     ],
-    "Taiwan": ["Unleaded 92", "Unleaded 95", "Unleaded 98", "Super Diesel"],
+    "Taiwan, China": ["Unleaded 92", "Unleaded 95", "Unleaded 98", "Super Diesel"],
     "Timor-Leste": ["Petrol", "Diesel"],
     "Tonga": ["Petrol", "Diesel", "Kerosene"],
     "Vanuatu": ["Unleaded Petrol 95RON", "Low Sulphur Diesel 10PPM"],
@@ -1325,13 +1325,17 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
             _th_records.append(r)
 
     _preprocessed = {
-        **fuel_data,
-        "Hong Kong": _hk_records,
-        "Mongolia": _mn_records,
-        "Vietnam": _vn_records,
-        "China": _cn_records,
-        "Thailand": _th_records,
+        ("Taiwan, China" if k == "Taiwan" else k): v for k, v in fuel_data.items()
     }
+    _preprocessed.update(
+        {
+            "Hong Kong": _hk_records,
+            "Mongolia": _mn_records,
+            "Vietnam": _vn_records,
+            "China": _cn_records,
+            "Thailand": _th_records,
+        }
+    )
 
     fuel_data_slim = {
         country: _collapse_country_records(
@@ -1340,13 +1344,13 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
         for country, records in _preprocessed.items()
     }
 
-    # Normalize Taiwan CPC product names ("92 Unleaded") to MOEA convention ("Unleaded 92")
+    # Normalize Taiwan, China CPC product names ("92 Unleaded") to MOEA convention ("Unleaded 92")
     _TW_RENAME = {
         "92 Unleaded": "Unleaded 92",
         "95 Unleaded": "Unleaded 95",
         "98 Unleaded": "Unleaded 98",
     }
-    for r in fuel_data_slim.get("Taiwan", []):
+    for r in fuel_data_slim.get("Taiwan, China", []):
         fp = r.get("fuel_product")
         if fp in _TW_RENAME:
             r["fuel_product"] = _TW_RENAME[fp]
@@ -1380,7 +1384,9 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
     country_products_json = json.dumps(COUNTRY_PRODUCTS)
     product_regimes_json = json.dumps(product_regimes)
     _HIDDEN_COUNTRIES = {"Palau"}
-    fuel_countries = sorted(c for c in fuel_data.keys() if c not in _HIDDEN_COUNTRIES)
+    fuel_countries = sorted(
+        c for c in fuel_data_slim.keys() if c not in _HIDDEN_COUNTRIES
+    )
     fuel_country_opts = "\n".join(
         f'<option value="{c}">{c}</option>' for c in fuel_countries
     )
@@ -1604,7 +1610,7 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
         </div>
     </div>
     <div class="ctrl-row">
-        <span class="row-label">Countries:</span>
+        <span class="row-label">Economies:</span>
     </div>
     <div class="chip-container" id="compare-country-chips"></div>
     <div class="slider-row">
@@ -2560,7 +2566,7 @@ function setCompareFamily() {{
 
 var COMPARE_DEFAULT_COUNTRIES = new Set([
     'Australia', 'Cambodia', 'China', 'Fiji', 'Japan', 'Myanmar',
-    'New Zealand', 'Singapore', 'Taiwan', 'Thailand', 'Vietnam'
+    'New Zealand', 'Singapore', 'Taiwan, China', 'Thailand', 'Vietnam'
 ]);
 
 function buildCompareCountryChips() {{

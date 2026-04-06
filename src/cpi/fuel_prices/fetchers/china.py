@@ -61,7 +61,7 @@ _TMPL_CN = make_template(
 
 
 _LISTING_BASE = "https://www.ndrc.gov.cn/xwdt/xwfb/"
-_NOTICE_TITLE_KWS = ("国内成品油价格按机制",)
+_NOTICE_TITLE_KWS = ("国内成品油价格按机制", "国内成品油价格调整")
 _LISTING_DATE_RE = re.compile(r"\b(\d{4})/(\d{2})/(\d{2})\b")
 
 _TMP_DIR = Path("_cn_ndrc_tmp")
@@ -163,7 +163,7 @@ def _ocr_table_values(processed_img_path: Path) -> list[tuple[int, int]]:
         rdr = csv.DictReader(fh, delimiter="\t")
         for r in rdr:
             txt = (r.get("text") or "").strip()
-            if not re.fullmatch(r"\d{4}", txt):
+            if not re.fullmatch(r"\d{4,5}", txt):
                 continue
             try:
                 conf = float(r.get("conf") or -1)

@@ -12,7 +12,7 @@ SOURCE_META = [
         "products": ["Gasoline (Super/Premium)", "Gasoline (Regular)", "Diesel"],
         "source_keys": ["kh_ptt_monthly_prices"],
         "publishes_on": "Monthly (start of month)",
-        "notes": "Iterates year-by-year; parses HTML price tables with multiple date-format fallbacks. Price range KHR 2,000–8,000/L.",
+        "notes": "Iterates year-by-year; parses HTML price tables with multiple date-format fallbacks. Price range KHR 2,000–20,000/L.",
     },
     {
         "fetcher_fn": "fetch_cambodia_moc",
@@ -170,7 +170,7 @@ def fetch_kh_ptt(cutoff: date) -> pd.DataFrame:
                         continue
                     try:
                         price = float(re.sub(r"[^0-9.]", "", texts[ci]))
-                        if not (2000 <= price <= 8000):
+                        if not (2000 <= price <= 20000):
                             continue
                     except (ValueError, TypeError):
                         continue

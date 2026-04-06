@@ -193,6 +193,18 @@ def fetch_lao(cutoff: date, max_pages: int = _MAX_PAGES) -> pd.DataFrame:
         if page < max_pages:
             time.sleep(0.5)
 
+    # Deduplicate: overlapping pages can yield the same province+date+product
+    seen_hashes: set[str] = set()
+    deduped: list[dict] = []
+    for r in all_rows:
+        h = r["observation_hash"]
+        if h not in seen_hashes:
+            seen_hashes.add(h)
+            deduped.append(r)
+    if len(deduped) < len(all_rows):
+        print(f"  [lao] Deduped {len(all_rows)} → {len(deduped)} rows")
+    all_rows = deduped
+
     if all_rows:
         max_d = max(r["observation_date"] for r in all_rows)
         print(f"  [lao] Collected {len(all_rows)} new rows (max date: {max_d})")

@@ -1,7 +1,7 @@
 """Shared utilities: hashing, HTTP session, template helpers."""
 
 import hashlib
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 
 import pandas as pd
 import requests
@@ -44,7 +44,7 @@ MONTH_MAP_EN = {
 
 def get_scrape_ts() -> str:
     """Return current UTC timestamp string — call per-fetch, not at import time."""
-    return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S")
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def make_hash(row: dict) -> str:

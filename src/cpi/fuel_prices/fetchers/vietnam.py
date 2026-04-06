@@ -170,7 +170,7 @@ def _get_vn_plx_article_urls(
 
 
 def _get_price_image_url(session, article_url: str) -> str | None:
-    """Fetch article HTML and return the URL of the price-table JPG image."""
+    """Fetch article HTML and return the URL of the price-table image."""
     try:
         resp = session.get(article_url, timeout=20)
         if resp.status_code != 200:
@@ -180,6 +180,28 @@ def _get_price_image_url(session, article_url: str) -> str | None:
         return None
 
     soup = BeautifulSoup(resp.content, "lxml")
+
+    # New format (2026-03): full-res image linked via <a href="/images/...jpg|png|webp">
+    # The page shows a WebP thumbnail in <img src="/thumbnailwebps/...">. The anchor href
+    # points to the full-res file, which may itself be served as WebP (.png.webp).
+    candidates = [
+        a["href"]
+        for a in soup.find_all("a", href=True)
+        if "/images/" in a["href"]
+        and a["href"].lower().endswith((".jpg", ".png", ".webp"))
+    ]
+    if candidates:
+        # Prefer the retail-price table (filename contains "giabanle")
+        preferred = next(
+            (h for h in candidates if "giabanle" in h.lower()), candidates[0]
+        )
+        if preferred.startswith("//"):
+            preferred = "https:" + preferred
+        elif preferred.startswith("/"):
+            preferred = _VN_PLX_BASE + preferred
+        return preferred
+
+    # Legacy format: <img src="/jpgs/...jpg"> (older articles)
     for img in soup.find_all("img", src=True):
         src = img["src"]
         if "/jpgs/" in src and "thumbnails" not in src:
@@ -188,6 +210,7 @@ def _get_price_image_url(session, article_url: str) -> str | None:
             elif src.startswith("/"):
                 src = _VN_PLX_BASE + src
             return src
+
     return None
 
 
@@ -195,12 +218,18 @@ def _parse_price_table_from_image(
     img_bytes: bytes, tmp_dir: Path
 ) -> list[tuple[str, float, float]]:
     """OCR the price-table image; returns list of (line_lower, vung1, vung2)."""
-    img_path = tmp_dir / "plx_price_img.jpg"
+    img_path = tmp_dir / "plx_price_img.png"
     ocr_out = tmp_dir / "plx_price_ocr"
     ocr_txt = tmp_dir / "plx_price_ocr.txt"
 
     try:
-        img_path.write_bytes(img_bytes)
+        # WebP is not supported by Tesseract directly; convert to PNG via Pillow.
+        # Pillow handles JPEG, PNG, and WebP transparently so we always write PNG.
+        import io
+        from PIL import Image
+
+        img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+        img.save(img_path, format="PNG")
     except Exception as e:
         print(f"  [vn_plx] Cannot write image: {e}")
         return []

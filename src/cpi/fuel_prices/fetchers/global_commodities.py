@@ -5,7 +5,8 @@ Source:
 """
 
 import json
-from datetime import date, timedelta
+import time
+from datetime import date
 from typing import Optional
 
 import pandas as pd
@@ -103,7 +104,6 @@ _INVESTING_SLUGS: list[dict] = [
 # ---------------------------------------------------------------------------
 
 _INVESTING_BASE = "https://www.investing.com/commodities/"
-_INVESTING_API = "https://api.investing.com/api/financialdata/historical"
 _INVESTING_HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -111,13 +111,6 @@ _INVESTING_HEADERS = {
     ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-US,en;q=0.9",
-}
-_INVESTING_API_HEADERS = {
-    **_INVESTING_HEADERS,
-    "Accept": "application/json, text/plain, */*",
-    "Referer": "https://www.investing.com/",
-    "X-Requested-With": "XMLHttpRequest",
-    "Domain": "www.investing.com",
 }
 
 
@@ -157,34 +150,15 @@ def _find_historical_rows(obj: object, depth: int = 0) -> list[dict]:
     return []
 
 
-def _extract_instrument_id(obj: object, depth: int = 0) -> Optional[int]:
-    """Recursively search __NEXT_DATA__ for the investing.com numeric instrument ID.
+def _parse_price_rows(
+    rows_data: list[dict], cutoff: Optional[date] = None
+) -> list[dict]:
+    """Convert raw investing.com row dicts into ``{obs_date, price}`` entries.
 
-    Looks for ``pairId`` or ``instrumentId`` keys (in that priority order) since
-    those are investing.com-specific and unambiguous.  The generic ``id`` key is
-    intentionally skipped to avoid false positives.
+    When ``cutoff`` is None (the default), all rows are returned and deduplication
+    is handled downstream by ``merge_new_rows`` via ``observation_hash``.  Pass a
+    cutoff only when you explicitly want to filter (e.g. bootstrap scripts).
     """
-    if depth > 15:
-        return None
-    if isinstance(obj, dict):
-        for key in ("pairId", "instrumentId"):
-            val = obj.get(key)
-            if isinstance(val, int) and val > 0:
-                return val
-        for v in obj.values():
-            result = _extract_instrument_id(v, depth + 1)
-            if result:
-                return result
-    elif isinstance(obj, list):
-        for item in obj:
-            result = _extract_instrument_id(item, depth + 1)
-            if result:
-                return result
-    return None
-
-
-def _parse_price_rows(rows_data: list[dict], cutoff: date) -> list[dict]:
-    """Convert raw investing.com row dicts into ``{obs_date, price}`` entries."""
     results = []
     for entry in rows_data:
         try:
@@ -192,7 +166,7 @@ def _parse_price_rows(rows_data: list[dict], cutoff: date) -> list[dict]:
             obs_date = pd.to_datetime(raw_date).date()
         except Exception:
             continue
-        if obs_date <= cutoff:
+        if cutoff is not None and obs_date <= cutoff:
             continue
         price_raw = entry.get("last_closeRaw") or entry.get("last_close")
         try:
@@ -205,98 +179,67 @@ def _parse_price_rows(rows_data: list[dict], cutoff: date) -> list[dict]:
     return results
 
 
-def _fetch_investing_api(
-    instrument_id: int, cutoff: date, slug: str, session
-) -> list[dict]:
-    """Attempt to fetch full history via the investing.com historical API.
-
-    Returns parsed ``{obs_date, price}`` rows, or an empty list on any failure.
-    """
-    params = {
-        "start-date": str(cutoff + timedelta(days=1)),
-        "end-date": str(date.today()),
-        "time-frame": "Daily",
-        "add-missing-rows": "false",
-    }
-    url = f"{_INVESTING_API}/{instrument_id}"
-    try:
-        resp = session.get(
-            url, params=params, headers=_INVESTING_API_HEADERS, timeout=30
-        )
-        if resp.status_code != 200:
-            print(
-                f"  [investing] API HTTP {resp.status_code} for {slug} (id={instrument_id})"
-            )
-            return []
-        api_data = resp.json()
-    except Exception as e:
-        print(f"  [investing] API error for {slug}: {e}")
-        return []
-
-    api_rows = _find_historical_rows(api_data)
-    if not api_rows:
-        print(f"  [investing] API returned no rows for {slug} (id={instrument_id})")
-        return []
-
-    results = _parse_price_rows(api_rows, cutoff)
-    print(f"  [investing] API returned {len(results)} rows for {slug}")
-    return results
+_FETCH_RETRIES = 3
+_FETCH_RETRY_SLEEP = 5  # seconds between retries
 
 
-def _fetch_investing_series(slug: str, cutoff: date, session) -> list[dict]:
-    """Fetch historical data for one slug.
+def _fetch_investing_series(slug: str, session) -> list[dict]:
+    """Fetch the ~20 most-recent trading days for one slug via HTML __NEXT_DATA__.
 
-    Stage 1 (API) — used when ``cutoff`` is more than 30 days in the past.
-      Extracts the instrument's numeric ID from ``__NEXT_DATA__`` and calls the
-      investing.com history API to retrieve the full date range.  Falls through
-      to Stage 2 on any failure.
-
-    Stage 2 (HTML fallback) — always available.
-      Returns the ~20 recent trading days embedded in the page's ``__NEXT_DATA__``.
-      This is sufficient for normal daily incremental updates.
+    Retries up to ``_FETCH_RETRIES`` times on transient failures (non-200, network
+    errors, missing __NEXT_DATA__).  Returns all rows found without cutoff filtering
+    — deduplication is handled downstream by ``merge_new_rows``.
     """
     url = f"{_INVESTING_BASE}{slug}-historical-data"
-    try:
-        resp = session.get(url, timeout=30)
+    for attempt in range(1, _FETCH_RETRIES + 1):
+        try:
+            resp = session.get(url, timeout=30)
+        except Exception as e:
+            print(f"  [investing] Fetch error for {slug} (attempt {attempt}): {e}")
+            if attempt < _FETCH_RETRIES:
+                time.sleep(_FETCH_RETRY_SLEEP)
+            continue
+
         if resp.status_code != 200:
-            print(f"  [investing] HTTP {resp.status_code} for {slug}")
-            return []
-    except Exception as e:
-        print(f"  [investing] Fetch error for {slug}: {e}")
-        return []
-
-    data = _extract_next_data(resp.text)
-    if data is None:
-        print(f"  [investing] __NEXT_DATA__ not found/parseable for {slug}")
-        return []
-
-    rows_data = _find_historical_rows(data)
-    if not rows_data:
-        print(f"  [investing] No historical rows found in page data for {slug}")
-        return []
-
-    # Stage 1: attempt API for large historical backfills
-    if cutoff < date.today() - timedelta(days=30):
-        instrument_id = _extract_instrument_id(data)
-        if instrument_id:
             print(
-                f"  [investing] Trying API for {slug} (id={instrument_id}, cutoff={cutoff})"
+                f"  [investing] HTTP {resp.status_code} for {slug} (attempt {attempt})"
             )
-            api_results = _fetch_investing_api(instrument_id, cutoff, slug, session)
-            if api_results:
-                return api_results
-            print(f"  [investing] API failed for {slug}, falling back to HTML rows")
-        else:
-            print(f"  [investing] No instrument ID found in page data for {slug}")
+            if attempt < _FETCH_RETRIES:
+                time.sleep(_FETCH_RETRY_SLEEP)
+            continue
 
-    # Stage 2: HTML fallback (~20 recent rows)
-    return _parse_price_rows(rows_data, cutoff)
+        data = _extract_next_data(resp.text)
+        if data is None:
+            print(
+                f"  [investing] __NEXT_DATA__ not found/parseable for {slug} (attempt {attempt})"
+            )
+            if attempt < _FETCH_RETRIES:
+                time.sleep(_FETCH_RETRY_SLEEP)
+            continue
+
+        rows_data = _find_historical_rows(data)
+        if not rows_data:
+            print(
+                f"  [investing] No historical rows in page for {slug} (attempt {attempt})"
+            )
+            if attempt < _FETCH_RETRIES:
+                time.sleep(_FETCH_RETRY_SLEEP)
+            continue
+
+        return _parse_price_rows(rows_data)
+
+    print(f"  [investing] All {_FETCH_RETRIES} attempts failed for {slug}")
+    return []
 
 
 def fetch_investing_commodities(cutoff: date) -> pd.DataFrame:
-    """Fetch daily global/EAP commodity prices from investing.com (best-effort)."""
+    """Fetch daily global/EAP commodity prices from investing.com (best-effort).
+
+    ``cutoff`` is accepted for pipeline compatibility but is not used to filter
+    rows — all ~20 rows from the HTML page are returned and deduplication is
+    handled downstream by ``merge_new_rows`` via ``observation_hash``.
+    """
     print("  [investing] Fetching investing.com commodity data...")
-    print(f"  [investing] Cutoff: {cutoff}")
 
     session = get_session()
     session.headers.update(_INVESTING_HEADERS)
@@ -306,7 +249,7 @@ def fetch_investing_commodities(cutoff: date) -> pd.DataFrame:
         slug = spec["slug"]
         print(f"  [investing] → {slug}")
 
-        raw_rows = _fetch_investing_series(slug, cutoff, session)
+        raw_rows = _fetch_investing_series(slug, session)
         if not raw_rows:
             print(f"  [investing]   0 rows for {slug}")
             continue
@@ -334,7 +277,7 @@ def fetch_investing_commodities(cutoff: date) -> pd.DataFrame:
             r = tmpl.copy()
             r.update(
                 {
-                    "price_local": round(entry["price"], 4),
+                    "price_local": round(entry["price"], 2),
                     "effective_from": str(obs_date),
                     "effective_to": str(obs_date),
                     "observation_date": str(obs_date),
