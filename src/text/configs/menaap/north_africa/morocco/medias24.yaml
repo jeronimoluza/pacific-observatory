@@ -8,11 +8,12 @@ listing:
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://medias24.com/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title"
+  url_template: "https://medias24.com/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title,content"
   json_paths:
     url: link
     title: title.rendered
     date: date
+    body: content.rendered
 
 client: http
 concurrency: 5
@@ -31,6 +32,7 @@ selectors:
 
 cleaning:
   date: handle_mixed_dates
+  body: clean_wp_html_body
 
 max_pages: null
 max_articles: null
