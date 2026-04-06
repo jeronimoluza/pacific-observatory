@@ -351,3 +351,101 @@ vietnam:
   iso3: VNM
   currency: VND
   languages: [en, vietnamese]
+
+# --- MENAAP: Middle East, North Africa, Afghanistan & Pakistan ---
+
+afghanistan:
+  name: Afghanistan
+  iso3: AFG
+  currency: AFN
+  languages: [en]
+
+algeria:
+  name: Algeria
+  iso3: DZA
+  currency: DZD
+  languages: [en, fr]
+
+djibouti:
+  name: Djibouti
+  iso3: DJI
+  currency: DJF
+  languages: [en, fr]
+
+egypt:
+  name: "Egypt, Arab Rep."
+  iso3: EGY
+  currency: EGP
+  languages: [en]
+
+iran:
+  name: "Iran, Islamic Rep."
+  iso3: IRN
+  currency: IRR
+  languages: [en]
+
+iraq:
+  name: Iraq
+  iso3: IRQ
+  currency: IQD
+  languages: [en]
+
+jordan:
+  name: Jordan
+  iso3: JOR
+  currency: JOD
+  languages: [en]
+
+lebanon:
+  name: Lebanon
+  iso3: LBN
+  currency: LBP
+  languages: [en, fr]
+
+libya:
+  name: Libya
+  iso3: LBY
+  currency: LYD
+  languages: [en]
+
+morocco:
+  name: Morocco
+  iso3: MAR
+  currency: MAD
+  languages: [en, fr]
+
+pakistan:
+  name: Pakistan
+  iso3: PAK
+  currency: PKR
+  languages: [en]
+
+saudi_arabia:
+  name: Saudi Arabia
+  iso3: SAU
+  currency: SAR
+  languages: [en]
+
+syria:
+  name: Syrian Arab Republic
+  iso3: SYR
+  currency: SYP
+  languages: [en]
+
+tunisia:
+  name: Tunisia
+  iso3: TUN
+  currency: TND
+  languages: [en, fr]
+
+west_bank_and_gaza:
+  name: West Bank and Gaza
+  iso3: PSE
+  currency: USD
+  languages: [en]
+
+yemen:
+  name: "Yemen, Rep."
+  iso3: YEM
+  currency: YER
+  languages: [en]

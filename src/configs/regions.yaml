@@ -112,4 +112,38 @@ eca:
       name: Russian Federation
       countries:
         - russian_federation
-       
+
+menaap:
+  name: Middle East, North Africa, Afghanistan & Pakistan
+  subregions:
+    gulf_states:
+      name: Gulf States
+      countries:
+        - saudi_arabia
+    middle_east:
+      name: Middle East
+      countries:
+        - iran
+        - iraq
+        - jordan
+        - lebanon
+        - syria
+        - west_bank_and_gaza
+        - yemen
+    north_africa:
+      name: North Africa
+      countries:
+        - algeria
+        - djibouti
+        - egypt
+        - libya
+        - morocco
+        - tunisia
+    afghanistan:
+      name: Afghanistan
+      countries:
+        - afghanistan
+    pakistan:
+      name: Pakistan
+      countries:
+        - pakistan
