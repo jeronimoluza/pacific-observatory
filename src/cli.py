@@ -158,9 +158,45 @@ _dry_run_opt = click.option(
 @_source_opt
 @_yes_opt
 @_dry_run_opt
-def fuel_collect(region, subregion, country, source, yes, dry_run):
+@click.option("--rebuild", is_flag=True, help="Delete and re-fetch from fallback date")
+@click.option("--force", is_flag=True, help="Run disabled sources")
+def fuel_collect(region, subregion, country, source, yes, dry_run, rebuild, force):
     """Fetch new fuel price observations from configured sources."""
-    click.echo("fuel collect: not yet migrated")
+    import logging
+
+    from fuel.collect import run_collection
+    from fuel.config import build_fuel_registry
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
+
+    try:
+        registry = build_fuel_registry(
+            region=region,
+            subregion=subregion,
+            country=country,
+            source_key=source,
+        )
+    except ValueError as exc:
+        raise click.ClickException(str(exc))
+
+    if not registry:
+        raise click.ClickException(
+            "No fuel sources found. Check --region/--subregion/--country/--source filters."
+        )
+
+    if not yes and not dry_run:
+        sources_list = ", ".join(sorted(registry))
+        click.echo(f"Sources to collect: {sources_list}")
+        if not click.confirm("Proceed?"):
+            raise SystemExit(0)
+
+    run_collection(
+        registry=registry,
+        source_key=source,
+        force=force,
+        rebuild=rebuild,
+        dry_run=dry_run,
+    )
 
 
 @fuel.command("build")
