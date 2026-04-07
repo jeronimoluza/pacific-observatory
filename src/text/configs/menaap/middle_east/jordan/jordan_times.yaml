@@ -6,14 +6,15 @@ base_url: https://jordantimes.com
 listing:
   type: api
   pagination_type: offset
-  page_start: 0
-  page_step: 20
+  offset_start: 0
+  offset_step: 20
   url_template: "https://jordantimes.com/api/pb/widget/2292/json?section_id=45&morein=loadmore&offset={offset}"
   json_paths:
-    collection: widget_data
+    collection: data
     url: link
     title: title
     date: publish_time
+    body: summary
 
 client: http
 concurrency: 3
@@ -35,6 +36,7 @@ selectors:
 
 cleaning:
   date: handle_mixed_dates
+  body: clean_wp_html_body
 
 max_pages: null
 max_articles: null

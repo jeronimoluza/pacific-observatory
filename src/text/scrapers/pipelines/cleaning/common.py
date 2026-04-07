@@ -108,6 +108,10 @@ def handle_mixed_dates(date_str: str | int) -> str:
             "%Y-%m-%dT%H:%M:%S.%fZ",  # ISO datetime with microseconds
             "%Y-%m-%dT%H:%M:%S.%f",  # ISO datetime with microseconds
             "%d %b, %Y %I:%M %p",  # 24 Sep, 2025 02:30 PM
+            "%d/%B/%Y %I:%M %p",  # 05/April/2026 05:44 PM
+            "%d/%B/%Y",  # 05/April/2026
+            "%d/%b/%Y %I:%M %p",  # 05/Apr/2026 05:44 PM
+            "%d/%b/%Y",  # 05/Apr/2026
             # Alternative formats
             "%d.%m.%Y",  # 24.09.2025
             "%m.%d.%Y",  # 09.24.2025
@@ -134,6 +138,8 @@ def handle_mixed_dates(date_str: str | int) -> str:
             r"(\d{4}[-/]\d{1,2}[-/]\d{1,2})",
             # Match "MM/DD/YYYY" or "DD/MM/YYYY" patterns
             r"(\d{1,2}[/-]\d{1,2}[/-]\d{4})",
+            # Match "DD/Month/YYYY" patterns (e.g. 05/April/2026)
+            r"(\d{1,2}/\w+/\d{4})",
         ]
 
         for regex_pattern in date_patterns:

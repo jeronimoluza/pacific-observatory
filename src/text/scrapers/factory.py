@@ -122,8 +122,9 @@ def create_scraper_from_file(
     # Load the configuration
     config = load_yaml_config(config_path)
 
-    # Add the config file path to the configuration for reference
+    # Add the config file path and source key to the configuration for reference
     config["_config_path"] = str(Path(config_path).absolute())
+    config["_source_key"] = Path(config_path).stem
 
     # Validate the configuration first
     validate_config(config)

@@ -18,9 +18,9 @@ retry_seconds: 2.0
 
 selectors:
   thumbnail:
-    container: article
-    title: "h3 a::text"
-    url: "a::attr(href)"
+    container: "div.post"
+    title: "h4 a::text"
+    url: "h4 a::attr(href)"
   article:
     body: "div.content p"
     date: "span.meta-item.date::text"

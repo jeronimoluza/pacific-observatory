@@ -18,7 +18,7 @@ retry_seconds: 2.0
 
 selectors:
   thumbnail:
-    container: article
+    container: "div.latest-story"
     title: "a.title::text"
     url: "a.title::attr(href)"
   article:

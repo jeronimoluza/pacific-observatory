@@ -23,7 +23,7 @@ selectors:
     url: "h2.entry-title a::attr(href)"
   article:
     body: "div.node__content p"
-    date: "time.entry-date::attr(datetime)"
+    date: "time.entry-date::text"
 
 cleaning:
   date: handle_mixed_dates

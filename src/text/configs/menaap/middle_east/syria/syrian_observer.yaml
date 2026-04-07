@@ -5,8 +5,8 @@ base_url: https://syrianobserver.com
 
 listing:
   type: pagination
-  start_url: "https://syrianobserver.com/category/news/"
-  url_template: "https://syrianobserver.com/category/news/page/{num}/"
+  start_url: "https://syrianobserver.com/category/news"
+  url_template: "https://syrianobserver.com/category/news/page/{num}"
   start_page: 2
   step: 1
 

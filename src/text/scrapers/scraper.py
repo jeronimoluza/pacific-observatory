@@ -10,6 +10,7 @@ the original methods for now. Full migration will happen in Phase 2.
 
 import asyncio
 import logging
+import re
 from datetime import datetime
 from typing import List, Dict, Optional, Any, TYPE_CHECKING
 from urllib.parse import urlparse
@@ -64,6 +65,9 @@ class NewspaperScraper:
 
         # Basic properties
         self.name = self.config.name
+        self.source_key = config.get("_source_key") or re.sub(
+            r"[^\w\-_.]", "_", self.config.name.replace(" ", "_").lower()
+        ).strip("_")
         self.country = self.config.country
         self.base_url = str(self.config.base_url)
         self.language = self.config.language or "en"
@@ -436,7 +440,7 @@ class NewspaperScraper:
 
         # Save thumbnails to JSONL file
         saved_path = self._storage.save_thumbnails_as_urls(
-            thumbnails, self.country, self.name
+            thumbnails, self.country, self.source_key
         )
         if saved_path:
             self._saved_files["urls"] = saved_path
@@ -841,7 +845,9 @@ class NewspaperScraper:
 
                         article = ArticleRecord(**article_data)
 
-                        self._storage.append_article(article, self.country, self.name)
+                        self._storage.append_article(
+                            article, self.country, self.source_key
+                        )
                         articles_scraped += 1
 
                         if self.progress and (i + 1) % 10 == 0:
@@ -899,7 +905,7 @@ class NewspaperScraper:
 
         try:
             # Initialize CSV file with headers before scraping
-            csv_path = self._storage.initialize_csv(self.country, self.name)
+            csv_path = self._storage.initialize_csv(self.country, self.source_key)
             self._saved_files["articles"] = csv_path
             logger.info(f"Initialized CSV file for streaming writes: {csv_path}")
 
@@ -929,7 +935,7 @@ class NewspaperScraper:
                 )
                 # Stream write prefetched articles to CSV
                 for article in self.prefetched_articles:
-                    self._storage.append_article(article, self.country, self.name)
+                    self._storage.append_article(article, self.country, self.source_key)
                 articles_stats = {
                     "articles_scraped": len(self.prefetched_articles),
                     "articles_failed": 0,
@@ -999,14 +1005,14 @@ class NewspaperScraper:
             # Save failed URLs and news if any - let storage handle serialization
             if self.failed_urls:
                 saved_path = self._storage.save_failed_urls(
-                    self.failed_urls, self.country, self.name
+                    self.failed_urls, self.country, self.source_key
                 )
                 if saved_path:
                     self._saved_files["failed_urls"] = saved_path
 
             if self.failed_news:
                 saved_path = self._storage.save_failed_news(
-                    self.failed_news, self.country, self.name
+                    self.failed_news, self.country, self.source_key
                 )
                 if saved_path:
                     self._saved_files["failed_news"] = saved_path
@@ -1014,7 +1020,7 @@ class NewspaperScraper:
             # Save metadata - let storage handle serialization
             try:
                 saved_path = self._storage.save_metadata(
-                    results, self.country, self.name
+                    results, self.country, self.source_key
                 )
                 if saved_path:
                     self._saved_files["metadata"] = saved_path
@@ -1078,11 +1084,13 @@ class NewspaperScraper:
             # Success ledger: news.csv (optional safety guard to avoid duplicate scraping)
 
             # Bootstrap urls.csv from news.csv if needed
-            self._storage.ensure_urls_csv_from_news(self.country, self.name)
+            self._storage.ensure_urls_csv_from_news(self.country, self.source_key)
 
-            urls_csv_seen = self._storage.get_existing_urls(self.country, self.name)
+            urls_csv_seen = self._storage.get_existing_urls(
+                self.country, self.source_key
+            )
             scraped_urls = self._storage.get_existing_article_urls(
-                self.country, self.name
+                self.country, self.source_key
             )
 
             # Effective seen set: urls.csv (discovery ledger) plus news.csv (always seen if scraped).
@@ -1128,7 +1136,7 @@ class NewspaperScraper:
             # Persist only newly discovered URLs to urls.csv (deduplicated merge)
             if new_thumbnails:
                 saved_path = self._storage.append_thumbnails_to_urls(
-                    new_thumbnails, self.country, self.name
+                    new_thumbnails, self.country, self.source_key
                 )
                 if saved_path:
                     self._saved_files["urls"] = saved_path
@@ -1175,7 +1183,7 @@ class NewspaperScraper:
                     f"Using {len(new_prefetched_articles)} prefetched articles from API JSON; streaming to CSV"
                 )
                 for article in new_prefetched_articles:
-                    self._storage.append_article(article, self.country, self.name)
+                    self._storage.append_article(article, self.country, self.source_key)
                     new_articles_count += 1
 
             # Identify thumbnails that still require HTML scraping
@@ -1198,7 +1206,8 @@ class NewspaperScraper:
 
             # Mark articles file as saved (already streamed)
             csv_path = (
-                self._storage.get_newspaper_dir(self.country, self.name) / "news.csv"
+                self._storage.get_newspaper_dir(self.country, self.source_key)
+                / "news.csv"
             )
             if csv_path.exists():
                 self._saved_files["articles"] = csv_path
@@ -1262,14 +1271,14 @@ class NewspaperScraper:
             # Save failed URLs and news if any
             if self.failed_urls:
                 saved_path = self._storage.save_failed_urls(
-                    self.failed_urls, self.country, self.name
+                    self.failed_urls, self.country, self.source_key
                 )
                 if saved_path:
                     self._saved_files["failed_urls"] = saved_path
 
             if self.failed_news:
                 saved_path = self._storage.save_failed_news(
-                    self.failed_news, self.country, self.name
+                    self.failed_news, self.country, self.source_key
                 )
                 if saved_path:
                     self._saved_files["failed_news"] = saved_path
@@ -1277,7 +1286,7 @@ class NewspaperScraper:
             # Save metadata
             try:
                 saved_path = self._storage.save_metadata(
-                    results, self.country, self.name, metadata_type="update"
+                    results, self.country, self.source_key, metadata_type="update"
                 )
                 if saved_path:
                     self._saved_files["metadata"] = saved_path
@@ -1383,7 +1392,7 @@ class NewspaperScraper:
             # Save failed URLs if any
             if self.failed_urls:
                 saved_path = self._storage.save_failed_urls(
-                    self.failed_urls, self.country, self.name
+                    self.failed_urls, self.country, self.source_key
                 )
                 if saved_path:
                     self._saved_files["failed_urls"] = saved_path
@@ -1391,7 +1400,7 @@ class NewspaperScraper:
             # Save metadata
             try:
                 saved_path = self._storage.save_metadata(
-                    results, self.country, self.name, metadata_type="urls_only"
+                    results, self.country, self.source_key, metadata_type="urls_only"
                 )
                 if saved_path:
                     self._saved_files["metadata"] = saved_path
@@ -1625,12 +1634,16 @@ class NewspaperScraper:
 
         try:
             # Step 1: Ensure urls.csv exists
-            created = self._storage.ensure_urls_csv_from_news(self.country, self.name)
+            created = self._storage.ensure_urls_csv_from_news(
+                self.country, self.source_key
+            )
             if created:
                 logger.info("Created urls.csv from existing news.csv")
 
             # Step 2: Load existing URLs from urls.csv
-            existing_urls = self._storage.get_existing_urls(self.country, self.name)
+            existing_urls = self._storage.get_existing_urls(
+                self.country, self.source_key
+            )
             logger.info(f"Loaded {len(existing_urls)} existing URLs from urls.csv")
 
             # Reset prefetched articles
@@ -1645,7 +1658,7 @@ class NewspaperScraper:
             # Step 5: Append new URLs to urls.csv (deduplicated)
             if new_thumbnails:
                 saved_path = self._storage.append_thumbnails_to_urls(
-                    new_thumbnails, self.country, self.name
+                    new_thumbnails, self.country, self.source_key
                 )
                 if saved_path:
                     self._saved_files["urls"] = saved_path
@@ -1670,7 +1683,7 @@ class NewspaperScraper:
 
             # Save metadata
             self._storage.save_metadata(
-                results, self.country, self.name, metadata_type="discover"
+                results, self.country, self.source_key, metadata_type="discover"
             )
 
             # Update metrics
@@ -1746,7 +1759,7 @@ class NewspaperScraper:
             # OVERWRITE urls.csv with all discovered URLs
             if all_thumbnails:
                 saved_path = self._storage.save_thumbnails_as_urls(
-                    all_thumbnails, self.country, self.name
+                    all_thumbnails, self.country, self.source_key
                 )
                 if saved_path:
                     self._saved_files["urls"] = saved_path
@@ -1769,7 +1782,7 @@ class NewspaperScraper:
 
             # Save metadata
             self._storage.save_metadata(
-                results, self.country, self.name, metadata_type="discover_full"
+                results, self.country, self.source_key, metadata_type="discover_full"
             )
 
             # Update metrics
@@ -1827,12 +1840,14 @@ class NewspaperScraper:
 
         try:
             # Step 1: Ensure urls.csv exists
-            created = self._storage.ensure_urls_csv_from_news(self.country, self.name)
+            created = self._storage.ensure_urls_csv_from_news(
+                self.country, self.source_key
+            )
             if created:
                 logger.info("Created urls.csv from existing news.csv")
 
             # Step 2: Load URLs from urls.csv
-            thumbnails = self._storage.load_urls_from_csv(self.country, self.name)
+            thumbnails = self._storage.load_urls_from_csv(self.country, self.source_key)
             if thumbnails is None:
                 logger.warning("No urls.csv found. Nothing to resume.")
                 return {
@@ -1852,7 +1867,7 @@ class NewspaperScraper:
 
             # Step 3: Load existing article URLs from news.csv
             existing_article_urls = self._storage.get_existing_article_urls(
-                self.country, self.name
+                self.country, self.source_key
             )
             logger.info(
                 f"Found {len(existing_article_urls)} existing articles in news.csv"
@@ -1896,7 +1911,8 @@ class NewspaperScraper:
 
             # Mark articles file as saved
             csv_path = (
-                self._storage.get_newspaper_dir(self.country, self.name) / "news.csv"
+                self._storage.get_newspaper_dir(self.country, self.source_key)
+                / "news.csv"
             )
             if csv_path.exists():
                 self._saved_files["articles"] = csv_path
@@ -1920,12 +1936,12 @@ class NewspaperScraper:
             # Save failed news if any
             if self.failed_news:
                 self._storage.save_failed_news(
-                    self.failed_news, self.country, self.name
+                    self.failed_news, self.country, self.source_key
                 )
 
             # Save metadata
             self._storage.save_metadata(
-                results, self.country, self.name, metadata_type="resume"
+                results, self.country, self.source_key, metadata_type="resume"
             )
 
             # Update metrics
@@ -1985,12 +2001,16 @@ class NewspaperScraper:
 
         try:
             # Step 1: Ensure urls.csv exists
-            created = self._storage.ensure_urls_csv_from_news(self.country, self.name)
+            created = self._storage.ensure_urls_csv_from_news(
+                self.country, self.source_key
+            )
             if created:
                 logger.info("Created urls.csv from existing news.csv")
 
             # Step 2: Load existing URLs from urls.csv
-            existing_urls = self._storage.get_existing_urls(self.country, self.name)
+            existing_urls = self._storage.get_existing_urls(
+                self.country, self.source_key
+            )
             logger.info(f"Loaded {len(existing_urls)} existing URLs from urls.csv")
 
             # Reset prefetched articles
@@ -2005,7 +2025,7 @@ class NewspaperScraper:
             # Step 4: Append new URLs to urls.csv (deduplicated)
             if new_thumbnails:
                 saved_path = self._storage.append_thumbnails_to_urls(
-                    new_thumbnails, self.country, self.name
+                    new_thumbnails, self.country, self.source_key
                 )
                 if saved_path:
                     self._saved_files["urls"] = saved_path
@@ -2020,13 +2040,15 @@ class NewspaperScraper:
 
             # Step 5: Load existing article URLs from news.csv
             existing_article_urls = self._storage.get_existing_article_urls(
-                self.country, self.name
+                self.country, self.source_key
             )
             logger.info(f"Found {len(existing_article_urls)} existing articles")
 
             # Step 6: Identify pending articles (all urls.csv - news.csv)
             # Reload urls.csv to get complete list including newly added
-            all_thumbnails = self._storage.load_urls_from_csv(self.country, self.name)
+            all_thumbnails = self._storage.load_urls_from_csv(
+                self.country, self.source_key
+            )
             if all_thumbnails is None:
                 all_thumbnails = []
 
@@ -2051,7 +2073,9 @@ class NewspaperScraper:
                         f"Writing {len(new_prefetched)} prefetched articles from API"
                     )
                     for article in new_prefetched:
-                        self._storage.append_article(article, self.country, self.name)
+                        self._storage.append_article(
+                            article, self.country, self.source_key
+                        )
                         articles_from_api += 1
 
                 # Remove prefetched URLs from pending
@@ -2088,7 +2112,8 @@ class NewspaperScraper:
 
             # Mark articles file as saved
             csv_path = (
-                self._storage.get_newspaper_dir(self.country, self.name) / "news.csv"
+                self._storage.get_newspaper_dir(self.country, self.source_key)
+                / "news.csv"
             )
             if csv_path.exists():
                 self._saved_files["articles"] = csv_path
@@ -2118,16 +2143,16 @@ class NewspaperScraper:
             # Save failed URLs and news if any
             if self.failed_urls:
                 self._storage.save_failed_urls(
-                    self.failed_urls, self.country, self.name
+                    self.failed_urls, self.country, self.source_key
                 )
             if self.failed_news:
                 self._storage.save_failed_news(
-                    self.failed_news, self.country, self.name
+                    self.failed_news, self.country, self.source_key
                 )
 
             # Save metadata
             self._storage.save_metadata(
-                results, self.country, self.name, metadata_type="default"
+                results, self.country, self.source_key, metadata_type="default"
             )
 
             # Update metrics

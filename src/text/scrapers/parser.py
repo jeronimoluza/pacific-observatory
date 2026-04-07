@@ -276,12 +276,12 @@ def extract_article_data_from_soup(
             )
             if date_result["values"]:
                 if date_result["extraction"] in {"text", "attr"}:
-                    # Join all text/attr values — allows regex cleaners to search multiple elements
-                    # (e.g. pages with multiple <script type="application/ld+json"> blocks)
-                    data["date"] = " ".join(
-                        v.strip() if isinstance(v, str) else str(v).strip()
-                        for v in date_result["values"]
-                    ).strip()
+                    first_val = date_result["values"][0]
+                    data["date"] = (
+                        first_val.strip()
+                        if isinstance(first_val, str)
+                        else str(first_val).strip()
+                    )
                 else:
                     date_elem = date_result["values"][0]
                     if hasattr(date_elem, "get_text"):

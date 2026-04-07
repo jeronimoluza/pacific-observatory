@@ -18,9 +18,9 @@ retry_seconds: 2.0
 
 selectors:
   thumbnail:
-    container: "div.writter-list-item"
+    container: "div.writter-list-item-story"
     title: "div.latest-right h2 a::text"
-    url: "a.open-section::attr(href)"
+    url: "div.latest-right h2 a::attr(href)"
   article:
     body: "div.story-detail p"
     date: meta[property='article:published_time']::attr(content)
