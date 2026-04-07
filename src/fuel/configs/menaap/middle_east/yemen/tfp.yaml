@@ -1,0 +1,16 @@
+source_key: tfp_ye_monthly
+module: menaap.thefuelprice
+function: fetch_tfp_ye
+url: https://www.thefuelprice.com/Fye/en
+fallback_date: 2003-01-01
+first_row_only: true
+
+products:
+  "Gasoline":
+    family: gasoline
+    grade: regular
+    series_key: gasoline_regular
+  "Diesel":
+    family: diesel
+    grade: standard
+    series_key: diesel

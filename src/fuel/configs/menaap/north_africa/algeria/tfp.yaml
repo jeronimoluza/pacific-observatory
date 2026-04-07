@@ -1,0 +1,24 @@
+source_key: tfp_dz_monthly
+module: menaap.thefuelprice
+function: fetch_tfp_dz
+url: https://www.thefuelprice.com/Fdz/en
+fallback_date: 2003-01-01
+
+products:
+  "Gasoline (Essence Normale)":
+    family: gasoline
+    grade: regular
+    octane_ron: 90
+    series_key: gasoline_90
+  "Gasoline (Unleaded/Essence super Sans plomb)":
+    family: gasoline
+    grade: unleaded
+    series_key: gasoline_unleaded
+  "Gasoline (Essence Super)":
+    family: gasoline
+    grade: super
+    series_key: gasoline_super
+  "Gas oil":
+    family: diesel
+    grade: standard
+    series_key: diesel

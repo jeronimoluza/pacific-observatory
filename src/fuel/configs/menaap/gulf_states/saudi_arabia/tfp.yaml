@@ -1,0 +1,30 @@
+source_key: tfp_sa_monthly
+module: menaap.thefuelprice
+function: fetch_tfp_sa
+url: https://www.thefuelprice.com/Fsa/en
+fallback_date: 2003-01-01
+
+products:
+  "Gasoline E Plus 91":
+    family: gasoline
+    grade: regular
+    octane_ron: 91
+    series_key: gasoline_91
+  "Unleaded Gasoline 95":
+    family: gasoline
+    grade: premium
+    octane_ron: 95
+    series_key: gasoline_95
+  "Diesel":
+    family: diesel
+    grade: standard
+    series_key: diesel
+  "Kerosene":
+    family: kerosene
+    grade: standard
+    series_key: kerosene
+  "L.P.G (12.5 kg)":
+    family: lpg
+    grade: 12_5kg
+    series_key: lpg_12_5kg
+    unit: cylinder

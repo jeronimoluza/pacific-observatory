@@ -1,0 +1,26 @@
+source_key: tfp_sy_monthly
+module: menaap.thefuelprice
+function: fetch_tfp_sy
+url: https://www.thefuelprice.com/Fsy/en
+fallback_date: 2003-01-01
+
+products:
+  "Gasoline 90":
+    family: gasoline
+    grade: regular
+    octane_ron: 90
+    series_key: gasoline_90
+  "Gasoline 95":
+    family: gasoline
+    grade: premium
+    octane_ron: 95
+    series_key: gasoline_95
+  "Heating Oil":
+    family: heating_oil
+    grade: standard
+    series_key: heating_oil
+  "L.P.G (10 kg)":
+    family: lpg
+    grade: 10kg
+    series_key: lpg_10kg
+    unit: cylinder

@@ -1,0 +1,32 @@
+source_key: tfp_tn_monthly
+module: menaap.thefuelprice
+function: fetch_tfp_tn
+url: https://www.thefuelprice.com/Ftn/en
+fallback_date: 2003-01-01
+
+products:
+  "Gasoline":
+    family: gasoline
+    grade: regular
+    series_key: gasoline_regular
+  "Gasoline (Super)":
+    family: gasoline
+    grade: super
+    series_key: gasoline_super
+  "Gas oil":
+    family: diesel
+    grade: standard
+    series_key: diesel
+  "Gas oil (Super)":
+    family: diesel
+    grade: super
+    series_key: diesel_super
+  "Gas oil 50":
+    family: diesel
+    grade: 50ppm
+    series_key: diesel_50
+  "L.P.G":
+    family: lpg
+    grade: standard
+    series_key: lpg
+    unit: cylinder
