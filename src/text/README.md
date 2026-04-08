@@ -31,14 +31,14 @@ outputs/text/small_dashboard_integrated.html
 ### Collect — scrape articles
 
 ```bash
-po text collect                                          # All newspapers
-po text collect --region eap                             # One region
-po text collect --subregion pacific_islands              # One subregion
-po text collect --country fiji                           # One country
-po text collect --source fiji_times                      # One newspaper
-po text collect --country fiji --max-pages 3             # Limit pages
-po text collect --region eca --dry-run                   # Preview without scraping
-po text collect -y                                       # Skip confirmation prompt
+python run.py text collect                                          # All newspapers
+python run.py text collect --region eap                             # One region
+python run.py text collect --subregion pacific_islands              # One subregion
+python run.py text collect --country fiji                           # One country
+python run.py text collect --source fiji_times                      # One configured newspaper key
+python run.py text collect --country fiji --max-pages 3             # Limit pages
+python run.py text collect --region eca --dry-run                   # Preview without scraping
+python run.py text collect -y                                       # Skip confirmation prompt
 ```
 
 | Flag | Description |
@@ -46,7 +46,7 @@ po text collect -y                                       # Skip confirmation pro
 | `--region, -r` | Filter by WB region slug (e.g., `eap`, `eca`) |
 | `--subregion` | Filter by subregion slug (e.g., `pacific_islands`, `eastern_europe`) |
 | `--country, -c` | Filter by country slug (e.g., `ukraine`, `fiji`) |
-| `--source, -s` | Run a single newspaper by source key |
+| `--source, -s` | Run a single configured newspaper key (YAML filename) |
 | `--max-pages` | Limit listing pages per newspaper |
 | `--max-articles` | Limit articles per newspaper |
 | `--dry-run` | Show plan without executing |
@@ -56,12 +56,12 @@ po text collect -y                                       # Skip confirmation pro
 ### Build — compute EPU index
 
 ```bash
-po text build --country ukraine                          # Incremental update (country only)
-po text build --subregion eastern_europe                 # All countries + subregion aggregate
-po text build --region eap                               # All countries + all aggregates
-po text build --country ukraine --rebuild                # Full recompute
-po text build --country ukraine --rebuild --cutoff 2025-12-31  # Custom cutoff
-po text build -y                                         # Skip confirmation
+python run.py text build --country ukraine                          # Incremental update (country only)
+python run.py text build --subregion eastern_europe                 # All countries + subregion aggregate
+python run.py text build --region eap                               # All countries + all aggregates
+python run.py text build --country ukraine --rebuild                # Full recompute
+python run.py text build --country ukraine --rebuild --cutoff-start-date 2020-01-01 --cutoff-end-date 2022-12-31  # Custom baseline window
+python run.py text build -y                                         # Skip confirmation
 ```
 
 When `--country` is specified, only that country is processed (no aggregates).
@@ -73,16 +73,17 @@ When `--subregion` or `--region` is specified, constituent countries + aggregate
 | `--subregion` | Filter by subregion slug |
 | `--country, -c` | Filter by country slug |
 | `--rebuild` | Force recalculation of params.json and all cached outputs |
-| `--cutoff` | Cutoff date (YYYY-MM-DD) for EPU standardization period |
+| `--cutoff-start-date` | Inclusive baseline start date (YYYY-MM-DD) for EPU standardization |
+| `--cutoff-end-date` | Inclusive baseline end date (YYYY-MM-DD) for EPU standardization |
 | `--yes, -y` | Skip confirmation prompt |
 
 ### Publish — generate dashboards
 
 ```bash
-po text publish                                          # All units → dashboard_data.json + HTML
-po text publish --country ukraine                        # Filter to one country
-po text publish --subregion eastern_europe               # One subregion
-po text publish -y                                       # Skip confirmation
+python run.py text publish                                          # All units → dashboard_data.json + HTML
+python run.py text publish --country ukraine                        # Filter to one country
+python run.py text publish --subregion eastern_europe               # One subregion
+python run.py text publish -y                                       # Skip confirmation
 ```
 
 Publish writes `outputs/text/dashboard_data.json` (all unit data + hierarchical tree), then

@@ -1,20 +1,14 @@
-"""Unified CLI entry point: `po`
+"""Unified CLI entry point for the Pacific Observatory.
 
 Usage:
-    po                           Show home screen
-    po status                    Compute pipeline health
-    po list-regions              Show region/subregion/country topology
-    po text collect [options]    Scrape articles
-    po text build   [options]    Run EPU calculation
-    po text publish [options]    Generate dashboards
-    po text status  [options]    Per-source health table
-    po fuel ...                  [not migrated]
-    po prices ...                [not migrated]
-    po init --region <name>      Scaffold directories
+    python run.py                Show home screen in this repo
+    python run.py text collect   Scrape articles
+    poetry run po --help         Use the installed alias
 """
 
 import click
 
+from cli_display import command_prefix, text_help_examples, top_level_help_examples
 from core.config import make_slug_validator
 
 
@@ -25,13 +19,13 @@ from core.config import make_slug_validator
 @click.version_option(package_name="pacific-observatory")
 @click.pass_context
 def po(ctx):
-    """Pacific Observatory data pipelines."""
+    """Pacific Observatory data pipelines for local repo use and the installed `po` alias."""
     if ctx.invoked_subcommand is None:
         _render_home()
 
 
 def _render_home():
-    """Print the po home screen with optional cached snapshot."""
+    """Print the CLI home screen with optional cached snapshot."""
     import importlib.metadata
 
     try:
@@ -45,19 +39,22 @@ def _render_home():
 
     lines = [
         "",
-        f"  Pacific Observatory (po) v{version}",
+        f"  Pacific Observatory CLI v{version}",
+        "",
+        f"  Repo-local: {command_prefix()}",
+        "  Installed alias: po",
         "",
         "  Pipelines:",
-        "    po text      Newspaper scraping and EPU analysis",
-        "    po fuel      [not migrated]",
-        "    po prices    [not migrated]",
+        f"    {command_prefix()} text      Newspaper scraping and EPU analysis",
+        f"    {command_prefix()} fuel      [not migrated]",
+        f"    {command_prefix()} prices    [not migrated]",
         "",
     ]
 
     if cache:
         computed_at = cache.get("computed_at", "unknown")
         lines.append(
-            f"  Snapshot (computed {computed_at} — run 'po status' to refresh):"
+            f"  Snapshot (computed {computed_at} — run '{command_prefix()} status' to refresh):"
         )
 
         text = cache.get("text", {})
@@ -76,22 +73,24 @@ def _render_home():
         lines.append("    prices  [not migrated]")
     else:
         lines.append("  Snapshot:")
-        lines.append("    (no data — run 'po status')")
+        lines.append(f"    (no data — run '{command_prefix()} status')")
 
     lines.extend(
         [
             "",
-            "  Common Commands:",
-            "    po text collect --dry-run      Preview scraping plan",
-            "    po text collect --list         List configured sources",
-            "    po text collect --country <x>  Scrape a single country",
-            "    po text build                  Run EPU index calculation",
-            "    po text publish                Generate dashboards",
-            "    po text status                 Source health and article stats",
-            "    po list-regions                Show region/subregion/country topology",
-            "    po status                      Compute and cache pipeline health",
+            "  Start Here:",
+            f"    {command_prefix()} list-regions                             Show region/subregion/country topology",
+            f"    {command_prefix()} text collect --list --country <slug>     List configured newspaper keys",
+            f"    {command_prefix()} text collect --country <slug> --dry-run  Preview a scrape safely",
             "",
-            "  Filters:  -r/--region  -S/--subregion  -c/--country  -s/--source",
+            "  Typical Workflow:",
+            f"    {command_prefix()} text collect --country <slug>            Scrape a single country",
+            f"    {command_prefix()} text build --country <slug>              Compute EPU outputs",
+            f"    {command_prefix()} text publish --country <slug>            Generate dashboards",
+        ]
+        + [
+            "",
+            "  Filters:  -r/--region  -S/--subregion  -c/--country  -s/--source (newspaper key)",
             "",
         ]
     )
@@ -141,6 +140,9 @@ _country_opt = click.option(
 )
 _source_opt = click.option(
     "--source", "-s", default=None, help="Run a single source key"
+)
+_text_source_opt = click.option(
+    "--source", "-s", default=None, help="Run a single configured newspaper key"
 )
 _yes_opt = click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
 _dry_run_opt = click.option(
@@ -225,7 +227,7 @@ def fuel_publish(region, subregion, yes):
 @_region_opt
 @_subregion_opt
 @_country_opt
-@_source_opt
+@_text_source_opt
 @_yes_opt
 @_dry_run_opt
 @click.option(
@@ -448,6 +450,8 @@ def init(region):
 
 
 def main():
+    po.epilog = top_level_help_examples()
+    text.epilog = text_help_examples()
     po()
 
 
