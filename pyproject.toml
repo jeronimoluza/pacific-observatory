@@ -34,6 +34,7 @@ packages = [
     {include = "cli.py", from = "src"},
     {include = "core", from = "src"},
     {include = "text", from = "src"},
+    {include = "fuel", from = "src"},
 ]
 
 [dependency-groups]
