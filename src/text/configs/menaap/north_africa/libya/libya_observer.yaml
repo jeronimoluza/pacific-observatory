@@ -1,14 +1,15 @@
 name: The Libya Observer
-language: en
+language: arabic
 country: libya
-base_url: https://libyaobserver.ly
+base_url: https://ar.libyaobserver.ly
 
 listing:
-  type: pagination
-  start_url: "https://libyaobserver.ly/news"
-  url_template: "https://libyaobserver.ly/news?page={num}"
+  type: paginated_archive
+  start_url: "https://ar.libyaobserver.ly/archive/{year}{month}"
+  url_template: "https://ar.libyaobserver.ly/archive/{year}{month}?page={num}"
+  start_date: "2018-01-01"
+  date_format: monthly
   start_page: 1
-  step: 1
 
 client: http
 concurrency: 5
@@ -18,12 +19,12 @@ retry_seconds: 2.0
 
 selectors:
   thumbnail:
-    container: article
+    container: "article.m-hentry"
     title: "h2.entry-title a::text"
     url: "h2.entry-title a::attr(href)"
+    date: "time.entry-date::text"
   article:
     body: "div.node__content p"
-    date: "time.entry-date::text"
 
 cleaning:
   date: handle_mixed_dates

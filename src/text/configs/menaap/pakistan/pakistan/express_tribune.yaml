@@ -5,8 +5,8 @@ base_url: https://tribune.com.pk
 
 listing:
   type: pagination
-  start_url: "https://tribune.com.pk/latest"
-  url_template: "https://tribune.com.pk/latest?page={num}"
+  start_url: "https://tribune.com.pk/pakistan/archives"
+  url_template: "https://tribune.com.pk/pakistan/archives?page={num}"
   start_page: 2
   step: 1
 

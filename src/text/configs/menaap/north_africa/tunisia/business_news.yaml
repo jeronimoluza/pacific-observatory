@@ -19,10 +19,10 @@ retry_seconds: 2.0
 selectors:
   thumbnail:
     container: article
-    title: "h3 a::text"
-    url: "h3 a::attr(href)"
+    title: "h5.entry-title a::text"
+    url: "h5.entry-title a::attr(href)"
   article:
-    body: ["div.elementor-widget-theme-post-content p", "div.entry-content p"]
+    body: "div.entry-content p"
     date: meta[property='article:published_time']::attr(content)
 
 cleaning:

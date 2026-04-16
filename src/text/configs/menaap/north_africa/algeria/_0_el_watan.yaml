@@ -1,14 +1,14 @@
-name: Hespress
-language: arabic
-country: morocco
-base_url: https://www.hespress.com
+name: El Watan
+language: fr
+country: algeria
+base_url: https://elwatan.dz
 
 listing:
   type: api
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://www.hespress.com/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title"
+  url_template: "https://elwatan.dz/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title"
   json_paths:
     url: link
     title: title.rendered
@@ -26,8 +26,8 @@ selectors:
     title: filler
     url: filler
   article:
-    body: "div.article-content p"
-    date: meta[property='article:published_time']::attr(content)
+    body: "div.entry-content p"
+    date: time::attr(datetime)
 
 cleaning:
   date: handle_mixed_dates

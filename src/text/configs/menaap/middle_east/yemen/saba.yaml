@@ -1,12 +1,12 @@
 name: SABA News Agency
-language: en
+language: arabic
 country: yemen
 base_url: https://www.saba.ye
 
 listing:
   type: pagination
-  start_url: "https://www.saba.ye/en/category14.htm"
-  url_template: "https://www.saba.ye/en/category14.htm?page={num}"
+  start_url: "https://www.saba.ye/ar/category1.htm"
+  url_template: "https://www.saba.ye/ar/category1.htm?page={num}&per-page=30"
   start_page: 2
   step: 1
 
@@ -18,12 +18,12 @@ retry_seconds: 2.0
 
 selectors:
   thumbnail:
-    container: "div.LastNewsText"
-    title: "a::text"
-    url: "a::attr(href)"
+    container: "td[bgcolor='#F0F0F0']"
+    title: "a[href*='news']::text"
+    url: "a[href*='news']::attr(href)"
   article:
-    body: "div.mainText p"
-    date: "div.mainText::text"
+    body: "div[itemprop='articleBody']"
+    date: "time[itemprop='datePublished']::attr(datetime)"
 
 cleaning:
   date: handle_mixed_dates

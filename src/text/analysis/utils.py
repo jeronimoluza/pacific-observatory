@@ -22,6 +22,7 @@ NON_SPACE_DELIMITED = frozenset(
         "chinese_simplified",
         "chinese_traditional",
         "japanese",
+        "arabic",
     }
 )
 

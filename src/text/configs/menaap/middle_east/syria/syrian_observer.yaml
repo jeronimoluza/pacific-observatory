@@ -23,7 +23,7 @@ selectors:
     url: "h3 a::attr(href)"
   article:
     body: ["div.elementor-widget-theme-post-content p", "article p"]
-    date: "time::attr(datetime)"
+    date: "meta[property='article:published_time']::attr(content)"
 
 cleaning:
   date: handle_mixed_dates

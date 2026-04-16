@@ -69,6 +69,9 @@ def handle_mixed_dates(date_str: str | int) -> str:
     cleaned = html.unescape(cleaned)
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
 
+    # Normalize spaces around slashes (e.g. "14 / April / 2026" -> "14/April/2026")
+    cleaned = re.sub(r"\s*/\s*", "/", cleaned)
+
     if not cleaned:
         return ""
 

@@ -12,7 +12,7 @@ import asyncio
 import logging
 import re
 from datetime import datetime
-from typing import List, Dict, Optional, Any, TYPE_CHECKING
+from typing import Callable, List, Dict, Optional, Any, TYPE_CHECKING
 from urllib.parse import urlparse
 
 if TYPE_CHECKING:
@@ -38,6 +38,24 @@ from .observability import ScraperMetrics
 from .filters import compile_listing_filters
 
 logger = logging.getLogger(__name__)
+
+# Number of article scraping attempts after which the early-abort gate fires
+# if articles_scraped is still 0. Indicates likely-broken selectors.
+EARLY_ABORT_THRESHOLD = 5
+
+
+class EarlyAbortError(RuntimeError):
+    """Raised when the early-abort gate fires inside _original_scrape_articles.
+
+    Subclass of RuntimeError so it satisfies the spec, but distinct enough that
+    the run_* methods can re-raise it without being swallowed by their broad
+    `except Exception` handlers (which return an error dict for ordinary
+    failures). The exception must propagate all the way to collect.py's
+    per-source handler so the source is marked failed and the next source
+    in the plan continues processing.
+    """
+
+    pass
 
 
 class NewspaperScraper:
@@ -125,6 +143,16 @@ class NewspaperScraper:
 
         # Store progress reporter (can be None for single-scraper runs)
         self.progress = progress_reporter
+
+        # Early-abort gate prompt callback. If set, the gate calls this with
+        # the attempt count instead of raising EarlyAbortError immediately;
+        # callback returns True to continue scraping (suppressing further
+        # checks for this run) or False to abort. If None, the gate aborts
+        # unconditionally — see _original_scrape_articles. The callback is
+        # invoked via asyncio.to_thread so it can use blocking input prompts
+        # (e.g. click.confirm) without stalling the event loop.
+        self.on_early_abort: Optional[Callable[[int], bool]] = None
+        self._early_abort_acknowledged: bool = False
 
         # Initialize orchestrators
         self.discovery_orchestrator = DiscoveryOrchestrator(self)
@@ -714,6 +742,52 @@ class NewspaperScraper:
         # Delegate to the retry version for consistency
         return await self.scrape_thumbnails_with_retry(listing_urls)
 
+    async def _check_early_abort(self, attempts: int) -> None:
+        """Run the early-abort gate logic.
+
+        Called from both the mid-loop and end-of-loop check sites in
+        `_original_scrape_articles` when `articles_scraped == 0` after at
+        least one article attempt. Behavior:
+
+        - If `_early_abort_acknowledged` is True, return immediately. The
+          user has already opted to continue this run; do not re-prompt.
+        - If `on_early_abort` is None, raise `EarlyAbortError` unconditionally
+          (the original fail-fast behavior with no callback registered).
+        - Otherwise, invoke the callback in a worker thread (so blocking
+          prompts like `click.confirm` don't stall the asyncio event loop).
+          If the callback returns True, set `_early_abort_acknowledged` so
+          subsequent gate checks in this run are no-ops. If it returns False,
+          raise `EarlyAbortError`.
+
+        Args:
+            attempts: Number of article attempts that have been made when the
+                gate fired. Used in the error/prompt message and passed to
+                the callback.
+        """
+        if self._early_abort_acknowledged:
+            return
+
+        message = (
+            f"Early validation shows that selectors could be broken: "
+            f"after {attempts} attempts of scraping articles, "
+            f"0 were actually scraped!"
+        )
+
+        if self.on_early_abort is None:
+            raise EarlyAbortError(message)
+
+        should_continue = await asyncio.to_thread(self.on_early_abort, attempts)
+        if should_continue:
+            self._early_abort_acknowledged = True
+            logger.info(
+                "Early-abort gate fired at %d attempts; user opted to continue. "
+                "Suppressing further early-abort checks for this run.",
+                attempts,
+            )
+            return
+
+        raise EarlyAbortError(message)
+
     async def _original_scrape_articles(
         self, thumbnails: List[ThumbnailRecord]
     ) -> Dict[str, Any]:
@@ -753,6 +827,11 @@ class NewspaperScraper:
         warning_title = 0
         warning_tags = 0
 
+        # Reset per-run early-abort state. The acknowledgement flag is on the
+        # instance so the helper method can read it, but it MUST NOT carry
+        # across multiple invocations of the same scraper instance.
+        self._early_abort_acknowledged = False
+
         if self.client_type == "http":
             client = self._get_http_client()
 
@@ -764,6 +843,15 @@ class NewspaperScraper:
                 for i, thumbnail in enumerate(
                     tqdm(thumbnails, desc="Scraping articles")
                 ):
+                    # Early-abort gate: if EARLY_ABORT_THRESHOLD attempts have
+                    # already completed and none of them passed validation,
+                    # invoke the gate. Behavior depends on whether an
+                    # on_early_abort callback is registered — see
+                    # _check_early_abort. Checked at the top of each iteration
+                    # because the validation `continue` paths below would
+                    # skip a check placed at the end of the loop body.
+                    if i >= EARLY_ABORT_THRESHOLD and articles_scraped == 0:
+                        await self._check_early_abort(EARLY_ABORT_THRESHOLD)
                     try:
                         content, status_code = await client.request_url(
                             http_client, str(thumbnail.url)
@@ -863,6 +951,15 @@ class NewspaperScraper:
         else:
             # Browser client implementation would go here
             pass
+
+        # End-of-loop early-abort check: catches sources whose total thumbnail
+        # count is below EARLY_ABORT_THRESHOLD. The mid-loop gate would never
+        # have fired because the loop never reached that many iterations.
+        # Per Q2=a, this also routes through the on_early_abort callback so
+        # tiny sites get the same UX as bigger ones; the acknowledgement flag
+        # ensures it doesn't re-prompt if the user already confirmed mid-loop.
+        if articles_scraped == 0 and len(thumbnails) > 0:
+            await self._check_early_abort(len(thumbnails))
 
         total_failed = failed_http + failed_body + failed_date
         logger.info(
@@ -1045,6 +1142,12 @@ class NewspaperScraper:
             )
             return results
 
+        except EarlyAbortError:
+            # Propagate so collect.py marks the source failed and continues
+            # the plan. Do NOT swallow into an error_results dict.
+            if self.progress:
+                self.progress.update(phase="failed")
+            raise
         except Exception as e:
             logger.error(f"Scraping failed for {self.name}: {e}")
             # Update progress: failed phase
@@ -1299,6 +1402,9 @@ class NewspaperScraper:
             )
             return results
 
+        except EarlyAbortError:
+            # Propagate so callers (collect.py et al.) mark the source failed.
+            raise
         except Exception as e:
             logger.error(f"Update scraping failed for {self.name}: {e}")
             error_results = {
@@ -1962,6 +2068,11 @@ class NewspaperScraper:
             )
             return results
 
+        except EarlyAbortError:
+            # Propagate so callers mark the source failed and continue.
+            if self.progress:
+                self.progress.update(phase="failed")
+            raise
         except Exception as e:
             logger.error(f"RESUME mode failed for {self.name}: {e}")
             # Update progress: failed phase
@@ -2173,6 +2284,12 @@ class NewspaperScraper:
             )
             return results
 
+        except EarlyAbortError:
+            # Propagate so collect.py marks the source failed and continues
+            # the plan. Do NOT swallow into an error result dict.
+            if self.progress:
+                self.progress.update(phase="failed")
+            raise
         except Exception as e:
             logger.error(f"DEFAULT mode failed for {self.name}: {e}")
             # Update progress: failed phase

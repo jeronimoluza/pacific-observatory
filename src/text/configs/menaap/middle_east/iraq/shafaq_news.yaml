@@ -11,10 +11,10 @@ listing:
   step: 1
 
 client: http
-concurrency: 5
-rate_limit: 0.5
-retries: 3
-retry_seconds: 2.0
+concurrency: 2
+rate_limit: 1.5
+retries: 5
+retry_seconds: 10.0
 
 selectors:
   thumbnail:

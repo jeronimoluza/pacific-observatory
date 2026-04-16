@@ -360,6 +360,43 @@ def display_plan(plan, max_pages=None, max_articles=None, rebuild=False, region=
     click.echo()
 
 
+def _make_early_abort_prompt(yes: bool, newspaper: str):
+    """Build the early-abort prompt callback for a single source.
+
+    The returned callable is assigned to `scraper.on_early_abort` and invoked
+    by the scraper when its mid-loop or end-of-loop early-abort gate fires
+    (i.e. articles_scraped == 0 after the threshold or end of loop).
+
+    Behavior:
+    - Under `--yes`, returns True (auto-continue). Per Q1=b, the user has
+      explicitly opted into noninteractive mode and `-y` is treated as
+      "yes to all confirmations" — including this one. Cron/CI runs will
+      let broken scrapes finish rather than fail fast.
+    - Otherwise, prompts via `click.confirm` with `default=False` so an
+      accidental Enter aborts. Returns the user's choice.
+    """
+
+    def _prompt(attempts: int) -> bool:
+        if yes:
+            click.echo(
+                f"\n  ⚠ {newspaper}: after {attempts} article attempts, 0 were "
+                f"successfully scraped. Selectors may be broken — continuing "
+                f"anyway because --yes was passed."
+            )
+            return True
+        # Newline separates the prompt from any tqdm progress bar that may
+        # still be on the same line.
+        click.echo("")
+        return click.confirm(
+            f"  ⚠ {newspaper}: after {attempts} article attempts, 0 were "
+            f"successfully scraped. Selectors may be broken. Continue scraping "
+            f"anyway?",
+            default=False,
+        )
+
+    return _prompt
+
+
 def _print_source_summary(results):
     """Print categorized outcome summary for a single source."""
     stats = results.get("statistics", {})
@@ -389,12 +426,16 @@ def run_collect(
     dry_run=False,
     yes=False,
     rebuild=False,
+    resume=False,
     list_sources=False,
 ):
     """Run the text collect stage."""
     if list_sources:
         display_list(region=region, subregion=subregion, country=country, source=source)
         return
+
+    if rebuild and resume:
+        raise click.UsageError("--rebuild and --resume are mutually exclusive")
 
     plan = _build_plan(
         region=region, subregion=subregion, country=country, source=source
@@ -429,12 +470,12 @@ def run_collect(
 
     import warnings
 
-    # Suppress scraper module logs from terminal — they use text.scrapers.* loggers
-    # which propagate to root's lastResort handler (WARNING+ to stderr).
-    # The po.text.{source} logger from setup_logger() is a separate hierarchy, unaffected.
-    _scraper_log = logging.getLogger("text")
-    _scraper_log.propagate = False
-    _scraper_log.addHandler(logging.NullHandler())
+    # Block scraper module logs (text.*) from propagating to root's lastResort
+    # handler (WARNING+ to stderr) so the terminal stays clean. The per-source
+    # FileHandler is attached directly to text.scrapers inside the loop below,
+    # which is unaffected by propagate=False (direct attachment, not propagation),
+    # so scraper module DEBUG output still lands in the per-source log file.
+    logging.getLogger("text").propagate = False
     logging.getLogger("httpx").setLevel(logging.CRITICAL)
     logging.getLogger("httpcore").setLevel(logging.CRITICAL)
 
@@ -466,6 +507,19 @@ def run_collect(
             ):
                 h.setLevel(logging.CRITICAL)
 
+        # Attach the per-source FileHandler to the text.scrapers logger so scraper
+        # module DEBUG output (text.scrapers.scraper, .parser, .client_http, etc.)
+        # is captured in the per-source log file. Detached in the finally clause
+        # below so handlers do not leak across iterations.
+        scraper_file_handler = next(
+            (h for h in source_logger.handlers if isinstance(h, logging.FileHandler)),
+            None,
+        )
+        scraper_log = logging.getLogger("text.scrapers")
+        if scraper_file_handler is not None:
+            scraper_log.setLevel(logging.DEBUG)
+            scraper_log.addHandler(scraper_file_handler)
+
         # Set data path: data/text/{region}/{subregion}/{country}/{newspaper}/
         # CSVStorage reads DATA_FOLDER_PATH env var for its base dir
         subregion_data_dir = str(DATA_BASE / rgn / subrgn)
@@ -473,6 +527,14 @@ def run_collect(
 
         try:
             scraper = create_scraper_from_file(str(entry["config_path"]))
+
+            # Wire the early-abort prompt so the scraper can ask before
+            # giving up on a source. Without this callback the scraper
+            # would raise EarlyAbortError unconditionally; with it, the
+            # user gets a chance to continue past the threshold.
+            scraper.on_early_abort = _make_early_abort_prompt(
+                yes=yes, newspaper=newspaper
+            )
 
             # Override max_pages/max_articles if CLI flags set.
             # Must also patch the listing_strategy since it captured
@@ -484,9 +546,15 @@ def run_collect(
             if max_articles is not None:
                 scraper.max_articles = max_articles
 
+            if rebuild:
+                mode_label = "rebuild"
+            elif resume:
+                mode_label = "resume"
+            else:
+                mode_label = "collect"
             source_logger.info(
                 "Starting %s for %s (%s/%s/%s)",
-                "rebuild" if rebuild else "collect",
+                mode_label,
                 newspaper,
                 rgn,
                 subrgn,
@@ -494,17 +562,35 @@ def run_collect(
             )
             if rebuild:
                 results = asyncio.run(scraper.run_full_scrape())
+            elif resume:
+                results = asyncio.run(scraper.run_resume())
             else:
                 results = asyncio.run(scraper.run_default())
 
             set_checked(state, entry["source_key"])
             source_logger.info("Done: %s", newspaper)
-            _print_source_summary(results)
+
+            stats = results.get("statistics", {}) if isinstance(results, dict) else {}
+            nothing_to_resume = (
+                resume
+                and stats.get("articles_scraped", 0) == 0
+                and stats.get("pending_articles", 0) == 0
+            )
+            if nothing_to_resume:
+                click.echo("  Nothing to resume.")
+            else:
+                _print_source_summary(results)
 
         except Exception as e:
             source_logger.exception("Failed: %s", newspaper)
             click.echo(f"  Failed: {newspaper} -- {e}")
             set_checked(state, entry["source_key"])
+        finally:
+            # Detach the per-source FileHandler from text.scrapers so it does
+            # not leak into the next iteration. Runs whether the source
+            # succeeded, failed via early-abort, or raised any other exception.
+            if scraper_file_handler is not None:
+                scraper_log.removeHandler(scraper_file_handler)
 
     write_state(state, STATE_FILE)
     click.echo("\n  Collection complete.")

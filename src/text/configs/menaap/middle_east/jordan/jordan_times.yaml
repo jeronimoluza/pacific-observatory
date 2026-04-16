@@ -8,7 +8,7 @@ listing:
   pagination_type: offset
   offset_start: 0
   offset_step: 20
-  url_template: "https://jordantimes.com/api/pb/widget/2292/json?section_id=45&morein=loadmore&offset={offset}"
+  url_template: "https://jordantimes.com/api/pb/fetch-more-articles?v=1776187226410&sectionId=45&limit=14&offset={offset}&start=0&offsetArchive=0&custom_field=&skip_article_without_image=1&widget_id=2292"
   json_paths:
     collection: data
     url: link
