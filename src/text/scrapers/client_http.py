@@ -109,15 +109,22 @@ class AsyncHttpClient:
             self._last_request_time = time.time()
 
     async def request_url(
-        self, client: httpx.AsyncClient, url: str, retries: Optional[int] = None
+        self,
+        client: httpx.AsyncClient,
+        url: str,
+        retries: Optional[int] = None,
+        method: str = "GET",
+        data: Optional[Dict[str, str]] = None,
     ) -> tuple[Optional[bytes], Optional[int]]:
         """
-        Send an async HTTP GET request to the specified URL.
+        Send an async HTTP request to the specified URL.
 
         Args:
             client: httpx AsyncClient instance
             url: URL to request
             retries: Number of retry attempts (uses instance default if None)
+            method: HTTP method ("GET" or "POST")
+            data: Form data for POST requests
 
         Returns:
             Tuple of (response content as bytes or None, status code or None)
@@ -129,19 +136,28 @@ class AsyncHttpClient:
             await self._rate_limit_delay()
 
             # Log request details for debugging
-            logger.debug(f"Making request to: {url}")
+            logger.debug(f"Making {method} request to: {url}")
             logger.debug(f"Request headers: {self.headers}")
             logger.debug(f"Request cookies: {self.cookies}")
             logger.debug(f"Request timeout: {self.timeout}")
 
             for attempt in range(retry_count + 1):
                 try:
-                    response = await client.get(
-                        url,
-                        headers=self.headers,
-                        timeout=self.timeout,
-                        follow_redirects=self.follow_redirects,
-                    )
+                    if method.upper() == "POST":
+                        response = await client.post(
+                            url,
+                            headers=self.headers,
+                            data=data,
+                            timeout=self.timeout,
+                            follow_redirects=self.follow_redirects,
+                        )
+                    else:
+                        response = await client.get(
+                            url,
+                            headers=self.headers,
+                            timeout=self.timeout,
+                            follow_redirects=self.follow_redirects,
+                        )
                     response.raise_for_status()
                     return response.content, response.status_code
 

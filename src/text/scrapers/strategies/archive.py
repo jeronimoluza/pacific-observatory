@@ -360,8 +360,8 @@ class PaginatedArchiveStrategy(ListingStrategy):
                 total_dates_processed += 1
                 continue
 
-            # Store the previous page's data for comparison
-            previous_page_data = [result.data for result in successful_results]
+            # Store the previous page's data for comparison (stringified for content equality)
+            previous_page_data = [str(result.data) for result in successful_results]
             yield successful_results
             total_pages_scraped += 1
 
@@ -395,7 +395,9 @@ class PaginatedArchiveStrategy(ListingStrategy):
                     break
 
                 # Stop condition 3: Same data as previous page (duplicate content)
-                current_page_data = [result.data for result in successful_page_results]
+                current_page_data = [
+                    str(result.data) for result in successful_page_results
+                ]
                 if current_page_data == previous_page_data:
                     logger.debug(
                         f"Page {current_page} has same data as previous page, stopping pagination for {date_str}"

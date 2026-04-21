@@ -321,8 +321,9 @@ class NewspaperConfig(BaseModel):
             "archive",
             "api",
             "follow_link",
+            "cursor",
         ]:
             raise ValueError(
-                "Listing type must be one of: pagination, paginated_archive, archive, api, follow_link"
+                "Listing type must be one of: pagination, paginated_archive, archive, api, follow_link, cursor"
             )
         return v

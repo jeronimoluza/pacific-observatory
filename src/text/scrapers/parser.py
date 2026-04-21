@@ -190,6 +190,14 @@ def extract_thumbnail_data_from_element(
             if href_value:
                 data["url"] = urljoin(base_url, href_value)
 
+        # Fallback: if container itself is an <a> with href, use it
+        if (
+            "url" not in data
+            and thumbnail_element.name == "a"
+            and thumbnail_element.get("href")
+        ):
+            data["url"] = urljoin(base_url, thumbnail_element["href"].strip())
+
         # Extract date if selector is provided
         if selectors.date:
             date_result = extract_with_selector_fallback(

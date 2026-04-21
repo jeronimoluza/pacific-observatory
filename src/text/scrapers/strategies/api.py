@@ -7,7 +7,10 @@ This module implements strategies for discovering articles from JSON API endpoin
 import asyncio
 import logging
 import json
+import re
 from typing import List, Dict, Any, Optional, AsyncGenerator
+
+from bs4 import BeautifulSoup
 
 from .base import ListingStrategy
 
@@ -35,6 +38,12 @@ class ApiStrategy(ListingStrategy):
         - page_start: Starting page number (for page-based, default: 0)
         - page_step: Page increment (for page-based, default: 1)
         - json_paths: Dictionary mapping field names to JSON paths
+          (or CSS sub-selectors when view_path is set)
+        - view_path: JSON key containing HTML string (optional)
+        - view_container: CSS selector for article containers in HTML view (optional)
+        - headers: Custom request headers dict (optional)
+        - request_method: "GET" or "POST" (optional, default: "GET")
+        - form_data: Dictionary of POST form data with optional {offset}/{page} placeholders
         """
         super().__init__(config, max_pages)
 
@@ -52,6 +61,11 @@ class ApiStrategy(ListingStrategy):
         self.json_paths = config.get("json_paths", {})
         self.batch_size = config.get("batch_size", 10)
         self.exclude = config.get("exclude", None)
+        self.view_path = config.get("view_path", None)
+        self.view_container = config.get("view_container", None)
+        self.headers = config.get("headers", None)
+        self.request_method = config.get("request_method", "GET")
+        self.form_data = config.get("form_data", None)
 
         # Validate pagination type
         if self.pagination_type not in ["offset", "page"]:
@@ -128,7 +142,15 @@ class ApiStrategy(ListingStrategy):
         """
         thumbnails = []
 
-        # Get the collection/array of articles
+        # HTML-in-JSON mode: extract HTML from a JSON field and parse with CSS selectors
+        if self.view_path:
+            html_content = self._get_nested_value(json_data, self.view_path)
+            if not html_content or not isinstance(html_content, str):
+                logger.warning(f"No HTML content at '{self.view_path}' in {api_url}")
+                return thumbnails
+            return self._extract_thumbnails_from_html_view(html_content, api_url)
+
+        # Standard JSON mode: traverse structured JSON with json_paths
         collection_path = self.json_paths.get("collection", "")
         if collection_path:
             articles = self._get_nested_value(json_data, collection_path)
@@ -197,6 +219,58 @@ class ApiStrategy(ListingStrategy):
 
         return filtered
 
+    def _extract_css_value(self, element, selector: str) -> Optional[str]:
+        """Extract a value from a BeautifulSoup element using a CSS selector.
+
+        Supports ::text and ::attr(name) pseudo-elements.
+        """
+        attr_match = re.match(r"(.+?)::attr\((\w+)\)$", selector)
+        text_match = re.match(r"(.+?)::text$", selector)
+
+        if attr_match:
+            css, attr_name = attr_match.groups()
+            el = element.select_one(css)
+            return el.get(attr_name) if el else None
+        elif text_match:
+            css = text_match.group(1)
+            el = element.select_one(css)
+            return el.get_text(strip=True) if el else None
+        else:
+            el = element.select_one(selector)
+            return el.get_text(strip=True) if el else None
+
+    def _extract_thumbnails_from_html_view(
+        self, html_content: str, api_url: str
+    ) -> List[Dict[str, Any]]:
+        """Extract thumbnails from an HTML string using CSS selectors.
+
+        Uses view_container to find article containers, then json_paths
+        values as CSS sub-selectors within each container.
+        """
+        thumbnails = []
+        soup = BeautifulSoup(html_content, "html.parser")
+        containers = soup.select(self.view_container)
+
+        if not containers:
+            logger.warning(
+                f"No containers matching '{self.view_container}' in {api_url}"
+            )
+            return thumbnails
+
+        for container in containers:
+            thumb_data = {}
+            for field, selector in self.json_paths.items():
+                if field in ["collection", "total"]:
+                    continue
+                value = self._extract_css_value(container, selector)
+                if value:
+                    thumb_data[field] = value
+
+            if thumb_data:
+                thumbnails.append(thumb_data)
+
+        return thumbnails
+
     async def discover_and_scrape(
         self, client, base_url: str, thumbnail_selector: str
     ) -> AsyncGenerator[List[Dict[str, Any]], None]:
@@ -225,37 +299,59 @@ class ApiStrategy(ListingStrategy):
                         offset=current_offset, size=self.offset_step
                     )
 
+                    # Resolve placeholders in form_data
+                    resolved_data = None
+                    if self.form_data:
+                        resolved_data = {
+                            k: str(v).format(offset=current_offset, page=current_offset)
+                            for k, v in self.form_data.items()
+                        }
+
                     try:
-                        # Fetch JSON response
+                        # Fetch response
                         import httpx
 
                         async with httpx.AsyncClient() as http_client:
                             content, status_code = await client.request_url(
-                                http_client, api_url
+                                http_client,
+                                api_url,
+                                method=self.request_method,
+                                data=resolved_data,
                             )
 
                         if content is None:
                             logger.warning(f"Failed to fetch API URL: {api_url}")
                             break
 
-                        # Parse JSON
-                        json_data = json.loads(content)
+                        # Raw HTML mode: view_container without view_path
+                        if self.view_container and not self.view_path:
+                            html_text = (
+                                content.decode("utf-8", errors="replace")
+                                if isinstance(content, bytes)
+                                else content
+                            )
+                            thumbnails = self._extract_thumbnails_from_html_view(
+                                html_text, api_url
+                            )
+                        else:
+                            # Parse JSON
+                            json_data = json.loads(content)
 
-                        # Get total count if available (first request only)
-                        if total_articles is None:
-                            total_path = self.json_paths.get("total")
-                            if total_path:
-                                total_articles = self._get_nested_value(
-                                    json_data, total_path
-                                )
-                                logger.info(
-                                    f"API reports {total_articles} total articles"
-                                )
+                            # Get total count if available (first request only)
+                            if total_articles is None:
+                                total_path = self.json_paths.get("total")
+                                if total_path:
+                                    total_articles = self._get_nested_value(
+                                        json_data, total_path
+                                    )
+                                    logger.info(
+                                        f"API reports {total_articles} total articles"
+                                    )
 
-                        # Extract thumbnails from JSON
-                        thumbnails = self._extract_thumbnails_from_json(
-                            json_data, api_url
-                        )
+                            # Extract thumbnails from JSON
+                            thumbnails = self._extract_thumbnails_from_json(
+                                json_data, api_url
+                            )
 
                         if not thumbnails:
                             logger.info(
@@ -301,26 +397,48 @@ class ApiStrategy(ListingStrategy):
                     # Generate API URL with current page
                     api_url = url_template.format(page=current_page)
 
+                    # Resolve placeholders in form_data
+                    resolved_data = None
+                    if self.form_data:
+                        resolved_data = {
+                            k: str(v).format(page=current_page, offset=current_page)
+                            for k, v in self.form_data.items()
+                        }
+
                     try:
-                        # Fetch JSON response
+                        # Fetch response
                         import httpx
 
                         async with httpx.AsyncClient() as http_client:
                             content, status_code = await client.request_url(
-                                http_client, api_url
+                                http_client,
+                                api_url,
+                                method=self.request_method,
+                                data=resolved_data,
                             )
 
                         if content is None:
                             logger.warning(f"Failed to fetch API URL: {api_url}")
                             break
 
-                        # Parse JSON
-                        json_data = json.loads(content)
+                        # Raw HTML mode: view_container without view_path
+                        if self.view_container and not self.view_path:
+                            html_text = (
+                                content.decode("utf-8", errors="replace")
+                                if isinstance(content, bytes)
+                                else content
+                            )
+                            thumbnails = self._extract_thumbnails_from_html_view(
+                                html_text, api_url
+                            )
+                        else:
+                            # Parse JSON
+                            json_data = json.loads(content)
 
-                        # Extract thumbnails from JSON
-                        thumbnails = self._extract_thumbnails_from_json(
-                            json_data, api_url
-                        )
+                            # Extract thumbnails from JSON
+                            thumbnails = self._extract_thumbnails_from_json(
+                                json_data, api_url
+                            )
 
                         if not thumbnails:
                             logger.info(

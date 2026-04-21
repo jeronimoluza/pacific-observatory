@@ -20,7 +20,12 @@ if TYPE_CHECKING:
 import httpx
 from .client_http import AsyncHttpClient
 from .client_browser import BrowserClient
-from .strategies import create_listing_strategy, ApiStrategy
+from .strategies import (
+    create_listing_strategy,
+    ApiStrategy,
+    ArchiveStrategy,
+    PaginatedArchiveStrategy,
+)
 from .models import (
     ThumbnailRecord,
     ArticleRecord,
@@ -378,11 +383,14 @@ class NewspaperScraper:
         """
         client = self._get_http_client()
         thumbnails = []
+        seen_urls: set[str] = set()
         thumbnail_selector = self.thumbnail_selectors.container
 
         async for result_batch in self.listing_strategy.discover_and_scrape(
             client, self.base_url, thumbnail_selector
         ):
+            batch_new_count = 0
+
             # Handle API strategy's direct return of dicts
             if isinstance(self.listing_strategy, ApiStrategy):
                 for thumb_data in result_batch:
@@ -390,12 +398,17 @@ class NewspaperScraper:
                     thumbnail = self._process_api_thumbnail(thumb_data)
 
                     if thumbnail:
+                        url_str = str(thumbnail.url)
+                        if url_str in seen_urls:
+                            continue
+                        seen_urls.add(url_str)
+                        batch_new_count += 1
                         thumbnails.append(thumbnail)
 
                         # Handle prefetched articles
                         if thumb_data.get("body"):
                             article_dict = {
-                                "url": str(thumbnail.url),
+                                "url": url_str,
                                 "title": thumbnail.title,
                                 "date": thumbnail.date or "",
                                 "body": thumb_data.get("body", ""),
@@ -413,11 +426,17 @@ class NewspaperScraper:
                                 )
                                 logger.debug(f"Article data: {article_dict}")
 
-                logger.info(f"Processed API batch: {len(result_batch)} items")
+                logger.info(
+                    f"Processed API batch: {len(result_batch)} items, {batch_new_count} new"
+                )
 
                 # Update progress after each API batch to keep progress file fresh
                 if self.progress:
                     self.progress.update(urls_found=len(thumbnails))
+
+                if batch_new_count == 0:
+                    logger.info("All URLs in batch already seen — stopping discovery.")
+                    break
 
                 continue
 
@@ -451,15 +470,31 @@ class NewspaperScraper:
                             thumb_data, stage="discovery"
                         )
                         if thumbnail:
+                            url_str = str(thumbnail.url)
+                            if url_str in seen_urls:
+                                continue
+                            seen_urls.add(url_str)
+                            batch_new_count += 1
                             thumbnails.append(thumbnail)
 
             logger.info(
-                f"Processed batch: {len(result_batch)} pages, {len(thumbnails)} total thumbnails"
+                f"Processed batch: {len(result_batch)} pages, {len(thumbnails)} total thumbnails, {batch_new_count} new"
             )
 
             # Update progress after each batch to keep progress file fresh
             if self.progress:
                 self.progress.update(urls_found=len(thumbnails))
+
+            if batch_new_count == 0:
+                if isinstance(
+                    self.listing_strategy, (ArchiveStrategy, PaginatedArchiveStrategy)
+                ):
+                    logger.info(
+                        "All URLs in batch already seen — skipping (archive strategy continues)."
+                    )
+                else:
+                    logger.info("All URLs in batch already seen — stopping discovery.")
+                    break
 
         logger.info(f"Total thumbnails discovered and scraped: {len(thumbnails)}")
 

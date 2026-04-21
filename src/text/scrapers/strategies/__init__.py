@@ -12,6 +12,7 @@ from .pagination import PaginationStrategy
 from .archive import ArchiveStrategy, PaginatedArchiveStrategy
 from .api import ApiStrategy
 from .follow_link import FollowLinkStrategy
+from .cursor import CursorStrategy
 
 __all__ = [
     "ListingStrategy",
@@ -20,6 +21,7 @@ __all__ = [
     "PaginatedArchiveStrategy",
     "ApiStrategy",
     "FollowLinkStrategy",
+    "CursorStrategy",
     "create_listing_strategy",
 ]
 
@@ -52,5 +54,7 @@ def create_listing_strategy(
         return ApiStrategy(config, max_pages=max_pages)
     elif strategy_type == "follow_link":
         return FollowLinkStrategy(config, max_pages=max_pages)
+    elif strategy_type == "cursor":
+        return CursorStrategy(config, max_pages=max_pages)
     else:
         raise ValueError(f"Unknown listing strategy type: {strategy_type}")
