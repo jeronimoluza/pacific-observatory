@@ -4,11 +4,20 @@ country: kuwait
 base_url: https://kuwaittimes.com
 
 listing:
-  type: pagination
-  start_url: "https://kuwaittimes.com/kuwait/"
-  url_template: "https://kuwaittimes.com/kuwait/?page={num}"
-  start_page: 2
-  step: 1
+  type: api
+  pagination_type: offset
+  offset_start: 0
+  offset_step: 20
+  url_template: "https://kuwaittimes.com/ajax/load_more_articles_section_subsection/?section=14&subsection=0&limit=20&offset={offset}&offsetarchive=0&pagenb=1"
+  view_path: view
+  view_container: "div.col-md-12"
+  json_paths:
+    title: "div.article-sub-title a::text"
+    url: "div.article-sub-title a::attr(href)"
+
+headers:
+  X-Requested-With: XMLHttpRequest
+  Referer: https://kuwaittimes.com/kuwait/
 
 client: http
 concurrency: 5
@@ -18,9 +27,9 @@ retry_seconds: 2.0
 
 selectors:
   thumbnail:
-    container: "div.row div.col-md-12"
-    title: "div.article-title h2 a::text"
-    url: "div.article-title h2 a::attr(href)"
+    container: filler
+    title: filler
+    url: filler
   article:
     body: "div.article-body p"
     date: "meta[property='article:published_time']::attr(content)"

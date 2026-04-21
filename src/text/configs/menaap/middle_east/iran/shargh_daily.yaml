@@ -1,0 +1,31 @@
+name: Shargh Daily
+language: farsi
+country: iran
+base_url: https://www.sharghdaily.com
+
+listing:
+  type: pagination
+  url_template: "https://www.sharghdaily.com/%D8%A8%D8%AE%D8%B4-%D8%B3%DB%8C%D8%A7%D8%B3%D8%AA-6/?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "section.landing_news ul li.container div.landing_content_cnt"
+    title: "h3.title a::text"
+    url: "h3 a::attr(href)"
+    date: "div.date time::attr(datetime)"
+  article:
+    body: "div.article_body p"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

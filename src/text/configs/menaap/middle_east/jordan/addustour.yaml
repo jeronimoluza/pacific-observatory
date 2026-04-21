@@ -1,0 +1,32 @@
+name: Ad-Dustour
+language: arabic
+country: jordan
+base_url: https://www.addustour.com
+
+listing:
+  type: pagination
+  start_url: "https://www.addustour.com/categories/1-%D9%85%D8%AD%D9%84%D9%8A%D8%A7%D8%AA/page1"
+  url_template: "https://www.addustour.com/categories/1-%D9%85%D8%AD%D9%84%D9%8A%D8%A7%D8%AA/page{num}"
+  start_page: 2
+  step: 1
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "li.list-item"
+    title: "a::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.box-wrapper p"
+    date: "span.timeDate_element::text"
+
+cleaning:
+  date: clean_addustour_date
+
+max_pages: null
+max_articles: null

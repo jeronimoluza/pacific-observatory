@@ -1,0 +1,37 @@
+# Unusable with current pipeline strategies.
+# Reason: ArvanCloud JS challenge page blocks all HTTP requests.
+# Both Farsi (irna.ir) and English (en.irna.ir) serve a cookie-based
+# JavaScript challenge (__arcsjs) that requires browser JS execution.
+# No public API endpoint found.
+name: "IRNA"
+country: "iran"
+base_url: "https://www.irna.ir"
+language: "fa"
+
+listing:
+  type: "pagination"
+  url_template: "https://www.irna.ir/page/archive.xhtml?pi={num}"
+  start_page: 1
+  step: 1
+  batch_size: 5
+
+client: "http"
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+    date: "filler"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null

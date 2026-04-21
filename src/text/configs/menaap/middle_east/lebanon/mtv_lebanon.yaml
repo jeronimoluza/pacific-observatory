@@ -1,0 +1,38 @@
+name: MTV Lebanon
+language: arabic
+country: lebanon
+base_url: https://www.mtv.com.lb
+
+listing:
+  type: api
+  pagination_type: offset
+  offset_start: 0
+  offset_step: 20
+  url_template:
+    - "https://www.mtv.com.lb/api/news/GetArticleByDate?sectionId=46&currentStart={offset}"
+    - "https://www.mtv.com.lb/api/news/GetArticleByDate?sectionId=44&currentStart={offset}"
+  json_paths:
+    url: Url
+    title: title
+    date: publishDate
+    body: Text
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: filler
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,38 @@
+name: "Khaleej Times"
+country: "united_arab_emirates"
+base_url: "https://www.khaleejtimes.com"
+language: "en"
+
+listing:
+  type: "api"
+  pagination_type: "offset"
+  offset_start: 0
+  offset_step: 100
+  url_template: "https://www.khaleejtimes.com/contentapi/v1/searchadvancestories?section-name=UAE&sort=latest-published&limit={size}&offset={offset}"
+  json_paths:
+    collection: "data.stories"
+    total: "data.total"
+    url: "url"
+    title: "headline"
+    date: "published_at"
+
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "div.innermixmatch p"
+    date: "filler"
+
+cleaning:
+  date: "handle_unix_timestamp_ms"
+
+max_pages: null
+max_articles: null

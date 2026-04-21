@@ -1,0 +1,31 @@
+name: El Khabar
+language: arabic
+country: algeria
+base_url: https://www.elkhabar.com
+
+listing:
+  type: pagination
+  url_template: "https://www.elkhabar.com/nation?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "article#categoryArticles > ul.list-news.wide > li"
+    title: "h3 a::text"
+    url: "h3 a::attr(href)"
+  article:
+    body: "div.module-article-content p"
+    date: "div.module-user header p"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

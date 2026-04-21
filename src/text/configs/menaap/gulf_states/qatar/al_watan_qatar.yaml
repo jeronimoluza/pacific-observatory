@@ -1,0 +1,39 @@
+name: Al Watan Qatar
+language: arabic
+country: qatar
+base_url: https://www.al-watan.com
+
+listing:
+  type: api
+  pagination_type: offset
+  offset_start: 0
+  offset_step: 20
+  url_template: "https://www.al-watan.com/ajax/load_more_articles_section?sections=26&limit=20&offset={offset}&offsetarchive=0"
+  view_container: "div.rowArticles"
+  json_paths:
+    title: "a::attr(title)"
+    url: "a::attr(href)"
+
+headers:
+  X-Requested-With: XMLHttpRequest
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: ".article-body p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

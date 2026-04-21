@@ -1,7 +1,7 @@
-name: The Nation
-language: en
+name: Nawaiwaqt
+language: urdu
 country: pakistan
-base_url: https://www.nation.com.pk
+base_url: https://www.nawaiwaqt.com.pk
 
 listing:
   type: api
@@ -9,7 +9,7 @@ listing:
   offset_start: 0
   offset_step: 9
   request_method: POST
-  url_template: "https://www.nation.com.pk/ajax_post_pagination"
+  url_template: "https://www.nawaiwaqt.com.pk/ajax_post_pagination"
   form_data:
     post_per_page: "9"
     post_listing_limit_offset: "{offset}"
@@ -23,7 +23,7 @@ listing:
 
 headers:
   X-Requested-With: XMLHttpRequest
-  Referer: https://www.nation.com.pk/national
+  Referer: https://www.nawaiwaqt.com.pk/national
 
 client: http
 concurrency: 5

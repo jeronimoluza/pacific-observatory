@@ -1,29 +1,29 @@
-name: The Nation
-language: en
+name: Daily Pakistan
+language: urdu
 country: pakistan
-base_url: https://www.nation.com.pk
+base_url: https://dailypakistan.com.pk
 
 listing:
   type: api
   pagination_type: offset
   offset_start: 0
-  offset_step: 9
+  offset_step: 36
   request_method: POST
-  url_template: "https://www.nation.com.pk/ajax_post_pagination"
+  url_template: "https://dailypakistan.com.pk/ajax_post_pagination"
   form_data:
-    post_per_page: "9"
+    post_per_page: "36"
     post_listing_limit_offset: "{offset}"
     directory_name: categories_pages
     template_name: lazy_loading
     category_name: national
-  view_container: article
+  view_container: "div.post-review"
   json_paths:
-    title: "h3.jeg_post_title a::text"
-    url: "h3.jeg_post_title a::attr(href)"
+    title: "div.post-title a::text"
+    url: "div.post-title a::attr(href)"
 
 headers:
   X-Requested-With: XMLHttpRequest
-  Referer: https://www.nation.com.pk/national
+  Referer: https://dailypakistan.com.pk/national
 
 client: http
 concurrency: 5
@@ -37,7 +37,7 @@ selectors:
     title: filler
     url: filler
   article:
-    body: "div.content-inner p"
+    body: "div.news-detail-content-class p"
     date: "meta[property='article:published_time']::attr(content)"
 
 cleaning:

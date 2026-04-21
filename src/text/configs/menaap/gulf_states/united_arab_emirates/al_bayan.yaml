@@ -1,0 +1,32 @@
+name: "Al Bayan"
+country: "united_arab_emirates"
+base_url: "https://www.albayan.ae"
+language: "ar"
+
+listing:
+  type: "pagination"
+  url_template: "https://www.albayan.ae/news/uae?page={num}"
+  start_page: 1
+  step: 1
+  batch_size: 5
+
+client: "http"
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.editors-wrapper"
+    title: "h4 a::text"
+    url: "h4 a::attr(href)"
+  article:
+    body: "div.article-body p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null

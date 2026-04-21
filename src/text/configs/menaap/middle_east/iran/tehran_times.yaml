@@ -4,11 +4,13 @@ country: iran
 base_url: https://www.tehrantimes.com
 
 listing:
-  type: pagination
-  start_url: "https://www.tehrantimes.com/service/politics?page=1"
-  url_template: "https://www.tehrantimes.com/service/politics?page={num}"
+  type: paginated_archive
+  date_format: daily
+  start_url: "https://www.tehrantimes.com/page/archive.xhtml?date={year}-{month}-{day}"
+  url_template: "https://www.tehrantimes.com/page/archive.xhtml?date={year}-{month}-{day}&pi={num}"
+  start_date: "2022-01-01"
   start_page: 2
-  step: 1
+  batch_size: 5
 
 client: http
 concurrency: 5

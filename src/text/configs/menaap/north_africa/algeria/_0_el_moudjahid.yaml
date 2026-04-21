@@ -1,18 +1,19 @@
-name: El Khabar
+name: El Moudjahid
 language: arabic
 country: algeria
-base_url: https://www.elkhabar.com
+base_url: https://www.elmoudjahid.dz
 
 listing:
   type: api
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://www.elkhabar.com/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title"
+  url_template: "https://www.elmoudjahid.dz/api/ar/articles/algerie?page={page}"
   json_paths:
-    url: link
-    title: title.rendered
-    date: date
+    collection: "data"
+    url: "url"
+    title: "title"
+    date: "published_at"
 
 client: http
 concurrency: 5
@@ -26,8 +27,8 @@ selectors:
     title: filler
     url: filler
   article:
-    body: "div.entry-content p"
-    date: time::attr(datetime)
+    body: "article.module-article section p"
+    date: "ul.list-details li ul li:last-child"
 
 cleaning:
   date: handle_mixed_dates
