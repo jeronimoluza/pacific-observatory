@@ -1,11 +1,11 @@
-name: ZN.ua
+name: NV.ua
 language: uk
 country: ukraine
-base_url: https://zn.ua
+base_url: https://nv.ua
 listing:
   type: pagination
-  start_url: https://zn.ua/ukr/
-  url_template: https://zn.ua/ukr/?page={num}
+  start_url: https://nv.ua/ukr/allnews.html
+  url_template: https://nv.ua/ukr/allnews/{num}.html
   start_page: 2
   batch_size: 5
 client: http
@@ -20,12 +20,12 @@ headers:
   Accept-Language: uk-UA,uk;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: div.content-tile
-    title: a::text
-    url: a::attr(href)
+    container: div.row-result
+    title: div.title::text
+    url: a.row-result-body::attr(href)
   article:
-    body: div.sbody p
-    date: .content-date::text
+    body: div.article-content-body p
+    date: .article__head__additional_published::text
 cleaning:
   date: handle_mixed_dates
 max_pages: null

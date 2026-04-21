@@ -25,9 +25,6 @@ selectors:
     url: h2 a::attr(href)
   article:
     body: "div.newsHolderContainer p"
-    date: meta[property='article:published_time']::attr(content)
-cleaning:
-  date: handle_mixed_dates
+    date: time::attr(datetime)
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

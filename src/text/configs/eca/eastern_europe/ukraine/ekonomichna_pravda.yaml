@@ -3,10 +3,10 @@ language: uk
 country: ukraine
 base_url: https://www.epravda.com.ua
 listing:
-  type: pagination
-  start_url: https://www.epravda.com.ua/news/
-  url_template: https://www.epravda.com.ua/news/page_{num}/
-  start_page: 2
+  type: archive
+  url_template: https://www.epravda.com.ua/news/date_{day}{month}{year}/
+  date_format: daily
+  start_date: '2005-01-01'
   batch_size: 5
 client: http
 concurrency: 3
@@ -20,14 +20,14 @@ headers:
   Accept-Language: uk-UA,uk;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: div.article_news
+    title: div.article_title a::text
+    url: div.article_title a::attr(href)
+    date: div.article_date::text
   article:
-    body: "div.layout_wrapper p"
-    date: meta[property='article:published_time']::attr(content)
+    body: div.post_news_body p
+    date: null
 cleaning:
-  date: handle_mixed_dates
+  date: clean_epravda_date
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

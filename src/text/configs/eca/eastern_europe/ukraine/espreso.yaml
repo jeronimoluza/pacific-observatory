@@ -25,9 +25,8 @@ selectors:
     url: a::attr(href)
   article:
     body: 'div.content'
-    date: meta[property='article:published_time']::attr(content)
+    date: .news__author_date__date::text
 cleaning:
   date: handle_mixed_dates
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

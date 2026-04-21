@@ -25,9 +25,8 @@ selectors:
     url: a::attr(href)
   article:
     body: "article p"
-    date: meta[property='article:published_time']::attr(content)
+    date: .post_news_date::text
 cleaning:
-  date: handle_mixed_dates
+  date: clean_ukrainska_pravda_eng_date
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

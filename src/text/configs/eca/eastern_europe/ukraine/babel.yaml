@@ -3,11 +3,10 @@ language: en
 country: ukraine
 base_url: https://babel.ua
 listing:
-  type: pagination
+  type: cursor
   start_url: https://babel.ua/en/news
-  url_template: https://babel.ua/en/news?page={num}
-  start_page: 2
-  batch_size: 5
+  cursor_api: https://babel.ua/en/api/news/loadmore?after={cursor}
+  cursor_selector: ".js-loadmore::attr(data-after)"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -25,9 +24,6 @@ selectors:
     url: h3 a::attr(href)
   article:
     body: "article p"
-    date: meta[property='article:published_time']::attr(content)
-cleaning:
-  date: handle_mixed_dates
+    date: time::attr(datetime)
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

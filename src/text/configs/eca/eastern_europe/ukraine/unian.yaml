@@ -25,9 +25,6 @@ selectors:
     url: a::attr(href)
   article:
     body: "div.article-text"
-    date: meta[property='article:published_time']::attr(content)
-cleaning:
-  date: handle_mixed_dates
+    date: meta[property='og:published_time']::attr(content)
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'
