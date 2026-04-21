@@ -63,6 +63,10 @@ UNSUPPORTED_LANGUAGES = {
     "bislama",
     "palauan",
     "solomon_islands_pijin",
+    "arabic",
+    "farsi",
+    "hebrew",
+    "urdu",
 }
 
 # Per-language custom Google Translate service URLs
