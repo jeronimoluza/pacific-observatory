@@ -10,6 +10,12 @@ albania:
   currency: ALL
   languages: [en]
 
+andorra:
+  name: Andorra
+  iso3: AND
+  currency: EUR
+  languages: [en]
+
 armenia:
   name: Armenia
   iso3: ARM
@@ -22,6 +28,12 @@ australia:
   currency: AUD
   languages: [en]
 
+austria:
+  name: Austria
+  iso3: AUT
+  currency: EUR
+  languages: [en]
+
 azerbaijan:
   name: Azerbaijan
   iso3: AZE
@@ -32,6 +44,12 @@ belarus:
   name: Belarus
   iso3: BLR
   currency: BYN
+  languages: [en]
+
+belgium:
+  name: Belgium
+  iso3: BEL
+  currency: EUR
   languages: [en]
 
 bosnia_and_herzegovina:
@@ -52,6 +70,12 @@ cambodia:
   currency: KHR
   languages: [en, km]
 
+channel_islands:
+  name: Channel Islands
+  iso3: CHI
+  currency: GBP
+  languages: [en]
+
 china:
   name: China
   iso3: CHN
@@ -64,10 +88,22 @@ croatia:
   currency: EUR
   languages: [en]
 
+cyprus:
+  name: Cyprus
+  iso3: CYP
+  currency: EUR
+  languages: [en]
+
 czech_republic:
   name: Czech Republic
   iso3: CZE
   currency: CZK
+  languages: [en]
+
+denmark:
+  name: Denmark
+  iso3: DNK
+  currency: DKK
   languages: [en]
 
 estonia:
@@ -76,11 +112,29 @@ estonia:
   currency: EUR
   languages: [en]
 
+faroe_islands:
+  name: Faroe Islands
+  iso3: FRO
+  currency: DKK
+  languages: [en]
+
 fiji:
   name: Fiji
   iso3: FJI
   currency: FJD
   languages: [en, fijian]
+
+finland:
+  name: Finland
+  iso3: FIN
+  currency: EUR
+  languages: [en]
+
+france:
+  name: France
+  iso3: FRA
+  currency: EUR
+  languages: [en]
 
 french_polynesia:
   name: French Polynesia
@@ -92,6 +146,30 @@ georgia:
   name: Georgia
   iso3: GEO
   currency: GEL
+  languages: [en]
+
+germany:
+  name: Germany
+  iso3: DEU
+  currency: EUR
+  languages: [en]
+
+gibraltar:
+  name: Gibraltar
+  iso3: GIB
+  currency: GIP
+  languages: [en]
+
+greece:
+  name: Greece
+  iso3: GRC
+  currency: EUR
+  languages: [en]
+
+greenland:
+  name: Greenland
+  iso3: GRL
+  currency: DKK
   languages: [en]
 
 guam:
@@ -106,11 +184,35 @@ hungary:
   currency: HUF
   languages: [en]
 
+iceland:
+  name: Iceland
+  iso3: ISL
+  currency: ISK
+  languages: [en]
+
 indonesia:
   name: Indonesia
   iso3: IDN
   currency: IDR
   languages: [en, indo]
+
+ireland:
+  name: Ireland
+  iso3: IRL
+  currency: EUR
+  languages: [en]
+
+isle_of_man:
+  name: Isle of Man
+  iso3: IMN
+  currency: GBP
+  languages: [en]
+
+italy:
+  name: Italy
+  iso3: ITA
+  currency: EUR
+  languages: [en]
 
 japan:
   name: Japan
@@ -148,9 +250,21 @@ latvia:
   currency: EUR
   languages: [en]
 
+liechtenstein:
+  name: Liechtenstein
+  iso3: LIE
+  currency: CHF
+  languages: [en]
+
 lithuania:
   name: Lithuania
   iso3: LTU
+  currency: EUR
+  languages: [en]
+
+luxembourg:
+  name: Luxembourg
+  iso3: LUX
   currency: EUR
   languages: [en]
 
@@ -159,6 +273,12 @@ malaysia:
   iso3: MYS
   currency: MYR
   languages: [en, malay]
+
+malta:
+  name: Malta
+  iso3: MLT
+  currency: EUR
+  languages: [en]
 
 marshall_islands:
   name: Marshall Islands
@@ -170,6 +290,12 @@ moldova:
   name: Moldova
   iso3: MDA
   currency: MDL
+  languages: [en]
+
+monaco:
+  name: Monaco
+  iso3: MCO
+  currency: EUR
   languages: [en]
 
 mongolia:
@@ -190,6 +316,12 @@ myanmar:
   currency: MMK
   languages: [en]
 
+netherlands:
+  name: Netherlands
+  iso3: NLD
+  currency: EUR
+  languages: [en]
+
 new_caledonia:
   name: New Caledonia
   iso3: NCL
@@ -206,6 +338,12 @@ north_macedonia:
   name: North Macedonia
   iso3: MKD
   currency: MKD
+  languages: [en]
+
+norway:
+  name: Norway
+  iso3: NOR
+  currency: NOK
   languages: [en]
 
 palau:
@@ -232,6 +370,12 @@ poland:
   currency: PLN
   languages: [en]
 
+portugal:
+  name: Portugal
+  iso3: PRT
+  currency: EUR
+  languages: [en]
+
 romania:
   name: Romania
   iso3: ROU
@@ -249,6 +393,12 @@ samoa:
   iso3: WSM
   currency: WST
   languages: [en, samoan]
+
+san_marino:
+  name: San Marino
+  iso3: SMR
+  currency: EUR
+  languages: [en]
 
 serbia:
   name: Serbia
@@ -285,6 +435,24 @@ south_korea:
   iso3: KOR
   currency: KRW
   languages: [en, korean]
+
+spain:
+  name: Spain
+  iso3: ESP
+  currency: EUR
+  languages: [en]
+
+sweden:
+  name: Sweden
+  iso3: SWE
+  currency: SEK
+  languages: [en]
+
+switzerland:
+  name: Switzerland
+  iso3: CHE
+  currency: CHF
+  languages: [en]
 
 tajikistan:
   name: Tajikistan
@@ -334,6 +502,12 @@ ukraine:
   currency: UAH
   languages: [en, ukrainian]
 
+united_kingdom:
+  name: United Kingdom
+  iso3: GBR
+  currency: GBP
+  languages: [en]
+
 uzbekistan:
   name: Uzbekistan
   iso3: UZB
@@ -366,6 +540,12 @@ algeria:
   currency: DZD
   languages: [en, fr]
 
+bahrain:
+  name: Bahrain
+  iso3: BHR
+  currency: BHD
+  languages: [en]
+
 djibouti:
   name: Djibouti
   iso3: DJI
@@ -390,10 +570,22 @@ iraq:
   currency: IQD
   languages: [en]
 
+israel:
+  name: Israel
+  iso3: ISR
+  currency: ILS
+  languages: [en]
+
 jordan:
   name: Jordan
   iso3: JOR
   currency: JOD
+  languages: [en]
+
+kuwait:
+  name: Kuwait
+  iso3: KWT
+  currency: KWD
   languages: [en]
 
 lebanon:
@@ -414,10 +606,22 @@ morocco:
   currency: MAD
   languages: [en, fr]
 
+oman:
+  name: Oman
+  iso3: OMN
+  currency: OMR
+  languages: [en]
+
 pakistan:
   name: Pakistan
   iso3: PAK
   currency: PKR
+  languages: [en]
+
+qatar:
+  name: Qatar
+  iso3: QAT
+  currency: QAR
   languages: [en]
 
 saudi_arabia:
@@ -437,6 +641,12 @@ tunisia:
   iso3: TUN
   currency: TND
   languages: [en, fr]
+
+united_arab_emirates:
+  name: United Arab Emirates
+  iso3: ARE
+  currency: AED
+  languages: [en]
 
 west_bank_and_gaza:
   name: West Bank and Gaza
