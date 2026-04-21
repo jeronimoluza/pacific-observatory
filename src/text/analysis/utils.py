@@ -23,8 +23,18 @@ NON_SPACE_DELIMITED = frozenset(
         "chinese_traditional",
         "japanese",
         "arabic",
+        "farsi",
+        "hebrew",
+        "urdu",
     }
 )
+
+# Map short ISO codes (used in some YAML configs) to canonical keyword directory names.
+LANGUAGE_ALIASES: dict[str, str] = {
+    "ar": "arabic",
+    "fa": "farsi",
+    "he": "hebrew",
+}
 
 
 def _build_keyword_pattern(terms: list, language: str = "en") -> str:
@@ -279,6 +289,7 @@ def _resolve_keywords_dir(language: str, filename: str) -> Path:
         3. keywords_new/en/{filename}
         4. keywords/en/{filename}
     """
+    language = LANGUAGE_ALIASES.get(language, language)
     base = Path(__file__).parent
     for kw_dir_name in ("keywords_new", "keywords"):
         lang_dir = base / kw_dir_name / language
