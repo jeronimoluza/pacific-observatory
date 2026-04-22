@@ -1,0 +1,89 @@
+source_key: adnoc_monthly
+module: menaap.gulf_states.uae.adnoc
+function: fetch_adnoc
+url: https://www.adnocdistribution.ae/en/consumer-fuel
+fallback_date: 2023-05-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+products:
+  "Super 98":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super
+    octane_ron: 98
+    series_key: gasoline_98
+  "Special 95":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+    series_key: gasoline_95
+  "E-Plus 91":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+    series_key: gasoline_91
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: diesel
+  "Refill Cylinder (LPG 25 lb)":
+    fuel_family: lpg
+    unit: pound
+    amount: 25
+    include_in_build: true
+    grade: 25lb_refill
+    series_key: lpg_25lb_refill
+  "New Cylinder (LPG 25 lb)":
+    fuel_family: lpg
+    unit: pound
+    amount: 25
+    include_in_build: false
+    grade: 25lb_new
+    series_key: lpg_25lb_new
+  "Refill Cylinder (LPG 50 lb)":
+    fuel_family: lpg
+    unit: pound
+    amount: 50
+    include_in_build: true
+    grade: 50lb_refill
+    series_key: lpg_50lb_refill
+  "New Cylinder (LPG 50 lb)":
+    fuel_family: lpg
+    unit: pound
+    amount: 50
+    include_in_build: false
+    grade: 50lb_new
+    series_key: lpg_50lb_new
+  "Refill Cylinder (LPG Composite)":
+    fuel_family: lpg
+    unit: kilogram
+    include_in_build: false
+    grade: composite_refill
+    series_key: lpg_composite_refill
+  "New Cylinder (LPG Composite)":
+    fuel_family: lpg
+    unit: kilogram
+    include_in_build: false
+    grade: composite_new
+    series_key: lpg_composite_new
+  "Fast & Ultra-Fast charging up to 180kW*":
+    fuel_family: electricity_ev
+    unit: kw
+    include_in_build: true
+    grade: fast_charge
+    series_key: ev_fast_charge
+  "Overstay (80% SOC & 40 mins of charging)*":
+    fuel_family: electricity_ev
+    unit: fee
+    include_in_build: false
+    grade: overstay
+    series_key: ev_overstay

@@ -1,20 +1,29 @@
 source_key: tfp_iq_monthly
-module: menaap.thefuelprice
+module: menaap.middle_east.iraq.tfp
 function: fetch_tfp_iq
 url: https://www.thefuelprice.com/Fiq/en
 fallback_date: 2003-01-01
+priority: 50
+cadence: monthly
+carry_forward: true
 
 products:
   "Gasoline (Normal)":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: regular
     series_key: gasoline_regular
   "Gasoline 95 (Premium)":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: premium
     octane_ron: 95
     series_key: gasoline_95
   "Gasoline (Imported)":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: imported
     series_key: gasoline_imported

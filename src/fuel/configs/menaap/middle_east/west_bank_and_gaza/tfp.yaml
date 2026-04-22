@@ -1,40 +1,57 @@
 source_key: tfp_ps_monthly
-module: menaap.thefuelprice
+module: menaap.middle_east.west_bank_and_gaza.tfp
 function: fetch_tfp_ps
 url: https://www.thefuelprice.com/Fps/en
 fallback_date: 2003-01-01
+priority: 50
+cadence: monthly
+carry_forward: true
 
 products:
   "Gasoline 95":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: premium
     octane_ron: 95
     series_key: gasoline_95
   "Gasoline 98":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: super_premium
     octane_ron: 98
     series_key: gasoline_98
   "Diesel":
-    family: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
     grade: standard
     series_key: diesel
   "Kerosene":
-    family: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
     grade: standard
     series_key: kerosene
   "L.P.G (5 kg)":
-    family: lpg
+    fuel_family: lpg
+    unit: kilogram
+    amount: 5
+    include_in_build: true
     grade: 5kg
     series_key: lpg_5kg
-    unit: cylinder
   "L.P.G (12 kg)":
-    family: lpg
+    fuel_family: lpg
+    unit: kilogram
+    amount: 12
+    include_in_build: true
     grade: 12kg
     series_key: lpg_12kg
-    unit: cylinder
   "L.P.G (48 kg)":
-    family: lpg
+    fuel_family: lpg
+    unit: kilogram
+    amount: 48
+    include_in_build: true
     grade: 48kg
     series_key: lpg_48kg
-    unit: cylinder

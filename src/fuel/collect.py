@@ -13,6 +13,8 @@ from core.hashing import observation_hash
 from core.state import read_state, set_checked, set_last_data_date, write_state
 from core.storage import load_csv, save_csv
 
+from .paths import canonical_observations_path_for_entry
+
 logger = logging.getLogger(__name__)
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -45,10 +47,8 @@ _HASH_FIELDS = [
 ]
 
 
-def _source_csv_path(
-    country_slug: str, source_key: str, base_dir: Path = _DATA_DIR
-) -> Path:
-    return base_dir / country_slug / source_key / "observations.csv"
+def _source_csv_path(entry: dict, base_dir: Path = _DATA_DIR) -> Path:
+    return canonical_observations_path_for_entry(entry, base_dir=base_dir)
 
 
 def _cutoff_from_df(df: pd.DataFrame, fallback: date) -> date:
@@ -123,9 +123,7 @@ def run_collection(
 
     if rebuild and source_key:
         entry = registry[source_key]
-        out_path = _source_csv_path(
-            entry["country_slug"], source_key, base_dir=base_dir
-        )
+        out_path = _source_csv_path(entry, base_dir=base_dir)
         if out_path.exists():
             out_path.unlink()
             logger.info("Deleted %s for rebuild", out_path)
@@ -138,7 +136,7 @@ def run_collection(
             logger.info("Skipping %s (disabled; use --force to run)", key)
             continue
 
-        out_path = _source_csv_path(country_slug, key, base_dir=base_dir)
+        out_path = _source_csv_path(entry, base_dir=base_dir)
         existing = load_csv(out_path, columns=COLUMNS)
         cutoff = _cutoff_from_df(existing, entry["fallback_date"])
 

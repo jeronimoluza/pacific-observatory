@@ -1,15 +1,22 @@
 source_key: tfp_ma_monthly
-module: menaap.thefuelprice
+module: menaap.north_africa.morocco.tfp
 function: fetch_tfp_ma
 url: https://www.thefuelprice.com/Fma/en
 fallback_date: 2003-01-01
+priority: 50
+cadence: monthly
+carry_forward: true
 
 products:
   "Gasoline (Unleaded)":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: unleaded
     series_key: gasoline_unleaded
   "Diesel":
-    family: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
     grade: standard
     series_key: diesel

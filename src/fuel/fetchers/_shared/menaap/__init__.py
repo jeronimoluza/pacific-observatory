@@ -1,0 +1,1 @@
+"""Shared MENAAP fetcher helpers."""

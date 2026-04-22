@@ -1,0 +1,48 @@
+source_key: pso_pk_biweekly
+module: menaap.pakistan.pakistan.pso
+function: fetch_pk_pso
+url: https://psopk.com/fuel-prices/pol/archives
+fallback_date: 2006-01-01
+priority: 10
+cadence: biweekly
+carry_forward: true
+
+products:
+  "E10 GASOLINE":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 87
+    series_key: gasoline_e10
+  "PREMIER EURO 5":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 92
+    series_key: gasoline_premier_euro5
+  "HI-CETANE DIESEL EURO 5":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium
+    series_key: diesel_hicetane_euro5
+  "LDO":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: light
+    series_key: ldo
+  "SKO":
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: kerosene_sko
+  "JP-1":
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: jet
+    series_key: kerosene_jp1

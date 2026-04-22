@@ -1,40 +1,57 @@
 source_key: tfp_jo_monthly
-module: menaap.thefuelprice
+module: menaap.middle_east.jordan.tfp
 function: fetch_tfp_jo
 url: https://www.thefuelprice.com/Fjo/en
 fallback_date: 2003-01-01
+priority: 50
+cadence: monthly
+carry_forward: true
 
 products:
   "Gasoline 90":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: regular
     octane_ron: 90
     series_key: gasoline_90
   "Gasoline 95":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: premium
     octane_ron: 95
     series_key: gasoline_95
   "Gasoline 98":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: super_premium
     octane_ron: 98
     series_key: gasoline_98
   "Diesel":
-    family: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
     grade: standard
     series_key: diesel
   "Kerosene":
-    family: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
     grade: standard
     series_key: kerosene
   "L.P.G (12.5 kg)":
-    family: lpg
+    fuel_family: lpg
+    unit: kilogram
+    amount: 12.5
+    include_in_build: true
     grade: 12_5kg
     series_key: lpg_12_5kg
-    unit: cylinder
   "L.P.G (50 kg)":
-    family: lpg
+    fuel_family: lpg
+    unit: kilogram
+    amount: 50
+    include_in_build: true
     grade: 50kg
     series_key: lpg_50kg
-    unit: cylinder

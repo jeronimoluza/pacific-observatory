@@ -1,16 +1,23 @@
 source_key: tfp_ye_monthly
-module: menaap.thefuelprice
+module: menaap.middle_east.yemen.tfp
 function: fetch_tfp_ye
 url: https://www.thefuelprice.com/Fye/en
 fallback_date: 2003-01-01
 first_row_only: true
+priority: 50
+cadence: monthly
+carry_forward: true
 
 products:
   "Gasoline":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: regular
     series_key: gasoline_regular
   "Diesel":
-    family: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
     grade: standard
     series_key: diesel

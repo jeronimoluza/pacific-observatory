@@ -1,24 +1,35 @@
 source_key: tfp_dz_monthly
-module: menaap.thefuelprice
+module: menaap.north_africa.algeria.tfp
 function: fetch_tfp_dz
 url: https://www.thefuelprice.com/Fdz/en
 fallback_date: 2003-01-01
+priority: 50
+cadence: monthly
+carry_forward: true
 
 products:
   "Gasoline (Essence Normale)":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: regular
     octane_ron: 90
     series_key: gasoline_90
   "Gasoline (Unleaded/Essence super Sans plomb)":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: unleaded
     series_key: gasoline_unleaded
   "Gasoline (Essence Super)":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: super
     series_key: gasoline_super
   "Gas oil":
-    family: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
     grade: standard
     series_key: diesel

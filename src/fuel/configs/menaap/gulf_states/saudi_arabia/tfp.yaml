@@ -1,30 +1,43 @@
 source_key: tfp_sa_monthly
-module: menaap.thefuelprice
+module: menaap.gulf_states.saudi_arabia.tfp
 function: fetch_tfp_sa
 url: https://www.thefuelprice.com/Fsa/en
 fallback_date: 2003-01-01
+priority: 50
+cadence: monthly
+carry_forward: true
 
 products:
   "Gasoline E Plus 91":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: regular
     octane_ron: 91
     series_key: gasoline_91
   "Unleaded Gasoline 95":
-    family: gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
     grade: premium
     octane_ron: 95
     series_key: gasoline_95
   "Diesel":
-    family: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
     grade: standard
     series_key: diesel
   "Kerosene":
-    family: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
     grade: standard
     series_key: kerosene
   "L.P.G (12.5 kg)":
-    family: lpg
+    fuel_family: lpg
+    unit: kilogram
+    amount: 12.5
+    include_in_build: true
     grade: 12_5kg
     series_key: lpg_12_5kg
-    unit: cylinder

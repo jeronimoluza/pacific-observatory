@@ -1,210 +1,153 @@
 # How to Add a New Fuel Price Fetcher
 
-This guide walks through adding a new fuel price data source. A
-"fetcher" is a Python function that pulls price data from a website,
-API, PDF, or Excel file and returns it as a DataFrame.
+This guide covers the migrated `src/fuel/` pipeline.
 
-## Prerequisites
+Canonical topology:
 
-- Python 3.11+
-- The repository cloned and installed: `pip install -e .`
-- The country must exist in `src/configs/countries.yaml`
-
-## Quick Start (5 minutes for simple API/table sources)
-
-1. Create config: `src/fuel/configs/{region}/{country}.yaml`
-2. Create fetcher: `src/fuel/fetchers/{region}/{country}.py`
-3. Test: `po fuel collect --source {source_key} --dry-run`
-4. Run: `po fuel collect --source {source_key}`
-
-## Step 1: Add the Country (if new)
-
-If the country doesn't exist in `src/configs/countries.yaml`, add it:
-
-```yaml
-germany:
-  name: Germany
-  iso3: DEU
-  region: europe
-  currency: EUR
+```text
+src/fuel/configs/{region}/{subregion}/{country}/{source}.yaml
+src/fuel/fetchers/{region}/{subregion}/{country}/{source}.py
+data/fuel/{region}/{subregion}/{country}/{source}/observations.csv
 ```
 
-And add the slug to the region in `src/configs/regions.yaml`.
+`source` is the YAML filename stem. `source_key` stays inside the YAML and output rows as dataset metadata, but it is not the directory name.
 
-## Step 2: Create the YAML Config
+## Quick Start
+
+1. Create a source YAML at `src/fuel/configs/{region}/{subregion}/{country}/{source}.yaml`
+2. Create a canonical wrapper module at `src/fuel/fetchers/{region}/{subregion}/{country}/{source}.py`
+3. Point the YAML `module:` field at the wrapper path relative to `fuel.fetchers`
+4. Run `python run.py fuel collect --source {source_key} --dry-run`
+5. Run `python run.py fuel collect --source {source_key}`
+
+## Step 1: Add The Country If Needed
+
+If the country does not exist in `src/configs/countries.yaml`, add it there and add the country slug to the correct subregion in `src/configs/regions.yaml`.
+
+## Step 2: Create The YAML Config
 
 Copy the template:
+
 ```bash
 cp src/fuel/configs/_examples/country_template.yaml \
-   src/fuel/configs/{region}/{country}.yaml
+   src/fuel/configs/{region}/{subregion}/{country}/{source}.yaml
 ```
 
-Fill in the config. Key sections:
-
-### Products
-
-Define what fuel types this country tracks:
+Example shape:
 
 ```yaml
+source_key: qe_qa_monthly
+module: menaap.gulf_states.qatar.qatar_energy
+function: fetch_qa_qatarenergy
+url: https://example.gov/fuel-prices
+fallback_date: 2025-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
 products:
-  diesel_standard:
-    family: diesel           # gasoline | diesel | lpg | kerosene | cng | electricity_ev
-    grade: standard          # Qualifier: regular, premium, midgrade, branded, etc.
-    series_key: diesel_standard
+  "Gasoline Premium":
+    series_key: gasoline_premium_91
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 91
 ```
 
-### Sources
+Notes:
 
-Define where data comes from:
+- One YAML file represents one source.
+- `module:` is the canonical wrapper module path relative to `fuel.fetchers`.
+- `source` is implied by the filename stem and should match the wrapper filename.
+- `source_key` is still required in rows and state, but it does not drive storage paths.
 
-```yaml
-sources:
-  de_bafa_monthly:
-    module: europe.germany          # Path under src/fuel/fetchers/
-    function: fetch_bafa            # Function name in that module
-    url: https://www.bafa.de/...    # Source homepage
-    description: "Monthly petroleum product prices from BAFA"
-    products:
-      "Dieselkraftstoff": diesel_standard
-      "Superbenzin":      gasoline_regular
-```
+## Step 3: Create The Wrapper Module
 
-The `products` mapping translates raw product names (as they appear in
-the source) to the product keys defined above.
+Create the canonical wrapper:
 
-## Step 3: Write the Fetcher
-
-Copy the template:
 ```bash
 cp src/fuel/fetchers/_examples/fetcher_template.py \
-   src/fuel/fetchers/{region}/{country}.py
+   src/fuel/fetchers/{region}/{subregion}/{country}/{source}.py
 ```
 
-### The Fetcher Contract
+For source-specific logic, implement directly in the wrapper.
+
+For shared providers, keep the wrapper thin and delegate to internal helpers under `src/fuel/fetchers/_shared/`.
+
+Example wrapper:
+
+```python
+from fuel.fetchers._shared.menaap.thefuelprice import fetch_tfp_jo
+
+__all__ = ["fetch_tfp_jo"]
+```
+
+## Fetcher Contract
 
 ```python
 def fetch_source_name(cutoff: date) -> pd.DataFrame | None:
 ```
 
-- **Input**: `cutoff` — the date of the last observation we have.
-  Only return data with `observation_date > cutoff`.
-- **Output**: DataFrame with these columns:
+- Input: `cutoff`, the newest stored observation date for that source
+- Return only rows with `observation_date > cutoff`
+- Return `None` or an empty DataFrame when there is no new data
+- Do not write files directly; collection handles deduplication and storage
 
-| Column | Required | Type | Description |
-|--------|----------|------|-------------|
-| `observation_date` | Yes | str (YYYY-MM-DD) | When the price was observed |
-| `country` | Yes | str | Country name (match countries.yaml) |
-| `fuel_product` | Yes | str | Raw product name (mapped via YAML config) |
-| `price_local` | Yes | float | Price in local currency |
-| `currency` | Yes | str | ISO 4217 code |
-| `source_key` | Yes | str | Must match YAML source key |
-| `unit` | No | str | Default: "L" (liter) |
-| `subnational_area` | No | str | State/province |
-| `city` | No | str | City name |
-| `address` | No | str | Station address |
+Expected row columns:
 
-- Return `None` or empty DataFrame if no new data.
-- The fetcher must **not** modify stored data — the collect layer
-  handles dedup and storage.
-
-### Common Extraction Patterns
-
-**HTML table** (see `pacific/new_zealand.py`):
-```python
-from core.http import make_session
-from bs4 import BeautifulSoup
-
-def fetch_mbie(cutoff):
-    session = make_session()
-    resp = session.get("https://...")
-    soup = BeautifulSoup(resp.text, "lxml")
-    table = soup.select_one("table.fuel-prices")
-    # ... parse rows into list of dicts
-```
-
-**JSON API** (see `pacific/timor_leste.py`):
-```python
-def fetch_anp_api(cutoff):
-    session = make_session()
-    resp = session.get("https://api.example.com/prices")
-    data = resp.json()
-    # ... extract from JSON structure
-```
-
-**PDF table** (see `pacific/fiji.py`):
-```python
-import pdfplumber
-from io import BytesIO
-
-def fetch_fccc(cutoff):
-    session = make_session()
-    resp = session.get("https://fccc.gov.fj/latest.pdf")
-    pdf = pdfplumber.open(BytesIO(resp.content))
-    table = pdf.pages[0].extract_table()
-    # ... parse table rows
-```
-
-**Excel download** (see `pacific/japan.py`):
-```python
-def fetch_anre(cutoff):
-    session = make_session()
-    resp = session.get("https://example.go.jp/prices.xlsx")
-    df = pd.read_excel(BytesIO(resp.content), sheet_name="Sheet1")
-    # ... filter and transform
-```
-
-### Tips
-
-- Use `core.http.make_session()` for HTTP requests (sets browser-like
-  headers to avoid blocks).
-- Always check `response.raise_for_status()` after requests.
-- Handle date parsing carefully — different sources use different
-  formats. See `fetchers/_common/dates.py` for helpers.
-- For PDF sources, see `fetchers/_common/pdf.py` for shared utilities.
-- Log progress: `import logging; logger = logging.getLogger(__name__)`
+| Column | Required | Description |
+| --- | --- | --- |
+| `observation_date` | Yes | ISO date string (`YYYY-MM-DD`) |
+| `country` | Yes | Country display name |
+| `fuel_product` | Yes | Raw product name from the source |
+| `price_local` | Yes | Numeric local-currency price |
+| `currency` | Yes | ISO currency code |
+| `source_key` | Yes | Dataset identifier from the YAML |
+| `unit` | No | Defaults to liter if omitted |
+| `subnational_area` | No | State or province |
+| `city` | No | City |
+| `address` | No | Station or address |
 
 ## Step 4: Test
 
 ```bash
-# Preview what would happen (no data written)
-po fuel collect --source de_bafa_monthly --dry-run
+# Preview without writing
+python run.py fuel collect --source qe_qa_monthly --dry-run
 
-# Run the fetcher for real
-po fuel collect --source de_bafa_monthly
+# Run the source
+python run.py fuel collect --source qe_qa_monthly
 
-# Verify the output
-cat data/fuel/germany/de_bafa_monthly/observations.csv | head
-
-# Build enriched dataset
-po fuel build --country germany
-
-# Check source health
-po status
+# Verify canonical storage
+python run.py fuel build --country qatar -y
 ```
 
-## Step 5: Commit
+Canonical raw observations will be written to:
 
-Commit both files together:
-- `src/fuel/configs/{region}/{country}.yaml`
-- `src/fuel/fetchers/{region}/{country}.py`
+```text
+data/fuel/{region}/{subregion}/{country}/{source}/observations.csv
+```
 
-Update `src/fuel/fetchers/README.md` if the fetcher uses a novel
-pattern not listed there.
+Example:
 
-## Troubleshooting
+```text
+data/fuel/menaap/gulf_states/qatar/qatar_energy/observations.csv
+```
 
-| Problem | Solution |
-|---------|----------|
-| 403 Forbidden | Source may block scripts. Check if auth/cookies needed. |
-| Empty DataFrame | Verify cutoff logic — are you filtering too aggressively? |
-| Date parse errors | Check source date format. Use `_common/dates.py` helpers. |
-| Encoding issues | Pass `encoding="utf-8"` (or source-specific encoding). |
-| SSL errors | Try `session.verify = False` as last resort (not recommended). |
-| PDF table misparse | Use `pdfplumber.extract_table(table_settings=...)` to tune. |
+## Step 5: Update Tests And Docs
+
+Update any tests, examples, or docs to import the canonical wrapper path and to refer to the canonical `{region}/{subregion}/{country}/{source}` storage layout.
+
+## Tips
+
+- Use `core.http.make_session()` for HTTP requests
+- Call `response.raise_for_status()` after requests
+- Keep shared logic in `_shared/` only when multiple wrappers need it
+- Keep wrapper files minimal when delegating to shared helpers
+- Use the YAML filename stem as the canonical source name everywhere paths are involved
 
 ## Reference
 
 - Config template: `src/fuel/configs/_examples/country_template.yaml`
-- Fetcher template: `src/fuel/fetchers/_examples/fetcher_template.py`
-- Config schema: [docs/fuel/YAML_CONFIG_REFERENCE.md](YAML_CONFIG_REFERENCE.md)
-- Pipeline docs: [docs/fuel/PIPELINE.md](PIPELINE.md)
+- Canonical wrapper examples: `src/fuel/fetchers/menaap/**`
+- Shared helper examples: `src/fuel/fetchers/_shared/`

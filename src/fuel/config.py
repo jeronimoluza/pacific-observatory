@@ -6,8 +6,10 @@ import importlib
 import logging
 from datetime import date
 from pathlib import Path
+from typing import Literal
+
 import yaml
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from core.config import discover_pipeline_configs, load_countries, parse_config_path
 
@@ -22,15 +24,79 @@ _FUEL_CONFIGS_DIR = Path(__file__).resolve().parent / "configs"
 class ProductSpec(BaseModel):
     """Fuel product definition within a source config."""
 
-    family: str  # gasoline, diesel, lpg, kerosene, cng, heating_oil
-    grade: str
+    model_config = ConfigDict(extra="ignore")
+
     series_key: str
+    fuel_family: str
+    unit: str = "liter"
+    amount: float | None = None
+    include_in_build: bool = True
+    grade: str | None = None
     octane_ron: int | None = None
-    unit: str = "L"
+
+    @field_validator("fuel_family")
+    @classmethod
+    def _normalize_family(cls, value: str) -> str:
+        aliases = {
+            "gasoline": "gasoline",
+            "diesel": "diesel",
+            "lpg": "lpg",
+            "kerosene": "kerosene",
+            "cng": "cng",
+            "ngv": "cng",
+            "heatingoil": "heating_oil",
+            "heating_oil": "heating_oil",
+            "electricityev": "electricity_ev",
+            "electricity_ev": "electricity_ev",
+        }
+        key = str(value).strip().lower().replace(" ", "_")
+        key = key.replace("-", "_")
+        key = key.replace("__", "_")
+        if key not in aliases:
+            raise ValueError(f"Unsupported fuel_family: {value}")
+        return aliases[key]
+
+    @field_validator("unit")
+    @classmethod
+    def _normalize_unit(cls, value: str) -> str:
+        aliases = {
+            "l": "liter",
+            "liter": "liter",
+            "liters": "liter",
+            "litre": "liter",
+            "litres": "liter",
+            "gallon": "gallon",
+            "gallons": "gallon",
+            "kg": "kilogram",
+            "kgs": "kilogram",
+            "kilogram": "kilogram",
+            "kilograms": "kilogram",
+            "lb": "pound",
+            "lbs": "pound",
+            "pound": "pound",
+            "pounds": "pound",
+            "m3": "m3",
+            "kw": "kw",
+            "kwh": "kwh",
+            "fee": "fee",
+        }
+        key = str(value).strip().lower()
+        if key not in aliases:
+            raise ValueError(f"Unsupported unit: {value}")
+        return aliases[key]
+
+    @field_validator("amount")
+    @classmethod
+    def _validate_amount(cls, value: float | None) -> float | None:
+        if value is not None and value <= 0:
+            raise ValueError("amount must be positive")
+        return value
 
 
 class FuelSourceConfig(BaseModel):
     """Source-centric config loaded from a single YAML file."""
+
+    model_config = ConfigDict(extra="ignore")
 
     source_key: str
     module: str
@@ -41,6 +107,17 @@ class FuelSourceConfig(BaseModel):
     full_refresh: bool = False
     default_unit: str = "L"
     first_row_only: bool = False
+    priority: int = 100
+    cadence: Literal[
+        "daily",
+        "weekly",
+        "biweekly",
+        "monthly",
+        "quarterly",
+        "yearly",
+        "irregular",
+    ]
+    carry_forward: bool = False
     products: dict[str, ProductSpec]  # raw_product_name → ProductSpec
 
     # Resolved from path + countries.yaml (not in YAML file)
@@ -50,6 +127,8 @@ class FuelSourceConfig(BaseModel):
     currency: str = ""
     region: str = ""
     subregion: str = ""
+    source: str = ""
+    config_path: str = Field(default="", exclude=True)
 
 
 # ── Loading ──────────────────────────────────────────────────────────────────
@@ -76,6 +155,8 @@ def load_source_config(
     raw["currency"] = country_props.get("currency", "")
     raw["region"] = region
     raw["subregion"] = subregion
+    raw["source"] = path.stem
+    raw["config_path"] = str(path)
 
     return FuelSourceConfig(**raw)
 
@@ -115,8 +196,18 @@ def load_all_source_configs(
 def resolve_fetcher(cfg: FuelSourceConfig) -> callable:
     """Resolve a source config's module/function to a Python callable."""
     mod_path = f"fuel.fetchers.{cfg.module}"
-    mod = importlib.import_module(mod_path)
-    return getattr(mod, cfg.function)
+    try:
+        mod = importlib.import_module(mod_path)
+    except ModuleNotFoundError as exc:
+        raise ValueError(
+            f"Failed to import module '{mod_path}' for {cfg.source_key} ({cfg.config_path})"
+        ) from exc
+    try:
+        return getattr(mod, cfg.function)
+    except AttributeError as exc:
+        raise ValueError(
+            f"Failed to resolve function '{cfg.function}' for {cfg.source_key} ({cfg.config_path})"
+        ) from exc
 
 
 def build_fuel_registry(
@@ -147,8 +238,18 @@ def build_fuel_registry(
             "fallback_date": cfg.fallback_date,
             "enabled": cfg.enabled,
             "full_refresh": cfg.full_refresh,
+            "priority": cfg.priority,
+            "cadence": cfg.cadence,
+            "carry_forward": cfg.carry_forward,
             "country_slug": cfg.country_slug,
             "country_name": cfg.country_name,
+            "iso3": cfg.iso3,
+            "currency": cfg.currency,
+            "region": cfg.region,
+            "subregion": cfg.subregion,
+            "source": cfg.source,
+            "products": cfg.products,
+            "config_path": cfg.config_path,
             "source_key": key,
             "url": cfg.url,
         }

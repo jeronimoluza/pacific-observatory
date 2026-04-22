@@ -1,0 +1,37 @@
+source_key: oomco_monthly
+module: menaap.gulf_states.oman.oomco
+function: fetch_oomco
+url: https://www.oomco.com/
+fallback_date: 2019-06-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+products:
+  "Mogas 91":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+    series_key: gasoline_91
+  "Mogas 95":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+    series_key: gasoline_95
+  "Ultimax 98":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super
+    octane_ron: 98
+    series_key: gasoline_98
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: diesel

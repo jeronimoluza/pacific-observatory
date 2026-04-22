@@ -1,27 +1,38 @@
 source_key: tfp_lb_monthly
-module: menaap.thefuelprice
+module: menaap.middle_east.lebanon.tfp
 function: fetch_tfp_lb
 url: https://www.thefuelprice.com/Flb/en
 fallback_date: 2003-01-01
 default_unit: gallon
+priority: 50
+cadence: monthly
+carry_forward: true
 
 products:
   "Gasoline 95":
-    family: gasoline
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
     grade: premium
     octane_ron: 95
     series_key: gasoline_95
   "Gasoline 98":
-    family: gasoline
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
     grade: super_premium
     octane_ron: 98
     series_key: gasoline_98
   "Diesel":
-    family: diesel
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: true
     grade: standard
     series_key: diesel
   "L.P.G (10 kg)":
-    family: lpg
+    fuel_family: lpg
+    unit: kilogram
+    amount: 10
+    include_in_build: true
     grade: 10kg
     series_key: lpg_10kg
-    unit: cylinder

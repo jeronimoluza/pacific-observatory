@@ -1,38 +1,36 @@
-# Fuel price source configuration template.
-#
-# Copy this file to: src/fuel/configs/{region}/{country_slug}.yaml
-# Then write a matching fetcher at: src/fuel/fetchers/{region}/{country_slug}.py
-#
-# See docs/fuel/HOW_TO_ADD_NEW_FETCHER.md for the full guide.
-# See docs/fuel/YAML_CONFIG_REFERENCE.md for all available fields.
+source_key: example_country_monthly
+module: region.subregion.country.source
+function: fetch_example_country
+url: https://example.gov/fuel-prices
+fallback_date: 2025-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
 
-country: Country Name          # Human-readable name (must match countries.yaml)
-iso3: XXX                      # ISO 3166-1 alpha-3 code
-currency: USD                  # ISO 4217 currency code
-
-# Products define what fuel types this country tracks.
-# Keys are internal product slugs; values describe the product.
 products:
-  diesel_standard:
-    family: diesel             # One of: gasoline, diesel, lpg, kerosene, cng, electricity_ev
-    grade: standard            # Qualifier within family
-    series_key: diesel_standard  # Unique key for time series
-
-  gasoline_regular:
-    family: gasoline
-    grade: regular
+  "Regular Gasoline":
     series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
 
-# Sources define where data comes from.
-# Each source maps to a fetcher function.
-sources:
-  xx_source_name:
-    module: region.country_slug       # Python module path under src/fuel/fetchers/
-    function: fetch_source_name       # Function name in that module
-    url: https://example.gov/prices   # Source homepage (for documentation)
-    description: "Weekly fuel prices from the Ministry of Energy"
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
 
-    # Map raw product names (as they appear in source) to product keys above
-    products:
-      "Diesel":           diesel_standard
-      "Regular Gasoline": gasoline_regular
+  "L.P.G (12.5 kg)":
+    series_key: lpg_12_5kg
+    fuel_family: lpg
+    unit: kilogram
+    amount: 12.5
+    include_in_build: true
+
+  "Promotional Bundle":
+    series_key: promo_bundle
+    fuel_family: lpg
+    unit: kilogram
+    amount: 12.5
+    include_in_build: false
