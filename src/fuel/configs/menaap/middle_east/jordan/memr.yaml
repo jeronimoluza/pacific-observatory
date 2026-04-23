@@ -1,0 +1,111 @@
+source_key: jo_memr_monthly
+module: menaap.middle_east.jordan.memr
+function: fetch_jo_memr
+url: https://www.memr.gov.jo/En/List/Retail_Prices_Of_all_Petroleum_Products
+fallback_date: 2021-01-01
+priority: 90
+cadence: monthly
+carry_forward: true
+
+products:
+  "Gasoline 90":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 90
+    series_key: gasoline_90
+  "Gasoline 95":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+    series_key: gasoline_95
+  "Gasoline 98":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super_premium
+    octane_ron: 98
+    series_key: gasoline_98
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: diesel
+  "Kerosene":
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: kerosene
+  "LPG 12.5kg":
+    fuel_family: lpg
+    unit: cylinder
+    amount: 12.5
+    include_in_build: true
+    grade: 12_5kg
+    series_key: lpg_12_5kg
+  "LPG 50kg":
+    fuel_family: lpg
+    unit: cylinder
+    amount: 50
+    include_in_build: true
+    grade: 50kg
+    series_key: lpg_50kg
+  "LPG Bulk":
+    fuel_family: lpg
+    unit: ton
+    include_in_build: true
+    grade: bulk
+    series_key: lpg_bulk
+  "Fuel Oil 3.5%":
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: high_sulfur
+    series_key: fuel_oil_3_5pct
+  "Fuel Oil 1%":
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: low_sulfur
+    series_key: fuel_oil_1pct
+  "Avtur Local":
+    fuel_family: jet_fuel
+    unit: liter
+    include_in_build: true
+    grade: local
+    series_key: avtur_local
+  "Avtur Foreign":
+    fuel_family: jet_fuel
+    unit: liter
+    include_in_build: true
+    grade: foreign
+    series_key: avtur_foreign
+  "Avtur Charter":
+    fuel_family: jet_fuel
+    unit: liter
+    include_in_build: true
+    grade: charter
+    series_key: avtur_charter
+  "Fuel Oil Bunkers":
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: bunker
+    series_key: fuel_oil_bunkers
+  "Diesel Bunkers":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: bunker
+    series_key: diesel_bunkers
+  "Asphalt":
+    fuel_family: asphalt
+    unit: ton
+    include_in_build: true
+    grade: standard
+    series_key: asphalt

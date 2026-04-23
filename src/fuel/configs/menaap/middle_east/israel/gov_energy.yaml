@@ -1,0 +1,71 @@
+source_key: il_gov_energy
+module: menaap.middle_east.israel.gov_energy
+function: fetch_il_gov_energy
+url: https://www.gov.il/he/pages/price_stucture
+fallback_date: 2023-12-01
+priority: 10
+cadence: monthly
+carry_forward: false
+
+products:
+  "Gasoline 95":
+    series_key: gasoline_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+
+  "Heavy Fuel Oil 3.5%S":
+    series_key: heavy_fuel_oil_3_5pct
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+
+  "Heavy Mazut 1%S":
+    series_key: heavy_mazut_1pct
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+
+  "Heavy Mazut 0.5%S":
+    series_key: heavy_mazut_0_5pct
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+
+  "Light Mazut 1%S":
+    series_key: light_mazut_1pct
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+
+  "Light Mazut 0.5%S":
+    series_key: light_mazut_0_5pct
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+
+  "Bitumen 80/100":
+    series_key: bitumen_80_100
+    fuel_family: asphalt
+    unit: ton
+    include_in_build: true
+
+  "HB Bitumen":
+    series_key: hb_bitumen
+    fuel_family: asphalt
+    unit: ton
+    include_in_build: true
+
+  "LPG Reference":
+    series_key: lpg_reference
+    fuel_family: lpg
+    unit: ton
+    include_in_build: true
+
+  "LPG Import":
+    series_key: lpg_import
+    fuel_family: lpg
+    unit: ton
+    include_in_build: true

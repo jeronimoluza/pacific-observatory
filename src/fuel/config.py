@@ -48,6 +48,11 @@ class ProductSpec(BaseModel):
             "heating_oil": "heating_oil",
             "electricityev": "electricity_ev",
             "electricity_ev": "electricity_ev",
+            "fuel_oil": "fuel_oil",
+            "fueloil": "fuel_oil",
+            "jet_fuel": "jet_fuel",
+            "jetfuel": "jet_fuel",
+            "asphalt": "asphalt",
         }
         key = str(value).strip().lower().replace(" ", "_")
         key = key.replace("-", "_")
@@ -75,6 +80,11 @@ class ProductSpec(BaseModel):
             "lbs": "pound",
             "pound": "pound",
             "pounds": "pound",
+            "ton": "ton",
+            "tons": "ton",
+            "tonne": "ton",
+            "tonnes": "ton",
+            "cylinder": "cylinder",
             "m3": "m3",
             "kw": "kw",
             "kwh": "kwh",
