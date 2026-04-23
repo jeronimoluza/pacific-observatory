@@ -1,0 +1,50 @@
+source_key: autotraveler_az_daily
+module: eca.south_caucasus.azerbaijan.autotraveler
+function: fetch_autotraveler_az
+url: https://autotraveler.ru/en/azerbaijan/trend-price-fuel-azerbaijan.html
+fallback_date: 2011-08-01
+priority: 50
+cadence: daily
+carry_forward: true
+
+products:
+  "Regular 92":
+    series_key: gasoline_92
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 92
+  "Super 95":
+    series_key: gasoline_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 95
+  "Premium 95":
+    series_key: gasoline_95_plus
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "Premium 98":
+    series_key: gasoline_98
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 98
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "LPG":
+    series_key: lpg
+    fuel_family: lpg
+    unit: liter
+    include_in_build: false
+    grade: standard

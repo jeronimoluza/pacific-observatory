@@ -1,0 +1,43 @@
+source_key: minfin_ua_regional_daily
+module: eca.eastern_europe.ukraine.minfin
+function: fetch_minfin_ua
+url: https://index.minfin.com.ua/markets/fuel/reg/
+fallback_date: 2020-01-01
+priority: 10
+cadence: daily
+carry_forward: true
+
+products:
+  "А 95+":
+    series_key: gasoline_95_plus
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "А 95":
+    series_key: gasoline_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 95
+  "А 92":
+    series_key: gasoline_92
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 92
+  "ДТ":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Газ":
+    series_key: lpg
+    fuel_family: lpg
+    unit: liter
+    include_in_build: false
+    grade: standard
