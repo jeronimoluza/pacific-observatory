@@ -208,7 +208,15 @@ def fuel_collect(region, subregion, country, source, yes, dry_run, rebuild, forc
 @_yes_opt
 def fuel_build(region, subregion, country, yes):
     """Process raw observations into enriched dataset."""
-    click.echo("fuel build: not yet migrated")
+    import logging
+
+    from fuel.process import run_build
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
+    try:
+        run_build(region=region, subregion=subregion, country=country, yes=yes)
+    except ValueError as exc:
+        raise click.ClickException(str(exc))
 
 
 @fuel.command("publish")
