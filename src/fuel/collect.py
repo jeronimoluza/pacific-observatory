@@ -13,6 +13,7 @@ from core.hashing import observation_hash
 from core.state import read_state, set_checked, set_last_data_date, write_state
 from core.storage import load_csv, save_csv
 
+from .fx import build_fx_table
 from .paths import canonical_observations_path_for_entry
 
 logger = logging.getLogger(__name__)
@@ -101,6 +102,7 @@ def run_collection(
     force: bool = False,
     rebuild: bool = False,
     dry_run: bool = False,
+    refresh_fx: bool = False,
 ) -> None:
     """Fetch new data from one or all configured fuel sources.
 
@@ -111,6 +113,7 @@ def run_collection(
         force: Run even if source has enabled=false.
         rebuild: Delete existing observations and re-fetch from fallback_date.
         dry_run: Print plan without writing data.
+        refresh_fx: Also refresh FX cache for currencies in the registry.
     """
     if rebuild and not source_key:
         logger.error("--rebuild requires --source KEY")
@@ -189,4 +192,43 @@ def run_collection(
 
     if not dry_run:
         write_state(state, state_path)
+
+    # Refresh FX cache for non-USD currencies in the registry
+    if not dry_run and refresh_fx:
+        currencies = sorted(
+            {
+                entry.get("currency", "")
+                for entry in registry.values()
+                if entry.get("currency") and entry["currency"] != "USD"
+            }
+        )
+        if currencies:
+            logger.info("Refreshing FX cache for %d currencies ...", len(currencies))
+            try:
+                dummy = pd.DataFrame(
+                    {
+                        "observation_date": [pd.Timestamp.now().strftime("%Y-%m-%d")],
+                        "currency": [currencies[0]],
+                    }
+                )
+                for c in currencies[1:]:
+                    dummy = pd.concat(
+                        [
+                            dummy,
+                            pd.DataFrame(
+                                {
+                                    "observation_date": [
+                                        pd.Timestamp.now().strftime("%Y-%m-%d")
+                                    ],
+                                    "currency": [c],
+                                }
+                            ),
+                        ],
+                        ignore_index=True,
+                    )
+                build_fx_table(dummy, cache_path=base_dir / "fx_cache.csv")
+                logger.info("FX cache updated.")
+            except Exception:
+                logger.exception("FX refresh failed (non-fatal)")
+
     logger.info("Done.")

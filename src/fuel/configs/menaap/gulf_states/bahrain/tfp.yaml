@@ -1,0 +1,37 @@
+source_key: tfp_bh_monthly
+module: menaap.gulf_states.bahrain.tfp
+function: fetch_tfp_bh
+url: https://www.thefuelprice.com/Fbh/en
+fallback_date: 2008-04-01
+priority: 50
+cadence: monthly
+carry_forward: true
+
+products:
+  "Gasoline 91 (Regular)":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+    series_key: gasoline_91
+  "Gasoline 95 (Premium)":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+    series_key: gasoline_95
+  "Gasoline 98 (Super)":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super
+    octane_ron: 98
+    series_key: gasoline_98
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: diesel

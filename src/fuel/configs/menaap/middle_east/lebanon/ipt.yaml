@@ -1,0 +1,37 @@
+source_key: ipt_weekly
+module: menaap.middle_east.lebanon.ipt
+function: fetch_ipt
+url: https://www.iptgroup.com.lb/ipt/en/our-stations/fuel-prices
+fallback_date: 2015-08-01
+priority: 10
+cadence: weekly
+carry_forward: true
+
+products:
+  "UNL 95":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 95
+    series_key: gasoline_95
+  "UNL 98":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 98
+    series_key: gasoline_98
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: diesel
+  "Gas (LPG)":
+    fuel_family: lpg
+    unit: kilogram
+    amount: 10
+    include_in_build: true
+    grade: 10kg
+    series_key: lpg_10kg

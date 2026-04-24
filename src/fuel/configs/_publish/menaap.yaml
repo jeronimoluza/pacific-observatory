@@ -1,0 +1,16 @@
+# Publish configuration for MENAAP fuel policy dashboard.
+
+region: menaap
+region_label: "Middle East, North Africa, Afghanistan & Pakistan"
+dashboard_history_years: 3
+
+# Regime overrides for countries missing from WB pricing-regime CSV.
+# Keys are ISO3 codes; values are per-product {regime, subsidy} dicts.
+regime_overrides: {}
+
+# Restrict scatter chart and KPI cards to this region's countries.
+scatter_focus_region: true
+
+# Commodity products to show in Tab 1 chart.
+# If empty, all available commodities are shown.
+commodity_products: []

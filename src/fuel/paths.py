@@ -14,8 +14,13 @@ def canonical_source_dir(
     *,
     base_dir: Path,
 ) -> Path:
-    """Return the canonical directory for one fuel source."""
-    return base_dir / region / subregion / country_slug / source
+    """Return the canonical directory for one fuel source.
+
+    Empty path components are collapsed, so a _global source with no
+    subregion/country produces ``base_dir/_global/source``.
+    """
+    parts = [p for p in (region, subregion, country_slug, source) if p]
+    return base_dir.joinpath(*parts)
 
 
 def canonical_observations_path(

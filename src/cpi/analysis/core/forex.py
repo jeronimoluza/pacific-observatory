@@ -15,7 +15,7 @@ COUNTRY_TIMEZONES = {
     "fiji": "Pacific/Fiji",
     "indonesia": "Asia/Jakarta",
     "japan": "Asia/Tokyo",
-    "korea": "Asia/Seoul",
+    "south_korea": "Asia/Seoul",
     "papua_new_guinea": "Pacific/Port_Moresby",
     "philippines": "Asia/Manila",
     "samoa": "Pacific/Apia",

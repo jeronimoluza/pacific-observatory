@@ -1,0 +1,108 @@
+source_key: af_aogc
+module: menaap.afghanistan.afghanistan.aogc
+function: fetch_af_aogc
+url: https://aogc.gov.af/en/pricing
+fallback_date: 2023-12-01
+priority: 10
+cadence: daily
+carry_forward: true
+currency: USD
+
+products:
+  "Diesel (Factory)":
+    series_key: diesel_factory
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: factory
+
+  "Diesel (Iranian)":
+    series_key: diesel_iranian
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: iranian
+
+  "Diesel (Iraqi)":
+    series_key: diesel_iraqi
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: iraqi
+
+  "Diesel L01":
+    series_key: diesel_l01
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: l01
+
+  "Diesel L02":
+    series_key: diesel_l02
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: l02
+
+  "Diesel L05":
+    series_key: diesel_l05
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: l05
+
+  "Petrol (Factory)":
+    series_key: petrol_factory
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: factory
+
+  "Petrol 80":
+    series_key: petrol_80
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: "80"
+
+  "Petrol 80 (Light)":
+    series_key: petrol_80_light
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: 80_light
+
+  "Petrol 92":
+    series_key: petrol_92
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: "92"
+
+  "Petrol 93":
+    series_key: petrol_93
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: "93"
+
+  "Lemon Petrol":
+    series_key: petrol_lemon
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: lemon
+
+  "Liquefied Petroleum Gas (LPG)":
+    series_key: lpg
+    fuel_family: lpg
+    unit: ton
+    include_in_build: true
+    grade: standard
+
+  "Mazut Oil":
+    series_key: mazut_oil
+    fuel_family: fuel_oil
+    unit: ton
+    include_in_build: true
+    grade: heavy

@@ -92,8 +92,8 @@ def build_fx_table(
     start_date = work["observation_date"].min()
     end_date = work["observation_date"].max()
 
-    cache = _load_cache(cache_path)
-    cache = cache[cache["currency"].isin(currencies)].copy()
+    full_cache = _load_cache(cache_path)
+    cache = full_cache[full_cache["currency"].isin(currencies)].copy()
     if (
         cache.empty
         or cache["date"].min() > start_date
@@ -103,10 +103,14 @@ def build_fx_table(
         if not fetched.empty:
             cache = pd.concat([cache, fetched], ignore_index=True)
             cache = cache.drop_duplicates(subset=["currency", "date"], keep="last")
-
-    if not cache.empty:
-        cache_path.parent.mkdir(parents=True, exist_ok=True)
-        cache.sort_values(["currency", "date"]).to_csv(cache_path, index=False)
+            # Merge new rates back into full cache (preserve other currencies)
+            other = full_cache[~full_cache["currency"].isin(currencies)]
+            full_cache = pd.concat([other, cache], ignore_index=True)
+            full_cache = full_cache.drop_duplicates(
+                subset=["currency", "date"], keep="last"
+            )
+            cache_path.parent.mkdir(parents=True, exist_ok=True)
+            full_cache.sort_values(["currency", "date"]).to_csv(cache_path, index=False)
 
     filled: list[pd.DataFrame] = []
     for currency in currencies:
