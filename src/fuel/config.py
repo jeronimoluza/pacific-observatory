@@ -33,6 +33,7 @@ class ProductSpec(BaseModel):
     include_in_build: bool = True
     grade: str | None = None
     octane_ron: int | None = None
+    label: str = ""
 
     @field_validator("fuel_family")
     @classmethod
@@ -160,15 +161,19 @@ def load_source_config(
     country_props = countries.get(country_slug, {})
 
     raw["country_slug"] = country_slug
-    raw["country_name"] = country_props.get("name", country_slug)
-    raw["iso3"] = country_props.get("iso3", "")
-    raw["currency"] = country_props.get("currency", "")
+    raw.setdefault("country_name", country_props.get("name", country_slug))
+    raw.setdefault("iso3", country_props.get("iso3", ""))
+    raw.setdefault("currency", country_props.get("currency", ""))
     raw["region"] = region
     raw["subregion"] = subregion
     raw["source"] = path.stem
     raw["config_path"] = str(path)
 
-    return FuelSourceConfig(**raw)
+    cfg = FuelSourceConfig(**raw)
+    for raw_name, spec in cfg.products.items():
+        if not spec.label:
+            spec.label = raw_name
+    return cfg
 
 
 def discover_fuel_configs(
@@ -220,16 +225,81 @@ def resolve_fetcher(cfg: FuelSourceConfig) -> callable:
         ) from exc
 
 
+def _build_global_registry(
+    source_key: str | None = None,
+    configs_dir: Path = _FUEL_CONFIGS_DIR,
+) -> dict[str, dict]:
+    """Build registry for _global sources (commodities, etc.).
+
+    These configs live under ``configs/_global/`` and don't follow the
+    region/subregion/country hierarchy.
+    """
+    global_dir = configs_dir / "_global"
+    if not global_dir.exists():
+        return {}
+
+    registry: dict[str, dict] = {}
+    for yaml_path in sorted(global_dir.glob("*.yaml")):
+        with open(yaml_path, encoding="utf-8") as f:
+            raw = yaml.safe_load(f)
+        if not isinstance(raw, dict):
+            continue
+        key = raw.get("source_key", yaml_path.stem)
+        if source_key and key != source_key:
+            continue
+
+        mod_path = f"fuel.fetchers.{raw['module']}"
+        try:
+            mod = importlib.import_module(mod_path)
+            fn = getattr(mod, raw["function"])
+        except Exception:
+            logger.exception("Failed to resolve _global fetcher: %s", key)
+            continue
+
+        fallback = raw.get("fallback_date", date(2021, 1, 1))
+        if isinstance(fallback, str):
+            fallback = date.fromisoformat(fallback)
+
+        registry[key] = {
+            "fn": fn,
+            "fallback_date": fallback,
+            "enabled": raw.get("enabled", True),
+            "full_refresh": raw.get("full_refresh", False),
+            "priority": raw.get("priority", 10),
+            "cadence": raw.get("cadence", "daily"),
+            "carry_forward": raw.get("carry_forward", False),
+            "country_slug": "",
+            "country_name": "Global",
+            "iso3": "",
+            "currency": "USD",
+            "region": "_global",
+            "subregion": "",
+            "source": yaml_path.stem,
+            "products": {},
+            "config_path": str(yaml_path),
+            "source_key": key,
+            "url": raw.get("url", ""),
+        }
+    return registry
+
+
 def build_fuel_registry(
     region: str | None = None,
     subregion: str | None = None,
     country: str | None = None,
     source_key: str | None = None,
+    include_global: bool = False,
 ) -> dict[str, dict]:
     """Build a registry of source_key → {fn, fallback_date, enabled, ...}.
 
     If source_key is given, only that source is included.
+    Pass ``region="global"`` to load commodity sources from ``_global/``.
+    Pass ``include_global=True`` to auto-include global commodity sources
+    alongside region-specific sources.
     """
+    if region == "global":
+        return _build_global_registry(source_key=source_key)
+
     configs = load_all_source_configs(region, subregion, country)
 
     if source_key:
@@ -263,4 +333,9 @@ def build_fuel_registry(
             "source_key": key,
             "url": cfg.url,
         }
+
+    if include_global and not source_key:
+        global_reg = _build_global_registry()
+        registry.update(global_reg)
+
     return registry

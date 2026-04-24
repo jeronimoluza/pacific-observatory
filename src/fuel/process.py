@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import date
 from pathlib import Path
 
 import click
@@ -45,6 +46,7 @@ _PRODUCT_COLUMNS = [
     "iso3",
     "currency",
     "series_key",
+    "label",
     "fuel_family",
     "unit",
     "price_local",
@@ -94,6 +96,8 @@ def _normalize_price(price_local: float, spec: ProductSpec) -> tuple[float, str]
     if family == "lpg":
         if unit == "kilogram":
             quantity = amount
+        elif unit == "ton":
+            quantity = amount * 1000.0
         elif unit == "pound":
             quantity = amount * 0.45359237
         else:
@@ -139,6 +143,7 @@ def _load_source_frame(entry: dict, data_dir: Path = DATA_DIR) -> pd.DataFrame:
         return df
 
     df["series_key"] = df["product_spec"].map(lambda spec: spec.series_key)
+    df["label"] = df["product_spec"].map(lambda spec: spec.label or spec.series_key)
     df["fuel_family"] = df["product_spec"].map(lambda spec: spec.fuel_family)
     normalized = df.apply(
         lambda row: _normalize_price(float(row["price_local"]), row["product_spec"]),
@@ -175,6 +180,7 @@ def _collapse_source_rows(df: pd.DataFrame) -> pd.DataFrame:
         "carry_forward",
         "observation_date",
         "series_key",
+        "label",
         "fuel_family",
         "unit",
     ]
@@ -191,6 +197,7 @@ def _collapse_source_rows(df: pd.DataFrame) -> pd.DataFrame:
 def _expand_with_carry_forward(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return df
+    today = pd.Timestamp(date.today()).normalize()
     rows: list[dict[str, object]] = []
     group_cols = ["country_slug", "source_key", "series_key"]
     for _, group in df.groupby(group_cols, dropna=False, sort=False):
@@ -206,6 +213,7 @@ def _expand_with_carry_forward(df: pd.DataFrame) -> pd.DataFrame:
                         ordered.iloc[idx + 1]["observation_date"]
                     ).normalize()
                     end = min(end, next_date - pd.Timedelta(days=1))
+                end = min(end, today)
             for obs_date in pd.date_range(start, end, freq="D"):
                 item = row.to_dict()
                 item["observation_date"] = obs_date
@@ -245,6 +253,7 @@ def _resolve_overlaps(df: pd.DataFrame) -> pd.DataFrame:
                 "currency": key[5],
                 "observation_date": pd.Timestamp(key[6]).strftime("%Y-%m-%d"),
                 "series_key": key[7],
+                "label": best["label"].iloc[0] if "label" in best.columns else key[7],
                 "fuel_family": best["fuel_family"].iloc[0],
                 "unit": best["unit"].iloc[0],
                 "price_local": round(best["price_local"].mean(), 6),
@@ -370,11 +379,14 @@ def run_build(
     results = []
     for country_slug, entries in sorted(countries.items()):
         click.echo(f"Building fuel outputs for {country_slug}...")
-        result = build_country_outputs(
-            entries,
-            data_dir=data_dir,
-            outputs_dir=outputs_dir,
-            fx_cache_path=fx_cache_path,
-        )
-        results.append(result)
+        try:
+            result = build_country_outputs(
+                entries,
+                data_dir=data_dir,
+                outputs_dir=outputs_dir,
+                fx_cache_path=fx_cache_path,
+            )
+            results.append(result)
+        except Exception:
+            logger.exception("Failed to build %s — skipping", country_slug)
     return results

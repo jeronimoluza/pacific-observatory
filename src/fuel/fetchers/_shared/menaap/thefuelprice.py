@@ -112,6 +112,27 @@ _COUNTRIES: dict[str, dict] = {
         "source_key": "tfp_tn_monthly",
         "unit": "L",
     },
+    "kw": {
+        "name": "Kuwait",
+        "iso3": "KWT",
+        "currency": "KWD",
+        "source_key": "tfp_kw_monthly",
+        "unit": "L",
+    },
+    "bh": {
+        "name": "Bahrain",
+        "iso3": "BHR",
+        "currency": "BHD",
+        "source_key": "tfp_bh_monthly",
+        "unit": "L",
+    },
+    "qa": {
+        "name": "Qatar",
+        "iso3": "QAT",
+        "currency": "QAR",
+        "source_key": "tfp_qa_monthly",
+        "unit": "L",
+    },
 }
 
 
@@ -290,3 +311,6 @@ fetch_tfp_dz = _make_fetcher("dz")
 fetch_tfp_ly = _make_fetcher("ly")
 fetch_tfp_ma = _make_fetcher("ma")
 fetch_tfp_tn = _make_fetcher("tn")
+fetch_tfp_kw = _make_fetcher("kw")
+fetch_tfp_bh = _make_fetcher("bh")
+fetch_tfp_qa = _make_fetcher("qa")

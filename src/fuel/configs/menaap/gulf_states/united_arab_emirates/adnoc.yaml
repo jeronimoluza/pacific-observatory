@@ -1,5 +1,5 @@
 source_key: adnoc_monthly
-module: menaap.gulf_states.uae.adnoc
+module: menaap.gulf_states.united_arab_emirates.adnoc
 function: fetch_adnoc
 url: https://www.adnocdistribution.ae/en/consumer-fuel
 fallback_date: 2023-05-01
@@ -78,7 +78,7 @@ products:
   "Fast & Ultra-Fast charging up to 180kW*":
     fuel_family: electricity_ev
     unit: kw
-    include_in_build: true
+    include_in_build: false
     grade: fast_charge
     series_key: ev_fast_charge
   "Overstay (80% SOC & 40 mins of charging)*":
@@ -87,3 +87,39 @@ products:
     include_in_build: false
     grade: overstay
     series_key: ev_overstay
+  "Basic (up to 60 kW)":
+    fuel_family: electricity_ev
+    unit: kw
+    include_in_build: false
+    grade: basic_charge
+    series_key: ev_basic_charge
+  "Fast (at 180 kW)":
+    fuel_family: electricity_ev
+    unit: kw
+    include_in_build: false
+    grade: fast_180kw
+    series_key: ev_fast_180kw
+  "Fast (up to 175 kW)":
+    fuel_family: electricity_ev
+    unit: kw
+    include_in_build: false
+    grade: fast_175kw
+    series_key: ev_fast_175kw
+  "Fast up to 90kW*":
+    fuel_family: electricity_ev
+    unit: kw
+    include_in_build: false
+    grade: fast_90kw
+    series_key: ev_fast_90kw
+  "Super fast up to 180kW (Dubai only)":
+    fuel_family: electricity_ev
+    unit: kw
+    include_in_build: false
+    grade: superfast_180kw_dubai
+    series_key: ev_superfast_180kw_dubai
+  "Super fast up to 180kW*":
+    fuel_family: electricity_ev
+    unit: kw
+    include_in_build: false
+    grade: superfast_180kw
+    series_key: ev_superfast_180kw
