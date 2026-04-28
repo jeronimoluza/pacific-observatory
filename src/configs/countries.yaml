@@ -10,6 +10,12 @@ albania:
   currency: ALL
   languages: [en]
 
+american_samoa:
+  name: American Samoa
+  iso3: ASM
+  currency: USD
+  languages: [en, samoan]
+
 andorra:
   name: Andorra
   iso3: AND
@@ -57,6 +63,12 @@ bosnia_and_herzegovina:
   iso3: BIH
   currency: BAM
   languages: [en]
+
+brunei_darussalam:
+  name: Brunei Darussalam
+  iso3: BRN
+  currency: BND
+  languages: [en, malay]
 
 bulgaria:
   name: Bulgaria
@@ -178,6 +190,12 @@ guam:
   currency: USD
   languages: [en]
 
+hong_kong_sar_china:
+  name: "Hong Kong SAR, China"
+  iso3: HKG
+  currency: HKD
+  languages: [en, chinese_traditional]
+
 hungary:
   name: Hungary
   iso3: HUN
@@ -226,6 +244,18 @@ kazakhstan:
   currency: KZT
   languages: [en]
 
+kiribati:
+  name: Kiribati
+  iso3: KIR
+  currency: AUD
+  languages: [en]
+
+korea_dem_peoples_rep:
+  name: "Korea, Dem. People's Rep."
+  iso3: PRK
+  currency: KPW
+  languages: [en, korean]
+
 kosovo:
   name: Kosovo
   iso3: XKX
@@ -268,6 +298,12 @@ luxembourg:
   currency: EUR
   languages: [en]
 
+macao_sar_china:
+  name: "Macao SAR, China"
+  iso3: MAC
+  currency: MOP
+  languages: [en, chinese_traditional]
+
 malaysia:
   name: Malaysia
   iso3: MYS
@@ -285,6 +321,12 @@ marshall_islands:
   iso3: MHL
   currency: USD
   languages: [en, marshallese]
+
+micronesia_fed_sts:
+  name: "Micronesia, Fed. Sts."
+  iso3: FSM
+  currency: USD
+  languages: [en]
 
 moldova:
   name: Moldova
@@ -316,6 +358,12 @@ myanmar:
   currency: MMK
   languages: [en]
 
+nauru:
+  name: Nauru
+  iso3: NRU
+  currency: AUD
+  languages: [en]
+
 netherlands:
   name: Netherlands
   iso3: NLD
@@ -338,6 +386,12 @@ north_macedonia:
   name: North Macedonia
   iso3: MKD
   currency: MKD
+  languages: [en]
+
+northern_mariana_islands:
+  name: Northern Mariana Islands
+  iso3: MNP
+  currency: USD
   languages: [en]
 
 norway:
@@ -453,6 +507,12 @@ switzerland:
   iso3: CHE
   currency: CHF
   languages: [en]
+
+taiwan_china:
+  name: "Taiwan, China"
+  iso3: TWN
+  currency: TWD
+  languages: [en, chinese_traditional]
 
 tajikistan:
   name: Tajikistan
@@ -658,4 +718,586 @@ yemen:
   name: "Yemen, Rep."
   iso3: YEM
   currency: YER
+  languages: [en]
+
+# --- SAR: South Asia ---
+
+bangladesh:
+  name: Bangladesh
+  iso3: BGD
+  currency: BDT
+  languages: [en, bengali]
+
+bhutan:
+  name: Bhutan
+  iso3: BTN
+  currency: BTN
+  languages: [en, dzongkha]
+
+india:
+  name: India
+  iso3: IND
+  currency: INR
+  languages: [en, hindi]
+
+maldives:
+  name: Maldives
+  iso3: MDV
+  currency: MVR
+  languages: [en, dhivehi]
+
+nepal:
+  name: Nepal
+  iso3: NPL
+  currency: NPR
+  languages: [en, nepali]
+
+sri_lanka:
+  name: Sri Lanka
+  iso3: LKA
+  currency: LKR
+  languages: [en, sinhala, tamil]
+
+# --- SSA: Sub-Saharan Africa ---
+
+angola:
+  name: Angola
+  iso3: AGO
+  currency: AOA
+  languages: [en, portuguese]
+
+benin:
+  name: Benin
+  iso3: BEN
+  currency: XOF
+  languages: [en, fr]
+
+botswana:
+  name: Botswana
+  iso3: BWA
+  currency: BWP
+  languages: [en]
+
+burkina_faso:
+  name: Burkina Faso
+  iso3: BFA
+  currency: XOF
+  languages: [en, fr]
+
+burundi:
+  name: Burundi
+  iso3: BDI
+  currency: BIF
+  languages: [en, fr]
+
+cabo_verde:
+  name: Cabo Verde
+  iso3: CPV
+  currency: CVE
+  languages: [en, portuguese]
+
+cameroon:
+  name: Cameroon
+  iso3: CMR
+  currency: XAF
+  languages: [en, fr]
+
+central_african_republic:
+  name: Central African Republic
+  iso3: CAF
+  currency: XAF
+  languages: [en, fr]
+
+chad:
+  name: Chad
+  iso3: TCD
+  currency: XAF
+  languages: [en, fr, arabic]
+
+comoros:
+  name: Comoros
+  iso3: COM
+  currency: KMF
+  languages: [en, fr, arabic]
+
+congo_dem_rep:
+  name: "Congo, Dem. Rep."
+  iso3: COD
+  currency: CDF
+  languages: [en, fr, swahili]
+
+congo_rep:
+  name: "Congo, Rep."
+  iso3: COG
+  currency: XAF
+  languages: [en, fr]
+
+cote_divoire:
+  name: Cote d'Ivoire
+  iso3: CIV
+  currency: XOF
+  languages: [en, fr]
+
+equatorial_guinea:
+  name: Equatorial Guinea
+  iso3: GNQ
+  currency: XAF
+  languages: [en, es, fr]
+
+eritrea:
+  name: Eritrea
+  iso3: ERI
+  currency: ERN
+  languages: [en, arabic]
+
+eswatini:
+  name: Eswatini
+  iso3: SWZ
+  currency: SZL
+  languages: [en]
+
+ethiopia:
+  name: Ethiopia
+  iso3: ETH
+  currency: ETB
+  languages: [en, amharic]
+
+gabon:
+  name: Gabon
+  iso3: GAB
+  currency: XAF
+  languages: [en, fr]
+
+gambia:
+  name: "Gambia, The"
+  iso3: GMB
+  currency: GMD
+  languages: [en]
+
+ghana:
+  name: Ghana
+  iso3: GHA
+  currency: GHS
+  languages: [en]
+
+guinea:
+  name: Guinea
+  iso3: GIN
+  currency: GNF
+  languages: [en, fr]
+
+guinea_bissau:
+  name: Guinea-Bissau
+  iso3: GNB
+  currency: XOF
+  languages: [en, portuguese]
+
+kenya:
+  name: Kenya
+  iso3: KEN
+  currency: KES
+  languages: [en, swahili]
+
+lesotho:
+  name: Lesotho
+  iso3: LSO
+  currency: LSL
+  languages: [en]
+
+liberia:
+  name: Liberia
+  iso3: LBR
+  currency: LRD
+  languages: [en]
+
+madagascar:
+  name: Madagascar
+  iso3: MDG
+  currency: MGA
+  languages: [en, fr]
+
+malawi:
+  name: Malawi
+  iso3: MWI
+  currency: MWK
+  languages: [en]
+
+mali:
+  name: Mali
+  iso3: MLI
+  currency: XOF
+  languages: [en, fr]
+
+mauritania:
+  name: Mauritania
+  iso3: MRT
+  currency: MRU
+  languages: [en, fr, arabic]
+
+mauritius:
+  name: Mauritius
+  iso3: MUS
+  currency: MUR
+  languages: [en, fr]
+
+mozambique:
+  name: Mozambique
+  iso3: MOZ
+  currency: MZN
+  languages: [en, portuguese]
+
+namibia:
+  name: Namibia
+  iso3: NAM
+  currency: NAD
+  languages: [en, afrikaans]
+
+niger:
+  name: Niger
+  iso3: NER
+  currency: XOF
+  languages: [en, fr]
+
+nigeria:
+  name: Nigeria
+  iso3: NGA
+  currency: NGN
+  languages: [en]
+
+rwanda:
+  name: Rwanda
+  iso3: RWA
+  currency: RWF
+  languages: [en, fr, swahili]
+
+sao_tome_and_principe:
+  name: Sao Tome and Principe
+  iso3: STP
+  currency: STN
+  languages: [en, portuguese]
+
+senegal:
+  name: Senegal
+  iso3: SEN
+  currency: XOF
+  languages: [en, fr]
+
+seychelles:
+  name: Seychelles
+  iso3: SYC
+  currency: SCR
+  languages: [en, fr]
+
+sierra_leone:
+  name: Sierra Leone
+  iso3: SLE
+  currency: SLE
+  languages: [en]
+
+somalia:
+  name: Somalia
+  iso3: SOM
+  currency: SOS
+  languages: [en, arabic]
+
+south_africa:
+  name: South Africa
+  iso3: ZAF
+  currency: ZAR
+  languages: [en, afrikaans]
+
+south_sudan:
+  name: South Sudan
+  iso3: SSD
+  currency: SSP
+  languages: [en, arabic]
+
+sudan:
+  name: Sudan
+  iso3: SDN
+  currency: SDG
+  languages: [en, arabic]
+
+tanzania:
+  name: Tanzania
+  iso3: TZA
+  currency: TZS
+  languages: [en, swahili]
+
+togo:
+  name: Togo
+  iso3: TGO
+  currency: XOF
+  languages: [en, fr]
+
+uganda:
+  name: Uganda
+  iso3: UGA
+  currency: UGX
+  languages: [en, swahili]
+
+zambia:
+  name: Zambia
+  iso3: ZMB
+  currency: ZMW
+  languages: [en]
+
+zimbabwe:
+  name: Zimbabwe
+  iso3: ZWE
+  currency: ZWG
+  languages: [en]
+
+# --- LAC: Latin America & Caribbean ---
+
+antigua_and_barbuda:
+  name: Antigua and Barbuda
+  iso3: ATG
+  currency: XCD
+  languages: [en]
+
+argentina:
+  name: Argentina
+  iso3: ARG
+  currency: ARS
+  languages: [en, es]
+
+aruba:
+  name: Aruba
+  iso3: ABW
+  currency: AWG
+  languages: [en, nl]
+
+bahamas_the:
+  name: "Bahamas, The"
+  iso3: BHS
+  currency: BSD
+  languages: [en]
+
+barbados:
+  name: Barbados
+  iso3: BRB
+  currency: BBD
+  languages: [en]
+
+belize:
+  name: Belize
+  iso3: BLZ
+  currency: BZD
+  languages: [en]
+
+bolivia:
+  name: Bolivia
+  iso3: BOL
+  currency: BOB
+  languages: [en, es]
+
+brazil:
+  name: Brazil
+  iso3: BRA
+  currency: BRL
+  languages: [en, portuguese]
+
+british_virgin_islands:
+  name: British Virgin Islands
+  iso3: VGB
+  currency: USD
+  languages: [en]
+
+cayman_islands:
+  name: Cayman Islands
+  iso3: CYM
+  currency: KYD
+  languages: [en]
+
+chile:
+  name: Chile
+  iso3: CHL
+  currency: CLP
+  languages: [en, es]
+
+colombia:
+  name: Colombia
+  iso3: COL
+  currency: COP
+  languages: [en, es]
+
+costa_rica:
+  name: Costa Rica
+  iso3: CRI
+  currency: CRC
+  languages: [en, es]
+
+cuba:
+  name: Cuba
+  iso3: CUB
+  currency: CUP
+  languages: [en, es]
+
+curacao:
+  name: Curacao
+  iso3: CUW
+  currency: ANG
+  languages: [en, nl]
+
+dominica:
+  name: Dominica
+  iso3: DMA
+  currency: XCD
+  languages: [en]
+
+dominican_republic:
+  name: Dominican Republic
+  iso3: DOM
+  currency: DOP
+  languages: [en, es]
+
+ecuador:
+  name: Ecuador
+  iso3: ECU
+  currency: USD
+  languages: [en, es]
+
+el_salvador:
+  name: El Salvador
+  iso3: SLV
+  currency: USD
+  languages: [en, es]
+
+grenada:
+  name: Grenada
+  iso3: GRD
+  currency: XCD
+  languages: [en]
+
+guatemala:
+  name: Guatemala
+  iso3: GTM
+  currency: GTQ
+  languages: [en, es]
+
+guyana:
+  name: Guyana
+  iso3: GUY
+  currency: GYD
+  languages: [en]
+
+haiti:
+  name: Haiti
+  iso3: HTI
+  currency: HTG
+  languages: [en, fr]
+
+honduras:
+  name: Honduras
+  iso3: HND
+  currency: HNL
+  languages: [en, es]
+
+jamaica:
+  name: Jamaica
+  iso3: JAM
+  currency: JMD
+  languages: [en]
+
+mexico:
+  name: Mexico
+  iso3: MEX
+  currency: MXN
+  languages: [en, es]
+
+nicaragua:
+  name: Nicaragua
+  iso3: NIC
+  currency: NIO
+  languages: [en, es]
+
+panama:
+  name: Panama
+  iso3: PAN
+  currency: PAB
+  languages: [en, es]
+
+paraguay:
+  name: Paraguay
+  iso3: PRY
+  currency: PYG
+  languages: [en, es]
+
+peru:
+  name: Peru
+  iso3: PER
+  currency: PEN
+  languages: [en, es]
+
+puerto_rico:
+  name: Puerto Rico
+  iso3: PRI
+  currency: USD
+  languages: [en, es]
+
+sint_maarten_dutch_part:
+  name: Sint Maarten (Dutch part)
+  iso3: SXM
+  currency: ANG
+  languages: [en, nl]
+
+st_kitts_and_nevis:
+  name: St. Kitts and Nevis
+  iso3: KNA
+  currency: XCD
+  languages: [en]
+
+st_lucia:
+  name: St. Lucia
+  iso3: LCA
+  currency: XCD
+  languages: [en]
+
+st_martin_french_part:
+  name: St. Martin (French part)
+  iso3: MAF
+  currency: EUR
+  languages: [en, fr]
+
+st_vincent_and_the_grenadines:
+  name: St. Vincent and the Grenadines
+  iso3: VCT
+  currency: XCD
+  languages: [en]
+
+suriname:
+  name: Suriname
+  iso3: SUR
+  currency: SRD
+  languages: [en, nl]
+
+trinidad_and_tobago:
+  name: Trinidad and Tobago
+  iso3: TTO
+  currency: TTD
+  languages: [en]
+
+turks_and_caicos_islands:
+  name: Turks and Caicos Islands
+  iso3: TCA
+  currency: USD
+  languages: [en]
+
+uruguay:
+  name: Uruguay
+  iso3: URY
+  currency: UYU
+  languages: [en, es]
+
+venezuela_rb:
+  name: "Venezuela, RB"
+  iso3: VEN
+  currency: VES
+  languages: [en, es]
+
+virgin_islands_us:
+  name: Virgin Islands (U.S.)
+  iso3: VIR
+  currency: USD
   languages: [en]

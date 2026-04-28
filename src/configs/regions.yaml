@@ -24,19 +24,28 @@ eap:
       name: East Asia
       countries:
         - china
+        - hong_kong_sar_china
         - japan
-        - south_korea
+        - korea_dem_peoples_rep
+        - macao_sar_china
         - mongolia
+        - south_korea
+        - taiwan_china
     pacific_islands:
       name: Pacific Islands
       countries:
+        - american_samoa
         - australia
         - fiji
         - french_polynesia
         - guam
+        - kiribati
         - marshall_islands
+        - micronesia_fed_sts
+        - nauru
         - new_caledonia
         - new_zealand
+        - northern_mariana_islands
         - palau
         - papua_new_guinea
         - samoa
@@ -47,6 +56,7 @@ eap:
     southeast_asia:
       name: Southeast Asia
       countries:
+        - brunei_darussalam
         - cambodia
         - indonesia
         - lao_pdr
@@ -188,3 +198,135 @@ menaap:
       name: Pakistan
       countries:
         - pakistan
+
+sar:
+  name: South Asia
+  subregions:
+    south_asia:
+      name: South Asia
+      countries:
+        - bangladesh
+        - bhutan
+        - india
+        - maldives
+        - nepal
+        - sri_lanka
+
+ssa:
+  name: Sub-Saharan Africa
+  subregions:
+    central_africa:
+      name: Central Africa
+      countries:
+        - cameroon
+        - central_african_republic
+        - chad
+        - congo_dem_rep
+        - congo_rep
+        - equatorial_guinea
+        - gabon
+        - sao_tome_and_principe
+    east_africa:
+      name: East Africa
+      countries:
+        - burundi
+        - comoros
+        - eritrea
+        - ethiopia
+        - kenya
+        - madagascar
+        - malawi
+        - mauritius
+        - mozambique
+        - rwanda
+        - seychelles
+        - somalia
+        - south_sudan
+        - sudan
+        - tanzania
+        - uganda
+    southern_africa:
+      name: Southern Africa
+      countries:
+        - angola
+        - botswana
+        - eswatini
+        - lesotho
+        - namibia
+        - south_africa
+        - zambia
+        - zimbabwe
+    west_africa:
+      name: West Africa
+      countries:
+        - benin
+        - burkina_faso
+        - cabo_verde
+        - cote_divoire
+        - gambia
+        - ghana
+        - guinea
+        - guinea_bissau
+        - liberia
+        - mali
+        - mauritania
+        - niger
+        - nigeria
+        - senegal
+        - sierra_leone
+        - togo
+
+lac:
+  name: Latin America & Caribbean
+  subregions:
+    caribbean:
+      name: Caribbean
+      countries:
+        - antigua_and_barbuda
+        - aruba
+        - bahamas_the
+        - barbados
+        - british_virgin_islands
+        - cayman_islands
+        - cuba
+        - curacao
+        - dominica
+        - dominican_republic
+        - grenada
+        - haiti
+        - jamaica
+        - puerto_rico
+        - sint_maarten_dutch_part
+        - st_kitts_and_nevis
+        - st_lucia
+        - st_martin_french_part
+        - st_vincent_and_the_grenadines
+        - trinidad_and_tobago
+        - turks_and_caicos_islands
+        - virgin_islands_us
+    central_america:
+      name: Central America
+      countries:
+        - belize
+        - costa_rica
+        - el_salvador
+        - guatemala
+        - honduras
+        - mexico
+        - nicaragua
+        - panama
+    south_america:
+      name: South America
+      countries:
+        - argentina
+        - bolivia
+        - brazil
+        - chile
+        - colombia
+        - ecuador
+        - guyana
+        - paraguay
+        - peru
+        - suriname
+        - uruguay
+        - venezuela_rb
