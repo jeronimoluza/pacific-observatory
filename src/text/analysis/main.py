@@ -1,5 +1,4 @@
 import argparse
-import asyncio
 import json
 import sys
 import time
@@ -26,12 +25,12 @@ from src.text.analysis.baseline import (  # noqa: E402
     has_modern_baseline_window,
     source_key_for_news_path,
 )
+from src.text.analysis.orchestrator import process_unit_v2  # noqa: E402
 from src.text.analysis.runners import (  # noqa: E402
     run_full_epu,
     run_full_groups_only,
     run_incremental_epu,
 )
-from src.text.analysis.translate_keywords import translate_keywords  # noqa: E402
 from src.text.analysis.utils import load_all_groups  # noqa: E402
 
 PROJECT_ROOT = _PROJECT_ROOT
@@ -47,11 +46,11 @@ REQUIRED_COLUMNS = {"url", "date", "title", "body", "_scraped_at"}
 # ── Validation ────────────────────────────────────────────────────────
 
 
-def _validate_news_files(news_dirs: list[Path], yes: bool = False) -> list[Path]:
-    """Validate news.csv files: check required columns, count NaN, ask to drop.
+def _validate_news_files(news_dirs: list[Path]) -> list[Path]:
+    """Validate news.csv files: check required columns, count NaN, warn loudly.
 
-    Returns the list of valid news.csv paths (unchanged — NaN rows are dropped
-    during EPU processing, not here, but the user is warned).
+    NaN rows are dropped during EPU processing, not here. Returns the list of
+    valid news.csv paths unchanged.
     """
     if not news_dirs:
         return news_dirs
@@ -97,18 +96,8 @@ def _validate_news_files(news_dirs: list[Path], yes: bool = False) -> list[Path]
         pct = (nan_rows / total_rows * 100) if total_rows > 0 else 0
         print(
             f"  {nan_rows} rows have missing date or body "
-            f"({pct:.1f}% of {total_rows} total)."
+            f"({pct:.1f}% of {total_rows} total). Dropping before EPU calc."
         )
-        if not yes:
-            import click
-
-            click.confirm(
-                "  Drop these rows before calculating EPU?",
-                default=True,
-                abort=True,
-            )
-        else:
-            print("  Auto-dropping rows with missing date or body (--yes).")
 
     return news_dirs
 
@@ -117,7 +106,6 @@ def _filter_sources_for_baseline(
     news_dirs: list[Path],
     cutoff_start_date: str | None,
     cutoff_end_date: str | None,
-    yes: bool = False,
 ) -> list[Path]:
     """Filter out sources with no usable observations inside the baseline window.
 
@@ -456,7 +444,6 @@ def process_unit(
     recalculate_params: bool = False,
     redo_topics: set[str] | None = None,
     redo_actors: set[str] | None = None,
-    yes: bool = False,
     source_languages: dict[str, str] | None = None,
 ):
     """Process all EPU and uncertainty attribution indices for a unit.
@@ -507,7 +494,7 @@ def process_unit(
         print(f"  total: {total_articles} articles")
 
     # ── Data validation ──────────────────────────────────────────────
-    news_dirs = _validate_news_files(news_dirs, yes=yes)
+    news_dirs = _validate_news_files(news_dirs)
     if not news_dirs:
         print(f"  No valid news files for {name}. Skipping.")
         return
@@ -515,7 +502,6 @@ def process_unit(
         news_dirs,
         cutoff_start_date=cutoff_start_date,
         cutoff_end_date=cutoff_end_date,
-        yes=yes,
     )
     if not news_dirs:
         print(f"  No valid baseline sources remain for {name}. Skipping.")
@@ -788,7 +774,7 @@ def run_analysis(
     redo_topics: set[str] | None = None,
     redo_actors: set[str] | None = None,
     exclude_countries: set[str] | None = None,
-    yes: bool = False,
+    max_parallel_sources: int = 1,
 ):
     """Run EPU analysis for matching units (countries + aggregates).
 
@@ -800,12 +786,18 @@ def run_analysis(
     cutoff_start_date : inclusive baseline start date for standardization.
     cutoff_end_date : inclusive baseline end date for standardization.
     subset_condition : pandas query filter.
-    recalculate_params : force recalculation of params.json.
-    redo_topics : set of topic keys to recompute full-history.
-    redo_actors : set of actor keys to recompute full-history.
+    recalculate_params : retained for back-compat; the new pipeline always
+        re-annotates when source set or keyword files changed, regardless.
+    redo_topics, redo_actors : retained for back-compat; new pipeline derives
+        topic/actor EPUs from source_counts.parquet without separate cache
+        invalidation, so these flags are no-ops.
     exclude_countries : set of country names to exclude.
-    yes : auto-confirm interactive prompts.
+    max_parallel_sources : bound on concurrent per-source annotation
+        (default 1, sequential).
     """
+    if max_parallel_sources < 1:
+        raise ValueError("max_parallel_sources must be >= 1")
+
     if subset_condition is None:
         today = pd.Timestamp.today().strftime("%Y-%m-%d")
         subset_condition = f"date >= '2015-01-01' and date <= '{today}'"
@@ -833,57 +825,141 @@ def run_analysis(
         print("No units with news data found.")
         return
 
-    print("\nChecking keyword translations...")
-    asyncio.run(translate_keywords())
+    from rich.console import Console
+
+    from src.text.analysis.build_progress import (
+        count_csv_rows,
+        make_build_progress,
+    )
+    from src.text.analysis.build_report import (
+        BuildSummary,
+        UnitRow,
+        setup_build_logger,
+    )
 
     total = len(units)
-    start_time = time.time()
     mode_str = "rebuild" if recalculate_params else "auto"
+
+    console = Console()
+    summary = BuildSummary()
+    logger = setup_build_logger(PROJECT_ROOT / "logs")
 
     country_units = [u for u in units if u["level"] == "country"]
     agg_units = [u for u in units if u["level"] != "country"]
+    logger.info(
+        "build start: %d units (%s); countries=%s; aggregates=%s; baseline=%s",
+        total,
+        mode_str,
+        ", ".join(u["name"] for u in country_units),
+        ", ".join(u["name"] for u in agg_units),
+        format_baseline_window(cutoff_start_date, cutoff_end_date),
+    )
+    console.print(
+        f"\nEPU build — {total} unit(s) ({mode_str}); "
+        f"baseline {format_baseline_window(cutoff_start_date, cutoff_end_date)}"
+    )
 
-    print(f"\n{'=' * 60}")
-    print(f"EPU Analysis — {total} unit(s) ({mode_str})")
-    print(f"  Countries: {', '.join(u['name'] for u in country_units)}")
-    if agg_units:
-        print(f"  Aggregates: {', '.join(u['name'] for u in agg_units)}")
-    print("  Baseline: " + format_baseline_window(cutoff_start_date, cutoff_end_date))
-    print(f"{'=' * 60}")
+    file_articles: dict[Path, int] = {}
+    for unit in units:
+        for fp in unit["news_dirs"]:
+            if fp not in file_articles:
+                file_articles[fp] = count_csv_rows(fp)
+    unit_articles: dict[str, int] = {
+        u["name"]: sum(file_articles.get(fp, 0) for fp in u["news_dirs"]) for u in units
+    }
+    total_articles_all = sum(
+        unit_articles[u["name"]] for u in units if u["level"] == "country"
+    )
 
-    for i, unit in enumerate(units):
-        unit_start = time.time()
-        elapsed = time.time() - start_time
-        if i > 0:
-            avg = elapsed / i
-            remaining = (total - i) * avg
-            eta_str = f"ETA: {int(remaining // 60)}m {int(remaining % 60)}s"
-        else:
-            eta_str = ""
+    progress = make_build_progress(console)
+    build_start = time.time()
+    articles_done_completed = 0
 
-        eta_suffix = f" — {eta_str}" if eta_str else ""
-        print(f"\n[{i + 1}/{total}] {unit['name']}{eta_suffix}")
-        try:
-            process_unit(
-                name=unit["name"],
-                news_dirs=unit["news_dirs"],
-                output_dir=unit["output_dir"],
-                cache_dir=unit["cache_dir"],
-                cutoff_start_date=cutoff_start_date,
-                cutoff_end_date=cutoff_end_date,
-                subset_condition=subset_condition,
-                recalculate_params=recalculate_params,
-                redo_topics=redo_topics,
-                redo_actors=redo_actors,
-                yes=yes,
-                source_languages=unit.get("source_languages"),
+    with progress:
+        task_id = progress.add_task(
+            "build",
+            total=1,
+            unit_idx=0,
+            unit_total=total,
+            unit_name="(starting)",
+            build_start=build_start,
+            articles_done_completed=0,
+            total_articles_all=total_articles_all,
+            count_in_total=True,
+        )
+        for i, unit in enumerate(units):
+            unit_total_articles = max(1, unit_articles.get(unit["name"], 0))
+            is_country = unit["level"] == "country"
+            progress.reset(
+                task_id,
+                total=unit_total_articles,
+                unit_idx=i + 1,
+                unit_total=total,
+                unit_name=unit["name"],
+                build_start=build_start,
+                articles_done_completed=articles_done_completed,
+                total_articles_all=total_articles_all,
+                count_in_total=is_country,
             )
-            elapsed_unit = time.time() - unit_start
-            print(f"  done ({elapsed_unit:.1f}s)")
-        except Exception as e:
-            print(f"  FAILED: {e}")
-            print(f"    Skipping {unit['name']} due to error")
-            continue
+            unit_start = time.time()
+            row = UnitRow(
+                name=unit["name"],
+                level=unit["level"],
+                status="ok",
+                n_sources=len(unit.get("news_dirs", [])),
+            )
+
+            def _cb(n: int, _tid=task_id) -> None:
+                progress.update(_tid, advance=n)
+
+            try:
+                diag = process_unit_v2(
+                    name=unit["name"],
+                    level=unit["level"],
+                    news_dirs=unit["news_dirs"],
+                    output_dir=unit["output_dir"],
+                    cache_dir=unit["cache_dir"],
+                    cutoff_start_date=cutoff_start_date,
+                    cutoff_end_date=cutoff_end_date,
+                    subset_condition=subset_condition,
+                    source_languages=unit.get("source_languages") or {},
+                    max_parallel_sources=max_parallel_sources,
+                    data_root=DATA_ROOT,
+                    cache_root=CACHE_DIR,
+                    progress_cb=_cb,
+                    file_articles=file_articles,
+                )
+                row.status = diag.get("status", "ok")
+                row.mode = diag.get("mode", "unknown")
+                row.n_articles = int(diag.get("total_articles", 0) or 0)
+                for src_key, src_diag in (diag.get("sources") or {}).items():
+                    n_nan = int(src_diag.get("n_dropped_nan_body", 0) or 0)
+                    summary.add_nan_drop(unit["name"], src_key, n_nan)
+                if row.status == "skipped":
+                    summary.add_failure(unit["name"], diag.get("error") or "skipped")
+                logger.info(
+                    "unit done: %s (%s, %s, %d articles, %.1fs)",
+                    unit["name"],
+                    row.level,
+                    row.mode,
+                    row.n_articles,
+                    time.time() - unit_start,
+                )
+            except Exception as e:
+                row.status = "failed"
+                row.error = f"{type(e).__name__}: {e}"
+                summary.add_failure(unit["name"], row.error)
+                logger.exception("unit FAILED: %s", unit["name"])
+            row.runtime_s = time.time() - unit_start
+            summary.add_unit(row)
+            progress.update(task_id, completed=unit_total_articles)
+            if is_country:
+                articles_done_completed += unit_articles.get(unit["name"], 0)
+
+    summary.render_to_stdout(console)
+    report_path = summary.write_markdown(OUTPUT_DIR)
+    console.print(f"Build report written to {report_path}")
+    logger.info("build report written to %s", report_path)
 
 
 if __name__ == "__main__":
@@ -976,5 +1052,4 @@ if __name__ == "__main__":
         redo_topics=redo_topics,
         redo_actors=redo_actors,
         exclude_countries=exclude_countries,
-        yes=False,
     )
