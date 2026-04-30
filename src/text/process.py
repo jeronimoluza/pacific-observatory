@@ -46,22 +46,6 @@ def _validate_baseline_window(
     return cutoff_start_date, cutoff_end_date
 
 
-def _prompt_baseline_window() -> tuple[str | None, str | None]:
-    """Prompt the operator for a baseline window."""
-    click.echo("  Enter baseline window for standardization.")
-    cutoff_start_date = click.prompt(
-        "  Cutoff start date (YYYY-MM-DD, blank for open start)",
-        default="",
-        show_default=False,
-    )
-    cutoff_end_date = click.prompt(
-        "  Cutoff end date (YYYY-MM-DD, blank for today)",
-        default="",
-        show_default=False,
-    )
-    return _validate_baseline_window(cutoff_start_date, cutoff_end_date)
-
-
 def _requested_unit_names(units: list[dict]) -> tuple[list[str], list[str]]:
     """Split preview units into country and aggregate labels."""
     countries = [u["name"] for u in units if u.get("level") == "country"]
@@ -120,43 +104,10 @@ def _classify_units(
     return matching, rebuild
 
 
-def _resolve_baseline_window(
-    units: list[dict],
-    yes: bool,
-    cutoff_start_date: str | None,
-    cutoff_end_date: str | None,
-) -> tuple[str | None, str | None]:
-    """Resolve the requested invocation-wide baseline window."""
-    if cutoff_start_date is not None or cutoff_end_date is not None:
-        return _validate_baseline_window(cutoff_start_date, cutoff_end_date)
-
-    if yes:
-        raise click.ClickException(
-            "Non-interactive builds require --cutoff-start-date and/or --cutoff-end-date."
-        )
-
-    cached_windows = _inspect_cached_windows(units)
-    if len(cached_windows) == 1:
-        cached_start, cached_end = next(iter(cached_windows))
-        click.echo(
-            "  Cached baseline window: "
-            + format_baseline_window(cached_start, cached_end)
-        )
-        if click.confirm("  Reuse this baseline?", default=True):
-            return cached_start, cached_end
-    elif len(cached_windows) > 1:
-        click.echo("  Multiple cached baseline windows detected. Enter a new one.")
-        for start, end in sorted(cached_windows):
-            click.echo("   - " + format_baseline_window(start, end))
-
-    return _prompt_baseline_window()
-
-
 def run_build(
     region=None,
     subregion=None,
     country=None,
-    yes=False,
     cutoff_start_date=None,
     cutoff_end_date=None,
     rebuild=False,
@@ -186,11 +137,8 @@ def run_build(
         subregion=subregion,
         countries=list(countries) if country else None,
     )
-    cutoff_start_date, cutoff_end_date = _resolve_baseline_window(
-        preview_units,
-        yes=yes,
-        cutoff_start_date=cutoff_start_date,
-        cutoff_end_date=cutoff_end_date,
+    cutoff_start_date, cutoff_end_date = _validate_baseline_window(
+        cutoff_start_date, cutoff_end_date
     )
 
     matching_units: list[str] = []
@@ -201,16 +149,11 @@ def run_build(
             cutoff_start_date,
             cutoff_end_date,
         )
-        if matching_units and rebuild_units and not yes:
+        if matching_units and rebuild_units:
             click.echo()
             click.echo("  Units requiring full rebuild:")
             for unit_name in rebuild_units:
                 click.echo(f"   - {unit_name}")
-            click.confirm(
-                "  Continue with incremental builds for matching units and full rebuilds for the units above?",
-                default=True,
-                abort=True,
-            )
 
     _preview_countries, preview_aggregates = _requested_unit_names(preview_units)
 
@@ -230,9 +173,6 @@ def run_build(
         click.echo(f"  Full rebuild units: {len(rebuild_units)}")
     click.echo()
 
-    if not yes:
-        click.confirm("  Proceed?", abort=True)
-
     try:
         run_analysis(
             region=region,
@@ -241,7 +181,6 @@ def run_build(
             cutoff_start_date=cutoff_start_date,
             cutoff_end_date=cutoff_end_date,
             recalculate_params=rebuild,
-            yes=yes,
         )
     except ImportError:
         click.echo("  Analysis module not yet migrated. Skipping.")

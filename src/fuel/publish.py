@@ -385,7 +385,6 @@ def run_publish(
     *,
     region: str | None = None,
     subregion: str | None = None,
-    yes: bool = False,
     data_dir: Path = _DATA_DIR,
     outputs_dir: Path = _OUTPUTS_DIR,
     cache_dir: Path = _REFERENCE_CACHE,
@@ -420,13 +419,8 @@ def run_publish(
         history_years = pub_cfg.get("dashboard_history_years", 3)
         region_label = pub_cfg.get("region_label", reg.upper())
 
-        if not yes:
-            names = ", ".join(c["country"] for c in countries)
-            click.echo(
-                f"Publishing {reg} dashboard ({len(countries)} countries: {names})"
-            )
-            if not click.confirm("Proceed?"):
-                continue
+        names = ", ".join(c["country"] for c in countries)
+        click.echo(f"Publishing {reg} dashboard ({len(countries)} countries: {names})")
 
         logger.info("Assembling data for %s ...", reg)
         data = assemble_publish_data(

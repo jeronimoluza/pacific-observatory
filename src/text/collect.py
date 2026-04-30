@@ -360,41 +360,23 @@ def display_plan(plan, max_pages=None, max_articles=None, rebuild=False, region=
     click.echo()
 
 
-def _make_early_abort_prompt(yes: bool, newspaper: str):
-    """Build the early-abort prompt callback for a single source.
+def _make_early_abort_callback(newspaper: str):
+    """Build the early-abort callback for a single source.
 
-    The returned callable is assigned to `scraper.on_early_abort` and invoked
-    by the scraper when its mid-loop or end-of-loop early-abort gate fires
-    (i.e. articles_scraped == 0 after the threshold or end of loop).
-
-    Behavior:
-    - Under `--yes`, returns True (auto-continue). Per Q1=b, the user has
-      explicitly opted into noninteractive mode and `-y` is treated as
-      "yes to all confirmations" — including this one. Cron/CI runs will
-      let broken scrapes finish rather than fail fast.
-    - Otherwise, prompts via `click.confirm` with `default=False` so an
-      accidental Enter aborts. Returns the user's choice.
+    Assigned to `scraper.on_early_abort` so the scraper does not fail-fast
+    when its mid-loop or end-of-loop gate fires (articles_scraped == 0
+    after the threshold). Always continues; emits a warning so the
+    operator can spot a likely broken selector in the log.
     """
 
-    def _prompt(attempts: int) -> bool:
-        if yes:
-            click.echo(
-                f"\n  ⚠ {newspaper}: after {attempts} article attempts, 0 were "
-                f"successfully scraped. Selectors may be broken — continuing "
-                f"anyway because --yes was passed."
-            )
-            return True
-        # Newline separates the prompt from any tqdm progress bar that may
-        # still be on the same line.
-        click.echo("")
-        return click.confirm(
-            f"  ⚠ {newspaper}: after {attempts} article attempts, 0 were "
-            f"successfully scraped. Selectors may be broken. Continue scraping "
-            f"anyway?",
-            default=False,
+    def _continue(attempts: int) -> bool:
+        click.echo(
+            f"\n  ⚠ {newspaper}: after {attempts} article attempts, 0 were "
+            f"successfully scraped. Selectors may be broken — continuing anyway."
         )
+        return True
 
-    return _prompt
+    return _continue
 
 
 def _print_source_summary(results):
@@ -424,7 +406,6 @@ def run_collect(
     max_pages=None,
     max_articles=None,
     dry_run=False,
-    yes=False,
     rebuild=False,
     resume=False,
     list_sources=False,
@@ -455,9 +436,6 @@ def run_collect(
     if dry_run:
         click.echo("  Dry run -- no data collected.")
         return
-
-    if not yes:
-        click.confirm("  Proceed?", abort=True)
 
     # Import here to avoid errors when scraper code isn't migrated yet
     try:
@@ -532,9 +510,7 @@ def run_collect(
             # giving up on a source. Without this callback the scraper
             # would raise EarlyAbortError unconditionally; with it, the
             # user gets a chance to continue past the threshold.
-            scraper.on_early_abort = _make_early_abort_prompt(
-                yes=yes, newspaper=newspaper
-            )
+            scraper.on_early_abort = _make_early_abort_callback(newspaper=newspaper)
 
             # Override max_pages/max_articles if CLI flags set.
             # Must also patch the listing_strategy since it captured

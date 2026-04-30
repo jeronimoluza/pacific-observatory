@@ -38,7 +38,6 @@ python run.py text collect --country fiji                           # One countr
 python run.py text collect --source fiji_times                      # One configured newspaper key
 python run.py text collect --country fiji --max-pages 3             # Limit pages
 python run.py text collect --region eca --dry-run                   # Preview without scraping
-python run.py text collect -y                                       # Skip confirmation prompt
 ```
 
 | Flag | Description |
@@ -51,7 +50,6 @@ python run.py text collect -y                                       # Skip confi
 | `--max-articles` | Limit articles per newspaper |
 | `--dry-run` | Show plan without executing |
 | `--rebuild` | Full re-scrape, bypass URL dedup |
-| `--yes, -y` | Skip confirmation prompt |
 
 ### Build — compute EPU index
 
@@ -61,11 +59,12 @@ python run.py text build --subregion eastern_europe                 # All countr
 python run.py text build --region eap                               # All countries + all aggregates
 python run.py text build --country ukraine --rebuild                # Full recompute
 python run.py text build --country ukraine --rebuild --cutoff-start-date 2020-01-01 --cutoff-end-date 2022-12-31  # Custom baseline window
-python run.py text build -y                                         # Skip confirmation
 ```
 
 When `--country` is specified, only that country is processed (no aggregates).
 When `--subregion` or `--region` is specified, constituent countries + aggregates are built.
+
+A baseline window is required: pass `--cutoff-start-date` and/or `--cutoff-end-date`.
 
 | Flag | Description |
 |------|-------------|
@@ -75,7 +74,6 @@ When `--subregion` or `--region` is specified, constituent countries + aggregate
 | `--rebuild` | Force recalculation of params.json and all cached outputs |
 | `--cutoff-start-date` | Inclusive baseline start date (YYYY-MM-DD) for EPU standardization |
 | `--cutoff-end-date` | Inclusive baseline end date (YYYY-MM-DD) for EPU standardization |
-| `--yes, -y` | Skip confirmation prompt |
 
 ### Publish — generate dashboards
 
@@ -83,7 +81,6 @@ When `--subregion` or `--region` is specified, constituent countries + aggregate
 python run.py text publish                                          # All units → dashboard_data.json + HTML
 python run.py text publish --country ukraine                        # Filter to one country
 python run.py text publish --subregion eastern_europe               # One subregion
-python run.py text publish -y                                       # Skip confirmation
 ```
 
 Publish writes `outputs/text/dashboard_data.json` (all unit data + hierarchical tree), then
@@ -94,7 +91,6 @@ generates `outputs/text/small_dashboard_integrated.html` with a hierarchical reg
 | `--region, -r` | Filter by WB region slug |
 | `--subregion` | Filter by subregion slug |
 | `--country, -c` | Filter by country slug |
-| `--yes, -y` | Skip confirmation prompt |
 
 ## Structure
 

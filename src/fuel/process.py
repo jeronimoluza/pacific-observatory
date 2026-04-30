@@ -356,7 +356,6 @@ def run_build(
     region: str | None = None,
     subregion: str | None = None,
     country: str | None = None,
-    yes: bool = False,
     data_dir: Path = DATA_DIR,
     outputs_dir: Path = OUTPUTS_DIR,
     fx_cache_path: Path = DEFAULT_FX_CACHE,
@@ -371,10 +370,7 @@ def run_build(
     for entry in registry.values():
         countries.setdefault(entry["country_slug"], []).append(entry)
 
-    if not yes:
-        click.echo(f"Countries to build: {', '.join(sorted(countries))}")
-        if not click.confirm("Proceed?"):
-            raise SystemExit(0)
+    click.echo(f"Countries to build: {', '.join(sorted(countries))}")
 
     results = []
     for country_slug, entries in sorted(countries.items()):
