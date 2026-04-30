@@ -1,0 +1,42 @@
+name: Colombo Telegraph
+language: en
+country: sri_lanka
+base_url: https://www.colombotelegraph.com
+
+# Article HTML pages are gated by a JS AES challenge — pipeline cannot fetch them.
+# Workaround: extract body directly from the WP API JSON (content.rendered) and
+# rely on prefetched_articles in the API listing strategy so HTML scraping is skipped.
+# Categories: news(1), opinion(8), politics-2(63), business(6998), featured-news(2186)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.colombotelegraph.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=1,8,63,6998"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: filler
+    date: filler
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

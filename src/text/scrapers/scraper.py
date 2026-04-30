@@ -107,6 +107,15 @@ class NewspaperScraper:
         self.max_pages = self.config.max_pages
         self.max_articles = self.config.max_articles
 
+        # When True, the failed_urls_seen.csv ledger is not subtracted from
+        # the pending set — every URL not already in news.csv is attempted.
+        # The ledger is still updated (failures upserted, successes evicted).
+        self.retry_failed: bool = False
+        # Per-run set of URLs that successfully landed in news.csv. Populated
+        # by _original_scrape_articles after each append_article. Consumed by
+        # run_default / run_resume to evict from the ledger.
+        self._scraped_urls_this_run: set = set()
+
         # Initialize client based on configuration
         self.client_type = self.config.client
         self._http_client: Optional[AsyncHttpClient] = None
@@ -861,6 +870,9 @@ class NewspaperScraper:
         failed_date = 0
         warning_title = 0
         warning_tags = 0
+        # Reset per-run success set so the run_* methods can evict succeeded
+        # URLs from the failure ledger after this method returns.
+        self._scraped_urls_this_run = set()
 
         # Reset per-run early-abort state. The acknowledgement flag is on the
         # instance so the helper method can read it, but it MUST NOT carry
@@ -972,6 +984,7 @@ class NewspaperScraper:
                             article, self.country, self.source_key
                         )
                         articles_scraped += 1
+                        self._scraped_urls_this_run.add(str(thumbnail.url))
 
                         if self.progress and (i + 1) % 10 == 0:
                             self.progress.update(
@@ -1619,6 +1632,66 @@ class NewspaperScraper:
         }
         self.failed_news.append(failed_entry)
 
+    def _update_failure_ledger(self, pending_thumbnails: List[ThumbnailRecord]) -> None:
+        """
+        Upsert this run's failures into ``failed_urls_seen.csv`` and evict any
+        URLs we just succeeded on.
+
+        A URL counts as failed for this run when it was in the ``pending`` set
+        passed to ``scrape_articles`` but did not end up in ``news.csv``. This
+        captures every failure mode — HTTP error, empty body, empty date,
+        parse exception — under one ledger entry per URL per run, regardless
+        of which ``self.failed_*`` list it landed on (or didn't).
+        """
+        scraped = set(self._scraped_urls_this_run)
+        attempted = {str(t.url) for t in pending_thumbnails}
+        failed = attempted - scraped
+
+        if failed:
+            # Build a status/error lookup from the existing failed_urls /
+            # failed_news lists so the ledger row carries the most descriptive
+            # error string we have available. Empty-body / empty-date paths
+            # don't populate those lists today, so those URLs land with empty
+            # status / error — that's fine, the ledger only needs the URL.
+            status_by_url: Dict[str, str] = {}
+            error_by_url: Dict[str, str] = {}
+            for entry in (self.failed_urls or []) + (self.failed_news or []):
+                u = entry.get("url")
+                if not u:
+                    continue
+                key = str(u)
+                if entry.get("status_code") is not None:
+                    status_by_url[key] = str(entry.get("status_code"))
+                if entry.get("error") is not None:
+                    error_by_url[key] = str(entry.get("error"))
+
+            entries = [
+                {
+                    "url": url,
+                    "last_status": status_by_url.get(url, ""),
+                    "last_error": error_by_url.get(url, ""),
+                }
+                for url in failed
+            ]
+            try:
+                self._storage.upsert_failed_urls_ledger(
+                    self.country, self.source_key, entries
+                )
+            except Exception as exc:
+                logger.error(f"Failed to upsert failure ledger: {exc}")
+
+        if scraped:
+            try:
+                removed = self._storage.evict_from_failed_ledger(
+                    self.country, self.source_key, scraped
+                )
+                if removed:
+                    logger.info(
+                        f"Evicted {removed} URL(s) from failed_urls_seen.csv after success"
+                    )
+            except Exception as exc:
+                logger.error(f"Failed to evict from failure ledger: {exc}")
+
     def cleanup(self):
         """Clean up resources."""
         if self._browser_client:
@@ -2015,11 +2088,27 @@ class NewspaperScraper:
             )
 
             # Step 4: Identify pending articles
+            # pending = urls.csv − news.csv − failed_urls_seen.csv (the latter
+            # only when --retry-failed was not passed). The ledger is the
+            # cumulative skip list of URLs that have already failed at least
+            # once and not since succeeded.
+            ledger_urls: set = set()
+            if not self.retry_failed:
+                ledger_urls = self._storage.get_failed_url_set(
+                    self.country, self.source_key
+                )
+                logger.info(
+                    f"Skipping {len(ledger_urls)} URL(s) per failed_urls_seen.csv ledger"
+                )
+            skip_set = existing_article_urls | ledger_urls
             pending_thumbnails = [
-                thumb
-                for thumb in thumbnails
-                if str(thumb.url) not in existing_article_urls
+                thumb for thumb in thumbnails if str(thumb.url) not in skip_set
             ]
+            skipped_by_ledger = (
+                0
+                if self.retry_failed
+                else max(len(skip_set) - len(existing_article_urls), 0)
+            )
             logger.info(f"Pending articles to scrape: {len(pending_thumbnails)}")
 
             if not pending_thumbnails:
@@ -2034,6 +2123,7 @@ class NewspaperScraper:
                         "existing_articles": len(existing_article_urls),
                         "pending_articles": 0,
                         "articles_scraped": 0,
+                        "skipped_by_ledger": skipped_by_ledger,
                     },
                 }
 
@@ -2071,6 +2161,7 @@ class NewspaperScraper:
                     "articles_scraped": scrape_stats.get("articles_scraped", 0),
                     "articles_failed": scrape_stats.get("articles_failed", 0),
                     "failed_news": len(self.failed_news),
+                    "skipped_by_ledger": skipped_by_ledger,
                 },
             }
 
@@ -2079,6 +2170,12 @@ class NewspaperScraper:
                 self._storage.save_failed_news(
                     self.failed_news, self.country, self.source_key
                 )
+
+            # Update the cumulative ledger: upsert this run's failures, then
+            # evict any URLs we just succeeded on. Order matters — eviction
+            # after upsert ensures a URL that succeeded this run never lingers
+            # in the ledger even if it had also been recorded as failed.
+            self._update_failure_ledger(pending_thumbnails)
 
             # Save metadata
             self._storage.save_metadata(
@@ -2198,11 +2295,25 @@ class NewspaperScraper:
             if all_thumbnails is None:
                 all_thumbnails = []
 
+            # pending = urls.csv − news.csv − failed_urls_seen.csv (unless
+            # --retry-failed). See run_resume for the same logic.
+            ledger_urls: set = set()
+            if not self.retry_failed:
+                ledger_urls = self._storage.get_failed_url_set(
+                    self.country, self.source_key
+                )
+                logger.info(
+                    f"Skipping {len(ledger_urls)} URL(s) per failed_urls_seen.csv ledger"
+                )
+            skip_set = existing_article_urls | ledger_urls
             pending_thumbnails = [
-                thumb
-                for thumb in all_thumbnails
-                if str(thumb.url) not in existing_article_urls
+                thumb for thumb in all_thumbnails if str(thumb.url) not in skip_set
             ]
+            skipped_by_ledger = (
+                0
+                if self.retry_failed
+                else max(len(skip_set) - len(existing_article_urls), 0)
+            )
             logger.info(f"Pending articles to scrape: {len(pending_thumbnails)}")
 
             # Handle prefetched articles from API
@@ -2222,6 +2333,7 @@ class NewspaperScraper:
                         self._storage.append_article(
                             article, self.country, self.source_key
                         )
+                        self._scraped_urls_this_run.add(str(article.url))
                         articles_from_api += 1
 
                 # Remove prefetched URLs from pending
@@ -2283,6 +2395,7 @@ class NewspaperScraper:
                     "warning_tags": scrape_stats.get("warning_tags", 0),
                     "failed_urls": len(self.failed_urls),
                     "failed_news": len(self.failed_news),
+                    "skipped_by_ledger": skipped_by_ledger,
                 },
             }
 
@@ -2295,6 +2408,10 @@ class NewspaperScraper:
                 self._storage.save_failed_news(
                     self.failed_news, self.country, self.source_key
                 )
+
+            # Cumulative failure ledger: upsert this run's failures, then evict
+            # successes. See _update_failure_ledger.
+            self._update_failure_ledger(pending_thumbnails)
 
             # Save metadata
             self._storage.save_metadata(

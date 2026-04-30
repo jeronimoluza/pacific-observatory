@@ -1,0 +1,32 @@
+name: Hindustan Times
+language: en
+country: india
+base_url: https://www.hindustantimes.com
+
+listing:
+  type: pagination
+  start_url: "https://www.hindustantimes.com/india-news"
+  url_template: "https://www.hindustantimes.com/india-news/page-{num}"
+  start_page: 2
+  step: 1
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.cartHolder"
+    title: "h2 a::text"
+    url: "h2 a::attr(href)"
+  article:
+    body: "div#dataHolder p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

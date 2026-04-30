@@ -369,6 +369,31 @@ class CSVStorage:
         newspaper_dir = self.get_newspaper_dir(country, newspaper)
         return self.url_tracker.save_failed_news(failed_news, newspaper_dir, timestamp)
 
+    def get_failed_url_set(self, country: str, newspaper: str) -> set:
+        """Return the URL set from failed_urls_seen.csv (auto-seeds if needed)."""
+        newspaper_dir = self.get_newspaper_dir(country, newspaper)
+        return self.url_tracker.get_failed_url_set(newspaper_dir)
+
+    def upsert_failed_urls_ledger(
+        self,
+        country: str,
+        newspaper: str,
+        entries: List[Dict[str, Any]],
+    ) -> Optional[Path]:
+        """Insert/refresh rows in failed_urls_seen.csv for the given URLs."""
+        newspaper_dir = self.get_newspaper_dir(country, newspaper)
+        return self.url_tracker.upsert_failed_urls(newspaper_dir, entries)
+
+    def evict_from_failed_ledger(self, country: str, newspaper: str, urls: set) -> int:
+        """Remove rows whose url is in urls from failed_urls_seen.csv."""
+        newspaper_dir = self.get_newspaper_dir(country, newspaper)
+        return self.url_tracker.evict_from_ledger(newspaper_dir, urls)
+
+    def seed_failed_ledger(self, country: str, newspaper: str) -> Optional[Path]:
+        """One-shot seed of failed_urls_seen.csv from any failed/*.csv snapshots."""
+        newspaper_dir = self.get_newspaper_dir(country, newspaper)
+        return self.url_tracker._seed_ledger_from_failed_dir(newspaper_dir)
+
 
 # Re-export for convenience
 __all__ = ["CSVStorage"]

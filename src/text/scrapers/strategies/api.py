@@ -457,8 +457,13 @@ class ApiStrategy(ListingStrategy):
                         await asyncio.sleep(0.5)
 
                     except json.JSONDecodeError as e:
-                        logger.error(f"Failed to parse JSON from {api_url}: {e}")
-                        break
+                        logger.error(
+                            f"Failed to parse JSON from {api_url}: {e} — skipping page and continuing"
+                        )
+                        current_page += self.page_step
+                        pages_scraped += 1
+                        await asyncio.sleep(0.5)
+                        continue
                     except Exception as e:
                         logger.error(f"Error fetching API URL {api_url}: {e}")
                         break

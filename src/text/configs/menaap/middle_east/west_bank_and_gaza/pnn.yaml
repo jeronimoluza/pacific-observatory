@@ -1,0 +1,31 @@
+name: Palestine News Network
+language: en
+country: west_bank_and_gaza
+base_url: https://english.pnn.ps
+
+listing:
+  type: pagination
+  url_template: "https://english.pnn.ps/news/category/policy?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.news_div"
+    title: "div.p-2 a::text"
+    url: "div.p-2 a::attr(href)"
+  article:
+    body: "div.news-content p"
+    date: "h6.news-meta::text"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,39 @@
+name: Prothom Alo English
+language: en
+country: bangladesh
+base_url: https://en.prothomalo.com
+
+# Quintype API. section-id=16600 is the Bangladesh section.
+# Date field is Unix timestamp in ms — uses handle_unix_timestamp_ms_or_iso.
+listing:
+  type: api
+  pagination_type: offset
+  offset_start: 0
+  offset_step: 20
+  url_template: "https://en.prothomalo.com/api/v1/stories?limit={size}&offset={offset}&section-id=16600"
+  json_paths:
+    collection: stories
+    url: url
+    title: headline
+    date: published-at
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.story-grid p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_unix_timestamp_ms_or_iso
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,32 @@
+name: Times of Eswatini - Sports
+language: en
+country: eswatini
+base_url: https://www.times.co.sz
+
+listing:
+  type: pagination
+  start_url: "https://www.times.co.sz/sports/?paged=1"
+  url_template: "https://www.times.co.sz/sports/?paged={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "a[href*='readmore.php']"
+    title: "a[href*='readmore.php']::text"
+    url: "a[href*='readmore.php']::attr(href)"
+  article:
+    body: "div.col-md-9.TheArticle p"
+    date: "div.col-md-9 span"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null
