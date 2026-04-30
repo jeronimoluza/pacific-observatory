@@ -1,0 +1,8 @@
+# Unusable with current pipeline strategies.
+# Reason: Uses Penci theme AJAX pagination (nonce-based JS calls) — no URL-based pagination.
+# Reason: WP REST API disabled (custom /Section/{id}/ permalink structure returns 404).
+# Reason: Category pages require AJAX to load more than the initial ~25 articles.
+name: Gulf Daily News Online
+language: en
+country: bahrain
+base_url: https://www.gdnonline.com

@@ -1,0 +1,39 @@
+name: Journal de Bangui
+country: central_african_republic
+language: fr
+base_url: https://www.journaldebangui.com
+
+# Categories: Politique(32), Eco et Business(11), Societe(41), Securite(36)
+# APA(491) and AFP(21) excluded — wire-service syndication, not local content
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.journaldebangui.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=32,11,41,36&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 8
+retry_seconds: 5.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

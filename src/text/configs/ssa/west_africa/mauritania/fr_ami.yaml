@@ -1,0 +1,38 @@
+name: Horizons
+country: mauritania
+language: fr
+base_url: http://fr.ami.mr
+
+# Categories: fil d'actualité(21646), A LA UNE(4910), Economie(2250), Slider Economie(343)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "http://fr.ami.mr/wp-json/wp/v2/posts?per_page=100&page={page}&categories=63957,63920,9,63922&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 8
+retry_seconds: 5.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

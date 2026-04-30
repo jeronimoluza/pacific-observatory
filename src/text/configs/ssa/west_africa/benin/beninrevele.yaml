@@ -1,0 +1,39 @@
+name: Benin Revele
+country: benin
+language: fr
+base_url: https://www.beninrevele.com
+
+# Categories: gestion-publique-1(597)=5964, politiques-publiques(9)=1503, economie(5)=595 — depth back to 2017-10
+# NOTE: cat 532 (opportunites-dinvestissement) excluded — its inclusion triggers a PHP warning prepended to JSON which breaks the parser
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.beninrevele.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=597,9,5"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 8
+retry_seconds: 5.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

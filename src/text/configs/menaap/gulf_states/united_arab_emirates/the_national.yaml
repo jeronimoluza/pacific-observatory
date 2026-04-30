@@ -1,0 +1,38 @@
+name: The National
+language: en
+country: united_arab_emirates
+base_url: https://www.thenationalnews.com
+
+listing:
+  type: api
+  pagination_type: offset
+  offset_start: 0
+  offset_step: 100
+  url_template: "https://www.thenationalnews.com/pf/api/v3/content/fetch/story-feed-sections?query=%7B%22feedSize%22%3A{size}%2C%22feedOffset%22%3A{offset}%2C%22includeSections%22%3A%22%2Fnews%2Fuae%22%7D"
+  json_paths:
+    collection: content_elements
+    url: canonical_url
+    title: headlines.basic
+    date: display_date
+    total: count
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "article.article-full-version p"
+    date: filler
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

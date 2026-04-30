@@ -1,0 +1,33 @@
+name: Times of Eswatini - Business
+country: eswatini
+language: en
+base_url: https://www.times.co.sz
+
+# Times of Eswatini /business/ — economy section per category-priority rule.
+listing:
+  type: pagination
+  url_template: "https://www.times.co.sz/business/?paged={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.col-md-4"
+    title: "a[href*='readmore.php']::text"
+    url: "a[href*='readmore.php']::attr(href)"
+  article:
+    body: "div.col-md-9.TheArticle p"
+    date: "small.Bywho::text"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_times_eswatini_url
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,38 @@
+name: Sidwaya
+country: burkina_faso
+language: fr
+base_url: https://www.sidwaya.info
+
+# Categories: LA UNE SITE(18687), ACTUALITES(8062), POLITIQUE(7370), SOCIETE(7287)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.sidwaya.info/wp-json/wp/v2/posts?per_page=100&page={page}&categories=58,631,20,25&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 8
+retry_seconds: 5.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null
