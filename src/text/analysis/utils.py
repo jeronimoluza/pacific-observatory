@@ -279,6 +279,9 @@ def generate_continous_df(
         raise ValueError("cannot find `date` column in dataframe being checked.")
 
 
+_FALLBACK_WARNED: set[tuple[str, str]] = set()
+
+
 def _resolve_keywords_dir(language: str, filename: str) -> Path:
     """
     Resolve the directory for a keyword file, preferring keywords_new/ over keywords/.
@@ -288,14 +291,26 @@ def _resolve_keywords_dir(language: str, filename: str) -> Path:
         2. keywords/{language}/{filename}
         3. keywords_new/en/{filename}
         4. keywords/en/{filename}
+
+    Emits a one-shot stderr warning per (language, filename) when falling back
+    to English so missing per-language keyword sets surface during builds.
     """
+    import sys
+
     language = LANGUAGE_ALIASES.get(language, language)
     base = Path(__file__).parent
     for kw_dir_name in ("keywords_new", "keywords"):
         lang_dir = base / kw_dir_name / language
         if (lang_dir / filename).exists():
             return lang_dir
-    # Fallback to English
+    key = (language, filename)
+    if key not in _FALLBACK_WARNED:
+        _FALLBACK_WARNED.add(key)
+        print(
+            f"WARNING: no {filename} for language '{language}'; falling back to English. "
+            f"Generate per-language keywords with the `translate-english-keywords` skill.",
+            file=sys.stderr,
+        )
     for kw_dir_name in ("keywords_new", "keywords"):
         en_dir = base / kw_dir_name / "en"
         if (en_dir / filename).exists():

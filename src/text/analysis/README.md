@@ -14,7 +14,6 @@ analysis, and topic indices from scraped newspaper articles.
 | `sentiment.py` | Sentiment scoring |
 | `data.py` | CSV file reading utilities |
 | `utils.py` | Text preprocessing, keyword pattern building |
-| `translate_keywords.py` | Multi-language keyword translation |
 
 ## Keywords
 
