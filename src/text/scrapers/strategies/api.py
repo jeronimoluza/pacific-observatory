@@ -387,6 +387,8 @@ class ApiStrategy(ListingStrategy):
                 # Page-based pagination
                 current_page = self.page_start
                 pages_scraped = 0
+                consecutive_failures = 0
+                MAX_CONSECUTIVE_FAILURES = 3
 
                 while True:
                     # Check max_pages limit
@@ -432,6 +434,32 @@ class ApiStrategy(ListingStrategy):
                                 html_text, api_url
                             )
                         else:
+                            # Bail early if the host returned HTML (e.g. WAF/captcha)
+                            # rather than JSON — saves a JSONDecodeError and gives a
+                            # clearer log line.
+                            preview = (
+                                content[:64].lstrip()
+                                if isinstance(content, (bytes, bytearray))
+                                else content[:64].lstrip().encode("utf-8", "replace")
+                            )
+                            if preview.startswith(b"<"):
+                                consecutive_failures += 1
+                                logger.error(
+                                    f"Non-JSON (HTML) response from {api_url} "
+                                    f"({consecutive_failures}/{MAX_CONSECUTIVE_FAILURES}) "
+                                    f"— likely WAF/captcha"
+                                )
+                                if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
+                                    logger.warning(
+                                        f"Stopping discovery after {consecutive_failures} "
+                                        f"consecutive non-JSON responses"
+                                    )
+                                    break
+                                current_page += self.page_step
+                                pages_scraped += 1
+                                await asyncio.sleep(0.5)
+                                continue
+
                             # Parse JSON
                             json_data = json.loads(content)
 
@@ -452,14 +480,23 @@ class ApiStrategy(ListingStrategy):
                         )
                         yield thumbnails
 
+                        consecutive_failures = 0
                         current_page += self.page_step
                         pages_scraped += 1
                         await asyncio.sleep(0.5)
 
                     except json.JSONDecodeError as e:
+                        consecutive_failures += 1
                         logger.error(
-                            f"Failed to parse JSON from {api_url}: {e} — skipping page and continuing"
+                            f"Failed to parse JSON from {api_url}: {e} "
+                            f"({consecutive_failures}/{MAX_CONSECUTIVE_FAILURES})"
                         )
+                        if consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
+                            logger.warning(
+                                f"Stopping discovery after {consecutive_failures} "
+                                f"consecutive JSON parse failures"
+                            )
+                            break
                         current_page += self.page_step
                         pages_scraped += 1
                         await asyncio.sleep(0.5)

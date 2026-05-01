@@ -19,8 +19,8 @@ retry_seconds: 2.0
 selectors:
   thumbnail:
     container: "li.list-item"
-    title: "a::text"
-    url: "a::attr(href)"
+    title: "a[href*='/articles/']::text"
+    url: "a[href*='/articles/']::attr(href)"
   article:
     body: "div.box-wrapper p"
     date: "span.timeDate_element::text"
