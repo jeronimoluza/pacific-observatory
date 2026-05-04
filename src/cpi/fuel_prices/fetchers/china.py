@@ -61,11 +61,17 @@ _TMPL_CN = make_template(
 
 
 _LISTING_BASE = "https://www.ndrc.gov.cn/xwdt/xwfb/"
-_NOTICE_TITLE_KWS = ("国内成品油价格按机制", "国内成品油价格调整")
+# NDRC varies the headline structure ("...按机制调整", "...调整", "...下调",
+# "...上调", "...适当调整", "...采取临时调控措施"). Match any retail-fuel
+# pricing notice whose title mentions 成品油价格 + an adjustment verb.
+_NOTICE_TITLE_RE = re.compile(r"成品油价格.{0,12}(?:调整|下调|上调|调控措施)")
 _LISTING_DATE_RE = re.compile(r"\b(\d{4})/(\d{2})/(\d{2})\b")
 
 _TMP_DIR = Path("_cn_ndrc_tmp")
 _TESSERACT_BIN = "/opt/homebrew/bin/tesseract"
+# Normal NDRC attachments yield ~29–30 province pairs. Skip notices whose OCR
+# returns fewer than this — the "national mean" of 1–2 provinces is misleading.
+_MIN_OCR_PAIRS = 10
 
 
 def _iter_listing_pages(max_pages: int = 50) -> Iterable[str]:
@@ -262,7 +268,7 @@ def fetch_cn_ndrc_max_retail_prices(cutoff: date) -> pd.DataFrame:
                 title = (a.get_text() or "").strip()
                 if not title:
                     continue
-                if any(kw in title for kw in _NOTICE_TITLE_KWS):
+                if _NOTICE_TITLE_RE.search(title):
                     href_raw = a.get("href")
                     href = str(href_raw or "").strip()
                     if not href:
@@ -333,6 +339,12 @@ def fetch_cn_ndrc_max_retail_prices(cutoff: date) -> pd.DataFrame:
             pairs = _ocr_table_values(proc_path)
             if not pairs:
                 print(f"  [cn_ndrc] {pub}: OCR produced no usable pairs")
+                continue
+            if len(pairs) < _MIN_OCR_PAIRS:
+                print(
+                    f"  [cn_ndrc] {pub}: only {len(pairs)} OCR pair(s) — "
+                    f"below {_MIN_OCR_PAIRS} threshold, skipping"
+                )
                 continue
 
             gas_mean = sum(g for g, _ in pairs) / len(pairs)
