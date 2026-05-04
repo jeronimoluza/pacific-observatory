@@ -94,12 +94,19 @@ def build_fx_table(
 
     full_cache = _load_cache(cache_path)
     cache = full_cache[full_cache["currency"].isin(currencies)].copy()
-    if (
-        cache.empty
-        or cache["date"].min() > start_date
-        or cache["date"].max() < end_date
-    ):
-        fetched = _fetch_missing_rates(currencies, start_date, end_date)
+    expected_dates = pd.date_range(start_date, end_date, freq="D").normalize()
+    expected_set = set(expected_dates)
+    missing_dates: set[pd.Timestamp] = set()
+    if cache.empty:
+        missing_dates = set(expected_set)
+    else:
+        for currency in currencies:
+            have = set(cache.loc[cache["currency"] == currency, "date"])
+            missing_dates.update(expected_set - have)
+    if missing_dates:
+        fetch_start = min(missing_dates)
+        fetch_end = max(missing_dates)
+        fetched = _fetch_missing_rates(currencies, fetch_start, fetch_end)
         if not fetched.empty:
             cache = pd.concat([cache, fetched], ignore_index=True)
             cache = cache.drop_duplicates(subset=["currency", "date"], keep="last")

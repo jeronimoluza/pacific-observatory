@@ -1,4 +1,5 @@
 source_key: tfp_sa_monthly
+enabled: false
 module: menaap.gulf_states.saudi_arabia.tfp
 function: fetch_tfp_sa
 url: https://www.thefuelprice.com/Fsa/en
@@ -22,6 +23,13 @@ products:
     grade: premium
     octane_ron: 95
     series_key: gasoline_95
+  "Gasoline 98":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super
+    octane_ron: 98
+    series_key: gasoline_98
   "Diesel":
     fuel_family: diesel
     unit: liter
@@ -38,6 +46,7 @@ products:
     fuel_family: lpg
     unit: kilogram
     amount: 12.5
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: true
     grade: 12_5kg
     series_key: lpg_12_5kg
