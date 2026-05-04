@@ -1,7 +1,8 @@
 """Global and EAP commodity oil/gasoline price fetchers.
 
 Source:
-  1. Investing.com internal API (daily, best-effort — Cloudflare may block)
+  1. Investing.com (daily, headless Playwright — fresh context per slug evades
+     Cloudflare's per-context fingerprint scoring)
 """
 
 import json
@@ -10,8 +11,9 @@ from datetime import date
 from typing import Optional
 
 import pandas as pd
+from playwright.sync_api import Browser, sync_playwright
 
-from ..utils import get_session, make_hash, make_template
+from ..utils import make_hash, make_template
 
 SOURCE_META = [
     {
@@ -31,7 +33,7 @@ SOURCE_META = [
         ],
         "source_keys": ["global_investing_daily"],
         "publishes_on": "Daily",
-        "notes": "WARNING: May be blocked by Cloudflare (403). Best-effort only.",
+        "notes": "Cloudflare-protected. Fetched via headless Playwright with fresh context per slug.",
     },
 ]
 
@@ -104,14 +106,12 @@ _INVESTING_SLUGS: list[dict] = [
 # ---------------------------------------------------------------------------
 
 _INVESTING_BASE = "https://www.investing.com/commodities/"
-_INVESTING_HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-    ),
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-}
+_INVESTING_USER_AGENT = (
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+)
+_INVESTING_VIEWPORT = {"width": 1366, "height": 900}
+_INVESTING_SETTLE_MS = 2500
 
 
 def _extract_next_data(html: str) -> Optional[dict]:
@@ -183,35 +183,47 @@ _FETCH_RETRIES = 3
 _FETCH_RETRY_SLEEP = 5  # seconds between retries
 
 
-def _fetch_investing_series(slug: str, session) -> list[dict]:
-    """Fetch the ~20 most-recent trading days for one slug via HTML __NEXT_DATA__.
+def _fetch_investing_series(slug: str, browser: Browser) -> list[dict]:
+    """Fetch ~20 most-recent trading days for one slug via headless Playwright.
 
-    Retries up to ``_FETCH_RETRIES`` times on transient failures (non-200, network
-    errors, missing __NEXT_DATA__).  Returns all rows found without cutoff filtering
-    — deduplication is handled downstream by ``merge_new_rows``.
+    Creates a fresh ``browser.new_context()`` per call so each navigation looks
+    like a first-time visitor to Cloudflare's bot scoring — otherwise CF flags
+    the context after the first navigation and all subsequent requests get 403.
     """
     url = f"{_INVESTING_BASE}{slug}-historical-data"
     for attempt in range(1, _FETCH_RETRIES + 1):
+        ctx = browser.new_context(
+            user_agent=_INVESTING_USER_AGENT,
+            locale="en-US",
+            viewport=_INVESTING_VIEWPORT,
+        )
+        page = ctx.new_page()
+        html = None
         try:
-            resp = session.get(url, timeout=30)
-        except Exception as e:
-            print(f"  [investing] Fetch error for {slug} (attempt {attempt}): {e}")
-            if attempt < _FETCH_RETRIES:
-                time.sleep(_FETCH_RETRY_SLEEP)
-            continue
+            try:
+                resp = page.goto(url, wait_until="domcontentloaded", timeout=45000)
+            except Exception as e:
+                print(f"  [investing] Goto error for {slug} (attempt {attempt}): {e}")
+                if attempt < _FETCH_RETRIES:
+                    time.sleep(_FETCH_RETRY_SLEEP)
+                continue
 
-        if resp.status_code != 200:
-            print(
-                f"  [investing] HTTP {resp.status_code} for {slug} (attempt {attempt})"
-            )
-            if attempt < _FETCH_RETRIES:
-                time.sleep(_FETCH_RETRY_SLEEP)
-            continue
+            if resp is None or resp.status != 200:
+                code = resp.status if resp else "no-response"
+                print(f"  [investing] HTTP {code} for {slug} (attempt {attempt})")
+                if attempt < _FETCH_RETRIES:
+                    time.sleep(_FETCH_RETRY_SLEEP)
+                continue
 
-        data = _extract_next_data(resp.text)
+            page.wait_for_timeout(_INVESTING_SETTLE_MS)
+            html = page.content()
+        finally:
+            ctx.close()
+
+        data = _extract_next_data(html or "")
         if data is None:
             print(
-                f"  [investing] __NEXT_DATA__ not found/parseable for {slug} (attempt {attempt})"
+                f"  [investing] __NEXT_DATA__ not found for {slug} (attempt {attempt})"
             )
             if attempt < _FETCH_RETRIES:
                 time.sleep(_FETCH_RETRY_SLEEP)
@@ -219,9 +231,7 @@ def _fetch_investing_series(slug: str, session) -> list[dict]:
 
         rows_data = _find_historical_rows(data)
         if not rows_data:
-            print(
-                f"  [investing] No historical rows in page for {slug} (attempt {attempt})"
-            )
+            print(f"  [investing] No historical rows for {slug} (attempt {attempt})")
             if attempt < _FETCH_RETRIES:
                 time.sleep(_FETCH_RETRY_SLEEP)
             continue
@@ -233,7 +243,11 @@ def _fetch_investing_series(slug: str, session) -> list[dict]:
 
 
 def fetch_investing_commodities(cutoff: date) -> pd.DataFrame:
-    """Fetch daily global/EAP commodity prices from investing.com (best-effort).
+    """Fetch daily global/EAP commodity prices from investing.com via Playwright.
+
+    Cloudflare blocks plain HTTP. This uses headless Chromium with a fresh
+    browser context per slug to evade per-context fingerprint scoring.
+    Requires the Chromium binary: ``poetry run playwright install chromium``.
 
     ``cutoff`` is accepted for pipeline compatibility but is not used to filter
     rows — all ~20 rows from the HTML page are returned and deduplication is
@@ -241,53 +255,55 @@ def fetch_investing_commodities(cutoff: date) -> pd.DataFrame:
     """
     print("  [investing] Fetching investing.com commodity data...")
 
-    session = get_session()
-    session.headers.update(_INVESTING_HEADERS)
-
     all_rows = []
-    for spec in _INVESTING_SLUGS:
-        slug = spec["slug"]
-        print(f"  [investing] → {slug}")
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        try:
+            for spec in _INVESTING_SLUGS:
+                slug = spec["slug"]
+                print(f"  [investing] → {slug}")
 
-        raw_rows = _fetch_investing_series(slug, session)
-        if not raw_rows:
-            print(f"  [investing]   0 rows for {slug}")
-            continue
+                raw_rows = _fetch_investing_series(slug, browser)
+                if not raw_rows:
+                    print(f"  [investing]   0 rows for {slug}")
+                    continue
 
-        tmpl = make_template(
-            country=spec["country"],
-            wb_iso3=spec["wb_iso3"],
-            subnational_area=spec["subnational_area"],
-            fuel_family=spec["fuel_family"],
-            fuel_product=spec["fuel_product"],
-            quality_group=spec["quality_group"],
-            currency=spec["currency"],
-            unit=spec["unit"],
-            source_key="global_investing_daily",
-            source_name="Investing.com Commodity Futures",
-            source_url=f"{_INVESTING_BASE}{slug}-historical-data",
-            source_type="market",
-            publication_frequency="daily",
-            observation_method="market",
-            tax_status="pre_tax",
-        )
+                tmpl = make_template(
+                    country=spec["country"],
+                    wb_iso3=spec["wb_iso3"],
+                    subnational_area=spec["subnational_area"],
+                    fuel_family=spec["fuel_family"],
+                    fuel_product=spec["fuel_product"],
+                    quality_group=spec["quality_group"],
+                    currency=spec["currency"],
+                    unit=spec["unit"],
+                    source_key="global_investing_daily",
+                    source_name="Investing.com Commodity Futures",
+                    source_url=f"{_INVESTING_BASE}{slug}-historical-data",
+                    source_type="market",
+                    publication_frequency="daily",
+                    observation_method="market",
+                    tax_status="pre_tax",
+                )
 
-        for entry in raw_rows:
-            obs_date = entry["obs_date"]
-            r = tmpl.copy()
-            r.update(
-                {
-                    "price_local": round(entry["price"], 2),
-                    "effective_from": str(obs_date),
-                    "effective_to": str(obs_date),
-                    "observation_date": str(obs_date),
-                    "source_url": f"{_INVESTING_BASE}{slug}-historical-data",
-                }
-            )
-            r["observation_hash"] = make_hash(r)
-            all_rows.append(r)
+                for entry in raw_rows:
+                    obs_date = entry["obs_date"]
+                    r = tmpl.copy()
+                    r.update(
+                        {
+                            "price_local": round(entry["price"], 2),
+                            "effective_from": str(obs_date),
+                            "effective_to": str(obs_date),
+                            "observation_date": str(obs_date),
+                            "source_url": f"{_INVESTING_BASE}{slug}-historical-data",
+                        }
+                    )
+                    r["observation_hash"] = make_hash(r)
+                    all_rows.append(r)
 
-        print(f"  [investing]   {len(raw_rows)} rows for {slug}")
+                print(f"  [investing]   {len(raw_rows)} rows for {slug}")
+        finally:
+            browser.close()
 
     print(f"  [investing] Total: {len(all_rows)} rows")
     return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
