@@ -104,16 +104,22 @@ class CommonCrawlScraper:
 
     # -- index step --
 
-    def _query_index(self, index: str) -> List[Dict[str, Any]]:
-        """
-        Query the CC index API for this spider's URL prefix.
-        Returns records that have status=200 AND match the product-path regex.
-        """
+    # Safety cap: max pages per index (prevents runaway loops if CC misbehaves).
+    # cc_limit=5000 × MAX_PAGES_PER_INDEX=40 = 200k records ceiling per (spider, index).
+    MAX_PAGES_PER_INDEX = 40
+
+    def _fetch_index_page(
+        self, index: str, from_urlkey: Optional[str] = None
+    ) -> Optional[str]:
+        """Single CC index API call. Returns raw stdout (JSONL) or None on failure."""
         api = (
             f"{CC_INDEX_API}/{index}-index"
             f"?url={self.url_prefix}&matchType=prefix"
             f"&output=json&limit={self.cc_limit}"
         )
+        if from_urlkey:
+            # CC index uses urlkey ordering; `from=` is inclusive.
+            api += f"&from={from_urlkey}"
         try:
             result = subprocess.run(
                 [
@@ -135,54 +141,105 @@ class CommonCrawlScraper:
                 timeout=240,
             )
         except subprocess.TimeoutExpired:
-            logger.warning(f"CC index timeout for {index}")
-            return []
-
+            logger.warning(f"CC index timeout for {index} (from={from_urlkey})")
+            return None
         if result.returncode != 0:
             logger.warning(f"CC index query failed for {index}: {result.stderr[:200]}")
-            return []
+            return None
+        return result.stdout
 
+    def _query_index(self, index: str) -> List[Dict[str, Any]]:
+        """
+        Query the CC index API for this spider's URL prefix, paging through
+        all results via the `from=<urlkey>` cursor.
+
+        Returns records that have status=200 AND match the product-path regex.
+        Pagination terminates when a page returns < cc_limit raw rows or after
+        MAX_PAGES_PER_INDEX iterations (safety cap).
+        """
         records: List[Dict[str, Any]] = []
-        for line in result.stdout.splitlines():
-            line = line.strip()
-            if not line.startswith("{"):
-                continue
-            try:
-                d = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-            if d.get("status") != "200":
-                continue
-            url = d.get("url", "")
-            try:
-                if not self.path_re.search(urlparse(url).path):
+        seen_urlkeys: set = (
+            set()
+        )  # dedupe across page boundaries (`from=` is inclusive)
+        from_urlkey: Optional[str] = None
+
+        for page in range(self.MAX_PAGES_PER_INDEX):
+            stdout = self._fetch_index_page(index, from_urlkey=from_urlkey)
+            if stdout is None:
+                break
+
+            raw_rows = 0
+            last_urlkey: Optional[str] = None
+            page_kept = 0
+
+            for line in stdout.splitlines():
+                line = line.strip()
+                if not line.startswith("{"):
                     continue
-            except Exception:
-                continue
-            try:
-                offset = int(d["offset"])
-                length = int(d["length"])
-            except (KeyError, ValueError):
-                continue
-            records.append(
-                {
-                    "url": url,
-                    "timestamp": d.get("timestamp", ""),
-                    "filename": d.get("filename", ""),
-                    "offset": offset,
-                    "length": length,
-                    "digest": d.get("digest", ""),
-                }
+                try:
+                    d = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                raw_rows += 1
+                urlkey = d.get("urlkey")
+                if urlkey:
+                    last_urlkey = urlkey
+                    if urlkey in seen_urlkeys:
+                        continue  # boundary overlap with previous page
+                    seen_urlkeys.add(urlkey)
+                if d.get("status") != "200":
+                    continue
+                url = d.get("url", "")
+                try:
+                    if not self.path_re.search(urlparse(url).path):
+                        continue
+                except Exception:
+                    continue
+                try:
+                    offset = int(d["offset"])
+                    length = int(d["length"])
+                except (KeyError, ValueError):
+                    continue
+                records.append(
+                    {
+                        "url": url,
+                        "timestamp": d.get("timestamp", ""),
+                        "filename": d.get("filename", ""),
+                        "offset": offset,
+                        "length": length,
+                        "digest": d.get("digest", ""),
+                    }
+                )
+                page_kept += 1
+
+            logger.info(
+                f"{index} page {page + 1}: {raw_rows} raw rows, "
+                f"+{page_kept} product records (running total {len(records)})"
             )
+
+            if raw_rows < self.cc_limit:
+                break  # last page
+            if last_urlkey is None:
+                logger.warning(
+                    f"{index}: page {page + 1} hit limit but had no urlkey to advance; stopping"
+                )
+                break
+            if last_urlkey == from_urlkey:
+                logger.warning(
+                    f"{index}: page {page + 1} returned same boundary urlkey ({last_urlkey}); stopping"
+                )
+                break
+            from_urlkey = last_urlkey
+        else:
+            logger.warning(
+                f"{index}: hit MAX_PAGES_PER_INDEX={self.MAX_PAGES_PER_INDEX} — "
+                f"more records may exist beyond {len(records)} kept"
+            )
+
         logger.info(
-            f"{index}: {len(records)} product-page records "
+            f"{index}: {len(records)} total product-page records across {page + 1} page(s) "
             f"(prefix={self.url_prefix}, path_re={self.path_re.pattern})"
         )
-        if len(records) >= self.cc_limit:
-            logger.warning(
-                f"{index}: hit cc_limit={self.cc_limit} — there may be more records. "
-                f"Consider paging with &from=<urlkey> or narrowing the prefix."
-            )
         return records
 
     # -- WARC fetch + parse --
