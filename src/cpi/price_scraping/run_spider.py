@@ -476,6 +476,54 @@ def run_wayback_scraping(
         sys.exit(1)
 
 
+def run_cc_scraping(
+    spider_name: str,
+    output_dir: Path,
+    cc_indexes: list[str],
+    num_workers: int = 8,
+):
+    """
+    Run Common Crawl WARC scraping for a spider.
+
+    Args:
+        spider_name: Name of the spider
+        output_dir: Base output directory
+        cc_indexes: List of CC index IDs (e.g. ['CC-MAIN-2024-22','CC-MAIN-2026-17'])
+        num_workers: Concurrent WARC fetches per index
+    """
+    try:
+        from price_scraping.cc_warc_fetcher import CommonCrawlScraper
+
+        spider_log = _spider_logger(spider_name)
+        country = _resolve_spider_country(spider_name)
+
+        spider_log.info(
+            f"Starting Common Crawl scraping for {spider_name} ({country}) "
+            f"across {len(cc_indexes)} indexes"
+        )
+        spider_log.info(f"Indexes: {', '.join(cc_indexes)}")
+
+        scraper = CommonCrawlScraper(spider_name, output_dir, cc_indexes)
+        stats = scraper.run_scrape_cc(country, num_workers=num_workers)
+
+        spider_log.info("=" * 60)
+        spider_log.info("COMMON CRAWL SCRAPING SUMMARY")
+        spider_log.info("=" * 60)
+        for k, v in stats.items():
+            spider_log.info(f"{k}: {v}")
+        spider_log.info("=" * 60)
+
+    except KeyError as e:
+        logger.error(f"No CC config for spider: {e}")
+        sys.exit(1)
+    except ImportError as e:
+        logger.error(f"Failed to import cc_warc_fetcher: {e}")
+        sys.exit(1)
+    except Exception as e:
+        logger.exception(f"Error during CC scraping: {e}")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -516,6 +564,23 @@ if __name__ == "__main__":
         dest="since_date",
         help="Start timestamp for wayback snapshots (YYYY-MM-DD format). "
         "Restricts CDX to snapshots on/after this date — use to recover a specific gap window.",
+    )
+    parser.add_argument(
+        "--scrape-cc",
+        action="store_true",
+        help="Scrape Common Crawl WARC archives instead of running the spider live.",
+    )
+    parser.add_argument(
+        "--cc-indexes",
+        default="",
+        help="Comma-separated CC index IDs (e.g. CC-MAIN-2024-22,CC-MAIN-2026-17). "
+        "Required with --scrape-cc.",
+    )
+    parser.add_argument(
+        "--cc-workers",
+        type=int,
+        default=8,
+        help="Concurrent WARC fetches per index (default: 8).",
     )
 
     args = parser.parse_args()
@@ -558,6 +623,13 @@ if __name__ == "__main__":
             run_wayback_scraping(
                 args.spider, output_dir, args.from_date, args.since_date
             )
+    elif args.scrape_cc:
+        cc_indexes = [s.strip() for s in args.cc_indexes.split(",") if s.strip()]
+        if not cc_indexes:
+            parser.error("--scrape-cc requires --cc-indexes <list>")
+        if args.all:
+            parser.error("--scrape-cc with --all is not supported; pass a spider name")
+        run_cc_scraping(args.spider, output_dir, cc_indexes, args.cc_workers)
     else:
         # Build settings dict
         settings_override = {
