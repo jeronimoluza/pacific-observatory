@@ -61,6 +61,12 @@ RETRY_HTTP_CODES = [500, 502, 503, 504, 408, 429]
 # Timeout settings
 DOWNLOAD_TIMEOUT = 15
 
+# Termination guards — bound runtime so spiders can't hang the daily run
+CLOSESPIDER_TIMEOUT = 1800  # 30 min hard cap per spider
+CLOSESPIDER_TIMEOUT_NO_ITEM = 600  # die if no items yielded for 10 min
+DEPTH_LIMIT = 8  # CrawlSpiders can't recurse forever
+LOGSTATS_INTERVAL = 300  # log stats every 5 min for visibility
+
 # Autothrottle settings
 AUTOTHROTTLE_ENABLED = True
 AUTOTHROTTLE_START_DELAY = 2
