@@ -401,7 +401,10 @@ def get_first_scrape_date(
 
 
 def run_wayback_scraping(
-    spider_name: str, output_dir: Path, from_date: str | None = None
+    spider_name: str,
+    output_dir: Path,
+    from_date: str | None = None,
+    since_date: str | None = None,
 ):
     """
     Run wayback machine scraping for a spider.
@@ -411,6 +414,9 @@ def run_wayback_scraping(
         output_dir: Base output directory
         from_date: End timestamp for wayback snapshots (YYYY-MM-DD format).
                    If None, auto-detects from first scrape date.
+        since_date: Start timestamp for wayback snapshots (YYYY-MM-DD format).
+                    If provided, restricts CDX query to snapshots on/after this date —
+                    useful for recovering a specific gap window without re-fetching history.
     """
     try:
         from price_scraping.wayback_scraper import WaybackScraper
@@ -445,7 +451,9 @@ def run_wayback_scraping(
         spider_log.info(f"Loaded {len(items)} items for wayback scraping")
 
         # Run wayback scraper
-        scraper = WaybackScraper(spider_name, output_dir, from_date)
+        scraper = WaybackScraper(
+            spider_name, output_dir, from_date, since_date=since_date
+        )
         stats = scraper.run_scrape_wayback(items, country)
 
         # Log summary
@@ -503,6 +511,12 @@ if __name__ == "__main__":
         help="End timestamp for wayback snapshots (YYYY-MM-DD format). "
         "If not provided, auto-detects from first scrape date (first scrape - 1 day).",
     )
+    parser.add_argument(
+        "--since",
+        dest="since_date",
+        help="Start timestamp for wayback snapshots (YYYY-MM-DD format). "
+        "Restricts CDX to snapshots on/after this date — use to recover a specific gap window.",
+    )
 
     args = parser.parse_args()
 
@@ -537,9 +551,13 @@ if __name__ == "__main__":
             for spider_name in spider_names:
                 if spider_name in AVOID_SPIDERS:
                     continue
-                run_wayback_scraping(spider_name, output_dir, args.from_date)
+                run_wayback_scraping(
+                    spider_name, output_dir, args.from_date, args.since_date
+                )
         else:
-            run_wayback_scraping(args.spider, output_dir, args.from_date)
+            run_wayback_scraping(
+                args.spider, output_dir, args.from_date, args.since_date
+            )
     else:
         # Build settings dict
         settings_override = {

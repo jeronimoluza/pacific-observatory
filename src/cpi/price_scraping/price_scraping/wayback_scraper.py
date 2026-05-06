@@ -29,18 +29,27 @@ class WaybackScraper:
 
     USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
-    def __init__(self, spider_name: str, output_dir: Path, from_date: str):
+    def __init__(
+        self,
+        spider_name: str,
+        output_dir: Path,
+        from_date: str,
+        since_date: Optional[str] = None,
+    ):
         """
         Initialize Wayback Machine scraper.
 
         Args:
             spider_name: Name of the spider (e.g., 'rbpatel')
             output_dir: Base output directory for scraped data
-            from_date: End timestamp for wayback snapshots (YYYY-MM-DD format)
+            from_date: End timestamp for wayback snapshots (YYYY-MM-DD format) — maps to CDX `to=`
+            since_date: Start timestamp for wayback snapshots (YYYY-MM-DD format) — maps to CDX `from=`.
+                        Use to recover a specific gap window instead of all historical snapshots.
         """
         self.spider_name = spider_name
         self.output_dir = Path(output_dir)
         self.from_date = from_date
+        self.since_date = since_date
         self.selectors = get_selectors(spider_name)
         self.scraped_at = datetime.now().isoformat()
         self._file_write_lock = threading.Lock()  # Lock for thread-safe file writing
@@ -180,6 +189,9 @@ class WaybackScraper:
                 # Convert YYYY-MM-DD to YYYYMMDD format for CDX API
                 from_date_formatted = self.from_date.replace("-", "")
                 cdx_url += f"&to={from_date_formatted}"
+            if self.since_date:
+                since_date_formatted = self.since_date.replace("-", "")
+                cdx_url += f"&from={since_date_formatted}"
 
             # Use curl to fetch CDX API response
             result = subprocess.run(
