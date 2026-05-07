@@ -137,6 +137,28 @@ _CSS = """
     .regime-popover a { color: #4855c9; text-decoration: underline; }
     .regime-popover p { margin: 4px 0; }
     .regime-tip-source { display: none; }
+    .chart-title {
+        font-size: 1.04em; font-weight: 600; color: #222;
+        margin: 14px 0 2px 0;
+    }
+    .chart-source {
+        font-size: 0.78em; color: #888; margin: 0 0 8px 0;
+    }
+    .chart-source a { color: #667eea; text-decoration: none; }
+    .chart-source a:hover { text-decoration: underline; }
+    .panel-label {
+        font-size: 0.86em; font-weight: 600; color: #555;
+        margin: 10px 0 2px 0;
+    }
+    .regime-glossary {
+        font-size: 0.84em; color: #555; margin: 4px 0 6px 0;
+    }
+    .regime-glossary summary {
+        cursor: pointer; color: #667eea; user-select: none; padding: 2px 0;
+    }
+    .regime-glossary summary:hover { text-decoration: underline; }
+    .regime-glossary ul { margin: 4px 0 4px 0; padding-left: 22px; }
+    .regime-glossary li { margin: 2px 0; }
     .kpi-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
     .kpi-card {
         flex: 1; min-width: 180px; padding: 14px 18px;
@@ -503,6 +525,9 @@ def gen_policy_html(
 <!-- ===== TAB 1 ===== -->
 <div id="tab1" class="tab-pane active">
 
+    <div class="chart-title">Trends in International Crude Oil and Refined Product Prices</div>
+    <div class="chart-source">Source: <a href="https://www.investing.com/commodities/energy" target="_blank" rel="noopener">investing.com — Energy Commodities</a></div>
+
     <div class="ctrl-row">
         <span class="row-label">Products:</span>
     </div>
@@ -516,8 +541,16 @@ def gen_policy_html(
 
     <div class="chart-wrapper"><canvas id="comm-chart"></canvas></div>
 
-    <div class="section-label" style="margin-top:18px">Country Pricing Regimes (2024)</div>
+    <div class="chart-title" style="margin-top:18px">Country Pricing Regimes (2024)</div>
     <div class="regime-hint">Click any pill to see its source. Pills with a dashed outline mark recent reforms — click for details.</div>
+    <details class="regime-glossary">
+        <summary>Definitions</summary>
+        <ul>
+            <li><b>Market</b> — retail price set by suppliers without government control.</li>
+            <li><b>Price Controlled</b> — government sets the retail price by regulation.</li>
+            <li><b>Subsidised</b> — IMF Fossil Fuel Subsidies Database (2025 release, 2024 reference year) reports a positive implicit or explicit subsidy. Implicit = retail price below supply cost or excludes externalities and the standard consumption tax.</li>
+        </ul>
+    </details>
     <div class="regime-table-wrap">
         <table class="regime-table">
             <thead>
@@ -534,6 +567,12 @@ def gen_policy_html(
 
 <!-- ===== TAB 2 ===== -->
 <div id="tab2" class="tab-pane">
+
+    <div class="chart-title">Relationship Between GDP per Capita and Fuel Subsidies Across Fuel Products</div>
+    <div class="chart-source">
+        Source: <a href="https://www.imf.org/en/Topics/climate-change/energy-subsidies" target="_blank" rel="noopener">IMF Fossil Fuel Subsidies Database</a> (2025 release, 2024 reference year);
+        <a href="https://www.imf.org/en/Publications/WEO" target="_blank" rel="noopener">IMF WEO 2025</a> for GDP per capita.
+    </div>
 
     <div class="kpi-row" id="kpi-row"></div>
 
@@ -559,6 +598,7 @@ def gen_policy_html(
 
 <!-- ===== TAB 3 ===== -->
 <div id="tab3" class="tab-pane">
+    <div class="chart-title">Short-Term Movements in Domestic Fuel Prices</div>
     <div class="ctrl-row">
         <span class="row-label">Country:</span>
         <select id="fuel-country-select">{fuel_country_opts}</select>
@@ -587,13 +627,15 @@ def gen_policy_html(
     <div class="section-label">Fuel Family:</div>
     <div class="chip-container" id="fuel-axis-chips"></div>
     <div id="fuel-meta-panel"></div>
+    <div class="panel-label">Panel A. Levels</div>
     <div class="chart-wrapper"><canvas id="fuel-chart"></canvas></div>
-    <div class="section-label" style="font-size:0.82em">Price Changes (day-to-day %)</div>
+    <div class="panel-label">Panel B. Daily Changes (%)</div>
     <div class="delta-chart-wrapper"><canvas id="fuel-delta-chart"></canvas></div>
 </div>
 
 <!-- ===== TAB 4 ===== -->
 <div id="tab4" class="tab-pane">
+    <div class="chart-title">Cross-Economy Fuel Price Comparison</div>
     <div class="ctrl-row">
         <span class="row-label">Fuel:</span>
         <div class="toggle-group">
