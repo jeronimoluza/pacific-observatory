@@ -784,7 +784,8 @@ function renderScatter() {{
 
     const noDataPts = regionScatter.filter(d =>
         d.gdp_per_capita != null &&
-        compositeRegime(d, product) === 'Unknown'
+        compositeRegime(d, product) === 'Unknown' &&
+        !(d.subsidies && d.subsidies[product] != null && d.subsidies[product] > 0)
     );
     if (noDataPts.length) {{
         datasets.push({{
