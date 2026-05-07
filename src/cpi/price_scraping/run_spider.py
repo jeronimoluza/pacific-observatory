@@ -341,6 +341,16 @@ def get_spider_country(spider_name: str) -> str:
         "fairprice": "singapore",
         "boots_th": "thailand",
         "exta": "thailand",
+        # Tier 1 additions (2026-05-06)
+        "citysuper_hk": "hong_kong",
+        "cold_storage_sg": "singapore",
+        "carrefour_tw": "taiwan",
+        # Tier 2 stubs (active=False)
+        "lotuss_my": "malaysia",
+        "wellcome_hk": "hong_kong",
+        "hktvmall_hk": "hong_kong",
+        "lotuss_th": "thailand",
+        "makro_pro_th": "thailand",
     }
     return spider_countries.get(spider_name, "unknown")
 
@@ -405,6 +415,8 @@ def run_wayback_scraping(
     output_dir: Path,
     from_date: str | None = None,
     since_date: str | None = None,
+    fetcher_workers: int = 8,
+    parser_workers: int = 8,
 ):
     """
     Run wayback machine scraping for a spider.
@@ -454,7 +466,12 @@ def run_wayback_scraping(
         scraper = WaybackScraper(
             spider_name, output_dir, from_date, since_date=since_date
         )
-        stats = scraper.run_scrape_wayback(items, country)
+        stats = scraper.run_scrape_wayback(
+            items,
+            country,
+            num_fetcher_workers=fetcher_workers,
+            num_parser_workers=parser_workers,
+        )
 
         # Log summary
         spider_log.info("=" * 60)

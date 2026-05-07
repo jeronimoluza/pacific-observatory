@@ -24,6 +24,12 @@ from .selectors import get_selectors, extract_with_fallback
 logger = logging.getLogger(__name__)
 
 
+class WaybackFetchError(Exception):
+    """Raised when the CDX API call fails (network, timeout, parse). A genuine
+    empty result (CDX returned []) is NOT an error and returns [] instead — only
+    this exception signals "do not cache an empty sentinel for this URL."""
+
+
 class WaybackScraper:
     """Scrapes historical product data from Wayback Machine archives."""
 
@@ -218,8 +224,9 @@ class WaybackScraper:
             )
 
             if result.returncode != 0:
-                logger.warning(f"Curl failed for {url}: {result.stderr}")
-                return []
+                raise WaybackFetchError(
+                    f"curl exit {result.returncode} for {url}: {result.stderr.strip()[:200]}"
+                )
 
             if result.stdout.strip() == "[]":
                 logger.debug(f"No snapshots found for {url}")
@@ -229,8 +236,7 @@ class WaybackScraper:
             try:
                 data = json.loads(result.stdout)
             except json.JSONDecodeError as e:
-                logger.debug(f"Failed to parse CDX API response for {url}: {e}")
-                return []
+                raise WaybackFetchError(f"CDX API returned non-JSON for {url}: {e}")
 
             # CDX API returns empty array [] when no snapshots found
             # CDX API JSON format with snapshots:
@@ -246,8 +252,9 @@ class WaybackScraper:
                 timestamp_idx = header.index("timestamp")
                 original_idx = header.index("original")
             except ValueError:
-                logger.warning(f"CDX API response missing expected columns for {url}")
-                return []
+                raise WaybackFetchError(
+                    f"CDX API response missing expected columns for {url}: header={header!r}"
+                )
 
             snapshots = []
             seen_timestamps = set()
@@ -274,12 +281,14 @@ class WaybackScraper:
             logger.debug(f"Found {len(snapshots)} unique snapshots for {url}")
             return snapshots
 
+        except WaybackFetchError:
+            raise
         except subprocess.TimeoutExpired:
-            logger.warning(f"Curl timeout while fetching snapshots for {url}")
-            return []
+            raise WaybackFetchError(f"curl timeout while fetching snapshots for {url}")
         except Exception as e:
-            logger.warning(f"Failed to fetch snapshots for {url}: {e}")
-            return []
+            raise WaybackFetchError(
+                f"unexpected error fetching snapshots for {url}: {e}"
+            )
 
     def _scrape_wayback_url(self, wayback_url: str) -> Optional[str]:
         """
@@ -392,25 +401,23 @@ class WaybackScraper:
                     input_queue.task_done()
                     continue
 
-                # Fetch new snapshots
+                # Fetch new snapshots. Only persist a sentinel (possibly empty
+                # list) when the CDX call genuinely succeeded — fetch failures
+                # raise WaybackFetchError and must not poison the resume cache.
                 try:
                     snapshots = self._fetch_wayback_snapshots(url)
-                    # Save snapshots regardless of whether they're empty or not
-                    # This prevents re-fetching URLs that have no snapshots
+                except WaybackFetchError as e:
+                    logger.warning(f"CDX fetch failed for {url}: {e}")
+                    output_queue.put((url_hash, []))
+                else:
                     self._save_snapshots(url_hash, snapshots, country)
-
                     if snapshots:
                         logger.debug(f"Found {len(snapshots)} snapshots for {url}")
                     else:
                         logger.warning(
                             f"No snapshots found for {url} - storing empty list to avoid re-fetching"
                         )
-
                     output_queue.put((url_hash, snapshots))
-                except Exception as e:
-                    logger.error(f"Error fetching snapshots for {url}: {e}")
-                    # Don't save on error - allow retry on next run
-                    output_queue.put((url_hash, []))
 
                 pbar_fetch.update(1)
                 input_queue.task_done()
@@ -546,19 +553,21 @@ class WaybackScraper:
             return output_file
 
     def run_scrape_wayback(
-        self, items: List[Dict[str, Any]], country: str, num_parser_workers: int = 1
+        self,
+        items: List[Dict[str, Any]],
+        country: str,
+        num_parser_workers: int = 1,
+        num_fetcher_workers: int = 1,
     ) -> Dict[str, Any]:
         """
         Run wayback machine scraping with parallel snapshot fetching and parsing.
 
-        Uses two worker threads:
-        1. Snapshot fetcher: Fetches snapshots from Wayback Machine CDX API
-        2. Parser: Parses snapshots and extracts product data (sequential to avoid interleaving)
-
         Args:
             items: List of product items with URLs
             country: Country code for directory structure
-            num_parser_workers: Number of parser worker threads (default: 1 for sequential processing)
+            num_parser_workers: parser worker threads (default 1; sequential parsing avoids interleaving)
+            num_fetcher_workers: CDX-fetcher worker threads (default 1). Bump to 4-8 for backfills;
+                IA tolerates 4-8 concurrent CDX queries from one client. Watch for HTTP 429.
 
         Returns:
             Summary statistics
@@ -607,14 +616,17 @@ class WaybackScraper:
         snapshot_queue = queue.Queue()  # Input queue for snapshot fetcher
         parse_queue = queue.Queue()  # Output from fetcher, input to parser
 
-        # Start snapshot fetcher thread
+        # Start snapshot fetcher threads
         pbar_fetch = tqdm(total=len(items_to_scrape), desc="Fetching snapshots")
-        fetcher_thread = threading.Thread(
-            target=self._snapshot_fetcher_worker,
-            args=(snapshot_queue, parse_queue, country, pbar_fetch),
-            daemon=True,
-        )
-        fetcher_thread.start()
+        fetcher_threads = []
+        for _ in range(num_fetcher_workers):
+            fetcher_thread = threading.Thread(
+                target=self._snapshot_fetcher_worker,
+                args=(snapshot_queue, parse_queue, country, pbar_fetch),
+                daemon=True,
+            )
+            fetcher_thread.start()
+            fetcher_threads.append(fetcher_thread)
 
         # Start parser worker threads
         pbar_parse = tqdm(total=len(items_to_scrape), desc="Parsing snapshots")
@@ -645,9 +657,11 @@ class WaybackScraper:
             parser_thread.join()
         pbar_parse.close()
 
-        # Send sentinel to stop fetcher
-        snapshot_queue.put((None, None))
-        fetcher_thread.join()
+        # Send sentinels to stop all fetcher workers
+        for _ in range(num_fetcher_workers):
+            snapshot_queue.put((None, None))
+        for t in fetcher_threads:
+            t.join()
 
         logger.info(
             f"Scraping completed: {stats['successful_scrapes']} successful, {stats['failed_scrapes']} failed, {stats['total_snapshots']} total snapshots"
