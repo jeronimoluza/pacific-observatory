@@ -141,6 +141,7 @@ _CSS = """
         font-size: 1.04em; font-weight: 600; color: #222;
         margin: 14px 0 2px 0;
     }
+    #tab3 .chart-title { margin: 18px 0 14px 0; }
     .chart-source {
         font-size: 0.78em; color: #888; margin: 0 0 8px 0;
     }
@@ -627,9 +628,9 @@ def gen_policy_html(
     <div class="section-label">Fuel Family:</div>
     <div class="chip-container" id="fuel-axis-chips"></div>
     <div id="fuel-meta-panel"></div>
-    <div class="panel-label">Panel A. Levels</div>
+    <div class="panel-label">Price Levels</div>
     <div class="chart-wrapper"><canvas id="fuel-chart"></canvas></div>
-    <div class="panel-label">Panel B. Daily Changes (%)</div>
+    <div class="panel-label">Daily Changes (%)</div>
     <div class="delta-chart-wrapper"><canvas id="fuel-delta-chart"></canvas></div>
 </div>
 
