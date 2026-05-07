@@ -39,6 +39,115 @@ regime_overrides:
     LPG: {regime: Price Control, subsidy: false}
     Kerosene: {regime: Price Control, subsidy: false}
 
+# Per-cell source attribution and reform notes for the regime table.
+# Keys: ISO3 -> product (Gasoline | Diesel | LPG | Kerosene) -> {classification_sources, reform}.
+# classification_sources: list of strings or {label, url} entries explaining where the
+#   regime classification comes from. Shown in the popover when the primary pill is clicked.
+# reform: optional. If present, a secondary pill is rendered next to the primary one.
+#   reform.label is the pill text; reform.note is the description; reform.sources is a list.
+regime_notes:
+  AFG:
+    Gasoline:
+      classification_sources:
+        - "Post-2021 deregulation: retail prices set by importers. No price control or subsidy."
+        - { label: "AFG Energy Information (Wikipedia)", url: "https://en.wikipedia.org/wiki/Energy_in_Afghanistan" }
+    Diesel:
+      classification_sources:
+        - "Post-2021 deregulation: retail prices set by importers."
+    LPG:
+      classification_sources:
+        - "Post-2021 deregulation: retail prices set by importers."
+    Kerosene:
+      classification_sources:
+        - "Post-2021 deregulation: retail prices set by importers."
+  MAR:
+    Gasoline:
+      classification_sources:
+        - "IMF Fossil Fuel Subsidies Database (2025 release, 2024 reference year): zero explicit subsidies for gasoline."
+        - { label: "World Bank Energy Pricing Regimes Dataset", url: "https://www.worldbank.org/en/topic/energy" }
+      reform:
+        label: "Reformed 2014–2015"
+        note: "Gasoline and diesel subsidies were eliminated in 2014–2015 as part of Morocco's broader subsidy reform programme. IMF 2025 reports zero explicit subsidies for these products."
+        sources:
+          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+    Diesel:
+      classification_sources:
+        - "IMF FFS 2025: zero explicit subsidies for diesel."
+      reform:
+        label: "Reformed 2014–2015"
+        note: "Diesel subsidies were eliminated in 2014–2015 alongside gasoline."
+        sources:
+          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+    LPG:
+      classification_sources:
+        - "IMF FFS 2025: positive implicit + explicit LPG subsidy."
+      reform:
+        label: "Prices rising 2024"
+        note: "LPG remains subsidised but retail prices were raised in 2024 as part of a gradual phase-out."
+        sources:
+          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+  PAK:
+    Gasoline:
+      classification_sources:
+        - "IMF FFS 2025 reference year is 2024 (subsidy data predates the reform)."
+      reform:
+        label: "Reformed 2024"
+        note: "Pakistan removed gasoline subsidies in 2024. The IMF 2025 release still reflects 2024 data and may overstate current subsidy levels."
+        sources:
+          - { label: "IMF Country Report — Pakistan", url: "https://www.imf.org/en/Countries/PAK" }
+    Diesel:
+      classification_sources:
+        - "IMF FFS 2025 (2024 reference year)."
+      reform:
+        label: "Reformed 2024"
+        note: "Diesel subsidies were also reduced as part of the 2024 reform programme."
+        sources:
+          - { label: "IMF Country Report — Pakistan", url: "https://www.imf.org/en/Countries/PAK" }
+  EGY:
+    Gasoline:
+      classification_sources:
+        - "IMF FFS 2025: small positive explicit subsidy for gasoline despite the indexation mechanism."
+      reform:
+        label: "Indexation since ~2019"
+        note: "Egypt removed most subsidies in the late 2010s and introduced a fuel price indexation mechanism that tracks global prices. Some small explicit subsidies remain in IMF 2025."
+        sources:
+          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+    Diesel:
+      classification_sources:
+        - "IMF FFS 2025: small positive explicit subsidy."
+      reform:
+        label: "Indexation since ~2019"
+        note: "Diesel is part of the same indexation mechanism introduced in the late 2010s."
+        sources:
+          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+  DZA:
+    Gasoline:
+      classification_sources:
+        - "Algeria operates a monthly pricing mechanism, but retail prices remain well below international supply cost."
+        - "IMF FFS 2025: large implicit subsidy."
+      reform:
+        label: "Monthly mechanism"
+        note: "A monthly pricing mechanism was introduced, but prices are still set well below cost; no meaningful phase-out yet."
+        sources:
+          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+  TUN:
+    Gasoline:
+      classification_sources:
+        - "IMF FFS 2025 (2024 reference year)."
+      reform:
+        label: "Reducing since 2024"
+        note: "Tunisia began reducing fuel subsidies in 2024 as part of fiscal consolidation."
+        sources:
+          - { label: "IMF Country Report — Tunisia", url: "https://www.imf.org/en/Countries/TUN" }
+    Diesel:
+      classification_sources:
+        - "IMF FFS 2025 (2024 reference year)."
+      reform:
+        label: "Reducing since 2024"
+        note: "Diesel subsidies are also being gradually reduced."
+        sources:
+          - { label: "IMF Country Report — Tunisia", url: "https://www.imf.org/en/Countries/TUN" }
+
 # Restrict scatter chart and KPI cards to this region's countries.
 scatter_focus_region: true
 

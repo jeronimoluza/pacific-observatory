@@ -217,6 +217,7 @@ def assemble_publish_data(
     pub_cfg = _load_publish_config(region)
     history_years = pub_cfg.get("dashboard_history_years", 3)
     regime_overrides = pub_cfg.get("regime_overrides", {})
+    regime_notes = pub_cfg.get("regime_notes", {})
 
     logger.info("Loading commodity data ...")
     comm_series = load_commodity_series(data_dir, history_years=history_years)
@@ -378,6 +379,7 @@ def assemble_publish_data(
         "products": PRODUCTS,
         "table_products": TABLE_PRODUCTS,
         "imf_raw_by_iso3": imf_raw_by_iso3,
+        "regime_notes": regime_notes,
     }
 
 
