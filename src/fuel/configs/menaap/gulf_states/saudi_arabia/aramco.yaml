@@ -44,6 +44,7 @@ products:
   "LPG":
     fuel_family: lpg
     unit: liter
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: false
     grade: standard
     series_key: lpg

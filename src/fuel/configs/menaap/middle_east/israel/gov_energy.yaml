@@ -62,10 +62,12 @@ products:
     series_key: lpg_reference
     fuel_family: lpg
     unit: ton
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: true
 
   "LPG Import":
     series_key: lpg_import
     fuel_family: lpg
     unit: ton
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: true

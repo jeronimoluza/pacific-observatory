@@ -449,10 +449,8 @@ def gen_policy_html(
     <div class="ctrl-row">
         <span class="row-label">Country:</span>
         <select id="fuel-country-select">{fuel_country_opts}</select>
-        <div class="toggle-group" style="margin-left:12px">
-            <label><input type="radio" name="currency-toggle" value="local" checked onchange="setCurrency('local')">Local Currency</label>
-            <label><input type="radio" name="currency-toggle" value="usd" onchange="setCurrency('usd')">USD</label>
-        </div>
+        <span class="row-label" style="margin-left:12px">Fuel:</span>
+        <div class="toggle-group" id="fuel-family-radios"></div>
     </div>
     <div class="slider-row">
         <label>Date Range:</label>
@@ -535,6 +533,7 @@ function switchTab(id, btn) {{
     }}
     if (id === 'tab3' && !fuelTabInitialized) {{
         fuelTabInitialized = true;
+        rebuildFuelFamilyRadios();
         rebuildFuelChips();
         initFuelSlider();
         rerenderFuel();
@@ -955,13 +954,6 @@ function formatYM(d) {{
     return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
 }}
 
-let fuelCurrencyMode = 'local';
-
-function setCurrency(mode) {{
-    fuelCurrencyMode = mode;
-    rerenderFuel();
-}}
-
 let fuelSliderDates = [];
 let fuelSlider = null;
 
@@ -1168,14 +1160,50 @@ function getFuelCountryRows() {{
     return FUEL_DATA[country] || [];
 }}
 
+var FUEL_FAMILY_ORDER = ["diesel","gasoline","lpg","kerosene","natural_gas","fuel_oil","electricity","crude_oil"];
+var FUEL_FAMILY_LABELS = {{
+    diesel: "Diesel", gasoline: "Gasoline", lpg: "LPG", kerosene: "Kerosene",
+    natural_gas: "Natural Gas", fuel_oil: "Fuel Oil", electricity: "Electricity", crude_oil: "Crude Oil",
+}};
+
+function getFuelFamily() {{
+    var el = document.querySelector('input[name="fuel-family-toggle"]:checked');
+    return el ? el.value : "";
+}}
+
+function setFuelFamily() {{
+    rebuildFuelChips();
+    rerenderFuel();
+}}
+
+function rebuildFuelFamilyRadios() {{
+    var rows = getFuelCountryRows();
+    var present = new Set();
+    rows.forEach(function(r) {{ if (r.fuel_family) present.add(r.fuel_family); }});
+    var ordered = FUEL_FAMILY_ORDER.filter(function(k) {{ return present.has(k); }});
+    var defaultKey = ordered.indexOf("diesel") >= 0 ? "diesel" : (ordered[0] || "");
+    var html = "";
+    ordered.forEach(function(k) {{
+        var checked = (k === defaultKey) ? " checked" : "";
+        var label = FUEL_FAMILY_LABELS[k] || k;
+        html += '<label><input type="radio" name="fuel-family-toggle" value="' + k + '"' + checked + ' onchange="setFuelFamily()">' + label + '</label>';
+    }});
+    var container = document.getElementById("fuel-family-radios");
+    if (container) container.innerHTML = html;
+}}
+
 function rebuildFuelChips() {{
     var rows = getFuelCountryRows();
+    var family = getFuelFamily();
+    if (family) rows = rows.filter(function(r) {{ return r.fuel_family === family; }});
     var keys = [...new Set(rows.map(chipKey))].sort();
     buildFuelChips("fuel-axis-chips", keys, rows);
 }}
 
 function rerenderFuel() {{
     var rows         = getFuelCountryRows();
+    var family       = getFuelFamily();
+    if (family) rows = rows.filter(function(r) {{ return r.fuel_family === family; }});
     window._fuelCountryRows = rows;
     var selectedKeys = getCheckedValues("fuel-axis-chips");
     var visibleRows  = rows.filter(function(r) {{ return selectedKeys.includes(chipKey(r)); }});
@@ -1184,8 +1212,7 @@ function rerenderFuel() {{
     if (range.to)   visibleRows = visibleRows.filter(function(r) {{ return r.observation_date <= range.to; }});
     updateFuelMeta(visibleRows);
 
-    var useUSD = fuelCurrencyMode === 'usd';
-    var priceField = useUSD ? 'price_usd' : 'price_local';
+    var priceField = 'price_local';
 
     if (!visibleRows.length) {{
         drawFuelChart([], "");
@@ -1195,16 +1222,12 @@ function rerenderFuel() {{
         return;
     }}
     var firstRow  = visibleRows[0];
-    var yLabel    = useUSD
-        ? "USD / " + (firstRow.unit || "L")
-        : (firstRow.currency || "") + " / " + (firstRow.unit || "");
+    var yLabel    = (firstRow.currency || "") + " / " + (firstRow.unit || "");
     var datasets  = [];
     var colorIdx  = 0;
     var keyColors = {{}};
     selectedKeys.forEach(function(key) {{
         var keyRows = visibleRows.filter(function(r) {{ return chipKey(r) === key; }});
-        if (!keyRows.length) return;
-        if (useUSD) keyRows = keyRows.filter(function(r) {{ return r.price_usd != null; }});
         if (!keyRows.length) return;
         var color  = PALETTE[colorIdx % PALETTE.length];
         var serLbl = chipLabel(key);
@@ -1334,6 +1357,7 @@ function updateFuelRegimeSection(countryName, selectedKeys, keyColors) {{
 }}
 
 document.getElementById("fuel-country-select").addEventListener("change", function() {{
+    rebuildFuelFamilyRadios();
     rebuildFuelChips();
     initFuelSlider();
     rerenderFuel();

@@ -6,7 +6,38 @@ dashboard_history_years: 3
 
 # Regime overrides for countries missing from WB pricing-regime CSV.
 # Keys are ISO3 codes; values are per-product {regime, subsidy} dicts.
-regime_overrides: {}
+# "Subsidised" badge is driven by IMF implicit subsidy data, not the subsidy field here.
+regime_overrides:
+  AFG:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+  IRQ:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+  KWT:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+  SYR:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+  PSE:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+  YEM:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
 
 # Restrict scatter chart and KPI cards to this region's countries.
 scatter_focus_region: true

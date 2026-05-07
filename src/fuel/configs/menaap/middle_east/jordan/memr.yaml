@@ -2,6 +2,7 @@ source_key: jo_memr_monthly
 module: menaap.middle_east.jordan.memr
 function: fetch_jo_memr
 url: https://www.memr.gov.jo/En/List/Retail_Prices_Of_all_Petroleum_Products
+enabled: false
 fallback_date: 2021-01-01
 priority: 90
 cadence: monthly
@@ -45,6 +46,7 @@ products:
     fuel_family: lpg
     unit: cylinder
     amount: 12.5
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: true
     grade: 12_5kg
     series_key: lpg_12_5kg
@@ -52,12 +54,14 @@ products:
     fuel_family: lpg
     unit: cylinder
     amount: 50
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: true
     grade: 50kg
     series_key: lpg_50kg
   "LPG Bulk":
     fuel_family: lpg
     unit: ton
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: true
     grade: bulk
     series_key: lpg_bulk
