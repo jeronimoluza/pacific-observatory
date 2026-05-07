@@ -1,0 +1,8 @@
+# DEFERRED — Tier 2
+# Major national daily. Custom CMS (not WordPress). No REST API found.
+# Requires custom HTML scraper. Revisit for Tier 1 pagination onboarding.
+# URL: https://listindiario.com
+name: Listín Diario
+country: dominican_republic
+language: es
+base_url: https://listindiario.com

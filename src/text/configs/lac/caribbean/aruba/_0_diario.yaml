@@ -1,0 +1,8 @@
+# DEFERRED — Tier 2
+# diario.aw uses Joomla with the "newsberg" template (not WordPress).
+# WP REST API endpoint returns 404. Custom scraper needed for Joomla CMS.
+# Main Papiamento newspaper in Aruba.
+name: Diario Aruba
+country: aruba
+language: pap
+base_url: https://diario.aw

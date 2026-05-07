@@ -1,0 +1,8 @@
+# DEFERRED: Congresso em Foco — https://congressoemfoco.uol.com.br/
+# WP API returns SPA HTML (Angular/React). No accessible JSON listing endpoint.
+# Tier 2: needs custom API or scraper approach.
+name: Congresso em Foco
+country: brazil
+language: portuguese
+base_url: https://congressoemfoco.uol.com.br
+enabled: false

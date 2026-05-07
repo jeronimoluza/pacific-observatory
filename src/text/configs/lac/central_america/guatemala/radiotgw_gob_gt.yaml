@@ -1,0 +1,39 @@
+name: Radiotgw
+language: es
+country: guatemala
+base_url: https://radiotgw.gob.gt
+
+# Categories: nacionales(7, 7718), informe-nacional(117, 582), economia(32, 376), primer-informe-de-gobierno-pdte-alejandro-giammattei(152, 18), eje-de-desarrollo-3-informe-de-gobierno(130, 12)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://radiotgw.gob.gt/wp-json/wp/v2/posts?per_page=100&categories=7,117,32,152,130&page={page}&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.entry-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

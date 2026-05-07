@@ -1,0 +1,8 @@
+# DEFERRED — Tier 2 (SPA / custom CMS, React-rendered)
+# Site: https://larepublica.pe
+# WP API returns HTML (React SPA, no REST endpoint exposed)
+# Needs custom JS-based fetcher or direct API reverse-engineering
+name: La República
+country: peru
+language: es
+base_url: https://larepublica.pe

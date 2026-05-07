@@ -1,0 +1,39 @@
+name: bartabazar.com
+language: en
+country: bangladesh
+base_url: https://bartabazar.com
+
+# Categories: politics(21173), national(17779), international(13481), %e0%a6%a2%e0%a6%be%e0%a6%95%e0%a6%be(7995), %e0%a6%9a%e0%a6%9f%e0%a7%8d%e0%a6%9f%e0%a6%97%e0%a7%8d%e0%a6%b0%e0%a6%be%e0%a6%ae(7619)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://bartabazar.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=22,14,5,36,37&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.entry-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,39 @@
+name: Contextodedurango
+language: es
+country: mexico
+base_url: https://contextodedurango.com.mx
+
+# Categories: noticias-nacionales(129, 4905), noticias-locales(124, 21107), noticias-policiacas(131, 2875), noticias-culturales(126, 1562), noticias-farandula(135, 289)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://contextodedurango.com.mx/wp-json/wp/v2/posts?per_page=100&categories=129,124,131,126,135&page={page}&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.entry-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

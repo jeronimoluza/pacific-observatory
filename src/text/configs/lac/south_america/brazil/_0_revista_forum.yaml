@@ -1,0 +1,8 @@
+# DEFERRED: Revista Fórum — https://revistaforum.com.br/
+# WP API returns auth-restricted response: {"code":"rest_cannot_access","message":"DRA: Only authenticated users can access the REST API."}
+# Tier 2: WP API blocked, requires authentication.
+name: Revista Fórum
+country: brazil
+language: portuguese
+base_url: https://revistaforum.com.br
+enabled: false

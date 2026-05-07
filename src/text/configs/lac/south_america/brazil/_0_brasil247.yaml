@@ -1,0 +1,7 @@
+# Brasil 247 — https://brasil247.com/
+# Deferred: Next.js SPA — no WP API, content loaded client-side.
+# Tier 3: requires browser automation (Playwright).
+name: Brasil 247
+country: brazil
+language: portuguese
+base_url: https://brasil247.com

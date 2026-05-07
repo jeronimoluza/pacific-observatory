@@ -1,0 +1,9 @@
+# Unusable with current pipeline strategies.
+# Reason: sgcaptcha challenge page blocks all automated access — homepage returns
+#         a meta-refresh redirect to /.well-known/sgcaptcha/ for non-browser clients.
+# Reason: WP API endpoint also protected behind captcha.
+# URL: https://www.htsstlucia.org/
+name: HTS St. Lucia
+country: st_lucia
+language: en
+base_url: https://www.htsstlucia.org

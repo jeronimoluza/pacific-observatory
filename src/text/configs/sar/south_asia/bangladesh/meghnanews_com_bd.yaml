@@ -1,0 +1,39 @@
+name: meghnanews.com.bd
+language: en
+country: bangladesh
+base_url: https://meghnanews.com.bd
+
+# Categories: %e0%a6%85%e0%a6%a8%e0%a7%8d%e0%a6%af%e0%a6%be%e0%a6%a8%e0%a7%8d%e0%a6%af(1436), crime_justice(1010), %e0%a6%95%e0%a7%81%e0%a7%9c%e0%a6%bf%e0%a6%97%e0%a7%8d%e0%a6%b0%e0%a6%be%e0%a6%ae-%e0%a6%9c%e0%a7%87%e0%a6%b2%e0%a6%be(730), %e0%a6%95%e0%a7%81%e0%a6%ae%e0%a6%bf%e0%a6%b2%e0%a7%8d%e0%a6%b2%e0%a6%be-%e0%a6%9c%e0%a7%87%e0%a6%b2%e0%a6%be(632), %e0%a6%95%e0%a6%b0%e0%a7%8b%e0%a6%a8%e0%a6%be-%e0%a6%ad%e0%a6%be%e0%a6%87%e0%a6%b0%e0%a6%be%e0%a6%b8(528)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://meghnanews.com.bd/wp-json/wp/v2/posts?per_page=100&page={page}&categories=36,21,8687,106,27481&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.entry-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

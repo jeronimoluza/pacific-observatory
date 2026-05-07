@@ -1,0 +1,8 @@
+# Unusable with current pipeline strategies.
+# Reason: Custom PHP CMS (storyid-based, anchor fragments on homepage). No standard pagination
+# or WP API. Archive is date-search form (JS popup), not linkable pages.
+# URL: https://www.7newsbelize.com/
+name: 7 News Belize
+country: belize
+language: en
+base_url: https://www.7newsbelize.com

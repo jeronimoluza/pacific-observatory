@@ -1,0 +1,39 @@
+name: Qcolombia
+language: es
+country: colombia
+base_url: https://qcolombia.com
+
+# Categories: inside-colombia(90, 262), latest-colombia-news(9, 4055), bogota-colombia-news(28, 332), medellin-colombia-news(61, 154), cali-colombia-news(60, 113)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://qcolombia.com/wp-json/wp/v2/posts?per_page=100&categories=90,9,28,61,60&page={page}&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.entry-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

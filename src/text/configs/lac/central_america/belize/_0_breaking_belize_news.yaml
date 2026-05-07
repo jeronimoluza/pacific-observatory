@@ -1,0 +1,7 @@
+# Unusable with current pipeline strategies.
+# Reason: Cloudflare JS challenge blocks all requests (managed challenge, requires JS execution).
+# URL: https://www.breakingbelizenews.com/
+name: Breaking Belize News
+country: belize
+language: en
+base_url: https://www.breakingbelizenews.com

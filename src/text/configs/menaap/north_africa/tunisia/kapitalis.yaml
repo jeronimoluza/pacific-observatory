@@ -1,0 +1,31 @@
+name: Kapitalis
+language: fr
+country: tunisia
+base_url: https://kapitalis.com
+
+listing:
+  type: pagination
+  url_template: "https://kapitalis.com/tunisie/category/politique/page/{num}/"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "article.cmsmasters_roll_titles_post"
+    title: "h4.entry-title a::text"
+    url: "h4.entry-title a::attr(href)"
+  article:
+    body: "div.cmsmasters_post_content p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

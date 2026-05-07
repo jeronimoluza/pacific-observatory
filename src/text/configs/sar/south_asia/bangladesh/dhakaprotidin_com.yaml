@@ -1,0 +1,39 @@
+name: www.dhakaprotidin.com
+language: en
+country: bangladesh
+base_url: https://www.dhakaprotidin.com
+
+# Categories: %e0%a6%9c%e0%a6%be%e0%a6%a4%e0%a7%80%e0%a6%af%e0%a6%bc(8047), %e0%a6%b8%e0%a6%be%e0%a6%b0%e0%a6%be%e0%a6%ac%e0%a6%be%e0%a6%82%e0%a6%b2%e0%a6%be(7129), %e0%a6%86%e0%a6%a8%e0%a7%8d%e0%a6%a4%e0%a6%b0%e0%a7%8d%e0%a6%9c%e0%a6%be%e0%a6%a4%e0%a6%bf%e0%a6%95(2658), %e0%a6%9a%e0%a6%9f%e0%a7%8d%e0%a6%9f%e0%a6%97%e0%a7%8d%e0%a6%b0%e0%a6%be%e0%a6%ae(2110), %e0%a6%96%e0%a7%87%e0%a6%b2%e0%a6%be(1952)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.dhakaprotidin.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=2,11,6,1802,7&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.entry-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

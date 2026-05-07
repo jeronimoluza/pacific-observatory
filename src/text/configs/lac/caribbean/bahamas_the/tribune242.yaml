@@ -1,0 +1,32 @@
+name: Tribune 242
+country: bahamas_the
+language: en
+base_url: https://www.tribune242.com
+
+listing:
+  type: pagination
+  url_template: "https://www.tribune242.com/news/?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.item"
+    title: "h4 a::text"
+    url: "h4 a::attr(href)"
+  article:
+    body: "div.story_body p"
+    date: "p.datetime a::text"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

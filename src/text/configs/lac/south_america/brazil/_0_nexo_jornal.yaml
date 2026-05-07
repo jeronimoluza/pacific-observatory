@@ -1,0 +1,8 @@
+# DEFERRED: Nexo Jornal — https://nexojornal.com.br/
+# WP API returns SPA HTML (Next.js). Hard paywall for all articles.
+# Tier 3: SPA + paywall. Skip.
+name: Nexo Jornal
+country: brazil
+language: portuguese
+base_url: https://nexojornal.com.br
+enabled: false

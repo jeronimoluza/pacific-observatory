@@ -1,0 +1,39 @@
+name: Diarioarmenia
+language: es
+country: argentina
+base_url: https://www.diarioarmenia.org.ar
+
+# Categories: consejo-nacional-armenio(68, 220), fondo-nacional-armenia(75, 75), noticias-locales(230, 252), mar-del-plata-noticias-locales(201, 27)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.diarioarmenia.org.ar/wp-json/wp/v2/posts?per_page=100&categories=68,75,230,201&page={page}&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.entry-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

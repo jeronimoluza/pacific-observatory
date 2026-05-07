@@ -1,0 +1,33 @@
+name: The Sun Dominica
+country: dominica
+language: en
+base_url: https://sundominica.com
+
+# Custom shakfu CMS; article cards: li.media; pagination: /news/?page=N
+listing:
+  type: pagination
+  url_template: "https://sundominica.com/news/?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "li.media"
+    title: "h4.media-heading a::text"
+    url: "h4.media-heading a::attr(href)"
+  article:
+    body: "div.body p"
+    date: "div.date::text"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

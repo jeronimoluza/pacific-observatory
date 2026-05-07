@@ -1,0 +1,29 @@
+# Unusable with current pipeline strategies.
+# Reason: Cloudflare managed challenge (HTTP 403, cf-mitigated: challenge) blocks all
+# requests including homepage and WP API endpoint — no content is accessible without JS
+# execution. Pre-noted: page 2+ blocked even if page 1 per category were accessible.
+name: INA (Iraqi News Agency)
+language: en
+country: iraq
+base_url: https://ina.iq/en
+listing:
+  type: pagination
+  url_template: "https://ina.iq/en/page/{num}/"
+  start_page: 1
+  step: 1
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
