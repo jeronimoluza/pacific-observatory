@@ -110,6 +110,7 @@ _CSS = """
         display: inline-block; padding: 2px 9px; border-radius: 12px;
         font-size: 0.78em; font-weight: 600; color: #fff; white-space: nowrap;
         border: 1px solid transparent; cursor: pointer; font-family: inherit;
+        vertical-align: middle;
     }
     .regime-pill:hover { filter: brightness(1.08); border-color: rgba(0,0,0,0.18); }
     .regime-pill:focus-visible { outline: 2px solid #667eea; outline-offset: 1px; }
@@ -118,6 +119,19 @@ _CSS = """
         border: 1px dashed #b0b0b0; font-weight: 500;
     }
     .regime-pill.regime-reform:hover { color: #222; border-color: #667eea; }
+    .regime-chip {
+        display: inline-flex; white-space: nowrap; vertical-align: middle;
+    }
+    .regime-chip > .regime-pill { border-radius: 0; }
+    .regime-chip > .regime-pill:first-child {
+        border-top-left-radius: 12px; border-bottom-left-radius: 12px;
+    }
+    .regime-chip > .regime-pill:last-child {
+        border-top-right-radius: 12px; border-bottom-right-radius: 12px;
+    }
+    .regime-chip > .regime-pill:not(:last-child) {
+        border-right: 1px solid rgba(255,255,255,0.55);
+    }
     .regime-hint {
         font-size: 0.84em; color: #777; font-style: italic;
         margin: 4px 0 8px 0;
@@ -435,7 +449,7 @@ def gen_policy_html(
                 f'<div id="{primary_tip_id}" class="regime-tip-source">{primary_tip_body}</div>'
             )
 
-            cell_html = (
+            chip_inner = (
                 f'<button type="button" class="regime-pill" '
                 f'style="background:{bc}" data-tip-id="{primary_tip_id}"'
                 f"{tooltip_attr}>{base_label}</button>"
@@ -457,11 +471,13 @@ def gen_policy_html(
                 popover_blocks.append(
                     f'<div id="{subs_tip_id}" class="regime-tip-source">{subs_tip_body}</div>'
                 )
-                cell_html += (
-                    f' <button type="button" class="regime-pill" '
+                chip_inner += (
+                    f'<button type="button" class="regime-pill" '
                     f'style="background:{_SUBSIDY_COLOR}" '
                     f'data-tip-id="{subs_tip_id}">Subsidised</button>'
                 )
+
+            cell_html = f'<span class="regime-chip">{chip_inner}</span>'
 
             reform = note_for_prod.get("reform") or {}
             if reform:
