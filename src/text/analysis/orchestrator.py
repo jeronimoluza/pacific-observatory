@@ -70,6 +70,44 @@ def _group_news_dirs_by_country(news_dirs: Iterable[Path]) -> dict[Path, list[Pa
     return dict(grouped)
 
 
+def _dedup_source_counts(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalize ym and drop (source_key, date) duplicates.
+
+    The cache can carry monthly ym in two forms ("2026-4" and "2026-04") plus
+    daily form ("2026-04-01") — leftover from past builds when daily_tail_start
+    moved or different code paths produced different paddings. Two distinct ym
+    strings that resolve to the same date break the pivot in
+    standardize.pivot_to_wide. Normalize monthly ym to zero-padded ("2026-04")
+    and dedupe by (source_key, date), keeping the daily form when both monthly
+    and daily exist for the same date.
+    """
+    if (
+        df is None
+        or df.empty
+        or "ym" not in df.columns
+        or "source_key" not in df.columns
+    ):
+        return df
+    work = df.copy()
+    ym_str = work["ym"].astype(str)
+    # Normalize monthly form: "YYYY-M" or "YYYY-MM" → "YYYY-MM"
+    monthly_mask = ym_str.str.fullmatch(r"\d{4}-\d{1,2}")
+    if monthly_mask.any():
+        normalized = ym_str.where(~monthly_mask).copy()
+        parts = ym_str[monthly_mask].str.split("-", expand=True)
+        normalized.loc[monthly_mask] = parts[0] + "-" + parts[1].str.zfill(2)
+        work["ym"] = normalized
+    work["_date"] = pd.to_datetime(work["ym"], format="mixed")
+    work["_len"] = work["ym"].astype(str).str.len()
+    work = (
+        work.sort_values(["source_key", "_date", "_len"], kind="stable")
+        .drop_duplicates(subset=["source_key", "_date"], keep="last")
+        .drop(columns=["_date", "_len"])
+        .reset_index(drop=True)
+    )
+    return work
+
+
 # ── Annotation gate (decides full / tail / skip) ─────────────────────
 
 
@@ -212,15 +250,10 @@ def _ensure_country_source_counts(
     # Replace the cached tail rows for affected sources with the new ones.
     if extended_frames:
         new_rows = pd.concat(extended_frames, ignore_index=True)
-        # Per affected source, drop cached rows whose ym is newer than the cutoff
-        # (we re-annotated those rows). For simplicity we drop the affected
-        # source's rows beyond the smallest cutoff per source and append.
         merged = pd.concat([cached_df, new_rows], ignore_index=True)
-        # Last-write-wins on (source_key, ym) key.
-        merged = merged.drop_duplicates(subset=["source_key", "ym"], keep="last")
-        df_out = merged
+        df_out = _dedup_source_counts(merged)
     else:
-        df_out = cached_df
+        df_out = _dedup_source_counts(cached_df)
 
     params_obj = source_counts.SourceCountsParams(
         schema_version=source_counts.SCHEMA_VERSION,

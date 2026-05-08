@@ -93,17 +93,22 @@ def pivot_to_wide(
     sources = sorted(source_counts["source_key"].unique())
     metric_cols = [c for c in source_counts.columns if c not in ("source_key", "ym")]
 
-    pivoted = source_counts.pivot_table(
-        index="ym",
+    # Pivot on resolved date, not ym. Different sources can carry different ym
+    # paddings ("2026-04" vs "2026-04-01") for the same date when a previous
+    # tail_start ran while only some sources had daily data — pivoting on ym
+    # would split those rows and break the downstream date-merge.
+    sc = source_counts.copy()
+    sc["_date"] = pd.to_datetime(sc["ym"], format="mixed")
+
+    pivoted = sc.pivot_table(
+        index="_date",
         columns="source_key",
         values=metric_cols,
         aggfunc="sum",
         fill_value=0,
     )
     pivoted.columns = [f"{src}_{metric}" for metric, src in pivoted.columns]
-    pivoted = pivoted.reset_index()
-
-    pivoted["date"] = pivoted["ym"].apply(_ym_to_date)
+    pivoted = pivoted.reset_index().rename(columns={"_date": "date"})
 
     # Determine date range for continuous index
     min_date = pivoted["date"].min()
