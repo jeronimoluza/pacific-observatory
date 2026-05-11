@@ -1,0 +1,39 @@
+name: Business Bhutan
+language: en
+country: bhutan
+base_url: https://businessbhutan.bt
+
+# Categories: national-news(14), politics(20), business(17), editorial(6), latest-news(13)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://businessbhutan.bt/wp-json/wp/v2/posts?per_page=100&page={page}&categories=14,20,17,6&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.elementor-widget-theme-post-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

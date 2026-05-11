@@ -1,0 +1,42 @@
+name: Tiempo Argentino (DISABLED)
+country: argentina
+language: es
+base_url: https://www.tiempoar.com.ar
+
+# DISABLED: Site has been taken over by gambling/casino spam content
+# (Russian-language gambling articles in WP REST output as of 2026-05).
+# WordPress REST API responds but title.rendered contains Cyrillic gambling spam.
+# Keep this stub so it is not reconsidered. Re-enable only if the legitimate
+# news site is restored and titles return to Spanish news.
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.tiempoar.com.ar/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

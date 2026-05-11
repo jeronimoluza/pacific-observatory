@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import click
@@ -10,10 +9,7 @@ import pandas as pd
 
 from core.config import discover_pipeline_configs
 from text.analysis.baseline import (
-    cache_matches_baseline,
-    cached_baseline_window,
     format_baseline_window,
-    has_modern_baseline_window,
     normalize_bound,
     source_key_for_news_path,
 )
@@ -46,22 +42,6 @@ def _validate_baseline_window(
     return cutoff_start_date, cutoff_end_date
 
 
-def _prompt_baseline_window() -> tuple[str | None, str | None]:
-    """Prompt the operator for a baseline window."""
-    click.echo("  Enter baseline window for standardization.")
-    cutoff_start_date = click.prompt(
-        "  Cutoff start date (YYYY-MM-DD, blank for open start)",
-        default="",
-        show_default=False,
-    )
-    cutoff_end_date = click.prompt(
-        "  Cutoff end date (YYYY-MM-DD, blank for today)",
-        default="",
-        show_default=False,
-    )
-    return _validate_baseline_window(cutoff_start_date, cutoff_end_date)
-
-
 def _requested_unit_names(units: list[dict]) -> tuple[list[str], list[str]]:
     """Split preview units into country and aggregate labels."""
     countries = [u["name"] for u in units if u.get("level") == "country"]
@@ -69,97 +49,51 @@ def _requested_unit_names(units: list[dict]) -> tuple[list[str], list[str]]:
     return countries, aggregates
 
 
-def _inspect_cached_windows(units: list[dict]) -> set[tuple[str | None, str | None]]:
-    """Return the unique modern cached baseline windows among the selected units."""
-    windows = set()
-    for unit in units:
-        params_path = unit["cache_dir"] / "params.json"
-        cache_path = unit["cache_dir"] / "epu_stats_cache.csv"
-        if not (params_path.exists() and cache_path.exists()):
-            continue
-        try:
-            params = json.loads(params_path.read_text(encoding="utf-8"))
-        except Exception:
-            continue
-        if has_modern_baseline_window(params):
-            windows.add(cached_baseline_window(params))
-    return windows
-
-
 def _classify_units(
     units: list[dict],
     cutoff_start_date: str | None,
     cutoff_end_date: str | None,
 ) -> tuple[list[str], list[str]]:
-    """Return unit names whose caches match or require full rebuild."""
-    matching = []
-    rebuild = []
+    """Return unit names whose source_counts cache is current vs stale.
+
+    Aggregate units (level != "country") never have their own cache; their
+    "freshness" is implicitly the staleness of their constituent countries,
+    so we lump them in with `matching` (the per-country gate handles
+    auto-build during processing).
+    """
+    from src.text.analysis import source_counts as sc
+    from src.text.analysis.orchestrator import KEYWORDS_ROOT
+    from src.text.analysis.utils import LANGUAGE_ALIASES
+
+    matching: list[str] = []
+    rebuild: list[str] = []
     for unit in units:
-        params_path = unit["cache_dir"] / "params.json"
-        cache_path = unit["cache_dir"] / "epu_stats_cache.csv"
-        if not (params_path.exists() and cache_path.exists()):
-            rebuild.append(unit["name"])
-            continue
-        try:
-            params = json.loads(params_path.read_text(encoding="utf-8"))
-        except Exception:
-            rebuild.append(unit["name"])
-            continue
-        current_sources = {
-            source_key_for_news_path(fp) for fp in unit.get("news_dirs", [])
-        }
-        if cache_matches_baseline(
-            params,
-            current_sources,
-            cutoff_start_date,
-            cutoff_end_date,
-        ):
+        if unit.get("level") != "country":
             matching.append(unit["name"])
-        else:
-            rebuild.append(unit["name"])
+            continue
+        cache_dir = unit["cache_dir"]
+        _, cached_params = sc.read_source_counts(cache_dir)
+        source_keys = sorted(
+            source_key_for_news_path(fp) for fp in unit.get("news_dirs", [])
+        )
+        languages = {
+            LANGUAGE_ALIASES.get(lang, lang)
+            for lang in (unit.get("source_languages") or {}).values()
+        }
+        keyword_hashes = sc.keyword_hash_bundle(KEYWORDS_ROOT, languages)
+        stale, _ = sc.is_stale(cached_params, source_keys, keyword_hashes)
+        (rebuild if stale else matching).append(unit["name"])
     return matching, rebuild
-
-
-def _resolve_baseline_window(
-    units: list[dict],
-    yes: bool,
-    cutoff_start_date: str | None,
-    cutoff_end_date: str | None,
-) -> tuple[str | None, str | None]:
-    """Resolve the requested invocation-wide baseline window."""
-    if cutoff_start_date is not None or cutoff_end_date is not None:
-        return _validate_baseline_window(cutoff_start_date, cutoff_end_date)
-
-    if yes:
-        raise click.ClickException(
-            "Non-interactive builds require --cutoff-start-date and/or --cutoff-end-date."
-        )
-
-    cached_windows = _inspect_cached_windows(units)
-    if len(cached_windows) == 1:
-        cached_start, cached_end = next(iter(cached_windows))
-        click.echo(
-            "  Cached baseline window: "
-            + format_baseline_window(cached_start, cached_end)
-        )
-        if click.confirm("  Reuse this baseline?", default=True):
-            return cached_start, cached_end
-    elif len(cached_windows) > 1:
-        click.echo("  Multiple cached baseline windows detected. Enter a new one.")
-        for start, end in sorted(cached_windows):
-            click.echo("   - " + format_baseline_window(start, end))
-
-    return _prompt_baseline_window()
 
 
 def run_build(
     region=None,
     subregion=None,
     country=None,
-    yes=False,
     cutoff_start_date=None,
     cutoff_end_date=None,
     rebuild=False,
+    max_parallel_sources: int = 1,
 ):
     """Run EPU analysis for matching units (countries + aggregates)."""
     countries = set()
@@ -186,11 +120,8 @@ def run_build(
         subregion=subregion,
         countries=list(countries) if country else None,
     )
-    cutoff_start_date, cutoff_end_date = _resolve_baseline_window(
-        preview_units,
-        yes=yes,
-        cutoff_start_date=cutoff_start_date,
-        cutoff_end_date=cutoff_end_date,
+    cutoff_start_date, cutoff_end_date = _validate_baseline_window(
+        cutoff_start_date, cutoff_end_date
     )
 
     matching_units: list[str] = []
@@ -201,16 +132,11 @@ def run_build(
             cutoff_start_date,
             cutoff_end_date,
         )
-        if matching_units and rebuild_units and not yes:
+        if matching_units and rebuild_units:
             click.echo()
             click.echo("  Units requiring full rebuild:")
             for unit_name in rebuild_units:
                 click.echo(f"   - {unit_name}")
-            click.confirm(
-                "  Continue with incremental builds for matching units and full rebuilds for the units above?",
-                default=True,
-                abort=True,
-            )
 
     _preview_countries, preview_aggregates = _requested_unit_names(preview_units)
 
@@ -230,9 +156,6 @@ def run_build(
         click.echo(f"  Full rebuild units: {len(rebuild_units)}")
     click.echo()
 
-    if not yes:
-        click.confirm("  Proceed?", abort=True)
-
     try:
         run_analysis(
             region=region,
@@ -241,7 +164,7 @@ def run_build(
             cutoff_start_date=cutoff_start_date,
             cutoff_end_date=cutoff_end_date,
             recalculate_params=rebuild,
-            yes=yes,
+            max_parallel_sources=max_parallel_sources,
         )
     except ImportError:
         click.echo("  Analysis module not yet migrated. Skipping.")

@@ -1,0 +1,38 @@
+name: Guinea InfoMarket
+country: equatorial_guinea
+language: es
+base_url: https://www.guineainfomarket.com
+
+# Categories: Economia(1720), Energia(1445), Banca(357), Gobierno(508), Sociedad(4230), Politica(3621)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.guineainfomarket.com/?rest_route=/wp/v2/posts&per_page=100&page={page}&categories=1720,1445,357,508,4230,3621"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 8
+retry_seconds: 5.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,8 @@
+# DEFERRED: Intercept Brasil — https://theintercept.com/brasil/
+# Cloudflare protection on WP API endpoint. Returns "Just a moment..." challenge page.
+# Tier 3: Cloudflare-blocked. Skip.
+name: Intercept Brasil
+country: brazil
+language: portuguese
+base_url: https://theintercept.com/brasil/
+enabled: false

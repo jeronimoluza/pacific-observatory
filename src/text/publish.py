@@ -247,7 +247,7 @@ def _build_dashboard_json(units: list) -> dict:
     return data
 
 
-def run_publish(region=None, subregion=None, country=None, yes=False):
+def run_publish(region=None, subregion=None, country=None):
     """Build dashboard_data.json and generate EPU dashboards."""
     units = _discover_units(region=region, subregion=subregion, country=country)
 
@@ -269,9 +269,6 @@ def run_publish(region=None, subregion=None, country=None, yes=False):
             f"  Aggregates: {', '.join(u['slug'] + ' (' + u['level'] + ')' for u in agg_units)}"
         )
     click.echo()
-
-    if not yes:
-        click.confirm("  Proceed?", abort=True)
 
     click.echo("  Building dashboard_data.json...")
     dashboard = _build_dashboard_json(units)

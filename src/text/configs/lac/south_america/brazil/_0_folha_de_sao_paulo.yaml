@@ -1,0 +1,8 @@
+# DEFERRED: Folha de S.Paulo — https://www.folha.uol.com.br/
+# WP API returns SPA HTML (Next.js). Paywall for most content. No open JSON listing endpoint.
+# Tier 3: SPA + paywall. Skip.
+name: Folha de S.Paulo
+country: brazil
+language: portuguese
+base_url: https://www.folha.uol.com.br
+enabled: false

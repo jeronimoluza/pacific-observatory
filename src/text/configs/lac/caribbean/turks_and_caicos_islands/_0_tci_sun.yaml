@@ -1,0 +1,37 @@
+name: TCI Sun
+country: turks_and_caicos_islands
+language: en
+base_url: https://suntci.com
+
+# DEFERRED - Tier 2: bulletlink.com CMS with Cloudflare anti-bot protection.
+# Content is JavaScript-rendered; direct HTTP scraping blocked (Cloudflare challenge pages served).
+# Same CMS platform as tcweeklynews.com — both use bulletlink.com template system.
+# Requires headless browser (Playwright/Selenium) to bypass JS rendering + Cloudflare challenge.
+
+listing:
+  type: pagination
+  url_template: "https://suntci.com/"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "TODO"
+    title: "TODO"
+    url: "TODO"
+  article:
+    body: "TODO"
+    date: "TODO"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

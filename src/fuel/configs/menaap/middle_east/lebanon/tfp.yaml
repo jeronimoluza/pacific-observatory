@@ -4,6 +4,7 @@ function: fetch_tfp_lb
 url: https://www.thefuelprice.com/Flb/en
 fallback_date: 2003-01-01
 default_unit: gallon
+enabled: false
 priority: 50
 cadence: monthly
 carry_forward: true
@@ -33,6 +34,7 @@ products:
     fuel_family: lpg
     unit: kilogram
     amount: 10
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: true
     grade: 10kg
     series_key: lpg_10kg

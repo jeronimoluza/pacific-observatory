@@ -1,0 +1,38 @@
+name: Togo Breaking News
+country: togo
+language: fr
+base_url: https://togobreakingnews.info
+
+# Categories: politique(48)=2858, economie(24)=2737, cooperation(36)=1324, gouvernance(11)=166 — depth back to 2014-04
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://togobreakingnews.info/wp-json/wp/v2/posts?per_page=100&page={page}&categories=48,24,36,11"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,8 @@
+# DEFERRED — Tier 2
+# amigoe.com uses a custom PHP/jQuery CMS (not WordPress, not standard pagination).
+# No REST API detected. Custom scraper needed.
+# Dutch-language newspaper covering Aruba and Curacao.
+name: Amigoe Aruba
+country: aruba
+language: nl
+base_url: https://amigoe.com

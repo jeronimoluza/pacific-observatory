@@ -1,0 +1,39 @@
+name: Latinamericanpost
+language: es
+country: colombia
+base_url: http://www.latinamericanpost.com
+
+# Categories: negocios-y-finanzas(45729, 767), economia(30094, 1124), business-and-finance(30080, 1062), politica(46458, 566), economy-en(30084, 1196)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "http://www.latinamericanpost.com/wp-json/wp/v2/posts?per_page=100&categories=45729,30094,30080,46458,30084&page={page}&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.entry-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

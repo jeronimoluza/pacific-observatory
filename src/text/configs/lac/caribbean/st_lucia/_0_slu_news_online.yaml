@@ -1,0 +1,9 @@
+# Not a local news source — content farm for celebrity/entertainment.
+# Reason: Categories are entirely celebrity profiles (Instagram Star, TikTok Star,
+#         Actresses, Models, etc.) — no national news, politics, or economy content.
+# Reason: Not suitable for EPU index; would pollute signal with off-topic content.
+# URL: https://www.stlucianewsonline.com/
+name: St. Lucia News Online
+country: st_lucia
+language: en
+base_url: https://www.stlucianewsonline.com

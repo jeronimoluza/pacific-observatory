@@ -2,6 +2,8 @@
 
 Source: Investing.com internal API + HTML fallback.
 Smart backfill: API → Playwright (optional) → HTML __NEXT_DATA__.
+HTML fetches use Playwright with a fresh ``browser.new_context()`` per slug
+to bypass Cloudflare bot fingerprinting (verified 2026-05-04).
 """
 
 from __future__ import annotations
@@ -12,6 +14,7 @@ import time
 from datetime import date, timedelta
 
 import pandas as pd
+from playwright.sync_api import Browser, sync_playwright
 
 from core.hashing import observation_hash
 from core.http import make_session
@@ -91,6 +94,11 @@ _INVESTING_API_HEADERS = {
     "X-Requested-With": "XMLHttpRequest",
     "Domain": "www.investing.com",
 }
+
+# Playwright fetch settings — fresh context per slug defeats CF bot fingerprinting
+_INVESTING_USER_AGENT = _INVESTING_HEADERS["User-Agent"]
+_INVESTING_VIEWPORT = {"width": 1366, "height": 900}
+_INVESTING_SETTLE_MS = 2500  # let CF challenge run after domcontentloaded
 
 _HASH_FIELDS = [
     "country",
@@ -304,37 +312,54 @@ _FETCH_RETRIES = 3
 _FETCH_RETRY_SLEEP = 5
 
 
-def _fetch_series(slug: str, cutoff: date, session) -> list[dict]:
-    """Smart 3-stage fetch: API → Playwright → HTML fallback.
+def _fetch_series(slug: str, cutoff: date, session, browser: Browser) -> list[dict]:
+    """Smart 3-stage fetch: API → Playwright backfill → HTML fallback.
 
+    The HTML fetch uses Playwright with a **fresh context per slug** to defeat
+    Cloudflare's bot fingerprinting — plain `requests` returns 403 since 2026-05-04.
     Stage 3 (HTML) returns all ~20 rows without cutoff filtering — deduplication
     is handled downstream by ``_merge_new_rows`` via ``observation_hash``.
     """
     url = f"{_INVESTING_BASE}{slug}-historical-data"
+    html: str | None = None
 
-    resp = None
     for attempt in range(1, _FETCH_RETRIES + 1):
+        # Fresh context each attempt — wipes CF fingerprint score between slugs
+        ctx = browser.new_context(
+            user_agent=_INVESTING_USER_AGENT,
+            locale="en-US",
+            viewport=_INVESTING_VIEWPORT,
+        )
+        page = ctx.new_page()
         try:
-            resp = session.get(url, timeout=30)
-            if resp.status_code != 200:
+            try:
+                resp = page.goto(url, wait_until="domcontentloaded", timeout=45000)
+            except Exception as e:
                 logger.info(
-                    "HTTP %d for %s (attempt %d)", resp.status_code, slug, attempt
+                    "Navigation error for %s (attempt %d): %s", slug, attempt, e
                 )
-                resp = None
                 if attempt < _FETCH_RETRIES:
                     time.sleep(_FETCH_RETRY_SLEEP)
                 continue
-            break
-        except Exception as e:
-            logger.info("Fetch error for %s (attempt %d): %s", slug, attempt, e)
-            if attempt < _FETCH_RETRIES:
-                time.sleep(_FETCH_RETRY_SLEEP)
 
-    if resp is None or resp.status_code != 200:
+            if resp is None or resp.status != 200:
+                status = resp.status if resp else "None"
+                logger.info("HTTP %s for %s (attempt %d)", status, slug, attempt)
+                if attempt < _FETCH_RETRIES:
+                    time.sleep(_FETCH_RETRY_SLEEP)
+                continue
+
+            page.wait_for_timeout(_INVESTING_SETTLE_MS)
+            html = page.content()
+        finally:
+            ctx.close()  # CRITICAL: wipes the CF fingerprint score
+        break  # successful fetch
+
+    if html is None:
         logger.info("All %d attempts failed for %s", _FETCH_RETRIES, slug)
         return []
 
-    data = _extract_next_data(resp.text)
+    data = _extract_next_data(html)
     if data is None:
         logger.info("__NEXT_DATA__ not found for %s", slug)
         return []
@@ -372,33 +397,38 @@ def fetch_investing_commodities(cutoff: date) -> pd.DataFrame:
     session.headers.update(_INVESTING_HEADERS)
 
     all_rows = []
-    for spec in INVESTING_SLUGS:
-        slug = spec["slug"]
-        logger.info("→ %s", slug)
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        try:
+            for spec in INVESTING_SLUGS:
+                slug = spec["slug"]
+                logger.info("→ %s", slug)
 
-        raw_rows = _fetch_series(slug, cutoff, session)
-        if not raw_rows:
-            logger.info("  0 rows for %s", slug)
-            continue
+                raw_rows = _fetch_series(slug, cutoff, session, browser)
+                if not raw_rows:
+                    logger.info("  0 rows for %s", slug)
+                    continue
 
-        for entry in raw_rows:
-            obs_date = entry["obs_date"]
-            r = {
-                "observation_date": str(obs_date),
-                "country": spec["country"],
-                "fuel_product": spec["fuel_product"],
-                "price_local": round(entry["price"], 4),
-                "currency": spec["currency"],
-                "unit": spec["unit"],
-                "source_key": _SOURCE_KEY,
-                "subnational_area": spec["subnational_area"],
-                "city": "",
-                "address": "",
-            }
-            r["observation_hash"] = observation_hash(r, _HASH_FIELDS)
-            all_rows.append(r)
+                for entry in raw_rows:
+                    obs_date = entry["obs_date"]
+                    r = {
+                        "observation_date": str(obs_date),
+                        "country": spec["country"],
+                        "fuel_product": spec["fuel_product"],
+                        "price_local": round(entry["price"], 4),
+                        "currency": spec["currency"],
+                        "unit": spec["unit"],
+                        "source_key": _SOURCE_KEY,
+                        "subnational_area": spec["subnational_area"],
+                        "city": "",
+                        "address": "",
+                    }
+                    r["observation_hash"] = observation_hash(r, _HASH_FIELDS)
+                    all_rows.append(r)
 
-        logger.info("  %d rows for %s", len(raw_rows), slug)
+                logger.info("  %d rows for %s", len(raw_rows), slug)
+        finally:
+            browser.close()
 
     logger.info("Total: %d rows", len(all_rows))
     return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()

@@ -1,0 +1,38 @@
+name: Newsmada
+country: madagascar
+language: fr
+base_url: https://newsmada.com
+
+# Categories: Politika(4238), Economie(3681), Société(3567), Politique(2815)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://newsmada.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=542,535,530,527&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 8
+retry_seconds: 5.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

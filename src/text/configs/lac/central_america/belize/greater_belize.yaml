@@ -1,0 +1,38 @@
+name: Greater Belize
+country: belize
+language: en
+base_url: https://www.greaterbelize.com
+
+# Categories: latest-news(444), breaking-news(484), economy(449)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.greaterbelize.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=444,484,449&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

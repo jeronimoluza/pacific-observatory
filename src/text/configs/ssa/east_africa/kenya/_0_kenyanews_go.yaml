@@ -1,0 +1,40 @@
+# DISABLED (SSL cert chain self-signed; httpx verify_ssl=False would be needed (pipeline doesn't expose). API works via curl.)
+# To re-enable: rename without `_0_` prefix and resolve issue.
+name: Kenya News Agency
+country: kenya
+language: en
+base_url: https://www.kenyanews.go.ke
+
+# Categories: County(87), Local(55), Politics(81), Business-Finance(58), Governance(27577), Development(35149)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.kenyanews.go.ke/wp-json/wp/v2/posts?per_page=10&page={page}&categories=87,55,81"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 8
+retry_seconds: 5.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

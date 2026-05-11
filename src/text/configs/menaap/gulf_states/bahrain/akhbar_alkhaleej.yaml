@@ -1,0 +1,31 @@
+name: Akhbar Al Khaleej
+language: arabic
+country: bahrain
+base_url: https://akhbar-alkhaleej.com
+
+listing:
+  type: pagination
+  url_template: "https://akhbar-alkhaleej.com/news/section/BNEW/{num}"
+  start_page: 0
+  step: 25
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.bah-news-box-top"
+    title: "h3 a::text"
+    url: "h3 a::attr(href)"
+  article:
+    body: "div.article-details p"
+    date: "meta[itemprop='datePublished']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

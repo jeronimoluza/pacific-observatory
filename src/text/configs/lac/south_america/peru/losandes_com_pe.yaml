@@ -1,0 +1,39 @@
+name: Losandes
+language: es
+country: peru
+base_url: https://losandes.com.pe
+
+# Categories: nacional(1727, 333), nacional-nacional(1728, 10), politica(12, 3470), economia(1775, 52)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://losandes.com.pe/wp-json/wp/v2/posts?per_page=100&categories=1727,1728,12,1775&page={page}&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.entry-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

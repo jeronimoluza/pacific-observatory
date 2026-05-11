@@ -205,27 +205,16 @@ def run_collection(
         if currencies:
             logger.info("Refreshing FX cache for %d currencies ...", len(currencies))
             try:
+                today = pd.Timestamp.now().normalize()
+                window_start = today - pd.Timedelta(days=60)
+                span = pd.date_range(window_start, today, freq="D")
                 dummy = pd.DataFrame(
-                    {
-                        "observation_date": [pd.Timestamp.now().strftime("%Y-%m-%d")],
-                        "currency": [currencies[0]],
-                    }
+                    [
+                        {"observation_date": d.strftime("%Y-%m-%d"), "currency": c}
+                        for c in currencies
+                        for d in (span[0], span[-1])
+                    ]
                 )
-                for c in currencies[1:]:
-                    dummy = pd.concat(
-                        [
-                            dummy,
-                            pd.DataFrame(
-                                {
-                                    "observation_date": [
-                                        pd.Timestamp.now().strftime("%Y-%m-%d")
-                                    ],
-                                    "currency": [c],
-                                }
-                            ),
-                        ],
-                        ignore_index=True,
-                    )
                 build_fx_table(dummy, cache_path=base_dir / "fx_cache.csv")
                 logger.info("FX cache updated.")
             except Exception:

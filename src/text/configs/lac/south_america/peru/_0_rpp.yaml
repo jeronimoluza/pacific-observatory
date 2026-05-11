@@ -1,0 +1,8 @@
+# DEFERRED — Tier 2 (custom CMS, no WP API)
+# Site: https://rpp.pe
+# Custom CMS (not WordPress), HTML returns for all API probes
+# Needs custom HTML scraper or API reverse-engineering
+name: RPP Noticias
+country: peru
+language: es
+base_url: https://rpp.pe

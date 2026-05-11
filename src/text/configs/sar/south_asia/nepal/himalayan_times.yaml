@@ -1,0 +1,34 @@
+name: The Himalayan Times
+language: en
+country: nepal
+base_url: https://thehimalayantimes.com
+
+# HTML pagination. Nepal section page has ~26 articles.
+# Note: ?page=N pagination does not advance (all pages identical) — max_pages: 1.
+# Fresh-content scraping only; backfill depth is limited.
+listing:
+  type: pagination
+  url_template: "https://thehimalayantimes.com/nepal?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "h3.alith_post_title"
+    title: "a::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.post-content p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: 1
+max_articles: null

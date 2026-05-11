@@ -1,0 +1,39 @@
+name: agrodristi.com
+language: en
+country: bangladesh
+base_url: http://agrodristi.com
+
+# Categories: %e0%a6%b2%e0%a6%bf%e0%a6%a1-%e0%a6%a8%e0%a6%bf%e0%a6%89%e0%a6%9c(9059), %e0%a6%8f%e0%a6%95%e0%a7%8d%e0%a6%b8%e0%a6%95%e0%a7%8d%e0%a6%b2%e0%a7%81%e0%a6%b8%e0%a6%bf%e0%a6%ad(3164), %e0%a6%9c%e0%a6%be%e0%a6%a4%e0%a7%80%e0%a7%9f(2019), %e0%a6%aa%e0%a7%8d%e0%a6%b0%e0%a6%ac%e0%a6%be%e0%a6%b8%e0%a7%87-%e0%a6%ac%e0%a6%be%e0%a6%82%e0%a6%b2%e0%a6%be%e0%a6%a6%e0%a7%87%e0%a6%b6(1688), %e0%a6%86%e0%a6%a8%e0%a7%8d%e0%a6%a4%e0%a6%b0%e0%a7%8d%e0%a6%9c%e0%a6%be%e0%a6%a4%e0%a6%bf%e0%a6%95(1619)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "http://agrodristi.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=33,39,4,17,5&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.entry-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

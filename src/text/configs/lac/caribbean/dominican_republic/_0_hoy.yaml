@@ -1,0 +1,8 @@
+# DEFERRED — Tier 2
+# Major national daily (Hoy Digital). Custom CMS (not WordPress). No REST API found.
+# Requires custom HTML scraper. Revisit for Tier 1 pagination onboarding.
+# URL: https://hoy.com.do
+name: Hoy Digital
+country: dominican_republic
+language: es
+base_url: https://hoy.com.do

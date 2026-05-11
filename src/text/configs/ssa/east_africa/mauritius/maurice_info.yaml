@@ -1,0 +1,38 @@
+name: Maurice Info
+country: mauritius
+language: fr
+base_url: https://maurice-info.mu
+
+# Categories: News(2), Entreprise(10), Info-Politique(78), Info-Gouvernement(82), Exclusivite(11), Info-Monde(5)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://maurice-info.mu/?rest_route=/wp/v2/posts&per_page=100&page={page}&categories=2,10,78,82,11,5"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 8
+retry_seconds: 5.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

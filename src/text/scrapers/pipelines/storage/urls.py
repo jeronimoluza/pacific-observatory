@@ -5,13 +5,27 @@ Manages urls.csv and failed URLs tracking.
 """
 
 import logging
-from datetime import datetime
+import os
+import re
+import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 from ...models import ThumbnailRecord
 
 logger = logging.getLogger(__name__)
+
+FAILED_LEDGER_FILENAME = "failed_urls_seen.csv"
+LEDGER_COLUMNS = [
+    "url",
+    "first_failed_at",
+    "last_failed_at",
+    "attempts",
+    "last_status",
+    "last_error",
+]
+_SEED_DATE_RE = re.compile(r"_(\d{8})\.csv$")
 
 
 class URLTracker:
@@ -381,3 +395,252 @@ class URLTracker:
 
         logger.info(f"Saved {len(failed_news)} failed news articles to {file_path}")
         return file_path
+
+    def _ledger_path(self, newspaper_dir: Path) -> Path:
+        return newspaper_dir / FAILED_LEDGER_FILENAME
+
+    def _read_ledger(self, newspaper_dir: Path) -> "Optional[Any]":
+        import pandas as pd
+
+        ledger_path = self._ledger_path(newspaper_dir)
+        if not ledger_path.exists():
+            return None
+        try:
+            df = pd.read_csv(ledger_path, encoding="utf-8", dtype=str)
+        except Exception as exc:
+            logger.error(f"Failed to read ledger {ledger_path}: {exc}")
+            return None
+        for col in LEDGER_COLUMNS:
+            if col not in df.columns:
+                df[col] = ""
+        return df[LEDGER_COLUMNS]
+
+    def _write_ledger_atomic(self, newspaper_dir: Path, df) -> Path:
+        import pandas as pd  # noqa: F401
+
+        ledger_path = self._ledger_path(newspaper_dir)
+        newspaper_dir.mkdir(parents=True, exist_ok=True)
+        fd, tmp_name = tempfile.mkstemp(
+            prefix=".failed_urls_seen.", suffix=".csv.tmp", dir=str(newspaper_dir)
+        )
+        os.close(fd)
+        tmp_path = Path(tmp_name)
+        try:
+            df.to_csv(tmp_path, index=False, encoding="utf-8", columns=LEDGER_COLUMNS)
+            os.replace(tmp_path, ledger_path)
+        finally:
+            if tmp_path.exists():
+                try:
+                    tmp_path.unlink()
+                except OSError:
+                    pass
+        return ledger_path
+
+    def _seed_ledger_from_failed_dir(self, newspaper_dir: Path) -> Optional[Path]:
+        """
+        Build a fresh ``failed_urls_seen.csv`` from any pre-existing
+        ``failed/failed_news_*.csv`` and ``failed/failed_urls_*.csv`` snapshots.
+
+        Used once per source on the first run after the ledger feature ships.
+        Returns the ledger path on success, or None when there are no source
+        files to seed from. Existing snapshot files are not modified.
+        """
+        import pandas as pd
+
+        failed_dir = newspaper_dir / "failed"
+        if not failed_dir.exists() or not failed_dir.is_dir():
+            return None
+
+        snapshot_files = sorted(failed_dir.glob("failed_news_*.csv")) + sorted(
+            failed_dir.glob("failed_urls_*.csv")
+        )
+        if not snapshot_files:
+            return None
+
+        per_url_first: Dict[str, datetime] = {}
+        per_url_last: Dict[str, datetime] = {}
+
+        for snap in snapshot_files:
+            ts = self._timestamp_from_snapshot(snap)
+            try:
+                snap_df = pd.read_csv(snap, encoding="utf-8", dtype=str)
+            except Exception as exc:
+                logger.warning(f"Failed to read snapshot {snap}: {exc}")
+                continue
+            if "url" not in snap_df.columns:
+                continue
+            for url in snap_df["url"].dropna().astype(str).unique():
+                if not url:
+                    continue
+                if url not in per_url_first or ts < per_url_first[url]:
+                    per_url_first[url] = ts
+                if url not in per_url_last or ts > per_url_last[url]:
+                    per_url_last[url] = ts
+
+        if not per_url_first:
+            return None
+
+        rows = [
+            {
+                "url": url,
+                "first_failed_at": per_url_first[url].isoformat(),
+                "last_failed_at": per_url_last[url].isoformat(),
+                "attempts": "1",
+                "last_status": "SEED",
+                "last_error": "seeded from failed/*.csv",
+            }
+            for url in per_url_first
+        ]
+        df = pd.DataFrame(rows, columns=LEDGER_COLUMNS)
+        ledger_path = self._write_ledger_atomic(newspaper_dir, df)
+        logger.info(
+            f"Seeded {len(rows)} URLs into {ledger_path} from {len(snapshot_files)} snapshot file(s)"
+        )
+        return ledger_path
+
+    @staticmethod
+    def _timestamp_from_snapshot(path: Path) -> datetime:
+        match = _SEED_DATE_RE.search(path.name)
+        if match:
+            try:
+                return datetime.strptime(match.group(1), "%Y%m%d").replace(
+                    tzinfo=timezone.utc
+                )
+            except ValueError:
+                pass
+        try:
+            return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+        except OSError:
+            return datetime.now(tz=timezone.utc)
+
+    def get_failed_url_set(self, newspaper_dir: Path) -> set:
+        """
+        Return the set of URLs currently recorded in ``failed_urls_seen.csv``.
+
+        If the ledger does not yet exist for this source but historical
+        ``failed/failed_*_*.csv`` snapshots are present, auto-seed the ledger
+        once and return its URL set. If neither exists, return an empty set.
+        """
+        df = self._read_ledger(newspaper_dir)
+        if df is None:
+            seeded = self._seed_ledger_from_failed_dir(newspaper_dir)
+            if seeded is None:
+                return set()
+            df = self._read_ledger(newspaper_dir)
+            if df is None:
+                return set()
+        return set(df["url"].dropna().astype(str).tolist())
+
+    def upsert_failed_urls(
+        self, newspaper_dir: Path, entries: List[Dict[str, Any]]
+    ) -> Optional[Path]:
+        """
+        Insert or refresh rows in ``failed_urls_seen.csv`` for the given URLs.
+
+        ``entries`` items are dicts with at least ``url``; ``last_status`` and
+        ``last_error`` are optional and default to empty strings. New rows get
+        ``attempts=1`` and identical ``first_failed_at`` / ``last_failed_at``.
+        Existing rows have ``attempts`` incremented and ``last_failed_at`` /
+        ``last_status`` / ``last_error`` refreshed; ``first_failed_at`` is
+        preserved.
+        """
+        import pandas as pd
+
+        if not entries:
+            return None
+
+        # Coalesce duplicate URLs in the incoming batch — keep the last entry's
+        # status/error but count each occurrence as a single failure for the run.
+        coalesced: Dict[str, Dict[str, Any]] = {}
+        for entry in entries:
+            url = entry.get("url")
+            if not url:
+                continue
+            url_str = str(url)
+            coalesced[url_str] = {
+                "url": url_str,
+                "last_status": str(entry.get("last_status") or ""),
+                "last_error": str(entry.get("last_error") or "")[:200],
+            }
+        if not coalesced:
+            return None
+
+        now_iso = datetime.now(tz=timezone.utc).isoformat()
+        existing = self._read_ledger(newspaper_dir)
+        if existing is None or existing.empty:
+            rows = [
+                {
+                    "url": url,
+                    "first_failed_at": now_iso,
+                    "last_failed_at": now_iso,
+                    "attempts": "1",
+                    "last_status": payload["last_status"],
+                    "last_error": payload["last_error"],
+                }
+                for url, payload in coalesced.items()
+            ]
+            df = pd.DataFrame(rows, columns=LEDGER_COLUMNS)
+            return self._write_ledger_atomic(newspaper_dir, df)
+
+        existing = existing.copy()
+        existing["url"] = existing["url"].astype(str)
+        existing_index = {url: idx for idx, url in enumerate(existing["url"].tolist())}
+        new_rows = []
+        for url, payload in coalesced.items():
+            if url in existing_index:
+                idx = existing_index[url]
+                try:
+                    attempts = int(existing.at[idx, "attempts"]) + 1
+                except (ValueError, TypeError):
+                    attempts = 2
+                existing.at[idx, "attempts"] = str(attempts)
+                existing.at[idx, "last_failed_at"] = now_iso
+                existing.at[idx, "last_status"] = payload["last_status"]
+                existing.at[idx, "last_error"] = payload["last_error"]
+            else:
+                new_rows.append(
+                    {
+                        "url": url,
+                        "first_failed_at": now_iso,
+                        "last_failed_at": now_iso,
+                        "attempts": "1",
+                        "last_status": payload["last_status"],
+                        "last_error": payload["last_error"],
+                    }
+                )
+        if new_rows:
+            existing = pd.concat(
+                [existing, pd.DataFrame(new_rows, columns=LEDGER_COLUMNS)],
+                ignore_index=True,
+            )
+        return self._write_ledger_atomic(newspaper_dir, existing[LEDGER_COLUMNS])
+
+    def evict_from_ledger(self, newspaper_dir: Path, urls: set) -> int:
+        """
+        Remove rows whose ``url`` is in ``urls`` from ``failed_urls_seen.csv``.
+
+        Returns the number of rows removed. No-op when the ledger is missing.
+        """
+        if not urls:
+            return 0
+        df = self._read_ledger(newspaper_dir)
+        if df is None or df.empty:
+            return 0
+        url_set = {str(u) for u in urls}
+        before = len(df)
+        kept = df[~df["url"].astype(str).isin(url_set)]
+        removed = before - len(kept)
+        if removed == 0:
+            return 0
+        if kept.empty:
+            ledger_path = self._ledger_path(newspaper_dir)
+            empty = (
+                kept[LEDGER_COLUMNS]
+                if set(LEDGER_COLUMNS).issubset(kept.columns)
+                else kept
+            )
+            self._write_ledger_atomic(newspaper_dir, empty)
+            logger.info(f"Evicted {removed} URL(s) from {ledger_path} (now empty)")
+            return removed
+        self._write_ledger_atomic(newspaper_dir, kept[LEDGER_COLUMNS])
+        return removed

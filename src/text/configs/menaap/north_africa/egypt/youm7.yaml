@@ -23,7 +23,7 @@ selectors:
     title: "h3 a::text"
     url: "h3 a::attr(href)"
   article:
-    body: "div#articleBody p"
+    body: "div#articleBody div"
     date: "meta[property='article:published_time']::attr(content)"
 
 cleaning:

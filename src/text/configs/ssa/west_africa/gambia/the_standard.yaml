@@ -1,0 +1,38 @@
+name: The Standard Gambia
+country: gambia
+language: en
+base_url: https://standard.gm
+
+# Categories: gambia-national-news(14053), editorial(15038), commentary(449)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://standard.gm/wp-json/wp/v2/posts?per_page=100&page={page}&categories=14053,15038,449"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

@@ -217,6 +217,7 @@ def assemble_publish_data(
     pub_cfg = _load_publish_config(region)
     history_years = pub_cfg.get("dashboard_history_years", 3)
     regime_overrides = pub_cfg.get("regime_overrides", {})
+    regime_notes = pub_cfg.get("regime_notes", {})
 
     logger.info("Loading commodity data ...")
     comm_series = load_commodity_series(data_dir, history_years=history_years)
@@ -378,6 +379,7 @@ def assemble_publish_data(
         "products": PRODUCTS,
         "table_products": TABLE_PRODUCTS,
         "imf_raw_by_iso3": imf_raw_by_iso3,
+        "regime_notes": regime_notes,
     }
 
 
@@ -385,7 +387,6 @@ def run_publish(
     *,
     region: str | None = None,
     subregion: str | None = None,
-    yes: bool = False,
     data_dir: Path = _DATA_DIR,
     outputs_dir: Path = _OUTPUTS_DIR,
     cache_dir: Path = _REFERENCE_CACHE,
@@ -420,13 +421,8 @@ def run_publish(
         history_years = pub_cfg.get("dashboard_history_years", 3)
         region_label = pub_cfg.get("region_label", reg.upper())
 
-        if not yes:
-            names = ", ".join(c["country"] for c in countries)
-            click.echo(
-                f"Publishing {reg} dashboard ({len(countries)} countries: {names})"
-            )
-            if not click.confirm("Proceed?"):
-                continue
+        names = ", ".join(c["country"] for c in countries)
+        click.echo(f"Publishing {reg} dashboard ({len(countries)} countries: {names})")
 
         logger.info("Assembling data for %s ...", reg)
         data = assemble_publish_data(

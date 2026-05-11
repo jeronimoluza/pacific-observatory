@@ -39,6 +39,7 @@ products:
     fuel_family: lpg
     unit: pound
     amount: 25
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: true
     grade: 25lb_refill
     series_key: lpg_25lb_refill
@@ -46,6 +47,7 @@ products:
     fuel_family: lpg
     unit: pound
     amount: 25
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: false
     grade: 25lb_new
     series_key: lpg_25lb_new
@@ -53,6 +55,7 @@ products:
     fuel_family: lpg
     unit: pound
     amount: 50
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: true
     grade: 50lb_refill
     series_key: lpg_50lb_refill
@@ -60,18 +63,21 @@ products:
     fuel_family: lpg
     unit: pound
     amount: 50
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: false
     grade: 50lb_new
     series_key: lpg_50lb_new
   "Refill Cylinder (LPG Composite)":
     fuel_family: lpg
     unit: kilogram
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: false
     grade: composite_refill
     series_key: lpg_composite_refill
   "New Cylinder (LPG Composite)":
     fuel_family: lpg
     unit: kilogram
+    density_l_per_kg: 1.96  # TODO: confirm with data team
     include_in_build: false
     grade: composite_new
     series_key: lpg_composite_new

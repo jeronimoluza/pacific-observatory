@@ -1,0 +1,38 @@
+name: The New Dawn Liberia
+country: liberia
+language: en
+base_url: https://thenewdawnliberia.com
+
+# Categories: Liberia news(77), Business(71), Commentary(103) — uses ?rest_route= legacy form
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://thenewdawnliberia.com/?rest_route=/wp/v2/posts&per_page=100&page={page}&categories=77,71,103"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

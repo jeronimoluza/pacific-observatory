@@ -8,7 +8,7 @@ Usage:
 
 import click
 
-from cli_display import command_prefix, text_help_examples, top_level_help_examples
+from cli_display import render_home, text_help_examples, top_level_help_examples
 from core.config import make_slug_validator
 
 
@@ -21,80 +21,7 @@ from core.config import make_slug_validator
 def po(ctx):
     """Pacific Observatory data pipelines for local repo use and the installed `po` alias."""
     if ctx.invoked_subcommand is None:
-        _render_home()
-
-
-def _render_home():
-    """Print the CLI home screen with optional cached snapshot."""
-    import importlib.metadata
-
-    try:
-        version = importlib.metadata.version("pacific-observatory")
-    except importlib.metadata.PackageNotFoundError:
-        version = "dev"
-
-    from text.status import read_status_cache
-
-    cache = read_status_cache()
-
-    lines = [
-        "",
-        f"  Pacific Observatory CLI v{version}",
-        "",
-        f"  Repo-local: {command_prefix()}",
-        "  Installed alias: po",
-        "",
-        "  Pipelines:",
-        f"    {command_prefix()} text      Newspaper scraping and EPU analysis",
-        f"    {command_prefix()} fuel      [not migrated]",
-        f"    {command_prefix()} prices    [not migrated]",
-        "",
-    ]
-
-    if cache:
-        computed_at = cache.get("computed_at", "unknown")
-        lines.append(
-            f"  Snapshot (computed {computed_at} — run '{command_prefix()} status' to refresh):"
-        )
-
-        text = cache.get("text", {})
-        collect = text.get("collect", {})
-        scraped = collect.get("sources_scraped", 0)
-        total = collect.get("sources_total", 0)
-        articles = collect.get("articles_total", 0)
-        art_str = f"{articles / 1000:.0f}k" if articles >= 1000 else str(articles)
-        last = collect.get("last_scraped_at", "—") or "—"
-
-        lines.append(
-            f"    text    {scraped}/{total} sources scraped · "
-            f"{art_str} articles · last scraped {last}"
-        )
-        lines.append("    fuel    [not migrated]")
-        lines.append("    prices  [not migrated]")
-    else:
-        lines.append("  Snapshot:")
-        lines.append(f"    (no data — run '{command_prefix()} status')")
-
-    lines.extend(
-        [
-            "",
-            "  Start Here:",
-            f"    {command_prefix()} list-regions                             Show region/subregion/country topology",
-            f"    {command_prefix()} text collect --list --country <slug>     List configured newspaper keys",
-            f"    {command_prefix()} text collect --country <slug> --dry-run  Preview a scrape safely",
-            "",
-            "  Typical Workflow:",
-            f"    {command_prefix()} text collect --country <slug>            Scrape a single country",
-            f"    {command_prefix()} text build --country <slug>              Compute EPU outputs",
-            f"    {command_prefix()} text publish --country <slug>            Generate dashboards",
-        ]
-        + [
-            "",
-            "  Filters:  -r/--region  -S/--subregion  -c/--country  -s/--source (newspaper key)",
-            "",
-        ]
-    )
-    click.echo("\n".join(lines))
+        render_home()
 
 
 # ── Pipeline groups ────────────────────────────────────────────────
@@ -144,7 +71,6 @@ _source_opt = click.option(
 _text_source_opt = click.option(
     "--source", "-s", default=None, help="Run a single configured newspaper key"
 )
-_yes_opt = click.option("--yes", "-y", is_flag=True, help="Skip confirmation prompt")
 _dry_run_opt = click.option(
     "--dry-run", is_flag=True, help="Show plan without executing"
 )
@@ -167,11 +93,10 @@ _fuel_region_opt = click.option(
 @_subregion_opt
 @_country_opt
 @_source_opt
-@_yes_opt
 @_dry_run_opt
 @click.option("--rebuild", is_flag=True, help="Delete and re-fetch from fallback date")
 @click.option("--force", is_flag=True, help="Run disabled sources")
-def fuel_collect(region, subregion, country, source, yes, dry_run, rebuild, force):
+def fuel_collect(region, subregion, country, source, dry_run, rebuild, force):
     """Fetch new fuel price observations from configured sources."""
     import logging
 
@@ -196,11 +121,9 @@ def fuel_collect(region, subregion, country, source, yes, dry_run, rebuild, forc
             "No fuel sources found. Check --region/--subregion/--country/--source filters."
         )
 
-    if not yes and not dry_run:
+    if not dry_run:
         sources_list = ", ".join(sorted(registry))
         click.echo(f"Sources to collect: {sources_list}")
-        if not click.confirm("Proceed?"):
-            raise SystemExit(0)
 
     run_collection(
         registry=registry,
@@ -216,8 +139,7 @@ def fuel_collect(region, subregion, country, source, yes, dry_run, rebuild, forc
 @_region_opt
 @_subregion_opt
 @_country_opt
-@_yes_opt
-def fuel_build(region, subregion, country, yes):
+def fuel_build(region, subregion, country):
     """Process raw observations into enriched dataset."""
     import logging
 
@@ -225,7 +147,7 @@ def fuel_build(region, subregion, country, yes):
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
     try:
-        run_build(region=region, subregion=subregion, country=country, yes=yes)
+        run_build(region=region, subregion=subregion, country=country)
     except ValueError as exc:
         raise click.ClickException(str(exc))
 
@@ -233,8 +155,7 @@ def fuel_build(region, subregion, country, yes):
 @fuel.command("publish")
 @_region_opt
 @_subregion_opt
-@_yes_opt
-def fuel_publish(region, subregion, yes):
+def fuel_publish(region, subregion):
     """Generate fuel policy dashboards."""
     import logging
 
@@ -242,7 +163,7 @@ def fuel_publish(region, subregion, yes):
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
     try:
-        run_publish(region=region, subregion=subregion, yes=yes)
+        run_publish(region=region, subregion=subregion)
     except ValueError as exc:
         raise click.ClickException(str(exc))
 
@@ -255,7 +176,6 @@ def fuel_publish(region, subregion, yes):
 @_subregion_opt
 @_country_opt
 @_text_source_opt
-@_yes_opt
 @_dry_run_opt
 @click.option(
     "--list", "list_sources", is_flag=True, help="List configured sources (YAML only)"
@@ -270,18 +190,29 @@ def fuel_publish(region, subregion, yes):
     is_flag=True,
     help="Scrape only pending URLs from urls.csv (no discovery)",
 )
+@click.option(
+    "--retry-failed",
+    "retry_failed",
+    is_flag=True,
+    help=(
+        "Re-attempt URLs in failed_urls_seen.csv (the cumulative ledger of "
+        "URLs that have failed before). Without this flag those URLs are "
+        "skipped. Use after fixing a parser to recover previously-failed "
+        "articles. Cannot be combined with --rebuild."
+    ),
+)
 def text_collect(
     region,
     subregion,
     country,
     source,
-    yes,
     dry_run,
     list_sources,
     max_pages,
     max_articles,
     rebuild,
     resume,
+    retry_failed,
 ):
     """Scrape new articles from configured newspapers."""
     from text.collect import run_collect
@@ -294,9 +225,9 @@ def text_collect(
         max_pages=max_pages,
         max_articles=max_articles,
         dry_run=dry_run,
-        yes=yes,
         rebuild=rebuild,
         resume=resume,
+        retry_failed=retry_failed,
         list_sources=list_sources,
     )
 
@@ -305,7 +236,6 @@ def text_collect(
 @_region_opt
 @_subregion_opt
 @_country_opt
-@_yes_opt
 @click.option(
     "--cutoff-start-date",
     type=str,
@@ -315,7 +245,8 @@ def text_collect(
 @click.option(
     "--cutoff-end-date",
     type=str,
-    default=None,
+    default="2020-12-31",
+    show_default=True,
     help="Inclusive baseline end date for EPU standardization (YYYY-MM-DD)",
 )
 @click.option(
@@ -324,20 +255,36 @@ def text_collect(
     default=False,
     help="Force recalculation of params.json and cache.",
 )
+@click.option(
+    "--max-parallel-sources",
+    type=int,
+    default=1,
+    show_default=True,
+    help="Bound on concurrent per-source annotation. Increase for speed; keep at 1 for memory safety.",
+)
 def text_build(
-    region, subregion, country, yes, cutoff_start_date, cutoff_end_date, rebuild
+    region,
+    subregion,
+    country,
+    cutoff_start_date,
+    cutoff_end_date,
+    rebuild,
+    max_parallel_sources,
 ):
     """Run EPU index calculation and analysis."""
     from text.process import run_build
+
+    if max_parallel_sources < 1:
+        raise click.BadParameter("--max-parallel-sources must be >= 1")
 
     run_build(
         region=region,
         subregion=subregion,
         country=country,
-        yes=yes,
         cutoff_start_date=cutoff_start_date,
         cutoff_end_date=cutoff_end_date,
         rebuild=rebuild,
+        max_parallel_sources=max_parallel_sources,
     )
 
 
@@ -345,12 +292,11 @@ def text_build(
 @_region_opt
 @_subregion_opt
 @_country_opt
-@_yes_opt
-def text_publish(region, subregion, country, yes):
+def text_publish(region, subregion, country):
     """Generate EPU dashboards and charts."""
     from text.publish import run_publish
 
-    run_publish(region=region, subregion=subregion, country=country, yes=yes)
+    run_publish(region=region, subregion=subregion, country=country)
 
 
 @text.command("status")
@@ -367,6 +313,22 @@ def text_status(region, subregion, country, show_all):
     )
 
 
+# ── Two-tier storage commands (archive / restore / storage-status) ──
+# Registered from cli_text_storage.py to keep cli.py under the 500-line cap.
+
+from cli_text_storage import register as _register_text_storage  # noqa: E402
+
+_register_text_storage(
+    text,
+    {
+        "region": _region_opt,
+        "subregion": _subregion_opt,
+        "country": _country_opt,
+        "source": _text_source_opt,
+    },
+)
+
+
 # ── Prices subcommands ──────────────────────────────────────────────
 
 
@@ -375,9 +337,8 @@ def text_status(region, subregion, country, show_all):
 @_subregion_opt
 @_country_opt
 @_source_opt
-@_yes_opt
 @_dry_run_opt
-def prices_collect(region, subregion, country, source, yes, dry_run):
+def prices_collect(region, subregion, country, source, dry_run):
     """Scrape supermarket prices from configured retailers."""
     click.echo("prices collect: not yet migrated")
 
@@ -386,8 +347,7 @@ def prices_collect(region, subregion, country, source, yes, dry_run):
 @_region_opt
 @_subregion_opt
 @_country_opt
-@_yes_opt
-def prices_build(region, subregion, country, yes):
+def prices_build(region, subregion, country):
     """Classify products (COICOP) and construct CPI indices."""
     click.echo("prices build: not yet migrated")
 
@@ -395,8 +355,7 @@ def prices_build(region, subregion, country, yes):
 @prices.command("publish")
 @_region_opt
 @_subregion_opt
-@_yes_opt
-def prices_publish(region, subregion, yes):
+def prices_publish(region, subregion):
     """Generate CPI dashboards."""
     click.echo("prices publish: not yet migrated")
 

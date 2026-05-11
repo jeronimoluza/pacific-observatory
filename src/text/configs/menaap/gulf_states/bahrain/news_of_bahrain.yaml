@@ -1,0 +1,31 @@
+name: News of Bahrain
+language: en
+country: bahrain
+base_url: https://www.newsofbahrain.com
+
+listing:
+  type: pagination
+  url_template: "https://www.newsofbahrain.com/bahrain/page/{num}/"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "article"
+    title: "h2 a::text"
+    url: "h2 a::attr(href)"
+  article:
+    body: "div.entry-content p"
+    date: "time.post-published::attr(datetime)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

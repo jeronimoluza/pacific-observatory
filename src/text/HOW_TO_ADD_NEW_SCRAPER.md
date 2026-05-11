@@ -410,7 +410,7 @@ poetry run po text collect --source {newspaper} --max-pages 2 --dry-run
 poetry run po text collect --source {newspaper} --max-pages 5 --max-articles 100
 
 # Full rebuild from scratch
-poetry run po text collect --source {newspaper} --rebuild -y
+poetry run po text collect --source {newspaper} --rebuild
 ```
 
 Check the output:

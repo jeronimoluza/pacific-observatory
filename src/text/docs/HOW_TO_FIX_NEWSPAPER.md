@@ -342,7 +342,7 @@ done
 
 ```bash
 # Rebuild with small limits to verify end-to-end
-poetry run po text collect --source {newspaper} --rebuild --max-pages 2 --max-articles 5 -y
+poetry run po text collect --source {newspaper} --rebuild --max-pages 2 --max-articles 5
 ```
 
 After each run, spot-check the output CSV:

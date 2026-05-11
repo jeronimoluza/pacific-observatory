@@ -9,7 +9,14 @@ from pathlib import Path
 from typing import Literal
 
 import yaml
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    field_validator,
+    model_validator,
+)
 
 from core.config import discover_pipeline_configs, load_countries, parse_config_path
 
@@ -30,6 +37,7 @@ class ProductSpec(BaseModel):
     fuel_family: str
     unit: str = "liter"
     amount: float | None = None
+    density_l_per_kg: float | None = None
     include_in_build: bool = True
     grade: str | None = None
     octane_ron: int | None = None
@@ -103,6 +111,20 @@ class ProductSpec(BaseModel):
             raise ValueError("amount must be positive")
         return value
 
+    @model_validator(mode="after")
+    def _validate_lpg_density(self) -> "ProductSpec":
+        if self.fuel_family == "lpg":
+            if self.density_l_per_kg is None:
+                raise ValueError(
+                    f"density_l_per_kg is required for LPG product '{self.series_key}'"
+                )
+            if self.density_l_per_kg <= 0:
+                raise ValueError(
+                    f"density_l_per_kg must be positive for LPG product '{self.series_key}' "
+                    f"(got {self.density_l_per_kg})"
+                )
+        return self
+
 
 class FuelSourceConfig(BaseModel):
     """Source-centric config loaded from a single YAML file."""
@@ -169,11 +191,39 @@ def load_source_config(
     raw["source"] = path.stem
     raw["config_path"] = str(path)
 
-    cfg = FuelSourceConfig(**raw)
+    try:
+        cfg = FuelSourceConfig(**raw)
+    except ValidationError as exc:
+        raise ValueError(_format_validation_error(path, raw, exc)) from exc
     for raw_name, spec in cfg.products.items():
         if not spec.label:
             spec.label = raw_name
     return cfg
+
+
+def _format_validation_error(path: Path, raw: dict, exc: ValidationError) -> str:
+    products = raw.get("products") or {}
+    product_keys = list(products.keys())
+    lines = [f"Invalid fuel source config: {path}"]
+    for err in exc.errors():
+        loc = err.get("loc", ())
+        msg = err.get("msg", "validation error")
+        if len(loc) >= 2 and loc[0] == "products":
+            raw_idx = loc[1]
+            try:
+                raw_name = (
+                    product_keys[int(raw_idx)]
+                    if isinstance(raw_idx, int)
+                    else str(raw_idx)
+                )
+            except (IndexError, ValueError):
+                raw_name = str(raw_idx)
+            field = ".".join(str(item) for item in loc[2:]) or "<product>"
+            lines.append(f"  - product '{raw_name}' / {field}: {msg}")
+        else:
+            field = ".".join(str(item) for item in loc) or "<root>"
+            lines.append(f"  - {field}: {msg}")
+    return "\n".join(lines)
 
 
 def discover_fuel_configs(

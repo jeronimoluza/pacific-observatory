@@ -1,0 +1,42 @@
+name: Foroyaa Newspaper Gambia
+country: gambia
+language: en
+base_url: https://foroyaa.net
+
+# Categories: national(29), latest-news(3), general-news(1), editorial(4), politics(11) — depth back to 2014
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://foroyaa.net/wp-json/wp/v2/posts?per_page=100&page={page}&categories=29,3,1,4,11"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+  Accept: "application/json, text/javascript, */*; q=0.01"
+  Accept-Language: "en-US,en;q=0.9"
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

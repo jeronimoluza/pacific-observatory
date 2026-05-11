@@ -1,0 +1,8 @@
+# Agência Brasil — https://agenciabrasil.ebc.com.br/
+# Deferred: WP API at /wp-json/wp/v2/posts and ?rest_route= both return HTML.
+# The site is a government news agency; its CMS does not expose the REST API publicly.
+# Tier 3: no accessible listing endpoint.
+name: Agência Brasil
+country: brazil
+language: portuguese
+base_url: https://agenciabrasil.ebc.com.br

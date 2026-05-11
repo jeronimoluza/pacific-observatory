@@ -1,0 +1,34 @@
+# DISABLED: listing URL https://allafrica.com/congo-kinshasa/ returns 404. Correct AllAfrica slug for DRC is unknown. 0 thumbnails discovered. Re-enable once the correct URL is found.
+name: AllAfrica DRC
+country: congo_dem_rep
+language: en
+base_url: https://allafrica.com
+
+# Pan-African EN aggregator covering Democratic Republic of Congo
+listing:
+  type: pagination
+  url_template: "https://allafrica.com/congo-kinshasa/?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "ul.stories li"
+    title: "a::text"
+    url: "a::attr(href)"
+  article:
+    body: ".story-body p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

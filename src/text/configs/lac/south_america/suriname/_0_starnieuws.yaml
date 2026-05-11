@@ -1,0 +1,36 @@
+name: Starnieuws
+country: suriname
+language: nl
+base_url: https://www.starnieuws.com
+
+# Tier 2 stub — custom PHP CMS (index.php/welcome/index/nieuwsitem/{id}), no paginated archive.
+# Homepage shows only latest ~50 articles via ul.hilights li; no way to paginate backwards.
+# Needs custom follow_link or archive strategy to backfill.
+# Probe URL: https://www.starnieuws.com/index.php/welcome/index/nieuws/1
+listing:
+  type: pagination
+  url_template: "https://www.starnieuws.com/index.php/welcome/index/nieuws/1"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "ul.hilights li"
+    title: "a::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.article-body p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

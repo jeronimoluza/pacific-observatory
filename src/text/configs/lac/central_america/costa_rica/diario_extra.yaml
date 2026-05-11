@@ -1,0 +1,38 @@
+name: Diario Extra
+country: costa_rica
+language: es
+base_url: https://www.diarioextra.com
+
+# Categories: Nacionales(1), Actualidad Política(1027581), Economía(1027567), Opinión(4)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.diarioextra.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=1,1027581,1027567,4&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

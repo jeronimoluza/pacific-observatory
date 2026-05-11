@@ -1,0 +1,8 @@
+# DEFERRED: O Globo — https://oglobo.globo.com/
+# Custom Globo CMS (no WP API). JavaScript-heavy SPA. Paywall for most articles.
+# Tier 3: SPA + paywall. Skip.
+name: O Globo
+country: brazil
+language: portuguese
+base_url: https://oglobo.globo.com
+enabled: false

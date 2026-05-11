@@ -1,0 +1,8 @@
+# DEFERRED: Jornal GGN — https://jornalggn.com.br/
+# Cloudflare protection on WP API endpoint. Returns "Just a moment..." challenge page.
+# Tier 3: Cloudflare-blocked. Skip.
+name: Jornal GGN
+country: brazil
+language: portuguese
+base_url: https://jornalggn.com.br
+enabled: false

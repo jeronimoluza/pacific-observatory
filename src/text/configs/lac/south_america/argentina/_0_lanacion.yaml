@@ -1,0 +1,48 @@
+# Unusable with current pipeline strategies.
+# Reason: section pages (/politica/, /economia/) ignore ?page=N — pages 1/2/3 return
+#   identical bytes (292,993 B). /page/N/ returns 404. No "next"/"ver más" link.
+#   Only ~33 latest articles are reachable via HTML pagination.
+# Reason: site exposes rich daily XML sitemaps
+#   (https://www.lanacion.com.ar/sitemap-index-historico.xml ->
+#    sitemap-articles-from{YYYY-MM-DD}T00:00:00Z-to{YYYY-MM-DD}T00:00:00Z.xml,
+#    with 10 politica + 15 economia URLs/day out of ~250 total),
+#   but the pipeline has no `sitemap` listing strategy.
+# Re-enable: implement SitemapStrategy in src/text/scrapers/strategies/sitemap.py
+#   (date-range URL template, parse <loc>, filter by URL prefix per section),
+#   then switch listing.type to "sitemap" and rename file to lanacion.yaml.
+# Verified working at article level (httpx + BeautifulSoup):
+#   date: meta[property='article:published_time']::attr(content) (ISO 8601)
+#   title: meta[property='og:title']::attr(content)
+#   body: <p> children inside the article container
+name: La Nacion (DISABLED)
+country: argentina
+language: es
+base_url: https://www.lanacion.com.ar
+
+listing:
+  type: pagination
+  url_template: "https://www.lanacion.com.ar/politica/?page={num}"
+  start_page: 1
+  step: 1
+  batch_size: 5
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

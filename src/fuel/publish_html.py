@@ -106,6 +106,74 @@ _CSS = """
         font-size: 0.78em; font-weight: 600; color: #fff; white-space: nowrap;
         cursor: default;
     }
+    .regime-pill {
+        display: inline-block; padding: 2px 9px; border-radius: 12px;
+        font-size: 0.78em; font-weight: 600; color: #fff; white-space: nowrap;
+        border: 1px solid transparent; cursor: pointer; font-family: inherit;
+        vertical-align: middle;
+    }
+    .regime-pill:hover { filter: brightness(1.08); border-color: rgba(0,0,0,0.18); }
+    .regime-pill:focus-visible { outline: 2px solid #667eea; outline-offset: 1px; }
+    .regime-pill.regime-reform {
+        background: transparent !important; color: #555;
+        border: 1px dashed #b0b0b0; font-weight: 500;
+    }
+    .regime-pill.regime-reform:hover { color: #222; border-color: #667eea; }
+    .regime-chip {
+        display: inline-flex; white-space: nowrap; vertical-align: middle;
+    }
+    .regime-chip > .regime-pill { border-radius: 0; }
+    .regime-chip > .regime-pill:first-child {
+        border-top-left-radius: 12px; border-bottom-left-radius: 12px;
+    }
+    .regime-chip > .regime-pill:last-child {
+        border-top-right-radius: 12px; border-bottom-right-radius: 12px;
+    }
+    .regime-chip > .regime-pill:not(:last-child) {
+        border-right: 1px solid rgba(255,255,255,0.55);
+    }
+    .regime-hint {
+        font-size: 0.84em; color: #777; font-style: italic;
+        margin: 4px 0 8px 0;
+    }
+    .regime-popover {
+        position: absolute; max-width: 340px; background: #fff;
+        border: 1px solid #d0d0d0; border-radius: 6px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+        padding: 10px 12px; font-size: 0.82em; color: #333; line-height: 1.4;
+        z-index: 9999;
+    }
+    .regime-popover .tip-title {
+        font-weight: 700; font-size: 0.92em; margin-bottom: 6px; color: #222;
+    }
+    .regime-popover ul { margin: 4px 0 0 0; padding-left: 18px; }
+    .regime-popover li { margin: 3px 0; }
+    .regime-popover a { color: #4855c9; text-decoration: underline; }
+    .regime-popover p { margin: 4px 0; }
+    .regime-tip-source { display: none; }
+    .chart-title {
+        font-size: 1.04em; font-weight: 600; color: #222;
+        margin: 14px 0 2px 0;
+    }
+    #tab3 .chart-title { margin: 18px 0 14px 0; }
+    .chart-source {
+        font-size: 0.78em; color: #888; margin: 0 0 8px 0;
+    }
+    .chart-source a { color: #667eea; text-decoration: none; }
+    .chart-source a:hover { text-decoration: underline; }
+    .panel-label {
+        font-size: 0.86em; font-weight: 600; color: #555;
+        margin: 10px 0 2px 0;
+    }
+    .regime-glossary {
+        font-size: 0.84em; color: #555; margin: 4px 0 6px 0;
+    }
+    .regime-glossary summary {
+        cursor: pointer; color: #667eea; user-select: none; padding: 2px 0;
+    }
+    .regime-glossary summary:hover { text-decoration: underline; }
+    .regime-glossary ul { margin: 4px 0 4px 0; padding-left: 22px; }
+    .regime-glossary li { margin: 2px 0; }
     .kpi-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
     .kpi-card {
         flex: 1; min-width: 180px; padding: 14px 18px;
@@ -227,6 +295,7 @@ def gen_policy_html(
     table_products = data.get("table_products", [])
     products = data.get("products", [])
     imf_raw_by_iso3 = data.get("imf_raw_by_iso3", {})
+    regime_notes = data.get("regime_notes", {})
 
     region_isos = sorted(data.get("region_isos", []))
     region_isos_json = json.dumps(region_isos)
@@ -315,6 +384,26 @@ def gen_policy_html(
     }
     _SUBSIDY_COLOR = "#2196f3"
 
+    def _src_entry_html(entry) -> str:
+        if isinstance(entry, dict):
+            label = _html.escape(str(entry.get("label", entry.get("url", ""))))
+            url = entry.get("url")
+            if url:
+                return (
+                    f'<a href="{_html.escape(str(url), quote=True)}" '
+                    f'target="_blank" rel="noopener">{label}</a>'
+                )
+            return label
+        return _html.escape(str(entry))
+
+    def _sources_ul(items) -> str:
+        if not items:
+            return ""
+        lis = "".join(f"<li>{_src_entry_html(e)}</li>" for e in items)
+        return f"<ul>{lis}</ul>"
+
+    popover_blocks: list[str] = []
+
     regime_rows_html = ""
     for c in sorted(
         region_countries, key=lambda x: x.get("country", x.get("country_name", ""))
@@ -326,6 +415,7 @@ def gen_policy_html(
 
         per_prod = product_regimes.get(iso3, {})
         imf_raw_country = imf_raw_by_iso3.get(iso3, {})
+        notes_country = regime_notes.get(iso3, {})
         prod_cells = ""
         for prod in table_products:
             info = per_prod.get(prod)
@@ -342,18 +432,78 @@ def gen_policy_html(
             subsidy = imf_val is not None and imf_val > 0
             bc = _BASE_COLORS.get(base, "#aec7e8")
             base_label = "Price Controlled" if base == "Price Control" else base
-            cell_html = (
-                f'<span class="regime-badge" style="background:{bc}"'
-                f"{tooltip_attr}>{base_label}</span>"
-            )
-            if subsidy:
-                cell_html += (
-                    f' <span class="regime-badge" style="background:{_SUBSIDY_COLOR}">'
-                    f"Subsidised</span>"
+
+            note_for_prod = notes_country.get(prod) or {}
+            cls_sources = note_for_prod.get("classification_sources") or []
+
+            primary_tip_id = f"tip-{iso3}-{prod}-primary"
+            primary_tip_body = f'<div class="tip-title">{_html.escape(name)} · {_html.escape(prod)} · {base_label}</div>'
+            if cls_sources:
+                primary_tip_body += _sources_ul(cls_sources)
+            else:
+                primary_tip_body += (
+                    "<p>Classification source: World Bank Energy Pricing Regimes Dataset "
+                    "(2024 reference year).</p>"
                 )
+            popover_blocks.append(
+                f'<div id="{primary_tip_id}" class="regime-tip-source">{primary_tip_body}</div>'
+            )
+
+            chip_inner = (
+                f'<button type="button" class="regime-pill" '
+                f'style="background:{bc}" data-tip-id="{primary_tip_id}"'
+                f"{tooltip_attr}>{base_label}</button>"
+            )
+
+            if subsidy:
+                subs_tip_id = f"tip-{iso3}-{prod}-subsidy"
+                subs_tip_body = (
+                    f'<div class="tip-title">{_html.escape(name)} · {_html.escape(prod)} · Subsidised</div>'
+                    "<p>The IMF Fossil Fuel Subsidies Database reports a positive "
+                    "<i>implicit</i> subsidy for this product (retail price below supply cost, "
+                    "externalities, or standard consumption tax).</p>"
+                    "<ul><li>"
+                    '<a href="https://www.imf.org/en/Topics/climate-change/energy-subsidies" '
+                    'target="_blank" rel="noopener">'
+                    "IMF Fossil Fuel Subsidies Database (2025 release, 2024 reference year)"
+                    "</a></li></ul>"
+                )
+                popover_blocks.append(
+                    f'<div id="{subs_tip_id}" class="regime-tip-source">{subs_tip_body}</div>'
+                )
+                chip_inner += (
+                    f'<button type="button" class="regime-pill" '
+                    f'style="background:{_SUBSIDY_COLOR}" '
+                    f'data-tip-id="{subs_tip_id}">Subsidised</button>'
+                )
+
+            cell_html = f'<span class="regime-chip">{chip_inner}</span>'
+
+            reform = note_for_prod.get("reform") or {}
+            if reform:
+                ref_tip_id = f"tip-{iso3}-{prod}-reform"
+                ref_label = _html.escape(str(reform.get("label", "Reform")))
+                ref_note = _html.escape(str(reform.get("note", "")))
+                ref_sources = reform.get("sources") or []
+                ref_tip_body = (
+                    f'<div class="tip-title">{_html.escape(name)} · {_html.escape(prod)} · {ref_label}</div>'
+                    f"<p>{ref_note}</p>"
+                )
+                if ref_sources:
+                    ref_tip_body += _sources_ul(ref_sources)
+                popover_blocks.append(
+                    f'<div id="{ref_tip_id}" class="regime-tip-source">{ref_tip_body}</div>'
+                )
+                cell_html += (
+                    f' <button type="button" class="regime-pill regime-reform" '
+                    f'data-tip-id="{ref_tip_id}">{ref_label}</button>'
+                )
+
             prod_cells += f"<td>{cell_html}</td>"
 
         regime_rows_html += f"<tr><td>{name}</td>{prod_cells}</tr>\n"
+
+    regime_popovers_html = "".join(popover_blocks)
 
     # --- Product radio buttons for Tab 2 ---
     product_radios_html = ""
@@ -392,6 +542,9 @@ def gen_policy_html(
 <!-- ===== TAB 1 ===== -->
 <div id="tab1" class="tab-pane active">
 
+    <div class="chart-title">Trends in International Crude Oil and Refined Product Prices</div>
+    <div class="chart-source">Source: <a href="https://www.investing.com/commodities/energy" target="_blank" rel="noopener">investing.com — Energy Commodities</a></div>
+
     <div class="ctrl-row">
         <span class="row-label">Products:</span>
     </div>
@@ -405,7 +558,16 @@ def gen_policy_html(
 
     <div class="chart-wrapper"><canvas id="comm-chart"></canvas></div>
 
-    <div class="section-label" style="margin-top:18px">Country Pricing Regimes (2024) &mdash; Subsidised = IMF implicit subsidy &gt; 0</div>
+    <div class="chart-title" style="margin-top:18px">Country Pricing Regimes (2024)</div>
+    <div class="regime-hint">Click any pill to see its source. Pills with a dashed outline mark recent reforms — click for details.</div>
+    <details class="regime-glossary">
+        <summary>Definitions</summary>
+        <ul>
+            <li><b>Market</b> — retail price set by suppliers without government control.</li>
+            <li><b>Price Controlled</b> — government sets the retail price by regulation.</li>
+            <li><b>Subsidised</b> — IMF Fossil Fuel Subsidies Database (2025 release, 2024 reference year) reports a positive implicit or explicit subsidy. Implicit = retail price below supply cost or excludes externalities and the standard consumption tax.</li>
+        </ul>
+    </details>
     <div class="regime-table-wrap">
         <table class="regime-table">
             <thead>
@@ -417,10 +579,17 @@ def gen_policy_html(
             <tbody>{regime_rows_html}</tbody>
         </table>
     </div>
+    <div id="regime-popover-sources" hidden>{regime_popovers_html}</div>
 </div>
 
 <!-- ===== TAB 2 ===== -->
 <div id="tab2" class="tab-pane">
+
+    <div class="chart-title">Relationship Between GDP per Capita and Fuel Subsidies Across Fuel Products</div>
+    <div class="chart-source">
+        Source: <a href="https://www.imf.org/en/Topics/climate-change/energy-subsidies" target="_blank" rel="noopener">IMF Fossil Fuel Subsidies Database</a> (2025 release, 2024 reference year);
+        <a href="https://www.imf.org/en/Publications/WEO" target="_blank" rel="noopener">IMF WEO 2025</a> for GDP per capita.
+    </div>
 
     <div class="kpi-row" id="kpi-row"></div>
 
@@ -446,13 +615,12 @@ def gen_policy_html(
 
 <!-- ===== TAB 3 ===== -->
 <div id="tab3" class="tab-pane">
+    <div class="chart-title">Short-Term Movements in Domestic Fuel Prices</div>
     <div class="ctrl-row">
         <span class="row-label">Country:</span>
         <select id="fuel-country-select">{fuel_country_opts}</select>
-        <div class="toggle-group" style="margin-left:12px">
-            <label><input type="radio" name="currency-toggle" value="local" checked onchange="setCurrency('local')">Local Currency</label>
-            <label><input type="radio" name="currency-toggle" value="usd" onchange="setCurrency('usd')">USD</label>
-        </div>
+        <span class="row-label" style="margin-left:12px">Fuel:</span>
+        <div class="toggle-group" id="fuel-family-radios"></div>
     </div>
     <div class="slider-row">
         <label>Date Range:</label>
@@ -476,13 +644,15 @@ def gen_policy_html(
     <div class="section-label">Fuel Family:</div>
     <div class="chip-container" id="fuel-axis-chips"></div>
     <div id="fuel-meta-panel"></div>
+    <div class="panel-label">Price Levels</div>
     <div class="chart-wrapper"><canvas id="fuel-chart"></canvas></div>
-    <div class="section-label" style="font-size:0.82em">Price Changes (day-to-day %)</div>
+    <div class="panel-label">Daily Changes (%)</div>
     <div class="delta-chart-wrapper"><canvas id="fuel-delta-chart"></canvas></div>
 </div>
 
 <!-- ===== TAB 4 ===== -->
 <div id="tab4" class="tab-pane">
+    <div class="chart-title">Cross-Economy Fuel Price Comparison</div>
     <div class="ctrl-row">
         <span class="row-label">Fuel:</span>
         <div class="toggle-group">
@@ -513,6 +683,54 @@ const PRODUCT_REGIMES = {product_regimes_json};
 const ALL_PRODUCTS  = {products_json};
 const REGION_ISOS   = new Set({region_isos_json});
 
+// Regime pill popover
+let _regimePopoverEl = null;
+function _showRegimePopover(pill) {{
+    var tipId = pill.dataset.tipId;
+    if (!tipId) return;
+    var src = document.getElementById(tipId);
+    if (!src) return;
+    if (!_regimePopoverEl) {{
+        _regimePopoverEl = document.createElement('div');
+        _regimePopoverEl.className = 'regime-popover';
+        document.body.appendChild(_regimePopoverEl);
+    }}
+    _regimePopoverEl.innerHTML = src.innerHTML;
+    _regimePopoverEl.style.display = 'block';
+    _regimePopoverEl.style.left = '0px';
+    _regimePopoverEl.style.top = '0px';
+    var rect = pill.getBoundingClientRect();
+    var pop = _regimePopoverEl.getBoundingClientRect();
+    var top = rect.bottom + window.scrollY + 6;
+    var left = rect.left + window.scrollX;
+    if (left + pop.width > window.scrollX + window.innerWidth - 8) {{
+        left = window.scrollX + window.innerWidth - pop.width - 8;
+    }}
+    if (left < window.scrollX + 8) left = window.scrollX + 8;
+    if (rect.bottom + pop.height + 12 > window.innerHeight) {{
+        top = rect.top + window.scrollY - pop.height - 6;
+    }}
+    _regimePopoverEl.style.left = left + 'px';
+    _regimePopoverEl.style.top = top + 'px';
+}}
+function _hideRegimePopover() {{
+    if (_regimePopoverEl) _regimePopoverEl.style.display = 'none';
+}}
+document.addEventListener('click', function(e) {{
+    var pill = e.target.closest('.regime-pill');
+    if (pill) {{
+        _showRegimePopover(pill);
+        e.stopPropagation();
+        return;
+    }}
+    if (!e.target.closest('.regime-popover')) _hideRegimePopover();
+}});
+document.addEventListener('keydown', function(e) {{
+    if (e.key === 'Escape') _hideRegimePopover();
+}});
+window.addEventListener('scroll', _hideRegimePopover, true);
+window.addEventListener('resize', _hideRegimePopover);
+
 // Tab switching
 let fuelTabInitialized    = false;
 let commTabInitialized    = false;
@@ -535,6 +753,7 @@ function switchTab(id, btn) {{
     }}
     if (id === 'tab3' && !fuelTabInitialized) {{
         fuelTabInitialized = true;
+        rebuildFuelFamilyRadios();
         rebuildFuelChips();
         initFuelSlider();
         rerenderFuel();
@@ -785,7 +1004,8 @@ function renderScatter() {{
 
     const noDataPts = regionScatter.filter(d =>
         d.gdp_per_capita != null &&
-        compositeRegime(d, product) === 'Unknown'
+        compositeRegime(d, product) === 'Unknown' &&
+        !(d.subsidies && d.subsidies[product] != null && d.subsidies[product] > 0)
     );
     if (noDataPts.length) {{
         datasets.push({{
@@ -953,13 +1173,6 @@ function getCheckedValues(containerId) {{
 function formatYM(d) {{
     const dt = new Date(d);
     return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
-}}
-
-let fuelCurrencyMode = 'local';
-
-function setCurrency(mode) {{
-    fuelCurrencyMode = mode;
-    rerenderFuel();
 }}
 
 let fuelSliderDates = [];
@@ -1168,14 +1381,50 @@ function getFuelCountryRows() {{
     return FUEL_DATA[country] || [];
 }}
 
+var FUEL_FAMILY_ORDER = ["diesel","gasoline","lpg","kerosene","natural_gas","fuel_oil","electricity","crude_oil"];
+var FUEL_FAMILY_LABELS = {{
+    diesel: "Diesel", gasoline: "Gasoline", lpg: "LPG", kerosene: "Kerosene",
+    natural_gas: "Natural Gas", fuel_oil: "Fuel Oil", electricity: "Electricity", crude_oil: "Crude Oil",
+}};
+
+function getFuelFamily() {{
+    var el = document.querySelector('input[name="fuel-family-toggle"]:checked');
+    return el ? el.value : "";
+}}
+
+function setFuelFamily() {{
+    rebuildFuelChips();
+    rerenderFuel();
+}}
+
+function rebuildFuelFamilyRadios() {{
+    var rows = getFuelCountryRows();
+    var present = new Set();
+    rows.forEach(function(r) {{ if (r.fuel_family) present.add(r.fuel_family); }});
+    var ordered = FUEL_FAMILY_ORDER.filter(function(k) {{ return present.has(k); }});
+    var defaultKey = ordered.indexOf("diesel") >= 0 ? "diesel" : (ordered[0] || "");
+    var html = "";
+    ordered.forEach(function(k) {{
+        var checked = (k === defaultKey) ? " checked" : "";
+        var label = FUEL_FAMILY_LABELS[k] || k;
+        html += '<label><input type="radio" name="fuel-family-toggle" value="' + k + '"' + checked + ' onchange="setFuelFamily()">' + label + '</label>';
+    }});
+    var container = document.getElementById("fuel-family-radios");
+    if (container) container.innerHTML = html;
+}}
+
 function rebuildFuelChips() {{
     var rows = getFuelCountryRows();
+    var family = getFuelFamily();
+    if (family) rows = rows.filter(function(r) {{ return r.fuel_family === family; }});
     var keys = [...new Set(rows.map(chipKey))].sort();
     buildFuelChips("fuel-axis-chips", keys, rows);
 }}
 
 function rerenderFuel() {{
     var rows         = getFuelCountryRows();
+    var family       = getFuelFamily();
+    if (family) rows = rows.filter(function(r) {{ return r.fuel_family === family; }});
     window._fuelCountryRows = rows;
     var selectedKeys = getCheckedValues("fuel-axis-chips");
     var visibleRows  = rows.filter(function(r) {{ return selectedKeys.includes(chipKey(r)); }});
@@ -1184,8 +1433,7 @@ function rerenderFuel() {{
     if (range.to)   visibleRows = visibleRows.filter(function(r) {{ return r.observation_date <= range.to; }});
     updateFuelMeta(visibleRows);
 
-    var useUSD = fuelCurrencyMode === 'usd';
-    var priceField = useUSD ? 'price_usd' : 'price_local';
+    var priceField = 'price_local';
 
     if (!visibleRows.length) {{
         drawFuelChart([], "");
@@ -1195,16 +1443,12 @@ function rerenderFuel() {{
         return;
     }}
     var firstRow  = visibleRows[0];
-    var yLabel    = useUSD
-        ? "USD / " + (firstRow.unit || "L")
-        : (firstRow.currency || "") + " / " + (firstRow.unit || "");
+    var yLabel    = (firstRow.currency || "") + " / " + (firstRow.unit || "");
     var datasets  = [];
     var colorIdx  = 0;
     var keyColors = {{}};
     selectedKeys.forEach(function(key) {{
         var keyRows = visibleRows.filter(function(r) {{ return chipKey(r) === key; }});
-        if (!keyRows.length) return;
-        if (useUSD) keyRows = keyRows.filter(function(r) {{ return r.price_usd != null; }});
         if (!keyRows.length) return;
         var color  = PALETTE[colorIdx % PALETTE.length];
         var serLbl = chipLabel(key);
@@ -1334,6 +1578,7 @@ function updateFuelRegimeSection(countryName, selectedKeys, keyColors) {{
 }}
 
 document.getElementById("fuel-country-select").addEventListener("change", function() {{
+    rebuildFuelFamilyRadios();
     rebuildFuelChips();
     initFuelSlider();
     rerenderFuel();

@@ -1,0 +1,38 @@
+name: Chequeado
+country: argentina
+language: es
+base_url: https://chequeado.com
+
+# Categories: Política(914), Economía(904), Justicia(908), Trabajo(911), Energía(906)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://chequeado.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=914,904,908,911,906&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

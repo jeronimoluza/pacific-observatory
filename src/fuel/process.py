@@ -25,7 +25,7 @@ _CANONICAL_FAMILY_UNITS = {
     "gasoline": "L",
     "diesel": "L",
     "kerosene": "L",
-    "lpg": "kg",
+    "lpg": "L",
 }
 _FAMILY_USD_FAMILIES = {"gasoline", "diesel", "kerosene", "lpg"}
 _CADENCE_DAYS = {
@@ -94,17 +94,26 @@ def _normalize_price(price_local: float, spec: ProductSpec) -> tuple[float, str]
         return price_local / quantity, _CANONICAL_FAMILY_UNITS[family]
 
     if family == "lpg":
-        if unit == "kilogram":
-            quantity = amount
-        elif unit == "ton":
-            quantity = amount * 1000.0
-        elif unit == "pound":
-            quantity = amount * 0.45359237
+        if unit == "liter":
+            quantity_in_liters = amount
         else:
-            raise ValueError(
-                f"Unsupported LPG conversion from {unit} for {spec.series_key}"
-            )
-        return price_local / quantity, _CANONICAL_FAMILY_UNITS[family]
+            if unit == "kilogram" or unit == "cylinder":
+                kg_amount = amount
+            elif unit == "ton":
+                kg_amount = amount * 1000.0
+            elif unit == "pound":
+                kg_amount = amount * 0.45359237
+            else:
+                raise ValueError(
+                    f"Unsupported LPG conversion from {unit} for {spec.series_key}"
+                )
+            if spec.density_l_per_kg is None or spec.density_l_per_kg <= 0:
+                raise ValueError(
+                    f"density_l_per_kg required for LPG product '{spec.series_key}' "
+                    f"(unit={unit}); update its config YAML"
+                )
+            quantity_in_liters = kg_amount * spec.density_l_per_kg
+        return price_local / quantity_in_liters, _CANONICAL_FAMILY_UNITS[family]
 
     normalized = price_local / amount if spec.amount else price_local
     return normalized, unit
@@ -313,9 +322,37 @@ def build_country_outputs(
     outputs_dir: Path = OUTPUTS_DIR,
     fx_cache_path: Path = DEFAULT_FX_CACHE,
 ) -> dict[str, Path | int]:
-    frames = [_load_source_frame(entry, data_dir=data_dir) for entry in entries]
+    enabled_entries = [entry for entry in entries if entry.get("enabled", True)]
+    skipped = [
+        entry["source_key"] for entry in entries if not entry.get("enabled", True)
+    ]
+    if skipped:
+        logger.info(
+            "Skipping disabled sources for %s: %s",
+            entries[0]["country_slug"],
+            ", ".join(skipped),
+        )
+    if not enabled_entries:
+        country_meta = entries[0]
+        logger.warning(
+            "All sources disabled for country %s — no outputs written. Skipped: %s",
+            country_meta["country_slug"],
+            ", ".join(skipped) if skipped else "(none)",
+        )
+        out_dir = (
+            outputs_dir
+            / country_meta["region"]
+            / country_meta["subregion"]
+            / country_meta["country_slug"]
+        )
+        return {
+            "product_path": out_dir / "fuel_product_local_prices.csv",
+            "family_path": out_dir / "fuel_family_usd_prices.csv",
+            "rows": 0,
+        }
+    frames = [_load_source_frame(entry, data_dir=data_dir) for entry in enabled_entries]
     frames = [frame for frame in frames if not frame.empty]
-    country_meta = entries[0]
+    country_meta = enabled_entries[0]
     out_dir = (
         outputs_dir
         / country_meta["region"]
@@ -356,7 +393,6 @@ def run_build(
     region: str | None = None,
     subregion: str | None = None,
     country: str | None = None,
-    yes: bool = False,
     data_dir: Path = DATA_DIR,
     outputs_dir: Path = OUTPUTS_DIR,
     fx_cache_path: Path = DEFAULT_FX_CACHE,
@@ -371,10 +407,7 @@ def run_build(
     for entry in registry.values():
         countries.setdefault(entry["country_slug"], []).append(entry)
 
-    if not yes:
-        click.echo(f"Countries to build: {', '.join(sorted(countries))}")
-        if not click.confirm("Proceed?"):
-            raise SystemExit(0)
+    click.echo(f"Countries to build: {', '.join(sorted(countries))}")
 
     results = []
     for country_slug, entries in sorted(countries.items()):

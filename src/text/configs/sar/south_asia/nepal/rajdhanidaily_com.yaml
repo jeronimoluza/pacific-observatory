@@ -1,0 +1,39 @@
+name: rajdhanidaily.com
+language: en
+country: nepal
+base_url: https://rajdhanidaily.com
+
+# Categories: breaking-news(9181), %e0%a4%b0%e0%a4%be%e0%a4%9c%e0%a4%a8%e0%a5%80%e0%a4%a4%e0%a4%bf(11458), %e0%a4%b8%e0%a4%ae%e0%a4%be%e0%a4%9c(10732), %e0%a4%aa%e0%a5%8d%e0%a4%b0%e0%a4%a6%e0%a5%87%e0%a4%b6-%e0%a5%a9(10706), pramukh(8709)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://rajdhanidaily.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=48,8,25,26,51&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "div.entry-content p"
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

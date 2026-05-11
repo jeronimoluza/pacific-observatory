@@ -119,7 +119,7 @@ python run.py fuel collect --source qe_qa_monthly --dry-run
 python run.py fuel collect --source qe_qa_monthly
 
 # Verify canonical storage
-python run.py fuel build --country qatar -y
+python run.py fuel build --country qatar
 ```
 
 Canonical raw observations will be written to:
