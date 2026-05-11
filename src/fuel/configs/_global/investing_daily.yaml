@@ -1,0 +1,16 @@
+# Global commodity price benchmarks from investing.com.
+# Collected via: po fuel collect --region global
+# Not discovered by normal region-based discovery (_global prefix).
+
+source_key: investing_daily
+module: _global.investing_daily
+function: fetch_investing_commodities
+url: https://www.investing.com/commodities/
+fallback_date: 2021-03-28
+priority: 10
+cadence: daily
+carry_forward: false
+
+# Products are defined in the fetcher code (INVESTING_SLUGS),
+# not here, because commodity instruments don't follow the
+# country-source product mapping pattern.

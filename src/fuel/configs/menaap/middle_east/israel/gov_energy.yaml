@@ -5,7 +5,7 @@ url: https://www.gov.il/he/pages/price_stucture
 fallback_date: 2023-12-01
 priority: 10
 cadence: monthly
-carry_forward: false
+carry_forward: true
 
 products:
   "Gasoline 95":

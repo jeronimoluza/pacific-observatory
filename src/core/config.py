@@ -205,7 +205,7 @@ def parse_config_path(config_path: Path, base_dir: Path) -> tuple[str, str, str]
 # ── Slug validation ───────────────────────────────────────────────
 
 
-def make_slug_validator(kind: str):
+def make_slug_validator(kind: str, extra_valid: set[str] | None = None):
     """Return a Click option callback that validates region/subregion/country slugs."""
     _hints = {
         "region": "Run 'po list-regions' to see available regions, subregions, and countries.",
@@ -220,6 +220,8 @@ def make_slug_validator(kind: str):
 
     def callback(ctx, param, value):
         if value is None:
+            return value
+        if extra_valid and value in extra_valid:
             return value
         idx = _build_index()
         if value not in idx[_index_key[kind]]:

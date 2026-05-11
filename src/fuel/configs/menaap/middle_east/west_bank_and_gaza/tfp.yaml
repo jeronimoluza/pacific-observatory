@@ -3,6 +3,7 @@ module: menaap.middle_east.west_bank_and_gaza.tfp
 function: fetch_tfp_ps
 url: https://www.thefuelprice.com/Fps/en
 fallback_date: 2003-01-01
+currency: ILS
 priority: 50
 cadence: monthly
 carry_forward: true

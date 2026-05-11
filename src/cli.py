@@ -150,11 +150,20 @@ _dry_run_opt = click.option(
 )
 
 
+_fuel_region_opt = click.option(
+    "--region",
+    "-r",
+    default=None,
+    callback=make_slug_validator("region", extra_valid={"global"}),
+    help="Filter by region slug (use 'global' for commodity benchmarks)",
+)
+
+
 # ── Fuel subcommands ────────────────────────────────────────────────
 
 
 @fuel.command("collect")
-@_region_opt
+@_fuel_region_opt
 @_subregion_opt
 @_country_opt
 @_source_opt
@@ -177,6 +186,7 @@ def fuel_collect(region, subregion, country, source, yes, dry_run, rebuild, forc
             subregion=subregion,
             country=country,
             source_key=source,
+            include_global=bool(region and region != "global"),
         )
     except ValueError as exc:
         raise click.ClickException(str(exc))
@@ -198,6 +208,7 @@ def fuel_collect(region, subregion, country, source, yes, dry_run, rebuild, forc
         force=force,
         rebuild=rebuild,
         dry_run=dry_run,
+        refresh_fx=bool(region and region != "global"),
     )
 
 
@@ -224,8 +235,16 @@ def fuel_build(region, subregion, country, yes):
 @_subregion_opt
 @_yes_opt
 def fuel_publish(region, subregion, yes):
-    """Generate dashboards and HTML outputs."""
-    click.echo("fuel publish: not yet migrated")
+    """Generate fuel policy dashboards."""
+    import logging
+
+    from fuel.publish import run_publish
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
+    try:
+        run_publish(region=region, subregion=subregion, yes=yes)
+    except ValueError as exc:
+        raise click.ClickException(str(exc))
 
 
 # ── Text subcommands ────────────────────────────────────────────────
