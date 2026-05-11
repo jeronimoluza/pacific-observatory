@@ -299,6 +299,21 @@ def text_publish(region, subregion, country):
     run_publish(region=region, subregion=subregion, country=country)
 
 
+@text.command("publish-special")
+@click.option(
+    "--region",
+    "-r",
+    required=True,
+    callback=make_slug_validator("region"),
+    help="Region slug with a Fuel Crisis Policy addon HTML",
+)
+def text_publish_special(region):
+    """Generate the per-region Fuel Crisis Policy + EPU dashboard."""
+    from text.publish import run_publish_special
+
+    run_publish_special(region=region)
+
+
 @text.command("status")
 @_region_opt
 @_subregion_opt
