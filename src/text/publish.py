@@ -291,3 +291,47 @@ def run_publish(region=None, subregion=None, country=None):
         )
     except Exception as e:
         click.echo(f"  Dashboard generation failed: {e}")
+
+
+def run_publish_special(region: str):
+    """Build the per-region Fuel Crisis Policy + EPU dashboard for ``region``.
+
+    Builds (or refreshes) a region-scoped ``outputs/text/dashboard_data_{region}.json``
+    from current outputs and renders the dashboard HTML.
+    """
+    from text.plotting.small_dashboard_integrated_w_policy import (
+        available_regions,
+        generate_dashboard_from_json,
+    )
+
+    click.echo()
+    click.echo("  Text publish-special (regional Fuel Crisis Policy dashboard)")
+    click.echo("  " + "-" * 40)
+
+    regions = available_regions()
+    if region not in regions:
+        raise click.ClickException(
+            f"No Fuel Crisis Policy addon for region '{region}'. "
+            f"Available: {', '.join(regions) or '(none)'}"
+        )
+
+    region_json = OUTPUT_DIR / f"dashboard_data_{region}.json"
+
+    click.echo(f"  Region: {region}")
+    click.echo(f"  Building {region_json.name} from outputs/text/...")
+    units = _discover_units(region=region)
+    if not units:
+        raise click.ClickException(
+            f"No units with EPU data found for region '{region}'. "
+            f"Run 'po text build --region {region}' first."
+        )
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    with open(region_json, "w", encoding="utf-8") as f:
+        json.dump(_build_dashboard_json(units), f, indent=2, default=str)
+    click.echo(f"  Written: {region_json.relative_to(PROJECT_ROOT)}")
+
+    try:
+        out_path = generate_dashboard_from_json(region_json, region)
+    except (FileNotFoundError, ValueError) as exc:
+        raise click.ClickException(str(exc))
+    click.echo(f"  Written: {out_path.relative_to(PROJECT_ROOT)}")
