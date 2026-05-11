@@ -1,0 +1,45 @@
+name: Forbes Kazakhstan
+language: ru
+country: kazakhstan
+base_url: https://forbes.kz
+
+# Forbes Kazakhstan (business/finance). Articles live at
+# /articles/{slug}-{short-hash}. Sitemap index /sitemaps/sitemap_index-
+# articles_ru.xml references dozens of sitemap-articles-N_ru.xml subfiles.
+# Article date available only via meta[name="article:published_time"]
+# (non-standard attribute combo) or JSON-LD.
+listing:
+  type: sitemap
+  sitemap_index_url: https://forbes.kz/sitemaps/sitemap_index-articles_ru.xml
+  sitemap_regex: "/sitemaps/sitemap-articles-[0-9]+_ru\\.xml$"
+  url_regex: "^https://forbes\\.kz/articles/.+-[a-f0-9]+$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article p
+    date: meta[name='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

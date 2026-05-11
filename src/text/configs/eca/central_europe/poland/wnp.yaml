@@ -1,0 +1,48 @@
+name: WNP
+language: pl
+country: poland
+base_url: https://www.wnp.pl
+# ``/wiadomosci/N/`` returns identical server content (100% overlap) and
+# robots.txt blocks the ``/wiadomosci/`` listing entirely. robots.txt points
+# at per-section sitemap indexes; ``sitemap-pack-1.xml`` of each section
+# holds the most recent articles (newest first). Aggregate the eight news
+# sections via explicit sitemap URLs.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://www.wnp.pl/polityka-i-sondaze/sitemap-pack-1.xml
+    - https://www.wnp.pl/energia/sitemap-pack-1.xml
+    - https://www.wnp.pl/przemysl/sitemap-pack-1.xml
+    - https://www.wnp.pl/rynki/sitemap-pack-1.xml
+    - https://www.wnp.pl/bezpieczenstwo/sitemap-pack-1.xml
+    - https://www.wnp.pl/tech/sitemap-pack-1.xml
+    - https://www.wnp.pl/budownictwo/sitemap-pack-1.xml
+    - https://www.wnp.pl/logistyka/sitemap-pack-1.xml
+  url_regex: "^https://www\\.wnp\\.pl/[a-z-]+/[a-z0-9-]+,\\d+\\.html$"
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: pl-PL,pl;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.post-content p
+    date: time::attr(datetime)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

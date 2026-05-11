@@ -2,12 +2,15 @@ name: N1 Serbia
 language: sr
 country: serbia
 base_url: https://n1info.rs
+# /vesti/page/N/ returns 404 and ?page=N returns identical content.
+# Using the Google-news sitemap (~370 newest) plus the newest post sitemap
+# for a few extra days of coverage (post_1 is most recent by server order).
 listing:
-  type: pagination
-  start_url: https://n1info.rs/vesti/
-  url_template: https://n1info.rs/vesti/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+    - https://n1info.rs/sitemap/sitemap_news_1.xml
+    - https://n1info.rs/sitemap/sitemap_post_1.xml
+  url_regex: "^https://n1info\\.rs/(?!english/)[a-z0-9-]+(/[a-z0-9-]+)+/?$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,14 +23,18 @@ headers:
   Accept-Language: sr-RS,sr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: article
-    title: h3 a::text
-    url: h3 a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.flex p"
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article p
+    date: script[type='application/ld+json']:-soup-contains('datePublished')::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

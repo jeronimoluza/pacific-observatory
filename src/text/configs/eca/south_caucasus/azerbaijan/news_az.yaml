@@ -1,0 +1,44 @@
+name: News.Az
+language: en
+country: azerbaijan
+base_url: https://news.az
+
+# English-language Azerbaijani news portal. /sitemap.xml is a sitemapindex
+# listing /news.xml and /news.xml?p=N (paginated, up to p=13 covering ~130k
+# historical articles) plus /news-data.xml for older content. Each <url> has
+# <lastmod>. Articles at /news/<slug> with body in div.post--content.
+listing:
+  type: sitemap
+  sitemap_index_url: https://news.az/sitemap.xml
+  sitemap_regex: "news(-data)?\\.xml(\\?p=[0-9]+)?$"
+  url_regex: "^https://news\\.az/news/[a-zA-Z0-9\\-]+$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: en-US,en;q=0.9
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.post--content
+    date: lastmod::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

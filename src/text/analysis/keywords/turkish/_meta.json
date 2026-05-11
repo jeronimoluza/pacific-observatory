@@ -1,0 +1,29 @@
+{
+  "language": "turkish",
+  "iso_codes": [
+    "tr"
+  ],
+  "status": "draft",
+  "source": "PROVISIONAL (template-translated). Upstream: Tunç et al. (2024) — ECSU index, Empirical Economics",
+  "source_url": "https://doi.org/10.1007/s00181-024-02594-z (paywalled — awaiting preprint access)",
+  "source_table": null,
+  "newspapers_used_by_source": [
+    "Cumhuriyet",
+    "Dünya",
+    "Hürriyet",
+    "Milliyet",
+    "Sabah",
+    "Sözcü"
+  ],
+  "standardization_period": "2006-01 onwards",
+  "notes": "The canonical ECSU paper lists 30 economy and 94 uncertainty keywords — not accessible without paywalled paper. This draft is a conservative translation of the BBD 2016 template plus standard Turkish economic/political vocabulary. Before use: (1) obtain the ECSU paper and replace with its full dictionaries, OR (2) run native-speaker audit against 300 random articles from the six panel newspapers. Status remains 'draft' until one of those is done.",
+  "audit": {
+    "sample_size": 0,
+    "precision": null,
+    "recall": null,
+    "audit_date": null,
+    "audit_notes": ""
+  },
+  "last_review_date": null,
+  "reviewer": null
+}

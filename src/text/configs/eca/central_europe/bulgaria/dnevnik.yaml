@@ -3,11 +3,38 @@ language: bg
 country: bulgaria
 base_url: https://www.dnevnik.bg
 listing:
-  type: pagination
-  start_url: https://www.dnevnik.bg/
-  url_template: https://www.dnevnik.bg/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+  - https://www.dnevnik.bg/dnevnik_stories_uragan0.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan50000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan100000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan150000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan200000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan250000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan300000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan350000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan400000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan450000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan500000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan550000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan600000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan650000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan700000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan750000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan800000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan850000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan900000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan950000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan1000000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan1050000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan1100000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan1150000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan1200000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan1250000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan1300000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_stories_uragan1350000.xml.gz
+  - https://www.dnevnik.bg/dnevnik_news0.xml
+  url_regex: ^https://www\.dnevnik\.bg/[a-z0-9_/-]+/\d{4}/\d{2}/\d{2}/\d+_
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,11 +47,14 @@ headers:
   Accept-Language: bg-BG,bg;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: main li
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
   article:
-    body: "section.main-footer-foot p"
+    title:
+    - meta[property="og:title"]::attr(content)
+    - h1::text
+    body: section.main-footer-foot p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

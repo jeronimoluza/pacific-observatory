@@ -1,0 +1,36 @@
+# Unusable with current pipeline strategies.
+# Reason: Next.js SPA. Sitemap lists ~tens of thousands of article URLs across
+#   sitemap-ro-1.xml / sitemap-ro-2.xml / sitemap-ru-1.xml / sitemap-ru-2.xml, but
+#   every article HTML contains only <div id="__next"></div> with no server-side
+#   rendered body. Article content is injected client-side via React. Only
+#   LD+JSON on-page (no articleBody field). No public WP / JSON listing endpoint
+#   discovered. Would need a browser client (Playwright/Chromium renderer) or a
+#   reverse-engineered internal API. Separate ro/ and ru/ configs would be
+#   trivial (language-split sitemaps exist) once rendering is available.
+name: TV8
+language: ro
+country: moldova
+base_url: https://tv8.md
+listing:
+  type: sitemap
+  sitemap_index_url: https://tv8.md/sitemap.xml
+  sitemap_regex: "sitemap-ro-"
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: '#__next'
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

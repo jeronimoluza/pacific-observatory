@@ -1,0 +1,44 @@
+name: Factor.am
+language: hy
+country: armenia
+base_url: https://factor.am
+
+# Factor.am independent Armenian news site. WordPress, but /wp-json is disabled
+# at the edge (403). Sitemap strategy works: /sitemap.xml is a wp-sitemap-index
+# referencing 120 sub-sitemaps (wp-sitemap-posts-post-1..120), each with URLs
+# like https://factor.am/<post-id>.html going back to 2017.
+listing:
+  type: sitemap
+  sitemap_index_url: https://factor.am/sitemap.xml
+  sitemap_regex: "wp-sitemap-posts-post-[0-9]+\\.xml$"
+  url_regex: "^https://factor\\.am/[0-9]+\\.html$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: hy-AM,hy;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

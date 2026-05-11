@@ -4,8 +4,8 @@ country: poland
 base_url: https://oko.press
 listing:
   type: pagination
-  start_url: https://oko.press/
-  url_template: https://oko.press/page/{num}/
+  start_url: https://oko.press/najnowsze
+  url_template: https://oko.press/najnowsze?page={num}
   start_page: 2
   batch_size: 5
 client: http
@@ -20,14 +20,14 @@ headers:
   Accept-Language: pl-PL,pl;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: div.post-card[data-type="post"]
+    title: a.post-card__title::text
+    url: a.post-card__title::attr(href)
   article:
-    body: div.bg-black p
-    date: meta[property='article:published_time']::attr(content)
+    body: div.column p
+    date: script[type='application/ld+json']::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

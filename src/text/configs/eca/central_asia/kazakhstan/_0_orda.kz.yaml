@@ -1,0 +1,38 @@
+# Unusable with current pipeline strategies.
+# Reason: orda.kz is an SPA. /sitemap.xml, /sitemap_index.xml, /rss,
+#   /feed, /news — all return a generic 404 HTML shell (the SPA bundle),
+#   despite robots.txt being fine. There is no WP REST API and no
+#   JSON/XML article feed exposed. Article URLs can be discovered only by
+#   rendering the JS front-end. A headless-browser strategy would be
+#   required, not implemented in this pipeline today.
+# Orda is an important independent Kazakh-language / Russian-language
+# opposition outlet; worth revisiting if/when a JS-rendering client lands.
+name: Orda
+language: ru
+country: kazakhstan
+base_url: https://orda.kz
+listing:
+  type: sitemap
+  sitemap_index_url: https://orda.kz/sitemap.xml
+  sitemap_regex: ""
+  url_regex: ""
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+    (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: article p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

@@ -1,0 +1,48 @@
+# turkmenistan.gov.tm — Official Turkmenistan state portal ("Altyn Asyr" /
+# Golden Age). State-controlled, but publishes a steady stream of state
+# press releases and official news in English, Russian and Turkmen.
+# Scraped via the English archive listing, which does support ?page=N
+# pagination (confirmed: pages 1..~3000 descend to post id 249).
+# Article URLs: /en/post/<numeric-id>/<slug>
+name: Turkmenistan.gov.tm
+language: en
+country: turkmenistan
+base_url: https://turkmenistan.gov.tm
+
+listing:
+  type: pagination
+  start_url: https://turkmenistan.gov.tm/en/archive
+  url_template: https://turkmenistan.gov.tm/en/archive?page={num}
+  start_page: 2
+  batch_size: 5
+  filters:
+    allow_domains:
+      - turkmenistan.gov.tm
+    deny_path_regex:
+      - "^/en/(archive|category|search)"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: en-US,en;q=0.9
+
+selectors:
+  thumbnail:
+    container: div.content_item
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.post_text
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

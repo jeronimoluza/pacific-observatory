@@ -1,0 +1,45 @@
+name: Kyiv Post Archive
+language: en
+country: ukraine
+base_url: https://archive.kyivpost.com
+
+# Covers 1997-02-10 to 2022-12-07 via the WP REST API that the modern
+# www.kyivpost.com site still exposes on the old content. 319,725 English
+# posts. Sister config kyiv_post.yaml handles 2022-12 → present via
+# HTML pagination on the new site.
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: https://www.kyivpost.com/wp-json/wp/v2/posts?per_page=100&page={page}&lang=en
+  json_paths:
+    url: post_link
+    title: post_title
+    date: post_date
+    body: post_content
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: application/json
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: filler
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

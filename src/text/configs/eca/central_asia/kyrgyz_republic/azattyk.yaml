@@ -1,0 +1,44 @@
+name: Azattyk (RFE/RL Kyrgyz)
+language: ky
+country: kyrgyz_republic
+base_url: https://www.azattyk.org
+
+# RFE/RL Kyrgyz service. Same Pangea platform as svaboda.org (Belarus).
+# /sitemap.xml is a sitemap index; 22 gzipped sub-sitemaps sitemap_7_N.xml.gz.
+# Articles at /a/NNN.html with meta article:published_time and body in
+# div.body-container (plus optional div.wsw for prose).
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.azattyk.org/sitemap.xml
+  sitemap_regex: "sitemap_7_[0-9]+\\.xml\\.gz$"
+  url_regex: "^https://www\\.azattyk\\.org/a/"
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ky-KG,ky;q=0.9,ru;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.body-container
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

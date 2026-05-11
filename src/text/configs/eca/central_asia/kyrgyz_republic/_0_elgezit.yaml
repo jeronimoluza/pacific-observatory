@@ -1,0 +1,41 @@
+# Unusable with current pipeline strategies.
+# Reason: WordPress site but /sitemap.xml, /sitemap_index.xml, and /wp-json/*
+#   all return the homepage HTML (301/200 rewrite to the theme index). The
+#   homepage exposes only 78 articles and every /page/N/ path returns the
+#   exact same 78 IDs — pagination token is silently ignored server-side
+#   (homepage is static-cached). /feed and /feed/ return an RSS with a
+#   small rolling window, no historical depth. No category archives surface
+#   in the HTML either.
+# Would need: direct DB export, a working WP REST endpoint, or an archive.org
+#   Wayback crawl — none is available over HTTP.
+name: Elgezit.kg
+language: ru
+country: kyrgyz_republic
+base_url: https://elgezit.kg
+listing:
+  type: pagination
+  start_url: https://elgezit.kg/
+  url_template: https://elgezit.kg/page/{num}/
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+selectors:
+  thumbnail:
+    container: article
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.entry-content
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

@@ -2,12 +2,17 @@ name: Bianet
 language: tr
 country: turkiye
 base_url: https://bianet.org
+# Homepage/category ?page=N and ?p=N return identical content (fake
+# pagination) and the root renders via JS (no anchor tags in the initial
+# HTML). The only working discovery surface is the Google News sitemap at
+# /sitemap/haberler, which lists the last ~5 days of stories. The sitemap
+# mixes TR and EN articles; bianet.yaml collects the TR subset and
+# bianet_english.yaml collects the EN subset via the companion config.
 listing:
-  type: pagination
-  start_url: https://bianet.org/
-  url_template: https://bianet.org/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+    - https://bianet.org/sitemap/haberler
+  url_regex: "^https://bianet\\.org/haber/.+-\\d+$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,12 +25,18 @@ headers:
   Accept-Language: tr-TR,tr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: div.col-12
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "main p"
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - h1::text
+      - title::text
+    body: main p
+    date:
+      - meta[itemprop='datePublished']::attr(content)
+      - meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates
 max_pages: null

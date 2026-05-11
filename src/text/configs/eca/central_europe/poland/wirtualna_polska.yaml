@@ -2,11 +2,15 @@ name: Wirtualna Polska
 language: pl
 country: poland
 base_url: https://wiadomosci.wp.pl
+# Homepage and section pages have fake pagination (``?page=N`` returns
+# identical content, 100% overlap). The site does expose a daily archive at
+# ``/archiwum/YYYY-MM-DD`` listing ~140 story links per day, so iterate via
+# the archive strategy.
 listing:
-  type: pagination
-  start_url: https://wiadomosci.wp.pl/
-  url_template: https://wiadomosci.wp.pl/?page={num}
-  start_page: 2
+  type: archive
+  url_template: https://wiadomosci.wp.pl/archiwum/{year}-{month}-{day}
+  date_format: daily
+  start_date: '2022-01-01'
   batch_size: 5
 client: http
 concurrency: 3

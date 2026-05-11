@@ -1,0 +1,31 @@
+{
+  "economic": {
+    "economy": "економија",
+    "economic": "економски",
+    "financial": "финансиски"
+  },
+  "policy": {
+    "policy": "политика",
+    "government": "влада",
+    "parliament": "собрание",
+    "Assembly": "Собрание",
+    "minister": "министер",
+    "ministry": "министерство",
+    "central bank": "централна банка",
+    "National Bank of North Macedonia": "Народна банка на Северна Македонија",
+    "NBRM": "НБРМ",
+    "president": "претседател",
+    "regulation": "регулатива",
+    "legislation": "законодавство",
+    "law": "закон",
+    "tax": "данок",
+    "deficit": "дефицит",
+    "budget": "буџет"
+  },
+  "uncertainty": {
+    "uncertain": "неизвесен",
+    "uncertainty": "неизвесност",
+    "risk": "ризик",
+    "instability": "нестабилност"
+  }
+}

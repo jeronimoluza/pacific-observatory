@@ -1,0 +1,12 @@
+# REJECTED: segodnya.ua (Segodnya)
+#
+# All endpoints return HTTP 403 from Cloudflare managed challenge
+# (/wp-json/wp/v2/posts, /sitemap.xml, homepage). cf-mitigated: challenge.
+# Not scrapeable with plain httpx.
+# Also worth noting: Segodnya's print edition ceased in 2019; online ownership
+# has shifted, independence tier is debatable.
+name: Segodnya
+language: ru
+country: ukraine
+base_url: https://segodnya.ua
+disabled: true

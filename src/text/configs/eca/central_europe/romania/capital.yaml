@@ -1,0 +1,33 @@
+name: Capital
+language: ro
+country: romania
+base_url: https://www.capital.ro
+listing:
+  type: pagination
+  start_url: https://www.capital.ro/actualitate
+  url_template: https://www.capital.ro/actualitate/page/{num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ro-RO,ro;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: article
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.post-content p
+    date: meta[itemprop='datePublished']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

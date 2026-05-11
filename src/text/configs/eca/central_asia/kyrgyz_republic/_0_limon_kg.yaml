@@ -1,0 +1,33 @@
+# Unusable with current pipeline strategies.
+# Reason: limon.kg is a Vue SPA (`<div id="app"><router-view/></div>`). The
+#   HTML response is an empty shell; all articles render client-side via
+#   /assets/index-*.js fetching JSON from the akipress backend. No sitemap
+#   (/sitemap.xml returns the shell HTML), no WP API, no static listings,
+#   and homepage has zero article links. Articles are also gated behind the
+#   same ddos-guard layer that blocks kg.akipress.org.
+# Would need: a browser client to render the SPA, or reverse-engineering
+#   the (unauthenticated) akipress JSON endpoint that the Vue app uses.
+name: Limon.kg
+language: ru
+country: kyrgyz_republic
+base_url: https://limon.kg
+listing:
+  type: sitemap
+  sitemap_index_url: https://limon.kg/sitemap.xml
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: div#app
+max_pages: null
+max_articles: null

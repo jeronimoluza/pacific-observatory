@@ -1,0 +1,55 @@
+# Unusable with current pipeline strategies.
+# Reason: same as _0_anadolu_agency.yaml — www.aa.com.tr serves Next.js with
+#   fake pagination (/en/turkiye?page=N returns the same 25 articles for every
+#   N, identical to page 1). No sitemap.xml (all paths return the HTML shell),
+#   no working /api/* endpoints, and /_next/data/ is 404. RSS feeds
+#   (/en/rss/default?cat=world|turkiye|politics|economy|sports|culture|life|
+#   health|education|europe|americas|africa|asia-pacific|middle-east) expose
+#   only ~30 most-recent items per category (no pagination); combining all EN
+#   categories yields ~400 unique URLs covering ~1-2 days, and the sitemap
+#   strategy cannot parse RSS reliably (html.parser treats <link> as
+#   self-closing so the URL is lost).
+# Existing CSV from the fake-pagination crawl contains 19 articles which are
+#   still valid — do not delete.
+# Would need: id-range enumeration (numeric IDs are sequential), a
+#   cooperation with AA to expose a proper sitemap / archive API, or a
+#   headless-browser + scroll strategy.
+name: Anadolu Agency English
+language: en
+country: turkiye
+base_url: https://www.aa.com.tr
+listing:
+  type: pagination
+  start_url: https://www.aa.com.tr/en/turkiye
+  url_template: https://www.aa.com.tr/en/turkiye?page={num}
+  start_page: 2
+  batch_size: 5
+  filters:
+    deny_path_prefixes:
+      - /en/vg/
+      - /en/p/
+      - /en/b/
+      - /en/rss/
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: en-US,en;q=0.9
+selectors:
+  thumbnail:
+    container: h3
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.prose p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

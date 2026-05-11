@@ -1,0 +1,33 @@
+# Unusable with current pipeline strategies.
+# Reason: legacy CMS uses query-string-based article URLs
+# (`/vijesti/index.php?id={N}`) which neither the `pagination` nor the
+# `archive` strategy currently handles. Articles are not enumerated as
+# clickable thumbnails on a single section page; instead the homepage
+# embeds latest items directly. No sitemap exposed.
+# Fixable by extending the pagination strategy to support query-string
+# numeric increments (`url_template: ".../index.php?id={num}"`). Counterpart
+# to FBiH's federalna.yaml — needed to balance Republika Srpska coverage.
+name: RTRS
+language: sr
+country: bosnia_and_herzegovina
+base_url: https://lat.rtrs.tv
+listing:
+  type: pagination
+  url_template: https://lat.rtrs.tv/vijesti/index.php?id={num}
+  start_page: 1
+  batch_size: 5
+client: http
+concurrency: 1
+rate_limit: 2.0
+retries: 3
+retry_seconds: 5.0
+selectors:
+  thumbnail:
+    container: div.vijest
+    title: h2 a::text, h3 a::text
+    url: a::attr(href)
+  article:
+    body: div#textOfArticle p
+    date: span.date::text
+max_pages: null
+max_articles: null

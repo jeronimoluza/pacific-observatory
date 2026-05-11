@@ -1,0 +1,45 @@
+name: Sputnik Tajikistan
+language: tg
+country: tajikistan
+base_url: https://sputnik.tj
+
+# Russian state Sputnik service for Tajikistan (Tajik-language articles;
+# tj.sputniknews.ru mirrors the same host). 138 monthly sitemap shards
+# under sitemap_article_index.xml (Nov 2014 .. present) with ~260 articles
+# each (~36,000 articles total). Article URLs look like:
+#   https://sputnik.tj/YYYYMMDD/slug-NNNNNNN.html
+listing:
+  type: sitemap
+  sitemap_index_url: https://sputnik.tj/sitemap_article_index.xml
+  sitemap_regex: "sitemap_article\\.xml\\?date_start="
+  url_regex: "^https://sputnik\\.tj/[0-9]{8}/.+-[0-9]+\\.html$"
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: tg-TJ,tg;q=0.9,ru;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.article__body
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

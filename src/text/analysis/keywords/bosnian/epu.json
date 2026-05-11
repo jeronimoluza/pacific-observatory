@@ -1,0 +1,31 @@
+{
+  "economic": {
+    "economy": "ekonomija",
+    "economic": "ekonomski",
+    "economy_alt": "privreda"
+  },
+  "policy": {
+    "policy": "politika",
+    "government": "vlada",
+    "parliament": "parlament",
+    "Parliamentary Assembly": "Parlamentarna skupština",
+    "minister": "ministar",
+    "ministry": "ministarstvo",
+    "central bank": "centralna banka",
+    "Central Bank of Bosnia and Herzegovina": "Centralna banka Bosne i Hercegovine",
+    "CBBH": "CBBH",
+    "president": "predsjednik",
+    "regulation": "regulacija",
+    "legislation": "zakon",
+    "law": "zakon",
+    "tax": "porez",
+    "deficit": "deficit",
+    "budget": "budžet"
+  },
+  "uncertainty": {
+    "uncertain": "neizvjestan",
+    "uncertainty": "neizvjesnost",
+    "risk": "rizik",
+    "instability": "nestabilnost"
+  }
+}

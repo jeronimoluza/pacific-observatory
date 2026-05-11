@@ -1,0 +1,11 @@
+# REJECTED: odessa-journal.com (The Odessa Journal, English-language Odesa news)
+#
+# HTTP 403 with Cloudflare Turnstile / managed challenge on every endpoint
+# (/, /sitemap.xml, /wp-json/wp/v2/posts). The response includes
+# `cf-mitigated: challenge` and requires browser-grade JS execution to pass.
+# Not scrapeable with plain httpx until Cloudflare policy is relaxed.
+name: The Odessa Journal
+language: en
+country: ukraine
+base_url: https://odessa-journal.com
+disabled: true

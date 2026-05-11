@@ -1,0 +1,51 @@
+# tdh.gov.tm — Turkmenistan State News Agency (TDH / Türkmen döwlet habarlary).
+# Official state newswire. English-language section crawled via the
+# /en/category/politics listing (deepest category); ?page=N pagination
+# confirmed working to ~page=300+ descending to post id ~25000.
+# Article URLs: /en/post/<numeric-id>/<slug>
+#
+# NOTE: /en/archive does NOT paginate (always returns the first page), and
+# /en/rss.xml is only the latest ~20 items. The politics category is
+# effectively the full archive by post count (most TDH output is political).
+name: TDH (Turkmenistan State News Agency)
+language: en
+country: turkmenistan
+base_url: https://tdh.gov.tm
+
+listing:
+  type: pagination
+  start_url: https://tdh.gov.tm/en/category/politics
+  url_template: https://tdh.gov.tm/en/category/politics?page={num}
+  start_page: 2
+  batch_size: 5
+  filters:
+    allow_domains:
+      - tdh.gov.tm
+    deny_path_regex:
+      - "^/en/(category|archive|search)"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: en-US,en;q=0.9
+
+selectors:
+  thumbnail:
+    container: div.main_news-content
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.news_page-text
+    date: div.publish_date::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

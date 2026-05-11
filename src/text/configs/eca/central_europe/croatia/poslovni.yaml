@@ -4,8 +4,8 @@ country: croatia
 base_url: https://www.poslovni.hr
 listing:
   type: pagination
-  start_url: https://www.poslovni.hr/
-  url_template: https://www.poslovni.hr/?page={num}
+  start_url: https://www.poslovni.hr/vijesti/
+  url_template: https://www.poslovni.hr/vijesti/page/{num}/
   start_page: 2
   batch_size: 5
 client: http
@@ -24,10 +24,12 @@ selectors:
     title: a[href]::text
     url: a[href]::attr(href)
   article:
-    body: "div.article__content"
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+    body: div.article__content p
+    date: script[type='application/ld+json']::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

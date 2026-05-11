@@ -1,0 +1,34 @@
+{
+  "economic": {
+    "economy": "ekonomi",
+    "economic": "ekonomik",
+    "financial": "financiar"
+  },
+  "policy": {
+    "policy": "politika",
+    "government": "qeveria",
+    "parliament": "parlamenti",
+    "Assembly": "Kuvendi",
+    "minister": "ministri",
+    "ministry": "ministria",
+    "central bank": "banka qendrore",
+    "Bank of Albania": "Banka e Shqipërisë",
+    "BoA": "BSH",
+    "president": "presidenti",
+    "prime minister": "kryeministri",
+    "regulation": "rregullore",
+    "legislation": "legjislacion",
+    "law": "ligj",
+    "tax": "taksë",
+    "taxation": "tatim",
+    "deficit": "deficit",
+    "budget": "buxhet"
+  },
+  "uncertainty": {
+    "uncertain": "i pasigurt",
+    "uncertainty": "pasiguri",
+    "risk": "rrezik",
+    "risky": "i rrezikshëm",
+    "instability": "paqëndrueshmëri"
+  }
+}

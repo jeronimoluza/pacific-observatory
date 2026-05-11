@@ -2,29 +2,45 @@ name: Censor.net
 language: uk
 country: ukraine
 base_url: https://censor.net
+
+# Sitemap index lives on assets.censor.net with ~247 monthly news sitemaps
+# (sitemap_uk_news_YYYYMM.xml) going back to ~2005. Each month holds a few
+# thousand article URLs. Browser-like headers required; minimal UA gets 403.
 listing:
-  type: pagination
-  start_url: https://censor.net/ua/news/all
-  url_template: https://censor.net/ua/news/all/page/{num}
-  start_page: 2
-  batch_size: 2
+  type: sitemap
+  sitemap_index_url: https://assets.censor.net/sitemap/censor.net/sitemap_uk.xml
+  sitemap_regex: "sitemap_uk_news_[0-9]{6}\\.xml"
+  url_regex: "^https://censor\\.net/ua/news/[0-9]+/"
+
 client: http
-concurrency: 1
-rate_limit: 3.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 5.0
+
 headers:
-  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
-    like Gecko) Chrome/131.0.0.0 Safari/537.36
-  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
   Accept-Language: uk-UA,uk;q=0.9,en;q=0.8
+  Upgrade-Insecure-Requests: "1"
+  Sec-Fetch-Dest: document
+  Sec-Fetch-Mode: navigate
+  Sec-Fetch-Site: none
+
 selectors:
   thumbnail:
-    container: div.news-list-item
-    title: h2 a::text
-    url: h2 a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
     body: div.news-text p
-    date: time::attr(datetime)
+
+cleaning:
+  date: handle_mixed_dates
+
 max_pages: null
 max_articles: null

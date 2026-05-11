@@ -1,0 +1,36 @@
+# Unusable with current pipeline strategies.
+# Reason: time.kz (Vremya newspaper) has NO sitemap (/sitemap.xml and
+#   variants all 404), NO WP REST API, and robots.txt explicitly disallows
+#   /rss and /search. The only article feed exposed is /rss which is a
+#   brief 30-item RSS current-affairs window — insufficient for
+#   backfill. Article URLs follow /articles/{section}/YYYY/MM/DD/slug
+#   but there is no index endpoint to enumerate them.
+name: Vremya (time.kz)
+language: ru
+country: kazakhstan
+base_url: https://time.kz
+listing:
+  type: sitemap
+  sitemap_index_url: https://time.kz/rss
+  sitemap_regex: ""
+  url_regex: ""
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+    (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: article p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

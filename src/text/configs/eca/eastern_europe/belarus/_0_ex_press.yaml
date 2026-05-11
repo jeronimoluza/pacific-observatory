@@ -1,0 +1,6 @@
+# UNUSABLE: ex-press.live
+# Ex-press.by (Borisov/Zhodino regional news), exile edition at ex-press.live.
+# /sitemap.xml 404, /sitemap_index.xml 404, /wp-sitemap.xml 404, /wp-json/wp/v2/posts
+# 404. Homepage renders HTML but no machine-readable article index exists.
+unusable: true
+reason: "No sitemap or WP REST API endpoints reachable"

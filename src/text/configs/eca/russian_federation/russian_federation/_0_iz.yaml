@@ -1,0 +1,37 @@
+# Unusable with current pipeline strategies.
+# Reason: iz.ru returns HTTP 403 (Qrator/DDoS-Guard-style anti-bot) to both
+# httpx and curl with standard browser headers. No viable API endpoint found.
+# Would need residential-proxy or browser-client solution.
+name: Izvestia
+language: ru
+country: russian_federation
+base_url: https://iz.ru
+listing:
+  type: pagination
+  start_url: https://iz.ru/news
+  url_template: https://iz.ru/news?page={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+selectors:
+  thumbnail:
+    container: article
+    title: h3 a::text
+    url: h3 a::attr(href)
+  article:
+    body: div.text-article__inside p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

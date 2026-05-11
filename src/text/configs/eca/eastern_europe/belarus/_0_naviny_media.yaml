@@ -1,0 +1,8 @@
+# UNUSABLE: naviny.media
+# Claimed successor to Naviny.by / TUT.BY. Domain resolves but /sitemap.xml
+# contains only the homepage (1 URL, no article listing); /wp-json/wp/v2/posts
+# returns 404; /sitemap_index.xml 404; robots.txt is empty-allow with no
+# Sitemap: directive. Homepage renders HTML but there is no machine-readable
+# article index. Not usable as a scrapeable source.
+unusable: true
+reason: "Sitemap lists only homepage; no WP API; no discoverable article index"

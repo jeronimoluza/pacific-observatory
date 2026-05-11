@@ -13,6 +13,7 @@ from .archive import ArchiveStrategy, PaginatedArchiveStrategy
 from .api import ApiStrategy
 from .follow_link import FollowLinkStrategy
 from .cursor import CursorStrategy
+from .sitemap import SitemapStrategy
 
 __all__ = [
     "ListingStrategy",
@@ -22,6 +23,7 @@ __all__ = [
     "ApiStrategy",
     "FollowLinkStrategy",
     "CursorStrategy",
+    "SitemapStrategy",
     "create_listing_strategy",
 ]
 
@@ -56,5 +58,7 @@ def create_listing_strategy(
         return FollowLinkStrategy(config, max_pages=max_pages)
     elif strategy_type == "cursor":
         return CursorStrategy(config, max_pages=max_pages)
+    elif strategy_type == "sitemap":
+        return SitemapStrategy(config, max_pages=max_pages)
     else:
         raise ValueError(f"Unknown listing strategy type: {strategy_type}")

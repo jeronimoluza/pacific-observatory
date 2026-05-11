@@ -1,0 +1,36 @@
+# Unusable — wrong domain.
+# globus.hr is "Nakladni zavod Globus", a Croatian book publisher
+# (`/kategorija-proizvoda/...`), NOT the Globus news weekly.
+# The Globus magazine has been digital-only since 2020 and is published as
+# part of Hanza Media's Jutarnji.hr group; current content lives at
+# `globus.jutarnji.hr` (which redirects to `jutarnji.hr/globus`).
+# Coverage of the magazine's content is already partially captured by the
+# existing `jutarnji_list.yaml` config, which scrapes the parent site.
+# No standalone Globus config is needed; flagged here so the gap is closed
+# in the audit log.
+name: Globus
+language: hr
+country: croatia
+base_url: https://globus.jutarnji.hr
+listing:
+  type: pagination
+  url_template: https://www.jutarnji.hr/globus/page/{num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+selectors:
+  thumbnail:
+    container: article
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.article-body p
+    date: script[type='application/ld+json']::text
+cleaning:
+  date: parse_date_from_jsonld
+max_pages: null
+max_articles: null

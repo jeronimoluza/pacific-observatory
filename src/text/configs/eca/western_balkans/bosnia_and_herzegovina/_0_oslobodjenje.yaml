@@ -1,3 +1,9 @@
+# Unusable with current pipeline strategies.
+# Reason: Next.js SPA serves the same ~6 top articles regardless of
+# ?page=N, /vijesti/stranica/N, /vijesti-N, /vijesti/<cat>?page=N, and
+# /vijesti/najnovije?page=N. The sitemap index links to /sitemap/0..19.xml
+# but every child sitemap returns 404. Only /rss.xml works, but it exposes
+# only the latest ~50 articles with no archival pagination.
 name: Oslobodjenje
 language: bs
 country: bosnia_and_herzegovina
@@ -21,10 +27,10 @@ headers:
 selectors:
   thumbnail:
     container: article
-    title: a[href]::text
+    title: h3::text
     url: a[href]::attr(href)
   article:
-    body: "div.relative p"
+    body: article p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

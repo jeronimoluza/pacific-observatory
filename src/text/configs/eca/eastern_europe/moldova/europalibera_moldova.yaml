@@ -1,0 +1,43 @@
+name: Europa Libera Moldova
+language: ro
+country: moldova
+base_url: https://moldova.europalibera.org
+
+# Romanian-language Moldova service of Radio Free Europe / Radio Liberty.
+# Sitemap index lists 21 gzipped sub-sitemaps covering the full archive.
+# Article bodies live inside div.wsw.
+listing:
+  type: sitemap
+  sitemap_index_url: https://moldova.europalibera.org/sitemap.xml
+  sitemap_regex: "sitemap_15_[0-9]+\\.xml"
+  url_regex: "^https://moldova\\.europalibera\\.org/a/.+\\.html$"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 3.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ro-RO,ro;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.wsw p
+    date: time::attr(datetime)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

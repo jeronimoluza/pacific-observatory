@@ -3,14 +3,12 @@ language: sr
 country: serbia
 base_url: https://www.blic.rs
 listing:
-  type: pagination
-  start_url: https://www.blic.rs/vesti
-  url_template: https://www.blic.rs/vesti?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://www.blic.rs/sitemap-stories-by-month-index.xml.gz
+  sitemap_regex: sitemap-stories-by-month-20(2[5-9]|[3-9][0-9])-
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -20,11 +18,15 @@ headers:
   Accept-Language: sr-RS,sr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: article
-    title: h4 a::text
-    url: h4 a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.article__content"
+    title:
+    - meta[property='og:title']::attr(content)
+    - h1::text
+    body: div.article__content
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

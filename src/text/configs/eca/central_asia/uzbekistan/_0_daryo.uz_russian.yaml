@@ -1,0 +1,44 @@
+# Unusable with current pipeline strategies.
+# Reason: same as _0_daryo.uz.yaml — article pages are JavaScript-rendered,
+# raw HTML lacks article body. No JSON API available. Could be recovered with
+# `client: "browser"` (playwright) but yield is marginal (only og:description
+# summaries) for the scraping cost.
+name: Daryo.uz
+country: uzbekistan
+base_url: https://daryo.uz
+language: ru
+
+listing:
+  type: sitemap
+  sitemap_index_url: https://daryo.uz/sitemap-ru.xml
+  url_regex: "^https://daryo\\.uz/ru/[0-9]{4}/[0-9]{2}/[0-9]{2}/[a-z0-9-]+/?$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.news-section-main-content p
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

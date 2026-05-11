@@ -1,0 +1,41 @@
+# Unusable with current pipeline strategies.
+# Reason: MIA (Macedonian Information Agency) puts all article content behind
+# a login wall. Both English (/en/story/...) and Macedonian (/story/...)
+# article pages return "You need to login to view this page" without a valid
+# session. No guest / free-tier access verified. Cannot scrape without a paid
+# subscription. Note: there's also an orphan data folder at
+# data/text/eca/western_balkans/north_macedonia/mia/ for a Macedonian config
+# that was never wired up — deleted alongside this one.
+name: MIA English
+language: en
+country: north_macedonia
+base_url: https://mia.mk
+
+listing:
+  type: archive
+  url_template: https://mia.mk/en/date/{year}-{month}-{day}
+  date_format: daily
+  start_date: '2022-01-01'
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: en-US,en;q=0.9
+selectors:
+  thumbnail:
+    container: h3.entry-title
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.entry-content p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

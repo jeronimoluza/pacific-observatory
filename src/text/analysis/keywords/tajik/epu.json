@@ -1,0 +1,30 @@
+{
+  "economic": {
+    "economy": "иқтисодиёт",
+    "economic": "иқтисодӣ",
+    "financial": "молиявӣ"
+  },
+  "policy": {
+    "policy": "сиёсат",
+    "government": "ҳукумат",
+    "parliament": "парлумон",
+    "Majlisi Oli": "Маҷлиси Олӣ",
+    "minister": "вазир",
+    "ministry": "вазорат",
+    "central bank": "бонки марказӣ",
+    "National Bank of Tajikistan": "Бонки миллии Тоҷикистон",
+    "president": "президент",
+    "regulation": "танзим",
+    "legislation": "қонунгузорӣ",
+    "law": "қонун",
+    "tax": "андоз",
+    "deficit": "касрот",
+    "budget": "буҷет"
+  },
+  "uncertainty": {
+    "uncertain": "номуайян",
+    "uncertainty": "номуайянӣ",
+    "risk": "хатар",
+    "instability": "ноустуворӣ"
+  }
+}

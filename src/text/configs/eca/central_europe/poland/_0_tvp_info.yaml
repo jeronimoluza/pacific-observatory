@@ -1,0 +1,31 @@
+# Unusable with current pipeline strategies.
+# Reason: Next.js SPA. Homepage returns 12KB shell with `<div id="root">` and
+# `__NEXT_DATA__` blob; article content is rendered client-side. Section pages
+# (e.g. /biznes) likewise serve only 12KB shells. Fixable with browser client
+# OR by reverse-engineering the Next.js getStaticProps API endpoint
+# (typically `/_next/data/{buildId}/pl/{slug}.json`) — risky because buildId
+# changes on every deploy.
+name: TVP Info
+language: pl
+country: poland
+base_url: https://www.tvp.info
+listing:
+  type: pagination
+  url_template: https://www.tvp.info/biznes/{num}
+  start_page: 2
+  batch_size: 5
+client: browser
+concurrency: 1
+rate_limit: 2.0
+retries: 3
+retry_seconds: 5.0
+selectors:
+  thumbnail:
+    container: article
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.am-article__body p
+    date: meta[property='article:published_time']::attr(content)
+max_pages: null
+max_articles: null

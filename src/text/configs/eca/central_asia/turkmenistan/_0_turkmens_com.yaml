@@ -1,0 +1,9 @@
+# REJECTED: turkmens.com
+#
+# Why rejected:
+#   - No response / empty body to HEAD and GET.
+#   - No WP API, no sitemap.
+#   - Not currently operating as a news site.
+name: turkmens.com
+disabled: true
+reason: site returns empty responses; not a working news source

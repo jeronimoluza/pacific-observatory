@@ -8,6 +8,12 @@ listing:
   url_template: https://adevarul.ro/?page={num}
   start_page: 2
   batch_size: 5
+  # The adevarul.ro homepage cards include cross-promotional links to sister
+  # outlets (observatornews.ro, stirileprotv.ro). Restrict to first-party URLs
+  # so the broad a[href*='.html'] thumbnail selector doesn't pull them in.
+  filters:
+    allow_domains:
+      - adevarul.ro
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,14 +26,14 @@ headers:
   Accept-Language: ro-RO,ro;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: "div:has(> a[href*='.html'])"
+    title: "a[href*='.html']::text"
+    url: "a[href*='.html']::attr(href)"
   article:
-    body: 'main'
-    date: meta[property='article:published_time']::attr(content)
+    body: article p
+    date: script[type='application/ld+json']::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

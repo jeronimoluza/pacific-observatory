@@ -2,12 +2,17 @@ name: Croatia Week
 language: en
 country: croatia
 base_url: https://www.croatiaweek.com
+# /page/N/ returns identical content (fake pagination). Using WordPress REST API.
 listing:
-  type: pagination
-  start_url: https://www.croatiaweek.com/
-  url_template: https://www.croatiaweek.com/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: https://www.croatiaweek.com/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,11 +25,11 @@ headers:
   Accept-Language: en-US,en;q=0.9
 selectors:
   thumbnail:
-    container: article
-    title: h3 a::text
-    url: h3 a::attr(href)
+    container: filler
+    title: filler
+    url: filler
   article:
-    body: "main p"
+    body: 'article[id^="post_"] p'
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

@@ -1,0 +1,40 @@
+name: Panorama
+language: sq
+country: albania
+base_url: https://www.panorama.com.al
+# /category/lajmi-i-fundit/page/{N}/ returns identical content for pages 2+
+# (WordPress pagination broken). Flat /sitemap.xml lists ~474 article URLs;
+# article dates come from the first <time datetime="..."> tag on each page
+# since <meta article:published_time> is absent.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://www.panorama.com.al/sitemap.xml
+  url_regex: "^https://www\\.panorama\\.com\\.al/(?!category/|panoramaplus/|$)[a-z0-9][a-z0-9-]+/$"
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: sq-AL,sq;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - meta[property='og:title']::attr(content)
+      - h1::text
+    body: div.td-post-content p
+    date: time[datetime]::attr(datetime)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

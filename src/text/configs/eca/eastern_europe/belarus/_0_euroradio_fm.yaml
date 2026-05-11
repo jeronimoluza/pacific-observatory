@@ -1,0 +1,7 @@
+# UNUSABLE: euroradio.fm
+# Re-checked: still behind Cloudflare "Attention Required!" interactive
+# challenge (HTTP 403) on /sitemap.xml, /sitemap_index.xml, and the www.
+# subdomain. Same status as the earlier _0_euroradio.yaml entry; no
+# non-interactive path discovered this round.
+unusable: true
+reason: "Cloudflare interactive challenge (403) on all endpoints"

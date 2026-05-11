@@ -1,0 +1,44 @@
+name: Vzglyad.az
+language: ru
+country: azerbaijan
+base_url: https://vzglyad.az
+
+# Russian-language Azerbaijani daily. Sitemap index at /sitemap.xml lists 24
+# part_N.xml sub-sitemaps (no gzip, no <lastmod> on parts). Article URLs at
+# /news/<id>/<percent-slug>.html. Articles have time[itemprop=datePublished]
+# with non-ISO datetime; body in div.body (fallback: article).
+listing:
+  type: sitemap
+  sitemap_index_url: https://vzglyad.az/sitemap.xml
+  sitemap_regex: "part_[0-9]+\\.xml$"
+  url_regex: "^https://vzglyad\\.az/news/[0-9]+/"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article
+    date: lastmod::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

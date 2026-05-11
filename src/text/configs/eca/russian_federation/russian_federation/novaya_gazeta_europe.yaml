@@ -2,12 +2,15 @@ name: Novaya Gazeta Europe
 language: ru
 country: russian_federation
 base_url: https://novayagazeta.eu
+# Homepage /?page=N re-renders the same articles regardless of N (100%
+# overlap). Novaya Gazeta Europe publishes a flat sitemap at /feed/sitemap
+# containing ~1000 articles (both ru and en variants, newest first). We
+# filter out URL slugs ending in "-en" or "-en-news" to keep the Russian
+# edition.
 listing:
-  type: pagination
-  start_url: https://novayagazeta.eu/
-  url_template: https://novayagazeta.eu/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls: https://novayagazeta.eu/feed/sitemap
+  url_regex: "^https://novayagazeta\\.eu/articles/.+(?<!-en)(?<!-en-news)$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,14 +23,18 @@ headers:
   Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
 selectors:
   thumbnail:
-    container: div.kXDbP
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: div#ng-root p
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - meta[property='og:title']::attr(content)
+      - h1::text
+    body: "#article-body p"
+    date: "script[type='application/ld+json']::text"
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

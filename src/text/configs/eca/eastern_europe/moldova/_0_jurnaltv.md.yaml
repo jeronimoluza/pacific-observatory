@@ -1,0 +1,35 @@
+# Unusable with current pipeline strategies.
+# Reason: Article pages render the main article body from inside JavaScript —
+#   server HTML only contains the page shell, navigation, and a few sidebar
+#   product cards (no <p> tags for the article content, no article:published_time
+#   meta tag, no <time> element, no JSON-LD with articleBody). /sitemap.xml,
+#   /sitemap_index.xml and /robots.txt all return 301 to themselves and no
+#   working sitemap is exposed; /news and category paths return 404. Would need
+#   a browser client to render the article, plus either an internal JSON API or
+#   brute-force of /news/{hash}/{slug}.html URLs.
+name: Jurnal TV
+language: ro
+country: moldova
+base_url: https://www.jurnaltv.md
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.jurnaltv.md/sitemap.xml
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: main#content
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

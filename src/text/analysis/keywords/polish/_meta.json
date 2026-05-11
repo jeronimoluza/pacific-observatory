@@ -1,0 +1,28 @@
+{
+  "language": "polish",
+  "iso_codes": [
+    "pl"
+  ],
+  "status": "draft",
+  "source": "Białkowski, Klepka & Sławik — 'Local and External EPU: Evidence from Poland' (2024)",
+  "source_url": "https://www.policyuncertainty.com/media/EPU_Poland.pdf",
+  "source_table": "Table 1",
+  "newspapers_used_by_source": [
+    "Gazeta Wyborcza",
+    "Rzeczpospolita",
+    "Dziennik Gazeta Prawna",
+    "Fakt",
+    "Parkiet"
+  ],
+  "standardization_period": "2003-03 to 2024-01",
+  "notes": "Source paper specifies stem-based wildcards (ekonomi-, gospodar-, polit-, parlamen-, sejm-, sena-, ustaw-, regulacj-, prezydent-, minist-, niepewn-). We expand each stem to common inflected forms for the regex pipeline. Native-speaker review required before promoting to 'approved'.",
+  "audit": {
+    "sample_size": 0,
+    "precision": null,
+    "recall": null,
+    "audit_date": null,
+    "audit_notes": ""
+  },
+  "last_review_date": null,
+  "reviewer": null
+}

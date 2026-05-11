@@ -1,0 +1,42 @@
+name: AZERTAC English
+language: en
+country: azerbaijan
+base_url: https://azertag.az
+
+# English edition of AZERTAC state news agency. Sitemap carries ~1500 recent
+# English URLs under /en/xeber/.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://azertag.az/media/website-social/sitemaps/sitemap_en.xml
+  url_regex: "^https://azertag\\.az/en/xeber/[a-z0-9_]+-[0-9]+$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: en-US,en;q=0.9
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.entry-content
+    date: lastmod::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

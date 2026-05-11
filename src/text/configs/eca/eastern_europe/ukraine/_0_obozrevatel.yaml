@@ -1,0 +1,12 @@
+# REJECTED: obozrevatel.com (Obozrevatel)
+#
+# /wp-json/wp/v2/posts 301-redirects to a trailing-slash path that returns HTML
+# (WP REST API is disabled/proxied). /robots.txt also 301s without a resolvable
+# sitemap URL. Homepage loads but relies on JS for listing. Possible but would
+# need a date-based URL walk or HTML archive pagination; deferred until a
+# sitemap or WP API endpoint resurfaces.
+name: Obozrevatel
+language: uk
+country: ukraine
+base_url: https://www.obozrevatel.com
+disabled: true

@@ -2,10 +2,11 @@ name: Vecernji List
 language: hr
 country: croatia
 base_url: https://www.vecernji.hr
+# /vijesti/?page=N returns identical content; /vijesti/hrvatska?page=N paginates.
 listing:
   type: pagination
-  start_url: https://www.vecernji.hr/vijesti/
-  url_template: https://www.vecernji.hr/vijesti/?page={num}
+  start_url: https://www.vecernji.hr/vijesti/hrvatska
+  url_template: https://www.vecernji.hr/vijesti/hrvatska?page={num}
   start_page: 2
   batch_size: 5
 client: http
@@ -21,13 +22,16 @@ headers:
 selectors:
   thumbnail:
     container: article
-    title: a[href]::text
+    title: h3::text
     url: a[href]::attr(href)
   article:
-    body: "article p"
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: main article p
+    date: script[type='application/ld+json']::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

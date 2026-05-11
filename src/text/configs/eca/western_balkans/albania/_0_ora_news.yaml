@@ -1,0 +1,31 @@
+# Unusable with current pipeline strategies.
+# Reason: Cloudflare challenge page returned to curl/httpx (403 homepage).
+# Would require browser client or residential proxy.
+name: Ora News
+language: sq
+country: albania
+base_url: https://www.oranews.tv
+listing:
+  type: pagination
+  start_url: https://www.oranews.tv/
+  url_template: https://www.oranews.tv/page/{num}/
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+selectors:
+  thumbnail:
+    container: article
+    title: h2 a::text
+    url: h2 a::attr(href)
+  article:
+    body: div.entry-content p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

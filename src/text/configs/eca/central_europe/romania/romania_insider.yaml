@@ -2,10 +2,13 @@ name: Romania Insider
 language: en
 country: romania
 base_url: https://www.romania-insider.com
+# Drupal site — each /latest/news?page=N yields 12 articles with 2 sticky
+# items repeating across pages (header "featured"), so ~10 unique per
+# increment. start_page=2 avoids overlap with start_url (page=1).
 listing:
   type: pagination
-  start_url: https://www.romania-insider.com/
-  url_template: https://www.romania-insider.com/page/{num}/
+  start_url: https://www.romania-insider.com/latest/news
+  url_template: https://www.romania-insider.com/latest/news?page={num}
   start_page: 2
   batch_size: 5
 client: http
@@ -20,11 +23,11 @@ headers:
   Accept-Language: en-US,en;q=0.9
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: article.node--type-article
+    title: "div.field--name-field-title a::text"
+    url: "div.field--name-field-title a::attr(href)"
   article:
-    body: "div.dialog-off-canvas-main-canvas p"
+    body: div.field--name-body p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

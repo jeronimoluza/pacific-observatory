@@ -1,0 +1,34 @@
+# Unusable with current pipeline strategies.
+# Reason: Article pages have no meta[property='article:published_time'] and no
+# time[datetime] attr on the primary publish time element. The only reliable
+# dates are inside <script type="application/ld+json"> (datePublished) or as
+# the text "Objavljeno DD.MM.YYYY. HH:MMh" which handle_mixed_dates cannot
+# parse (trailing dot + "h" suffix). Would need a custom cleaning function.
+name: Mondo
+language: sr
+country: serbia
+base_url: https://mondo.rs
+listing:
+  type: pagination
+  start_url: https://mondo.rs/Info/Srbija
+  url_template: https://mondo.rs/Info/Srbija/page/{num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+selectors:
+  thumbnail:
+    container: div.card.card-wrap.type-news-card-b
+    title: .card-title::text
+    url: a.card-link::attr(href)
+  article:
+    body: div.article-body p
+    date: time[datetime]::attr(datetime)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

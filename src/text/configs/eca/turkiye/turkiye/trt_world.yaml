@@ -2,12 +2,14 @@ name: TRT World
 language: en
 country: turkiye
 base_url: https://www.trtworld.com
+# /?page=N is ignored — Next.js homepage always hydrates to the same
+# ~60 articles. Site publishes a monthly article sitemap index that we
+# traverse newest-first.
 listing:
-  type: pagination
-  start_url: https://www.trtworld.com/
-  url_template: https://www.trtworld.com/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://www.trtworld.com/sitemap_index.xml
+  sitemap_regex: "/article/sitemap-"
+  url_regex: "^https://www\\.trtworld\\.com/article/[a-f0-9]+$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,14 +22,18 @@ headers:
   Accept-Language: en-US,en;q=0.9
 selectors:
   thumbnail:
-    container: div.grid
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "main p"
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: main p
+    date: script[type='application/ld+json']:-soup-contains('datePublished')::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

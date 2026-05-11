@@ -1,0 +1,41 @@
+name: Ak Zhaiyk (AZH) Kazakh
+language: kk
+country: kazakhstan
+base_url: https://azh.kz
+
+# Kazakh-language edition of Ak Zhaiyk (Atyrau).
+listing:
+  type: sitemap
+  sitemap_index_url: https://azh.kz/sitemap.xml
+  sitemap_regex: "/sitemap-kz-news\\.xml$"
+  url_regex: "^https://azh\\.kz/kz/news/view/[0-9]+$"
+
+client: http
+concurrency: 2
+rate_limit: 1.0
+retries: 3
+retry_seconds: 3.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: kk-KZ,kk;q=0.9,ru;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.user-content p
+    date: meta[itemprop='datePublished']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

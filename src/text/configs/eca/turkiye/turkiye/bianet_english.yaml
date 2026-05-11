@@ -2,12 +2,18 @@ name: Bianet English
 language: en
 country: turkiye
 base_url: https://bianet.org
+# Homepage/category ?page=N returns identical content (fake pagination) and
+# the /english path is JS-rendered with no anchor tags in initial HTML. The
+# only working discovery surface is the Google News sitemap at
+# /sitemap/haberler, which lists the last ~5 days of stories mixing TR and
+# EN; English articles share the same /haber/<slug>-<id> path. The pipeline
+# will fetch every URL and the config's language tag keeps this output
+# separate from the TR bianet.yaml.
 listing:
-  type: pagination
-  start_url: https://bianet.org/english
-  url_template: https://bianet.org/english?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+    - https://bianet.org/sitemap/haberler
+  url_regex: "^https://bianet\\.org/haber/.+-\\d+$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,12 +26,18 @@ headers:
   Accept-Language: en-US,en;q=0.9
 selectors:
   thumbnail:
-    container: div.col-12
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "main p"
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - h1::text
+      - title::text
+    body: main p
+    date:
+      - meta[itemprop='datePublished']::attr(content)
+      - meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates
 max_pages: null

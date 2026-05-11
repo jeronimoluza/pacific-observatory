@@ -1,0 +1,32 @@
+{
+  "economic": {
+    "economy": "տնտեսություն",
+    "economic": "տնտեսական",
+    "financial": "ֆինանսական"
+  },
+  "policy": {
+    "policy": "քաղաքականություն",
+    "government": "կառավարություն",
+    "parliament": "խորհրդարան",
+    "National Assembly": "Ազգային ժողով",
+    "minister": "նախարար",
+    "ministry": "նախարարություն",
+    "central bank": "կենտրոնական բանկ",
+    "Central Bank of Armenia": "Հայաստանի Կենտրոնական Բանկ",
+    "CBA": "ՀՀ ԿԲ",
+    "president": "նախագահ",
+    "prime minister": "վարչապետ",
+    "regulation": "կարգավորում",
+    "legislation": "օրենսդրություն",
+    "law": "օրենք",
+    "tax": "հարկ",
+    "deficit": "դեֆիցիտ",
+    "budget": "բյուջե"
+  },
+  "uncertainty": {
+    "uncertain": "անորոշ",
+    "uncertainty": "անորոշություն",
+    "risk": "ռիսկ",
+    "instability": "անկայունություն"
+  }
+}

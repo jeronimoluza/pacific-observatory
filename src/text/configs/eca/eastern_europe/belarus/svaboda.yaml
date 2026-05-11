@@ -1,0 +1,42 @@
+name: Radio Svaboda
+language: be
+country: belarus
+base_url: https://www.svaboda.org
+
+# RFE/RL Belarusian service. 33 gzipped sub-sitemaps under /sitemap.xml.
+# Independent, Belarusian-language.
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.svaboda.org/sitemap.xml
+  sitemap_regex: "sitemap_11_[0-9]+\\.xml\\.gz$"
+  url_regex: "^https://www\\.svaboda\\.org/a/[0-9]+\\.html$"
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: be-BY,be;q=0.9,ru;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.wsw
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

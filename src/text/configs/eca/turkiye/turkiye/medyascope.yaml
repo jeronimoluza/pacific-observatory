@@ -2,15 +2,21 @@ name: Medyascope
 language: tr
 country: turkiye
 base_url: https://medyascope.tv
+# /page/N/ returned overlapping Elementor feeds. WordPress REST API works
+# cleanly and yields properly paginated post listings.
 listing:
-  type: pagination
-  start_url: https://medyascope.tv/
-  url_template: https://medyascope.tv/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: https://medyascope.tv/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -20,11 +26,11 @@ headers:
   Accept-Language: tr-TR,tr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: main li
-    title: a::text
-    url: a::attr(href)
+    container: filler
+    title: filler
+    url: filler
   article:
-    body: "div.elementor p"
+    body: div.elementor-widget-theme-post-content p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

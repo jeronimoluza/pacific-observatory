@@ -1,0 +1,35 @@
+# Unusable with current pipeline strategies.
+# Reason: Cloudflare 403 blocks httpx requests on every page.
+name: Slobodna Dalmacija
+language: hr
+country: croatia
+base_url: https://slobodnadalmacija.hr
+listing:
+  type: pagination
+  start_url: https://slobodnadalmacija.hr/vijesti
+  url_template: https://slobodnadalmacija.hr/vijesti?page={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: hr-HR,hr;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: filler
+    date: filler
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

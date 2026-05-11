@@ -2,12 +2,16 @@ name: Kommersant
 language: ru
 country: russian_federation
 base_url: https://www.kommersant.ru
+# /lenta?page=N re-renders the same handful of thumbnails regardless of N
+# (100% overlap). Kommersant publishes a news sitemap index at
+# /sitemaps/news.xml that points to sitemap_daily.xml, sitemap_online.xml,
+# sitemap_news.xml and rubric/region sub-sitemaps covering all fresh docs
+# under /doc/<id>.
 listing:
-  type: pagination
-  start_url: https://www.kommersant.ru/lenta
-  url_template: https://www.kommersant.ru/lenta?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://www.kommersant.ru/sitemaps/news.xml
+  sitemap_regex: "sitemap_(news|daily|online|fm|apps|rubric_[2345])\\.xml$"
+  url_regex: "^https://www\\.kommersant\\.ru/(doc|gallery)/[0-9]+$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,11 +24,15 @@ headers:
   Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
 selectors:
   thumbnail:
-    container: article
-    title: h2 a::text
-    url: h2 a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.layout p"
+    title:
+      - meta[property='og:title']::attr(content)
+      - h1::text
+    body: "p[class*='doc__text']"
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

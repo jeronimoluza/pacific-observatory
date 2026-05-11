@@ -1,0 +1,10 @@
+# UNUSABLE: zerkalo.io
+# Zerkalo (successor to tut.by, Lithuania-based exile outlet) is fully behind
+# Cloudflare's "Just a moment..." interactive challenge. Every attempt to
+# fetch /sitemap.xml, /sitemap_index.xml, or /wp-json/wp/v2/posts returns
+# HTTP 403 with the JS challenge page regardless of User-Agent. No alternate
+# subdomain (news.zerkalo.io tested) or sitemap strategy works without a
+# headless/JS-capable browser. Skipping until a Cloudflare-bypass transport
+# is added.
+unusable: true
+reason: "Cloudflare interactive challenge (403) on all endpoints"

@@ -1,0 +1,45 @@
+# Unusable with current pipeline strategies.
+# Reason: MIA is the state news agency and paywalls essentially all
+# Macedonian-language articles — story pages return only the subscriber
+# notice "Веста е достапна само за претплатниците на веб-сервисот на МИА"
+# (~170 chars). A sample of 10 stories from the daily archive returned 10/10
+# paywalled, so no article body can be extracted without authentication.
+# Listing / pagination works (date archive /date/YYYY-MM-DD), but the body
+# is unreachable.
+name: MIA
+language: mk
+country: north_macedonia
+base_url: https://mia.mk
+
+# MIA has no HTML or API pagination (``?page=N`` returns the same homepage
+# content). It does expose a daily date archive at /date/YYYY-MM-DD that
+# returns all stories for that day, so iterate via the archive strategy.
+listing:
+  type: archive
+  url_template: https://mia.mk/date/{year}-{month}-{day}
+  date_format: daily
+  start_date: '2022-01-01'
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: mk-MK,mk;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: h3.entry-title
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.entry-content p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

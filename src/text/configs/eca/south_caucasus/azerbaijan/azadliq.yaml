@@ -1,0 +1,44 @@
+name: Azadliq (RFE/RL Azerbaijani)
+language: az
+country: azerbaijan
+base_url: https://www.azadliq.org
+
+# RFE/RL Azerbaijani service. Sitemap index lists ~16 gzipped sub-sitemaps
+# sitemap_1_N.xml.gz; together they cover the full archive. Articles live at
+# /a/<slug>/NNNNNNNN.html with body in div.wsw and published_time in
+# meta[property=article:published_time].
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.azadliq.org/sitemap.xml
+  sitemap_regex: "sitemap_1_[0-9]+\\.xml\\.gz$"
+  url_regex: "^https://www\\.azadliq\\.org/a/"
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: az-AZ,az;q=0.9,tr;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.wsw
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

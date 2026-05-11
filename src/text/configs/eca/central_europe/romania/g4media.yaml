@@ -20,11 +20,11 @@ headers:
   Accept-Language: ro-RO,ro;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: h3.article__title
+    title: "a::text"
+    url: "a::attr(href)"
   article:
-    body: div.article__content
+    body: div.single__text p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

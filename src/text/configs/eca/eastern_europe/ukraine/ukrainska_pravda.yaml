@@ -2,22 +2,31 @@ name: Ukrainska Pravda
 language: uk
 country: ukraine
 base_url: https://www.pravda.com.ua
+
 listing:
-  type: pagination
-  start_url: https://www.pravda.com.ua/news/
-  url_template: https://www.pravda.com.ua/news/page_{num}/
-  start_page: 2
+  type: archive
+  date_format: daily
+  url_template: https://www.pravda.com.ua/news/date_{day}{month}{year}/
+  start_date: "2000-04-16"
   batch_size: 5
+  # Daily archive is a federated index across the whole Pravda media group
+  # (epravda, life.pravda, champion, tabloid). Restrict to the main
+  # www.pravda.com.ua host so this config only keeps Ukrainska Pravda articles.
+  filters:
+    allow_domains:
+      - www.pravda.com.ua
+
 client: http
 concurrency: 3
 rate_limit: 1.0
 retries: 3
 retry_seconds: 2.0
+
 headers:
-  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
-    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
   Accept-Language: uk-UA,uk;q=0.9,en;q=0.8
+
 selectors:
   thumbnail:
     container: div.article_news_list
@@ -26,7 +35,9 @@ selectors:
   article:
     body: div.post_news_body p
     date: .post_news_date::text
+
 cleaning:
   date: clean_ukrainska_pravda_date
+
 max_pages: null
 max_articles: null

@@ -1,0 +1,32 @@
+# Unusable with current pipeline strategies.
+# Reason: section pagination URL `/ekonomi?sayfa=N` 301-redirects to `/ekonomi/`
+# (page 1) for all N — server silently drops the query string. Site uses JS
+# load-more / infinite-scroll. Fixable with browser client OR by reverse-engineering
+# the load-more API. Was used as one of the 6 panel papers in Tunç et al. (2024)
+# Türkiye ECSU index.
+name: Milliyet
+language: tr
+country: turkiye
+base_url: https://www.milliyet.com.tr
+listing:
+  type: pagination
+  url_template: https://www.milliyet.com.tr/ekonomi?sayfa={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+selectors:
+  thumbnail:
+    container: div.cat-list-card__item
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: section.news-detail-content p
+    date: script[type='application/ld+json']::text
+cleaning:
+  date: parse_date_from_jsonld
+max_pages: null
+max_articles: null

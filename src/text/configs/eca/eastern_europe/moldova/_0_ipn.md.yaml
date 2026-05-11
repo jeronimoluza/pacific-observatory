@@ -1,0 +1,31 @@
+# Unusable with current pipeline strategies.
+# Reason: IPN news agency is fully behind a Cloudflare managed challenge. Every
+#   path (/robots.txt, /sitemap.xml, /ro/sitemap.xml, /ro/rss.xml, /ro/) returns
+#   HTTP 403 with the "Just a moment..." interstitial for non-browser clients.
+#   A challenge-solving browser/TLS client would be required.
+name: IPN
+language: ro
+country: moldova
+base_url: https://www.ipn.md
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.ipn.md/ro/sitemap.xml
+client: http
+concurrency: 2
+rate_limit: 1.0
+retries: 3
+retry_seconds: 3.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: div.content
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

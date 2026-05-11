@@ -1,0 +1,22 @@
+{
+  "language": "estonian",
+  "iso_codes": [
+    "et"
+  ],
+  "status": "draft",
+  "source": "Template translation of BBD (2016) E/U/P triple into estonian",
+  "source_url": null,
+  "source_table": null,
+  "newspapers_used_by_source": null,
+  "standardization_period": null,
+  "notes": "For Estonia press. Applies to Estonia. Requires native-speaker review before promoting to 'reviewed'.",
+  "audit": {
+    "sample_size": 0,
+    "precision": null,
+    "recall": null,
+    "audit_date": null,
+    "audit_notes": ""
+  },
+  "last_review_date": null,
+  "reviewer": null
+}

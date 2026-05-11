@@ -1,0 +1,48 @@
+name: Ozodagon
+language: tg
+country: tajikistan
+base_url: https://www.ozodagon.com
+
+# Historical archive of the now-defunct Tajik-language independent newspaper
+# "Озодагон". Site still serves content but no longer publishes; every
+# <lastmod> in /sitemap.xml is 2014-01-23..2014-01-28, meaning the archive is
+# frozen. ~14,300 URLs in the sitemap; url_regex keeps only numeric-slug
+# article pages (e.g. /7500-aramoni-...html) and skips tag/section indexes.
+# Runs DataLife Engine. Article date lives inline in div.full-news-date
+# (e.g. "02 май 2011 08:59", mixed Tajik/Russian month names) — handle_mixed_dates
+# normalizes what it can.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://ozodagon.com/sitemap.xml
+  url_regex: "^https?://www\\.ozodagon\\.com/[0-9]+-.+\\.html$"
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: tg-TJ,tg;q=0.9,ru;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.full-news-content
+    date: div.full-news-date::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,39 @@
+# Unusable with current pipeline strategies.
+# Reason: Article page has no article:published_time meta, no JSON-LD
+# datePublished, no <time datetime>. Visible date is "22. 04. 2026. 23:04 >> 23:05"
+# (spaces and ">>" range) — not parseable by handle_mixed_dates. RSS pubDate
+# format "23.04.2026T00:11:00 +0100" is non-standard and also unparseable.
+# Sitemap/pagination return identical first-page content (no pagination).
+name: RTCG
+language: me
+country: montenegro
+base_url: https://www.rtcg.me
+listing:
+  type: pagination
+  start_url: https://www.rtcg.me/vijesti/
+  url_template: https://www.rtcg.me/vijesti/?page={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: sr-ME,sr;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: div.item
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.fix p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

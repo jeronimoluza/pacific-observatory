@@ -1,0 +1,37 @@
+# Unusable with current pipeline strategies.
+# Reason: No machine-readable publication date anywhere on the page — no
+# article:published_time meta, no <time datetime>, no JSON-LD, no itemprop,
+# and no visible date text either on listing or article pages.
+name: Depo.ba
+language: bs
+country: bosnia_and_herzegovina
+base_url: https://depo.ba
+listing:
+  type: pagination
+  start_url: https://depo.ba/
+  url_template: https://depo.ba/page/{num}/
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: bs-BA,bs;q=0.9,hr;q=0.8,en;q=0.7
+selectors:
+  thumbnail:
+    container: div.media-body
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: "div.container p"
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

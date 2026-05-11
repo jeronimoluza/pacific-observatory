@@ -1,0 +1,41 @@
+# Unusable with current pipeline strategies.
+# Reason: No XML sitemap (/sitemap.xml, /sitemap_index.xml, /news_sitemap.xml
+#   all return HTML 404 pages). Homepage /?page=N changes HTML slightly but
+#   the set of article links (href="/?p=NNN") is identical across all pages —
+#   pagination is not functional for discovery. Individual articles load with
+#   og:updated_time and a visible body in div.azpolitika_info_article, but
+#   there is no archive listing mechanism.
+# Would need: an AJAX load-more endpoint or /category/... pagination that
+#   actually returns distinct content.
+name: Azpolitika
+language: az
+country: azerbaijan
+base_url: https://azpolitika.info
+listing:
+  type: pagination
+  start_url: https://azpolitika.info/
+  url_template: https://azpolitika.info/?page={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: az-AZ,az;q=0.9
+selectors:
+  thumbnail:
+    container: a[href^='/?p=']
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.azpolitika_info_article
+    date: meta[property='og:updated_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

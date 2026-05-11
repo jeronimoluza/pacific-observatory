@@ -1,0 +1,39 @@
+name: ClubZ
+# Disabled: homepage pagination is fake (?page=N, ?p=N, ?offset= all return
+# the identical 38-article set). No sitemap exists (sitemap.xml and variants
+# all 404). Category pages (/category/{n}) show the same fixed window with no
+# working pagination. Only /rss.xml works, exposing ~73 recent items, but the
+# sitemap strategy expects <url><loc> elements, not RSS <item><link>.
+# No deep scraping path is feasible.
+language: bg
+country: bulgaria
+base_url: https://clubz.bg
+listing:
+  type: pagination
+  start_url: https://clubz.bg/
+  url_template: https://clubz.bg/?page={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: bg-BG,bg;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: article
+    title: h2 a::text
+    url: h2 a::attr(href)
+  article:
+    body: div.inner-wrapper p
+    date: script[type='application/ld+json']:-soup-contains('datePublished')::text
+cleaning:
+  date: parse_date_from_jsonld
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

@@ -275,6 +275,21 @@ def extract_article_data_from_soup(
                 if elem.get_text(strip=True)
             ]
             data["body"] = " ".join(text_values)
+        # Extract article title if selector is provided (optional; useful when
+        # the thumbnail title is a URL placeholder, e.g. sitemap-based configs).
+        if selectors.title:
+            title_result = extract_with_selector_fallback(
+                soup,
+                selectors.title,
+                first_only=True,
+            )
+            if title_result["values"]:
+                first_val = title_result["values"][0]
+                if isinstance(first_val, str):
+                    data["title"] = first_val.strip()
+                elif hasattr(first_val, "get_text"):
+                    data["title"] = first_val.get_text(strip=True)
+
         # Extract article date if selector is provided
         if selectors.date:
             date_result = extract_with_selector_fallback(
@@ -283,7 +298,21 @@ def extract_article_data_from_soup(
                 first_only=False,  # collect all matches so JSON-LD cleaners can search across scripts
             )
             if date_result["values"]:
-                if date_result["extraction"] in {"text", "attr"}:
+                # When the selector targets <script type='application/ld+json'>
+                # there are often multiple blocks (e.g. Yoast WebPage + NewsArticle).
+                # Join them so cleaners like parse_date_from_jsonld can scan all.
+                # Detected by checking if values look like JSON.
+                is_jsonld = (
+                    date_result["extraction"] == "text"
+                    and len(date_result["values"]) > 1
+                    and all(
+                        isinstance(v, str) and v.lstrip().startswith("{")
+                        for v in date_result["values"]
+                    )
+                )
+                if is_jsonld:
+                    data["date"] = "\n".join(v.strip() for v in date_result["values"])
+                elif date_result["extraction"] in {"text", "attr"}:
                     first_val = date_result["values"][0]
                     data["date"] = (
                         first_val.strip()

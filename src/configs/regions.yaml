@@ -95,54 +95,12 @@ eca:
       countries:
         - bulgaria
         - croatia
-        - czech_republic
-        - hungary
         - poland
         - romania
-        - slovak_republic
-        - slovenia
-    baltic_states:
-      name: Baltic States
-      countries:
-        - estonia
-        - latvia
-        - lithuania
     turkiye:
       name: Türkiye
       countries:
         - turkiye
-    western_europe:
-      name: Western Europe
-      countries:
-        - andorra
-        - austria
-        - belgium
-        - channel_islands
-        - cyprus
-        - denmark
-        - faroe_islands
-        - finland
-        - france
-        - germany
-        - gibraltar
-        - greece
-        - greenland
-        - iceland
-        - ireland
-        - isle_of_man
-        - italy
-        - liechtenstein
-        - luxembourg
-        - malta
-        - monaco
-        - netherlands
-        - norway
-        - portugal
-        - san_marino
-        - spain
-        - sweden
-        - switzerland
-        - united_kingdom
     russian_federation:
       name: Russian Federation
       countries:

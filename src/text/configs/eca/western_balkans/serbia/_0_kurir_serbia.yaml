@@ -1,0 +1,44 @@
+# Unusable with current pipeline strategies.
+# Reason: kurir.rs's "/vesti/" listing is a JS-rendered aggregator — the
+# server-side HTML has no article links matching standard patterns. Articles
+# live on multiple sub-categories (`/crna-hronika/`, `/region/`, `/planeta/`,
+# `/info-biz/`, etc.) under both `www.kurir.rs` and `biznis.kurir.rs`. The
+# `biznis.kurir.rs/page/{N}` URL returns 200 with 18 `<li>` containers but
+# article hrefs are inconsistent across the kurir family. A working scraper
+# would need a load-more API or browser-rendered approach.
+# 100-article test (PID earlier): 0 thumbnails discovered.
+# Note: there is already a `kurir.yaml` for North Macedonia (kurir.mk) — this
+# Serbia config uses the slug `kurir_serbia` to avoid collision.
+name: Kurir Serbia
+language: sr
+country: serbia
+base_url: https://www.kurir.rs
+listing:
+  type: pagination
+  start_url: https://www.kurir.rs/vesti/
+  url_template: https://www.kurir.rs/vesti/page/{num}
+  start_page: 2
+  step: 1
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: sr-RS,sr;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: article
+    title: h2 a::text, h3 a::text
+    url: a::attr(href)
+  article:
+    body: div.article-content p, div.article-body p
+    date: script[type='application/ld+json']::text
+cleaning:
+  date: parse_date_from_jsonld
+max_pages: null
+max_articles: null

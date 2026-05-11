@@ -1,0 +1,9 @@
+# UNUSABLE: belapan.com
+# Not the real BelaPAN. The .com domain now serves a stub / mocked content
+# site: /wp-json/wp/v2/posts returns a fake HTML template with nonsense
+# text (e.g. "Yvihodonyhyh gyhuhykomo jeranypy lyva byxixelilazesy") rather
+# than an actual JSON posts response, and the sitemap likewise contains
+# only a handful of low-quality /?id=N URLs. The real BelaPAN archive is
+# at belapan.by (see belapan.yaml).
+unusable: true
+reason: "Domain serves spam/mocked content; not the real BelaPAN — use belapan.by"

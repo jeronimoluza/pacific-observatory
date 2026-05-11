@@ -1,0 +1,59 @@
+# Disabled (_0_): tass.ru is fully behind ServicePipe (servicepipe.ru) — a
+# Russian DDoS / bot protection service that requires solving a JavaScript
+# challenge to set a session cookie before any content is served. The HTTP
+# client gets back a ~1.7 KB JS-challenge stub for every article URL.
+#
+# Re-enable when a JS-rendering client (Playwright / undetected-chrome) is
+# wired into the scraper, or when an alternate feed/API is arranged with TASS.
+#
+# What works without JS rendering:
+#   - The sitemap index (https://tass.ru/sitemap.xml) IS reachable
+#     and exposes ~225k article URLs across 9 news sub-sitemaps.
+#   - Discovery would yield URLs like https://tass.ru/<section>/<numeric-id>
+#     (e.g. https://tass.ru/ekonomika/27207493).
+# What's blocked:
+#   - Every individual article page returns the ServicePipe interstitial.
+#
+# Config below is structured to match tass_english.yaml (sister site, same CMS)
+# so that flipping the _0_ prefix off works once a JS client is available.
+name: TASS
+language: ru
+country: russian_federation
+base_url: https://tass.ru
+
+listing:
+  type: sitemap
+  sitemap_index_url: https://tass.ru/sitemap.xml
+  sitemap_regex: "sitemap_(hot|news[0-9]+|section)\\.xml$"
+  url_regex: "^https://tass\\.ru/[a-z-]+/[0-9]+$"
+
+# Use a real-browser UA — even sitemap fetches are 403'd against curl/* UAs.
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: "div.text-content p"
+    date: "script[type='application/ld+json']::text"
+
+cleaning:
+  date: parse_date_from_jsonld
+
+max_pages: null
+max_articles: null

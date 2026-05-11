@@ -1,0 +1,37 @@
+# Unusable with current pipeline strategies.
+# Reason: Vechernii Bishkek publishes only a rolling 73-URL sitemap_news
+#   (google news format) at /other/sitemap_news.php?sitemap=sitemap.xml and
+#   has no archive sitemap. Homepage has no category pages, no /?page=N
+#   pagination (all variants return 404), no WP API, no feed. Article IDs
+#   /doc/NNN_slug.html are not guessable without the slug component.
+# Would need: a categorical listing page that reveals older URLs, or a
+#   working archive sitemap that covers pre-last-week content.
+name: Vechernii Bishkek
+language: ru
+country: kyrgyz_republic
+base_url: https://www.vb.kg
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.vb.kg/other/sitemap_news.php?sitemap=sitemap.xml
+  url_regex: "^https://www\\.vb\\.kg/doc/"
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    body: div.topic-text
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

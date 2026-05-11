@@ -1,0 +1,32 @@
+{
+  "economic": {
+    "economy": "iqtisadiyyat",
+    "economic": "iqtisadi",
+    "financial": "maliyyə"
+  },
+  "policy": {
+    "policy": "siyasət",
+    "government": "hökumət",
+    "parliament": "parlament",
+    "Milli Majlis": "Milli Məclis",
+    "minister": "nazir",
+    "ministry": "nazirlik",
+    "central bank": "mərkəzi bank",
+    "Central Bank of Azerbaijan": "Azərbaycan Mərkəzi Bankı",
+    "president": "prezident",
+    "regulation": "tənzimləmə",
+    "legislation": "qanunvericilik",
+    "law": "qanun",
+    "tax": "vergi",
+    "deficit": "defisit",
+    "budget": "büdcə",
+    "interest rate": "faiz dərəcəsi"
+  },
+  "uncertainty": {
+    "uncertain": "qeyri-müəyyən",
+    "uncertainty": "qeyri-müəyyənlik",
+    "risk": "risk",
+    "risky": "riskli",
+    "instability": "qeyri-sabitlik"
+  }
+}

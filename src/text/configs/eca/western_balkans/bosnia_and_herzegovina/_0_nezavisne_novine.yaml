@@ -1,3 +1,8 @@
+# Unusable with current pipeline strategies.
+# Reason: Cloudflare WAF returns 403 on all non-homepage requests (?page=N,
+# /novosti, /sitemap.xml, /rss, /arhiva, all /category/* paths). The homepage
+# returns 200 but exposes only the top ~55 articles with no working URL
+# pagination. No WP REST, no sitemap, no accessible archive.
 name: Nezavisne Novine
 language: sr
 country: bosnia_and_herzegovina
@@ -24,8 +29,8 @@ selectors:
     title: a::text
     url: a::attr(href)
   article:
-    body: div.article-body p
-    date: meta[property='article:published_time']::attr(content)
+    body: '[itemprop="articleBody"] p'
+    date: time[itemprop='datePublished']::attr(datetime)
 cleaning:
   date: handle_mixed_dates
 max_pages: null

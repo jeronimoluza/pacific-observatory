@@ -1,0 +1,33 @@
+{
+  "economic": {
+    "economy": "экономика",
+    "economic": "экономический",
+    "economics": "экономики"
+  },
+  "policy": {
+    "policy": "политика",
+    "tax": "налог",
+    "taxes": "налоги",
+    "budget spending": "расходы бюджета",
+    "government spending": "государственные расходы",
+    "spending": "расходование",
+    "regulation": "регулирование",
+    "Central Bank of Russia": "Центральный банк России",
+    "CBR": "ЦБР",
+    "central bank": "центральный банк",
+    "State Duma": "Государственная Дума",
+    "Gosduma": "Госдума",
+    "Duma": "Дума",
+    "Kremlin": "Кремль",
+    "law": "закон",
+    "legislative act": "законодательный акт",
+    "legislation": "законодательство",
+    "monetary policy": "денежно-кредитная политика",
+    "trade policy": "торговая политика",
+    "interest rate": "процентная ставка"
+  },
+  "uncertainty": {
+    "uncertain": "неопределённый",
+    "uncertainty": "неопределённость"
+  }
+}

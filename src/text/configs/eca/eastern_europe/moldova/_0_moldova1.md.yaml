@@ -1,0 +1,35 @@
+# Unusable with current pipeline strategies.
+# Reason: Public broadcaster Moldova 1. Article bodies render server-side and
+#   would be scrapeable, but there is no enumerable archive surface: /sitemap/
+#   index.xml only lists 4 top-level URLs (home, /n/index.xml, /e/index.xml,
+#   /live) — where /n/index.xml returns an HTML listing page, not a sitemap.
+#   /rss gives only the most recent items. No deeper sitemap, no WP API, no
+#   pagination parameter discovered on any listing page. Would need to
+#   enumerate article ids (/p/{id}/...) by crawling category listing pages and
+#   paginating via their internal load-more endpoint.
+name: Moldova 1
+language: ro
+country: moldova
+base_url: https://moldova1.md
+listing:
+  type: sitemap
+  sitemap_index_url: https://moldova1.md/sitemap/index.xml
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: article.prose p
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

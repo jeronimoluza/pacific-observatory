@@ -1,0 +1,45 @@
+name: Vecherniy Almaty (Vecher.kz)
+language: ru
+country: kazakhstan
+base_url: https://vecher.kz
+
+# "Vecherniy Almaty" — long-running Almaty city daily (Russian / Kazakh).
+# /sitemap.xml is a flat <urlset> (NOT a <sitemapindex>) listing ~5000 URLs
+# with lastmod dates. Must use sitemap_urls so the strategy parses it as a
+# urlset. Article URLs: /ru/article/{slug}.html (we filter out /kz/). Articles
+# expose no meta article:published_time, so we rely on sitemap lastmod.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://vecher.kz/sitemap.xml
+  url_regex: "^https://vecher\\.kz/ru/article/.+\\.html$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,kk;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article p
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

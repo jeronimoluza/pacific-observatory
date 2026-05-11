@@ -2,12 +2,11 @@ name: Tirana Post
 language: sq
 country: albania
 base_url: https://www.tiranapost.al
+# Site is a SPA with no HTML listing; dates only in JSON-LD.
 listing:
-  type: pagination
-  start_url: https://www.tiranapost.al/
-  url_template: https://www.tiranapost.al/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://www.tiranapost.al/sitemap.xml
+  sitemap_regex: "/sitemap-\\d{4}-\\d{2}\\.xml"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,14 +19,16 @@ headers:
   Accept-Language: sq-AL,sq;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.wrapper p"
-    date: meta[property='article:published_time']::attr(content)
+    title: meta[property='og:title']::attr(content)
+    body: div.c-open-content p
+    date: script[type='application/ld+json']::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

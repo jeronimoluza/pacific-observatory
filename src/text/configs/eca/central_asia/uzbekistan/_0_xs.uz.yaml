@@ -1,0 +1,33 @@
+# Unusable with current pipeline strategies.
+# Reason: xs.uz is a Next.js single-page application and the HTML shell
+#   returned to the HTTP client contains only the _next/static bootstrap
+#   — no article text, no meta[article:published_time] on the server side.
+#   /sitemap.xml only enumerates per-locale landing pages (/uz, /kr, /qq, /ru)
+#   rather than individual articles.
+# Would need: browser-based rendering (Playwright) or the undocumented
+#   backend JSON endpoint that the SPA fetches.
+name: XS.uz
+country: uzbekistan
+base_url: https://xs.uz
+language: uz
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://xs.uz/sitemap.xml
+  url_regex: "^https://xs\\.uz/(uz|ru|kr|qq)/[a-z0-9-]+"
+client: http
+concurrency: 2
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: article p
+max_pages: null
+max_articles: null

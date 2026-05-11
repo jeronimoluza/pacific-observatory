@@ -1,0 +1,44 @@
+name: UPL.uz
+country: uzbekistan
+base_url: https://upl.uz
+language: ru
+
+# UPL News is a Russian-language Uzbek portal (unclear editorial independence —
+# functional, small-to-medium archive). /sitemap.xml is a tiny index pointing
+# to /news_pages.xml (flat urlset of /<section>/<numeric_id>-news.html items).
+# Sitemap last updated 2024-09 — site may be dormant; included as coverage.
+listing:
+  type: sitemap
+  sitemap_index_url: https://upl.uz/sitemap.xml
+  sitemap_regex: "news_pages"
+  url_regex: "^https://upl\\.uz/[a-z_-]+/[0-9]+-news\\.html$"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.plus_text p
+    date: div.post-date::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

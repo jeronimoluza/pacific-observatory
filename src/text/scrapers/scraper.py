@@ -919,9 +919,13 @@ class NewspaperScraper:
                             self.config.cleaning,
                         )
 
+                        # Prefer the article-page title when available. This
+                        # matters for sitemap-based configs where thumbnail.title
+                        # is a URL placeholder (loc::text).
+                        article_title = article_content.get("title") or thumbnail.title
                         article_data = {
                             "url": str(thumbnail.url),
-                            "title": thumbnail.title,
+                            "title": article_title,
                             "date": (
                                 thumbnail.date
                                 if thumbnail.date

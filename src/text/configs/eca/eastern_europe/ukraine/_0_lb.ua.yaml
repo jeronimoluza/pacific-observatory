@@ -1,0 +1,13 @@
+# REJECTED: lb.ua (Levyy Bereg / Livyi Bereg)
+#
+# robots.txt advertises https://lb.ua/sitemap.xml, but that URL returns HTTP 404
+# (empty body). No working sitemap index located at common paths
+# (/sitemap_index.xml, /sitemap-news.xml). /wp-json/wp/v2/posts also 404s.
+# Cloudflare-fronted; listing would require either (a) archive-page HTML crawl
+# (JS-rendered) or (b) a date-based URL walk that lb.ua does not support via
+# public paths. Re-probe later if a sitemap appears.
+name: Levyy Bereg
+language: uk
+country: ukraine
+base_url: https://lb.ua
+disabled: true

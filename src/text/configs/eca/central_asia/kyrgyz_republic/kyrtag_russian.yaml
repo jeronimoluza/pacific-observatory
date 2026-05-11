@@ -1,0 +1,43 @@
+name: KyrTAG
+language: ru
+country: kyrgyz_republic
+base_url: https://kyrtag.kg
+
+# Kyrgyz Telegraph Agency (affiliate of KazTAG family). Bitrix CMS. Site's
+# /sitemap_iblock_*.xml endpoints return 500 errors, so we fall back to
+# pagination via /ru/news/?PAGEN_1=N (observed up to PAGEN_1=5502 in the
+# footer). Article URLs /ru/news/<slug>. Body is div.content p; visible date
+# text lives in div.t-news (e.g. "16:12, 22-04-2026Headline...").
+listing:
+  type: pagination
+  start_url: https://kyrtag.kg/ru/news/
+  url_template: https://kyrtag.kg/ru/news/?PAGEN_1={num}
+  start_page: 2
+  batch_size: 5
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: li.item
+    title: h2.title a::text
+    url: h2.title a::attr(href)
+  article:
+    body: div.content p
+    date: div.t-news::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

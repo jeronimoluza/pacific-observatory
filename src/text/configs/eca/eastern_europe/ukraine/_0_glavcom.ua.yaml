@@ -1,0 +1,13 @@
+# REJECTED: glavcom.ua (Glavcom)
+#
+# robots.txt advertises https://glavcom.ua/pub/sitemaps/sitemap_index.xml, which
+# lists only gzipped monthly sub-sitemaps (YYYY-MM.xml.gz) and a gzipped
+# sitemap-news.xml. The pacific-observatory sitemap fetcher does not decompress
+# .gz sitemap URLs, and no plain-XML equivalents are exposed. /wp-json/wp/v2/posts
+# 301-redirects to a .html path indicating WP API is disabled. Re-probe later or
+# write a custom .gz-aware fetcher.
+name: Glavcom
+language: uk
+country: ukraine
+base_url: https://glavcom.ua
+disabled: true

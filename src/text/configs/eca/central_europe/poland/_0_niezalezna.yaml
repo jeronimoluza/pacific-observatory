@@ -1,0 +1,40 @@
+# Unusable with current pipeline strategies.
+# Reason: Article date format "22.04.2026, 21:47" (dd.mm.yyyy with comma + time) is
+# not parseable by built-in handle_mixed_dates. The only machine-readable date is in
+# ld+json (datePublished), which CSS selectors cannot extract. The <time datetime>
+# element on article pages contains a stale placeholder (2014-12-12).
+# Pagination (?page=N) and body (section[class*='article-content']) work fine.
+# Fix would require a custom cleaning function to strip ", HH:MM" before parsing.
+name: Niezalezna
+language: pl
+country: poland
+base_url: https://niezalezna.pl
+listing:
+  type: pagination
+  start_url: https://niezalezna.pl/polska
+  url_template: https://niezalezna.pl/polska?page={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: pl-PL,pl;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: div.group
+    title: h3::text
+    url: a::attr(href)
+  article:
+    body: section.article-content p
+    date: time::attr(datetime)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

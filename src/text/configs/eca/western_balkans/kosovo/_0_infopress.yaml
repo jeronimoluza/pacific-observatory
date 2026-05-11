@@ -1,0 +1,39 @@
+# Unusable with current pipeline strategies.
+# Reason: Domain mismatch — infopress.tv serves Romanian content (local news from
+# Constanța, RO), not Kosovo/Albanian. The site is WordPress and WP REST API
+# paginates fine, but every article is in Romanian so it does not belong under
+# kosovo/sq. No obvious alternative domain for the Kosovo "InfoPress" exists
+# (infopress.ks, infopress-ks.com, infopress.info all NXDOMAIN or SSL-broken).
+name: InfoPress
+language: sq
+country: kosovo
+base_url: https://www.infopress.tv
+listing:
+  type: pagination
+  start_url: https://www.infopress.tv/
+  url_template: https://www.infopress.tv/page/{num}/
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: sq-AL,sq;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: div.post
+    title: h2 a::text
+    url: h2 a::attr(href)
+  article:
+    body: div.boxed-wrap p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

@@ -1,0 +1,44 @@
+name: Meduza
+language: ru
+country: russian_federation
+base_url: https://meduza.io
+# DISABLED (2026-04-22): Homepage /?page=N re-renders the same thumbnails
+# regardless of N (100% overlap, 63 articles). All sitemap URLs
+# (/sitemap.xml, /sitemap-news.xml etc.) return HTTP 502 behind
+# Cloudflare; /api/w5/search returns 403 to non-browser clients; RSS
+# (/rss/all, /rss/en/all) is capped at 30 items. No usable pagination or
+# archive endpoint for an HTTP scraper — would need a headless browser
+# client bypassing Cloudflare. Preserving existing CSV (5 rows) as-is.
+listing:
+  type: pagination
+  start_url: https://meduza.io/
+  url_template: https://meduza.io/?page={num}
+  start_page: 2
+  batch_size: 5
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: article
+    title: "h2 a::text"
+    url: "h2 a::attr(href)"
+  article:
+    body: "div[class*='GeneralMaterial-module-root'] p"
+    date: "script[type='application/ld+json']::text"
+
+cleaning:
+  date: parse_date_from_jsonld
+
+max_pages: null
+max_articles: null

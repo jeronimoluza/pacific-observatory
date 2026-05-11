@@ -3,14 +3,13 @@ language: hr
 country: croatia
 base_url: https://direktno.hr
 listing:
-  type: pagination
-  start_url: https://direktno.hr/
-  url_template: https://direktno.hr/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://direktno.hr/sitemap.xml
+  sitemap_regex: /sitemap[0-9]+\.xml
+  url_regex: ^https://direktno\.hr/[a-z0-9-]+/[a-z0-9-]+-[0-9]+/?$
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -20,10 +19,14 @@ headers:
   Accept-Language: hr-HR,hr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
+    title:
+    - meta[property="og:title"]::attr(content)
+    - h1::text
     body: div.page-wrapper-cnt p
     date: meta[property='article:published_time']::attr(content)
 cleaning:

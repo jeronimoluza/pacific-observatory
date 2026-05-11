@@ -1,0 +1,34 @@
+# Unusable with current pipeline strategies.
+# Reason: no standard pagination on section pages (`/ekonomi/2`, `/ekonomi?sayfa=2`
+# all return 404). Articles only enumerable via the sitemap index at
+# `/sitemap.xml` (which references `/sitemap_recentlocal_news.xml` and
+# `/sitemap_posts.xml`). Sitemap-based scraping IS supported by the pipeline
+# (see novosti.yaml in Serbia for an example), but the haberturk sitemap
+# returns only ~2KB recent-news index — full archive requires sub-sitemap traversal.
+# Fixable with a sitemap config pointing at the post sitemap. Was used as the
+# Zaman replacement in Tunç et al. (2024) Türkiye ECSU index post-2017.
+name: Haberturk
+language: tr
+country: turkiye
+base_url: https://www.haberturk.com
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://www.haberturk.com/sitemap_posts.xml
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: div.content-news-text p, div.haber-icerik p
+    date: script[type='application/ld+json']::text
+cleaning:
+  date: parse_date_from_jsonld
+max_pages: null
+max_articles: null

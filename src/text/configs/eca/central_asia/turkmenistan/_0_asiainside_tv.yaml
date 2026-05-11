@@ -1,0 +1,13 @@
+# REJECTED: asiainside.tv
+#
+# Asia Inside TV — nominally a Central Asia focused exile video outlet.
+#
+# Why rejected:
+#   - Root URL returns 200 but response body is effectively empty
+#     (a 675-byte placeholder served by Caddy).
+#   - No WP API, no sitemap.
+#   - Content (if any) is delivered via social/video platforms, not as
+#     scrapeable article pages.
+name: Asia Inside TV
+disabled: true
+reason: no article HTML, no API, no sitemap

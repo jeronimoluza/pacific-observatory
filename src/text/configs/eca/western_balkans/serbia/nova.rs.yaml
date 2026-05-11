@@ -2,12 +2,13 @@ name: Nova.rs
 language: sr
 country: serbia
 base_url: https://nova.rs
+# /vesti/page/N/ returns 404 and wp-json is blocked.
+# Using the Google-news sitemap (carries ~440 newest articles).
 listing:
-  type: pagination
-  start_url: https://nova.rs/vesti/
-  url_template: https://nova.rs/vesti/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+    - https://nova.rs/sitemap/sitemap_news_1.xml
+  url_regex: "^https://nova\\.rs/[a-z0-9-]+(/[a-z0-9-]+)+/?$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,14 +21,18 @@ headers:
   Accept-Language: sr-RS,sr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: article
-    title: a[href]::text
-    url: a[href]::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.page-content p"
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article p
+    date: script[type='application/ld+json']:-soup-contains('datePublished')::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

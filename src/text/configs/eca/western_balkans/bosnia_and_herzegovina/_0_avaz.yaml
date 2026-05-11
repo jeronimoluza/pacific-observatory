@@ -1,0 +1,35 @@
+# Unusable with current pipeline strategies.
+# Reason: Cloudflare "Just a moment..." JavaScript challenge blocks
+# all HTTP access. WP API also 403. Would require stealth browser.
+name: Dnevni Avaz
+language: bs
+country: bosnia_and_herzegovina
+base_url: https://avaz.ba
+listing:
+  type: pagination
+  start_url: https://avaz.ba/vijesti
+  url_template: https://avaz.ba/vijesti?page={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept-Language: bs-BA,bs;q=0.9,hr;q=0.8,sr;q=0.7,en;q=0.6
+selectors:
+  thumbnail:
+    container: article
+    title: h2 a::text
+    url: h2 a::attr(href)
+  article:
+    body: div.article-content p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'
