@@ -1,0 +1,32 @@
+source_key: mx_cre_daily
+module: lac.central_america.mexico.cre
+function: fetch_mx_cre
+url: https://www.cne.gob.mx/ConsultaPrecios/GasolinasyDiesel/GasolinasyDiesel.html
+fallback_date: 2020-01-01
+priority: 20
+enabled: false
+cadence: daily
+carry_forward: true
+
+products:
+  "regular":
+    label: Regular Gasoline
+    series_key: gasoline_regular_87
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "premium":
+    label: Premium Gasoline
+    series_key: gasoline_premium_91
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "diesel":
+    label: Diesel
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard

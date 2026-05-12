@@ -96,6 +96,8 @@ def _normalize_price(price_local: float, spec: ProductSpec) -> tuple[float, str]
     if family == "lpg":
         if unit == "liter":
             quantity_in_liters = amount
+        elif unit == "gallon":
+            quantity_in_liters = amount * 3.785411784
         else:
             if unit == "kilogram" or unit == "cylinder":
                 kg_amount = amount

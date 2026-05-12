@@ -1,0 +1,43 @@
+source_key: ar_datos_argentina_monthly
+module: lac.south_america.argentina.datos_argentina
+function: fetch_ar_datos_argentina
+url: https://datos.gob.ar/sv/dataset/energia-precios-surtidor---resolucion-3142016
+fallback_date: 2020-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+products:
+  "Nafta (súper) entre 92 y 95 Ron":
+    series_key: gasoline_super_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 95
+  "Nafta (premium) de más de 95 Ron":
+    series_key: gasoline_premium_98
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 98
+  "Gas Oil Grado 2":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Gas Oil Grado 3":
+    series_key: diesel_premium
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "GNC":
+    label: CNG
+    series_key: cng
+    fuel_family: cng
+    unit: m3
+    include_in_build: true
+    grade: standard

@@ -1,0 +1,17 @@
+source_key: ndtv_in_diesel
+module: sar.south_asia.india.ndtv
+function: fetch_in_ndtv_diesel
+url: https://www.ndtv.com/fuel-prices/diesel-price-in-india
+fallback_date: 2020-01-01
+priority: 10
+cadence: daily
+carry_forward: true
+currency: INR
+
+products:
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel

@@ -1,0 +1,49 @@
+source_key: bo_anh_monthly
+module: lac.south_america.bolivia.anh
+function: fetch_bo_anh
+url: https://www.anh.gob.bo/w2019/contenido.php?s=13&Y=2026
+fallback_date: 2020-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# ANH publishes "Precios Internacionales" monthly via resolución
+# administrativa: state-set prices applied to foreign-plated vehicles,
+# aviation and industry. The mercado-interno (subsidized Bolivian)
+# prices are frozen since 2005 and image-only on the site; the
+# internacional series IS the one that actually changes, so we ingest
+# it here. carry_forward=true because the resolución sets the price
+# until the next month's update — daily gaps should be filled forward.
+
+products:
+  "Gasolina Especial Internacional":
+    series_key: gasoline_premium_intl
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 85
+  "Gasolina Especial + Internacional":
+    series_key: gasoline_super_intl
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: super
+  "Diesel Oil Internacional":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Gas Natural Vehicular Internacional":
+    series_key: cng
+    fuel_family: cng
+    unit: m3
+    include_in_build: true
+    grade: standard
+  "Jet Fuel Internacional":
+    series_key: jet_fuel
+    fuel_family: jet_fuel
+    unit: liter
+    include_in_build: false
+    grade: standard

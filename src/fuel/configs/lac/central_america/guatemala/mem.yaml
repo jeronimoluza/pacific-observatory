@@ -1,0 +1,39 @@
+source_key: gt_mem_weekly
+module: lac.central_america.guatemala.mem
+function: fetch_gt_mem
+url: https://mem.gob.gt/que-hacemos/hidrocarburos/comercializacion-downstream/precios-combustible-nacionales/
+fallback_date: 2024-06-01
+priority: 10
+cadence: weekly
+carry_forward: false
+
+# Guatemalan retail prices are reported (market-monitored) by MEM/DGH —
+# they reflect observed station averages, not a state-set price. Hence
+# carry_forward=false: gaps should not be forward-filled.
+#
+# Each weekly PDF includes a 7-week comparison table covering Mon/Thu
+# monitoring dates, so a small number of PDFs covers history. The live
+# index page is Cloudflare-gated; we discover PDF URLs via monthly
+# Wayback snapshots and download the PDFs directly from mem.gob.gt.
+
+products:
+  "Gasolina Superior":
+    series_key: gasoline_premium_95
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "Gasolina Regular":
+    series_key: gasoline_regular_91
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+  "Combustible Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: true
+    grade: standard

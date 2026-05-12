@@ -1,0 +1,40 @@
+source_key: cr_recope_historical
+module: lac.central_america.costa_rica.recope
+function: fetch_cr_recope
+url: https://www.recope.go.cr/productos/precios-nacionales/historicos/
+fallback_date: 1994-01-01
+priority: 10
+cadence: irregular
+carry_forward: true
+
+products:
+  "GASOLINA SUPER":
+    label: Gasoline Super
+    series_key: gasoline_super_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super
+    octane_ron: 95
+  "GASOLINA PLUS 91":
+    label: Gasoline Plus 91
+    series_key: gasoline_regular_91
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+  "DIESEL 50":
+    label: Diesel 50
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "KEROSENO":
+    label: Kerosene
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard

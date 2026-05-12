@@ -1,0 +1,17 @@
+source_key: co_minenergia_cng_monthly
+module: lac.south_america.colombia.minenergia_cng
+function: fetch_co_minenergia_cng
+url: https://www.datos.gov.co/d/he3q-86dn
+fallback_date: 2022-10-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+products:
+  "GNCV":
+    label: CNG
+    series_key: cng
+    fuel_family: cng
+    unit: m3
+    include_in_build: true
+    grade: standard

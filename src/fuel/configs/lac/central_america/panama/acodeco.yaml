@@ -1,0 +1,37 @@
+source_key: pa_acodeco_monthly
+module: lac.central_america.panama.acodeco
+function: fetch_pa_acodeco
+url: https://www.acodeco.gob.pa/inicio/estadisticas-precios/precios-2/
+fallback_date: 2017-04-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# Acodeco publishes a cumulative "HistoricoCombustible_Panama" PDF with
+# monthly average retail prices in the Panama City + San Miguelito metro
+# area going back to 1998. We only ingest the post-2017-04 era when
+# regulation simplified retail to three products (Diesel Bajo Azufre
+# replaced both Normal and Liviano grades). Panama caps retail prices
+# via biweekly Decreto Ejecutivo, so carry_forward=true.
+
+products:
+  "Gasolina 91 Octanos":
+    series_key: gasoline_regular_91
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 91
+  "Gasolina 95 Octanos":
+    series_key: gasoline_premium_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "Diesel Bajo Azufre":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard

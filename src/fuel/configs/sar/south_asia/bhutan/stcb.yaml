@@ -1,0 +1,23 @@
+source_key: stcb_bt_retail
+module: sar.south_asia.bhutan.stcb
+function: fetch_bt_stcb
+url: https://www.stcb.bt/bhutanpetroleum.php
+fallback_date: 2018-01-01
+priority: 10
+cadence: biweekly
+carry_forward: true
+currency: BTN
+
+products:
+  "Petrol":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: petrol_ms
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel_hsd

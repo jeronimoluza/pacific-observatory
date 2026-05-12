@@ -1,0 +1,17 @@
+source_key: cardekho_in_cng
+module: sar.south_asia.india.cardekho
+function: fetch_in_cardekho_cng
+url: https://www.cardekho.com/fuel-price
+fallback_date: 2020-01-01
+priority: 10
+cadence: daily
+carry_forward: true
+currency: INR
+
+products:
+  "CNG":
+    fuel_family: cng
+    unit: kg
+    include_in_build: true
+    grade: standard
+    series_key: cng

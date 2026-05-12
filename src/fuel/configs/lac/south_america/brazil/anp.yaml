@@ -1,0 +1,61 @@
+source_key: br_anp_weekly
+module: lac.south_america.brazil.anp
+function: fetch_br_anp
+url: https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/serie-historica-de-precos-de-combustiveis
+fallback_date: 2023-01-01
+priority: 10
+cadence: weekly
+carry_forward: true
+
+products:
+  "GASOLINA":
+    label: Gasoline
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "GASOLINA ADITIVADA":
+    label: Gasoline Aditivada
+    series_key: gasoline_additivated
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: premium
+  "ETANOL":
+    label: Ethanol
+    series_key: ethanol
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: ethanol
+  "DIESEL":
+    label: Diesel
+    series_key: diesel_s500
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "DIESEL S10":
+    label: Diesel S10
+    series_key: diesel_s10
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: low_sulfur
+  "GNV":
+    label: CNG
+    series_key: cng
+    fuel_family: cng
+    unit: m3
+    include_in_build: true
+    grade: standard
+  "GLP":
+    label: LPG
+    series_key: lpg_13kg
+    fuel_family: lpg
+    unit: cylinder
+    amount: 13
+    density_l_per_kg: 1.96  # TODO: confirm with data team
+    include_in_build: true
+    grade: p13

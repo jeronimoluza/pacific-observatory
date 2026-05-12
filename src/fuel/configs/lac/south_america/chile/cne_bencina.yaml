@@ -1,0 +1,104 @@
+source_key: cl_cne_bencina_monthly
+module: lac.south_america.chile.cne_bencina
+function: fetch_cl_cne_bencina
+url: https://3b9x.short.gy/kp1HF1
+fallback_date: 2012-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+products:
+  "93":
+    label: Gasoline 93
+    series_key: gasoline_93
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 93
+  "95":
+    label: Gasoline 95
+    series_key: gasoline_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super
+    octane_ron: 95
+  "97":
+    label: Gasoline 97
+    series_key: gasoline_97
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 97
+  "A93":
+    label: Gasoline A93
+    series_key: gasoline_93_additivated
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: additivated
+    octane_ron: 93
+  "A95":
+    label: Gasoline A95
+    series_key: gasoline_95_additivated
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: additivated
+    octane_ron: 95
+  "A97":
+    label: Gasoline A97
+    series_key: gasoline_97_additivated
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: additivated
+    octane_ron: 97
+  "DI":
+    label: Diesel
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "ADI":
+    label: Diesel ADI
+    series_key: diesel_additivated
+    fuel_family: diesel
+    unit: liter
+    include_in_build: false
+    grade: additivated
+  "KE":
+    label: Kerosene
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "AKE":
+    label: Kerosene AKE
+    series_key: kerosene_additivated
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: false
+    grade: additivated
+  "GLP":
+    # CNE labels GLP rows as "$/m3" but the per-liter price range
+    # (~600-770 CLP) confirms the actual unit is CLP/litre, matching
+    # Chile retail GLP vehicular. Treating as liter for downstream USD/L.
+    label: LPG
+    series_key: lpg_vehicular
+    fuel_family: lpg
+    unit: liter
+    density_l_per_kg: 1.96
+    include_in_build: true
+    grade: vehicular
+  "GNC":
+    label: CNG
+    series_key: cng
+    fuel_family: cng
+    unit: m3
+    include_in_build: false
+    grade: standard

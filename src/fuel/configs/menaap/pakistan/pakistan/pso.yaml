@@ -29,12 +29,14 @@ products:
     grade: premium
     series_key: diesel_hicetane_euro5
   "LDO":
+    label: LDO Diesel
     fuel_family: diesel
     unit: liter
     include_in_build: true
     grade: light
     series_key: ldo
   "SKO":
+    label: SKO Kerosene
     fuel_family: kerosene
     unit: liter
     include_in_build: true

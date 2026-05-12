@@ -98,6 +98,7 @@ class ProductSpec(BaseModel):
             "kw": "kw",
             "kwh": "kwh",
             "fee": "fee",
+            "index": "index",
         }
         key = str(value).strip().lower()
         if key not in aliases:

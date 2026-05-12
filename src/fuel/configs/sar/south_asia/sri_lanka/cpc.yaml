@@ -1,0 +1,55 @@
+source_key: cpc_lk_historical
+module: sar.south_asia.sri_lanka.cpc
+function: fetch_lk_cpc
+url: https://ceypetco.gov.lk/historical-prices/
+fallback_date: 1990-01-01
+priority: 10
+cadence: irregular
+carry_forward: true
+currency: LKR
+
+products:
+  "LP 92":
+    label: LP 92 Gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 92
+    series_key: gasoline_lp92
+  "LP 95":
+    label: LP 95 Gasoline
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+    series_key: gasoline_lp95
+  "LAD":
+    label: LAD Diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: diesel_lad
+  "LSD":
+    label: LSD Diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium
+    series_key: diesel_lsd
+  "LK":
+    label: LK Kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: kerosene_lk
+  "LIK":
+    label: LIK Kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: false
+    grade: industrial
+    series_key: kerosene_lik

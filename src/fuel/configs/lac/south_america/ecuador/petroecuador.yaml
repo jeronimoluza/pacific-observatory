@@ -1,0 +1,78 @@
+source_key: ec_petroecuador_monthly
+module: lac.south_america.ecuador.petroecuador
+function: fetch_ec_petroecuador
+url: https://www.eppetroecuador.ec/?p=20421
+fallback_date: 2018-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# EP Petroecuador (state oil company) publishes a monthly "Estructura
+# de Precios en Terminal" PDF — wholesale prices that authorized
+# distributors pay, set by executive decree. These are state-managed
+# terminal/ex-rack prices, NOT retail pump prices. Retail prices add
+# regulated margins on top. carry_forward=true: each PDF sets the
+# vigencia period explicitly (e.g. "12-Dic-2024 al 11-Ene-2025") and
+# the price holds until the next decree.
+
+products:
+  "GASOLINA EXTRA":
+    series_key: gasoline_regular_85
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: regular
+    octane_ron: 85
+  "EXTRA CON ETANOL":
+    series_key: gasoline_ecopais
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: regular_ethanol
+  "GASOLINA SUPER PREMIUM 95":
+    series_key: gasoline_premium_95
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "DIESEL 2":
+    series_key: diesel
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: true
+    grade: standard
+  "DIESEL PREMIUM":
+    series_key: diesel_premium
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: false
+    grade: premium
+  "DIESEL 1":
+    series_key: diesel_1
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: false
+    grade: light
+  "FUEL OIL":
+    series_key: fuel_oil
+    fuel_family: fuel_oil
+    unit: gallon
+    include_in_build: false
+    grade: standard
+  "GLP DOMESTICO":
+    label: LPG (household)
+    series_key: lpg_household
+    fuel_family: lpg
+    unit: kilogram
+    density_l_per_kg: 1.96
+    include_in_build: true
+    grade: subsidized
+  "GLP INDUSTRIAL":
+    label: LPG (industrial)
+    series_key: lpg_industrial
+    fuel_family: lpg
+    unit: kilogram
+    density_l_per_kg: 1.96
+    include_in_build: false
+    grade: standard

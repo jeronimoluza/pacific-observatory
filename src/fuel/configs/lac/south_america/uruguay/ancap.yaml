@@ -1,0 +1,62 @@
+source_key: uy_ancap_historical
+module: lac.south_america.uruguay.ancap
+function: fetch_uy_ancap
+url: https://www.ancap.com.uy/10564/1/historico-precios-combustibles.html
+fallback_date: 2005-01-01
+priority: 10
+cadence: irregular
+carry_forward: true
+
+products:
+  "Super 95":
+    series_key: gasoline_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super
+    octane_ron: 95
+  "Premium 97":
+    series_key: gasoline_97
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 97
+  "Especial 87":
+    series_key: gasoline_87
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: regular
+    octane_ron: 87
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: false
+    grade: standard
+  "Gasoil 50S":
+    series_key: diesel_50_ppm
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Gasoil 10S":
+    series_key: diesel_10_ppm
+    fuel_family: diesel
+    unit: liter
+    include_in_build: false
+    grade: premium
+  "Queroseno":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Supergas":
+    series_key: lpg_residential
+    fuel_family: lpg
+    unit: kilogram
+    density_l_per_kg: 1.96
+    include_in_build: true
+    grade: residential

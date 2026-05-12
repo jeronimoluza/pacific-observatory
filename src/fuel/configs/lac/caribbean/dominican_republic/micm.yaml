@@ -1,0 +1,62 @@
+source_key: do_micm_weekly
+module: lac.caribbean.dominican_republic.micm
+function: fetch_do_micm
+url: https://micm.gob.do/direcciones/combustibles/avisos-semanales-de-precios/avisos-semanales-de-precios-de-combustibles/
+fallback_date: 2024-01-01
+priority: 10
+cadence: weekly
+carry_forward: true
+
+products:
+  "Gasolina Premium":
+    series_key: gasoline_premium_95
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "Gasolina Regular":
+    series_key: gasoline_regular_89
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: regular
+    octane_ron: 89
+  "Gasoil Regular":
+    series_key: diesel
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: true
+    grade: standard
+  "Gasoil Optimo":
+    series_key: diesel_optimo
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: false
+    grade: premium
+  "Avtur":
+    series_key: jet_fuel
+    fuel_family: jet_fuel
+    unit: gallon
+    include_in_build: false
+    grade: standard
+  "Kerosene":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: gallon
+    include_in_build: true
+    grade: standard
+  "Fuel Oil":
+    series_key: fuel_oil
+    fuel_family: fuel_oil
+    unit: gallon
+    include_in_build: false
+    grade: standard
+  "GLP":
+    label: LPG
+    series_key: lpg_retail
+    fuel_family: lpg
+    unit: gallon
+    density_l_per_kg: 1.96
+    include_in_build: true
+    grade: retail

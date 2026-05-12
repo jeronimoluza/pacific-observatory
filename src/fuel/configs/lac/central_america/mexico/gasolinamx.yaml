@@ -1,0 +1,37 @@
+source_key: mx_gasolinamx_wayback
+module: lac.central_america.mexico.gasolinamx
+function: fetch_mx_gasolinamx
+url: https://www.gasolinamx.com/
+fallback_date: 2019-03-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# Replaces the CRE XML feed (which only exposed today's snapshot) with the
+# national-average prices that gasolinamx.com publishes on its homepage.
+# Historical coverage comes from the Internet Archive Wayback Machine:
+# we probe one snapshot per month from 2019-03 onwards. The price widget
+# format ("Magna <b>NN.NN</b> / Premium <b>NN.NN</b> / Diesel <b>NN.NN</b>")
+# has been stable since at least 2019-Q1.
+
+products:
+  "Magna":
+    series_key: gasoline_regular_87
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 87
+  "Premium":
+    series_key: gasoline_premium_91
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 91
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard

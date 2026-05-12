@@ -1,0 +1,25 @@
+source_key: co_creg_liquids
+module: lac.south_america.colombia.creg
+function: fetch_co_creg
+url: https://creg.gov.co/publicaciones/15565/precios-de-combustibles-liquidos/
+fallback_date: 2022-03-01
+priority: 10
+cadence: irregular
+carry_forward: true
+
+products:
+  "GASOLINA MC":
+    label: Gasoline MC
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: regular
+    octane_ron: 87
+  "ACPM":
+    label: Diesel
+    series_key: diesel
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: true
+    grade: standard
