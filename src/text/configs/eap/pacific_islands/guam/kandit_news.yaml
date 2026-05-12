@@ -1,0 +1,41 @@
+# Kandit News (Guam) Configuration
+# WordPress REST API — categories: 15 (Guam, 4244 posts), 1 (Corruption, 1089 posts),
+# 3 (Crime, 1855 posts), 4 (Legislature, 768 posts), 17 (Money, 1380 posts)
+
+name: "Kandit News"
+country: "guam"
+language: "en"
+base_url: "https://kanditnews.com"
+
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://kanditnews.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=15,1,3,4,17&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,30 @@
+name: "Nepituno"
+country: "tonga"
+language: "[en]"
+base_url: "https://nepituno.to"
+
+listing:
+  type: "follow_link"
+  start_url: "https://nepituno.to/index.php/politics"
+  follow_selector: "li.pagination-next a::attr(href)"
+
+client: "http"
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "article.itemView"
+    title: "h2 a::text"
+    url: "h2 a::attr(href)"
+  article:
+    date: "time::attr(datetime)"
+    body: "div.item-description p"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null

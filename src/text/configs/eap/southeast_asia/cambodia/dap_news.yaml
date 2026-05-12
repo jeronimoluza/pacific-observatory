@@ -1,15 +1,14 @@
-name: El Nacional
-language: es
-country: venezuela_rb
-base_url: http://www.el-nacional.com
+name: "DAP News"
+country: "cambodia"
+language: "km"
+base_url: "https://dap-news.com"
 
-# Categories: noticias(1, 277831), politica(202011, 40577), economia(201966, 12135), finanzas(201970, 1850)
 listing:
   type: api
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "http://www.el-nacional.com/wp-json/wp/v2/posts?per_page=100&categories=1,202011,201966,201970&page={page}&_fields=id,date,link,title,excerpt,content"
+  url_template: "https://dap-news.com/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title,content"
   json_paths:
     url: link
     title: title.rendered
@@ -21,6 +20,9 @@ concurrency: 5
 rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 selectors:
   thumbnail:
@@ -35,5 +37,5 @@ cleaning:
   date: handle_mixed_dates
   body: clean_wp_html_body
 
-max_pages: 30
+max_pages: null
 max_articles: null

@@ -1,14 +1,14 @@
-name: The Kabul Times
+name: Business Advantage PNG
 language: en
-country: afghanistan
-base_url: https://thekabultimes.com
+country: papua_new_guinea
+base_url: https://www.businessadvantagepng.com
 
 listing:
   type: api
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://thekabultimes.com/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title"
+  url_template: "https://www.businessadvantagepng.com/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title"
   json_paths:
     url: link
     title: title.rendered
@@ -20,19 +20,14 @@ rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 
-headers:
-  User-Agent: "Mozilla/5.0"
-
 selectors:
   thumbnail:
     container: filler
     title: filler
     url: filler
   article:
-    body:
-      - "div.penci-entry-content.entry-content p"
-      - "div.penci-entry-content.entry-content"
-    date: time::attr(datetime)
+    body: "div.single-column-content p"
+    date: "meta[property='article:published_time']::attr(content)"
 
 cleaning:
   date: handle_mixed_dates

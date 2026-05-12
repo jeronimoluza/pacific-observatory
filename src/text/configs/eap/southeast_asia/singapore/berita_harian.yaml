@@ -1,0 +1,48 @@
+# Berita Harian Configuration (Singapore Malay-language daily)
+
+name: "Berita Harian"
+country: "singapore"
+language: "ms"
+base_url: "https://www.beritaharian.sg"
+
+# Subsection listing pages scraped as start_urls (no numeric pagination available).
+# The url_template hits page 2+ which returns 404, terminating pagination after start_urls.
+listing:
+  type: "pagination"
+  start_url:
+    - "https://www.beritaharian.sg/singapura"
+    - "https://www.beritaharian.sg/singapura/masyarakat"
+    - "https://www.beritaharian.sg/singapura/politik"
+    - "https://www.beritaharian.sg/singapura/perumahan"
+    - "https://www.beritaharian.sg/singapura/pendidikan"
+    - "https://www.beritaharian.sg/singapura/kesihatan"
+    - "https://www.beritaharian.sg/singapura/pengangkutan"
+    - "https://www.beritaharian.sg/singapura/jenayah-mahkamah"
+  url_template: "https://www.beritaharian.sg/singapura/page/{num}"
+  start_page: 2
+  step: 1
+  batch_size: 5
+
+client: "http"
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "a[data-discover='true']:has(h2)"
+    title: "h2::text"
+    url: "::attr(href)"
+  article:
+    body: "div[data-testid='widget-wrapper'] p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

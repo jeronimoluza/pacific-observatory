@@ -19,9 +19,9 @@ retry_seconds: 2.0
 
 selectors:
   thumbnail:
-    container: "a[href*='/item/']"
+    container: "li:has(div.pub-date)"
     title: "h3::text"
-    url: filler
+    url: "a[href*='/item/']::attr(href)"
     date: "div.pub-date::text"
   article:
     body: "div.text-content p"

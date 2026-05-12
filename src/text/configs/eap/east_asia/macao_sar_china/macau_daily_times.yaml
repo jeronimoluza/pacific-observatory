@@ -1,0 +1,39 @@
+name: Macau Daily Times
+language: en
+country: macao_sar_china
+base_url: https://macaudailytimes.com.mo
+
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://macaudailytimes.com.mo/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: "span.s2"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

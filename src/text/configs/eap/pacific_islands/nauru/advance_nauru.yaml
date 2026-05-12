@@ -1,15 +1,15 @@
-name: El Nacional
-language: es
-country: venezuela_rb
-base_url: http://www.el-nacional.com
+name: "Advance Nauru"
+country: "nauru"
+language: "en"
+base_url: "https://advancenauru.com"
 
-# Categories: noticias(1, 277831), politica(202011, 40577), economia(201966, 12135), finanzas(201970, 1850)
+# WP REST API — all posts
 listing:
   type: api
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "http://www.el-nacional.com/wp-json/wp/v2/posts?per_page=100&categories=1,202011,201966,201970&page={page}&_fields=id,date,link,title,excerpt,content"
+  url_template: "https://advancenauru.com/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title,content"
   json_paths:
     url: link
     title: title.rendered
@@ -29,11 +29,11 @@ selectors:
     url: filler
   article:
     body: "div.entry-content p"
-    date: meta[property='article:published_time']::attr(content)
+    date: "meta[property='article:published_time']::attr(content)"
 
 cleaning:
   date: handle_mixed_dates
   body: clean_wp_html_body
 
-max_pages: 30
+max_pages: null
 max_articles: null

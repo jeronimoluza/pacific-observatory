@@ -1,0 +1,40 @@
+name: "Beijing Review"
+country: "china"
+language: "en"
+base_url: "https://www.bjreview.com/China/"
+
+# Listing discovery configuration
+listing:
+  type: "pagination"
+  start_url: "https://www.bjreview.com/China/"
+  url_template: "https://www.bjreview.com/China/index_{num}.html"
+  start_page: 2
+  batch_size: 10
+
+# Client configuration
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: "div.bian8"
+    title: "a.bt-2020::text"
+    url: "a.bt-2020::attr(href)"
+  article:
+    date: "meta[name=\"publishdate\"]::attr(content)"
+    body: "div.TRS_Editor p"
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null

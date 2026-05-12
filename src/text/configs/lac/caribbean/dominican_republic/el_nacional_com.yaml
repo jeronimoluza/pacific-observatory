@@ -35,5 +35,5 @@ cleaning:
   date: handle_mixed_dates
   body: clean_wp_html_body
 
-max_pages: null
+max_pages: 30
 max_articles: null

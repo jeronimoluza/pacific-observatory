@@ -1,0 +1,39 @@
+# Taipei Times Configuration
+# English-language newspaper of record for Taiwan
+# Single listing page with ~23 articles; follow_selector points to a non-existent next link
+# so scraping terminates after one page.
+
+name: "Taipei Times"
+country: "taiwan_china"
+language: "en"
+base_url: "https://www.taipeitimes.com/"
+
+listing:
+  type: "follow_link"
+  start_url: "https://www.taipeitimes.com/News/taiwan"
+  follow_selector: "a.next-page::attr(href)"
+
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "ul.dlistbox2 li"
+    title: "h2.bf6::text"
+    url: "a.tit::attr(href)"
+    date: "div.date_list::text"
+  article:
+    date: "meta[property='article:published_time']::attr(content)"
+    body: "div.archives p"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null

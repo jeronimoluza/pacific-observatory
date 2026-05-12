@@ -1,0 +1,39 @@
+# Focus Taiwan Configuration
+# Central News Agency English-language wire service for Taiwan
+# Listing page has 10 articles loaded server-side; "More stories" uses JS.
+# Single-page follow_link; terminates naturally when follow_selector finds nothing.
+
+name: "Focus Taiwan"
+country: "taiwan_china"
+language: "en"
+base_url: "https://focustaiwan.tw/"
+
+listing:
+  type: "follow_link"
+  start_url: "https://focustaiwan.tw/politics"
+  follow_selector: "a.next-page::attr(href)"
+
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "ul#jsList li"
+    title: "div.listInfo h2 span::text"
+    url: "a::attr(href)"
+    date: "div.listInfo div.date::text"
+  article:
+    date: "meta[property='article:published_time']::attr(content)"
+    body: "div.paragraph p"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null

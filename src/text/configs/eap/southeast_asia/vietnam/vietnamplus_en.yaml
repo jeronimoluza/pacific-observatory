@@ -1,0 +1,47 @@
+# VietnamPlus (English) Configuration
+
+name: "VietnamPlus English"
+country: "vietnam"
+base_url: "https://en.vietnamplus.vn/"
+language: "en"
+
+# Listing discovery configuration — no functional URL-based pagination; follow_link stops after one page
+listing:
+  type: follow_link
+  start_url: "https://en.vietnamplus.vn/politics/"
+  follow_selector: "a.next-page::attr(href)"
+
+# Client configuration
+client: "http"
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Referer: "https://en.vietnamplus.vn/"
+  Accept-Encoding: "gzip, deflate, br"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: "article.story"
+    title: "h2.story__heading a::text"
+    url: "h2.story__heading a::attr(href)"
+  article:
+    date:
+      - meta[itemprop="datePublished"]::attr(content)
+      - meta[property="article:published_time"]::attr(content)
+      - time.time::attr(datetime)
+    body:
+      - div.article__body p
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null

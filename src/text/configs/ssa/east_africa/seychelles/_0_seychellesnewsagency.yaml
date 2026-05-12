@@ -1,0 +1,33 @@
+# DEFERRED: Cloudflare-blocked on listing query (HTTP 403 "Just a moment").
+# Re-enable when browser client (Playwright) is wired up.
+name: Seychelles News Agency
+country: seychelles
+language: en
+base_url: http://www.seychellesnewsagency.com
+
+listing:
+  type: pagination
+  url_template: "http://www.seychellesnewsagency.com/articles?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

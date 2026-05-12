@@ -1,0 +1,39 @@
+name: "KCNA Watch"
+country: "korea_dem_peoples_rep"
+language: "en"
+base_url: "https://kcnawatch.org"
+
+# Listing discovery configuration
+# Homepage exposes ~5 unique article links via HTTP (WP REST disabled, JS loads more dynamically).
+# follow_selector points to a non-existent next link so scraping stops after one page.
+listing:
+  type: "follow_link"
+  start_url: "https://kcnawatch.org/"
+  follow_selector: "a.next-page::attr(href)"
+
+# Client configuration
+client: "http"
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: "article.clearfix"
+    title: "h4 a::text"
+    url: "h4 a::attr(href)"
+    date: "p.articled-date span::text"
+  article:
+    date: "p.articled-date span::text"
+    body: "div.article-content"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,44 @@
+# Vietnam Investment Review Configuration
+
+name: "Vietnam Investment Review"
+country: "vietnam"
+base_url: "https://vir.com.vn/"
+language: "en"
+
+# Listing discovery configuration — no functional URL-based pagination; follow_link stops after one page
+listing:
+  type: follow_link
+  start_url: "https://vir.com.vn/world-news"
+  follow_selector: "a.next-page::attr(href)"
+
+# Client configuration
+client: "http"
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Referer: "https://vir.com.vn/"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: "div.article"
+    title: "h2.article-title a.article-link::text"
+    url: "h2.article-title a.article-link::attr(href)"
+  article:
+    date:
+      - meta[property="article:published_time"]::attr(content)
+    body:
+      - div.__MB_MASTERCMS_EL p
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null

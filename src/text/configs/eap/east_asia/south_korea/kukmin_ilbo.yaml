@@ -1,0 +1,39 @@
+# Kukmin Ilbo / Kuki News (국민일보) Configuration
+
+name: "Kukmin Ilbo"
+country: "south_korea"
+language: "ko"
+base_url: "https://www.kukinews.com"
+
+listing:
+  type: "pagination"
+  url_template:
+    - "https://www.kukinews.com/article/list/kuk001000000?page={num}"
+    - "https://www.kukinews.com/article/list/kuk003000000?page={num}"
+    - "https://www.kukinews.com/article/list/kuk005000000?page={num}"
+  start_page: 1
+  batch_size: 10
+
+client: "http"
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "article.test2"
+    title: "h3"
+    url: "a::attr(href)"
+  article:
+    date: "div.publishDate span"
+    body: "div.newsview_content.smartOutput"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null

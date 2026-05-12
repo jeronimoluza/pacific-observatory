@@ -1,0 +1,33 @@
+# DEFERRED: Major Cabo Verde paper. Custom HTML, no WP REST API.
+# Tier 2 — needs custom selectors via /assess-newspaper-source pass.
+name: Expresso das Ilhas
+country: cabo_verde
+language: portuguese
+base_url: https://expressodasilhas.cv
+
+listing:
+  type: pagination
+  url_template: "https://expressodasilhas.cv/?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

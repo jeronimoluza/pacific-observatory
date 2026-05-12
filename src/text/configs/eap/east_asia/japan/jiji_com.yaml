@@ -1,0 +1,40 @@
+# JIJI.com (Japan) Configuration
+# Japanese news wire service — SSR listing page, follow_link to article pages
+
+name: "JIJI.com"
+country: "japan"
+language: "ja"
+base_url: "https://www.jiji.com/"
+
+# Listing discovery configuration — single-page politics listing, no next-page link
+listing:
+  type: "follow_link"
+  start_url: "https://www.jiji.com/jc/list?g=pol"
+  follow_selector: "a.next-page::attr(href)"
+
+# Client configuration
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: "ul.LinkList li"
+    title: "p::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.ArticleText p"
+    date: "meta[itemprop='datePublished']::attr(content)"
+
+# Test/debug options
+max_pages: null
+max_articles: null
+
+cleaning:
+  date: "handle_mixed_dates"

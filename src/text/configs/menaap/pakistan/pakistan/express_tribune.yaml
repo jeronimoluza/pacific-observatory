@@ -11,8 +11,8 @@ listing:
   step: 1
 
 client: http
-concurrency: 5
-rate_limit: 0.5
+concurrency: 10
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 

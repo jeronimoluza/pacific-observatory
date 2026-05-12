@@ -7,7 +7,7 @@ listing:
   type: api
   pagination_type: offset
   offset_start: 0
-  offset_step: 20
+  offset_step: 4
   url_template:
     - "https://www.mtv.com.lb/api/news/GetArticleByDate?sectionId=46&currentStart={offset}"
     - "https://www.mtv.com.lb/api/news/GetArticleByDate?sectionId=44&currentStart={offset}"

@@ -1,0 +1,38 @@
+# Liberty Times (自由時報) Configuration
+# Taiwan's largest-circulation Chinese-language newspaper
+# Listing page has ~22 articles loaded server-side; JS carousel handles more.
+# Single-page follow_link; terminates naturally when follow_selector finds nothing.
+
+name: "Liberty Times"
+country: "taiwan_china"
+language: "zh"
+base_url: "https://news.ltn.com.tw/"
+
+listing:
+  type: "follow_link"
+  start_url: "https://news.ltn.com.tw/list/breakingnews"
+  follow_selector: "a.next-page::attr(href)"
+
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "ul.list li"
+    title: "h3.title::text"
+    url: "a::attr(href)"
+  article:
+    date: "meta[property='article:published_time']::attr(content)"
+    body: "section.content940 p"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null

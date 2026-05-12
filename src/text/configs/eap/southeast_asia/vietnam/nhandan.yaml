@@ -1,0 +1,53 @@
+# Nhân Dân (People's Daily) Configuration
+
+name: "Nhan Dan"
+country: "vietnam"
+base_url: "https://nhandan.vn/"
+language: "vi"
+
+# Listing discovery configuration
+listing:
+  type: "pagination"
+  start_url:
+    - "https://nhandan.vn/chinhtri/"
+    - "https://nhandan.vn/kinhte/"
+  url_template:
+    - "https://nhandan.vn/chinhtri/?page={num}"
+    - "https://nhandan.vn/kinhte/?page={num}"
+  start_page: 2
+  batch_size: 10
+
+# Client configuration
+client: "http"
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Referer: "https://nhandan.vn/"
+  Accept-Encoding: "gzip, deflate, br"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: "article.story"
+    title: "h2.story__heading a::text"
+    url: "h2.story__heading a::attr(href)"
+  article:
+    date:
+      - meta[itemprop="datePublished"]::attr(content)
+      - meta[property="article:published_time"]::attr(content)
+      - time.time::attr(datetime)
+    body:
+      - div.article__body p
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null

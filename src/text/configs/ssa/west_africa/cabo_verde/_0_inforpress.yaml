@@ -1,0 +1,33 @@
+# DEFERRED: Cabo Verde state news agency. WP REST returns empty body — likely behind firewall or SPA.
+# Tier 2 — re-probe with browser client or assess HTML structure.
+name: Inforpress (Cabo Verde)
+country: cabo_verde
+language: portuguese
+base_url: https://inforpress.cv
+
+listing:
+  type: pagination
+  url_template: "https://inforpress.cv/?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

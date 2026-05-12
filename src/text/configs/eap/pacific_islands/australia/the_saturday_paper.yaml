@@ -1,0 +1,35 @@
+name: "The Saturday Paper"
+country: "australia"
+language: "[en]"
+base_url: "https://www.thesaturdaypaper.com.au"
+
+listing:
+  type: pagination
+  start_url: "https://www.thesaturdaypaper.com.au/news"
+  url_template: "https://www.thesaturdaypaper.com.au/news?page={num}"
+  start_page: 1
+  batch_size: 5
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "p.article__title"
+    title: "a::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.article-page__body p"
+    date: "time::attr(datetime)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

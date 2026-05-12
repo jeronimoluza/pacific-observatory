@@ -1,0 +1,36 @@
+name: "The Conversation Australia"
+country: "australia"
+language: "[en]"
+base_url: "https://theconversation.com"
+
+listing:
+  type: pagination
+  start_url: "https://theconversation.com/au"
+  url_template: "https://theconversation.com/au?page={num}"
+  start_page: 1
+  batch_size: 5
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "article.contents"
+    title: "h3 span::text"
+    url: "a::attr(href)"
+    image: "img::attr(src)"
+  article:
+    body: "div.content-body.entry-content p"
+    date: "time::attr(datetime)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

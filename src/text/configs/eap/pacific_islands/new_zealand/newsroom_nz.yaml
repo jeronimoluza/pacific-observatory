@@ -1,0 +1,42 @@
+name: "Newsroom"
+country: "new_zealand"
+language: "en"
+base_url: "https://newsroom.co.nz"
+
+# WordPress REST API — politics(16), economy(37), business(36), government(34),
+# justice(33), health-science(25), environment(10)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://newsroom.co.nz/wp-json/wp/v2/posts?per_page=100&page={page}&categories=16,37,36,34,33,25,10&_fields=id,date,link,title,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,40 @@
+# Bru Direct Configuration
+# Brunei's No.1 News Website — custom CMS with daily archive pages
+
+name: "Bru Direct"
+country: "brunei_darussalam"
+language: "en"
+base_url: "https://brudirect.com"
+
+# Listing discovery — date-based archive
+listing:
+  type: "archive"
+  url_template: "https://brudirect.com/daywise.php?date={year}-{month}-{day}"
+  start_date: "2020-01-01"
+  date_format: "daily"
+  batch_size: 10
+
+# Client configuration
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "div.category-page-post-item"
+    title: "h3 a::text"
+    url: "h3 a::attr(href)"
+  article:
+    body: "div.main-text p"
+    date: "div.date-user div.date a::text"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null

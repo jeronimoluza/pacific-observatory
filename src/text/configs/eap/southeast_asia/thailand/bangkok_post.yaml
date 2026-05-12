@@ -1,0 +1,38 @@
+# Bangkok Post Configuration
+
+name: "Bangkok Post"
+country: "thailand"
+language: "en"
+base_url: "https://www.bangkokpost.com"
+
+# Category listing renders ~9 articles via static HTML (no URL-based pagination).
+# follow_selector points to a non-existent next link so scraping stops after one page.
+listing:
+  type: follow_link
+  start_url: "https://www.bangkokpost.com/thailand/general"
+  follow_selector: "a.next-page::attr(href)"
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "div.news--list"
+    title: "h3 a::text"
+    url: "h3 a::attr(href)"
+    date: "div.chanel-s span::text"
+  article:
+    date: "meta[name='lead:published_at']::attr(content)"
+    body: "div.article-content p"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

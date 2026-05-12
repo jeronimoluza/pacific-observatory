@@ -1,0 +1,37 @@
+# Jakarta Globe Configuration
+
+name: "Jakarta Globe"
+country: "indonesia"
+language: "en"
+base_url: "https://jakartaglobe.id"
+
+listing:
+  type: "pagination"
+  start_url: "https://jakartaglobe.id/newsindex"
+  url_template: "https://jakartaglobe.id/latest/newsindex/{num}"
+  start_page: 2
+  batch_size: 3
+
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "div.row.mb-4.position-relative"
+    title: "h4::text"
+    url: "a.stretched-link::attr(href)"
+  article:
+    date: "div.col.small.pt-1 span.text-muted::text"
+    body: "div.col.fsbody p"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null

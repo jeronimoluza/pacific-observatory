@@ -1,15 +1,15 @@
-name: Antena San Luis
-country: mexico
-language: es
-base_url: https://antenasanluis.mx
+name: The Borneo Post
+country: malaysia
+language: en
+base_url: https://www.theborneopost.com
 
-# No category filter — fetch all latest posts
+# Categories: Nation(5), Business(9), Sarawak(22)
 listing:
   type: api
   pagination_type: page
   page_start: 1
   page_step: 1
-  url_template: "https://antenasanluis.mx/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title,excerpt,content"
+  url_template: "https://www.theborneopost.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=5,9,22&_fields=id,date,link,title,excerpt,content"
   json_paths:
     url: "link"
     title: "title.rendered"
@@ -28,11 +28,12 @@ selectors:
     title: "filler"
     url: "filler"
   article:
-    body: "article p"
+    body: ".post-content p"
+    date: "meta[property='article:published_time']::attr(content)"
 
 cleaning:
   date: handle_mixed_dates
   body: clean_wp_html_body
 
-max_pages: 30
+max_pages: null
 max_articles: null

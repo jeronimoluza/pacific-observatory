@@ -1,0 +1,45 @@
+# Thanh Niên Configuration
+
+name: "Thanh Nien"
+country: "vietnam"
+base_url: "https://thanhnien.vn/"
+language: "vi"
+
+# Listing discovery configuration — pagination requires login; follow_link stops after one page
+listing:
+  type: follow_link
+  start_url: "https://thanhnien.vn/thoi-su.htm"
+  follow_selector: "a.next-page::attr(href)"
+
+# Client configuration
+client: "http"
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+  Referer: "https://thanhnien.vn/"
+
+# CSS selectors for data extraction
+selectors:
+  thumbnail:
+    container: "div.box-category-content"
+    title: "a.box-category-link-title::text"
+    url: "a.box-category-link-title::attr(href)"
+  article:
+    date:
+      - meta[itemprop="datePublished"]::attr(content)
+      - meta[property="article:published_time"]::attr(content)
+    body:
+      - div.detail-content p
+
+# Data cleaning configuration
+cleaning:
+  date: "handle_mixed_dates"
+
+# Test/debug options
+max_pages: null
+max_articles: null
