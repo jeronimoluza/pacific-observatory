@@ -1,0 +1,1687 @@
+# Known Online-Newspaper Aggregators — South Asia (`sar`)
+
+Pre-extracted per-country newspaper lists from four online-newspaper
+aggregators. Used by `/onboard-region-newspapers` step 2a as a static
+seed instead of refetching aggregator homepages every run.
+
+See `references/known_aggregators/README.md` for the ignore rules and
+the populator script that generated this file.
+
+---
+
+## bangladesh (south_asia) — Bangladesh
+
+### w3newspapers — https://www.w3newspapers.com/bangladesh/
+- Prothom Alo — https://www.prothomalo.com/
+- Ittefaq — https://www.ittefaq.com.bd/
+- Kaler Kantho — https://www.kalerkantho.com/
+- Bangladesh Pratidin — https://www.bd-pratidin.com/
+- Samakal — https://samakal.com/
+- Jugantor — https://www.jugantor.com/
+- Kalbela — https://www.kalbela.com/
+- Manab Zamin — https://www.mzamin.com/
+- Jai Jai Din — https://www.jaijaidinbd.com/
+- Amader Shomoy — https://www.dainikamadershomoy.com/
+- Janakantha — https://www.dailyjanakantha.com/
+- Sangbad — https://sangbad.net/
+- Inqilab — https://dailyinqilab.com/
+- Ajkaler Khobor — https://www.ajkalerkhobor.net/
+- Ajker Patrika — https://www.ajkerpatrika.com/
+- Protidiner Sangbad — https://www.protidinersangbad.com/
+- Bangladesher Khabor — https://www.bangladesherkhabor.net/
+- Protidiner Bangladesh — https://protidinerbangladesh.com/
+- Amar Desh — https://www.dailyamardesh.com/
+- Bangladesh Journal — https://www.bd-journal.com/
+- Amar Sangbad — https://www.amarsangbad.com/
+- Vorer Pata — https://www.dailyvorerpata.com/
+- Sangram — https://dailysangram.com/
+- Desh Rupantor — https://www.deshrupantor.com/
+- Manobkantha — https://manobkantha.com.bd/
+- bdnews24 (Bangla) — https://bangla.bdnews24.com/
+- Banglanews24 — https://www.banglanews24.com/
+- BD24Live — https://www.bd24live.com/bangla/
+- Bangla Tribune — https://www.banglatribune.com/
+- Jago News 24 — https://www.jagonews24.com/
+- Risingbd — https://www.risingbd.com/
+- DhakaTimes24 — https://www.dhakatimes24.com/
+- AmaderShomoy.com — https://www.amadershomoy.com/
+- MTnews24 — https://bn.mtnews24.com/
+- DMP News — https://dmpnews.org/
+- Dhaka Post — https://www.dhakapost.com/
+- Bangladesh Times — https://bangladeshtimes.com/
+- Sarabangla — https://sarabangla.net/
+- barta24.com — https://barta24.com/
+- Shomoyer Alo — https://www.shomoyeralo.com/
+- Bonik Barta — https://www.bonikbarta.com/
+- ArthoSuchak — https://www.arthosuchak.com/
+- ShareNews24 — https://sharenews24.com/
+- Dhaka Stock Exchange — https://bangla.dsebd.org/
+- Ajker Bazzar — https://www.ajkerbazzar.com/
+- Share Bazar News — https://sharebazarnews.com/
+- ShareBarta24 — https://www.sharebarta24.com/
+- ShareMarketBD — https://www.sharemarketbd.com/
+- Share Biz — https://sharebiz.net/
+- Business24BD — https://www.business24bd.com/
+- Bank Bima Shilpa — https://bankbimashilpa.com/
+- Arthoniteer Kagoj — https://arthoniteerkagoj.com/
+- bdcrictime — https://bn.bdcrictime.com/
+- T Sports — https://www.tsports.com/
+- Cricfrenzy — https://cricfrenzy.com/bn
+- Sportsmail24.com — https://www.sportsmail24.com/
+- Offside Bangladesh — https://www.offsidebangladesh.com/
+- Dainik Shiksha — https://www.dainikshiksha.com/
+- The Daily Campus — https://thedailycampus.com/
+- Shikkhabarta — https://shikshabarta.com/
+- Daily Star — https://www.thedailystar.net/
+- Dhaka Tribune — https://www.dhakatribune.com/
+- New Age — https://www.newagebd.net/
+- Daily Sun — https://www.daily-sun.com/
+- Financial Express — https://thefinancialexpress.com.bd/
+- Observer — https://www.observerbd.com/
+- Bangladesh Today — https://thebangladeshtoday.com/
+- Asian Age — https://dailyasianage.com/
+- Prothom Alo English — https://en.prothomalo.com/
+- Bangladesh Post — https://bangladeshpost.net/
+- Energy Bangla — https://energybangla.com/
+- Good Morning — https://thegoodmorning.net/
+- Bangladesh National News Agency (BSS) — https://www.bssnews.net/
+- United News of Bangladesh (UNB) — https://unb.com.bd/bangla
+- Eastern News Agency (ENA) — https://ena-news.com/
+- VOA Bangla — https://www.voabangla.com/
+- NHK World Bangla — https://www3.nhk.or.jp/nhkworld/bn/
+- CRI Bangla — https://bengali.cri.cn/
+- BD Morning — https://www.bdmorning.com/
+- Bangla Telegraph — https://www.banglatelegraph.com/
+- Last News BD — https://www.lastnewsbd.com/
+- Zoom Bangla — https://zoombangla.com/
+- Somoyer Konthosor — https://www.somoyerkonthosor.com/
+- The Report 24 — https://www.thereport24.com/
+- Just News BD — https://www.justnewsbd.com/
+- BBarta24 — https://www.bbarta24.net/
+- Barta Bazar — https://bartabazar.com/
+- Dhaka Today — https://www.dhakatoday.com/
+- Gonokantho — https://www.gonokantho.com/
+- Fair News Service — https://www.fns24.com/
+- Politics News 24 — https://politicsnews24.com/
+- Uttaradhikar 71 News — https://www.u71news.com/
+- BD View 24 — https://www.bdview24.com/
+- Fulki — https://dailyfulki.com/
+- Dhaka News 24 — https://www.dhakanews24.com/
+- Amader Protidin — https://amaderprotidin.com/
+- Natun Barta — https://www.natun-barta.com/
+- United News 24 — https://unitednews24.com/
+- Dhaka Protidin — https://www.dhakaprotidin.com/
+- Bangla Post BD — https://www.banglapostbd.com/
+- Sorejomin Barta — https://sorejominbarta.com/
+- Alokito Protidin — https://www.alokitoprotidin.com/
+- Prothom Khabor — https://www.prothomkhabor.com/
+- Barta Bangla — https://bartabangla.com/
+- News71 Online — https://news71online.com/
+- Latest BD News — https://www.latestbdnews.com/
+- One News BD — https://www.onenewsbd.com/
+- Khola Kagoj — https://www.kholakagojbd.com/
+- Bahumatrik — https://www.bahumatrik.com/
+- Shotto Bani — https://shottobani.com/
+- Lakhokantho — https://lakhokantho.com/
+- MediVoice — https://medivoicebd.com/
+- Sangbad Protidin 24 — https://sangbadprotidin24.com/
+- Khobor Protidin 24 — https://khoborprotidin24.com/
+- Khabor — https://khabor.com/
+- BD Bulletin — https://www.bd-bulletin.com/
+- BBC24 News — https://www.bbc24news.com/
+- Suprobhat — https://suprobhat.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/bangladesh.shtml
+- 1 News BD — http://www.1newsbd.com/
+- 24 Live News BD — https://www.24livenewsbd.com/
+- 24 Live Newspaper — https://www.bangla.24livenewspaper.com/
+- A2Z Newspapers — http://www.a2znewspapers.com/
+- Abnews24.com — http://www.abnews24.com/
+- Abnews24bd — http://www.abnews24bd.com/
+- ABNWorld.com — http://www.abnworld.com/
+- Agaminews24.com — http://agaminews24.com/
+- Ajkerkrishi.com — http://www.ajkerkrishi.com/
+- Ajker Patrika — https://www.ajkerpatrika.com/
+- Akhon Samoy.com — http://www.akhonsamoy.com/
+- AL-Ihsan — http://www.al-ihsan.net/
+- All Time News — http://www.alltimenews.com/
+- Amadar Shokal24.com — http://www.amadarshokal24.com/
+- Amader Barisal — http://www.amaderbarisal.com/
+- Amader Protidin — https://amaderprotidin.com/
+- AmaderShomoy.com — http://www.amadershomoy.com/
+- Amader Sylhet.com — http://www.amadersylhet.com/
+- Amar Sangbad — http://www.dailyamarsangbad.com/
+- Aporadh Shongbad — http://www.aporadhshongbad.com/
+- Arthosuchak — http://www.arthosuchak.com/
+- Bahumatrik — http://www.bahumatrik.com/
+- Bangladesher Khabor — https://www.bangladesherkhabor.net/
+- Bangladesh Journal — https://www.bd-journal.com/
+- The Bangladesh Monitor — http://www.bangladeshmonitor.net/
+- Bangladesh News24 — https://www.bdnews24us.com/
+- Bangladesh Online24 — http://www.bangladeshonline24.com/
+- Bangladesh Sangbad Sangstha — http://www.bssnews.net/
+- Bangladesh Sun — http://www.bangladeshsun.com/
+- The Bangladesh Today — http://www.thebangladeshtoday.com/
+- Bangladeshi — http://www.bangladeshi.com/
+- Bangla Kantho — http://www.banglakantho.com/
+- Bangla News 16 — http://www.banglanews16.com/
+- BanglaNews24.com — http://www.banglanews24.com/
+- Bangla-News24 — http://www.bangla-news24.com/
+- Bangla Photo News — http://www.banglaphotonews.com/
+- Banglapostbd — http://www.banglapostbd.com/
+- Banglarnews.com — http://www.banglarnews.com
+- Banglar Somoy 24 — http://www.banglasomoy24.com/
+- Bangla Songbad 24 — http://www.banglasongbad24.com/
+- Bangla Times — http://www.banglatimes.com.bd/
+- BanglaToday24 — http://www.banglatoday24.com/
+- BankNewsS24.Com — http://www.banknews24.com/
+- BanshkhaliTimes — http://www.banshkhalitimes.com/
+- BartaBangla — http://www.bartabangla.com/
+- BD24Live — http://www.bd24live.com/
+- BDLive24 — http://www.bdlive24.com/
+- BDMirror24 — https://www.bdmirror24.com/
+- BD National News — http://www.bdnationalnews.com/
+- Bdnews24.com — http://www.bdnews24.com/
+- Bdnewsdesk — http://www.bdnewsdesk.com/
+- bdNewsTimes.com — http://www.bdnewstimes.com/
+- BD Pratidin.com — http://www.bd-pratidin.com/
+- BD Report 24 — http://www.bdreport24.com/
+- BDSangbad24 — http://www.bdsangbad24.com/
+- BD Sport News — http://www.bdsportsnews.com/
+- BDTimeLine24 — https://www.bdtimeline24.com/
+- BDToday24 — http://www.bdtoday24.com/
+- BDView24 — http://www.bdview24.com/
+- Bidesh Bangla 24 — http://www.bideshbangla24.com/
+- Binodon69 — http://www.binodon69.com/
+- BijoyNews.com — http://www.bijoynews.com/
+- Bijoynews24.com — https://www.bijoynews24.com/
+- Bijoysangbad.com — http://www.bijoysangbad.com/
+- Bishwabidyalay — https://www.bishwabidyalay.com/news/
+- Blitz — http://www.weeklyblitz.net/
+- Bogra Sangbad — http://www.bograsangbad.com/
+- Boichitra News 24 — http://www.boichitranews24.com/
+- Brahmanbaria24 — http://www.brahmanbaria24.com/
+- BreakingNews — http://www.breakingnews.com.bd/
+- Brittanto24.com — http://www.brittanto24.com/
+- Business24bd.com — http://www.business24bd.com/
+- Business Insider — https://www.businessinsiderbd.com/
+- The Business Post — https://businesspostbd.com/
+- CDNews24.com — http://www.cdnews24.com/
+- Chakaria News — http://www.chakarianews.com/
+- Chandpurweb.com — http://www.chandpurweb.com/
+- Chapainawabganj News — http://www.chapainawabganjnews.com/
+- ChildrenVoice.com — http://www.childrenvoice.com/
+- Chittagong Daily — http://www.chittagongdaily.com/
+- Chittagong News Agency — http://www.cnanews24.net/
+- CNews24.com — http://www.cnews24.com/
+- Comillar Barta — https://comillarbarta.com/
+- Comillar Kagoj — http://www.comillarkagoj.com/
+- ComillarKhabor.com — http://www.comillarkhabor.com/
+- Comillaweb.com — http://www.comillaweb.com/
+- Coochbehar News — http://www.coochbeharnews.blogspot.com/
+- Country News 24 — http://www.countrynews24.com/
+- Coxsbazar News — http://www.coxsbazarnews.com/
+- Cox's Bazar Times — http://www.coxsbazartimes.net/
+- Cox's Bazar Voice — http://www.coxsbazar-voice.com/
+- CrimeOff24 — http://www.crimeoff24.com/
+- Ctgbarta24.com — http://www.ctgbarta24.com/
+- CtgTimes.com — http://www.ctgtimes.com/
+- Dalit Voice 24 — http://dalitvoice24.com/
+- The Daily Alokito Bangladesh — http://www.alokitobangladesh.com/
+- Daily Amader Comilla — http://www.dailyamadercomilla.com/
+- Daily Amadar Orthoneeti — http://www.amaderorthoneeti.com/
+- Daily Amader Shomoy — http://www.dainikamadershomoy.com/
+- Daily Amardesh — http://www.amardeshonline.com/
+- Daily Amardesh — https://www.dailyasianage.com/
+- Daily Asian Age — http://www.dailybartoman.com/
+- The Daily Bdtype — http://www.bdtype.com/
+- The Daily Bhorer Barta — http://www.bhorerbarta.com/
+- The Daily Bhorerkagoj — https://www.bhorerkagoj.com/
+- Daily Bonik Barta — http://epaper.bonikbarta.net/
+- The Daily BTB News — http://www.btbnews.com/
+- Daily Coxsbazar — http://www.dailycoxsbazar.com/
+- The Daily Chandpur Dapan — http://www.chandpurdarpan.com/
+- The Daily Dundee Barta — http://www.dundeebarta.com/
+- Daily Dhaka Times — https://dailydhakatimes.com/
+- The Daily Fulki — http://www.dailyfulki.com/
+- The Daily Gonokantho — http://www.gonokantho.com/
+- Daily Habiganj Samachar — http://habiganj-samachar.com/
+- The Daily Inqilab — http://www.dailyinqilab.com/
+- The Daily Ittefaq — http://www.ittefaq.com.bd/
+- Daily Jaijaidin — http://www.jaijaidinbd.com/
+- Daily Janakantha — http://www.dailyjanakantha.com/
+- The Daily Janatar Sangbad — http://www.janatarsangbad.com/
+- The Daily Jatiya Nishan — http://www.jatiyanishan.com/
+- Daily Jugantor — https://www.jugantor.com/
+- Daily KalerKhontho — http://www.kalerkantho.com/
+- Daily Karatoa — http://www.karatoa.com.bd/
+- Daily Karatoa — http://www.ekaratoa.com/
+- The Daily Khabar — http://www.thedailykhabar.com/
+- The Daily Khowai — http://www.dailykhowai.com/
+- Daily Lok Lokantor — http://www.loklokantor.com/
+- Daily Mail 24 — https://www.dailymail24.com/
+- Daily Mail 24 — https://en.dailymail24.com/
+- Daily Mathabhanga — http://www.mathabhanga.com/
+- The Daily Naya Diganta — http://www.dailynayadiganta.com/
+- The Daily Observer — http://www.observerbd.com/
+- The Daily Odhikar — https://www.odhikar.news/
+- Daily Patradoot — http://www.patradoot.net/
+- Daily Pratidiner Aporadh — http://www.pratidineraporadh.com/
+- The Daily Prothom Alo — https://www.prothomalo.com/
+- Daily Prothom Khabor — http://www.prothomkhabor.com/
+- Daily Protidiner Khobor — http://www.protidinerkhobor.com/
+- The Daily Purbanchal — http://www.purbanchal.com/
+- The Daily Samachar — http://www.habiganj-samachar.com/
+- The Daily Sangbad — http://www.thedailysangbad.com/
+- The Daily Sangram — http://www.dailysangram.com/
+- The Daily Shahnama — http://www.shahnamabd.com/
+- The Daily Sonali Sangbad — http://www.sonalisangbad.com/
+- The Daily Star — http://www.thedailystar.net/
+- The Daily Sun — http://www.daily-sun.com/
+- The Daily Swadhin Sangbad — http://www.swadhinsangbad.com/
+- The Daily Sylhet — http://www.dailysylhet.com/
+- Daily Times 24 — http://www.dailytimes24.com/
+- Dainik Azadi — http://www.dainikazadi.org/
+- Dainik Coxsbazar — http://dainikcoxsbazar.com/
+- Dainik Manobzamin — http://www.mzamin.com/
+- Dainik Purbokone — http://www.dainikpurbokone.net/
+- Dainik Sylhet — http://www.dainiksylhet.com/
+- Dalit Voice — http://www.dalitvoice24.com/
+- Desher Khobor — http://www.desherkhobor.net/
+- Desh News 24 — http://www.deshnews24.com/
+- Dhaka News24 — http://www.dhakanews24.com/
+- Dhaka Report — http://www.dhakareport.com/
+- Dhakar News — http://www.dhakarnews.com/
+- Dhakar Post — https://www.dhakapost.com/
+- Dhaka Prokash — https://www.dhakaprokash24.com/
+- DhakaReport24 — http://www.dhakareport24.com/
+- Dhaka Times24 — http://www.dhakatimes24.com/
+- Digital Bangla News — https://www.digitalbanglanews.com/
+- Dinajpur News 24 — http://dinajpurnews24.com/
+- Doshdik — http://www.doshdik.com/
+- Easynews24 — http://www.easynews24.com/
+- Ekotar Kantho — https://www.ekotarkantho.com/
+- Ekusheralo24 — http://www.ekusheralo24.com/
+- Ekusheysangbad.com — http://www.ekusheysangbad.com/
+- Election News Bangladesh — http://www.electionnewsbd.com/
+- Energy Bangla — http://www.energybangla.com/
+- EnergyNewsBD.com — http://www.energynewsbd.com/
+- E-Prothom Alo — http://www.eprothomalo.com/
+- Eye News BD — https://www.eyenewsbd.com/
+- The Financial Express — http://www.thefinancialexpress-bd.com/
+- FNS — http://www.fairnews24.com/
+- Fulbaria News 24 — http://www.fulbarianews24.com/
+- The Global News24 — http://www.theglobalnews24.com/
+- GNewsBD.net — http://www.gnewsbd.net/
+- GoNews24.Com — http://www.gonews24.com/
+- The Good Morning — http://www.thegoodmorning.net/
+- Gournadi — http://www.gournadi.com/
+- GPNews24 — http://www.gpnews24.com/
+- Gramer Kagoj — http://www.gramerkagoj.com/
+- Greater Noakhali — http://www.noakhaliweb.com.bd/
+- Greenwatch Dhaka — http://www.greenwatchbd.com/
+- Hawker — http://www.hawker.com.bd/
+- The Independent — http://www.theindependentbd.com/
+- Iportbd — http://www.iportbd.com/
+- Jagonews24 — http://www.jagonews24.com/
+- Jagoroniya — http://www.jagoroniya.com/
+- Jagroto Janata — https://www.jagrotojanata.com/
+- Jonotar Awaz — https://jonotarawaz.com/
+- Joybangla News — https://joybangla.news/
+- Jugantor — http://www.jugantor.com/
+- Just News BD — http://www.justnewsbd.com/
+- Khobar 24 — http://www.khobar24.com/
+- KhulaNews.com — http://www.khulnanews.com/
+- KhulnaPedia — https://www.khulnapedia.com/
+- The Kushtia Times — http://www.thekushtiatimes.com/
+- Lakshmipur24 — http://www.lakshmipur24.com/
+- Lakshmipurweb — http://www.lakshmipurweb.com/
+- LastNews24.com — http://www.lastnews24.com/
+- Latest BD News — https://www.latestbdnews.com/
+- Live Press24 — http://www.livepress24.com/
+- Lokaloy24 — http://lokaloy24.com/
+- Lok Sangbad — http://www.loksangbad.com/
+- Maddhayom — https://maddhayom.com/
+- Manchitro News — http://www.manchitronews.com/
+- Manobkantha — http://www.manobkantha.com/
+- Mediabd24 — http://www.mediabd24.com/
+- Meghna News মেঘনা নিউজ — https://meghnanews.com.bd/
+- Mohona24.com — http://www.mohona24.com/
+- Mongla News 24 — http://www.monglanews24.com/
+- Monthly Vanguard — http://www.vanguardonline.info/
+- MTnews24 - সদা সত্য — http://www.mtnews24.com/
+- Nagorik News — https://nagorik.news/
+- NanoNews24 — http://www.nanonews24.com/
+- Natunbarta.com — http://www.natunbarta.com/
+- News39 — http://www.news39.net/
+- News69BD — http://www.news69bd.com/
+- News Agency 24 — http://www.newsagency24.com/
+- News Bangla24 — https://www.newsbangla24.com/
+- News BNA — http://www.newsbna.com/
+- News Camp 24 — http://www.newscamp24.com/
+- News From Bangladesh — http://www.newsfrombangladesh.net/
+- Newsgarden24 — http://www.newsgarden24.com/
+- Newshour 24 — http://www.newshour24.com/
+- News Inside 24 — https://newsinside24.com/
+- News Media BD 24 — http://www.newsmediabd24.com/
+- Newsnextbd.Com — http://www.newsnextbd.com/
+- News Pabna — http://www.newspabna.com/
+- NewsTV24.com — http://www.newstv24.com/
+- NewTimes24 — http://www.newtimes24.com/
+- Nobokontho24 — https://nobokontho24.com/
+- Notun Khobor — http://www.notunkhobor.com/
+- Onabilsangbad — http://www.onabil.net/
+- OnNews24 — http://www.onnews24.com/
+- OurNewsBd — http://www.ournewsbd.com/
+- The Peoples News 24 — http://www.thepeoplesnews24.com/
+- Poriborton — http://www.poriborton.com/
+- PrimeNewsBD24 — http://www.primenewsbd24.com/
+- Press Barta — http://www.pressbarta.com/
+- Priyodesh Bangladesh — http://www.priyodesh.com/
+- Protibedok.com — http://www.protibedok.com/
+- Prorthom Barta — http://www.prothombarta.com/
+- Prothom Sokal — http://prothomsokal24.com/
+- Quicknewsbd.com — http://www.quicknewsbd.com/
+- Rangpur Crime News — http://www.rcn24bd.com/
+- Real-Time News Network — http://www.rtnn.net/
+- The Report 24.com — http://www.thereport24.com/
+- Sadesh Bangla — https://www.bijoyerbangla.com/
+- Sahos24.com — http://www.sahos24.com/
+- Sangbad21 — http://www.sangbad21.com/
+- Sangbad Probaho — https://sangbadprobaho.com/
+- Sarabangla — https://www.sarabangla.net/
+- Satkhira News — http://www.satkhiranews.com/
+- SatkhiraNews24.com — http://www.satkhiranews24.com/
+- SatkhirarKhabor — http://www.satkhirarkhabor.com/
+- Savar News 24 — https://savarnews24.com/
+- SawdeshBarta — http://www.sawdeshbarta.webs.com/
+- Shadin Desh — http://www.shadindesh.com/
+- Sharabanglanews.com — http://www.sharabanglanews.com/
+- Share Barta 24 — http://www.sharebarta24.com/
+- Share News 24 — http://www.sharenews24.com/
+- Sherpur News 24 — http://www.sherpurnews24.com/
+- Sheersha News — http://www.sheershanews.com/
+- Sheersha Media — http://www.sheershamedia.com/
+- Sheersha Sangbad — http://www.sheershasangbad.com/
+- Shesherkhobor — http://www.shesherkhobor.com/
+- Shironaam — http://www.shironaam.com/
+- Shokalerkhobor 24 — http://shokalerkhobor24.com/
+- Shomoy News24 — http://www.shomoynews24.net/
+- SNN24 — http://www.snn24.com/
+- Somoysongbad সময় সংবাদ — http://somoysongbad.com/
+- Sondhan24 — https://www.sondhan24.com/
+- Songbadbd — http://www.songbadbd.com/
+- Sundarban News — http://www.sundarbannews.com/
+- Surjalok News — http://www.surjaloknews.com/
+- Surma Times — http://www.surmatimes.com/
+- Sylhet Express — http://www.sylhetexpress.com/
+- Sylhet Mirror — http://www.sylhetmirror.com/
+- SylhetNews24 — http://www.sylhetnews24.com/
+- Sylhet Today — https://www.sylhettoday.com/
+- SylhetToday24 — https://www.sylhettoday24.news/
+- SylhetView24 — http://www.sylhetview24.net/
+- TaxNewsBD.com — http://www.taxnewsbd.com/
+- Times Today24 — http://www.timestoday24.com/
+- TopBDNews24 — https://www.topbdnews24.com/
+- Top News of Bangladesh (TNB24) — http://www.tnb24.com/
+- UK BD News — http://www.ukbdnews.com/
+- United News 24 — http://www.unitednews24.com/
+- Update BD News — http://www.updatebdnews.com/
+- VNews — http://www.vnewsbd.com/
+- The World Reporter — http://www.theworldreporter.com/
+- Weekly Ekota — http://www.weeklyekota.net/
+- Weekly Sonar Bangla — http://www.weeklysonarbangla.net/
+- Zakiganjbarta24.com — http://www.zakiganjbarta24.com/
+
+### allyoucanread — https://www.allyoucanread.com/bangladesh-newspapers/
+- Jugantor — https://www.jugantor.com/
+- bdnews24.com — https://bdnews24.com/
+- Daily Star — http://www.thedailystar.net/
+- BD-Pratidin — https://bd-pratidin.com/
+- Daily Manab Zamin — https://mzamin.com/
+- Daily Ittefaq — https://www.ittefaq.com.bd/
+- Kalerkantho.com — https://www.kalerkantho.com/
+- MTnews24.com — https://mtnews24.com/
+- Daily Nayadiganta — https://dailynayadiganta.com/
+- BanglaNews24.com — https://banglanews24.com/
+- Samakal — https://samakal.com/
+- Daily Inqilab — https://dailyinqilab.com/
+- SomoyNews — https://www.somoynews.tv/
+- Bangla Tribune — https://banglatribune.com/
+- bd24live.com — https://24livenewspaper.com/
+- Daily Janakantha — https://dailyjanakantha.com/
+- Dainik Bartoman — https://www.risingbd.com/
+- DhakaTimes24 — https://dhakatimes24.com/
+- Dainik Amader Shomoy — https://dainikamadershomoy.com/
+- Daily Sun — https://www.daily-sun.com/
+- Bonikbarta.com — https://bonikbarta.net/
+- Bartaman Patrika — https://bartamanpatrika.com/
+- media Times 24 — https://bssnews.net/
+- Arthosuchak — https://www.arthosuchak.com/
+- New Nation — https://www.ittefaq.com/
+- Priyo.com — https://priyo.com/
+- Prothom Alo — https://www.prothom-alo.com/
+- Amardesh — http://www.amardesh.com/
+- BD24Live.com — https://www.bd24live.com/
+- Somoyerkonthosor — http://somoyerkonthosor.com/
+- Daily Sangram — https://dailysangram.com/
+- Commilar Kogaj — https://comillarkagoj.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/bangl.htm
+- 24 Live Newspaper — http://www.24livenewspaper.com/
+- 71 Sangbad — http://71sangbad.com/
+- 71 Times — http://71times.com/
+- AB News 24 — http://www.abnews24.com/
+- Agrodristi — http://agrodristi.com/
+- Ajker Krishi — http://www.ajkerkrishi.com/
+- Ajker Somoy — http://www.ajkershomoy.com/
+- Ajker Sotta Sangbad 24 — http://ajkersottasangbad24.com/
+- Akash 24 — http://www.akash24.com/
+- Alert News 24 — http://www.alertnews24.com/
+- All BD Live — http://www.allbdlive.com/
+- All Time News — http://www.alltimenews.com/bn/
+- Alorkantho 24 — http://www.alorkantho24.com/
+- Alorpath 24 — http://alorpath24.com/
+- Amader Shomoy — http://www.amadershomoy.biz/
+- Amar Bangladesh Online — http://www.amarbangladesh-online.com/
+- Amazing Bangla — http://amazingbangla.com/
+- ANB Asian News of Bangladesh — http://www.anb24.net/
+- Aparadh Bichitra — http://aparadhbichitra.net/
+- Aparadhchokh 24 BD — http://www.aparadhchokh24bd.com/
+- Aporadh Shongbad — http://www.aporadhshongbad.com/
+- Artho Suchak — http://www.arthosuchak.com/
+- Asia Barta 24 — http://www.asiabarta24.news/
+- ATN Times — http://atntimes.com/
+- Azker Khobor — http://www.azkerkhobor.com/
+- B Barta 24 — http://www.bbarta24.net/
+- B Barta 24 — http://en.bbarta24.net/
+- Bangal Press — https://bangalpress.com/
+- Bangla 24 Live — http://bangla24live.com/
+- Bangla Bazar News — http://banglabazarnews.com/
+- Bangla Insider — http://www.banglainsider.com/
+- Bangla Insider — http://en.banglainsider.com/
+- Bangla Kagoj 24 — http://banglakagoj24.com/
+- Bangla Khabor BD — http://banglakhaborbd.com/
+- Bangla Mail 24 — http://www.banglamail24.com/
+- Bangla News 24 — http://www.banglanews24.com/
+- Bangla Press — http://banglapress.com.bd/
+- Bangla Songbad 24 — http://www.banglasongbad24.com/
+- Bangla Tribune — http://www.banglatribune.com/
+- Bangladesh Bani 24 — http://www.bangladeshbani24.com/
+- Bangladesh Barta 24 — http://www.bangladeshbarta24.com/
+- Bangladesh Chronicle — http://bangladeshchronicle.net/
+- Bangladesh News — http://www.independent-bangladesh.com/
+- Bangladesh News — http://www.bangladeshnews.net/
+- Bangladesh News 24 — http://www.bdnews24us.com/
+- Banagladesh Sun — http://www.bangladeshsun.com/
+- Bangladesh Times 24 — http://www.bangladeshtimes24.com/
+- Banglar Khobor 24 — http://banglarkhobor24.com/
+- Barta 24 — https://barta24.com/
+- Barta 24 Live — http://barta24live.net/
+- Barta Bangla — http://bartabangla.com/
+- Barta Bazar — http://www.bartabazar.com/
+- BBC 24 News — http://www.bbc24news.com/
+- BD 24 Live — http://www.bd24live.com/bn/
+- BD Dhoni — http://bddhoni.com/
+- BD Hot News — http://www.bdhotnews.com/
+- BD Journal 365 — http://www.bdjournal365.com/
+- BD Law News — http://www.bdlawnews.com/
+- BD Live 24 — http://www.bdlive24.com/
+- BD Morning — http://www.bdmorning.com/
+- BD News 24 — http://bangla.bdnews24.com/
+- BD News 24 — http://bdnews24.com/
+- BC News Desk — http://bdnewsdesk.com/
+- BD News Every Day — http://www.bdnewseveryday.com/
+- BD News Times — http://www.bdnewstimes.com/
+- BD Report 24 — http://www.bdreport24.com/
+- BD Sangbad 24 — http://bdsangbad24.com/
+- BD Today 24 — http://www.bdtoday24.com/
+- BD Todays — http://bdtodays.com/
+- BD Type — https://bdtype.com/lang/bd/
+- BD View 24 — http://www.bdview24.news/
+- BD Vision 24 — http://bdvision24.com/
+- BD Web News — http://bdwebnews.com/
+- Beacon Bangla — https://beaconbangla.com/
+- Bengali News 24 — http://bengalinews24.com/
+- Biz Tech 24 — http://www.biztech24.com/
+- BNN 71 — http://bnn71.com/
+- BNN Online 24 — http://www.bnnonline24.com/
+- Boichitra News 24 — http://www.boichitranews24.com/
+- Breaking News BD — http://breakingnewsbd.online/
+- Breaking News BD 24 — http://www.breakingnewsbd24.com/
+- BSPN 24 — http://www.bspn24.com/
+- Business Leader Club — http://www.businessleader.club/
+- CD News 24 — http://cdnews24.com/
+- Crime Barta — http://www.crimebarta.com/
+- Crime BD News 24 — http://www.crimebdnews24.com/
+- Crime Express 24 — http://www.crimeexpress24.com/
+- Crime Reporter 24 — http://crimereporter24.com/
+- Daily Stock Bangladesh — http://www.dailystockbangladesh.com/
+- Daily Talash — http://www.thedailytalash.com/
+- Daily Talash — http://www.en.thedailytalash.com/
+- Dainik Shiksha — http://www.dainikshiksha.com/
+- Desh Jure — http://deshjure.com/
+- Desh News — http://deshnews.net/
+- Desh News 24 — http://deshnews24.com/
+- Desh Sangbad — http://www.deshsangbad.com/
+- Deshe Bideshe — http://www.deshebideshe.com/
+- Desher Sangbad — http://deshersangbad.com/
+- Dhaka Crime — http://dhakacrime.com
+- Dhaka Crime News — http://dhakacrimenews24.com/
+- Dhaka Protidin — http://www.dhakaprotidin.com/
+- Dhaka Times — http://dhakatimes.com.bd/
+- Dhaka Times 24 — http://www.dhakatimes24.com/
+- Dhaka Tribune — http://www.dhakatribune.com/
+- Dhakar News — http://dhakarnews.com/
+- Earth News 24 — http://earthnews24.com/
+- Euro BD News — http://www.eurobdnews.com/
+- Famous News 24 — http://www.famousnews24.com/
+- FNS — http://www.fns24.com/
+- Fresh News BD — http://www.freshnewsbd.com/
+- G News BD 24 — http://gnewsbd24.com/
+- Globe Today BD — http://globetodaybd.com/
+- Go News 24 — http://www.gonews24.com/
+- Hawker — http://www.hawker.com.bd/
+- I Barta — http://www.ibarta.com/
+- I News 24 — http://www.i-news24.com/
+- Information World — http://www.informationworldbd.com/
+- Jago News 24 — http://www.jagonews24.com/
+- Jago News 24 — http://en.jagonews24.com/
+- Jagoroniya — http://bangla.jagoroniya.com/
+- Jagoroniya — http://www.jagoroniya.com/
+- Jamuna News 24 — http://www.jamunanews24.com/
+- Just News BD — http://www.justnewsbd.com/
+- Khaskhabor — http://www.khaskhabor.com/
+- Khobor Protidin 24 — http://www.khoborprotidin24.com/
+- Last News BD — http://www.lastnewsbd.com/
+- Latest BD News — http://www.latestbdnews.com/
+- Live Press 24 — http://livepress24.com/
+- M Songbad — http://msongbad.com/
+- Metro News 24 — https://metronews24.com/
+- MK News BD 24 — http://www.mknewsbd24.com/
+- Morning Sun 24 — http://morningsun24.com/
+- Mridubashan — http://www.mridubhashan.com/
+- MT News 24 — http://bn.mtnews24.com/
+- MT News 24 — http://mtnews24.com/
+- Muktir Barta — http://www.muktirbarta.com/
+- Nagorikkantha — http://www.nagorikkantha.com/
+- Natun Barta — http://www.natunbarta.com/
+- Natun Somoy — http://www.natunsomoy.com/
+- Natun Somoy — http://en.natunsomoy.com/
+- Natunkantho 24 — http://natunkantho24.com/
+- News 69 BD — http://www.news69bd.com/
+- News 71 Online — http://www.news71online.com/
+- News Agency 24 — http://newsagency24.com/
+- News Bangla 21 — http://www.newsbangla21.com/
+- News Ekattor — http://www.newsekattor.com/
+- News Event 24 — http://www.newsevent24.com/
+- News from Bangladesh — http://www.bangladesh-web.com/
+- News Garden 24 — http://www.newsgarden24.com/
+- News Media BD 24 — http://newsmediabd24.com/
+- News of Bangladesh — http://www.newsofbangladesh.com/
+- News Post BD — http://www.newspostbd.com/
+- News TV 24 — http://www.newstv24.com/
+- News World BD — http://www.newsworldbd.com/bn/
+- Nirbhik — http://nirbhiknews.com/
+- Nobobarta — http://nobobarta.com/
+- ONB 24 — http://onb24.com/
+- ONN 24 — http://www.onn24.com/
+- One News BD — http://www.1newsbd.com/
+- Our News BD — http://ournewsbd.com/
+- Our Time — http://www.ourtimebd.com/
+- Pacific News 24 — http://pacificnews24.com/
+- PC News 24 — http://www.pcnews24.com/
+- Photo Bazar 24 — http://www.photobazar24.com/
+- Photo News 24 — http://www.photonews24.com/
+- Politics News 24 — http://politicsnews24.com/
+- Prime News — http://primenews.com.bd/bn/
+- Prime News BD — http://www.primenewsbd.com/
+- Private Detective BD — http://private-detectivebd.com/
+- Priyo — http://www.priyo.com/
+- Prohor News — http://www.prohornews.com/
+- Prothom Barta — http://prothombarta.com/
+- Protom Sokal — http://www.protomsokal.com/
+- Protibedok — http://protibedok.com/
+- Protikhon — http://www.protikhon.com/
+- Purboposh Chim BD — http://purboposhchimbd.news/
+- Raj Path 24 — http://rajpath24.com/
+- Rising BD — http://www.risingbd.com/
+- RTNN — http://www.real-timenews.com/bangla/
+- RTNN — http://www.english.rtnn.net/
+- Sahos — http://www.sahos24.com/
+- Sahos — http://en.sahos24.com/
+- Sangbad 24 — http://www.sangbad24.net/
+- Sangbad Protidin 24 — http://sangbadprotidin24.com/
+- SB TV 24 — http://www.sbtv24.net/
+- Shadhin Bangla 24 — http://shadhinbangla24.com/
+- Shamol Bangla 24 — http://shamolbangla24.com/
+- Share Barta 24 — http://www.sharebarta24.com/
+- Share Market BD — http://www.sharemarketbd.com
+- Share News 24 — http://www.sharenews24.com/
+- Sheersha Media — http://www.sheershamedia.com/
+- Sheersha News — http://www.sheershanewsbd.com/
+- Sheersha Sangbad BD — http://www.sheershasangbad.com/
+- Shomoy Barta 24 — http://www.shomoybarta24.net/
+- SNN 24 — http://snn24.com/
+- Somoy Songlap — http://somoysonglap.com/
+- Somoyer Konthosor — http://www.somoyerkonthosor.com/
+- Songbad Shomogro — http://www.songbadshomogro.com/
+- Student BD 24 — http://studentbd24.com/
+- Sunday Times 24 — http://bn.sundaytimes24.com/
+- T Barta 24 — https://tbarta24.com/
+- Taza Khobor — http://www.taza-khobor.com/bd/
+- Taranga News Service — http://www.taranganews.com/
+- Tech Shohor — http://techshohor.com/
+- The BD Express — http://thebdexpress.com/
+- The BD Express — http://english.thebdexpress.com/
+- The Dhaka Post — http://www.thedhakapost.com/bn/
+- The Dhaka Report — http://www.thedhakareport.com/
+- The Peoples News 24 — http://thepeoplesnews24.com/
+- The Report 24 — http://bangla.thereport24.com/
+- The Report 24 — http://english.thereport24.com/
+- The Runner News — http://etherunnernews.com/
+- Time News BD — http://www.timenewsbd.com/
+- Time Watch — http://www.timewatch.com.bd/
+- Times of Bangla — http://www.timesofbangla.com/
+- Tulpar 24 — http://tulpar24.com/
+- U71 News — http://www.u71news.com/
+- V News — http://bangla.vnewsbd.com/
+- V News — http://vnewsbd.com/
+- World Khobar — http://worldkhobar.com/
+- Zoom Bangla — http://news.zoombangla.com/
+- Amader Shomoy — http://www.dainikamadershomoy.com/
+- Amar Desh — http://www.amardeshonline.com/
+- Bhorer Kagoj — http://www.bhorerkagoj.net/
+- Daily Manab Zamin — http://mzamin.com/
+- Kaler Kantho — http://www.kalerkantho.com/
+- Kaler Kantho — http://www.ekalerkantho.com/
+- Prothom Alo — http://www.prothom-alo.com/
+- Prothom Alo — http://en.prothom-alo.com/
+- The Daily Inqilab — http://www.dailyinqilab.com/
+- The Daily Ittefaq — http://www.ittefaq.com.bd/
+- The Daily Ittefaq — http://www.clickittefaq.com/
+- The Daily Janakantha — https://www.dailyjanakantha.com/
+- The Daily Jugantor — http://www.jugantor.us/
+
+## bhutan (south_asia) — Bhutan
+
+### w3newspapers — https://www.w3newspapers.com/bhutan/
+- Kuensel — https://kuenselonline.com/
+- Bhutanese Expression — https://www.bbs.bt/
+- Daily Bhutan — https://www.dailybhutan.com/
+- The Bhutanese — https://thebhutanese.bt/
+- Bhutan News Network — http://www.bhutannewsnetwork.com/
+- Business Bhutan — https://businessbhutan.bt/
+- Department of Tourism, Bhutan — https://bhutan.travel/
+- KuzooFM — https://www.kuzoofm.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/bhutan.shtml
+- Apfa News — http://www.apfanews.com/
+- The Bhutanese — https://www.thebhutanese.bt/
+- Bhutan News Network — http://www.bhutannewsnetwork.com/
+- Daily Bhutan — https://www.dailybhutan.com/
+- Kuensel — http://www.kuenselonline.com/
+
+### allyoucanread — https://www.allyoucanread.com/bhutan-newspapers/
+- KuenselOnline.com — https://kuenselonline.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/bhuta.htm
+- APFA News — http://www.apfanews.com/
+- Bhutan News Service — http://www.bhutannewsservice.com/
+- Kuensel — http://www.dzkuensel.bt/
+- Kuensel — http://www.kuenselonline.com/
+
+## india (south_asia) — India
+
+### w3newspapers — https://www.w3newspapers.com/india/
+- Times of India (TOI) — https://timesofindia.indiatimes.com/
+- The Hindu — https://www.thehindu.com/
+- Hindustan Times (HT) — https://www.hindustantimes.com/
+- Indian Express — https://indianexpress.com/
+- The Telegraph — https://www.telegraphindia.com/
+- The Tribune — https://www.tribuneindia.com/
+- Economic Times — https://economictimes.indiatimes.com/
+- Business Standard — https://www.business-standard.com/
+- Financial Express — https://www.financialexpress.com/
+- Mint — https://www.livemint.com/
+- Deccan Herald — https://www.deccanherald.com/
+- Deccan Chronicle — https://www.deccanchronicle.com/
+- The Pioneer — https://www.dailypioneer.com/
+- The New Indian Express — https://www.newindianexpress.com/
+- Asian Age — https://www.asianage.com/
+- Daily News and Analysis (DNA) — https://www.dnaindia.com/
+- Andaman Chronicle — https://www.andamanchronicle.net/
+- Andaman Sheekha — https://andamansheekha.com/
+- Orissa Post — https://www.orissapost.com/
+- The Statesman — https://www.thestatesman.com/
+- Himalaya Darpan — http://epaperhimalayadarpan.com/
+- Central Chronicle — https://www.centralchronicle.com/
+- Excelsior — https://www.dailyexcelsior.com/
+- Greater Kashmir — https://www.greaterkashmir.com/
+- Hitavada — https://www.thehitavada.com/
+- Daily Post — https://dailypost.in/
+- Kashmir Observer — https://kashmirobserver.net/
+- Kashmir Times — https://kashmirtimes.com/
+- State Times — https://statetimes.in/
+- Milli Gazette — https://www.milligazette.com/
+- Organiser — https://organiser.org/
+- People's Democracy — https://peoplesdemocracy.in/
+- Sunday Guardian — https://sundayguardianlive.com/
+- Hawk — https://www.thehawk.in/
+- The Assam Tribune — https://assamtribune.com/
+- The Shillong Times — https://theshillongtimes.com/
+- The Morung Express — https://morungexpress.com/
+- Nagaland Post — https://nagalandpost.com/
+- Nagaland Page — https://nagalandpage.com/
+- The Sentinel — https://www.sentinelassam.com/
+- Sikkim Express — https://sikkimexpress.com/
+- Syandan Patrika — https://syandanpatrika.in/
+- The North East Times — https://net.glpublications.in/
+- Bangalore Mirror — https://bangaloremirror.indiatimes.com/
+- The Hindu BusinessLine — https://www.thehindubusinessline.com/
+- News Today — https://newstodaynet.com/
+- Star of Mysore — https://starofmysore.com/
+- Mangalore Today — https://www.mangaloretoday.com/
+- The Hans India — https://www.thehansindia.com/
+- Ahmedabad Mirror — https://www.ahmedabadmirror.com/
+- Free Press Journal — https://www.freepressjournal.in/
+- Lokmat Times — https://epaper.lokmat.com/lokmattimes/
+- Mid Day — https://www.mid-day.com/
+- Mumbai Mirror — https://mumbaimirror.indiatimes.com/
+- Pune Mirror — https://punemirror.com/
+- Asian News International (ANI) — https://www.aninews.in/
+- Indian Embassies(opens in new tab) — https://embassies.info/india
+- Holidays in India(opens in new tab) — https://mostholidays.com/india
+
+### onlinenewspapers — https://onlinenewspapers.com/india.shtml
+- 5abi — http://www.5abi.com/
+- 5 Dariya News — http://www.5dariyanews.com/
+- 6TV News — https://6tvnews.com/
+- Aaj Tak — http://www.aajtak.com/
+- Aamader Malda — http://www.aamadermalda.in/
+- AapKiAwaz.com — http://www.aapkiawaz.com/
+- ABCDePaper — http://www.abcdepaper.com/
+- ABC Live — http://abclive.in/
+- ABP Live — https://www.abplive.in/
+- Akanto Appan — http://www.liveaapnews.com/
+- Akila Daily — http://www.akilaindia.com/
+- Anandabazar — https://www.anandabazar.com/
+- Aadhra Wishesh — http://www.andhrawishesh.com/
+- Abasar — http://www.abasar.net/
+- Abhitak News — http://www.abhitaknews.com/
+- Accommodation Times — http://www.accommodationtimes.com/
+- Agra News — http://www.agranews.com/
+- Agra Samachar — http://www.agrasamachar.com/
+- Ahmedabad Mirror — https://ahmedabadmirror.indiatimes.com/
+- Ajmernama — http://www.ajmernama.com/
+- Akhbarulhind — http://www.akhbarulhind.com/
+- Akila Daily — https://www.akilanews.com/
+- Amarujala.com — http://www.amarujala.com/
+- Anandabazar Patrika — http://www.anandabazar.com/
+- Andhra Bhoomi — http://www.andhrabhoomi.net/
+- Andhra Jyothy — http://www.andhrajyothy.com/
+- Anweshanam — http://www.anweshanam.com/
+- Aponzone — http://www.aponzonepatrika.com/
+- The Asian — http://www.asianage.com/
+- Asian Correspondent — http://asiancorrespondent.com/category/india/
+- Asli Azadi — http://www.azadidaily.com/
+- Assam Times — http://www.assamtimes.org/
+- The Assam Tribune — http://www.assamtribune.com/
+- Atal Hind (अटल हिन्द) — http://kaithal.haryanaonline.in/atalhind
+- Aurangabad Times Daily — https://aurangabadtimes.net/
+- Avadhnama — https://www.avadhnama.com/
+- Badlapur Vikas — http://www.badlapurvikas.com/
+- Bangla Kagaj — http://www.banglakagaj.com/
+- Bangalore Mirror — https://bangaloremirror.indiatimes.com/
+- Bartaman Patrika — http://www.bartamanpatrika.com/
+- Baseerat Online — http://www.baseeratonline.com/
+- BD24Live — http://bd24live.com/
+- Beed Reporter — http://beedreporter.com/
+- The Better India — http://www.thebetterindia.com/
+- Bharat Khabar — http://www.bharatkhabar.com/
+- Bharat Prahari — https://bharatprahari.in/
+- Bhaskar — http://www.bhaskar.com/
+- Bhopal Samachar — http://www.bhopalsamachar.com/
+- Bihar Times — http://bihartimes.com/
+- BijoyNews24 — http://www.bijoynews24.com/
+- Bilkul Online — http://www.bilkulonline.com/
+- BimaLoan — https://bimaloan.net/
+- Boolokam — http://www.boolokam.com/
+- Business Standard — http://www.business-standard.com/
+- The Capital Post — http://www.thecapitalpost.in/
+- Chauthi Duniya — http://urdu.chauthiduniya.com/
+- Cheekhti Awazen चीखती आवाज़ें — https://cheekhtiawazen.com/
+- Chitralekha — https://chitralekha.com/
+- Ciniglitz — https://ciniglitz.in/
+- Counterview — http://counterview.org/
+- Costatimes Telugu News Online — http://www.chitralekha.com/
+- The Covai Post — http://www.covaipost.com/
+- The Craze Venture — http://www.thecrazeventure.in/
+- Current Crime — http://www.currentcrime.com/
+- Daily Aftab — http://www.dailyaftab.com/
+- DailyExcelsior.com — http://www.dailyexcelsior.com/
+- Daily Hindi News — http://www.dailyhindinews.com/
+- Daily Janshakti — https://www.ejanshakti.com/
+- Daily Kesari — http://www.dailykesari.com/
+- Daily Lokmanthan — http://www.lokmanthan.com/
+- The Daily Milap — http://www.milap.com/
+- Daily News — http://www.dailynews360.com/
+- Daily News Activist — http://www.dailynewsactivist.com/
+- Daily News & Analysis — http://www.dnaindia.com/
+- Daily Punjab Times — http://www.dailypunjabtimes.com/
+- Daily Sada-E-Chanar — http://www.sadaechanar.com/
+- Daily Srinagar News — http://www.srinagarnews.org/
+- Daily Thanthi — http://www.dailythanthi.com/
+- Dainik Aikya — http://www.dainikaikya.com/
+- Dainik Atal Hind — http://www.atalhind.com/
+- Dainik Chorcha — https://www.dainikchorcha.com/
+- Dainik Gomantak — https://www.dainikgomantak.com/
+- Dainik Jagran — http://www.jagran.com/
+- Dainik Jugasankha — http://www.dainikjugasankha.in/
+- Dainik Navajyoti — http://www.dainiknavajyoti.com/
+- Dainik Murder — http://www.dainikmurder.net/
+- Dainik Rashtriya Ujala — http://www.rashtriyaujala.com/
+- Dainik Sach Kahoon — https://www.sachkahoon.com/
+- Dainik Savera Times — http://www.dainiksavera.com/
+- Dainik Suprovat — http://www.suprovat.com/
+- Dakshin Bharat — http://www.dakshinbharat.com/
+- Dandakaranya Samachar — http://www.dandakaranyasamachar.com/
+- Danik Gwalior Sandesh — http://www.danikgwaliorsandesh.blogspot.com/
+- Dastak News — http://dastaknews.com/
+- The Day After — http://www.dayafterindia.com/
+- DD News — http://www.ddinews.gov.in/
+- Deccan Chronicle — http://www.deccanchronicle.com/
+- Deccan Herald — http://www.deccanherald.com/
+- Deepika — http://www.deepika.com/
+- Deepika Global — http://www.deepikaglobal.com/
+- Deshabhimani Daily — http://www.deshabhimani.com/
+- Deshbandhu — http://www.deshbandhu.co.in/
+- Deshdoot — http://www.deshdoot.com/
+- Deshonnati — http://deshonnati.digitaledition.in/
+- Dharitri — http://www.dharitri.com/
+- DID News — http://didnews.in/
+- Dinamalar — http://www.dinamalar.com/
+- Dinakaran — http://www.dinakaran.com/
+- Dinamani — http://www.dinamani.com/
+- Divya Bhaskar — http://www.divyabhaskar.co.in/
+- Divya Himachal — http://www.divyahimachal.com/
+- DLA — http://www.dlamedia.com/
+- Doaba Headlines — http://www.doabaheadlines.co.in/
+- DM News — https://www.mahademocrat.com/
+- Dopahar Metro — http://epaper.dopaharmetro.com/
+- Eastern Chronicle — http://www.easternchronicle.net/
+- Ebela — http://ebela.in/
+- The Economic Times — http://economictimes.indiatimes.com/
+- Eenadu — http://www.eenadu.net/
+- EgujaratiTimes.com/ — http://www.egujaratitimes.com/
+- Ei Samay — http://www.epaper.eisamay.com/
+- Ellenabad Times — https://timesofindia.indiatimes.com/topic/Ellenabad
+- Emalwa — http://www.emalwa.com/
+- Energy Bangla — http://www.energybangla.com/
+- Entevaartha — http://www.entevaartha.com/
+- E-Pao — http://www.e-pao.net/
+- Epilogue — http://www.epilogue.in/
+- The Etemaad Daily — http://www.etemaaddaily.com/
+- ExpressNews7 — http://www.expressnews7.com/
+- The Financial Express — http://www.financialexpress.com/
+- Firstpost — http://www.firstpost.com/
+- The Free Press Journal — http://www.freepressjournal.in/
+- Ganashakti — http://www.ganashakti.com/
+- Garja Chhattisgarh — http://www.garjachhattisgarhnews.com/
+- Global Malayalam — https://www.globalmalayalam.com/
+- GoldTamil — http://www.goldtamil.com/
+- Greater Kashmir — http://www.greaterkashmir.com/
+- Gujarat Today Daily — http://www.gujarattoday.in/
+- Gujarati Jagran — https://www.gujaratijagran.com/
+- Gujarati Midday — https://www.gujaratimidday.com/news
+- Gujarati News6 — https://gujaratinews6.in/ class=
+- Gujarat Samachar — http://www.gujaratsamachar.com/
+- Hamara Mahanagar — http://www.hamaramahanagar.in/
+- Hamara Samaj — http://hamarasamajdaily.com/
+- The Hamdam Daily — http://hamdamdaily.com/
+- Hamdard Weekly — http://www.hamdardweekly.com/
+- The Hans India — http://www.thehansindia.com/
+- Har Pal Online — http://www.harpalonline.com/
+- The Hawk — http://www.thehawkindia.com/
+- Hill Post — http://www.hillpost.in/
+- The Hill Times — https://www.thehillstimes.in/
+- Himachal Voice — https://www.himachalvoice.in/
+- Himtimes — http://www.himtimes.com/
+- HindFresh — https://www.hindfresh.com/
+- Hindistan — http://www.livehindustan.com/
+- Hindsamachar — http://www.hindsamachar.in/
+- The Hindu — http://www.thehindu.com/
+- Hindustan Lokshakti Ka Parcha — http://www.hindustanlokshakti.com/
+- The Hindustan Times — http://www.hindustantimes.com/
+- The Hindu Tamil Daily — http://tamil.thehindu.com/
+- Husaini Times — https://www.husainitimes.com/
+- IdeaTvNews — http://ideatvnews.com/
+- India Abroad — http://indiaabroad.com/
+- India Gazette — http://www.indiagazette.com/
+- India Global Business — https://www.indiaglobalbusiness.com/
+- India Times — http://www.indiatimes.com/
+- The Indian Awaaz — http://www.theindianawaaz.com/
+- Indian Express — http://www.indianexpress.com/
+- The Indian Hawk — https://www.theindianhawk.com/
+- Indian Muslim Observer — http://www.indianmuslimobserver.com/
+- INext — http://www.inext.co.in/
+- Inquilab — http://www.inquilab.com/
+- International Business Times — http://www.ibtimes.co.in/
+- Irinjalakuda.com — http://irinjalakuda.com/
+- Irinjalakuda Live — http://www.irinjalakudalive.com/category/news/
+- Isma Times — http://www.ismatimes.com/
+- Jaihind Daily — http://www.jaihinddaily.com/
+- Jagbani — http://www.jagbani.in/
+- Jagruk Times — http://www.jagruktimes.co.in/
+- Janadesh.in — http://www.janadesh.in/
+- Janatha Vani — http://www.janathavani.com/
+- Jankaal Sandesh — http://www.jankaalsandesh.com/
+- Janmat Patrika — http://www.janmatpatrika.com/
+- Jansatta — http://www.jansatta.com/
+- Jara Suniye — https://www.jarasuniye.com/
+- The Jas News — https://www.thejasnews.com/
+- Kalki Weekly — http://www.kalkiweekly.com/
+- Kangla Online — http://www.kanglaonline.com/
+- Kannada Prabha — http://www.kannadaprabha.com/
+- Karmakshetra — http://www.ekarmakshetra.com/
+- Karnataka News — http://www.udayavani.com/Kannada
+- Kasaragod.com — http://www.kasaragod.com/
+- Kasaragodvartha — http://www.kasargodvartha.com/
+- Kashmir Times — http://www.kashmirtimes.com/
+- Kaumudi Online — http://www.kaumudi.com/
+- Kerala Kaumudi — http://www.keralakaumudi.com/
+- Kerala Online News — http://www.keralaonline.com/
+- KhabarExpress.com — http://www.khabarexpress.com/
+- Khabro Ki Dunia — http://www.khabrokidunia.com/
+- Khaleej Times — http://www.khaleejtimes.com/
+- Khapar Harpal — http://www.khabarharpal.in/
+- Khas Khabar — http://www.khaskhabar.com/
+- Kolkata Today — https://kolkatatoday.com/
+- Koshur Akhbar — http://www.koshurakhbar.net/
+- KutchUday — http://www.kutchuday.in/
+- Kumudam — http://www.kumudam.com/
+- My Kerala News.com — http://mykeralanews.com/
+- League of India — http://leagueofindia.com/
+- Legend News — http://www.legendnews.in/
+- Lenden News — https://lendennews.com/
+- Live At News — https://liveatnews.com/
+- LocalNewspaper.in — http://www.localnewspaper.in/
+- Lokmanthan — http://lokmanthan.epapersonline.com/
+- Lokmat — http://www.lokmat.com/
+- Loksatta — http://www.loksatta.com/
+- Loktej — http://www.loktej.com/
+- Madhyamam Daily — http://www.madhyamam.com/
+- Maharashtra News — http://www.mahanews.gov.in/
+- Maharashtra Times — http://maharashtratimes.indiatimes.com/
+- Mana Telangana — http://www.manatelangana.org/
+- Mangalam — http://www.mangalam.com/
+- Mangla Times — http://www.manglatimes.com/
+- Manipur Chronicle — http://www.manipurchronicle.net/
+- Manorama News — http://www.manoramanews.com/
+- Manorama Online — http://www.manoramaonline.com/
+- Marathi News Daily — http://www.esakal.com/
+- Marathwada Neta — http://www.marathwadaneta.com/
+- Marudhar Bulletin — https://marudharbulletin.in/
+- Mathrubhumi — http://www.mathrubhumi.com/
+- Media Darbar — http://www.mediadarbar.tv/
+- Media Newsline — http://www.medianewsline.com/
+- Media Plus News — http://www.mediaplusnews.com/
+- Mid-Day — http://www.mid-day.com/
+- The Milli Gazette — http://www.milligazette.com/
+- Mithila Samad — http://www.mithilasamad.blogspot.com/
+- The Mizoram Post — http://www.themizorampost.net/
+- The Morung Express — http://morungexpress.com/
+- MP News Now — https://www.mpnewsnow.com/
+- Mumbai Mirror — https://mumbaimirror.indiatimes.com/
+- Munsif Daily — http://www.munsifdaily.com/
+- Muslims Duniya — https://www.muslimsduniya.com/
+- My CSR India — https://mycsrindia.com/
+- Naba Barta Prasanga — http://www.nababartaprasanga.com/
+- Nagaland Post — http://www.nagalandpost.com/
+- Naidunia — http://www.naidunia.com/
+- Namastey Telangana — https://www.ntnews.com/
+- Navajivan News — https://www.navajivan.in/
+- Nav Bharat Times — http://www.navbharattimes.com/
+- The Navhind Times — http://www.navhindtimes.com/
+- Naya India — http://www.nayaindia.com/
+- Neindia.com — http://www.neindia.com/
+- NewAge — https://www.livenewage.com/
+- The New Indian Express — http://www.newindianexpress.com/
+- NewsBazar24 — https://www.newsbazar24.com/
+- NewsBytes — https://www.newsbytesapp.com/
+- The News India — http://www.thenewsindia.co.in/
+- News In Marathi — https://www.newsinmarathi.xyz/
+- The News International — http://www.thenewsinternational.com/
+- News Mag — http://www.newsmag.in/
+- News Nation — http://www.newsnation.in/
+- Newznew — https://www.newznew.com/
+- News Today — http://www.newstodaynet.com/
+- News Track — http://www.newstracklive.com/
+- News Wing — http://newswing.com/
+- Newstrack India — http://www.newstrackindia.com/
+- Nixs News — https://www.nixs.in/
+- Nobat — http://www.nobat.com/
+- The Northeast Today (TNT) — http://www.thenortheasttoday.com/
+- Northlines — http://www.thenorthlines.com/
+- Odisha.Com — http://www.odisha.com/
+- Odisha News — http://www.odisha360.com/
+- Online Indian News — http://www.onlineindiannews.com/
+- Only Kashmir — http://www.onlykashmir.in/
+- Opinion Times — http://www.opiniontimes.in/
+- Orissa Barta — http://www.orissabarta.com/
+- Orissa India — http://www.orissaindia.com/
+- Outlook India — http://www.outlookindia.com/
+- Paliwal Wani — http://www.paliwalwani.com/
+- Palpal India — http://www.palpalindia.com/
+- Panchjanya — http://www.panchjanya.com/
+- Parabaas — http://www.parabaas.com/
+- Parichay Times Daily — http://www.parichaytimes.in/
+- Patna Daily — http://www.patnadaily.com/
+- Patrika.com — http://www.patrika.com/
+- Peoples Samachar — http://peoplessamachar.co.in/
+- Phayul — http://www.phayul.com/
+- Phulchhab — https://www.phulchhab.com/
+- The Pioneer — http://www.dailypioneer.com/
+- Prabha Sakshi — http://www.prabhasakshi.com/
+- Prabhat Khabar — http://www.prabhatkhabar.com/
+- Pragativadi — http://www.pragativadi.com/
+- Prag News — https://pragnews.com/
+- Prahaar — http://www.prahaar.in/
+- Prajasakti — http://www.prajasakti.com/
+- Prajavani Kannada Daily — http://www.prajavani.net/
+- Pratahkal — http://www.pratahkal.com/
+- ProKerala News — http://www.prokerala.com/
+- Public News — http://www.publicnewsindia.com/
+- Pudhari ePaper — http://www.pudhari.com/
+- Punalur News — http://www.punalurnews.com/
+- Pune Mirror — https://punemirror.indiatimes.com/
+- Punjab Infoline — http://www.punjabinfoline.com/
+- Punjab Kesari — http://www.punjabkesari.in/
+- Punjab News Channel — http://www.pnchannel.com/
+- Punjab Newsline — http://www.punjabnewsline.com/
+- Punjab Newsline — http://www.punjabnewsline.in/
+- Punjab Today — http://www.punjabtoday.in/
+- Punyanagari — http://www.epunyanagari.com/
+- Quami Ekta — http://www.quamiekta.com/
+- Quami Tanzeem — http://qaumitanzeem.com/
+- Rajasthan Patrika — http://www.rajasthanpatrika.com/
+- Rajdhani Samachar — https://rajdhanisamachar.in/
+- Rajmangal Times — http://www.rajmangal.com/
+- Ranchi Express — http://www.ranchiexpress.com/
+- Rashtriya Hindi Mail — http://www.epaper.rashtriyahindimail.in/
+- Rashtriya Sahara — http://www.roznamasahara.com/
+- Rising  Kashmir — http://www.risingkashmir.com/
+- RNews1 — http://www.rnews1.com/
+- Rokthok Lekhani — https://www.rokthoklekhaninews.com/epaper/
+- Rozana Spokesman — http://www.rozanaspokesman.com/
+- The Sabha — http://www.thesabha.org/
+- Sach Kahoon — http://www.sachkahoon.com/
+- Saderatulhind — http://www.saderatulhind.com/
+- Sahafat — http://www.sahafat.in/
+- Sahara Samay — http://www.saharasamay.com/
+- Sahil Online — http://www.sahilonline.net/
+- Sakalam News — https://www.sakalam.in/
+- Sakshi Daily — http://www.sakshi.com/
+- Samachar.com — http://www.samachar.com/
+- Samachar Jagat — http://www.samacharjagat.com/
+- Samayik Prasanga — http://www.samayikprasanga.in/
+- The Samaj — http://www.thesamaja.com/
+- The Samaya — http://www.odishasamaya.com/
+- Sanchar — http://www.esanchar.co.in/
+- Sandesh — http://www.sandesh.com/
+- The Sangai Express — https://www.thesangaiexpress.com/
+- Sanjeevni Today — http://www.sanjeevnitoday.com/
+- Sanjevani — http://www.sanjevani.com/
+- Sansani — http://www.sansani.com/
+- Satyamanthan — https://satyamanthan.in/
+- Satyam Live — http://www.satyamlive.com/
+- Saurashtra Update — http://www.saurashtraupdate.in/
+- Savera India Times — http://www.saveraindiatimes.co.in/
+- Scoop News — http://www.scoopnews.in/
+- The Sentinel — https://www.sentinelassam.com/
+- The Sentinel — http://www.sentinelassam.com/
+- Shahernama — http://shahernama.com/
+- The Shillong Times — http://www.theshillongtimes.com/
+- The Siasat Daily — http://www.siasat.com/
+- Sikh Virsa — http://www.sikhvirsa.com/
+- Sikkim Express — http://www.sikkimexpress.com/
+- Soan Meeraas — http://www.soanmeeraas.in/
+- SP News — http://www.spnews.in/
+- The Sports Mirror — http://www.thesportsmirror.com/
+- State Times — http://www.statetimes.in/
+- The Statesman — http://www.thestatesman.net/
+- Sting Newz — http://www.stingnewz.com/
+- Suddi Online News — http://news.suddimahithi.com/
+- The Sunday Indian — http://www.thesundayindian.com/
+- Suryaa — https://www.suryaa.com/
+- Surya Telugu Daily — http://www.suryaa.com/
+- Suryoday Bharat — http://www.suryodaybharat.com/
+- Swatantraawaz.com — https://www.swatantraawaz.com/
+- Tarun Bharat — http://www.tarunbharat.com/
+- Tarunmitra — https://tarunmitra.in/
+- Tehelka — http://www.tehelka.com/
+- The Telegraph — http://www.telegraphindia.com/
+- Telugu Bullet — http://www.telugubullet.com/
+- Thatstamil.com — http://www.thatstamil.com
+- Thinaboomi — http://www.thinaboomi.com/
+- The Tibet Post International — http://www.thetibetpost.com/
+- Times of Assam — http://www.timesofassam.com/
+- The Times of Bengal — http://www.thetimesofbengal.com/
+- Times Of Congress — http://www.timesofcongress.com/
+- The Times of India — http://www.timesofindia.com/
+- Times of North — http://www.timesofnorth.in/
+- The Times of Punjab — http://www.thetimesofpunjab.com/
+- Today India — http://www.todayindia.com/
+- The Tribune — http://www.tribuneindia.com/
+- TwoCircles.net — http://www.twocircles.net/
+- UBG News — https://www.uttarbangergramunnayan.com/
+- Udaipur Kiran — http://www.udaipurkiran.com/
+- Udaipur Times — https://udaipurtimes.com/news-archive/
+- Udayavani — https://www.udayavani.com/
+- Updates Of Maharashtra — https://updatesofmaharashtra.com/
+- UpdateNews360 — https://www.updatenews360.com/
+- Uttarakhand Hindi News — https://www.uttarakhandhindinews.in/
+- Uttarbanga Sambad — http://www.uttarbangasambad.com/
+- Vaartha Telugu Daily — http://www.vaartha.com/
+- VijayaKanataka — http://www.vijaykarnatakaepaper.com/
+- Vikatan — http://www.vikatan.com/
+- Visakha Samacharam — http://www.visakhasamacharam.com/
+- Vishva Kannada — http://www.vishvakannada.com/
+- Vivegam News — http://www.vivegamnews.com/
+- Voice of Sikkim — http://www.voiceofsikkim.com/
+- Wadikiawaz — http://www.wadikiawaz.in/
+- Web Dunia — http://www.webdunia.com/
+- Web India — http://www.webindia123.com/
+- West Bengal News 24 — https://www.westbengalnews24.com/
+- World Daily News 24 — https://worlddailynews24.com/
+- World News Arabia — http://www.worldnewsarabia.com/
+- World Now — http://www.worldnow.in/
+- The Yam Times — http://www.theyamtimes.com/
+- Youth Ki Awaaz — http://www.youthkiawaaz.com/
+- Yugabdha — http://www.yugabda.com/
+- Yug Sambad Darpan — http://www.yugsambaddarpan.com/
+- Zee News — http://www.zeenews.com/
+- Zio Tamil — https://www.ziotamil.in/
+
+### allyoucanread — https://www.allyoucanread.com/india-newspapers/
+- Indiatimes — https://www.indiatimes.com/
+- The Times of India — https://timesofindia.com/
+- LiveHindustan.com — https://livehindustan.com/
+- EENADU — https://www.eenadu.net/
+- Hindustan Times — https://www.hindustantimes.com/
+- Outlook India — https://www.outlookindia.com/
+- The Indian Express — https://indianexpress.com/
+- The Hindu — https://www.thehindu.com/
+- Amarujala.com — https://amarujala.com/
+- News18 — http://www.news18.com/
+- Rediff — http://www.rediff.com/
+- DNA — https://www.dnaindia.com/
+- Times Now — https://www.timesnownews.com/
+- Dainik Jagran — https://www.jagran.com/
+- Manorama Online — https://www.manoramaonline.com/
+- Deccan Herald — https://deccanherald.com/
+- Firstpost — https://www.firstpost.com/
+- Dainik Bhaskar — https://www.bhaskar.com/
+- mathrubhumi.com — https://www.mathrubhumi.com/
+- Dinamalar - Tamil — http://www.dinamalar.com/
+- Anandabazar — http://www.anandabazar.com/
+- Sakshi.com — https://sakshi.com/
+- Lokmat — https://www.lokmat.com/
+- Andhrajyothy — https://www.andhrajyothy.com/
+- Loksatta — https://www.loksatta.com/
+- V6 News — https://www.v6velugu.com/
+- The Telegraph - Calcutta — https://telegraphindia.com/
+- New Indian Express — https://newindianexpress.com/
+- India TV — https://www.indiatvnews.com/
+- The Tribune — https://tribuneindia.com/
+- scroll.in — https://www.scroll.in/
+- Mid-Day — https://www.mid-day.com/
+- WebDunia — https://webdunia.com/
+- Deccan Chronicle — https://www.deccanchronicle.com/
+- Gujaratsamachar — https://gujaratsamachar.com/
+- Malayalam — https://www.madhyamam.com/
+- Prabhat Khabar — https://prabhatkhabar.com/
+- Namasthe Telangaana — https://www.ntnews.com/
+- Daily Thanthi — https://www.dailythanthi.com/
+- Free Press Journal — https://www.freepressjournal.in/
+- Siasat Daily — https://www.siasat.com/
+- eSakel.com — https://esakal.com/
+- Sify — https://www.sify.com/
+- Daiji World — https://daijiworld.com/
+- Vikatan — https://vikatan.com/
+- Great Andhra — https://greatandhra.com/
+- Patrika — https://www.patrika.com/
+- The Hans India — https://www.thehansindia.com/
+- Asian Age — https://asianage.com/
+- DivyaBhaskar — https://www.divyabhaskar.co.in/
+
+### abyznewslinks — http://www.abyznewslinks.com/india.htm
+- (no entries)
+
+## maldives (south_asia) — Maldives
+
+### w3newspapers — https://www.w3newspapers.com/maldives/
+- Maldives Independent — https://maldivesindependent.com/
+- CNM (Channel News Maldives) — https://cnm.mv/
+- Sun Online — https://en.sun.mv/
+- Miadhu News — https://miadhu.mv/
+- Mikal News — https://mikalnews.com/
+- Maldives Times — https://maldivestimes.com/
+- mvhotels.travel — https://mvhotels.travel/
+- Public Service Media — https://psmnews.mv/
+- Raajie TV — https://raajje.mv/
+
+### onlinenewspapers — https://onlinenewspapers.com/maldives.shtml
+- Express News — https://expressnews.mv/
+- Haveeru Daily — http://www.haveeru.com.mv/
+- Ihavandhoo.com — http://www.ihavandhoo.com/
+- Maidhu News — http://www.miadhu.com/
+- Maldive Independent — https://maldivesindependent.com/
+- Maldive Times — https://www.maldivestimes.com/
+- Manadhoo Live — http://manadhoolive.com/
+- Miadhu Daily — https://miadhu.mv/
+- Mikal News — http://www.mikalnews.com/
+- Maldives Post — https://www.maldivespost.com/
+- The Press — https://thepress.mv/
+- Raajje.mv — https://raajje.mv/
+- V Online — http://www.vnews.mv/
+
+### allyoucanread — https://www.allyoucanread.com/maldives-newspapers/
+- SUN — https://www.sun.mv/
+
+### abyznewslinks — http://www.abyznewslinks.com/maldi.htm
+- Avas — https://avas.mv/
+- CNM — http://www.cnm.mv/
+- Gadhdhoo — http://www.gadhdhoo.com/
+- Kavaasa — http://www.kavaasaa.com/
+- Maldives Times — http://www.maldivestimes.com/
+- Manadhoo Live — http://manadhoolive.com/
+- Mikal News — http://mikalnews.com/
+- Minivan News — http://minivannews.com/dhivehi/
+- MV Headlines — http://mvheadlines.com/
+- Sun — http://www.sun.mv/
+- Haveeru Daily — http://www.haveeru.com.mv/dhivehi/
+
+## nepal (south_asia) — Nepal
+
+### w3newspapers — https://www.w3newspapers.com/nepal/
+- Kantipur — https://ekantipur.com/
+- Annapurna Post — https://annapurnapost.com/
+- Nagarik — https://nagariknews.nagariknetwork.com/
+- Gorkhapatra — https://gorkhapatraonline.com/
+- The Kathmandu Post — https://kathmandupost.com/
+- Onlinekhabar — https://www.onlinekhabar.com/
+- Naya Patrika — https://www.nayapatrikadaily.com/
+- Nepal Samacharpatra — https://newsofnepal.com/
+- Sourya Online — https://www.souryaonline.com/
+- Rajdhani Daily — https://rajdhanidaily.com/
+- The Himalayan Times — https://thehimalayantimes.com/
+- Nepali Times — https://nepalitimes.com/
+- The Rising Nepal — https://risingnepaldaily.com/
+- Aarthik Abhiyan — https://www.abhiyandaily.com/
+- Karobar Economic Daily — https://www.karobardaily.com/
+- New Business Age — https://www.newbusinessage.com/
+- Nepali Paisa — https://www.nepalipaisa.com/
+- Artha Sarokar — https://arthasarokar.com/
+- bizshala.com — https://www.bizshala.com/
+- Aarthiknews.com — https://aarthiknews.com/
+- Bizmandu — https://bizmandu.com/
+- Merolagani — https://merolagani.com/
+- ShareSansar — https://www.sharesansar.com/
+- Hamro Khelkud — https://www.hamrokhelkud.com/
+- GoalNepal — https://www.goalnepal.com/
+- Cricnepal — https://www.cricnepal.com/
+- MeroKhel — https://merokhel.com/
+- Nepal90 — https://www.nepal90.com/
+- Sajha Khel — https://www.sajhakhel.com/
+- Ratopati — https://www.ratopati.com/
+- Nepal Live — https://nepallive.com/
+- Lokaantar — https://lokaantar.com/
+- News24 Nepal — https://www.news24nepal.com/
+- MyRepublica — https://myrepublica.nagariknetwork.com/
+- OSnepal — https://www.osnepal.com/
+- Baahrakhari — https://baahrakhari.com/
+- Thaha Khabar — https://thahakhabar.com/
+- Setopati — https://www.setopati.com/
+- Nepalkhabar — https://nepalkhabar.com/
+- hamrakura.com — https://hamrakura.com/
+- Online TV Nepal — https://onlinetvnepal.com/
+- Nayapage — https://nayapage.com/
+- Nepal Samaya — https://nepalsamaya.com/
+- Khabarhub — https://khabarhub.com/
+- Deshsanchar — https://deshsanchar.com/
+- Nepal Press — https://www.nepalpress.com/
+- ImageKhabar — https://www.imagekhabar.com/
+- ujyaaloonline.com — https://ujyaaloonline.com/
+- himalkhabar.com — https://www.himalkhabar.com/
+- nepalihimal.com — http://nepalihimal.com/
+- Himalini — https://www.himalini.com/
+- Online Majdoor — https://onlinemajdoor.com
+- People's Review — https://mypeoplesreview.com/
+- Nagarik Network — https://nagariknetwork.com/
+- Arghakhanchi.com — https://www.arghakhanchi.com/
+- Himalaya Darpan — http://epaperhimalayadarpan.com/
+- Janakpur Today — https://ejanakpurtoday.com/
+- Adarsha Samaj — https://www.eadarsha.com/
+- topnepalnews.com — https://topnepalnews.com/
+- chitawan.com — https://www.chitawan.com/
+- Khasokhas Weekly — https://www.khasokhas.com/
+- Nepali Post — http://nepalipost.com/
+- Samudrapari.com — https://samudrapari.com/
+- Nepali Patra — https://www.nepalipatra.com/
+- Nepali Headlines — https://nepaliheadlines.com/
+- DCNepal — https://www.dcnepal.com/
+- Radio Nepal — https://radionepal.gov.np/
+- Radio Sagarmatha — https://radiosagarmatha.org.np/
+- Rastriya Samachar Samiti (RSS) — http://rssnepal.org.np/
+
+### onlinenewspapers — https://onlinenewspapers.com/nepal.shtml
+- Aarthik Abhiyan Daily — http://www.abhiyan.com.np/
+- Adarsha Samaj National Daily — http://www.eadarsha.com/
+- Arghakhanchi Times — http://www.arghakhanchi.com/
+- Bigul News — http://www.bigulnews.com/
+- Bizkhabar — http://www.bizkhabar.com/
+- Chitawan Online News Service — http://www.chitawan.com/
+- eKantipur — https://ekantipur.com/
+- Gorkhapatra National Daily — https://gorkhapatraonline.com/
+- Hamro Khotang — https://www.hamrokhotang.com/
+- Hellokhabar — http://www.hellokhabar.com/
+- The Himalayan Times — https://www.thehimalayantimes.com/
+- Image Channel — http://imagechannel.com.np/
+- Jana Aastha National Weekly — https://www.janaaastha.com/
+- Kantipath — http://www.kantipath.com/
+- Kantipur National Daily — http://www.kantipuronline.com/
+- Karobar Economic Daily — https://www.karobardaily.com/
+- The Kathmandu Post — https://www.kathmandupost.com/
+- Khojtalash Daily — http://www.khojtalashonline.com/
+- myRupública — https://www.myrepublica.com/
+- Nagarik News — https://www.nagariknews.com/
+- Naya Patrika Daily — https://www.nayapatrikadaily.com/
+- Nepali Times — https://www.nepalitimes.com/
+- Nepal Khabar — https://nepalkhabar.com/
+- Nepal News — http://www.nepalnews.com/
+- News of Nepal — http://www.newsofnepal.com/
+- Online Khabar — https://www.onlinekhabar.com/
+- Online Majdoor — https://www.onlinemajdoor.com/
+- People's Review — https://www.peoplesreview.com.np/
+- Real Khabar — https://www.realkhabar.net/
+- The Rising Nepal — https://risingnepaldaily.com/
+- Sadae Aam — https://sadaeaam.webnode.com/
+- Samachar Pati — http://www.samacharpati.com/
+- SancharKendra — https://www.sancharkendra.com/
+- Saptahik — https://saptahik.com.np/
+
+### allyoucanread — https://www.allyoucanread.com/nepal-newspapers/
+- onlinekhabar.com — https://onlinekhabar.com/
+- eKantipur.com — https://ekantipur.com/
+- ratopati.com — https://ratopati.com/
+- Setopeti — https://www.setopati.com/
+- The Himalayan Times — https://thehimalayantimes.com/
+- Nepalnews.com — https://nepalnews.com/
+- Republica — https://myrepublica.com/
+- Annapurna Post — https://www.annapurnapost.com/
+- GorkhapatraOnline.com — https://www.gorkhapatraonline.com/
+- HimalKhabar.com — https://www.himalkhabar.com/
+- Karobar Daily — https://karobardaily.com/
+- Rajdhani — https://rajdhanidaily.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/nepal.htm
+- E Kantipur — http://www.ekantipur.com/
+- Himal Khabar — http://www.himalkhabar.com/
+- Kantipath — http://kantipath.com/?cat=50
+- Media for Freedom — http://www.mediaforfreedom.com/
+- Nepal 123 — https://www.nepal123.com/
+- Nepal Monitor — http://www.nepalmonitor.com/
+- Nepal News — http://www.nepalnews.com/
+- Nepal News — http://www.nepalnews.net/
+- Nepal Now — http://nepalnow.com/
+- Nepali Headlines — http://www.nepaliheadlines.com/
+- Nepali Post — http://www.nepalipost.com/
+- Titan Herald — http://www.titanherald.com/
+- Annapurna Post — http://www.annapurnapost.com/
+- Gorkhapatra — http://www.gorkhapatraonline.com/
+- Himalayan Times — http://www.thehimalayantimes.com/
+- Nepal Samacharpatra — http://www.newsofnepal.com/
+- Rajdhani — http://www.rajdhani.com.np/
+
+## sri_lanka (south_asia) — Sri Lanka
+
+### w3newspapers — https://www.w3newspapers.com/srilanka/
+- Lankadeepa — https://www.lankadeepa.lk/
+- Divaina — https://divaina.lk/
+- Dinamina — https://www.dinamina.lk/
+- Ada — https://www.ada.lk/
+- Daily Mirror — https://www.dailymirror.lk/
+- Virakesari — https://www.virakesari.lk/
+- Silumina — https://www.silumina.lk/
+- Mawbima — https://mawbima.lk/
+- Deshaya — https://www.deshaya.lk/
+- Budusarana — https://lakehouse.lk/
+- Aruna — https://www.aruna.lk/
+- Sathhanda — https://www.sathhanda.com/
+- Adaderana — https://www.adaderana.lk/
+- Vikalpa — https://www.vikalpa.org/
+- Lanka Truth — https://lankatruth.com/si/
+- Gossip Lanka News — https://www.gossiplankanews.com/
+- news.lk (Sinhala) — https://sinhala.news.lk/
+- Thrimana — http://3mana.com/
+- ceylondaily.com — https://ceylondaily.com/
+- GossipClanka — https://www.gossipclanka.com/
+- Daily News — https://www.dailynews.lk/
+- The Island — https://island.lk/
+- Daily FT (Financial Times) — https://www.ft.lk/
+- Sunday Times — https://www.sundaytimes.lk/
+- Sunday Observer — https://www.sundayobserver.lk/
+- Ceylon Today — https://ceylontoday.lk/
+- news.lk — https://www.news.lk/
+- newsfirst.lk — https://english.newsfirst.lk/
+- hirunews.lk — https://www.hirunews.lk/
+- Sri Lanka Guardian — http://www.srilankaguardian.org/
+- Island Cricket — https://www.islandcricket.lk/
+- Colombo Telegraph — https://www.colombotelegraph.com/
+- Economy Next — https://economynext.com/
+- GroundViews — https://groundviews.org/
+- Sri Lanka Guardian — https://slguardian.org/
+- Lanka Business Online — https://www.lankabusinessonline.com/
+- DBS Jeyaraj — https://dbsjeyaraj.com/
+- Asian Mirror — https://asianmirror.lk/
+- Tamil Guardian — https://www.tamilguardian.com/
+- Tamil Net — https://www.tamilnet.com/
+- Lanka News Web — https://www.lankaenews.com/English/
+- Lanka Web — https://www.lankaweb.com/
+- LANKA Standard — https://www.lankastandard.com/
+- Lanka Newspapers — https://www.lankanewspapers.com/
+- The Lanka Academic — http://www.theacademic.org/
+- Lanka Cyber News — https://lankacnews.com/
+- On Lanka News — https://www.onlanka.com/
+- LankaSri News — https://news.lankasri.com/
+- TV Derana — https://www.derana.lk/
+- Sirasa FM — https://sirasafm.lk/
+- Shakthi TV — https://shakthitv.lk/
+- Shakthi FM — https://shakthifm.com/
+- Sun FM — https://www.sunfm.lk/
+- Yes FM — https://yesfmonline.com/
+- Gold FM — https://www.goldfm.lk/
+- Thinakaran — https://www.thinakaran.lk/
+- Uthayan — https://newuthayan.com/
+- Eelanadu — https://www.eelanadu.lk/
+- tamilwin.com — https://tamilwin.com/
+- Jaffna Muslim — https://www.jaffnamuslim.com/
+- 4tamilmedia.com — https://www.4tamilmedia.com/
+- Yarlosai — https://www.yarlosai.lk/
+- supeedsam.com — https://www.supeedsam.com/
+- Elukathir — https://www.elukathir.lk/
+- yarldeepam.com — https://www.yarldeepam.com/
+- jaffnazone.com — https://jaffnazone.com/
+- Lankaone — https://lankaone.com/
+- Ilankainet — http://www.ilankainet.com/
+- Athirvu — https://athirvu.in/
+- Lankapuvath — https://english.lankapuvath.lk/
+
+### onlinenewspapers — https://onlinenewspapers.com/sri-lanka.shtml
+- The Academic — http://www.theacademic.org/
+- A Cricket Turf — http://cricturf.com/
+- Ada — http://www.ada.lk/
+- ADAderana — http://www.adaderana.lk/
+- Apostolic Tribune — http://www.apostolictribune.org/
+- Asian Tribune — http://www.asiantribune.com/
+- The Bottom Line — http://www.thebottomline.lk/
+- Ceylon Today — http://www.ceylontoday.lk/
+- Colomba Page — http://www.colombopage.com/
+- Colombo Times — http://www.thecolombotimes.com/
+- Daily FT — https://www.ft.lk/
+- Daily Mirror — http://www.dailymirror.lk/
+- Daily News — http://www.dailynews.lk/
+- Deshaya — http://www.deshaya.lk/
+- Dinamina — http://www.dinamina.lk/
+- Divaina — http://www.divaina.com/
+- Divesa News — http://divesanews.com/
+- Eelanatham — http://www.eelanatham.net/
+- E-Lankanews — http://www.lankaenews.com/
+- Endera — http://www.endera.org/
+- Friday — http://www.friday.lk/
+- Irudina — http://www.irudina.lk/
+- The Island — http://www.island.lk/
+- The Island LK — http://www.theislandlk.com/
+- Janadhipathi — http://www.janadhipathi.com/
+- Jasmine News — http://www.jnw.lk/
+- Kandy News — http://www.kandynews.net/
+- Lakbima News — http://www.lakbimanews.lk/
+- Lakbima (Sinhala) — http://www.lakbima.lk/
+- Lakshme's News — http://lakshmenews.blogspot.com/
+- Lanka Business Today — http://www.lbt.lk/
+- Lankadeepa — http://www.lankadeepa.lk/
+- Lankanews — http://www.lankapolity.com/
+- Lankamuslims.com — http://www.lankamuslims.com/
+- Lanka Page — http://www.lankapage.com/
+- Lankapuvath — http://www.lankapuvath.lk/
+- Lanka Standard — http://www.lankastandard.com/
+- The Lanka Sun — http://www.lankasun.com/
+- Lanka Truth — http://www.lankatruth.com/
+- Lankaweb — http://www.lankaweb.com/
+- Mariya Handa — http://www.mariyahanda.org/
+- Mawbima — http://www.mawbima.lk/
+- Mawrata News — https://www.mawratanews.lk/
+- Meda Peradiga — http://www.medaperadiga.com/
+- Meelparvai — http://www.meelparvai.net/
+- Metro News — http://www.metronews.lk/
+- The Nation — http://www.nation.lk/
+- Nithrsanam — http://www.nitharsanam.com/
+- Omlanka Sri Lanka News — http://www.omlanka.com/
+- Pawasa News — http://www.pawasamedia.blogspot.com.au/
+- Praja — http://praja.lk/
+- Prothom Alo — https://www.prothomalo.com/
+- Rivira Sinhala — http://www.rivira.lk/
+- Sengkathir — http://www.sengkathir.com/
+- Silumina — http://www.silumina.lk/
+- SinhalaNet — http://www.sinhala.net/
+- Sinhalayani — http://www.sinhalayani.com/
+- Sooriyan — http://www.sooriyan.com/
+- Sri Lanka Guardian — http://www.srilankaguardian.org/
+- Sri Lanka Mirror — https://www.srilankamirror.com/
+- Sri Lanka Muslim Diaspora — http://www.muslimdiaspora.org/
+- Sri Lanka News — http://www.news.lk/
+- Sri Lankan Patriotic — http://www.srilankanpatriot.lk/
+- Sri Lanka Source — http://www.srilankasource.com/
+- Sri Lanka Today — http://www.srilankatoday.com/
+- Sri Lanka X News — http://www.srilankaxnews.com/
+- Sricolama — http://sricolama.com/
+- The Sunday Leader — http://www.thesundayleader.lk/
+- The Sunday Observer — http://www.sundayobserver.lk/
+- The Sunday Times — http://www.sundaytimes.lk/
+- Tamil Guardian — http://www.tamilguardian.com/
+- Tamil Naatham — http://www.tamilnaatham.com/
+- TamilNet — http://www.tamilnet.com/
+- Telegraph — http://www.telegraph.lk/
+- Thenee — http://www.thenee.com/
+- Thinakural — http://www.thinakkural.lk/
+- Thuruvam — http://www.thuruvam.com/
+- Tribun-Timur — https://makassar.tribunnews.com/
+- Universal Tamil — http://www.universaltamil.com/
+- Uthayan — http://www.uthayan.com/
+- Vigasa Puwath 24 — http://vigasapuwath.blogspot.com/
+- Vimasuma — http://www.vimasuma.com/
+- Virakesari — http://www.virakesari.lk/
+- VivaLanka.com — http://www.vivalanka.com/
+
+### allyoucanread — https://www.allyoucanread.com/sri-lanka-newspapers/
+- Maalaimalar — https://www.maalaimalar.com/
+- Daily Mirror — https://dailymirror.lk/
+- Adaderana.lk — https://adaderana.lk/
+- hirunews.lk — https://www.hirunews.lk/
+- lankadeepa.lk — https://lankadeepa.lk/
+- Lankasri — https://lankasri.com/
+- Tamilwin — https://tamilwin.com/
+- Lanka C News — https://lankacnews.com/
+- Asian Mirror — https://www.asianmirror.lk/
+- Daily News — https://www.dailynews.lk/
+- Sunday Times — https://sundaytimes.lk/
+- Island — https://island.lk/
+- Daily FT — https://ft.lk/
+- newsfirst.lk — https://english.newsfirst.lk/
+- Sunday Observer — https://www.sundayobserver.lk/
+- Divaina — https://divaina.lk/
+- Lanka News Web — https://lankanewsweb.net/
+- lankaweb.com — https://lankaweb.com/
+- colombotelegraph.com — https://www.colombotelegraph.com/
+- news.lk — https://news.lk/
+- Laka E news — http://www.lankaenews.com/
+- dinamina.lk — https://www.dinamina.lk/
+- Silumina — https://www.silumina.lk/
+- ceylontoday.lk — https://ceylontoday.lk/
+- Colombo Gazette — https://colombogazette.com/
+- onlanka.com — https://onlanka.com/
+- Nation — https://nation.lk/
+- Ada — https://ada.lk/
+- tamilnet.com — https://tamilnet.com/
+- lankatruth.com — https://lankatruth.com/
+- Sri Lanka Guardian — http://www.srilankaguardian.org/
+- mawbima.lk — https://mawbima.lk/
+- Sri Lanka Mirror — https://srilankamirror.com/
+- Athirvu — https://athirvu.in/
+
+### abyznewslinks — http://www.abyznewslinks.com/srila.htm
+- 123 Sri Lanka — http://www.123srilanka.com/
+- Adaderana — http://www.adaderana.lk/
+- Adaderana — http://sinhala.adaderana.lk/
+- Adaderana — http://tamil.adaderana.lk/
+- Digatha News — http://digathanews.com/
+- E Lanka News — http://www.elankanews.com/
+- Lanka E Reporter — https://lankaereporter.com/
+- Lanka Truth — http://www.lankatruth.com/
+- Lanka World — http://www.lankaworld.com/
+- News — http://www.news.lk/
+- News — http://sinhala.news.lk/
+- News — http://tamil.news.lk/
+- On Lanka — http://news.onlanka.com/
+- Sri Express — http://www.sriexpress.com/
+- Sri Lanka News First — http://www.srilankanewsfirst.com/
+- Asian Tribune — http://www.asiantribune.com/
+- Colombo Page — http://www.colombopage.com/
+- Info Lanka — http://infolanka.asia/
+- Lanka Academic — http://www.theacademic.org/
+- Lanka Daily News — http://lankadailynews.com/
+- Lanka Newspapers — http://www.lankanewspapers.com/news/index.jsp
+- Lanka Page — http://www.lankapage.com/
+- Lanka Times — http://www.lankatimes.com/
+- Lanka Web — http://www.lankaweb.com/
+- Muslim Guardian — http://www.muslimguardian.com/
+- Our Lanka — http://www.ourlanka.com/
+- Sri Lanka News Live — http://www.srilankanewslive.com/
+- Sri Lanka Watch — http://www.srilankawatch.com/
+- Sri Lankan News — http://www.srilankannews.net/
+- Tamil Net — http://www.tamilnet.com/
+- Top Lanka News — http://www.toplankanews.com/
+- Daily Mirror — http://www.dailymirror.lk/
+- Daily News — http://www.dailynews.lk/
+- Divaina — http://www.divaina.com/
+- Island — http://www.island.lk/
+- Lakbima — http://www.lakbima.lk/
+- Lankadeepa — http://www.lankadeepa.lk/
+- Sunday Leader — http://www.thesundayleader.lk/
+- Sunday Observer — http://www.sundayobserver.lk/
+- Sunday Times — http://www.sundaytimes.lk/
+- Thinakkural — http://www.thinakkural.com/
+- Uthayan — http://onlineuthayan.com/
+- Virakesari — http://www.virakesari.lk/
+- Tamil Guardian — http://www.tamilguardian.com/

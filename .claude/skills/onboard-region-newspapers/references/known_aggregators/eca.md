@@ -1,0 +1,8626 @@
+# Known Online-Newspaper Aggregators — Europe & Central Asia (`eca`)
+
+Pre-extracted per-country newspaper lists from four online-newspaper
+aggregators. Used by `/onboard-region-newspapers` step 2a as a static
+seed instead of refetching aggregator homepages every run.
+
+See `references/known_aggregators/README.md` for the ignore rules and
+the populator script that generated this file.
+
+---
+
+## kazakhstan (central_asia) — Kazakhstan
+
+### w3newspapers — https://www.w3newspapers.com/kazakhstan/
+- Caravan — https://www.caravan.kz/
+- Kazakhstanskaya Pravda — https://www.kazpravda.kz/
+- Vremya (Time) — https://time.kz/
+- NUR.kz — https://www.nur.kz/
+- Zakon.kz — https://www.zakon.kz/
+- Tengri News — https://tengrinews.kz/
+- KTK — https://www.ktk.kz/
+- 24.kz — https://24.kz/ru/
+- Sputnik News — https://sputnik.kz/
+- Sports.kz — https://www.sports.kz/
+- Informburo.kz — https://informburo.kz/
+- Massaget.kz — https://massaget.kz/
+- kapital — https://kapital.kz/
+- yvision.kz — https://yvision.kz/
+- Lada — https://www.lada.kz/
+- Ak Zhaik — https://azh.kz/en
+- Nasha Gazeta — https://www.ng.kz/
+- Egemen Kazakhstan — https://egemen.kz/
+- Kostanaiskie Novosti — https://kstnews.kz/
+- Diapazon — https://diapazon.kz/
+- Inform Vest — https://ivest.kz/
+- Novyi Vestnik — https://nv.kz/
+- Mgorod.kz — https://mgorod.kz/
+- Otyrar.kz — https://otyrar.kz/
+- Vesti — https://vesti.kz/
+- Total.kz — https://total.kz/
+- Zona Kz — https://zonakz.net/
+- Titus.kz — https://titus.kz/
+- Khabar — https://khabar.kz/kk/
+- Liter — https://liter.kz/
+- Komsomolskaia Pravda — https://www.kp.kz/
+- Zhas Alash — https://zhasalash.kz/
+- Astana Times — https://astanatimes.com/
+- Qostanayi Tany — https://kostanaytany.kz/
+- Atyrau — https://atr.kz/
+- Novoye Pokoleniye — https://www.np.kz/
+- qazdauiri.kz — https://qazdauiri.kz/
+- Delovaya Nedelya — https://dn.kz/
+- BAQ — https://baq.kz/
+- E Karaganda — https://ekaraganda.kz/
+- aqparat.info — https://aqparat.info/
+- Yralskaya nedelya — https://www.uralskweek.kz/
+- Altyn-orda.kz — https://altyn-orda.kz/
+- Altainews.kz — https://altainews.kz/ru/
+- Deutsche Allgemeine Zeitung — https://daz.asia/
+- Newsline — https://newsline.kz/
+- Investkz — http://www.investkz.com/en/
+
+### onlinenewspapers — https://onlinenewspapers.com/kazakhstan.shtml
+- Ak Zhayk — https://www.azh.kz/
+- Al-Ihsaan — http://www.al-ihsan.net/
+- The Almaty Herald — https://www.herald.kz/
+- Deutsche Allgemeine Zeitung — https://daz.asia/
+- Diapazon — http://www.diapazon.kz/
+- Express-K — http://www.express-k.kz/
+- The Globe & Mail — https://www.theglobeandmail.com/topics/kazakhstan/
+- Kapabah — http://www.caravan.kz/
+- Kazakhstanskaya Pravda — https://www.kazpravda.kz/
+- Kazinform — http://www.inform.kz/
+- Liter — https://www.liter.kz/
+- Petroleum — https://www.petroleumjournal.kz/
+- Silk Road Intelligencer — http://www.silkroadintelligencer.com/
+- Tengrinews.kz — https://www.tengrinews.kz/
+- Tengrinews.kz — https://en.tengrinews.kz/
+- The Times of Central Asia — https://www.timesca.com/index.php/news/kazakhstan/
+- Ustinka — https://www.ustinka.kz/
+- Vechernyaya Astana — https://www.vechastana.kz/
+- Vremya — http://www.time.kz/
+
+### allyoucanread — https://www.allyoucanread.com/kazakhstan-newspapers/
+- Tengri News — https://tengrinews.kz/
+- Zakon.kz — https://www.zakon.kz/
+- vesti.kz — https://vesti.kz/
+- KazInform — https://www.inform.kz/
+- Informburo.kz — https://informburo.kz/
+- lada.kz — https://www.lada.kz/
+- Ak Zhayik — https://azh.kz/
+- Caravan — https://www.caravan.kz/
+- Sputnik — https://sputniknews.kz/
+- eKaraganda.kz — https://ekaraganda.kz/
+- massaget.kz — https://massaget.kz/
+- Kazakhstanskaya Pravda — https://kazpravda.kz/
+- Diapazon — https://diapazon.kz/
+- Central Asia — https://centralasia.media/
+- pavon.kz — https://pavon.kz/
+- baq.kz — https://baq.kz/
+- Kazakhstan Today — http://www.kt.kz/
+- mgorod.kz — https://mgorod.kz/
+- Total.kz — https://yvision.kz/
+- otyrar.kz — https://otyrar.kz/
+- altaynews.kz — https://altaynews.kz/
+- Nasha Gazeta — https://ng.kz/
+- Vremya — https://time.kz/
+- Khabar — https://khabar.kz/
+- Express K — https://express-k.kz/
+- Yralskaya Nedelya — https://www.uralskweek.kz/
+- NV Novosti Karagandi — https://nv.kz/
+- Zona KZ — https://zonakz.net/
+- Nomad — https://nomad.su/
+- total.kz — https://total.kz/
+- titus.kz — https://titus.kz/
+- altyn-orda.kz — https://altyn-orda.kz/
+
+### abyznewslinks — http://www.abyznewslinks.com/kazak.htm
+- BAQ — https://baq.kz/ar
+- BRIF — http://www.brif.kz/
+- I News — https://i-news.kz/
+- Kaz News — http://kaznews.kz/
+- Kazakhstan News — http://www.kazakhstannews.net/
+- Newsline — http://www.newsline.kz/
+- Nur — https://www.nur.kz/kk
+- Respublika — http://www.respublika-kz.info/news/kazm
+- Sports — http://www.sports.kz/
+- Tengri News — https://en.tengrinews.kz/
+- Tengri News — https://kaz.tengrinews.kz/
+- Tengri News — https://tengrinews.kz/
+- The News — https://thenews.kz/
+- Today News — http://todaynews.kz/
+- Vesti — http://vesti.kz/
+- Zakon — http://www.zakon.kz/
+- Karavan — http://kaz.caravan.kz/
+- Karavan — http://www.caravan.kz/
+- Zhas Alash — http://www.zhasalash.kz/
+
+## kyrgyz_republic (central_asia) — Kyrgyz Republic
+
+### w3newspapers — https://www.w3newspapers.com/kyrgyzstan/
+- Azattyk Unalgysy — https://www.azattyk.org/
+- Super Info — https://www.super.kg/
+- Vecherny Bishkek — https://www.vb.kg/
+- Kabar — https://www.kabar.kg/
+- Kloop — https://kloop.kg/
+- Komsomolskaya Pravda — https://www.kp.kg/
+- For — https://www.for.kg/
+- Aki press — https://akipress.org/
+- AKIpress (In English) — https://akipress.com/
+- KyrTAG — https://kyrtag.kg/ru/
+- 24.kg News Agency — https://24.kg/english/
+- Ca-news.org — http://ca-news.org/
+- K news — https://knews.kg/
+- The Times Of Central Asia — https://timesca.com/
+- Gazeta — https://gazeta.kg/
+- pr.kg — http://www.pr.kg/
+- Internews — https://internews.kg/
+- Kyrgyz tuusu — https://kyrgyztuusu.kg/
+- Moya Stolitsa Novosti (MSN) — https://www.msn.kg/
+
+### onlinenewspapers — https://onlinenewspapers.com/kyrgyzstan.shtml
+- Kabar — http://www.kabar.kg/
+- Kabar — http://en.kabar.kg/
+- Kyrgyz Tuusu — http://www.kyrgyztuusu.kg/
+- Slovo Kyrgystana — https://www.slovo.kg/
+- The Times of Central Asia — https://www.timesca.com/index.php/news/kyrgyzstan/
+- Vecherny Bishkek — https://www.vb.kg/
+
+### allyoucanread — https://www.allyoucanread.com/kyrgyzstan-newspapers/
+- 24.kg — https://24.kg/
+- AKI Press — https://akipress.org/
+- Super Info — https://super.kg/
+- K-News — https://knews.kg/
+- Vecherniy Bishkek — https://vb.kg/
+- Central Asia — https://centralasia.media/
+- Vesti.kg — https://vesti.kg/
+- AKIpress — https://akipress.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/kyrgy.htm
+- For — http://www.for.kg/
+- Gazeta — http://www.gazeta.kg/
+- Internews — http://internews.kg/?newlang=eng
+- Kyrgyzstan News — http://www.kyrgyzstannews.net/
+- Slovo Kyrgystana — http://www.sk.kg/
+
+## tajikistan (central_asia) — Tajikistan
+
+### w3newspapers — https://www.w3newspapers.com/tajikistan/
+- Faraj — https://farazh.tj/
+- Jumhuriyat — https://www.jumhuriyat.tj/
+- avesta.tj — https://avesta.tj/
+- khovar.tj — https://khovar.tj/
+- Tajikistan Times — https://tajikistantimes.tj/
+- Radio Tiroz — https://tiroz.org/
+
+### onlinenewspapers — (not listed)
+- (no entries)
+
+### allyoucanread — https://www.allyoucanread.com/tajikistan-newspapers/
+- Fergana News — https://fergananews.com/
+- Khovar — https://www.khovar.tj/
+- Avesta — https://www.avesta.tj/
+- TopTJ — https://toptj.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/tajik.htm
+- Novosti Tadzhikistana — http://tajuncos.ru/
+- Tajikistan News — http://www.tajikistannews.net/
+- Asia Plus — http://www.asiaplus.tj/ru/newspaper
+- Jumhuriyat — http://www.jumhuriyat.tj/
+- Tojikiston — http://www.pressa.tj/ru
+
+## turkmenistan (central_asia) — Turkmenistan
+
+### w3newspapers — https://www.w3newspapers.com/turkmenistan/
+- Turkmenistan.ru — https://www.turkmenistan.ru/ru/
+- Turkmen Portal — https://turkmenportal.com/
+- Gundogar News — http://gundogar-news.com/
+- Gundogar — https://gundogar.media/
+- News Central Asia — https://www.newscentralasia.net/
+- Turkmen Business — http://www.turkmenbusiness.org/
+- Turkmenistan Live — http://turkmenistanlive.com/
+- Turkmenistan — https://www.turkmenistaninfo.ru/
+- Turkmen Dovlet Habarlary (TDH) — https://tdh.gov.tm/ru/
+- hronikatm.com — https://www.hronikatm.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/turkmenistan.shtml
+- The Times of Central Asia — https://www.timesca.com/index.php/news/turkmenistan/
+
+### allyoucanread — https://www.allyoucanread.com/turkmenistan-newspapers/
+- Azatlik Radiosy — https://www.azathabar.com/
+- Turkmenistan - The Golden Age — https://www.turkmenistan.gov.tm/
+- Turkmenistan.ru — https://turkmenistan.ru/
+- TurkmenistanNews.net — https://www.turkmenistannews.net/
+
+### abyznewslinks — http://www.abyznewslinks.com/turkm.htm
+- Alternativnie
+Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
+- Arzuw News — http://arzuw.tm/
+- Asgabat — http://asgabat.net/
+- Chronicles of Turkmenistan — http://www.chrono-tm.org/en/
+- Gundogar — http://www.gundogar.org/?022000000000000000011000000
+- Gundogar News — http://gundogar-news.com/
+- Infoabad — http://infoabad.com/
+- News Central Asia — http://www.newscentralasia.net/
+- TM Habar — http://www.tmhabar.com/
+- Turkmen Business — http://www.turkmenbusiness.org/
+- Turkmen Inform — http://www.turkmeninform.com/en/
+- Turkmen Portal — http://turkmenportal.com/
+- Turkmenistan — http://www.turkmenistan.ru/en/
+- Turkmenistan — http://www.turkmenistan.gov.tm/_eng/
+- Turkmenistan Live — http://turkmenistanlive.com/
+- Turkmenistan News — http://www.turkmenistannews.net/
+- Zaman — http://zamanturkmenistan.com/
+
+## uzbekistan (central_asia) — Uzbekistan
+
+### w3newspapers — https://www.w3newspapers.com/uzbekistan/
+- Gazeta — https://www.gazeta.uz/ru/
+- Uzbekistan National News Agency — https://uza.uz/uz
+- KUN.UZ — https://kun.uz/
+- podrobno.uz — https://podrobno.uz/
+- UZ24 — https://uz24.uz/
+- Khalq Sozi — https://xs.uz/
+- Uz Report — https://uzreport.news/
+- National Television and Radio Company — https://mtrk.uz/
+- Sputnik — https://uz.sputniknews.ru/
+- Daryo — https://daryo.uz/
+- Qalampir — https://qalampir.uz/
+- Xabar — https://www.xabar.uz/
+- UZ Daily — https://www.uznews.uz/
+- yuz.uzNews — https://yuz.uz/ru
+- sputniknews-uz.com — https://sputniknews.uz/
+- Hurriyat (Freedom) — https://uzhurriyat.uz/
+- Oriat FM — http://www.oriatfm.uz/
+- Samarqand — https://www.samarkandnews.uz/
+- championatasia — https://championat.asia/
+- Business - uzdaily.com — https://www.uzdaily.com/en/section/2/
+
+### onlinenewspapers — https://onlinenewspapers.com/uzbekistan.shtml
+- Erkin Qaraqalpaqstan — http://www.karakalpakstan.uz/
+- Harakat — http://www.harakat.net/
+- Khalq Sozi — https://www.xs.uz/en/
+- Narodnoe Slovo — https://xs.uz/ru/
+- Novosti Uzbekistana — https://nuz.uz/
+- Ovozi Tojik — https://www.ovozitojik.uz/
+- Ozbekiston Ovozi — https://www.uzbekistonovozi.uz/
+- Pravda Vostoka — https://www.pv.uz/en/
+- Review — https://www.review.uz//
+- The Times of Central Asia — https://www.timesca.com/index.php/news/uzbekistan/
+
+### allyoucanread — https://www.allyoucanread.com/uzbekistan-newspapers/
+- Gazeta.uz — https://www.gazeta.uz/
+- Fergana News — https://fergananews.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/uzbek.htm
+- Anons — http://www.anons.uz/ru/
+- ASR — http://asr.uz/ru/
+- Daryo — https://daryo.uz/k/
+- Doda — http://www.doda.uz/
+- Gazeta — https://www.gazeta.uz/ru/
+- Hordiq — http://hordiq.uz/
+- Kun — https://kun.uz/en
+- Press Service — http://press-service.uz/en
+- Publika — http://www.publika.uz/
+- Qalampir — http://www.qalampir.uz/
+- Sof — http://www.sof.uz/
+- Sputnik — https://ru.sputniknews-uz.com/
+- Sputnik — https://sputniknews-uz.com/
+- Sputnik — https://oz.sputniknews-uz.com/
+- Tridantus — http://www.tridantus.uz/
+- UZ Daily — http://www.uzdaily.com/
+- UZ Daily — https://www.uzdaily.uz/
+- UZ Daily — https://uz.uzdaily.uz/
+- UZ Metronom — http://www.uzmetronom.com/
+- UZ News — http://www.uznews.uz/ru
+- UZ Report — https://uzreport.news/lang/en
+- UZ24 — http://www.uz24.uz/ru
+- Uzbekistan News — http://www.uzbekistannews.net/
+- Xabar — https://www.xabar.uz/
+- Narodnoe Slovo — http://narodnoeslovo.uz/
+- Pravda Vostoka — http://www.pv.uz/
+- Xalq Sozi — http://xs.uz/
+
+## armenia (south_caucasus) — Armenia
+
+### w3newspapers — https://www.w3newspapers.com/armenia/
+- Aravot — https://www.aravot.am/
+- Haykakan Zhamanak — https://armtimes.com/hy
+- Hraparak — https://hraparak.am/
+- Azg — https://azg.am/
+- Jhoghovurd — https://armlur.am/
+- Iravunk — https://www.iravunk.com/
+- Irates de Facto — https://www.irates.am/
+- Yerkir — https://yerkir.am/
+- Past — https://past.am/
+- Avangard — http://www.avangard.am/
+- 301.am — https://www.301.am/
+- Golos Armenii — https://www.golosarmenii.am/
+- Syuniac Yerkir — https://syuniacyerkir.am/
+- Novoye Vremya — https://nv.am/
+- Hayastani Hanrapetutyun — https://hhpress.am/
+- Tert.am — https://tert.am/en
+- 1in.am — https://www.1in.am/
+- PanARMENIAN.Net — https://panarmenian.net/
+- Panorama.am — https://www.panorama.am/am/
+- Shamshyan.com — https://shamshyan.com/hy/
+- Lurer.com — https://lurer.com/
+- Sputnik Armenia — https://arm.sputniknews.ru/
+- Mamul.am — https://mamul.am/
+- Iravaban.net — https://iravaban.net/
+- YN.am — https://yn.am/
+- Yelaket Lratvakan — https://yelaket.am/
+- Slaq.am — https://slaq.am/
+- Asekose.am — https://asekose.am/
+- Shabat.am — https://shabat.news/
+- Orer.am — https://orer.am/
+- Business 24 — https://b24.am/
+- ARKA News – Business — https://arka.am/en/news/business/
+- NEWS.am – Business / Economics — https://news.am/eng/news/allregions/economics/
+- FinPort.am — https://finport.am/
+- ABNews.am — https://abnews.am/
+- Armsport.am — https://armsport.am/
+- NEWS.am Sport — https://sport.news.am/
+- Mediamax Sport — https://sport.mediamax.am/
+- Sportaran.com — https://sportaran.com/
+- Asbarez — https://asbarez.com/
+- Hairenik Weekly — https://hairenikweekly.com/
+- Horizon Weekly — https://horizonweekly.ca/
+- Aztag — https://www.aztagdaily.com/
+- Marmara — https://normarmara.com/
+- Alik — https://alikonline.ir/
+- Azat Or — https://azator.gr/
+- Armenpress — https://armenpress.am/hy
+- Novosti Armenia — https://newsarmenia.am/
+- Armenia Liberty (RFE/RL) — https://www.azatutyun.am/
+- Hetq (English) — https://hetq.am/en
+- 168.am (English) — https://en.168.am/
+
+### onlinenewspapers — https://onlinenewspapers.com/armenia.shtml
+- Asbarez — http://www.asbarez.com/
+- Aravot Daily — http://www.aravot.am/
+- ArmeniaDiaspora.com — https://www.armeniadiaspora.com/
+- ArmeniaNow.com — https://www.armenianow.com/
+- Armenian Report — https://www.armenianreport.com/
+- The Armenian Weekly — https://www.armenianweekly.com/
+- Armenpress — https://armenpress.am/arm/
+- Avangard — http://www.avangard.am/
+- Azdarar — https://www.azdarar.am/
+- AZG Armenian Daily — http://www.azg.am/
+- Bavnews — https://bavnews.am/
+- Caspian News — https://caspiannews.com/
+- EVN Report — https://www.evnreport.com/
+- Golos Armenii — https://www.golosarmenii.am/
+- Hayatsk Yerevanits — http://www.acnis.am/hy/
+- Haykakan Zhamanak (Armenian Times) — http://www.armtimes.com/
+- Hetq Online — http://www.hetq.am/
+- Horizon Weekly — http://www.horizonweekly.ca/
+- Hye Media — http://hyemedia.com/
+- Internews Armenia — https://internews.org/
+- Iravunk — https://www.iravunk.com/
+- Kantsasar — http://www.periotem.com/
+- MediaMax — https://mediamax.am/am/
+- News.am — http://www.news.am/
+- Noyan Tapan News — http://www.nt.am/
+- OpenArmenia — https://www.openarmenia.am/
+- Pan Armenian — http://www.panarmenian.net/
+- Panorama — https://www.panorama.am/am/
+- Panorama — https://en.armradio.am/tag/armenia/
+- Tert.am — https://www.tert.am/en/
+- Yerkir — http://www.yerkir.am/
+
+### allyoucanread — https://www.allyoucanread.com/armenian-newspapers/
+- News.am — https://news.am/
+- Sputnik Armenia — https://armeniasputnik.am/
+- Mamul.am — https://mamul.am/
+- Hraparak.am — https://hraparak.am/
+- Armenpress — https://armenpress.am/
+- Lurer.com — https://lurer.com/
+- Azatutyun Radio — https://www.azatutyun.am/
+- Jhoghovurd — https://armlur.am/
+- PanArmenian.net — https://panarmenian.net/
+- 168 Jham — https://168.am/
+- Shamshyan.com — https://shamshyan.com/
+- Lragir.am — https://lragir.am/
+- Aravot — https://www.aravot.am/
+- 1in — https://www.1in.am/
+- Panorama.am — https://www.panorama.am/
+- Republic Radio of Armenia — https://armradio.am/
+- Hetq — https://hetq.am/
+- Tert.am — https://tert.am/
+- Armenian Times — https://armtimes.com/
+- Aysor.am — https://www.aysor.am/
+- ARKA News Agency — https://arka.am/
+- Novosti Armenia — https://www.newsarmenia.am/
+- MediaMax — https://mediamax.am/
+- H1 TV — https://1tv.am/
+- Civilnet — https://civilnet.am/
+- A1 Plus — https://a1plus.am/
+- Yerkramas.org — https://www.yerkramas.org/
+- Factor — https://www.factor.am/
+- BlogNews.am — https://www.blognews.am/
+- Operativ.am — https://operativ.am/
+- Iravaban.net — https://iravaban.net/
+- Asekose.am — http://asekose.am/
+- Golos Armenii — https://golosarmenii.am/
+- 7or — https://www.7or.am/
+- ePress.am — https://epress.am/
+- Yerkir.am — https://yerkir.am/
+- Slaq — https://slaq.am/
+- Hayeli.am — https://hayeli.am/
+- Pastinfo.am — https://www.pastinfo.am/
+- Artsakh Press — https://artsakhpress.am/
+
+### abyznewslinks — http://www.abyznewslinks.com/armen.htm
+- 1in — http://www.1in.am/
+- 1in — http://ru.1in.am/
+- 7 Or — http://www.7or.am/
+- A1 Plus — http://en.a1plus.am/
+- A1 Plus — http://www.a1plus.am/
+- A1 Plus — http://ru.a1plus.am/
+- Armenia — http://armenia.az/am/
+- Armenia Now — http://www.armenianow.com/
+- Aysor — http://www.aysor.am/am/
+- De Facto — http://defacto.am/
+- ePress — http://www.epress.am/en
+- FMG News — http://eng.fmgnews.info/
+- FMG News — http://arm.fmgnews.info/
+- FMG News — http://fmgnews.info/
+- Groong — http://groong.usc.edu/
+- Hetq — http://hetq.am/eng/
+- Lragir — http://www.lragir.am/index/eng/
+- Lurer — http://lurer.com/?l=en
+- Media — http://www.media.am/en
+- News — http://news.am/eng/
+- Oratert — http://www.oratert.com/news/
+- Panorama — http://www.panorama.am/en/
+- Tert — http://www.tert.am/en/
+- Top News — http://www.top-news.am/
+- Aravot — http://en.aravot.am/
+- Aravot — http://www.aravot.am/
+- Aravot — http://ru.aravot.am/
+- AZG — http://www.azg.am/
+- Hayastany Hanrapetutyun — http://www.hhpress.am/
+- Haykakan Zhamanak — http://armtimes.com/
+
+## azerbaijan (south_caucasus) — Azerbaijan
+
+### w3newspapers — https://www.w3newspapers.com/azerbaijan/
+- Azərbaycan — https://www.azerbaijan-news.az/
+- Xalq Qəzeti — https://xalqqazeti.az/az
+- Yeni Musavat — https://musavat.com/ru/
+- AzerNews — https://www.azernews.az/
+- 525-ci qəzet — https://525.az/
+- Zerkalo (Зеркало) — https://zerkalo.az/
+- Oxu.az — https://oxu.az/
+- Qafqazinfo.az — https://qafqazinfo.az/
+- Axar.az — https://axar.az/
+- Haqqin.az — https://haqqin.az/
+- Milli.az — https://www.milli.az/
+- Publika.az — https://publika.az/
+- 1news.az — https://1news.az/
+- Big.AZ — https://big.az/
+- Minval.az — https://minval.az/
+- Modern.az — https://modern.az/
+- SIA.az — https://sia.az/
+- Aktual.az — https://aktual.az/
+- Hurriyyet — https://hurriyyet.az/az
+- Kaspi — https://kaspi.az/
+- Millet.az — http://www.millet.az/
+- Olaylar — https://olaylar.az/
+- Uch Nogta — https://ucnoqta.az/
+- Day.az — https://www.day.az/
+- Moderator.az — https://moderator.az/
+- MediaNews.az — https://medianews.az/
+- Gap.az — https://gapp.az/
+- Trend — https://www.trend.az/
+- Report.az — https://report.az/
+- Iqtisadiyyat — https://iqtisadiyyat.com/
+- Banker.az — https://banker.az/
+- Apasport.az — https://apasport.az/
+- Football+ — https://www.football-plus.az/
+- AzTV — https://aztv.az/
+- İTV (Public Television) — https://itv.az/
+- InterAz TV — https://interaztv.com/
+- AZERTAC — https://azertag.az/
+- Azerbaijan Press Agency (APA) — https://en.apa.az/
+- Bakinskiy Rabochiy — https://br.az/
+- Araz Azerbaijan — https://araznews.org/
+- Şərq — https://sherg.az/
+- Azadlıq qəzeti — https://www.azadliq.info/
+- Xalq Cebhesi — https://www.xalqcebhesi.az/
+- Yeni Azerbaycan — https://www.yeniazerbaycan.com/
+- Bizim Yol — https://bizimyol.info/
+- Serq Qapisi — https://serqqapisi.az/
+- Baki Xeber — https://www.baki-xeber.com/
+- Tezadlar — https://tezadlar.az/
+
+### onlinenewspapers — https://onlinenewspapers.com/azerbaijan.shtml
+- Akinchi — https://akinchi.org/
+- Asbarez — https://www.asbarez.com/
+- Azadliq — https://www.azadliq.info/
+- Azat Artsakh — https://www.artsakhtert.com/arm/
+- Azer News — https://www.azernews.az/
+- Bakinskiy Rabochiy — http://www.br.az/
+- Bizim Yol — https://www.bizimyol.info/
+- Caspian News — https://www.caspiannews.com/
+- Deyerler — http://www.deyerler.org/
+- Ezhednevnie Novosty — http://www.ej.ru/
+- Futbol+ — https://www.football-plus.az/
+- Hürriyyet Daily News — https://apa.az/ru/media/-165598
+- IRS — https://www.irs-az.com/
+- Nezavicimaya Gazeta — https://www.ng.ru/
+- Olaylar — http://www.olaylar.net/
+- Şerq Qapisi — http://www.serqqapisi.az/
+- Today — http://today.az
+- Ucnoqta — http://www.ucnoqta.az/
+- Xalq Cebhesi — http://www.xalqcebhesi.az/
+- Xalq Q?zeti — http://www.xalqqazeti.com/
+- Yeni Müsavat — https://www.musavat.com/
+- Zerkalo — http://www.zerkalo.az/
+
+### allyoucanread — https://www.allyoucanread.com/azerbaijan-newspapers/
+- Haqqin.az — https://haqqin.az/
+- Oxu.az — https://oxu.az/
+- Trend — https://trend.az/
+- Azer Tag — https://azertag.az/
+- APA — https://apa.az/
+- axar.az — https://axar.az/
+- Milli.az — https://www.milli.az/
+- Musavat.com — https://musavat.com/
+- Qafqazinfo.az — https://qafqazinfo.az/
+- Telegraf — https://teleqraf.com/
+- 1News.az — https://1news.az/
+- Azernews — https://www.azernews.az/
+- Minval.az — https://minval.az/
+- Bizim Yol — https://bizimyol.info/
+- Interfax Azerbaijan — https://interfax.az/
+- Vesti.az — https://vesti.az/
+- zerkalo — https://zerkalo.az/
+- MediaNews.az — https://medianews.az/
+- Moderator.az — https://moderator.az/
+- SIA — https://sia.az/
+- Qaynar Info — https://az.qaynarinfo.az/
+- Disput.az — https://www.dispute.az/
+- Azadliq Radiosu — https://www.azadliq.org/
+- AzXeber.com — https://azxeber.com/
+- AZ News — https://www.aznews.az/
+- ANN — https://ann.az/
+- Echo — http://echo.az/
+- mia.gov.az — https://mia.az/
+- Open.az — https://open.az/
+
+### abyznewslinks — http://www.abyznewslinks.com/azerb.htm
+- 1 News — http://www.1news.az/
+- A 24 — http://a24.az/
+- Azerbaijan — http://www.azerbaijan.az/_News/_news_a.html?lang=az
+- Azerbaijan Intelligence — https://www.azerbaijanintelligence.com/
+- Azerbaijan News — http://www.azerbaijannews.net/
+- Azeri Times — http://www.azeritimes.az/index.php/az/
+- Bizim Xeber — http://bizimxeber.az/
+- D Sport — http://www.dsport.az/
+- Day — http://www.day.az/
+- Hurriyet — http://www.hurriyet.az/
+- Metbuat — http://metbuat.az/site/language?id=az
+- Milli — http://www.milli.az/
+- News — http://news.az/
+- Sakartvelo — http://www.sakartvelo.info/
+- Ses Gazeti — http://www.sesqazeti.az/
+- Today — http://www.today.az/
+- 525 Ci Gazet — http://www.525.az/
+- Ayna — http://www.ayna.az/
+- Azadliq — http://www.azadliq.info/
+- Azerbaycan — http://www.azerbaijan-news.az/
+- Ekho — http://www.echo-az.info/
+- Xalq Cebhesi — http://www.xalqcebhesi.az/
+- Yeni Azerbaycan — http://www.yeniazerbaycan.com/
+- Yeni Musavat — http://musavat.com/
+- Zerkalo — http://www.zerkalo.az/
+
+## georgia (south_caucasus) — Georgia
+
+### w3newspapers — https://www.w3newspapers.com/georgia/
+- Georgia today — https://georgiatoday.ge/
+- Georgian Times — https://geotimes.ge/
+- The Messenger — http://www.messenger.com.ge/
+- Georgian Journal — https://georgianjournal.ge/
+- Kvilis Palitra — https://kvirispalitra.ge/
+- Financial — https://finchannel.com/
+- GHN (Georgia News Agency) — https://eng.ghn.ge/
+- Zdf heute — https://www.zdf.de/nachrichten
+- Ard tagesschau — https://www.tagesschau.de/
+- Pressportal.de — https://www.presseportal.de/
+- Der postillon — https://www.der-postillon.com/
+- Reitingi.ge — https://reitingi.ambebi.ge/
+- Ambebi.ge — https://www.ambebi.ge/
+- Intermedia — http://intermedia.ge/
+- BAbajana — https://babajana.com/
+- Interpressnews — https://www.interpressnews.ge/ka/
+- Grujiya online — https://www.apsny.ge/
+- Sputnik Georgia — https://sputnik-georgia.com/
+- Netgazeti.ge — https://netgazeti.ge/
+- Tabula.ge — https://tabula.ge/ge
+- Presa — https://presa.ge/
+- Newposts.ge — https://newposts.ge/
+- Liberali.ge — https://liberali.ge/
+- For.ge — https://for.ge/
+- Geworld.ge — http://geworld.ge/
+- Guria news — https://gurianews.com/
+- Timer.ge — https://www.timer.ge/
+- Media News — http://medianews.ge/
+- Droni — https://www.droni.ge/
+- New Press — https://www.newpress.ge/
+- Caucasus Business Week — http://cbw.ge/
+- Saerto Gazeti — https://www.saertogazeti.ge/
+- Civil Georgia — https://civil.ge/
+
+### onlinenewspapers — https://onlinenewspapers.com/georgia.shtml
+- Agenda.ge — https://www.agenda.ge/
+- BatumiNews — https://batumelebi.netgazeti.ge/
+- Caspian News — https://www.caspiannews.com/
+- Civil.ge — https://www.civil.ge/
+- Euronews Georgia — https://euronewsgeorgia.com/
+- The Georgian Journal — https://www.georgianjournal.ge/
+- The Georgian Times — https://m.geotimes.com.ge/
+- Georgia Today — http://www.georgiatoday.ge/
+- Guria News — https://www.gurianews.com/
+- Ho Da Ara — http://www.hodaara.ge/
+- Imeretis Moambe — https://www.erepublik.com/en/main/newspaper/imeretis-moambe-317949/1
+- Kviris Palitra — https://www.kvirispalitra.ge/
+- The Messenger Online — http://www.messenger.com.ge/
+- Sarbieli — https://www.sarbieli.com/
+- Vrastan — http://www.vrastan.ge/
+
+### allyoucanread — https://www.allyoucanread.com/georgian-newspapers/
+- ambebi.ge — https://www.ambebi.ge/
+- Interpress News — https://www.interpressnews.ge/
+- News.ge — https://news.ge/
+- Civil.ge — http://civil.ge/
+- Intermedia — https://intermedia.ge/
+- Sputnik Georgia — https://sputnik-georgia.com/
+- Gruziya Online — https://apsny.ge/
+- Kviris Palitra — https://kvirispalitra.ge/
+- netgazeti.ge — https://netgazeti.ge/
+- newposts.ge — https://newposts.ge/
+- tabula.ge — https://tabula.ge/
+- For.ge — https://for.ge/
+- droni.ge — https://droni.ge/
+- Georgian Times — https://geotimes.ge/
+- BabaJaNa — https://babajana.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/georg.htm
+- Ambebi — http://www.ambebi.ge/
+- GBC — http://www.gbc.ge/?lang=eng
+- Georgien Nachrichten — http://www.georgien-nachrichten.de/
+- Kvali — http://www.kvali.com/
+- Net Gazeti — http://netgazeti.ge/
+- News — http://news.ge/ge/
+- Novosti Gruziia — http://www.newsgeorgia.ge/
+- Regions — http://www.regions.ge/
+- Sakartvelo — http://www.sakartvelo.info/
+- 24 Saati — http://www.24saati.ge/
+- Kviris Palitra — http://www.kvirispalitra.ge/
+- Rezonansi — http://www.resonancedaily.com/
+
+## belarus (eastern_europe) — Belarus
+
+### w3newspapers — https://www.w3newspapers.com/belarus/
+- Novy Chas (Новы Час) — https://novychas.org/
+- Zvyazda (Звязда) — https://zviazda.by/be
+- Svaboda — https://www.svaboda.org/
+- Naša Niva (Наша Ніва) — https://nashaniva.com/
+- Sovetskaya Belorussia (Советская Белоруссия) — https://www.sb.by/
+- Belorusy i rynok (Белорусы и Рынок) — https://belmarket.by/
+- Belorusskaya Delovaya Gazeta (BDG) — https://bdg.news/
+- Gomelskaya Pravda (Гомельская правда) — https://gp.by/
+- Dnyaprovets (Дняпровец) — https://dneprovec.by/
+- Minskiy Kurier (Минский Курьер) — https://minsknews.by/
+- Narodnaya Volya — https://nv-online.info/
+- Vecherny Brest (Вечерний Брест) — https://vb.by/
+- Vecherny Grodno (Вечерний Гродно) — https://vgr.by/
+- Gazeta Slonimskaya — https://www.gs.by/
+- Argumenty i Fakty — https://aif.by/
+- Ekonomicheskaya Gazeta — https://neg.by/
+- Delo — https://delo.by/
+- Brestskii Kaleidoskop — https://br-k.com/
+- naviny.by — https://naviny.by/
+- Telegraf.by — https://telegraf.news/
+- UDF — https://udf.name/
+- Gazetby.com — https://gazetaby.com/
+- Belaruski Chas — https://belchas.1prof.by/
+- Belapan - English Edition — https://belapan.by/
+- Belarus Today — http://belarustoday.info/?new_lang_id=2
+- BPC — https://www.bpc.by/
+- EKOPRESS — https://www.ecopress.by/
+
+### onlinenewspapers — https://onlinenewspapers.com/belarus.shtml
+- (no entries)
+
+### allyoucanread — https://www.allyoucanread.com/belarus-newspapers/
+- BelTA — https://belta.by/
+- Khartiya '97 — https://charter97.org/
+- Telegraf.by — https://telegraf.news/
+- CB Belarus Segodnya — https://sb.by/
+- Nasha Niva — https://nashaniva.com/
+- s13.ru — https://s13.ru/
+- UDF — https://udf.name/
+- Naviny.by — http://naviny.by/
+- Radio Svaboda — https://www.svaboda.org/
+- Gazetaby.com — https://gazetaby.com/
+- Belarusskiy Partizan — http://belaruspartisan.org/
+- Narodnie Novosti Vitebska — https://viciebsk.cc/
+- Narodnaya Volya — https://nv-online.info/
+- Belapan — http://belapan.com/
+- AFN — http://afn.by/
+
+### abyznewslinks — http://www.abyznewslinks.com/belar.htm
+- Belarus Live — http://www.belarus-live.eu/
+- Belorusskie Novosti — http://naviny.by/
+- Charter 97 — http://www.charter97.org/be/news/
+- Novy Chas — http://www.nchas.info/
+- Telegraf — http://telegraf.by/
+- Belorusskaia Delovaia Gazeta — http://bdg.by/
+- Belorusskaia Gazeta — http://www.belgazeta.by/
+- Sovetskaia Belorussiia — http://www.sb.by/
+
+## moldova (eastern_europe) — Moldova
+
+### w3newspapers — https://www.w3newspapers.com/moldova/
+- Timpul de dimineață — https://timpul.md/
+- Expresul de Ungheni — https://expresul.md/
+- Unghiul — https://unghiul.com/
+- Ziarul de Gardă — https://www.zdg.md/
+- Jurnal.md — https://www.jurnal.md/
+- Moldova Suverana — https://moldova-suverana.md/
+- Ziarul National — https://www.ziarulnational.md/
+- Est Curier — https://estcurier.md/
+- novostipmr.com — https://novostipmr.com/ru
+- Point — https://point.md/ru/
+- Pro TV Chisinau — https://protv.md/
+- Yam news — https://news.yam.md/
+- Unimedia — https://unimedia.info/
+- NOI.md — https://noi.md/
+- Diez — https://diez.md/
+- AVA.md — https://ava.md/
+- Omega — https://omg.md/
+- Vesti — https://vesti.md/
+- Sp — https://esp.md/ru
+- Actualitati.md — https://actualitati.md/
+- Press Obozrenie — https://press.try.md/
+- My Business — https://mybusiness.md/ru/
+- Terra — http://terra.md/
+- Adevarul — https://adevarul.ro/stiri-externe/republica-moldova
+- Info Market — https://infomarket.md/
+- 24H — https://24h.md/
+- TRM — https://trm.md/
+- Limba Română — https://www.limbaromana.md/
+
+### onlinenewspapers — https://onlinenewspapers.com/moldova.shtml
+- 1MD — https://www.1md.online/
+- Adev&acaronrul — https://www.adevarul.ro/
+- Apropo Magazin — https://www.apropomagazin.md/
+- Ekonomicheskoe Obozrenie — http://logos.press.md/
+- Est-Curier — https://www.estcurier.md/
+- Expresul — https://www.expresul.md/
+- Flux — https://www.flux.md/
+- Gazeta Din Vest — https://gazetadinvest.ro/
+- Glia Drochian&acaron — http://www.gliadrochiana.info/
+- Jurnal.md — https://www.jurnal.md/
+- Makler — https://www.makler.md/
+- Moldova Azi — http://moldova-azi.md/
+- Observatorul de Nord — https://www.observatorul.md/
+- Ştiri — https://www.stiri.md/
+- Timpul — https://www.timpul.md/
+- Unghiul — https://www.unghiul.com/
+- Ziarul de Gard&acaron — https://www.zdg.md/
+
+### allyoucanread — https://www.allyoucanread.com/moldova-newspapers/
+- NOI.md — https://noi.md/
+- Point — http://point.md/
+- Unimedia — https://www.unimedia.info/
+- ZDG — https://www.zdg.md/
+- SP — https://esp.md/
+- Journal.md — https://www.jurnal.md/
+- Timpul.md — https://timpul.md/
+- Ziarul National — https://www.ziarulnational.md/
+- diez — https://diez.md/
+- AVA.md — http://ava.md/
+
+### abyznewslinks — http://www.abyznewslinks.com/moldo.htm
+- 24H — http://www.24h.md/
+- Hot News — http://www.hotnews.md/
+- Info Market — http://www.infomarket.md/
+- Moldova AZI — http://www.azi.md/en
+- My Business — http://mybusiness.md/
+- News — http://thenews.md/?go=news&nt=12
+- News Moldova — http://newsmoldova.info/
+- Press Obozrenie — http://press.try.md/
+- Puls — http://www.puls.md/
+- Salut — http://www.salut.md/
+- Unimedia — http://unimedia.info/
+- Vesti — http://www.vesti.md/
+- Yam — http://www.yam.md/
+- Moldova — http://www.moldova.org/eng/
+- Flux — http://www.flux.md/
+- Komsomolskaia Pravda — http://www.kp.md/
+- Nezavisimaya Moldova — http://www.nm.md/
+- Timpul — http://www.timpul.md/
+- Ziarul National — http://www.ziarulnational.md/
+
+## ukraine (eastern_europe) — Ukraine
+
+### w3newspapers — https://www.w3newspapers.com/ukraine/
+- Ekspres(Експрес) — https://expres.online/
+- Holos Ukrayiny(Голос України) — https://www.golos.com.ua/
+- Silski Visti(Сільські вісті) — http://www.silskivisti.kiev.ua/
+- Ukrayina Moloda — https://www.umoloda.kiev.ua/
+- Ukrainska Pravda(Українська правда) — https://www.pravda.com.ua/
+- Zerkalo Nedeli — https://zn.ua/
+- Uryadovy Kuryer — https://ukurier.gov.ua/uk/
+- Gazeta.ua — https://gazeta.ua/
+- Segodnya(Сегодня) — https://www.segodnya.ua/
+- Den(День)/ day.kyiv.ua — https://day.kyiv.ua/
+- Fakty i Kommentarii(Факты и комментарии) — https://fakty.ua/
+- Komsomolskaya Pravda in Ukraine — https://kp.ua/
+- Vysoky Zamok — https://wz.lviv.ua/
+- UKR.NET — https://www.ukr.net/
+- TSN.ua — https://tsn.ua/
+- Obozrevatel — https://www.obozrevatel.com/
+- bigmir.net — https://www.bigmir.net/
+- Censor — https://censor.net/
+- Liga — https://www.liga.net/
+- Suspilne Novyny — https://suspilne.media/
+- Hromadske — https://hromadske.ua/
+- Gordon UA — https://gordonua.com/
+- Novoe Vremya — https://nv.ua/
+- LB — https://lb.ua/
+- Glavcom — https://glavcom.ua/
+- Podrobnosti — https://podrobnosti.ua/
+- Telegraf — https://telegraf.com.ua/
+- Facenews — https://www.facenews.ua/
+- Comments — https://comments.ua/
+- Evropeiska Pravda — https://www.eurointegration.com.ua/
+- Meta — https://news.meta.ua/
+- Dialog — https://dialog.ua/
+- Fokus — https://focus.ua/
+- Kievskiye Vedomosti — https://www.kv.com.ua/
+- Khreshchatyk — https://kreschatic.kiev.ua/
+- ArmyInform — https://armyinform.com.ua/en/
+- Zaxid.net — https://zaxid.net/
+- Vgorode.ua — https://kiev.vgorode.ua/news/
+- Vecherniye Vesti — https://vv.com.ua/
+- Odessa Daily — http://odessa-daily.com.ua/
+- Lvivska Hazeta — https://www.galychyna.fm/
+- Ogo.ua — https://ogo.ua/
+- Molodyy Bukovynets — https://molbuk.ua/
+- Chas — https://chas.cv.ua/
+- Sobitie — https://sobitie.com.ua/
+- СПОРТ.UA — https://sport.ua/
+- Football.UA — https://football.ua/
+- UA-Football.com — https://ua-football.com/
+- Sport – Korrespondent.net — https://ua.korrespondent.net/sport/
+- Чемпіон — https://champion.com.ua/
+- Ekonomichna Pravda — https://epravda.com.ua/
+- Delovaya Stolitsa (DSnews) — https://www.dsnews.ua/
+- DELO (ДЕЛО) — https://delo.ua/
+- RBC-Ukraine – Business — https://newsukraine.rbc.ua/business
+- All About Accounting (VOBU.ua) — http://vobu.ua/ukr/
+- Kyiv Post — https://www.kyivpost.com/
+- Kyiv Independent — https://kyivindependent.com/
+- New Voice of Ukraine (NV English) — https://english.nv.ua/
+- Euromaidan Press — https://euromaidanpress.com/
+- Ukrainian Independent Information Agency (UNIAN) — https://www.unian.ua/
+- RBC-Ukraine (РБК-Україна) — https://www.rbc.ua/
+- Interfax-Ukraine News Agency — https://interfax.com.ua/
+- Ukrainian News Agency (Ukranews) — https://ukranews.com/en/news
+- Ukrinform — https://www.ukrinform.net/
+
+### onlinenewspapers — https://onlinenewspapers.com/ukraine.shtml
+- 2000 — http://www.2000.net.ua/
+- 1K — http://www.1k.com.ua/
+- 24ua — https://24tv.ua/ru/
+- Antenna — http://www.antenna.com.ua/
+- Berdyansk Delovoy — http://delovoy.zp.ua/
+- Bospor Crimea — http://bospor.com.ua/
+- Comments.ua — https://comments.ua/
+- CuPol — http://www.cupol.lviv.ua/
+- Dancor — http://www.dancor.sumy.ua/
+- Den — http://day.kyiv.ua/
+- Delovaya Stolitsa — https://www.dsnews.ua/
+- Dnepropetrovskaya Nedelya — http://www.zorya.dp.ua/
+- E-News — http://www.e-news.com.ua/
+- ElVisti — https://visti.net/
+- Expressinform — http://www.einform.com.ua/
+- Facty i kommentarii — https://fakty.ua/
+- ForUm — http://www.for-ua.com/
+- Gazeta — https://gazeta.ua/
+- Glavnoe — http://www.glavnoe.ua/
+- Gorod — http://gorod-donetsk.com/
+- Graznaya Pravda — http://gpravda.com/
+- Hawla Ukraina — http://www.aures.com.ua/
+- Inspiration — https://vasyltereshchuk.blogspot.com/
+- KafaNews — http://kafanews.com/
+- Kapitalist — http://www.kapitalist.com.ua/
+- Kievskaya Pravda — http://www.kpravda.com/
+- Kievskie Vedomosti — https://www.kv.com.ua/
+- Korespondent — http://www.korespondent.net/
+- Krymskaya Pravda — http://www.kp.crimea.ua/
+- Kyiv Post — https://www.kyivpost.com/
+- Legioner — http://www.legioner.kulichki.com/
+- LIGA.News — http://news.liga.net/
+- Lpravda — http://www.lpravda.com/
+- Lviv News — http://www.lvivnews.info/
+- LvivPost.net — http://www.lvivpost.net/
+- Lviv Today — http://www.lvivtoday.com.ua/
+- Nash Sport — http://www.sports.com.ua/
+- Nataly — http://www.nataly.com.ua
+- News of Ukraine — http://www.novyny.org.ua/
+- Obozrevatel — http://obozrevatel.com/
+- The Observer — https://ndsmcobserver.com/tag/ukraine/
+- Parus — http://www.parus.ua/
+- Personal Plus — http://www.personal-plus.net/
+- Piar — https://piar.ua/
+- Podrobnosti — http://podrobnosti.ua/
+- Poslezavtra — http://poslezavtra.com.ua/
+- Postup — http://postup.brama.com/
+- Pres-Centr — http://www.pres-centr.ck.ua/
+- Road Gazeta — https://roadnews.wordpress.com/
+- Samostyina Ukraina — http://www.samostyina.com/
+- Segodnya — https://ukraine.segodnya.ua/
+- Sevastopolskaya Gazeta — http://sevastopol.press/
+- Slovo — http://www.slovo.odessa.ua/
+- Siverschyna — http://www.siver.com.ua/
+- Sobitie — http://www.sobitie.com.ua/
+- Tema — http://tema.in.ua/
+- UA-News — http://www.ua-news.net/
+- Ukraine Business Online — http://www.ukrainebusiness.com.ua/
+- Ukrainian Journal — http://www.ukrainianjournal.com/
+- Ukrainian News — https://www.ukranews.com/ua/news/
+- Ukrayinska Pravda — http://www.pravda.com.ua/
+- Unian — http://www.unian.net/
+- URA-Inform — http://www.ura-inform.com/
+- Vechernie Vesti — http://www.vv.com.ua/
+- Vechernij Kharkiv — https://vecherniy.kharkov.ua/
+- Vechirniy Kyiv — https://vechirniy.kyiv.ua/
+- Zaxid.Net — http://www.zaxid.net/
+- ZN.ua — https://zn.ua/
+
+### allyoucanread — https://www.allyoucanread.com/ukrainian-newspapers/
+- TCN — https://tsn.ua/
+- Ukrainskaya Pravda — https://www.pravda.com.ua/
+- UKR.NET — https://ukr.net/
+- Unian.net — https://www.unian.net/
+- Obozrevatel.com — https://obozrevatel.com/
+- Novoe Vremya — https://nv.ua/
+- RBC — https://www.rbc.ua/
+- Unian — https://www.unian.ua/
+- focus.ua — https://focus.ua/
+- Telegraf — https://telegraf.com.ua/
+- glavcom.ua — https://glavcom.ua/
+- Gordon UA — https://gordonua.com/
+- KorrespondenT.net — https://korrespondent.net/
+- Interfax Ukraine — https://interfax.com.ua/
+- Espreso TV — https://espreso.tv/
+- Kyiv Post — https://www.kyivpost.com/
+- bigmir)net — http://www.bigmir.net/
+- UKR Inform — https://www.ukrinform.ua/
+- ZN.ua — https://zn.ua/
+- Gazeta.ua — https://gazeta.ua/
+- LB.ua — https://lb.ua/
+- ukranews.com — https://ukranews.com/
+- Evropeiska Pravda — https://www.eurointegration.com.ua/
+- Segodnya.ua — https://segodnya.ua/
+- Fakty — https://fakty.ua/
+- Glavred — https://glavred.info/
+- Dialog — https://www.dialog.ua/
+- comments.ua — https://comments.ua/
+- zaxid.net — https://zaxid.net/
+- Dumskaya Novoski — https://dumskaya.net/
+- Komsomolskaya pravda — https://kp.ua/
+- Podrobnosti — https://podrobnosti.ua/
+- osvita.ua — https://osvita.ua/
+- Krym Realii — https://ru.krymr.com/
+- Novosti N — https://novosti-n.org/
+- Expres — https://expres.online/
+- Censor.net — https://censor.net.ua/
+- from UA — https://from-ua.org/
+- UNN — https://unn.ua/
+- 20minut.ua — https://20minut.ua/
+- ostroV — https://ostro.org/
+- Sprotyv — https://sprotyv.info/
+- InfoResist — https://inforesist.org/
+- forUm — http://for-ua.com/
+- tyzhden.ua — https://tyzhden.ua/
+- MediaPort — https://www.mediaport.ua/
+- Ukraina Kriminalnaya — https://cripo.com.ua/
+- RIA Novosti Ukraine — https://rian.com.ua/
+- kontrakty.ua — https://kontrakty.ua/
+- vlasti.net — http://vlasti.net/
+
+### abyznewslinks — http://www.abyznewslinks.com/ukrai.htm
+- (no entries)
+
+## albania (western_balkans) — Albania
+
+### w3newspapers — https://www.w3newspapers.com/albania/
+- Panorama — https://www.panorama.com.al/
+- Gazeta Tema — https://www.gazetatema.net/
+- Shqiptarja — https://shqiptarja.com/
+- Shekulli — https://shekulli.com.al/
+- Koha Jonë — https://kohajone.com/
+- Gazeta Sot — https://sot.com.al/
+- Gazeta Shqiptare — https://gazetashqiptare.al/
+- DITA — https://gazetadita.al/
+- Shqip — https://gazeta-shqip.com/
+- Gazeta 55 — https://www.55news.al/
+- Standard — https://standard.al/
+- Gazeta Liberale — https://liberale.al/
+- Kombetare — http://kombetare.al/
+- Telegraf — https://telegraf.al/
+- Albanian Times — https://albaniantimes.al/
+- Rilindja Demokratike (RD) — https://rdnews.al/
+- BalkanWeb — https://www.balkanweb.com/
+- Gazeta Express — https://www.gazetaexpress.com/
+- Top Channel — https://top-channel.tv/
+- ABC News Albania — https://abcnews.al/
+- News24 Albania — https://www.news24.al/
+- Albanian Radio and TV (RTSH) — https://rtsh.al/
+- Ora News — https://www.oranews.tv/
+- TV Klan — https://tvklan.al/
+- Vision Plus — https://www.vizionplus.tv/
+- JOQ Albania — https://joq-albania.com/
+- Lapsi.al — https://lapsi.al/
+- Albeu — https://albeu.com/
+- News Bomb — https://newsbomb.al/
+- Java News — https://javanews.al/
+- Lajmi Fundit — https://lajmifundit.al/
+- Lexo.al — https://lexo.al/
+- Shqiperia.com — https://www.shqiperia.com/
+- 24 ore lajme — https://24-ore.com/
+- Gazeta Intervista — https://intervista.al/web/
+- Tirana Post — https://www.tiranapost.al/
+- Tirana Observer — https://www.tiranaobserver.al/
+- Durres Lajm — https://durreslajm.al/
+- Shqiptari — https://shqiptari.net/
+- TV Koha – Korçë — https://tvkoha.tv/
+- Fieri Sot — https://fierisot.com/
+- Berati TV — https://berati.tv/
+- Saranda Web — https://sarandaweb.net/
+- Monitor — https://monitor.al/
+- Faktoje.al — https://faktoje.al/
+- Exit News — https://exit.al/
+- Opinion.al — https://opinion.al/
+- City News (CNA) — https://www.cna.al/
+- Politiko.al — https://politiko.al/
+- Konica — https://konica.al/
+- Bota — https://bota.al/
+- Epoka e Re — https://www.epokaere.com/
+- Gazeta Blic — https://gazetablic.com/
+- Lëvizja Vetëvendosje! — https://www.vetevendosje.org/
+- 360grade.al — https://360grade.al/
+- SCAN TV — https://www.scan-tv.com/
+- Sport Ekspres — https://sportekspres.com/
+- Newsport.al — https://newsport.al/
+- Albanian Telegraphic Agency (ATA) — https://ata.gov.al/
+- NOA Agency — https://noa.al/
+- Tirana Times — https://www.tiranatimes.com/
+- Albanian Daily News (ADN) — https://www.albaniandailynews.com/
+- Euronews Albania (English) — https://euronews.al/en/
+
+### onlinenewspapers — https://onlinenewspapers.com/albania.shtml
+- 24 Orë — http://www.24-ore.com/
+- ABC News — https://www.abcnews.al/
+- Agjencia e Lajmeve Albpress — https://www.noa.al/
+- AlbaNews — http://albanews.org/
+- Albanian Daily News — http://www.albaniannews.com/
+- Albanian Economy News — http://www.albanianeconomy.com/
+- Albanian Telegraphic Agency — http://ata.gov.al/
+- Albanian Telegraphic Agency — http://en.ata.gov.al/
+- Albeu — https://www.albeu.com/
+- Express — http://www.gazetaexpress.com/
+- Koha Jone — http://www.kohajone.com/
+- Lajme — http://www.lajme.gen.al/
+- Lajmet Shqip — http://www.lajmetshqip.com/
+- LajmiFundit — http://www.lajmifundit.al/
+- Panorama Online — http://www.panorama.com.al/
+- Shekulli — http://shekulli.com.al/
+- Shqip — http://www.gazeta-shqip.com/
+- Shqip Media — http://www.shqipmedia.com/
+- TanPortal & TanMedia — http://www.tanmarket.com/php/
+- Tema Online — http://www.gazetatema.net/
+- Tirana Times — http://www.tiranatimes.com/
+- Zéri — http://www.zeri.info/
+
+### allyoucanread — https://www.allyoucanread.com/albanian-newspapers/
+- Gazeta Panorama — http://www.panorama.com.al/
+- Gazeta TemA — https://www.gazetatema.net/
+- BalkanWeb — https://www.balkanweb.com/
+- Gazeta Express — https://www.gazetaexpress.com/
+- SOT News — https://www.sot.com.al/
+- TOP Channel — https://www.top-channel.tv/
+- Shqiptarja.com — https://www.shqiptarja.com/
+- ORA News — https://www.oranews.tv/
+- Lajmi I fundit — https://www.lajmifundit.al/
+- Albeu — https://www.albeu.com/
+- Gazeta Dita — https://www.gazetadita.al/
+- Gazeta Shqip — https://www.gazeta-shqip.com/
+- TV Klan — https://www.tvklan.al/
+- Lapsi.al — https://lapsi.al/
+- ABC news — https://www.abcnews.al/
+- Radio Evropa e Lire — https://www.evropaelire.org/
+- Koha Jone — https://www.kohajone.com/
+- Vision Plus — https://www.vizionplus.tv/
+- NOA Lajme — https://www.noa.al/
+- Java News — https://javanews.al/
+- RTSH — https://rtsh.al/
+- Zeri I Amerikes — https://www.zeriamerikes.com/
+- Tirana Post — https://www.tiranapost.al/
+- Konica.al — https://konica.al/
+- 360grade.al — https://www.360grade.al/
+- Durres Lajm — https://durreslajm.al/
+- Politiko.al — https://www.politiko.al/
+- Opinion.al — https://www.opinion.al/
+- fax.al — https://www.fax.al/
+- Gazeta Telegraf — https://telegraf.al/
+- Reporter.al — https://www.reporter.al/
+- Te Paekspozuarit — https://www.tpz.al/
+- FaxWeb — https://www.faxweb.al/
+
+### abyznewslinks — http://www.abyznewslinks.com/alban.htm
+- 24 Ore — http://24-ore.com/
+- Alb News — http://www.albnews.al/
+- Alb Press News — http://www.albpress.org/
+- Albeu — http://english.albeu.com/
+- Albeu — http://www.albeu.com/
+- Balkan Web — http://www.balkanweb.com/
+- Bota — http://www.bota.al/
+- Dritare — https://dritare.net/
+- Ekspres — http://www.ekspres.al/
+- Express — http://www.gazetaexpress.com/?changeCountry=al
+- Gazeta Blic — http://gazetablic.com/
+- Gazeta Ekonomia — http://gazetaekonomia.com/
+- Gazeta Kritika — http://www.gazetakritika.net/
+- Gazeta Si — https://gazetasi.al/
+- I Kub — http://www.ikub.al/
+- Info Arkhiv — http://www.arkivalajmeve.com/
+- JOQ — http://joq.al/
+- Lajme — http://www.lajme.al/
+- Lajme — http://www.lajme.gen.al/
+- Lajme — http://www.lajme.net/
+- Lajme Online — http://www.lajmeonline.eu/
+- Lajme Shqip — http://www.lajm-shqip.com/
+- Lajme Shqip — http://www.lajmeshqip.com/
+- Lajme Sport — http://www.lajmesport.com/
+- Lajmet Shqip — http://lajmetshqip.com/
+- Lajmi Fundit — http://lajmifundit.al/
+- Politiko — https://politiko.al/english/
+- Shqiperia — https://www.shqiperia.com/
+- Shqiptari — https://shqiptari.net/
+- Shtypi Dites — http://www.shtypidites.com/
+- Time — http://time.ikub.al/
+- Zhurnal — http://www.zhurnal.al/
+- Shekulli — http://www.shekulli.com.al/
+
+## bosnia_and_herzegovina (western_balkans) — Bosnia and Herzegovina
+
+### w3newspapers — https://www.w3newspapers.com/bosnia-and-herzegovina/
+- Dnevni Avaz — https://avaz.ba/
+- Oslobođenje — https://www.oslobodjenje.ba/
+- Nezavisne novine — https://www.nezavisne.com/
+- Glas Srpske — https://www.glassrpske.com/
+- Dnevni list — https://dnevni.ba/
+- Slobodna Bosna — https://www.slobodna-bosna.ba/
+- Klix.ba — https://www.klix.ba/
+- N1 Bosnia and Herzegovina — https://n1info.ba/
+- Federalna.ba — https://federalna.ba/
+- Faktor — https://faktor.ba/
+- Vijesti.ba — https://www.vijesti.ba/
+- Bljesak.info — https://bljesak.info/
+- Source.ba — https://source.ba/
+- Buka — https://6yka.com/
+- Žurnal — https://zurnal.info/
+- Večernji list BiH — https://www.vecernji.ba/
+- Hercegovina.info — https://www.hercegovina.info/
+- Fokus.ba — https://www.fokus.ba/
+- Mondo.ba — https://mondo.ba/
+- Dnevnik — https://www.dnevnik.ba/
+- 24sata.info — https://24sata.info/
+- Krajina.ba — https://krajina.ba/
+- Haber.ba — https://www.haber.ba/
+- Tip.ba — https://tip.ba/
+- ZenicaBlog — https://www.zenicablog.com/
+- Magazin.ba — https://magazin.ba/
+- Pogled.ba — https://pogled.ba/
+- Bošnjaci.net — https://bosnjaci.net/
+- BH-Index — https://www.bh-index.com/
+- Radio Ljubuški — https://radioljubuski.ba/
+- Naša riječ — https://nasarijec.ba/
+- PaleLive — https://www.palelive.com/
+- Poskok — https://poskok.info/
+- MojUSK — https://mojusk.ba/
+- Livno Online — https://www.livno-online.com/
+- Krupljani — https://krupljani.ba/
+- Akta.ba — https://www.akta.ba/
+- eKapija (BiH) — https://ba.ekapija.com/
+- Capital.ba — https://capital.ba/
+- SportSport.ba — https://sportsport.ba/
+- BHRT — https://www.bhrt.ba/
+- RTRS — https://www.rtrs.tv/
+- FENA — https://fena.ba/
+- Hrvatska riječ — https://www.hrvatskarijec.rs/
+
+### onlinenewspapers — https://onlinenewspapers.com/bosnia-herzegovina.shtml
+- The Balkan Chronicle — https://balkaninsight.com/birn_source/the-balkan-chronicle/
+- Balkanske Istrazivacke Mreze (BIRN) — https://birn.eu.com/
+- Bosna Habar — http://www.zambak.ba/
+- Bosnian Media Group — http://www.bosnianmediagroup.com/
+- Dani — https://www.bhdani.ba/
+- Dnevni Avaz — http://www.avaz.ba/
+- Dnevni List — https://www.dnevni.ba/
+- Glas Srpske — https://www.glassrpske.com/
+- Jutarnje Novine — https://www.jutarnji.hr/tag/Bosna_i_Hercegovina/
+- Nezavisne Novine — http://www.nezavisne.com/
+- Novi Horizonti — https://www.novihorizonti.ba/
+- Oslobodjenje — https://www.oslobodjenje.ba/
+- Sarajevo Times — http://www.sarajevotimes.com/
+- Slobodna Bosna — http://www.slobodna-bosna.ba/
+- Svjetlo Rijeci — https://www.svjetlorijeci.ba/
+- Vijesti.ba — http://www.vijesti.ba/
+
+### allyoucanread — https://www.allyoucanread.com/bosnian-newspapers/
+- Dnevni Avaz — https://avaz.ba/
+- Nezavisne Novine — https://nezavisne.com/
+- Slobodna Bosna — https://www.slobodna-bosna.ba/
+- Oslobodjenje — https://www.oslobodjenje.ba/
+- Bljesak.info — https://bljesak.info/
+- Vijesti.ba — https://vijesti.ba/
+- Glas Srpske — https://glassrpske.com/
+- Vecernji List — https://www.vecernji.ba/
+- Hercegovina.info — https://www.hercegovina.info/
+- BUKA — https://6yka.com/
+- Zenica blog — https://zenicablog.com/
+- Source.ba - Naslovnica — http://source.ba/
+- Dnevnik.ba — https://www.dnevnik.ba/
+- Haber.ba — https://haber.ba/
+- Poskok — https://poskok.info/
+- Pogled.ba — https://pogled.ba/
+- Zurnal - Jedina slobodna teritorija — https://zurnal.info/
+- FENA — https://fena.ba/
+- Krajina.ba — https://krajina.ba/
+- Livno Online — https://livno-online.com/
+- TIP.ba — https://tip.ba/
+
+### abyznewslinks — http://www.abyznewslinks.com/bosni.htm
+- 24 Sata — http://24sata.info/
+- Akta — http://www.akta.ba/
+- Danas — https://www.danas.ba/
+- E Kapija — https://ba.ekapija.com/
+- Haber — http://www.haber.ba/
+- Klix — http://www.klix.ba/
+- Mondo — http://mondo.ba/
+- OHR — http://www.ohr.int/?lang=bs
+- Tvoj Svijet — http://www.tvojsvijet.com/
+- Dnevni Avaz — http://www.avaz.ba/
+- Dnevni List — http://dnevni-list.ba/
+- Nezavisne Novine — http://www.nezavisne.com/
+- Oslobodenje — http://www.oslobodjenje.ba/
+
+## kosovo (western_balkans) — Kosovo
+
+### w3newspapers — (not listed)
+- (no entries)
+
+### onlinenewspapers — (not listed)
+- (no entries)
+
+### allyoucanread — https://www.allyoucanread.com/kosovo-newspapers/
+- Telegrafi — https://telegrafi.com/
+- Bota Sot — https://www.botasot.info/
+- KOHAnet — https://www.koha.net/
+- Shkabaj — https://www.shkabaj.net/
+- lajmi.net — https://lajmi.net/
+- Kosovo Sot — https://www.kosova-sot.info/
+- Kosova Press — https://kosovapress.com/
+- ZERI.info — https://zeri.info/
+- IK Info Kosova — https://infokosova.net/
+- Presheva.com — https://presheva.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/kosov.htm
+- 10 Minuta — http://www.10minuta.com/
+- Express — http://www.gazetaexpress.com/en?changeCountry=ks
+- Gazeta Jeta ne Kosove — http://www.gazetajnk.com/
+- Indeks Online — http://www.indeksonline.net/
+- Info Kosova — http://www.infokosova.net/
+- Kosova — http://www.kosova.info/
+- Kosova Online — http://www.kosovaonline.info/
+- Kosovo News Network — http://www.knninfo.com/
+- Lajmi — http://lajmi.net/
+- Mesazhi — http://www.mesazhi.com/
+- QIK — http://www.kosova.com/
+- Shkabaj — http://www.shkabaj.net/
+- Sport Kosova — http://www.sportkosova.com/
+- Telegrafi — http://www.telegrafi.com/
+- UNMIK — http://www.unmikonline.org/pages/default.aspx
+- Zhurnal — http://www.zhurnal-ks.com/
+- Kosova Info Online — http://www.kosova-info-line.de/
+- Radio Free Europe
+Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
+- Koha Ditore — http://koha.net/
+
+## montenegro (western_balkans) — Montenegro
+
+### w3newspapers — https://www.w3newspapers.com/montenegro/
+- Dan — https://www.dan.co.me/
+- Pobjeda — https://www.pobjeda.me/
+- Analitika — https://www.portalanalitika.me/
+- Vijesti — https://www.vijesti.me/
+- Made in Montenegro — https://madeinmontenegro.com/
+- BIT — https://www.bit.me/
+- MINA — https://mina.news/
+- Cafe del Montenegro — https://www.cdm.me/
+- RTCG — https://rtcg.me/
+- Radio Antena M — https://www.antenam.net/
+- Mondo — https://mondo.me/
+- Barinfo — https://barinfo.me/
+- PC Nen — https://www.pcnen.com/portal/
+- Pljevaljske Novine — https://www.pvnovine.me/
+
+### onlinenewspapers — (not listed)
+- (no entries)
+
+### allyoucanread — https://www.allyoucanread.com/montenegro-newspapers/
+- Vijesti — https://vijesti.me/
+- CDM Cafe del Montenegro — https://www.cdm.me/
+- Analitika — https://portalanalitika.me/
+- Pobjeda — https://www.pobjeda.me/
+- Bar info — http://barinfo.me/
+- Made in Montenegro — http://madeinmontenegro.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/monte.htm
+- CDM — http://www.cdm.me/
+- Mondo — http://mondo.me/
+- Monte News — http://www.montenews.me/
+- MozakUbi — http://www.mozakubi.me/
+- PC Nen — http://www.pcnen.com/portal/
+- Dan — http://www.dan.co.me/
+- Pobjeda — http://www.pobjeda.co.me/
+- Vijesti — http://www.vijesti.me/
+
+## north_macedonia (western_balkans) — North Macedonia
+
+### w3newspapers — https://www.w3newspapers.com/macedonia/
+- Nova Makedonija (Нова Македонија) — https://novamakedonija.com.mk/
+- Sloboden Pečat (Слободен Печат) — https://www.slobodenpecat.mk/
+- Večer (Вечер) — https://vecer.mk/
+- Nezavisen Vesnik (Независен Весник) — https://www.nezavisen.mk/
+- Utrinski Vesnik (Утрински весник) — https://utrinski.com.mk/
+- MKD.mk — https://mkd.mk/
+- Plusinfo — https://plusinfo.mk/
+- Kurir — https://kurir.mk/
+- Republika — https://republika.mk/
+- MK News — https://mkd-news.com/
+- Skopje Diem — http://skopjediem.com/
+- Ekonomski Lider (Лидер) — https://lider.mk/
+- Kapital — https://kapital.mk/
+- Fokus (Фокус) — https://fokus.mk/
+- Makedonsko Sonce (Македонско Сонце) — http://makedonskosonce.com/
+- Macedonian Information Agency – MIA (Македонска информативна агенција) — https://mia.mk/
+- Makfax — https://makfax.com.mk/
+- NetPress (Нет Прес) — https://netpress.com.mk/
+- Zhurnal.mk — https://zhurnal.mk/
+- Koha — https://koha.mk/
+- Yeni Balkan — https://www.yenibalkan.com/
+- Kajgana — https://kajgana.com/
+- Tocka.com.mk — https://tocka.com.mk/
+- Off.net.mk — https://off.net.mk/
+- A1on.mk — https://a1on.mk/
+- Centar.mk — https://centar.mk/
+- Puls24 — https://puls24.mk/
+- Aktuale.mk — https://aktuale.mk/
+- Sitel TV — https://sitel.com.mk/
+- Kanal 5 — https://kanal5.com.mk/
+- Kanal 77 — https://kanal77.mk/
+- SportMedia — https://sportmedia.mk/
+
+### onlinenewspapers — https://onlinenewspapers.com/macedonia.shtml
+- 24 Vesti — https://24vesti.com/
+- Fokus — https://fokus.mk/
+- Kapital — https://www.kapital.mk/
+- Koha — http://koha.com.mk/
+- Libertas — https://www.libertas.mk/
+- Makedonsko Delo — http://www.delo.mk/
+- Makedonsko Sonce — http://www.makedonskosonce.com/
+- News24 — https://www.news24.com/Tags/Places/macedonia
+- Nova Makedonija — http://www.novamakedonija.com.mk/
+- Skopje Diem — http://www.skopjediem.com/
+- Utrinski Vesnik — https://www.utrinski.com.mk/
+- Vesnik — https://vesnik.com/
+- Yeni Balkan — http://www.yenibalkan.com/
+- Zum — http://www.zum.mk/
+
+### allyoucanread — https://www.allyoucanread.com/macedonian-newspapers/
+- Time.mk — https://time.mk/
+- Sloboden pecat — https://www.slobodenpecat.mk/
+- Republika — https://republika.mk/
+- Kurir — http://kurir.mk/
+- tocka.com.mk — https://tocka.com.mk/
+- Kajgana — https://kajgana.com/
+- Vecer.mk — https://vecer.mk/
+- sitel — http://sitel.com.mk/
+- MAKFAX — https://makfax.com.mk/
+- Kanal 5 — https://kanal5.com.mk/
+- a1on.mk — https://a1on.mk/
+- Fokus — https://www.fokus.mk/
+- Plus Info — https://plusinfo.mk/
+- Libertas — https://libertas.mk/
+- Nezavisen Vesnik — https://nezavisen.mk/
+- off.net.mk — https://off.net.mk/
+- INFOMAX.mk — https://infomax.mk/
+- Expres.mk — https://www.expres.mk/
+- Sakam da kazham — https://sdk.mk/
+- Telma TV — https://telma.com.mk/
+- GRID.mk — https://grid.mk/
+- Daily Makedonia — https://daily.mk/
+- ALFA TV — https://alfa.mk/
+- Nova Makedonija — https://novamakedonija.com.mk/
+- IDI VIDI — http://idividi.com.mk/
+- MKD — https://mkd.mk/
+- MIA — https://mia.mk/
+- Radio Slobodna Evropa — https://www.slobodnaevropa.mk/
+- Press 24 — https://press24.mk/
+- MAKTEL — https://maktel.mk/
+- Brif.mk — https://www.brif.mk/
+- MRT — https://www.mrt.com.mk/
+- vesti.mk — https://www.vesti.mk/
+- NetPress — https://netpress.com.mk/
+- Lokalno.mk — https://lokalno.mk/
+- 24.mk — https://24.mk/
+- 24 Info — https://www.24info.mk/
+- Meta.mk — https://www.meta.mk/
+- Denesen Vesnik — http://denesen.mk/
+- Markukule — https://markukule.mk/
+- ohridnews.com — https://www.ohridnews.com/
+- Zhurnal — https://zhurnal.mk/
+- Bitola News — https://www.bitolanews.mk/
+- Gostivar press — https://www.gostivarpress.mk/
+- radiomof.mk — https://www.radiomof.mk/
+- CivilMedia — https://www.civilmedia.mk/
+
+### abyznewslinks — http://www.abyznewslinks.com/maced.htm
+- 24 Online — http://www.24online.mk/
+- ABE — http://abe.mk/
+- B2 — http://b2.mk/
+- Daily — http://daily.mk/
+- Ekonomski Lider — http://lider.mk/
+- Express — http://www.gazetaexpress.com/?changeCountry=mk
+- Grid — http://grid.mk/
+- Headlines — http://hl.mk/
+- Idi Vidi — http://www.idividi.com.mk/english/
+- Kurir — http://www.kurir.mk/
+- Macedonia Times — https://macedoniatimes.news/
+- Macedonia Today — http://macedoniatoday.ru/
+- Makedonija — http://www.makedonija.com/
+- Makedonija 24 — http://www.makedonija24.mk/
+- Makedonski Sport — http://www.sport.com.mk/
+- MK News — http://mkd-news.com/
+- Net Press — http://netpress.com.mk/
+- On Net — http://on.net.mk/
+- Plus Info — http://www.plusinfo.mk/
+- Puls 24 — http://www.puls24.mk/
+- Republika — http://english.republika.mk/
+- Republika — http://republika.mk/
+- Republika — http://shqip.republika.mk/
+- Shqip Media — http://shqipmedia.com/portal/
+- Skopje Diem — http://www.skopjediem.com/
+- Sport Media — http://sportmedia.mk/
+- Start — http://start.mk/
+- Telegraf — http://www.telegraf.mk/
+- Time — http://www.time.mk/
+- Tochka — http://tocka.com.mk/
+- Vesti — http://vesti.mk/
+- Vistina — http://vistina.mk/
+- Zhurnal — http://www.zhurnal.mk/
+- Dnevnik — http://www.dnevnik.mk/
+- Nova Makedonija — http://www.novamakedonija.com.mk/
+- Utrinski Vesnik — http://www.utrinski.mk/
+- Vecer — http://vecer.mk/
+
+## serbia (western_balkans) — Serbia
+
+### w3newspapers — https://www.w3newspapers.com/serbia/
+- Informer — https://informer.rs/
+- Večernje Novosti(Вечерње новости) — https://www.novosti.rs/
+- Blic — https://www.blic.rs/
+- Kurir — https://www.kurir.rs/
+- Alo! — https://www.alo.rs/
+- Politika — https://www.politika.rs/
+- Danas — https://www.danas.rs/
+- Dnevnik — https://www.dnevnik.rs/
+- Nedeljnik — https://www.nedeljnik.rs/
+- Vreme — https://vreme.com/
+- Pečat — https://www.pecat.co.rs/
+- Novistandard — https://standard.rs/
+- Borba — https://www.borba.rs/
+- B92.net — https://www.b92.net/
+- Mondo — https://mondo.rs/
+- RTS — https://www.rts.rs/
+- Telegraf — https://www.telegraf.rs/
+- Krstarica — https://www.krstarica.com/
+- Noizz — https://noizz.rs/
+- Pravda — https://www.pravda.rs/
+- Vesti — https://www.vesti-online.com/
+- Peščanik — https://pescanik.net/
+- Istinomer — https://www.istinomer.rs/
+- Studio B — https://studiob.rs/
+- Svet Plus — https://www.svetplus.com/
+- Glas Javnosti — https://www.glas-javnosti.rs/
+- Mozzart Sport — https://www.mozzartsport.com/
+- Sportske.net — https://sportske.net/
+- Sportski žurnal — https://www.zurnal.rs/
+- Sport Klub — https://sportklub.n1info.rs/
+- Južne vesti — https://www.juznevesti.com/
+- RTV Novi Pazar — https://rtvnp.rs/
+- Beograd — https://www.beograd.rs/
+- Sandžak Press — https://sandzakpress.net/
+- Ozon Press — https://www.ozonpress.net/
+- Subotičke Novine — http://www.subotickenovine.rs/
+- Glas Podrinja — https://www.glaspodrinja.rs/
+- Sremske novine — https://www.sremskenovine.co.rs/
+- 013 Info — https://013info.rs/
+- VA Media — https://www.vamedia.info/
+- Patak Online — https://patak.co.rs/
+- Zaječar Online — https://zajecaronline.com/
+- JUG Press — https://jugpress.com/
+- Lozničke Novosti — https://loznickenovosti.com/
+- Užička nedelja — https://uzickanedelja.rs/
+- Reč naroda — https://recnaroda.co.rs/
+- Kruševac Grad — https://krusevacgrad.rs/
+- Pančevac — https://pancevac-online.rs/
+- Loznica Info — https://www.infolo.rs/
+- Bečejski Mozaik — https://becejski-mozaik.co.rs/
+- Čačanski glas — https://www.caglas.rs/
+- Beta News Agency — https://beta.rs/
+- Fonet — https://fonet.rs/
+- Tanjug — https://www.tanjug.rs/
+- Naslovi — https://naslovi.net/
+- Vesti.rs — https://www.vesti.rs/
+- Time.rs — https://time.rs/
+- E Kapija — https://www.ekapija.com/de/
+- Bunjevačke Novine — https://www.bunjevci.net/bunjevacke-novine
+- Hrvatska riječ — http://www.hrvatskarijec.rs/
+- Hlas L’udu — https://hl.rs/
+- Ruske Slovo — https://www.ruskeslovo.com/
+- Hét Nap — https://hetnap.rs/
+- Presheva Jone — https://www.preshevajone.com/
+- Libertatea — https://libertatea.rs/
+- Presheva — https://presheva.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/serbia.shtml
+- Alo — http://www.alo.rs/
+- BLIC — http://www.blic.rs/
+- Cacanski Glas — https://www.caglas.rs/
+- Danas — http://www.danas.rs/
+- Dnevnik — https://www.dnevnik.rs/
+- Fokus Vesti — https://www.fokusvesti.rs/
+- Glas Javnosti — https://www.glas-javnosti.rs/
+- Koha Ditore — http://www.koha.net/
+- Kosava — http://www.yurope.com/zines/kosava/
+- Kurir — https://www.kurir.rs/
+- M Novine — http://www.m-novine.com/
+- Narodne Novine — http://www.narodne.com/
+- Nezavisne Novine — https://www.nezavisne.com/
+- NIN — http://www.nin.co.rs/
+- Novosti — https://www.novosti.rs/
+- Pobjeda — http://www.pobjeda.me/
+- Politika — http://www.politika.rs/
+- Revija Kolubara — http://www.kolubara.info/
+- Sportske Vesti — http://www.sportske.net/
+- Sremske Novine — http://www.sremskenovine.co.rs/
+- Suboticke Novine — http://www.subotickenovine.rs/
+- Vesti — https://www.vesti-online.com/
+- Vijesti — https://www.vijesti.me/
+- Vreme — http://www.vreme.com/
+
+### allyoucanread — https://www.allyoucanread.com/serbian-newspapers/
+- Blic — http://www.blic.rs/
+- Kurir — https://www.kurir.rs/
+- B92 — https://www.b92.net/
+- Novosti — https://novosti.rs/
+- Telegraf — https://telegraf.rs/
+- Danas — https://www.danas.rs/
+- Informer — https://www.informer.rs/
+- naslovi.net — https://naslovi.net/
+- RTS — https://rts.rs/
+- Polotika — https://www.politika.rs/
+- Pravda — https://pravda.rs/
+- Vesti Online — https://www.vesti-online.com/
+- Serbian Cafe — https://serbiancafe.com/
+- Juzne vesti — https://www.juznevesti.com/
+- Dnevnik — https://www.dnevnik.rs/
+- TANJUG — https://tanjug.rs/
+- Vreme — https://vreme.com/
+- Pescanik — https://pescanik.net/
+- Istinomer — https://www.istinomer.rs/
+- Vesti.rs — http://www.vesti.rs/
+- Nova srpska politicka misao — http://nspm.rs/
+- Beta press — https://beta.rs/
+- S Media — http://www.smedia.rs/
+- NoviStandard — https://standard.rs/
+- TIME.rs — https://time.rs/
+- Glas javnosti — https://www.glas-javnosti.rs/
+- NoviMagazin.rs — https://novimagazin.rs/
+- Press Online — http://www.pressonline.rs/
+
+### abyznewslinks — http://www.abyznewslinks.com/yugos.htm
+- Aktuelno — http://aktuelno.net/
+- E Kapija — https://www.ekapija.com/de/
+- Krstarica — https://www.krstarica.com/
+- MFA — http://www.mfa.gov.rs/en/
+- Mondo — http://mondo.rs/
+- Mozzart Sport — http://www.mozzartsport.com/
+- Nadlanu — http://nadlanu.com/
+- Naslovi — https://naslovi.net/
+- Noizz — https://noizz.rs/
+- Pravda — http://www.pravda.rs/
+- Press — http://www.pressonline.rs/
+- S Media — http://www.smedia.rs/
+- Sportske Net — https://www.sportske.net/
+- Srbija — http://www.srbija.gov.rs/?change_lang=en
+- Svet Plus — http://www.svetplus.com/
+- Blic — https://www.blic.rs/
+- Danas — https://www.danas.rs/
+- Glas Javnosti — http://www.glas-javnosti.rs/
+- Politika — http://www.politika.rs/scc
+- Vecernje Novosti — http://www.novosti.rs/
+
+## bulgaria (central_europe) — Bulgaria
+
+### w3newspapers — https://www.w3newspapers.com/bulgaria/
+- 24 Chasa(24 часа) — https://www.24chasa.bg/
+- Trud(Труд) — https://trud.bg/
+- Telegraph(Телеграф) — https://telegraph.bg/
+- SEGA(СЕГА) — https://www.segabg.com/
+- Duma(ДУМА) — https://duma.bg/
+- Bulgaria Dnes(България Днес) — https://www.bgdnes.bg/
+- 168 Chasa — https://www.168chasa.bg/
+- Ataka(Атака) — https://vestnikataka.bg/
+- Capital(Капитал) — https://www.capital.bg/
+- Banker(Банкер) — https://banker.bg/
+- Faktor — https://faktor.bg/
+- Sinor.bg — https://sinor.bg/
+- Actualno — https://www.actualno.com/
+- Sportal.bg — https://sportal.bg/
+- Gong(Гонг) — https://gong.bg/
+- Tema Sport — https://temasport.com/
+- bTV Novinite — https://btvnovinite.bg/
+- NOVA — https://nova.bg/
+- Dnevnik(Дневник) — https://www.dnevnik.bg/
+- Standart(Стандарт) — https://www.standartnews.com/
+- DIR.bg — https://dir.bg/
+- Novinar(Новинар) — https://novinar.bg/
+- ABV.bg — https://abv.bg/
+- Blitz — https://blitz.bg/
+- Vesti.bg — https://www.vesti.bg/
+- Dnes.bg — https://www.dnes.bg/
+- PIK — https://pik.bg/
+- Mediapool — https://www.mediapool.bg/
+- OFFNews — https://offnews.bg/
+- Fakti.bg — https://fakti.bg/
+- Frog News(Фрогнюз) — https://frognews.bg/
+- Bulgarski Faktor (factor-news.net) — https://www.factor-news.net/
+- Club Z — https://clubz.bg/
+- Hotnews.bg — https://hotnews.bg/
+- Budnaera.com — https://budnaera.com/
+- Glasove.com — https://glasove.com/
+- Pogled — https://pogled.info/
+- Plovdiv24 — https://www.plovdiv24.bg/
+- Varna24 — https://www.varna24.bg/
+- Burgas Info — https://www.burgasinfo.com/
+- Ruse24 — https://www.ruse24.bg/
+- Cherno More — https://www.chernomore.bg/
+- Marica — https://www.marica.bg/
+- e-Burgas — https://e-burgas.com/
+- Haskovo.info — https://haskovo.info/
+- Kompas — https://kompasbg.com/
+- Borba(Вестник Борба) — https://www.borbabg.com/
+- Yantra Dnes(Янтра ДНЕС) — https://www.dnesbg.com/
+- Struma(Струма) — https://www.struma.com/
+- Mont Press — https://montpress.com/
+- Za Pernik — https://zapernik.com/
+- Nova Dobrudzhanska Tribuna — https://ndt1.eu/
+- Viara — https://viaranews.com/
+- Zashumen — https://zashumen.bg/
+- Sliven News — https://sl-news.sliven.net/
+- Varna Utre — https://varnautre.bg/
+- Sapernik — https://sapernik.info/
+- BTA – Bulgarian News Agency — https://www.bta.bg/en
+- Focus News Agency — https://www.focus-news.net/
+- Novinite (Sofia News Agency) — https://www.novinite.com/
+- The Sofia Globe — https://sofiaglobe.com/
+- SeeNews — https://seenews.com/
+- Radio Bulgaria / BNR News in English — https://bnrnews.bg/en
+
+### onlinenewspapers — https://onlinenewspapers.com/bulgaria.shtml
+- 7 Sport — https://www.7sport.net/
+- 24 Chasa — https://www.24chasa.bg/
+- 365DNI.info — https://365dni.info/
+- Actualno.com — http://www.actualno.com/
+- Ataka — http://www.vestnikataka.bg/
+- BGNES — https://bgnesagency.com/
+- BNT — https://www.bnt.bg/
+- Bourgas.Org — https://www.burgaslargo.com/
+- Bulgaria Gazette — http://www.bulgariagazette.com/
+- Bulgaria Oggi — http://www.bulgariaoggi.com/
+- Bulgaria Weekly — http://www.bulgaria-weekly.com/
+- Burgas Info — http://www.burgasinfo.com/
+- Burgas News — http://www.burgasnews.com/
+- Capital — http://www.capital.bg/
+- Cherno More — https://www.chernomore.bg/
+- DNES — https://www.dnes.bg/
+- Dnevnik — http://www.dnevnik.bg/
+- Duma — https://www.duma.bg/
+- Ekip News — https://ekipnews.com/
+- e-Novinar.com — https://e-novinar.com/
+- Factor News — http://www.factor-news.net/
+- Fair Newspaper — http://www.panairenvestnik.com/
+- Focus News — http://www.focus-news.net/
+- Frog News — http://www.frognews.bg/
+- Komentari — http://www.komentari.com/
+- Manager — http://www.manager.bg/
+- Marica — https://www.marica.bg/
+- Media Pool — http://www.mediapool.bg/
+- Monitor — https://www.monitor.bg/
+- Mont Press Online — https://www.mont-press.com/
+- News.bg — https://www.news.bg/
+- News Guide Bulgaria — http://news.guide-bulgaria.com/
+- Novinite.com — http://www.novinite.com/
+- Novo Vreme — http://www.novovreme.com/
+- Obektiv.info — http://www.obektiv.info/
+- Pari — http://www.pari.bg/
+- Pozvanete Novini — http://www.pozvanete.bg/
+- Segabg — http://www.segabg.com/
+- Slivenski Novini — https://sl-news.sliven.net/
+- The Sofia Echo — https://balkaninsight.com/birn_source/sofia-echo/
+- Standart — http://www.standartnews.com/
+- Struma — http://www.struma.com/
+- Tema Sport — https://www.temasport.com/
+- Top Novini — https://www.topnovini.com/
+- Top Sport — http://www.topsport.bg/
+- Trud — https://www.trud.bg/
+- Vratza — https://vratza.com/
+- Wirtschaftsblatt Bulgarisches — https://www.wirtschaftsblatt-bg.com/
+- Za Pernik — https://zapernik.com/
+
+### allyoucanread — https://www.allyoucanread.com/bulgarian-newspapers/
+- Actualno — https://actualno.com/
+- 24 Chasa — https://www.24chasa.bg/
+- Nova.bg — https://nova.bg/
+- Dnes.bg — https://dnes.bg/
+- Standard Information Agency — https://www.standartnews.com/
+- Fakti — https://fakti.bg/
+- Pik — http://pik.bg/
+- Petel.bg — https://petel.bg/
+- Marica — https://marica.bg/
+- Flagman.bg — https://flagman.bg/
+- Focus — https://focus-news.net/
+- Dnevnik — https://dnevnik.bg/
+- Novinite.com — https://novinite.com/
+- News.bg — https://news.bg/
+- Trud — https://trud.bg/
+- btv novinite — https://btvnovinite.bg/
+- Vesti.bg — https://www.vesti.bg/
+- OFFNews.bg — https://offnews.bg/
+- Darik News — https://dariknews.bg/
+- mediapool.bg — https://mediapool.bg/
+- Sega — https://segabg.com/
+- Novini.bg — https://novini.bg/
+- Webcafe — https://webcafe.bg/
+- Capital — https://www.capital.bg/
+- Frog News — https://frognews.bg/
+- Telegraph — https://telegraph.bg/
+- Pogled Info — https://pogled.info/
+- Glasove.com — https://glasove.com/
+- HaskovoNET — https://www.haskovo.net/
+- ClubZ — https://clubz.bg/
+- Struma — https://struma.com/
+- AFERA — https://afera.bg/
+- hotNews.bg — https://hotnews.bg/
+- Shum.bg — https://shum.bg/
+- 168 Chasa — https://www.168chasa.bg/
+- Novinite.bg — https://novinite.bg/
+- BGNES — https://bgnes.bg/
+- iNews — https://inews.bg/
+- Burgasnews — https://burgasnews.com/
+- zaPERNIK.com — https://zapernik.com/
+- e-vestnik.bg — https://e-vestnik.bg/
+- Razkritia.com — https://razkritia.com/
+- Bivol — https://bivol.bg/
+- Cross — http://www.cross.bg/
+- B News — https://bnews.bg/
+- TopNovini.com — https://topnovini.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/bulga.htm
+- Actualno — https://www.actualno.com/
+- Agro Plovdiv — http://agroplovdiv.bg/
+- BG News — https://bgnews.host/
+- Blitz — http://www.blitz.bg/
+- Bulgaria Gazette — http://www.bulgariagazette.com/
+- Bulgaria Utre — http://www.bulgaria.utre.bg/
+- Bulgarian Business Adviser — http://www.bba.bg/
+- Bulgarian Post — http://www.bpost.bg/
+- Bulgarian Post — http://www.thebulgarianpost.com/
+- Bulgarian Times — http://www.bg-times.com/
+- Bulgarski Faktor — http://www.factor-news.net/
+- Dnes — http://www.dnes.bg/
+- Faktor — http://www.faktor.bg/
+- Forum News — http://forumnews.bg/
+- Guide Bulgaria — http://news.guide-bulgaria.com/
+- Media Times Review — http://www.mediatimesreview.com/
+- Mediapool — http://www.mediapool.bg/
+- News — https://news.bg/
+- Novinite — http://www.novinite.com/
+- Novoto Vreme — http://www.novotovreme.bg/
+- PIK — http://pik.bg/
+- Pogled — http://www.pogled.info/
+- Radar — http://radar.bg/bg/
+- Sport Online — http://www.sportonline.bg/
+- Top Novini — https://www.topnovini.com/
+- 7 din Sport — http://www.7sport.net/
+- 24 Chasa — https://www.24chasa.bg/
+- Banker — http://www.banker.bg/
+- Bulgariya — http://www.bulgaria-weekly.com/
+- Dnevnik — http://www.dnevnik.bg/
+- Duma — http://www.duma.bg/
+- Kapital — http://www.capital.bg/
+- Kesh — http://www.cash.bg/
+- Meridian Mach — http://www.meridianmatch.bg/
+- Monitor — http://www.monitor.bg/
+- Novinar — http://novinar.bg/
+- Sega — http://www.segabg.com/
+- Standart — http://www.standartnews.com/bg/
+- Trud — http://www.trud.bg/
+
+## croatia (central_europe) — Croatia
+
+### w3newspapers — https://www.w3newspapers.com/croatia/
+- 24sata (24hours) — https://www.24sata.hr/
+- Jutarnji list (The Morning Paper) — https://www.jutarnji.hr/
+- Večernji list — https://www.vecernji.hr/
+- Slobodna Dalmacija — https://slobodnadalmacija.hr/
+- Novi list — https://www.novilist.hr/
+- Sportske novosti — https://sportske.jutarnji.hr/sn
+- Index — https://www.index.hr/
+- Dnevnik — https://dnevnik.hr/
+- Net.hr — https://net.hr/
+- Tportal — https://www.tportal.hr/
+- HRT — https://www.hrt.hr/
+- RTL — https://www.rtl.hr/
+- N1 — https://n1info.hr/
+- Telegram.hr — https://www.telegram.hr/
+- Dnevno.hr — https://www.dnevno.hr/
+- Narod.hr — https://narod.hr/
+- Monitor — https://www.monitor.hr/
+- Scena — https://www.scena.hr/
+- Glas Istre — https://www.glasistre.hr/
+- Glas Slavonije — https://www.glas-slavonije.hr/
+- Zadarski list — https://zadarskilist.novilist.hr/
+- Varaždinske vijesti — https://www.varazdinske-vijesti.hr/
+- Podravski list — https://podravski.hr/
+- Dubrovački vjesnik — https://dubrovacki.slobodnadalmacija.hr/dubrovnik
+- Narodni list — https://www.narodni-list.hr/
+- Zagreb.info — https://www.zagreb.info/
+- Dalmacija News — https://www.dalmacijanews.hr/
+- Dalmacija Danas — https://www.dalmacijadanas.hr/
+- Dalmatinski portal — http://dalmatinskiportal.hr/
+- Dubrovački dnevnik — https://dubrovackidnevnik.net.hr/
+- 057 info — https://www.057info.hr/
+- Osijek 031 — https://www.osijek031.com/
+- Rijeka Danas — https://www.rijekadanas.com/
+- eVaraždin — https://evarazdin.hr/
+- Regionalni tjednik — https://regionalni.com/
+- Dugoselska Kronika — https://dugoselska-kronika.hr/
+- ŠibenikIN — https://www.sibenik.in/
+- Zagorje.com — https://www.zagorje.com/
+- Lika online — https://www.lika-online.hr/
+- 034portal — https://www.034portal.hr/
+- Dubrovnik Portal — https://dubrovnikportal.com/
+- Samoborski glasnik — http://www.samoborskiglasnik.net/
+- Križevci.info — https://www.krizevci.info/
+- Poslovni dnevnik — https://www.poslovni.hr/
+- Narodne novine — https://www.nn.hr/
+- Direktno.hr — https://direktno.hr/
+- Metro portal — http://metro-portal.hr/
+- Lokalna Hrvatska — https://lokalnahrvatska.hr/
+- Klik.hr — https://klik.hr/
+- Glas Koncila — https://www.glas-koncila.hr/
+- Nacional — https://www.nacional.hr/
+- Lider — https://lidermedia.hr/
+- Gloria — https://www.gloria.hr/
+- Bug — https://www.bug.hr/
+- The Dubrovnik Times — https://www.thedubrovniktimes.com/
+- Total Croatia News — https://total-croatia-news.com/
+- Croatia Week — https://www.croatiaweek.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/croatia.shtml
+- 24Sata — http://www.24sata.hr/
+- Croatian Cultural Association — https://www.hkv.hr/
+- Croatian Times — https://www.croatia-times.com/
+- Croatia Week — https://www.croatiaweek.com/
+- Dubrovacki Dnevnik — http://www.dubrovackidnevnik.hr/
+- The Dubrovnik Times — http://www.thedubrovniktimes.com/
+- Elektronicki Varazdin — http://www.evarazdin.hr/
+- Glas Istre — http://www.glasistre.hr/
+- Glas Koncila — http://www.glas-koncila.hr/
+- Glas Slavonije — http://www.glas-slavonije.hr/
+- HIC — http://www.hic.hr/
+- Hina — http://www.hina.hr/
+- Hrvatska Matica Iseljenika — http://www.matis.hr/
+- Javno — http://www.javno.com/
+- Jutarnji List — http://www.jutarnji.hr/
+- La Voce del Popolo — https://lavoce.hr/
+- Lokalna Hrvatska — http://www.lokalnahrvatska.hr/
+- Monitor — http://www.monitor.hr/
+- Nacional — http://www.nacional.hr/
+- Narodne Novine — http://www.nn.hr/
+- Narodni List — http://www.narodni-list.hr/
+- Poslovni Dnevnik — http://www.poslovni.hr/
+- Slavonski Brod — http://www.sbonline.net/
+- Slobodna Dalmacija — http://www.slobodnadalmacija.hr/
+- Sportske.net — http://www.sportske.net/
+- Sportske Novosti — http://sportske.jutarnji.hr/
+- Večernji List — http://www.vecernji.hr/
+- Zadarski List — http://www.zadarskilist.hr/
+
+### allyoucanread — https://www.allyoucanread.com/croatian-newspapers/
+- Index.hr — https://www.index.hr/
+- Jutarnji List — https://www.jutarnji.hr/
+- Ve&#269;ernji list — https://www.vecernji.hr/
+- 24sata.hr — https://www.24sata.hr/
+- Slobodna Dalmacija — https://slobodnadalmacija.hr/
+- tportal.hr — https://www.tportal.hr/
+- Dnevno.hr — https://www.dnevno.hr/
+- Zagreb.info — https://www.zagreb.info/
+- Dnevnik.hr — https://dnevnik.hr/
+- net.hr — https://net.hr/
+- N1 — https://n1info.hr/
+- RTL — https://www.rtl.hr/
+- HRT — https://www.hrt.hr/
+- Novi List — https://www.novilist.hr/
+- Telegram.hr — https://www.telegram.hr/
+- Nacional.hr — https://www.nacional.hr/
+- Glas Istre — http://www.glasistre.hr/
+- Danas.hr — https://danas.hr/
+- klik.hr — https://klik.hr/
+- dalmatinskiportal.hr — https://www.dalmatinskiportal.hr/
+- direktno.hr — https://direktno.hr/
+- Dalmacija Danas — https://www.dalmacijadanas.hr/
+- narod.hr — https://www.narod.hr/
+- istarski.hr — https://istarski.hr/
+- Podravski.hr — https://www.podravski.hr/
+- Total Croatia News — https://www.total-croatia-news.com/
+- Glas Slavonije — http://www.glas-slavonije.hr/
+- Zagorje.com — https://www.zagorje.com/
+- Croatia Week — https://www.croatiaweek.com/
+- 057info.hr — https://www.057info.hr/
+- ePodravina.hr — https://www.epodravina.hr/
+- DuList — https://www.dulist.hr/
+- Maxportal — https://www.maxportal.hr/
+- Radio Banovina — https://www.radio-banovina.hr/
+- Informativni centar Virovitica — https://www.icv.hr/
+- 034portal.hr — https://www.034portal.hr/
+- Ferata.hr — https://ferata.hr/
+- Antena Zadar — https://www.antenazadar.hr/
+- 7dnevno.hr — https://www.7dnevno.hr/
+- Rijeka Danas — https://www.rijekadanas.com/
+- eVarazdin.hr — https://www.evarazdin.hr/
+- GEOpolitika news — https://geopolitika.news/
+- Internet Monitor — https://www.monitor.hr/
+- Osijek031 — http://www.osijek031.com/
+- Novosti — https://www.portalnovosti.com/
+- advance.hr — https://www.advance.hr/
+- Dalje.com — https://dalje.com/
+- HINA — https://www.hina.hr/
+- Dalmacija News — https://www.dalmacijanews.hr/
+
+### abyznewslinks — http://www.abyznewslinks.com/croat.htm
+- 1 Klik — http://www.1klik.hr/
+- Dalje — http://dalje.com/en/
+- Dnevnik — http://dnevnik.hr/
+- HIC — http://www.hic.hr/english/
+- Index — http://www.index.hr/
+- Lokalna Hrvatska — http://lokalnahrvatska.hr/
+- Monitor — http://www.monitor.hr/
+- Net — http://www.net.hr/
+- Scena — http://www.scena.hr/
+- Sport Net HR — http://www.hrsport.net/
+- T Portal — http://www.tportal.hr/
+- VIP — http://www.vip.hr/
+- Croatia Today — http://www.omniacomm.biz/MT.shtml?type=2
+- Croatian Times — http://www.croatiantimes.com/
+- 24 Sata — http://www.24sata.hr/
+- Jutarnji List — http://www.jutarnji.hr/
+- Vecernji List — http://www.vecernji.hr/
+
+## czech_republic (central_europe) — Czech Republic
+
+### w3newspapers — https://www.w3newspapers.com/czech-republic/
+- Mladá fronta DNES (MF DNES) — https://www.idnes.cz/
+- Blesk — https://www.blesk.cz/
+- iSport — https://isport.blesk.cz/
+- Deník — https://www.denik.cz/
+- Lidové noviny — https://www.lidovky.cz/
+- Hospodářské noviny — https://hn.cz/
+- E15 — https://www.e15.cz/
+- Aha! — https://www.ahaonline.cz/
+- Ceskobudejovicky Denik — https://ceskobudejovicky.denik.cz/
+- Chebsky Denik — https://chebsky.denik.cz/
+- Sokolovsky Denik — https://sokolovsky.denik.cz/
+- Karlovarsky Denik — https://karlovarsky.denik.cz/
+- Trebicsky Denik — https://trebicsky.denik.cz/
+- Czech Happenings — https://www.ceskenoviny.cz/news/
+- Radio Impuls — http://regiony.impuls.cz/
+- metro.cz — https://www.metro.cz/
+- CTK — https://www.ctk.cz/
+- Volny.cz — https://volny.centrum.cz/
+- Prague Daily Monitor — https://praguemonitor.com/
+- Katolický týdeník — https://katyd.cirkev.cz/
+- Kolinsky Pres — https://www.kolinskypres.cz/
+- Głos — https://glos.live/
+- Prostejovsky Vecernik — https://www.vecernikpv.cz/
+- Olomoucke Novinky — http://www.olomouckenovinky.cz/
+- Plzenske Novinky — http://www.plzenskenovinky.cz/
+- Melnicko — https://melnicko.cz/
+- Prazske Novinky — http://www.prazskenovinky.cz/
+- homerlive.cz — http://www.homerlive.cz/
+- Prager Zeitung — https://www.pragerzeitung.cz/
+- Pardubicke Novinky — http://www.pardubickenovinky.cz/
+- Pressweb — https://www.pressweb.cz/
+- Jihoceske Novinky — http://www.jihoceskenovinky.cz/
+- Karlovarske Novinky — http://www.karlovarskenovinky.cz/
+- Kralovehradecke Novinky — http://www.kralovehradeckenovinky.cz/
+- Ceska Pozice — https://ceskapozice.lidovky.cz/
+- Tydenik Kromerizska — https://www.tydenik-km.cz/
+- Stredoceske Novinky — http://www.stredoceskenovinky.cz/
+- TheDaily.cz — https://www.thedaily.cz/
+- Ustecke Novinky — http://www.usteckenovinky.cz/
+- Moravskoslezske Novinky — http://www.moravskoslezskenovinky.cz/
+- Liberecke Novinky — http://www.libereckenovinky.cz/
+- Aktualne — https://www.aktualne.cz/
+- Rumburske Noviny — https://rn.rumburk.cz/
+- Newstin — http://www.newstin.cz/
+- Parlamentni Listy — https://www.parlamentnilisty.cz/
+- Tiscali.cz — https://www.tiscali.cz/
+- Reflex.cz — https://www.reflex.cz/
+- Tyden.cz — https://www.tyden.cz/
+- Echo24 — https://echo24.cz/
+- Cnews.cz — https://www.cnews.cz/
+- Blisty — https://www.blisty.cz/
+- Prague Post — https://www.praguepost.com/
+- Zlinsky Denik — https://zlinsky.denik.cz/
+- Valassky Denik — https://valassky.denik.cz/
+- Slovacky Denik — https://slovacky.denik.cz/
+- Kromerizsky Denik — https://kromerizsky.denik.cz/
+- Zdarsky Denik — https://zdarsky.denik.cz/
+- Pelhrimovsky Denik — https://pelhrimovsky.denik.cz/
+- Havlickobrodsky Denik — https://havlickobrodsky.denik.cz/
+- Jihlavsky Denik — https://jihlavsky.denik.cz/
+- Benesovsky Denik — https://benesovsky.denik.cz/
+- Kladensky Denik — https://kladensky.denik.cz/
+- Kolinsky Denik — https://kolinsky.denik.cz/
+- Kutnohorsky Denik — https://kutnohorsky.denik.cz/
+- Melnicky Denik — https://melnicky.denik.cz/
+- Boleslavsky Denik — https://boleslavsky.denik.cz/
+- Nymbursky Denik — https://nymbursky.denik.cz/
+- Pribramsky Denik — https://pribramsky.denik.cz/
+- Rakovnicky Denik — https://rakovnicky.denik.cz/
+- Chomutovsky Denik — https://chomutovsky.denik.cz/
+- Decinsky Denik — https://decinsky.denik.cz/
+- Litomericky Denik — https://litomericky.denik.cz/
+- Mostecky Denik — https://mostecky.denik.cz/
+- Teplicky Denik — https://teplicky.denik.cz/
+- Ustecky Denik — https://ustecky.denik.cz/
+- Zatecky a Lounsky Denik — https://zatecky.denik.cz
+- Prazsky Denik — https://prazsky.denik.cz/
+- Sip — https://sip.denik.cz/
+- Olomoucky Denik — https://olomoucky.denik.cz/
+- Prostejovsky Denik — https://prerovsky.denik.cz/
+- Sumpersky a Jesenicky Denik — https://sumpersky.denik.cz/
+- Orlicky Denik — https://orlicky.denik.cz/
+- Chrudimsky Denik — https://chrudimsky.denik.cz/
+- Pardubicky Denik — https://pardubicky.denik.cz/
+- Svitavsky Denik — https://svitavsky.denik.cz/
+- Domazlicky Denik — https://domazlicky.denik.cz/
+- Klatovsky Denik — https://klatovsky.denik.cz/
+- Plzensky Denik — https://plzensky.denik.cz/
+- Rokycansky Denik — https://rokycansky.denik.cz/
+- Tachovsky Denik — https://tachovsky.denik.cz/
+- Moravskoslezsky Denik — https://moravskoslezsky.denik.cz/
+- Opavsky a Hlucinsky Denik — https://opavsky.denik.cz/
+- Novojicinsky Denik — https://novojicinsky.denik.cz/
+- Karvinsky Denik — https://karvinsky.denik.cz/
+- Frydeckomistecky a Trinecky Denik — https://fm.denik.cz/
+- Bruntalsky a Krnovsky Denik — https://bruntalsky.denik.cz/
+- Jablonecky Denik — https://jablonecky.denik.cz/
+- Ceskolipsky Denik — https://ceskolipsky.denik.cz/
+- Hradecky Denik — https://hradecky.denik.cz/
+- Jicinsky Denik — https://jicinsky.denik.cz/
+- Nachodsky Denik — https://nachodsky.denik.cz/
+- Rychnovsky Denik — https://rychnovsky.denik.cz/
+- Krkonnoske Denik — https://krkonossky.denik.cz/
+- Ceskokrumlovsky Denik — https://ceskokrumlovsky.denik.cz/
+- Pisecky Denik — https://pisecky.denik.cz/
+- Taborsky Denik — https://taborsky.denik.cz/
+- Blanensky Denik — https://blanensky.denik.cz/
+- Breclavsky Denik — https://breclavsky.denik.cz/
+- Hodoninsky Denik — https://hodoninsky.denik.cz/
+- Vyskovsky Denik — https://vyskovsky.denik.cz/
+- Znojemsky Denik — https://znojemsky.denik.cz/
+- Neviditelny Pes — https://neviditelnypes.lidovky.cz/
+- Tschechien Online — https://www.tschechien-online.org/
+- Brno Business — https://www.ibrno.cz/
+- OIK TV — https://www.oiktv.cz/
+- Znojemsko — https://www.znojemsko.cz/
+- Jihomoravske Novinky — http://www.jihomoravskenovinky.cz/
+- Raport — https://raport.cz/noviny
+- Regionalni Noviny — http://www.regionalninovinky.cz/
+- landesecho.cz — https://landesecho.cz/
+- Radio Prague — https://english.radio.cz
+- Prague Bus.Journal — https://www.pbj.cz/
+- Sport.cz — https://www.sport.cz/
+
+### onlinenewspapers — https://onlinenewspapers.com/czech-republic.shtml
+- Aktuálně.cz — https://magazin.aktualne.cz/
+- Aktuálně.cz (Sport) — https://sport.aktualne.cz/
+- Azatlyk Radiosy — http://www.azathabar.com/
+- České Noviny — https://www.ceskenoviny.cz/
+- CzechToday — http://www.czechtoday.cz/
+- Czech Journal — http://www.czechjournal.cz/
+- CzechNews — http://www.aktualne.cz/czechnews/
+- The Daily — http://www.thedaily.cz/
+- Denìk — http://www.denik.cz/
+- Haló noviny — http://www.halonoviny.cz/
+- Hospodářské Noviny — http://www.ihned.cz/
+- Idnes — http://www.idnes.cz/
+- iRegiony — https://www.impuls.cz/regiony/
+- Lidové Noviny — http://www.lidovenoviny.cz/
+- Man Spricht Deutsch CZ — http://www.mansprichtdeutsch.cz/
+- Metro — http://www.metro.cz/
+- Národní Noviny — https://www.narodninoviny.cz/
+- Neviditelný Pes — https://neviditelnypes.lidovky.cz
+- Novinky.cz — https://www.novinky.cz/
+- Právo — https://www.pravo.cz/
+- Prague Business Journal — http://www.pbj.cz/
+- The Prague Daily Monitor — http://www.praguemonitor.com/
+- Prague Morning — http://www.praguemorning.cz/
+- The Prague Post — http://www.praguepost.com/
+- Prager Zeitung — https://www.pragerzeitung.cz/
+- Praha Press — https://www.prahapress.cz/
+- Pressweb — http://www.pressweb.cz/
+- Transitions Online — http://www.tol.org/
+- Tschechien Online — http://www.tschechien-online.org/
+- Ukrnoviny.cz — http://www.ukrnoviny.cz/
+- Záhady Života — http://www.zahadyzivota.cz/
+
+### allyoucanread — https://www.allyoucanread.com/czech-newspapers/
+- iDNES.cz — https://idnes.cz/
+- Novinky.cz — https://www.novinky.cz/
+- Sport.cz — https://www.sport.cz/
+- ParlamentniListy.cz — https://www.parlamentnilisty.cz/
+- Denik.cz — https://denik.cz/
+- Lidovky.cz — http://www.lidovky.cz/
+- Aktualne.cz — https://www.aktualne.cz/
+- Tiscali.cz — https://tiscali.cz/
+- Echo24.cz — https://echo24.cz/
+- CeskeNoviny.cz — https://www.ceskenoviny.cz/
+- Reflex.cz — https://reflex.cz/
+- IHNED.cz — https://ihned.cz/
+- Tyden.cz — https://www.tyden.cz/
+- PraveDnes.cz — https://pravednes.cz/
+- Cnews.cz — https://www.cnews.cz/
+- Metro — http://www.metro.cz/
+- AC24.cz — https://ac24.cz/
+- pise.cz — https://www.pise.cz/
+
+### abyznewslinks — http://www.abyznewslinks.com/czech.htm
+- Ahas Web — http://www.ahasweb.cz/
+- Aktualne — http://www.aktualne.cz/
+- Blisty — http://www.blisty.cz/
+- Ceska Pozice — http://ceskapozice.lidovky.cz/
+- Ceske Noviny — http://www.ceskenoviny.cz/
+- Czech Journal — http://www.czechjournal.cz/
+- Czech News in English — http://www.cnie.cz/
+- Denik — http://www.denik.cz/
+- Expats CZ — https://www.expats.cz/
+- Financni Noviny — http://www.financninoviny.cz/
+- IDNES — http://www.idnes.cz/
+- Neviditelny Pes — http://neviditelnypes.lidovky.cz/
+- Newstin — http://www.newstin.cz/
+- Novinky — http://www.novinky.cz/
+- Novoya — http://www.novoya.com/
+- Number CZ — http://www.numberczech.cz/
+- Parlamentni Listy — http://www.parlamentnilisty.cz/
+- Prave DNES — http://pravednes.cz/top.news
+- Regionalni Noviny — http://www.regionalninovinky.cz/
+- Sportovni Noviny — http://www.sportovninoviny.cz/
+- Tschechien Online — http://www.tschechien-online.org/
+- Volny — http://www.volny.cz/
+- CZ 24 — http://www.cz24.ru/
+- Blesk — http://www.blesk.cz/
+- Halo Noviny — http://www.halonoviny.cz/
+- Hospodarske Noviny — http://ihned.cz/
+- Lidove Noviny — http://www.lidovky.cz/
+- Pravo — http://pravo.novinky.cz/
+- Sport — http://isport.blesk.cz/
+
+## hungary (central_europe) — Hungary
+
+### w3newspapers — https://www.w3newspapers.com/hungary/
+- Blikk — https://www.blikk.hu/
+- Magyar Nemzet — https://magyarnemzet.hu/
+- Népszava — https://nepszava.hu/
+- Magyar Hírlap — https://www.magyarhirlap.hu/
+- Telex — https://telex.hu/
+- Index.hu — https://index.hu/
+- 24.hu — https://24.hu/
+- Origo — https://www.origo.hu/
+- hvg.hu — https://hvg.hu/
+- 444.hu — https://444.hu/
+- Hirado.hu — https://hirado.hu/
+- Mandiner — https://mandiner.hu/
+- 168.hu — https://168.hu/
+- Portfolio — https://www.portfolio.hu/
+- Világgazdaság — https://www.vg.hu/
+- Economx.hu — https://www.economx.hu/
+- Budapest Business Journal — https://bbj.hu/
+- Nemzeti Sport — https://www.nemzetisport.hu/
+- Sportal.hu — https://www.sportal.hu/
+- DailyNewsHungary – Sport section — https://dailynewshungary.com/category/life/sport/
+- Kisalföld — https://www.kisalfold.hu/
+- Vas Népe — https://www.vaol.hu/
+- Zalai Hírlap — https://www.zaol.hu/
+- Fejér Megyei Hírlap — https://www.feol.hu/
+- Délmagyarország — https://www.delmagyar.hu/
+- Borsod Online — https://www.boon.hu/
+- Szabolcs Online — https://www.szon.hu/
+- DUOL — https://www.duol.hu/
+- Pécsi Napilap — https://www.pecsinapilap.hu/
+- Pécsi Újság — https://www.pecsiujsag.hu/
+- Hajdú-bihari Napló (HAON) — https://www.haon.hu/
+- Info Miskolc — https://www.infomiskolc.hu/
+- Dunaújváros Online — https://dunaujvaros.com/
+- Hungary Today — https://hungarytoday.hu/
+- The Budapest Times — https://www.budapesttimes.hu/
+- About Hungary — https://abouthungary.hu/
+- XpatLoop — https://xpatloop.com/
+- Budapester Zeitung — https://www.budapester.hu/
+- Pester Lloyd — https://www.pesterlloyd.net/
+- Le Petit Journal Budapest — https://lepetitjournal.com/budapest
+- Le Journal Francophone de Budapest — https://www.jfb.hu/
+- Ľudové noviny — https://www.luno.hu/
+- Xin Dao Bao — https://www.xindb.com/
+- Új Szó — https://ujszo.com/
+- Bors — https://www.borsonline.hu/
+- Szeretlek Magyarország — https://www.szeretlekmagyarorszag.hu/
+- Velvet — https://velvet.hu/
+- Propeller — https://propeller.hu/
+- Hírkereső — https://www.hirkereso.hu/
+- Cafeblog.hu — https://cafeblog.hu/
+- ATV — https://www.atv.hu/
+- Alfahír — https://alfahir.hu/
+- PestiSrácok.hu — https://pestisracok.hu/
+- Élet és Tudomány — https://eletestudomany.hu/
+- Szabad Föld — https://szabadfold.hu/
+- Magyar Fórum — http://magyarforum.hu/
+- Pedagógusok Lapja — https://pedagogusok.hu/
+- Élet és Irodalom — https://www.es.hu/
+- Demokrata — https://demokrata.hu/
+- Hetek — https://www.hetek.hu/
+- Metropol — https://metropol.hu/
+- Havaria Press — https://www.havariapress.hu/
+
+### onlinenewspapers — https://onlinenewspapers.com/hungary.shtml
+- 24.hu — https://www.24.hu/
+- Észak-Magyarország — http://www.eszak.hu/
+- Új Egyenlöség — https://ujegyenloseg.hu/
+- Új Kelet — https://ujkelet.live/
+- 168 Óra — http://www.168ora.hu/
+- Blikk — http://www.blikk.hu/
+- Budapesti Városvédõ Egyesület — http://www.varosvedo.hu/
+- The Budapest Times — https://www.budapesttimes.hu/
+- Budapester Zeitung — https://www.budapester.hu/
+- Délmagyarország — http://www.delmagyar.hu/
+- Demokrata — http://www.demokrata.hu/
+- Dunakanyar R&edblacgió — https://www.dunakanyarregio.hu/
+- DUOL — http://www.duol.hu/
+- FEOL — http://www.feol.hu/
+- Figyelő — http://www.figyelo.hu/
+- Gödi Hírek — https://godihirek.hu/
+- Gödi Körkép — http://www.god.hu/media/korkep/index.php
+- Hajdú-Bihari Napló — http://www.naplo.hu/
+- Hírstart — https://www.hirstart.hu/
+- Hírkereső — https://www.hirkereso.hu/
+- HVG Online — https://www.hvg.hu/
+- IgazMondó Online — http://www.igazmondo.hu/
+- Index — http://www.index.hu/
+- Jobbik — http://www.jobbik.com/
+- Journal Francophone de Budapest — http://www.jfb.hu/
+- Kelet-Magyarország — http://www.kelet.hu/
+- Kisalföld — https://www.kisalfold.hu/
+- Magyar Hirlap — https://www.magyarhirlap.hu/
+- Magyar Nemzet — https://www.magyarnemzet.hu/
+- Magyar Távirati Iroda — https://24.hu/tag/magyar-tavirati-iroda/
+- Napi Gazdaság — http://www.napi.hu/
+- Nemzeti Hírháló — http://www.nemzetihirhalo.hu/
+- N&eacutepszava — http://www.nepszava.hu/
+- NOL — http://www.nol.hu/
+- Pester Lloyd — http://www.pesterlloyd.net/
+- Rosszijszkij Kurier — http://www.kurier.hu/
+- VAOL — http://www.vaol.hu/
+- Világgazdaság — https://www.vg.hu/
+- VOEL — http://www.veol.hu/
+- ZAOL — http://www.zaol.hu/
+
+### allyoucanread — https://www.allyoucanread.com/hungarian-newspapers/
+- Index — https://index.hu/
+- ORIGO — https://www.origo.hu/
+- hvg.hu — https://hvg.hu/
+- !!444!!! — https://444.hu/
+- Magyar Nemzet — https://magyarnemzet.hu/
+- Blikk — https://www.blikk.hu/
+- Nemzeti Sport — https://www.nemzetisport.hu/
+- Hirado.hu — https://hirado.hu/
+- Mandiner — https://mandiner.hu/
+- Vilaggazdasag VG.hu — https://www.vg.hu/
+- Nepszava — https://nepszava.hu/
+- Magyar Hirlap — https://magyarhirlap.hu/
+- ATV — https://atv.hu/
+- Hirkereso.hu — https://www.hirkereso.hu/
+- Velvet — https://velvet.hu/
+- Uj Szo — https://ujszo.com/
+- nyugat.hu — https://www.nyugat.hu/
+- 168 — https://168.hu/
+- Transindex — https://transindex.ro/
+- Szeretlek Magyarorszag — https://szeretlekmagyarorszag.hu/
+- kisalfold.hu — https://www.kisalfold.hu/
+- Borsad Online — https://www.boon.hu/
+- haon.hu — https://www.haon.hu/
+- Propeller — https://propeller.hu/
+- delmagyar.hu — https://www.delmagyar.hu/
+- heol.hu — https://www.heol.hu/
+- kemma.hu — https://www.kemma.hu/
+- Nepszabadsag — http://nol.hu/
+- atlatszo.hu — https://atlatszo.hu/
+- Szabolcs Online — https://www.szon.hu/
+- cafeblog.hu — https://cafeblog.hu/
+- Veol.hu — https://www.veol.hu/
+- Napi.hu — https://napi.hu/
+- feol.hu — https://www.feol.hu/
+- sonline — https://www.sonline.hu/
+- beol.hu — https://www.beol.hu/
+- baon.hu — https://www.baon.hu/
+- TEOL — https://www.teol.hu/
+- Szoljon.hu — https://www.szoljon.hu/
+- dhol — https://www.duol.hu/
+- ma.hu — https://ma.hu/
+- Civishir — https://civishir.hu/
+- alfahir.hu — https://alfahir.hu/
+- szegedma.hu — https://szegedma.hu/
+- hir.ma — https://hir.ma/
+- szatmar.ro — https://www.szatmar.ro/
+- karpatinfo.net — https://karpatinfo.net/
+
+### abyznewslinks — http://www.abyznewslinks.com/hunga.htm
+- Budapest Beacon — http://budapestbeacon.com/
+- Budapest Beacon — http://hu.budapestbeacon.com/
+- Gondola — http://www.gondola.hu/
+- Hir 24 — http://www.hir24.hu/
+- Hir Start — http://www.hirstart.hu/
+- Hirkereso — http://www.hirkereso.hu/
+- Hungary Around the Clock — http://www.hatc.hu/
+- Index — http://index.hu/
+- Ma — http://www.ma.hu/
+- Net Hirlap — http://www.nethirlap.hu/
+- Origo — http://www.origo.hu/index.html
+- Portfolio — http://www.portfolio.hu/
+- Stop — http://www.stop.hu/
+- Magyar Hirlap — http://magyarhirlap.hu/
+- Magyar Nemzet — http://mno.hu/
+- Napi Gazdasag — http://www.napi.hu/
+- Nemzeti Sport — http://www.nemzetisport.hu/
+- Nepszabadsag — http://nol.hu/index.html
+- Nepszava — http://www.nepszava.hu/
+- Vilaggazdasag — http://www.vg.hu/
+
+## poland (central_europe) — Poland
+
+### w3newspapers — https://www.w3newspapers.com/poland/
+- Gazeta Wyborcza — https://wyborcza.pl/
+- Fakt — https://www.fakt.pl/
+- Super Express — https://www.se.pl/
+- Rzeczpospolita — https://www.rp.pl/
+- Dziennik Gazeta Prawna — https://www.dziennik.pl/
+- Gazeta Polska Codziennie — https://gpcodziennie.pl/
+- Tygodnik Powszechny — https://www.tygodnikpowszechny.pl/
+- Nasz Dziennik — https://naszdziennik.pl/
+- Sport.pl — https://www.sport.pl/
+- SportoweFakty WP — https://sportowefakty.wp.pl/
+- Przegląd Sportowy — https://przegladsportowy.onet.pl/
+- Transfery.info — https://transfery.info/
+- Eurosport – TVN24 — https://eurosport.tvn24.pl/
+- Bankier.pl — https://www.bankier.pl/
+- Money.pl — https://www.money.pl/
+- Forbes Polska — https://www.forbes.pl/
+- Puls Biznesu — https://www.pb.pl/
+- Wyborcza.biz – Biznes — https://wyborcza.biz/
+- Biznes – Gazeta Prawna — https://biznes.gazetaprawna.pl/
+- Parkiet — https://www.parkiet.com/
+- Warsaw Business Journal (WBJ) — https://wbj.pl/
+- Dziennik Zachodni — https://dziennikzachodni.pl/
+- Gazeta Krakowska — https://gazetakrakowska.pl/
+- Głos Wielkopolski — https://gloswielkopolski.pl/
+- Gazeta Pomorska — https://pomorska.pl/
+- Gazeta Wrocławska — https://wroclaw.naszemiasto.pl/
+- Dziennik Łódzki — https://dzienniklodzki.pl/
+- Express Ilustrowany — https://expressilustrowany.pl/
+- Dziennik Bałtycki — https://dziennikbaltycki.pl/
+- Gazeta Lubuska — https://gazetalubuska.pl/
+- Echo Dnia — https://echodnia.eu/
+- Nowa Trybuna Opolska — https://nto.pl/
+- Dziennik Wschodni — https://www.dziennikwschodni.pl/
+- Kurier Lubelski — https://kurierlubelski.pl/
+- Gazeta Współczesna — https://wspolczesna.pl/
+- Kurier Poranny — https://poranny.pl/
+- Kurier Szczeciński — https://24kurier.pl/
+- Gazeta Olsztyńska — http://gazetaolsztynska.pl/
+- Nowiny24 — https://nowiny24.pl/
+- Super Nowości — https://supernowosci24.pl/
+- Życie Podkarpackie (zycie.pl) — https://zycie.pl/
+- Życie Warszawy — https://zyciewarszawy.pl/
+- Tygodnik Podhalański — https://24tp.pl/
+- Tygodnik Zamojski — https://www.tygodnikzamojski.pl/
+- NOWa Gazeta Biłgorajska — https://gazetabilgoraj.pl/
+- NOWa Gazeta — https://nowagazeta.pl/
+- Nowiny Gliwickie — https://www.nowiny.gliwice.pl/
+- tuOlawa — https://www.tuolawa.pl/
+- Sztafeta — https://sztafeta.pl/
+- Korso — https://korso.pl/
+- Gazeta Powiatowa — https://gazetapowiatowa.pl/
+- Gazeta Jarocińska — https://jarocinska.pl/
+- Wiadomości Rudzkie — https://wiadomoscirudzkie.pl/
+- dkl24 — https://dkl24.pl/
+- Wiadomości Świdnickie — http://ws-24.pl/
+- Kurier Gmin — https://kuriergmin.pl/
+- Głos Siemiatycz — http://www.siemiatycze.com.pl/
+- Onet — https://www.onet.pl/
+- Interia — https://www.interia.pl/
+- Wirtualna Polska – Wiadomości — https://wiadomosci.wp.pl/
+- Gazeta.pl — https://gazeta.pl/
+- TVP.info — https://www.tvp.info/
+- Noizz — https://noizz.pl/
+- Wykop.pl — https://wykop.pl/
+- Niezalezna.pl — https://niezalezna.pl/
+- wPolityce.pl — https://wpolityce.pl/
+- RMF24 — https://www.rmf24.pl/
+- TOK FM — https://www.tokfm.pl/
+- Salon24 — https://www.salon24.pl/
+- Wirtualnemedia.pl — https://www.wirtualnemedia.pl/
+- i.pl — https://i.pl/
+- OKO.press — https://oko.press/
+- Notes from Poland — https://notesfrompoland.com/
+- Spider’s Web — https://spidersweb.pl/
+- Antyweb — https://antyweb.pl/
+- Krakow Post — http://www.krakowpost.com/
+- Warsaw Voice — https://www.warsawvoice.pl/
+- Schlesisches Wochenblatt — https://wochenblatt.pl/
+- Nowy Dziennik — https://dziennik.com/
+- Le Petit Journal – Varsovie — https://lepetitjournal.com/varsovie
+- Polska Agencja Prasowa (PAP) — https://www.pap.pl/
+- Informacyjna Agencja Radiowa (IAR) — https://www.polskieradio.pl/
+- Katolicka Agencja Informacyjna (KAI) — https://www.ekai.pl/
+
+### onlinenewspapers — https://onlinenewspapers.com/poland.shtml
+- 7 Dni Kalisza — http://www.7dnikalisza.com/
+- 24Kurier — https://www.24kurier.pl/
+- 24TP — http://www.tygodnikpodhalanski.pl/
+- 300 Polityka — http://300polityka.pl/
+- Angora — http://www.angora.com.pl
+- BusinessPL — http://www.businesspl.com/
+- Biznes Polska — http://www.biznespolska.pl/
+- DKL24 — http://dkl24.pl/
+- Do Rzeczy — https://dorzeczy.pl/
+- DwuTygodnik Suwalski — http://dwutygodniksuwalski.pl/
+- Dziennik — https://www.dziennik.pl/
+- Dziennik Baltycki — http://www.dziennikbaltycki.pl/
+- Dziennik Lodzki — http://www.dzienniklodzki.pl/
+- Dziennik Polska Europa Swiat — http://www.dziennik.pl/
+- Dziennik Polski — https://dziennikpolski24.pl/
+- Dziennik Wschodni — http://www.dziennikwschodni.pl/
+- Dziennik Zachodni — http://www.dziennikzachodni.pl/
+- Echo Dnia — https://echodnia.eu/
+- Express Bydgoski — https://expressbydgoski.pl/
+- Express Elblag — http://www.expresselblag.pl/
+- Express Ilustrowany — https://expressilustrowany.pl/
+- Fakt24 — https://www.fakt.pl/
+- Forbes — https://www.forbes.pl/
+- Gazeta — https://www.gazeta.pl/
+- Gazeta Bankowa — https://www.gb.pl/
+- Gazeta Lubuska — http://www.gazetalubuska.pl/
+- Gazeta Gostyńska — http://www.gostynska.pl/
+- Gazeta Jarocinska — http://www.jarocinska.pl/
+- Gazeta Krakowska — https://gazetakrakowska.pl/
+- Gazeta Krotoszyńska — https://www.krotoszynska.pl/
+- Gazeta Lubuska — https://gazetalubuska.pl/
+- Gazeta Olsztyńska — http://gazetaolsztynska.pl/
+- Gazeta Polska — http://www.gazetapolska.pl/
+- Gazeta Polska Codziennie — http://gpcodziennie.pl/
+- Gazeta Pomorska — http://www.pomorska.pl/
+- Gazeta Powiatowa — https://gazetapowiatowa.pl/
+- Gazeta Powiatowa — https://gazeta-olawa.pl/
+- Gazeta Prawna — http://www.gazetaprawna.pl/
+- Gazeta Średzka — http://www.gazetasredzka.pl/
+- Gazeta Wroclawska — https://gazetawroclawska.pl/
+- Gazeta Wspólczesna — https://wspolczesna.pl/
+- Gazeta Wyborcza — https://wyborcza.pl/
+- Glos Koszalinski (GK24) — https://gk24.pl/
+- Glos Pomorza (GP24) — https://gp24.pl/
+- Glos Szczecinski (GS24) — https://gs24.pl/
+- Glos Wielkopolski — https://gloswielkopolski.pl/
+- Interia — https://www.interia.pl/
+- The Krakow Post — http://www.krakowpost.com/
+- Kronika Tygodnia — https://www.kronikatygodnia.pl/
+- Kurier Gmin — http://kuriergmin.pl/
+- Kurier Lubelski — http://www.kurierlubelski.pl/
+- Kurier Podlaski — http://siemiatycze.com.pl/
+- Kurier Poranny — https://poranny.pl/
+- Le Monde Diplomatique — http://www.monde-diplomatique.pl/
+- The Lódź Post — http://www.lodzpost.com/
+- Moje-Gniezno — http://www.moje-gniezno.pl/
+- Naczelna Izba Lekarska — https://www.nil.org.pl/
+- Najwyzszy Czas — http://www.nczas.com/
+- Nashe Vremya — http://www.nashevremya.pl/
+- Nasz Dziennik — http://www.naszdziennik.pl/
+- Nasze Miasto — https://poznan.naszemiasto.pl/
+- Na:Temat — https://natemat.pl/
+- New Poland Express — http://newpolandexpress.pl/
+- Newsweek — https://www.newsweek.pl/
+- Nie — http://www.nie.com.pl/
+- Nowa Gazeta Bilgorajska — https://bilgorajska.pl/
+- Nowa Trybuna Opolska — http://www.nto.pl/
+- Nowiny24 — https://nowiny24.pl/
+- Nowiny Glickie — https://www.nowiny.gliwice.pl/
+- Nowo&sscuteci — http://www.nowosci.com.pl/
+- ONet — https://www.onet.pl/
+- PAP — https://www.pap.pl/
+- Parkiet — http://www.parkiet.com.pl/
+- Polityka — http://www.polityka.pl/
+- Polska Times — https://polskatimes.pl/
+- Polskie Radio — https://www.polskieradio.pl/
+- Poluki TV — http://palukitv.pl/
+- Przeglad — https://www.tygodnikprzeglad.pl/
+- Przeglad Sportowy — https://www.przegladsportowy.pl/
+- Przewodnik Katolicki — https://www.przewodnik-katolicki.pl/
+- Puls Biznesu — https://www.pb.pl/
+- RMF 24 — https://www.rmf24.pl/
+- Rzeczpospolita — https://www.rp.pl/
+- Slowo Polskie — http://slowopolskie.org/
+- Sport — http://www.sport.pl/
+- Super Express — https://www.se.pl/
+- Super Nowości — http://supernowosci24.pl/
+- Trybuna — http://www.trybuna.com.pl/
+- Trybuna Slaska — http://www.trybuna-slaska.com.pl/
+- Tygodnik Katolicki Niedziela — http://www.niedziela.pl/
+- Tygodnik Ostrol&ecedilcki — http://www.to.com.pl/
+- Tygodnik Powszechny — https://www.tygodnikpowszechny.pl/
+- Tygodnik Zamojski — http://www.tygodnikzamojski.pl/
+- Warsaw Business Journal — http://www.wbj.pl/
+- The Warsaw Voice — http://www.warsawvoice.pl/
+- Weekendfm — https://weekendfm.pl/
+- Wirtualna Polska — https://www.wp.pl/
+- Wprost — http://www.wprost.pl/
+- Wsieci — https://www.wsieciprawdy.pl/
+- Zycie Pleszewa — http://www.zpleszewa.pl/
+- Zycie Podkrpackie — http://www.zycie.pl/
+- Zycie Rawicza — http://www.rawicz24.pl/
+- Zycie Warszawy — http://www.zw.com.pl/
+
+### allyoucanread — https://www.allyoucanread.com/polish-newspapers/
+- Gazeta Pomorska — https://pomorska.pl/
+- Gazeta.pl — https://www.gazeta.pl/
+- Gazeta Wyborcza — https://wyborcza.pl/
+- Gazeta Wroclawska — https://gazetawroclawska.pl/
+- Gazeta Krakowska — https://www.gazetakrakowska.pl/
+- Echo Dnia — https://echodnia.eu/
+- nto.pl — https://nto.pl/
+- GK24.PL — https://gk24.pl/
+- Rzeczpospolita — https://rp.pl/
+- Wykop.pl — https://wykop.pl/
+- wPolityce.pl — https://wpolityce.pl/
+- Dziennik Zachodni — https://www.dziennikzachodni.pl/
+- Glos Wielkopolski — https://gloswielkopolski.pl/
+- nowiny24 — https://nowiny24.pl/
+- Poranny.pl — https://poranny.pl/
+- PAP — https://www.pap.pl/
+- GP24.pl — https://gp24.pl/
+- wspolczesna — https://wspolczesna.pl/
+- GazetaPrawna.pl — https://www.gazetaprawna.pl/
+- niezalezna.pl — https://niezalezna.pl/
+- WPROST — https://wprost.pl/
+- Dziennik.pl — https://www.dziennik.pl/
+- Express Ilustrowany — https://expressilustrowany.pl/
+- Newsweek Polska — https://www.newsweek.pl/
+- TVP.INFO — https://www.tvp.info/
+- NaTemat.pl — https://natemat.pl/
+- WirtualneMedia.pl — https://wirtualnemedia.pl/
+- Salon24 — https://salon24.pl/
+- Polityka.pl — https://www.polityka.pl/
+- dziennik wschodni — https://dziennikwschodni.pl/
+- Dziennik Baltycki — https://dziennikbaltycki.pl/
+- Dziennik Polski — https://dziennikpolski24.pl/
+- Dziennik Lodzki — https://dzienniklodzki.pl/
+- gazetalubuska — https://gazetalubuska.pl/
+- Kurier Lubelski — https://kurierlubelski.pl/
+- portel.pl — http://www.portel.pl/
+- Press.pl — https://press.pl/
+- wGospodarce.pl — https://wgospodarce.pl/
+- bloog.pl — https://bloog.pl/
+- Polskatimes.pl — https://polskatimes.pl/
+- Gazeta Olsztynska — https://gazetaolsztynska.pl/
+- Gazeta Polska — https://www.gazetapolska.pl/
+- WM.pl — https://wm.pl/
+- Gazeta Legnicka — https://lca.pl/
+
+### abyznewslinks — http://www.abyznewslinks.com/polan.htm
+- Business Portal for Poland — http://www.polishmarket.com/
+- Gazeta — http://www.gazeta.pl/
+- Interia — http://www.interia.pl/
+- Noizz — http://noizz.pl/
+- Onet — http://www.onet.pl/
+- Polska — http://www.polskatimes.pl/
+- Sport — http://www.sport.pl/
+- Dziennik — http://www.dziennik.pl/
+- Fakt — http://www.fakt.pl/
+- Gazeta Wyborcza — http://wyborcza.pl/
+- Nasz Dziennik — http://www.naszdziennik.pl/
+- Parkiet — http://www.parkiet.com/
+- Przeglad Sportowy — http://www.przegladsportowy.pl/
+- Puls Biznesu — http://www.pb.pl/
+- Rzeczpospolita — http://www.rp.pl/
+- Super Express — http://www.se.pl/
+- Zycie Warszawy — http://www.zw.com.pl/
+
+## romania (central_europe) — Romania
+
+### w3newspapers — https://www.w3newspapers.com/romania/
+- Adevărul — https://adevarul.ro/
+- Libertatea — https://www.libertatea.ro/
+- Evenimentul Zilei — https://evz.ro/
+- România Liberă — https://romanialibera.ro/
+- Jurnalul Naţional — https://jurnalul.ro/
+- Click! — https://click.ro/
+- Cotidianul — https://www.cotidianul.ro/
+- Curierul Național — https://curierulnational.ro/
+- Gândul — https://www.gandul.ro/
+- Naţional — https://www.national.ro/
+- Cronica Romana — https://cronicaromana.net/
+- Ziare.com — https://ziare.com/
+- Știri pe Surse — https://www.stiripesurse.ro/
+- Realitatea.net — https://www.realitatea.net/
+- DCNews — https://www.dcnews.ro/
+- România TV — https://www.romaniatv.net/
+- Ziarul Financiar — https://www.zf.ro/
+- Bursa — https://www.bursa.ro/
+- Capital — https://www.capital.ro/
+- Ziarul Afacerilor — http://ziarul-afacerilor.ro/
+- Manager.ro — https://www.manager.ro/
+- Business 24 — https://business24.ro/
+- Govnet — https://www.govnet.ro/
+- Gazeta Sporturilor — https://www.gsp.ro/
+- ProSport — https://www.prosport.ro/
+- Sport.ro — https://www.sport.ro/
+- Fanatik.ro — https://www.fanatik.ro/
+- Onlinesport — https://www.onlinesport.ro/
+- Ziarul de Sport — https://www.ziaruldesport.ro/
+- Sport Arad — https://www.sportarad.ro/
+- Sportul de Vrancea — http://www.sportuldevrancea.ro/
+- Alba24 — https://alba24.ro/
+- Monitorul de Cluj — https://www.monitorulcj.ro/
+- NewsArad — https://www.newsarad.ro/
+- Bună Ziua Braşov — https://www.bzb.ro/
+- Gazeta de Sud — https://www.gds.ro/
+- Obiectiv de Suceava — https://www.obiectivdesuceava.ro/
+- Cuget Liber — https://www.cugetliber.ro/
+- Ziua de Constanţa — https://www.ziuaconstanta.ro/
+- Bacău.net — https://www.bacau.net/
+- Opinia Transilvană — https://opiniatransilvana.ro/
+- Ziarul Unirea — https://ziarulunirea.ro/
+- Ziarul Argeşul — https://ziarulargesul.ro/
+- Curierul Zilei — https://curier.ro/
+- Deşteptarea de Bacău — https://www.desteptarea.ro/
+- Ziarul de Bacău — https://ziaruldebacau.ro/
+- Monitorul de Botoşani — https://www.monitorulbt.ro/
+- Monitorul Expres — https://www.monitorulexpres.ro/
+- Aradon — https://www.aradon.ro/
+- Bihon — https://www.bihon.ro/
+- Observatorul PH — https://www.observatorulph.ro/
+- Prahova — https://ziarulprahova.ro/
+- Graiul Sălajului — https://graiulsalajului.ro/
+- Monitorul de Suceava — https://www.monitorulsv.ro/
+- Bună Ziua Constanţa — https://www.bzc.ro/
+- Replica — https://www.replicaonline.ro/
+- Cuvântul Libertăţii — https://cvlpress.ro/
+- Oradea Online — http://www.oradea-online.ro/
+- Info Est — https://www.infoest.ro/
+- Obiectiv Brăila — https://obiectivbr.ro/
+- Monitorul de Făgăraș — https://www.monitorfg.ro/
+- Gazeta de Cluj — https://gazetadecluj.ro/
+- Ziarul 21 — https://www.ziarul21.ro/
+- Flagrant — http://www.flagrantct.ro/
+- Monitorul de Galaţi — https://www.monitoruldegalati.ro/
+- Bună Ziua Iaşi — https://www.bzi.ro/
+- Krónika — https://kronika.ro/
+- Új Magyar Szó / Maszol.ro — https://www.maszol.ro/
+- Szabadság — http://szabadsag.ro/
+- Háromszék — https://www.3szek.ro/
+- Allgemeine Deutsche Zeitung für Rumänien (ADZ) — https://adz.news/startseite
+- Hermannstädter Zeitung — https://www.hermannstaedter.ro/
+- Ziarul Lumina — https://ziarullumina.ro/
+- Acasa.ro — https://acasa.ro/
+- Zoso.ro — https://zoso.ro/
+- 9AM News — https://www.9am.ro/
+- B1TV.ro — https://www.b1tv.ro/
+- Romania Online (ROL.ro) — https://rol.ro/
+- Times New Roman — https://www.timesnewroman.ro/
+- Pagina de Media — https://www.paginademedia.ro/
+- Apropo TV — https://www.apropotv.ro/
+- Astazi.ro — https://www.astazi.ro/
+- Știrile pe scurt — http://www.stirilepescurt.ro/
+- Romania-Insider — https://www.romania-insider.com/
+- Nine O’Clock — https://nineoclock.ro/
+- Romania Journal — https://www.romaniajournal.ro/
+- The Diplomat – Bucharest — https://www.thediplomat.ro/
+- Bucharest Daily News — https://bucharestdailynews.com/
+- RFE/RL Romanian Service (English) — https://www.rferl.org/Romania
+- AGERPRES — https://www.agerpres.ro/
+- Mediafax — https://www.mediafax.ro/
+- News.ro — https://www.news.ro/
+
+### onlinenewspapers — https://onlinenewspapers.com/romania.shtml
+- Actualitatea — https://ziarulactualitatea.ro/
+- Acum — https://www.acum.tv/
+- Acum — https://www.agerpres.ro/
+- AgerPres — http://www.arad24.net/
+- Antena24.ro — https://www.antena24.ro/
+- Anunturi Libertatea — http://www.publicitate-libertatea.ro/
+- AraratOnline — http://www.araratonline.com/
+- Argeşul — http://www.ziarulargesul.ro/&
+- Aspecte Diplomatice — http://www.aspectediplomatice.eu/
+- Atitudinea — http://www.atitudinea.ro/
+- Adevarul — http://www.adevarul.ro/
+- Bacau Expres — http://www.bacauexpres.ro/
+- Balkan Insight — https://www.balkaninsight.com/
+- Banateanul — http://www.banateanul.ro/
+- Banii Nostri — http://www.baniinostri.ro/
+- Bistrita24 — http://www.bistrita24.ro/
+- Bistriteanul.ro — http://www.bistriteanul.ro/
+- BizCity — http://www.bizcity.ro/
+- Bucharest Business Week — https://www.eubusiness.com/europe/romania/bucharest-business-week/
+- Bursa.ro — http://www.bursa.ro/
+- Capital — http://www.capital.ro/
+- Capital NEWS — http://www.capitalnews.ro/
+- CDNews — http://www.cdnews.ro/
+- Cotidianul — http://www.cotidianul.ro/
+- Crai Nou — http://www.crainou.ro/
+- Curierul de Râmnic — http://www.ramnic.ro/
+- Curierul de Valcea — http://www.curierul.ro/
+- DC News — http://www.dcnews.ro/
+- Dilema Veche — https://www.dilemaveche.ro
+- The Diplomat — http://www.thediplomat.ro/
+- Druckeria — http://www.druckeria.ro/
+- Economistul — http://www.ccir.ro/economistul/
+- Ediţia — http://www.editia.ro/
+- Editie Speciala — http://www.editie.ro/
+- eNational — http://www.enational.ro/
+- ePolitic — https://www.e-politic.ro/
+- EurActiv.ro — http://www.euractiv.ro/
+- Evenimentul — http://www.ziarulevenimentul.ro/
+- Evz.ro — https://www.evz.ro/
+- Financiarul — http://www.financiarul.ro/
+- Flash News — http://www.flashnews.ro/
+- Foaia Transilvana — https://www.foaiatransilvana.ro/
+- Gazeta de Cluj — http://www.gazetadecluj.ro/
+- Gazeta de Maramures — http://www.gazetademaramures.ro/
+- Gazeta de Nord-Vest — http://www.gazetanord-vest.ro/
+- Gazeta de Sud — http://www.gds.ro/
+- Gazeta Sporturilor — https://www.gsp.ro/
+- Indiscret In Oltenia — http://www.indiscret.ro/
+- InfoEST.ro — http://www.infoest.ro/
+- Investigatii Media — https://www.investigatiimedia.ro/
+- Jurnalul National — http://www.jurnalul.ro/
+- Jurnalul Romanesc — http://www.jurnalromanesc.ro/
+- Libertatea — http://www.libertatea.ro/
+- LiveArad — http://www.livearad.ro/
+- Lumina — http://www.ziarullumina.ro/
+- Mediafax — http://www.mediafax.ro/
+- Mesagerul.ro — http://www.mesagerul.ro/
+- Monitorul de Botosani — http://www.monitorulbt.ro/
+- Monitorul de Cluj — http://www.monitorulcj.ro/
+- Népújság — https://www.e-nepujsag.ro/
+- News Bucovina Suceava — http://www.news-bucovina.ro/
+- News Buzau — http://www.newsbuzau.ro/
+- Newz.ro — http://www.newz.ro/ class=
+- Nine O'Clock — http://www.nineoclock.ro/
+- Obiectiv — http://www.obiectiv-online.ro/
+- Obiectiv Vocea Brailei — http://www.obiectivbr.ro/
+- Observator de Bacau — https://www.observatordebacau.ro/
+- Observator de Calaraşi — http://www.observatorcl.info/
+- Oltenaşul — http://www.oltenasul.ro/
+- Onesti Expres — http://www.onestiexpres.bacau.rdsnet.ro/
+- Opinia Timisoarei — https://www.opiniatimisoarei.ro/
+- The Poc — https://www.thepoc.ro/
+- ProSPORT — http://www.prosport.ro/
+- Puterea — http://www.puterea.ro/
+- Renasterea Banateana — http://www.renasterea.ro/
+- Romania Business Insider — http://www.romania-insider.com/
+- Romania Business Journal — https://www.ucoz.ro/
+- The Romania Journal — https://www.romaniajournal.ro/
+- Romanian Soccer — http://www.romaniansoccer.ro/
+- Romanian Times — http://www.romaniantimes.com/
+- Servus Cluj — https://www.servuscluj.ro/
+- Sighet Online — http://www.sighet-online.ro/
+- SMARTfinancial.ro — http://www.smartfinancial.ro/
+- SportSv — http://sportsv.ro/
+- Ştiri De Mâine — https://www.stiridemaine.ro/
+- Stiri din Romania — https://stiridinromania.ro/
+- Suceava News — https://www.svnews.ro/
+- Szabadság — http://szabadsag.ro/
+- Szatmári Friss Úság — http://www.frissujsag.ro/
+- Transilvania TV — https://www.transilvania-tv.ro/
+- Tribuna — http://www.tribuna.ro/
+- Ultima Ora — http://www.ultima-ora.ro/
+- Valahia News — https://www.valahia.news/
+- Zdbc.ro — https://www.zdbc.ro
+- Ziar.com — https://www.ziar.com/
+- Ziar de Buzunar — https://www.ziardebuzunar.ro
+- ZiarPiatraNeamt — https://www.ziarpiatraneamt.ro/
+- Ziarul de Investigatii — https://zin.ro
+- Ziarul de Iasi — https://www.ziaruldeiasi.ro/
+- Ziarul de Mures — http://www.ziaruldemures.ro/
+- Ziarul Financiar — http://www.zf.ro/
+- Ziarul Obiectiv Ialomita — http://www.obiectiv.net/
+- Ziua de Cluj — https://www.zcj.ro
+
+### allyoucanread — https://www.allyoucanread.com/romanian-newspapers/
+- adevarul.ro — https://adevarul.ro/
+- Liber Tatea — https://libertatea.ro/
+- Gandul — https://www.gandul.ro/
+- Sport.ro — https://www.sport.ro/
+- Stiripesurse.ro — https://www.stiripesurse.ro/
+- Romania TV — https://www.romaniatv.net/
+- Ziare.com — https://ziare.com/
+- HotNews.ro — http://hotnews.ro/
+- Realitatea.net — https://realitatea.net/
+- DC News — https://dcnews.ro/
+- MEDIAFAX.ro — https://www.mediafax.ro/
+- evz.ro — https://evz.ro/
+- jurnalul.ro — https://jurnalul.ro/
+- Cotidianul — https://www.cotidianul.ro/
+- Buna Ziua Iasi — https://www.bzi.ro/
+- Ziarul de Iasi — https://www.ziaruldeiasi.ro/
+- Gazeta de Sud — https://gds.ro/
+- B1 — https://www.b1tv.ro/
+- Alba24 — https://alba24.ro/
+- Bihoreanul — https://ebihoreanul.ro/
+- Stiri de Cluj — https://stiridecluj.ro/
+- Bihon.ro — https://bihon.ro/
+- Replica — https://replicaonline.ro/
+- ObservatorulPH.ro — https://observatorulph.ro/
+- Pandurul — https://pandurul.ro/
+- Ziarul National — https://www.national.ro/
+- Turnul Sfatului — https://turnulsfatului.ro/
+- Arad Online — https://aradon.ro/
+- Unirea — https://ziarulunirea.ro/
+- Zoso's blog — https://zoso.ro/
+- ZIUA de Constanta — https://www.ziuaconstanta.ro/
+- Tribuna — https://www.tribuna.ro/
+- Monitorul de Suceava — https://www.monitorulsv.ro/
+- Romania Libere — https://romanialibera.ro/
+- Timis Online — https://tion.ro/
+- Desteptarea — https://desteptarea.ro/
+- Viata Libera — https://viata-libera.ro/
+- Opinia Timisoarei — https://opiniatimisoarei.ro/
+- Pagina de media — https://paginademedia.ro/
+- myTEX.ro — https://mytex.ro/
+- Contributors — https://contributors.ro/
+- e-Ziare.ro — https://e-ziare.ro/
+- Puterea — https://www.puterea.ro/
+- Renasterea — https://renasterea.ro/
+- Gazeta de Cluj — https://gazetadecluj.ro/
+- Botosaneanul — https://botosaneanul.ro/
+- Monitorul de Botosani — https://www.monitorulbt.ro/
+- BotosaniNews — https://botosaninews.ro/
+- Ziarul evenimentul — https://ziarulevenimentul.ro/
+- Monitorul Oficial — https://monitoruloficial.ro/
+
+### abyznewslinks — http://www.abyznewslinks.com/roman.htm
+- Acasa — http://www.acasa.ro/
+- Apropo TV — http://stiri.apropotv.ro/
+- Astazi — http://www.astazi.ro/
+- Business 24 — http://www.business24.ro/cum-sa-i-cheltuiesti/
+- Cotidianul — http://www.cotidianul.ro/
+- DC News — http://www.dcnews.ro/
+- Flash News — http://www.flashnews.ro/
+- Gandul — http://www.gandul.info/
+- Govnet — http://www.govnet.ro/
+- Home — http://www.home.ro/
+- Hot News — http://www.hotnews.ro/
+- Jurnalul 24 — http://www.jurnalul24.ro/
+- Manager — http://www.manager.ro/
+- My Press — http://www.my-press.ro/
+- Online Sport — http://www.onlinesport.ro/
+- Realitatea — http://www.realitatea.net/
+- Romania Journal — http://www.romaniajournal.ro/
+- Romania Online — http://www.rol.ro/
+- Romanian News Blog — http://ronewsblog.wordpress.com/
+- Romanian Times — http://www.romaniantimes.at/
+- Valahia News — https://www.valahia.news/
+- Valahia News — https://valahia.news/ro/
+- Adevarul — http://adevarul.ro/
+- Azi — http://www.eazi.ro/
+- Bursa — http://www.bursa.ro/?s=english_section
+- Capital — http://www.capital.ro/index.html
+- Click — http://www.click.ro/
+- Cronica Romana — http://cronicaromana.net/
+- Curentul — http://www.curentul.info/
+- Curierul National — http://www.curierulnational.ro/
+- Evenimentul Zilei — http://www.evz.ro/index.html
+- Gazeta Sporturilor — http://www.gsp.ro/
+- Independent — http://www.independent-al.ro/
+- Jornalul National — http://jurnalul.ro/
+- Libertatea — http://www.libertatea.ro/
+- Pro Sport — http://www.prosport.ro/
+- Romania Libera — http://www.romanialibera.ro/
+- Ziarul Financiar — http://www.zfenglish.com/
+- Ziarul Financiar — http://www.zf.ro/
+
+## slovak_republic (central_europe) — Slovak Republic
+
+### w3newspapers — https://www.w3newspapers.com/slovakia/
+- Pravda — https://www.pravda.sk/
+- Hospodárske noviny — https://hnonline.sk/
+- SME — https://www.sme.sk/
+- Nový čas — https://www.cas.sk/
+- Új Szó — https://ujszo.com/
+- Slovak Spectator — https://spectator.sme.sk/
+- Pluska — https://www.pluska.sk/
+- Sport — https://sport.aktuality.sk/
+- Avizo — https://avizo.sk/
+- Bratislavský kuriér — https://www.bakurier.sk/
+- Bratislavské noviny — https://www.bratislavskenoviny.sk/
+- 24 Hodin — https://www.24hod.sk/
+- Žilinský večerník — https://www.zilinskyvecernik.sk/
+- Daily Slovak News — https://www.thedaily.sk/
+- Noizz — https://noizz.aktuality.sk/
+- Topy.sk — https://www.topky.sk/
+- Dobre noviny — https://www.dobrenoviny.sk/
+- sita.sk — https://sita.sk/
+- Teraz.sk — https://www.teraz.sk/
+- Dnes24 — https://www.dnes24.sk/
+- Tyzden — https://tyzden.sk/
+- Birdz.sk — https://www.birdz.sk/
+- Poprad — https://www.noviny-poprad.sk/
+- Paraméter — https://parameter.sk/
+- aktuality.sk — https://www.aktuality.sk/
+- Profini — https://www.profini.sk/
+- Podbrezovan — https://www.zelpo.sk/
+- Korzar — https://korzar.sme.sk/
+- Tlačová agentúra Slovenskej Republiky (TASR) — https://www.tasr.sk/
+- Trnavsky hlas — https://www.trnavskyhlas.sk/
+- Topspravy.sk — https://www.topspravy.sk/
+- Pozri — https://spravy.pozri.sk/
+- Rimava.sk — https://www.rimava.sk/
+- Euractive.sk — https://euractiv.sk/
+- Pieatansky dennik — https://www.piestanskydennik.sk/
+- News.sk — https://www.news.sk/
+- Zivot Presova — https://www.zivotpo.sk/
+
+### onlinenewspapers — https://onlinenewspapers.com/slovakia.shtml
+- Új Szó — http://www.ujszo.com/
+- Buongiorno Slovacchia — http://www.buongiornoslovacchia.sk/
+- The Daily.SK — http://www.thedaily.sk/
+- Dolezite.sk — http://dolezite.sk/
+- Trend — https://www.trend.sk/
+- Hírek.sk — http://www.hirek.sk/
+- HN Online — http://www.hnonline.sk/
+- Nový ÈAS — https://www.cas.sk/
+- Pravda — http://www.pravda.sk/
+- Sktoday — http://www.sktoday.com/
+- Slovak News Agency — http://www.tasr.sk/
+- The Slovak Spectator — https://spectator.sme.sk/
+- Slovo — http://www.noveslovo.sk/
+- SME — http://www.sme.sk/
+
+### allyoucanread — https://www.allyoucanread.com/slovak-newspapers/
+- Aktuality.sk — https://www.aktuality.sk/
+- Topky.sk — http://www.topky.sk/
+- CAS.sk — http://www.cas.sk/
+- HNonline.sk — https://hnonline.sk/
+- Pluska.sk — https://www1.pluska.sk/
+- Pravda.sk — https://pravda.sk/
+- Dobre noviny — https://dobrenoviny.sk/
+- TERAZ.sk — https://teraz.sk/
+- Noviny.sk — https://noviny.sk/
+- dnes24 — https://www.dnes24.sk/
+- TASR — https://tasr.sk/
+- rimava.sk — https://rimava.sk/
+- Webnoviny.sk — https://www.webnoviny.sk/
+- Tyzden — https://tyzden.sk/
+- Bratislavske Noviny — https://bratislavskenoviny.sk/
+- TRNAVSKY HLAS — https://www.trnavskyhlas.sk/
+- topspravy.sk — https://www.topspravy.sk/
+- BIRDZ.SK — https://www.birdz.sk/
+- 24hod.sk — https://24hod.sk/
+- Piestansky Dennik — https://piestanskydennik.sk/
+
+### abyznewslinks — http://www.abyznewslinks.com/slova.htm
+- Aktuality — http://www.aktuality.sk/
+- Aktualne — http://aktualne.atlas.sk/
+- Buongiorno Slovacchia — http://www.buongiornoslovacchia.sk/
+- Daily — http://www.thedaily.sk/
+- La Voce della Slovacchia — http://www.lavoce.sk/
+- MY — http://www.mynoviny.sk/
+- Noizz — http://noizz.sk/
+- Pozri — http://spravy.pozri.sk/
+- Profini — http://www.profini.sk/
+- SK Today — http://www.sktoday.com/
+- Start It Up — https://www.startitup.sk/
+- Web Noviny — http://www.webnoviny.sk/
+- Hospodarske Noviny — http://hnonline.sk/
+- Novy Cas — http://www.cas.sk/
+- Katolicke Noviny — http://www.katnoviny.sk/
+- Pravda — http://www.pravda.sk/
+- SME — http://www.sme.sk/
+- Sport — http://sport.aktuality.sk/
+- Uj Szo — http://ujszo.com/
+
+## slovenia (central_europe) — Slovenia
+
+### w3newspapers — https://www.w3newspapers.com/slovenia/
+- Delo — https://www.delo.si/
+- Dnevnik — https://www.dnevnik.si/
+- Ekipa24 — https://ekipa.svet24.si/
+- Finance — https://www.finance.si/
+- Slovenske novice — https://www.slovenskenovice.si/
+- Večer — https://vecer.com/
+- Žurnal24 — https://www.zurnal24.si/
+- Gorenjski Glas — https://www.gorenjskiglas.si/
+- Dolenjski List — https://dolenjskilist.svet24.si/si/
+- Primorske Novice — https://primorske.svet24.si/
+- Druzina — https://www.druzina.si/
+- 24ur.com — https://www.24ur.com/
+- Rtv slo — https://www.rtvslo.si/
+- Pozareport — https://pozareport.si/
+- Mladina — https://www.mladina.si/
+- Reporter.si — https://reporter.si/
+- Sobotainfo.com — https://sobotainfo.com/
+- Demokracija — https://demokracija.si/
+- Pomurec.com — https://www.pomurec.com/
+- Lokalno — https://lokalno.svet24.si/si/
+- Si 21 — https://www.si21.com/
+- Times.si — https://www.times.si/
+- Telez.si — https://www.telex.si/
+- Drugi svet — https://www.drugisvet.com/
+- Ljubljanske Novice — https://ljnovice.si/
+- Nepujsag — https://www.nepujsag.net/
+- Slovenia Times — https://sloveniatimes.com/
+- Primorski dnevnik — https://www.primorski.eu/
+- insajder.com — https://insajder.com/
+- Slovenian Press Agency (STA) — https://www.sta.si/
+
+### onlinenewspapers — https://onlinenewspapers.com/slovenia.shtml
+- Delo — http://www.delo.si/
+- Dnevnik — http://www.dnevnik.si/
+- Druzina — http://www.druzina.si/
+- Ekipa — https://ekipa.svet24.si/
+- Euportal.si — http://www.euportal.si/
+- Finance.si — https://agrobiznis.finance.si/
+- Ljubljanske Novice — https://www.ljnovice.si/
+- Mladina — http://www.mladina.si/
+- MP — https://mladipodjetnik.si/
+- Primorske Novice — https://www.primorske.si/
+- STA Slovenian Press Agency — http://www.sta.si/
+- Vecer — https://www.vecer.com/
+
+### allyoucanread — https://www.allyoucanread.com/slovenian-newspapers/
+- PlanetSiol.net — https://siol.net/
+- RTV SLO — https://www.rtvslo.si/
+- 24ur.com — https://www.24ur.com/
+- Slovenske novice — https://slovenskenovice.si/
+- Zurnal24 — https://zurnal24.si/
+- Dnevnik — https://www.dnevnik.si/
+- Svet24 — https://svet24.si/
+- vecer.com — https://vecer.com/
+- Sobotainfo.com — https://sobotainfo.com/
+- Reporter.si — https://reporter.si/
+- MLADINA — https://www.mladina.si/
+- Demokracija — https://demokracija.si/
+- Pozareport.si — https://pozareport.si/
+- Gorenjski glas — https://www.gorenjskiglas.si/
+- Pomurec.com — https://pomurec.com/
+- TIMES.si — https://times.si/
+
+### abyznewslinks — http://www.abyznewslinks.com/slove.htm
+- Si 21 — http://www.si21.com/
+- Slovenske Novice — http://slovenskenovice.com/
+- Delo — http://www.delo.si/
+- Dnevnik — http://www.dnevnik.si/
+- Vecer — http://www.vecer.com/
+- Zurnal — http://www.zurnal24.si/
+
+## estonia (baltic_states) — Estonia
+
+### w3newspapers — https://www.w3newspapers.com/estonia/
+- Äripäev — https://www.aripaev.ee/
+- Õhtuleht — https://www.ohtuleht.ee/
+- Eesti Päevaleht — https://epl.delfi.ee/
+- Eesti Ekspress — https://ekspress.delfi.ee/
+- Lääne Elu — https://online.le.ee/
+- Sakala — https://sakala.postimees.ee/
+- Uma Leht — https://umaleht.ee/
+- Delovye Vedomosti — https://www.dv.ee/
+- Kuldne Börs — https://www.kuldnebors.ee/
+- Nelli Teataja — https://www.nelli.ee/
+- Maaleht — https://maaleht.delfi.ee/
+- Harju Elu — https://harjuelu.ee/
+- Kesknädal — https://kesknadal.ee/
+- Saarte Hääl — https://www.saartehaal.ee/
+- Postimees — https://www.postimees.ee/
+- Sonumitooja — https://sonumitooja.ee/
+- Pohjarannik — http://pr.pohjarannik.ee/
+- Jarva Teataja — https://jarvateataja.postimees.ee/
+- Severnoje Poberezje — https://severnojepoberezhje.postimees.ee/
+- Virumaa Teataja — https://virumaateataja.postimees.ee/
+- MK Estoniia — https://www.mke.ee/
+- Narva — https://narvaleht.ee/
+- Vooremaa — https://www.vooremaa.ee/
+- Hiiu Leht — https://hiiuleht.ee/
+- Baltische Rundschau — https://baltische-rundschau.eu/
+- Raplamaa Sonumid — https://sonumid.ee/
+- Lounaleht — http://www.lounaleht.ee/
+- gazeta.ee — https://gazeta.ee/
+- Eesti Kirik — https://eestikirik.ee/
+- Kuulutaja — https://www.kuulutaja.ee/
+- Komsomolskaya pravada — https://www.kompravda.eu/
+- Stena.ee — https://www.stena.ee/
+- Baltija.eu — https://baltija.eu/
+- Telegram — https://www.telegram.ee/
+- Baltic Times — https://www.baltictimes.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/estonia.shtml
+- Ärileht — http://www.arileht.ee/
+- Äripäev — http://www.aripaev.ee/
+- Õpetajateleht — http://www.opleht.ee/
+- Eesti Ekspress — http://www.ekspress.ee/
+- Eesti Kirik — http://www.eestikirik.ee/
+- Eesti Päevaleht — http://www.epl.ee/
+- Ehitusuudised — http://www.ehitusuudised.ee/
+- Lääne Elu — http://www.le.ee/
+- Ma'aleht — http://www.maaleht.ee/
+- Meie Maa — http://www.meiemaa.ee/
+- Molodjoz Estonii — http://www.moles.ee/
+- Narvskaya Gazeta — https://prospekt.ee/
+- Nelli Teataja — http://www.nelli.ee/
+- Õhtuleht — https://www.ohtuleht.ee/
+- Põhjarannik — http://www.pohjarannik.ee/
+- Postimees — http://www.postimees.ee/
+- SIRP — http://www.sirp.ee/
+- Võrumaa Teataja — https://vorumaateataja.ee/
+
+### allyoucanread — https://www.allyoucanread.com/estonian-newspapers/
+- DELFI — https://delfi.ee/
+- Postimees — https://postimees.ee/
+- Ohtuleht — https://ohtuleht.ee/
+- Aripaev — https://www.aripaev.ee/
+- dv.ee — https://dv.ee/
+- stena.ee — https://stena.ee/
+- Laane Elu — https://online.le.ee/
+- baltija.eu — https://baltija.eu/
+- MK Estonia — http://www.mke.ee/
+- Komsomolskaya Pravda — https://kompravda.eu/
+- Telegram — https://telegram.ee/
+
+### abyznewslinks — http://www.abyznewslinks.com/eston.htm
+- Delfi — http://www.delfi.ee/
+- Delfi — http://rus.delfi.ee/
+- Estonian Free Press — http://estonianfreepress.com/
+- Everyday — http://ee.everyday.com/
+- Hot — http://www.hot.ee/
+- Aripaev — http://www.aripaev.ee/
+- Eesti Ekspress — http://ekspress.delfi.ee/
+- Eesti Paevaleht — http://epl.delfi.ee/
+- Maaleht — http://maaleht.delfi.ee/
+- Ohtuleht — http://www.ohtuleht.ee/
+- Postimees — http://www.postimees.ee/
+
+## latvia (baltic_states) — Latvia
+
+### w3newspapers — https://www.w3newspapers.com/latvia/
+- Diena — https://www.diena.lv/
+- Neatkarīgā Rīta Avīze — https://nra.lv/
+- Dienas bizness — http://www.db.lv/
+- Baltic Times — https://www.baltictimes.com/
+- Čekeme Avīze - Liepāja — http://www.lpia.lv/
+- Neatkarīgās Tukuma Ziņas — https://www.ntz.lv/
+- Latvians Online — https://latviansonline.com/
+- Latgales Laiks — https://latgaleslaiks.lv/
+- Nasha Gazeta — https://nasha.la.lv/
+- Briva Daugava — https://www.bdaugava.lv/
+- Novaya Gazeta — https://www.novaja.lv/
+- Kurzemnieks — https://kurzemnieks.lv/
+- laiks.us — https://www.laiks.us/
+- Latvijas Vēstnesis — https://www.lv.lv/
+- aprinkis.lv — https://www.aprinkis.lv/
+- eliesma.lv — https://www.eliesma.lv/
+- Druva — https://edruva.lv/
+- Vaduguns — http://www.vaduguns.lv/
+- Ventas Balss — https://www.ventasbalss.lv/
+- ziemellatvija — https://ziemellatvija.lv/
+- Delfi.lv — https://www.delfi.lv/
+- tvnet.lv — https://www.tvnet.lv/
+- telegraf — https://telegraf.lv/
+- jauns.lv — https://jauns.lv/
+- press.lv — https://press.lv/
+- Mixnews.lv — https://mixnews.lv/
+- Gorod.lv — https://gorod.lv/
+- Grani.lv — https://www.grani.lv/
+- Liepajniekiem.lv — https://www.liepajniekiem.lv/
+- Apollo — https://www.apollo.lv/
+- Kurzemes Vards — https://rekurzeme.lv/
+- Zemgales Zinas — https://zz.lv/
+- Mk Latvia — https://www.mklat.lv/
+- Pietiek — https://pietiek.com/
+- kriminal.lv — https://kriminal.lv/
+- leta — https://leta.lv/
+- Saldus Zeme — https://www.sz.lv/
+- Dzirkstele — https://dzirkstele.lv/
+- Rēzeknes Vēstis — http://www.rv.lv/
+- Kurzemes Vards — https://www.kurzemes-vards.lv/
+- BB.lv — https://bb.lv/
+- Latvijas Avize — https://www.la.lv/
+- ir — https://ir.lv/
+- latvijas vestnesis — https://www.vestnesis.lv/
+- kompromat.lv — https://www.kompromat.lv/
+- Ventspils — https://www.ventspils.lv/
+- News — https://news.lv/
+- purao.lv — https://puaro.lv/
+- D Fakti — https://www.d-fakti.lv/
+- Subbota — http://www.subbota.com/
+- Politika — http://providus.lv/
+- Panorama Rezekne — http://www.panorama-rezekne.lv/
+- Ezerzeme — http://www.ezerzeme.lv/lv
+- retalsi.lv — https://retalsi.lv/
+- Auseklis — https://www.auseklis.lv/
+
+### onlinenewspapers — https://onlinenewspapers.com/latvia.shtml
+- Baltic Business Information Center — https://ttinform.lv/
+- Baltic News Network — http://www.bnn-news.com/
+- The Baltic Times — http://www.baltictimes.com/
+- Business & the Baltics — http://www.bb.lv/
+- City Paper — http://www.citypaper.lv/
+- Delfi — https://www.delfi.lv/
+- Diena Online — http://www.diena.lv/
+- Kurzemes Vards — http://www.kurzemes-vards.lv/
+- Laikraksts Vakara Ziòas — https://nra.lv/vakara-zinas/
+- Latgales Laiks — http://www.latgaleslaiks.lv/
+- Latvijas Avize — http://www.la.lv/
+- Nasha — http://www.nasha.lv/
+- News.lv — http://www.news.lv/lavize/
+- NovoNews.lv — http://www.novonews.lv/
+- Ogres Vestis — https://www.ovv.lv/
+- Ogres Ziņas — http://www.ogrenet.lv/
+- TVNet — http://www.tvnet.lv/
+- Zemgales Zinas — http://www.zz.lv/
+
+### allyoucanread — https://www.allyoucanread.com/latvian-newspapers/
+- DELFI — https://delfi.lv/
+- Mixnews.lv — https://mixnews.lv/
+- LA.lv — https://la.lv/
+- Apollo — https://www.apollo.lv/
+- nra.lv — https://nra.lv/
+- liepajniekiem.lv — https://www.liepajniekiem.lv/
+- Pribalt.info — https://pribalt.info/
+- Gorod.lv — https://gorod.lv/
+- Diena.lv — https://diena.lv/
+- Grani.lv — http://www.grani.lv/
+- Pietiek — https://pietiek.com/
+- Kompromat.lv — https://kompromat.lv/
+- Ventas Balss — https://www.ventasbalss.lv/
+- Kasjauns.lv — https://kasjauns.lv/
+- Latvijas Vestnesis — https://vestnesis.lv/
+
+### abyznewslinks — http://www.abyznewslinks.com/latvi.htm
+- Apollo — http://apollo.tvnet.lv/
+- Delfi — http://www.delfi.lv/
+- Delfi — http://rus.delfi.lv/
+- Finance Net — http://financenet.tvnet.lv/
+- Focus — http://www.focus.lv/
+- Focus — http://ru.focus.lv/
+- Kasjauns — http://www.kasjauns.lv/lv/
+- News — http://news.lv/
+- Politika — http://politika.lv/
+- Sportsnews — http://sportsnews.lv/ru/
+- TV Net — http://www.tvnet.lv/
+- TV Net — http://rus.tvnet.lv/
+- Ves — http://www.ves.lv/
+- Vesti — http://vesti.lv/
+- Baltic Times — http://www.baltictimes.com/
+- Biznez i Baltiya — http://bb.vesti.lv/
+- Diena — http://www.diena.lv/
+- Dienas Bizness — http://www.db.lv/
+- Latvijas Vestnesis — https://www.lv.lv/
+- Nasz Czas — http://nasz-czas.tripod.com/
+- Neatkariga Rita Avize — http://nra.lv
+
+## lithuania (baltic_states) — Lithuania
+
+### w3newspapers — https://www.w3newspapers.com/lithuania/
+- Lietuvos rytas — https://www.lrytas.lt/
+- Respublika — https://www.respublika.lt/
+- Verslo žinios — https://www.vz.lt/
+- Vilniaus diena — https://diena.lt/
+- 15 min (Penkiolika minučių) — https://www.15min.lt/
+- Kurier Wileński — https://kurierwilenski.lt/
+- Kauno diena — https://kauno.diena.lt/
+- Vakarų ekspresas — https://ve.lt/
+- Voruta — https://www.voruta.lt/
+- ELTA (Lietuvos naujienų agentūra) — https://www.elta.lt/
+- Alytaus naujienos — https://www.alytausnaujienos.lt/
+- Druskonis — http://www.druskonis.lt/beta/index.php
+- Banga — https://gargzdai.lt/
+- Kmintys — https://kmintys.lt/
+- alfa.lt — https://www.alfa.lt/
+- Grokiskis — https://grokiskis.lt/
+- Lietuvos žinios — https://lzinios.lt/
+- BNS (Baltic News Service) — https://bns.lt/
+- Siauliu Krastas — https://www.skrastas.lt/
+- Taurages Kurjeris — https://kurjeris.lt/
+- Klaipeda — https://klaipeda.diena.lt/
+- Bernardinai — https://www.bernardinai.lt/
+- Ekspertai.eu — https://ekspertai.eu/
+- Litovskiy Kurier — https://www.kurier.lt/
+- Alkas.lt — https://alkas.lt/
+- L24 — https://l24.lt/en/
+- Nyksciai — http://nyksciai.lt/
+- Prim.lt — http://www.prim.lt/prim/
+- Anyksta — https://www.anyksta.lt/
+- Veidas — http://www.veidas.lt/
+- Budas Zemaiciu — http://www.budas.lt/
+- Santarve — https://www.santarve.lt/
+- Ukmerges zinios — https://www.ukzinios.lt/
+- gyvenimas — https://www.Gyvenimas.eu/
+- santaka — https://www.Santaka.info/
+- Delfi — https://www.delfi.lt/en/
+- Utenos Diena — https://udiena.lt/
+- Gimtoji Zeme — https://www.gzeme.lt/
+- Telsiu Zinios — https://tzinios.lt/
+- Lietuvos Aidas — https://www.aidas.lt/
+- Elektrenu Kronika — https://www.kronika.lt/
+- Traku Zeme — https://www.traku-zeme.lt/
+- Tygodnik Wilenszczyzny — http://www.tygodnik.lt/
+- Suvalkietis — https://www.suvalkietis.lt/
+- Svencionu Krastas — https://www.svencioniukrastas.lt/
+- Kalvotoji Zemaitija — http://www.kalvotoji.lt/
+- Politika — http://politika.lt/
+
+### onlinenewspapers — https://onlinenewspapers.com/lithuania.shtml
+- 15min.lt — http://www.15min.lt/
+- AINA.LT — http://www.aina.lt/
+- The Baltic Times — http://www.baltictimes.com/
+- Baltische Rundschau — http://www.baltische-rundschau.eu/
+- Delfi — https://www.delfi.lt/
+- Druskonis — http://www.druskonis.lt/
+- Kaipkada.lt — https://www.kaipkada.lt/
+- Kauno Diena — http://www.kaunodiena.lt/
+- Kiekvienos Dienos Skaitiniai — https://www.kds.lt/
+- Kurier Wileński — https://www.kurierwilenski.lt/
+- Laisvas Laikrastis — http://www.laisvaslaikrastis.lt/
+- Lietuvos Aidas — http://www.aidas.lt/
+- LRytas — https://www.lrytas.lt/
+- Lietuvos Zinios — http://www.lzinios.lt/
+- The Lithuania Tribune — http://www.lithuaniatribune.com/
+- Litovskij Kurier — http://www.kurier.lt/
+- Nasza Gazeta — https://www.naszagazeta.info/
+- Panevezio Balsas — http://www.paneveziobalsas.lt/
+- Santarve — http://www.santarve.lt/
+- Sekundé — http://www.sekunde.lt/
+- Siauliu krastas — https://www.skrastas.lt/
+- Tauragés Kurjeris — http://www.kurjeris.lt
+- Ukmergės Žinios — https://www.ukzinios.lt/
+- Utenos Diena — http://www.utenos-diena.lt/
+- Valstiecio Laikrastis — http://www.valstietis.lt/
+- Verslo Zinios — http://www.vz.lt/
+
+### allyoucanread — https://www.allyoucanread.com/lithuanian-newspapers/
+- 15min.lt — https://www.15min.lt/
+- lrytas.lt — https://lrytas.lt/
+- TV3 — https://www.tv3.lt/
+- Verslo zinios - VZ.LT — http://www.vz.lt/
+- VilniausDiena — https://www.diena.lt/
+- Alfa.lt — https://www.alfa.lt/
+- Vakar ekspresas — https://ve.lt/
+- Respublika.lt — https://respublika.lt/
+- anyksta.lt — https://www.anyksta.lt/
+- Alkas.lt — https://alkas.lt/
+- skrastas.lt — https://www.skrastas.lt/
+- sekunde.lt — https://sekunde.lt/
+- L24 — https://l24.lt/
+- Ekspertai.eu — https://ekspertai.eu/
+- Gimtasis Rokiskis — https://www.grokiskis.lt/
+- Nyksciai — http://nyksciai.lt/
+- Santarve.lt — https://www.santarve.lt/
+- ELTA — https://elta.lt/
+- Veidas — http://www.veidas.lt/
+
+### abyznewslinks — http://www.abyznewslinks.com/lithu.htm
+- Bernardinai — http://www.bernardinai.lt/
+- Delfi — http://www.delfi.lt/
+- Lithuania Tribune — http://www.lithuaniatribune.com/
+- Penki — http://www.penki.lt/
+- Politika — http://politika.lt/
+- RSS Pasaulis — http://www.rsspasaulis.lt/
+- Baltic Times — http://www.baltictimes.com/
+- Kauno Diena — http://kauno.diena.lt/
+- Lietuvos Aidas — http://www.aidas.lt/
+- Lietuvos Rytas — http://www.lrytas.lt/
+- Lietuvos Zinios — http://www.lzinios.lt/
+- Litovskiy Kurier — http://www.kurier.lt/
+- Valstieciu Laikrastis — http://valstietis.balsas.lt/
+- Verslo Zinios — http://vz.lt/
+
+## turkiye (turkiye) — Türkiye
+
+### w3newspapers — https://www.w3newspapers.com/turkey/
+- Hürriyet — https://www.hurriyet.com.tr/
+- Sabah — https://www.sabah.com.tr/
+- Posta — https://www.posta.com.tr/
+- Sözcü — https://www.sozcu.com.tr/
+- Milliyet — https://www.milliyet.com.tr/
+- Türkiye — https://www.turkiyegazetesi.com.tr/
+- Yeni Şafak — https://www.yenisafak.com/
+- Takvim — https://www.takvim.com.tr/
+- Akşam — https://www.aksam.com.tr/
+- Star Gazetesi — https://www.star.com.tr/
+- Cumhuriyet — https://www.cumhuriyet.com.tr/
+- BirGün — https://www.birgun.net/
+- Evrensel — https://www.evrensel.net/
+- Yeni Asır — https://www.yeniasir.com.tr/
+- Güneş — https://www.gunes.com/
+- Milat — https://www.milatgazetesi.com/
+- Yeniçağ — https://www.yenicaggazetesi.com.tr/
+- Milli Gazete — https://www.milligazete.com.tr/
+- Yurt Gazetesi — https://www.yurtgazetesi.com.tr/
+- Karar Haber — https://www.karar.com/
+- Yeni Akit — https://www.yeniakit.com.tr/
+- Aydınlık — https://www.aydinlik.com.tr/
+- İstiklal.com.tr — https://www.istiklal.com.tr/
+- Yeni Asya — https://www.yeniasya.com.tr/
+- Yeni Mesaj — https://www.yenimesaj.com.tr/
+- Şok Gazetesi — https://www.sokgazetesi.com.tr/
+- Diriliş Postası — https://www.dirilispostasi.com/
+- Anadolu Ajansı (AA) — https://www.aa.com.tr/
+- Habertürk — https://www.haberturk.com/
+- NTV — https://www.ntv.com.tr/
+- MyNet — https://www.mynet.com/
+- Haberler — https://www.haberler.com/
+- Diken — https://www.diken.com.tr/
+- Dünya — https://www.dunya.com/
+- En Son Haber — https://www.ensonhaber.com/
+- Vatan — https://www.gazetevatan.com/
+- SoL — https://haber.sol.org.tr/
+- OrtadoguGazetesi.com — https://www.ortadogugazetesi.com/
+- Haber Port — https://www.haberport.com/
+- Hedef Halk — https://www.hedefhalk.com/
+- internetHaber / internetSpor — https://www.internethaber.com/
+- CNN Türk — https://www.cnnturk.com/
+- OdaTV — https://www.odatv.com/
+- TRT Haber — https://www.trthaber.com/
+- Bursada Bugün — https://www.bursadabugun.com/
+- Özgür Kocaeli — https://www.ozgurkocaeli.com.tr/
+- Anadolu — https://www.anadolugazetesi.com/
+- Mersin Haber — https://www.mersinhaber.com/
+- Haber Antalya — https://www.haberantalya.com/
+- Yeni Meram — https://www.yenimeram.com.tr/
+- Malatya Haber — https://malatyahaber.com/
+- Kocaeli Gazetesi — https://www.kocaeligazetesi.com.tr/
+- Yeni Alanya — https://www.yenialanya.com/
+- Haber Ekspres — https://www.haberekspres.com.tr/
+- Bolu Gündem — https://www.bolugundem.com/
+- Bolunun Sesi — https://www.bolununsesi.com/
+- Elbistanın Sesi — https://www.elbistaninsesi.com/
+- Erzurum Gazetesi — https://www.erzurumgazetesi.com.tr/
+- Eko Haber — https://www.ekohaber.com.tr/
+- Gazete Kadıköy — https://www.gazetekadikoy.com.tr/
+- Güncel Gazetesi — https://www.guncelgazete.com/
+- Kartal 24 — https://www.kartal24.com/
+- Kayseri Gündem — https://www.kayserigundem.com.tr/
+- Kayseri Haber — https://www.kayserihaber.com.tr/
+- Kent Bursa — https://www.kentbursa.com/
+- Merhaba Gazetesi — https://www.merhabahaber.com/
+- Mersin Radikal — https://www.mersinradikal.com/
+- Sakarya Gazetesi – Eskişehir — https://www.sakaryagazetesi.com.tr/
+- Sakarya’dan Haber — https://www.sakaryadanhaber.com/
+- Urfa Haber — https://www.urfahaber.com/
+- Kahramanmaraş Gazetesi — https://kahramanmarasgazetesi.com.tr/
+- Fotomaç — https://www.fotomac.com.tr/
+- Fanatik — https://www.fanatik.com.tr/
+- NTVSpor.net — https://www.ntvspor.net/
+- Sporx — https://www.sporx.com/
+- Haber3 – Spor — https://www.haber3.com/spor
+- Hürriyet Daily News — https://www.hurriyetdailynews.com/
+- Daily Sabah (English edition) — https://www.dailysabah.com/
+- Turkish Minute — https://www.turkishminute.com/
+- Duvar English — https://www.duvarenglish.com/
+- Agos — http://www.agos.com.tr/tr/anasayfa
+- Şalom — https://www.salom.com.tr/
+- Marmara — https://www.normarmara.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/turkey.shtml
+- A Haber — http://www.aksam.com.tr/
+- Adıyaman Haber — https://adiyamaninsesi.com/
+- Akşam Gazetesi — http://www.ahaber.com.tr/
+- Aksaray Governorship — http://www.aksaray.gov.tr/
+- Agos — http://www.agos.com.tr/
+- Alanya — http://www.yenialanya.com/
+- Anadolu Ajansı — https://www.aa.com.tr/
+- Anayurt — http://www.anayurtgazetesi.com/
+- Aydinlik — https://www.aydinlik.com.tr/
+- Ay Gazete — http://www.aygazete.com/
+- Bianet — http://bianet.org/
+- Beyaz Gazete — http://www.beyazgazete.com/
+- Bigpara — http://bigpara.hurriyet.com.tr/
+- Birgün — https://www.birgun.net/
+- Bolu Köroğlu — http://www.bolukoroglu.com/
+- Bucak Haberleri — http://www.bucakhaberleri.com/
+- Bursa Hakimiyet Gazetesi — http://www.bursahakimiyet.com.tr/
+- Büyük Zafer — http://buyukzafer.com/
+- Çanakkale Içinde — http://www.canakkaleicinde.com/
+- Cevrimici Haber — http://www.cevrimicihaber.com/
+- CNN Turk — https://www.cnnturk.com/
+- Cumhuriyet — http://www.cumhuriyet.com.tr/
+- Dünya — http://www.dunya.com/
+- Demirören Haber Ajansi (DHA) — https://www.dha.com.tr/
+- Demokrat — http://www.demokrat.com/
+- Deutsche Türkei Zeitung / Prima Türkei — http://www.tuerkei-zeitung.de/
+- Enson Haber — https://www.ensonhaber.com/
+- Evrensel — http://www.evrensel.net/
+- F5haber — https://www.f5haber.com/
+- Fanatik Gazetesi — http://www.fanatik.com.tr/
+- Fotomaç — http://www.fotomac.com.tr/
+- Fotospor — http://www.fotospor.com/
+- Gazete Istanbul — https://gazeteistanbul.com/
+- Gazete Oku — http://www.gazeteoku.net/
+- Good Morning Turkey — https://goodmorningturkey.com/
+- Günes — http://www.gunes.com/
+- Gündem Kıbrıs Gazetesi — http://www.gundemkibris.com/
+- Haber 3 — http://www.haber3.com/
+- Haber 7 — http://www.haber7.com/
+- Haber 16 — http://www.haber16.com/
+- Haberekspresi — http://www.haberekspresi.net/
+- Haber Ekspres — http://www.haberekspres.com.tr/
+- Haber Entel (Istanbul) — https://www.haberentel.com/
+- Haberport — https://haberport.com/
+- HaberTürk — http://www.haberturk.com/
+- Haberler — https://www.haberler.com/
+- Haber Vitrini — http://www.habervitrini.com/
+- Habervaktim — http://www.habervaktim.com/
+- HaberX — https://www.haberx.com/
+- Hürriyet — http://www.hurriyet.com.tr/
+- Hurriyet Daily News — http://www.hurriyetdailynews.com/
+- İHA — http://www.iha.com.tr/
+- İnternethaber — https://www.internethaber.com/
+- Karamürsel Aktif Habar — http://www.karamurselaktifhaber.com/
+- Karar — https://www.karar.com/
+- Kayserim — http://www.kayserim.net/
+- Kent — http://www.kentgazetesi.com/
+- Kibris Postasi — http://www.kibrispostasi.com/
+- Kocaeli Gazetesi — http://www.kocaeligazetesi.com.tr/
+- Kurultay — http://www.kurultay.net/
+- Mail Gazete — http://www.mailgazete.com/
+- Malatya Haber — http://www.malatyahaber.com/
+- Malatya Haber Portalı — http://www.malatyam.com/
+- Manavgat Haberi — http://manavgathaberi.com/
+- Mebajans — http://www.mebajans.com/
+- Mega Gündem — https://www.megatv.com.tr/mega-gundem/
+- Milli Gazete — http://www.milligazete.com.tr/
+- Milliyet — http://www.milliyet.com.tr/
+- MyNet — https://www.mynet.com/
+- NetGazete — http://www.netgazete.com/
+- NTV — http://www.ntv.com.tr/
+- NTVMSNBC — http://www.ntvmsnbc.com/
+- Olay Medya — http://www.olaymedya.com/
+- Onedio — https://onedio.com/
+- Ortadogu Gazetesi — https://www.ortadogugazetesi.com/
+- Özgür Kocaeli — http://www.ozgurkocaeli.com.tr/
+- Posta Gazetesi — http://www.posta.com.tr/
+- PressTurk — http://www.pressturk.com/
+- Radikal Gazetesi — http://www.radikal.com.tr/
+- Renkli Haber — http://www.renklihaber.net/
+- Russkaya Volna — http://www.rvolna.com/
+- Sabah Gazetesi — http://www.sabah.com.tr/
+- Sakarya Gazetesi — http://www.sakaryagazetesi.com.tr/
+- Salom — http://www.salom.com.tr/
+- Sonsayfa — http://www.sonsayfa.com/
+- Sondakika — https://www.sondakika.com/
+- soL — http://haber.sol.org.tr/
+- Sözcü — http://www.sozcu.com.tr/
+- Star — http://www.stargazete.com.tr/
+- Türkiye — http://www.turkiyegazetesi.com/
+- Takvim — http://www.takvim.com.tr/
+- Tgrt Haber — https://www.tgrthaber.com.tr/
+- TimeTurk — https://www.timeturk.com/
+- Trabzondan Haber — http://www.trabzondanhaber.net/
+- TRT Haber — https://www.trthaber.com/
+- Turizm Gazetesi — https://www.turizmgazetesi.com/
+- Turkish Press — http://www.turkishpress.com/
+- Turks.US — http://www.turks.us/
+- TurkTime — http://www.turktime.com/
+- Ulusal Kanal — http://www.ulusalkanal.com.tr/
+- Vakit Gazetesi — http://www.vakit.com.tr/
+- Van Havadis Haber — https://www.vanhavadis.com/
+- Vatan — http://www.gazetevatan.com/
+- Voices — http://www.voicesnewspaper.com/
+- World Bulletin — http://www.worldbulletin.net/
+- Yalcin Cakir haberler — http://www.yalcincakir.com/
+- Yazete — http://www.yazete.com/
+- Yeni Akit — http://www.yeniakit.com.tr/
+- Yeni Asir — http://www.yeniasir.com.tr/
+- Yeni Asya — http://www.yeniasya.com.tr/
+- Yeniçag — http://www.yenicaggazetesi.com.tr/
+- Yeni Bakış Gazetesi — https://www.yenibakis.com.tr/
+- Yeni Meram — https://www.yenimeram.com.tr/
+- Yeni Mesaj — http://www.yenimesaj.com.tr/
+- Yeni Safak — http://www.yenisafak.com/
+- Yert — http://www.yurtgazetesi.com.tr/
+
+### allyoucanread — https://www.allyoucanread.com/turkish-newspapers/
+- Hurriyet — https://www.hurriyet.com.tr/
+- Milliyet — https://www.milliyet.com.tr/
+- Haberler.com — https://www.haberler.com/
+- haber7.com — https://www.haber7.com/
+- Sozcu — https://www.sozcu.com.tr/
+- Anadolu Ajansi — https://aa.com.tr/
+- Haber Turk — https://www.haberturk.com/
+- Sabah — https://www.sabah.com.tr/
+- Onedio — https://onedio.com/
+- En Son Haber — https://www.ensonhaber.com/
+- Cumhuriyet — https://www.cumhuriyet.com.tr/
+- SonDakika.com — https://www.sondakika.com/
+- AKSAM — https://www.aksam.com.tr/
+- Takvim — https://www.takvim.com.tr/
+- Yenicag Gazetesi — https://www.yenicaggazetesi.com.tr/
+- Posta — https://www.posta.com.tr/
+- Yeni Akit — https://www.yeniakit.com.tr/
+- CNN turk — https://www.cnnturk.com/
+- Hurriyet Daily news — https://www.hurriyetdailynews.com/
+- A haber — https://www.ahaber.com.tr/
+- memurlar.net — https://www.memurlar.net/
+- Aydinlik — https://www.aydinlik.com.tr/
+- Medyatava.com — https://www.medyatava.com/
+- Gercek Gundem — https://www.gercekgundem.com/
+- YeniSafak — https://www.yenisafak.com/
+- Galatasaray Gazete — https://gsgazete.com/
+- Show TV — https://www.showtv.com.tr/
+- milligazete — https://milligazete.com.tr/
+- T24 — http://t24.com.tr/
+- Vatan — https://www.gazetevatan.com/
+- Duhuliye — https://www.duhuliye.com/
+- STAR — https://star.com.tr/
+- Turkiye — https://www.turkiyegazetesi.com.tr/
+- Diken — https://diken.com.tr/
+- Haber 3 — https://www.haber3.com/
+- TGRT Haber — https://www.tgrthaber.com.tr/
+- gazeteoku.com — https://www.gazeteoku.com/
+- Bursada Bugun — https://www.bursadabugun.com/
+- yeniasir.com.tr — https://www.yeniasir.com.tr/
+- Medya Radar — https://www.medyaradar.com/
+- Haber 61 — https://www.haber61.net/
+- evrensel.net — https://www.evrensel.net/
+- Yurt Gazetesi — https://www.yurtgazetesi.com.tr/
+- ozgurkocaeli.com.tr — https://ozgurkocaeli.com.tr/
+- gazeteler.com — http://gazeteler.com/
+- IHA — https://www.iha.com.tr/
+- OLAY — http://www.olay.com.tr/
+- bianet.org — https://bianet.org/
+- Ege Haber — https://www.egehaber.com/
+- DHA — https://www.dha.com.tr/
+
+### abyznewslinks — http://www.abyznewslinks.com/turke.htm
+- 90 Min — https://www.90min.com/tr
+- Burasi Turkiye — http://www.burasiturkiye.com/
+- Cevrimici Haber — http://www.cevrimicihaber.com/
+- Gazete App — https://gazeteapp.com/
+- Gazete Oku — http://www.gazeteoku.net/
+- Haber 10 — http://www.haber10.com/
+- Haber FX — http://www.haberfx.net/
+- Haber Port — http://www.haberport.com/
+- Haber Tuar — http://www.habertuar.com/
+- Haberin Sitesi — https://www.haberinsitesi.com/
+- Haberler — http://haberler.gen.al/
+- Hye Tert — http://hyetert.blogspot.com.tr/
+- Istanbul Post — http://www.istanbulpost.net/
+- Journal of Turkish Weekly — http://www.turkishweekly.net/
+- Kamu Saati — http://www.kamusaati.com/
+- Medya 365 — http://www.medya365.com/
+- Mesaj Haber — http://www.mesajhaber.com/
+- Net Gazete — http://www.netgazete.com/
+- News on Turkey — https://www.newsonturkey.com/
+- Patlak Haber — http://www.patlakhaber.com/
+- Sansursuz — http://www.sansursuz.com/
+- Turkey Daily News — http://turkeydailynews.com/
+- Turkish Press — http://www.turkishpress.com/
+- Aksam — http://www.aksam.com.tr/
+- Hurriyet — http://www.hurriyet.com.tr/anasayfa/
+- Milliyet — http://www.milliyet.com.tr/
+- Posta — http://www.posta.com.tr/
+- Sabah — http://www.dailysabah.com/
+- Sabah — http://www.sabah.com.tr/
+- Turkiye — http://www.turkiyegazetesi.com.tr/
+- Zaman — http://www.zaman.com.tr/
+
+## andorra (western_europe) — Andorra
+
+### w3newspapers — https://www.w3newspapers.com/andorra/
+- Diari d'Andorra — https://www.diariandorra.ad/
+- El Periòdic d'Andorra — https://elperiodic.ad/
+- Ara Andorra — https://www.ara.ad/
+- Bondia — https://www.bondia.ad/
+- Forum — https://forum.ad/
+- Agència de Notícies Andorrana (ANA) — https://www.ana.ad/
+- RTVA (Ràdio i Televisió d'Andorra S.A.) — https://www.andorradifusio.ad/
+
+### onlinenewspapers — https://onlinenewspapers.com/andorra.shtml
+- All Andorra — http://www.all-andorra.com/
+- Bondia — http://www.bondia.ad/
+- Diari d'Andorra — http://www.diariandorra.ad/
+- El Periòdic — https://www.elperiodic.ad/
+
+### allyoucanread — https://www.allyoucanread.com/andorra-newspapers/
+- Bondia — https://www.bondia.ad/
+- El Periodic — https://www.elperiodic.ad/
+- ANA — https://www.ana.ad/
+- Forum — https://forum.ad/
+
+### abyznewslinks — http://www.abyznewslinks.com/andor.htm
+- Ara — http://www.ara.ad/
+- Forum — http://forum.ad/
+- Diari d'Andorra — http://www.diariandorra.ad/
+
+## austria (western_europe) — Austria
+
+### w3newspapers — https://www.w3newspapers.com/austria/
+- Kronen Zeitung (Krone) — https://www.krone.at/
+- Heute — https://www.heute.at/
+- Kleine Zeitung — https://www.kleinezeitung.at/
+- Österreich — https://www.oe24.at/
+- Kurier — https://kurier.at/
+- Neue Vorarlberger Tageszeitung (NEUE) — https://www.neue.at/
+- Oberösterreichische Nachrichten — https://www.nachrichten.at/
+- Die Presse — https://www.diepresse.com/
+- Der Standard — https://www.derstandard.at/
+- Tiroler Tageszeitung (TT) — https://www.tt.com/
+- Salzburger Nachrichten (SN) — https://www.sn.at/
+- Vorarlberger Nachrichten (VN) — https://www.vn.at/
+- medianet — https://medianet.at/
+- Neues Volksblatt — https://volksblatt.at/
+- Wiener Zeitung — https://www.wienerzeitung.at/
+- Falter — https://www.falter.at/
+- Economy — https://economy.at/
+- Die Furche — https://www.furche.at/
+- The Local — https://www.thelocal.at/
+- Burgenländische Volkszeitung (BVZ, St. Pölten) — https://www.bvz.at/
+- Niederösterreichischen Nachrichten (NÖN) — https://www.noen.at/
+- Alpenpost — https://www.alpenpost.at/
+- Der Sonntag — https://www.meinekirchenzeitung.at/wien-noe-ost-der-sonntag
+- ANNO — https://anno.onb.ac.at/
+- Orf.at — https://orf.at/
+- Vorarlberg online — https://www.vol.at/
+- Meinbezirk.at — https://www.meinbezirk.at/
+- Newa.at — https://www.news.at/
+- Salzburg 24 — https://www.salzburg24.at/
+- APA-OTS — https://www.ots.at/
+- Profil — https://www.profil.at/
+- Die tagespress — https://dietagespresse.com/
+- Salzi.at — https://www.salzi.at/
+- Wiener Bezirks Blatt — https://wienerbezirksblatt.at/
+- Novice — https://www.novice.at/
+- Yeni Vatan Gazetesi — https://www.yenivatan.at/
+- Süd Ost Journal — https://www.soj.at/
+- der Grazer — https://grazer.at/
+- Der Ennstaler — https://www.derennstaler.at/
+- Liezener Bezirksnachrichten — https://www.liezener-bezirksnachrichten.at/
+- EnnsSeiten — https://www.ennsseiten.at/
+- Badener Zeitung — https://badenerzeitung.at/
+- Salzburger Fenster — https://www.svh.at/salzburger-fenster-magazin/
+- Unterkärntner Nachrichten — https://unterkaerntner.at/
+- KirchenZeitung — http://www.kirchenzeitung.at/
+- Verband Österreichischer Zeitungen — https://voez.at/
+- Vindobona — https://www.vindobona.org/
+
+### onlinenewspapers — https://onlinenewspapers.com/austria.shtml
+- Austrian Times — http://www.austriantimes.at/
+- AK Für Sie - Aktuell — https://wien.arbeiterkammer.at/
+- Austria Presse Agentur — http://www.apa.at/
+- Badener Zeitung — http://www.badenerzeitung.at/
+- Der Falter — http://www.falter.at/
+- Der Standard — http://derstandard.at/
+- Die Furche — https://www.furche.at/
+- Die Presse — http://www.diepresse.at/
+- Fonds Professionell — http://www.fondsprofessionell.at/
+- Gewinn — http://www.gewinn.co.at/
+- Heute — https://www.heute.at/
+- Israel Nachrichten — http://www.israel-nachrichten.org/
+- Jurnalul Românesc — http://www.jurnalromanesc.ro/
+- Kärntner Tageszeitung — https://www.kleinezeitung.at/
+- KathPress — http://www.kathpress.at/
+- Kitzbüheler Anzeiger — https://www.kitzanzeiger.at/
+- Kleine Zeitung — http://www.kleinezeitung.at/
+- Kronen Zeitung — http://www.krone.at/
+- Kurier — http://www.kurier.at/
+- LeobenNews — http://www.leobennews.at/
+- News — http://www.news.at/
+- NÖN.at — https://www.noen.at/
+- Oberöesterreichische Nachrichten — http://www.nachrichten.at/
+- Oberwarter Zeitung — http://www.oz-net.at/
+- Profil — http://www.profil.at/
+- Russische Rundschau — http://www.russischerundschau.com/
+- Salzburger Nachrichten — http://www.salzburg.com/
+- Tiroler Tageszeitung — https://www.tt.com/
+- Trend — http://www.trend.at/
+- The Vienna Review — https://www.theviennareview.at/
+- Vienna Times — http://www.viennatimes.com/
+- Voice Of Vienna — http://www.voiceofvienna.org/
+- Volltext — http://www.volltext.at/
+- Vorarlberg Online — http://www.vol.at/
+- Vorarlberger Nachrichten — https://www.vn.at/
+- Wiener Zeitung — https://www.wienerzeitung.at/
+- WN24 / Wiener Neustadt Aktuell — http://www.wn24.at/
+- Yamaghreb — http://www.yamaghreb.com/
+- Zur Zeit — https://www.zurzeit.at/
+- Ärzte Woche — https://www.springermedizin.at/aerztewoche/15131984
+- Öberoesterreich — https://www.oberoesterreich.at/
+- Österreich Journal — http://www.oe-journal.at/
+- Österreichischen Gewerkschaftsbund — https://www.oegb.at/
+- Österreichischer Rundfunk — http://www.orf.at/
+
+### allyoucanread — https://www.allyoucanread.com/austria-newspapers/
+- ORF.at — https://orf.at/
+- derStandard.at — https://derstandard.at/
+- Krone.at — http://www.krone.at/
+- Heute.at — https://www.heute.at/
+- Kleine Zeitung — https://www.kleinezeitung.at/
+- DiePresse.com — https://diepresse.com/
+- oe24.at — https://oe24.at/
+- KURIER.at — https://kurier.at/
+- Wiener Zeitung — https://www.wienerzeitung.at/
+- Vorarlberg Online — https://www.vol.at/
+- Nachrichten.at — https://www.nachrichten.at/
+- Tiroler Tageszeitung — https://www.tt.com/
+- APA-OTS — https://www.ots.at/
+- Salzburger Nachrichten — https://www.sn.at/
+- Vienna.at — https://www.vienna.at/
+- NOEN — https://www.noen.at/
+- Profil — https://www.profil.at/
+- Salzburg24 — https://www.salzburg24.at/
+- NEWS.AT — https://www.news.at/
+- Die Tagespresse — https://dietagespresse.com/
+- salzi.at — https://salzi.at/
+
+### abyznewslinks — http://www.abyznewslinks.com/austi.htm
+- Aktien Portal — http://aktien-portal.at/
+- Austria Credit Score Online — http://www.austriacreditscoreonline.co.uk/
+- Austria News — http://www.austrianews.co.uk/
+- Austria Today — http://www.austriatoday.at/
+- Austrian Times — http://www.austriantimes.at/
+- MSN — http://www.msn.com/de-at
+- One World — http://www.oneworld.at/
+- The Local — http://www.thelocal.at/
+- Der Standard — http://derstandard.at/
+- Die Presse — http://diepresse.com/
+- Kronen Zeitung — http://www.krone.at/
+- Kurier — http://kurier.at/
+- Osterreich — http://www.oe24.at/
+- Wiener Zeitung — http://www.wienerzeitung.at/
+- Wirtschafts Blatt — http://wirtschaftsblatt.at/
+
+## belgium (western_europe) — Belgium
+
+### w3newspapers — https://www.w3newspapers.com/belgium/
+- Het Laatste Nieuws — https://www.hln.be/
+- Het Nieuwsblad — https://www.nieuwsblad.be/
+- Gazet van Antwerpen — https://www.gva.be/
+- Het Belang van Limburg — https://www.hbvl.be/
+- De Standaard — https://www.standaard.be/
+- Le Soir — https://www.lesoir.be/
+- La Derniere Heure (La DH) — https://www.dhnet.be/
+- De Morgen — https://www.demorgen.be/
+- La Libre Belgique — https://www.lalibre.be/
+- De Tijd — https://www.tijd.be/
+- L'Echo — https://www.lecho.be/
+- Grenz Echo — https://www.grenzecho.net/
+- Metro — https://www.metrotime.be/
+- Brussels Times — https://www.brusselstimes.com/
+- Belga News Agency — http://www.belga.be/
+- Demer — http://www.demer.be/
+- lavenir.net — https://www.lavenir.net/
+- Sudinfo.be — https://www.sudinfo.be/
+- Hoofdpunten — https://hoofdpunten.be/
+- 7sur7 — https://www.7sur7.be/
+- Télé MB — https://www.telemb.be/
+- PAL NWS — https://pal.be/
+- De redactie — https://www.vrt.be/vrtnws/nl/
+- Krant van West Vlaanderen — https://kw.be/
+- Weekend — https://weekend.knack.be/
+- Knack.be — https://www.knack.be/nieuws/
+- Newsmonkey — https://newsmonkey.be/
+- Euractiv — https://www.euractiv.com/
+- Nord presse — https://nordpresse.be/
+- Business AM — https://businessam.be/
+- TV Limburg — https://www.tvl.be/
+- Vlaamse Volksbeweging — https://www.vvb.vlaanderen/
+- t Scheldt — https://www.tscheldt.be/
+- Camer.be — http://www.camer.be/
+- Waaskrant — https://www.waaskrant.be/
+- CathoBel — https://www.cathobel.be/
+- Spirou — https://www.spirou.com/
+- Le Vif — https://www.levif.be/
+- Politico — https://www.politico.eu/
+
+### onlinenewspapers — https://onlinenewspapers.com/belgium.shtml
+- 'T Pallieterke — https://www.pallieterke.net/
+- The Brussels Times — http://www.thebrusselstimes.com/
+- Brusselskyi Vestnik — http://www.bvnewspaper.com/
+- Camer.be — http://www.camer.be/
+- De Frut Van Koekestad — http://www.defrut.be/
+- De Gentenaar — http://www.gentenaar.be/
+- De Goed Nieuws Krant — https://www.degoednieuwskrant.nl/
+- De Morgen — http://www.demorgen.be/
+- De Standaard — http://www.standaard.be/
+- De Tijd — http://www.tijd.be/
+- Diplomatic Aspects — http://www.diplomaticaspects.eu/
+- Duma — http://www.duma.bg/
+- Euractiv — http://www.euractiv.com/
+- EU Reporter — https://www.eureporter.co/
+- EU Observer — http://www.euobserver.com/
+- GrenzEcho — http://www.grenzecho.net/
+- GVA — https://www.gva.be/
+- Het Belang van Limburg — http://www.hbvl.be/
+- Het Laatste Nieuws — https://www.hln.be/
+- Het Nieuwsblad — http://www.nieuwsblad.be/
+- Het Volk — https://www.nieuwsblad.be/cnt/dma15052006_002
+- L'Avenir — https://www.lavenir.net/
+- L'Echo — https://www.lecho.be/
+- L'Echo de la Presse — http://www.lechopresse.be/
+- L'Européenne de Bruxelles — http://leuropeennedebruxelles.com/
+- La Dernière Heure — http://www.dhnet.be/
+- La Libre Belgique — https://www.lalibre.be/
+- La Meuse — http://www.lameuse.be/
+- La Nouvelle Gazette — http://www.lanouvellegazette.be/
+- Le Soir — http://www.lesoir.be/
+- New Europe — https://www.neweurope.eu/
+- Politico — https://www.politico.eu/
+- Vonk — http://www.vonk.org/
+- Waaskrant — http://www.waaskrant.be/
+
+### allyoucanread — https://www.allyoucanread.com/belgium-newspapers/
+- HLN — https://hln.be/
+- Nieuwsblad — https://www.nieuwsblad.be/
+- DH — https://www.dhnet.be/
+- Sudinfo.be — https://sudinfo.be/
+- Le Soir — https://lesoir.be/
+- De Morgen — https://demorgen.be/
+- La Libre — https://www.lalibre.be/
+- Gazet Van Antwerpen — https://www.gva.be/
+- 7sur7 — https://7sur7.be/
+- De Standaard — https://www.standaard.be/
+- De Tijd — https://www.tijd.be/
+- L'Echo — https://www.lecho.be/
+- L'avenir.net — https://www.lavenir.net/
+- Knack.be — https://www.knack.be/
+- Het Belang Van Limburg — https://www.hbvl.be/
+- LeVif.be — https://www.levif.be/
+- Jobat — https://www.jobat.be/
+- Business AM — https://businessam.be/
+- inmemoriam.be — https://inmemoriam.be/
+- newsmonkey — https://newsmonkey.be/
+- LaMeuse.be — https://lameuse.be/
+- LaCapitale.be — https://lacapitale.be/
+- Nord Presse — https://nordpresse.be/
+- La Nouvelle Gazette — https://lanouvellegazette.be/
+
+### abyznewslinks — http://www.abyznewslinks.com/belgi.htm
+- 7 sur 7 — http://www.7sur7.be/
+- Expatica — http://www.expatica.com/be/main.html
+- Hoofdpunten — http://www.hoofdpunten.be/
+- Kranten Koppen — http://www.krantenkoppen.be/
+- Nieuws Anker — http://www.nieuwsanker.be/
+- Politics — http://www.politics.be/
+- ''t Scheldt — http://www.tscheldt.be/
+- Vlaamse Volksbeweging — http://www.vvb.org/
+- Waals Weekblad — http://www.waalsweekblad.be/
+- Belgisch Staatsblad — http://www.ejustice.just.fgov.be/cgi/welcome.pl
+- De Gentenaar — http://www.nieuwsblad.be/?ref=dg
+- De Morgen — http://www.demorgen.be/
+- De Standaard — http://www.standaard.be/
+- De Tijd — http://www.tijd.be/
+- Het Laatste Nieuws — http://www.hln.be/
+- La Derniere Heure — http://www.dhnet.be/
+- La Libre Belgique — http://www.lalibre.be/
+- Le Soir — http://www.lesoir.be/
+- L'Echo — http://www.lecho.be/
+
+## channel_islands (western_europe) — Channel Islands
+
+### w3newspapers — (not listed)
+- (no entries)
+
+### onlinenewspapers — https://onlinenewspapers.com/channel-islands.shtml
+- Guernsey Press — https://www.guernseypress.com/
+
+### allyoucanread — (not listed)
+- (no entries)
+
+### abyznewslinks — (not listed)
+- (no entries)
+
+## cyprus (western_europe) — Cyprus
+
+### w3newspapers — https://www.w3newspapers.com/cyprus/
+- Phileleftheros — https://www.philenews.com/
+- Cyprus Mail — https://cyprus-mail.com/
+- Politis — https://www.politis.com.cy/
+- Simerini — https://simerini.sigmalive.com/
+- Alithia — https://alithia.com.cy/
+- Haravgi — https://dialogos.com.cy/haravgi/
+- Kathimerini Cyprus — https://www.kathimerini.com.cy/gr/
+- Kibris Gazetesi — https://kibrisgazetesi.com/
+- Kıbrıs Postası Gazetesi — https://www.kibrispostasi.com/
+- Yeniduzen — https://www.yeniduzen.com/
+- Havadis — https://www.havadiskibris.com/
+- Halkın Sesi — https://www.halkinsesikibris.com/
+- Star Kıbrıs — https://www.starkibris.net/
+- Gundem Kibris — https://www.gundemkibris.com/
+- Haber Kibris — https://haberkibris.com/
+- Haberal Kibrisli — https://haberalkibrisli.net/
+- Yenicag — https://www.ykp.org.cy/
+- Detay — https://www.detaykibris.com/
+- Diyalog — https://www.diyaloggazetesi.com/
+- Gnomi — https://gnomionline.com.cy/
+- SigmaLive — https://www.sigmalive.com/
+- Offsite.com.cy — https://www.offsite.com.cy/
+- In Cyprus — https://in-cyprus.philenews.com/
+- 24h.com.cy — https://24h.com.cy/
+- Omega Live — https://omegalive.com.cy/
+- Typos — https://typos.com.cy/
+- CyprusNews.eu — https://cyprusnews.eu/
+- Paideia News — https://paideia-news.com/
+- Cytoday — https://cytoday.eu/
+- News in Cyprus — https://www.newsincyprus.com/
+- Pafos Press — https://pafospress.com/
+- LGC News (North Cyprus) — https://lgcnews.com/
+- North Cyprus Free Press — https://northcyprusfreepress.com/
+- Financial Mirror — https://www.financialmirror.com/
+- Ekonomi Kibris — https://www.ekonomikibris.com/
+- 24Sports — http://www.24sports.com.cy/gr/news/
+- Action in Sports — https://www.actioninsports.com/
+- Omonoia News — https://omonoianews.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/cyprus.shtml
+- Artsakank — http://www.artsakank.com.cy/
+- Cyprus Gazette — http://www.cygazette.com/
+- Cyprus Mail — http://www.cyprus-mail.com/
+- Cyprus Oberver — http://www.observercyprus.com/
+- CYtoday — http://www.cytoday.eu/
+- Detay Gazetesi — http://www.detaykibris.com/
+- Dialogos — https://dialogos.com.cy/
+- Eurokerdos — http://www.eurokerdos.com/
+- Famagusta Gazette — http://www.famagusta-gazette.com/
+- Financial Mirror — https://www.financialmirror.com/
+- Gündem Kıbrıs — http://www.gundemkibris.com/
+- H MAXH — https://www.bestnewscy.com/
+- i-Eidisi — http://www.i-eidisi.com/
+- iKypros — http://www.ikypros.com/
+- In Cyprus — https://in-cyprus.com/
+- Kibris Gazetesi — http://kibrisgazetesi.com/
+- Kibris Postasi — https://www.kibrispostasi.com/
+- LGC News — http://www.lgcnews.com/
+- News In Cyprus — http://www.newsincyprus.com/
+- Northern Cyprus Daily — http://www.northerncyprusnews.com/
+- North Cyprus Free Press — http://www.northcyprusfreepress.com/
+- Novosti — https://cyprusbutterfly.com.cy/news/
+- Offsite — https://www.offsite.com.cy/
+- Onlycy News — http://www.onlycy.news/
+- PameGipedo — http://www.pamegipedo.com/
+- Phileleftheros News — http://www.philenews.com/
+- Politis — https://politis.com.cy/
+- Reporter — http://www.reporter.com.cy/
+- Shmerini Online — http://www.simerini.com.cy/
+- Star Kibris — http://www.starkibris.net/
+- Telegraph — https://www.telegraph.co.uk/cyprus/
+- Typos — http://www.typos.com.cy/
+- Voice of the Island — https://www.voiceoftheisland.com/
+- YeniDüzen — http://www.yeniduzen.com/
+
+### allyoucanread — https://www.allyoucanread.com/cyprus-newspapers/
+- Cyprus Mail (English) — https://cyprus-mail.com/
+- Philenews.com — https://philenews.com/
+- Sigma Live — https://sigmalive.com/
+- Politis — https://politis.com.cy/
+- CyprusNews.eu — https://cyprusnews.eu/
+- CYtoday — https://cytoday.eu/
+- Kathimerini — https://kathimerini.com.cy/
+- Gundem Kibris — https://gundemkibris.com/
+- Kibris postasi — https://www.kibrispostasi.com/
+- Kibris Gazetesi — https://www.kibrisgazetesi.com/
+- Haber Kibris — https://haberkibris.com/
+- offsite — https://offsite.com.cy/
+- Ant1 iwo — https://www.ant1live.com/
+- Paideia news — https://paideia-news.com/
+- Omonoia News — https://omonoianews.com/
+- 24h.com.cy — https://24h.com.cy/
+- Pafos Press — https://pafospress.com/
+- Typos — https://typos.com.cy/
+
+### abyznewslinks — http://www.abyznewslinks.com/cypru.htm
+- 24 News — http://www.24news.com.cy/
+- 24 Sports — http://www.24sports.com.cy/
+- Baris Gazetesi — http://www.barisgazetesi.com/
+- CY Today — http://www.cytoday.eu/
+- Cyprus News — http://cyprusnews.eu/
+- Daily Cyprus — https://daily-cyprus.com/
+- Famagusta Gazette — http://famagusta-gazette.com/
+- i Kypros — http://ikypros.com/
+- KKTC Medya — http://www.kktcmedya.com/
+- LGC News — http://www.lgcnews.com/
+- MAXH News — http://www.maxhnews.com.cy/
+- MAXH Sports — http://www.maxhsports.com/
+- News in Cyprus — http://www.newsincyprus.com/greek/
+- North Cyprus Daily — http://www.northcyprusdaily.com/
+- North Cyprus Free Press — http://northcyprusfreepress.com/
+- Northern Cyprus News — http://www.northerncyprusnews.com/
+- Only CY — http://www.onlycy.com/
+- Pame Gipedo — http://www.pamegipedo.com/
+- Sigma Live — http://www.sigmalive.com/
+- Sports Break — http://www.sportsbreak.com.cy/
+- Typos — http://www.typos.com.cy/
+- Kibris — http://www.kibrisgazetesi.com/
+- Phileleftheros — http://www.philenews.com/
+- Politis — http://politis.com.cy/
+
+## denmark (western_europe) — Denmark
+
+### w3newspapers — https://www.w3newspapers.com/denmark/
+- Politiken — https://politiken.dk/
+- Jyllands-Posten — https://jyllands-posten.dk/
+- Berlingske — https://www.berlingske.dk/
+- Ekstra Bladet — https://ekstrabladet.dk/
+- B.T. — https://www.bt.dk/
+- Dagbladet Information — https://www.information.dk/
+- Kristeligt Dagblad — https://www.kristeligt-dagblad.dk/
+- Søndagsavisen — https://www.sondagsavisen.dk/
+- Weekendavisen — https://www.weekendavisen.dk/
+- DR Nyheder — https://www.dr.dk/nyheder
+- TV 2 Nyheder — https://nyheder.tv2.dk/
+- Zetland — https://www.zetland.dk/
+- Altinget — https://www.altinget.dk/
+- Avisen.dk — https://www.avisen.dk/
+- Nyheder.dk — https://www.nyheder.dk/
+- Dagens.dk — https://www.dagens.dk/
+- Nyheds (ni.dk) — https://ni.dk/
+- Netavisen 180grader.dk — https://www.180grader.dk/
+- News.dk — https://news.dk/
+- Nordjyske Stiftstidende — https://nordjyske.dk/
+- JydskeVestkysten — https://jv.dk/
+- Fyens Stiftstidende — https://fyens.dk/
+- Århus Stiftstidende — https://stiften.dk/
+- Vejle Amts Folkeblad — https://vafo.dk/
+- Fredericia Dagblad — https://frdb.dk/
+- Helsingør Dagblad — https://helsingordagblad.dk/
+- Skive Folkeblad — https://www.skivefolkeblad.dk/
+- Brande Bladet — https://www.brandebladet.dk/
+- Fyns Amts Avis — https://faa.dk/
+- Midtjyllands Avis — https://www.midtjyllandsavis.dk/
+- Horsens Folkeblad — https://hsfo.dk/
+- Ugeavisen Ribe — https://ugeavisen.dk/ribe
+- Aars — https://www.aars.dk/
+- Netavisen Sjælland — https://netavisen-sjaelland.dk/
+- Skanderborg — https://dinavis.dk/skanderborg
+- Galten Folkeblad — https://www.galtenfolkeblad.dk/
+- Skive-Her — https://www.skive-her.dk/
+- LigeHer.nu — https://ligeher.nu/himmerland
+- Københavnliv.dk — https://kobenhavnliv.dk/
+- KBH.dk — https://kbh.dk/
+- sn.dk — https://www.sn.dk/
+- Folketidende — https://www.folketidende.dk/
+- Randers Amtsavis — https://amtsavisen.dk/
+- Herning Folkeblad — https://www.herningfolkeblad.dk/
+- Dagbladet Børsen — https://borsen.dk/
+- Finans — https://finans.dk/
+- InsideBusiness — https://ib.dk/
+- Mandag Morgen — https://www.mm.dk/
+- bold.dk — https://bold.dk/
+- Tipsbladet — https://www.tipsbladet.dk/
+- sportnyt.dk — https://sportnyt.dk/
+- Copenhagen Post — https://cphpost.dk/
+- The Local Denmark — https://www.thelocal.dk/
+- Der Nordschleswiger — https://www.nordschleswiger.dk/de
+- Flensborg Avis — https://www.fla.de/
+- Danish Pioneer — https://thedanishpioneer.com/
+- The Danish Dream — https://thedanishdream.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/denmark.shtml
+- Århus Stiftstidende — https://www.stiften.dk/
+- Albertslund Posten — https://sn.dk/albertslund/
+- Alt om København — https://www.berlingske.dk/aok
+- Arbejderen — http://www.arbejderen.dk/
+- Børsen — http://www.borsen.dk/
+- Berlingske Tidende — http://www.berlingske.dk/
+- Bl.a.Dét — http://www.boemig.dk/bladet/
+- Bornholms Tidende — https://www.tidende.dk/
+- B.T. — https://www.bt.dk/
+- The Copenhagen Post — https://cphpost.dk/
+- Den Blå Avis — http://www.dba.dk/
+- Der Nordschleswiger — http://www.nordschleswiger.dk/
+- Ekstra Bladet — http://ekstrabladet.dk/
+- Folkebladet — https://hsfo.dk/
+- Folkebladet Glostrup — http://www.folkebladet.dk/
+- Frederiksberg Bladet — https://ugeavisen.dk/frederiksberg/
+- Fyens Stiftstidende — https://www.fyens.dk/
+- Fyns Amts Avis — https://www.faa.dk/
+- Haberler.dk — http://www.haberler.dk/
+- Hedensted Avis — http://www.hedensted-avis.dk
+- Helsingør Dagblad — http://www.helsingordagblad.dk/
+- Herning Folkeblad — http://herningfolkeblad.dk/
+- I Dag — http://www.idag.dk/
+- Informatíon — http://www.information.dk/
+- Ingeniøren — http://www.ing.dk/
+- Jydske Vestkysten — http://www.jv.dk/
+- Jyllands-Posten — https://jyllands-posten.dk/
+- Kolding Nyheder — https://koldingnyheder.dk/
+- Kristeligt Dagblad — http://www.kristeligt-dagblad.dk/
+- Lolland-Falsters Folketidende — http://www.folketidende.dk/
+- Midtjyllands Avis — http://www.midtjyllandsavis.dk/
+- Newsbreak.dk — http://newsbreak.dk/
+- Nordjyske Stiftstidinde — http://www.nordjyske.dk/
+- Nyheder Fra Skive — http://www.skive-her.dk/
+- Nyt Fra Danmark — http://www.nytfradanmark.dk/
+- Politiken Daily — http://politiken.dk/
+- Rødovre lokal nyt — http://www.rnn.dk/
+- Randers Amtsavis — http://www.randersamtsavis.dk/
+- Søndagsavisen — http://www.sondagsavisen.dk/
+- Skandinavsky Listok — http://www.sclistok.com/
+- Skive Folkeblad — http://www.skivefolkeblad.dk/
+- SN.dk — https://www.sn.dk/
+- Stevns Bladet — https://stevnsbladet.dk/
+- Urdu Hamasr — http://www.urduhamasr.dk/
+- Weekendavisen — http://www.weekendavisen.dk/
+
+### allyoucanread — https://www.allyoucanread.com/danish-newspapers/
+- Ekstra Bladet — https://ekstrabladet.dk/
+- BT — https://www.bt.dk/
+- Politiken.dk — https://politiken.dk/
+- Jyllands-Posten — https://jyllands-posten.dk/
+- Berlingske — https://www.berlingske.dk/
+- Nordjyske.dk — https://nordjyske.dk/
+- Fyens.dk — https://fyens.dk/
+- Information — https://information.dk/
+- JydskeVestkysten.dk — https://jv.dk/
+- Avisen.dk — https://www.avisen.dk/
+- SN.dk — https://www.sn.dk/
+- Lokalavisen.dk — https://lokalavisen.dk/
+- Arhus Stiftstidende — https://stiften.dk/
+- Kristeligt Dagblad — https://www.kristeligt-dagblad.dk/
+- Nyheds-Index — https://ni.dk/
+- Horsens Folkeblad — https://hsfo.dk/
+- folketidende.dk — https://folketidende.dk/
+- Herning Folkeblad — https://www.herningfolkeblad.dk/
+- amtsavisen.dk — https://amtsavisen.dk/
+- Vejle Amts Folkeblad — https://vafo.dk/
+- Midtjyllands Avis — https://www.midtjyllandsavis.dk/
+- Den Korte Avis — https://denkorteavis.dk/
+
+### abyznewslinks — http://www.abyznewslinks.com/denma.htm
+- Euro Investor — http://www.euroinvestor.dk/
+- News — http://news.dk/
+- Newspaq — http://newspaq.dk/
+- NP Investor — http://npinvestor.dk/
+- The Local — http://www.thelocal.dk/
+- Dagens Nyheder — http://www.dagenspost.com/
+- Berlingske — http://www.b.dk/
+- Borsen — http://borsen.dk/
+- BT — http://www.bt.dk/
+- Ekstra Bladet — http://ekstrabladet.dk/
+- Information — http://www.information.dk/
+- Jyllands Posten — http://jyllands-posten.dk/
+- Politiken — http://politiken.dk/
+- Weekend Avisen — http://www.weekendavisen.dk/
+
+## faroe_islands (western_europe) — Faroe Islands
+
+### w3newspapers — (not listed)
+- (no entries)
+
+### onlinenewspapers — https://onlinenewspapers.com/faroe-islands.shtml
+- Dimmalaetting — http://www.dimma.fo/
+- Local.fo — http://www.local.fo/
+- Nordlýsid — http://www.nordlysid.fo/
+
+### allyoucanread — https://www.allyoucanread.com/faroe-islands-newspapers/
+- Portal — https://portal.fo/
+
+### abyznewslinks — http://www.abyznewslinks.com/faroe.htm
+- Local — http://local.fo/
+- Portal — http://portal.fo/forsida.html
+- Sosialurin — http://www.sosialurin.fo/
+- Vikubladid — http://www.vikublad.fo/
+
+## finland (western_europe) — Finland
+
+### w3newspapers — https://www.w3newspapers.com/finland/
+- Helsingin Sanomat — https://www.hs.fi/
+- Kauppalehti — https://www.kauppalehti.fi/
+- Aamulehti — https://www.aamulehti.fi/
+- Abo Underrattelser — https://www.abounderrattelser.fi/
+- Hufvudstadsbladet — https://www.hbl.fi/
+- Ilta-Sanomat — https://www.is.fi/
+- Iltalehti — https://www.iltalehti.fi/
+- KU — https://www.ku.fi/
+- Kaleva — https://www.kaleva.fi/
+- Turun Sanomat — https://www.ts.fi/
+- Ålandstidningen — https://www.alandstidningen.ax/
+- Etela-Suomen Sanomat — https://www.ess.fi/
+- Osterbottens Tidning (OT) — https://www.osterbottenstidning.fi/
+- Vasabladet — https://www.vasabladet.fi/
+- Vastra Nyland — https://www.vastranyland.fi/
+- Nya Åland — https://www.nyan.ax/
+- ilkkapohjalainen.fi — https://ilkkapohjalainen.fi/
+- Maaseudun Tulevaisuus — https://www.maaseuduntulevaisuus.fi/
+- Syd-Osterbotten — https://www.sydin.fi/
+- Aamuposti — https://www.aamuposti.fi/
+- Helsinki Times — https://www.helsinkitimes.fi/
+- Karjalainen — https://www.karjalainen.fi/
+- Ita-Savo — https://www.ita-savo.fi/
+- Etela-Saimaa — https://www.esaimaa.fi/
+- Kainuun Sanomat — https://www.kainuunsanomat.fi/
+- Finland Times — https://www.finlandtimes.fi/
+- Hameen Sanomat — https://www.hameensanomat.fi/
+- Ita-Hame — https://www.itahame.fi/
+- Keskisuomalainen — https://www.ksml.fi/
+- Kouvolan Sanomat — https://www.kouvolansanomat.fi/
+- Kymen Sanomat — https://www.kymensanomat.fi/
+- Lansi-Savo — https://www.lansi-savo.fi/
+- Uusimaa — https://www.uusimaa.fi/
+- Lapin Kansa — https://www.lapinkansa.fi/
+- Savon Sanomat — https://www.savonsanomat.fi/
+- Satakunnan Kansa — https://www.satakunnankansa.fi/
+- Tyrvaan Sanomat — https://www.tyrvaansanomat.fi/
+- Hankasalmen Sanomat — https://www.hankasalmensanomat.fi/
+- Jamsan Seutu — https://www.jamsanseutu.fi/
+- Keskilaakso — https://www.keskilaakso.fi/
+- Nokian Uutiset — https://www.nokianuutiset.fi/
+- Sisa Savo — https://www.sisa-savolehti.fi/
+- Salon Seudun Sanomat — https://www.sss.fi/
+- Jarviseutu — https://www.jarviseutu-lehti.fi/
+- JP Kunnallissanomat — https://www.jp-kunnallissanomat.fi/
+- Heinaveden Lehti — https://www.heinavedenlehti.fi/
+- Juvan Lehti — https://www.juvanlehti.fi/
+- Pitajanuutiset — https://www.pitajanuutiset.fi/
+- Puumala Lehti — https://www.puumalalehti.fi/
+- puruvesi — https://www.puruvesi.net/
+- paikallisuutiset — https://www.paikallisuutiset.fi/
+- Kotiseudun Sanomat — https://kotiseudunsanomat.fi/
+- Lempaalan Vesilahden Sanomat — https://lvs.fi/
+- Pernionseudun Lehti — https://pernionseudunlehti.fi/
+- Keskipohjanmaa — https://www.keskipohjanmaa.fi/
+- Pirkkalainen — https://pirkkalainen.fi/
+- Viikkosavo — https://www.viikkosavo.fi/
+- Viitasaaren Seutu — https://www.viitasaarenseutu.fi/
+- Tiedonantaja — https://tiedonantaja.fi/
+- Soisalon Seutu — https://www.soisalonseutu.fi/
+- Rantalakeus — https://www.rantalakeus.fi/
+- Paivamies — https://www.paivamies.fi/
+- Punkalaitumen Sanomat — https://www.punkalaitumensanomat.fi/
+- Perhonjokilaakso — https://www.perhonjokilaakso.fi/
+- Komiat — https://www.komiat.fi/
+- Kaakonkulma — https://www.kaakonkulma.fi/
+- Jarviseudun Sanomat — https://www.jarviseudunsanomat.fi/
+- Jurvan Sanomat — https://www.jurvansanomat.fi/
+- Joutseno — https://www.joutsenolehti.fi/
+- Haapavesi — https://www.haapavesi-lehti.fi/
+- Viiskunta — https://www.viiskunta.fi/
+- Turun Tienoo — https://www.turuntienoo.fi/
+- Sydan-Satakunta — https://www.sydansatakunta.fi/
+- Suupohjan Sanomat — https://www.suupohjansanomat.fi/
+- Somero — https://www.somerolehti.fi/
+- Rantapohja — https://www.rantapohja.fi/
+- Rannikkoseutu — https://www.rannikkoseutu.fi/
+- Pohjankyro-lehti — https://www.pohjankyro-lehti.fi/
+- Pyhajokiseutu — https://www.pyhajokiseutu.fi/
+- Parikkalan-Rautjarven Sanomat — https://www.prsanomat.fi/
+- Nivala — https://www.nivala-lehti.fi/
+- Lestijoki — https://www.lestijoki.fi/
+- Lauttakyla-lehti — https://lauttakyla.fi/
+- Lapuan Sanomat — https://www.lapuansanomat.fi/
+- Kunnallislehti Paimio-Sauvo-Kaarina — https://www.kuntsari.fi/
+- Koti-Karjala — https://www.kotikarjala.fi/
+- Kauhajoki-lehti — https://www.kauhajoki-lehti.fi/
+- Ilmajoki-lehti — https://www.ilmajoki-lehti.fi/
+- Iijokiseutu — https://www.iijokiseutu.fi/
+- Auranmaan Viikkolehti — https://www.avl.fi/
+- Alasatakunta — https://www.alasatakunta.fi/
+- Vakka-Suomen Sanomat — https://www.vakka.fi/
+- Uudenkaupungin Sanomat — https://www.uudenkaupunginsanomat.fi/
+- Pietarsaaren Sanomat — https://www.pietarsaarensanomat.fi/
+- Orimattilan Sanomat — https://www.orimattilansanomat.fi/
+- Lieksan Lehti — https://www.lieksanlehti.fi/
+- Raahen Seutu — https://www.raahenseutu.fi/
+- Demokraatti — https://demokraatti.fi/
+- Koillissanomat — https://www.koillissanomat.fi/
+- Kalajokilaakso — https://www.kalajokilaakso.fi/
+- Iisalmen Sanomat — https://www.iisalmensanomat.fi/
+- Forssan Lehti — https://www.forssanlehti.fi/
+- Suomenmaa — https://www.suomenmaa.fi/
+- Yle — https://yle.fi/
+- 7seiska.fi — https://www.seiska.fi/
+- Ampparit — https://www.ampparit.com/
+- Uusi Suomi — https://www.uusisuomi.fi/
+- Helsingin uutiset — https://www.helsinginuutiset.fi/
+- Tivi — https://www.tivi.fi/
+- Verkkouutiset — https://www.verkkouutiset.fi/
+- Stara — https://www.stara.fi/
+- Suomen kuvalethi — https://suomenkuvalehti.fi/
+- Tilannehuone.fi — https://www.tilannehuone.fi/
+- Vantaan Sanomat — https://www.vantaansanomat.fi/
+- Keski Uusimaa — https://www.keski-uusimaa.fi/
+- Kotimaa — https://www.kotimaa.fi/
+- Lappeenrannan Uutiset — https://www.lappeenrannanuutiset.fi/
+- Uutisvuoksi — https://www.uutisvuoksi.fi/
+- Akaan Seutu — https://akaanseutu.fi/
+- Lansi Uusimaa — https://www.lansi-uusimaa.fi/
+- Sipoon Sanomat — https://www.sipoonsanomat.fi/
+- Kiuruvesi — https://kiuruvesilehti.fi/
+- Loimaan Lehti — https://www.loimaanlehti.fi/
+- Lansi Saimaan Sanomat — https://www.lansisaimaa.fi/
+- Koillis Savo — https://www.koillis-savo.fi/
+- Kangasniemen Kunnallislehti — https://www.kangasniemenlehti.fi/
+- Satakunnan Viikko — https://www.sv24.fi/
+- Tervareitti — https://www.tervareitti.fi/
+- Uutis Jousi — https://www.uutis-jousi.fi/
+- Kangasalan Sanomat — https://kangasalansanomat.fi/
+- Yla Satakunta — https://www.ylasatakunta.fi/
+- Tejuka — https://www.tejuka-lehti.fi/
+- Yla Karjala — https://www.ylakarjala.fi/
+- Pitajalainen — https://www.pitajalainen.fi/
+- Laitilan Sanomat — https://www.laitilansanomat.fi/uutiset/
+- Mantsalan Uutiset — https://www.mantsalanuutiset.fi/
+- Keski Hame — https://www.keski-hame.fi/
+- Urjalan Sanomat — https://urjalansanomat.fi/
+- Matti ja Liisa — https://www.mattijaliisa.fi/
+- Miilu — https://www.miilu.fi/
+- Pielavesi Keitele — https://www.pielavesi-keitele.fi/
+- Kotiseutu Uutiset — https://kotiseutu-uutiset.com/
+- Luumaen Lehti — https://www.luumaenlehti.fi/
+- Free Magazine — http://www.freemagazine.fi/
+- Joroisten Lehti — https://www.joroistenlehti.fi/
+- Kuhmoisten Sanomat — https://kuhmoistensanomat.fi/
+- Petajavesi — https://petajavesilehti.fi/
+- Padasjoen Sanomat — https://padasjoensanomat.fi/
+- Oriveden Sanomat — https://orivedensanomat.fi/
+- Ruovesi — https://www.ruovesi-lehti.fi/
+- Pielisjokiseutu — https://www.pielisjokiseutu.fi/
+- Pogostan Sanomat — https://www.pogostansanomat.fi/
+- Siikajokilaakso — https://www.siikajokilaakso.fi/
+- Sievilainen — https://sievilainenlehti.fi/
+- Ulvilan Seutu — https://www.ulvilanseutu.fi/
+- Six Degrees — http://www.6d.fi/
+- SvD Naringsliv — https://www.svd.se/naringsliv
+- Sport - svenska.yle.fi — https://svenska.yle.fi/sport
+- Sportbladet - Aftonbladet — https://www.aftonbladet.se/sportbladet
+- Sport - DN.SE — https://www.dn.se/sport/
+- Expressen — https://www.expressen.se/
+
+### onlinenewspapers — (not listed)
+- (no entries)
+
+### allyoucanread — https://www.allyoucanread.com/finland-newspapers/
+- Iltalehti.fi — https://iltalehti.fi/
+- yle — https://yle.fi/
+- Helsingin Sanomat — https://www.hs.fi/
+- Ilta-Sanomat — https://www.is.fi/
+- 7 Seiska — https://www.seiska.fi/
+- Kauppalehti — https://www.kauppalehti.fi/
+- Turun Sanomat — https://ts.fi/
+- Aamulehti — https://www.aamulehti.fi/
+- Kaleva.fi — https://www.kaleva.fi/
+- Uusi Suomi — https://www.uusisuomi.fi/
+- HBL.fi — https://www.hbl.fi/
+- Keskisuomalainen — http://www.ksml.fi/
+- Ampparit.com — https://ampparit.com/
+- Maaseudun Tulevaisuus — http://maaseuduntulevaisuus.fi/
+- Savon Sanomat — http://www.savonsanomat.fi/
+- Verkkouutiset — https://verkkouutiset.fi/
+- Etela-Suomen Sanomat - ESS.fi — http://www.ess.fi/
+- Helsingin Uutiset — http://www.helsinginuutiset.fi/
+- Satakunnan Kansa — https://www.satakunnankansa.fi/
+- Lapin Kansa — https://www.lapinkansa.fi/
+- Etela-Saimaa — http://www.esaimaa.fi/
+- Stara — http://www.stara.fi/
+- Ilkka — https://ilkkapohjalainen.fi/
+- Kouvolan Sanomat — http://www.kouvolansanomat.fi/
+- Tilannehuone.fi — https://www.tilannehuone.fi/
+- Tivi — https://www.tivi.fi/
+- Vuodatus.net — https://vuodatus.net/
+- Karjalainen — https://karjalainen.fi/
+- SSS Salon Seudun Sanomat — https://sss.fi/
+- Lansi-Savo — http://www.lansi-savo.fi/
+- Ita-Savo — http://www.ita-savo.fi/
+- Kymen Sanomat — http://www.kymensanomat.fi/
+- Gbtimes — https://gbtimes.com/
+- Kainuun Sanomat — https://www.kainuunsanomat.fi/
+- Suomen Kuvalehti — https://suomenkuvalehti.fi/
+- PHNet.fi — http://phnet.fi/
+- Kansan Uutiset — https://www.kansanuutiset.fi/
+- Plaza — https://plaza.fi/
+- KP — https://www.keskipohjanmaa.fi/
+
+### abyznewslinks — http://www.abyznewslinks.com/finla.htm
+- Daily Finland — http://www.dailyfinland.fi/
+- Finland Times — http://www.finlandtimes.fi/
+- Finnbay — http://www.finnbay.com/
+- This is Finland — http://finland.fi/Public/default.aspx
+- Helsingin Sanomat — http://www.hs.fi/
+- Hufvudstadsbladet — http://hbl.fi/
+- Ilta Sanomat — http://www.iltasanomat.fi/
+- Iltalehti — http://www.iltalehti.fi/etusivu/
+- Kauppalehti — http://www.kauppalehti.fi/5/i/etusivu/
+
+## france (western_europe) — France
+
+### w3newspapers — https://www.w3newspapers.com/france/
+- Le Monde — https://www.lemonde.fr/
+- Le Figaro — https://www.lefigaro.fr/
+- Les Échos — https://www.lesechos.fr/
+- Le Parisien — https://www.leparisien.fr/
+- Libération — https://www.liberation.fr/
+- La Croix — https://www.la-croix.com/
+- Mediapart — https://www.mediapart.fr/
+- L’Humanité — https://www.humanite.fr/
+- L’Opinion — https://www.lopinion.fr/
+- Ouest-France — https://www.ouest-france.fr/
+- Le Canard enchaîné — https://www.lecanardenchaine.fr/
+- Le Point — https://www.lepoint.fr/
+- L’Obs (Le Nouvel Observateur) — https://www.nouvelobs.com/
+- L’Express — https://www.lexpress.fr/
+- Courrier International — https://www.courrierinternational.com/
+- Charlie Hebdo — https://charliehebdo.fr/
+- Le Journal du Dimanche — https://www.lejdd.fr/
+- Le Monde diplomatique — https://www.monde-diplomatique.fr/
+- Boursorama — https://www.boursorama.com/
+- Challenges — https://www.challenges.fr/
+- Capital — https://www.capital.fr/
+- Alternatives Économiques — https://www.alternatives-economiques.fr/
+- L’Usine Nouvelle — https://www.usinenouvelle.com/
+- L’Équipe — https://www.lequipe.fr/
+- Eurosport France — https://www.eurosport.fr/
+- RMC Sport — https://rmcsport.bfmtv.com/
+- Rugbyrama — https://www.rugbyrama.fr/
+- BFMTV — https://www.bfmtv.com/
+- 20 Minutes — https://www.20minutes.fr/
+- franceinfo: — https://www.franceinfo.fr/
+- TF1info — https://www.tf1info.fr/
+- Le HuffPost — https://www.huffingtonpost.fr/
+- Télérama — https://www.telerama.fr/
+- L’Internaute — https://www.linternaute.com/
+- 1jour1actu — https://www.1jour1actu.com/
+- France Soir — https://www.francesoir.fr/
+- Planet.fr — https://www.planet.fr/
+- Jean-Marc Morandini — https://www.jeanmarcmorandini.com/
+- Maire info — https://www.maire-info.com/
+- La Voix du Nord — https://www.lavoixdunord.fr/
+- Sud Ouest — https://www.sudouest.fr/
+- Le Dauphiné Libéré — https://www.ledauphine.com/
+- La Montagne — https://www.lamontagne.fr/
+- La Provence — https://www.laprovence.com/
+- Nice-Matin — https://www.nicematin.com/
+- La Dépêche du Midi — https://www.ladepeche.fr/
+- Le Télégramme — https://www.letelegramme.fr/
+- Midi Libre — https://www.midilibre.fr/
+- Le Progrès — https://www.leprogres.fr/
+- L’Est Républicain — https://www.estrepublicain.fr/
+- Le Républicain Lorrain — https://www.republicain-lorrain.fr/
+- Le Journal de Saône-et-Loire — https://www.lejsl.com/
+- Le Bien Public — https://www.bienpublic.com/
+- L’Union — https://www.lunion.fr/
+- L’Alsace — https://www.lalsace.fr/
+- Les Dernières Nouvelles d’Alsace (DNA) — https://www.dna.fr/
+- Paris-Normandie — https://www.paris-normandie.fr/
+- La Nouvelle République du Centre-Ouest — https://www.lanouvellerepublique.fr/
+- Le Populaire du Centre — https://www.lepopulaire.fr/
+- La République du Centre — https://www.larep.fr/
+- L’Indépendant — https://www.lindependant.fr/
+- Corse-Matin — https://www.corsematin.com/
+- Le Berry Républicain — https://www.leberry.fr/
+- L’Yonne Républicaine — https://www.lyonne.fr/
+- Charente Libre — https://www.charentelibre.fr/
+- La Nouvelle République des Pyrénées — https://www.nrpyrenees.fr/
+- La République des Pyrénées — https://www.larepubliquedespyrenees.fr/
+- L’Est Éclair — https://www.lest-eclair.fr/
+- Vosges Matin — https://www.vosgesmatin.fr/
+- Le Journal de la Haute-Marne — https://jhm.fr/
+- La Presse de la Manche — https://actu.fr/la-presse-de-la-manche/
+- Dordogne Libre — https://www.dordognelibre.fr/
+- L’Éveil de la Haute-Loire — https://www.leveil.fr/
+- Tribune Bulletin Côte d’Azur — https://tribuca.net/
+- Alpes et Midi — https://www.alpes-et-midi.fr/
+- L’Écho Drôme Ardèche — https://l-echo.info/
+- Liberté Hebdo — https://libertehebdo.fr/
+- Info du Jour — https://infodujour.fr/
+- L’Auvergnat de Paris — https://www.auvergnat.fr/
+- Haute Provence Info — https://www.hauteprovenceinfo.com/
+- The Local (France) — https://www.thelocal.fr/
+- The Connexion — https://www.connexionfrance.com/
+- French Morning — https://www.frenchmorning.com/
+- Le Petit Journal — https://lepetitjournal.com/
+- Radio-Canada — https://ici.radio-canada.ca/
+- La Presse (Canada) — https://www.lapresse.ca/
+- SBS French (Australia) — https://www.sbs.com.au/language/french
+- Frenchly — https://frenchly.us/
+
+### onlinenewspapers — https://onlinenewspapers.com/france.shtml
+- 20 Minutes — http://www.20minutes.fr/
+- Actuz — https://www.actuz.net/
+- Berria — http://www.berria.info/
+- Centre Presse — http://www.centre-presse.fr/
+- Clicanoo — http://www.clicanoo.com/
+- The Connexion — http://www.connexionfrance.com/
+- Courrier International — http://www.courrierinternational.com/
+- Dernières Nouvelles d'Alsace — http://www.dna.fr/
+- EuroFora — http://www.eurofora.net/
+- France Soir — http://www.francesoir.fr/
+- fr.Palestina Libération — https://fr.palestinaliberation.com/
+- L'Equipe — http://www.lequipe.fr/
+- L'Essor Sarladais — http://www.essorsarladais.com/
+- L'Est Républicain — http://www.estrepublicain.com/
+- L'Express — http://www.lexpress.fr/
+- L'Humanité — http://www.humanite.presse.fr/
+- L'Indépendant — http://www.lindependant.com/
+- L'Informateur — http://www.linformateur.com/
+- L'Obs — https://www.nouvelobs.com/
+- L'Yonne-Républicaine — https://www.lyonne.fr/
+- La Charente Libre — http://www.charentelibre.com/
+- La Croix — http://www.la-croix.com/
+- La Dépèche — http://www.ladepeche.fr/
+- La Montagne — http://www.lamontagne.fr/
+- Languedoc Living — http://www.languedocliving.com/
+- La Nouvelle République — http://www.lanouvellerepublique.fr/
+- La Provence — https://www.laprovence.com/
+- La République — http://www.larepublique.com/
+- La Tribune — http://www.latribune.fr/
+- La Voix du Nord — http://www.lavoixdunord.fr/
+- LCI — https://www.lci.fr/
+- Le Bien Public — http://www.bienpublic.com/
+- Le Canard Enchaîne — http://www.lecanardenchaine.fr/
+- Le Courier Picard — http://www.courrier-picard.fr/
+- Le Dauphiné Libéré — http://www.ledauphinelibere.com/
+- Le Figaro — http://www.lefigaro.fr/
+- Le Figaro — http://plus.lefigaro.fr/cercle/le-figaro-in-english/
+- Le Journal de Saône-et-Loire — http://www.lejsl.com/
+- Le Journal du Dimanche — http://www.lejdd.fr/
+- Le Journal du Pays Basque — http://www.lejpb.com/
+- The Local — https://www.thelocal.fr/
+- Le Monde — http://www.lemonde.fr/
+- Le Monde Diplomatique — http://www.monde-diplomatique.fr/
+- Le Monde Diplomatique — http://mondediplo.com/
+- Le Parisien — http://www.leparisien.fr/
+- Le Petit Journal — http://www.lepetitjournal.com/
+- Le Progrès — http://www.leprogres.fr/
+- Le Public — http://www.lepublic-journal.com/
+- Le Républicain Lorrain — http://www.republicain-lorrain.fr/
+- Le Télégramme — http://www.letelegramme.com/
+- Les Echos — http://www.lesechos.fr/
+- Libération — http://www.liberation.fr/
+- Midi Libre — https://www.midilibre.fr/
+- Nice Matin — https://www.nicematin.com/
+- Ouest France — http://www.ouest-france.fr/
+- Paris Guardian — http://www.parisguardian.com/
+- Paris Normandie — http://www.paris-normandie.fr/
+- Paris Tamil — http://www.paristamil.com/
+- Reuters France — http://www.reuters.fr/
+- Régards — http://www.regards.fr/
+- Révolution Permanente — http://www.revolutionpermanente.fr/
+- The Riviera Reporter — http://www.rivierareporter.com/
+- The Silver Times — https://sivertimes.com/fr/
+- Sodruzhestvo — http://www.sodruzhestvo.fr/
+- Sud Ouest — http://www.sudouest.com/
+- SXMinfo — http://www.sxminfo.fr/
+- Terra Economica — http://www.terra-economica.info/
+- Tous Sur l'Algérie — http://www.tsa-algerie.com/
+
+### allyoucanread — https://www.allyoucanread.com/french-newspapers/
+- Le Monde — https://www.lemonde.fr/
+- Le Figaro — https://lefigaro.fr/
+- France TV Info — https://www.francetvinfo.fr/
+- la1ere.fr — https://la1ere.francetvinfo.fr/
+- Ouest France — https://www.ouest-france.fr/
+- le Parisien — https://www.leparisien.fr/
+- Liberation — https://liberation.fr/
+- 20minutes — https://20minutes.fr/
+- Les Echos — https://lesechos.fr/
+- SudOuest.fr — http://www.sudouest.fr/
+- L'Internaute — http://www.linternaute.com/
+- La Depeche.fr — https://ladepeche.fr/
+- Le Point — http://www.lepoint.fr/
+- La Voix du Nord — http://www.lavoixdunord.fr/
+- Le Dauphine Libere — https://ledauphine.com/
+- Le Telegramme — https://www.letelegramme.fr/
+- Midi Libre — https://midilibre.fr/
+- Le Progres — https://leprogres.fr/
+- L'Independant — https://lindependant.fr/
+- Le Nouvel Observateur — http://www.nouvelobs.com/
+- Libra Memoria — https://libramemoria.com/
+- L'Express — https://www.lexpress.fr/
+- Le Huffington Post — https://huffingtonpost.fr/
+- Paris Match — https://parismatch.com/
+- Slate.fr — http://www.slate.fr/
+- La Tribune — https://www.latribune.fr/
+- Mediapart — https://mediapart.fr/
+- La Croix — https://la-croix.com/
+- estrepublicain.fr — https://www.estrepublicain.fr/
+- lamontagne.fr — https://www.lamontagne.fr/
+- Courrier International — https://www.courrierinternational.com/
+- le JDD — https://lejdd.fr/
+- i24news.tv — https://i24news.tv/
+- Nice-Matin — http://www.nicematin.com/
+- Marianne — https://www.marianne.net/
+- The Local — https://thelocal.fr/
+- La Provence — https://www.laprovence.com/
+- L'Humanite — https://www.humanite.fr/
+- Jean Marc Morandini — https://jeanmarcmorandini.com/
+- La Nouvelle Republique — https://www.lanouvellerepublique.fr/
+- LCI — https://www.lci.fr/
+- Presse-citron — https://presse-citron.net/
+- Le Republicain Lorrain — https://www.republicain-lorrain.fr/
+- L'Alsace.fr — https://lalsace.fr/
+- Valeurs Actuelles — https://www.valeursactuelles.com/
+- Planet.fr — https://planet.fr/
+- Le Bien Public — https://www.bienpublic.com/
+- Le Journal de Saone et Loire — https://lejsl.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/franc.htm
+- La Croix — http://www.la-croix.com/
+- La Tribune — http://www.latribune.fr/
+- Le Figaro — http://www.lefigaro.fr/
+- Le Journal du Dimanche — http://www.lejdd.fr/
+- Le Monde — http://www.lemonde.fr/
+- Le Parisien — http://www.leparisien.fr/
+- L'Equipe — http://www.lequipe.fr/
+- Les Echos — http://www.lesechos.fr/
+- L'Humanite — http://www.humanite.fr/
+- Liberation — http://www.liberation.fr/
+
+## germany (western_europe) — Germany
+
+### w3newspapers — https://www.w3newspapers.com/germany/
+- Bild — https://www.bild.de/
+- Süddeutsche Zeitung (SZ) — https://www.sueddeutsche.de/
+- Frankfurter Allgemeine Zeitung (FAZ) — https://www.faz.net/
+- Die Zeit — https://www.zeit.de/index
+- Die Welt — https://www.welt.de/
+- Frankfurter Rundschau — https://www.fr.de/
+- die tageszeitung (taz) — https://taz.de/
+- Der Tagesspiegel — https://www.tagesspiegel.de/
+- Neues Deutschland (ND) — https://www.nd-aktuell.de/
+- Junge Welt (jW) — https://www.jungewelt.de/
+- Junge Freiheit (JF) — https://jungefreiheit.de/
+- Der Freitag — https://www.freitag.de/
+- tagesschau.de — https://www.tagesschau.de/
+- Der Spiegel (Online) — https://www.spiegel.de/
+- n-tv.de — https://www.n-tv.de/
+- t-online.de — https://www.t-online.de/
+- Focus (Online) — https://www.focus.de/
+- Stern (Online) — https://www.stern.de/
+- Tag24 — https://www.tag24.de/
+- Der Postillon — https://www.der-postillon.com/
+- Handelsblatt — https://www.handelsblatt.com/
+- Wirtschaftswoche (WiWo) — https://www.wiwo.de/
+- Manager Magazin — https://www.manager-magazin.de/
+- Capital — https://www.capital.de/
+- Finanzen.net — https://www.finanzen.net/
+- Börse Online — https://www.boerse-online.de/
+- Deutsche Wirtschafts Nachrichten — https://deutsche-wirtschafts-nachrichten.de/
+- Der Aktionär — https://www.der-aktionaer.de/
+- brand eins — https://www.brandeins.de/
+- Kicker — https://www.kicker.de/
+- Transfermarkt — https://www.transfermarkt.de/
+- Sport1 — https://www.sport1.de/
+- Sport Bild (Online) — https://sportbild.bild.de/
+- Sportschau / ARD — https://www.sportschau.de/
+- Sky Sport News / Sky Deutschland — https://www.sky.de/sport
+- Bundesliga.com — https://www.bundesliga.com/en/bundesliga
+- OneFootball — https://onefootball.com/en/competition/bundesliga-1
+- Bulinews — https://bulinews.com/
+- Aachener Nachrichten — https://www.aachener-nachrichten.de/
+- Aachener Zeitung — https://www.aachener-zeitung.de/
+- Abendzeitung (AZ) — https://www.abendzeitung-muenchen.de/
+- Allgäuer Zeitung — https://mediengruppe.allgaeuer-zeitung.de/
+- Allgemeine Zeitung (Münsterland) — https://www.azonline.de/
+- Allgemeine Zeitung (Uelzen/Lüneburg) — https://www.az-online.de/
+- Aller-Zeitung — https://www.waz-online.de/lokales/gifhorn-lk/
+- Anzeiger für Harlingerland — https://harlinger.de/
+- Augsburger Allgemeine — https://www.augsburger-allgemeine.de/
+- B.Z. — https://www.bz-berlin.de/
+- Backnanger Kreiszeitung — https://www.bkz.de/
+- Badische Neueste Nachrichten (BNN) — https://bnn.de/
+- Badische Zeitung — https://www.badische-zeitung.de/
+- Barmstedter Zeitung — https://www.shz.de/lokales/elmshorn-barmstedt
+- Berchtesgadener Anzeiger — https://www.berchtesgadener-anzeiger.de/
+- Bergedorfer Zeitung — https://www.abendblatt.de/hamburg/bergedorf/
+- Berliner Kurier — https://www.berliner-kurier.de/
+- Berliner Morgenpost — https://www.morgenpost.de/
+- Berliner Tageszeitung — https://www.berlinertageszeitung.de/
+- Berliner Zeitung — https://www.berliner-zeitung.de/
+- Bocholter-Borkener Volksblatt — https://www.bbv-net.de/
+- Borkener Zeitung — https://www.borkenerzeitung.de/
+- Boyens-Medien — https://www.boyens-medien.de/
+- Braunschweiger Zeitung — https://www.braunschweiger-zeitung.de/
+- Böhme-Zeitung — https://www.boehme-zeitung.de/
+- Bremervörder Zeitung — https://www.brv-zeitung.de/
+- Cellesche Zeitung — https://www.cz.de/
+- Coburger Tageblatt — https://www.infranken.de/lk/coburg/
+- Cuxhavener Nachrichten — https://www.cn-online.de/
+- DEWEZET — https://www.dewezet.de/
+- Der Teckbote — https://www.teckbote.de/
+- Die Glocke — https://www.die-glocke.de/lokalnachrichten
+- Die Harke — https://www.dieharke.de/
+- Die Rheinpfalz — https://www.rheinpfalz.de/
+- Donaukurier — https://www.donaukurier.de/
+- Dresdner Neueste Nachrichten — https://www.dnn.de/
+- Dülmener Zeitung — https://www.dzonline.de/
+- Echo — https://www.echo-online.de/
+- Einbecker Morgenpost — https://www.einbecker-morgenpost.de/
+- Elbe-Jeetzel-Zeitung — https://www.ejz.de/
+- Eßlinger Zeitung — https://www.esslinger-zeitung.de/
+- Express — https://www.express.de/
+- Flensborg Avis — https://www.fla.de/
+- Frankenpost — https://www.frankenpost.de/
+- Frankfurter Neue Presse — https://www.fnp.de/
+- Fränkische Nachrichten — https://www.fnweb.de/
+- Freie Presse — https://www.freiepresse.de/
+- Freies Wort — https://www.insuedthueringen.de/
+- Fuldaer Zeitung — https://www.fuldaerzeitung.de/
+- Gelnhäuser Neue Zeitung — https://www.gnz.de/
+- General-Anzeiger — https://ga.de/
+- Göttinger Tageblatt — https://www.goettinger-tageblatt.de/
+- Grafschafter Nachrichten — https://www.gn-online.de/
+- Gmünder Tagespost — https://www.gmuender-tagespost.de/
+- Gießener Allgemeine — https://www.giessener-allgemeine.de/
+- Gießener Anzeiger — https://www.giessener-anzeiger.de/
+- Goslarsche Zeitung — https://www.goslarsche.de/
+- Gäubote — https://www.gaeubote.de/
+- Haller Kreisblatt — https://www.haller-kreisblatt.de/
+- Hamburger Morgenpost — https://www.mopo.de/
+- Hanauer Anzeiger — https://www.hanauer.de/
+- Hannoversche Allgemeine Zeitung (HAZ) — https://www.haz.de/
+- Hellweger Anzeiger — https://www.hellwegeranzeiger.de/
+- Heilbronner Stimme — https://www.stimme.de/
+- Hersbrucker Zeitung — https://n-land.de/verlag/hersbrucker-zeitung
+- Hersfelder Zeitung — https://www.hersfelder-zeitung.de/
+- Hessische/Niedersächsische Allgemeine — https://www.hna.de/
+- Hildesheimer Allgemeine Zeitung — https://www.hildesheimer-allgemeine.de/
+- Hinterländer Anzeiger — https://www.mittelhessen.de/
+- Ibbenbürener Volkszeitung — https://www.ivz-aktuell.de/
+- idowa — https://www.idowa.de/
+- Jeversches Wochenblatt — https://jeversches-wochenblatt.de/
+- Kieler Nachrichten (KN) — https://www.kn-online.de/
+- Kreis-Anzeiger — https://www.kreis-anzeiger.de/
+- Kreiszeitung Böblinger Bote — https://www.krzbb.de/
+- Kreiszeitung Wesermarsch — https://www.kreiszeitung-wesermarsch.de/
+- Kölnische Rundschau — https://www.rundschau-online.de/
+- Kölner Stadt-Anzeiger (KStA) — https://www.ksta.de/
+- Lahrer Zeitung — https://www.schwarzwaelder-bote.de/ortenau
+- Landeszeitung für die Lüneburger Heide — https://www.landeszeitung.de/
+- Lauterbacher Anzeiger — https://www.lauterbacher-anzeiger.de/
+- Lausitzer Rundschau — https://www.lr-online.de/
+- Leipziger Volkszeitung — https://www.lvz.de/
+- Lippische Landes-Zeitung — https://www.lz.de/
+- Ludwigsburger Kreiszeitung — https://www.lkz.de/
+- Lübecker Nachrichten (LN) — https://www.ln-online.de/
+- Lüdenscheider Nachrichten — https://www.come-on.de/
+- Main-Echo — https://www.main-echo.de/
+- Main-Post — https://www.mainpost.de/
+- Mannheimer Morgen — https://www.mannheimer-morgen.de/
+- Märkische Allgemeine — https://www.maz-online.de/
+- Märkische Oderzeitung — https://www.moz.de/
+- Merkur — https://www.merkur.de/
+- Mindener Tageblatt — https://www.mt.de/
+- Mühlacker Tagblatt — https://www.muehlacker-tagblatt.de/
+- Münstersche Zeitung — https://www.muensterschezeitung.de/
+- Neue Osnabrücker Zeitung — https://www.noz.de/
+- Neue Presse — https://www.neuepresse.de/
+- Neue Westfälische — https://www.nw.de/
+- Nordbayerischer Kurier — https://www.kurier.de/
+- Nordkurier — https://www.nordkurier.de/
+- Nordsee-Zeitung — https://www.nordsee-zeitung.de/
+- Nordwest-Zeitung — https://www.nwzonline.de/
+- Nürnberger Nachrichten — https://www.nordbayern.de/
+- Oberbayerisches Volksblatt — https://www.ovb-online.de/
+- Oberhessische Presse — https://www.op-marburg.de/
+- Oberpfalznetz — https://www.onetz.de/
+- Offenbach-Post — https://www.op-online.de/
+- Offenburger Tageblatt — https://bo.de/
+- OM Online — https://www.om-online.de/
+- Ostsee-Zeitung — https://www.ostsee-zeitung.de/
+- Ostthüringer Zeitung — https://www.otz.de/
+- Passauer Neue Presse — https://www.pnp.de/
+- Preußische Allgemeine Zeitung — https://paz.de/
+- Peiner Allgemeine Zeitung — https://www.paz-online.de/
+- Pforzheimer Zeitung — https://www.pz-news.de/
+- Reutlinger General-Anzeiger — https://www.gea.de/
+- Rheinische Post — https://rp-online.de/
+- Ruhr Nachrichten — https://www.ruhrnachrichten.de/
+- Sächsische Zeitung — https://www.saechsische.de/
+- Sauerland Kurier — https://www.sauerlandkurier.de/
+- Schaumburger Nachrichten — https://www.sn-online.de/
+- Schwäbische Post — https://www.schwaebische-post.de/
+- Schwäbische Zeitung — https://www.schwaebische.de/
+- Serbske Nowiny — https://www.serbske-nowiny.de/
+- Siegener Zeitung — https://www.siegener-zeitung.de/
+- Soester Anzeiger — https://www.soester-anzeiger.de/
+- Solinger Tageblatt — https://www.solinger-tageblatt.de/
+- Stuttgart Journal — https://stuttgart-journal.de/
+- Stuttgarter Nachrichten — https://www.stuttgarter-nachrichten.de/
+- Stuttgarter Zeitung — https://www.stuttgarter-zeitung.de/
+- Südkurier — https://www.suedkurier.de
+- TAGEBLATT — https://www.tageblatt.de/
+- Tip Berlin — https://www.tip-berlin.de/
+- Waldeckische Landeszeitung — https://www.wlz-online.de/
+- Weser-Kurier — https://www.weser-kurier.de/
+- Westdeutsche Zeitung — https://www.wz.de/
+- Westfälische Nachrichten — https://www.wn.de/
+- The Local (Germany) — https://www.thelocal.de/
+- Munich Now — https://munichnow.com/
+- The Munich Eye — https://themunicheye.com/
+- Deutsche Presse-Agentur (dpa) — https://www.dpa.com/en
+- dts Nachrichtenagentur — https://dts-nachrichtenagentur.de
+
+### onlinenewspapers — https://onlinenewspapers.com/germany.shtml
+- Ärzte Zeitung — http://www.aerztezeitung.de/
+- Aachener Nachrichten — http://www.an-online.de/
+- Aachener Zeitung — http://home.az-web.de/
+- Abendzeitung — http://www.abendzeitung.de/
+- Allgemeine Zeitung — https://www.allgemeine-zeitung.de/
+- Amberger Zeitung — https://www.onetz.de/
+- Angehörigen Info — https://www.nadir.org/nadir/periodika/angehoerigen_info/
+- Annonce — http://www.annonce.de/
+- Augsburger Allgemeine — http://www.augsburger-allgemeine.de/
+- AZ Nürnberg — http://www.abendzeitung-nuernberg.de/
+- Badische Zeitung — http://www.badische-zeitung.de/
+- Badisches Tagblatt — http://www.badisches-tagblatt.de/
+- Bautzener Bote — http://www.bautzenerbote.de/
+- Berliner Morgenpost — http://www.morgenpost.de/
+- Berliner Umschau — http://www.berlinerumschau.com/
+- Berliner Zeitung — http://www.berlinonline.de/
+- Bielefeld Aktuell — https://www.bielefeld-aktuell.de/
+- Bietigheimer Zeitung — http://www.bietigheimerzeitung.de/
+- Bild — https://www.bild.de/
+- Bocholter-Borkener Volksblatt — http://www.bbv-net.de/
+- Bodensee-Woche — http://www.bodensee-woche.de/
+- Borkener Zeitung — https://www.borkenerzeitung.de/
+- Börsen Zeitung — https://www.boersen-zeitung.de/
+- Braunschweiger Zeitung — http://www.newsclick.de/
+- Bundesliga 365 — http://www.bundesliga365.com/
+- Campo de Criptana — http://www.campodecriptana.de/
+- Cellesche Zeitung — http://www.cellesche-zeitung.de/
+- CroExpress — http://www.cro-express.com/
+- DarmstSdter Echo — http://www.echo-online.de/
+- DarmstadtNews.de — http://www.darmstadtnews.de/
+- Das Handelsblatt — http://www.handelsblatt.de/
+- Das Sonntagsblatt — http://www.sonntagsblatt.de/
+- Der Ahauser — http://www.der-ahauser.de/
+- Der Bote — https://n-land.de/verlag/der-bote/
+- Der Heisse Draht — http://www.dhd24.com/
+- Der Münsterländer — http://www.der-muensterlaender.de/
+- Der Märkische Bote — https://www.maerkischer-bote.de/
+- Der Nordschleswiger — http://www.nordschleswiger.dk/
+- Der Rüganer — http://www.rueganer-anzeiger.de/
+- Der Spiegel — http://www.spiegel.de/
+- Der Tagesspiegel — http://www.tagesspiegel.de/
+- Der Westen — http://www.derwesten.de/
+- Der Wiesbadener Kurier — http://www.wiesbadener-kurier.de/
+- Deutsche Türkei Zeitung - Prima Türkei — http://www.tuerkei-zeitung.de/
+- Deutsche Welle — http://www.dw-world.de/
+- Dewezet — http://www.dewezet.de/
+- DFG-NRW Landesnachrichten — http://www.finland.de/landesnachrichten/
+- Die Glocke — http://www.die-glocke.de/
+- Die Harke — http://www.die-harke.de/
+- Die Politik — http://www.diepolitik.de/
+- Die Rote Hilfe Zeitung — http://www.rote-hilfe.de/
+- Die Welt — http://www.welt.de/
+- Die Wochenpost — http://www.wochenpost.de/
+- Die Zeit — http://www.zeit.de/
+- Dithmarsche Landeszeitung — http://www.sh-nordsee.de/
+- Dresden News — http://www.dresden-news.com/
+- Dresdner Neueste Nachrichten — http://www.dnn-online.de/
+- Durlacher Blatt — http://www.durlacherblatt.de/
+- Elbmarschpost — http://www.elbmarschpost.de/
+- Erlangen-Nachrichton — http://www.erlanger-nachrichten.de/
+- Esslinger Zeitung — http://www.ez-online.de/
+- Express — http://www.express.de/
+- Financial Times Deutschland — http://www.ftd.de/
+- Flensborg Avis — http://www.flensborg-avis.de/
+- Focus — http://www.focus.de/
+- Fränkischer Nachrichten — http://www.fnweb.de/
+- Fränkischer Tag — http://www.fraenkischer-tag.de/
+- Frankenpost — http://www.frankenpost.de/
+- Frankfurter Allgemeine — http://www.faz.net/
+- Frankfurter Neue Presse — http://www.rhein-main.net/
+- Frankfurter Rundschau — http://www.frankfurter-rundschau.de/
+- Freace — http://www.freace.de/
+- Freie Presse — http://www.freiepresse.de/
+- Freitag — http://www.freitag.de/
+- Fudder — http://fudder.de/
+- Fuldaer Zeitung — http://www.fuldaerzeitung.de/
+- Ganz-muenchen.de — http://www.ganz-muenchen.de/
+- Gäubote — http://www.gaeubote.de/
+- Göttinger Tageblatt — http://www.goettinger-tageblatt.de/
+- GegenDruck — http://www.nadir.org/nadir/periodika/gegendruck/
+- General-Anzeiger — http://www.general-anzeiger-bonn.de/
+- The German Eye — http://www.thegermaneye.com/
+- GermanPolicy.com — https://www.germanpolicy.com/
+- Griechenland Zeitung — http://www.griechenland.net/
+- Hamburger Abendblatt — http://www.abendblatt.de/
+- Hannover Zeitung — http://www.hannover-zeitung.net/
+- Hannoversche Allgemeine — http://www.haz.de/
+- Harburger Anzeigen und Nachrichten — http://www.han-online.de/
+- Harzkurier — http://www.harzkurier.de/
+- Heilbronner Stimme — http://www.stimme.de/
+- Heinertown.de — http://www.heinertown.de/
+- Hellweger Anzeiger — http://www.hellwegeranzeiger.de/
+- Hessisch-Niedersächsische Allgemeine — http://www.hna.de/
+- Hildesheimer Allgemeine Zeitung — http://www.hildesheimer-allgemeine.de/
+- Iserlohner Kreisanzeiger — http://www.ikz-online.de/
+- Islamische Zeitung — http://www.islamische-zeitung.de/
+- Israel Nachrichten — http://www.israel-nachrichten.org/
+- Juedische Allgemeine — https://www.juedische-allgemeine.de/
+- Junge Freiheit — http://www.jungefreiheit.de/
+- Junge Welt — http://www.jungewelt.de/
+- Jurnalo — http://www.jurnalo.com/
+- ka-news.de — http://www.ka-news.de/
+- KAZ Kommunistische Arbeiterzeitung — http://www.kaz-online.de/
+- Kölner Stadt-Anzeiger — https://www.ksta.de/
+- Kölnische Rundschau — https://www.rundschau-online.de/
+- Königsteiner Woche — http://www.koenigsteiner-woche.de/
+- Kieler Nachrichten — http://www.kn-online.de/
+- Klasse Gegen Klasse — http://www.klassegegenklasse.org/
+- Kreiszeitung Böblinger Bote — http://www.bb-live.de/
+- Kroatische Zeitung — http://www.kroatische-zeitung.de/
+- Kurier — https://www.kurier.de/
+- Lübecker Nachrichten — http://www.ln-online.de/
+- Lübecker Stadtzeitung — http://www.stadtzeitung.luebeck.de/
+- La Gazette de Berlin — http://www.lagazettedeberlin.de/
+- Landes-Zeitung — http://www.landes-zeitung.de/
+- Landeszeitung Für die Lüneburger Heide — http://www.landeszeitung.de/
+- Landshuter Zeitung — http://www.idowa.de/
+- Lausitzer Rundschau — http://www.lr-online.de/
+- Leipziger Volkszeitung — http://www.lvz-online.de/
+- Lippische Landes-Zeitung — http://www.lz-online.de/
+- The Local — http://www.thelocal.de/
+- Lokal-Anzeiger — http://www.lokal-anzeiger-verlag.de/
+- Märkische Allgemeine — http://www.maz-online.de/
+- Märkische Oderzeitung — http://www.moz.de/
+- Münstersche Zeitung — https://www.muensterschezeitung.de/
+- Main Echo — https://www.main-echo.de/
+- Main-Rheiner — http://www.main-rheiner.de/
+- Mainpost — http://www.mainpost.de/
+- Mannheimer Morgen — http://www.morgenweb.de/
+- Marktspiegel — http://www.marktspiegel.de/
+- Meindresden.info — http://www.meindresden.info/
+- Merkpunkt — http://www.merkpunkt.com/
+- Mindener Tageblatt — http://www.mt-online.de/
+- Mittelbadische Presse — http://www.baden-online.de/
+- Mittelbayerische Zeitung — http://www.donau.de/
+- Mitteldeutsche Zeitung — http://www.mz-web.de/
+- Morgenwelt — http://www.morgenwelt.de/
+- Muenchener Merkur — http://www.merkur-online.de/
+- MunichNOW — http://munichnow.com/
+- Münster Journal — https://muenster-journal.de/
+- Münster News — https://www.muenster-news.de/
+- Nürnberger Nachrichten — http://www.nn-online.de/
+- Nürnberger Zeitung — http://www.nz-online.de/
+- Nürtinger Zeitung — http://www.ntz.de/
+- Netzeitung Titelseite — http://www.netzeitung.de/
+- Neue Deister Zeitung — http://www.ndz.de/
+- Neue Osnabrücker Zeitung — http://www.neue-oz.de/
+- Neue Rheinische Zeitung — http://www.nrhz.de/
+- Neue Westfälische Zeitung — http://www.nw-news.de/
+- Neues Deutschland — http://www.nd-online.de/
+- Neuss-Grevenbroicher Zeitung — http://www.ngz-online.de/
+- Neues Münchener Tagblatt — http://www.nmtagblatt.com/
+- News.de — http://www.news.de/
+- Niederlausitz Aktuell — http://www.niederlausitz-aktuell.de/
+- Niederrhein Zeitung — http://www.niederrheinzeitung.de/
+- Norddeutsche Neueste Nachrichten — http://www.nnn.de/
+- Nordkurier — http://www.nordkurier.de/
+- Nordsee Zeitung — http://www.nordsee-zeitung.de/
+- Nordwest Zeitung — http://www.nwz-online.de/
+- NRZ — https://www.nrz.de/
+- Oberhessische Presse — http://www.op-marburg.de/
+- Oberpfalznetz — http://www.oberpfalznetz.de/
+- Offenbach Post — http://www.offenbach-post.de/
+- Oldenburger Stachel — http://www.stachel.de/
+- Oldenburgische Volkszeitung — http://www.ov-online.de/
+- Osna-Live — https://www.osna-live.de/
+- Ostfriesen-Zeitung — http://www.ostfriesen-zeitung.de/
+- Ostsee-Zeitung — http://www.ostseezeitung.de/
+- Ostthürhinger Zeitung — http://www.otz.de/
+- Owwer-Ramschd.de — http://www.owwer-ramschd.de/
+- Passauer Neue Presse — https://www.pnp.de/
+- Pfälzischer Landbote — http://www.pfaelzischer-landbote.de/
+- Pforzheimer Zeitung — http://www.pz-news.de/
+- Pipeline — http://www.pipeline.de/
+- Preussische-Allgemeine Zeitung — http://www.preussische-allgemeine.de/
+- Prinz — http://www.prinz.de/
+- Pyrmonter Nachrichten — http://www.pyrmonter-nachrichten.de/
+- Rems Zeitung — http://remszeitung.de/
+- Reutlinger General-Anzeiger — http://www.gea.de/
+- Rhein-Neckar Zeitung — http://www.rnz.de/
+- Rhein-Zeitung — http://rhein-zeitung.de/
+- Rheinische Post — http://www.rp-online.de/
+- Rheinpfalz Online — http://www.rheinpfalz.de/
+- Rodenkirchen.de — http://www.rodenkirchen.de/
+- Rote Fahne — http://www.rotefahne.info/
+- Ruhr Nachrichten — https://www.ruhrnachrichten.de/
+- Sächsische Zeitung — http://www.sz-online.de/
+- Schlesisches Wochenblatt — http://www.wochenblatt.pl/
+- Schwepnitzer Anzeiger — http://www.schwepnitzeranzeiger.de/
+- Süddeutsche Zeitung — http://www.sueddeutsche.de/
+- Südkurier — http://www.skol.de/
+- Südwest Press — http://www.suedwest-aktiv.de/
+- Saarbrücker Zeitung — http://www.sol.de/
+- Sauerlandkurier — https://www.sauerlandkurier.de/
+- Schaumburger Zeitung — http://www.schaumburger-zeitung.de/
+- Schleswig-Holsteinischen Zeitungsverlag — http://www.shz.de/
+- Schwäbische Post — http://www.schwaebische-post.de/
+- Schwäbische Zeitung Online — http://www.szon.de/
+- Schwäbisches Tagblatt — http://www.cityinfonetz.de/
+- Schwarzwälder Bote — http://www.swol.de/
+- Schweriner Volkszeitung — http://www.svz.de/
+- Segodnya — http://www.ru-heute.de/
+- Shanepakistan — http://www.shanepakistan.com/
+- Siegener Zeitung — http://www.siegener-zeitung.de/
+- The Silver Times — https://sivertimes.com/de/
+- Soester Anzeiger — http://www.soester-anzeiger.de/
+- Solinger Tageblatt — http://www.solingen-online.de/
+- Stars & Stripes — http://www.stripes.com/
+- Stern — http://www.stern.de/
+- Stuttgart Journal — http://www.stuttgart-journal.de/
+- Stuttgarter Nachrichten — http://www.stuttgarter-nachrichten.de/
+- Stuttgarter Zeitung — http://www.stuttgarter-zeitung.de/
+- Taeglicher Anzeiger Holzminden — http://www.tah.de/
+- Tag des Herrn — http://www.tag-des-herrn.de/
+- Tagblatt.de — http://www.tageblatt.de/
+- Taubertalnews — http://www.taubertalnews.de/
+- TAZ — http://www.taz.de/
+- Thüringer Landeszeitung — http://www.tlz.de/
+- Tico News — http://www.tico-news.com/
+- Trierischer Volksfreund — https://www.volksfreund.de/
+- Turkmensahra — http://www.turkmensahra.org/
+- Unicum Online — http://www.unicum.de/
+- VDI Nachrichten — http://www.vdi-nachrichten.com/
+- Volksstimme Magdeburg — http://www.volksstimme.de/
+- Volltext — http://www.volltext.net/
+- Waldeckische Landeszeitung — http://www.wlz-fz.de/
+- Weser-Kurier — http://www.weser-kurier.de/
+- Westdeutsche Allgemeine Zeitung — http://www.waz.de/
+- Westdeutsche Zeitung — http://www.wz-newsline.de/
+- Westfälische Anzeiger — https://www.wa.de/
+- Westfälische Nachrichten — http://www.wn.de/
+- Westfälische Rundschau — http://www.westfaelische-rundschau.de/
+- Wilhelmshavener Zeitung — http://www.wzonline.de/
+- Wochenblatt Online — http://www.wobla.de/
+- Zeitungsverlag Waiblingen — http://www.zvw.de/
+- Zollernalbkurier — http://www.zak.de/
+- Zweite Hand — http://www.zweitehand.de/
+
+### allyoucanread — https://www.allyoucanread.com/german-newspapers/
+- Bild — https://www.bild.de/
+- merkur-online.de — https://www.merkur.de/
+- Spiegel — https://www.spiegel.de/
+- DIE WELT — https://www.welt.de/
+- ZEIT — http://zeit.de/
+- Frankfurter Allgemeine — https://faz.net/
+- FOCUS — https://www.focus.de/
+- Sueddeutsche.de — https://www.sueddeutsche.de/
+- ARD Tagesschau — http://tagesschau.de/
+- Tagesspiegel — https://tagesspiegel.de/
+- Frankfurter Rundschau — https://www.fr.de/
+- STERN — https://www.stern.de/
+- WAZ.de — https://derwesten.de/
+- EXPRESS — https://www.express.de/
+- TZ — http://www.tz.de/
+- HNA.de — http://www.hna.de/
+- RP ONLINE — https://rp-online.de/
+- taz.de — https://taz.de/
+- Berliner Morgenpost — https://morgenpost.de/
+- Berliner Zeitung — https://berliner-zeitung.de/
+- Augsburger Allgemeine — https://www.augsburger-allgemeine.de/
+- Presseportal.de — https://www.presseportal.de/
+- B.Z. Berlin — https://www.bz-berlin.de/
+- Hamburger Morgenpost — https://www.mopo.de/
+- Koelner Stadt-Anzeiger — https://www.ksta.de/
+- Suedwest Presse Ulm — https://www.swp.de/
+- Hamburger Abendblatt — https://abendblatt.de/
+- SUEDKURIER Online — https://suedkurier.de/
+- Stuttgarter Zeitung — https://www.stuttgarter-zeitung.de/
+- Dadische Zeitung — http://www.badische-zeitung.de/
+- The Local — https://thelocal.de/
+- Stuttgarter Nachrichten — https://www.stuttgarter-nachrichten.de/
+- Nordbayern.de — https://www.nordbayern.de/
+- Saechsische Zeitung — https://www.saechsische.de/
+- Neue Osnabruecker Zeitung NOZ.de — https://www.noz.de/
+- Abendzeitung Muenchen — https://abendzeitung-muenchen.de/
+- Freie Presse — http://www.freiepresse.de/
+- HAZ - Hannoversche Allgemeine — http://www.haz.de/
+- shz.de — https://www.shz.de/
+- inFranken.de — https://infranken.de/
+- WESER-KURIER — https://www.weser-kurier.de/
+- Schwaebische.de — http://www.schwaebische.de/
+- Schwarzwaelder Bote — https://www.schwarzwaelder-bote.de/
+- NWZ Nordwest Zeitung — https://www.nwzonline.de/
+- Passauer Neue Presse — https://www.pnp.de/
+- Frankfurter Neue Presse — http://www.fnp.de/
+- Neue Westfaelische — https://www.nw.de/
+- Mittelbayerische Zeitung — https://www.mittelbayerische.de/
+- Main Post — https://mainpost.de/
+
+### abyznewslinks — http://www.abyznewslinks.com/germa.htm
+- (no entries)
+
+## gibraltar (western_europe) — Gibraltar
+
+### w3newspapers — (not listed)
+- (no entries)
+
+### onlinenewspapers — https://onlinenewspapers.com/gibraltar.shtml
+- GBC — http://www.gbc.gi/
+- GibNews.net — http://www.gibnews.net/
+- Gibraltar Chronicle — http://www.chronicle.gi/
+- Panorama — http://www.panorama.gi/
+- Vox — http://www.vox.gi/
+- Your Gibraltar TV — http://www.yourgibraltartv.com/
+
+### allyoucanread — (not listed)
+- (no entries)
+
+### abyznewslinks — http://www.abyznewslinks.com/gibra.htm
+- Gib News — http://www.gibnews.net/
+- Your Gibraltar TV — http://www.yourgibraltartv.com/
+- Gibraltar Chronicle — http://www.chronicle.gi/
+
+## greece (western_europe) — Greece
+
+### w3newspapers — https://www.w3newspapers.com/greece/
+- Kathimerini (Η Καθημερινή) — https://www.kathimerini.gr/
+- Ta Nea (Τα Νέα) — https://www.tanea.gr/
+- To Vima (Το Βήμα) — https://www.tovima.gr/
+- Naftemporiki (Η Ναυτεμπορική) — https://www.naftemporiki.gr/
+- Efimerida ton Syntakton (Η Εφημερίδα των Συντακτών) — https://www.efsyn.gr/
+- Eleftheros Typos (Ελεύθερος Τύπος) — https://www.eleftherostypos.gr/
+- Proto Thema — https://www.protothema.gr/
+- News247 — https://www.news247.gr/
+- Espresso — https://www.espressonews.gr/
+- Rizospastis (Ριζοσπάστης) — https://www.rizospastis.gr/
+- I Avgi (Η Αυγή) — https://www.avgi.gr/
+- Peloponnisos (Πελοπόννησος) — https://pelop.gr/
+- Ethnos (Έθνος) — https://www.ethnos.gr/
+- Dimokratiki (Δημοκρατική) — https://www.dimokratiki.gr/
+- Proinos Logos (Πρωινός Λόγος) — https://www.proinoslogos.gr/
+- I Imera (Η Ημέρα) — https://imeranews.gr/
+- Eleftheria (Ελευθερία) — https://www.eleftheria.gr/
+- Rodiaki (Ροδιακή) — https://www.rodiaki.gr/
+- Thessalia (Θεσσαλία) — https://e-thessalia.gr/
+- Xronos (Χρόνος) — https://xronos.gr/
+- Patris (Πατρίς) — https://www.patris.gr/
+- Evrytanika (Ευρυτανικά Νέα) — https://evrytanika.gr/
+- Kathimerini English Edition — https://www.ekathimerini.com/
+- Greek Reporter — https://greekreporter.com/
+- Keep Talking Greece — https://www.keeptalkinggreece.com/
+- Newsit.gr — https://www.newsit.gr/
+- Newsbomb.gr — https://www.newsbomb.gr/
+- Iefimerida — https://www.iefimerida.gr/
+- Newsbeast.gr — https://www.newsbeast.gr/
+- Parapolitika.gr — https://www.parapolitika.gr/
+- Enikos.gr — https://www.enikos.gr/
+- Zougla.gr — https://www.zougla.gr/
+- Protagon.gr — https://www.protagon.gr/
+- TheTOC.gr — https://www.thetoc.gr/
+- Athens Voice — https://www.athensvoice.gr/
+- Lifo.gr — https://www.lifo.gr/
+- Hotdoc / Kouti Pandoras — https://www.koutipandoras.gr/
+- Cretalive.gr — https://www.cretalive.gr/
+- NewsNow.gr — https://www.newsnowgr.com/
+- Makeleio — https://www.makeleio.gr/
+- Dnews.gr — https://www.dnews.gr/
+- Pentapostagma — https://www.pentapostagma.gr/
+- Pronews.gr — https://www.pronews.gr/
+- Newpost.gr — https://newpost.gr/
+- Thestival.gr — https://www.thestival.gr/
+- TheBest.gr — https://www.thebest.gr/
+- ERT (state broadcaster) — https://www.ert.gr/
+- Flashnews.gr — https://flashnews.gr/
+- Katohika.gr — https://katohika.gr/
+- Politis Online — https://politisonline.com/
+- Aggelioxoros — https://agx.gr/
+- Trakyanin Sesi — https://www.trakyaninsesi.com/
+- BusinessNews.gr — https://www.businessnews.gr/
+- Day Press — https://www.daypress.gr/
+- Ipirotikos Agon (Ηπειρωτικός Αγών) — https://www.agon.gr/
+- Filodimos (Φιλόδημος) — https://www.filodimos.gr/
+- Styx (Στύξ) — https://www.styga.gr/
+- Symvoulos Epicheiriseon (Σύμβουλος Επιχειρήσεων) — https://www.symboulos.gr/
+- Alithia (Αλήθεια) — https://www.alithia.gr/
+- Anexartitos Typos (Ανεξάρτητος Τύπος) — https://www.anexartitos.gr/
+- Evia News (Εύβοια News) — https://evianews.com/
+- Neoi Agones (Νέοι Αγώνες) — https://neoiagones.gr/
+- Laos (Λαός) — https://www.laosnews.gr/
+- Nea Kriti (Νέα Κρήτη) — https://www.neakriti.gr/
+- Eleftheria (Ελευθερία) — https://eleftheriaonline.gr/
+- Empros (Εμπρός) — https://www.emprosnet.gr/
+- Metro Sport — https://www.metrosport.gr/
+- Taxydromos (Ταχυδρόμος) — https://www.taxydromos.gr/
+- Makedonia (Μακεδονία) — https://www.emakedonia.gr/
+- Kosmos (Κόσμος Λάρισας) — https://kosmoslarissa.gr/
+- Enimerosi (Ενημέρωση) — https://enimerosi.com/
+- Aixmi (Αιχμή) — https://www.aixmi-news.gr/
+- Proinos Logos (Πρωινός Λόγος Κοζάνης) — https://www.prlogos.gr/
+- Chios News — https://chiosnews.com/
+- Agonas (Αγώνας) — https://agonas.gr/
+- Proina Nea (Πρωϊνά Νέα) — https://www.proinanea.gr/
+- Ditiki Makedonia (Δυτική Μακεδονία) — http://ditiki.gr/
+- Karfitsa (Καρφίτσα) — https://www.karfitsa.gr/
+- Patris News (Πατρίς) — https://www.patrisnews.com/
+- Stochos (Στόχος) — https://www.stoxos.gr/
+- Eleftheros Kosmos (Ελεύθερος Κόσμος) — https://elkosmos.gr/
+- To Pontiki (Το Ποντίκι) — https://www.topontiki.gr/
+- Prin (Πριν) — https://prin.gr/
+- Kokkinos Protathlitis — https://www.kokkinosprotathlitis.gr/
+- Gazzetta.gr — https://www.gazzetta.gr/
+- Nova Sports — https://www.novasports.gr/
+- Sport24 — https://www.sport24.gr/
+- Contra — https://www.contra.gr/
+- Sport-FM — https://www.sport-fm.gr/
+- Gavros — https://www.gavros.gr/
+- Orthodoxia.gr — https://orthodoxia.gr/
+- Athinorama — https://www.athinorama.gr/
+- Athens–Macedonian News Agency (AMNA) — https://www.amna.gr/
+- Greek News — https://www.greeknewsonline.com/
+- National Herald — https://www.thenationalherald.com/
+- Eleftheria — http://www.eleftheria.co.uk/
+
+### onlinenewspapers — https://onlinenewspapers.com/greece.shtml
+- Adapokrites — http://www.adapokrites.gr/
+- Aiolika Nea — http://www.aiolikanea.gr/
+- Agelioforos — http://www.agelioforos.gr/
+- Agora — http://www.kerdos.gr/
+- Alithia — http://www.alithia.gr/
+- Amarysia — https://www,amarysia.gr/
+- Anexartitos — http://www.anexartitos.gr/
+- Anglo Greece — http://www.anglogreece.com/
+- Apofasi — http://www.apofasi.gr/
+- Apogevmatini — http://www.apogevmatini.gr/
+- Aristera — http://www.koel.gr/
+- Athener Zeitung — http://www.griechenland.de/
+- Athens Express Weekly — http://www.athensexpress.gr/
+- Athens News — http://www.athensnews.gr/
+- The Athens Times — http://www.athens-times.com/
+- Athinapoli — http://www.athinapoli.gr/
+- Athlitiatrika Nea — http://www.smn.gr/
+- Athlitika Nea — http://www.athlitikanea.gr/
+- Avgi — http://www.avgi.gr/
+- Axia — http://www.axiaplus.gr/
+- Azat Or — http://www.azator.gr/
+- The Balkan Chronicle — https://balkaninsight.com/birn_source/the-balkan-chronicle/
+- BORO — http://www.boro.gr/
+- Chios News — http://www.chiosnews.com/
+- City Press — http://www.cpress.gr/
+- Crete Gazette — http://www.cretegazette.com/
+- Dais Perdais News — http://www.daisperdais.com/
+- Dimokratiki — http://www.dimokratiki.gr/
+- Dimokratiki Newspaper of Chios — http://www.dimokratiki.org/
+- Dimotikos Antilogos — http://www.dimotikosantilogos.gr/
+- Dromos Tis Aristeras — http://www.edromos.gr/
+- Egaleo — http://www.egaleonews.wix.com/egaleonews
+- Eirini Moutzouri — http://www.konstantinoupolis.net/
+- Ekathimerini.com — https://www.ekathimerini.com/
+- Eklogika — http://www.eklogika.gr/
+- Eleftheria — http://www.eleftheria.gr/
+- Eleftheros Kosmos — http://www.elkosmos.gr/
+- Eleftheros Typos — http://www.e-typos.com/
+- Eleftherotypia — http://www.enet.gr/
+- Ellinikes Grammes — http://www.e-grammes.gr/
+- Elliniko Fenomeno — http://www.elliniko-fenomeno.gr/
+- Empros — http://www.emprosnet.gr/
+- Enimerosi — http://www.enimerosi.com/
+- Epohi — http://www.epohi.gr/
+- Ergatiki Allilegyi — http://www.sek-ist.gr/
+- Ethnos — http://www.ethnos.gr/
+- Exelixeis — http://www.exelixeis.gr/
+- Express — http://www.express.gr/
+- Expresso News — http://www.espressonews.gr/
+- Faros Live — http://www.faroslive.com/
+- Greek Herald — http://www.greekherald.com/
+- Greek Reporter — https://www.greekreporter.com/
+- Haniotika-Nea — http://www.haniotika-nea.gr/
+- Ikypros — http://www.ikypros.com/
+- Imera tsi Zakythos — http://www.imerazante.gr/
+- Imerisia — https://www.imerisia-ver.gr/
+- Imerisios Kirikas — http://www.kirikas.com.gr/
+- IN.gr — http://www.in.gr/
+- Insider.gr/ — https://www.insider.gr/
+- Isotimia — http://www.isotimia.gr/
+- Kardasi — http://www.kardasi.gr/
+- Kathimerini — http://www.kathimerini.gr/
+- Kathimerinos Tipos Daily Newspaper of Kavala — http://www.k-tipos.gr/
+- The Khronicles — http://www.ko-go.gr/
+- Kosmos — http://www.kosmoslarissa.gr/
+- Kyklades News — http://www.kykladesnews.gr/
+- Laos — http://www.laosver.gr/
+- Larissaonline.gr — http://www.Larissaonline.gr/
+- LasithiNews — http://www.lasithinews.gr/
+- Logos Tis Pellas — http://www.logospellas.gr/
+- Madata.gr — http://www.madata.gr/
+- MadatoForos News — http://www.madatoforos.com/
+- Magoula Online — http://magoulaonline.gr/
+- Makedonia — http://www.makthes.gr/
+- Mhnyma — http://www.minima-hania.gr/
+- Mikres Aggelies — http://www.mikresaggelies.com.gr/
+- Mileika Nea — http://www.mileikanea.gr/
+- Nafpaktia News — http://www.nafpaktianews.gr/
+- Naftemporiki — http://www.naftemporiki.gr/
+- Neakriti — http://www.cretetv.gr/
+- Neoi Agones — http://www.neoiagones.gr/
+- O Kosmos Toy Ependyth — http://www.kte.gr/
+- Orizontes — http://www.orizontespress.com/
+- The Pak Nation — http://www.thepaknation.com/
+- Pamesports — http://www.pamesports.gr/
+- Patris — http://www.patris.gr/
+- Peloponnisos — http://www.peloponnisos.com.gr/
+- Photoreportage — http://www.photoreportage.gr/
+- Pierikoi Antilaloi — http://www.pierikoiantilaloi.gr/
+- Pixida News — http://www.pixidanews.gr/
+- Pliroforiodotis — http://www.pliroforiodotis.gr/
+- PMNews — http://www.pmnews.gr/
+- PolisPress — http://www.polispress.gr/
+- Politischios / Πολίτης — https://www.politischios.gr/
+- PolitisOnline — http://www.politisonline.com/
+- PRESStime — http://www.press-time.gr/
+- Prin — http://www.prin.gr/
+- Proini — http://www.proini.eu/
+- Proletariaki Simea — http://www.kkeml.gr/
+- Proodos — http://www.proodos.net/
+- Proto Thema — http://www.protothema.gr/
+- Pyxida tis Polhs — http://www.pyxida.gr/
+- Raporto — http://www.raporto.gr/
+- Rizospastis — http://www.rizospastis.gr/
+- Rodiaki — http://www.rodiaki.gr/
+- Rodos News — https://news.rodos-island.gr/
+- Servitoros tis Evias — http://www.servitoros.gr/
+- Sofia Times Magazine — http://www.sofiatimes.com/
+- Statesmen — http://www.statesmen.gr/
+- Stoxos — http://www.stoxos.gr/
+- Styx — http://www.styx.gr/
+- Ta Nea — http://ta-nea.dolnet.gr/
+- Taxydromos — http://www.taxydromos.gr/
+- Thrakikigi — http://www.thrakikigi.gr/
+- To Bhma — https://www.tovima.gr/
+- To Kalami — http://www.kalami.net/
+- Travel Daily News — http://www.traveldailynews.gr/
+- Ujaalanews.com — http://www.ujaalanews.com/
+- Vima Tis Ko — http://www.vimatisko.gr/
+- Voria — http://www.voria.gr/
+- Xanthi News — http://www.xanthinews.gr/
+- Xirafi — http://www.xirafi.gr/
+- Xronos — http://www.xronos.gr/
+- Xtypos — http://www.xtypos.gr/
+- Zo — http://www.zonews.gr/
+
+### allyoucanread — https://www.allyoucanread.com/greek-newspapers/
+- Proto Thema — https://www.protothema.gr/
+- in.gr — https://www.in.gr/
+- Gazetta.gr — https://www.gazzetta.gr/
+- iEfimerida — https://www.iefimerida.gr/
+- newsbeast.gr — https://www.newsbeast.gr/
+- NewsIt.gr — https://www.newsit.gr/
+- Newsbomb.gr — https://www.newsbomb.gr/
+- enikos.gr — https://www.enikos.gr/
+- I Kathimerini — https://kathimerini.gr/
+- News247 — https://news247.gr/
+- naftemporiki.gr — https://naftemporiki.gr/
+- Zougla — https://www.zougla.gr/
+- PRO news — https://www.pronews.gr/
+- pentapostagma.gr — https://pentapostagma.gr/
+- makeleio.gr — http://www.makeleio.gr/
+- D News — https://www.dnews.gr/
+- To Vima — https://www.tovima.gr/
+- Ethnos — https://ethnos.gr/
+- Ta Nea — https://www.tanea.gr/
+- ERT — https://www.ert.gr/
+- efsyn.gr — https://efsyn.gr/
+- Athens Voice — https://www.athensvoice.gr/
+- The TOC (Time of Change) — https://www.thetoc.gr/
+- star.gr — https://www.star.gr/
+- Real.gr — http://www.real.gr/
+- protagon.gr — https://protagon.gr/
+- Avgi — https://avgi.gr/
+- Imerisia.gr — https://www.imerisia.gr/
+- parapolitika.gr — https://www.parapolitika.gr/
+- iNewsgr.com — https://www.inewsgr.com/
+- frontpages.gr — https://frontpages.gr/
+- Vorio — http://voria.gr/
+- The Best News - Patras — https://www.thebest.gr/
+- Cretalive.gr — https://cretalive.gr/
+- HOTDOC — https://www.koutipandoras.gr/
+- aftodioikisi — https://aftodioikisi.gr/
+- thestival.gr — https://thestival.gr/
+- madata.gr — https://www.madata.gr/
+- popaganda.gr — https://popaganda.gr/
+- Lamia Report — https://lamiareport.gr/
+- ANAmna.gr — https://amna.gr/
+- Triklopodia — https://triklopodia.gr/
+- Hellas Now — https://hellas-now.com/
+- New Post — https://newpost.gr/
+- Pelop.gr — https://pelop.gr/
+- flashnews.gr — https://flashnews.gr/
+- Patris News — https://patrisnews.com/
+- onAlert — https://onalert.gr/
+- katohika.gr — https://katohika.gr/
+- Pathfinder — https://pathfinder.gr/
+
+### abyznewslinks — http://www.abyznewslinks.com/greec.htm
+- Athens Voice — http://www.athensvoice.gr/
+- CNN — http://www.cnn.gr/
+- Day Press — http://www.daypress.gr/
+- E Go — http://www.e-go.gr/default.asp
+- Exelixeis — http://exelixeis.gr/
+- Flash — http://www.flash.gr/
+- Gavros — http://www.gavros.gr/
+- Greek News Agenda — http://www.greeknewsagenda.gr/
+- I Pop — http://ipop.gr/
+- Iefimerida — http://www.iefimerida.gr/
+- Lifo — http://www.lifo.gr/
+- MSN — http://www.msn.com/el-gr/news
+- News Bomb — http://www.newsbomb.gr/
+- News It — http://www.newsit.gr/
+- News Now — http://www.newsnowgr.com/
+- Polis Press — http://www.polispress.gr/
+- Politis Online — http://www.politisonline.com/
+- Protagon — http://www.protagon.gr/
+- Zougla — http://www.zougla.gr/
+- Eleftherotypia — http://www.enet.gr/
+- Eleftherotypia — http://www.enetenglish.gr/
+- Ethnos — http://www.ethnos.gr/default.asp
+- Kathimerini — http://www.kathimerini.gr/
+- Kathimerini — http://www.ekathimerini.com/
+- Rizospastis — http://www1.rizospastis.gr/
+- Ta Nea — http://www.tanea.gr/
+- To Vima — http://www.tovima.gr/
+
+## greenland (western_europe) — Greenland
+
+### w3newspapers — (not listed)
+- (no entries)
+
+### onlinenewspapers — https://onlinenewspapers.com/greenland.shtml
+- Atuagagdliutit — https://sermitsiaq.ag/
+
+### allyoucanread — https://www.allyoucanread.com/greenland-newspapers/
+- sermitsiaq.ag — https://sermitsiaq.ag/
+
+### abyznewslinks — http://www.abyznewslinks.com/green.htm
+- Atuagagdliutit — http://sermitsiaq.ag/
+
+## iceland (western_europe) — Iceland
+
+### w3newspapers — https://www.w3newspapers.com/iceland/
+- Fréttablaðið — https://www.visir.is/
+- Morgunblaðið — https://www.mbl.is/frettir/
+- DV (Dagblaðið Vísir) — https://www.dv.is/
+- IceNews — https://www.icenews.is/
+- MBL.IS (News in English) — https://icelandmonitor.mbl.is/news/
+- Bæjarins Besta (BB) — https://www.bb.is/
+- Eyjafréttir — https://eyjafrettir.is/
+- Félag leiðsögumanna — https://www.touristguide.is/
+- Feykir — https://www.feykir.is/
+- vikubladid.is — https://www.vikubladid.is/
+- Skessuhorn — https://skessuhorn.is/
+- Víkurfréttir — https://www.vf.is/
+- Kopavogsbladid — https://www.kopavogsbladid.is/
+- Vidskiptabladid — https://vb.is/
+- Pressan — https://pressan.dv.is/
+- Sykkisholms Posturinn — https://www.snaefellingar.is/
+- Austur Frett — https://www.austurfrett.is/
+- Hunahornid — https://www.huni.is/
+- Sunnlenska — https://www.sunnlenska.is/
+
+### onlinenewspapers — https://onlinenewspapers.com/iceland.shtml
+- Bæjarins Besta — http://www.bb.is/
+- DV — http://www.dv.is/
+- Eyjafréttir — http://eyjafrettir.is/
+- Félag leiðsögumanna — http://www.touristguide.is/
+- Feykir.is — http://www.feykir.is/
+- Fréttabladid — http://www.frettabladid.is/
+- Iceland Monitor — https://icelandmonitor.mbl.is/
+- Iceland Review — http://icelandreview.com/
+- Kjarninn — http://www.kjarninn.is/
+- Morgunbladid — http://www.mbl.is/
+- The Reykjavik Grapevine — http://www.grapevine.is/
+- Skessuhorns — http://www.skessuhorn.is/
+- Strandir — https://www.strandir.is/
+- Stundin — http://www.stundin.is/
+- Vaktin — http://eyjar.net/
+- Vefthjodviljinn — http://www.andriki.is/
+- Víkurfréttir — http://www.vf.is/
+- Vísir — http://www.visir.is/
+
+### allyoucanread — https://www.allyoucanread.com/iceland-newspapers/
+- mbl.is — https://www.mbl.is/
+- Visir — https://visir.is/
+- DV — https://dv.is/
+- Iceland Review — https://www.icelandreview.com/
+- Vidskiptabladid — https://vb.is/
+- VF.is — https://vf.is/
+- BB.is — https://www.bb.is/
+
+### abyznewslinks — http://www.abyznewslinks.com/icela.htm
+- AMX — http://www.amx.is/
+- Ice News — http://www.icenews.is/
+- Iceland Dori — http://iceland-dori.blogspot.com/
+- Iceland Monitor — http://icelandmonitor.mbl.is
+- Pressan — http://www.pressan.is/
+- Scandinavia Now — http://scandinavianow.com/
+- Sport — http://www.sport.is/
+- Visir — http://www.visir.is/section/FRONTPAGE
+- Morgunbladid — http://www.mbl.is/frettir/english/
+
+## ireland (western_europe) — Ireland
+
+### w3newspapers — https://www.w3newspapers.com/ireland/
+- Irish Independent — https://www.independent.ie/
+- Irish Times — https://www.irishtimes.com/
+- Irish Sun — https://www.irishsun.com/
+- Examiner — https://www.irishexaminer.com/
+- An Phoblacht — https://www.anphoblacht.com/
+- Sunday Business Post — https://www.businesspost.ie/
+- Athlone Advertiser — https://www.advertiser.ie/athlone
+- Evening Echo — https://www.echolive.ie/
+- Avondhu — https://avondhupress.ie/
+- Irish Echo — https://www.irishecho.com/
+- Sunday World — https://www.sundayworld.com/
+- Clare Champion — https://clarechampion.ie/
+- Connaught Telegraph — https://www.con-telegraph.ie/
+- Cork Independent — https://www.corkindependent.com/
+- Derry People and Donegal News — https://donegalnews.com/
+- Dublin News — https://www.dublinnews.com/
+- Carlow Nationalist — https://www.carlow-nationalist.ie/
+- Fermanagh Herald — https://fermanaghherald.com/
+- Anglo-Celt — https://www.anglocelt.ie/
+- Impartial Reporter — https://www.impartialreporter.com/
+- Irish News — https://www.irishnews.com/
+- Irish Voice Online — https://www.irishcentral.com/news/irishvoice/
+- Irish World — https://www.theirishworld.com/
+- Limerick Leader — https://www.limerickleader.ie/
+- Munster Express — https://www.munster-express.ie/
+- An Phoblacht / Republican News — https://republican-news.org/
+- Waterford Today — https://www.voicemedia.ie/waterford-today/
+- Scotsman — https://www.scotsman.com/
+- Saoirse — https://saoirse.info/
+- Southern Star — https://www.southernstar.ie/
+- Northside People — https://dublinpeople.com/
+- Connacht Sentinel — https://connachttribune.ie/
+- Meath Chronicle — https://www.meathchronicle.ie/
+- Offaly Express — https://www.offalyexpress.ie/
+- Marine Times — http://www.marinetimes.ie/
+- Donegal Live — https://www.donegallive.ie/
+- lietuvis — https://lietuvis.ie/
+- Tuam Herald — https://www.tuamherald.ie/
+- Leinster Leader — https://www.leinsterleader.ie/
+- Kilkenny People — https://www.kilkennypeople.ie/
+- Leitrim Observer — https://www.leitrimobserver.ie/
+- Western People — https://www.westernpeople.ie/
+- Waterford News and Star — https://www.waterford-news.ie/
+- Guardian — https://www.nenaghguardian.ie/
+- Thejournal.ie — https://www.thejournal.ie/
+- Breakingnews.ie — https://www.breakingnews.ie/
+- Le Petit Journal — https://lepetitjournal.com/dublin
+- Irish Post — https://www.irishpost.com/
+- Donegal daily — https://www.donegaldaily.com/
+- Tipperary Star — https://www.tipperarylive.ie/
+- Longford Leader — https://www.longfordleader.ie/
+- Limerick Post — https://www.limerickpost.ie/
+- Leinster Express — https://www.leinsterexpress.ie/
+- Rebel News — http://www.rebelnews.ie/
+- Politics.ie — https://politics.ie/
+- Mayo News — https://www.mayonews.ie/
+- Westmeath Examiner — https://www.westmeathexaminer.ie/
+- Westmeath Independent — https://www.westmeathindependent.ie/
+- Killarney Today — https://www.killarneytoday.com/
+- Offaly Independent — https://www.offalyindependent.ie/
+- Laois Nationalist — https://www.laois-nationalist.ie/
+- Irish Independent — https://insideireland.ie/
+- Kerry's Eye — http://www.kerryseye.com/
+- Roscommon Herald — https://www.roscommonherald.ie/
+- Sligo Weekender — http://sligoweekender.ie/
+
+### onlinenewspapers — https://onlinenewspapers.com/ireland.shtml
+- Andersonstown News — http://belfastmediagroup.com/tag/andersonstown-news/
+- The Anglo Celt — https://www.anglocelt.ie/
+- An Phoblacht / Republican News — http://www.anphoblacht.com/
+- The Argus — https://www.independent.ie/regionals/argus/
+- Athlone Advertiser — http://www.advertiser.ie/athlone/
+- The Avondhu — http://www.avondhupress.ie/
+- The Ballymena & Antrim Times — http://www.ballymenatimes.com/
+- Ballymoney & Moyle Times — https://www.ballymoneytimes.co.uk/
+- Banbridge Leader — https://www.banbridgeleader.co.uk/
+- Belfast Telegraph — http://www.belfasttelegraph.co.uk/
+- BreakingNews.ie — https://www.breakingnews.ie/ireland/
+- Business Post — https://www.businesspost.ie/ class=
+- Carrick Times — https://www.carrickfergustimes.co.uk/
+- Coleraine Times — https://www.colerainetimes.co.uk/
+- Connacht Tribune — https://www.connachttribune.ie/
+- Connaught Telegraph — http://www.con-telegraph.ie/
+- Cork Independent — http://www.corkindependent.com
+- Derry Journal — http://www.derryjournal.com/
+- Donegal News — https://www.donegalnews.com/
+- Down Recorder — http://www.thedownrecorder.co.uk/
+- Drogheda Independent — http://droghedaindependent.newspaperdirect.com/
+- Dublin News — http://www.dublinnews.com/
+- Dublin People — https://www.dublinpeople.com/
+- The Dundalk Leader — http://www.dundalkleader.com/
+- The Epoch Times — http://www.theepochtimes.com/
+- Farming Life — https://www.farminglife.com/
+- Fermanagh Herald — http://fermanaghherald.com/
+- Galway Advertiser — https://www.advertiser.ie/galway
+- The Galway Independent — http://www.galwayindependent.com/
+- Good News — https://www.thejournal.ie/good-news/
+- Impartial Reporter — http://www.impartialreporter.com/
+- Inishowen News — http://www.inishowennews.com/
+- Inside Ireland — http://www.insideireland.ie/
+- The Irish Examiner — https://www.irishexaminer.com/
+- The Irish News — http://www.irishnews.com/
+- The Irish Post — http://www.irishpost.co.uk/
+- The Irish Sun — https://www.thesun.ie/
+- The Irish Times — https://www.irishtimes.com/
+- The Irish Mirror — https://www.irishmirror.ie/
+- The Irish World — http://www.theirishworld.com/
+- Kerry's Eye — http://www.kerryseye.com/
+- Kildare Nationalist — http://www.kildare-nationalist.ie/
+- Killarney Advertiser — http://www.killarneyadvertiser.ie/
+- Laois Nationalist — http://www.laois-nationalist.ie/
+- Larne Times — https://www.larnetimes.co.uk/
+- Leinster Express — https://www.leinsterexpress.ie/
+- Leinster Leader — https://www.leinsterleader.ie/
+- The Liberty — https://www.theliberty.ie/
+- The Limerick Leader — https://www.limerickleader.ie/
+- Limerick Post — http://www.limerickpost.ie/
+- Londonderry Sentinel — https://www.londonderrysentinel.co.uk/
+- The Longford Leader — https://www.longfordleader.ie/
+- Mayo Echo — http://www.mayoecho.com/login.htm
+- The Mayo News — https://www.mayonews.ie/
+- Meath Chronicle — https://www.meathchronicle.ie/
+- Mid-Ulster Mail — https://www.midulstermail.co.uk/
+- The Munster Express — http://www.munster-express.ie/
+- Nasz Glos — https://www.ng24.ie/
+- The Nationalist — http://www.carlow-nationalist.ie/
+- Nenagh Guardian — https://www.nenaghguardian.ie/
+- Newry Democrat — http://www.newrydemocrat.com/
+- Newry.ie — http://www.newry.ie/
+- Newry Times — http://www.newrytimes.com/
+- News Letter — https://www.newsletter.co.uk/
+- North Country Leader — http://www.northcountyleader.ie/
+- The Northern Standard — http://www.northernstandard.ie/
+- North West Express — http://www.theexpress.ie/
+- Offaly Express — https://www.offalyexpress.ie/
+- Offaly Independent — https://www.offalyindependent.ie/
+- Portadown Times — https://www.portadowntimes.co.uk/
+- Roscommon Herald — https://roscommonherald.ie/
+- ShannonSide — https://www.shannonside.ie/
+- Sligo Town — https://www.irishpost.com/sligo-town
+- Sligo Weekender — http://www.sligoweekender.ie/
+- Rebel News — http://www.rebelnews.ie/
+- Southern Star — https://www.southernstar.ie/
+- Strabane Chronicle — https://www.strabanechronicle.com
+- Strabane Weekly News — https://www.strabaneweekly.co.uk/
+- Tirconaill Tribune — https://www.donegaldaily.com/tag/tirconaill-tribune/
+- Tuam Herald — https://www.tuamherald.ie/
+- Tyrone Constitution — https://www.tyronecon.co.uk/
+- Tyrone Courier — https://www.tyronecourier.co.uk/
+- Ulster Business — http://www.ulsterbusiness.com/
+- Ulster Gazette — https://www.ulstergazette.co.uk/
+- Ulster Herald — http://www.ulsterherald.com/
+- The Ulster Star — https://www.lisburntoday.co.uk/
+- The University Observer — https://universityobserver.ie/
+- Waterford News & Star — http://www.waterford-news.com/
+- West Cork People — http://www.westcorkpeople.ie/
+- Western People — http://www.western-people.com/
+- Westmeath Examiner — https://www.westmeathexaminer.ie/
+- Westmeath Independent — https://www.westmeathindependent.ie/
+- Westmeath Topic — http://www.westmeathtopic.com/
+
+### allyoucanread — https://www.allyoucanread.com/irish-newspapers/
+- The Irish Times — https://irishtimes.com/
+- Irish Independent — https://independent.ie/
+- Irish Examiner — https://www.irishexaminer.com/
+- TheJournal.ie — https://thejournal.ie/
+- IrishCentral — https://www.irishcentral.com/
+- BreakingNews.ie — https://breakingnews.ie/
+- Sunday World — https://sundayworld.com/
+- Limerick Leader — https://www.limerickleader.ie/
+- Echo — https://www.echolive.ie/
+- Donegal Daily — https://donegaldaily.com/
+- Advertiser.ie — https://advertiser.ie/
+- Politics.ie — https://politics.ie/
+- The Mayo News — https://www.mayonews.ie/
+- Connacht Tribune — https://connachttribune.ie/
+
+### abyznewslinks — http://www.abyznewslinks.com/irela.htm
+- Inside Ireland — http://insideireland.ie/
+- An Phoblacht — http://www.anphoblacht.com/
+- Foinse — http://www.foinse.ie/
+- Irish Examiner — http://www.irishexaminer.com/
+- Irish Independent — http://www.independent.ie/
+- Irish Republican News — http://www.republican-news.org/
+- Irish Times — http://www.irishtimes.com/
+- Socialist Worker — http://www.swp.ie/
+- Irish Post — http://www.irishpost.co.uk/
+
+## isle_of_man (western_europe) — Isle of Man
+
+### w3newspapers — (not listed)
+- (no entries)
+
+### onlinenewspapers — (not listed)
+- (no entries)
+
+### allyoucanread — (not listed)
+- (no entries)
+
+### abyznewslinks — http://www.abyznewslinks.com/isman.htm
+- Isle of Man Guide — http://www.iomguide.com/news/index.php
+- Isle News — http://isleofman.isle-news.com/
+- Manx — http://www.manx.net/
+- Isle of Man Courier — http://www.iomtoday.co.im/
+
+## italy (western_europe) — Italy
+
+### w3newspapers — https://www.w3newspapers.com/italy/
+- Corriere della Sera — https://www.corriere.it/
+- la Repubblica — https://www.repubblica.it/
+- La Stampa — https://www.lastampa.it/
+- Il Sole 24 Ore — https://www.ilsole24ore.com/
+- Il Messaggero — https://www.ilmessaggero.it/
+- Il Fatto Quotidiano — https://www.ilfattoquotidiano.it/
+- Avvenire — https://www.avvenire.it/
+- il Giornale — https://www.ilgiornale.it/
+- Libero — https://www.liberoquotidiano.it/
+- La Verità — https://www.laverita.info/
+- Il Foglio — https://www.ilfoglio.it/
+- Il manifesto — https://ilmanifesto.it/
+- Domani — https://www.editorialedomani.it/
+- Il Riformista — https://www.ilriformista.it/
+- La Notizia — https://www.lanotiziagiornale.it/
+- Il Dubbio — https://www.ildubbio.news/
+- l'Unità — https://www.unita.it/
+- Il Tempo — https://www.iltempo.it/
+- L’Opinione delle Libertà — https://opinione.it/
+- ItaliaOggi — https://www.italiaoggi.it/
+- MF Milano Finanza — https://www.milanofinanza.it/
+- Wall Street Italia — https://www.wallstreetitalia.com/
+- Il Denaro — https://www.ildenaro.it/
+- FinanzaOnline — https://www.finanzaonline.com/
+- Investing.com Italia — https://it.investing.com/
+- EconomyUp — https://www.economyup.it/
+- La Gazzetta dello Sport — https://www.gazzetta.it/
+- Corriere dello Sport — https://www.corrieredellosport.it/
+- Tuttosport — https://www.tuttosport.com/
+- Milannews.it — https://www.milannews.it/
+- Guerin Sportivo — https://www.guerinsportivo.it/
+- Football Italia — https://football-italia.net/
+- Fanpage — https://www.fanpage.it/
+- Rai News 24 — https://www.rainews.it/
+- HuffPost Italia — https://www.huffingtonpost.it/
+- Leggo — https://www.leggo.it/
+- Metro — https://metrotoday.it/
+- Today.it — https://www.today.it/
+- Il Post — https://www.ilpost.it/
+- Notizie.it — https://www.notizie.it/
+- Quotidiano.net — https://www.quotidiano.net/
+- Affari Italiani — https://www.affaritaliani.it/
+- Dagospia — https://www.dagospia.com/
+- Tiscali — https://www.tiscali.it/
+- Internazionale — https://www.internazionale.it/
+- Il Sussidiario — https://www.ilsussidiario.net/
+- Punto Informatico — https://www.punto-informatico.it/
+- Leonardo.it — https://leonardo.it/
+- Life in Italy — https://lifeinitaly.com/
+- Notizie Geopolitiche — https://www.notiziegeopolitiche.net/
+- Blog di Beppe Grillo — https://beppegrillo.it/
+- Italy News — https://www.italynews.it/
+- Sicilia News 24 — https://www.sicilianews24.it/
+- Onda International Newspaper — https://www.ligury.com/
+- Il Mattino — https://www.ilmattino.it/
+- Il Resto del Carlino — https://www.ilrestodelcarlino.it/
+- La Nazione — https://www.lanazione.it/
+- Il Giorno — https://www.ilgiorno.it/
+- Il Gazzettino — https://www.ilgazzettino.it/
+- Il Secolo XIX — https://www.ilsecoloxix.it/
+- Giornale di Sicilia — https://gds.it/
+- La Sicilia — https://www.lasicilia.it/
+- La Gazzetta del Mezzogiorno — https://www.lagazzettadelmezzogiorno.it/
+- Gazzetta del Sud — https://gazzettadelsud.it/
+- Il Piccolo — https://www.ilpiccolo.it/
+- L’Arena — https://www.larena.it/
+- Il Tirreno — https://www.iltirreno.it/
+- Il Centro — https://www.ilcentro.it/
+- Il Friuli — https://www.ilfriuli.it/
+- L’Eco di Bergamo — https://www.ecodibergamo.it/
+- Gazzetta di Parma — https://www.gazzettadiparma.it/
+- Bresciaoggi — https://www.bresciaoggi.it/
+- Giornale di Brescia — https://www.giornaledibrescia.it/
+- Varese News — https://www.varesenews.it/
+- La Nuova Sardegna — https://www.lanuovasardegna.it/
+- Quotidiano di Puglia — https://www.quotidianodipuglia.it/
+- L’Adige — https://www.ladige.it/
+- Il Giornale di Vicenza — https://www.ilgiornaledivicenza.it/
+- Roma (Napoli) — https://www.ilroma.net/
+- Libertà (Piacenza) — https://www.liberta.it/
+- Alto Adige — https://www.altoadige.it/
+- Corriere Romagna — https://www.corriereromagna.it/
+- Quotidiano di Sicilia — https://qds.it/
+- Agenzia Nazionale Stampa Associata (ANSA) — https://www.ansa.it/
+- AGI – Agenzia Giornalistica Italia — https://www.agi.it/
+- Adnkronos — https://www.adnkronos.com/
+- Agenzia Nova — https://www.agenzianova.com/
+- Agenzia S.I.R. — https://www.agensir.it/
+- The Local (Italy) — https://www.thelocal.it/
+- Wanted in Rome — https://www.wantedinrome.com/
+- The Florentine — https://www.theflorentine.net/
+- Italy News Online — https://italynews.online/
+- L’Italo-Americano — https://italoamericano.org/
+- Corriere Canadese — https://www.corriere.ca/
+- Italian Tribune (USA) — https://italiantribune.com/
+- Le Petit Journal(Milan) — https://lepetitjournal.com/milan
+- Dolomiten(Südtirol) — https://abo.athesiamedien.com/
+- Italian-American Herald — https://italianamericanherald.com/
+- La Gazzetta Italiana — https://www.lagazzettaitaliana.com/
+- Il Marco Polo — https://ilmarcopolo.ca/
+
+### onlinenewspapers — https://onlinenewspapers.com/italy.shtml
+- Abitare — http://www.abitare.it/
+- Affari Italiani — http://www.affaritaliani.it/
+- Agenfax — http://www.agenfax.it/
+- Agen Press — http://www.agenpp-press.it/
+- Aggiornamenti Sociali — https://www.aggiornamentisociali.it/
+- AGI - Agenzia Italia — https://www.agi.it/
+- Albania News — http://www.albanianews.it/
+- AlbengaCorsara News — https://www.albengacorsara.it/
+- Alice Non Lo Sa — http://www.alicenonlosa.it/
+- Alguer.it — http://www.alguer.it/
+- Altamurgia.it — http://www.altamurgia.it/
+- Alto Adige — http://www.altoadige.it/
+- Altrenotizie — http://www.altrenotizie.org/
+- Aostaoggi — http://www.aostaoggi.it/
+- ASIpress — http://www.asipress.it/
+- Avanti — http://www.avanti.it/
+- Avvenire — http://www.avvenire.it/
+- Bandiera Rossa — http://www.ecn.org/bandierarossa/
+- Barbarossa — http://www.barbarossaonline.com/
+- Bari Sera — http://www.barisera.it/
+- The Bebak — http://www.thebebak.com/
+- Bresciaoggi — http://www.bresciaoggi.it/
+- Brindisilibera — http://www.brindisilibera.it/
+- Cantieridea — http://www.cantieridea.it/
+- Capitanata — http://www.capitanata.it/
+- Catanzaro Informa — https://www.catanzaroinforma.it/
+- Centumcellae News — http://www.ceppaloni.info/
+- Cerca News — http://www.ilfaro.it/news_cerca/
+- CityJournal — https://www.notizie.umbria.it/
+- Controcorrente — http://www.controcorrente.info/
+- Corriere — http://www.corriereirpinia.it/
+- Corriere Adriatico — http://www.corriereadriaticonline.it/
+- Corriere Canadese — http://www.corriere.com/
+- Corriere del Giorno — http://www.corgiorno.it/
+- Corriere della Sera — https://www.corriere.it/
+- Corriere dello Sport — http://www.corrieredellosport.it/
+- Corsera Magazine — http://www.corsera.it/
+- Corriere dell'Umbria — https://corrieredellumbria.corr.it/
+- Corriere di Como — http://www.corrieredicomo.it/
+- Cosenza Informa — https://www.cosenzainforma.it/
+- Cronaca Oggi — http://www.cronacaoggi.it/
+- Cronache del Mezzogiorno — https://corrieredelmezzogiorno.corriere.it/
+- Crotone24News — http://www.crotone24news.it/
+- Crotone Informa — https://www.crotoneinforma.it/
+- CrotoneNews — http://www.crotonenews.com/
+- CSN7News.IT — http://www.csn7news.it/
+- di Alessandria — http://www.dialessandria.it/
+- Diario — http://www.diario.it/
+- Dillo ad Alice — http://www.dilloadalice.it/
+- Diretta Sicilia — https://www.direttasicilia.it/
+- Dolomiten — http://www.dolomiten.it/
+- Emilianet — http://www.emilianet.it/
+- Epe News — https://epenews.com/
+- Estense.com Ferrara — http://www.estense.com/
+- Europa — http://www.europaquotidiano.it/
+- Famiglia Cristiana — http://www.famigliacristiana.it/
+- Fatti Nuovi — http://www.fattinuovi.it/
+- Fisco Oggi — http://www.fiscooggi.it/
+- Florence News — http://www.florencenews.it/
+- The Florentine — http://www.theflorentine.net/
+- Fusiorari — http://www.fusiorari.org/
+- Gay News — http://www.gaynews.it/
+- Gazzetta Amministrativa — http://www.gazzettaamministrativa.it/
+- Gazzetta del Sud — http://www.gazzettadelsud.it/
+- Gazzetta dello Sport — http://www.gazzetta.it/
+- Gazzetta di Parma — http://www.gazzettadiparma.it/
+- Giornale di Arona — http://www.giornalediarona.it/
+- Giornale di Brescia — http://www.giornaledibrescia.it/
+- Giornale di Calabria — http://www.giornaledicalabria.net/
+- Giornale Campania — http://www.giornalecampania.it/
+- Giornale di Cantù — http://www.giornaledicantu.it/
+- Giornale di Como — http://www.giornaledicomo.it/
+- Giornale di Desio — http://www.giornaledidesio.it/
+- Giornale di Lecco — http://www.giornaledilecco.it/
+- Giornale di Merate — http://www.giornaledimerate.it/
+- Giornale di Seregno — http://www.giornalediseregno.it/
+- Giornale de Sicilia — http://www.gds.it/
+- Giornal.it — http://www.giornal.it/
+- Go Marche — http://www.gomarche.it/
+- GrossetoOggi.net — http://www.grossetooggi.net/
+- Heos — http://www.heos.it/
+- I Fatti — http://www.ifatti.com/
+- La Stradone — http://www.lostradone.it/
+- Ideazione — http://www.ideazione.com/
+- Il Brigante — http://www.ilbrigante.com/
+- Il Centro — http://www.ilcentro.it/
+- Il Centro Tirreno — http://www.ilcentrotirreno.it/
+- Il Cittadino — http://www.ilcittadino.it/
+- Il Corriere Apuano — http://www.ilcorriereapuano.it/
+- Il Corriere del Salento — http://www.corrieresalento.it/
+- Il Corriere dell'Umbria — http://www.corr.it/
+- Il Corriere di Bologna — http://corrieredibologna.corriere.it/
+- Il Corriere di Como — http://www.corrierecomo.it/
+- Il Corriere Laziale — http://www.ilcorrierelaziale.it/
+- Il Crotonese — http://www.ilcrotonese.it/
+- Il Denaro — http://www.denaro.it/
+- IL Discorso — http://www.ildiscorso.it/
+- Il Domani — http://www.ildomani.it/
+- Il Fatto Quotidiano — http://www.ilfattoquotidiano.it/
+- Il Foglio — http://www.ilfoglio.it/
+- Il Gazzettino — http://www.gazzettino.it/
+- Il Giornale — http://www.ilgiornale.it/
+- Il Giornale de Vicenza — http://www.ilgiornaledivicenza.it/
+- Il Giornale del Lazio — http://www.ilgiornaledellazio.it/
+- Il Giornale dell'Umbria — http://www.inumbria.it/
+- Il Giornale di Sardegna — http://www.giornaledisardegna.it/
+- Il Giorno — https://www.ilgiorno.it/bergamo/
+- Il Globo — http://www.ilglobonews.it/
+- Il Golfo — http://www.ilgolfo.it/
+- Lamezia Informa — https://www.lameziainforma.it/
+- Il Libero Italiano — http://www.liberoitaliano.com/
+- Il Manifesto — http://www.ilmanifesto.it/
+- Il Mattino di Padova — https://mattinopadova.gelocal.it/
+- Il Mattino — https://www.ilmattino.it/
+- Il Mensile — http://www.ilmensile.it/
+- Il Meridiano — http://www.ilmeridiano.info/
+- Il Messaggero — http://www.ilmessaggero.it/
+- Il Messaggero Veneto — http://www.messaggeroveneto.it/
+- Il Mondo di Pavia — http://www.ilmondodipavia.it/
+- Il Monferrato — http://www.ilmonferrato.it/
+- Il Nuovo — http://www.ilnuovo.it/
+- Il Piccolo — http://www.ilpiccolo.net/
+- Il Piccolo — https://ilpiccolo.gelocal.it/trieste/
+- PRP Channel — https://www.prpchannel.com/
+- Il Quotidiano del Sud — http://www.ilquotidianodellacalabria.it/
+- Il Quotidiano della PA — http://www.ilquotidianodellapa.it/
+- Il Resto del Carlino — https://www.ilrestodelcarlino.it/ancona/
+- Il Resto del Gargano — http://www.ilrestodelgargano.it/
+- Il Riformista — http://www.ilriformista.it/
+- Il Roma — http://www.ilroma.net/
+- Il Romanista — http://www.ilromanista.it/
+- Il Sannio Quotidiano — http://www.ilsannioquotidiano.it/
+- Il Secolo XIX — http://www.ilsecoloxix.it/
+- Il Sole 24 Ore — http://www.ilsole24ore.com/
+- Il Telegrafo — https://www.iltelegrafolivorno.it/
+- Il Tempo — http://www.iltempo.it/
+- Il Territorio — http://www.ilterritorio.info/
+- Il Tirreno — https://iltirreno.gelocal.it/
+- Il Vernacoliere — http://www.vernacoliere.com/
+- In Alessandria — http://www.inalessandria.it/
+- InforMare — http://www.informare.it/
+- Informazione Corretta — http://www.informazionecorretta.it/
+- Internazionale — http://www.internazionale.it/
+- Iran Italia News — http://www.iranitalianews.com/
+- Italiani News — https://italianinews.com/
+- Italia Oggi — http://www.italiaoggi.it/
+- Italica — http://www.italica.sm/
+- ItalyNews.it — http://www.italynews.it/
+- L'Adige — http://www.ladige.it/
+- L'Arena — http://www.larena.it/
+- L'Eco di Bergamo — https://www.ecodibergamo.it/
+- L'Espresso — https://espresso.repubblica.it/
+- L' Essenziale — http://www.essenzialeonline.it/
+- L'Impronta L'Aquila — http://www.improntalaquila.org/
+- L'Occidentale — http://www.loccidentale.it/
+- L'Onda — http://www.ligury.com/
+- L'Unione Sarda — http://www.unionesarda.it/
+- L'Unita — http://www.unita.it/
+- La Gazzetta Del Mezzogiorno — http://www.lagazzettadelmezzogiorno.it/
+- La Gazzetta dello Sport — https://www.gazzetta.it/
+- La Gazzetta di Mantova — http://www.gazzettadimantova.it/
+- La Gazzetta di Modena — https://gazzettadimodena.gelocal.it/
+- La Gazzetta di Reggio — http://www.gazzettadireggio.it/
+- La Gazzetta di Santa — http://www.gazzettadisanta.eu/
+- La Goccia Briantea — http://www.lagocciabriantea.com/
+- La Milano — https://lamilano.it/
+- La Nazione — https://www.lanazione.it/arezzo/
+- La Nuova Ferrara — https://lanuovaferrara.gelocal.it/
+- La Nuova Periferia — http://www.nuovaperiferia.it/
+- La Nuova Sardegna — http://www.lanuovasardegna.it/
+- La Nuova Venezia — http://www.nuovavenezia.it/
+- La Padani — http://www.lapadania.com/
+- La Prealpina — http://www.prealpina.it/
+- La Provincia — https://www.laprovinciacr.it/
+- La Provincia Cosentina — http://www.laprovinciacosentina.it/
+- La Provincia Pavese — http://www.laprovinciapavese.it/
+- La Provincia di Como — http://www.laprovinciadicomo.it/
+- La Provincia di Lecco — http://www.laprovinciadilecco.it/
+- La Provincia di Sondrio — http://www.laprovinciadisondrio.it/
+- La Pulce Nell'Orecchio — http://www.lapulcenellorecchio.it/
+- La Repubblica — http://www.repubblica.it/
+- La Sicilia — http://www.lasicilia.it/
+- La Stampa — http://www.lastampa.it/
+- La Tribuna di Treviso — http://www.tribunatreviso.it/
+- Latina Oggi — http://www.latina-oggi.it/
+- Latina per Strada — http://www.latinaperstrada.it/
+- La Voce — http://www.lavoce.info/
+- La Voce del NordEst.it — http://www.lavocedelnordest.it/
+- La Voce della Campania — http://www.lavocedellacampania.it/
+- La Voce D'Italia — http://www.voceditalia.it/
+- La Voce di Mantova — http://www.vocedimantova.it/
+- La Voce di Siena — http://www.lavocedisiena.com/
+- La Voce di Venezia — http://www.lavocedivenezia.it/
+- Latina24ore.it — http://www.latina24ore.it/
+- LavorinCasa.it — http://www.lavorincasa.it/
+- Le Notizie.net — http://www.lenotizie.net/
+- Liberazione — http://www.liberazione.it/
+- Libero — http://www.liberoquotidiano.it/
+- Libertà — http://www.liberta.it/
+- The Local — http://www.thelocal.it/
+- Lo Schermo Lucca — http://www.loschermo.it/
+- Merate Online — https://www.merateonline.it/
+- Messaggero — https://messaggeroveneto.gelocal.it/
+- Metro News — http://www.metronews.it/
+- Milano Finanza — http://www.milanofinanza.it/
+- MilanoFree.it — https://www.milanofree.it/
+- Milano Lorenteggio — http://www.mi-lorenteggio.com/
+- Milano News — http://www.milanonotizie.it/
+- Milano Top News — http://www.milanotopnews.it/
+- Milano Weekend — http://www.milanoweekend.it/
+- Mount Live — http://www.mountlive.com/
+- Napoli.com — http://www.napoli.com/
+- Nautica — http://www.nautica.it/
+- Normanno — http://www.normanno.com/
+- Notizie Geopolitiche — http://www.notiziegeopolitiche.net/
+- Notizie Oggi 24 — https://www.notizieoggi24.it/
+- Nove da Firenze — https://www.nove.firenze.it/
+- Ottopagine — http://www.ottopagine.it/
+- Padova News — http://www.padovanews.it/
+- Panorama — http://www.panorama.it/
+- Parma Daily — http://www.parmadaily.it/
+- Parvapolis — http://www.parvapolis.it/
+- PaviaFree — https://www.paviafree.it/
+- Peace Reporter — http://www.peacereporter.net/
+- Pianeta Press — http://www.pianetapress.it/
+- Politicamentecorretto.com — http://www.politicamentecorretto.com/
+- Ponte di Ferro — http://www.pontediferro.org/
+- Positano News — http://positanonews.it/
+- Prima Comunicazione — http://www.primaonline.it/
+- Primo Piano — http://www.primopianomolise.it/
+- Primorski Dnevnik — http://www.primorski.it/
+- Punto a Capo Online — http://www.paconline.it/
+- Quotidiani.net — http://www.quotidiani.net/
+- Quotidiano.net — https://www.quotidiano.net/
+- Quotidiano del Molise — https://quotidianomolise.com/
+- Quotidiano Giovani — http://www.quotidianogiovani.it/
+- Raixe Venete — http://www.raixevenete.net/
+- ReggioOnline — https://www.reggionline.com/
+- Retrò Online — http://www.retroonline.it/
+- Rinascita — http://www.rinascita.info/
+- Romagnaoggi.it — http://www.romagnaoggi.it/
+- RomaNotizie24 — https://www.romanotizie24.it/
+- Rome Post — http://www.romepost.it/
+- RovigoOggi.it — http://www.rovigooggi.it/
+- Sambenedettoggi — http://www.sambenedettoggi.it/
+- Sassariweb — http://www.sassariweb.info/
+- Sicilia News 24 — http://www.sicilianews24.it/
+- Soverato News — https://www.soveratonews.com/
+- Sport Mediaset — https://www.sportmediaset.mediaset.it/
+- Tempti — http://www.tempi.it/
+- Trapani Oggi — http://www.trapanioggi.it/
+- Tuono News — http://www.tuononews.it/
+- Tuttoggi — https://www.tuttoggi.info/
+- Valenza.it — http://www.valenza.it/
+- Varese News — http://www.varesenews.it/
+- Verona oggi — http://www.veronaoggi.it/
+- Vita — http://www.vita.it/
+- Voce — http://www.voce.it
+- ViolaNews — https://www.violanews.com/
+- War News — http://warnews.it/
+- Zero 7 News — http://www.zerosette.it/
+
+### allyoucanread — https://www.allyoucanread.com/italian-newspapers/
+- La Repubblica — https://www.repubblica.it/
+- Corriere della Sera — https://www.corriere.it/
+- Il Messaggero — https://ilmessaggero.it/
+- Fanpage — https://fanpage.it/
+- Altervista — https://www.altervista.org/
+- ANSA.it — https://www.ansa.it/
+- La Stampa — https://www.lastampa.it/
+- Il Fatto Quotidiano — https://www.ilfattoquotidiano.it/
+- Rai News — https://www.rainews.it/
+- Tiscali — https://tiscali.it/
+- liberoquotidiano.it — https://www.liberoquotidiano.it/
+- La Nazione — https://www.lanazione.it/
+- il Resto del Carlino — http://www.ilrestodelcarlino.it/
+- Il Gazzettino — https://ilgazzettino.it/
+- Leggo — https://leggo.it/
+- Virgilio Notizie — https://notizie.virgilio.it/
+- Il Post — https://ilpost.it/
+- Quotidiano Net — https://www.quotidiano.net/
+- Il Mattino — https://ilmattino.it/
+- Gazzetta Ufficiale — https://www.gazzettaufficiale.it/
+- Huffington Post — https://www.huffingtonpost.it/
+- Il Giorno — https://www.ilgiorno.it/
+- Adnkronos News — https://adnkronos.com/
+- MilanNews.it — https://www.milannews.it/
+- Tutto Napoli — https://www.tuttonapoli.net/
+- il Tempo Sfogliatore — https://www.iltempo.it/
+- Agenzia Giornalistica Italia | AGI — https://www.agi.it/
+- Internazionale — http://www.internazionale.it/
+- L'Unione Sarda — https://www.unionesarda.it/
+- Affari Italiani — https://www.affaritaliani.it/
+- Today — http://today.it/
+- Il Secolo XIX — https://www.ilsecoloxix.it/
+- L'Eco di Bergamo — https://ecodibergamo.it/
+- RomaToday — http://romatoday.it/
+- GIORNALE DI SICILIA — https://gds.it/
+- Varese News — https://www.varesenews.it/
+- MilanoToday — http://milanotoday.it/
+- La Gazzetta del Mezzogiorno — https://lagazzettadelmezzogiorno.it/
+- stol.it — https://www.stol.it/
+- La Sicilia — https://lasicilia.it/
+- L'Arena.it — https://www.larena.it/
+- Linkiesta.it — https://linkiesta.it/
+- Panorama — https://www.panorama.it/
+- Gazzetta di Parma — https://www.gazzettadiparma.it/
+- Il Giornale di Vicenza — https://www.ilgiornaledivicenza.it/
+- Corriere Adriatico — https://www.corriereadriatico.it/
+- il Sussidiario — https://ilsussidiario.net/
+- l'Adige.it — https://www.ladige.it/
+- Live Sicilia — https://livesicilia.it/
+- LeccePrima — http://lecceprima.it/
+
+### abyznewslinks — http://www.abyznewslinks.com/italy.htm
+- 90 Min — https://www.90min.com/it
+- Albania News — http://www.albanianews.it/
+- Giornale — http://www.giornale.it/
+- In Italia — http://www.initaliaonline.it/
+- Italy News — http://www.italynews.it/
+- Leggi Notizie — http://www.legginotizie.com/
+- Onda International Newspaper — http://www.ligury.com/
+- The Local — http://www.thelocal.it/
+- Wall Street Italia — http://www.wallstreetitalia.com/
+- Yahoo — https://it.notizie.yahoo.com/
+- International Business Times — http://it.ibtimes.com/
+- Italica — http://www.italica.sm/
+- Life in Italy — http://www.lifeinitaly.com/
+- Affari Italiani — http://www.affaritaliani.it/
+- Corriere della Sera — http://www.corriere.it/
+- Il Messaggero — http://www.ilmessaggero.it/
+- Il Sole 24 Ore — http://www.ilsole24ore.com/
+- La Gazzetta dello Sport — http://www.gazzetta.it/
+- La Repubblica — http://www.repubblica.it/
+- La Stampa — http://www.lastampa.it/
+
+## liechtenstein (western_europe) — Liechtenstein
+
+### w3newspapers — https://www.w3newspapers.com/liechtenstein/
+- Liechtensteiner Vaterland — https://www.vaterland.li/
+- Liechtenstein Tourism — https://tourismus.li/en/
+- Radio Liechtenstein — https://www.radio.li/
+
+### onlinenewspapers — https://onlinenewspapers.com/liechtenstein.shtml
+- Landesspiegel — https://landesspiegel.li/
+- Liechtensteiner Vaterland — http://www.vaterland.li/
+- Die Süedostschweiz — https://www.suedostschweiz.ch/
+
+### allyoucanread — https://www.allyoucanread.com/liechtenstein-newspapers/
+- Vaterland — http://www.vaterland.li/
+- Landesspiegel — https://landesspiegel.li/
+
+### abyznewslinks — http://www.abyznewslinks.com/liech.htm
+- Liechtenstein Online — http://www.lol.li/
+- Liechtensteiner Vaterland — http://www.vaterland.li/
+- Liechtensteiner Volksblatt — http://www.volksblatt.li/
+
+## luxembourg (western_europe) — Luxembourg
+
+### w3newspapers — https://www.w3newspapers.com/luxembourg/
+- Luxemburger Wort — https://www.wort.lu/
+- Tageblatt — https://www.tageblatt.lu/
+- Le Quotidien — https://lequotidien.lu/
+- Letzebuerger Journal — https://journal.lu/de
+- Zeitung vum Letzebuerger Vollek — https://www.zlv.lu/
+- L'essentiel — https://www.lessentiel.lu/fr
+- D'Lëtzebuerger Land — http://www.land.lu/
+- Woxx — https://www.woxx.lu/
+- RTL Tele Letzebuerg — http://www.rtl.lu/
+- Telecran — https://www.telecran.lu/
+- Luxembourg Times — https://www.luxtimes.lu/
+- Contacto — https://www.contacto.lu/
+- Revue — https://revue.lu/
+- Le Jeudi — https://jeudi.lu/
+- les frontiers — https://www.lesfrontaliers.lu/
+- rtl 5minutes — http://5minutes.rtl.lu/laune/
+- paperJam — https://paperjam.lu/
+
+### onlinenewspapers — https://onlinenewspapers.com/luxembourg.shtml
+- Diplomatic Intelligence — http://www.diplomaticintelligence.eu/
+- Journal des 3 Frontieres — https://www.lalsace.fr/
+- Luxembourg News — https://www.luxembourgnews.eu/
+- Luxembourg Times — https://www.luxtimes.lu/
+- Luxemburger Wort — https://www.wort.lu/fr
+- News352 — https://www.tout-luxembourg.com/media/352-news
+- Tageblatt — http://www.tageblatt.lu/ class=
+
+### allyoucanread — https://www.allyoucanread.com/luxembourg-newspapers/
+- RTL — https://www.rtl.lu/
+- L'Essentiel — https://lessentiel.lu/
+- Wort — https://www.wort.lu/
+- paperJam — https://paperjam.lu/
+- Tageblatt.lu — https://tageblatt.lu/
+- Le Quotidien — http://lequotidien.lu/
+- les frontiers — https://lesfrontaliers.lu/
+
+### abyznewslinks — http://www.abyznewslinks.com/luxem.htm
+- Expatica — http://www.expatica.lu/
+- Italians in Lux — http://www.italiansinlux.com/
+- Luxemburger Wort — http://www.wort.lu/de
+- Tagebatt — http://www.tageblatt.lu/
+
+## malta (western_europe) — Malta
+
+### w3newspapers — https://www.w3newspapers.com/malta/
+- Times of Malta — https://timesofmalta.com/
+- The Malta Independent — https://www.independent.com.mt/
+- MaltaToday — https://www.maltatoday.com.mt/
+- Newsbook — https://newsbook.com.mt/
+- Illum — https://www.illum.com.mt/
+- The Shift News — https://theshiftnews.com/
+- The Maltese Herald — https://themalteseherald.com/
+- Malta Daily — https://maltadaily.mt/
+- TVM News — https://tvmnews.mt/
+- ONE — https://one.com.mt/
+- NET News — https://netnews.com.mt/
+- 89.7 Bay — https://bay.com.mt/
+- NET FM — https://netfm.com.mt/
+- Talk.mt — https://talk.mt/
+- Business Today — https://www.businesstoday.com.mt/
+- Malta Sport — http://www.maltasport.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/malta.shtml
+- Gozo News — http://www.gozonews.com/
+- Illum — http://www.illum.com.mt/
+- iNewsMalta — http://www.inewsmalta.com/
+- it-Torca — http://www.it-torca.com/
+- Kullhadd — http://www.kullhadd.com/
+- The Malta Independent — http://www.independent.com.mt/
+- Maltasport — http://www.maltasport.com/
+- Malta Today — http://www.maltatoday.com.mt/
+- Newsbook — http://www.newsbook.com.mt/
+- Sportinmalta.com — http://www.sportinmalta.com/
+- Times of Malta — http://www.timesofmalta.com/
+
+### allyoucanread — https://www.allyoucanread.com/malta-newspapers/
+- Times of Malta — https://timesofmalta.com/
+- Malta Today — https://maltatoday.com.mt/
+- Malta Indepepndent — http://www.independent.com.mt/
+- Newsbook — https://newsbook.com.mt/
+- Netnews.com.mt — https://netnews.com.mt/
+- Daphne Caruana Galizia's notebook — https://daphnecaruanagalizia.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/malta.htm
+- Di Ve — http://www.di-ve.com/
+- Malta Media — http://www.maltamediaonline.com/
+- Malta Right Now — http://maltarightnow.com/
+- Malta Sport — http://www.maltasport.com/
+- Malta Star — http://www.maltastar.com/
+- L Orizzont — http://www.orizzont.com.mt/
+- Times — http://www.timesofmalta.com/
+
+## monaco (western_europe) — Monaco
+
+### w3newspapers — https://www.w3newspapers.com/monaco/
+- Monaco-Matin — https://www.monacomatin.mc/
+- Monaco Life — https://monacolife.net/
+- Journal de Monaco — https://journaldemonaco.gouv.mc/
+- Radio Monte-Carlo (RMC) — https://rmc.bfmtv.com/
+- Riviera Radio — https://rivieraradio.mc/
+- Visit Monaco — https://www.visitmonaco.com/
+- TV Monte-Carlo (TMC) — https://www.tf1.fr/tmc
+- Monaco Hebdo — https://monaco-hebdo.com/
+- L'Observateur de Monaco — https://lobservateurdemonaco.com/
+- Monte Carlo News — https://www.montecarlonews.it/
+
+### onlinenewspapers — https://onlinenewspapers.com/monaco.shtml
+- Actualité de Monaco — https://www.monte-carlo.mc/fr/informations-pratiques/news/
+- La Gazette — https://www.lagazettedemonaco.com/
+- Monaco Matin — https://www.monacomatin.mc/
+- Monaco Life — http://www.monacolife.net/
+- Yug — http://www.ru-sud.com/
+
+### allyoucanread — https://www.allyoucanread.com/monaco-newspapers/
+- Nice Matin — http://www.nicematin.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/monac.htm
+- Monaco Net — http://www.monaco.net/
+- Monte Carlo News — http://www.montecarlonews.it/
+- Monaco Life — http://www.monacolife.net/
+- Journal de Monaco — http://cloud.gouv.mc/dataweb/Jourmon.nsf?OpenDatabase
+- Monaco Matin — http://www.monacomatin.mc/
+
+## netherlands (western_europe) — Netherlands
+
+### w3newspapers — https://www.w3newspapers.com/netherlands/
+- De Telegraaf ("The Telegraph") — https://www.telegraaf.nl/
+- Algemeen Dagblad (AD) — https://www.ad.nl/
+- de Volkskrant — https://www.volkskrant.nl/
+- NRC — https://www.nrc.nl/
+- Trouw — https://www.trouw.nl/
+- Het Parool — https://www.parool.nl/
+- Reformatorisch Dagblad — https://www.rd.nl/
+- Nederlands Dagblad — https://www.nd.nl/
+- Metro Holland — https://www.metronieuws.nl/
+- NOS.nl — https://nos.nl/
+- Blik op Nieuws — https://www.blikopnieuws.nl/
+- GeenStijl — https://www.geenstijl.nl/
+- FOK.nl — https://frontpage.fok.nl/
+- Joop — https://www.bnnvara.nl/joop
+- Nieuws.nl — https://nieuws.nl/
+- Mensenlinq.nl — https://mensenlinq.nl/
+- PowNed — https://www.powned.tv/
+- Omroep Brabant — https://www.omroepbrabant.nl/
+- Omroep Gelderland — https://www.gld.nl/
+- 112 Groningen — https://112groningen.nl/
+- Wald Net — https://www.waldnet.nl/
+- Het Kontakt — https://www.hetkontakt.nl/
+- Ede Stad — https://www.edestad.nl/
+- Groninger Internet Courant — https://www.gic.nl/
+- Streekgids — https://www.streekgids.nl/
+- Oisterwijk News — https://www.oisterwijknieuws.nl/
+- Flakkee Nieuws — https://flakkeenieuws.nl/
+- Liwwadders — https://www.liwwadders.nl/
+- Sliedrecht — https://www.sliedrecht.net/
+- Nieuwe Meerbode — https://www.meerbode.nl/
+- De Staatskrant De Buurtkrant — https://www.staatskrant.com/
+- Kranten — https://www.kranten.com/
+- Niedziel — https://www.niedziela.nl/
+- Schuttevaer — https://www.schuttevaer.nl/
+- Speld — https://speld.nl/
+- De Gelderlander — https://www.gelderlander.nl/
+- Noordhollands Dagblad — https://www.noordhollandsdagblad.nl/
+- De Stentor — https://www.destentor.nl/
+- Brabants Dagblad — https://www.bd.nl/
+- Leeuwarder Courant — https://lc.nl/
+- Provinciale Zeeuwse Courant (PZC) — https://www.pzc.nl/
+- Haarlems Dagblad — https://www.haarlemsdagblad.nl/
+- Friesch Dagblad — https://frieschdagblad.nl/
+- Barneveldse Krant — https://www.barneveldsekrant.nl/
+- Dagblad van het Noorden — https://dvhn.nl/
+- Dagblad De Limburger — https://www.limburger.nl/
+- Tubantia — https://www.tubantia.nl/
+- BN DeStem — https://www.bndestem.nl/
+- De Gooi- en Eemlander — https://www.gooieneemlander.nl/
+- IJmuider Courant — https://www.ijmuidercourant.nl/
+- Balkster Courant — https://balkstercourant.nl/
+- Leidsch Dagblad — https://www.leidschdagblad.nl/
+- Meppeler Courant — https://meppelercourant.nl/
+- De Terschellinger — https://www.deterschellinger.nl/
+- Arnhemse Koerier — https://www.arnhemsekoerier.nl/
+- Brabant Centrum — https://www.brabantscentrum.nl/
+- Texelse Courant — https://www.texelsecourant.nl/
+- Almere Deze Week — http://www.almeredezeweek.nl/
+- Nieuw Volendam — https://www.nieuw-volendam.nl/
+- ED (Eindhovens Dagblad) — https://www.ed.nl/
+- Het Urkerland — https://www.heturkerland.nl/
+- Over Betuwe Nieuws — https://overbetuwe.nieuws.nl/
+- Het Financieele Dagblad — https://fd.nl/
+- BNR Nieuwsradio — https://www.bnr.nl/
+- DeOndernemer.nl — https://www.deondernemer.nl/
+- Dagelijkse Standaard — https://www.dagelijksestandaard.nl/
+- One World — https://www.oneworld.nl/
+- Cobouw — https://www.cobouw.nl/
+- Sport Nieuws – nu.nl — https://www.nu.nl/sport
+- Voetbal International (VI) — https://www.vi.nl/
+- Voetbalzone — https://www.voetbalzone.nl/
+- Sport.nl — https://sport.nl/
+- Voetbal in Zaanstad — https://voetbalinzaanstad.nl/
+- ANP (Algemeen Nederlands Persbureau) — https://www.anp.nl/
+- Government.nl — https://www.government.nl/
+- NOS News (Nederlandse Omroep Stichting) — https://over.nos.nl/
+- Dutch News — https://www.dutchnews.nl/
+- NL Times — https://nltimes.nl/
+- IamExpat.nl — https://www.iamexpat.nl/
+- DutchReview — https://dutchreview.com/
+- The Holland Times — https://www.hollandtimes.nl/
+- Football-Oranje — https://www.football-oranje.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/netherlands.shtml
+- 24ora — https://24ora.com/
+- Agrarisch Dagblad — http://www.agrarischdagblad.nl/
+- Algemeen Dagblad — http://www.ad.nl/
+- Apeldoorns Stadsblad — https://www.apeldoornsstadsblad.nl/
+- Arnhemse Koerier — https://www.arnhemsekoerier.nl/
+- Azamil — https://azamil.com/
+- Barneveldse Krant — http://www.barneveldsekrant.nl/
+- Bewal News — http://www.bewalnews.com/
+- Blik op Nieuws — http://www.blikopnieuws.nl/
+- BN/DeStem — http://www.bndestem.nl/
+- Brabants Dagblad — http://www.brabantsdagblad.nl/
+- de Brug — http://www.weekbladdebrug.nl/
+- Dagblad De Limburger — http://www.limburger.nl/
+- Dagblad van het Noorden — http://www.dvhn.nl/
+- Daily Dastak — http://www.dailydastak.com/
+- Daily Dharti — http://www.roznamadharti.com/
+- de Gelderlander — http://www.gelderlander.nl/
+- de Gooi-en Eemlander — http://www.gooieneemlander.nl/
+- de Groene Amsterdammer — http://www.groene.nl/
+- Dienstagische Kurant — http://www.dienstagischekurant.com/
+- DutchNews.nl — https://www.dutchnews.nl/
+- Ede Stad — http://www.edestad.nl/
+- Eindhoven News — https://eindhovennews.com/
+- Eindhovens Dagblad — http://www.eindhovensdagblad.nl/
+- Free Amsterdam — http://www.freeamsterdam.nl/
+- Friesch Dagblad — http://www.frieschdagblad.nl/
+- de Gelderlander — https://www.gelderlander.nl/
+- Gezondheidskrant — http://www.gezondheidskrant.nl/
+- Grenzeloos — http://www.grenzeloos.org/
+- Groninger Internet Courant — http://www.gic.nl/
+- Haarlems Dagblad — http://www.haarlemsdagblad.nl/
+- Het Financieele Dagblad — http://www.fd.nl/
+- Het Kontakt — https://www.hetkontakt.nl/regio/alblasserwaard
+- Het Noordhollands Dagblad — http://www.nhd.nl/
+- Het Parool — http://www.parool.nl/
+- IamExpat — http://www.iamexpat.nl/read-and-discuss/news
+- Intermediair — http://www.intermediair.nl/
+- Katholiek Nieuwsblad — https://www.kn.nl/
+- Leeuwarder Courant — https://www.lc.nl/
+- Leidsch Dagblad — http://www.leidschdagblad.nl/
+- Metro — http://www.metronieuws.nl/
+- Münster Journal — https://muenster-journal.de/
+- Nasha Gazeta — http://www.nashagazeta.nl/
+- Nauandeshi — http://www.nauandeshi.com/
+- NDTV — https://www.ndtv.com/topic/netherlands
+- Nederlands Dagblad — http://www.nd.nl/
+- Nieuw Israelitisch Weekblad — http://www.niw.nl/
+- Nieuws.nl — http://www.nieuws.nl/
+- NL Times — https://nltimes.nl/
+- NRC — http://www.nrc.nl/
+- NU — http://www.nu.nl/
+- Provinciale Zeeuwse Courant (PZC) — http://www.pzc.nl/
+- Reformatorisch Dagblad — http://www.reformatorischdagblad.nl/
+- de Roskam — http://www.roskam.nl/
+- de Scheveningsche Courant — http://www.descheveningschecourant.nl/
+- Schuttevaer — http://www.schuttevaer.nl/
+- Socialist — http://www.internationalesocialisten.org/
+- de Stentor — https://www.destentor.nl/
+- de Telegraaf — http://www.telegraaf.nl/
+- de Terschellinger — http://www.deterschellinger.nl/
+- Texelse Courant — http://www.texelsecourant.nl/
+- Trouw — http://www.trouw.nl/
+- Tubantia — http://www.tctubantia.nl/
+- Veluws Nieuws — https://www.veluws-nieuws.nl/
+- de Volkskrant — http://www.volkskrant.nl/
+- Wâldnet — http://www.waldnet.nl/
+- Weesper Plein — http://www.weesper.nl/
+- Zenderstreeknieuws — https://www.zenderstreeknieuws.nl/
+- Zondag — https://weekbladzondag.nl/
+
+### allyoucanread — https://www.allyoucanread.com/holland-newspapers/
+- nu.nl — https://nu.nl/
+- Telegraaf.nl — https://www.telegraaf.nl/
+- AD.nl — https://ad.nl/
+- NOS.nl — https://nos.nl/
+- RTL Nieuws — https://rtlnieuws.nl/
+- De Gelderlander — https://gelderlander.nl/
+- Volkskrant — https://volkskrant.nl/
+- NRC — https://www.nrc.nl/
+- de Stentor — https://destentor.nl/
+- TROUW — https://trouw.nl/
+- PAROOL — https://parool.nl/
+- ED.nl — https://ed.nl/
+- BD.nl — https://bd.nl/
+- Tubantia — https://www.tubantia.nl/
+- Omroep Brabant — https://www.omroepbrabant.nl/
+- BNDeStem.nl — https://bndestem.nl/
+- Noordhollands Dagblad — https://noordhollandsdagblad.nl/
+- Dagblad De Limburger — https://www.limburger.nl/
+- GeenStijl — https://www.geenstijl.nl/
+- Dagblad van het Noorden — http://dvhn.nl/
+- Metro — https://metronieuws.nl/
+- Leeuwarder Courant — http://lc.nl/
+- PZC — https://pzc.nl/
+- Hart van Nederland — https://hartvannederland.nl/
+- Omroep West — https://www.omroepwest.nl/
+- Drimble — https://drimble.nl/
+- Alarmeringen.nl — https://alarmeringen.nl/
+- Nieuws.nl — https://nieuws.nl/
+- Reformatorisch Dagblad — https://www.rd.nl/
+- WaldNet — https://www.waldnet.nl/
+- FOK.nl — https://fok.nl/
+- Nederlands Dagblad — https://www.nd.nl/
+- Omroep Zeeland — https://omroepzeeland.nl/
+- Mensenlinq.nl — https://mensenlinq.nl/
+- HVZeeland.nl — https://hvzeeland.nl/
+- DutchCowboys — http://www.dutchcowboys.nl/
+- Niedziela w Holandii (Polish) — https://niedziela.nl/
+- The POST — http://tpo.nl/
+- Dagelijkse Standaard — https://dagelijksestandaard.nl/
+- Speld — https://speld.nl/
+- Pow! Ned — https://www.powned.tv/
+- Headliner.nl — https://headliner.nl/
+- Blik op nieuws — https://blikopnieuws.nl/
+- Regio15.nl — https://regio15.nl/
+- 112Groningen — https://112groningen.nl/
+- Klik Nieuws — https://www.kliknieuws.nl/
+
+### abyznewslinks — http://www.abyznewslinks.com/nethe.htm
+- 112 Nieuws — http://www.112-nieuws.nl/
+- Amsterdam Herald — http://www.amsterdamherald.com/
+- Blik op Nieuws — http://www.blikopnieuws.nl/
+- Dutch Daily News — http://www.dutchdailynews.com/
+- Dutch News — http://www.dutchnews.nl/
+- Dutch News Digest — http://www.dnd.nl/
+- EMEA Nieuws Netwerk — http://www.emea.nl/
+- Eufin — https://www.eufin.nl/
+- Government — http://www.government.nl/
+- Headliner — http://www.headliner.nl/index.php?c=us
+- Hollanda Rehberi — http://www.hollandarehberi.com/
+- I Am Expat — http://www.iamexpat.nl/
+- Kranten — http://www.kranten.com/
+- Nederland Nieuws — http://www.nederlandnieuws.nl/
+- Nieuws — http://www.nieuws.nl/
+- Nieuws Grazer — http://www.nieuwsgrazer.nl/
+- NIS News Bulletin — http://www.nisnews.nl/
+- NL Times — http://www.nltimes.nl/
+- NU — http://www.nu.nl/
+- One World — http://www.oneworld.nl/
+- Spits — http://www.spitsnieuws.nl/
+- Expatica — http://www.expatica.com/nl/main.html
+- Algemeen Dagblad — http://www.ad.nl/
+- De Telegraaf — http://www.telegraaf.nl/
+- De Volkskrant — http://www.volkskrant.nl/
+- Het Financieele Dagblad — http://fd.nl/
+- Het Parool — http://www.parool.nl/
+- Metro — http://www.metronieuws.nl/
+- Nederlands Dagblad — http://www.nd.nl/
+- NRC Handelsblad — http://www.nrc.nl/
+- Reformatorisch Dagblad — http://www.refdag.nl/
+- Trouw — http://www.trouw.nl/
+
+## norway (western_europe) — Norway
+
+### w3newspapers — https://www.w3newspapers.com/norway/
+- Aftenposten — https://www.aftenposten.no/
+- Verdens Gang (VG) — https://www.vg.no/
+- Dagbladet — https://www.dagbladet.no/
+- Dagsavisen — https://www.dagsavisen.no/
+- Klassekampen — https://klassekampen.no/
+- Vårt Land — https://www.vl.no/
+- Nationen — https://www.nationen.no/
+- Morgenbladet — https://www.morgenbladet.no/
+- Dag og Tid — https://www.dagogtid.no/
+- Ny Tid — https://www.nytid.no/
+- Norge Idag — https://idag.no/
+- Friheten — https://www.friheten.no/
+- Dagen (formerly Magazinet) — https://www.dagen.no/
+- Adresseavisen — https://www.adressa.no/
+- Agderposten — https://www.agderposten.no/
+- Altaposten — https://www.altaposten.no/
+- Avisa Nordland — https://www.an.no/
+- Bergens Tidende — https://www.bt.no/
+- Bergensavisen — https://www.ba.no/
+- iTromsø — https://www.itromso.no/
+- Budstikka — https://www.budstikka.no/
+- Drammens Tidende — https://www.dt.no/
+- Finnmarken — https://www.ifinnmark.no/
+- Framtid i Nord — https://www.framtidinord.no/
+- Fredriksstad Blad — https://www.f-b.no/
+- Fædrelandsvennen — https://www.fvn.no/
+- Glåmdalen — https://www.glomdalen.no/
+- Gudbrandsdølen Dagningen — https://www.gd.no/
+- Hadeland — https://www.hadeland.no/
+- Halden Arbeiderblad — https://www.ha-halden.no/
+- Harstad Tidende — https://www.ht.no/
+- Haugesunds Avis — https://www.h-avis.no/
+- Helgeland Arbeiderblad — https://www.helg.no/
+- Laagendalsposten — https://www.laagendalsposten.no/
+- Lofotposten — https://www.lofotposten.no/
+- Moss Avis — https://www.moss-avis.no/
+- Namdalsavisa — https://www.namdalsavisa.no/
+- Nordlys — https://www.nordlys.no/
+- Oppland Arbeiderblad — https://www.oa.no/
+- Rana Blad — https://www.ranablad.no/
+- Romerikes Blad — https://www.rb.no/
+- Romsdals Budstikke — https://www.rbnett.no/
+- Sarpsborg Arbeiderblad — https://www.sa.no/
+- Stavanger Aftenblad — https://www.aftenbladet.no/
+- Sunnmørsposten — https://www.smp.no/
+- Telemarksavisa — https://www.ta.no/
+- Tidens Krav — https://www.tk.no/
+- Tønsbergs Blad — https://www.tb.no/
+- Trønder-Avisa — https://www.t-a.no/
+- Vestlandsnytt — https://www.vestlandsnytt.no/
+- Østlandets Blad — https://www.oblad.no/
+- Østlendingen — https://www.ostlendingen.no/
+- Agder — https://www.av-avis.no/
+- Arendals Tidende — https://arendalstidende.no/
+- Birkenesavisa — https://bavisa.no/
+- Bømlo-Nytt — https://www.bomlo-nytt.no/
+- Dølen — https://www.dolen.no/
+- Driva — https://www.driva.no/
+- Enebakk Avis — https://www.enebakkavis.no/
+- Fanaposten — https://www.fanaposten.no/
+- Fitjarposten — https://fitjarposten.no/
+- Fremover — https://www.fremover.no/
+- Frostingen — https://www.frostingen.no/
+- Gjøviks Blad — https://www.gjoviksblad.no/
+- Grannar — https://grannar.no/
+- Grenda — https://www.grenda.no/
+- Hordaland Folkeblad — https://www.hf.no/
+- Lillesands-Posten — https://www.lp.no/
+- Nordre — https://nordrenett.no/
+- Norddalen — https://www.norddalen.no/
+- Nordhordland — https://www.nordhordland.no/
+- Nytt i Uka — https://nyttiuka.no/
+- Os og Fusaposten — https://www.osogfusa.no/
+- Raumnes — https://www.raumnes.no/
+- Ringerikes Blad — https://www.ringblad.no/
+- Ringeriksavisa — https://www.ringeriksavisa.no/
+- Sandefjords Blad — https://www.sb.no/
+- Sør-Varanger Avis — https://www.sva.no/
+- Stangeavisa — https://www.stangeavisa.no/
+- Steinkjer-Avisa — https://www.steinkjer-avisa.no/
+- Storfjordnytt — https://www.storfjordnytt.no/
+- Strilen — https://www.strilen.no/
+- Synste Møre — https://synste.no/
+- Sydvesten — https://www.sydvesten.no/
+- Totens Blad — https://www.totensblad.no/
+- Trollheimsporten — https://www.trollheimsporten.no/
+- Tvedestrandsposten — https://www.tvedestrandsposten.no/
+- Tysnes — https://www.tysnesbladet.no/
+- Vestavind Bygdeblad — https://vestavind-sveio.no/
+- Vaksdal Posten — https://www.vaksdalposten.no/
+- Vestby Avis — https://www.vestbyavis.no/
+- Vigga — https://www.vigga.no/
+- Åsane Tidende — https://www.aasanetidende.no/
+- Ås Avis — https://www.aasavis.no/
+- Akers Avis Groruddalen — https://groruddalen.no/
+- Andøyposten — https://www.vol.no/andoyposten/
+- Avvir — https://www.avvir.no/
+- Avisa Hemnes — https://avisahemnes.no/
+- Bladet Vesterålen — https://www.blv.no/
+- Bodø Nu — https://www.bodonu.no/
+- Brønnøysunds Avis — https://www.banett.no/
+- Bygdanytt — https://www.bygdanytt.no/
+- Bygdeposten — https://www.bygdeposten.no/
+- Demokraten — https://www.demokraten.no/
+- Finnmarksposten — https://www.finnmarksposten.no/
+- Firda Tidend — https://www.firdatidend.no/
+- Fjordabladet — https://www.fjordabladet.no/
+- Fjordingen — https://www.fjordingen.no/
+- Troms Folkeblad — https://www.folkebladet.no/
+- Frolendingen — https://frolendingen.no/
+- Gausdølen — https://www.gausdolen.no/
+- Gjengangeren — https://www.gjengangeren.no/
+- Gjesdalbuen — https://www.gbnett.no/
+- Valdres — https://www.avisa-valdres.no/
+- Inderøyningen — https://www.inderoyningen.no/
+- Indre Akershus Blad — https://www.indre.no/
+- Jarlsberg Avis — https://www.jarlsbergavis.no/
+- Kvinnheringen — https://www.kvinnheringen.no/
+- Lyngdals Avis — https://www.lyngdalsavis.no/
+- Lokalavisa Sør-Østerdal — https://www.lokal-avisa.no/
+- Marsteinen — https://marsteinen.no/
+- Møre-Nytt — https://www.morenytt.no/
+- Nye Troms — https://www.nyetroms.no/
+- OPP — https://www.opp.no/
+- Ringsaker Blad — https://www.ringsaker-blad.no/
+- Sagat — https://www.sagat.no/
+- Samningen — https://samningen.no/
+- Strandbuen — https://www.strandbuen.no/
+- Stjørdals-Nytt — https://s-n.no/
+- Svalbardposten — https://www.svalbardposten.no/
+- Telen — https://www.telen.no/
+- Trønderbladet — https://www.tronderbladet.no/
+- Vennesla Tidende — https://www.venneslatidende.no/
+- Varingen — https://www.varingen.no/
+- Vestnesavisa — https://www.vestnesavisa.no/
+- VestNytt — https://www.vestnytt.no/
+- Ytringen — https://www.ytringen.no/
+- Dagens Næringsliv (DN) — https://www.dn.no/
+- Finansavisen — https://www.finansavisen.no/
+- E24 — https://e24.no/
+- Fiskeribladet — https://www.fiskeribladet.no/
+- TradeWinds — https://www.tradewindsnews.com/
+- Upstream — https://www.upstreamonline.com/
+- Kyst og Fjord — https://www.kystogfjord.no/
+- Dagligvarehandelen (Handelsbladet) — https://www.dagligvarehandelen.no/
+- Bondebladet — https://www.bondebladet.no/
+- TV 2 Sport — https://www.tv2.no/sport/
+- NRK Sport — https://www.nrk.no/sport/
+- Nettavisen Sport — https://www.nettavisen.no/sport/
+- Eurosport Norge — https://www.eurosport.no/
+- ITavisen — https://itavisen.no/
+- Nyss — https://nyss.no/
+- Eikernytt — https://www.eikernytt.no/
+- Bodøposten.no — https://bodøposten.no/
+- NTB – Norsk Telegrambyrå — https://www.ntb.no/
+- NPK – Nynorsk Pressekontor — https://www.npk.no/
+- The Local — https://www.thelocal.no/
+- NewsinEnglish.no – Norway news for internationals — https://www.newsinenglish.no/
+- High North News — https://www.highnorthnews.com/en/
+- Government.no – Official Norwegian Government News — https://www.regjeringen.no/en/id4/
+- Norway News — https://www.norwaynews.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/norway.shtml
+- ABC Nyheter — http://www.abcnyheter.no/
+- Adresseavisen — http://www.adressa.no/
+- Aftenbladet — https://www.aftenbladet.no/
+- Aftenposten — http://www.aftenposten.no/
+- Agder — http://www.avisenagder.no/
+- Agderposten — http://www.agderposten.no/
+- Akers Avis Groruddalen — http://www.groruddalen.no/
+- Akershus Amtstidende — http://www.amta.no/
+- Altaposten — https://www.altaposten.no/
+- An.no — http://www.an.no/
+- Andøyposten — http://www.andoyposten.no/
+- Arbeidets Rett — http://www.retten.no/
+- Askøyværingen — http://www.askoyv.no/
+- Aura Avis — http://www.auraavis.no/
+- Aust Agder Blad — https://www.austagderblad.no/
+- The Awaz Norway — http://www.theawaznorway.com/
+- Bømlo Nytt — http://www.bomlo-nytt.no/
+- Bellona — http://www.bellona.no/
+- Bergens Tidende — https://www.bt.no/
+- Bergensavisen — http://www.ba.no/
+- Bladet — https://www.bladet.no/
+- Bokavisen — http://www.bokavisen.no/
+- Budstikke — http://www.budstikka.no/
+- Brønnøysund Avis — https://www.banett.no/
+- Byavisa Tønsberg — http://www.byavisatonsberg.no/
+- Bygdanytt — https://www.bygdanytt.no/
+- Dag og Tid — http://www.dagogtid.no/
+- Dagbladet — http://www.dagbladet.no/
+- Dagen — http://www.dagen.no/
+- Dagens Næringsliv — http://www.dn.no/
+- Dagsavisen Arbeiderbladet — http://www.dagsavisen.no/
+- Dalane Tidende — http://www.dalane-tidende.no/
+- Drammens Tidende — http://www.dt.no/
+- E24 — https://e24.no/
+- Fædrelandsvennen — https://www.fvn.no/
+- Finansavisen — http://www.finansavisen.no/
+- Firda — http://www.firda.no/
+- Firdaposten — http://www.firdaposten.no/
+- Fiskeribladet — https://www.fiskeribladet.no/
+- Fjordabladet — https://www.fjordabladet.no/
+- Fjordingen — http://www.fjordingen.no/
+- Fjordingens Tidende — http://www.fjt.no/
+- Fjuken — http://www.fjuken.no/
+- Folkebladet — https://www.folkebladet.no/
+- The Foreigner — http://www.theforeigner.no/
+- Fosenavisa — http://www.fosenavisa.no/
+- Fosna Folket — http://www.fosna-folket.no/
+- Framtid i Nord — https://www.framtidinord.no/
+- Fredriksstad Blad — https://www.f-b.no/
+- Fremover — http://www.fremover.no/
+- Gausdolen — http://www.gausdolen.no/
+- Gjengangeren — http://www.gjengangeren.no/
+- Gjesdalbuen — https://www.gbnett.no/
+- Grannar — http://www.grannar.no/
+- Grimstad Adressetidende — http://www.adressetidende.no/
+- Gudbrandsølen Dagningen — https://www.gd.no/
+- Hadeland — https://www.hadeland.no/
+- Halden Arbeiderblad — http://www.ha-halden.no/
+- Hallingdølen — http://www.hallingdolen.no/
+- Hamar Arbeiderblad — http://www.h-a.no/
+- Hamar Dagblad — https://www.hamar-dagblad.no/
+- Hardanger Folkeblad — http://www.hardanger-folkeblad.no/
+- Harstad Tidende — https://www.ht.no/
+- Haugesunds Avis — https://www.h-avis.no/
+- Helgelendingen — https://www.helg.no/
+- Helgelands Blad — http://www.hblad.no/
+- Hordaland — http://www.avisa-hordaland.no/
+- iFinnmark — https://www.ifinnmark.no/
+- Indre Akershus Blad — http://www.iablad.no/
+- Innherred — https://www.innherred.no/
+- Itromso.no — http://www.itromso.no/
+- Jærbladet — https://www.jbl.no/
+- Klar Tale — http://www.klartale.no/
+- Klassekampen — http://www.klassekampen.no/
+- Kragerø Blad — https://www.kv.no/
+- Laagendalsposten — http://www.laagendalsposten.no/
+- Lindesnes Avis — https://www.l-a.no/
+- The Local — https://www.thelocal.no/
+- Lofotposten — http://www.lofotposten.no/
+- Lofot-Tidende — http://www.lofot-tidende.no/
+- Montel Energy News — https://www.montelnews.com/en/
+- Morgenbladet — http://www.morgenbladet.no/
+- Moss Avis — http://www.moss-avis.no/
+- Moss Dagblad — http://www.moss-dagblad.no/
+- Municipal Reporter — http://www.kommunal-rapport.no/
+- Nærnett — https://www.nernett.no/
+- Namdals-Avisa — https://www.namdalsavisa.no/
+- Nationen — https://www.nationen.no/
+- Nettavisen — http://www.nettavisen.no/
+- NewsinEnglish.no — http://www.newsinenglish.no/
+- Nordlys — http://www.nordlys.no/
+- NorgeIDAG — http://www.idag.no/
+- The North Post — http://www.tnp.no/
+- Norway Post — http://www.norwaypost.no/
+- Norway Today — http://www.norwaytoday.info/
+- Ny Tid — http://www.nytid.no/
+- Nye Troms — http://www.nye-troms.no/
+- NyttiUka — http://www.nyttiuka.no/
+- Opdalingen — https://www.opdalingen.no/
+- Oppland Arbeiderblad — https://www.oa.no/
+- Os og Fusaposten — https://www.osogfusa.no/
+- Porsgrunns Dagblad — https://www.pd.no/
+- RanaBlad — http://www.ranablad.no/
+- Regionavisa — http://www.regionavisa.no/
+- Ringerikes Blad — http://www.ringblad.no/
+- Rogalands Avis — http://www.rogavis.no/
+- Romerikes Blad — http://www.rb.no/
+- Romsdals Budstikke — https://www.rbnett.no/
+- Røyken og Hurums Avis — https://www.rha.no/
+- Ságat — http://www.sagat.no/
+- Saltenposten — http://www.saltenposten.no/
+- Sandefjords Blad — https://www.sb.no/
+- Sandnesposten — http://www.sandnesposten.no/
+- Sarpsborg Arbeiderblad — https://www.sa.no/
+- Setesdølen — http://www.setesdolen.no/
+- Smaalenenes Avis — http://www.smaalenene.no/
+- Sogn Avis — http://www.sognavis.no/
+- Strandbuen — http://www.strandbuen.no/
+- Studvest — https://www.studvest.no/
+- Sunnhordland — http://www.sunnhordland.no/
+- Sunnmøringen — http://www.sunnmoringen.no/
+- Sunnmørsposten — http://www.smp.no/
+- Svalbard Posten — http://www.svalbardposten.no/
+- Sør-Trøndelag — http://www.avisa-st.no/
+- Tønsbergs Blad — https://www.tb.no/
+- Telemarksavisa — http://www.telemarksavisa.no/
+- Telen — https://www.telen.no/
+- Tidens Krav — http://www.tk.no/
+- Trønder-Avisa — https://www.t-a.no/
+- TradeWinds — https://www.tradewindsnews.com/
+- Tromsø By — http://www.tromsoby.no/
+- Tysnes — http://www.tysnesbladet.no/
+- Under Dusken — http://www.underdusken.no/
+- Universitas — https://universitas.no/
+- Valdres — http://www.avisa-valdres.no/
+- Varden — http://www.varden.no/
+- Varingen — http://www.varingen.no/
+- Verdens Gang — http://www.vg.no/
+- Vesterålen Online — http://www.vol.no/
+- Vestkantavisen — http://www.vestkantavisen.no/
+- Vestnytt — http://www.vestnytt.no/
+- Vest-Telemark Blad — http://www.vtb.no/
+- Vårt Land — http://www.vl.no/
+- Østlandets Blad — http://www.oblad.no/
+- Østlands-Posten — http://www.op.no/
+- Østlendingen — http://www.ostlendingen.no/
+
+### allyoucanread — https://www.allyoucanread.com/norway-newspapers/
+- VG Nett — https://www.vg.no/
+- Dagbladet.no — https://www.dagbladet.no/
+- Aftenposten — https://www.aftenposten.no/
+- E24 — https://e24.no/
+- Nettavisen — https://www.nettavisen.no/
+- Bergens Tidende — https://www.bt.no/
+- adressa.no — https://www.adressa.no/
+- DN.no — https://www.dn.no/
+- Stavanger Aftenbladet — https://www.aftenbladet.no/
+- SOL — https://sol.no/
+- Dagsavisen — https://www.dagsavisen.no/
+- ABC Nyheter — https://abcnyheter.no/
+- FVN Fedrelandsvennen — https://fvn.no/
+- BA Bergensavisen — https://www.ba.no/
+- Nordlys.no — https://www.nordlys.no/
+- Drammens Tidende — https://www.dt.no/
+- smp.no — https://www.smp.no/
+- an.no — https://www.an.no/
+- rb.no — https://www.rb.no/
+- Agderposten — https://www.agderposten.no/
+- Fredriksstad Blad — https://www.f-b.no/
+- TA.no — https://www.ta.no/
+- rbnett.no — https://www.rbnett.no/
+- GD.no — https://www.gd.no/
+- Haugesunds Avis — https://www.h-avis.no/
+- iTromso.no — https://www.itromso.no/
+- Tonsbergs Blad — https://www.tb.no/
+- Ostlendingen — https://www.ostlendingen.no/
+- Varden — https://www.varden.no/
+- oa.no — https://www.oa.no/
+- Hamar Arbeiderblad — https://www.h-a.no/
+- TK.no Tidens Krav — https://www.tk.no/
+- Moss Avis — https://www.moss-avis.no/
+- Finnmark Dagblad — https://www.ifinnmark.no/
+- Tronder-Avisa — https://www.t-a.no/
+- Ostlands Posten — https://www.op.no/
+- Sandefjords Blad — https://www.sb.no/
+- Fremover.no — https://www.fremover.no/
+- Ranablad.no — https://www.ranablad.no/
+- SA.no — https://www.sa.no/
+- Glomdalen.no — https://www.glomdalen.no/
+- ht.no Harstad — https://www.ht.no/
+- Lofotposten — https://www.lofotposten.no/
+- Ringerikes Blad — https://www.ringblad.no/
+- Firda.no — https://www.firda.no/
+- smaalenene.no — https://www.smaalenene.no/
+- FriFagbevegelse — https://frifagbevegelse.no/
+- Vart Land — https://www.vl.no/
+- Budstikka — https://www.budstikka.no/
+- Sogn Avis — https://www.sognavis.no/
+
+### abyznewslinks — http://www.abyznewslinks.com/norwa.htm
+- Euro Investor — http://www.euroinvestor.no/
+- Hegnar — http://www.hegnar.no/
+- Medie Mix — http://www.mediemix.no/
+- Nettavisen — http://www.nettavisen.no/
+- Norway News — http://www.norwaynews.com/en/
+- Norway Post — http://www.norwaypost.no/
+- Norway Today — http://www.norwaytoday.info/
+- The Local — http://www.thelocal.no/
+- Aftenposten — http://www.aftenposten.no/
+- Bondebladet — http://www.bondebladet.no/
+- Dagbladet — http://www.dagbladet.no/
+- Dagen — http://www.dagen.no/
+- Dagsavisen — http://www.dagsavisen.no/
+- Finansavisen — http://finansavisen.hegnar.no/
+- Handelsbladet — http://handelsbladet.no/
+- Verdens Gang — http://www.vg.no/
+
+## portugal (western_europe) — Portugal
+
+### w3newspapers — https://www.w3newspapers.com/portugal/
+- Público — https://www.publico.pt/
+- Correio da Manhã — https://www.cmjornal.pt/
+- Jornal de Notícias (JN) — https://www.jn.pt/
+- Diário de Notícias — https://www.dn.pt/
+- Observador — https://observador.pt/
+- iOnline — https://ionline.sapo.pt/
+- Expresso — https://expresso.pt/
+- Sol — https://sol.sapo.pt/
+- Avante — https://www.avante.pt/
+- Povo Livre — https://www.psd.pt/?idc=203
+- Record — https://www.record.pt/
+- A Bola — https://www.abola.pt/
+- O Jogo — https://www.ojogo.pt/
+- Jornal de Negócios — https://www.jornaldenegocios.pt/
+- ECO — Economia Online — https://eco.sapo.pt/
+- Jornal Económico — https://jornaleconomico.sapo.pt/
+- Dinheiro Vivo — https://dinheirovivo.dn.pt/
+- Notícias ao Minuto — https://www.noticiasaominuto.com/
+- Sábado — https://www.sabado.pt/
+- Página Um — https://www.paginaum.pt/
+- PT Jornal — https://ptjornal.com/
+- Jornais e Revistas — https://www.jornaiserevistas.com/
+- O Açoriano Oriental — https://www.acorianooriental.pt/
+- Diário dos Açores — https://diariodosacores.pt/
+- dnoticias.pt (Madeira) — https://www.dnoticias.pt/
+- O Mirante — https://omirante.pt/
+- Diário de Coimbra — https://www.diariocoimbra.pt/
+- Diário de Aveiro — https://www.diarioaveiro.pt/
+- Diário do Minho — https://www.diariodominho.pt/
+- Jornal do Algarve — https://jornaldoalgarve.pt/
+- Diário de Trás-os-Montes — https://www.diariodetrasosmontes.com/
+- Diário de Leiria — https://www.jornaldeleiria.pt/
+- Notícias de Aveiro — https://www.noticiasdeaveiro.pt/
+- Diário As Beiras — https://www.asbeiras.pt/
+- Correio do Minho — https://www.correiodominho.pt/
+- Barlavento — https://www.barlavento.pt/
+- Maia Hoje — https://www.maiahoje.pt/
+- Jornal Nordeste — https://www.jornalnordeste.com/
+- O Povo Famalicense — https://opovofamalicense.com/
+- A Guarda — https://jornalaguarda.com/
+- On Line News — https://oln.pt/
+- Alvorada — https://www.alvorada.pt/
+- O Almeirinense — https://www.almeirinense.com/
+- Jornal do Fundão — https://www.jornaldofundao.pt/
+- Mensageiro de Bragança — https://www.mdb.pt/
+- Correio de Azeméis — https://correiodeazemeis.sapo.pt/
+- Terras da Beira — http://www.terrasdabeira.com/
+- Roda Viva — https://rodaviva.pt/
+- Soberania do Povo — https://www.soberaniadopovo.pt/
+- Jornal da Bairrada — https://www.jb.pt/
+- Gazeta do Interior — https://www.gazetadointerior.pt/
+- Gazeta das Caldas — https://gazetadascaldas.pt/
+- DiáriOnline Região Sul — https://regiao-sul.pt/
+- Notícias de Fátima — https://www.noticiasdefatima.pt/
+- Imediato — https://www.imediato.pt/
+- The Portugal News — https://www.theportugalnews.com/
+- Algarve Resident — https://www.portugalresident.com/
+- Algarve Daily News — https://algarvedailynews.com/
+- Expatica Portugal — https://www.expatica.com/pt/
+- PortuGOAL — https://www.portugoal.net/
+- ECO News — https://econews.pt/
+- Lusa — https://www.lusa.pt/
+- Diário da República — https://diariodarepublica.pt/
+
+### onlinenewspapers — https://onlinenewspapers.com/portugal.shtml
+- A Bola — http://www.abola.pt/
+- A União — http://www.auniao.com/
+- A Voz de Felgueira — http://www.avozdafigueira.pt/
+- A Voz de Trás-os-Montes — https://www.avozdetrasosmontes.pt/
+- Açoriano Oriental — https://www.acorianooriental.pt/
+- Acção Socialista — https://www.accaosocialista.pt/
+- Algarve24 - Notícias Online — https://algarve24.blogspot.com/
+- Algarve Daily News — http://algarvedailynews.com/
+- Algarve Resident — http://www.algarveresident.com/
+- Avante! — http://www.avante.pt/
+- Caminha@2000 — http://www.caminha2000.com/
+- Campeão — http://www.campeaoprovincias.pt
+- Canallagos — http://www.canallagos.com/
+- Cidade de Tomar — http://www.cidadetomar.pt/
+- Correio de Azemeis — http://www.correiodeazemeis.pt/
+- Correio da Manhã — http://www.correiomanha.pt/
+- Correio do Minho — http://www.correiodominho.com/
+- Desportivo Transmontano — https://www.desportivotransmontano.com/
+- Destak — http://www.destak.pt/
+- Diário do Alentejo — http://www.diariodoalentejo.pt/
+- Diário dos Açores — http://www.diariodosacores.pt/
+- Diário As Beiras — https://www.asbeiras.pt/
+- Diário de Aveiro — http://www.diarioaveiro.pt/
+- Diário de Coimbra — http://www.diariocoimbra.pt/
+- Diário de Leiria — http://www.diarioleiria.pt/
+- Diário de Notícias — http://www.dn.pt/
+- Diário de Notícias — https://www.dn.pt/portugal.html
+- Diário de Notícias — http://www.dnoticias.pt/
+- Diário Regional Viseu — http://www.diarioviseu.pt/
+- Diário de Trás-os-Montes — http://www.diariodetrasosmontes.com/
+- DiariOnline — https://regiao-sul.pt/
+- Expresso — http://www.expresso.pt/
+- Expresso de Castanheira — https://castanheiradeperaemnoticia.blogspot.com/
+- Gazeta das Caldas — http://www.gazetacaldas.com/
+- Gazeta do Interior — http://www.gazetadointerior.pt/
+- Guimarães Digital — http://www.guimaraesdigital.com/
+- Informa+ — https://www.informamais.pt/
+- Inimigo Público — https://inimigo.publico.pt/
+- Jornal 1X2 — http://www.jornal1x2.pt/
+- Jornal de Bairrada — http://www.jb.pt/
+- Jornal das Caldas — http://www.jornaldascaldas.com/
+- Jornal do Centro — http://www.jornaldocentro.pt/
+- Jornal O Despertar — https://www.odespertar.pt/
+- Jornal Económico — https://jornaleconomico.sapo.pt/
+- Jornal do Fundão — https://www.jornaldofundao.pt/
+- Jornal O Independente — http://www.oindependentetupa.com.br/
+- Jornal Inside — http://www.jornalinside.com/
+- Jornal da Madeira — https://www.jm-madeira.pt/
+- Jornal de Negócios — https://www.jornaldenegocios.pt/
+- Jornal de Noticias (JN) — http://www.jn.pt/
+- Jornal da Praia — http://www.jornaldapraia.com/
+- Jornal Record — https://www.record.pt/
+- Jornal O Semanário — http://www.semanario.pt/
+- Jornal O Setubalense — http://www.osetubalense.pt/
+- Jornal Torrejano — http://www.jornaltorrejano.pt/
+- Journal I — http://www.ionline.pt/
+- Linhas de Elvas — https://www.linhasdeelvas.pt/
+- The Madeira Times — http://www.themadeiratimes.com/
+- Maia Hoje — http://www.maiahoje.pt/
+- Maisfutebol — http://www.maisfutebol.iol.pt/
+- Mensageiro de Braganĉa — https://www.mdb.pt/
+- Mobiliário em Notícia — http://www.mobiliarioemnoticia.pt/
+- Notícias da Amadora — http://noticiasdaamadora.com.pt/
+- Notícias de Coimbra — https://www.noticiasdecoimbra.pt/
+- Notícias Locais — https://www.periodismo.com/category/noticias-locas/
+- Notícias Maia — https://www.noticiasmaia.com/
+- Notícias de Vizela — http://www.noticiasdevizela.com/
+- O Almeirinense — http://www.almeirinense.com/
+- O Diabo — https://jornaldiabo.com/
+- O Figueirense — http://www.ofigueirense.com/
+- Ogni Portugalii — http://www.ru-portugal.com/
+- O Interior — http://www.ointerior.pt/
+- O Jogo — http://www.ojogo.pt/
+- O Mirante — http://www.omirante.pt/
+- O Noticias da Trofa — http://www.onoticiasdatrofa.pt/
+- O Portomosense — http://oportomosense.com/
+- Opinião Pública — http://www.opiniaopublica.pt/
+- O Regional — http://www.oregional.pt/
+- O Templário — http://www.otemplario.pt/
+- Porta da Estrela — https://portadaestrela.pt/
+- The Portugal News — http://www.theportugalnews.com/
+- Póvoa Semanário — http://www.povoasemanario.pt/
+- P2 Público — https://www.publico.pt/p2
+- Público — http://www.publico.pt/
+- Partido Communista Português (PCP) — http://www.pcp.pt/
+- PT LOCAL — http://local.pt/
+- Pulse Portugal — https://www.portugalpulse.com/
+- Reconquista — http://www.reconquista.pt/
+- Região de Leiria — http://www.regiaodeleiria.pt/
+- Resistir — https://www.resistir.info/
+- Sol — http://sol.sapo.pt/
+- Terras da Beira — http://www.terrasdabeira.com/
+- Tribuna da Madeira — http://www.tribunadamadeira.pt/
+- TVI24 — https://tvi24.iol.pt/
+- Voz Ribatejana — https://www.vozribatejana.com/
+- Visão — http://visao.sapo.pt/
+
+### allyoucanread — https://www.allyoucanread.com/portuguese-newspapers/
+- SAPO — https://www.sapo.pt/
+- noticiasaominuto.com — https://noticiasaominuto.com/
+- Correio da Manha — https://www.cmjornal.pt/
+- Observador — https://observador.pt/
+- PUBLICO — https://www.publico.pt/
+- Jornal de Noticias — https://www.jn.pt/
+- Expresso — https://expresso.pt/
+- Diario de Noticias — http://dn.pt/
+- DNOTICIAS.PT — http://www.dnoticias.pt/
+- Diario da Republica Electronico — https://dre.pt/
+- Sabado — https://www.sabado.pt/
+- O Mirante — https://omirante.pt/
+- Diario As Beiras — https://asbeiras.pt/
+- Jornais e Revistas — https://www.jornaiserevistas.com/
+- PT Jornal — https://ptjornal.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/portu.htm
+- Diario Digital — http://diariodigital.sapo.pt/
+- Jornal Digital — http://www.jornaldigital.com/
+- Ler Noticias — http://lernoticias.com/
+- Local — http://local.pt/
+- Sapo — http://www.sapo.pt/
+- Expatica — http://www.expatica.com/pt/
+- A Bola — http://www.abola.pt/
+- Correio da Manha — http://www.cmjornal.xl.pt/
+- Diario da Republica — https://dre.pt/
+- Diario de Noticias — http://www.dn.pt/
+- Expresso — http://expresso.sapo.pt/
+- Jornal de Negocios — http://www.jornaldenegocios.pt/
+- Jornal de Noticias — http://www.jn.pt/paginainicial/
+- O Jogo — http://www.ojogo.pt/
+- Publico — http://www.publico.pt/
+- Record — http://www.record.xl.pt/
+
+## san_marino (western_europe) — San Marino
+
+### w3newspapers — (not listed)
+- (no entries)
+
+### onlinenewspapers — (not listed)
+- (no entries)
+
+### allyoucanread — https://www.allyoucanread.com/san-marino-newspapers/
+- RTV San Marino — https://www.sanmarinortv.sm/
+- Libertas — https://www.libertas.sm/
+- Giornalesm — https://giornalesm.com/
+- San Marino Fixing — https://sanmarinofixing.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/sanma.htm
+- Giornale — http://www.giornalesm.com/
+- Italica — http://www.italica.sm/
+- Libertas — http://www.libertas.sm/
+- Notizie di San Marino — http://www.notiziesanmarino.com/
+- San Marino Notizie — http://www.sanmarinonotizie.com/
+- La Tribuna Sanmarinese — http://www.latribunasammarinese.net/
+
+## spain (western_europe) — Spain
+
+### w3newspapers — https://www.w3newspapers.com/spain/
+- El País — https://elpais.com/
+- El Mundo — https://www.elmundo.es/
+- ABC — https://www.abc.es/
+- La Vanguardia — https://www.lavanguardia.com/
+- El Confidencial — https://www.elconfidencial.com/
+- elDiario.es — https://www.eldiario.es/
+- El Periódico — https://www.elperiodico.com/es/
+- La Razón — https://www.larazon.es/
+- Expansión — https://www.expansion.com/
+- Cinco Días — https://cincodias.elpais.com/
+- El Mundo Financiero — https://www.elmundofinanciero.com/
+- El Económico — https://eleconomico.es/
+- El Economista — https://www.eleconomista.es/
+- AS — https://as.com/
+- MARCA — https://www.marca.com/
+- Mundo Deportivo — https://www.mundodeportivo.com/
+- Sport — https://www.sport.es/es/
+- Superdeporte — https://www.superdeporte.es/
+- Estadio Deportivo — https://www.estadiodeportivo.com/
+- Avance Deportivo — https://www.avancedeportivo.es/
+- 20 Minutos — https://www.20minutos.es/
+- Público — https://www.publico.es/
+- Antena 3 Noticias — https://www.antena3.com/noticias/
+- RTVE Noticias — https://www.rtve.es/noticias/
+- laSexta Noticias — https://www.lasexta.com/noticias/
+- Informativos Telecinco — https://www.telecinco.es/informativos/
+- El HuffPost — https://www.huffingtonpost.es/
+- Libertad Digital — https://www.libertaddigital.com/
+- Vozpópuli — https://www.vozpopuli.com/
+- Qué! — https://www.que.es/
+- Periodista Digital — https://www.periodistadigital.com/
+- InfoLibre — https://www.infolibre.es/
+- El Plural — https://www.elplural.com/
+- Catalunya Diari — https://catalunyadiari.com/
+- El Cultural — https://www.elespanol.com/el-cultural/
+- Kiosko.net — https://es.kiosko.net/
+- Boletín Oficial del Estado(BOE) — https://www.boe.es/
+- Diario Crítico — https://www.diariocritico.com/
+- Diario Siglo XXI — https://www.diariosigloxxi.com/
+- El Jurista — http://www.eljurista.eu/
+- El Boletín — https://www.elboletin.com/
+- Hispanidad — https://www.hispanidad.com/
+- La Voz Libre — https://vozlibre.com/
+- E-notícies — https://www.e-noticies.cat/
+- Madridiario — https://www.madridiario.es/
+- La Voz de Galicia — https://www.lavozdegalicia.es/
+- El Correo — https://www.elcorreo.com/
+- El Diario Vasco — https://www.diariovasco.com/
+- Heraldo de Aragón — https://www.heraldo.es/
+- La Nueva España — https://www.lne.es/
+- Levante-EMV — https://www.levante-emv.com/
+- Las Provincias — https://www.lasprovincias.es/
+- Faro de Vigo — https://www.farodevigo.es/
+- Diario SUR — https://www.diariosur.es/
+- Málaga Hoy — https://www.malagahoy.es/
+- El Norte de Castilla — https://www.elnortedecastilla.es/
+- Diario de Sevilla — https://www.diariodesevilla.es/
+- Ideal — https://www.ideal.es/
+- La Opinión de Murcia — https://www.laopiniondemurcia.es/
+- La Verdad — https://www.laverdad.es/
+- Información — https://www.informacion.es/
+- La Provincia — https://www.laprovincia.es/
+- Canarias7 — https://www.canarias7.es/
+- Última Hora — https://www.ultimahora.es/
+- El Periódico de Aragón — https://www.elperiodicodearagon.com/
+- Diario de Mallorca — https://www.diariodemallorca.es/
+- Deia — https://www.deia.eus/
+- Diario de Cádiz — https://www.diariodecadiz.es/
+- El Progreso — https://www.elprogreso.es/
+- El Correo Gallego — https://www.elcorreogallego.es/
+- La Opinión — https://www.laopinioncoruna.es/
+- La Región — https://www.laregion.es/
+- Diario de Pontevedra — https://www.diariodepontevedra.es/
+- Atlántico — https://www.atlantico.net/
+- Diario de Ferrol — https://diariodeferrol.elidealgallego.com/
+- El Día — https://www.eldia.es/
+- Europa Sur — https://www.europasur.es/
+- La Voz de Avilés — https://www.elcomercio.es/aviles/
+- Berria — https://www.berria.eus/
+- El Apurón — https://elapuron.com/
+- El Adelantado de Segovia — https://eladelantado.com/
+- El Correo de Burgos — https://www.elcorreodeburgos.com/
+- El Día de Córdoba — https://www.eldiadecordoba.es/
+- El Día de Valladolid — https://www.eldiadevalladolid.com/
+- El Faro Astorgano — https://www.elfaroastorgano.net/
+- El Faro de Ceuta — https://elfarodeceuta.es/
+- El Ideal Gallego — https://www.elidealgallego.com/
+- El Pueblo de Ceuta — https://www.elpueblodeceuta.es/
+- El Periódico de Extremadura — https://www.elperiodicoextremadura.com/
+- Mediterráneo — https://www.elperiodicomediterraneo.com/
+- El Correo de Andalucía — https://www.elcorreoweb.es/
+- Ahotsa.info — https://ahotsa.info/
+- BCN Més — https://bcnmes.com/
+- El Día — https://www.infoclm.es/sec/toledo/
+- Gente Digital (Santander) — http://www.gentedigital.es/santander/
+- Granada Digital — https://www.granadadigital.es/
+- Granada Hoy — https://www.granadahoy.com/
+- Guada News — https://www.guadanews.es/
+- Viva Jaén — https://www.andaluciainformacion.es/jaen/
+- Huelva Información — https://www.huelvainformacion.es/
+- InfoNorteDigital — https://infonortedigital.com/
+- La Cerca — https://www.lacerca.com/
+- La Gaceta Regional de Salamanca — https://www.lagacetadesalamanca.es/
+- La Rioja — https://www.larioja.com/
+- La Voz de Almería — https://www.lavozdealmeria.com/
+- La Voz de Asturias — https://www.lavozdeasturias.es/
+- La Voz de Cádiz — https://www.lavozdigital.es/
+- La Tribuna de Albacete — https://www.latribunadealbacete.es/
+- La Tribuna de Cuenca — https://www.latribunadecuenca.es/
+- La Tribuna (Salamanca) — https://www.tribunasalamanca.com/
+- Menorca — https://www.menorca.info/
+- Mallorca Confidencial — https://www.mallorcaconfidencial.com/
+- Mallorca Zeitung — https://www.mallorcazeitung.es/
+- Més — https://www.diarimes.com/
+- Gara — https://www.naiz.eus/hemeroteca/gara
+- Noticias de Álava — https://www.noticiasdealava.eus/
+- Noticias de Navarra — https://www.noticiasdenavarra.com/
+- Noticias de Gipuzkoa — https://www.noticiasdegipuzkoa.eus/
+- Nueva Alcarria — https://nuevaalcarria.com/
+- Pamplona Actual — https://pamplonaactual.com/
+- Hortaleza — https://www.periodicohortaleza.org/
+- Periódico de Ibiza — https://www.periodicodeibiza.es/
+- Salamanca 24 Horas — https://www.salamanca24horas.com/
+- Valle de Elda — https://www.valledeelda.com/
+- Diario de Ávila — https://www.diariodeavila.es/
+- Diario de Arousa — https://diariodearousa.elidealgallego.com/
+- Diario de Burgos — https://www.diariodeburgos.es/
+- Diario de Lanzarote — https://www.diariodelanzarote.com/
+- Diario de Ibiza — https://www.diariodeibiza.es/
+- Diario de Navarra — https://www.diariodenavarra.es/
+- Diario Palentino — https://www.diariopalentino.es/
+- Diario del AltoAragón — https://www.diariodelaltoaragon.es/
+- Diario de Jerez — https://www.diariodejerez.es/
+- Diario de Teruel — https://www.diariodeteruel.es/
+- Diario de León — https://www.diariodeleon.es/
+- Diario de Almería — https://www.diariodealmeria.es/
+- Diario Jaén — https://www.diariojaen.es/
+- Lanza — https://www.lanzadigital.com/
+- Cartelera Arandina — http://www.carteleraarandina.com/
+- Aragón Digital — https://www.aragondigital.es/
+- Ara — https://www.ara.cat/
+- VilaWeb — https://www.vilaweb.cat/
+- NacióDigital — https://naciodigital.cat/
+- El Punt Avui — https://www.elpuntavui.cat/
+- Segre — https://www.segre.com/
+- El Món — https://elmon.cat/
+- Diari de Girona — https://www.diaridegirona.cat/
+- Regió7 — https://www.regio7.cat/
+- Diari de Tarragona — https://www.diaridetarragona.com/
+- Diari de Terrassa — https://www.diarideterrassa.com/
+- Ara Balears — https://www.arabalears.cat/
+- dBalears — https://www.dbalears.cat/
+- L'Esportiu — https://www.lesportiudecatalunya.cat/el9.html
+- El Temps — https://www.eltemps.cat/
+- TarragonaDigital — https://tarragonadigital.com/
+- El 3 de Vuit — https://www.el3devuit.cat/
+- El Vallenc — https://www.elvallenc.cat/
+- Setmanari Sóller — https://www.elsoller.cat/
+- La Veu de l’Anoia — https://veuanoia.cat/
+- El Bruguers — https://elbruguersdigital.cat/
+- El Triangle — https://www.eltriangle.eu/
+- Agencia EFE — https://efe.com/
+- Europa Press — https://www.europapress.es/
+- Servimedia — https://www.servimedia.es/
+- Agència Catalana de Notícies — https://www.acn.cat/
+- El País (English) — https://english.elpais.com/
+- The Local (Spain) — https://www.thelocal.es/
+- Catalan News (ACN) — https://www.catalannews.com/
+- SUR in English — https://www.surinenglish.com/
+- Majorca Daily Bulletin — https://www.majorcadailybulletin.com/
+- Euro Weekly News — https://euroweeklynews.com/
+- Murcia Today — https://murciatoday.com/
+- Alicante Today — https://alicantetoday.com/
+- Canarian Weekly — https://www.canarianweekly.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/spain.shtml
+- Última Hora — http://www.ultimahora.es/
+- 20 Minutos — https://www.20minutos.es/andalucia/
+- 20 Minutos — http://www.20minutos.es/madrid/
+- ABC — http://www.abc.es/
+- Actualidad 24 Horas — http://www.actualidad24horas.com/
+- Actualidad Económica — http://www.actualidad-economica.com/
+- Agencia EFE — http://www.efe.es/
+- Aktuelt Spania — https://www.aktueltspania.net/
+- Almería Actualidad — http://www.elalmeria.es/
+- Ara — https://www.ara.cat/
+- Aragón Digital — https://aragondigital.es/
+- AS — http://www.as.com/
+- BCNMÉS — http://bcnmes.com/
+- Berria — https://www.berria.eus/
+- Canaria Sport — http://www.canariasport.com/
+- Canarias 7 — http://www.canarias7.es/
+- Canarias Ahora — http://www.canariasahora.com/
+- Cantabria Diario — http://www.cantabriadiario.com/
+- Castellón Diario — http://www.castellondiario.com/
+- The Catalunya Chronicle — https://issuu.com/chroniccat
+- Cinco Días — http://www.5dias.com/
+- Claridad Digital — http://www.claridaddigital.es/
+- Costa Almeria News — https://www.costa-news.com/
+- Costa Blanca & Costa Calida Leader — http://www.yourlocalnewspaper.info/index.php
+- Daimiel Noticias — http://www.daimiel.org/
+- DEIA — https://www.deia.eus/
+- Democracia — http://www.diariodemocracia.com/
+- DeVina — http://www.devina.es/
+- De Week — http://www.deweek.net/
+- Diari de Balears — http://www.diaridebalears.com/
+- Diari de Girona — http://www.diaridegirona.es/
+- Diari de Tarragona — http://www.diaridetarragona.es/
+- Diario Córdoba — http://www.diariocordoba.com/
+- Diario de Avisos — http://www.diariodeavisos.com/
+- Diario de Burgos — http://www.diariodeburgos.es/
+- Diario de Cádiz — http://www.diariodecadiz.es/
+- Diario de Ferrol — http://www.diariodeferrol.com/
+- Diario de Ibiza — http://www.diariodeibiza.es/
+- Diario de Jerez — http://www.diariodejerez.com/
+- Diario de León — https://www.diariodeleon.es
+- Diario de Mallorca — https://www.diariodemallorca.es/
+- Diario de Navarra — http://www.diariodenavarra.es/
+- Diario de Pontevedra — https://www.diariodepontevedra.es/
+- Diario de Sevilla — https://www.diariodesevilla.es/
+- Diario de Teruel — https://www.diariodeteruel.es/
+- Diario Información — http://www.diarioinformacion.com/
+- Diario Jaén — http://www.diariojaen.es/
+- El Boletin.com — http://www.elboletin.com/
+- El Comercio — https://www.elcomercio.es/
+- El Confidencial — http://www.elconfidencial.com/
+- El Correo — https://www.elcorreo.com/
+- El Correo Gallego — https://www.elcorreogallego.es/
+- El Día — http://www.eldiadecordoba.com/
+- El Dia — https://www.eldia.es/
+- El Dia Digital — https://eldiadigital.es/
+- ElDiario.es — https://www.eldiario.es/
+- El Diario Montañés — https://www.eldiariomontanes.es/
+- El Diario Vasco — http://www.diariovasco.com/
+- El Dimoni de Santa Eugínia de Ter — http://www.eldimoni.com/
+- El Español — https://www.elespanol.com/
+- El Faro de Melilla — https://elfarodemelilla.es/
+- El Ideal — https://www.ideal.es/
+- El Ilustrador Digital — http://www.ilustradordigital.es/
+- El Mundo — http://www.elmundo.es/
+- El Mundo Deportivo — http://www.elmundodeportivo.es/
+- El Nacional — https://www.elnacional.com/
+- El Norte de Castilla — https://www.elnortedecastilla.es/
+- El País — http://www.elpais.es/
+- El País Financiero — https://elpaisfinanciero.com/
+- El Periódico de Aragón — http://www.elperiodicodearagon.com/
+- El Periódico — http://www.elperiodico.com/
+- El Periódico de Extremadura — http://www.elperiodicoextremadura.com/
+- El Periódico Latino — http://elperiodicolatino.com.es/
+- El Progreso — http://www.elprogreso.es/
+- El Pueblo de Ceuta — https://elpueblodeceuta.es/
+- El Punt Avui — https://www.elpuntavui.cat/barcelona.html
+- El Semanal Digital — http://www.elsemanaldigital.com/
+- El Semanario La Calle de Córdoba — http://www.lacalledecordoba.com
+- El Sol News — https://www.elsolnews.com/
+- El Telegrama — http://www.eltelegrama.com/
+- El Vigía — http://www.elvigia.com/
+- Europa Press — http://www.europapress.es/
+- Euro Weekly News — http://www.euroweeklynews.com/
+- Fuerteventura News — http://www.fuerteventuranews.com/
+- Fuertextra — http://www.fuertextra.com/
+- Gara — http://www.gara.net/
+- GenCat.cat — https://web.gencat.cat/
+- Granada Hoy — http://www.granadahoy.com/
+- Hamawatan — http://www.hamwatan.net/
+- Heraldo de Aragón — https://www.heraldo.es/
+- Hispanidad — http://www.hispanidad.com/
+- Hoy — http://www.hoy.es/
+- IBL News — http://www.iblnews.com/
+- Islam Hoy — http://www.islamhoy.com/
+- Izquierda Diario — http://www.izquierdadiario.es/
+- La Cerca — http://www.lacerca.com/
+- La Estrella Digital — http://www.estrelladigital.es/
+- La Gaceta — https://gaceta.es/
+- La Gran Época — http://www.lagranepoca.com/
+- La Insignia — http://www.lainsignia.org/
+- La Nueva España — http://www.lne.es/
+- La Noción — http://www.lanocion.es/
+- La Opinión de Málga — https://www.laopiniondemalaga.es/
+- La Opinión de Murcia — http://www.laopiniondemurcia.es/
+- La Opinión A Coruña — http://www.laopinioncoruna.com/
+- La Provincia / Diario de Las Palmas — https://www.laprovincia.es/
+- La Razón — http://www.larazon.es/
+- La Rioja — http://www.larioja.com/
+- La Tribuna — https://www.latribunahoy.com/
+- La Vanguardia — https://www.lavanguardia.com/
+- La Verdad — http://www.laverdad.es/
+- La Voz — https://www.lavozdelanzarote.com/
+- La Voz de Asturias — http://www.lavozdeasturias.es/
+- La Voz De Galicia — http://www.lavozdegalicia.es/
+- La Voz Digital — https://www.lavozdigital.es/
+- La Voz Libre — http://www.lavozlibre.com/
+- Las Provincias — http://www.lasprovincias.es/
+- Las Verdades De Miguel — https://lasverdadesdemiguel.tv/
+- The Leader — http://www.theleader.info/
+- Le Petit Journal — https://lepetitjournal.com/madrid
+- LeoNoticias — https://www.leonoticias.com/
+- Levante : El Mercantil Valenciano — http://www.levante-emv.com/
+- Libertad Digital — http://www.libertaddigital.com/
+- The Local — http://www.thelocal.es/
+- Losgigantes.com — http://www.losgigantes.com/news/
+- Mallorca Confidencial — http://www.mallorcaconfidencial.com/
+- Majorca Daily Bulletin — http://www.majorcadailybulletin.es/
+- Marca — https://www.marca.com/
+- Melilla Hoy — http://www.melillahoy.es/
+- Menorca.info — http://www.menorca.info/
+- Milenio — https://www.milenio.com/
+- Mini Diario Comunidad Valenciana — http://www.minidiario.com/
+- Minuto Digital — http://www.minutodigital.com/
+- Monòver.com — https://www.monover.com/
+- Mollet A Mà — http://www.molletama.cat/
+- News In The Sun — http://newsinthesun.com/
+- Noticias de Álava — https://www.noticiasdealava.eus/
+- Noticieirogalego.com — http://www.noticieirogalego.com/
+- Noticias de Navarra — http://www.diariodenoticias.es/
+- Noticias de Navarra — http://www.noticiasdenavarra.com/
+- Noticias de La Rioja — https://www.larioja.com/
+- Noticiero Universal — http://www.noticierouniversal.com/
+- The Olive Press — http://www.theolivepress.es/
+- Páginas Digital — http://www.paginasdigital.es/
+- PakNews — http://www.paknews.es/
+- Periodismo Independiente — http://periodismoindependiente.es/
+- Periodista Digital — http://www.periodistadigital.com/
+- Público — http://www.publico.es/
+- The Reader — http://www.thereader.es/
+- Rebelion — http://www.rebelion.org/
+- Regió 7 — http://www.regio7.com/
+- The Resident — http://www.theresident.eu/
+- Round Town News — http://allaboutbenidorm.com/rtonline.php
+- Russkaya Pravda — http://www.ru-pravda.es/
+- Ser — http://www.diariosur.es/
+- Ser — http://www.surinenglish.com/
+- Siglo XXI — http://www.diariosigloxxi.com/
+- Spania24.no — http://www.spania24.no/
+- Spaniens Allgemeine Zeitung — https://www.saz-aktuell.com/
+- Spanish News — http://www.spanishnews.es/
+- Sport — http://www.sport.es/
+- Super Deporte — http://www.superdeporte.com/
+- Sur — https://www.diariosur.es/
+- Tenerife News — https://www.tenerifenews.com
+- The Times of Earth — http://www.timesofearth.com/category/noticias-en-espanol.html
+- Tribuna De Salamanca — https://www.tribunasalamanca.com/
+- Veintepies.com — http://www.veintepies.com/
+- Vieiros — http://www.vieiros.com/
+- VilaWeb — http://vilaweb.com/
+- Vinalopo.com — https://www.vinalopo.com/
+- Wochenblatt — http://www.wochenblatt.es/
+- Xornal Galicia — http://xornalgalicia.com/
+
+### allyoucanread — https://www.allyoucanread.com/spanish-newspapers/
+- El Pais — https://elpais.com
+- elmundo.es — https://elmundo.es/
+- 20minutos.es — https://20minutos.es/
+- LaVanguardia.com — https://www.lavanguardia.com/
+- ABC — https://www.abc.es/
+- El Confidencial — https://www.elconfidencial.com/
+- eldiario.es — http://www.eldiario.es/
+- Europa Press — https://www.europapress.es/
+- elPeriodico.com — https://www.elperiodico.com/
+- La Razon — https://www.larazon.es/
+- BOE.es -Boletin Oficial del Estado — https://boe.es/
+- La Voz de Galicia — http://www.lavozdegalicia.es/
+- elcorreo.com — https://www.elcorreo.com/
+- El Huffington Post — https://www.huffingtonpost.es/
+- Heraldo.es — https://heraldo.es/
+- Libertad Digital — https://www.libertaddigital.com/
+- e-noticies — https://e-noticies.cat/
+- Diario Expansion — https://expansion.com/
+- Publico.es — https://publico.es/
+- Faro de Vigo — https://www.farodevigo.es/
+- LAS PROVINCIAS - Valencia — https://www.lasprovincias.es/
+- La Nueva Espana — https://www.lne.es/
+- diariovasco.com — https://www.diariovasco.com/
+- Levante-EMV - Valencia — https://www.levante-emv.com/
+- Diario de Asturias — https://www.elcomercio.es/
+- Vozpopuli — https://vozpopuli.com/
+- EFE — https://efe.com/
+- diariodenavarra.es — https://diariodenavarra.es/
+- Diario de Noticias de Navarra — https://www.noticiasdenavarra.com/
+- Vilaweb.cat — https://vilaweb.cat/
+- Lainformacion.com — https://lainformacion.com/
+- Terra Noticias — http://noticias.terra.es/
+- El Diario Montanes — https://www.eldiariomontanes.es/
+- Ultima Hora — https://ultimahora.es/
+- ideal.es Granada — https://www.ideal.es/
+- laverdad.es - Diario de Murcia — https://www.laverdad.es/
+- Diario de Sevilla — http://www.diariodesevilla.es/
+- SUR diario de Malaga — https://www.diariosur.es/
+- Ara.cat — https://www.ara.cat/
+- Diario de Mallorca — https://www.diariodemallorca.es/
+- Periodista Digital — https://periodistadigital.com/
+- HOY — http://www.hoy.es/
+- El Norte de Castilla — https://www.elnortedecastilla.es/
+- Deia — https://www.deia.eus/
+- El Periodico de Aragon — https://www.elperiodicodearagon.com/
+- Informacion — https://www.informacion.es/
+- Que! — https://que.es/
+- el Dia — https://www.eldia.es/
+- Canarias7 — https://www.canarias7.es/
+- laprovincia.es - Canarias — https://www.laprovincia.es/
+
+### abyznewslinks — http://www.abyznewslinks.com/spain.htm
+- 20 Minutos — http://www.20minutos.es/
+- 90 Min — https://www.90min.com/es
+- Agro Digital — http://www.agrodigital.com/
+- Agro Informacion — http://www.agroinformacion.com/
+- Corner — http://thecorner.eu/
+- CU Noticias — http://www.cunoticias.com/
+- Diario Cr�tico — http://www.diariocritico.com/
+- Diario Siglo XXI — http://www.diariosigloxxi.com/
+- El Boletin — http://www.elboletin.com/
+- El Confidencial — http://www.elconfidencial.com/
+- El Confidencial Digital — http://www.elconfidencialdigital.com/
+- El Desmarque — http://www.eldesmarque.com/
+- El Diario — http://www.eldiario.es/
+- El Espanol — https://www.elespanol.com/
+- El Imparcial — http://www.elimparcial.es/
+- El Semanal Digital — http://www.elsemanaldigital.com/
+- Estrella Digital — http://www.estrelladigital.es/
+- Europa Press — http://www.europapress.es/
+- Expatica — http://www.expatica.com/es/
+- Hispanidad — http://www.hispanidad.com/
+- Info Libre — https://www.infolibre.es/
+- La Informacion — http://www.lainformacion.com/
+- La Semana — http://www.lasemana.es/
+- La Voz Libre — http://www.lavozlibre.com/
+- Libertad Digital — http://www.libertaddigital.com/
+- MSN — http://www.msn.com/es-es
+- Noticias de Bolsa — http://www.noticiasdebolsa.com/
+- Noticiero Universal — http://noticierouniversal.com/
+- Periodista Digital — http://www.periodistadigital.com/
+- Que — http://www.que.es/
+- Spanish News — https://www.spanishnews.es/
+- Spanish News Today — http://spanishnewstoday.com/
+- Terra — http://www.terra.es/
+- The Conversation — https://theconversation.com/es/
+- The Local — http://www.thelocal.es/
+- Typically Spanish — http://www.typicallyspanish.com/
+- Voz Populi — http://vozpopuli.com/
+- Yahoo — https://es.noticias.yahoo.com/
+- ABC — http://www.abc.es/
+- AS — http://as.com/
+- Boletin Oficial del Estado — http://www.boe.es/
+- Cinco Dias — http://cincodias.com/
+- El Mundo — http://www.elmundo.es/
+- El Pais — http://elpais.com/
+- Expansion — http://www.expansion.com/
+- La Gaceta — http://lagaceta.es/
+- Marca — http://www.marca.com/
+- Sport — http://www.sport.es/
+
+## sweden (western_europe) — Sweden
+
+### w3newspapers — https://www.w3newspapers.com/sweden/
+- Dagens Nyheter (DN) — https://www.dn.se/
+- Göteborgs-Posten (G-P) — https://www.gp.se/
+- Svenska Dagbladet (SvD) — https://www.svd.se/
+- Sydsvenskan — https://www.sydsvenskan.se/
+- Dagen — https://www.dagen.se/
+- Aftonbladet — https://www.aftonbladet.se/
+- Expressen — https://www.expressen.se/
+- Arbetarbladet — https://www.arbetarbladet.se/
+- Borås Tidning — https://www.bt.se/
+- Dala-Demokraten — https://www.dalademokraten.se/
+- Dagens Industri (DI) — https://www.di.se/
+- Dagens Handel — https://www.dagenshandel.se/
+- Hallands Nyheter — https://www.hn.se/
+- Hallandsposten — https://www.hallandsposten.se/
+- Helsingborgs Dagblad (HD) — https://www.hd.se/
+- Nerikes Allehanda (NA) — https://www.na.se/
+- Norrländska Socialdemokraten (NSD) — https://www.nsd.se/
+- Nya Wermlands-Tidningen (NWT) — https://www.nwt.se/
+- TTELA — https://www.ttela.se/
+- Västerbottens Folkblad — https://www.folkbladet.nu/
+- Västerbottens-Kuriren — https://www.vk.se/
+- Östgöta Correspondenten — https://www.corren.se/
+- Nordstjernan — https://nordstjernan.com/
+- Alekuriren — http://www.alekuriren.se/
+- Alingsås tidning — https://www.alingsastidning.se/
+- Alingsåskuriren — https://www.alingsaskuriren.se/
+- Allehanda.se — https://www.allehanda.se/
+- Arbetaren — https://www.arbetaren.se/
+- Arboga tidning — https://www.bblat.se/
+- Avesta tidning — https://www.avestatidning.com/
+- Barometern — https://www.barometern.se/
+- Blekingeposten — https://blekingeposten.se/
+- Bohusläningen — https://www.bohuslaningen.se/
+- Enköpingsposten — https://www.eposten.se/
+- Eskilstunakuriren med Strängnäs tidning — https://www.ekuriren.se/
+- Fagerstaposten — https://www.fagersta-posten.se/
+- Finnveden nu — https://nutidningen.nu/
+- Flamman — https://www.flamman.se/
+- The Local — https://www.thelocal.se/
+- Dalabygden — http://dalabygden.se/
+- Gefle Dagblad — https://www.gd.se/
+- Smålands-Tidningen — https://www.smt.se/
+- Jonkopings Posten — https://www.jp.se/
+- Vimmerby Tidning — https://www.vimmerbytidning.se/
+- Olandsbladet — https://www.olandsbladet.se/
+- Norra Halland — https://norrahalland.se/
+- Vasterbottningen — https://www.vasterbottningen.se/
+- Nord Sverige — https://www.nordsverige.se/
+- Lysekilsposten — https://www.lysekilsposten.se/
+- Mariestads Tidningen — https://www.molndalsposten.se/
+- 8 Sidor — https://8sidor.se/
+- Vestmanlands Läns Tidning (VLT) — https://www.vlt.se/
+- Omni — https://omni.se/
+- Fria Tider — https://www.friatider.se/
+- Nyheter Idag — https://nyheteridag.se/
+- iFokus — https://www.ifokus.se/
+- Privata Affarer — https://www.privataaffarer.se/
+- Gotlands Allehanda — https://www.helagotland.se/
+- Blekinge Lans Tidning — https://www.blt.se/
+- Skovde Nyheter — https://www.skovdenyheter.se/
+- Markbladet — https://www.markbladet.se/
+- Nacka Varmdo Posten — https://www.nvp.se/
+- Vetlanda Posten — https://www.vetlandaposten.se/
+- Hoglandsnytt — https://hoglandsnytt.se/
+- Proletaren — http://proletaren.se/
+- Magazin 24 — https://magazin24.se/
+- Tranas Tidning — https://www.tranastidning.se/
+- Varnamo Nyheter — https://www.vn.se/
+- Nynashamns Posten — https://www.nynashamnsposten.se/
+- Karlskoga Kuriren — https://www.kt-kuriren.se/
+- Ystads Allehanda — https://www.ystadsallehanda.se/
+- Västgöta-Bladet — https://www.vastgotabladet.se/
+- Trelleborgs Allehanda — https://www.trelleborgsallehanda.se/
+- Tidningen Härjedalen — https://www.tidningenharjedalen.se/
+- Södermanlands Nyheter — https://www.sn.se/
+- Smålänningen — https://www.smalanningen.se/
+- Strömstads Tidning — https://www.stromstadstidning.se/
+- Skaraborgs Läns Tidning — https://www.skaraborgslanstidning.se/
+- Skaraborgs Allehanda — https://www.sla.se/
+- Piteå-Tidningen — https://www.pt.se/
+- Nya Lidköpings-Tidningen — https://www.nlt.se/
+- Norra Skåne — https://www.nsk.se/
+- Länstidningen Östersund — https://www.ltz.se/
+- Länstidningen Södertälje — https://www.lt.se/
+- Mariestads-Tidningen — https://www.mariestadstidningen.se/
+- Katrineholms-Kuriren — https://www.kkuriren.se/
+- Världen idag — https://www.varldenidag.se/
+- Falköpings Tidning — https://www.falkopingstidning.se/
+- Östersunds-Posten — https://www.op.se/
+- Västerviks-Tidningen — https://www.vt.se/
+- Värmlands Folkblad — https://www.vf.se/
+- Upsala Nya Tidning — https://www.unt.se/
+- Sundsvalls Tidning — https://www.st.nu/
+- Smålandsposten — https://www.smp.se/
+- Norrbottens-Kuriren — https://www.kuriren.nu/
+- Norran — https://www.norran.se/
+- Kristianstadsbladet — https://www.kristianstadsbladet.se/
+- ABC Nyheter — https://www.abcnyheter.se/
+
+### onlinenewspapers — https://onlinenewspapers.com/sweden.shtml
+- ABC Nyheter — https://www.abcnyheter.se/
+- Aftonbladet — http://www.aftonbladet.se/
+- Alingsås Tidning — https://www.alingsastidning.se/
+- Allehanda.se — https://www.allehanda.se/
+- Arbetarbladet — http://www.arbetarbladet.se/
+- Arvika Nyheter — https://www.arvikanyheter.se/
+- The Awaz Norway — http://www.theawaznorway.com/
+- Barometern — http://www.barometern.se/
+- Blekinge Läns Tidning — http://www.blt.se/
+- Bohusläningen — http://www.bohuslaningen.se/
+- Borås Tidning — https://www.bt.se/
+- Bärgslagsbladet — http://www.bargslagsbladet.com/
+- Corren — http://www.corren.se/
+- Dagbladet — https://www.dagbladet.no/emne/sverige/
+- Dagens Nyheter — https://www.dn.se/
+- Dagens Industri — http://www.di.se/
+- Dala-Demokraten — https://www.dalademokraten.se/
+- DT — https://www.dt.se/
+- Enköpings-Posten — https://www.eposten.se/
+- Eskilstuna-Kuriren — http://www.ekuriren.se/
+- Europa Portalen — https://www.europaportalen.se/
+- Expressen — http://www.expressen.se/
+- Filipstads Tidning — https://www.filipstadstidning.se/
+- Folkbladet — http://www.folkbladet.se/
+- Fryksdals Bygden — https://www.fryksdalsbygden.se/
+- Göteborgs Fria Tidning — http://www.goteborgsfria.se/
+- Göteborgs-Posten — http://www.gp.se/
+- Gefle Dagblad — http://www.gd.se/
+- GT Privat — http://www.gt-tidning.se/
+- Hallands Nyheter — http://www.hn.se/
+- Hallandsposten — http://www.hallandsposten.se/
+- Halmstad Tidning — http://www.halmstadtidning.nu/
+- Helagotland.se — http://www.helagotland.se/
+- Helsingborgs Dagblad — http://www.hd.se/
+- Helahälsingland.se — http://www.halsingekuriren.se/
+- Hjo Tidning — https://www.hjotidning.se/
+- Jnytt — http://www.jnytt.se/
+- Karlskoga Tidning — https://www.karlskogatidning.se/
+- Katrineholms-Kuriren — http://www.kkuriren.se/
+- Kristianstads Bladet — http://www.kristianstadsbladet.se/
+- Kuriren — http://www.kuriren.nu/
+- Lamaane — http://www.lamaane.net/
+- The Local — http://www.thelocal.se/
+- Länstidningen Östersund — http://www.ltz.se/
+- Mariestads-Tidningen — https://www.mariestadstidningen.se/
+- Motala & Vadstena Tidning — https://www.mvt.se/
+- Nerikes Allehanda — http://www.na.se/
+- NewsDirect — http://www.newsdirect.se/
+- News Nyheter — http://www.nyavf.se/
+- NKPG.News — https://nkpg.news/
+- Norra Skåne — http://www.nsk.se/
+- Norra Västerbotten — http://www.norran.se/
+- Norrköpings Tidningar — http://www.nt.se/
+- Norrtelje Tidning — http://www.norrteljetidning.se/
+- NSD, Norrländska Socialdemokraten — http://www.nsd.se
+- Nya Kristinehamns-Posten — https://www.nkp.se/
+- Nya Lidköpings Tidningen — http://www.nlt.se/
+- Nya Wermlands-Tidningen — https://www.nwt.se/
+- Nynashamns Posten — https://www.nynashamnsposten.se/
+- Offensi — https://www.socialisterna.org/offensiv/
+- Piteå-Tidningen — http://www.pitea-tidningen.se/
+- Proletären — http://www.proletaren.se/
+- Säffle-Tidningen — https://www.saffletidningen.se/
+- Scandinavian Times — https://www.scandinaviatimes.com/
+- Södermanlands Nyheter — http://www.sn.se/
+- Skånska Dagbladet — http://www.skd.se/
+- Skaraborgs Läns Allehanda — https://www.sla.se/
+- Skaraborgs Läns Tidning — https://www.skaraborgslanstidning.se/
+- Skaraborgs Nyheter — https://www.skaraborgsnyheter.se/
+- Smålandsposten — http://www.smp.se/
+- Stockholms Fria — http://www.stockholmsfria.se/
+- Stockholm News — https://www.stockholmnews.com/
+- Sundsvalls Tidning — http://www.st.nu/
+- Svenljunga & Tranemo Tidning — http://www.stthuset.com/
+- Svenska Dagbladet — http://www.svd.se/
+- Sydöstran — http://www.sydostran.se/
+- Sydsvenskan — https://www.sydsvenskan.se/
+- Ttela — http://www.ttela.se/
+- Upsala Nya Tidning — https://www.unt.se/
+- Värmlands Folkblad — http://www.vfb.se/
+- Västerbottens-Kuriren — http://www.vk.se/
+- Vestmanlands Läns Tidning — https://www.vlt.se/
+- Vi i Tyresö — http://viityreso.se/
+- Vimmerby Tidnin — http://www.vimmerbytidning.se/
+- Wighs News — http://www.wighsnews.se/
+- Your Middle East — http://www.yourmiddleeast.com/
+- Ystads Allehanda — http://www.ystadsallehanda.se/
+- Ölandsbladet — http://www.olandsbladet.se/
+- Östersunds-Posten — http://www.op.se/
+- Östra Småland — https://helaostrasmaland.se/
+
+### allyoucanread — https://www.allyoucanread.com/swedish-newspapers/
+- Expressen — https://www.expressen.se/
+- Aftonbladet — https://aftonbladet.se/
+- DN.se — https://www.dn.se/
+- SvD Svenska Dagbladet — http://svd.se/
+- GP — https://www.gp.se/
+- The Local (English) — https://thelocal.se/
+- Blogg.se — https://www.blogg.se/
+- Sydsvenskan — https://sydsvenskan.se/
+- Nyheter24 — https://nyheter24.se/
+- omni.se — https://omni.se/
+- Helsingborgs Dagblad — https://hd.se/
+- VK Vasterbottens-Kuriren — https://www.vk.se/
+- NA.se — https://na.se/
+- ST — https://st.nu/
+- vlt.se — https://vlt.se/
+- OP.se — https://op.se/
+- Hallandsposten — https://www.hallandsposten.se/
+- GD.se — https://gd.se/
+- allehanda.se — https://allehanda.se/
+- nwt.se — https://nwt.se/
+- Fria Tider — https://friatider.se/
+- UNT.se — https://unt.se/
+- Norran Skelleftea — https://norran.se/
+- Norrkopings Tidningar — https://nt.se/
+- Corren.se — https://corren.se/
+- MetroMode — https://metromode.se/
+- Boras Tidning bt.se — https://www.bt.se/
+- SMP.se Smalandsposten — https://www.smp.se/
+- Samnytt — https://samnytt.se/
+- NSD Norrlandska Socialdemokraten — https://nsd.se/
+- Barometern Oskarshamns-Tidningen — https://www.barometern.se/
+- Kristianstadsbladet — https://www.kristianstadsbladet.se/
+- ttela — https://www.ttela.se/
+- ekuriren.se — https://ekuriren.se/
+- Arbetarbladet — https://arbetarbladet.se/
+- Bohuslaningen — https://www.bohuslaningen.se/
+- Norrbottens-Kuriren — https://kuriren.nu/
+- Hallands Nyheter — https://www.hn.se/
+- Ystads Allehanda — https://www.ystadsallehanda.se/
+- BLT Blekinge Lans Tidning — https://www.blt.se/
+- Hela Gotland — https://helagotland.se/
+- VF Varmlands Folkblad — https://vf.se/
+- iFokus — https://ifokus.se/
+- Dagen — https://www.dagen.se/
+- Dagens Media — https://dagensmedia.se/
+- Folkbladet — https://www.folkbladet.nu/
+- Dala-Demokraten — https://dalademokraten.se/
+- SN.se Sodermanlands Nyheter — https://sn.se/
+- Norra Skane — https://www.nsk.se/
+- LT ltz.se — https://ltz.se/
+
+### abyznewslinks — http://www.abyznewslinks.com/swede.htm
+- ABC Nyheter — http://www.abcnyheter.se/
+- Alla Nyheter — http://allanyheter.com/
+- Euro Investor — http://www.euroinvestor.se/
+- Finansportalen — https://www.finansportalen.se/
+- Nyheter — http://nyheter.se/
+- Nyheter 24 — https://nyheter24.se/
+- Nyheter Idag — https://nyheteridag.se/
+- Nyheter Nu — http://www.nyheternu.se/
+- Nyhets Databasen — http://www.nyhetsdatabasen.se/
+- Nyhetsportalen — http://www.nyhetsportalen.se/
+- Omni — http://omni.se/
+- Pressen — http://www.pressen.se/
+- Sportal — https://www.sportal.se/
+- Sverige — https://www.sverige.nu/
+- The Local — https://www.thelocal.se/
+- Aftonbladet — http://www.aftonbladet.se/
+- Dagens Industri — http://www.di.se/
+- Dagens Nyheter — http://www.dn.se/
+- Expressen — http://www.expressen.se/
+- Goteborgs Posten — http://www.gp.se/
+- Metro — https://www.metro.se/
+- Svenska Dagbladet — https://www.svd.se/
+- Syd Svenska Dagbladet — https://www.sydsvenskan.se/
+
+## switzerland (western_europe) — Switzerland
+
+### w3newspapers — https://www.w3newspapers.com/switzerland/
+- Blick — https://www.blick.ch/
+- Neue Zürcher Zeitung (NZZ) — https://www.nzz.ch/
+- 20 Minuten — https://www.20min.ch/
+- Aargauer Zeitung — https://www.aargauerzeitung.ch/
+- Tages-Anzeiger (Tagi or TA) — https://www.tagesanzeiger.ch/
+- Neue Luzerner Zeitung (Neue LZ) — https://www.luzernerzeitung.ch/
+- BZ — https://www.bzbasel.ch/
+- Basler Zeitung — https://www.bazonline.ch/
+- Berner Zeitung (BZ) — https://www.bernerzeitung.ch/
+- Bieler Tagblatt — https://www.bielertagblatt.ch/
+- Der Bund — https://www.derbund.ch/
+- St. Galler Tagblatt — https://www.tagblatt.ch/
+- Die Südostschweiz (Southeastern Switzerland) — https://www.suedostschweiz.ch/
+- TagesWoche — https://tageswoche.ch/
+- Tessiner Zeitung — https://tessinerzeitung.ch/
+- Zofinger Tagblatt — https://www.zofingertagblatt.ch/
+- Cash — https://www.cash.ch/
+- Neue Fricktaler Zeitung — https://www.nfz.ch/
+- Der Brienzer — https://www.derbrienzer.ch/
+- Berner Oberlander — https://www.berneroberlaender.ch/
+- Zurcher Unterlander — https://www.zuonline.ch/
+- Zurichsee Zeitung — https://www.zsz.ch/
+- Der Landbote — https://www.landbote.ch/
+- March Anzeiger — https://www.hoefner.ch/
+- Handelszeitung — https://www.handelszeitung.ch/
+- Schweizer Bauer — https://www.schweizerbauer.ch/
+- Anzeiger vom Rottal — https://www.anzeigervomrottal.ch/
+- Vorwaerts — https://www.vorwaerts.ch/
+- Zuger Woche — https://www.zugerwoche.ch/
+- Winterthurer Zeitung — https://www.winterthurer-zeitung.ch/
+- Wiler Nachrichten — https://www.wiler-nachrichten.ch/
+- Tagblatt der Stadt Zürich — https://www.tagblattzuerich.ch/
+- Simmental Zeitung — http://www.simmentalzeitung.ch/
+- Schaffhauser AZ — https://www.shaz.ch/
+- St. Galler Nachrichten — https://www.st-galler-nachrichten.ch/
+- Jungfrau Zeitung — https://www.jungfrauzeitung.ch/
+- Frutiglander — https://www.frutiglaender.ch/
+- Fridolin — https://www.fridolin.ch/
+- Engadiner Post — https://www.engadinerpost.ch/
+- Baernerbaer — https://baernerbaer.ch/
+- Aarauer Nachrichten — https://www.aarauer-nachrichten.ch/
+- Schaffhauser Nachrichten — https://www.shn.ch/
+- Sarganserländer — https://www.sarganserlaender.ch/rubriken/aktuell/
+- March-Anzeiger — https://www.marchanzeiger.ch/
+- Watson.ch — https://www.watson.ch/
+- Beobachter — https://www.beobachter.ch/
+- Finanz und Wirtschaft — https://www.fuw.ch/
+- Die Weltwoche — https://weltwoche.ch/
+- zueriost.ch — https://zueriost.ch/
+- BERN-OST — https://www.bern-ost.ch/
+- Bote der Urschweiz — https://www.bote.ch/
+- Radio Rottu Oberwallis — http://www.rro.ch/cms/index.php
+- Der Rheintaler — https://rheintaler.ch/
+- WOZ Die Wochenzeitung — https://www.woz.ch/
+- Freiburger Nachrichten — https://freiburger-nachrichten.ch/
+- Oltner Tagblatt — https://www.oltnertagblatt.ch/
+- Thuner Tagblatt — https://www.thunertagblatt.ch/
+- Coopzeitung — https://www.coopzeitung.ch/
+- Schweizerzeit — https://schweizerzeit.ch/
+- Zeit Fragen — https://www.zeit-fragen.ch/
+- Lokalinfo.ch — https://www.lokalinfo.ch/
+- Appenzeller Zeitung — https://appenzell24.ch/
+- Wochen Zeitung — https://www.wochen-zeitung.ch/
+- Bauern Zeitung — https://www.bauernzeitung.ch/
+- Grenchner Tagblatt — https://www.grenchnertagblatt.ch/
+- Entlebucher Anzeiger — https://www.entlebucher-anzeiger.ch/
+- Unter Emmentaler — https://unter-emmentaler.ch/
+- Neue Oltner Zeitung — https://www.noz.ch/
+- Anzeiger der Stadt Kloten — https://www.kloteneranzeiger.ch/
+- Meilener Anzeiger — https://meileneranzeiger.ch/
+- 24 heures — https://www.24heures.ch/
+- Le Matin — https://www.lematin.ch/
+- Tribune de Genève — https://www.tdg.ch/
+- Le Temps — https://www.letemps.ch/
+- Le Courrier — https://lecourrier.ch/
+- Le Nouvelliste — https://www.lenouvelliste.ch/
+- La Gruyère — https://www.lagruyere.ch/
+- La Liberté — https://www.laliberte.ch/
+- arcinfo.ch — https://www.arcinfo.ch/
+- Le Quotidien jurassien — https://www.lqj.ch/
+- Lausanne Cités — https://lausannecites.ch/
+- Terre&Nature — https://www.terrenature.ch/
+- Agefi — https://agefi.com/
+- La Cote — https://www.lacote.ch/
+- Corriere del Ticino — https://www.cdt.ch/
+- laRegione Ticino — https://www.laregione.ch/
+- Il Grigione Italiano — https://www.ilgrigioneitaliano.ch/
+- Ticionline tio — https://www.tio.ch/
+- Schweizer-illustrierte — https://www.schweizer-illustrierte.ch/
+- Ticinonews — https://www.ticinonews.ch/
+- The Local — https://www.thelocal.ch/
+- Le News — https://lenews.ch/
+- swissinfo.ch — https://www.swissinfo.ch/
+- business-swiss.ch — https://business-swiss.ch/
+- sport.ch — https://www.sport.ch/
+- Sport - Schweizer Radio und Fernsehen — https://www.srf.ch/sport
+- sport - news.ch — https://www.news.ch/sport/
+- MSN Sport — https://www.msn.com/de-ch/sport
+- fussball.ch — https://www.fussball.ch/
+- Keystone-SDA — https://www.keystone-sda.ch/
+
+### onlinenewspapers — https://onlinenewspapers.com/switzerland.shtml
+- 20 Minuten — http://www.20min.ch/
+- 24 Heures — http://www.24heures.ch/
+- Aargauer Zeitung — http://www.aargauerzeitung.ch/
+- Agefi — http://www.agefi.com/
+- Andelfinger Zeitung — http://www.andelfinger.ch/
+- Anglo Swiss — http://www.angloswiss.com/
+- Appenzell24 — https://appenzell24.ch/
+- Basellandschaftliche Zeitung (BZ) — https://www.bzbasel.ch/
+- Basler Zeitung — http://www.bazonline.ch/
+- BauernZeitung — http://www.bauernzeitung.ch/
+- Beobachter — http://www.beobachter.ch/
+- Berner Landbote — https://www.bernerlandbote.ch/
+- Berner Oberländer — https://www.berneroberlaender.ch/
+- Berner Zeitung — http://www.bernerzeitung.ch/
+- Bärnerbär — https://baernerbaer.ch/
+- Biel Bienne — http://www.bielbienne.com/
+- Bieler Tagblatt — https://www.bielertagblatt.ch/
+- Bilanz — http://www.bilanz.ch/
+- BLICK — http://www.blick.ch/
+- Bock — http://www.bockonline.ch/
+- Bote der Urschweiz — http://www.bote.ch/
+- Cash — http://www.cash.ch/
+- Coop Zeitung — http://www.coopzeitung.ch/
+- Corriere del Ticino — http://www.cdt.ch/
+- Der Bund — http://www.ebund.ch/
+- Die Ostschweiz — http://www.dieostschweiz.ch/
+- Die Wochen Zeitung (WOZ) — https://www.woz.ch/
+- DorfBLITZ — http://www.dorfblitz.ch/
+- Dorfzeitung — http://www.dorfposcht.ch/
+- Engadiner Post/Posta Ladina — http://www.engadinerpost.ch/
+- Entlebucher Anzeiger — http://www.entlebucher-anzeiger.ch/
+- Finanz & Wirtschaft — https://www.fuw.ch/
+- Frauenfelder Nachrichten — https://www.thurgauer-nachrichten.ch/
+- Freiburger Nachrichten — http://www.freiburger-nachrichten.ch/
+- Fridolin — https://ausgabe.fridolin.ch/
+- Furttaler — http://www.furttaler.ch/
+- General-Anzeiger — http://www.brugg-online.ch/
+- Giornale del Popolo — https://gdp.ch
+- Grenchner Stadt Anzeiger — https://www.grenchnerstadtanzeiger.ch/
+- Grenchner Tagblatt — https://www.grenchnertagblatt.ch/
+- Gundeldinger Zeitung — http://www.gundeldingen.ch/
+- Höfner Volksblatt — http://www.hoefner.ch/
+- Handels Zeitung (HZ) — http://www.handelszeitung.ch/
+- Israel Nachrichten — http://www.israel-nachrichten.org/
+- Le Journal du Jura — http://www.journaldujura.ch/
+- Jungfrau Zeitung — http://www.jungfrauzeitung.ch/
+- Langenthaler Tagblatt — https://www.langenthalertagblatt.ch/
+- KreuzlingerZeitung — https://www.kreuzlinger-zeitung.ch/
+- L' Express — http://www.lexpress.ch/
+- L'Impartial — http://www.limpartial.ch/
+- La Gruyère — http://www.lagruyere.ch/
+- La Libertè — http://www.laliberte.ch/
+- La Régione — http://www.laregione.ch/
+- Le Courrier — http://www.lecourrier.ch/
+- Le Matin — http://www.lematin.ch/
+- Le News — https://lenews.ch/
+- Le Nouvelliste — http://www.nouvelliste.ch/
+- Le Quotidien Jurassien — https://www.lqj.ch/
+- Le Temps — http://www.letemps.ch/
+- Lenzburg News — https://www.lenzburg.ch/de/news.html
+- The Local — http://www.thelocal.ch/
+- Luzerner Zeitung — https://www.luzernerzeitung.ch/
+- Neue Oltner Zeitung (NOZ) — http://www.noz.ch/
+- Neue Zürcher Zeitung — http://www.nzz.ch/
+- Obshina — http://www.obshina.ch/
+- Oltner Tagblatt — http://www.oltnertagblatt.ch/
+- PferdeWoche — http://www.pferdewoche.ch/
+- Quartierecho — http://www.quartierecho.ch/
+- Schaffhauser Nachrichten — http://www.shn.ch/
+- Solothurner Zeitung — http://www.solothurner-zeitung.ch/
+- SonntagsZeitung — http://www.sonntagszeitung.ch/
+- Südostschweiz — https://www.suedostschweiz.ch/
+- Swiss Info — http://www.swissinfo.ch/
+- Tachles — http://www.tachles.ch/
+- Tagblatt — https://www.tagblatt.ch/
+- Tagblatt der Stadt Zürich — https://www.tagblattzuerich.ch/
+- Tages Anzeiger — https://www.tagesanzeiger.ch/
+- TagesWoche — https://tageswoche.ch/
+- Tele — http://www.tele.ch/
+- Thuner Tagblatt (BZ) — http://www.thunertagblatt.ch/
+- TicinoLibero (Ticino) [In Italian] — https://www.ticinolibero.ch/
+- Toggenburger Zeitung — https://www.toggenburger-zeitung.ch/
+- Tribune de Genève — http://www.tdg.ch/
+- Urner Wochenblatt — http://www.urnerwochenblatt.ch/
+- Volksstimme — http://www.volksstimme.ch/
+- Vorwärts — https://pda.ch/feeds/vorwaerts/
+- Die Weltwoche — http://www.weltwoche.ch/
+- Wiler Nachrichten — http://www.wiler-nachrichten.ch/
+- Winterthurer Woche — https://winterthurerwoche.ch/
+- Winterthurer Zeitung — https://www.winterthurer-zeitung.ch/
+- Wochen-Zeitung — http://www.wochen-zeitung.ch/
+- Zürcher Unterländer — https://www.zuonline.ch/
+- Zürichsee-Zeitung — http://www.zsz.ch/
+- Zofinger Tagblatt — https://www.zofingertagblatt.ch/
+
+### allyoucanread — https://www.allyoucanread.com/swiss-newspapers/
+- Blick — https://blick.ch/
+- 20 Minuten — https://20min.ch/
+- Neue Zuercher Zeitung — https://nzz.ch/
+- swissinfo.ch — https://www.swissinfo.ch/
+- Tages Anzeiger — https://tagesanzeiger.ch/
+- Watson.ch — https://watson.ch/
+- LeTemps.ch — https://letemps.ch/
+- Tribune de Geneve — https://tdg.ch/
+- 24 heures — https://24heures.ch/
+- Le Matin — https://lematin.ch/
+- baz.ch Basler Zeitung — https://bazonline.ch/
+- Berner Zeitung — https://bernerzeitung.ch/
+- Ticinonline tio — http://www.tio.ch/
+- Aargauer Zeitung — https://aargauerzeitung.ch/
+- St.Galler Tagblatt — https://tagblatt.ch/
+- Der Bund — https://derbund.ch/
+- Neue Luzerner Zeitung — https://luzernerzeitung.ch/
+- Suedostschweiz.ch — https://suedostschweiz.ch/
+- Le Nouvelliste — https://www.lenouvelliste.ch/
+- Schweizer Illustrierte — https://www.schweizer-illustrierte.ch/
+- Corriere del Ticino — https://cdt.ch/
+- Beobachter — https://www.beobachter.ch/
+- teletext.ch — https://teletext.ch/
+- Hommages — https://hommages.ch/
+- Arcinfo — https://www.arcinfo.ch/
+- MeteoNews — https://meteonews.ch/
+- Ticinonews — https://ticinonews.ch/
+- SonntagsZeitung — https://sonntagszeitung.ch/
+- Tages Woche — https://tageswoche.ch/
+- BERN-OST — https://www.bern-ost.ch/
+
+### abyznewslinks — http://www.abyznewslinks.com/switz.htm
+- Cosmopolis — http://www.cosmopolis.ch/
+- News — http://www.news.ch/
+- The Local — http://www.thelocal.ch/
+- Expatica — http://www.expatica.com/ch/
+- Blick — http://www.blick.ch/
+- Cash — http://www.cash.ch/
+- Die Weltwoche — http://www.weltwoche.ch/
+- Neue Zurcher Zeitung — http://www.nzz.ch/
+- Sonntags Zeitung — http://www.sonntagszeitung.ch/
+- Tages Anzeiger — http://www.tagesanzeiger.ch/
+
+## united_kingdom (western_europe) — United Kingdom
+
+### w3newspapers — (not listed)
+- (no entries)
+
+### onlinenewspapers — (not listed)
+- (no entries)
+
+### allyoucanread — (not listed)
+- (no entries)
+
+### abyznewslinks — http://www.abyznewslinks.com/uking.htm
+- (no entries)
+
+## russian_federation (russian_federation) — Russian Federation
+
+### w3newspapers — https://www.w3newspapers.com/russia/
+- Komsomolskaya Pravda (Комсомольская правда) — https://www.kp.ru/
+- Rossiyskaya Gazeta (Российская газета) — https://rg.ru/
+- Kommersant (Коммерсантъ) — https://www.kommersant.ru/
+- Izvestia (Известия) — https://iz.ru/
+- Argumenty i Fakty (Аргументы и факты) — https://aif.ru/
+- Novaya Gazeta (Новая газета) — https://novayagazeta.ru/
+- Nezavisimaya Gazeta (Независимая газета) — https://www.ng.ru/
+- RBC (РБК) — https://www.rbc.ru/
+- Moskovskij Komsomolets (Московский комсомолец) — https://www.mk.ru/
+- Novye Izvestia (Новые Известия) — https://newizv.ru/
+- Pravda (Правда) — https://gazeta-pravda.ru/
+- Literaturnaya Gazeta (Литературная газета) — https://lgz.ru/
+- Nezavisimoye Voyennoye Obozreniye (Независимое военное обозрение) — https://nvo.ng.ru/
+- Versia (Версия) — https://versia.ru/
+- Novy Vzglyad (Новый Взгляд) — https://www.newlookmedia.ru/
+- Moskovskiye Novosti (Московские новости) — https://www.mn.ru/
+- Trud (Труд) — https://www.trud.ru/
+- Vremya Novostei (Время новостей) — http://vremya.ru/
+- RT — https://www.rt.com/
+- Lenta.ru(Лента.ру) — https://lenta.ru/
+- RIA Novosti(РИА Новости) — https://ria.ru/
+- Vesti.ru(Вести.ру) — https://www.vesti.ru/
+- Smi2.ru(СМИ2) — https://smi2.ru/
+- Gazeta.ru (Газета.ру) — https://www.gazeta.ru/
+- TV Rain (Дождь) — https://tvrain.tv/
+- Meduza(Медуза) — https://meduza.io/
+- Svobodnaya Pressa(Свободная Пресса) — https://svpressa.ru/
+- InoSMI.ru(ИноСМИ) — https://inosmi.ru/
+- REGNUM — https://regnum.ru/
+- Radio Svoboda(Радио Свобода) — https://www.svoboda.org/
+- M24 (Moscow 24)(Москва 24) — https://www.m24.ru/
+- Dni.ru(Дни.ру) — https://dni.ru/
+- Utro.ru — https://utro.ru/
+- TV Zvezda — https://tvzvezda.ru/
+- Rosbalt — https://www.rosbalt.ru/
+- Metro Russia — https://www.metronews.ru/
+- Russkaya Planeta — https://rusplt.ru/
+- Og.ru (Obshchaya Gazeta) — https://og.ru/
+- Russkaya Vesna — https://rusvesna.su/
+- Vedomosti (Ведомости) — https://www.vedomosti.ru/
+- Delovoy Peterburg (Деловой Петербург) — https://www.dp.ru/
+- RB.ru (Rusbase) — https://rb.ru/
+- Expert.ru — Economics (Эксперт) — https://expert.ru/ekonomika/
+- Ekonomika i Zhizn (Экономика и жизнь) — https://www.eg-online.ru/
+- E1.RU(Екатеринбург Онлайн) — https://www.e1.ru/
+- NGS (Novosibirsk Online)(НГС) — https://ngs.ru/
+- Vechernyaya Moskva(Вечерняя Москва) — https://vm.ru/
+- Chita.ru(Чита.ру) — https://www.chita.ru/
+- Amic.ru (ИА «Амител») — https://www.amic.ru/
+- Sakhalin.info(Сахалин.Инфо) — https://sakhalin.info/
+- Fontanka.ru (Фонтанка.ру) — https://www.fontanka.ru/
+- Kubanskiye Novosti(Кубанские новости) — https://kubnews.ru/
+- Sankt-Peterburgskie Vedomosti(Санкт-Петербургские ведомости) — https://spbvedomosti.ru/
+- Moskovskaya Pravda(Московская правда) — https://mospravda.ru/
+- Novgorodskie Vedomosti(Новгородские ведомости) — https://novvedomosti.ru/
+- Vecherniy Chelyabinsk(Вечерний Челябинск) — https://vecherka.su/
+- Tyumenskie Izvestiya(Тюменские известия) — https://t-i.ru/
+- Tulskie Izvestiya(Тульские известия) — https://ti71.ru/
+- Volgogradskaya Pravda(Волгоградская правда) — https://vpravda.ru/
+- Yakutiya(Якутия) — https://yakutia-daily.ru/
+- Pskovskaya Lenta Novostey(Псковская Лента Новостей) — https://pln-pskov.ru/
+- Vecherniy Novosibirsk(Вечерний Новосибирск) — https://vn.ru/
+- Vecherniy Murmansk(Вечерний Мурманск) — https://vmnews.ru/
+- Vecherniy Stavropol(Вечерний Ставрополь) — https://vechorka.ru/
+- Sovetsky Sakhalin(Советский Сахалин) — https://sovsakh.ru/
+- Tyumenskaya Oblast Segodnya(Тюменская область сегодня) — https://tumentoday.ru/
+- Novgorod (Veliky Novgorod)(Новгород) — https://gazetanovgorod.ru/
+- Tverskaya Zhizn(Тверская жизнь) — https://tverlife.ru/
+- Altaiskaya Pravda(Алтайская правда) — https://www.ap22.ru/
+- Pravda Severa(Правда Севера) — https://pravdasevera.ru/
+- Province(Провинция) — https://www.province.ru/
+- Nizhegorodskiye Novosti(Нижегородские новости) — https://nnews.nnov.ru/
+- Vladivostok (Владивосток) — https://vladnews.ru/
+- Kazanskiye Vedomosti(Казанские ведомости) — https://kazved.ru/
+- Respublika Tatarstan(Республика Татарстан) — https://rt-online.ru/
+- Vostochno-Sibirskaya Pravda(Восточно-Сибирская правда) — https://vsp.ru/
+- Sports.ru — https://www.sports.ru/
+- Sport ExpressСпорт-Экспресс — https://www.sport-express.ru/
+- Sovetsky SportСоветский спорт — https://www.sovsport.ru/
+- Championat (Чемпионат) — https://www.championat.com/
+- Match TV (Матч ТВ) — https://matchtv.ru/
+- SportRBCСпорт РБК — https://sportrbc.ru/
+- SportsDaily.ruСпорт День за Днём — https://www.sportsdaily.ru/
+- TASS (ТАСС) — https://tass.ru/
+- Interfax (Интерфакс) — https://www.interfax.ru/
+- Parlamentskaya Gazeta (Парламентская газета) — https://www.pnp.ru/
+- The Moscow Times — https://www.themoscowtimes.com/
+- The Insider (English) — https://theins.ru/en
+- Moskauer Deutsche Zeitung — https://mdz-moskau.eu/
+
+### onlinenewspapers — https://onlinenewspapers.com/russia.shtml
+- 59.MVD — http://59.mvd.ru/
+- Argumenti I Fakti — http://www.aif.ru/
+- ARI Russian News Agency — http://ari.ru/
+- Arsenievskie Vesti — http://www.arsvest.ru/
+- ChasPik — http://www.chaspik.spb.ru/
+- Credo — http://www.portal-credo.ru/
+- Delo — http://sia.ru/
+- Delovoi Krug — http://www.mediakrug.ru/
+- Delovoi Peterburg — http://dp.ru/
+- EG Online — https://www.eg-online.ru/
+- Financial Newspaper — http://www.2kom.ru/
+- Gazeta — http://www.gzt.ru/
+- Gazeta Strela — http://gazetastrela.ru/
+- Gazeta.ru — http://www.gazeta.ru/
+- Informpolis — http://infpol.ru/
+- Inostranets — http://www.inostranets.ru/
+- Interfax Vremia — http://www.interfax.ru/
+- IZH Media — https://izhmedia.ru/
+- Izvestia — https://iz.ru/
+- Kaluga.ru — http://www.kaluga.ru/news/
+- Karelia — http://www.gov.karelia.ru/press-office/
+- The Kazan Herald — https://vk.com/kazanherald
+- Khabarovskye Izvestya — http://www.khb.ru/
+- Koenigsberger Express — http://www.koenigsberger-express.com/
+- Kommersant — http://www.kommersant.ru/
+- Komsomoljskaja Pravda — http://www.kp.ru/
+- Krasnodarskaya Pravda — https://krd-pravda.ru/
+- Kvedomosti — https://www.kvedomosti.ru/
+- Lenta.Ru — http://lenta.ru/
+- Literaturnaya Gazeta — http://www.lgz.ru/
+- MKRU — http://ulan.mk.ru/
+- Mir News — https://mirnewsa.ru/
+- Molodoy Kommunar — http://www.mkommunar.ru/
+- Moscow Daily News — http://www.mn.ru/
+- The Moscow Times — http://www.themoscowtimes.com/
+- Moskovskaya Pravda — http://www.mospravda.ru/
+- Moskovsky Komsomoletz — http://www.mk.ru/
+- Nevskoe Vremya — http://www.nevskoevremya.spb.ru/
+- Newsru — http://www.newsru.com/
+- Nezavisimaja Gazeta — http://www.ng.ru/
+- Novaya Gazeta — http://www.novayagazeta.ru/
+- Novosti Press Agency — https://fr.sputniknews.com/
+- Novosty Peterburga — http://novosti.spb.ru/
+- Novosty Pskova — http://www.ellink.ru/
+- Obshchaya Gazeta — http://www.og.ru/
+- Ogonyok — https://www.riga.lv/
+- Parlamentskaya Gazeta — http://www.pnp.ru/
+- Pervaya Krymskaya — https://www.1k.com.ua/
+- Polit.ru — http://www.polit.ru/
+- Poslednie Izvestija — http://berita.ru/
+- Pravda — http://www.pravda.ru/
+- Pravda Severa — http://www.pravdasevera.ru/
+- Present — http://www.present-dv.ru/
+- Primorskie Vesty — https://www.srbijadanas.com/tags/kk-primorska
+- Provincia — https://www.province.ru/
+- Rabochaya Democratia — http://www.1917.com/
+- Rabota e Obuchenie — https://rabota-obuchenie.ru/
+- RBC — https://www.rbc.ru/
+- Regional Informational Digest — http://www.rid.spb.ru/
+- Ria Ru — https://ria.ru/
+- Regnum — https://regnum.ru/
+- Ria Novosti — https://sputniknews.com/
+- Rossiyskaja Kurortnaja Gazeta — http://www.rg.ru/
+- Russia Herald — http://www.russiaherald.com/
+- The Russia Journal — http://www.russiajournal.com/
+- Russia Today — http://www.rt.com/
+- Russian RT — https://russian.rt.com/
+- Russkij Bazar — http://russian-bazaar.com/
+- Russkiy Vestnik — http://www.rv.ru/
+- Russland.RU - Internettavisen — http://www.norge.russland.ru/
+- RZD Partner — https://www.rzd-partner.ru/
+- Samara News — https://www.trkterra.ru/
+- Samara Today — http://news.samaratoday.ru/
+- Selskaya Zhizn — http://www.sgazeta.ru/
+- Segodnya — http://www.itogi.ru/
+- Segodnyashnija Gazeta — http://www.sgzt.com/
+- Sobesednik — http://www.sobesednik.ru/
+- Sovietsky Sport — http://www.sovsport.ru/
+- Speed-Info — http://www.s-info.ru/
+- Sport-Express — http://www.sport-express.ru/
+- The St Petersburg Times — https://www.sptimes.ru/
+- St Petersburg News — http://www.novosti.spb.ru/
+- Stavropol'skaya Pravda — http://www.stapravda.ru/
+- Stolica S — http://stolica-s.su/
+- Stop Gazeta — http://www.stopgazeta.ru/
+- Strana Kaliningrad — https://strana39.ru/
+- TASS — https://www.tass.ru/
+- Tatarskaya Gazeta — http://tatar.yuldash.com/
+- Tele 7 — http://www.tele7.nsk.su/
+- Telegraf — https://telegraf.bb.lv/
+- Tomskaya Nedelya — http://tn.tomsk.ru/
+- Transport Rossie — https://mintrans.gov.ru/
+- Trud — http://www.trud.ru/
+- Tver13 — http://www.tver13.org/
+- Uchitelskaya Gazeta — http://www.ug.ru/
+- Utro — http://www.utro.ru/
+- Vashe Zdorovie — http://www.optovik.khv.ru/
+- Vecherny Novosibirsk — http://www.vn.ru/
+- Vechernyaya Kazan — http://www.evening-kazan.ru/
+- Vedomosti — http://www.vedomosti.ru/
+- Versia — https://www.versia.ru/
+- Vesti.Ru — https://www.vesti.ru/
+- Vladivostok News — http://www.vladnews.ru/
+- Wek — http://www.wek.ru/
+- World Point — http://www.worldpoint.tv/
+- Yabloko — http://www.yabloko.ru/
+- Zavtra Online — http://www.zavtra.ru/
+- Zelenograd — http://www.zelenograd.ru/
+- ZR Press — http://www.zrpress.ru/
+
+### allyoucanread — https://www.allyoucanread.com/russian-newspapers/
+- RIA Novosti — https://ria.ru/
+- Lenta.ru — https://lenta.ru/
+- KP.ru Komsomolskaya Pravda — https://kp.ru/
+- RG.ru Rossiyskaya Gazeta — https://rg.ru/
+- smi2.ru — https://smi2.ru/
+- TASS — https://tass.ru/
+- NGS Novosibirsk — https://ngs.ru/
+- AiF Argumenti i Fakti — https://aif.ru/
+- MK.ru — https://www.mk.ru/
+- interfax — https://www.interfax.ru/
+- Gazeta.ru — https://gazeta.ru/
+- E1 Ekaterinburg1 — http://www.e1.ru/
+- vedomosti.ru — https://www.vedomosti.ru/
+- URA.ru — https://ura.news/
+- Kommersant.ru — https://www.kommersant.ru/
+- Fontanka.ru — https://www.fontanka.ru/
+- Pravda — https://www.pravda.ru/
+- Utro.ru — https://utro.ru/
+- Life — https://life.ru/
+- Moscow Times — https://themoscowtimes.com/
+- Izvestia — https://iz.ru/
+- sibnet.ru — https://sibnet.ru/
+- Vesti.ru — https://www.vesti.ru/
+- Russkaya Vesna — https://rusvesna.su/
+- InoCMI.ru — https://inosmi.ru/
+- primamedia.ru Vladivastok — https://primamedia.ru/
+- Radio Svoboda — https://www.svoboda.org/
+- REGNUM — https://regnum.ru/
+- KM.ru — https://www.km.ru/
+- Nezavisimaya gazeta — https://ng.ru/
+- 74.ru Chelyabinsk — https://74.ru/
+- subscribe.ru — https://subscribe.ru/
+- NN.ru Nizhniy Novgorod — https://www.nn.ru/
+- TV Zvezda — https://tvzvezda.ru/
+- Novaya Gazeta — https://novayagazeta.ru/
+- Rosbalt — https://rosbalt.ru/
+- RIN.ru — https://rin.ru/
+- klops.ru — https://klops.ru/
+- kasparov.ru — http://kasparov.ru/
+- sakh.com Sakhalin — https://sakh.com/
+- M24 Moscow — https://www.m24.ru/
+- NEWSru.com — https://www.newsru.com/
+- Expert — https://expert.ru/
+- 24smi — https://24smi.org/
+- Svobodnaya Pressa — https://svpressa.ru/
+- Snob — https://snob.ru/
+- UznayVse — https://uznayvse.ru/
+- Mir 24 — http://mir24.tv/
+- Vechernyaya Moskva — https://vm.ru/
+- Dni.ru — https://dni.ru/
+
+### abyznewslinks — http://www.abyznewslinks.com/russi.htm
+- Agro Info — http://agroinfo.com/en/
+- Chastny Korrespondent — http://www.chaskor.ru/
+- Expatica — http://www.expatica.ru/
+- Gazeta — http://www.gazeta.ru/
+- Integrum — http://www.integrum.ru/
+- Last 24 — http://last24.info/
+- Lenta — http://lenta.ru/
+- Life News — http://lifenews.ru/
+- Meduza — https://meduza.io/
+- Mos News — http://www.mosnews.com/
+- News RU — http://www.newsru.com/
+- Polit — http://www.polit.ru/
+- Pravda — http://english.pravda.ru/
+- Pravda — http://italia.pravda.ru/
+- Pravda — http://port.pravda.ru/
+- Pravda — http://www.pravda.ru/
+- RU Poisk — http://www.rupoisk.ru/
+- Rus Business News — http://de.rusbiznews.com/
+- Rus Business News — http://www.rusbiznews.com/
+- Rus Business News — http://fr.rusbiznews.com/
+- Rus Business News — http://www.rusbiznews.ru/
+- Rus Business News — http://es.rusbiznews.com/
+- Rus Business News — http://cn.rusbiznews.com/
+- RUS TV — http://www.rustv.ru/
+- Russia Beyond the Headlines — http://rbth.com/
+- Russia Region Press — http://russiaregionpress.ru/
+- Russland Aktuell — http://www.aktuell.ru/
+- Sovekon — http://www.sovecon.ru/
+- Sport Segodnia — http://www.sports.ru/
+- Strana — http://strana.ru/
+- Utro — http://www.utro.ru/
+- Argumenty i Fakty — http://www.aif.ru/
+- Ekonomika i Zhizn — http://www.akdi.ru/
+- Izvestiia — http://izvestia.ru/
+- Kommersant — http://www.kommersant.ru/
+- Komsomolskaia Pravda — http://www.kp.ru/
+- Krestyanskiye Vedomosti — http://www.agronews.ru/
+- Literaturnaia Gazeta — http://www.lgz.ru/
+- MK — http://www.mk.ru/
+- Nezavizimaia Gazeta — http://www.ng.ru/
+- Novaia Gazeta — http://www.novayagazeta.ru/
+- Parlamentskaia Gazeta — http://www.pnp.ru/
+- Provinchiia — http://www.province.ru/
+- Rossiyskaia Gazeta — http://www.rg.ru/
+- Russkii Kurer — http://www.ruscur.ru/
+- Russkii Vestnik — http://www.rv.ru/
+- Selskaia Zhizn — http://sgazeta.ru/
+- Sovetskii Sport — http://www.sovsport.ru/
+- Sport Ekspress — http://www.sport-express.ru/
+- Trud — http://www.trud.ru/
+- Uchitelskaia Gazeta — http://www.ug.ru/
+- Vedomosti — http://www.vedomosti.ru/
+- Versia — https://versia.ru

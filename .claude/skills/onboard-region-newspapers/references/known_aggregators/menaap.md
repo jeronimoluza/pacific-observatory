@@ -1,0 +1,2826 @@
+# Known Online-Newspaper Aggregators — Middle East, North Africa, Afghanistan & Pakistan (`menaap`)
+
+Pre-extracted per-country newspaper lists from four online-newspaper
+aggregators. Used by `/onboard-region-newspapers` step 2a as a static
+seed instead of refetching aggregator homepages every run.
+
+See `references/known_aggregators/README.md` for the ignore rules and
+the populator script that generated this file.
+
+---
+
+## bahrain (gulf_states) — Bahrain
+
+### w3newspapers — https://www.w3newspapers.com/bahrain/
+- Al-Watan — https://alwatannews.net/
+- Al Ayam — https://www.alayam.com/
+- Al Bilad — https://www.albiladpress.com/
+- Akhbar Al Khaleej — https://akhbar-alkhaleej.com/
+- Gulf Daily News (GDN) — https://www.gdnonline.com/
+- Daily Tribune (DT) — https://www.newsofbahrain.com/
+- Bahrain News Agency (BNA) — https://www.bna.bh/
+- Bahrain Mirror — https://www.bahrainmirror.com/
+- Gulf Insider — https://www.gulf-insider.com/
+- Bahrain This Week — https://www.bahrainthisweek.com/
+- 24x7 Bahrain News — https://www.twentyfoursevennews.com/
+- Gulf Weekly — https://www.gulfweekly.com/
+- Al-Wasat (archive) — http://www.alwasatnews.com/
+- BizBahrain — https://www.bizbahrain.com/
+- TradeArabia — https://www.tradearabia.com/
+- Bahrain Rugby Football Club — https://bahrainrfc.com/
+- Bahrain Olympic Committee — https://www.boc.bh/
+- Bahrain International Circuit — https://www.bahraingp.com/
+- Bahrain TV & Radio Live (MIA) — https://www.mia.gov.bh/btv-radio-live/
+- Voice of Bahrain — https://www.vob.org/
+
+### onlinenewspapers — https://onlinenewspapers.com/bahrain.shtml
+- 24/7 News — http://twentyfoursevennews.com/
+- Akhbar-Alkhaleej — http://www.akhbar-alkhaleej.com/
+- Al Ahad — http://alahad.tv.iq/
+- Al Ayam — http://www.alayam.com/
+- Al Bilad — http://www.albiladpress.com/
+- Al Watan — http://www.alwatannews.net/
+- Alwaqt — http://www.alwaqt.com/
+- Al-Wasat News — http://www.alwasatnews.com/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/bahrain/
+- Bahrain News Agency — https://www.bna.bh/
+- Bahrain This Week — http://www.bahrainthisweek.com/
+- Bahrain Tribune — https://www.newsofbahrain.com/
+- BizBahrain — http://www.bizbahrain.com/
+- Gulf News — https://www.gulfnews.com/
+- Gulf Digital News — http://www.gdnonline.com/
+- Gulf Weekly — http://www.gulfweekly.com/
+- Khaleej Times — https://www.khaleejtimes.com/region/bahrain
+- Voice of Bahrain — http://www.vob.org/
+
+### allyoucanread — https://www.allyoucanread.com/bahrain-newspapers/
+- BNA Bahrain News Agency — https://bna.bh/
+- Gulf Daily News — https://www.gdnonline.com/
+- Al Ayam — https://alayam.com/
+- AlWatan — https://alwatannews.net/
+- Akhbar-Al-Khaleej — https://akhbar-alkhaleej.com/
+- Al-Wasat — http://www.alwasatnews.com/
+- Al Bilad Press — https://www.albiladpress.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/bahra.htm
+- 24 X 7 News — http://www.twentyfoursevennews.com/
+- Bahrain Business News — http://bahrainbiznews.com/index.php?lang=ar
+- Bahrain Mirror — http://www.bahrainmirror.com/
+- Bahrain News — http://www.bahrainnews.net/
+- Biz Bahrain — http://www.bizbahrain.com/
+- Voice of Bahrain — http://www.vob.org/?lang=arabic
+- Akhbar Al Khaleej — http://www.akhbar-alkhaleej.com/
+- Al Ayam — http://www.alayam.com/
+
+## kuwait (gulf_states) — Kuwait
+
+### w3newspapers — https://www.w3newspapers.com/kuwait/
+- Al Rai — https://www.alraimedia.com/
+- Al Anbaa — https://www.alanba.com.kw/newspaper/
+- Al-Qabas — https://www.alqabas.com/
+- Al-Jarida — https://www.aljarida.com/
+- Al-Seyassah — http://al-seyassah.com/
+- Al Watan, Kuwait — https://alwatan.kuwait.tt/
+- Al-Mujtama'a — https://mugtama.com/
+- Sabr — https://www.sabr.cc/
+- Anhaar — https://anhaar.com/
+- Al Taleea — https://altaleea.com/
+- Kuwait Times — https://kuwaittimes.com/
+- Arab Times — https://www.arabtimesonline.com/
+- Kuwait News — https://kuwaitnews.com/
+- 248am.com — https://248am.com/
+- ALAAN — https://www.alaan.cc/
+- IndiansinKuwait.com — https://www.indiansinkuwait.com/Default.aspx
+- Al Masila — https://www.masilanews.com/
+- Arab Gate — https://www.arabgate.com/
+- Alzebda.com — http://alzebda.com/
+- Kuwait Daily News — http://q8dailynews.com/
+- Marina FM — http://www.marinafm.com/
+- Kuwait News Agency (KUNA) — https://www.kuna.net.kw/
+
+### onlinenewspapers — https://onlinenewspapers.com/kuwait.shtml
+- Al Aan — http://www.alaan.cc/
+- Al Anbaa — http://www.alanba.com.kw/
+- Al Arabi — http://www.alarabimag.com/
+- Al Arabimag — https://www.alarabimag.com/
+- Al Jareeda — http://www.aljarida.com/
+- Al Kuwaityah — http://alkuwaityah.com/
+- Al Qabas — https://alqabas.com/
+- Alrai — http://www.alrai.com/
+- Alrai Media — http://www.alraialaam.com/
+- Al Sabah — http://www.alsabahpress.com/
+- Al Seyassah — http://www.al-seyassah.com/
+- Al Shahed — http://www.alshahedkw.com/
+- Al Wasat — http://www.alwasat.com.kw/
+- Al Watan — http://www.alwatan.com.kw/
+- Annahar — http://www.annaharkw.com/
+- Arab Times — http://www.arabtimesonline.com/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/kuwait/
+- Gulf Digital News — http://www.gdnonline.com/
+- Gulf News — https://www.gulfnews.com/
+- Khaleej Times — https://www.khaleejtimes.com/region/kuwait
+- Kuwait Times — http://www.kuwaittimes.net/
+- Reqaba — http://www.reqaba.com/
+- Sabr — http://www.sabr.cc/
+- The Times — https://www.timeskuwait.com/
+
+### allyoucanread — https://www.allyoucanread.com/kuwait-newspapers/
+- indiansinkuwait.com — https://indiansinkuwait.com/
+- Kuwait News Agency KUNA — https://www.kuna.net.kw/
+- 248am.com — https://248am.com/
+- Arab Times — https://arabtimesonline.com/
+- Alanba — https://alanba.com.kw/
+- Al Qabas — https://alqabas.com/
+- Alrai Newspaper — https://alraimedia.com/
+- Al jarida — https://aljarida.com/
+- Kuwait Times — https://kuwaittimes.com/
+- Al Watan Kuwait.tt — http://kuwait.tt/
+
+### abyznewslinks — http://www.abyznewslinks.com/kuwai.htm
+- Al Masila — https://www.masilanews.com/
+- Araa — http://kuwait.araa.com/
+- Kuwait Bulletin — http://www.kuwaitbulletin.com/
+- Kuwait Daily News — http://q8dailynews.com/index.php?lang=ar
+- Kuwait News — http://www.kuwaitnews.com/
+- Al Qabas — http://www.alqabas.com.kw/
+- Al Rai — http://www.alraimedia.com/
+- Al Seyassah — http://www.al-seyassah.com/
+- Al Watan — http://alwatan.kuwait.tt/
+
+## oman (gulf_states) — Oman
+
+### w3newspapers — https://www.w3newspapers.com/oman/
+- Alwatan — https://alwatan.om/
+- Al Shabiba — https://shabiba.com/
+- Al-Roya — https://alroya.om/
+- Oman Daily — https://www.omandaily.om/
+- Watanserb — https://www.watanserb.com/
+- Shuoon Oman — https://shuoon.om/
+- Atheer — https://www.atheer.om/
+- Times of Oman — https://timesofoman.com/
+- Oman Observer — https://www.omanobserver.om/
+- Muscat Daily — https://www.muscatdaily.com/
+- The Arabian Stories — https://www.thearabianstories.com/
+- Majan TV — http://www.majan-tv.com/
+- Al-Wisal — https://wisal.fm/
+- Hi FM — https://www.hifmradio.com/
+- Gulf News – Oman — https://gulfnews.com/world/gulf/oman
+- Al Arabiya – Oman — https://english.alarabiya.net/locations/oman
+- Oman News Agency (ONA) — https://omannews.gov.om/
+- Ministry of Information, Sultanate of Oman — https://omaninfo.om/
+
+### onlinenewspapers — https://onlinenewspapers.com/oman.shtml
+- Al Rroya — https://www.alroya.om/
+- Al Shabiba — http://www.shabiba.com/
+- Al Watan — http://www.alwatan.com/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/oman/
+- Azzamn Daily — http://www.azzamn.net/
+- Gulf Digital News — http://www.gdnonline.com/
+- Gulf News — https://www.gulfnews.com/
+- Khaleej Times — https://www.khaleejtimes.com/region/oman
+- Muscat Daily — http://www.muscatdaily.com/
+- Oman Daily Observer — https://www.omanobserver.om/
+- Oman Tribune — http://www.omantribune.com/
+- Siraj Daily — http://www.sirajlive.com/
+- Times of Oman — https://www.timesofoman.com/
+- TheWeek — https://www.apexmedia.co.om/theweek/
+
+### allyoucanread — https://www.allyoucanread.com/oman-newspapers/
+- Times of Oman — https://timesofoman.com/
+- Alroya.om — https://alroya.om/
+- Watanserb — https://watanserb.com/
+- OmanDaily.com — https://www.omandaily.om/
+- Al Watan — http://alwatan.com/
+- Shabiba — https://shabiba.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/oman.htm
+- Al Masar — https://almasar.co/
+- Oman Bulletin — http://omanbulletin.com/index.php?lang=ar
+- Oman Info — http://www.omaninfo.com/
+- Omanet — http://www.omanet.om/arabic/home.asp
+- Al Shabiba — http://www.shabiba.com/
+- Al Watan — http://alwatan.com/
+- Oman Daily — http://omandaily.om/
+
+## qatar (gulf_states) — Qatar
+
+### w3newspapers — https://www.w3newspapers.com/qatar/
+- Al-Raya — https://www.raya.com/
+- Al-Watan — https://www.al-watan.com/
+- Al-Sharq — https://al-sharq.com/
+- Al Arab — https://alarab.qa/
+- Lusail — https://lusailnews.net/
+- Gulf Times — https://www.gulf-times.com/
+- The Peninsula — https://thepeninsulaqatar.com/
+- Qatar Tribune — https://www.qatar-tribune.com/
+- Qatar TV — https://www.qtv.qa
+- Doha News — https://dohanews.co/
+- beIN SPORTS — https://www.beinsports.com/
+- Doha Insight — https://dohainsight.com/
+- Islam Online — https://islamonline.net/
+- Qatar Gulf News — https://www.qatar-gulfnews.com/
+- Qatar News Agency (QNA) — https://qna.org.qa/en/home
+
+### onlinenewspapers — https://onlinenewspapers.com/qatar.shtml
+- Al Arab — http://alarab.com.qa/
+- Al-Rayah — http://www.raya.com/
+- Al-Sharq — http://www.al-sharq.com/
+- Al Watan — http://www.al-watan.com/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/qatar/
+- Doha News — http://www.doha-news.com/
+- Gulf Digital News — http://www.gdnonline.com/
+- Gulf News — https://www.gulfnews.com/
+- Gulf Times — https://www.gulf-times.com/
+- Khaleej Times — https://www.khaleejtimes.com/region/qatar
+- Lusail — http://www.lusailnews.qa/
+- New Gulf Times — https://www.gulftimes.com/
+- The Peninsula — http://www.thepeninsulaqatar.com/ [In English]
+- Qatar Daily Star — https://www.thedailystar.net/tags/qatar/
+- Qatar Tribune — http://www.qatar-tribune.com/
+- Stad Al Doha — https://www.staddoha.com/ class=
+
+### allyoucanread — https://www.allyoucanread.com/qatar-newspapers/
+- Gulf Times — https://gulf-times.com/
+- The Peninsula — http://thepeninsulaqatar.com/
+- Doha News — https://dohanews.co/
+- Al Sharq — https://al-sharq.com/
+- Qatar Tribune — https://qatar-tribune.com/
+- Raya — https://www.raya.com/
+- Al Watan — https://al-watan.com/
+- Al Arab — https://alarab.qa/
+
+### abyznewslinks — http://www.abyznewslinks.com/qatar.htm
+- Doha Insight — http://dohainsight.com/index.php?lang=ar
+- Doha News — http://dohanews.co/
+- Doha News — http://doha-news.com/
+- Qatar Actu — http://qataractu.com/
+- Qatar Gulf News — http://www.qatar-gulfnews.com/
+- Qatar Chronicle — http://www.qatarchronicle.com/
+- Qatar Morning Post — http://www.qatarmorningpost.com/
+- Al Raya — http://www.raya.com/
+- Al Sharq — http://www.al-sharq.com/
+- Al Watan — http://www.al-watan.com/
+
+## saudi_arabia (gulf_states) — Saudi Arabia
+
+### w3newspapers — https://www.w3newspapers.com/saudi-arabia/
+- Okaz — https://www.okaz.com.sa/
+- Al Riyadh — https://www.alriyadh.com/
+- Al Watan — https://www.alwatan.com.sa/
+- Asharq Al-Awsat — https://aawsat.com/
+- Al Madina — https://www.al-madina.com/
+- Al Jazirah — https://www.al-jazirah.com/
+- Al-Yaum — https://www.alyaum.com/
+- Makkah Newspaper — https://makkahnewspaper.com/
+- Albilad Daily — https://albiladdaily.com/
+- Umm Al Qura — https://www.uqn.gov.sa/
+- Arab News — https://www.arabnews.com/
+- Saudi Gazette — https://saudigazette.com.sa/
+- Al Arabiya – English — https://english.alarabiya.net
+- Asharq Al-Awsat – English Edition — https://english.aawsat.com
+- Saudi Press Agency (SPA) – English — https://www.spa.gov.sa/en
+- Sabq — https://sabq.org/
+- Al-Marsd — https://al-marsd.com/
+- Almowaten.net — https://www.almowaten.net/
+- Slaati — https://slaati.com/
+- Al Weeam — https://www.alweeam.com.sa/
+- Al-Jazirah Online — https://www.al-jazirahonline.com/
+- mz-mz.com — https://mz-mz.net/
+- Sauress — https://www.sauress.com/
+- Bab — https://bab.com/
+- Afif News — http://www.afifnp.com/
+- arab-eng.org — https://arab-eng.org/
+- Al Arabiya — https://www.alarabiya.net/
+- Al Hadath — https://www.alhadath.net/
+- Elaph — https://elaph.com/
+- Sayidaty — https://www.sayidaty.net/
+- Al Jamila — https://www.aljamila.com/
+- Graaam.com — https://www.graaam.com/
+- Ra2ed.com — https://www.ra2ed.com/
+- Al Eqtisadiah — https://www.aleqt.com/
+- Business – Zawya — https://www.zawya.com/ar/%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%A7%D9%84
+- Federation of Saudi Chambers — https://fsc.org.sa/
+- Arriyadiyah.com — https://arriyadiyah.com/
+- Goal.com/ar-sa — https://www.goal.com/ar-sa
+- Kooora — https://www.kooora.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/saudi-arabia.shtml
+- Ain-Al-Yaqeen — https://ainalyaqeen.com/
+- Al Awsat — https://aawsat.com/
+- Al Bilad — http://www.albiladdaily.com/
+- Al-Eqtisadiah — http://www.aleqt.com/
+- Al Hayat — http://www.alhayat.com/
+- Al Jamaheir.net — http://aljamaheir.net/
+- Al-Jazirah — http://www.al-jazirah.com/
+- Al-Madina Press — http://www.al-madina.com/
+- Al Majalla — http://www.majalla.com/
+- Al Majles — http://www.mj-sp.com/
+- Al-Riyadh — http://www.alriyadh.com/
+- Al-Sharq — http://www.alsharq.net.sa/
+- Al Sharq Al Awsat — http://www.asharqalawsat.com/
+- Al Watan — http://www.alwatan.com.sa/
+- Al Yaum — https://www.alyaum.com/
+- Arab News — https://www.arabnews.com/saudiarabia
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/saudi-arabia/
+- Ar Riyadh — http://www.arriyadh.com/
+- Arreyadi — http://www.arreyadi.com.sa/
+- Arryadhiyah — https://arriyadiyah.com/
+- Asharq Al-Awsat — https://www.aawsat.com/
+- Bab — http://www.bab.com/
+- Elaph — http://www.elaph.com/
+- Gulf Digital News — http://www.gdnonline.com/
+- Gulf News — https://www.gulfnews.com/
+- iNewsArabia — http://www.inewsarabia.com/
+- Khaleej Times — https://www.khaleejtimes.com/region/saudi-arabia
+- The Majalla — https://arb.majalla.com/
+- Makkah Newspaper — http://www.makkahnewspaper.com/
+- Okaz — http://www.okaz.com.sa/
+- Sabq — http://www.sabq.org/
+- Saudi Gazette — http://www.saudigazette.com.sa/
+- Saudi Press Agency — https://www.spa.gov.sa/
+- SportsKSA — http://www.sportksa.net/
+- Um Al-Qura — http://www.uqn.gov.sa/
+
+### allyoucanread — https://www.allyoucanread.com/saudi-newspapers/
+- Arab News — https://arabnews.com/
+- Sabq — https://sabq.org/
+- al-marsd.com — https://al-marsd.com/
+- Aawsat — https://aawsat.com/
+- Al Bawaba — https://albawaba.com/
+- Saudi Gazette — https://saudigazette.com.sa/
+- Arabi21 — https://arabi21.com/
+- AlRiyadh — https://www.alriyadh.com/
+- Okaz — https://okaz.com.sa/
+- Ajel.sa — https://ajel.sa/
+- Slaati — https://slaati.com/
+- Alyaum.com — https://alyaum.com/
+- Al Watan — https://alwatan.com.sa/
+- Al-Jazirah — https://al-jazirah.com/
+- Al-Jazirah — http://www.al-jazirah.com/
+- Al Madina — https://al-madina.com/
+- almowaten.net — https://www.almowaten.net/
+- twasul.info — https://twasul.info/
+- mz-mz.net — https://mz-mz.net/
+- islamtoday.net — https://islamtoday.net/
+- graaam.com — http://www.graaam.com/
+- abunawaf.com — https://abunawaf.com/
+- ra2ed.com — https://ra2ed.com/
+- Al Weeam — https://alweeam.com.sa/
+- Al Bilad — http://albiladdaily.com/
+- arab-eng.org — https://arab-eng.org/
+
+### abyznewslinks — http://www.abyznewslinks.com/saudi.htm
+- Mshariq — http://ar.mshariq.com/
+- Saudi Daily Report — http://saudidailyrecord.net/index.php?lang=ar
+- Sauress — https://www.sauress.com/
+- Al Hayat — http://alhayat.com/
+- Al Jazirah — http://www.al-jazirah.com/
+- Al Riyadh — http://www.alriyadh.com/
+- Asharq Al Awsat — http://www.aawsat.com/
+- Okaz — http://www.okaz.com.sa/
+
+## united_arab_emirates (gulf_states) — United Arab Emirates
+
+### w3newspapers — https://www.w3newspapers.com/uae/
+- Al Bayan — https://www.albayan.ae/
+- Al Ittihad — https://www.aletihad.ae/
+- Al Khaleej — https://www.alkhaleej.ae/
+- Emarat Al Youm — https://www.emaratalyoum.com/
+- Al Wahda — https://alwahda.ae/
+- Gulf News — https://gulfnews.com/
+- Khaleej Times — https://www.khaleejtimes.com/
+- The National — https://www.thenationalnews.com/
+- Gulf Today — https://www.gulftoday.ae/
+- Emirates 24/7 — https://www.emirates247.com/
+- The Filipino Times — https://filipinotimes.net/
+- 24.ae — https://24.ae/
+- Sharjah24 — https://sharjah24.ae/
+- Dubai Post — https://www.dubaipost.ae/
+- Time Out Dubai — https://www.timeoutdubai.com/
+- Fujairah Today — https://fujairahtoday.ae/
+- Al Arabiya TV — https://www.alarabiya.net/
+- Sky News Arabia — https://www.skynewsarabia.com/
+- Dubai TV — https://www.dubaitv.ae/content/dubaitv/ar-ae/home.html
+- Abu Dhabi TV — https://www.adtv.ae/
+- Sama Dubai — https://www.samadubai.ae/content/samadubai/ar-ae/home.html
+- Al Aan TV — https://www.alaan.tv/
+- Dubai One — https://www.dubaione.ae/content/dubaione/en-ae/home.html
+- Elaph — https://elaph.com/
+- Arabian Business — https://www.arabianbusiness.com/
+- CNN Business Arabic — https://cnnbusinessarabic.com/
+- The Arabian Post — https://thearabianpost.com/
+- UAE Business Review — http://uaereview.com/
+- Sport360 — https://sport360.com/
+- Dubai Sports TV — https://www.dubaisports.ae/content/dubaisports/home.html
+- UAEFA.com — https://www.uaefa.ae/
+- WAM / Emirates News Agency – Arabic — https://www.wam.ae/ar
+
+### onlinenewspapers — https://onlinenewspapers.com/united-arab-emirates.shtml
+- Al Bayan — http://www.albayan.ae/
+- Al Fajr — https://www.alfajr-news.net/
+- Al-Ittihad — http://www.alittihad.ae/
+- Al Jarida Presse - الجريدة بريس — https://aljaridapresse.com/
+- Al-Khaleej — http://www.alkhaleej.ae/
+- Al Masry Al Youm — https://www.almasryalyoum.com/
+- Al Roeya — https://www.alroeya.com/
+- Al Wahda — https://www.alwahdanews.ae/
+- Akhbar Al Arab — https://www.alarab.com/
+- Arabian Business — http://www.arabianbusiness.com/
+- The Arabian Post — http://www.thearabianpost.com/
+- Arab News Review — http://www.arabnewsreview.com/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/uae/
+- Cox's Bazar Voice — http://www.coxsbazarvoice.com/
+- Dubai Chronicle — http://www.dubaichronicle.com/
+- El Correo Del Golfo — https://www.elcorreo.ae/
+- Emarat Alyoum — https://www.emaratalyoum.com/
+- Emarat Business Review — https://www.uaereview.com/
+- Emirates 24/7 — https://www.emirates247.com/
+- Emirates News Agency — http://www.wam.ae/en/
+- Erem News — http://www.eremnews.com/
+- The Filipino Times — http://www.filipinotimes.ae/
+- Go Dubai News — http://www.godubai.com/
+- Gulf Digital News — http://www.gdnonline.com/
+- Gulf News — https://www.gulfnews.com/
+- Gulf Today — http://www.gulftoday.ae/
+- Kabayan Weekly — http://www.kabayanweekly.com/
+- Khaleej Times — https://www.khaleejtimes.com/
+- MENA Herald — https://www.menaherald.com/
+- The National — https://www.thenationalnews.com/
+- Sport360 — https://sport360.com/category/regional-article/
+
+### allyoucanread — https://www.allyoucanread.com/uae-newspapers/
+- The National — https://www.thenationalnews.com/
+- GulfNews.com — https://gulfnews.com/
+- Khaleej Times — http://www.khaleejtimes.com/
+- Emirates 24/7 — https://www.emirates247.com/
+- Albayan — https://www.albayan.ae/
+- EmaratAlyoum.com — https://emaratalyoum.com/
+- Elaph — https://elaph.com/
+- Alkhaleej.ae — https://www.alkhaleej.ae/
+- Alaan TV — https://www.alaan.tv/
+- Alittihad.ae — https://www.aletihad.ae/
+- 24.ae — https://24.ae/
+
+### abyznewslinks — http://www.abyznewslinks.com/uarab.htm
+- Arabian Post — https://thearabianpost.com/
+- Emarat Business Review — http://www.emaratbusiness.com/
+- Erem News — http://www.eremnews.com/
+- UAE Business Review — http://uaereview.com/index.php?lang=ar
+- UAE Interact — http://www.uaeinteract.com/
+- Al Bayan — http://www.albayan.ae/
+- Al Ittihad — http://www.alittihad.ae/
+- Al Khaleej — http://www.alkhaleej.ae/portal
+
+## iran (middle_east) — Iran, Islamic Rep.
+
+### w3newspapers — https://www.w3newspapers.com/iran/
+- Hamshahri (همشهری‎) — https://www.hamshahrionline.ir/
+- Ettela'at — https://www.ettelaat.com/
+- Kayhan (کیهان‎) — https://kayhan.ir/
+- Shargh — https://www.sharghdaily.com/
+- Etemad — https://www.etemadnewspaper.ir/
+- Jaam-e Jam (جام جم‎) — https://jamejamonline.ir/
+- Khorasan — https://www.khorasannews.com/
+- Javan — https://www.javanonline.ir/
+- Aftab-e Yazd — https://aftabyazdonline.ir/
+- Vatan-e Emrooz — https://vatanemrooz.ir/
+- Ebtekar — https://ebtekarnews.com/
+- Farhikhtegan Daily — https://farhikhtegandaily.com/
+- Siasat Rooz — https://www.siasatrooz.ir/
+- Jomhouri Eslami (جمهوری اسلامی) — https://www.jomhourieslami.com/
+- Resalat (رسالت) — https://resalat-news.com/
+- IRNA – Islamic Republic News Agency — https://www.irna.ir/
+- Mehr News Agency (MNA) — https://www.mehrnews.com/
+- Iranian Students News Agency (ISNA) — https://en.isna.ir/
+- Tasnim News Agency — https://www.tasnimnews.com/en
+- Quds Online — https://www.qudsonline.ir/
+- Dana News Agency — https://www.dana.ir/
+- Khabar Online — https://www.khabaronline.ir/
+- Asriran.com — https://www.asriran.com/
+- Tabnak — https://www.tabnak.ir/
+- Entekhab — https://www.entekhab.ir/
+- Mashreghnews.ir — https://www.mashreghnews.ir/
+- Beytoote.com — https://www.beytoote.com/
+- Seemorgh.com — https://seemorgh.com/
+- Fardanews — https://www.fardanews.com/
+- Alef — https://www.alef.ir/
+- Shahrekhabar.com — https://www.shahrekhabar.com/
+- Bartarinha.ir — https://www.bartarinha.ir/
+- Vista.ir — https://vista.ir/
+- Khabargroup.ir — https://khabargroup.ir/
+- Khabarads.ir — https://www.khabarads.ir/
+- Aminnews.ir — https://www.aminnews.ir/
+- Hamvatansalam.com — http://www.hamvatansalam.com/
+- Donya-e Eqtesad (دنیای اقتصاد‎) — https://donya-e-eqtesad.com/
+- Financial Tribune — https://financialtribune.com/
+- Eghtesad Online — https://www.eghtesadonline.com/
+- Tafahom News — https://www.tafahomnews.com/
+- Isfahan Emrooz — https://esfahanemrooz.ir/
+- Nasle Farda — http://www.naslefarda.net/
+- Karoon — https://www.karoondaily.ir/
+- Azarbaydgan — https://www.azarbaydgan.ir/
+- Noor Daily — http://noordaily.ir/
+- Khabar Varzeshi — https://www.khabarvarzeshi.com/
+- PersianFootball.com — https://www.persianfootball.com/news/
+- Footballi — https://footballi.net/
+- Iran International — https://www.iranintl.com/en
+- Tehran Times — https://www.tehrantimes.com/
+- Iran Front Page — https://ifpnews.com/
+- The Iranian — https://iranian.com/
+- Iran News Daily — https://irannewsdaily.com/
+- Iran Focus — https://iranfocus.com/
+- Pars Times — https://www.parstimes.com/
+- Salam Toronto — https://salamtoronto.ca/
+- Mellee — https://mellee.ir/
+
+### onlinenewspapers — https://onlinenewspapers.com/iran.shtml
+- Afkar News — https://www.afkarnews.com/
+- Al Alam — https://www.alalamtv.net/
+- Asre-Nou — http://www.asre-nou.net/
+- Chabar — http://www.iran-chabar.de/
+- Donya e Eqtesad — http://www.donya-e-eqtesad.com/
+- Ebtekar News — http://www.ebtekarnews.com/
+- Emtiaz Daily — http://www.emtiazdaily.ir/
+- Ettela'at — http://www.ettelaat.com/
+- Farda News — http://www.fardanews.com/
+- Farheekhtegan — http://www.farheekhtegan.ir/
+- Financial Tribune — https://financialtribune.com/
+- Hambastegimeli — https://www.hambastegimeli.com/
+- Hamshahri Online — https://www.hamshahrionline.ir/
+- Iran Daily — http://www.iran-daily.com/
+- Iran Front Page (IFP) — https://ifpnews.com/
+- Iran Herald — http://www.iranherald.com/
+- Iran Javan — http://www.iran-javan.com/
+- Iran News Daily — http://www.irannewsdaily.com/
+- Iran Newspaper — http://www.iran-newspaper.com/
+- Iran Varzeshi — http://www.iran-varzeshi.com/
+- The Iranian — http://www.iranian.com/
+- Iranian Diplomacy — http://www.irdiplomacy.ir/
+- Islamic Republic News Agency — http://www.irna.com/en/
+- Isna — http://www.isna.ir/
+- Javan Online — https://www.javanonline.ir/
+- Kayhan News — http://www.kayhannews.ir/
+- Khabar Jonoub — http://www.khabarjonoub.com/
+- Khabar Online — http://www.khabaronline.ir/
+- Khabar Varzeshi — https://www.khabarvarzeshi.com/
+- Khorasan News — http://www.khorasannews.com/
+- NCRI News — http://www.ncr-iran.org/
+- Pars Today — https://farsi.iranpress.com/
+- Quds Daily — http://www.qudsdaily.com/
+- Resalat — http://www.resalat-news.com/
+- Shahrara — http://www.shahrara.com/
+- Shargh Daily — http://www.sharghdaily.ir/
+- Tehran Times — http://www.tehrantimes.com/
+
+### allyoucanread — https://www.allyoucanread.com/iran-newspapers/
+- Khabar Online — https://www.khabaronline.ir/
+- Fararu — https://fararu.com/
+- Asriran.com — https://www.asriran.com/
+- bartarinha.ir — https://bartarinha.ir/
+- IRNA - Islamic Republic News Agency — https://www.irna.ir/
+- Mehr News — https://mehrnews.com/
+- ISNA — https://www.isna.ir/
+- Hamshahri — https://www.hamshahrionline.ir/
+- Tabnak — https://www.tabnak.ir/
+- shahrekhabar.com — https://www.shahrekhabar.com/
+- delgarm.com — https://www.delgarm.com/
+- entekhab.ir — https://www.entekhab.ir/
+- Young Journalists Club — https://www.yjc.ir/
+- Namnak — https://namnak.com/
+- Press TV — https://www.presstv.ir/
+- Aftab News — https://aftabnews.ir/
+- Aviny.com — https://aviny.com/
+- Tasnim News Agency — https://www.tasnimnews.com/
+- Shoma News — https://shomanews.com/
+- 55online.news — https://www.55online.news/
+- Fardanews — https://fardanews.com/
+- Mashreghnews.ir — https://www.mashreghnews.ir/
+- ilna.ir — https://ilna.ir/
+- Alalam News Network — https://www.alalam.ir/
+- beytoote.com — https://www.beytoote.com/
+- Aftabnews — https://www.ghatreh.com/
+- iribnews.ir — http://www.iribnews.ir/
+- Alef.ir — https://www.alef.ir/
+- Afkar News — https://www.afkarnews.com/
+- Parsine.com — https://parsine.com/
+- khabarfarsi.com — https://khabarfarsi.com/
+- vista.ir — https://vista.ir/
+- khabarpu.com — https://khabarpu.com/
+- Jahan News — https://www.jahannews.com/
+- Roozno — https://roozno.com/
+- Shafaqna.com — http://shafaqna.com/
+- balatarin.com — https://balatarin.com/
+- IranWire — https://iranwire.com/
+- magiran.com — https://magiran.com/
+- Shargh — https://www.sharghdaily.com/
+- snn.ir — https://snn.ir/
+- baharnews.ir — https://www.baharnews.ir/
+- topnaz.com — https://topnaz.com/
+- Kayhan — https://kayhan.ir/
+- iranian.com — https://iranian.com/
+- dolat.ir — https://dolat.ir/
+- jamejamonline.ir — https://jamejamonline.ir/
+- Iran Emrooz — https://iran-emrooz.net/
+- momtaznews.com — https://momtaznews.com/
+- Rajanews — https://www.rajanews.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/iran.htm
+- Alef — http://www.alef.ir/
+- Entekhab — http://www.entekhab.ir/
+- Gooya — http://news.gooya.com/
+- Iran Emrooz — http://www.iran-emrooz.net/
+- Iran Focus — http://www.iranfocus.com/en/
+- Iran Front Page — http://ifpnews.com/ar/
+- Iran Independent News Service — http://www.iranwpd.com/
+- Iran Sports Press — http://iransportspress.com/
+- Iranian — http://iranian.com/
+- Khabar Online — http://arabic.khabaronline.ir/
+- Khabar Online — http://english.khabaronline.ir/
+- Khabar Online — http://khabaronline.ir/
+- Mellee — http://mellee.ir/
+- Ministry of Foreign Affairs — http://en.mfa.ir/
+- Ministry of Foreign Affairs — http://www.mfa.gov.ir/
+- Pars Times — http://www.parstimes.com/
+- Payvand — http://www.payvand.com/
+- Rooz — http://www.roozonline.com/english/
+- Tabnak — http://www.tabnak.ir/
+- Tehran Telegram — http://tehrantelegram.com/index.php?lang=ar
+- Abrar — http://www.abrarnews.com/
+- Ettelaat — http://www.ettelaat.com/
+- Hamshahri — http://www.hamshahrionline.ir/
+- Iran — http://www.iran-newspaper.com/
+- Iran Varzeshi — http://www.iran-varzeshi.com/
+- Kayhan — http://kayhan.ir/ar
+
+## iraq (middle_east) — Iraq
+
+### w3newspapers — https://www.w3newspapers.com/iraq/
+- Al Sabaah — https://www.alsabaah.iq/
+- Al Mada — https://almadapaper.net/
+- Azzaman — https://www.azzaman.com/
+- Shafaq News — https://shafaq.com/
+- National Iraqi News Agency — https://ninanews.com/
+- Iraqi News — https://www.iraqinews.com/
+- Iraqi News Agency (INA) — https://ina.iq/en/
+- Kitabat — https://kitabat.com/
+- Al Sabah Al Jadid — https://newsabah.com/
+- Independent Press Agency (IPA) — https://mustaqila.com/
+- Almasalah — https://almasalah.com/
+- Sotal Iraq — https://www.sotaliraq.com/
+- Alghadpress — https://www.alghadpress.com/
+- Buratha News Agency — http://burathanews.com/arabic/
+- Hatha Alyoum — https://hathalyoum.net/
+- Baghdad Today — https://baghdadtoday.news/
+- Alforat News — https://www.alforatnews.iq/
+- Iraq Business News — https://www.iraq-businessnews.com/
+- Iraq Oil Report — https://www.iraqoilreport.com/
+- Iraq Directory (Arabic) — http://www.iraqdirectory.com/ar/
+- Alsumaria TV — https://www.alsumaria.tv/
+- Al-Iraqiya (IMN) — https://imn.iq/
+- Alsharqiya — https://www.alsharqiya.com/
+- Sumer FM — http://www.sumerfm.com/
+- Bas News — https://www.basnews.com/
+- Awene — https://www.awene.com/
+- Xebat — https://xebat.net/
+- Rudaw — https://www.rudaw.net/english
+- Kurdistan24 — https://www.kurdistan24.net/en
+- Hawlati — https://hawlati.co/
+- Kurdiu.org — https://www.kurdiu.org/
+- Nasiriyah — https://nasiriyah.org/ar/
+- Faceiraq — https://www.faceiraq.org/
+- Iraq News Network — https://aliraqnews.com/
+- Mangish.net — https://mangish.net/
+- Al Adala — http://aladalanews.net/
+- Iraqi Communist Party — https://www.iraqicp.com/
+- Iraq Daily Journal — https://iraqdailyjournal.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/iraq.shtml
+- Al-Furat — http://furatnews.com/
+- Al Ghad — https://alghad.com/
+- Al Mada — https://www.almadapaper.net/
+- Al-Monitor — https://www.al-monitor.com/
+- Al Wifaq — http://www.al-wifaq.com/
+- Al Taakhi — https://www.altaakhipress.com/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/iraq/
+- Ashour Land — https://www.ashourland.net/
+- Awene — http://www.awene.com/
+- Azamil — http://www.azamil.com/
+- Az-Zaman — http://www.azzaman.com/
+- The Baghdad Post — https://www.thebaghdadpost.com/ar/
+- Dar Addustour — http://www.addustor.com/
+- Iraq Sun — http://www.iraqsun.com/
+- Iraq Today — http://www.iraq-today.com/
+- Iraqi News — http://www.iraqinews.com/
+- Kirkuk Now — https://kirkuknow.com/ar/
+- Kitabat — https://kitabat.com/
+- The Kurdish Globe — http://www.kurdishglobe.net/
+- Mangish — http://www.mangish.com/
+- Middle East Eye — https://www.middleeasteye.net/
+- New Sabah — http://www.newsabah.com/
+- PUK Media — http://www.puk.org/
+- Rozhnama — https://www.rozhnamawany.com/
+- Voice Of Iraq — http://www.sotaliraq.com/
+- Xebat — https://xebat.net/
+
+### allyoucanread — https://www.allyoucanread.com/iraq-newspapers/
+- rudaw.net — https://www.rudaw.net/
+- Ahewar.org — https://ahewar.org/
+- Bas News — https://www.basnews.com/
+- Firatnews — https://firatnews.com/
+- azzaman.com — https://azzaman.com/
+- Face Iraq — https://www.faceiraq.org/
+- Xenden Kurdish — http://www.xendan.org/
+- Almada Newspaper — https://almadapaper.net/
+- Speemedia — https://speemedia.com/
+- Awene News — https://awene.com/
+- Pukmedia — https://pukmedia.com/
+- Iraqi Media Network — https://imn.iq/
+- Nasiriyah — https://ar.nasiriyah.org/
+- Alghad Press — https://www.alghadpress.com/
+- Buratha News Agency — http://burathanews.com/
+- Voice of Iraq — https://www.sotaliraq.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/iraq.htm
+- Babylon News — http://www.babylonnews.net/
+- Iraq — http://www.iraqnewspaper.net/
+- Iraq 123 News — http://www.iraqidinar123.com/
+- Iraq Daily Journal — http://iraqdailyjournal.com/index.php?lang=ar
+- Iraqi News — https://www.iraqinews.com/
+- Iraqi Reporter — http://www.iraqireporter.us/
+- Aswat al Iraq — http://ar.aswataliraq.info/
+- Aswat al Iraq — http://en.aswataliraq.info/
+- Aswat al Iraq — http://ku.aswataliraq.info/
+- Iraq Business News — http://www.iraq-businessnews.com/
+- Iraq Energy — http://www.iraqenergy.org/
+- Mangish — http://www.mangish.com/
+- MEMRI — http://www.memri.org/iraq-media.html
+- Sotal Iraq — http://www.sotaliraq.com/
+- Al Mada — http://www.almadapaper.net/
+- Al Mutmar — http://www.almutmar.com/
+- Al Sabaah — http://www.alsabaah.iq
+- Al Zaman — http://www.azzaman.com/
+
+## israel (middle_east) — Israel
+
+### w3newspapers — https://www.w3newspapers.com/israel/
+- Israel Hayom (Hebrew:ישראל היום‎) — https://www.israelhayom.co.il/
+- Yedioth Ahronoth / Ynet (Hebrew:ידיעות אחרונות‎) — https://www.ynet.co.il/
+- Haaretz (Hebrew:הארץ‎) — https://www.haaretz.co.il/
+- Maariv — https://www.maariv.co.il/
+- Makor Rishon (Hebrew:מָקוֹר רִאשׁוֹן) — https://www.makorrishon.co.il/
+- B'Sheva (Hebrew:בשבע) — https://www.inn.co.il/Besheva/
+- The Times of Israel — https://www.timesofisrael.com/
+- The Jerusalem Post — https://www.jpost.com/
+- Ynetnews — https://www.ynetnews.com/
+- Haaretz – English edition — https://www.haaretz.com/
+- Israel Hayom (English edition) — https://www.israelhayom.com/
+- Vesty (Russian:Вести) — https://www.vesty.co.il
+- NewsRU.co.il — https://www.newsru.co.il/
+- MIGnews.com — https://mignews.com/
+- As Sennara (Arabic:الصنارة) — https://sonara.net/
+- Aurora — https://aurora-israel.co.il/
+- Epoch Times – Israeli edition — https://epoch.org.il/
+- Calcalist (Hebrew:כלכליסט) — https://www.calcalist.co.il/
+- TheMarker (Hebrew:דה מרקר) — https://www.themarker.com/
+- Globes (Hebrew:גלובס‎) — https://www.globes.co.il/
+- Israel Business News – kib.co.il — https://kib.co.il/
+- Courier — https://www.courier.co.il/
+- ONE.co.il — https://www.one.co.il/
+- Sport5.co.il — https://www.sport5.co.il/
+- Walla Sport — https://sports.walla.co.il/
+- Mako — https://www.mako.co.il/
+- Walla — https://www.walla.co.il/
+- Panet — https://panet.com/
+- Tapuz.co.il — https://www.tapuz.co.il/
+- MSN Israel — https://www.msn.com/he-il
+- Rotter.net — https://rotter.net/
+- Isramedia.net — https://www.isramedia.net/
+- Cursorinfo — https://cursorinfo.co.il/
+- News Now — https://www.newsnow.co.il/
+- News Israel — https://www.news-israel.net/
+- Negev Info — https://infodarom.co.il/portfolio/
+- Jewish Telegraphic Agency (JTA) — https://www.jta.org/
+- Jewish Daily Forward — https://forward.com/
+- Arutz Sheva / Israel National News — https://www.israelnationalnews.com/
+- Hamodia — https://www.hamodia.com/
+- Electronic Intifada (EI) — https://electronicintifada.net/
+- Israel Behind The News — https://israelbehindthenews.com/
+- Juif — http://www.juif.org/
+- 13 News — https://13tv.co.il/news/
+- i24NEWS — https://www.i24news.tv/
+- Debka.co.il — https://www.debka.co.il/
+
+### onlinenewspapers — https://onlinenewspapers.com/israel.shtml
+- Al-Arab — https://www.alarab.com/
+- Al-Ittihad — https://www.alittihad44.com/
+- Al Madina (??????) — http://www.almadina.co.il/
+- Arutz Sheva (Hadashot / Israel National News) — http://www.israelnationalnews.com/
+- Aurora Israel — http://www.aurora-israel.co.il/
+- Besheva — https://www.inn.co.il/Besheva/
+- Calcalist — https://www.calcalist.co.il/
+- Courier — http://www.courier.co.il/
+- Davar — https://www.davar1.co.il/
+- Davar — https://en.davar1.co.il/
+- Debkafile — http://www.debka.co.il/
+- Debkafile — http://www.debka.com/
+- Emet News Service — https://www.emetnews.org/
+- The Epoch Times — http://www.epochtimes.co.il/
+- Globes — http://www.globes.co.il/
+- Ha'Aretz (Israel News) — http://www.haaretz.co.il/
+- Ha'Aretz — http://www.haaretz.com/
+- Ice — http://www.ice.co.il/
+- Israel E News — http://www.israelenews.com/
+- Israel Faxx — http://www.israelfaxx.com/
+- Israel Hayom — http://www.israelhayom.com/
+- Israel Herald — http://www.israelherald.com/
+- Israel Messenger — http://www.israelsmessenger.com/
+- Israel Nachrichten — http://www.israel-nachrichten.org/
+- Israeli News — http://www.lenta.co.il
+- Israel News — https://www.israel-news.co.il/
+- ISRAland News — http://www.isra.com/
+- Iton Tel-Aviv — http://www.tam.co.il/
+- Janglo — https://www.janglo.net/
+- Jerusalem Newswire — http://www.jnewswire.com
+- JerusalemOnline — https://www.jerusalemonline.com/
+- Jerusalem Post — https://www.jpost.com/
+- Jewish Telegraphic Agency — https://www.jta.org/
+- Jewish News Syndicate — https://www.jns.org/
+- Kabbalah Leam — http://www.kab.co.il/
+- Kan Naim — https://www.kanisrael.co.il/
+- Kol Hasharon — http://www.ksn.co.il
+- Maariv — http://www.maariv.co.il/
+- Megafon News — http://megafon-news.co.il/
+- Middle East News — https://www.haaretz.com/middle-east-news/
+- Mig News — http://www.mignews.com/
+- Makor Rishon — https://www.timesofisrael.com/
+- News Israel — http://www.news-israel.net/
+- Our Jerusalem — http://www.ourjerusalem.com/
+- Panorama — http://www.panet.co.il/
+- Pnai Plus — http://www.ynet.co.il/
+- Rotter — http://www.rotter.net/
+- Siha Mekomit — https://www.mekomit.co.il/
+- Vesti — https://www.vesty.co.il/
+- Walla — https://www.walla.co.il/
+- Yated Ne'eman — https://www.yated.com/
+- Yedioth Ahronoth — http://www.ynetnews.com/
+- Yedioth Haifa — http://www.yedhaifa.co.il/
+- YeshaNews — http://www.yeshanews.com/
+
+### allyoucanread — https://www.allyoucanread.com/israeli-newspapers/
+- Ynet — https://www.ynet.co.il/
+- Times of Israel — https://timesofisrael.com/
+- Jerusalem Post — https://jpost.com/
+- Haaretz.com English — https://www.haaretz.com/
+- Mako — https://mako.co.il/
+- Haaretz — https://haaretz.co.il/
+- Walla — https://walla.co.il/
+- Maariv — https://www.maariv.co.il/
+- Israel Hayom — https://www.israelhayom.co.il/
+- rotter.net — https://rotter.net/
+- Ice — http://www.ice.co.il/
+- Globes — http://www.globes.co.il/
+- inn.co.il — https://www.inn.co.il/
+- israelnationalnews.com — https://www.israelnationalnews.com/
+- MIGnews.com — https://mignews.com/
+- srugim.co.il — https://www.srugim.co.il/
+- NewsRU.co.il — https://newsru.co.il/
+- The Marker — https://www.themarker.com/
+- Israel Info — https://israelinfo.co.il/
+- cursorinfo — https://cursorinfo.co.il/
+- Maan News Agency — https://www.maannews.net/
+- News1 — https://news1.co.il/
+- Makor Rishon — https://www.makorrishon.co.il/
+- Al Watan Voice — https://alwatanvoice.com/
+- ISRA land — http://www.isra.com/
+- tapuz.co.il — https://www.tapuz.co.il/
+- mivzakim.net — https://mivzakim.net/
+- Panet — https://panet.com/
+- Alquds — https://alquds.com/
+- Bokra — https://bokra.net/
+- Al Arab — https://www.alarab.co.il/
+- isramedia.net — https://isramedia.net/
+- izrus — http://izrus.co.il/
+- JewsNews — http://jewsnews.co.il/
+
+### abyznewslinks — http://www.abyznewslinks.com/israe.htm
+- 7 Kanal — http://www.7kanal.com/
+- BICOM — http://www.bicom.org.uk/
+- Bull — http://www.bull.co.il/
+- Daily Alert — http://dailyalert.org/
+- Debka File — http://www.debka.com/
+- Debka File — http://www.debka.co.il/
+- Israel AM — https://www.israelam.com/
+- Israel E News — http://www.israelenews.com/
+- Israel Faxx — http://www.israelfaxx.com/
+- Israel Insider — http://www.israelinsider.com/
+- Israel Ministry of Foreign Affairs — http://mfa.gov.il/
+- Israel News Agency — http://israelnewsagency.com/
+- Israel News Now — http://www.israelinewsnow.com/
+- Isranews — http://isranews.com/
+- Jerusalem Online — http://www.jerusalemonline.com/
+- Juif — http://www.juif.org/
+- MSN — http://www.msn.com/he-il
+- Nana 10 — http://www.nana10.co.il/
+- News from Israel — http://www.isrinfo.org/
+- News Israel — http://www.news-israel.net/
+- News Now — http://www.newsnow.co.il/
+- One — http://www.one.co.il/
+- Semana — http://www.semana.co.il/
+- Sikur Memukad — http://sikurmemukad.com/
+- Start Page — http://news.startpage.co.il/english/
+- Times of Israel — http://ar.timesofisrael.com/
+- Times of Israel — http://www.timesofisrael.com/
+- Times of Israel — http://fr.timesofisrael.com/
+- Times of Israel — http://cn.timesofisrael.com/
+- Walla — http://www.walla.co.il/
+- Globes — http://www.globes.co.il/en/
+- Haaretz — http://www.haaretz.com/
+- Haaretz — http://www.haaretz.co.il/
+- Jerusalem Post — http://www.jpost.com/
+- Maariv — http://www.nrg.co.il/
+- Yedioth Ahronoth — http://www.ynetnews.com/home/0,7340,L-3083,00.html
+- Yedioth Ahronoth — http://www.ynet.co.il/home/0,7340,L-8,00.html
+
+## jordan (middle_east) — Jordan
+
+### w3newspapers — https://www.w3newspapers.com/jordan/
+- Ad Dustour — https://www.addustour.com/
+- Saraya News — https://www.sarayanews.com/
+- Khaberni — https://www.khaberni.com/
+- ammonnews.net — https://www.ammonnews.net/
+- alwakeelnews.com — https://www.alwakeelnews.com/
+- Factjo.com — https://www.factjo.com/
+- Jo24.net — https://jo24.net/
+- Jordan zad — http://www.jordanzad.com/
+- Assawsana — https://www.assawsana.com/
+- Al Bawaba — https://www.albawaba.com/ar
+- Gerasa — http://www.gerasanews.com/
+- Sawaleif.com — https://sawaleif.com/
+- Alghad — https://alghad.com/
+- Al Ra'i — https://alrai.com/
+- Assabeel — https://assabeel.net/
+- Al Anbat News — https://alanbatnews.net/
+- Jordan Times — http://www.jordantimes.com/
+- arabi21.com — https://arabi21.com/
+- garaanews.com — https://www.garaanews.com/
+- Saraha News — https://www.sarahanews.net/
+- Ram News Agency — https://www.rumonline.net/
+- Petra (Jordan News Agency) — https://www.petra.gov.jo/
+- Jfranews — https://jfranews.com.jo/
+- Almadenahnews.com — https://www.almadenahnews.com/
+- Albosala — https://albosala.com/
+- Alwakaai.com — https://alwakaai.com/
+- Lawjo — https://lawjo.net/
+- Al Majd — https://almajd.net/
+- Amman Net — https://ammannet.net/
+- Al-Maqar — https://maqar.com/
+- Maraya News — https://www.marayanews.com/
+- Jordan Radio and Television — https://www.jrtv.gov.jo/
+- Amman Daily News — http://ammannewsdaily.com/
+- hashd-ahali.org — https://www.hashd-ahali.org/
+- Allofjo.net — http://allofjo.net/
+- Watana news — https://watananews.com/
+- JBCnews — http://www.jbcnews.net/
+- fbmjo.com — https://fbmjo.com/
+- Jordan Football Association — https://www.jfa.jo/
+
+### onlinenewspapers — https://onlinenewspapers.com/jordan.shtml
+- Ad-Dustour — http://www.addustour.com/
+- Alanbat News — https://alanbatnews.net/
+- Al Ghad — http://www.alghad.com/
+- Al Ra'i Daily — http://www.alrai.com/
+- Al Sijill — http://www.al-sijill.com/
+- Amman Net — https://ammannet.net/
+- Ammon News — https://www.ammonnews.net/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/jordan/
+- As-Sabeel Weekly — http://www.assabeel.net/
+- Jordanian News Agency (Petra) — https://petra.gov.jo/
+- Jordan Times — https://www.jordantimes.com/
+- Maraya News — https://www.marayanews.com
+
+### allyoucanread — https://www.allyoucanread.com/jordan-newspapers/
+- Jordan Times — http://jordantimes.com/
+- Ammon News — https://www.ammonnews.net/
+- Khaberni.com — https://khaberni.com/
+- Saraya News — https://www.sarayanews.com/
+- alwakeelnews.com — https://www.alwakeelnews.com/
+- Alghad.com — https://alghad.com/
+- Alrai.com — https://alrai.com/
+- Addustour — https://www.addustour.com/
+- Assawsana.com — https://assawsana.com/
+- Petra - Jordan News Agency — https://petra.gov.jo/
+- Gerasanews.com — https://www.gerasanews.com/
+- Rum — https://rumonline.net/
+- sawaleif.com — https://sawaleif.com/
+- JO24.net — https://jo24.net/
+- Assabeel — https://assabeel.net/
+- Jordan Zad — http://jordanzad.com/
+- jfranews — https://jfranews.com.jo/
+- Almadenahnews.com — http://www.almadenahnews.com/
+- albaladnews.net — http://albaladnews.net/
+- factjo.com — https://www.factjo.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/jorda.htm
+- Amman Daily News — http://ammannewsdaily.com/index.php?lang=ar
+- Amman Today — http://www.ammantoday.com/
+- Ammon — http://www.ammonnews.net/
+- Ammon — http://en.ammonnews.net/
+- Khaberni — http://www.khaberni.com/
+- Media News Channel — http://medianewschannel.net/
+- Saraya — http://www.sarayanews.com/
+- Ad Dustour — http://www.addustour.com/
+- Al Arab Al Yawm — http://alarabalyawm.net/
+- Al Ghad — http://www.alghad.com/
+- Al Rai — http://www.alrai.com/
+
+## lebanon (middle_east) — Lebanon
+
+### w3newspapers — https://www.w3newspapers.com/lebanon/
+- An-Nahar — https://www.annahar.com/
+- L'Orient-Le Jour — https://www.lorientlejour.com/
+- Al Akhbar — https://www.al-akhbar.com/
+- Al Joumhouria — https://www.aljoumhouria.com/ar
+- Al Liwaa — https://aliwaa.com.lb/
+- Ad-Diyar — https://addiyar.com/
+- El-Shark — https://www.elsharkonline.com/
+- Aztag (Ազդակ Օրաթերթ) — https://www.aztagdaily.com/
+- Al Aman — http://al-aman.com/
+- Nidaa al-Watan — https://www.nidaalwatan.com/
+- Al-Binaa — https://www.al-binaa.com/
+- Ararad (Արարատ) — https://araraddaily.com/
+- Lebanon 24 — https://www.lebanon24.com/
+- Lebanon Files — https://www.lebanonfiles.com/
+- Elnashra — https://elnashra.com/
+- Lebanon Debate — https://www.lebanondebate.com/
+- Al-Modon — https://www.almodon.com/
+- Naharnet — https://www.naharnet.com/
+- The961 — https://the961.com/
+- Ya Libnan — https://yalibnan.com/
+- Bintjbeil — https://bintjbeil.org/
+- Yasour — https://www.yasour.org/
+- Saida Online — https://www.saidaonline.com/
+- CH23 — https://ch23.com/
+- saida.tv — https://saida.tv/
+- NOW Lebanon — https://nowlebanon.com/
+- Megaphone — https://megaphone.news/
+- Beirut Today — https://beirut-today.com/
+- ASAS Media — https://asasmedia.com/
+- Sawt Beirut International — https://www.sawtbeirut.com/
+- Tayyar.org — https://www.tayyar.org/
+- Al-Ahed — https://alahednews.news/
+- Lebanese Forces — https://www.lebanese-forces.com/
+- Kataeb.org — https://kataeb.org/
+- Al Anbaa — https://anbaaonline.com/
+- El Marada — https://elmarada.org/
+- BusinessNews — https://www.businessnews.com.lb/
+- ElSport — https://elsport.com/
+- Malaeeb — https://www.malaeeb.com/
+- FA Lebanon — https://www.falebanon.com/
+- Arab Week — https://arabweek.com.lb/
+- LBCI (Lebanese Broadcasting Corporation International) — https://www.lbcgroup.tv/
+- MTV Lebanon (Murr TV) — https://www.mtv.com.lb/
+- Tele-Liban — https://www.teleliban.com.lb/
+- Al Manar — https://www.almanar.com.lb/
+- OTV — https://otv.com.lb/
+- Al Mayadeen — https://www.almayadeen.net/
+- Al Jadeed (New TV) — https://www.aljadeed.tv/
+- NBN (National Broadcasting Network) — https://nbn.com.lb
+- National News Agency (NNA) — https://www.nna-leb.gov.lb/en
+- Al Markazia – Central News Agency — https://almarkazia.com/
+- WAL – Lebanese News Agency — https://walnews.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/lebanon.shtml
+- 3agel News — http://www.3agelnews.me/
+- 7aki Sa7 — http://www.7akisa7.com/
+- 14 March — http://14march.org/
+- The 961 News — https://www.the961.com/news/
+- Addiyar Online — http://www.aldiyaronline.com/
+- Akhbar Lubnan — http://www.akhbarlubnan.net/
+- Al - 7aqiqa — http://www.al-7aqiqa.com/
+- Al Akhbar — http://www.al-akhbar.com/
+- Al Aman — http://www.al-aman.com/
+- Al Anbaa — https://anbaaonline.com/
+- Alankabout — https://www.alankabout.com/
+- Al Anwar — http://www.alanwar.com/
+- Al Awassef — http://www.al-awassef.com/
+- Al Balad — http://www.albaladonline.com/
+- Al Bayan — http://www.albayanlebanon.com/
+- Al Binaa — http://www.al-binaa.com/
+- Al Hadass — http://www.alhadass.com/
+- Al Hadath News — http://www.alhadathnews.net/
+- Al-Hawadess — http://www.al-hawadess.com/
+- Al Hawadeth — http://www.al-hawadeth.com/
+- Al Hayat — http://www.daralhayat.com/
+- Al Hiwar — http://www.alhiwar.com/
+- Al Inshaa — http://www.al-inshaa.com/
+- Al Intiqad — http://www.alintiqad.com/
+- Alintichar — http://alintichar.com/
+- Al Joumhouria — http://www.aljoumhouria.com/
+- Al Kalima Online — http://www.alkalimaonline.com/
+- Al Khabar — http://www.alkhabarpress.com/
+- Al Kifah Al-Arabi — http://www.kifaharabi.com/
+- Al Liwa — http://www.aliwaa.com/
+- Al Manar TV — http://www.almanar.com.lb/
+- Al-Manshour — http://www.al-manshour.org/
+- Al-Markazia — http://www.almarkazia.com/
+- Al Massira — http://www.almassira.com/
+- Al Modon — http://www.almodon.com/
+- Al Moharrer — http://www.almoharrer.net/
+- Al Mourabitoun — http://www.almourabitoun.com/
+- Al Mushahed — http://www.almushahidassiyasi.com/
+- Al-Mustaqbal — http://www.almustaqbal.com/
+- Al Nabad — http://www.alnabad.com/
+- Al Nafez News — http://www.alnafeznews.com/
+- Al Ousbou' Al Arabi — http://www.arabweek.com.lb/
+- Al Rassed — http://www.alrassedonline.com/
+- Al Shiraa — http://www.alshiraa.com/
+- Al Waie — http://www.al-waie.org/
+- Al-Watan Al-Arabi — http://www.alwatanalarabi.com/
+- Al Wifak — https://alwifaknews.com/
+- An Nabaa — http://annabaa.org/
+- An Nahar — http://www.annaharonline.com/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/lebanon/
+- Ararad — http://araraddaily.org/
+- Arrouwad — http://www.arrouwad.net/
+- Asia News — http://www.asianewslb.com/
+- As-Safir — http://www.assafir.com/
+- Assouhofiah — http://www.assouhofiah.com/
+- Athabat — http://www.athabat.net/
+- At Takwa — http://www.attakwa.net/
+- Attamaddon — https://www.attamaddon.com/
+- Aya News — http://www.ayanews.com/
+- Aztag Daily — http://www.aztagdaily.com/
+- Beirut Gate — http://www.beirutgate.net/
+- The Beirut Middle East Herald — http://www.beirutherald.com/
+- Beirut Observer — http://www.beirutobserver.com/
+- Beirut Online — http://www.beirut-online.net/
+- Beiruttime — http://www.beiruttime-lb.com/
+- The Beirut Times — http://www.beiruttimes.com/
+- Biladouna — http://www.biladouna.com/
+- Cedar News — http://www.cedarnews.net/
+- Central News Agency — http://www.almarkazia.net/
+- The Daily Star — https://www.dailystar.com.lb/
+- East West Record — http://www.eastwestrecord.com/
+- Echobeirut — http://www.echobeirut.com/
+- Ekher el Akhbar — http://www.ekherelakhbar.com/
+- El Kalima — http://www.el-kalima.com/
+- El Manbar — http://www.elmanbar.com/
+- El Marada — http://www.elmarada.com
+- Elminieh.com — http://www.elminieh.com/
+- El Nashra — http://www.elnashra.com/
+- El Shamal — http://www.elshamal.com/
+- El Shark — http://www.elshark.com/
+- Future Movement — http://www.almustaqbal.org/
+- Future News — http://www.future-news.tv/
+- Hamzet Wassel News — http://www.hamzetwasselnews.com/
+- Iloubnan.info — http://www.iloubnan.info/
+- Immar Wa Iktissad — http://www.immarwaiktissad.com/
+- Inbaa — http://www.inbaa.com/
+- Inn Lebanon — http://www.innlebanon.com/
+- Janoubia — http://www.janoubia.com/
+- Kataeb — http://www.kataeb.org/
+- La Revue du Liban — http://www.rdl.com.lb/
+- LBCI News — http://www.lbcgroup.tv/
+- Leb Arab : لبنان العربي — http://www.lebarab.com/
+- Leb Journal — http://www.lebjournal.com/
+- Lebanese American News — http://www.lebaneseamericannews.com/
+- Lebanese News Agency — http://www.walnews.com/
+- Lebanese Files — http://www.lebanonfiles.com/
+- Lebanese Forces — http://www.lebanese-forces.com/
+- Lebanese Rights Organization — http://www.lebaneserights.org/
+- Lebano News — http://www.lebanonews.net/
+- Lebanon 24 — http://www.lebanon24.com/
+- Lebanon Debate — http://www.lebanondebate.com/
+- Lebanon E-Gate — http://www.lebanonegate.com/
+- Lebanon Post — http://www.lebanonpost.com/
+- Lebscoop — http://www.lebscoop.com/
+- Lel Nasher — http://www.akhbarlelnasher.com/
+- L'Orient-Le Jour — http://www.lorient-lejour.com.lb/
+- Magazine l'Hebdo — http://www.magazine.com.lb/
+- Media Focal Center — http://www.ertikaz.org/
+- Manartv.com.lb — http://www.manartv.com.lb/
+- Menara — https://www.menara.ma/
+- Monday Morning — http://www.mmorning.com/
+- Movement Of Independence — http://www.alharaka.org/
+- Mulhak News — http://www.mulhak.com/
+- Naharnet — http://www.naharnet.com/
+- National News Agency — http://www.nna-leb.gov.lb/
+- New Orient News — http://www.neworientnews.com/
+- NOW Lebanon — http://www.nowlebanon.com/
+- Only Lebanon : أخبار لبنان — http://onlylebanon.net/
+- Orient Reports — http://www.orientreports.com/
+- OTV — http://www.otv.com.lb/
+- Radar News — http://www.radar-news.net/
+- Ras Baalbeck Online — http://www.rasbaalbeckonline.com/
+- Saida Online — http://www.saidaonline.com/
+- Sawtaljabal — http://www.sawtaljabal.com/
+- Sidonia News — http://www.sidonianews.net/
+- Radio Sour — https://radiosour.com/
+- Tahawolat — http://www.tahawolat.com/
+- Tale3at Loubnan Al3araby — http://www.taleaalebanon.com/
+- Tayyar — http://www.tayyar.org/
+- TopNews : Nasser Kandil — http://topnews-nasserkandil.com/
+- Ya Libnan — http://yalibnan.com/
+- Youkal — http://www.youkal.net/
+
+### allyoucanread — https://www.allyoucanread.com/lebanese-newspapers/
+- almayadeen.net — https://almayadeen.net/
+- L'Orent Le Jour — https://www.lorientlejour.com/
+- Almaner News — https://www.almanar.com.lb/
+- The Daily Star — http://dailystar.com.lb/
+- Lebanon24 — https://www.lebanon24.com/
+- al-akhbar — https://al-akhbar.com/
+- elnashra.com — https://www.elnashra.com/
+- LebanonDebate.com — https://www.lebanondebate.com/
+- tayyar.org — http://www.tayyar.org/
+- Lebanon Files — https://www.lebanonfiles.com/
+- annahar.com — https://www.annahar.com/
+- naharnet — https://naharnet.com/
+- lebanese-forces.com — http://www.lebanese-forces.com/
+- NNA National News Agency Lebanon — https://www.nna-leb.gov.lb/ar/
+- Yasour.org — https://yasour.org/
+- Al-Ahed News — https://www.alahednews.com.lb/
+- Al Joumhouria — https://www.aljoumhouria.com/
+- Addiyar.com — https://addiyar.com/
+- saidaonline.com — https://saidaonline.com/
+- Kataeb.org — https://kataeb.org/
+- bintjbeil — https://bintjbeil.org/
+- AlKalima Online — https://www.alkalimaonline.com/
+- CH23 — https://ch23.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/leban.htm
+- Akhbar Lubnan — http://akhbarlubnan.net/
+- Alankabout — http://www.alankabout.com/
+- Aya News — http://www.ayanews.com/
+- Beirut Business Report — http://beirutbizreport.com/index.php?lang=ar
+- Beirut Gate — http://beirutgate.net/
+- Cedar News — http://www.cedarnews.net/
+- El Nashra — http://www.elnashra.com/
+- Lebanese Forces — http://www.lebanese-forces.com/
+- Lebanon Newswire — http://www.lebanon.com/
+- Lebanon Post — http://www.lebanonpost.com/
+- Lebanon Wire — http://www.lebanonwire.com/
+- Nahar Net — http://www.naharnet.com/
+- Now — https://now.mmedia.me/lb/ar
+- Only Lebanon News — https://www.onlylebanon.net/
+- Tayyar — http://www.tayyar.org/tayyar
+- Ya Libnan — http://www.yalibnan.com/
+- Al Anwar — http://www.alanwar-leb.com/
+- An Nahar — http://www.annahar.com/
+- As Safir — http://www.assafir.com/
+
+## syria (middle_east) — Syrian Arab Republic
+
+### w3newspapers — https://www.w3newspapers.com/syria/
+- Al-Watan — https://alwatan.sy/
+- Al-Thawra — http://thawra.sy/
+- Al-Jamahir — http://jamahir.alwehda.gov.sy/
+- Al-Mokif Al-Riyadi — http://riadi.alwehda.gov.sy/
+- Zaman Al Wsl — https://www.zamanalwsl.net/
+- Enab Baladi — https://www.enabbaladi.net/
+- Syria steps — http://syriasteps.com/
+- Syria News — https://syria.news/
+- Dam press — https://www.dampress.net/
+- Aks alser — https://www.aksalser.com/news/
+- Al mjhar — https://www.almjhar.com/
+- Ortas Online — http://www.ortas.online/
+- Orient News — https://orient-news.net/
+- Syria Times — http://syriatimes.sy/
+- Al-Wehda — http://wehda.alwehda.gov.sy/
+- Al-Ourba — http://ouruba.alwehda.gov.sy/
+- Al-Furat — http://furat.alwehda.gov.sy/
+- Al-Fedaa — http://fedaa.alwehda.gov.sy/
+- Syrian Network for Human Rights — https://snhr.org/
+- Syria Direct — https://syriadirect.org/
+- Al-Ghad — https://www.alghad.tv/
+- Topnews — https://topnewsnet.net/
+- Syria Report — https://syria-report.com/
+- Syrian Arab news agency — https://www.sana.sy/
+
+### onlinenewspapers — https://onlinenewspapers.com/syria.shtml
+- Al-Binaa — https://www.al-binaa.com/
+- Al Quds — http://www.alquds.com/
+- Al Thawra — http://www.thawra.sy/
+- Al Watan — http://www.alwatan.sy/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/syria-arab-league/
+- Athabat — http://www.athabat.net/
+- Iqtissadiya — http://www.iqtissadiya.com/
+- Kassioun — https://kassioun.org/
+- Sana — http://www.sana.sy/
+- Smart News Agency — https://smartnews-agency.com/ar/
+- Syria a2z News — http://syriaa2z.blogspot.com/
+- Syria News — http://www.syria-news.com/
+- The Syrian Observer — https://syrianobserver.com/
+- The Syrian Report — https://www.syria-report.com/
+- Syria Times — http://syriatimes.sy/
+- Tishreen — http://tishreen.news.sy/
+
+### allyoucanread — https://www.allyoucanread.com/syria-newspapers/
+- Raialyoum — https://raialyoum.com/
+- zamanalwsl.net — https://www.zamanalwsl.net/
+- aks alser — https://aksalser.com/
+- syria News — http://syria.news/
+- Al Watan — https://alwatan.sy/
+- Dam Press — https://dampress.net/
+- Al Mjhar — https://almjhar.com/
+- SyrianDays.com — http://syriandays.com/
+- Alazmenah — https://alazmenah.com/
+- JP news — https://jpnews-sy.com/
+- Top News — http://www.topnews-nasserkandil.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/syria.htm
+- Al Sham Info — http://alshaminfo.com/index.php?lang=ar
+- Syria News — http://www.syria-news.com/
+- Syria News — https://syrianews.media/
+- Syria Times — http://syriatimes.sy/
+- Al Thawra — http://thawra.sy/
+- Al Watan — http://www.alwatan.sy/
+- Tishreen — http://tishreen.news.sy/
+
+## west_bank_and_gaza (middle_east) — West Bank and Gaza
+
+### w3newspapers — https://www.w3newspapers.com/palestine/
+- Al-Quds — https://www.alquds.com/ar
+- Al-Ayyam — https://www.al-ayyam.ps/
+- Al-Hurriya — https://www.alhourriah.org/
+- Dunya Alwatan — https://www.alwatanvoice.com/arabic/index.html
+- Felesteen — https://felesteen.news/
+- Raya.ps — https://www.raya.ps/
+- Palestine News & Info Agency (WAFA) — https://english.wafa.ps/
+- Ma'an News Agency (MNA) — https://www.maannews.net/
+- Wattan.tv — https://www.wattan.net/ar/
+- Palestinian Information Center (PIC) — https://palinfo.com/
+- Jerusalem Media and Communication Centre — https://www.jmcc.org/
+- PNN - Palestine News Network — https://english.pnn.ps/
+- Shabakat Azyal Al-Izaeia — https://arn.ps/
+- This Week in Palestine — https://thisweekinpalestine.com/
+- Arab48 — https://www.arab48.com/
+- Deyar Al Nagab — https://www.deyaralnagab.com/
+- Manar — https://www.manar.com/
+- Al Sonara — https://sonara.net/
+- Palestine Public Broadcasting — https://www.pbc.ps/
+- Salam TV — https://www.salam-tv.net/
+- Alwasat Alyum — https://www.alwasattoday.com/
+- Palestine Chronicle — https://www.palestinechronicle.com/
+- Al Quds Al Arabi — https://www.alquds.co.uk/
+- Business Women Forum- Palestine — https://bwf.ps/
+- Palsport News Agency — http://www.palsport.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/palestine.shtml
+- Al-Ayyam — https://www.al-ayyam.ps/
+- Al-Bayader — http://www.al-bayader.com/
+- Al Estqlal — http://www.alestqlal.com/
+- Alhayat Aljadeeda — http://www.alhayat-j.com/
+- Al Hourriah — http://www.alhourriah.org/
+- Al Manar — http://www.manar.com/
+- Al-Quds — http://www.alquds.com/
+- Al Safeer Al Iqtisadi — http://www.alsafeernews.com/arabic/
+- Arabs48 — https://www.arab48.com/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/palestine/
+- Assabeel Weekly — http://www.assabeel.net/
+- Deyar Al Nagab — http://www.deyaralnagab.com/
+- Donia Al-Watan — http://www.alwatanvoice.com/
+- Felesteen — https://www.felesteen.ps/
+- Kul Al Arab — http://www.kul-alarab.com/
+- Palestine Chronicle — https://www.palestinechronicle.com/
+- Palestine News Network — http://www.pnn.ps/
+- Palestine News Network — http://english.pnn.ps/
+- The Palestinian Information Center — http://www.palinfo.com/
+- PalSport — http://www.palsport.com/
+- Quds Net News Agency — https://www.qudsnet.com/
+- Quds News — https://www.qudsnen.co/
+- Sama News — https://www.samanews.ps/
+- Time Palestine — https://time.com/tag/palestine/
+- Wafa News Agency — https://www.wafa.ps/
+- Wafa News Agency — https://english.wafa.ps/
+
+### allyoucanread — https://www.allyoucanread.com/palestinian-authority-newspapers/
+- Palinfo — https://palinfo.com/
+- PNN Palestine News Network — https://pnn.ps/
+- Wattan — https://www.wattan.net/
+- raya.ps — https://www.raya.ps/
+
+### abyznewslinks — http://www.abyznewslinks.com/pales.htm
+- Jerusalem Media and — http://www.jmcc.org/
+- Palestine Chronicle — http://www.palestinechronicle.com/
+- Palestine Information Center — https://www.palinfo.com/
+- Palestine Information Center — https://english.palinfo.com/
+- Palestine Information Center — https://farsi.palinfo.com/
+- Palestine Information Center — https://french.palinfo.com/
+- Palestine Information Center — https://melayu.palinfo.com/
+- Palestine Information Center — https://russian.palinfo.com/
+- Palestine Information Center — https://turkish.palinfo.com/
+- Palestine Information Center — https://urdu.palinfo.com/
+- Palestine Journal — http://paljournal.net/index.php?lang=ar
+- Palestine News Network — http://arabic.pnn.ps/
+- Palestine News Network — http://german.pnn.ps/
+- Palestine News Network — http://english.pnn.ps/
+- Palestine News Network — http://french.pnn.ps/
+- Al Ayyam — http://www.al-ayyam.com/
+- Al Hayat Al Jadidah — http://www.alhayat-j.com/newsite/
+- Al Quds — http://www.alquds.com/
+- Al Quds Al Arabi — http://www.alquds.co.uk/
+
+## yemen (middle_east) — Yemen, Rep.
+
+### w3newspapers — https://www.w3newspapers.com/yemen/
+- sahaafa.net — https://sahaafa.net/
+- SABA (Yemen News Agency) — https://www.saba.ye/ar/
+- 26 September — https://26sep.net/
+- Sahafah 24 — https://sa24.co/
+- marebpress.net — https://marebpress.net/
+- Almasdar Online — https://almasdaronline.com/
+- newsyemen.net — https://www.newsyemen.net/
+- Yemen Economist — https://www.yemeneconomist.com/
+- yemenat.net — https://yemenat.net/
+- Yemen-press.com — https://yemen-press.net/
+- almashhadnews.com — https://www.almashhadnews.com/
+- Yemen Now — https://ym-now.net/
+- Al Thawra — https://althawrah.ye/
+- Yemen Saeed — https://yemen-saeed.com/
+- Hour News — https://hournews.net/
+- almotamar.net — https://www.almotamar.net/news/
+- Al Sahwa — https://www.alsahwa-yemen.net/
+- Al Wahdawi — https://alwahdawi.net/
+- yemenportal.net — https://yemenportal.net/
+- Abarah Press — https://abarahpress.com/
+- Yemen Post — http://www.yemenpost.net/
+- Al Wasat — https://alwasat-ye.net/
+- Yemeress — https://www.yemeress.com/
+- Yafa-News.net — https://yafa-news.net/
+- Yemen Voice — https://ye-voice.com/
+- anayemeny.net — http://anayemeni.net/
+- Al Ayyam — https://www.alayyam.info/
+- Al Eshteraky — http://www.aleshteraky.com/
+- Lahj News — http://www.lahjnews.net/ar/
+- Yemen Online — https://www.yemenonline.info/
+- Al Saeedah TV — https://www.alsaeedah-tv.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/yemen.shtml
+- 26th September — http://www.26sep.net/
+- Al Ayyam — https://www.alayyam.info/
+- Al-Hawyah — http://www.alhawyah.com/
+- Al Motamar — http://www.almotamar.net/
+- Al-Sahwa — http://www.alsahwa-yemen.net/
+- Al Shmoa Weekly — http://www.alshmoa.com.ye/
+- Al-Shora — http://www.y.net.ye/shoura/
+- Al Tagheer — http://www.al-tagheer.com/
+- Al Thawra — http://www.althawrah.ye/
+- Al Wahdawi — http://www.alwahdawi.net/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/yemen-arab-league/
+- Newsyemen — http://www.newsyemen.net/
+- Sahafah — https://www.sahafaa.net/
+- Yaman Yoon — https://www.yamanyoon.com/
+- Yemen American News — https://yemeniamerican.com/
+- Yemen Economist News — http://www.yemeneconomist.com/
+- Yemen News Agency — https://www.saba.ye/
+- Yemen Online — http://www.yemenonline.info/
+- Yemen Portal — http://yemenportal.net/
+- Yemen Post — http://www.yemenpost.net/
+- Yemen Times — https://time.com/tag/yemen/
+
+### allyoucanread — https://www.allyoucanread.com/yemen-newspapers/
+- yemen.net.ye — http://yemen.net.ye/
+- almashhad-alyemeni.com — https://almashhad-alyemeni.com/
+- Sahafah.net — https://news.sahafaa.net/
+- Saba NET — https://sabanews.net/
+- Althawrah.ye — https://althawrah.ye/
+- Almasdar — https://almasdaronline.com/
+- Almotamar.net — https://almotamar.net/
+- Yemen-Press.com — https://yemen-press.com/
+- Mareb Press — http://marebpress.net/
+- HourNews.net — https://hournews.net/
+- Adenalghad.net — https://adenalghad.net/
+- yemenat.net — http://yemenat.net/
+- Anayemeny.net — http://anayemeni.net/
+- Yafa-News.net — https://yafa-news.net/
+
+### abyznewslinks — http://www.abyznewslinks.com/yemen.htm
+- Ababiil — https://ababiil.net/
+- Al Badeel — http://albadeel.info/
+- Al Eshteraky — http://www.aleshteraky.com/
+- Al Ganob — http://www.alganob.net/
+- Al Heyad — https://alheyad.net/
+- Al Tagheer — https://www.al-tagheer.com/
+- Hour News — http://hournews.net/
+- Lahj News — http://www.lahjnews.net/
+- Mosnad — http://www.mosnad.com/
+- News Yemen — https://www.newsyemen.net/
+- Saadah Press — http://www.saadahpress.net/
+- Sahafah — http://sahafahnet.net/
+- Sahafah 24 — http://www.sahafah24.net/
+- Yemen Akhbar — https://www.yemenakhbar.com/
+- Yemen AT — http://www.yemenat.net/
+- Yemen Economist — http://www.yemeneconomist.com/
+- Yemen News — http://yemennewstraffic.com/index.php?lang=ar
+- Yemen News Gate — https://www.yemennewsgate.net/
+- Yemen Now — https://yemen-now.com/
+- Yemen Online — http://www.yemenonline.info/
+- Yemen Portal — https://www.yemenportal.net/
+- Yemen Post — http://www.yemenpost.co/
+- Yemen Press — https://www.yemen-press.com/
+- Yemen Saeed — https://yemensaeed.net/
+- Yemen Voice — http://www.yemenvoice.net/
+- Yemeni Media Center — http://yemen-media.net/?lng=arabic
+- Yemeni Sport — https://yemenisport.com/
+- Yemeress — https://www.yemeress.com/
+- Yen News — http://www.yen-news.net/
+- Al Thawra — http://www.althawranews.net/
+
+## algeria (north_africa) — Algeria
+
+### w3newspapers — https://www.w3newspapers.com/algeria/
+- Echorouk — https://www.echoroukonline.com/
+- El Khabar — https://www.elkhabar.com/
+- L'Expression — https://www.lexpressiondz.com/
+- Ennahar — https://www.ennaharonline.com/
+- El Watan — https://elwatan.com/
+- Ech Chaab — http://www.ech-chaab.com/
+- El Massa — https://www.el-massa.com/
+- Akher Saâ — https://akhersaa.net/
+- Annasr — https://www.annasronline.com/
+- El Djoumhouria — https://www.eldjoumhouria.dz/
+- Akhbar el Youm — https://www.akhbarelyoum.dz/ar/index.php
+- Al Seyassi — https://www.alseyassi-dz.com/ara/index.php
+- El Wassat — https://elwassat.dz/
+- El Hayat — https://elhayat.dz/
+- El Moudjahid — https://www.elmoudjahid.com/
+- Le Quotidien d'Oran — https://www.lequotidien-oran.com/
+- Le Soir d’Algérie — https://www.lesoirdalgerie.com/
+- Le Jour d’Algérie — https://www.lejourdalgerie.com/
+- La Dépêche de Kabylie — https://www.depechedekabylie.com/
+- La Réflexion — https://www.reflexiondz.net/
+- Alger Républicain — http://www.alger-republicain.com/
+- Horizons — https://www.horizons.dz/
+- Le Courrier d’Algérie — https://lecourrier-dalgerie.com/
+- Le Carrefour d’Algérie — https://lecarrefourdalgerie.dz/
+- L’Echo d’Algérie — https://lechodalgerie.dz/
+- Le Jeune Indépendant — https://www.jeune-independant.net/
+- Transaction d’Algérie — https://transactiondalgerie.com/
+- Algérie Eco — https://algerie-eco.com/
+- Algérie Maintenant — https://algeriemaintenant.com/
+- L’automarché — http://lautomarche.com/
+- The North Africa Journal — https://north-africa.com/
+- El Heddaf — https://www.elheddaf.com/
+- DZFoot — https://www.dzfoot.com/
+- Le Buteur — https://www.lebuteur.com/
+- Compétition — https://www.competition.dz/
+- Algerie.Football — https://algerie.football/
+- Le Matin DZ — https://www.lematindz.net/
+- El Bilad — https://www.elbilad.net/
+- Algerie360.com — https://www.algerie360.com/
+- Algérie 1 — https://www.algerie1.com/
+- Algérie Patriotique — https://algeriepatriotique.com/
+- Dzayerinfo — https://dzayerinfo.com/
+- Al Jazair Al Youm — https://www.aljazairalyoum.dz/
+- Le Matin d’Algérie — https://lematindalgerie.com/
+- Algérie-Focus.com — https://www.algerie-focus.com/
+- El Hiwar El Jazairia — https://elhiwar.dz/
+- DIA — Dernières Infos d’Algérie — https://dia-algerie.com/
+- Algerie-dz.com — https://www.algerie-dz.com/
+- Djelfa.info — https://djelfainfo.dz/ar/
+- AL24 News — https://al24news.dz/
+- Algérie Presse Service (APS) — https://www.aps.dz/
+- Radio Algérie — https://news.radioalgerie.dz/
+- Télévision Algérienne (ENTV) — https://www.entv.dz/
+- ObservAlgérie — https://observalgerie.com/
+- DNA Algérie — https://dnalgerie.com/
+- DiasporaDZ — https://www.diasporadz.com/
+- France Maghreb 2 — https://www.francemaghreb2.fr/
+- Beur FM — https://www.beurfm.net/
+- CanadaAlgérie — https://www.canadalgerie.info/
+
+### onlinenewspapers — https://onlinenewspapers.com/algeria.shtml
+- Afrol News — http://www.afrol.com/regions/north_africa/
+- Akhbar el Youm — http://www.akhbarelyoum.dz/
+- Akher Saâ — http://www.akhersaa-dz.com/
+- Al Ahdath News — https://alahdathnews.com/
+- Algeria Daily — http://www.algeriadaily.com/
+- Algérie Press Service — http://www.aps.dz/
+- Al Jazairal Youm — https://www.aljazairalyoum.com/
+- AllAfrica: Algeria — https://allafrica.com/algeria/
+- Annasr — http://www.annasronline.com/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/algeria/
+- Ech-Chaab — http://www.ech-chaab.com/
+- Echourouk el Youmi — http://www.echoroukonline.com/
+- El Ahdath — https://ahdath.info/
+- El Djournhouria — http://www.eldjoumhouria.dz/
+- El Heddaf — http://www.elheddaf.com/
+- El Khabar — http://www.elkhabar.com/
+- El Massa — http://www.el-massa.com/
+- El Moudjahid — http://www.elmoudjahid.com/
+- El Raaed — http://www.elraaed.com/
+- El Watan — http://www.elwatan.com/
+- El Youm — https://www.youm7.com/
+- Ennahar El Djadid — https://www.ennaharonline.com/
+- JeuneAfrique — https://www.jeuneafrique.com/pays/algerie/
+- Le Jeune Independant — http://www.jeune-independant.net/
+- Kawalisse — http://www.kawalisse.com
+- La Dépêche de Kabylie — http://www.depechedekabylie.com/
+- Les Débats — https://lesdebats.com/
+- L'Expression — http://www.lexpressiondz.com/
+- Le Jour d'Algérie — http://www.lejourdalgerie.com/
+- Le Matin d'Algérie — http://www.lematindz.net/
+- Liberté — http://www.liberte-algerie.com/
+- Le Quotidien d'Oran — http://www.quotidien-oran.com/
+- Le Soir d'Algérie — http://www.lesoirdalgerie.com/
+- North Africa Journal — http://north-africa.com/algeria-country-channel/
+- ObservAlgerie — https://www.observalgerie.com/actualite-algerie/
+- Today's Opinion — https://www.raialyoum.com/
+- Transaction d'Algérie — http://transactiondalgerie.com/
+- Wakteld Jazair — http://www.wakteldjazair.com/
+- The Worldfolio — http://www.theworldfolio.com/algeria/
+
+### allyoucanread — https://www.allyoucanread.com/algerian-newspapers/
+- Ennahar el Djadid — https://www.ennaharonline.com/
+- Echorouk — https://www.echoroukonline.com/
+- El Khabar — https://www.elkhabar.com/
+- APS Algerie Presse Service — https://www.aps.dz/
+- Algerie360.com — https://www.algerie360.com/
+- Djelfa.info — https://www.djelfa.info/
+- TSA — https://www.tsa-algerie.com/
+- El Bilad — https://www.elbilad.net/
+- El Watan — https://www.elwatan.com/
+- Le Soir d'Algerie — https://www.lesoirdalgerie.com/
+- L'Expression — https://www.lexpressiondz.com/
+- Liberte — https://www.liberte-algerie.com/
+- Algerie Patriotique — https://www.algeriepatriotique.com/
+- Algerie-Focus.com — https://www.algerie-focus.com/
+- Djazairess.com — https://www.djazairess.com/
+- Le Quotidien d'Oran — https://www.lequotidien-oran.com/
+- Algerie-dz.com — https://www.algerie-dz.com/
+- El Massa — http://www.el-massa.com/
+- El Moudjahid — https://www.elmoudjahid.com/
+- An Nasr — https://www.annasronline.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/alger.htm
+- About Algeria — https://www.aboutalgeria.com/
+- Akhbar Dzair — https://www.akhbardzair.com/
+- Al Jazair 1 — http://aljazair1.com/
+- Al Jazair 24 — http://aljazair24.com/
+- Al Jazair Al Youm — http://aljazairalyoum.com/
+- Al Jazair Com — https://aljazaircom.com/
+- ALG 24 — https://www.alg24.net/
+- Algeria Business Info — http://www.algeriabusinessinfo.com/index.php?lang=ar
+- Algeria Press Online — http://www.algeriapressonline.com/
+- Algeria Times — http://www.algeriatimes.net/
+- Algeria Times — http://algeriatimes.info/index.php?lang=ar
+- Algeria Watch — https://algeria-watch.org/?cat=33
+- Algerie 1 — https://www.algerie1.com/
+- Algerie 7 — https://algerie7.com/
+- Algerie 360 — http://www.algerie360.com/
+- Algerie Direct — https://algerie-direct.net/
+- Algerie Eco — https://www.algerie-eco.com/
+- Algerie Focus — https://www.algerie-focus.com/
+- Algerie Maintenant — http://algeriemaintenant.com/
+- Algerie Maintenant — http://fr.algeriemaintenant.com/
+- Algerie Monde Infos — https://www.algeriemondeinfos.com/ar/
+- Algerie Network — http://algerienetwork.com/
+- Algerie Part — https://algeriepart.com/ar/
+- Algerie Patriotique — https://www.algeriepatriotique.com/
+- Algerie Scoop — http://www.algeriescoop.com/
+- Algerie Solidaire — http://algeriesolidaire.net/
+- CNP News — http://cnpnews.net/ar/
+- DIA Dernieres Infos d'Algerie — http://dia-algerie.com/
+- Djazairess — https://www.djazairess.com/
+- DZ Foot — http://www.dzfoot.com/
+- Dzair Infos — http://dzairinfos.com/
+- Dzair Presse — https://www.dzairpresse.com/
+- Dzayer Info — http://dzayerinfo.com/
+- Infos Premieres — https://www.infos-premieres.com/
+- La Voix d'Algerie — https://lavoixdalgerie.com/
+- Le Matin d'Algerie — http://www.lematindalgerie.com/
+- Le Quotidien d'Algerie — http://lequotidienalgerie.org/
+- L'Express DZ — https://www.express-dz.com/
+- Live News Algerie — http://www.livenewsalgerie.com/
+- Observ Algerie — https://www.observalgerie.com/
+- PF Algerie — http://www.pfalgerie.com/
+- Podium DZ — https://www.podium-dz.com/
+- Presse Algerie — http://www.presse-algerie.net/
+- Sabq Press — https://www.sabqpress.net/
+- TSA — https://www.tsa-algerie.com/ar/
+- Ech Chaab — http://www.ech-chaab.com/
+- Echorouk El Youmi — https://www.echoroukonline.com/
+- El Khabar — https://www.elkhabar.com/
+- El Moudjahid — http://www.elmoudjahid.com/ar
+- El Watan — https://www.elwatan.com/
+- Journal Officiel — https://www.joradp.dz/HAR/Index.htm
+- La Tribune — https://www.latribune-algerie.com/
+- Liberte — https://www.liberte-algerie.com/
+
+## djibouti (north_africa) — Djibouti
+
+### w3newspapers — https://www.w3newspapers.com/djibouti/
+- La Nation — https://www.lanation.dj/
+- La Prosperite — https://laprosperiteonline.net/
+- La Voix de Djibouti — https://lavoixdedjibouti.info/
+- Al Qarn — https://www.alqarn.dj/
+- Agence Djiboutienne d'Information — http://www.adi.dj/
+- ReliefWeb Djibouti — https://reliefweb.int/country/dji
+
+### onlinenewspapers — (not listed)
+- (no entries)
+
+### allyoucanread — https://www.allyoucanread.com/djibouti-newspapers/
+- ADI — http://www.adi.dj/
+- Al Qarn — https://www.alqarn.dj/
+- La Nacion — https://www.lanation.dj/
+
+### abyznewslinks — http://www.abyznewslinks.com/djibo.htm
+- Djib Net — http://www.djibnet.com/
+- Al Qarn — http://www.alqarn.dj/
+- La Nation — http://www.lanationdj.com/
+
+## egypt (north_africa) — Egypt, Arab Rep.
+
+### w3newspapers — https://www.w3newspapers.com/egypt/
+- Youm7 — https://www.youm7.com/
+- Al-Masry Al-Youm — https://www.almasryalyoum.com/
+- Al-Ahram — https://gate.ahram.org.eg/
+- El Watan — https://www.elwatannews.com/
+- Akhbar el-Yom — https://akhbarelyom.com/
+- Shorouk — https://www.shorouknews.com/
+- Al Dostor — https://www.dostor.org/
+- Al Gomhuria — https://www.gomhuriaonline.com/
+- Al Wafd — https://www.alwafd.news/
+- Al-Bawabh News — https://www.albawabhnews.com/
+- Veto — https://www.vetogate.com/
+- El Fagr — https://www.elfagr.org/
+- Al Mal — https://almalnews.com/
+- Alnahar Egypt — https://www.alnaharegypt.com/
+- El Aosboa — https://www.elaosboa.com/
+- Al Ahaly — https://alahalygate.com/
+- Al Messa — https://almessa.gomhuriaonline.com/
+- Masrawy — https://www.masrawy.com/
+- El Balad — https://www.elbalad.news/
+- Mada Masr — https://www.madamasr.com/
+- ngmisr.com — https://www.ngmisr.com
+- dotmsr.com — https://www.dotmsr.com/
+- Mobtada — https://www.mobtada.com/
+- Akhbarak — https://akhbarak.net/
+- ArabNet5 — https://www.arabnet5.com/
+- Rassd News — https://rassd.com/
+- Misr5 — https://misr5.com/
+- El Mogaz — https://www.elmogaz.com/
+- Al Zaman — https://www.elzmannews.com/
+- Al Hilal Al Youm — https://www.darelhilal.com/
+- Propaganda — https://propaganda-eg.com/
+- Washwasha.org — https://www.washwasha.org/
+- Misr Day — https://www.masralyoum.net/
+- Sabah Arabi — https://www.sabaharabi.com/
+- FJ Portal — https://fj-p.com/
+- Akhbarway.com — https://www.akhbarway.com/
+- El Bashayer — https://elbashayer.com/
+- Soutalomma.com — https://www.soutalomma.com/
+- Ahl Masr — https://ahlmasrnews.com/
+- Al Masdar — https://www.almasdar.com/
+- Ikhwan Online — https://www.ikhwanonline.com/
+- Sout Al Malaien — https://www.soutalmalaien.com/
+- Fath-News.com — https://fath-news.com/
+- Amwal Al Ghad — https://amwalalghad.com/
+- Masress — https://www.masress.com/
+- YallaKora — https://www.yallakora.com/
+- Fil Goal — https://www.filgoal.com/
+- Kooora — https://www.kooora.com/
+- KingFut — https://www.kingfut.com/
+- Btolat — https://www.btolat.com/
+- El Ahly — https://www.el-ahly.com/
+- Ismaily Online — https://www.ismailyonline.com/
+- Stad El Ahly — https://stadelahly.net/
+- Korabia — https://www.korabia.net/
+- Cairo24 — https://www.cairo24.com/
+- Sharkia Today — https://sharkiatoday.com/
+- Watani — https://www.wataninet.com/
+- MogazMasr — https://www.mogazmasr.com/
+- Al-Ahram (English Edition) — https://english.ahram.org.eg/
+- Daily News Egypt — https://www.dailynewsegypt.com/
+- Egypt Independent — https://www.egyptindependent.com/
+- Egyptian Streets — https://egyptianstreets.com/
+- Egypt Today — https://www.egypt-today.com/
+- Middle East News Agency (MENA) — https://mena.org.eg/
+- Egypt State Information Service (SIS) — https://www.sis.gov.eg/
+- Egyptian Radio and Television Union (ERTU) — https://www.maspero.eg/
+- Nile Television Network — https://www.niletc.tv/
+
+### onlinenewspapers — https://onlinenewspapers.com/egypt.shtml
+- Afrol News — http://www.afrol.com/regions/north_africa/
+- Ahram — http://www.ahram.org.eg/
+- AhlyNews.com — http://www.ahlynews.com/
+- Akhbar El Yom — http://www.akhbarelyom.org.eg/
+- Akhbar Way — http://www.akhbarway.com/
+- Al-Ahaly — http://www.al-ahaly.com/
+- Al-Ahram News Gate — http://gate.ahram.org.eg/
+- Al-Arabi Al-Nasery — http://al-araby.com/
+- Al-Azma — http://www.alazma.com/
+- Alborsa — https://www.alborsanews.com/
+- AllAfrica: Egypt — https://allafrica.com/egypt/
+- Al Mal News (جريدة المال) — http://www.almalnews.com/
+- Al Manar Aljadeed — http://www.almanar.net/
+- Al Masry Al Youm — http://www.almasryalyoum.com/
+- Almasry Alyoum — http://www.almasry-alyoum.com/
+- Al Maqal — http://al-maqal.com/
+- Al Mesryoon — http://www.almesryoon.com/
+- Al-Messa — http://www.almessa.net.eg/
+- Al Moheet — http://www.moheet.com/
+- Al Nafeza (النافذة الاخبارية) — http://www.alnafeza.com/
+- Al Nahar — https://www.alnaharegypt.com/
+- Al Nilin — http://www.alnilin.com/
+- Al-Osboa — http://www.elosboa.com/
+- Al Shaab — http://www.alshaab.com/
+- Al-Shaab — http://www.elshaab.org/
+- Al-Shorouk — http://www.shorouknews.com/
+- Al Tahreer — http://www.egarida.com/
+- Alwafd — http://www.alwafd.org/
+- Al-Youm Al-Sabee — https://www.youm7.com/
+- Anbaa Masr — http://www.anbaamasr.com/
+- Arab Net 5 — http://www.arabnet5.com/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/egypt/
+- Business Today — http://www.businesstodayegypt.com/
+- Cairo Now — http://www.cairo-now.com/
+- Cairo Portal — http://www.cairoportal.com/
+- CairoStadium.com — http://www.cairostadium.com/
+- Cairo Times — http://www.cairotimes.com/
+- Capital News (جريدة كابيتال) — https://www.capitalnewseg.com/
+- Copts United — http://www.coptsunited.com/
+- CTV Egypt News — https://www.ctv-egypt.com/
+- Daily Egypt News — http://www.dailyegyptnews.com/
+- Daily News Egypt — http://www.thedailynewsegypt.com/
+- The Daily Star Egypt — http://www.dailystaregypt.com/
+- Democraticfront — http://www.democraticfront.org/
+- Egypt Daily News — http://www.egyptdailynews.com/
+- Egypt Gate (بوابة مصر) — http://www.gateeg.com/
+- Egypt Independent — http://www.egyptindependent.com/
+- Egypt Today — http://www.egypttoday.co.uk/
+- El Akhbar — http://www.elakhbar.org.uk/
+- El Aosboa — http://www.elaosboa.com/
+- El Aph — http://www.elaph.com/
+- El Badil — http://www.elbadil.net/
+- El Bashayer — http://www.elbashayer.com/
+- El Dostor — http://www.dostor.org/
+- El Dostor Alasly — http://www.dostorasly.com/
+- El Fagr — http://www.elfagr.org/
+- El-Gomhuriah — http://www.eltahrir.net.eg/
+- El Mogaz — http://www.elmogaz.com/
+- El Saba7 — http://www.elsaba7.com/
+- El Wasat — http://www.el-wasat.com/
+- Elwatan — http://www.elwatannews.com/
+- Ertu — http://www.egynews.net/
+- Giza Now (الجيزة الآن) — http://www.gizanow.com/
+- Hedayah — http://www.hedayah.net/
+- Het Laatste Nieuws — http://www.hln.be/
+- Imalmasr (شبكة انا المصري الاخبارية) — http://imalmasry.com/
+- Islam Online — http://www.islamonline.net/ara
+- JeuneAfrique — https://www.jeuneafrique.com/pays/egypte/
+- Khabar Masr — https://www.khabarmasr.com/
+- Kalam Social — https://www.kalamsocial.com/
+- La Revue d'Égypte — http://www.larevuedegypte.com/
+- Mahalla City News — http://www.mahallacity.com/
+- Media NET2 — http://www.medianet2.com/
+- Melody Sport — http://www.melodysport.tv/
+- Middle East News Agency — http://www.mena.org.eg/
+- The Middle East Observer — http://www.meobserver.org/
+- The Middle East Times — http://metimes.com/
+- Misr 24 - 24 (مصر) — http://www.24.com.eg/
+- MisrDay (مصر اليوم) — http://www.misrday.com/
+- MisrNews.com — http://www.misrnews.com/
+- Muhtwaplus — https://www.muhtwaplus.com/
+- Nile360 — http://www.nile360.com/
+- Nile Sports — http://www.nilesports.com/
+- Nogoom Masrya — https://www.ngmisr.com/
+- Nononline — http://www.nononline.com/
+- NTA Newstime — http://www.newstimeafrica.com/archives/category/north-africa/egypt-north-africa
+- ONA News Agency — http://onaeg.com/
+- Ouionnet — http://www.ouionnet.org/
+- Rosalyousef — http://www.rosaonline.net/
+- Russkiy v Egypte — http://www.russianinegypt.com/
+- Sabaharabi — http://www.sabaharabi.com/
+- Shabab Misr — http://www.shbabmisr.com/
+- Shabab Online — http://www.shababon-line.com/
+- Sout al Malaien — http://www.soutalmalaien.com/
+- Sout AlOmma — http://www.soutalomma.com/
+- Tahrir News — http://tahrirnews.com/
+- Veto — http://www.vetogate.com/
+- Watan — http://www.watan.com/
+- Watani — http://www.watani.com.eg/
+- The Worldfolio — http://www.theworldfolio.com/egypt
+- Yallakora — http://www.yallakora.com/
+- Zamalek Fans — http://zamalekfans.com/
+- Zamalek Today — http://www.zamalektoday.com/
+
+### allyoucanread — https://www.allyoucanread.com/egyptian-newspapers/
+- Al Masry al Youm — https://www.almasryalyoum.com/
+- Youm7 — http://www.youm7.com/
+- Masrawy — https://www.masrawy.com/
+- El-Balad — https://www.elbalad.news/
+- Ahram — https://www.ahram.org.eg/
+- Al-Monitor — https://al-monitor.com/
+- Vetogate — https://vetogate.com/
+- Alaraby.co.uk — https://www.alaraby.co.uk/
+- El Watan — https://www.elwatannews.com/
+- El Badil — https://news.elbadil.com/
+- Egypt Independent — https://www.egyptindependent.com/
+- Shorouk — https://www.shorouknews.com/
+- EgyptToday.com — https://www.egypttoday.com/
+- Dostor — https://www.dostor.org/
+- El Fagr — https://www.elfagr.org/
+- Daily News Egypt — https://www.dailynewsegypt.com/
+- Elbashayer — https://elbashayer.com/
+- Middle-East-Online — https://middle-east-online.com/
+- Akhbarelyom — https://akhbarelyom.com/
+- Albawabh News — https://albawabhnews.com/
+- Akhbarak.net — https://www.akhbarak.net/
+- Erem News — https://eremnews.com/
+- Al Mesryoon — https://www.almesryoon.com/
+- MENA Middle East News Agency — https://www.mena.org.eg/
+- WataniNet.com — https://www.wataninet.com/
+- arabstoday.net — https://www.arabstoday.net/
+- Almogaz.com — http://www.almogaz.com/
+- IkhwanOnline.com — https://www.ikhwanonline.com/
+- Soutalomma.com — https://www.soutalomma.com/
+- Egypt Today — https://www.egypt-today.com/
+- Misr5 — https://misr5.com/
+- El Mogaz — https://www.elmogaz.com/
+- Tahrirnews.com — https://www.tahrirnews.com/
+- Moheet.com — https://www.moheet.com/
+- Masress — https://www.masress.com/
+- Dotmsr — https://www.dotmsr.com/
+- Al Nahar — https://www.alnaharegypt.com/
+- WashWasha.org — https://www.washwasha.org/
+
+### abyznewslinks — http://www.abyznewslinks.com/egypt.htm
+- Ahl Masr — https://www.ahlmasrnews.com/
+- Akhbar Masr — http://akhbarmasr.news/
+- Akhbarak — http://www.akhbarak.net/
+- Al Bashayer — http://elbashayeronline.com/
+- Al Hilal Al Youm — https://www.alhilalalyoum.com/
+- Al Masdar — http://www.almasdar.com/
+- Arab Net 5 — http://www.arabnet5.com/
+- Arabi 21 — https://www.arabi21.com/
+- Cairo Now — http://www.cairo-now.com/
+- Dot Msr — http://www.dotmsr.com/
+- Egypt Commercial News — http://egyptcmnews.com/index.php?lang=ar
+- Egypt Daily News — http://www.egyptdailynews.com/
+- Egypt Independent — https://ww.egyptindependent.com/
+- Egypt News — https://www.egyptnews.net/
+- Egypt Sports Network — http://egyptsportsnetwork.net/
+- Egypt Window — https://www.egyptwindow.net/
+- Egyptian Streets — https://egyptianstreets.com/
+- El Balad — https://www.elbalad.news/
+- El Fariq — http://www.elfariq.com/
+- El Mawke 3 — http://www.elmawke3.com/
+- El Mostaqbal — https://www.elmostaqbal.com/
+- El Tareeq — https://www.el-tareeq.net/
+- Elmwatin — https://www.elmwatin.com/
+- Fehob Masr — https://www.fehobmasr.com/
+- Fil Goal — https://www.filgoal.com/
+- FJ P — http://fj-p.com/
+- Khabar Al Youm — http://khabaralyoum.com/
+- Khabar Masr — http://www.khabarmasr.com/
+- Koorabia — http://www.koorabia.com/
+- Mada Masr — https://madamasr.com/
+- Masr Al Arabia — http://www.masralarabia.com/
+- Masrawy — https://www.masrawy.com/
+- Masress — https://www.masress.com/
+- Misr 5 — http://misr5.com/
+- Misr Day — http://www.misrday.com/
+- Mobtada — https://www.mobtada.com/
+- Mogaz Masr — https://www.mogazmasr.com/
+- N Misr — https://www.nmisr.com/
+- Propaganda — http://www.propaganda-eg.com/
+- Rassd — https://rassd.com/
+- Sabah Arabi — https://www.sabaharabi.com/
+- SIS — http://www.sis.gov.eg/?lang=ar
+- Vetogate — https://www.vetogate.com/
+- Yallakora — https://www.yallakora.com/
+- Al Ahram — http://www.ahram.org.eg/
+- Al Akhbar — https://akhbar.akhbarelyom.com/
+- Al Gomhuria — http://www.algomhuria.net.eg/
+- Al Wafd — https://alwafd.news/
+- Youm 7 — https://www.youm7.com/
+
+## libya (north_africa) — Libya
+
+### w3newspapers — https://www.w3newspapers.com/libya/
+- Libya Akhbar — https://www.libyaakhbar.com/
+- Afrigate News — https://www.afrigatenews.net/
+- Al Marsad — https://almarsad.co/
+- New Libya — http://www.newlibya.net/
+- akhbarlibya24.net — https://akhbarlibya24.net/
+- Libya Herald — https://libyaherald.com/
+- Libya Observer — https://libyaobserver.ly/
+- Al-musallh — https://www.almusallh.ly/
+- Libyan Express — https://www.libyanexpress.com/
+- Libya Business News — https://libya-businessnews.com/
+- February — https://febp.ly/
+- Ean Libya — https://www.eanlibya.com/
+- Al-Wasat — http://alwasat.ly/
+- Libya's Channel — https://libyaschannel.com/
+- 218tv.net — https://www.218tv.net/
+- Libyan News Agency — https://lana.gov.ly/
+- Al Mukhtar Al Arabi‎ — https://www.almukhtaralarabi.com/
+- Libya Monitor — https://www.libyamonitor.com/
+- Libya Al Salam — http://libyaalsalam.net/
+- El Khabar — https://www.elkhabar.ly/
+- Libya News — https://www.libya-news.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/libya.shtml
+- Afrol News — http://www.afrol.com/regions/north_africa/
+- Akhbar Libya — https://www.libyaakhbar.com/
+- Al-Fajral Al-Jadeed — https://alfajraljadeed.com/
+- AllAfrica: Libya — https://allafrica.com/libya/
+- Al-Shames — http://www.alshames.com/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/libya/
+- JeuneAfrique — https://www.jeuneafrique.com/pays/libye/
+- Libya Herald — http://www.libyaherald.com/
+- Libyan Express — https://www.libyanexpress.com/
+- Libya Jeel — https://www.libyajeel.com/
+- Libyan News Agency (LANA) — https://www.lana-news.ly/
+- The Libya Observer — http://www.libyaobserver.ly/
+- The Libya Times — https://www.libyatimes.net/
+- Libya-Today — http://www.libya-today.com/
+- Quryna — https://www.quryna.com/
+
+### allyoucanread — https://www.allyoucanread.com/libya-newspapers/
+- Alwasat — https://alwasat.ly/
+- Libya Herald — https://www.libyaherald.com/
+- LANA — https://lana.gov.ly/
+
+### abyznewslinks — http://www.abyznewslinks.com/libya.htm
+- Afrigate News — https://www.afrigatenews.net/
+- Ajwa — http://www.ajwa.net/
+- Akhbar Libya — http://www.akhbarlibya.net/
+- Akhbar Libya 24 — https://akhbarlibya24.net/
+- Al Marsad — https://almarsad.co/
+- Al Motawaset — http://almotawaset.com/
+- Al Mukhtar Al Arabi — http://www.almukhtaralarabi.com/
+- Al Rassed Al Liby — http://www.alrassedalliby.com/
+- Al Wasat — http://alwasat.ly/
+- Al Watan Libya — http://www.alwatanlibya.net/
+- Ean Libya — https://www.eanlibya.com/
+- El Khabar — http://www.elkhabar.ly/
+- Ewan Libya — http://ewanlibya.ly/
+- Fassato News — http://www.fassatonews.net/
+- Libya Akhbar — https://www.libyaakhbar.com/
+- Libya Al Khabar — http://www.libyaalkhabar.com/
+- Libya Al Mokhtar — http://libyaalmokhtar.com/
+- Libya Al Salam — http://libyaalsalam.net/
+- Libya Business Info — http://libyabizinfo.com/index.php?lang=ar
+- Libya Business News — http://www.libya-businessnews.com/
+- Libya Herald — http://www.libyaherald.com/
+- Libya Monitor — https://www.libyamonitor.com/
+- Libya News — https://www.libya-news.com/
+- Libya Observer — https://www.libyaobserver.ly/
+- Libya Press Board — https://lpb.ly/
+- Libya Prospect — http://libyaprospect.com/
+- Libya Times — http://www.libyatimes.net/
+- Libyan Express — https://www.libyanexpress.com/
+- New Libya — http://www.newlibya.net/
+- Brnieq — http://brnieq.ly/
+- February — http://febp.ly/
+
+## morocco (north_africa) — Morocco
+
+### w3newspapers — https://www.w3newspapers.com/morocco/
+- Assabah — https://assabah.ma/
+- Al Ittihad Al Ichtiraki — https://alittihad.info/
+- Le Matin du Sahara et du Maghreb (Le Matin) — https://lematin.ma/
+- Al Alam — https://www.alalam.ma/
+- L’Opinion — https://www.lopinion.ma/
+- Aujourd’hui Le Maroc — https://aujourdhui.ma/
+- Tel Quel — https://www.telquel.ma/
+- Le Reporter — https://www.lereporter.ma/
+- Libération — https://www.libe.ma/
+- Maroc Hebdo — https://www.maroc-hebdo.com/
+- Al Maghribia — https://www.almaghribia.ma/
+- ALakhabar — https://www.alakhbar.press.ma/
+- Anfas Press — https://www.anfaspress.com/
+- Cawalisse Alyoum — https://www.cawalisse.com/
+- Ahdath Maghribiya — https://www.ahdath.info/
+- Bayane Alyaoume — http://bayanealyaoume.press.ma/
+- Al Bayane — https://www.albayane.ma/
+- L’Économiste — https://www.leconomiste.com/
+- La Vie Éco — https://www.lavieeco.com/
+- Finances News Hebdo — https://fnh.ma/
+- La Nouvelle Tribune — https://lanouvelletribune.info/
+- Hespress — https://www.hespress.com/
+- Le 360 — https://ar.le360.ma/
+- Chouf TV — https://chouftv.ma/
+- H24 Info — https://h24info.ma/
+- Hiba Press — https://ar.hibapress.com/
+- LeSiteInfo — https://www.lesiteinfo.com/
+- Alyaoum 24 — https://alyaoum24.com/
+- Akhbarona.com — https://www.akhbarona.com/
+- Rue20 — https://rue20.com/
+- Barlamane — https://www.barlamane.com/
+- yabiladi.com — https://www.yabiladi.com/
+- Morocco World News — https://www.moroccoworldnews.com/
+- Febrayer — https://febrayer.com/
+- GOUD — https://www.goud.ma/
+- Kifache — https://kifache.com/
+- Al3omk — https://al3omk.com/
+- Article 19 — https://article19.ma/
+- Agora — https://www.agora.ma/
+- Tanja News — https://tanjanews.com/
+- Tanja 24 — https://tanja24.com/
+- Kech 24 — https://kech24.com/
+- Agadir 24 — https://agadir24.info/
+- Souss 24 — https://souss24.com/
+- Souss Plus — https://soussplus.ma/
+- Nador City — https://www.nadorcity.com/
+- Dalil Rif — https://dalil-rif.com/
+- Oujda City — https://www.oujdacity.net/
+- Casa Oui — https://casaoui.ma/
+- Al Ikhbaria — https://marrakech7.com/
+- Chtouka Press — https://www.chtoukapress.com/
+- Presstetouan.com — https://presstetouan.com/
+- Atlas Scoop — https://www.atlasscoop.com/
+- Zagora Press — https://www.zagorapress.com/
+- Zagora News — https://zagoranews.com/
+- El Jadida 24 — http://www.eljadida24.com/ar/
+- Azilal 24 — https://azilal24.com/
+- Al Mountakhab — https://www.almountakhab.com/
+- Le360 Sport — https://sport.le360.ma/
+- Hespress Sports — https://en.hespress.com/sports
+- Maghreb Arab Presse (MAP) — https://www.map.ma/
+- SNRT News — https://snrtnews.com/
+- 2M — https://2m.ma/ar
+- Medi 1 Radio — https://www.medi1.com/
+- Medi1TV — https://www.medi1tv.com/
+- Hit Radio — https://www.hitradio.ma/
+- Med Radio — https://medradio.ma/
+
+### onlinenewspapers — https://onlinenewspapers.com/morocco.shtml
+- 24 أصوات — https://aswat24.com/
+- Actualités Maroc — https://www.yabiladi.com/
+- Afrol News — http://www.afrol.com/regions/north_africa/
+- Ahdath Maghribiya — http://www.ahdath.info/
+- Al Arabiya — https://www.alarabiya.net/
+- Al Alam — http://www.alalam.ma/
+- Al Akhbar Press — https://www.alakhbar.press.ma/
+- Al Bayane — http://www.albayane.ma/
+- Aljarida24 — http://www.aljarida24.ma/
+- Al Khabar — https://al-akhbar.com/
+- AllAfrica: Morocco — https://allafrica.com/morocco/
+- Al Maghrib Press — https://www.almaghribpress.com/
+- Al Maghrib Today — https://www.almaghribtoday.net/
+- Al Massae — http://www.almassaepress.com/
+- Al Mountakhab — http://www.almountakhab.com/
+- Alyoum24 — http://www.alyaoum24.com/
+- Annoukhba — http://annoukhba.info/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/morocco/
+- Assabah — https://assabah.ma/
+- Assahra Al Maghribia — http://www.almaghribia.ma/
+- Aujourd´hui Le Maroc — http://www.aujourdhui.ma/
+- Cawalisse Alyoum — http://www.cawalisse.com/
+- Emarrakech — http://www.emarrakech.info/
+- Hespress — http://www.hespress.com/
+- Hiba Press — http://www.hibapress.com/
+- JeuneAfrique — https://www.jeuneafrique.com/pays/maroc/
+- Khabar Maroc — http://www.khabarmaroc.com/
+- L'Economiste — http://www.leconomiste.com/
+- L'Opinion — http://www.lopinion.ma/
+- La Nouvelle Tribune — https://lnt.ma/
+- La Vie Éco — http://www.lavieeco.com/
+- La Jour Maroc — https://www.mlj.ma/
+- Le Journal de Tanger — http://www.lejournaldetanger.com/
+- Le Journal Hebdomadaire — http://www.lejournal-hebdo.com/
+- Le Matin — http://www.lematin.ma/
+- Libération — http://www.libe.ma/
+- M24 — https://www.m24tv.ma/
+- Maghreb Daily News — http://www.maghrebdailynews.com/
+- Map Express — http://www.mapexpress.ma/
+- Maroc Hebdo International — http://www.maroc-hebdo.press.ma/
+- Marocpress.ma — http://www.marocpress.com/
+- Marocpost — http://www.marocpost.net/
+- Maroc Telegraph — http://www.maroctelegraph.com/
+- Medias24 — http://www.medias24.com/
+- The Moroccan Times — http://www.themoroccantimes.com/
+- Morocco Gazette — http://marocgazette.com/
+- Morocco Gazette — http://www.marocgazette.com/
+- Morocco Today — http://www.moroccotoday.com/
+- Morocco Times TV — https://moroccotimes.tv/
+- Morocco World News — http://moroccoworldnews.com/
+- Noistranieri — https://noistranieri.it/
+- Oujda Portail — http://www.oujdaportail.net/
+- Rue20.com — http://www.rue20.com/
+- Sahara Press — https://www.spsrasd.info/
+- TelQuel — https://telquel.ma/
+- La Vie Éco — https://www.lavieeco.com/
+- Western Sahara News — http://www.corcas.com/
+- The Worldfolio: Morocco — http://www.theworldfolio.com/morocco/
+- Zagora Press — http://www.zagorapress.com/
+
+### allyoucanread — https://www.allyoucanread.com/moroccan-newspapers/
+- Hespress — https://www.hespress.com/
+- Akhbarona.com — http://www.akhbarona.com/
+- Menara — https://www.menara.ma/
+- Morocco World News — https://www.moroccoworldnews.com/
+- yabiladi.com — https://www.yabiladi.com/
+- le360.ma — https://fr.le360.ma/
+- Le Matin — https://www.lematin.ma/
+- bladi.net — https://www.bladi.net/
+- Alyaoum24 — https://alyaoum24.com/
+- Goud — https://www.goud.ma/
+- Hiba Press — http://www.hibapress.com/
+- Rue20 — https://rue20.com/
+- NadorCity.com — https://www.nadorcity.com/
+- Ariffino — https://www.ariffino.net/
+- Assabah — https://assabah.ma/
+- Agadir24 — https://www.agadir24.info/
+- PressTetouan.com — https://www.presstetouan.com/
+- Aujourd'hui — https://aujourdhui.ma/
+- h24info — https://www.h24info.ma/
+- Maghress.com — https://www.maghress.com/
+- L'Opinion — https://www.lopinion.ma/
+- Infomediaire — https://www.infomediaire.net/
+- Febrayer — https://www.febrayer.com/
+- Le2Minutes.com — https://le2minutes.com/
+- Ahdath — https://www.ahdath.info/
+- TelexPresse.com — https://telexpresse.com/
+- MAP Maghreb Arabe Presse — https://www.map.ma/
+- Kifache — https://kifache.com/
+- Tanja24.com — https://www.tanja24.com/
+- Dalil-Rif.com — https://dalil-rif.com/
+- Chtouka Press — https://www.chtoukapress.com/
+- Liberation — https://www.libe.ma/
+- Maroc Hebdo — https://maroc-hebdo.press.ma/
+- TanjaNews.com — https://www.tanjanews.com/
+- almaghribtoday.net — https://www.almaghribtoday.net/
+
+### abyznewslinks — http://www.abyznewslinks.com/moroc.htm
+- 24 a La 24 — https://24ala24.info/
+- Akhbar 7 — https://akhbar7.ma/
+- Article 19 — http://article19.ma/ar/
+- Barlamane — https://www.barlamane.com/
+- Bilwadeh — http://www.bilwadeh.com/
+- Bladi — https://www.bladi.net/
+- Bourse News — https://www.boursenews.ma/
+- Cawalisse Alyoume — https://www.cawalisse.com/
+- H24 Info — https://www.h24info.ma/
+- Hala Press — https://halapress.com/
+- Hespress — https://www.hespress.com/
+- Le 360 — http://ar.le360.ma/
+- Le 360 — http://fr.le360.ma/
+- L'Observateur — http://lobservateurdumaroc.info/
+- Maroc 24 — http://maroc24.ma/
+- Maroc News 24 — https://marocnews24.com/
+- Maroc Press — http://www.marocpress.com/
+- Maroc Webo — http://www.marocwebo.com/
+- Menara — http://www.menara.ma/ar
+- Moroccan Times — http://themoroccantimes.com/
+- Morocco Gazette — http://marocgazette.com/index.php?lang=ar
+- Morocco Media — http://moroccomedia.com/
+- Morocco World News — https://www.moroccoworldnews.com/
+- N24 — https://n24.ma/
+- Newsly — http://www.newsly.ma/ar/
+- Al Alam — http://www.alalam.ma/
+- Assabah — https://assabah.ma/
+- Bayane Al Yaoume — http://bayanealyaoume.press.ma/
+- Le Matin — https://lematin.ma/
+
+## tunisia (north_africa) — Tunisia
+
+### w3newspapers — https://www.w3newspapers.com/tunisia/
+- La Presse Tunisie — https://lapresse.tn/
+- Agence Tunis Afrique Presse — https://www.tap.info.tn/
+- Babnet Tunisie — https://www.babnet.net/
+- Tuniscope — https://www.tuniscope.com/ar/
+- Kapitalis — https://kapitalis.com/
+- Business News — https://www.businessnews.com.tn/
+- Tunisie Numerique — https://www.tunisienumerique.com/
+- Arrakmia — https://ar.tunisienumerique.com/
+- Assabah News — https://www.assabahnews.tn/ar/
+- Realites — https://realites.com.tn/fr/
+- Al Chourouk — https://www.alchourouk.com/
+- Le Maghreb — https://ar.lemaghreb.tn/
+- Tunisie Focus — https://www.tunisiefocus.com/
+- L'Economiste — https://www.leconomistemaghrebin.com/
+- Webdo.tn — https://www.webdo.tn/fr
+- Direct Info — https://directinfo.webmanagercenter.com/
+- Web Manager Center — https://www.webmanagercenter.com/
+- African Manager — https://africanmanager.com/
+- Assarih — https://assarih.com/
+- Tunisie.co — https://tunisie.co/
+- Tunisie 14 — https://tunisie14.tn/
+- Tunis Daily News — http://www.tdailynews.net/
+- Nessma TV — https://www.nessma.tv/ar
+- Al-Watania — http://www.watania1.tn/
+- Jnaliste Sfaxien — https://journalistesfaxien.tn/
+- Turess — https://www.turess.com/
+- Kawarji — https://www.kawarji.com/
+- Leaders.com.tn — https://www.leaders.com.tn/
+- Espace Manager — https://www.espacemanager.com/
+- Tekiano — http://www.tekiano.com/
+- Nawaat — https://nawaat.org/
+- Tunisien — https://www.tunisien.tn/
+- Tunisie Telegraph — https://tunisie-telegraph.com/
+- Marhba.com — https://www.marhba.com/
+- El Hiwar Ettounsi TV — https://www.elhiwarettounsi.com/ar/
+- Tunisian Radio — http://www.radiotunisienne.tn/
+- Mosaique FM — https://www.mosaiquefm.net/ar/
+
+### onlinenewspapers — https://onlinenewspapers.com/tunisia.shtml
+- African Manager — http://www.africanmanager.com/
+- Afrol News — http://www.afrol.com/regions/north_africa/
+- Akhbar Tounis — http://www.akhbar.tn/
+- Al Badil — http://www.albadil.org/
+- Al Chourouk — https://www.alchourouk.com/
+- AllAfrica: Tunisia — https://allafrica.com/tunisia/
+- Arab World Daily News — http://arabworlddailynews.com/category/arab-league/tunisia/
+- Assabah — http://www.assabah.com.tn/
+- Assabah News — http://www.assabahnews.tn/
+- Biladi News — http://www.biladinews.com/
+- Essahafa — http://www.essahafa.tn/
+- JeuneAfrique — https://www.jeuneafrique.com/pays/tunisie/
+- La Presse — http://www.lapresse.tn/
+- L'Economiste Maghrebin — http://www.leconomistemaghrebin.com/
+- Le Temps — http://www.letemps.com.tn/
+- Tunis Daily News — http://www.tdailynews.net/
+- The Worldfolio: Tunisia — http://www.theworldfolio.com/tunisia/
+
+### allyoucanread — https://www.allyoucanread.com/tunisia-newspapers/
+- TN Tunisie Numerique — https://www.tunisienumerique.com/
+- Babnet Tunisie — https://www.babnet.net/
+- Akhbar Globalnet Tunisie — https://www.gnet.tn/
+- Al Chourouk — https://www.alchourouk.com/
+- Tuniscope.com — https://tuniscope.com/
+- Kapitalis — https://kapitalis.com/
+- leaders.com.tn — https://www.leaders.com.tn/
+- Assabah News — https://www.assabahnews.tn/
+- La Presse — https://www.lapresse.tn/
+- REALITES — https://www.realites.com.tn/
+- webdo.tn — https://www.webdo.tn/
+- Nawaat — https://nawaat.org/
+- Espace Manager — https://www.espacemanager.com/
+- Turess.com — https://www.turess.com/
+- Tunisia Live — https://www.tunisia-live.net/
+- Journaliste Sfaxien — https://journalistesfaxien.tn/
+
+### abyznewslinks — http://www.abyznewslinks.com/tunis.htm
+- Actualitie Tunisie — https://actualite-tunisie.info/
+- African Manager — https://africanmanager.com/
+- Akher Khabar Online — http://www.akherkhabaronline.com/
+- Al Hayet Atounissia — http://www.alhayetatounissia.net/
+- Al Hiwar — http://www.alhiwar.net/
+- Al Jarida — https://www.aljarida.com.tn/
+- Annahar News — https://www.annaharnews.tn/
+- Arrakmia — https://www.arrakmia.com/
+- Assabah News — http://www.assabahnews.tn/
+- Assarih — http://www.assarih.com/
+- Awttar — https://www.awttar.com/
+- Babnet Tunisie — https://www.babnet.net/
+- Business News — http://www.businessnews.com.tn/
+- Direct Info — https://directinfo.webmanagercenter.com/
+- El Khabar — http://www.elkhabar.com.tn/
+- El Yaum — http://elyaum.info/
+- Espace Manager — https://www.espacemanager.com/
+- Hakaek Online — https://www.hakaekonline.com/
+- G Net — http://www.gnet.tn/
+- Infos Foot — http://www.infosfoot.net/
+- Kapitalis — http://www.kapitalis.com/anbaa-tounes/
+- Kapitalis — http://kapitalis.com/
+- Kawarji — https://www.kawarji.com/
+- Ma Arab — https://magarabe.com/
+- Nawaat — http://nawaat.org/portail/ar/
+- Tounes El Khadra — https://touneselkhadra.com/
+- Tuni Gate — https://tunigate.net/
+- Tuni Gate — https://fr.tunigate.net/
+- Tuni Gazette — https://tunigazette.com/
+- Tunis Daily News — http://tdailynews.net/index.php?lang=ar
+- Tunis Webdo — http://www.webdo.tn/
+- Tuniscope — https://www.tuniscope.com/ar/
+- Tunisia Now — http://tunisianow.net.tn/
+- Tunisie 14 — https://tunisie14.tn/
+- Tunisie Focus — http://www.tunisiefocus.com/
+- Tunisie Foot — http://www.tunisie-foot.com/home/
+- Tunisie Football — http://tunisiefootball.tn/
+- Tunisie News — http://ar.tunisie-news.com/
+- Tunisie News — https://www.tunisie-news.com/
+- Tunisie Numerique — https://www.tunisienumerique.com/
+- Tunisie Secret — https://www.tunisie-secret.com/
+- Tunisie Telegraph — http://tunisie-telegraph.com/
+- Tunisien — http://www.tunisien.tn/
+- Turess — https://www.turess.com/
+- Web Manager Center — https://www.webmanagercenter.com/
+- Zoom Tunisia — http://www.zoomtunisia.tn/
+- Assabah — http://www.assabah.com.tn/
+- Essahafa — http://www.essahafa.tn/
+- La Presse — http://www.lapresse.tn/
+- Le Temps — http://www.letemps.com.tn/
+
+## afghanistan (afghanistan) — Afghanistan
+
+### w3newspapers — https://www.w3newspapers.com/afghanistan/
+- The Afghan Times — https://theafghantimes.com/
+- Daily Afghanistan — http://www.dailyafghanistan.com/
+- Arman-e-Mili — https://armanemili.com/
+- The Kabul Times — https://thekabultimes.com/
+- Hewad — https://hewaddaily.com/
+- Daily Outlook Afghanistan — http://www.outlookafghanistan.net/
+- Pajhwok Afghan News — https://pajhwok.com/
+- Khaama Press — https://www.khaama.com/
+- Afghanistan International — https://www.afintl.com/en
+- Afghanistan Analysts Network — https://www.afghanistan-analysts.org/
+- 8AM Media — https://8am.media/eng/
+- Kabul Press — https://www.kabulpress.org/
+- Etilaat Roz — https://www.etilaatroz.com/
+- Kilid Group (TKG) — https://tkg.af/english/
+- Afghan Voice Agency (AVA) — https://www.avapress.com/en/
+- Afghan Paper — https://www.afghanpaper.com/
+- Salam Watandar — https://swn.af/
+- Rohi — https://rohi.af/
+- Larawbar — https://larawbar.net/
+- Afghan Online Press — https://www.aopnews.com/
+- Benawa — http://www.benawa.com/
+- Eslah Online — https://www.eslahonline.net/
+- nunn.asia — https://www.nunn.asia/
+- Ariaye — https://ariaye.com/
+- Afghanistan.ru — https://afghanistan.ru/
+- TOLOnews — https://tolonews.com/
+- Ariana News — https://www.ariananews.af/
+- Shamshad TV — https://shamshadtv.tv/
+- Lemar TV — https://www.lemar.tv/
+- Amu TV — https://amu.tv/
+- Radio Television Afghanistan (RTA) — https://rta.af/
+- Radio Azadi — https://www.azadiradio.com/
+- VOA Pashto — https://www.pashtovoa.com/
+- VOA Dari — https://www.darivoa.com/
+- Sputnik News Afghanistan — https://sputnik.af/
+- Bakhtar News Agency (BNA) — https://www.bakhtarnews.af/
+- Afghan Islamic Press (AIP) — https://www.afghanislamicpress.com/
+- Elonat Magazine — http://www.elonat.com/
+- Jawedan — https://jawedan.com/
+- Farsi.ru — http://www.farsi.ru/
+- Sabawoon — http://www.sabawoon.com/
+- Dawat Media — https://dawatmedia24.com/
+
+### onlinenewspapers — https://onlinenewspapers.com/afghanistan.shtml
+- 8 Sobh — http://www.8am.af/
+- Afghan Daily — http://www.afghandaily.com/
+- Afghan Online Press — http://www.aopnews.com/
+- Afghanistan Sun — http://www.afghanistansun.com/
+- Afghanistan Times — http://www.afghanistantimes.af/
+- Benawa.com — http://www.benawa.com/
+- The Daily Afghanistan — http://www.dailyafghanistan.com/
+- Daily Outlook Afghanistan — http://www.outlookafghanistan.net/
+- Jawedan — http://www.jawedan.com/
+- Kabul Press — http://www.kabulpress.org/
+- Khaama Press — http://www.khaama.com/
+- Larabar.com — http://www.larawbar.com/
+- Mandegar Daily — https://www.mandegardaily.com/
+- The Pashtun Times — http://www.thepashtuntimes.com/
+- Sabawoon Online — http://www.sabawoon.com/
+- The Times of Central Asia — https://www.timesca.com/index.php/news/afghanistan/
+- Taand — http://www.taand.com/
+- Tolafghan — http://www.tolafghan.com/
+- Wadsam — http://www.wadsam.com/
+- Zwak News — https://www.zwaknews.com/
+
+### allyoucanread — https://www.allyoucanread.com/afghanistan-newspapers/
+- Tolo News — https://tolonews.com/
+- Khaama Press — https://www.khaama.com/
+- Pajhwok Afghan News — https://www.pajhwok.com/
+- Sputnik.af — https://sputnik.af/
+- Ariana News — https://ariananews.af/
+- Azadi Radio Dari — https://da.azadiradio.com/
+- Azadi Radio Pashto — https://pa.azadiradio.com/
+- Dari VOA — https://www.darivoa.com/
+- Pashto VOA — https://www.pashtovoa.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/afgha.htm
+- (no entries)
+
+## pakistan (pakistan) — Pakistan
+
+### w3newspapers — https://www.w3newspapers.com/pakistan/
+- Dawn — https://www.dawn.com/
+- The News International — https://www.thenews.com.pk/
+- The Express Tribune — https://tribune.com.pk/
+- The Nation — https://www.nation.com.pk/
+- Express — https://www.express.com.pk/
+- Ummat — https://ummat.net/
+- Pakistan Today — https://www.pakistantoday.com.pk/
+- Daily Times — https://dailytimes.com.pk/
+- Pakistan Observer — https://pakobserver.net/
+- The Friday Times — https://thefridaytimes.com/
+- Frontier Post — https://thefrontierpost.com/
+- The Patriot — https://dailythepatriot.com/
+- Business Recorder — https://www.brecorder.com/
+- The Financial Daily — https://thefinancialdaily.com/
+- Pakistan & Gulf Economist — https://www.pakistangulfeconomist.com/
+- Lahore Times — https://www.lhrtimes.com/
+- Kawish — https://www.thekawish.com/
+- Ibrat — https://www.dailyibrat.com/
+- Jinnah — https://dailyjinnah.com/
+- Daily Akhbar e Khyber — https://akhbarekhyber.com.pk/
+- Chitral Times — https://chitraltimes.com/
+- Baakhabar — https://www.dailybaakhabar.com/
+- Dharti — https://dailydhartiajk.com/
+- Sarzameen — https://dailysarzameen.com/
+- Kashmir Post — https://dailykashmirpost.com/
+- Shamal — https://shamalmzd.com/
+- Pindi Post — https://pindipost.pk/
+- Subheno — https://subhenoe.com/
+- Dhudial News — https://www.dhudialnews.com/
+- ProPakistani — https://propakistani.pk
+- HamariWeb News — https://enews.hamariweb.com/
+- Pak Tribune — https://www.paktribune.com/
+- Online Indus — https://www.onlineindus.com/
+- Pakistan Christian Post — https://www.pakistanchristianpost.com/
+- Geo News — https://www.geo.tv
+- ARY News — https://arynews.tv
+- Samaa TV — https://www.samaa.tv
+- Dunya News — https://dunyanews.tv/
+- Aaj News — https://www.aaj.tv
+- Radio Pakistan — https://radio.gov.pk/
+- Associated Press of Pakistan (APP) — https://www.app.com.pk/
+- Pakistan Press International (PPI) — https://ppinewsagency.com
+- INP — https://www.inp.net.pk/
+
+### onlinenewspapers — https://onlinenewspapers.com/pakistan.shtml
+- A News Plan — http://www.anewsplan.com/
+- AAJ Daily — http://www.dailyaaj.com.pk/
+- Ahwaal — http://www.ahwaal.com/
+- Akhbar-e-Khyber — http://www.akhbarekhyber.com/
+- Akhbar e Nau — https://www.akhbarenau.com/
+- Al-Akhbar — http://www.alakhbar.com.pk/
+- All Pakistani News — http://www.allpakistaninews.com/
+- Al-Qalam Online — http://www.alqalamonline.com/
+- Alfazl — http://www.alfazl.org/
+- Amar Sangbad — http://www.amar-sangbad.com/
+- Apna Jhelum — http://www.apnajhelum.com/
+- Apna Pak News — http://www.apnapaknews.com/
+- Apna Pirmahal — http://www.apnapirmahal.com/
+- APS Associated Press Service — http://www.associatedpressservice.net/
+- Asia Pacific News — http://www.apnpk.com/
+- Asia Times — https://www.asiatimes.com/section/pakistan/
+- Asian Correspondent — https://asiancorrespondent.com/section/pakistan/
+- Associated Press of Pakistan — http://www.app.com.pk/
+- Awaz-e-Haq — http://awaz-e-haq.com/
+- BBC Jhelum — https://www.bbcjhelum.com/
+- Bazeera — http://www.bazeera.com/
+- Bebaak Awaz — https://www.bebaakawaz.com/
+- Business Recorder — http://www.brecorder.com/
+- Chitral News — http://www.chitralnews.com/
+- Chitral Post — http://www.chitralpost.net/
+- Chitral Times — http://www.chitraltimes.com/
+- The Convener Weekly — http://www.thepioneer.com.pk/
+- The Correspondent PK — https://www.thecorrespondent.pk/
+- Daily Aaj Kal — http://www.aajkal.com.pk/
+- Daily Akhbar — http://www.dailyakhbar.com.pk/
+- Daily Alfazl — https://www.alislam.org/alfazl/
+- Daily Ausaf — http://www.dailyausaf.com/
+- Daily Awami Awaz — http://www.awamiawaz.com/
+- Daily Azadi Swat — http://www.dailyazadiswat.com/
+- Daily Baad-e-Shimal — http://www.dailybaadeshimal.com/
+- The Daily Basharat روزنامہ بشارت — http://www.basharat.com.pk/
+- Daily Baithak — https://baithak.news/
+- Daily Baithak — https://english.baithak.news/
+- Daily Beopar Karachi — http://www.dailybeopaar.com/
+- Daily Chakwal Nama — http://www.dailychakwalnama.com/
+- Daily Chand News — http://www.dailychand.com/
+- Daily Charsadda News — http://charsaddanews.com/
+- Daily Crimemail — http://www.dailycrimemail.com/
+- Daily Dawn — http://www.dailydawn.webs.com/
+- Daily Dharti — http://www.roznamadharti.com/
+- Daily Dharti Rawalakot Azad Kashmir — http://www.dailydhartiajk.com/
+- Daily Din News — http://www.dailydinnews.com/
+- Daily Express — https://www.express.com.pk/
+- Daily Gujar Khan 2 Day — http://www.gujarkhan2day.com/
+- Daily Hareef — http://www.dailyhareef.com.pk/
+- The Daily Heights — http://www.heights.com.pk/
+- Daily Ibrat — http://www.dailyibrat.com/
+- Daily Ilhaaq — http://www.dailyilhaaq.com/
+- Daily Indus Post — http://dailyinduspost.com/
+- Daily Islam — http://www.dailyislam.pk/
+- Daily Jaiza International — http://thejaiza.com/
+- Daily Jang — http://www.jang.com.pk/
+- The Daily Jasarat — http://www.jasarat.com/
+- Daily Jazba — http://www.jazbalink.com/
+- Daily Jinnah — http://www.dailyjinnah.com/
+- Daily Jurat — https://juraat.com/
+- Daily K2 — http://www.dailyk2.com
+- Daily Kashmir Express — http://www.dailykashmirexpress.com/
+- Daily Khabarnama Faisalabad — http://www.khabarnama.net/
+- Daily Khabrain — http://www.khabrain.com/
+- Daily Lahore Post — http://www.dailylahorepost.com/
+- Daily Mahasib — http://www.mahasib.com.pk/
+- Daily Manaqib — https://www.dailymanaqib.com/
+- Daily Mashriq — https://www.mashriqtv.pk/
+- Daily Nai Baat — http://www.naibaat.pk/
+- Daily Newsmart — http://www.dailynewsmart.com.pk/
+- Daily NHT — http://www.dailynht.com/
+- Daily Pakistan — http://www.dailypak.com/
+- The Daily Pakistan — http://www.dailypakistan.pk/
+- The Daily Patriot — https://dailythepatriot.com/
+- Daily Pegham — http://www.dailypegham.com/
+- Daily Post International — http://www.dailypostinternational.com.pk/
+- Daily Press Conference — https://dailypressconference.com/
+- Daily Pukar — http://www.dailypukar.com/
+- Daily Qadamat — http://www.dailyqadamat.com/
+- Daily Sada-e-Chanar — http://www.sadaechanar.com/
+- The Daily Sada-e-Haq — http://www.sadaehaq.com/
+- Daily Saif-ul-Akhbar — http://saifulakhbar.webs.com/
+- Daily Salam Gilgit Baltistan — http://www.dailysalam.com/
+- Daily Sama — http://www.sama.pk/
+- Daily Shana Bashana — http://shanabashana.com/
+- Daily Sobh — https://www.dailysobh.com/
+- Daily Soon Times — https://soontimes.pk/
+- Daily Taqat — http://www.dailytaqat.com/
+- Daily Times — http://www.dailytimes.com.pk/
+- Daily Ummat — http://www.ummat.com.pk/
+- Daily Universal Recorder — http://www.dailyuniversal.com.pk/
+- Daily Voice Of Pakistan — http://www.dailyvoiceofpakistan.com/
+- Daily Wahdat — http://www.dailywahdat.com.pk/
+- Daily Walayat News — http://www.walayat.net/
+- Daily Waqt — http://www.dailywaqt.com/
+- The Dardistan Times — http://www.dardistantimes.com/
+- Dawn — http://www.dawn.com/
+- The Dawn Post — http://www.dawnpost.com/
+- Dhudial News — https://dhudialnews.com/
+- Dhudial Point — http://www.dhudialpoint.com/
+- Diplomacy Pakistan News — http://www.diplomacypakistan.com/
+- Dhudial News — https://www.dhudialnews.com/
+- Dunya News — https://dunyanews.tv/
+- Dunya News — https://e.dunya.com.pk/
+- The Education Watch Pakistan — http://www.eduwatchpak.org/
+- Ehtasabi Amal Lahore — https://ehtasabiamal.blogspot.com/
+- eNews.pk — http://www.enews.pk/
+- The Exclusive News — http://www.theexclusivenews.com/
+- Express — https://www.sindhexpress.com.pk/
+- Express Daily — http://www.express.com.pk/
+- Express Tribune — https://www.tribune.com.pk/
+- Falak News | فلک نیوز — http://www.falaknews.com/
+- FevTv Pakistan News — http://www.fevtv.com/
+- The Financial Daily — http://thefinancialdaily.com/
+- FQDUpdates (فاروق آباد اَپ ڈیٹس) — http://www.fqdupdates.com/
+- Free Hand News — http://www.freehandnews.com/
+- The Friday Times — http://www.thefridaytimes.com/
+- GBee News — https://www.gbee.pk/news/
+- Geo News — https://www.geo.tv/
+- Gujar Khan 2day — http://gujarkhan2day.com/
+- Hambastegimeli — http://www.hambastegimeli.com/
+- Human Rights Post — http://www.hrnww.com/
+- Ilm News — http://www.ilmnews.com/
+- Independent News Pakistan — http://www.inp.net.pk
+- Indus News — http://www.indusnews.net/
+- Inkashaf Urdu — http://www.inkashaf.com/
+- International News Network — http://onlinenews.com.pk/
+- Islam Times — https://www.islamtimes.org/
+- Ittefaq News — http://www.ittefaqnews.pk/
+- Jang — https://e.jang.com.pk/
+- Jazba Post — http://www.jazbapost.com/
+- Jeet Pakistan — http://www.jeetpakistan.com/
+- Jhelum Geo — http://www.jhelumgeo.com/
+- Jhelum News — http://www.jhelumnews.com/
+- Jhelum Updates — http://www.jhelumupdates.com/
+- K2 Times — http://www.k2times.com/
+- Karachi News Network — http://www.karachinews.com.pk/
+- Karachi Updates — http://www.karachiupdates.com/
+- Kashmir Media Service — http://www.kmsnews.org/
+- Kashmir Watch — http://www.kashmirwatch.com/
+- Khohar News — https://www.khohar.com/
+- Khushbu — http://syberwurx.com/khushbu/
+- Kotli News — http://www.kotlinews.com/
+- Lahore Dispatch — http://www.lahoredispatch.com/
+- Lahore News — http://lahorimela.com/
+- The Lahore Times — http://www.lhrtimes.com/
+- Mandi Bahauddin News — http://www.mbdinnews.com/
+- Millat Online — http://www.millat.com/
+- Minute Mirror — https://minutemirror.com.pk/
+- Mubassir — http://www.mubassir.com/
+- Multan Updates — http://multanupdates.com/
+- Muslim World Today — http://www.muslimworldtoday.com/
+- Muzaffarabad News — http://www.muzaffarabadnews.com/
+- The Nation — http://www.nation.com.pk/
+- Nawaiwaqt — http://www.nawaiwaqt.com.pk/
+- Naveedezia — http://www.naveedezia.com/
+- Nawa-e-Islam — http://www.nawa-e-islam.com/
+- The News International — https://www.thenews.com.pk/
+- Newsline Karachi — http://www.newslinekarachi.com/
+- Nowshera Today — http://www.nowshera.com/
+- Pakistan Daily — http://www.daily.pk/
+- Pakistan Link — https://pakistanlink.org/
+- Pakistan News — http://www.pakistannews.com.pk/
+- Pakistan News Today — http://www.pakistannews.today/
+- Pakistan Observer — http://www.pakobserver.net/
+- Pakistan Post — http://www.pakistanpost.pk/
+- Pakistan Telegraph — http://www.pakistantelegraph.com/
+- Pakistan Today — https://www.pakistantoday.com.pk/
+- Pakistan Tribune — http://pakistantribune.com.pk/
+- The Pakistani Newspaper — http://www.thepakistaninewspaper.com/
+- Pak Media Network — http://pakmedia.com.pk/
+- Pak News LIve — http://www.paknewslive.com/
+- Pakistan Times — http://www.pakistantimes.com/
+- Pakistan Today — http://www.pakistantoday.org.pk/
+- PakPositive — http://www.pakpositive.com/
+- PakTribune — http://www.paktribune.com/
+- Pak Watan — http://www.pakwatan.com/
+- Parliament Times — http://www.dailyparliamenttimes.com/
+- Pindi Post — http://www.pindipost.pk/
+- The Post — http://www.thepost.com.pk/
+- Pothwar.com — https://pothwar.com/
+- Pukar News — http://www.pukarnews.com/
+- The Pashtun Times — http://thepashtuntimes.com/tag/pashtun/
+- Qaumi Akhbar — http://www.qaumiakhbar.com/
+- Regional Times of Sindh — http://www.regionaltimes.com/
+- Roshan Pakistan Daily Urdu News — http://www.roshanpakistannews.com/
+- Roznama Dunya — http://www.dunya.com.pk/
+- Samaa — https://www.samaa.tv/
+- Sada-e-Waqt — http://www.sadaewaqt.com/
+- Sbeiy.com — http://www.sbeiy.com/
+- Sehar News — http://www.seharnews.pk/
+- Shia News — http://www.shiacenter.org/
+- Siasat Pakistan — http://www.siasatpakistan.com/
+- The Sindh Times — http://www.thesindhtimes.com/
+- Sindh Week — http://www.sindhweek.webs.com/
+- The Statesman — https://www.thestatesman.com/
+- StateViews — http://www.stateviews.pk/
+- Tasweer-E-Wattan — http://www.gujratlink.com/
+- Tehqiq Nama — http://www.tehqiqnama.com/
+- The Think Tank Journal — https://thinktank.pk/
+- Times of Islamabad — https://timesofislamabad.com/
+- Times of Pakistan — https://www.timesofpakistan.com/
+- Umeed-e-jahan International — http://www.umeed-e-jahan.com/
+- Urdu24 — http://www.urdu24.com/
+- Urdu Khabrain — http://www.urdukhabrain.com/
+- Urdu News Room — https://www.urdunewsroom.com/
+- Urdu Point — http://www.urdupoint.com/
+- UrduPower — http://www.urdupower.com/
+- Urdu Waqt — http://www.urduwaqt.com/
+- US Urdu News — http://www.usurdunews.com/
+- Voice Of Asia — http://www.voiceofasianews.com/
+- Voice of Jalalour Jattan — http://vojpj.com/
+- Weekly Cutting Edge — http://www.weeklycuttingedge.com/
+- Weekly Saiban-e-Lakki Marwat — http://weeklysaiban.blogspot.com/
+- Zama Swat — http://www.zamaswat.com/
+
+### allyoucanread — https://www.allyoucanread.com/pakistan-newspapers/
+- DAWN.COM — http://www.dawn.com/
+- Daily Jang — https://jang.com.pk/
+- The Express Tribune — https://www.tribune.com.pk/
+- The News International — https://www.thenews.com.pk/
+- UrduPoint Network — https://urdupoint.com/
+- Pakistan Observer — https://pakobserver.net/
+- Daily Times — https://dailytimes.com.pk/
+- The Nation — https://nation.com.pk/
+- Daily Pakistan — https://dailypakistan.com.pk/
+- Pakistan Today — http://pakistantoday.com.pk/
+- Dunya News — https://dunyanews.tv/
+- Express — https://express.pk/
+- DawnNews TV — https://www.dawnnews.tv/
+- Daily Express — https://express.com.pk/
+- Dunya — http://dunya.com.pk/
+- AAJ News — https://www.aaj.tv/
+- Nawaiwaqt — https://nawaiwaqt.com.pk/
+- The Frontier Post — https://thefrontierpost.com/
+- PakTribune — https://paktribune.com/
+- Mashriq — https://www.mashriqtv.pk/
+- Jasarat — http://jasarat.com/
+- Daily Aaj — https://dailyaaj.com.pk/
+- AKHBAR-E-JEHAN — https://akhbar-e-jehan.com/
+- The News Tribe — https://thenewstribe.com/
+
+### abyznewslinks — http://www.abyznewslinks.com/pakis.htm
+- A Sports News — http://www.asportsnews.com/
+- Al Qamar Online — http://alqamar.info/news/
+- All Pakistani News — http://www.allpakistaninews.com/
+- AYC  World News — http://www.aycworldnews.com/
+- Border Times Pakistan — http://www.bordertimespk.com/
+- Dannka — http://www.dannka.com/
+- E News — http://www.enews.pk/
+- Express Knowledge — https://expressknowledge.com.pk/
+- Express Knowledge — https://urdu.expressknowledge.com.pk/
+- Googly News TV — https://googlynews.tv/
+- Hi Pakistan — http://www.hipakistan.com/
+- Jang — http://jang.com.pk/
+- Kooza — http://www.thekooza.com/
+- My Urdu News — http://www.myurdunews.com/
+- News Link — https://newslink.pk/
+- News Pakistan — https://newspakistan.tv/
+- One Pakistan — http://www.onepakistan.com.pk/
+- One Pakistan — http://pakistan.onepakistan.com.pk/urdunews/
+- Online Indus — https://onlineindus.com/
+- Online International News Network — http://www.onlinenews.com.pk/
+- Pak Tribune — http://www.paktribune.com/
+- Pak Watan — http://www.pakwatan.com/
+- Pakistan News — http://www.pakistannews.net/
+- Pakistan News Online — http://www.newsonlinepakistan.org/
+- Pakistani Newspaper — http://thepakistaninewspaper.com/
+- Pakistans — http://www.pakistans.com/
+- PK News Today — https://www.pknewstoday.tk/
+- Roznama Urdu — http://www.roznamaurdu.com/
+- Roznama Urdu — http://www.roznamaurdu.com.pk/
+- Sehar News — http://www.seharnews.pk/
+- Shanakht — http://www.shanakht.com/
+- Urdu Globally — https://urduglobally.com/
+- Urdu Namah — http://www.urdunamah.com/
+- Urdu News — http://www.urdunews.net.pk/
+- Urdu Point — http://www.urdupoint.com/
+- Urdu Voz — https://www.urduvoz.com/
+- Walayatp — http://www.walayat.net/
+- Business Recorder — http://www.brecorder.com/
+- Daily Khabrain — http://www.khabraingroup.com/
+- Daily Nawa i Waqt — http://www.nawaiwaqt.com.pk/
+- Dawn — http://www.dawn.com/
+- News International — http://www.thenews.com.pk/Default.aspx
