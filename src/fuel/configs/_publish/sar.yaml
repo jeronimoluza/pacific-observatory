@@ -1,0 +1,4 @@
+# Publish configuration for SAR fuel policy dashboard.
+
+region: sar
+region_label: "South Asia"

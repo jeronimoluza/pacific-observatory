@@ -535,7 +535,7 @@ def gen_policy_html(
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Fuel Policy Overview &mdash; {title_escaped}</title>
+    <title>Fuel Prices Overview &mdash; {title_escaped}</title>
     <script>{chartjs_inline}</script>
     <script>{adapter_inline}</script>
     <style>{noui_css_inline}</style>
@@ -543,14 +543,14 @@ def gen_policy_html(
     <style>{_CSS}</style>
 </head>
 <body>
-<h1>Fuel Policy Overview &mdash; {title_escaped}</h1>
+<h1>Fuel Prices Overview &mdash; {title_escaped}</h1>
 <div id="last-updated" style="font-size:0.88em;color:#888;margin:-4px 0 10px 0" data-utc="{_build_utc}"></div>
 <script>!function(){{var el=document.getElementById('last-updated'),u=el.dataset.utc;if(u){{var d=new Date(u+'Z');el.textContent='Last updated: '+d.toLocaleString(undefined,{{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}});}}}}();</script>
 
 <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('tab1',this)">Commodity Prices</button>
     <button class="tab-btn"       onclick="switchTab('tab2',this)">Country Subsidies</button>
-    <button class="tab-btn"       onclick="switchTab('tab3',this)">Economies Fuel Prices</button>
+    <button class="tab-btn"       onclick="switchTab('tab3',this)">Fuel Prices</button>
     <button class="tab-btn"       onclick="switchTab('tab4',this)">Cross-Economy Comparison</button>
 </div>
 
