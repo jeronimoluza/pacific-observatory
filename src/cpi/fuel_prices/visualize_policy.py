@@ -5,9 +5,9 @@ Four tabs:
            EAP country pricing-regime table.
   Tab 2 — Country Subsidies Comparison: scatter of subsidy per capita
            vs GDP per capita, coloured by pricing regime.
-  Tab 3 — Country Fuel Prices: per-country fuel product time-series with
+  Tab 3 — Economies Fuel Prices: per-country fuel product time-series with
            regime information and day-to-day price change chart.
-  Tab 4 — Cross-Country Comparison: multi-country USD fuel price comparison
+  Tab 4 — Cross-Economy Comparison: multi-country USD fuel price comparison
            by fuel family with regional average benchmark line.
 """
 
@@ -30,6 +30,16 @@ from .constants import (
     WB_POPULATION_CSV,
     WB_SUBSIDIES_CSV,
 )
+
+VENDOR_DIR = Path(__file__).resolve().parent / "vendor"
+_VENDOR_CACHE: dict[str, str] = {}
+
+
+def _vendor(name: str) -> str:
+    if name not in _VENDOR_CACHE:
+        _VENDOR_CACHE[name] = (VENDOR_DIR / name).read_text(encoding="utf-8")
+    return _VENDOR_CACHE[name]
+
 
 _IMF_XLSB_URL = "https://www.imf.org/-/media/files/topics/energysubsidies/imffossilfuelsubsidiesdata.xlsb"
 _IMF_XLSB = IMF_SUBSIDIES_XLSB
@@ -1077,7 +1087,7 @@ _CSS = """
     .legend-row { display: flex; gap: 14px; flex-wrap: wrap; margin: 8px 0; }
     .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.82em; }
     .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-    /* Tab 3 — Country Fuel Prices */
+    /* Tab 3 — Economies Fuel Prices */
     #fuel-country-select {
         padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px;
         font-size: 0.9em; cursor: pointer; background: #fff;
@@ -1133,7 +1143,7 @@ _CSS = """
     /* fuel location table removed (no per-location rendering) */
     /* delta chart */
     .delta-chart-wrapper { position: relative; height: 180px; margin-top: 12px; }
-    /* Tab 4 — Cross-Country Comparison */
+    /* Tab 4 — Cross-Economy Comparison */
     #compare-date-slider { flex: 0 1 55%; min-width: 140px; max-width: 55%; }
     #compare-range-label { font-size: 0.85em; color: #555; min-width: 200px; text-align: center; white-space: nowrap; }
     .compare-chart-wrapper { position: relative; height: 700px; margin-top: 8px; }
@@ -1485,15 +1495,20 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
             f'{checked} onchange="renderScatter()">{prod}</label>\n'
         )
 
+    chartjs_inline = _vendor("chart.umd.min.js")
+    adapter_inline = _vendor("chartjs-adapter-date-fns.bundle.min.js")
+    noui_css_inline = _vendor("nouislider.min.css")
+    noui_js_inline = _vendor("nouislider.min.js")
+
     html = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Fuel Policy Overview — EAP</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <script>{chartjs_inline}</script>
+    <script>{adapter_inline}</script>
+    <style>{noui_css_inline}</style>
+    <script>{noui_js_inline}</script>
     <style>{_CSS}</style>
 </head>
 <body>
@@ -1504,8 +1519,8 @@ def gen_policy_html(data: dict, fuel_data: dict, out: Path) -> None:
 <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('tab1',this)">Commodity Prices</button>
     <button class="tab-btn"       onclick="switchTab('tab2',this)">Country Subsidies</button>
-    <button class="tab-btn"       onclick="switchTab('tab3',this)">Country Fuel Prices</button>
-    <button class="tab-btn"       onclick="switchTab('tab4',this)">Cross-Country Comparison</button>
+    <button class="tab-btn"       onclick="switchTab('tab3',this)">Economies Fuel Prices</button>
+    <button class="tab-btn"       onclick="switchTab('tab4',this)">Cross-Economy Comparison</button>
 </div>
 
 <!-- ===== TAB 1 ===== -->
@@ -2037,7 +2052,7 @@ function renderScatter() {{
     }}
 }}
 
-// ─── Tab 3: Country Fuel Prices ───────────────────────────────────────────────
+// ─── Tab 3: Economies Fuel Prices ─────────────────────────────────────────────
 const FUEL_DATA = JSON.parse({fuel_data_json});
 const COUNTRY_PRODUCTS = {country_products_json};
 
@@ -2543,7 +2558,7 @@ document.getElementById("fuel-country-select").addEventListener("change", functi
     rerenderFuel();
 }});
 
-// ─── Tab 4: Cross-Country Comparison ─────────────────────────────────────────
+// ─── Tab 4: Cross-Economy Comparison ──────────────────────────────────────────
 let compareSliderDates = [];
 let compareSlider = null;
 
@@ -2568,12 +2583,14 @@ var COMPARE_DEFAULT_COUNTRIES = new Set([
     'Australia', 'Cambodia', 'China', 'Fiji', 'Japan', 'Myanmar',
     'New Zealand', 'Singapore', 'Taiwan, China', 'Thailand', 'Vietnam'
 ]);
+var COMPARE_EXCLUDE_COUNTRIES = new Set(['Timor-Leste', 'Tonga', 'Solomon Islands', 'Vanuatu']);
 
 function buildCompareCountryChips() {{
     var family = getCompareFamily();
     var container = document.getElementById('compare-country-chips');
     container.innerHTML = '';
     var countries = Object.keys(FUEL_DATA).sort().filter(function(country) {{
+        if (COMPARE_EXCLUDE_COUNTRIES.has(country)) return false;
         var allowed = COUNTRY_PRODUCTS[country];
         return (FUEL_DATA[country] || []).some(function(r) {{
             return r.fuel_family === family && compareUnitFilter(r.unit, family) && r.price_usd != null
@@ -2597,6 +2614,7 @@ function initCompareSlider() {{
     var family = getCompareFamily();
     var dateSet = {{}};
     Object.keys(FUEL_DATA).forEach(function(country) {{
+        if (COMPARE_EXCLUDE_COUNTRIES.has(country)) return;
         var allowed = COUNTRY_PRODUCTS[country];
         (FUEL_DATA[country] || []).forEach(function(r) {{
             if (r.fuel_family === family && compareUnitFilter(r.unit, family) && r.price_usd != null
@@ -2646,6 +2664,7 @@ function getCompareSliderRange() {{
 function getCompareSeries(family) {{
     var result = {{}};
     Object.keys(FUEL_DATA).forEach(function(country) {{
+        if (COMPARE_EXCLUDE_COUNTRIES.has(country)) return;
         var allowed = COUNTRY_PRODUCTS[country];
         var rows = (FUEL_DATA[country] || []).filter(function(r) {{
             return r.fuel_family === family && compareUnitFilter(r.unit, family) && r.price_usd != null
@@ -2795,6 +2814,7 @@ function updateCompareBreakdown(family) {{
     var panel = document.getElementById('compare-product-breakdown');
     var items = [];
     Object.keys(FUEL_DATA).sort().forEach(function(country) {{
+        if (COMPARE_EXCLUDE_COUNTRIES.has(country)) return;
         var allowed = COUNTRY_PRODUCTS[country];
         var products = {{}};
         (FUEL_DATA[country] || []).forEach(function(r) {{
