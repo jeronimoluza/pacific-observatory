@@ -3,6 +3,16 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+VENDOR_DIR = Path(__file__).resolve().parent / "vendor"
+_VENDOR_CACHE: dict[str, str] = {}
+
+
+def _vendor(name: str) -> str:
+    if name not in _VENDOR_CACHE:
+        _VENDOR_CACHE[name] = (VENDOR_DIR / name).read_text(encoding="utf-8")
+    return _VENDOR_CACHE[name]
+
+
 PALETTE = [
     "#667eea",
     "#e6ab02",
@@ -516,15 +526,20 @@ def gen_policy_html(
 
     title_escaped = _html.escape(region_label)
 
+    chartjs_inline = _vendor("chart.umd.min.js")
+    adapter_inline = _vendor("chartjs-adapter-date-fns.bundle.min.js")
+    noui_css_inline = _vendor("nouislider.min.css")
+    noui_js_inline = _vendor("nouislider.min.js")
+
     html = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title>Fuel Policy Overview &mdash; {title_escaped}</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js"></script>
+    <script>{chartjs_inline}</script>
+    <script>{adapter_inline}</script>
+    <style>{noui_css_inline}</style>
+    <script>{noui_js_inline}</script>
     <style>{_CSS}</style>
 </head>
 <body>
