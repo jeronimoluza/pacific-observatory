@@ -435,7 +435,8 @@ def run_publish(
         logger.info("Loading country USD data ...")
         usd_data = _load_country_usd_data(countries, history_years=history_years)
 
-        out_path = outputs_dir / reg / "fuel_policy_dashboard.html"
+        out_path = outputs_dir / "dashboards" / f"{reg}_fuel_dashboard.html"
+        out_path.parent.mkdir(parents=True, exist_ok=True)
         gen_policy_html(
             data=data,
             fuel_data=fuel_data,
