@@ -31,5 +31,7 @@ selectors:
     date: script[type='application/ld+json']::text
 cleaning:
   date: parse_date_from_jsonld
-max_pages: null
+# Site's ?page=N has no end-marker — observed live pagination past page 5800
+# still returning ~24 new URLs per page. Cap at 500 to bound the discovery.
+max_pages: 500
 max_articles: null
