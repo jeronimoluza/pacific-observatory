@@ -1,0 +1,35 @@
+name: Niezalezna
+language: pl
+country: poland
+base_url: https://niezalezna.pl
+
+# Date is exposed only in JSON-LD; use parse_date_from_jsonld cleaner.
+# <time datetime> on article pages contains stale placeholder.
+listing:
+  type: pagination
+  start_url: https://niezalezna.pl/polska
+  url_template: https://niezalezna.pl/polska?page={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: pl-PL,pl;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: a[href*="niezalezna.pl/polska/"]:has(h3)
+    title: h3::text
+    url: a[data-nonexistent]::attr(href)
+  article:
+    body: article p
+    date: script[type='application/ld+json']::text
+cleaning:
+  date: parse_date_from_jsonld
+max_pages: null
+max_articles: null

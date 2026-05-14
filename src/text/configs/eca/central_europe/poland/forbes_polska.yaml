@@ -1,14 +1,9 @@
-# Unusable with current pipeline strategies.
-# Reason: No machine-readable date meta tag on article pages. Date only appears
-# as ".articleDates" span text "Data publikacji: 02.04.2026, 15:30" which is not
-# parseable by built-in handle_mixed_dates (comma + time breaks %d.%m.%Y pattern).
-# datePublished in ld+json is present but CSS selectors cannot extract from
-# ld+json script blocks. Pagination (?page=N) and body (div.contentPremium p)
-# work fine otherwise.
 name: Forbes Polska
 language: pl
 country: poland
 base_url: https://www.forbes.pl
+
+# Date is exposed only in JSON-LD; use parse_date_from_jsonld cleaner.
 listing:
   type: pagination
   start_url: https://www.forbes.pl/gospodarka
@@ -27,14 +22,13 @@ headers:
   Accept-Language: pl-PL,pl;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: a.list-item
-    title: h3.item_title::text
+    container: a[href*="/gospodarka/"]
+    title: h2.artTitle::text
     url: a[data-nonexistent]::attr(href)
   article:
     body: div.contentPremium p
-    date: span.articleDates::text
+    date: script[type='application/ld+json']::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'
