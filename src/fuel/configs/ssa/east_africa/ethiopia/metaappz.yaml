@@ -1,0 +1,26 @@
+source_key: metaappz_et_monthly
+module: ssa.east_africa.ethiopia.metaappz
+function: fetch_metaappz_et
+url: https://www.metaappz.com/Tools/Ethiopia_Fuel_Price
+fallback_date: 2022-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# MetaAppz publishes a static HTML table of monthly Petrol and Diesel
+# retail prices for Addis Ababa in ETB per liter. The fetcher parses the
+# table directly — no PDF or OCR step required.
+
+products:
+  "Petrol":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Diesel":
+    series_key: diesel_standard
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
