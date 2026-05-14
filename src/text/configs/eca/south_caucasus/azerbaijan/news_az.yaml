@@ -29,13 +29,15 @@ selectors:
     container: url
     title: loc::text
     url: loc::text
-    date: lastmod::text
+    # NOTE: sitemap <lastmod> regenerates to current time per sitemap rebuild,
+    # so every URL ends up stamped "today". Date comes from the article's
+    # time anchor (e.g. <a href="/time/2021/5/11" title="11 May 2021 14:11">).
   article:
     title:
       - 'meta[property="og:title"]::attr(content)'
       - 'h1::text'
     body: div.post--content
-    date: lastmod::text
+    date: 'a[href*="news.az/time/"]::attr(title)'
 
 cleaning:
   date: handle_mixed_dates

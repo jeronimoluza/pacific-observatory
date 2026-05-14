@@ -14,8 +14,8 @@ listing:
   step: 21
   batch_size: 5
 client: http
-concurrency: 2
-rate_limit: 1.5
+concurrency: 3
+rate_limit: 1.0
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -29,7 +29,7 @@ selectors:
     title: h2 a::text
     url: h2 a::attr(href)
   article:
-    body: div#textsize p
+    body: div#textsize
     date: div.date::text
 cleaning:
   date: handle_mixed_dates

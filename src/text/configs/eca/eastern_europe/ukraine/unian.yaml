@@ -13,8 +13,8 @@ listing:
   url_regex: "^https://www\\.unian\\.ua/.+\\.html$"
 
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 3.0
 

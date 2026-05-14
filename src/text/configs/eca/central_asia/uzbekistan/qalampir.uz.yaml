@@ -28,7 +28,10 @@ selectors:
     container: url
     title: loc::text
     url: loc::text
-    date: lastmod::text
+    # NOTE: sitemap <lastmod> reflects sitemap regen time, not article publish
+    # date — stamps every URL with "today". Date is read from the article page
+    # via p[itemprop="datePublished"] (text includes view-count noise, but
+    # handle_mixed_dates extracts the date via dateutil).
   article:
     title:
       - 'meta[property="og:title"]::attr(content)'

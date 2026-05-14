@@ -28,13 +28,15 @@ selectors:
     container: url
     title: loc::text
     url: loc::text
-    date: lastmod::text
+    # NOTE: sitemap <lastmod> is regenerated to current time on every sitemap
+    # rebuild, so it stamps every URL with "today" — useless as a publish date.
+    # Date is extracted from the article page instead.
   article:
     title:
       - 'meta[property="og:title"]::attr(content)'
       - 'h1::text'
     body: div.text-content
-    date: lastmod::text
+    date: 'span.news-inner-date::text'
 
 cleaning:
   date: handle_mixed_dates

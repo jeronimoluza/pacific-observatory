@@ -13,8 +13,8 @@ listing:
   sitemap_regex: "sitemap2\\.xml\\?p=[0-9]+"
 
 client: http
-concurrency: 2
-rate_limit: 2.0
+concurrency: 3
+rate_limit: 1.0
 retries: 5
 retry_seconds: 10.0
 
