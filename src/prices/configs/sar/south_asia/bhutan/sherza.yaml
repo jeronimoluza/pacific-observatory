@@ -1,0 +1,4 @@
+spider: sherza
+language: en
+notes: >
+  Shopify storefront. Uses /products.json endpoint (no auth, paginated 250/page).

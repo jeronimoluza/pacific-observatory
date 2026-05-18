@@ -1,0 +1,5 @@
+spider: singer_lk
+language: en
+notes: >
+  Sri Lanka electronics/appliances. PDP URLs are /product/<slug> (singular,
+  not /products/). Extracts from JSON-LD Product blocks.

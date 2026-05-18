@@ -1,0 +1,5 @@
+spider: smartdoko
+language: en
+notes: >
+  SPA — uses Playwright listing-card extraction. Schema.org microdata
+  (itemprop="price", /product/<slug> anchors) is stable.
