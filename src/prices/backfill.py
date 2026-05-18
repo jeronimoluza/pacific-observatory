@@ -11,9 +11,18 @@ from __future__ import annotations
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from bs4 import BeautifulSoup
+
+from prices._shared.wayback import (
+    discover_snapshots,
+    fetch_snapshot,
+    parse_timestamp_to_date,
+)
+from prices.price_scraping.selectors import extract_with_fallback
 
 logger = logging.getLogger(__name__)
 
@@ -114,3 +123,61 @@ class Ledger:
         self.path.write_text(
             json.dumps(out, indent=2, sort_keys=True), encoding="utf-8"
         )
+
+
+def backfill_one_url(
+    *,
+    session,
+    url: str,
+    url_hash: str,
+    cutoff: date,
+    selectors: dict[str, list[str]],
+    ledger: Ledger,
+    currency: str | None,
+    collapse_digits: int = 8,
+    max_snapshots: int | None = None,
+) -> list[dict[str, Any]]:
+    """Discover, fetch, parse all wayback snapshots for one URL.
+
+    Returns the list of row dicts to append. Rows are dropped (not returned)
+    when the spider's price selector finds nothing — but the ledger is still
+    updated for those timestamps so we don't retry dead snapshots.
+    """
+    timestamps = discover_snapshots(
+        session, url, cutoff, collapse_digits=collapse_digits
+    )
+    pending = [ts for ts in timestamps if not ledger.is_done(url_hash, ts)]
+    if max_snapshots is not None:
+        pending = pending[:max_snapshots]
+
+    rows: list[dict[str, Any]] = []
+    for ts in pending:
+        html = fetch_snapshot(session, ts, url)
+        ledger.record(url_hash, ts)
+        if html is None:
+            continue
+        soup = BeautifulSoup(html, "html.parser")
+        extracted: dict[str, Any] = {}
+        for field, selector_list in selectors.items():
+            value = extract_with_fallback(soup, selector_list)
+            if value:
+                extracted[field] = value
+        if not extracted.get("price"):
+            logger.debug("[wayback] dropping %s @ %s: no price extracted", url, ts)
+            continue
+        snap_date = parse_timestamp_to_date(ts)
+        row = {
+            "url": url,
+            "url_hash": url_hash,
+            "currency": currency,
+            "source_kind": "wayback",
+            "wayback_timestamp": ts,
+            "scraped_at_utc": (
+                f"{snap_date.isoformat()}T00:00:00+00:00"
+                if snap_date is not None
+                else None
+            ),
+            **extracted,
+        }
+        rows.append(row)
+    return rows
