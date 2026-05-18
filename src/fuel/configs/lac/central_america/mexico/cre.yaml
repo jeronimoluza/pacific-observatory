@@ -10,14 +10,14 @@ carry_forward: true
 
 products:
   "regular":
-    label: Regular Gasoline
+    label: Gasoline Regular
     series_key: gasoline_regular_87
     fuel_family: gasoline
     unit: liter
     include_in_build: true
     grade: regular
   "premium":
-    label: Premium Gasoline
+    label: Gasoline Premium
     series_key: gasoline_premium_91
     fuel_family: gasoline
     unit: liter

@@ -1,0 +1,478 @@
+# Publish configuration for ECA (Europe & Central Asia) fuel policy dashboard.
+
+region: eca
+region_label: "Europe & Central Asia"
+dashboard_history_years: 3
+
+# Regime overrides for countries where the WB 2024 pricing-regime CSV no longer
+# matches 2025-2026 reality, or where per-product nuance is lost in the
+# aggregate code. Keys are ISO3; values are per-product {regime, subsidy} dicts.
+# The "Subsidised" badge in the table is driven by IMF implicit subsidy data,
+# not the subsidy field here — the subsidy field below is used for the scatter
+# view classification (Price Control + Subsidies).
+regime_overrides:
+  # Albania — Transparency Board reactivated March 2026 (was abolished Jun-2023).
+  # Government decree sets gasoline & diesel ceilings via Platts-based formula;
+  # LPG and kerosene remain unregulated.
+  ALB:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Belarus — not in WB pricing-regime CSV. Belneftekhim/BNK operates ~571/865
+  # stations and sets all liquid-fuel retail by Council of Ministers decree.
+  BLR:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Croatia — WB codes biweekly cap since Oct-2021; cap was dropped Jul-2025
+  # then reimposed 9-Mar-2026 via Uredba o najvišim maloprodajnim cijenama.
+  # Eurosuper 95, Eurodiesel, blue diesel, LPG all covered by current decree.
+  HRV:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Gibraltar — not in WB CSV. Small competitive retail market (3 majors:
+  # Gulf, Repsol, Cepsa) with no caps; import-duty discount expired Jan-2024.
+  GIB:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Isle of Man — not in WB CSV. OFT publishes weekly fuel monitoring but has
+  # no power to set prices; market regime with structurally higher pump costs.
+  IMN:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Liechtenstein — not in WB CSV. Customs union with Switzerland; Swiss
+  # mineral-oil tax + VAT applies, no domestic caps.
+  LIE:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Monaco — not in WB CSV. Cross-border supply via French distributors;
+  # French TICPE + 20% VAT pass through.
+  MCO:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Montenegro — WB codes deregulated, but Ministry of Capital Investments
+  # publishes biweekly maximum retail prices (weekly since Mar-2026); excise
+  # halved Mar-2026 to absorb Middle-East price shock.
+  MNE:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Poland — still deregulated but March-April 2026 temporary VAT cut (23→8%)
+  # and diesel excise cut introduce a transient subsidy footprint on top of
+  # the standing farmer "zwrot akcyzy" (PLN 1.46/L) refund.
+  POL:
+    Gasoline: {regime: Market, subsidy: true}
+    Diesel: {regime: Market, subsidy: true}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Romania — OUG 19/2026 caps commercial fuel markups at 2025 averages
+  # (1-Apr–30-Jun-2026). Diesel state-aid scheme (≤1 leu/L, reduced excise
+  # 1,900 lei/1,000 L for road transport) extended through 31-Dec-2026.
+  ROU:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Russia — WB codes mech=3 (hybrid). De facto Price Control for gasoline
+  # (rolling export ban Mar-2024 → Feb-2026), diesel (damper squeeze Q2-2025
+  # as wholesale breached 10%/20% deviation cap), and aviation kerosene
+  # (jet-fuel compensation). LPG remains genuinely deregulated.
+  RUS:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # San Marino — not in WB CSV. Italian cross-border supply at lower SMR
+  # excise (persistent 10-20 c/L discount vs Italy); no domestic caps.
+  SMR:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Türkiye — WB codes "Free Pricing System" since 2005, but de facto Price
+  # Control via SCT (Special Consumption Tax) Fuel Price Stabilization
+  # Mechanism (FPSM) — reinstated 11-Mar-2026 — capping consumer
+  # pass-through to ~25% of global price moves.
+  TUR:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+# Per-cell source attribution and reform notes for the regime table.
+# Keys: ISO3 -> product (Gasoline | Diesel | LPG | Kerosene) -> {classification_sources, reform}.
+# classification_sources: list of strings or {label, url} entries explaining where the
+#   regime classification comes from. Shown in the popover when the primary pill is clicked.
+# reform: optional. If present, a secondary pill is rendered next to the primary one.
+regime_notes:
+  ALB:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1; Transparency Board abolished Jun-2023). Override: Board reactivated by government decree March 2026 with a Platts-based ceiling formula."
+        - { label: "Euronews Albania — Transparency Board reactivated", url: "https://euronews.al/en/decision-the-transparency-board-officially-enters-into-force-fuel-price-cap-to-be-set/" }
+      reform:
+        label: "Bord reactivated Mar-2026"
+        note: "After abolishing the Transparency Board in June 2023, Albania reactivated it in March 2026 with a Platts FOB + $30/t premium formula. The Board's first session set diesel at a 203 lekë/L ceiling. A parallel 20% cut to diesel excise duty was passed alongside."
+        sources:
+          - { label: "Euronews Albania — Board enters into force", url: "https://euronews.al/en/decision-the-transparency-board-officially-enters-into-force-fuel-price-cap-to-be-set/" }
+          - { label: "SeeNews — Albania cuts fuel excise 20%", url: "https://seenews.com/news/albania-cuts-fuel-excise-by-20-percent-to-cap-fuel-prices-1291877" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, subsidy_type=6 agriculture). Override: Transparency Board reactivated Mar-2026 covers diesel ceiling; separate farmer rebate program continues (historical baseline ~5 lekë/L)."
+      reform:
+        label: "Excise -20% Mar-2026"
+        note: "Government cut diesel excise from 39.6 lek/L by 20% in March 2026, simultaneously with reactivating the Transparency Board cap."
+        sources:
+          - { label: "SeeNews — Albania cuts fuel excise 20%", url: "https://seenews.com/news/albania-cuts-fuel-excise-by-20-percent-to-cap-fuel-prices-1291877" }
+
+  ARM:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, no subsidies). Import & sale of oil products are privatised and unregulated."
+      reform:
+        label: "AZ imports broke monopoly"
+        note: "Since mid-December 2025, gasoline and diesel imports from Azerbaijan transit Georgia into Armenia. PM Pashinyan stated the imports 'broke fuel monopolies' — gasoline retail fell from ~510 AMD/L to ~430 AMD/L and diesel from ~480 to ~410 AMD/L. No state price control."
+        sources:
+          - { label: "Euronews — Armenia reshapes pricing as it imports Azerbaijani fuel", url: "https://www.euronews.com/2026/01/22/armenia-reshapes-its-pricing-system-as-it-continues-to-import-azerbaijani-fuel" }
+          - { label: "ARKA — Armenian retail price moves (Feb 2026)", url: "https://arka.am/en/news/business/gasoline-in-armenia-increased-in-price-by-0-6-in-february-over-a-year-while-diesel-fuel-decreased-by/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, no subsidies)."
+
+  AZE:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, freq=6 bi-monthly; subsidy_type=2 price freeze, 6 agriculture). Prices are set by the Tariff Council and frozen for long stretches."
+      reform:
+        label: "Tariff hikes Dec-2025"
+        note: "On 30-Dec-2025 the Tariff Council raised AI-92 from 1.10 to 1.15 AZN/L — the first adjustment since the Jul-2024 EURO-5 transition hike. Reaffirms continued de jure regulated regime."
+        sources:
+          - { label: "Turan — gasoline & diesel hikes Dec-2025", url: "https://turan.az/en/social/prices-for-ai-92-gasoline-and-diesel-fuel-have-been-increased-in-azerbaijan" }
+          - { label: "APA — AI-92 + diesel raised", url: "https://en.apa.az/energy-and-industry/azerbaijan-increases-ai-92-gasoline-diesel-prices-487837" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2; subsidy_type=2 price freeze + 6 agriculture)."
+      reform:
+        label: "Tariff hikes Dec-2025"
+        note: "Diesel raised from 1.00 to 1.10 AZN/L on 30-Dec-2025 alongside the AI-92 increase."
+        sources:
+          - { label: "Turan — gasoline & diesel hikes Dec-2025", url: "https://turan.az/en/social/prices-for-ai-92-gasoline-and-diesel-fuel-have-been-increased-in-azerbaijan" }
+
+  BGR:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, no subsidies). Bulgaria's draft updated NECP confirms no fossil-fuel subsidies."
+      reform:
+        label: "Euro adoption Jan-2026"
+        note: "Bulgaria adopted the euro on 1-Jan-2026 with mandatory dual pricing Aug-2025 to Aug-2026. The 2022-2025 temporary zero-excise on energy products lapsed 30-Jun-2025; excises now sit at EU minimums (EUR 0.363/L petrol, EUR 0.330/L diesel) with 20% VAT."
+        sources:
+          - { label: "European Council — Bulgaria euro adoption Jan-2026", url: "https://www.consilium.europa.eu/en/press/press-releases/2025/07/08/bulgaria-ready-to-use-the-euro-from-1-january-2026-council-takes-final-steps/" }
+          - { label: "Delchev — Bulgaria energy-tax measures 2022-2025", url: "https://www.delchev-lawfirm.com/blog/tax/tax-measures-for-tackling-the-increasing-energy-prices-in-bulgaria/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, no subsidies)."
+
+  BLR:
+    Gasoline:
+      classification_sources:
+        - "Not in WB pricing-regime dataset. Belneftekhim/BNK operates ~571/865 stations and sets retail by Council of Ministers decree; the state effectively monopolises the supply chain."
+        - { label: "Reform — methodical weekly price hikes 2025", url: "https://reform.news/en/retail-prices-for-motor-fuel-in-belarus-raised-again" }
+      reform:
+        label: "Weekly +1 kopeck creep"
+        note: "Belneftekhim resumed methodical weekly retail hikes through 2025 — eight consecutive +2-kopeck increases starting 15-Mar-2025 (+16 kopecks total per grade). Officially justified as 'comprehensive assessment of the economic situation' and parity with neighbours."
+        sources:
+          - { label: "Reform — Belarus fuel hikes 2025", url: "https://reform.news/en/retail-prices-for-motor-fuel-in-belarus-raised-again" }
+          - { label: "Charter97 — 2026 price tracking", url: "https://charter97.org/en/news/2026/1/4/668828/" }
+    Diesel:
+      classification_sources:
+        - "Not in WB CSV; Belneftekhim sets diesel retail by decree alongside gasoline."
+
+  GEO:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, no subsidies). Crude and oil products market is fully liberalized; prices are deregulated."
+      reform:
+        label: "GEL 51.6m cartel fine"
+        note: "Georgia's National Competition Agency fined the five largest retailers (SOCAR Georgia, Wissol, Rompetrol, Lukoil, San Petroleum/Gulf) GEL 51.6m for coordinated price-fixing during Mar-Aug 2022. The 2023 ruling was upheld through 2025 — market remains deregulated but actively policed under antitrust."
+        sources:
+          - { label: "Civil.ge — GEL 51.6m cartel fine", url: "https://civil.ge/archives/124762" }
+          - { label: "Civil.ge — Wissol disputes share", url: "https://civil.ge/archives/124765" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, no subsidies)."
+
+  GIB:
+    Gasoline:
+      classification_sources:
+        - "Not in WB CSV. Competitive retail market (Gulf, Repsol, Cepsa) with no government cap; fuel duty applies (lower than UK), no VAT."
+      reform:
+        label: "Duty discount sunset"
+        note: "Temporary import-duty discount expired 31-Dec-2023. From Jan-2024 unleaded-95 jumped ~11-12% and diesel ~13% at the pump."
+        sources:
+          - { label: "GBC — duty discount ends", url: "https://www.gbc.gi/news/fuel-prices-rock-rise-import-duty-discount-comes-end" }
+    Diesel:
+      classification_sources:
+        - "Not in WB CSV. Same competitive 3-retailer retail structure as gasoline."
+
+  HRV:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, freq=1 biweekly; subsidy_type=1). Government decrees biweekly maximum retail prices via Uredba o utvrđivanju najviših maloprodajnih cijena naftnih derivata."
+      reform:
+        label: "Cap Jul-25 → Mar-26"
+        note: "Croatia ended its 3-year biweekly cap regime in July 2025 in favour of free pricing, then reimposed the Uredba on 9-Mar-2026 at the 152nd Government session amid Middle-East oil volatility. Biweekly extensions through at least 20-Apr-2026, with a parallel 10-23 Mar 2026 diesel-excise cut (-EUR 20 to EUR 386.13/1,000 L)."
+        sources:
+          - { label: "Serbia-energy — Croatia ends biweekly cap (Jul-2025)", url: "https://serbia-energy.eu/croatia-government-ends-biweekly-fuel-price-cap-emphasizes-market-stability/" }
+          - { label: "vlada.gov.hr — Plenković extends cap (Mar-2026)", url: "https://vlada.gov.hr/plenkovic-announces-extension-of-government-measure-to-cap-fuel-prices/33336" }
+          - { label: "Croatia Week — fuel price caps & Iran-war volatility", url: "https://www.croatiaweek.com/croatia-fuel-price-caps-iran-war-oil-market/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Diesel covered by the same Uredba decree."
+      reform:
+        label: "Excise cut Mar-2026"
+        note: "Diesel excise temporarily reduced by EUR 20 to EUR 386.13/1,000 L for the window 10-23 Mar 2026, in parallel with the cap reimposition."
+        sources:
+          - { label: "vlada.gov.hr — extension of cap", url: "https://vlada.gov.hr/plenkovic-announces-extension-of-government-measure-to-cap-fuel-prices/33336" }
+
+  IMN:
+    Gasoline:
+      classification_sources:
+        - "Not in WB CSV. Isle of Man Office of Fair Trading (OFT) publishes weekly road-fuel monitoring but has no statutory power to cap prices. Pump prices structurally higher than UK due to import and small-market overheads."
+        - { label: "Isle of Man OFT — road fuel monitoring", url: "https://www.gov.im/about-the-government/statutory-boards/isle-of-man-office-of-fair-trading/pricing/road-fuel-monitoring/" }
+    Diesel:
+      classification_sources:
+        - "Not in WB CSV. Same OFT weekly monitoring as gasoline; no cap power."
+
+  KGZ:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1; subsidy_type=7 EAEU export-ban exposure). Antimonopoly Regulatory Service (NAS) monitors prices and holds working sessions with traders but does not set caps; five majors hold ~90% market share."
+      reform:
+        label: "EAEU shield + NAS watch"
+        note: "When Russia banned gasoline exports (Mar-2024 and again 2025), Kyrgyzstan retained tariff-free supply as an EAEU member. Despite this, 2025 retail rose ~15% gasoline / ~11% diesel due to Russian refinery outages, prompting NAS jawboning of traders."
+        sources:
+          - { label: "Times of Central Asia — Russia ban no KGZ impact", url: "https://timesca.com/russian-gasoline-export-ban-will-not-impact-kyrgyzstan-ministry-confirms/" }
+          - { label: "24.kg — 2025 retail price rises", url: "https://24.kg/english/329067_Gasoline_rises_in_price_by_1-15_soms_in_Kyrgyzstan_in_2025/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1; subsidy_type=7)."
+
+  LIE:
+    Gasoline:
+      classification_sources:
+        - "Not in WB CSV. Customs and treaty union with Switzerland; Swiss mineral-oil tax (~CHF 0.77/L petrol, CHF 0.80/L diesel) plus 8.1% VAT apply. No domestic caps; retail tracks Swiss pump."
+    Diesel:
+      classification_sources:
+        - "Not in WB CSV. Same Swiss-aligned tax structure as gasoline."
+
+  MCO:
+    Gasoline:
+      classification_sources:
+        - "Not in WB CSV. Fuel supplied via French distributors; French TICPE excise + 20% VAT pass through. No domestic cap. Retail tracks French pump."
+    Diesel:
+      classification_sources:
+        - "Not in WB CSV. Same French cross-border supply chain."
+
+  MDA:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, freq=1 weekly; subsidy_type=1). ANRE publishes a maximum daily/weekly cap derived from Platts CIF Med + margin + excise + VAT. H1-2025 margin set at 3.34 MDL/L gasoline, 3.35 MDL/L diesel."
+      reform:
+        label: "Crisis flex Apr-2026"
+        note: "After the Jan-2025 Transnistria gas-cutoff crisis, PAS registered a draft law (Apr-2026) allowing ANRE to alter the marginal price formula in crises (shorter billing period, alternative quotes). New 2025 excises phased in: 578.16 MDL/t gasoline, 243.28 MDL/t diesel."
+        sources:
+          - { label: "news-pravda.com — ANRE formula flex law", url: "https://md.news-pravda.com/en/world/2026/04/29/96558.html" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, freq=1 weekly; subsidy_type=1)."
+
+  MKD:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, freq=1 weekly; subsidy_type=1). Regulatory Commission for Energy (ERC) calculates weekly Eurosuper-95/98 maxima with a Platts-Med formula."
+      reform:
+        label: "VAT 10% retained"
+        note: "ERC continued the weekly Platts-Med formula through 2025-2026 with reduced VAT (10% vs 18% standard) and reduced excise still in force. New Energy Law adopted May-2025 redesignated MEMO as the NEMO; no pricing regime shift."
+        sources:
+          - { label: "ERC official site", url: "https://www.erc.org.mk/Default_en.aspx" }
+          - { label: "BTA — new fuel prices in North Macedonia", url: "https://www.bta.bg/en/news/balkans/1100755-new-fuel-prices-come-into-force-in-north-macedonia-from-midnight" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, freq=1 weekly). Same VAT/excise relief as gasoline."
+    LPG:
+      classification_sources:
+        - "ERC also sets weekly autogas (LPG) maxima alongside gasoline and diesel."
+
+  MNE:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1 deregulated). Override: Ministry of Capital Investments publishes biweekly maximum retail prices, shifted to weekly in Mar-2026 amid the Middle-East price shock."
+      reform:
+        label: "Weekly cap + excise -50%"
+        note: "In March 2026 Montenegro halved fuel excise and moved from biweekly to weekly price setting, capping diesel at EUR 1.54 (vs EUR 1.81 uncapped) and petrol at EUR 1.51 (vs EUR 1.68). Earlier 2024 proposals to partially deregulate highway stations were not adopted."
+        sources:
+          - { label: "gov.me — government caps fuel prices", url: "https://www.gov.me/en/article/government-caps-fuel-prices-diesel-to-increase-by-only-4-cents-instead-of-31" }
+          - { label: "CdM — excise -50%, weekly pricing", url: "https://www.cdm.me/english/government-takes-maximum-measure-instead-of-31-diesel-up-by-four-cents-excise-duties-cut-by-50-prices-to-be-set-weekly/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 mech=1; override based on the same biweekly Ministry tariff."
+      reform:
+        label: "Excise -50% Mar-2026"
+        note: "Diesel excise halved in the March-2026 measure; capped at EUR 1.54/L vs an estimated EUR 1.81 uncapped."
+        sources:
+          - { label: "gov.me — government caps fuel prices", url: "https://www.gov.me/en/article/government-caps-fuel-prices-diesel-to-increase-by-only-4-cents-instead-of-31" }
+
+  POL:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1 deregulated; subsidy_type=6 agriculture excise refund). Override: subsidy flagged true for the Mar-Apr 2026 temporary VAT/excise relief."
+      reform:
+        label: "Temp VAT 8% + excise cut"
+        note: "Poland temporarily cut motor-fuel VAT from 23% to 8% (31 Mar – 30 Apr 2026) and slashed diesel excise from PLN 1,160 to PLN 880 per 1,000 L (30 Mar – 15 Apr 2026). Standing farmer 'zwrot akcyzy' refund continues at PLN 1.46/L (cap PLN 160.60/ha)."
+        sources:
+          - { label: "KPMG — Poland temporary fuel VAT & excise cuts", url: "https://kpmg.com/us/en/taxnewsflash/news/2026/04/tnf-poland-temporary-reduction-in-excise-duty-rates-and-vat-on-fuels-other-tax-developments.html" }
+          - { label: "Scandagra — 2025 farmer excise refund", url: "https://www.scandagra.pl/zwrot-akcyzy-za-paliwo-rolnicze-2025-ile-wynosi-i-kiedy-zlozyc-wniosek/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1; subsidy_type=6). Same farmer refund + Mar-Apr 2026 temporary VAT/excise cut applies."
+
+  ROU:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1 deregulated; subsidy_type=6 diesel state aid Feb-2024). Override: OUG 19/2026 (1 Apr – 30 Jun 2026) caps commercial fuel markups at 2025 average levels (effective ~8.41 lei/L gasoline, ~8.86 lei/L diesel), updated monthly."
+      reform:
+        label: "OUG 19/2026 markup cap"
+        note: "OUG 19/2026 imposed temporary commercial-margin caps on retail fuel from 1 Apr – 30 Jun 2026, financed partly by a 'solidarity contribution' / windfall tax on oil producers. April 2026 package added a further diesel-excise cut."
+        sources:
+          - { label: "Romania Insider — excise cut April 2026", url: "https://www.romania-insider.com/romania-cut-excise-duty-fuel-april-2026" }
+          - { label: "Informat — Romania caps diesel margins", url: "https://informat.ro/en/exclusive/romania-caps-diesel-prices-in-europe-112784" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1; subsidy_type=6). Override: OUG 19/2026 applies; the 1 leu/L diesel state-aid scheme (reduced excise 1,900 lei/1,000 L for transport operators) was extended through 31 Dec 2026."
+      reform:
+        label: "1 leu/L aid to end-2026"
+        note: "Diesel state-aid scheme renewed: up to 1 leu/L (reduced excise 1,900 lei/1,000 L for transport operators) through 31 Dec 2026, layered on top of the markup cap."
+        sources:
+          - { label: "Romania Insider — excise cut April 2026", url: "https://www.romania-insider.com/romania-cut-excise-duty-fuel-april-2026" }
+
+  RUS:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=3 hybrid; subsidy_type=7). Override: rolling export bans, damper squeeze, and FAS antitrust action push the retail regime into de facto Price Control."
+      reform:
+        label: "Export ban + damper squeeze"
+        note: "Russia re-imposed a gasoline export ban Mar-2024 (6 months), extended through end-2024, re-imposed through end-2025, and again extended through Feb-2026. Damper payouts collapsed Q2-2025 (RUB 405 bn → 139.7 bn) as wholesale SPbX prices breached the 10% deviation cap. FAS pushed a full VIOC export ban through Oct-2025; the 5% gasoline import duty was scrapped and the octane-additive ban lifted to stabilise supply."
+        sources:
+          - { label: "Bloomberg — gasoline export ban through Feb 2026", url: "https://www.bloomberg.com/news/articles/2025-12-27/russia-extends-temporary-gasoline-export-ban-through-february" }
+          - { label: "Moscow Times — import duty scrap + additive ban lift", url: "https://www.themoscowtimes.com/2025/10/01/russia-to-scrap-gasoline-import-tariffs-additive-ban-in-bid-to-stabilize-fuel-market-a90688" }
+          - { label: "Interfax — damper Q2 2025 collapse", url: "https://interfax.com/newsroom/top-stories/112267/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=3; subsidy_type=7). Diesel covered by the same damper mechanism and SPbX deviation cap (20% threshold for diesel)."
+      reform:
+        label: "Damper squeeze Q2-2025"
+        note: "Same damper-payout collapse hit diesel in Q2-2025 when SPbX wholesale prices breached the 20% deviation threshold."
+        sources:
+          - { label: "Interfax — damper Q2 2025", url: "https://interfax.com/newsroom/top-stories/112267/" }
+
+  SMR:
+    Gasoline:
+      classification_sources:
+        - "Not in WB CSV. Fuel imported from Italy but San Marino's domestic excise is lower than Italy's SCT, producing a persistent 10-20 c/L cross-border discount. No domestic cap."
+    Diesel:
+      classification_sources:
+        - "Not in WB CSV. Same Italian cross-border supply with lower SMR excise."
+
+  SRB:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, freq=1 weekly; subsidy_type=1). Ministry of Internal and Foreign Trade sets weekly Friday caps for Eurosuper BMB 95 and Eurodiesel; wholesale margin fixed at +16 din/L."
+      reform:
+        label: "Caps extended 6 months"
+        note: "Government extended weekly fuel price caps (in place since Feb-2022) for another 6 months in 2025. Total 2025 agricultural budget RSD 138 bn + RSD 11 bn earmarked for fuel-excise refunds; performance-additive fuels stay exempt from the cap."
+        sources:
+          - { label: "Serbia-business — caps extended + farmer support", url: "https://serbia-business.eu/serbia-extends-fuel-price-caps-for-six-months-supports-farmers-with-subsidized-diesel/" }
+          - { label: "srbija.gov.rs — petroleum cap extension", url: "https://www.srbija.gov.rs/vest/en/193312/limit-on-prices-of-petroleum-products-basic-foodstuffs-extended.php" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2; subsidy_type=1). Eurodiesel cap + 50 din/L excise rebate for road transport."
+      reform:
+        label: "Farmer diesel 179 din/L"
+        note: "Renewed agricultural preferential decree: diesel at 179 din/L up to 100 L/ha × 100 ha for registered farmers, alongside the standing weekly cap on Eurodiesel."
+        sources:
+          - { label: "Serbia-business — extended caps + farmer support", url: "https://serbia-business.eu/serbia-extends-fuel-price-caps-for-six-months-supports-farmers-with-subsidized-diesel/" }
+
+  TUR:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1 'Free Pricing System' since 2005). Override: de facto Price Control via SCT (Special Consumption Tax) Fuel Price Stabilization Mechanism (FPSM) — Treasury absorbs ~75% of global price moves so only ~25% passes to consumers."
+      reform:
+        label: "FPSM reinstated Mar-2026"
+        note: "Türkiye reintroduced the SCT-based fuel price stabilisation mechanism effective 11-Mar-2026, capping consumer pass-through at ~25% of global price increases. For 2026 budgeting, SCT hikes on fuel/alcohol/tobacco are limited to 7.84% (CBRT inflation target) instead of automatic PPI indexation — formal end of multi-year SCT freeze, but consumer prices remain managed."
+        sources:
+          - { label: "KPMG — Türkiye FPSM reinstated Mar-2026", url: "https://kpmg.com/us/en/taxnewsflash/news/2026/03/tnf-turkiye-reintroduction-of-fuel-price-stabilization-mechanism-for-special-consumption-tax-on-certain-petroleum-products.html" }
+          - { label: "Türkiye Today — 2026 SCT hike cap 7.84%", url: "https://www.turkiyetoday.com/business/turkiye-limits-excise-tax-hikes-on-fuel-alcohol-tobacco-to-reinforce-disinflation-goa-3212243" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 'Free Pricing'; override based on FPSM/SCT manipulation that produces a large implicit Treasury subsidy on diesel."
+
+  UKR:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, deregulated since May-2022). Retail is competitive; excise is the dominant policy lever."
+      reform:
+        label: "Excise +EU-aligned Jan-26"
+        note: "President Zelensky signed the 2024-2028 motor-fuel excise schedule. From 1-Jan-2026 gasoline excise rises to EUR 300.80/1,000 L, diesel to EUR 253.80/1,000 L, LPG to EUR 198/1,000 L. Cumulative 2024-2026 burden: LPG ~4x, diesel +83%, A-95 +40%. Driven by EU Association alignment and defense budget needs."
+        sources:
+          - { label: "Interfax — excise hike Jan-2026", url: "https://interfax.com/newsroom/top-stories/105595/" }
+          - { label: "Razumkov Centre — excise impact analysis", url: "https://razumkov.org.ua/en/comments/the-government-raises-excise-duty-on-motor-fuel-from-january-1-2026-what-will-the-consequences-for-consumers-in-ukraine-look-like" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1). Same EU-alignment excise schedule. PSO support exists for Ukrzaliznytsia (rail) and agriculture but is not a retail consumer subsidy."
+
+  UZB:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1 liberalized May-2020). Gasoline exchange-traded since May-2023; AI-91 deregulated, AI-95/98 at market prices. The AI-80 zero-excise window expired 31-Jan-2024 and the AI-80 retail price cap was lifted 10-Jul-2025."
+      reform:
+        label: "AI-80 sunset + WB DPO"
+        note: "Uzbekneftegaz halted AI-80 production Sep-2025; retail AI-80 sales were discontinued 1-Dec-2025 and replaced by an AI-92 expansion. The transition is backed by the World Bank's USD 800 m Advancing Global Integration DPO (Oct-2025), supporting energy-tariff cost recovery by end-2026 with targeted compensation for low-income households."
+        sources:
+          - { label: "Kun.uz — AI-80 excise benefit ended Jan-2024", url: "https://kun.uz/en/news/2024/01/03/excise-tax-benefit-on-ai-80-gasoline-ended" }
+          - { label: "Kun.uz — AI-92 price cut Aug-2025", url: "https://kun.uz/en/news/2025/08/11/uzbekneftegaz-announces-price-cut-for-ai-92-gasoline" }
+          - { label: "World Bank — Advancing Global Integration DPO", url: "https://www.worldbank.org/en/news/press-release/2025/10/16/first-advancing-global-integration-and-market-transition-uzbekistan-programmatic-development-policy-operation" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1 liberalized May-2020). Diesel sold at market prices via Uzbekneftegaz exchange channels."
+
+# Restrict scatter chart and KPI cards to this region's countries.
+scatter_focus_region: true
+
+# Commodity products to show in Tab 1 chart.
+# If empty, all available commodities are shown.
+commodity_products: []

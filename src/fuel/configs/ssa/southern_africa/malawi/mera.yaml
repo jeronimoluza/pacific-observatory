@@ -1,0 +1,41 @@
+source_key: mera_mw_monthly
+module: ssa.southern_africa.malawi.mera
+function: fetch_mera_mw
+url: https://mera.mw/category/energy-price-reviews/
+fallback_date: 2022-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+products:
+  "Petrol":
+    series_key: petrol
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Paraffin":
+    series_key: paraffin
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "LPG":
+    series_key: lpg
+    fuel_family: lpg
+    unit: kilogram
+    include_in_build: true
+    density_l_per_kg: 1.96
+    grade: standard
+  "Jet A-1":
+    series_key: jet_a1
+    fuel_family: jet_fuel
+    unit: liter
+    include_in_build: true
+    grade: standard

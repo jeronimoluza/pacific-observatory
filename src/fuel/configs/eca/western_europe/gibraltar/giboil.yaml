@@ -1,0 +1,34 @@
+source_key: gi_giboil_daily
+module: eca.western_europe.gibraltar.giboil
+function: fetch_gi_giboil
+url: https://giboil.com/
+fallback_date: 2024-06-01
+priority: 10
+cadence: daily
+carry_forward: false
+currency: GBP
+
+products:
+  "Regular Unleaded (UNL 95)":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 95
+    series_key: gasoline_95
+  "Premium Unleaded (UNL 98)":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 98
+    series_key: gasoline_98
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: diesel
+  # Ad Blue is captured by the fetcher but omitted here:
+  # the validator has no fuel_family for it (it's DEF, not a fuel).
+  # Rows still land in observations.csv and are dropped by build for lack of mapping.

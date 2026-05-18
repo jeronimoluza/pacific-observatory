@@ -1,0 +1,34 @@
+source_key: moci_lr_monthly
+module: ssa.west_africa.liberia.moci
+function: fetch_moci_lr
+url: https://www.moci.gov.lr/media/press-releases
+fallback_date: 2023-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+products:
+  "Gasoline (PMS)":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Fuel Oil (AGO)":
+    series_key: diesel_ago
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "HFO":
+    series_key: hfo
+    fuel_family: fuel_oil
+    unit: liter
+    include_in_build: true
+    grade: heavy
+  "Jet Fuel":
+    series_key: jet_fuel
+    fuel_family: jet_fuel
+    unit: liter
+    include_in_build: true
+    grade: standard

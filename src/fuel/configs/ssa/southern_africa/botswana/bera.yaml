@@ -1,0 +1,46 @@
+source_key: bera_bw_monthly
+module: ssa.southern_africa.botswana.bera
+function: fetch_bera_bw
+url: https://www.bera.co.bw/petroleum.php
+fallback_date: 2023-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# BERA publishes official fuel price adjustment PDFs and petroleum-price
+# gazette PDFs. Gazette schedules are location-specific; the fetcher uses
+# the Gaborone row and applies subsequent BERA press-release deltas.
+
+products:
+  "ULP 95":
+    series_key: gasoline_premium
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "ULP 93":
+    series_key: gasoline_regular_93
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 93
+  "Diesel 50ppm":
+    series_key: diesel_50ppm
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: 50ppm
+  "Diesel 500ppm":
+    series_key: diesel_500ppm
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: 500ppm
+  "Illuminating Paraffin":
+    series_key: illuminating_paraffin
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard

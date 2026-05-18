@@ -11,12 +11,20 @@ carry_forward: true
 # de Precios en Terminal" PDF — wholesale prices that authorized
 # distributors pay, set by executive decree. These are state-managed
 # terminal/ex-rack prices, NOT retail pump prices. Retail prices add
-# regulated margins on top. carry_forward=true: each PDF sets the
-# vigencia period explicitly (e.g. "12-Dic-2024 al 11-Ene-2025") and
-# the price holds until the next decree.
+# regulated margins on top. carry_forward=true at source level: each
+# PDF sets the vigencia period explicitly and the price holds until
+# the next decree.
+#
+# Per-product overrides reflect the 2024–2025 reform sequence:
+# - Super Premium 95: liberalized in 2018; pure market price → false
+# - Diesel 2 / Diesel Premium: subsidy eliminated 13-Sep-2025; market
+#   prices with a small residual (~$0.11/gal) → false
+# - Extra / Ecopaís remain under a price-band cap (Jun-2024) → true
+# - LPG (household), kerosene equivalents remain subsidised → true
 
 products:
   "GASOLINA EXTRA":
+    label: Gasoline Extra
     series_key: gasoline_regular_85
     fuel_family: gasoline
     unit: gallon
@@ -24,44 +32,53 @@ products:
     grade: regular
     octane_ron: 85
   "EXTRA CON ETANOL":
+    label: Gasoline Extra Ethanol
     series_key: gasoline_ecopais
     fuel_family: gasoline
     unit: gallon
     include_in_build: true
     grade: regular_ethanol
   "GASOLINA SUPER PREMIUM 95":
+    label: Gasoline Super Premium 95
     series_key: gasoline_premium_95
     fuel_family: gasoline
     unit: gallon
     include_in_build: true
     grade: premium
     octane_ron: 95
+    carry_forward: false  # Super liberalized 2018 — market priced
   "DIESEL 2":
+    label: Diesel 2
     series_key: diesel
     fuel_family: diesel
     unit: gallon
     include_in_build: true
     grade: standard
+    carry_forward: false  # subsidy eliminated 13-Sep-2025 — market priced
   "DIESEL PREMIUM":
+    label: Diesel Premium
     series_key: diesel_premium
     fuel_family: diesel
     unit: gallon
     include_in_build: false
     grade: premium
+    carry_forward: false  # subsidy eliminated 13-Sep-2025 — market priced
   "DIESEL 1":
+    label: Diesel 1
     series_key: diesel_1
     fuel_family: diesel
     unit: gallon
     include_in_build: false
     grade: light
   "FUEL OIL":
+    label: Fuel Oil
     series_key: fuel_oil
     fuel_family: fuel_oil
     unit: gallon
     include_in_build: false
     grade: standard
   "GLP DOMESTICO":
-    label: LPG (household)
+    label: LPG
     series_key: lpg_household
     fuel_family: lpg
     unit: kilogram
@@ -69,7 +86,7 @@ products:
     include_in_build: true
     grade: subsidized
   "GLP INDUSTRIAL":
-    label: LPG (industrial)
+    label: LPG
     series_key: lpg_industrial
     fuel_family: lpg
     unit: kilogram

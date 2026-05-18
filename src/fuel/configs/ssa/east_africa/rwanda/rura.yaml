@@ -1,0 +1,38 @@
+source_key: rura_rw_monthly
+module: ssa.east_africa.rwanda.rura
+function: fetch_rura_rw
+url: https://www.rura.rw/publications/tariffs
+enabled: false
+fallback_date: 2024-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# Disabled 2026-05-14: RURA hosts monthly fuel-pump-price PDFs in three
+# unlisted folders (/Documents/Tariffs/, /Announcements/, legacy
+# /fileadmin/publication/) — none are linked from any browsable listing
+# page except the current cycle. The /publications/tariffs scraper picks
+# up at most 2 observations (current + immediately prior via Wayback).
+# Re-enable after rewriting the fetcher to combine Wayback CDX domain
+# scan + URL-pattern probing for the three folders.
+
+products:
+  "Petrol":
+    series_key: gasoline_premium
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Kerosene":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard

@@ -1,0 +1,41 @@
+source_key: seypec_sc_monthly
+module: ssa.east_africa.seychelles.seypec
+function: fetch_seypec_sc
+url: https://www.seypec.com/fuel-prices
+fallback_date: 2020-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# SeyPEC publishes current retail prices for Gasoline, Gasoil, Kerosene
+# and LPG at /fuel-prices with a "Last modified DD/MM/YYYY" stamp. The
+# fetcher hits the live page plus Wayback CDX snapshots since 2020 for
+# historical depth (~7 snapshots between 2020 and 2024). Kerosene is
+# published per 5 litres and is converted to per-litre.
+
+products:
+  "Gasoline":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Kerosene":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "LPG":
+    series_key: lpg
+    fuel_family: lpg
+    unit: kilogram
+    include_in_build: true
+    grade: domestic
+    density_l_per_kg: 1.96

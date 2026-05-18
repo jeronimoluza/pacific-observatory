@@ -1,0 +1,38 @@
+source_key: nbs_ng_state_monthly
+module: ssa.west_africa.nigeria.nbs
+function: fetch_nbs_ng
+url: https://nigerianstat.gov.ng/elibrary
+fallback_date: 2021-02-01
+priority: 10
+cadence: monthly
+carry_forward: false
+
+# NBS publishes four parallel monthly Price Watch series in the e-library:
+#   • Premium Motor Spirit (PMS) Price Watch          → gasoline
+#   • Automotive Gas Oil (AGO) Price Watch            → diesel
+#   • National Household Kerosene (HHK) Price Watch   → kerosene
+# Each issue is a PDF whose appendix carries a 36-state + FCT table with
+# columns [State, YoY-baseline, prev-month, current-month, MoM%, YoY%].
+# Currency: NGN per litre. The current-month column is identified by
+# scanning the table header for "MoM" and taking the column just before.
+# LPG (Cooking Gas) is per-kg and not yet wired in here.
+
+products:
+  "PMS":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "AGO":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: false
+    grade: standard
+  "HHK":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: false
+    grade: standard

@@ -1,0 +1,28 @@
+source_key: iwacu_bi_historical
+module: ssa.east_africa.burundi.iwacu
+function: fetch_iwacu_bi
+url: https://iwacu-burundi.org/opendata/iod-bu-145-evolution-des-prix-des-carburants/
+fallback_date: 1980-01-01
+priority: 10
+cadence: irregular
+carry_forward: true
+
+products:
+  "essence":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "pétrole":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard

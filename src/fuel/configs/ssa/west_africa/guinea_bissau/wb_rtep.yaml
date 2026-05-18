@@ -1,0 +1,48 @@
+source_key: wb_rtep_gw_monthly
+module: ssa.west_africa.guinea_bissau.wb_rtep
+function: fetch_wb_rtep_gw
+url: https://microdata.worldbank.org/index.php/catalog/6134
+fallback_date: 2007-01-01
+priority: 20
+cadence: monthly
+carry_forward: false
+
+products:
+  "Fuel diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Fuel gas":
+    series_key: lpg
+    fuel_family: lpg
+    unit: kilogram
+    density_l_per_kg: 1.96
+    include_in_build: true
+    grade: standard
+  "Fuel kerosene":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Fuel petrol gasoline":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Fuel petrol gasoline 95 octane":
+    series_key: gasoline_premium_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "Fuel super petrol":
+    series_key: gasoline_super
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super

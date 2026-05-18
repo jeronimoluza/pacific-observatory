@@ -1,0 +1,36 @@
+source_key: csph_cm_monthly
+module: ssa.central_africa.cameroon.csph
+function: fetch_csph_cm
+url: https://www.csph.cm/
+fallback_date: 2024-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+products:
+  "Super":
+    series_key: gasoline_super
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: super
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Pétrole Lampant":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Gaz Butane":
+    series_key: lpg_butane
+    fuel_family: lpg
+    unit: cylinder
+    amount: 12.5
+    include_in_build: true
+    density_l_per_kg: 1.96
+    grade: domestic

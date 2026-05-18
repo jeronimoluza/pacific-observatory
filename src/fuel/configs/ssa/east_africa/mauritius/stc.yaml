@@ -1,0 +1,28 @@
+source_key: stc_mu_monthly
+module: ssa.east_africa.mauritius.stc
+function: fetch_stc_mu
+url: https://www.stcmu.com/ppm/retail-prices
+fallback_date: 2004-04-02
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# State Trading Corporation's Petroleum Pricing Committee publishes the
+# entire APM revision history on a single page (since Apr-2004; quarterly
+# until Oct-2008, monthly thereafter). One GET reconstructs the whole
+# series — no pagination, no JS.
+
+products:
+  "Mogas":
+    series_key: gasoline_regular_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 95
+  "Gas Oil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard

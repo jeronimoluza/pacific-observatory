@@ -18,6 +18,7 @@ carry_forward: false
 
 products:
   "Gasolina Superior":
+    label: Gasoline Superior
     series_key: gasoline_premium_95
     fuel_family: gasoline
     unit: gallon
@@ -25,6 +26,7 @@ products:
     grade: premium
     octane_ron: 95
   "Gasolina Regular":
+    label: Gasoline Regular
     series_key: gasoline_regular_91
     fuel_family: gasoline
     unit: gallon
@@ -32,6 +34,7 @@ products:
     grade: regular
     octane_ron: 91
   "Combustible Diesel":
+    label: Diesel
     series_key: diesel
     fuel_family: diesel
     unit: gallon

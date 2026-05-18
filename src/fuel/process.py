@@ -171,7 +171,12 @@ def _load_source_frame(entry: dict, data_dir: Path = DATA_DIR) -> pd.DataFrame:
     df["source_key"] = entry["source_key"]
     df["source_priority"] = entry["priority"]
     df["cadence"] = entry["cadence"]
-    df["carry_forward"] = entry["carry_forward"]
+    source_default = entry["carry_forward"]
+    df["carry_forward"] = df["product_spec"].map(
+        lambda spec: source_default
+        if spec.carry_forward is None
+        else spec.carry_forward
+    )
     return df
 
 

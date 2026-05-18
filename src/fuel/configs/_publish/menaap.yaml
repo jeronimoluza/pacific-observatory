@@ -14,20 +14,20 @@ regime_overrides:
     LPG: {regime: Market, subsidy: false}
     Kerosene: {regime: Market, subsidy: false}
   IRQ:
-    Gasoline: {regime: Price Control, subsidy: false}
-    Diesel: {regime: Price Control, subsidy: false}
-    LPG: {regime: Price Control, subsidy: false}
-    Kerosene: {regime: Price Control, subsidy: false}
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
   KWT:
-    Gasoline: {regime: Price Control, subsidy: false}
-    Diesel: {regime: Price Control, subsidy: false}
-    LPG: {regime: Price Control, subsidy: false}
-    Kerosene: {regime: Price Control, subsidy: false}
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
   SYR:
-    Gasoline: {regime: Price Control, subsidy: false}
-    Diesel: {regime: Price Control, subsidy: false}
-    LPG: {regime: Price Control, subsidy: false}
-    Kerosene: {regime: Price Control, subsidy: false}
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
   PSE:
     Gasoline: {regime: Price Control, subsidy: false}
     Diesel: {regime: Price Control, subsidy: false}
@@ -38,6 +38,51 @@ regime_overrides:
     Diesel: {regime: Price Control, subsidy: false}
     LPG: {regime: Price Control, subsidy: false}
     Kerosene: {regime: Price Control, subsidy: false}
+  LBY:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
+  SAU:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: false}
+  BHR:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Market, subsidy: false}
+  OMN:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Market, subsidy: false}
+  QAT:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+  ARE:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+  ISR:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+  JOR:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
+  LBN:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
 
 # Per-cell source attribution and reform notes for the regime table.
 # Keys: ISO3 -> product (Gasoline | Diesel | LPG | Kerosene) -> {classification_sources, reform}.
@@ -60,6 +105,199 @@ regime_notes:
     Kerosene:
       classification_sources:
         - "Post-2021 deregulation: retail prices set by importers."
+
+  BHR:
+    Gasoline:
+      classification_sources:
+        - "Bahrain administered retail since 2016 reform; BAPCO/Tatweer sells under government-set pricing schedule."
+        - { label: "BAPCO Energies — fuel prices",
+            url: "https://bapcoenergies.com/" }
+      reform:
+        label: "Jan-2016 +60%"
+        note: "Bahrain raised Mumtaz (95 RON) gasoline ~60% and Jayyid (91 RON) ~56% in January 2016 as part of a GCC-wide subsidy-reduction wave; prices held since."
+        sources:
+          - { label: "Reuters — Bahrain fuel hike 2016",
+              url: "https://www.reuters.com/" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail also government-administered; raised in 2016 reform."
+    LPG:
+      classification_sources:
+        - "Household LPG (10kg cylinder) subsidised; raised but still below cost."
+    Kerosene:
+      classification_sources:
+        - "No domestic retail kerosene market — treated as Market."
+
+  DZA:
+    Gasoline:
+      classification_sources:
+        - "Algeria operates a monthly pricing mechanism, but retail prices remain well below international supply cost."
+        - "IMF FFS 2025: large implicit subsidy."
+      reform:
+        label: "Monthly mechanism"
+        note: "A monthly pricing mechanism was introduced, but prices are still set well below cost; no meaningful phase-out yet."
+        sources:
+          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+    Diesel:
+      classification_sources:
+        - "Sonatrach retail diesel also below import-parity; structural implicit subsidy."
+    LPG:
+      classification_sources:
+        - "LPG retail (Sirghaz/butane) heavily subsidised."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail also under Sonatrach administered pricing."
+
+  EGY:
+    Gasoline:
+      classification_sources:
+        - "IMF FFS 2025: small positive explicit subsidy for gasoline despite the indexation mechanism."
+      reform:
+        label: "Indexation since ~2019"
+        note: "Egypt removed most subsidies in the late 2010s and introduced a fuel price indexation mechanism that tracks global prices. Some small explicit subsidies remain in IMF 2025."
+        sources:
+          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+    Diesel:
+      classification_sources:
+        - "IMF FFS 2025: small positive explicit subsidy."
+      reform:
+        label: "Indexation since ~2019"
+        note: "Diesel is part of the same indexation mechanism introduced in the late 2010s."
+        sources:
+          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+    LPG:
+      classification_sources:
+        - "Household 12.5kg LPG cylinder remains heavily subsidised despite 2019-2024 partial price hikes."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail also under EGPC administered pricing."
+
+  IRQ:
+    Gasoline:
+      classification_sources:
+        - "State-set retail via Oil Products Distribution Company (OPDC); regular and improved (premium) priced uniformly nationwide."
+        - { label: "Ministry of Oil — Iraq",
+            url: "https://oil.gov.iq/" }
+      reform:
+        label: "Premium gasoline 2022"
+        note: "Iraq raised the premium-gasoline price by ~50% in 2022 while keeping regular gasoline at IQD 450/L; further targeted hikes resisted on social grounds."
+        sources:
+          - { label: "Reuters — Iraq fuel prices",
+              url: "https://www.reuters.com/" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail also state-administered at heavily subsidised rate."
+    LPG:
+      classification_sources:
+        - "Household LPG cylinder distributed at administered price; subsidised."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail under OPDC subsidised pricing."
+
+  ISR:
+    Gasoline:
+      classification_sources:
+        - "Ministry of Energy publishes maximum 95 RON retail price monthly (formula tracks Med spot + excise + VAT)."
+        - { label: "Ministry of Energy — Israel",
+            url: "https://www.gov.il/en/departments/ministry_of_energy" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail not capped; set by station competition. Government publishes reference benchmark only."
+    LPG:
+      classification_sources:
+        - "LPG retail liberalised since 2013 anti-trust reform; consumer choice between suppliers."
+    Kerosene:
+      classification_sources:
+        - "Limited domestic kerosene retail market."
+
+  JOR:
+    Gasoline:
+      classification_sources:
+        - "Energy & Minerals Regulatory Commission (EMRC) monthly committee sets retail since 2008."
+        - { label: "EMRC — Jordan",
+            url: "https://www.emrc.gov.jo/" }
+      reform:
+        label: "Cross-subsidy targeted 2023"
+        note: "Government introduced targeted cash transfers for LPG and kerosene to vulnerable households in 2023, replacing blanket subsidies on those fuels."
+        sources:
+          - { label: "Jordan Times — fuel pricing",
+              url: "https://www.jordantimes.com/" }
+    Diesel:
+      classification_sources:
+        - "Same EMRC monthly committee mechanism applies to diesel."
+    LPG:
+      classification_sources:
+        - "Household LPG cylinder retains targeted subsidy via the National Aid Fund."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail also under EMRC with seasonal targeted relief for winter heating."
+
+  KWT:
+    Gasoline:
+      classification_sources:
+        - "Kuwait National Petroleum Company (KNPC) sets administered retail; raised in Sep-2016 reform and adjusted quarterly thereafter."
+        - { label: "KNPC — Kuwait",
+            url: "https://www.knpc.com/" }
+      reform:
+        label: "Sep-2016 +40-80%"
+        note: "Kuwait raised Premium (95) ~80% and Ultra (98) ~40% in September 2016 — first major reform since 1998. Quarterly review mechanism stalled in practice; retail effectively frozen since 2018."
+        sources:
+          - { label: "Reuters — Kuwait fuel reform",
+              url: "https://www.reuters.com/" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail also administered; raised in 2015-2016 reforms."
+    LPG:
+      classification_sources:
+        - "Household LPG cylinder distributed at administered price; heavily subsidised."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail also under KNPC administered pricing."
+
+  LBN:
+    Gasoline:
+      classification_sources:
+        - "Ministry of Energy publishes a weekly maximum retail price for 95/98 RON, but importers/stations transact in US dollars at near-import-parity since the 2021 subsidy removal."
+        - { label: "Lebanon Ministry of Energy and Water",
+            url: "https://www.energyandwater.gov.lb/" }
+      reform:
+        label: "Subsidy removed 2021-22"
+        note: "Lebanon's gasoline/diesel subsidy was unwound through 2021-22 amid the FX crisis; retail transacted in USD or LBP-equivalent at near-international parity since 2022."
+        sources:
+          - { label: "Reuters — Lebanon fuel subsidy",
+              url: "https://www.reuters.com/" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail also liberalised after the 2021-22 subsidy removal; near-parity pricing in USD."
+    LPG:
+      classification_sources:
+        - "Household LPG cylinder retains a partial cap via the Ministry's weekly schedule."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail follows weekly Ministry schedule but trades in USD."
+
+  LBY:
+    Gasoline:
+      classification_sources:
+        - "Brega and Sirte Oil administered retail at LYD 0.150/L gasoline — one of the most heavily subsidised fuel prices globally."
+        - { label: "National Oil Corporation — Libya",
+            url: "https://noc.ly/" }
+      reform:
+        label: "IMF flags subsidy fraud"
+        note: "Smuggling losses estimated at >USD 5 bn/year; multiple GNU reform attempts (2018, 2022, 2024) failed politically. Targeted card-based rationing piloted 2024."
+        sources:
+          - { label: "IMF Country Report — Libya",
+              url: "https://www.imf.org/en/Countries/LBY" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail also heavily subsidised; Brega administered pricing."
+    LPG:
+      classification_sources:
+        - "Household LPG distributed at administered price; heavily subsidised."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail also under Brega administered pricing."
+
   MAR:
     Gasoline:
       classification_sources:
@@ -86,10 +324,38 @@ regime_notes:
         note: "LPG remains subsidised but retail prices were raised in 2024 as part of a gradual phase-out."
         sources:
           - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail also liberalised since 2015 reform."
+
+  OMN:
+    Gasoline:
+      classification_sources:
+        - "Oman Ministry of Energy and Minerals (MEM) sets monthly maximum retail for M91 and M95 since Jan-2017 (dynamic-pricing mechanism)."
+        - { label: "OOMCO — fuel prices",
+            url: "https://www.oomco.com/en/fuel-prices" }
+      reform:
+        label: "Dynamic pricing 2017"
+        note: "Oman introduced monthly dynamic pricing in January 2017; M91/M95 caps adjusted to global oil moves with subsidised band for nationals via Hifaz card (suspended 2020)."
+        sources:
+          - { label: "Times of Oman — fuel pricing",
+              url: "https://timesofoman.com/" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail also under MEM monthly dynamic pricing."
+    LPG:
+      classification_sources:
+        - "Household LPG retail subsidised via Oman Oil Marketing Company / Shell Oman."
+    Kerosene:
+      classification_sources:
+        - "Limited domestic kerosene retail market."
+
   PAK:
     Gasoline:
       classification_sources:
         - "IMF FFS 2025 reference year is 2024 (subsidy data predates the reform)."
+        - { label: "OGRA — Oil and Gas Regulatory Authority Pakistan",
+            url: "https://www.ogra.org.pk/" }
       reform:
         label: "Reformed 2024"
         note: "Pakistan removed gasoline subsidies in 2024. The IMF 2025 release still reflects 2024 data and may overstate current subsidy levels."
@@ -103,33 +369,101 @@ regime_notes:
         note: "Diesel subsidies were also reduced as part of the 2024 reform programme."
         sources:
           - { label: "IMF Country Report — Pakistan", url: "https://www.imf.org/en/Countries/PAK" }
-  EGY:
+    LPG:
+      classification_sources:
+        - "OGRA sets monthly LPG producer price; retail variable by marketing company."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail under OGRA monthly pricing."
+
+  PSE:
     Gasoline:
       classification_sources:
-        - "IMF FFS 2025: small positive explicit subsidy for gasoline despite the indexation mechanism."
+        - "Palestinian Petroleum Authority retail prices indexed to Israeli prices under the Paris Protocol (1994)."
+        - { label: "Palestinian Petroleum Authority",
+            url: "https://www.ppa.ps/" }
       reform:
-        label: "Indexation since ~2019"
-        note: "Egypt removed most subsidies in the late 2010s and introduced a fuel price indexation mechanism that tracks global prices. Some small explicit subsidies remain in IMF 2025."
+        label: "Israeli indexation"
+        note: "Retail prices in West Bank and Gaza track Israeli administered/wholesale prices under the Paris Protocol; no independent Palestinian price policy."
         sources:
-          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+          - { label: "Paris Protocol — Annex IV",
+              url: "https://www.un.org/" }
     Diesel:
       classification_sources:
-        - "IMF FFS 2025: small positive explicit subsidy."
-      reform:
-        label: "Indexation since ~2019"
-        note: "Diesel is part of the same indexation mechanism introduced in the late 2010s."
-        sources:
-          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
-  DZA:
+        - "Diesel retail also indexed to Israeli pricing under the Paris Protocol."
+    LPG:
+      classification_sources:
+        - "LPG retail also indexed to Israeli pricing."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail also indexed to Israeli pricing."
+
+  QAT:
     Gasoline:
       classification_sources:
-        - "Algeria operates a monthly pricing mechanism, but retail prices remain well below international supply cost."
-        - "IMF FFS 2025: large implicit subsidy."
+        - "Qatar Energy publishes monthly retail prices for Premium (95) and Super (97) — formula-based but rarely changed."
+        - { label: "Qatar Energy — fuel prices",
+            url: "https://www.qatarenergy.qa/" }
       reform:
-        label: "Monthly mechanism"
-        note: "A monthly pricing mechanism was introduced, but prices are still set well below cost; no meaningful phase-out yet."
+        label: "Monthly review 2016"
+        note: "Qatar moved to monthly review in early 2016 alongside other GCC reforms; retail prices have remained near cost-recovery since 2018."
         sources:
-          - { label: "IMF Fossil Fuel Subsidies Database (2025)", url: "https://www.imf.org/en/Topics/climate-change/energy-subsidies" }
+          - { label: "Gulf Times — Qatar fuel prices",
+              url: "https://www.gulf-times.com/" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail also published monthly by Qatar Energy."
+    LPG:
+      classification_sources:
+        - "LPG retail (Shafaf cylinder) priced by Woqod; near cost-recovery."
+    Kerosene:
+      classification_sources:
+        - "Limited domestic retail kerosene market."
+
+  SAU:
+    Gasoline:
+      classification_sources:
+        - "Aramco publishes administered retail (91 and 95 RON) under the Energy Price Reform Programme started in 2016."
+        - { label: "Saudi Aramco — fuel prices",
+            url: "https://www.aramco.com/en/" }
+      reform:
+        label: "Capped at SAR 2.33/L"
+        note: "Government capped retail at SAR 2.33/L (95) from Jul-2021 even as global prices rose, with PIF/Aramco absorbing the differential via the Citizens Account programme."
+        sources:
+          - { label: "Reuters — Saudi gasoline cap",
+              url: "https://www.reuters.com/" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail administered by Aramco; subsidised relative to international parity."
+    LPG:
+      classification_sources:
+        - "Household LPG distributed at administered subsidised price."
+    Kerosene:
+      classification_sources:
+        - "Limited domestic kerosene retail market."
+
+  SYR:
+    Gasoline:
+      classification_sources:
+        - "MahroukatSY (state distributor) administers heavily-rationed retail; smart-card based allocation since 2014."
+        - { label: "MahroukatSY",
+            url: "https://www.mahroukat.sy/" }
+      reform:
+        label: "Frequent hikes 2024-25"
+        note: "Post-Assad transitional administration introduced multiple price adjustments through 2024-25 amid currency volatility; black-market premium remains large."
+        sources:
+          - { label: "Reuters — Syria fuel pricing",
+              url: "https://www.reuters.com/" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail also rationed via smart card; heavily subsidised tier + market tier."
+    LPG:
+      classification_sources:
+        - "Household LPG distributed via smart-card rationing at subsidised price."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail also rationed via smart card for winter heating."
+
   TUN:
     Gasoline:
       classification_sources:
@@ -147,6 +481,56 @@ regime_notes:
         note: "Diesel subsidies are also being gradually reduced."
         sources:
           - { label: "IMF Country Report — Tunisia", url: "https://www.imf.org/en/Countries/TUN" }
+    LPG:
+      classification_sources:
+        - "Household LPG cylinder retains targeted subsidy."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail under STIR administered pricing."
+
+  ARE:
+    Gasoline:
+      classification_sources:
+        - "Fuel Price Committee under the Ministry of Energy and Infrastructure sets monthly retail for Special (95) and Super (98) since Aug-2015 reform."
+        - { label: "ADNOC Distribution — fuel prices",
+            url: "https://www.adnocdistribution.ae/en/fuel-prices/" }
+      reform:
+        label: "Liberalised Aug-2015"
+        note: "UAE liberalised gasoline and diesel retail in August 2015 — monthly Fuel Price Committee tracks Platts + margin; first GCC member to fully deregulate."
+        sources:
+          - { label: "Reuters — UAE fuel reform 2015",
+              url: "https://www.reuters.com/" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail also under monthly Fuel Price Committee formula since Aug-2015."
+    LPG:
+      classification_sources:
+        - "LPG retail (Emarat / ENOC cylinders) priced near cost-recovery."
+    Kerosene:
+      classification_sources:
+        - "Limited domestic kerosene retail market."
+
+  YEM:
+    Gasoline:
+      classification_sources:
+        - "Divided market: Aden government uses formal Yemen Petroleum Company pricing; Houthi-controlled north administered separately by their YPC branch."
+        - { label: "Yemen Petroleum Company",
+            url: "https://www.ypcye.com/" }
+      reform:
+        label: "Divided market 2015-"
+        note: "Since 2015 civil-war split, separate pricing regimes operate in Aden government and Houthi-controlled areas; significant FX-driven retail divergence."
+        sources:
+          - { label: "OCHA — Yemen Humanitarian Update",
+              url: "https://www.unocha.org/yemen" }
+    Diesel:
+      classification_sources:
+        - "Diesel retail also under divided YPC administered pricing."
+    LPG:
+      classification_sources:
+        - "Household LPG distributed at administered prices in both administrative areas; subject to import shortages."
+    Kerosene:
+      classification_sources:
+        - "Kerosene retail under YPC administered pricing."
 
 # Restrict scatter chart and KPI cards to this region's countries.
 scatter_focus_region: true

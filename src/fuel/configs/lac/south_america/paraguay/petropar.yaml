@@ -9,6 +9,7 @@ carry_forward: true
 
 products:
   "Nafta Kape 88":
+    label: Gasoline Kape 88
     series_key: gasoline_88
     fuel_family: gasoline
     unit: liter
@@ -16,6 +17,7 @@ products:
     grade: regular
     octane_ron: 88
   "Nafta Oikoite 93":
+    label: Gasoline Oikoite 93
     series_key: gasoline_93
     fuel_family: gasoline
     unit: liter
@@ -23,6 +25,7 @@ products:
     grade: super
     octane_ron: 93
   "Nafta Aratiri 97":
+    label: Gasoline Aratiri 97
     series_key: gasoline_97
     fuel_family: gasoline
     unit: liter
@@ -30,18 +33,21 @@ products:
     grade: premium
     octane_ron: 97
   "Diésel Porã":
+    label: Diesel Porã
     series_key: diesel
     fuel_family: diesel
     unit: liter
     include_in_build: true
     grade: standard
   "Diésel Mbarete":
+    label: Diesel Mbarete
     series_key: diesel_low_sulfur
     fuel_family: diesel
     unit: liter
     include_in_build: false
     grade: premium
   "Ñande Gas por Kilogramo":
+    label: LPG
     series_key: lpg_per_kg
     fuel_family: lpg
     unit: kilogram
@@ -49,6 +55,7 @@ products:
     include_in_build: true
     grade: residential
   "Ñande Gas por Litro":
+    label: LPG
     series_key: lpg_per_l
     fuel_family: lpg
     unit: liter

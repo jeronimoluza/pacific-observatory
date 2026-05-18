@@ -1,0 +1,41 @@
+source_key: irdp_ao_quarterly
+module: ssa.southern_africa.angola.irdp
+function: fetch_irdp_ao
+url: https://www.irdp.gov.ao/
+fallback_date: 2022-01-01
+priority: 10
+cadence: quarterly
+carry_forward: true
+
+products:
+  "Gasolina":
+    series_key: gasolina
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasóleo":
+    series_key: gasoleo
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Petróleo Iluminante":
+    series_key: petroleo_iluminante
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "GPL":
+    series_key: gpl
+    fuel_family: lpg
+    unit: kilogram
+    include_in_build: true
+    density_l_per_kg: 1.96
+    grade: standard
+  "Jet A-1":
+    series_key: jet_a1
+    fuel_family: jet_fuel
+    unit: liter
+    include_in_build: true
+    grade: standard

@@ -1,0 +1,276 @@
+# Publish configuration for LAC fuel policy dashboard.
+
+region: lac
+region_label: "Latin America & Caribbean"
+dashboard_history_years: 3
+
+# Regime overrides for countries where the WB 2024 pricing-regime CSV no
+# longer matches reality, or where per-product nuance is lost in the
+# aggregate code.
+# Keys are ISO3 codes; values are per-product {regime, subsidy} dicts.
+# "Subsidised" badge in the scatter view is driven by IMF implicit subsidy
+# data, not the subsidy field here.
+regime_overrides:
+  # Bolivia — Decreto Supremo 5503 (17-Dec-2025) eliminated fuel subsidies.
+  # Dashboard still reflects 2024 reference year (Price Control + Subsidies).
+  BOL:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # Colombia — FEPC closed the gasoline price differential in 2023, but
+  # diesel (ACPM) remains heavily subsidised. WB CSV bundles both.
+  COL:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Dominican Republic — WB CSV codes the freeze as code 2 which our parser
+  # does NOT treat as a subsidy, but MICM actively transfers RD$200M–500M
+  # per week to keep retail prices stable.
+  DOM:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # Ecuador — partial reforms: Super gasoline liberalised 2018; Extra/Ecopaís
+  # moved to a price-band cap in June 2024; diesel subsidy eliminated
+  # Sep-2025 (residual ~$0.11/gal). LPG and kerosene remain subsidised.
+  # Aggregate "Gasoline" cell reflects the dominant Extra/Ecopaís product.
+  ECU:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Market, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # Nicaragua — gasoline/diesel retail prices have been frozen by the
+  # government since May 2025 ("congelamiento") and GLP is regulated and
+  # subsidised by INE. WB CSV classifies as Market (mech=3).
+  NIC:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+# Per-cell source attribution and reform notes for the regime table.
+# Keys: ISO3 -> product (Gasoline | Diesel | LPG | Kerosene) -> {classification_sources, reform}.
+# classification_sources: list of strings or {label, url} entries explaining where the
+#   regime classification comes from. Shown in the popover when the primary pill is clicked.
+# reform: optional. If present, a secondary pill is rendered next to the primary one.
+regime_notes:
+  ARG:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=3, hybrid / pseudo-regulated)."
+      reform:
+        label: "Deregulated 2024"
+        note: "DNU 70/2023 and the 2024 RIGI law prohibit executive intervention in fuel commercialisation prices. YPF and private retailers now adjust prices freely; the April 2026 45-day YPF freeze in response to the Iran conflict is the exception."
+        sources:
+          - { label: "Global Legal Insights — Argentina Energy Laws 2025", url: "https://www.globallegalinsights.com/practice-areas/energy-laws-and-regulations/argentina/" }
+          - { label: "Bloomberg — YPF freeze (Apr 2026)", url: "https://www.bloomberg.com/news/articles/2026-04-02/argentina-to-maintain-gas-prices-in-shift-for-free-market-milei" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=3)."
+      reform:
+        label: "Deregulated 2024"
+        note: "Diesel commercialisation also covered by DNU 70/2023 and RIGI deregulation."
+        sources:
+          - { label: "Global Legal Insights — Argentina Energy Laws 2025", url: "https://www.globallegalinsights.com/practice-areas/energy-laws-and-regulations/argentina/" }
+
+  BOL:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, subsidy_type=2 price freeze)."
+        - "ANH publishes monthly 'Precios Internacionales' for foreign-plated vehicles, aviation and industry; subsidised domestic prices were frozen since 2005."
+      reform:
+        label: "Subsidy eliminated Dec-2025"
+        note: "Decreto Supremo 5503 (17-Dec-2025) ended fuel subsidies. Gasoline rose ~86% (~$1/L), diesel ~160% (~$1.40/L). Import restrictions lifted 31-Dec-2025. Transition still underway as of early 2026."
+        sources:
+          - { label: "Bloomberg — Bolivia Declares Economic Emergency", url: "https://www.bloomberg.com/news/articles/2025-12-18/bolivia-declares-economic-emergency-scraps-fuel-subsidies" }
+          - { label: "S&P Global — subsidy elimination", url: "https://www.spglobal.com/energy/en/news-research/latest-news/refined-products/121925-bolivias-fuel-subsidy-elimination-sparks-major-protests" }
+          - { label: "MercoPress — import restrictions lifted", url: "https://en.mercopress.com/2025/12/31/bolivia-lifts-all-fuel-import-restrictions" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, subsidy_type=2)."
+      reform:
+        label: "Subsidy eliminated Dec-2025"
+        note: "Same Decreto Supremo 5503 (17-Dec-2025) ended diesel subsidy; price rose ~160%."
+        sources:
+          - { label: "Bloomberg — Bolivia Declares Economic Emergency", url: "https://www.bloomberg.com/news/articles/2025-12-18/bolivia-declares-economic-emergency-scraps-fuel-subsidies" }
+
+  BRA:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=3, hybrid intervention via Petrobras)."
+        - "ANP publishes weekly observed retail averages from station surveys (not a state-set price)."
+      reform:
+        label: "PPI abandoned May-2023"
+        note: "Petrobras dropped the import-parity price (PPI) formula in May 2023 and adopted an 'Alternative Customer Cost' policy. Since June 2025 gasoline has been priced ~R$0.28/L above import parity."
+        sources:
+          - { label: "Click Petróleo e Gás — end of PPI", url: "https://en.clickpetroleoegas.com.br/fim-do-ppi-entenda-de-vez-como-a-petrobras-calcula-o-preco-da-gasolina-com-a-nova-formula-mhbb01/" }
+          - { label: "EPE — Fuel Price Composition Brazil May 2025", url: "https://www.epe.gov.br/sites-en/publicacoes-dados-abertos/publicacoes/PublicacoesArquivos/publicacao-251/topico-195/Understanding%20Fuel%20Price%20Composition%20in%20Brazil_May%202025.pdf" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=3, subsidy_type=6)."
+      reform:
+        label: "Diesel below parity"
+        note: "Under the new Petrobras pricing policy, diesel has been kept ~R$0.16/L below import parity to shield freight and transport costs."
+        sources:
+          - { label: "Click Petróleo e Gás — Petrobras pricing policy", url: "https://en.clickpetroleoegas.com.br/fim-do-ppi-entenda-de-vez-como-a-petrobras-calcula-o-preco-da-gasolina-com-a-nova-formula-mhbb01/" }
+
+  CHL:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, subsidy_type=4 MEPCO stabilization fund)."
+      reform:
+        label: "MEPCO tightened Mar-2026"
+        note: "The MEPCO margin was restricted in March 2026, allowing international price variation to pass through to retail more quickly. Gross fiscal cost of MEPCO in Q1-2025 was ~US$21M; weekly stabilization had reached ~US$140M before the adjustment."
+        sources:
+          - { label: "Rio Times — Kast ends MEPCO subsidy", url: "https://www.riotimesonline.com/chile-fuel-price-hike-54-percent-mepco-kast/" }
+          - { label: "Enerdata — Chile removes brakes on fuel prices", url: "https://www.enerdata.net/publications/daily-energy-news/chile-removes-brakes-fuel-prices-and-expects-historic-hikes.html" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, MEPCO)."
+      reform:
+        label: "MEPCO tightened Mar-2026"
+        note: "Diesel is also covered by the MEPCO mechanism whose margin was tightened in March 2026."
+        sources:
+          - { label: "Enerdata — Chile removes brakes on fuel prices", url: "https://www.enerdata.net/publications/daily-energy-news/chile-removes-brakes-fuel-prices-and-expects-historic-hikes.html" }
+
+  COL:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, subsidy_type=4 FEPC stabilization fund). Override: gasoline differential was closed in 2023; remaining FEPC deficit is for diesel."
+      reform:
+        label: "Gasoline FEPC closed 2023"
+        note: "The Fuel Price Stabilization Fund (FEPC) gasoline differential was closed in 2023. Accumulated FEPC deficit is ~COP$72.8T (~US$18.2B), mostly diesel. Jan-2026 decree reduced gasoline by COP$500/gal."
+        sources:
+          - { label: "Finance Colombia — FEPC and future of subsidies", url: "https://www.financecolombia.com/gasoline-diesel-prices-in-colombia-looking-at-the-fepc-and-the-future-of-subsidies/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, subsidy_type=4). Override: diesel (ACPM) remains heavily subsidised via FEPC."
+      reform:
+        label: "Diesel subsidy continues"
+        note: "Diesel/ACPM is the main driver of the FEPC deficit. SEI (2024) proposed a phase-out, and 2024 saw heavy-duty transport protests against subsidy restructuring."
+        sources:
+          - { label: "SEI — Colombia diesel subsidy transition", url: "https://www.sei.org/wp-content/uploads/2024/07/colombia-diesel-subsidy-transition.pdf" }
+
+  DOM:
+    Gasoline:
+      classification_sources:
+        - "MICM sets prices weekly based on international parity + exchange rate; weekly transfers (RD$200M–500M) absorb part of the cost so retail prices stay stable."
+        - { label: "Dominican Today — weekly RD$210M fuel subsidy (Aug 2025)", url: "https://dominicantoday.com/dr/economy/2025/08/01/dominican-government-pours-rd210m-into-weekly-fuel-subsidy/" }
+    Diesel:
+      classification_sources:
+        - "Weekly MICM subsidy reduces diesel price by RD$15–24/gallon (regular and optimal)."
+        - { label: "Dominican Today — weekly RD$210M fuel subsidy (Aug 2025)", url: "https://dominicantoday.com/dr/economy/2025/08/01/dominican-government-pours-rd210m-into-weekly-fuel-subsidy/" }
+    LPG:
+      classification_sources:
+        - "Weekly MICM subsidy ~RD$10–30/gallon on LPG."
+        - { label: "DR Listings — fuel subsidy stabilises prices", url: "https://www.drlistings.com/news/dominican-republic-holds-key-fuel-prices-steady-with-926-million-pesos-subsidy/" }
+
+  ECU:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset codes mech as '1 (Super gasoline)' — only Super is deregulated. Extra/Ecopaís (the dominant grade) is under a regulated price-band cap since June 2024."
+      reform:
+        label: "Price band Jun-2024"
+        note: "Extra/Ecopaís gasoline subsidy ended in June 2024 and replaced by a price-band system that caps monthly variation at 5%, tied to international markets. The State absorbs the gap when international prices rise faster."
+        sources:
+          - { label: "Cuenca Dispatch — gasoline subsidy phase-out", url: "https://thecuencadispatch.com/fuel-savings-meet-new-pressure-as-ecuador-phases-out-gasoline-subsidy/" }
+    Diesel:
+      classification_sources:
+        - "Diesel subsidy was eliminated by decree on 13-Sep-2025; price rose from $1.80 to $2.80/gallon."
+        - { label: "Peoples Dispatch — Noboa eliminates diesel subsidy", url: "https://peoplesdispatch.org/2025/09/16/noboa-eliminates-the-diesel-subsidy-protests-announced-in-ecuador/" }
+      reform:
+        label: "Subsidy eliminated Sep-2025"
+        note: "After a subsidy in place since 1974, diesel was liberalised on 13-Sep-2025. State spending on the diesel subsidy fell from $957M to $560M in 2025. A small residual subsidy (~$0.11/gallon) for automotive diesel returned in late 2025."
+        sources:
+          - { label: "Argus — Ecuador fuel subsidy plan", url: "https://www.argusmedia.com/en/news-and-insights/latest-market-news/2575568-ecuador-fuel-subsidy-plan-draws-strike-threat" }
+    LPG:
+      classification_sources:
+        - "LPG remains heavily subsidised at the household level. Not affected by the 2024–2025 gasoline / diesel reforms."
+
+  NIC:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 codes Nicaragua as mech=3 (hybrid) on the grounds that gasoline/diesel are not state-set. Override reflects the May-2025 government freeze (congelamiento) which de facto caps retail."
+        - { label: "Artículo 66 — congelamiento de precios 2025", url: "https://www.articulo66.com/2025/05/03/precios-gasolina-combustible-nicaragua-robo-consumidores-congelamiento-precios/" }
+      reform:
+        label: "Freeze since May-2025"
+        note: "Since May 2025 the government has frozen retail gasoline/diesel prices despite falling international crude prices. The freeze has cost consumers over US$100M according to Confidencial."
+        sources:
+          - { label: "Confidencial — subsidio bloquea baja precios", url: "https://confidencial.digital/economia/subsidio-de-combustibles-bloquea-baja-en-los-precios-a-consumidores/" }
+    Diesel:
+      classification_sources:
+        - "Frozen at the May-2025 level alongside gasoline."
+    LPG:
+      classification_sources:
+        - "GLP (LPG) is the only product formally regulated by INE; the government absorbs the difference between international and applied prices as a subsidy."
+        - { label: "INE Nicaragua — comunicado GLP", url: "https://www.ine.gob.ni/wp-content/uploads/2022/03/Comunicado-GLP.pdf" }
+
+  PER:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, subsidy_type=4,6 — FEPC stabilization fund + targeted subsidies)."
+      reform:
+        label: "FEPC weakened 2025"
+        note: "Petroperú (May 2025), Repsol (Jun 2025) and Pluspetrol (Sep 2025) withdrew from the FEPC — 65%+ of the local fuel market. The fund is now sustained only by international fuel importers. Total FEPC cost exceeds S/ 18 billion since inception."
+        sources:
+          - { label: "El Comercio — FEPC se desintegra", url: "https://elcomercio.pe/economia/peru/el-fondo-de-estabilizacion-de-precios-de-los-combustibles-se-desintegra-las-razones-y-si-es-que-impactara-en-los-precios-noticia/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, FEPC)."
+      reform:
+        label: "FEPC weakened 2025"
+        note: "Same FEPC withdrawal context — diesel is the product most exposed to international price volatility under the weakened fund."
+        sources:
+          - { label: "El Comercio — FEPC se desintegra", url: "https://elcomercio.pe/economia/peru/el-fondo-de-estabilizacion-de-precios-de-los-combustibles-se-desintegra-las-razones-y-si-es-que-impactara-en-los-precios-noticia/" }
+
+  URY:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Executive Power sets monthly prices based on URSEA's PPI."
+      reform:
+        label: "Stabilization factor 2024"
+        note: "From 2024, the pricing formula shifted from monthly PPI to a two-month average plus a 'factor de estabilización' surcharge of ~UYU$1.5/L on gasoline and gasoil. Consumers paid US$88M above import parity between March and December 2025."
+        sources:
+          - { label: "El Observador — sobreprecio US$88M 2025", url: "https://www.elobservador.com.uy/economia-y-empresas/combustibles-los-uruguayos-pagaron-un-sobreprecio-us-88-millones-marzo-y-diciembre-2025-n6031031" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Diesel (gasoil) also priced via Executive decree on URSEA PPI."
+      reform:
+        label: "Stabilization factor 2024"
+        note: "Diesel also covered by the 2024 two-month-average pricing methodology and the ~UYU$1.5/L stabilization surcharge."
+        sources:
+          - { label: "El Observador — sobreprecio US$88M 2025", url: "https://www.elobservador.com.uy/economia-y-empresas/combustibles-los-uruguayos-pagaron-un-sobreprecio-us-88-millones-marzo-y-diciembre-2025-n6031031" }
+
+  JAM:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, deregulated retail). Petrojam — state-owned refinery — sets ex-refinery prices weekly on import parity; retail is competitive."
+      reform:
+        label: "Cap absorbed 2026"
+        note: "Between Mar–Apr 2026 transport fuel rose ~J$49/L globally but only J$18 was passed to consumers; Petrojam absorbed the difference under a new tiered pricing cap, partly shielding households from global volatility."
+        sources:
+          - { label: "Jamaica Gleaner — Petrojam spares motorists (Mar 2026)", url: "https://jamaica-gleaner.com/article/news/20260305/petrojam-says-motorists-spared-full-impact-global-fuel-price-increases" }
+
+  PAN:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, subsidy_type=1 cap-regulated). Cabinet decrees set maximum sale prices biweekly for 91/95 octane gasoline and low-sulfur diesel."
+      reform:
+        label: "6-month cap Apr-2026"
+        note: "Executive Decree 231 (28-Apr-2026) sets maximum retail prices nationwide for six months, provisional until market conditions allow deregulation."
+        sources:
+          - { label: "El Siglo — gobierno fija precios máximos 6 meses", url: "https://elsiglo.com.pa/panama/nacionales/gobierno-fija-precios-maximos-del-combustible-por-seis-meses-esto-dice-el-decreto-GP21956617" }
+
+# Restrict scatter chart and KPI cards to this region's countries.
+scatter_focus_region: true
+
+# Commodity products to show in Tab 1 chart.
+# If empty, all available commodities are shown.
+commodity_products: []

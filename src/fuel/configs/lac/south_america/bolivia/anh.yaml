@@ -17,6 +17,7 @@ carry_forward: true
 
 products:
   "Gasolina Especial Internacional":
+    label: Gasoline Especial
     series_key: gasoline_premium_intl
     fuel_family: gasoline
     unit: liter
@@ -24,24 +25,28 @@ products:
     grade: premium
     octane_ron: 85
   "Gasolina Especial + Internacional":
+    label: Gasoline Especial+
     series_key: gasoline_super_intl
     fuel_family: gasoline
     unit: liter
     include_in_build: false
     grade: super
   "Diesel Oil Internacional":
+    label: Diesel
     series_key: diesel
     fuel_family: diesel
     unit: liter
     include_in_build: true
     grade: standard
   "Gas Natural Vehicular Internacional":
+    label: CNG
     series_key: cng
     fuel_family: cng
     unit: m3
     include_in_build: true
     grade: standard
   "Jet Fuel Internacional":
+    label: Jet Fuel
     series_key: jet_fuel
     fuel_family: jet_fuel
     unit: liter

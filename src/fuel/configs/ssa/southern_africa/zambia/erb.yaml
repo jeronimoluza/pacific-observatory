@@ -1,0 +1,41 @@
+source_key: erb_zm_monthly
+module: ssa.southern_africa.zambia.erb
+function: fetch_erb_zm
+url: https://www.erb.org.zm/category/price-build-up
+fallback_date: 2024-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# Zambia's Energy Regulation Board sets uniform countrywide pump prices
+# under the Cost-Plus model and publishes a "Current Fuel Pump Prices"
+# press statement PDF each month at
+# /wp-content/uploads/PressStatements/CurrentFuelPumpPrices<Month><Year>.pdf
+# Articles in the /category/price-build-up/ index link the monthly PDF.
+# Note: the site's TLS chain is incomplete — fetcher uses verify=False.
+
+products:
+  "Petrol":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Kerosene":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Jet A-1":
+    series_key: jet_a1
+    fuel_family: jet_fuel
+    unit: liter
+    include_in_build: true
+    grade: standard

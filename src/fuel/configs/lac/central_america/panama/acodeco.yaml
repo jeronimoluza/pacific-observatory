@@ -16,6 +16,7 @@ carry_forward: true
 
 products:
   "Gasolina 91 Octanos":
+    label: Gasoline 91
     series_key: gasoline_regular_91
     fuel_family: gasoline
     unit: liter
@@ -23,6 +24,7 @@ products:
     grade: regular
     octane_ron: 91
   "Gasolina 95 Octanos":
+    label: Gasoline 95
     series_key: gasoline_premium_95
     fuel_family: gasoline
     unit: liter
@@ -30,6 +32,7 @@ products:
     grade: premium
     octane_ron: 95
   "Diesel Bajo Azufre":
+    label: Diesel Low Sulfur
     series_key: diesel
     fuel_family: diesel
     unit: liter

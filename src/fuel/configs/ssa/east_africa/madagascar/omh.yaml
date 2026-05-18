@@ -1,0 +1,38 @@
+source_key: omh_mg_monthly
+module: ssa.east_africa.madagascar.omh
+function: fetch_omh_mg
+url: https://www.omh.mg/index.php?page=prixevomensuel
+fallback_date: 2025-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# OMH (Office Malgache des Hydrocarbures) lists the last few months of
+# pump prices in Ariary/litre for Super Carburant, Pétrole Lampant and
+# Gasoil. The site uses an invalid TLS chain — fetcher disables verify.
+# History older than ~3 months is not on the live page; Wayback backfill
+# is out of scope for this initial fetcher.
+
+products:
+  "Super Carburant":
+    label: Gasoline 95
+    series_key: gasoline_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 95
+  "Gasoil":
+    label: Diesel
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Pétrole Lampant":
+    label: Kerosene
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard

@@ -1,0 +1,35 @@
+source_key: beninpetro_bj_monthly
+module: ssa.west_africa.benin.beninpetro
+function: fetch_beninpetro_bj
+url: https://beninpetro.com/
+fallback_date: 2021-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+products:
+  "Essence":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Gasoil":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Gaz":
+    series_key: lpg
+    fuel_family: lpg
+    unit: kilogram
+    density_l_per_kg: 1.96
+    include_in_build: true
+    grade: standard
+  "Pétrole lampant":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard

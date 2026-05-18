@@ -1,0 +1,31 @@
+source_key: ubos_ug_monthly
+module: ssa.east_africa.uganda.ubos
+function: fetch_ubos_ug
+url: https://www.ubos.org/explore-statistics/
+fallback_date: 2022-01-01
+priority: 10
+cadence: monthly
+carry_forward: false
+
+# UBOS publishes a monthly Consumer Price Index PDF that includes a
+# "National Average Retail Prices of Selected Commodities" table. Each row
+# of that table is structured as:
+#   Petrol 1 Litre <current_month> <prev_month> <same_month_prev_year>
+#   Diesel 1 Litre <current_month> <prev_month> <same_month_prev_year>
+# Currency: UGX/litre. Kerosene is not exposed at UGX/litre in this PDF
+# (only as a CPI sub-index) so it is omitted here. Site uses an
+# incomplete TLS chain — fetcher disables verification.
+
+products:
+  "Petrol":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard

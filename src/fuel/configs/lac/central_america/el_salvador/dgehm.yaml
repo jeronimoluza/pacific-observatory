@@ -1,0 +1,55 @@
+source_key: sv_dgehm_biweekly
+module: lac.central_america.el_salvador.dgehm
+function: fetch_sv_dgehm
+url: https://estadisticas.dgehm.gob.sv/combustibles/precios-referencia/
+fallback_date: 2011-01-01
+priority: 10
+cadence: biweekly
+carry_forward: true
+
+# DGEHM publishes biweekly FERE reference prices per zone (Occidental /
+# Central / Oriental) in USD/gallon. We average the three zones to a
+# single national figure per (date, fuel). The data series is currently
+# frozen at 2024-02-20 (no fresh observations published since).
+#
+# Fuels covered:
+#   - Gasolina Especial    (full history 2011-01 → 2024-02)
+#   - Gasolina Regular     (full history 2011-01 → 2024-02)
+#   - Diesel               (2011-01 → 2019-04, phased out for DO-LS)
+#   - Diesel Bajo Azufre   (2017-05 → 2024-02)
+#
+# carry_forward=true: FERE is a regulated biweekly reference set by the
+# state; the price in effect carries forward until the next resolución.
+# Build pipeline normalises USD/gal → USD/L.
+
+products:
+  "Gasolina Especial":
+    label: Gasoline Especial
+    series_key: gasoline_premium_95
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+  "Gasolina Regular":
+    label: Gasoline Regular
+    series_key: gasoline_regular_87
+    fuel_family: gasoline
+    unit: gallon
+    include_in_build: true
+    grade: regular
+    octane_ron: 87
+  "Diesel":
+    label: Diesel
+    series_key: diesel
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: false
+    grade: standard
+  "Diesel Bajo en Azufre":
+    label: Diesel Low Sulfur
+    series_key: diesel_ulsd
+    fuel_family: diesel
+    unit: gallon
+    include_in_build: true
+    grade: ultra_low_sulfur

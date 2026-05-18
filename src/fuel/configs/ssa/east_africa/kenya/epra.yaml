@@ -1,0 +1,39 @@
+source_key: epra_ke_monthly
+module: ssa.east_africa.kenya.epra
+function: fetch_epra_ke
+url: https://www.epra.go.ke/pump-prices
+fallback_date: 2024-11-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# EPRA renders the complete cycle history at /pump-prices as a single
+# Drupal+DataTables HTML table (~223 towns × cycle, KES/L). Columns:
+#   From | To | Town | Super (PMS) | Diesel (AGO) | Kerosene (IK)
+# One GET returns every cycle currently published (~18 months of history
+# as of 2026-05). The build stage averages towns → national price per
+# cycle, so the per-town granularity yields a much more accurate
+# national-average than the previous 5-city release scraper.
+
+products:
+  "PMS":
+    label: Super Petrol (PMS)
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "AGO":
+    label: Automotive Gas Oil (Diesel)
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "IK":
+    label: Illuminating Kerosene
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard

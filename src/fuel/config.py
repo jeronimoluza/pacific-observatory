@@ -42,6 +42,11 @@ class ProductSpec(BaseModel):
     grade: str | None = None
     octane_ron: int | None = None
     label: str = ""
+    # Per-product override for FuelSourceConfig.carry_forward. None → fall back
+    # to the source-level flag. Set on products whose pricing regime differs
+    # from the source default (e.g. market-priced Premium vs subsidized Magna
+    # under the same daily/weekly scrape).
+    carry_forward: bool | None = None
 
     @field_validator("fuel_family")
     @classmethod

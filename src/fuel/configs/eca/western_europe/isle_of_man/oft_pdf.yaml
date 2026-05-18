@@ -1,0 +1,23 @@
+source_key: im_oft_weekly
+module: eca.western_europe.isle_of_man.oft_pdf
+function: fetch_im_oft
+url: https://www.gov.im/about-the-government/statutory-boards/isle-of-man-office-of-fair-trading/pricing/road-fuel-monitoring/
+fallback_date: 2024-01-01
+priority: 10
+cadence: weekly
+carry_forward: false
+currency: GBP
+
+products:
+  "Unleaded Petrol":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    series_key: gasoline_unleaded
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: diesel

@@ -1,14 +1,14 @@
 source_key: br_anp_weekly
 module: lac.south_america.brazil.anp
 function: fetch_br_anp
-url: https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/serie-historica-de-precos-de-combustiveis
-fallback_date: 2023-01-01
+url: https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/serie-historica-do-levantamento-de-precos
+fallback_date: 2004-05-09
 priority: 10
 cadence: weekly
-carry_forward: true
+carry_forward: false
 
 products:
-  "GASOLINA":
+  "GASOLINA COMUM":
     label: Gasoline
     series_key: gasoline_regular
     fuel_family: gasoline
@@ -22,21 +22,21 @@ products:
     unit: liter
     include_in_build: false
     grade: premium
-  "ETANOL":
+  "ETANOL HIDRATADO":
     label: Ethanol
     series_key: ethanol
     fuel_family: gasoline
     unit: liter
     include_in_build: true
     grade: ethanol
-  "DIESEL":
+  "OLEO DIESEL":
     label: Diesel
     series_key: diesel_s500
     fuel_family: diesel
     unit: liter
     include_in_build: true
     grade: standard
-  "DIESEL S10":
+  "OLEO DIESEL S10":
     label: Diesel S10
     series_key: diesel_s10
     fuel_family: diesel

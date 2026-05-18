@@ -15,18 +15,21 @@ carry_forward: true
 
 products:
   "Gasolina Premium":
+    label: Gasoline Premium
     series_key: gasoline_premium_pure
     fuel_family: gasoline
     unit: gallon
     include_in_build: false
     grade: premium
   "Gasolina Regular":
+    label: Gasoline Regular
     series_key: gasoline_regular_pure
     fuel_family: gasoline
     unit: gallon
     include_in_build: false
     grade: regular
   "Gasolina 84":
+    label: Gasoline 84
     series_key: gasoline_84_pure
     fuel_family: gasoline
     unit: gallon
@@ -34,36 +37,42 @@ products:
     grade: regular
     octane_ron: 84
   "Turbo":
+    label: Jet Fuel
     series_key: jet_fuel
     fuel_family: jet_fuel
     unit: gallon
     include_in_build: false
     grade: standard
   "Diesel B5 Bajo Azufre":
+    label: Diesel B5 Low Sulfur
     series_key: diesel_b5_50ppm
     fuel_family: diesel
     unit: gallon
     include_in_build: true
     grade: standard
   "Diesel B5 Alto Azufre":
+    label: Diesel B5 High Sulfur
     series_key: diesel_b5_high_sulfur
     fuel_family: diesel
     unit: gallon
     include_in_build: false
     grade: standard
   "Petroleo Industrial 6":
+    label: Industrial Fuel Oil 6
     series_key: fuel_oil_6
     fuel_family: fuel_oil
     unit: gallon
     include_in_build: false
     grade: industrial
   "Petroleo Industrial 500":
+    label: Industrial Fuel Oil 500
     series_key: fuel_oil_500
     fuel_family: fuel_oil
     unit: gallon
     include_in_build: false
     grade: industrial
   "GLP 70/30":
+    label: LPG 70/30
     series_key: lpg_residential
     fuel_family: lpg
     unit: kilogram
@@ -71,18 +80,21 @@ products:
     include_in_build: true
     grade: residential
   "Gasohol Premium":
+    label: Gasohol Premium
     series_key: gasohol_premium
     fuel_family: gasoline
     unit: gallon
     include_in_build: true
     grade: premium
   "Gasohol Regular":
+    label: Gasohol Regular
     series_key: gasohol_regular
     fuel_family: gasoline
     unit: gallon
     include_in_build: true
     grade: regular
   "Gasohol 84":
+    label: Gasohol 84
     series_key: gasohol_84
     fuel_family: gasoline
     unit: gallon
@@ -90,24 +102,28 @@ products:
     grade: regular
     octane_ron: 84
   "Alcohol Carburante":
+    label: Fuel Ethanol
     series_key: alcohol_carburante
     fuel_family: gasoline
     unit: gallon
     include_in_build: false
     grade: ethanol
   "Diesel 2 Bajo Azufre":
+    label: Diesel 2 Low Sulfur
     series_key: diesel_2_low_sulfur
     fuel_family: diesel
     unit: gallon
     include_in_build: false
     grade: standard
   "Diesel 2 Alto Azufre":
+    label: Diesel 2 High Sulfur
     series_key: diesel_2_high_sulfur
     fuel_family: diesel
     unit: gallon
     include_in_build: false
     grade: standard
   "Biodiesel B100":
+    label: Biodiesel B100
     series_key: biodiesel_b100
     fuel_family: diesel
     unit: gallon

@@ -1,0 +1,59 @@
+source_key: uz_goldenpages_biweekly
+module: eca.central_asia.uzbekistan.goldenpages
+function: fetch_uz_goldenpages
+url: https://www.goldenpages.uz/en/benzin-cena/
+fallback_date: 2020-01-01
+priority: 10
+cadence: biweekly
+carry_forward: false
+currency: UZS
+
+products:
+  "AI-80":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: low
+    octane_ron: 80
+    series_key: gasoline_ai80
+  "AI-92 UZB":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 92
+    series_key: gasoline_ai92_uzb
+  "AI-92 IMPORT":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: regular
+    octane_ron: 92
+    series_key: gasoline_ai92_import
+  "AI-95":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+    series_key: gasoline_ai95
+  "AI-98":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: super
+    octane_ron: 98
+    series_key: gasoline_ai98
+  "AI-100":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: false
+    grade: super
+    octane_ron: 100
+    series_key: gasoline_ai100
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: diesel

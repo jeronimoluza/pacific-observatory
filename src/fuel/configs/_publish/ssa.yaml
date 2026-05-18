@@ -1,0 +1,739 @@
+# Publish configuration for SSA (Sub-Saharan Africa) fuel policy dashboard.
+
+region: ssa
+region_label: "Sub-Saharan Africa"
+dashboard_history_years: 3
+
+# Regime overrides where the WB 2024 pricing-regime CSV is missing the
+# country entirely, or where 2024-2026 reform / per-product nuance is not
+# captured in the aggregate code. Keys are ISO3; values are per-product
+# {regime, subsidy} dicts. "Subsidised" badge in the table is driven by IMF
+# implicit subsidy data, not the subsidy field here.
+regime_overrides:
+  # Angola — WB codes mech=2 stype=2 (frozen, parser reads as no-subsidy).
+  # Reality: gasoline and diesel sold well below import-parity through state
+  # company Sonangol; June-2023 + April-2024 partial hikes did not eliminate
+  # the implicit subsidy. LPG and kerosene also subsidised under the same
+  # multiphase reform plan.
+  AGO:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # Ghana — WB codes mixed mech=1,2 with stype=6 (premix/RFO carve-out).
+  # Retail gasoline and diesel fully deregulated since 2015; LPG follows the
+  # same import-parity calculation. Cross-subsidy on premix fuel (fishing
+  # boats) financed by levies on other fuels.
+  GHA:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Guinea-Bissau — not in WB CSV. Government sets retail prices for liquid
+  # fuels (FCFA ~899/L gasoline, ~898/L diesel during Jun-2025 oil shock);
+  # two successive pass-through hikes during the Iran conflict suggest no
+  # standing consumer subsidy in 2025.
+  GNB:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Kenya — WB codes EPRA as Price Control + stype=1,6 (stabilisation fund
+  # + LPG carve-out). The cross-subsidy on gasoline was largely cleared by
+  # mid-2024 (Treasury halved allocation); diesel retains residual subsidy;
+  # LPG retained VAT exemption + Mwananchi support; kerosene un-subsidised.
+  KEN:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Liberia — not in WB CSV. MoCI and LPRC publish monthly retail-price
+  # ceilings for PMS and AGO (gasoline/diesel) based on import-parity; LPG
+  # and kerosene have no documented price ceiling.
+  LBR:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Mauritius — WB codes mech=2 stype=1,6. STC monthly Automatic Pricing
+  # Mechanism plus active per-litre support: diesel relief Rs 5/L active
+  # from Nov-2023 (originally to end Dec-2024, extended for fisheries / bus
+  # operators), and standing LPG subsidy on 12-kg domestic cylinders.
+  MUS:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Nigeria — WB codes mech=1 stype=0 (post-2024 deregulation). Gasoline
+  # subsidy removed 29-May-2023 ("subsidy is gone"), full liberalisation
+  # completed 2024 with Dangote and NNPC competing on retail margins.
+  # Override exists only to ensure a clean Market classification with
+  # subsidy=false; the historic reform is attached via regime_notes.
+  NGA:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Rwanda — not in WB CSV. RURA sets pump-price caps for gasoline, diesel
+  # and LPG on a ~60-day cycle (Nov-2025 caps: RWF 1,989/L petrol, 1,900/L
+  # diesel, 1,260/kg LPG). Clean-cooking RBF scheme subsidises stoves for
+  # ~50k households → LPG flagged subsidy:true. Kerosene effectively
+  # displaced by the LPG transition.
+  RWA:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Seychelles — not in WB CSV. SEYPEC is the state-monopoly importer and
+  # retailer; a single national price per product is published monthly. No
+  # documented consumer subsidy as of 2025.
+  SYC:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: false}
+    LPG: {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Somalia — not in WB CSV. No functioning federal price regulator;
+  # retail set by importers/stations. NBS reports near-immediate pass-through
+  # to global oil shocks (Feb-Mar 2026 surge).
+  SOM:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # South Africa — WB notes only diesel is deregulated; gasoline, LPG and
+  # paraffin (kerosene) remain regulated by DMRE with monthly Basic Fuel
+  # Price adjustments. No general consumer subsidy.
+  ZAF:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # South Sudan — not in WB CSV. Nilepet is the nominal regulator/importer
+  # but Juba retail prices move freely with the SSP exchange rate (SSP 1,700
+  # → 2,995/L in Mar-2024). De facto Market regime.
+  SSD:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+# Per-cell source attribution and reform notes. Keys: ISO3 -> product
+# (Gasoline | Diesel | LPG | Kerosene) -> {classification_sources, reform}.
+# classification_sources is a list of strings or {label, url} entries that
+# explain where the classification comes from. Reform is optional and adds
+# a secondary dashed pill next to the primary one.
+regime_notes:
+  AGO:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, frozen-price regime via Sonangol)."
+        - { label: "Decreto-Presidencial 96/23 (multiphase subsidy reform)",
+            url: "https://www.minfin.gov.ao/" }
+      reform:
+        label: "Partial reform 2023-24"
+        note: "Angola raised gasoline prices in June 2023 (first hike since 2016) and diesel in April 2024 as part of a multiphase subsidy reform; both fuels still sell well below import-parity."
+        sources:
+          - { label: "IMF Article IV — Angola 2024",
+              url: "https://www.imf.org/en/Countries/AGO" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=2). Frozen retail with implicit subsidy."
+      reform:
+        label: "Diesel hike Apr-2024"
+        note: "First diesel adjustment since January 2016 — partial pass-through to consumers."
+        sources:
+          - { label: "IMF Article IV — Angola 2024",
+              url: "https://www.imf.org/en/Countries/AGO" }
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG covered by the same controlled-price regime."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail also state-controlled."
+
+  BDI:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Government sets prices and freezes for extended periods."
+      reform:
+        label: "Multiple revisions 2024"
+        note: "Burundi adjusted gasoline and diesel prices several times in 2024 (Feb -8%, subsequent hikes), reflecting FX scarcity and import-cost passthrough."
+        sources:
+          - { label: "RFI — Burundi pump prices",
+              url: "https://www.rfi.fr/fr/afrique/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same decree-based regime as gasoline."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG also controlled but limited retail market."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail regulated but minor."
+
+  BEN:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=2). Retail frozen for long stretches."
+      reform:
+        label: "Aug-2023 first hike"
+        note: "Government raised gasoline from FCFA 650 to 680 in August 2023 — first revision in 10 months. Persistent informal cross-border supply from Nigeria distorts the official retail market."
+        sources:
+          - { label: "WAEMU energy regulators",
+              url: "https://www.uemoa.int/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Diesel governed by the same controlled-price regime."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also regulated."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail regulated."
+
+  BWA:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). BERA recommends pump-price adjustments to cabinet; no consumer subsidy per BOC."
+        - { label: "Botswana Energy Regulatory Authority (BERA)",
+            url: "https://www.bera.co.bw/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same BERA mechanism."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also under BERA price-slate."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Paraffin price set in the BERA slate."
+
+  CPV:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). ARME publishes monthly price caps per fuel."
+        - { label: "ARME — Agência de Regulação Multissectorial",
+            url: "https://www.arme.cv/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. ARME monthly cap covers diesel."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG also under monthly ARME cap."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail capped by ARME."
+
+  CMR:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). CSPH stabilisation fund pays the differential between import cost and frozen retail."
+        - { label: "Caisse de Stabilisation des Prix des Hydrocarbures (CSPH)",
+            url: "https://www.csph.cm/" }
+      reform:
+        label: "Feb-2024 hike only"
+        note: "Gasoline and diesel were adjusted only once in 2024 (Feb) and otherwise frozen — CSPH continues to absorb the gap."
+        sources:
+          - { label: "IMF Article IV — Cameroon",
+              url: "https://www.imf.org/en/Countries/CMR" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same CSPH stabilisation mechanism."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail covered by CSPH and remained frozen."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail also under CSPH."
+
+  ETH:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=1,4). MoTRI quarterly review with stabilisation-fund support."
+      reform:
+        label: "Subsidy phase-down 2024-25"
+        note: "Ethiopia accelerated subsidy reduction in 2024-25 under the IMF programme — Jul-2024 hike of ~38% pass-through with a targeted transport voucher scheme to cushion impact."
+        sources:
+          - { label: "IMF Country Report — Ethiopia 2024",
+              url: "https://www.imf.org/en/Countries/ETH" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same MoTRI-administered regime."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also regulated."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail also regulated."
+
+  GMB:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=2). Government sets monthly pump price using Platts-based formula but freezes during volatility."
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same monthly formula."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also under government pricing."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail also under government pricing."
+
+  GHA:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, deregulated since June 2015). NPA publishes indicative prices but retailers set their own."
+        - { label: "National Petroleum Authority (NPA)",
+            url: "https://npa.gov.gh/" }
+      reform:
+        label: "Deregulated since 2015"
+        note: "Government deregulated most fuels in June 2015. Price controls and subsidies retained only on premix (fishing) and residual fuel oil, financed by cross-subsidy levies."
+        sources:
+          - { label: "IMF Country Report — Ghana",
+              url: "https://www.imf.org/en/Countries/GHA" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1). Diesel fully deregulated since 2015."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1). LPG retail also liberalised; cylinder-recirculation model still being rolled out."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail also deregulated since 2015."
+
+  GNB:
+    Gasoline:
+      classification_sources:
+        - "Not in WB 2024 CSV. Transition government sets retail; two pass-through hikes during the June-2025 Iran-conflict oil shock."
+        - { label: "Agence Ecofin — UEMOA pump-price tracker",
+            url: "https://www.agenceecofin.com/actualites/0405-138093-essence-les-prix-a-la-pompe-dans-luemoa-depuis-le-debut-de-la-guerre-en-iran" }
+      reform:
+        label: "Two 2025 hikes"
+        note: "Government raised retail twice during the Iran-conflict shock; no standing consumer subsidy in 2025."
+        sources:
+          - { label: "Agence Ecofin — Iran-war pump prices",
+              url: "https://www.agenceecofin.com/actualites/0405-138093-essence-les-prix-a-la-pompe-dans-luemoa-depuis-le-debut-de-la-guerre-en-iran" }
+    Diesel:
+      classification_sources:
+        - "Government-administered diesel price tracks import-parity; no documented consumer subsidy."
+    LPG:
+      classification_sources:
+        - "Not in WB 2024 CSV. No documented LPG retail regulation; informal market."
+    Kerosene:
+      classification_sources:
+        - "Not in WB 2024 CSV. Limited domestic kerosene retail; treated as Market."
+
+  KEN:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=1,6). EPRA monthly cap applies; FY2024/25 subsidy allocation halved."
+        - { label: "Energy & Petroleum Regulatory Authority (EPRA)",
+            url: "https://www.epra.go.ke/" }
+      reform:
+        label: "Subsidy halved FY2024/25"
+        note: "Treasury cut EPRA's stabilisation allocation from ~KSh 50 bn to KSh 27 bn for FY2024/25 — gasoline largely cleared of cross-subsidy by mid-2024."
+        sources:
+          - { label: "National Treasury — Kenya Budget 2024",
+              url: "https://www.treasury.go.ke/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Diesel retained a partial subsidy through 2024 to limit transport-cost passthrough."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (stype=6). 13-kg cylinder remained VAT-exempt; Mwananchi LPG initiative via NOC subsidises clean-cooking access."
+      reform:
+        label: "VAT scrapped 2023-24"
+        note: "LPG retained VAT exemption through 2024-25 to support clean-cooking transition; targeted Mwananchi subsidy continues."
+        sources:
+          - { label: "Ministry of Energy — Kenya",
+              url: "https://energy.go.ke/" }
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. EPRA monthly cap applies; subsidy removed in 2018 reform."
+
+  LSO:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Petroleum Fund operates monthly slate; positive balance through 2024."
+        - { label: "Lesotho Petroleum Fund",
+            url: "https://petroleum.org.ls/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same Petroleum Fund mechanism."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail covered by the same slate."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Illuminating paraffin priced in the slate."
+
+  LBR:
+    Gasoline:
+      classification_sources:
+        - "Not in WB 2024 CSV. MoCI/LPRC monthly price-ceiling circulars (e.g. Jun-2025: USD 4.04/gal; Jul-2025: USD 4.18/gal)."
+        - { label: "Ministry of Commerce and Industry — Liberia",
+            url: "https://www.moci.gov.lr/" }
+      reform:
+        label: "Rural ceiling Mar-2026"
+        note: "MoCI/LPRC introduced a separate rural-county pricing structure effective 21-Mar-2026 to stabilise costs outside Monrovia."
+        sources:
+          - { label: "AllAfrica — Liberia rural fuel pricing",
+              url: "https://allafrica.com/stories/202507070688.html" }
+    Diesel:
+      classification_sources:
+        - "Not in WB 2024 CSV. Same MoCI/LPRC monthly ceiling regime."
+    LPG:
+      classification_sources:
+        - "Not in WB 2024 CSV. No documented LPG retail ceiling — treated as Market."
+    Kerosene:
+      classification_sources:
+        - "Not in WB 2024 CSV. Kerosene not listed in 2025 ceiling circulars — treated as Market."
+
+  MDG:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=2). Government freezes prices for long stretches."
+      reform:
+        label: "Formula planned 2026"
+        note: "Government plans to switch to an automated fuel-pricing formula in 2026; gasoline retail unchanged since August 2022."
+        sources:
+          - { label: "Xinhua/CGTN French — Madagascar fuel reform",
+              url: "https://french.news.cn/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same frozen-price regime."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also frozen."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene used for power generation also subsidised."
+
+  MWI:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). MERA publishes adjustments triggered by ±5% landed-cost moves."
+        - { label: "Malawi Energy Regulatory Authority (MERA)",
+            url: "https://www.mera.mw/" }
+      reform:
+        label: "30% hike Nov-2023"
+        note: "MERA raised pump prices ~30% in Nov-2023 after the kwacha devaluation; prices held thereafter."
+        sources:
+          - { label: "Reuters — Malawi kwacha devaluation",
+              url: "https://www.reuters.com/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same MERA-administered regime."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also under MERA."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene under MERA price-cap."
+
+  MUS:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=1,6). Petroleum Pricing Committee monthly Automatic Pricing Mechanism since 2011."
+        - { label: "State Trading Corporation — Mauritius",
+            url: "https://www.stc.mu/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Same APM mechanism."
+      reform:
+        label: "Rs 5/L relief Nov-23"
+        note: "Government introduced Rs 5/L diesel support for fisheries and bus operators in Nov-2023; relief extended into 2025."
+        sources:
+          - { label: "STC Mauritius press releases",
+              url: "https://www.stc.mu/" }
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (stype=6). 12-kg domestic cylinder remains subsidised."
+      reform:
+        label: "12kg cylinder subsidy"
+        note: "Domestic 12-kg LPG cylinder retail kept stable through government cross-subsidy financed by other fuel margins."
+        sources:
+          - { label: "STC LPG pricing",
+              url: "https://www.stc.mu/lpg-prices" }
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene under APM."
+
+  MOZ:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). ARENE adjusts prices but typically freezes for long stretches."
+        - { label: "ARENE — Autoridade Reguladora de Energia",
+            url: "https://www.arene.gov.mz/" }
+      reform:
+        label: "Frozen Jun-21 → Jan-25"
+        note: "Gasoline retail frozen from June-2021 to January 2025 — government accumulated arrears to oil retailers."
+        sources:
+          - { label: "IMF Country Report — Mozambique",
+              url: "https://www.imf.org/en/Countries/MOZ" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same ARENE regime."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also under ARENE."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail under ARENE."
+
+  NAM:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=1,4). MME monthly adjustments using a price-correction formula with NEF stabilisation."
+        - { label: "Ministry of Mines and Energy — Namibia",
+            url: "https://www.mme.gov.na/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same MME monthly formula."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also under MME."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Illuminating paraffin under MME."
+
+  NGA:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, stype=0). Subsidy formally removed 29-May-2023; full liberalisation 2024."
+        - { label: "Reuters — Nigeria petrol subsidy removal",
+            url: "https://www.reuters.com/world/africa/" }
+      reform:
+        label: "Subsidy removed 2023-24"
+        note: "Tinubu administration removed gasoline subsidy on Day 1 (29-May-2023). Petroleum Industry Act commencement and Dangote Refinery startup completed retail deregulation through 2024."
+        sources:
+          - { label: "IMF Country Report — Nigeria 2024",
+              url: "https://www.imf.org/en/Countries/NGA" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1). Diesel deregulated since 2020."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail deregulated."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail deregulated."
+
+  RWA:
+    Gasoline:
+      classification_sources:
+        - "Not in WB 2024 CSV. RURA sets pump-price caps on a ~60-day cycle (Nov-2025: RWF 1,989/L petrol)."
+        - { label: "RURA — Rwanda Utilities Regulatory Authority",
+            url: "https://www.rura.rw/sectors/energy/sub-sectors-and-services/downstream-petroleum" }
+    Diesel:
+      classification_sources:
+        - "Not in WB 2024 CSV. RURA caps diesel under the same 60-day formula (Nov-2025: RWF 1,900/L)."
+    LPG:
+      classification_sources:
+        - "Not in WB 2024 CSV. Dec-2024 RURA directive capped LPG retail at RWF 1,260/kg. Clean-cooking RBF scheme subsidises stoves for ~50k households."
+      reform:
+        label: "LPG cap + cookstoves"
+        note: "RURA capped LPG retail (Dec-2024) while the government scaled targeted LPG-stove subsidies under the 2025 Energy Policy to push the charcoal-to-LPG transition."
+        sources:
+          - { label: "MININFRA — 2025 Energy Policy",
+              url: "https://www.mininfra.gov.rw/" }
+    Kerosene:
+      classification_sources:
+        - "Not in WB 2024 CSV. Kerosene largely displaced by LPG transition; no active retail regulation."
+
+  SEN:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=2). Government freezes retail for long stretches."
+      reform:
+        label: "Frozen through 2024"
+        note: "Gasoline and diesel retail frozen throughout 2024; last revision Jan-2023 (+11% gasoline, +15% diesel)."
+        sources:
+          - { label: "Petrosen — Sénégal",
+              url: "https://petrosen.sn/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same controlled-price regime."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also under government control."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail also under government control."
+
+  SYC:
+    Gasoline:
+      classification_sources:
+        - "Not in WB 2024 CSV. SEYPEC sole importer/retailer publishes monthly national price (Nov-2025: SCR 20.73/L)."
+        - { label: "SEYPEC — fuel prices",
+            url: "https://www.seypec.com/fuel-prices" }
+    Diesel:
+      classification_sources:
+        - "Not in WB 2024 CSV. SEYPEC monopoly retail (Nov-2025: SCR 20.54/L)."
+    LPG:
+      classification_sources:
+        - "Not in WB 2024 CSV. SEYPEC sole LPG supplier (Nov-2025: SCR 17.50/kg)."
+    Kerosene:
+      classification_sources:
+        - "Not in WB 2024 CSV. SEYPEC kerosene retail (Nov-2025: SCR 150/5L); limited market."
+
+  SLE:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=1). PRA monthly formula adopted July 2024."
+        - { label: "Petroleum Regulatory Agency — Sierra Leone",
+            url: "https://npra.gov.sl/" }
+      reform:
+        label: "Monthly formula Jul-24"
+        note: "PRA adopted a new monthly fuel-pricing formula in July 2024 replacing ad-hoc freezes; LPG remains outside the regulated regime."
+        sources:
+          - { label: "NPRA Sierra Leone press releases",
+              url: "https://npra.gov.sl/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same monthly formula."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset notes LPG is the only fuel outside the price-control regime."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Kerosene under the same monthly formula."
+
+  SOM:
+    Gasoline:
+      classification_sources:
+        - "Not in WB 2024 CSV. No functioning federal price regulator; retail set by importers/stations."
+        - { label: "Somalia NBS — Inflation Outlook 2026",
+            url: "https://nbs.gov.so/wp-content/uploads/2026/03/Somalias-Inflation-Outlook.pdf" }
+      reform:
+        label: "Mar-2026 surge"
+        note: "Mogadishu retail roughly doubled-to-tripled in late-Feb / Mar-2026 with the Iran-conflict supply disruption; near-immediate global pass-through reported by NBS."
+        sources:
+          - { label: "Middle East Eye — Somalia fuel surge",
+              url: "https://www.middleeasteye.net/live-blog/live-blog-update/fuel-prices-surge-somalia-and-tanzania-amid-supply-disruption" }
+    Diesel:
+      classification_sources:
+        - "Not in WB 2024 CSV. Same import-driven pass-through dynamics."
+    LPG:
+      classification_sources:
+        - "Not in WB 2024 CSV. Limited formal LPG retail market."
+    Kerosene:
+      classification_sources:
+        - "Not in WB 2024 CSV. Limited domestic kerosene retail."
+
+  ZAF:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1 mixed, stype=1). DMRE Basic Fuel Price formula sets monthly pump price for gasoline and LPG."
+        - { label: "Department of Mineral Resources and Energy",
+            url: "https://www.dmre.gov.za/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset notes diesel is NOT regulated. FIASA publishes a calculated reference price."
+        - { label: "Fuels Industry Association of South Africa",
+            url: "https://fuelsindustry.org.za/fuel-prices/" }
+      reform:
+        label: "Diesel deregulated"
+        note: "Diesel retail prices are not capped — reference prices published monthly by FIASA; wholesale rebates available to mining/agriculture sectors."
+        sources:
+          - { label: "DMRE — fuel pricing methodology",
+              url: "https://www.dmre.gov.za/" }
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. DMRE sets LPG max-refilled-cylinder price."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Illuminating paraffin regulated by DMRE."
+
+  SSD:
+    Gasoline:
+      classification_sources:
+        - "Not in WB 2024 CSV. Nilepet is the statutory regulator/importer but station-level Juba retail moves freely with SSP exchange rate."
+        - { label: "Eye Radio — Juba pump prices",
+            url: "https://www.eyeradio.org/fuel-prices-shoot-up-to-ssp2995-per-liter-in-juba/" }
+      reform:
+        label: "FX-driven hike Mar-24"
+        note: "Juba pump prices jumped ~50% in March-2024 (SSP 1,700 → 2,995/L) as SSP weakened sharply; ongoing volatility into 2025."
+        sources:
+          - { label: "World Bank — South Sudan macro brief",
+              url: "https://www.worldbank.org/en/country/southsudan" }
+    Diesel:
+      classification_sources:
+        - "Not in WB 2024 CSV. Same FX pass-through (SSP 2,990/L Juba Mar-2024)."
+    LPG:
+      classification_sources:
+        - "Not in WB 2024 CSV. Minimal formal LPG retail."
+    Kerosene:
+      classification_sources:
+        - "Not in WB 2024 CSV. Limited kerosene retail."
+
+  TZA:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=1). EWURA publishes monthly retail and wholesale price caps by region."
+        - { label: "EWURA — Tanzania",
+            url: "https://www.ewura.go.tz/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same EWURA monthly cap."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also capped by EWURA."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene regional caps under EWURA."
+
+  UGA:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1, stype=0). Fuel prices deregulated since 1994."
+        - { label: "Uganda Bureau of Statistics — fuel prices",
+            url: "https://www.ubos.org/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=1). Diesel retail also fully deregulated."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail deregulated."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail deregulated."
+
+  ZMB:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=1). ERB publishes monthly wholesale price; uniform nationwide."
+        - { label: "Energy Regulation Board — Zambia",
+            url: "https://www.erb.org.zm/" }
+      reform:
+        label: "Subsidies eliminated 2021"
+        note: "Zambia eliminated fossil-fuel subsidies in December 2021 to re-orient expenditure; ERB monthly adjustments fully pass through international benchmarks."
+        sources:
+          - { label: "CUTS Lusaka — Zambia subsidy reform",
+              url: "https://cuts-lusaka.org/background/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same ERB monthly mechanism."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also under ERB monthly cap."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene under ERB monthly cap."
+
+# Restrict scatter chart and KPI cards to this region's countries.
+scatter_focus_region: true
+
+# Commodity products to show in Tab 1 chart. Empty = all commodities.
+commodity_products: []

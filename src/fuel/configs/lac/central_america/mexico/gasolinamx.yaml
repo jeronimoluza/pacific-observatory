@@ -13,9 +13,16 @@ carry_forward: true
 # we probe one snapshot per month from 2019-03 onwards. The price widget
 # format ("Magna <b>NN.NN</b> / Premium <b>NN.NN</b> / Diesel <b>NN.NN</b>")
 # has been stable since at least 2019-Q1.
+#
+# Per-product carry_forward:
+# - Magna and Diesel receive weekly IEPS fiscal stimulus (Hacienda absorbs
+#   part of the volatility), so they behave as quasi-state managed prices
+#   that hold between adjustments → source default true.
+# - Premium receives no IEPS subsidy and tracks the open market → false.
 
 products:
   "Magna":
+    label: Gasoline Magna
     series_key: gasoline_regular_87
     fuel_family: gasoline
     unit: liter
@@ -23,13 +30,16 @@ products:
     grade: regular
     octane_ron: 87
   "Premium":
+    label: Gasoline Premium
     series_key: gasoline_premium_91
     fuel_family: gasoline
     unit: liter
     include_in_build: true
     grade: premium
     octane_ron: 91
+    carry_forward: false  # no IEPS subsidy; pure market price
   "Diesel":
+    label: Diesel
     series_key: diesel
     fuel_family: diesel
     unit: liter

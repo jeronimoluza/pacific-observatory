@@ -1,0 +1,39 @@
+source_key: mepm_sn_irregular
+module: ssa.west_africa.senegal.mepm
+function: fetch_mepm_sn
+url: https://energie.gouv.sn/our-blog/
+fallback_date: 2022-01-01
+priority: 10
+cadence: irregular
+carry_forward: true
+
+# The official ministry site identifies CNH as calculating petroleum prices
+# every four weeks, but no complete CNH archive was found. This source is
+# limited to first-party ministry communiqués/articles with explicit prices.
+
+products:
+  "Super":
+    series_key: supercarburant
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+  "Gasoil":
+    series_key: gasoil
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Pétrole lampant":
+    series_key: petrole_lampant
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Gaz butane":
+    series_key: gaz_butane
+    fuel_family: lpg
+    unit: kilogram
+    include_in_build: true
+    grade: domestic
+    density_l_per_kg: 1.96

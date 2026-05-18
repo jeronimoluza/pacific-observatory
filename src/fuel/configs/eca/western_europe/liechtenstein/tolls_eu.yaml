@@ -1,0 +1,30 @@
+source_key: tolls_li_weekly
+module: eca.western_europe.liechtenstein.tolls_eu
+function: fetch_tolls_li
+url: https://www.tolls.eu/fuel-prices
+fallback_date: 2023-01-01
+priority: 50
+cadence: weekly
+carry_forward: false
+currency: CHF
+
+products:
+  "Gasoline 95":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 95
+    series_key: gasoline_95
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: diesel
+  "LPG":
+    fuel_family: lpg
+    unit: liter
+    include_in_build: true
+    series_key: lpg
+    density_l_per_kg: 1.96  # TODO: confirm with data team

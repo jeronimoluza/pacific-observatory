@@ -1,0 +1,78 @@
+source_key: jm_petrojam_weekly
+module: lac.caribbean.jamaica.petrojam
+function: fetch_jm_petrojam
+url: https://www.petrojam.com/price/
+fallback_date: 2004-02-01
+priority: 10
+cadence: weekly
+carry_forward: true
+
+# Petrojam is Jamaica's only petroleum refinery (state-owned) and
+# publishes weekly ex-refinery prices that effectively anchor retail
+# pump prices. carry_forward=true because each weekly price applies
+# until the next Petrojam notice is issued (typically Thursdays).
+# Coverage runs back to Feb 2004.
+
+products:
+  "Gasolene 87":
+    label: Gasoline 87
+    series_key: gasoline_regular_87
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 87
+  "Gasolene 90":
+    label: Gasoline 90
+    series_key: gasoline_premium_90
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 90
+  "Auto Diesel":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "ULSD":
+    series_key: diesel_ulsd
+    fuel_family: diesel
+    unit: liter
+    include_in_build: false
+    grade: ultra_low_sulfur
+  "Kerosene":
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Propane":
+    label: LPG
+    series_key: lpg_propane
+    fuel_family: lpg
+    unit: liter
+    density_l_per_kg: 1.96
+    include_in_build: false
+    grade: propane
+  "Butane":
+    label: LPG
+    series_key: lpg_butane
+    fuel_family: lpg
+    unit: liter
+    density_l_per_kg: 1.96
+    include_in_build: false
+    grade: butane
+  "HFO":
+    series_key: fuel_oil_hfo
+    fuel_family: fuel_oil
+    unit: liter
+    include_in_build: false
+    grade: heavy
+  "Asphalt":
+    series_key: asphalt
+    fuel_family: asphalt
+    unit: liter
+    include_in_build: false
+    grade: standard

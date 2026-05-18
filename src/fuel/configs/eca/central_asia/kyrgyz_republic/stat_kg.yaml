@@ -1,0 +1,38 @@
+source_key: stat_kg_monthly
+module: eca.central_asia.kyrgyz_republic.stat_kg
+function: fetch_kg_stat
+url: https://www.stat.gov.kg/media/files/cfdf6deb-d10c-4e34-b92d-a43198e097a8.xls
+fallback_date: 2016-01-01
+priority: 10
+cadence: daily
+carry_forward: false
+currency: KGS
+
+products:
+  "Gasoline A-95":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
+    series_key: gasoline_a95
+  "Gasoline A-92":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 92
+    series_key: gasoline_a92
+  "Gasoline A-80":
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: low
+    octane_ron: 80
+    series_key: gasoline_a80
+  "Diesel":
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+    series_key: diesel

@@ -1,4 +1,164 @@
-# Publish configuration for SAR fuel policy dashboard.
+# Publish configuration for SAR (South Asia Region) fuel policy dashboard.
 
 region: sar
 region_label: "South Asia"
+dashboard_history_years: 3
+
+# Regime overrides for countries missing from WB pricing-regime CSV, or
+# where 2024-2026 reforms / per-product nuance is not captured. Keys are
+# ISO3; values are per-product {regime, subsidy} dicts. "Subsidised" badge
+# is driven by IMF implicit subsidy data, not the subsidy field here.
+regime_overrides:
+  # India — WB codes mech=3 stype=6 (LPG carve-out). Gasoline/diesel were
+  # deregulated in 2010/2014; OMCs (IOCL/BPCL/HPCL) set daily retail under
+  # informal government guidance. PMUY LPG subsidy + Ujjwala expansion
+  # keeps domestic LPG subsidised. Kerosene under-recoveries largely
+  # eliminated post-2017 with PDS-kerosene phase-down.
+  IND:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel: {regime: Market, subsidy: false}
+    LPG: {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Sri Lanka — not in WB CSV. CPC + LIOC monopoly importers; IMF-program
+  # fuel-pricing formula (revised Jan-2025) sets monthly retail. Targeted
+  # subsidies: Rs 25/L kerosene for fishermen (Oct-2024 cabinet decision),
+  # 7.5% diesel concession for fisheries.
+  LKA:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel: {regime: Price Control, subsidy: true}
+    LPG: {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+# Per-cell source attribution and reform notes. Keys: ISO3 -> product
+# (Gasoline | Diesel | LPG | Kerosene) -> {classification_sources, reform}.
+regime_notes:
+  BGD:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=1). BPC monopoly importer; historically frozen for long stretches."
+        - { label: "Bangladesh Petroleum Corporation (BPC)",
+            url: "https://bpc.gov.bd/" }
+      reform:
+        label: "Automatic formula Mar-24"
+        note: "Bangladesh introduced an automatic fuel-pricing formula in March 2024 (Automatic Fuel Oil Pricing Guidelines, Feb-2024); domestic retail now tracks import costs."
+        sources:
+          - { label: "Daily Star — Bangladesh fuel formula 2024",
+              url: "https://www.thedailystar.net/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same BPC + automatic formula since Mar-2024."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail set monthly by Bangladesh Energy Regulatory Commission (BERC)."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail also under BPC formula."
+
+  BTN:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=1). MoEA-administered formula since 2016 (revised 2022) covers import + transport + leakage."
+        - { label: "Ministry of Economic Affairs — Bhutan",
+            url: "https://www.moice.gov.bt/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same MoEA formula."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. STCBL administers domestic LPG distribution and pricing."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene also under MoEA formula."
+
+  IND:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=3, stype=6 LPG carve-out). Gasoline deregulated June 2010; OMCs set daily retail."
+        - { label: "PPAC — Petroleum Planning and Analysis Cell",
+            url: "https://ppac.gov.in/" }
+      reform:
+        label: "Daily revisions since 2017"
+        note: "OMCs (IOCL/BPCL/HPCL) have set daily retail prices since June 2017 under informal government guidance; price freezes recur around elections."
+        sources:
+          - { label: "Reuters — India fuel pricing",
+              url: "https://www.reuters.com/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=3). Diesel deregulated October 2014."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (stype=6). PAHAL/DBTL subsidy direct-to-bank for 14.2kg + 5kg domestic cylinders since 2015."
+      reform:
+        label: "PMUY expanded 2024"
+        note: "Pradhan Mantri Ujjwala Yojana provides additional Rs 300/cylinder subsidy to ~104mn beneficiary households; expanded in 2024."
+        sources:
+          - { label: "Ministry of Petroleum & Natural Gas — India",
+              url: "https://mopng.gov.in/" }
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. PDS-kerosene under-recoveries eliminated post-2017; most states have phased out the kerosene PDS allocation."
+
+  LKA:
+    Gasoline:
+      classification_sources:
+        - "Not in WB 2024 CSV. CPC and LIOC operate under IMF-program fuel-pricing formula (revised Jan-2025)."
+        - { label: "Public Finance Sri Lanka — fuel price tracker",
+            url: "https://publicfinance.lk/en/topics/february-2025-fuel-price-update-fuel-prices-align-with-formula-for-the-first-time-since-2022-1738736777" }
+      reform:
+        label: "Formula realigned Jan-2025"
+        note: "Parameters of the IMF-linked fuel-price formula were revised in January 2025 (processing cost USD 0.06/L, admin cost cut 4%→2%, SSCL 1.25% added); February 2025 was first month prices aligned with the formula since 2022."
+        sources:
+          - { label: "Fuel Price Methodology — Sri Lanka",
+              url: "https://dashboards.publicfinance.lk/fuel-price-tracker/wp-content/uploads/2025/03/Fuel-Price-Methodology.pdf" }
+    Diesel:
+      classification_sources:
+        - "Not in WB 2024 CSV. Same formula (processing cost USD 0.05/L)."
+      reform:
+        label: "Fisheries diesel 7.5%"
+        note: "October-2024 cabinet decision granted a 7.5% diesel concession to the fisheries sector for six months; subsequently extended."
+        sources:
+          - { label: "Newswire LK — fisheries fuel concession",
+              url: "https://www.newswire.lk/2024/10/15/rs-25-fuel-subsidy-govt-announces-three-key-concessions-for-fisheries/" }
+    LPG:
+      classification_sources:
+        - "Not in WB 2024 CSV. Litro Gas applies monthly global-price formula; no general subsidy."
+      reform:
+        label: "Cap hikes Mar/Apr-26"
+        note: "Litro Gas applied an 8% hike in March-2026 and a further 23% hike in April-2026 reflecting global LPG price moves."
+        sources:
+          - { label: "Newswire LK — LPG price moves",
+              url: "https://www.newswire.lk/" }
+    Kerosene:
+      classification_sources:
+        - "Not in WB 2024 CSV. CPC sets kerosene retail at Rs 183-185/L (mid/late 2025)."
+      reform:
+        label: "Rs 25/L fisherman subsidy"
+        note: "October-2024 cabinet decision granted Rs 25/L subsidy on kerosene for fishermen, capped at 15 L/day for 25 days/month; kerosene use surged in response."
+        sources:
+          - { label: "Newswire LK — kerosene subsidy",
+              url: "https://www.newswire.lk/2024/10/15/rs-25-fuel-subsidy-govt-announces-three-key-concessions-for-fisheries/" }
+          - { label: "Economy Next — kerosene surge",
+              url: "https://economynext.com/sri-lanka-kerosene-use-rockets-amid-subsidies-186075/" }
+
+  NPL:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=1,4). Nepal Oil Corporation is the sole importer and publishes biweekly prices."
+        - { label: "Nepal Oil Corporation",
+            url: "https://www.noc.org.np/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same NOC biweekly mechanism."
+    LPG:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. LPG retail also under NOC monopoly distribution."
+    Kerosene:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset. Kerosene retail under NOC."
+
+# Restrict scatter chart and KPI cards to this region's countries.
+scatter_focus_region: true
+
+# Commodity products to show in Tab 1 chart. Empty = all commodities.
+commodity_products: []

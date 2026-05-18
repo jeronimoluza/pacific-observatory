@@ -1,0 +1,51 @@
+source_key: ni_ine_weekly
+module: lac.central_america.nicaragua.ine
+function: fetch_ni_ine
+url: https://www.ine.gob.ni/?page_id=108819
+fallback_date: 2021-01-01
+priority: 10
+cadence: weekly
+carry_forward: false
+
+# INE's "Monitoreo de Precios" weekly PDF reports Managua station averages
+# for Gasolina Regular, Súper, Diésel and Kerosene. These are explicitly
+# "precios no regulados por el Estado" (unlike GLP, which IS regulated),
+# so carry_forward=false — gaps should reflect missing observations.
+#
+# The Hidrocarburos page lists six year-tile subpages (2021-2026) whose
+# weekly PDF links are buried in a Divi inline-JS gallery config. We hit
+# each subpage, harvest PDF URLs, and parse the comparison table.
+# GLP regulated prices are a separate (still-to-build) source; the GLP
+# yearly consolidados are image-only PDFs requiring OCR.
+
+products:
+  "Gasolina Regular":
+    label: Gasoline Regular
+    series_key: gasoline_regular_87
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 87
+  "Gasolina Súper":
+    label: Gasoline Super
+    series_key: gasoline_premium_91
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 91
+  "Diésel":
+    label: Diesel
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Kerosene":
+    label: Kerosene
+    series_key: kerosene
+    fuel_family: kerosene
+    unit: liter
+    include_in_build: true
+    grade: standard

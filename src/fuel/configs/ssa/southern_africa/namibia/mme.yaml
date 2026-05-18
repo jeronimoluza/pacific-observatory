@@ -1,0 +1,38 @@
+source_key: mme_na_monthly
+module: ssa.southern_africa.namibia.mme
+function: fetch_mme_na
+url: https://www.mme.gov.na/news/
+fallback_date: 2025-03-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# Namibia's Ministry of Mines and Energy publishes a Fuel Price Review
+# announcement at /news/ around the first business day of every month.
+# Prices are referenced in N$/litre at the Port of Walvis Bay (the
+# canonical reference; other towns adjust via transport differentials
+# not published per-town here). Live listing shows ~11 recent months;
+# we backfill via the Wayback Machine CDX API to reach earlier 2025.
+# Pre-March 2025 articles only report price *changes* in cents/litre and
+# require parsing the linked PDF for absolute levels — out of scope here.
+
+products:
+  "Petrol":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+    octane_ron: 95
+  "Diesel 50ppm":
+    series_key: diesel_50ppm
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "Diesel 10ppm":
+    series_key: diesel_10ppm
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: premium

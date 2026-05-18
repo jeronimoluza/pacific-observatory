@@ -1,0 +1,22 @@
+source_key: fuelsindustry_za_retail_petrol
+module: ssa.southern_africa.south_africa.fuelsindustry
+function: fetch_fuelsindustry_za
+url: https://fuelsindustry.org.za/consumer-information/fuel-prices-current-past/
+fallback_date: 2012-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# FIASA publishes a per-year TablePress grid of South African pump
+# prices. The fetcher keeps only the retail 95 ULP rows (marked *)
+# and emits a monthly average across the Coastal and Gauteng regions
+# in ZAR/litre.
+
+products:
+  "Petrol 95":
+    series_key: petrol_95
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: premium
+    octane_ron: 95
