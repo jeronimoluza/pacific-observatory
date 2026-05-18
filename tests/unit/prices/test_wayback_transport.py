@@ -60,3 +60,40 @@ def test_discover_snapshots_returns_empty_on_request_failure():
         session, "https://example.com/p/3", date(2024, 1, 1)
     )
     assert out == []
+
+
+@pytest.mark.unit
+def test_fetch_snapshot_returns_text_on_success():
+    fake_resp = MagicMock()
+    fake_resp.text = "<html>p</html>"
+    fake_resp.raise_for_status.return_value = None
+
+    session = MagicMock()
+    session.get.return_value = fake_resp
+
+    out = wayback.fetch_snapshot(
+        session, "20240101000000", "https://example.com/p/1"
+    )
+    assert out == "<html>p</html>"
+    fetched_url = session.get.call_args.args[0]
+    assert fetched_url == (
+        "https://web.archive.org/web/20240101000000id_/https://example.com/p/1"
+    )
+
+
+@pytest.mark.unit
+def test_fetch_snapshot_returns_none_on_failure():
+    session = MagicMock()
+    session.get.side_effect = requests.exceptions.Timeout("slow")
+
+    out = wayback.fetch_snapshot(
+        session, "20240101000000", "https://example.com/p/2"
+    )
+    assert out is None
+
+
+@pytest.mark.unit
+def test_parse_timestamp_to_date():
+    assert wayback.parse_timestamp_to_date("20240102030405") == date(2024, 1, 2)
+    assert wayback.parse_timestamp_to_date("abc") is None
+    assert wayback.parse_timestamp_to_date("99999999") is None

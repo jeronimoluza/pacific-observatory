@@ -109,3 +109,33 @@ def discover_snapshots(
         "[wayback] %d snapshots for %s after %s", len(timestamps), url, cutoff
     )
     return timestamps
+
+
+def fetch_snapshot(
+    session: requests.Session,
+    timestamp: str,
+    url: str,
+    *,
+    timeout: int = 60,
+) -> str | None:
+    """Fetch a single Wayback snapshot's raw HTML (no toolbar injection).
+
+    The `id_` suffix on the wayback path returns the original archived bytes
+    without IA's playback wrapper, which is essential for keeping the price
+    spiders' selectors intact.
+    """
+    snap_url = WAYBACK_RAW.format(ts=timestamp, url=url)
+    resp = _request_with_retry(
+        session, snap_url, timeout=timeout, label=f"wayback snap {timestamp}"
+    )
+    return resp.text if resp is not None else None
+
+
+def parse_timestamp_to_date(ts: str) -> date | None:
+    """Wayback timestamps are 14-digit YYYYMMDDHHMMSS — extract the date."""
+    if len(ts) < 8:
+        return None
+    try:
+        return date(int(ts[:4]), int(ts[4:6]), int(ts[6:8]))
+    except ValueError:
+        return None
