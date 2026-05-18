@@ -1,14 +1,9 @@
 """Generate standalone HTML fuel policy overview visualization.
 
-Four tabs:
-  Tab 1 — Global Commodity Prices: Brent/WTI/Dubai/RBOB time-series +
-           EAP country pricing-regime table.
-  Tab 2 — Country Subsidies Comparison: scatter of subsidy per capita
-           vs GDP per capita, coloured by pricing regime.
-  Tab 3 — Economies Fuel Prices: per-country fuel product time-series with
-           regime information and day-to-day price change chart.
-  Tab 4 — Cross-Economy Comparison: multi-country USD fuel price comparison
-           by fuel family with regional average benchmark line.
+Variant of `visualize_policy.py`. Loads Tab 1 regime overrides from
+`eap_regime_overrides.yaml` (new pipeline schema: `regime_overrides`) instead
+of the in-file `_HARDCODED_PRODUCT_REGIMES` dict. Writes to
+`data/cpi/fuel_prices/eap_fuel_dashboard.html`.
 """
 
 import bisect
@@ -20,6 +15,7 @@ from pathlib import Path
 
 import pandas as pd
 import requests
+import yaml
 
 from .constants import (
     DASHBOARD_HISTORY_YEARS,
@@ -162,28 +158,42 @@ _SUBSIDY_TYPE_CODES = {3, 4, 5, 6, 7, 9}
 # ISO3 codes excluded from subsidy chips in Tab 1 (no data yet)
 _SUBSIDY_CHIP_EXCLUDE: set[str] = set()
 
-# Hardcoded product regimes for countries missing from, or intentionally
-# overriding, the WB pricing-regime CSV.
-_HARDCODED_PRODUCT_REGIMES: dict[str, dict[str, dict]] = {
-    "MNG": {
-        "Gasoline": {"regime": "Price Control", "subsidy": False},
-        "Diesel": {"regime": "Price Control", "subsidy": False},
-        "LPG": {"regime": "Price Control", "subsidy": False},
-        "Kerosene": {"regime": "Price Control", "subsidy": False},
-    },
-    "HKG": {
-        "Gasoline": {"regime": "Market", "subsidy": False},
-        "Diesel": {"regime": "Market", "subsidy": False},
-        "LPG": {"regime": "Market", "subsidy": False},
-        "Kerosene": {"regime": "Market", "subsidy": False},
-    },
-    "TWN": {
-        "Gasoline": {"regime": "Price Control", "subsidy": False},
-        "Diesel": {"regime": "Price Control", "subsidy": False},
-        "LPG": {"regime": "Price Control", "subsidy": False},
-        "Kerosene": {"regime": "Price Control", "subsidy": False},
-    },
-}
+# YAML file holding per-product regime overrides for Tab 1.
+# Schema mirrors `src/fuel/configs/_publish/<region>.yaml` in template-repo:
+#   regime_overrides:
+#     ISO3:
+#       Gasoline: {regime: Price Control, subsidy: true}
+#       Diesel:   {regime: Market,        subsidy: false}
+#       LPG:      {regime: Price Control, subsidy: true}
+#       Kerosene: {regime: Market,        subsidy: false}
+_REGIME_OVERRIDES_YAML = Path(__file__).resolve().parent / "eap_regime_overrides.yaml"
+
+
+def _load_hardcoded_product_regimes() -> dict[str, dict[str, dict]]:
+    """Load `regime_overrides` from YAML and normalize to {iso3: {product: {regime, subsidy}}}."""
+    if not _REGIME_OVERRIDES_YAML.is_file():
+        return {}
+    with open(_REGIME_OVERRIDES_YAML, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f) or {}
+    overrides = data.get("regime_overrides", {}) or {}
+    out: dict[str, dict[str, dict]] = {}
+    for iso3, per_product in overrides.items():
+        if not isinstance(per_product, dict):
+            continue
+        out[iso3] = {
+            prod: {
+                "regime": info.get("regime", "Unknown"),
+                "subsidy": bool(info.get("subsidy", False)),
+            }
+            for prod, info in per_product.items()
+            if isinstance(info, dict)
+        }
+    return out
+
+
+_HARDCODED_PRODUCT_REGIMES: dict[
+    str, dict[str, dict]
+] = _load_hardcoded_product_regimes()
 
 
 def _apply_hardcoded_regime_overrides(
@@ -2893,3 +2903,15 @@ requestAnimationFrame(() => {{
     with open(out, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"  [policy] Created {out}")
+
+
+if __name__ == "__main__":
+    from .loader import load_fuel_data
+
+    print("Loading fuel prices data...")
+    fuel_data = load_fuel_data()
+    policy_data = load_policy_data()
+    out_path = DATA_DIR / "eap_fuel_dashboard.html"
+    print(f"Generating fuel policy HTML -> {out_path}")
+    gen_policy_html(policy_data, fuel_data, out_path)
+    print("Done.")

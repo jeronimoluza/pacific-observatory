@@ -1,0 +1,269 @@
+# Tab 1 regime overrides for the EAP fuel dashboard rendered by
+# `visualize_policy_pills.py`. Schema mirrors `_publish/<region>.yaml` in
+# template-repo (`src/fuel/configs/_publish/lac.yaml` is the canonical
+# reference).
+#
+# Include a country here only when at least one product cell disagrees with
+# the WB 2024 pricing-regime CSV (or the country is missing from it). When
+# you do include a country, spell out all four products: Gasoline, Diesel,
+# LPG, Kerosene.
+#
+# Last full pass: 2026-05-14 (30 EAP countries, all 3 subregions).
+
+regime_overrides:
+  # ── East Asia ────────────────────────────────────────────────────────
+
+  # China — NDRC retail ceilings adjusted every 10 working days on a basket
+  # of Brent/WTI/Dubai (within $40–$130/bbl band); LPG market-set; kerosene
+  # under same NDRC mechanism.
+  CHN:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel:   {regime: Price Control, subsidy: false}
+    LPG:      {regime: Market,        subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Japan — Provisional fuel taxes abolished Dec 2025 (gasoline) / Apr 2026
+  # (diesel); ANRE follow-on subsidy active for gasoline + gasoil (~JPY10/L)
+  # and kerosene (JPY5/L since May 2025). LPG market-set.
+  JPN:
+    Gasoline: {regime: Market, subsidy: true}
+    Diesel:   {regime: Market, subsidy: true}
+    LPG:      {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: true}
+
+  # South Korea — Statutory fuel price cap imposed 13-Mar-2026 (gasoline
+  # KRW 1,934, diesel 1,923, kerosene 1,530); on 5th extension as of May
+  # 2026. Excise tax cuts in parallel (gasoline 15%, diesel/LPG 25%).
+  KOR:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Market,        subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # Hong Kong SAR — Gasoline/diesel retail fully deregulated; auto-LPG at
+  # dedicated stations capped by P=A+B formula; 2-month LPG/diesel subsidy
+  # for taxis/minibuses/commercial vehicles active May 2026.
+  HKG:
+    Gasoline: {regime: Market,        subsidy: false}
+    Diesel:   {regime: Market,        subsidy: true}
+    LPG:      {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Market,        subsidy: false}
+
+  # Taiwan — CPC weekly formula (70% Dubai + 30% Brent) with 5% cap; dual
+  # gov-CPC stabilization fund (gov ratio raised 60%→75% Mar-2026); LPG
+  # monthly review; hybrid pseudo-regulation via state-owned refiner.
+  TWN:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Market,        subsidy: false}
+
+  # Mongolia — 100% imported from Russia; Price Control Council coordinates
+  # supply contracts + customs/excise exemptions; tax exemptions act as
+  # implicit consumer subsidy keeping retail below import parity.
+  MNG:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Market,        subsidy: false}
+    Kerosene: {regime: Market,        subsidy: false}
+
+  # ── Southeast Asia ───────────────────────────────────────────────────
+
+  # Cambodia — MOC weekly formula (Inter-Ministerial Proclamation 0083/2022)
+  # sets gasoline & diesel caps; LPG cylinder set administratively.
+  KHM:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel:   {regime: Price Control, subsidy: false}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Indonesia — Prabowo froze Pertalite (Rp10,000 vs true cost Rp13,500) &
+  # Solar (Rp6,800) through end-2026; LPG 3kg ~70% subsidised, kerosene ~78%.
+  IDN:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # Lao PDR — MOIC sets retail via Singapore benchmark + excise caps
+  # (21% diesel / 31% gasoline); LAK 300–600bn fuel support fund + Mar-2026
+  # emergency excise cut.
+  LAO:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Malaysia — BUDI95 caps RON95 at RM1.99 (200 L/month quota from Apr-2026);
+  # diesel subsidised for transport (RM1.88–2.15); LPG household RM26 cap;
+  # RON97 floats but minor share.
+  MYS:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # Myanmar — Junta-coordinated MPTA pricing + MPE state LPG monopoly +
+  # digital rationing (2026); no consumer subsidy, prices have surged
+  # 70–100% since 2022.
+  MMR:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel:   {regime: Price Control, subsidy: false}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Philippines — RA 8479 deregulates gasoline/diesel (Pantawid Pasada is
+  # producer-side transport aid); EO 114 (Apr-2026) suspended LPG & kerosene
+  # excise for 3 months.
+  PHL:
+    Gasoline: {regime: Market, subsidy: true}
+    Diesel:   {regime: Market, subsidy: true}
+    LPG:      {regime: Market, subsidy: true}
+    Kerosene: {regime: Market, subsidy: true}
+
+  # Singapore — Fully market; EMA confirmed Apr-2026 no across-the-board
+  # fuel duty cuts, only targeted CDC vouchers.
+  SGP:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel:   {regime: Market, subsidy: false}
+    LPG:      {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Thailand — OFP burns ~$32M/day capping diesel ≤30 THB/L; LPG 15kg
+  # cylinder frozen at 423 THB through Mar-2026; gasoline floats with
+  # stabilisation overlay.
+  THA:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Price Control, subsidy: true}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Vietnam — MOIT weekly adjustment + Stabilisation Fund (VND 8tn budget
+  # advance Mar-2026, VND 3,000/L subsidy on petrol); kerosene deregulated
+  # 29-Apr-2026; LPG market-set.
+  VNM:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Market,        subsidy: false}
+    Kerosene: {regime: Market,        subsidy: false}
+
+  # Timor-Leste — Council of Ministers Decree-Law (Mar-2026) set max retail:
+  # gasoline US$1.50/L, diesel US$1.65/L, LPG US$4.20/kg; flipped from
+  # Market to Price Control.
+  TLS:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel:   {regime: Price Control, subsidy: false}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # ── Pacific Islands ──────────────────────────────────────────────────
+
+  # Australia — Fully deregulated retail; ACCC monitors only.
+  AUS:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel:   {regime: Market, subsidy: false}
+    LPG:      {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # New Zealand — Fully deregulated retail; MBIE weekly monitoring only.
+  NZL:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel:   {regime: Market, subsidy: false}
+    LPG:      {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Fiji — FCCC monthly Pricing Order caps benzine, premix, ADO, kerosene
+  # and LPG.
+  FJI:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel:   {regime: Price Control, subsidy: false}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # PNG — ICCC monthly Indicative Retail Prices; 2025-2026 government "fuel
+  # relief" extensions act as a consumer subsidy.
+  PNG:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # Solomon Islands — PAC (Ministry of Commerce) sets monthly retail prices
+  # with active smoothing/absorption in May 2026.
+  SLB:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # Vanuatu — URA / DoE monthly retail price template; PMO announced
+  # targeted fuel support measures in 2026.
+  VUT:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # Samoa — MCIL issues monthly maximum retail prices for petrol, diesel,
+  # kerosene and LPG under the Price Control Order regime.
+  WSM:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel:   {regime: Price Control, subsidy: false}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Tonga — Competent Authority under Price and Wages Control Act 1988
+  # caps petrol, diesel, kerosene and LPG monthly.
+  TON:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel:   {regime: Price Control, subsidy: false}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Kiribati — Government-set prices retained; 2025 fuel/electricity tariff
+  # reform (IMF 2026 Art IV) removed consumer subsidies.
+  KIR:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel:   {regime: Price Control, subsidy: false}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Tuvalu — State of emergency (Apr-2026) gives explicit government control
+  # over fuel supply and consumption; no formal subsidy fund.
+  TUV:
+    Gasoline: {regime: Price Control, subsidy: false}
+    Diesel:   {regime: Price Control, subsidy: false}
+    LPG:      {regime: Market,        subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: false}
+
+  # Marshall Islands — Retail set by Mobil; 90-day economic emergency
+  # (Apr-2026) introduced temporary relief subsidies for fuel/power.
+  MHL:
+    Gasoline: {regime: Market, subsidy: true}
+    Diesel:   {regime: Market, subsidy: true}
+    LPG:      {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
+
+  # Micronesia (FSM) — Vital FSMPC Pricing Policy Framework sets domestic
+  # fuel prices; currently absorbing ~70% of cost increases.
+  FSM:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Price Control, subsidy: false}
+    Kerosene: {regime: Price Control, subsidy: true}
+
+  # Nauru — Government sets fuel pricing under 2022 Petroleum Supply
+  # Agreement; CSO subsidies and import-duty reductions remain in force.
+  NRU:
+    Gasoline: {regime: Price Control, subsidy: true}
+    Diesel:   {regime: Price Control, subsidy: true}
+    LPG:      {regime: Market,        subsidy: false}
+    Kerosene: {regime: Market,        subsidy: false}
+
+  # Palau — Retail set by private suppliers; Office of Planning & Statistics
+  # monitors only.
+  PLW:
+    Gasoline: {regime: Market, subsidy: false}
+    Diesel:   {regime: Market, subsidy: false}
+    LPG:      {regime: Market, subsidy: false}
+    Kerosene: {regime: Market, subsidy: false}
