@@ -71,3 +71,46 @@ def _parse_iso_utc(value: str | None) -> datetime | None:
     if dt.tzinfo is None:
         return dt.replace(tzinfo=timezone.utc)
     return dt.astimezone(timezone.utc)
+
+
+class Ledger:
+    """Per-source ledger of (url_hash, wayback_timestamp) pairs already fetched.
+
+    Stored as `{url_hash: sorted_unique_list_of_timestamps}` JSON.
+    """
+
+    def __init__(self, path: Path, data: dict[str, list[str]] | None = None):
+        self.path = path
+        self._data: dict[str, set[str]] = {
+            k: set(v) for k, v in (data or {}).items()
+        }
+
+    @classmethod
+    def load(cls, path: Path) -> "Ledger":
+        if not path.exists():
+            return cls(path)
+        try:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(raw, dict):
+                logger.warning("Ledger %s is not a dict; starting fresh", path)
+                return cls(path)
+            return cls(
+                path,
+                {k: list(v) for k, v in raw.items() if isinstance(v, list)},
+            )
+        except (OSError, json.JSONDecodeError) as exc:
+            logger.warning("Failed to read ledger %s: %s — starting fresh", path, exc)
+            return cls(path)
+
+    def is_done(self, url_hash: str, timestamp: str) -> bool:
+        return timestamp in self._data.get(url_hash, set())
+
+    def record(self, url_hash: str, timestamp: str) -> None:
+        self._data.setdefault(url_hash, set()).add(timestamp)
+
+    def save(self) -> None:
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        out = {k: sorted(v) for k, v in self._data.items() if v}
+        self.path.write_text(
+            json.dumps(out, indent=2, sort_keys=True), encoding="utf-8"
+        )
