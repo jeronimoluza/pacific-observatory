@@ -105,9 +105,7 @@ def discover_snapshots(
             continue
         timestamps.append(row[0])
     timestamps.sort()
-    logger.info(
-        "[wayback] %d snapshots for %s after %s", len(timestamps), url, cutoff
-    )
+    logger.info("[wayback] %d snapshots for %s after %s", len(timestamps), url, cutoff)
     return timestamps
 
 

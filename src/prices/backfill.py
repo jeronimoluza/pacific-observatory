@@ -97,9 +97,7 @@ class Ledger:
 
     def __init__(self, path: Path, data: dict[str, list[str]] | None = None):
         self.path = path
-        self._data: dict[str, set[str]] = {
-            k: set(v) for k, v in (data or {}).items()
-        }
+        self._data: dict[str, set[str]] = {k: set(v) for k, v in (data or {}).items()}
 
     @classmethod
     def load(cls, path: Path) -> "Ledger":
@@ -260,10 +258,11 @@ def run_source_backfill(
     def _process(entry: dict[str, Any]) -> int:
         url = entry["url"]
         url_hash = entry["url_hash"]
-        earliest = entry.get("earliest_scraped_at")
-        cutoff = cutoff_override or (
-            earliest.date() if earliest is not None else date(2015, 1, 1)
-        )
+        # CDX `from=` is the EARLIEST snapshot date to include. For backfill
+        # we want every archived snapshot (older than what live collection
+        # already covers), so default to a very early year. The user can
+        # narrow with --from if they only want recent history.
+        cutoff = cutoff_override or date(2010, 1, 1)
         session = make_session()
         try:
             rows = backfill_one_url(
@@ -445,9 +444,7 @@ def backfill_command(
 
     for m, sd, n in plan:
         if n == 0:
-            click.echo(
-                f"Skipping {m.source}: no raw_items found at {sd}/raw_items/"
-            )
+            click.echo(f"Skipping {m.source}: no raw_items found at {sd}/raw_items/")
             continue
         click.echo(f"\n=== {m.source} ({n} URLs) ===")
         run_source_backfill(

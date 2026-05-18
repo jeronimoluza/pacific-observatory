@@ -71,9 +71,7 @@ def test_fetch_snapshot_returns_text_on_success():
     session = MagicMock()
     session.get.return_value = fake_resp
 
-    out = wayback.fetch_snapshot(
-        session, "20240101000000", "https://example.com/p/1"
-    )
+    out = wayback.fetch_snapshot(session, "20240101000000", "https://example.com/p/1")
     assert out == "<html>p</html>"
     fetched_url = session.get.call_args.args[0]
     assert fetched_url == (
@@ -86,9 +84,7 @@ def test_fetch_snapshot_returns_none_on_failure():
     session = MagicMock()
     session.get.side_effect = requests.exceptions.Timeout("slow")
 
-    out = wayback.fetch_snapshot(
-        session, "20240101000000", "https://example.com/p/2"
-    )
+    out = wayback.fetch_snapshot(session, "20240101000000", "https://example.com/p/2")
     assert out is None
 
 
