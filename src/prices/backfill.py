@@ -11,18 +11,22 @@ from __future__ import annotations
 
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from contextlib import suppress
 from datetime import date, datetime, timezone
 from pathlib import Path
+from threading import Lock
 from typing import Any
 
 from bs4 import BeautifulSoup
 
+from core.http import make_session
 from prices._shared.wayback import (
     discover_snapshots,
     fetch_snapshot,
     parse_timestamp_to_date,
 )
-from prices.price_scraping.selectors import extract_with_fallback
+from prices.price_scraping.selectors import extract_with_fallback, get_selectors
 
 logger = logging.getLogger(__name__)
 
@@ -181,3 +185,143 @@ def backfill_one_url(
         }
         rows.append(row)
     return rows
+
+
+_RUN_TS_FMT = "%Y%m%d_%H%M%S"
+
+
+def _resolve_currency(source_dir: Path) -> str | None:
+    """Read currency from the first row of the most recent raw_items jsonl.
+
+    Spiders hardcode currency as a class attr; the easiest source of truth
+    at backfill time is the already-collected data.
+    """
+    raw_dir = source_dir / "raw_items"
+    if not raw_dir.exists():
+        return None
+    files = sorted(raw_dir.glob("*.jsonl"), reverse=True)
+    for f in files:
+        for line in f.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            cur = row.get("currency")
+            if cur:
+                return cur
+    return None
+
+
+def run_source_backfill(
+    *,
+    source_dir: Path,
+    spider: str,
+    cutoff_override: date | None = None,
+    collapse_digits: int = 8,
+    max_snapshots_per_url: int | None = None,
+    max_urls: int | None = None,
+    workers: int = 4,
+) -> dict[str, int]:
+    """Backfill one source. Returns stats dict.
+
+    Writes:
+      {source_dir}/wayback_items/{source}_{run_ts}.jsonl
+      {source_dir}/wayback_items/.ledger.json
+    """
+    universe = load_url_universe(source_dir)
+    if max_urls is not None:
+        universe = universe[:max_urls]
+
+    stats = {
+        "urls_total": len(universe),
+        "urls_processed": 0,
+        "rows_written": 0,
+    }
+    if not universe:
+        logger.info("[%s] no URLs to backfill", source_dir.name)
+        return stats
+
+    wayback_dir = source_dir / "wayback_items"
+    wayback_dir.mkdir(parents=True, exist_ok=True)
+    ledger = Ledger.load(wayback_dir / ".ledger.json")
+    selectors = get_selectors(spider)
+    currency = _resolve_currency(source_dir)
+
+    run_ts = datetime.now(timezone.utc).strftime(_RUN_TS_FMT)
+    out_path = wayback_dir / f"{source_dir.name}_{run_ts}.jsonl"
+    write_lock = Lock()
+    out_fh = open(out_path, "w", encoding="utf-8")
+
+    def _process(entry: dict[str, Any]) -> int:
+        url = entry["url"]
+        url_hash = entry["url_hash"]
+        earliest = entry.get("earliest_scraped_at")
+        cutoff = cutoff_override or (
+            earliest.date() if earliest is not None else date(2015, 1, 1)
+        )
+        session = make_session()
+        try:
+            rows = backfill_one_url(
+                session=session,
+                url=url,
+                url_hash=url_hash,
+                cutoff=cutoff,
+                selectors=selectors,
+                ledger=ledger,
+                currency=currency,
+                collapse_digits=collapse_digits,
+                max_snapshots=max_snapshots_per_url,
+            )
+        finally:
+            session.close()
+        if rows:
+            with write_lock:
+                for r in rows:
+                    out_fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+                out_fh.flush()
+        return len(rows)
+
+    try:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {pool.submit(_process, e): e for e in universe}
+            for fut in as_completed(futures):
+                entry = futures[fut]
+                try:
+                    n = fut.result()
+                except Exception:
+                    logger.exception(
+                        "[%s] backfill failed for %s",
+                        source_dir.name,
+                        entry["url"],
+                    )
+                    n = 0
+                stats["rows_written"] += n
+                stats["urls_processed"] += 1
+                if stats["urls_processed"] % 25 == 0:
+                    logger.info(
+                        "[%s] %d/%d urls, %d rows so far",
+                        source_dir.name,
+                        stats["urls_processed"],
+                        stats["urls_total"],
+                        stats["rows_written"],
+                    )
+                    with suppress(OSError):
+                        ledger.save()
+    finally:
+        out_fh.close()
+        with suppress(OSError):
+            ledger.save()
+
+    if stats["rows_written"] == 0:
+        with suppress(OSError):
+            out_path.unlink()
+
+    logger.info(
+        "[%s] backfill complete — %d urls, %d rows written",
+        source_dir.name,
+        stats["urls_processed"],
+        stats["rows_written"],
+    )
+    return stats
