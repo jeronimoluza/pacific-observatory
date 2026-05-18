@@ -20,12 +20,15 @@ from typing import Any
 
 from bs4 import BeautifulSoup
 
+import click
+
 from core.http import make_session
 from prices._shared.wayback import (
     discover_snapshots,
     fetch_snapshot,
     parse_timestamp_to_date,
 )
+from prices.config import PriceSourceConfig, discover_prices_configs
 from prices.price_scraping.selectors import extract_with_fallback, get_selectors
 
 logger = logging.getLogger(__name__)
@@ -325,3 +328,134 @@ def run_source_backfill(
         stats["rows_written"],
     )
     return stats
+
+
+_PRICES_DIR = Path(__file__).resolve().parent
+_PROJECT_ROOT = _PRICES_DIR.parent.parent
+
+
+def _load_manifests(
+    region: str | None,
+    subregion: str | None,
+    country: str | None,
+    source: str | None,
+) -> list[PriceSourceConfig]:
+    paths = discover_prices_configs(region=region, subregion=subregion, country=country)
+    if source is not None:
+        paths = [p for p in paths if p.stem == source]
+    return [PriceSourceConfig.load(p) for p in paths]
+
+
+def _source_dir_for(manifest: PriceSourceConfig) -> Path:
+    return (
+        _PROJECT_ROOT
+        / "data"
+        / "prices"
+        / manifest.region
+        / manifest.subregion
+        / manifest.country
+        / manifest.source
+    )
+
+
+def _parse_iso_date(value: str | None) -> date | None:
+    if value is None:
+        return None
+    return datetime.strptime(value, "%Y-%m-%d").date()
+
+
+@click.command()
+@click.option("--region", "-r", default=None, help="Region slug (e.g. eap)")
+@click.option("--subregion", "-S", default=None, help="Subregion slug")
+@click.option("--country", "-c", default=None, help="Country slug")
+@click.option("--source", "-s", default=None, help="Run a single source slug")
+@click.option(
+    "--from",
+    "from_date",
+    default=None,
+    help="CDX cutoff (YYYY-MM-DD). Default: earliest live row for the source.",
+)
+@click.option(
+    "--collapse",
+    type=click.Choice(["day", "month", "year"]),
+    default="day",
+    show_default=True,
+    help="CDX collapse granularity",
+)
+@click.option(
+    "--max-snapshots-per-url",
+    type=int,
+    default=None,
+    help="Cap snapshots fetched per URL (testing/cost control).",
+)
+@click.option(
+    "--max-urls", type=int, default=None, help="Cap URLs processed per source."
+)
+@click.option(
+    "--workers",
+    type=int,
+    default=4,
+    show_default=True,
+    help="Thread pool size per source.",
+)
+@click.option("--dry-run", is_flag=True, help="List sources + URL counts; don't fetch.")
+def backfill_command(
+    region,
+    subregion,
+    country,
+    source,
+    from_date,
+    collapse,
+    max_snapshots_per_url,
+    max_urls,
+    workers,
+    dry_run,
+):
+    """Recover historical prices from the Wayback Machine."""
+    manifests = _load_manifests(region, subregion, country, source)
+    if not manifests:
+        raise click.ClickException(
+            "No matching sources. Check --region/--subregion/--country/--source."
+        )
+
+    active = [m for m in manifests if m.active]
+    if not active:
+        raise click.ClickException("No active sources to back-fill.")
+
+    collapse_digits = {"day": 8, "month": 6, "year": 4}[collapse]
+    cutoff = _parse_iso_date(from_date)
+
+    plan = []
+    for m in active:
+        sd = _source_dir_for(m)
+        n_urls = len(load_url_universe(sd))
+        plan.append((m, sd, n_urls))
+
+    for m, sd, n in plan:
+        click.echo(
+            f"  {m.region}/{m.subregion}/{m.country}/{m.source}  "
+            f"(spider={m.spider}, urls={n})"
+        )
+    click.echo(f"\n{len(plan)} sources, {sum(n for _, _, n in plan)} unique URLs")
+
+    if dry_run:
+        return
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
+
+    for m, sd, n in plan:
+        if n == 0:
+            click.echo(
+                f"Skipping {m.source}: no raw_items found at {sd}/raw_items/"
+            )
+            continue
+        click.echo(f"\n=== {m.source} ({n} URLs) ===")
+        run_source_backfill(
+            source_dir=sd,
+            spider=m.spider,
+            cutoff_override=cutoff,
+            collapse_digits=collapse_digits,
+            max_snapshots_per_url=max_snapshots_per_url,
+            max_urls=max_urls,
+            workers=workers,
+        )

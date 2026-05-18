@@ -314,6 +314,26 @@ def text_publish_special(region):
     run_publish_special(region=region)
 
 
+@text.command("build-policy-addons")
+@click.option(
+    "--region",
+    "-r",
+    default=None,
+    callback=make_slug_validator("region"),
+    help="Region slug; omit to build all six.",
+)
+@click.option(
+    "--chart-title",
+    default=None,
+    help="Optional chart title embedded in the HTML. Defaults to today's date.",
+)
+def text_build_policy_addons(region, chart_title):
+    """Build Fuel Crisis Policy addon HTMLs from data/text/policy_tracker/<region>.xlsx."""
+    from text.plotting.policy_dashboards import build_addons
+
+    build_addons(region=region, chart_title=chart_title)
+
+
 @text.command("status")
 @_region_opt
 @_subregion_opt
@@ -347,15 +367,11 @@ _register_text_storage(
 # ── Prices subcommands ──────────────────────────────────────────────
 
 
-@prices.command("collect")
-@_region_opt
-@_subregion_opt
-@_country_opt
-@_source_opt
-@_dry_run_opt
-def prices_collect(region, subregion, country, source, dry_run):
-    """Scrape supermarket prices from configured retailers."""
-    click.echo("prices collect: not yet migrated")
+from prices.collect import collect as _prices_collect  # noqa: E402
+from prices.backfill import backfill_command as _prices_backfill  # noqa: E402
+
+prices.add_command(_prices_collect, name="collect")
+prices.add_command(_prices_backfill, name="backfill")
 
 
 @prices.command("build")
