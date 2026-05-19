@@ -1,0 +1,34 @@
+{
+  "economic": {
+    "economy": "majandus",
+    "economic": "majanduslik",
+    "financial": "finants"
+  },
+  "policy": {
+    "policy": "poliitika",
+    "government": "valitsus",
+    "parliament": "parlament",
+    "Riigikogu": "Riigikogu",
+    "minister": "minister",
+    "ministry": "ministeerium",
+    "central bank": "keskpank",
+    "Bank of Estonia": "Eesti Pank",
+    "president": "president",
+    "prime minister": "peaminister",
+    "regulation": "reguleerimine",
+    "legislation": "õigusaktid",
+    "law": "seadus",
+    "tax": "maks",
+    "taxation": "maksustamine",
+    "deficit": "defitsiit",
+    "budget": "eelarve"
+  },
+  "uncertainty": {
+    "uncertain": "ebakindel",
+    "uncertainty": "ebakindlus",
+    "uncertain_alt": "ebamäärane",
+    "risk": "risk",
+    "risky": "riskantne",
+    "instability": "ebastabiilsus"
+  }
+}

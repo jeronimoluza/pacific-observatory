@@ -1,0 +1,32 @@
+{
+  "economic": {
+    "economy": "ekonomika",
+    "economic": "ekonomisks",
+    "financial": "finanšu"
+  },
+  "policy": {
+    "policy": "politika",
+    "government": "valdība",
+    "parliament": "parlaments",
+    "Saeima": "Saeima",
+    "minister": "ministrs",
+    "ministry": "ministrija",
+    "central bank": "centrālā banka",
+    "Bank of Latvia": "Latvijas Banka",
+    "president": "prezidents",
+    "prime minister": "Ministru prezidents",
+    "regulation": "regulējums",
+    "legislation": "likumdošana",
+    "law": "likums",
+    "tax": "nodoklis",
+    "deficit": "deficīts",
+    "budget": "budžets"
+  },
+  "uncertainty": {
+    "uncertain": "nenoteikts",
+    "uncertainty": "nenoteiktība",
+    "risk": "risks",
+    "risky": "riskants",
+    "instability": "nestabilitāte"
+  }
+}

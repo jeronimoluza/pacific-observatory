@@ -9,6 +9,36 @@ from html import unescape
 
 
 URL_DATE_RE = re.compile(r"/(\d{4})/(\d{2})/(\d{2})/")
+# Ekonomichna Pravda listing URLs: /news/date_DDMMYYYY/ and article URLs:
+# /publications/publication/YYYY/MM/DD/...  also /news/YYYY/MM/DD/...
+EPRAVDA_URL_RE = re.compile(r"/date_(\d{2})(\d{2})(\d{4})/")
+EPRAVDA_ARTICLE_URL_RE = re.compile(
+    r"/(?:news|publications/publication)/(?:[a-z-]+/)?(\d{4})/(\d{2})/(\d{2})/"
+)
+
+
+@register_cleaner
+def clean_epravda_date(
+    date_str: str, page_url: Optional[str] = None, base_url: Optional[str] = None
+) -> str:
+    """Normalize Ekonomichna Pravda dates.
+
+    The listing pages are date-filtered (/news/date_DDMMYYYY/) and each thumbnail
+    row carries just a 'HH:MM' time. Article URLs also embed the publish date.
+    Prefer the article URL, fall back to the listing URL, fall back to mixed-dates.
+    """
+    if page_url:
+        m = EPRAVDA_ARTICLE_URL_RE.search(page_url)
+        if m:
+            year, month, day = m.groups()
+            return f"{year}-{month}-{day}"
+        m = EPRAVDA_URL_RE.search(page_url)
+        if m:
+            day, month, year = m.groups()
+            return f"{year}-{month}-{day}"
+    if date_str:
+        return handle_mixed_dates(date_str)
+    return ""
 
 
 def _clean_ukrainska_pravda_date(

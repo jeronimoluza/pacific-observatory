@@ -1,0 +1,31 @@
+{
+  "economic": {
+    "economy": "ეკონომიკა",
+    "economic": "ეკონომიკური",
+    "financial": "ფინანსური"
+  },
+  "policy": {
+    "policy": "პოლიტიკა",
+    "government": "მთავრობა",
+    "parliament": "პარლამენტი",
+    "minister": "მინისტრი",
+    "ministry": "სამინისტრო",
+    "central bank": "ცენტრალური ბანკი",
+    "National Bank of Georgia": "საქართველოს ეროვნული ბანკი",
+    "NBG": "სებ",
+    "president": "პრეზიდენტი",
+    "prime minister": "პრემიერ-მინისტრი",
+    "regulation": "რეგულირება",
+    "legislation": "კანონმდებლობა",
+    "law": "კანონი",
+    "tax": "გადასახადი",
+    "deficit": "დეფიციტი",
+    "budget": "ბიუჯეტი"
+  },
+  "uncertainty": {
+    "uncertain": "გაურკვეველი",
+    "uncertainty": "გაურკვევლობა",
+    "risk": "რისკი",
+    "instability": "არასტაბილურობა"
+  }
+}

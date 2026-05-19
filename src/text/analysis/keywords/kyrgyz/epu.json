@@ -1,0 +1,30 @@
+{
+  "economic": {
+    "economy": "экономика",
+    "economic": "экономикалык",
+    "financial": "финансылык"
+  },
+  "policy": {
+    "policy": "саясат",
+    "government": "өкмөт",
+    "parliament": "парламент",
+    "Jogorku Kenesh": "Жогорку Кеңеш",
+    "minister": "министр",
+    "ministry": "министрлик",
+    "central bank": "борбордук банк",
+    "National Bank of the Kyrgyz Republic": "Кыргыз Республикасынын Улуттук банкы",
+    "president": "президент",
+    "regulation": "жөнгө салуу",
+    "legislation": "мыйзам",
+    "law": "мыйзам",
+    "tax": "салык",
+    "deficit": "дефицит",
+    "budget": "бюджет"
+  },
+  "uncertainty": {
+    "uncertain": "белгисиз",
+    "uncertainty": "белгисиздик",
+    "risk": "тобокел",
+    "instability": "туруксуздук"
+  }
+}

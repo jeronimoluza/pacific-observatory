@@ -1,0 +1,33 @@
+{
+  "economic": {
+    "economy": "экономика",
+    "economic": "экономикалық",
+    "economic_alt": "экономикасы",
+    "financial": "қаржылық"
+  },
+  "policy": {
+    "policy": "саясат",
+    "government": "үкімет",
+    "parliament": "парламент",
+    "Mazhilis": "Мәжіліс",
+    "Senate": "Сенат",
+    "minister": "министр",
+    "ministry": "министрлік",
+    "central bank": "орталық банк",
+    "National Bank of Kazakhstan": "Қазақстан Ұлттық Банкі",
+    "president": "президент",
+    "regulation": "реттеу",
+    "legislation": "заңнама",
+    "law": "заң",
+    "tax": "салық",
+    "deficit": "тапшылық",
+    "budget": "бюджет",
+    "interest rate": "пайыздық мөлшерлеме"
+  },
+  "uncertainty": {
+    "uncertain": "белгісіз",
+    "uncertainty": "белгісіздік",
+    "risk": "тәуекел",
+    "instability": "тұрақсыздық"
+  }
+}

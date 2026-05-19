@@ -1,0 +1,41 @@
+{
+  "economic": {
+    "economy": "economie",
+    "economic": "economic",
+    "economical": "economică",
+    "economics": "economică",
+    "business": "afaceri",
+    "finance": "finanțe",
+    "financial": "financiar"
+  },
+  "policy": {
+    "policy": "politică",
+    "government": "guvern",
+    "parliament": "parlament",
+    "chamber of deputies": "Camera Deputaților",
+    "senate": "Senat",
+    "minister": "ministru",
+    "ministry": "minister",
+    "central bank": "banca centrală",
+    "National Bank of Romania": "Banca Națională a României",
+    "BNR": "BNR",
+    "president": "președinte",
+    "regulation": "reglementare",
+    "legislation": "legislație",
+    "law": "lege",
+    "tax": "impozit",
+    "taxation": "taxare",
+    "deficit": "deficit",
+    "budget": "buget",
+    "interest rate": "rata dobânzii"
+  },
+  "uncertainty": {
+    "uncertain": "incert",
+    "uncertainty": "incertitudine",
+    "unpredictable": "imprevizibil",
+    "instability": "instabilitate",
+    "risk": "risc",
+    "risky": "riscant",
+    "volatility": "volatilitate"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "economic": {
+    "economy": "эканоміка",
+    "economic": "эканамічны",
+    "economics": "эканамічныя"
+  },
+  "policy": {
+    "policy": "палітыка",
+    "government": "урад",
+    "parliament": "парламент",
+    "national assembly": "Нацыянальны сход",
+    "minister": "міністр",
+    "ministry": "міністэрства",
+    "central bank": "цэнтральны банк",
+    "National Bank of Belarus": "Нацыянальны банк Беларусі",
+    "NBRB": "НБРБ",
+    "president": "прэзідэнт",
+    "regulation": "рэгуляванне",
+    "legislation": "заканадаўства",
+    "law": "закон",
+    "tax": "падатак",
+    "deficit": "дэфіцыт",
+    "budget": "бюджэт"
+  },
+  "uncertainty": {
+    "uncertain": "нявызначаны",
+    "uncertainty": "нявызначанасць",
+    "instability": "нестабільнасць",
+    "risk": "рызыка",
+    "risky": "рызыкоўны"
+  }
+}

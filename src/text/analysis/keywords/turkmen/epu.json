@@ -1,0 +1,30 @@
+{
+  "economic": {
+    "economy": "ykdysadyýet",
+    "economic": "ykdysady",
+    "financial": "maliýe"
+  },
+  "policy": {
+    "policy": "syýasat",
+    "government": "hökümet",
+    "parliament": "parlament",
+    "Mejlis": "Mejlis",
+    "minister": "ministr",
+    "ministry": "ministrlik",
+    "central bank": "merkezi bank",
+    "Central Bank of Turkmenistan": "Türkmenistanyň Merkezi banky",
+    "president": "prezident",
+    "regulation": "düzgünleşdirme",
+    "legislation": "kanunçylyk",
+    "law": "kanun",
+    "tax": "salgyt",
+    "deficit": "defisit",
+    "budget": "býujet"
+  },
+  "uncertainty": {
+    "uncertain": "näbelli",
+    "uncertainty": "näbellilik",
+    "risk": "töwekgelçilik",
+    "instability": "durnuksyzlyk"
+  }
+}

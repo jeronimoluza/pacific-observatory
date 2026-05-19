@@ -184,6 +184,15 @@ class ArticleSelectorConfig(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     body: SelectorType = Field(..., description="Selector(s) for article body content")
+    title: Optional[SelectorType] = Field(
+        default=None,
+        description=(
+            "Optional selector(s) for article titles. When present, the value"
+            " extracted from the article page overrides the thumbnail title"
+            " (useful for sitemap-based configs where the thumbnail's 'title'"
+            " is just the URL)."
+        ),
+    )
     date: Optional[SelectorType] = Field(
         default=None, description="Optional selector(s) for article dates"
     )
@@ -322,8 +331,9 @@ class NewspaperConfig(BaseModel):
             "api",
             "follow_link",
             "cursor",
+            "sitemap",
         ]:
             raise ValueError(
-                "Listing type must be one of: pagination, paginated_archive, archive, api, follow_link, cursor"
+                "Listing type must be one of: pagination, paginated_archive, archive, api, follow_link, cursor, sitemap"
             )
         return v

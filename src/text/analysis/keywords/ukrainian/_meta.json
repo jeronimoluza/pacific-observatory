@@ -1,0 +1,23 @@
+{
+  "language": "ukrainian",
+  "iso_codes": [
+    "uk",
+    "ua"
+  ],
+  "status": "reviewed",
+  "source": "Repo in-house translation of BBD 2016 template (pre-existing before 2026-04)",
+  "source_url": null,
+  "source_table": null,
+  "newspapers_used_by_source": null,
+  "standardization_period": null,
+  "notes": "Pre-existing Ukrainian EPU dictionary in this repo. Used by the text-analysis pipeline but has NOT undergone a formal precision audit. Per the 2026-04-24 plan (docs/plans/2026-04-24-epu-ukraine-eca-plan.md), Milestone U-1 will add Ukraine-specific political terms (Верховна Рада, НБУ, МВФ, Кабмін, Мінфін, ДФС) and run a 300-article human audit before promoting to 'approved'.",
+  "audit": {
+    "sample_size": 0,
+    "precision": null,
+    "recall": null,
+    "audit_date": null,
+    "audit_notes": "Not yet audited. Plan: 300-article random sample from 10-paper UA panel."
+  },
+  "last_review_date": null,
+  "reviewer": null
+}

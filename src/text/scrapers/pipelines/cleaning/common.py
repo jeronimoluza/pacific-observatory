@@ -14,6 +14,132 @@ from .registry import register_cleaner
 logger = logging.getLogger(__name__)
 
 
+_RU_UK_MONTHS = {
+    # Russian
+    "январь": "January",
+    "января": "January",
+    "янв": "January",
+    "февраль": "February",
+    "февраля": "February",
+    "фев": "February",
+    "март": "March",
+    "марта": "March",
+    "мар": "March",
+    "апрель": "April",
+    "апреля": "April",
+    "апр": "April",
+    "май": "May",
+    "мая": "May",
+    "июнь": "June",
+    "июня": "June",
+    "июн": "June",
+    "июль": "July",
+    "июля": "July",
+    "июл": "July",
+    "август": "August",
+    "августа": "August",
+    "авг": "August",
+    "сентябрь": "September",
+    "сентября": "September",
+    "сен": "September",
+    "сент": "September",
+    "октябрь": "October",
+    "октября": "October",
+    "окт": "October",
+    "ноябрь": "November",
+    "ноября": "November",
+    "ноя": "November",
+    "нояб": "November",
+    "декабрь": "December",
+    "декабря": "December",
+    "дек": "December",
+    # Ukrainian
+    "січень": "January",
+    "січня": "January",
+    "січ": "January",
+    "лютий": "February",
+    "лютого": "February",
+    "лют": "February",
+    "березень": "March",
+    "березня": "March",
+    "бер": "March",
+    "квітень": "April",
+    "квітня": "April",
+    "кві": "April",
+    "травень": "May",
+    "травня": "May",
+    "тра": "May",
+    "червень": "June",
+    "червня": "June",
+    "чер": "June",
+    "липень": "July",
+    "липня": "July",
+    "лип": "July",
+    "серпень": "August",
+    "серпня": "August",
+    "сер": "August",
+    "вересень": "September",
+    "вересня": "September",
+    "вер": "September",
+    "жовтень": "October",
+    "жовтня": "October",
+    "жов": "October",
+    "листопад": "November",
+    "листопада": "November",
+    "лис": "November",
+    "грудень": "December",
+    "грудня": "December",
+    "гру": "December",
+    # Bulgarian
+    "януари": "January",
+    "февруари": "February",
+    "април": "April",
+    "юни": "June",
+    "юли": "July",
+    "септември": "September",
+    "октомври": "October",
+    "ноември": "November",
+    "декември": "December",
+    # Azerbaijani (İ→I normalised in _translate_slavic_months before matching)
+    "yanvar": "January",
+    "fevral": "February",
+    "mart": "March",  # Azerbaijani/Turkish/Bosnian/Croatian/Serbian for March
+    "aprel": "April",
+    "iyun": "June",
+    "iyul": "July",
+    "avqust": "August",
+    "sentyabr": "September",
+    "oktyabr": "October",
+    "noyabr": "November",
+    "dekabr": "December",
+    # Turkmen
+    "ýanwar": "January",
+    "fewral": "February",
+    "maý": "May",
+    "iýun": "June",
+    "iýul": "July",
+    "awgust": "August",
+    "sentýabr": "September",
+    "oktýabr": "October",
+    "noýabr": "November",
+}
+
+
+def _translate_slavic_months(text: str) -> str:
+    """Replace Russian/Ukrainian/Bulgarian/Azerbaijani/Turkmen month names with English.
+    Uses word boundaries so substrings inside other words (e.g. "smart" containing
+    "mart") don't get translated. Normalises Turkic `İ`→`I` and `ı`→`i` first so
+    case-insensitive matching reaches the lowercase ASCII month keys."""
+    out = text.replace("İ", "I").replace("ı", "i")
+    low = out.lower()
+    for ru, en in sorted(_RU_UK_MONTHS.items(), key=lambda kv: -len(kv[0])):
+        if ru in low:
+            # Word-boundary regex replace to avoid matching "mart" inside "smart"
+            out = re.sub(rf"\b{re.escape(ru)}\b", en, out, flags=re.IGNORECASE)
+            low = out.lower()
+    return out
+
+
 @register_cleaner
 def handle_mixed_dates(date_str: str | int) -> str:
     """
@@ -21,7 +147,7 @@ def handle_mixed_dates(date_str: str | int) -> str:
 
     This function handles various date formats and common formatting issues
     found in scraped content, including prefixes, suffixes, and extra text.
-    Also handles Unix timestamps (as int or str).
+    Also handles Unix timestamps (as int or str), and Russian/Ukrainian month names.
 
     Args:
         date_str: Date string in various formats, or Unix timestamp (int or str)
@@ -52,9 +178,9 @@ def handle_mixed_dates(date_str: str | int) -> str:
     cleaned = re.sub(r"^[-•\*\+\|\s]+", "", cleaned).strip()
     cleaned = re.sub(r"[-•\*\+\|\s]+$", "", cleaned).strip()
 
-    # Remove common date-related prefixes (case insensitive)
+    # Remove common date-related prefixes (case insensitive, optional colon/space)
     cleaned = re.sub(
-        r"^(Published|Posted|Date|On|Updated|Last\s+modified|Modified):\s*",
+        r"^(Published|Posted|Date|On|Updated|Last\s+modified|Modified)[:\s]*",
         "",
         cleaned,
         flags=re.IGNORECASE,
@@ -71,6 +197,24 @@ def handle_mixed_dates(date_str: str | int) -> str:
 
     # Normalize spaces around slashes (e.g. "14 / April / 2026" -> "14/April/2026")
     cleaned = re.sub(r"\s*/\s*", "/", cleaned)
+
+    # Bulgarian "г." suffix (short for "година" = year) — strip it
+    cleaned = re.sub(r"\s*г\.\s*$", "", cleaned).strip()
+
+    # Strip leading time stamp before date separator (e.g. "20:42 | 22.04.26" -> "22.04.26")
+    cleaned = re.sub(r"^\d{1,2}:\d{2}(:\d{2})?\s*\|\s*", "", cleaned).strip()
+
+    # Strip Bulgarian "обновена" (updated) suffix and anything after (fakti.bg)
+    cleaned = re.sub(r",\s*обновена\b.*$", "", cleaned, flags=re.IGNORECASE).strip()
+
+    # Strip trailing ". HH:MM" after a DD.MM.YYYY date (federalna.ba: "24.04.2026. 18:22")
+    cleaned = re.sub(r"\.\s+\d{1,2}:\d{2}(:\d{2})?\s*$", "", cleaned).strip()
+
+    # Strip Croatian " u HH:MM" separator after a DD.MM.YYYY date (tportal.hr: "25.04.2026 u 02:23")
+    cleaned = re.sub(r"\s+u\s+\d{1,2}:\d{2}(:\d{2})?\s*$", "", cleaned).strip()
+
+    # Translate Russian/Ukrainian month names to English so strptime patterns match
+    cleaned = _translate_slavic_months(cleaned)
 
     if not cleaned:
         return ""
@@ -117,10 +261,18 @@ def handle_mixed_dates(date_str: str | int) -> str:
             "%d/%b/%Y",  # 05/Apr/2026
             # Alternative formats
             "%d.%m.%Y",  # 24.09.2025
+            "%d.%m.%Y %H:%M",  # 24.09.2025 17:48
+            "%d.%m.%Y %H:%M:%S",  # 24.09.2025 17:48:30
             "%m.%d.%Y",  # 09.24.2025
             "%Y.%m.%d",  # 2025.09.24
             "%d-%b-%Y",  # 24-Sep-2025
             "%d-%B-%Y",  # 24-September-2025
+            "%d %B %Y",  # 24 September 2025 (after Slavic translation: "24 Февраль 2026" -> "24 February 2026")
+            "%d %B %Y %H:%M",  # 24 September 2025 14:30
+            "%d %B, %Y",  # 24 September, 2025
+            "%d %B, %Y %H:%M",  # 22 April, 2026 22:44 (Bulgarian fakti.bg after translation)
+            "%d %b, %Y %H:%M",  # 22 Apr, 2026 22:44
+            "%d.%m.%y",  # 22.04.26 (2-digit year)
         ]
 
         for pattern in patterns:

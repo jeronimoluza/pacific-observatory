@@ -1,0 +1,40 @@
+{
+  "economic": {
+    "economy": "економија",
+    "economic": "економски",
+    "economy_lat": "ekonomija",
+    "economic_lat": "ekonomski"
+  },
+  "policy": {
+    "policy": "политика",
+    "policy_lat": "politika",
+    "government": "влада",
+    "government_lat": "vlada",
+    "parliament": "скупштина",
+    "parliament_lat": "skupština",
+    "National Assembly": "Народна скупштина",
+    "minister": "министар",
+    "minister_lat": "ministar",
+    "ministry": "министарство",
+    "central bank": "централна банка",
+    "National Bank of Serbia": "Народна банка Србије",
+    "NBS": "НБС",
+    "president": "председник",
+    "regulation": "регулатива",
+    "legislation": "закон",
+    "law": "закон",
+    "tax": "порез",
+    "tax_lat": "porez",
+    "deficit": "дефицит",
+    "budget": "буџет"
+  },
+  "uncertainty": {
+    "uncertain": "неизвестан",
+    "uncertain_lat": "neizvestan",
+    "uncertainty": "неизвесност",
+    "uncertainty_lat": "neizvesnost",
+    "risk": "ризик",
+    "risk_lat": "rizik",
+    "instability": "нестабилност"
+  }
+}

@@ -26,9 +26,23 @@ def parse_date_from_jsonld(jsonld_text: str) -> str:
 
     from .common import handle_mixed_dates
 
-    m = re.search(r'"datePublished"\s*:\s*"([^"]+)"', jsonld_text)
-    if m:
-        return handle_mixed_dates(m.group(1))
+    # Pages often contain multiple JSON-LD blocks (e.g. Yoast WebPage schema
+    # with sentinel "-0001-11-30" plus the real NewsArticle schema). Find all
+    # datePublished values and pick the first plausible one.
+    matches = re.findall(r'"datePublished"\s*:\s*"([^"]+)"', jsonld_text)
+    for m in matches:
+        # Skip Yoast/WordPress sentinels for missing CMS dates
+        if m.startswith(("-", "0000-", "0001-")):
+            continue
+        # Skip implausible historical years (parser bugs / placeholder data)
+        year_m = re.match(r"^(\d{4})", m)
+        if year_m and int(year_m.group(1)) < 1990:
+            continue
+        return handle_mixed_dates(m)
+
+    # All matches were sentinels — fall back to the first one for visibility
+    if matches:
+        return handle_mixed_dates(matches[0])
 
     # Fallback: input may already be a clean date (double-cleaning scenario in scraper)
     return handle_mixed_dates(jsonld_text.strip())

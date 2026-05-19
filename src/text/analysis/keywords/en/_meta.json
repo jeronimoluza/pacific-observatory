@@ -1,0 +1,33 @@
+{
+  "language": "english",
+  "iso_codes": [
+    "en"
+  ],
+  "status": "production",
+  "source": "Baker, Bloom & Davis — 'Measuring Economic Policy Uncertainty' (2016), QJE",
+  "source_url": "https://www.policyuncertainty.com/us_monthly.html",
+  "source_table": "Main paper Table 3.1 + Appendix A (US)",
+  "newspapers_used_by_source": [
+    "USA Today",
+    "Miami Herald",
+    "Chicago Tribune",
+    "Washington Post",
+    "Los Angeles Times",
+    "Boston Globe",
+    "San Francisco Chronicle",
+    "Dallas Morning News",
+    "New York Times",
+    "Wall Street Journal"
+  ],
+  "standardization_period": "1985-01 to 2009-12",
+  "notes": "BBD 2016 canonical US template. This is the dictionary every derivative country index translates from. Use as the gold reference when auditing other languages.",
+  "audit": {
+    "sample_size": 12000,
+    "precision": 0.86,
+    "recall": null,
+    "audit_date": "2015-01-01",
+    "audit_notes": "BBD original 12,000-article manual audit yielded 0.86 correlation between keyword-based and audit-based series."
+  },
+  "last_review_date": "2016-10-01",
+  "reviewer": "Baker, Bloom & Davis"
+}

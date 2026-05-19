@@ -1,0 +1,29 @@
+{
+  "language": "croatian",
+  "iso_codes": [
+    "hr"
+  ],
+  "status": "draft",
+  "source": "Sorić & Lolić — 'Economic uncertainty and its impact on the Croatian economy' (2017), Public Sector Economics 41(4)",
+  "source_url": "http://www.pse-journal.hr/upload/files/pse/2017/4/soric_lolic.pdf",
+  "source_table": "Appendix 1, Table A1",
+  "newspapers_used_by_source": [
+    "Jutarnji list",
+    "Večernji list",
+    "24 sata",
+    "index.hr",
+    "Poslovni dnevnik",
+    "Dnevnik.hr"
+  ],
+  "standardization_period": "2002-11 to 2016-12",
+  "notes": "Source paper lists terms in English (searched via SQL on Croatian news DB). We added Croatian equivalents (gospodarstvo, neizvjesnost, HNB, MMF, etc.) for native-text regex matching. Both languages kept so the pipeline catches mixed-language content (English acronyms are common in Croatian press). Native-speaker precision audit required.",
+  "audit": {
+    "sample_size": 0,
+    "precision": null,
+    "recall": null,
+    "audit_date": null,
+    "audit_notes": ""
+  },
+  "last_review_date": null,
+  "reviewer": null
+}

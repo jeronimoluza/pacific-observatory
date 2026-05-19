@@ -1,0 +1,24 @@
+{
+  "language": "russian",
+  "iso_codes": [
+    "ru"
+  ],
+  "status": "draft",
+  "source": "Baker, Bloom & Davis — 'Measuring Economic Policy Uncertainty' (2016), QJE Appendix A",
+  "source_url": "https://www.policyuncertainty.com/media/BakerBloomDavis.pdf",
+  "source_table": "Appendix A — Russia (p. 44-45)",
+  "newspapers_used_by_source": [
+    "Kommersant"
+  ],
+  "standardization_period": "1992-10 to 2014-12",
+  "notes": "BBD used a single paper (Kommersant). Translated transliterations back to Cyrillic for regex matching on native-script text. Dictionary is broad enough to cover generic Russian-language press; extending it with more synonyms (e.g. 'НДС' for VAT, 'Правительство' for government) is recommended before promoting from 'draft' to 'reviewed'.",
+  "audit": {
+    "sample_size": 0,
+    "precision": null,
+    "recall": null,
+    "audit_date": null,
+    "audit_notes": ""
+  },
+  "last_review_date": null,
+  "reviewer": null
+}

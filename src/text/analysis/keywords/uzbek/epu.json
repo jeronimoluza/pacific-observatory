@@ -1,0 +1,32 @@
+{
+  "economic": {
+    "economy": "iqtisodiyot",
+    "economic": "iqtisodiy",
+    "financial": "moliyaviy"
+  },
+  "policy": {
+    "policy": "siyosat",
+    "government": "hukumat",
+    "parliament": "parlament",
+    "Oliy Majlis": "Oliy Majlis",
+    "minister": "vazir",
+    "ministry": "vazirlik",
+    "central bank": "markaziy bank",
+    "Central Bank of Uzbekistan": "O'zbekiston Markaziy banki",
+    "CBU": "MBU",
+    "president": "prezident",
+    "regulation": "tartibga solish",
+    "legislation": "qonunchilik",
+    "law": "qonun",
+    "tax": "soliq",
+    "deficit": "taqchillik",
+    "budget": "byudjet"
+  },
+  "uncertainty": {
+    "uncertain": "noaniq",
+    "uncertainty": "noaniqlik",
+    "risk": "xavf",
+    "risky": "xavfli",
+    "instability": "beqarorlik"
+  }
+}

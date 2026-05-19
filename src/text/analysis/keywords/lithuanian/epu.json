@@ -1,0 +1,33 @@
+{
+  "economic": {
+    "economy": "ekonomika",
+    "economic": "ekonominis",
+    "financial": "finansinis"
+  },
+  "policy": {
+    "policy": "politika",
+    "government": "vyriausybė",
+    "parliament": "parlamentas",
+    "Seimas": "Seimas",
+    "minister": "ministras",
+    "ministry": "ministerija",
+    "central bank": "centrinis bankas",
+    "Bank of Lithuania": "Lietuvos bankas",
+    "president": "prezidentas",
+    "prime minister": "ministras pirmininkas",
+    "regulation": "reguliavimas",
+    "legislation": "teisės aktai",
+    "law": "įstatymas",
+    "tax": "mokestis",
+    "deficit": "deficitas",
+    "budget": "biudžetas"
+  },
+  "uncertainty": {
+    "uncertain": "neaiškus",
+    "uncertainty": "neapibrėžtumas",
+    "uncertainty_alt": "neaiškumas",
+    "risk": "rizika",
+    "risky": "rizikingas",
+    "instability": "nestabilumas"
+  }
+}

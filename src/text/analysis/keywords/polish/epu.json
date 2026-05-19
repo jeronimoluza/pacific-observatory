@@ -1,0 +1,46 @@
+{
+  "economic": {
+    "economy": "ekonomia",
+    "economics": "ekonomii",
+    "economic": "ekonomiczny",
+    "economically": "ekonomicznie",
+    "economic_fem": "ekonomiczna",
+    "economic_neut": "ekonomiczne",
+    "economy_nat": "gospodarka",
+    "economic_nat": "gospodarczy",
+    "economic_nat_f": "gospodarcza",
+    "economic_nat_n": "gospodarcze"
+  },
+  "policy": {
+    "policy": "polityka",
+    "politics": "polityki",
+    "political": "polityczny",
+    "political_f": "polityczna",
+    "political_n": "polityczne",
+    "politician": "polityk",
+    "parliament": "parlament",
+    "parliamentary": "parlamentarny",
+    "sejm": "sejm",
+    "sejm_gen": "sejmu",
+    "senate": "senat",
+    "senator": "senator",
+    "act": "ustawa",
+    "acts": "ustaw",
+    "legislation": "ustawodawstwo",
+    "regulation": "regulacja",
+    "regulations": "regulacje",
+    "president": "prezydent",
+    "presidential": "prezydencki",
+    "National Bank of Poland": "Narodowy Bank Polski",
+    "NBP": "NBP",
+    "minister": "minister",
+    "ministry": "ministerstwo"
+  },
+  "uncertainty": {
+    "uncertainty": "niepewność",
+    "uncertain": "niepewny",
+    "uncertain_f": "niepewna",
+    "uncertain_n": "niepewne",
+    "uncertainly": "niepewnie"
+  }
+}

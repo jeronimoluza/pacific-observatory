@@ -1,0 +1,22 @@
+{
+  "language": "kyrgyz",
+  "iso_codes": [
+    "ky"
+  ],
+  "status": "draft",
+  "source": "Template translation of BBD (2016) E/U/P triple into kyrgyz",
+  "source_url": null,
+  "source_table": null,
+  "newspapers_used_by_source": null,
+  "standardization_period": null,
+  "notes": "For Kyrgyz-language press. Much of KG press is also Russian — use russian/ in parallel. Applies to Kyrgyzstan. Requires native-speaker review before promoting to 'reviewed'.",
+  "audit": {
+    "sample_size": 0,
+    "precision": null,
+    "recall": null,
+    "audit_date": null,
+    "audit_notes": ""
+  },
+  "last_review_date": null,
+  "reviewer": null
+}

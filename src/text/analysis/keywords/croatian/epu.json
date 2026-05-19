@@ -1,0 +1,29 @@
+{
+  "economic": {
+    "economy": "gospodarstvo",
+    "economic": "ekonomski",
+    "economy_alt": "ekonomija"
+  },
+  "policy": {
+    "prime minister": "predsjednik vlade",
+    "minister": "ministar",
+    "parliament": "sabor",
+    "Croatian National Bank": "Hrvatska narodna banka",
+    "CNB": "HNB",
+    "European Central Bank": "Europska središnja banka",
+    "ECB": "ESB",
+    "International Monetary Fund": "Međunarodni monetarni fond",
+    "IMF": "MMF",
+    "European Commission": "Europska komisija",
+    "EC": "EK"
+  },
+  "uncertainty": {
+    "uncertainty": "neizvjesnost",
+    "uncertain": "neizvjestan",
+    "not certain": "nesiguran",
+    "risk": "rizik",
+    "risky": "rizičan",
+    "non-reliable": "nepouzdan",
+    "not reliable": "nepouzdano"
+  }
+}

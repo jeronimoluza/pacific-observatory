@@ -1,0 +1,47 @@
+{
+  "economic": {
+    "economy": "ekonomi",
+    "economic": "ekonomik",
+    "economic_n": "ekonomisi",
+    "business": "iş dünyası",
+    "finance": "finans",
+    "financial": "finansal"
+  },
+  "policy": {
+    "policy": "politika",
+    "government": "hükümet",
+    "authority": "yetkili",
+    "authorities": "yetkililer",
+    "minister": "bakan",
+    "ministry": "bakanlık",
+    "parliament": "meclis",
+    "Grand National Assembly": "Büyük Millet Meclisi",
+    "TBMM": "TBMM",
+    "tax": "vergi",
+    "taxation": "vergilendirme",
+    "regulation": "düzenleme",
+    "legislation": "mevzuat",
+    "law": "kanun",
+    "decree": "kararname",
+    "Central Bank": "Merkez Bankası",
+    "CBRT": "TCMB",
+    "President": "Cumhurbaşkanı",
+    "Ministry of Finance": "Hazine ve Maliye Bakanlığı",
+    "budget": "bütçe",
+    "deficit": "açık",
+    "spending": "harcama",
+    "monetary policy": "para politikası",
+    "fiscal policy": "maliye politikası",
+    "interest rate": "faiz oranı"
+  },
+  "uncertainty": {
+    "uncertain": "belirsiz",
+    "uncertainty": "belirsizlik",
+    "risk": "risk",
+    "risky": "riskli",
+    "instability": "istikrarsızlık",
+    "unpredictable": "öngörülemez",
+    "volatility": "oynaklık",
+    "volatile": "dalgalı"
+  }
+}

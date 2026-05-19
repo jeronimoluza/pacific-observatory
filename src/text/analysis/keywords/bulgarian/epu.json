@@ -1,0 +1,36 @@
+{
+  "economic": {
+    "economy": "икономика",
+    "economic": "икономически",
+    "financial": "финансов"
+  },
+  "policy": {
+    "policy": "политика",
+    "government": "правителство",
+    "parliament": "парламент",
+    "National Assembly": "Народно събрание",
+    "minister": "министър",
+    "ministry": "министерство",
+    "central bank": "централна банка",
+    "Bulgarian National Bank": "Българска народна банка",
+    "BNB": "БНБ",
+    "president": "президент",
+    "prime minister": "министър-председател",
+    "regulation": "регулация",
+    "legislation": "законодателство",
+    "law": "закон",
+    "tax": "данък",
+    "taxation": "данъчно облагане",
+    "deficit": "дефицит",
+    "budget": "бюджет",
+    "interest rate": "лихвен процент"
+  },
+  "uncertainty": {
+    "uncertain": "несигурен",
+    "uncertainty": "несигурност",
+    "risk": "риск",
+    "risky": "рисков",
+    "instability": "нестабилност",
+    "volatility": "волатилност"
+  }
+}
