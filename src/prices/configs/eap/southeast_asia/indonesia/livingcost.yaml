@@ -1,0 +1,12 @@
+spider: livingcost
+language: en
+spider_kwargs:
+  country_slug: indonesia
+  # cities: intentionally omitted — exercises auto-discover path.
+  # Spider will fetch livingcost.org/cost/indonesia and parse all city links.
+notes: >
+  LivingCost.org — Indonesia, ~48 cities in panel. Demonstrates the hybrid
+  city-discovery path: with no `cities` listed, the spider auto-discovers
+  from the country landing page. Larger-country pattern, useful baseline
+  for whether auto-discover yields all 48 cities. USD-canonical.
+  Recommended cadence: weekly.

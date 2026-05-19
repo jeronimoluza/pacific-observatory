@@ -1,0 +1,11 @@
+spider: livingcost
+language: en
+spider_kwargs:
+  country_slug: fiji
+  cities: [suva, nasinu, nadi, lautoka]
+notes: >
+  LivingCost.org — crowd-sourced city-level cost-of-living aggregator.
+  Emits ~50 records per city (Eating Out, Rent & Utilities, Transportation,
+  Groceries, Other). Prices are USD-canonical; apply WB FX feed downstream
+  to derive FJD values. Serves PPP + soft inflation proxy; NOT stickiness.
+  Recommended cadence: weekly.

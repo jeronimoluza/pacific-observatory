@@ -1,0 +1,21 @@
+spider: livingcost
+language: en
+spider_kwargs:
+  country_slug: vietnam
+  cities:
+    - ho-chi-minh
+    - hanoi
+    - can-tho
+    - da-nang
+    - haiphong
+    - bien-hoa
+    - hue
+    - nha-trang
+    - vung-tau
+    - ha-long
+notes: >
+  LivingCost.org — top-10 Vietnamese cities by LivingCost panel coverage.
+  38 cities are available; we curate the 10 largest to keep scrape volume
+  modest. To re-audit coverage, run: po prices aggregators probe-cities
+  --source livingcost --country vietnam (utility TBD). USD-canonical.
+  Recommended cadence: weekly.
