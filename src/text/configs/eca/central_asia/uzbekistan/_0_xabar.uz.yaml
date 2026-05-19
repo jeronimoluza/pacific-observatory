@@ -1,0 +1,53 @@
+# DISABLED: xabar.uz origin is persistently slow/flaky. The main page,
+# /sitemap.xml, and sub-sitemaps (/sitemap-1.xml, /sitemap-2.xml) routinely
+# exceed the scraper's 60s HTTP timeout (measured: /sitemap.xml ~60s partial,
+# /sitemap-1.xml ~120s, even /p/2 > 30s). Every scrape run ends with 0
+# sub-sitemaps yielded and 0 thumbnails. No alternative endpoint (feed/,
+# rss.xml) exists — both 404. Re-enable once origin performance improves
+# or a raised per-request timeout is wired through the scraper config.
+name: Xabar.uz
+country: uzbekistan
+base_url: https://xabar.uz
+language: uz
+
+# xabar.uz declares /sitemap-index.xml in robots.txt pointing to sitemap.xml,
+# sitemap-1.xml and sitemap-2.xml. The top-level /sitemap.xml consistently
+# times out past the scraper's 60s HTTP timeout (empty response → 0 URLs).
+# sitemap-1.xml and sitemap-2.xml (the historical archive shards, ~13 MB each)
+# complete in ~90-120s per fetch BUT stream incrementally — the scraper uses a
+# separate XML parse path that handles them. Article URLs live under /post/<slug>.
+# Uz (default) URLs have no /ru/ prefix; filter excludes the /ru/ mirror so
+# this config stays Uzbek-only.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://xabar.uz/sitemap-1.xml
+    - https://xabar.uz/sitemap-2.xml
+  url_regex: "^https://xabar\\.uz/(?!ru/)(post|jamiyat|siyosat|iqtisodiyot|sport|dunyo|madaniyat|texnologiya|hodisa)/"
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: uz-UZ,uz;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    body: div.article__content p
+    date: span.date-time::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

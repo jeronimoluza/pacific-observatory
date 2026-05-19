@@ -2,12 +2,12 @@ name: Top Channel
 language: sq
 country: albania
 base_url: https://top-channel.tv
+# /lajme/page/N/ pagination is broken (always returns same page); using sitemap.
 listing:
-  type: pagination
-  start_url: https://top-channel.tv/lajme/
-  url_template: https://top-channel.tv/lajme/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://top-channel.tv/sitemap.xml
+  sitemap_regex: "/post-sitemap\\d+\\.xml"
+  url_regex: "^https://top-channel\\.tv/\\d{4}/\\d{2}/\\d{2}/"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,12 +20,14 @@ headers:
   Accept-Language: sq-AL,sq;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: 'article'
-    date: meta[property='article:published_time']::attr(content)
+    title: meta[property='og:title']::attr(content)
+    body: article div.articleContent p
+    date: article div.title div.date::text
 cleaning:
   date: handle_mixed_dates
 max_pages: null

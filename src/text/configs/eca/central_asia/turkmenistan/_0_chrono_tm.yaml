@@ -1,0 +1,20 @@
+# REJECTED: chrono-tm.org
+#
+# Chronicles of Turkmenistan (chrono-tm.org) — exile Russian/English site
+# run by the Turkmen Initiative for Human Rights (TIHR), Vienna.
+#
+# Why rejected:
+#   - IPv4 145.239.138.235 / IPv6 unavailable; TLS handshake times out
+#     consistently from the crawler network (tested 2026-04-22 with
+#     Mozilla UA and 20-second timeout). Both chrono-tm.org and
+#     www.chrono-tm.org hang with no response headers.
+#   - Likely geofenced / infrastructure blocked for non-residential
+#     traffic.
+#
+# The sister site hronikatm.com is served from a different host and IS
+# reachable; see hronikatm.yaml for the full ~18,941-post WP API scrape.
+# hronikatm.com is run by the same organisation and carries the same
+# editorial content in Russian, so this is not an unrecoverable loss.
+name: Chronicles of Turkmenistan (chrono-tm.org)
+disabled: true
+reason: origin unreachable (connect timeout) — covered by hronikatm.yaml

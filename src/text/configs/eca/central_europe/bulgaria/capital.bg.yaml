@@ -3,11 +3,15 @@ language: bg
 country: bulgaria
 base_url: https://www.capital.bg
 listing:
-  type: pagination
-  start_url: https://www.capital.bg/
-  url_template: https://www.capital.bg/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+  - https://www.capital.bg/capital_stories0.xml.gz
+  - https://www.capital.bg/capital_stories50000.xml.gz
+  - https://www.capital.bg/capital_stories100000.xml.gz
+  - https://www.capital.bg/capital_stories150000.xml.gz
+  - https://www.capital.bg/capital_stories200000.xml.gz
+  - https://www.capital.bg/capital_news0.xml
+  url_regex: ^https://www\.capital\.bg/[a-z0-9_/-]+/\d{4}/\d{2}/\d{2}/\d+_
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,14 +24,17 @@ headers:
   Accept-Language: bg-BG,bg;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: div.media-body
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
   article:
-    body: div.article-body p
-    date: meta[property='article:published_time']::attr(content)
+    title:
+    - meta[property="og:title"]::attr(content)
+    - h1::text
+    body: article p
+    date: script[type='application/ld+json']:-soup-contains('datePublished')::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

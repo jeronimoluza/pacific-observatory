@@ -1,0 +1,41 @@
+# Unusable with current pipeline strategies.
+# Reason: panarmenian.net has no sitemap.xml, no wp-json (not WordPress), and its
+#   listing page /eng/news/ returns only a 30-line shell with ~8 article links
+#   (remaining feed is loaded via JS). Query params like ?page=N and ?p=N are
+#   ignored and return the same shell.
+#   RSS feeds at https://stickers.panarmenian.net/feeds/{eng,arm,rus}/news/ expose
+#   only the 20 most-recent items with no pagination.
+#   Article URLs are https://www.panarmenian.net/{eng,arm,rus}/news/{sequential-id}/
+#   — an id-range listing strategy would work, but the pipeline does not have one.
+name: PanARMENIAN
+language: en
+country: armenia
+base_url: https://www.panarmenian.net
+listing:
+  type: pagination
+  start_url: https://www.panarmenian.net/eng/news/
+  url_template: https://www.panarmenian.net/eng/news/?page={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: en-US,en;q=0.9
+selectors:
+  thumbnail:
+    container: li
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div#article_block
+    date: div.article_date::text
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

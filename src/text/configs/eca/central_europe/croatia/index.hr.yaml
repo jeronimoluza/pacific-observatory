@@ -1,0 +1,38 @@
+name: Index.hr
+language: hr
+country: croatia
+base_url: https://www.index.hr
+
+# Listing pagination is fake (?page=N returns identical URLs). Site exposes
+# a comprehensive month/year sitemap index (2002→present). Filter to vijesti
+# (news) section only. Date is JSON-LD only.
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.index.hr/sitemap.xml
+  url_regex: "^https://www\\.index\\.hr/vijesti/clanak/[^/]+/\\d+\\.aspx$"
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: hr-HR,hr;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article p
+    date: script[type='application/ld+json']::text
+cleaning:
+  date: parse_date_from_jsonld
+max_pages: null
+max_articles: null

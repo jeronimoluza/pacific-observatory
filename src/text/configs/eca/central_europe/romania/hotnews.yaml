@@ -2,15 +2,21 @@ name: HotNews
 language: ro
 country: romania
 base_url: https://www.hotnews.ro
+# Homepage ?page= returns identical content. WordPress REST API exposes posts
+# in reverse-chronological order with working page-based pagination.
 listing:
-  type: pagination
-  start_url: https://www.hotnews.ro/
-  url_template: https://www.hotnews.ro/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: https://www.hotnews.ro/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -20,9 +26,9 @@ headers:
   Accept-Language: ro-RO,ro;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: article
-    title: a[href]::text
-    url: a[href]::attr(href)
+    container: filler
+    title: filler
+    url: filler
   article:
     body: "div.hn-container p"
     date: meta[property='article:published_time']::attr(content)

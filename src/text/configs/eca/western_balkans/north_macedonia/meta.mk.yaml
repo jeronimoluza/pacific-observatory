@@ -2,32 +2,40 @@ name: Meta.mk
 language: mk
 country: north_macedonia
 base_url: https://meta.mk
+
+# Meta.mk exposes an open WordPress REST API. The previous HTML pagination
+# path yielded no thumbnails (`article` containers on the homepage lack the
+# expected `h3 a` structure) and articles have no article:published_time meta.
 listing:
-  type: pagination
-  start_url: https://meta.mk/
-  url_template: https://meta.mk/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: https://meta.mk/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title,content
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
 client: http
 concurrency: 3
-rate_limit: 1.0
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
   User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
     like Gecko) Chrome/131.0.0.0 Safari/537.36
-  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-  Accept-Language: mk-MK,mk;q=0.9,en;q=0.8
+  Accept: application/json
 selectors:
   thumbnail:
-    container: article
-    title: h3 a::text
-    url: h3 a::attr(href)
+    container: filler
+    title: filler
+    url: filler
   article:
-    body: "article p"
-    date: meta[property='article:published_time']::attr(content)
+    body: filler
 cleaning:
   date: handle_mixed_dates
+  body: clean_wp_html_body
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

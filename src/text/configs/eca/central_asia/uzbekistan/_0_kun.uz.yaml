@@ -1,0 +1,41 @@
+# Unusable with current pipeline strategies.
+# Reason: kun.uz is fronted by Cloudflare and the HTML shell returned to our
+#   UA contains only the consent modal + scripts — the actual article body
+#   (div.news-inner__content-page p) is hydrated client-side, so http-client
+#   scraping produces empty documents. robots.txt points to a third-party
+#   sitemap (3dreference.com) and has no public API. The native sitemap
+#   index at /sitemap.xml is fine for URL discovery, but we can't extract
+#   article bodies without a browser client.
+# Would need: browser-based rendering (Playwright) or direct hits against the
+#   internal JSON endpoint used by the SPA (un-documented).
+name: Kun.uz
+country: uzbekistan
+base_url: https://kun.uz
+language: uz
+listing:
+  type: sitemap
+  sitemap_index_url: https://kun.uz/sitemap.xml
+  sitemap_regex: "site-map-news_year_"
+  url_regex: "^https?://kun\\.uz/news/"
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: uz-UZ,uz;q=0.9,en-US;q=0.8,en;q=0.7
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    body: div.news-inner__content-page p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

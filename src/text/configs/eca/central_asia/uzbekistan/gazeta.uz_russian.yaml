@@ -1,0 +1,44 @@
+name: Gazeta.uz
+country: uzbekistan
+base_url: https://www.gazeta.uz
+language: ru
+
+# gazeta.uz is the flagship independent Uzbek outlet. Sitemap index at
+# /sitemap.xml splits per-language standard-<lang>.xml, google-news-<lang>.xml
+# and weekly materials-<lang>-YYYY-MM-DD.xml chunks. Russian mirror lives under
+# /ru/YYYY/MM/DD/<slug>/. We follow the materials-ru-* chunks for depth.
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.gazeta.uz/sitemap.xml
+  sitemap_regex: "(standard-ru|materials-ru-)"
+  url_regex: "^https://www\\.gazeta\\.uz/ru/[0-9]{4}/[0-9]{2}/[0-9]{2}/[a-z0-9-]+/?$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div[itemprop='articleBody'] p
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

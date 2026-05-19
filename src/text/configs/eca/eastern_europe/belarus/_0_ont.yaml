@@ -1,0 +1,8 @@
+# UNUSABLE: ont.by
+# ONT (state TV broadcaster) website. Root /sitemap.xml returns only section/
+# category URLs (~50 entries such as /ru/news-ru, /ru/policy-ru) — no article
+# listing. Article URLs (/news/<slug>) exist but are not enumerated in any
+# public sitemap, and the news sections load content dynamically via AJAX
+# from endpoints that are not openly documented. No WP REST API.
+unusable: true
+reason: "Sitemap lists only section pages, not articles; content loaded dynamically"

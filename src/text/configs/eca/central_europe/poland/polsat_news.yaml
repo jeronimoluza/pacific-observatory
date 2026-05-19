@@ -2,12 +2,16 @@ name: Polsat News
 language: pl
 country: poland
 base_url: https://www.polsatnews.pl
+# Homepage and ``/wiadomosci/polska`` both have fake pagination (``?page=N``
+# / ``?strona=N`` / ``/N`` all return the same content, 100% overlap). The
+# sitemap index lists 7 sub-sitemaps; sitemap0/sitemap1 cover recent news
+# (newest first within each). Filter to ``/wiadomosc/YYYY-MM-DD/slug/`` to
+# exclude video/gallery URLs.
 listing:
-  type: pagination
-  start_url: https://www.polsatnews.pl/
-  url_template: https://www.polsatnews.pl/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://www.polsatnews.pl/sitemap.xml
+  sitemap_regex: "sitemap[01]\\.xml$"
+  url_regex: "^https://www\\.polsatnews\\.pl/wiadomosc/\\d{4}-\\d{2}-\\d{2}/"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,14 +24,18 @@ headers:
   Accept-Language: pl-PL,pl;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: article
-    title: a[href]::text
-    url: a[href]::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "article p"
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article p
+    date: script[type='application/ld+json']::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

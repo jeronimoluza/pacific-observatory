@@ -1,0 +1,46 @@
+# Unusable with current pipeline strategies.
+# Reason: article pages are JavaScript-rendered (SPA). Raw HTML contains only
+# an empty shell + 102-char og:description; no JSON API found (/wp-json, /api/v1/*
+# all 404). Previous scrape got 12,768 rows but 96.8% had body <100 chars
+# (picked up author name + "leave a comment, register first" placeholder).
+# Could be recovered with `client: "browser"` (playwright) but slow and the
+# yield is marginal since only the lead-paragraph summary is worth extracting.
+name: Daryo.uz (Uzbek)
+country: uzbekistan
+base_url: https://daryo.uz
+language: uz
+
+listing:
+  type: sitemap
+  sitemap_index_url: https://daryo.uz/sitemap-uz.xml
+  url_regex: "^https://daryo\\.uz/uz/[0-9]{4}/[0-9]{2}/[0-9]{2}/[a-z0-9-]+/?$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: uz-UZ,uz;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.news-section-main-content p
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,60 @@
+# Unusable with current pipeline strategies.
+# Reason: www.aa.com.tr (Anadolu Ajansı) runs a Next.js front-end that
+#   server-renders the exact same 22-article feed on every /tr/gundem,
+#   /tr/gundem?page=N, /tr/gundem/arsiv and /tr/gundem/arsiv?page=N request —
+#   pagination parameters are accepted but ignored and the underlying list is
+#   hydrated client-side from internal endpoints we could not discover.
+#   /sitemap.xml, /sitemap_index.xml, /sitemap-news.xml, /tr/sitemap.xml,
+#   /tr/gundem/sitemap.xml, /haber-sitemap.xml, /news-sitemap.xml and every
+#   other path we tried all return the Next.js HTML shell (no XML sitemap).
+#   robots.txt advertises /sitemap.xml but it resolves to the same HTML shell.
+#   /_next/data/ paths and every /api/* endpoint are 404.
+#   RSS feeds (/tr/rss/default?cat=<N>) work but each exposes only ~30
+#   most-recent items with no pagination or date filter; combining all TR
+#   categories yields ~270 unique URLs over ~1-2 days — not usable as a
+#   long-tail discovery surface and the sitemap strategy cannot parse RSS
+#   reliably (html.parser treats <link> as self-closing).
+# Existing CSV from the fake-pagination crawl contains 18 articles which are
+#   still valid — do not delete.
+# Would need: either id-range enumeration (numeric IDs are sequential, e.g.
+#   3915105) or a cooperation with AA to expose a proper sitemap / archive
+#   API, or a headless-browser + scroll strategy.
+name: Anadolu Agency
+language: tr
+country: turkiye
+base_url: https://www.aa.com.tr
+listing:
+  type: pagination
+  start_url: https://www.aa.com.tr/tr/gundem
+  url_template: https://www.aa.com.tr/tr/gundem?page={num}
+  start_page: 2
+  batch_size: 5
+  filters:
+    deny_path_prefixes:
+      - /tr/vg/
+      - /tr/p/
+      - /tr/b/
+      - /tr/rss/
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: tr-TR,tr;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: h3
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.prose p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

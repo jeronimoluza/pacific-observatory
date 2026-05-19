@@ -1,0 +1,32 @@
+# Unusable with current pipeline strategies.
+# Reason: bugun.uz returns HTTP 403 on every endpoint and the server-served
+#   shell is a hoster-provided "Работа сайта приостановлена" page
+#   (reg.ru panel) — the site is suspended / offline. robots.txt, sitemap.xml,
+#   sitemap_index.xml and the homepage all return the same 403 shell regardless
+#   of User-Agent (Googlebot also blocked). No usable discovery path.
+# Would need: the site to be restored by its operator, or an archival source.
+name: Bugun.uz
+country: uzbekistan
+base_url: https://bugun.uz
+language: uz
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://bugun.uz/sitemap.xml
+  url_regex: "^https://bugun\\.uz/.+"
+client: http
+concurrency: 2
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: p
+max_pages: null
+max_articles: null

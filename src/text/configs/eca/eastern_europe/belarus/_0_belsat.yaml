@@ -1,0 +1,8 @@
+# UNUSABLE: belsat.eu
+# Belsat TV (Polish-funded Belarusian-language broadcaster). All paths
+# (/sitemap.xml, /sitemap_index.xml, /be/sitemap.xml, /wp-json/wp/v2/posts,
+# /be/wp-json/wp/v2/posts) return HTTP 404 serving the homepage. Site is a
+# bespoke SPA with no discoverable public sitemap or WP REST endpoint. JSON-
+# LD in HTML would require per-URL seeding. Skipping.
+unusable: true
+reason: "No sitemap or REST API; bespoke SPA returns 404 on all standard endpoints"

@@ -1,0 +1,45 @@
+name: 1in.am
+language: hy
+country: armenia
+base_url: https://www.1in.am
+
+# 1in.am ("First News and Analyses") independent Armenian news portal.
+# WordPress REST API is disabled ("rest_disabled" 401), but wp-sitemap is open.
+# /wp-sitemap.xml indexes 478 sub-sitemaps (wp-sitemap-posts-post-1..478), each
+# with ~2,000 article URLs of the form https://www.1in.am/<post-id>.html.
+# Archive spans 2010 - today (~900k+ URLs).
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.1in.am/wp-sitemap.xml
+  sitemap_regex: "wp-sitemap-posts-post-[0-9]+\\.xml$"
+  url_regex: "^https://www\\.1in\\.am/[0-9]+\\.html$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: hy-AM,hy;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.single-post-content
+    date: lastmod::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

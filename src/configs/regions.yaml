@@ -106,21 +106,14 @@ eca:
         - bulgaria
         - croatia
         - czech_republic
+        - estonia
         - hungary
+        - latvia
+        - lithuania
         - poland
         - romania
         - slovak_republic
         - slovenia
-    baltic_states:
-      name: Baltic States
-      countries:
-        - estonia
-        - latvia
-        - lithuania
-    turkiye:
-      name: Türkiye
-      countries:
-        - turkiye
     western_europe:
       name: Western Europe
       countries:
@@ -153,6 +146,10 @@ eca:
         - sweden
         - switzerland
         - united_kingdom
+    turkiye:
+      name: Türkiye
+      countries:
+        - turkiye
     russian_federation:
       name: Russian Federation
       countries:

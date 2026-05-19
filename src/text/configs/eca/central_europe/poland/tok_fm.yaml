@@ -2,12 +2,16 @@ name: TOK FM
 language: pl
 country: poland
 base_url: https://www.tokfm.pl
+# ``/page/N/`` returns 404 and the homepage has no working pagination, so
+# iterate via the XML sitemap index exposed at /esi/block/seo/sitemap. The
+# index lists per-section ``params=<section>&offset=N`` sub-sitemaps (~400
+# URLs each); keep the "polska"/"swiat"/"polityka"/"gospodarka" politics
+# sections and skip video, podcast and category roots.
 listing:
-  type: pagination
-  start_url: https://www.tokfm.pl/
-  url_template: https://www.tokfm.pl/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://www.tokfm.pl/esi/block/seo/sitemap
+  sitemap_regex: "params=(polska|swiat|polityka|gospodarka)&(amp;)?offset="
+  url_regex: "^https://www\\.tokfm\\.pl/(polska|swiat|polityka|gospodarka)/"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,10 +24,14 @@ headers:
   Accept-Language: pl-PL,pl;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: main li
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
     body: "article p"
     date: meta[property='article:published_time']::attr(content)
 cleaning:

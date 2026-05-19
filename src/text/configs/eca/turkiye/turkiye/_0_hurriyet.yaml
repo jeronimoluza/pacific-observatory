@@ -1,0 +1,38 @@
+# Unusable with current pipeline strategies.
+# Reason: /index/?p=N&d=gundem listing returns 0 thumbnails — the thumbnail
+# container `a[href*='-']` matches nothing, and the underlying page is heavily
+# JavaScript-rendered (article teasers loaded async). Diagnostic: 0 thumbnails.
+# Would need browser client (playwright) and major selector rework.
+name: Hurriyet
+language: tr
+country: turkiye
+base_url: https://www.hurriyet.com.tr
+listing:
+  type: pagination
+  start_url: https://www.hurriyet.com.tr/index/?p=1&d=gundem
+  url_template: https://www.hurriyet.com.tr/index/?p={num}&d=gundem
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: tr-TR,tr;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: a[href*='-']
+    title: a::attr(title)
+    url: a::attr(href)
+  article:
+    body: div.page-wrapper p
+    date: time[datetime]::attr(datetime)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

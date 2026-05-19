@@ -1,0 +1,32 @@
+# Unusable with current pipeline strategies.
+# Reason: The delo.kg domain no longer serves the Delo.kg news archive.
+#   Cloudflare returns 403 on the bare domain; every path on delo.kg and
+#   www.delo.kg renders a "Mostbet Error" casino-redirect page. robots.txt
+#   still references https://www.delo.kg/sitemap.xml but that URL also
+#   returns the Mostbet HTML. Domain appears to have been squatted/parked.
+# Would need: a live archive of the former Delo.kg content — not recoverable
+#   from the current DNS owner.
+name: Delo.kg
+language: ru
+country: kyrgyz_republic
+base_url: https://delo.kg
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.delo.kg/sitemap.xml
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: div.article
+max_pages: null
+max_articles: null

@@ -2,12 +2,15 @@ name: The Insider
 language: ru
 country: russian_federation
 base_url: https://theins.ru
+# /news?page=N returns almost identical items (98% overlap). The Insider
+# publishes a sitemap index at /sitemap.xml with sitemap-news-ru-1.xml
+# (latest 1000 news items) and sitemap-posts-ru-1.xml (latest long-read
+# posts) as the freshest sub-sitemaps.
 listing:
-  type: pagination
-  start_url: https://theins.ru/news
-  url_template: https://theins.ru/news?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://theins.ru/sitemap.xml
+  sitemap_regex: "sitemap-(news|posts)-ru-1\\.xml$"
+  url_regex: "^https://theins\\.(ru|press)/.+/[0-9]+$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,11 +23,15 @@ headers:
   Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
 selectors:
   thumbnail:
-    container: div.articleList_cardWrapper__Tnyiy
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.layoutContainer p"
+    title:
+      - meta[property='og:title']::attr(content)
+      - h1::text
+    body: "div[class*='Text_textContainer'] p"
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

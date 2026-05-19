@@ -1,0 +1,14 @@
+# REJECTED: gordonua.com (Dmitry Gordon's outlet)
+#
+# Sitemap index at https://gordonua.com/pub/sitemaps/sitemap_index.xml lists only
+# gzipped sub-sitemaps (part1.xml.gz ... part12.xml.gz, sitemap-news.xml.gz).
+# The pacific-observatory sitemap fetcher does not transparently decompress .gz
+# sitemap URLs (no existing configs reference xml.gz). /sitemap.xml, /sitemap-news.xml
+# (plain) and /wp-json/wp/v2/posts all 404. Would need a custom fetcher or server
+# serving an ungzipped mirror. Additionally, Dmitry Gordon has been criticized
+# for editorial direction; independence tier is debatable.
+name: Gordon
+language: ru
+country: ukraine
+base_url: https://gordonua.com
+disabled: true

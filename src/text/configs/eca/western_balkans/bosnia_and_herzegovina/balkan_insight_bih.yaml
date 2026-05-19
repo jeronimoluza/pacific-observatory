@@ -20,11 +20,11 @@ headers:
   Accept-Language: en-US,en;q=0.9
 selectors:
   thumbnail:
-    container: li
-    title: a::text
+    container: div.btSinglePostTemplate
+    title: h4 a::text
     url: a::attr(href)
   article:
-    body: "div.cmplz-cookiebanner p"
+    body: div.btArticleBody p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

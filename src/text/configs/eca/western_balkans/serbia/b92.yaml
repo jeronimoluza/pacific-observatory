@@ -24,10 +24,10 @@ selectors:
     title: h2 a::text
     url: h2 a::attr(href)
   article:
-    body: "div.container p"
-    date: meta[property='article:published_time']::attr(content)
+    body: "article p"
+    date: script[type='application/ld+json']:-soup-contains('datePublished')::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

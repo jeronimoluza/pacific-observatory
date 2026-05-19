@@ -1,0 +1,32 @@
+# Unusable with current pipeline strategies.
+# Reason: pagination via `?sayfa=N` and `?page=N` returns identical 1.6MB content
+# (server ignores query string for the English edition). Site likely renders
+# articles client-side via JS load-more. The Turkish edition (yeni_safak.yaml)
+# pagination DOES work — keep that one as primary; this English mirror would
+# require browser client.
+name: Yeni Şafak (English)
+language: en
+country: turkiye
+base_url: https://www.yenisafak.com
+listing:
+  type: pagination
+  url_template: https://www.yenisafak.com/en/economy?sayfa={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+selectors:
+  thumbnail:
+    container: div.ys-link
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.detail-page p
+    date: script[type='application/ld+json']::text
+cleaning:
+  date: parse_date_from_jsonld
+max_pages: null
+max_articles: null

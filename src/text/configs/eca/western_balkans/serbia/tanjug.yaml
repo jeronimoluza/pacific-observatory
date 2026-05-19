@@ -2,12 +2,13 @@ name: Tanjug
 language: sr
 country: serbia
 base_url: https://www.tanjug.rs
+# ?page=N returns 504 / identical homepage (fake pagination).
+# Using the news sitemap declared in robots.txt (carries ~520 newest items).
 listing:
-  type: pagination
-  start_url: https://www.tanjug.rs/
-  url_template: https://www.tanjug.rs/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+    - https://www.tanjug.rs/sitemap/news.xml
+  url_regex: "^https://www\\.tanjug\\.rs/[a-z-]+/[a-z-]+/[0-9]+/"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,10 +21,14 @@ headers:
   Accept-Language: sr-RS,sr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: article
-    title: h2 a::text
-    url: h2 a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
     body: "div.container p"
     date: meta[property='article:published_time']::attr(content)
 cleaning:

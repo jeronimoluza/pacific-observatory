@@ -1,0 +1,43 @@
+name: Palitra Video
+language: ka
+country: georgia
+base_url: https://palitravideo.ge
+
+# Palitra Video — Georgian video/news portal (Palitra Media group).
+# Sitemap index at /sitemap.xml, shards: article_latest.xml and article_1..5.xml.
+# Body in <article>; date in <time datetime="..."> within.
+listing:
+  type: sitemap
+  sitemap_index_url: https://palitravideo.ge/sitemap.xml
+  sitemap_regex: "/(article_latest|article_[0-9]+)\\.xml$"
+  url_regex: "^https://palitravideo\\.ge/[a-z0-9-]+/[0-9]+-[^/]+/?$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ka-GE,ka;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article
+    date: time::attr(datetime)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

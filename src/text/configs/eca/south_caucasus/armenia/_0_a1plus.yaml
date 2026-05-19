@@ -1,0 +1,45 @@
+# DISABLED (2026-04): a1plus.am is fully behind Cloudflare's "Attention
+# Required" challenge — every path (/, /robots.txt, /hy/sitemap.xml, articles)
+# returns HTTP 403 with the CF interstitial regardless of User-Agent. A JS
+# challenge / browser fingerprint is required to pass. Static httpx scraping
+# is not viable; revisit only with a headless-browser fetcher.
+name: A1plus
+language: hy
+country: armenia
+base_url: https://a1plus.am
+
+# A1+ runs a custom CMS. /wp-json is a redirect to /hy/wp/v2/posts (not WordPress).
+# Sitemap strategy: /hy/sitemap.xml lists ~10,000 recent article URLs of the form
+#   https://a1plus.am/hy/article/<numeric-id>
+# Only recent ~10k articles are in the sitemap (rolling window); the CMS does not
+# expose an archive sitemap index.
+listing:
+  type: sitemap
+  sitemap_index_url: https://a1plus.am/hy/sitemap.xml
+  url_regex: "^https://a1plus\\.am/hy/article/[0-9]+$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: hy-AM,hy;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: div.news-content-block
+    date: time[datetime]::attr(datetime)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

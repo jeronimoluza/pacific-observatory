@@ -3,10 +3,10 @@ language: sq
 country: kosovo
 base_url: https://www.koha.net
 listing:
-  type: pagination
-  start_url: https://www.koha.net/
-  url_template: https://www.koha.net/?page={num}
-  start_page: 2
+  type: archive
+  url_template: https://www.koha.net/arkivi?f={year}-{month}-{day}&t={year}-{month}-{day}
+  date_format: daily
+  start_date: '2025-01-01'
   batch_size: 5
 client: http
 concurrency: 3
@@ -20,11 +20,11 @@ headers:
   Accept-Language: sq-AL,sq;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: main li
-    title: a::text
+    container: a.list-item
+    title: span.title::text
     url: a::attr(href)
   article:
-    body: 'main'
+    body: main p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

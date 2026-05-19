@@ -1,0 +1,45 @@
+name: 24.kz Kazakh
+language: kk
+country: kazakhstan
+base_url: https://24.kz
+
+# Kazakh-language edition of 24 KZ (Khabar Agency public broadcaster).
+# /all-sitemap is an index of urlsets: /ru/sitemap, /kz/sitemap (plus
+# category/tag). Each per-language sitemap is a flat urlset. Article URLs
+# follow /kz/{section}/{sub}/{id}-{slug}. No meta article:published_time —
+# visible date lives in .post-date; we use lastmod from the sitemap instead.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://24.kz/kz/sitemap
+  url_regex: "^https://24\\.kz/kz/.+/[0-9]+-.+$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: kk-KZ,kk;q=0.9,ru;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article p
+    date: div.post-date::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,53 @@
+name: Novy Chas
+language: be
+country: belarus
+base_url: https://novychas.online
+
+# Independent Belarusian-language weekly. Original domain novychas.by was
+# taken over; novychas.online is the active exile edition.
+# NOTE: /sitemap/index.xml is served by Cloudflare with a bogus
+# `content-encoding: gzip` header over already-decompressed XML bytes, which
+# makes httpx raise `incorrect header check` when reading it. The per-year
+# files serve properly (CF caches them decompressed with correct headers),
+# so we bypass the index and enumerate the year sitemaps directly.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://novychas.online/sitemap/2026.xml.gz
+    - https://novychas.online/sitemap/2025.xml.gz
+    - https://novychas.online/sitemap/2024.xml.gz
+    - https://novychas.online/sitemap/2023.xml.gz
+    - https://novychas.online/sitemap/2022.xml.gz
+    - https://novychas.online/sitemap/2021.xml.gz
+    - https://novychas.online/sitemap/2020.xml.gz
+  url_regex: "^https://novychas\\.online/[a-z]+/[a-z0-9_-]+$"
+
+client: http
+concurrency: 2
+rate_limit: 2.0
+retries: 5
+retry_seconds: 10.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: be-BY,be;q=0.9,ru;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.publication-body
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

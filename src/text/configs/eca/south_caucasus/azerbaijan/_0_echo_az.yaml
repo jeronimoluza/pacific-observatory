@@ -1,0 +1,37 @@
+# Unusable with current pipeline strategies.
+# Reason: Echo Azerbaijan (echo.az -> ru.echo.az) ceased publishing in 2018.
+#   The WordPress sitemap still serves ~3k archive URLs but the newest entry
+#   is from October 2017. Not a live source; included here only to document
+#   that it has been evaluated.
+name: Echo.az
+language: ru
+country: azerbaijan
+base_url: https://ru.echo.az
+listing:
+  type: sitemap
+  sitemap_index_url: https://ru.echo.az/sitemap.xml
+  sitemap_regex: "post-sitemap[0-9]*\\.xml$"
+  url_regex: "^https://ru\\.echo\\.az/\\?p=[0-9]+$"
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    body: div.entry-content
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

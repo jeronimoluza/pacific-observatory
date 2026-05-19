@@ -1,0 +1,45 @@
+name: The Stan
+language: tg
+country: kyrgyz_republic
+base_url: https://stan.kg
+
+# Independent Central Asia news portal registered in Kyrgyzstan but publishing
+# primarily in Tajik. WordPress; /sitemap.xml is a flat <urlset> (NOT a
+# sitemap index) with ~54 article URLs — site is young with a small archive.
+# Must use sitemap_urls so the strategy parses it directly. Articles use meta
+# article:published_time and body div.entry-content.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://stan.kg/sitemap.xml
+  url_regex: "^https://stan\\.kg/[a-z]{2}/news/.+"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: tg-TJ,tg;q=0.9,ru;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.entry-content
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

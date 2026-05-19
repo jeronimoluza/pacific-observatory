@@ -1,0 +1,29 @@
+name: Babel English
+language: en
+country: ukraine
+base_url: https://babel.ua
+listing:
+  type: cursor
+  start_url: https://babel.ua/en/news
+  cursor_api: https://babel.ua/en/api/news/loadmore?after={cursor}
+  cursor_selector: ".js-loadmore::attr(data-after)"
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: en-US,en;q=0.9
+selectors:
+  thumbnail:
+    container: article
+    title: h3 a::text
+    url: h3 a::attr(href)
+  article:
+    body: "article p"
+    date: time::attr(datetime)
+max_pages: null
+max_articles: null

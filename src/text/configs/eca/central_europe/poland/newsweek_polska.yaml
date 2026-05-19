@@ -2,11 +2,15 @@ name: Newsweek Polska
 language: pl
 country: poland
 base_url: https://www.newsweek.pl
+# Homepage and section pages have fake pagination (``?page=N`` returns the
+# same content, 100% overlap). The site does expose a daily date archive at
+# ``/archiwum/YYYY-MM-DD`` (zero-padded works too) listing all stories for
+# that day, so iterate via the archive strategy.
 listing:
-  type: pagination
-  start_url: https://www.newsweek.pl/
-  url_template: https://www.newsweek.pl/?page={num}
-  start_page: 2
+  type: archive
+  url_template: https://www.newsweek.pl/archiwum/{year}-{month}-{day}
+  date_format: daily
+  start_date: '2022-01-01'
   batch_size: 5
 client: http
 concurrency: 3

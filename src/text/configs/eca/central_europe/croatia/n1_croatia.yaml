@@ -2,12 +2,13 @@ name: N1 Croatia
 language: hr
 country: croatia
 base_url: https://n1info.hr
+# /vijesti/page/N/ returns 404 and ?paged=N returns identical content.
+# Using Google-news sitemap (always carries the newest ~220 articles).
 listing:
-  type: pagination
-  start_url: https://n1info.hr/vijesti/
-  url_template: https://n1info.hr/vijesti/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+    - https://n1info.hr/sitemap/sitemap_news_1.xml
+  url_regex: "^https://n1info\\.hr/[a-z0-9-]+/[a-z0-9-]+/?$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,14 +21,18 @@ headers:
   Accept-Language: hr-HR,hr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: article
-    title: h3 a::text
-    url: h3 a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.flex p"
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.rich-text-block p
+    date: script[type='application/ld+json']::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

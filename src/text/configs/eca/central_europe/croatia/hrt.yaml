@@ -3,14 +3,13 @@ language: hr
 country: croatia
 base_url: https://vijesti.hrt.hr
 listing:
-  type: pagination
-  start_url: https://vijesti.hrt.hr/
-  url_template: https://vijesti.hrt.hr/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://vijesti.hrt.hr/sitemaps/sitemap-index.xml
+  sitemap_regex: articles-(news|archive-[0-9]+)\.xml
+  url_regex: ^https://vijesti\.hrt\.hr/[a-z0-9-]+/[a-z0-9-]+-[0-9]+/?$
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -20,14 +19,18 @@ headers:
   Accept-Language: hr-HR,hr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: article
-    title: a[href]::text
-    url: a[href]::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: div.w-full p
-    date: meta[property='article:published_time']::attr(content)
+    title:
+    - meta[property="og:title"]::attr(content)
+    - h1::text
+    body: div.a-body p
+    date: script[type='application/ld+json']::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

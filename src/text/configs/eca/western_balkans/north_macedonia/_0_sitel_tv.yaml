@@ -1,0 +1,42 @@
+# Unusable with current pipeline strategies.
+# Reason: No article:published_time meta, no <time datetime>, no JSON-LD on
+# article pages. The only on-page date appears as visible text in
+# ``div.data-na-objava`` formatted like "22. April 2026 - 12:38", which the
+# registered handle_mixed_dates cleaner cannot parse (day has a trailing dot
+# and no space before "April"). Would need a custom cleaner to strip the dot.
+# Listing pagination also doesn't work: ``/?page=N`` returns identical
+# content on every page; category pages paginate but there's no single root
+# category covering all news.
+name: Sitel TV
+language: mk
+country: north_macedonia
+base_url: https://sitel.com.mk
+listing:
+  type: pagination
+  start_url: https://sitel.com.mk/
+  url_template: https://sitel.com.mk/?page={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: mk-MK,mk;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: li
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: 'div.content'
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

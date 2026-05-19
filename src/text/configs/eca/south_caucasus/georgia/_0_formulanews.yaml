@@ -1,0 +1,47 @@
+# DISABLED (2026-04): formulanews.ge exposes no usable article archive.
+# /sitemap.xml lists only 4 URLs (2 News, 2 category). /sitemap_news.xml is
+# an empty <urlset>. /Category/all and query-string ?page=N all return the
+# same ~15 most-recent items (no server-side pagination). Article IDs under
+# /News/<n> are sequential but there is no supported scrape strategy for
+# brute-force numeric-ID enumeration. Revisit if the site adds a real
+# sitemap or an archive endpoint.
+name: Formula News
+language: ka
+country: georgia
+base_url: https://formulanews.ge
+
+# Formula News — Georgian TV / news. Single sitemap.xml at root (flat
+# urlset, no index). Article URLs: /News/NNNNN. Body in section.article-content.
+# No published_time meta; rely on sitemap lastmod.
+listing:
+  type: sitemap
+  sitemap_index_url: https://formulanews.ge/sitemap.xml
+  sitemap_regex: "/sitemap\\.xml$"
+  url_regex: "^https://formulanews\\.ge/News/[0-9]+$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ka-GE,ka;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    body: section.article-content
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,45 @@
+# Hronikatm / Chronicles of Turkmenistan — independent Russian-language
+# exile outlet (based in Vienna / run by Turkmen Initiative for Human Rights).
+# WordPress WP API is exposed publicly: X-WP-Total ~18,941 posts.
+# Same org as chrono-tm.org (Russian/English) but this is the standalone site.
+name: Hronikatm
+language: ru
+country: turkmenistan
+base_url: https://www.hronikatm.com
+
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: https://www.hronikatm.com/wp-json/wp/v2/posts?per_page=100&page={page}
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: application/json
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: filler
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

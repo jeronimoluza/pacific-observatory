@@ -2,31 +2,36 @@ name: Ukrainska Pravda English
 language: en
 country: ukraine
 base_url: https://www.pravda.com.ua
+
 listing:
-  type: pagination
-  start_url: https://www.pravda.com.ua/eng/news/
-  url_template: https://www.pravda.com.ua/eng/news/page_{num}/
-  start_page: 2
+  type: archive
+  date_format: daily
+  url_template: https://www.pravda.com.ua/eng/news/date_{day}{month}{year}/
+  start_date: "2022-02-24"
   batch_size: 5
+
 client: http
 concurrency: 3
 rate_limit: 1.0
 retries: 3
 retry_seconds: 2.0
+
 headers:
-  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
-    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
   Accept-Language: en-US,en;q=0.9
+
 selectors:
   thumbnail:
     container: div.article_news_list
     title: a::text
     url: a::attr(href)
   article:
-    body: "article p"
+    body: article p
     date: .post_news_date::text
+
 cleaning:
   date: clean_ukrainska_pravda_eng_date
+
 max_pages: null
 max_articles: null

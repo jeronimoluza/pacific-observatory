@@ -1,13 +1,16 @@
 name: The Insider English
 language: en
 country: russian_federation
-base_url: https://theins.ru
+base_url: https://theins.press
+# /en/news?page=N returns nearly identical items (92% overlap). English
+# edition is hosted at theins.press; the site publishes sitemap-news-en-
+# 1..3.xml and sitemap-posts-en-1..2.xml covering the latest English
+# articles under theins.press/en/.
 listing:
-  type: pagination
-  start_url: https://theins.ru/en/news
-  url_template: https://theins.ru/en/news?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://theins.press/sitemap.xml
+  sitemap_regex: "sitemap-(news|posts)-en-1\\.xml$"
+  url_regex: "^https://theins\\.press/en/.+/[0-9]+$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,11 +23,15 @@ headers:
   Accept-Language: en-US,en;q=0.9
 selectors:
   thumbnail:
-    container: div.articleList_cardWrapper__Tnyiy
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.layoutContainer p"
+    title:
+      - meta[property='og:title']::attr(content)
+      - h1::text
+    body: "div[class*='Text_textContainer'] p"
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

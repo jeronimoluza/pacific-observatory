@@ -1,0 +1,45 @@
+name: Imedi News
+language: ka
+country: georgia
+base_url: https://imedinews.ge
+
+# Imedi News — major Georgian TV broadcaster. Sitemap index at
+# /_cmssitemap listing the current month (_cmscurrentmonthsitemap)
+# plus monthly archives (/sitemaps/sitemap-YYYY-MM.xml). Body in
+# div.news-text. No standard date meta; pipeline relies on sitemap
+# lastmod fallback + any discoverable date selector.
+listing:
+  type: sitemap
+  sitemap_index_url: https://imedinews.ge/_cmssitemap
+  sitemap_regex: "/(sitemap-[0-9]{4}-[0-9]{2}\\.xml|_cmscurrentmonthsitemap)$"
+  url_regex: "^https://imedinews\\.ge/ge/[a-z0-9]+/[0-9]+/[^/]+$"
+
+client: http
+concurrency: 10
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ka-GE,ka;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.news-text
+    date: span.date::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

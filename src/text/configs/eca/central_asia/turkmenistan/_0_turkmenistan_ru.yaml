@@ -1,0 +1,23 @@
+# REJECTED: turkmenistan.ru
+#
+# turkmenistan.ru — "Интернет-газета Turkmenistan.Ru", a long-running
+# Russian-language news portal about Turkmenistan (Drupal 6-era).
+#
+# Why rejected:
+#   - No WP API, no working sitemap (sitemap.xml and sitemap_index.xml
+#     both 404).
+#   - Listing pagination is broken on the server: every page of
+#     /ru/taxonomy/term/3/all?page=N returns the same latest ~10
+#     articles (confirmed page=1, page=2, page=5000 all identical).
+#     Same for /ru/taxonomy/term/3/all/feed?page=N.
+#   - Per-date archive /ru/archive/YYYYMMDD works but each day only
+#     lists ~0-5 articles, and there is no index of dates — crawling
+#     back through every day since ~2000 is not feasible within the
+#     standard listing framework.
+#   - Sequential article IDs are sparse (49047 works, 49048/49050/
+#     49100 all 404) — most IDs don't correspond to articles.
+#
+# Kept as a _0_ marker so future maintainers don't re-discover.
+name: Turkmenistan.Ru
+disabled: true
+reason: Drupal pagination broken; sitemap absent; ID sequence too sparse

@@ -2,12 +2,14 @@ name: N1 Serbia English
 language: en
 country: serbia
 base_url: https://n1info.rs
+# /english/news/page/N/ returns 404 and wp-json is blocked. Post sitemaps are
+# indexed newest-first (post_1 = most recent); filtering for /english/news/
+# URLs. post_1 alone yields ~65 English articles from the last ~7 days.
 listing:
-  type: pagination
-  start_url: https://n1info.rs/english/news/
-  url_template: https://n1info.rs/english/news/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+    - https://n1info.rs/sitemap/sitemap_post_1.xml
+  url_regex: "^https://n1info\\.rs/english/news/[a-z0-9-]+/?$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,14 +22,18 @@ headers:
   Accept-Language: en-US,en;q=0.9
 selectors:
   thumbnail:
-    container: article
-    title: h3 a::text
-    url: h3 a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.flex p"
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article p
+    date: script[type='application/ld+json']:-soup-contains('datePublished')::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

@@ -1,0 +1,38 @@
+name: Tuzlanski
+language: bs
+country: bosnia_and_herzegovina
+base_url: https://tuzlanski.ba
+# /vijesti?page=N returns identical HTML (server ignores page param).
+# Using yearly article sitemaps and news.xml for current coverage.
+listing:
+  type: sitemap
+  sitemap_index_url: https://tuzlanski.ba/sitemap.xml
+  sitemap_regex: "(sitemap/news\\.xml|sitemap/articles/202[5-9]\\.xml)"
+  url_regex: "^https://tuzlanski\\.ba/[a-z0-9-]+/[a-z0-9-/]+/[0-9]+/?$"
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: bs-BA,bs;q=0.9,hr;q=0.8,sr;q=0.7,en;q=0.6
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.article-text p
+    date: time::attr(datetime)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

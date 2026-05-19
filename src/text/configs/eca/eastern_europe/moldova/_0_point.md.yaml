@@ -1,0 +1,32 @@
+# Unusable with current pipeline strategies.
+# Reason: Next.js SPA served behind nginx. All relevant paths (/, /ru/sitemap.xml/,
+#   /api/articles/, /api/news/) return the same bootstrap HTML shell regardless
+#   of Accept header. No public sitemap with article URLs, no JSON listing
+#   endpoint. No WP/REST API. Would require browser rendering or reverse-
+#   engineered internal Next API.
+name: Point.md
+language: ru
+country: moldova
+base_url: https://point.md
+listing:
+  type: sitemap
+  sitemap_index_url: https://point.md/ru/sitemap.xml/
+client: http
+concurrency: 2
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: article
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

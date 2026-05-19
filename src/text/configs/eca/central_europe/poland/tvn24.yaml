@@ -2,10 +2,13 @@ name: TVN24
 language: pl
 country: poland
 base_url: https://tvn24.pl
+# ``?page=N`` is disallowed by robots.txt and returns identical content
+# (100% overlap); the site paginates via ``/najnowsze/N`` path segments
+# instead. Verified pages 2/3/5/10 yield fully distinct article lists.
 listing:
   type: pagination
   start_url: https://tvn24.pl/najnowsze
-  url_template: https://tvn24.pl/najnowsze?page={num}
+  url_template: https://tvn24.pl/najnowsze/{num}
   start_page: 2
   batch_size: 5
 client: http
@@ -20,12 +23,12 @@ headers:
   Accept-Language: pl-PL,pl;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: div[class*="SectionTeaser"]
+    title: a[href*="tvn24.pl/"][href*="-st"]:not([href*="eurosport"])::text
+    url: a[href*="tvn24.pl/"][href*="-st"]:not([href*="eurosport"])::attr(href)
   article:
-    body: div.page-container p
-    date: meta[property='article:published_time']::attr(content)
+    body: main p
+    date: time::attr(datetime)
 cleaning:
   date: handle_mixed_dates
 max_pages: null

@@ -2,10 +2,13 @@ name: Profit.ro
 language: ro
 country: romania
 base_url: https://www.profit.ro
+# Homepage ?page= returns identical content. Site uses /toate?p=N (query
+# param "p") for real pagination; needs full Chrome headers including
+# Sec-CH-UA to pass Cloudflare. Article body under div.art-content.
 listing:
   type: pagination
-  start_url: https://www.profit.ro/
-  url_template: https://www.profit.ro/?page={num}
+  start_url: https://www.profit.ro/toate
+  url_template: https://www.profit.ro/toate?p={num}
   start_page: 2
   batch_size: 5
 client: http
@@ -18,13 +21,24 @@ headers:
     like Gecko) Chrome/131.0.0.0 Safari/537.36
   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
   Accept-Language: ro-RO,ro;q=0.9,en;q=0.8
+  Referer: https://www.profit.ro/
+  Sec-Fetch-Dest: document
+  Sec-Fetch-Mode: navigate
+  Sec-Fetch-Site: same-origin
+  Sec-Fetch-User: '?1'
+  Upgrade-Insecure-Requests: '1'
+  Sec-CH-UA: '"Chromium";v="131", "Not_A Brand";v="24"'
+  Sec-CH-UA-Mobile: '?0'
+  Sec-CH-UA-Platform: '"macOS"'
 selectors:
   thumbnail:
-    container: article
-    title: a[href]::text
-    url: a[href]::attr(href)
+    # article.article-row is a sticky "featured" strip that repeats across
+    # pages; excluding it leaves ~20 fresh items per page.
+    container: "article:not(.article-row)"
+    title: "a[href]::attr(title)"
+    url: "a[href]::attr(href)"
   article:
-    body: article p
+    body: div.art-content p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

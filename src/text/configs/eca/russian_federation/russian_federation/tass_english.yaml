@@ -1,33 +1,52 @@
+# TASS English — Russian state news agency, English edition.
+#
+# Sitemap-based discovery (was previously broken pagination — the /world?page=N
+# listing pages render via JavaScript and return only a placeholder shell to the
+# HTTP client). The sitemap index exposes ~223k article URLs across 9 news
+# sub-sitemaps (sitemap_news0..sitemap_news8 with 25k each) plus hot/section.
+# Article pages are direct-fetchable and parse cleanly with parse_date_from_jsonld.
 name: TASS English
 language: en
 country: russian_federation
 base_url: https://tass.com
+
 listing:
-  type: pagination
-  start_url: https://tass.com/
-  url_template: https://tass.com/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://tass.com/sitemap.xml
+  sitemap_regex: "sitemap_(hot|news[0-9]+|section)\\.xml$"
+  url_regex: "^https://tass\\.com/[a-z-]+/[0-9]+$"
+
 client: http
 concurrency: 3
-rate_limit: 1.0
+# rate_limit is currently enforced GLOBALLY across all workers (see
+# client_http.py:_rate_limit_delay using a shared self._last_request_time).
+# 0.33s gives ~3 req/s total = ~1 req/s per worker, matching the original
+# politeness intent. Restore to 1.0 if the per-worker fix lands.
+rate_limit: 0.33
 retries: 3
 retry_seconds: 2.0
+
 headers:
   User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
     like Gecko) Chrome/131.0.0.0 Safari/537.36
   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
   Accept-Language: en-US,en;q=0.9
+
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: 'main'
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: "div.text-content p"
+    date: "script[type='application/ld+json']::text"
+
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
+
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

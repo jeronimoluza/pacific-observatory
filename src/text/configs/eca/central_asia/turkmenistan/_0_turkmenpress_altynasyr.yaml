@@ -1,0 +1,15 @@
+# REJECTED (grouped): turkmenpress.tm, altyn-asyr.tm, altyn-asyr.tv,
+# neutraljob.gov.tm, turkmenbashy.biz
+#
+# Why rejected:
+#   - turkmenpress.tm: no HTTP response (DNS/TLS fail from crawler).
+#   - altyn-asyr.tv: no response. altyn-asyr.tm: redirects to
+#     turkmenistan.gov.tm (the portal is itself branded "Altyn Asyr") —
+#     covered by turkmenistan_gov.yaml.
+#   - neutraljob.gov.tm: jobs portal, not news.
+#   - turkmenbashy.biz: not a news site.
+#
+# Consolidated into a single marker file to keep the directory tidy.
+name: Turkmen state-minor sites (press/altyn-asyr/neutraljob/turkmenbashy)
+disabled: true
+reason: unreachable, redirects into other covered sources, or non-news

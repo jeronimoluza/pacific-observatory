@@ -3,14 +3,18 @@ language: sr
 country: serbia
 base_url: https://www.nedeljnik.rs
 listing:
-  type: pagination
-  start_url: https://www.nedeljnik.rs/
-  url_template: https://www.nedeljnik.rs/page/{num}/
-  start_page: 2
-  batch_size: 5
-client: http
-concurrency: 3
-rate_limit: 1.0
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: https://www.nedeljnik.rs/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+client: browser
+concurrency: 1
+rate_limit: 3.0
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -20,14 +24,14 @@ headers:
   Accept-Language: sr-RS,sr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: article
-    title: h2 a::text
-    url: h2 a::attr(href)
+    container: filler
+    title: filler
+    url: filler
   article:
-    body: "div.container p"
-    date: meta[property='article:published_time']::attr(content)
+    body: main p
+    date: script[type='application/ld+json']:-soup-contains('datePublished')::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

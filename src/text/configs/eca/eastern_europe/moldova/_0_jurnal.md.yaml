@@ -1,0 +1,32 @@
+# Unusable with current pipeline strategies.
+# Reason: jurnal.md is behind a Cloudflare JavaScript challenge (HTTP 403 with
+#   "Just a moment..." interstitial and meta refresh) for every non-browser
+#   request, including /robots.txt and /sitemap.xml. No WP API reachable, no RSS
+#   reachable. Would need a challenge-solving browser/TLS client (undetected-
+#   chromedriver, curl_cffi with chrome fingerprint, etc.) to proceed.
+name: Jurnal.md
+language: ro
+country: moldova
+base_url: https://jurnal.md
+listing:
+  type: sitemap
+  sitemap_index_url: https://jurnal.md/sitemap.xml
+client: http
+concurrency: 2
+rate_limit: 1.0
+retries: 3
+retry_seconds: 3.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: article
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

@@ -2,31 +2,37 @@ name: Espreso
 language: uk
 country: ukraine
 base_url: https://espreso.tv
+
 listing:
-  type: pagination
-  start_url: https://espreso.tv/news
-  url_template: https://espreso.tv/news?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://espreso.tv/sitemap.xml
+  sitemap_regex: "sitemap_news_[0-9]+\\.xml"
+
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
+
 headers:
-  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
-    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
   Accept-Language: uk-UA,uk;q=0.9,en;q=0.8
+
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: 'div.content'
-    date: .news__author_date__date::text
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.news-content p
+
 cleaning:
   date: handle_mixed_dates
+
 max_pages: null
 max_articles: null

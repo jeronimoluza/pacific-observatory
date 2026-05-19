@@ -1,0 +1,39 @@
+# Unusable with current pipeline strategies.
+# Reason: ca-news.org / centralasia.media (old "CA-News", akipress stable)
+#   has no real sitemap (/sitemap.xml returns HTML). Homepage yields ~60
+#   /news:NNN links. Every probed pagination token — /last:pageN,
+#   /news:pageN, /?page=N, /news:N, /country:3/page_2/ — returns the same
+#   46 article IDs, so pagination is decorative (server ignores N). No
+#   date-indexed archive endpoint found.
+# Would need: a working chronological archive, or a Wayback-backed crawl.
+name: CentralAsia.media
+language: ru
+country: kyrgyz_republic
+base_url: https://centralasia.media
+listing:
+  type: pagination
+  start_url: https://centralasia.media/
+  url_template: https://centralasia.media/last:page{num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+selectors:
+  thumbnail:
+    container: div.most-popular-list
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.newstext
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

@@ -1,0 +1,35 @@
+# Unusable with current pipeline strategies.
+# Reason: virtualaz.org is a parked domain. /sitemap.xml only lists a single
+#   URL (/lander) which GoDaddy-redirects to a "for sale" parking page.
+#   The Azerbaijani news site that once lived here is offline.
+name: Virtual.az
+language: az
+country: azerbaijan
+base_url: https://virtualaz.org
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://virtualaz.org/sitemap.xml
+  url_regex: "^https://virtualaz\\.org/"
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: az-AZ,az;q=0.9
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: article
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

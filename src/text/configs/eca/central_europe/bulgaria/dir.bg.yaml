@@ -2,12 +2,12 @@ name: Dir.bg
 language: bg
 country: bulgaria
 base_url: https://dnes.dir.bg
+# Homepage pagination timed out during scraping. Switching to the sitemap
+# index which lists monthly news sitemaps (/sitemaps/YYYY/M/news.xml).
 listing:
-  type: pagination
-  start_url: https://dnes.dir.bg/
-  url_template: https://dnes.dir.bg/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://dnes.dir.bg/sitemap.xml
+  sitemap_regex: "sitemaps/\\d{4}/\\d{1,2}/news\\.xml"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,12 +20,16 @@ headers:
   Accept-Language: bg-BG,bg;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.inner-wrapper p"
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: "div.article-content p"
+    date: time[datetime]::attr(datetime)
 cleaning:
   date: handle_mixed_dates
 max_pages: null

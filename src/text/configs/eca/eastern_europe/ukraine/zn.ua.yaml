@@ -2,31 +2,40 @@ name: ZN.ua
 language: uk
 country: ukraine
 base_url: https://zn.ua
+
 listing:
-  type: pagination
-  start_url: https://zn.ua/ukr/
-  url_template: https://zn.ua/ukr/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://zn.ua/pub/sitemaps/sitemap_index.xml
+  url_replace:
+    pattern: "^(https://zn\\.ua/)(?!ukr/|eng/)"
+    replacement: "\\1ukr/"
+  url_regex: "^https://zn\\.ua/ukr/.+\\.html$"
+
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 10
+rate_limit: 0.3
 retries: 3
 retry_seconds: 2.0
+
 headers:
-  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
-    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
   Accept-Language: uk-UA,uk;q=0.9,en;q=0.8
+
 selectors:
   thumbnail:
-    container: div.content-tile
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
     body: div.sbody p
-    date: .content-date::text
+
 cleaning:
   date: handle_mixed_dates
+
 max_pages: null
 max_articles: null

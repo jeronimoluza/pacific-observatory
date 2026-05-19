@@ -1,0 +1,44 @@
+name: Vesti.kg
+language: ru
+country: kyrgyz_republic
+base_url: https://vesti.kg
+
+# Russian-language KG news site on Joomla. /sitemapindex_xml_ru.xml lists
+# sitemap_xml_ru_N.xml sub-sitemaps (each up to 25k URLs). No meta date tag;
+# the visible date "Среда, DD месяца YYYY HH:MM" lives in li.itemDate. Body
+# is div.itemFullText (K2 component).
+listing:
+  type: sitemap
+  sitemap_index_url: https://vesti.kg/sitemapindex_xml_ru.xml
+  sitemap_regex: "sitemap_xml_ru"
+  url_regex: "^https://vesti\\.kg/"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.itemFullText
+    date: li.itemDate::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

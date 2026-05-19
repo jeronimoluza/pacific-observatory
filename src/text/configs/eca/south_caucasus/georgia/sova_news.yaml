@@ -1,0 +1,44 @@
+name: SOVA News
+language: ru
+country: georgia
+base_url: https://sova.news
+
+# SOVA News — Russian-language independent Georgian news site.
+# robots.txt points at /sitemaps/sitemap.xml.gz which is a sitemap
+# index over /sitemaps/sitemap-NNN.xml.gz shards. Articles follow
+# /YYYY/MM/DD/<slug>/. Body in div.content; published_time meta exists.
+listing:
+  type: sitemap
+  sitemap_index_url: https://sova.news/sitemaps/sitemap.xml.gz
+  sitemap_regex: "sitemap-[0-9]+\\.xml\\.gz$"
+  url_regex: "^https://sova\\.news/[0-9]{4}/[0-9]{2}/[0-9]{2}/[^/]+/?$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.content
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,46 @@
+# Azathabar (Azatlyk / Azat Ýewropa Radiosy) — RFE/RL Turkmen service.
+# Exile / external independent. Covers Turkmenistan in Turkmen language.
+# Sitemap index at /sitemap.xml references ~11 gzipped sub-sitemaps
+# (sitemap_14_1.xml.gz .. sitemap_14_11.xml.gz) plus latest/news/sections/videos.
+# Article URLs are https://www.azathabar.com/a/<numeric-id>.html
+# Same platform as svaboda.org/ozodi.org — uses RFE/RL Pangea CMS.
+name: Azathabar
+language: tk
+country: turkmenistan
+base_url: https://www.azathabar.com
+
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.azathabar.com/sitemap.xml
+  sitemap_regex: "sitemap_14_(latest|news|[0-9]+)\\.xml\\.gz$"
+  url_regex: "^https://www\\.azathabar\\.com/a/(?:[a-z0-9-]+/)?[0-9]+\\.html$"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: tk-TM,tk;q=0.9,ru;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.wsw
+    date: time[pubdate]::attr(datetime)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

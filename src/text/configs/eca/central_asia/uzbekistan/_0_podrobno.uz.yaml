@@ -1,0 +1,33 @@
+# Unusable with current pipeline strategies.
+# Reason: podrobno.uz returns a 1C-Bitrix sitemap (podrobno.uz/sitemap.xml) but
+#   the root domain 301-redirects /wp-json and wraps article pages in an
+#   interstitial (iso-8859-1 shell). The /sitemap-iblock-*.xml chunks exist
+#   but were last updated 2023-05-04 — the site appears to have frozen its
+#   public sitemap index, so the newest content is no longer indexed there.
+#   Article HTML is delivered, but only stale URLs are reachable by sitemap.
+# Would need: an active discovery endpoint or a rework that scrapes the
+#   paginated category indices directly (e.g. /politics/?PAGEN_1=N).
+name: Podrobno.uz
+country: uzbekistan
+base_url: https://podrobno.uz
+language: ru
+listing:
+  type: sitemap
+  sitemap_index_url: https://podrobno.uz/sitemap.xml
+  url_regex: "^https://podrobno\\.uz/cat/[a-z-]+/[a-z0-9-]+/?$"
+client: http
+concurrency: 2
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: div.news-detail p
+max_pages: null
+max_articles: null

@@ -2,12 +2,14 @@ name: Daily Sabah
 language: en
 country: turkiye
 base_url: https://www.dailysabah.com
+# /?page=N returns the same homepage every time.
+# Robots.txt advertises /sitemaps/sitemap_latest.xml — google-news format
+# with the freshest ~100 articles across every section.
 listing:
-  type: pagination
-  start_url: https://www.dailysabah.com/
-  url_template: https://www.dailysabah.com/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+    - https://www.dailysabah.com/sitemaps/sitemap_latest.xml
+  url_regex: "^https://www\\.dailysabah\\.com/[a-z0-9-]+/.+[a-z0-9-]+$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,10 +22,14 @@ headers:
   Accept-Language: en-US,en;q=0.9
 selectors:
   thumbnail:
-    container: div.col-lg-4
-    title: h3 a::text
-    url: h3 a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
     body: "div.container p"
     date: meta[property='article:published_time']::attr(content)
 cleaning:

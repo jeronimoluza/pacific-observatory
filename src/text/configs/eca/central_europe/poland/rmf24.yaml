@@ -2,12 +2,16 @@ name: RMF24
 language: pl
 country: poland
 base_url: https://www.rmf24.pl
+# Homepage listing pages (``nPack,N``, ``?page=N``, ``/page/N``, etc.) all
+# reuse the same server-rendered block (94% overlap) and the article regions
+# are injected by JS, so httpx only sees a few stubs. robots.txt exposes 21
+# sitemap index files with per-day article sitemaps — use the newest one as
+# the source of fresh URLs.
 listing:
-  type: pagination
-  start_url: https://www.rmf24.pl/
-  url_template: https://www.rmf24.pl/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://www.rmf24.pl/sitemap/www.rmf24.pl-siteindex-21.xml.gz
+  sitemap_regex: "artykuly-\\d{4}-\\d{2}-\\d{2}\\.xml"
+  url_regex: "^https://www\\.rmf24\\.pl/[a-z0-9-]+(?:/[a-z0-9-]+)*/news-[^\"]+,nId,\\d+$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,12 +24,16 @@ headers:
   Accept-Language: pl-PL,pl;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: div.item
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: div#backTop p
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div[itemprop="articleBody"] p
+    date: meta[itemprop='datePublished']::attr(content)
 cleaning:
   date: handle_mixed_dates
 max_pages: null

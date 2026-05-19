@@ -2,10 +2,15 @@ name: Europa FM
 language: ro
 country: romania
 base_url: https://www.europafm.ro
+# /stiri/page/N/ returns identical content (fake pagination). Monthly
+# date archive (/YYYY/MM/) with paginated_archive strategy yields 12
+# fresh article tiles per page with zero overlap.
 listing:
-  type: pagination
-  start_url: https://www.europafm.ro/stiri/
-  url_template: https://www.europafm.ro/stiri/page/{num}/
+  type: paginated_archive
+  date_format: monthly
+  start_url: https://www.europafm.ro/{year}/{month}/
+  url_template: https://www.europafm.ro/{year}/{month}/page/{num}/
+  start_date: '2020-01-01'
   start_page: 2
   batch_size: 5
 client: http
@@ -20,8 +25,8 @@ headers:
   Accept-Language: ro-RO,ro;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
+    container: div.column > div.newsbox-post
+    title: a::attr(title)
     url: a::attr(href)
   article:
     body: div.container p

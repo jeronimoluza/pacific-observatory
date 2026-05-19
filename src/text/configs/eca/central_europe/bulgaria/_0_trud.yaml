@@ -1,0 +1,30 @@
+# Unusable with current pipeline strategies.
+# Reason: Cloudflare managed JS challenge ("Just a moment...") on every request.
+# Homepage returns 5KB challenge-page only; httpx cannot solve it. Fixable
+# with browser client (Playwright) or by routing through a residential proxy
+# that solves the challenge. Trud is the top-3 Bulgarian daily by circulation
+# (tabloid format) — high-priority gap in the panel.
+name: Trud
+language: bg
+country: bulgaria
+base_url: https://trud.bg
+listing:
+  type: pagination
+  url_template: https://trud.bg/category/ikonomika/page/{num}
+  start_page: 2
+  batch_size: 5
+client: browser
+concurrency: 1
+rate_limit: 2.0
+retries: 3
+retry_seconds: 5.0
+selectors:
+  thumbnail:
+    container: article
+    title: h2 a::text
+    url: a::attr(href)
+  article:
+    body: div.entry-content p
+    date: meta[property='article:published_time']::attr(content)
+max_pages: null
+max_articles: null

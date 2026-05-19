@@ -1,0 +1,14 @@
+# REJECTED: amu.tv
+#
+# Amu TV — independent exile Afghan TV. Despite surfacing in searches
+# for Turkmen exile media it is primarily an Afghan outlet, not a
+# Turkmenistan source.
+#
+# Why rejected:
+#   - /wp-json/wp/v2/posts returns {"code":"rest_not_logged_in",
+#     "data":{"status":401}} — the WP API is behind auth.
+#   - /sitemap.xml is empty (200 OK but zero bytes).
+#   - Scope mismatch: the site covers Afghanistan, not Turkmenistan.
+name: Amu TV
+disabled: true
+reason: WP API auth-gated + out of country scope (Afghan exile)

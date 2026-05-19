@@ -1,0 +1,42 @@
+name: Texty
+language: uk
+country: ukraine
+base_url: https://texty.org.ua
+
+# Independent Ukrainian data-journalism outlet. Exposes /sitemap-news.xml for recent
+# items and paginated /sitemap-articles.xml and /sitemap-fragments.xml for archive.
+listing:
+  type: sitemap
+  sitemap_index_url: https://texty.org.ua/sitemap.xml
+  sitemap_regex: "sitemap-(articles|fragments|news)\\.xml"
+  url_regex: "^https://texty\\.org\\.ua/(articles|fragments)/[0-9]+/"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: uk-UA,uk;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: main article p
+    date: time.publish_date::attr(datetime)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

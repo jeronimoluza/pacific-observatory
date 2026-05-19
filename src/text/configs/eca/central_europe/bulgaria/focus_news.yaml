@@ -1,0 +1,33 @@
+name: Focus News
+language: bg
+country: bulgaria
+base_url: https://www.focus-news.net
+listing:
+  type: archive
+  url_template: https://www.focus-news.net/novini/{day}.{month}.{year}/showall.html
+  date_format: daily
+  start_date: '2022-01-01'
+  batch_size: 5
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: bg-BG,bg;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: div.search-result-news
+    title: h3::text
+    url: a::attr(href)
+  article:
+    body: div.article-text p
+    date: script[type='application/ld+json']:-soup-contains('datePublished')::text
+cleaning:
+  date: parse_date_from_jsonld
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

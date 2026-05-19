@@ -2,32 +2,40 @@ name: Economist.kg
 language: ru
 country: kyrgyz_republic
 base_url: https://economist.kg
+
+# Ghost CMS. /sitemap.xml is a sitemap index pointing at sitemap-posts.xml and
+# sitemap-posts-2.xml (actual article URLs). Filter to post sub-sitemaps only.
 listing:
-  type: pagination
-  start_url: https://economist.kg/
-  url_template: https://economist.kg/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://economist.kg/sitemap.xml
+  sitemap_regex: "/sitemap-posts"
+
 client: http
 concurrency: 3
-rate_limit: 1.0
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
+
 headers:
-  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
-    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
   Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: 'article'
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.gh-post-page__content
     date: meta[property='article:published_time']::attr(content)
+
 cleaning:
   date: handle_mixed_dates
+
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

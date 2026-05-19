@@ -1,0 +1,14 @@
+# REJECTED: suspilne.media (Suspilne Movlennya / UATV, public broadcaster)
+#
+# All endpoints (/, /robots.txt, /sitemap.xml, /wp-json/...) return HTTP 403 with
+# Cloudflare "Sorry, you have been blocked" challenge. This is an active bot-
+# management policy requiring browser-grade TLS/JS fingerprinting (cf-mitigated:
+# challenge). httpx / requests cannot pass it with UA spoofing alone.
+#
+# Re-probe periodically — if the challenge is relaxed, switch to a sitemap-based
+# config.
+name: Suspilne
+language: uk
+country: ukraine
+base_url: https://suspilne.media
+disabled: true

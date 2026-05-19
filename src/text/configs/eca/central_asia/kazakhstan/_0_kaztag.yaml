@@ -1,0 +1,36 @@
+# Unusable with current pipeline strategies.
+# Reason: kaztag.kz (Kazakhstan news agency) publishes a full Bitrix
+#   sitemap (sitemap-iblock-150.xml is the main articles file with ~18k
+#   URLs), but fetching any article yields just a 2-sentence teaser with a
+#   "available only to subscribers" notice in <article>. The rest of the
+#   content is paywalled and delivered only after server-side subscription
+#   check. No public API or RSS bypass.
+name: KazTAG
+language: ru
+country: kazakhstan
+base_url: https://kaztag.kz
+listing:
+  type: sitemap
+  sitemap_index_url: https://kaztag.kz/sitemap.xml
+  sitemap_regex: "/sitemap-iblock-150\\.xml$"
+  url_regex: "^https://kaztag\\.kz/ru/news/[a-z0-9-]+$"
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
+    (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: article p
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

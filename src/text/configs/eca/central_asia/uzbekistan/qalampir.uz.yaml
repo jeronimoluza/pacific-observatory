@@ -1,0 +1,46 @@
+name: Qalampir.uz
+country: uzbekistan
+base_url: https://qalampir.uz
+language: uz
+
+# Qalampir is an independent Uzbek-language news site. /sitemap.xml is a
+# single flat urlset (~16MB, tens of thousands of URLs). News articles live
+# under /news/<slug>-<id>. No sub-sitemap index; /wp-json returns 404.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://qalampir.uz/sitemap.xml
+  url_regex: "^https://qalampir\\.uz/news/[^/]+-[0-9]+$"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: uz-UZ,uz;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    # NOTE: sitemap <lastmod> reflects sitemap regen time, not article publish
+    # date — stamps every URL with "today". Date is read from the article page
+    # via p[itemprop="datePublished"] (text includes view-count noise, but
+    # handle_mixed_dates extracts the date via dateutil).
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.content-main p
+    date: p[itemprop='datePublished']::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

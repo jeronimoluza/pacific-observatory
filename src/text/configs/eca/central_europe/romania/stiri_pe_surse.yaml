@@ -2,12 +2,13 @@ name: Stiri pe surse
 language: ro
 country: romania
 base_url: https://www.stiripesurse.ro
+# /page/N/ returns 404. Using Google-news sitemap (sitemap-news.xml)
+# which always carries the newest ~800 articles.
 listing:
-  type: pagination
-  start_url: https://www.stiripesurse.ro/
-  url_template: https://www.stiripesurse.ro/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+    - https://www.stiripesurse.ro/sitemap-v2/sitemap-news.xml
+  url_regex: "^https://www\\.stiripesurse\\.ro/[a-z0-9-]+_[0-9]+$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,11 +21,15 @@ headers:
   Accept-Language: ro-RO,ro;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: article
-    title: a[href]::text
-    url: a[href]::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.article-content"
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

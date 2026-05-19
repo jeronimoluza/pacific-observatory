@@ -1,0 +1,42 @@
+name: Ak Zhaiyk (AZH) Russian
+language: ru
+country: kazakhstan
+base_url: https://azh.kz
+
+# "Ak Zhaiyk" (Atyrau regional paper, est. 1991). The declared sitemap
+# /sitemap-ru-news.xml is a 12MB XML that routinely takes ~95s to serve
+# (scraper client timeout is 60s → fails every run). Falling back to
+# paginated listing /ru/news/?page=N which returns 32 URLs/page and resolves
+# in <1s. Article URLs: /ru/news/view/{numeric-id}.
+listing:
+  type: pagination
+  start_url: https://azh.kz/ru/news/
+  url_template: https://azh.kz/ru/news/?page={num}
+  start_page: 2
+  batch_size: 5
+
+client: http
+concurrency: 2
+rate_limit: 1.0
+retries: 3
+retry_seconds: 3.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,kk;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: "div.articles > article"
+    title: h3.news-list__title::text
+    url: "a[href*='/ru/news/view/']::attr(href)"
+  article:
+    body: div.user-content p
+    date: meta[itemprop='datePublished']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

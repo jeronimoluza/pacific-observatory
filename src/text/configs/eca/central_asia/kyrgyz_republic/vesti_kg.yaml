@@ -1,0 +1,42 @@
+name: Vesti.kg Kyrgyz
+language: ky
+country: kyrgyz_republic
+base_url: https://vesti.kg
+
+# Kyrgyz edition of vesti.kg. Same Joomla/K2 template; sub-sitemap
+# sitemap_xml_kg_0.xml.
+listing:
+  type: sitemap
+  sitemap_index_url: https://vesti.kg/sitemapindex_xml_kg.xml
+  sitemap_regex: "sitemap_xml_kg"
+  url_regex: "^https://vesti\\.kg/"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ky-KG,ky;q=0.9,ru;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.itemFullText
+    date: li.itemDate::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

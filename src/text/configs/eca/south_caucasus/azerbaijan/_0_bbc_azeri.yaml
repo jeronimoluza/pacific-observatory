@@ -1,0 +1,42 @@
+# Unusable with current pipeline strategies.
+# Reason: BBC Azerbaijani (www.bbc.com/azeri) is a React SPA. Static sitemap at
+#   /azeri/sitemap.xml is frozen in September 2014 (100 .shtml URLs pointing to
+#   the defunct bbc.co.uk/azeri edition) and doesn't index any modern
+#   /azeri/articles/<id> URLs. The global /sitemap.xml and /sitemaps/*.xml do
+#   not include Azerbaijani content. Articles themselves render fine with
+#   meta article:published_time, but URL discovery via sitemap/pagination
+#   isn't possible without the internal topic-page JSON endpoint.
+# Would need: browser-client rendering of /azeri index pages or a partnership
+#   with BBC Global News Ltd for an archive feed.
+name: BBC Azerbaijani
+language: az
+country: azerbaijan
+base_url: https://www.bbc.com
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://www.bbc.com/azeri/sitemap.xml
+  url_regex: "^https://www\\.bbc\\.com/azeri/articles/"
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: az-AZ,az;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    body: main
+    date: meta[property='article:published_time']::attr(content)
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

@@ -2,12 +2,16 @@ name: Vedomosti
 language: ru
 country: russian_federation
 base_url: https://www.vedomosti.ru
+# Homepage /?page=N returns identical thumbnails regardless of N (100%
+# overlap). Vedomosti publishes a sitemap index at /sitemap.xml pointing to
+# sitemap_news3.xml and sitemap_news5.xml, two flat sitemaps covering all
+# news articles from 2022 to present (newest last).
 listing:
-  type: pagination
-  start_url: https://www.vedomosti.ru/
-  url_template: https://www.vedomosti.ru/?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+    - https://www.vedomosti.ru/sitemap_news5.xml
+    - https://www.vedomosti.ru/sitemap_news3.xml
+  url_regex: "^https://www\\.vedomosti\\.ru/.+/(news|articles|galleries)/20(2[5-9]|[3-9][0-9])/"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,12 +24,16 @@ headers:
   Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: div.layout p
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - meta[property='og:title']::attr(content)
+      - h1::text
+    body: "div.article__content p"
+    date: "time[datetime]::attr(datetime)"
 cleaning:
   date: handle_mixed_dates
 max_pages: null

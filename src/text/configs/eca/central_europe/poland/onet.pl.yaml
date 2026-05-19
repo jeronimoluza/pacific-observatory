@@ -3,14 +3,14 @@ language: pl
 country: poland
 base_url: https://wiadomosci.onet.pl
 listing:
-  type: pagination
-  start_url: https://wiadomosci.onet.pl/
-  url_template: https://wiadomosci.onet.pl/?page={num}
-  start_page: 2
+  type: archive
+  url_template: https://wiadomosci.onet.pl/archiwum/{year}-{month}-{day}
+  date_format: daily
+  start_date: '2022-01-01'
   batch_size: 5
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -20,14 +20,14 @@ headers:
   Accept-Language: pl-PL,pl;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: div.ods-c-card-wrapper
+    container: div.ods-m-date-about-author
     title: a::text
     url: a::attr(href)
   article:
-    body: "div.main-content p"
-    date: meta[property='article:published_time']::attr(content)
+    body: article.ods-article-body div.ods-a-body-text
+    date: script[type='application/ld+json']::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

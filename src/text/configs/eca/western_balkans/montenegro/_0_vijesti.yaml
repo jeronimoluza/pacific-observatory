@@ -1,0 +1,41 @@
+# Unusable with current pipeline strategies.
+# Reason: Fake pagination everywhere. /vijesti/?page=N, /vijesti/politika?page=N,
+# /svijet/balkan?page=N all return the same ~43 thumbnails regardless of N (100%
+# overlap across pages 1/2/3/5). WP REST API is disabled (404). /sitemap.xml
+# only lists section landing pages (no article URLs). RSS feed /rss returns ~31
+# latest articles with no pagination. Article IDs are sequential and resolve
+# (e.g. /vijesti/805000), but that would require a new ID-walking strategy
+# beyond the pagination/api/sitemap/archive/cursor strategies currently shipped.
+name: Vijesti
+language: me
+country: montenegro
+base_url: https://www.vijesti.me
+listing:
+  type: pagination
+  start_url: https://www.vijesti.me/vijesti/
+  url_template: https://www.vijesti.me/vijesti/?page={num}
+  start_page: 2
+  batch_size: 5
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: sr-ME,sr;q=0.9,en;q=0.8
+selectors:
+  thumbnail:
+    container: div.newsItem
+    title: h2 a::text
+    url: h2 a::attr(href)
+  article:
+    body: 'div[itemprop="articleBody"] p'
+    date: script[type='application/ld+json']:-soup-contains('datePublished')::text
+cleaning:
+  date: parse_date_from_jsonld
+max_pages: null
+max_articles: null
+stop_date: '2025-12-01'

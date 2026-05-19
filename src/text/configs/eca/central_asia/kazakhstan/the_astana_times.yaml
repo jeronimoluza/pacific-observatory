@@ -2,32 +2,43 @@ name: The Astana Times
 language: en
 country: kazakhstan
 base_url: https://astanatimes.com
+
+# WordPress-native sitemap index lists wp-sitemap-posts-post-1..12.xml for
+# articles (plus pages/videos/taxonomies which we exclude). Article URLs
+# follow /YYYY/MM/slug/. WP REST API is Cloudflare-blocked on this host
+# (403), so sitemap is the fastest working option.
 listing:
-  type: pagination
-  start_url: https://astanatimes.com/
-  url_template: https://astanatimes.com/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://astanatimes.com/wp-sitemap.xml
+  sitemap_regex: "/wp-sitemap-posts-post-[0-9]+\\.xml$"
+  url_regex: "^https://astanatimes\\.com/[0-9]{4}/[0-9]{2}/.+/$"
+
 client: http
 concurrency: 3
-rate_limit: 1.0
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
+
 headers:
-  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
-    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
   Accept-Language: en-US,en;q=0.9
+
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: div#searchresults p
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.post p
     date: meta[property='article:published_time']::attr(content)
+
 cleaning:
   date: handle_mixed_dates
+
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

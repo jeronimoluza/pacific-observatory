@@ -1,11 +1,11 @@
 name: Dziennik.pl
 language: pl
 country: poland
-base_url: https://www.dziennik.pl
+base_url: https://wiadomosci.dziennik.pl
 listing:
   type: pagination
-  start_url: https://www.dziennik.pl/
-  url_template: https://www.dziennik.pl/?page={num}
+  start_url: https://wiadomosci.dziennik.pl/wydarzenia,1.html
+  url_template: https://wiadomosci.dziennik.pl/wydarzenia,{num}.html
   start_page: 2
   batch_size: 5
 client: http
@@ -20,11 +20,11 @@ headers:
   Accept-Language: pl-PL,pl;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: a[href*="/artykuly/"]
+    title: h3::text
+    url: a[data-nonexistent]::attr(href)
   article:
-    body: 'main'
+    body: main p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

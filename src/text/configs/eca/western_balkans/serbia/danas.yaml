@@ -2,12 +2,24 @@ name: Danas
 language: sr
 country: serbia
 base_url: https://www.danas.rs
+# /page/N/ returns identical homepage content (fake pagination). wp-json REST API
+# returns 401. post-sitemap[N].xml are numbered oldest-to-newest; the strategy
+# reverse-sorts lexicographically so we pin explicit newest sitemaps to force
+# newest-first walk (last populated sitemap is ~755 at current volume).
 listing:
-  type: pagination
-  start_url: https://www.danas.rs/
-  url_template: https://www.danas.rs/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_urls:
+    - https://www.danas.rs/post-sitemap755.xml
+    - https://www.danas.rs/post-sitemap754.xml
+    - https://www.danas.rs/post-sitemap753.xml
+    - https://www.danas.rs/post-sitemap752.xml
+    - https://www.danas.rs/post-sitemap751.xml
+    - https://www.danas.rs/post-sitemap750.xml
+    - https://www.danas.rs/post-sitemap749.xml
+    - https://www.danas.rs/post-sitemap748.xml
+    - https://www.danas.rs/post-sitemap747.xml
+    - https://www.danas.rs/post-sitemap746.xml
+  url_regex: "^https://www\\.danas\\.rs/[a-z0-9-]+/[a-z0-9-]+(/[a-z0-9-]+)?/?$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,11 +32,15 @@ headers:
   Accept-Language: sr-RS,sr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: article
-    title: h3 a::text
-    url: h3 a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: "div.post-content"
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: "div.post-content p"
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

@@ -1,0 +1,46 @@
+name: Azatutyun
+language: hy
+country: armenia
+base_url: https://www.azatutyun.am
+
+# RFE/RL Armenian service (Ազատություն ռադիոկայան). Exile / external independent,
+# Armenian-language. Sitemap index at /sitemap.xml references ~17 gzipped
+# sub-sitemaps (sitemap_16_1.xml.gz .. sitemap_16_16.xml.gz plus latest/news/
+# sections/videos). Article URLs are https://www.azatutyun.am/a/<numeric-id>.html
+# or .../a/<slug>/<numeric-id>.html. Same Pangea CMS platform as svaboda.org /
+# ozodi.org / azathabar.com.
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.azatutyun.am/sitemap.xml
+  sitemap_regex: "sitemap_16_[0-9]+\\.xml\\.gz$"
+  url_regex: "^https://www\\.azatutyun\\.am/a/[^\"]+\\.html$"
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: hy-AM,hy;q=0.9,ru;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.wsw
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

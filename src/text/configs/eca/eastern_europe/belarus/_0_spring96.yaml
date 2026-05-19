@@ -1,0 +1,5 @@
+# UNUSABLE: spring96.org
+# Viasna human rights centre. All sitemap endpoints return Cloudflare 403
+# interactive challenge. Bypass would require a headless browser transport.
+unusable: true
+reason: "Cloudflare interactive challenge (403) on all endpoints"

@@ -1,0 +1,10 @@
+# REJECTED: t-nation.org
+#
+# Why rejected:
+#   - Not a news site. Root serves a 1999-era Netscape-generated HTML
+#     frameset (navbar.html + openning.html) by Dr. Farzad Marjani,
+#     about Turkmen language/culture. Has no news-like structure,
+#     no dated articles, no archive.
+name: t-nation.org
+disabled: true
+reason: legacy frameset site, not a news publication

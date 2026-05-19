@@ -1,0 +1,47 @@
+name: Nezavisimoye Mneniye
+language: ru
+country: tajikistan
+base_url: https://nm.tj
+
+# Russian-language Tajik news agency "Независимое мнение" (Independent Opinion,
+# NIA). Archive frozen circa Oct 2024 — new articles uncertain, but
+# ~56,500 historical URLs across sitemap2.xml (39,798 entries, 2014-2024) and
+# sitemap3.xml (16,717 entries, pre-2022) are recoverable. Site runs the
+# DataLife Engine CMS. Root /sitemap.xml is a sitemap index pointing at the
+# three numbered shards (sitemap1 holds 13 category pages and is skipped by
+# url_regex).
+listing:
+  type: sitemap
+  sitemap_index_url: https://nm.tj/sitemap.xml
+  sitemap_regex: "uploads/sitemap[23]\\.xml$"
+  url_regex: "^https://nm\\.tj/[a-z][a-z_-]*/[0-9]+-.+\\.html$"
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div#hypercontext
+    date: div.p2_time::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

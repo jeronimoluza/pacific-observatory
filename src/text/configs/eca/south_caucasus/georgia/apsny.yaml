@@ -1,0 +1,47 @@
+name: Apsny.ge (Gruziya Online)
+language: ru
+country: georgia
+base_url: https://www.apsny.ge
+
+# Apsny.ge — also branded "Грузия Online". Russian-language Georgia
+# news portal. /sitemap.xml is a flat <urlset> in Google News sitemap
+# format (no <sitemapindex>), so it must be used as a direct sitemap URL
+# rather than a sitemap index. The <url> entries carry `n:publication_date`
+# (no <lastmod>), and there is no article:published_time meta in the HTML
+# article — the only date available is the one in the sitemap itself.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - https://www.apsny.ge/sitemap.xml
+  url_regex: "^https://www\\.apsny\\.ge/[0-9]{4}/[a-z]+/[0-9]+\\.php$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: "n\\:title::text"
+    url: loc::text
+    date: "n\\:publication_date::text"
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.txt-item-news
+    # No article:published_time meta exists; the sitemap's
+    # n:publication_date (assigned to thumbnail.date above) is used instead.
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

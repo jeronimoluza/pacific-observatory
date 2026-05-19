@@ -1,0 +1,44 @@
+name: UzA (Uzbek)
+country: uzbekistan
+base_url: https://uza.uz
+language: uz
+
+# Uzbek (Latin) edition of UzA national news agency. /sitemap.xml dispatches
+# to monthly posts-uz-YYYY-MM.xml. Articles: /uz/posts/<slug>_<id>.
+# Body is wrapped in <article class="news-content"> (not a div) — prior config
+# used div.news-content which matched nothing and skipped every article.
+listing:
+  type: sitemap
+  sitemap_index_url: https://uza.uz/sitemap.xml
+  sitemap_regex: "posts-uz-"
+  url_regex: "^https://uza\\.uz/uz/posts/[a-z0-9_-]+_[0-9]+$"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: uz-UZ,uz;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article.news-content p
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

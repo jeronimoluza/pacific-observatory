@@ -1,0 +1,41 @@
+name: 24.kg Kyrgyz
+language: ky
+country: kyrgyz_republic
+base_url: https://24.kg
+
+# Kyrgyz edition of 24.kg. Sitemap index filtered to kyr sub-sitemaps.
+listing:
+  type: sitemap
+  sitemap_index_url: https://24.kg/sitemap.xml
+  sitemap_regex: "sitemap_(kyrgyz|kyr)"
+  url_regex: "^https://24\\.kg/"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ky-KG,ky;q=0.9,ru;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.cont
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

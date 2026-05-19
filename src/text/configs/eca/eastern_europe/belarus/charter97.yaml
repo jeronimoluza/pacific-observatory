@@ -1,0 +1,44 @@
+name: Charter 97
+language: ru
+country: belarus
+base_url: https://charter97.org
+
+# Opposition independent news. Daily sitemaps by language (_ru, _be, _en).
+# Article pages require browser-like headers (Sec-Fetch-*) or return 403.
+listing:
+  type: sitemap
+  sitemap_index_url: https://charter97.org/sitemap.xml
+  sitemap_regex: "/sitemap/[0-9]{4}-[0-9]{2}-[0-9]{2}_ru\\.xml$"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,be;q=0.8
+  Upgrade-Insecure-Requests: "1"
+  Sec-Fetch-Dest: document
+  Sec-Fetch-Mode: navigate
+  Sec-Fetch-Site: none
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: article.article p
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

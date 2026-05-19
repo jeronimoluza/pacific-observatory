@@ -1,0 +1,32 @@
+# Unusable with current pipeline strategies.
+# Reason: Angular SPA. Every URL (homepage, /sitemap.xml, /sitemap_index.xml,
+#   /api/articles, /api/news) returns the same bootstrap HTML shell with no
+#   server-side rendered article list or body — article content is fetched via
+#   a private Angular service. No public JSON listing endpoint discovered.
+#   Would need a browser client or reverse-engineered internal API.
+name: Agora
+language: ro
+country: moldova
+base_url: https://agora.md
+listing:
+  type: sitemap
+  sitemap_index_url: https://agora.md/sitemap_index.xml
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: article
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

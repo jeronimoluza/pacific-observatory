@@ -1,0 +1,32 @@
+# Unusable with current pipeline strategies.
+# Reason: /sitemap.xml lists ~32k article URLs, but every article URL tested
+#   (including the most recent entries in the sitemap) returns an HTML 404
+#   page ("Ошибка 404" body). The sitemap appears to be generated from a
+#   stale export and URLs do not match any currently-served permalink pattern.
+#   No WP API, no working RSS, no discoverable current listing structure.
+name: Gagauzinfo
+language: ru
+country: moldova
+base_url: https://gagauzinfo.md
+listing:
+  type: sitemap
+  sitemap_index_url: https://gagauzinfo.md/sitemap.xml
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+  article:
+    body: section.section-content
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

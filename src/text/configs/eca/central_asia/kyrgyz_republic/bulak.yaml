@@ -1,0 +1,43 @@
+name: Bulak
+language: ru
+country: kyrgyz_republic
+base_url: https://bulak.kg
+
+# Russian-language KG news outlet on WordPress. /sitemap.xml 301 to
+# /sitemap_index.xml with post-sitemap1..N sub-sitemaps. Article body
+# lives in div.td-post-content (tagDiv theme).
+listing:
+  type: sitemap
+  sitemap_index_url: https://bulak.kg/sitemap_index.xml
+  sitemap_regex: "post-sitemap\\d*\\.xml"
+  url_regex: "^https://bulak\\.kg/\\d{4}/"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.td-post-content
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

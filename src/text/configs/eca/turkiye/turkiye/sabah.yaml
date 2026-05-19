@@ -2,12 +2,14 @@ name: Sabah
 language: tr
 country: turkiye
 base_url: https://www.sabah.com.tr
+# /gundem?page=N returned identical content on every page.
+# Robots.txt advertises /sitemap/index.xml with a post sitemap-index that
+# points at per-day chunks (~700 URLs/chunk).
 listing:
-  type: pagination
-  start_url: https://www.sabah.com.tr/gundem
-  url_template: https://www.sabah.com.tr/gundem?page={num}
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://www.sabah.com.tr/sitemap/post.xml
+  # Skip /trend/galeri/ tile pages and /fotohaber/ galleries (no body text).
+  url_regex: "^https://www\\.sabah\\.com\\.tr/(?!trend/galeri/|fotohaber/|galeri/)[a-z0-9-]+/.+$"
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,14 +22,18 @@ headers:
   Accept-Language: tr-TR,tr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: figure
-    title: figcaption a::text
-    url: a::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
-    body: 'main p'
-    date: meta[property='article:published_time']::attr(content)
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: ["div.newsBox p", "main div.page p"]
+    date: script[type='application/ld+json']:-soup-contains('datePublished')::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
 stop_date: '2025-12-01'

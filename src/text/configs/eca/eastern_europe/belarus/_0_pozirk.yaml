@@ -1,0 +1,8 @@
+# UNUSABLE: pozirk.online
+# Exile news agency. WordPress site technically present, but /post-sitemap.xml
+# currently lists only a single placeholder "hello-world" post. /wp-json/wp/v2/posts
+# returns rest_no_route. Other sitemap indexes redirect to 301 empty. The
+# outlet publishes via a different CMS/frontend and no public article index
+# is exposed. Re-evaluate when production sitemap is published.
+unusable: true
+reason: "Sitemap only contains placeholder post; WP REST route disabled"

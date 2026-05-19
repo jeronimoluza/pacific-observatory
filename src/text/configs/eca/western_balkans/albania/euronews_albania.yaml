@@ -3,11 +3,15 @@ language: sq
 country: albania
 base_url: https://euronews.al
 listing:
-  type: pagination
-  start_url: https://euronews.al/sq/
-  url_template: https://euronews.al/sq/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: https://euronews.al/wp-json/wp/v2/posts?per_page=50&page={page}&_fields=id,date,link,title
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
 client: http
 concurrency: 3
 rate_limit: 1.0
@@ -20,11 +24,11 @@ headers:
   Accept-Language: sq-AL,sq;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: filler
+    title: filler
+    url: filler
   article:
-    body: 'main'
+    body: main p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

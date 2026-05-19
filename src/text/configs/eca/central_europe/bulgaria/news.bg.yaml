@@ -4,13 +4,13 @@ country: bulgaria
 base_url: https://news.bg
 listing:
   type: pagination
-  start_url: https://news.bg/
-  url_template: https://news.bg/?page={num}
+  start_url: https://news.bg/bulgaria
+  url_template: https://news.bg/bulgaria?page={num}
   start_page: 2
   batch_size: 5
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -20,11 +20,11 @@ headers:
   Accept-Language: bg-BG,bg;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: li
-    title: h2 a::text
-    url: h2 a::attr(href)
+    container: ul.secondary-articles li div.topic
+    title: a.title::text
+    url: a.title::attr(href)
   article:
-    body: "div.global-wrapper p"
+    body: div.global-wrapper p
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates

@@ -1,33 +1,46 @@
-name: Monitor
-language: me
+name: Monitor (Montenegro)
+language: sr
 country: montenegro
 base_url: https://www.monitor.co.me
+
+# Monitor is a Montenegrin weekly news magazine (Podgorica). WordPress site with
+# a working REST API at /wp-json/wp/v2/posts (returns id/date/link/title/content).
+# Previous pagination config failed because /page/N/ listings used a generic
+# <li> container and article pages lacked article:published_time meta. API gives
+# clean ISO dates directly.
 listing:
-  type: pagination
-  start_url: https://www.monitor.co.me/
-  url_template: https://www.monitor.co.me/page/{num}/
-  start_page: 2
-  batch_size: 5
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: https://www.monitor.co.me/wp-json/wp/v2/posts?per_page=100&page={page}
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
 client: http
 concurrency: 3
-rate_limit: 1.0
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
+
 headers:
-  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
-    like Gecko) Chrome/131.0.0.0 Safari/537.36
-  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-  Accept-Language: sr-ME,sr;q=0.9,en;q=0.8
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: application/json
+
 selectors:
   thumbnail:
-    container: li
-    title: a::text
-    url: a::attr(href)
+    container: filler
+    title: filler
+    url: filler
   article:
-    body: "div.left p"
-    date: meta[property='article:published_time']::attr(content)
+    body: filler
+
 cleaning:
   date: handle_mixed_dates
+  body: clean_wp_html_body
+
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'
