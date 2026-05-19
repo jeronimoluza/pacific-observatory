@@ -12,10 +12,30 @@ so we collect one page per category.
 
 import logging
 from datetime import datetime, timezone
+from pathlib import Path
 
 import scrapy
 
 logger = logging.getLogger(__name__)
+
+# Category IDs live in an adjacent TSV (`<id>\t<name>` per line) discovered by
+# crawling https://www.rakuten.co.jp/category/. Storing inline would push this
+# file past the 500-line cap.
+CATEGORIES_FILE = Path(__file__).parent / "rakuten_categories.tsv"
+
+
+def _load_categories() -> list[tuple[str, str]]:
+    pairs: list[tuple[str, str]] = []
+    for line in CATEGORIES_FILE.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        parts = line.split("\t", 1)
+        if len(parts) != 2:
+            continue
+        cat_id, name = parts[0].strip(), parts[1].strip()
+        if cat_id and name:
+            pairs.append((cat_id, name))
+    return pairs
 
 
 class RakutenSpider(scrapy.Spider):
@@ -24,30 +44,7 @@ class RakutenSpider(scrapy.Spider):
     currency = "JPY"
     language = "jp"
 
-    CATEGORY_IDS = [
-        ("100227", "食品"),
-        ("201184", "米・白米"),
-        ("100269", "和風惣菜"),
-        ("100275", "洋風惣菜"),
-        ("110428", "牛肉"),
-        ("200929", "豚肉"),
-        ("200939", "鶏肉"),
-        ("110411", "カニ"),
-        ("207770", "マグロ"),
-        ("555086", "レディーストップス"),
-        ("555089", "レディースボトムス"),
-        ("110765", "メンズトップス"),
-        ("558846", "メンズパンツ"),
-        ("564497", "ノートPC"),
-        ("100026", "デスクトップPC"),
-        ("211742", "スマートフォン本体"),
-        ("558944", "食器"),
-        ("215783", "調理器具"),
-        ("100939", "スキンケア"),
-        ("100945", "メイクアップ"),
-        ("101070", "ランニング"),
-        ("101077", "フィットネス"),
-    ]
+    CATEGORY_IDS = _load_categories()
 
     IMPERSONATE_PROFILE = "safari17_0"
 
