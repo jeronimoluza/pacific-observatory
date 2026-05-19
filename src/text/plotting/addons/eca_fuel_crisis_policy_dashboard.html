@@ -1,0 +1,1641 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fuel Crisis Policy Dashboard — Europe and Central Asia</title>
+<style>
+  :root {
+    --blue: #4f81bd;
+    --red: #c0504d;
+    --green: #9bbb59;
+    --purple: #8064a2;
+    --teal: #4bacc6;
+    --orange: #f79646;
+    --gold: #ffc000;
+    --grid: #d9d9d9;
+    --text: #555;
+    --muted: #777;
+    --panel: #ffffff;
+    --border: #d8d8d8;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #f5f6f8;
+    font-family: Calibri, Arial, Helvetica, sans-serif;
+    color: var(--text);
+  }
+  .page {
+    max-width: 1180px;
+    margin: 24px auto;
+    padding: 0 16px 32px;
+  }
+  .dashboard {
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    padding: 20px 24px 28px;
+  }
+  .controls {
+    display: grid;
+    grid-template-columns: minmax(220px, 1.2fr) minmax(160px, .8fr) minmax(160px, .8fr) minmax(180px, .8fr);
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 14px;
+  }
+  .control-group label {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+  }
+  select, input[type="text"] {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #cfcfcf;
+    border-radius: 4px;
+    padding: 7px 8px;
+    font-size: 14px;
+    background: #fff;
+    color: #333;
+  }
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .kpi {
+    border: 1px solid #e2e2e2;
+    border-radius: 6px;
+    padding: 8px 10px;
+    background: #fbfbfb;
+  }
+  .kpi .value {
+    font-size: 24px;
+    line-height: 1.1;
+    color: #444;
+  }
+  .kpi .label {
+    font-size: 12px;
+    color: #777;
+  }
+  .chart-title {
+    text-align: center;
+    font-size: 25px;
+    font-weight: 400;
+    margin: 18px 0 0;
+    color: #555;
+  }
+  .chart-subtitle {
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    margin: 4px 0 10px;
+  }
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  svg {
+    display: block;
+    margin: 0 auto;
+    background: #fff;
+    min-width: 900px;
+  }
+  .axis text {
+    font-size: 15px;
+    fill: #666;
+  }
+  .grid line {
+    stroke: var(--grid);
+    stroke-width: 1.2;
+  }
+  .axis-line {
+    stroke: #cfcfcf;
+    stroke-width: 1.2;
+  }
+  .bar-segment {
+    cursor: help;
+    shape-rendering: crispEdges;
+  }
+  .bar-segment:hover {
+    filter: brightness(0.94);
+    stroke: #333;
+    stroke-width: 1px;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px 20px;
+    max-width: 900px;
+    margin: 8px auto 0;
+    font-size: 17px;
+    color: #666;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+  .legend-swatch {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+  }
+  .tooltip {
+    position: fixed;
+    z-index: 20;
+    pointer-events: none;
+    display: none;
+    width: min(440px, calc(100vw - 32px));
+    background: rgba(255,255,255,0.98);
+    color: #333;
+    border: 1px solid #bdbdbd;
+    border-radius: 6px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+  .tooltip h3 {
+    font-size: 15px;
+    margin: 0 0 5px;
+    color: #333;
+  }
+  .tooltip .meta {
+    margin: 0 0 7px;
+    color: #666;
+    font-size: 12px;
+  }
+  .tooltip ul {
+    margin: 6px 0 0 18px;
+    padding: 0;
+    max-height: 260px;
+    overflow: auto;
+  }
+  .tooltip li {
+    margin: 0 0 6px;
+  }
+  .tooltip strong {
+    color: #333;
+  }
+  .detail-panel {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .detail-card {
+    border: 1px solid #e2e2e2;
+    border-radius: 6px;
+    background: #fff;
+    padding: 12px 14px;
+  }
+  .detail-card h2 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: #444;
+  }
+  .detail-card p {
+    margin: 4px 0;
+    font-size: 13px;
+    color: #666;
+  }
+  .policy-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .policy-card {
+    border-left: 5px solid #ccc;
+    background: #fafafa;
+    padding: 8px 10px;
+    min-height: 72px;
+  }
+  .policy-card .policy-title {
+    font-weight: 600;
+    color: #333;
+    font-size: 13px;
+  }
+  .policy-card .policy-desc {
+    color: #666;
+    font-size: 12px;
+    margin-top: 3px;
+  }
+  .policy-card .policy-foot {
+    color: #888;
+    font-size: 11px;
+    margin-top: 5px;
+  }
+  .note {
+    margin-top: 14px;
+    font-size: 12px;
+    color: #777;
+  }
+  @media (max-width: 820px) {
+    .controls {
+      grid-template-columns: 1fr 1fr;
+    }
+    .kpis {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 540px) {
+    .controls, .kpis {
+      grid-template-columns: 1fr;
+    }
+    .dashboard {
+      padding: 14px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="dashboard">
+    <div class="controls">
+      <div class="control-group">
+        <label for="groupSelect">Country view</label>
+        <select id="groupSelect"></select>
+      </div>
+      <div class="control-group">
+        <label for="categorySelect">Policy category</label>
+        <select id="categorySelect"></select>
+      </div>
+      <div class="control-group">
+        <label for="statusSelect">Status</label>
+        <select id="statusSelect">
+          <option value="all">All rows</option>
+          <option value="active">Active only</option>
+          <option value="proposed">Proposed only</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="titleInput">Chart title</label>
+        <input id="titleInput" type="text" value="8 May 2026" />
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="value" id="kpiPolicies">0</div><div class="label">Rows in current view</div></div>
+      <div class="kpi"><div class="value" id="kpiCountries">0</div><div class="label">Countries/economies shown</div></div>
+      <div class="kpi"><div class="value" id="kpiLabels">0</div><div class="label">Policy labels present</div></div>
+      <div class="kpi"><div class="value" id="kpiMax">0</div><div class="label">Largest country total</div></div>
+    </div>
+
+    <h1 id="chartTitle" class="chart-title">8 May 2026</h1>
+    <div class="chart-subtitle" id="subtitle"></div>
+
+    <div class="chart-wrap">
+      <svg id="chart" aria-label="Stacked bar chart of fuel-crisis policy responses by country and policy label"></svg>
+      <div id="tooltip" class="tooltip"></div>
+    </div>
+    <div id="legend" class="legend"></div>
+
+    <div class="detail-panel">
+      <div class="detail-card" id="detailCard">
+        <h2>Policy details</h2>
+        <p>Hover over a shaded bar segment to see an info tip. Click a segment to pin its policy details here.</p>
+      </div>
+    </div>
+    <div class="note">
+      Note: this dashboard was generated from the Europe and Central Asia workbook and uses the workbook's row-level date/status text, not a true daily effective-date field. The title shows the dashboard's last update date and remains editable; the chart counts the rows currently selected by the filters. Countries/economies are sorted from left to right by the number of policies in the current filtered view.
+    </div>
+  </div>
+</div>
+
+<script>
+const DASHBOARD_DATA = {
+  "policies": [
+    {
+      "Country": "European Union",
+      "#": "P002",
+      "Policy": "Weekly Oil Bulletin publishes consumer prices and tax components for petroleum products submitted by EU member states.",
+      "Policy Description": "Used as the authoritative regional benchmark for EU member-state prices and as a tax-change cross-check. Products: Gasoline, diesel, heating oil, LPG/related petroleum products Status: Active Verification note: For country-specific legal instruments, follow through to each ministry/gazette where needed.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active Weekly; latest bulletin 2026-04-30",
+      "Source": "European Commission Weekly Oil Bulletin",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "For country-specific legal instruments, follow through to each ministry/gazette where needed."
+    },
+    {
+      "Country": "European Union",
+      "#": "P003",
+      "Policy": "Middle East Crisis Temporary State Aid Framework permits targeted crisis aid, including aid for extra fuel/fertilizer costs in agriculture, fisheries and transport.",
+      "Policy Description": "Regional framework relevant to national fuel-support measures in EU member states. Products: Fuel costs / fertilizers / energy-intensive industry Status: Adopted Verification note: Record national implementation separately when member states notify/announce schemes.",
+      "Label": "Guaranteeing essential services",
+      "Active or Proposed Date": "Active Adopted 2026-04-29; in force to 2026-12-31",
+      "Source": "European Commission METSAF announcement",
+      "Source URL": "https://competition-policy.ec.europa.eu/about/news/commission-adopts-temporary-state-aid-framework-support-economy-context-middle-east-crisis-2026-04-29_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Record national implementation separately when member states notify/announce schemes."
+    },
+    {
+      "Country": "Austria",
+      "#": "P004",
+      "Policy": "Reduced fuel-related tax/excise burden during the crisis period; IEA also records gasoline/diesel tax cuts and retailer-margin cap.",
+      "Policy Description": "Reduced fuel-related tax/excise burden during the crisis period; IEA also records gasoline/diesel tax cuts and retailer-margin cap. Products: Gasoline, diesel Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-04-01",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Croatia",
+      "#": "P005",
+      "Policy": "Reduced excise duties and used price caps/direct support according to EC/IEA tracker entries.",
+      "Policy Description": "Reduced excise duties and used price caps/direct support according to EC/IEA tracker entries. Products: Gasoline, diesel Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-03-30",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Cyprus",
+      "#": "P006",
+      "Policy": "Lowered fuel excise duties from 1 April 2026 per EC Weekly Oil Bulletin note.",
+      "Policy Description": "Lowered fuel excise duties from 1 April 2026 per EC Weekly Oil Bulletin note. Products: Gasoline, diesel Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-04-01",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Czech Republic",
+      "#": "P007",
+      "Policy": "Lowered diesel excise and capped fuel retailer margins during crisis response.",
+      "Policy Description": "Lowered diesel excise and capped fuel retailer margins during crisis response. Products: Diesel; motor fuels Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-04-08",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Finland",
+      "#": "P008",
+      "Policy": "Increased VAT applicable to petroleum products from 1 January 2026 per EC bulletin note.",
+      "Policy Description": "Increased VAT applicable to petroleum products from 1 January 2026 per EC bulletin note. Products: Petroleum products Status: Implemented Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-01-01",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "France",
+      "#": "P009",
+      "Policy": "Decreased some excises from 1 January 2026; heating-oil tax increase from 1 February 2026; IEA records targeted support to transport/fishing/agriculture/high-mileage drivers.",
+      "Policy Description": "Decreased some excises from 1 January 2026; heating-oil tax increase from 1 February 2026; IEA records targeted support to transport/fishing/agriculture/high-mileage drivers. Products: Gasoline, diesel, heating oil Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "Guaranteeing essential services",
+      "Active or Proposed Date": "Active 2026-01-01 / 2026-02-01",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Germany",
+      "#": "P010",
+      "Policy": "Fuel excises increased from 1 January 2026; IEA records earlier crisis tax cuts and rules limiting price increases to once per day.",
+      "Policy Description": "Fuel excises increased from 1 January 2026; IEA records earlier crisis tax cuts and rules limiting price increases to once per day. Products: Gasoline, diesel Status: Implemented/monitored Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-01-01",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Hungary",
+      "#": "P011",
+      "Policy": "Changed LPG/residual fuel-oil excises from January; temporary tax cuts in March/April; IEA records fuel price caps and excise cuts.",
+      "Policy Description": "Changed LPG/residual fuel-oil excises from January; temporary tax cuts in March/April; IEA records fuel price caps and excise cuts. Products: Gasoline, diesel, LPG, fuel oil Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-01-01 / 2026-03 / 2026-04-13",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Ireland",
+      "#": "P012",
+      "Policy": "Reduced excise from 25 March 2026; IEA also records fuel allowance, diesel rebate and NORA levy changes.",
+      "Policy Description": "Reduced excise from 25 March 2026; IEA also records fuel allowance, diesel rebate and NORA levy changes. Products: Gasoline, diesel, heating oil Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "Guaranteeing essential services",
+      "Active or Proposed Date": "Active 2026-03-25",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Italy",
+      "#": "P013",
+      "Policy": "Equalized gasoline/diesel excises from January, lowering gasoline and raising diesel; also lowered excises from 19 March 2026 during crisis period.",
+      "Policy Description": "Equalized gasoline/diesel excises from January, lowering gasoline and raising diesel; also lowered excises from 19 March 2026 during crisis period. Products: Gasoline, diesel Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-01-01 / 2026-03-19",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Latvia",
+      "#": "P014",
+      "Policy": "Increased excises on gasoline, diesel and LPG and lowered heating-oil tax from 1 January 2026; IEA records diesel and green-diesel cuts.",
+      "Policy Description": "Increased excises on gasoline, diesel and LPG and lowered heating-oil tax from 1 January 2026; IEA records diesel and green-diesel cuts. Products: Gasoline, diesel, LPG, heating oil Status: Implemented Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "Guaranteeing essential services",
+      "Active or Proposed Date": "Active 2026-01-01",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Lithuania",
+      "#": "P015",
+      "Policy": "Increased other indirect taxes on EuroSuper 95 from January and reduced diesel excise from 20 April 2026; IEA records local train fare cut as fuel-conservation support.",
+      "Policy Description": "Increased other indirect taxes on EuroSuper 95 from January and reduced diesel excise from 20 April 2026; IEA records local train fare cut as fuel-conservation support. Products: Gasoline, diesel; public transport Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "Reduce demand - restricting quantities",
+      "Active or Proposed Date": "Active 2026-01-01 / 2026-04-20",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Luxembourg",
+      "#": "P016",
+      "Policy": "Increased fuel excises from 1 January 2026 per EC Weekly Oil Bulletin note.",
+      "Policy Description": "Increased fuel excises from 1 January 2026 per EC Weekly Oil Bulletin note. Products: Gasoline, diesel Status: Implemented Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-01-01",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Netherlands",
+      "#": "P017",
+      "Policy": "Increased excises from January; IEA records energy fund and targeted tax cuts for commuters/business vehicles plus oil-crisis plan measures.",
+      "Policy Description": "Increased excises from January; IEA records energy fund and targeted tax cuts for commuters/business vehicles plus oil-crisis plan measures. Products: Gasoline, diesel Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "Guaranteeing essential services",
+      "Active or Proposed Date": "Active 2026-01-01",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Poland",
+      "#": "P018",
+      "Policy": "Increased excises from January; reduced excises and lower VAT from 30 March 2026; IEA records retail fuel price/margin caps.",
+      "Policy Description": "Increased excises from January; reduced excises and lower VAT from 30 March 2026; IEA records retail fuel price/margin caps. Products: Gasoline, diesel Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-01-01 / 2026-03-30",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Portugal",
+      "#": "P019",
+      "Policy": "Multiple excise and other tax changes; IEA records bottled-gas support, extra diesel rebate and fuel-tax cuts.",
+      "Policy Description": "Multiple excise and other tax changes; IEA records bottled-gas support, extra diesel rebate and fuel-tax cuts. Products: Gasoline, diesel, bottled gas/LPG Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-01-01 / 2026-03-20 / 2026-04-01 / 2026-04-20 / 2026-04-27",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Romania",
+      "#": "P020",
+      "Policy": "Increased fuel taxes from January, then reduced diesel excise from 27 April; IEA records diesel excise cut, transport-operator excise scheme and solidarity levy.",
+      "Policy Description": "Increased fuel taxes from January, then reduced diesel excise from 27 April; IEA records diesel excise cut, transport-operator excise scheme and solidarity levy. Products: Gasoline, diesel Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "Support to business",
+      "Active or Proposed Date": "Active 2026-01-01 / 2026-04-27",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Slovak Republic",
+      "#": "P021",
+      "Policy": "IEA records cap on fuel purchases and higher prices for foreign plates; EC note flags fuel-oil treatment.",
+      "Policy Description": "IEA records cap on fuel purchases and higher prices for foreign plates; EC note flags fuel-oil treatment. Products: Motor fuels; fuel oil Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "Reduce demand - higher prices",
+      "Active or Proposed Date": "Active 2026-03/2026",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Slovenia",
+      "#": "P022",
+      "Policy": "Increased excises from December 2025, then lowered excises and other taxes from 24 March 2026; IEA records temporary fuel-purchase cap.",
+      "Policy Description": "Increased excises from December 2025, then lowered excises and other taxes from 24 March 2026; IEA records temporary fuel-purchase cap. Products: Gasoline, diesel Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "Reduce demand - restricting quantities",
+      "Active or Proposed Date": "Active 2025-12-16 / 2026-03-24",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Spain",
+      "#": "P023",
+      "Policy": "Reduced VAT and excise from 22 March 2026; IEA records renovation/electrification support and suspension of hydrocarbon excise.",
+      "Policy Description": "Reduced VAT and excise from 22 March 2026; IEA records renovation/electrification support and suspension of hydrocarbon excise. Products: Gasoline, diesel, hydrocarbon fuels Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-03-22",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Sweden",
+      "#": "P024",
+      "Policy": "Lowered excises from 1 January 2026; IEA also records temporary cuts to vehicle-fuel duty.",
+      "Policy Description": "Lowered excises from 1 January 2026; IEA also records temporary cuts to vehicle-fuel duty. Products: Gasoline, diesel Status: Implemented Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-01-01",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Belgium",
+      "#": "P025",
+      "Policy": "IEA records employer fuel allowance subsidy, excise-duty postponement and social energy funds.",
+      "Policy Description": "IEA records employer fuel allowance subsidy, excise-duty postponement and social energy funds. Products: Motor fuels; household energy Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "Support to business",
+      "Active or Proposed Date": "Active 2026 crisis period",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://www.iea.org/reports/2026-energy-crisis-policy-response-tracker/government-actions",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Bulgaria",
+      "#": "P026",
+      "Policy": "IEA records income-targeted fuel subsidy for car owners and fuel-excise compensation for farmers.",
+      "Policy Description": "IEA records income-targeted fuel subsidy for car owners and fuel-excise compensation for farmers. Products: Motor fuels; agricultural fuels Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "Support to business",
+      "Active or Proposed Date": "Active 2026 crisis period",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://www.iea.org/reports/2026-energy-crisis-policy-response-tracker/government-actions",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Greece",
+      "#": "P027",
+      "Policy": "IEA records diesel subsidy, fertilizer/fuel card and margin caps.",
+      "Policy Description": "IEA records diesel subsidy, fertilizer/fuel card and margin caps. Products: Diesel; gasoline; agricultural fuels Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "Support to business",
+      "Active or Proposed Date": "Active 2026 crisis period",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://www.iea.org/reports/2026-energy-crisis-policy-response-tracker/government-actions",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Norway",
+      "#": "P028",
+      "Policy": "IEA records cuts to petrol and diesel taxes.",
+      "Policy Description": "IEA records cuts to petrol and diesel taxes. Products: Gasoline, diesel Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026 crisis period",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://www.iea.org/reports/2026-energy-crisis-policy-response-tracker/government-actions",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "Turkey",
+      "#": "P029",
+      "Policy": "IEA records lower fuel tax on oil.",
+      "Policy Description": "IEA records lower fuel tax on oil. Products: Oil products / motor fuels Status: Active/recent Verification note: Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026 crisis period",
+      "Source": "European Commission Weekly Oil Bulletin / IEA tracker",
+      "Source URL": "https://www.iea.org/reports/2026-energy-crisis-policy-response-tracker/government-actions",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Verify final legal instrument in national gazette for exact rate, duration and product scope where the row is based on regional summaries."
+    },
+    {
+      "Country": "United Kingdom",
+      "#": "P030",
+      "Policy": "Temporary 5p/litre cut in fuel duty extended to end-August 2026, followed by staged withdrawal in September and December 2026 and March 2027.",
+      "Policy Description": "Official policy paper records continuation and phased withdrawal of the 5p cut. Products: Petrol, diesel and other road fuels Status: Legislated/current Verification note: Track autumn/fiscal-event updates if the phase-out is amended.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-04 / policy through 2026-08 then phased withdrawal",
+      "Source": "HMRC/HMT fuel duty policy paper",
+      "Source URL": "https://www.gov.uk/government/publications/continuation-and-phased-withdrawal-of-the-temporary-5p-cut-in-fuel-duty/continuation-and-phased-withdrawal-of-the-temporary-5p-cut-in-fuel-duty",
+      "Evaluation": "A - official/current source",
+      "Reason": "Track autumn/fiscal-event updates if the phase-out is amended."
+    },
+    {
+      "Country": "United Kingdom",
+      "#": "P031",
+      "Policy": "IEA tracker records heating-oil consumer support and EV/heat-pump related measures.",
+      "Policy Description": "Complementary policy measures beyond excise-duty cut. Products: Heating oil; transport fuels Status: Active/recent Verification note: Verify sectoral eligibility in UK departmental pages if needed.",
+      "Label": "Guaranteeing essential services",
+      "Active or Proposed Date": "Active 2026 crisis period",
+      "Source": "IEA 2026 Energy Crisis Policy Response Tracker",
+      "Source URL": "https://www.iea.org/reports/2026-energy-crisis-policy-response-tracker/government-actions",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Verify sectoral eligibility in UK departmental pages if needed."
+    },
+    {
+      "Country": "Albania",
+      "#": "P032",
+      "Policy": "Government reportedly cut fuel excise by 20% and used a Transparency Board to set maximum pump prices; ATA reported diesel/petrol/LPG caps in April 2026.",
+      "Policy Description": "Secondary/current reporting indicates both tax relief and price caps; source trail is not as clean as for regulator websites. Products: Gasoline, diesel, LPG Status: Active/recent Verification note: Needs official gazette or Ministry of Finance decision to confirm excise-rate mechanics and duration.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active 2026-03/2026-04",
+      "Source": "SeeNews / ATA / IEA tracker",
+      "Source URL": "https://ata.gov.al/en/fuel-prices-revised-diesel-set-at-203-lek-petrol-at-206-lek-lpg-at-90-lek/",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Needs official gazette or Ministry of Finance decision to confirm excise-rate mechanics and duration."
+    },
+    {
+      "Country": "Andorra",
+      "#": "P033",
+      "Policy": "Official government fuel-price comparator provides current station-level prices; no new 2026 relief measure verified in this pass.",
+      "Policy Description": "Useful official price source for a missing/small economy; retained even absent a new crisis measure. Products: Gasoline, diesel, LPG Status: Source active; no relief verified Verification note: Monitor government bulletins for tax/subsidy changes.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active Current",
+      "Source": "Govern d'Andorra PreusCarburants",
+      "Source URL": "https://sig.govern.ad/IPE/PreusCarburants",
+      "Evaluation": "A - official/current source",
+      "Reason": "Monitor government bulletins for tax/subsidy changes."
+    },
+    {
+      "Country": "Azerbaijan",
+      "#": "P035",
+      "Policy": "Tariff Council reportedly raised RON-92 gasoline and diesel retail prices from January 2026.",
+      "Policy Description": "Useful current price-regime event, but official Tariff Council decision should be collected. Products: RON-92 gasoline, diesel Status: Implemented/reported Verification note: Needs official Tariff Council decision URL / gazette.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-01",
+      "Source": "Report.az",
+      "Source URL": "https://report.az/en/energy/azerbaijan-raises-ron-92-gasoline-diesel-fuel-prices/",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Needs official Tariff Council decision URL / gazette."
+    },
+    {
+      "Country": "Azerbaijan",
+      "#": "P036",
+      "Policy": "Excise tax on imported AI-92 gasoline and diesel reportedly temporarily lowered to 1 manat per ton with import quantity caps.",
+      "Policy Description": "Likely a material import-tax relief measure for supply/price stabilization. Products: AI-92 gasoline, diesel Status: Reported/adopted Verification note: Needs Cabinet decision / official gazette link.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active 2026-05-01 to 2027-03-31",
+      "Source": "APA",
+      "Source URL": "https://apa.az/en/infrastructure/azerbaijan-lowers-excise-tax-on-imported-ai-92-gasoline-diesel-fuel-until-2027-464241",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Needs Cabinet decision / official gazette link."
+    },
+    {
+      "Country": "Belarus",
+      "#": "P037",
+      "Policy": "Belneftekhim publishes current motor-fuel prices and archive, including the 30 April 2026 price posting.",
+      "Policy Description": "Strong official ongoing price-source row; policy is administered pricing rather than a one-off relief scheme. Products: Gasoline, diesel, LPG/CNG where applicable Status: Active Verification note: Add any Council of Ministers/tax decree if policy mechanics are required.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active Current 2026",
+      "Source": "Belneftekhim fuel prices",
+      "Source URL": "https://www.belneftekhim.by/en/azs/fuel-prices/",
+      "Evaluation": "A - official/current source",
+      "Reason": "Add any Council of Ministers/tax decree if policy mechanics are required."
+    },
+    {
+      "Country": "Bosnia and Herzegovina",
+      "#": "P038",
+      "Policy": "Entity-level margin caps remain in force, including Federation of BiH retail margin caps and Republika Srpska caps reported by local sources.",
+      "Policy Description": "Policy is subnational/entity based; important for BiH coverage. Products: Gasoline, diesel Status: Active/reported Verification note: Needs FBiH/RS official gazette decisions and separate entity rows if the tracker requires legal precision.",
+      "Label": "Reduce demand - restricting quantities",
+      "Active or Proposed Date": "Active 2026/current",
+      "Source": "FENA / entity reporting",
+      "Source URL": "https://www.fena.ba/article/1568578/decisions-on-margin-caps-remain-in-force-in-federation-of-bih",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Needs FBiH/RS official gazette decisions and separate entity rows if the tracker requires legal precision."
+    },
+    {
+      "Country": "Channel Islands",
+      "#": "P039",
+      "Policy": "Jersey fuel surveys are now twice weekly on Prices.je; no unified Channel Islands fuel-policy relief found in this pass.",
+      "Policy Description": "Added as supplemental missing territory; Jersey/Guernsey should be treated separately if the client frame requires it. Products: Gasoline, diesel Status: Monitoring active; no relief verified Verification note: Need Guernsey official fuel-price or duty source; this row is not a legal policy measure.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active Current",
+      "Source": "Jersey Consumer Council",
+      "Source URL": "https://www.consumercouncil.je/news/energy-and-fuel/fuel-surveys-now-twice-a-week-stay-informed-with-prices-je/",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Need Guernsey official fuel-price or duty source; this row is not a legal policy measure."
+    },
+    {
+      "Country": "Isle of Man",
+      "#": "P041",
+      "Policy": "Office of Fair Trading monitors and publishes road-fuel price comparisons; no crisis relief measure verified in this pass.",
+      "Policy Description": "Added because it was missing and has a direct public monitoring page. Products: Gasoline, diesel Status: Monitoring active; no relief verified Verification note: Need Treasury duty/tax order if fiscal policy changes are requested.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active Current",
+      "Source": "Isle of Man Office of Fair Trading road-fuel monitoring",
+      "Source URL": "https://www.gov.im/about-the-government/statutory-boards/isle-of-man-office-of-fair-trading/pricing/road-fuel-monitoring/",
+      "Evaluation": "A - official/current source",
+      "Reason": "Need Treasury duty/tax order if fiscal policy changes are requested."
+    },
+    {
+      "Country": "Kazakhstan",
+      "#": "P042",
+      "Policy": "Energy ministry set maximum wholesale LPG price for January-June 2026; IEA profile notes LPG market regulation and quarterly price limits.",
+      "Policy Description": "Important regulated-price policy affecting LPG market. Products: LPG Status: Active/current period Verification note: Add official retail-fuel moratorium/closeout documents where relevant.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active 2026-01 to 2026-06",
+      "Source": "Kazakhstan Ministry of Energy / IEA profile",
+      "Source URL": "https://www.gov.kz/memleket/entities/energo/press/news/details/907496",
+      "Evaluation": "A - official/current source",
+      "Reason": "Add official retail-fuel moratorium/closeout documents where relevant."
+    },
+    {
+      "Country": "Kazakhstan",
+      "#": "P043",
+      "Policy": "Energy ministry reported stable fuel prices after closeout of a fuel-price moratorium.",
+      "Policy Description": "Useful indication of administered/stabilization context. Products: Gasoline, diesel Status: Monitoring/current Verification note: Confirm whether any formal moratorium or cap remains legally active.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active 2026",
+      "Source": "Kazakhstan Energy Ministry coverage",
+      "Source URL": "https://www.gov.kz/memleket/entities/energo",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Confirm whether any formal moratorium or cap remains legally active."
+    },
+    {
+      "Country": "Kosovo",
+      "#": "P044",
+      "Policy": "AP/local reporting states wholesale prices are determined by importers with a 12% profit-margin cap; no new government action reported during 2026 crisis.",
+      "Policy Description": "Important existing regulatory control even without a new relief package. Products: Gasoline, diesel Status: Active margin cap; no new relief Verification note: Needs official Kosovo ministry/regulator decision for the 12% margin cap.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active 2026/current",
+      "Source": "Associated Press",
+      "Source URL": "https://apnews.com/article/fuel-prices-kosovo-iran-2026",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Needs official Kosovo ministry/regulator decision for the 12% margin cap."
+    },
+    {
+      "Country": "Kyrgyz Republic",
+      "#": "P045",
+      "Policy": "Cabinet imposed temporary ban on exports of oil and petroleum products outside the EAEU.",
+      "Policy Description": "Supply-security measure rather than direct consumer-price relief. Products: Oil and petroleum products Status: Adopted/reported Verification note: Check whether the ban was extended, expired, or modified in 2026.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active 2025-10 to current review",
+      "Source": "Kyrgyz Cabinet announcement",
+      "Source URL": "https://www.gov.kg/en/post/s/26951-cabinet-of-ministers-imposes-temporary-ban-on-export-of-petroleum-products",
+      "Evaluation": "A - official/current source",
+      "Reason": "Check whether the ban was extended, expired, or modified in 2026."
+    },
+    {
+      "Country": "Moldova",
+      "#": "P046",
+      "Policy": "ANRE publishes maximum reference retail prices for gasoline/diesel; 30 April 2026 posting applied to 1-4 May 2026.",
+      "Policy Description": "One of the strongest ECA non-EU direct price regulation pages. Products: Gasoline, diesel Status: Active Verification note: Archive individual dated ANRE pages/PDFs if a dated legal trail is needed.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active Current, daily/near daily",
+      "Source": "Moldova ANRE",
+      "Source URL": "https://anre.md/en",
+      "Evaluation": "A - official/current source",
+      "Reason": "Archive individual dated ANRE pages/PDFs if a dated legal trail is needed."
+    },
+    {
+      "Country": "Montenegro",
+      "#": "P047",
+      "Policy": "Government adopted maximum fuel-price caps and shortened pricing-calculation period from 15 to 7 days.",
+      "Policy Description": "Direct official policy entry; should replace prior source-only treatment. Products: Diesel, gasoline, LPG/other fuels depending decree Status: Adopted/current Verification note: Download official decision/gazette for exact product list and formula details.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active 2026-03-20",
+      "Source": "Government of Montenegro press release",
+      "Source URL": "https://www.gov.me/en/article/government-caps-fuel-prices-diesel-to-increase-by-only-4-cents-instead-of-31",
+      "Evaluation": "A - official/current source",
+      "Reason": "Download official decision/gazette for exact product list and formula details."
+    },
+    {
+      "Country": "North Macedonia",
+      "#": "P048",
+      "Policy": "VAT on gasoline and diesel reportedly temporarily reduced from 18% to 10% and extended to 20 April 2026.",
+      "Policy Description": "Material fiscal measure plus regulated maximum-price regime through Energy Regulatory Commission. Products: Gasoline, diesel Status: Temporary/recent Verification note: Needs official VAT amendment/gazette and ERC price bulletins.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-03-23 to 2026-04-20",
+      "Source": "Public Revenue Office / local reporting",
+      "Source URL": "https://www.ujp.gov.mk/en/javnost/soopstenija/pogledni/1193",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Needs official VAT amendment/gazette and ERC price bulletins."
+    },
+    {
+      "Country": "Russian Federation",
+      "#": "P049",
+      "Policy": "Government extended ban on gasoline exports to the end of July 2026 to stabilize domestic supply.",
+      "Policy Description": "Supply-security measure likely relevant for regional fuel markets. Products: Gasoline Status: Adopted/current Verification note: Needs Russian government decree / legal act URL.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active 2026 through end-July",
+      "Source": "Reuters",
+      "Source URL": "https://www.reuters.com/business/energy/russia-extends-ban-gasoline-exports-end-july-government-says-2026-04-30/",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Needs Russian government decree / legal act URL."
+    },
+    {
+      "Country": "Serbia",
+      "#": "P050",
+      "Policy": "Serbia extended fuel export ban, released 40,000 tonnes of diesel, maintained 20% excise reduction, and continued price caps amid supply stress.",
+      "Policy Description": "Multiple instruments: export controls, strategic reserves, excise relief, and price caps. Products: Diesel, gasoline, petroleum products Status: Active/recent Verification note: Use official weekly price pages and decrees to pin exact dates/rates.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active 2026-03/2026-04",
+      "Source": "Serbia government / Reuters",
+      "Source URL": "https://www.reuters.com/world/europe/serbia-extends-fuel-export-ban-until-april-2-oil-supplies-tighten-2026-03-20/",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Use official weekly price pages and decrees to pin exact dates/rates."
+    },
+    {
+      "Country": "Turkmenistan",
+      "#": "P052",
+      "Policy": "Known administered-price environment, but no clean official current fuel policy page or 2026 relief measure verified in this pass.",
+      "Policy Description": "Treat as unresolved rather than assuming no policy. Products: Gasoline, diesel, LPG Status: Proxy only Verification note: Requires local-language legal/gazette follow-up.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active 2026 pass",
+      "Source": "Government/statistical sources",
+      "Source URL": "https://www.stat.gov.tm/",
+      "Evaluation": "C - proxy / needs verification",
+      "Reason": "Requires local-language legal/gazette follow-up."
+    },
+    {
+      "Country": "Ukraine",
+      "#": "P053",
+      "Policy": "Cabinet proposed abolishing fuel excise and reducing VAT from 20% to 7% to stabilize prices and prevent deficits during wartime.",
+      "Policy Description": "Official wartime fiscal intervention; later changes should be logged separately if the tracker needs current 2026 tax rates. Products: Gasoline, diesel, petroleum products Status: Historical/current relevance; verify current status Verification note: Need 2026 current tax-rate/gazette verification; do not assume 2022 settings still apply unchanged.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Proposed 2022-03 onward; crisis tax measure",
+      "Source": "Cabinet of Ministers of Ukraine",
+      "Source URL": "https://www.kmu.gov.ua/en/news/uriad-proponuie-verhovnii-radi-skasuvati-aktsyz-na-palne-ta-zniziti-pdv-z-20-do-7",
+      "Evaluation": "A - official/current source",
+      "Reason": "Need 2026 current tax-rate/gazette verification; do not assume 2022 settings still apply unchanged."
+    },
+    {
+      "Country": "Uzbekistan",
+      "#": "P054",
+      "Policy": "Excise tax rates on petroleum products increased from 1 April 2026 according to tax advisory/local reporting.",
+      "Policy Description": "This is an increase, not relief, but is a fuel-policy event that affects prices. Products: Gasoline, diesel and petroleum products Status: Implemented/reported Verification note: Needs official Tax Committee/MoF resolution.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-04-01",
+      "Source": "EY / Uzbek media",
+      "Source URL": "https://www.ey.com/en_gl/tax-alerts/uzbekistan-increases-excise-tax-rates-on-several-products-from-1-april-2026",
+      "Evaluation": "B - international tracker / reputable secondary",
+      "Reason": "Needs official Tax Committee/MoF resolution."
+    },
+    {
+      "Country": "Uzbekistan",
+      "#": "P055",
+      "Policy": "Government announced phase-out of AI-80 gasoline.",
+      "Policy Description": "Fuel-quality and supply-market policy relevant to gasoline tracking. Products: AI-80 gasoline Status: Adopted/transition Verification note: Track implementation milestones and any subsidy/social-offset policy.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active 2025/2026 transition",
+      "Source": "Government of Uzbekistan",
+      "Source URL": "https://www.gov.uz/en/news/view/9919",
+      "Evaluation": "A - official/current source",
+      "Reason": "Track implementation milestones and any subsidy/social-offset policy."
+    },
+    {
+      "Country": "European Union",
+      "#": "R001",
+      "Policy": "Weekly Oil Bulletin prices with/without taxes and duties/taxes workbook",
+      "Policy Description": "Official weekly consumer price and petroleum tax source for EU countries; used to fill missing EU fuel coverage links. Products: Gasoline, diesel, petroleum products Status: Current source Verification note: National legal instruments still needed for country-specific tax changes.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-04-30",
+      "Source": "European Commission Weekly Oil Bulletin",
+      "Source URL": "https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "A",
+      "Reason": "National legal instruments still needed for country-specific tax changes."
+    },
+    {
+      "Country": "Global / ECA countries in tracker",
+      "#": "R002",
+      "Policy": "IEA tracking of government actions to conserve energy and support consumers",
+      "Policy Description": "Used as a lead source for crisis measures including caps, excise/VAT relief, subsidies, purchase restrictions and conservation measures. Products: Transport fuels, LPG, heating oil, related support Status: Current tracker Verification note: Treat as lead unless national official source/gazette is also found.",
+      "Label": "Reduce demand - restricting quantities",
+      "Active or Proposed Date": "Active As of 2026-04-29",
+      "Source": "IEA 2026 Energy Crisis Policy Response Tracker",
+      "Source URL": "https://www.iea.org/data-and-statistics/data-tools/2026-energy-crisis-policy-response-tracker",
+      "Evaluation": "A/B",
+      "Reason": "Treat as lead unless national official source/gazette is also found."
+    },
+    {
+      "Country": "Albania",
+      "#": "R003",
+      "Policy": "Transparency Board fuel price cap; conditional 20% excise reduction lead",
+      "Policy Description": "State news reported diesel price cap and conditional excise reduction mechanism. Products: Diesel, gasoline Status: Current/recent Verification note: Exact normative act/gazette not located.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active April 2026",
+      "Source": "Albanian Telegraphic Agency / AMAN / IEA",
+      "Source URL": "https://en.ata.gov.al/2026/04/29/transparency-board-sets-diesel-price-cap-at-203-lek-per-liter/ ; https://www.aman-alliance.org/Home/ContentDetail/101911",
+      "Evaluation": "B",
+      "Reason": "Exact normative act/gazette not located."
+    },
+    {
+      "Country": "Armenia",
+      "#": "R004",
+      "Policy": "Competition authority reportedly monitored gasoline/diesel price increases; no relief verified",
+      "Policy Description": "Added as evidence of monitoring, not a confirmed relief policy. Products: Gasoline, diesel Status: Monitoring only Verification note: Official CPC page and excise-law citation needed.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active April 2026",
+      "Source": "PanArmenian / PwC",
+      "Source URL": "https://panarmenian.net/eng/tofv?tourl=http%3A%2F%2Fpanarmenian.net%2Feng%2Fnews%2F332834 ; https://taxsummaries.pwc.com/armenia/corporate/other-taxes",
+      "Evaluation": "C",
+      "Reason": "Official CPC page and excise-law citation needed."
+    },
+    {
+      "Country": "Bosnia and Herzegovina",
+      "#": "R006",
+      "Policy": "Entity-level fuel-profit margin caps retained/reported in FBiH and RS",
+      "Policy Description": "Added entity-level margin-cap leads. Products: Motor fuels Status: Current/recent Verification note: Entity gazette/legal decisions needed.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026",
+      "Source": "Monitor / SeeNews",
+      "Source URL": "https://monitor.al/bosnia-fuel-price-relief-stalled-by-authorities-procedural-deadlock/ ; https://seenews.com/news/bosnias-serb-republic-caps-fuel-staple-goods-margins-amid-iran-war-1291310",
+      "Evaluation": "B/C",
+      "Reason": "Entity gazette/legal decisions needed."
+    },
+    {
+      "Country": "Croatia",
+      "#": "R007",
+      "Policy": "Fuel price caps and excise adjustments reported/retained",
+      "Policy Description": "Added country-specific reporting to supplement regional tracker. Products: Gasoline, diesel Status: Current/recent Verification note: Official Croatian government decision URL still preferred.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026",
+      "Source": "CroatiaWeek / Xinhua / IEA",
+      "Source URL": "https://croatiaweek.com/croatia-extends-fuel-price-caps-april-2026/ ; https://english.news.cn/europe/20260420/33d9ce8f007c40b0a03686a99b999c16/c.html ; https://www.iea.org/data-and-statistics/data-tools/2026-energy-crisis-policy-response-tracker",
+      "Evaluation": "B",
+      "Reason": "Official Croatian government decision URL still preferred."
+    },
+    {
+      "Country": "Georgia",
+      "#": "R008",
+      "Policy": "Competition agency market-monitoring report; no relief verified",
+      "Policy Description": "Added official monitoring/proxy price sources. Products: Gasoline, diesel Status: Monitoring only Verification note: No confirmed discretionary relief measure found.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active 2025-2026",
+      "Source": "GCCA / Gulf Georgia",
+      "Source URL": "https://gcca.gov.ge/uploads_script/publications/tmp/phpxD4ies.pdf ; https://gulf.ge/ge/fuel_prices",
+      "Evaluation": "B/C",
+      "Reason": "No confirmed discretionary relief measure found."
+    },
+    {
+      "Country": "Hungary",
+      "#": "R009",
+      "Policy": "Fuel price cap lead and statistical source; reserve release reported",
+      "Policy Description": "Added KSH and news corroboration for March 2026 cap lead. Products: Gasoline, diesel Status: Current/recent Verification note: Exact decree/gazette should be retrieved.",
+      "Label": "Reduce demand - restricting quantities",
+      "Active or Proposed Date": "Active March 2026",
+      "Source": "KSH / Reuters / AP",
+      "Source URL": "https://www.ksh.hu/s/en/experimental-statistics/publications/motor-fuel-price-statistics-2026-04-13/ ; https://www.reuters.com/business/energy/hungary-cap-fuel-prices-pm-orban-says-2026-03-09/ ; https://apnews.com/article/af6d81352ca6333175afb49c552d11fa",
+      "Evaluation": "B",
+      "Reason": "Exact decree/gazette should be retrieved."
+    },
+    {
+      "Country": "Kazakhstan",
+      "#": "R010",
+      "Policy": "Energy Ministry official-news lead states fuel prices stable; statistical retail price source added",
+      "Policy Description": "Added official-news/statistical sources rather than inventing a cap/subsidy measure. Products: Gasoline, diesel Status: Monitoring / no new relief verified Verification note: Need ministry decision if coding moratorium/cap.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active April 2026",
+      "Source": "Qazinform / Kazakhstan statistics",
+      "Source URL": "https://qazinform.com/news/fuel-prices-in-kazakhstan-remain-stable-energy-ministry-d5e6c2 ; https://stat.gov.kz/api/iblock/element/421052/file/en/",
+      "Evaluation": "B/C",
+      "Reason": "Need ministry decision if coding moratorium/cap."
+    },
+    {
+      "Country": "Kosovo",
+      "#": "R011",
+      "Policy": "MINT maximum retail price lead for oil/diesel, gasoline and gas",
+      "Policy Description": "Added local reporting on daily/periodic ceiling prices. Products: Diesel/oil, gasoline, gas Status: Current/recent Verification note: Exact MINT decision page/gazette not located.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active April 2026",
+      "Source": "Gazeta Express",
+      "Source URL": "https://www.gazetaexpress.com/en/ceiling-prices-for-today-oil-1-65-gasoline-1-39-gas-0-88-euros-per-liter/",
+      "Evaluation": "C",
+      "Reason": "Exact MINT decision page/gazette not located."
+    },
+    {
+      "Country": "Moldova",
+      "#": "R012",
+      "Policy": "ANRE maximum retail reference-pricing page",
+      "Policy Description": "Official regulator page provides current maximum retail prices. Products: Gasoline 95, diesel Status: Current Verification note: Values roll over; archive snapshots if exact value needed later.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-04-30 / 2026-05-01 to 2026-05-04",
+      "Source": "ANRE",
+      "Source URL": "https://anre.md/en",
+      "Evaluation": "A",
+      "Reason": "Values roll over; archive snapshots if exact value needed later."
+    },
+    {
+      "Country": "Montenegro",
+      "#": "R013",
+      "Policy": "Cabinet adopted maximum fuel-price caps and reduced calculation period from 15 to 7 days",
+      "Policy Description": "Official article states diesel EUR 1.54 instead of EUR 1.81 and petrol EUR 1.51 instead of EUR 1.68. Products: Diesel, gasoline Status: Current/recent Verification note: Cabinet decision/legal text may still be useful.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-03-20",
+      "Source": "Government of Montenegro",
+      "Source URL": "https://www.gov.me/en/article/government-caps-fuel-prices-diesel-to-increase-by-only-4-cents-instead-of-31",
+      "Evaluation": "A",
+      "Reason": "Cabinet decision/legal text may still be useful."
+    },
+    {
+      "Country": "North Macedonia",
+      "#": "R014",
+      "Policy": "Temporary VAT reduction and reserve-release/excise-relief leads",
+      "Policy Description": "Added IMF and tax-news leads. Products: Fuel products Status: Current/recent Verification note: Official tax authority/gazette still needed.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active March-April 2026",
+      "Source": "IMF / Global VAT Compliance",
+      "Source URL": "https://www.imf.org/en/news/articles/2026/03/31/mcs-04012026-north-macedonia-staff-concluding-statement-of-the-2026-article-iv-mission ; https://www.globalvatcompliance.com/globalvatnews/north-macedonia-vat-fuel-extension/",
+      "Evaluation": "B",
+      "Reason": "Official tax authority/gazette still needed."
+    },
+    {
+      "Country": "Romania",
+      "#": "R015",
+      "Policy": "Diesel excise cut, markup/export controls and farmer/transport support leads",
+      "Policy Description": "Added tracker/news leads for multiple instruments. Products: Diesel, motor fuels Status: Current/recent Verification note: Emergency ordinance/gazette details needed.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active April 2026",
+      "Source": "IEA / Reuters",
+      "Source URL": "https://www.iea.org/data-and-statistics/data-tools/2026-energy-crisis-policy-response-tracker ; https://www.reuters.com/business/energy/czech-government-cap-fuel-retailers-margins-lower-excise-tax-2026-04-02/",
+      "Evaluation": "B",
+      "Reason": "Emergency ordinance/gazette details needed."
+    },
+    {
+      "Country": "Russian Federation",
+      "#": "R016",
+      "Policy": "Temporary ban on export of gasoline/diesel/other fuels",
+      "Policy Description": "Official government source added for export restriction. Products: Gasoline, diesel, fuel products Status: Current/recent Verification note: Use decree text for exact product scope.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active To 2026-07-31",
+      "Source": "Government of Russia",
+      "Source URL": "https://government.ru/en/docs/57731/",
+      "Evaluation": "A",
+      "Reason": "Use decree text for exact product scope."
+    },
+    {
+      "Country": "Serbia",
+      "#": "R017",
+      "Policy": "Official weekly maximum prices; official 20% excise cut and reserve-release lead; export-ban lead retained from news",
+      "Policy Description": "Official source gives RSD 203/l diesel and RSD 184/l gasoline for March 6 week; follow-up official item notes excise/reserve measures. Products: Diesel, gasoline Status: Current/recent Verification note: Export ban exact legal text still needed.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active March-April 2026",
+      "Source": "Government of Serbia",
+      "Source URL": "https://www.srbija.gov.rs/vest/en/271778/state-protecting-citizens-businesses-from-sudden-fuel-price-increases.php ; https://www.srbija.gov.rs/vest/en/273176/nis-operating-licence-extended-until-17-april.php",
+      "Evaluation": "A/B",
+      "Reason": "Export ban exact legal text still needed."
+    },
+    {
+      "Country": "Slovak Republic",
+      "#": "R018",
+      "Policy": "Diesel purchase-cap and foreign-plate pricing leads; later rollback reported",
+      "Policy Description": "Added restriction and rollback leads. Products: Diesel Status: Current/recent Verification note: Exact regulation text needed.",
+      "Label": "Reduce demand - restricting quantities",
+      "Active or Proposed Date": "Active March-April 2026",
+      "Source": "BPV / Radio Slovakia / IEA",
+      "Source URL": "https://www.bpv-bp.com/en/clanek/slovakia-is-introducing-a-30-day-limit-on-diesel-fuel-purchases/ ; https://enrsi.stvr.sk/articles/news/441329/slovakia-adjusts-fuel-restrictions-as-supply-stabilizes-and-russian-oil-phase-out-continues ; https://www.iea.org/data-and-statistics/data-tools/2026-energy-crisis-policy-response-tracker",
+      "Evaluation": "B",
+      "Reason": "Exact regulation text needed."
+    },
+    {
+      "Country": "Slovenia",
+      "#": "R019",
+      "Policy": "Official duty-reduction page; purchase-limit lead from news/tracker",
+      "Policy Description": "Official page confirms duty cuts; purchase-limit lead still secondary. Products: Diesel, gasoline, heating oil Status: Current/recent Verification note: Find official purchase-limit decree/source.",
+      "Label": "Guaranteeing essential services",
+      "Active or Proposed Date": "Active March 2026",
+      "Source": "Government of Slovenia / Reuters / IEA",
+      "Source URL": "https://www.gov.si/en/news/2026-03-18-the-government-will-further-reduce-duties-and-mitigate-the-increase-in-the-prices-of-petroleum-products/ ; https://www.reuters.com/business/energy/slovenia-limits-fuel-purchases-pumps-run-dry-2026-03-22/ ; https://www.iea.org/data-and-statistics/data-tools/2026-energy-crisis-policy-response-tracker",
+      "Evaluation": "A/B",
+      "Reason": "Find official purchase-limit decree/source."
+    },
+    {
+      "Country": "Sweden",
+      "#": "R020",
+      "Policy": "Spring budget fuel-tax cut lead",
+      "Policy Description": "Added tax-cut lead. Products: Diesel, gasoline Status: Current/recent Verification note: Swedish budget/tax-agency legal source needed.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active May 2026",
+      "Source": "IRU / EC WOB",
+      "Source URL": "https://www.iru.org/news-resources/newsroom/war-pump-prices-continue-climb ; https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en",
+      "Evaluation": "B",
+      "Reason": "Swedish budget/tax-agency legal source needed."
+    },
+    {
+      "Country": "United Kingdom",
+      "#": "R021",
+      "Policy": "Temporary 5p/l cut extended to end-August 2026 and phased out in 2026-27 rates",
+      "Policy Description": "Official GOV.UK rates added/confirmed. Products: Petrol, diesel, kerosene, LPG, road fuel gas Status: Current Verification note: No main gap for duty-rate coding.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-03-23 through 2027-03-01",
+      "Source": "GOV.UK",
+      "Source URL": "https://www.gov.uk/government/publications/fuel-duty-rates-for-2026-to-2027/fuel-duty-rates-2026-to-2027",
+      "Evaluation": "A",
+      "Reason": "No main gap for duty-rate coding."
+    },
+    {
+      "Country": "Uzbekistan",
+      "#": "R022",
+      "Policy": "Excise tax increases for petroleum products and end-consumer fuel sales",
+      "Policy Description": "Added 2026 excise-increase leads. Products: Gasoline, diesel, aviation kerosene, LPG, CNG Status: Current/recent Verification note: Official tax-code amendment/gazette still needed.",
+      "Label": "General consumption smoothing",
+      "Active or Proposed Date": "Active 2026-04-01",
+      "Source": "EY / PwC",
+      "Source URL": "https://www.ey.com/en_uz/technical/tax-alerts/2026/01/uzbekistan-tax-updates-2026 ; https://taxsummaries.pwc.com/republic-of-uzbekistan/corporate/other-taxes",
+      "Evaluation": "B",
+      "Reason": "Official tax-code amendment/gazette still needed."
+    },
+    {
+      "Country": "Ukraine",
+      "#": "R025",
+      "Policy": "Existing emergency tax measure retained; current 2026 rate not verified",
+      "Policy Description": "Do not assume emergency rates remain current in 2026 without a current tax-code/gazette update. Products: Motor fuels Status: Historical verified / current uncertain Verification note: Find 2026 tax-code/gazette source.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Active 2022-2026",
+      "Source": "Existing workbook sources / IEA",
+      "Source URL": "https://www.iea.org/data-and-statistics/data-tools/2026-energy-crisis-policy-response-tracker",
+      "Evaluation": "B/C",
+      "Reason": "Find 2026 tax-code/gazette source."
+    },
+    {
+      "Country": "Germany",
+      "#": "2",
+      "Policy": "Emergency jet-fuel supply coordination with Israel",
+      "Policy Description": "Germany requested support during the Strait of Hormuz fuel-supply crisis, and Israel’s energy ministry said Israel would transfer jet fuel to Germany with coordination through refineries.",
+      "Label": "Secure supply",
+      "Active or Proposed Date": "Active 06-May-26",
+      "Source": "Reuters / Israel energy ministry",
+      "Evaluation": "New",
+      "Reason": "Reuters reports Germany’s request and the Israeli energy ministry statement that jet fuel would be transferred following the Hormuz crisis.",
+      "Source URL": "https://www.reuters.com/business/energy/israel-transfer-jet-fuel-germany-following-hormuz-crisis-2026-05-06/"
+    },
+    {
+      "Country": "European Union",
+      "#": "4",
+      "Policy": "EU jet-fuel supply observatory and emergency import coordination",
+      "Policy Description": "The European Commission prepared measures to ramp up U.S. jet-fuel and sustainable aviation fuel supplies and set up a fuel observatory beginning with jet fuel to monitor shortages and supply strain from the Iran-war fuel crisis.",
+      "Label": "Communication",
+      "Active or Proposed Date": "Proposed Apr-26",
+      "Source": "Reuters / European Commission",
+      "Evaluation": "New",
+      "Reason": "Reuters reports the Commission planned a broader energy and transport package including a fuel observatory and supply measures, starting with jet fuel.",
+      "Source URL": "https://www.reuters.com/business/energy/eu-looks-ramp-up-us-jet-fuel-saf-tackle-strain-iran-war-2026-04-21/"
+    }
+  ],
+  "labels": [
+    "Communication",
+    "General consumption smoothing",
+    "Guaranteeing essential services",
+    "Reduce demand - higher prices",
+    "Reduce demand - restricting quantities",
+    "Secure supply",
+    "Support to business"
+  ],
+  "countryGroups": {
+    "All countries and economies": [
+      "European Union",
+      "Kazakhstan",
+      "United Kingdom",
+      "Uzbekistan",
+      "Albania",
+      "Azerbaijan",
+      "Bosnia and Herzegovina",
+      "Croatia",
+      "Germany",
+      "Hungary",
+      "Kosovo",
+      "Moldova",
+      "Montenegro",
+      "North Macedonia",
+      "Romania",
+      "Russian Federation",
+      "Serbia",
+      "Slovak Republic",
+      "Slovenia",
+      "Sweden",
+      "Ukraine",
+      "Andorra",
+      "Armenia",
+      "Austria",
+      "Belarus",
+      "Belgium",
+      "Bulgaria",
+      "Channel Islands",
+      "Cyprus",
+      "Czech Republic",
+      "Finland",
+      "France",
+      "Georgia",
+      "Global / ECA countries in tracker",
+      "Greece",
+      "Ireland",
+      "Isle of Man",
+      "Italy",
+      "Kyrgyz Republic",
+      "Latvia",
+      "Lithuania",
+      "Luxembourg",
+      "Netherlands",
+      "Norway",
+      "Poland",
+      "Portugal",
+      "Spain",
+      "Turkey",
+      "Turkmenistan"
+    ],
+    "Countries/economies with proposed rows": [
+      "Ukraine"
+    ],
+    "Regional / multi-country groups": [
+      "European Union"
+    ]
+  },
+  "displayName": {
+    "European Union": "European\\nUnion",
+    "Czech Republic": "Czech\\nRepublic",
+    "Slovak Republic": "Slovak\\nRepublic",
+    "United Kingdom": "United\\nKingdom",
+    "Bosnia and Herzegovina": "Bosnia and\\nHerzegovina",
+    "Channel Islands": "Channel\\nIslands",
+    "Kyrgyz Republic": "Kyrgyz\\nRepublic",
+    "North Macedonia": "North\\nMacedonia",
+    "Russian Federation": "Russian\\nFederation",
+    "Global / ECA countries in tracker": "Global / ECA\\ncountries in tracker",
+    "Solomon Islands": "Solomon\\nIslands",
+    "Hong Kong SAR, China": "Hong Kong SAR,\\nChina",
+    "Macao SAR, China": "Macao SAR,\\nChina",
+    "Taiwan, China": "Taiwan,\\nChina",
+    "Brunei Darussalam": "Brunei\\nDarussalam",
+    "Korea, Rep.": "Korea,\\nRep.",
+    "Timor Leste": "Timor\\nLeste",
+    "New Caledonia": "New\\nCaledonia",
+    "French Polynesia": "French\\nPolynesia",
+    "Marshall Islands": "Marshall\\nIslands",
+    "Democratic Republic of the Congo": "DR Congo",
+    "São Tomé and Príncipe": "São Tomé\\nand Príncipe",
+    "Antigua and Barbuda": "Antigua\\nand Barbuda",
+    "St. Vincent and the Grenadines": "St. Vincent\\nand the Grenadines",
+    "Trinidad and Tobago": "Trinidad\\nand Tobago",
+    "West Bank and Gaza": "West Bank\\nand Gaza"
+  },
+  "metadata": {
+    "generated_on": "2026-05-08",
+    "source_file": "eca_fuel_policy_tracker_third_pass_review.xlsx",
+    "source_sheet": "Policy_Measure_Log",
+    "row_count": 75,
+    "country_count": 49,
+    "dashboard_version": "2026-05-08 update",
+    "region": "Europe and Central Asia",
+    "included_rows": 73,
+    "excluded_non_policy_rows": 18,
+    "typology_update": "Split old Reduce demand into Reduce demand - higher prices and Reduce demand - restricting quantities.",
+    "audit_note": "Added Germany emergency jet-fuel supply coordination with Israel and EU jet-fuel observatory/planned import coordination row. Split Reduce demand label into higher-prices and restricting-quantities categories."
+  }
+};
+
+const COLORS = {
+  "Communication": "#4f81bd",
+  "General consumption smoothing": "#c0504d",
+  "Guaranteeing essential services": "#9bbb59",
+  "Reduce demand - higher prices": "#7030a0",
+  "Reduce demand - restricting quantities": "#8064a2",
+  "Secure supply": "#4bacc6",
+  "Support to business": "#f79646"
+};
+
+const state = {
+  pinned: null
+};
+
+const groupSelect = document.getElementById("groupSelect");
+const categorySelect = document.getElementById("categorySelect");
+const statusSelect = document.getElementById("statusSelect");
+const titleInput = document.getElementById("titleInput");
+const chartTitle = document.getElementById("chartTitle");
+const subtitle = document.getElementById("subtitle");
+const svg = document.getElementById("chart");
+const tooltip = document.getElementById("tooltip");
+const legend = document.getElementById("legend");
+const detailCard = document.getElementById("detailCard");
+
+function initControls() {
+  Object.keys(DASHBOARD_DATA.countryGroups).forEach((name, index) => {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name;
+    if (index === 0) opt.selected = true;
+    groupSelect.appendChild(opt);
+  });
+  const allCategory = document.createElement("option");
+  allCategory.value = "all";
+  allCategory.textContent = "All policy categories";
+  categorySelect.appendChild(allCategory);
+  DASHBOARD_DATA.labels.forEach(label => {
+    const opt = document.createElement("option");
+    opt.value = label;
+    opt.textContent = label;
+    categorySelect.appendChild(opt);
+  });
+  [groupSelect, categorySelect, statusSelect, titleInput].forEach(el => el.addEventListener("input", render));
+}
+
+function cleanText(text) {
+  return (text || "").toString().replace(/\s+/g, " ").trim();
+}
+
+function isActive(row) {
+  return cleanText(row["Active or Proposed Date"]).toLowerCase().startsWith("active");
+}
+
+function isProposed(row) {
+  return cleanText(row["Active or Proposed Date"]).toLowerCase().startsWith("proposed");
+}
+
+function filteredRows() {
+  const categoryMode = categorySelect.value;
+  const statusMode = statusSelect.value;
+  return DASHBOARD_DATA.policies.filter(row => {
+    if (categoryMode !== "all" && row.Label !== categoryMode) return false;
+    if (statusMode === "active" && !isActive(row)) return false;
+    if (statusMode === "proposed" && !isProposed(row)) return false;
+    return true;
+  });
+}
+
+function visibleCountries(rows) {
+  const group = DASHBOARD_DATA.countryGroups[groupSelect.value] || [];
+  const allowedCountries = new Set(group);
+  const totalByCountry = new Map();
+  rows.forEach(row => {
+    if (!allowedCountries.has(row.Country)) return;
+    totalByCountry.set(row.Country, (totalByCountry.get(row.Country) || 0) + 1);
+  });
+  return group
+    .filter(country => totalByCountry.has(country))
+    .sort((a, b) => {
+      const diff = (totalByCountry.get(b) || 0) - (totalByCountry.get(a) || 0);
+      return diff !== 0 ? diff : a.localeCompare(b);
+    });
+}
+
+function aggregate(rows, countries) {
+  const byCountry = new Map();
+  countries.forEach(country => {
+    byCountry.set(country, new Map(DASHBOARD_DATA.labels.map(label => [label, []])));
+  });
+  rows.forEach(row => {
+    if (!byCountry.has(row.Country)) return;
+    const label = row.Label;
+    if (!byCountry.get(row.Country).has(label)) byCountry.get(row.Country).set(label, []);
+    byCountry.get(row.Country).get(label).push(row);
+  });
+  return byCountry;
+}
+
+function niceMax(maxValue) {
+  // Keep the y-axis tight: only 1–2 units of headroom above the tallest bar.
+  if (maxValue <= 0) return 1;
+  const headroom = maxValue <= 1 ? 1 : 2;
+  return Math.ceil(maxValue) + headroom;
+}
+
+function yTicks(maxValue) {
+  const top = niceMax(maxValue);
+  if (top <= 10) {
+    return Array.from({length: top + 1}, (_, i) => i);
+  }
+  const step = Math.ceil(top / 8);
+  const ticks = [];
+  for (let v = 0; v <= top; v += step) ticks.push(v);
+  if (ticks[ticks.length - 1] !== top) ticks.push(top);
+  return ticks;
+}
+
+function labelLines(country) {
+  return (DASHBOARD_DATA.displayName[country] || country).split("\n");
+}
+
+function truncate(text, maxLen) {
+  text = cleanText(text);
+  return text.length > maxLen ? text.slice(0, maxLen - 1) + "…" : text;
+}
+
+function escapeHTML(s) {
+  return cleanText(s).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[ch]));
+}
+
+function makeTooltipHTML(country, label, policies) {
+  const items = policies.map(row => `
+    <li><strong>${escapeHTML(row.Policy)}</strong>: ${escapeHTML(truncate(row["Policy Description"], 260))}
+      <br><span class="meta">${escapeHTML(row["Active or Proposed Date"])} · ${escapeHTML(row.Source)}</span>
+    </li>`).join("");
+  return `
+    <h3>${escapeHTML(country)} — ${escapeHTML(label)}</h3>
+    <p class="meta">${policies.length} reform${policies.length === 1 ? "" : "s"} in this segment</p>
+    <ul>${items}</ul>`;
+}
+
+function showTooltip(evt, html) {
+  tooltip.innerHTML = html;
+  tooltip.style.display = "block";
+  moveTooltip(evt);
+}
+
+function moveTooltip(evt) {
+  const pad = 16;
+  const rect = tooltip.getBoundingClientRect();
+  let left = evt.clientX + 14;
+  let top = evt.clientY + 14;
+  if (left + rect.width + pad > window.innerWidth) left = evt.clientX - rect.width - 14;
+  if (top + rect.height + pad > window.innerHeight) top = evt.clientY - rect.height - 14;
+  tooltip.style.left = Math.max(pad, left) + "px";
+  tooltip.style.top = Math.max(pad, top) + "px";
+}
+
+function hideTooltip() {
+  tooltip.style.display = "none";
+}
+
+function pinDetails(country, label, policies) {
+  const html = makeTooltipHTML(country, label, policies);
+  detailCard.innerHTML = `<h2>${escapeHTML(country)} — ${escapeHTML(label)}</h2><p>Clicked segment; policy details are pinned below.</p><div class="policy-list">` +
+    policies.map(row => `
+      <div class="policy-card" style="border-left-color:${COLORS[label] || "#999"}">
+        <div class="policy-title">${escapeHTML(row.Policy)}</div>
+        <div class="policy-desc">${escapeHTML(row["Policy Description"])}</div>
+        <div class="policy-foot">${escapeHTML(row["Active or Proposed Date"])} · ${escapeHTML(row.Source)}</div>
+      </div>`).join("") + "</div>";
+}
+
+function drawLegend(activeLabels) {
+  legend.innerHTML = "";
+  DASHBOARD_DATA.labels.forEach(label => {
+    if (!activeLabels.has(label)) return;
+    const item = document.createElement("div");
+    item.className = "legend-item";
+    item.innerHTML = `<span class="legend-swatch" style="background:${COLORS[label]}"></span><span>${escapeHTML(label)}</span>`;
+    legend.appendChild(item);
+  });
+}
+
+function render() {
+  chartTitle.textContent = titleInput.value || "30 April 2026";
+
+  const rows = filteredRows();
+  const countries = visibleCountries(rows);
+  const byCountry = aggregate(rows, countries);
+  const totals = countries.map(country => {
+    const labelMap = byCountry.get(country);
+    return DASHBOARD_DATA.labels.reduce((sum, label) => sum + (labelMap.get(label) || []).length, 0);
+  });
+  const maxTotal = Math.max(0, ...totals);
+  const ticks = yTicks(maxTotal);
+  const yMax = ticks[ticks.length - 1];
+
+  const activeLabels = new Set();
+  countries.forEach(country => {
+    const labelMap = byCountry.get(country);
+    DASHBOARD_DATA.labels.forEach(label => {
+      if ((labelMap.get(label) || []).length > 0) activeLabels.add(label);
+    });
+  });
+
+  document.getElementById("kpiPolicies").textContent = rows.filter(r => countries.includes(r.Country)).length;
+  document.getElementById("kpiCountries").textContent = countries.length;
+  document.getElementById("kpiLabels").textContent = activeLabels.size;
+  document.getElementById("kpiMax").textContent = maxTotal;
+  subtitle.textContent = `${groupSelect.value} · ${categorySelect.options[categorySelect.selectedIndex].text} · ${statusSelect.options[statusSelect.selectedIndex].text}`;
+  drawLegend(activeLabels);
+
+  const countryCount = Math.max(countries.length, 1);
+  const width = Math.max(920, countryCount * 74 + 130);
+  const height = 560;
+  const margin = {top: 20, right: 26, bottom: 100, left: 42};
+  const plotW = width - margin.left - margin.right;
+  const plotH = height - margin.top - margin.bottom;
+  const barSlot = plotW / countryCount;
+  const barW = Math.min(48, barSlot * 0.48);
+
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute("width", width);
+  svg.setAttribute("height", height);
+  svg.innerHTML = "";
+
+  const ns = "http://www.w3.org/2000/svg";
+  function el(name, attrs = {}, text = null) {
+    const node = document.createElementNS(ns, name);
+    Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, v));
+    if (text !== null) node.textContent = text;
+    svg.appendChild(node);
+    return node;
+  }
+  function yScale(v) {
+    return margin.top + plotH - (v / yMax) * plotH;
+  }
+
+  // Grid lines and Y axis
+  ticks.forEach(t => {
+    const y = yScale(t);
+    el("line", {x1: margin.left, y1: y, x2: margin.left + plotW, y2: y, class: "axis-line", stroke: t === 0 ? "#cfcfcf" : "var(--grid)", "stroke-width": t === 0 ? 1.4 : 1.2});
+    el("text", {x: margin.left - 18, y: y + 5, "text-anchor": "end", fill: "#666", "font-size": "15"}, t);
+  });
+
+  // Bars
+  countries.forEach((country, i) => {
+    const xCenter = margin.left + i * barSlot + barSlot / 2;
+    const x = xCenter - barW / 2;
+    let cumulative = 0;
+    const labelMap = byCountry.get(country);
+    DASHBOARD_DATA.labels.forEach(label => {
+      const policies = labelMap.get(label) || [];
+      const value = policies.length;
+      if (value <= 0) return;
+      const y1 = yScale(cumulative + value);
+      const y0 = yScale(cumulative);
+      const rect = el("rect", {
+        x: x,
+        y: y1,
+        width: barW,
+        height: Math.max(1, y0 - y1),
+        fill: COLORS[label] || "#999",
+        class: "bar-segment",
+        "data-country": country,
+        "data-label": label
+      });
+      const tip = makeTooltipHTML(country, label, policies);
+      rect.addEventListener("mouseenter", e => showTooltip(e, tip));
+      rect.addEventListener("mousemove", moveTooltip);
+      rect.addEventListener("mouseleave", hideTooltip);
+      rect.addEventListener("click", () => pinDetails(country, label, policies));
+      cumulative += value;
+    });
+
+    // X-axis labels
+    const lines = labelLines(country);
+    const text = document.createElementNS(ns, "text");
+    text.setAttribute("x", xCenter);
+    text.setAttribute("y", margin.top + plotH + 24);
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("fill", "#666");
+    text.setAttribute("font-size", "15");
+    lines.forEach((line, idx) => {
+      const tsp = document.createElementNS(ns, "tspan");
+      tsp.setAttribute("x", xCenter);
+      tsp.setAttribute("dy", idx === 0 ? 0 : 17);
+      tsp.textContent = line;
+      text.appendChild(tsp);
+    });
+    svg.appendChild(text);
+  });
+
+  // Axes
+  el("line", {x1: margin.left, y1: margin.top, x2: margin.left, y2: margin.top + plotH, class: "axis-line"});
+  el("line", {x1: margin.left, y1: margin.top + plotH, x2: margin.left + plotW, y2: margin.top + plotH, class: "axis-line"});
+
+  if (countries.length === 0) {
+    el("text", {x: width / 2, y: height / 2, "text-anchor": "middle", fill: "#777", "font-size": "18"}, "No rows match the current filters.");
+  }
+}
+
+initControls();
+render();
+</script>
+</body>
+</html>

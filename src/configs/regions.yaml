@@ -105,8 +105,47 @@ eca:
       countries:
         - bulgaria
         - croatia
+        - czech_republic
+        - estonia
+        - hungary
+        - latvia
+        - lithuania
         - poland
         - romania
+        - slovak_republic
+        - slovenia
+    western_europe:
+      name: Western Europe
+      countries:
+        - andorra
+        - austria
+        - belgium
+        - channel_islands
+        - cyprus
+        - denmark
+        - faroe_islands
+        - finland
+        - france
+        - germany
+        - gibraltar
+        - greece
+        - greenland
+        - iceland
+        - ireland
+        - isle_of_man
+        - italy
+        - liechtenstein
+        - luxembourg
+        - malta
+        - monaco
+        - netherlands
+        - norway
+        - portugal
+        - san_marino
+        - spain
+        - sweden
+        - switzerland
+        - united_kingdom
     turkiye:
       name: Türkiye
       countries:
