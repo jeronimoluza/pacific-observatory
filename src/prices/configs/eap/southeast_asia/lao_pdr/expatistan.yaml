@@ -1,0 +1,14 @@
+spider: expatistan
+language: en
+spider_kwargs:
+  country_slug: laos
+  currency: LAK
+  # cities: intentionally omitted — exercises auto-discover from
+  # /cost-of-living/country/laos (~2 cities).
+notes: >
+  Expatistan crowd-sourced cost-of-living aggregator. Emits one
+  record per (city, item) pair in LOCAL currency (apply WB FX feed
+  downstream for USD). Includes two summary rows per city
+  (Family-of-four / Single-person monthly costs) as
+  category="Summary" — CPI-analog city totals. Recommended
+  cadence: weekly.
