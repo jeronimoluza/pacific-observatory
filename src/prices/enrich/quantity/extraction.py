@@ -534,9 +534,9 @@ def merge_quantities_with_gemini(
     if "date" in df_merged.columns:
         # Convert to timezone-naive to avoid comparison issues
         # Handle both tz-aware and tz-naive timestamps
-        df_merged["date"] = pd.to_datetime(df_merged["date"], utc=True).dt.tz_localize(
-            None
-        )
+        df_merged["date"] = pd.to_datetime(
+            df_merged["date"], format="mixed", utc=True
+        ).dt.tz_localize(None)
         df_merged = df_merged.sort_values(by=["url_hash", "date"], na_position="last")
         print("✓ Sorted by url_hash and date")
     else:
