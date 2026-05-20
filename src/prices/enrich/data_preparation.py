@@ -1,0 +1,316 @@
+"""
+Match products to COICOP categories using product names and categories.
+
+This module reads price scraping data, cleans it, extracts product names without
+quantities, and creates product-category combinations for COICOP matching.
+
+The workflow:
+1. Load and clean price scraping data
+2. Remove amounts and quantities from product names → "product_only"
+3. Clean "product_only" from special characters
+4. Clean category names (lowercase, remove "Home " prefix, clean special chars)
+5. Create "product_w_cat" combining product_only and cleaned category
+"""
+
+import sys
+from pathlib import Path
+from typing import Optional
+import unicodedata
+
+import pandas as pd
+import re
+
+
+# Handle both relative and direct execution
+try:
+    from .loading import load_price_scraping_data
+    from .cleaning import clean_product_names, clean_special_characters, parse_price
+    from .quantity.regex import (
+        AMOUNT_REGEX,
+        UNITS_REGEX,
+        PER_KG_REGEX,
+        PER_EACH_REGEX,
+        STOPWORDS,
+    )
+except ImportError:
+    # Direct execution: add parent directory to path
+    sys.path.insert(0, str(Path(__file__).parent))
+    from loading import load_price_scraping_data
+    from cleaning import clean_product_names, clean_special_characters, parse_price
+    from quantity.regex import (
+        AMOUNT_REGEX,
+        UNITS_REGEX,
+        PER_KG_REGEX,
+        PER_EACH_REGEX,
+        STOPWORDS,
+    )
+
+
+def clean_product_only(product_name: str) -> str:
+    """
+    Clean product name by removing parentheses/brackets and normalizing accents
+    while preserving all language characters.
+
+    Steps:
+    1. Remove all strings contained in () or []
+    2. Remove diacritics from Latin characters only (é → e, ñ → n)
+       while keeping non-Latin scripts intact.
+
+    Args:
+        product_name: The product name to clean.
+
+    Returns:
+        Cleaned product name.
+    """
+    if not isinstance(product_name, str):
+        return product_name
+
+    # Remove content in parentheses (...)
+    cleaned = re.sub(r"\([^)]*\)", "", product_name)
+
+    # Remove content in square brackets [...]
+    cleaned = re.sub(r"\[[^\]]*\]", "", cleaned)
+
+    # Normalize to decomposed form
+    cleaned = unicodedata.normalize("NFD", cleaned)
+
+    # Remove combining marks (accents) ONLY
+    cleaned = "".join(ch for ch in cleaned if unicodedata.category(ch) != "Mn")
+
+    # Re-compose characters
+    cleaned = unicodedata.normalize("NFC", cleaned)
+
+    # Clean up extra whitespace
+    cleaned = " ".join(cleaned.split())
+
+    return cleaned
+
+
+def remove_amounts_and_quantities(product_name: str) -> str:
+    """
+    Remove amounts and quantities from a product name.
+
+    Uses regex patterns to identify and remove:
+    - Amount (weight/volume): g, gm, kg, lb, oz, ml, mls, l, litre, ltrs, ltr, gallon, gal, m, cm
+    - Units (count): can, cans, pack, packs, piece, pieces, pcs
+    - Per kg/each patterns
+
+    Args:
+        product_name: The product name to clean.
+
+    Returns:
+        Product name with amounts and quantities removed.
+    """
+    if not isinstance(product_name, str):
+        return product_name
+
+    cleaned = product_name
+
+    # Remove amount patterns (weight/volume)
+    cleaned = AMOUNT_REGEX.sub("", cleaned)
+
+    # Remove units patterns (count)
+    cleaned = UNITS_REGEX.sub("", cleaned)
+
+    # Remove per kg pattern
+    cleaned = PER_KG_REGEX.sub("", cleaned)
+
+    # Remove per each pattern
+    cleaned = PER_EACH_REGEX.sub("", cleaned)
+
+    # Clean up extra whitespace that may result from removals
+    cleaned = " ".join(cleaned.split())
+
+    return cleaned
+
+
+def clean_category(category: str) -> str:
+    """
+    Clean a category name for use in product-category combinations.
+
+    Steps:
+    1. Convert to lowercase
+    2. Remove "Home " prefix if present (case-insensitive)
+    3. Clean special characters (replace with ", ")
+
+    Args:
+        category: The category name to clean.
+
+    Returns:
+        Cleaned category name.
+    """
+    if not isinstance(category, str):
+        return category
+
+    # Convert to lowercase
+    cleaned = category.lower()
+
+    # Remove "Home" prefix (case-insensitive): handles "Home", "Home > category", etc.
+    cleaned = re.sub(r"^home(?:\s*>\s*)?", "", cleaned, flags=re.IGNORECASE)
+
+    # Clean special characters
+    cleaned = clean_special_characters(cleaned)
+
+    return cleaned
+
+
+def create_product_with_category(product_only: str, category: str) -> str:
+    """
+    Create a product-category combination string.
+
+    Format: "{product_only}; {cleaned_category}"
+
+    Args:
+        product_only: The product name without quantities.
+        category: The category name (will be cleaned).
+
+    Returns:
+        Combined product-category string.
+    """
+    if not isinstance(product_only, str) or not isinstance(category, str):
+        return ""
+
+    cleaned_cat = clean_category(category)
+    return f"{product_only}; {cleaned_cat}"
+
+
+def clean_product_w_cat(text: str) -> str:
+    """
+    Clean product_w_cat strings by removing words with numbers, single characters, and stopwords.
+
+    Cleaning steps (in order):
+    1. Remove all words that contain any numbers (e.g., "123", "8x24s", "1235sw2", "92777a", "412w")
+    2. Remove all words with len(word) == 1 (e.g., "x", "o", "c")
+    3. Remove all stopwords (includes nltk stopwords, size words, count units, and additional packaging words)
+
+    Args:
+        text: The product_w_cat string to clean.
+
+    Returns:
+        Cleaned product_w_cat string with words separated by spaces.
+    """
+    if not isinstance(text, str):
+        return text
+
+    # Split text into words
+    words = text.split()
+    cleaned_words = []
+
+    for word in words:
+        # Step 1: Skip if word contains any digit
+        if any(char.isdigit() for char in word):
+            continue
+
+        # Step 2: Skip if word is single character
+        if len(word) == 1:
+            continue
+
+        # Step 3: Skip if word is in STOPWORDS (includes nltk stopwords + size words + count units + additional units)
+        if word.lower() in STOPWORDS:
+            continue
+
+        # Keep the word if it passes all filters
+        cleaned_words.append(word)
+
+    # Join cleaned words back together
+    cleaned_text = " ".join(cleaned_words)
+
+    return cleaned_text
+
+
+def prepare_coicop_matching_data_from_df(
+    df: pd.DataFrame,
+    project_root: Optional[Path] = None,
+) -> pd.DataFrame:
+    """
+    Prepare a provided dataframe for COICOP matching.
+
+    Steps:
+    1. Save original product_name as product_name_original
+    2. Clean product names (source-specific cleaning)
+    3. Parse and clean price column
+    4. Remove amounts and quantities → "product_only"
+    5. Clean "product_only" from special characters
+    6. Clean category names
+    7. Create "product_w_cat" combining product_only and cleaned category
+    """
+    df = df.copy()
+
+    # Save original product_name before any cleaning
+    df["product_name_original"] = df["product_name"].copy()
+
+    # Clean product names (source-specific cleaning)
+    df = clean_product_names(df, project_root)
+
+    # Parse and clean price column (with currency-aware parsing)
+    if "price" in df.columns:
+        df["price"] = df.apply(
+            lambda row: parse_price(row["price"], row.get("currency")), axis=1
+        )
+
+    # Clean product names by removing content in parentheses and brackets
+    df["product_name"] = df["product_name"].apply(clean_product_only)
+
+    # Remove amounts and quantities from product names
+    df["product_only"] = df["product_name"].apply(remove_amounts_and_quantities)
+
+    # Clean product_only from special characters
+    df["product_only"] = df["product_only"].apply(clean_special_characters)
+
+    # Create product_w_cat combining product_only and cleaned category
+    if "category" in df.columns:
+        df["product_w_cat"] = df.apply(
+            lambda row: (
+                create_product_with_category(row["product_only"], row["category"])
+                if pd.notna(row["category"]) and str(row["category"]).strip()
+                else row["product_only"]
+            ),
+            axis=1,
+        )
+    else:
+        # If no category column, product_w_cat is same as product_only
+        df["product_w_cat"] = df["product_only"]
+
+    # Clean product_w_cat by removing numbers, single characters, and stopwords
+    df["product_w_cat"] = df["product_w_cat"].apply(clean_product_w_cat)
+
+    df["product_only"] = df["product_w_cat"].apply(lambda x: x.split(";")[0])
+
+    # Rename 'url' to 'product_url' if it exists
+    if "url" in df.columns and "product_url" not in df.columns:
+        df = df.rename(columns={"url": "product_url"})
+
+    return df
+
+
+def prepare_coicop_matching_data(project_root: Optional[Path] = None) -> pd.DataFrame:
+    """
+    Load price scraping data and prepare it for COICOP matching.
+
+    Steps:
+    1. Load raw price scraping data
+    2. Save original product_name as product_name_original
+    3. Clean product names (source-specific cleaning)
+    4. Parse and clean price column
+    5. Remove amounts and quantities → "product_only"
+    6. Clean "product_only" from special characters
+    7. Clean category names
+    8. Create "product_w_cat" combining product_only and cleaned category
+    """
+    # Load raw price scraping data
+    df = load_price_scraping_data(project_root)
+    return prepare_coicop_matching_data_from_df(df, project_root)
+
+
+if __name__ == "__main__":
+    # Example usage
+    df = prepare_coicop_matching_data()
+    print(f"Prepared {len(df)} products for COICOP matching")
+    print(f"\nColumns: {df.columns.tolist()}")
+    print("\nFirst 10 rows:")
+    print(df[["product_name", "product_only", "product_w_cat"]].head(10))
+    print("\nData types:")
+    print(df.dtypes)
+    df[["product_name", "product_only", "category", "product_w_cat"]].to_csv(
+        "coicop_matching_data.csv", index=False
+    )

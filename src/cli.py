@@ -369,9 +369,13 @@ _register_text_storage(
 
 from prices.collect import collect as _prices_collect  # noqa: E402
 from prices.backfill import backfill_command as _prices_backfill  # noqa: E402
+from prices.cc_warc_fetcher import common_crawl_command as _prices_common_crawl  # noqa: E402
+from prices.enrich.process import process_command as _prices_process  # noqa: E402
 
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
+prices.add_command(_prices_common_crawl, name="common-crawl")
+prices.add_command(_prices_process, name="process")
 
 
 @prices.command("build")
@@ -379,7 +383,7 @@ prices.add_command(_prices_backfill, name="backfill")
 @_subregion_opt
 @_country_opt
 def prices_build(region, subregion, country):
-    """Classify products (COICOP) and construct CPI indices."""
+    """Construct CPI indices from the enriched prices dataset."""
     click.echo("prices build: not yet migrated")
 
 
