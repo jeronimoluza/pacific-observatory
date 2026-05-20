@@ -64,9 +64,14 @@ class SmartdokoSpider(scrapy.Spider):
                     "playwright_page_goto_kwargs": {"wait_until": "domcontentloaded"},
                     "playwright_page_methods": [
                         PageMethod("wait_for_timeout", 6000),
-                        PageMethod("evaluate", "window.scrollTo(0, document.body.scrollHeight/2)"),
+                        PageMethod(
+                            "evaluate",
+                            "window.scrollTo(0, document.body.scrollHeight/2)",
+                        ),
                         PageMethod("wait_for_timeout", 2000),
-                        PageMethod("evaluate", "window.scrollTo(0, document.body.scrollHeight)"),
+                        PageMethod(
+                            "evaluate", "window.scrollTo(0, document.body.scrollHeight)"
+                        ),
                         PageMethod("wait_for_timeout", 2000),
                     ],
                 },

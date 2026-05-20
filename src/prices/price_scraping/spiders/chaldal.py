@@ -39,7 +39,10 @@ class ChaldalSpider(scrapy.Spider):
         "canSeeOutOfStock": "false",
         "filters": [],
         "maxOutOfStockCount": {"case": "Some", "fields": [0]},
-        "shouldShowAlternateProductsForAllOutOfStock": {"case": "Some", "fields": ["true"]},
+        "shouldShowAlternateProductsForAllOutOfStock": {
+            "case": "Some",
+            "fields": ["true"],
+        },
         "customerGuid": {"case": "None"},
         "deliveryAreaId": {"case": "None"},
         "shouldShowCategoryBasedRecommendations": {"case": "None"},
@@ -76,7 +79,9 @@ class ChaldalSpider(scrapy.Spider):
         hits = data.get("hits", [])
         page = response.meta.get("page", 0)
         nb_pages = data.get("nbPages", 0)
-        logger.info(f"chaldal: page={page}/{nb_pages} hits={len(hits)} total_nbHits={data.get('nbHits')}")
+        logger.info(
+            f"chaldal: page={page}/{nb_pages} hits={len(hits)} total_nbHits={data.get('nbHits')}"
+        )
 
         scraped_at = response.headers.get("Date", b"").decode("utf-8")
         for it in hits:
@@ -87,7 +92,9 @@ class ChaldalSpider(scrapy.Spider):
             category = ",".join(str(c) for c in cats) if cats else None
             slug = it.get("slug")
             yield {
-                "product_id": str(it.get("objectID")) if it.get("objectID") is not None else None,
+                "product_id": str(it.get("objectID"))
+                if it.get("objectID") is not None
+                else None,
                 "product_name": it.get("name") or it.get("nameWithoutSubText"),
                 "price": price,
                 "currency": self.currency,

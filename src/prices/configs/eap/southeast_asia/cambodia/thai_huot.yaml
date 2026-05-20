@@ -1,0 +1,4 @@
+spider: thai_huot
+language: en
+active: false
+inactive_reason: "Site migrated to brochure-only React SPA on 2026-04-06; product catalog no longer published on the web. Ordering moved to per-branch Telegram channels (t.me/thaihuot*). See engram memory #1306."

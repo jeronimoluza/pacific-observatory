@@ -1,1 +1,1 @@
-"""Supermarket prices pipeline: collect (scrape) → build (classify + CPI) → publish."""
+"""Supermarket prices pipeline: collect (Scrapy spiders) → build → publish."""

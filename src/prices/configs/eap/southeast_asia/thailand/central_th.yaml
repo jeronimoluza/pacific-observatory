@@ -1,0 +1,7 @@
+spider: central_th
+language: th
+notes: >
+  Listing-card extraction (Tier 2 / Playwright). Category pages render cards
+  with atomic Tailwind-style classes; the `p.text-central-red` class uniquely
+  marks the current ฿ price. PDPs trigger Cloudflare on revisit from
+  non-residential IPs, so do NOT add a PDP follow-up.

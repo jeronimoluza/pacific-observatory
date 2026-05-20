@@ -95,9 +95,7 @@ class LivingCostSpider(scrapy.Spider):
         # are country-comparison cards (Indonesia-vs-Japan etc.); scoping
         # discovery to the cities <ol> avoids matching them.
         heading = soup.find(id="cities")
-        cities_list = (
-            heading.find_next("ol") if heading is not None else None
-        )
+        cities_list = heading.find_next("ol") if heading is not None else None
         if cities_list is None:
             logger.warning(
                 "[livingcost] no <h2 id='cities'> + <ol> found on country "
@@ -247,9 +245,7 @@ class LivingCostSpider(scrapy.Spider):
                 price_raw = span.get_text(strip=True)
                 item_key = cls._slugify(label)
                 yield {
-                    "product_id": (
-                        f"{city}:{item_key}" if city else item_key
-                    ),
+                    "product_id": (f"{city}:{item_key}" if city else item_key),
                     "product_name": label,
                     "price": price_usd,
                     "price_raw": price_raw,

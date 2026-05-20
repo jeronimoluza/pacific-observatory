@@ -1,0 +1,3 @@
+spider: winmart
+language: vi
+notes: Uses internal JSON API at api-crownx.winmart.vn. No Playwright required.

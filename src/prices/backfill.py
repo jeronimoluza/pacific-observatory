@@ -9,6 +9,7 @@ tracks completion in `wayback_items/.ledger.json` for resumability.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -55,9 +56,14 @@ def load_url_universe(source_dir: Path) -> list[dict[str, Any]]:
                 except json.JSONDecodeError:
                     continue
                 url = row.get("url")
-                url_hash = row.get("url_hash")
-                if not url or not url_hash:
+                if not url:
                     continue
+                # Aggregator spiders disable DuplicationPipeline (one URL
+                # emits ~50 rows), so url_hash isn't set on those rows.
+                # Synthesize from URL — matches the md5(url) used elsewhere.
+                url_hash = row.get("url_hash") or hashlib.md5(
+                    url.encode()
+                ).hexdigest()
                 scraped_at = _parse_iso_utc(row.get("scraped_at_utc"))
                 prior = by_hash.get(url_hash)
                 if prior is None:
@@ -141,12 +147,20 @@ def backfill_one_url(
     currency: str | None,
     collapse_digits: int = 8,
     max_snapshots: int | None = None,
+    parse_html_fn=None,
 ) -> list[dict[str, Any]]:
     """Discover, fetch, parse all wayback snapshots for one URL.
 
     Returns the list of row dicts to append. Rows are dropped (not returned)
     when the spider's price selector finds nothing — but the ledger is still
     updated for those timestamps so we don't retry dead snapshots.
+
+    Dispatch:
+    - When `parse_html_fn` is supplied (aggregator spiders that expose a
+      `parse_html(html, url)` classmethod), each snapshot may yield MANY
+      rows; the function is the single source of truth for parsing.
+    - Otherwise (retailer spiders), the existing per-field SPIDER_SELECTORS
+      path runs and emits one row per snapshot.
     """
     timestamps = discover_snapshots(
         session, url, cutoff, collapse_digits=collapse_digits
@@ -161,6 +175,39 @@ def backfill_one_url(
         ledger.record(url_hash, ts)
         if html is None:
             continue
+        snap_date = parse_timestamp_to_date(ts)
+        snap_iso = (
+            f"{snap_date.isoformat()}T00:00:00+00:00"
+            if snap_date is not None
+            else None
+        )
+
+        if parse_html_fn is not None:
+            try:
+                parsed = list(parse_html_fn(html, url))
+            except Exception:
+                logger.exception(
+                    "[wayback] parse_html failed for %s @ %s", url, ts
+                )
+                continue
+            if not parsed:
+                logger.debug(
+                    "[wayback] aggregator parse yielded 0 rows for %s @ %s",
+                    url,
+                    ts,
+                )
+                continue
+            for rec in parsed:
+                rec.setdefault("url", url)
+                rec["url_hash"] = url_hash
+                rec["source_kind"] = "wayback"
+                rec["wayback_timestamp"] = ts
+                rec["scraped_at_utc"] = snap_iso
+                if currency and not rec.get("currency"):
+                    rec["currency"] = currency
+                rows.append(rec)
+            continue
+
         soup = BeautifulSoup(html, "html.parser")
         extracted: dict[str, Any] = {}
         for field, selector_list in selectors.items():
@@ -170,18 +217,13 @@ def backfill_one_url(
         if not extracted.get("price"):
             logger.debug("[wayback] dropping %s @ %s: no price extracted", url, ts)
             continue
-        snap_date = parse_timestamp_to_date(ts)
         row = {
             "url": url,
             "url_hash": url_hash,
             "currency": currency,
             "source_kind": "wayback",
             "wayback_timestamp": ts,
-            "scraped_at_utc": (
-                f"{snap_date.isoformat()}T00:00:00+00:00"
-                if snap_date is not None
-                else None
-            ),
+            "scraped_at_utc": snap_iso,
             **extracted,
         }
         rows.append(row)
@@ -212,6 +254,42 @@ def _resolve_currency(source_dir: Path) -> str | None:
             cur = row.get("currency")
             if cur:
                 return cur
+    return None
+
+
+def _load_spider_parse_html(spider_name: str):
+    """Return the spider's `parse_html(html, url)` classmethod if it exists.
+
+    Aggregator spiders (livingcost, mylifeelsewhere, expatistan) expose this
+    so live scrape and Wayback share one parser. Retailer spiders don't, and
+    the backfiller falls back to the SPIDER_SELECTORS path.
+    """
+    import importlib
+
+    try:
+        mod = importlib.import_module(
+            f"prices.price_scraping.spiders.{spider_name}"
+        )
+    except ImportError:
+        logger.debug(
+            "[wayback] no spider module prices.price_scraping.spiders.%s",
+            spider_name,
+        )
+        return None
+    for attr_name in dir(mod):
+        obj = getattr(mod, attr_name)
+        if not isinstance(obj, type):
+            continue
+        if getattr(obj, "name", None) != spider_name:
+            continue
+        parse_html = getattr(obj, "parse_html", None)
+        if callable(parse_html):
+            logger.info(
+                "[wayback] using parse_html hook from %s.%s",
+                mod.__name__,
+                obj.__name__,
+            )
+            return parse_html
     return None
 
 
@@ -247,7 +325,8 @@ def run_source_backfill(
     wayback_dir = source_dir / "wayback_items"
     wayback_dir.mkdir(parents=True, exist_ok=True)
     ledger = Ledger.load(wayback_dir / ".ledger.json")
-    selectors = get_selectors(spider)
+    parse_html_fn = _load_spider_parse_html(spider)
+    selectors = get_selectors(spider) if parse_html_fn is None else {}
     currency = _resolve_currency(source_dir)
 
     run_ts = datetime.now(timezone.utc).strftime(_RUN_TS_FMT)
@@ -275,6 +354,7 @@ def run_source_backfill(
                 currency=currency,
                 collapse_digits=collapse_digits,
                 max_snapshots=max_snapshots_per_url,
+                parse_html_fn=parse_html_fn,
             )
         finally:
             session.close()

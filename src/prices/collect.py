@@ -1,4 +1,172 @@
-"""Prices collect stage: run Scrapy spiders for supermarket price data.
+"""Prices collect stage: run Scrapy spiders for supermarket / retailer data."""
 
-Stub — will be migrated from src/cpi/price_scraping/
-"""
+from __future__ import annotations
+
+import logging
+import os
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+import click
+
+from prices.config import PriceSourceConfig, discover_prices_configs
+
+_PRICES_DIR = Path(__file__).resolve().parent
+_PROJECT_ROOT = _PRICES_DIR.parent.parent
+_PRICES_CONFIGS_DIR = _PRICES_DIR / "configs"
+
+logger = logging.getLogger(__name__)
+
+
+def _load_manifests(
+    region: str | None,
+    subregion: str | None,
+    country: str | None,
+    source: str | None,
+) -> list[PriceSourceConfig]:
+    paths = discover_prices_configs(region=region, subregion=subregion, country=country)
+    if source is not None:
+        paths = [p for p in paths if p.stem == source]
+    return [PriceSourceConfig.load(p) for p in paths]
+
+
+def _setup_run_logging(run_ts: str) -> tuple[Path, logging.Handler]:
+    runs_dir = _PROJECT_ROOT / "logs" / "prices" / "_runs" / run_ts
+    runs_dir.mkdir(parents=True, exist_ok=True)
+    master_log = runs_dir / "master.log"
+
+    fmt = logging.Formatter(
+        fmt="%(asctime)s [%(levelname)s] [%(name)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    root = logging.getLogger()
+    root.setLevel(logging.INFO)
+    for h in list(root.handlers):
+        root.removeHandler(h)
+
+    stream = logging.StreamHandler()
+    stream.setFormatter(fmt)
+    root.addHandler(stream)
+
+    master = logging.FileHandler(master_log, encoding="utf-8")
+    master.setFormatter(fmt)
+    root.addHandler(master)
+
+    return runs_dir, master
+
+
+def _print_plan(manifests: list[PriceSourceConfig]) -> None:
+    for m in manifests:
+        marker = " " if m.active else "*"
+        click.echo(
+            f"{marker} {m.region}/{m.subregion}/{m.country}/{m.source}  "
+            f"(spider={m.spider}, lang={m.language or '-'})"
+        )
+    inactive = sum(1 for m in manifests if not m.active)
+    click.echo(f"\n{len(manifests)} sources ({inactive} inactive marked *)")
+
+
+@click.command()
+@click.option("--region", "-r", default=None, help="Region slug (e.g. eap)")
+@click.option("--subregion", "-S", default=None, help="Subregion slug")
+@click.option("--country", "-c", default=None, help="Country slug")
+@click.option("--source", "-s", default=None, help="Run a single source slug")
+@click.option(
+    "--max-items",
+    type=int,
+    default=None,
+    help="Per-source item cap (passed as Scrapy CLOSESPIDER_ITEMCOUNT, applies independently to every spider).",
+)
+@click.option("--dry-run", is_flag=True, help="List sources without running")
+@click.option(
+    "--list",
+    "list_sources",
+    is_flag=True,
+    help="List sources without running (alias for --dry-run).",
+)
+def collect(region, subregion, country, source, max_items, dry_run, list_sources):
+    """Run Scrapy spiders to collect raw retailer items."""
+
+    manifests = _load_manifests(region, subregion, country, source)
+    if not manifests:
+        raise click.ClickException(
+            "No matching sources. Check --region/--subregion/--country/--source filters."
+        )
+
+    if dry_run or list_sources:
+        _print_plan(manifests)
+        return
+
+    active = [m for m in manifests if m.active]
+    skipped = [m for m in manifests if not m.active]
+    for m in skipped:
+        click.echo(
+            f"Skipping inactive source: {m.region}/{m.subregion}/{m.country}/{m.source}"
+        )
+
+    if not active:
+        raise click.ClickException("No active sources to run.")
+
+    run_ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+    runs_dir, _ = _setup_run_logging(run_ts)
+    logger.info(
+        "Prices collect — %d active source(s); run log dir: %s",
+        len(active),
+        runs_dir,
+    )
+
+    # Scrapy's project discovery walks UP from CWD looking for scrapy.cfg.
+    # We chdir into src/prices/ so it finds ours. Spiders import from
+    # `price_scraping.utils`; that package lives at src/prices/price_scraping/
+    # so we must also have src/prices on sys.path.
+    os.chdir(_PRICES_DIR)
+    if str(_PRICES_DIR) not in sys.path:
+        sys.path.insert(0, str(_PRICES_DIR))
+
+    from scrapy.crawler import CrawlerProcess
+    from scrapy.utils.project import get_project_settings
+
+    settings = get_project_settings()
+    if max_items is not None:
+        settings.set("CLOSESPIDER_ITEMCOUNT", int(max_items))
+
+    process = CrawlerProcess(settings, install_root_handler=False)
+    loader = process.spider_loader
+
+    for m in active:
+        try:
+            spider_cls = loader.load(m.spider)
+        except KeyError as exc:
+            raise click.ClickException(
+                f"Spider '{m.spider}' from {m.config_path} not found in "
+                f"price_scraping.spiders: {exc}"
+            ) from exc
+
+        crawl_kwargs: dict = {
+            "prices_region": m.region,
+            "prices_subregion": m.subregion,
+            "prices_country": m.country,
+            "prices_source": m.source,
+            "prices_data_root": str(_PROJECT_ROOT / "data"),
+        }
+        if m.start_urls:
+            crawl_kwargs["start_urls"] = list(m.start_urls)
+        if m.spider_kwargs:
+            crawl_kwargs.update(m.spider_kwargs)
+
+        logger.info(
+            "Scheduling spider: %s (%s/%s/%s)",
+            m.spider,
+            m.region,
+            m.subregion,
+            m.country,
+        )
+        process.crawl(spider_cls, **crawl_kwargs)
+
+    try:
+        process.start()
+        logger.info("All spiders completed.")
+    except Exception:
+        logger.exception("Crawler process failed.")
+        raise click.ClickException("Crawler process failed; see logs.")

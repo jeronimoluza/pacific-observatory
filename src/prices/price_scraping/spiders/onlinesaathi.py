@@ -53,7 +53,7 @@ class OnlinesaathiSpider(CrawlSpider):
         Rule(
             LinkExtractor(
                 allow=r"/[a-z0-9\-]{30,}$",
-                deny=r"(cart|checkout|login|search|/about|/contact|/blog|wp-admin|/category|page=)",
+                deny=r"(cart|checkout|login|search|/about|/contact|/blog|wp-admin|/category|page=|/questions/|/shop/)",
             ),
             callback="parse_product",
             follow=True,
@@ -64,7 +64,9 @@ class OnlinesaathiSpider(CrawlSpider):
         extractor = SelectorExtractor(response, logger)
         product_name = extractor.extract("product_name", self.SELECTORS["product_name"])
         price = extractor.extract("price", self.SELECTORS["price"])
-        category = extractor.extract("category", self.SELECTORS["category"], method="getall")
+        category = extractor.extract(
+            "category", self.SELECTORS["category"], method="getall"
+        )
         product_id = extractor.extract("product_id", self.SELECTORS["product_id"])
 
         if product_name and price:

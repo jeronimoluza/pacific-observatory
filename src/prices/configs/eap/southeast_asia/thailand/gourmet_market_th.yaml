@@ -1,0 +1,6 @@
+spider: gourmet_market_th
+language: th
+notes: >
+  Listing-card extraction (Tier 2 / Playwright). Site is a Next.js SPA; product
+  cards expose `.item-card-detail` anchors with `.name` + `.price` inline.
+  Product slug trailing digits are the product barcode/EAN.

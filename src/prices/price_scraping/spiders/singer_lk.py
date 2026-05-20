@@ -51,7 +51,10 @@ class SingerLkSpider(CrawlSpider):
     rules = (
         Rule(
             LinkExtractor(
-                allow=[r"/product/[a-z0-9\-]+$", r"/products/[a-z0-9\-]+(/[a-z0-9\-]+){0,3}$"],
+                allow=[
+                    r"/product/[a-z0-9\-]+$",
+                    r"/products/[a-z0-9\-]+(/[a-z0-9\-]+){0,3}$",
+                ],
                 deny=r"(cart|checkout|login|account|/add/|\?listview|\?page=|\?order_by|json-)",
             ),
             callback="parse_product",

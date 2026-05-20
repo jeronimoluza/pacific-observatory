@@ -23,21 +23,21 @@ class PharmeasySpider(scrapy.Spider):
 
     # Top-level OTC category IDs scraped from /api/home/fetchCategories.
     CATEGORIES = [
-        9297,   # Must Haves
-        623,    # Vitamin Store
-        877,    # Personal Care
-        575,    # Sexual Wellness
+        9297,  # Must Haves
+        623,  # Vitamin Store
+        877,  # Personal Care
+        575,  # Sexual Wellness
         16709,  # Summer Store
         16819,  # Pet Care
-        648,    # Health Food and Drinks
-        145,    # Diabetes Essentials
-        765,    # Ayurvedic Care
-        838,    # Mother and Baby Care
-        750,    # Mobility & Elderly Care
+        648,  # Health Food and Drinks
+        145,  # Diabetes Essentials
+        765,  # Ayurvedic Care
+        838,  # Mother and Baby Care
+        750,  # Mobility & Elderly Care
         12931,  # Sports Nutrition
-        717,    # Healthcare Devices
-        93,     # Skin Care
-        693,    # Health Concerns
+        717,  # Healthcare Devices
+        93,  # Skin Care
+        693,  # Health Concerns
         15393,  # Explore More
     ]
     MAX_PAGES_PER_CATEGORY = 30  # 30 * 20 = 600 items cap per cat
@@ -87,7 +87,9 @@ class PharmeasySpider(scrapy.Spider):
                 "price": price,
                 "currency": self.currency,
                 "category": str(cat_id),
-                "url": f"https://pharmeasy.in/online-medicine-order/{slug}" if slug else None,
+                "url": f"https://pharmeasy.in/online-medicine-order/{slug}"
+                if slug
+                else None,
                 "scraped_at": scraped_at,
             }
 

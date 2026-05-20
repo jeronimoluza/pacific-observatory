@@ -1,0 +1,35 @@
+# Supermarket / retailer price source manifest.
+#
+# Region, subregion, country, and source slug are derived from the file's path:
+#   src/prices/configs/{region}/{subregion}/{country}/{source}.yaml
+# They MUST NOT be duplicated in the body of this file.
+#
+# Copy this template to the appropriate location and edit.
+
+# REQUIRED: must match a Scrapy spider's `name` attribute under
+# src/prices/price_scraping/spiders/.
+spider: example_spider
+
+# OPTIONAL: ISO 639-1 / common language code (en, ja, zh, th, vi, id, km, mn, ms, fil).
+# Informational only; downstream COICOP / index code may use it.
+language: en
+
+# OPTIONAL: whether to include this source when running `prices collect`.
+# Defaults to true. Set false to skip a spider that is currently broken without
+# deleting its manifest.
+active: true
+
+# OPTIONAL: per-source cap on items emitted (for testing). null = no cap.
+max_items: null
+
+# OPTIONAL: override the spider's start_urls. Rarely needed.
+start_urls: null
+
+# OPTIONAL: keyword args passed to spider __init__.
+spider_kwargs: {}
+
+# OPTIONAL: Scrapy setting overrides for this source only.
+scrapy_settings: {}
+
+# OPTIONAL: free-text notes / gotchas.
+notes: ""
