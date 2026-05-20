@@ -1,20 +1,29 @@
-"""Prices collect stage: run Scrapy spiders for supermarket / retailer data."""
+"""Prices collect stage: run Scrapy spiders + Python fetchers in one pass."""
 
 from __future__ import annotations
 
+import importlib
 import logging
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import click
 
 from prices.config import PriceSourceConfig, discover_prices_configs
+from prices.writers import (
+    append_observations,
+    columns_for,
+    cutoff_from_csv,
+    output_path_for,
+)
 
 _PRICES_DIR = Path(__file__).resolve().parent
 _PROJECT_ROOT = _PRICES_DIR.parent.parent
 _PRICES_CONFIGS_DIR = _PRICES_DIR / "configs"
+_DATA_ROOT = _PROJECT_ROOT / "data"
+_FETCHERS_PACKAGE = "prices.fetchers"
 
 logger = logging.getLogger(__name__)
 
@@ -59,12 +68,47 @@ def _setup_run_logging(run_ts: str) -> tuple[Path, logging.Handler]:
 def _print_plan(manifests: list[PriceSourceConfig]) -> None:
     for m in manifests:
         marker = " " if m.active else "*"
+        if m.scaffolding == "fetcher":
+            handler = f"fetcher={m.module}:{m.function}"
+        else:
+            handler = f"spider={m.spider}"
         click.echo(
             f"{marker} {m.region}/{m.subregion}/{m.country}/{m.source}  "
-            f"(spider={m.spider}, lang={m.language or '-'})"
+            f"({handler}, lang={m.language or '-'})"
         )
     inactive = sum(1 for m in manifests if not m.active)
     click.echo(f"\n{len(manifests)} sources ({inactive} inactive marked *)")
+
+
+def _run_fetcher(m: PriceSourceConfig) -> None:
+    out_path = output_path_for(
+        data_root=_DATA_ROOT,
+        region=m.region,
+        subregion=m.subregion,
+        country=m.country,
+        source=m.source,
+        analytical_role=m.analytical_role,
+    )
+    columns = columns_for(m.analytical_role)
+    fallback = m.fallback_date or date(1970, 1, 1)
+    cutoff = cutoff_from_csv(out_path, fallback)
+
+    logger.info(
+        "Running fetcher: %s (%s/%s/%s, cutoff=%s)",
+        m.source,
+        m.region,
+        m.subregion,
+        m.country,
+        cutoff,
+    )
+
+    module = importlib.import_module(f"{_FETCHERS_PACKAGE}.{m.module}")
+    fn = getattr(module, m.function)
+    df = fn(cutoff)
+    if df is None or df.empty:
+        logger.info("Fetcher %s returned no new rows", m.source)
+        return
+    append_observations(df, out_path, columns=columns)
 
 
 @click.command()
@@ -86,7 +130,7 @@ def _print_plan(manifests: list[PriceSourceConfig]) -> None:
     help="List sources without running (alias for --dry-run).",
 )
 def collect(region, subregion, country, source, max_items, dry_run, list_sources):
-    """Run Scrapy spiders to collect raw retailer items."""
+    """Run Scrapy spiders and/or Python fetchers to collect price data."""
 
     manifests = _load_manifests(region, subregion, country, source)
     if not manifests:
@@ -110,11 +154,28 @@ def collect(region, subregion, country, source, max_items, dry_run, list_sources
 
     run_ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     runs_dir, _ = _setup_run_logging(run_ts)
+
+    fetchers = [m for m in active if m.scaffolding == "fetcher"]
+    spiders = [m for m in active if m.scaffolding == "spider"]
+
     logger.info(
-        "Prices collect — %d active source(s); run log dir: %s",
-        len(active),
+        "Prices collect — %d fetcher(s) + %d spider(s); run log dir: %s",
+        len(fetchers),
+        len(spiders),
         runs_dir,
     )
+
+    # Run fetchers first — they're synchronous and finish before we hand
+    # control to Scrapy's blocking reactor.
+    for m in fetchers:
+        try:
+            _run_fetcher(m)
+        except Exception:
+            logger.exception("Fetcher %s failed", m.source)
+
+    if not spiders:
+        logger.info("No spiders queued; done.")
+        return
 
     # Scrapy's project discovery walks UP from CWD looking for scrapy.cfg.
     # We chdir into src/prices/ so it finds ours. Spiders import from
@@ -134,7 +195,7 @@ def collect(region, subregion, country, source, max_items, dry_run, list_sources
     process = CrawlerProcess(settings, install_root_handler=False)
     loader = process.spider_loader
 
-    for m in active:
+    for m in spiders:
         try:
             spider_cls = loader.load(m.spider)
         except KeyError as exc:
@@ -148,7 +209,7 @@ def collect(region, subregion, country, source, max_items, dry_run, list_sources
             "prices_subregion": m.subregion,
             "prices_country": m.country,
             "prices_source": m.source,
-            "prices_data_root": str(_PROJECT_ROOT / "data"),
+            "prices_data_root": str(_DATA_ROOT),
         }
         if m.start_urls:
             crawl_kwargs["start_urls"] = list(m.start_urls)
