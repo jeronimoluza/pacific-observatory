@@ -2115,6 +2115,12 @@ class NewspaperScraper:
             )
             logger.info(f"Pending articles to scrape: {len(pending_thumbnails)}")
 
+            # Newest-first so time-bounded runs capture recent articles before
+            # older backfill. Undated thumbnails fall to the tail.
+            pending_thumbnails.sort(
+                key=lambda t: getattr(t, "date", "") or "", reverse=True
+            )
+
             if not pending_thumbnails:
                 logger.info("No pending articles to scrape")
                 return {
@@ -2345,6 +2351,12 @@ class NewspaperScraper:
                 pending_thumbnails = [
                     t for t in pending_thumbnails if str(t.url) not in prefetched_urls
                 ]
+
+            # Newest-first so time-bounded runs capture recent articles before
+            # older backfill. Undated thumbnails fall to the tail.
+            pending_thumbnails.sort(
+                key=lambda t: getattr(t, "date", "") or "", reverse=True
+            )
 
             # Apply max_articles limit if set
             if (
