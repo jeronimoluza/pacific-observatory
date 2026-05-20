@@ -732,6 +732,30 @@ regime_notes:
       classification_sources:
         - "WB 2024 pricing-regime dataset. Kerosene under ERB monthly cap."
 
+  ZWE:
+    Gasoline:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2, stype=2). ZERA publishes monthly caps; uniform nationwide; retailers may sell below the cap."
+        - { label: "Zimbabwe Energy Regulatory Authority (ZERA)",
+            url: "https://www.zera.co.zw/" }
+      reform:
+        label: "Dual USD/ZiG pricing"
+        note: "Zimbabwe replaced the ZWL with the gold-backed ZiG (ZWG) on 5-Apr-2024. ZERA now publishes the monthly fuel cap in both USD and ZiG; stations may transact in either currency, and USD is the de-facto pump unit."
+        sources:
+          - { label: "RBZ — Introduction of Zimbabwe Gold (ZiG)",
+              url: "https://www.rbz.co.zw/" }
+    Diesel:
+      classification_sources:
+        - "WB 2024 pricing-regime dataset (mech=2). Same ZERA monthly mechanism applies to diesel (D50)."
+    LPG:
+      classification_sources:
+        - "ZERA homepage publishes LPG (USD/Kg and ZiG/Kg) alongside fuels under the same monthly review."
+        - { label: "ZERA Current Energy Prices",
+            url: "https://www.zera.co.zw/" }
+    Kerosene:
+      classification_sources:
+        - "Paraffin (illuminating kerosene) and Jet A-1 covered by ZERA's monthly review per Petroleum Act [Chapter 13:22]."
+
 # Restrict scatter chart and KPI cards to this region's countries.
 scatter_focus_region: true
 

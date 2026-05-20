@@ -1,0 +1,36 @@
+source_key: zera_zw_current
+module: ssa.southern_africa.zimbabwe.zera
+function: fetch_zera_zw
+url: https://www.zera.co.zw/
+currency: USD
+fallback_date: 2025-01-01
+priority: 10
+cadence: monthly
+carry_forward: true
+
+# ZERA publishes only the CURRENT regulated prices on the homepage widget
+# "Current Energy Prices". Both USD and ZWG are shown; this fetcher captures
+# the USD figures (de-facto pump currency in Zimbabwe). The "As Of:" header
+# (DD-MM-YYYY) supplies observation_date — re-runs after the homepage updates
+# add a new row; runs on the same day are deduped by the framework.
+
+products:
+  "Petrol Blend (E20)":
+    series_key: gasoline_regular
+    fuel_family: gasoline
+    unit: liter
+    include_in_build: true
+    grade: regular
+  "Diesel (D50)":
+    series_key: diesel
+    fuel_family: diesel
+    unit: liter
+    include_in_build: true
+    grade: standard
+  "LPG":
+    series_key: lpg
+    fuel_family: lpg
+    unit: kilogram
+    include_in_build: true
+    density_l_per_kg: 1.96
+    grade: standard
