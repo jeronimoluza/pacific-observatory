@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1"]
+spider: propertyguru_sg
+url: https://www.propertyguru.com.sg/property-for-rent
+language: en
+cadence: weekly
+notes: |
+  Rental listings from PropertyGuru SG — listings-layer source for COICOP
+  04.1.1 (actual rentals paid by tenants). The spider hits the rental
+  landing once, harvests the ~28 SG postal-district anchors of the form
+  /property-for-rent/in-<area>-d<NN>, then crawls each district page.
+  Each page yields ~20 listing cards (private + HDB mix), so the crawl
+  emits ~500–600 listings per run with geographic diversity. Per-listing
+  fields (rent, address, beds, sqft, psf) are inlined on the listing-card
+  div.hui-card.listing-card-v2 — no PDP crawl needed.
+
+  Pagination caveat: ?page_num=N is SPA-driven (all page-N anchor hrefs
+  resolve to the bare landing URL). Per-district landings are the only
+  reliable way to widen coverage from server-rendered HTML. Whole source
+  is COICOP 04.1.1 (source_curated), so the Gemini coicopping step is
+  skipped for this spider's rows.
+
+  Cloudflare bypass: curl_cffi chrome120 TLS impersonation. Previously
+  documented as cf-mitigated:challenge in known_blockers.md; that posture
+  has relaxed (no Turnstile observed 2026-05-20). If the challenge
+  returns, swap meta to playwright + stealth — settings already wired.

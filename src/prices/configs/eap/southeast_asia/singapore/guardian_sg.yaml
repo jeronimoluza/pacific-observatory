@@ -1,2 +1,8 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
 spider: guardian_sg
+url: https://www.guardian.com.sg
 language: en
+cadence: daily

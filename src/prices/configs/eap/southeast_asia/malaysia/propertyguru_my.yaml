@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1"]
+spider: propertyguru_my
+url: https://www.propertyguru.com.my/property-for-rent
+language: en
+cadence: weekly
+notes: |
+  Rental listings from PropertyGuru MY — listings-layer source for COICOP
+  04.1.1 (actual rentals paid by tenants). Twin of propertyguru_sg: same
+  SaaS frontend, same div.hui-card.listing-card-v2 card DOM. Locale
+  differences encoded in the spider:
+    - Currency MYR (`RM 2,200 /mo`).
+    - PDP path is /property-listing/<slug>-<id> (not /listing/).
+    - District anchors are /property-for-rent/in-<area>-<5char>; the
+      trailing 5-char alphanum is the area hash (not d<NN> like SG).
+  ~28 district landings × ~20 cards/page ≈ 500–600 listings per run.
+  Pagination is SPA-driven on this site too; widening via district
+  anchors is the reliable strategy.
+
+  Cloudflare bypass: curl_cffi chrome120 TLS impersonation, confirmed
+  clean 200 on 2026-05-21 (no Turnstile interactive challenge observed).

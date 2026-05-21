@@ -1,0 +1,19 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.3.2"]
+source_key: sg_lta_fares
+module: eap.southeast_asia.singapore.lta_fares
+function: fetch_sg_lta_fares
+url: https://www.lta.gov.sg/content/dam/ltagov/img/map/bus/fare-table.pdf
+language: en
+cadence: irregular
+fallback_date: 2024-01-01
+notes: |
+  LTA static fare-table.pdf — 1 page, refreshed when PTC announces a fare
+  revision (most recently 27 Dec 2025). We emit only the Adult Card / Basic
+  Services row across 39 distance bands (39 rows per snapshot, COICOP
+  07.3.2). Express Services, cash fares, and concession cards (Senior,
+  Student, WTCS) are visible in the same PDF — deferred until basket
+  assembly proves out which fare variants matter.

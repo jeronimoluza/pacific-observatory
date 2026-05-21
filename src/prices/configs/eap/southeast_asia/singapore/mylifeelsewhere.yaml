@@ -1,10 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: deferred_gemini
 spider: mylifeelsewhere
+url: https://www.mylifeelsewhere.com/country-life/singapore
 language: en
+cadence: weekly
 spider_kwargs:
   country_slug: singapore
-notes: >
-  MyLifeElsewhere crowd-sourced cost-of-living aggregator.
-  Country-only — emits one record per (country, item) pair (~34
-  items / 7 categories per country, no city dimension). Both
-  price (local) and price_usd are populated from source.
-  Recommended cadence: weekly.
+notes: |
+  MyLifeElsewhere country-level cost-of-living aggregator (~34 items / 7
+  categories, no city dimension). Both price (local) and price_usd
+  populated direct from source — no downstream FX needed.

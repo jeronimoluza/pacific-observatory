@@ -1,11 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: deferred_gemini
 spider: livingcost
+url: https://livingcost.org/cost/singapore
 language: en
+cadence: weekly
 spider_kwargs:
   country_slug: singapore
-  # cities: intentionally omitted — exercises auto-discover path.
-  # Country landing page advertises ~2 cities.
-notes: >
-  LivingCost.org crowd-sourced cost-of-living aggregator. Emits one
-  record per (city, item) pair, USD-canonical (apply WB FX feed
-  downstream for local-currency). Serves PPP + soft inflation proxy;
-  not stickiness. Recommended cadence: weekly.
+notes: |
+  LivingCost.org crowd-sourced cost-of-living aggregator. Emits one record
+  per (city, item) pair, USD-canonical (apply WB FX feed downstream for
+  local-currency). Serves PPP + soft inflation proxy; not stickiness.

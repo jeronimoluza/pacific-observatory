@@ -70,6 +70,14 @@ AUTOTHROTTLE_MAX_DELAY = 10
 AUTOTHROTTLE_TARGET_CONCURRENCY = 4.0
 AUTOTHROTTLE_DEBUG = False
 
+# Safety nets so no single spider can hang the whole collect run. Without these,
+# Playwright pages that never resolve and DNS-stuck retries kept fairprice and
+# k24klik open indefinitely while the rest of the run finished. CLOSESPIDER_-
+# TIMEOUT_NO_ITEM auto-closes a spider that goes N seconds without yielding an
+# item; CLOSESPIDER_TIMEOUT is the absolute cap.
+CLOSESPIDER_TIMEOUT_NO_ITEM = 600
+CLOSESPIDER_TIMEOUT = 14400
+
 # Memory usage optimization
 MEMDEBUG_ENABLED = False
 TELNETCONSOLE_ENABLED = False

@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1"]
+spider: ddproperty_th
+url: https://www.ddproperty.com/en/property-for-rent
+language: en
+cadence: weekly
+notes: |
+  Rental listings from DDProperty TH (PropertyGuru's Thailand brand) —
+  listings-layer source for COICOP 04.1.1 (actual rentals paid by
+  tenants). Twin of propertyguru_sg: same SaaS, same
+  div.hui-card.listing-card-v2 card DOM. Locale differences encoded in
+  the spider:
+    - Currency THB (`฿11,000 /mo`).
+    - PDP path is /en/property/<slug>-for-rent-<id>.
+    - District anchors /en/property-for-rent/in-<area>-th<NN> — `th`
+      prefix + numeric region code (th10 Bangkok, th50 Chiang Mai, ...).
+  ~27 district landings × ~20 cards/page ≈ ~500 listings per run.
+
+  Cloudflare bypass: curl_cffi chrome120 TLS impersonation, clean 200 on
+  the rental landing on 2026-05-21.

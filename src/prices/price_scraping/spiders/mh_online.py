@@ -1,86 +1,184 @@
 """
-Spider for scraping MH Online (Fiji) - https://mh.com.fj/
-Extracts product information including prices, categories, and URLs.
+Spider for MH Online (Fiji) — Morris Hedstrom's WooCommerce storefront.
+
+URL discovery via the WordPress sitemap index `/wp-sitemap.xml` which exposes
+`/wp-sitemap-posts-product-*.xml` (~3,700 canonical product URLs). This avoids
+the BFS-from-`/shop/` strategy used previously, which discovered thousands of
+duplicate variant URLs of the form `/product/<slug>/<post-id>` that all 301
+back to the canonical `/product/<slug>/` — wasting most of the request budget
+on redirect chains.
+
+Each product page exposes a Schema.org Product JSON-LD inside a `@graph` array
+(alongside a BreadcrumbList); we read name, sku, brand, offers.price,
+offers.priceCurrency, offers.availability from it.
 """
 
-import scrapy
-from scrapy.spiders import CrawlSpider, Rule
-from scrapy.linkextractors import LinkExtractor
-from urllib.parse import urljoin
+import json
 import logging
+import re
+from datetime import datetime, timezone
 
-from price_scraping.utils import SelectorExtractor
-from price_scraping.selectors import get_selectors
+import scrapy
 
 logger = logging.getLogger(__name__)
 
+SITEMAP_INDEX = "https://mh.com.fj/wp-sitemap.xml"
+# Strip a trailing /<digits> from product URLs so the variant suffixes don't
+# round-trip through 301 redirects to the canonical slug.
+VARIANT_SUFFIX_RE = re.compile(r"/\d+/?$")
 
-class MhOnlineSpider(CrawlSpider):
-    """
-    CrawlSpider for MH Online (Fiji).
-    Discovers product pages and extracts price data.
-    """
 
+class MhOnlineSpider(scrapy.Spider):
     name = "mh_online"
     allowed_domains = ["mh.com.fj"]
-    start_urls = ["https://mh.com.fj/shop/"]
     currency = "FJ"
+    language = "en"
 
-    # CSS selector fallbacks for product fields
-    SELECTORS = get_selectors("mh_online")
+    IMPERSONATE_PROFILE = "safari17_0"
 
-    # Rules for following links and extracting data
-    rules = (
-        # Follow category links
-        Rule(
-            LinkExtractor(
-                allow=r"/product/.*",
-                deny=r"(cart|checkout|account|login|search\?)",
-            ),
-            callback="parse_product",
-            follow=True,
-        ),
-    )
+    custom_settings = {
+        "DOWNLOADER_MIDDLEWARES": {
+            "scrapy_impersonate.middleware.RandomBrowserMiddleware": None,
+            "price_scraping.middlewares.CustomUserAgentMiddleware": None,
+        },
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 8,
+        "CONCURRENT_REQUESTS": 16,
+        "DOWNLOAD_DELAY": 0,
+        "RETRY_TIMES": 3,
+        # Site is responsive and returns no 429s; AutoThrottle was capping us
+        # at ~15 items/min in the previous run.
+        "AUTOTHROTTLE_ENABLED": False,
+    }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.queued_urls: set[str] = set()
+
+    def start_requests(self):
+        yield scrapy.Request(
+            SITEMAP_INDEX,
+            callback=self.parse_sitemap_index,
+            meta={"impersonate": self.IMPERSONATE_PROFILE},
+            errback=self.errback,
+        )
+
+    def parse_sitemap_index(self, response):
+        sub_sitemaps = response.xpath("//*[local-name()='loc']/text()").getall()
+        product_sitemaps = [s for s in sub_sitemaps if "posts-product" in s]
+        logger.info(
+            f"sitemap index: {len(sub_sitemaps)} sub-sitemaps "
+            f"({len(product_sitemaps)} product sub-sitemaps)"
+        )
+        for sm in product_sitemaps:
+            yield scrapy.Request(
+                sm,
+                callback=self.parse_product_sitemap,
+                meta={"impersonate": self.IMPERSONATE_PROFILE},
+                errback=self.errback,
+            )
+
+    def parse_product_sitemap(self, response):
+        urls = response.xpath("//*[local-name()='loc']/text()").getall()
+        canonical = []
+        for u in urls:
+            cu = VARIANT_SUFFIX_RE.sub("/", u)
+            if cu in self.queued_urls:
+                continue
+            self.queued_urls.add(cu)
+            canonical.append(cu)
+        logger.info(
+            f"{response.url.rsplit('/', 1)[-1]}: {len(urls)} urls, queued {len(canonical)}"
+        )
+        for url in canonical:
+            yield scrapy.Request(
+                url,
+                callback=self.parse_product,
+                meta={"impersonate": self.IMPERSONATE_PROFILE},
+                errback=self.errback,
+            )
 
     def parse_product(self, response):
-        """
-        Parse product page and extract relevant data.
-        """
-        # Initialize extractor with fallback selectors
-        extractor = SelectorExtractor(response, logger)
+        product = self._extract_product(response)
+        if not product:
+            logger.warning(f"no Product JSON-LD found at {response.url}")
+            return
+        offer = product.get("offers") or {}
+        if isinstance(offer, list):
+            offer = offer[0] if offer else {}
+        # WooCommerce ships price under offers[0].priceSpecification[0].price,
+        # not as a top-level offer.price.
+        price = offer.get("price")
+        currency = offer.get("priceCurrency")
+        if price is None:
+            specs = offer.get("priceSpecification") or []
+            if isinstance(specs, dict):
+                specs = [specs]
+            if specs:
+                price = specs[0].get("price")
+                currency = currency or specs[0].get("priceCurrency")
+        name = product.get("name")
+        if not (price and name):
+            return
+        brand = product.get("brand")
+        if isinstance(brand, dict):
+            brand = brand.get("name")
+        yield {
+            "product_id": str(product.get("sku") or product.get("@id") or response.url),
+            "product_name": str(name).strip()[:500],
+            "brand": brand,
+            "category": self._extract_category(response),
+            "price": str(price),
+            "currency": currency or self.currency,
+            "available": "InStock" in str(offer.get("availability") or ""),
+            "url": response.url,
+            "language": self.language,
+            "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
+        }
 
-        # Extract product information using fallback selectors
-        product_name = extractor.extract("product_name", self.SELECTORS["product_name"])
-        price = extractor.extract("price", self.SELECTORS["price"])
-        category = extractor.extract(
-            "category", self.SELECTORS["category"], method="getall"
-        )
-        product_id = extractor.extract("product_id", self.SELECTORS["product_id"])
-        url = response.url
-
-        if product_name and price:
-            yield {
-                "product_id": product_id,
-                "product_name": product_name,
-                "price": price,
-                "currency": self.currency,
-                "category": " > ".join(category) if category else None,
-                "url": url,
-                "scraped_at": response.headers.get("Date", "").decode("utf-8"),
-            }
-            logger.info(f"Scraped product: {product_name}")
-        else:
-            logger.warning(f"Could not extract product data from {response.url}")
-
-    def parse_start_url(self, response):
-        """
-        Parse the start URL to discover category links.
-        """
-        # Extract category links from homepage
-        category_links = response.css("a.category-link::attr(href)").getall()
-        for link in category_links:
-            yield scrapy.Request(
-                urljoin(response.url, link),
-                callback=self.parse_product,
-                dont_obey_robotstxt=False,
+    @staticmethod
+    def _extract_product(response):
+        for raw in response.xpath(
+            '//script[@type="application/ld+json"]/text()'
+        ).getall():
+            try:
+                data = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+            candidates = (
+                data.get("@graph")
+                if isinstance(data, dict) and "@graph" in data
+                else [data]
             )
+            for c in candidates:
+                if isinstance(c, dict) and c.get("@type") == "Product":
+                    return c
+        return None
+
+    @staticmethod
+    def _extract_category(response):
+        for raw in response.xpath(
+            '//script[@type="application/ld+json"]/text()'
+        ).getall():
+            try:
+                data = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+            candidates = (
+                data.get("@graph")
+                if isinstance(data, dict) and "@graph" in data
+                else [data]
+            )
+            for c in candidates:
+                if isinstance(c, dict) and c.get("@type") == "BreadcrumbList":
+                    crumbs = c.get("itemListElement") or []
+                    names = []
+                    for cr in crumbs:
+                        item = cr.get("item") if isinstance(cr, dict) else None
+                        if isinstance(item, dict) and item.get("name"):
+                            names.append(item["name"])
+                    if names:
+                        return " > ".join(names)
+        return None
+
+    def errback(self, failure):
+        logger.error(f"Request failed: {failure.request.url} — {failure.value!r}")

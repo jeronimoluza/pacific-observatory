@@ -1,0 +1,19 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: sg_sp_group_tariff
+module: eap.southeast_asia.singapore.sp_group_tariff
+function: fetch_sg_sp_group_tariff
+url: https://www.spgroup.com.sg/our-services/utilities/tariff-information
+language: en
+cadence: quarterly
+fallback_date: 2014-01-01
+notes: |
+  SP Group's Magnolia-hosted Historical Electricity Tariff.xlsx. The
+  "SPWebsite (without GST)" sheet has quarterly tariffs from 2014-Q1 to
+  current. We emit only the Low-Tension Domestic All-Units row (household
+  tariff, COICOP 04.5.1). High-tension and EHT supplies are commercial /
+  industrial and not in the PPP household basket. Rates are ¢/kWh ex-GST
+  in source; we divide by 100 to ship SGD/kWh.

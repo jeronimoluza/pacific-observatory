@@ -1,0 +1,19 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: deferred_gemini
+source_key: sg_singstat_arp
+module: eap.southeast_asia.singapore.singstat_arp
+function: fetch_sg_singstat_arp
+url: https://tablebuilder.singstat.gov.sg/table/TS/M213761
+language: en
+cadence: monthly
+fallback_date: 2015-01-01
+notes: |
+  SingStat Table M213761 — public TableBuilder JSON endpoint. Series list
+  must be fetched from /metadata then queried one-by-one via
+  ?seriesNoORrowNo=<id>; the bulk endpoint silently caps at 3 series.
+  Items carry an embedded "(Per <unit>)" suffix that becomes `unit`.
+  Pre- vs post-Jan-2024 prices use different CPI baskets (footnote
+  noted by SingStat) — Gemini classification downstream is per-row, so
+  the basket switch is harmless for COICOP tagging.

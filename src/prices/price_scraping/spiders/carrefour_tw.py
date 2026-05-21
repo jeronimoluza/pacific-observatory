@@ -45,10 +45,14 @@ class CarrefourTwSpider(scrapy.Spider):
             "scrapy_impersonate.middleware.RandomBrowserMiddleware": None,
             "price_scraping.middlewares.CustomUserAgentMiddleware": None,
         },
-        "CONCURRENT_REQUESTS_PER_DOMAIN": 16,
-        "CONCURRENT_REQUESTS": 32,
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 32,
+        "CONCURRENT_REQUESTS": 64,
         "DOWNLOAD_DELAY": 0,
         "RETRY_TIMES": 3,
+        # Global settings enable AutoThrottle with TARGET_CONCURRENCY=4, which
+        # capped the previous full run at ~170 items/min despite the higher
+        # CONCURRENT_REQUESTS_PER_DOMAIN. Site returns zero 429s — disable.
+        "AUTOTHROTTLE_ENABLED": False,
     }
 
     def __init__(self, *args, **kwargs):

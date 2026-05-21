@@ -1,0 +1,20 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+source_key: sg_singstat_cpi
+module: eap.southeast_asia.singapore.singstat_cpi
+function: fetch_sg_singstat_cpi
+url: https://tablebuilder.singstat.gov.sg/table/TS/M213751
+language: en
+cadence: monthly
+fallback_date: 1961-01-01
+notes: |
+  SingStat Table M213751 — public TableBuilder JSON. Singapore's CPI
+  grouping is 11 divisions, NOT COICOP-2018 13. Translation map lives
+  in the fetcher's _DIVISION_MAP. COICOP 02 (alcohol & tobacco) is
+  folded into SingStat's Misc bucket and is NOT separately reported —
+  intentionally uncovered. All-Items index (coicop_code=null) is also
+  emitted for headline-inflation use; downstream consumers filter on
+  presence of coicop_code.

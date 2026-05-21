@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1"]
+spider: batdongsan_vn
+url: https://batdongsan.com.vn/nha-dat-cho-thue
+language: vi
+cadence: weekly
+spider_kwargs:
+  max_pages: 25
+notes: |
+  Rental listings from batdongsan.com.vn — Vietnam's largest property
+  portal. Separate platform from the PropertyGuru family (SSR HTML, no
+  Next.js blob). COICOP 04.1.1.
+
+  Strategy: paginate /nha-dat-cho-thue/p<N> for the first `max_pages`
+  pages (~20 cards each). Default 25 pages → ~500 listings/run. The full
+  corpus is ~1,913 pages (~38k listings) at time of writing; bump
+  max_pages to enlarge the sample.
+
+  Card markup is `div.js__card.js__card-listing`. Prices use Vietnamese
+  units — `triệu` (million) and `tỷ` (billion) — with either dot or
+  comma as the decimal separator. The spider normalises everything to
+  integer VND.
+
+  Cloudflare bypass: curl_cffi `safari17_0` (NOT chrome120 — chrome120
+  hits a 403 + interactive challenge on the rental landing as of
+  2026-05-21; safari17_0 passes cleanly).
