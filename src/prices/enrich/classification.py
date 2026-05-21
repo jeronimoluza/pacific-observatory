@@ -177,7 +177,7 @@ def classify_products_with_gemini(
     coicop_categories_df: pd.DataFrame,
     existing_classifications: Optional[pd.DataFrame] = None,
     project_root: Optional[Path] = None,
-    batch_size: int = 2000,
+    batch_size: int = 600,
 ) -> pd.DataFrame:
     """
     Classify products using Gemini 3.0 Flash in batches.
@@ -247,7 +247,7 @@ def classify_products_with_gemini(
         # Call Gemini API
         try:
             model = genai.GenerativeModel("gemini-3.1-flash-lite")
-            response = model.generate_content(prompt)
+            response = model.generate_content(prompt, request_options={"timeout": 600})
             response_text = response.text
 
             # Parse CSV response
@@ -665,7 +665,7 @@ def reclassify_missing_classifications(
         # Call Gemini API
         try:
             model = genai.GenerativeModel("gemini-3.1-flash-lite")
-            response = model.generate_content(prompt)
+            response = model.generate_content(prompt, request_options={"timeout": 600})
             response_text = response.text
 
             # Parse CSV response
