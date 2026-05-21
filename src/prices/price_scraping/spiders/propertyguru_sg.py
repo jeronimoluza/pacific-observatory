@@ -21,6 +21,7 @@ this file once their card DOMs are mapped.
 
 from __future__ import annotations
 
+import json
 import logging
 import re
 from datetime import datetime, timezone
@@ -38,6 +39,7 @@ _PSF_RE = re.compile(r"S\$\s*([\d.]+)\s*psf", re.IGNORECASE)
 # (HDB-public vs private/condo respectively).
 _PDP_RE = re.compile(r"/listing/(?:([a-z]+)-)?for-rent-[a-z0-9-]+-(\d{6,})")
 _DISTRICT_PATH_RE = re.compile(r"/property-for-rent/in-[a-z0-9-]+-d\d{1,2}\b")
+_NEXT_DATA_RE = re.compile(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', re.DOTALL)
 
 
 class PropertyGuruSGSpider(scrapy.Spider):
@@ -48,6 +50,20 @@ class PropertyGuruSGSpider(scrapy.Spider):
 
     LANDING_URL = "https://www.propertyguru.com.sg/property-for-rent"
     IMPERSONATE_PROFILE = "chrome120"
+
+    # PDP enrichment fetches each card's listing page to extract lat/lng from
+    # __NEXT_DATA__.props.pageProps.pageData.data.listingLocationData.data.center.
+    # Concurrency=3 is the bench-validated ceiling (2026-05-21: 50 PDPs/site
+    # at c=3 ran clean across SG/MY/TH, zero CF challenges). 404/410 are
+    # normal terminal responses for delisted PDPs — accept them so
+    # parse_pdp can still emit the card-level item with lat=None.
+    custom_settings = {
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 3,
+        "DOWNLOAD_TIMEOUT": 30,
+        "RETRY_TIMES": 3,
+        "RETRY_HTTP_CODES": [500, 502, 503, 504, 408, 429, 403],
+        "HTTPERROR_ALLOWED_CODES": [404, 410],
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -87,10 +103,16 @@ class PropertyGuruSGSpider(scrapy.Spider):
         scraped_at = datetime.now(timezone.utc).isoformat()
         emitted = 0
         for card in cards:
-            item = self._parse_card(card, response.url, scraped_at)
-            if item is None:
+            result = self._parse_card(card, response.url, scraped_at)
+            if result is None:
                 continue
-            yield item
+            item, pdp_url = result
+            yield scrapy.Request(
+                pdp_url,
+                callback=self.parse_pdp,
+                errback=self.errback_pdp,
+                meta={"impersonate": self.IMPERSONATE_PROFILE, "item": item},
+            )
             emitted += 1
         logger.info(
             "page=%s cards=%d items=%d cumulative=%d",
@@ -100,7 +122,24 @@ class PropertyGuruSGSpider(scrapy.Spider):
             len(self.scraped_listing_ids),
         )
 
-    def _parse_card(self, card, base_url: str, scraped_at: str) -> dict | None:
+    def parse_pdp(self, response):
+        item = response.meta["item"]
+        item["pdp_status"] = response.status
+        if response.status == 200:
+            lat, lng = _extract_listing_center(response.text)
+            item["lat"] = lat
+            item["lng"] = lng
+        yield item
+
+    def errback_pdp(self, failure):
+        item = failure.request.meta.get("item")
+        logger.warning("PDP fetch failed: %s — %r", failure.request.url, failure.value)
+        if item is not None:
+            yield item
+
+    def _parse_card(
+        self, card, base_url: str, scraped_at: str
+    ) -> tuple[dict, str] | None:
         html = card.get()
 
         pdp_url: str | None = None
@@ -143,7 +182,7 @@ class PropertyGuruSGSpider(scrapy.Spider):
         ]
         product_name = ", ".join(p for p in name_parts if p)
 
-        return {
+        item = {
             "product_id": listing_id,
             "product_name": product_name[:500],
             "category": f"{prop_type}-for-rent",
@@ -151,10 +190,38 @@ class PropertyGuruSGSpider(scrapy.Spider):
             "currency": self.currency,
             "url": pdp_url,
             "language": self.language,
+            "lat": None,
+            "lng": None,
+            "pdp_status": None,
             "scraped_at_utc": scraped_at,
         }
+        return item, pdp_url
 
     def errback(self, failure):
-        logger.error(
-            "Request failed: %s — %r", failure.request.url, failure.value
-        )
+        logger.error("Request failed: %s — %r", failure.request.url, failure.value)
+
+
+def _extract_listing_center(html: str) -> tuple[float | None, float | None]:
+    """Walk __NEXT_DATA__ to the listing center. A regex over the raw HTML
+    is unsafe — PG PDPs embed school/MRT coords in the same JSON shape and
+    a first-match regex can return the nearest MRT station instead of the
+    listing (verified 2026-05-21 on SG listing 500145420)."""
+    m = _NEXT_DATA_RE.search(html)
+    if not m:
+        return None, None
+    try:
+        blob = json.loads(m.group(1))
+        center = blob["props"]["pageProps"]["pageData"]["data"]["listingLocationData"][
+            "data"
+        ]["center"]
+    except (KeyError, TypeError, json.JSONDecodeError):
+        return None, None
+    # PG renders center=null on listings that are mid-delisting; treat as
+    # "no coord available" rather than an error.
+    if not isinstance(center, dict):
+        return None, None
+    lat = center.get("lat")
+    lng = center.get("lng")
+    if isinstance(lat, (int, float)) and isinstance(lng, (int, float)):
+        return float(lat), float(lng)
+    return None, None
