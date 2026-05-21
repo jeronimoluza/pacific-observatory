@@ -134,6 +134,14 @@ def create_products_input_csv(
 
     print(f"✓ Prepared {len(df_products)} products")
 
+    # Sort oldest-first so dedup keeps the earliest observation per url_hash /
+    # product_w_cat, and Gemini batches process the oldest products first.
+    if "scraped_at_utc" in df_products.columns:
+        df_products = df_products.sort_values(
+            "scraped_at_utc", ascending=True, na_position="last", kind="stable"
+        )
+        print("✓ Sorted by scraped_at_utc ascending (oldest first)")
+
     # Select required columns
     required_cols = ["url_hash", "product_w_cat"]
     missing_cols = [col for col in required_cols if col not in df_products.columns]
@@ -238,8 +246,7 @@ def classify_products_with_gemini(
 
         # Call Gemini API
         try:
-            model = genai.GenerativeModel("gemini-3-flash-preview")
-            # model = genai.GenerativeModel("gemini-2.5-flash")
+            model = genai.GenerativeModel("gemini-3.1-flash-lite")
             response = model.generate_content(prompt)
             response_text = response.text
 
@@ -657,7 +664,7 @@ def reclassify_missing_classifications(
 
         # Call Gemini API
         try:
-            model = genai.GenerativeModel("gemini-3-flash-preview")
+            model = genai.GenerativeModel("gemini-3.1-flash-lite")
             response = model.generate_content(prompt)
             response_text = response.text
 
