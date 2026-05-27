@@ -1,26 +1,58 @@
 import click
 
+from prices.enrich import config
+from prices.enrich.stages import enrich as enrich_stage
+from prices.enrich.stages import merge as merge_stage
+from prices.enrich.stages import prepare as prepare_stage
+from prices.enrich.stages import taxonomy as taxonomy_stage
 
-@click.group(name="process")
-def process_group():
+STAGES = {
+    "prepare": prepare_stage.run,
+    "taxonomy": taxonomy_stage.run,
+    "enrich": enrich_stage.run,
+    "merge": merge_stage.run,
+}
+
+
+def _invalidate_for(stage: str | None) -> None:
+    if stage == "prepare" and config.PRODUCTS_INPUT_PARQUET.exists():
+        config.PRODUCTS_INPUT_PARQUET.unlink()
+    if stage == "taxonomy" and config.COICOP_SUBCATS_JSON.exists():
+        config.COICOP_SUBCATS_JSON.unlink()
+    if stage == "enrich":
+        for p in (config.ENRICHMENTS_PARQUET, config.FAILED_PARQUET):
+            if p.exists():
+                p.unlink()
+    # merge always overwrites the CSV; no invalidation needed.
+
+
+@click.command(name="process")
+@click.option(
+    "--stage",
+    type=click.Choice(list(STAGES.keys())),
+    default=None,
+    help="Run a single stage; omit to run all in order.",
+)
+@click.option(
+    "--rebuild",
+    is_flag=True,
+    help="Ignore caches for the chosen stage (DANGEROUS on enrich — full 430k pass).",
+)
+@click.option("-r", "--region", "region", default=None, hidden=True)
+@click.option("-S", "--subregion", "subregion", default=None, hidden=True)
+@click.option("-c", "--country", "country", default=None, hidden=True)
+def process_command(stage, rebuild, region, subregion, country):
     """AI enrichment pipeline (prepare → taxonomy → enrich → merge)."""
-
-
-@process_group.command()
-def prepare():
-    raise NotImplementedError  # Task 2.1
-
-
-@process_group.command()
-def taxonomy():
-    raise NotImplementedError  # Task 3.1
-
-
-@process_group.command()
-def enrich():
-    raise NotImplementedError  # Task 2.4
-
-
-@process_group.command()
-def merge():
-    raise NotImplementedError  # Task 5.1
+    if any([region, subregion, country]):
+        click.echo(
+            "warning: -r/-S/-c are accepted but ignored by prices process (global pipeline).",
+            err=True,
+        )
+    if rebuild:
+        _invalidate_for(stage)
+    if stage:
+        STAGES[stage]()
+    else:
+        for name in ["prepare", "taxonomy", "enrich", "merge"]:
+            click.echo(f"\n=== {name} ===")
+            STAGES[name]()

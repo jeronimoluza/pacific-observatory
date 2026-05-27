@@ -370,13 +370,7 @@ _register_text_storage(
 from prices.collect import collect as _prices_collect  # noqa: E402
 from prices.backfill import backfill_command as _prices_backfill  # noqa: E402
 from prices.cc_warc_fetcher import common_crawl_command as _prices_common_crawl  # noqa: E402
-
-
-@click.command(name="process")
-def _prices_process():
-    """Stub — being rewritten on the enrich-ai branch."""
-    raise SystemExit("prices process: rewrite in progress, no working CLI yet")
-
+from prices.enrich.cli import process_command as _prices_process  # noqa: E402
 
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
