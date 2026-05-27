@@ -23,3 +23,6 @@ Rules:
 - Cover the leaf's `includes` exhaustively. Group `also_includes` where natural.
 - Do NOT invent entries for things in `excludes`.
 - IDs are stable identifiers; do not include numerals unless intrinsic ("vitamin-c").
+- Each `synonyms` element is a single plain word or short phrase. Never embed
+  punctuation that looks like JSON syntax (no `[`, `]`, `{`, `}`, `"id":`, `"label":`).
+  Keep each synonym under ~40 characters. Prefer 3–8 synonyms per entry.

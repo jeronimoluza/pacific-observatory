@@ -27,6 +27,10 @@ def _load_food_depth4() -> dict[str, list[SubcategoryEntry]]:
 
     Each depth-3 parent (e.g. "01.1.1") gets entries built from depth-4 children
     (e.g. "01.1.1.1") plus the mandatory trailing "_other" escape hatch.
+
+    Parents with only ONE depth-4 child (e.g. "01.2.6" → just "01.2.6.0 (ND)") are
+    skipped here — a single-entry vocabulary provides no discrimination, so those
+    parents fall through to the AI sub-vocabulary path.
     """
     df = pd.read_excel(config.COICOP_XLSX)
     food = df[df["code"].astype(str).str.match(r"^01\.\d\.\d\.\d$", na=False)]
@@ -40,6 +44,7 @@ def _load_food_depth4() -> dict[str, list[SubcategoryEntry]]:
                 synonyms=[],
             )
         )
+    out = {k: v for k, v in out.items() if len(v) > 1}
     for entries in out.values():
         entries.append(SubcategoryEntry(id="_other", label="Other", synonyms=[]))
     return out
