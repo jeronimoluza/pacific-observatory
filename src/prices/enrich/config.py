@@ -12,7 +12,9 @@ RAW_PRICES_CSV = REPO_ROOT / "outputs" / "prices" / "all_countries_prices.csv"
 ENRICH_DIR = REPO_ROOT / "data" / "prices" / "_enrich"
 PRODUCTS_INPUT_PARQUET = ENRICH_DIR / "products_input.parquet"
 COICOP_XLSX = ENRICH_DIR / "coicop_categories.xlsx"
-COICOP_SUBCATS_JSON = ENRICH_DIR / "coicop_subcategories.json"
+COICOP_SUBCATS_JSON = (
+    Path(__file__).resolve().parent / "static" / "coicop_subcategories.json"
+)
 CACHE_DIR = ENRICH_DIR / "cache"
 ENRICHMENTS_PARQUET = CACHE_DIR / "enrichments.parquet"
 FAILED_PARQUET = CACHE_DIR / "_failed.parquet"
