@@ -18,9 +18,18 @@ from prices.enrich.versioning import (
 
 
 def _load_coicop_context() -> str:
+    subcats: dict[str, list[dict]] = {}
+    if config.COICOP_SUBCATS_JSON.exists():
+        subcats = json.loads(config.COICOP_SUBCATS_JSON.read_text())
     df = pd.read_excel(config.COICOP_XLSX)
     leaves = df[df["code"].astype(str).str.match(r"^\d{2}\.\d\.\d$", na=False)]
-    return "\n".join(f"{r.code} | {r.title}" for r in leaves.itertuples())
+    lines: list[str] = []
+    for r in leaves.itertuples():
+        lines.append(f"{r.code} | {r.title}")
+        for entry in subcats.get(r.code, []):
+            syns = ", ".join(entry.get("synonyms", [])[:4])
+            lines.append(f"  - {entry['id']} | {entry['label']} | synonyms: {syns}")
+    return "\n".join(lines)
 
 
 def _structured_input(row: pd.Series) -> dict:

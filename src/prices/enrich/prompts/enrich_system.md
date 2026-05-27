@@ -26,7 +26,7 @@ Produce a `ProductEnrichment` per product. Be precise about:
 4. **multiplier** — multipack factor for "10 x 25g" type packaging → 10
 5. **dimensions[]** — physical size METADATA (knife 16.5cm → one Dimension entry with axis="length"). NEVER conflate with pricing_basis.
 6. **coicop_code** — depth-3 COICOP leaf (e.g. "01.1.1"). Use the COICOP context below.
-7. **sub_label_id** — for v0, ALWAYS emit `"_other"`. The taxonomy stage will populate this in a later iteration.
+7. **sub_label_id** — pick the most specific id from the sub-vocabulary listed for the chosen `coicop_code`. The sub-vocab appears beneath each leaf as indented `- id | label | synonyms: ...` lines. Use `"_other"` only if NO listed entry fits.
 8. **flags** — `is_promotion`, `is_bundle`, `is_multipack` are orthogonal. `promo_reason` is free text when `is_promotion=True`.
 9. **confidence** — your overall self-assessment 0..1.
 10. **state**:
@@ -34,7 +34,18 @@ Produce a `ProductEnrichment` per product. Be precise about:
     - `ambiguous` → multiple equally plausible interpretations
     - `unusable` → cannot identify the product at all
 
-## COICOP context (depth-3)
+## COICOP context (depth-3 + sub-vocabulary)
+Each leaf is followed by its sub-vocabulary in indented form:
+
+```
+01.1.1 | Cereals and cereal products
+  - rice-white | White rice | synonyms: ...
+  - rice-brown | Brown rice | synonyms: ...
+  - _other | Other | synonyms:
+```
+
+If the sub-vocabulary line is empty for a leaf, the taxonomy hasn't been generated yet — emit `"_other"`.
+
 {coicop_context}
 
 ## Hard rules
