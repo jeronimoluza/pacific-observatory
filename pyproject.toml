@@ -20,6 +20,7 @@ dependencies = [
     "bs4 (>=0.0.2,<0.0.3)",
     "lxml (>=6.0.1,<7.0.0)",
     "playwright (>=1.40)",
+    "scrapy-impersonate (>=1.6.3,<2.0.0)",
 ]
 
 [project.scripts]
@@ -63,6 +64,7 @@ ancillary = [
 ]
 classification = [
     "google-generativeai (>=0.8.5,<0.9.0)",
+    "pydantic-ai (>=1.0.0)",
     "scikit-learn (>=1.7.2,<2.0.0)",
 ]
 plotting = [
@@ -78,7 +80,7 @@ testing = [
     "pytest (>=8.4.2,<9.0.0)",
     "anyio (>=4.11.0,<5.0.0)",
     "pytest-asyncio (>=1.2.0,<2.0.0)",
-    "pytest-httpx (>=0.30.0,<0.31.0)",
+    "pytest-httpx (>=0.35.0,<0.36.0)",
     "pytest-cov (>=4.1.0,<5.0.0)",
 ]
 
