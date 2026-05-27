@@ -97,3 +97,13 @@ logs/
 outputs/
 
 docs/plans
+
+# Local-only project skills (not committed)
+.claude/skills/refresh-all-regions/
+.claude/skills/refresh-fuel-dashboards/
+
+# prices/enrich runtime artifacts (cache + history)
+data/prices/_enrich/cache/
+data/prices/_enrich/eval_history.csv
+data/prices/_enrich/products_input.parquet
+data/prices/_enrich/products_input.csv
