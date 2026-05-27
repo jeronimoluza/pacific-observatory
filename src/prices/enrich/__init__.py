@@ -1,11 +1,3 @@
-"""
-COICOP classification package for price scraping data.
+"""AI-driven product enrichment pipeline (prepare → taxonomy → enrich → merge)."""
 
-This package provides tools for:
-- Loading and preparing price scraping data
-- Extracting quantities from product names
-- Classifying products with COICOP codes using Gemini AI
-- Merging and finalizing data for analysis
-"""
-
-__version__ = "0.1.0"
+__version__ = "1.0.0-dev"
