@@ -1,4 +1,4 @@
-.PHONY: help dev install lint fmt check ci test test-unit test-integration test-cov docs docs-open
+.PHONY: help dev install lint fmt check ci test test-unit test-integration test-cov eval docs docs-open
 
 export PYTHONPATH := src
 
@@ -69,6 +69,9 @@ test-integration: ## Run integration tests only
 
 test-cov: ## Run tests with HTML coverage report (htmlcov/index.html)
 	@poetry run pytest tests/ --cov=src --cov-report=html --cov-report=term-missing
+
+eval: ## Run enrich pipeline against eval_set.csv and append to eval_history.csv (requires GOOGLE_API_KEY)
+	@poetry run python scripts/run_eval.py
 
 # =============================================================================
 # Documentation
