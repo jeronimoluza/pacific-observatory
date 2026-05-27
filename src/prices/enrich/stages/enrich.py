@@ -103,18 +103,22 @@ async def _enrich_async(df: pd.DataFrame) -> None:
     async def worker(chunk: pd.DataFrame) -> None:
         inputs = [_structured_input(r) for _, r in chunk.iterrows()]
         async with sem:
-            result = await agent.run(json.dumps(inputs))
-            products = result.output.products
-            if len(products) != len(inputs):
-                raise RuntimeError(
-                    f"Length mismatch: {len(inputs)} in, {len(products)} out"
-                )
-            raw_text = str(getattr(result, "all_messages", lambda: "")())[:8000]
-            usage_fn = getattr(result, "usage", None)
-            tokens = usage_fn() if callable(usage_fn) else None
-            total_tokens = getattr(tokens, "total_tokens", 0) if tokens else 0
-            rows = _flatten_for_cache(inputs, products, raw_text, total_tokens)
-            cache.append_enrichments(rows)
+            try:
+                result = await agent.run(json.dumps(inputs))
+                products = result.output.products
+                if len(products) != len(inputs):
+                    raise RuntimeError(
+                        f"Length mismatch: {len(inputs)} in, {len(products)} out"
+                    )
+                raw_text = str(getattr(result, "all_messages", lambda: "")())[:8000]
+                usage_fn = getattr(result, "usage", None)
+                tokens = usage_fn() if callable(usage_fn) else None
+                total_tokens = getattr(tokens, "total_tokens", 0) if tokens else 0
+                rows = _flatten_for_cache(inputs, products, raw_text, total_tokens)
+                cache.append_enrichments(rows)
+            except Exception as batch_err:
+                for inp in inputs:
+                    await _enrich_single(agent, inp, batch_err)
 
     chunks = [
         df.iloc[i : i + config.BATCH_SIZE] for i in range(0, len(df), config.BATCH_SIZE)
@@ -123,7 +127,40 @@ async def _enrich_async(df: pd.DataFrame) -> None:
         await asyncio.gather(*(worker(c) for c in chunks))
 
 
+async def _enrich_single(agent: Agent, inp: dict, batch_err: Exception) -> None:
+    last_err: Exception | None = batch_err
+    for _ in range(config.OUTPUT_RETRIES):
+        try:
+            result = await agent.run(json.dumps([inp]))
+            products = result.output.products
+            if products:
+                raw = str(getattr(result, "all_messages", lambda: "")())[:8000]
+                usage_fn = getattr(result, "usage", None)
+                tokens = usage_fn() if callable(usage_fn) else None
+                ttok = getattr(tokens, "total_tokens", 0) if tokens else 0
+                rows = _flatten_for_cache([inp], products, raw, ttok)
+                cache.append_enrichments(rows)
+                return
+        except Exception as e:
+            last_err = e
+            continue
+    cache.append_failures(
+        [
+            {
+                "cache_key": cache_key(inp),
+                **inp,
+                "last_error": f"batch_err={batch_err}; last={last_err}",
+                "attempt_count": config.OUTPUT_RETRIES,
+                "failed_at": datetime.now(timezone.utc).isoformat(),
+            }
+        ]
+    )
+
+
 def run(input_parquet: Optional[Path] = None) -> None:
     input_parquet = input_parquet or config.PRODUCTS_INPUT_PARQUET
     df = pd.read_parquet(input_parquet)
     asyncio.run(_enrich_async(df))
+    pruned = cache.enforce_collision_invariant()
+    if pruned:
+        print(f"Pruned {pruned} cache_key(s) from _failed.parquet (now in enrichments)")
