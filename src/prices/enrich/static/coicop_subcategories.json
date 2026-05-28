@@ -9982,6 +9982,83 @@
       ]
     },
     {
+      "id": "napkin",
+      "label": "Napkin",
+      "synonyms": [
+        "serviette",
+        "cloth napkin",
+        "table napkin",
+        "dinner napkin",
+        "linen napkin"
+      ]
+    },
+    {
+      "id": "tea-towel",
+      "label": "Tea towel",
+      "synonyms": [
+        "kitchen towel",
+        "dishcloth",
+        "dish towel",
+        "tea cloth",
+        "drying cloth"
+      ]
+    },
+    {
+      "id": "tablecloth",
+      "label": "Tablecloth",
+      "synonyms": [
+        "table cloth",
+        "table cover",
+        "dining tablecloth",
+        "linen tablecloth",
+        "oilcloth table cover"
+      ]
+    },
+    {
+      "id": "place-mat",
+      "label": "Place mat",
+      "synonyms": [
+        "placemat",
+        "table mat",
+        "dining mat",
+        "setting mat",
+        "individual table mat"
+      ]
+    },
+    {
+      "id": "bath-towel",
+      "label": "Bath towel",
+      "synonyms": [
+        "hand towel",
+        "bath sheet",
+        "face towel",
+        "bath linen",
+        "towel"
+      ]
+    },
+    {
+      "id": "shower-curtain",
+      "label": "Shower curtain",
+      "synonyms": [
+        "bath curtain",
+        "bathroom curtain",
+        "plastic shower curtain",
+        "fabric shower curtain",
+        "shower drape"
+      ]
+    },
+    {
+      "id": "ironing-board-cover",
+      "label": "Ironing-board cover",
+      "synonyms": [
+        "ironing board cover",
+        "pressing board cover",
+        "iron board cover",
+        "ironing cover",
+        "board cover"
+      ]
+    },
+    {
       "id": "_other",
       "label": "Other",
       "synonyms": []
@@ -13749,6 +13826,105 @@
         "RAM",
         "memory module",
         "DDR memory"
+      ]
+    },
+    {
+      "id": "screen-protector",
+      "label": "Screen protector",
+      "synonyms": [
+        "tempered glass film",
+        "phone screen protector",
+        "screen guard",
+        "protective glass",
+        "display protector"
+      ]
+    },
+    {
+      "id": "phone-grip",
+      "label": "Phone grip",
+      "synonyms": [
+        "pop socket",
+        "phone pop socket",
+        "phone grip",
+        "mobile grip",
+        "phone ring holder"
+      ]
+    },
+    {
+      "id": "stylus",
+      "label": "Stylus",
+      "synonyms": [
+        "digital pen",
+        "touch pen",
+        "tablet pen",
+        "stylus pen",
+        "active pen"
+      ]
+    },
+    {
+      "id": "webcam",
+      "label": "Webcam",
+      "synonyms": [
+        "web camera",
+        "USB webcam",
+        "computer camera",
+        "video camera",
+        "external webcam"
+      ]
+    },
+    {
+      "id": "computer-mouse",
+      "label": "Computer mouse",
+      "synonyms": [
+        "mouse",
+        "wireless mouse",
+        "USB mouse",
+        "optical mouse",
+        "PC mouse"
+      ]
+    },
+    {
+      "id": "keyboard",
+      "label": "Keyboard",
+      "synonyms": [
+        "computer keyboard",
+        "PC keyboard",
+        "wireless keyboard",
+        "USB keyboard",
+        "typing keyboard"
+      ]
+    },
+    {
+      "id": "headphones",
+      "label": "Headphones",
+      "synonyms": [
+        "earphones",
+        "earbuds",
+        "headset",
+        "wireless earbuds",
+        "in-ear headphones"
+      ]
+    },
+    {
+      "id": "computer-speakers",
+      "label": "Computer speakers",
+      "synonyms": [
+        "PC speakers",
+        "desktop speakers",
+        "USB speakers",
+        "multimedia speakers",
+        "speaker set"
+      ]
+    },
+    {
+      "id": "wireless-router",
+      "label": "Wireless router",
+      "synonyms": [
+        "Wi-Fi router",
+        "wifi router",
+        "internet router",
+        "network router",
+        "wireless modem router"
       ]
     },
     {
@@ -18699,6 +18875,127 @@
       ]
     },
     {
+      "id": "shampoo",
+      "label": "Shampoo",
+      "synonyms": [
+        "hair shampoo",
+        "shampoo wash",
+        "anti-dandruff shampoo",
+        "baby shampoo",
+        "shampoo bottle"
+      ]
+    },
+    {
+      "id": "hair-conditioner",
+      "label": "Hair conditioner",
+      "synonyms": [
+        "conditioner",
+        "conditioning rinse",
+        "leave-in conditioner",
+        "cream rinse",
+        "hair conditioner"
+      ]
+    },
+    {
+      "id": "facial-cleanser",
+      "label": "Facial cleanser",
+      "synonyms": [
+        "face wash",
+        "facial foam",
+        "cleansing foam",
+        "facial wash",
+        "face cleanser"
+      ]
+    },
+    {
+      "id": "facial-toner",
+      "label": "Facial toner",
+      "synonyms": [
+        "micellar water",
+        "facial toner",
+        "face toner",
+        "toner water",
+        "cleansing water"
+      ]
+    },
+    {
+      "id": "body-lotion",
+      "label": "Body lotion",
+      "synonyms": [
+        "moisturizer",
+        "skin cream",
+        "body moisturizer",
+        "moisturising lotion",
+        "skincare cream"
+      ]
+    },
+    {
+      "id": "baby-wipes",
+      "label": "Baby wipes",
+      "synonyms": [
+        "wet wipes",
+        "baby wipes",
+        "nappy wipes",
+        "infant wipes",
+        "moist wipes"
+      ]
+    },
+    {
+      "id": "menstrual-products",
+      "label": "Menstrual products",
+      "synonyms": [
+        "sanitary pads",
+        "sanitary towels",
+        "tampons",
+        "menstrual pads",
+        "period pads"
+      ]
+    },
+    {
+      "id": "cotton-buds-pads",
+      "label": "Cotton buds and pads",
+      "synonyms": [
+        "cotton buds",
+        "cotton swabs",
+        "cotton pads",
+        "cotton rounds",
+        "makeup pads"
+      ]
+    },
+    {
+      "id": "lip-balm",
+      "label": "Lip balm",
+      "synonyms": [
+        "lip balm",
+        "chapstick",
+        "lip salve",
+        "lip moisturizer",
+        "lip care stick"
+      ]
+    },
+    {
+      "id": "hand-cream",
+      "label": "Hand cream",
+      "synonyms": [
+        "hand cream",
+        "hand lotion",
+        "hand moisturizer",
+        "hand balm",
+        "hand salve"
+      ]
+    },
+    {
+      "id": "body-wash",
+      "label": "Body wash",
+      "synonyms": [
+        "shower gel",
+        "body wash",
+        "bath gel",
+        "shower cream",
+        "liquid body soap"
+      ]
+    },
+    {
       "id": "_other",
       "label": "Other",
       "synonyms": []
@@ -19215,6 +19512,72 @@
         "casket",
         "funeral coffin",
         "burial casket"
+      ]
+    },
+    {
+      "id": "baby-pacifier",
+      "label": "Baby pacifier",
+      "synonyms": [
+        "dummy",
+        "soother",
+        "baby dummy",
+        "infant pacifier",
+        "comforter teat"
+      ]
+    },
+    {
+      "id": "baby-teether",
+      "label": "Baby teether",
+      "synonyms": [
+        "teething ring",
+        "teether",
+        "baby teething toy",
+        "teething toy",
+        "gum soother"
+      ]
+    },
+    {
+      "id": "baby-bib",
+      "label": "Baby bib",
+      "synonyms": [
+        "bib",
+        "baby bib",
+        "feeding bib",
+        "infant bib",
+        "dribble bib"
+      ]
+    },
+    {
+      "id": "walking-stick",
+      "label": "Walking stick",
+      "synonyms": [
+        "cane",
+        "walking cane",
+        "mobility cane",
+        "walking stick",
+        "support cane"
+      ]
+    },
+    {
+      "id": "key-ring",
+      "label": "Key ring",
+      "synonyms": [
+        "keychain",
+        "key chain",
+        "key holder",
+        "key fob",
+        "keyring"
+      ]
+    },
+    {
+      "id": "eyeglass-case",
+      "label": "Eyeglass case",
+      "synonyms": [
+        "glasses case",
+        "spectacle case",
+        "sunglasses case",
+        "eyewear case",
+        "specs case"
       ]
     },
     {

@@ -1,13 +1,13 @@
 eval_id,pricing_basis,amount_value,standard_unit,count,multiplier,dimensions_json,coicop_code,sub_label_id,is_promotion,is_bundle,is_multipack,promo_reason,state,label_notes
-eval_0030,volume,0.33,lt,,,[],13.1.2.0,_other,False,False,False,,resolved,"'&' is brand name (Head & Shoulders), not a bundle. Sub-vocab for 13.1.2.0 has no shampoo entry — gap to flag."
+eval_0030,volume,0.33,lt,,,[],13.1.2.0,shampoo,False,False,False,,resolved,"'&' is brand name (Head & Shoulders), not a bundle. Head & Shoulders is shampoo."
 eval_0014,mass,0.5,kg,,,[],01.1.2.5.1,fresh-sausages,False,False,False,,resolved,'&' is conjunction in product name.
-eval_0023,volume,0.1,lt,,2,[],13.1.2.0,_other,False,False,True,,resolved,Twin Pack = multipack of 2 identical units. Cicaplast Baume is skincare; sub-vocab has no balm/skincare-cream entry.
+eval_0023,volume,0.1,lt,,2,[],13.1.2.0,body-lotion,False,False,True,,resolved,Twin Pack = multipack of 2 identical units. Cicaplast Baume is a skincare cream/balm.
 eval_0021,mass,0.048,kg,,48,[],01.1.1.3.9,sweet-biscuits,False,False,True,,resolved,"48 PACK x 48g = 48 identical biscuits at 48g each. 'Bundle pack' here is colloquial multipack, not COICOP bundle."
 eval_0011,item,,item,,,[],13.1.1.1,_other,True,False,False,50% off coupon + free shipping banners in title,resolved,Japanese: UV/LED nail lamp = electric personal-care appliance. '【全品半額coupon】' = 50% off coupon promo. Promo banners do not change product identity.
 eval_0047,item,,item,,12,[],09.2.1.2,toy-vehicle,False,False,True,,resolved,'12 in 1' = 12 toy cars in 1 pack — multipack of 12. Dimensions regex falsely matched '12 in' as inches.
 eval_0050,mass,0.04,kg,,2,[],01.1.8.5.1,chocolate-bar,False,False,True,,resolved,"'BUNDLE PACK 2 X 40 GR' = multipack of 2 chocolate bars at 40g each. 'Bundle pack' is retailer term, not COICOP bundle (homogeneous items)."
 eval_0085,count,,unit,20,,"[{""value"":0.7,""unit"":""mm"",""axis"":""diameter""},{""value"":75,""unit"":""mm"",""axis"":""length""}]",09.7.4.0,pencil,False,False,False,,resolved,"Vietnamese: 20 pencil-lead refills, each 75mm long × 0.7mm diameter. Pricing basis = count of 20 leads."
-eval_0053,item,,item,,,"[{""value"":34,""unit"":""cm"",""axis"":""width""},{""value"":100,""unit"":""cm"",""axis"":""length""}]",05.2.1.9,_other,False,False,False,,ambiguous,'Serbet' = serviette/napkin (Indonesian). 34×100 cm dims suggest large napkin or tea-towel. Sub-vocab has no napkin entry.
+eval_0053,item,,item,,,"[{""value"":34,""unit"":""cm"",""axis"":""width""},{""value"":100,""unit"":""cm"",""axis"":""length""}]",05.2.1.9,napkin,False,False,False,,ambiguous,'Serbet' = serviette/napkin (Indonesian). 34×100 cm dims — large cloth napkin or runner. State remains ambiguous on basis (could also be small tablecloth).
 eval_0086,item,,item,,,"[{""value"":10,""unit"":""cm"",""axis"":""width""},{""value"":11.5,""unit"":""cm"",""axis"":""height""}]",09.7.4.0,wrapping-paper,False,False,False,,ambiguous,Vietnamese: gift bag 10×11.5 cm. Wrapping-paper is closest sub-vocab entry; could also map to 05.2.1.9.
 eval_0089,count,,unit,12,,[],05.2.1.9,_other,False,False,False,,ambiguous,"'Dushvorhang' = shower curtain (German). 'x12' likely means 12 curtain rings/hooks, but could be 12 curtains. No matching sub-vocab entry."
 eval_0102,item,,item,,,[],11.1.1.2,takeaway-meal,False,False,False,,resolved,'Animal Fries' = restaurant menu item with PICKUP indicator → takeaway from a limited-service eatery.
@@ -15,10 +15,10 @@ eval_0114,item,,item,,,[],09.7.1.1,dictionary,False,False,False,,resolved,Vietna
 eval_0092,item,,item,,,[],13.2.9.1,travel-bag,False,False,False,,resolved,Travel bag / luggage.
 eval_0101,item,,item,,,[],01.1.7.9.4,frozen-chips,False,False,False,,ambiguous,Robinsons-brand french fries. No size info — could be frozen retail pack or restaurant item; defaulting to frozen-chips retail.
 eval_0131,count,,unit,15,,[],06.1.1.1,vitamins,False,False,False,,resolved,Omega-3 DHA gummies for kids. '15S' = 15 servings → count.
-eval_0126,volume,0.3,lt,,,[],13.1.2.0,_other,False,False,False,,resolved,Indonesian: Head & Shoulders anti-dandruff shampoo 300ml. Sub-vocab has no shampoo entry.
+eval_0126,volume,0.3,lt,,,[],13.1.2.0,shampoo,False,False,False,,resolved,Indonesian: Head & Shoulders anti-dandruff shampoo 300ml.
 eval_0154,item,,item,,,[],09.7.1.1,school-textbook,False,False,False,,resolved,Vietnamese language-learning textbook (Chinese characters in 3 months).
-eval_0148,volume,0.1183,lt,,2,[],13.1.2.0,soap,False,False,True,,resolved,"Thai: facial foam cleanser, 4 fl oz (~0.118 L), Pack 2 = multipack of 2. Sub-vocab has no facial-cleanser; soap is closest."
-eval_0129,item,,item,,,[],08.1.9.2,_other,False,False,False,,resolved,"Japanese: iPhone glass screen protector, listing many compatible models. Belongs under ICT accessories (08.1.9.2); no screen-protector entry in sub-vocab."
+eval_0148,volume,0.1183,lt,,2,[],13.1.2.0,facial-cleanser,False,False,True,,resolved,"Thai: facial foam cleanser, 4 fl oz (~0.118 L), Pack 2 = multipack of 2."
+eval_0129,item,,item,,,[],08.1.9.2,screen-protector,False,False,False,,resolved,"Japanese: iPhone glass screen protector, listing many compatible models."
 eval_0177,mass,0.25,kg,,,[],01.1.2.2.1,_other,False,False,False,,resolved,Grass-fed beef trimmings 250g. Doesn't fit steak/roast/ground/ribs/veal sub-entries.
 eval_0203,mass,0.0041,kg,,,[],13.1.2.0,makeup,False,False,False,,resolved,Cathy Doll concealer 4.1g — cosmetic.
 eval_0204,mass,0.006,kg,,,[],13.1.2.0,lipstick,False,False,False,,resolved,In2It gel tint 6g — lip/cheek color. Closest sub-vocab entry is lipstick.
@@ -30,11 +30,11 @@ eval_0230,item,,item,,,[],05.4.0.3,kitchen-utensils,False,False,False,,resolved,
 eval_0256,item,,item,,,"[{""value"":100,""unit"":""cm"",""axis"":""width""},{""value"":140,""unit"":""cm"",""axis"":""length""}]",05.1.1.4,rug,False,False,False,,resolved,Japanese rug 100×140 cm (1-tatami).
 eval_0266,count,,unit,10,,[],06.1.1.1,pain-relief,False,False,False,,resolved,"Ibuprofen 200mg, 10 capsules. '200 mg' is per-capsule dose, not pricing basis. mg can't be expressed in Dimension schema (mm/cm/m/in/ft only) — omitted."
 eval_0328,item,,item,,,[],09.7.1.9,nonfiction-book,False,False,False,,resolved,Chinese: book on traditional Chinese medicine theory.
-eval_0338,volume,0.25,lt,,,[],13.1.2.0,_other,False,False,False,,resolved,Thai: Bioderma Hydrabio H2O 250ml — micellar water cleanser. Sub-vocab lacks micellar-water/face-cleanser entry.
+eval_0338,volume,0.25,lt,,,[],13.1.2.0,facial-toner,False,False,False,,resolved,Thai: Bioderma Hydrabio H2O 250ml — micellar water (facial-toner family).
 eval_0342,item,,item,,,[],09.7.1.9,fiction-book,False,False,False,,resolved,Vinland Saga manga volume 1 — fiction.
 eval_0307,mass,0.015,kg,,10,[],06.1.1.2,traditional-medicine,False,False,True,,resolved,"Chinese: Shenshi Tong granules, 15g sachets × 10 = multipack. Traditional Chinese medicine."
 eval_0334,mass,0.005,kg,,10,[],06.1.1.1,vitamins,False,False,True,,resolved,"Thai: collagen-glutathione powder, 5g sachets × 10 = multipack."
-eval_0390,mass,0.12,kg,,2,[],13.1.2.0,soap,True,True,True,Buy 2 Senka Perfect Whip + free Senka Milky Water,resolved,Real promo: 2 of cleanser + 1 free bonus product. is_promotion + is_bundle (heterogeneous bonus) + is_multipack (2 of the main).
+eval_0390,mass,0.12,kg,,2,[],13.1.2.0,facial-cleanser,True,True,True,Buy 2 Senka Perfect Whip + free Senka Milky Water,resolved,Real promo: 2 of facial cleanser (Senka Perfect Whip) + 1 free Senka Milky Water (toner). is_promotion + is_bundle (heterogeneous bonus) + is_multipack (2 of the main).
 eval_0349,volume,0.75,lt,,,[],01.1.6.9.9,fruit-jam,False,False,False,,resolved,"FALSE-POSITIVE TRAP: 'Gluten Free' is dietary label, not promotion. Closest sub-vocab is fruit-jam (puree)."
 eval_0396,volume,1.0,lt,,,[],01.1.4.3.9,lactose-free-milk,False,False,False,,resolved,"FALSE-POSITIVE TRAP: 'Lactose Free' is dietary label, not promotion."
 eval_0380,count,,unit,110,,[],06.1.1.1,vitamins,False,False,False,,resolved,FALSE-POSITIVE TRAP: '95% Sugar Free' is a nutrition claim. '110s' = 110 gummies.
@@ -48,4 +48,4 @@ eval_0471,volume,1.0,lt,,12,[],01.2.5.0.0,bottled-water,False,False,True,,resolv
 eval_0489,volume,0.355,lt,,,[],01.2.6.0.0,cola,False,False,False,,resolved,Dr Pepper Cherry 355ml soft drink (cola family).
 eval_0481,volume,0.1,lt,,,[],09.3.2.2,pet-veterinary-supply,True,True,False,Bundled SMACK raw pet food samples (25g x 2),resolved,Chinese: pet milk-thistle supplement 100ml + bundled free pet food samples = bundle + promotion.
 eval_0497,volume,1.0,lt,,,[],01.1.8.6.0,ice-cream,False,False,False,,resolved,"Strawberry ice cream, 1L tub."
-eval_0453,item,,item,,,[],13.2.9.1,_other,False,False,False,,resolved,"Pigeon baby bottle 240ml capacity — pricing is per item (the bottle), 240ml is the capacity. Sub-vocab has no baby-bottle entry."
+eval_0453,item,,item,,,[],05.4.0.3,_other,False,False,False,,resolved,"Pigeon baby bottle 240ml capacity. 13.2.9.1 explicitly EXCLUDES feeding bottles (per COICOP includes/excludes); baby bottles belong to 05.4.0.3 (Kitchen utensils). 240ml is capacity, not contents. Sub-vocab 05.4.0.3 lacks a baby-bottle entry — flag for next gapfill round."
