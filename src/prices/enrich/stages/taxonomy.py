@@ -7,47 +7,42 @@ import pandas as pd
 from pydantic_ai import Agent
 
 from prices.enrich import config
-from prices.enrich.schemas import LeafSubcategories, SubcategoryEntry
+from prices.enrich.schemas import LeafSubcategories
 
 
-def _load_leaves() -> pd.DataFrame:
-    """Return depth-3 COICOP leaves (codes matching '^\\d{2}\\.\\d\\.\\d$')."""
-    df = pd.read_excel(config.COICOP_XLSX)
-    return df[df["code"].astype(str).str.match(r"^\d{2}\.\d\.\d$", na=False)]
+def _clean_text(value) -> str:
+    if pd.isna(value):
+        return ""
+    return str(value).replace("_x000D_", "").strip()
 
 
 def _split_field(value) -> list[str]:
     if pd.isna(value):
         return []
-    return [s.strip() for s in str(value).split(";") if s.strip()]
+    raw = str(value).replace("_x000D_", "\n")
+    parts: list[str] = []
+    for chunk in raw.replace(";", "\n").splitlines():
+        s = chunk.lstrip("*").strip()
+        if s:
+            parts.append(s)
+    return parts
 
 
-def _load_food_depth4() -> dict[str, list[SubcategoryEntry]]:
-    """Division 01 (food): use official depth-4 leaves as the sub_label_id vocabulary.
+def _load_leaves() -> pd.DataFrame:
+    """Return the deepest-available COICOP leaves.
 
-    Each depth-3 parent (e.g. "01.1.1") gets entries built from depth-4 children
-    (e.g. "01.1.1.1") plus the mandatory trailing "_other" escape hatch.
-
-    Parents with only ONE depth-4 child (e.g. "01.2.6" → just "01.2.6.0 (ND)") are
-    skipped here — a single-entry vocabulary provides no discrimination, so those
-    parents fall through to the AI sub-vocabulary path.
+    A leaf is any code in the xlsx that no other code uses as a prefix. In
+    COICOP 2018 this resolves to a mix of depth-4 (no depth-5 children) and
+    depth-5 entries — yielding the most specific node available per branch.
     """
     df = pd.read_excel(config.COICOP_XLSX)
-    food = df[df["code"].astype(str).str.match(r"^01\.\d\.\d\.\d$", na=False)]
-    out: dict[str, list[SubcategoryEntry]] = {}
-    for _, row in food.iterrows():
-        parent = ".".join(str(row["code"]).split(".")[:3])
-        out.setdefault(parent, []).append(
-            SubcategoryEntry(
-                id=str(row["code"]).replace(".", "-"),
-                label=str(row["title"]),
-                synonyms=[],
-            )
-        )
-    out = {k: v for k, v in out.items() if len(v) > 1}
-    for entries in out.values():
-        entries.append(SubcategoryEntry(id="_other", label="Other", synonyms=[]))
-    return out
+    df = df[df["code"].notna()].copy()
+    df["code"] = df["code"].astype(str)
+    codes = set(df["code"])
+    is_leaf = df["code"].apply(
+        lambda c: not any(other != c and other.startswith(c + ".") for other in codes)
+    )
+    return df[is_leaf].reset_index(drop=True)
 
 
 def _build_agent() -> Agent:
@@ -62,8 +57,8 @@ def _build_agent() -> Agent:
 async def _ask_leaf(agent: Agent, leaf_row: pd.Series) -> LeafSubcategories:
     payload = {
         "coicop_code": str(leaf_row["code"]),
-        "title": str(leaf_row.get("title", "")),
-        "intro": "" if pd.isna(leaf_row.get("intro")) else str(leaf_row["intro"]),
+        "title": _clean_text(leaf_row.get("title")),
+        "intro": _clean_text(leaf_row.get("intro")),
         "includes": _split_field(leaf_row.get("includes")),
         "also_includes": _split_field(leaf_row.get("alsoIncludes")),
         "excludes": _split_field(leaf_row.get("excludes")),
@@ -74,10 +69,6 @@ async def _ask_leaf(agent: Agent, leaf_row: pd.Series) -> LeafSubcategories:
 
 async def _run_async() -> dict:
     leaves = _load_leaves()
-    food = _load_food_depth4()
-    food_parents = set(food.keys())
-    nonfood = leaves[~leaves["code"].isin(food_parents)]
-
     agent = _build_agent()
     sem = asyncio.Semaphore(config.CONCURRENCY)
 
@@ -95,15 +86,8 @@ async def _run_async() -> dict:
                     {"id": "_other", "label": "Other", "synonyms": []}
                 ]
 
-    results = await asyncio.gather(*(fetch(r) for _, r in nonfood.iterrows()))
-
-    out: dict[str, list[dict]] = {}
-    for code, entries in results:
-        out[code] = entries
-    for code, entries in food.items():
-        out[code] = [e.model_dump() for e in entries]
-
-    return out
+    results = await asyncio.gather(*(fetch(r) for _, r in leaves.iterrows()))
+    return {code: entries for code, entries in results}
 
 
 def run(out_path: Optional[Path] = None) -> dict:

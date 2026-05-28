@@ -22,10 +22,20 @@ def _load_coicop_context() -> str:
     if config.COICOP_SUBCATS_JSON.exists():
         subcats = json.loads(config.COICOP_SUBCATS_JSON.read_text())
     df = pd.read_excel(config.COICOP_XLSX)
-    leaves = df[df["code"].astype(str).str.match(r"^\d{2}\.\d\.\d$", na=False)]
+    df = df[df["code"].notna()].copy()
+    df["code"] = df["code"].astype(str)
+    codes = set(df["code"])
+    df = df[
+        df["code"].apply(
+            lambda c: not any(
+                other != c and other.startswith(c + ".") for other in codes
+            )
+        )
+    ]
     lines: list[str] = []
-    for r in leaves.itertuples():
-        lines.append(f"{r.code} | {r.title}")
+    for r in df.itertuples():
+        title = str(r.title).replace("_x000D_", "").strip()
+        lines.append(f"{r.code} | {title}")
         for entry in subcats.get(r.code, []):
             syns = ", ".join(entry.get("synonyms", [])[:4])
             lines.append(f"  - {entry['id']} | {entry['label']} | synonyms: {syns}")
