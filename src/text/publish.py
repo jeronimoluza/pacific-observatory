@@ -248,8 +248,119 @@ def _build_dashboard_json(units: list) -> dict:
     return data
 
 
+_ID_COLS = ["date", "ym", "region", "subregion", "unit_slug", "level", "label"]
+
+
+def _stack_family(units: list, family_filename: str) -> pd.DataFrame:
+    """Read one EPU-family CSV (epu/topics_epu/actors_epu) across units, stacked."""
+    rows = []
+    for u in units:
+        path = u["output_dir"] / "epu" / family_filename
+        if not path.exists():
+            continue
+        df = pd.read_csv(path, encoding="utf-8")
+        df["region"] = u["region"]
+        df["subregion"] = u["subregion"]
+        df["unit_slug"] = u["slug"]
+        df["level"] = u["level"]
+        df["label"] = u["label"]
+        rows.append(df)
+    if not rows:
+        return pd.DataFrame()
+    return pd.concat(rows, ignore_index=True, sort=False)
+
+
+def _front_id_cols(df: pd.DataFrame) -> pd.DataFrame:
+    front = [c for c in _ID_COLS if c in df.columns]
+    rest = [c for c in df.columns if c not in front]
+    return df[front + rest]
+
+
+def _export_region_panel(region: str, units: list) -> Path:
+    """Write outputs/text/dashboard_data/<region>/<region>.{json,csv,xlsx,dta}.
+
+    JSON: hierarchical dashboard payload (same shape as the global JSON,
+    scoped to this region). CSV/DTA: long-on-unit, wide-on-index panel
+    merging EPU + topics + actors. XLSX: one sheet per family plus a
+    combined ``panel`` sheet.
+    """
+    region_dir = DASHBOARD_DATA_DIR / region
+    region_dir.mkdir(parents=True, exist_ok=True)
+
+    region_json = region_dir / f"{region}.json"
+    with open(region_json, "w", encoding="utf-8") as f:
+        json.dump(_build_dashboard_json(units), f, indent=2, default=str)
+
+    epu_df = _stack_family(units, "epu.csv")
+    topics_df = _stack_family(units, "topics_epu.csv")
+    actors_df = _stack_family(units, "actors_epu.csv")
+
+    if epu_df.empty and topics_df.empty and actors_df.empty:
+        return region_json
+
+    merged: pd.DataFrame | None = None
+    for df in (epu_df, topics_df, actors_df):
+        if df.empty:
+            continue
+        if merged is None:
+            merged = df.copy()
+            continue
+        merge_keys = [c for c in _ID_COLS if c in merged.columns and c in df.columns]
+        new_cols = merge_keys + [c for c in df.columns if c not in merged.columns]
+        merged = merged.merge(df[new_cols], on=merge_keys, how="outer")
+
+    merged = (
+        _front_id_cols(merged)
+        .sort_values(["unit_slug", "date"], kind="stable")
+        .reset_index(drop=True)
+    )
+
+    csv_path = region_dir / f"{region}.csv"
+    merged.to_csv(csv_path, index=False, encoding="utf-8")
+
+    dta_path = region_dir / f"{region}.dta"
+    dta_df = merged.copy()
+    dta_df["date"] = pd.to_datetime(dta_df["date"], errors="coerce")
+    for c in dta_df.select_dtypes(include="object").columns:
+        dta_df[c] = dta_df[c].fillna("").astype(str)
+    dta_df.to_stata(dta_path, write_index=False, version=118)
+
+    xlsx_path = region_dir / f"{region}.xlsx"
+    with pd.ExcelWriter(xlsx_path, engine="openpyxl") as xw:
+        for sheet, df in (
+            ("epu", epu_df),
+            ("topics", topics_df),
+            ("actors", actors_df),
+        ):
+            if df.empty:
+                continue
+            _front_id_cols(df).to_excel(xw, sheet_name=sheet, index=False)
+        _front_id_cols(merged).to_excel(xw, sheet_name="panel", index=False)
+
+    return region_json
+
+
+def _render_fcp_dashboard(region: str, region_json: Path) -> Path | None:
+    """Render the regional Fuel Crisis Policy + EPU HTML if an addon exists."""
+    from text.plotting.small_dashboard_integrated_w_policy import (
+        available_regions,
+        generate_dashboard_from_json,
+    )
+
+    if region not in available_regions():
+        return None
+    return generate_dashboard_from_json(region_json, region)
+
+
 def run_publish(region=None, subregion=None, country=None):
-    """Build dashboard_data.json and generate EPU dashboards."""
+    """Build dashboard_data.json, per-region panels, and EPU dashboards.
+
+    Always writes the global ``outputs/text/dashboard_data/dashboard_data.json``
+    and renders the basic integrated HTML. When the scope covers full
+    regions (no ``--subregion``/``--country`` filter), also writes per-region
+    ``outputs/text/dashboard_data/<region>/<region>.{json,csv,xlsx,dta}`` and
+    renders the regional Fuel Crisis Policy HTML where an addon exists.
+    """
     units = _discover_units(region=region, subregion=subregion, country=country)
 
     click.echo()
@@ -293,47 +404,27 @@ def run_publish(region=None, subregion=None, country=None):
     except Exception as e:
         click.echo(f"  Dashboard generation failed: {e}")
 
+    if subregion or country:
+        click.echo(
+            "  Skipping per-region panels and Fuel Crisis Policy dashboards "
+            "(scope is narrower than a full region)."
+        )
+        return
 
-def run_publish_special(region: str):
-    """Build the per-region Fuel Crisis Policy + EPU dashboard for ``region``.
-
-    Builds (or refreshes) a region-scoped
-    ``outputs/text/dashboard_data/dashboard_data_{region}.json``
-    from current outputs and renders the dashboard HTML.
-    """
-    from text.plotting.small_dashboard_integrated_w_policy import (
-        available_regions,
-        generate_dashboard_from_json,
-    )
-
-    click.echo()
-    click.echo("  Text publish-special (regional Fuel Crisis Policy dashboard)")
-    click.echo("  " + "-" * 40)
-
-    regions = available_regions()
-    if region not in regions:
-        raise click.ClickException(
-            f"No Fuel Crisis Policy addon for region '{region}'. "
-            f"Available: {', '.join(regions) or '(none)'}"
+    regions_in_scope = sorted({u["region"] for u in units})
+    for rgn in regions_in_scope:
+        rgn_units = [u for u in units if u["region"] == rgn]
+        click.echo(f"  Building {rgn}/ panel from outputs/text/...")
+        region_json = _export_region_panel(rgn, rgn_units)
+        click.echo(
+            f"  Written: {(region_json.parent).relative_to(PROJECT_ROOT)}/"
+            f"{rgn}.{{json,csv,xlsx,dta}}"
         )
 
-    region_json = DASHBOARD_DATA_DIR / f"dashboard_data_{region}.json"
-
-    click.echo(f"  Region: {region}")
-    click.echo(f"  Building {region_json.name} from outputs/text/...")
-    units = _discover_units(region=region)
-    if not units:
-        raise click.ClickException(
-            f"No units with EPU data found for region '{region}'. "
-            f"Run 'po text build --region {region}' first."
-        )
-    DASHBOARD_DATA_DIR.mkdir(parents=True, exist_ok=True)
-    with open(region_json, "w", encoding="utf-8") as f:
-        json.dump(_build_dashboard_json(units), f, indent=2, default=str)
-    click.echo(f"  Written: {region_json.relative_to(PROJECT_ROOT)}")
-
-    try:
-        out_path = generate_dashboard_from_json(region_json, region)
-    except (FileNotFoundError, ValueError) as exc:
-        raise click.ClickException(str(exc))
-    click.echo(f"  Written: {out_path.relative_to(PROJECT_ROOT)}")
+        try:
+            fcp_html = _render_fcp_dashboard(rgn, region_json)
+        except (FileNotFoundError, ValueError) as exc:
+            click.echo(f"  Fuel Crisis Policy dashboard for {rgn}: {exc}")
+            continue
+        if fcp_html is not None:
+            click.echo(f"  Written: {fcp_html.relative_to(PROJECT_ROOT)}")

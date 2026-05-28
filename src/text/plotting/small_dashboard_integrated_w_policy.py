@@ -1405,7 +1405,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--json",
         default=None,
-        help="Path to dashboard_data.json (default: outputs/text/dashboard_data/dashboard_data.json)",
+        help="Path to dashboard JSON (default: outputs/text/dashboard_data/<region>/<region>.json)",
     )
     args = parser.parse_args()
 
@@ -1414,7 +1414,12 @@ if __name__ == "__main__":
         Path(args.json)
         if args.json
         else (
-            project_root / "outputs" / "text" / "dashboard_data" / "dashboard_data.json"
+            project_root
+            / "outputs"
+            / "text"
+            / "dashboard_data"
+            / args.region
+            / f"{args.region}.json"
         )
     )
     if not json_path.exists():
