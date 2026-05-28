@@ -1405,7 +1405,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--json",
         default=None,
-        help="Path to dashboard_data.json (default: outputs/text/dashboard_data.json)",
+        help="Path to dashboard_data.json (default: outputs/text/dashboard_data/dashboard_data.json)",
     )
     args = parser.parse_args()
 
@@ -1413,7 +1413,9 @@ if __name__ == "__main__":
     json_path = (
         Path(args.json)
         if args.json
-        else (project_root / "outputs" / "text" / "dashboard_data.json")
+        else (
+            project_root / "outputs" / "text" / "dashboard_data" / "dashboard_data.json"
+        )
     )
     if not json_path.exists():
         raise SystemExit(

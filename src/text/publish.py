@@ -8,7 +8,8 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "text"
-DASHBOARD_JSON = OUTPUT_DIR / "dashboard_data.json"
+DASHBOARD_DATA_DIR = OUTPUT_DIR / "dashboard_data"
+DASHBOARD_JSON = DASHBOARD_DATA_DIR / "dashboard_data.json"
 
 
 def _discover_units(region=None, subregion=None, country=None):
@@ -273,7 +274,7 @@ def run_publish(region=None, subregion=None, country=None):
     click.echo("  Building dashboard_data.json...")
     dashboard = _build_dashboard_json(units)
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    DASHBOARD_DATA_DIR.mkdir(parents=True, exist_ok=True)
     with open(DASHBOARD_JSON, "w", encoding="utf-8") as f:
         json.dump(dashboard, f, indent=2, default=str)
 
@@ -296,7 +297,8 @@ def run_publish(region=None, subregion=None, country=None):
 def run_publish_special(region: str):
     """Build the per-region Fuel Crisis Policy + EPU dashboard for ``region``.
 
-    Builds (or refreshes) a region-scoped ``outputs/text/dashboard_data_{region}.json``
+    Builds (or refreshes) a region-scoped
+    ``outputs/text/dashboard_data/dashboard_data_{region}.json``
     from current outputs and renders the dashboard HTML.
     """
     from text.plotting.small_dashboard_integrated_w_policy import (
@@ -315,7 +317,7 @@ def run_publish_special(region: str):
             f"Available: {', '.join(regions) or '(none)'}"
         )
 
-    region_json = OUTPUT_DIR / f"dashboard_data_{region}.json"
+    region_json = DASHBOARD_DATA_DIR / f"dashboard_data_{region}.json"
 
     click.echo(f"  Region: {region}")
     click.echo(f"  Building {region_json.name} from outputs/text/...")
@@ -325,7 +327,7 @@ def run_publish_special(region: str):
             f"No units with EPU data found for region '{region}'. "
             f"Run 'po text build --region {region}' first."
         )
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    DASHBOARD_DATA_DIR.mkdir(parents=True, exist_ok=True)
     with open(region_json, "w", encoding="utf-8") as f:
         json.dump(_build_dashboard_json(units), f, indent=2, default=str)
     click.echo(f"  Written: {region_json.relative_to(PROJECT_ROOT)}")

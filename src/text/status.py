@@ -90,7 +90,7 @@ def compute_text_status() -> dict:
 
     last_built_at = epu_latest_mtime.strftime("%Y-%m-%d") if epu_latest_mtime else None
 
-    dash_data = OUTPUTS_BASE / "dashboard_data.json"
+    dash_data = OUTPUTS_BASE / "dashboard_data" / "dashboard_data.json"
     dash_html = OUTPUTS_BASE / "small_dashboard_integrated.html"
     dash_data_exists = dash_data.exists()
     dash_html_exists = dash_html.exists()

@@ -71,6 +71,15 @@ CPI_DATA_ROOT = PROJECT_ROOT / "data" / "cpi"
 EPU_DATA_ROOT = PROJECT_ROOT / "outputs" / "text"
 TOPICS = ["inflation", "job"]
 
+
+def _country_output_dir(country: str, leaf: str) -> Path:
+    """Resolve outputs/text/<region>/<subregion>/<country>/<leaf>/ for a country slug."""
+    from core.config import get_country_path
+
+    region, subregion, _ = get_country_path(country)
+    return EPU_DATA_ROOT / region / subregion / country / leaf
+
+
 TRAIN_COUNTRIES = [
     "china",
     "fiji",
@@ -443,7 +452,7 @@ if __name__ == "__main__":
         )
 
         # Create output directory
-        output_dir = PROJECT_ROOT / "outputs" / "text" / country / "lasso_preds"
+        output_dir = _country_output_dir(country, "lasso_preds")
         output_dir.mkdir(parents=True, exist_ok=True)
 
         # Save predictions
@@ -631,7 +640,7 @@ if __name__ == "__main__":
         )
 
         # Create output directory
-        output_dir = PROJECT_ROOT / "outputs" / "text" / country / "lasso_preds_oob"
+        output_dir = _country_output_dir(country, "lasso_preds_oob")
         output_dir.mkdir(parents=True, exist_ok=True)
 
         # Save predictions

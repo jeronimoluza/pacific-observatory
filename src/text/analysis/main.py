@@ -36,6 +36,7 @@ from src.text.analysis.utils import load_all_groups  # noqa: E402
 PROJECT_ROOT = _PROJECT_ROOT
 DATA_ROOT = PROJECT_ROOT / "data" / "text"
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "text"
+REPORTS_DIR = OUTPUT_DIR / "reports"
 CACHE_DIR = PROJECT_ROOT / "data" / "text" / "cache"
 TEXT_CONFIGS_DIR = PROJECT_ROOT / "src" / "text" / "configs"
 
@@ -957,7 +958,7 @@ def run_analysis(
                 articles_done_completed += unit_articles.get(unit["name"], 0)
 
     summary.render_to_stdout(console)
-    report_path = summary.write_markdown(OUTPUT_DIR)
+    report_path = summary.write_markdown(REPORTS_DIR)
     console.print(f"Build report written to {report_path}")
     logger.info("build report written to %s", report_path)
 
