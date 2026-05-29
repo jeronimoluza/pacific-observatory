@@ -1,12 +1,12 @@
 ---
 name: update-fuel-crisis-policy
-description: "Update the regional Fuel Crisis Policy trackers and regenerate the per-region addon dashboards that feed `po text publish-special`. Trigger when the user wants to refresh policy data for EAP / ECA / MENAAP / SAR / LAC / SSA, asks to 'update the policy tracker', references `data/text/policy_tracker/<region>.xlsx`, or wants to publish the Fuel Crisis Policy + EPU dashboard for a region. Orchestrates: (1) research-driven workbook updates per `references/master_prompt.md` (per-country search, two-part demand-reduction typology, SAR excludes AFG/PAK, EAP includes the 12-PIC view), (2) `po text build-policy-addons --region <r>` to convert workbooks into HTML addons under `src/text/plotting/addons/`, (3) `po text publish-special --region <r>` to render the final tabbed dashboard. Stops after publish — does NOT modify any other pipeline state."
+description: "Update the regional Fuel Crisis Policy trackers and regenerate the per-region addon dashboards that feed `po text publish`. Trigger when the user wants to refresh policy data for EAP / ECA / MENAAP / SAR / LAC / SSA, asks to 'update the policy tracker', references `data/text/policy_tracker/<region>.xlsx`, or wants to publish the Fuel Crisis Policy + EPU dashboard for a region. Orchestrates: (1) research-driven workbook updates per `references/master_prompt.md` (per-country search, two-part demand-reduction typology, SAR excludes AFG/PAK, EAP includes the 12-PIC view), (2) `po text build-policy-addons --region <r>` to convert workbooks into HTML addons under `src/text/plotting/addons/`, (3) `po text publish --region <r>` to render the final tabbed dashboard. Stops after publish — does NOT modify any other pipeline state."
 ---
 
 # Update Fuel Crisis Policy
 
 Refresh the regional Fuel Crisis Policy trackers and rebuild the standalone
-HTML dashboards that the `publish-special` command embeds as iframe srcdoc.
+HTML dashboards that the `publish` command embeds as iframe srcdoc.
 
 ## When this skill applies
 
@@ -32,8 +32,8 @@ po text build-policy-addons --region <r>
 src/text/plotting/addons/<region>_fuel_crisis_policy_dashboard.html
    |
    v
-po text publish-special --region <r>
-   |  (orchestrator: src/text/publish.py:run_publish_special)
+po text publish --region <r>
+   |  (orchestrator: src/text/publish.py:run_publish)
    v
 outputs/text/dashboards/<region>_policy_dashboard.html
 ```
@@ -88,12 +88,12 @@ under `errors`, and the per-region HTML mtime is fresh
 ## Step 3 — Publish
 
 ```bash
-poetry run po text publish-special --region <r>
+poetry run po text publish --region <r>
 ```
 
-This calls `src/text/publish.py:run_publish_special`, which:
+This calls `src/text/publish.py:run_publish`, which (for each region in scope):
 1. Discovers EPU units for the region.
-2. Writes `outputs/text/dashboard_data_<region>.json`.
+2. Writes `outputs/text/dashboard_data/<region>/<region>.{json,csv,xlsx,dta}`.
 3. Loads the addon HTML from step 2 via
    `src/text/plotting/small_dashboard_integrated_w_policy.py:_load_addon_html`.
 4. Composes the final four-tab dashboard:
