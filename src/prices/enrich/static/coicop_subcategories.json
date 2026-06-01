@@ -3356,7 +3356,10 @@
         "lactose-free milk",
         "lactose free dairy milk",
         "low lactose milk",
-        "digestive milk"
+        "digestive milk",
+        "lactose free milk",
+        "lactose intolerant milk",
+        "lf milk"
       ]
     },
     {
@@ -8144,7 +8147,12 @@
         "Coca-Cola",
         "Pepsi",
         "Diet Cola",
-        "Zero sugar cola"
+        "Zero sugar cola",
+        "Dr. Pepper",
+        "Dr Pepper",
+        "root beer",
+        "cherry cola",
+        "RC Cola"
       ]
     },
     {
@@ -15618,7 +15626,15 @@
       "synonyms": [
         "flea treatment",
         "dewormer",
-        "pet medicine"
+        "pet medicine",
+        "pet supplement",
+        "pet vitamins",
+        "pet herbal supplement",
+        "milk thistle for pets",
+        "pet liver tonic",
+        "pet wellness",
+        "獸醫補品",
+        "pet medicine supplement"
       ]
     },
     {
@@ -16822,7 +16838,16 @@
       "synonyms": [
         "novel",
         "paperback novel",
-        "story book"
+        "story book",
+        "manga",
+        "comic",
+        "comic book",
+        "graphic novel",
+        "light novel",
+        "漫畫",
+        "漫画",
+        "truyện tranh",
+        "ライトノベル"
       ]
     },
     {
@@ -16831,7 +16856,15 @@
       "synonyms": [
         "nonfiction title",
         "reference book",
-        "general book"
+        "general book",
+        "non-fiction",
+        "non fiction",
+        "scholarly book",
+        "academic book",
+        "非小說",
+        "非小说",
+        "sách phi hư cấu",
+        "ノンフィクション"
       ]
     },
     {
@@ -17129,7 +17162,10 @@
       "synonyms": [
         "gift wrap",
         "gift paper",
-        "wrap paper"
+        "wrap paper",
+        "paper bag",
+        "gift bag",
+        "túi giấy"
       ]
     },
     {
@@ -18844,7 +18880,11 @@
       "synonyms": [
         "lip colour",
         "lipstick tube",
-        "lip makeup"
+        "lip makeup",
+        "lip tint",
+        "gel tint",
+        "lip gloss",
+        "lip stain"
       ]
     },
     {
@@ -19394,7 +19434,10 @@
       "synonyms": [
         "duffel bag",
         "weekend bag",
-        "overnight bag"
+        "overnight bag",
+        "travelling bag",
+        "traveling bag",
+        "travel bag"
       ]
     },
     {
