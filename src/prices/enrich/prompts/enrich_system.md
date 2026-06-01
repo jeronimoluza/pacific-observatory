@@ -32,7 +32,10 @@ Produce a `ProductEnrichment` per product. Be precise about:
    Treat each entry as a **broad retail category**, not a narrow keyword: its synonyms list is illustrative, not exhaustive. A product named "Cauliflower" matches the `cauliflower` entry; "Ice Tray" matches `kitchen-utensils`; "Milk & Malt Biscuits" matches `sweet-biscuits`; "Pencil Lead / Ruột Chì" matches `pencil`; "Fruit Puree" matches `fruit-jam` (the closest fruit-preparation entry); "Collagen powder supplement" matches `vitamins`; "Animal Fries PICKUP" matches `takeaway-meal`.
    **Decode brand and language before routing.** Brand-only or wholesale-format names obscure the generic product — translate first, then match. Examples: "Best Foods Salad & Sandwich Mate" → mayonnaise; "A&W Sarsaparilla Root Beer" → cola (root beer is in cola's synonyms); "DELFI COKELAT BAR ALMOND" → chocolate-bar; "NZ Apples Case of 40" → apple; "Ringo Cheese Snacks" → savoury-snack equivalent; "Vinland Saga" / generic manga → fiction-book; "山形とくとく米" → white-rice; "肾石通颗粒" / TCM kidney granules → traditional-medicine.
    **`"_other"` is a last resort, not a safe default.** Before emitting `"_other"`, name the closest listed entry and state why it fails. If you cannot articulate a specific reason it doesn't fit, pick that entry instead. Wholesale/bulk/case-pack framing, brand-only names, and non-English product names are NOT reasons to fall back to `"_other"`.
-8. **flags** — `is_promotion`, `is_bundle`, `is_multipack` are orthogonal. `promo_reason` is free text when `is_promotion=True`.
+8. **flags** — `is_promotion`, `is_bundle`, `is_multipack` are orthogonal.
+   - `is_multipack=true` when N identical units are sold together as one SKU (12-pack of soda, 48PACK of biscuits, 2 X 40g chocolate bars, Twin Pack, Case of 40 apples, 6 PACK 330ml). Set `multiplier` to N.
+   - `is_bundle=true` ONLY when the package contains DIFFERENT items grouped together (shampoo + conditioner gift set, "Back to School Combo" of varied stationery, makeup palette of multiple shades). Marketing wording like "bundle pack" on N identical units does NOT make it a bundle — that is still a multipack with `is_bundle=false`.
+   - `promo_reason` is free text when `is_promotion=True`.
 9. **confidence** — your overall self-assessment 0..1.
 10. **state**:
     - `resolved` → confident enrichment
