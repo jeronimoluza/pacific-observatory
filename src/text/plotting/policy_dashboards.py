@@ -141,9 +141,6 @@ FIELD_ALIASES = {
         "Label",
         "Policy label",
         "Policy Label",
-        "Category",
-        "Policy category",
-        "Policy Category",
         "Dashboard label",
         "Dashboard Label",
         "Type",
@@ -153,6 +150,22 @@ FIELD_ALIASES = {
         "Response category",
         "Broad category",
         "Classification",
+    ],
+    "category": [
+        "Category",
+        "Policy category",
+        "Policy Category",
+        "v6_category",
+        "V6 category",
+    ],
+    "subcategory": [
+        "Subcategory",
+        "Sub-category",
+        "Sub category",
+        "Policy subcategory",
+        "Policy Subcategory",
+        "v6_subcategory",
+        "V6 subcategory",
     ],
     "date_status": [
         "Active or Proposed Date",
@@ -631,6 +644,8 @@ def normalize_row(raw: Dict[str, str], seq_num: int) -> Optional[Dict[str, str]]
         "Policy": policy,
         "Policy Description": description,
         "Label": label,
+        "Category": find_value(raw, "category"),
+        "Subcategory": find_value(raw, "subcategory"),
         "Active or Proposed Date": status_date,
         "Source": source,
         "Source URL": source_url,
@@ -1219,12 +1234,32 @@ def generate_region(
         f"  included rows: {len(rows)}; excluded rows: {excluded}; countries/economies: {len({r['Country'] for r in rows})}"
     )
 
-    data, colors = build_dashboard_data(
-        rows, region_cfg, workbook, sheet_name, excluded
+    from text.plotting.policy_dashboards_v6 import (
+        build_v6_dashboard_data,
+        has_v6_columns,
+        make_v6_html,
     )
-    html = make_html(data, colors, chart_title=chart_title)
+
     output_dir.mkdir(parents=True, exist_ok=True)
     out_path = output_dir / f"{key}_fuel_crisis_policy_dashboard.html"
+
+    if has_v6_columns(rows):
+        print("  taxonomy: v6 (Category + Subcategory)")
+        groups = build_country_groups(rows, region_cfg)
+        display_names = build_display_names(sort_countries_by_count(rows))
+        data, colors = build_v6_dashboard_data(
+            rows, region_cfg, workbook, sheet_name, excluded, groups, display_names
+        )
+        html = make_v6_html(data, chart_title=chart_title)
+        labels_summary = data["categories"]
+    else:
+        print("  taxonomy: legacy Label")
+        data, colors = build_dashboard_data(
+            rows, region_cfg, workbook, sheet_name, excluded
+        )
+        html = make_html(data, colors, chart_title=chart_title)
+        labels_summary = data["labels"]
+
     out_path.write_text(html, encoding="utf-8")
     print(f"  wrote: {out_path}")
     return {
@@ -1235,7 +1270,7 @@ def generate_region(
         "included_rows": len(rows),
         "excluded_rows": excluded,
         "countries": len({r["Country"] for r in rows}),
-        "labels": data["labels"],
+        "labels": labels_summary,
     }
 
 
