@@ -1405,7 +1405,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--json",
         default=None,
-        help="Path to dashboard JSON (default: outputs/text/dashboard_data/<region>/<region>.json)",
+        help="Path to dashboard JSON (default: outputs/text/dashboard_data/json/<region>.json)",
     )
     args = parser.parse_args()
 
@@ -1418,7 +1418,7 @@ if __name__ == "__main__":
             / "outputs"
             / "text"
             / "dashboard_data"
-            / args.region
+            / "json"
             / f"{args.region}.json"
         )
     )

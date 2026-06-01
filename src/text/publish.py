@@ -277,17 +277,21 @@ def _front_id_cols(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _export_region_panel(region: str, units: list) -> Path:
-    """Write outputs/text/dashboard_data/<region>/<region>.{json,csv,xlsx,dta}.
+    """Write outputs/text/dashboard_data/{json,csv,xlsx,dta}/<region>.<ext>.
 
     JSON: hierarchical dashboard payload (same shape as the global JSON,
     scoped to this region). CSV/DTA: long-on-unit, wide-on-index panel
     merging EPU + topics + actors. XLSX: one sheet per family plus a
     combined ``panel`` sheet.
     """
-    region_dir = DASHBOARD_DATA_DIR / region
-    region_dir.mkdir(parents=True, exist_ok=True)
+    json_dir = DASHBOARD_DATA_DIR / "json"
+    csv_dir = DASHBOARD_DATA_DIR / "csv"
+    xlsx_dir = DASHBOARD_DATA_DIR / "xlsx"
+    dta_dir = DASHBOARD_DATA_DIR / "dta"
+    for d in (json_dir, csv_dir, xlsx_dir, dta_dir):
+        d.mkdir(parents=True, exist_ok=True)
 
-    region_json = region_dir / f"{region}.json"
+    region_json = json_dir / f"{region}.json"
     with open(region_json, "w", encoding="utf-8") as f:
         json.dump(_build_dashboard_json(units), f, indent=2, default=str)
 
@@ -315,17 +319,17 @@ def _export_region_panel(region: str, units: list) -> Path:
         .reset_index(drop=True)
     )
 
-    csv_path = region_dir / f"{region}.csv"
+    csv_path = csv_dir / f"{region}.csv"
     merged.to_csv(csv_path, index=False, encoding="utf-8")
 
-    dta_path = region_dir / f"{region}.dta"
+    dta_path = dta_dir / f"{region}.dta"
     dta_df = merged.copy()
     dta_df["date"] = pd.to_datetime(dta_df["date"], errors="coerce")
     for c in dta_df.select_dtypes(include="object").columns:
         dta_df[c] = dta_df[c].fillna("").astype(str)
     dta_df.to_stata(dta_path, write_index=False, version=118)
 
-    xlsx_path = region_dir / f"{region}.xlsx"
+    xlsx_path = xlsx_dir / f"{region}.xlsx"
     with pd.ExcelWriter(xlsx_path, engine="openpyxl") as xw:
         for sheet, df in (
             ("epu", epu_df),
@@ -358,7 +362,7 @@ def run_publish(region=None, subregion=None, country=None):
     Always writes the global ``outputs/text/dashboard_data/dashboard_data.json``
     and renders the basic integrated HTML. When the scope covers full
     regions (no ``--subregion``/``--country`` filter), also writes per-region
-    ``outputs/text/dashboard_data/<region>/<region>.{json,csv,xlsx,dta}`` and
+    ``outputs/text/dashboard_data/{json,csv,xlsx,dta}/<region>.<ext>`` and
     renders the regional Fuel Crisis Policy HTML where an addon exists.
     """
     units = _discover_units(region=region, subregion=subregion, country=country)
@@ -417,8 +421,8 @@ def run_publish(region=None, subregion=None, country=None):
         click.echo(f"  Building {rgn}/ panel from outputs/text/...")
         region_json = _export_region_panel(rgn, rgn_units)
         click.echo(
-            f"  Written: {(region_json.parent).relative_to(PROJECT_ROOT)}/"
-            f"{rgn}.{{json,csv,xlsx,dta}}"
+            f"  Written: {DASHBOARD_DATA_DIR.relative_to(PROJECT_ROOT)}/"
+            f"{{json,csv,xlsx,dta}}/{rgn}.<ext>"
         )
 
         try:
