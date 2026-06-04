@@ -2138,6 +2138,18 @@
       ]
     },
     {
+      "id": "tuna",
+      "label": "Tuna",
+      "synonyms": [
+        "tuna",
+        "maguro",
+        "まぐろ",
+        "マグロ",
+        "鮪",
+        "本マグロ"
+      ]
+    },
+    {
       "id": "_other",
       "label": "Other",
       "synonyms": []
@@ -4399,6 +4411,18 @@
         "fresh jackfruit",
         "nangka",
         "jack fruit"
+      ]
+    },
+    {
+      "id": "citrus-fruit",
+      "label": "Citrus Fruit",
+      "synonyms": [
+        "citrus fruit",
+        "orange",
+        "ponkan",
+        "mikan",
+        "pomelo",
+        "蜜柑"
       ]
     },
     {
@@ -7537,6 +7561,66 @@
       ]
     },
     {
+      "id": "savoury-snack",
+      "label": "Savoury Snack",
+      "synonyms": [
+        "savoury snack",
+        "salty snack",
+        "chips",
+        "crisps",
+        "corn snack",
+        "cheese snack"
+      ]
+    },
+    {
+      "id": "sweet-dessert",
+      "label": "Sweet Dessert",
+      "synonyms": [
+        "sweet dessert",
+        "pastry",
+        "cake",
+        "tart",
+        "tikoy",
+        "甜點"
+      ]
+    },
+    {
+      "id": "prepared-food-gift-set",
+      "label": "Prepared Food Gift Set",
+      "synonyms": [
+        "food gift set",
+        "snack hamper",
+        "combo pack",
+        "gift hamper",
+        "詰め合わせ",
+        "禮盒"
+      ]
+    },
+    {
+      "id": "instant-soup-noodle",
+      "label": "Instant Soup And Noodles",
+      "synonyms": [
+        "instant soup",
+        "freeze dried soup",
+        "ramen kit",
+        "miso soup",
+        "お茶漬け",
+        "スープ"
+      ]
+    },
+    {
+      "id": "prepared-meat-dish",
+      "label": "Prepared Meat Dish",
+      "synonyms": [
+        "prepared meat dish",
+        "hamburger steak",
+        "roast meat",
+        "chicken snack",
+        "meat appetizer",
+        "惣菜"
+      ]
+    },
+    {
       "id": "_other",
       "label": "Other",
       "synonyms": []
@@ -7714,6 +7798,86 @@
       "synonyms": [
         "pico de gallo",
         "tomato salsa"
+      ]
+    },
+    {
+      "id": "salad-dressing",
+      "label": "Salad Dressing",
+      "synonyms": [
+        "dressing",
+        "sesame dressing",
+        "caesar dressing",
+        "thousand island dressing",
+        "ドレッシング",
+        "和風たまねぎドレッシング"
+      ]
+    },
+    {
+      "id": "barbecue-sauce",
+      "label": "Barbecue Sauce",
+      "synonyms": [
+        "bbq sauce",
+        "barbeque sauce",
+        "bbq truffle sauce",
+        "spicy bbq sauce",
+        "chipotle sauce"
+      ]
+    },
+    {
+      "id": "dessert-syrup",
+      "label": "Dessert Syrup",
+      "synonyms": [
+        "chocolate sauce",
+        "caramel syrup",
+        "flavoured syrup",
+        "flavored syrup",
+        "dessert topping"
+      ]
+    },
+    {
+      "id": "seasoning-condiment",
+      "label": "Seasoning Condiment",
+      "synonyms": [
+        "liquid seasoning",
+        "seasoning powder",
+        "chicken seasoning",
+        "gia vị",
+        "peleza rasa ayam",
+        "savor seasoning"
+      ]
+    },
+    {
+      "id": "pickled-condiment",
+      "label": "Pickled Condiment",
+      "synonyms": [
+        "pickle relish",
+        "lime pickle",
+        "capers",
+        "chutney",
+        "pickled relish"
+      ]
+    },
+    {
+      "id": "sandwich-spread",
+      "label": "Sandwich Spread",
+      "synonyms": [
+        "sandwich spread",
+        "savory spread",
+        "savoury spread",
+        "vegemite",
+        "spread"
+      ]
+    },
+    {
+      "id": "asian-condiment-sauce",
+      "label": "Asian Condiment Sauce",
+      "synonyms": [
+        "fish sauce",
+        "oyster sauce",
+        "hoisin sauce",
+        "ssamjang",
+        "nước mắm",
+        "patis"
       ]
     },
     {
@@ -9715,6 +9879,90 @@
       ]
     },
     {
+      "id": "office-chair",
+      "label": "Office Chair",
+      "synonyms": [
+        "office chair",
+        "computer chair",
+        "ergonomic chair",
+        "desk chair",
+        "辦公椅",
+        "電腦椅"
+      ]
+    },
+    {
+      "id": "floor-chair-recliner",
+      "label": "Floor Chair Recliner",
+      "synonyms": [
+        "floor chair",
+        "recliner chair",
+        "座椅子",
+        "座いす",
+        "調整椅",
+        "reclining chair"
+      ]
+    },
+    {
+      "id": "tv-stand",
+      "label": "TV Stand",
+      "synonyms": [
+        "tv stand",
+        "tv board",
+        "tv cabinet",
+        "tv mount",
+        "テレビ台",
+        "電視櫃"
+      ]
+    },
+    {
+      "id": "storage-cabinet",
+      "label": "Storage Cabinet",
+      "synonyms": [
+        "storage cabinet",
+        "side cabinet",
+        "kitchen cabinet",
+        "mirror cabinet",
+        "收納櫃",
+        "櫃"
+      ]
+    },
+    {
+      "id": "clothes-shoe-rack",
+      "label": "Clothes And Shoe Rack",
+      "synonyms": [
+        "shoe rack",
+        "clothes rack",
+        "coat rack",
+        "hanger rack",
+        "鞋架",
+        "吊衣架"
+      ]
+    },
+    {
+      "id": "furniture-cushion",
+      "label": "Furniture Cushion",
+      "synonyms": [
+        "seat cushion",
+        "sofa cushion",
+        "lumbar cushion",
+        "pillow",
+        "靠墊",
+        "坐墊"
+      ]
+    },
+    {
+      "id": "side-table-stand",
+      "label": "Side Table And Stand",
+      "synonyms": [
+        "side table",
+        "night table",
+        "tablet stand",
+        "small stand",
+        "サイドテーブル",
+        "支架"
+      ]
+    },
+    {
       "id": "_other",
       "label": "Other",
       "synonyms": []
@@ -9925,6 +10173,18 @@
       ]
     },
     {
+      "id": "bed-protector-pad",
+      "label": "Bed Protector Pad",
+      "synonyms": [
+        "bed pad",
+        "mattress pad",
+        "waterproof bed pad",
+        "bed protector",
+        "保潔墊",
+        "床墊"
+      ]
+    },
+    {
       "id": "_other",
       "label": "Other",
       "synonyms": []
@@ -10064,6 +10324,42 @@
         "iron board cover",
         "ironing cover",
         "board cover"
+      ]
+    },
+    {
+      "id": "bath-mat",
+      "label": "Bath Mat",
+      "synonyms": [
+        "bath mat",
+        "bathmat",
+        "showermat",
+        "shower mat",
+        "diatomite mat",
+        "吸水地墊"
+      ]
+    },
+    {
+      "id": "door-curtain",
+      "label": "Door Curtain",
+      "synonyms": [
+        "door curtain",
+        "doorway curtain",
+        "門簾",
+        "noren",
+        "long curtain",
+        "風水簾"
+      ]
+    },
+    {
+      "id": "mattress-topper",
+      "label": "Mattress Topper",
+      "synonyms": [
+        "mattress topper",
+        "folding mattress",
+        "soft mattress",
+        "床墊",
+        "軟床墊",
+        "涼感墊"
       ]
     },
     {
@@ -10276,6 +10572,54 @@
       "id": "food-dehydrator",
       "label": "Food dehydrator",
       "synonyms": []
+    },
+    {
+      "id": "electric-cooking-pot",
+      "label": "Electric Cooking Pot",
+      "synonyms": [
+        "electric hot pot",
+        "multi cooker",
+        "rice cooker",
+        "ceramic cooker",
+        "電火鍋",
+        "料理鍋"
+      ]
+    },
+    {
+      "id": "dish-sterilizer-dryer",
+      "label": "Dish Sterilizer Dryer",
+      "synonyms": [
+        "dish dryer",
+        "uv sterilizer",
+        "bottle sterilizer",
+        "烘碗機",
+        "殺菌機",
+        "殺菌烘乾機"
+      ]
+    },
+    {
+      "id": "kitchen-scale",
+      "label": "Kitchen Scale",
+      "synonyms": [
+        "cooking scale",
+        "food scale",
+        "nutrition scale",
+        "digital kitchen scale",
+        "料理秤",
+        "キッチンスケール"
+      ]
+    },
+    {
+      "id": "garment-care-appliance",
+      "label": "Garment Care Appliance",
+      "synonyms": [
+        "handheld steamer",
+        "garment steamer",
+        "lint remover",
+        "fabric shaver",
+        "毛球修剪器",
+        "烘物器"
+      ]
     },
     {
       "id": "_other",
@@ -10772,6 +11116,126 @@
       ]
     },
     {
+      "id": "air-freshener-deodorizer",
+      "label": "Air Fresheners And Deodorizers",
+      "synonyms": [
+        "air freshener",
+        "room deodorizer",
+        "reed diffuser",
+        "room fragrance",
+        "消臭剤",
+        "擴香"
+      ]
+    },
+    {
+      "id": "cleaning-wipes",
+      "label": "Cleaning Wipes",
+      "synonyms": [
+        "cleaning wipes",
+        "antibacterial wipes",
+        "alcohol wipes",
+        "wet wipes",
+        "濕紙巾",
+        "おそうじシート"
+      ]
+    },
+    {
+      "id": "moisture-absorber",
+      "label": "Moisture Absorbers",
+      "synonyms": [
+        "dehumidifier",
+        "moisture absorber",
+        "desiccant",
+        "除湿剤",
+        "除濕劑",
+        "湿気取り"
+      ]
+    },
+    {
+      "id": "insect-control",
+      "label": "Insect Control Products",
+      "synonyms": [
+        "insect killer",
+        "mosquito coil",
+        "mosquito repellent",
+        "fly swatter",
+        "蚊香",
+        "防蚊"
+      ]
+    },
+    {
+      "id": "lint-roller",
+      "label": "Lint Rollers",
+      "synonyms": [
+        "lint roller",
+        "lint remover",
+        "sticky roller",
+        "隨手黏",
+        "粘毛",
+        "除塵滾輪"
+      ]
+    },
+    {
+      "id": "household-storage",
+      "label": "Household Storage",
+      "synonyms": [
+        "storage box",
+        "storage bin",
+        "organizer",
+        "garment cover",
+        "收納盒",
+        "整理箱"
+      ]
+    },
+    {
+      "id": "absorbent-mat",
+      "label": "Absorbent Mats",
+      "synonyms": [
+        "absorbent mat",
+        "diatomite mat",
+        "bath mat",
+        "珪藻土",
+        "硅藻土",
+        "吸水墊"
+      ]
+    },
+    {
+      "id": "household-filters-drain-covers",
+      "label": "Household Filters And Drain Covers",
+      "synonyms": [
+        "range hood filter",
+        "vent filter",
+        "drain net",
+        "hair catcher",
+        "換気扇フィルター",
+        "排水口ネット"
+      ]
+    },
+    {
+      "id": "disposable-food-packaging",
+      "label": "Disposable Food Packaging",
+      "synonyms": [
+        "paper straws",
+        "food bags",
+        "heat resistant bags",
+        "sando bag",
+        "耐熱袋",
+        "straw"
+      ]
+    },
+    {
+      "id": "decorative-stickers-magnets",
+      "label": "Decorative Stickers And Magnets",
+      "synonyms": [
+        "window sticker",
+        "decorative sticker",
+        "fridge magnet",
+        "patch magnet",
+        "玻璃貼",
+        "冰箱磁鐵"
+      ]
+    },
+    {
       "id": "_other",
       "label": "Other",
       "synonyms": []
@@ -10888,6 +11352,78 @@
       "synonyms": [
         "insulin",
         "blood glucose strips"
+      ]
+    },
+    {
+      "id": "throat-lozenge",
+      "label": "Throat Lozenge",
+      "synonyms": [
+        "lozenges",
+        "pastilles",
+        "cough drops",
+        "throat candy",
+        "潤喉糖",
+        "herb lozenges"
+      ]
+    },
+    {
+      "id": "medicated-balm-patch",
+      "label": "Medicated Balm Patch",
+      "synonyms": [
+        "medicated balm",
+        "pain relief patch",
+        "rub",
+        "roll-on",
+        "tiger balm",
+        "yoko yoko"
+      ]
+    },
+    {
+      "id": "antiseptic-disinfectant",
+      "label": "Antiseptic Disinfectant",
+      "synonyms": [
+        "ethyl alcohol",
+        "medical alcohol",
+        "antiseptic spray",
+        "hand sanitizer",
+        "betadine",
+        "disinfectant"
+      ]
+    },
+    {
+      "id": "digestive-remedy",
+      "label": "Digestive Remedy",
+      "synonyms": [
+        "laxative",
+        "digestive enzymes",
+        "probiotic",
+        "constipation remedy",
+        "整腸",
+        "消化酵素"
+      ]
+    },
+    {
+      "id": "eye-medicine",
+      "label": "Eye Medicine",
+      "synonyms": [
+        "eye drops",
+        "ophthalmic ointment",
+        "dry eye drops",
+        "滴眼液",
+        "nước nhỏ mắt",
+        "ophthalmic"
+      ]
+    },
+    {
+      "id": "traditional-medicine",
+      "label": "Traditional Medicine",
+      "synonyms": [
+        "herbal medicine",
+        "chinese medicine",
+        "ginseng tonic",
+        "漢方",
+        "中藥",
+        "人蔘"
       ]
     },
     {
@@ -15113,6 +15649,42 @@
       ]
     },
     {
+      "id": "craft-kit",
+      "label": "Craft Kit",
+      "synonyms": [
+        "diy kit",
+        "craft set",
+        "art kit",
+        "slime kit",
+        "crochet kit",
+        "手作"
+      ]
+    },
+    {
+      "id": "educational-toy",
+      "label": "Educational Toy",
+      "synonyms": [
+        "learning toy",
+        "activity toy",
+        "teaching toy",
+        "vtech toy",
+        "leapfrog toy",
+        "操作教具"
+      ]
+    },
+    {
+      "id": "collectible-figure",
+      "label": "Collectible Figure",
+      "synonyms": [
+        "figurine",
+        "collectible toy",
+        "blind box",
+        "mini figure",
+        "公仔",
+        "手辦模型"
+      ]
+    },
+    {
       "id": "_other",
       "label": "Other",
       "synonyms": []
@@ -16826,6 +17398,126 @@
       ]
     },
     {
+      "id": "language-learning-book",
+      "label": "Language Learning Book",
+      "synonyms": [
+        "language learning",
+        "english grammar",
+        "japanese study",
+        "korean study",
+        "tiếng nhật",
+        "toeic"
+      ]
+    },
+    {
+      "id": "exam-prep-book",
+      "label": "Exam Prep Book",
+      "synonyms": [
+        "exam prep",
+        "test prep",
+        "practice questions",
+        "mock exam",
+        "題庫",
+        "考試"
+      ]
+    },
+    {
+      "id": "business-management-book",
+      "label": "Business Management Book",
+      "synonyms": [
+        "business book",
+        "management book",
+        "leadership",
+        "okr",
+        "kpi",
+        "會議英語"
+      ]
+    },
+    {
+      "id": "health-medical-book",
+      "label": "Health And Medical Book",
+      "synonyms": [
+        "medical book",
+        "health book",
+        "medicine",
+        "nutrition",
+        "病理學",
+        "黃帝內經"
+      ]
+    },
+    {
+      "id": "science-technology-book",
+      "label": "Science And Technology Book",
+      "synonyms": [
+        "science book",
+        "technology book",
+        "engineering",
+        "computer book",
+        "stem",
+        "科學"
+      ]
+    },
+    {
+      "id": "childrens-learning-book",
+      "label": "Children Learning Book",
+      "synonyms": [
+        "children learning",
+        "kids workbook",
+        "preschool workbook",
+        "小學",
+        "學前",
+        "兒童"
+      ]
+    },
+    {
+      "id": "finance-investing-book",
+      "label": "Finance And Investing Book",
+      "synonyms": [
+        "finance book",
+        "investing book",
+        "stock trading",
+        "accounting",
+        "k line",
+        "投資"
+      ]
+    },
+    {
+      "id": "architecture-construction-book",
+      "label": "Architecture And Construction Book",
+      "synonyms": [
+        "architecture book",
+        "construction book",
+        "building code",
+        "建築",
+        "電工",
+        "構造"
+      ]
+    },
+    {
+      "id": "psychology-self-help-book",
+      "label": "Psychology And Self Help Book",
+      "synonyms": [
+        "self help",
+        "psychology book",
+        "personal development",
+        "life design",
+        "拖延症",
+        "心理學"
+      ]
+    },
+    {
+      "id": "law-book",
+      "label": "Law Book",
+      "synonyms": [
+        "law book",
+        "legal study",
+        "civil service law",
+        "法學",
+        "法規",
+        "警察法規"
+      ]
+    },
+    {
       "id": "_other",
       "label": "Other",
       "synonyms": []
@@ -16937,6 +17629,138 @@
         "digital book",
         "electronic book",
         "ebook download"
+      ]
+    },
+    {
+      "id": "cookbook",
+      "label": "Cookbook",
+      "synonyms": [
+        "recipe book",
+        "cooking book",
+        "baking book",
+        "料理書",
+        "食譜",
+        "甜點"
+      ]
+    },
+    {
+      "id": "parenting-book",
+      "label": "Parenting Book",
+      "synonyms": [
+        "parenting guide",
+        "childcare book",
+        "family education book",
+        "育兒",
+        "親子",
+        "教養"
+      ]
+    },
+    {
+      "id": "self-help-book",
+      "label": "Self-Help Book",
+      "synonyms": [
+        "personal growth book",
+        "life advice book",
+        "psychology self-help",
+        "心靈",
+        "人生",
+        "正念"
+      ]
+    },
+    {
+      "id": "business-finance-book",
+      "label": "Business Finance Book",
+      "synonyms": [
+        "business book",
+        "finance book",
+        "investment book",
+        "trading book",
+        "理財",
+        "投資"
+      ]
+    },
+    {
+      "id": "health-book",
+      "label": "Health Book",
+      "synonyms": [
+        "medical book",
+        "wellness book",
+        "health guide",
+        "健康",
+        "復健",
+        "養生"
+      ]
+    },
+    {
+      "id": "history-politics-book",
+      "label": "History Politics Book",
+      "synonyms": [
+        "history book",
+        "politics book",
+        "military history",
+        "world history",
+        "歷史",
+        "政治"
+      ]
+    },
+    {
+      "id": "craft-book",
+      "label": "Craft Book",
+      "synonyms": [
+        "craft guide",
+        "handicraft book",
+        "diy book",
+        "embroidery book",
+        "摺紙",
+        "刺繡"
+      ]
+    },
+    {
+      "id": "language-learning-book",
+      "label": "Language Learning Book",
+      "synonyms": [
+        "english learning book",
+        "grammar book",
+        "reading workbook",
+        "idiom book",
+        "語文",
+        "英文"
+      ]
+    },
+    {
+      "id": "puzzle-book",
+      "label": "Puzzle Book",
+      "synonyms": [
+        "sudoku book",
+        "brain teaser book",
+        "observation book",
+        "activity puzzle book",
+        "數獨",
+        "智力測驗"
+      ]
+    },
+    {
+      "id": "science-technology-book",
+      "label": "Science Technology Book",
+      "synonyms": [
+        "science book",
+        "technology book",
+        "computer book",
+        "engineering book",
+        "科學",
+        "生成式ai"
+      ]
+    },
+    {
+      "id": "pet-care-book",
+      "label": "Pet Care Book",
+      "synonyms": [
+        "animal care book",
+        "pet guide",
+        "bird care book",
+        "貓咪",
+        "鸚鵡",
+        "獸醫"
       ]
     },
     {
@@ -19036,6 +19860,174 @@
       ]
     },
     {
+      "id": "face-mask",
+      "label": "Face Mask",
+      "synonyms": [
+        "face mask",
+        "sheet mask",
+        "facial mask",
+        "面膜",
+        "mặt nạ",
+        "シートマスク"
+      ]
+    },
+    {
+      "id": "facial-serum",
+      "label": "Facial Serum",
+      "synonyms": [
+        "facial serum",
+        "skin serum",
+        "ampoule",
+        "essence",
+        "精華液",
+        "美容液"
+      ]
+    },
+    {
+      "id": "eye-care",
+      "label": "Eye Care",
+      "synonyms": [
+        "eye cream",
+        "eye gel",
+        "eye serum",
+        "eye contour gel",
+        "眼霜",
+        "蒸氣眼罩"
+      ]
+    },
+    {
+      "id": "hair-color",
+      "label": "Hair Color",
+      "synonyms": [
+        "hair color",
+        "hair dye",
+        "hair colouring",
+        "染髮",
+        "染髮霜",
+        "haircolor"
+      ]
+    },
+    {
+      "id": "hair-treatment",
+      "label": "Hair Treatment",
+      "synonyms": [
+        "hair treatment",
+        "hair oil",
+        "hair serum",
+        "hair tonic",
+        "scalp ampoule",
+        "護髮"
+      ]
+    },
+    {
+      "id": "hair-styling-product",
+      "label": "Hair Styling Product",
+      "synonyms": [
+        "hair gel",
+        "hair wax",
+        "pomade",
+        "styling gel",
+        "髮油",
+        "定型膠"
+      ]
+    },
+    {
+      "id": "mouthwash",
+      "label": "Mouthwash",
+      "synonyms": [
+        "mouthwash",
+        "mouth rinse",
+        "oral rinse",
+        "漱口水",
+        "潔口液",
+        "マウスウォッシュ"
+      ]
+    },
+    {
+      "id": "oral-care-accessory",
+      "label": "Oral Care Accessory",
+      "synonyms": [
+        "dental floss",
+        "interdental brush",
+        "tongue brush",
+        "brush head",
+        "牙線",
+        "舌苔清潔"
+      ]
+    },
+    {
+      "id": "bath-additives",
+      "label": "Bath Additives",
+      "synonyms": [
+        "bath bomb",
+        "bath salts",
+        "bath additive",
+        "入浴剤",
+        "泡澡",
+        "沐浴鹽"
+      ]
+    },
+    {
+      "id": "feminine-wash",
+      "label": "Feminine Wash",
+      "synonyms": [
+        "feminine wash",
+        "intimate wash",
+        "vaginal wash",
+        "private wash",
+        "私密潔淨",
+        "dung dịch vệ sinh"
+      ]
+    },
+    {
+      "id": "intimate-lubricant",
+      "label": "Intimate Lubricant",
+      "synonyms": [
+        "personal lubricant",
+        "intimate lubricant",
+        "lube",
+        "water based lubricant",
+        "潤滑液",
+        "潤滑劑"
+      ]
+    },
+    {
+      "id": "insect-repellent",
+      "label": "Insect Repellent",
+      "synonyms": [
+        "insect repellent",
+        "bug spray",
+        "mosquito repellent",
+        "anti-bugs",
+        "防蚊液",
+        "驅蚊噴霧"
+      ]
+    },
+    {
+      "id": "beauty-tool",
+      "label": "Beauty Tool",
+      "synonyms": [
+        "makeup sponge",
+        "makeup brush",
+        "powder puff",
+        "beauty blender",
+        "美妝蛋",
+        "化妝刷"
+      ]
+    },
+    {
+      "id": "scrub-exfoliant",
+      "label": "Scrub And Exfoliant",
+      "synonyms": [
+        "face scrub",
+        "body scrub",
+        "exfoliant",
+        "peel",
+        "去角質",
+        "磨砂"
+      ]
+    },
+    {
       "id": "_other",
       "label": "Other",
       "synonyms": []
@@ -19621,6 +20613,148 @@
         "sunglasses case",
         "eyewear case",
         "specs case"
+      ]
+    },
+    {
+      "id": "hair-accessory",
+      "label": "Hair Accessory",
+      "synonyms": [
+        "hair clip",
+        "hair claw",
+        "hair tie",
+        "hair band",
+        "髮夾",
+        "髮束"
+      ]
+    },
+    {
+      "id": "false-eyelashes",
+      "label": "False Eyelashes",
+      "synonyms": [
+        "fake eyelashes",
+        "magnetic lashes",
+        "eyelash set",
+        "lash strips",
+        "假睫毛",
+        "睫毛"
+      ]
+    },
+    {
+      "id": "eyelid-tape",
+      "label": "Eyelid Tape",
+      "synonyms": [
+        "double eyelid tape",
+        "eyelid sticker",
+        "invisible eyelid tape",
+        "雙眼皮貼",
+        "雙眼皮貼布"
+      ]
+    },
+    {
+      "id": "makeup-applicator",
+      "label": "Makeup Applicator",
+      "synonyms": [
+        "makeup sponge",
+        "beauty blender",
+        "powder puff",
+        "cosmetic sponge",
+        "美妝蛋",
+        "mút tán trang điểm"
+      ]
+    },
+    {
+      "id": "cosmetic-mirror",
+      "label": "Cosmetic Mirror",
+      "synonyms": [
+        "makeup mirror",
+        "compact mirror",
+        "folding mirror",
+        "table mirror",
+        "化妝鏡",
+        "gương trang điểm"
+      ]
+    },
+    {
+      "id": "feminine-hygiene-product",
+      "label": "Feminine Hygiene Product",
+      "synonyms": [
+        "sanitary pads",
+        "tampons",
+        "pantyliners",
+        "period pants",
+        "postpartum disposable underwear",
+        "生理"
+      ]
+    },
+    {
+      "id": "mask-case",
+      "label": "Mask Case",
+      "synonyms": [
+        "mask storage case",
+        "face mask case",
+        "口罩收納盒",
+        "口罩隨身收納盒",
+        "mask holder"
+      ]
+    },
+    {
+      "id": "travel-organizer",
+      "label": "Travel Organizer",
+      "synonyms": [
+        "packing cubes",
+        "passport organizer",
+        "travel pouch",
+        "travel storage bag",
+        "旅行收納",
+        "passport cover"
+      ]
+    },
+    {
+      "id": "phone-lanyard",
+      "label": "Phone Lanyard",
+      "synonyms": [
+        "phone strap",
+        "phone lanyard",
+        "lanyard strap",
+        "手機掛繩",
+        "手機繩",
+        "背帶"
+      ]
+    },
+    {
+      "id": "lapel-pin",
+      "label": "Lapel Pin",
+      "synonyms": [
+        "pin badge",
+        "brooch pin",
+        "country pin",
+        "胸章",
+        "胸針",
+        "別針"
+      ]
+    },
+    {
+      "id": "bag-charm",
+      "label": "Bag Charm",
+      "synonyms": [
+        "bag charm",
+        "bag pendant",
+        "leather charm",
+        "吊飾",
+        "馬吊飾",
+        "pegase charm"
+      ]
+    },
+    {
+      "id": "baby-accessory",
+      "label": "Baby Accessory",
+      "synonyms": [
+        "baby article",
+        "baby gift set",
+        "stroller organizer",
+        "mother-child handbook case",
+        "嬰兒",
+        "母子手帳ケース"
       ]
     },
     {

@@ -60,7 +60,14 @@ def _row_input_dict(row: pd.Series) -> dict:
 
 def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
     df = raw.copy()
-    df["product_name_original"] = df["product_name"].astype(str)
+    if "product_name_original" not in df.columns:
+        df["product_name_original"] = df["product_name"].astype(str)
+    else:
+        df["product_name_original"] = (
+            df["product_name_original"].fillna(df["product_name"]).astype(str)
+        )
+    if "category" not in df.columns:
+        df["category"] = ""
     df["price"] = df.apply(lambda r: parse_price(r["price"], r.get("currency")), axis=1)
     df["input_hash"] = df.apply(lambda r: input_hash(_row_input_dict(r)), axis=1)
     grouped = df.groupby("input_hash", as_index=False).agg(
