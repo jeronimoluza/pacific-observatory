@@ -48,6 +48,14 @@ logger = logging.getLogger(__name__)
 # if articles_scraped is still 0. Indicates likely-broken selectors.
 EARLY_ABORT_THRESHOLD = 5
 
+# Per-batch watchdog timeout for asyncio.gather of article-fetch tasks.
+# When a server blackholes the client (TCP-level stall, no FIN/RST), httpx's
+# per-request timeout can fail to interrupt promptly and all concurrency slots
+# pile up. The watchdog cancels the whole batch after this many seconds and
+# the URLs are recorded as cancelled-by-watchdog so they remain unattempted
+# from the failure-ledger's POV (next run picks them up automatically).
+BATCH_TIMEOUT_SECONDS = 90
+
 
 class EarlyAbortError(RuntimeError):
     """Raised when the early-abort gate fires inside _original_scrape_articles.
@@ -115,6 +123,9 @@ class NewspaperScraper:
         # by _original_scrape_articles after each append_article. Consumed by
         # run_default / run_resume to evict from the ledger.
         self._scraped_urls_this_run: set = set()
+        # Per-run set of URLs whose batch hit the watchdog timeout. Excluded
+        # from the failure ledger so the next run will retry them.
+        self._cancelled_by_watchdog: set = set()
 
         # Initialize client based on configuration
         self.client_type = self.config.client
@@ -873,6 +884,7 @@ class NewspaperScraper:
         # Reset per-run success set so the run_* methods can evict succeeded
         # URLs from the failure ledger after this method returns.
         self._scraped_urls_this_run = set()
+        self._cancelled_by_watchdog = set()
 
         # Reset per-run early-abort state. The acknowledgement flag is on the
         # instance so the helper method can read it, but it MUST NOT carry
@@ -902,9 +914,25 @@ class NewspaperScraper:
                         fetch_tasks = [
                             client.request_url(http_client, str(t.url)) for t in batch
                         ]
-                        batch_results = await asyncio.gather(
-                            *fetch_tasks, return_exceptions=True
-                        )
+                        try:
+                            batch_results = await asyncio.wait_for(
+                                asyncio.gather(*fetch_tasks, return_exceptions=True),
+                                timeout=BATCH_TIMEOUT_SECONDS,
+                            )
+                        except asyncio.TimeoutError:
+                            logger.warning(
+                                f"Batch watchdog fired after {BATCH_TIMEOUT_SECONDS}s "
+                                f"(batch_start={batch_start}, size={len(batch)}); "
+                                f"cancelling and continuing"
+                            )
+                            self._cancelled_by_watchdog.update(
+                                str(t.url) for t in batch
+                            )
+                            failed_http += len(batch)
+                            for _ in batch:
+                                i += 1
+                                progress_bar.update(1)
+                            continue
 
                         for thumbnail, result in zip(batch, batch_results):
                             i += 1
@@ -1683,7 +1711,9 @@ class NewspaperScraper:
         of which ``self.failed_*`` list it landed on (or didn't).
         """
         scraped = set(self._scraped_urls_this_run)
-        attempted = {str(t.url) for t in pending_thumbnails}
+        attempted = {
+            str(t.url) for t in pending_thumbnails
+        } - self._cancelled_by_watchdog
         failed = attempted - scraped
 
         if failed:
