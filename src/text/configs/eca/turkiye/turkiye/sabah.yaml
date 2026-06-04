@@ -14,8 +14,8 @@ listing:
   sitemap_index_url: https://www.sabah.com.tr/sitemap/post.xml
   url_regex: "^https://www\\.sabah\\.com\\.tr/(finans|teknokulis|yasam|gundem|ekonomi|dunya|yazarlar|magazin|saglik|kultur-sanat|egitim|memurlar|medya|turizm|haber)/(?!galeri/).+$"
 client: http
-concurrency: 5
-rate_limit: 0.5
+concurrency: 3
+rate_limit: 1.0
 retries: 3
 retry_seconds: 2.0
 headers:

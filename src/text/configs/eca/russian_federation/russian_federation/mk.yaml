@@ -15,10 +15,12 @@ listing:
   sitemap_regex: "articles_sitemap_\\d+_map\\.xml$"
   url_regex: "^https://www\\.mk\\.ru/(politics|social|incident|economics|science|culture|moscow|mosobl)/"
 client: http
-concurrency: 10
-rate_limit: 0.3
-retries: 3
-retry_seconds: 2.0
+# 2026-06-04: dialed down from c:10 r:0.3 — backfill flooded the origin and
+# every request returned HTTP 429 after the 4-attempt retry budget.
+concurrency: 3
+rate_limit: 1.5
+retries: 5
+retry_seconds: 5.0
 headers:
   User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
     like Gecko) Chrome/131.0.0.0 Safari/537.36

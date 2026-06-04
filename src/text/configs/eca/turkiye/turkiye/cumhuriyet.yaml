@@ -12,8 +12,8 @@ listing:
   sitemap_index_url: https://www.cumhuriyet.com.tr/sitemaps/posts.xml
   url_regex: "^https://www\\.cumhuriyet\\.com\\.tr/(turkiye|yazarlar|siyaset|dunya|ekonomi|yasam|kultur-sanat|magazin|bilim-teknoloji|saglik|egitim|yerel-gundem|otomotiv|gurme)/.+-[0-9]+$"
 client: http
-concurrency: 5
-rate_limit: 0.5
+concurrency: 3
+rate_limit: 1.0
 retries: 3
 retry_seconds: 2.0
 headers:

@@ -16,10 +16,12 @@ listing:
   url_regex: "^https://www\\.unian\\.ua/(war|weapons|politics|economics|world|society|science|health|incidents|ecology|common)/.+\\.html$"
 
 client: http
-concurrency: 5
-rate_limit: 0.5
-retries: 3
-retry_seconds: 3.0
+# 2026-06-04: dialed down from c:5 r:0.5 — site started 403-throttling the
+# pool; retries lifted so transient blocks have a chance to recover.
+concurrency: 3
+rate_limit: 1.5
+retries: 5
+retry_seconds: 5.0
 
 headers:
   User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
