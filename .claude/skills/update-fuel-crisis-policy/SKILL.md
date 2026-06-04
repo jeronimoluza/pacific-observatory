@@ -26,6 +26,9 @@ the workbook directly and run step 2 + step 3 below — no skill needed.
 data/text/policy_tracker/<region>.xlsx
    |  (research + edit per references/master_prompt.md)
    v
+data/text/policy_tracker/YYYY-MM-DD/excel/<region>.xlsx   (dated snapshot — audit trail)
+   |
+   v
 po text build-policy-addons --region <r>
    |  (converter: src/text/plotting/policy_dashboards.py)
    v
@@ -48,7 +51,18 @@ evidence standards, QC list — is in `references/master_prompt.md`.
 **Open and follow that file.** Do not duplicate its content here.
 
 All workbooks share the same sheet layout: `Policies` (the policy rows
-the converter reads), `Categories` (label list), `Update_Audit` (notes).
+the converter reads), `Taxonomy` (closed 6×31 (Category, Subcategory)
+enum the dashboard renders, treat as read-only), `Update_Audit`
+(notes). The legacy v5 `Categories` sheet and the older
+`Taxonomy_v6` name were retired on 2026-06-04 — any workbook that still
+carries them must be re-saved with the legacy sheet dropped and
+`Taxonomy_v6` renamed to `Taxonomy` before `build-policy-addons` runs.
+
+Every Policies row must carry both `Category` (1 of 6) and `Subcategory`
+(1 of 31, constrained by Category) from the closed v6 enum. The legacy
+`Label` column is retained for audit but is **not rendered** by the
+dashboard.
+
 Region-specific rules the converter enforces on top of that:
 
 | Region | Hard rule |
@@ -63,7 +77,33 @@ Region-specific rules the converter enforces on top of that:
 Save back to the same filename (`<region>.xlsx`, no date suffix). Git
 status / mtime is the version log.
 
-## Step 2 — Build the addon HTML
+## Step 2 — Archive the dated snapshot
+
+Immediately after the workbook edit, **before** building the addon, copy
+the updated workbook(s) into a dated audit directory:
+
+```bash
+DATE=$(date -u +%Y-%m-%d)
+mkdir -p data/text/policy_tracker/$DATE/excel
+# For one region:
+cp data/text/policy_tracker/<region>.xlsx data/text/policy_tracker/$DATE/excel/<region>.xlsx
+# Or for all six in one go:
+for r in eap eca lac menaap sar ssa; do
+  cp data/text/policy_tracker/$r.xlsx data/text/policy_tracker/$DATE/excel/$r.xlsx
+done
+```
+
+The dated directories under `data/text/policy_tracker/YYYY-MM-DD/excel/`
+form the human-readable audit trail — one snapshot per run-day. If the
+skill runs more than once on the same day, the later snapshot wins
+(later runs supersede earlier ones); use the dated `.pre-codex-<ts>.bak`
+or `.pre-v6.bak` siblings of the live `<region>.xlsx` for finer-grained
+rollback within a day.
+
+Skip this step only when you didn't actually change the workbook (e.g.,
+you're only re-running build+publish after a converter-side fix).
+
+## Step 3 — Build the addon HTML
 
 ```bash
 poetry run po text build-policy-addons --region <r>
@@ -85,7 +125,7 @@ The converter (`src/text/plotting/policy_dashboards.py`):
 under `errors`, and the per-region HTML mtime is fresh
 (`ls -la src/text/plotting/addons/<region>_*.html`).
 
-## Step 3 — Publish
+## Step 4 — Publish
 
 ```bash
 poetry run po text publish --region <r>
@@ -102,12 +142,18 @@ This calls `src/text/publish.py:run_publish`, which (for each region in scope):
 The skill may run this directly — side effects are local file writes
 only.
 
-## Step 4 — QC
+## Step 5 — QC
 
 Open the final HTML and confirm against the checklist at the end of
 `references/master_prompt.md`. Critical items:
 
-- No `Reduce demand` entry remains in the legend (use the two new labels).
+- Every Policies row has both `Category` and `Subcategory` populated,
+  and the pair is in the closed v6 enum (see `Taxonomy` sheet).
+- Legend shows the 6 v6 categories (agriculture, energy, firm
+  liquidity and financial support, fiscal measures, regulatory and
+  trade facilitation reforms, social protection) — not the legacy
+  Label values.
+- Filter pair (Category + cascading Subcategory) is functional.
 - SAR has no Afghanistan / Pakistan rows in the bar chart.
 - EAP shows `World Bank PICs only (12)` in the country-view dropdown,
   and that view contains exactly the 12 countries.
@@ -120,6 +166,7 @@ Open the final HTML and confirm against the checklist at the end of
 ```
 ## Fuel Crisis Policy refresh: <region>
 - Workbook: data/text/policy_tracker/<region>.xlsx  (last edited: <mtime>)
+- Snapshot: data/text/policy_tracker/YYYY-MM-DD/excel/<region>.xlsx
 - Addon:    src/text/plotting/addons/<region>_fuel_crisis_policy_dashboard.html
             (rows=<n>, excluded=<n>, countries=<n>)
 - Final:    outputs/text/dashboards/<region>_policy_dashboard.html
@@ -137,5 +184,7 @@ Open the final HTML and confirm against the checklist at the end of
 - **Never** add Afghanistan or Pakistan to the SAR workbook (the
   converter auto-excludes them, but they should not be in the source
   data either).
-- The deprecated `Reduce demand` label must not appear in any final
-  dashboard-compatible row.
+- **Never** leave Category or Subcategory blank on a new row; never
+  invent values outside the closed v6 enum.
+- The deprecated `Reduce demand` label must not appear in the legacy
+  `Label` column when that column is populated at all.

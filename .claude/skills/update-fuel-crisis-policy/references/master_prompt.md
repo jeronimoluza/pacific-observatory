@@ -16,6 +16,44 @@ the dashboard will normalize it:
   quantities` based on text content. Reclassify in the workbook
   anyway — don't rely on the auto-split.
 
+# Primary taxonomy — v6 Category + Subcategory
+
+Starting with the v6 consolidated policy dataset, every Policies-sheet
+row must carry **both** of these dashboard-rendered fields:
+
+- `Category` — one of 6 closed-enum values
+- `Subcategory` — one of 31 closed-enum values, constrained by Category
+
+These are now the primary classification axis the dashboard renders
+(bar color = Category; stacked segments = Subcategory; filter pair =
+Category + cascading Subcategory). The legacy `Label` column is kept
+in the workbook for audit/history but is **not rendered** by the new
+dashboard.
+
+The closed 6×31 enum (lowercase, canonical spelling):
+
+| Category | Subcategories |
+|---|---|
+| `agriculture` | agricultural trade & export measures; domestic production & innovation; input subsidies & direct support; input supply, procurement & reserves; market regulation & price stabilization |
+| `energy` | energy transition & efficiency; price & market interventions; subsidies & financial support; supply & infrastructure; trade & regulatory measures |
+| `firm liquidity and financial support` | credit & liquidity instruments; direct grants & subsidies to firms; financial sector & external financing; msme-targeted support; regulatory & compliance relief; trade finance & export support |
+| `fiscal measures` | financial stabilization and reserve management; fiscal consolidation; subsidies; tax and tariff measures |
+| `regulatory and trade facilitation reforms` | emergency & coordination measures; fiscal & financial support; labor market & workforce measures; regulatory & business environment reforms; trade, logistics & connectivity |
+| `social protection` | direct assistance & transfers; human development services; humanitarian & emergency response; market regulation & consumer protection; operational & logistics support; social insurance & protection |
+
+The authoritative reference is the `Taxonomy` sheet inside each
+regional workbook (formerly `Taxonomy_v6`; renamed 2026-06-04 when the
+legacy v5 `Categories` sheet was retired). When in doubt, use that sheet
+as the closed-enum source of truth.
+
+Assignment rule: if a policy is sourced from the v6 consolidated file
+(`data/text/policy_tracker/consolidated_policies/consolidated_policy_responses_v6.xlsx`),
+copy the v6 row's `category` and `subcategory` verbatim (lowercased,
+trimmed). For policies sourced elsewhere (existing workbook rows, new
+research), pick the closest match from the closed enum above based on
+the policy's dominant mechanism — never invent new values, never leave
+blank.
+
 # Regional workbooks
 
 The current regional trackers live at
@@ -49,7 +87,9 @@ At minimum, each valid policy row should support these dashboard fields:
 - Country or economy
 - Policy name
 - Policy description
-- Policy category / label
+- **Category** (one of 6 closed-enum v6 values — required, dashboard-rendered)
+- **Subcategory** (one of 31 closed-enum v6 values constrained by Category — required, dashboard-rendered)
+- `Label` (legacy 8-value enum — kept for audit, not rendered)
 - Active or proposed date
 - Source name
 - Source URL, where available
@@ -60,10 +100,16 @@ Do not invent measures. Do not fill gaps speculatively. When evidence is
 weak or unavailable, clearly flag the row as unverified, uncertain,
 excluded, or needing follow-up.
 
-# Approved dashboard labels
+# Legacy `Label` column — audit-only
 
-Use the following dashboard labels. The old label `Reduce demand` is
-deprecated and should not remain in final dashboard-compatible rows.
+The `Label` column below is retained on the Policies sheet for audit
+and rollback, but the v6 dashboard does **not** render it. Populate
+Category + Subcategory (see "Primary taxonomy" above) on every row;
+keep `Label` accurate when it's already populated, but do not block
+adding a new row if the closest Label match is ambiguous.
+
+The closed Label enum (legacy; old label `Reduce demand` is deprecated
+and should not remain):
 
 - Communication
 - General consumption smoothing
@@ -402,33 +448,61 @@ not yet available.
 
 ## Step 6: Categorize consistently
 
-Assign exactly one primary label from the approved dashboard labels
-unless the workbook already supports multiple labels.
+Assign exactly one (Category, Subcategory) pair from the closed v6 enum
+to every row — this is what the dashboard renders. Optionally also fill
+the legacy `Label` for audit continuity.
 
-Use the direct recipient or dominant mechanism to classify:
+Use the direct recipient or dominant mechanism to pick the v6 pair:
 
-- A subsidy paid to bus operators to prevent fare increases is usually
-  `Support to business` or `Guaranteeing essential services`,
-  depending on whether the emphasis is firm relief or service
-  continuity.
-- A cash transfer to low-income households is `Support to households`.
-- A fuel-price cap, fuel tax reduction, or stabilization-fund drawdown
-  is `General consumption smoothing`.
-- A public appeal not to hoard is `Communication`.
-- A government work-from-home order, vehicle-use restriction,
-  fuel-purchase cap, rationing system, or conservation order is
-  `Reduce demand - restricting quantities`.
-- A fuel-price increase, tariff increase, or subsidy phase-down
-  explicitly intended to constrain demand or preserve supply finances is
-  `Reduce demand - higher prices`.
-- Emergency import procurement, reserves, anti-smuggling, or supply
-  diversification is `Secure supply`.
-- Emergency measures to keep electricity, hospitals, schools, food
-  transport, or public transport operating are `Guaranteeing essential
-  services`.
+- A fuel-price cap, fuel-tax reduction, VAT/GST relief, excise cut, or
+  stabilization-fund drawdown that keeps retail fuel prices below market
+  → Category `energy`, Subcategory `subsidies & financial support` (or
+  `price & market interventions` for non-fiscal price administration).
+- A subsidy phase-down, deregulation, or administered-price increase
+  intended to reduce fiscal cost or curb demand → Category `energy`,
+  Subcategory `price & market interventions`.
+- A tax/excise change unrelated to fuel-specific retail prices (broad
+  VAT or excise reform) → Category `fiscal measures`, Subcategory
+  `tax and tariff measures`.
+- A cash transfer, household LPG/kerosene subsidy, electricity-bill
+  rebate, or low-income compensation → Category `social protection`,
+  Subcategory `direct assistance & transfers`.
+- A humanitarian response to displaced or crisis-affected households
+  → Category `social protection`, Subcategory `humanitarian & emergency
+  response`.
+- A subsidy or rebate paid to transport operators, fishers, airlines,
+  utilities, or SMEs → Category `firm liquidity and financial support`,
+  Subcategory `direct grants & subsidies to firms` (or
+  `msme-targeted support` if MSME-scoped).
+- A credit line, working-capital loan, or central-bank liquidity window
+  → Category `firm liquidity and financial support`, Subcategory
+  `credit & liquidity instruments`.
+- Emergency import procurement, strategic reserves, refinery output
+  orders, anti-smuggling, supply diversification → Category `energy`,
+  Subcategory `supply & infrastructure` (or `trade & regulatory
+  measures` for trade-side actions).
+- Government work-from-home orders, vehicle-use restrictions, fuel
+  purchase caps, rationing, conservation orders, AC limits → Category
+  `regulatory and trade facilitation reforms`, Subcategory
+  `emergency & coordination measures`.
+- Emergency declarations, crisis coordination committees, public
+  monitoring task forces, anti-hoarding advisories → Category
+  `regulatory and trade facilitation reforms`, Subcategory
+  `emergency & coordination measures`.
+- Export restrictions or import-licensing changes → Category
+  `regulatory and trade facilitation reforms`, Subcategory
+  `trade, logistics & connectivity`.
+- Foreign-exchange support, reserve management, or financial
+  stabilization for fuel imports → Category `fiscal measures`,
+  Subcategory `financial stabilization and reserve management`.
+- Input subsidies for farmers/fishers facing fuel-cost shocks
+  → Category `agriculture`, Subcategory `input subsidies & direct
+  support`.
 
-If classification is uncertain, choose the most specific mechanism and
-explain the classification in the reason/evidence note.
+If a row spans multiple plausible pairs, pick the dominant mechanism
+and explain the choice in the reason/evidence note. Never leave
+Category or Subcategory blank. Never invent values outside the closed
+enum — if no pair fits, the row probably isn't dashboard-relevant.
 
 ## Step 7: Date/status convention
 
@@ -541,9 +615,15 @@ formatting and column structure where possible.
 
 All six workbooks share a unified sheet layout:
 
-- `Policies` — the policy rows (this is what the converter reads)
-- `Categories` — list of approved labels
-- `Update_Audit` — update memo / freeform notes
+- `Policies` — the policy rows (this is what the converter reads).
+  Required dashboard-rendered columns: `Country`, `Policy`,
+  `Policy Description`, `Category`, `Subcategory`. Legacy `Label`
+  column is retained for audit but not rendered.
+- `Taxonomy` — closed-enum reference for the (Category, Subcategory)
+  pairs the dashboard renders. Treat as read-only. (Renamed from
+  `Taxonomy_v6` on 2026-06-04; the legacy v5 `Categories` sheet was
+  dropped at the same time.)
+- `Update_Audit` — update memo / freeform notes.
 
 If a workbook has dashboard-compatible columns, fill them directly. If
 the workbook has a broader schema, preserve its schema and fill the
@@ -617,7 +697,9 @@ For each workbook:
 15. Confirm no duplicate rows describe the same instrument.
 16. For EAP, confirm the 12 World Bank PICs are present so the
     `World Bank PICs only (12)` view populates.
-17. Add an audit note summarizing the update window, searches performed,
+17. Confirm every Policies row has a non-blank (Category, Subcategory)
+    pair in the closed v6 enum (see `Taxonomy` sheet).
+18. Add an audit note summarizing the update window, searches performed,
     major additions, unresolved uncertainties, and excluded candidates.
 
 # Suggested search queries
@@ -702,8 +784,10 @@ Before finalizing:
 
 - Check that all source URLs open or are otherwise documented.
 - Check that each policy row is assigned to the correct country.
-- Check that each policy row has one approved dashboard label.
-- Check that no row keeps the deprecated label `Reduce demand`.
+- Check that **every row has both `Category` and `Subcategory` populated**
+  and that the pair is in the closed `Taxonomy` enum.
+- Check that no row keeps the deprecated label `Reduce demand` in the
+  legacy `Label` column (where `Label` is populated at all).
 - Check that `Reduce demand - higher prices` is used only for
   price-increase or effective-price-increase mechanisms.
 - Check that `Reduce demand - restricting quantities` is used for
