@@ -17398,18 +17398,6 @@
       ]
     },
     {
-      "id": "language-learning-book",
-      "label": "Language Learning Book",
-      "synonyms": [
-        "language learning",
-        "english grammar",
-        "japanese study",
-        "korean study",
-        "tiếng nhật",
-        "toeic"
-      ]
-    },
-    {
       "id": "exam-prep-book",
       "label": "Exam Prep Book",
       "synonyms": [
@@ -17419,42 +17407,6 @@
         "mock exam",
         "題庫",
         "考試"
-      ]
-    },
-    {
-      "id": "business-management-book",
-      "label": "Business Management Book",
-      "synonyms": [
-        "business book",
-        "management book",
-        "leadership",
-        "okr",
-        "kpi",
-        "會議英語"
-      ]
-    },
-    {
-      "id": "health-medical-book",
-      "label": "Health And Medical Book",
-      "synonyms": [
-        "medical book",
-        "health book",
-        "medicine",
-        "nutrition",
-        "病理學",
-        "黃帝內經"
-      ]
-    },
-    {
-      "id": "science-technology-book",
-      "label": "Science And Technology Book",
-      "synonyms": [
-        "science book",
-        "technology book",
-        "engineering",
-        "computer book",
-        "stem",
-        "科學"
       ]
     },
     {
@@ -17470,18 +17422,6 @@
       ]
     },
     {
-      "id": "finance-investing-book",
-      "label": "Finance And Investing Book",
-      "synonyms": [
-        "finance book",
-        "investing book",
-        "stock trading",
-        "accounting",
-        "k line",
-        "投資"
-      ]
-    },
-    {
       "id": "architecture-construction-book",
       "label": "Architecture And Construction Book",
       "synonyms": [
@@ -17491,18 +17431,6 @@
         "建築",
         "電工",
         "構造"
-      ]
-    },
-    {
-      "id": "psychology-self-help-book",
-      "label": "Psychology And Self Help Book",
-      "synonyms": [
-        "self help",
-        "psychology book",
-        "personal development",
-        "life design",
-        "拖延症",
-        "心理學"
       ]
     },
     {
