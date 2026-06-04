@@ -2,15 +2,21 @@ name: Moskovsky Komsomolets
 language: ru
 country: russian_federation
 base_url: https://www.mk.ru
+# 2026-06-04: BACKFILL MODE — migrated from pagination (/news/{num}/) to sitemap.
+# sitemap/index.xml lists 31 numbered articles_sitemap_N_map.xml sub-sitemaps
+# covering 2007-09-18 to 2025-11-05 (~19 years). No gzip, no WAF.
+# After backfill catches up, dial back to concurrency: 3, rate_limit: 1.0.
+# 2026-06-04: narrowed url_regex to positive-list of news rubrics; full
+# corpus includes /auto/, /realestate/, /pravoslavie/, /press-center/ and
+# other off-topic content (~62k URLs) that would bloat ETA.
 listing:
-  type: pagination
-  start_url: https://www.mk.ru/news/
-  url_template: https://www.mk.ru/news/{num}/
-  start_page: 2
-  batch_size: 5
+  type: sitemap
+  sitemap_index_url: https://www.mk.ru/sitemap/index.xml
+  sitemap_regex: "articles_sitemap_\\d+_map\\.xml$"
+  url_regex: "^https://www\\.mk\\.ru/(politics|social|incident|economics|science|culture|moscow|mosobl)/"
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 10
+rate_limit: 0.3
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -20,9 +26,10 @@ headers:
   Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
 selectors:
   thumbnail:
-    container: li.news-listing__item
-    title: h3.news-listing__item-title::text
-    url: a.news-listing__item-link::attr(href)
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
     body: 'div[itemprop="articleBody"] p'
     date: meta[itemprop='datePublished']::attr(content)
@@ -30,4 +37,3 @@ cleaning:
   date: handle_mixed_dates
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

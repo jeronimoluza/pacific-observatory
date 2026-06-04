@@ -6,11 +6,14 @@ base_url: https://www.unian.ua
 # Sitemap index has 113 rubric sitemaps (sitemap.rubric_N_M.xml) covering the
 # full archive back to ~2011 — vastly faster than the previous daily-archive
 # approach which iterated ~7,300 days one by one.
+# 2026-06-04: narrowed url_regex to positive-list of news rubrics; full
+# corpus (~238k URLs) included 5k weather (pogoda) + 3k tourism filler
+# that bloated ETA to ~5.8 days at the current rate.
 listing:
   type: sitemap
   sitemap_index_url: https://www.unian.ua/sitemap.xml
   sitemap_regex: "sitemap\\.rubric_"
-  url_regex: "^https://www\\.unian\\.ua/.+\\.html$"
+  url_regex: "^https://www\\.unian\\.ua/(war|weapons|politics|economics|world|society|science|health|incidents|ecology|common)/.+\\.html$"
 
 client: http
 concurrency: 5

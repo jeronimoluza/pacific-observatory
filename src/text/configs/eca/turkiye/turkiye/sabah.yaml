@@ -5,14 +5,17 @@ base_url: https://www.sabah.com.tr
 # /gundem?page=N returned identical content on every page.
 # Robots.txt advertises /sitemap/index.xml with a post sitemap-index that
 # points at per-day chunks (~700 URLs/chunk).
+# 2026-06-04: narrowed url_regex to positive-list of news categories +
+# explicit /galeri/ exclusion at any depth. Full sitemap (~1.5M URLs)
+# included /roza/ (22k tabloid), /laykla/ (10k tabloid), /bulmaca-coz/
+# (puzzles), /cizerler/ (cartoons) and /trend/ filler that bloated ETA.
 listing:
   type: sitemap
   sitemap_index_url: https://www.sabah.com.tr/sitemap/post.xml
-  # Skip /trend/galeri/ tile pages and /fotohaber/ galleries (no body text).
-  url_regex: "^https://www\\.sabah\\.com\\.tr/(?!trend/galeri/|fotohaber/|galeri/)[a-z0-9-]+/.+$"
+  url_regex: "^https://www\\.sabah\\.com\\.tr/(finans|teknokulis|yasam|gundem|ekonomi|dunya|yazarlar|magazin|saglik|kultur-sanat|egitim|memurlar|medya|turizm|haber)/(?!galeri/).+$"
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -36,4 +39,3 @@ cleaning:
   date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

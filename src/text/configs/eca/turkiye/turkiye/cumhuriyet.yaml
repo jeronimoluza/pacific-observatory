@@ -4,13 +4,16 @@ country: turkiye
 base_url: https://www.cumhuriyet.com.tr
 # /haberleri/son-dakika?sayfa=N returns identical content on every page.
 # Site ships a monthly-partitioned sitemap index (robots.txt advertises it).
+# 2026-06-04: narrowed url_regex to positive-list of news categories; full
+# sitemap (~650k URLs) included cartoons (cizerler), astrology, puzzles,
+# TV listings and other body-less filler that bloated ETA to ~5 days.
 listing:
   type: sitemap
   sitemap_index_url: https://www.cumhuriyet.com.tr/sitemaps/posts.xml
-  url_regex: "^https://www\\.cumhuriyet\\.com\\.tr/[a-z0-9-]+/.+-[0-9]+$"
+  url_regex: "^https://www\\.cumhuriyet\\.com\\.tr/(turkiye|yazarlar|siyaset|dunya|ekonomi|yasam|kultur-sanat|magazin|bilim-teknoloji|saglik|egitim|yerel-gundem|otomotiv|gurme)/.+-[0-9]+$"
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -34,4 +37,3 @@ cleaning:
   date: handle_mixed_dates
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'
