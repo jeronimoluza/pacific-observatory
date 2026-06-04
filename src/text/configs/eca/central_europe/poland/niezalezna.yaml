@@ -13,7 +13,7 @@ listing:
   batch_size: 5
 client: http
 concurrency: 3
-rate_limit: 1.0
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 headers:
