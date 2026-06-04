@@ -886,32 +886,137 @@ class NewspaperScraper:
 
             logger.info(f"Scraping {len(article_urls)} articles...")
 
-            async with httpx.AsyncClient() as http_client:
-                for i, thumbnail in enumerate(
-                    tqdm(thumbnails, desc="Scraping articles")
-                ):
-                    # Early-abort gate: if EARLY_ABORT_THRESHOLD attempts have
-                    # already completed and none of them passed validation,
-                    # invoke the gate. Behavior depends on whether an
-                    # on_early_abort callback is registered — see
-                    # _check_early_abort. Checked at the top of each iteration
-                    # because the validation `continue` paths below would
-                    # skip a check placed at the end of the loop body.
-                    if i >= EARLY_ABORT_THRESHOLD and articles_scraped == 0:
-                        await self._check_early_abort(EARLY_ABORT_THRESHOLD)
-                    try:
-                        content, status_code = await client.request_url(
-                            http_client, str(thumbnail.url)
-                        )
+            # Batched parallel article fetch. The semaphore in
+            # AsyncHttpClient.request_url enforces the actual concurrency cap;
+            # gathering `batch_size` tasks just feeds the semaphore. Per-item
+            # processing (parse, validate, ledger write) stays serial because
+            # it mutates shared state (storage, counters, early-abort).
+            batch_size = max(1, self.config.concurrency or 10)
 
-                        if content is None:
-                            self._add_failed_news(
-                                url=thumbnail.url,
-                                status_code=status_code,
-                                error="Failed to retrieve content",
-                                stage="article_content",
+            async with httpx.AsyncClient() as http_client:
+                progress_bar = tqdm(total=len(thumbnails), desc="Scraping articles")
+                i = -1
+                for batch_start in range(0, len(thumbnails), batch_size):
+                    batch = thumbnails[batch_start : batch_start + batch_size]
+                    fetch_tasks = [
+                        client.request_url(http_client, str(t.url)) for t in batch
+                    ]
+                    batch_results = await asyncio.gather(
+                        *fetch_tasks, return_exceptions=True
+                    )
+
+                    for thumbnail, result in zip(batch, batch_results):
+                        i += 1
+                        progress_bar.update(1)
+
+                        # Early-abort gate: if EARLY_ABORT_THRESHOLD attempts have
+                        # already completed and none of them passed validation,
+                        # invoke the gate. Behavior depends on whether an
+                        # on_early_abort callback is registered — see
+                        # _check_early_abort. Checked at the top of each iteration
+                        # because the validation `continue` paths below would
+                        # skip a check placed at the end of the loop body.
+                        if i >= EARLY_ABORT_THRESHOLD and articles_scraped == 0:
+                            await self._check_early_abort(EARLY_ABORT_THRESHOLD)
+
+                        if isinstance(result, BaseException):
+                            logger.error(
+                                f"Failed to scrape article {thumbnail.url}: {result}"
                             )
                             failed_http += 1
+                            continue
+
+                        content, status_code = result
+
+                        try:
+                            if content is None:
+                                self._add_failed_news(
+                                    url=thumbnail.url,
+                                    status_code=status_code,
+                                    error="Failed to retrieve content",
+                                    stage="article_content",
+                                )
+                                failed_http += 1
+                                if self.progress and (i + 1) % 10 == 0:
+                                    self.progress.update(
+                                        articles_scraped=articles_scraped,
+                                        articles_failed=failed_http
+                                        + failed_body
+                                        + failed_date,
+                                    )
+                                continue
+
+                            soup = client.parse_content(content)
+
+                            article_content = extract_article_data_from_soup(
+                                soup,
+                                str(thumbnail.url),
+                                self.article_selectors,
+                                self.base_url,
+                                self.config.cleaning,
+                            )
+
+                            # Prefer the article-page title when available. This
+                            # matters for sitemap-based configs where thumbnail.title
+                            # is a URL placeholder (loc::text).
+                            article_title = (
+                                article_content.get("title") or thumbnail.title
+                            )
+                            article_data = {
+                                "url": str(thumbnail.url),
+                                "title": article_title,
+                                "date": (
+                                    thumbnail.date
+                                    if thumbnail.date
+                                    else article_content.get("date", "")
+                                ),
+                                "body": article_content.get("body", ""),
+                                "tags": article_content.get("tags", []),
+                                "source": self.name,
+                                "country": self.country,
+                                "language": self.language,
+                            }
+
+                            cleaning_config = self.config.cleaning
+                            if cleaning_config:
+                                article_data = apply_cleaning(
+                                    article_data, cleaning_config, self.base_url
+                                )
+
+                            # Validate required fields — skip articles with empty body or date
+                            body_val = (article_data.get("body") or "").strip()
+                            date_val = (article_data.get("date") or "").strip()
+
+                            if not body_val:
+                                failed_body += 1
+                                logger.debug(
+                                    f"Skipping article (empty body): {thumbnail.url}"
+                                )
+                                continue
+
+                            if not date_val:
+                                failed_date += 1
+                                logger.debug(
+                                    f"Skipping article (empty date): {thumbnail.url}"
+                                )
+                                continue
+
+                            # Track warnings for non-critical empty fields
+                            title_val = (article_data.get("title") or "").strip()
+                            tags_val = article_data.get("tags")
+                            if not title_val:
+                                warning_title += 1
+                            if not tags_val or tags_val == []:
+                                warning_tags += 1
+
+                            article = ArticleRecord(**article_data)
+
+                            self._storage.append_article(
+                                article, self.country, self.source_key
+                            )
+                            articles_scraped += 1
+                            self._scraped_urls_this_run.add(str(thumbnail.url))
+
                             if self.progress and (i + 1) % 10 == 0:
                                 self.progress.update(
                                     articles_scraped=articles_scraped,
@@ -919,86 +1024,14 @@ class NewspaperScraper:
                                     + failed_body
                                     + failed_date,
                                 )
-                            continue
 
-                        soup = client.parse_content(content)
-
-                        article_content = extract_article_data_from_soup(
-                            soup,
-                            str(thumbnail.url),
-                            self.article_selectors,
-                            self.base_url,
-                            self.config.cleaning,
-                        )
-
-                        # Prefer the article-page title when available. This
-                        # matters for sitemap-based configs where thumbnail.title
-                        # is a URL placeholder (loc::text).
-                        article_title = article_content.get("title") or thumbnail.title
-                        article_data = {
-                            "url": str(thumbnail.url),
-                            "title": article_title,
-                            "date": (
-                                thumbnail.date
-                                if thumbnail.date
-                                else article_content.get("date", "")
-                            ),
-                            "body": article_content.get("body", ""),
-                            "tags": article_content.get("tags", []),
-                            "source": self.name,
-                            "country": self.country,
-                            "language": self.language,
-                        }
-
-                        cleaning_config = self.config.cleaning
-                        if cleaning_config:
-                            article_data = apply_cleaning(
-                                article_data, cleaning_config, self.base_url
+                        except Exception as e:
+                            logger.error(
+                                f"Failed to scrape article {thumbnail.url}: {e}"
                             )
+                            failed_http += 1
 
-                        # Validate required fields — skip articles with empty body or date
-                        body_val = (article_data.get("body") or "").strip()
-                        date_val = (article_data.get("date") or "").strip()
-
-                        if not body_val:
-                            failed_body += 1
-                            logger.debug(
-                                f"Skipping article (empty body): {thumbnail.url}"
-                            )
-                            continue
-
-                        if not date_val:
-                            failed_date += 1
-                            logger.debug(
-                                f"Skipping article (empty date): {thumbnail.url}"
-                            )
-                            continue
-
-                        # Track warnings for non-critical empty fields
-                        title_val = (article_data.get("title") or "").strip()
-                        tags_val = article_data.get("tags")
-                        if not title_val:
-                            warning_title += 1
-                        if not tags_val or tags_val == []:
-                            warning_tags += 1
-
-                        article = ArticleRecord(**article_data)
-
-                        self._storage.append_article(
-                            article, self.country, self.source_key
-                        )
-                        articles_scraped += 1
-                        self._scraped_urls_this_run.add(str(thumbnail.url))
-
-                        if self.progress and (i + 1) % 10 == 0:
-                            self.progress.update(
-                                articles_scraped=articles_scraped,
-                                articles_failed=failed_http + failed_body + failed_date,
-                            )
-
-                    except Exception as e:
-                        logger.error(f"Failed to scrape article {thumbnail.url}: {e}")
-                        failed_http += 1
+                progress_bar.close()
 
         else:
             # Browser client implementation would go here
