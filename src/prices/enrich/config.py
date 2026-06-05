@@ -8,7 +8,10 @@ OUTPUT_RETRIES = 3
 
 # Paths (relative to repo root)
 REPO_ROOT = Path(__file__).resolve().parents[3]
-RAW_PRICES_CSV = REPO_ROOT / "outputs" / "prices" / "all_countries_prices.csv"
+RAW_PRICES_CSV = REPO_ROOT / "outputs" / "prices" / "raw" / "raw_prices.csv"
+ENRICHED_PRICES_CSV = (
+    REPO_ROOT / "outputs" / "prices" / "enriched" / "enriched_prices.csv"
+)
 ENRICH_DIR = REPO_ROOT / "data" / "prices" / "_enrich"
 PRODUCTS_INPUT_PARQUET = ENRICH_DIR / "products_input.parquet"
 COICOP_XLSX = ENRICH_DIR / "coicop_categories.xlsx"
