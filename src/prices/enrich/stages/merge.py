@@ -50,6 +50,20 @@ def compute_unit_value(
             m = 1
         else:
             m = 1
+    # Sachet-pack double-encode: amount_value holds the pack-total
+    # mass/volume while count was filled with the piece count
+    # (e.g. 100 × 21g latte sachets → av=2.1, count=100). Trust the
+    # pack-total and collapse count. 0.5 (kg/lt) excludes any plausible
+    # per-piece F&B SKU so single-bottle rows are unaffected.
+    elif (
+        basis in ("mass", "volume", "length")
+        and c > 1
+        and m == 1
+        and amount_value is not None
+        and not pd.isna(amount_value)
+        and float(amount_value) >= 0.5
+    ):
+        c = 1
     if basis in ("mass", "volume", "length"):
         if amount_value is None or pd.isna(amount_value) or amount_value == 0:
             return None
