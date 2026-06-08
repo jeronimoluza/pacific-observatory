@@ -79,8 +79,10 @@ status / mtime is the version log.
 
 ## Step 2 — Archive the dated snapshot
 
-Immediately after the workbook edit, **before** building the addon, copy
-the updated workbook(s) into a dated audit directory:
+**After every workbook edit is finished and saved** — and specifically
+**after** any parallel research agents (e.g. codex-rescue) have
+returned and you have confirmed the live `.xlsx` mtimes reflect their
+writes — copy the updated workbook(s) into a dated audit directory:
 
 ```bash
 DATE=$(date -u +%Y-%m-%d)
@@ -92,6 +94,16 @@ for r in eap eca lac menaap sar ssa; do
   cp data/text/policy_tracker/$r.xlsx data/text/policy_tracker/$DATE/excel/$r.xlsx
 done
 ```
+
+**Ordering rule (do not snapshot early):** the snapshot is post-edit by
+definition. In a parallel/orchestrated run (multiple regions edited
+concurrently by sub-agents), do NOT snapshot at job dispatch — the live
+files still hold the previous run's content. Wait until every region's
+editor has reported done, then snapshot once. Verify by spot-checking
+that `ls -la data/text/policy_tracker/$DATE/excel/` mtimes are AFTER
+the editor agents' reported finish times and that file sizes differ
+from yesterday's snapshot (identical sizes across all 6 regions is the
+canonical "snapshotted too early" smell).
 
 The dated directories under `data/text/policy_tracker/YYYY-MM-DD/excel/`
 form the human-readable audit trail — one snapshot per run-day. If the
