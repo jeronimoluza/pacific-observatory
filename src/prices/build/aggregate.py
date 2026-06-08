@@ -51,6 +51,7 @@ OBSERVATIONS_PARQUET = BUILD_DIR / "eap_fnb_observations.parquet"
 SNAPSHOT_PARQUET = BUILD_DIR / "eap_fnb_snapshot.parquet"
 PRODUCTS_INPUT_PARQUET = REPO_ROOT / "data" / "prices" / "_enrich" / "products_input.parquet"
 CSV_CHUNK_SIZE = 50_000
+FX_HISTORY_FLOOR = pd.Timestamp("2024-03-06")
 
 JOIN_KEYS = ["product_name_original", "country", "currency"]
 
@@ -228,6 +229,15 @@ def build_observations(csv_path: Path | None = None) -> pd.DataFrame:
     )
 
     df = df.rename(columns={"date": "observation_date"})
+    df["observation_date"] = pd.to_datetime(
+        df["observation_date"], errors="coerce", utc=True, format="ISO8601"
+    ).dt.tz_localize(None)
+    before = len(df)
+    df = df[df["observation_date"] >= FX_HISTORY_FLOOR]
+    logger.info(
+        "[observations] date floor (%s) kept %d of %d rows",
+        FX_HISTORY_FLOOR.date(), len(df), before,
+    )
     df = _finalize(df)
     BUILD_DIR.mkdir(parents=True, exist_ok=True)
     df.to_parquet(OBSERVATIONS_PARQUET, index=False)
