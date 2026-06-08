@@ -2,8 +2,8 @@ from pathlib import Path
 
 # Model
 MODEL_NAME = "gemini-3.1-flash-lite"
-BATCH_SIZE = 75
-CONCURRENCY = 12
+BATCH_SIZE = 15
+CONCURRENCY = 1
 OUTPUT_RETRIES = 3
 
 # Paths (relative to repo root)

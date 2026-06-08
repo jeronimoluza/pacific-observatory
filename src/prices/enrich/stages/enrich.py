@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -15,6 +16,11 @@ from prices.enrich.versioning import (
     TAXONOMY_VERSION,
     cache_key,
 )
+
+_RETRY_AFTER_RE = re.compile(r"retry in (\d+(?:\.\d+)?)s")
+_RATE_LIMIT_MAX_ATTEMPTS = 6
+_RATE_LIMIT_DEFAULT_DELAY = 20.0
+_RATE_LIMIT_CAP_DELAY = 60.0
 
 
 def _load_coicop_context() -> str:
@@ -103,6 +109,29 @@ def _flatten_for_cache(
     return rows
 
 
+async def _run_with_retry_after(agent: Agent, payload: str):
+    """Call agent.run; on 429 RESOURCE_EXHAUSTED, honor server's retryDelay and re-try.
+
+    Why: free-tier Gemini returns `Please retry in Xs` on TPM exhaustion. The
+    default code immediately re-tries and is throttled again, burning attempts
+    for nothing. Sleeping until the TPM window refills is the correct fix.
+    """
+    for _ in range(_RATE_LIMIT_MAX_ATTEMPTS):
+        try:
+            return await agent.run(payload)
+        except Exception as e:
+            s = str(e)
+            if "429" not in s and "RESOURCE_EXHAUSTED" not in s:
+                raise
+            m = _RETRY_AFTER_RE.search(s)
+            delay = float(m.group(1)) if m else _RATE_LIMIT_DEFAULT_DELAY
+            delay = min(delay + 1.0, _RATE_LIMIT_CAP_DELAY)
+            await asyncio.sleep(delay)
+    raise RuntimeError(
+        f"Rate-limit retry budget exhausted ({_RATE_LIMIT_MAX_ATTEMPTS})"
+    )
+
+
 async def _enrich_async(df: pd.DataFrame) -> None:
     agent = _build_agent()
     already = cache.existing_keys()
@@ -114,7 +143,7 @@ async def _enrich_async(df: pd.DataFrame) -> None:
         inputs = [_structured_input(r) for _, r in chunk.iterrows()]
         async with sem:
             try:
-                result = await agent.run(json.dumps(inputs))
+                result = await _run_with_retry_after(agent, json.dumps(inputs))
                 products = result.output.products
                 if len(products) != len(inputs):
                     raise RuntimeError(
@@ -141,7 +170,7 @@ async def _enrich_single(agent: Agent, inp: dict, batch_err: Exception) -> None:
     last_err: Exception | None = batch_err
     for _ in range(config.OUTPUT_RETRIES):
         try:
-            result = await agent.run(json.dumps([inp]))
+            result = await _run_with_retry_after(agent, json.dumps([inp]))
             products = result.output.products
             if products:
                 raw = str(getattr(result, "all_messages", lambda: "")())[:8000]
