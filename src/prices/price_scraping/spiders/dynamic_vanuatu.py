@@ -24,7 +24,7 @@ class DynamicVanuatuSpider(CrawlSpider):
     name = "dynamic_vanuatu"
     allowed_domains = ["retail.dynamicvanuatu.com"]
     start_urls = ["https://retail.dynamicvanuatu.com/collections/all-products"]
-    currency = "VNT"
+    currency = "VUV"
 
     # CSS selector fallbacks for product fields
     SELECTORS = get_selectors("dynamic_vanuatu")
