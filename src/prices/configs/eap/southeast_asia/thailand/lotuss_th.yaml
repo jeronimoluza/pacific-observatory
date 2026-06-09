@@ -1,0 +1,8 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: lotuss_th
+url: https://www.lotuss.com/th/
+language: th
+cadence: daily

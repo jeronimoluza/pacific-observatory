@@ -2,7 +2,7 @@ scaffolding: spider
 extraction_pattern: scrapy_api
 analytical_role: retailer_sku
 coicop_classification: deferred_gemini
-spider: guardian_my
-url: https://www.guardian.com.my
+spider: life_pharmacy_nz
+url: https://www.lifepharmacy.co.nz
 language: en
 cadence: weekly

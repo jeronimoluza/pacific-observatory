@@ -1,0 +1,8 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: source_curated
+spider: squarefoot_hk
+url: https://www.squarefoot.com.hk/rent/
+language: zh-HK
+cadence: weekly

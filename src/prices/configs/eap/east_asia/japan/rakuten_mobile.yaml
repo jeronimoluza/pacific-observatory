@@ -1,0 +1,8 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+spider: rakuten_mobile
+url: https://network.mobile.rakuten.co.jp/fee/saikyo-plan/
+language: ja
+cadence: weekly

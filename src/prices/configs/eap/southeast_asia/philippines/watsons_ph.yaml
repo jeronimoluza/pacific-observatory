@@ -1,8 +1,8 @@
 scaffolding: spider
-extraction_pattern: scrapy_api
+extraction_pattern: scrapy_html
 analytical_role: retailer_sku
 coicop_classification: deferred_gemini
-spider: guardian_my
-url: https://www.guardian.com.my
+spider: watsons_ph
+url: https://www.watsons.com.ph
 language: en
-cadence: weekly
+cadence: daily

@@ -1,0 +1,8 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+spider: hkcsl_prepaid
+url: https://www.hkcsl.com/en/prepaid/
+language: en
+cadence: weekly

@@ -1,0 +1,8 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+spider: two_degrees_nz
+url: https://www.2degrees.nz/mobile-plans/pay-monthly
+language: en
+cadence: weekly

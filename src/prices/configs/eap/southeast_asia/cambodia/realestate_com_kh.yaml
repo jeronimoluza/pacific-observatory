@@ -1,0 +1,8 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: source_curated
+spider: realestate_com_kh
+url: https://www.realestate.com.kh/
+language: en
+cadence: weekly

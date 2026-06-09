@@ -1,8 +1,8 @@
 scaffolding: spider
-extraction_pattern: scrapy_api
+extraction_pattern: scrapy_playwright
 analytical_role: retailer_sku
 coicop_classification: deferred_gemini
-spider: guardian_my
-url: https://www.guardian.com.my
-language: en
+spider: sayurbox
+url: https://www.sayurbox.com/
+language: id
 cadence: weekly

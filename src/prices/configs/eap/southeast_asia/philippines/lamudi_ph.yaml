@@ -1,0 +1,9 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1"]
+spider: lamudi_ph
+url: https://www.lamudi.com.ph/rent/
+language: en
+cadence: weekly

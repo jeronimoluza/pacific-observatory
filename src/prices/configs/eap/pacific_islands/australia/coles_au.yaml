@@ -1,0 +1,12 @@
+spider: coles_au
+language: en
+active: false
+# Imperva Incapsula with active headless-detection. Tested 2026-06-08:
+# - curl_cffi (chrome120 TLS): 212-byte JS-challenge stub
+# - Vanilla Playwright headless: 211-byte stub
+# - Playwright + homepage warm-up + stealth JS (webdriver/plugins/languages
+#   overrides) + en-AU locale + Sydney TZ: homepage 200/590KB with full
+#   reese84 cookie set, but category navigation rejected with explicit
+#   "Request unsuccessful" 974-byte page + Incapsula incident ID (edet=12).
+# Bypass requires playwright-stealth (new dep) or residential AU proxy, or
+# drop the source.

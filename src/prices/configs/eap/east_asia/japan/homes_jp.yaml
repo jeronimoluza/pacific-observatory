@@ -1,0 +1,8 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+spider: homes_jp
+url: https://www.homes.co.jp/chintai/tokyo/list/
+language: ja
+cadence: weekly

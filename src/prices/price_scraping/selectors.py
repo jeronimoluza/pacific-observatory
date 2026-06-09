@@ -635,6 +635,113 @@ SPIDER_SELECTORS = {
             "meta[property='og:url']::attr(content)",
         ],
     },
+    # --- Australia (Coles, Next.js SSR) ---
+    "coles_au": {
+        "product_name": [
+            "h1.product__title::text",
+            "h1[data-testid='title']::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span.price__value[data-testid='pricing']::text",
+            "span.price__value::text",
+        ],
+        "category": [
+            "nav[aria-label='breadcrumb'] a::text",
+            "ol.breadcrumb a::text",
+        ],
+        "product_id": [
+            "meta[property='product:retailer_item_id']::attr(content)",
+            "link[rel='canonical']::attr(href)",
+        ],
+    },
+    # --- Hong Kong (Wellcome, Nuxt SSR) ---
+    "wellcome_hk": {
+        "product_name": [
+            "meta[name='og:title']::attr(content)",
+            "meta[property='og:title']::attr(content)",
+            "h1::text",
+        ],
+        "price": [
+            "meta[name='product:price:amount']::attr(content)",
+            "meta[property='product:price:amount']::attr(content)",
+            "span.price::text",
+        ],
+        "category": [
+            "nav.breadcrumb a::text",
+            "ol.breadcrumb a::text",
+        ],
+        "product_id": [
+            "link[rel='canonical']::attr(href)",
+            "meta[name='og:url']::attr(content)",
+        ],
+    },
+    # --- South Korea (Emart / SSG.com) ---
+    "emart_kr": {
+        "product_name": [
+            "meta[property='og:title']::attr(content)",
+            "h2.cdtl_info_tit::text",
+            "h1::text",
+        ],
+        "price": [
+            "span.cdtl_new_price em.ssg_price::text",
+            "em.ssg_price::text",
+        ],
+        "category": [
+            "div.cdtl_category_info a::text",
+            "ol.breadcrumb a::text",
+        ],
+        "product_id": [
+            "meta[property='og:url']::attr(content)",
+            "link[rel='canonical']::attr(href)",
+        ],
+    },
+    # --- Samoa (Farmer Joe via SamoaMarket, Shopify) ---
+    "farmer_joe": {
+        "product_name": [
+            "meta[property='og:title']::attr(content)",
+            "h1.m5::text",
+            "h1.product__title::text",
+            "h1::text",
+        ],
+        "price": [
+            "meta[property='product:price:amount']::attr(content)",
+            "meta[property='og:price:amount']::attr(content)",
+            "span.price-item--regular::text",
+            "span.f8pr-price::text",
+        ],
+        "category": [
+            "nav.breadcrumb a::text",
+            "ol.breadcrumb a::text",
+        ],
+        "product_id": [
+            "meta[property='product:retailer_item_id']::attr(content)",
+            "input[name='product-id']::attr(value)",
+            "input[name='id']::attr(value)",
+        ],
+    },
+    # --- Malaysia (Jaya Grocer, Shopify Hydrogen-style) ---
+    "jaya_grocer": {
+        "product_name": [
+            "h1.product__title::text",
+            "h1::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "product-price span.price::text",
+            "span.price-item--regular::text",
+            "span.price::text",
+        ],
+        "category": [
+            "nav.breadcrumb a::text",
+            "ol.breadcrumb a::text",
+        ],
+        "product_id": [
+            "meta[property='product:retailer_item_id']::attr(content)",
+            "input[name='product-id']::attr(value)",
+            "input[name='id']::attr(value)",
+        ],
+    },
 }
 
 

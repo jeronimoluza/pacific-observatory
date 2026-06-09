@@ -1,0 +1,8 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: watsons_tw
+url: https://www.watsons.com.tw
+language: zh-TW
+cadence: daily
