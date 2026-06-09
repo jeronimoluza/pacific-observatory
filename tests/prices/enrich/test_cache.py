@@ -32,9 +32,11 @@ def _enrichment_row(cache_key="abc", input_hash="h1", state="resolved"):
         "raw_response_text": "{}",
         "total_tokens": 42,
         "model_version": "gemini-3.1-flash-lite",
-        "prompt_version": "p",
+        "prompt_semver": "v1",
+        "prompt_bytes_hash": "p",
         "schema_version": "s",
         "taxonomy_version": "t",
+        "trust_level": "high",
         "created_at": "2026-05-27T00:00:00+00:00",
     }
 

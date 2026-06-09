@@ -18,12 +18,13 @@ Produce a `ProductEnrichment` per product. Be precise about:
    - `length` → goods sold by length (rope, fabric by meter)
    - `count` → discrete units bought as a pack (eggs x12, capsules x24)
    - `item` → single discrete item (phone, knife, t-shirt)
-2. **amount_value + standard_unit** — convert to one of {kg, lt, mt, unit, item}:
+2. **amount_value + standard_unit** — PER-SINGLE-UNIT quantity (NOT pack total) converted to {kg, lt, mt, unit, item}:
    - mass → kg; volume → lt (litres; 75cl = 0.75 lt); length → mt
    - count → null amount_value, standard_unit="unit"
    - item → null amount_value, standard_unit="item"
-3. **count** — pack size for count-based pricing (12 eggs → 12)
-4. **multiplier** — multipack factor for "10 x 25g" type packaging → 10
+   - For "24x330ml" → amount_value=0.33 (one bottle), NOT 7.92 (whole pack). The pack size goes in `multiplier`.
+3. **count** — ONLY used when `pricing_basis` is `count` or `item`. Number of discrete units in the SKU (12 eggs → count=12). For mass/volume/length goods, leave count=1; the pack size belongs in `multiplier`.
+4. **multiplier** — multipack factor (N identical units sold as one SKU). For "10 x 25g" → multiplier=10, amount_value=0.025. Default is 1 (no multipack). Only ONE of `count` or `multiplier` should be >1 for any given row.
 5. **dimensions[]** — physical size METADATA (knife 16.5cm → one Dimension entry with axis="length"). NEVER conflate with pricing_basis.
 6. **coicop_code** — the **deepest-available COICOP leaf** from the context below. These are depth-4 or depth-5 codes (e.g. `01.1.6.1.7`, `09.3.2.2`). Pick the most specific listed leaf the product belongs to. Suffixes `(ND)`, `(SD)`, `(D)`, `(S)` are COICOP goods/services markers (Non-Durable / Semi-Durable / Durable / Services) — they do NOT mean "no further detail"; treat them as ordinary labels.
    To pick the leaf: first identify WHAT the product is (a cosmetic, a snack, a pet supply, a medicine, a book…), then route. Anchor on the product TYPE, not on units or quantities — "Bioderma Hydrabio H2O 250 ml" is a facial toner (cosmetics), not a beverage; "Vita Gummies" is a vitamin supplement, not a confection; pet-aimed milk thistle is a pet product (09.3.2.2), not a human medicine. Product names arrive in many languages — translate to the English noun first.
@@ -62,6 +63,25 @@ If the sub-vocabulary line is empty for a leaf, the taxonomy hasn't been generat
 
 ## Hard rules
 - Output IDs are English even when input is not.
-- Promo math uses the AS-PAID denominator (if "buy 2 get 1 free", count=3, not 2).
+- Promo math uses the AS-PAID denominator (if "buy 2 get 1 free", count=3 OR multiplier=3 per rule 3/4, not 2).
 - "cl" → volume in litres (75cl → 0.75 lt). Do not drop centilitres.
 - "cm" on cutlery/cookware → dimensions[], NOT pricing_basis=length.
+- **Unit suffixes are case-insensitive.** "4.8G", "4.8g", "4.8 G", "4.8 g" all mean 4.8 grams = 0.0048 kg. Same for "250ML"/"250ml" = 0.25 lt, "16OZ"/"16oz" = 0.4536 kg. Never treat an uppercase letter as a different unit from its lowercase form.
+- **When the product name contains an explicit mass/volume marker (Ng, Nkg, Nml, Nlt, Ncl, Noz, etc.), pricing_basis MUST be `mass` or `volume` — never `item`.** Example: "Wardah Lip Balm 7G" is mass (0.007 kg), NOT item. Only fall back to `item` when there is NO weight/volume signal anywhere in the name.
+
+## Common mistakes — multipack math (READ BEFORE EMITTING)
+
+The downstream computes `denom = amount_value × count × multiplier` and `unit_value = price / denom`. Filling redundantly inflates the denominator by N² or N³. For ANY multipack/bundle/promo, only ONE of {count, multiplier} should be > 1, and `amount_value` is always PER-UNIT.
+
+| product_name_original | basis | amount_value | count | multiplier | unit |
+|---|---|---|---|---|---|
+| "Ganzberg Beer 24x330ml" | volume | **0.33** | 1 | **24** | lt |
+| "Plain Crackers 4x20g" | mass | **0.02** | 1 | **4** | kg |
+| "12 eggs" | count | null | **12** | 1 | unit |
+| "Family Pack 16 x 2.1L" | volume | **2.1** | 1 | **16** | lt |
+| "House Blend Coffee x4" (4 identical items) | item | null | 1 | **4** | item |
+| "Buy 2 Get 1 Free, 500g chocolate bar" | mass | **0.5** | 1 | **3** | kg |
+
+WRONG (double-counts the pack):
+- amount_value=7.92, count=24, multiplier=24 → denom=4562L for a 7.92L pack
+- amount_value=0.08, count=4, multiplier=4   → denom=1.28kg for an 80g pack

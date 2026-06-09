@@ -1,7 +1,8 @@
 import hashlib
 
 from prices.enrich.versioning import (
-    PROMPT_VERSION,
+    PROMPT_BYTES_HASH,
+    PROMPT_SEMVER,
     SCHEMA_VERSION,
     _sha12,
     cache_key,
@@ -45,21 +46,34 @@ def test_input_hash_stable():
     assert len(h1) == 64
 
 
-def test_cache_key_changes_with_versions(monkeypatch):
+def test_cache_key_changes_with_semver(monkeypatch):
     d = {"x": 1}
     k1 = cache_key(d)
     import prices.enrich.versioning as v
 
-    monkeypatch.setattr(v, "PROMPT_VERSION", "deadbeefdead")
+    monkeypatch.setattr(v, "PROMPT_SEMVER", "v999")
     expected = hashlib.sha256(
-        (
-            canonical_json(d) + "deadbeefdead" + v.SCHEMA_VERSION + v.TAXONOMY_VERSION
-        ).encode()
+        (canonical_json(d) + "v999" + v.SCHEMA_VERSION + v.TAXONOMY_VERSION).encode()
     ).hexdigest()
     assert v.cache_key(d) == expected
     assert v.cache_key(d) != k1
 
 
-def test_prompt_and_schema_version_are_12_chars():
-    assert len(PROMPT_VERSION) == 12
+def test_cache_key_ignores_bytes_hash(monkeypatch):
+    """Editing the prompt file must NOT invalidate the cache automatically.
+
+    Only an explicit PROMPT_SEMVER bump should change cache_key. This is the
+    whole point of the decoupling — typo fixes shouldn't trigger 41k re-enrich.
+    """
+    d = {"x": 1}
+    k1 = cache_key(d)
+    import prices.enrich.versioning as v
+
+    monkeypatch.setattr(v, "PROMPT_BYTES_HASH", "deadbeefdead")
+    assert v.cache_key(d) == k1
+
+
+def test_prompt_semver_and_hashes_well_formed():
+    assert PROMPT_SEMVER.startswith("v") and len(PROMPT_SEMVER) >= 2
+    assert len(PROMPT_BYTES_HASH) == 12
     assert len(SCHEMA_VERSION) == 12

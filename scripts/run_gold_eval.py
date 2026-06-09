@@ -15,7 +15,8 @@ import pandas as pd
 from prices.enrich import cache, config
 from prices.enrich.stages.enrich import _enrich_async, _structured_input
 from prices.enrich.versioning import (
-    PROMPT_VERSION,
+    PROMPT_BYTES_HASH,
+    PROMPT_SEMVER,
     SCHEMA_VERSION,
     TAXONOMY_VERSION,
     cache_key,
@@ -244,7 +245,8 @@ def main() -> None:
     # Summary line for capture
     summary = {
         "ts": datetime.now(timezone.utc).isoformat(),
-        "prompt_version": PROMPT_VERSION,
+        "prompt_semver": PROMPT_SEMVER,
+        "prompt_bytes_hash": PROMPT_BYTES_HASH,
         "schema_version": SCHEMA_VERSION,
         "taxonomy_version": TAXONOMY_VERSION,
         "model": config.MODEL_NAME,

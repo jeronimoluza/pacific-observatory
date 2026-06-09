@@ -11,7 +11,8 @@ from pydantic_ai import Agent
 from prices.enrich import cache, config
 from prices.enrich.schemas import EnrichmentBatch, ProductEnrichment
 from prices.enrich.versioning import (
-    PROMPT_VERSION,
+    PROMPT_BYTES_HASH,
+    PROMPT_SEMVER,
     SCHEMA_VERSION,
     TAXONOMY_VERSION,
     cache_key,
@@ -100,9 +101,11 @@ def _flatten_for_cache(
                 "raw_response_text": raw_text,
                 "total_tokens": total_tokens,
                 "model_version": config.MODEL_NAME,
-                "prompt_version": PROMPT_VERSION,
+                "prompt_semver": PROMPT_SEMVER,
+                "prompt_bytes_hash": PROMPT_BYTES_HASH,
                 "schema_version": SCHEMA_VERSION,
                 "taxonomy_version": TAXONOMY_VERSION,
+                "trust_level": "high",
                 "created_at": now,
             }
         )
