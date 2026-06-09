@@ -58,7 +58,10 @@ class MhOnlineSpider(scrapy.Spider):
         yield scrapy.Request(
             SITEMAP_INDEX,
             callback=self.parse_sitemap_index,
-            meta={"impersonate": self.IMPERSONATE_PROFILE},
+            meta={
+                "impersonate": self.IMPERSONATE_PROFILE,
+                "handle_httpstatus_list": [404],
+            },
             errback=self.errback,
         )
 
@@ -70,10 +73,17 @@ class MhOnlineSpider(scrapy.Spider):
             f"({len(product_sitemaps)} product sub-sitemaps)"
         )
         for sm in product_sitemaps:
+            # Site quirk: some sub-sitemaps return HTTP 404 with a valid XML
+            # payload (e.g. wp-sitemap-posts-product-2.xml on 2026-05-21
+            # served 404 + 1,702 product URLs). Accept 404 here so the body
+            # still reaches the parser.
             yield scrapy.Request(
                 sm,
                 callback=self.parse_product_sitemap,
-                meta={"impersonate": self.IMPERSONATE_PROFILE},
+                meta={
+                    "impersonate": self.IMPERSONATE_PROFILE,
+                    "handle_httpstatus_list": [404],
+                },
                 errback=self.errback,
             )
 
