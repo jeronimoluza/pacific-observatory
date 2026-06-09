@@ -126,6 +126,51 @@ def test_merge_left_joins_and_keeps_unenriched_rows():
     assert pd.isna(unknown["unit_value"])
 
 
+def test_merge_coalesces_missing_trust_level_to_high():
+    """Legacy enrichments without trust_level must surface as high-trust.
+
+    Pre-decoupling cache rows lack the column entirely, and any NaN that
+    survives the merge would silently drop the row from a downstream
+    trust filter that uses .isin({"high"}).
+    """
+    raw = pd.DataFrame(
+        [
+            {
+                "product_name": "Coke 1L",
+                "category": "Drinks",
+                "country": "PH",
+                "currency": "PHP",
+                "price": 60.0,
+            }
+        ]
+    )
+    coke_hash = input_hash(_row_input_dict(raw.iloc[0]))
+    enriched = pd.DataFrame(
+        [
+            {
+                "input_hash": coke_hash,
+                "pricing_basis": "volume",
+                "amount_value": 1.0,
+                "standard_unit": "lt",
+                "count": None,
+                "multiplier": None,
+                "coicop_code": "01.2.2",
+                "sub_label_id": "cola",
+                "is_promotion": False,
+                "is_bundle": False,
+                "is_multipack": False,
+                "promo_reason": None,
+                "confidence": 0.95,
+                "state": "resolved",
+                # trust_level intentionally omitted (legacy row)
+            }
+        ]
+    )
+    out = merge_enrichments(raw, enriched, key_recompute=True)
+    assert "trust_level" in out.columns
+    assert out["trust_level"].iloc[0] == "high"
+
+
 def test_merge_drops_input_hash_column_from_output():
     raw = pd.DataFrame(
         [

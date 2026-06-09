@@ -36,6 +36,10 @@ COUNTRIES_YAML = REPO_ROOT / "src" / "configs" / "countries.yaml"
 CURRENT_LOOKBACK_DAYS = 60
 FX_HISTORY_FLOOR = pd.Timestamp("2024-03-06")
 MIN_OBS_PER_CELL = 1
+# Only rows whose trust_level is in this set reach the published dashboard.
+# Cache rows without trust_level (legacy v1-era) are coalesced to "high" by
+# the build stage, so this default is conservative without dropping vetted data.
+PUBLISH_TRUST_LEVELS = frozenset({"high"})
 
 _COICOP_RE = re.compile(r"^(\d+(?:\.\d+)*)")
 _ND_SUFFIX_RE = re.compile(r"\s*\(ND\)\s*$")
@@ -222,6 +226,15 @@ def publish() -> Path:
     obs = pd.read_parquet(OBSERVATIONS_PARQUET)
     obs["observation_date"] = pd.to_datetime(obs["observation_date"], errors="coerce")
     obs = obs[obs["observation_date"].notna()]
+    if "trust_level" in obs.columns:
+        before = len(obs)
+        obs = obs[obs["trust_level"].fillna("high").isin(PUBLISH_TRUST_LEVELS)]
+        logger.info(
+            "trust_level filter (%s) kept %d of %d rows",
+            sorted(PUBLISH_TRUST_LEVELS),
+            len(obs),
+            before,
+        )
     current = _current_snapshot(obs)
     monthly = _monthly_series(obs)
 

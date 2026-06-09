@@ -22,6 +22,7 @@ ENRICHMENT_COLS = [
     "confidence",
     "state",
     "dimensions_json",
+    "trust_level",
 ]
 
 
@@ -110,6 +111,13 @@ def merge_enrichments(
         keep_cols = [c for c in ENRICHMENT_COLS if c in enriched.columns]
         join_cols = ["input_hash"] + keep_cols
         merged = raw.merge(enriched[join_cols], on="input_hash", how="left")
+    # Legacy rows pre-dating the trust_level column default to high — they
+    # were vetted under the prior pipeline and a NaN here would silently
+    # drop them in any downstream trust filter.
+    if "trust_level" in merged.columns:
+        merged["trust_level"] = merged["trust_level"].fillna("high")
+    elif "trust_level" in ENRICHMENT_COLS:
+        merged["trust_level"] = "high"
     merged["price"] = merged.apply(
         lambda r: parse_price(r.get("price"), r.get("currency")), axis=1
     )

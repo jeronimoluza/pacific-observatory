@@ -60,6 +60,7 @@ CACHE_KEEP_COLS = [
     "pricing_basis", "amount_value", "standard_unit",
     "count", "multiplier", "coicop_code", "sub_label_id",
     "is_promotion", "is_bundle", "is_multipack", "confidence",
+    "trust_level",
 ]
 
 
@@ -75,6 +76,10 @@ def load_filtered_cache() -> pd.DataFrame:
     cache = cache.sort_values("created_at").drop_duplicates(
         subset=JOIN_KEYS, keep="last"
     )
+    if "trust_level" not in cache.columns:
+        cache["trust_level"] = "high"
+    else:
+        cache["trust_level"] = cache["trust_level"].fillna("high")
     return cache[CACHE_KEEP_COLS]
 
 
