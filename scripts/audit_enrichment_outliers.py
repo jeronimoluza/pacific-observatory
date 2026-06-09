@@ -13,12 +13,17 @@ Outputs:
 """
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from prices.enrich.stages.merge import compute_unit_value  # noqa: E402
+
 CACHE = REPO_ROOT / "data/prices/_enrich/cache/enrichments.parquet"
 PI = REPO_ROOT / "data/prices/_enrich/products_input.parquet"
 OUT_DIR = REPO_ROOT / "outputs/prices/audit"
@@ -31,14 +36,17 @@ UNIT_BASES = {"mass", "volume", "count"}
 
 
 def _unit_price(row) -> float:
-    denom = (
-        (row["amount_value"] or 1.0)
-        * (row["multiplier"] or 1.0)
-        * (row["count"] or 1.0)
+    # Delegate to the canonical compute_unit_value in merge.py so audit math
+    # matches what publish actually sees — including the multipack-collapse
+    # workaround for legacy double-counted rows (c==m>1 → c=1, m=1).
+    v = compute_unit_value(
+        row["price"],
+        row["pricing_basis"],
+        row.get("amount_value"),
+        row.get("count"),
+        row.get("multiplier"),
     )
-    if denom in (0, None) or pd.isna(denom):
-        return np.nan
-    return row["price"] / denom
+    return np.nan if v is None else v
 
 
 def main() -> int:
