@@ -1788,6 +1788,8 @@ class NewspaperScraper:
         thumbnail_selector = self.thumbnail_selectors.container
         all_thumbnails: List[ThumbnailRecord] = []
         previous_batch_data = None
+        prev_batch_urls_window: List[set] = []
+        no_progress_streak = 0
 
         async for result_batch in self.listing_strategy.discover_and_scrape(
             client, self.base_url, thumbnail_selector
@@ -1878,6 +1880,29 @@ class NewspaperScraper:
                 if batch_urls.issubset(existing_urls):
                     logger.info("Batch already in urls.csv. Stopping discovery.")
                     break
+
+                # Rule 5: Subtract last 2 batches' URLs (sticky widget noise:
+                # sidebar/related/popular blocks that repeat across pages)
+                # before checking for genuinely new URLs. Stops after 3
+                # consecutive batches with zero truly-new content.
+                widget_noise = (
+                    set().union(*prev_batch_urls_window)
+                    if prev_batch_urls_window
+                    else set()
+                )
+                truly_new = batch_urls - widget_noise - existing_urls
+                if not truly_new:
+                    no_progress_streak += 1
+                    if no_progress_streak >= 3:
+                        logger.info(
+                            "3 consecutive batches with no truly-new URLs "
+                            "after widget filter. Stopping discovery."
+                        )
+                        break
+                else:
+                    no_progress_streak = 0
+                prev_batch_urls_window.append(batch_urls)
+                prev_batch_urls_window = prev_batch_urls_window[-2:]
 
             # Add to results
             all_thumbnails.extend(batch_thumbnails)
