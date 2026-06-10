@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["11.1"]
+spider: sushiya_ua
+url: https://sushiya.ua/rolli/
+language: uk
+cadence: weekly
+notes: |
+  Sushiya — Ukraine's largest fast-casual sushi chain (21 restaurants, 5 cities).
+  Magento storefront, fully server-rendered menu (Tier 1A, no Playwright):
+  li.product-item cards, name in a.product-item-link, price in the .price span
+  of the finalPrice wrapper ("395 ₴"). Crawls rolls/sets/sushi/soups/drinks/
+  appetizers -> COICOP 11.1 (restaurants & catering), the one division otherwise
+  only covered by accommodation. Whole source is restaurant menu -> single
+  COICOP, source_curated. Reachable from non-UA IPs (2026-06).
