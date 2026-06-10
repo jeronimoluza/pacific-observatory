@@ -1,0 +1,17 @@
+# Bosnia and Herzegovina
+
+| Source name | URL | COICOP divisions covered | Source type | Cadence | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Bingo supermarket | https://www.bingo.ba/ | 01, 02, 05, 12 | Online supermarket | daily | no | HTML | medium | partial | yes | Most profitable BiH retailer (€820M turnover 2022; 199 stores); check for online catalogue / app with per-product BAM prices; dominant food retail player |
+| Maxi BiH online | https://maxiks.com/ | 01, 02, 05, 12 | Online supermarket | daily | no | HTML | medium | partial | yes | MAXI confirmed as first to bring online shopping to Bosnia BiH market; per-product BAM prices expected; EN and BS interface; probe catalogue depth |
+| Tropic supermarket | https://www.tropic.ba/ | 01, 02, 05 | Online supermarket | daily | no | HTML | medium | partial | yes | Second largest chain (€188M turnover, 39 stores); probe for online catalogue with BAM per-product prices |
+| Agency for Statistics (BHAS) — CPI | https://bhas.gov.ba/?lang=en | 01-12 | NSO CPI division indexes | monthly | no | XLS/HTML | low | yes | no | Agency for Statistics of Bosnia and Herzegovina; CPI and consumer price data; EN interface; data covers both Republika Srpska and Federation BiH entities; inflation 1.3% Aug 2024; primary CPI benchmark for BiH |
+| BHAS — Prices publication calendar | https://bhas.gov.ba/Calendar/Category/10?lang=en | 01-12 | National statistics office datasets | monthly | no | XLS | low | yes | no | BHAS price release calendar with links to consumer price data downloads; XLS format; complement to direct CPI page |
+| Central Bank of BiH — FX | https://www.cbbh.ba/CurrencyExchange | n/a | Bank fee schedule / FX board | daily | no | HTML/XLS | low | yes | n/a | BiH uses currency-board arrangement (BAM pegged to EUR at 1 EUR = 1.95583 BAM since 1998); CBBH publishes official rate daily; XLS download available |
+| GlobalPetrolPrices — Bosnia | https://www.globalpetrolprices.com/Bosnia-and-Herzegovina/gasoline_prices/ | 07 | Fuel pump-price tracker | weekly | no | HTML-table | low | yes | no | Weekly retail fuel price series for BiH in BAM; historical archive; use as primary fuel source pending official regulator page confirmation |
+| m:tel BiH tariffs | https://www.mtel.ba/en/tariff-packages | 08 | Telco / ISP tariff | irregular | no | HTML | medium | partial | no | State-owned Republika Srpska telecom; mobile + fixed-internet; BAM monthly tariff plans; EN page; probe for HTML vs JS |
+| BH Telecom tariffs | https://www.bhtelecom.ba/en/tariffs | 08 | Telco / ISP tariff | irregular | no | HTML | medium | partial | no | Federation entity's dominant telecom; BAM tariff plans; EN page; complement to m:tel probe |
+| Nekretnine.ba real estate | https://www.nekretnine.ba/ | 04 | Real-estate / rental portal | daily | no | HTML | low | partial | yes | Bosnia's main real estate classifieds; sale and rental listings in BAM/EUR; Sarajevo and regional cities; COICOP 04.1 coverage |
+| AutoBiH / oglasi.ba vehicles | https://www.oglasi.ba/auto | 07 | Classifieds — vehicles | daily | no | HTML | low | partial | yes | Bosnia general classifieds — vehicle section; per-listing EUR/BAM prices; COICOP 07.1 coverage |
+
+Cross-region aggregators that also cover Bosnia and Herzegovina (Eurostat HICP, IMF CPI, WB ICP, Booking.com) live in `../_aggregators.md`.

@@ -1,0 +1,19 @@
+# Armenia
+
+| Source name | URL | COICOP divisions covered | Source type | Cadence | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| SAS.am Online Supermarket | https://www.sas.am/en/ | 01, 02, 05, 12 | Online supermarket | daily | no | HTML | medium | yes | yes | First Armenian online supermarket; 30 000+ SKUs; AMD + USD + EUR prices displayed; EN interface; 24/7 delivery; probe for per-product PDP selector stability |
+| Supermarket.am | https://supermarket.am/en/ | 01, 02, 05, 12 | Online supermarket | daily | no | HTML | medium | partial | yes | Dedicated full-range online supermarket with website and app ordering; AMD prices; Yerevan delivery; probe HTML vs JS-rendered PDP |
+| Parma online | https://parma.am/en/ | 01, 02, 05 | Online supermarket | daily | no | HTML | medium | partial | yes | Supermarket chain with online ordering in Yerevan; AMD per-product prices; complement to SAS.am for price comparison |
+| Armstat — Prices and Price Indexes | https://armstat.am/en/?nid=82&id=2677 | 01-12 | National statistics office datasets | annual | no | XLS/PDF | low | yes | no | Statistical Committee of Armenia publishes annual "Prices and Price Indexes" compendium covering COICOP-aligned averages; XLS/PDF; primary official price-level source for PPP basket |
+| Armstat — CPI time series | https://armstat.am/en/?nid=12&id=07001 | 01-12 | NSO CPI division indexes | monthly | no | XLS | low | yes | no | Monthly CPI time series with COICOP division breakdown; 426 goods and services in basket (2024); EN interface; XLS download; backbone CPI benchmark for Armenia |
+| Central Bank of Armenia — FX | https://www.cba.am/en/sitepages/exchangerates.aspx | n/a | Bank fee schedule / FX board | daily | no | HTML/JSON | low | yes | n/a | Official AMD FX rates; central bank page; check for JSON API endpoint or XML download of daily rates |
+| List.am real estate | https://www.list.am/en/category/54 | 04 | Real-estate / rental portal | daily | no | HTML | low | yes | yes | 104 000+ property listings across Armenia; sale and rent; AMD prices; largest Armenian classifieds portal; confirmed EN interface; good COICOP 04.1 rental coverage |
+| MyRealty.am | https://myrealty.am/en | 04 | Real-estate / rental portal | daily | no | HTML | low | yes | yes | Largest dedicated Armenian real estate database; rentals and sales in Yerevan and provinces; AMD + EUR prices; EN interface; per-listing data in DOM |
+| List.am auto classifieds | https://www.list.am/en/category/1 | 07 | Classifieds — vehicles | daily | no | HTML | low | yes | yes | List.am vehicles section; per-listing AMD/USD prices; large inventory; COICOP 07.1 vehicle purchase prices |
+| Dram.am — fuel prices | https://dram.am/en/fuel | 07 | Fuel pump-price tracker | daily | no | HTML-table | low | partial | no | Live fuel prices across Armenia by region and city in AMD/L; compares petrol stations by type; confirmed in search as a real-time tracker; probe table structure for automation |
+| GlobalPetrolPrices — Armenia | https://www.globalpetrolprices.com/Armenia/gasoline_prices/ | 07 | Fuel pump-price tracker | weekly | no | HTML-table | low | yes | no | Weekly historical fuel price series for Armenia; AMD per litre; complement to Dram.am for historical backfill |
+| VivaCell-MTS tariffs | https://www.mts.am/en/tariffs | 08 | Telco / ISP tariff | irregular | no | HTML | low | partial | no | Largest Armenian mobile operator (MTS brand); tariff plans in AMD; probe for HTML table vs JS-rendered cards |
+| Beeline Armenia tariffs | https://beeline.am/en/tariffs | 08 | Telco / ISP tariff | irregular | no | HTML | low | partial | no | Second operator; tariff page with AMD monthly costs; confirm pricing table structure |
+
+Cross-region aggregators that also cover Armenia (Eurostat HICP, IMF CPI, WB ICP, CIS-STAT, Booking.com) live in `../_aggregators.md`.

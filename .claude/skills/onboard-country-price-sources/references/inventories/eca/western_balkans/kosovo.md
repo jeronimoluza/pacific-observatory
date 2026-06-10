@@ -1,0 +1,17 @@
+# Kosovo
+
+| Source name | URL | COICOP divisions covered | Source type | Cadence | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Interex Kosovo (Proex) | https://www.interex.al/en | 01, 02, 05 | Online supermarket | daily | no | HTML | medium | partial | yes | Proex operates Interex-branded stores in Kosovo; confirm whether Kosovo-specific online catalogue exists at interex-ks.com or via interex.al; EUR prices (Kosovo uses EUR as sole currency) |
+| Maxi Kosovo | https://maxiks.com/ | 01, 02, 05, 12 | Online supermarket | daily | no | HTML | medium | partial | yes | Maxi brand also operates in Kosovo; online shopping confirmed; per-product EUR prices expected; probe catalogue depth |
+| Kosovo Agency of Statistics (ASK) — Prices | https://ask.rks-gov.net/en/kosovo-agency-of-statistics/economy/prices | 01-12 | NSO CPI division indexes | monthly | no | XLS/HTML | low | yes | no | KAS publishes HICP from Jan 2016 (base 2015=100) in line with Eurostat; prior CPI series back to 2002; monthly release; Nov 2024 CPI growth 0.7% YoY; EN page; primary CPI benchmark for Kosovo |
+| ASKdata — Kosovo statistics | https://askdata.rks-gov.net/ | 01-12 | National statistics office datasets | monthly | no | XLS | low | yes | no | ASK open data portal; structured statistical tables including price data; EN interface; complement to main ASK prices page |
+| Central Bank of Kosovo — FX | https://www.bqk-kos.org/en/statistics/exchange-rates | n/a | Bank fee schedule / FX board | daily | no | HTML/XLS | low | yes | n/a | Kosovo uses EUR as currency; BQK publishes reference FX rates for other currencies relative to EUR; XLS download likely |
+| GlobalPetrolPrices — Kosovo | https://www.globalpetrolprices.com/Kosovo/gasoline_prices/ | 07 | Fuel pump-price tracker | weekly | no | HTML-table | low | partial | no | Weekly retail fuel price series for Kosovo in EUR; confirm page existence — Kosovo sometimes missing from regional fuel trackers; supplement with KEDS/energy regulator page |
+| ERO Kosovo — electricity tariff | https://www.ero-ks.org/en | 04 | Utility tariff | irregular | no | HTML/PDF | low | partial | no | Energy Regulatory Office of Kosovo; sets household electricity tariff in EUR/kWh; PDF tariff decisions; probe for structured tariff schedule page |
+| IPKO tariffs | https://www.ipko.com/en/tariffs | 08 | Telco / ISP tariff | irregular | no | HTML | low | partial | no | Largest Kosovo private telecom; tariff plans in EUR; EN page; probe for HTML table structure |
+| Vala tariffs | https://vala.net/en/tariffs | 08 | Telco / ISP tariff | irregular | no | HTML | low | partial | no | PTK-owned mobile operator; EUR tariff plans; EN page; complement to IPKO probe |
+| Banesore.com real estate | https://www.banesore.com/ | 04 | Real-estate / rental portal | daily | no | HTML | low | partial | yes | Kosovo real estate classifieds; sale and rental listings in EUR; Pristina-focused; per-listing prices in DOM; COICOP 04.1 coverage |
+| megatrend-real.com | https://megatrend-real.com/en | 04 | Real-estate / rental portal | daily | no | HTML | low | partial | yes | Kosovo and regional property listings; EUR prices; complement to Banesore; probe for per-listing price visibility |
+
+Cross-region aggregators that also cover Kosovo (Eurostat HICP, IMF CPI, WB ICP, Booking.com) live in `../_aggregators.md`.

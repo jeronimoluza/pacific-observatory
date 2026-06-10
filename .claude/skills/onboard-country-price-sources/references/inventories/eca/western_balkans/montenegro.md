@@ -1,0 +1,17 @@
+# Montenegro
+
+| Source name | URL | COICOP divisions covered | Source type | Cadence | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Idea Montenegro | https://www.idea.me/ | 01, 02, 05 | Online supermarket | daily | no | HTML | medium | partial | yes | Montenegrin supermarket chain; probe for online catalogue with per-product EUR prices; EU single currency |
+| Voli Supermarket | https://www.voli.me/ | 01, 02, 05, 12 | Online supermarket | daily | no | HTML | medium | partial | yes | Major Montenegrin chain; check for online catalogue with per-product EUR prices — probe HTML PDP structure |
+| MONSTAT — Consumer Price Index | https://monstat.org/eng/page.php?id=26&pageid=26 | 01-12 | NSO CPI division indexes | monthly | no | XLS/HTML | low | yes | no | Statistical Office of Montenegro; CPI as main inflation macroeconomic indicator; monthly release; EN page; Sept 2025 annual inflation 4.9% (highest since May 2024); primary CPI benchmark for Montenegro |
+| MONSTAT — Dwelling price data | https://monstat.org/ | 04 | National statistics office datasets | annual | no | XLS/PDF | low | yes | no | MONSTAT publishes dwelling prices in new residential buildings; 2024 preliminary data available in PDF; complement to classifieds for hedonic housing price analysis |
+| Central Bank of Montenegro — FX | https://www.cbcg.me/en/statistics/official-exchange-rates | n/a | Bank fee schedule / FX board | daily | no | HTML/XLS | low | yes | n/a | Montenegro uses EUR unilaterally; CBCG publishes other-currency FX rates relative to EUR daily; structural reference for pipeline |
+| EPCG — electricity tariff | https://www.epcg.com/en | 04 | Utility tariff | irregular | no | HTML/PDF | low | partial | no | Elektroprivreda Crne Gore; household electricity supplied at regulated EUR/kWh tariff; daytime ~0.09 EUR/kWh, nighttime ~0.05 EUR/kWh per 2024 data; probe for dedicated tariff page |
+| GlobalPetrolPrices — Montenegro | https://www.globalpetrolprices.com/Montenegro/gasoline_prices/ | 07 | Fuel pump-price tracker | weekly | no | HTML-table | low | yes | no | Weekly retail fuel price series for Montenegro in EUR; historical archive; primary fuel source pending national regulator page |
+| MTEL Montenegro tariffs | https://www.mtel.me/en/tariffs | 08 | Telco / ISP tariff | irregular | no | HTML | low | partial | no | State telecom; mobile + fixed-internet; EUR monthly tariff plans; EN page; probe for HTML table structure |
+| ONE Montenegro tariffs | https://www.one.me/en/tariffs | 08 | Telco / ISP tariff | irregular | no | HTML | low | partial | no | Private mobile operator; EUR tariff plans; EN page; complement to MTEL probe |
+| CityExpert Montenegro / nekretnine.me | https://www.nekretnine.me/ | 04 | Real-estate / rental portal | daily | no | HTML | low | partial | yes | Montenegro real estate classifieds; sale and rental listings in EUR; Podgorica and coastal resorts; per-listing prices in DOM; COICOP 04.1 coverage |
+| Automarket.me classifieds | https://www.automarket.me/ | 07 | Classifieds — vehicles | daily | no | HTML | low | partial | yes | Montenegro auto classifieds; per-listing EUR prices for used and new vehicles; COICOP 07.1 coverage |
+
+Cross-region aggregators that also cover Montenegro (Eurostat HICP, IMF CPI, WB ICP, Booking.com) live in `../_aggregators.md`.
