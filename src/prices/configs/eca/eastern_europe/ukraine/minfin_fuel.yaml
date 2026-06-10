@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+source_key: ua_minfin_fuel
+module: eca.eastern_europe.ukraine.minfin_fuel
+function: fetch_ua_minfin_fuel
+url: https://index.minfin.com.ua/ua/markets/fuel/reg/
+language: ukrainian
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Per-oblast daily snapshot, 23 oblasts × 5 fuel grades. Source publishes
+  values in kopiykas per litre — divided by 100 to emit UAH/L. Page renders
+  one day's snapshot at a time; the fetcher tags rows with the run date.
+  Auto-LPG ("Газ") is COICOP 07.2.2 (vehicle fuel sold at АЗС), not 04.5.4.
