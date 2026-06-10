@@ -1,0 +1,21 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["00"]
+source_key: ua_ukrstat_cpi
+module: eca.eastern_europe.ukraine.ukrstat_cpi
+function: fetch_ua_ukrstat_cpi
+url: https://www.ukrstat.gov.ua/imf/arhiv/isc_e.htm
+language: en
+cadence: monthly
+fallback_date: 2002-01-01
+notes: |
+  State Statistics Service all-items consumer price index (base 2001=100),
+  monthly 2002-present, from the IMF/SDDS archive HTML table. The benchmark
+  index series for Ukraine -> analytical_role cpi_benchmark, emits
+  IndexObservation rows (index_observations.csv). coicop_code "00" = all-items;
+  a per-COICOP-division breakdown would come from the SDMX API
+  (stat.gov.ua/sdmx) — left for a later pass. Cells carry OCR-style stray spaces
+  ("4 40 , 1" = 440.1), stripped before parsing. Fetched via curl_cffi
+  (impersonate=chrome) since ukrstat WAF/TCP-drops non-UA clients; page is cp1251.
