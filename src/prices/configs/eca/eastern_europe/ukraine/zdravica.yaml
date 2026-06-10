@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: zdravica
+url: https://zdravica.ua/
+language: uk
+cadence: weekly
+notes: |
+  Zdravica online pharmacy. Server-rendered HTML (Tier 1A, no Playwright);
+  .product-card cards carry price in .price-value and the SKU in data-product.
+  Crawls a representative spread of pharmacy categories -> COICOP division 06
+  (pharmaceuticals/medical, with some 05.6/12 spillover) via downstream Gemini.
+  ?page=N paginates, 45 cards/page. Reachable from non-UA IPs (2026-06).
