@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: novus
+url: https://novus.ua/
+language: uk
+cadence: daily
+notes: |
+  NOVUS supermarket via the public zakaz.ua storefront JSON API
+  (stores-api.zakaz.ua, store 482010105, header x-chain: novus). Tier 1B, no
+  Playwright. Full grocery basket -> COICOP via downstream Gemini. NOTE: API
+  `price` is in KOPECKS (divide by 100). Reachable from non-UA IPs (2026-06)
+  even though the novus.ua SPA + old novus.zakaz.ua path are not.
