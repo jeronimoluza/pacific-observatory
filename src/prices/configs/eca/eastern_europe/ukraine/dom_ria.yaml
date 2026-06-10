@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1"]
+spider: dom_ria
+url: https://dom.ria.com/uk/arenda-kvartir/
+language: uk
+cadence: daily
+notes: |
+  Long-term apartment rental listings (actual rentals, COICOP 04.1.1).
+  Server-rendered Vue SSR — prices in raw HTML, no Playwright. Cards
+  (section.realty-item) carry price/address/rooms/district inline. UAH-only;
+  USD-quoted listings skipped. Reachable from non-UA IPs (2026-06).
