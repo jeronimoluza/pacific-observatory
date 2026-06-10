@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["02.1"]
+spider: goodwine
+url: https://goodwine.com.ua/ua/napoi/
+language: uk
+cadence: weekly
+notes: |
+  GoodWine wine & spirits retailer. Server-rendered Magento HTML (Tier 1A, no
+  Playwright); product cards carry the final price in a data-price-amount attr.
+  Crawls alcoholic-beverage categories under /ua/napoi/ (wine, sparkling,
+  spirits, whisky, beer, cider, low-alcohol) -> COICOP 02.1. Soft drinks
+  (bezalkogol-ni) excluded. ?p=N paginates, 24 cards/page. Reachable from
+  non-UA IPs (2026-06).
