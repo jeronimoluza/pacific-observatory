@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3"]
+spider: kyivstar_ua
+url: https://kyivstar.ua/tariffs
+language: uk
+cadence: monthly
+notes: |
+  Kyivstar (Ukraine's largest mobile operator) tariff plans — COICOP 08.3 mobile
+  communication services; complements vodafone_ua for the operator panel. Tier 2:
+  Next.js grid with CSS-module class names (TariffCard_card__<hash>), so
+  selectors match the stable prefix and Playwright is required. Each card links
+  to a per-plan page and shows "<N> грн/міс" (or "<N> UAH/mo" in EN render);
+  contract bundles showing only a daily figure are skipped. source_curated.
+  Reachable from non-UA IPs (2026-06).
