@@ -1,0 +1,46 @@
+# Ukraine
+
+| Source name | URL | COICOP divisions covered | Source type | Cadence | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Silpo | https://silpo.ua/ | 01, 02 | Retail / e-commerce / pharmacy | daily | no | HTML | high | yes | yes | 403 to non-UA IPs (Cloudflare/Imperva); UK only; PDPs exist but require UA-resident probe to confirm selectors |
+| ATB-Market | https://www.atbmarket.com/ | 01, 02, 05 | Retail / e-commerce / pharmacy | weekly | no | HTML | high | yes | yes | 403 to non-UA IPs; largest UA discounter; UK only; promo cycle is weekly |
+| Auchan UA | https://auchan.ua/ | 01, 02, 05, 09 | Retail / e-commerce / pharmacy | daily | no | HTML | high | partial | yes | 502/Cloudflare from non-UA; UK only post-2022; hypermarket-wide basket |
+| Novus | https://novus.ua/ | 01, 02 | Retail / e-commerce / pharmacy | daily | no | HTML | low | yes | yes | Loaded cleanly; per-SKU prices visible in DOM with regular + discounted; orders go via novus.zakaz.ua |
+| Varus | https://varus.ua/ | 01, 02, 05 | Retail / e-commerce / pharmacy | daily | no | HTML | high | partial | yes | 403 to non-UA IPs; Dnipro-focused chain, broad food basket |
+| Megamarket | https://megamarket.ua/ | 01, 02 | Retail / e-commerce / pharmacy | weekly | no | HTML | high | partial | yes | 403 to non-UA IPs; Kyiv hypermarket; PDPs exist |
+| Tabletki.ua | https://tabletki.ua/uk/ | 06 | Retail / e-commerce / pharmacy | daily | no | HTML | high | yes | yes | 403 to non-UA; pharmacy price aggregator across many chains — highest-value pharma source if probe survives from UA IP |
+| Apteka 9-1-1 | https://apteka911.ua/ | 06 | Retail / e-commerce / pharmacy | daily | no | HTML | high | yes | yes | National online pharmacy chain; needs UA-IP probe; PDP structure typical e-com |
+| ANC | https://anc.ua/ | 06 | Retail / e-commerce / pharmacy | daily | no | HTML | high | partial | yes | 403 to non-UA; large network |
+| Rozetka | https://rozetka.com.ua/ | 05, 07, 08, 09, 12 | Retail / e-commerce / pharmacy | daily | no | HTML | high | yes | yes | 429 on probe — rate-limited; UA's #1 marketplace, covers electronics/appliances/furniture/personal-care; UK switch available |
+| Allo | https://allo.ua/ | 08, 09 | Retail / e-commerce / pharmacy | daily | no | HTML | high | yes | yes | 403 to non-UA; phones + electronics |
+| Foxtrot | https://foxtrot.com.ua/ | 05, 08, 09 | Retail / e-commerce / pharmacy | daily | no | HTML | high | yes | yes | 403 to non-UA; appliances + electronics chain |
+| Comfy | https://comfy.ua/ | 05, 08, 09 | Retail / e-commerce / pharmacy | daily | no | HTML | low | yes | yes | Loaded cleanly; UK; prices in HTML in UAH with discount markup; good fallback if Rozetka tarpits |
+| Eldorado UA | https://eldorado.ua/ | 05, 08, 09 | Retail / e-commerce / pharmacy | daily | no | HTML | medium | yes | yes | Homepage loads; PDP confirmation needed; appliances + electronics |
+| EVA | https://eva.ua/ | 05, 06, 12 | Retail / e-commerce / pharmacy | weekly | no | HTML | high | partial | yes | 403 to non-UA; drugstore chain — personal care + household chemistry |
+| Brocard | https://brocard.ua/ | 12 | Retail / e-commerce / pharmacy | daily | no | HTML | low | yes | yes | Loaded cleanly; UAH prices in DOM with strikethrough discount; perfumery + cosmetics |
+| Makeup | https://makeup.com.ua/ | 12 | Retail / e-commerce / pharmacy | daily | no | HTML | low | yes | yes | Loaded cleanly; 249k SKUs; PDP layer exists; RU+UK switch — use /ua/ paths |
+| Minfin consumer basket | https://index.minfin.com.ua/markets/consumer/ | 01 | Official food / commodity tracker | weekly | no | HTML-table | low | yes | no | Curated consumer-basket tracker; weighted national averages; complements retailer scrape with benchmark series |
+| Minfin fuel tracker | https://index.minfin.com.ua/markets/fuel/ | 07 | Fuel pump-price tracker | daily | no | HTML-table | low | yes | no | Daily by-region weighted prices A-95+/95/92/diesel/LPG; archive back to 2015; ideal pump-price source |
+| Minagro food prices | https://minagro.gov.ua/en | 01 | Official food / commodity tracker | weekly | no | PDF | medium | partial | no | Ministry of Agrarian Policy weekly bulletins; PDF-heavy; EN landing redirects often — UK path more reliable |
+| Ukrstat — Prices | https://ukrstat.gov.ua/operativ/menu/menu_e/cit.htm | 01-12 | National statistics office datasets | monthly | no | XLS | medium | yes | no | Average prices + retail-price-survey tables; EN page; XLS downloads; some 2022 gaps but resumed; backbone for COICOP validation |
+| Ukrstat — CPI | https://www.ukrstat.gov.ua/imf/arhiv/isc_e.htm | 01-12 | NSO CPI division indexes | monthly | no | XLS | medium | yes | no | CPI by COICOP division; EN archive page; primary CPI benchmark |
+| NBU FX rates API | https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json | n/a | Bank fee schedule / FX board | daily | no | JSON-API | low | yes | n/a | Official UAH FX rates; JSON endpoint; 403 from generic UA-string but returns JSON with `?json` from normal clients; daily fixing |
+| NEURC tariffs | https://www.nerc.gov.ua/ | 04 | Utility tariff | irregular | no | PDF | medium | partial | no | National energy/utilities regulator; electricity/gas/heating/water tariff decisions; PDF-heavy; needs decision-registry crawl |
+| Naftogaz household gas | https://www.naftogaz.com/ | 04 | Utility tariff | quarterly | no | HTML | medium | partial | no | Household gas tariff; 403 on deep link, homepage scrapable; tariff under wartime fixed regime |
+| Kyivstar tariffs | https://www.kyivstar.ua/uk/mm/tariffs | 08 | Telco / ISP tariff | irregular | no | HTML | medium | partial | no | Mobile tariff cards; landing loads but tariff detail requires JS — confirm cards in initial HTML before committing |
+| Vodafone UA tariffs | https://www.vodafone.ua/uk/tariffs | 08 | Telco / ISP tariff | irregular | no | HTML | medium | partial | no | Probe hit 404 — URL drifts; use https://www.vodafone.ua/uk/mobile-services/tariffs as canonical; mobile tariff plans |
+| lifecell tariffs | https://www.lifecell.ua/uk/mobilnyj-zvyazok/tarify/ | 08 | Telco / ISP tariff | irregular | no | HTML | medium | partial | no | Returned empty body on probe — JS-rendered; may need fetcher with headless or sitemap-driven static fallback |
+| Kyiv Metro fares | https://kyivmetro.com/ | 07 | Public-transport fare schedule | irregular | no | HTML | low | yes | no | Fare schedule page; UAH per ride; rare changes (annual at most); static-HTML fetch |
+| Ukrzaliznytsia booking | https://booking.uz.gov.ua/ | 07 | Public-transport fare schedule | daily | no | HTML | high | partial | no | 403 to non-UA on probe; intercity rail fares; dynamic by date+route — best as periodic basket-route snapshot |
+| AUTO.RIA | https://auto.ria.com/uk/ | 07 | Classifieds | daily | no | HTML | low | yes | yes | UK switch works; per-listing UAH+USD prices in DOM; UA's #1 auto classifieds — used + new |
+| DOM.RIA | https://dom.ria.com/ | 04 | Real-estate / rental portal | daily | no | HTML | low | yes | yes | Loaded cleanly; sale + rental listings across all major cities; UAH prices; covers actual-rentals (COICOP 04.1) |
+| LUN | https://lun.ua/ | 04 | Real-estate / rental portal | daily | no | HTML | low | yes | yes | Loaded cleanly; new-builds + secondary + rentals; publishes minimum-price stats by city/class — useful aggregate proxy |
+| OLX UA — Real Estate | https://www.olx.ua/uk/nedvizhimost/ | 04 | Real-estate / rental portal | daily | no | HTML | low | yes | yes | UK paths active; UAH prices in DOM with USD/EUR toggle; ~360k active listings spanning apartments/houses/rooms |
+| PrivatBank fees | https://privatbank.ua/tariffs/private-persons | n/a | Bank fee schedule / FX board | irregular | no | HTML | medium | partial | no | Probe 404 — exact URL drifts (`/business`, `/ru`); fee schedule for private persons; UAH amounts in tables |
+| KSE tuition | https://kse.ua/ | 10 | University tuition | annual | no | HTML | low | partial | no | Kyiv School of Economics tuition page; UAH amounts published per program; English version exists; tuition page is /study/* — 302s from old path |
+| KNU | https://www.knu.ua/en | 10 | University tuition | annual | no | HTML | low | yes | no | Taras Shevchenko National Univ; tuition published in EN pages per-faculty PDF; manual extraction required, low cadence |
+| Spotify UA | https://www.spotify.com/ua-uk/premium/ | 09 | Streaming / app-store country pricing | irregular | no | HTML | low | yes | no | Lists Ukraine plans in USD (not UAH) post-2024 — flag in pipeline as USD-denominated reference price |
+| Glovo UA | https://glovoapp.com/ua/uk/ | 11 | Restaurant-delivery aggregator | daily | yes | HTML | high | partial | yes | Lists Ukraine + Kyiv as active; menu pricing gated behind address+login; restaurant menus + groceries delivery |
+| Hotline.finance | https://hotline.finance/ | 12 | Insurance comparison | weekly | no | HTML | medium | partial | no | UA car/health/travel insurance comparison; probe 404 on /uk/ subpath; try root |
+
+Cross-region aggregators that also cover Ukraine (Eurostat HICP, IMF CPI, WB ICP, Booking, Numbeo, EC Agri-food, UkrAgroConsult) live in `../_aggregators.md`.

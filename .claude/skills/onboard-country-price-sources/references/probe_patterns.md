@@ -271,3 +271,62 @@ curl -sL -A "$UA" "<url>" -o /dev/null -w "HTTP %{http_code}\n"
 ```
 
 This is the same diagnostic the skill ran — running it again confirms the site state hasn't changed since the original probe.
+
+## Probe artifacts: prefer `$CLAUDE_JOB_DIR` over `/tmp`
+
+When running as a background job, multiple parallel agents share `/tmp` and clobber each other's `probe_*` files. Use `$CLAUDE_JOB_DIR/probes/` instead (created by the harness; isolated per job; auto-cleaned). Fall back to `/tmp` only when the env var is unset.
+
+```bash
+PROBE_DIR="${CLAUDE_JOB_DIR:-/tmp}/probes"
+mkdir -p "$PROBE_DIR"
+curl -sS -A "$UA" "<url>" -o "$PROBE_DIR/<key>_sample.html"
+```
+
+## Stats-office REST APIs — paginate by series, not by `limit`
+
+Government TableBuilder-style endpoints (SingStat, DGBAS Taiwan, DOSM Malaysia) often have a `limit` parameter that does **not** mean "return up to N rows from this table" — it means "return the first N series the server decides to return", silently capped well below the table's true size. The Singapore SingStat API caps at 3 series even with `limit=2000`.
+
+The correct pattern is two hops:
+
+```bash
+# 1. Get the full series list from the /metadata endpoint
+curl -sS "https://tablebuilder.singstat.gov.sg/api/table/metadata/<TABLE_ID>" \
+  | jq '.Data.records.row[].seriesNo'
+
+# 2. Query each series individually via seriesNoORrowNo
+for sn in 1.01 1.02 1.03 ...; do
+  curl -sS "https://tablebuilder.singstat.gov.sg/api/table/tabledata/<TABLE_ID>?seriesNoORrowNo=$sn"
+done
+```
+
+Comma-separated series + `between=` returns zero — combine the filters client-side instead.
+
+## Discovering the canonical URL when guesses 404
+
+Inventory entries and intuition often point at URLs that look right but 404, especially for stats-office / regulator / utility DAMs where docs get republished under different paths every quarter.
+
+**Use `WebSearch allowed_domains=[<host>]` instead of guessing**:
+
+```python
+WebSearch(
+    query="SP Group Singapore electricity tariff 2026 cents per kWh quarterly",
+    allowed_domains=["spgroup.com.sg", "ema.gov.sg"],
+)
+```
+
+This usually surfaces both the current quarterly media-release page AND any historical-data XLSX / PDF endpoints that aren't linked from the homepage. Works particularly well for:
+
+- Stats-office historical-data dumps (often under `/dam/`, `/wcm/`, or `/uploads/` with a UUID or hash path)
+- Utility / regulator tariff schedules (quarterly republished, URL pattern not human-derivable)
+- Central-bank fee schedules / FX boards (deeply buried)
+
+Combine with the **stale-DAM-PDF check** from `known_blockers.md`: after downloading the candidate, always run `file` on it to confirm the body is what the content-type claims. Magnolia / AEM 200-OK-but-actually-HTML responses are common on retired vanity URLs.
+
+## How to handle effective-date in published static docs
+
+For tariff PDFs and similar published-static-doc fetchers, the canonical `observation_date` is the date *inside the document* (e.g. "Fares effective from 27 December 2025"), **not** the HTTP `Last-Modified` header. Two reasons:
+
+- `Last-Modified` often reflects when the file was *uploaded* to the CDN, which can be days off from the policy effective date
+- The document body's "effective from" is what regulators and downstream analysts actually cite
+
+Parse it from the first page header text and use it for both `observation_date` and the cutoff comparison. If the parsed date is `<=` the caller's cutoff, return `None` — no new rows.
