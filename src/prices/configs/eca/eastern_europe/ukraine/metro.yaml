@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: metro
+url: https://metro.ua/
+language: uk
+cadence: daily
+notes: |
+  METRO Ukraine cash-and-carry via the public zakaz.ua storefront JSON API
+  (stores-api.zakaz.ua, store 48215610 "METRO Позняки DRIVE", header
+  x-chain: metro). Tier 1B, no Playwright; shares _zakaz_base.py with novus.
+  Full grocery basket -> COICOP via downstream Gemini. NOTE: API `price` is in
+  KOPECKS (divide by 100). Reachable from non-UA IPs (2026-06).

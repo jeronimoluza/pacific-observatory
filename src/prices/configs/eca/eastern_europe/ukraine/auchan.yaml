@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: auchan
+url: https://auchan.ua/
+language: uk
+cadence: daily
+notes: |
+  Auchan Ukraine hypermarket via the public zakaz.ua storefront JSON API
+  (stores-api.zakaz.ua, store 48246401 "Auchan Почайна DRIVE", header
+  x-chain: auchan). Tier 1B, no Playwright; shares _zakaz_base.py with novus.
+  Full grocery basket -> COICOP via downstream Gemini. NOTE: API `price` is in
+  KOPECKS (divide by 100). Reachable from non-UA IPs (2026-06).

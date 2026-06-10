@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: tavriav
+url: https://tavriav.ua/
+language: uk
+cadence: daily
+notes: |
+  Tavria-V supermarket (southern Ukraine) via the public zakaz.ua storefront
+  JSON API (stores-api.zakaz.ua, store 48221130 "Таврія В Харків DRIVE", header
+  x-chain: tavriav). Tier 1B, no Playwright; shares _zakaz_base.py with novus.
+  Full grocery basket -> COICOP via downstream Gemini. NOTE: API `price` is in
+  KOPECKS (divide by 100). Reachable from non-UA IPs (2026-06).
