@@ -1,0 +1,19 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1", "04.4.2"]
+source_key: ua_vodokanal_water
+module: eca.eastern_europe.ukraine.vodokanal_water
+function: fetch_ua_vodokanal_water
+url: https://www.vodokanal.kiev.ua/tarifi
+language: uk
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Kyivvodokanal regulated household tariffs for centralised water supply
+  (водопостачання -> COICOP 04.4.1) and wastewater drainage (водовідведення ->
+  04.4.2), e.g. 47.19 UAH/m³ each, parsed from the tariffs page text.
+  Administered prices; snapshot per run, accumulated by observation_hash. The
+  site serves an invalid TLS chain to non-UA resolvers, so fetched via curl_cffi
+  with verify disabled. Kyiv-only (extend with other oblvodokanals later).

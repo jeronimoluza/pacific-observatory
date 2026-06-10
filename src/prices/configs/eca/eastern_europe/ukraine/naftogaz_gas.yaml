@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.2"]
+source_key: ua_naftogaz_gas
+module: eca.eastern_europe.ukraine.naftogaz_gas
+function: fetch_ua_naftogaz_gas
+url: https://www.naftogaz.com/en/business/retail-supply-business-unit
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Naftogaz (state gas supplier) regulated household natural-gas tariff
+  (fixed-price moratorium, e.g. 7.96 UAH/m³) parsed from the retail-supply page
+  text. Administered price (COICOP 04.5.2); snapshot per run, accumulated by
+  observation_hash. Fetched via curl_cffi (impersonate=chrome). Reachable from
+  non-UA IPs (2026-06).
