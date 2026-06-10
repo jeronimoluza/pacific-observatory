@@ -6,9 +6,10 @@ server-rendered (Tier 1A): each product block exposes stable `data-qaid` QA
 hooks (the visible CSS class names are hashed and unstable, so we key off the
 QA attributes). The final price sits in `data-qaprice` on the price node.
 
-We crawl a few category landings spanning clothing (03), footwear (03) and
-furniture/furnishings (05). The catalogue is broad mixed merchandise, so COICOP
-is left to the downstream Gemini classifier.
+We crawl a few category landings spanning clothing/footwear (COICOP 03),
+furniture/furnishings (05) and recreation goods — toys, sporting goods, books
+(09). The catalogue is broad mixed merchandise, so COICOP is left to the
+downstream Gemini classifier.
 
 Only ~10 products are server-rendered per page (the rest lazy-load), so we walk
 `?page=N`. product_id is the `pNNNN` token in the product URL.
@@ -29,9 +30,12 @@ class PromUaSpider(scrapy.Spider):
 
     PAGES_PER_CATEGORY = 8  # ~10 SSR cards/page
     CATEGORIES = [
-        ("Odezhda.html", "Одяг"),       # clothing  -> 03
-        ("Obuv.html", "Взуття"),        # footwear  -> 03
-        ("Mebel.html", "Меблі"),        # furniture -> 05
+        ("Odezhda.html", "Одяг"),              # clothing       -> 03
+        ("Obuv.html", "Взуття"),               # footwear       -> 03
+        ("Mebel.html", "Меблі"),               # furniture      -> 05
+        ("Igrushki.html", "Іграшки"),          # toys           -> 09
+        ("Sport-i-otdyh.html", "Спорт"),       # sporting goods -> 09
+        ("Knigi.html", "Книги"),               # books          -> 09
     ]
     _BASE = "https://prom.ua/{cat}?page={page}"
 
