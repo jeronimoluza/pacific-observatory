@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3"]
+spider: vodafone_ua
+url: https://www.vodafone.ua/tariffs
+language: uk
+cadence: monthly
+notes: |
+  Vodafone Ukraine mobile tariff plans (one of the 3 UA operators) — the COICOP
+  08.3 mobile-communication-services layer, otherwise represented only by ICT
+  equipment. Tier 2: the /tariffs grid is an Angular app whose .vf-tariff-card
+  plan cards hydrate client-side, so Playwright is required. Each card has a plan
+  name, recurring price ("420 грн") and billing period ("на 4 тижні" / "на
+  місяць"); the account-widget card without a price is skipped. source_curated.
+  Reachable from non-UA IPs (2026-06).
