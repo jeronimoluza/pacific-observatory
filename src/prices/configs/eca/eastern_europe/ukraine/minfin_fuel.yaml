@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: aggregate_proxy
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+source_key: ua_minfin_fuel
+module: eca.eastern_europe.ukraine.minfin_fuel
+function: fetch_ua_minfin_fuel
+url: https://index.minfin.com.ua/ua/markets/fuel/
+language: uk
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  National daily average pump prices from the per-fuel-type history tables
+  (a96/a95/a92/dt/lpg). Each page carries a rolling ~2-month daily series;
+  daily runs accumulate full history via observation_hash dedup. All five
+  fuels map to COICOP 07.2.2. Reachable from non-UA IPs (2026-06).

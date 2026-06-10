@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: aggregate_proxy
+coicop_classification: source_curated
+coicop_codes: []
+source_key: ua_nbu_fx
+module: eca.eastern_europe.ukraine.nbu_fx
+function: fetch_ua_nbu_fx
+url: https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?json
+language: uk
+cadence: daily
+fallback_date: 2015-01-01
+notes: |
+  Official NBU UAH exchange rates for reference currencies (USD/EUR/GBP/PLN/CNY)
+  via the date-range endpoint (one request per currency per window). FX is an
+  RER/PPP denominator series with no COICOP position — coicop_code is null by
+  design (coicop_codes empty). price_local is UAH per 1 unit of the currency.
