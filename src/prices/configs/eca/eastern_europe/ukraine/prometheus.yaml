@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["10.5"]
+spider: prometheus
+url: https://prometheus.org.ua/courses-catalog/
+language: uk
+cadence: monthly
+notes: |
+  Prometheus — Ukraine's leading MOOC platform. Collects the paid "Prometheus+"
+  professional programmes (the catalogue cards carrying a UAH price tag) as the
+  COICOP 10 education layer — non-formal adult / professional education
+  (10.5, education not definable by level). Tier 2: the price tags hydrate
+  client-side, so Playwright is required. Each paid course is an
+  a[href*="/prometheus-plus/<slug>"] wrapping .course-card-plus; title in
+  .course-card-plus__title, price in .tag-price. ~20 paid courses; whole source
+  is education -> single COICOP, source_curated. Reachable from non-UA IPs (2026-06).
