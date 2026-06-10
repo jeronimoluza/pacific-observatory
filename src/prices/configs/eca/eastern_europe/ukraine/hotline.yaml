@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: deferred_gemini
+spider: hotline
+url: https://hotline.ua/
+language: uk
+cadence: weekly
+notes: |
+  Hotline.ua — dominant UA price-comparison portal. Server-rendered Vue HTML
+  (Tier 1A, no Playwright); .list-item--row cards carry a.item-title and the
+  lowest aggregated offer in .list-item__value-price (nbsp thousands). Reports
+  the MIN offer across merchants -> analytical_role aggregate_proxy. Crawls
+  smartphones (08) + laptops/TVs (09); COICOP via downstream Gemini. ?p=N
+  paginates, ~49 priced cards/page. Reachable from non-UA IPs (2026-06).
