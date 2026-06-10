@@ -11,5 +11,6 @@ notes: |
   Nuxt HTML (Tier 1A, no Playwright); cards key off stable data-testid hooks.
   Current price = [data-testid="product-final-price"] (NOT product-price, which
   is the struck old price). Crawls cosmetics/perfume/hair/body categories ->
-  COICOP 12.1 via downstream Gemini. ?p=N paginates, ~40 cards/page. Reachable
-  from non-UA IPs (2026-06).
+  COICOP 2018 division 13.1 (personal care appliances/articles/products) via
+  downstream Gemini. ?p=N paginates, ~40 cards/page. Reachable from non-UA IPs
+  (2026-06).
