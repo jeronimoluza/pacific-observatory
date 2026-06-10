@@ -11,10 +11,12 @@ furniture/furnishings (05) and recreation goods — toys, sporting goods, books
 (09). The catalogue is broad mixed merchandise, so COICOP is left to the
 downstream Gemini classifier.
 
-Only ~10 products are server-rendered per page; the rest lazy-load on scroll
-(~59/page once fully scrolled). So this is a Tier-2 spider: each page is opened
-in Playwright and scrolled to the bottom to hydrate the full grid before
-parsing. product_id is the `pNNNN` token in the product URL.
+Category landings are fixed ~29-item preview grids (not deep listings): only
+~10 cards are server-rendered and the rest lazy-load on scroll, capping at ~29.
+The legacy `?page=N` URLs all 301 to the same canonical landing (so paginating
+just hits Scrapy's dupefilter), so we use one confirmed-stable canonical
+`/ua/<slug>` URL per category and open it in Playwright, scrolling to the bottom
+to hydrate the full ~29-card grid. product_id is the `pNNNN` token in the URL.
 """
 
 import logging
@@ -41,16 +43,15 @@ class PromUaSpider(scrapy.Spider):
     allowed_domains = ["prom.ua"]
     currency = "UAH"
 
-    PAGES_PER_CATEGORY = 5  # ~59 cards/page once scrolled
+    # Confirmed-stable canonical category landings (each ~29-card preview grid).
     CATEGORIES = [
-        ("Odezhda.html", "Одяг"),              # clothing       -> 03
-        ("Obuv.html", "Взуття"),               # footwear       -> 03
-        ("Mebel.html", "Меблі"),               # furniture      -> 05
-        ("Igrushki.html", "Іграшки"),          # toys           -> 09
-        ("Sport-i-otdyh.html", "Спорт"),       # sporting goods -> 09
-        ("Knigi.html", "Книги"),               # books          -> 09
+        ("https://prom.ua/ua/Odezhda-do.html", "Одяг"),       # clothing       -> 03
+        ("https://prom.ua/ua/Obuv", "Взуття"),                # footwear       -> 03
+        ("https://prom.ua/ua/Mebel", "Меблі"),                # furniture      -> 05
+        ("https://prom.ua/ua/Igrushki", "Іграшки"),           # toys           -> 09
+        ("https://prom.ua/ua/Sportivnye-tovary", "Спорт"),    # sporting goods -> 09
+        ("https://prom.ua/ua/Knigi", "Книги"),                # books          -> 09
     ]
-    _BASE = "https://prom.ua/{cat}?page={page}"
 
     custom_settings = {
         "ROBOTSTXT_OBEY": False,
@@ -66,21 +67,20 @@ class PromUaSpider(scrapy.Spider):
     _ID_RE = re.compile(r"/p(\d+)-")
 
     def start_requests(self):
-        for cat, title in self.CATEGORIES:
-            for page in range(1, self.PAGES_PER_CATEGORY + 1):
-                yield scrapy.Request(
-                    self._BASE.format(cat=cat, page=page),
-                    callback=self.parse_listing,
-                    meta={
-                        "category": title,
-                        "playwright": True,
-                        "playwright_page_goto_kwargs": {
-                            "wait_until": "domcontentloaded"
-                        },
-                        "playwright_page_methods": _SCROLL_METHODS,
+        for url, title in self.CATEGORIES:
+            yield scrapy.Request(
+                url,
+                callback=self.parse_listing,
+                meta={
+                    "category": title,
+                    "playwright": True,
+                    "playwright_page_goto_kwargs": {
+                        "wait_until": "domcontentloaded"
                     },
-                    errback=self.errback,
-                )
+                    "playwright_page_methods": _SCROLL_METHODS,
+                },
+                errback=self.errback,
+            )
 
     def errback(self, failure):
         logger.error("prom_ua request failed: %s — %r",
