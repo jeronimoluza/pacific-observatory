@@ -1,5 +1,5 @@
 scaffolding: spider
-extraction_pattern: scrapy_html
+extraction_pattern: scrapy_playwright
 analytical_role: retailer_sku
 coicop_classification: deferred_gemini
 spider: prom_ua
@@ -7,9 +7,11 @@ url: https://prom.ua/
 language: uk
 cadence: weekly
 notes: |
-  Prom.ua — Ukraine's largest general-merchandise marketplace. Server-rendered
-  listings (Tier 1A, no Playwright); product blocks key off stable data-qaid QA
-  hooks (visible CSS classes are hashed) and the final price sits in
-  data-qaprice. Crawls clothing/footwear (03), furniture (05) and recreation
-  goods — toys/sport/books (09) landings -> COICOP via downstream Gemini.
-  ~10 SSR cards/page, ?page=N paginates. Reachable from non-UA IPs (2026-06).
+  Prom.ua — Ukraine's largest general-merchandise marketplace. Product blocks
+  key off stable data-qaid QA hooks (visible CSS classes are hashed) and the
+  final price sits in data-qaprice. Crawls clothing/footwear (03), furniture
+  (05) and recreation goods — toys/sport/books (09) landings -> COICOP via
+  downstream Gemini. Tier 2: only ~10 cards are server-rendered per page and the
+  rest lazy-load on scroll (~59/page once fully scrolled), so each page is
+  opened in Playwright and scrolled to the bottom before parsing. ?page=N
+  paginates, 5 pages/category. Reachable from non-UA IPs (2026-06).

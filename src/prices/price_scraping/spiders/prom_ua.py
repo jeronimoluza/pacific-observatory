@@ -1,26 +1,39 @@
 """
 Spider for Prom.ua (Ukraine) — prom.ua
 
-Ukraine's largest general-merchandise marketplace. Category listing pages are
-server-rendered (Tier 1A): each product block exposes stable `data-qaid` QA
-hooks (the visible CSS class names are hashed and unstable, so we key off the
-QA attributes). The final price sits in `data-qaprice` on the price node.
+Ukraine's largest general-merchandise marketplace. Category listing pages expose
+stable `data-qaid` QA hooks per product block (the visible CSS class names are
+hashed and unstable, so we key off the QA attributes); the final price sits in
+`data-qaprice` on the price node.
 
 We crawl a few category landings spanning clothing/footwear (COICOP 03),
 furniture/furnishings (05) and recreation goods — toys, sporting goods, books
 (09). The catalogue is broad mixed merchandise, so COICOP is left to the
 downstream Gemini classifier.
 
-Only ~10 products are server-rendered per page (the rest lazy-load), so we walk
-`?page=N`. product_id is the `pNNNN` token in the product URL.
+Only ~10 products are server-rendered per page; the rest lazy-load on scroll
+(~59/page once fully scrolled). So this is a Tier-2 spider: each page is opened
+in Playwright and scrolled to the bottom to hydrate the full grid before
+parsing. product_id is the `pNNNN` token in the product URL.
 """
 
 import logging
 import re
 
 import scrapy
+from scrapy_playwright.page import PageMethod
 
 logger = logging.getLogger(__name__)
+
+# Scroll the listing to the bottom in steps so the lazy-loaded cards hydrate.
+_SCROLL_METHODS = [
+    PageMethod("wait_for_selector", '[data-qaid="product_block"]', timeout=30000),
+]
+for _frac in (0.25, 0.5, 0.75, 1.0, 1.0):
+    _SCROLL_METHODS.append(
+        PageMethod("evaluate", f"window.scrollTo(0, document.body.scrollHeight*{_frac})")
+    )
+    _SCROLL_METHODS.append(PageMethod("wait_for_timeout", 1500))
 
 
 class PromUaSpider(scrapy.Spider):
@@ -28,7 +41,7 @@ class PromUaSpider(scrapy.Spider):
     allowed_domains = ["prom.ua"]
     currency = "UAH"
 
-    PAGES_PER_CATEGORY = 8  # ~10 SSR cards/page
+    PAGES_PER_CATEGORY = 5  # ~59 cards/page once scrolled
     CATEGORIES = [
         ("Odezhda.html", "Одяг"),              # clothing       -> 03
         ("Obuv.html", "Взуття"),               # footwear       -> 03
@@ -42,6 +55,8 @@ class PromUaSpider(scrapy.Spider):
     custom_settings = {
         "ROBOTSTXT_OBEY": False,
         "DOWNLOAD_DELAY": 1,
+        "CONCURRENT_REQUESTS": 2,
+        "PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT": 60000,
         "USER_AGENT": (
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
             "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
@@ -56,8 +71,20 @@ class PromUaSpider(scrapy.Spider):
                 yield scrapy.Request(
                     self._BASE.format(cat=cat, page=page),
                     callback=self.parse_listing,
-                    meta={"category": title},
+                    meta={
+                        "category": title,
+                        "playwright": True,
+                        "playwright_page_goto_kwargs": {
+                            "wait_until": "domcontentloaded"
+                        },
+                        "playwright_page_methods": _SCROLL_METHODS,
+                    },
+                    errback=self.errback,
                 )
+
+    def errback(self, failure):
+        logger.error("prom_ua request failed: %s — %r",
+                     failure.request.url, failure.value)
 
     def parse_listing(self, response):
         blocks = response.css('div[data-qaid="product_block"]')
