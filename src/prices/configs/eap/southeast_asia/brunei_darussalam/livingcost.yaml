@@ -1,5 +1,11 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: deferred_gemini
 spider: livingcost
+url: https://livingcost.org/cost/brunei
 language: en
+cadence: weekly
 spider_kwargs:
   country_slug: brunei
   # cities: intentionally omitted — exercises auto-discover path.
@@ -8,4 +14,4 @@ notes: >
   LivingCost.org crowd-sourced cost-of-living aggregator. Emits one
   record per (city, item) pair, USD-canonical (apply WB FX feed
   downstream for local-currency). Serves PPP + soft inflation proxy;
-  not stickiness. Recommended cadence: weekly.
+  not stickiness.
