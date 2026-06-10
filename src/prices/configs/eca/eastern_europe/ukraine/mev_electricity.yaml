@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: ua_mev_electricity
+module: eca.eastern_europe.ukraine.mev_electricity
+function: fetch_ua_mev_electricity
+url: https://www.mev.gov.ua/en/storinka/tariffs-and-prices
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Ministry of Energy regulated residential electricity tariff — the time-of-use
+  household rates (day/night UAH/kWh) from the server-rendered "Time | Tariff"
+  HTML table. Administered price (COICOP 04.5.1); snapshot per run, accumulated
+  by observation_hash so a new row only lands when the regulated rate changes.
+  Deepens division 04 (previously only rentals). Reachable from non-UA IPs (2026-06).
