@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["07.1.2"]
+spider: auto_ria
+url: https://auto.ria.com/uk/car/used/
+language: uk
+cadence: daily
+notes: |
+  Used-car classifieds (second-hand motor cars, COICOP 07.1.2). Server-rendered
+  HTML — cards (section.ticket-item) carry make/model/year as data-attrs and
+  both USD+UAH prices inline; we emit the UAH price. No Playwright. Reachable
+  from non-UA IPs (2026-06).
