@@ -12,6 +12,7 @@ This file is keyed by **blocker class / CDN family**, not region. Country exampl
 - **auction.co.kr** (KR, eBay Korea) — 403 on root and category.
 - **coupang.com** (KR) — Cloudflare-style challenges plus per-storefront login soft-walls.
 - **tops.co.th**, **bigc.co.th**, **homepro.co.th**, **powerbuy.co.th** (TH) — Cloudflare 403 on curl AND Playwright; appear to share a protection profile.
+- **brocard.ua** (UA) — curl from non-UA IP returns 403 + `<title>Just a moment...</title>` (Cloudflare challenge) on the apex, 2026-06-10. Was previously logged as "404 on /uk/" in the UA wartime cohort; posture drifted to a full CF challenge.
 
 ## Cloudflare interactive challenge (`cf-mitigated: challenge`)
 
@@ -39,7 +40,7 @@ Site returns a tiny (~212-byte) HTML stub containing a JS challenge. `scrapy-imp
 
 - **makro.co.th** (TH, Siam Makro) — Incapsula 403 on curl AND Playwright.
 - **coles.com.au** (AU) — Incapsula JS challenge; 212-byte stub on bare `scrapy-impersonate`.
-- **comfy.ua** (UA) — `_Incapsula_Resource` script stub (~1KB body, HTTP 200 with `<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">` + an iframe to `/_Incapsula_Resource?SWUDNSAI=...`).
+- ~~**comfy.ua** (UA)~~ — **DRIFTED 2026-06-10.** Re-probe from a non-UA IP returned HTTP 200 + 871KB real SSR HTML (`<title>COMFY - Інтернет магазин побутової техніки`), no Incapsula stub. Previously logged as a `_Incapsula_Resource` ~1KB stub. Re-probe before treating as blocked; selectors still need a real Playwright/HTML dump pass.
 - **lifecell.ua** (UA) — same Incapsula tenant signature as comfy.ua; ~960-byte stub. Likely same protection profile across the AS Watson-style cohort.
 
 ## PerimeterX (per-session token, collector beacons only)
@@ -91,6 +92,8 @@ Distinct from the CDN connection-reset section: these sites complete the TCP han
 **Ukraine wartime cohort (probed 2026-06-09 from a non-UA IP, all 403'd):**
 
 Supermarkets — silpo.ua, atbmarket.com, auchan.ua, varus.ua, megamarket.ua. Pharmacies — tabletki.ua, apteka911.ua, anc.ua. Marketplaces / electronics — rozetka.com.ua (429, rate-limit not 403), allo.ua, foxtrot.com.ua. Personal care — eva.ua, brocard.ua (404 on /uk/ — branded error). Utility/transport — naftogaz.com, booking.uz.gov.ua, minagro.gov.ua. Delivery — glovoapp.com/ua. Some of these may genuinely run Cloudflare strict — re-probe individually from a UA residential IP before deciding per-source.
+
+**Reachability correction (re-probed 2026-06-10 from a non-UA IP — these DO load, despite the broad cohort note above):** index.minfin.com.ua (200, clean HTML tables), bank.gov.ua NBU API (200, JSON), novus.ua (200, 621KB; prices JS-rendered so still needs Playwright/API sniff), comfy.ua (200, see Incapsula section), makeup.com.ua (200, 765KB), auto.ria.com (200, 1.6MB), dom.ria.com (200), lun.ua (200), spotify.com/ua-uk (200). The wartime IP-fence is per-tenant, not nationwide — always re-probe per host before skipping. Still blocked 2026-06-10: brocard.ua (Cloudflare, see above), **olx.ua** (HTTP 200 but a captcha/DataDome interstitial in the body — treat as challenge-walled).
 
 ## App-only / no scrapeable web catalogue
 
