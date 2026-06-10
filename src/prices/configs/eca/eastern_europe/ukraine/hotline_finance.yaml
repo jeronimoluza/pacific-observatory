@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: aggregate_proxy
+coicop_classification: source_curated
+coicop_codes: ["12.1"]
+spider: hotline_finance
+url: https://hotline.finance/ua/osago
+language: uk
+cadence: weekly
+notes: |
+  Hotline.finance — dominant UA insurance-comparison portal. Each product page
+  (OSAGO / KASKO / Green Card / travel) renders a "price by geography" widget
+  with one card per city showing the aggregated premium range across insurers
+  ("Київ 4687 грн – 7057 грн · 13 пропозицій"). The spider captures the *from*
+  (cheapest) premium per city — the COICOP 12.1 (insurance) layer, otherwise
+  unreachable because insurer sites are calculator-gated. Reports the min offer
+  across insurers -> analytical_role aggregate_proxy. Tier 2: the widget
+  hydrates client-side, so Playwright is required. Cards are
+  .price-by-geo-card--slide wrapping /ua/<product>-<city> links. Reachable from
+  non-UA IPs (2026-06).
