@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: prom_ua
+url: https://prom.ua/
+language: uk
+cadence: weekly
+notes: |
+  Prom.ua — Ukraine's largest general-merchandise marketplace. Server-rendered
+  listings (Tier 1A, no Playwright); product blocks key off stable data-qaid QA
+  hooks (visible CSS classes are hashed) and the final price sits in
+  data-qaprice. Crawls clothing/footwear (03) + furniture (05) landings ->
+  COICOP via downstream Gemini. ~10 SSR cards/page, ?page=N paginates.
+  Reachable from non-UA IPs (2026-06).
