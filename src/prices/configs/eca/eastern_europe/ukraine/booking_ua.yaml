@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["11.2"]
+spider: booking_ua
+url: https://www.booking.com/searchresults.uk.html?ss=Київ&selected_currency=UAH
+language: uk
+cadence: weekly
+notes: |
+  Booking.com nightly accommodation rates for the five largest UA cities
+  (Kyiv/Lviv/Odesa/Kharkiv/Dnipro) — the COICOP 11.2 accommodation layer.
+  Booking only renders a price when a date range is supplied, so the spider
+  pins a 1-night stay 30 days out, 2 adults, UAH currency. Tier 2: a plain
+  request gets an HTTP 202 anti-bot stub, so Playwright (real Chromium) is
+  required to hydrate the property cards. Paginates via &offset=N (25/page).
+  Whole source is accommodation -> single COICOP, source_curated.
