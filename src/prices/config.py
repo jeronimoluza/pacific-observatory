@@ -10,6 +10,7 @@ import yaml
 from pydantic import BaseModel, ConfigDict, model_validator
 
 from core.config import parse_config_path
+from prices.enrich.schemas import Channel
 
 _PRICES_CONFIGS_DIR = Path(__file__).resolve().parent / "configs"
 
@@ -36,6 +37,11 @@ class PriceSourceConfig(BaseModel):
     analytical_role: str | None = None
 
     language: str | None = None
+    # `channel` is required: every YAML must set it (use `null` for non-retail
+    # sources where analytical_role is cpi_benchmark / official_avg / tariff /
+    # aggregate_proxy). Backfill applied 2026-06-11 covers all 215 manifests.
+    channel: Channel | None
+    coicop_codes: list[str] | None = None
     active: bool = True
     max_items: int | None = None
     start_urls: list[str] | None = None

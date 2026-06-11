@@ -4,6 +4,7 @@ from typing import Optional
 
 import pandas as pd
 
+from core.config import load_countries
 from prices.enrich import config
 from prices.enrich.versioning import input_hash
 
@@ -58,6 +59,62 @@ def _row_input_dict(row: pd.Series) -> dict:
     }
 
 
+def _build_country_lang_map() -> dict[str, str]:
+    """Country slug → first language from countries.yaml; '' if missing."""
+    out: dict[str, str] = {}
+    for slug, meta in load_countries().items():
+        langs = meta.get("languages") or []
+        out[slug] = langs[0] if langs else ""
+    return out
+
+
+def _build_source_channel_map() -> dict[tuple[str, str], str]:
+    """(country, source) → channel from per-source YAML; missing keys default
+    to '' downstream."""
+    from prices.config import PriceSourceConfig, discover_prices_configs
+
+    out: dict[tuple[str, str], str] = {}
+    for path in discover_prices_configs():
+        try:
+            cfg = PriceSourceConfig.load(path)
+        except Exception:
+            continue
+        if cfg.channel:
+            out[(cfg.country, cfg.source)] = cfg.channel
+    return out
+
+
+def _build_source_coicop_codes_map() -> dict[tuple[str, str], str]:
+    """(country, source) → `|`-joined declared coicop_codes from per-source
+    YAML. Missing or empty declarations are absent from the map."""
+    from prices.config import PriceSourceConfig, discover_prices_configs
+    from prices.enrich.narrowness import serialize_codes
+
+    out: dict[tuple[str, str], str] = {}
+    for path in discover_prices_configs():
+        try:
+            cfg = PriceSourceConfig.load(path)
+        except Exception:
+            continue
+        serialized = serialize_codes(cfg.coicop_codes)
+        if serialized:
+            out[(cfg.country, cfg.source)] = serialized
+    return out
+
+
+def _modal_or_empty(series: pd.Series) -> str:
+    mode = series.mode()
+    return str(mode.iloc[0]) if not mode.empty else ""
+
+
+def _first_non_empty(series: pd.Series) -> str:
+    for v in series:
+        s = "" if pd.isna(v) else str(v)
+        if s:
+            return s
+    return ""
+
+
 def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
     df = raw.copy()
     if "product_name_original" not in df.columns:
@@ -68,13 +125,44 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
         )
     if "category" not in df.columns:
         df["category"] = ""
+    else:
+        df["category"] = df["category"].fillna("").astype(str)
     df["price"] = df.apply(lambda r: parse_price(r["price"], r.get("currency")), axis=1)
     df["input_hash"] = df.apply(lambda r: input_hash(_row_input_dict(r)), axis=1)
+    lang_map = _build_country_lang_map()
+    df["lang"] = df["country"].map(lang_map).fillna("").astype(str)
+
+    # Channel — per-row from concatenate when present; fall back to source-YAML
+    # lookup for rows produced before this change shipped.
+    channel_map = _build_source_channel_map()
+    if "channel" not in df.columns:
+        df["channel"] = ""
+    df["channel"] = df["channel"].fillna("").astype(str)
+    if "source" in df.columns:
+        fallback = df.set_index(["country", "source"]).index.map(
+            lambda k: channel_map.get(k, "")
+        )
+        df["channel"] = df["channel"].where(
+            df["channel"] != "", pd.Series(fallback, index=df.index)
+        )
+
+    coicop_codes_map = _build_source_coicop_codes_map()
+    if "source" in df.columns:
+        declared = df.set_index(["country", "source"]).index.map(
+            lambda k: coicop_codes_map.get(k, "")
+        )
+        df["declared_coicop_codes"] = pd.Series(declared, index=df.index).astype(str)
+    else:
+        df["declared_coicop_codes"] = ""
+
     grouped = df.groupby("input_hash", as_index=False).agg(
         product_name_original=("product_name_original", "first"),
-        category=("category", "first"),
+        category=("category", _first_non_empty),
         country=("country", "first"),
         currency=("currency", "first"),
+        lang=("lang", "first"),
+        channel=("channel", _modal_or_empty),
+        declared_coicop_codes=("declared_coicop_codes", _modal_or_empty),
         price=("price", "median"),
         n_rows=("input_hash", "size"),
     )

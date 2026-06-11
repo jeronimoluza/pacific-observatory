@@ -1,208 +1,539 @@
+"""Match cascade — formerly the per-observation enrichment runner.
+
+Runs the 5-tier cascade over the products dimension. Each tier writes to
+`match_log.parquet` with a `match_method` so coverage is auditable.
+
+Tiers:
+    0. input_hash exact match against cache (legacy fallback)
+    1. product_identity_key exact match
+    2. (canonical_loose, country) exact match
+    a. regex structural extraction (tier_a — overlays, doesn't decide)
+    b. KNN over cluster-resolved cache (tier_b)
+    c. KNN-aware LLM reranker (tier_c — residual products only; in `stages/tier_c.py`)
+"""
+
+from __future__ import annotations
+
 import asyncio
-import json
-import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Iterable, Optional
 
 import pandas as pd
-from pydantic_ai import Agent
 
-from prices.enrich import cache, config
-from prices.enrich.schemas import EnrichmentBatch, ProductEnrichment
-from prices.enrich.versioning import (
-    PROMPT_BYTES_HASH,
-    PROMPT_SEMVER,
-    SCHEMA_VERSION,
-    TAXONOMY_VERSION,
-    cache_key,
+from prices.enrich import cache, config, pool_filter
+from prices.enrich import index as tier_b_index
+from prices.enrich.extract import StructuralFields, extract
+from prices.enrich.narrowness import is_narrow, parse_codes, resolved_code
+from prices.enrich.propagation import product_input_hashes, propagate_row
+from prices.enrich.stages import tier_c
+
+_STRUCTURAL_FIELDS = (
+    "pricing_basis",
+    "amount_value",
+    "standard_unit",
+    "count",
+    "multiplier",
+    "is_promotion",
+    "is_bundle",
+    "is_multipack",
+    "promo_reason",
 )
 
-_RETRY_AFTER_RE = re.compile(r"retry in (\d+(?:\.\d+)?)s")
-_RATE_LIMIT_MAX_ATTEMPTS = 6
-_RATE_LIMIT_DEFAULT_DELAY = 20.0
-_RATE_LIMIT_CAP_DELAY = 60.0
+_LANG_MAP_CACHE: Optional[dict[str, str]] = None
 
 
-def _load_coicop_context() -> str:
-    subcats: dict[str, list[dict]] = {}
-    if config.COICOP_SUBCATS_JSON.exists():
-        subcats = json.loads(config.COICOP_SUBCATS_JSON.read_text())
-    df = pd.read_excel(config.COICOP_XLSX)
-    df = df[df["code"].notna()].copy()
-    df["code"] = df["code"].astype(str)
-    codes = set(df["code"])
-    df = df[
-        df["code"].apply(
-            lambda c: not any(
-                other != c and other.startswith(c + ".") for other in codes
-            )
-        )
-    ]
-    lines: list[str] = []
-    for r in df.itertuples():
-        title = str(r.title).replace("_x000D_", "").strip()
-        lines.append(f"{r.code} | {title}")
-        for entry in subcats.get(r.code, []):
-            syns = ", ".join(entry.get("synonyms", [])[:4])
-            lines.append(f"  - {entry['id']} | {entry['label']} | synonyms: {syns}")
-    return "\n".join(lines)
+def _resolve_lang(country: str) -> Optional[str]:
+    """Resolve primary language for a country slug via countries.yaml. Lazy
+    module-level cache; returns None if country slug missing or yaml absent."""
+    global _LANG_MAP_CACHE
+    if _LANG_MAP_CACHE is None:
+        try:
+            from core.config import load_countries
+
+            mp: dict[str, str] = {}
+            for slug, meta in load_countries().items():
+                langs = meta.get("languages") or []
+                if langs:
+                    mp[slug] = langs[0]
+            _LANG_MAP_CACHE = mp
+        except Exception:
+            _LANG_MAP_CACHE = {}
+    return _LANG_MAP_CACHE.get(country)
 
 
-def _structured_input(row: pd.Series) -> dict:
-    return {
-        "product_name_original": str(row["product_name_original"]),
-        "category": "" if pd.isna(row.get("category")) else str(row["category"]),
-        "country": str(row["country"]),
-        "currency": str(row["currency"]),
-    }
+_CLUSTER_GATED_FIELDS = ("pricing_basis", "standard_unit")
 
 
-def _build_agent() -> Agent:
-    prompt_template = config.ENRICH_PROMPT_PATH.read_text()
-    system_prompt = prompt_template.replace("{coicop_context}", _load_coicop_context())
-    # pydantic-ai 1.41: string-form model spec resolves the provider via the
-    # `google-gla:` prefix (Google Generative Language API).
-    return Agent(
-        f"google-gla:{config.MODEL_NAME}",
-        output_type=EnrichmentBatch,
-        system_prompt=system_prompt,
-        output_retries=config.OUTPUT_RETRIES,
-    )
+def _overlay_tier_a(
+    payload: dict, sf: StructuralFields, cluster_agreement_coicop: float = 0.0
+) -> dict:
+    """Tier (a) overlays non-None structural fields onto payload.
 
-
-def _flatten_for_cache(
-    inputs: list[dict],
-    products: list[ProductEnrichment],
-    raw_text: str,
-    total_tokens: int,
-) -> list[dict]:
-    rows = []
-    now = datetime.now(timezone.utc).isoformat()
-    for inp, p in zip(inputs, products):
-        rows.append(
-            {
-                "cache_key": cache_key(inp),
-                **inp,
-                "pricing_basis": p.pricing_basis,
-                "amount_value": p.amount_value,
-                "standard_unit": p.standard_unit,
-                "count": p.count,
-                "multiplier": p.multiplier,
-                "dimensions_json": json.dumps([d.model_dump() for d in p.dimensions]),
-                "coicop_code": p.coicop_code,
-                "sub_label_id": p.sub_label_id,
-                "is_promotion": p.flags.is_promotion,
-                "is_bundle": p.flags.is_bundle,
-                "is_multipack": p.flags.is_multipack,
-                "promo_reason": p.flags.promo_reason,
-                "confidence": p.confidence,
-                "state": p.state,
-                "raw_response_text": raw_text,
-                "total_tokens": total_tokens,
-                "model_version": config.MODEL_NAME,
-                "prompt_semver": PROMPT_SEMVER,
-                "prompt_bytes_hash": PROMPT_BYTES_HASH,
-                "schema_version": SCHEMA_VERSION,
-                "taxonomy_version": TAXONOMY_VERSION,
-                "trust_level": "high",
-                "created_at": now,
-            }
-        )
-    return rows
-
-
-async def _run_with_retry_after(agent: Agent, payload: str):
-    """Call agent.run; on 429 RESOURCE_EXHAUSTED, honor server's retryDelay and re-try.
-
-    Why: free-tier Gemini returns `Please retry in Xs` on TPM exhaustion. The
-    default code immediately re-tries and is throttled again, burning attempts
-    for nothing. Sleeping until the TPM window refills is the correct fix.
+    `pricing_basis` and `standard_unit` are gated: when the source comes from a
+    strongly-agreeing tier-b cluster (`cluster_agreement_coicop ≥
+    KNN_CLUSTER_AGREEMENT_MIN`) AND already carries a value, the cluster vote
+    wins. Per-row fields (amount, count, promos, multipack) always overlay.
     """
-    for _ in range(_RATE_LIMIT_MAX_ATTEMPTS):
-        try:
-            return await agent.run(payload)
-        except Exception as e:
-            s = str(e)
-            if "429" not in s and "RESOURCE_EXHAUSTED" not in s:
-                raise
-            m = _RETRY_AFTER_RE.search(s)
-            delay = float(m.group(1)) if m else _RATE_LIMIT_DEFAULT_DELAY
-            delay = min(delay + 1.0, _RATE_LIMIT_CAP_DELAY)
-            await asyncio.sleep(delay)
-    raise RuntimeError(
-        f"Rate-limit retry budget exhausted ({_RATE_LIMIT_MAX_ATTEMPTS})"
-    )
-
-
-async def _enrich_async(df: pd.DataFrame) -> None:
-    agent = _build_agent()
-    already = cache.existing_keys()
-    if not df.empty:
-        df = df[~df.apply(lambda r: cache_key(_structured_input(r)) in already, axis=1)]
-    sem = asyncio.Semaphore(config.CONCURRENCY)
-
-    async def worker(chunk: pd.DataFrame) -> None:
-        inputs = [_structured_input(r) for _, r in chunk.iterrows()]
-        async with sem:
-            try:
-                result = await _run_with_retry_after(agent, json.dumps(inputs))
-                products = result.output.products
-                if len(products) != len(inputs):
-                    raise RuntimeError(
-                        f"Length mismatch: {len(inputs)} in, {len(products)} out"
-                    )
-                raw_text = str(getattr(result, "all_messages", lambda: "")())[:8000]
-                usage_fn = getattr(result, "usage", None)
-                tokens = usage_fn() if callable(usage_fn) else None
-                total_tokens = getattr(tokens, "total_tokens", 0) if tokens else 0
-                rows = _flatten_for_cache(inputs, products, raw_text, total_tokens)
-                cache.append_enrichments(rows)
-            except Exception as batch_err:
-                for inp in inputs:
-                    await _enrich_single(agent, inp, batch_err)
-
-    chunks = [
-        df.iloc[i : i + config.BATCH_SIZE] for i in range(0, len(df), config.BATCH_SIZE)
-    ]
-    if chunks:
-        await asyncio.gather(*(worker(c) for c in chunks))
-
-
-async def _enrich_single(agent: Agent, inp: dict, batch_err: Exception) -> None:
-    last_err: Exception | None = batch_err
-    for _ in range(config.OUTPUT_RETRIES):
-        try:
-            result = await _run_with_retry_after(agent, json.dumps([inp]))
-            products = result.output.products
-            if products:
-                raw = str(getattr(result, "all_messages", lambda: "")())[:8000]
-                usage_fn = getattr(result, "usage", None)
-                tokens = usage_fn() if callable(usage_fn) else None
-                ttok = getattr(tokens, "total_tokens", 0) if tokens else 0
-                rows = _flatten_for_cache([inp], products, raw, ttok)
-                cache.append_enrichments(rows)
-                return
-        except Exception as e:
-            last_err = e
+    out = dict(payload)
+    cluster_strong = cluster_agreement_coicop >= config.KNN_CLUSTER_AGREEMENT_MIN
+    for f in _STRUCTURAL_FIELDS:
+        val = getattr(sf, f)
+        if val is None:
             continue
-    cache.append_failures(
-        [
-            {
-                "cache_key": cache_key(inp),
-                **inp,
-                "last_error": f"batch_err={batch_err}; last={last_err}",
-                "attempt_count": config.OUTPUT_RETRIES,
-                "failed_at": datetime.now(timezone.utc).isoformat(),
-            }
-        ]
+        if f in _CLUSTER_GATED_FIELDS and cluster_strong and out.get(f) is not None:
+            continue
+        out[f] = val
+    return out
+
+
+def _tier_a_fired(sf: StructuralFields) -> bool:
+    return any(getattr(sf, f) is not None for f in _STRUCTURAL_FIELDS)
+
+
+def _pricing_basis_mismatch(tier_a: StructuralFields, source: dict) -> bool:
+    """True only when tier-a extracted a pricing_basis AND the tier-b source
+    carries a different non-null pricing_basis. Either side null → no mismatch."""
+    a = tier_a.pricing_basis
+    b = source.get("pricing_basis")
+    if a is None or b is None:
+        return False
+    return a != b
+
+
+_CACHE_DERIVED_PREFIXES: Optional[dict[tuple[str, str], list[str]]] = None
+
+
+def _cache_derived_prefixes(country: str, channel: str) -> list[str]:
+    """Lazy-load (country, channel) → cache-derived 3-digit prefix list from
+    `clusters_<country>.parquet` files. Used by the tier-b pool filter when no
+    YAML codes are declared. Cached at module level; one-time disk read."""
+    global _CACHE_DERIVED_PREFIXES
+    if _CACHE_DERIVED_PREFIXES is None:
+        out: dict[tuple[str, str], list[str]] = {}
+        if config.TIER_B_INDEX_DIR.exists():
+            for cp in config.TIER_B_INDEX_DIR.glob("clusters_*.parquet"):
+                country_slug = cp.stem.removeprefix("clusters_")
+                try:
+                    df = pd.read_parquet(cp)
+                except Exception:
+                    continue
+                if "channel" not in df.columns:
+                    continue
+                for ch in df["channel"].dropna().unique():
+                    codes = pool_filter.compute_channel_derived_codes(
+                        df, country_slug, str(ch)
+                    )
+                    if codes:
+                        out[(country_slug, str(ch))] = codes
+        _CACHE_DERIVED_PREFIXES = out
+    return _CACHE_DERIVED_PREFIXES.get((country, channel), [])
+
+
+def _tier_b_dispatch(
+    country: str,
+    query_text: str,
+    channel_arg: Optional[str],
+    category: Optional[str],
+    product,
+) -> tier_b_index.KNNHit:
+    """Tier-b call site with optional pool filter (Feature B, ADR-0003).
+    Falls back to the existing `query()` path when the filter is off or the
+    allowed-prefix set is empty — production behavior is unchanged by default."""
+    declared = parse_codes(product.get("declared_coicop_codes"))
+    cache_derived: list[str] = []
+    if not declared:
+        cache_derived = _cache_derived_prefixes(country, channel_arg or "null")
+    allowed = pool_filter.resolve_filter_codes(declared, cache_derived)
+    mode = getattr(config, "TIER_B_POOL_FILTER", "off")
+    if mode == "off" or not allowed:
+        return tier_b_index.query(
+            country=country,
+            query_text=query_text,
+            channel=channel_arg,
+            category=category,
+        )
+    picked, cross, clusters_df, reason = tier_b_index.pick_neighbors(
+        country=country,
+        query_text=query_text,
+        channel=channel_arg,
+        category=category,
     )
+    if picked is None or clusters_df is None:
+        return tier_b_index.KNNHit(
+            accepted=False,
+            cluster_id="",
+            payload={},
+            top1_cosine=0.0,
+            top1_cluster_agreement=0.0,
+            topk_majority=0,
+            escalation_reason=reason,
+        )
+    cluster_codes = {
+        lab: str(clusters_df.iloc[lab].get("coicop_code") or "") for lab, _ in picked
+    }
+    if mode == "hard_drop":
+        filtered = pool_filter.apply_hard_drop(picked, cluster_codes, allowed)
+    elif mode == "rank_boost":
+        boost = getattr(config, "POOL_FILTER_BOOST", 0.05)
+        filtered = pool_filter.apply_rank_boost(
+            picked, cluster_codes, allowed, boost=boost
+        )
+    else:
+        filtered = picked
+    if not filtered:
+        return tier_b_index.KNNHit(
+            accepted=False,
+            cluster_id="",
+            payload={},
+            top1_cosine=0.0,
+            top1_cluster_agreement=0.0,
+            topk_majority=0,
+            escalation_reason="miss_after_filter",
+        )
+    return tier_b_index.accept_from_picked(filtered, clusters_df, cross)
 
 
-def run(input_parquet: Optional[Path] = None) -> None:
-    input_parquet = input_parquet or config.PRODUCTS_INPUT_PARQUET
-    df = pd.read_parquet(input_parquet)
-    asyncio.run(_enrich_async(df))
+_KILLSWITCH_CACHE: Optional[set[tuple[str, str]]] = None
+
+
+def _killswitch_combos() -> set[tuple[str, str]]:
+    """Load the (country, channel) combos whose tier-b precision is below the
+    eval-measured floor. Combos in the set are forced to tier-c instead of
+    accepting a tier-b hit. Cached at module level."""
+    global _KILLSWITCH_CACHE
+    if _KILLSWITCH_CACHE is not None:
+        return _KILLSWITCH_CACHE
+    if not config.TIER_B_KILLSWITCH_ENABLED:
+        _KILLSWITCH_CACHE = set()
+        return _KILLSWITCH_CACHE
+    try:
+        import yaml
+
+        data = yaml.safe_load(config.TIER_B_KILLSWITCH_PATH.read_text(encoding="utf-8"))
+        _KILLSWITCH_CACHE = {
+            (str(c["country"]), str(c["channel"])) for c in (data.get("combos") or [])
+        }
+    except (FileNotFoundError, KeyError, TypeError):
+        _KILLSWITCH_CACHE = set()
+    return _KILLSWITCH_CACHE
+
+
+_PAYLOAD_FIELDS = [
+    "pricing_basis",
+    "amount_value",
+    "standard_unit",
+    "count",
+    "multiplier",
+    "dimensions_json",
+    "coicop_code",
+    "sub_label_id",
+    "is_promotion",
+    "is_bundle",
+    "is_multipack",
+    "promo_reason",
+    "confidence",
+    "state",
+]
+
+
+def _build_cache_lookups(
+    cached: pd.DataFrame,
+) -> tuple[dict[str, dict], dict[str, dict], dict[tuple[str, str], dict]]:
+    """Return (input_hash, product_identity_key, (canonical_loose, country)) lookups
+    over the cache. Legacy rows without pid/loose columns simply omit those entries."""
+    hash_lookup: dict[str, dict] = {}
+    pid_lookup: dict[str, dict] = {}
+    loose_lookup: dict[tuple[str, str], dict] = {}
+    if cached.empty:
+        return hash_lookup, pid_lookup, loose_lookup
+    has_pid = "product_identity_key" in cached.columns
+    has_loose = "canonical_loose" in cached.columns
+    has_country = "country" in cached.columns
+    for r in cached.to_dict(orient="records"):
+        h = r.get("input_hash")
+        if isinstance(h, str) and h:
+            hash_lookup.setdefault(h, r)
+        if has_pid:
+            pid = r.get("product_identity_key")
+            if isinstance(pid, str) and pid:
+                pid_lookup.setdefault(pid, r)
+        if has_loose and has_country:
+            loose = r.get("canonical_loose")
+            country = r.get("country")
+            if (
+                isinstance(loose, str)
+                and loose
+                and isinstance(country, str)
+                and country
+            ):
+                loose_lookup.setdefault((loose, country), r)
+    return hash_lookup, pid_lookup, loose_lookup
+
+
+def _payload_from_source(src: dict) -> dict:
+    return {k: src.get(k) for k in _PAYLOAD_FIELDS}
+
+
+def cascade(
+    products: pd.DataFrame, cached: pd.DataFrame
+) -> tuple[list[dict], pd.DataFrame, list[dict]]:
+    """Pure cascade — no I/O, no LLM. Returns (cache_rows_to_write, residual_products, match_log_rows).
+
+    `cache_rows_to_write` covers Tier 0/1/2/b propagations. `residual_products`
+    is what falls through to tier (c) (LLM)."""
+    hash_lookup, pid_lookup, loose_lookup = _build_cache_lookups(cached)
+    now = datetime.now(timezone.utc).isoformat()
+    cache_rows: list[dict] = []
+    match_log: list[dict] = []
+    residual_idx: list[int] = []
+    tier_a_by_idx: dict = {}
+
+    for idx, product in products.iterrows():
+        pid = product.get("product_identity_key")
+        country = str(product.get("country") or "")
+        loose = product.get("canonical_loose")
+        input_hashes = product_input_hashes(product)
+
+        # Tier (a) — regex structural extraction. Runs unconditionally; result
+        # is overlaid onto whatever subsequent tier resolves, and also stamped
+        # onto the residual DataFrame as `tier_a_*` columns for the LLM tier.
+        lang = _resolve_lang(country)
+        tier_a = extract(
+            item_name=str(product.get("first_name") or ""),
+            category=(str(product.get("category") or "") or None),
+            country=country,
+            lang=lang,
+        )
+        tier_a_by_idx[idx] = tier_a
+        tier_a_suffix = "+regex" if _tier_a_fired(tier_a) else ""
+
+        source: Optional[dict] = None
+        method: Optional[str] = None
+
+        # Tier 0: input_hash
+        for h in input_hashes:
+            if h in hash_lookup:
+                source = hash_lookup[h]
+                method = "input_hash"
+                break
+
+        # Tier 1: product_identity_key
+        if source is None and isinstance(pid, str) and pid in pid_lookup:
+            source = pid_lookup[pid]
+            method = "product_identity_key"
+
+        # Tier 2: (canonical_loose, country)
+        if source is None and isinstance(loose, str) and loose and country:
+            key = (loose, country)
+            if key in loose_lookup:
+                source = loose_lookup[key]
+                method = "canonical_loose"
+
+        # Source-curated short-circuit (ADR-0002). For narrow spider sources —
+        # those whose YAML declares `coicop_codes:` sharing a single 3-digit
+        # COICOP class prefix — bypass tier-b/c entirely. Tier-a regex has
+        # already populated structural fields above.
+        if source is None:
+            declared = parse_codes(product.get("declared_coicop_codes"))
+            if declared and is_narrow(declared):
+                code = resolved_code(declared)
+                payload = _overlay_tier_a(
+                    {
+                        "pricing_basis": None,
+                        "amount_value": None,
+                        "standard_unit": None,
+                        "count": None,
+                        "multiplier": None,
+                        "dimensions_json": None,
+                        "coicop_code": code,
+                        "sub_label_id": None,
+                        "is_promotion": None,
+                        "is_bundle": None,
+                        "is_multipack": None,
+                        "promo_reason": None,
+                        "confidence": 1.0,
+                        "state": "resolved",
+                    },
+                    tier_a,
+                    cluster_agreement_coicop=0.0,
+                )
+                method_out = f"source_curated{tier_a_suffix}"
+                for h in input_hashes:
+                    if h in hash_lookup:
+                        continue
+                    cache_rows.append(
+                        propagate_row(
+                            h,
+                            product,
+                            payload,
+                            method_out,
+                            "",
+                            0,
+                            "source_curated",
+                            now,
+                        )
+                    )
+                match_log.append(
+                    {
+                        "product_identity_key": str(pid)
+                        if isinstance(pid, str)
+                        else "",
+                        "canonical_loose": str(loose) if isinstance(loose, str) else "",
+                        "country": country,
+                        "n_input_hashes": len(input_hashes),
+                        "match_method": method_out,
+                        "matched_at": now,
+                    }
+                )
+                continue
+
+        # Tier (b): KNN over cluster-resolved cache. Falls through silently
+        # when no index exists for the country (bootstrap or pre-build).
+        if source is None and config.MATCH_TIER_B_ENABLED:
+            row_channel = product.get("channel")
+            channel_arg = (
+                str(row_channel)
+                if isinstance(row_channel, str) and row_channel
+                else None
+            )
+            hit = _tier_b_dispatch(
+                country=country,
+                query_text=str(product.get("first_name") or ""),
+                channel_arg=channel_arg,
+                category=(str(product.get("category") or "") or None),
+                product=product,
+            )
+            killswitched = (
+                hit.accepted
+                and channel_arg is not None
+                and (country, channel_arg) in _killswitch_combos()
+            )
+            if hit.accepted and _pricing_basis_mismatch(tier_a, hit.payload):
+                tier_b_index.append_miss(
+                    {
+                        "cluster_id": hit.cluster_id,
+                        "country": country,
+                        "first_name": str(product.get("first_name") or ""),
+                        "top1_cosine": hit.top1_cosine,
+                        "top1_cluster_agreement": hit.top1_cluster_agreement,
+                        "topk_majority": hit.topk_majority,
+                        "escalation_reason": "pricing_basis_mismatch",
+                        "logged_at": now,
+                        "tier_a_pricing_basis": tier_a.pricing_basis,
+                        "cluster_pricing_basis": hit.payload.get("pricing_basis"),
+                    }
+                )
+            elif killswitched:
+                tier_b_index.append_miss(
+                    {
+                        "cluster_id": hit.cluster_id,
+                        "country": country,
+                        "first_name": str(product.get("first_name") or ""),
+                        "top1_cosine": hit.top1_cosine,
+                        "top1_cluster_agreement": hit.top1_cluster_agreement,
+                        "topk_majority": hit.topk_majority,
+                        "escalation_reason": "killswitched",
+                        "logged_at": now,
+                    }
+                )
+            elif hit.accepted:
+                source = dict(hit.payload)
+                source["raw_response_text"] = ""
+                source["total_tokens"] = 0
+                source["model_version"] = f"tier_b/{config.EMBED_BACKEND}"
+                source["cluster_agreement_coicop"] = hit.top1_cluster_agreement
+                method = f"tier_b_knn_{hit.escalation_reason}"
+            elif hit.escalation_reason == "miss":
+                tier_b_index.append_miss(
+                    {
+                        "cluster_id": hit.cluster_id,
+                        "country": country,
+                        "first_name": str(product.get("first_name") or ""),
+                        "top1_cosine": hit.top1_cosine,
+                        "top1_cluster_agreement": hit.top1_cluster_agreement,
+                        "topk_majority": hit.topk_majority,
+                        "escalation_reason": hit.escalation_reason,
+                        "logged_at": now,
+                    }
+                )
+
+        # Tier 3: embedding (skipped while MATCH_FUZZY_ENABLED=False)
+        if source is None and config.MATCH_FUZZY_ENABLED:
+            pass
+
+        if source is not None and method is not None:
+            cluster_agreement = float(source.get("cluster_agreement_coicop") or 0.0)
+            payload = _overlay_tier_a(
+                _payload_from_source(source), tier_a, cluster_agreement
+            )
+            raw_text = str(source.get("raw_response_text") or "")
+            total_tokens = int(source.get("total_tokens") or 0)
+            model_version = str(source.get("model_version") or config.MODEL_NAME)
+            method_out = f"{method}{tier_a_suffix}"
+            for h in input_hashes:
+                if h in hash_lookup:
+                    continue
+                cache_rows.append(
+                    propagate_row(
+                        h,
+                        product,
+                        payload,
+                        method_out,
+                        raw_text,
+                        total_tokens,
+                        model_version,
+                        now,
+                    )
+                )
+            match_log.append(
+                {
+                    "product_identity_key": str(pid) if isinstance(pid, str) else "",
+                    "canonical_loose": str(loose) if isinstance(loose, str) else "",
+                    "country": country,
+                    "n_input_hashes": len(input_hashes),
+                    "match_method": method_out,
+                    "matched_at": now,
+                }
+            )
+        else:
+            residual_idx.append(idx)
+
+    residual = (
+        products.loc[residual_idx].copy() if residual_idx else products.iloc[0:0].copy()
+    )
+    if not residual.empty:
+        for f in _STRUCTURAL_FIELDS:
+            residual[f"tier_a_{f}"] = [
+                getattr(tier_a_by_idx[i], f) for i in residual.index
+            ]
+    return cache_rows, residual, match_log
+
+
+def _append_match_log(rows: Iterable[dict]) -> None:
+    rows = list(rows)
+    if not rows:
+        return
+    path = config.MATCH_LOG_PARQUET
+    path.parent.mkdir(parents=True, exist_ok=True)
+    new = pd.DataFrame(rows)
+    if path.exists():
+        existing = pd.read_parquet(path)
+        out = pd.concat([existing, new], ignore_index=True)
+    else:
+        out = new
+    out.to_parquet(path, index=False)
+
+
+def run(products_parquet: Optional[Path] = None) -> None:
+    products_parquet = products_parquet or config.PRODUCTS_PARQUET
+    products = pd.read_parquet(products_parquet)
+    cached = cache.read_cache()
+    cache_rows, residual, match_log = cascade(products, cached)
+    if cache_rows:
+        cache.append_enrichments(cache_rows)
+    _append_match_log(match_log)
+    asyncio.run(tier_c.run_residual(residual))
     pruned = cache.enforce_collision_invariant()
     if pruned:
         print(f"Pruned {pruned} cache_key(s) from _failed.parquet (now in enrichments)")
