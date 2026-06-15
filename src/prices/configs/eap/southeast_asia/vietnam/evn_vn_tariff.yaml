@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: vn_evn_tariff
+module: eap.southeast_asia.vietnam.evn_vn_tariff
+function: fetch_vn_evn_tariff
+url: https://www.evn.com.vn/vi-VN/news-l/Gia-dien-60-28
+language: vi
+cadence: irregular
+fallback_date: 2023-11-01
+channel: null
+notes: |
+  EVN household retail electricity tariff — tiered 6-bậc schedule, VND/kWh.
+  Source: Decision 1279/QĐ-BCT dated 2025-05-09 (Ministry of Industry and Trade).
+  The EVN news article lists tariff decisions in its headline; the fetcher detects
+  new decision dates and warns if _KNOWN_DECISIONS needs updating. Tariff values
+  are hardcoded because the EVN PDF (QD1279-QD-BCT-20250509163514982.pdf) is
+  image-only (scanned); the numbers match the publicly reported rates:
+  bậc 1: 1,893; bậc 2: 1,956; bậc 3: 2,271; bậc 4: 2,860; bậc 5: 3,197;
+  bậc 6: 3,587 VND/kWh.
+  Only household (sinh hoạt) tiers are emitted; industrial/commercial rates
+  are separate COICOP divisions not in the household PPP basket.

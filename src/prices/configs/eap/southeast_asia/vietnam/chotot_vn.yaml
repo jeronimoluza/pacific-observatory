@@ -1,0 +1,20 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["07.1.2", "07.1.4"]
+source_key: vn_chotot
+module: eap.southeast_asia.vietnam.chotot_vn
+function: fetch_vn_chotot
+url: https://gateway.chotot.com/v1/public/ad-listing
+language: vi
+cadence: weekly
+fallback_date: 2023-01-01
+channel: aggregator
+notes: |
+  Cho Tot Vietnam classifieds — REST API at gateway.chotot.com/v1/public/ad-listing.
+  Covers used cars (cg=2010 → COICOP 07.1.2) and motorcycles (cg=2020 → COICOP 07.1.4).
+  Fetches from 3 major regions: Ho Chi Minh City (13000), Hanoi (12000), Da Nang (48000).
+  Five pages per region per category (100 ads max per region+category pair). Prices are
+  listing prices in VND, not transaction prices — typical for classifieds. The API returns
+  list_time as epoch-ms which maps to observation_date. No auth required.

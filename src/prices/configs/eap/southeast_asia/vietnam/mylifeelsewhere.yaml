@@ -1,5 +1,11 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: deferred_gemini
 spider: mylifeelsewhere
+url: https://www.mylifeelsewhere.com/cost-of-living/vietnam
 language: en
+cadence: weekly
 spider_kwargs:
   country_slug: vietnam
 notes: >
@@ -8,3 +14,4 @@ notes: >
   items / 7 categories per country, no city dimension). Both
   price (local) and price_usd are populated from source.
   Recommended cadence: weekly.
+channel: aggregator

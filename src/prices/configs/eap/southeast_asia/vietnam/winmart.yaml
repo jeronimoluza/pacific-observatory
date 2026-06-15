@@ -1,3 +1,10 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
 spider: winmart
+url: https://winmart.vn
 language: vi
+cadence: daily
 notes: Uses internal JSON API at api-crownx.winmart.vn. No Playwright required.
+channel: supermarket

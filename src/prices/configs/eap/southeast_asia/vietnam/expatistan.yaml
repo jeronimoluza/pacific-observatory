@@ -1,5 +1,11 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: deferred_gemini
 spider: expatistan
+url: https://www.expatistan.com/cost-of-living/country/vietnam
 language: en
+cadence: weekly
 spider_kwargs:
   country_slug: vietnam
   currency: VND
@@ -12,3 +18,4 @@ notes: >
   (Family-of-four / Single-person monthly costs) as
   category="Summary" — CPI-analog city totals. Recommended
   cadence: weekly.
+channel: aggregator
