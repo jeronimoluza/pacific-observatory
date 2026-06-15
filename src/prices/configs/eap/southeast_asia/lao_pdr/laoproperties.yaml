@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1"]
+spider: laoproperties
+url: https://laoproperties.com/
+language: en
+cadence: daily
+channel: null
+notes: |
+  Residential rental and sale listings for Lao PDR. Per-property slug
+  URLs. ~75 active listings (houses, apartments), primarily Vientiane
+  Capital. Prices in USD — apply BOL/WB FX for LAK conversion.
+  Server-rendered WordPress (houzez theme), confirmed 2026-06-15.
+  Narrow source: all rows COICOP 04.1.1 (residential rentals).
+  Spider not yet built — scaffold as scrapy_listing when 04.1 priority
+  confirmed against other gap-COICOP targets.
+  active: false

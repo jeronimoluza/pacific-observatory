@@ -1,0 +1,20 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+source_key: la_laosis_cpi
+module: eap.southeast_asia.lao_pdr.laosis_cpi
+function: fetch_la_laosis_cpi
+channel: null
+url: https://laosis.lsb.gov.la/majorIndicators.do
+language: en
+cadence: monthly
+fallback_date: 2012-01-01
+notes: |
+  Lao Statistics Bureau (LAOSIS) CPI portal. SSL cert expired —
+  fetcher uses requests verify=False (not a WAF; documented in
+  known_blockers.md). Base year 2012=100; CPI rebasing underway
+  in 2026 (per IMF Article IV 2025) — update _BASE_PERIOD when
+  LSB publishes new series. Division count (12 vs 13) depends on
+  whether LSB folds COICOP 13 into 12.

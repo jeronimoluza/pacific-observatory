@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: khaivai
+url: https://khaivai.com/
+language: lo
+cadence: daily
+channel: hypermarket
+notes: |
+  Lao e-commerce marketplace (WooCommerce variant). Covers clothing/
+  footwear (COICOP 03), household goods (05), electronics/appliances (09).
+  Prices in LAK; og:price:amount meta tag returns "LAK100,000" format —
+  spider strips prefix. Product slugs in Lao script (URL-encoded).
+  Server-rendered HTML confirmed 2026-06-15.

@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["09.4.2"]
+source_key: la_spotify
+module: eap.southeast_asia.lao_pdr.spotify_la
+function: fetch_la_spotify
+channel: null
+url: https://www.spotify.com/la/premium/
+language: en
+cadence: irregular
+fallback_date: 2024-01-01
+notes: |
+  Spotify Premium Laos — 4 tiers (Individual $3.29/mo, Student
+  $1.69/mo, Duo $4.49/mo, Family $5.79/mo). Prices in USD on Laos
+  locale; apply BOL/WB FX for LAK conversion. Server-rendered HTML
+  confirmed 2026-06-15. Narrow source (COICOP 09.4.2).

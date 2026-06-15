@@ -1,5 +1,12 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
 spider: mylifeelsewhere
+url: https://www.mylifeelsewhere.com/cost-of-living/laos
 language: en
+cadence: weekly
+channel: aggregator
 spider_kwargs:
   country_slug: laos
 notes: >
@@ -7,4 +14,3 @@ notes: >
   Country-only — emits one record per (country, item) pair (~34
   items / 7 categories per country, no city dimension). Both
   price (local) and price_usd are populated from source.
-  Recommended cadence: weekly.

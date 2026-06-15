@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1"]
+spider: yula
+url: https://www.yula.la/en/real-estate
+language: en
+cadence: daily
+channel: null
+notes: |
+  Lao classifieds portal — real estate section covers 292 property
+  listings (for rent and sale). Numeric listing IDs in URLs
+  (e.g. /en/house-and-land-sale-in-huoixai-bokeo-76374). Pagination
+  at ?page=N. Prices primarily in LAK (some USD). Server-rendered HTML
+  confirmed 2026-06-15. Also covers vehicles, electronics, fashion —
+  multi-category; declare coicop_codes only for rental filter
+  (?filter_category=rent → 04.1.1). Full classifieds scope would need
+  wider coicop_codes; rental-only run is the safe start.
+  active: false

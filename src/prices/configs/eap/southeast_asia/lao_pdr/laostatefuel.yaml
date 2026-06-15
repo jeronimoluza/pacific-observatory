@@ -1,0 +1,20 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2", "07.2.3"]
+source_key: la_laostatefuel
+module: eap.southeast_asia.lao_pdr.laostatefuel
+function: fetch_la_laostatefuel
+channel: null
+url: https://laostatefuel.com/en/gas-price.html
+language: en
+cadence: weekly
+fallback_date: 2016-01-01
+notes: |
+  Province-level retail fuel prices for all 18 Lao provinces.
+  Paginated HTML archive (~294 pages from ~2016-present).
+  _COICOP_MAP: Gasoline 92/95 → 07.2.2; Diesel → 07.2.3.
+  Site now shows Cloudflare interstitial on WebFetch; works with
+  curl browser headers (confirmed 2026-06-15). Narrow source:
+  short-circuits tier-b/c via source_curated short-circuit.

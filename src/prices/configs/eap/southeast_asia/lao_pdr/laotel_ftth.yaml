@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: la_laotel_ftth
+module: eap.southeast_asia.lao_pdr.laotel_ftth
+function: fetch_la_laotel_ftth
+channel: null
+url: https://www.laotel.com/la/new-package-ftth.php?Lang=en
+language: en
+cadence: irregular
+fallback_date: 2024-01-01
+notes: |
+  Lao Telecom FTTH broadband plans — 13 tiers from 35 Mbps
+  (165,000 LAK/mo) to 480 Mbps (5,405,000 LAK/mo), all in LAK.
+  Server-rendered HTML table; confirmed 2026-06-15.
+  Narrow source (all rows COICOP 08.3.0).
