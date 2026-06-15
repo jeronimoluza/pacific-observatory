@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: sb_siea_tariff
+module: eap.pacific_islands.solomon_islands.siea_tariff
+function: fetch_sb_siea_tariff
+url: https://solomonpower.com.sb/tariff/
+language: en
+cadence: monthly
+fallback_date: 2021-06-01
+notes: |
+  Monthly electricity tariff bulletin published by SIEA (trading as Solomon Power).
+  PDFs discovered via WP media REST API (search=charges). Prepaid retail rates only
+  (Domestic/Commercial/Industrial tiers by kWh block). Non-Regular demand-charge
+  customers excluded. Effective date parsed from PDF header; falls back to publish date.

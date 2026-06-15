@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+source_key: sb_our_telekom_plans
+module: eap.pacific_islands.solomon_islands.our_telekom_plans
+function: fetch_sb_our_telekom_plans
+url: https://www.ourtelekom.com.sb/personal/personal-mobile/
+language: en
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  Our Telekom (Solomon Telekom) mobile prepaid GIGA plan and internet data plan
+  tariffs. Both pages are fully server-rendered SSR HTML — no JS required. Covers
+  mobile prepaid (RedHot GIGA Plans) and internet (RedHot Data Plans, Broadband).
+  Prices in SBD. Published cadence is irregular; monthly check is sufficient to
+  capture rate changes.

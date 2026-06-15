@@ -1,5 +1,11 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: deferred_gemini
 spider: mylifeelsewhere
+channel: aggregator
 language: en
+cadence: weekly
 spider_kwargs:
   country_slug: solomon-islands
 notes: >
@@ -7,4 +13,3 @@ notes: >
   Country-only — emits one record per (country, item) pair (~34
   items / 7 categories per country, no city dimension). Both
   price (local) and price_usd are populated from source.
-  Recommended cadence: weekly.

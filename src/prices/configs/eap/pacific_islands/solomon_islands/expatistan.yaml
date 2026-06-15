@@ -1,14 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: deferred_gemini
 spider: expatistan
+channel: aggregator
 language: en
+cadence: weekly
 spider_kwargs:
   country_slug: solomon-islands
   currency: SBD
-  # cities: intentionally omitted — exercises auto-discover from
-  # /cost-of-living/country/solomon-islands (~1 cities).
 notes: >
   Expatistan crowd-sourced cost-of-living aggregator. Emits one
   record per (city, item) pair in LOCAL currency (apply WB FX feed
   downstream for USD). Includes two summary rows per city
   (Family-of-four / Single-person monthly costs) as
-  category="Summary" — CPI-analog city totals. Recommended
-  cadence: weekly.
+  category="Summary" — CPI-analog city totals.

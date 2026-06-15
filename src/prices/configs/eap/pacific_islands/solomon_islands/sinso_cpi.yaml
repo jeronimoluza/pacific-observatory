@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+source_key: sb_sinso_cpi
+module: eap.pacific_islands.solomon_islands.sinso_cpi
+function: fetch_sb_sinso_cpi
+url: https://statistics.gov.sb/category/statistics/economic-statistics/consumer-price-index/
+language: en
+cadence: monthly
+fallback_date: 2023-01-01
+notes: |
+  SINSO monthly CPI bulletin. Live site is Imunify360-protected (415 on direct API).
+  Post discovery runs via Wayback WP JSON API (categories=14); PDFs attempted direct
+  then Wayback fallback. Table 1.0 (Weighted Average 4 Towns) is the primary table.
+  Base period 2017=100. 12 COICOP groups published; division 13 absent. All-items
+  headline row dropped (no sanctioned sentinel code yet).
