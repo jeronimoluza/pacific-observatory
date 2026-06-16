@@ -48,7 +48,7 @@ class ChaldalSpider(scrapy.Spider):
         "shouldShowCategoryBasedRecommendations": {"case": "None"},
     }
 
-    def start_requests(self):
+    async def start(self):
         yield self._page_request(0)
 
     def _page_request(self, page_index):

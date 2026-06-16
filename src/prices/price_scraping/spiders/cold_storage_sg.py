@@ -37,7 +37,7 @@ class ColdStorageSgSpider(scrapy.Spider):
         "AUTOTHROTTLE_TARGET_CONCURRENCY": 4,
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(SITEMAP_URL, callback=self.parse_sitemap)
 
     def parse_sitemap(self, response):

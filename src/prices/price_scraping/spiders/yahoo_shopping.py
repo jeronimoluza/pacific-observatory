@@ -104,7 +104,7 @@ class YahooShoppingSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.scraped_product_ids = set()
 
-    def start_requests(self):
+    async def start(self):
         """
         Start by requesting category listing pages using Playwright.
         """

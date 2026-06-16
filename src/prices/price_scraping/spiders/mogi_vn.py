@@ -43,7 +43,7 @@ class MogiVNSpider(scrapy.Spider):
             self.max_pages = MAX_PAGES
         self.scraped_ids = set()
 
-    def start_requests(self):
+    async def start(self):
         for base in LANDING_URLS:
             for page in range(1, self.max_pages + 1):
                 url = base if page == 1 else f"{base}?cp={page}"

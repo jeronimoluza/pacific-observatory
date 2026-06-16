@@ -40,7 +40,7 @@ class FrankieSamoaSpider(scrapy.Spider):
         ),
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             f"{BASE}?limit={PER_PAGE}&page=1",
             callback=self.parse_page,

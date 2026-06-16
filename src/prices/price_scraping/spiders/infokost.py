@@ -39,7 +39,7 @@ class InfokostSpider(scrapy.Spider):
         "CONCURRENT_REQUESTS": 1,
     }
 
-    def start_requests(self):
+    async def start(self):
         for city in CITIES:
             url = f"https://infokost.id/kost/{city}"
             yield scrapy.Request(

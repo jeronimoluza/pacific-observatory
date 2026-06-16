@@ -55,7 +55,7 @@ class AeonOnlineSpider(scrapy.Spider):
         "x-currency": "KHR",
     }
 
-    def start_requests(self):
+    async def start(self):
         for slug in self.STORE_SLUGS:
             yield self._page_request(slug, page=1)
 

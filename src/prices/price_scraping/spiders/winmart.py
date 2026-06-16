@@ -34,7 +34,7 @@ class WinmartSpider(scrapy.Spider):
         "DOWNLOAD_DELAY": 1,
     }
 
-    def start_requests(self):
+    async def start(self):
         headers = {
             "Accept": "application/json",
             "Origin": "https://winmart.vn",

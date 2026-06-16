@@ -44,7 +44,7 @@ class GourmetMarketThSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.seen_urls: set[str] = set()
 
-    def start_requests(self):
+    async def start(self):
         for url in self.START_URLS:
             yield scrapy.Request(
                 url,
@@ -86,7 +86,9 @@ class GourmetMarketThSpider(scrapy.Spider):
                 card.css("a.item-card-detail .name::text").get()
                 or card.css("img::attr(alt)").get()
             )
-            price_text = card.css("a.item-card-detail .price-per-unit .price::text").get() or ""
+            price_text = (
+                card.css("a.item-card-detail .price-per-unit .price::text").get() or ""
+            )
 
             price = None
             if price_text:

@@ -91,7 +91,7 @@ class ManningsSpider(scrapy.Spider):
             meta=meta,
         )
 
-    def start_requests(self):
+    async def start(self):
         # Mannings does not always assign products directly to the parent category;
         # fetch children and scrape each child category id.
         for cat_name, cat_id in CATEGORIES.items():

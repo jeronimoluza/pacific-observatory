@@ -40,7 +40,7 @@ class TwoDegreesNzSpider(scrapy.Spider):
         "DOWNLOAD_TIMEOUT": 30,
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             API_URL,
             callback=self.parse_plans,

@@ -18,6 +18,11 @@ CONCURRENT_REQUESTS = 32
 CONCURRENT_REQUESTS_PER_DOMAIN = 8
 CONCURRENT_REQUESTS_PER_IP = 8
 
+# Scrapy 2.13 flipped the default SCHEDULER_PRIORITY_QUEUE to
+# DownloaderAwarePriorityQueue, which rejects CONCURRENT_REQUESTS_PER_IP.
+# Pin back to the legacy queue to keep per-IP throttling working.
+SCHEDULER_PRIORITY_QUEUE = "scrapy.pqueues.ScrapyPriorityQueue"
+
 # Download delay (seconds between requests)
 DOWNLOAD_DELAY = 0.1
 

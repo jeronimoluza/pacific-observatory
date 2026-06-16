@@ -65,7 +65,7 @@ class LivingCostSpider(scrapy.Spider):
         self._missing_cities: list[str] = []
         self._scraped_cities: list[str] = []
 
-    def start_requests(self):
+    async def start(self):
         if self.cities:
             for city in self.cities:
                 yield self._city_request(city)

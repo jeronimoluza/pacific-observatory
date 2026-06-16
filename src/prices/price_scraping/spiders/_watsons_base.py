@@ -55,7 +55,7 @@ class WatsonsBaseSpider(scrapy.Spider):
     SITEMAP_FILTER: str = "sitemap_prd_en"
     PRICE_SYMBOL: str = ""
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             self.SITEMAP_INDEX,
             callback=self.parse_index,

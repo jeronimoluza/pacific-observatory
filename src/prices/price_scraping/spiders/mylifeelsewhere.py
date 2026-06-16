@@ -44,8 +44,10 @@ _UA = (
 
 # Filter out non-category h3s that appear elsewhere on the page.
 _NON_CATEGORY_H3 = {
-    "nice to see you!", "help us improve these prices",
-    "ask the elsewhere community", "change currency:",
+    "nice to see you!",
+    "help us improve these prices",
+    "ask the elsewhere community",
+    "change currency:",
 }
 
 
@@ -74,7 +76,7 @@ class MyLifeElsewhereSpider(scrapy.Spider):
         self.country_slug = country_slug
         self._record_count = 0
 
-    def start_requests(self):
+    async def start(self):
         url = f"{_BASE}/cost-of-living/{self.country_slug}"
         yield scrapy.Request(
             url,
@@ -84,7 +86,9 @@ class MyLifeElsewhereSpider(scrapy.Spider):
         )
 
     def parse_country(self, response):
-        records = list(self.parse_html(response.text, response.url, country_slug=self.country_slug))
+        records = list(
+            self.parse_html(response.text, response.url, country_slug=self.country_slug)
+        )
         if not records:
             logger.warning(
                 "[mylifeelsewhere] country=%s url=%s yielded 0 records — "

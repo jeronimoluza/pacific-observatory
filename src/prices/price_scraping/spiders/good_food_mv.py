@@ -20,7 +20,7 @@ class GoodFoodMvSpider(scrapy.Spider):
     currency = "MVR"
     page_size = 250
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             f"{self.base_url}/products.json?limit={self.page_size}&page=1",
             callback=self.parse_products,

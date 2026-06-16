@@ -27,7 +27,7 @@ class BootsThSpider(scrapy.Spider):
     allowed_domains = ["store.boots.co.th"]
     currency = "THB"
 
-    def start_requests(self):
+    async def start(self):
         url = f"{API_BASE}?locale=en&size={PAGE_SIZE}&page=1"
         yield scrapy.Request(
             url,

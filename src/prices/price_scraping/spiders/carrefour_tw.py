@@ -59,7 +59,7 @@ class CarrefourTwSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.scraped_skus: set[str] = set()
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             SITEMAP_INDEX,
             callback=self.parse_sitemap_index,
@@ -116,7 +116,7 @@ class CarrefourTwSpider(scrapy.Spider):
             logger.warning(f"sku={sku}: non-JSON response")
             return
         p = data.get("product") or {}
-        sales = ((p.get("price") or {}).get("sales") or {})
+        sales = (p.get("price") or {}).get("sales") or {}
         price = sales.get("value")
         if price is None:
             return
@@ -128,7 +128,11 @@ class CarrefourTwSpider(scrapy.Spider):
             brand = brand.get("name")
         availability = p.get("availability") or {}
         if isinstance(availability, dict):
-            availability = availability.get("messages", [None])[0] if availability.get("messages") else None
+            availability = (
+                availability.get("messages", [None])[0]
+                if availability.get("messages")
+                else None
+            )
         yield {
             "product_id": str(p.get("id") or sku),
             "product_name": name.strip()[:500],

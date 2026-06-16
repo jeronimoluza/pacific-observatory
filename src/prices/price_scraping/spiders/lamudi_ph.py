@@ -45,7 +45,7 @@ class LamudiPhSpider(scrapy.Spider):
             pass
         self.scraped_ids = set()
 
-    def start_requests(self):
+    async def start(self):
         for root in SEARCH_ROOTS:
             for page in range(1, self.max_pages + 1):
                 url = root if page == 1 else f"{root}?page={page}"

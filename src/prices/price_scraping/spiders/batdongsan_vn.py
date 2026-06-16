@@ -70,13 +70,16 @@ class BatdongsanVNSpider(scrapy.Spider):
             pass
         self.scraped_listing_ids: set[str] = set()
 
-    def start_requests(self):
+    async def start(self):
         for page in range(1, self.max_pages + 1):
             path = self.LANDING_URL if page == 1 else f"{self.LANDING_URL}/p{page}"
             yield scrapy.Request(
                 path,
                 callback=self.parse_listing_page,
-                meta={"impersonate": self.IMPERSONATE_PROFILE, "page_label": f"p{page}"},
+                meta={
+                    "impersonate": self.IMPERSONATE_PROFILE,
+                    "page_label": f"p{page}",
+                },
                 errback=self.errback,
             )
 
@@ -110,7 +113,9 @@ class BatdongsanVNSpider(scrapy.Spider):
         if listing_id in self.scraped_listing_ids:
             return None
 
-        price_text = " ".join(card.css(".re__card-config-price ::text").getall()).strip()
+        price_text = " ".join(
+            card.css(".re__card-config-price ::text").getall()
+        ).strip()
         rent_vnd = self._parse_price_to_vnd(price_text)
         if rent_vnd is None:
             return None
@@ -119,10 +124,17 @@ class BatdongsanVNSpider(scrapy.Spider):
 
         area = (card.css(".re__card-config-area ::text").get() or "").strip() or None
         beds = (card.css(".re__card-config-bedroom ::text").get() or "").strip() or None
-        toilets = (card.css(".re__card-config-toilet ::text").get() or "").strip() or None
-        location = " ".join(
-            t.strip() for t in card.css(".re__card-location ::text").getall() if t.strip()
-        ) or None
+        toilets = (
+            card.css(".re__card-config-toilet ::text").get() or ""
+        ).strip() or None
+        location = (
+            " ".join(
+                t.strip()
+                for t in card.css(".re__card-location ::text").getall()
+                if t.strip()
+            )
+            or None
+        )
         title = (card.css(".re__card-title ::text").get() or "").strip() or None
 
         name_parts = [
@@ -163,6 +175,4 @@ class BatdongsanVNSpider(scrapy.Spider):
         return None
 
     def errback(self, failure):
-        logger.error(
-            "Request failed: %s — %r", failure.request.url, failure.value
-        )
+        logger.error("Request failed: %s — %r", failure.request.url, failure.value)

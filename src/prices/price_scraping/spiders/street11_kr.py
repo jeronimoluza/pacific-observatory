@@ -63,7 +63,7 @@ class Street11KrSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.scraped_product_ids: set[str] = set()
 
-    def start_requests(self):
+    async def start(self):
         for meta_ctgr, disp_ctgr, name in CATEGORIES:
             qs = ["pageId=PCBEST"]
             if meta_ctgr:
@@ -128,8 +128,10 @@ def _iter_products(obj):
     """Walk the PUI JSON tree and yield every dict that looks like a product
     (has prdNo + prdNm + at least one of sellPrice/finalDscPrice)."""
     if isinstance(obj, dict):
-        if obj.get("prdNo") and obj.get("prdNm") and (
-            obj.get("sellPrice") or obj.get("finalDscPrice")
+        if (
+            obj.get("prdNo")
+            and obj.get("prdNm")
+            and (obj.get("sellPrice") or obj.get("finalDscPrice"))
         ):
             yield obj
         for v in obj.values():

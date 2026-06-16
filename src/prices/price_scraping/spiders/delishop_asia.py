@@ -62,7 +62,7 @@ class DelishopAsiaSpider(scrapy.Spider):
         "tableware",
     ]
 
-    def start_requests(self):
+    async def start(self):
         """
         Generate initial requests for page 1 of each category.
         """

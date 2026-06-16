@@ -39,7 +39,7 @@ class DotPropertyPhSpider(scrapy.Spider):
         "CONCURRENT_REQUESTS": 1,
     }
 
-    def start_requests(self):
+    async def start(self):
         for prov in PROVINCES:
             url = f"https://www.dotproperty.com.ph/properties-for-rent{prov}"
             yield scrapy.Request(

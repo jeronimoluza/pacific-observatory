@@ -18,10 +18,12 @@ class CompositeDownloadHandler(ImpersonateDownloadHandler):
     @classmethod
     def from_crawler(cls, crawler):
         instance = super().from_crawler(crawler)
-        instance._playwright_handler = ScrapyPlaywrightDownloadHandler.from_crawler(crawler)
+        instance._playwright_handler = ScrapyPlaywrightDownloadHandler.from_crawler(
+            crawler
+        )
         return instance
 
-    def download_request(self, request, spider):
+    async def download_request(self, request):
         if request.meta.get("playwright"):
-            return self._playwright_handler.download_request(request, spider)
-        return super().download_request(request, spider)
+            return await self._playwright_handler.download_request(request)
+        return await super().download_request(request)

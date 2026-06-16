@@ -24,13 +24,19 @@ logger = logging.getLogger(__name__)
 CATEGORIES = [
     ("https://www.fairprice.com.sg/category/fruits-vegetables", "Fruits & Vegetables"),
     ("https://www.fairprice.com.sg/category/meat-seafood", "Meat & Seafood"),
-    ("https://www.fairprice.com.sg/category/dairy-chilled-eggs", "Dairy, Chilled & Eggs"),
+    (
+        "https://www.fairprice.com.sg/category/dairy-chilled-eggs",
+        "Dairy, Chilled & Eggs",
+    ),
     (
         "https://www.fairprice.com.sg/category/rice-noodles-cooking-ingredients",
         "Rice, Noodles & Cooking",
     ),
     ("https://www.fairprice.com.sg/category/beverages", "Beverages"),
-    ("https://www.fairprice.com.sg/category/snacks-confectionery", "Snacks & Confectionery"),
+    (
+        "https://www.fairprice.com.sg/category/snacks-confectionery",
+        "Snacks & Confectionery",
+    ),
     ("https://www.fairprice.com.sg/category/health-beauty", "Health & Beauty"),
     ("https://www.fairprice.com.sg/category/household", "Household"),
     ("https://www.fairprice.com.sg/category/baby", "Baby"),
@@ -67,7 +73,7 @@ class FairPriceSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.scraped_urls: set[str] = set()
 
-    def start_requests(self):
+    async def start(self):
         for cat_url, cat_name in CATEGORIES:
             yield scrapy.Request(
                 cat_url,

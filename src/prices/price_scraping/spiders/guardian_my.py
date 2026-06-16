@@ -63,7 +63,7 @@ class GuardianMYSpider(scrapy.Spider):
     allowed_domains = ["www.guardian.com.my"]
     currency = "MYR"
 
-    def start_requests(self):
+    async def start(self):
         for cat_name, cat_id in CATEGORIES.items():
             yield scrapy.Request(
                 GRAPHQL_URL,

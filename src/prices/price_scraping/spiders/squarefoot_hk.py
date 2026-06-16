@@ -40,7 +40,7 @@ class SquarefootHkSpider(scrapy.Spider):
         "CONCURRENT_REQUESTS": 1,
     }
 
-    def start_requests(self):
+    async def start(self):
         for slug, name in SECTIONS:
             url = f"https://www.squarefoot.com.hk/{slug}/"
             yield scrapy.Request(

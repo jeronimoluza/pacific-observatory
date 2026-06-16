@@ -60,7 +60,7 @@ class PropertyGuruMYSpider(scrapy.Spider):
         self.scraped_listing_ids: set[str] = set()
         self.discovered_districts: set[str] = set()
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             self.LANDING_URL,
             callback=self.parse_landing,

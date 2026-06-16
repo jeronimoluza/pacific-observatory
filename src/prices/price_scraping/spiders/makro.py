@@ -65,7 +65,7 @@ class MakroSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.scraped_product_ids = set()
 
-    def start_requests(self):
+    async def start(self):
         """
         Start by requesting all main category pages with Playwright rendering.
         """

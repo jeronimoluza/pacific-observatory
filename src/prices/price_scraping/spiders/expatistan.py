@@ -90,7 +90,7 @@ class ExpatistanSpider(scrapy.Spider):
         self._missing_cities: list[str] = []
         self._scraped_cities: list[str] = []
 
-    def start_requests(self):
+    async def start(self):
         if self.cities:
             for city in self.cities:
                 yield self._city_request(city)
@@ -117,9 +117,7 @@ class ExpatistanSpider(scrapy.Spider):
         # Country page has an h2 "List of all cities available in <Country>"
         # followed by a table.extra-spacing-in-mobile of city anchors.
         # Anchors point at /cost-of-living/<city-country> (disambiguated slugs).
-        h2 = soup.find(
-            "h2", string=lambda s: bool(s) and "List of all cities" in s
-        )
+        h2 = soup.find("h2", string=lambda s: bool(s) and "List of all cities" in s)
         tbl = h2.find_next("table") if h2 is not None else None
         if tbl is None:
             logger.warning(
@@ -171,7 +169,9 @@ class ExpatistanSpider(scrapy.Spider):
             )
             return
         records = list(
-            self.parse_html(response.text, response.url, currency=self.currency, city=city)
+            self.parse_html(
+                response.text, response.url, currency=self.currency, city=city
+            )
         )
         if not records:
             self._missing_cities.append(city or response.url)
@@ -262,7 +262,9 @@ class ExpatistanSpider(scrapy.Spider):
         # --- Summary block: span.price elements OUTSIDE the item table.
         # Page layout: two <li>s near the top each with a <span class="price">
         # for "Family of four monthly costs" and "Single person monthly costs".
-        table_descendants = set(id(d) for d in table.descendants) if table is not None else set()
+        table_descendants = (
+            set(id(d) for d in table.descendants) if table is not None else set()
+        )
         for span in soup.select("span.price"):
             if id(span) in table_descendants:
                 continue

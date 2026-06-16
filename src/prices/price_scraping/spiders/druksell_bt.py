@@ -35,7 +35,7 @@ class DruksellBtSpider(scrapy.Spider):
         "DOWNLOAD_TIMEOUT": 60,
     }
 
-    def start_requests(self):
+    async def start(self):
         yield self._products_request(1)
 
     def _products_request(self, page: int) -> scrapy.Request:

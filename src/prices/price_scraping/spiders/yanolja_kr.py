@@ -35,7 +35,7 @@ class YanoljaKrSpider(scrapy.Spider):
         "CONCURRENT_REQUESTS": 1,
     }
 
-    def start_requests(self):
+    async def start(self):
         for path, name in CATEGORIES:
             url = f"{BASE}{path}"
             yield scrapy.Request(

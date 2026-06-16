@@ -48,7 +48,7 @@ class PharmeasySpider(scrapy.Spider):
         "CONCURRENT_REQUESTS": 4,
     }
 
-    def start_requests(self):
+    async def start(self):
         headers = {
             "Accept": "application/json",
             "Origin": "https://pharmeasy.in",

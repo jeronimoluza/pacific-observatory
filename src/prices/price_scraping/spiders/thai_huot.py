@@ -49,7 +49,7 @@ class ThaiHuotSpider(scrapy.Spider):
         "yogurt-and-drink",
     ]
 
-    def start_requests(self):
+    async def start(self):
         """
         Generate initial requests for all category pages.
         """

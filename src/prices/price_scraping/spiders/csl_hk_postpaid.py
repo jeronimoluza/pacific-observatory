@@ -42,7 +42,7 @@ class CslHkPostpaidSpider(scrapy.Spider):
         "CONCURRENT_REQUESTS": 1,
     }
 
-    def start_requests(self):
+    async def start(self):
         for url in START_URLS:
             yield scrapy.Request(
                 url,

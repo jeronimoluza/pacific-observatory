@@ -55,7 +55,7 @@ class DoctorOnCallSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.scraped_urls: set[str] = set()
 
-    def start_requests(self):
+    async def start(self):
         for slug, name in CATEGORIES:
             yield self._listing_request(slug, name, 1)
 
@@ -87,7 +87,9 @@ class DoctorOnCallSpider(scrapy.Spider):
         for card in cards:
             product_id = card.attrib.get("data-product_id")
             product_name = card.css("h3 a::text").get() or card.css("h2 a::text").get()
-            href = card.css("h3 a::attr(href)").get() or card.css("h2 a::attr(href)").get()
+            href = (
+                card.css("h3 a::attr(href)").get() or card.css("h2 a::attr(href)").get()
+            )
             if not (product_name and href):
                 continue
             product_name = product_name.strip()

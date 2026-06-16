@@ -40,7 +40,7 @@ class K24KlikSpider(scrapy.Spider):
         "AUTOTHROTTLE_ENABLED": False,
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             SITEMAP_URL,
             callback=self.parse_sitemap,

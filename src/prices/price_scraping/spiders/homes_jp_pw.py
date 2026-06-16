@@ -40,7 +40,7 @@ class HomesJpPwSpider(scrapy.Spider):
         "CONCURRENT_REQUESTS": 1,
     }
 
-    def start_requests(self):
+    async def start(self):
         for slug, name in PREFECTURES:
             url = f"https://www.homes.co.jp/chintai/{slug}/list/"
             yield scrapy.Request(

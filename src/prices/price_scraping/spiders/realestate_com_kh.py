@@ -37,7 +37,7 @@ class RealestateComKhSpider(scrapy.Spider):
         "CONCURRENT_REQUESTS": 1,
     }
 
-    def start_requests(self):
+    async def start(self):
         for area in AREAS:
             url = (
                 f"https://www.realestate.com.kh/rent/{area}/"

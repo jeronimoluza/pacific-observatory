@@ -42,7 +42,7 @@ class CentralThSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.seen_urls: set[str] = set()
 
-    def start_requests(self):
+    async def start(self):
         for url in self.START_URLS:
             yield scrapy.Request(
                 url,

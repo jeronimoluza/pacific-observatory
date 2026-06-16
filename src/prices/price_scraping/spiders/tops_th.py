@@ -45,7 +45,7 @@ class TopsThSpider(scrapy.Spider):
         ),
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(SITEMAP_INDEX, callback=self.parse_index)
 
     def parse_index(self, response):

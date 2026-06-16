@@ -43,7 +43,7 @@ class LotussThSpider(scrapy.Spider):
         "CONCURRENT_REQUESTS": 1,
     }
 
-    def start_requests(self):
+    async def start(self):
         for slug, name in CATEGORIES:
             url = f"https://www.lotuss.com/th/category/{slug}"
             yield scrapy.Request(

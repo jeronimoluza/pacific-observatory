@@ -66,7 +66,7 @@ class RakutenSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.scraped_product_ids: set[str] = set()
 
-    def start_requests(self):
+    async def start(self):
         for category_id, category_name in self.CATEGORY_IDS:
             yield scrapy.Request(
                 f"https://www.rakuten.co.jp/category/{category_id}/",
@@ -80,7 +80,6 @@ class RakutenSpider(scrapy.Spider):
             )
 
     def parse_category(self, response):
-        category_id = response.meta["category_id"]
         category_name = response.meta["category_name"]
 
         cards = response.css("div.dui-card[data-track-itemid]")

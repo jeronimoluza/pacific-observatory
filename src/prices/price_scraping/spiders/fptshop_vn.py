@@ -50,7 +50,7 @@ class FptshopVNSpider(scrapy.Spider):
         self.scraped_skus = set()
         self.visited_categories = set()
 
-    def start_requests(self):
+    async def start(self):
         for url in CATEGORY_ROOTS:
             yield scrapy.Request(
                 url,

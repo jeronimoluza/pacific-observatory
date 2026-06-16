@@ -45,7 +45,7 @@ class SayurboxSpider(scrapy.Spider):
         "CONCURRENT_REQUESTS": 1,
     }
 
-    def start_requests(self):
+    async def start(self):
         for slug, name in CATEGORIES:
             url = f"https://www.sayurbox.com/category/{slug}"
             yield scrapy.Request(

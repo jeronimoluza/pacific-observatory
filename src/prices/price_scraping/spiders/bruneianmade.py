@@ -32,7 +32,7 @@ class BruneianmadeSpider(scrapy.Spider):
         "AUTOTHROTTLE_TARGET_CONCURRENCY": 3,
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             "https://bruneianmade.com/shop/",
             callback=self.parse_listing,

@@ -42,7 +42,7 @@ class SurangelPwSpider(scrapy.Spider):
         ),
     }
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             f"{BASE}?per_page={PER_PAGE}&page=1",
             callback=self.parse_page,

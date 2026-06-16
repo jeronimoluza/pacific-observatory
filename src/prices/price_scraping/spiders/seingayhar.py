@@ -57,7 +57,7 @@ class SeingayharSpider(scrapy.Spider):
         "AUTOTHROTTLE_TARGET_CONCURRENCY": 3,
     }
 
-    def start_requests(self):
+    async def start(self):
         for url in CATEGORY_ROOTS:
             yield scrapy.Request(
                 url,

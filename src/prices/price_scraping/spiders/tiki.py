@@ -69,7 +69,7 @@ class TikiSpider(scrapy.Spider):
         self._seen_listing_urls: set[str] = set()
         self._empty_pages_by_branch: dict[str, int] = defaultdict(int)
 
-    def start_requests(self):
+    async def start(self):
         for url in self.start_urls:
             root_slug = self._root_slug_from_url(url)
             yield scrapy.Request(

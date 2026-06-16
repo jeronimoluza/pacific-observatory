@@ -42,7 +42,7 @@ class AthomeJpSpider(scrapy.Spider):
         "USER_AGENT": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     }
 
-    def start_requests(self):
+    async def start(self):
         for slug, name in PREFECTURES:
             url = f"https://www.athome.co.jp/chintai/{slug}/list/"
             yield scrapy.Request(

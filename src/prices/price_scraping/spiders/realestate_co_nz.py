@@ -57,7 +57,7 @@ class RealestateCoNzSpider(scrapy.Spider):
             params.append(("filter[region-slug][]", region_slug))
         return f"{API_BASE}?{urlencode(params)}"
 
-    def start_requests(self):
+    async def start(self):
         for category, region_slug, label in REGION_FILTERS:
             url = self._build_url(category, region_slug, 0)
             yield scrapy.Request(

@@ -54,7 +54,7 @@ class MhOnlineSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.queued_urls: set[str] = set()
 
-    def start_requests(self):
+    async def start(self):
         yield scrapy.Request(
             SITEMAP_INDEX,
             callback=self.parse_sitemap_index,
