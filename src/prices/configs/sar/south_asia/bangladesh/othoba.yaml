@@ -3,3 +3,4 @@ language: en
 notes: >
   Bangladesh general e-commerce + daily-bazar grocery. CrawlSpider, server-rendered HTML.
   PDPs match /<slug>-<6+digit-id>.
+channel: supermarket

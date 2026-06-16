@@ -1,3 +1,4 @@
 spider: whim_mv
 language: en
 notes: Maldives online supermarket on Odoo; PDPs at /shop/<slug>-<id>.
+channel: supermarket

@@ -6,3 +6,4 @@ spider: watsons_ph
 url: https://www.watsons.com.ph
 language: en
 cadence: daily
+channel: pharmacy

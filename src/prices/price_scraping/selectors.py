@@ -468,6 +468,30 @@ SPIDER_SELECTORS = {
             "input[name='product_id']::attr(value)",
         ],
     },
+    # --- Laos (Khaivai — WooCommerce variant) ---
+    "khaivai": {
+        "product_name": [
+            "h1.mb-2.fs-20.fw-600::text",
+            "meta[property='og:title']::attr(content)",
+            "h1.fs-20::text",
+            "h1::text",
+        ],
+        "price": [
+            # og:price:amount returns "LAK100,000" — spider strips the prefix
+            "meta[property='og:price:amount']::attr(content)",
+            "strong#chosen_price.h4.fw-600.text-primary::text",
+            "span.fs-17.fw-600.text-primary::text",
+        ],
+        "category": [
+            "nav.woocommerce-breadcrumb a::text",
+            "div.breadcrumb a::text",
+            "a[class*='category']::text",
+        ],
+        "product_id": [
+            "input[name='product_id']::attr(value)",
+            "meta[property='product:retailer_item_id']::attr(content)",
+        ],
+    },
     # --- Laos (Shopify) ---
     "shopping_d": {
         "product_name": [

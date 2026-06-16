@@ -14,3 +14,4 @@ notes: |
   (city, item) pair in LOCAL currency (apply WB FX feed downstream for
   USD). Includes two summary rows per city (Family-of-four / Single-person
   monthly costs) as category="Summary" — CPI-analog city totals.
+channel: null

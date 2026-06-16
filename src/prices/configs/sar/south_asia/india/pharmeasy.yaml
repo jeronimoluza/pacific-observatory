@@ -3,3 +3,4 @@ language: en
 notes: >
   India pharmacy. Uses pharmeasy.in/api/otc/getCategoryProducts (GET, no auth,
   20/page). 16 OTC top-level categories, cap 30 pages/cat = ~9,600 items max.
+channel: pharmacy

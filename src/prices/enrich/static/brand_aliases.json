@@ -1,0 +1,133 @@
+{
+  "_doc": "Token-level brand alias map: variant (lowercased, hyphens kept) -> canonical token. Applied after character cleanup, before stop-word removal. Keep entries minimal — only spellings that demonstrably appear in cache or raw_prices and that collapse to the same brand identity.",
+
+  "coca-cola": "cocacola",
+  "coca cola": "cocacola",
+  "coke": "cocacola",
+
+  "lay's": "lays",
+  "lay s": "lays",
+  "lay": "lays",
+
+  "kewpie": "kewpie",
+  "キユーピー": "kewpie",
+
+  "nestlé": "nestle",
+  "nestle": "nestle",
+
+  "s&r": "sandr",
+  "s & r": "sandr",
+
+  "kraft heinz": "heinz",
+
+  "p&g": "pg",
+  "p & g": "pg",
+
+  "l'oreal": "loreal",
+  "l'oréal": "loreal",
+
+  "j&j": "johnson",
+  "johnson & johnson": "johnson",
+  "johnson johnson": "johnson",
+
+  "philips": "philips",
+  "フィリップス": "philips",
+
+  "panasonic": "panasonic",
+  "パナソニック": "panasonic",
+
+  "sony": "sony",
+  "ソニー": "sony",
+
+  "sharp": "sharp",
+  "シャープ": "sharp",
+
+  "asus": "asus",
+  "華碩": "asus",
+
+  "samsung": "samsung",
+  "サムスン": "samsung",
+
+  "lg": "lg",
+
+  "pepsi": "pepsi",
+  "pepsico": "pepsi",
+
+  "san miguel": "sanmiguel",
+  "san-miguel": "sanmiguel",
+
+  "alaska": "alaska",
+
+  "meiji": "meiji",
+  "明治": "meiji",
+
+  "moccona": "moccona",
+
+  "purefoods": "purefoods",
+  "pure foods": "purefoods",
+
+  "maltesers": "maltesers",
+
+  "balenciaga": "balenciaga",
+  "巴黎世家": "balenciaga",
+
+  "the north face": "northface",
+  "north face": "northface",
+  "ザ・ノース・フェイス": "northface",
+
+  "coach": "coach",
+  "コーチ": "coach",
+
+  "anker": "anker",
+
+  "iris ohyama": "irisohyama",
+  "アイリスオーヤマ": "irisohyama",
+
+  "marlboro": "marlboro",
+  "マルボロ": "marlboro",
+  "camel": "camel",
+  "lucky strike": "lucky-strike",
+  "lucky-strike": "lucky-strike",
+  "winston": "winston",
+  "dunhill": "dunhill",
+  "mevius": "mevius",
+  "メビウス": "mevius",
+  "mild seven": "mevius",
+  "fortune": "fortune",
+  "hope": "hope",
+
+  "sprite": "sprite",
+  "fanta": "fanta",
+
+  "oreo": "oreo",
+
+  "nike": "nike",
+  "ナイキ": "nike",
+  "adidas": "adidas",
+  "アディダス": "adidas",
+  "puma": "puma",
+  "プーマ": "puma",
+  "new balance": "new-balance",
+  "new-balance": "new-balance",
+  "asics": "asics",
+  "アシックス": "asics",
+
+  "iphone": "iphone",
+  "アイフォン": "iphone",
+  "galaxy": "galaxy",
+  "ギャラクシー": "galaxy",
+  "pixel": "pixel",
+
+  "toyota": "toyota",
+  "トヨタ": "toyota",
+  "honda": "honda",
+  "ホンダ": "honda",
+  "ford": "ford",
+  "hyundai": "hyundai",
+  "현대": "hyundai",
+
+  "pedigree": "pedigree",
+  "ペディグリー": "pedigree",
+  "whiskas": "whiskas",
+  "ウィスカス": "whiskas"
+}

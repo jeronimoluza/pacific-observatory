@@ -6,3 +6,4 @@ spider: docomo
 url: https://www.docomo.ne.jp/charge/
 language: ja
 cadence: weekly
+channel: null

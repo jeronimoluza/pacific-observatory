@@ -6,6 +6,7 @@ coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11",
 source_key: sb_sinso_cpi
 module: eap.pacific_islands.solomon_islands.sinso_cpi
 function: fetch_sb_sinso_cpi
+channel: null
 url: https://statistics.gov.sb/category/statistics/economic-statistics/consumer-price-index/
 language: en
 cadence: monthly

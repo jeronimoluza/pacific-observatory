@@ -6,3 +6,4 @@ spider: watsons_tw
 url: https://www.watsons.com.tw
 language: zh-TW
 cadence: daily
+channel: pharmacy

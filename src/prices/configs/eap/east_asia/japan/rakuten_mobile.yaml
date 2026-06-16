@@ -6,3 +6,4 @@ spider: rakuten_mobile
 url: https://network.mobile.rakuten.co.jp/fee/saikyo-plan/
 language: ja
 cadence: weekly
+channel: null

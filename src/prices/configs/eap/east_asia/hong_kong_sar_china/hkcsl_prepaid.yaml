@@ -6,3 +6,4 @@ spider: hkcsl_prepaid
 url: https://www.hkcsl.com/en/prepaid/
 language: en
 cadence: weekly
+channel: null

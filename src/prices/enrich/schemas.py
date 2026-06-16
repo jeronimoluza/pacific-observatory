@@ -1,6 +1,20 @@
 from typing import Literal
 from pydantic import BaseModel, Field
 
+Channel = Literal[
+    "supermarket",
+    "pharmacy",
+    "fuel-station",
+    "dept-store",
+    "electronics",
+    "home-improvement",
+    "cosmetics",
+    "pet",
+    "fashion",
+    "aggregator",
+    "hypermarket",
+]
+
 
 class Dimension(BaseModel):
     value: float

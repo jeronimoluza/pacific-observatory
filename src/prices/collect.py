@@ -129,7 +129,14 @@ def _run_fetcher(m: PriceSourceConfig) -> None:
     is_flag=True,
     help="List sources without running (alias for --dry-run).",
 )
-def collect(region, subregion, country, source, max_items, dry_run, list_sources):
+@click.option(
+    "--skip-fetchers",
+    is_flag=True,
+    help="Skip the synchronous fetcher phase and go straight to Scrapy spiders.",
+)
+def collect(
+    region, subregion, country, source, max_items, dry_run, list_sources, skip_fetchers
+):
     """Run Scrapy spiders and/or Python fetchers to collect price data."""
 
     manifests = _load_manifests(region, subregion, country, source)
@@ -167,11 +174,14 @@ def collect(region, subregion, country, source, max_items, dry_run, list_sources
 
     # Run fetchers first — they're synchronous and finish before we hand
     # control to Scrapy's blocking reactor.
-    for m in fetchers:
-        try:
-            _run_fetcher(m)
-        except Exception:
-            logger.exception("Fetcher %s failed", m.source)
+    if skip_fetchers:
+        logger.info("Skipping %d fetcher(s) (--skip-fetchers).", len(fetchers))
+    else:
+        for m in fetchers:
+            try:
+                _run_fetcher(m)
+            except Exception:
+                logger.exception("Fetcher %s failed", m.source)
 
     if not spiders:
         logger.info("No spiders queued; done.")

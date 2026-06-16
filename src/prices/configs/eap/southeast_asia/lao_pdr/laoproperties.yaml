@@ -4,6 +4,7 @@ analytical_role: retailer_sku
 coicop_classification: source_curated
 coicop_codes: ["04.1.1"]
 spider: laoproperties
+active: false
 url: https://laoproperties.com/
 language: en
 cadence: daily

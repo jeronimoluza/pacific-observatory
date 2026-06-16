@@ -10,9 +10,13 @@ Shapes handled:
   - wayback_items/*.jsonl              (Wayback Machine)
   - common_crawl_data/items/*.json     (Common Crawl, one product per file)
 
-Output schema (12 cols, raw-only — no enrichment-derived columns):
+Output schema (14 cols, raw-only — no enrichment-derived columns):
   url_hash, product_name, price, currency, country, source, date,
-  product_url, product_id, region, subregion, wayback
+  product_url, product_id, region, subregion, wayback, channel, category
+
+`channel` is per-row, looked up from the source YAML's `channel:` field at
+startup. `category` is the per-item breadcrumb captured by Scrapy spiders
+(`ProductItem.category`). Both default to "" when absent.
 
 product_name_original is NOT emitted here — prepare derives it. Currency for
 Common Crawl rows (which often lack a currency field) is back-filled with the
@@ -53,7 +57,35 @@ OUTPUT_COLS = [
     "region",
     "subregion",
     "wayback",
+    "channel",
+    "category",
 ]
+
+
+_CHANNEL_MAP_CACHE: Optional[dict[tuple[str, str], str]] = None
+
+
+def _build_source_channel_map() -> dict[tuple[str, str], str]:
+    """Walk per-source YAMLs and return {(country, source): channel}. Missing
+    or invalid channels are omitted; callers default to ``""``."""
+    from prices.config import PriceSourceConfig, discover_prices_configs
+
+    out: dict[tuple[str, str], str] = {}
+    for path in discover_prices_configs():
+        try:
+            cfg = PriceSourceConfig.load(path)
+        except Exception:  # malformed YAML or schema mismatch — skip silently
+            continue
+        if cfg.channel:
+            out[(cfg.country, cfg.source)] = cfg.channel
+    return out
+
+
+def _channel_for(country: str, source: str) -> str:
+    global _CHANNEL_MAP_CACHE
+    if _CHANNEL_MAP_CACHE is None:
+        _CHANNEL_MAP_CACHE = _build_source_channel_map()
+    return _CHANNEL_MAP_CACHE.get((country, source), "")
 
 
 def _url_hash(url: Optional[str]) -> Optional[str]:
@@ -81,6 +113,7 @@ def _emit_jsonl(path: Path, wayback: bool) -> Iterable[dict]:
                 "product_id": obj.get("product_id"),
                 "url_hash": obj.get("url_hash") or _url_hash(obj.get("url")),
                 "wayback": wayback,
+                "category": obj.get("category") or "",
             }
 
 
@@ -98,6 +131,7 @@ def _emit_cc(path: Path) -> Iterable[dict]:
         "product_id": obj.get("product_id"),
         "url_hash": _url_hash(obj.get("url")),
         "wayback": False,
+        "category": obj.get("category") or "",
     }
 
 
@@ -161,6 +195,11 @@ def _load_source(
     df["source"] = source
     df["region"] = region
     df["subregion"] = subregion
+    df["channel"] = _channel_for(country, source)
+    if "category" not in df.columns:
+        df["category"] = ""
+    else:
+        df["category"] = df["category"].fillna("").astype(str)
 
     required = ["product_name", "price", "currency", "country"]
     before = len(df)

@@ -1,0 +1,36 @@
+# Channel → likely COICOP top-levels.
+#
+# Used by tier-c (`stages/tier_c.py`) to narrow the LLM prompt's candidate
+# COICOP space when a row carries a channel from its source YAML.
+#
+# Empty list ([]) = no narrowing applied — the channel is genuinely
+# cross-category and the item breadcrumb does the disambiguation.
+#
+# Soft constraint only. The LLM is told these are likely values; it can
+# still choose outside when the evidence is strong. Out-of-prior outcomes
+# are logged to `_channel_outliers.parquet` for audit.
+#
+# COICOP 2018 top-levels:
+#   01 — Food and non-alcoholic beverages
+#   02 — Alcoholic beverages, tobacco, and narcotics
+#   03 — Clothing and footwear
+#   04 — Housing, water, electricity, gas, and other fuels
+#   05 — Furnishings, household equipment, and routine household maintenance
+#   06 — Health
+#   07 — Transport
+#   08 — Information and communication
+#   09 — Recreation, sport, and culture
+#   10 — Education services
+#   11 — Restaurants and accommodation services
+#   12 — Insurance and financial services / personal care / misc
+supermarket:       ["01", "02", "05", "09", "12"]
+pharmacy:          ["05", "06", "12"]
+fuel-station:      ["04", "07"]
+dept-store:        ["03", "05", "09", "12"]
+electronics:       ["08", "09", "12"]
+home-improvement:  ["04", "05"]
+cosmetics:         ["12"]
+pet:               ["09"]
+fashion:           ["03"]
+aggregator:        []
+hypermarket:       []

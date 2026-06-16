@@ -15,3 +15,4 @@ notes: |
   values in kopiykas per litre — divided by 100 to emit UAH/L. Page renders
   one day's snapshot at a time; the fetcher tags rows with the run date.
   Auto-LPG ("Газ") is COICOP 07.2.2 (vehicle fuel sold at АЗС), not 04.5.4.
+channel: null

@@ -6,3 +6,4 @@ spider: watsons_hk
 url: https://www.watsons.com.hk
 language: en
 cadence: daily
+channel: pharmacy

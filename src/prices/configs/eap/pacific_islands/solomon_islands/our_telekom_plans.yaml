@@ -6,6 +6,7 @@ coicop_codes: ["08.1.0"]
 source_key: sb_our_telekom_plans
 module: eap.pacific_islands.solomon_islands.our_telekom_plans
 function: fetch_sb_our_telekom_plans
+channel: null
 url: https://www.ourtelekom.com.sb/personal/personal-mobile/
 language: en
 cadence: monthly

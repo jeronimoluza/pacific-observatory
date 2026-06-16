@@ -6,3 +6,4 @@ spider: fairprice
 url: https://www.fairprice.com.sg
 language: en
 cadence: daily
+channel: supermarket

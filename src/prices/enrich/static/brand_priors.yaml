@@ -1,0 +1,119 @@
+# Brand-prior whitelist for tier-b residual rescue.
+#
+# Schema:
+#   {brand_normalized}:
+#     coicop: <4 or 5-digit coicop code>     # required
+#     note:   <short rationale>              # optional, for human review
+#
+# Lookup is keyed on the canonical brand token produced by
+# normalize._apply_brand_aliases (which reads static/brand_aliases.json).
+# A brand listed here MUST also have an entry mapping its raw forms to the
+# canonical token in brand_aliases.json — otherwise the normalizer never tags
+# it and this whitelist is dead code.
+#
+# Curation rule: only include brands whose primary product line is
+# unambiguous at the 4-digit COICOP level. Marlboro is unambiguous (all
+# variants → cigarettes / 02.3.0). Sony is NOT unambiguous (consumer
+# electronics span 09.1.1 audiovisual, 09.1.2 PCs, 12.7.0 misc) — left out
+# until cluster-aware sub-prior is added.
+
+# ----- Tobacco (COICOP 02.3) -----
+marlboro:
+  coicop: "02.3.0"
+  note: "Philip Morris cigarettes; all sub-brands (Red, Gold, Black Menthol) are cigarettes"
+camel:
+  coicop: "02.3.0"
+  note: "JTI/Reynolds cigarettes"
+lucky-strike:
+  coicop: "02.3.0"
+  note: "BAT cigarettes"
+winston:
+  coicop: "02.3.0"
+  note: "JTI cigarettes"
+dunhill:
+  coicop: "02.3.0"
+  note: "BAT cigarettes — note: also a luxury accessories line, rare in price scrapes"
+mevius:
+  coicop: "02.3.0"
+  note: "JT cigarettes (was Mild Seven); dominant JP brand"
+fortune:
+  coicop: "02.3.0"
+  note: "PMFTC PH cigarettes — local market leader"
+hope:
+  coicop: "02.3.0"
+  note: "PMFTC PH cigarettes"
+
+# ----- Non-alcoholic beverages (COICOP 01.2.2) -----
+cocacola:
+  coicop: "01.2.2"
+  note: "all carbonated SKUs; Coke Zero / Light still 01.2.2"
+pepsi:
+  coicop: "01.2.2"
+  note: "PepsiCo carbonated; Pepsi Max still 01.2.2"
+sprite:
+  coicop: "01.2.2"
+  note: "Coca-Cola Co lemon-lime"
+fanta:
+  coicop: "01.2.2"
+  note: "Coca-Cola Co fruit-flavored"
+
+# ----- Snacks / confectionery (COICOP 01.1.8) -----
+maltesers:
+  coicop: "01.1.8"
+  note: "Mars confectionery"
+lays:
+  coicop: "01.1.7"
+  note: "PepsiCo potato chips — 01.1.7 vegetables prepared"
+oreo:
+  coicop: "01.1.8"
+  note: "Mondelez biscuits"
+
+# ----- Apparel & footwear (COICOP 03.2) -----
+nike:
+  coicop: "03.2.1"
+  note: "footwear-dominant; apparel SKUs also 03.2"
+adidas:
+  coicop: "03.2.1"
+  note: "footwear-dominant; apparel SKUs also 03.2"
+puma:
+  coicop: "03.2.1"
+  note: "footwear-dominant"
+new-balance:
+  coicop: "03.2.1"
+  note: "footwear"
+asics:
+  coicop: "03.2.1"
+  note: "footwear"
+
+# ----- Phones (COICOP 08.2.0) -----
+iphone:
+  coicop: "08.2.0"
+  note: "Apple smartphones — telephone equipment"
+galaxy:
+  coicop: "08.2.0"
+  note: "Samsung smartphones (Galaxy line) — telephone equipment"
+pixel:
+  coicop: "08.2.0"
+  note: "Google smartphones"
+
+# ----- Personal vehicles (COICOP 07.1.1) -----
+toyota:
+  coicop: "07.1.1"
+  note: "passenger vehicles; commercial / used trucks rare in price scrapes"
+honda:
+  coicop: "07.1.1"
+  note: "passenger vehicles + motorcycles — 07.1.2; cars dominate scrapes"
+ford:
+  coicop: "07.1.1"
+  note: "passenger vehicles"
+hyundai:
+  coicop: "07.1.1"
+  note: "passenger vehicles"
+
+# ----- Pet products (COICOP 09.3.2) -----
+pedigree:
+  coicop: "09.3.2.2"
+  note: "Mars Petcare dog food — all SKUs (dry, wet, treats) land in pet products"
+whiskas:
+  coicop: "09.3.2.2"
+  note: "Mars Petcare cat food — same rationale"

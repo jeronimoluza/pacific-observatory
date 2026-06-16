@@ -14,16 +14,12 @@ def _read_bytes(path: Path) -> bytes:
     return path.read_bytes() if path.exists() else b""
 
 
-# Manual prompt semver. Bump explicitly when a prompt change should
-# invalidate the cache and trigger re-enrichment. Auto-hashing the prompt
-# file would force a full 41k-row re-enrichment on every typo fix, which
-# burns >80 days of free-tier RPD; the semver gives us control.
+# Manual prompt semver. Stamped onto each cached row as a provenance column.
+# No longer part of the cache key — see cache_key() below.
 # v1 → v2 (2026-06-09): multipack-math clarification, case-insensitive unit
 # suffixes, mass-marker forces mass/volume basis. Selective re-enrich of
 # cambodia/lager + malaysia/lip-balm buckets only (see drop_flagged_from_cache.py).
 PROMPT_SEMVER = "v2"
-# Audit-only: stamped on each cache row to detect silent drift within a
-# semver (someone edited the prompt but forgot to bump). Not in cache_key.
 PROMPT_BYTES_HASH = _sha12(_read_bytes(config.ENRICH_PROMPT_PATH))
 TAXONOMY_PROMPT_VERSION = _sha12(_read_bytes(config.TAXONOMY_PROMPT_PATH))
 SCHEMA_VERSION = _sha12(
@@ -37,16 +33,16 @@ def canonical_json(d: dict) -> str:
 
 
 def input_hash(structured_input: dict) -> str:
-    """Stable hash for prepare-stage dedup (does NOT include version hashes)."""
+    """Stable hash of the row's structured input. Identity-only — never includes
+    prompt/schema/taxonomy versions."""
     return hashlib.sha256(canonical_json(structured_input).encode()).hexdigest()
 
 
 def cache_key(structured_input: dict) -> str:
-    """Cache key for enrich stage; invalidates on manual PROMPT_SEMVER bump."""
-    payload = (
-        canonical_json(structured_input)
-        + PROMPT_SEMVER
-        + SCHEMA_VERSION
-        + TAXONOMY_VERSION
-    )
-    return hashlib.sha256(payload.encode()).hexdigest()
+    """Cache lookup key. Decoupled from prompt: equals input_hash(structured_input).
+
+    Prompt/schema/taxonomy version drift is recorded as provenance columns
+    (`prompt_semver`, `schema_version`, `taxonomy_version`) on each cached row,
+    not folded into the key. SCHEMA_VERSION drift is handled by partitioning the
+    cache into one parquet per schema version (see cache.read_cache)."""
+    return input_hash(structured_input)

@@ -1,3 +1,4 @@
 spider: epharmacy_np
 language: en
 notes: Nepal pharmacy; server-rendered HTML; PDPs at /<long-product-slug>.
+channel: pharmacy

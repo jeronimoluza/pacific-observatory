@@ -7,3 +7,4 @@ spider: mogi_vn
 url: https://mogi.vn/thue-nha
 language: vi
 cadence: weekly
+channel: aggregator

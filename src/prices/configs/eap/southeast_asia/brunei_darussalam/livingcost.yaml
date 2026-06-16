@@ -15,3 +15,4 @@ notes: >
   record per (city, item) pair, USD-canonical (apply WB FX feed
   downstream for local-currency). Serves PPP + soft inflation proxy;
   not stickiness.
+channel: null

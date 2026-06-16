@@ -1,3 +1,4 @@
 spider: azha_pasa
 language: en
 notes: Bhutan supermarket; server-rendered HTML, PDPs at /shop/product/<slug>.
+channel: supermarket

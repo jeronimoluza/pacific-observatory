@@ -14,6 +14,32 @@ spider: example_spider
 # Informational only; downstream COICOP / index code may use it.
 language: en
 
+# REQUIRED for new sources (validation is currently soft to allow audit-script
+# backfill of existing manifests). Closed enum identifying the retailer type;
+# fed into the tier-b cluster_key and the tier-c COICOP-priors prompt.
+#
+# Allowed values:
+#   supermarket       (Coles, Tesco, Emart, Pak'nSave)
+#   pharmacy          (Watsons, Boots, Kimia Farma, Caring2u)
+#   fuel-station      (Shell, BP, fuel-watch portals)
+#   dept-store        (Macy's, Marks & Spencer, Mitsukoshi)
+#   electronics       (JB Hi-Fi, MediaMarkt, Yodobashi)
+#   home-improvement  (Bunnings, B&Q, Home Depot)
+#   cosmetics         (Sephora, Sasa, drugstore-cosmetics)
+#   pet               (PetSmart, dedicated pet retailers)
+#   fashion           (Uniqlo, fast-fashion online stores)
+#   aggregator        (Numbeo, Expatistan, Livingcost, Mylifeelsewhere)
+#   hypermarket       (physical hypermarkets that genuinely cross-sell: Carrefour, Walmart, AEON, Hypermart)
+#
+# Use `channel: null` for non-retail sources (CPI publications, NSO official
+# averages, utility/telecom tariffs, commodity benchmarks). The
+# `analytical_role` field already distinguishes those.
+#
+# `hypermarket` and `aggregator` skip the tier-c COICOP-priors narrowing
+# (empty priors); the item breadcrumb (ProductItem.category) carries the
+# disambiguation instead.
+channel: supermarket
+
 # OPTIONAL: whether to include this source when running `prices collect`.
 # Defaults to true. Set false to skip a spider that is currently broken without
 # deleting its manifest.

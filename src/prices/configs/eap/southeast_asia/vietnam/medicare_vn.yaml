@@ -6,3 +6,4 @@ spider: medicare_vn
 url: https://medicare.vn/
 language: vi
 cadence: weekly
+channel: pharmacy

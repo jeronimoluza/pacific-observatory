@@ -6,3 +6,4 @@ spider: realestate_co_nz
 url: https://www.realestate.co.nz/residential/rent
 language: en
 cadence: weekly
+channel: aggregator

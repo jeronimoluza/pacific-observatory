@@ -17,3 +17,4 @@ notes: |
   Pre- vs post-Jan-2024 prices use different CPI baskets (footnote
   noted by SingStat) — Gemini classification downstream is per-row, so
   the basket switch is harmless for COICOP tagging.
+channel: null

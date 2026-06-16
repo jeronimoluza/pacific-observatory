@@ -6,3 +6,4 @@ spider: csl_hk_postpaid
 url: https://www.hkcsl.com/en/service-plan/
 language: en
 cadence: weekly
+channel: null

@@ -64,7 +64,7 @@ def _load_cache() -> dict[str, list[float]]:
             with np.load(p, allow_pickle=False) as d:
                 keys = d["keys"]
                 vecs = d["vecs"]
-            _CACHE_SINGLETON = {str(k): vecs[i].tolist() for i, k in enumerate(keys)}
+            _CACHE_SINGLETON = {str(k): vecs[i] for i, k in enumerate(keys)}
             return _CACHE_SINGLETON
         except Exception:
             _CACHE_SINGLETON = {}

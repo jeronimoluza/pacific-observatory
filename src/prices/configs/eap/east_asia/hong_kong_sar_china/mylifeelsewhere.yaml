@@ -8,3 +8,4 @@ notes: >
   country, no city dimension). Both price (local) and price_usd are
   populated from source. Closes LivingCost EAP coverage gap.
   Recommended cadence: weekly.
+channel: aggregator

@@ -20,6 +20,8 @@ canonical_strict on the fly from product_name_original + country.
 from __future__ import annotations
 
 import json
+import re
+import unicodedata
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -36,6 +38,45 @@ from prices.enrich.normalize import (
     normalize_breadcrumb,
     resolve_cluster_category,
 )
+
+_COICOP_DIR = Path(__file__).resolve().parent / "keywords" / "coicop"
+_ANCHORS_DF: Optional[pd.DataFrame] = None
+_EXCLUDES: dict[str, list[str]] = {}
+
+
+def _load_anchors() -> pd.DataFrame:
+    p = _COICOP_DIR / "_sub_labels.parquet"
+    if not p.exists():
+        return pd.DataFrame()
+    df = pd.read_parquet(p)
+    # Include both anchor and synonym rows: synonym rows carry verbatim JSON ids
+    # that match real-cluster sub_label_id values, closing the vocabulary gap.
+    return df[df["role"].isin(["anchor", "synonym"])].copy()
+
+
+def _load_excludes() -> dict[str, list[str]]:
+    p = _COICOP_DIR / "_excludes.parquet"
+    if not p.exists():
+        return {}
+    df = pd.read_parquet(p)
+    out: dict[str, list[str]] = {}
+    for code, grp in df.groupby("coicop_code"):
+        out[str(code)] = grp["phrase"].astype(str).tolist()
+    return out
+
+
+def _slug(s: str) -> str:
+    s = unicodedata.normalize("NFC", s.lower())
+    return re.sub(r"[^a-z0-9]+", "_", s).strip("_")[:60]
+
+
+def _init_module_data() -> None:
+    global _ANCHORS_DF, _EXCLUDES
+    _ANCHORS_DF = _load_anchors()
+    _EXCLUDES = _load_excludes()
+
+
+_init_module_data()
 
 
 _CLUSTER_LABEL_FIELDS = (
@@ -195,18 +236,63 @@ def _meta_path(country: str) -> Path:
     return config.TIER_B_INDEX_DIR / f"{country}.meta.json"
 
 
+def _make_anchor_rows(country: str) -> pd.DataFrame:
+    """Build synthetic anchor rows for one country from the loaded anchors DF.
+    `sub_label_id` is read directly from the parquet `id` column so anchor IDs
+    match the real-cluster vocabulary (both originate from coicop_subcategories.json ids).
+    """
+    if _ANCHORS_DF is None or _ANCHORS_DF.empty:
+        return pd.DataFrame()
+    has_id_col = "id" in _ANCHORS_DF.columns
+    rows = []
+    for _, r in _ANCHORS_DF.iterrows():
+        code = str(r["coicop_code"])
+        label = str(r["label"])
+        sl = str(r["id"]) if has_id_col else _slug(label)
+        rows.append(
+            {
+                "cluster_id": f"_anchor::{country}::{code}::{sl}",
+                "country": country,
+                "channel": "_anchor",
+                "canonical_strict": label.lower(),
+                "representative_name": label,
+                "rep_category": "",
+                "cluster_size": 1,
+                "cluster_agreement_coicop": 1.0,
+                "cluster_agreement_sub_label": 1.0,
+                "coicop_code": code,
+                "sub_label_id": sl,
+                "state": "anchor",
+                "pricing_basis": None,
+                "standard_unit": None,
+                "amount_value": None,
+                "count": 0,
+                "multiplier": None,
+                "is_promotion": False,
+                "is_bundle": False,
+                "is_multipack": False,
+                "promo_reason": None,
+                "confidence": 1.0,
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def build_index(cluster_df: pd.DataFrame, country: str) -> Optional[hnswlib.Index]:
     """Build a cosine hnswlib index for one country. Returns None if the
-    country falls below KNN_BOOTSTRAP_CLUSTER_FLOOR."""
+    country falls below KNN_BOOTSTRAP_CLUSTER_FLOOR (real clusters only)."""
     sub = cluster_df[cluster_df["country"] == country].copy()
     if len(sub) < config.KNN_BOOTSTRAP_CLUSTER_FLOOR:
         return None
+    anchor_rows = _make_anchor_rows(country)
+    if not anchor_rows.empty:
+        sub = pd.concat([sub, anchor_rows], ignore_index=True)
     sub = sub.reset_index(drop=True)
     if "rep_category" not in sub.columns:
         sub["rep_category"] = ""
     sub["rep_category"] = sub["rep_category"].fillna("").astype(str)
     texts = [
-        f"passage: {cat} | {name}" if cat else f"passage: {name}"
+        f"passage: {name}" if not cat else f"passage: {cat} | {name}"
         for cat, name in zip(
             sub["rep_category"].tolist(), sub["representative_name"].tolist()
         )
@@ -225,12 +311,13 @@ def build_index(cluster_df: pd.DataFrame, country: str) -> Optional[hnswlib.Inde
     config.TIER_B_INDEX_DIR.mkdir(parents=True, exist_ok=True)
     idx.save_index(str(_index_path(country)))
     sub.to_parquet(_clusters_parquet_path(country), index=False)
+    n_real = int((sub["channel"] != "_anchor").sum())
     _meta_path(country).write_text(
         json.dumps(
             {
                 "dim": config.EMBED_DIM,
                 "backend": config.EMBED_BACKEND,
-                "n_clusters": int(len(sub)),
+                "n_clusters": n_real,
             }
         )
     )
@@ -284,7 +371,12 @@ def pick_neighbors(
     if loaded is None:
         return None, False, None, "no_index"
     idx, clusters = loaded
-    if len(clusters) < config.KNN_BOOTSTRAP_CLUSTER_FLOOR:
+    n_real = (
+        int((clusters["channel"] != "_anchor").sum())
+        if "channel" in clusters.columns
+        else len(clusters)
+    )
+    if n_real < config.KNN_BOOTSTRAP_CLUSTER_FLOOR:
         return None, False, clusters, "skip_bootstrap"
 
     overfetch = max(k, k * getattr(config, "KNN_CHANNEL_OVERFETCH", 4))
@@ -306,7 +398,8 @@ def pick_neighbors(
         other: list[tuple[int, float]] = []
         for lab, cos in zip(raw_labels, raw_cosines):
             row_channel = clusters.iloc[int(lab)].get("channel") or "null"
-            if str(row_channel) == channel:
+            # _anchor rows are universally matchable — never filtered to "other"
+            if str(row_channel) == channel or str(row_channel) == "_anchor":
                 same.append((int(lab), float(cos)))
             else:
                 other.append((int(lab), float(cos)))
@@ -326,15 +419,56 @@ def pick_neighbors(
     return picked, cross_channel_accept, clusters, ""
 
 
+def _sub_label_query_agreement(
+    rows: list, accepted_code: object, chosen_sub_label: object
+) -> float:
+    """Fraction of query-time neighbors that (a) share the accepted coicop_code
+    AND (b) carry the same sub_label_id as the chosen row. Returns 0.0 when no
+    same-coicop neighbors exist or the chosen sub_label is null."""
+    if chosen_sub_label is None or accepted_code is None:
+        return 0.0
+    same_coicop = [r for r in rows if r.get("coicop_code") == accepted_code]
+    if not same_coicop:
+        return 0.0
+    n_match = sum(1 for r in same_coicop if r.get("sub_label_id") == chosen_sub_label)
+    return n_match / len(same_coicop)
+
+
+def _is_excluded(coicop_code: object, query_text: str) -> bool:
+    """Return True if any exclude phrase for this code is a substring of query_text."""
+    if not coicop_code or not query_text:
+        return False
+    phrases = _EXCLUDES.get(str(coicop_code), [])
+    qt_lower = query_text.lower()
+    return any(p in qt_lower for p in phrases)
+
+
+def _miss_snapshot(top1, cross_channel_accept: bool) -> dict:
+    """Bare minimum of top1 fields kept on miss returns so apply_brand_prior
+    can borrow tier-b's top1 sub_label when its coicop matches the prior."""
+    return {
+        "_top1_coicop_code": top1.get("coicop_code"),
+        "_top1_sub_label_id": top1.get("sub_label_id"),
+        "cross_channel_accept": cross_channel_accept,
+    }
+
+
 def accept_from_picked(
     picked: list[tuple[int, float]],
     clusters: pd.DataFrame,
     cross_channel_accept: bool,
+    query_text: str = "",
 ) -> KNNHit:
     """Stage 2: apply hard/soft accept logic to a picked neighbor list. Split
     out from query() so the bake-off can intervene between picking and
-    accepting (the pool filter sits exactly there). Behavior matches the
-    original inline path verbatim — see git history for the merged version."""
+    accepting (the pool filter sits exactly there).
+
+    Sub_label_id co-gate (Phase 3, 2026-06-11): when the coicop accept lands
+    but the K same-coicop neighbors disagree on sub_label_id below
+    `KNN_SUB_LABEL_AGREEMENT_MIN`, return a hit with the coicop accepted but
+    `sub_label_id` cleared and `escalation_reason='partial_sub_label_pending'`
+    so the cascade routes the row to a constrained tier-c call instead of
+    writing the cluster's sub_label_id straight through."""
     labels = [lab for lab, _ in picked]
     cosines = [cos for _, cos in picked]
     top_rows = [clusters.iloc[int(lab)] for lab in labels]
@@ -371,18 +505,79 @@ def accept_from_picked(
         out["cross_channel_accept"] = cross_channel_accept
         return out
 
+    def _maybe_partial(chosen_row, base_reason: str) -> tuple[dict, str]:
+        """Return (payload, escalation_reason). If the K same-coicop neighbors
+        disagree on sub_label_id below the gate, blank `sub_label_id` and
+        flag for constrained tier-c."""
+        payload = _payload_from_cluster_row(chosen_row)
+        chosen_sub_label = chosen_row.get("sub_label_id")
+        accepted_code = chosen_row.get("coicop_code")
+        sub_agree = _sub_label_query_agreement(
+            top_rows, accepted_code, chosen_sub_label
+        )
+        payload["sub_label_query_agreement"] = sub_agree
+        if (
+            chosen_sub_label is not None
+            and sub_agree < config.KNN_SUB_LABEL_AGREEMENT_MIN
+        ):
+            payload["sub_label_id"] = None
+            return payload, "partial_sub_label_pending"
+        return payload, base_reason
+
     if (
-        top1_cos >= config.KNN_TAU_HIGH
+        top1_cos >= config.knn_score_hard_min(config.E5_MODEL_PATH)
         and top1_agree >= config.KNN_CLUSTER_AGREEMENT_MIN
     ):
+        if not _is_excluded(top1.get("coicop_code"), query_text):
+            payload, reason = _maybe_partial(top1, "hard")
+            return KNNHit(
+                accepted=True,
+                cluster_id=str(top1.get("cluster_id") or ""),
+                payload=payload,
+                top1_cosine=top1_cos,
+                top1_cluster_agreement=top1_agree,
+                topk_majority=int(top_code_count),
+                escalation_reason=reason,
+            )
+        # hard candidate excluded — fall through to soft check on remaining rows
+        for row, cos in zip(top_rows[1:], cosines[1:]):
+            row_code = row.get("coicop_code")
+            row_agree = float(row.get("cluster_agreement_coicop", 0.0))
+            if (
+                cos >= config.knn_score_hard_min(config.E5_MODEL_PATH)
+                and row_agree >= config.KNN_CLUSTER_AGREEMENT_MIN
+                and not _is_excluded(row_code, query_text)
+            ):
+                payload, reason = _maybe_partial(row, "hard")
+                return KNNHit(
+                    accepted=True,
+                    cluster_id=str(row.get("cluster_id") or ""),
+                    payload=payload,
+                    top1_cosine=top1_cos,
+                    top1_cluster_agreement=row_agree,
+                    topk_majority=int(top_code_count),
+                    escalation_reason=reason,
+                )
+
+    # HIGH-COS override (2026-06-16). Rare-but-clean cluster: a single nearby
+    # neighbor with very-high cosine AND near-perfect cluster_agreement_coicop
+    # is accepted even when the K-NN majority floor isn't met. Catches the
+    # Spring-Onion-style case (top1 cos=0.887, agreement=1.0, maj=2/5).
+    if (
+        getattr(config, "KNN_HIGH_COS_OVERRIDE_ENABLED", False)
+        and top1_cos >= config.KNN_HIGH_COS_OVERRIDE_COSINE
+        and top1_agree >= config.KNN_HIGH_COS_OVERRIDE_AGREEMENT
+        and not _is_excluded(top1.get("coicop_code"), query_text)
+    ):
+        payload, reason = _maybe_partial(top1, "high_cos_override")
         return KNNHit(
             accepted=True,
             cluster_id=str(top1.get("cluster_id") or ""),
-            payload=_payload_from_cluster_row(top1),
+            payload=payload,
             top1_cosine=top1_cos,
             top1_cluster_agreement=top1_agree,
             topk_majority=int(top_code_count),
-            escalation_reason="hard",
+            escalation_reason=reason,
         )
 
     if (
@@ -390,21 +585,57 @@ def accept_from_picked(
         and top_code_count >= config.KNN_SOFT_MAJORITY_MIN
         and top1_cos >= config.KNN_TAU_LOW
     ):
-        chosen = next(r for r in top_rows if r.get("coicop_code") == top_code)
+        if not _is_excluded(top_code, query_text):
+            chosen = next(r for r in top_rows if r.get("coicop_code") == top_code)
+            payload, reason = _maybe_partial(chosen, "soft")
+            return KNNHit(
+                accepted=True,
+                cluster_id=str(chosen.get("cluster_id") or ""),
+                payload=payload,
+                top1_cosine=top1_cos,
+                top1_cluster_agreement=float(
+                    chosen.get("cluster_agreement_coicop", 0.0)
+                ),
+                topk_majority=int(top_code_count),
+                escalation_reason=reason,
+            )
+        # soft majority code excluded — try next majority code
+        for alt_code, alt_count in code_counter.most_common()[1:]:
+            if alt_count < config.KNN_SOFT_MAJORITY_MIN:
+                break
+            if _is_excluded(alt_code, query_text):
+                continue
+            chosen = next(
+                (r for r in top_rows if r.get("coicop_code") == alt_code), None
+            )
+            if chosen is None:
+                continue
+            payload, reason = _maybe_partial(chosen, "soft")
+            return KNNHit(
+                accepted=True,
+                cluster_id=str(chosen.get("cluster_id") or ""),
+                payload=payload,
+                top1_cosine=top1_cos,
+                top1_cluster_agreement=float(
+                    chosen.get("cluster_agreement_coicop", 0.0)
+                ),
+                topk_majority=int(alt_count),
+                escalation_reason=reason,
+            )
         return KNNHit(
-            accepted=True,
-            cluster_id=str(chosen.get("cluster_id") or ""),
-            payload=_payload_from_cluster_row(chosen),
+            accepted=False,
+            cluster_id=str(top1.get("cluster_id") or ""),
+            payload=_miss_snapshot(top1, cross_channel_accept),
             top1_cosine=top1_cos,
-            top1_cluster_agreement=float(chosen.get("cluster_agreement_coicop", 0.0)),
+            top1_cluster_agreement=top1_agree,
             topk_majority=int(top_code_count),
-            escalation_reason="soft",
+            escalation_reason="excluded",
         )
 
     return KNNHit(
         accepted=False,
         cluster_id=str(top1.get("cluster_id") or ""),
-        payload={},
+        payload=_miss_snapshot(top1, cross_channel_accept),
         top1_cosine=top1_cos,
         top1_cluster_agreement=top1_agree,
         topk_majority=int(top_code_count),
@@ -445,7 +676,9 @@ def query(
             topk_majority=0,
             escalation_reason=reason,
         )
-    return accept_from_picked(picked, clusters, cross_channel_accept)
+    return accept_from_picked(
+        picked, clusters, cross_channel_accept, query_text=query_text
+    )
 
 
 def reindex_all(cache_df: Optional[pd.DataFrame] = None) -> dict[str, int]:

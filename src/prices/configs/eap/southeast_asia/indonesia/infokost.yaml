@@ -6,3 +6,4 @@ spider: infokost
 url: https://infokost.id/
 language: id
 cadence: weekly
+channel: aggregator

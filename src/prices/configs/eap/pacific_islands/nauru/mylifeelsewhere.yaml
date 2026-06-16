@@ -8,3 +8,4 @@ notes: >
   items / 7 categories per country, no city dimension). Both
   price (local) and price_usd are populated from source.
   Recommended cadence: weekly.
+channel: aggregator

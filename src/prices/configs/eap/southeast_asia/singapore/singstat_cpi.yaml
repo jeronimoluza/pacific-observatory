@@ -18,3 +18,4 @@ notes: |
   intentionally uncovered. All-Items index (coicop_code=null) is also
   emitted for headline-inflation use; downstream consumers filter on
   presence of coicop_code.
+channel: null

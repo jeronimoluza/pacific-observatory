@@ -6,3 +6,4 @@ spider: watsons_id
 url: https://www.watsons.co.id
 language: en
 cadence: daily
+channel: pharmacy

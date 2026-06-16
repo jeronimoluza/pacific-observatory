@@ -12,3 +12,4 @@ notes: |
   MyLifeElsewhere country-level cost-of-living aggregator (~34 items / 7
   categories, no city dimension). Both price (local) and price_usd
   populated direct from source — no downstream FX needed.
+channel: null

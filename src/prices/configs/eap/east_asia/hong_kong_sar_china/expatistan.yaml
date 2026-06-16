@@ -12,3 +12,4 @@ notes: >
   costs) as category="Summary" — CPI-analog city totals. Serves PPP + soft
   inflation proxy; not stickiness. Closes LivingCost EAP coverage gap.
   Recommended cadence: weekly.
+channel: aggregator

@@ -21,3 +21,4 @@ notes: |
 
   Cloudflare bypass: curl_cffi chrome120 TLS impersonation, clean 200 on
   the rental landing on 2026-05-21.
+channel: aggregator

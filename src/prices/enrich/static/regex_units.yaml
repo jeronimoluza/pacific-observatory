@@ -1,0 +1,204 @@
+# Tier (a) regex registry — extension of pack_patterns.yaml.
+#
+# This file contributes three things that pack_patterns does NOT cover:
+#   1. unit_map: canonical-unit → (pricing_basis, standard_unit, multiplier-to-canonical)
+#   2. extra_units: regexes for units pack_patterns deliberately excludes (cl)
+#   3. promo_markers + bundle_markers: per-language flag detection
+#
+# pack_patterns.yaml stays the source-of-truth for value/count/unit EXTRACTION.
+# regex_units.yaml maps the extracted unit onto the schema's enum values and
+# computes amount_value in the canonical (kg/lt) unit.
+
+# --- Unit → schema mapping ---------------------------------------------------
+#   basis: schema pricing_basis enum  ("mass" | "volume" | "length" | "count" | "item")
+#   su:    schema standard_unit enum  ("kg" | "lt" | "mt" | "unit" | "item")
+#   mul:   factor that converts pack-pattern value → canonical (kg or lt)
+unit_map:
+  g:  {basis: mass,   su: kg, mul: 0.001}
+  kg: {basis: mass,   su: kg, mul: 1.0}
+  mg: {basis: mass,   su: kg, mul: 0.000001}
+  oz: {basis: mass,   su: kg, mul: 0.0283495}
+  lb: {basis: mass,   su: kg, mul: 0.453592}
+  ml: {basis: volume, su: lt, mul: 0.001}
+  l:  {basis: volume, su: lt, mul: 1.0}
+  cl: {basis: volume, su: lt, mul: 0.01}
+
+# --- Extra unit patterns (NOT covered by pack_patterns) ---------------------
+# pack_patterns excludes length (cm/mm/m) by design (cutlery fits dimensions[]).
+# It also excludes cl, which the prompt explicitly requires us to handle as volume.
+extra_units:
+  - id: cl_volume
+    lang: any
+    regex: '(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?)\s*(?:cl|CL|cL|Cl)\b'
+    basis: volume
+    su: lt
+    mul: 0.01
+  - id: vi_lit_volume
+    lang: any
+    regex: '(?P<value>\d+(?:[.,]\d+)?)\s*l[íi]t'
+    basis: volume
+    su: lt
+    mul: 1.0
+
+# --- Extra count markers (NOT covered by pack_patterns) ---------------------
+# Tried in order when pack_patterns returns no match. CJK markers have no Latin
+# false-positive risk because the trailing CJK character literally cannot appear
+# in Latin text. English count markers use `\b` boundaries to avoid mid-word hits.
+extra_count_markers:
+  # --- CJK count markers ---
+  - id: cjk_mai
+    lang: any
+    regex: '(?P<count>\d+)\s*枚'
+  - id: cjk_pair
+    lang: any
+    regex: '(?P<count>\d+)\s*雙'
+  - id: cjk_grain
+    lang: any
+    regex: '(?P<count>\d+)\s*顆'
+  - id: cjk_strip
+    lang: any
+    regex: '(?P<count>\d+)\s*條(?:入)?'
+  - id: cjk_sheet_tissue
+    lang: any
+    regex: '(?P<count>\d+)\s*抽'
+  - id: cjk_set_group
+    lang: any
+    regex: '(?P<count>\d+)\s*(?:本|入|片|盒|個|包|束|件|杯|袋|張|支|冊|箱)(?:組|套(?:書|裝)?|入り?)?'
+  - id: cjk_numeral_version
+    lang: any
+    regex: '(?P<count_cjk>[一二三四五六七八九十]+)(?:版|種(?:口味)?|樣|樣式|品)'
+  - id: cjk_numeral_set
+    lang: any
+    regex: '(?P<count_cjk>[一二三四五六七八九十]+)(?:本|入|片|盒|個|包|束|件|杯|袋|張|支|冊|箱)(?:組|套)?'
+  - id: vi_to_sheets
+    lang: any
+    regex: '(?P<count>\d+)\s*Tờ\b'
+  - id: cjk_ko_pcs
+    lang: any
+    regex: '(?P<count>\d+)\s*(?:개|매|병|봉|장|회)'
+  - id: cjk_n_x_count
+    lang: any
+    regex: '\bM?[xX×]\s*(?P<count>\d+)\s*(?:組|セット|本|入|片|盒|個|包|束|件|杯|袋|張)\b'
+  - id: cjk_double_pack
+    lang: any
+    regex: '\b(?:ダブルパック|ツインパック|デュアルパック)\b'
+    fixed_count: 2
+  # --- English count markers ---
+  - id: en_caps
+    lang: any
+    regex: '\b(?P<count>\d+)\s*(?:Caps?|Capsules?|caps?|capsules?|CAPS?|CAPSULES?)\b'
+  - id: en_tablets
+    lang: any
+    regex: '\b(?P<count>\d+)\s*(?:Tabs?|Tablets?|tabs?|tablets?|TABS?|TABLETS?)\b'
+  - id: en_sachets_s
+    lang: any
+    regex: '\b(?P<count>\d+)[sS]\b(?:\s|$)'
+  - id: en_sheets
+    lang: any
+    regex: '\b(?P<count>\d+)\s*(?:Sheets?|sheets?|SHEETS?)\b'
+  - id: en_pack_of
+    lang: any
+    regex: '\bPack\s*of\s*(?P<count>\d+)\b'
+  - id: en_n_pack
+    lang: any
+    regex: '\b(?P<count>\d+)\s*[-]?\s*(?:Pack|PACK|pack)\b'
+  - id: en_n_individual_pack
+    lang: any
+    regex: '\b(?P<count>\d+)\s*(?:INDIVIDUAL|Individual|individual)\s*(?:PACK|Pack|pack)\b'
+  - id: en_twin_pack
+    lang: any
+    regex: '\bTwin\s*Pack\b'
+    fixed_count: 2
+  - id: en_triple_pack
+    lang: any
+    regex: '\b(?:Triple\s*Pack|Tri\s*Pack)\b'
+    fixed_count: 3
+  - id: en_double_pack
+    lang: any
+    regex: '\bDouble\s*Pack\b'
+    fixed_count: 2
+  # --- Vietnamese: '200M' = 200 miếng (pieces). Lang-gated to avoid meter clashes.
+  - id: vi_m_pieces
+    lang: vi
+    regex: '\b(?P<count>\d+)\s*M\b'
+
+# --- Optional: multi-pack patterns ("N片*M包" = M packs × N pcs each) -------
+# When matched, returns (count=N_inner, multiplier=M_outer).
+multi_pack_markers:
+  - id: cjk_inner_outer_star
+    lang: any
+    regex: '(?P<count>\d+)\s*片\s*[*xX×]\s*(?P<multiplier>\d+)\s*包'
+  - id: cjk_inner_outer_full
+    lang: any
+    regex: '(?P<count>\d+)(?:支|本|片|包|入|個)\s*[*xX×]\s*(?P<multiplier>\d+)(?:組|盒|包|箱)'
+
+# --- Promotion markers ------------------------------------------------------
+# Matched against the original (pre-normalization) item name.
+# If lang is unknown, scan only the 'any' bucket (script-agnostic markers).
+promo_markers:
+  - lang: any
+    patterns:
+      - '\b\d+\s*%\s*off\b'
+      - '\b\d+\s*%\s*OFF\b'
+  - lang: en
+    patterns:
+      - '\b(?:promo|promotion|sale|discount|clearance|markdown|special\s*offer|buy\s+\d+\s+get|on\s+sale)\b'
+  - lang: es
+    patterns:
+      - '\b(?:oferta|promoci[oó]n|descuento|rebaja|ahorr[oa])\b'
+  - lang: pt
+    patterns:
+      - '\b(?:oferta|promo[cç][aã]o|desconto|saldo|liquida[cç][aã]o)\b'
+  - lang: fr
+    patterns:
+      - '\b(?:solde|promotion|promo|remise|offre\s*sp[eé]ciale)\b'
+  - lang: zh
+    patterns:
+      - '(?:特價|折扣|優惠|特惠|促銷|減價|特賣|降價|限時)'
+  - lang: ja
+    patterns:
+      - '(?:セール|割引|お買い得|特売|お徳用|値引き)'
+  - lang: ko
+    patterns:
+      - '(?:할인|세일|특가|특별가|기획전)'
+  - lang: vi
+    patterns:
+      - '(?:giảm\s*giá|khuyến\s*m[ãa]i|ưu\s*đãi)'
+      - '\bsale\b'
+  - lang: th
+    patterns:
+      - '(?:ลดราคา|โปรโมชั่น|ลดพิเศษ|ราคาพิเศษ)'
+  - lang: id
+    patterns:
+      - '(?:diskon|promosi|jualan|harga\s*spesial)'
+  - lang: ms
+    patterns:
+      - '(?:diskaun|promosi|jualan|harga\s*istimewa)'
+
+# --- Bundle markers ---------------------------------------------------------
+# Conservative — only strong cues that DIFFERENT items are grouped (not N copies
+# of one item). Multipack wording (e.g. Japanese セット = pack count) is NOT a
+# bundle marker; see pack_patterns for those.
+bundle_markers:
+  - lang: any
+    patterns:
+      - '\b(?:gift\s*set|gift\s*pack|starter\s*kit|sample\s*kit|trial\s*kit)\b'
+      - '\b(?:variety\s*pack|assorted\s*pack|assortment)\b'
+  - lang: en
+    patterns:
+      - '\b(?:back\s*to\s*school\s*(?:combo|pack)|holiday\s*set|essentials\s*set)\b'
+  - lang: zh
+    patterns:
+      - '(?:禮盒|禮品套裝|綜合裝|綜合組|福袋)'
+  - lang: ja
+    patterns:
+      - '(?:ギフトセット|福袋|詰め合わせ)'
+  - lang: ko
+    patterns:
+      - '(?:선물\s*세트|기획\s*세트)'
+  - lang: es
+    patterns:
+      - '\b(?:set\s*de\s*regalo|kit\s*de\s*bienvenida)\b'
+  - lang: pt
+    patterns:
+      - '\b(?:kit\s*presente|kit\s*de\s*boas-vindas)\b'

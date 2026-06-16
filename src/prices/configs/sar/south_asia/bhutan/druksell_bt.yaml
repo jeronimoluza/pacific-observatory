@@ -2,3 +2,4 @@ spider: druksell_bt
 language: en
 notes: >
   Shopify storefront for Made-in-Bhutan goods. Uses /products.json endpoint.
+channel: pharmacy

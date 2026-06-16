@@ -6,3 +6,4 @@ spider: watsons_sg
 url: https://www.watsons.com.sg
 language: en
 cadence: daily
+channel: pharmacy

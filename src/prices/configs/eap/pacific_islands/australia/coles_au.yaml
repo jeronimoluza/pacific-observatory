@@ -10,3 +10,4 @@ active: false
 #   "Request unsuccessful" 974-byte page + Incapsula incident ID (edet=12).
 # Bypass requires playwright-stealth (new dep) or residential AU proxy, or
 # drop the source.
+channel: supermarket

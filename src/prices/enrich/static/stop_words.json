@@ -1,0 +1,50 @@
+{
+  "_doc": "Stop-words and promo/marketplace markers stripped during canonicalization. Keys are ISO-639-1 language codes. Each list combines (a) grammatical fillers (articles, particles, prepositions) and (b) e-commerce noise that shows up in scraped product titles (\"free shipping\", \"official\", \"limited time\"). Matching is whole-token, lowercased, hyphen-preserved. For CJK where word boundaries are fuzzy, entries are substring-stripped.",
+
+  "en": [
+    "the", "a", "an", "and", "or", "of", "for", "with", "by", "in", "at", "to", "on", "from",
+    "this", "that", "new", "fresh", "best", "top",
+    "free", "shipping", "official", "original", "brand", "authentic", "premium",
+    "pack", "promo", "sale", "off", "save", "deal", "limited", "edition",
+    "x"
+  ],
+
+  "es": [
+    "el", "la", "los", "las", "un", "una", "unos", "unas",
+    "de", "del", "con", "para", "por", "en", "y", "o", "a",
+    "envío", "envio", "gratis", "oferta", "promoción", "promocion", "nuevo", "nueva", "original"
+  ],
+
+  "pt": [
+    "o", "a", "os", "as", "um", "uma", "uns", "umas",
+    "de", "do", "da", "dos", "das", "com", "para", "em", "e", "ou", "no", "na",
+    "frete", "grátis", "gratis", "oferta", "promoção", "promocao", "novo", "nova", "original"
+  ],
+
+  "id": [
+    "yang", "dan", "dari", "untuk", "di", "ke", "dengan", "dalam", "atau", "pada",
+    "gratis", "ongkir", "promo", "diskon", "original", "asli", "terbaru"
+  ],
+
+  "vi": [
+    "của", "và", "cho", "với", "từ", "trong", "các", "ở", "tại", "trên", "theo",
+    "mua", "bán", "hàng", "chính", "hãng", "giao", "miễn", "phí", "khuyến", "mãi",
+    "siêu", "thị", "giảm", "giá", "mới", "tốt", "nhất",
+    "tiki", "trading", "shopee", "lazada", "sách"
+  ],
+
+  "zh": [
+    "的", "了", "在", "和", "與", "及",
+    "正品", "正版", "授權", "原裝", "進口", "限時", "限量", "現貨", "免運", "免運費",
+    "廠商直送", "現貨秒出", "促銷", "特價", "優惠", "熱銷", "新品", "新款",
+    "台灣製造"
+  ],
+
+  "ja": [
+    "の", "は", "が", "を", "に", "で", "と", "や", "も", "へ",
+    "送料無料", "ポイント", "クーポン", "期間限定", "ふるさと納税", "楽天市場", "楽天",
+    "セール", "スーパーセール", "アウトレット", "正規品", "国内正規品", "新品",
+    "公式", "限定", "予約", "在庫", "倍",
+    "おすすめ", "人気", "ランキング"
+  ]
+}

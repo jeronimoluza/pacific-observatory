@@ -6,3 +6,4 @@ spider: guardian_my
 url: https://www.guardian.com.my
 language: en
 cadence: weekly
+channel: pharmacy

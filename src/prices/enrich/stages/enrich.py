@@ -21,8 +21,9 @@ from typing import Iterable, Optional
 
 import pandas as pd
 
-from prices.enrich import cache, config, pool_filter
+from prices.enrich import cache, config, cross_check, pool_filter
 from prices.enrich import index as tier_b_index
+from prices.enrich.brand_prior import apply_brand_prior
 from prices.enrich.extract import StructuralFields, extract
 from prices.enrich.narrowness import is_narrow, parse_codes, resolved_code
 from prices.enrich.propagation import product_input_hashes, propagate_row
@@ -277,8 +278,8 @@ def _payload_from_source(src: dict) -> dict:
 
 def cascade(
     products: pd.DataFrame, cached: pd.DataFrame
-) -> tuple[list[dict], pd.DataFrame, list[dict]]:
-    """Pure cascade — no I/O, no LLM. Returns (cache_rows_to_write, residual_products, match_log_rows).
+) -> tuple[list[dict], pd.DataFrame, list[dict], list[dict]]:
+    """Pure cascade — no I/O, no LLM. Returns (cache_rows_to_write, residual_products, match_log_rows, cross_check_rows).
 
     `cache_rows_to_write` covers Tier 0/1/2/b propagations. `residual_products`
     is what falls through to tier (c) (LLM)."""
@@ -286,6 +287,7 @@ def cascade(
     now = datetime.now(timezone.utc).isoformat()
     cache_rows: list[dict] = []
     match_log: list[dict] = []
+    cross_check_rows: list[dict] = []
     residual_idx: list[int] = []
     tier_a_by_idx: dict = {}
 
@@ -358,7 +360,20 @@ def cascade(
                     tier_a,
                     cluster_agreement_coicop=0.0,
                 )
-                method_out = f"source_curated{tier_a_suffix}"
+                # Phase-2 consolidation on the source-curated path.
+                sc_bucket, sc_override = cross_check.consolidate(
+                    payload.get("pricing_basis"),
+                    str(payload.get("coicop_code") or ""),
+                    payload.get("sub_label_id"),
+                )
+                if sc_bucket == "SILENT_OVERRIDE" and sc_override:
+                    payload["pricing_basis"] = sc_override
+                sc_suffix = ""
+                if sc_bucket == "SILENT_OVERRIDE":
+                    sc_suffix = "_basis_override"
+                elif sc_bucket == "ESCALATE_MULTI":
+                    sc_suffix = "_basis_pending"
+                method_out = f"source_curated{tier_a_suffix}{sc_suffix}"
                 for h in input_hashes:
                     if h in hash_lookup:
                         continue
@@ -386,6 +401,17 @@ def cascade(
                         "matched_at": now,
                     }
                 )
+                cross_check_rows.append(
+                    cross_check.build_row(
+                        row_id=str(pid) if isinstance(pid, str) else (str(loose) or ""),
+                        country=country,
+                        structural_basis=payload.get("pricing_basis"),
+                        categorical_code=str(payload.get("coicop_code") or ""),
+                        categorical_sub_label=payload.get("sub_label_id"),
+                        matched_at=now,
+                        consolidation_bucket=sc_bucket,
+                    )
+                )
                 continue
 
         # Tier (b): KNN over cluster-resolved cache. Falls through silently
@@ -404,12 +430,40 @@ def cascade(
                 category=(str(product.get("category") or "") or None),
                 product=product,
             )
+            # Brand-prior rescue (2026-06-16). Only fires when tier-b returned
+            # not-accepted, the normalized brand is whitelisted, and top1
+            # cosine sits in the pre-soft band — see index.apply_brand_prior.
+            if not hit.accepted:
+                rescued = apply_brand_prior(hit, product.get("brand"))
+                if rescued is not None:
+                    hit = rescued
             killswitched = (
                 hit.accepted
+                and hit.escalation_reason != "brand_prior"
                 and channel_arg is not None
                 and (country, channel_arg) in _killswitch_combos()
             )
-            if hit.accepted and _pricing_basis_mismatch(tier_a, hit.payload):
+            # Phase-2 guarded basis-mismatch refusal. When tier-a and the
+            # cluster disagree on pricing_basis, we previously refused
+            # outright (almonds→wine guard). Phase-2 keeps that refusal ONLY
+            # when allowed_bases is permissive — i.e. the rule book can't
+            # confirm the cluster's category. When allowed_bases vouches for
+            # the cluster (CLEAN/SILENT_OVERRIDE), we accept and let the
+            # post-overlay consolidation arbitrate the basis.
+            basis_mismatch_unguarded = False
+            if (
+                hit.accepted
+                and not killswitched
+                and _pricing_basis_mismatch(tier_a, hit.payload)
+            ):
+                pre_bucket, _ = cross_check.consolidate(
+                    hit.payload.get("pricing_basis"),
+                    str(hit.payload.get("coicop_code") or ""),
+                    hit.payload.get("sub_label_id"),
+                )
+                if pre_bucket == "PASS_THROUGH":
+                    basis_mismatch_unguarded = True
+            if basis_mismatch_unguarded:
                 tier_b_index.append_miss(
                     {
                         "cluster_id": hit.cluster_id,
@@ -443,6 +497,11 @@ def cascade(
                 source["total_tokens"] = 0
                 source["model_version"] = f"tier_b/{config.EMBED_BACKEND}"
                 source["cluster_agreement_coicop"] = hit.top1_cluster_agreement
+                # Partial-accept (Phase 3): hit.payload has sub_label_id
+                # already blanked by accept_from_picked, and the method label
+                # below is greppable in match_log so a future async pass can
+                # resolve sub_label_id via tier_c.enrich_sub_label_only()
+                # when quota permits.
                 method = f"tier_b_knn_{hit.escalation_reason}"
             elif hit.escalation_reason == "miss":
                 tier_b_index.append_miss(
@@ -467,10 +526,25 @@ def cascade(
             payload = _overlay_tier_a(
                 _payload_from_source(source), tier_a, cluster_agreement
             )
+            # Phase-2 consolidation: arbitrate basis disagreements via
+            # allowed_bases. Singleton-allowed leaves get the basis rewritten;
+            # multi-allowed disagreements get tagged for tier-c arbitration.
+            bucket, override_basis = cross_check.consolidate(
+                payload.get("pricing_basis"),
+                str(payload.get("coicop_code") or ""),
+                payload.get("sub_label_id"),
+            )
+            if bucket == "SILENT_OVERRIDE" and override_basis:
+                payload["pricing_basis"] = override_basis
+            method_suffix = ""
+            if bucket == "SILENT_OVERRIDE":
+                method_suffix = "_basis_override"
+            elif bucket == "ESCALATE_MULTI":
+                method_suffix = "_basis_pending"
             raw_text = str(source.get("raw_response_text") or "")
             total_tokens = int(source.get("total_tokens") or 0)
             model_version = str(source.get("model_version") or config.MODEL_NAME)
-            method_out = f"{method}{tier_a_suffix}"
+            method_out = f"{method}{tier_a_suffix}{method_suffix}"
             for h in input_hashes:
                 if h in hash_lookup:
                     continue
@@ -496,6 +570,17 @@ def cascade(
                     "matched_at": now,
                 }
             )
+            cross_check_rows.append(
+                cross_check.build_row(
+                    row_id=str(pid) if isinstance(pid, str) else (str(loose) or ""),
+                    country=country,
+                    structural_basis=payload.get("pricing_basis"),
+                    categorical_code=str(payload.get("coicop_code") or ""),
+                    categorical_sub_label=payload.get("sub_label_id"),
+                    matched_at=now,
+                    consolidation_bucket=bucket,
+                )
+            )
         else:
             residual_idx.append(idx)
 
@@ -507,7 +592,7 @@ def cascade(
             residual[f"tier_a_{f}"] = [
                 getattr(tier_a_by_idx[i], f) for i in residual.index
             ]
-    return cache_rows, residual, match_log
+    return cache_rows, residual, match_log, cross_check_rows
 
 
 def _append_match_log(rows: Iterable[dict]) -> None:
@@ -529,10 +614,11 @@ def run(products_parquet: Optional[Path] = None) -> None:
     products_parquet = products_parquet or config.PRODUCTS_PARQUET
     products = pd.read_parquet(products_parquet)
     cached = cache.read_cache()
-    cache_rows, residual, match_log = cascade(products, cached)
+    cache_rows, residual, match_log, cross_check_rows = cascade(products, cached)
     if cache_rows:
         cache.append_enrichments(cache_rows)
     _append_match_log(match_log)
+    cross_check.append(cross_check_rows)
     asyncio.run(tier_c.run_residual(residual))
     pruned = cache.enforce_collision_invariant()
     if pruned:

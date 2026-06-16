@@ -1,0 +1,107 @@
+# Pack-size extraction patterns.
+#
+# Patterns are tried in order; first match wins. Most-specific first.
+# Each pattern produces some subset of (count, value, unit, multiplier).
+#
+# Fields:
+#   id          unique identifier (snake_case)
+#   lang        language hint; "any" means script-agnostic
+#   regex       Python regex (re.IGNORECASE applied) with named groups
+#   groups      mapping of named group -> field
+#                 fields: count (multiplier int), value (per-unit numeric),
+#                         unit (canonical unit string)
+#   unit_norm   optional map of literal -> canonical unit (e.g. GM -> g)
+#
+# Canonical units: g, kg, mg, ml, l, oz, lb.
+# Length units (cm, mm, m, ft, in, V, W) are NOT pack — excluded by design.
+
+patterns:
+
+  # --- Multipack notations (N × M-unit) ----------------------------------------
+  # "20x1.5g", "4x90g", "12 x 500ml"  → count=20, value=1.5, unit=g
+  - id: multipack_num_x_value_unit
+    lang: any
+    regex: '(?P<count>\d+)\s*[x×X]\s*(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>ml|mL|ML|l|L|kg|KG|g|G|mg|MG|gm|GM|gr|GR|oz|OZ|lb|LB)\b'
+    groups: {count: count, value: value, unit: unit}
+
+  # "5kg(5kg×1)" or "5kg x 1" — pack-of-1 explicit  → count=1, value=5, unit=kg
+  - id: multipack_value_unit_x_count
+    lang: any
+    regex: '(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>ml|mL|ML|l|L|kg|KG|g|G|mg|MG|gm|GM|gr|GR|oz|OZ|lb|LB)\s*[x×X]\s*(?P<count>\d+)\b'
+    groups: {count: count, value: value, unit: unit}
+
+  # --- Count-only multipack markers (no per-unit weight) ----------------------
+  # "12 PCS", "8 PCS", "5 cái" (vi), "30 gói" (vi), "10 入" (ja), "12本入" (ja)
+  - id: multipack_pcs_en
+    lang: en
+    regex: '(?P<count>\d+)\s*(?:PCS|Pcs|pcs|pieces?|pack|PACK|Pack|ct|CT)\b'
+    groups: {count: count}
+
+  - id: multipack_n_x_only
+    lang: any
+    regex: '(?P<count>\d+)\s*[xX×]\s*$'  # trailing "6X" alone
+    groups: {count: count}
+
+  - id: multipack_vi_loc
+    lang: vi
+    regex: '\b(?:Lốc|lốc|Thùng|thùng|Hộp|hộp|Bộ|bộ|Combo|combo|Set|set)\s+(?P<count>\d+)\b'
+    groups: {count: count}
+
+  - id: multipack_vi_count_unit
+    lang: vi
+    regex: '(?P<count>\d+)\s*(?:cái|cây|gói|chai|lon|chiếc|hộp|bịch)\b'
+    groups: {count: count}
+
+  - id: multipack_zh_count_unit
+    lang: zh
+    regex: '(?P<count>\d+)\s*(?:入|粒|本|片|盒|個|包|束|件|杯|袋|顆|張)(?:組|セット|入)?'
+    groups: {count: count}
+
+  - id: multipack_ja_kana_set
+    lang: ja
+    regex: '(?P<count>\d+)\s*(?:本入|束セット|個入|枚入|袋入|セット|組)'
+    groups: {count: count}
+
+  # --- Single value + unit (the common case) ---------------------------------
+  # "500g", "1L", "135ml", "158GM", "60gr", "25mg"
+  - id: value_unit_volume_mass
+    lang: any
+    regex: '(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>ml|mL|ML|l|L|kg|KG|g|G|mg|MG|gm|GM|gr|GR|oz|OZ|lb|LB|Oz)\b'
+    groups: {value: value, unit: unit}
+
+  # --- CJK volume/mass suffixes ---------------------------------------------
+  # "500毫升" "1公升" "200公克" "2公斤" "50克"
+  - id: zh_volume_mass
+    lang: zh
+    regex: '(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>公升|毫升|公斤|公克|克|升)'
+    groups: {value: value, unit: unit}
+
+unit_norm:
+  ml: ml
+  mL: ml
+  ML: ml
+  l: l
+  L: l
+  g: g
+  G: g
+  kg: kg
+  KG: kg
+  mg: mg
+  MG: mg
+  # variant spellings
+  gm: g
+  GM: g
+  gr: g
+  GR: g
+  oz: oz
+  OZ: oz
+  Oz: oz
+  lb: lb
+  LB: lb
+  # CJK
+  公升: l
+  毫升: ml
+  公斤: kg
+  公克: g
+  克: g
+  升: l
