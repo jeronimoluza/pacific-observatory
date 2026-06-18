@@ -39,7 +39,10 @@ _EXTRA_COUNT_ORDER: tuple[str, ...] = (
     "cjk_strip",
     "cjk_sheet_tissue",
     "cjk_set_group",
-    "cjk_numeral_version",
+    # cjk_numeral_version (二版/二種/二樣/二品) dropped 2026-06-16: these are
+    # almost always style/edition descriptors, not pack counts (e.g. 經典二版
+    # = "classic 2nd edition" on a book title). Surfaced as gold=item / pred=
+    # count failures during the tier-a precision lift.
     "cjk_numeral_set",
     "vi_to_sheets",
     "cjk_ko_pcs",
@@ -56,6 +59,13 @@ _EXTRA_COUNT_ORDER: tuple[str, ...] = (
     "en_triple_pack",
     "en_double_pack",
     "vi_m_pieces",
+    # CPI-survey idioms (added 2026-06-16) — short product names where the
+    # pack count is a free-text phrase rather than a structured marker.
+    "en_n_rolls",
+    "en_comma_xn",
+    "en_n_pcs",
+    "en_apos_s",
+    "en_n_tickets",
 )
 
 _MULTI_PACK_ORDER: tuple[str, ...] = (

@@ -60,7 +60,35 @@ _PHRASE_STRIP_PATTERNS = [
     re.compile(r"\d+\s*(?:円|¥)\s*(?:OFF|引き|引|分)?"),
     re.compile(r"\d+\s*[%％]"),
     re.compile(r"\d+\s*W\b"),  # wattage
+    # Pharma per-tablet strength: `100mg Tablet`, `20mcg Capsule`. The number
+    # is the API dose, not the package weight. Stripping it prevents tier-a
+    # from emitting basis=mass with a tiny per-pill value (2026-06-16).
+    re.compile(
+        r"\d+(?:[.,]\d+)?\s*(?:mg|MG|Mg|mcg|MCG|µg|ug)\s+"
+        r"(?:Tablet|Tablets|TABLET|TABLETS|tablet|tablets|"
+        r"Tab|Tabs|Capsule|Capsules|CAPSULE|CAPSULES|capsule|capsules|"
+        r"Cap|Caps|Caplet|Caplets|Pill|Pills|PILL|PILLS|pill|pills)\b"
+    ),
 ]
+
+# Pharma per-unit markers — when any of these fire, the product is sold per
+# tablet/capsule/pill regardless of what mass extract_pack might have seen.
+# Force basis=count (overrides downstream basis decision). See fix 3 in the
+# 2026-06-16 tier-a precision-lift batch.
+#
+# Two trigger shapes:
+#   1. Drug strength `<N>mg Tablet/Capsule/...` — the N is API dose, not pkg.
+#   2. Explicit `(per Tablet)` / `(per Capsule)` literal marker.
+# Either suffices.
+_PHARMA_PER_UNIT_RE = re.compile(
+    r"\d+(?:[.,]\d+)?\s*(?:mg|MG|Mg|mcg|MCG|µg|ug)\s+"
+    r"(?:Tablet|Tablets|TABLET|TABLETS|tablet|tablets|"
+    r"Tab|Tabs|Capsule|Capsules|CAPSULE|CAPSULES|capsule|capsules|"
+    r"Cap|Caps|Caplet|Caplets|Pill|Pills|PILL|PILLS|pill|pills)\b"
+    r"|\((?:per\s+(?:Tablet|Capsule|Cap|Caplet|Pill)|"
+    r"per\s+tablet|per\s+capsule|per\s+cap|per\s+caplet|per\s+pill|"
+    r"PER\s+TABLET|PER\s+CAPSULE|PER\s+CAP|PER\s+CAPLET|PER\s+PILL)\)"
+)
 
 # CJK count markers inside parens often signal item-multipack (multiplier), not
 # count-basis. e.g. "(3入)" on outlet adapters → item, mul=3, not count=3.
@@ -256,6 +284,13 @@ def extract(
 
     has_non_ascii = any(ord(ch) > 127 for ch in item_name)
 
+    # Fix 3 (2026-06-16): pharma "(per Tablet)" / "(per Capsule)" marker forces
+    # basis=count regardless of any mass token in the name (e.g. "100mg" is
+    # API strength, not package weight). Phrase-strip above already wiped
+    # `<N>mg Tablet` from `stripped`; this flag short-circuits the basis tree
+    # below.
+    pharma_per_unit = bool(_PHARMA_PER_UNIT_RE.search(item_name))
+
     # Pass 0: detect "20'S X 2g" style (count'S × value+unit) — DILMAH/tea-bag
     # idiom. Routes straight to mass/volume + multiplier=count.
     apos = _APOS_S_X_UNIT_RE.search(item_name)
@@ -304,26 +339,30 @@ def extract(
 
     extra_entry, extra_value = (None, None)
     if pack_unit is None:
-        extra_entry, extra_value = _match_extra_unit(item_name, lang)
+        extra_entry, extra_value = _match_extra_unit(stripped, lang)
 
     # Broaden lang for marker tries when the name contains non-ASCII chars —
     # otherwise vi/ko/zh-tagged patterns never fire for countries whose primary
     # language is English (e.g. vietnam → "en" in countries.yaml).
     effective_lang = None if has_non_ascii else lang
 
+    # Use `stripped` so phrase-strip patterns (e.g. parenthesized inner-pack
+    # `(3入)`, pharma `100mg Tablet`) actually suppress downstream matchers.
+    # Without this, extra_count saw the original name and re-matched the very
+    # tokens we just stripped (2026-06-16 fix).
     extra_count = (
-        _match_extra_count(item_name, effective_lang)
+        _match_extra_count(stripped, effective_lang)
         if pack_unit is None and extra_entry is None and pack_count is None
         else None
     )
 
     basis_marker = (
-        _match_pricing_basis_marker(item_name, lang)
+        _match_pricing_basis_marker(stripped, lang)
         if pack_unit is None and extra_entry is None
         else None
     )
 
-    multi_pack = _match_multi_pack(item_name, effective_lang)
+    multi_pack = _match_multi_pack(stripped, effective_lang)
 
     # Apos pattern wins outright when it matched — it's very specific.
     if apos is not None:
@@ -349,6 +388,21 @@ def extract(
     amount_value: float | None = None
     count: int | None = None
     multiplier: int | None = None
+
+    # Pharma per-unit short-circuit: count basis with cnt=1, drop any mass that
+    # slipped through the phrase-strip (e.g. unit-less "100" not followed by mg).
+    if pharma_per_unit:
+        return StructuralFields(
+            pricing_basis="count",
+            amount_value=None,
+            standard_unit="unit",
+            count=1,
+            multiplier=1,
+            is_promotion=_markers_fire(item_name, lang, _PROMO_MARKERS),
+            is_bundle=_markers_fire(item_name, lang, _BUNDLE_MARKERS),
+            is_multipack=False,
+            promo_reason=None,
+        )
 
     if pack_unit is not None:
         um = _UNIT_MAP.get(pack_unit)

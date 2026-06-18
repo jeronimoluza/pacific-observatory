@@ -48,7 +48,7 @@ def _invalidate_for(stage: str | None) -> None:
 @click.option(
     "--rebuild",
     is_flag=True,
-    help="Ignore caches for the chosen stage (DANGEROUS on enrich — full 430k pass).",
+    help="Ignore caches for the chosen stage (DANGEROUS on enrich — re-matches every deduped product, no cache reuse).",
 )
 @click.option(
     "--no-reindex",

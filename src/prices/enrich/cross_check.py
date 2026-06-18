@@ -30,6 +30,24 @@ _CROSS_CHECK_PARQUET = config.ENRICH_DIR / "cross_check.parquet"
 _lock = threading.Lock()
 _class_cache: dict[str, COICOPClass | None] = {}
 
+# Canonical (basis → standard_unit) mapping mirroring schemas.ProductEnrichment.
+# Used by the leaf-gate B-reset: when SILENT_OVERRIDE rewrites the basis, the
+# old amount/unit (whatever tier-a extracted) is no longer trustworthy and
+# must be reset together with the basis. count/multiplier are basis-orthogonal
+# and are preserved by the caller.
+_CANONICAL_UNIT_FOR_BASIS: dict[str, str] = {
+    "mass": "kg",
+    "volume": "lt",
+    "length": "mt",
+    "count": "unit",
+    "item": "item",
+}
+
+
+def canonical_unit_for_basis(basis: str) -> str | None:
+    """Return the canonical standard_unit for a basis, or None if unknown."""
+    return _CANONICAL_UNIT_FOR_BASIS.get(basis)
+
 
 def _class_for(code: str) -> Optional[COICOPClass]:
     if not code:

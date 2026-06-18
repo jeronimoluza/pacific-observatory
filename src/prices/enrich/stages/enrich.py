@@ -368,6 +368,14 @@ def cascade(
                 )
                 if sc_bucket == "SILENT_OVERRIDE" and sc_override:
                     payload["pricing_basis"] = sc_override
+                    # Leaf-gate B-reset: tier-a's amount/unit belonged to the
+                    # wrong basis, so they cannot be trusted under the new one.
+                    # Clobber to canonical defaults; count/multiplier are
+                    # basis-orthogonal and stay as tier-a captured them.
+                    payload["amount_value"] = None
+                    payload["standard_unit"] = cross_check.canonical_unit_for_basis(
+                        sc_override
+                    )
                 sc_suffix = ""
                 if sc_bucket == "SILENT_OVERRIDE":
                     sc_suffix = "_basis_override"
@@ -536,6 +544,11 @@ def cascade(
             )
             if bucket == "SILENT_OVERRIDE" and override_basis:
                 payload["pricing_basis"] = override_basis
+                # Leaf-gate B-reset: see source-curated path above.
+                payload["amount_value"] = None
+                payload["standard_unit"] = cross_check.canonical_unit_for_basis(
+                    override_basis
+                )
             method_suffix = ""
             if bucket == "SILENT_OVERRIDE":
                 method_suffix = "_basis_override"

@@ -39,7 +39,11 @@ EMBED_MODEL_GEMINI = "gemini-embedding-001"
 # (e.g. `data/prices/_enrich/_models/e5-ft-v1`). Cache keys mix this in so
 # baseline and fine-tuned vectors coexist without collision.
 E5_MODEL_PATH = os.environ.get("E5_MODEL_PATH", "intfloat/multilingual-e5-base")
-EMBED_DIM = 768
+# Override via `EMBED_DIM` env var when swapping models with a different
+# output dimension (e5-base = 768, e5-large = 1024). HNSW indexes built with
+# a different dim are silently incompatible — pair this env var with a
+# `TIER_B_INDEX_DIR` override so old + new indexes don't collide.
+EMBED_DIM = int(os.environ.get("EMBED_DIM", "768"))
 EMBED_RPM = 90  # free-tier ceiling is 100/min for gemini-embedding-001
 KNN_K = 5
 # DEPRECATED scalar — remove after the next release. Production code reads
@@ -54,6 +58,9 @@ KNN_TAU_LOW = 0.85
 # the active model is missing so a silent default never sneaks through.
 KNN_SCORE_HARD_MIN: dict[str, float] = {
     "intfloat/multilingual-e5-base": KNN_TAU_HIGH,
+    # e5-large is a larger model (1024-dim) but cosine scale is comparable;
+    # start at the same threshold and tune from gold eval (2026-06-16).
+    "intfloat/multilingual-e5-large": KNN_TAU_HIGH,
 }
 
 

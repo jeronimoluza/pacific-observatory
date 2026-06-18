@@ -21,7 +21,7 @@ The enricher that decides a row's `coicop_code` + `sub_label_id`. Cheap-to-expen
 _Avoid_: "labeler" (privileges one tactic over the other), "classifier" (overloaded).
 
 **Cross-check**:
-The mechanism by which the two enrichers compare answers and flag rows where their outputs are mutually implausible. Concrete example: structural says `pricing_basis=mass amount=2000g` and categorical says `external hard drive` — one of them is lying (this is the live "1TB-as-1L" failure mode). Implementation pending. Supersedes the parked [[structural prior]] framing — instead of a telemetry-only distribution, the cross-check is a live decision-time signal.
+The mechanism by which the two enrichers compare answers and flag rows where their outputs are mutually implausible. Concrete example: structural says `pricing_basis=mass amount=2000g` and categorical says `external hard drive` — one of them is lying (this is the live "1TB-as-1L" failure mode). **Shipped** as a Phase-2 consolidation layer (`cross_check.py`): `consolidate()` returns a routing bucket (`PASS_THROUGH` / `CLEAN` / `NO_STRUCTURAL` / `SILENT_OVERRIDE` / `ESCALATE_MULTI`); on `SILENT_OVERRIDE` (the sub_label permits exactly one basis and structural disagrees) the cascade rewrites `pricing_basis` + `standard_unit` live (`stages/enrich.py:376,549`). Supersedes the parked [[structural prior]] framing — the cross-check is a live decision-time signal, not a telemetry-only distribution.
 _Avoid_: "validator", "sanity check" (already overloaded), "outlier filter".
 
 **Tier-a**:
@@ -85,7 +85,7 @@ The merge-gate test for tier-a regex refactors: load BOTH the old extractor (ext
 _Avoid_: "regression test" (other regression suites have looser gates)
 
 **Keywords tree**:
-The directory `src/prices/enrich/keywords/coicop/` containing one `c{NN}.py` file per 2-digit COICOP class (01..15). Each holds a typed `COICOPClass` literal with nested groups → subgroups → leaves. Sub_labels live in a **sibling** `c{NN}_subs.py` file as `SUB_LABELS_BY_LEAF: dict[str, tuple[SubLabel, ...]]` — split out only because c01 alone has 1,110 sub_labels and inlining would bust the 500-line cap. The registry walks the class tree at load time and injects each leaf's sub_labels via `dataclasses.replace`. `_other` is auto-injected per leaf if not already present. The legacy `_sub_labels.parquet` is retained as the migration source-of-truth for `tools/regenerate_subs.py`; it is not read at runtime.
+The directory `src/prices/enrich/keywords/coicop/` containing one `c{NN}.py` file per 2-digit COICOP class (01..15). Each holds a typed `COICOPClass` literal with nested groups → subgroups → leaves. Sub_labels live in a **sibling** `c{NN}_subs.py` file as `SUB_LABELS_BY_LEAF: dict[str, tuple[SubLabel, ...]]` — split out only because c01 alone has 1,110 sub_labels and inlining would bust the 500-line cap. The registry walks the class tree at load time and injects each leaf's sub_labels via `dataclasses.replace`. `_other` is auto-injected per leaf if not already present. Regenerate `_sub_labels.parquet` from the Python tree via `tools/regenerate_sub_labels_parquet.py`. NOTE: `_sub_labels.parquet` **is** read at runtime — `taxonomy_index.py` (tier-c sub-vocab) and `index.py` (tier-b anchors) both load it — so the Python tree (authoritative for `cross_check.py`) and the parquet + `static/coicop_subcategories.json` (authoritative for tier-b/tier-c) are two live representations kept in sync only by regeneration.
 _Avoid_: "coicop terms", "keyword files"
 
 **Allowed bases**:
@@ -93,7 +93,7 @@ The `frozenset[str] | None` field on `SubLabel`: the `pricing_basis` values that
 _Avoid_: "basis whitelist" (whitelist implies single-mode; this is multi-modal), "expected basis".
 
 **Cross_check.parquet**:
-The Phase-1 telemetry written next to `match_log.parquet` (via `prices.enrich.cross_check.append`). Columns: `row_id`, `country`, `structural_basis`, `categorical_code`, `categorical_sub_label`, `allowed_bases_at_finest` (pipe-separated), `resolved_level` (`sub_label`/`leaf`/`subgroup`/`permissive`/`unknown_leaf`/`unknown_class`/`no_code`), `flag_reason` (`""` or `"structural_not_in_allowed_bases"`), `matched_at`. Telemetry only — never routes or filters in Phase 1. Two writes per cascade: source-curated and resolved.
+The Phase-1 telemetry written next to `match_log.parquet` (via `prices.enrich.cross_check.append`). Columns: `row_id`, `country`, `structural_basis`, `categorical_code`, `categorical_sub_label`, `allowed_bases_at_finest` (pipe-separated), `resolved_level` (`sub_label`/`leaf`/`subgroup`/`permissive`/`unknown_leaf`/`unknown_class`/`no_code`), `flag_reason` (`""` or `"structural_not_in_allowed_bases"`), `consolidation_bucket`, `matched_at`. Phase 1 wrote this as telemetry only; **Phase 2 now routes** — `consolidate()` acts on the bucket and can rewrite basis/unit (see the **Cross-check** entry above). Two writes per cascade: source-curated and resolved.
 _Avoid_: "cross_check_log" (consistency with match_log.parquet, not match_log_log).
 
 **Keyword vote channel**:
@@ -105,5 +105,5 @@ The bi-encoder convention where CLUSTER REP passages get the canonical COICOP gl
 _Avoid_: "query rewriting", "passage enrichment" (too generic)
 
 **Calibration-as-PR-suggestion**:
-The workflow for updating tier-b thresholds. `tools/calibrate_knn_thresholds.py` reads gold sets and emits a STDOUT diff suggesting new values for `KNN_SCORE_HARD_MIN[model]` / `KNN_SCORE_SOFT_MIN[model]` / `KNN_GAP_MIN[model]` in `config.py`. The engineer pastes the diff into a PR; the script NEVER auto-writes config. Reproducibility via `git blame`.
+The workflow for updating tier-b thresholds. `tools/calibrate_knn_thresholds.py` reads gold sets and emits a STDOUT diff suggesting new values for `KNN_SCORE_HARD_MIN[model]` / `KNN_SCORE_SOFT_MIN[model]` / `KNN_GAP_MIN[model]` in `config.py`. The engineer pastes the diff into a PR; the script NEVER auto-writes config. Reproducibility via `git blame`. NOTE: only `KNN_SCORE_HARD_MIN` is defined in `config.py` today — `KNN_SCORE_SOFT_MIN`/`KNN_GAP_MIN` do not exist (the soft path keys off `KNN_TAU_LOW` + `KNN_SOFT_MAJORITY_MIN`).
 _Avoid_: "auto-tune", "dynamic threshold"

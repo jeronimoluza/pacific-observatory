@@ -1,6 +1,6 @@
 # Prices pipeline — STATUS
 
-Snapshot: **2026-06-11**. This file is a living status doc, not a glossary.
+Snapshot: **2026-06-11** (partial reconcile 2026-06-17 — see the acceptance-branch note in §2 and the LoC figures in §4.6). This file is a living status doc, not a glossary.
 For terminology, see `src/prices/enrich/CONTEXT.md`. For locked architectural
 decisions, see `docs/adr/000{1,2,3}-*.md`.
 
@@ -44,7 +44,12 @@ product row → tier (a) regex extraction → tier (b) KNN over cluster cache �
   than `MIN_SAME_CHANNEL_KNN=3` same-channel candidates clear the cosine
   threshold (logged as `cross_channel_accept`). Hard accept at
   `cos≥KNN_TAU_HIGH ∧ cluster_agreement_coicop≥KNN_CLUSTER_AGREEMENT_MIN`;
-  soft accept on top-K majority + lower cosine.
+  soft accept on top-K majority + lower cosine. **Additional acceptance
+  branches shipped 2026-06-16 and are not yet reflected throughout this
+  doc**: a high-cosine single-neighbor override (`KNN_HIGH_COS_OVERRIDE_*`),
+  a brand-prior rescue (`BRAND_PRIOR_*`), and a per-(country, channel)
+  tier-b kill-switch (`TIER_B_KILLSWITCH_*`) — see `accept_from_picked` in
+  `index.py` and `config.py`.
 - **Source-curated short-circuit** (ADR-0002). When a spider's YAML declares
   COICOP codes sharing a single 3-digit class prefix, the cascade writes the
   declared code straight through and skips tier-b/c entirely. Sub_label_id is
@@ -203,8 +208,10 @@ so the first three items target it.
    and resolves them via `tier_c.enrich_sub_label_only()` when quota is
    healthy. Currently the partial-accept rows just ship with
    `sub_label_id = null`.
-6. **Split oversized modules** — `tier_c.py` 637 LoC, `index.py` 523 LoC,
-   `enrich.py` 544 LoC. The 500-LoC cap is being violated.
+6. **Split oversized modules** — `stages/tier_c.py` 769 LoC, `index.py`
+   822 LoC, `stages/enrich.py` 638 LoC (all grown since this was written),
+   plus `bakeoff.py` 522. The 500-LoC cap is being violated and the gap is
+   widening.
 7. **`build` and `publish` stages** — still stubs; needed before any data
    ships externally.
 
