@@ -1,6 +1,16 @@
 import os
 from pathlib import Path
 
+import yaml
+
+# Cascade tuning surface — the four KNN knobs live in one YAML alongside
+# channel_coicop_priors.yaml. Loaded once at import; the module-level constant
+# names below are assigned from it so every config.<NAME> import site is
+# unchanged. Values are byte-identical to the previous inline literals.
+ENRICH_KNOBS_PATH = Path(__file__).resolve().parent / "static" / "enrich_knobs.yaml"
+with open(ENRICH_KNOBS_PATH, encoding="utf-8") as _f:
+    _ENRICH_KNOBS = yaml.safe_load(_f) or {}
+
 # Model
 MODEL_NAME = "gemini-3.1-flash-lite"
 BATCH_SIZE = 15
@@ -74,16 +84,17 @@ def knn_score_hard_min(model: str) -> float:
     return KNN_SCORE_HARD_MIN[model]
 
 
-KNN_CLUSTER_AGREEMENT_MIN = 0.90
+KNN_CLUSTER_AGREEMENT_MIN = _ENRICH_KNOBS["knn_cluster_agreement_min"]  # 0.90
 # Sub_label_id co-gate at query time. When coicop_code passes the hard/soft
 # gate but the K neighbors that share the chosen coicop disagree on
 # sub_label_id below this threshold, accept the coicop and route the row to a
 # constrained tier-c call (enrich_sub_label_only) instead of writing the
 # cluster's sub_label_id straight through. Initial conservative default —
 # tune from match_log after collection.
-KNN_SUB_LABEL_AGREEMENT_MIN = 0.90
+KNN_SUB_LABEL_AGREEMENT_MIN = _ENRICH_KNOBS["knn_sub_label_agreement_min"]  # 0.90
 KNN_SOFT_MAJORITY_MIN = 3  # out of K=5
-KNN_BOOTSTRAP_CLUSTER_FLOOR = 150  # was 200; lowered post-sanitization to retain SG/MY indices (5k eval, 2026-06-11)
+# was 200; lowered post-sanitization to retain SG/MY indices (5k eval, 2026-06-11)
+KNN_BOOTSTRAP_CLUSTER_FLOOR = _ENRICH_KNOBS["knn_bootstrap_cluster_floor"]  # 150
 MATCH_TIER_B_ENABLED = True
 
 # HIGH-COS override (2026-06-16). Third acceptance branch in
@@ -111,7 +122,7 @@ BRAND_PRIOR_COS_HIGH = KNN_TAU_LOW  # 0.85 — hand off to soft above this
 # at least MIN_SAME_CHANNEL_KNN of them; otherwise fall through to
 # cross-channel candidates (logged as cross_channel_accept=True).
 KNN_CHANNEL_OVERFETCH = 4
-MIN_SAME_CHANNEL_KNN = 3
+MIN_SAME_CHANNEL_KNN = _ENRICH_KNOBS["min_same_channel_knn"]  # 3
 
 TIER_B_INDEX_DIR = Path(
     os.environ.get("TIER_B_INDEX_DIR", str(ENRICH_DIR / "_tier_b_index"))
