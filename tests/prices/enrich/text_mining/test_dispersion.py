@@ -33,13 +33,13 @@ def _gold_with_known_group(floor: int) -> pd.DataFrame:
     # padded with extra rows so n >= floor for the un-suppressed assertion.
     rows = []
     for v in [4.0, 6.0, 8.0]:
-        rows.append(("01.1.1.0.1", "philippines", "en", "rice", "mass", v))
+        rows.append(("Rice", "01.1.1.0.1", "philippines", "en", "rice", "mass", v))
     # pad the same group up to the floor
     for _ in range(floor):
-        rows.append(("01.1.1.0.1", "philippines", "en", "rice", "mass", 6.0))
+        rows.append(("Rice", "01.1.1.0.1", "philippines", "en", "rice", "mass", 6.0))
     # a separate low-n group (n=2 < floor)
-    rows.append(("01.2.2.0.1", "japan", "ja", "soft_drink", "volume", 0.5))
-    rows.append(("01.2.2.0.1", "japan", "ja", "soft_drink", "volume", 0.5))
+    rows.append(("Cola", "01.2.2.0.1", "japan", "ja", "soft_drink", "volume", 0.5))
+    rows.append(("Cola", "01.2.2.0.1", "japan", "ja", "soft_drink", "volume", 0.5))
     return pd.DataFrame(
         rows,
         columns=[
