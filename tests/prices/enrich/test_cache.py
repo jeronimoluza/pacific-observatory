@@ -1,7 +1,8 @@
 import pandas as pd
 import pytest
 
-from prices.enrich import cache, config
+from prices.enrich import config
+from prices.enrich.tier_b import cache
 
 
 @pytest.fixture(autouse=True)
@@ -83,7 +84,8 @@ def test_append_enrichments_appends_not_overwrites():
 
 def test_existing_keys_returns_set():
     cache.append_enrichments([_enrichment_row("k1", "h1")])
-    assert cache.existing_keys() == {"k1"}
+    # Lookup identity is input_hash, not cache_key — the latter is provenance only.
+    assert cache.existing_keys() == {"h1"}
 
 
 def test_append_failures_creates_parquet():

@@ -88,7 +88,7 @@ def _build_source_coicop_codes_map() -> dict[tuple[str, str], str]:
     """(country, source) → `|`-joined declared coicop_codes from per-source
     YAML. Missing or empty declarations are absent from the map."""
     from prices.config import PriceSourceConfig, discover_prices_configs
-    from prices.enrich.narrowness import serialize_codes
+    from prices.enrich.tier_b.narrowness import serialize_codes
 
     out: dict[tuple[str, str], str] = {}
     for path in discover_prices_configs():

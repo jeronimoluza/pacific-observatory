@@ -24,8 +24,8 @@ from typing import Any, Optional
 import pandas as pd
 
 from core.config import load_countries
-from prices.enrich import cache
 from prices.enrich.normalize import canonicalize
+from prices.enrich.tier_b import cache
 from prices.enrich.stages.enrich import _PAYLOAD_FIELDS  # noqa: F401  (re-exported for backwards compat)
 
 REQUIRED_COLUMNS = [

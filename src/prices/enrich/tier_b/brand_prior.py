@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Optional
 
 from prices.enrich import config
-from prices.enrich.index import KNNHit
+from prices.enrich.tier_b.index import KNNHit
 
 
 _BRAND_PRIORS_CACHE: Optional[dict[str, dict]] = None

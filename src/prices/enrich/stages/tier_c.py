@@ -37,12 +37,13 @@ import pandas as pd
 import yaml
 from pydantic_ai import Agent
 
-from prices.enrich import cache, config, rate_limit
-from prices.enrich import index as tier_b_index
-from prices.enrich.propagation import product_input_hashes, propagate_row
+from prices.enrich import config, rate_limit
 from prices.enrich.schemas import EnrichmentBatch, ProductEnrichment
 from prices.enrich.scope import build_scope_constrained, build_scope_residual
-from prices.enrich.taxonomy_index import (
+from prices.enrich.tier_b import cache
+from prices.enrich.tier_b import index as tier_b_index
+from prices.enrich.tier_b.propagation import product_input_hashes, propagate_row
+from prices.enrich.tier_b.taxonomy_index import (
     closest_codes as _closest_codes,
     load_coicop_context as _load_coicop_context,
     load_taxonomy_index as _load_taxonomy_index,
@@ -162,7 +163,7 @@ def _neighbors_for(country: str, query_text: str, k: int) -> list[dict]:
     idx, clusters = loaded
     if len(clusters) == 0:
         return []
-    from prices.enrich.embed import embed_texts
+    from prices.enrich.tier_b.embed import embed_texts
 
     vec = embed_texts(
         [f"query: {query_text}"],

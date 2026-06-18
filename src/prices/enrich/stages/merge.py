@@ -3,7 +3,8 @@ from typing import Optional
 
 import pandas as pd
 
-from prices.enrich import cache, config
+from prices.enrich import config
+from prices.enrich.tier_b import cache
 from prices.enrich.stages.prepare import _row_input_dict, parse_price
 from prices.enrich.versioning import input_hash
 

@@ -21,12 +21,13 @@ from typing import Iterable, Optional
 
 import pandas as pd
 
-from prices.enrich import cache, config, cross_check, pool_filter
-from prices.enrich import index as tier_b_index
-from prices.enrich.brand_prior import apply_brand_prior
+from prices.enrich import config
 from prices.enrich.extract import StructuralFields, extract
-from prices.enrich.narrowness import is_narrow, parse_codes, resolved_code
-from prices.enrich.propagation import product_input_hashes, propagate_row
+from prices.enrich.tier_b import cache, cross_check, pool_filter
+from prices.enrich.tier_b import index as tier_b_index
+from prices.enrich.tier_b.brand_prior import apply_brand_prior
+from prices.enrich.tier_b.narrowness import is_narrow, parse_codes, resolved_code
+from prices.enrich.tier_b.propagation import product_input_hashes, propagate_row
 from prices.enrich.stages import tier_c
 
 _STRUCTURAL_FIELDS = (

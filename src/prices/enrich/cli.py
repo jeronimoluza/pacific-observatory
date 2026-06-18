@@ -95,7 +95,7 @@ def process_command(stage, rebuild, no_reindex, region, subregion, country):
             STAGES[name]()
     if not no_reindex and stage in (None, "match", "enrich", "merge"):
         click.echo("\n=== reindex (tier-b) ===")
-        from prices.enrich import index as tier_b_index
+        from prices.enrich.tier_b import index as tier_b_index
 
         built = tier_b_index.reindex_all()
         click.echo(f"tier-b indices built: {len(built)} country/ies")

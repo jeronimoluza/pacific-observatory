@@ -4,7 +4,9 @@ import re
 import pytest
 
 from prices.enrich import config
-from prices.enrich.stages.enrich import _load_coicop_context
+from prices.enrich.tier_b.taxonomy_index import (
+    load_coicop_context as _load_coicop_context,
+)
 
 
 def test_enrich_prompt_has_no_unfilled_placeholders():

@@ -37,7 +37,7 @@ import pandas as pd
 
 from prices.build.basket import EAP_COUNTRIES, FNB_COICOP_PREFIXES
 from prices.build.fx import attach_fx_and_usd
-from prices.enrich import cache as enrich_cache
+from prices.enrich.tier_b import cache as enrich_cache
 from prices.enrich import config as enrich_config
 from prices.enrich.stages.merge import compute_unit_value
 from prices.enrich.stages.prepare import parse_price

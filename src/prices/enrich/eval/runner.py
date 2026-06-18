@@ -8,8 +8,9 @@ from typing import Optional
 
 import pandas as pd
 
-from prices.enrich import cache, config
-from prices.enrich import index as tier_b_index
+from prices.enrich import config
+from prices.enrich.tier_b import cache
+from prices.enrich.tier_b import index as tier_b_index
 from prices.enrich.eval import gold as gold_mod
 from prices.enrich.eval import report as report_mod
 from prices.enrich.eval.gold import SYNTH_PREFIX

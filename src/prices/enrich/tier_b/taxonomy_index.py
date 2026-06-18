@@ -149,7 +149,7 @@ def load_taxonomy_index() -> tuple[set[str], dict[str, set[str]]]:
         from pathlib import Path
 
         sub_parquet = (
-            Path(__file__).resolve().parent
+            Path(__file__).resolve().parent.parent
             / "keywords"
             / "coicop"
             / "_sub_labels.parquet"
