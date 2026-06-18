@@ -13,7 +13,8 @@ import os
 import numpy as np
 import pytest
 
-from prices.enrich import config, embed
+from prices.enrich import config
+from prices.enrich.tier_b import embed
 
 
 def test_cache_key_distinguishes_backend_and_prefix(tmp_path, monkeypatch):

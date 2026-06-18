@@ -5,7 +5,8 @@ from datetime import datetime, timezone
 
 import pandas as pd
 
-from prices.enrich import cache, config
+from prices.enrich import config
+from prices.enrich.tier_b import cache
 from prices.enrich.stages.enrich import _enrich_async, _structured_input
 from prices.enrich.versioning import (
     PROMPT_BYTES_HASH,
