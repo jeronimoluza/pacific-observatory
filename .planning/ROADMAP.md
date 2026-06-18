@@ -7,7 +7,7 @@ Five phases turn a circularly-contaminated PoC cascade into a verified, widened,
 ## Phases
 
 - [ ] **Phase 0: Eval Foundation & Independent Gold Set** - Merge the eval harness; split the gold by provenance into a 313-row working set + a 187-row held-out cert set (relabeled blind to cache); record trustworthy baseline accuracy
-- [ ] **Phase 0.5: Cascade Cleanup (behavior-preserving)** - Kill dead paths/unused features, split file sprawl (10k-line c01_subs.py), consolidate scattered knobs, untangle the _sub_labels.parquet ↔ c*_subs.py source-of-truth knot — all gated by identical `prices eval` numbers before/after
+- [x] **Phase 0.5: Cascade Cleanup (behavior-preserving)** - Kill dead paths/unused features, split file sprawl (10k-line c01_subs.py), consolidate scattered knobs, untangle the _sub_labels.parquet ↔ c*_subs.py source-of-truth knot — all gated by identical `prices eval` numbers before/after (completed 2026-06-18)
 - [ ] **Phase 1: Tier-a/b Hardening on Existing F&B Basket** - Wire suppress_window, fix BUG 3/4, deploy IMF unit-value formula, migrate to Gemini 2.5, re-calibrate KNN; shrink tier-c to <20%
 - [ ] **Phase 2: Basket Widening (COICOP 02/03/06/electronics)** - Pre-seed KNN per division, extend priors, parameterise basket_id; enforce <1% F&B regression gate
 - [ ] **Phase 3: Full-History Unification + Panel Emit** - Unify all three ingestion paths; atomic cache writes; emit row-level unit-value panel + Jevons aggregates
@@ -54,14 +54,14 @@ Five phases turn a circularly-contaminated PoC cascade into a verified, widened,
 
 **Scope boundary**: behavior-preserving only — no content/label fixes, no threshold retuning. Those belong to Phase 1+.
 
-**Plans**: 1/6 plans executed
+**Plans**: 6/6 plans complete
 
 - [x] 00.5-01-PLAN.md — Read-only inventory (SC1) + prices eval parity anchor (D-09) [Wave 1]
-- [ ] 00.5-02-PLAN.md — Resolve source-of-truth knot: data-store-as-truth, collapse BOTH c{NN}.py CLASS trees + c{NN}_subs.py sub-label sprawl (SC5/SC3) [Wave 2]
-- [ ] 00.5-03-PLAN.md — Consolidate KNN knobs into one YAML tuning surface, values unchanged (SC4) [Wave 2]
-- [ ] 00.5-04-PLAN.md — Tier-a regex single-source: kind + MODULE_ORDER + shared/script axis (SC7) [Wave 3]
-- [ ] 00.5-05-PLAN.md — Tier-b package + fat meta.json/manifest.json provenance, split index.py (SC8/SC3) [Wave 3]
-- [ ] 00.5-06-PLAN.md — Coverage-aware dead-code removal with approve-once gate (SC6) [Wave 4]
+- [x] 00.5-02-PLAN.md — Resolve source-of-truth knot: data-store-as-truth, collapse BOTH c{NN}.py CLASS trees + c{NN}_subs.py sub-label sprawl (SC5/SC3) [Wave 2]
+- [x] 00.5-03-PLAN.md — Consolidate KNN knobs into one YAML tuning surface, values unchanged (SC4) [Wave 2]
+- [x] 00.5-04-PLAN.md — Tier-a regex single-source: kind + MODULE_ORDER + shared/script axis (SC7) [Wave 3]
+- [x] 00.5-05-PLAN.md — Tier-b package + fat meta.json/manifest.json provenance, split index.py (SC8/SC3) [Wave 3]
+- [x] 00.5-06-PLAN.md — Coverage-aware dead-code removal with approve-once gate (SC6) [Wave 4]
 
 ### Phase 1: Tier-a/b Hardening on Existing F&B Basket
 
@@ -131,7 +131,7 @@ Five phases turn a circularly-contaminated PoC cascade into a verified, widened,
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 0. Eval Foundation & Independent Gold Set | 2/3 | In Progress|  |
-| 0.5. Cascade Cleanup (behavior-preserving) | 1/6 | In Progress|  |
+| 0.5. Cascade Cleanup (behavior-preserving) | 6/6 | Complete   | 2026-06-18 |
 | 1. Tier-a/b Hardening on Existing F&B Basket | 0/TBD | Not started | - |
 | 2. Basket Widening (COICOP 02/03/06/electronics) | 0/TBD | Not started | - |
 | 3. Full-History Unification + Panel Emit | 0/TBD | Not started | - |
