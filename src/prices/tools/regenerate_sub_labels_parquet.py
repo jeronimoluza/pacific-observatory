@@ -1,17 +1,16 @@
-"""Export c{NN}_subs.py SUB_LABELS_BY_LEAF → _sub_labels.parquet.
+"""Export the sub-label store → _sub_labels.parquet.
 
-The c{NN}_subs.py files are the hand-curated source of truth for the
-sub-label vocabulary (anchors + synonyms with allowed_bases and 5-digit
-numeric_id granularity). The parquet at keywords/coicop/_sub_labels.parquet
-is a derived artifact read by tier-b at index-build time
-(see src/prices/enrich/index.py:_load_anchors).
+The sub-label store `keywords/coicop/_sub_labels_store.json` is the source of
+truth for the sub-label vocabulary (anchors + synonyms with allowed_bases and
+5-digit numeric_id granularity), read via `keywords._registry`. The parquet at
+keywords/coicop/_sub_labels.parquet is a derived artifact read by tier-b at
+index-build time (see src/prices/enrich/index.py:_load_anchors).
 
 Schema preserved for backward compatibility with the existing parquet:
   coicop_code, id, label, lang, role
 
 `coicop_code` is the SubLabel.numeric_id when present (preserving 5-digit
-granularity for class 01 items), otherwise the parent 4-digit leaf code
-from SUB_LABELS_BY_LEAF.
+granularity for class 01 items), otherwise the parent 4-digit leaf code.
 """
 
 from __future__ import annotations
@@ -21,23 +20,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from prices.enrich.keywords.coicop import (
-    c01_subs,
-    c02_subs,
-    c03_subs,
-    c04_subs,
-    c05_subs,
-    c06_subs,
-    c07_subs,
-    c08_subs,
-    c09_subs,
-    c10_subs,
-    c11_subs,
-    c12_subs,
-    c13_subs,
-    c14_subs,
-    c15_subs,
-)
+from prices.enrich.keywords import _registry as registry
 
 _DEFAULT_OUT = (
     Path(__file__).resolve().parents[1]
@@ -47,29 +30,13 @@ _DEFAULT_OUT = (
     / "_sub_labels.parquet"
 )
 
-_SUBS_MODULES = (
-    c01_subs,
-    c02_subs,
-    c03_subs,
-    c04_subs,
-    c05_subs,
-    c06_subs,
-    c07_subs,
-    c08_subs,
-    c09_subs,
-    c10_subs,
-    c11_subs,
-    c12_subs,
-    c13_subs,
-    c14_subs,
-    c15_subs,
-)
+_CLASS_CODES = tuple(f"{i:02d}" for i in range(1, 16))
 
 
 def build_df() -> pd.DataFrame:
     rows = []
-    for module in _SUBS_MODULES:
-        sub_table = getattr(module, "SUB_LABELS_BY_LEAF", {})
+    for cc in _CLASS_CODES:
+        sub_table = registry._load_sub_labels_for(cc)
         for leaf_code, sub_labels in sub_table.items():
             for sl in sub_labels:
                 code = sl.numeric_id or leaf_code

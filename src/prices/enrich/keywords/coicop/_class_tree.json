@@ -1,0 +1,5570 @@
+{
+ "01": {
+  "code": "01",
+  "groups": [
+   {
+    "code": "01.1",
+    "label": "Food",
+    "subgroups": [
+     {
+      "code": "01.1.1",
+      "label": "Cereals and cereal products",
+      "leaves": [
+       {
+        "code": "01.1.1.1",
+        "excludes": [
+         {
+          "code": "01.1.1.2",
+          "label": "flour of cereals",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.1.4",
+          "label": "breakfast cereals",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.9.1",
+          "label": "cereal-based ready-made preparations such as-ready-made soups based on cereals",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.9.2",
+          "label": "baby rice cereals and other baby cereals",
+          "lang": "en"
+         },
+         {
+          "code": "09.3.1.2",
+          "label": "seeds for planting",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Cereals"
+       },
+       {
+        "code": "01.1.1.2",
+        "excludes": [
+         {
+          "code": "01.1.9.2",
+          "label": "flour as baby food, baby rice cereals and other baby cereals",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Flour of cereals"
+       },
+       {
+        "code": "01.1.1.3",
+        "excludes": [
+         {
+          "code": "01.1.9.1",
+          "label": "pizza with topping, whether precooked or not; quiche; and meat and fish pies",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Bread and bakery products"
+       },
+       {
+        "code": "01.1.1.4",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Breakfast cereals"
+       },
+       {
+        "code": "01.1.1.5",
+        "excludes": [
+         {
+          "code": "01.1.1.1",
+          "label": "bulgur",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.9.1",
+          "label": "prepared dishes containing stuffed pasta, and prepared couscous dishes",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Macaroni, noodles, couscous and similar pasta products"
+       },
+       {
+        "code": "01.1.1.9",
+        "excludes": [
+         {
+          "code": "01.1.7.9",
+          "label": "soy meat and soy burgers, veggie burgers, tofu, tempeh and other meat substitutes made from vegetables and nuts; and potato starch, tapioca, sago and other starches",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.9.1",
+          "label": "ready-made cereal-based preparations, such as ready-made cereal-based soups",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other milled cereal and grain products"
+       }
+      ]
+     },
+     {
+      "code": "01.1.2",
+      "label": "Live animals, and meat and other parts of slaughtered land animals",
+      "leaves": [
+       {
+        "code": "01.1.2.1",
+        "excludes": [
+         {
+          "code": "01.1.3.1",
+          "label": "live fish",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.3.4",
+          "label": "other live seafood",
+          "lang": "en"
+         },
+         {
+          "code": "07.1.4.0",
+          "label": "live animals for transport",
+          "lang": "en"
+         },
+         {
+          "code": "09.1.2.4",
+          "label": "live animals purchased for recreational purposes",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Live land animals"
+       },
+       {
+        "code": "01.1.2.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Meat, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.2.3",
+        "excludes": [
+         {
+          "code": "01.1.2.5",
+          "label": "pâté",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Meat, dried, salted, in brine or smoked"
+       },
+       {
+        "code": "01.1.2.4",
+        "excludes": [
+         {
+          "code": "01.1.2.5",
+          "label": "preparations of offal, blood and other parts of slaughtered animals",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Offal, blood and other parts of slaughtered animals, fresh, chilled or frozen, dried, salted, in brine or smoked"
+       },
+       {
+        "code": "01.1.2.5",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Preparations of meat, offal, blood and other parts of slaughtered animals"
+       }
+      ]
+     },
+     {
+      "code": "01.1.3",
+      "label": "Fish and other seafood",
+      "leaves": [
+       {
+        "code": "01.1.3.1",
+        "excludes": [
+         {
+          "code": "01.1.3.7",
+          "label": "meal, livers, roes, fins, maws and other offal",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Fish, live, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.3.2",
+        "excludes": [
+         {
+          "code": "01.1.3.7",
+          "label": "meal, livers, roes, fins, maws and other offal",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Fish, dried, salted, in brine or smoked"
+       },
+       {
+        "code": "01.1.3.3",
+        "excludes": [
+         {
+          "code": "01.1.3.7",
+          "label": "prepared or preserved livers, roes, fins and other offal",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Fish preparations"
+       },
+       {
+        "code": "01.1.3.4",
+        "excludes": [
+         {
+          "code": "01.1.7.4",
+          "label": "seaweeds and other edible aquatic plants",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other seafood, live, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.3.5",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other seafood, dried, salted, in brine or smoked"
+       },
+       {
+        "code": "01.1.3.6",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other seafood preparations"
+       },
+       {
+        "code": "01.1.3.7",
+        "excludes": [
+         {
+          "code": "01.1.7.4",
+          "label": "seaweeds and other aquatic plants",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Livers, roes and other offal of fish and of other seafood in all forms"
+       }
+      ]
+     },
+     {
+      "code": "01.1.4",
+      "label": "Milk, other dairy products and eggs",
+      "leaves": [
+       {
+        "code": "01.1.4.1",
+        "excludes": [
+         {
+          "code": "01.1.4.6",
+          "label": "curdled, fermented or acidified milk and cream",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Raw and whole milk"
+       },
+       {
+        "code": "01.1.4.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Skimmed milk"
+       },
+       {
+        "code": "01.1.4.3",
+        "excludes": [
+         {
+          "code": "01.1.4.7",
+          "label": "beverages flavoured with cocoa, coffee or other substances",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.9.2",
+          "label": "condensed, evaporated and powdered milk used as baby food",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other milk and cream"
+       },
+       {
+        "code": "01.1.4.4",
+        "excludes": [
+         {
+          "code": "01.1.9.3",
+          "label": "coconut milk for cooking",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Non-animal milk"
+       },
+       {
+        "code": "01.1.4.5",
+        "excludes": [
+         {
+          "code": "01.1.7.9",
+          "label": "tofu",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Cheese"
+       },
+       {
+        "code": "01.1.4.6",
+        "excludes": [
+         {
+          "code": "01.1.8.6",
+          "label": "frozen yoghurt",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Yoghurt and similar products"
+       },
+       {
+        "code": "01.1.4.7",
+        "excludes": [
+         {
+          "code": "01.1.8.3",
+          "label": "lemon curd and similar fruit card",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Milk-based dessert and beverages"
+       },
+       {
+        "code": "01.1.4.8",
+        "excludes": [
+         {
+          "code": "01.1.3.7",
+          "label": "fish roe",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.9.1",
+          "label": "omelettes, crêpes and other ready-made egg-based food products",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Eggs"
+       },
+       {
+        "code": "01.1.4.9",
+        "excludes": [
+         {
+          "code": "01.1.5.2",
+          "label": "butter and other oils and fats derived from milk",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.8.6",
+          "label": "ice cream",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other dairy products"
+       }
+      ]
+     },
+     {
+      "code": "01.1.5",
+      "label": "Oils and fats",
+      "leaves": [
+       {
+        "code": "01.1.5.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Vegetable oils"
+       },
+       {
+        "code": "01.1.5.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Butter and other oils and fats derived from milk"
+       },
+       {
+        "code": "01.1.5.3",
+        "excludes": [
+         {
+          "code": "01.1.8.4",
+          "label": "peanut butter",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Margarine and similar preparations"
+       },
+       {
+        "code": "01.1.5.9",
+        "excludes": [
+         {
+          "code": "06.1.1.1",
+          "label": "cod liver or halibut liver oil",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other animal oils and fats"
+       }
+      ]
+     },
+     {
+      "code": "01.1.6",
+      "label": "Fruits and nuts",
+      "leaves": [
+       {
+        "code": "01.1.6.1",
+        "excludes": [
+         {
+          "code": "01.1.7.5",
+          "label": "plantains and cooking bananas",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Dates, figs and tropical fruits, fresh"
+       },
+       {
+        "code": "01.1.6.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Citrus fruits, fresh"
+       },
+       {
+        "code": "01.1.6.3",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Stone fruits and pome fruits, fresh"
+       },
+       {
+        "code": "01.1.6.4",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Berries, fresh"
+       },
+       {
+        "code": "01.1.6.5",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other fruits, fresh"
+       },
+       {
+        "code": "01.1.6.6",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Fruits, frozen"
+       },
+       {
+        "code": "01.1.6.7",
+        "excludes": [
+         {
+          "code": "01.1.6.9",
+          "label": "fruit flour",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Fruits, dried and dehydrated"
+       },
+       {
+        "code": "01.1.6.8",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Nuts, in shell or shelled"
+       },
+       {
+        "code": "01.1.6.9",
+        "excludes": [
+         {
+          "code": "01.1.8.3",
+          "label": "jams, marmalades, fruit jellies, purées and pastes",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.8.4",
+          "label": "nut purées, nut butters and nut pastes",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.9.2",
+          "label": "homogenized baby food preparations",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Fruits and nuts, ground, and in other preparations"
+       }
+      ]
+     },
+     {
+      "code": "01.1.7",
+      "label": "Vegetables, tubers, plantains, cooking bananas and pulses",
+      "leaves": [
+       {
+        "code": "01.1.7.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Leafy or stem vegetables, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Fruit-bearing vegetables, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.3",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Green leguminous vegetables, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.4",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other vegetables, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.5",
+        "excludes": [
+         {
+          "code": "01.1.6.1",
+          "label": "dessert bananas",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Tubers, plantains and cooking bananas, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.6",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Pulses"
+       },
+       {
+        "code": "01.1.7.7",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other vegetables, tubers, plantains and cooking bananas, dried and dehydrated"
+       },
+       {
+        "code": "01.1.7.8",
+        "excludes": [
+         {
+          "code": "01.1.7.9",
+          "label": "preparations such as frozen chipped potatoes",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Vegetables, tubers, plantains and cooking bananas, frozen"
+       },
+       {
+        "code": "01.1.7.9",
+        "excludes": [
+         {
+          "code": "01.1.1.9",
+          "label": "seitan and other meat substitutes made from cereals",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.9.1",
+          "label": "ready-made vegetable preparations, whether frozen or not, including other ingredients, such as cheese, meat or fish; and ready-made soups",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.9.2",
+          "label": "homogenized baby food preparations",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.9.4",
+          "label": "culinary herbs and spices",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.9.9",
+          "label": "broths and stocks containing vegetables",
+          "lang": "en"
+         },
+         {
+          "code": "01.2.1.0",
+          "label": "vegetable juices",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Vegetables, tubers, plantains, cooking bananas and pulses, ground, and in other preparations"
+       }
+      ]
+     },
+     {
+      "code": "01.1.8",
+      "label": "Sugar, confectionery and desserts",
+      "leaves": [
+       {
+        "code": "01.1.8.1",
+        "excludes": [
+         {
+          "code": "01.1.8.2",
+          "label": "refined cane or beet sugar, containing added flavouring or colouring matter",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Cane sugar and beet sugar"
+       },
+       {
+        "code": "01.1.8.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other sugars and sugar substitutes"
+       },
+       {
+        "code": "01.1.8.3",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Jams, marmalades, fruit jellies, purées and pastes, and honey"
+       },
+       {
+        "code": "01.1.8.4",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Nut purées, nut butters and nut pastes"
+       },
+       {
+        "code": "01.1.8.5",
+        "excludes": [
+         {
+          "code": "01.1.8.9",
+          "label": "white chocolate",
+          "lang": "en"
+         },
+         {
+          "code": "01.2.4.0",
+          "label": "cocoa and chocolate-based drinks",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Chocolate, cocoa and cocoa-based food products"
+       },
+       {
+        "code": "01.1.8.6",
+        "excludes": [
+         {
+          "code": "04.5.5.0",
+          "label": "ice for cooling",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Ice, ice cream and sorbets"
+       },
+       {
+        "code": "01.1.8.9",
+        "excludes": [
+         {
+          "code": "01.1.8.5",
+          "label": "sugar confectionery based on cocoa and chocolate",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other sugar confectionery and desserts n.e.c."
+       }
+      ]
+     },
+     {
+      "code": "01.1.9",
+      "label": "Ready-made food and other food products",
+      "leaves": [
+       {
+        "code": "01.1.9.1",
+        "excludes": [
+         {
+          "code": "01.1.1.3",
+          "label": "bread and bakery products, and cakes",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.1.5",
+          "label": "macaroni, noodles, couscous and similar pasta products uncooked, whether stuffed or not",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.7.9",
+          "label": "chipped potatoes, frozen",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.8.9",
+          "label": "ice cream (0.1.1.8.6) and other desserts, n.e.c.",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Ready-made food"
+       },
+       {
+        "code": "01.1.9.2",
+        "excludes": [
+         {
+          "code": "01.1.4.3",
+          "label": "powdered milk not intended exclusively for baby use",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.4.6",
+          "label": "yoghurt for children",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Baby food"
+       },
+       {
+        "code": "01.1.9.3",
+        "excludes": [
+         {
+          "code": "01.1.4.4",
+          "label": "coconut milk for drinking",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.6.9",
+          "label": "fruit pickles",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.7.9",
+          "label": "vegetable pickles",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Salt, condiments and sauces"
+       },
+       {
+        "code": "01.1.9.4",
+        "excludes": [
+         {
+          "code": "01.1.5.1",
+          "label": "vegetable oils",
+          "lang": "en"
+         },
+         {
+          "code": "09.3.1.2",
+          "label": "seeds for planting",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Spices, culinary herbs and seeds"
+       },
+       {
+        "code": "01.1.9.9",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other food products n.e.c."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "01.2",
+    "label": "Non-alcoholic beverages",
+    "subgroups": [
+     {
+      "code": "01.2.1",
+      "label": "Fruit and vegetable juices",
+      "leaves": [
+       {
+        "code": "01.2.1.0",
+        "excludes": [
+         {
+          "code": "01.2.6.0",
+          "label": "sparkling juices",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Fruit and vegetable juices"
+       }
+      ]
+     },
+     {
+      "code": "01.2.2",
+      "label": "Coffee and coffee substitutes",
+      "leaves": [
+       {
+        "code": "01.2.2.0",
+        "excludes": [
+         {
+          "code": "01.1.4.7",
+          "label": "milk-based beverages flavoured with coffee",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Coffee and coffee substitutes"
+       }
+      ]
+     },
+     {
+      "code": "01.2.3",
+      "label": "Tea, maté and other plant-derived products for infusion",
+      "leaves": [
+       {
+        "code": "01.2.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Tea, maté and other plant-derived products for infusion"
+       }
+      ]
+     },
+     {
+      "code": "01.2.4",
+      "label": "Cocoa drinks",
+      "leaves": [
+       {
+        "code": "01.2.4.0",
+        "excludes": [
+         {
+          "code": "01.1.4.7",
+          "label": "milk flavoured with chocolate or cacao",
+          "lang": "en"
+         },
+         {
+          "code": "01.1.8.5",
+          "label": "cocoa powder for all purposes; chocolate in bars or slabs; cocoa-based foods and cocoa-based dessert preparations",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Cocoa drinks"
+       }
+      ]
+     },
+     {
+      "code": "01.2.5",
+      "label": "Water",
+      "leaves": [
+       {
+        "code": "01.2.5.0",
+        "excludes": [
+         {
+          "code": "01.2.9.0",
+          "label": "flavoured water",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Water"
+       }
+      ]
+     },
+     {
+      "code": "01.2.6",
+      "label": "Soft drinks",
+      "leaves": [
+       {
+        "code": "01.2.6.0",
+        "excludes": [
+         {
+          "code": "01.2.3.0",
+          "label": "iced tea",
+          "lang": "en"
+         },
+         {
+          "code": "01.2.5.0",
+          "label": "sparkling water",
+          "lang": "en"
+         },
+         {
+          "code": "01.2.9.0",
+          "label": "flavoured water",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Soft drinks"
+       }
+      ]
+     },
+     {
+      "code": "01.2.9",
+      "label": "Other non-alcoholic beverages",
+      "leaves": [
+       {
+        "code": "01.2.9.0",
+        "excludes": [
+         {
+          "code": "01.2.1.0",
+          "label": "syrups of fruit and vegetables and concentrates of fruit and vegetables",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other non-alcoholic beverages"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "01.3",
+    "label": "Services for processing primary goods for food and non-alcoholic beverages",
+    "subgroups": [
+     {
+      "code": "01.3.0",
+      "label": "Services for processing primary goods for food and non-alcoholic beverages",
+      "leaves": [
+       {
+        "code": "01.3.0.0",
+        "excludes": [
+         {
+          "code": "02.2.0.0",
+          "label": "fruit and vegetable crushing and pressing services for the production of alcoholic beverages",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Services for processing primary goods for food and non-alcoholic beverages"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Food and non-alcoholic beverages"
+ },
+ "02": {
+  "code": "02",
+  "groups": [
+   {
+    "code": "02.1",
+    "label": "Alcoholic beverages",
+    "subgroups": [
+     {
+      "code": "02.1.1",
+      "label": "Spirits and liquors",
+      "leaves": [
+       {
+        "code": "02.1.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Spirits and liquors"
+       }
+      ]
+     },
+     {
+      "code": "02.1.2",
+      "label": "Wine",
+      "leaves": [
+       {
+        "code": "02.1.2.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Wine from grapes"
+       },
+       {
+        "code": "02.1.2.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Wine from other sources"
+       }
+      ]
+     },
+     {
+      "code": "02.1.3",
+      "label": "Beer",
+      "leaves": [
+       {
+        "code": "02.1.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Beer"
+       }
+      ]
+     },
+     {
+      "code": "02.1.9",
+      "label": "Other alcoholic beverages",
+      "leaves": [
+       {
+        "code": "02.1.9.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other alcoholic beverages"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "02.2",
+    "label": "Alcohol production services",
+    "subgroups": [
+     {
+      "code": "02.2.0",
+      "label": "Alcohol production services",
+      "leaves": [
+       {
+        "code": "02.2.0.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Alcohol production services"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "02.3",
+    "label": "Tobacco",
+    "subgroups": [
+     {
+      "code": "02.3.0",
+      "label": "Tobacco",
+      "leaves": [
+       {
+        "code": "02.3.0.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Cigarettes"
+       },
+       {
+        "code": "02.3.0.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Cigars"
+       },
+       {
+        "code": "02.3.0.9",
+        "excludes": [
+         {
+          "code": "11.1.1",
+          "label": "tobacco that is consumed through use of a shisha or a hookah pipe in restaurants, cafés or shisha lounges",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other tobacco products"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "02.4",
+    "label": "Narcotics",
+    "subgroups": [
+     {
+      "code": "02.4.0",
+      "label": "Narcotics",
+      "leaves": [
+       {
+        "code": "02.4.0.0",
+        "excludes": [
+         {
+          "code": "06.1.1.1",
+          "label": "narcotics used for medicinal purpose",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Narcotics"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Alcoholic beverages, tobacco and narcotics"
+ },
+ "03": {
+  "code": "03",
+  "groups": [
+   {
+    "code": "03.1",
+    "label": "Clothing",
+    "subgroups": [
+     {
+      "code": "03.1.1",
+      "label": "Clothing materials",
+      "leaves": [
+       {
+        "code": "03.1.1.0",
+        "excludes": [
+         {
+          "code": "05.2.1.1",
+          "label": "furnishing fabrics",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Clothing materials"
+       }
+      ]
+     },
+     {
+      "code": "03.1.2",
+      "label": "Garments",
+      "leaves": [
+       {
+        "code": "03.1.2.1",
+        "excludes": [
+         {
+          "code": "03.1.2.3",
+          "label": "garments for infants (under 2 years of age)",
+          "lang": "en"
+         },
+         {
+          "code": "03.1.4.2",
+          "label": "tailoring services for which the customer supplies the material",
+          "lang": "en"
+         },
+         {
+          "code": "06.1.2.2",
+          "label": "articles of medical hosiery, such as elasticated stockings",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Garments for men or boys"
+       },
+       {
+        "code": "03.1.2.2",
+        "excludes": [
+         {
+          "code": "03.1.2.3",
+          "label": "garments for infants (under 2 years of age)",
+          "lang": "en"
+         },
+         {
+          "code": "03.1.4.2",
+          "label": "tailoring services for which the customer supplies the material",
+          "lang": "en"
+         },
+         {
+          "code": "06.1.2.2",
+          "label": "articles of medical hosiery, such as elasticated stockings",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Garments for women or girls"
+       },
+       {
+        "code": "03.1.2.3",
+        "excludes": [
+         {
+          "code": "03.1.4.2",
+          "label": "tailoring services for which the customer supplies the material",
+          "lang": "en"
+         },
+         {
+          "code": "13.2.9.1",
+          "label": "diapers (nappies) of any material",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Garments for infants (under 2 years of age)"
+       },
+       {
+        "code": "03.1.2.4",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "School uniforms"
+       }
+      ]
+     },
+     {
+      "code": "03.1.3",
+      "label": "Other articles of clothing and clothing accessories",
+      "leaves": [
+       {
+        "code": "03.1.3.1",
+        "excludes": [
+         {
+          "code": "05.6.1.9",
+          "label": "pins, safety pins, sewing needles, knitting needles and thimbles; rubber gloves and other articles made of rubber; and gardening gloves",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.1",
+          "label": "protective headgear for sports; and other protective gear for sports, such as life jackets, boxing and other sporting gloves, body padding, belts, supports, etc.",
+          "lang": "en"
+         },
+         {
+          "code": "13.1.2.0",
+          "label": "paper handkerchiefs",
+          "lang": "en"
+         },
+         {
+          "code": "13.2.1.1",
+          "label": "watches, jewellery, cufflinks and tiepins",
+          "lang": "en"
+         },
+         {
+          "code": "13.2.9.1",
+          "label": "umbrellas and parasols, fans and key rings",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other articles of clothing"
+       },
+       {
+        "code": "03.1.3.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Clothing accessories"
+       }
+      ]
+     },
+     {
+      "code": "03.1.4",
+      "label": "Cleaning, repair, tailoring and hire of clothing",
+      "leaves": [
+       {
+        "code": "03.1.4.1",
+        "excludes": [
+         {
+          "code": "05.6.2.9",
+          "label": "dry-cleaning, laundering, dyeing of household linen and other household textiles",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Cleaning of clothing"
+       },
+       {
+        "code": "03.1.4.2",
+        "excludes": [
+         {
+          "code": "05.2.2.0",
+          "label": "repair, hire and sewing services of household linen and other household textiles",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Repair, tailoring and hire of clothing"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "03.2",
+    "label": "Footwear",
+    "subgroups": [
+     {
+      "code": "03.2.1",
+      "label": "Shoes and other footwear",
+      "leaves": [
+       {
+        "code": "03.2.1.1",
+        "excludes": [
+         {
+          "code": "03.2.2.0",
+          "label": "cleaning, repair and hire of footwear",
+          "lang": "en"
+         },
+         {
+          "code": "05.6.1.1",
+          "label": "polishes, creams and other shoe-cleaning articles",
+          "lang": "en"
+         },
+         {
+          "code": "06.1.3.3",
+          "label": "therapeutic footwear",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.1",
+          "label": "game-specific footwear (ski boots, football boots, golfing shoes and other such footwear fitted with ice skates, rollers, spikes, studs, etc.); and shin guards, cricket pads and other such protective sports apparel",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Footwear for men"
+       },
+       {
+        "code": "03.2.1.2",
+        "excludes": [
+         {
+          "code": "03.2.2.0",
+          "label": "cleaning, repair and hire of footwear",
+          "lang": "en"
+         },
+         {
+          "code": "05.6.1.1",
+          "label": "polishes, creams and other shoe-cleaning articles",
+          "lang": "en"
+         },
+         {
+          "code": "06.1.3.3",
+          "label": "therapeutic footwear",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.1",
+          "label": "game-specific footwear (ski boots, football boots, golfing shoes and other such footwear fitted with ice skates, rollers, spikes, studs, etc.); and shin guards, cricket pads and other such protective sports apparel",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Footwear for women"
+       },
+       {
+        "code": "03.2.1.3",
+        "excludes": [
+         {
+          "code": "03.2.2.0",
+          "label": "cleaning, repair and hire of footwear",
+          "lang": "en"
+         },
+         {
+          "code": "05.6.1.1",
+          "label": "polishes, creams and other shoe-cleaning articles",
+          "lang": "en"
+         },
+         {
+          "code": "06.1.3.3",
+          "label": "therapeutic footwear",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.1",
+          "label": "game-specific footwear (ski boots, football boots, golfing shoes and other such footwear fitted with ice skates, rollers, spikes, studs, etc.); and shin guards, cricket pads and other such protective sports apparel",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Footwear for infants and children"
+       }
+      ]
+     },
+     {
+      "code": "03.2.2",
+      "label": "Cleaning, repair and hire of footwear",
+      "leaves": [
+       {
+        "code": "03.2.2.0",
+        "excludes": [
+         {
+          "code": "03.2.1",
+          "label": "parts of footwear, such as heels, soles, etc., purchased by households with the intention of undertaking footwear repair themselves",
+          "lang": "en"
+         },
+         {
+          "code": "05.6.1.1",
+          "label": "polishes, creams and other shoe-cleaning articles",
+          "lang": "en"
+         },
+         {
+          "code": "09.4.4.0",
+          "label": "hire and repair of game-specific footwear (ski boots, football boots, golfing shoes and other such footwear fitted with ice skates, rollers, spikes, studs, etc.)",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Cleaning, repair and hire of footwear"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Clothing and footwear"
+ },
+ "04": {
+  "code": "04",
+  "groups": [
+   {
+    "code": "04.1",
+    "label": "Actual rental payments made for housing",
+    "subgroups": [
+     {
+      "code": "04.1.1",
+      "label": "Actual rental payments made by tenants for main residence",
+      "leaves": [
+       {
+        "code": "04.1.1.0",
+        "excludes": [
+         {
+          "code": "04.1.2.2",
+          "label": "rental paid for use of a garage that provides parking and storage but not in connection with a dwelling",
+          "lang": "en"
+         },
+         {
+          "code": "11.2.0.3",
+          "label": "accommodation services of boarding schools, universities and other educational establishments",
+          "lang": "en"
+         },
+         {
+          "code": "11.2.0.9",
+          "label": "accommodation services of hostels for workers",
+          "lang": "en"
+         },
+         {
+          "code": "13.3.0.2",
+          "label": "retirement homes for elderly persons",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Actual rental payments made by tenants for main residence"
+       }
+      ]
+     },
+     {
+      "code": "04.1.2",
+      "label": "Other actual rental payments",
+      "leaves": [
+       {
+        "code": "04.1.2.1",
+        "excludes": [
+         {
+          "code": "11.2.0.2",
+          "label": "accommodation services of holiday villages and holiday centres",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Actual rental payments made by tenants for secondary residences"
+       },
+       {
+        "code": "04.1.2.2",
+        "excludes": [
+         {
+          "code": "07.2.4.1",
+          "label": "payment for the use of a parking space or a garage that provides parking but not in connection with a dwelling",
+          "lang": "en"
+         },
+         {
+          "code": "07.4.9.1",
+          "label": "removal and storage services",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Garage rental payments and other rental payments made by tenants"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "04.2",
+    "label": "Imputed rental payments for housing",
+    "subgroups": [
+     {
+      "code": "04.2.1",
+      "label": "Imputed rental payments of owner-occupiers for their main residence",
+      "leaves": [
+       {
+        "code": "04.2.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Imputed rental payments of owner-occupiers for their main residence"
+       }
+      ]
+     },
+     {
+      "code": "04.2.2",
+      "label": "Other imputed rentals",
+      "leaves": [
+       {
+        "code": "04.2.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other imputed rentals"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "04.3",
+    "label": "Maintenance, repair and security of the dwelling",
+    "subgroups": [
+     {
+      "code": "04.3.1",
+      "label": "Security equipment and materials for dwelling maintenance and repair",
+      "leaves": [
+       {
+        "code": "04.3.1.1",
+        "excludes": [
+         {
+          "code": "05.5.2.1",
+          "label": "hand tools",
+          "lang": "en"
+         },
+         {
+          "code": "05.5.2.2",
+          "label": "lamp bulbs",
+          "lang": "en"
+         },
+         {
+          "code": "05.6.1.1",
+          "label": "brooms, scrubbing brushes, dusting brushes and cleaning products",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Materials for the maintenance and repair of the dwelling"
+       },
+       {
+        "code": "04.3.1.2",
+        "excludes": [
+         {
+          "code": "07.2.1.3",
+          "label": "fire extinguishers for transport equipment",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Security equipment"
+       }
+      ]
+     },
+     {
+      "code": "04.3.2",
+      "label": "Services for the maintenance, repair and security of the dwelling",
+      "leaves": [
+       {
+        "code": "04.3.2.0",
+        "excludes": [
+         {
+          "code": "04.3.1.1",
+          "label": "separate purchases of materials by households with the intention of undertaking maintenance or repair themselves",
+          "lang": "en"
+         },
+         {
+          "code": "07.2.3.0",
+          "label": "locksmith services for cars",
+          "lang": "en"
+         },
+         {
+          "code": "13.9.0.9",
+          "label": "bodyguards",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Services for the maintenance, repair and security of the dwelling"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "04.4",
+    "label": "Water supply and miscellaneous services relating to the dwelling",
+    "subgroups": [
+     {
+      "code": "04.4.1",
+      "label": "Water supply",
+      "leaves": [
+       {
+        "code": "04.4.1.1",
+        "excludes": [
+         {
+          "code": "01.2.5.0",
+          "label": "drinking water sold in bottles or containers",
+          "lang": "en"
+         },
+         {
+          "code": "04.5.5.0",
+          "label": "hot water and steam purchased from district heating plants",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Water supply delivered through network systems"
+       },
+       {
+        "code": "04.4.1.2",
+        "excludes": [
+         {
+          "code": "01.2.5.0",
+          "label": "drinking water sold in bottles or containers",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Water supply delivered through other systems"
+       }
+      ]
+     },
+     {
+      "code": "04.4.2",
+      "label": "Refuse collection",
+      "leaves": [
+       {
+        "code": "04.4.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Refuse collection"
+       }
+      ]
+     },
+     {
+      "code": "04.4.3",
+      "label": "Sewage collection",
+      "leaves": [
+       {
+        "code": "04.4.3.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Sewage collection through sewer systems"
+       },
+       {
+        "code": "04.4.3.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Sewage collection through on-site sanitation systems"
+       }
+      ]
+     },
+     {
+      "code": "04.4.4",
+      "label": "Other services related to the dwelling",
+      "leaves": [
+       {
+        "code": "04.4.4.1",
+        "excludes": [
+         {
+          "code": "05.6.2.9",
+          "label": "household services, such as window cleaning, disinfection, fumigation and pest extermination",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Charges for maintenance of multi-occupied buildings"
+       },
+       {
+        "code": "04.4.4.9",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other services related to the dwelling n.e.c."
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "04.5",
+    "label": "Electricity, gas and other fuels",
+    "subgroups": [
+     {
+      "code": "04.5.1",
+      "label": "Electricity",
+      "leaves": [
+       {
+        "code": "04.5.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Electricity"
+       }
+      ]
+     },
+     {
+      "code": "04.5.2",
+      "label": "Gas",
+      "leaves": [
+       {
+        "code": "04.5.2.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Natural gas through networks"
+       },
+       {
+        "code": "04.5.2.2",
+        "excludes": [
+         {
+          "code": "07.4.9.2",
+          "label": "fees for delivery of liquefied hydrocarbons (butane, propane, etc.), if separately priced",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.2",
+          "label": "camping gas in cylinders",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Liquefied hydrocarbons"
+       }
+      ]
+     },
+     {
+      "code": "04.5.3",
+      "label": "Liquid fuels",
+      "leaves": [
+       {
+        "code": "04.5.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Liquid fuels"
+       }
+      ]
+     },
+     {
+      "code": "04.5.4",
+      "label": "Solid fuels",
+      "leaves": [
+       {
+        "code": "04.5.4.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Coal, coal briquettes, peat and peat briquettes"
+       },
+       {
+        "code": "04.5.4.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Wood fuel, including pellets and briquettes"
+       },
+       {
+        "code": "04.5.4.3",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Charcoal"
+       },
+       {
+        "code": "04.5.4.9",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other solid fuels"
+       }
+      ]
+     },
+     {
+      "code": "04.5.5",
+      "label": "Other energy for heating and cooling",
+      "leaves": [
+       {
+        "code": "04.5.5.0",
+        "excludes": [
+         {
+          "code": "01.1.8.6",
+          "label": "ice cubes",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other energy for heating and cooling"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Housing, water, electricity, gas and other fuels"
+ },
+ "05": {
+  "code": "05",
+  "groups": [
+   {
+    "code": "05.1",
+    "label": "Furniture, furnishings, and loose carpets",
+    "subgroups": [
+     {
+      "code": "05.1.1",
+      "label": "Furniture, furnishings and loose carpets",
+      "leaves": [
+       {
+        "code": "05.1.1.1",
+        "excludes": [
+         {
+          "code": "05.1.2.0",
+          "label": "repair, installation and hire of household furniture",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Household furniture"
+       },
+       {
+        "code": "05.1.1.2",
+        "excludes": [
+         {
+          "code": "05.1.2.0",
+          "label": "repair, installation and hire of garden and camping furniture",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.2",
+          "label": "camping equipment",
+          "lang": "en"
+         },
+         {
+          "code": "09.3.1.1",
+          "label": "decorative garden materials",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Garden and camping furniture"
+       },
+       {
+        "code": "05.1.1.3",
+        "excludes": [
+         {
+          "code": "05.1.2.0",
+          "label": "repair and hire of lighting equipment",
+          "lang": "en"
+         },
+         {
+          "code": "05.5.2.2",
+          "label": "light bulbs, tubes and LEDs",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.1.3",
+          "label": "light strings for Christmas trees",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Lighting equipment"
+       },
+       {
+        "code": "05.1.1.4",
+        "excludes": [
+         {
+          "code": "04.3.1.1",
+          "label": "fitted carpets and linoleum",
+          "lang": "en"
+         },
+         {
+          "code": "05.1.2.0",
+          "label": "installation of furniture and furnishings if separately priced from delivery",
+          "lang": "en"
+         },
+         {
+          "code": "05.1.2.0",
+          "label": "repair and hire of loose carpets and other furniture and furnishings",
+          "lang": "en"
+         },
+         {
+          "code": "05.2.1.2",
+          "label": "bedding (bed linen)",
+          "lang": "en"
+         },
+         {
+          "code": "05.2.1.9",
+          "label": "sunshades",
+          "lang": "en"
+         },
+         {
+          "code": "05.3.1.9",
+          "label": "safes",
+          "lang": "en"
+         },
+         {
+          "code": "05.4.0.1",
+          "label": "ornamental glass and ceramic articles",
+          "lang": "en"
+         },
+         {
+          "code": "07.4.9.2",
+          "label": "delivery of loose carpets and other furniture and furnishings if separately priced",
+          "lang": "en"
+         },
+         {
+          "code": "07.4.9.2",
+          "label": "installation of furniture and furnishings if not separately priced from delivery",
+          "lang": "en"
+         },
+         {
+          "code": "13.2.9.1",
+          "label": "carrycots, pushchairs and strollers; and wall thermometers and barometers",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Furnishings, loose carpets and rugs"
+       }
+      ]
+     },
+     {
+      "code": "05.1.2",
+      "label": "Repair, installation and hire of furniture, furnishings and loose carpets",
+      "leaves": [
+       {
+        "code": "05.1.2.0",
+        "excludes": [
+         {
+          "code": "04.3.2.0",
+          "label": "laying and repair of fitted carpets, linoleum and other such floor coverings",
+          "lang": "en"
+         },
+         {
+          "code": "05.1.1",
+          "label": "materials purchased by households with the intention of undertaking maintenance and repair themselves",
+          "lang": "en"
+         },
+         {
+          "code": "05.6.2.9",
+          "label": "dry-cleaning and shampooing of carpets",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Repair, installation and hire of furniture, furnishings and loose carpets"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "05.2",
+    "label": "Household textiles",
+    "subgroups": [
+     {
+      "code": "05.2.1",
+      "label": "Household textiles",
+      "leaves": [
+       {
+        "code": "05.2.1.1",
+        "excludes": [
+         {
+          "code": "05.2.2.0",
+          "label": "repair and sewing of curtains",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Furnishing fabrics and curtains"
+       },
+       {
+        "code": "05.2.1.2",
+        "excludes": [
+         {
+          "code": "05.2.2.0",
+          "label": "repair and sewing of bed linen",
+          "lang": "en"
+         },
+         {
+          "code": "05.3.2.9",
+          "label": "electric blankets",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.2",
+          "label": "air mattresses and sleeping bags",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Bed linen and bedding"
+       },
+       {
+        "code": "05.2.1.3",
+        "excludes": [
+         {
+          "code": "05.2.2.0",
+          "label": "repair and sewing of table and bathroom linen",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Table linen and bathroom linen"
+       },
+       {
+        "code": "05.2.1.9",
+        "excludes": [
+         {
+          "code": "04.3.1.1",
+          "label": "fabric wall coverings",
+          "lang": "en"
+         },
+         {
+          "code": "05.1.1.4",
+          "label": "floor coverings, such as loose carpets and rugs; and tapestries",
+          "lang": "en"
+         },
+         {
+          "code": "05.2.2.0",
+          "label": "repair and sewing of other household textiles",
+          "lang": "en"
+         },
+         {
+          "code": "07.2.1.3",
+          "label": "covers for motor cars, motorcycles, etc.",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other household textiles"
+       }
+      ]
+     },
+     {
+      "code": "05.2.2",
+      "label": "Repair, hire and sewing services of household textiles",
+      "leaves": [
+       {
+        "code": "05.2.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Repair, hire and sewing services of household textiles"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "05.3",
+    "label": "Household appliances",
+    "subgroups": [
+     {
+      "code": "05.3.1",
+      "label": "Major electric and other household appliances",
+      "leaves": [
+       {
+        "code": "05.3.1.1",
+        "excludes": [
+         {
+          "code": "05.3.3.0",
+          "label": "repair, installation and hire of kitchen appliances",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Major kitchen appliances"
+       },
+       {
+        "code": "05.3.1.2",
+        "excludes": [
+         {
+          "code": "05.3.3.0",
+          "label": "repair, installation and hire of laundry appliances",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Major laundry appliances"
+       },
+       {
+        "code": "05.3.1.3",
+        "excludes": [
+         {
+          "code": "05.3.3.0",
+          "label": "repair, installation and hire of these appliances",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Heaters and air conditioners"
+       },
+       {
+        "code": "05.3.1.4",
+        "excludes": [
+         {
+          "code": "05.3.3.0",
+          "label": "repair, installation and hire of cleaning equipment",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Cleaning equipment"
+       },
+       {
+        "code": "05.3.1.9",
+        "excludes": [
+         {
+          "code": "05.3.3.0",
+          "label": "repair and hire of household appliances",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other major household appliances"
+       }
+      ]
+     },
+     {
+      "code": "05.3.2",
+      "label": "Small household appliances",
+      "leaves": [
+       {
+        "code": "05.3.2.1",
+        "excludes": [
+         {
+          "code": "05.3.3.0",
+          "label": "repair, installation and hire of food processing appliances",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Small appliances for the cooking and processing of food"
+       },
+       {
+        "code": "05.3.2.2",
+        "excludes": [
+         {
+          "code": "05.3.3.0",
+          "label": "repair, installation and hire of coffee machines, tea makers and similar appliances",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Small appliances for the preparation of beverages"
+       },
+       {
+        "code": "05.3.2.9",
+        "excludes": [
+         {
+          "code": "05.3.1.2",
+          "label": "ironing machines",
+          "lang": "en"
+         },
+         {
+          "code": "05.3.3.0",
+          "label": "repair, installation and hire of other small household appliances",
+          "lang": "en"
+         },
+         {
+          "code": "05.4.0.3",
+          "label": "small non-electric household articles and kitchen utensils",
+          "lang": "en"
+         },
+         {
+          "code": "06.1.2.1",
+          "label": "baby scales",
+          "lang": "en"
+         },
+         {
+          "code": "13.1.2.0",
+          "label": "personal weighing machines",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other small household appliances"
+       }
+      ]
+     },
+     {
+      "code": "05.3.3",
+      "label": "Repair, installation and hire of household appliances",
+      "leaves": [
+       {
+        "code": "05.3.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Repair, installation and hire of household appliances"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "05.4",
+    "label": "Glassware, tableware and household utensils",
+    "subgroups": [
+     {
+      "code": "05.4.0",
+      "label": "Glassware, tableware and household utensils",
+      "leaves": [
+       {
+        "code": "05.4.0.1",
+        "excludes": [
+         {
+          "code": "05.4.0.4",
+          "label": "repair and hire of glassware, crystal ware, ceramic ware and chinaware",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Glassware, crystal ware, ceramic ware and china ware"
+       },
+       {
+        "code": "05.4.0.2",
+        "excludes": [
+         {
+          "code": "05.4.0.4",
+          "label": "repair and hire of cutlery, flatware and silverware",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Cutlery, flatware and silverware"
+       },
+       {
+        "code": "05.4.0.3",
+        "excludes": [
+         {
+          "code": "05.4.0.4",
+          "label": "repair and hire of kitchen utensils and articles",
+          "lang": "en"
+         },
+         {
+          "code": "05.6.1.9",
+          "label": "disposable tableware",
+          "lang": "en"
+         },
+         {
+          "code": "13.2.9.1",
+          "label": "ashtrays",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Kitchen utensils and articles"
+       },
+       {
+        "code": "05.4.0.4",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Repair and hire of glassware, tableware and household utensils"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "05.5",
+    "label": "Tools and equipment for house and garden",
+    "subgroups": [
+     {
+      "code": "05.5.1",
+      "label": "Motorized tools and equipment",
+      "leaves": [
+       {
+        "code": "05.5.1.0",
+        "excludes": [
+         {
+          "code": "05.5.3.0",
+          "label": "repair, installation and hire of motorized major tools and equipment",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Motorized tools and equipment"
+       }
+      ]
+     },
+     {
+      "code": "05.5.2",
+      "label": "Non-motorized tools and miscellaneous accessories",
+      "leaves": [
+       {
+        "code": "05.5.2.1",
+        "excludes": [
+         {
+          "code": "05.5.3.0",
+          "label": "repair and hire of non-motorized small tools",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Non-motorized tools"
+       },
+       {
+        "code": "05.5.2.2",
+        "excludes": [
+         {
+          "code": "04.3.1.1",
+          "label": "door fittings, power sockets, switches and wiring flex",
+          "lang": "en"
+         },
+         {
+          "code": "05.5.3.0",
+          "label": "repair and hire of miscellaneous small tool accessories",
+          "lang": "en"
+         },
+         {
+          "code": "07.2.1.2",
+          "label": "fuses for cars, motorcycles, etc.",
+          "lang": "en"
+         },
+         {
+          "code": "08.1.9.2",
+          "label": "batteries for information and communication equipment",
+          "lang": "en"
+         },
+         {
+          "code": "09.1.1.2",
+          "label": "batteries for photographic and cinematographic equipment",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Miscellaneous accessories"
+       }
+      ]
+     },
+     {
+      "code": "05.5.3",
+      "label": "Repair and hire of motorized and non-motorized tools and equipment",
+      "leaves": [
+       {
+        "code": "05.5.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Repair and hire of motorized and non-motorized tools and equipment"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "05.6",
+    "label": "Goods and services for routine household maintenance",
+    "subgroups": [
+     {
+      "code": "05.6.1",
+      "label": "Non-durable household goods",
+      "leaves": [
+       {
+        "code": "05.6.1.1",
+        "excludes": [
+         {
+          "code": "04.3.1.1",
+          "label": "brushes and scrapers for paint, varnish and wallpaper",
+          "lang": "en"
+         },
+         {
+          "code": "07.2.1.3",
+          "label": "products used specifically for the cleaning and maintenance of transport equipment, such as paints, chrome cleaners, sealing compounds and bodywork polishes",
+          "lang": "en"
+         },
+         {
+          "code": "09.3.1.1",
+          "label": "horticultural products for the upkeep of ornamental gardens",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Household cleaning and maintenance products"
+       },
+       {
+        "code": "05.6.1.9",
+        "excludes": [
+         {
+          "code": "13.1.2.0",
+          "label": "paper handkerchiefs, toilet paper, toilet soaps, toilet sponges and other personal hygiene products",
+          "lang": "en"
+         },
+         {
+          "code": "13.2.9.1",
+          "label": "cigarette, cigar and pipe lighters and lighter fuel",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other non-durable household goods"
+       }
+      ]
+     },
+     {
+      "code": "05.6.2",
+      "label": "Domestic services and household services",
+      "leaves": [
+       {
+        "code": "05.6.2.1",
+        "excludes": [
+         {
+          "code": "10.1.0.1",
+          "label": "child-minding with an educational component",
+          "lang": "en"
+         },
+         {
+          "code": "13.3.0.1",
+          "label": "child-minding outside the home",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Domestic services provided by paid staff"
+       },
+       {
+        "code": "05.6.2.9",
+        "excludes": [
+         {
+          "code": "03.1.4.1",
+          "label": "dry-cleaning, laundering and dyeing of garments",
+          "lang": "en"
+         },
+         {
+          "code": "04.3.2.0",
+          "label": "security services",
+          "lang": "en"
+         },
+         {
+          "code": "04.4.2.0",
+          "label": "refuse collection",
+          "lang": "en"
+         },
+         {
+          "code": "04.4.3",
+          "label": "sewage collection",
+          "lang": "en"
+         },
+         {
+          "code": "04.4.4.1",
+          "label": "co-proprietor charges for caretaking, gardening, stairwell cleaning, heating and lighting, maintenance of lifts and refuse disposal chutes, etc. in multi-occupied buildings",
+          "lang": "en"
+         },
+         {
+          "code": "04.4.4.9",
+          "label": "snow removal and chimney sweeping",
+          "lang": "en"
+         },
+         {
+          "code": "07.4.9.1",
+          "label": "removal and storage services",
+          "lang": "en"
+         },
+         {
+          "code": "13.9.0.9",
+          "label": "bodyguards",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other household services"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Furnishings, household equipment and routine household maintenance"
+ },
+ "06": {
+  "code": "06",
+  "groups": [
+   {
+    "code": "06.1",
+    "label": "Medicines and health products",
+    "subgroups": [
+     {
+      "code": "06.1.1",
+      "label": "Medicines",
+      "leaves": [
+       {
+        "code": "06.1.1.1",
+        "excludes": [
+         {
+          "code": "09.3.2.2",
+          "label": "veterinary products",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Medicines, vaccines and other pharmaceutical preparations"
+       },
+       {
+        "code": "06.1.1.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Herbal medicines and homeopathic products"
+       }
+      ]
+     },
+     {
+      "code": "06.1.2",
+      "label": "Medical products",
+      "leaves": [
+       {
+        "code": "06.1.2.1",
+        "excludes": [
+         {
+          "code": "13.1.2.0",
+          "label": "scales",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Medical diagnostic products"
+       },
+       {
+        "code": "06.1.2.2",
+        "excludes": [
+         {
+          "code": "06.1.1.1",
+          "label": "oral contraceptives",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Preventive and protective devices"
+       },
+       {
+        "code": "06.1.2.3",
+        "excludes": [
+         {
+          "code": "06.1.1.1",
+          "label": "inhalators and nebulizers with medication",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Treatment devices for personal use"
+       }
+      ]
+     },
+     {
+      "code": "06.1.3",
+      "label": "Assistive products",
+      "leaves": [
+       {
+        "code": "06.1.3.1",
+        "excludes": [
+         {
+          "code": "09.2.2.1",
+          "label": "goggles for protection against potential eye damage resulting from the practice of a sport",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.1",
+          "label": "walking sticks and canes for recreational purposes (e.g., hiking and tracking)",
+          "lang": "en"
+         },
+         {
+          "code": "13.2.9.1",
+          "label": "(non-corrective) sunglasses and protective glasses",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Assistive products for vision"
+       },
+       {
+        "code": "06.1.3.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Assistive products for hearing and communication"
+       },
+       {
+        "code": "06.1.3.3",
+        "excludes": [
+         {
+          "code": "09.2.2.1",
+          "label": "walking sticks and canes for recreational purposes (e.g., hiking and tracking)",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Assistive products for mobility and daily living"
+       }
+      ]
+     },
+     {
+      "code": "06.1.4",
+      "label": "Repair, rental and maintenance of medical and assistive products",
+      "leaves": [
+       {
+        "code": "06.1.4.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Repair, rental and maintenance of medical and assistive products"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "06.2",
+    "label": "Outpatient care services",
+    "subgroups": [
+     {
+      "code": "06.2.1",
+      "label": "Preventive care services",
+      "leaves": [
+       {
+        "code": "06.2.1.1",
+        "excludes": [
+         {
+          "code": "06.1.1.1",
+          "label": "the vaccine itself when priced separately from the service",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Immunization services"
+       },
+       {
+        "code": "06.2.1.9",
+        "excludes": [
+         {
+          "code": "06.2.2.1",
+          "label": "routine dental preventive check-ups",
+          "lang": "en"
+         },
+         {
+          "code": "06.3",
+          "label": "control and follow-up services for the treatment of symptoms that arise during the provision of overnight care",
+          "lang": "en"
+         },
+         {
+          "code": "06.4",
+          "label": "laboratory and imaging services priced separately from preventive care services",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other preventive care services"
+       }
+      ]
+     },
+     {
+      "code": "06.2.2",
+      "label": "Outpatient dental services",
+      "leaves": [
+       {
+        "code": "06.2.2.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Dental preventive services"
+       },
+       {
+        "code": "06.2.2.9",
+        "excludes": [
+         {
+          "code": "06.1",
+          "label": "all health products (e.g., assistive, medical, pharmaceutical and therapeutic) needed to deliver outpatient dental services that are priced separately from the provider’s services",
+          "lang": "en"
+         },
+         {
+          "code": "06.4.1.0",
+          "label": "services of medical laboratories performing analytic testing and diagnostic imaging centres priced separately from dental services received",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other outpatient dental services"
+       }
+      ]
+     },
+     {
+      "code": "06.2.3",
+      "label": "Other outpatient care services",
+      "leaves": [
+       {
+        "code": "06.2.3.1",
+        "excludes": [
+         {
+          "code": "06.1",
+          "label": "medicines and health products (medical, assistive) priced separately from the services of the provider (e.g., specialist, physician, nurse or another type of health-care practitioner)",
+          "lang": "en"
+         },
+         {
+          "code": "06.2.1",
+          "label": "preventive care services",
+          "lang": "en"
+         },
+         {
+          "code": "06.2.2",
+          "label": "outpatient dental services",
+          "lang": "en"
+         },
+         {
+          "code": "06.4.1.0",
+          "label": "diagnostic imaging services and medical laboratory services priced separately from the services of the provider (specialist, physician, nurse or another type of health-care practitioner)",
+          "lang": "en"
+         },
+         {
+          "code": "06.4.2.0",
+          "label": "patient emergency transportation services and emergency rescue",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Outpatient curative and rehabilitative services"
+       },
+       {
+        "code": "06.2.3.2",
+        "excludes": [
+         {
+          "code": "06.1",
+          "label": "medicines and health products (medical, assistive) priced separately from the service of the provider (specialist, physician, nurse or another type of health-care practitioner)",
+          "lang": "en"
+         },
+         {
+          "code": "06.4.1.0",
+          "label": "diagnostic imaging services and medical laboratory services priced separately from the service fee of the provider (specialist, physician, nurse or another type of health-care practitioner)",
+          "lang": "en"
+         },
+         {
+          "code": "06.4.2.0",
+          "label": "patient emergency transportation services and emergency rescue",
+          "lang": "en"
+         },
+         {
+          "code": "13.3.0.3",
+          "label": "social assistance services including care delivered to enable a person to live independently in a house or an apartment; community and leisure activities; and occupational support provided on a continuing or recurrent basis",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Outpatient long-term care services"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "06.3",
+    "label": "Inpatient care services",
+    "subgroups": [
+     {
+      "code": "06.3.1",
+      "label": "Inpatient curative and rehabilitative services",
+      "leaves": [
+       {
+        "code": "06.3.1.0",
+        "excludes": [
+         {
+          "code": "06.2",
+          "label": "hospital day care (with or without admission and without an overnight stay) and home-based hospital treatment",
+          "lang": "en"
+         },
+         {
+          "code": "06.2",
+          "label": "services provided in a hospital or a hospital setting without an overnight stay (06.2), including services provided by facilities, such as surgeries, clinics and dispensaries, devoted exclusively to outpatient care",
+          "lang": "en"
+         },
+         {
+          "code": "06.4.2.0",
+          "label": "patient emergency transportation services and emergency rescue",
+          "lang": "en"
+         },
+         {
+          "code": "13.3.0.2",
+          "label": "services provided by non-medical retirement homes for elderly persons, non-medical institutions for disabled persons, non-medical rehabilitation centres offering primarily long-term social support and retirement villages that do not offer inpatient medical services",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Inpatient curative and rehabilitative services"
+       }
+      ]
+     },
+     {
+      "code": "06.3.2",
+      "label": "Inpatient long-term care services",
+      "leaves": [
+       {
+        "code": "06.3.2.0",
+        "excludes": [
+         {
+          "code": "13.3",
+          "label": "social protection services",
+          "lang": "en"
+         },
+         {
+          "code": "13.3.0.2",
+          "label": "non-medical retirement homes for elderly persons and non-medical residences for disabled persons",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Inpatient long-term care services"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "06.4",
+    "label": "Other health services",
+    "subgroups": [
+     {
+      "code": "06.4.1",
+      "label": "Diagnostic imaging services and medical laboratory services",
+      "leaves": [
+       {
+        "code": "06.4.1.0",
+        "excludes": [
+         {
+          "code": "06.2.1",
+          "label": "diagnostic imaging services and medical laboratory services not priced separately from outpatient preventive care services",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Diagnostic imaging services and medical laboratory services"
+       }
+      ]
+     },
+     {
+      "code": "06.4.2",
+      "label": "Patient emergency transportation and emergency rescue services",
+      "leaves": [
+       {
+        "code": "06.4.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Patient emergency transportation and emergency rescue services"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Health"
+ },
+ "07": {
+  "code": "07",
+  "groups": [
+   {
+    "code": "07.1",
+    "label": "Purchase of vehicles",
+    "subgroups": [
+     {
+      "code": "07.1.1",
+      "label": "Motor cars",
+      "leaves": [
+       {
+        "code": "07.1.1.1",
+        "excludes": [
+         {
+          "code": "06.1.3.3",
+          "label": "invalid carriages",
+          "lang": "en"
+         },
+         {
+          "code": "09.1.2.1",
+          "label": "camper vans",
+          "lang": "en"
+         },
+         {
+          "code": "09.1.2.9",
+          "label": "golf carts",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "New motor cars"
+       },
+       {
+        "code": "07.1.1.2",
+        "excludes": [
+         {
+          "code": "06.1.3.3",
+          "label": "invalid carriages",
+          "lang": "en"
+         },
+         {
+          "code": "09.1.2.1",
+          "label": "camper vans",
+          "lang": "en"
+         },
+         {
+          "code": "09.1.2.9",
+          "label": "golf carts",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Second-hand motor cars"
+       }
+      ]
+     },
+     {
+      "code": "07.1.2",
+      "label": "Motorcycles",
+      "leaves": [
+       {
+        "code": "07.1.2.0",
+        "excludes": [
+         {
+          "code": "07.1.3.0",
+          "label": "electric bicycles (e-bikes), pedelecs",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Motorcycles"
+       }
+      ]
+     },
+     {
+      "code": "07.1.3",
+      "label": "Bicycles",
+      "leaves": [
+       {
+        "code": "07.1.3.0",
+        "excludes": [
+         {
+          "code": "07.1.2.0",
+          "label": "motorized bicycles with combustion engines",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.1.2",
+          "label": "toy bicycles and toy tricycles",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Bicycles"
+       }
+      ]
+     },
+     {
+      "code": "07.1.4",
+      "label": "Animal-drawn vehicles",
+      "leaves": [
+       {
+        "code": "07.1.4.0",
+        "excludes": [
+         {
+          "code": "09.1.2.4",
+          "label": "horses and ponies and horse- and pony-drawn vehicles purchased for recreational purposes and related equipment",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Animal-drawn vehicles"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "07.2",
+    "label": "Operation of personal transport equipment",
+    "subgroups": [
+     {
+      "code": "07.2.1",
+      "label": "Parts and accessories for personal transport equipment",
+      "leaves": [
+       {
+        "code": "07.2.1.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Tyres"
+       },
+       {
+        "code": "07.2.1.2",
+        "excludes": [
+         {
+          "code": "07.2.3.0",
+          "label": "services purchased for the fitting of parts and accessories and for the painting, washing and polishing of bodywork",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Parts for personal transport equipment"
+       },
+       {
+        "code": "07.2.1.3",
+        "excludes": [
+         {
+          "code": "05.6.1.1",
+          "label": "non-specific products used for cleaning and maintenance, such as household sponges, chamois leathers and detergents",
+          "lang": "en"
+         },
+         {
+          "code": "08.1.4.0",
+          "label": "audio and video systems for cars",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Accessories for personal transport equipment"
+       }
+      ]
+     },
+     {
+      "code": "07.2.2",
+      "label": "Fuels and lubricants for personal transport equipment",
+      "leaves": [
+       {
+        "code": "07.2.2.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Diesel"
+       },
+       {
+        "code": "07.2.2.2",
+        "excludes": [
+         {
+          "code": "07.2.2.3",
+          "label": "two-stroke mixtures",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Petrol"
+       },
+       {
+        "code": "07.2.2.3",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other fuels for personal transport equipment"
+       },
+       {
+        "code": "07.2.2.4",
+        "excludes": [
+         {
+          "code": "07.2.3.0",
+          "label": "services purchased for oil changes and greasing",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Lubricants"
+       }
+      ]
+     },
+     {
+      "code": "07.2.3",
+      "label": "Maintenance and repair of personal transport equipment",
+      "leaves": [
+       {
+        "code": "07.2.3.0",
+        "excludes": [
+         {
+          "code": "07.2.4.3",
+          "label": "roadworthiness tests",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Maintenance and repair of personal transport equipment"
+       }
+      ]
+     },
+     {
+      "code": "07.2.4",
+      "label": "Other services related to personal transport equipment",
+      "leaves": [
+       {
+        "code": "07.2.4.1",
+        "excludes": [
+         {
+          "code": "04.1.2.2",
+          "label": "rental of a parking space or a garage that provides parking in connection with a dwelling",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Parking services"
+       },
+       {
+        "code": "07.2.4.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Toll facilities"
+       },
+       {
+        "code": "07.2.4.3",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Driving lessons, tests, licences and roadworthiness tests"
+       },
+       {
+        "code": "07.2.4.4",
+        "excludes": [
+         {
+          "code": "07.3.2.2",
+          "label": "passenger transport services by taxi and hired vehicle with driver",
+          "lang": "en"
+         },
+         {
+          "code": "09.4.2.2",
+          "label": "rental of personal transport equipment for recreation",
+          "lang": "en"
+         },
+         {
+          "code": "12.1.4.1",
+          "label": "service charges for personal transport equipment insurance",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Hire of personal transport equipment without driver"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "07.3",
+    "label": "Passenger transport services",
+    "subgroups": [
+     {
+      "code": "07.3.1",
+      "label": "Passenger transport by railway",
+      "leaves": [
+       {
+        "code": "07.3.1.1",
+        "excludes": [
+         {
+          "code": "07.3.6.0",
+          "label": "funicular transport",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Passenger transport by train"
+       },
+       {
+        "code": "07.3.1.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Passenger transport by rapid transit and tram"
+       }
+      ]
+     },
+     {
+      "code": "07.3.2",
+      "label": "Passenger transport by road",
+      "leaves": [
+       {
+        "code": "07.3.2.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Passenger transport by bus and coach"
+       },
+       {
+        "code": "07.3.2.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Passenger transport by taxi and hired vehicle with driver"
+       },
+       {
+        "code": "07.3.2.3",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Passenger transport for students to and from school"
+       },
+       {
+        "code": "07.3.2.9",
+        "excludes": [
+         {
+          "code": "07.3.2.1",
+          "label": "transport of persons and accompanied luggage by busses with driver",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other passenger transport by road"
+       }
+      ]
+     },
+     {
+      "code": "07.3.3",
+      "label": "Passenger transport by air",
+      "leaves": [
+       {
+        "code": "07.3.3.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Passenger transport by air, domestic"
+       },
+       {
+        "code": "07.3.3.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Passenger transport by air, international"
+       }
+      ]
+     },
+     {
+      "code": "07.3.4",
+      "label": "Passenger transport by sea and inland waterway",
+      "leaves": [
+       {
+        "code": "07.3.4.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Passenger transport by sea and inland waterway"
+       }
+      ]
+     },
+     {
+      "code": "07.3.5",
+      "label": "Combined passenger transport",
+      "leaves": [
+       {
+        "code": "07.3.5.0",
+        "excludes": [
+         {
+          "code": "09.8.0.0",
+          "label": "package holidays",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Combined passenger transport"
+       }
+      ]
+     },
+     {
+      "code": "07.3.6",
+      "label": "Other passenger transport services",
+      "leaves": [
+       {
+        "code": "07.3.6.0",
+        "excludes": [
+         {
+          "code": "09.4.6.2",
+          "label": "cable-car and chairlift transport at ski resorts and holiday centres",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other passenger transport services"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "07.4",
+    "label": "Transport services for goods",
+    "subgroups": [
+     {
+      "code": "07.4.1",
+      "label": "Postal and courier services",
+      "leaves": [
+       {
+        "code": "07.4.1.1",
+        "excludes": [
+         {
+          "code": "09.7.4.0",
+          "label": "postcards, envelopes and other postal matter, not pre-franked",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Letter handling services"
+       },
+       {
+        "code": "07.4.1.2",
+        "excludes": [
+         {
+          "code": "07.4.9.2",
+          "label": "delivery services for goods (e.g., furniture and groceries), if separately priced",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Courier and parcel delivery services"
+       }
+      ]
+     },
+     {
+      "code": "07.4.9",
+      "label": "Other transport of goods",
+      "leaves": [
+       {
+        "code": "07.4.9.1",
+        "excludes": [
+         {
+          "code": "04.1.2.2",
+          "label": "self-storage units",
+          "lang": "en"
+         },
+         {
+          "code": "07.3.6.0",
+          "label": "services of porters and left-luggage and luggage-forwarding offices",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Removal and storage services"
+       },
+       {
+        "code": "07.4.9.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Delivery of goods"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Transport"
+ },
+ "08": {
+  "code": "08",
+  "groups": [
+   {
+    "code": "08.1",
+    "label": "Information and communication equipment",
+    "subgroups": [
+     {
+      "code": "08.1.1",
+      "label": "Fixed telephone equipment",
+      "leaves": [
+       {
+        "code": "08.1.1.0",
+        "excludes": [
+         {
+          "code": "08.1.3.1",
+          "label": "telefax and telephone-answering facilities provided by personal computers",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Fixed telephone equipment"
+       }
+      ]
+     },
+     {
+      "code": "08.1.2",
+      "label": "Mobile telephone equipment",
+      "leaves": [
+       {
+        "code": "08.1.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Mobile telephone equipment"
+       }
+      ]
+     },
+     {
+      "code": "08.1.3",
+      "label": "Information processing equipment",
+      "leaves": [
+       {
+        "code": "08.1.3.1",
+        "excludes": [
+         {
+          "code": "08.2.0.0",
+          "label": "computer software packages, comprising, for example, operating systems, applications and programming languages",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.1.1",
+          "label": "video game software; and video game computers and consoles",
+          "lang": "en"
+         },
+         {
+          "code": "09.7.1.1",
+          "label": "books, dictionaries, encyclopaedias, foreign language trainers, multimedia presentations, etc. in the form of software",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Computers, laptops and tablets"
+       },
+       {
+        "code": "08.1.3.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Peripheral equipment and its consumable components"
+       }
+      ]
+     },
+     {
+      "code": "08.1.4",
+      "label": "Equipment for the reception, recording and reproduction of sound and vision",
+      "leaves": [
+       {
+        "code": "08.1.4.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Equipment for the reception, recording and reproduction of sound and vision"
+       }
+      ]
+     },
+     {
+      "code": "08.1.5",
+      "label": "Unrecorded recording media",
+      "leaves": [
+       {
+        "code": "08.1.5.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Unrecorded recording media"
+       }
+      ]
+     },
+     {
+      "code": "08.1.9",
+      "label": "Other information and communication equipment and accessories",
+      "leaves": [
+       {
+        "code": "08.1.9.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other information and communication equipment"
+       },
+       {
+        "code": "08.1.9.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other information and communication accessories"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "08.2",
+    "label": "Software, excluding games",
+    "subgroups": [
+     {
+      "code": "08.2.0",
+      "label": "Software, excluding games",
+      "leaves": [
+       {
+        "code": "08.2.0.0",
+        "excludes": [
+         {
+          "code": "09.2.1.1",
+          "label": "video game software",
+          "lang": "en"
+         },
+         {
+          "code": "09.7.1.1",
+          "label": "books, dictionaries, encyclopaedias, foreign language trainers, multimedia presentations, etc. in the form of software",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Software, excluding games"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "08.3",
+    "label": "Information and communication services",
+    "subgroups": [
+     {
+      "code": "08.3.1",
+      "label": "Fixed communication services",
+      "leaves": [
+       {
+        "code": "08.3.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Fixed communication services"
+       }
+      ]
+     },
+     {
+      "code": "08.3.2",
+      "label": "Mobile communication services",
+      "leaves": [
+       {
+        "code": "08.3.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Mobile communication services"
+       }
+      ]
+     },
+     {
+      "code": "08.3.3",
+      "label": "Internet access provision services and online storage services",
+      "leaves": [
+       {
+        "code": "08.3.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Internet access provision services and online storage services"
+       }
+      ]
+     },
+     {
+      "code": "08.3.4",
+      "label": "Bundled telecommunication services",
+      "leaves": [
+       {
+        "code": "08.3.4.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Bundled telecommunication services"
+       }
+      ]
+     },
+     {
+      "code": "08.3.5",
+      "label": "Repair and rental of information and communication equipment",
+      "leaves": [
+       {
+        "code": "08.3.5.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Repair and rental of information and communication equipment"
+       }
+      ]
+     },
+     {
+      "code": "08.3.9",
+      "label": "Other information and communication services",
+      "leaves": [
+       {
+        "code": "08.3.9.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Television and radio licences and fees"
+       },
+       {
+        "code": "08.3.9.2",
+        "excludes": [
+         {
+          "code": "09.4.3.1",
+          "label": "rental of and subscription to video game software and online games",
+          "lang": "en"
+         },
+         {
+          "code": "09.5.2.0",
+          "label": "audiovisual content purchased online for immediate download",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Subscriptions to audiovisual streaming services and rental of audiovisual content"
+       },
+       {
+        "code": "08.3.9.9",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other information and communication services n.e.c."
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Information and communication"
+ },
+ "09": {
+  "code": "09",
+  "groups": [
+   {
+    "code": "09.1",
+    "label": "Recreational durables",
+    "subgroups": [
+     {
+      "code": "09.1.1",
+      "label": "Photographic and cinematographic equipment and optical instruments",
+      "leaves": [
+       {
+        "code": "09.1.1.1",
+        "excludes": [
+         {
+          "code": "07.2.1.3",
+          "label": "dash cameras",
+          "lang": "en"
+         },
+         {
+          "code": "08.1.3.2",
+          "label": "web cameras",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Cameras"
+       },
+       {
+        "code": "09.1.1.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Accessories for photographic and cinematographic equipment"
+       },
+       {
+        "code": "09.1.1.3",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Optical instruments"
+       }
+      ]
+     },
+     {
+      "code": "09.1.2",
+      "label": "Major recreational durables",
+      "leaves": [
+       {
+        "code": "09.1.2.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Camper vans, caravans and trailers"
+       },
+       {
+        "code": "09.1.2.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Aeroplanes, microlight aircraft, gliders, hang gliders and hot-air balloons"
+       },
+       {
+        "code": "09.1.2.3",
+        "excludes": [
+         {
+          "code": "09.2.2.2",
+          "label": "inflatable boats, rafts and swimming pools",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Boats, yachts, outboard motors and other water-sport equipment"
+       },
+       {
+        "code": "09.1.2.4",
+        "excludes": [
+         {
+          "code": "07.1.4.0",
+          "label": "horses and ponies, horse- and pony-drawn vehicles, camels and dromedaries, and related equipment, purchased for personal transport",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Horses, ponies, camels and dromedaries and accessories"
+       },
+       {
+        "code": "09.1.2.9",
+        "excludes": [
+         {
+          "code": "07.1.3.0",
+          "label": "electric kick scooters",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.2",
+          "label": "inflatable boats, rafts and swimming pools",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other major recreational durables"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "09.2",
+    "label": "Other recreational goods",
+    "subgroups": [
+     {
+      "code": "09.2.1",
+      "label": "Games, toys and hobby-related articles",
+      "leaves": [
+       {
+        "code": "09.2.1.1",
+        "excludes": [
+         {
+          "code": "09.4.3.1",
+          "label": "video game subscriptions and rentals",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Video game computers, consoles, game applications and software"
+       },
+       {
+        "code": "09.2.1.2",
+        "excludes": [
+         {
+          "code": "09.7.1.9",
+          "label": "children’s scrapbooks",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other games, toys and hobby-related articles"
+       },
+       {
+        "code": "09.2.1.3",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Celebration articles"
+       }
+      ]
+     },
+     {
+      "code": "09.2.2",
+      "label": "Sporting, camping and open-air recreation equipment",
+      "leaves": [
+       {
+        "code": "09.2.2.1",
+        "excludes": [
+         {
+          "code": "07.2.1.3",
+          "label": "motorcycle and bicycle crash helmets",
+          "lang": "en"
+         },
+         {
+          "code": "09.4.4.0",
+          "label": "rental and repair of sporting, camping and open-air recreation equipment",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Sporting equipment"
+       },
+       {
+        "code": "09.2.2.2",
+        "excludes": [
+         {
+          "code": "05.1.1.2",
+          "label": "garden and camping furniture",
+          "lang": "en"
+         },
+         {
+          "code": "09.4.4.0",
+          "label": "rental and repair of camping and open-air recreation equipment",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Camping and open-air recreation equipment"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "09.3",
+    "label": "Garden products and pets",
+    "subgroups": [
+     {
+      "code": "09.3.1",
+      "label": "Garden products, plants and flowers",
+      "leaves": [
+       {
+        "code": "09.3.1.1",
+        "excludes": [
+         {
+          "code": "05.5.1.0",
+          "label": "motorized gardening equipment",
+          "lang": "en"
+         },
+         {
+          "code": "05.5.2.1",
+          "label": "non-motorized gardening tools",
+          "lang": "en"
+         },
+         {
+          "code": "05.6.1.9",
+          "label": "insecticides, pesticides and fungicides for household use; gardening gloves",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Garden products"
+       },
+       {
+        "code": "09.3.1.2",
+        "excludes": [
+         {
+          "code": "07.4.9.2",
+          "label": "flower and plant delivery charges, if separately priced",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.1.3",
+          "label": "Christmas trees",
+          "lang": "en"
+         },
+         {
+          "code": "09.3.1.1",
+          "label": "soil, peat, composts and fertilizers",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Plants, seeds and flowers"
+       }
+      ]
+     },
+     {
+      "code": "09.3.2",
+      "label": "Pets and pet products",
+      "leaves": [
+       {
+        "code": "09.3.2.1",
+        "excludes": [
+         {
+          "code": "07.1.4.0",
+          "label": "horses, ponies, camels and dromedaries used for transport",
+          "lang": "en"
+         },
+         {
+          "code": "09.1.2.4",
+          "label": "horses, ponies, camels and dromedaries used for recreation",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Pets"
+       },
+       {
+        "code": "09.3.2.2",
+        "excludes": [
+         {
+          "code": "09.4.5.0",
+          "label": "veterinary and other services for pets and other household animals",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Products for pets and other household animals"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "09.4",
+    "label": "Recreational services",
+    "subgroups": [
+     {
+      "code": "09.4.1",
+      "label": "Hire and repair of photographic and cinematographic equipment and optical instruments",
+      "leaves": [
+       {
+        "code": "09.4.1.0",
+        "excludes": [
+         {
+          "code": "09.1.1",
+          "label": "separate purchases of materials made by households with the intention of undertaking maintenance and repair themselves",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Hire and repair of photographic and cinematographic equipment and optical instruments"
+       }
+      ]
+     },
+     {
+      "code": "09.4.2",
+      "label": "Hire, maintenance and repair of major recreational durables",
+      "leaves": [
+       {
+        "code": "09.4.2.1",
+        "excludes": [
+         {
+          "code": "07.2.2",
+          "label": "fuel and lubricants for recreational vehicles",
+          "lang": "en"
+         },
+         {
+          "code": "09.1.2",
+          "label": "materials purchased by households with the intention of undertaking maintenance or repair themselves",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Hire, maintenance and repair of camper vans and caravans"
+       },
+       {
+        "code": "09.4.2.2",
+        "excludes": [
+         {
+          "code": "07.2.2",
+          "label": "fuel and lubricants for recreational vehicles",
+          "lang": "en"
+         },
+         {
+          "code": "07.2.4.4",
+          "label": "rental of equipment for transport",
+          "lang": "en"
+         },
+         {
+          "code": "09.1.2",
+          "label": "materials purchased by households with the intention of undertaking maintenance or repair themselves",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Hire, maintenance and repair of other major recreational durables"
+       }
+      ]
+     },
+     {
+      "code": "09.4.3",
+      "label": "Hire and repair of games, toys and hobby-related articles",
+      "leaves": [
+       {
+        "code": "09.4.3.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Hire of game software and subscription to online games"
+       },
+       {
+        "code": "09.4.3.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Hire and repair of other games, toys and hobby-related articles"
+       }
+      ]
+     },
+     {
+      "code": "09.4.4",
+      "label": "Hire and repair of sporting, camping and open-air recreational equipment",
+      "leaves": [
+       {
+        "code": "09.4.4.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Hire and repair of sporting, camping and open-air recreational equipment"
+       }
+      ]
+     },
+     {
+      "code": "09.4.5",
+      "label": "Veterinary and other services for pets",
+      "leaves": [
+       {
+        "code": "09.4.5.0",
+        "excludes": [
+         {
+          "code": "09.3.2.2",
+          "label": "pet products",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Veterinary and other services for pets"
+       }
+      ]
+     },
+     {
+      "code": "09.4.6",
+      "label": "Recreational and sporting services",
+      "leaves": [
+       {
+        "code": "09.4.6.1",
+        "excludes": [
+         {
+          "code": "09.4.7.0",
+          "label": "games of chance",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Recreational and leisure services"
+       },
+       {
+        "code": "09.4.6.2",
+        "excludes": [
+         {
+          "code": "07.3.6.0",
+          "label": "cable-car and chairlift transport other than at ski resorts or holiday centres",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Services associated with the practice of sports"
+       },
+       {
+        "code": "09.4.6.3",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Services associated with attendance at sporting events"
+       }
+      ]
+     },
+     {
+      "code": "09.4.7",
+      "label": "Games of chance",
+      "leaves": [
+       {
+        "code": "09.4.7.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Games of chance"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "09.5",
+    "label": "Cultural goods",
+    "subgroups": [
+     {
+      "code": "09.5.1",
+      "label": "Musical instruments",
+      "leaves": [
+       {
+        "code": "09.5.1.0",
+        "excludes": [
+         {
+          "code": "09.2.1.2",
+          "label": "toy instruments",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Musical instruments"
+       }
+      ]
+     },
+     {
+      "code": "09.5.2",
+      "label": "Audiovisual media",
+      "leaves": [
+       {
+        "code": "09.5.2.0",
+        "excludes": [
+         {
+          "code": "08.2.0.0",
+          "label": "software (other than video game software)",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.1.1",
+          "label": "video games and game applications and software",
+          "lang": "en"
+         },
+         {
+          "code": "09.7.1",
+          "label": "recorded tapes, CDs, DVDs, Blu-ray discs, gramophone records and flash drives, reproducing books, both educational and non-educational, novels, plays, poetry, dictionaries, encyclopaedias, guidebooks and musical scores",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Audiovisual media"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "09.6",
+    "label": "Cultural services",
+    "subgroups": [
+     {
+      "code": "09.6.1",
+      "label": "Services provided by cinemas, theatres and concert venues",
+      "leaves": [
+       {
+        "code": "09.6.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Services provided by cinemas, theatres and concert venues"
+       }
+      ]
+     },
+     {
+      "code": "09.6.2",
+      "label": "Services provided by museums, libraries and cultural sites",
+      "leaves": [
+       {
+        "code": "09.6.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Services provided by museums, libraries and cultural sites"
+       }
+      ]
+     },
+     {
+      "code": "09.6.3",
+      "label": "Photographic services",
+      "leaves": [
+       {
+        "code": "09.6.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Photographic services"
+       }
+      ]
+     },
+     {
+      "code": "09.6.9",
+      "label": "Other cultural services",
+      "leaves": [
+       {
+        "code": "09.6.9.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other cultural services"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "09.7",
+    "label": "Newspapers, books and stationery",
+    "subgroups": [
+     {
+      "code": "09.7.1",
+      "label": "Books",
+      "leaves": [
+       {
+        "code": "09.7.1.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Educational books and textbooks"
+       },
+       {
+        "code": "09.7.1.9",
+        "excludes": [
+         {
+          "code": "09.2.1.2",
+          "label": "stamp albums",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other books"
+       }
+      ]
+     },
+     {
+      "code": "09.7.2",
+      "label": "Newspapers and periodicals",
+      "leaves": [
+       {
+        "code": "09.7.2.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Newspapers"
+       },
+       {
+        "code": "09.7.2.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Magazines and periodicals"
+       }
+      ]
+     },
+     {
+      "code": "09.7.3",
+      "label": "Miscellaneous printed matter",
+      "leaves": [
+       {
+        "code": "09.7.3.0",
+        "excludes": [
+         {
+          "code": "07.4.1.1",
+          "label": "pre-franked postcards, envelopes and aerogrammes",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.1.2",
+          "label": "stamp albums",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Miscellaneous printed matter"
+       }
+      ]
+     },
+     {
+      "code": "09.7.4",
+      "label": "Stationery and drawing materials",
+      "leaves": [
+       {
+        "code": "09.7.4.0",
+        "excludes": [
+         {
+          "code": "07.4.1.1",
+          "label": "pre-franked postcards, envelopes and aerogrammes",
+          "lang": "en"
+         },
+         {
+          "code": "08.1.3.2",
+          "label": "pocket calculators",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Stationery and drawing materials"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "09.8",
+    "label": "Package holidays",
+    "subgroups": [
+     {
+      "code": "09.8.0",
+      "label": "Package holidays",
+      "leaves": [
+       {
+        "code": "09.8.0.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Package holidays"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Recreation, sport and culture"
+ },
+ "10": {
+  "code": "10",
+  "groups": [
+   {
+    "code": "10.1",
+    "label": "Early childhood and primary education",
+    "subgroups": [
+     {
+      "code": "10.1.0",
+      "label": "Early childhood and primary education",
+      "leaves": [
+       {
+        "code": "10.1.0.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Early childhood education"
+       },
+       {
+        "code": "10.1.0.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Primary education"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "10.2",
+    "label": "Secondary education",
+    "subgroups": [
+     {
+      "code": "10.2.0",
+      "label": "Secondary education",
+      "leaves": [
+       {
+        "code": "10.2.0.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Secondary education"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "10.3",
+    "label": "Post-secondary non-tertiary education",
+    "subgroups": [
+     {
+      "code": "10.3.0",
+      "label": "Post-secondary non-tertiary education",
+      "leaves": [
+       {
+        "code": "10.3.0.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Post-secondary non-tertiary education"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "10.4",
+    "label": "Tertiary education",
+    "subgroups": [
+     {
+      "code": "10.4.0",
+      "label": "Tertiary education",
+      "leaves": [
+       {
+        "code": "10.4.0.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Tertiary education"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "10.5",
+    "label": "Education not defined by level",
+    "subgroups": [
+     {
+      "code": "10.5.0",
+      "label": "Education not defined by level",
+      "leaves": [
+       {
+        "code": "10.5.0.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Tutoring"
+       },
+       {
+        "code": "10.5.0.9",
+        "excludes": [
+         {
+          "code": "07.2.4.3",
+          "label": "driving lessons",
+          "lang": "en"
+         },
+         {
+          "code": "09.4.6",
+          "label": "training courses for recreation and sports that are not part of an educational programme",
+          "lang": "en"
+         },
+         {
+          "code": "09.7.1.1",
+          "label": "removable media containing foreign language trainers",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other education not defined by level"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Education services"
+ },
+ "11": {
+  "code": "11",
+  "groups": [
+   {
+    "code": "11.1",
+    "label": "Food and beverage serving services",
+    "subgroups": [
+     {
+      "code": "11.1.1",
+      "label": "Restaurants, cafés and the like",
+      "leaves": [
+       {
+        "code": "11.1.1.1",
+        "excludes": [
+         {
+          "code": "02.3.0",
+          "label": "tobacco purchases",
+          "lang": "en"
+         },
+         {
+          "code": "07.3",
+          "label": "food and beverage services on public transport, if not separately priced",
+          "lang": "en"
+         },
+         {
+          "code": "07.4.9.2",
+          "label": "food and beverage delivery, if separately priced",
+          "lang": "en"
+         },
+         {
+          "code": "09.4.6.1",
+          "label": "entrance fees for dancing establishments and nightclubs",
+          "lang": "en"
+         },
+         {
+          "code": "09.8.0.0",
+          "label": "food and beverage services provided in package holidays, if not separately priced",
+          "lang": "en"
+         },
+         {
+          "code": "11.2",
+          "label": "food and beverage services in hotels or other lodging establishments, if not separately priced from accommodation",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Restaurants, cafés and the like – with full service"
+       },
+       {
+        "code": "11.1.1.2",
+        "excludes": [
+         {
+          "code": "02.3.0",
+          "label": "tobacco purchases",
+          "lang": "en"
+         },
+         {
+          "code": "07.3",
+          "label": "food and beverage services on public transport, if not separately priced",
+          "lang": "en"
+         },
+         {
+          "code": "07.4.9.2",
+          "label": "food and beverage delivery, if separately priced",
+          "lang": "en"
+         },
+         {
+          "code": "09.4.6.1",
+          "label": "entrance fees for dancing establishments and nightclubs",
+          "lang": "en"
+         },
+         {
+          "code": "09.8.0.0",
+          "label": "food and beverage services provided in package holidays, if not separately priced",
+          "lang": "en"
+         },
+         {
+          "code": "11.2",
+          "label": "food and beverage services in hotels or other lodging establishments, if not separately priced from accommodation",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Restaurants, cafés and the like – with limited service"
+       }
+      ]
+     },
+     {
+      "code": "11.1.2",
+      "label": "Canteens, cafeterias and refectories",
+      "leaves": [
+       {
+        "code": "11.1.2.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Canteens and cafeterias of universities, schools and kindergartens"
+       },
+       {
+        "code": "11.1.2.9",
+        "excludes": [
+         {
+          "code": "06.3",
+          "label": "food and beverages provided to hospital in-patients, if not separately priced",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other canteens, cafeterias and refectories"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "11.2",
+    "label": "Accommodation services",
+    "subgroups": [
+     {
+      "code": "11.2.0",
+      "label": "Accommodation services",
+      "leaves": [
+       {
+        "code": "11.2.0.1",
+        "excludes": [
+         {
+          "code": "04.1.1.0",
+          "label": "payments of households occupying a room in a hotel or boarding house as their main residence",
+          "lang": "en"
+         },
+         {
+          "code": "04.1.2.1",
+          "label": "rentals paid by households for a secondary residence or timeshare residence",
+          "lang": "en"
+         },
+         {
+          "code": "08.3.1.0",
+          "label": "telephone calls",
+          "lang": "en"
+         },
+         {
+          "code": "09.8.0.0",
+          "label": "package holidays",
+          "lang": "en"
+         },
+         {
+          "code": "11.1.1",
+          "label": "breakfast, meals and other food and beverages provided in accommodation and similar establishments, if separately priced",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Hotels, motels, inns and similar accommodation services"
+       },
+       {
+        "code": "11.2.0.2",
+        "excludes": [
+         {
+          "code": "04.1.1.0",
+          "label": "payments of households occupying a room in holiday centres, camping sites, youth hostels and similar accommodation as their main or secondary residence",
+          "lang": "en"
+         },
+         {
+          "code": "08.3.1.0",
+          "label": "telephone calls",
+          "lang": "en"
+         },
+         {
+          "code": "11.1.1",
+          "label": "breakfast, meals and other food and beverages provided in accommodation and similar establishments, if separately priced",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Holiday centres, camping sites, youth hostels and similar accommodation services"
+       },
+       {
+        "code": "11.2.0.3",
+        "excludes": [
+         {
+          "code": "13.3.0.2",
+          "label": "homes for disabled or maladjusted persons",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Accommodation services of boarding schools, universities and other educational establishments"
+       },
+       {
+        "code": "11.2.0.9",
+        "excludes": [
+         {
+          "code": "08.3.1.0",
+          "label": "telephone calls",
+          "lang": "en"
+         },
+         {
+          "code": "11.1.1",
+          "label": "breakfast, meals and other food and beverages provided in accommodation and similar establishments, if separately priced",
+          "lang": "en"
+         },
+         {
+          "code": "13.3.0.2",
+          "label": "homes for disabled or maladjusted persons",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other accommodation services"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Restaurants and accommodation services"
+ },
+ "12": {
+  "code": "12",
+  "groups": [
+   {
+    "code": "12.1",
+    "label": "Insurance",
+    "subgroups": [
+     {
+      "code": "12.1.1",
+      "label": "Life and accident insurance",
+      "leaves": [
+       {
+        "code": "12.1.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Life and accident insurance"
+       }
+      ]
+     },
+     {
+      "code": "12.1.2",
+      "label": "Insurance connected with health",
+      "leaves": [
+       {
+        "code": "12.1.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Insurance connected with health"
+       }
+      ]
+     },
+     {
+      "code": "12.1.3",
+      "label": "Insurance connected with dwellings",
+      "leaves": [
+       {
+        "code": "12.1.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Insurance connected with dwellings"
+       }
+      ]
+     },
+     {
+      "code": "12.1.4",
+      "label": "Insurance connected with transport",
+      "leaves": [
+       {
+        "code": "12.1.4.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Personal transport insurance"
+       },
+       {
+        "code": "12.1.4.2",
+        "excludes": [
+         {
+          "code": "12.1.2.0",
+          "label": "travel health insurance",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Travel insurance"
+       }
+      ]
+     },
+     {
+      "code": "12.1.9",
+      "label": "Other insurance",
+      "leaves": [
+       {
+        "code": "12.1.9.0",
+        "excludes": [
+         {
+          "code": "12.1.4.1",
+          "label": "civil liability or damage to third parties or their property arising from the operation of personal transport equipment",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other insurance"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "12.2",
+    "label": "Financial services",
+    "subgroups": [
+     {
+      "code": "12.2.1",
+      "label": "Financial intermediation services indirectly measured",
+      "leaves": [
+       {
+        "code": "12.2.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Financial intermediation services indirectly measured"
+       }
+      ]
+     },
+     {
+      "code": "12.2.2",
+      "label": "Explicit charges by deposit-taking corporations",
+      "leaves": [
+       {
+        "code": "12.2.2.0",
+        "excludes": [
+         {
+          "code": "12.2.9.1",
+          "label": "remittances fees",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Explicit charges by deposit-taking corporations"
+       }
+      ]
+     },
+     {
+      "code": "12.2.9",
+      "label": "Other financial services",
+      "leaves": [
+       {
+        "code": "12.2.9.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Remittances fees"
+       },
+       {
+        "code": "12.2.9.9",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other financial services n.e.c."
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Insurance and financial services"
+ },
+ "13": {
+  "code": "13",
+  "groups": [
+   {
+    "code": "13.1",
+    "label": "Personal care",
+    "subgroups": [
+     {
+      "code": "13.1.1",
+      "label": "Electric appliances for personal care",
+      "leaves": [
+       {
+        "code": "13.1.1.1",
+        "excludes": [
+         {
+          "code": "13.1.1.2",
+          "label": "repair of electric appliances for personal care",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Purchase of electric appliances for personal care"
+       },
+       {
+        "code": "13.1.1.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Repair of electric appliances for personal care"
+       }
+      ]
+     },
+     {
+      "code": "13.1.2",
+      "label": "Other appliances, articles and products for personal care",
+      "leaves": [
+       {
+        "code": "13.1.2.0",
+        "excludes": [
+         {
+          "code": "03.1.3.1",
+          "label": "handkerchiefs made of fabric",
+          "lang": "en"
+         },
+         {
+          "code": "06.1.2.1",
+          "label": "baby scales",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Other appliances, articles and products for personal care"
+       }
+      ]
+     },
+     {
+      "code": "13.1.3",
+      "label": "Hairdressing salons and personal grooming establishments",
+      "leaves": [
+       {
+        "code": "13.1.3.1",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Hairdressing"
+       },
+       {
+        "code": "13.1.3.2",
+        "excludes": [
+         {
+          "code": "09.4.5.0",
+          "label": "animal tattooing",
+          "lang": "en"
+         },
+         {
+          "code": "09.4.6.2",
+          "label": "fitness centres",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Personal grooming treatments"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "13.2",
+    "label": "Other personal effects",
+    "subgroups": [
+     {
+      "code": "13.2.1",
+      "label": "Jewellery and watches",
+      "leaves": [
+       {
+        "code": "13.2.1.1",
+        "excludes": [
+         {
+          "code": "05.1.1.4",
+          "label": "wall clocks, floor clocks, alarm clocks and travel clocks",
+          "lang": "en"
+         },
+         {
+          "code": "08.1.4.0",
+          "label": "radio clocks",
+          "lang": "en"
+         },
+         {
+          "code": "08.1.9.1",
+          "label": "smartwatches",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Purchase of jewellery and watches"
+       },
+       {
+        "code": "13.2.1.2",
+        "excludes": [
+         {
+          "code": "05.1.2.0",
+          "label": "repair of floor standing and similar household clocks",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Repair and hire of jewellery, clocks and watches"
+       }
+      ]
+     },
+     {
+      "code": "13.2.2",
+      "label": "Devotional articles and articles for religious and ritual celebrations",
+      "leaves": [
+       {
+        "code": "13.2.2.0",
+        "excludes": [
+         {
+          "code": "09.2.1.3",
+          "label": "Christmas trees, holiday decorations (for Christmas, Easter, Hanukkah, Eid, Diwali and similar)",
+          "lang": "en"
+         },
+         {
+          "code": "09.7.1.9",
+          "label": "religious books",
+          "lang": "en"
+         },
+         {
+          "code": "13.2.9.1",
+          "label": "funerary articles",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Devotional articles and articles for religious and ritual celebrations"
+       }
+      ]
+     },
+     {
+      "code": "13.2.9",
+      "label": "Other personal effects n.e.c.",
+      "leaves": [
+       {
+        "code": "13.2.9.1",
+        "excludes": [
+         {
+          "code": "05.1.1.1",
+          "label": "baby furniture",
+          "lang": "en"
+         },
+         {
+          "code": "05.2.1.9",
+          "label": "shopping bags",
+          "lang": "en"
+         },
+         {
+          "code": "05.4.0.3",
+          "label": "feeding bottles",
+          "lang": "en"
+         },
+         {
+          "code": "06.1.2.1",
+          "label": "baby scales",
+          "lang": "en"
+         },
+         {
+          "code": "07.2.1.3",
+          "label": "car seats for babies",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.1",
+          "label": "protection glasses for the practice of a sport",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.2",
+          "label": "backpacks for camping and open-air recreation",
+          "lang": "en"
+         },
+         {
+          "code": "09.2.2.2",
+          "label": "umbrellas and parasols for the garden (05.1.1.2) or for the beach",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Travel goods, baby articles and other personal effects n.e.c."
+       },
+       {
+        "code": "13.2.9.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Repair and hire of other personal effects"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "13.3",
+    "label": "Social protection",
+    "subgroups": [
+     {
+      "code": "13.3.0",
+      "label": "Social protection",
+      "leaves": [
+       {
+        "code": "13.3.0.1",
+        "excludes": [
+         {
+          "code": "05.6.2.1",
+          "label": "babysitters and so on",
+          "lang": "en"
+         },
+         {
+          "code": "10.1.0.1",
+          "label": "educational kindergartens",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Childcare services"
+       },
+       {
+        "code": "13.3.0.2",
+        "excludes": [
+         {
+          "code": "06.3.2.0",
+          "label": "services of mental health convalescent homes or hospitals",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Retirement homes for elderly persons and residences for disabled persons, not providing medical care"
+       },
+       {
+        "code": "13.3.0.3",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Home care services for elderly and disabled"
+       },
+       {
+        "code": "13.3.0.9",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other social protection services"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "13.9",
+    "label": "Other services",
+    "subgroups": [
+     {
+      "code": "13.9.0",
+      "label": "Other services",
+      "leaves": [
+       {
+        "code": "13.9.0.1",
+        "excludes": [
+         {
+          "code": "11.1.1",
+          "label": "food or beverages consumed in brothels, if separately priced",
+          "lang": "en"
+         }
+        ],
+        "keywords_by_lang": {},
+        "label": "Prostitution"
+       },
+       {
+        "code": "13.9.0.2",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Religious services"
+       },
+       {
+        "code": "13.9.0.9",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other services n.e.c."
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Personal care, social protection and miscellaneous goods and services"
+ },
+ "14": {
+  "code": "14",
+  "groups": [
+   {
+    "code": "14.1",
+    "label": "Housing",
+    "subgroups": [
+     {
+      "code": "14.1.0",
+      "label": "Housing",
+      "leaves": [
+       {
+        "code": "14.1.0.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Housing"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "14.2",
+    "label": "Health",
+    "subgroups": [
+     {
+      "code": "14.2.1",
+      "label": "Pharmaceutical products",
+      "leaves": [
+       {
+        "code": "14.2.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Pharmaceutical products"
+       }
+      ]
+     },
+     {
+      "code": "14.2.2",
+      "label": "Other medical products",
+      "leaves": [
+       {
+        "code": "14.2.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other medical products"
+       }
+      ]
+     },
+     {
+      "code": "14.2.3",
+      "label": "Therapeutic appliances and equipment",
+      "leaves": [
+       {
+        "code": "14.2.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Therapeutic appliances and equipment"
+       }
+      ]
+     },
+     {
+      "code": "14.2.4",
+      "label": "Outpatient medical services",
+      "leaves": [
+       {
+        "code": "14.2.4.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Outpatient medical services"
+       }
+      ]
+     },
+     {
+      "code": "14.2.5",
+      "label": "Outpatient dental services",
+      "leaves": [
+       {
+        "code": "14.2.5.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Outpatient dental services"
+       }
+      ]
+     },
+     {
+      "code": "14.2.6",
+      "label": "Outpatient paramedical services",
+      "leaves": [
+       {
+        "code": "14.2.6.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Outpatient paramedical services"
+       }
+      ]
+     },
+     {
+      "code": "14.2.7",
+      "label": "Hospital services",
+      "leaves": [
+       {
+        "code": "14.2.7.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Hospital services"
+       }
+      ]
+     },
+     {
+      "code": "14.2.8",
+      "label": "Other health services",
+      "leaves": [
+       {
+        "code": "14.2.8.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other health services"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "14.3",
+    "label": "Recreation and culture",
+    "subgroups": [
+     {
+      "code": "14.3.1",
+      "label": "Recreational and sporting services",
+      "leaves": [
+       {
+        "code": "14.3.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Recreational and sporting services"
+       }
+      ]
+     },
+     {
+      "code": "14.3.2",
+      "label": "Cultural services",
+      "leaves": [
+       {
+        "code": "14.3.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Cultural services"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "14.4",
+    "label": "Education",
+    "subgroups": [
+     {
+      "code": "14.4.1",
+      "label": "Pre-primary and primary education",
+      "leaves": [
+       {
+        "code": "14.4.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Pre-primary and primary education"
+       }
+      ]
+     },
+     {
+      "code": "14.4.2",
+      "label": "Secondary education",
+      "leaves": [
+       {
+        "code": "14.4.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Secondary education"
+       }
+      ]
+     },
+     {
+      "code": "14.4.3",
+      "label": "Post-secondary non-tertiary education",
+      "leaves": [
+       {
+        "code": "14.4.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Post-secondary non-tertiary education"
+       }
+      ]
+     },
+     {
+      "code": "14.4.4",
+      "label": "Tertiary education",
+      "leaves": [
+       {
+        "code": "14.4.4.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Tertiary education"
+       }
+      ]
+     },
+     {
+      "code": "14.4.5",
+      "label": "Education not defined by level",
+      "leaves": [
+       {
+        "code": "14.4.5.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Education not defined by level"
+       }
+      ]
+     },
+     {
+      "code": "14.4.6",
+      "label": "Other educational services",
+      "leaves": [
+       {
+        "code": "14.4.6.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other educational services"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "14.5",
+    "label": "Social protection",
+    "subgroups": [
+     {
+      "code": "14.5.0",
+      "label": "Social protection",
+      "leaves": [
+       {
+        "code": "14.5.0.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Social protection"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "14.6",
+    "label": "Other services",
+    "subgroups": [
+     {
+      "code": "14.6.1",
+      "label": "Religion",
+      "leaves": [
+       {
+        "code": "14.6.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Religion"
+       }
+      ]
+     },
+     {
+      "code": "14.6.2",
+      "label": "Political parties, labour and professional organizations",
+      "leaves": [
+       {
+        "code": "14.6.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Political parties, labour and professional organizations"
+       }
+      ]
+     },
+     {
+      "code": "14.6.3",
+      "label": "Environmental protection",
+      "leaves": [
+       {
+        "code": "14.6.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Environmental protection"
+       }
+      ]
+     },
+     {
+      "code": "14.6.4",
+      "label": "Services n.e.c.",
+      "leaves": [
+       {
+        "code": "14.6.4.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Services n.e.c."
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Individual consumption expenditure of Non-profit Institutions Serving Households"
+ },
+ "15": {
+  "code": "15",
+  "groups": [
+   {
+    "code": "15.1",
+    "label": "Housing",
+    "subgroups": [
+     {
+      "code": "15.1.0",
+      "label": "Housing",
+      "leaves": [
+       {
+        "code": "15.1.0.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Housing"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "15.2",
+    "label": "Health",
+    "subgroups": [
+     {
+      "code": "15.2.1",
+      "label": "Pharmaceutical products",
+      "leaves": [
+       {
+        "code": "15.2.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Pharmaceutical products"
+       }
+      ]
+     },
+     {
+      "code": "15.2.2",
+      "label": "Other medical products",
+      "leaves": [
+       {
+        "code": "15.2.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Other medical products"
+       }
+      ]
+     },
+     {
+      "code": "15.2.3",
+      "label": "Therapeutic appliances and equipment",
+      "leaves": [
+       {
+        "code": "15.2.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Therapeutic appliances and equipment"
+       }
+      ]
+     },
+     {
+      "code": "15.2.4",
+      "label": "Outpatient medical services",
+      "leaves": [
+       {
+        "code": "15.2.4.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Outpatient medical services"
+       }
+      ]
+     },
+     {
+      "code": "15.2.5",
+      "label": "Outpatient dental services",
+      "leaves": [
+       {
+        "code": "15.2.5.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Outpatient dental services"
+       }
+      ]
+     },
+     {
+      "code": "15.2.6",
+      "label": "Outpatient paramedical services",
+      "leaves": [
+       {
+        "code": "15.2.6.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Outpatient paramedical services"
+       }
+      ]
+     },
+     {
+      "code": "15.2.7",
+      "label": "Hospital services",
+      "leaves": [
+       {
+        "code": "15.2.7.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Hospital services"
+       }
+      ]
+     },
+     {
+      "code": "15.2.8",
+      "label": "Public health services",
+      "leaves": [
+       {
+        "code": "15.2.8.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Public health services"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "15.3",
+    "label": "Recreation and culture",
+    "subgroups": [
+     {
+      "code": "15.3.1",
+      "label": "Recreational and sporting services",
+      "leaves": [
+       {
+        "code": "15.3.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Recreational and sporting services"
+       }
+      ]
+     },
+     {
+      "code": "15.3.2",
+      "label": "Cultural services",
+      "leaves": [
+       {
+        "code": "15.3.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Cultural services"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "15.4",
+    "label": "Education",
+    "subgroups": [
+     {
+      "code": "15.4.1",
+      "label": "Pre-primary and primary education",
+      "leaves": [
+       {
+        "code": "15.4.1.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Pre-primary and primary education"
+       }
+      ]
+     },
+     {
+      "code": "15.4.2",
+      "label": "Secondary education",
+      "leaves": [
+       {
+        "code": "15.4.2.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Secondary education"
+       }
+      ]
+     },
+     {
+      "code": "15.4.3",
+      "label": "Post-secondary non-tertiary education",
+      "leaves": [
+       {
+        "code": "15.4.3.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Post-secondary non-tertiary education"
+       }
+      ]
+     },
+     {
+      "code": "15.4.4",
+      "label": "Tertiary education",
+      "leaves": [
+       {
+        "code": "15.4.4.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Tertiary education"
+       }
+      ]
+     },
+     {
+      "code": "15.4.5",
+      "label": "Education not defined by level",
+      "leaves": [
+       {
+        "code": "15.4.5.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Education not defined by level"
+       }
+      ]
+     },
+     {
+      "code": "15.4.6",
+      "label": "Subsidiary services to education",
+      "leaves": [
+       {
+        "code": "15.4.6.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Subsidiary services to education"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "code": "15.5",
+    "label": "Social protection",
+    "subgroups": [
+     {
+      "code": "15.5.0",
+      "label": "Social protection",
+      "leaves": [
+       {
+        "code": "15.5.0.0",
+        "excludes": [],
+        "keywords_by_lang": {},
+        "label": "Social protection"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "label": "Individual consumption expenditure of general government"
+ }
+}
