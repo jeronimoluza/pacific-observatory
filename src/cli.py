@@ -333,6 +333,23 @@ def text_status(region, subregion, country, show_all):
     )
 
 
+@text.command("database-status")
+def text_database_status():
+    """Export verified per-source article counts + date ranges to outputs/text/database_status/."""
+    from text.status import compute_database_status, write_database_status
+
+    click.echo("  Scanning data/text/ for news.csv files...")
+    data = compute_database_status()
+    paths = write_database_status(data)
+    t = data["totals"]
+    click.echo(
+        f"\n  {t['sources']} sources · {t['articles_total']:,} articles · "
+        f"{t['countries']} countries\n"
+        f"  Coverage: {t['earliest_date'] or '—'} → {t['latest_date'] or '—'}\n"
+        f"  Wrote {paths['csv']}\n  Wrote {paths['json']}\n  Wrote {paths['xlsx']}\n"
+    )
+
+
 # ── Two-tier storage commands (archive / restore / storage-status) ──
 # Registered from cli_text_storage.py to keep cli.py under the 500-line cap.
 
@@ -356,11 +373,13 @@ from prices.collect import collect as _prices_collect  # noqa: E402
 from prices.backfill import backfill_command as _prices_backfill  # noqa: E402
 from prices.cc_warc_fetcher import common_crawl_command as _prices_common_crawl  # noqa: E402
 from prices.enrich.cli import process_command as _prices_process  # noqa: E402
+from prices.enrich.eval.cli import eval_command as _prices_eval  # noqa: E402
 
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
 prices.add_command(_prices_common_crawl, name="common-crawl")
 prices.add_command(_prices_process, name="process")
+prices.add_command(_prices_eval, name="eval")
 
 
 @prices.command("build")
@@ -368,16 +387,31 @@ prices.add_command(_prices_process, name="process")
 @_subregion_opt
 @_country_opt
 def prices_build(region, subregion, country):
-    """Construct CPI indices from the enriched prices dataset."""
-    click.echo("prices build: not yet migrated")
+    """Construct CPI indices from the enriched prices dataset.
+
+    PoC scope: writes the EAP × F&B basket parquet at
+    data/prices/_build/eap_fnb_observations.parquet. Region/subregion/
+    country flags are accepted but ignored until the basket widens
+    beyond the EAP PoC.
+    """
+    from prices.build.aggregate import run as _build_run
+
+    _build_run()
 
 
 @prices.command("publish")
 @_region_opt
 @_subregion_opt
 def prices_publish(region, subregion):
-    """Generate CPI dashboards."""
-    click.echo("prices publish: not yet migrated")
+    """Generate CPI dashboards.
+
+    PoC scope: renders outputs/prices/eap_fnb_dashboard.html from the
+    EAP F&B basket parquet. Region/subregion flags are accepted but
+    ignored until the basket widens beyond the EAP PoC.
+    """
+    from prices.publish import run as _publish_run
+
+    _publish_run()
 
 
 # ── Cross-cutting commands ──────────────────────────────────────────
