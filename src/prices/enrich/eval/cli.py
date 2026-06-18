@@ -19,10 +19,10 @@ from prices.enrich.eval import runner
     "gold_path",
     type=click.Path(exists=True, dir_okay=False),
     default=None,
-    help="Override gold parquet path (default: data/prices/_enrich/gold_labels.parquet).",
+    help="Override gold parquet path (default: data/prices/enrich/gold/gold_labels.parquet).",
 )
 def eval_command(tier_c, no_write, gold_path):
-    """Score the enrichment cascade against the 500-row gold set.
+    """Score the enrichment cascade against the working gold set.
 
     Reports per-field accuracy, composed unit_value accuracy (1% tolerance),
     and attributes each miss to a causal bucket: A_coicop (wrong leaf),

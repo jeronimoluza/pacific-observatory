@@ -1,4 +1,4 @@
-"""Load the 500-row gold set and adapt it to cascade input."""
+"""Load the working gold set and adapt it to cascade input."""
 
 from __future__ import annotations
 
@@ -11,7 +11,9 @@ from core.config import load_countries
 from prices.enrich import config
 from prices.enrich.normalize import canonicalize
 
-GOLD_PATH = config.ENRICH_DIR / "gold_labels.parquet"
+GOLD_PATH = (
+    config.REPO_ROOT / "data" / "prices" / "enrich" / "gold" / "gold_labels.parquet"
+)
 
 SYNTH_PREFIX = "__eval_synthetic__:"
 
