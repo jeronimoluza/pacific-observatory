@@ -37,9 +37,7 @@ from typing import Optional
 import pandas as pd
 
 from prices.enrich import config
-from prices.enrich.tier_b import cache as cache_mod
-from prices.enrich.tier_b import index as tier_b_index
-from prices.enrich.tier_b import pool_filter
+from prices.enrich.tier_b import cache as cache_mod, index as tier_b_index, pool_filter
 
 logger = logging.getLogger(__name__)
 
