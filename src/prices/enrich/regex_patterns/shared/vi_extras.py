@@ -13,5 +13,6 @@ PATTERNS: tuple[PackPattern, ...] = (
         groups=("count",),
         lang="any",
         role="extract",
+        kind="extra_count",
     ),
 )

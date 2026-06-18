@@ -19,6 +19,7 @@ PATTERNS: tuple[PackPattern, ...] = (
         groups=("count", "multiplier"),
         lang="any",
         role="extract",
+        kind="multi_pack",
     ),
     PackPattern(
         id="cjk_inner_outer_full",
@@ -28,5 +29,6 @@ PATTERNS: tuple[PackPattern, ...] = (
         groups=("count", "multiplier"),
         lang="any",
         role="extract",
+        kind="multi_pack",
     ),
 )

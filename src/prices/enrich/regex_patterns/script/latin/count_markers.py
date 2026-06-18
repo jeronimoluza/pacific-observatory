@@ -1,4 +1,4 @@
-"""English count-marker patterns (extract role) — translated from regex_units.yaml::extra_count_markers."""
+"""Latin-script count-marker patterns (extract role) — translated from regex_units.yaml::extra_count_markers."""
 
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ def _p(
         lang="any",
         role="extract",
         fixed_count=fixed_count,
+        kind="extra_count",
     )
 
 

@@ -16,5 +16,6 @@ PATTERNS: tuple[PackPattern, ...] = (
         groups=("count",),
         lang="ja",
         role="canonicalization",
+        kind="canon",
     ),
 )

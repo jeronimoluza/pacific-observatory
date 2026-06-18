@@ -1,4 +1,10 @@
-"""Chinese multipack + volume/mass patterns — canonicalization role."""
+"""Chinese multipack patterns — canonicalization role.
+
+The zh volume/mass pattern lives in volume_mass.py: in the consumed canon order
+it sorts last (after the Japanese kana set and the shared value+unit pattern),
+whereas this count-unit multipack sorts earlier — a single module cannot occupy
+both positions, so the volume/mass pattern is split out (Phase 0.5 / Plan 04).
+"""
 
 from __future__ import annotations
 
@@ -16,16 +22,6 @@ PATTERNS: tuple[PackPattern, ...] = (
         groups=("count",),
         lang="zh",
         role="canonicalization",
-    ),
-    # "500毫升" "1公升" "200公克" "2公斤" "50克"
-    PackPattern(
-        id="zh_volume_mass",
-        regex=re.compile(
-            r"(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>公升|毫升|公斤|公克|克|升)",
-            re.IGNORECASE,
-        ),
-        groups=("value", "unit"),
-        lang="zh",
-        role="canonicalization",
+        kind="canon",
     ),
 )

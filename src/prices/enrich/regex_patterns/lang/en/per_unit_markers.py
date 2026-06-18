@@ -21,6 +21,7 @@ PATTERNS: tuple[PackPattern, ...] = (
         lang="en",
         role="extract",
         pricing_basis_emit="mass",
+        kind="pricing_basis_marker",
     ),
     # Bare form: "Per Kg", "per kg", "Per KG"
     PackPattern(
@@ -30,6 +31,7 @@ PATTERNS: tuple[PackPattern, ...] = (
         lang="en",
         role="extract",
         pricing_basis_emit="mass",
+        kind="pricing_basis_marker",
     ),
     # Parens form: (Per/ L), (per/l)
     PackPattern(
@@ -39,6 +41,7 @@ PATTERNS: tuple[PackPattern, ...] = (
         lang="en",
         role="extract",
         pricing_basis_emit="volume",
+        kind="pricing_basis_marker",
     ),
     # Bare form: "per liter", "per litre", "Per Liter"
     PackPattern(
@@ -48,5 +51,6 @@ PATTERNS: tuple[PackPattern, ...] = (
         lang="en",
         role="extract",
         pricing_basis_emit="volume",
+        kind="pricing_basis_marker",
     ),
 )

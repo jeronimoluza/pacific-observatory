@@ -27,6 +27,7 @@ def _p(id_: str, regex: str, groups: tuple[str, ...]) -> PackPattern:
         groups=groups,
         lang="any",
         role="extract",
+        kind="extra_count",
     )
 
 

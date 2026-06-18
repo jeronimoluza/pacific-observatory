@@ -31,6 +31,12 @@ class PackPattern:
     role: str = "canonicalization"  # "canonicalization" | "extract"
     fixed_count: int | None = None
     unit_emit: UnitEmit | None = None
+    # Bucket-routing for the dict_view composer. Explicit on the record so adding
+    # a pattern is a one-file edit instead of a two-file trap (module + a separate
+    # ID-order tuple). distinct from `role` (which only splits canonicalization vs
+    # extract). A pattern with kind="unrouted" is declared but deliberately not fed
+    # to any consumed bucket (e.g. cjk_numeral_version, dropped 2026-06-16).
+    kind: str = "canon"  # canon | extra_unit | extra_count | multi_pack | pricing_basis_marker | unrouted
 
 
 @dataclass(frozen=True)

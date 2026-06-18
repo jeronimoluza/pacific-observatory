@@ -22,6 +22,7 @@ PATTERNS: tuple[PackPattern, ...] = (
         lang="any",
         role="extract",
         unit_emit=UnitEmit(basis="volume", su="lt", mul=0.01),
+        kind="extra_unit",
     ),
     PackPattern(
         id="vi_lit_volume",
@@ -32,5 +33,6 @@ PATTERNS: tuple[PackPattern, ...] = (
         lang="any",
         role="extract",
         unit_emit=UnitEmit(basis="volume", su="lt", mul=1.0),
+        kind="extra_unit",
     ),
 )

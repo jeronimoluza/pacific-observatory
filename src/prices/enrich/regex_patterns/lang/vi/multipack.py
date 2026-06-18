@@ -1,4 +1,10 @@
-"""Vietnamese multipack markers + lang-gated count extras."""
+"""Vietnamese multipack markers — canonicalization role.
+
+The lang-gated count extra `vi_m_pieces` lives in count_markers.py: in the
+consumed extra_count order it sorts after the Latin count markers, whereas these
+canon multipack patterns sort early — a single module cannot occupy both
+positions, so the extract-role marker is split out (Phase 0.5 / Plan 04).
+"""
 
 from __future__ import annotations
 
@@ -16,6 +22,7 @@ PATTERNS: tuple[PackPattern, ...] = (
         groups=("count",),
         lang="vi",
         role="canonicalization",
+        kind="canon",
     ),
     PackPattern(
         id="multipack_vi_count_unit",
@@ -26,14 +33,6 @@ PATTERNS: tuple[PackPattern, ...] = (
         groups=("count",),
         lang="vi",
         role="canonicalization",
-    ),
-    # '200M' = 200 miếng. Lang-gated to avoid meter clashes.
-    # extract-role: no re.IGNORECASE (mirrors extract.py loader).
-    PackPattern(
-        id="vi_m_pieces",
-        regex=re.compile(r"\b(?P<count>\d+)\s*M\b"),
-        groups=("count",),
-        lang="vi",
-        role="extract",
+        kind="canon",
     ),
 )

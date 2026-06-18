@@ -1,7 +1,10 @@
 """Language-agnostic multipack patterns (pack_patterns.yaml::patterns - canonicalization role).
 
 Translated verbatim from static/pack_patterns.yaml; re.IGNORECASE matches the
-existing loader at extract.py.
+existing loader at extract.py. The trailing "Nx" pattern (multipack_n_x_only)
+lives in multipack_trailing.py because, in the consumed canon order, the
+language-specific multipack_pcs_en (lang/en) sorts between these and it — the
+file split is the order source-of-truth (Phase 0.5 / Plan 04).
 """
 
 from __future__ import annotations
@@ -21,6 +24,7 @@ PATTERNS: tuple[PackPattern, ...] = (
         groups=("count", "value", "unit"),
         lang="any",
         role="canonicalization",
+        kind="canon",
     ),
     # "5kg(5kg×1)" or "5kg x 1" — pack-of-1 explicit  → count=1, value=5, unit=kg
     PackPattern(
@@ -32,13 +36,6 @@ PATTERNS: tuple[PackPattern, ...] = (
         groups=("count", "value", "unit"),
         lang="any",
         role="canonicalization",
-    ),
-    # Trailing "6X" alone
-    PackPattern(
-        id="multipack_n_x_only",
-        regex=re.compile(r"(?P<count>\d+)\s*[xX×]\s*$", re.IGNORECASE),
-        groups=("count",),
-        lang="any",
-        role="canonicalization",
+        kind="canon",
     ),
 )

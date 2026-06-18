@@ -35,5 +35,6 @@ PATTERNS: tuple[PackPattern, ...] = (
         groups=("value", "unit"),
         lang="any",
         role="canonicalization",
+        kind="canon",
     ),
 )
