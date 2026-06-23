@@ -24,13 +24,30 @@ _REDIRECTS: dict[str, list[str]] = {}
 
 
 def _load_anchors() -> pd.DataFrame:
+    # Tier-b retrieval vocabulary. Phase 0.8 decoupled the two consumers of the
+    # COICOP vocabulary: the clean short-item catalog `_sub_labels.parquet` feeds
+    # the tier-c sub_index, while tier-b RETRIEVAL also draws on the pre-rebuild
+    # vocabulary `_retrieval_legacy.parquet` (anchor + synonym rows whose verbatim
+    # real-cluster ids close the embedding vocabulary gap). Dropping that legacy
+    # vocabulary regresses COICOP retrieval (eval: 23.3% -> 15.3%); merging it with
+    # the new catalog anchors recovers most of it (-> 20.5%). The legacy sidecar is
+    # an optional local artifact (recoverable from the pre-0.8 parquet); when it is
+    # absent this loader degrades gracefully to the catalog anchors alone. Folding
+    # the new anchors into the retrieval index properly is deferred to Phase 1's
+    # KNN recalibration.
+    frames: list[pd.DataFrame] = []
     p = _COICOP_DIR / "_sub_labels.parquet"
-    if not p.exists():
+    if p.exists():
+        df = pd.read_parquet(p)
+        frames.append(df[df["role"].isin(["anchor", "synonym"])])
+    legacy = _COICOP_DIR / "_retrieval_legacy.parquet"
+    if legacy.exists():
+        ldf = pd.read_parquet(legacy)
+        frames.append(ldf[ldf["role"].isin(["anchor", "synonym"])])
+    if not frames:
         return pd.DataFrame()
-    df = pd.read_parquet(p)
-    # Include both anchor and synonym rows: synonym rows carry verbatim JSON ids
-    # that match real-cluster sub_label_id values, closing the vocabulary gap.
-    return df[df["role"].isin(["anchor", "synonym"])].copy()
+    out = pd.concat(frames, ignore_index=True)
+    return out.drop_duplicates(subset=["coicop_code", "id"], keep="first").copy()
 
 
 def _load_excludes() -> dict[str, list[str]]:
