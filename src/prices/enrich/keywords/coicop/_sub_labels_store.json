@@ -2910,18 +2910,6 @@
     "label": "donkey milk",
     "numeric_id": "01.1.4.1.9",
     "role": "anchor"
-   },
-   {
-    "allowed_bases": null,
-    "id": "milk-of-other-animals-n-e-c",
-    "keywords_by_lang": {
-     "en": [
-      "milk of other animals n.e.c"
-     ]
-    },
-    "label": "milk of other animals n.e.c",
-    "numeric_id": "01.1.4.1.9",
-    "role": "anchor"
    }
   ],
   "01.1.4.2.0": [

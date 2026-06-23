@@ -115,7 +115,7 @@ def load_coicop_context(scope: Optional[frozenset] = None) -> str:
     return _render_scope(scope)
 
 
-_CLEAN_ANCHOR_MAX_ID_LEN = 30
+_CLEAN_ANCHOR_MAX_ID_LEN = 250
 
 
 def load_taxonomy_index() -> tuple[set[str], dict[str, set[str]]]:
@@ -124,10 +124,16 @@ def load_taxonomy_index() -> tuple[set[str], dict[str, set[str]]]:
     `valid_coicop_codes` is the set of deepest-available xlsx leaves.
     Sub-label vocabularies are sourced from `_sub_labels.parquet`, filtered to
     curated kebab ids: `role='synonym'` (JSON-curated + harvested) plus
-    `role='anchor'` rows whose id length is at most _CLEAN_ANCHOR_MAX_ID_LEN
-    (catches single-concept depth-5 anchors like `rice`, drops semicolon-list
-    catch-all anchors like `garden-tractors-chain-saws-...`). `_other` is
-    added to every sub-vocabulary as the taxonomy-valid fallback."""
+    `role='anchor'` rows whose id length is at most _CLEAN_ANCHOR_MAX_ID_LEN.
+    The catch-all-list rationale that originally motivated a tight (30-char)
+    gate (dropping semicolon-list anchors like `garden-tractors-chain-saws-...`)
+    is now handled UPSTREAM by the Phase 00.8 D1 prose purge at harvest time:
+    every surviving sub_label is a grounded `role='anchor'` row and all prose
+    `synonym` rows are gone, so the gate only guards against pathological
+    lengths. It is raised to 250 so legitimate multi-word grounded anchors
+    (e.g. `farro-broken-and-pearled` or long verbatim COICOP item descriptions)
+    are NOT silently dropped to `_other`-only. `_other` is added to every
+    sub-vocabulary as the taxonomy-valid fallback."""
     global _TAXONOMY_INDEX
     if _TAXONOMY_INDEX is not None:
         return _TAXONOMY_INDEX
