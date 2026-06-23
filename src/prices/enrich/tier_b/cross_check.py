@@ -104,7 +104,8 @@ def lookup_allowed_bases(
     if klass is None:
         return None, "unknown_class"
 
-    leaf_code = ".".join(coicop_code.split(".")[:4])
+    depth = 5 if coicop_code.split(".")[0].zfill(2) == "01" else 4
+    leaf_code = ".".join(coicop_code.split(".")[:depth])
     grp, sg, leaf = _walk_to_leaf(klass, leaf_code)
     if leaf is None:
         return None, "unknown_leaf"
