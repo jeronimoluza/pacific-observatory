@@ -11,99 +11,256 @@
       "label": "Cereals and cereal products",
       "leaves": [
        {
-        "code": "01.1.1.1",
-        "excludes": [
-         {
-          "code": "01.1.1.2",
-          "label": "flour of cereals",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.1.4",
-          "label": "breakfast cereals",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.9.1",
-          "label": "cereal-based ready-made preparations such as-ready-made soups based on cereals",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.9.2",
-          "label": "baby rice cereals and other baby cereals",
-          "lang": "en"
-         },
-         {
-          "code": "09.3.1.2",
-          "label": "seeds for planting",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Cereals"
-       },
-       {
-        "code": "01.1.1.2",
-        "excludes": [
-         {
-          "code": "01.1.9.2",
-          "label": "flour as baby food, baby rice cereals and other baby cereals",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Flour of cereals"
-       },
-       {
-        "code": "01.1.1.3",
-        "excludes": [
-         {
-          "code": "01.1.9.1",
-          "label": "pizza with topping, whether precooked or not; quiche; and meat and fish pies",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Bread and bakery products"
-       },
-       {
-        "code": "01.1.1.4",
+        "code": "01.1.1.1.1",
         "excludes": [],
-        "keywords_by_lang": {},
+        "keywords_by_lang": {
+         "en": [
+          "Wheat",
+          "wheat"
+         ]
+        },
+        "label": "Wheat"
+       },
+       {
+        "code": "01.1.1.1.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Rice",
+          "rice"
+         ]
+        },
+        "label": "Rice"
+       },
+       {
+        "code": "01.1.1.1.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Sorghum",
+          "sorghum"
+         ]
+        },
+        "label": "Sorghum"
+       },
+       {
+        "code": "01.1.1.1.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Barley",
+          "barley"
+         ]
+        },
+        "label": "Barley"
+       },
+       {
+        "code": "01.1.1.1.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Millet",
+          "millet"
+         ]
+        },
+        "label": "Millet"
+       },
+       {
+        "code": "01.1.1.1.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Maize (corn)",
+          "maize (corn)"
+         ]
+        },
+        "label": "Maize (corn)"
+       },
+       {
+        "code": "01.1.1.1.7",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Quinoa",
+          "quinoa"
+         ]
+        },
+        "label": "Quinoa"
+       },
+       {
+        "code": "01.1.1.1.8",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Teff",
+          "teff"
+         ]
+        },
+        "label": "Teff"
+       },
+       {
+        "code": "01.1.1.1.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other cereals",
+          "other cereals"
+         ]
+        },
+        "label": "Other cereals"
+       },
+       {
+        "code": "01.1.1.2.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Flour of wheat",
+          "flour of wheat"
+         ]
+        },
+        "label": "Flour of wheat"
+       },
+       {
+        "code": "01.1.1.2.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Flour of rice",
+          "flour of rice"
+         ]
+        },
+        "label": "Flour of rice"
+       },
+       {
+        "code": "01.1.1.2.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Flour of sorghum",
+          "flour of sorghum"
+         ]
+        },
+        "label": "Flour of sorghum"
+       },
+       {
+        "code": "01.1.1.2.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Flour of barley",
+          "flour of barley"
+         ]
+        },
+        "label": "Flour of barley"
+       },
+       {
+        "code": "01.1.1.2.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Flour of millet",
+          "flour of millet"
+         ]
+        },
+        "label": "Flour of millet"
+       },
+       {
+        "code": "01.1.1.2.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Flour of maize or cornmeal",
+          "flour of maize or cornmeal"
+         ]
+        },
+        "label": "Flour of maize or cornmeal"
+       },
+       {
+        "code": "01.1.1.2.7",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Flour of quinoa",
+          "flour of quinoa"
+         ]
+        },
+        "label": "Flour of quinoa"
+       },
+       {
+        "code": "01.1.1.2.8",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Flour of teff",
+          "flour of teff"
+         ]
+        },
+        "label": "Flour of teff"
+       },
+       {
+        "code": "01.1.1.2.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other flours of cereals",
+          "other flours of cereals"
+         ]
+        },
+        "label": "Other flours of cereals"
+       },
+       {
+        "code": "01.1.1.3.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Bread",
+          "bread"
+         ]
+        },
+        "label": "Bread"
+       },
+       {
+        "code": "01.1.1.3.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other bakery products",
+          "other bakery products"
+         ]
+        },
+        "label": "Other bakery products"
+       },
+       {
+        "code": "01.1.1.4.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Breakfast cereals",
+          "breakfast cereals"
+         ]
+        },
         "label": "Breakfast cereals"
        },
        {
-        "code": "01.1.1.5",
-        "excludes": [
-         {
-          "code": "01.1.1.1",
-          "label": "bulgur",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.9.1",
-          "label": "prepared dishes containing stuffed pasta, and prepared couscous dishes",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.1.1.5.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Macaroni, noodles, couscous and similar pasta products",
+          "macaroni, noodles, couscous and similar pasta products"
+         ]
+        },
         "label": "Macaroni, noodles, couscous and similar pasta products"
        },
        {
-        "code": "01.1.1.9",
-        "excludes": [
-         {
-          "code": "01.1.7.9",
-          "label": "soy meat and soy burgers, veggie burgers, tofu, tempeh and other meat substitutes made from vegetables and nuts; and potato starch, tapioca, sago and other starches",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.9.1",
-          "label": "ready-made cereal-based preparations, such as ready-made cereal-based soups",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.1.1.9.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other milled cereal and grain products",
+          "other milled cereal and grain products"
+         ]
+        },
         "label": "Other milled cereal and grain products"
        }
       ]
@@ -113,67 +270,246 @@
       "label": "Live animals, and meat and other parts of slaughtered land animals",
       "leaves": [
        {
-        "code": "01.1.2.1",
-        "excludes": [
-         {
-          "code": "01.1.3.1",
-          "label": "live fish",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.3.4",
-          "label": "other live seafood",
-          "lang": "en"
-         },
-         {
-          "code": "07.1.4.0",
-          "label": "live animals for transport",
-          "lang": "en"
-         },
-         {
-          "code": "09.1.2.4",
-          "label": "live animals purchased for recreational purposes",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Live land animals"
-       },
-       {
-        "code": "01.1.2.2",
+        "code": "01.1.2.1.1",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Meat, fresh, chilled or frozen"
+        "keywords_by_lang": {
+         "en": [
+          "Bovine animal, live",
+          "bovine animal, live"
+         ]
+        },
+        "label": "Bovine animal, live"
        },
        {
-        "code": "01.1.2.3",
-        "excludes": [
-         {
-          "code": "01.1.2.5",
-          "label": "pâté",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Meat, dried, salted, in brine or smoked"
-       },
-       {
-        "code": "01.1.2.4",
-        "excludes": [
-         {
-          "code": "01.1.2.5",
-          "label": "preparations of offal, blood and other parts of slaughtered animals",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Offal, blood and other parts of slaughtered animals, fresh, chilled or frozen, dried, salted, in brine or smoked"
-       },
-       {
-        "code": "01.1.2.5",
+        "code": "01.1.2.1.2",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Preparations of meat, offal, blood and other parts of slaughtered animals"
+        "keywords_by_lang": {
+         "en": [
+          "Pigs, live",
+          "pigs, live"
+         ]
+        },
+        "label": "Pigs, live"
+       },
+       {
+        "code": "01.1.2.1.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Goats, lambs and sheep, live",
+          "goats, lambs and sheep, live"
+         ]
+        },
+        "label": "Goats, lambs and sheep, live"
+       },
+       {
+        "code": "01.1.2.1.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Poultry, live",
+          "poultry, live"
+         ]
+        },
+        "label": "Poultry, live"
+       },
+       {
+        "code": "01.1.2.1.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Hares and rabbits, live",
+          "hares and rabbits, live"
+         ]
+        },
+        "label": "Hares and rabbits, live"
+       },
+       {
+        "code": "01.1.2.1.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other live animals",
+          "other live animals"
+         ]
+        },
+        "label": "Other live animals"
+       },
+       {
+        "code": "01.1.2.2.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Meat of bovine animals, fresh, chilled or frozen",
+          "meat of bovine animals, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Meat of bovine animals, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.2.2.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Meat of pigs, fresh, chilled or frozen",
+          "meat of pigs, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Meat of pigs, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.2.2.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Meat of goats, lambs and sheep, fresh, chilled or frozen",
+          "meat of goats, lambs and sheep, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Meat of goats, lambs and sheep, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.2.2.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Meat of poultry, fresh, chilled or frozen",
+          "meat of poultry, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Meat of poultry, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.2.2.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Meat of hares and rabbits, fresh, chilled or frozen",
+          "meat of hares and rabbits, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Meat of hares and rabbits, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.2.2.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Meat of horses and other equines, fresh, chilled or frozen",
+          "meat of horses and other equines, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Meat of horses and other equines, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.2.2.7",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Meat of camels and camelids, fresh, chilled or frozen",
+          "meat of camels and camelids, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Meat of camels and camelids, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.2.2.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other meat, fresh, chilled or frozen",
+          "other meat, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Other meat, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.2.3.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Meat of bovine, salted, dried or smoked",
+          "meat of bovine, salted, dried or smoked"
+         ]
+        },
+        "label": "Meat of bovine, salted, dried or smoked"
+       },
+       {
+        "code": "01.1.2.3.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Meat of pigs, cuts, salted, dried or smoked (bacon and ham)",
+          "meat of pigs, cuts, salted, dried or smoked (bacon and ham)"
+         ]
+        },
+        "label": "Meat of pigs, cuts, salted, dried or smoked (bacon and ham)"
+       },
+       {
+        "code": "01.1.2.3.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other meat, dried, salted or smoked",
+          "other meat, dried, salted or smoked"
+         ]
+        },
+        "label": "Other meat, dried, salted or smoked"
+       },
+       {
+        "code": "01.1.2.4.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Offal, blood and other parts of slaughtered animals fresh, chilled or frozen, dried, salted, in brine or smoked",
+          "offal, blood and other parts of slaughtered animals fresh, chilled or frozen, dried, salted, in brine or smoked"
+         ]
+        },
+        "label": "Offal, blood and other parts of slaughtered animals fresh, chilled or frozen, dried, salted, in brine or smoked"
+       },
+       {
+        "code": "01.1.2.5.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Sausages and similar products of meat, offal or blood",
+          "sausages and similar products of meat, offal or blood"
+         ]
+        },
+        "label": "Sausages and similar products of meat, offal or blood"
+       },
+       {
+        "code": "01.1.2.5.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Canned meat",
+          "canned meat"
+         ]
+        },
+        "label": "Canned meat"
+       },
+       {
+        "code": "01.1.2.5.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Pâté, including liver pâté",
+          "pâté, including liver pâté"
+         ]
+        },
+        "label": "Pâté, including liver pâté"
+       },
+       {
+        "code": "01.1.2.5.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other preparations of meat, offal or blood n.e.c.",
+          "other preparations of meat, offal or blood n.e.c."
+         ]
+        },
+        "label": "Other preparations of meat, offal or blood n.e.c."
        }
       ]
      },
@@ -182,75 +518,366 @@
       "label": "Fish and other seafood",
       "leaves": [
        {
-        "code": "01.1.3.1",
-        "excludes": [
-         {
-          "code": "01.1.3.7",
-          "label": "meal, livers, roes, fins, maws and other offal",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Fish, live, fresh, chilled or frozen"
-       },
-       {
-        "code": "01.1.3.2",
-        "excludes": [
-         {
-          "code": "01.1.3.7",
-          "label": "meal, livers, roes, fins, maws and other offal",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Fish, dried, salted, in brine or smoked"
-       },
-       {
-        "code": "01.1.3.3",
-        "excludes": [
-         {
-          "code": "01.1.3.7",
-          "label": "prepared or preserved livers, roes, fins and other offal",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Fish preparations"
-       },
-       {
-        "code": "01.1.3.4",
-        "excludes": [
-         {
-          "code": "01.1.7.4",
-          "label": "seaweeds and other edible aquatic plants",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Other seafood, live, fresh, chilled or frozen"
-       },
-       {
-        "code": "01.1.3.5",
+        "code": "01.1.3.1.1",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Other seafood, dried, salted, in brine or smoked"
+        "keywords_by_lang": {
+         "en": [
+          "Freshwater fish, live, fresh, chilled or frozen",
+          "freshwater fish, live, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Freshwater fish, live, fresh, chilled or frozen"
        },
        {
-        "code": "01.1.3.6",
+        "code": "01.1.3.1.2",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Other seafood preparations"
+        "keywords_by_lang": {
+         "en": [
+          "Salmonoidae, live, fresh, chilled or frozen",
+          "salmonoidae, live, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Salmonoidae, live, fresh, chilled or frozen"
        },
        {
-        "code": "01.1.3.7",
-        "excludes": [
-         {
-          "code": "01.1.7.4",
-          "label": "seaweeds and other aquatic plants",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.1.3.1.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Flatfish, live, fresh, chilled, or frozen",
+          "flatfish, live, fresh, chilled, or frozen"
+         ]
+        },
+        "label": "Flatfish, live, fresh, chilled, or frozen"
+       },
+       {
+        "code": "01.1.3.1.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Gadiformes, live, fresh, chilled, or frozen",
+          "gadiformes, live, fresh, chilled, or frozen"
+         ]
+        },
+        "label": "Gadiformes, live, fresh, chilled, or frozen"
+       },
+       {
+        "code": "01.1.3.1.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Tunas, skipjack or stripe-bellied bonito, live, fresh, chilled, or frozen",
+          "tunas, skipjack or stripe-bellied bonito, live, fresh, chilled, or frozen"
+         ]
+        },
+        "label": "Tunas, skipjack or stripe-bellied bonito, live, fresh, chilled, or frozen"
+       },
+       {
+        "code": "01.1.3.1.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other pelagic fish, live, fresh, chilled, or frozen",
+          "other pelagic fish, live, fresh, chilled, or frozen"
+         ]
+        },
+        "label": "Other pelagic fish, live, fresh, chilled, or frozen"
+       },
+       {
+        "code": "01.1.3.1.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other fish, live, fresh, chilled, or frozen",
+          "other fish, live, fresh, chilled, or frozen"
+         ]
+        },
+        "label": "Other fish, live, fresh, chilled, or frozen"
+       },
+       {
+        "code": "01.1.3.2.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Salmonoidae, smoked",
+          "salmonoidae, smoked"
+         ]
+        },
+        "label": "Salmonoidae, smoked"
+       },
+       {
+        "code": "01.1.3.2.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Gadiformes, dried, salted or in brine",
+          "gadiformes, dried, salted or in brine"
+         ]
+        },
+        "label": "Gadiformes, dried, salted or in brine"
+       },
+       {
+        "code": "01.1.3.2.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other fish, dried, salted, in brine, smoked",
+          "other fish, dried, salted, in brine, smoked"
+         ]
+        },
+        "label": "Other fish, dried, salted, in brine, smoked"
+       },
+       {
+        "code": "01.1.3.3.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Tunas, skipjack or stripe-bellied bonito, prepared or preserved",
+          "tunas, skipjack or stripe-bellied bonito, prepared or preserved"
+         ]
+        },
+        "label": "Tunas, skipjack or stripe-bellied bonito, prepared or preserved"
+       },
+       {
+        "code": "01.1.3.3.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other pelagic fish, prepared or preserved",
+          "other pelagic fish, prepared or preserved"
+         ]
+        },
+        "label": "Other pelagic fish, prepared or preserved"
+       },
+       {
+        "code": "01.1.3.3.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Caviar and caviar substitutes",
+          "caviar and caviar substitutes"
+         ]
+        },
+        "label": "Caviar and caviar substitutes"
+       },
+       {
+        "code": "01.1.3.3.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other fish, prepared or preserved",
+          "other fish, prepared or preserved"
+         ]
+        },
+        "label": "Other fish, prepared or preserved"
+       },
+       {
+        "code": "01.1.3.4.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Shrimps and prawns, live, fresh, chilled or frozen",
+          "shrimps and prawns, live, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Shrimps and prawns, live, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.3.4.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other crustaceans, live, fresh, chilled or frozen",
+          "other crustaceans, live, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Other crustaceans, live, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.3.4.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Bivalves, live, fresh, chilled or frozen",
+          "bivalves, live, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Bivalves, live, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.3.4.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cephalopods, live, fresh, chilled or frozen",
+          "cephalopods, live, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Cephalopods, live, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.3.4.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other molluscs, live, fresh, chilled or frozen",
+          "other molluscs, live, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Other molluscs, live, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.3.4.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other aquatic invertebrates, live, fresh, chilled or frozen",
+          "other aquatic invertebrates, live, fresh, chilled or frozen"
+         ]
+        },
+        "label": "Other aquatic invertebrates, live, fresh, chilled or frozen"
+       },
+       {
+        "code": "01.1.3.5.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Shrimps and prawns, dried, salted or in brine; smoked",
+          "shrimps and prawns, dried, salted or in brine; smoked"
+         ]
+        },
+        "label": "Shrimps and prawns, dried, salted or in brine; smoked"
+       },
+       {
+        "code": "01.1.3.5.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other crustaceans, dried, salted or in brine; smoked",
+          "other crustaceans, dried, salted or in brine; smoked"
+         ]
+        },
+        "label": "Other crustaceans, dried, salted or in brine; smoked"
+       },
+       {
+        "code": "01.1.3.5.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Bivalves, dried, salted or in brine; smoked",
+          "bivalves, dried, salted or in brine; smoked"
+         ]
+        },
+        "label": "Bivalves, dried, salted or in brine; smoked"
+       },
+       {
+        "code": "01.1.3.5.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cephalopods, dried, salted or in brine; smoked",
+          "cephalopods, dried, salted or in brine; smoked"
+         ]
+        },
+        "label": "Cephalopods, dried, salted or in brine; smoked"
+       },
+       {
+        "code": "01.1.3.5.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other molluscs, dried, salted or in brine; smoked",
+          "other molluscs, dried, salted or in brine; smoked"
+         ]
+        },
+        "label": "Other molluscs, dried, salted or in brine; smoked"
+       },
+       {
+        "code": "01.1.3.5.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other aquatic invertebrates, dried, salted or in brine; smoked",
+          "other aquatic invertebrates, dried, salted or in brine; smoked"
+         ]
+        },
+        "label": "Other aquatic invertebrates, dried, salted or in brine; smoked"
+       },
+       {
+        "code": "01.1.3.6.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Shrimps and prawns, prepared or preserved",
+          "shrimps and prawns, prepared or preserved"
+         ]
+        },
+        "label": "Shrimps and prawns, prepared or preserved"
+       },
+       {
+        "code": "01.1.3.6.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other crustaceans, prepared or preserved",
+          "other crustaceans, prepared or preserved"
+         ]
+        },
+        "label": "Other crustaceans, prepared or preserved"
+       },
+       {
+        "code": "01.1.3.6.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Bivalves, prepared or preserved",
+          "bivalves, prepared or preserved"
+         ]
+        },
+        "label": "Bivalves, prepared or preserved"
+       },
+       {
+        "code": "01.1.3.6.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cephalopods, prepared or preserved",
+          "cephalopods, prepared or preserved"
+         ]
+        },
+        "label": "Cephalopods, prepared or preserved"
+       },
+       {
+        "code": "01.1.3.6.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other molluscs, prepared or preserved",
+          "other molluscs, prepared or preserved"
+         ]
+        },
+        "label": "Other molluscs, prepared or preserved"
+       },
+       {
+        "code": "01.1.3.6.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other aquatic invertebrates, prepared or preserved",
+          "other aquatic invertebrates, prepared or preserved"
+         ]
+        },
+        "label": "Other aquatic invertebrates, prepared or preserved"
+       },
+       {
+        "code": "01.1.3.7.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Livers, roes and other offal of fish and of other seafood in all forms",
+          "livers, roes and other offal of fish and of other seafood in all forms"
+         ]
+        },
         "label": "Livers, roes and other offal of fish and of other seafood in all forms"
        }
       ]
@@ -260,120 +887,256 @@
       "label": "Milk, other dairy products and eggs",
       "leaves": [
        {
-        "code": "01.1.4.1",
-        "excludes": [
-         {
-          "code": "01.1.4.6",
-          "label": "curdled, fermented or acidified milk and cream",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Raw and whole milk"
+        "code": "01.1.4.1.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Raw and whole milk of cattle",
+          "raw and whole milk of cattle"
+         ]
+        },
+        "label": "Raw and whole milk of cattle"
        },
        {
-        "code": "01.1.4.2",
+        "code": "01.1.4.1.2",
         "excludes": [],
-        "keywords_by_lang": {},
+        "keywords_by_lang": {
+         "en": [
+          "Raw and whole milk of buffaloes",
+          "raw and whole milk of buffaloes"
+         ]
+        },
+        "label": "Raw and whole milk of buffaloes"
+       },
+       {
+        "code": "01.1.4.1.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Raw and whole milk of sheep and goats",
+          "raw and whole milk of sheep and goats"
+         ]
+        },
+        "label": "Raw and whole milk of sheep and goats"
+       },
+       {
+        "code": "01.1.4.1.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Raw and whole milk of camels",
+          "raw and whole milk of camels"
+         ]
+        },
+        "label": "Raw and whole milk of camels"
+       },
+       {
+        "code": "01.1.4.1.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other raw and whole milk",
+          "other raw and whole milk"
+         ]
+        },
+        "label": "Other raw and whole milk"
+       },
+       {
+        "code": "01.1.4.2.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Skimmed milk",
+          "skimmed milk"
+         ]
+        },
         "label": "Skimmed milk"
        },
        {
-        "code": "01.1.4.3",
-        "excludes": [
-         {
-          "code": "01.1.4.7",
-          "label": "beverages flavoured with cocoa, coffee or other substances",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.9.2",
-          "label": "condensed, evaporated and powdered milk used as baby food",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Other milk and cream"
+        "code": "01.1.4.3.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Condensed or evaporated milk",
+          "condensed or evaporated milk"
+         ]
+        },
+        "label": "Condensed or evaporated milk"
        },
        {
-        "code": "01.1.4.4",
-        "excludes": [
-         {
-          "code": "01.1.9.3",
-          "label": "coconut milk for cooking",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Non-animal milk"
+        "code": "01.1.4.3.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Powdered milk",
+          "powdered milk"
+         ]
+        },
+        "label": "Powdered milk"
        },
        {
-        "code": "01.1.4.5",
-        "excludes": [
-         {
-          "code": "01.1.7.9",
-          "label": "tofu",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.1.4.3.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cream",
+          "cream"
+         ]
+        },
+        "label": "Cream"
+       },
+       {
+        "code": "01.1.4.3.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other milk",
+          "other milk"
+         ]
+        },
+        "label": "Other milk"
+       },
+       {
+        "code": "01.1.4.4.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Coconut milk",
+          "coconut milk"
+         ]
+        },
+        "label": "Coconut milk"
+       },
+       {
+        "code": "01.1.4.4.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Almond milk",
+          "almond milk"
+         ]
+        },
+        "label": "Almond milk"
+       },
+       {
+        "code": "01.1.4.4.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Soy milk",
+          "soy milk"
+         ]
+        },
+        "label": "Soy milk"
+       },
+       {
+        "code": "01.1.4.4.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Rice milk",
+          "rice milk"
+         ]
+        },
+        "label": "Rice milk"
+       },
+       {
+        "code": "01.1.4.4.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Oat milk",
+          "oat milk"
+         ]
+        },
+        "label": "Oat milk"
+       },
+       {
+        "code": "01.1.4.4.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other non-animal milk",
+          "other non-animal milk"
+         ]
+        },
+        "label": "Other non-animal milk"
+       },
+       {
+        "code": "01.1.4.5.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cheese",
+          "cheese"
+         ]
+        },
         "label": "Cheese"
        },
        {
-        "code": "01.1.4.6",
-        "excludes": [
-         {
-          "code": "01.1.8.6",
-          "label": "frozen yoghurt",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.1.4.6.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Yoghurt and similar products",
+          "yoghurt and similar products"
+         ]
+        },
         "label": "Yoghurt and similar products"
        },
        {
-        "code": "01.1.4.7",
-        "excludes": [
-         {
-          "code": "01.1.8.3",
-          "label": "lemon curd and similar fruit card",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.1.4.7.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Milk-based dessert and beverages",
+          "milk-based dessert and beverages"
+         ]
+        },
         "label": "Milk-based dessert and beverages"
        },
        {
-        "code": "01.1.4.8",
-        "excludes": [
-         {
-          "code": "01.1.3.7",
-          "label": "fish roe",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.9.1",
-          "label": "omelettes, crêpes and other ready-made egg-based food products",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Eggs"
+        "code": "01.1.4.8.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Eggs of hen and other birds, in shell, fresh",
+          "eggs of hen and other birds, in shell, fresh"
+         ]
+        },
+        "label": "Eggs of hen and other birds, in shell, fresh"
        },
        {
-        "code": "01.1.4.9",
-        "excludes": [
-         {
-          "code": "01.1.5.2",
-          "label": "butter and other oils and fats derived from milk",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.8.6",
-          "label": "ice cream",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.1.4.8.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Eggs of other animals, in shell, fresh",
+          "eggs of other animals, in shell, fresh"
+         ]
+        },
+        "label": "Eggs of other animals, in shell, fresh"
+       },
+       {
+        "code": "01.1.4.8.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other egg products",
+          "other egg products"
+         ]
+        },
+        "label": "Other egg products"
+       },
+       {
+        "code": "01.1.4.9.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other dairy products",
+          "other dairy products"
+         ]
+        },
         "label": "Other dairy products"
        }
       ]
@@ -383,40 +1146,169 @@
       "label": "Oils and fats",
       "leaves": [
        {
-        "code": "01.1.5.1",
+        "code": "01.1.5.1.1",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Vegetable oils"
+        "keywords_by_lang": {
+         "en": [
+          "Sunflower-seed and safflower-seed oil",
+          "sunflower-seed and safflower-seed oil"
+         ]
+        },
+        "label": "Sunflower-seed and safflower-seed oil"
        },
        {
-        "code": "01.1.5.2",
+        "code": "01.1.5.1.2",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Butter and other oils and fats derived from milk"
+        "keywords_by_lang": {
+         "en": [
+          "Palm oil",
+          "palm oil"
+         ]
+        },
+        "label": "Palm oil"
        },
        {
-        "code": "01.1.5.3",
-        "excludes": [
-         {
-          "code": "01.1.8.4",
-          "label": "peanut butter",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.1.5.1.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Olive oil",
+          "olive oil"
+         ]
+        },
+        "label": "Olive oil"
+       },
+       {
+        "code": "01.1.5.1.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Soya bean oil",
+          "soya bean oil"
+         ]
+        },
+        "label": "Soya bean oil"
+       },
+       {
+        "code": "01.1.5.1.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Groundnut oil",
+          "groundnut oil"
+         ]
+        },
+        "label": "Groundnut oil"
+       },
+       {
+        "code": "01.1.5.1.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Coconut oil",
+          "coconut oil"
+         ]
+        },
+        "label": "Coconut oil"
+       },
+       {
+        "code": "01.1.5.1.7",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Corn oil",
+          "corn oil"
+         ]
+        },
+        "label": "Corn oil"
+       },
+       {
+        "code": "01.1.5.1.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other edible vegetable oils n.e.c.",
+          "other edible vegetable oils n.e.c."
+         ]
+        },
+        "label": "Other edible vegetable oils n.e.c."
+       },
+       {
+        "code": "01.1.5.2.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Butter",
+          "butter"
+         ]
+        },
+        "label": "Butter"
+       },
+       {
+        "code": "01.1.5.2.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other oils and fats derived from milk",
+          "other oils and fats derived from milk"
+         ]
+        },
+        "label": "Other oils and fats derived from milk"
+       },
+       {
+        "code": "01.1.5.3.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Margarine and similar preparations",
+          "margarine and similar preparations"
+         ]
+        },
         "label": "Margarine and similar preparations"
        },
        {
-        "code": "01.1.5.9",
-        "excludes": [
-         {
-          "code": "06.1.1.1",
-          "label": "cod liver or halibut liver oil",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Other animal oils and fats"
+        "code": "01.1.5.9.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Lard",
+          "lard"
+         ]
+        },
+        "label": "Lard"
+       },
+       {
+        "code": "01.1.5.9.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Tallow",
+          "tallow"
+         ]
+        },
+        "label": "Tallow"
+       },
+       {
+        "code": "01.1.5.9.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Edible oils and fats of fish",
+          "edible oils and fats of fish"
+         ]
+        },
+        "label": "Edible oils and fats of fish"
+       },
+       {
+        "code": "01.1.5.9.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other animal oils and fats n.e.c.",
+          "other animal oils and fats n.e.c."
+         ]
+        },
+        "label": "Other animal oils and fats n.e.c."
        }
       ]
      },
@@ -425,86 +1317,598 @@
       "label": "Fruits and nuts",
       "leaves": [
        {
-        "code": "01.1.6.1",
-        "excludes": [
-         {
-          "code": "01.1.7.5",
-          "label": "plantains and cooking bananas",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Dates, figs and tropical fruits, fresh"
+        "code": "01.1.6.1.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Avocados, fresh",
+          "avocados, fresh"
+         ]
+        },
+        "label": "Avocados, fresh"
        },
        {
-        "code": "01.1.6.2",
+        "code": "01.1.6.1.2",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Citrus fruits, fresh"
+        "keywords_by_lang": {
+         "en": [
+          "Bananas, fresh",
+          "bananas, fresh"
+         ]
+        },
+        "label": "Bananas, fresh"
        },
        {
-        "code": "01.1.6.3",
+        "code": "01.1.6.1.3",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Stone fruits and pome fruits, fresh"
+        "keywords_by_lang": {
+         "en": [
+          "Dates, fresh",
+          "dates, fresh"
+         ]
+        },
+        "label": "Dates, fresh"
        },
        {
-        "code": "01.1.6.4",
+        "code": "01.1.6.1.4",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Berries, fresh"
+        "keywords_by_lang": {
+         "en": [
+          "Figs, fresh",
+          "figs, fresh"
+         ]
+        },
+        "label": "Figs, fresh"
        },
        {
-        "code": "01.1.6.5",
+        "code": "01.1.6.1.5",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Other fruits, fresh"
+        "keywords_by_lang": {
+         "en": [
+          "Mangoes, guavas and mangosteens, fresh",
+          "mangoes, guavas and mangosteens, fresh"
+         ]
+        },
+        "label": "Mangoes, guavas and mangosteens, fresh"
        },
        {
-        "code": "01.1.6.6",
+        "code": "01.1.6.1.6",
         "excludes": [],
-        "keywords_by_lang": {},
+        "keywords_by_lang": {
+         "en": [
+          "Papayas, fresh",
+          "papayas, fresh"
+         ]
+        },
+        "label": "Papayas, fresh"
+       },
+       {
+        "code": "01.1.6.1.7",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Pineapples, fresh",
+          "pineapples, fresh"
+         ]
+        },
+        "label": "Pineapples, fresh"
+       },
+       {
+        "code": "01.1.6.1.8",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Coconuts, fresh",
+          "coconuts, fresh"
+         ]
+        },
+        "label": "Coconuts, fresh"
+       },
+       {
+        "code": "01.1.6.1.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other tropical fruits, fresh",
+          "other tropical fruits, fresh"
+         ]
+        },
+        "label": "Other tropical fruits, fresh"
+       },
+       {
+        "code": "01.1.6.2.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Pomelos and grapefruits, fresh",
+          "pomelos and grapefruits, fresh"
+         ]
+        },
+        "label": "Pomelos and grapefruits, fresh"
+       },
+       {
+        "code": "01.1.6.2.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Lemons and limes, fresh",
+          "lemons and limes, fresh"
+         ]
+        },
+        "label": "Lemons and limes, fresh"
+       },
+       {
+        "code": "01.1.6.2.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Oranges, fresh",
+          "oranges, fresh"
+         ]
+        },
+        "label": "Oranges, fresh"
+       },
+       {
+        "code": "01.1.6.2.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Tangerines, mandarins and clementines, fresh",
+          "tangerines, mandarins and clementines, fresh"
+         ]
+        },
+        "label": "Tangerines, mandarins and clementines, fresh"
+       },
+       {
+        "code": "01.1.6.2.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other citrus fruits, fresh",
+          "other citrus fruits, fresh"
+         ]
+        },
+        "label": "Other citrus fruits, fresh"
+       },
+       {
+        "code": "01.1.6.3.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Apples, fresh",
+          "apples, fresh"
+         ]
+        },
+        "label": "Apples, fresh"
+       },
+       {
+        "code": "01.1.6.3.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Pears and quinces, fresh",
+          "pears and quinces, fresh"
+         ]
+        },
+        "label": "Pears and quinces, fresh"
+       },
+       {
+        "code": "01.1.6.3.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Apricots, fresh",
+          "apricots, fresh"
+         ]
+        },
+        "label": "Apricots, fresh"
+       },
+       {
+        "code": "01.1.6.3.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cherries, fresh",
+          "cherries, fresh"
+         ]
+        },
+        "label": "Cherries, fresh"
+       },
+       {
+        "code": "01.1.6.3.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Peaches and nectarines, fresh",
+          "peaches and nectarines, fresh"
+         ]
+        },
+        "label": "Peaches and nectarines, fresh"
+       },
+       {
+        "code": "01.1.6.3.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Plums and sloes, fresh",
+          "plums and sloes, fresh"
+         ]
+        },
+        "label": "Plums and sloes, fresh"
+       },
+       {
+        "code": "01.1.6.3.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other stone fruits and pome fruits, fresh",
+          "other stone fruits and pome fruits, fresh"
+         ]
+        },
+        "label": "Other stone fruits and pome fruits, fresh"
+       },
+       {
+        "code": "01.1.6.4.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Currants, fresh",
+          "currants, fresh"
+         ]
+        },
+        "label": "Currants, fresh"
+       },
+       {
+        "code": "01.1.6.4.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Gooseberries, fresh",
+          "gooseberries, fresh"
+         ]
+        },
+        "label": "Gooseberries, fresh"
+       },
+       {
+        "code": "01.1.6.4.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Raspberries, fresh",
+          "raspberries, fresh"
+         ]
+        },
+        "label": "Raspberries, fresh"
+       },
+       {
+        "code": "01.1.6.4.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Blackberries, mulberries and loganberries, fresh",
+          "blackberries, mulberries and loganberries, fresh"
+         ]
+        },
+        "label": "Blackberries, mulberries and loganberries, fresh"
+       },
+       {
+        "code": "01.1.6.4.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Strawberries, fresh",
+          "strawberries, fresh"
+         ]
+        },
+        "label": "Strawberries, fresh"
+       },
+       {
+        "code": "01.1.6.4.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Blueberries, fresh",
+          "blueberries, fresh"
+         ]
+        },
+        "label": "Blueberries, fresh"
+       },
+       {
+        "code": "01.1.6.4.7",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cranberries, fresh",
+          "cranberries, fresh"
+         ]
+        },
+        "label": "Cranberries, fresh"
+       },
+       {
+        "code": "01.1.6.4.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other berries, fresh",
+          "other berries, fresh"
+         ]
+        },
+        "label": "Other berries, fresh"
+       },
+       {
+        "code": "01.1.6.5.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Grapes, fresh",
+          "grapes, fresh"
+         ]
+        },
+        "label": "Grapes, fresh"
+       },
+       {
+        "code": "01.1.6.5.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Kiwi fruits, fresh",
+          "kiwi fruits, fresh"
+         ]
+        },
+        "label": "Kiwi fruits, fresh"
+       },
+       {
+        "code": "01.1.6.5.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cantaloupes and other melons, fresh",
+          "cantaloupes and other melons, fresh"
+         ]
+        },
+        "label": "Cantaloupes and other melons, fresh"
+       },
+       {
+        "code": "01.1.6.5.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Watermelons, fresh",
+          "watermelons, fresh"
+         ]
+        },
+        "label": "Watermelons, fresh"
+       },
+       {
+        "code": "01.1.6.5.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Persimmons, fresh",
+          "persimmons, fresh"
+         ]
+        },
+        "label": "Persimmons, fresh"
+       },
+       {
+        "code": "01.1.6.5.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cashew apples, fresh",
+          "cashew apples, fresh"
+         ]
+        },
+        "label": "Cashew apples, fresh"
+       },
+       {
+        "code": "01.1.6.5.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other fruits or mixtures of fruit, fresh, n.e.c.",
+          "other fruits or mixtures of fruit, fresh, n.e.c."
+         ]
+        },
+        "label": "Other fruits or mixtures of fruit, fresh, n.e.c."
+       },
+       {
+        "code": "01.1.6.6.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Fruits, frozen",
+          "fruits, frozen"
+         ]
+        },
         "label": "Fruits, frozen"
        },
        {
-        "code": "01.1.6.7",
-        "excludes": [
-         {
-          "code": "01.1.6.9",
-          "label": "fruit flour",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Fruits, dried and dehydrated"
-       },
-       {
-        "code": "01.1.6.8",
+        "code": "01.1.6.7.1",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Nuts, in shell or shelled"
+        "keywords_by_lang": {
+         "en": [
+          "Raisins",
+          "raisins"
+         ]
+        },
+        "label": "Raisins"
        },
        {
-        "code": "01.1.6.9",
-        "excludes": [
-         {
-          "code": "01.1.8.3",
-          "label": "jams, marmalades, fruit jellies, purées and pastes",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.8.4",
-          "label": "nut purées, nut butters and nut pastes",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.9.2",
-          "label": "homogenized baby food preparations",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Fruits and nuts, ground, and in other preparations"
+        "code": "01.1.6.7.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Prunes",
+          "prunes"
+         ]
+        },
+        "label": "Prunes"
+       },
+       {
+        "code": "01.1.6.7.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other dried fruit",
+          "other dried fruit"
+         ]
+        },
+        "label": "Other dried fruit"
+       },
+       {
+        "code": "01.1.6.8.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Almonds, in shell or shelled",
+          "almonds, in shell or shelled"
+         ]
+        },
+        "label": "Almonds, in shell or shelled"
+       },
+       {
+        "code": "01.1.6.8.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cashew nuts, in shell or shelled",
+          "cashew nuts, in shell or shelled"
+         ]
+        },
+        "label": "Cashew nuts, in shell or shelled"
+       },
+       {
+        "code": "01.1.6.8.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Chestnuts, in shell or shelled",
+          "chestnuts, in shell or shelled"
+         ]
+        },
+        "label": "Chestnuts, in shell or shelled"
+       },
+       {
+        "code": "01.1.6.8.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Hazelnuts, in shell or shelled",
+          "hazelnuts, in shell or shelled"
+         ]
+        },
+        "label": "Hazelnuts, in shell or shelled"
+       },
+       {
+        "code": "01.1.6.8.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Pistachios, in shell or shelled",
+          "pistachios, in shell or shelled"
+         ]
+        },
+        "label": "Pistachios, in shell or shelled"
+       },
+       {
+        "code": "01.1.6.8.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Walnuts, in shell or shelled",
+          "walnuts, in shell or shelled"
+         ]
+        },
+        "label": "Walnuts, in shell or shelled"
+       },
+       {
+        "code": "01.1.6.8.7",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Brazil nuts, in shell or shelled",
+          "brazil nuts, in shell or shelled"
+         ]
+        },
+        "label": "Brazil nuts, in shell or shelled"
+       },
+       {
+        "code": "01.1.6.8.8",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Groundnuts, in shell or shelled",
+          "groundnuts, in shell or shelled"
+         ]
+        },
+        "label": "Groundnuts, in shell or shelled"
+       },
+       {
+        "code": "01.1.6.8.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other nuts, in shell or shelled",
+          "other nuts, in shell or shelled"
+         ]
+        },
+        "label": "Other nuts, in shell or shelled"
+       },
+       {
+        "code": "01.1.6.9.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Fruit and nuts flour",
+          "fruit and nuts flour"
+         ]
+        },
+        "label": "Fruit and nuts flour"
+       },
+       {
+        "code": "01.1.6.9.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Canned fruit",
+          "canned fruit"
+         ]
+        },
+        "label": "Canned fruit"
+       },
+       {
+        "code": "01.1.6.9.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Homogenized fruit preparations",
+          "homogenized fruit preparations"
+         ]
+        },
+        "label": "Homogenized fruit preparations"
+       },
+       {
+        "code": "01.1.6.9.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Nuts and seeds roasted, salted or otherwise prepared",
+          "nuts and seeds roasted, salted or otherwise prepared"
+         ]
+        },
+        "label": "Nuts and seeds roasted, salted or otherwise prepared"
+       },
+       {
+        "code": "01.1.6.9.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other fruit and nuts preparations",
+          "other fruit and nuts preparations"
+         ]
+        },
+        "label": "Other fruit and nuts preparations"
        }
       ]
      },
@@ -513,101 +1917,620 @@
       "label": "Vegetables, tubers, plantains, cooking bananas and pulses",
       "leaves": [
        {
-        "code": "01.1.7.1",
+        "code": "01.1.7.1.1",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Leafy or stem vegetables, fresh or chilled"
+        "keywords_by_lang": {
+         "en": [
+          "Asparagus, fresh or chilled",
+          "asparagus, fresh or chilled"
+         ]
+        },
+        "label": "Asparagus, fresh or chilled"
        },
        {
-        "code": "01.1.7.2",
+        "code": "01.1.7.1.2",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Fruit-bearing vegetables, fresh or chilled"
+        "keywords_by_lang": {
+         "en": [
+          "Cabbages, fresh or chilled",
+          "cabbages, fresh or chilled"
+         ]
+        },
+        "label": "Cabbages, fresh or chilled"
        },
        {
-        "code": "01.1.7.3",
+        "code": "01.1.7.1.3",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Green leguminous vegetables, fresh or chilled"
+        "keywords_by_lang": {
+         "en": [
+          "Cauliflowers and broccoli, fresh or chilled",
+          "cauliflowers and broccoli, fresh or chilled"
+         ]
+        },
+        "label": "Cauliflowers and broccoli, fresh or chilled"
        },
        {
-        "code": "01.1.7.4",
+        "code": "01.1.7.1.4",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Other vegetables, fresh or chilled"
+        "keywords_by_lang": {
+         "en": [
+          "Lettuce and chicory, fresh or chilled",
+          "lettuce and chicory, fresh or chilled"
+         ]
+        },
+        "label": "Lettuce and chicory, fresh or chilled"
        },
        {
-        "code": "01.1.7.5",
-        "excludes": [
-         {
-          "code": "01.1.6.1",
-          "label": "dessert bananas",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Tubers, plantains and cooking bananas, fresh or chilled"
+        "code": "01.1.7.1.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Spinach, fresh or chilled",
+          "spinach, fresh or chilled"
+         ]
+        },
+        "label": "Spinach, fresh or chilled"
        },
        {
-        "code": "01.1.7.6",
+        "code": "01.1.7.1.6",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Pulses"
+        "keywords_by_lang": {
+         "en": [
+          "Artichokes, fresh or chilled",
+          "artichokes, fresh or chilled"
+         ]
+        },
+        "label": "Artichokes, fresh or chilled"
        },
        {
-        "code": "01.1.7.7",
+        "code": "01.1.7.1.7",
         "excludes": [],
-        "keywords_by_lang": {},
+        "keywords_by_lang": {
+         "en": [
+          "Cassava leaves, fresh or chilled",
+          "cassava leaves, fresh or chilled"
+         ]
+        },
+        "label": "Cassava leaves, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.1.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other leafy or stem vegetables, fresh or chilled",
+          "other leafy or stem vegetables, fresh or chilled"
+         ]
+        },
+        "label": "Other leafy or stem vegetables, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.2.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Chillies and peppers, fresh or chilled",
+          "chillies and peppers, fresh or chilled"
+         ]
+        },
+        "label": "Chillies and peppers, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.2.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cucumbers and gherkins, fresh or chilled",
+          "cucumbers and gherkins, fresh or chilled"
+         ]
+        },
+        "label": "Cucumbers and gherkins, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.2.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Eggplants (aubergines), fresh or chilled",
+          "eggplants (aubergines), fresh or chilled"
+         ]
+        },
+        "label": "Eggplants (aubergines), fresh or chilled"
+       },
+       {
+        "code": "01.1.7.2.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Tomatoes, fresh or chilled",
+          "tomatoes, fresh or chilled"
+         ]
+        },
+        "label": "Tomatoes, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.2.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Pumpkins, squash and gourds, fresh or chilled",
+          "pumpkins, squash and gourds, fresh or chilled"
+         ]
+        },
+        "label": "Pumpkins, squash and gourds, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.2.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Okra, fresh or chilled",
+          "okra, fresh or chilled"
+         ]
+        },
+        "label": "Okra, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.2.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other fruit-bearing vegetables, fresh or chilled",
+          "other fruit-bearing vegetables, fresh or chilled"
+         ]
+        },
+        "label": "Other fruit-bearing vegetables, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.3.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Beans, fresh or chilled",
+          "beans, fresh or chilled"
+         ]
+        },
+        "label": "Beans, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.3.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "String beans, fresh or chilled",
+          "string beans, fresh or chilled"
+         ]
+        },
+        "label": "String beans, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.3.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Peas, fresh or chilled",
+          "peas, fresh or chilled"
+         ]
+        },
+        "label": "Peas, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.3.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Broad beans and horse beans, fresh or chilled",
+          "broad beans and horse beans, fresh or chilled"
+         ]
+        },
+        "label": "Broad beans and horse beans, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.3.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Soya beans, fresh or chilled",
+          "soya beans, fresh or chilled"
+         ]
+        },
+        "label": "Soya beans, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.3.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other green leguminous vegetables, fresh or chilled",
+          "other green leguminous vegetables, fresh or chilled"
+         ]
+        },
+        "label": "Other green leguminous vegetables, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.4.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Carrots and turnips, fresh or chilled",
+          "carrots and turnips, fresh or chilled"
+         ]
+        },
+        "label": "Carrots and turnips, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.4.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Garlic, fresh or chilled",
+          "garlic, fresh or chilled"
+         ]
+        },
+        "label": "Garlic, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.4.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Onions and shallots, fresh or chilled",
+          "onions and shallots, fresh or chilled"
+         ]
+        },
+        "label": "Onions and shallots, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.4.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Leeks and other alliaceous vegetables, fresh or chilled",
+          "leeks and other alliaceous vegetables, fresh or chilled"
+         ]
+        },
+        "label": "Leeks and other alliaceous vegetables, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.4.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Mushrooms and truffles, fresh or chilled",
+          "mushrooms and truffles, fresh or chilled"
+         ]
+        },
+        "label": "Mushrooms and truffles, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.4.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Edible seaweeds and other aquatic plants, fresh or chilled",
+          "edible seaweeds and other aquatic plants, fresh or chilled"
+         ]
+        },
+        "label": "Edible seaweeds and other aquatic plants, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.4.7",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Olives, fresh or chilled",
+          "olives, fresh or chilled"
+         ]
+        },
+        "label": "Olives, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.4.8",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Green maize (green corn)",
+          "green maize (green corn)"
+         ]
+        },
+        "label": "Green maize (green corn)"
+       },
+       {
+        "code": "01.1.7.4.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other vegetable n.e.c., mixtures of vegetables, fresh or chilled",
+          "other vegetable n.e.c., mixtures of vegetables, fresh or chilled"
+         ]
+        },
+        "label": "Other vegetable n.e.c., mixtures of vegetables, fresh or chilled"
+       },
+       {
+        "code": "01.1.7.5.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Potatoes",
+          "potatoes"
+         ]
+        },
+        "label": "Potatoes"
+       },
+       {
+        "code": "01.1.7.5.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Sweet potatoes",
+          "sweet potatoes"
+         ]
+        },
+        "label": "Sweet potatoes"
+       },
+       {
+        "code": "01.1.7.5.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cassava (manioc, yuca)",
+          "cassava (manioc, yuca)"
+         ]
+        },
+        "label": "Cassava (manioc, yuca)"
+       },
+       {
+        "code": "01.1.7.5.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Yams",
+          "yams"
+         ]
+        },
+        "label": "Yams"
+       },
+       {
+        "code": "01.1.7.5.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Taro",
+          "taro"
+         ]
+        },
+        "label": "Taro"
+       },
+       {
+        "code": "01.1.7.5.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Yautia",
+          "yautia"
+         ]
+        },
+        "label": "Yautia"
+       },
+       {
+        "code": "01.1.7.5.7",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Plantains and cooking bananas",
+          "plantains and cooking bananas"
+         ]
+        },
+        "label": "Plantains and cooking bananas"
+       },
+       {
+        "code": "01.1.7.5.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other tubers",
+          "other tubers"
+         ]
+        },
+        "label": "Other tubers"
+       },
+       {
+        "code": "01.1.7.6.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Beans, dried",
+          "beans, dried"
+         ]
+        },
+        "label": "Beans, dried"
+       },
+       {
+        "code": "01.1.7.6.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Broad beans and horse beans, dried",
+          "broad beans and horse beans, dried"
+         ]
+        },
+        "label": "Broad beans and horse beans, dried"
+       },
+       {
+        "code": "01.1.7.6.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Chickpeas, dried",
+          "chickpeas, dried"
+         ]
+        },
+        "label": "Chickpeas, dried"
+       },
+       {
+        "code": "01.1.7.6.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Lentils, dried",
+          "lentils, dried"
+         ]
+        },
+        "label": "Lentils, dried"
+       },
+       {
+        "code": "01.1.7.6.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Peas, dried",
+          "peas, dried"
+         ]
+        },
+        "label": "Peas, dried"
+       },
+       {
+        "code": "01.1.7.6.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cow peas, dried",
+          "cow peas, dried"
+         ]
+        },
+        "label": "Cow peas, dried"
+       },
+       {
+        "code": "01.1.7.6.7",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Pigeon peas, dried",
+          "pigeon peas, dried"
+         ]
+        },
+        "label": "Pigeon peas, dried"
+       },
+       {
+        "code": "01.1.7.6.8",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Bambara beans, dried",
+          "bambara beans, dried"
+         ]
+        },
+        "label": "Bambara beans, dried"
+       },
+       {
+        "code": "01.1.7.6.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other pulses",
+          "other pulses"
+         ]
+        },
+        "label": "Other pulses"
+       },
+       {
+        "code": "01.1.7.7.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other vegetables, tubers, plantains and cooking bananas, dried and dehydrated",
+          "other vegetables, tubers, plantains and cooking bananas, dried and dehydrated"
+         ]
+        },
         "label": "Other vegetables, tubers, plantains and cooking bananas, dried and dehydrated"
        },
        {
-        "code": "01.1.7.8",
-        "excludes": [
-         {
-          "code": "01.1.7.9",
-          "label": "preparations such as frozen chipped potatoes",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.1.7.8.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Vegetables, tubers, plantains and cooking bananas, frozen",
+          "vegetables, tubers, plantains and cooking bananas, frozen"
+         ]
+        },
         "label": "Vegetables, tubers, plantains and cooking bananas, frozen"
        },
        {
-        "code": "01.1.7.9",
-        "excludes": [
-         {
-          "code": "01.1.1.9",
-          "label": "seitan and other meat substitutes made from cereals",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.9.1",
-          "label": "ready-made vegetable preparations, whether frozen or not, including other ingredients, such as cheese, meat or fish; and ready-made soups",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.9.2",
-          "label": "homogenized baby food preparations",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.9.4",
-          "label": "culinary herbs and spices",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.9.9",
-          "label": "broths and stocks containing vegetables",
-          "lang": "en"
-         },
-         {
-          "code": "01.2.1.0",
-          "label": "vegetable juices",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Vegetables, tubers, plantains, cooking bananas and pulses, ground, and in other preparations"
+        "code": "01.1.7.9.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Flour of vegetables, pulses, tubers, plantains and cooking bananas",
+          "flour of vegetables, pulses, tubers, plantains and cooking bananas"
+         ]
+        },
+        "label": "Flour of vegetables, pulses, tubers, plantains and cooking bananas"
+       },
+       {
+        "code": "01.1.7.9.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Canned vegetables",
+          "canned vegetables"
+         ]
+        },
+        "label": "Canned vegetables"
+       },
+       {
+        "code": "01.1.7.9.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Preserved olives",
+          "preserved olives"
+         ]
+        },
+        "label": "Preserved olives"
+       },
+       {
+        "code": "01.1.7.9.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Chipped potatoes, frozen",
+          "chipped potatoes, frozen"
+         ]
+        },
+        "label": "Chipped potatoes, frozen"
+       },
+       {
+        "code": "01.1.7.9.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Tofu",
+          "tofu"
+         ]
+        },
+        "label": "Tofu"
+       },
+       {
+        "code": "01.1.7.9.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Tempeh, soy meat and burgers",
+          "tempeh, soy meat and burgers"
+         ]
+        },
+        "label": "Tempeh, soy meat and burgers"
+       },
+       {
+        "code": "01.1.7.9.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other vegetables, pulses and tubers preserved or processed",
+          "other vegetables, pulses and tubers preserved or processed"
+         ]
+        },
+        "label": "Other vegetables, pulses and tubers preserved or processed"
        }
       ]
      },
@@ -616,75 +2539,147 @@
       "label": "Sugar, confectionery and desserts",
       "leaves": [
        {
-        "code": "01.1.8.1",
-        "excludes": [
-         {
-          "code": "01.1.8.2",
-          "label": "refined cane or beet sugar, containing added flavouring or colouring matter",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Cane sugar and beet sugar"
+        "code": "01.1.8.1.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cane sugar",
+          "cane sugar"
+         ]
+        },
+        "label": "Cane sugar"
        },
        {
-        "code": "01.1.8.2",
+        "code": "01.1.8.1.2",
         "excludes": [],
-        "keywords_by_lang": {},
+        "keywords_by_lang": {
+         "en": [
+          "Beet sugar",
+          "beet sugar"
+         ]
+        },
+        "label": "Beet sugar"
+       },
+       {
+        "code": "01.1.8.2.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other sugars and sugar substitutes",
+          "other sugars and sugar substitutes"
+         ]
+        },
         "label": "Other sugars and sugar substitutes"
        },
        {
-        "code": "01.1.8.3",
+        "code": "01.1.8.3.1",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Jams, marmalades, fruit jellies, purées and pastes, and honey"
+        "keywords_by_lang": {
+         "en": [
+          "Honey",
+          "honey"
+         ]
+        },
+        "label": "Honey"
        },
        {
-        "code": "01.1.8.4",
+        "code": "01.1.8.3.9",
         "excludes": [],
-        "keywords_by_lang": {},
+        "keywords_by_lang": {
+         "en": [
+          "Other jams, marmalades, fruit jellies, purées and pastes",
+          "other jams, marmalades, fruit jellies, purées and pastes"
+         ]
+        },
+        "label": "Other jams, marmalades, fruit jellies, purées and pastes"
+       },
+       {
+        "code": "01.1.8.4.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Nut purées, nut butters and nut pastes",
+          "nut purées, nut butters and nut pastes"
+         ]
+        },
         "label": "Nut purées, nut butters and nut pastes"
        },
        {
-        "code": "01.1.8.5",
-        "excludes": [
-         {
-          "code": "01.1.8.9",
-          "label": "white chocolate",
-          "lang": "en"
-         },
-         {
-          "code": "01.2.4.0",
-          "label": "cocoa and chocolate-based drinks",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Chocolate, cocoa and cocoa-based food products"
+        "code": "01.1.8.5.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Chocolate",
+          "chocolate"
+         ]
+        },
+        "label": "Chocolate"
        },
        {
-        "code": "01.1.8.6",
-        "excludes": [
-         {
-          "code": "04.5.5.0",
-          "label": "ice for cooling",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.1.8.5.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cocoa beans",
+          "cocoa beans"
+         ]
+        },
+        "label": "Cocoa beans"
+       },
+       {
+        "code": "01.1.8.5.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cocoa powder",
+          "cocoa powder"
+         ]
+        },
+        "label": "Cocoa powder"
+       },
+       {
+        "code": "01.1.8.5.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other cocoa-based foods and cocoa-based dessert preparations",
+          "other cocoa-based foods and cocoa-based dessert preparations"
+         ]
+        },
+        "label": "Other cocoa-based foods and cocoa-based dessert preparations"
+       },
+       {
+        "code": "01.1.8.6.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Ice, ice cream and sorbets",
+          "ice, ice cream and sorbets"
+         ]
+        },
         "label": "Ice, ice cream and sorbets"
        },
        {
-        "code": "01.1.8.9",
-        "excludes": [
-         {
-          "code": "01.1.8.5",
-          "label": "sugar confectionery based on cocoa and chocolate",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Other sugar confectionery and desserts n.e.c."
+        "code": "01.1.8.9.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Vegetables, fruits, nuts, fruit peel and other parts of plants, preserved by sugar",
+          "vegetables, fruits, nuts, fruit peel and other parts of plants, preserved by sugar"
+         ]
+        },
+        "label": "Vegetables, fruits, nuts, fruit peel and other parts of plants, preserved by sugar"
+       },
+       {
+        "code": "01.1.8.9.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other sugar confectionery and desserts n.e.c. (not containing cocoa)",
+          "other sugar confectionery and desserts n.e.c. (not containing cocoa)"
+         ]
+        },
+        "label": "Other sugar confectionery and desserts n.e.c. (not containing cocoa)"
        }
       ]
      },
@@ -693,92 +2688,168 @@
       "label": "Ready-made food and other food products",
       "leaves": [
        {
-        "code": "01.1.9.1",
-        "excludes": [
-         {
-          "code": "01.1.1.3",
-          "label": "bread and bakery products, and cakes",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.1.5",
-          "label": "macaroni, noodles, couscous and similar pasta products uncooked, whether stuffed or not",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.7.9",
-          "label": "chipped potatoes, frozen",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.8.9",
-          "label": "ice cream (0.1.1.8.6) and other desserts, n.e.c.",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Ready-made food"
+        "code": "01.1.9.1.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Precooked dishes based on pasta and cereals",
+          "precooked dishes based on pasta and cereals"
+         ]
+        },
+        "label": "Precooked dishes based on pasta and cereals"
        },
        {
-        "code": "01.1.9.2",
-        "excludes": [
-         {
-          "code": "01.1.4.3",
-          "label": "powdered milk not intended exclusively for baby use",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.4.6",
-          "label": "yoghurt for children",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Baby food"
+        "code": "01.1.9.1.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Precooked dishes based on meat and/or fish",
+          "precooked dishes based on meat and/or fish"
+         ]
+        },
+        "label": "Precooked dishes based on meat and/or fish"
        },
        {
-        "code": "01.1.9.3",
-        "excludes": [
-         {
-          "code": "01.1.4.4",
-          "label": "coconut milk for drinking",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.6.9",
-          "label": "fruit pickles",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.7.9",
-          "label": "vegetable pickles",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Salt, condiments and sauces"
+        "code": "01.1.9.1.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Mixed salads and prepared dishes based on vegetables",
+          "mixed salads and prepared dishes based on vegetables"
+         ]
+        },
+        "label": "Mixed salads and prepared dishes based on vegetables"
        },
        {
-        "code": "01.1.9.4",
-        "excludes": [
-         {
-          "code": "01.1.5.1",
-          "label": "vegetable oils",
-          "lang": "en"
-         },
-         {
-          "code": "09.3.1.2",
-          "label": "seeds for planting",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.1.9.1.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Sandwiches, pizzas, quiches, meat or fish pies, frozen or not",
+          "sandwiches, pizzas, quiches, meat or fish pies, frozen or not"
+         ]
+        },
+        "label": "Sandwiches, pizzas, quiches, meat or fish pies, frozen or not"
+       },
+       {
+        "code": "01.1.9.1.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Omelettes, crepes and other ready-made food based on eggs",
+          "omelettes, crepes and other ready-made food based on eggs"
+         ]
+        },
+        "label": "Omelettes, crepes and other ready-made food based on eggs"
+       },
+       {
+        "code": "01.1.9.1.6",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Ready-made soups",
+          "ready-made soups"
+         ]
+        },
+        "label": "Ready-made soups"
+       },
+       {
+        "code": "01.1.9.1.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other prepared ready-made dishes and meals n.e.c.",
+          "other prepared ready-made dishes and meals n.e.c."
+         ]
+        },
+        "label": "Other prepared ready-made dishes and meals n.e.c."
+       },
+       {
+        "code": "01.1.9.2.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Baby formula",
+          "baby formula"
+         ]
+        },
+        "label": "Baby formula"
+       },
+       {
+        "code": "01.1.9.2.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Baby rice cereals and flours for baby meals",
+          "baby rice cereals and flours for baby meals"
+         ]
+        },
+        "label": "Baby rice cereals and flours for baby meals"
+       },
+       {
+        "code": "01.1.9.2.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Homogenized baby food",
+          "homogenized baby food"
+         ]
+        },
+        "label": "Homogenized baby food"
+       },
+       {
+        "code": "01.1.9.2.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other baby food",
+          "other baby food"
+         ]
+        },
+        "label": "Other baby food"
+       },
+       {
+        "code": "01.1.9.3.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Salt",
+          "salt"
+         ]
+        },
+        "label": "Salt"
+       },
+       {
+        "code": "01.1.9.3.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other condiments and sauces",
+          "other condiments and sauces"
+         ]
+        },
+        "label": "Other condiments and sauces"
+       },
+       {
+        "code": "01.1.9.4.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Spices, culinary herbs and seeds",
+          "spices, culinary herbs and seeds"
+         ]
+        },
         "label": "Spices, culinary herbs and seeds"
        },
        {
-        "code": "01.1.9.9",
+        "code": "01.1.9.9.0",
         "excludes": [],
-        "keywords_by_lang": {},
+        "keywords_by_lang": {
+         "en": [
+          "Other food products n.e.c.",
+          "other food products n.e.c."
+         ]
+        },
         "label": "Other food products n.e.c."
        }
       ]
@@ -794,15 +2865,14 @@
       "label": "Fruit and vegetable juices",
       "leaves": [
        {
-        "code": "01.2.1.0",
-        "excludes": [
-         {
-          "code": "01.2.6.0",
-          "label": "sparkling juices",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.2.1.0.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Fruit and vegetable juices",
+          "fruit and vegetable juices"
+         ]
+        },
         "label": "Fruit and vegetable juices"
        }
       ]
@@ -812,16 +2882,37 @@
       "label": "Coffee and coffee substitutes",
       "leaves": [
        {
-        "code": "01.2.2.0",
-        "excludes": [
-         {
-          "code": "01.1.4.7",
-          "label": "milk-based beverages flavoured with coffee",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
-        "label": "Coffee and coffee substitutes"
+        "code": "01.2.2.0.1",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Coffee",
+          "coffee"
+         ]
+        },
+        "label": "Coffee"
+       },
+       {
+        "code": "01.2.2.0.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Coffee substitutes",
+          "coffee substitutes"
+         ]
+        },
+        "label": "Coffee substitutes"
+       },
+       {
+        "code": "01.2.2.0.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other coffee",
+          "other coffee"
+         ]
+        },
+        "label": "Other coffee"
        }
       ]
      },
@@ -830,10 +2921,70 @@
       "label": "Tea, maté and other plant-derived products for infusion",
       "leaves": [
        {
-        "code": "01.2.3.0",
+        "code": "01.2.3.0.1",
         "excludes": [],
-        "keywords_by_lang": {},
-        "label": "Tea, maté and other plant-derived products for infusion"
+        "keywords_by_lang": {
+         "en": [
+          "Green tea, leaves",
+          "green tea, leaves"
+         ]
+        },
+        "label": "Green tea, leaves"
+       },
+       {
+        "code": "01.2.3.0.2",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Black tea, leaves",
+          "black tea, leaves"
+         ]
+        },
+        "label": "Black tea, leaves"
+       },
+       {
+        "code": "01.2.3.0.3",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Iced tea",
+          "iced tea"
+         ]
+        },
+        "label": "Iced tea"
+       },
+       {
+        "code": "01.2.3.0.4",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Instant tea powder",
+          "instant tea powder"
+         ]
+        },
+        "label": "Instant tea powder"
+       },
+       {
+        "code": "01.2.3.0.5",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Maté",
+          "maté"
+         ]
+        },
+        "label": "Maté"
+       },
+       {
+        "code": "01.2.3.0.9",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other tea products and plant-derived products for infusion",
+          "other tea products and plant-derived products for infusion"
+         ]
+        },
+        "label": "Other tea products and plant-derived products for infusion"
        }
       ]
      },
@@ -842,20 +2993,14 @@
       "label": "Cocoa drinks",
       "leaves": [
        {
-        "code": "01.2.4.0",
-        "excludes": [
-         {
-          "code": "01.1.4.7",
-          "label": "milk flavoured with chocolate or cacao",
-          "lang": "en"
-         },
-         {
-          "code": "01.1.8.5",
-          "label": "cocoa powder for all purposes; chocolate in bars or slabs; cocoa-based foods and cocoa-based dessert preparations",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.2.4.0.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Cocoa drinks",
+          "cocoa drinks"
+         ]
+        },
         "label": "Cocoa drinks"
        }
       ]
@@ -865,15 +3010,14 @@
       "label": "Water",
       "leaves": [
        {
-        "code": "01.2.5.0",
-        "excludes": [
-         {
-          "code": "01.2.9.0",
-          "label": "flavoured water",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.2.5.0.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Water",
+          "water"
+         ]
+        },
         "label": "Water"
        }
       ]
@@ -883,25 +3027,14 @@
       "label": "Soft drinks",
       "leaves": [
        {
-        "code": "01.2.6.0",
-        "excludes": [
-         {
-          "code": "01.2.3.0",
-          "label": "iced tea",
-          "lang": "en"
-         },
-         {
-          "code": "01.2.5.0",
-          "label": "sparkling water",
-          "lang": "en"
-         },
-         {
-          "code": "01.2.9.0",
-          "label": "flavoured water",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.2.6.0.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Soft drinks",
+          "soft drinks"
+         ]
+        },
         "label": "Soft drinks"
        }
       ]
@@ -911,15 +3044,14 @@
       "label": "Other non-alcoholic beverages",
       "leaves": [
        {
-        "code": "01.2.9.0",
-        "excludes": [
-         {
-          "code": "01.2.1.0",
-          "label": "syrups of fruit and vegetables and concentrates of fruit and vegetables",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.2.9.0.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Other non-alcoholic beverages",
+          "other non-alcoholic beverages"
+         ]
+        },
         "label": "Other non-alcoholic beverages"
        }
       ]
@@ -935,15 +3067,14 @@
       "label": "Services for processing primary goods for food and non-alcoholic beverages",
       "leaves": [
        {
-        "code": "01.3.0.0",
-        "excludes": [
-         {
-          "code": "02.2.0.0",
-          "label": "fruit and vegetable crushing and pressing services for the production of alcoholic beverages",
-          "lang": "en"
-         }
-        ],
-        "keywords_by_lang": {},
+        "code": "01.3.0.0.0",
+        "excludes": [],
+        "keywords_by_lang": {
+         "en": [
+          "Services for processing primary goods for food and non-alcoholic beverages",
+          "services for processing primary goods for food and non-alcoholic beverages"
+         ]
+        },
         "label": "Services for processing primary goods for food and non-alcoholic beverages"
        }
       ]
