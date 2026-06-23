@@ -25,8 +25,8 @@ class PickarooSpider(scrapy.Spider):
     """Location-aware listing-first spider for Pickaroo."""
 
     name = "pickaroo"
-    allowed_domains = ["pickaroo.com"]
-    start_urls = ["https://pickaroo.com/groceries/brands/supermarket/"]
+    allowed_domains = ["ops.pickaroo.com", "pickaroo.com"]
+    start_urls = ["https://ops.pickaroo.com/groceries/brands/supermarket/"]
     currency = "PHP"
 
     # CSS selector fallbacks for product fields
@@ -159,7 +159,7 @@ class PickarooSpider(scrapy.Spider):
             category = " > ".join(breadcrumb) if breadcrumb else None
         if product_name and price:
             yield {
-                "product_name": product_name,
+                "product_name": self._merge_pack(product_name, details),
                 "category": category,
                 "price": price,
                 "currency": self.currency,
@@ -214,44 +214,74 @@ class PickarooSpider(scrapy.Spider):
             out.append((urljoin(response.url, href), location_slug))
         return list(dict.fromkeys(out))
 
+    # number adjacent to a unit / count word, or an NxM multipack.
+    _PACK_RE = re.compile(
+        r"\d\s*"
+        r"(?:kgs?|kg|g|mg|ml|cl|l|oz|lbs?|"
+        r"pcs?|pieces?|packs?|pax|ct|"
+        r"tabs?|tablets?|caps?|capsules?|sachets?|"
+        r"tarts?|rolls?|sheets?|bottles?|cans?|bags?|boxe?s?|jars?|tubs?|"
+        r"pairs?|sets?|dozen)\b"
+        r"|\d\s*[xX]\s*\d",
+        re.IGNORECASE,
+    )
+
+    def _merge_pack(self, name, details):
+        """Append the size/pack to the name (Aldi-style) when `details` carries a
+        packing pattern and is not already in the name, so the quantity survives
+        the downstream drop of the `details` field and feeds tier-a."""
+        name = (name or "").strip()
+        details = (details or "").strip()
+        if (
+            details
+            and self._PACK_RE.search(details)
+            and details.lower().replace(" ", "") not in name.lower().replace(" ", "")
+        ):
+            return f"{name} {details}"
+        return name
+
     def _extract_listing_products(self, response, category: str):
+        seen_urls: set[str] = set()
         links = response.css("a[href*='product-detail/']")
         for link in links:
             href = link.attrib.get("href")
             if not href or self._is_denied_url(href):
                 continue
             abs_url = urljoin(response.url, href)
+            # The same product appears in several category carousels on one page.
+            if abs_url in seen_urls:
+                continue
+            seen_urls.add(abs_url)
 
-            # Try to pick a reasonable card container around the link.
-            card = link.xpath(
-                "ancestor::div[contains(@class,'product') or contains(@class,'item')][1]"
-            )
-            if not card:
-                card = link.xpath("ancestor::li[1]")
+            # Per-product card cell holds the <a> (name/size) and its price sibling.
+            card = link.xpath("./ancestor::div[contains(@class,'columns')][1]")
             context = card[0] if card else link
 
             product_name = (
-                context.css(".product-name::text").get()
-                or context.css(".name::text").get()
-                or context.css("h3::text").get()
-                or context.css("h2::text").get()
+                link.css("span.name::text").get()
+                or context.css("span.name::text").get()
                 or link.attrib.get("aria-label")
             )
+            details = context.css("span.desc::text").get()
             price_text = (
-                context.css("div.price::text").get()
+                context.css("span.price-new::text").get()
+                or context.css("span.price-old::text").get()
                 or context.css("span.price::text").get()
                 or context.css("[class*='price']::text").get()
             )
 
             if product_name and price_text:
-                yield {
-                    "product_name": product_name.strip(),
+                item = {
+                    "product_name": self._merge_pack(product_name, details),
                     "category": category,
                     "price": price_text.strip(),
                     "currency": self.currency,
                     "url": abs_url,
                     "scraped_at": response.headers.get("Date", b"").decode("utf-8"),
                 }
+                if details and details.strip():
+                    item["details"] = details.strip()
+                yield item
             else:
                 yield scrapy.Request(
                     abs_url,
