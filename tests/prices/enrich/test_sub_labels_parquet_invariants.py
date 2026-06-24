@@ -9,10 +9,10 @@ no leaf that has a sub-vocabulary in the store may be silently starved to
 `_other`-only by the `_CLEAN_ANCHOR_MAX_ID_LEN` gate in `taxonomy_index`.
 
 Reconciliation with the 538-leaf taxonomy: the store keys all 538 deepest
-COICOP leaves, but 48 of them are genuine prose-only n.e.c. catch-alls left
-intentionally empty (D1/D3 — no extractable grounded short item). The parquet
-therefore carries exactly the 490 leaves that DO have a grounded vocabulary
-(227 food 5-digit + 263 non-food 4-digit + 0 food 4-digit).
+COICOP leaves, and after the Phase 0.9 atomization pass every one of them
+carries a grounded vocabulary (the 48 formerly-empty prose-only catch-alls
+were filled by thin-leaf enrichment). The parquet therefore carries all 538
+leaves (269 food 5-digit + 269 non-food 4-digit + 0 food 4-digit).
 """
 
 from __future__ import annotations
@@ -34,10 +34,20 @@ _PARQUET = (
     / "_sub_labels.parquet"
 )
 
-# Non-empty leaf counts (the 48 prose-only catch-alls are intentionally absent).
-_FOOD_5DIGIT = 227
-_NONFOOD_4DIGIT = 263
-_TOTAL_NONEMPTY = _FOOD_5DIGIT + _NONFOOD_4DIGIT  # 490
+# Post-atomization leaf counts: all 538 leaves now carry a grounded vocabulary
+# (the 48 formerly-empty prose-only catch-alls were filled in Phase 0.9).
+_FOOD_5DIGIT = 269
+_NONFOOD_4DIGIT = 269
+_TOTAL_NONEMPTY = _FOOD_5DIGIT + _NONFOOD_4DIGIT  # 538
+
+# Aggregate row-count ceiling (Pitfall 3 — class-6/7 cross-product growth guard).
+# Current parquet: 2556 rows INCLUDING 426 case-dup rows → ~2130 rows post-dedup.
+# Atomization removes the case dups but class-6/7 cross-products
+# (e.g. "salted, dried or smoked meat of: × N animals") plus 48-leaf thin
+# enrichment grow the count. The bound is 2 × 2130 = 4260 (2× the post-dedup
+# baseline): generous enough to admit legitimate cross-product expansion, tight
+# enough that a runaway class-6/7 balloon trips it.
+_MAX_PARQUET_ROWS = 4260
 
 
 @pytest.fixture(scope="module")
@@ -104,3 +114,30 @@ def test_non_empty_vocab_per_leaf(df):
     assert (
         not starved
     ), f"{len(starved)} leaves starved to _other-only: {sorted(starved)[:10]}"
+
+
+@pytest.mark.integration
+def test_parquet_case_deduped(df):
+    """SC-4a (parquet projection): no two rows sharing a (coicop_code, id) have
+    labels equal after .lower(). Catches the 426 case-variant dup rows if the
+    merge ever re-introduces a [label, label.lower()] keyword list."""
+    low = df["label"].astype(str).str.lower()
+    grouped = df.assign(_label_low=low).groupby(["coicop_code", "id"])
+    dup_groups = grouped["_label_low"].apply(lambda s: s.duplicated().any())
+    offenders = dup_groups[dup_groups].index.tolist()
+    assert not offenders, (
+        f"{len(offenders)} (coicop_code, id) groups carry case-variant dup "
+        f"labels (expected 0): {offenders[:10]}"
+    )
+
+
+@pytest.mark.integration
+def test_parquet_row_ceiling(df):
+    """Pitfall 3 — aggregate growth guard. Bounds the TOTAL parquet row count
+    so a class-6/7 cross-product balloon trips a hard backstop. Complements
+    (does not replace) Plan 02's per-leaf ~40 cap: per-leaf bounds a single-leaf
+    balloon, this bounds the aggregate. No silent truncation anywhere."""
+    assert len(df) <= _MAX_PARQUET_ROWS, (
+        f"parquet has {len(df)} rows, exceeds ceiling {_MAX_PARQUET_ROWS} "
+        "(class-6/7 cross-product balloon?)"
+    )
