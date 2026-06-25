@@ -27,7 +27,7 @@ PATTERNS: tuple[PackPattern, ...] = (
     PackPattern(
         id="multipack_vi_count_unit",
         regex=re.compile(
-            r"(?P<count>\d+)\s*(?:cái|cây|gói|chai|lon|chiếc|hộp|bịch)\b",
+            r"(?P<count>\d+)\s*(?:cái|cây|gói|chai|lon|chiếc|hộp|bịch|viên|miếng)\b",
             re.IGNORECASE,
         ),
         groups=("count",),

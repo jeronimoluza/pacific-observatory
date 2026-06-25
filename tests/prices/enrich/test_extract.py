@@ -226,6 +226,23 @@ def test_cjk_outer_multiplier_suppressed_in_limit_clause():
     assert sf.multiplier == 1
 
 
+@pytest.mark.parametrize(
+    "name, expected_count",
+    [
+        ("Miếng dán mụn giúp giảm mụn sưng viêm Acnes Clear Patch (24 Miếng)", 24),
+        ("Thuốc bổ Vitamin C (60 viên)", 60),
+        ("Khẩu trang y tế Hộp 50 Miếng", 50),
+    ],
+)
+def test_vietnamese_counter_vocab_yields_count(name, expected_count):
+    """Vietnamese `viên`/`miếng` counters → count basis (lang=None retry path)."""
+    sf = _ex(name)
+    assert sf.pricing_basis == "count"
+    assert sf.standard_unit == "unit"
+    assert sf.count == expected_count
+    assert sf.multiplier == 1
+
+
 def test_pcs_only_marker_yields_count_basis():
     sf = _ex("Pencils 12 PCS", lang="en")
     assert sf.pricing_basis == "count"
