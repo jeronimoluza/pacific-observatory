@@ -23,7 +23,7 @@ class CompositeDownloadHandler(ImpersonateDownloadHandler):
         )
         return instance
 
-    async def download_request(self, request):
+    def download_request(self, request, spider):
         if request.meta.get("playwright"):
-            return await self._playwright_handler.download_request(request)
-        return await super().download_request(request)
+            return self._playwright_handler.download_request(request, spider)
+        return super().download_request(request, spider)
