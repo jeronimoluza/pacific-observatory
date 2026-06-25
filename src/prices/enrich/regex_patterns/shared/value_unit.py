@@ -6,33 +6,25 @@ import re
 
 from prices.enrich.regex_patterns.types import PackPattern
 
-# FIXME (BUG 3): Appliance "99L" / "120L" false volume extraction.
-# PackPattern.suppress_window is scaffolded but has no consumer in extract.py.
-# When suppress_window is wired, add a suppress pattern that blocks
-# value_unit_volume_mass from emitting when these appliance keywords appear
-# within N chars of the match:
-#   freezer, fridge, refrigerator, washer, dryer, oven, microwave,
-#   vacuum, dishwasher, tank, bin, cooler
-# Concrete failing case: "99L Chest Freezer" → basis=volume (wrong), should be item.
-# Do NOT implement until the suppress_window consumer is added to extract.py.
-
-# FIXME (BUG 4): Apparel fabric-weight "5.6oz" false mass extraction.
-# Same suppress_window mechanism as BUG 3. Appliance-style suppress_window
-# needed for these apparel keywords near an oz/g match:
-#   t-shirt, tee, shirt, jeans, shorts, dress, hoodie, sweatshirt,
-#   trackpants, socks, underwear, bra
-# Concrete failing case: "T-shirt 5.6oz Heavyweight" → basis=mass (wrong), should be item.
-# Do NOT implement until the suppress_window consumer is added to extract.py.
+# BUG 3 / BUG 4 (wired 2026-06-23): appliance-capacity ("99L freezer") and
+# apparel fabric-weight ("5.6oz t-shirt") false mass/volume extraction.
+# `suppress_window` below is now consumed by extract.py: when a value+unit match
+# sits within `suppress_window` chars of an appliance / apparel / storage cue
+# (`_VU_SUPPRESS_CTX_RE` in extract.py), the number is the product's CAPACITY or
+# FABRIC WEIGHT, not a sale quantity, so the mass/volume emit is dropped and the
+# row falls through to item (or count, if a real pack count remains).
 
 PATTERNS: tuple[PackPattern, ...] = (
-    # "500g", "1L", "135ml", "158GM", "60gr", "25mg"
+    # "500g", "1L", "135ml", "158GM", "60gr", "25mg", "1ltr", "5LT", "2.25LTRS"
+    # ltrs|ltr|lt placed before l|L so the longest litre spelling wins (IGNORECASE).
     PackPattern(
         id="value_unit_volume_mass",
         regex=re.compile(
-            r"(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>ml|mL|ML|l|L|kg|KG|g|G|mg|MG|gm|GM|gr|GR|oz|OZ|lb|LB|Oz)\b",
+            r"(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>ml|mL|ML|ltrs|ltr|lt|l|L|kg|KG|g|G|mg|MG|gm|GM|gr|GR|oz|OZ|lb|LB|Oz)\b",
             re.IGNORECASE,
         ),
         groups=("value", "unit"),
+        suppress_window=20,
         lang="any",
         role="canonicalization",
         kind="canon",

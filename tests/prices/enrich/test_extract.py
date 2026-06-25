@@ -1,0 +1,262 @@
+"""Unit tests for `prices.enrich.normalize.extract` — tier (a) regex extractor.
+
+Covers per-language pack/unit patterns, multipack, promo + bundle markers,
+and edge cases (empty input, no-match, cl, length-like-mass false-positive).
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from prices.enrich.extract import extract
+
+
+def _ex(name, lang=None, country=""):
+    return extract(name, None, country, lang)
+
+
+# --- defaults / edge cases ---------------------------------------------------
+
+
+def test_empty_input_returns_all_none():
+    sf = _ex("")
+    assert sf.pricing_basis is None
+    assert sf.amount_value is None
+    assert sf.standard_unit is None
+    assert sf.count is None
+    assert sf.is_multipack is None
+
+
+def test_whitespace_only_returns_all_none():
+    sf = _ex("   ")
+    assert sf.pricing_basis is None
+
+
+def test_no_unit_no_count_defaults_to_item():
+    sf = _ex("Generic Brand Raincoat XL", lang="en")
+    assert sf.pricing_basis == "item"
+    assert sf.standard_unit == "item"
+    assert sf.amount_value is None
+    assert sf.count == 1
+    assert sf.multiplier == 1
+    assert sf.is_multipack is False
+
+
+# --- mass / volume / cl ------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "name, expected_av, expected_su",
+    [
+        ("Coca-Cola 500ml", 0.5, "lt"),
+        ("Pepsi 1L", 1.0, "lt"),
+        ("Milk 1.5L", 1.5, "lt"),
+        ("Bottle 75cl", 0.75, "lt"),
+        ("Sugar 2KG", 2.0, "kg"),
+        ("Wardah Lip Balm 7G", 0.007, "kg"),
+        ("Salt 250g", 0.25, "kg"),
+    ],
+)
+def test_value_unit_extraction(name, expected_av, expected_su):
+    sf = _ex(name, lang="en")
+    assert sf.standard_unit == expected_su
+    assert sf.amount_value == pytest.approx(expected_av, rel=1e-6)
+    assert sf.pricing_basis in {"mass", "volume"}
+
+
+def test_mass_marker_overrides_item_default():
+    sf = _ex("Wardah Lip Balm 7G", lang="en")
+    assert sf.pricing_basis == "mass"
+
+
+def test_volume_marker_overrides_item_default():
+    sf = _ex("Tonic 250ml", lang="en")
+    assert sf.pricing_basis == "volume"
+
+
+def test_cm_does_not_register_as_pack():
+    """Cutlery dimensions must NOT become pricing_basis=length."""
+    sf = _ex("Chef Knife 16.5cm", lang="en")
+    assert sf.pricing_basis == "item"
+    assert sf.amount_value is None
+
+
+@pytest.mark.parametrize(
+    "name, expected_av",
+    [
+        ("Macro Organic Soy Milk 1ltr", 1.0),
+        ("SIMPLY SOYA BEAN OIL 5LT", 5.0),
+        ("Crush Natural Artesian Water 1.5LTR", 1.5),
+        ("Jucy Orange 2.25LTRS", 2.25),
+        ("Redribbon Sce 3LTR", 3.0),
+    ],
+)
+def test_litre_spellings_extract_as_volume(name, expected_av):
+    """`ltr`/`lt`/`ltrs` are real retail litre spellings (Fiji/PNG data)."""
+    sf = _ex(name, lang="en")
+    assert sf.pricing_basis == "volume"
+    assert sf.standard_unit == "lt"
+    assert sf.amount_value == pytest.approx(expected_av, rel=1e-6)
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "Himalayan Pink Salt 250g",  # 'lt' inside salt; 250g must win → mass
+        "Cordless Drill 5 Bolt Kit",  # 'bolt' after a number must not read as litre
+        "Default Moisturiser 50ml",  # 'lt' inside default; 50ml must win → volume/ml
+    ],
+)
+def test_litre_lookalikes_not_misread(name):
+    """The litre spellings need a preceding number; word-internal 'lt' must not fire."""
+    sf = _ex(name, lang="en")
+    assert sf.amount_value != pytest.approx(5.0)  # no spurious "5 litre" etc.
+
+
+# --- multipack ---------------------------------------------------------------
+
+
+def test_multipack_value_unit():
+    sf = _ex("Plain Crackers 4x20g", lang="en")
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(0.02)
+    assert sf.standard_unit == "kg"
+    assert sf.multiplier == 4
+    assert sf.count == 1
+    assert sf.is_multipack is True
+
+
+def test_multipack_24_x_330ml():
+    sf = _ex("Ganzberg Beer 24x330ml", lang="en")
+    assert sf.pricing_basis == "volume"
+    assert sf.amount_value == pytest.approx(0.33)
+    assert sf.multiplier == 24
+    assert sf.count == 1
+    assert sf.is_multipack is True
+
+
+def test_cjk_outer_multiplier_at_declared_lang():
+    # `×24本` is a script-specific outer-pack multiplier that needs lang=None
+    # patterns; a successful per-unit `500ml` match in declared lang used to
+    # suppress the retry, dropping the multiplier (left it at 1).
+    sf = _ex("三ツ矢サイダー 500ml×24本", lang="ja")
+    assert sf.pricing_basis == "volume"
+    assert sf.amount_value == pytest.approx(0.5)
+    assert sf.standard_unit == "lt"
+    assert sf.count == 1
+    assert sf.multiplier == 24
+    assert sf.is_multipack is True
+
+
+def test_cjk_outer_multiplier_mass_at_declared_lang():
+    sf = _ex("せんべい 120g×28袋", lang="ja")
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(0.12)
+    assert sf.standard_unit == "kg"
+    assert sf.count == 1
+    assert sf.multiplier == 28
+
+
+def test_cjk_total_breakdown_not_double_counted():
+    # `10kg（5kg×2袋）` states a TOTAL (10kg) then its breakdown; the ×2 is the
+    # breakdown, not an extra multiplier, so multiplier must stay 1 (total 10kg),
+    # not become 2 (which would imply 20kg).
+    sf = _ex("コシヒカリ 白米 10kg（5kg×2袋）令和7年産", lang="ja")
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(10.0)
+    assert sf.multiplier == 1
+
+
+def test_cjk_servings_count_not_treated_as_multiplier():
+    # `50杯分` (50 servings) is a portions count, not a pack multiplier; the real
+    # pack is `×1袋`, so multiplier must stay 1.
+    sf = _ex("即席スープ [50杯分] 200g×1袋 お徳用", lang="ja")
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(0.2)
+    assert sf.multiplier == 1
+
+
+def test_cjk_outer_multiplier_suppressed_in_limit_clause():
+    # A CJK count inside a purchase-limit clause (お一人様…限り) must NOT be
+    # mistaken for an outer-pack multiplier.
+    sf = _ex("緑茶 500ml お一人様5本限り", lang="ja")
+    assert sf.pricing_basis == "volume"
+    assert sf.amount_value == pytest.approx(0.5)
+    assert sf.multiplier == 1
+
+
+def test_pcs_only_marker_yields_count_basis():
+    sf = _ex("Pencils 12 PCS", lang="en")
+    assert sf.pricing_basis == "count"
+    assert sf.standard_unit == "unit"
+    assert sf.count == 12
+    assert sf.is_multipack is True
+
+
+# --- promo markers -----------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "name, lang",
+    [
+        ("Shampoo 300ml SALE", "en"),
+        ("Champu 300ml en OFERTA", "es"),
+        ("洗髪剤 300ml 特売", "ja"),
+        ("샴푸 300ml 할인", "ko"),
+        ("Dầu gội 300ml giảm giá", "vi"),
+        ("Champu PROMOÇÃO", "pt"),
+    ],
+)
+def test_promo_markers_fire(name, lang):
+    sf = _ex(name, lang=lang)
+    assert sf.is_promotion is True
+
+
+def test_promo_no_marker_returns_false():
+    sf = _ex("Shampoo 300ml", lang="en")
+    assert sf.is_promotion is False
+
+
+# --- bundle markers ----------------------------------------------------------
+
+
+def test_bundle_gift_set_marker():
+    sf = _ex("Lavender Gift Set", lang="en")
+    assert sf.is_bundle is True
+
+
+def test_japanese_set_alone_is_NOT_bundle():
+    """multipack 'セット' is count, not bundle. Only ギフトセット triggers bundle."""
+    sf = _ex("おやつ 10セット", lang="ja")
+    assert sf.is_bundle is False
+    assert sf.is_multipack is True  # pack_patterns extracts セット as count
+
+
+def test_japanese_gift_set_is_bundle():
+    sf = _ex("ギフトセット 化粧水", lang="ja")
+    assert sf.is_bundle is True
+
+
+def test_chinese_gift_box_is_bundle():
+    sf = _ex("月餅 禮盒", lang="zh")
+    assert sf.is_bundle is True
+
+
+# --- bool flag consistency ---------------------------------------------------
+
+
+def test_default_flags_are_false_not_none_when_text_present():
+    sf = _ex("Plain Shampoo", lang="en")
+    assert sf.is_promotion is False
+    assert sf.is_bundle is False
+    assert sf.is_multipack is False
+
+
+def test_unknown_language_still_extracts_mass_and_promo_via_any_bucket():
+    """When lang is None, language-tagged promo markers are skipped, but the
+    pack regex (lang=any) still fires for value+unit, and 'any' promo bucket
+    catches '50% off'."""
+    sf = _ex("Detergent 500g 50% off", lang=None)
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(0.5)
+    assert sf.is_promotion is True
