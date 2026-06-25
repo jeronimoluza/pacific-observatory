@@ -2154,38 +2154,20 @@ class NewspaperScraper:
             if created:
                 logger.info("Created urls.csv from existing news.csv")
 
-            # Step 2: Load URLs from urls.csv
-            thumbnails = self._storage.load_urls_from_csv(self.country, self.source_key)
-            if thumbnails is None:
-                logger.warning("No urls.csv found. Nothing to resume.")
-                return {
-                    "success": True,
-                    "newspaper": self.name,
-                    "country": self.country,
-                    "mode": "resume",
-                    "statistics": {
-                        "urls_in_csv": 0,
-                        "existing_articles": 0,
-                        "pending_articles": 0,
-                        "articles_scraped": 0,
-                    },
-                }
-
-            logger.info(f"Loaded {len(thumbnails)} URLs from urls.csv")
-
-            # Step 3: Load existing article URLs from news.csv
+            # Step 2: Build the skip set BEFORE loading urls.csv.
+            # pending = urls.csv − news.csv − failed_urls_seen.csv (the latter
+            # only when --retry-failed was not passed). The ledger is the
+            # cumulative skip list of URLs that have already failed at least
+            # once and not since succeeded. These are cheap string sets, so we
+            # compute them first and pass them to the loader: only the pending
+            # rows are turned into (and retained as) ThumbnailRecord objects,
+            # bounding RSS to the pending set instead of the whole urls.csv.
             existing_article_urls = self._storage.get_existing_article_urls(
                 self.country, self.source_key
             )
             logger.info(
                 f"Found {len(existing_article_urls)} existing articles in news.csv"
             )
-
-            # Step 4: Identify pending articles
-            # pending = urls.csv − news.csv − failed_urls_seen.csv (the latter
-            # only when --retry-failed was not passed). The ledger is the
-            # cumulative skip list of URLs that have already failed at least
-            # once and not since succeeded.
             ledger_urls: set = set()
             if not self.retry_failed:
                 ledger_urls = self._storage.get_failed_url_set(
@@ -2195,9 +2177,30 @@ class NewspaperScraper:
                     f"Skipping {len(ledger_urls)} URL(s) per failed_urls_seen.csv ledger"
                 )
             skip_set = existing_article_urls | ledger_urls
-            pending_thumbnails = [
-                thumb for thumb in thumbnails if str(thumb.url) not in skip_set
-            ]
+
+            # Step 3: Load ONLY the pending URLs from urls.csv (skip_set rows are
+            # built transiently and dropped, not retained).
+            pending_thumbnails = self._storage.load_urls_from_csv(
+                self.country, self.source_key, skip_urls=skip_set
+            )
+            if pending_thumbnails is None:
+                logger.warning("No urls.csv found. Nothing to resume.")
+                return {
+                    "success": True,
+                    "newspaper": self.name,
+                    "country": self.country,
+                    "mode": "resume",
+                    "statistics": {
+                        "urls_in_csv": len(existing_article_urls),
+                        "existing_articles": len(existing_article_urls),
+                        "pending_articles": 0,
+                        "articles_scraped": 0,
+                    },
+                }
+
+            # urls_in_csv reports scraped + pending (the loader no longer holds
+            # the full file, so the exact row count is not materialized).
+            urls_in_csv = len(existing_article_urls) + len(pending_thumbnails)
             skipped_by_ledger = (
                 0
                 if self.retry_failed
@@ -2219,7 +2222,7 @@ class NewspaperScraper:
                     "country": self.country,
                     "mode": "resume",
                     "statistics": {
-                        "urls_in_csv": len(thumbnails),
+                        "urls_in_csv": urls_in_csv,
                         "existing_articles": len(existing_article_urls),
                         "pending_articles": 0,
                         "articles_scraped": 0,
@@ -2255,7 +2258,7 @@ class NewspaperScraper:
                 "country": self.country,
                 "mode": "resume",
                 "statistics": {
-                    "urls_in_csv": len(thumbnails),
+                    "urls_in_csv": urls_in_csv,
                     "existing_articles": len(existing_article_urls),
                     "pending_articles": len(pending_thumbnails),
                     "articles_scraped": scrape_stats.get("articles_scraped", 0),

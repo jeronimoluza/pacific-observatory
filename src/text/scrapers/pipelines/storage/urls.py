@@ -27,6 +27,10 @@ LEDGER_COLUMNS = [
 ]
 _SEED_DATE_RE = re.compile(r"_(\d{8})\.csv$")
 
+# Chunk size for streaming urls.csv during resume loads. Bounds the resident
+# DataFrame to one chunk instead of the whole file.
+URLS_LOAD_CHUNKSIZE = 50_000
+
 
 class URLTracker:
     """Handles URL tracking and failed URL logging."""
@@ -90,13 +94,20 @@ class URLTracker:
         return file_path
 
     def load_urls_from_csv(
-        self, newspaper_dir: Path
+        self, newspaper_dir: Path, skip_urls: Optional[set] = None
     ) -> Optional[List[ThumbnailRecord]]:
         """
         Load thumbnail URLs from urls.csv file.
 
         Args:
             newspaper_dir: Directory for the newspaper
+            skip_urls: Optional set of URL strings to drop. When provided, the
+                file is streamed in chunks and each row's ThumbnailRecord is
+                constructed transiently and only RETAINED when its url is not in
+                this set. This bounds peak retained memory to the number of
+                *pending* rows rather than the full file size — a resume run on a
+                mostly-drained source no longer holds a pydantic object per
+                already-scraped URL for the entire run.
 
         Returns:
             List of ThumbnailRecord objects if file exists, None otherwise
@@ -111,28 +122,33 @@ class URLTracker:
             logger.warning(f"No URLs file found: {file_path}")
             return None
 
+        skip = skip_urls or set()
+        thumbnails: List[ThumbnailRecord] = []
         try:
-            # Read CSV file
-            df = pd.read_csv(file_path, encoding="utf-8")
-            thumbnails = []
+            # Stream the file so the resident DataFrame never exceeds one chunk.
+            for chunk in pd.read_csv(
+                file_path, encoding="utf-8", chunksize=URLS_LOAD_CHUNKSIZE
+            ):
+                for _, row in chunk.iterrows():
+                    try:
+                        # Handle NaN values
+                        thumb_data = {
+                            k: v if pd.notna(v) else None
+                            for k, v in row.to_dict().items()
+                        }
+                        # Build first, then test str(url) so the skip match uses
+                        # the same normalized key the scraper compares against.
+                        # Skipped records go out of scope here and are freed.
+                        thumbnail = ThumbnailRecord(**thumb_data)
+                    except Exception as row_error:
+                        logger.warning(
+                            f"Failed to parse thumbnail row in {file_path}: {row_error}"
+                        )
+                        continue
 
-            for _, row in df.iterrows():
-                try:
-                    # Convert row to dictionary
-                    thumb_data = row.to_dict()
-
-                    # Handle NaN values
-                    thumb_data = {
-                        k: v if pd.notna(v) else None for k, v in thumb_data.items()
-                    }
-
-                    thumbnail = ThumbnailRecord(**thumb_data)
+                    if skip and str(thumbnail.url) in skip:
+                        continue
                     thumbnails.append(thumbnail)
-                except Exception as row_error:
-                    logger.warning(
-                        f"Failed to parse thumbnail row in {file_path}: {row_error}"
-                    )
-                    continue
 
             logger.info(f"Loaded {len(thumbnails)} thumbnails from {file_path}")
             return thumbnails

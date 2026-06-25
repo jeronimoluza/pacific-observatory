@@ -261,7 +261,7 @@ class CSVStorage:
         )
 
     def load_urls_from_csv(
-        self, country: str, newspaper: str
+        self, country: str, newspaper: str, skip_urls: Optional[set] = None
     ) -> Optional[List[ThumbnailRecord]]:
         """
         Load thumbnail URLs from urls.csv file.
@@ -269,12 +269,15 @@ class CSVStorage:
         Args:
             country: Country code
             newspaper: Newspaper name
+            skip_urls: Optional set of URL strings to drop while loading. See
+                ``URLTracker.load_urls_from_csv`` — bounds resume memory to the
+                pending set instead of the full file.
 
         Returns:
             List of ThumbnailRecord objects if file exists, None otherwise
         """
         newspaper_dir = self.get_newspaper_dir(country, newspaper)
-        return self.url_tracker.load_urls_from_csv(newspaper_dir)
+        return self.url_tracker.load_urls_from_csv(newspaper_dir, skip_urls=skip_urls)
 
     def get_existing_urls(self, country: str, newspaper: str) -> set:
         """
