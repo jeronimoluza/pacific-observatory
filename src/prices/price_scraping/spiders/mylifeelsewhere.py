@@ -3,14 +3,17 @@
 MLE only publishes country-level pages (no city pages exist). Each page
 holds ~34 items across 7 categories (Restaurants, Groceries,
 Transportation, Housing, Childcare, Entertainment and Sports, Clothing).
-Prices are DUAL-CURRENCY: each cost cell has USD as the direct text node
-and local currency in a nested ``<div class="text-gray-400">`` (e.g.
-``$4.75`` + ``FJD10.46``).
+Each cost cell holds two amounts: the ``<td>``'s direct text node is the
+visitor's geo-display currency (server-side IP geolocation, unreliable),
+and the country's LOCAL currency lives in a nested
+``<div class="text-gray-400">`` (e.g. ``FJD10.46``, ``₫49,592``,
+``NZ$25.18``).
 
-Because of the dual encoding, this is the first aggregator where both
-``price`` (local) AND ``price_usd`` come straight from the source — no
-downstream FX needed. The 3-letter ISO currency code is parsed from the
-nested div text prefix (e.g. ``FJD10.46`` → ``FJD``).
+We take ``price`` + ``currency`` from the nested local-currency div only.
+The currency is resolved from the amount's prefix — a 2–4 letter ISO code
+(``FJD``, ``THB``) used as-is, or a symbol / ``X$`` prefix mapped via
+``_CURRENCY_PREFIX_MAP`` (``₫`` → ``VND``, ``NZ$`` → ``NZD``). ``price_usd``
+is left null; USD is attached downstream from FX in ``build/aggregate.py``.
 
 No city dimension: ``city`` is left null and ``product_id`` is
 ``{country_slug}:{item_slug}``.
@@ -33,8 +36,25 @@ from bs4 import BeautifulSoup
 logger = logging.getLogger(__name__)
 
 _BASE = "https://www.mylifeelsewhere.com"
-_USD_RE = re.compile(r"\$\s*([\d.,]+)")
-_LOCAL_RE = re.compile(r"^([A-Z]{2,4})\s*([\d.,]+)")
+# Local-currency cell: leading non-digit prefix (currency code/symbol) + amount.
+_PREFIX_RE = re.compile(r"^([^\d]+?)\s*([\d.,]+)")
+_ISO_CODE_RE = re.compile(r"^[A-Z]{2,4}$")
+# Non-ISO-letter prefixes seen across MLE country pages → ISO codes.
+_CURRENCY_PREFIX_MAP = {
+    "A$": "AUD",
+    "HK$": "HKD",
+    "NZ$": "NZD",
+    "NT$": "TWD",
+    "S$": "SGD",
+    "US$": "USD",
+    "CN¥": "CNY",
+    "$": "USD",
+    "¥": "JPY",
+    "₱": "PHP",
+    "₩": "KRW",
+    "₫": "VND",
+    "CFPF": "XPF",
+}
 _NUMBER_RE = re.compile(r"([\d.,]+)")
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
 _UA = (
@@ -128,9 +148,10 @@ class MyLifeElsewhereSpider(scrapy.Spider):
     ) -> Iterator[dict]:
         """Yield one dict per (country, item) on an MLE country page.
 
-        Both ``price`` (local) and ``price_usd`` are populated from the
-        source — MLE puts USD in the direct text node and local currency
-        in a nested ``<div class="text-gray-400">``.
+        ``price`` + ``currency`` come from the nested local-currency div
+        (``<div class="text-gray-400">``); the cell's direct text node is
+        the visitor's geo-display currency and is ignored. ``price_usd``
+        is left null and attached downstream from FX.
         """
         soup = BeautifulSoup(html, "html.parser")
 
@@ -158,7 +179,7 @@ class MyLifeElsewhereSpider(scrapy.Spider):
                 if len(tds) < 2:
                     continue  # skip header row
                 # td[0] = item name (may include nested .text-gray-400 sub-label)
-                # td[1] = "$USD<div class='text-gray-400'>LOCALCURRENCY+AMOUNT</div>"
+                # td[1] = "<geo currency><div class='text-gray-400'>LOCAL+AMOUNT</div>"
                 name = tds[0].get_text(" ", strip=True)
                 # Collapse repeated whitespace from inner spans
                 name = re.sub(r"\s+", " ", name).strip()
@@ -166,52 +187,35 @@ class MyLifeElsewhereSpider(scrapy.Spider):
                     continue
 
                 cost_td = tds[1]
-                # USD: take direct text of the td (excluding nested divs)
-                usd_text = "".join(
-                    s for s in cost_td.find_all(string=True, recursive=False)
-                ).strip()
-                if not usd_text:
-                    # Fallback: full td text minus any nested div text
-                    full = cost_td.get_text(" ", strip=True)
-                    nested = cost_td.find("div", class_="text-gray-400")
-                    if nested:
-                        full = full.replace(nested.get_text(strip=True), "").strip()
-                    usd_text = full
-                usd_m = _USD_RE.search(usd_text)
-                if not usd_m:
+                # Local currency lives in the nested gray div; the td's direct
+                # text node is the visitor's geo-display currency (ignored).
+                nested = cost_td.find("div", class_="text-gray-400")
+                local_raw = nested.get_text(strip=True) if nested else ""
+                local_m = _PREFIX_RE.match(local_raw)
+                if not local_m:
                     continue
+                prefix = local_m.group(1).strip()
+                currency = _CURRENCY_PREFIX_MAP.get(prefix)
+                if currency is None:
+                    if _ISO_CODE_RE.match(prefix):
+                        currency = prefix
+                    else:
+                        continue
                 try:
-                    price_usd = float(usd_m.group(1).replace(",", ""))
+                    price_local = float(local_m.group(2).replace(",", ""))
                 except ValueError:
                     continue
 
-                nested = cost_td.find("div", class_="text-gray-400")
-                local_raw = nested.get_text(strip=True) if nested else ""
-                local_m = _LOCAL_RE.match(local_raw)
-                if local_m:
-                    currency = local_m.group(1)
-                    try:
-                        price_local = float(local_m.group(2).replace(",", ""))
-                    except ValueError:
-                        price_local = None
-                else:
-                    # Some countries show USD only (e.g. USD economies); use USD.
-                    currency = "USD"
-                    price_local = price_usd
-                    local_raw = usd_text.strip()
-
                 item_key = cls._slugify(name)
-                price_field = price_local if price_local is not None else price_usd
-                price_raw = local_raw or usd_text.strip()
                 yield {
                     "product_id": (
                         f"{country_slug}:{item_key}" if country_slug else item_key
                     ),
                     "product_name": name,
-                    "price": price_field,
-                    "price_raw": price_raw,
+                    "price": price_local,
+                    "price_raw": local_raw,
                     "currency": currency,
-                    "price_usd": price_usd,
+                    "price_usd": None,
                     "category": current_cat,
                     "city": None,
                     "url": url,
