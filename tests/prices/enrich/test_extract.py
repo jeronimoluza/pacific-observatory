@@ -399,3 +399,37 @@ def test_unknown_language_still_extracts_mass_and_promo_via_any_bucket():
     assert sf.pricing_basis == "mass"
     assert sf.amount_value == pytest.approx(0.5)
     assert sf.is_promotion is True
+
+
+# --- appliance/drinkware capacity-spec suppression (BUG3/BUG4 cue extension) --
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "EY905 - Dual Easy Fry & Grill Air fryer 8.3L",
+        "Classic 2 Rice Cooker 3L",
+        "名入れ 部活 スポーツ タンブラー 真空 350ml 全5色",
+        "炊飯器 5.5合 3L",
+        "サーモス 水筒 真空断熱 ステンレス ボトル 350ml 500ml",
+    ],
+)
+def test_appliance_capacity_litres_not_sellable_volume(name):
+    sf = _ex(name, lang="en")
+    assert sf.pricing_basis == "item"
+    assert sf.standard_unit == "item"
+    assert sf.amount_value is None
+
+
+def test_real_volume_without_appliance_cue_still_extracts():
+    sf = _ex("Cooking Oil 3L", lang="en")
+    assert sf.pricing_basis == "volume"
+    assert sf.amount_value == pytest.approx(3.0)
+
+
+def test_rice_cooker_descaler_consumable_keeps_volume():
+    # Appliance noun present, but the consumable-form neg guard (cleaner/descal)
+    # must keep the real by-volume sale quantity.
+    sf = _ex("Rice Cooker Descaler Cleaner 500ml", lang="en")
+    assert sf.pricing_basis == "volume"
+    assert sf.amount_value == pytest.approx(0.5)
