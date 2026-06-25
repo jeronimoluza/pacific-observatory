@@ -294,6 +294,44 @@ def test_pcs_only_marker_yields_count_basis():
     assert sf.is_multipack is True
 
 
+@pytest.mark.parametrize(
+    "name, expected_count",
+    [
+        ("Pork Sausage with Cheese (5pc)", 5),
+        ("All-Natural Donuts Plain (3pc)", 3),
+        ("LS HOOK OVAL VERT 3PC M HK-1", 3),
+        ("Combi Nipple Round Hole Size S 2pc", 2),
+    ],
+)
+def test_glued_singular_pc_yields_count(name, expected_count):
+    """Glued singular `Npc` (no trailing s) → count basis, like `Npcs`."""
+    sf = _ex(name, lang="en")
+    assert sf.pricing_basis == "count"
+    assert sf.standard_unit == "unit"
+    assert sf.count == expected_count
+    assert sf.multiplier == 1
+
+
+def test_glued_singular_pc_single_unit_is_item():
+    """`1pc` is a single unit → item by the v0.2 single-unit rule, not count/1."""
+    sf = _ex("Cezanne Shading Stick 02 1pc", lang="en")
+    assert sf.pricing_basis == "item"
+    assert sf.standard_unit == "item"
+
+
+def test_spaced_pc_is_not_a_piece_count():
+    """`N PC` spaced (personal computer) must NOT be read as a pieces count."""
+    sf = _ex("Gaming Desktop Windows 11 PC", lang="en")
+    assert sf.pricing_basis == "item"
+
+
+def test_glued_pcs_still_count_not_singular_pc():
+    """`Npcs` keeps its full count (the `(?!s)` guard doesn't truncate to Npc)."""
+    sf = _ex("Cotton Buds 50pcs", lang="en")
+    assert sf.pricing_basis == "count"
+    assert sf.count == 50
+
+
 # --- promo markers -----------------------------------------------------------
 
 

@@ -21,4 +21,15 @@ PATTERNS: tuple[PackPattern, ...] = (
         role="canonicalization",
         kind="canon",
     ),
+    # Glued singular "Npc" — "(5pc)", "3PC", "2pc". GLUED only (no \s*) and
+    # `(?!s)` so the spaced "N PC" (personal computer) and the plural "Npcs"
+    # (handled above) never hit this; `(?<!\w)` guards SKU tails (2026-06-25).
+    PackPattern(
+        id="multipack_pc_glued_en",
+        regex=re.compile(r"(?<!\w)(?P<count>\d+)pc\b(?!s)", re.IGNORECASE),
+        groups=("count",),
+        lang="en",
+        role="canonicalization",
+        kind="canon",
+    ),
 )
