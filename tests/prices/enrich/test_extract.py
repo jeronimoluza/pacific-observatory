@@ -113,6 +113,47 @@ def test_litre_lookalikes_not_misread(name):
     assert sf.amount_value != pytest.approx(5.0)  # no spurious "5 litre" etc.
 
 
+# --- "Pack of N" / "Bundle of N" outer multiplier with a per-unit measure ----
+
+
+@pytest.mark.parametrize(
+    "name, expected_av, expected_su, expected_mult",
+    [
+        ("NIVEA Spray 150ml Pack Of 2", 0.15, "lt", 2),
+        ("Vaseline Lotion 70Ml Bundle of 2", 0.07, "lt", 2),
+        ("Vaseline Lotion Bundle of 2 70ml", 0.07, "lt", 2),
+        ("Sachet 10g Pack of 3", 0.01, "kg", 3),
+    ],
+)
+def test_pack_of_n_promotes_to_multiplier_with_measure(
+    name, expected_av, expected_su, expected_mult
+):
+    """A per-unit measure + 'Pack/Bundle of N' → N is the outer multiplier."""
+    sf = _ex(name, lang="en")
+    assert sf.pricing_basis in {"mass", "volume"}
+    assert sf.standard_unit == expected_su
+    assert sf.amount_value == pytest.approx(expected_av, rel=1e-6)
+    assert sf.multiplier == expected_mult
+    assert sf.count == 1
+    assert sf.is_multipack is True
+
+
+def test_pack_of_glued_measure_is_not_a_count():
+    """'Pack of 500g' = a single 500g pack; 500 is the mass, not a multiplier."""
+    sf = _ex("Value Pack of 500g Rice", lang="en")
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(0.5)
+    assert sf.multiplier == 1
+
+
+def test_pack_of_n_without_measure_stays_count():
+    """No per-unit measure: 'Pack of 12' remains a count basis (unchanged)."""
+    sf = _ex("Pencils Pack of 12", lang="en")
+    assert sf.pricing_basis == "count"
+    assert sf.count == 12
+    assert sf.multiplier == 1
+
+
 # --- multipack ---------------------------------------------------------------
 
 

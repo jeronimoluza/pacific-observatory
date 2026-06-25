@@ -47,6 +47,15 @@ _BRAND_ALIAS_KEYS = sorted(_BRAND_ALIASES.keys(), key=len, reverse=True)
 # substring replacement before clean_text, since CJK has no tokenization.
 _CJK_BRAND_KEYS = [k for k in _BRAND_ALIAS_KEYS if any(ord(c) >= 0x3000 for c in k)]
 
+# English "Pack/Bundle of N" OUTER multiplier. Only consulted when the winning
+# pack match was a per-unit value+unit with no count (e.g. "150ml Pack of 2");
+# the N then becomes the outer pack multiplier. The negative lookahead rejects a
+# digit glued to a measure unit ("Pack of 500g" = one 500 g pack, not 500 packs).
+_OUTER_PACK_OF_RE = re.compile(
+    r"\b(?:pack|bundle)\s*of\s*(\d+)\b(?!\s*(?:k?gs?|m?ls?|ltrs?|lt|oz|lb|mg|l)\b)",
+    re.IGNORECASE,
+)
+
 # CJK stop-words and ZH/JA promo markers are substring-stripped because
 # CJK script has no word boundaries.
 _CJK_LANGS = {"zh", "ja"}
@@ -115,6 +124,10 @@ def extract_pack(
             unit = _UNIT_NORM.get(
                 raw_unit, _UNIT_NORM.get(raw_unit.lower(), raw_unit.lower())
             )
+        if count is None and value is not None and unit is not None:
+            om = _OUTER_PACK_OF_RE.search(s)
+            if om:
+                count = int(om.group(1))
         cleaned = (s[: m.start()] + " " + s[m.end() :]).strip()
         cleaned = re.sub(r"\s+", " ", cleaned)
         return cleaned, count, value, unit
