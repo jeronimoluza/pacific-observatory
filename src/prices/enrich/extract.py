@@ -14,7 +14,10 @@ import re
 from dataclasses import dataclass
 
 from prices.enrich.normalize import extract_pack
-from prices.enrich.regex_patterns.dict_view import regex_units_for_extract
+from prices.enrich.regex_patterns.dict_view import (
+    regex_units_for_extract,
+    value_unit_pattern,
+)
 
 
 @dataclass(frozen=True)
@@ -44,11 +47,49 @@ class StructuralFields:
     _PRICING_BASIS_MARKERS,
 ) = regex_units_for_extract()
 
+_VU_RE, _VU_SUPPRESS_WINDOW = value_unit_pattern()
+
+# Appliance-capacity / apparel-fabric-weight / storage-container context cues
+# (BUG 3 / BUG 4). A mass/volume value+unit within `_VU_SUPPRESS_WINDOW` chars of
+# one of these is the product's capacity or fabric weight, not a sale quantity.
+# High-precision nouns only: bare modifiers that co-occur with consumables
+# ("oven" → oven cleaner, "fan", "tank") are deliberately excluded so genuine
+# by-volume/by-weight goods are not suppressed.
+_VU_SUPPRESS_CTX_RE = re.compile(
+    r"refrigerator|freezer|washing\s*machine|tumble\s*dry|\bdryer\b|dishwasher|"
+    r"microwave\s*oven|water\s*heater|"
+    r"洗衣機|洗衣机|冰箱|冷凍庫|冷冻柜|冷凍櫃|製氧機|制氧机|冷氣機|冷气机|"
+    r"熱水器|热水器|飲水機|饮水机|洗碗機|洗碗机|吸塵器|吸尘器|烘衣機|乾衣機|"
+    r"除濕機|除湿机|收納盒|收纳盒|收納箱|收纳箱|"
+    r"t-?shirt|hoodie|sweatshirt|trackpants",
+    re.IGNORECASE,
+)
+
+# Negative guard: appliance-care CONSUMABLES (washer-drum cleaner, dishwasher
+# rinse aid, fridge deodorizer) and perfumes mention an appliance/apparel noun
+# but ARE sold by weight/volume. If any consumable-form cue is present anywhere
+# in the name, never suppress — the mass/volume is real.
+_VU_NEG_RE = re.compile(
+    r"清潔|清洗|洗滌|洗劑|除臭|消臭|脫臭|去味|淨味|柔軟|洗衣精|洗衣粉|洗衣球|"
+    r"凝珠|潤乾|香氛|防潮|防霉|乾燥劑|活性炭|專用|補充|除濕盒|"
+    r"conditioner|shampoo|detergent|cleaner|rinse|softener|deodor|fragrance|"
+    r"refill|edt|edp|parfum|perfume|cologne|salt|wart|verruca|descal|nail polish",
+    re.IGNORECASE,
+)
+
 
 _MARKETING_LIMIT_RE = re.compile(
     r"(?:限り|限定|まで|お一人|お1人|まとめ買い|名様限定|名様まで|お一人様|突破|累計|売れ|名様"
     r"|工作天|工作日|営業日|個口|円OFF|円引き|円分|送料|配送)"
 )
+
+# Inner value+unit tokens, used to detect a "total（per×count）" breakdown idiom
+# (e.g. 10kg（5kg×2袋）) so the outer count isn't double-applied to the total.
+_INNER_VALUE_UNIT_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*(ml|mL|ML|kg|KG|g|G|l|L|cl|CL)")
+
+# Servings counters (N杯分 / N食分 / N回分 / N人前) are "portions worth", never a
+# pack multiplier — used to veto a recovered outer-pack count in Pass 1b2.
+_SERVINGS_SUFFIX_RE = re.compile(r"杯分|食分|回分|人前")
 
 # Patterns that LOOK like pack/count markers but are calendar/time/role context.
 # Stripped from item_name before extract_pack/extra_count runs.
@@ -149,6 +190,47 @@ def _find_value_unit_anywhere(item_name: str):
         return None, None, None
     unit = _SU_NORM.get(m.group("unit"))
     return None, value, unit
+
+
+def _is_total_breakdown(name, matched_value, matched_unit, count):
+    """True when `matched_value`+`matched_unit` is a stated TOTAL whose breakdown
+    `(per × count)` also appears in `name` (e.g. 10kg（5kg×2袋）). In that case the
+    outer `count` is the breakdown of the total, not an extra multiplier, so it
+    must not be re-applied (would double the quantity)."""
+    if matched_value is None or matched_unit is None or not count or count <= 1:
+        return False
+    um = _UNIT_MAP.get(matched_unit)
+    if not um:
+        return False
+    matched_canon = matched_value * float(um["mul"])
+    for m in _INNER_VALUE_UNIT_RE.finditer(name):
+        inner_um = _UNIT_MAP.get(_SU_NORM.get(m.group(2)))
+        if not inner_um:
+            continue
+        inner_canon = float(m.group(1).replace(",", ".")) * float(inner_um["mul"])
+        if (
+            inner_canon < matched_canon
+            and abs(inner_canon * count - matched_canon) < 1e-9
+        ):
+            return True
+    return False
+
+
+def _value_unit_suppressed(name: str) -> bool:
+    """Wire PackPattern.suppress_window for value_unit_volume_mass: True when the
+    first latin value+unit match in `name` sits within the suppress window of an
+    appliance / apparel / storage-container cue, i.e. the number is a capacity or
+    fabric weight rather than a sale quantity (BUG 3 / BUG 4)."""
+    if _VU_SUPPRESS_WINDOW is None:
+        return False
+    m = _VU_RE.search(name)
+    if not m:
+        return False
+    if _VU_NEG_RE.search(name):
+        return False
+    a = max(0, m.start() - _VU_SUPPRESS_WINDOW)
+    b = min(len(name), m.end() + _VU_SUPPRESS_WINDOW)
+    return bool(_VU_SUPPRESS_CTX_RE.search(name[a:b]))
 
 
 def _match_extra_unit(item_name: str, lang: str | None):
@@ -309,6 +391,33 @@ def extract(
     if pack_count is None and pack_value is None and has_non_ascii:
         _cleaned, pack_count, pack_value, pack_unit = extract_pack(stripped, None)
 
+    # Pass 1b2: declared-lang matched a value+unit but no outer-pack count. A
+    # script-specific outer multiplier (×24本, ×28袋) only fires under lang=None,
+    # and the value+unit match above suppressed the Pass 1b retry — so the
+    # multiplier was silently dropped (stays 1). Re-scan lang=None solely to
+    # recover the missing count, keeping the value/unit already matched. Only a
+    # bare count (no competing value/unit) is adopted, and the marketing-limit
+    # window guard (same as Pass 1c) rejects counts inside お一人様…限り clauses.
+    if pack_value is not None and pack_count is None and has_non_ascii:
+        _, alt_count, alt_value, alt_unit = extract_pack(stripped, None)
+        if (
+            alt_count is not None
+            and alt_value is None
+            and alt_unit is None
+            and not _is_total_breakdown(item_name, pack_value, pack_unit, alt_count)
+        ):
+            alt_m = re.search(rf"(?<!\d){alt_count}", item_name)
+            if alt_m is None:
+                pack_count = alt_count
+            else:
+                a = max(0, alt_m.start() - 12)
+                b = min(len(item_name), alt_m.end() + 12)
+                window = item_name[a:b]
+                if not _MARKETING_LIMIT_RE.search(
+                    window
+                ) and not _SERVINGS_SUFFIX_RE.search(window):
+                    pack_count = alt_count
+
     # Pass 1c: local marketing-clause suppression for count-only matches.
     # Pack_patterns is first-match-wins, so the count could be e.g. "953枚突破"
     # (marketing) instead of the real "4枚セット". Re-find the count match in
@@ -336,6 +445,19 @@ def extract(
         if sec_value is not None and sec_unit is not None:
             # promote: keep pack_count as multiplier, attach value+unit
             pack_value, pack_unit = sec_value, sec_unit
+
+    # Pass 1e: appliance-capacity / apparel-fabric-weight suppression (BUG 3/4).
+    # value_unit_volume_mass carries a suppress_window; if the value+unit that
+    # fired sits within it of an appliance/apparel/container cue, the number is
+    # a capacity / fabric weight, not a sale quantity -> drop the mass/volume so
+    # the row falls through to item (or count, if a real pack count survives).
+    if (
+        pack_unit is not None
+        and _UNIT_MAP.get(pack_unit, {}).get("basis") in ("mass", "volume")
+        and _value_unit_suppressed(item_name)
+    ):
+        pack_value = None
+        pack_unit = None
 
     extra_entry, extra_value = (None, None)
     if pack_unit is None:
