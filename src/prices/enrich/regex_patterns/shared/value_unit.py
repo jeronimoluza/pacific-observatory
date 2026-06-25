@@ -17,10 +17,12 @@ from prices.enrich.regex_patterns.types import PackPattern
 PATTERNS: tuple[PackPattern, ...] = (
     # "500g", "1L", "135ml", "158GM", "60gr", "25mg", "1ltr", "5LT", "2.25LTRS"
     # ltrs|ltr|lt placed before l|L so the longest litre spelling wins (IGNORECASE).
+    # value also accepts a leading-dot decimal (".3 mL", ".75 L" — pharma dosing);
+    # the left lookbehind still rejects a dot glued to a letter/digit ("No.3 ml").
     PackPattern(
         id="value_unit_volume_mass",
         regex=re.compile(
-            r"(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>ml|mL|ML|ltrs|ltr|lt|l|L|kg|KG|g|G|mg|MG|gm|GM|gr|GR|oz|OZ|lb|LB|Oz)\b",
+            r"(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?|[.,]\d+)\s*(?P<unit>ml|mL|ML|ltrs|ltr|lt|l|L|kg|KG|g|G|mg|MG|gm|GM|gr|GR|oz|OZ|lb|LB|Oz)\b",
             re.IGNORECASE,
         ),
         groups=("value", "unit"),

@@ -113,6 +113,28 @@ def test_litre_lookalikes_not_misread(name):
     assert sf.amount_value != pytest.approx(5.0)  # no spurious "5 litre" etc.
 
 
+@pytest.mark.parametrize(
+    "name, expected_av, expected_su",
+    [
+        ("Rx: Epokine 4,000 IU/ .3 mL Solution for Injection", 0.0003, "lt"),
+        ("Filgrastim Injection .5 mL Prefilled Syringe", 0.0005, "lt"),
+        (".75 L Bottle Sparkling Water", 0.75, "lt"),
+    ],
+)
+def test_leading_dot_decimal_measure(name, expected_av, expected_su):
+    """Leading-dot decimals (`.3 mL`, common in pharma dosing) extract correctly."""
+    sf = _ex(name, lang="en")
+    assert sf.pricing_basis == "volume"
+    assert sf.standard_unit == expected_su
+    assert sf.amount_value == pytest.approx(expected_av, rel=1e-6)
+
+
+def test_leading_dot_needs_clean_left_boundary():
+    """A dot glued to a letter/digit (`No.3 ml`) is NOT a measure."""
+    sf = _ex("Catalogue Item No.3 ml description", lang="en")
+    assert sf.amount_value != pytest.approx(0.0003)
+
+
 # --- "Pack of N" / "Bundle of N" outer multiplier with a per-unit measure ----
 
 
@@ -155,6 +177,27 @@ def test_pack_of_n_without_measure_stays_count():
 
 
 # --- multipack ---------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "name, expected_basis, expected_av",
+    [
+        ("Thin Sausages 24 Pack 1.8kg", "mass", 1.8),
+        ("Snack Multipack 6 Pack 330ml", "volume", 0.33),
+        ("Kẹo đậu Phộng Hình Quạt (4 miếng) VIETTIN MART 240g", "mass", 0.24),
+        ("Vitamin Tablets 30 viên 500mg", "mass", 0.0005),
+    ],
+)
+def test_bare_count_plus_total_measure_is_not_a_multiplier(
+    name, expected_basis, expected_av
+):
+    """A bare 'N Pack/PCS' or 'N miếng/viên' next to a single TOTAL mass/volume
+    means the measure is the pack total — the count is internal, multiplier=1."""
+    sf = _ex(name)
+    assert sf.pricing_basis == expected_basis
+    assert sf.amount_value == pytest.approx(expected_av, rel=1e-6)
+    assert sf.multiplier == 1
+    assert sf.count == 1
 
 
 def test_multipack_value_unit():
