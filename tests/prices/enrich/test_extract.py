@@ -433,3 +433,57 @@ def test_rice_cooker_descaler_consumable_keeps_volume():
     sf = _ex("Rice Cooker Descaler Cleaner 500ml", lang="en")
     assert sf.pricing_basis == "volume"
     assert sf.amount_value == pytest.approx(0.5)
+
+
+# --- single-unit mass/volume range -> lower bound (spec rule) ----------------
+
+
+@pytest.mark.parametrize(
+    "name,lower",
+    [
+        ('Pechay Baguio "Wombok" (600-700g)', 0.6),
+        ("Green Ice Lettuce (350-400g) by Mayani", 0.35),
+        ('Singkamas "Turnips" (300-400g)', 0.3),
+        ("Frozen Chicken Thigh with Bone (550-650g)", 0.55),
+        ("Frozen [Choice] Ribeye Tomahawk End Cut (1.1-1.2kg)", 1.1),
+        ("Beef 1.5-2kg", 1.5),
+    ],
+)
+def test_single_unit_mass_range_uses_lower_bound(name, lower):
+    # Range where only the upper bound carries the unit ("600-700g"): the spec
+    # mandates the LOWER bound. The both-sided form ("800g-1Kg") already works
+    # because value_unit matches the leftmost (lower) token.
+    sf = _ex(name, lang="en")
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(lower)
+
+
+def test_both_sided_mass_range_still_lower_bound():
+    sf = _ex("Rice 800g-1Kg", lang="en")
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(0.8)
+
+
+def test_sku_dash_not_treated_as_range():
+    # A hyphenated SKU with no trailing mass/volume unit must stay item.
+    sf = _ex("Nj-009-127/128", lang="en")
+    assert sf.pricing_basis == "item"
+    assert sf.amount_value is None
+
+
+@pytest.mark.parametrize(
+    "name,unchanged",
+    [
+        # 182 = item no., 500g is the real mass; must NOT collapse to 0.182.
+        ("GRANORO DEDICATO LINGUINE N. 182 -  500G", 0.5),
+        ("CAMPAGNA LINGUINE #6 -  500G", 0.5),
+        # selectable capacity (ratio 2.5): upper-bound match survives unchanged.
+        ("HARIO Filter Bottle 3color 300-750ml", 0.75),
+    ],
+)
+def test_wide_ratio_sku_or_capacity_not_collapsed_to_lower(name, unchanged):
+    # The range collapse only fires for tight (high/low < 2.5) product-weight
+    # ranges; a wide "range" is an SKU-then-weight or selectable-capacity idiom
+    # whose pre-existing match must survive unchanged (no collapse to lower).
+    sf = _ex(name, lang="en")
+    assert sf.amount_value == pytest.approx(unchanged)
