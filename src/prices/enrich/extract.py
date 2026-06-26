@@ -58,7 +58,7 @@ _VU_RE, _VU_SUPPRESS_WINDOW = value_unit_pattern()
 # by-volume/by-weight goods are not suppressed.
 _VU_SUPPRESS_CTX_RE = re.compile(
     r"refrigerator|freezer|washing\s*machine|tumble\s*dry|\bdryer\b|dishwasher|"
-    r"microwave\s*oven|water\s*heater|air\s*fryer|rice\s*cooker|\btumbler\b|"
+    r"microwave\s*oven|water\s*heater|air\s*fryer|rice\s*cooker|\btumbler\b|\bsteamer\b|"
     r"洗衣機|洗衣机|冰箱|冷凍庫|冷冻柜|冷凍櫃|製氧機|制氧机|冷氣機|冷气机|"
     r"熱水器|热水器|飲水機|饮水机|洗碗機|洗碗机|吸塵器|吸尘器|烘衣機|乾衣機|"
     r"除濕機|除湿机|收納盒|收纳盒|收納箱|收纳箱|炊飯器|タンブラー|水筒|"

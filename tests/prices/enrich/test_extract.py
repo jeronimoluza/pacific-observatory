@@ -487,3 +487,47 @@ def test_wide_ratio_sku_or_capacity_not_collapsed_to_lower(name, unchanged):
     # whose pre-existing match must survive unchanged (no collapse to lower).
     sf = _ex(name, lang="en")
     assert sf.amount_value == pytest.approx(unchanged)
+
+
+# --- spelled-out litre (LITER / litre / liters) ------------------------------
+
+
+@pytest.mark.parametrize(
+    "name,liters",
+    [
+        ("DIAMOND MILK UHT LOW FAT 1 LITER", 1.0),
+        ("BAGUS FRESH 99 DISH WASH MIX BERRY JERIGEN 4.25 LITER", 4.25),
+        ("SUNCO COOKING OIL REFILL 2 LITERS", 2.0),
+        ("Bulk Olive Oil 5 Litre", 5.0),
+        ("AMAGO MINYAK GORENG SAWIT REFFIL 2 LITER", 2.0),
+    ],
+)
+def test_spelled_litre_extracts_volume(name, liters):
+    # The value+unit alphabet only knew abbreviations (l/lt/ltr); the spelled-out
+    # "LITER"/"LITRE" (Indonesian + English) fell through to item. Recognize it.
+    sf = _ex(name, lang="en")
+    assert sf.pricing_basis == "volume"
+    assert sf.standard_unit == "lt"
+    assert sf.amount_value == pytest.approx(liters)
+
+
+def test_spelled_liter_appliance_capacity_suppressed():
+    # "5 Liter Food Steamer" is appliance CAPACITY, not a sale volume -> item.
+    sf = _ex("Kuchenluxe 5 Liter Food Steamer KFS-1", lang="en")
+    assert sf.pricing_basis == "item"
+    assert sf.amount_value is None
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "AA Lithium Batteries 4 Pack",
+        "3 Little Pigs Storybook",
+        "Canned Litchi 2 Pack",
+    ],
+)
+def test_lit_prefix_words_not_treated_as_litre(name):
+    # Full-word "liter"/"litre" must not over-match a bare "lit" prefix
+    # (lithium / little / litchi) into a phantom volume.
+    sf = _ex(name, lang="en")
+    assert sf.pricing_basis != "volume"
