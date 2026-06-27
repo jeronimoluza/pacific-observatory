@@ -22,7 +22,7 @@ import scrapy
 
 logger = logging.getLogger(__name__)
 
-SITEMAP_INDEX = "https://mh.com.fj/wp-sitemap.xml"
+SITEMAP_INDEX = "https://mh.com.fj/sitemaps.xml"
 # Strip a trailing /<digits> from product URLs so the variant suffixes don't
 # round-trip through 301 redirects to the canonical slug.
 VARIANT_SUFFIX_RE = re.compile(r"/\d+/?$")
@@ -67,7 +67,7 @@ class MhOnlineSpider(scrapy.Spider):
 
     def parse_sitemap_index(self, response):
         sub_sitemaps = response.xpath("//*[local-name()='loc']/text()").getall()
-        product_sitemaps = [s for s in sub_sitemaps if "posts-product" in s]
+        product_sitemaps = [s for s in sub_sitemaps if "product-sitemap" in s]
         logger.info(
             f"sitemap index: {len(sub_sitemaps)} sub-sitemaps "
             f"({len(product_sitemaps)} product sub-sitemaps)"

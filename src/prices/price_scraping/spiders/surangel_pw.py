@@ -31,9 +31,9 @@ class SurangelPwSpider(scrapy.Spider):
     language = "en"
 
     custom_settings = {
-        "CONCURRENT_REQUESTS_PER_DOMAIN": 2,
-        "CONCURRENT_REQUESTS": 4,
-        "DOWNLOAD_DELAY": 1.0,
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
+        "CONCURRENT_REQUESTS": 1,
+        "DOWNLOAD_DELAY": 2.0,
         "RETRY_TIMES": 3,
         "AUTOTHROTTLE_ENABLED": True,
         "USER_AGENT": (

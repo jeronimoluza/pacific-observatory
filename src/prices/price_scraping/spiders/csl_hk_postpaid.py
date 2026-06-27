@@ -10,7 +10,6 @@ from scrapy_playwright.page import PageMethod
 logger = logging.getLogger(__name__)
 
 START_URLS = [
-    "https://www.hkcsl.com/en/service-plan/",
     "https://www.hkcsl-5g.com/en/5g-tariff-plan/",
 ]
 
@@ -27,7 +26,7 @@ def slugify(s):
 
 class CslHkPostpaidSpider(scrapy.Spider):
     name = "csl_hk_postpaid"
-    allowed_domains = ["hkcsl.com"]
+    allowed_domains = ["hkcsl.com", "hkcsl-5g.com"]
     currency = "HKD"
     language = "en"
 

@@ -21,14 +21,14 @@ class EmartKrSpider(scrapy.Spider):
     # Top-level Emart categories spanning food + non-food (COICOP 01, 05, 09, 12).
     # Each renders ~60 cards on first load.
     START_URLS = [
-        "https://emart.ssg.com/disp/category.ssg?dispCtgId=6000095244",  # 신선식품 fresh
-        "https://emart.ssg.com/disp/category.ssg?dispCtgId=6000213046",  # 건강식품 health
-        "https://emart.ssg.com/disp/category.ssg?dispCtgId=6000228036",  # 친환경/유기농 organic
-        "https://emart.ssg.com/disp/category.ssg?dispCtgId=6000217707",  # 밀키트 meal kits
-        "https://emart.ssg.com/disp/category.ssg?dispCtgId=6000213997",  # 제지/위생/건강 hygiene
-        "https://emart.ssg.com/disp/category.ssg?dispCtgId=6000214658",  # 헤어/바디/뷰티 personal care
-        "https://emart.ssg.com/disp/category.ssg?dispCtgId=6000214420",  # 청소/생활용품 household
-        "https://emart.ssg.com/disp/category.ssg?dispCtgId=6000214128",  # 주방용품 kitchenware
+        "https://www.ssg.com/disp/category.ssg?dispCtgId=6000095244",  # 신선식품 fresh
+        "https://www.ssg.com/disp/category.ssg?dispCtgId=6000213046",  # 건강식품 health
+        "https://www.ssg.com/disp/category.ssg?dispCtgId=6000228036",  # 친환경/유기농 organic
+        "https://www.ssg.com/disp/category.ssg?dispCtgId=6000217707",  # 밀키트 meal kits
+        "https://www.ssg.com/disp/category.ssg?dispCtgId=6000213997",  # 제지/위생/건강 hygiene
+        "https://www.ssg.com/disp/category.ssg?dispCtgId=6000214658",  # 헤어/바디/뷰티 personal care
+        "https://www.ssg.com/disp/category.ssg?dispCtgId=6000214420",  # 청소/생활용품 household
+        "https://www.ssg.com/disp/category.ssg?dispCtgId=6000214128",  # 주방용품 kitchenware
     ]
 
     custom_settings = {
@@ -62,13 +62,13 @@ class EmartKrSpider(scrapy.Spider):
             )
 
     def parse_listing(self, response):
-        cards = response.css("li.mnemitem_grid_item")
+        cards = response.css("li.cunit_t232")
         yielded = 0
         for card in cards:
             unit = card.css("[data-react-unit-id]")
             product_id = unit.attrib.get("data-react-unit-id")
             unit_price = unit.attrib.get("data-react-unit-price")
-            name = (card.css("span.mnemitem_goods_tit::text").get() or "").strip()
+            name = (card.css("div.ssgitem_tit_name::text").get() or "").strip()
             # Promo/rental cards have data-react-unit-price="0" and a monthly
             # price string that starts with "월". Filter those out.
             if not product_id or not name or not unit_price or unit_price == "0":

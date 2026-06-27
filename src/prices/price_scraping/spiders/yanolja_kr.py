@@ -19,7 +19,7 @@ CATEGORIES = [
     ("/around/keyword-hotel?sourcePage=Hotel", "Hotel Search"),
 ]
 
-PRICE_RE = re.compile(r"([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{4,})\s*원")
+PRICE_RE = re.compile(r"([0-9]{1,3}(?:[, ][0-9]{3})+|[0-9]{4,})\s*원")
 ID_RE = re.compile(r"/stay/(?:domestic|overseas)/([0-9]+)")
 
 
@@ -33,6 +33,16 @@ class YanoljaKrSpider(scrapy.Spider):
         "PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT": 60000,
         "DOWNLOAD_DELAY": 2,
         "CONCURRENT_REQUESTS": 1,
+        "PLAYWRIGHT_LAUNCH_OPTIONS": {
+            "headless": True,
+            "args": ["--disable-blink-features=AutomationControlled", "--no-sandbox"],
+        },
+        "PLAYWRIGHT_CONTEXTS": {
+            "default": {
+                "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+                "viewport": {"width": 1280, "height": 720},
+            }
+        },
     }
 
     async def start(self):
@@ -100,7 +110,7 @@ class YanoljaKrSpider(scrapy.Spider):
 
             price = None
             for pm in PRICE_RE.finditer(joined):
-                v = pm.group(1).replace(",", "")
+                v = pm.group(1).replace(",", "").replace(" ", "")
                 try:
                     if float(v) > 0:
                         price = v
@@ -110,17 +120,20 @@ class YanoljaKrSpider(scrapy.Spider):
             if not price:
                 continue
 
-            # Name: prefer anchor image alt, then anchor text, then heading inside parent.
-            name = anchor.css("img::attr(alt)").get()
-            if not name or not name.strip():
-                name = anchor.css("::text").get()
-            if not name or not name.strip():
-                name = anchor.xpath(
-                    "./parent::*//*[self::h2 or self::h3 or self::h4]//text()"
-                ).get()
-            if not name or not name.strip():
+            # Name: first non-numeric, non-currency, non-percent text node in the anchor.
+            all_texts = [t.strip() for t in anchor.css("*::text").getall() if t.strip()]
+            name = next(
+                (
+                    t
+                    for t in all_texts
+                    if not re.fullmatch(r"[\d,. ]+", t)
+                    and "원" not in t
+                    and not t.endswith("%")
+                ),
+                None,
+            )
+            if not name:
                 continue
-            name = name.strip()
 
             seen_ids.add(product_id)
 

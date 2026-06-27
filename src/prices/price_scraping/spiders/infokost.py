@@ -1,11 +1,10 @@
-"""Spider for Infokost ID — kost (informal rental) listings, Playwright SSR-hydrate."""
+"""Spider for Infokost ID — kost (informal rental) listings, impersonated plain HTTP."""
 
 import logging
 import re
 from datetime import datetime, timezone
 
 import scrapy
-from scrapy_playwright.page import PageMethod
 
 logger = logging.getLogger(__name__)
 
@@ -45,29 +44,7 @@ class InfokostSpider(scrapy.Spider):
             yield scrapy.Request(
                 url,
                 callback=self.parse_listing,
-                meta={
-                    "playwright": True,
-                    "playwright_page_goto_kwargs": {"wait_until": "domcontentloaded"},
-                    "playwright_page_methods": [
-                        PageMethod("wait_for_timeout", 5000),
-                        PageMethod(
-                            "evaluate",
-                            "window.scrollTo(0, document.body.scrollHeight/3)",
-                        ),
-                        PageMethod("wait_for_timeout", 2000),
-                        PageMethod(
-                            "evaluate",
-                            "window.scrollTo(0, document.body.scrollHeight*2/3)",
-                        ),
-                        PageMethod("wait_for_timeout", 2000),
-                        PageMethod(
-                            "evaluate",
-                            "window.scrollTo(0, document.body.scrollHeight)",
-                        ),
-                        PageMethod("wait_for_timeout", 2000),
-                    ],
-                    "category": city,
-                },
+                meta={"impersonate": "chrome120", "category": city},
             )
 
     def parse_listing(self, response):

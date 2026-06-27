@@ -1,11 +1,10 @@
-"""Spider for SquareFoot HK rental listings (cards hydrate via AJAX, needs Playwright)."""
+"""Spider for SquareFoot HK rental listings (impersonated plain HTTP)."""
 
 import logging
 import re
 from datetime import datetime, timezone
 
 import scrapy
-from scrapy_playwright.page import PageMethod
 
 logger = logging.getLogger(__name__)
 
@@ -46,29 +45,7 @@ class SquarefootHkSpider(scrapy.Spider):
             yield scrapy.Request(
                 url,
                 callback=self.parse_listing,
-                meta={
-                    "playwright": True,
-                    "playwright_page_goto_kwargs": {"wait_until": "domcontentloaded"},
-                    "playwright_page_methods": [
-                        PageMethod("wait_for_timeout", 15000),
-                        PageMethod(
-                            "evaluate",
-                            "window.scrollTo(0, document.body.scrollHeight/3)",
-                        ),
-                        PageMethod("wait_for_timeout", 5000),
-                        PageMethod(
-                            "evaluate",
-                            "window.scrollTo(0, document.body.scrollHeight*2/3)",
-                        ),
-                        PageMethod("wait_for_timeout", 5000),
-                        PageMethod(
-                            "evaluate",
-                            "window.scrollTo(0, document.body.scrollHeight)",
-                        ),
-                        PageMethod("wait_for_timeout", 5000),
-                    ],
-                    "category": name,
-                },
+                meta={"impersonate": "chrome120", "category": name},
             )
 
     def parse_listing(self, response):
