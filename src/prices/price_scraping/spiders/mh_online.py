@@ -88,7 +88,11 @@ class MhOnlineSpider(scrapy.Spider):
             )
 
     def parse_product_sitemap(self, response):
-        urls = response.xpath("//*[local-name()='loc']/text()").getall()
+        # Only <loc> directly under <url>; the new sitemap nests <image:loc>
+        # image URLs inside each <url> which must not be fetched as products.
+        urls = response.xpath(
+            "//*[local-name()='url']/*[local-name()='loc']/text()"
+        ).getall()
         canonical = []
         for u in urls:
             cu = VARIANT_SUFFIX_RE.sub("/", u)
