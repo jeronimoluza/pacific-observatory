@@ -102,7 +102,101 @@ def _read_modifiers(suppressed_ids):
     return [m for m in _MODIFIER_ORDER if m in present]
 
 
+def _accounted_numbers(events, sf):
+    accounted = set()
+    for ev in events:
+        amt = ev.get("candidate_amount")
+        if ev.get("candidate_unit") is not None and amt is not None:
+            accounted.add(int(amt))
+        mult = ev.get("candidate_multiplier")
+        if mult is not None:
+            accounted.add(int(mult))
+    if sf is not None:
+        if sf.multiplier is not None:
+            accounted.add(int(sf.multiplier))
+        if sf.count is not None:
+            accounted.add(int(sf.count))
+    return accounted
+
+
+def _orphan_number(name, events, sf):
+    # A `numeric_nonquantity`: a digit run in the name that is neither a
+    # unit-bearing amount, a multiplier, nor a count candidate — demoted to a
+    # spec_number modifier (CONTEXT decision 2 / RESEARCH §3 step 5). Reads the
+    # accounted values off the candidate set; never re-detects units or counts.
+    present = {int(m) for m in _INT_RE.findall(name)}
+    return bool(present - _accounted_numbers(events, sf))
+
+
+def _unit_group_count(events):
+    # Distinct (amount, unit) pairs among unit-bearing candidates. The dedup
+    # collapses the pack_lang + secondary_vu double-fire on the same `900g`, so
+    # `Stage 2 900g` reads as ONE group (A1: unit-bearing groups only).
+    groups = set()
+    for ev in events:
+        unit = ev.get("candidate_unit")
+        if unit is not None:
+            groups.add((ev.get("candidate_amount"), unit))
+    return len(groups)
+
+
+def _has_count_candidate(events):
+    for ev in events:
+        if ev.get("_source") == "extra_count" or ev.get("candidate_basis") == "count":
+            mult = ev.get("candidate_multiplier")
+            if mult is not None and mult > 1:
+                return True
+    return False
+
+
 def classify(current, structural_fields):
-    # Wave-0 stub: returns the fallthrough shape. Task 2 fills the interceptor
-    # precedence (dose/spec detectors + candidate-set + StructuralFields reads).
-    return ("bare_item", [])
+    if current is None:
+        return ("bare_item", [])
+
+    sf = structural_fields
+    src = current.get("accepted_source")
+    events = current.get("match", [])
+    sup = current.get("suppressed_ids", {})
+    name = current.get("working_name") or current.get("raw_name") or ""
+
+    dose = _dose_present(name)
+    spec = _spec_present(name) or _orphan_number(name, events, sf)
+    count_candidate = _has_count_candidate(events)
+    unit_groups = _unit_group_count(events)
+
+    basis = sf.pricing_basis if sf is not None else None
+    mult = sf.multiplier if sf is not None else None
+    is_multipack = sf.is_multipack if sf is not None else None
+    measure_basis = basis in ("mass", "volume")
+
+    # First-match interceptor precedence (CONTEXT taxonomy / RESEARCH Finding A).
+    if src == "basis_marker":
+        shape = "per_unit_priced"
+    elif dose and count_candidate and measure_basis:
+        # Finding A: the dose mass won the rung but the count is the sellable
+        # quantity — `1000mg 60 tablets` / `60'S`.
+        shape = "count_pack"
+    elif is_multipack or (mult is not None and mult > 1):
+        shape = "multipack_measure"
+    elif unit_groups >= 2:
+        shape = "multi_measure"
+    elif measure_basis and mult in (None, 1) and unit_groups == 1:
+        shape = "single_measure"
+    elif basis == "count":
+        shape = "count_pack"
+    else:
+        shape = "bare_item"
+
+    modifiers = _read_modifiers(sup)
+    if dose and shape not in ("single_measure", "multi_measure"):
+        modifiers.append("dosage_strength")
+    if spec:
+        modifiers.append("spec_number")
+
+    seen = set()
+    ordered = []
+    for m in _MODIFIER_ORDER:
+        if m in modifiers and m not in seen:
+            seen.add(m)
+            ordered.append(m)
+    return (shape, ordered)
