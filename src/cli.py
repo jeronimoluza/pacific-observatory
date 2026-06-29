@@ -374,12 +374,16 @@ from prices.backfill import backfill_command as _prices_backfill  # noqa: E402
 from prices.cc_warc_fetcher import common_crawl_command as _prices_common_crawl  # noqa: E402
 from prices.enrich.cli import process_command as _prices_process  # noqa: E402
 from prices.enrich.eval.cli import eval_command as _prices_eval  # noqa: E402
+from prices.enrich.match_record_view import (  # noqa: E402
+    match_record_command as _prices_match_record,
+)
 
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
 prices.add_command(_prices_common_crawl, name="common-crawl")
 prices.add_command(_prices_process, name="process")
 prices.add_command(_prices_eval, name="eval")
+prices.add_command(_prices_match_record, name="match-record")
 
 
 @prices.command("build")
