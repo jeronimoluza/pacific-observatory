@@ -72,6 +72,19 @@ _RESIDUAL_COLUMNS = (
     "priority_rank",
 )
 
+# Columns whose values arrive mixed (raw regex strings on synthetic candidates,
+# floats/ints elsewhere) and so must be coerced to a single numeric dtype before
+# parquet serialization, which cannot infer a type for a mixed str/float column.
+_NUMERIC_COLUMNS = frozenset(
+    {
+        "candidate_amount",
+        "candidate_multiplier",
+        "priority_rank",
+        "start_char",
+        "end_char",
+    }
+)
+
 # Module-level sink (None == OFF) + the current-row buffer (None == no active
 # row, so every record_* call no-ops).
 _SINK: dict | None = None
@@ -294,6 +307,9 @@ def flush(out_dir=None) -> dict:
             if rows
             else pd.DataFrame(columns=list(cols))
         )
+        for c in df.columns:
+            if c in _NUMERIC_COLUMNS:
+                df[c] = pd.to_numeric(df[c], errors="coerce")
         df["recorded_at"] = recorded_at
         path = target / fname
         df.to_parquet(path, index=False)
