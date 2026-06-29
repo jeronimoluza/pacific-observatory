@@ -3,9 +3,14 @@ Spider for scraping Yahoo Shopping (Japan) - https://shopping.yahoo.co.jp/
 Extracts product information including prices, categories, and URLs.
 
 Strategy:
-1. Use Playwright to render category listing pages
-2. Extract product data directly from product cards on listing pages
-3. Follow pagination to get more products
+1. Walk each top-level category via the paginating browse endpoint
+   /category/{id}/list/?b={offset} (offset is a 1-based item index, ~30
+   products per page). The /recommend endpoint used previously is a curated,
+   non-paginating slice (~200 items/category) and is NOT used here.
+2. Render each offset page with Playwright (the list is client-rendered) and
+   extract name/price/url directly from the product cards.
+3. Step the offset until a page yields no new products (Yahoo pins deep offsets
+   to the last page) or MAX_OFFSET is reached.
 
 Note: Yahoo Shopping has anti-bot protection on product pages, so we extract
 data directly from listing pages where product cards show name, price, and URL.
@@ -14,7 +19,7 @@ data directly from listing pages where product cards show name, price, and URL.
 import scrapy
 import logging
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from scrapy_playwright.page import PageMethod
 
 logger = logging.getLogger(__name__)
@@ -48,7 +53,7 @@ def _abort_heavy_requests(request) -> bool:
 class YahooShoppingSpider(scrapy.Spider):
     """
     Spider for Yahoo Shopping (Japan).
-    Extracts product data from category listing pages using Playwright.
+    Walks each category's /list/?b={offset} browse pages with Playwright.
     """
 
     name = "yahoo_shopping"
@@ -56,7 +61,7 @@ class YahooShoppingSpider(scrapy.Spider):
     currency = "JPY"
     language = "jp"
 
-    # Category IDs to scrape (covers all major product categories)
+    # Top-level category IDs to walk.
     CATEGORY_IDS = [
         # Food & Health
         ("2498", "食品"),
@@ -80,10 +85,21 @@ class YahooShoppingSpider(scrapy.Spider):
         ("2513", "アウトドア、釣り、旅行用品"),
     ]
 
-    # Maximum pages per category
-    MAX_PAGES_PER_CATEGORY = 3
+    # Offset stepping. The page shows ~30 products; step below the smallest
+    # observed page size so consecutive offsets overlap and never leave a gap.
+    PAGE_STEP = 25
+    # Yahoo pins deep offsets to the last page; the 0-new-products stop catches
+    # that, this is just a hard safety bound.
+    MAX_OFFSET = 6000
 
-    # Custom settings for Playwright
+    # Product cards: the only div whose class carries the SearchResultItem
+    # prefix and contains BOTH a product link and a price element is the row.
+    ROW_XPATH = (
+        '//div[contains(@class, "SearchResultItem__") '
+        'and .//a[contains(@href, ".html")] '
+        'and .//*[contains(@class, "ItemPrice_ItemPrice")]]'
+    )
+
     custom_settings = {
         "PLAYWRIGHT_BROWSER_TYPE": "chromium",
         "PLAYWRIGHT_LAUNCH_OPTIONS": {
@@ -104,183 +120,123 @@ class YahooShoppingSpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.scraped_product_ids = set()
 
-    async def start(self):
-        """
-        Start by requesting category listing pages using Playwright.
-        """
-        for category_id, category_name in self.CATEGORY_IDS:
-            # Use the recommend page which shows product listings
-            url = f"https://shopping.yahoo.co.jp/category/{category_id}/recommend"
-            yield scrapy.Request(
-                url,
-                callback=self.parse_category_listing,
-                meta={
-                    "category_id": category_id,
-                    "category_name": category_name,
-                    "page": 1,
-                    "playwright": True,
-                    "playwright_include_page": False,
-                    "playwright_page_goto_kwargs": {
-                        # networkidle tends to hang on Yahoo pages due to long-lived requests.
-                        "wait_until": "domcontentloaded",
-                    },
-                    "playwright_page_methods": [
-                        PageMethod("wait_for_timeout", 3000),
-                    ],
+    def _list_request(self, category_id, category_name, offset):
+        url = f"https://shopping.yahoo.co.jp/category/{category_id}/list/?b={offset}"
+        return scrapy.Request(
+            url,
+            callback=self.parse_listing,
+            meta={
+                "category_id": category_id,
+                "category_name": category_name,
+                "offset": offset,
+                "playwright": True,
+                "playwright_include_page": False,
+                "playwright_page_goto_kwargs": {
+                    # networkidle hangs on Yahoo (long-lived requests).
+                    "wait_until": "domcontentloaded",
                 },
-                errback=self.errback_httpbin,
-            )
+                "playwright_page_methods": [
+                    PageMethod("wait_for_timeout", 3500),
+                ],
+            },
+            errback=self.errback_httpbin,
+        )
 
-    def parse_category_listing(self, response):
-        """
-        Parse category listing page and extract product data from product cards.
-        """
+    async def start(self):
+        for category_id, category_name in self.CATEGORY_IDS:
+            yield self._list_request(category_id, category_name, 1)
+
+    def parse_listing(self, response):
         category_id = response.meta.get("category_id")
         category_name = response.meta.get("category_name")
-        page = response.meta.get("page", 1)
+        offset = response.meta.get("offset", 1)
 
-        # Check response length
-        response_len = len(response.text)
-        logger.info(f"Response length for {category_name}: {response_len} chars")
-
-        if response_len < 1000:
-            logger.warning(
-                f"Short response for category {category_name}: {response_len} chars"
-            )
-            return
-
-        # Extract product cards from the listing page
-        # Yahoo Shopping uses 'item' class for product cards
-        product_cards = response.css(
-            "div.item, li.item, div[class*='item '], div.items > div"
-        )
-
-        items_found = 0
-        for card in product_cards:
-            item = self._parse_product_card(card, category_name)
+        rows = response.xpath(self.ROW_XPATH)
+        new_items = 0
+        for row in rows:
+            item = self._parse_row(row, category_name)
             if item:
-                items_found += 1
+                new_items += 1
                 yield item
 
-        logger.info(f"Found {items_found} products in {category_name} (page {page})")
+        logger.info(
+            f"{category_name} b={offset}: {len(rows)} rows, {new_items} new "
+            f"(total {len(self.scraped_product_ids)})"
+        )
 
-        # Follow pagination if we found items and haven't reached max pages
-        if items_found > 0 and page < self.MAX_PAGES_PER_CATEGORY:
-            next_page = page + 1
-            next_url = f"https://shopping.yahoo.co.jp/category/{category_id}/recommend?page={next_page}"
-            yield scrapy.Request(
-                next_url,
-                callback=self.parse_category_listing,
-                meta={
-                    "category_id": category_id,
-                    "category_name": category_name,
-                    "page": next_page,
-                    "playwright": True,
-                    "playwright_include_page": False,
-                    "playwright_page_goto_kwargs": {
-                        "wait_until": "domcontentloaded",
-                    },
-                    "playwright_page_methods": [
-                        PageMethod("wait_for_timeout", 3000),
-                    ],
-                },
-                errback=self.errback_httpbin,
+        # Continue while the page still surfaces unseen products. When Yahoo
+        # pins the offset to the last page, every product is a duplicate and
+        # new_items drops to 0, ending this category.
+        if new_items > 0 and offset < self.MAX_OFFSET:
+            yield self._list_request(
+                category_id, category_name, offset + self.PAGE_STEP
             )
 
-    def _parse_product_card(self, card, category_name):
-        """
-        Extract product data from a product card element.
-        Yahoo Shopping uses item-* classes for product data.
-        """
-        # Try multiple selectors for product name
+    def _parse_row(self, row, category_name):
+        product_url = row.xpath('.//a[contains(@href, ".html")]/@href').get()
         product_name = (
-            card.css("a.item-link::attr(title)").get()
-            or card.css("img::attr(alt)").get()
-            or card.css("a[class*='name']::text").get()
-            or card.css("div[class*='title']::text").get()
-            or card.css("span[class*='name']::text").get()
+            row.xpath('.//a[contains(@href, ".html")]//img/@alt').get()
+            or row.xpath(
+                './/span[contains(@class, "SearchResultItemTitle")]//text()'
+            ).get()
         )
 
-        # Try multiple selectors for price - Yahoo uses item-price-value
-        price_text = (
-            card.css("span.item-price-value::text").get()
-            or card.css("div.item-price-value::text").get()
-            or card.css("span[class*='price-value']::text").get()
-            or card.css("div.item-price::text").get()
-            or card.css("span[class*='price']::text").get()
+        price_text = "".join(
+            row.css('[class*="SearchResultItem__price"] ::text').getall()
         )
-
-        # Try to get product URL
-        product_url = (
-            card.css("a.item-link::attr(href)").get()
-            or card.css("a[href*='store.shopping.yahoo.co.jp']::attr(href)").get()
-            or card.css("a[href*='shopping.yahoo.co.jp']::attr(href)").get()
-            or card.css("a::attr(href)").get()
-        )
-
-        if not product_name or not price_text:
-            return None
-
-        # Clean the price
         price = self._clean_price(price_text)
-        if not price:
+
+        if not (product_url and product_name and price):
             return None
 
-        # Extract product ID from URL
-        product_id = (
-            self._extract_product_id_from_url(product_url) if product_url else None
-        )
-
-        # Skip duplicates
-        if product_id and product_id in self.scraped_product_ids:
+        product_id = self._extract_product_id_from_url(product_url)
+        # Dedup on the URL (always present); product_id can be None for store
+        # domains the id regex doesn't recognise, and those must not leak dupes.
+        dedup_key = product_id or product_url.split("?")[0]
+        if dedup_key in self.scraped_product_ids:
             return None
-        if product_id:
-            self.scraped_product_ids.add(product_id)
+        self.scraped_product_ids.add(dedup_key)
 
         return {
             "product_name": product_name.strip(),
             "category": category_name,
             "price": price,
             "currency": self.currency,
-            "url": product_url or "",
+            "url": product_url,
             "product_id": product_id,
             "language": self.language,
-            "scraped_at_utc": datetime.utcnow().isoformat(),
+            "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
         }
 
     def _clean_price(self, price_str):
-        """
-        Clean price string - remove currency symbols, commas, and extract number.
-        """
+        """First yen amount in the price cell (ignores points/shipping text)."""
         if not price_str:
             return None
-        # Remove yen symbol, commas, spaces, and '円'
-        cleaned = re.sub(r"[¥￥,\s円]", "", str(price_str))
-        # Extract first number
-        match = re.search(r"(\d+)", cleaned)
+        match = re.search(r"([\d,]+)\s*円", price_str)
+        if not match:
+            match = re.search(r"[¥￥]\s?([\d,]+)", price_str)
         if match:
-            return match.group(1)
-        return cleaned
+            return match.group(1).replace(",", "")
+        return None
 
     def _extract_product_id_from_url(self, url):
         """
-        Extract product ID from Yahoo Shopping URL.
-        URL format: https://store.shopping.yahoo.co.jp/{store_id}/{item_id}.html
+        Extract {store}_{item} id from a Yahoo Shopping product URL. Covers both
+        store-front domains (.../{store}/{item}.html) and the /store/{s}/item/{i}
+        layout used by lohaco/paypaymall.
         """
-        # Try store.shopping.yahoo.co.jp pattern
-        match = re.search(r"store\.shopping\.yahoo\.co\.jp/([^/]+)/([^/]+)", url)
+        match = re.search(r"yahoo\.co\.jp/store/([^/]+)/item/([^/?#]+)", url)
         if match:
-            return f"{match.group(1)}_{match.group(2).replace('.html', '')}"
+            return f"{match.group(1)}_{match.group(2)}"
 
-        # Try paypaymall pattern
-        match = re.search(r"paypaymall\.yahoo\.co\.jp/store/([^/]+)/item/([^/]+)", url)
+        match = re.search(
+            r"\.yahoo\.co\.jp/([^/]+)/([^/?#]+?)(?:\.html)?(?:[?#]|$)", url
+        )
         if match:
             return f"{match.group(1)}_{match.group(2)}"
 
         return None
 
     def errback_httpbin(self, failure):
-        """
-        Handle request failures.
-        """
+        """Handle request failures."""
         logger.error(f"Request failed: {failure.request.url}")
