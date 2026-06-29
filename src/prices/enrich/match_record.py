@@ -70,6 +70,8 @@ _RESIDUAL_COLUMNS = (
     "residual_text",
     "accepted_source",
     "priority_rank",
+    "shape",
+    "modifiers",
 )
 
 # Columns whose values arrive mixed (raw regex strings on synthetic candidates,
@@ -267,6 +269,9 @@ def end_row(structural_fields=None) -> None:
         final["priority_rank"] = rank if accepted else None
         _SINK["match"].append(final)
     _SINK["suppression"].extend(_CURRENT.get("suppression", []))
+    from prices.enrich import shape_label
+
+    shape, modifiers = shape_label.classify(_CURRENT, structural_fields)
     _SINK["residual"].append(
         {
             "row_id": _CURRENT["row_id"],
@@ -275,6 +280,8 @@ def end_row(structural_fields=None) -> None:
             "residual_text": _residual_text(accepted_source, _CURRENT["working_name"]),
             "accepted_source": accepted_source,
             "priority_rank": rank,
+            "shape": shape,
+            "modifiers": json.dumps(modifiers, ensure_ascii=False),
         }
     )
     _CURRENT = None

@@ -77,9 +77,14 @@ def test_shape_buckets_are_clean_over_armed_logs(tmp_path):
         accepted = events[events["accepted"].fillna(False)]
 
         if shape == "single_measure":
-            # Invariant 1: exactly one match event with a non-null candidate_unit.
+            # Invariant 1: exactly one distinct (amount, unit) group among the
+            # unit-bearing events — the labeler's A1 dedup collapses the
+            # pack_lang/pack_none/secondary_vu double-fire on the same measure.
             unit_events = events[events["candidate_unit"].notna()]
-            assert len(unit_events) == 1, f"row {rid}: single_measure unit groups"
+            groups = set(
+                zip(unit_events["candidate_amount"], unit_events["candidate_unit"])
+            )
+            assert len(groups) == 1, f"row {rid}: single_measure unit groups"
 
         elif shape == "multipack_measure":
             # Invariant 2: candidate_multiplier > 1 on the accepted/pack candidate.
@@ -87,8 +92,17 @@ def test_shape_buckets_are_clean_over_armed_logs(tmp_path):
             assert (mult > 1).any(), f"row {rid}: multipack_measure multiplier"
 
         elif shape == "bare_item":
-            # Invariant 3: no sellable rung — accepted_source is `item`.
-            assert rec["accepted_source"] == "item", f"row {rid}: bare_item source"
+            # Invariant 3: no measure surfaced to the labeler — either the item
+            # fallback won the rung, or no unit-bearing candidate exposed a
+            # distinct (amount, unit) group (e.g. a vi_lit_volume accept whose
+            # recorder candidate_unit is None still reads as zero unit groups).
+            unit_events = events[events["candidate_unit"].notna()]
+            unit_groups = set(
+                zip(unit_events["candidate_amount"], unit_events["candidate_unit"])
+            )
+            assert (
+                rec["accepted_source"] == "item" or len(unit_groups) == 0
+            ), f"row {rid}: bare_item source"
 
         elif shape == "count_pack":
             # Invariant 4: a count candidate (count basis / multiplier>1) OR an

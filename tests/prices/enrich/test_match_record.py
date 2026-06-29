@@ -259,3 +259,60 @@ def test_every_suppression_has_reason(tmp_path):
     assert s["suppression_reason"].notna().all()
     assert (s["suppression_reason"].astype(str).str.len() > 0).all()
     assert set(s["suppression_reason"]) <= mr.REASON_TOKENS
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "name, lang, country, expected",
+    [(n, lg, c, e) for _id, n, lg, c, e in _OFF_ROWS],
+    ids=[r[0] for r in _OFF_ROWS],
+)
+def test_recording_on_does_not_perturb_byte_identical(
+    name, lang, country, expected, tmp_path
+):
+    # The shape labeler runs inside end_row when recording is ON; arming the
+    # recorder (and invoking classify) must leave the StructuralFields returned
+    # by extract() field-for-field identical to the OFF baseline.
+    mr.enable(sample_rate=1.0, out_dir=tmp_path)
+    mr.begin_row(
+        row_id="probe",
+        raw_name=name,
+        working_name=name,
+        country=country,
+        source="test",
+    )
+    sf = extract(name, None, country, lang)
+    mr.end_row(sf)
+    got = tuple(getattr(sf, f) for f in _FIELDS)
+    for field, want, have in zip(_FIELDS, expected, got):
+        if field == "amount_value" and want is not None:
+            assert have == pytest.approx(
+                want, rel=1e-9
+            ), f"{field}: {have!r} != {want!r}"
+        else:
+            assert have == want, f"{field}: {have!r} != {want!r}"
+
+
+@pytest.mark.unit
+def test_recording_on_persists_shape_and_modifiers(tmp_path):
+    from prices.enrich.shape_label import SHAPES
+
+    mr.enable(sample_rate=1.0, out_dir=tmp_path)
+    for rid, name, lang, country in _PROBE:
+        mr.begin_row(
+            row_id=rid, raw_name=name, working_name=name, country=country, source="test"
+        )
+        sf = extract(name, None, country, lang)
+        mr.end_row(sf)
+    paths = mr.flush(tmp_path)
+    r = pd.read_parquet(paths["residual"])
+
+    assert "shape" in r.columns
+    assert "modifiers" in r.columns
+    # One row per processed row; every shape is a member of the SHAPES vocabulary.
+    assert len(r) == len(_PROBE)
+    assert r["row_id"].nunique() == len(_PROBE)
+    assert set(r["shape"]) <= SHAPES
+    # modifiers serializes parquet-safe as a JSON list per row.
+    for raw in r["modifiers"]:
+        assert isinstance(json.loads(raw), list)
