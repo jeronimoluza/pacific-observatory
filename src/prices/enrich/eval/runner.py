@@ -8,7 +8,7 @@ from typing import Optional
 
 import pandas as pd
 
-from prices.enrich import config
+from prices.enrich import config, match_record
 from prices.enrich.tier_b import cache
 from prices.enrich.tier_b import index as tier_b_index
 from prices.enrich.eval import gold as gold_mod
@@ -145,6 +145,7 @@ def run(
     write: bool = True,
     print_report: bool = False,
 ) -> dict:
+    enrich_mod._arm_match_record_from_env()
     gold = gold_mod.load_gold(gold_path)
     products = gold_mod.build_products(gold)
     cached = cache.read_cache()
@@ -176,6 +177,9 @@ def run(
     finally:
         tier_b_index.append_miss = orig_append_miss
         enrich_mod._tier_b_dispatch = orig_dispatch
+
+    if match_record.is_recording():
+        match_record.flush()
 
     captured = _run_tier_c_capture(residual) if run_tier_c else None
     predictions = _build_predictions(products, cache_rows, residual, captured)

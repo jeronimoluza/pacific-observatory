@@ -15,13 +15,14 @@ Tiers:
 from __future__ import annotations
 
 import asyncio
+import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, Optional
 
 import pandas as pd
 
-from prices.enrich import config
+from prices.enrich import config, match_record
 from prices.enrich.extract import StructuralFields, extract
 from prices.enrich.tier_b import cache, cross_check, pool_filter
 from prices.enrich.tier_b import index as tier_b_index
@@ -302,13 +303,22 @@ def cascade(
         # is overlaid onto whatever subsequent tier resolves, and also stamped
         # onto the residual DataFrame as `tier_a_*` columns for the LLM tier.
         lang = _resolve_lang(country)
+        _first_name = str(product.get("first_name") or "")
+        match_record.begin_row(
+            row_id=idx,
+            raw_name=_first_name,
+            working_name=_first_name,
+            country=country,
+            source=str(product.get("source") or ""),
+        )
         tier_a = extract(
-            item_name=str(product.get("first_name") or ""),
+            item_name=_first_name,
             category=(str(product.get("category") or "") or None),
             country=country,
             lang=lang,
         )
         tier_a_by_idx[idx] = tier_a
+        match_record.end_row(tier_a)
         tier_a_suffix = "+regex" if _tier_a_fired(tier_a) else ""
 
         source: Optional[dict] = None
@@ -624,7 +634,17 @@ def _append_match_log(rows: Iterable[dict]) -> None:
     out.to_parquet(path, index=False)
 
 
+def _arm_match_record_from_env() -> None:
+    """Opt-in arm (default OFF). `PRICES_MATCH_RECORD` truthy arms the sink;
+    `PRICES_MATCH_RECORD_SAMPLE` (0..1) sets the deterministic sample rate."""
+    if os.environ.get("PRICES_MATCH_RECORD"):
+        match_record.enable(
+            sample_rate=float(os.environ.get("PRICES_MATCH_RECORD_SAMPLE", "1") or 1)
+        )
+
+
 def run(products_parquet: Optional[Path] = None) -> None:
+    _arm_match_record_from_env()
     products_parquet = products_parquet or config.PRODUCTS_PARQUET
     products = pd.read_parquet(products_parquet)
     cached = cache.read_cache()
@@ -632,6 +652,8 @@ def run(products_parquet: Optional[Path] = None) -> None:
     if cache_rows:
         cache.append_enrichments(cache_rows)
     _append_match_log(match_log)
+    if match_record.is_recording():
+        match_record.flush()
     cross_check.append(cross_check_rows)
     asyncio.run(tier_c.run_residual(residual))
     pruned = cache.enforce_collision_invariant()
