@@ -82,13 +82,13 @@ def _find_value_unit_anywhere(item_name: str):
     when a first-pass count-only match shadowed the real mass/volume signal."""
     m = _SECONDARY_VU_RE.search(item_name)
     if not m:
-        return None, None, None
+        return None, None, None, None
     try:
         value = float(m.group("value").replace(",", "."))
     except ValueError:
-        return None, None, None
+        return None, None, None, None
     unit = _SU_NORM.get(m.group("unit"))
-    return None, value, unit
+    return None, value, unit, (m.start(), m.end())
 
 
 def _is_total_breakdown(name, matched_value, matched_unit, count):
@@ -139,21 +139,23 @@ def _match_extra_unit(item_name: str, lang: str | None):
         m = entry["regex"].search(item_name)
         if m:
             value = float(m.group("value").replace(",", "."))
-            return entry, value
-    return None, None
+            return entry, value, entry["id"], (m.start(), m.end())
+    return None, None, None, None
 
 
 _BASIS_TO_SU = {"mass": "kg", "volume": "lt"}
 
 
-def _match_pricing_basis_marker(item_name: str, lang: str | None) -> str | None:
-    """Return pricing_basis when a bare per-unit marker fires (no amount_value)."""
+def _match_pricing_basis_marker(item_name: str, lang: str | None):
+    """Return (pricing_basis, regex_id, span) when a bare per-unit marker fires
+    (no amount_value); (None, None, None) otherwise."""
     for entry in _PRICING_BASIS_MARKERS:
         if entry["lang"] != "any" and lang and entry["lang"] != lang:
             continue
-        if entry["regex"].search(item_name):
-            return entry["pricing_basis_emit"]
-    return None
+        m = entry["regex"].search(item_name)
+        if m:
+            return entry["pricing_basis_emit"], entry["id"], (m.start(), m.end())
+    return None, None, None
 
 
 def _cjk_numeral_to_int(s: str) -> int | None:
@@ -175,7 +177,9 @@ def _cjk_numeral_to_int(s: str) -> int | None:
     return n if n else None
 
 
-def _match_extra_count(item_name: str, lang: str | None) -> int | None:
+def _match_extra_count(item_name: str, lang: str | None):
+    """Return (count, regex_id, span) for the firing entry/match; (None, None,
+    None) when nothing fires."""
     for entry in _EXTRA_COUNT:
         if entry["lang"] != "any" and lang and entry["lang"] != lang:
             continue
@@ -188,22 +192,25 @@ def _match_extra_count(item_name: str, lang: str | None) -> int | None:
             b = min(len(item_name), m.end() + 12)
             if _MARKETING_LIMIT_RE.search(item_name[a:b]):
                 continue
+            span = (m.start(), m.end())
             fc = entry.get("fixed_count")
             if fc is not None:
-                return int(fc)
+                return int(fc), entry["id"], span
             try:
                 if "count_cjk" in m.groupdict():
                     n = _cjk_numeral_to_int(m.group("count_cjk"))
                     if n is not None and n > 0:
-                        return n
+                        return n, entry["id"], span
                     continue
-                return int(m.group("count"))
+                return int(m.group("count")), entry["id"], span
             except (IndexError, ValueError):
                 continue
-    return None
+    return None, None, None
 
 
 def _match_multi_pack(item_name: str, lang: str | None):
+    """Return (inner, outer, regex_id, span) for the firing entry/match;
+    (None, None, None, None) when nothing fires."""
     for entry in _MULTI_PACK:
         if entry["lang"] != "any" and lang and entry["lang"] != lang:
             continue
@@ -212,10 +219,10 @@ def _match_multi_pack(item_name: str, lang: str | None):
             try:
                 inner = int(m.group("count"))
                 outer = int(m.group("multiplier"))
-                return inner, outer
+                return inner, outer, entry["id"], (m.start(), m.end())
             except (IndexError, ValueError):
                 continue
-    return None
+    return None, None, None, None
 
 
 def _markers_fire(item_name: str, lang: str | None, markers) -> bool:
@@ -246,72 +253,97 @@ def enumerate_candidates(
 
     candidates: list = []
 
-    _cleaned, pack_count, pack_value, pack_unit = extract_pack(stripped, lang)
+    cleaned, pack_count, pack_value, pack_unit = extract_pack(stripped, lang)
     candidates.append(
         Candidate(
             source="pack_lang",
             span=None,
             source_string="stripped",
-            groups={"count": pack_count, "value": pack_value, "unit": pack_unit},
+            groups={
+                "count": pack_count,
+                "value": pack_value,
+                "unit": pack_unit,
+                "regex_id": "pack_lang",
+                "cleaned": cleaned,
+            },
         )
     )
     if has_non_ascii:
-        _cleaned, nc, nv, nu = extract_pack(stripped, None)
+        nc_cleaned, nc, nv, nu = extract_pack(stripped, None)
         candidates.append(
             Candidate(
                 source="pack_none",
                 span=None,
                 source_string="stripped",
-                groups={"count": nc, "value": nv, "unit": nu},
+                groups={
+                    "count": nc,
+                    "value": nv,
+                    "unit": nu,
+                    "regex_id": "pack_none",
+                    "cleaned": nc_cleaned,
+                },
             )
         )
-    sec_count, sec_value, sec_unit = _find_value_unit_anywhere(item_name)
+    sec_count, sec_value, sec_unit, sec_span = _find_value_unit_anywhere(item_name)
     candidates.append(
         Candidate(
             source="secondary_vu",
-            span=None,
+            span=sec_span,
             source_string="item_name",
-            groups={"count": sec_count, "value": sec_value, "unit": sec_unit},
+            groups={
+                "count": sec_count,
+                "value": sec_value,
+                "unit": sec_unit,
+                "regex_id": "secondary_vu",
+            },
         )
     )
-    extra_entry, extra_value = _match_extra_unit(stripped, lang)
+    extra_entry, extra_value, extra_id, extra_span = _match_extra_unit(stripped, lang)
     if extra_entry is not None:
         candidates.append(
             Candidate(
                 source="extra_unit",
-                span=None,
+                span=extra_span,
                 source_string="stripped",
-                groups={"entry": extra_entry, "value": extra_value},
+                groups={
+                    "entry": extra_entry,
+                    "value": extra_value,
+                    "regex_id": extra_id,
+                },
             )
         )
-    extra_count = _match_extra_count(stripped, effective_lang)
+    extra_count, ec_id, ec_span = _match_extra_count(stripped, effective_lang)
     if extra_count is not None:
         candidates.append(
             Candidate(
                 source="extra_count",
-                span=None,
+                span=ec_span,
                 source_string="stripped",
-                groups={"count": extra_count},
+                groups={"count": extra_count, "regex_id": ec_id},
             )
         )
-    basis_marker = _match_pricing_basis_marker(stripped, lang)
+    basis_marker, bm_id, bm_span = _match_pricing_basis_marker(stripped, lang)
     if basis_marker is not None:
         candidates.append(
             Candidate(
                 source="basis_marker",
-                span=None,
+                span=bm_span,
                 source_string="stripped",
-                groups={"basis": basis_marker},
+                groups={"basis": basis_marker, "regex_id": bm_id},
             )
         )
-    multi_pack = _match_multi_pack(stripped, effective_lang)
-    if multi_pack is not None:
+    mp_inner, mp_outer, mp_id, mp_span = _match_multi_pack(stripped, effective_lang)
+    if mp_inner is not None:
         candidates.append(
             Candidate(
                 source="multi_pack",
-                span=None,
+                span=mp_span,
                 source_string="stripped",
-                groups={"inner": multi_pack[0], "outer": multi_pack[1]},
+                groups={
+                    "inner": mp_inner,
+                    "outer": mp_outer,
+                    "regex_id": mp_id,
+                },
             )
         )
     return candidates
