@@ -344,6 +344,95 @@ def _markers_fire(item_name: str, lang: str | None, markers) -> bool:
     return False
 
 
+def enumerate_candidates(
+    item_name: str,
+    stripped: str,
+    lang: str | None,
+    has_non_ascii: bool,
+    effective_lang: str | None,
+):
+    """Record every tier-a matcher fire as a Candidate, without deciding.
+
+    Same matcher calls on the same strings the cascade uses today (RESEARCH Q5
+    black-box enumeration); each fire is tagged with its source_string so
+    decide() never reads the wrong string. The Pass-1c substring re-scan is
+    data-dependent on the resolved pack_count, so decide() performs that fire.
+    """
+    from prices.enrich.extract_decide import Candidate
+
+    candidates: list = []
+
+    _cleaned, pack_count, pack_value, pack_unit = extract_pack(stripped, lang)
+    candidates.append(
+        Candidate(
+            source="pack_lang",
+            span=None,
+            source_string="stripped",
+            groups={"count": pack_count, "value": pack_value, "unit": pack_unit},
+        )
+    )
+    if has_non_ascii:
+        _cleaned, nc, nv, nu = extract_pack(stripped, None)
+        candidates.append(
+            Candidate(
+                source="pack_none",
+                span=None,
+                source_string="stripped",
+                groups={"count": nc, "value": nv, "unit": nu},
+            )
+        )
+    sec_count, sec_value, sec_unit = _find_value_unit_anywhere(item_name)
+    candidates.append(
+        Candidate(
+            source="secondary_vu",
+            span=None,
+            source_string="item_name",
+            groups={"count": sec_count, "value": sec_value, "unit": sec_unit},
+        )
+    )
+    extra_entry, extra_value = _match_extra_unit(stripped, lang)
+    if extra_entry is not None:
+        candidates.append(
+            Candidate(
+                source="extra_unit",
+                span=None,
+                source_string="stripped",
+                groups={"entry": extra_entry, "value": extra_value},
+            )
+        )
+    extra_count = _match_extra_count(stripped, effective_lang)
+    if extra_count is not None:
+        candidates.append(
+            Candidate(
+                source="extra_count",
+                span=None,
+                source_string="stripped",
+                groups={"count": extra_count},
+            )
+        )
+    basis_marker = _match_pricing_basis_marker(stripped, lang)
+    if basis_marker is not None:
+        candidates.append(
+            Candidate(
+                source="basis_marker",
+                span=None,
+                source_string="stripped",
+                groups={"basis": basis_marker},
+            )
+        )
+    multi_pack = _match_multi_pack(stripped, effective_lang)
+    if multi_pack is not None:
+        candidates.append(
+            Candidate(
+                source="multi_pack",
+                span=None,
+                source_string="stripped",
+                groups={"inner": multi_pack[0], "outer": multi_pack[1]},
+            )
+        )
+    return candidates
+
+
 def extract(
     item_name: str,
     category: str | None,
@@ -375,7 +464,7 @@ def extract(
     # basis=count regardless of any mass token in the name (e.g. "100mg" is
     # API strength, not package weight). Phrase-strip above already wiped
     # `<N>mg Tablet` from `stripped`; this flag short-circuits the basis tree
-    # below.
+    # in decide().
     pharma_per_unit = bool(_PHARMA_PER_UNIT_RE.search(item_name))
 
     # Pass 0: detect "20'S X 2g" style (count'S × value+unit) — DILMAH/tea-bag
@@ -388,213 +477,22 @@ def extract(
     for pat in _PHRASE_STRIP_PATTERNS:
         stripped = pat.sub(" ", stripped)
 
-    # Pass 1: try pack_patterns on the stripped name with declared language.
-    _cleaned, pack_count, pack_value, pack_unit = extract_pack(stripped, lang)
-    # Pass 1b: if nothing matched and the name has any non-ASCII char (CJK / vi
-    # diacritic / etc.), retry lang=None so script-specific patterns can fire.
-    # Most country `languages` lists are `[en, <other>]`; lang=None scans all.
-    if pack_count is None and pack_value is None and has_non_ascii:
-        _cleaned, pack_count, pack_value, pack_unit = extract_pack(stripped, None)
-
-    # Pass 1b2: declared-lang matched a value+unit but no outer-pack count. A
-    # script-specific outer multiplier (×24本, ×28袋) only fires under lang=None,
-    # and the value+unit match above suppressed the Pass 1b retry — so the
-    # multiplier was silently dropped (stays 1). Re-scan lang=None solely to
-    # recover the missing count, keeping the value/unit already matched. Only a
-    # bare count (no competing value/unit) is adopted, and the marketing-limit
-    # window guard (same as Pass 1c) rejects counts inside お一人様…限り clauses.
-    if pack_value is not None and pack_count is None and has_non_ascii:
-        _, alt_count, alt_value, alt_unit = extract_pack(stripped, None)
-        if (
-            alt_count is not None
-            and alt_value is None
-            and alt_unit is None
-            and not _is_total_breakdown(item_name, pack_value, pack_unit, alt_count)
-        ):
-            alt_m = re.search(rf"(?<!\d){alt_count}", item_name)
-            if alt_m is None:
-                pack_count = alt_count
-            else:
-                a = max(0, alt_m.start() - 12)
-                b = min(len(item_name), alt_m.end() + 12)
-                window = item_name[a:b]
-                if not _MARKETING_LIMIT_RE.search(
-                    window
-                ) and not _SERVINGS_SUFFIX_RE.search(window):
-                    pack_count = alt_count
-
-    # Pass 1c: local marketing-clause suppression for count-only matches.
-    # Pack_patterns is first-match-wins, so the count could be e.g. "953枚突破"
-    # (marketing) instead of the real "4枚セット". Re-find the count match in
-    # the name and check the surrounding window for a limit clause.
-    if pack_count is not None and pack_value is None and pack_unit is None:
-        pack_count_m = re.search(rf"(?<!\d){pack_count}", item_name)
-        if pack_count_m:
-            a = max(0, pack_count_m.start() - 12)
-            b = min(len(item_name), pack_count_m.end() + 12)
-            if _MARKETING_LIMIT_RE.search(item_name[a:b]):
-                pack_count = None
-                _cleaned, alt_count, alt_value, alt_unit = extract_pack(
-                    item_name[pack_count_m.end() :], None
-                )
-                if alt_value is not None or alt_count is not None:
-                    pack_count, pack_value, pack_unit = alt_count, alt_value, alt_unit
-
-    # Pass 1d: a count-only marker from pack_patterns ("5 Pack", "4入") can mask
-    # a real mass/volume signal elsewhere in the name. If pack returned a count
-    # but no value/unit, search the rest of the name for a value+unit pair and
-    # prefer mass/volume when found — schema requires basis=mass|volume when
-    # an explicit weight/volume marker is present.
-    if pack_count is not None and pack_unit is None and pack_value is None:
-        sec_count, sec_value, sec_unit = _find_value_unit_anywhere(item_name)
-        if sec_value is not None and sec_unit is not None:
-            # promote: keep pack_count as multiplier, attach value+unit
-            pack_value, pack_unit = sec_value, sec_unit
-
-    # Pass 1e: appliance-capacity / apparel-fabric-weight suppression (BUG 3/4).
-    # value_unit_volume_mass carries a suppress_window; if the value+unit that
-    # fired sits within it of an appliance/apparel/container cue, the number is
-    # a capacity / fabric weight, not a sale quantity -> drop the mass/volume so
-    # the row falls through to item (or count, if a real pack count survives).
-    if (
-        pack_unit is not None
-        and _UNIT_MAP.get(pack_unit, {}).get("basis") in ("mass", "volume")
-        and _value_unit_suppressed(item_name)
-    ):
-        pack_value = None
-        pack_unit = None
-
-    extra_entry, extra_value = (None, None)
-    if pack_unit is None:
-        extra_entry, extra_value = _match_extra_unit(stripped, lang)
-
-    # Broaden lang for marker tries when the name contains non-ASCII chars —
-    # otherwise vi/ko/zh-tagged patterns never fire for countries whose primary
-    # language is English (e.g. vietnam → "en" in countries.yaml).
+    # Broaden lang for non-ASCII names so vi/ko/zh-tagged patterns fire even when
+    # the country's primary language is English (e.g. vietnam → "en").
     effective_lang = None if has_non_ascii else lang
 
-    # Use `stripped` so phrase-strip patterns (e.g. parenthesized inner-pack
-    # `(3入)`, pharma `100mg Tablet`) actually suppress downstream matchers.
-    # Without this, extra_count saw the original name and re-matched the very
-    # tokens we just stripped (2026-06-16 fix).
-    extra_count = (
-        _match_extra_count(stripped, effective_lang)
-        if pack_unit is None and extra_entry is None and pack_count is None
-        else None
+    from prices.enrich.extract_decide import decide
+
+    candidates = enumerate_candidates(
+        item_name, stripped, lang, has_non_ascii, effective_lang
     )
-
-    basis_marker = (
-        _match_pricing_basis_marker(stripped, lang)
-        if pack_unit is None and extra_entry is None
-        else None
-    )
-
-    multi_pack = _match_multi_pack(stripped, effective_lang)
-
-    # Apos pattern wins outright when it matched — it's very specific.
-    if apos is not None:
-        unit_norm = _SU_NORM.get(apos.group("unit"))
-        um = _UNIT_MAP.get(unit_norm) if unit_norm else None
-        if um is not None:
-            value = float(apos.group("value").replace(",", "."))
-            mult = int(apos.group("count"))
-            return StructuralFields(
-                pricing_basis=um["basis"],
-                amount_value=value * float(um["mul"]),
-                standard_unit=um["su"],
-                count=1,
-                multiplier=mult,
-                is_promotion=_markers_fire(item_name, lang, _PROMO_MARKERS),
-                is_bundle=_markers_fire(item_name, lang, _BUNDLE_MARKERS),
-                is_multipack=mult > 1,
-                promo_reason=None,
-            )
-
-    pricing_basis: str | None = None
-    standard_unit: str | None = None
-    amount_value: float | None = None
-    count: int | None = None
-    multiplier: int | None = None
-
-    # Pharma per-unit short-circuit: count basis with cnt=1, drop any mass that
-    # slipped through the phrase-strip (e.g. unit-less "100" not followed by mg).
-    if pharma_per_unit:
-        return StructuralFields(
-            pricing_basis="count",
-            amount_value=None,
-            standard_unit="unit",
-            count=1,
-            multiplier=1,
-            is_promotion=_markers_fire(item_name, lang, _PROMO_MARKERS),
-            is_bundle=_markers_fire(item_name, lang, _BUNDLE_MARKERS),
-            is_multipack=False,
-            promo_reason=None,
-        )
-
-    if pack_unit is not None:
-        um = _UNIT_MAP.get(pack_unit)
-        if um:
-            pricing_basis = um["basis"]
-            standard_unit = um["su"]
-            if pack_value is not None:
-                amount_value = pack_value * float(um["mul"])
-            count = 1
-            multiplier = pack_count if pack_count and pack_count > 0 else 1
-        else:
-            pricing_basis = "item"
-            standard_unit = "item"
-            count = 1
-            multiplier = 1
-    elif extra_entry is not None:
-        pricing_basis = extra_entry["basis"]
-        standard_unit = extra_entry["su"]
-        amount_value = extra_value * extra_entry["mul"]
-        count = 1
-        multiplier = 1
-    elif basis_marker is not None:
-        pricing_basis = basis_marker
-        standard_unit = _BASIS_TO_SU.get(basis_marker, "item")
-        amount_value = None
-        count = 1
-        multiplier = 1
-    elif multi_pack is not None:
-        inner, outer = multi_pack
-        pricing_basis = "count"
-        standard_unit = "unit"
-        count = inner
-        multiplier = outer
-    elif pack_count is not None and pack_count > 1:
-        pricing_basis = "count"
-        standard_unit = "unit"
-        count = pack_count
-        multiplier = 1
-    elif extra_count is not None and extra_count > 1:
-        pricing_basis = "count"
-        standard_unit = "unit"
-        count = extra_count
-        multiplier = 1
-    else:
-        # No structural signal OR pack_count == 1: a single item.
-        # (Hard-coded "1pcs" / "1 Tablet" markers are still single items.)
-        pricing_basis = "item"
-        standard_unit = "item"
-        count = 1
-        multiplier = 1
-
-    is_multipack = (multiplier is not None and multiplier > 1) or (
-        pricing_basis == "count" and count is not None and count > 1
-    )
-    is_promotion = _markers_fire(item_name, lang, _PROMO_MARKERS)
-    is_bundle = _markers_fire(item_name, lang, _BUNDLE_MARKERS)
-
-    return StructuralFields(
-        pricing_basis=pricing_basis,
-        amount_value=amount_value,
-        standard_unit=standard_unit,
-        count=count,
-        multiplier=multiplier,
-        is_promotion=is_promotion,
-        is_bundle=is_bundle,
-        is_multipack=is_multipack,
-        promo_reason=None,
+    return decide(
+        candidates,
+        apos=apos,
+        pharma_per_unit=pharma_per_unit,
+        item_name=item_name,
+        stripped=stripped,
+        lang=lang,
+        has_non_ascii=has_non_ascii,
+        effective_lang=effective_lang,
     )
