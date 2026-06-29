@@ -381,7 +381,8 @@ def extract(
     # API strength, not package weight). Phrase-strip above already wiped
     # `<N>mg Tablet` from `stripped`; this flag short-circuits the basis tree
     # in decide().
-    pharma_per_unit = bool(_PHARMA_PER_UNIT_RE.search(item_name))
+    pharma_m = _PHARMA_PER_UNIT_RE.search(item_name)
+    pharma_per_unit = bool(pharma_m)
 
     # Pass 0: detect "20'S X 2g" style (count'S × value+unit) — DILMAH/tea-bag
     # idiom. Routes straight to mass/volume + multiplier=count.
@@ -402,6 +403,44 @@ def extract(
     candidates = enumerate_candidates(
         item_name, stripped, lang, has_non_ascii, effective_lang
     )
+
+    # Side-channel emission (§9 match log). No-op when recording is off; the
+    # whole block is gated on is_recording() so a production run never builds
+    # the synthetic apos/pharma candidates.
+    from prices.enrich import match_record
+
+    if match_record.is_recording():
+        from prices.enrich.extract_decide import Candidate
+
+        for c in candidates:
+            src_txt = item_name if c.source_string == "item_name" else stripped
+            match_record.record_candidate(c, source_text=src_txt)
+        if apos is not None:
+            match_record.record_candidate(
+                Candidate(
+                    source="apos",
+                    span=(apos.start(), apos.end()),
+                    source_string="item_name",
+                    groups={
+                        "value": apos.group("value"),
+                        "count": apos.group("count"),
+                        "unit": apos.group("unit"),
+                        "regex_id": "apos",
+                    },
+                ),
+                source_text=item_name,
+            )
+        if pharma_m is not None:
+            match_record.record_candidate(
+                Candidate(
+                    source="pharma",
+                    span=(pharma_m.start(), pharma_m.end()),
+                    source_string="item_name",
+                    groups={"regex_id": "pharma"},
+                ),
+                source_text=item_name,
+            )
+
     return decide(
         candidates,
         apos=apos,

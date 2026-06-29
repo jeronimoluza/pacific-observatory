@@ -29,6 +29,7 @@ from prices.enrich.extract import (
     _SERVINGS_SUFFIX_RE,
     _SU_NORM,
     _UNIT_MAP,
+    _VU_RE,
     StructuralFields,
     _is_total_breakdown,
     _markers_fire,
@@ -66,6 +67,8 @@ def _resolve_pack(by: dict, *, item_name: str, has_non_ascii: bool):
     pack_lang / pack_none candidates, the Pass-1c substring re-scan, the
     secondary value+unit promotion (1d) and the appliance/apparel suppression
     (1e). Guards are byte-identical to the current cascade's if-conditions."""
+    from prices.enrich import match_record
+
     pl = by["pack_lang"].groups
     pack_count, pack_value, pack_unit = pl["count"], pl["value"], pl["unit"]
     pn = by.get("pack_none")
@@ -79,11 +82,9 @@ def _resolve_pack(by: dict, *, item_name: str, has_non_ascii: bool):
     if pack_value is not None and pack_count is None and has_non_ascii:
         g = pn.groups
         alt_count, alt_value, alt_unit = g["count"], g["value"], g["unit"]
-        if (
-            alt_count is not None
-            and alt_value is None
-            and alt_unit is None
-            and not _is_total_breakdown(item_name, pack_value, pack_unit, alt_count)
+        adopt_alt = alt_count is not None and alt_value is None and alt_unit is None
+        if adopt_alt and not _is_total_breakdown(
+            item_name, pack_value, pack_unit, alt_count
         ):
             alt_m = re.search(rf"(?<!\d){alt_count}", item_name)
             if alt_m is None:
@@ -96,6 +97,23 @@ def _resolve_pack(by: dict, *, item_name: str, has_non_ascii: bool):
                     window
                 ) and not _SERVINGS_SUFFIX_RE.search(window):
                     pack_count = alt_count
+                elif match_record.is_recording():
+                    mkt = _MARKETING_LIMIT_RE.search(window)
+                    match_record.record_suppression(
+                        suppressed_text=str(alt_count),
+                        span=(alt_m.start(), alt_m.end()),
+                        suppression_type="match",
+                        reason="marketing_limit" if mkt else "servings_portion",
+                        regex_id="pack_none",
+                    )
+        elif adopt_alt and match_record.is_recording():
+            match_record.record_suppression(
+                suppressed_text=str(alt_count),
+                span=None,
+                suppression_type="match",
+                reason="total_breakdown",
+                regex_id="pack_none",
+            )
 
     # Pass 1c: marketing-limit suppression of a count-only match + substring re-scan.
     if pack_count is not None and pack_value is None and pack_unit is None:
@@ -104,6 +122,14 @@ def _resolve_pack(by: dict, *, item_name: str, has_non_ascii: bool):
             a = max(0, pack_count_m.start() - 12)
             b = min(len(item_name), pack_count_m.end() + 12)
             if _MARKETING_LIMIT_RE.search(item_name[a:b]):
+                if match_record.is_recording():
+                    match_record.record_suppression(
+                        suppressed_text=str(pack_count),
+                        span=(pack_count_m.start(), pack_count_m.end()),
+                        suppression_type="match",
+                        reason="marketing_limit",
+                        regex_id="pack_lang",
+                    )
                 pack_count = None
                 _cleaned, alt_count, alt_value, alt_unit = extract_pack(
                     item_name[pack_count_m.end() :], None
@@ -123,6 +149,15 @@ def _resolve_pack(by: dict, *, item_name: str, has_non_ascii: bool):
         and _UNIT_MAP.get(pack_unit, {}).get("basis") in ("mass", "volume")
         and _value_unit_suppressed(item_name)
     ):
+        if match_record.is_recording():
+            vu_m = _VU_RE.search(item_name)
+            match_record.record_suppression(
+                suppressed_text=item_name[vu_m.start() : vu_m.end()] if vu_m else None,
+                span=(vu_m.start(), vu_m.end()) if vu_m else None,
+                suppression_type="match",
+                reason="appliance_capacity",
+                regex_id="value_unit_volume_mass",
+            )
         pack_value = None
         pack_unit = None
 
@@ -281,6 +316,21 @@ _RUNGS = (
     (9, _rung_item_pred, _rung_item_emit),
 )
 
+# Maps each winning rung to the candidate source it represents (the §9 match-log
+# accepted source). pack_unit (3) and pack_count (7) both resolve from the
+# pack candidate, so both map to 'pack_lang'.
+_RUNG_SOURCE = {
+    1: "apos",
+    2: "pharma",
+    3: "pack_lang",
+    4: "extra_unit",
+    5: "basis_marker",
+    6: "multi_pack",
+    7: "pack_lang",
+    8: "extra_count",
+    9: "item",
+}
+
 
 def decide(
     candidates,
@@ -301,6 +351,8 @@ def decide(
     extra_entry / extra_count / basis_marker are byte-identical to the original
     if-conditions, gating which recorded candidate is actually used.
     """
+    from prices.enrich import match_record
+
     by = {c.source: c for c in candidates}
 
     pack_count, pack_value, pack_unit = _resolve_pack(
@@ -343,5 +395,7 @@ def decide(
 
     for _rank, predicate, emit in _RUNGS:
         if predicate(st):
+            if match_record.is_recording():
+                match_record.record_accepted(_rank, _RUNG_SOURCE[_rank])
             return emit(st)
     return _rung_item_emit(st)  # unreachable: rung 9 is a catch-all
