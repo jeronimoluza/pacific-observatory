@@ -13,6 +13,7 @@ the gitignored logs and prints. The metric/HTML dashboard (§5/§8) is Phase 1.7
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import click
@@ -30,7 +31,7 @@ _FILES = {
 }
 
 
-def load_logs(log_dir, *, row=None, country=None, reason=None):
+def load_logs(log_dir, *, row=None, country=None, reason=None, shape=None):
     """Read the three §9 parquets from `log_dir` into filtered DataFrames.
 
     Returns `(match_df, suppression_df, residual_df)` or `None` when any of the
@@ -73,6 +74,12 @@ def load_logs(log_dir, *, row=None, country=None, reason=None):
         residual_df = residual_df[residual_df["row_id"].isin(sup_rows)]
         match_df = match_df[match_df["row_id"].isin(sup_rows)]
         suppression_df = suppression_df[suppression_df["row_id"].isin(sup_rows)]
+
+    if shape is not None and "shape" in residual_df.columns:
+        residual_df = residual_df[residual_df["shape"] == shape]
+        keep = set(residual_df["row_id"])
+        match_df = match_df[match_df["row_id"].isin(keep)]
+        suppression_df = suppression_df[suppression_df["row_id"].isin(keep)]
 
     return match_df, suppression_df, residual_df
 
@@ -117,6 +124,11 @@ def render_row(row_id, match_rows, suppression_rows, residual_row):
     if residual_row is not None:
         lines.append(f"  raw:     {residual_row.get('raw_name')}")
         lines.append(f"  working: {residual_row.get('working_name')}")
+        shape = residual_row.get("shape")
+        if shape is not None:
+            mods = json.loads(residual_row.get("modifiers") or "[]")
+            mod_suffix = "".join(f" +{m}" for m in mods)
+            lines.append(f"  shape:   {shape}{mod_suffix}")
 
     lines.append("  candidates:")
     for rec in sorted(match_rows, key=_candidate_sort_key):
@@ -196,6 +208,13 @@ def render_summary(match_df, suppression_df, residual_df):
         pct = 100.0 * cnt / max(n_rows, 1)
         lines.append(f"  {str(val):<14} {cnt:>5}  ({pct:4.1f}%)")
 
+    if "shape" in residual_df.columns:
+        lines.append("shape distribution:")
+        shape_counts = residual_df["shape"].value_counts(dropna=False)
+        for val, cnt in shape_counts.items():
+            pct = 100.0 * cnt / max(n_rows, 1)
+            lines.append(f"  {str(val):<14} {cnt:>5}  ({pct:4.1f}%)")
+
     lines.append("top regex_id by fire count:")
     for val, cnt in match_df["regex_id"].value_counts().head(10).items():
         lines.append(f"  {str(val):<18} {cnt:>5}")
@@ -221,6 +240,7 @@ def render_summary(match_df, suppression_df, residual_df):
 @click.option(
     "--reason", default=None, help="Only rows carrying this suppression reason."
 )
+@click.option("--shape", default=None, help="Only rows with this primary shape.")
 @click.option(
     "--dir",
     "log_dir",
@@ -229,7 +249,7 @@ def render_summary(match_df, suppression_df, residual_df):
     help="Override the log dir (default: data/prices/_enrich/_match_record/).",
 )
 @click.option("--summary-only", is_flag=True, help="Print only the summary header.")
-def match_record_command(limit, row, country, reason, log_dir, summary_only):
+def match_record_command(limit, row, country, reason, shape, log_dir, summary_only):
     """Render a plain-text trace of the §9 match-event logs (read-only).
 
     Reads match_log_long / suppression_log / residual_log and prints a compact
@@ -238,7 +258,7 @@ def match_record_command(limit, row, country, reason, log_dir, summary_only):
     command to produce them and exits cleanly. Writes nothing.
     """
     target = Path(log_dir) if log_dir else DEFAULT_DIR
-    frames = load_logs(target, row=row, country=country, reason=reason)
+    frames = load_logs(target, row=row, country=country, reason=reason, shape=shape)
     if frames is None:
         click.echo(f"no match-record logs found at {target}")
         click.echo(f"produce them with:\n  {PRODUCE_CMD}")
