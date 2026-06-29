@@ -14,7 +14,7 @@ without an import cycle (Plan 03).
 
 from __future__ import annotations
 
-import re  # noqa: F401  (used by the dose/spec detectors authored in Plan 02)
+import re
 
 # The six primary shape labels (top-down precedence; exactly one per row).
 SHAPES = frozenset(
@@ -43,7 +43,66 @@ MODIFIERS = frozenset(
 )
 
 
+# Deterministic emit order for the modifier list (stable test + JSON output).
+_MODIFIER_ORDER = (
+    "dosage_strength",
+    "spec_number",
+    "marketing_limit",
+    "appliance_capacity",
+    "servings_portion",
+    "total_breakdown",
+)
+
+# The four §9 suppression reasons the labeler READS off the recorder's
+# `suppressed_ids` (the other two — dosage_strength, spec_number — are computed
+# fresh). dosage_strength is in REASON_TOKENS but never recorded, so it is not
+# read here.
+_READ_MODIFIERS = frozenset(
+    {
+        "marketing_limit",
+        "appliance_capacity",
+        "servings_portion",
+        "total_breakdown",
+    }
+)
+
+# Bare-dose detector: the mg/mcg/µg alternation lifted from `_PHARMA_PER_UNIT_RE`
+# (extract_patterns.py:85-93), with IU added and the Tablet/Capsule adjacency
+# DROPPED — `1000mg 60 tablets` breaks adjacency, so the pharma regex misses it.
+# Keys on the dose UNIT, never on magnitude (`7g lip balm` is mass, not a dose).
+# Linear: one quantifier per token, no nested quantifier (ReDoS gate T-1.65-01).
+_DOSE_RE = re.compile(r"\d+(?:[.,]\d+)?\s*(?:mg|MG|Mg|mcg|MCG|µg|ug|IU)\b")
+
+# High-precision spec detectors (A3, precision-first): SPF, percentage, 4-digit
+# year, and a glued model token. Every pattern is linear with a single bounded
+# quantifier per token — no `.*`/`.+` nesting (ReDoS gate T-1.65-01).
+_SPEC_RES = (
+    re.compile(r"SPF\s*\d+", re.IGNORECASE),
+    re.compile(r"\d+(?:[.,]\d+)?\s*[%％]"),
+    re.compile(r"\b(?:19|20)\d{2}\b"),
+    re.compile(r"\b[A-Z]{1,3}\d{3,}\b"),
+)
+
+# Plain integer-run locator used to enumerate the numbers present in a name when
+# demoting a `numeric_nonquantity` to a spec_number modifier. Single quantifier.
+_INT_RE = re.compile(r"\d+")
+
+
+def _dose_present(text):
+    return bool(_DOSE_RE.search(text or ""))
+
+
+def _spec_present(text):
+    t = text or ""
+    return any(rx.search(t) for rx in _SPEC_RES)
+
+
+def _read_modifiers(suppressed_ids):
+    present = set((suppressed_ids or {}).values()) & _READ_MODIFIERS
+    return [m for m in _MODIFIER_ORDER if m in present]
+
+
 def classify(current, structural_fields):
-    # Wave-0 stub: returns the fallthrough shape. Plan 02 fills the interceptor
+    # Wave-0 stub: returns the fallthrough shape. Task 2 fills the interceptor
     # precedence (dose/spec detectors + candidate-set + StructuralFields reads).
     return ("bare_item", [])
