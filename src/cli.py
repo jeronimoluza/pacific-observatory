@@ -377,6 +377,7 @@ from prices.enrich.eval.cli import eval_command as _prices_eval  # noqa: E402
 from prices.enrich.match_record_view import (  # noqa: E402
     match_record_command as _prices_match_record,
 )
+from prices.enrich.census import census_command as _prices_census  # noqa: E402
 
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
@@ -384,6 +385,7 @@ prices.add_command(_prices_common_crawl, name="common-crawl")
 prices.add_command(_prices_process, name="process")
 prices.add_command(_prices_eval, name="eval")
 prices.add_command(_prices_match_record, name="match-record")
+prices.add_command(_prices_census, name="census")
 
 
 @prices.command("build")
