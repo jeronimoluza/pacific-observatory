@@ -49,6 +49,7 @@ GOLDEN_CANON: tuple[str, ...] = (
     "multipack_num_x_value_unit",
     "multipack_value_unit_x_count",
     "multipack_pcs_en",
+    "multipack_pc_glued_en",
     "multipack_n_x_only",
     "multipack_vi_loc",
     "multipack_vi_count_unit",
