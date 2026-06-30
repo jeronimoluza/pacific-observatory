@@ -24,9 +24,7 @@ from typing import Iterable
 from prices.enrich.regex_patterns.types import PackPattern
 
 _ROOT = "prices.enrich.regex_patterns"
-_SHARED_PKG = f"{_ROOT}.shared"
-_SCRIPT_PKG = f"{_ROOT}.script"
-_LANG_PKG = f"{_ROOT}.lang"
+_BUCKETS_PKG = f"{_ROOT}.buckets"
 _COUNTRY_PKG = f"{_ROOT}.country"
 
 # lang -> script family. The script axis carries structure shared *within* a
@@ -47,15 +45,17 @@ _SCRIPT_OF: dict[str, str] = {
 }
 
 
-def _script_pkg_for(lang: str | None) -> str | None:
+def _script_family_for(lang: str | None) -> str | None:
+    """The script family (cjk | latin | None) selected for a given lang.
+
+    Mirrors the pre-reorg _script_pkg_for resolution: _SCRIPT_OF lookup plus the
+    zh-prefix fallback. Drives load_for's script-field membership predicate."""
     if not lang:
         return None
     family = _SCRIPT_OF.get(lang)
     if family is None and lang.startswith("zh"):
         family = "cjk"
-    if family is None:
-        return None
-    return f"{_SCRIPT_PKG}.{family}"
+    return family
 
 
 def _iter_pattern_modules(package_name: str) -> Iterable[str]:
@@ -89,17 +89,10 @@ def _patterns_in_module(module_name: str) -> tuple[PackPattern, ...]:
     return tuple(patterns)
 
 
-def _patterns_under(package_name: str) -> tuple[PackPattern, ...]:
-    out: list[PackPattern] = []
-    for mod in _iter_pattern_modules(package_name):
-        out.extend(_patterns_in_module(mod))
-    return tuple(out)
-
-
 def _scan_all_patterns() -> dict[str, tuple[PackPattern, str]]:
     """Return id -> (pattern, source_module). Raise on collision."""
     index: dict[str, tuple[PackPattern, str]] = {}
-    for root in (_SHARED_PKG, _SCRIPT_PKG, _LANG_PKG, _COUNTRY_PKG):
+    for root in (_BUCKETS_PKG, _COUNTRY_PKG):
         for mod in _iter_pattern_modules(root):
             for pat in _patterns_in_module(mod):
                 if pat.id in index:
@@ -113,6 +106,89 @@ def _scan_all_patterns() -> dict[str, tuple[PackPattern, str]]:
 
 
 _INDEX: dict[str, tuple[PackPattern, str]] = _scan_all_patterns()
+
+# Global base-composition order. The buckets reorg scrambles the on-disk scan
+# order, so the pre-reorg directory-walk order (shared/* -> lang/<lang>/* ->
+# script/<family>/*, each alpha-by-module then declaration) can no longer be
+# derived from the tree. It is pinned here as the single ordering fact for
+# load_for: every load_for(country, lang) result is this sequence filtered by the
+# field-membership predicate, preserving order. Guarded byte-for-byte by
+# tests/prices/enrich/test_composition_diff.py (LOAD_FOR_BASELINE through RENAME).
+_BASE_ORDER: tuple[str, ...] = (
+    # shared/* (script=None, lang="any")
+    "NUM_ROLLS",
+    "EN_COMMA_XN",
+    "EN_PCS",
+    "EN_APOS_S",
+    "EN_N_TICKETS",
+    "CENTILITRE",
+    "LITRE_VI",
+    "NUM_X_VALUE_UNIT",
+    "VALUE_UNIT_X_NUM",
+    "NUM_X_TRAILING",
+    "VALUE_UNIT",
+    "VI_TO_SHEETS",
+    # lang/<lang>/* (script=None): en, ja, vi, zh
+    "NUM_PCS",
+    "NUM_PC_GLUED",
+    "PER_KG_PARENS",
+    "PER_KG",
+    "PER_LITRE_PARENS",
+    "PER_LITRE",
+    "SET_JA",
+    "VI_PIECES",
+    "LOC_VI",
+    "COUNT_UNIT_VI",
+    "COUNT_UNIT_ZH",
+    "VALUE_UNIT_ZH",
+    # script/<family>/*: cjk, latin
+    "CJK_MAI",
+    "CJK_PAIR",
+    "CJK_GRAIN",
+    "CJK_STRIP",
+    "CJK_SHEET",
+    "CJK_SET",
+    "VERSION_CJK",
+    "CJK_NUMERAL_SET",
+    "CJK_KO_PCS",
+    "CJK_N_X_COUNT",
+    "CJK_DOUBLE_PACK",
+    "INNER_X_OUTER_STAR",
+    "INNER_X_OUTER",
+    "EN_CAPS",
+    "EN_TABLETS",
+    "EN_SACHETS",
+    "EN_SHEETS",
+    "EN_PACK_OF",
+    "EN_N_PACK",
+    "EN_N_INDIVIDUAL_PACK",
+    "EN_TWIN_PACK",
+    "EN_TRIPLE_PACK",
+    "EN_DOUBLE_PACK",
+)
+
+_ORDERED_PATTERNS: tuple[PackPattern, ...] = tuple(
+    _INDEX[pid][0] for pid in _BASE_ORDER
+)
+
+
+def _in_membership(pat: PackPattern, lang: str | None) -> bool:
+    """Reproduce the pre-reorg directory membership via the lang/script fields.
+
+    - lang=None: broad fallback = every pattern (was shared/* + every lang/*/* +
+      every script/*/*).
+    - lang given: shared/* (script=None, lang="any") + lang/<lang>/* (script=None,
+      lang==lang) + script/<family>/* (script==script_of(lang)).
+    """
+    if lang is None:
+        return True
+    if pat.script is not None:
+        return pat.script == _script_family_for(lang)
+    return pat.lang == "any" or pat.lang == lang
+
+
+def _compose_base(lang: str | None) -> list[PackPattern]:
+    return [p for p in _ORDERED_PATTERNS if _in_membership(p, lang)]
 
 
 def _resolve_lang_for_country(country: str) -> str | None:
@@ -166,16 +242,7 @@ def load_for(
         if resolved is not None:
             lang = resolved
 
-    base: list[PackPattern] = list(_patterns_under(_SHARED_PKG))
-
-    if lang is None:
-        base.extend(_patterns_under(_LANG_PKG))
-        base.extend(_patterns_under(_SCRIPT_PKG))
-    else:
-        base.extend(_patterns_under(f"{_LANG_PKG}.{lang}"))
-        script_pkg = _script_pkg_for(lang)
-        if script_pkg is not None:
-            base.extend(_patterns_under(script_pkg))
+    base: list[PackPattern] = _compose_base(lang)
 
     if not country:
         return _filter_role(base, role)

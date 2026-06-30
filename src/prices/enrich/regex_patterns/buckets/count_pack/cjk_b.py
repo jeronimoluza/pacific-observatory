@@ -1,10 +1,9 @@
-"""CJK count markers, part 2 (extract role).
+"""count_pack bucket — CJK count markers, part 2 (extract role).
 
-Split from count_markers.py: in the consumed extra_count order the
-script-agnostic `vi_to_sheets` marker sorts between cjk_numeral_set and these,
-so the file boundary encodes that ordering directly (MODULE_ORDER replaces the
-old hand-maintained _EXTRA_COUNT_ORDER tuple). Translated verbatim from
-regex_units.yaml::extra_count_markers.
+Records moved VERBATIM from script/cjk/count_markers_b.py, ids renamed to
+SCREAMING_SNAKE. Split from cjk.py because in GOLDEN_EXTRA_COUNT the
+script-agnostic VI_TO_SHEETS sorts between CJK_NUMERAL_SET and these — the file
+boundary is the ordering lever. script="cjk" (was under script/cjk/).
 """
 
 from __future__ import annotations
@@ -28,18 +27,20 @@ def _p(
         role="extract",
         fixed_count=fixed_count,
         kind="extra_count",
+        bucket="count_pack",
+        script="cjk",
     )
 
 
 PATTERNS: tuple[PackPattern, ...] = (
-    _p("cjk_ko_pcs", r"(?P<count>\d+)\s*(?:개|매|병|봉|장|회)", ("count",)),
+    _p("CJK_KO_PCS", r"(?P<count>\d+)\s*(?:개|매|병|봉|장|회)", ("count",)),
     _p(
-        "cjk_n_x_count",
+        "CJK_N_X_COUNT",
         r"\bM?[xX×]\s*(?P<count>\d+)\s*(?:組|セット|本|入|片|盒|個|包|束|件|杯|袋|張)\b",
         ("count",),
     ),
     _p(
-        "cjk_double_pack",
+        "CJK_DOUBLE_PACK",
         r"\b(?:ダブルパック|ツインパック|デュアルパック)\b",
         (),
         fixed_count=2,

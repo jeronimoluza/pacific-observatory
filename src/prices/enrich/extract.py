@@ -116,7 +116,7 @@ def _is_total_breakdown(name, matched_value, matched_unit, count):
 
 
 def _value_unit_suppressed(name: str) -> bool:
-    """Wire PackPattern.suppress_window for value_unit_volume_mass: True when the
+    """Wire PackPattern.suppress_window for VALUE_UNIT: True when the
     first latin value+unit match in `name` sits within the suppress window of an
     appliance / apparel / storage-container cue, i.e. the number is a capacity or
     fabric weight rather than a sale quantity (BUG 3 / BUG 4)."""

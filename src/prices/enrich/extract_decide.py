@@ -156,7 +156,7 @@ def _resolve_pack(by: dict, *, item_name: str, has_non_ascii: bool):
                 span=(vu_m.start(), vu_m.end()) if vu_m else None,
                 suppression_type="match",
                 reason="appliance_capacity",
-                regex_id="value_unit_volume_mass",
+                regex_id="VALUE_UNIT",
             )
         pack_value = None
         pack_unit = None

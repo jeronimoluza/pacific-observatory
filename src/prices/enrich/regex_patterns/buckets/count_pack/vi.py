@@ -1,9 +1,9 @@
-"""Vietnamese lang-gated count extras (extract role).
+"""count_pack bucket — Vietnamese lang-gated count extra (extract role).
 
-Split from multipack.py: in the consumed extra_count order this marker sorts
-after the Latin count markers and before the CPI count idioms, so the file
-boundary encodes that ordering (MODULE_ORDER replaces the old _EXTRA_COUNT_ORDER
-tuple). Lang-gated to vi to avoid meter clashes.
+Record moved VERBATIM from lang/vi/count_markers.py (lang="vi"), id renamed to
+SCREAMING_SNAKE. In GOLDEN_EXTRA_COUNT this sits BETWEEN the Latin run and the CPI
+run, so it is its own module — the file boundary is the ordering lever.
+script=None (was under lang/vi/).
 """
 
 from __future__ import annotations
@@ -16,11 +16,12 @@ PATTERNS: tuple[PackPattern, ...] = (
     # '200M' = 200 miếng. Lang-gated to avoid meter clashes.
     # extract-role: no re.IGNORECASE (mirrors extract.py loader).
     PackPattern(
-        id="vi_m_pieces",
+        id="VI_PIECES",
         regex=re.compile(r"\b(?P<count>\d+)\s*M\b"),
         groups=("count",),
         lang="vi",
         role="extract",
         kind="extra_count",
+        bucket="count_pack",
     ),
 )

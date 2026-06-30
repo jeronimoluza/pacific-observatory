@@ -37,6 +37,15 @@ class PackPattern:
     # extract). A pattern with kind="unrouted" is declared but deliberately not fed
     # to any consumed bucket (e.g. cjk_numeral_version, dropped 2026-06-16).
     kind: str = "canon"  # canon | extra_unit | extra_count | multi_pack | pricing_basis_marker | unrouted
+    # Morphology bucket — the human/monitoring axis (per_unit_marker |
+    # single_measure | multipack | count_pack | _unrouted). Distinct from `kind`
+    # (which drives composition): several count_pack sub-modules all tag
+    # bucket="count_pack" while their files are split purely as the ordering lever.
+    bucket: str | None = None
+    # Script family — set ONLY for patterns that lived under script/<family>/
+    # (cjk | latin). shared/* and lang/<lang>/* patterns carry script=None even
+    # when they contain CJK/Latin characters. Drives load_for membership.
+    script: str | None = None
 
 
 @dataclass(frozen=True)

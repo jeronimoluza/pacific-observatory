@@ -1,9 +1,9 @@
-"""English per-unit pricing-basis markers (extract role).
+"""Per-unit pricing-basis marker bucket (extract role).
 
-Emits pricing_basis without an amount_value — used for loose-weight / bulk items
-priced per kg or per litre where no numeric quantity appears in the product name.
-
-Examples: "Beef Roast (Per/ Kg)", "Loose Tomatoes Per Kg", "Bulk Olive Oil (Per/ L)".
+Records moved VERBATIM from lang/en/per_unit_markers.py, ids renamed to
+SCREAMING_SNAKE. Emits pricing_basis without an amount_value — loose-weight / bulk
+items priced per kg or per litre. Declaration order matches the pre-reorg
+pricing_basis_markers order (PER_KG_PARENS, PER_KG, PER_LITRE_PARENS, PER_LITRE).
 """
 
 from __future__ import annotations
@@ -15,42 +15,46 @@ from prices.enrich.regex_patterns.types import PackPattern
 PATTERNS: tuple[PackPattern, ...] = (
     # Parens form: (Per/ Kg), (per/KG), (Per/ kg)
     PackPattern(
-        id="en_per_kg_parens",
+        id="PER_KG_PARENS",
         regex=re.compile(r"\(\s*[Pp]er\s*/?\s*[Kk][Gg]\s*\)"),
         groups=(),
         lang="en",
         role="extract",
         pricing_basis_emit="mass",
         kind="pricing_basis_marker",
+        bucket="per_unit_marker",
     ),
     # Bare form: "Per Kg", "per kg", "Per KG"
     PackPattern(
-        id="en_per_kg_bare",
+        id="PER_KG",
         regex=re.compile(r"\b[Pp]er\s+[Kk][Gg]\b"),
         groups=(),
         lang="en",
         role="extract",
         pricing_basis_emit="mass",
         kind="pricing_basis_marker",
+        bucket="per_unit_marker",
     ),
     # Parens form: (Per/ L), (per/l)
     PackPattern(
-        id="en_per_l_parens",
+        id="PER_LITRE_PARENS",
         regex=re.compile(r"\(\s*[Pp]er\s*/?\s*[Ll]\s*\)"),
         groups=(),
         lang="en",
         role="extract",
         pricing_basis_emit="volume",
         kind="pricing_basis_marker",
+        bucket="per_unit_marker",
     ),
     # Bare form: "per liter", "per litre", "Per Liter"
     PackPattern(
-        id="en_per_liter_bare",
+        id="PER_LITRE",
         regex=re.compile(r"\b[Pp]er\s+[Ll]it(?:er|re)\b"),
         groups=(),
         lang="en",
         role="extract",
         pricing_basis_emit="volume",
         kind="pricing_basis_marker",
+        bucket="per_unit_marker",
     ),
 )

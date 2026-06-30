@@ -36,23 +36,16 @@ from prices.enrich.regex_patterns.unit_tables import UNIT_MAP, UNIT_NORM
 # Modules are listed by their import path under regex_patterns/. Changing this
 # list reorders the composed buckets, so it is guarded by the snapshot test.
 MODULE_ORDER: tuple[str, ...] = (
-    "shared.multipack",
-    "lang.en.multipack",
-    "shared.multipack_trailing",
-    "lang.vi.multipack",
-    "lang.zh.multipack",
-    "lang.ja.multipack",
-    "shared.value_unit",
-    "lang.zh.volume_mass",
-    "shared.extra_units",
-    "script.cjk.count_markers",
-    "shared.vi_extras",
-    "script.cjk.count_markers_b",
-    "script.latin.count_markers",
-    "lang.vi.count_markers",
-    "shared.cpi_count_markers",
-    "script.cjk.multi_pack",
-    "lang.en.per_unit_markers",
+    "buckets.multipack",
+    "buckets.single_measure",
+    "buckets.count_pack.cjk",
+    "buckets.count_pack.vi_sheets",
+    "buckets.count_pack.cjk_b",
+    "buckets.count_pack.latin",
+    "buckets.count_pack.vi",
+    "buckets.count_pack.latin_cpi",
+    "buckets.per_unit_marker",
+    "buckets._unrouted",
 )
 
 _ROOT = "prices.enrich.regex_patterns"
@@ -112,6 +105,14 @@ def pack_patterns_for_normalize() -> list[dict[str, Any]]:
 
 def unit_norm() -> dict[str, str]:
     return dict(UNIT_NORM)
+
+
+def value_unit_pattern() -> tuple[re.Pattern[str], int | None]:
+    """Compiled regex + ``suppress_window`` for the canon mass/volume pattern,
+    surfaced so extract.py can apply local-window context suppression of
+    appliance-capacity / apparel-fabric-weight false positives (BUG 3 / BUG 4)."""
+    pat, _ = _INDEX["VALUE_UNIT"]
+    return pat.regex, pat.suppress_window
 
 
 def regex_units_for_extract() -> (

@@ -56,6 +56,19 @@ _OUTER_PACK_OF_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Count markers whose N is an INTERNAL piece-count, not an outer pack: English
+# "N Pack/PCS/pieces" and Vietnamese "N miếng/viên". When one of these co-occurs
+# with a single total mass/volume, the spec treats the measure as the pack TOTAL
+# (e.g. "24 Pack 1.8kg" = 24 items totalling 1.8 kg, multiplier 1), so the count
+# must not be promoted to a multiplier. Excludes "Combo/Lốc N" (real outer pack).
+_TOTAL_INTERNAL_COUNT_IDS = {"NUM_PCS", "COUNT_UNIT_VI"}
+_VALUE_UNIT_PAT = next(p for p in _PACK_PATTERNS if p["id"] == "VALUE_UNIT")
+# A counter joined to the measure by x/×/* IS an explicit multiplier ("12PACK x
+# 86g", "6 PCS X 100ml") — NOT a total, so the total-internal redirect is skipped.
+_COUNTER_X_MEASURE_RE = re.compile(
+    r"(?:pack|pcs|pieces?|ct|miếng|viên)\s*[x×*]\s*\d", re.IGNORECASE
+)
+
 # CJK stop-words and ZH/JA promo markers are substring-stripped because
 # CJK script has no word boundaries.
 _CJK_LANGS = {"zh", "ja"}
@@ -128,6 +141,20 @@ def extract_pack(
             om = _OUTER_PACK_OF_RE.search(s)
             if om:
                 count = int(om.group(1))
+        if (
+            value is None
+            and count is not None
+            and pat["id"] in _TOTAL_INTERNAL_COUNT_IDS
+            and not _COUNTER_X_MEASURE_RE.search(s)
+        ):
+            vm = _VALUE_UNIT_PAT["regex"].search(s)
+            if vm:
+                raw = vm.group("unit")
+                unit = _UNIT_NORM.get(raw, _UNIT_NORM.get(raw.lower(), raw.lower()))
+                value = float(vm.group("value").replace(",", "."))
+                count = None
+                cleaned = (s[: vm.start()] + " " + s[vm.end() :]).strip()
+                return re.sub(r"\s+", " ", cleaned), count, value, unit
         cleaned = (s[: m.start()] + " " + s[m.end() :]).strip()
         cleaned = re.sub(r"\s+", " ", cleaned)
         return cleaned, count, value, unit

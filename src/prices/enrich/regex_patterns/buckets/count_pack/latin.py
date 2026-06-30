@@ -1,4 +1,8 @@
-"""Latin-script count-marker patterns (extract role) — translated from regex_units.yaml::extra_count_markers."""
+"""count_pack bucket — Latin-script count markers (extract role).
+
+Records moved VERBATIM from script/latin/count_markers.py, ids renamed to
+SCREAMING_SNAKE. script="latin" (was under script/latin/). bucket="count_pack".
+"""
 
 from __future__ import annotations
 
@@ -22,43 +26,45 @@ def _p(
         role="extract",
         fixed_count=fixed_count,
         kind="extra_count",
+        bucket="count_pack",
+        script="latin",
     )
 
 
 PATTERNS: tuple[PackPattern, ...] = (
     _p(
-        "en_caps",
+        "EN_CAPS",
         r"\b(?P<count>\d+)\s*(?:Caps?|Capsules?|caps?|capsules?|CAPS?|CAPSULES?)\b",
         ("count",),
     ),
     _p(
-        "en_tablets",
+        "EN_TABLETS",
         r"\b(?P<count>\d+)\s*(?:Tabs?|Tablets?|tabs?|tablets?|TABS?|TABLETS?)\b",
         ("count",),
     ),
-    _p("en_sachets_s", r"\b(?P<count>\d+)[sS]\b(?:\s|$)", ("count",)),
+    _p("EN_SACHETS", r"\b(?P<count>\d+)[sS]\b(?:\s|$)", ("count",)),
     _p(
-        "en_sheets",
+        "EN_SHEETS",
         r"\b(?P<count>\d+)\s*(?:Sheets?|sheets?|SHEETS?)\b",
         ("count",),
     ),
-    _p("en_pack_of", r"\bPack\s*of\s*(?P<count>\d+)\b", ("count",)),
+    _p("EN_PACK_OF", r"\bPack\s*of\s*(?P<count>\d+)\b", ("count",)),
     _p(
-        "en_n_pack",
+        "EN_N_PACK",
         r"\b(?P<count>\d+)\s*[-]?\s*(?:Pack|PACK|pack)\b",
         ("count",),
     ),
     _p(
-        "en_n_individual_pack",
+        "EN_N_INDIVIDUAL_PACK",
         r"\b(?P<count>\d+)\s*(?:INDIVIDUAL|Individual|individual)\s*(?:PACK|Pack|pack)\b",
         ("count",),
     ),
-    _p("en_twin_pack", r"\bTwin\s*Pack\b", (), fixed_count=2),
+    _p("EN_TWIN_PACK", r"\bTwin\s*Pack\b", (), fixed_count=2),
     _p(
-        "en_triple_pack",
+        "EN_TRIPLE_PACK",
         r"\b(?:Triple\s*Pack|Tri\s*Pack)\b",
         (),
         fixed_count=3,
     ),
-    _p("en_double_pack", r"\bDouble\s*Pack\b", (), fixed_count=2),
+    _p("EN_DOUBLE_PACK", r"\bDouble\s*Pack\b", (), fixed_count=2),
 )

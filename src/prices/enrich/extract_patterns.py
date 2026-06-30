@@ -105,7 +105,7 @@ _APOS_S_X_UNIT_RE = re.compile(
 )
 
 # Secondary value+unit scan (used when pack_patterns returns count-only). Mirrors
-# pack_patterns' value_unit_volume_mass regex but lives here so we can call it
+# pack_patterns' VALUE_UNIT regex but lives here so we can call it
 # AFTER an initial count-only match — pack_patterns is first-match-wins.
 _SECONDARY_VU_RE = re.compile(
     r"(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?)\s*"
