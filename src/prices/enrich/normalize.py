@@ -117,11 +117,16 @@ def clean_text(s: str, lang: str | None = None) -> str:
 
 
 def extract_pack(
-    s: str, lang: str | None = None
+    s: str, lang: str | None = None, with_id: bool = False
 ) -> tuple[str, int | None, float | None, str | None]:
-    """Return (text_with_pack_removed, count, value, unit). First match wins."""
+    """Return (text_with_pack_removed, count, value, unit). First match wins.
+
+    When `with_id` is True, append the winning pattern id (or None) as a 5th
+    element — an additive, display-only channel for the §9 recorder. The first
+    four elements are identical to the default (4-tuple) return for every input.
+    """
     if not s:
-        return s, None, None, None
+        return (s, None, None, None, None) if with_id else (s, None, None, None)
     for pat in _PACK_PATTERNS:
         if pat["lang"] != "any" and lang and pat["lang"] != lang:
             continue
@@ -154,11 +159,16 @@ def extract_pack(
                 value = float(vm.group("value").replace(",", "."))
                 count = None
                 cleaned = (s[: vm.start()] + " " + s[vm.end() :]).strip()
-                return re.sub(r"\s+", " ", cleaned), count, value, unit
+                cleaned = re.sub(r"\s+", " ", cleaned)
+                if with_id:
+                    return cleaned, count, value, unit, pat["id"]
+                return cleaned, count, value, unit
         cleaned = (s[: m.start()] + " " + s[m.end() :]).strip()
         cleaned = re.sub(r"\s+", " ", cleaned)
+        if with_id:
+            return cleaned, count, value, unit, pat["id"]
         return cleaned, count, value, unit
-    return s, None, None, None
+    return (s, None, None, None, None) if with_id else (s, None, None, None)
 
 
 def _strip_promo_substrings(s: str, lang: str | None) -> str:

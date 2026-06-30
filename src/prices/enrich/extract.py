@@ -253,7 +253,9 @@ def enumerate_candidates(
 
     candidates: list = []
 
-    cleaned, pack_count, pack_value, pack_unit = extract_pack(stripped, lang)
+    cleaned, pack_count, pack_value, pack_unit, pack_id = extract_pack(
+        stripped, lang, with_id=True
+    )
     candidates.append(
         Candidate(
             source="pack_lang",
@@ -263,13 +265,13 @@ def enumerate_candidates(
                 "count": pack_count,
                 "value": pack_value,
                 "unit": pack_unit,
-                "regex_id": "pack_lang",
+                "regex_id": pack_id or "pack_lang",
                 "cleaned": cleaned,
             },
         )
     )
     if has_non_ascii:
-        nc_cleaned, nc, nv, nu = extract_pack(stripped, None)
+        nc_cleaned, nc, nv, nu, nc_id = extract_pack(stripped, None, with_id=True)
         candidates.append(
             Candidate(
                 source="pack_none",
@@ -279,7 +281,7 @@ def enumerate_candidates(
                     "count": nc,
                     "value": nv,
                     "unit": nu,
-                    "regex_id": "pack_none",
+                    "regex_id": nc_id or "pack_none",
                     "cleaned": nc_cleaned,
                 },
             )
@@ -294,7 +296,7 @@ def enumerate_candidates(
                 "count": sec_count,
                 "value": sec_value,
                 "unit": sec_unit,
-                "regex_id": "secondary_vu",
+                "regex_id": "VALUE_UNIT",
             },
         )
     )
