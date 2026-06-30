@@ -28,6 +28,8 @@ from __future__ import annotations
 
 import pytest
 
+from rename_map import RENAME
+
 pytestmark = pytest.mark.unit
 
 
@@ -45,7 +47,7 @@ pytestmark = pytest.mark.unit
 # `cjk_numeral_version` is intentionally absent from GOLDEN_EXTRA_COUNT.
 # ---------------------------------------------------------------------------
 
-GOLDEN_CANON: tuple[str, ...] = (
+_PRE_RENAME_CANON: tuple[str, ...] = (
     "multipack_num_x_value_unit",
     "multipack_value_unit_x_count",
     "multipack_pcs_en",
@@ -59,9 +61,9 @@ GOLDEN_CANON: tuple[str, ...] = (
     "zh_volume_mass",
 )
 
-GOLDEN_EXTRA_UNITS: tuple[str, ...] = ("cl_volume", "vi_lit_volume")
+_PRE_RENAME_EXTRA_UNITS: tuple[str, ...] = ("cl_volume", "vi_lit_volume")
 
-GOLDEN_EXTRA_COUNT: tuple[str, ...] = (
+_PRE_RENAME_EXTRA_COUNT: tuple[str, ...] = (
     "cjk_mai",
     "cjk_pair",
     "cjk_grain",
@@ -91,16 +93,32 @@ GOLDEN_EXTRA_COUNT: tuple[str, ...] = (
     "en_n_tickets",
 )
 
-GOLDEN_MULTI_PACK: tuple[str, ...] = (
+_PRE_RENAME_MULTI_PACK: tuple[str, ...] = (
     "cjk_inner_outer_star",
     "cjk_inner_outer_full",
 )
 
-GOLDEN_PRICING_BASIS_MARKERS: tuple[str, ...] = (
+_PRE_RENAME_PRICING_BASIS_MARKERS: tuple[str, ...] = (
     "en_per_kg_parens",
     "en_per_kg_bare",
     "en_per_l_parens",
     "en_per_liter_bare",
+)
+
+# --------------------------------------------------------------------------- #
+# Plan 03 reorg: the live composer now emits SCREAMING_SNAKE ids. Each golden is
+# regenerated POSITIONALLY by mapping the frozen pre-reorg sequence through the
+# authoritative RENAME map — `tuple(RENAME[x] for x in OLD)`. This deliberately
+# does NOT re-run the live composer (that would silently absorb a reorder and
+# defeat the byte-identity net). Promo/bundle langs are not ids, so they are
+# unchanged.
+# --------------------------------------------------------------------------- #
+GOLDEN_CANON: tuple[str, ...] = tuple(RENAME[x] for x in _PRE_RENAME_CANON)
+GOLDEN_EXTRA_UNITS: tuple[str, ...] = tuple(RENAME[x] for x in _PRE_RENAME_EXTRA_UNITS)
+GOLDEN_EXTRA_COUNT: tuple[str, ...] = tuple(RENAME[x] for x in _PRE_RENAME_EXTRA_COUNT)
+GOLDEN_MULTI_PACK: tuple[str, ...] = tuple(RENAME[x] for x in _PRE_RENAME_MULTI_PACK)
+GOLDEN_PRICING_BASIS_MARKERS: tuple[str, ...] = tuple(
+    RENAME[x] for x in _PRE_RENAME_PRICING_BASIS_MARKERS
 )
 
 GOLDEN_PROMO_LANGS: tuple[str, ...] = (
@@ -131,7 +149,7 @@ GOLDEN_BUNDLE_LANGS: tuple[str, ...] = (
 # `cjk_numeral_version` is a live PATTERN in the tree but is deliberately NOT
 # routed into the consumed extra_count bucket. The no-silent-drop test treats it
 # as a sanctioned exception so the byte-identity snapshot stays honest.
-SANCTIONED_UNROUTED: frozenset[str] = frozenset({"cjk_numeral_version"})
+SANCTIONED_UNROUTED: frozenset[str] = frozenset({"VERSION_CJK"})
 
 
 def _live_composed() -> dict[str, tuple[str, ...]]:

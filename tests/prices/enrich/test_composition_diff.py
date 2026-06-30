@@ -6,14 +6,14 @@ module paths), so it is directory-agnostic and survives the reorg.
 
 Two modes, selected by the ``MAPPED`` env var:
 
-  * OLD-id self-check (default, ``MAPPED`` unset/0): the live composer still emits
-    OLD ids (no rename has happened yet), so the live composition must equal the
-    frozen baseline VERBATIM. This proves the harness wiring is correct on the
-    pre-reorg tree — exactly what Plan 01 asserts.
+  * MAPPED (default, post Plan 03): the live composer emits SCREAMING_SNAKE ids, so
+    the live composition must equal the frozen baseline mapped through RENAME. This
+    is the SC2/SC4 proof that the reorg changed nothing but the names. The default
+    is MAPPED because the reorg has landed.
 
-  * MAPPED (``MAPPED=1``): Plan 03 renames the live ids to SCREAMING_SNAKE, so the
-    live composition must equal the frozen baseline mapped through RENAME. Plan 03
-    flips this on to prove its reorg changed nothing but the names.
+  * OLD-id self-check (``MAPPED=0``): asserts the live composition equals the frozen
+    baseline VERBATIM. Only meaningful on the pre-reorg tree (what Plan 01 asserted);
+    retained so the harness can still be run against an un-renamed checkout.
 
 The same assertion body serves both modes — only the expected side is mapped.
 """
@@ -29,7 +29,7 @@ from rename_map import RENAME
 
 pytestmark = pytest.mark.unit
 
-_MAPPED = os.environ.get("MAPPED", "0") not in ("0", "", "false", "False")
+_MAPPED = os.environ.get("MAPPED", "1") not in ("0", "", "false", "False")
 
 
 def _expected(seq: tuple[str, ...]) -> tuple[str, ...]:

@@ -24,15 +24,17 @@ def _index_ids() -> set[str]:
     return set(_INDEX.keys())
 
 
-def test_domain_covers_every_registry_id() -> None:
-    """Every `_INDEX` id is a RENAME key — no id missed, no extra key."""
+def test_images_cover_every_registry_id() -> None:
+    """Post Plan-03 reorg, the live registry holds the RENAMED (image) ids, so
+    every `_INDEX` id is a RENAME VALUE — no image missed, no extra image. (Plan 01
+    pinned this against the domain; the reorg flipped the registry to the images.)"""
     index_ids = _index_ids()
-    rename_keys = set(RENAME.keys())
+    rename_images = set(RENAME.values())
 
-    missing = index_ids - rename_keys
-    extra = rename_keys - index_ids
-    assert not missing, f"registry ids missing from RENAME: {sorted(missing)}"
-    assert not extra, f"RENAME keys absent from registry: {sorted(extra)}"
+    missing = index_ids - rename_images
+    extra = rename_images - index_ids
+    assert not missing, f"registry ids missing from RENAME images: {sorted(missing)}"
+    assert not extra, f"RENAME images absent from registry: {sorted(extra)}"
 
 
 def test_registry_has_47_ids() -> None:
