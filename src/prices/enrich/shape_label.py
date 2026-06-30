@@ -102,20 +102,28 @@ def _read_modifiers(suppressed_ids):
     return [m for m in _MODIFIER_ORDER if m in present]
 
 
+def _int_runs(value):
+    # Integer digit-runs within a candidate value, tokenized the same way
+    # `_orphan_number` reads the name (_INT_RE `\d+`). A fractional amount like
+    # "2.5" yields {2, 5} instead of raising on int("2.5"); an integer value is
+    # unchanged ({12} for "12"), so this preserves the integer-amount behaviour.
+    return {int(run) for run in _INT_RE.findall(str(value))}
+
+
 def _accounted_numbers(events, sf):
     accounted = set()
     for ev in events:
         amt = ev.get("candidate_amount")
         if ev.get("candidate_unit") is not None and amt is not None:
-            accounted.add(int(amt))
+            accounted |= _int_runs(amt)
         mult = ev.get("candidate_multiplier")
         if mult is not None:
-            accounted.add(int(mult))
+            accounted |= _int_runs(mult)
     if sf is not None:
         if sf.multiplier is not None:
-            accounted.add(int(sf.multiplier))
+            accounted |= _int_runs(sf.multiplier)
         if sf.count is not None:
-            accounted.add(int(sf.count))
+            accounted |= _int_runs(sf.count)
     return accounted
 
 
