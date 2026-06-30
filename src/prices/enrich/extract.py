@@ -265,7 +265,7 @@ def enumerate_candidates(
                 "count": pack_count,
                 "value": pack_value,
                 "unit": pack_unit,
-                "regex_id": pack_id or "pack_lang",
+                "regex_id": pack_id or "no_match",
                 "cleaned": cleaned,
             },
         )
@@ -281,7 +281,7 @@ def enumerate_candidates(
                     "count": nc,
                     "value": nv,
                     "unit": nu,
-                    "regex_id": nc_id or "pack_none",
+                    "regex_id": nc_id or "no_match",
                     "cleaned": nc_cleaned,
                 },
             )
@@ -296,7 +296,7 @@ def enumerate_candidates(
                 "count": sec_count,
                 "value": sec_value,
                 "unit": sec_unit,
-                "regex_id": "VALUE_UNIT",
+                "regex_id": "VALUE_UNIT" if sec_span is not None else "no_match",
             },
         )
     )

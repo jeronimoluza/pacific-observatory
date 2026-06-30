@@ -60,6 +60,31 @@ def test_canon_path_surfaces_real_ids(tmp_path):
         assert ids.isdisjoint(_OPAQUE_IDS), f"{name!r}: opaque id surfaced in {ids!r}"
 
 
+def test_no_match_candidates_read_no_match(tmp_path):
+    """A bare item with no structural match surfaces `no_match` on the empty-span
+    candidates — never the opaque `pack_lang` / `pack_none` / `VALUE_UNIT`
+    fallback literals (SC3 refinement)."""
+    import pandas as pd
+
+    name = "Plain Spiral Notebook"
+    match_record.enable(out_dir=tmp_path)
+    try:
+        match_record.begin_row(0, name, name, None, "")
+        tier_a = extract(item_name=name, category=None, country=None, lang="en")
+        match_record.end_row(tier_a)
+        match_record.flush(out_dir=tmp_path)
+    finally:
+        match_record.disable()
+
+    match_df = pd.read_parquet(tmp_path / "match_log_long.parquet")
+    ids = set(match_df[match_df["row_id"] == 0]["regex_id"])
+
+    assert "no_match" in ids, f"expected 'no_match' in {ids!r}"
+    assert ids.isdisjoint(
+        {"pack_lang", "pack_none", "VALUE_UNIT"}
+    ), f"opaque fallback literal surfaced on no-match row: {ids!r}"
+
+
 def test_off_equals_on_and_with_id_non_perturbation():
     for name, lang, _expected in _CASES:
         off = extract(item_name=name, category=None, country=None, lang=lang)
