@@ -27,7 +27,8 @@ import click
 from prices.enrich import config, match_record
 from prices.enrich.extract import extract
 
-NAME_COLUMN = "product_name_original"
+NAME_CANDIDATES = ("product_name_original", "first_name")
+NAME_COLUMN = NAME_CANDIDATES[0]
 CHANNEL_COLUMN = "channel"
 EXCLUDED_CHANNEL = "aggregator"
 CENSUS_PARQUET_NAME = "census_shape_regex.parquet"
@@ -54,11 +55,12 @@ def _unique_names(df, limit=None):
     `product_name_original` values (optionally capped at `limit`)."""
     if CHANNEL_COLUMN in df.columns:
         df = df[df[CHANNEL_COLUMN] != EXCLUDED_CHANNEL]
-    if NAME_COLUMN not in df.columns:
+    name_col = next((c for c in NAME_CANDIDATES if c in df.columns), None)
+    if name_col is None:
         return []
     seen = set()
     unique = []
-    for name in df[NAME_COLUMN].dropna().astype(str):
+    for name in df[name_col].dropna().astype(str):
         if not name.strip() or name in seen:
             continue
         seen.add(name)
