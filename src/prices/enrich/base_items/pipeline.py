@@ -76,6 +76,34 @@ def _grep_slice(base_item_rec: dict, region: str | None) -> pd.DataFrame:
     return df[mask].reset_index(drop=True).copy()
 
 
+def full_corpus(base_items_df):
+    """Union of the deduped-cache slices for every base_item token set.
+
+    Greps PRODUCTS_INPUT_PARQUET once per base_item record (via _grep_slice),
+    concatenates, and de-duplicates on product_name_original. Returns a frame
+    with at least product_name_original and lang columns.
+    """
+    names = sorted(set(base_items_df["base_item"].astype(str)))
+    frames = []
+    for base_item in names:
+        try:
+            rec = store.load_record(base_item)
+        except KeyError:
+            continue
+        sl = _grep_slice(rec, None)
+        if sl.empty:
+            continue
+        if "product_name_original" not in sl.columns and "name" in sl.columns:
+            sl = sl.rename(columns={"name": "product_name_original"})
+        frames.append(sl)
+    if not frames:
+        return pd.DataFrame(columns=["product_name_original", "lang"])
+    out = pd.concat(frames, ignore_index=True)
+    if "lang" not in out.columns:
+        out["lang"] = None
+    return out.drop_duplicates(subset=["product_name_original"]).reset_index(drop=True)
+
+
 def run_iteration(base_item: str, region: str | None = None, nlp=None) -> dict:
     ts = datetime.now(timezone.utc)
     rec = store.load_record(base_item)

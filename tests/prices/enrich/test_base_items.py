@@ -429,3 +429,23 @@ def test_promote_bands_and_small_groups():
     assert set(["group_n", "group_median_usd", "band_lo", "band_hi"]).issubset(
         df.columns
     )
+
+
+def test_regex_check_diff_empty_then_flags(tmp_path, monkeypatch):
+    from prices.enrich.base_items import regex_check as R
+
+    monkeypatch.setattr(R, "SNAPSHOT", tmp_path / "extraction_snapshot.parquet")
+    corpus = pd.DataFrame(
+        {
+            "product_name_original": ["Rice 5kg", "Oranges 12 pack"],
+            "lang": ["en", "en"],
+        }
+    )
+    R.freeze(corpus)  # write snapshot
+    diff = R.diff(corpus)  # same code + corpus -> empty
+    assert diff.empty
+    # a perturbed extraction surfaces a non-empty diff
+    perturbed = corpus.copy()
+    perturbed.loc[0, "product_name_original"] = "Rice 500g"
+    diff2 = R.diff(perturbed)
+    assert not diff2.empty
