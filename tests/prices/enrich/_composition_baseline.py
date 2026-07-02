@@ -67,6 +67,8 @@ EXTRA_COUNT: tuple[str, ...] = (
     "en_pack_of",
     "en_n_pack",
     "en_n_individual_pack",
+    "en_half_dozen",
+    "en_dozen",
     "en_twin_pack",
     "en_triple_pack",
     "en_double_pack",

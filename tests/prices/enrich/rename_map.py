@@ -58,6 +58,8 @@ RENAME: dict[str, str] = {
     "en_pack_of": "EN_PACK_OF",
     "en_n_pack": "EN_N_PACK",
     "en_n_individual_pack": "EN_N_INDIVIDUAL_PACK",
+    "en_half_dozen": "EN_HALF_DOZEN",
+    "en_dozen": "EN_DOZEN",
     "en_twin_pack": "EN_TWIN_PACK",
     "en_triple_pack": "EN_TRIPLE_PACK",
     "en_double_pack": "EN_DOUBLE_PACK",

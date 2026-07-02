@@ -59,6 +59,16 @@ PATTERNS: tuple[PackPattern, ...] = (
         r"\b(?P<count>\d+)\s*(?:INDIVIDUAL|Individual|individual)\s*(?:PACK|Pack|pack)\b",
         ("count",),
     ),
+    # "Half Dozen" (6) must precede bare "Dozen" (12) — first-match-wins. A bare
+    # or "1 Dozen" both mean 12 fresh units (e.g. "Orange Pursat 1 Dozen"); the
+    # rarer "N Dozen" (N>1) is not enumerated here (no such fresh-produce rows).
+    _p(
+        "EN_HALF_DOZEN",
+        r"\b(?:Half|HALF|half)\s*(?:Dozen|DOZEN|dozen)\b",
+        (),
+        fixed_count=6,
+    ),
+    _p("EN_DOZEN", r"\b(?:Dozen|DOZEN|dozen)\b", (), fixed_count=12),
     _p("EN_TWIN_PACK", r"\bTwin\s*Pack\b", (), fixed_count=2),
     _p(
         "EN_TRIPLE_PACK",
