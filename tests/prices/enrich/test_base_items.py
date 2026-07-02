@@ -204,6 +204,22 @@ def test_seed_propagates_allowed_basis(tmp_path):
         store.set_data_dir(store.REPO_ROOT / "data" / "prices")
 
 
+def test_reseed_overrides_stale_on_disk_basis(tmp_path):
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        # simulate a stale on-disk seed with the wrong (empty) basis
+        df = store.load_base_items()
+        df.loc[df["base_item"] == "pineapple", "allowed_basis"] = ""
+        store.write_base_items(df)
+        assert store.load_record("pineapple")["allowed_basis"] is None
+        # re-seeding must make config authoritative again, not keep the stale row
+        taxonomy.seed_from_config(CONFIG)
+        assert store.load_record("pineapple")["allowed_basis"] == {"mass"}
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
 def test_mine_source_boilerplate(tmp_path):
     store.set_data_dir(tmp_path)
     try:

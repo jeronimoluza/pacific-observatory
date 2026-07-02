@@ -29,7 +29,7 @@ import pandas as pd
 from prices.enrich.config import REPO_ROOT
 
 from . import store
-from .store import BASE_ITEM_COLS, _now, upsert_base_items
+from .store import BASE_ITEM_COLS, _now, load_base_items, write_base_items
 
 XLSX = REPO_ROOT / "data" / "prices" / "_enrich" / "coicop_categories.xlsx"
 
@@ -347,7 +347,12 @@ def seed_from_config(config_path: Path) -> pd.DataFrame:
                 plausible,
             )
 
-    return upsert_base_items(pd.DataFrame(rows, columns=BASE_ITEM_COLS))
+    seeded = pd.DataFrame(rows, columns=BASE_ITEM_COLS)
+    cur = load_base_items()
+    kept = cur[~cur["base_item"].isin(set(seeded["base_item"]))]
+    out = pd.concat([kept, seeded], ignore_index=True)
+    write_base_items(out)
+    return out
 
 
 # --- xlsx noun-chunk CANDIDATE base_items (auto, refined by the loop) ----------
