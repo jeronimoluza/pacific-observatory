@@ -65,7 +65,9 @@ Basis is checked twice, at two different strengths:
   (e.g. oranges-by-count when only mass is confirmed for the item) does not
   demote; it is surfaced as a **basis_conflict** and written to
   `basis_conflict.txt`. Resolve it by widening the item's `allowed_basis` or
-  improving parsing, then re-run.
+  improving parsing, then **re-seed** (`--seed-config`) and re-run — the seed is
+  config-authoritative, so a config basis/form edit only takes effect after a
+  re-seed (it replaces that base_item's rows; other items are untouched).
 
 (This replaces the old "basis mismatch demotes to REVIEW" guardrail.)
 
@@ -131,14 +133,37 @@ run `python run.py prices process` (or its prepare stage) if stale.
    unit_value_local and unit_value_usd. Verify a sample of the calc strings and
    that the CANDIDATE rows really are pineapple.
 
-4. **Shrink REVIEW (flywheel).** The run prints:
-   - `REVIEW brand/variety candidates` — tokens like `sunnyphil`/`rockit` that
-     ARE the base_item. Confirm them with
-     `mine.confirm_varieties(base_item, [...])` (writes gazetteer.parquet); the
-     next run earns them into CANDIDATE (and then GREEN if they clear the band).
-   - `REVIEW cross-base_items` — OTHER base_items hiding in the pile (a pineapple
-     run surfacing `juice`/`jam`). **Report these back** as new candidate rows for
-     `base_items.parquet` — they mean the base_item DB is incomplete.
+4. **Shrink REVIEW (the flywheel loop).** Open `review.csv` and read the actual
+   `product_name_original` behind each printed token — **the token alone lies**
+   (`dole` looks canned but is fresh "Tropica Gold"; `tang` is drink powder;
+   `squid` is seafood). Classify EVERY residual token into one of three verdicts
+   and write it to `gazetteer.parquet` via
+   `store.append_gazetteer(base_item, {token: (role, "flywheel:confirmed")})`
+   (`role` merges into the cascade rec on the next run):
+   - **fresh** brand / cultivar / origin / size (`sunnyphil`, `honeygold`,
+     `taiwan`, `large`) → role `"variety"` → merges into `benign`, earns
+     CANDIDATE. Helper: `mine.confirm_varieties(base_item, [...])`.
+   - **processed** form of the base_item — a form noun (`sliced`, `dried`,
+     `crushed`) OR a canned/processed brand (`hosen`, `del`) → role
+     `"form:<coicop_leaf>"` → routes to OTHER_FORM at that leaf.
+   - **different product / nonfood** (`chicken`, `cheese`, `chocolate`,
+     `supplement`, `towel`, `condom`, candy) → role `"nonfood"` → EXCLUDE.
+
+   Re-run; REVIEW shrinks. Also `REVIEW cross-base_items` (e.g. `rice`) = OTHER
+   base_items hiding in the pile — **report these back** as new
+   `base_items.parquet` rows (the base_item DB is incomplete).
+
+   Gotchas that bite (learned on pineapple, REVIEW 425→6 over 6 passes):
+   - The form/nonfood matcher is **whole-word `[a-z]+` and exact** — singular ≠
+     plural (`slice`≠`slices`, `sachet`≠`sachets`); list every surface form.
+   - `whole_item_scan` checks **nonfood BEFORE form**, so an over-broad `nonfood`
+     token wins over a `form` token on the same row. Reserve `nonfood` for
+     genuinely non-pineapple products and route canned/processed pineapple as
+     `form:` — otherwise canned pineapple lands in EXCLUDE, not OTHER_FORM.
+   - `append_gazetteer` is **keep-first**: a token's role can't be changed by
+     re-adding — edit `gazetteer.parquet` to re-role.
+   - **CJK / non-Latin names and the `base-in-parens` guard are unreachable** by
+     this English-token engine — they stay in REVIEW by design (the floor).
 
 5. **Promote.** Once the artifact looks right, append the earned GREEN:
    ```bash
@@ -147,11 +172,15 @@ run `python run.py prices process` (or its prepare stage) if stale.
    (appends `green.csv` to `outputs/prices/{region}_prices.csv`).
 
 6. **Loop until the stop rule fires.** Re-run the same base_item and stop when
-   either:
+   any of:
    - **convergence** — < 5% of rows move buckets between runs, OR
-   - **ratio** — CANDIDATE ≤ 2× GREEN,
+   - **ratio** — CANDIDATE ≤ 2× GREEN (printed as `loop-status: STOP`), OR
+   - **REVIEW floor** — a flywheel pass surfaces no new *confirmable* candidates:
+     only irreducible singletons remain (CJK/non-Latin names, `base-in-parens`,
+     genuinely ambiguous). Don't chase these — they're the English-token engine's
+     floor. (Pineapple converged to 6 such rows: 4 CJK + 1 base-in-parens + 1
+     ambiguous.)
 
-   whichever comes first. The CLI prints this as `loop-status: STOP|CONTINUE`.
    Then move to the next base_item.
 
 ## Guardrails
