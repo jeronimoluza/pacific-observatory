@@ -28,6 +28,7 @@ from prices.enrich.stages.merge import compute_unit_value
 VALIDATION_RUNS_DIR = REPO_ROOT / "data" / "prices" / "_enrich" / "validation_runs"
 
 ARTIFACT_COLS = [
+    "input_hash",
     "product_name_original",
     "country",
     "source",
@@ -127,6 +128,7 @@ def validate_green(
         )
         keep.append(
             {
+                "input_hash": getattr(r, "input_hash", None),
                 "product_name_original": name,
                 "country": r.country,
                 "source": getattr(r, "source", "") or "",

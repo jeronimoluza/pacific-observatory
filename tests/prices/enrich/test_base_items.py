@@ -284,6 +284,7 @@ def test_validate_green_unit_value_and_demote():
                 "price": 10.0,
                 "observation_date": "2024-06-01",
                 "lang": "en",
+                "input_hash": "abc123",
             },
         ]
     )
@@ -297,6 +298,7 @@ def test_validate_green_unit_value_and_demote():
     assert abs(row["unit_value_usd"] - 2.0) < 1e-6  # USD fx_rate == 1
     assert list(art.columns) == validate.ARTIFACT_COLS
     assert "source" in art.columns
+    assert row["input_hash"] == "abc123"  # join key for the time-series build
 
 
 def test_validate_keeps_basis_conflict_row():
