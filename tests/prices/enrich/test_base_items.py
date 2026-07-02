@@ -363,6 +363,24 @@ def test_loop_status_ratio_and_convergence():
     assert not s3["stop"]
 
 
+def test_promote_handles_nonunique_index():
+    from prices.enrich.base_items import promote as P
+
+    rows = [
+        {
+            "base_item": "orange",
+            "pricing_basis": "mass",
+            "country": "fiji",
+            "unit_value_usd": uv,
+        }
+        for uv in [2.0, 2.0, 2.1, 1.9, 2.05]
+    ]
+    df_in = pd.DataFrame(rows, index=[0, 0, 0, 0, 0])  # pathological non-unique index
+    out = P.promote(df_in, allowed_basis={"mass"})
+    assert (out["group_n"] == 5).all()
+    assert (out["promotion_status"] == "green").all()
+
+
 def test_promote_bands_and_small_groups():
     from prices.enrich.base_items import promote as P
 

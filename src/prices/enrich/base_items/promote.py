@@ -33,7 +33,7 @@ def _band(vals: np.ndarray):
 
 
 def promote(candidates: pd.DataFrame, allowed_basis) -> pd.DataFrame:
-    df = candidates.copy()
+    df = candidates.copy().reset_index(drop=True)
     for c in GATE_COLS:
         df[c] = None if c == "promotion_status" else np.nan
     if df.empty:
