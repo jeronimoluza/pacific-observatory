@@ -8,6 +8,7 @@ outputs/prices/{region}_prices.csv (append_region()).
 
 from __future__ import annotations
 
+import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
@@ -116,10 +117,11 @@ def run_iteration(base_item: str, region: str | None = None, nlp=None) -> dict:
     boiler = set()
     if "source" in sl.columns:
         srcs = set(sl["source"].dropna().astype(str))
-        full = pd.read_parquet(PRODUCTS_INPUT_PARQUET)
-        if "source" in full.columns:
-            full = full[full["source"].astype(str).isin(srcs)]
-            mine.mine_source_boilerplate(full)
+        if os.environ.get("BASE_ITEMS_SKIP_MINE") not in ("1", "true", "True"):
+            full = pd.read_parquet(PRODUCTS_INPUT_PARQUET)
+            if "source" in full.columns:
+                full = full[full["source"].astype(str).isin(srcs)]
+                mine.mine_source_boilerplate(full)
         boiler = store.load_boilerplate(srcs)
 
     if nlp is None:

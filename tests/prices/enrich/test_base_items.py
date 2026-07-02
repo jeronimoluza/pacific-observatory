@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -193,13 +194,19 @@ def test_store_seed_and_load_record(tmp_path):
 def test_seed_propagates_allowed_basis(tmp_path):
     store.set_data_dir(tmp_path)
     try:
+        cfg = json.loads(CONFIG.read_text())["base_items"]
+        pine = cfg["pineapple"]
         taxonomy.seed_from_config(CONFIG)
-        # pineapple carries config allowed_basis=["mass"] + plausible override
+        # config allowed_basis + plausible override propagate to the record
         rec = store.load_record("pineapple")
-        assert rec["allowed_basis"] == {"mass"}
-        assert rec["plausible_basis"] == {"mass", "count", "item"}
+        assert rec["allowed_basis"] == set(pine["allowed_basis"])
+        assert rec["plausible_basis"] == set(
+            pine.get("plausible_basis") or pine["allowed_basis"]
+        )
         # regression: an item with no config allowed_basis stays None
-        assert store.load_record("apple")["allowed_basis"] is None
+        no_basis = [k for k, v in cfg.items() if not v.get("allowed_basis")]
+        if no_basis:
+            assert store.load_record(no_basis[0])["allowed_basis"] is None
     finally:
         store.set_data_dir(store.REPO_ROOT / "data" / "prices")
 
@@ -207,6 +214,9 @@ def test_seed_propagates_allowed_basis(tmp_path):
 def test_reseed_overrides_stale_on_disk_basis(tmp_path):
     store.set_data_dir(tmp_path)
     try:
+        expected = set(
+            json.loads(CONFIG.read_text())["base_items"]["pineapple"]["allowed_basis"]
+        )
         taxonomy.seed_from_config(CONFIG)
         # simulate a stale on-disk seed with the wrong (empty) basis
         df = store.load_base_items()
@@ -215,7 +225,7 @@ def test_reseed_overrides_stale_on_disk_basis(tmp_path):
         assert store.load_record("pineapple")["allowed_basis"] is None
         # re-seeding must make config authoritative again, not keep the stale row
         taxonomy.seed_from_config(CONFIG)
-        assert store.load_record("pineapple")["allowed_basis"] == {"mass"}
+        assert store.load_record("pineapple")["allowed_basis"] == expected
     finally:
         store.set_data_dir(store.REPO_ROOT / "data" / "prices")
 
@@ -479,3 +489,85 @@ def test_regex_check_diff_empty_then_flags(tmp_path, monkeypatch):
     perturbed.loc[0, "product_name_original"] = "Rice 500g"
     diff2 = R.diff(perturbed)
     assert not diff2.empty
+
+
+def test_skip_mine_env_gates_boilerplate(tmp_path, monkeypatch):
+    """BASE_ITEMS_SKIP_MINE=1 skips the shared source_boilerplate write so parallel
+    classify runs never race on it; unset, boilerplate is mined as before."""
+    from prices.enrich.base_items import pipeline
+
+    calls = []
+    monkeypatch.setattr(
+        pipeline.mine, "mine_source_boilerplate", lambda *a, **k: calls.append(1)
+    )
+    monkeypatch.setattr(
+        pipeline.store,
+        "load_record",
+        lambda bi: {
+            "name": bi,
+            "tokens": {bi},
+            "fresh_leaf": "01.1.6.1.7",
+            "fresh_prefix": "01.1.6",
+            "variety": set(),
+            "benign": set(),
+            "form": {},
+            "nonfood": set(),
+            "species_veto": set(),
+            "allowed_basis": None,
+            "plausible_basis": None,
+            "coicop2digit_title": "Food",
+        },
+    )
+    sl = pd.DataFrame(
+        {
+            "product_name_original": ["Foo Bar"],
+            "source": ["s1"],
+            "lang": ["en"],
+            "country": ["ph"],
+            "currency": ["PHP"],
+            "price": [10.0],
+        }
+    )
+    monkeypatch.setattr(pipeline, "_grep_slice", lambda rec, region: sl.copy())
+    monkeypatch.setattr(
+        pipeline.pd,
+        "read_parquet",
+        lambda *a, **k: pd.DataFrame(
+            {"product_name_original": ["Foo Bar"], "source": ["s1"], "lang": ["en"]}
+        ),
+    )
+    monkeypatch.setattr(
+        pipeline,
+        "classify_names",
+        lambda *a, **k: [("REVIEW", "brand-residue:foo", None)],
+    )
+    monkeypatch.setattr(
+        pipeline.validate,
+        "validate_green",
+        lambda green, rec, bi, ts: (
+            pd.DataFrame(columns=validate.ARTIFACT_COLS),
+            pd.DataFrame(),
+        ),
+    )
+    monkeypatch.setattr(pipeline.validate, "write_run", lambda *a, **k: str(tmp_path))
+    monkeypatch.setattr(
+        pipeline.mine,
+        "review_residue",
+        lambda s: (
+            pd.DataFrame(columns=["token", "n"]),
+            pd.DataFrame(columns=["token", "n"]),
+        ),
+    )
+    monkeypatch.setattr(pipeline, "food_phrase_index", lambda: {})
+    monkeypatch.setattr(pipeline.store, "load_boilerplate", lambda s: set())
+    monkeypatch.setattr(pipeline.store, "load_form_lexicon", lambda: {})
+    monkeypatch.setattr(pipeline.store, "load_neg_lexicon", lambda: {})
+
+    monkeypatch.delenv("BASE_ITEMS_SKIP_MINE", raising=False)
+    pipeline.run_iteration("pineapple", None, nlp=object())
+    assert calls == [1]  # mined once when the guard is unset
+
+    calls.clear()
+    monkeypatch.setenv("BASE_ITEMS_SKIP_MINE", "1")
+    pipeline.run_iteration("pineapple", None, nlp=object())
+    assert calls == []  # mine skipped when the guard is set
