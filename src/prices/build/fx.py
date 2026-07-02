@@ -70,5 +70,11 @@ def attach_fx_and_usd(df: pd.DataFrame, cache_path: Path = PRICES_FX_CACHE) -> p
     work = df.copy()
     if "currency" in work.columns:
         work["currency"] = work["currency"].map(_normalize_currency_safe)
+    if "observation_date" in work.columns:
+        # Raw scrape dates carry a UTC offset (tz-aware); the FX cache is
+        # tz-naive. The FX join is date-only, so drop the tz to a naive UTC
+        # date before delegating to the (tz-naive) fuel primitive.
+        obs = pd.to_datetime(work["observation_date"], errors="coerce", utc=True)
+        work["observation_date"] = obs.dt.tz_localize(None)
     out = _attach(work, cache_path=cache_path)
     return _fill_from_latest_rate(out, cache_path)

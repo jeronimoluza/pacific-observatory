@@ -24,7 +24,7 @@ from core.config import load_regions
 from prices.build.fx import attach_fx_and_usd
 from prices.enrich.config import RAW_PRICES_CSV, REPO_ROOT
 from prices.enrich.stages.merge import compute_unit_value
-from prices.enrich.stages.prepare import _row_input_dict
+from prices.enrich.stages.prepare import _clean_url, _row_input_dict, parse_price
 from prices.enrich.versioning import input_hash as _input_hash
 
 OUTPUTS_DIR = REPO_ROOT / "outputs" / "prices"
@@ -56,6 +56,9 @@ _RAW_COLS = [
     "date",
     "region",
 ]
+# Identity columns for input_hash recompute (mirrors prepare._row_input_dict:
+# url when present, else the (name, country, currency) fallback).
+_IDENT_COLS = ["product_name_original", "product_url", "country", "currency"]
 # Per-(input_hash, date) provenance kept from the first matching observation
 # (product_url is inside the hash, so it is constant per input_hash).
 _FIRST_COLS = [
@@ -119,16 +122,33 @@ def build_timeseries(
     pc = raw.copy()
     if "product_name_original" not in pc.columns:
         pc["product_name_original"] = pc["product_name"]
+    if "product_url" not in pc.columns:
+        pc["product_url"] = ""
+    pc["product_url"] = pc["product_url"].map(_clean_url)
     # Prefilter by name (cheap) before recomputing hashes on the survivors.
     pc = pc[pc["product_name_original"].astype(str).isin(green_names)].copy()
     if pc.empty:
         return pd.DataFrame(columns=_OUT_COLS), pd.DataFrame(columns=_OUT_COLS)
-    pc["input_hash"] = [_input_hash(_row_input_dict(r)) for _i, r in pc.iterrows()]
+    # Hash once per UNIQUE identity (~one per GREEN product), not per dated row —
+    # the matched slice has many dates per product, so per-row hashing is the
+    # bottleneck. Map the hash back onto every observation.
+    ident = [c for c in _IDENT_COLS if c in pc.columns]
+    uniq = pc[ident].drop_duplicates().copy()
+    uniq["input_hash"] = [_input_hash(_row_input_dict(r)) for _i, r in uniq.iterrows()]
+    pc = pc.merge(uniq, on=ident, how="left")
     pc = pc[pc["input_hash"].isin(green_hashes)]
     if pc.empty:
         return pd.DataFrame(columns=_OUT_COLS), pd.DataFrame(columns=_OUT_COLS)
 
     pc = pc.merge(carry, on="input_hash", how="left")
+    # raw_prices.csv holds unparsed string prices (e.g. '$1.22'); parse them the
+    # same way prepare does before reapplying the unit-value transform.
+    pc["price"] = [parse_price(p, c) for p, c in zip(pc["price"], pc["currency"])]
+    # raw dates come in mixed formats (ISO offset + RFC-2822); normalize to a
+    # clean UTC calendar date so (input_hash, date) grouping is exact.
+    pc["date"] = pd.to_datetime(pc["date"], errors="coerce", utc=True).dt.strftime(
+        "%Y-%m-%d"
+    )
     derived = pc["country"].map(_country_region_map())
     if "region" in pc.columns:
         pc["region"] = pc["region"].where(pc["region"].astype(str).ne(""), derived)

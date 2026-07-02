@@ -104,6 +104,33 @@ def test_latest_rate_fallback_for_nat_date(tmp_path, monkeypatch):
     assert out["currency"].tolist() == ["FJD", "FJD"]
 
 
+def test_tz_aware_observation_date_matches_naive_cache(tmp_path, monkeypatch):
+    """Raw scrape dates carry a UTC offset (tz-aware); the FX cache dates are
+    tz-naive. The date-only join must not raise on the tz mismatch."""
+    cache_path = tmp_path / "fx_cache.csv"
+    pd.DataFrame(
+        {
+            "currency": ["FJD", "FJD"],
+            "date": ["2024-05-01", "2024-05-02"],
+            "rate_usd_to_local": [2.20, 2.25],
+        }
+    ).to_csv(cache_path, index=False)
+    monkeypatch.setattr(
+        "fuel.fx.fetch_fx_rates",
+        lambda *a, **k: (_ for _ in ()).throw(AssertionError("no network")),
+    )
+
+    df = pd.DataFrame(
+        {
+            "price_local": [10.0],
+            "currency": ["FJD"],
+            "observation_date": [pd.Timestamp("2024-05-02 21:10:09+00:00")],
+        }
+    )
+    out = fx.attach_fx_and_usd(df, cache_path=cache_path)
+    assert out["price_usd"].iloc[0] == pytest.approx(10.0 / 2.25)  # same-day rate
+
+
 def test_fallback_leaves_uncached_currency_null(tmp_path, monkeypatch):
     cache_path = tmp_path / "fx_cache.csv"
     pd.DataFrame(
