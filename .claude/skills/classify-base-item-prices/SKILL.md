@@ -1,6 +1,6 @@
 ---
 name: classify-base-item-prices
-description: "Loopable two-stage per-base_item COICOP classification for the prices pipeline. Stage 1 buckets every raw product name for one base_item (pineapple, rice, apple, ...) into CANDIDATE / OTHER_FORM / REVIEW / EXCLUDE via the tier-0 gazetteer + tier-1 earn cascade with a plausible_basis wrong-entity gate; stage 2 promotes CANDIDATE rows to GREEN — the earned status — only when their tier-a unit-value clears the per (base_item × pricing_basis × country) statistical gate (median ± 3·MAD, groups n≥5) and the allowed_basis soft gate. Emits an inspectable run folder data/prices/_enrich/validation_runs/{base_item}_YYYYMMDD_HHMM/ (candidates.csv + green.csv + other_form.csv + review.csv + exclude.csv + basis_conflict.txt) for human review before appending green.csv to outputs/prices/{region}_prices.csv. Use whenever the user wants to build the trusted unit-value price DB one base_item at a time — 'classify pineapple', 'run the apples/oranges workflow', 'validate CANDIDATE→GREEN for <item>', 'shrink the REVIEW pile for <item>', 'add <item> to the price DB', or references base_items.parquet / gazetteer.parquet / the validation_runs artifacts. GREEN is statistically earned, never assumed; 100% of rows stay usable (doubtful → REVIEW, never dropped). Backed by python run.py prices classify."
+description: "Loopable two-stage per-base_item COICOP classification for the prices pipeline. Stage 1 buckets every raw product name for one base_item (pineapple, rice, apple, ...) into CANDIDATE / OTHER_FORM / REVIEW / EXCLUDE via the tier-0 gazetteer + tier-1 earn cascade with a plausible_basis wrong-entity gate; stage 2 promotes CANDIDATE rows to GREEN — the earned status — only when their tier-a unit-value clears the per (base_item × pricing_basis × country) statistical gate (median ± 3·MAD, groups n≥5) and the allowed_basis soft gate. Emits an inspectable run folder data/prices/_enrich/validation_runs/{base_item}/{stamp}/ (candidates.csv + green.csv + other_form.csv + review.csv + exclude.csv + basis_conflict.txt) with a {base_item}/latest pointer + manifest.json, for human review before appending green.csv to outputs/prices/{region}_prices.csv. Use whenever the user wants to build the trusted unit-value price DB one base_item at a time — 'classify pineapple', 'run the apples/oranges workflow', 'validate CANDIDATE→GREEN for <item>', 'shrink the REVIEW pile for <item>', 'add <item> to the price DB', or references base_items.parquet / gazetteer.parquet / the validation_runs artifacts. GREEN is statistically earned, never assumed; 100% of rows stay usable (doubtful → REVIEW, never dropped). Backed by python run.py prices classify."
 ---
 
 # Classify Base-Item Prices (loopable, two-stage, one base_item per run)
@@ -118,7 +118,11 @@ run `python run.py prices process` (or its prepare stage) if stale.
    inspect it before trusting the artifact.
 
 3. **Inspect the run folder** at
-   `data/prices/_enrich/validation_runs/pineapple_YYYYMMDD_HHMM/`:
+   `data/prices/_enrich/validation_runs/pineapple/{stamp}/` (the stamp is
+   `YYYYMMDD_HHMM`; `pineapple/latest` symlinks the newest run and
+   `pineapple/manifest.json` summarises the surviving runs — only the last
+   `KEEP_RUNS=10` are kept, the folders are an ephemeral audit trail while the
+   accumulated `{item}/latest/green.csv` is the source of truth):
    - `candidates.csv` — ALL promoted-cascade rows plus the gate columns
      `promotion_status` / `group_n` / `group_median_usd` / `band_lo` / `band_hi`.
    - `green.csv` — the earned subset (`promotion_status == green`).
@@ -136,22 +140,44 @@ run `python run.py prices process` (or its prepare stage) if stale.
 4. **Shrink REVIEW (the flywheel loop).** Open `review.csv` and read the actual
    `product_name_original` behind each printed token — **the token alone lies**
    (`dole` looks canned but is fresh "Tropica Gold"; `tang` is drink powder;
-   `squid` is seafood). Classify EVERY residual token into one of three verdicts
-   and write it to `gazetteer.parquet` via
-   `store.append_gazetteer(base_item, {token: (role, "flywheel:confirmed")})`
-   (`role` merges into the cascade rec on the next run):
-   - **fresh** brand / cultivar / origin / size (`sunnyphil`, `honeygold`,
-     `taiwan`, `large`) → role `"variety"` → merges into `benign`, earns
-     CANDIDATE. Helper: `mine.confirm_varieties(base_item, [...])`.
-   - **processed** form of the base_item — a form noun (`sliced`, `dried`,
-     `crushed`) OR a canned/processed brand (`hosen`, `del`) → role
-     `"form:<coicop_leaf>"` → routes to OTHER_FORM at that leaf.
-   - **different product / nonfood** (`chicken`, `cheese`, `chocolate`,
-     `supplement`, `towel`, `condom`, candy) → role `"nonfood"` → EXCLUDE.
+   `squid` is seafood). Classify EVERY residual token into one of three verdicts,
+   then write them all at once through the **`apply-verdicts` CLI verb** (this is
+   the productionized, agent-facing path — the cascade is NOT re-run; the
+   verdicts only feed the gazetteer for the *next* `classify`):
 
-   Re-run; REVIEW shrinks. Also `REVIEW cross-base_items` (e.g. `rice`) = OTHER
-   base_items hiding in the pile — **report these back** as new
-   `base_items.parquet` rows (the base_item DB is incomplete).
+   ```bash
+   python run.py prices apply-verdicts pineapple verdicts.json
+   ```
+
+   `verdicts.json` is a judgment-only document — one object with the target
+   `item` and a `verdicts` array, one entry per residual token:
+
+   ```json
+   {"item": "pineapple",
+    "verdicts": [
+      {"token": "sunnyphil", "role": "variety"},
+      {"token": "sliced",    "role": "form", "leaf": "01.1.7.4.1"},
+      {"token": "condom",    "role": "nonfood"}
+    ]}
+   ```
+
+   The three roles (validated against the target item; a mismatched `item` or an
+   unknown role is rejected):
+   - **fresh** brand / cultivar / origin / size (`sunnyphil`, `honeygold`,
+     `taiwan`, `large`) → `"variety"` → merges into `benign`, earns CANDIDATE.
+   - **processed** form of the base_item — a form noun (`sliced`, `dried`,
+     `crushed`) OR a canned/processed brand (`hosen`, `del`) → `"form"` WITH a
+     `"leaf"` (the reroute COICOP code) → OTHER_FORM at that leaf.
+   - **different product / nonfood** (`cheese`, `chocolate`, `supplement`,
+     `towel`, `condom`, candy) → `"nonfood"` → EXCLUDE.
+
+   (`mine.confirm_varieties(base_item, [...])` remains a one-liner shortcut for a
+   batch of pure `variety` verdicts.) Re-run `classify`; REVIEW shrinks. Also
+   `REVIEW cross-base_items` (e.g. `rice`) = OTHER base_items hiding in the pile
+   — **report these back** as new `base_items.parquet` rows (the base_item DB is
+   incomplete). A token that is OTHER_FORM here (`juice`, `sauce`, `pizza`) is
+   frequently the *head noun* of another base_item — that spillover is why
+   sibling base_items must reconcile shared tokens/leaves (see Orchestration).
 
    Gotchas that bite (learned on pineapple, REVIEW 425→6 over 6 passes):
    - The form/nonfood matcher is **whole-word `[a-z]+` and exact** — singular ≠
@@ -182,6 +208,26 @@ run `python run.py prices process` (or its prepare stage) if stale.
      ambiguous.)
 
    Then move to the next base_item.
+
+## Orchestration (fleet mode — many base_items at once)
+
+The loop above is per-base_item; scale it by fanning out, keeping the cascade
+deterministic and the models judgment-only:
+
+- **Cascade runs ONCE** per base_item via the `classify` CLI — never inside an
+  agent. Agents only read a run folder's `review.csv` and emit a `verdicts.json`.
+- **One Sonnet agent per deep leaf**, dispatched in parallel, **grouped into
+  sibling batches** (citrus: orange/lemon/lime/grapefruit; stone fruit; cereals).
+  Each agent classifies its leaf's residual tokens → `verdicts.json` →
+  `apply-verdicts`. The sibling batch is the reconciliation scope because shared
+  tokens (`juice`, `peel`, `zest`, `sauce`) live *within* a sibling group.
+- **Reserve Opus for the seam, not per-item classification:** after a batch's
+  Sonnet verdicts land, Opus (a) resolves **shared-token / shared-leaf
+  conflicts** — who owns `juice`, the fruit's OTHER_FORM reroute or a dedicated
+  `juice` base_item? — so one physical row is not double-counted into two GREEN
+  sets, and (b) promotes the `REVIEW cross-base_items` report-backs into new
+  `base_items.parquet` rows. The structured `token→role→leaf` verdicts make this
+  a mechanical diff across the batch rather than prose reconciliation.
 
 ## Guardrails
 

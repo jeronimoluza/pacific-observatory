@@ -111,6 +111,36 @@ def build_timeseries_command(green_csv):
     click.echo(f"latest snapshot: {summary['snapshot']}")
 
 
+@click.command("apply-verdicts")
+@click.argument("base_item")
+@click.argument("verdicts_json", type=click.Path(exists=True, path_type=Path))
+def apply_verdicts_command(base_item, verdicts_json):
+    """Apply a judgment agent's verdicts JSON to the gazetteer flywheel.
+
+    VERDICTS_JSON is a {"item", "verdicts":[{token, role, leaf?}]} document (a
+    Sonnet agent reads a run folder's review.csv and emits it — see the
+    classify-base-item-prices skill). Validates it against BASE_ITEM, then
+    appends the (token -> role) rows to gazetteer.parquet so the next
+    `prices classify BASE_ITEM` earns them. The cascade is NOT re-run here.
+    """
+    from . import store
+    from . import verdicts as V
+
+    payload = json.loads(Path(verdicts_json).read_text())
+    try:
+        vmap = V.parse_verdicts(payload, base_item)
+    except ValueError as e:
+        raise click.ClickException(str(e)) from e
+
+    before = len(store.load_gazetteer())
+    store.append_gazetteer(base_item, vmap)
+    after = len(store.load_gazetteer())
+    click.echo(
+        f"apply-verdicts {base_item}: {len(vmap)} verdicts parsed, "
+        f"{after - before} new gazetteer rows (was {before}, now {after})."
+    )
+
+
 @click.command("regex-check")
 @click.option("--bless", is_flag=True, help="Overwrite the snapshot after review.")
 def regex_check_command(bless):

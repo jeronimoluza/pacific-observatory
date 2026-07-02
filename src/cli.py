@@ -387,6 +387,9 @@ from prices.enrich.base_items.cli import (  # noqa: E402
 from prices.enrich.base_items.cli import (  # noqa: E402
     build_timeseries_command as _prices_build_timeseries,
 )
+from prices.enrich.base_items.cli import (  # noqa: E402
+    apply_verdicts_command as _prices_apply_verdicts,
+)
 
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
@@ -398,6 +401,7 @@ prices.add_command(_prices_census, name="census")
 prices.add_command(_prices_classify, name="classify")
 prices.add_command(_prices_regex_check, name="regex-check")
 prices.add_command(_prices_build_timeseries, name="build-timeseries")
+prices.add_command(_prices_apply_verdicts, name="apply-verdicts")
 
 
 @prices.command("build")

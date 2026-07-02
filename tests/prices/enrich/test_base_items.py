@@ -9,7 +9,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from prices.enrich.base_items import cascade, mine, store, taxonomy, validate
+from prices.enrich.base_items import cascade, mine, store, taxonomy, validate, verdicts
 from prices.enrich.base_items.static import CANDIDATE, EXCLUDE, OTHER_FORM, REVIEW
 
 CONFIG = Path(".planning/experiments/base_item_config.json")
@@ -268,6 +268,62 @@ def test_review_residue_splits_cross_base_items(tmp_path):
         assert "sunrice" in set(candidates["token"])
         # 'apple' is a known base_item -> reported back, not a brand candidate
         assert "apple" in set(cross["token"])
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
+# --- apply-verdicts (judgment -> gazetteer flywheel) ---------------------------
+def test_parse_verdicts_maps_roles_and_encodes_form_leaf():
+    payload = {
+        "item": "pineapple",
+        "verdicts": [
+            {"token": "SunnyPhil", "role": "variety"},
+            {"token": "juice", "role": "form", "leaf": "01.2.1.1.1"},
+            {"token": "shampoo", "role": "nonfood"},
+        ],
+    }
+    vmap = verdicts.parse_verdicts(payload, "pineapple")
+    assert vmap["sunnyphil"] == ("variety", "apply-verdicts")  # lowercased token
+    assert vmap["juice"] == ("form:01.2.1.1.1", "apply-verdicts")  # leaf encoded
+    assert vmap["shampoo"][0] == "nonfood"
+
+
+def test_parse_verdicts_rejects_bad_schema():
+    with pytest.raises(ValueError, match="does not match target"):
+        verdicts.parse_verdicts({"item": "orange", "verdicts": [{}]}, "pineapple")
+    with pytest.raises(ValueError, match="non-empty list"):
+        verdicts.parse_verdicts({"item": "pineapple", "verdicts": []}, "pineapple")
+    with pytest.raises(ValueError, match="role"):
+        verdicts.parse_verdicts(
+            {"item": "pineapple", "verdicts": [{"token": "x", "role": "bogus"}]},
+            "pineapple",
+        )
+    with pytest.raises(ValueError, match="requires a 'leaf'"):
+        verdicts.parse_verdicts(
+            {"item": "pineapple", "verdicts": [{"token": "juice", "role": "form"}]},
+            "pineapple",
+        )
+
+
+def test_apply_verdicts_feeds_gazetteer_flywheel(tmp_path):
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        vmap = verdicts.parse_verdicts(
+            {
+                "item": "pineapple",
+                "verdicts": [
+                    {"token": "sunnyphil", "role": "variety"},
+                    {"token": "juice", "role": "form", "leaf": "01.2.1.1.1"},
+                ],
+            },
+            "pineapple",
+        )
+        store.append_gazetteer("pineapple", vmap)
+        rec = store.load_record("pineapple")
+        # the confirmed variety is now benign; the form leaf is decoded back
+        assert "sunnyphil" in rec["benign"]
+        assert rec["form"].get("juice") == "01.2.1.1.1"
     finally:
         store.set_data_dir(store.REPO_ROOT / "data" / "prices")
 
