@@ -1,12 +1,14 @@
-"""Validate the GREEN bucket into trusted unit-value prices + emit the artifact.
+"""Validate the CANDIDATE bucket into trusted unit-value prices + emit the artifact.
 
-For every GREEN row: run tier-a extract(), enforce the record's allowed_basis
-(a basis mismatch is DEMOTED to REVIEW, never deleted — 100%-usable principle),
-compute unit_value via the shipped compute_unit_value, render a human-readable
-calculation string, and attach FX -> unit_value_usd with the prices FX cache.
+For every CANDIDATE row: run tier-a extract(), compute unit_value via the shipped
+compute_unit_value (every row is kept — basis mismatches flow through to the
+promotion gate, which tags them basis_conflict; nothing is hard-demoted here,
+per the 100%-usable principle), render a human-readable calculation string, and
+attach FX -> unit_value_usd with the prices FX cache.
 
-Writes logs/prices/validation_runs/{base_item}_YYYYMMDD_HHMM.csv for review
-before any promotion downstream.
+write_run writes data/prices/_enrich/validation_runs/{base_item}_YYYYMMDD_HHMM/
+with candidates.csv (all promoted rows + the promote gate columns) and green.csv
+(the promotion_status==green subset), for review before any promotion downstream.
 """
 
 from __future__ import annotations
@@ -23,9 +25,7 @@ from prices.enrich.extract import extract
 from prices.enrich.normalize import extract_pack
 from prices.enrich.stages.merge import compute_unit_value
 
-from .static import DEFAULT_ALLOWED_BASIS, REVIEW
-
-VALIDATION_RUNS_DIR = REPO_ROOT / "logs" / "prices" / "validation_runs"
+VALIDATION_RUNS_DIR = REPO_ROOT / "data" / "prices" / "_enrich" / "validation_runs"
 
 ARTIFACT_COLS = [
     "product_name_original",
@@ -104,8 +104,11 @@ def validate_green(
     green: pd.DataFrame, rec: dict, base_item: str, timestamp: datetime
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Return (artifact_df, demoted_df). green needs columns:
-    product_name_original, country, currency, price, observation_date, lang."""
-    allowed = rec.get("allowed_basis") or DEFAULT_ALLOWED_BASIS
+    product_name_original, country, currency, price, observation_date, lang.
+
+    Every row is kept and unit-valued; basis mismatches are no longer demoted
+    here — the promotion gate tags them basis_conflict downstream. demoted is
+    returned empty for signature compatibility."""
     variety_set = rec.get("variety", set())
     leaf = rec["fresh_leaf"]
     div_title = rec.get("coicop2digit_title", "")
@@ -119,16 +122,6 @@ def validate_green(
             country=getattr(r, "country", None),
             lang=getattr(r, "lang", None),
         )
-        if sf.pricing_basis not in allowed:
-            demoted.append(
-                {
-                    "product_name_original": name,
-                    "country": r.country,
-                    "bucket": REVIEW,
-                    "reason": f"basis-mismatch:{sf.pricing_basis}",
-                }
-            )
-            continue
         uv = compute_unit_value(
             r.price, sf.pricing_basis, sf.amount_value, sf.count, sf.multiplier
         )
@@ -178,16 +171,26 @@ _BUCKET_FILES = {
 
 
 def write_run(
-    art: pd.DataFrame, classified: pd.DataFrame, base_item: str, timestamp: datetime
+    candidates: pd.DataFrame,
+    classified: pd.DataFrame,
+    base_item: str,
+    timestamp: datetime,
 ) -> str:
-    """Write one run folder: green.csv (validated unit-values) + one CSV per
-    non-GREEN bucket (review/exclude/other_form). Returns the run dir path."""
+    """candidates: promoted CANDIDATE rows (has promotion_status + gate cols).
+    Writes candidates.csv (all) + green.csv (promotion_status==green) + one CSV per
+    non-CANDIDATE bucket. Returns the run dir path."""
+    from .promote import green_only
+
     stamp = timestamp.strftime("%Y%m%d_%H%M")
     run_dir = VALIDATION_RUNS_DIR / f"{base_item}_{stamp}"
     run_dir.mkdir(parents=True, exist_ok=True)
-    art.to_csv(run_dir / "green.csv", index=False)
+    candidates.to_csv(run_dir / "candidates.csv", index=False)
+    if "promotion_status" in candidates.columns:
+        green_only(candidates).to_csv(run_dir / "green.csv", index=False)
+    else:
+        candidates.iloc[0:0].to_csv(run_dir / "green.csv", index=False)
     for bucket, fname in _BUCKET_FILES.items():
-        if bucket == "GREEN":
+        if bucket == "CANDIDATE":
             continue
         sub = classified[classified["decision"] == bucket]
         cols = [c for c in NON_GREEN_COLS if c in sub.columns]

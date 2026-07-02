@@ -259,9 +259,38 @@ def test_validate_green_unit_value_and_demote():
     assert "source" in art.columns
 
 
+def test_validate_keeps_basis_conflict_row():
+    rec = _rice_rec()
+    rec["allowed_basis"] = {"mass"}
+    rec["plausible_basis"] = {"mass", "count", "item", None}
+    green = pd.DataFrame(
+        [
+            {
+                "product_name_original": "Rice 10 pcs",
+                "country": "au",
+                "currency": "USD",
+                "price": 5.0,
+                "observation_date": "2024-06-01",
+                "lang": "en",
+            },
+        ]
+    )
+    art, demoted = validate.validate_green(
+        green, rec, "rice", datetime.now(timezone.utc)
+    )
+    # count row is NOT hard-demoted anymore; it stays in the artifact for promote
+    assert len(demoted) == 0
+    assert len(art) == 1
+
+
+def test_validation_runs_dir_under_data():
+    assert "data" in str(validate.VALIDATION_RUNS_DIR)
+    assert "_enrich" in str(validate.VALIDATION_RUNS_DIR)
+
+
 def test_write_run_bucket_files(tmp_path, monkeypatch):
     monkeypatch.setattr(validate, "VALIDATION_RUNS_DIR", tmp_path / "runs")
-    art = pd.DataFrame(columns=validate.ARTIFACT_COLS)
+    art = pd.DataFrame(columns=validate.ARTIFACT_COLS + ["promotion_status"])
     classified = pd.DataFrame(
         {
             "product_name_original": ["Rice Wine 750ml", "Rice Cooker", "Sunrice 5kg"],
@@ -278,7 +307,13 @@ def test_write_run_bucket_files(tmp_path, monkeypatch):
         validate.write_run(art, classified, "rice", datetime.now(timezone.utc))
     )
     assert run_dir.name.startswith("rice_")
-    for fname in ("green.csv", "other_form.csv", "review.csv", "exclude.csv"):
+    for fname in (
+        "candidates.csv",
+        "green.csv",
+        "other_form.csv",
+        "review.csv",
+        "exclude.csv",
+    ):
         assert (run_dir / fname).exists()
     rev = pd.read_csv(run_dir / "review.csv")
     assert "source" in rev.columns and rev.iloc[0]["reason"] == "brand-residue:sunrice"
