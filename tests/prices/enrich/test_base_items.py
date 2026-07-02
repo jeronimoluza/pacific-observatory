@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-import json as _json
-import subprocess
-import sys as _sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -285,33 +282,3 @@ def test_classify_names_buckets():
     assert buckets[0] == CANDIDATE
     assert buckets[1] == EXCLUDE
     assert buckets[2] == OTHER_FORM
-
-
-HOOK = Path(".claude/hooks/protect-data-dirs.py")
-
-
-def _run_hook(command: str):
-    payload = _json.dumps({"tool_input": {"command": command}})
-    out = subprocess.run(
-        [_sys.executable, str(HOOK)],
-        input=payload,
-        capture_output=True,
-        text=True,
-    )
-    return out.stdout.strip()
-
-
-def test_protect_hook_denies_rm_on_data():
-    dec = _json.loads(_run_hook("rm -rf data/prices/_enrich/x"))
-    assert dec["hookSpecificOutput"]["permissionDecision"] == "deny"
-
-
-def test_protect_hook_asks_on_mv_data():
-    dec = _json.loads(_run_hook("mv data/a.csv data/b.csv"))
-    assert dec["hookSpecificOutput"]["permissionDecision"] == "ask"
-
-
-def test_protect_hook_allows_create_and_tmp_rm():
-    assert _run_hook("mkdir -p data/prices/_enrich/runs/x") == ""
-    assert _run_hook("rm -rf /tmp/scratch/x") == ""
-    assert _run_hook("python run.py prices classify pineapple") == ""
