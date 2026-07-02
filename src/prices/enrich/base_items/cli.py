@@ -86,13 +86,17 @@ def classify_command(base_item, region, seed_config, derive_lexicons, append):
 
 
 @click.command("build-timeseries")
-@click.argument("green_csv", type=click.Path(exists=True, path_type=Path))
+@click.argument(
+    "green_csv", required=False, type=click.Path(exists=True, path_type=Path)
+)
 def build_timeseries_command(green_csv):
     """Trace GREEN products back to their dated scrapes.
 
-    Joins the accumulated GREEN artifact (GREEN_CSV, keyed by input_hash) to
-    prepared_cache, reapplies each product's unit-value transform per dated
-    price, attaches date-accurate FX, and writes the long parquet
+    With no argument, concatenates every validation_runs/{item}/latest/green.csv
+    (the accumulated GREEN across all classified base_items); pass a single
+    GREEN_CSV to scope to one run. Joins the GREEN keys (input_hash) to
+    raw_prices.csv, reapplies each product's unit-value transform per dated price,
+    attaches date-accurate FX, and writes the long parquet
     outputs/prices/eap_prices.parquet + latest-snapshot CSV eap_prices_latest.csv.
     """
     from . import timeseries

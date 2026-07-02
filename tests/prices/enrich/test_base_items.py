@@ -400,6 +400,26 @@ def test_build_timeseries_traces_green_to_dated_observations():
     assert snapshot.iloc[0]["date"] == "2024-07-01"
 
 
+def test_load_accumulated_green_concats_latest(tmp_path, monkeypatch):
+    from prices.enrich.base_items import timeseries
+
+    # load_accumulated_green reads validate.VALIDATION_RUNS_DIR at call time.
+    monkeypatch.setattr(validate, "VALIDATION_RUNS_DIR", tmp_path / "runs")
+    cols = validate.ARTIFACT_COLS + ["promotion_status"]
+    for item, ih in (("apple", "h1"), ("orange", "h2")):
+        art = pd.DataFrame([{c: None for c in cols}])
+        art["input_hash"] = ih
+        art["promotion_status"] = "green"
+        validate.write_run(
+            art,
+            pd.DataFrame(columns=["product_name_original", "decision"]),
+            item,
+            datetime.now(timezone.utc),
+        )
+    acc = timeseries.load_accumulated_green()
+    assert set(acc["input_hash"]) == {"h1", "h2"}  # both items' latest greens
+
+
 def test_build_timeseries_empty_green_returns_empty():
     from prices.enrich.base_items import timeseries
 
@@ -432,7 +452,8 @@ def test_write_run_bucket_files(tmp_path, monkeypatch):
     run_dir = Path(
         validate.write_run(art, classified, "rice", datetime.now(timezone.utc))
     )
-    assert run_dir.name.startswith("rice_")
+    # New layout: validation_runs/{item}/{stamp}/
+    assert run_dir.parent.name == "rice"
     for fname in (
         "candidates.csv",
         "green.csv",
@@ -443,6 +464,35 @@ def test_write_run_bucket_files(tmp_path, monkeypatch):
         assert (run_dir / fname).exists()
     rev = pd.read_csv(run_dir / "review.csv")
     assert "source" in rev.columns and rev.iloc[0]["reason"] == "brand-residue:sunrice"
+    # latest pointer resolves to this run
+    latest = run_dir.parent / "latest"
+    assert latest.resolve() == run_dir.resolve()
+    assert (latest / "green.csv").exists()
+    # manifest records the run
+    manifest = json.loads((run_dir.parent / "manifest.json").read_text())
+    assert manifest["base_item"] == "rice"
+    assert manifest["runs"][-1]["stamp"] == run_dir.name
+
+
+def test_write_run_prunes_to_last_n(tmp_path, monkeypatch):
+    monkeypatch.setattr(validate, "VALIDATION_RUNS_DIR", tmp_path / "runs")
+    monkeypatch.setattr(validate, "KEEP_RUNS", 3)
+    art = pd.DataFrame(columns=validate.ARTIFACT_COLS + ["promotion_status"])
+    classified = pd.DataFrame(columns=["product_name_original", "decision"])
+    stamps = []
+    for i in range(5):
+        ts = datetime(2026, 1, 1, 12, i, tzinfo=timezone.utc)
+        rd = Path(validate.write_run(art, classified, "rice", ts))
+        stamps.append(rd.name)
+    item_dir = tmp_path / "runs" / "rice"
+    kept = sorted(
+        p.name for p in item_dir.iterdir() if p.is_dir() and p.name != "latest"
+    )
+    assert kept == sorted(stamps[-3:])  # only the last 3 run dirs survive
+    assert (item_dir / "latest").resolve().name == stamps[-1]
+    # manifest keeps only the surviving runs
+    manifest = json.loads((item_dir / "manifest.json").read_text())
+    assert [r["stamp"] for r in manifest["runs"]] == stamps[-3:]
 
 
 # --- spaCy-backed end-to-end (skipped if model absent) -------------------------

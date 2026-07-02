@@ -13,7 +13,9 @@ with candidates.csv (all promoted rows + the promote gate columns) and green.csv
 
 from __future__ import annotations
 
+import json
 import re
+import shutil
 from collections import Counter
 from datetime import datetime
 
@@ -26,6 +28,9 @@ from prices.enrich.normalize import extract_pack
 from prices.enrich.stages.merge import compute_unit_value
 
 VALIDATION_RUNS_DIR = REPO_ROOT / "data" / "prices" / "_enrich" / "validation_runs"
+# Keep only the last N timestamped run dirs per base_item — the folders are an
+# ephemeral audit trail; the {item}/latest greens are the source of truth.
+KEEP_RUNS = 10
 
 ARTIFACT_COLS = [
     "input_hash",
@@ -172,6 +177,42 @@ _BUCKET_FILES = {
 }
 
 
+def _run_dirs(item_dir) -> list:
+    """Timestamped run dirs under an item dir, oldest-first (excludes 'latest')."""
+    if not item_dir.exists():
+        return []
+    dirs = [
+        p
+        for p in item_dir.iterdir()
+        if p.is_dir() and not p.is_symlink() and p.name != "latest"
+    ]
+    return sorted(dirs, key=lambda p: p.name)
+
+
+def _point_latest(item_dir, stamp: str) -> None:
+    """Repoint {item}/latest -> {stamp} (relative symlink)."""
+    link = item_dir / "latest"
+    if link.is_symlink() or link.exists():
+        link.unlink()
+    link.symlink_to(stamp, target_is_directory=True)
+
+
+def _write_manifest(item_dir, base_item: str, surviving: list) -> None:
+    """Rewrite {item}/manifest.json to the surviving run summaries."""
+    runs = []
+    for rd in surviving:
+        try:
+            n_candidates = len(pd.read_csv(rd / "candidates.csv"))
+            n_green = len(pd.read_csv(rd / "green.csv"))
+        except Exception:
+            n_candidates = n_green = 0
+        runs.append(
+            {"stamp": rd.name, "n_candidates": n_candidates, "n_green": n_green}
+        )
+    manifest = {"base_item": base_item, "runs": runs}
+    (item_dir / "manifest.json").write_text(json.dumps(manifest, indent=2))
+
+
 def write_run(
     candidates: pd.DataFrame,
     classified: pd.DataFrame,
@@ -179,12 +220,15 @@ def write_run(
     timestamp: datetime,
 ) -> str:
     """candidates: promoted CANDIDATE rows (has promotion_status + gate cols).
-    Writes candidates.csv (all) + green.csv (promotion_status==green) + one CSV per
-    non-CANDIDATE bucket. Returns the run dir path."""
+    Writes validation_runs/{base_item}/{stamp}/ with candidates.csv (all) +
+    green.csv (promotion_status==green) + one CSV per non-CANDIDATE bucket,
+    repoints {base_item}/latest, refreshes manifest.json, and prunes to the last
+    KEEP_RUNS run dirs. Returns the run dir path."""
     from .promote import green_only
 
     stamp = timestamp.strftime("%Y%m%d_%H%M")
-    run_dir = VALIDATION_RUNS_DIR / f"{base_item}_{stamp}"
+    item_dir = VALIDATION_RUNS_DIR / base_item
+    run_dir = item_dir / stamp
     run_dir.mkdir(parents=True, exist_ok=True)
     candidates.to_csv(run_dir / "candidates.csv", index=False)
     if "promotion_status" in candidates.columns:
@@ -197,4 +241,11 @@ def write_run(
         sub = classified[classified["decision"] == bucket]
         cols = [c for c in NON_GREEN_COLS if c in sub.columns]
         sub[cols].to_csv(run_dir / fname, index=False)
+
+    # Prune old run dirs (keep last KEEP_RUNS), then sync latest + manifest.
+    for old in _run_dirs(item_dir)[:-KEEP_RUNS]:
+        shutil.rmtree(old, ignore_errors=True)
+    surviving = _run_dirs(item_dir)
+    _point_latest(item_dir, stamp)
+    _write_manifest(item_dir, base_item, surviving)
     return str(run_dir)

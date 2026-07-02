@@ -56,8 +56,14 @@ def _moved_fraction(base_item, current):
     """Fraction of rows whose decision differs from the latest prior run folder."""
     import glob
 
-    prev = sorted(glob.glob(str(validate.VALIDATION_RUNS_DIR / f"{base_item}_*")))
-    prev = [p for p in prev if Path(p) != Path(current)]
+    prev = sorted(glob.glob(str(validate.VALIDATION_RUNS_DIR / base_item / "*")))
+    prev = [
+        p
+        for p in prev
+        if Path(p) != Path(current)
+        and not p.endswith("latest")
+        and not p.endswith("manifest.json")
+    ]
     if not prev:
         return 1.0
     try:

@@ -190,10 +190,29 @@ def _latest_snapshot(long_df: pd.DataFrame) -> pd.DataFrame:
     return long_df.loc[idx].sort_values("input_hash").reset_index(drop=True)
 
 
-def run(green_path: Path | str, raw_path: Path = RAW_PRICES_CSV) -> dict:
-    """IO wrapper: read the accumulated GREEN artifact + raw_prices.csv, build the
-    time series, and write the long parquet + latest-snapshot CSV."""
-    green = pd.read_csv(green_path)
+def load_accumulated_green() -> pd.DataFrame:
+    """Concatenate every validation_runs/{item}/latest/green.csv — the accumulated
+    GREEN across all classified base_items (the source of truth for the series)."""
+    from .validate import VALIDATION_RUNS_DIR
+
+    frames = []
+    if VALIDATION_RUNS_DIR.exists():
+        for item_dir in sorted(VALIDATION_RUNS_DIR.iterdir()):
+            g = item_dir / "latest" / "green.csv"
+            if g.exists():
+                df = pd.read_csv(g)
+                if not df.empty:
+                    frames.append(df)
+    if not frames:
+        return pd.DataFrame(columns=["input_hash", "product_name_original"])
+    return pd.concat(frames, ignore_index=True)
+
+
+def run(green_path: Path | str | None = None, raw_path: Path = RAW_PRICES_CSV) -> dict:
+    """IO wrapper: read the accumulated GREEN (all {item}/latest greens, or a single
+    green.csv when green_path is given) + raw_prices.csv, build the time series, and
+    write the long parquet + latest-snapshot CSV."""
+    green = pd.read_csv(green_path) if green_path else load_accumulated_green()
     raw = pd.read_csv(raw_path, usecols=_RAW_COLS, low_memory=False)
     long_df, snapshot = build_timeseries(green, raw)
     OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
