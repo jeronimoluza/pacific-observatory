@@ -349,6 +349,20 @@ def test_classify_names_buckets():
     assert buckets[2] == OTHER_FORM
 
 
+def test_loop_status_ratio_and_convergence():
+    from prices.enrich.base_items.pipeline import loop_status
+
+    # candidate pile <= 2x green -> stop by ratio
+    s = loop_status(n_candidate=10, n_green=6, moved_fraction=0.5)
+    assert s["stop"] and s["reason"] == "ratio"
+    # flywheel dry -> stop by convergence
+    s2 = loop_status(n_candidate=100, n_green=5, moved_fraction=0.01)
+    assert s2["stop"] and s2["reason"] == "convergence"
+    # neither -> continue
+    s3 = loop_status(n_candidate=100, n_green=5, moved_fraction=0.5)
+    assert not s3["stop"]
+
+
 def test_promote_bands_and_small_groups():
     from prices.enrich.base_items import promote as P
 
