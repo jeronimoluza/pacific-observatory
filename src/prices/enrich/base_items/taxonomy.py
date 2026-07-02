@@ -189,6 +189,14 @@ def _plausible_for_division(code) -> str:
     return "mass,count,item,none"  # default -> produce
 
 
+def _basis_repr(values) -> str:
+    """Config basis list -> the comma-joined lowercased string that
+    store._parse_basis round-trips (mirrors _plausible_for_division)."""
+    if not values:
+        return ""
+    return ",".join(str(v).strip().lower() for v in values)
+
+
 def _clean(x) -> str:
     if pd.isna(x):
         return ""
@@ -282,7 +290,7 @@ def seed_from_config(config_path: Path) -> pd.DataFrame:
     ts = _now()
     rows = []
 
-    def _emit(base_item, base_name, role, code, form_leaf, prov):
+    def _emit(base_item, base_name, role, code, form_leaf, prov, allowed, plausible):
         rows.append(
             {
                 "base_item": base_item,
@@ -291,8 +299,8 @@ def seed_from_config(config_path: Path) -> pd.DataFrame:
                 "role": role,
                 "coicop_code": code,
                 "coicop2digit_title": dv_titles.get(str(code)[:2], ""),
-                "allowed_basis": "",
-                "plausible_basis": _plausible_for_division(code),
+                "allowed_basis": allowed,
+                "plausible_basis": plausible,
                 "form_leaf": form_leaf or "",
                 "provenance": prov,
                 "created_at": ts,
@@ -301,17 +309,43 @@ def seed_from_config(config_path: Path) -> pd.DataFrame:
 
     for base, rec in cfg["base_items"].items():
         leaf = rec["default_leaf"]
+        allowed = _basis_repr(rec.get("allowed_basis"))
+        plausible = (
+            _basis_repr(rec["plausible_basis"])
+            if rec.get("plausible_basis")
+            else _plausible_for_division(leaf)
+        )
         for alias in rec["aliases"]:
-            _emit(base, alias, "alias", leaf, "", "config:alias")
+            _emit(base, alias, "alias", leaf, "", "config:alias", allowed, plausible)
         for tag, terms in rec.get("variety", {}).items():
             for v in terms:
-                _emit(base, v, "variety", leaf, "", f"config:variety:{tag}")
+                _emit(
+                    base,
+                    v,
+                    "variety",
+                    leaf,
+                    "",
+                    f"config:variety:{tag}",
+                    allowed,
+                    plausible,
+                )
         for token, form_leaf in rec.get("form", {}).items():
-            _emit(base, token, "form", leaf, form_leaf, "config:form")
+            _emit(
+                base, token, "form", leaf, form_leaf, "config:form", allowed, plausible
+            )
         for w in rec.get("nonfood", []):
-            _emit(base, w, "nonfood", leaf, "", "config:nonfood")
+            _emit(base, w, "nonfood", leaf, "", "config:nonfood", allowed, plausible)
         for w in rec.get("species_veto", []):
-            _emit(base, w, "species_veto", leaf, "", "config:species_veto")
+            _emit(
+                base,
+                w,
+                "species_veto",
+                leaf,
+                "",
+                "config:species_veto",
+                allowed,
+                plausible,
+            )
 
     return upsert_base_items(pd.DataFrame(rows, columns=BASE_ITEM_COLS))
 

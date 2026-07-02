@@ -190,6 +190,20 @@ def test_store_seed_and_load_record(tmp_path):
         store.set_data_dir(store.REPO_ROOT / "data" / "prices")
 
 
+def test_seed_propagates_allowed_basis(tmp_path):
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        # pineapple carries config allowed_basis=["mass"] + plausible override
+        rec = store.load_record("pineapple")
+        assert rec["allowed_basis"] == {"mass"}
+        assert rec["plausible_basis"] == {"mass", "count", "item"}
+        # regression: an item with no config allowed_basis stays None
+        assert store.load_record("apple")["allowed_basis"] is None
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
 def test_mine_source_boilerplate(tmp_path):
     store.set_data_dir(tmp_path)
     try:
