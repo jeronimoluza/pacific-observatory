@@ -56,13 +56,20 @@ def classify_command(base_item, region, seed_config, derive_lexicons, append):
     if summary["n"] == 0:
         return
     click.echo(f"distribution: {summary['distribution']}")
+    click.echo(f"promotion: {summary.get('promotion')}  GREEN={summary.get('n_green')}")
+    ls = summary.get("loop_status") or {}
+    click.echo(
+        f"loop-status: {'STOP' if ls.get('stop') else 'CONTINUE'} ({ls.get('reason')})"
+    )
+    if summary.get("basis_conflict"):
+        click.echo("basis_conflict:\n" + summary["basis_conflict"])
     click.echo(
         f"GREEN validated={summary['green_validated']}  "
         f"demoted(basis)={summary['green_demoted']}"
     )
     click.echo(
-        f"run dir: {summary['run_dir']}  (green.csv / other_form.csv / "
-        f"review.csv / exclude.csv)"
+        f"run dir: {summary['run_dir']}  (candidates.csv / green.csv / "
+        f"other_form.csv / review.csv / exclude.csv)"
     )
     if summary["review_cross_base_items"]:
         click.echo("REVIEW cross-base_items to report back to base_items.parquet:")
