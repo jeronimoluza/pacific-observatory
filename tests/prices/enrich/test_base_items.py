@@ -443,6 +443,8 @@ def test_build_timeseries_traces_green_to_dated_observations():
     long_df, snapshot = timeseries.build_timeseries(green, raw)
 
     assert list(long_df.columns) == timeseries._OUT_COLS
+    assert "pricing_basis" in timeseries._OUT_COLS  # unit interpretation travels
+    assert (long_df["pricing_basis"] == "mass").all()
     assert len(long_df) == 2  # only the two GREEN-matched dated observations
     assert set(long_df["input_hash"]) == {ih}
     by_date = long_df.set_index("date")
