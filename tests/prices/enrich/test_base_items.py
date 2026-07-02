@@ -12,7 +12,7 @@ import pandas as pd
 import pytest
 
 from prices.enrich.base_items import cascade, mine, store, taxonomy, validate
-from prices.enrich.base_items.static import EXCLUDE, GREEN, OTHER_FORM, REVIEW
+from prices.enrich.base_items.static import CANDIDATE, EXCLUDE, OTHER_FORM, REVIEW
 
 CONFIG = Path(".planning/experiments/base_item_config.json")
 
@@ -188,7 +188,7 @@ def test_review_residue_splits_cross_base_items(tmp_path):
         taxonomy.seed_from_config(CONFIG)
         result = pd.DataFrame(
             {
-                "decision": [REVIEW, REVIEW, REVIEW, GREEN],
+                "decision": [REVIEW, REVIEW, REVIEW, CANDIDATE],
                 "reason": [
                     "brand-residue:sunrice",
                     "brand-residue:noodle",
@@ -282,7 +282,7 @@ def test_classify_names_buckets():
         names, ["en"] * 4, rec, nlp, set(), food_phrase_index(), {}, {}
     )
     buckets = [g[0] for g in got]
-    assert buckets[0] == GREEN
+    assert buckets[0] == CANDIDATE
     assert buckets[1] == EXCLUDE
     assert buckets[2] == OTHER_FORM
 
