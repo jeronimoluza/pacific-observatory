@@ -85,6 +85,28 @@ def classify_command(base_item, region, seed_config, derive_lexicons, append):
         click.echo(f"appended validated GREEN -> {out}")
 
 
+@click.command("build-timeseries")
+@click.argument("green_csv", type=click.Path(exists=True, path_type=Path))
+def build_timeseries_command(green_csv):
+    """Trace GREEN products back to their dated scrapes.
+
+    Joins the accumulated GREEN artifact (GREEN_CSV, keyed by input_hash) to
+    prepared_cache, reapplies each product's unit-value transform per dated
+    price, attaches date-accurate FX, and writes the long parquet
+    outputs/prices/eap_prices.parquet + latest-snapshot CSV eap_prices_latest.csv.
+    """
+    from . import timeseries
+
+    summary = timeseries.run(green_csv)
+    click.echo(
+        f"green products: {summary['green_products']}  "
+        f"matched: {summary['matched_products']}  "
+        f"observations: {summary['observations']}"
+    )
+    click.echo(f"long parquet: {summary['parquet']}")
+    click.echo(f"latest snapshot: {summary['snapshot']}")
+
+
 @click.command("regex-check")
 @click.option("--bless", is_flag=True, help="Overwrite the snapshot after review.")
 def regex_check_command(bless):

@@ -325,6 +325,90 @@ def test_validate_keeps_basis_conflict_row():
     assert len(art) == 1
 
 
+def test_build_timeseries_traces_green_to_dated_observations():
+    from prices.enrich.base_items import timeseries
+    from prices.enrich.stages.prepare import _row_input_dict
+    from prices.enrich.versioning import input_hash as _input_hash
+
+    name, url = "Basmati Rice 5kg", "https://shop.example/p/rice-5kg"
+    ih = _input_hash(
+        _row_input_dict(pd.Series({"product_name_original": name, "product_url": url}))
+    )
+    green = pd.DataFrame(
+        [
+            {
+                "input_hash": ih,
+                "product_name_original": name,
+                "amount_value": 5.0,
+                "count": 1,
+                "multiplier": 1,
+                "pricing_basis": "mass",
+                "coicop_deep_leaf_code": "01.1.1.1.2",
+                "base_item": "rice",
+                "form": "",
+                "variety": "basmati",
+            }
+        ]
+    )
+    raw = pd.DataFrame(
+        [
+            {
+                "product_name": name,
+                "product_url": url,
+                "source": "s1",
+                "region": "eap",
+                "country": "australia",
+                "currency": "USD",
+                "price": 10.0,
+                "date": "2024-06-01",
+            },
+            {
+                "product_name": name,
+                "product_url": url,
+                "source": "s1",
+                "region": "eap",
+                "country": "australia",
+                "currency": "USD",
+                "price": 12.0,
+                "date": "2024-07-01",
+            },
+            {
+                "product_name": "Wild Rice 1kg",
+                "product_url": "https://x/y",
+                "region": "eap",
+                "source": "s2",
+                "country": "australia",
+                "currency": "USD",
+                "price": 9.0,
+                "date": "2024-06-01",
+            },
+        ]
+    )
+    long_df, snapshot = timeseries.build_timeseries(green, raw)
+
+    assert list(long_df.columns) == timeseries._OUT_COLS
+    assert len(long_df) == 2  # only the two GREEN-matched dated observations
+    assert set(long_df["input_hash"]) == {ih}
+    by_date = long_df.set_index("date")
+    assert abs(by_date.loc["2024-06-01", "unit_value_local"] - 2.0) < 1e-6  # 10 / 5kg
+    assert abs(by_date.loc["2024-07-01", "unit_value_local"] - 2.4) < 1e-6  # 12 / 5kg
+    assert abs(by_date.loc["2024-06-01", "unit_value_usd"] - 2.0) < 1e-6  # USD fx == 1
+    assert (long_df["product_url"] == url).all()  # provenance recovered
+    assert (long_df["region"] == "eap").all()  # region derived from country
+    # snapshot = latest date per input_hash
+    assert len(snapshot) == 1
+    assert snapshot.iloc[0]["date"] == "2024-07-01"
+
+
+def test_build_timeseries_empty_green_returns_empty():
+    from prices.enrich.base_items import timeseries
+
+    green = pd.DataFrame(columns=["input_hash", "product_name_original"])
+    raw = pd.DataFrame(columns=timeseries._RAW_COLS)
+    long_df, snapshot = timeseries.build_timeseries(green, raw)
+    assert long_df.empty and snapshot.empty
+
+
 def test_validation_runs_dir_under_data():
     assert "data" in str(validate.VALIDATION_RUNS_DIR)
     assert "_enrich" in str(validate.VALIDATION_RUNS_DIR)
