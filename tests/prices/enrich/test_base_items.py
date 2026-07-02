@@ -456,6 +456,80 @@ def test_build_timeseries_traces_green_to_dated_observations():
     assert snapshot.iloc[0]["date"] == "2024-07-01"
 
 
+def test_build_timeseries_drops_undated_products_without_crashing():
+    # A GREEN product whose raw observations ALL have unparseable dates must not
+    # crash the snapshot idxmax and must be excluded from the dated series.
+    from prices.enrich.base_items import timeseries
+    from prices.enrich.stages.prepare import _row_input_dict
+    from prices.enrich.versioning import input_hash as _input_hash
+
+    def _h(name, url):
+        return _input_hash(
+            _row_input_dict(
+                pd.Series({"product_name_original": name, "product_url": url})
+            )
+        )
+
+    dated_name, dated_url = "Fuji Apple 1kg", "https://s/p/apple"
+    undated_name, undated_url = "Navel Orange 1kg", "https://s/p/orange"
+    green = pd.DataFrame(
+        [
+            {
+                "input_hash": _h(dated_name, dated_url),
+                "product_name_original": dated_name,
+                "amount_value": 1.0,
+                "count": 1,
+                "multiplier": 1,
+                "pricing_basis": "mass",
+                "coicop_deep_leaf_code": "01.1.6.1.1",
+                "base_item": "apple",
+                "form": "",
+                "variety": "fuji",
+            },
+            {
+                "input_hash": _h(undated_name, undated_url),
+                "product_name_original": undated_name,
+                "amount_value": 1.0,
+                "count": 1,
+                "multiplier": 1,
+                "pricing_basis": "mass",
+                "coicop_deep_leaf_code": "01.1.6.2.1",
+                "base_item": "orange",
+                "form": "",
+                "variety": "navel",
+            },
+        ]
+    )
+    raw = pd.DataFrame(
+        [
+            {
+                "product_name": dated_name,
+                "product_url": dated_url,
+                "source": "s1",
+                "region": "eap",
+                "country": "australia",
+                "currency": "USD",
+                "price": 3.0,
+                "date": "2024-06-01",
+            },
+            {
+                "product_name": undated_name,
+                "product_url": undated_url,
+                "source": "s2",
+                "region": "eap",
+                "country": "australia",
+                "currency": "USD",
+                "price": 5.0,
+                "date": "not-a-date",
+            },
+        ]
+    )
+    long_df, snapshot = timeseries.build_timeseries(green, raw)
+    assert set(long_df["input_hash"]) == {_h(dated_name, dated_url)}  # undated dropped
+    assert long_df["date"].notna().all()
+    assert len(snapshot) == 1  # snapshot did not crash on the all-NaN-date group
+
+
 def test_load_accumulated_green_concats_latest(tmp_path, monkeypatch):
     from prices.enrich.base_items import timeseries
 

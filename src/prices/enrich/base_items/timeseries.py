@@ -146,9 +146,18 @@ def build_timeseries(
     pc["price"] = [parse_price(p, c) for p, c in zip(pc["price"], pc["currency"])]
     # raw dates come in mixed formats (ISO offset + RFC-2822); normalize to a
     # clean UTC calendar date so (input_hash, date) grouping is exact.
-    pc["date"] = pd.to_datetime(pc["date"], errors="coerce", utc=True).dt.strftime(
-        "%Y-%m-%d"
-    )
+    # raw_prices.csv dates are HETEROGENEOUS per row (ISO-offset, RFC-2822, plain
+    # date, wayback stamps). format="mixed" parses each value independently — the
+    # default single-format inference from row 0 coerces ~80% of the corpus to NaT.
+    pc["date"] = pd.to_datetime(
+        pc["date"], errors="coerce", utc=True, format="mixed"
+    ).dt.strftime("%Y-%m-%d")
+    # A time series needs a date: drop observations whose raw date is unparseable
+    # (strftime leaves them NaN). A product with only undated observations then
+    # vanishes from the series — it cannot be placed on a timeline or FX-dated.
+    pc = pc[pc["date"].notna()]
+    if pc.empty:
+        return pd.DataFrame(columns=_OUT_COLS), pd.DataFrame(columns=_OUT_COLS)
     derived = pc["country"].map(_country_region_map())
     if "region" in pc.columns:
         pc["region"] = pc["region"].where(pc["region"].astype(str).ne(""), derived)
@@ -184,10 +193,11 @@ def build_timeseries(
 
 
 def _latest_snapshot(long_df: pd.DataFrame) -> pd.DataFrame:
-    if long_df.empty:
-        return long_df.copy()
-    idx = long_df.groupby("input_hash")["date"].idxmax()
-    return long_df.loc[idx].sort_values("input_hash").reset_index(drop=True)
+    dated = long_df[long_df["date"].notna()] if not long_df.empty else long_df
+    if dated.empty:
+        return long_df.iloc[0:0].copy()
+    idx = dated.groupby("input_hash")["date"].idxmax()
+    return dated.loc[idx].sort_values("input_hash").reset_index(drop=True)
 
 
 def load_accumulated_green() -> pd.DataFrame:
