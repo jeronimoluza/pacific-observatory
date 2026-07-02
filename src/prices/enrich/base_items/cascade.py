@@ -3,11 +3,11 @@
 Faithful port of ao_rice_cascade.decide (which folds tier0_gazetteer_replay +
 tier1_earn_fresh_replay + tier1_derive_replay) with two production changes:
 
-  * bucket FRESH -> GREEN, NOT_FRESH -> OTHER_FORM, EXCLUDED -> EXCLUDE
+  * bucket FRESH -> CANDIDATE, NOT_FRESH -> OTHER_FORM, EXCLUDED -> EXCLUDE
     (pure relabel; decision logic is byte-identical on apple+orange+rice).
   * the hard-coded `basis == "volume"` branch is generalized to the record's
-    allowed_basis set (default {mass, count, item, None} => only volume routes),
-    so a base_item priced by volume can opt in without touching this file.
+    plausible_basis set (default {mass, count, item, None} => only volume routes),
+    so a base_item priced by an implausible basis routes to OTHER_FORM here.
 
 Locked principles preserved: memoize role-not-string (tier-0 roles feed in),
 GREEN must be EARNED via bare-item evidence, basis is NOT a positive cue, read
