@@ -130,6 +130,10 @@ MOD_CHILD_DEPS = {"amod", "compound", "nmod", "poss", "npadvmod"}
 # default admits everything but volume.
 DEFAULT_ALLOWED_BASIS = {"mass", "count", "item", None}
 
+# Physically-possible bases per entity class (hard wrong-entity gate). A base_item
+# overrides via its record; None falls back to this produce default.
+DEFAULT_PLAUSIBLE_BASIS = {"mass", "count", "item", None}
+
 # --- cascade buckets (promotable = CANDIDATE; GREEN is earned later) -----------
 CANDIDATE = "CANDIDATE"
 OTHER_FORM = "OTHER_FORM"

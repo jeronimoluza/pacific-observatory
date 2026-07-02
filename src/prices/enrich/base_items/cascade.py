@@ -23,7 +23,7 @@ from .static import (
     BOILER_BLOCK,
     CANDIDATE,
     CONTAM,
-    DEFAULT_ALLOWED_BASIS,
+    DEFAULT_PLAUSIBLE_BASIS,
     DIGIT,
     EXCLUDE,
     LEAK,
@@ -116,9 +116,9 @@ def decide(name, doc, roles_set, rec, boiler, basis, form_lex, neg_lex):
         return EXCLUDE, "gaz:nonfood"
     if any(r.startswith("form_mover") for r in roles_set):
         return OTHER_FORM, "gaz:form_mover"
-    allowed = rec.get("allowed_basis") or DEFAULT_ALLOWED_BASIS
-    if basis not in allowed:
-        return OTHER_FORM, f"not-green:basis:{basis}"
+    plausible = rec.get("plausible_basis") or DEFAULT_PLAUSIBLE_BASIS
+    if basis not in plausible:
+        return OTHER_FORM, f"not-plausible:basis:{basis}"
     if "unknown" in roles_set:
         return REVIEW, "gaz:unknown"
     if only_in_parens(name, tokens):

@@ -49,6 +49,36 @@ def test_whole_item_scan():
     assert cascade.whole_item_scan("Basmati Rice 5kg", rec) == (None, None)
 
 
+class _DocStub(list):
+    pass
+
+
+def _produce_rec():
+    return {
+        "tokens": {"apple", "apples"},
+        "plausible_basis": {"mass", "count", "item", None},
+        "allowed_basis": {"mass"},
+        "nonfood": set(),
+        "species_veto": set(),
+        "form": {},
+        "benign": {"fuji"},
+    }
+
+
+def test_two_level_basis_cascade_and_record():
+    rec = _produce_rec()
+    # volume is IMPLAUSIBLE for produce -> hard-gated to OTHER_FORM
+    d, r = cascade.decide("Fuji Apple", _DocStub(), set(), rec, set(), "volume", {}, {})
+    assert d == OTHER_FORM
+    assert "plausible" in r
+    # count is PLAUSIBLE (in plausible_basis) even though not in allowed_basis ->
+    # must survive the cascade's hard gate (allowed_basis enforced later).
+    d2, r2 = cascade.decide(
+        "Fuji Apple", _DocStub(), set(), rec, set(), "count", {}, {}
+    )
+    assert d2 != OTHER_FORM or "plausible" not in r2
+
+
 def test_only_in_parens():
     assert cascade.only_in_parens("Lozenges (Orange)", {"orange", "oranges"})
     assert not cascade.only_in_parens("Orange Juice (500ml)", {"orange", "oranges"})
