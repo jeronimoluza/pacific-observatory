@@ -312,3 +312,53 @@ def test_classify_names_buckets():
     assert buckets[0] == CANDIDATE
     assert buckets[1] == EXCLUDE
     assert buckets[2] == OTHER_FORM
+
+
+def test_promote_bands_and_small_groups():
+    from prices.enrich.base_items import promote as P
+
+    rows = []
+    # fiji kg: 6 tight rows ~2.0 + 1 outlier 20.0
+    for uv in [1.9, 2.0, 2.1, 2.0, 1.95, 2.05, 20.0]:
+        rows.append(
+            {
+                "base_item": "orange",
+                "pricing_basis": "mass",
+                "country": "fiji",
+                "unit_value_usd": uv,
+            }
+        )
+    # australia kg: only 3 rows -> held
+    for uv in [3.0, 3.1, 2.9]:
+        rows.append(
+            {
+                "base_item": "orange",
+                "pricing_basis": "mass",
+                "country": "australia",
+                "unit_value_usd": uv,
+            }
+        )
+    # count basis not in allowed -> basis_conflict
+    for uv in [0.5, 0.6, 0.55, 0.52, 0.58]:
+        rows.append(
+            {
+                "base_item": "orange",
+                "pricing_basis": "count",
+                "country": "fiji",
+                "unit_value_usd": uv,
+            }
+        )
+    df = P.promote(pd.DataFrame(rows), allowed_basis={"mass"})
+    fiji_kg = df[(df.country == "fiji") & (df.pricing_basis == "mass")]
+    assert (fiji_kg[fiji_kg.unit_value_usd < 3]["promotion_status"] == "green").all()
+    assert (
+        fiji_kg[fiji_kg.unit_value_usd == 20.0]["promotion_status"].iloc[0]
+        == "candidate_outlier"
+    )
+    au = df[df.country == "australia"]
+    assert (au["promotion_status"] == "candidate_small_group").all()
+    cnt = df[df.pricing_basis == "count"]
+    assert (cnt["promotion_status"] == "basis_conflict").all()
+    assert set(["group_n", "group_median_usd", "band_lo", "band_hi"]).issubset(
+        df.columns
+    )
