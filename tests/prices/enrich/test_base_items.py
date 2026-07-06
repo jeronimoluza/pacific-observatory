@@ -927,6 +927,187 @@ def test_promote_bands_and_small_groups():
     )
 
 
+def test_promote_qa_value_recall_ladder():
+    from prices.enrich.base_items import promote as P
+
+    rows = []
+    # A. orange fiji mass leaf .1: 6 tight ~2.0 -> base_item green -> qa2;
+    #    +1 outlier 20.0 -> outlier, out of leaf band too -> qa0.
+    for uv in [1.9, 2.0, 2.1, 2.0, 1.95, 2.05, 20.0]:
+        rows.append(
+            {
+                "base_item": "orange",
+                "coicop_deep_leaf_code": "01.1.6.2.1",
+                "pricing_basis": "mass",
+                "country": "fiji",
+                "unit_value_usd": uv,
+            }
+        )
+    # B. leaf .9 mass australia: orange(3) + mandarin(3) each small at base_item
+    #    grain, but 6 pooled at leaf grain -> rescued to qa1.
+    for uv in [3.0, 3.1, 2.9]:
+        rows.append(
+            {
+                "base_item": "orange",
+                "coicop_deep_leaf_code": "01.1.6.2.9",
+                "pricing_basis": "mass",
+                "country": "australia",
+                "unit_value_usd": uv,
+            }
+        )
+    for uv in [3.05, 2.95, 3.0]:
+        rows.append(
+            {
+                "base_item": "mandarin",
+                "coicop_deep_leaf_code": "01.1.6.2.9",
+                "pricing_basis": "mass",
+                "country": "australia",
+                "unit_value_usd": uv,
+            }
+        )
+    # C. kiwi samoa leaf .7: only 2 rows -> small at BOTH grains -> qa0.
+    for uv in [5.0, 5.2]:
+        rows.append(
+            {
+                "base_item": "kiwi",
+                "coicop_deep_leaf_code": "01.1.6.2.7",
+                "pricing_basis": "mass",
+                "country": "samoa",
+                "unit_value_usd": uv,
+            }
+        )
+    # D. count basis not allowed -> basis_conflict; excluded from qa1 -> qa0.
+    for uv in [0.5, 0.6, 0.55, 0.52, 0.58]:
+        rows.append(
+            {
+                "base_item": "orange",
+                "coicop_deep_leaf_code": "01.1.6.2.1",
+                "pricing_basis": "count",
+                "country": "fiji",
+                "unit_value_usd": uv,
+            }
+        )
+    df = P.promote(pd.DataFrame(rows), allowed_basis={"mass"})
+
+    # promote alone: qa2 == green; everything else qa0 (qa1 is a separate global pass)
+    assert (df[df.promotion_status == "green"].qa_value == 2).all()
+    assert (df[df.promotion_status != "green"].qa_value == 0).all()
+
+    # global leaf-grain pass over the pooled frame rescues sibling-pooled rows to qa1
+    df = P.assign_leaf_qa(df)
+
+    # nested/monotonic: qa2 is exactly the green set; values live in {0,1,2}
+    assert set(df["qa_value"].unique()).issubset({0, 1, 2})
+    assert (df[df.promotion_status == "green"].qa_value == 2).all()
+    assert (df[df.qa_value == 2].promotion_status == "green").all()
+
+    a_tight = df[
+        (df.base_item == "orange")
+        & (df.country == "fiji")
+        & (df.pricing_basis == "mass")
+        & (df.unit_value_usd < 3)
+    ]
+    assert (a_tight.qa_value == 2).all()
+    a_out = df[(df.pricing_basis == "mass") & (df.unit_value_usd == 20.0)]
+    assert (a_out.qa_value == 0).all()
+
+    b = df[df.country == "australia"]
+    assert (b.promotion_status == "candidate_small_group").all()
+    assert (b.qa_value == 1).all()  # leaf-grain rescue
+
+    c = df[df.base_item == "kiwi"]
+    assert (c.qa_value == 0).all()
+
+    d = df[df.pricing_basis == "count"]
+    assert (d.promotion_status == "basis_conflict").all()
+    assert (d.qa_value == 0).all()
+
+
+def test_promote_qa_value_defaults_without_leaf_column():
+    from prices.enrich.base_items import promote as P
+
+    rows = [
+        {
+            "base_item": "orange",
+            "pricing_basis": "mass",
+            "country": "fiji",
+            "unit_value_usd": uv,
+        }
+        for uv in [2.0, 2.0, 2.1, 1.9, 2.05]
+    ]
+    df = P.promote(pd.DataFrame(rows), allowed_basis={"mass"})
+    # no coicop leaf column -> qa2 for green, qa0 otherwise, never errors
+    assert (df.qa_value == 2).all()
+
+
+def test_load_accumulated_green_min_qa(tmp_path, monkeypatch):
+    from prices.enrich.base_items import timeseries as T
+    from prices.enrich.base_items import validate as V
+
+    monkeypatch.setattr(V, "VALIDATION_RUNS_DIR", tmp_path)
+
+    # Two sibling base_items share leaf .9 (mass, fiji): each is a small_group of 3
+    # (qa0 per item), but 6 pooled at leaf grain -> both rescued to qa1 globally.
+    def _write(item, leaf, uvs, status):
+        latest = tmp_path / item / "latest"
+        latest.mkdir(parents=True)
+        cand = pd.DataFrame(
+            {
+                "input_hash": [f"{item}{i}" for i in range(len(uvs))],
+                "product_name_original": [f"{item}{i}" for i in range(len(uvs))],
+                "base_item": item,
+                "coicop_deep_leaf_code": leaf,
+                "pricing_basis": "mass",
+                "country": "fiji",
+                "unit_value_usd": uvs,
+                "promotion_status": status,
+                "qa_value": [2 if status[i] == "green" else 0 for i in range(len(uvs))],
+            }
+        )
+        cand.to_csv(latest / "candidates.csv", index=False)
+        cand[cand.qa_value == 2].to_csv(latest / "green.csv", index=False)
+
+    _write("foo", "01.1.6.2.9", [3.0, 3.1, 2.9], ["candidate_small_group"] * 3)
+    _write("bar", "01.1.6.2.9", [3.05, 2.95, 3.0], ["candidate_small_group"] * 3)
+    # a clean green product on a different leaf -> qa2, present at both tiers
+    _write("baz", "01.1.9.9.9", [9.0, 9.1, 8.9, 9.0, 9.05], ["green"] * 5)
+
+    g2 = T.load_accumulated_green(min_qa=2)
+    assert set(g2["input_hash"]) == {"baz0", "baz1", "baz2", "baz3", "baz4"}
+
+    g1 = T.load_accumulated_green(min_qa=1)
+    # qa2 greens + the 6 sibling rows rescued to qa1
+    assert set(g1["input_hash"]) == {
+        "baz0",
+        "baz1",
+        "baz2",
+        "baz3",
+        "baz4",
+        "foo0",
+        "foo1",
+        "foo2",
+        "bar0",
+        "bar1",
+        "bar2",
+    }
+
+
+def test_load_accumulated_green_legacy_green_defaults_qa2(tmp_path, monkeypatch):
+    from prices.enrich.base_items import timeseries as T
+    from prices.enrich.base_items import validate as V
+
+    monkeypatch.setattr(V, "VALIDATION_RUNS_DIR", tmp_path)
+    latest = tmp_path / "bar" / "latest"
+    latest.mkdir(parents=True)
+    # legacy green.csv with NO qa_value column
+    pd.DataFrame(
+        {"input_hash": ["h9"], "product_name_original": ["z"], "base_item": ["bar"]}
+    ).to_csv(latest / "green.csv", index=False)
+    g = T.load_accumulated_green(min_qa=2)
+    assert set(g["input_hash"]) == {"h9"}
+    assert (g["qa_value"] == 2).all()
+
+
 def test_regex_check_diff_empty_then_flags(tmp_path, monkeypatch):
     from prices.enrich.base_items import regex_check as R
 

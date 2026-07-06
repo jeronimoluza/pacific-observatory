@@ -89,19 +89,30 @@ def classify_command(base_item, region, seed_config, derive_lexicons, append):
 @click.argument(
     "green_csv", required=False, type=click.Path(exists=True, path_type=Path)
 )
-def build_timeseries_command(green_csv):
+@click.option(
+    "--min-qa",
+    type=click.IntRange(0, 2),
+    default=2,
+    show_default=True,
+    help="Lowest qa_value tier to publish: 2=green only (today's series), "
+    "1=also leaf-grain-rescued rows (expanded), 0=also flagged rows.",
+)
+def build_timeseries_command(green_csv, min_qa):
     """Trace GREEN products back to their dated scrapes.
 
     With no argument, concatenates every validation_runs/{item}/latest/green.csv
     (the accumulated GREEN across all classified base_items); pass a single
-    GREEN_CSV to scope to one run. Joins the GREEN keys (input_hash) to
+    GREEN_CSV to scope to one run. --min-qa widens below green to the graded
+    qa_value tiers persisted in candidates.csv. Joins the keys (input_hash) to
     raw_prices.csv, reapplies each product's unit-value transform per dated price,
     attaches date-accurate FX, and writes the long parquet
-    outputs/prices/eap_prices.parquet + latest-snapshot CSV eap_prices_latest.csv.
+    outputs/prices/eap_prices.parquet + latest-snapshot CSV eap_prices_latest.csv +
+    the product-decision audit outputs/prices/validation/product_decisions.csv
+    (every classified product with its GREEN/OTHER_FORM/REVIEW/EXCLUDE bucket).
     """
     from . import timeseries
 
-    summary = timeseries.run(green_csv)
+    summary = timeseries.run(green_csv, min_qa=min_qa)
     click.echo(
         f"green products: {summary['green_products']}  "
         f"matched: {summary['matched_products']}  "
@@ -109,6 +120,10 @@ def build_timeseries_command(green_csv):
     )
     click.echo(f"long parquet: {summary['parquet']}")
     click.echo(f"latest snapshot: {summary['snapshot']}")
+    click.echo(
+        f"decision audit: {summary['audit_csv']} "
+        f"({summary['audit_rows']} rows, {summary['by_decision']})"
+    )
 
 
 @click.command("apply-verdicts")
@@ -139,6 +154,63 @@ def apply_verdicts_command(base_item, verdicts_json):
         f"apply-verdicts {base_item}: {len(vmap)} verdicts parsed, "
         f"{after - before} new gazetteer rows (was {before}, now {after})."
     )
+
+
+@click.command("discover")
+@click.option(
+    "--sample",
+    type=int,
+    default=None,
+    help="Cap to the first N unique names (by input_hash) for a fast run.",
+)
+@click.option(
+    "--lang", default="en", help="Restrict to one lang column value (default en)."
+)
+@click.option(
+    "--top",
+    type=int,
+    default=200,
+    help="Emit the top-N ROI-ranked head nouns (0 = all).",
+)
+@click.option(
+    "--out",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Write the full candidate table to this CSV.",
+)
+@click.option(
+    "--coverage",
+    is_flag=True,
+    help="Also print the COICOP leaf coverage / worklist summary.",
+)
+def discover_command(sample, lang, top, out, coverage):
+    """Mine ROI-ranked candidate base_item head nouns from products_input.parquet.
+
+    Deterministic: spaCy ROOT-noun per unique name, weighted by n_rows, with
+    registered base_items / gazetteer tokens / STOP / GUARD removed. Candidates
+    feed the loopable existence judgment -> proposals table -> bridge -> seed.
+    """
+    import spacy
+
+    from . import discover as D
+
+    nlp = spacy.load("en_core_web_sm", disable=["ner"])
+    res = D.discover(nlp, sample=sample, lang=lang, top=top)
+    click.echo(
+        f"discovered candidate head nouns: {len(res)} (lang={lang}, sample={sample})"
+    )
+    click.echo(res.head(25).to_string(index=False, max_colwidth=48))
+    if out:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        res.to_csv(out, index=False)
+        click.echo(f"wrote candidates -> {out}")
+    if coverage:
+        cov = D.leaf_coverage(nlp)
+        n_open = int((~cov["covered"]).sum())
+        click.echo(
+            f"COICOP leaf coverage: {len(cov) - n_open}/{len(cov)} bound; "
+            f"{n_open} leaves with no base_item yet."
+        )
 
 
 @click.command("regex-check")

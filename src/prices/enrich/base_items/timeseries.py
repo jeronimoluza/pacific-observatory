@@ -43,6 +43,7 @@ _GREEN_CARRY = [
     "base_item",
     "form",
     "variety",
+    "qa_value",
 ]
 # raw_prices.csv columns read from disk (keep the read narrow — ~20M rows).
 # raw carries product_name (not product_name_original) + a native region column.
@@ -72,6 +73,7 @@ _FIRST_COLS = [
     "base_item",
     "form",
     "variety",
+    "qa_value",
 ]
 _OUT_COLS = [
     "input_hash",
@@ -90,6 +92,7 @@ _OUT_COLS = [
     "base_item",
     "form",
     "variety",
+    "qa_value",
 ]
 
 
@@ -113,6 +116,8 @@ def build_timeseries(
       product_name, product_url, currency, price, date, source, country
       (region optional — derived from country when absent).
     """
+    if "qa_value" not in green.columns:
+        green = green.assign(qa_value=2)
     carry = green[[c for c in _GREEN_CARRY if c in green.columns]].drop_duplicates(
         subset=["input_hash"], keep="first"
     )
@@ -202,34 +207,115 @@ def _latest_snapshot(long_df: pd.DataFrame) -> pd.DataFrame:
     return dated.loc[idx].sort_values("input_hash").reset_index(drop=True)
 
 
-def load_accumulated_green() -> pd.DataFrame:
-    """Concatenate every validation_runs/{item}/latest/green.csv — the accumulated
-    GREEN across all classified base_items (the source of truth for the series)."""
+def _dedup_owner(green: pd.DataFrame) -> pd.DataFrame:
+    """Backstop arbiter: one physical product (input_hash) must not be double
+    counted into two base_items' GREEN sets. Part A routes the non-owner run to
+    OTHER_FORM, so cross-item duplicates are rare; where one slips through (contam
+    vs earn divergence), keep the head-owner via 'rightmost alias END wins, ties
+    broken by longer alias'. The head noun sits rightmost in English ("Chicken
+    RICE" -> rice), while a specific compound and its constituent end at the same
+    position ("olive oil" and "oil" both end at ...oil) so the longer compound
+    wins ("olive oil" beats "oil"). Deterministic: no parse, stable on ties
+    (keeps the first-seen row)."""
+    from . import store
+
+    if "input_hash" not in green.columns or green["input_hash"].isna().all():
+        return green
+    dup_hashes = green["input_hash"].value_counts()
+    dup_hashes = set(dup_hashes[dup_hashes > 1].index)
+    if not dup_hashes:
+        return green
+    owner_idx = store.head_alias_index()
+
+    def _score(row) -> tuple[int, int]:
+        aliases = [a for a, b in owner_idx.items() if b == str(row["base_item"])]
+        name = str(row["product_name_original"]).lower()
+        best = (-1, -1)  # (rightmost match end, alias length)
+        for a in aliases:
+            i = name.rfind(a)
+            if i >= 0:
+                best = max(best, (i + len(a), len(a)))
+        return best
+
+    keep_idx = set(green.index[~green["input_hash"].isin(dup_hashes)])
+    for h, grp in green[green["input_hash"].isin(dup_hashes)].groupby("input_hash"):
+        if grp["base_item"].nunique() <= 1:
+            keep_idx.update(grp.index)
+            continue
+        scores = grp.apply(_score, axis=1)
+        keep_idx.add(max(scores.index, key=lambda ix: scores.loc[ix]))
+    return green.loc[sorted(keep_idx)].reset_index(drop=True)
+
+
+def _load_item_green(item_dir: Path, min_qa: int) -> pd.DataFrame | None:
+    latest = item_dir / "latest"
+    if min_qa >= 2:
+        g = latest / "green.csv"
+        if not g.exists():
+            return None
+        df = pd.read_csv(g)
+        if "qa_value" not in df.columns:
+            df["qa_value"] = 2
+        return df
+    # min_qa < 2: pool ALL candidate rows (qa1 is assigned globally afterwards, so
+    # the qa0 rows must stay in the pool to be eligible for rescue — do NOT filter
+    # per item here). green.csv is a strict subset of candidates.csv.
+    c = latest / "candidates.csv"
+    if not c.exists():
+        return None
+    df = pd.read_csv(c)
+    if "qa_value" not in df.columns:
+        # legacy run predating the ladder: derive per-item qa2 from GREEN, rest qa0
+        # (qa0 may be lifted to qa1 by the cross-item leaf pass).
+        if "promotion_status" in df.columns:
+            df["qa_value"] = (df["promotion_status"] == "green").astype(int) * 2
+        else:
+            df["qa_value"] = 0
+    return df
+
+
+def load_accumulated_green(min_qa: int = 2) -> pd.DataFrame:
+    """Concatenate the accumulated classified rows across all base_items at or above
+    the requested quality tier. min_qa=2 (default) = green.csv only (today's series);
+    min_qa=1 also admits leaf-grain-rescued rows from candidates.csv."""
     from .validate import VALIDATION_RUNS_DIR
 
     frames = []
     if VALIDATION_RUNS_DIR.exists():
         for item_dir in sorted(VALIDATION_RUNS_DIR.iterdir()):
-            g = item_dir / "latest" / "green.csv"
-            if g.exists():
-                df = pd.read_csv(g)
-                if not df.empty:
-                    frames.append(df)
+            df = _load_item_green(item_dir, min_qa)
+            if df is not None and not df.empty:
+                frames.append(df)
     if not frames:
         return pd.DataFrame(columns=["input_hash", "product_name_original"])
-    return pd.concat(frames, ignore_index=True)
+    pooled = pd.concat(frames, ignore_index=True)
+    if min_qa < 2:
+        # qa1 is a cross-item leaf-grain decision — assign it on the global pool,
+        # then keep rows at or above the requested tier.
+        from .promote import assign_leaf_qa
+
+        pooled = assign_leaf_qa(pooled)
+        pooled = pooled[pooled["qa_value"] >= min_qa]
+    return _dedup_owner(pooled)
 
 
-def run(green_path: Path | str | None = None, raw_path: Path = RAW_PRICES_CSV) -> dict:
-    """IO wrapper: read the accumulated GREEN (all {item}/latest greens, or a single
-    green.csv when green_path is given) + raw_prices.csv, build the time series, and
-    write the long parquet + latest-snapshot CSV."""
-    green = pd.read_csv(green_path) if green_path else load_accumulated_green()
+def run(
+    green_path: Path | str | None = None,
+    raw_path: Path = RAW_PRICES_CSV,
+    min_qa: int = 2,
+) -> dict:
+    """IO wrapper: read the accumulated GREEN (all {item}/latest greens at or above
+    min_qa, or a single green.csv when green_path is given) + raw_prices.csv, build
+    the time series, and write the long parquet + latest-snapshot CSV."""
+    from .audit import write_audit
+
+    green = pd.read_csv(green_path) if green_path else load_accumulated_green(min_qa)
     raw = pd.read_csv(raw_path, usecols=_RAW_COLS, low_memory=False)
     long_df, snapshot = build_timeseries(green, raw)
     OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
     long_df.to_parquet(TIMESERIES_PARQUET, index=False)
     snapshot.to_csv(SNAPSHOT_CSV, index=False)
+    audit = write_audit()
     return {
         "green_products": int(green["input_hash"].nunique())
         if "input_hash" in green.columns
@@ -238,4 +324,5 @@ def run(green_path: Path | str | None = None, raw_path: Path = RAW_PRICES_CSV) -
         "observations": int(len(long_df)),
         "parquet": str(TIMESERIES_PARQUET),
         "snapshot": str(SNAPSHOT_CSV),
+        **audit,
     }
