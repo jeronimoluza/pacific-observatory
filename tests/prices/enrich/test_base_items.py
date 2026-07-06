@@ -19,6 +19,7 @@ def _rice_rec():
     return {
         "name": "rice",
         "tokens": {"rice", "rices"},
+        "blank_tokens": {"rice", "rices"},
         "fresh_leaf": "01.1.1.1.2",
         "fresh_prefix": "01.1.1",
         "variety": {"basmati", "jasmine"},
@@ -57,6 +58,7 @@ class _DocStub(list):
 def _produce_rec():
     return {
         "tokens": {"apple", "apples"},
+        "blank_tokens": {"apple", "apples"},
         "plausible_basis": {"mass", "count", "item", None},
         "allowed_basis": {"mass"},
         "nonfood": set(),
@@ -657,6 +659,192 @@ def test_classify_names_buckets():
     assert buckets[2] == OTHER_FORM
 
 
+# --- Part A: main-noun ownership ----------------------------------------------
+def test_head_alias_index_is_derived(tmp_path):
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        idx = store.head_alias_index()
+        assert idx["milk"] == "milk" and idx["chocolate"] == "chocolate"
+        assert idx["rice"] == "rice" and idx["oranges"] == "orange"
+        # only alias rows populate the index (varieties/forms never do)
+        assert "flour" not in idx
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
+def test_owned_by_routes_modhead_to_other_form(tmp_path):
+    nlp = _nlp_or_skip()
+    from prices.enrich.base_items.phrase_index import food_phrase_index
+
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        rec = store.load_record("chicken")
+        names = ["Chicken Rice", "Chicken Breast", "Beef Rice"]
+        got = cascade.classify_names(
+            names,
+            ["en"] * 3,
+            rec,
+            nlp,
+            set(),
+            food_phrase_index(),
+            store.load_form_lexicon(),
+            store.load_neg_lexicon(),
+        )
+        # 'chicken rice' -> rice is the head base_item -> rice owns it
+        assert got[0][0] == OTHER_FORM and got[0][1] == "owned-by:rice"
+        # 'chicken breast' -> head is not a base_item -> unchanged (not owned-by)
+        assert not got[1][1].startswith("owned-by:")
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
+def test_variety_head_is_not_rerouted_to_owner(tmp_path):
+    """A syntactic head that is a declared variety of the current base_item
+    (cream ∈ milk.variety in 'Milk Full Cream') must stay with the item, not get
+    handed to the cream base_item as an owner."""
+    nlp = _nlp_or_skip()
+    from prices.enrich.base_items.phrase_index import food_phrase_index
+
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        rec = store.load_record("milk")
+        names = ["Milk Full Cream 1L", "Milk Mango"]
+        got = cascade.classify_names(
+            names,
+            ["en"] * 2,
+            rec,
+            nlp,
+            set(),
+            food_phrase_index(),
+            store.load_form_lexicon(),
+            store.load_neg_lexicon(),
+        )
+        # cream is a milk variety -> NOT owned-by:cream
+        assert got[0][1] != "owned-by:cream"
+        # mango is a real other base_item, not a milk variety -> still reroutes
+        assert got[1][1] == "owned-by:mango"
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
+def test_dedup_owner_keeps_last_alias(tmp_path):
+    from prices.enrich.base_items import timeseries
+
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        # same physical product (input_hash) landed GREEN in two runs; the
+        # head-owner (rightmost alias = 'rice') must win, 'chicken' row dropped.
+        green = pd.DataFrame(
+            [
+                {
+                    "input_hash": "h1",
+                    "base_item": "chicken",
+                    "product_name_original": "Braised Chicken Rice",
+                },
+                {
+                    "input_hash": "h1",
+                    "base_item": "rice",
+                    "product_name_original": "Braised Chicken Rice",
+                },
+                {
+                    "input_hash": "h2",
+                    "base_item": "apple",
+                    "product_name_original": "Fuji Apple",
+                },
+            ]
+        )
+        out = timeseries._dedup_owner(green)
+        assert len(out) == 2  # h1 deduped to one row, h2 untouched
+        assert out[out["input_hash"] == "h1"].iloc[0]["base_item"] == "rice"
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
+def test_dedup_owner_compound_beats_constituent(tmp_path):
+    from prices.enrich.base_items import timeseries
+
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        # a bare compound product matched both the specific compound ('olive oil'
+        # -> olive_oil) and its constituent ('oil' -> oil). Both aliases END at
+        # the same spot, so the longer compound wins; the generic 'oil' is dropped.
+        green = pd.DataFrame(
+            [
+                {
+                    "input_hash": "h1",
+                    "base_item": "oil",
+                    "product_name_original": "Extra Virgin Olive Oil 1L",
+                },
+                {
+                    "input_hash": "h1",
+                    "base_item": "olive_oil",
+                    "product_name_original": "Extra Virgin Olive Oil 1L",
+                },
+            ]
+        )
+        out = timeseries._dedup_owner(green)
+        assert len(out) == 1
+        assert out.iloc[0]["base_item"] == "olive_oil"
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
+# --- Part C: head-noun -> COICOP leaf bridge (provenance-cited) ----------------
+def test_candidate_leaves_title_match_survives_excludes_veto():
+    nlp = _nlp_or_skip()
+    from prices.enrich.base_items import bridge
+
+    c = bridge.candidate_leaves("chocolate", nlp)
+    codes = {x["code"] for x in c}
+    # 'Chocolate' (01.1.8.5.1) is recovered via its TITLE even though its
+    # `excludes` names 'white chocolate' — a title match is definitional.
+    assert "01.1.8.5.1" in codes
+    top = next(x for x in c if x["code"] == "01.1.8.5.1")
+    assert top["field"] == "ttl"
+    assert top["provenance"].startswith("xlsx-match:ttl:")
+
+
+def test_candidate_leaves_intro_recovers_chicken_and_beef_is_a_gap():
+    nlp = _nlp_or_skip()
+    from prices.enrich.base_items import bridge
+
+    # 'chicken' is only in the intro of the poultry-meat leaf -> still recovered
+    assert "01.1.2.2.4" in {x["code"] for x in bridge.candidate_leaves("chicken", nlp)}
+    # 'beef' is semantic (bovine); absent from the xlsx -> a provenance gap
+    assert bridge.candidate_leaves("beef", nlp) == []
+
+
+def test_propose_bridge_commits_pick_with_provenance(tmp_path):
+    nlp = _nlp_or_skip()
+    from prices.enrich.base_items import bridge
+
+    store.set_data_dir(tmp_path)
+    try:
+        # in-candidate pick inherits xlsx provenance
+        n, in_cand = bridge.propose_bridge("milk", "01.1.4.1.1", nlp)
+        assert n == 1 and in_cand
+        p = store.load_proposals()
+        row = p[p["key"] == "milk"].iloc[0]
+        assert row["verdict"] == "default_leaf"
+        assert row["provenance"].startswith("xlsx-match:")
+        # out-of-candidate pick is still recorded but flagged as a recall gap
+        n2, in_cand2 = bridge.propose_bridge("beef", "01.1.2.2.1", nlp)
+        assert n2 == 1 and not in_cand2
+        beef = store.load_proposals()
+        assert (
+            beef[beef["key"] == "beef"]["provenance"] == "oracle:out-of-candidate"
+        ).all()
+        # keep-first: the same pick again writes nothing new
+        assert bridge.propose_bridge("milk", "01.1.4.1.1", nlp)[0] == 0
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
 def test_loop_status_ratio_and_convergence():
     from prices.enrich.base_items.pipeline import loop_status
 
@@ -839,3 +1027,127 @@ def test_skip_mine_env_gates_boilerplate(tmp_path, monkeypatch):
     monkeypatch.setenv("BASE_ITEMS_SKIP_MINE", "1")
     pipeline.run_iteration("pineapple", None, nlp=object())
     assert calls == []  # mine skipped when the guard is set
+
+
+# --- global cross-item (token -> role) prior -----------------------------------
+def test_build_token_prior_requires_unanimous_and_two_items(tmp_path):
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        # unanimous across two items -> transfers
+        store.append_gazetteer("rice", {"zestvalley": ("variety", "p")})
+        store.append_gazetteer("apple", {"zestvalley": ("variety", "p")})
+        # attested by only one item -> not global yet
+        store.append_gazetteer("rice", {"solobrand": ("variety", "p")})
+        # roles conflict across items -> not transferable (flip hazard)
+        store.append_gazetteer("rice", {"sparkle": ("variety", "p")})
+        store.append_gazetteer("apple", {"sparkle": ("nonfood", "p")})
+        # a form role carries an item-specific leaf -> excluded from the prior
+        store.append_gazetteer("rice", {"sliced": ("form:01.1.1.2.2", "p")})
+        store.append_gazetteer("apple", {"sliced": ("form:01.1.6.7.9", "p")})
+        prior = store.build_token_prior()
+        assert prior.get("zestvalley") == "variety"
+        assert "solobrand" not in prior
+        assert "sparkle" not in prior
+        assert "sliced" not in prior
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
+def test_load_record_applies_global_prior_across_items(tmp_path):
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        # two OTHER items unanimously learn a variety token
+        store.append_gazetteer("rice", {"zestvalley": ("variety", "p")})
+        store.append_gazetteer("apple", {"zestvalley": ("variety", "p")})
+        # a THIRD item with no zestvalley row of its own inherits it via the prior
+        rec = store.load_record("orange")
+        assert "zestvalley" in rec["benign"]
+        # a nonfood token transfers into the nonfood veto set
+        store.append_gazetteer("rice", {"detergentco": ("nonfood", "p")})
+        store.append_gazetteer("apple", {"detergentco": ("nonfood", "p")})
+        assert "detergentco" in store.load_record("orange")["nonfood"]
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
+def test_global_prior_excludes_base_item_alias_tokens(tmp_path):
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        # 'chocolate' is a registered base_item alias; even a unanimous cross-item
+        # tag must NOT transfer it (a shared head-noun is not a global modifier).
+        store.append_gazetteer("rice", {"chocolate": ("nonfood", "p")})
+        store.append_gazetteer("apple", {"chocolate": ("nonfood", "p")})
+        rec = store.load_record("orange")
+        assert "chocolate" not in rec["nonfood"]
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
+def test_global_prior_can_be_disabled(tmp_path, monkeypatch):
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        store.append_gazetteer("rice", {"zestvalley": ("variety", "p")})
+        store.append_gazetteer("apple", {"zestvalley": ("variety", "p")})
+        monkeypatch.setenv("BASE_ITEMS_DISABLE_PRIOR", "1")
+        rec = store.load_record("orange")
+        assert "zestvalley" not in rec["benign"]  # prior off -> no transfer
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
+# --- Part B: discovery miner ---------------------------------------------------
+def test_root_noun_is_head_position_only():
+    nlp = _nlp_or_skip()
+    from prices.enrich.base_items import discover
+
+    # the ROOT of a modified noun phrase is the head noun, never the modifier ->
+    # whole / raw / fresh can never surface as candidate base_items.
+    assert discover._root_noun(nlp("fresh apple juice")) == "juice"
+    assert discover._root_noun(nlp("whole milk")) == "milk"
+    assert discover._root_noun(nlp("raw chicken breast")) in {"breast", "chicken"}
+    # a bare modifier / non-noun root yields nothing
+    assert discover._root_noun(nlp("fresh")) is None
+    assert discover._root_noun(nlp("500")) is None
+
+
+def test_propose_existence_commits_to_proposals(tmp_path):
+    from prices.enrich.base_items import discover
+
+    store.set_data_dir(tmp_path)
+    try:
+        assert discover.propose_existence("noodle", True, note="staple") == 1
+        assert discover.propose_existence("shampoo", False) == 1
+        p = store.load_proposals()
+        assert set(p["kind"]) == {"existence"}
+        noodle = p[p["key"] == "noodle"].iloc[0]
+        assert noodle["verdict"] == "is_base_item"
+        assert noodle["provenance"] == "oracle:existence:staple"
+        assert (p[p["key"] == "shampoo"]["verdict"] == "not_base_item").all()
+        # keep-first: re-judging the same head noun writes nothing new
+        assert discover.propose_existence("noodle", True) == 0
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
+
+
+def test_leaf_coverage_flags_bound_and_open_leaves(tmp_path):
+    nlp = _nlp_or_skip()
+    from prices.enrich.base_items import discover
+
+    store.set_data_dir(tmp_path)
+    try:
+        taxonomy.seed_from_config(CONFIG)
+        cov = discover.leaf_coverage(nlp)
+        assert set(cov["covered"]) == {True, False}  # some bound, most still open
+        bound = set(cov[cov["covered"]]["code"])
+        # a seeded base_item's default leaf is marked covered
+        bi = store.load_base_items()
+        seeded_leaf = str(bi[bi["role"] == "alias"]["coicop_code"].dropna().iloc[0])
+        assert seeded_leaf in bound
+        # the vast majority of the ~334 priceable leaves have no base_item yet
+        assert (~cov["covered"]).sum() > cov["covered"].sum()
+    finally:
+        store.set_data_dir(store.REPO_ROOT / "data" / "prices")
