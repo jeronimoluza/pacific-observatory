@@ -1,14 +1,15 @@
 """
 Spider for Emart / SSG.com (South Korea) - https://emart.ssg.com/
-Listing-card extraction with Playwright. Category pages are React-hydrated and
-return a 15KB placeholder via plain HTTP; the listing cards expose product id,
-name, and price as data-attributes once hydrated, so no PDP visit is needed.
+Listing-card extraction over plain HTTP. The category pages are server-rendered
+(~1MB): when the Akamai edge check passes, the raw HTML already carries every
+`li.cunit_t232` card with product id, name, and price as data-attributes, so no
+Playwright render and no PDP visit is needed. Akamai bot-scores probabilistically
+(~1-in-3 to 1-in-2 requests 403), so 403 is retried — each retry is a fresh roll.
 """
 
 import logging
 
 import scrapy
-from scrapy_playwright.page import PageMethod
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +33,15 @@ class EmartKrSpider(scrapy.Spider):
     ]
 
     custom_settings = {
-        "PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT": 60000,
+        # ssg.com passes chrome124 fingerprints where the global chrome120 fails.
+        "IMPERSONATE_BROWSERS": ["chrome124"],
+        # Akamai bot-scores probabilistically; retry the 403s until a request rolls
+        # through. Each RetryMiddleware attempt re-issues a fresh curl_cffi request.
+        "RETRY_HTTP_CODES": [403, 500, 502, 503, 504, 408, 429],
+        "RETRY_TIMES": 12,
         "DOWNLOAD_DELAY": 2,
         "CONCURRENT_REQUESTS": 1,
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
     }
 
     async def start(self):
@@ -42,23 +49,7 @@ class EmartKrSpider(scrapy.Spider):
             yield scrapy.Request(
                 url,
                 callback=self.parse_listing,
-                meta={
-                    "playwright": True,
-                    "playwright_page_goto_kwargs": {"wait_until": "domcontentloaded"},
-                    "playwright_page_methods": [
-                        PageMethod("wait_for_timeout", 6000),
-                        PageMethod(
-                            "evaluate",
-                            "window.scrollTo(0, document.body.scrollHeight / 2)",
-                        ),
-                        PageMethod("wait_for_timeout", 1500),
-                        PageMethod(
-                            "evaluate",
-                            "window.scrollTo(0, document.body.scrollHeight)",
-                        ),
-                        PageMethod("wait_for_timeout", 1500),
-                    ],
-                },
+                meta={"impersonate": "chrome124"},
             )
 
     def parse_listing(self, response):
