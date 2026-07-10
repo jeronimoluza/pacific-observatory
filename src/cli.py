@@ -390,6 +390,12 @@ from prices.enrich.base_items.cli import (  # noqa: E402
 from prices.enrich.base_items.cli import (  # noqa: E402
     apply_verdicts_command as _prices_apply_verdicts,
 )
+from prices.enrich.base_items.cli import (  # noqa: E402
+    discover_command as _prices_discover,
+)
+from prices.enrich.classifier.cli import (  # noqa: E402
+    train_classifier_command as _prices_train_classifier,
+)
 
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
@@ -402,6 +408,8 @@ prices.add_command(_prices_classify, name="classify")
 prices.add_command(_prices_regex_check, name="regex-check")
 prices.add_command(_prices_build_timeseries, name="build-timeseries")
 prices.add_command(_prices_apply_verdicts, name="apply-verdicts")
+prices.add_command(_prices_discover, name="discover")
+prices.add_command(_prices_train_classifier, name="train-classifier")
 
 
 @prices.command("build")
