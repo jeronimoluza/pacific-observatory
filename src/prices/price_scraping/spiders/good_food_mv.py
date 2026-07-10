@@ -20,6 +20,15 @@ class GoodFoodMvSpider(scrapy.Spider):
     currency = "MVR"
     page_size = 250
 
+    # Site returns 429 under default concurrency; throttle to a single
+    # in-flight request per domain with a delay.
+    custom_settings = {
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
+        "DOWNLOAD_DELAY": 3,
+        "AUTOTHROTTLE_ENABLED": True,
+        "AUTOTHROTTLE_TARGET_CONCURRENCY": 1.0,
+    }
+
     async def start(self):
         yield scrapy.Request(
             f"{self.base_url}/products.json?limit={self.page_size}&page=1",

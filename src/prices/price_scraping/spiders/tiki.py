@@ -40,6 +40,12 @@ class TikiSpider(scrapy.Spider):
     currency = "VND"
     language = "vi"
 
+    # Pinned default IMPERSONATE_BROWSERS=["chrome120"] gets a 403 from
+    # tiki.vn; chrome124 passes its TLS fingerprint check.
+    custom_settings = {
+        "IMPERSONATE_BROWSERS": ["chrome124"],
+    }
+
     MAX_PAGES_PER_BRANCH = 60
     MAX_CONSECUTIVE_EMPTY_PAGES = 2
 

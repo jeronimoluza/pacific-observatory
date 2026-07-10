@@ -26,6 +26,15 @@ class SamoaMarketSpider(CrawlSpider):
     start_urls = ["https://samoamarket.com/collections/wholesale"]
     currency = "NZD"
 
+    # Site returns 429 under default concurrency; throttle to a single
+    # in-flight request per domain with a delay.
+    custom_settings = {
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
+        "DOWNLOAD_DELAY": 3,
+        "AUTOTHROTTLE_ENABLED": True,
+        "AUTOTHROTTLE_TARGET_CONCURRENCY": 1.0,
+    }
+
     # CSS selector fallbacks for product fields
     SELECTORS = get_selectors("samoa_market")
 

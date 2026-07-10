@@ -5,7 +5,7 @@ import scrapy
 
 logger = logging.getLogger(__name__)
 
-_AREA_RE = re.compile(r"([\d.]+)")
+_AREA_RE = re.compile(r"([\d.]+)平米")
 
 
 class AnjukeSpider(scrapy.Spider):
@@ -22,12 +22,12 @@ class AnjukeSpider(scrapy.Spider):
     }
 
     SELECTORS = {
-        "card": "li.list-item",
-        "listing_url": "a.houseInfo::attr(href)",
+        "card": "div.zu-itemmod",
+        "listing_url": ".zu-info h3 a::attr(href)",
         "price": "strong.price::text",
-        "area": "span.area::text",
-        "district": "span.comm-address::text",
-        "next_page": "a.next::attr(href)",
+        "area": "p.details-item.tag ::text",
+        "district": "address.details-item.tag ::text",
+        "next_page": "a.aNxt::attr(href)",
     }
 
     def parse(self, response):
@@ -59,13 +59,14 @@ class AnjukeSpider(scrapy.Spider):
             except ValueError:
                 continue
 
-            area_raw = card.css(self.SELECTORS["area"]).get(default="")
+            area_raw = "".join(card.css(self.SELECTORS["area"]).getall())
             am = _AREA_RE.search(area_raw)
             area_sqm = am.group(1) if am else None
 
-            district = card.css(self.SELECTORS["district"]).get()
-            if district:
-                district = district.strip()
+            district_parts = [
+                t.strip() for t in card.css(self.SELECTORS["district"]).getall() if t.strip()
+            ]
+            district = district_parts[1] if len(district_parts) > 1 else None
 
             url = listing_url or response.url
             yield {
