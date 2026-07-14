@@ -302,7 +302,7 @@ class CSVWriter:
 
         try:
             # Read CSV file and extract URLs
-            df = pd.read_csv(file_path, encoding="utf-8")
+            df = pd.read_csv(file_path, usecols=["url"], encoding="utf-8")
             urls = set(df["url"].astype(str).unique())
             logger.info(f"Found {len(urls)} existing article URLs")
             return urls
