@@ -22,7 +22,7 @@ from prices.enrich.keywords.types import (
     SubLabel,
     Subgroup,
 )
-from prices.enrich.tier_b import cross_check
+from prices.enrich import cross_check
 
 
 def _clear_caches() -> None:

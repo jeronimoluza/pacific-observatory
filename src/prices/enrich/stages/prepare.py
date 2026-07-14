@@ -6,6 +6,7 @@ import pandas as pd
 
 from core.config import load_countries
 from prices.enrich import config
+from prices.enrich.boilerplate import strip_boilerplate
 from prices.enrich.versioning import input_hash
 
 # Currencies that use European-style number formatting:
@@ -50,10 +51,24 @@ def parse_price(price_str, currency: Optional[str] = None) -> Optional[float]:
         return None
 
 
+def _clean_url(value) -> str:
+    if value is None or (isinstance(value, float) and pd.isna(value)):
+        return ""
+    return str(value).strip()
+
+
 def _row_input_dict(row: pd.Series) -> dict:
+    """Dedup identity = (product_name, product_url). Rows with no URL (wayback /
+    common-crawl) fall back to (name, country, currency) so they are not
+    over-collapsed by a shared empty URL."""
+    name = row.get("product_name_original")
+    if name is None or (isinstance(name, float) and pd.isna(name)):
+        name = row.get("product_name")
+    url = _clean_url(row.get("product_url"))
+    if url:
+        return {"product_name_original": str(name), "product_url": url}
     return {
-        "product_name_original": str(row["product_name"]),
-        "category": "" if pd.isna(row.get("category")) else str(row["category"]),
+        "product_name_original": str(name),
         "country": str(row["country"]),
         "currency": str(row["currency"]),
     }
@@ -88,7 +103,7 @@ def _build_source_coicop_codes_map() -> dict[tuple[str, str], str]:
     """(country, source) → `|`-joined declared coicop_codes from per-source
     YAML. Missing or empty declarations are absent from the map."""
     from prices.config import PriceSourceConfig, discover_prices_configs
-    from prices.enrich.tier_b.narrowness import serialize_codes
+    from prices.enrich.coicop_codes import serialize_codes
 
     out: dict[tuple[str, str], str] = {}
     for path in discover_prices_configs():
@@ -127,8 +142,20 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
         df["category"] = ""
     else:
         df["category"] = df["category"].fillna("").astype(str)
+    if "product_url" not in df.columns:
+        df["product_url"] = ""
+    df["product_url"] = df["product_url"].map(_clean_url)
+    if "date" in df.columns:
+        df["observation_date"] = pd.to_datetime(df["date"], errors="coerce")
+    else:
+        df["observation_date"] = pd.NaT
     df["price"] = df.apply(lambda r: parse_price(r["price"], r.get("currency")), axis=1)
     df["input_hash"] = df.apply(lambda r: input_hash(_row_input_dict(r)), axis=1)
+    # Strip retailer boilerplate (keeping quantity) after the observation hash is
+    # fixed, so canonical keys downstream see clean names but input_hash identity
+    # stays tied to the raw scraped name.
+    _boiler = {n: strip_boilerplate(n) for n in df["product_name_original"].unique()}
+    df["product_name_original"] = df["product_name_original"].map(_boiler)
     lang_map = _build_country_lang_map()
     df["lang"] = df["country"].map(lang_map).fillna("").astype(str)
 
@@ -155,17 +182,23 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
     else:
         df["declared_coicop_codes"] = ""
 
-    grouped = df.groupby("input_hash", as_index=False).agg(
+    agg = dict(
         product_name_original=("product_name_original", "first"),
+        product_url=("product_url", _first_non_empty),
         category=("category", _first_non_empty),
         country=("country", "first"),
         currency=("currency", "first"),
         lang=("lang", "first"),
         channel=("channel", _modal_or_empty),
         declared_coicop_codes=("declared_coicop_codes", _modal_or_empty),
+        observation_date=("observation_date", "max"),
         price=("price", "median"),
         n_rows=("input_hash", "size"),
     )
+    for col in ("source", "region", "subregion"):
+        if col in df.columns:
+            agg[col] = (col, _first_non_empty)
+    grouped = df.groupby("input_hash", as_index=False).agg(**agg)
     return grouped
 
 
