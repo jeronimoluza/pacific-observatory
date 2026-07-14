@@ -28,13 +28,16 @@ from prices.enrich.classifier import MANIFEST_FILE, TRAIN_FILE, version_dir
 GOLD_DIR = config.REPO_ROOT / "data" / "prices" / "enrich" / "gold"
 GOLD_MAIN = GOLD_DIR / "gold_v5_8k_final.parquet"
 GOLD_EXTRA = GOLD_DIR / "gold_v5_fnb_extra.parquet"
+# Gold-expansion rounds (leaf-targeted, dual-labeled + Opus-adjudicated); each
+# round appends a new gold_v5_roundN_final.parquet in the canonical 8k schema.
+GOLD_ROUNDS = sorted(GOLD_DIR.glob("gold_v5_round*_final.parquet"))
 
 MIN_SUPPORT = 5
 
 
 def _load_gold() -> pd.DataFrame:
     frames = []
-    for p in (GOLD_MAIN, GOLD_EXTRA):
+    for p in (GOLD_MAIN, GOLD_EXTRA, *GOLD_ROUNDS):
         if p.exists():
             frames.append(pd.read_parquet(p))
     if not frames:
@@ -78,7 +81,9 @@ def build(
         "min_support": min_support,
         "n_rows": int(len(table)),
         "n_leaves": int(table["label"].nunique()),
-        "gold_sources": [p.name for p in (GOLD_MAIN, GOLD_EXTRA) if p.exists()],
+        "gold_sources": [
+            p.name for p in (GOLD_MAIN, GOLD_EXTRA, *GOLD_ROUNDS) if p.exists()
+        ],
         "rows_per_source": table["source"].value_counts().to_dict(),
         "rows_per_leaf": table["label"].value_counts().to_dict(),
     }
