@@ -102,6 +102,7 @@ def run(division: str = config.CLASSIFIER_DEFAULT_DIVISION) -> pd.DataFrame:
                 "n_nodes": len(unodes),
                 "tau": round(float(tau), 4),
                 "fired": fired,
+                "accuracy": round(float(correct.mean()), 4),  # ungated argmax over all
                 "coverage": round(fired / n, 4) if n else float("nan"),
                 "precision": round(tp / fired, 4) if fired else float("nan"),
             }
@@ -112,8 +113,8 @@ def run(division: str = config.CLASSIFIER_DEFAULT_DIVISION) -> pd.DataFrame:
         f"CV: {OOF_FOLDS}-fold OOF, target precision {TARGET_PRECISION:.0%}, per-level gate\n"
     )
     show = df.copy()
-    show["coverage"] = (show["coverage"] * 100).round(1).astype(str) + "%"
-    show["precision"] = (show["precision"] * 100).round(1).astype(str) + "%"
+    for col in ("accuracy", "coverage", "precision"):
+        show[col] = (show[col] * 100).round(1).astype(str) + "%"
     print(show.to_string(index=False))
     return df
 
