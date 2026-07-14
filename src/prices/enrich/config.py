@@ -49,8 +49,13 @@ CLASSIFIER_EMBED_PROMPT = (
 )
 CLASSIFIER_EMBED_BATCH = int(os.environ.get("QWEN_EMBED_BATCH", "8"))
 CLASSIFIER_EMBED_CACHE_DIR = ENRICH_DIR / "_embed_cache_qwen"
-CLASSIFIER_CONFIDENCE_TAU = 0.90  # global accept gate on head max-proba
+CLASSIFIER_CONFIDENCE_TAU = (
+    0.90  # fallback gate; the trained bundle carries its own derived tau
+)
 CLASSIFIER_DEFAULT_DIVISION = "01"  # food & non-alcoholic beverages (PoC scope)
+CLASSIFIED_PARQUET = (
+    CACHE_DIR / "classified.parquet"
+)  # classify-stage output, keyed by input_hash
 
 PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 ENRICH_PROMPT_PATH = PROMPTS_DIR / "enrich_system.md"

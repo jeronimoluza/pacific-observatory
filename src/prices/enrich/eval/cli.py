@@ -1,37 +1,27 @@
 import click
 
-from prices.enrich.eval import runner
+from prices.enrich import config
+from prices.enrich.eval import head_eval
 
 
 @click.command(name="eval")
 @click.option(
-    "--tier-c",
-    is_flag=True,
-    help="Invoke tier-c (Gemini) on residuals. Costs API calls; off by default.",
+    "--division",
+    default=config.CLASSIFIER_DEFAULT_DIVISION,
+    help="COICOP division to score (default 01 — food & non-alcoholic beverages).",
 )
 @click.option(
-    "--no-write",
-    is_flag=True,
-    help="Print the scorecard without writing report.md/summary.json/misses.csv.",
+    "--target-precision",
+    type=float,
+    default=head_eval.TARGET_PRECISION,
+    help="Precision the global gate targets when deriving tau (default 0.98).",
 )
-@click.option(
-    "--gold",
-    "gold_path",
-    type=click.Path(exists=True, dir_okay=False),
-    default=None,
-    help="Override gold parquet path (default: data/prices/enrich/gold/gold_labels.parquet).",
-)
-def eval_command(tier_c, no_write, gold_path):
-    """Score the enrichment cascade against the working gold set.
+def eval_command(division, target_precision):
+    """Score the (embedding -> head) classifier against gold via cross-validation.
 
-    Reports per-field accuracy, composed unit_value accuracy (1% tolerance),
-    and attributes each miss to a causal bucket: A_coicop (wrong leaf),
-    B_basis (wrong pricing_basis), C_magnitude (wrong unit_value). Writes to
-    outputs/prices/reports/eval/. Tier-c is off unless --tier-c is passed.
+    Reports the config-E operating point — global confidence gate at the target
+    precision plus per-leaf trap vetoes — as overall precision and coverage plus
+    a per-leaf breakdown, using out-of-fold predictions on the gold food/bev
+    leaves.
     """
-    runner.run(
-        gold_path=gold_path,
-        run_tier_c=tier_c,
-        write=not no_write,
-        print_report=True,
-    )
+    head_eval.run(division=division, target_precision=target_precision)

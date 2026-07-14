@@ -12,9 +12,9 @@ every miss to one of three causal buckets:
     B_basis      right COICOP, wrong pricing_basis
     C_magnitude  right basis, wrong unit_value magnitude
 
-Entry point: `prices.enrich.eval.runner.run()` (also `python run.py prices eval`).
+Entry point: `prices.enrich.eval.head_eval.run()` (also `python run.py prices eval`).
 """
 
-from prices.enrich.eval.runner import run
+from prices.enrich.eval.head_eval import run
 
 __all__ = ["run"]

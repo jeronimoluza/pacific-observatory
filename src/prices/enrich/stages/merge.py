@@ -4,7 +4,6 @@ from typing import Optional
 import pandas as pd
 
 from prices.enrich import config
-from prices.enrich.tier_b import cache
 from prices.enrich.stages.prepare import _row_input_dict, parse_price
 from prices.enrich.versioning import input_hash
 
@@ -141,7 +140,10 @@ def run(csv_path: Optional[Path] = None, out_path: Optional[Path] = None) -> Non
     csv_path = csv_path or config.RAW_PRICES_CSV
     out_path = out_path or config.ENRICHED_PRICES_CSV
     raw = pd.read_csv(csv_path, low_memory=False)
-    enriched = cache.read_cache()
+    if config.CLASSIFIED_PARQUET.exists():
+        enriched = pd.read_parquet(config.CLASSIFIED_PARQUET)
+    else:
+        enriched = pd.DataFrame(columns=["input_hash", *ENRICHMENT_COLS])
     out = merge_enrichments(raw, enriched, key_recompute=True)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(out_path, index=False)

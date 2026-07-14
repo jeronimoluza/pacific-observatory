@@ -192,11 +192,9 @@ def _compose_base(lang: str | None) -> list[PackPattern]:
 
 
 def _resolve_lang_for_country(country: str) -> str | None:
-    try:
-        from prices.enrich.stages.enrich import _resolve_lang
-    except Exception:
-        return None
-    return _resolve_lang(country)
+    from prices.enrich.langs import resolve_lang
+
+    return resolve_lang(country)
 
 
 def _load_country_patch(
