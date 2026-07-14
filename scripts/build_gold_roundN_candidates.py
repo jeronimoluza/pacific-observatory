@@ -58,6 +58,7 @@ BATCH_COLS = [
 
 TARGET_PER_LEAF = 10  # >=10 gold labels per reachable leaf
 N_PER_LEAF = 6  # candidates dispatched per under-covered leaf this round
+MAX_PER_BRAND = 2  # cap same-brand (digit-stripped) near-dupes per leaf
 NONLATIN_FRAC = 0.30  # round-level quota
 SEED = 20260715
 
@@ -198,6 +199,13 @@ def _norm_key(name: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9 ]", " ", str(name).lower())).strip()
 
 
+def _brand_key(name: str) -> str:
+    """Norm-key with digits stripped, so size/pack variants of the same product
+    ("so good almond milk 1l" / "... 2l") collapse to one brand-key. Caps how many
+    near-duplicate SKUs a single fat pattern (usually a brand) can contribute."""
+    return re.sub(r"\s+", " ", re.sub(r"\d+", "", _norm_key(name))).strip()
+
+
 def _is_nonlatin(name: str) -> bool:
     for ch in str(name):
         if ch.isalpha():
@@ -317,13 +325,15 @@ def _corpus_token_df(corpus: pd.DataFrame) -> Counter:
 
 
 def _match_corpus(corpus, anchors, accept, veto, want, exclude) -> dict:
-    """Scan each unique name once. A name matches leaf L via (a) an accept n-gram
-    (strong, weight ACCEPT_WEIGHT) or (b) an anchor token (weak). Any L whose veto
-    n-gram appears is disqualified. Assign to the best-scoring wanted leaf.
-    Returns leaf -> list of corpus row-idx."""
+    """Scan each unique name once. A leaf that HAS a require-list matches only via
+    its accept n-grams (hard require, weight ACCEPT_WEIGHT); a leaf without one
+    falls back to anchor tokens. This keeps a bare anchor ("almond") from leaking
+    almond-meal/cereal/cosmetics into a require-listed leaf. Any L whose veto n-gram
+    appears is disqualified. Assign to the best-scoring wanted leaf. Returns
+    leaf -> list of corpus row-idx."""
     tok_to_leaves = defaultdict(list)
     for code, toks in anchors.items():
-        if code in want:
+        if code in want and code not in accept:  # anchor-mode leaves only
             for t in toks:
                 tok_to_leaves[t].append(code)
     ng_to_leaves = defaultdict(list)
@@ -416,13 +426,24 @@ def build(round_no: int, dry_run: bool) -> tuple:
             if key in picked_keys:
                 continue
             (non if _is_nonlatin(names[i]) else lat).append(i)
+        # fill respecting a per-brand cap so one fat brand pattern cannot supply
+        # more than MAX_PER_BRAND size-variant near-duplicates for this leaf
         take = []
-        take += non[:per_leaf_nonlatin]
-        take += lat[: N_PER_LEAF - len(take)]
-        if len(take) < N_PER_LEAF:
-            take += non[
-                per_leaf_nonlatin : per_leaf_nonlatin + (N_PER_LEAF - len(take))
-            ]
+        brand_ct = Counter()
+
+        def _fill(pool, limit):
+            for i in pool:
+                if len(take) >= limit:
+                    break
+                bk = _brand_key(names[i])
+                if brand_ct[bk] >= MAX_PER_BRAND:
+                    continue
+                brand_ct[bk] += 1
+                take.append(i)
+
+        _fill(non, per_leaf_nonlatin)
+        _fill(lat, N_PER_LEAF)
+        _fill(non, N_PER_LEAF)  # backfill from remaining non-latin
         mode = "accept" if code in accept else "anchor"
         for i in take:
             picked_keys.add(_norm_key(names[i]))
