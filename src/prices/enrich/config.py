@@ -38,6 +38,20 @@ FAILED_PARQUET = CACHE_DIR / "_failed.parquet"
 EVAL_SET_CSV = ENRICH_DIR / "eval_set.csv"
 EVAL_HISTORY_CSV = ENRICH_DIR / "eval_history.csv"
 
+# --- Classifier: (embedding → head) COICOP classification ---
+# Structural regex extraction + a logistic-regression head over Qwen3-Embedding
+# vectors of the RAW product name (normalization/canonicalization hurts). This
+# replaces the retired KNN/HNSW + LLM-reranker cascade.
+CLASSIFIER_EMBED_MODEL = os.environ.get("QWEN_EMBED_MODEL", "Qwen/Qwen3-Embedding-4B")
+CLASSIFIER_EMBED_PROMPT = (
+    "Instruct: Represent the retail product name for COICOP category "
+    "classification.\nQuery: "
+)
+CLASSIFIER_EMBED_BATCH = int(os.environ.get("QWEN_EMBED_BATCH", "8"))
+CLASSIFIER_EMBED_CACHE_DIR = ENRICH_DIR / "_embed_cache_qwen"
+CLASSIFIER_CONFIDENCE_TAU = 0.90  # global accept gate on head max-proba
+CLASSIFIER_DEFAULT_DIVISION = "01"  # food & non-alcoholic beverages (PoC scope)
+
 PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 ENRICH_PROMPT_PATH = PROMPTS_DIR / "enrich_system.md"
 TAXONOMY_PROMPT_PATH = PROMPTS_DIR / "taxonomy_system.md"
@@ -123,6 +137,10 @@ BRAND_PRIOR_COS_HIGH = KNN_TAU_LOW  # 0.85 — hand off to soft above this
 # cross-channel candidates (logged as cross_channel_accept=True).
 KNN_CHANNEL_OVERFETCH = 4
 MIN_SAME_CHANNEL_KNN = _ENRICH_KNOBS["min_same_channel_knn"]  # 3
+
+# W4 consensus layer: when true, `prices process` may run classify-delta after
+# dedupe. Default false keeps the existing pipeline byte-identical.
+CONSENSUS_ENABLED = _ENRICH_KNOBS.get("consensus_enabled", False)
 
 TIER_B_INDEX_DIR = Path(
     os.environ.get("TIER_B_INDEX_DIR", str(ENRICH_DIR / "_tier_b_index"))
