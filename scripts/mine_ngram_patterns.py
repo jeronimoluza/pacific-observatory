@@ -27,13 +27,28 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 GOLD_DIR = ROOT / "data" / "prices" / "enrich" / "gold"
 CORPUS = ROOT / "data" / "prices" / "_enrich" / "products_input.parquet"
-CANDIDATES = GOLD_DIR / "gold_round1_candidates.parquet"
-ROUND_FINAL = GOLD_DIR / "gold_v5_round1_final.parquet"
 GOLD_MAIN = GOLD_DIR / "gold_v5_8k_final.parquet"
 GOLD_EXTRA = GOLD_DIR / "gold_v5_fnb_extra.parquet"
 
 VETO_OUT = GOLD_DIR / "veto_lexicon.parquet"
 ACCEPT_OUT = GOLD_DIR / "accept_patterns.parquet"
+
+
+def _candidates_path(round_no: int) -> Path:
+    return GOLD_DIR / f"gold_round{round_no}_candidates.parquet"
+
+
+def _round_final_path(round_no: int) -> Path:
+    return GOLD_DIR / f"gold_v5_round{round_no}_final.parquet"
+
+
+def _latest_round() -> int:
+    ns = [
+        int(p.stem.split("round")[1].split("_")[0])
+        for p in GOLD_DIR.glob("gold_round*_candidates.parquet")
+    ]
+    return max(ns) if ns else 1
+
 
 _WORD = re.compile(r"[a-z0-9]+")
 _UNIT = {
@@ -85,9 +100,11 @@ def _name_ngrams(name: str) -> set[str]:
     return set(_ngrams(_content_tokens(name)))
 
 
-def _load_round() -> pd.DataFrame:
-    cand = pd.read_parquet(CANDIDATES)
-    fin = pd.read_parquet(ROUND_FINAL)[["gold_row_id", "verdict", "code"]]
+def _load_round(round_no: int) -> pd.DataFrame:
+    cand = pd.read_parquet(_candidates_path(round_no))
+    fin = pd.read_parquet(_round_final_path(round_no))[
+        ["gold_row_id", "verdict", "code"]
+    ]
     m = cand.merge(fin, on="gold_row_id", how="left")
     m["code"] = m["code"].astype(str)
     m["target"] = m["target_leaf_hint"].astype(str)
@@ -96,8 +113,13 @@ def _load_round() -> pd.DataFrame:
 
 
 def _gold_positives() -> dict:
-    """leaf -> set of positive product names (standing gold, verdict==leaf)."""
-    frames = [pd.read_parquet(p) for p in (GOLD_MAIN, GOLD_EXTRA) if p.exists()]
+    """leaf -> set of positive product names across ALL standing gold (main + extra
+    + every prior round final), verdict==leaf. Round finals fold this round's keeps
+    back in so accept patterns reflect the full current gold vocabulary."""
+    rounds = sorted(GOLD_DIR.glob("gold_v5_round*_final.parquet"))
+    frames = [
+        pd.read_parquet(p) for p in (GOLD_MAIN, GOLD_EXTRA, *rounds) if p.exists()
+    ]
     g = pd.concat(frames, ignore_index=True)
     g = g[g["verdict"] == "leaf"]
     out = defaultdict(set)
@@ -200,8 +222,8 @@ def _corpus_coverage(patterns: set[str]) -> Counter:
     return cov
 
 
-def build() -> dict:
-    rnd = _load_round()
+def build(round_no: int) -> dict:
+    rnd = _load_round(round_no)
     gold_pos = _gold_positives()
 
     vetoes = mine_vetoes(rnd, gold_pos)
@@ -234,9 +256,12 @@ def build() -> dict:
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "--round", type=int, default=None, help="round to mine (default latest)"
+    )
     ap.add_argument("--show", type=int, default=25, help="preview top rows")
     args = ap.parse_args()
-    info = build()
+    info = build(args.round if args.round is not None else _latest_round())
     import json
 
     print(json.dumps(info, indent=2))
