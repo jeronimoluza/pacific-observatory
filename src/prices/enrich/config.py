@@ -37,6 +37,9 @@ ENRICHMENTS_PARQUET = CACHE_DIR / "enrichments.parquet"
 FAILED_PARQUET = CACHE_DIR / "_failed.parquet"
 EVAL_SET_CSV = ENRICH_DIR / "eval_set.csv"
 EVAL_HISTORY_CSV = ENRICH_DIR / "eval_history.csv"
+VETO_LEXICON_PARQUET = (
+    REPO_ROOT / "data" / "prices" / "enrich" / "gold" / "veto_lexicon.parquet"
+)
 
 # --- Classifier: (embedding → head) COICOP classification ---
 # Structural regex extraction + a logistic-regression head over Qwen3-Embedding
