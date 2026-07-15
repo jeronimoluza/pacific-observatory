@@ -38,12 +38,22 @@ from prices.enrich.extract import (
 from prices.enrich.normalize import extract_pack
 
 
-# Loose single-suffix count matchers (bare `\d+s` / `\d+'s`): fine as a
-# standalone fallback, but too noisy to promote OVER a measure — they fire on
-# brand tokens ("333'S OLIVES") and sizes ("2s"). Precision-first: exclude them.
-_LOOSE_PROMOTE_IDS = frozenset({"EN_APOS_S", "EN_SACHETS"})
+# Loose single-suffix count matchers (bare `\d+s` / `\d+'s`) are now eligible
+# to promote INTO a co-occurring measure (rung 3's noun_count_raw): the
+# bare-adjacency shape (no `X`/`×` operator — that form is a distinct earlier
+# candidate, "apos", handled by rung 1) IS the mass->count convention this
+# promotion exists for ("Mission Quinoa Wraps 8s 360g" -> count=8). The
+# no-measure brand-token case ("333'S OLIVES") never reaches this promotion —
+# it requires `st.pack_unit is not None` — so loosening here does not reopen
+# that risk. Kept as an explicit hook for any future id that DOES need
+# excluding.
+_LOOSE_PROMOTE_IDS = frozenset()
 _PROMOTE_COUNT_CAP = 144  # a co-occurring measure + count>144 is a size/model artifact
 _RANGE_LOW_RE = re.compile(r"\d\s*[-–]\s*$")
+# "buy N get M free" bonus-pack idiom ("18+2s"): the suffixed number is a
+# promo bonus count, not the pack's piece count — reject it like a range low
+# bound (Pass 1b's marketing-limit guard doesn't cover this shape).
+_BONUS_PLUS_RE = re.compile(r"\d\s*\+\s*$")
 
 
 def _clean_promote_count(ec_cand, stripped: str):
@@ -51,7 +61,7 @@ def _clean_promote_count(ec_cand, stripped: str):
 
     Precision guards (never promote a doubtful token over an explicit measure):
     loose single-suffix ids excluded, pack-size sanity cap, numeric-range low
-    bound rejected."""
+    bound rejected, bonus-pack "N+Ms" rejected."""
     if ec_cand is None:
         return None
     n = ec_cand.groups.get("count")
@@ -61,7 +71,9 @@ def _clean_promote_count(ec_cand, stripped: str):
         return None
     span = ec_cand.span
     if span:
-        if _RANGE_LOW_RE.search(stripped[max(0, span[0] - 4) : span[0]]):
+        if _RANGE_LOW_RE.search(
+            stripped[max(0, span[0] - 4) : span[0]]
+        ) or _BONUS_PLUS_RE.search(stripped[max(0, span[0] - 4) : span[0]]):
             return None
         # servings / marketing-limit clause near the match: a portions count
         # ("50杯分") or a purchase limit, not a pack quantity — mirror Pass 1b2.
@@ -281,11 +293,16 @@ def _rung_pack_unit_emit(st):
         # calc decides what to do with them). Convention: volume -> multiplier,
         # mass/count -> count. Skip a total-breakdown count ("10kg (5kg×2)"): there
         # the integer is the breakdown of the stated total, not an extra quantity.
+        # Skip unit=mg: in this corpus a milligram "measure" beside a pack count
+        # ("160mg Softgel 100s") is a per-unit drug DOSE misread as the pack's
+        # mass, not a real sale weight — promoting the count would compound one
+        # wrong field into two.
         n = st.noun_count_raw
         if (
             n
             and n > 1
             and multiplier == 1
+            and st.pack_unit != "mg"
             and not _is_total_breakdown(st.item_name, st.pack_value, st.pack_unit, n)
         ):
             if um["basis"] == "volume":
