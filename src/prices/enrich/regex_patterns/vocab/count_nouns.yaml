@@ -69,3 +69,15 @@ EN_APOS_S:
 EN_N_TICKETS:
   {template: num_noun, sep: required, lb: word, case: cs,
    nouns: ['Tickets?', 'tickets?', 'TICKETS?']}
+
+# broad bidirectional count-noun class (C): <num><noun> + guarded <noun><num>.
+# Appended last so existing first-match order is unchanged; fires only when no
+# narrower pattern above already captured the integer.
+EN_COUNT_NUM_NOUN:
+  {template: num_noun, sep: optional, lb: word, case: ci,
+   nouns: ['slices?', 'sachets?', 'cakes?', 'combos?', 'pods?', 'sliders?',
+           'sticks?', 'bars?', 'tins?', 'trays?', 'tubes?', 'bottles?',
+           'cans?', 'jars?', 'cups?', 'bags?', 'boxe?s?', 'cases?', 'sets?']}
+EN_COUNT_NOUN_TRAIL:
+  {template: regex, case: ci,
+   regex: '\b(?:pack|combo|set|box|case)\s*-?\s*(?P<count>\d+)(?![\d.,]*\s*(?:ml|mls|l|ltrs?|litres?|liters?|cl|dl|g|gm|gr|kg|mg|oz|lb)\b)\b'}

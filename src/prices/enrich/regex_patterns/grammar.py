@@ -201,6 +201,8 @@ _META = {
     "EN_TWIN_PACK": dict(lang="any", script="latin", groups=()),
     "EN_TRIPLE_PACK": dict(lang="any", script="latin", groups=()),
     "EN_DOUBLE_PACK": dict(lang="any", script="latin", groups=()),
+    "EN_COUNT_NUM_NOUN": dict(lang="any", script="latin"),
+    "EN_COUNT_NOUN_TRAIL": dict(lang="any", script="latin"),
     # count_pack/latin_cpi (extra_count, script=None)
     "NUM_ROLLS": dict(lang="any"),
     "EN_COMMA_XN": dict(lang="any"),

@@ -202,7 +202,7 @@ ROWS = [
         "Thin Sausages 24 Pack 1.8kg",
         "en",
         "",
-        ("mass", 1.8, "kg", 1, 1, False, False, False, None),
+        ("mass", 1.8, "kg", 24, 1, False, False, False, None),
     ),
     (
         "vietnamese_counter_mass",

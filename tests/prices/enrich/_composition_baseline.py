@@ -72,6 +72,8 @@ EXTRA_COUNT: tuple[str, ...] = (
     "en_twin_pack",
     "en_triple_pack",
     "en_double_pack",
+    "en_count_num_noun",
+    "en_count_noun_trail",
     "vi_m_pieces",
     "en_n_rolls",
     "en_comma_xn",

@@ -30,7 +30,7 @@ _EXPECTED_CARDINALITY = {
     "per_unit_marker": 4,
     "single_measure": 4,
     "multipack": 11,
-    "count_pack": 29,
+    "count_pack": 31,
     "_unrouted": 1,
 }
 
@@ -65,6 +65,8 @@ _SCRIPT_LATIN = {
     "EN_TWIN_PACK",
     "EN_TRIPLE_PACK",
     "EN_DOUBLE_PACK",
+    "EN_COUNT_NUM_NOUN",
+    "EN_COUNT_NOUN_TRAIL",
 }
 
 

@@ -24,4 +24,6 @@ PATTERNS: tuple[PackPattern, ...] = grammar.build_ids(
     "EN_TWIN_PACK",
     "EN_TRIPLE_PACK",
     "EN_DOUBLE_PACK",
+    "EN_COUNT_NUM_NOUN",
+    "EN_COUNT_NOUN_TRAIL",
 )

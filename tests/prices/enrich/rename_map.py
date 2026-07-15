@@ -63,6 +63,8 @@ RENAME: dict[str, str] = {
     "en_twin_pack": "EN_TWIN_PACK",
     "en_triple_pack": "EN_TRIPLE_PACK",
     "en_double_pack": "EN_DOUBLE_PACK",
+    "en_count_num_noun": "EN_COUNT_NUM_NOUN",
+    "en_count_noun_trail": "EN_COUNT_NOUN_TRAIL",
     "en_n_rolls": "NUM_ROLLS",
     "en_comma_xn": "EN_COMMA_XN",
     "en_n_pcs": "EN_PCS",

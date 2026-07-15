@@ -38,6 +38,39 @@ from prices.enrich.extract import (
 from prices.enrich.normalize import extract_pack
 
 
+# Loose single-suffix count matchers (bare `\d+s` / `\d+'s`): fine as a
+# standalone fallback, but too noisy to promote OVER a measure — they fire on
+# brand tokens ("333'S OLIVES") and sizes ("2s"). Precision-first: exclude them.
+_LOOSE_PROMOTE_IDS = frozenset({"EN_APOS_S", "EN_SACHETS"})
+_PROMOTE_COUNT_CAP = 144  # a co-occurring measure + count>144 is a size/model artifact
+_RANGE_LOW_RE = re.compile(r"\d\s*[-–]\s*$")
+
+
+def _clean_promote_count(ec_cand, stripped: str):
+    """The count-noun integer eligible to compose into a measure's count, or None.
+
+    Precision guards (never promote a doubtful token over an explicit measure):
+    loose single-suffix ids excluded, pack-size sanity cap, numeric-range low
+    bound rejected."""
+    if ec_cand is None:
+        return None
+    n = ec_cand.groups.get("count")
+    if not n or n <= 1 or n > _PROMOTE_COUNT_CAP:
+        return None
+    if ec_cand.groups.get("regex_id") in _LOOSE_PROMOTE_IDS:
+        return None
+    span = ec_cand.span
+    if span:
+        if _RANGE_LOW_RE.search(stripped[max(0, span[0] - 4) : span[0]]):
+            return None
+        # servings / marketing-limit clause near the match: a portions count
+        # ("50杯分") or a purchase limit, not a pack quantity — mirror Pass 1b2.
+        win = stripped[max(0, span[0] - 12) : min(len(stripped), span[1] + 12)]
+        if _SERVINGS_SUFFIX_RE.search(win) or _MARKETING_LIMIT_RE.search(win):
+            return None
+    return n
+
+
 @dataclass(frozen=True)
 class Candidate:
     """One recorded matcher fire from the enumerate step.
@@ -242,7 +275,24 @@ def _rung_pack_unit_emit(st):
             st.pack_value * float(um["mul"]) if st.pack_value is not None else None
         )
         multiplier = st.pack_count if st.pack_count and st.pack_count > 0 else 1
-        return _finish(st, um["basis"], um["su"], amount_value, 1, multiplier)
+        count = 1
+        # Faithfully capture a real count-noun integer the measure would else drop
+        # (extract() records both a mass/volume AND its piece count; the unit-value
+        # calc decides what to do with them). Convention: volume -> multiplier,
+        # mass/count -> count. Skip a total-breakdown count ("10kg (5kg×2)"): there
+        # the integer is the breakdown of the stated total, not an extra quantity.
+        n = st.noun_count_raw
+        if (
+            n
+            and n > 1
+            and multiplier == 1
+            and not _is_total_breakdown(st.item_name, st.pack_value, st.pack_unit, n)
+        ):
+            if um["basis"] == "volume":
+                multiplier = n
+            else:
+                count = n
+        return _finish(st, um["basis"], um["su"], amount_value, count, multiplier)
     return _finish(st, "item", "item", None, 1, 1)
 
 
@@ -370,6 +420,13 @@ def decide(
         c = by.get("extra_count")
         extra_count = c.groups["count"] if c is not None else None
 
+    # Count-noun integer promoted into a co-occurring measure's count/multiplier
+    # (rung 8 would otherwise drop it). Precision-first: only promote a CLEAN
+    # pack-size token — never the loose single-suffix matchers (bare `\d+s` /
+    # `\d+'s`, which fire on brands/sizes), never an implausible size, and never
+    # a numeric-range low bound (e.g. "9-11pcs" is a size range, not a pack of 11).
+    noun_count_raw = _clean_promote_count(by.get("extra_count"), stripped)
+
     basis_marker = None
     if pack_unit is None and extra_entry is None:
         c = by.get("basis_marker")
@@ -389,6 +446,7 @@ def decide(
         extra_entry=extra_entry,
         extra_value=extra_value,
         extra_count=extra_count,
+        noun_count_raw=noun_count_raw,
         basis_marker=basis_marker,
         multi_pack=multi_pack,
     )

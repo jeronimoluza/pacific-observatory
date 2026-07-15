@@ -180,24 +180,29 @@ def test_pack_of_n_without_measure_stays_count():
 
 
 @pytest.mark.parametrize(
-    "name, expected_basis, expected_av",
+    "name, expected_basis, expected_av, expected_count, expected_mult",
     [
-        ("Thin Sausages 24 Pack 1.8kg", "mass", 1.8),
-        ("Snack Multipack 6 Pack 330ml", "volume", 0.33),
-        ("Kẹo đậu Phộng Hình Quạt (4 miếng) VIETTIN MART 240g", "mass", 0.24),
-        ("Vitamin Tablets 30 viên 500mg", "mass", 0.0005),
+        ("Thin Sausages 24 Pack 1.8kg", "mass", 1.8, 24, 1),
+        ("Snack Multipack 6 Pack 330ml", "volume", 0.33, 1, 6),
+        # lang-gated `miếng`/`viên` counters need lang=vi; at default lang the
+        # count is not captured, so these stay 1 (see test_vietnamese_counter_*).
+        ("Kẹo đậu Phộng Hình Quạt (4 miếng) VIETTIN MART 240g", "mass", 0.24, 1, 1),
+        ("Vitamin Tablets 30 viên 500mg", "mass", 0.0005, 1, 1),
     ],
 )
-def test_bare_count_plus_total_measure_is_not_a_multiplier(
-    name, expected_basis, expected_av
+def test_bare_count_plus_measure_captures_count_faithfully(
+    name, expected_basis, expected_av, expected_count, expected_mult
 ):
-    """A bare 'N Pack/PCS' or 'N miếng/viên' next to a single TOTAL mass/volume
-    means the measure is the pack total — the count is internal, multiplier=1."""
+    """extract() records BOTH the mass/volume AND a real pack count/multiplier
+    (a 24-pack that weighs 1.8kg IS both a mass and 24 pieces). Convention:
+    volume -> multiplier, mass/count -> count. What the unit-value calc does with
+    them (per-kg vs per-piece) is a downstream concern. False counts (servings,
+    total-breakdown, size-range) stay suppressed — see the dedicated tests."""
     sf = _ex(name)
     assert sf.pricing_basis == expected_basis
     assert sf.amount_value == pytest.approx(expected_av, rel=1e-6)
-    assert sf.multiplier == 1
-    assert sf.count == 1
+    assert sf.count == expected_count
+    assert sf.multiplier == expected_mult
 
 
 def test_multipack_value_unit():
