@@ -494,6 +494,63 @@ def test_wide_ratio_sku_or_capacity_not_collapsed_to_lower(name, unchanged):
     assert sf.amount_value == pytest.approx(unchanged)
 
 
+# --- range: "to" separator + mixed-case unit (spec: still lower bound) ------
+
+
+@pytest.mark.parametrize(
+    "name,lower",
+    [
+        ("Thammachart Norwegian Salmon Fillet 900 to 1000g.(C", 0.9),
+        ("Thammachart Organic Salmon Fillet 400to500g.(C", 0.4),
+        ("Tops Nile Tilapia Size 500to700g. per pcs.", 0.5),
+        ("Half Champagne Ham (3-5Kg piece) (Per/ Kg)", 3.0),
+    ],
+)
+def test_range_to_separator_and_mixed_case_unit_use_lower_bound(name, lower):
+    # "to" (spaced or glued) is an alternate range separator alongside the
+    # dash forms, and the unit spelling is matched case-insensitively
+    # ("Kg") — both must still collapse to the lower bound.
+    sf = _ex(name, lang="en")
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(lower)
+
+
+# --- net-weight tolerance clause (± N unit) is not the sale quantity --------
+
+
+@pytest.mark.parametrize(
+    "name,expected",
+    [
+        ("Broiler Chicken Breast Boneless ± 25 gm 500 gm", 0.5),
+        ("Broiler Chicken Breast With Bone (± 50 gm) 1 kg", 1.0),
+        ("Green Capsicum ± 15 gm 300 gm", 0.3),
+        ("Deshi Duck With Skin After Cutting (Net Weight ± 50 gm) 1 kg", 1.0),
+    ],
+)
+def test_tolerance_clause_not_read_as_quantity(name, expected):
+    # "± N gm" is a net-weight variance allowance, not the sale quantity — the
+    # real measure is the OTHER value+unit in the name.
+    sf = _ex(name, lang="en")
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(expected)
+
+
+# --- additive dual-measure (a+b same unit) sums to the real quantity --------
+
+
+@pytest.mark.parametrize(
+    "name,expected",
+    [
+        ("Keventer Pork Breakfast Sausages 400g+100g", 0.5),
+        ("BIOGREEN, Organic Sultana Raisins 190g + 50g | Watsons Malaysia", 0.24),
+    ],
+)
+def test_additive_measure_sums_to_total(name, expected):
+    sf = _ex(name, lang="en")
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(expected)
+
+
 # --- spelled-out litre (LITER / litre / liters) ------------------------------
 
 

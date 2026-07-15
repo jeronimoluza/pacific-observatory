@@ -26,6 +26,7 @@ from prices.enrich.extract_patterns import (
     _SECONDARY_VU_RE,
     _SERVINGS_SUFFIX_RE,
     _SU_NORM,
+    _TOLERANCE_CLAUSE_RE,
     _VU_NEG_RE,
     _VU_SUPPRESS_CTX_RE,
 )
@@ -34,6 +35,7 @@ from prices.enrich.regex_patterns.dict_view import (
     regex_units_for_extract,
     value_unit_pattern,
 )
+from prices.enrich.regex_patterns.shared.plus_measure import collapse_additive_measure
 from prices.enrich.regex_patterns.shared.range_lower import collapse_numeric_ranges
 
 
@@ -372,9 +374,12 @@ def extract(
     if not item_name or not item_name.strip():
         return StructuralFields(None, None, None, None, None, None, None, None, None)
 
-    # Collapse single-unit mass/volume ranges to their lower bound (spec rule)
-    # before any pattern reads the name.
+    # Collapse single-unit mass/volume ranges to their lower bound (spec rule),
+    # additive dual-measures ("400g+100g") to their sum, and strip a net-weight
+    # tolerance clause ("± 25 gm") — all before any pattern reads the name.
     item_name = collapse_numeric_ranges(item_name)
+    item_name = collapse_additive_measure(item_name)
+    item_name = _TOLERANCE_CLAUSE_RE.sub(" ", item_name)
 
     has_non_ascii = any(ord(ch) > 127 for ch in item_name)
 

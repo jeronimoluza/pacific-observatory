@@ -39,6 +39,18 @@ _VU_NEG_RE = re.compile(
 )
 
 
+# Net-weight TOLERANCE clause (butcher/produce "actual weight may vary"
+# idiom): "± 25 gm" / "(± 50 gm)" / "(Net Weight ± 50 gm)". The number here is
+# a variance allowance, not the sale quantity — the real measure is always the
+# OTHER value+unit elsewhere in the name (e.g. "Green Capsicum ± 15 gm 300 gm"
+# -> 300 gm). Stripped from item_name before any pattern runs so no candidate
+# ever reads the tolerance value as the quantity.
+_TOLERANCE_CLAUSE_RE = re.compile(
+    r"\(?\s*(?:Net\s+Weight\s+)?±\s*\d+(?:[.,]\d+)?\s*"
+    r"(?:gm?|kg|mg|ml|l|oz|lb)\b\s*\)?",
+    re.IGNORECASE,
+)
+
 _MARKETING_LIMIT_RE = re.compile(
     r"(?:限り|限定|まで|お一人|お1人|まとめ買い|名様限定|名様まで|お一人様|突破|累計|売れ|名様"
     r"|工作天|工作日|営業日|個口|円OFF|円引き|円分|送料|配送)"

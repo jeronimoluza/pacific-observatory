@@ -14,7 +14,13 @@ is "1-2kg" saba). Wider "ranges" are NOT product mass: SKU-then-weight idioms
 ("LINGUINE N. 182 - 500G" -> 6.4x, where 182 is an item number and 500g the real
 mass), selectable-capacity options ("300-750ml" -> 2.5x), and body-weight/spec
 ratings. Collapsing those would corrupt a correct upper-bound match, so we only
-collapse when the two bounds are close.
+collapse when the two bounds are close (equal bounds, e.g. a degenerate
+"1.0 - 1kg", are the tightest possible case and also collapse).
+
+The separator also accepts the word "to" (any spacing, e.g. "900 to 1000g" or
+the glued "400to500g" idiom), and unit spelling is matched case-insensitively
+("3-5Kg") — the emitted unit is lower-cased so downstream extract_pack always
+recognizes it.
 """
 
 from __future__ import annotations
@@ -24,8 +30,9 @@ import re
 _MAX_RANGE_RATIO = 2.5
 
 _NUM_RANGE_LOWER_RE = re.compile(
-    r"(?<![A-Za-z0-9.])(\d+(?:[.,]\d+)?)\s*[-–—~〜]\s*(\d+(?:[.,]\d+)?)(\s*)"
-    r"(ml|mL|ML|ltrs|ltr|lt|l|L|kg|KG|g|G|mg|MG|gm|GM|gr|GR|oz|OZ|lb|LB|Oz)\b"
+    r"(?<![A-Za-z0-9.])(\d+(?:[.,]\d+)?)\s*(?:[-–—~〜]|to)\s*(\d+(?:[.,]\d+)?)(\s*)"
+    r"(ml|ltrs|ltr|lt|l|kg|g|mg|gm|gr|oz|lb)\b",
+    re.IGNORECASE,
 )
 
 
@@ -35,9 +42,9 @@ def _sub(m: re.Match) -> str:
         hi = float(m.group(2).replace(",", "."))
     except ValueError:
         return m.group(0)
-    if lo <= 0 or hi <= lo or hi / lo >= _MAX_RANGE_RATIO:
+    if lo <= 0 or hi < lo or hi / lo >= _MAX_RANGE_RATIO:
         return m.group(0)
-    return f"{m.group(1)}{m.group(3)}{m.group(4)}"
+    return f"{m.group(1)}{m.group(3)}{m.group(4).lower()}"
 
 
 def collapse_numeric_ranges(name: str) -> str:
