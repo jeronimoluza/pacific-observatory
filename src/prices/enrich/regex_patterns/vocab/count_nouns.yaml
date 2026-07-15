@@ -1,0 +1,71 @@
+# C-class count-noun specs, keyed by pattern id. <num><noun> OR <noun><num>.
+# The builder (grammar.py) supplies module-level metadata (lang/script/kind/
+# bucket/role); this table supplies only the regex-generation shape per id.
+#
+# templates:
+#   num_noun : (?<!\w?)<num> [sep] (?:NOUN) \b     lb: word (?<!\w) | none
+#   noun_num : \b(?:NOUN) \s+ <num> \b
+#   fixed    : \b(?:NOUN)\b  with fixed_count
+#   regex    : verbatim fragment (structural specials); must name group `count`
+# case: ci (ignorecase) | cs (case-sensitive; enumerate variants in NOUN)
+# sep : optional (\s*) | required (\s+) | glued (no space)
+
+# --- canon channel (feed extract_pack as pack_count) -------------------------
+NUM_PCS:
+  {template: num_noun, sep: optional, lb: word, case: ci,
+   nouns: ['PCS', 'Pcs', 'pcs', 'pieces?', 'pack', 'PACK', 'Pack', 'ct', 'CT']}
+NUM_PC_GLUED:
+  {template: regex, case: ci, regex: '(?<!\w)(?P<count>\d+)pc\b(?!s)'}
+NUM_X_TRAILING:
+  {template: regex, case: ci, regex: '(?P<count>\d+)\s*[xX×]\s*$'}
+LOC_VI:
+  {template: noun_num, case: ci, nouns: ['Lốc', 'Thùng', 'Hộp', 'Bộ', 'Combo', 'Set']}
+COUNT_UNIT_VI:
+  {template: num_noun, sep: optional, lb: none, case: ci,
+   nouns: ['cái', 'cây', 'gói', 'chai', 'lon', 'chiếc', 'hộp', 'bịch', 'viên', 'miếng']}
+
+# --- extra_count channel (fallback; decide rung 8) ---------------------------
+VI_TO_SHEETS:
+  {template: regex, case: cs, regex: '(?P<count>\d+)\s*Tờ\b'}
+EN_CAPS:
+  {template: num_noun, sep: optional, lb: word, case: cs,
+   nouns: ['Caps?', 'Capsules?', 'caps?', 'capsules?', 'CAPS?', 'CAPSULES?']}
+EN_TABLETS:
+  {template: num_noun, sep: optional, lb: word, case: cs,
+   nouns: ['Tabs?', 'Tablets?', 'tabs?', 'tablets?', 'TABS?', 'TABLETS?']}
+EN_SACHETS:
+  {template: regex, case: cs, regex: '\b(?P<count>\d+)[sS]\b(?:\s|$)'}
+EN_SHEETS:
+  {template: num_noun, sep: optional, lb: word, case: cs,
+   nouns: ['Sheets?', 'sheets?', 'SHEETS?']}
+EN_PACK_OF:
+  {template: regex, case: cs, regex: '\bPack\s*of\s*(?P<count>\d+)\b'}
+EN_N_PACK:
+  {template: regex, case: cs, regex: '\b(?P<count>\d+)\s*[-]?\s*(?:Pack|PACK|pack)\b'}
+EN_N_INDIVIDUAL_PACK:
+  {template: regex, case: cs,
+   regex: '\b(?P<count>\d+)\s*(?:INDIVIDUAL|Individual|individual)\s*(?:PACK|Pack|pack)\b'}
+EN_HALF_DOZEN:
+  {template: fixed, case: cs, fixed_count: 6, nouns: ['(?:Half|HALF|half)\s*(?:Dozen|DOZEN|dozen)']}
+EN_DOZEN:
+  {template: fixed, case: cs, fixed_count: 12, nouns: ['Dozen', 'DOZEN', 'dozen']}
+EN_TWIN_PACK:
+  {template: fixed, case: cs, fixed_count: 2, nouns: ['Twin\s*Pack']}
+EN_TRIPLE_PACK:
+  {template: fixed, case: cs, fixed_count: 3, nouns: ['Triple\s*Pack', 'Tri\s*Pack']}
+EN_DOUBLE_PACK:
+  {template: fixed, case: cs, fixed_count: 2, nouns: ['Double\s*Pack']}
+VI_PIECES:
+  {template: regex, case: cs, regex: '\b(?P<count>\d+)\s*M\b'}
+NUM_ROLLS:
+  {template: num_noun, sep: required, lb: word, case: cs, nouns: ['Rolls?', 'rolls?', 'ROLLS?']}
+EN_COMMA_XN:
+  {template: regex, case: cs, regex: ',\s*[xX]\s*(?P<count>\d+)\b'}
+EN_PCS:
+  {template: regex, case: cs,
+   regex: '(?<!\w)(?P<count>\d+)\s*(?:PCS|Pcs|pcs|PIECES|Pieces|pieces|PIECE|Piece|piece)\.?\b'}
+EN_APOS_S:
+  {template: regex, case: cs, regex: "\\b(?P<count>\\d+)\\s*['’`]\\s*[sS]\\b"}
+EN_N_TICKETS:
+  {template: num_noun, sep: required, lb: word, case: cs,
+   nouns: ['Tickets?', 'tickets?', 'TICKETS?']}

@@ -1,0 +1,27 @@
+# P-class (pack x measure) + B-class (per-unit basis marker) + separators.
+
+# latin multiply separators. CJK '*' is N-class (deferred), not here.
+separators: ['x', 'X', '×']
+
+# P productions keyed by id (unit surfaces come from units.yaml::pack_measure):
+#   NUM_X_VALUE_UNIT : <num> SEP <value><unit>
+#   VALUE_UNIT_X_NUM : <value><unit> SEP <num>
+pack:
+  NUM_X_VALUE_UNIT: {form: num_sep_measure}
+  VALUE_UNIT_X_NUM: {form: measure_sep_num}
+
+# B-class per-unit markers (verbatim regex; parens + casing variants preserved).
+basis_markers:
+  PER_KG_PARENS:    {basis: mass,   regex: '\(\s*[Pp]er\s*/?\s*[Kk][Gg]\s*\)'}
+  PER_KG:           {basis: mass,   regex: '\b[Pp]er\s+[Kk][Gg]\b'}
+  PER_LITRE_PARENS: {basis: volume, regex: '\(\s*[Pp]er\s*/?\s*[Ll]\s*\)'}
+  PER_LITRE:        {basis: volume, regex: '\b[Pp]er\s+[Ll]it(?:er|re)\b'}
+
+# M-class + extra_unit fallbacks (verbatim where case-sensitive).
+extra_unit:
+  CENTILITRE:
+    {basis: volume, su: lt, mul: 0.01,
+     regex: '(?<![A-Za-z0-9.])(?P<value>\d+(?:[.,]\d+)?)\s*(?:cl|CL|cL|Cl)\b'}
+  LITRE_VI:
+    {basis: volume, su: lt, mul: 1.0,
+     regex: '(?P<value>\d+(?:[.,]\d+)?)\s*l[íi]t'}

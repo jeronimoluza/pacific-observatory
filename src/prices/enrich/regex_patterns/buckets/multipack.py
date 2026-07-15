@@ -1,109 +1,21 @@
-"""Multipack bucket — canon multipack count patterns + N-inner×M-outer multi_pack.
+"""Multipack bucket — canon multipack/count patterns + N-inner×M-outer multi_pack.
 
-Records moved VERBATIM (regex/groups/lang/role unchanged) from the pre-reorg
-modules shared/multipack.py, lang/en/multipack.py, shared/multipack_trailing.py,
-lang/vi/multipack.py, lang/zh/multipack.py, lang/ja/multipack.py (the 9 canon)
-and script/cjk/multi_pack.py (the 2 multi_pack), with ids renamed to
-SCREAMING_SNAKE. Declaration order reproduces GOLDEN_CANON's 9 multipack-canon
-positions, then GOLDEN_MULTI_PACK (star, full). multipack.py precedes
-single_measure.py in MODULE_ORDER so the value+unit canon pair lands at the canon
-tail.
+Latin/vi canon patterns (NUM_X_VALUE_UNIT, VALUE_UNIT_X_NUM, NUM_PCS, NUM_PC_GLUED,
+NUM_X_TRAILING, LOC_VI, COUNT_UNIT_VI) are now table-driven via grammar.build_ids
+(P-class num×measure + C-class count). The CJK records (COUNT_UNIT_ZH, SET_JA, and
+the two INNER_X_OUTER multi_pack) stay hand-written — CJK vocab is deferred.
+Declaration order (the ordering lever guarded by test_composition_diff) is
+preserved: the 7 latin/vi canon first, then the 4 CJK records.
 """
 
 from __future__ import annotations
 
 import re
 
+from prices.enrich.regex_patterns import grammar
 from prices.enrich.regex_patterns.types import PackPattern
 
-PATTERNS: tuple[PackPattern, ...] = (
-    # "20x1.5g", "4x90g", "12 x 500ml"  → count=20, value=1.5, unit=g
-    PackPattern(
-        id="NUM_X_VALUE_UNIT",
-        regex=re.compile(
-            r"(?P<count>\d+)\s*[x×X]\s*(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>ml|mL|ML|l|L|kg|KG|g|G|mg|MG|gm|GM|gr|GR|oz|OZ|lb|LB)\b",
-            re.IGNORECASE,
-        ),
-        groups=("count", "value", "unit"),
-        lang="any",
-        role="canonicalization",
-        kind="canon",
-        bucket="multipack",
-    ),
-    # "5kg(5kg×1)" or "5kg x 1" — pack-of-1 explicit  → count=1, value=5, unit=kg
-    PackPattern(
-        id="VALUE_UNIT_X_NUM",
-        regex=re.compile(
-            r"(?P<value>\d+(?:[.,]\d+)?)\s*(?P<unit>ml|mL|ML|l|L|kg|KG|g|G|mg|MG|gm|GM|gr|GR|oz|OZ|lb|LB)\s*[x×X]\s*(?P<count>\d+)\b",
-            re.IGNORECASE,
-        ),
-        groups=("count", "value", "unit"),
-        lang="any",
-        role="canonicalization",
-        kind="canon",
-        bucket="multipack",
-    ),
-    # "12 PCS", "8 PCS". Word-boundary lookbehind (?<!\w) prevents SKU tails
-    # like `15CT` in `SM15CT` from being read as count=15 (2026-06-16, surfaced
-    # by VN kitchen-cabinet gold rows during tier-a precision lift).
-    PackPattern(
-        id="NUM_PCS",
-        regex=re.compile(
-            r"(?<!\w)(?P<count>\d+)\s*(?:PCS|Pcs|pcs|pieces?|pack|PACK|Pack|ct|CT)\b",
-            re.IGNORECASE,
-        ),
-        groups=("count",),
-        lang="en",
-        role="canonicalization",
-        kind="canon",
-        bucket="multipack",
-    ),
-    # Glued singular "Npc" — "(5pc)", "3PC", "2pc". GLUED only (no \s*) and
-    # `(?!s)` so the spaced "N PC" (personal computer) and the plural "Npcs"
-    # (handled above) never hit this; `(?<!\w)` guards SKU tails (2026-06-25).
-    PackPattern(
-        id="NUM_PC_GLUED",
-        regex=re.compile(r"(?<!\w)(?P<count>\d+)pc\b(?!s)", re.IGNORECASE),
-        groups=("count",),
-        lang="en",
-        role="canonicalization",
-        kind="canon",
-        bucket="multipack",
-    ),
-    # Trailing "6X" alone
-    PackPattern(
-        id="NUM_X_TRAILING",
-        regex=re.compile(r"(?P<count>\d+)\s*[xX×]\s*$", re.IGNORECASE),
-        groups=("count",),
-        lang="any",
-        role="canonicalization",
-        kind="canon",
-        bucket="multipack",
-    ),
-    PackPattern(
-        id="LOC_VI",
-        regex=re.compile(
-            r"\b(?:Lốc|lốc|Thùng|thùng|Hộp|hộp|Bộ|bộ|Combo|combo|Set|set)\s+(?P<count>\d+)\b",
-            re.IGNORECASE,
-        ),
-        groups=("count",),
-        lang="vi",
-        role="canonicalization",
-        kind="canon",
-        bucket="multipack",
-    ),
-    PackPattern(
-        id="COUNT_UNIT_VI",
-        regex=re.compile(
-            r"(?P<count>\d+)\s*(?:cái|cây|gói|chai|lon|chiếc|hộp|bịch|viên|miếng)\b",
-            re.IGNORECASE,
-        ),
-        groups=("count",),
-        lang="vi",
-        role="canonicalization",
-        kind="canon",
-        bucket="multipack",
-    ),
+_CJK: tuple[PackPattern, ...] = (
     PackPattern(
         id="COUNT_UNIT_ZH",
         regex=re.compile(
@@ -152,4 +64,17 @@ PATTERNS: tuple[PackPattern, ...] = (
         bucket="multipack",
         script="cjk",
     ),
+)
+
+PATTERNS: tuple[PackPattern, ...] = (
+    grammar.build_ids(
+        "NUM_X_VALUE_UNIT",
+        "VALUE_UNIT_X_NUM",
+        "NUM_PCS",
+        "NUM_PC_GLUED",
+        "NUM_X_TRAILING",
+        "LOC_VI",
+        "COUNT_UNIT_VI",
+    )
+    + _CJK
 )

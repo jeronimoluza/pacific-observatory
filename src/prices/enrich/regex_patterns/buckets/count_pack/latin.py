@@ -1,80 +1,27 @@
 """count_pack bucket — Latin-script count markers (extract role).
 
-Records moved VERBATIM from script/latin/count_markers.py, ids renamed to
-SCREAMING_SNAKE. script="latin" (was under script/latin/). bucket="count_pack".
+Table-driven: the enumerated per-noun/case patterns are now generated from
+regex_patterns/vocab/count_nouns.yaml via grammar.build_ids (C-class, the
+<num><noun> production). Adding a count noun is a table edit, not a new regex.
+IDs / declaration order / metadata (script=latin, kind=extra_count) unchanged.
 """
 
 from __future__ import annotations
 
-import re
-
+from prices.enrich.regex_patterns import grammar
 from prices.enrich.regex_patterns.types import PackPattern
 
-
-def _p(
-    id_: str, regex: str, groups: tuple[str, ...], fixed_count: int | None = None
-) -> PackPattern:
-    # extract-role patterns compile WITHOUT re.IGNORECASE — see
-    # extract.py::_load_regex_units (only promo/bundle markers get IGNORECASE).
-    # The author of these patterns deliberately enumerated case variants
-    # (Caps?|Capsules?|caps?|CAPS?) rather than relying on the flag.
-    return PackPattern(
-        id=id_,
-        regex=re.compile(regex),
-        groups=groups,
-        lang="any",
-        role="extract",
-        fixed_count=fixed_count,
-        kind="extra_count",
-        bucket="count_pack",
-        script="latin",
-    )
-
-
-PATTERNS: tuple[PackPattern, ...] = (
-    _p(
-        "EN_CAPS",
-        r"\b(?P<count>\d+)\s*(?:Caps?|Capsules?|caps?|capsules?|CAPS?|CAPSULES?)\b",
-        ("count",),
-    ),
-    _p(
-        "EN_TABLETS",
-        r"\b(?P<count>\d+)\s*(?:Tabs?|Tablets?|tabs?|tablets?|TABS?|TABLETS?)\b",
-        ("count",),
-    ),
-    _p("EN_SACHETS", r"\b(?P<count>\d+)[sS]\b(?:\s|$)", ("count",)),
-    _p(
-        "EN_SHEETS",
-        r"\b(?P<count>\d+)\s*(?:Sheets?|sheets?|SHEETS?)\b",
-        ("count",),
-    ),
-    _p("EN_PACK_OF", r"\bPack\s*of\s*(?P<count>\d+)\b", ("count",)),
-    _p(
-        "EN_N_PACK",
-        r"\b(?P<count>\d+)\s*[-]?\s*(?:Pack|PACK|pack)\b",
-        ("count",),
-    ),
-    _p(
-        "EN_N_INDIVIDUAL_PACK",
-        r"\b(?P<count>\d+)\s*(?:INDIVIDUAL|Individual|individual)\s*(?:PACK|Pack|pack)\b",
-        ("count",),
-    ),
-    # "Half Dozen" (6) must precede bare "Dozen" (12) — first-match-wins. A bare
-    # or "1 Dozen" both mean 12 fresh units (e.g. "Orange Pursat 1 Dozen"); the
-    # rarer "N Dozen" (N>1) is not enumerated here (no such fresh-produce rows).
-    _p(
-        "EN_HALF_DOZEN",
-        r"\b(?:Half|HALF|half)\s*(?:Dozen|DOZEN|dozen)\b",
-        (),
-        fixed_count=6,
-    ),
-    _p("EN_DOZEN", r"\b(?:Dozen|DOZEN|dozen)\b", (), fixed_count=12),
-    _p("EN_TWIN_PACK", r"\bTwin\s*Pack\b", (), fixed_count=2),
-    _p(
-        "EN_TRIPLE_PACK",
-        r"\b(?:Triple\s*Pack|Tri\s*Pack)\b",
-        (),
-        fixed_count=3,
-    ),
-    _p("EN_DOUBLE_PACK", r"\bDouble\s*Pack\b", (), fixed_count=2),
+PATTERNS: tuple[PackPattern, ...] = grammar.build_ids(
+    "EN_CAPS",
+    "EN_TABLETS",
+    "EN_SACHETS",
+    "EN_SHEETS",
+    "EN_PACK_OF",
+    "EN_N_PACK",
+    "EN_N_INDIVIDUAL_PACK",
+    "EN_HALF_DOZEN",
+    "EN_DOZEN",
+    "EN_TWIN_PACK",
+    "EN_TRIPLE_PACK",
+    "EN_DOUBLE_PACK",
 )

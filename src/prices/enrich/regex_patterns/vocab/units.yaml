@@ -1,0 +1,24 @@
+# M/P-class unit vocab (locale-invariant productions over this data table).
+# surfaces are matched case-insensitively where the source pattern used IGNORECASE.
+# basis/su/mul reproduce unit_tables.UNIT_MAP. Adding a unit spelling = one row.
+
+# M-class canon measure surfaces (the VALUE_UNIT alternation), longest-first-safe.
+measure:
+  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g]}
+  - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg]}
+  - {basis: mass,   su: kg, mul: 0.000001,  surfaces: [mg]}
+  - {basis: mass,   su: kg, mul: 0.0283495, surfaces: [oz]}
+  - {basis: mass,   su: kg, mul: 0.453592,  surfaces: [lb]}
+  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml]}
+  - {basis: volume, su: lt, mul: 1.0,       surfaces: [liters, litres, liter, litre, ltrs, ltr, lt, l]}
+
+# P-class pack-measure unit surfaces — NARROWER than M (no cl, no litre-words,
+# bare l only), reproducing NUM_X_VALUE_UNIT / VALUE_UNIT_X_NUM verbatim.
+pack_measure:
+  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g]}
+  - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg]}
+  - {basis: mass,   su: kg, mul: 0.000001,  surfaces: [mg]}
+  - {basis: mass,   su: kg, mul: 0.0283495, surfaces: [oz]}
+  - {basis: mass,   su: kg, mul: 0.453592,  surfaces: [lb]}
+  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml]}
+  - {basis: volume, su: lt, mul: 1.0,       surfaces: [l]}
