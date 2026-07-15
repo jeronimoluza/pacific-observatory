@@ -1,7 +1,7 @@
 # P-class (pack x measure) + B-class (per-unit basis marker) + separators.
 
 # latin multiply separators. CJK '*' is N-class (deferred), not here.
-separators: ['x', 'X', '×']
+separators: ['x', 'X', '×', '*']
 
 # P productions keyed by id (unit surfaces come from units.yaml::pack_measure):
 #   NUM_X_VALUE_UNIT : <num> SEP <value><unit>

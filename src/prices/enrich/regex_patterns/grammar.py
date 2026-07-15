@@ -53,15 +53,27 @@ def _value_unit_regex():
     )
 
 
+# A count immediately glued to a measure-multiplier operator ("170G *4",
+# "30g X 15s", "400MLx12PCS") is often followed, with no space, by a bare
+# count-noun abbreviation the plain `\b` boundary rejects (digit-then-letter
+# is not a word boundary). Consume that abbreviation as part of the match so
+# the outer count is captured instead of silently dropped; narrow set only
+# (pcs/pc/p/s/'s) — never a bare `\D`, so an unrelated glued unit/word after
+# the count still fails to match, same as before this addition.
+_TRAILING_COUNT_NOUN = r"(?:pcs?|p|['’]?s)"
+
+
 def _pack_regex(form):
     ua = _measure_alt("pack_measure")
-    sep = "[" + "".join(_PB["separators"]) + "]"
+    sep = rf"(?:[{''.join(_PB['separators'])}]|\bby\b)"
     if form == "num_sep_measure":
         return re.compile(
             rf"(?P<count>\d+)\s*{sep}\s*{_VAL_P}\s*(?P<unit>{ua})\b", re.IGNORECASE
         )
     return re.compile(
-        rf"{_VAL_P}\s*(?P<unit>{ua})\s*{sep}\s*(?P<count>\d+)\b", re.IGNORECASE
+        rf"{_VAL_P}\s*(?P<unit>{ua})\s*{sep}\s*(?P<count>\d+)"
+        rf"(?:{_TRAILING_COUNT_NOUN})?\b",
+        re.IGNORECASE,
     )
 
 
