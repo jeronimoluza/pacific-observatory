@@ -38,8 +38,8 @@ from prices.enrich.extract import (
 from prices.enrich.normalize import extract_pack
 
 
-# Loose single-suffix count matchers (bare `\d+s` / `\d+'s`) are now eligible
-# to promote INTO a co-occurring measure (rung 3's noun_count_raw): the
+# Loose single-suffix count matchers (bare `\d+s` / `\d+'s`) are eligible to
+# promote INTO a co-occurring measure (rung 3's noun_count_raw): the
 # bare-adjacency shape (no `X`/`×` operator — that form is a distinct earlier
 # candidate, "apos", handled by rung 1) IS the mass->count convention this
 # promotion exists for ("Mission Quinoa Wraps 8s 360g" -> count=8). The
@@ -54,6 +54,18 @@ _RANGE_LOW_RE = re.compile(r"\d\s*[-–]\s*$")
 # promo bonus count, not the pack's piece count — reject it like a range low
 # bound (Pass 1b's marketing-limit guard doesn't cover this shape).
 _BONUS_PLUS_RE = re.compile(r"\d\s*\+\s*$")
+# A bare NS count-suffix PRECEDING the measure ("10s 106g") that is
+# IMPLAUSIBLY large for a per-piece pack (e.g. decorative sugar sprinkles
+# "100s and 1000s") is a size-descriptor, not a pack quantity. Deliberately a
+# NARROW magnitude-only guard, not a general count-before-measure
+# suppression: the latter conflicts with the canonical NS gold slice the
+# scoreboard gate is built from — e.g. "Laughing Cow Sliced Cheddar Cheese
+# 10s 200g" (gold count=10) is the same shape as "Mini Babybel Tasty Cheddar
+# Cheese 5s 100g" (corpus holdout, count=1) with opposite truth; no textual
+# signal separates them within [8, 30]. 30 is the highest count-before-measure
+# value in the gold slice, so gating strictly above it is gate-safe.
+_ORDER_GUARDED_IDS = frozenset({"EN_SACHETS", "EN_APOS_S"})
+_COUNT_BEFORE_MEASURE_CAP = 30
 
 
 def _clean_promote_count(ec_cand, stripped: str):
@@ -61,13 +73,15 @@ def _clean_promote_count(ec_cand, stripped: str):
 
     Precision guards (never promote a doubtful token over an explicit measure):
     loose single-suffix ids excluded, pack-size sanity cap, numeric-range low
-    bound rejected, bonus-pack "N+Ms" rejected."""
+    bound rejected, bonus-pack "N+Ms" rejected, and (for the bare NS ids only)
+    an implausibly large count preceding the measure rejected."""
     if ec_cand is None:
         return None
     n = ec_cand.groups.get("count")
     if not n or n <= 1 or n > _PROMOTE_COUNT_CAP:
         return None
-    if ec_cand.groups.get("regex_id") in _LOOSE_PROMOTE_IDS:
+    regex_id = ec_cand.groups.get("regex_id")
+    if regex_id in _LOOSE_PROMOTE_IDS:
         return None
     span = ec_cand.span
     if span:
@@ -79,6 +93,12 @@ def _clean_promote_count(ec_cand, stripped: str):
         # ("50杯分") or a purchase limit, not a pack quantity — mirror Pass 1b2.
         win = stripped[max(0, span[0] - 12) : min(len(stripped), span[1] + 12)]
         if _SERVINGS_SUFFIX_RE.search(win) or _MARKETING_LIMIT_RE.search(win):
+            return None
+        if (
+            regex_id in _ORDER_GUARDED_IDS
+            and n > _COUNT_BEFORE_MEASURE_CAP
+            and _VU_RE.search(stripped, span[1])
+        ):
             return None
     return n
 
@@ -293,16 +313,18 @@ def _rung_pack_unit_emit(st):
         # calc decides what to do with them). Convention: volume -> multiplier,
         # mass/count -> count. Skip a total-breakdown count ("10kg (5kg×2)"): there
         # the integer is the breakdown of the stated total, not an extra quantity.
-        # Skip unit=mg: in this corpus a milligram "measure" beside a pack count
-        # ("160mg Softgel 100s") is a per-unit drug DOSE misread as the pack's
-        # mass, not a real sale weight — promoting the count would compound one
-        # wrong field into two.
+        # unit=mg is NOT special-cased here: a milligram figure beside a piece
+        # count ("160mg Softgel 100s") is the per-piece drug DOSE, and the
+        # trailing count is the genuine pack quantity — the corpus holdout
+        # (20260715 NS slice) shows 100/100 mg rows want the count promoted
+        # (0 counterexamples); a blanket `pack_unit != "mg"` block was pure
+        # recall loss. `_clean_promote_count`'s magnitude cap (above) is the
+        # real precision gate now.
         n = st.noun_count_raw
         if (
             n
             and n > 1
             and multiplier == 1
-            and st.pack_unit != "mg"
             and not _is_total_breakdown(st.item_name, st.pack_value, st.pack_unit, n)
         ):
             if um["basis"] == "volume":

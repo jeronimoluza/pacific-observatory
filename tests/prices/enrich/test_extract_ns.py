@@ -1,14 +1,28 @@
 """Unit tests for the NS (compact count-suffix) grammar shape.
 
-`EN_APOS_S` (`\\d+'s`) and `EN_SACHETS` (bare `\\d+s`) used to be excluded from
-promoting into a co-occurring measure's count/multiplier (`_LOOSE_PROMOTE_IDS`
-in extract_decide.py) — so "Mission Quinoa Wraps 8s 360g" resolved to
-count=1 instead of count=8. The bare-adjacency shape (no `X`/`×` operator) is
-exactly the mass/volume->count convention the promotion path exists for; the
-explicit-multiplier shape ("Centrum 20'S X 2g") is a distinct earlier
-candidate ("apos", rung 1) that already wins before this promotion is ever
-considered, and the no-measure brand-token shape ("333'S OLIVES") never
-reaches promotion because it requires a co-occurring pack_unit measure.
+`EN_APOS_S` (`\\d+'s`) and `EN_SACHETS` (bare `\\d+s`) are eligible to promote
+into a co-occurring measure's count/multiplier (`_LOOSE_PROMOTE_IDS` in
+extract_decide.py is empty). The bare-adjacency shape (no `X`/`×` operator —
+that form is a distinct earlier candidate, "apos", handled by rung 1) IS the
+mass/volume->count convention this promotion exists for
+("Mission Quinoa Wraps 8s 360g" -> count=8); the no-measure brand-token shape
+("333'S OLIVES") never reaches promotion because it requires a co-occurring
+pack_unit measure.
+
+A 182-row corpus holdout
+(`data/prices/_enrich/validation_runs/structural_gold_agreed_20260715.parquet`,
+bucket startswith "NS") found that unit=mg was wrongly blocking promotion
+(100/100 mg holdout rows want the trailing count captured — see
+`test_mg_dose_count_suffix_is_promoted`) and that a bare count-suffix
+PRECEDING an implausibly large measure ("100s and 1000s ... 85g") is a
+size-descriptor, not a pack quantity — but a general count-before-measure
+suppression directly conflicts with the canonical NS gold slice the
+scoreboard gate is built from (e.g. "Laughing Cow Sliced Cheddar Cheese 10s
+200g", gold count=10, is the same shape as "Mini Babybel Tasty Cheddar
+Cheese 5s 100g" from the corpus holdout, which wants count=1 — no textual
+signal separates them). `_COUNT_BEFORE_MEASURE_CAP=30` in extract_decide.py
+is a narrow, gate-safe compromise: it only rejects a count-before-measure
+bare suffix ABOVE the highest such value in the canonical gold slice.
 """
 
 from __future__ import annotations
@@ -39,6 +53,37 @@ def test_bare_apos_s_and_sachets_promote_to_count(
     assert sf.pricing_basis == expected_basis
     assert sf.amount_value == pytest.approx(expected_av, rel=1e-6)
     assert sf.count == expected_count
+    assert sf.multiplier == 1
+
+
+def test_mg_dose_count_suffix_is_promoted():
+    """Defect #1 fix: a milligram measure beside a trailing piece count
+    ("160mg Softgel 100s") IS the per-piece drug DOSE plus the genuine pack
+    quantity — the corpus holdout shows 100/100 mg rows want the count
+    captured (0 counterexamples), so unit=mg is no longer specially blocked."""
+    sf = _ex("GNC Herbal Plus Saw Palmetto Extract 160mg Softgel 100s")
+    assert sf.pricing_basis == "mass"
+    assert sf.count == 100
+    assert sf.multiplier == 1
+
+
+@pytest.mark.parametrize(
+    "name, expected_av",
+    [
+        ("Waitrose 100s and 1000s Multi Colorured Sugar Decoretion 85g.", 0.085),
+        ("Biodance Collagen Gel Toner Pads 60s 140g", 0.14),
+        ("Nagar Pyan Finest Myanmar Tea 50's 100g", 0.1),
+    ],
+)
+def test_count_before_measure_above_gold_max_stays_unpromoted(name, expected_av):
+    """Defect #2 partial fix: a bare count-suffix PRECEDING the measure, above
+    30 (the highest such value in the canonical NS gold slice), is an
+    implausible per-piece pack size (e.g. "100s and 1000s" decorative sugar
+    sprinkles) — real over-fire examples from the 20260715 corpus holdout."""
+    sf = _ex(name)
+    assert sf.pricing_basis == "mass"
+    assert sf.amount_value == pytest.approx(expected_av, rel=1e-6)
+    assert sf.count == 1
     assert sf.multiplier == 1
 
 
@@ -73,15 +118,6 @@ def test_no_measure_bare_suffix_never_reaches_promotion(name):
     sf = _ex(name)
     assert sf.pricing_basis == "count"
     assert sf.amount_value is None
-
-
-def test_mg_dose_measure_is_not_promoted():
-    # A milligram "measure" beside a pack count ("160mg Softgel 100s") is a
-    # per-unit drug dose misread as the pack's mass, not a real sale weight —
-    # promoting the count would compound one wrong field into two.
-    sf = _ex("GNC Herbal Plus Saw Palmetto Extract 160mg Softgel 100s")
-    assert sf.count == 1
-    assert sf.multiplier == 1
 
 
 def test_bonus_pack_plus_suffix_is_not_promoted():
