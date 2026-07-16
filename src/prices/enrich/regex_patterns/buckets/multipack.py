@@ -19,7 +19,7 @@ _CJK: tuple[PackPattern, ...] = (
     PackPattern(
         id="COUNT_UNIT_ZH",
         regex=re.compile(
-            r"(?P<count>\d+)\s*(?:入|粒|丸|本|片|盒|個|包|束|件|杯|袋|顆|張)(?:組|セット|入)?",
+            r"(?P<count>\d+)\s*(?:入|粒|丸|本|片|盒|個|包|束|件|杯|袋|顆|張|缶|瓶|錠)(?:組|セット|入)?",
             re.IGNORECASE,
         ),
         groups=("count",),
