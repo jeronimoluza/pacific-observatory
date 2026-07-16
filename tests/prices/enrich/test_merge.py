@@ -19,6 +19,30 @@ def test_unit_value_multipack_volume():
     ) == pytest.approx(20.0)
 
 
+def test_unit_value_mass_count_is_inert():
+    # Convention A: "Laughing Cow 10s 200g" @ 5 → count=10 is faithful but must
+    # NOT multiply the total weight → 5 / 0.2 = 25/kg (not 2.50/kg).
+    assert compute_unit_value(
+        price=5.0, basis="mass", amount_value=0.2, count=10, multiplier=None
+    ) == pytest.approx(25.0)
+
+
+def test_unit_value_mass_multiplier_scales():
+    # multiplier (identical priced sub-units) DOES scale a per-unit measure:
+    # 4 x 20g @ 8 → per-kg = 8 / (0.02 * 4) = 100.0
+    assert compute_unit_value(
+        price=8.0, basis="mass", amount_value=0.02, count=1, multiplier=4
+    ) == pytest.approx(100.0)
+
+
+def test_unit_value_mass_double_encode_collapses_multiplier():
+    # Pre-fix double-encode: count == multiplier > 1, amount = pack-total.
+    # Collapse the redundant multiplier → 8 / 0.08 = 100.0
+    assert compute_unit_value(
+        price=8.0, basis="mass", amount_value=0.08, count=4, multiplier=4
+    ) == pytest.approx(100.0)
+
+
 def test_unit_value_count_eggs():
     # 12 eggs @ 60  →  per egg = 5.0
     assert compute_unit_value(

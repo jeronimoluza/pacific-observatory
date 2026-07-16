@@ -41,34 +41,20 @@ def compute_unit_value(
         return None
     c = _coerce_count(count)
     m = _coerce_count(multiplier)
-    # Workaround for pre-fix enrichment rows where the model
-    # double-counted the multipack: count == multiplier > 1 AND
-    # amount_value was set to the pack-total instead of per-unit.
-    # Collapse to a single factor so denom matches the as-paid qty.
+    # Convention A (count is UV-inert for weight/volume): for mass/volume/length
+    # the amount_value is the PACK TOTAL, so only `multiplier` (identical priced
+    # sub-units) scales the denominator. The piece `count` is captured faithfully
+    # but NEVER multiplies a total weight/volume — it scales the denominator only
+    # for count/item basis. This removes the earlier count×amount double-count
+    # (e.g. "Laughing Cow 10s 200g" @ $5 → $25/kg, not $2.50/kg) at the source.
+    # Double-encoded multipacks (count == multiplier > 1, amount = pack-total)
+    # still collapse the redundant multiplier to 1.
     if c == m and c > 1:
-        if basis in ("mass", "volume", "length"):
-            c = 1
-            m = 1
-        else:
-            m = 1
-    # Sachet-pack double-encode: amount_value holds the pack-total
-    # mass/volume while count was filled with the piece count
-    # (e.g. 100 × 21g latte sachets → av=2.1, count=100). Trust the
-    # pack-total and collapse count. 0.5 (kg/lt) excludes any plausible
-    # per-piece F&B SKU so single-bottle rows are unaffected.
-    elif (
-        basis in ("mass", "volume", "length")
-        and c > 1
-        and m == 1
-        and amount_value is not None
-        and not pd.isna(amount_value)
-        and float(amount_value) >= 0.5
-    ):
-        c = 1
+        m = 1
     if basis in ("mass", "volume", "length"):
         if amount_value is None or pd.isna(amount_value) or amount_value == 0:
             return None
-        denom = float(amount_value) * c * m
+        denom = float(amount_value) * m
         if denom == 0:
             return None
         return float(price) / denom
