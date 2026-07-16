@@ -327,7 +327,13 @@ def _rung_pack_unit_emit(st):
             and multiplier == 1
             and not _is_total_breakdown(st.item_name, st.pack_value, st.pack_unit, n)
         ):
-            if um["basis"] == "volume":
+            # "<per-unit measure>. Pack N" (e.g. "17.5g. Pack 60sachets") is a
+            # MULTIPACK: the measure is per-unit and N multiplies it, whatever the
+            # basis. "N Pack <total>" ("Thin Sausages 24 Pack 1.8kg") does NOT
+            # match `Pack\s*N`, so its count stays inert as before.
+            if um["basis"] == "volume" or re.search(
+                rf"[Pp]ack\s*0*{n}(?!\d)", st.item_name
+            ):
                 multiplier = n
             else:
                 count = n
