@@ -53,10 +53,21 @@ def evaluate(
     x = embedding.embed_names(names)
 
     pred, conf = _oof(x, y)
+    tau = _global_tau(conf, pred == y, target_precision)
+    pred = np.array(pred, dtype=object)
+    force_reject = np.zeros(len(pred), dtype=bool)
+    force_accept = np.zeros(len(pred), dtype=bool)
+    for i, (p, n) in enumerate(zip(pred, names)):
+        action = vetoes.veto_action(p, n)
+        if action is None:
+            continue
+        if action == vetoes.REJECT:
+            force_reject[i] = True
+        else:
+            pred[i] = action
+            force_accept[i] = True
     correct = pred == y
-    tau = _global_tau(conf, correct, target_precision)
-    vetoed = np.array([vetoes.is_vetoed(p, n) for p, n in zip(pred, names)], dtype=bool)
-    accepted = (conf >= tau) & (~vetoed)
+    accepted = ((conf >= tau) & ~force_reject) | force_accept
 
     tp = int((accepted & correct).sum())
     fired = int(accepted.sum())

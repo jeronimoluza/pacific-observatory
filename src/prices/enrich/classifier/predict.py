@@ -21,9 +21,9 @@ from prices.enrich.classifier import MODEL_FILE, read_latest, version_dir
 
 @dataclass
 class Prediction:
-    leaf: np.ndarray  # top-1 leaf per name
+    leaf: np.ndarray  # top-1 leaf per name (post-reroute)
     conf: np.ndarray  # top-1 probability
-    accepted: np.ndarray  # bool: conf >= tau and not vetoed
+    accepted: np.ndarray  # bool: conf >= tau, minus vetoes, plus reroutes
 
 
 class Predictor:
@@ -43,12 +43,18 @@ class Predictor:
         x = embedding.embed_names(names)
         p = self.clf.predict_proba(x)
         top = p.argmax(axis=1)
-        leaf = self.classes[top]
+        leaf = np.array(self.classes[top], dtype=object)
         conf = p[np.arange(len(top)), top]
-        vetoed = np.array(
-            [vetoes.is_vetoed(lf, nm) for lf, nm in zip(leaf, names)], dtype=bool
-        )
-        accepted = (conf >= self.tau) & (~vetoed)
+        accepted = conf >= self.tau
+        for i, (lf, nm) in enumerate(zip(leaf, names)):
+            action = vetoes.veto_action(lf, nm)
+            if action is None:
+                continue
+            if action == vetoes.REJECT:
+                accepted[i] = False
+            else:
+                leaf[i] = action
+                accepted[i] = True
         return Prediction(leaf, conf, accepted)
 
 
