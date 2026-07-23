@@ -80,6 +80,7 @@ def load_filtered_cache() -> pd.DataFrame:
         cache["trust_level"] = "high"
     else:
         cache["trust_level"] = cache["trust_level"].fillna("high")
+    cache = cache[cache["trust_level"] == "high"]
     return cache[CACHE_KEEP_COLS]
 
 

@@ -9,9 +9,10 @@ independent enrich jobs per unique product name:
     where the head's global confidence gate clears AND no trap veto fires.
 
 Source-declared narrow COICOP codes bypass the classifier (structural extraction
-still runs). ``cross_check`` reconciles the structural basis against the leaf's
-allowed bases. Output is keyed by ``input_hash`` with ``merge.ENRICHMENT_COLS``,
-filtered to a single COICOP division (default 01 — the EAP F&B PoC).
+still runs). A basis-audit (``audit.py``) withholds trust from accepted rows
+whose extracted basis contradicts the leaf's denylist. Output is keyed by
+``input_hash`` with ``merge.ENRICHMENT_COLS``, filtered to a single COICOP
+division (default 01 — the EAP F&B PoC).
 """
 
 from __future__ import annotations
@@ -21,7 +22,7 @@ from typing import Optional
 
 import pandas as pd
 
-from prices.enrich import config, coicop_codes, cross_check
+from prices.enrich import audit, config, coicop_codes
 from prices.enrich.classifier.predict import load_predictor
 from prices.enrich.extract import extract
 from prices.enrich.stages.merge import ENRICHMENT_COLS
@@ -42,16 +43,6 @@ def _structural_fields(name, category, country, lang) -> dict:
         "is_multipack": sf.is_multipack,
         "promo_reason": sf.promo_reason,
     }
-
-
-def _apply_cross_check(row: dict) -> dict:
-    bucket, override = cross_check.consolidate(
-        row.get("pricing_basis"), row.get("coicop_code") or "", None
-    )
-    if bucket == "SILENT_OVERRIDE" and override:
-        row["pricing_basis"] = override
-        row["standard_unit"] = cross_check.canonical_unit_for_basis(override)
-    return row
 
 
 def classify_products(
@@ -93,7 +84,17 @@ def classify_products(
             row["state"] = "rejected"
             row["trust_level"] = "low"
 
-        row = _apply_cross_check(row)
+        if row["trust_level"] == "high":
+            verdict = audit.audit(
+                row.get("coicop_code"), row.get("pricing_basis"), audit._denylist_map()
+            )
+            if verdict == audit.REJECT:
+                row["trust_level"] = "low"
+                row["state"] = "rejected"
+            elif verdict == audit.FLAG:
+                row["trust_level"] = "flagged"
+                row["state"] = "flagged_basis"
+
         out_rows.append(row)
 
     out = pd.DataFrame(out_rows)

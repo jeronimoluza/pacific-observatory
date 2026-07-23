@@ -40,6 +40,9 @@ EVAL_HISTORY_CSV = ENRICH_DIR / "eval_history.csv"
 VETO_LEXICON_PARQUET = (
     REPO_ROOT / "data" / "prices" / "enrich" / "gold" / "veto_lexicon.parquet"
 )
+BASIS_DENYLIST_PARQUET = (
+    REPO_ROOT / "data" / "prices" / "enrich" / "gold" / "basis_denylist.parquet"
+)
 
 # --- Classifier: (embedding → head) COICOP classification ---
 # Structural regex extraction + a logistic-regression head over Qwen3-Embedding
