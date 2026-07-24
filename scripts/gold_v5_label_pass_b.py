@@ -23,7 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from prices.enrich import config, rate_limit  # noqa: E402
 from prices.enrich.extract import extract  # noqa: E402
-from prices.enrich.tier_b.taxonomy_index import load_coicop_context, load_taxonomy_index  # noqa: E402
+from prices.enrich.coicop_taxonomy import load_coicop_context, load_taxonomy_index  # noqa: E402
 
 GOLD_DIR = config.REPO_ROOT / "data" / "prices" / "enrich" / "gold"
 BATCH_DIR = GOLD_DIR / "batches"

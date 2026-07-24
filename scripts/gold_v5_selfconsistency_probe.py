@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from prices.enrich import config  # noqa: E402
-from prices.enrich.tier_b.taxonomy_index import load_taxonomy_index  # noqa: E402
+from prices.enrich.coicop_taxonomy import load_taxonomy_index  # noqa: E402
 
 _spec = importlib.util.spec_from_file_location(
     "passb", ROOT / "scripts" / "gold_v5_label_pass_b.py"
@@ -59,7 +59,7 @@ async def run(
     passb.MODEL = "gemini-3.1-flash-lite"
     leaves, _ = load_taxonomy_index()
     if with_taxonomy:
-        from prices.enrich.tier_b.taxonomy_index import load_coicop_context
+        from prices.enrich.coicop_taxonomy import load_coicop_context
 
         ctx = load_coicop_context()
         _orig_agent = passb._agent

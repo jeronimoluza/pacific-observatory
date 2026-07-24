@@ -18,7 +18,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from prices.enrich import config  # noqa: E402
-from prices.enrich.tier_b.taxonomy_index import load_taxonomy_index  # noqa: E402
+from prices.enrich.coicop_taxonomy import load_taxonomy_index  # noqa: E402
 
 GATE_DIR = config.REPO_ROOT / "data" / "prices" / "enrich" / "gold" / "gate1"
 ADJ_DIR = GATE_DIR / "adjudications"

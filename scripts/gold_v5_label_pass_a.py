@@ -21,7 +21,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from prices.enrich.tier_b.taxonomy_index import (  # noqa: E402
+from prices.enrich.coicop_taxonomy import (  # noqa: E402
     load_coicop_context,
     load_taxonomy_index,
 )

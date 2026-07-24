@@ -5,6 +5,9 @@ from pathlib import Path
 # dual-label → opus adjudication — currently run ad-hoc, not yet a pipeline
 # module). The RATE_LIMITS block below is the matching Gemini quota config.
 MODEL_NAME = "gemini-3.1-flash-lite"
+# Escalation model for the gold-labeling Pass B (stronger, tighter RPD quota).
+# Override per-run with `--model gemini-3.1-flash-lite` when pro is unavailable.
+LLM_MODEL_ESCALATE = "gemini-3-pro"
 CONCURRENCY = 1
 OUTPUT_RETRIES = 3
 
