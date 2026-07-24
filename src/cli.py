@@ -378,21 +378,6 @@ from prices.enrich.match_record_view import (  # noqa: E402
     match_record_command as _prices_match_record,
 )
 from prices.enrich.census import census_command as _prices_census  # noqa: E402
-from prices.enrich.base_items.cli import (  # noqa: E402
-    classify_command as _prices_classify,
-)
-from prices.enrich.base_items.cli import (  # noqa: E402
-    regex_check_command as _prices_regex_check,
-)
-from prices.enrich.base_items.cli import (  # noqa: E402
-    build_timeseries_command as _prices_build_timeseries,
-)
-from prices.enrich.base_items.cli import (  # noqa: E402
-    apply_verdicts_command as _prices_apply_verdicts,
-)
-from prices.enrich.base_items.cli import (  # noqa: E402
-    discover_command as _prices_discover,
-)
 from prices.enrich.classifier.cli import (  # noqa: E402
     train_classifier_command as _prices_train_classifier,
 )
@@ -404,11 +389,6 @@ prices.add_command(_prices_process, name="process")
 prices.add_command(_prices_eval, name="eval")
 prices.add_command(_prices_match_record, name="match-record")
 prices.add_command(_prices_census, name="census")
-prices.add_command(_prices_classify, name="classify")
-prices.add_command(_prices_regex_check, name="regex-check")
-prices.add_command(_prices_build_timeseries, name="build-timeseries")
-prices.add_command(_prices_apply_verdicts, name="apply-verdicts")
-prices.add_command(_prices_discover, name="discover")
 prices.add_command(_prices_train_classifier, name="train-classifier")
 
 

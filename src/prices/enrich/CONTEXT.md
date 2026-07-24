@@ -152,8 +152,6 @@ canonicalize unit per leaf → compute unit_value → Layer-2 flag → attach FX
   coverage grain) and the dead `enrichments.parquet`.
 - **`data/prices/enrich/`** (no underscore) — curated gold/veto/denylist home.
   **`data/prices/_enrich/`** (underscore) — working/scratch dir. Do not confuse.
-- **`prices classify <base_item>`** — the `base_items/` GREEN-promotion tool, a
-  *separate* CLI verb from the `classify` stage inside `prices process`.
 
 ## Regex patterns tree
 
