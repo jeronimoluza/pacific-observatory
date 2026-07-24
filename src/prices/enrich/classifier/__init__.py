@@ -1,10 +1,9 @@
-"""Local supervised COICOP classifier (v0).
+"""(embedding → head) COICOP classifier — versioned model bundles.
 
-Repo-standard port of ``scripts/poc_local_classifier.py``: a char n-gram
-TF-IDF + logistic-regression model trained on the resolved
-``product_decisions.csv`` labels (plus ``label_store`` adjudications when
-populated). Classes are the COICOP leaves seen in GREEN decisions plus the two
-reject classes ``__EXCLUDE__`` and ``__OTHER_FORM__``.
+A logistic-regression head over Qwen3-Embedding vectors of the RAW product
+name, predicting the COICOP leaf (see ``train.py`` / ``predict.py``). Trained on
+the canonical gold set (``dataset.py``); each bundle is one ``model.joblib``
+carrying {clf, classes, tau, division, embed_model}.
 
 Artifacts are versioned under
 ``data/prices/_enrich/_models/classifier/{version}/`` with a ``latest.txt``
@@ -20,15 +19,9 @@ from prices.enrich import config
 MODELS_DIR = config.ENRICH_DIR / "_models" / "classifier"
 LATEST_POINTER = MODELS_DIR / "latest.txt"
 
-EXCLUDE_CLASS = "__EXCLUDE__"
-OTHER_FORM_CLASS = "__OTHER_FORM__"
-REJECT_CLASSES = (EXCLUDE_CLASS, OTHER_FORM_CLASS)
-
 MODEL_FILE = "model.joblib"
 TRAIN_FILE = "train.parquet"
 MANIFEST_FILE = "training_manifest.json"
-RELIABILITY_FILE = "reliability.csv"
-EVAL_REPORT_FILE = "eval_report.md"
 EVAL_METRICS_FILE = "eval_metrics.json"
 
 
