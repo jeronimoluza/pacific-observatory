@@ -14,7 +14,6 @@ collect → outputs/prices/raw/raw_prices.csv        (per-source spiders/fetcher
     ▼  prices process   (STAGE_ORDER in enrich/cli.py)
   concatenate → outputs/prices/raw/raw_prices.csv   (unify raw_items/wayback/CC → one CSV)
   prepare     → data/prices/_enrich/products_input.parquet   (dedup to one row / input_hash)
-  taxonomy    → static/coicop_subcategories.json    (Gemini-derived leaf sub-vocab)
   classify    → data/prices/_enrich/cache/classified.parquet
   merge       → outputs/prices/enriched/enriched_prices.csv   (raw × enrichment, per obs)
     │

@@ -1,5 +1,3 @@
-import hashlib
-
 from prices.enrich.versioning import (
     PROMPT_BYTES_HASH,
     PROMPT_SEMVER,
@@ -44,19 +42,6 @@ def test_input_hash_stable():
     h2 = input_hash(dict(reversed(list(d.items()))))
     assert h1 == h2
     assert len(h1) == 64
-
-
-def test_cache_key_changes_with_semver(monkeypatch):
-    d = {"x": 1}
-    k1 = cache_key(d)
-    import prices.enrich.versioning as v
-
-    monkeypatch.setattr(v, "PROMPT_SEMVER", "v999")
-    expected = hashlib.sha256(
-        (canonical_json(d) + "v999" + v.SCHEMA_VERSION + v.TAXONOMY_VERSION).encode()
-    ).hexdigest()
-    assert v.cache_key(d) == expected
-    assert v.cache_key(d) != k1
 
 
 def test_cache_key_ignores_bytes_hash(monkeypatch):

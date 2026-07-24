@@ -1,7 +1,9 @@
 import os
 from pathlib import Path
 
-# Model (Gemini — used by the taxonomy stage's pydantic-ai calls)
+# Gemini / LLM knobs, retained for the gold-labeling workflow (codex + gemini
+# dual-label → opus adjudication — currently run ad-hoc, not yet a pipeline
+# module). The RATE_LIMITS block below is the matching Gemini quota config.
 MODEL_NAME = "gemini-3.1-flash-lite"
 CONCURRENCY = 1
 OUTPUT_RETRIES = 3
@@ -18,9 +20,6 @@ PRODUCTS_INPUT_PARQUET = ENRICH_DIR / "products_input.parquet"
 # separate concept from the classify pipeline's per-input_hash products_input.
 PRODUCTS_PARQUET = ENRICH_DIR / "products.parquet"
 COICOP_XLSX = ENRICH_DIR / "coicop_categories.xlsx"
-COICOP_SUBCATS_JSON = (
-    Path(__file__).resolve().parent / "static" / "coicop_subcategories.json"
-)
 CACHE_DIR = ENRICH_DIR / "cache"
 VETO_LEXICON_PARQUET = (
     REPO_ROOT / "data" / "prices" / "enrich" / "gold" / "veto_lexicon.parquet"

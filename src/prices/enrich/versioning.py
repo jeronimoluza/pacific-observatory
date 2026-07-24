@@ -25,7 +25,6 @@ TAXONOMY_PROMPT_VERSION = _sha12(_read_bytes(config.TAXONOMY_PROMPT_PATH))
 SCHEMA_VERSION = _sha12(
     json.dumps(EnrichmentBatch.model_json_schema(), sort_keys=True).encode()
 )
-TAXONOMY_VERSION = _sha12(_read_bytes(config.COICOP_SUBCATS_JSON))
 
 
 def canonical_json(d: dict) -> str:

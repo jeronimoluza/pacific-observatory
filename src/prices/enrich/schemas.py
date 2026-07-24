@@ -44,13 +44,3 @@ class ProductEnrichment(BaseModel):
 
 class EnrichmentBatch(BaseModel):
     products: list[ProductEnrichment]
-
-
-class SubcategoryEntry(BaseModel):
-    id: str  # kebab-case
-    label: str
-    synonyms: list[str] = Field(default_factory=list)
-
-
-class LeafSubcategories(BaseModel):
-    entries: list[SubcategoryEntry]

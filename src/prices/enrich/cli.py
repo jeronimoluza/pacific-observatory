@@ -5,17 +5,15 @@ from prices.enrich.stages import classify as classify_stage
 from prices.enrich.stages import concatenate as concatenate_stage
 from prices.enrich.stages import merge as merge_stage
 from prices.enrich.stages import prepare as prepare_stage
-from prices.enrich.stages import taxonomy as taxonomy_stage
 
 STAGES = {
     "concatenate": concatenate_stage.run,
     "prepare": prepare_stage.run,
-    "taxonomy": taxonomy_stage.run,
     "classify": classify_stage.run,
     "merge": merge_stage.run,
 }
 
-STAGE_ORDER = ["concatenate", "prepare", "taxonomy", "classify", "merge"]
+STAGE_ORDER = ["concatenate", "prepare", "classify", "merge"]
 
 
 def _invalidate_for(stage: str | None) -> None:
@@ -23,8 +21,6 @@ def _invalidate_for(stage: str | None) -> None:
         concatenate_stage.STATE_FILE.unlink()
     if stage == "prepare" and config.PRODUCTS_INPUT_PARQUET.exists():
         config.PRODUCTS_INPUT_PARQUET.unlink()
-    if stage == "taxonomy" and config.COICOP_SUBCATS_JSON.exists():
-        config.COICOP_SUBCATS_JSON.unlink()
     if stage == "classify" and config.CLASSIFIED_PARQUET.exists():
         config.CLASSIFIED_PARQUET.unlink()
 
@@ -45,7 +41,7 @@ def _invalidate_for(stage: str | None) -> None:
 @click.option("-S", "--subregion", "subregion", default=None, hidden=True)
 @click.option("-c", "--country", "country", default=None, hidden=True)
 def process_command(stage, rebuild, region, subregion, country):
-    """AI enrichment pipeline (concatenate → prepare → taxonomy → classify → merge).
+    """AI enrichment pipeline (concatenate → prepare → classify → merge).
 
     `classify` runs the two independent enrich jobs per product: deterministic
     structural regex extraction (pricing_basis / amount / count / promo flags)
