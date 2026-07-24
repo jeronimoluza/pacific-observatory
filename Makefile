@@ -70,8 +70,8 @@ test-integration: ## Run integration tests only
 test-cov: ## Run tests with HTML coverage report (htmlcov/index.html)
 	@poetry run pytest tests/ --cov=src --cov-report=html --cov-report=term-missing
 
-eval: ## Run enrich pipeline against eval_set.csv and append to eval_history.csv (requires GOOGLE_API_KEY)
-	@poetry run python scripts/run_eval.py
+eval: ## Run the (embedding->head) classifier gold eval (coverage@precision)
+	@poetry run python run.py prices eval
 
 # =============================================================================
 # Documentation

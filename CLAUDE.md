@@ -22,8 +22,8 @@ poetry run pytest tests/prices/enrich/test_extract.py -v        # single file
 poetry run pytest tests/prices/enrich/test_extract.py::test_name # single test
 poetry run pytest -m unit                                        # by marker (unit|integration|slow)
 
-# Enrich eval (requires GOOGLE_API_KEY)
-make eval               # runs scripts/run_eval.py against eval_set.csv
+# Enrich eval (classifier gold eval, coverage@precision)
+make eval               # runs `python run.py prices eval` (head_eval.py)
 
 # Docs
 make docs               # jupyter-book build (opens browser)
@@ -136,7 +136,7 @@ A Scrapy project (`price_scraping/`) and standalone `fetchers/` are unified unde
 
 `backfill/` is the resumable Wayback runner. `build/` (aggregate + basket + fx) and `publish.py` are live at EAP F&B PoC scope — `build` writes `data/prices/_build/eap_fnb_observations.parquet`, `publish` renders `outputs/prices/eap_fnb_dashboard.html` with vendored/inlined Chart.js (WB intranet blocks CDNs).
 
-> **Migration status:** the embedding→head classifier is replacing a retired KNN/HNSW + LLM-reranker cascade. Any surviving `tier_b`/`tier_c`/`KNN`/`HNSW`/`consensus`/`witness` naming, and the stale `enrichments.parquet` cache + Gemini `gemini_classification.csv` (from the separate legacy `src/cpi/coicopping/` classifier), are dead — do not treat them as current.
+> **Migration status:** the embedding→head classifier has fully replaced the retired KNN/HNSW + LLM-reranker cascade, which was **removed** on 2026-07-24 (`stages/{enrich,tier_c,dedupe}.py`, the `tier_b/` package, `eval/{runner,gold,metrics,report}.py`, the tier-b/tier-c config block, and their scripts/tests are gone). The `prices build` step now reads the live `classified.parquet` (keyed by `input_hash`, states `narrow_source`/`classified`) rather than the retired `enrichments.parquet` cache. Any lingering `tier_b`/`tier_c`/`KNN`/`HNSW`/`consensus`/`witness` reference, plus the Gemini `gemini_classification.csv` from the separate legacy `src/cpi/coicopping/` classifier, is dead — do not treat it as current. Note: `prices classify <base_item>` (the `base_items/` GREEN-promotion tool) is a **separate** CLI verb from the `classify` stage inside `prices process`; do not conflate them.
 
 ### Configuration system
 
