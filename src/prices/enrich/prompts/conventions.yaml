@@ -1,0 +1,145 @@
+# COICOP boundary decision record — governs GOLD labeling ONLY.
+# NOT read at inference. The head learns each boundary from corrected gold.
+# One entry per ambiguous leaf boundary. `inject: true` entries are rendered into the
+# labeler prompts (gold_labeling.md / gate1_adjudication.md); all entries drive the
+# candidate-violator sweep of existing gold.
+#
+# fields:
+#   id                 stable slug
+#   boundary           the competing leaves
+#   rule               prose the labeler must follow (rendered verbatim into the prompt)
+#   citation           exact COICOP 2018 text (coicop_categories.xlsx) supporting the split
+#   established         true = clear COICOP text + gold majority; false = adjudicate before sweep
+#   inject             true = include in labeler prompt now
+#   shortlist_keywords name substrings to FIND candidate violators (shortlist only, not a rewrite)
+
+# ---- established boundaries (promoted from prior flip lists, reconciled to the xlsx) ----
+
+- id: instant-noodles
+  boundary: ["01.1.1.5.0", "01.1.9.1.1"]
+  rule: >
+    Dried/instant noodle or pasta PACKET that must be cooked or rehydrated (ramen,
+    ramyun, udon, dry cup/bowl noodles, vermicelli, macaroni, mi goreng) -> 01.1.1.5.0,
+    even when a seasoning sachet is included. A COOKED, ready-to-eat noodle DISH
+    (beef-noodle soup, fried noodles, wonton noodles) -> 01.1.9.1.x.
+  citation: "01.1.1.5 = uncooked pasta ... and couscous, uncooked dumplings (leaf sub-labels include 'instant-noodle')"
+  established: true
+  inject: true
+  shortlist_keywords: [instant, ramen, ramyun, ramyeon, udon, "cup noodle", vermicelli, "mi goreng"]
+
+- id: yoghurt-fermented-vs-milk-dessert
+  boundary: ["01.1.4.6.0", "01.1.4.7.0"]
+  rule: >
+    Split on FERMENTED vs non-fermented, NOT drinkable vs spoonable. Any FERMENTED
+    dairy — yoghurt (set, Greek, drinking/liquid), kefir, buttermilk, lassi,
+    curdled/acidified milk, soy/coconut yoghurt — INCLUDING flavoured/sweetened/fruit
+    variants -> 01.1.4.6.0. NON-fermented milk-based drinks & desserts (chocolate/
+    coffee/flavoured milk drink, milkshake, custard, pudding, panna cotta) -> 01.1.4.7.0.
+  citation: "01.1.4.6 includes yoghurt/kefir/buttermilk 'whether or not ... are flavoured or contain added fruits, nuts or cocoa'; 01.1.4.7 = milk-based beverages flavoured w/ cocoa/coffee + desserts"
+  established: true    # xlsx-authoritative; REVERSES the 2026-07-13 flip (7 rows .7.0 -> .6.0)
+  inject: true
+  shortlist_keywords: [yoghurt, yogurt, yakult, kefir, buttermilk, lassi, "drinking yoghurt"]
+
+- id: juice-still-vs-sparkling
+  boundary: ["01.2.1.0.0", "01.2.6.0.0"]
+  rule: >
+    Split on CARBONATION. STILL fruit/vegetable juice, nectar, cordial, syrup,
+    concentrate or powdered juice — even if sweetened — -> 01.2.1.0.0. CARBONATED /
+    sparkling drinks (sodas, colas, lemonades, sparkling juice, tonic) -> 01.2.6.0.0.
+  citation: "01.2.1.0 = fruit and vegetable juices ... whether or not ... added sugar ... syrups ... concentrates ... powdered juices; excludes sparkling juices (01.2.6.0). 01.2.6.0 = sodas, lemonades and colas, sparkling juices"
+  established: true
+  inject: true
+  shortlist_keywords: [soda, cola, lemonade, sparkling, "carbonated", tonic, "soft drink"]
+
+- id: tea-rtd-vs-dry-infusion
+  boundary: ["01.2.3.0.3", "01.2.3.0.9"]
+  rule: >
+    Ready-to-DRINK bottled/canned iced tea -> 01.2.3.0.3. Dry herbal/fruit/rooibos/
+    maté infusions, tea substitutes, tea extracts/essences, instant tea -> 01.2.3.0.9.
+    (Dry black/green leaf/bag tea -> 01.2.3.0.1.)
+  citation: "01.2.3.0 alsoIncludes fruit and herbal teas, rooibos, instant tea, iced tea; 01.2.6.0 excludes iced tea (-> 01.2.3.0)"
+  established: true
+  inject: true
+  shortlist_keywords: ["iced tea", "ice tea", herbal, rooibos, chamomile, "fruit tea", mate]
+
+- id: coffee-dry-vs-liquid-prep
+  boundary: ["01.2.2.0.1", "01.2.2.0.9"]
+  rule: >
+    Dry coffee — ground, instant, whole/roasted bean, decaf -> 01.2.2.0.1. Liquid
+    coffee extracts, essences, concentrates and coffee-based beverage preparations
+    -> 01.2.2.0.9. (Milk-based coffee drinks -> 01.1.4.7, NOT here.)
+  citation: "01.2.2.0 = coffee ... roasted or ground, incl instant; extracts, essences and concentrates of coffee; coffee-based beverage preparations. excludes milk-based coffee beverages (01.1.4.7)"
+  established: true
+  inject: true
+  shortlist_keywords: [concentrate, essence, "coffee extract", "liquid coffee", "ready to drink coffee"]
+
+- id: chocolate-solid-vs-composite
+  boundary: ["01.1.8.5.1", "01.1.8.5.9"]
+  rule: >
+    SOLID eating chocolate — dark/milk bars, slabs, blocks -> 01.1.8.5.1. Composite/
+    filled chocolate — chocolate-covered biscuits, coated nuts, spreads/creams,
+    mousses, cocoa desserts -> 01.1.8.5.9. (WHITE chocolate -> 01.1.8.9; chocolate
+    DRINKS/cocoa powder for drinks -> 01.2.4.0.)
+  citation: "01.1.8.5 = chocolate in bars or slabs; chocolate-based creams and spreads; chocolate-covered food products if composed mainly of chocolate. excludes white chocolate (01.1.8.9), chocolate-based drinks (01.2.4.0)"
+  established: true
+  inject: true
+  shortlist_keywords: ["chocolate covered", "chocolate coated", spread, mousse, "white chocolate", cocoa]
+
+# ---- new boundaries from the 2026-07-21 tau-pinner audit ----
+
+- id: canned-luncheon-meat-vs-cured-ham
+  boundary: ["01.1.2.5.2", "01.1.2.3.2"]
+  rule: >
+    Canned/tinned luncheon meat, spiced ham, Spam-type block, potted meat, pate,
+    sausages -> 01.1.2.5.x (subclass explicitly lists 'canned meat'). Dry-cured /
+    smoked / salted whole cuts and slices (prosciutto, bacon, salami, cured ham
+    slices) -> 01.1.2.3.x.
+  citation: "01.1.2.5 = ... sausages ..., canned meat, meat extracts ...; 01.1.2.3 = Meat ... dried, salted, in brine or smoked ... bacon, ham and salami"
+  established: true
+  inject: true
+  shortlist_keywords: [luncheon, "spiced ham", spam, "potted meat", "pork luncheon", "canned pork"]
+
+- id: marinated-meat-vs-fresh-cut
+  boundary: ["01.1.2.5.9", "01.1.2.2.1"]
+  rule: >
+    Meat with added marinade, seasoning, sauce, herb/garlic butter, breading or other
+    value-added prep -> 01.1.2.5.x (subclass lists 'marinated meat'). PLAIN fresh,
+    chilled or frozen cuts with no added preparation -> 01.1.2.2.x.
+  citation: "01.1.2.5 = ... marinated meat ...; 01.1.2.2 = Meat ... fresh, chilled or frozen"
+  established: true
+  inject: true
+  shortlist_keywords: [marinated, "with garlic", "herb butter", seasoned, bbq, "ready to cook"]
+
+- id: papad-cracker-vs-pulse-prep
+  boundary: ["01.1.1.3.1", "01.1.7.9.9"]
+  rule: >
+    Crispbread-type crackers eaten like bread/snack crackers — pappadum/papad, rice
+    crackers, prawn crackers, crispbread, rusks -> 01.1.1.3.x. Reserve 01.1.7.9.x for
+    vegetable/pulse PREPARATIONS (canned pulses, dhal, vegetable flakes).
+  citation: "01.1.1.3 = ... crispbreads, rusks, toasted bread and crackers ..."
+  established: true
+  inject: true
+  shortlist_keywords: [pappadum, papad, "prawn cracker", "rice cracker", crispbread, crackers]
+
+- id: fish-ready-meal-vs-fish-prep
+  boundary: ["01.1.9.1.2", "01.1.3.3.1"]
+  rule: >
+    Composite ready-MEAL where fish is one ingredient among sauce/pasta/vegetables
+    (tuna mornay/bake, fish pie, seafood pasta meal) -> 01.1.9.1.x. Product that IS
+    the fish (canned tuna/sardines, fillets, fish fingers, fish cakes, surimi)
+    -> 01.1.3.3.x.
+  citation: "01.1.3.3 = Prepared foodstuffs CONSISTING OF fish ...; 01.1.9.1 = Prepared food and meals ... mixed ingredients"
+  established: false   # adjudicate before sweeping / prompt-injecting
+  inject: false
+  shortlist_keywords: [mornay, "fish pie", "fish bake", "seafood pasta", casserole]
+
+- id: birds-nest-tonic-vs-beverage
+  boundary: ["01.1.9.9.0", "01.2.9.0.0"]
+  rule: >
+    Ready-to-DRINK bottled tonic (birds nest drink, herbal jelly drink, grass-jelly
+    drink) sold by volume -> 01.2.9.0.0. Jarred/canned tonic FOOD eaten with a spoon,
+    or sold by mass as an ingredient -> 01.1.9.9.0.
+  citation: "01.2.9.0 = flavoured water, energy drinks ...; 01.1.9.9 = ... other ready-made food and other food products"
+  established: false   # genuinely ambiguous — adjudicate per pack form (volume vs mass)
+  inject: false
+  shortlist_keywords: ["bird's nest", "birds nest", "herbal jelly", "grass jelly", tonic]
