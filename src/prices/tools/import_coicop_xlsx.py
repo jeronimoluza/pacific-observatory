@@ -409,12 +409,6 @@ def main(argv: list[str] | None = None) -> None:
     class_tree_path = args.out_dir / "_class_tree.json"
     class_tree_path.write_text(emit_class_tree_store(tree))
 
-    # _sub_labels store is no longer written here. The sub-label store
-    # (keywords/coicop/_sub_labels_store.json) carries hand-curated synonyms +
-    # 5-digit numeric_id + allowed_bases and is the source of truth; the derived
-    # parquet is regenerated via
-    # `python -m prices.tools.regenerate_sub_labels_parquet`.
-
     excludes_df = build_excludes_df(exclude_rows)
     excludes_path = args.out_dir / "_excludes.parquet"
     excludes_df.to_parquet(excludes_path, index=False)
