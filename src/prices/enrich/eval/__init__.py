@@ -1,16 +1,10 @@
-"""Gold evaluation harness for the prices enrichment cascade.
+"""Gold evaluation for the (embedding -> head) COICOP classifier.
 
-First-class home (promoted out of `tests/`) for scoring the 3-tier cascade
-against the working gold set at `data/prices/enrich/gold/gold_labels.parquet`
-(313 rows: 300 oracle + 13 human-overridden, split by provenance from the
-legacy set; the 187-row held-out certification set is reserved for milestone close).
-
-Beyond per-field accuracy it grades the composed `unit_value` and attributes
-every miss to one of three causal buckets:
-
-    A_coicop     wrong COICOP leaf
-    B_basis      right COICOP, wrong pricing_basis
-    C_magnitude  right basis, wrong unit_value magnitude
+Scores the logistic-regression head against the canonical gold set
+(`data/prices/enrich/gold/gold_v5_8k_final.parquet` + rounds + fnb_extra) using
+5-fold out-of-fold predictions, reporting coverage at the target precision
+(cov@98) after the veto pass. The retired 3-tier-cascade harness
+(runner/gold/metrics/report) was removed; `head_eval` is the only eval.
 
 Entry point: `prices.enrich.eval.head_eval.run()` (also `python run.py prices eval`).
 """
