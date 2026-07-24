@@ -7,10 +7,13 @@ put a non-apple into apples). Either way the row is untrustworthy for
 unit-value aggregation, which is exactly what Layer-1's basis audit does not
 catch (it only rejects physically-impossible (leaf, pricing_basis) pairs).
 
-Cell = (sub_label_id, country). `_canonicalize_units` in aggregate.py already
-collapses each sub_label_id to its modal standard_unit, so every
+Cell = (coicop_code, country). `_canonicalize_units` in aggregate.py already
+collapses each coicop_code leaf to its modal standard_unit, so every
 unit_value_local inside a cell is unit-homogeneous and comparable; country
-pins the currency, so no FX is needed -- we score unit_value_LOCAL.
+pins the currency, so no FX is needed -- we score unit_value_LOCAL. coicop_code
+is the deepest leaf the live classifier assigns (the retired sub_label_id is no
+longer produced); the leaf is never rolled up, so distinct products stay in
+distinct cells wherever the taxonomy separates them.
 
 Method (one code path for snapshot and observations):
   - log space (prices are multiplicative / right-skewed)
@@ -41,7 +44,7 @@ NEW_COLS = ["uv_robust_z", "uv_cell_n", "uv_outlier", "trust_uv"]
 def flag_uv_outliers(
     df: pd.DataFrame,
     *,
-    group_cols: tuple[str, ...] = ("sub_label_id", "country"),
+    group_cols: tuple[str, ...] = ("coicop_code", "country"),
     period_col: str = "observation_date",
     value_col: str = "unit_value_local",
     k: float = 3.0,

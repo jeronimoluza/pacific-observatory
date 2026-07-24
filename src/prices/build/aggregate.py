@@ -3,29 +3,41 @@
 Two outputs, two sources:
 
   1. SNAPSHOT (current-state tab):
-     - read data/prices/_enrich/products_input.parquet (270k dedup'd rows)
-     - inner-join cache on (product_name_original, country, currency)
-     - 100% coverage of the 2,246 cache rows across 16 EAP countries
+     - read data/prices/_enrich/products_input.parquet (dedup'd, one row per
+       input_hash), which already carries `input_hash`
+     - inner-join the classifier output (classified.parquet) on `input_hash`
      - no date; FX dated to today
      → data/prices/_build/eap_fnb_snapshot.parquet
 
   2. OBSERVATIONS (historical tab):
      - stream outputs/prices/raw/raw_prices.csv
-     - inner-join cache on (product_name_original, country, currency)
-       where the CSV's `product_name` → cache's `product_name_original`
+     - recompute `input_hash` per raw row (same _row_input_dict basis prepare
+       used) and inner-join classified.parquet on it
      - has `date` (rename to observation_date) → monthly history
      → data/prices/_build/eap_fnb_observations.parquet
 
 Both paths:
-  - filter cache → current taxonomy × EAP × COICOP 01/02 × resolved
+  - filter classified.parquet → COICOP 01/02 × live states × trust_level==high
   - compute_unit_value via merge.compute_unit_value (multipack C-fix wired)
-  - canonicalize standard_unit per sub_label (modal; drop minority)
+  - canonicalize standard_unit per coicop_code leaf (modal; drop minority)
+  - flag Layer-2 unit-value outliers (trust_uv)
   - attach FX (USD-base) → price_usd, unit_value_usd
 
-The join key is the (name, country, currency) triple rather than input_hash.
-We measured 102/2246 (4.5%) hit rate via input_hash but 2246/2246 (100%) via
-direct triple-key join — the input_hash basis stored in products_input.parquet
-diverges in ways we couldn't fully reproduce, and the direct join is simpler.
+Design notes (why it is wired this way):
+  - The join key is `input_hash`, NOT the (name, country, currency) triple used
+    before. The embedding→head classifier writes classified.parquet keyed on the
+    exact input_hash it inherited from products_input.parquet (no recompute in
+    between), so the two frames' hashes are identical by construction and the
+    join is exact. The old triple-key workaround existed only because the retired
+    LLM cascade recomputed the hash on a divergent basis; that no longer applies.
+  - The unit-value CELL (for canonicalize + Layer-2 audit) is `coicop_code` at the
+    deepest leaf the classifier assigns. The retired cascade emitted a finer
+    `sub_label_id`, but the embedding→head classifier has no sub-leaf output and
+    leaves that column null. coicop_code is the finest granularity the live
+    pipeline populates; using the leaf (never rolling up) keeps distinct products
+    (e.g. apples vs oranges) in separate cells wherever the taxonomy separates
+    them. This is a coarsening vs sub_label_id: Layer-2 under-covers (withholds
+    trust on more rows) but never mis-rejects — consistent with precision-first.
 """
 from __future__ import annotations
 
@@ -38,11 +50,10 @@ import pandas as pd
 from prices.build.basket import EAP_COUNTRIES, FNB_COICOP_PREFIXES
 from prices.build.fx import attach_fx_and_usd
 from prices.build.unit_value_audit import flag_uv_outliers
-from prices.enrich.tier_b import cache as enrich_cache
 from prices.enrich import config as enrich_config
 from prices.enrich.stages.merge import compute_unit_value
-from prices.enrich.stages.prepare import parse_price
-from prices.enrich.versioning import TAXONOMY_VERSION
+from prices.enrich.stages.prepare import _row_input_dict, parse_price
+from prices.enrich.versioning import input_hash
 
 logger = logging.getLogger(__name__)
 
@@ -54,29 +65,36 @@ PRODUCTS_INPUT_PARQUET = REPO_ROOT / "data" / "prices" / "_enrich" / "products_i
 CSV_CHUNK_SIZE = 50_000
 FX_HISTORY_FLOOR = pd.Timestamp("2024-03-06")
 
-JOIN_KEYS = ["product_name_original", "country", "currency"]
+JOIN_KEYS = ["input_hash"]
 
 CACHE_KEEP_COLS = [
-    "product_name_original", "country", "currency",
+    "input_hash",
     "pricing_basis", "amount_value", "standard_unit",
-    "count", "multiplier", "coicop_code", "sub_label_id",
+    "count", "multiplier", "coicop_code",
     "is_promotion", "is_bundle", "is_multipack", "confidence",
     "trust_level",
 ]
 
 
 def load_filtered_cache() -> pd.DataFrame:
-    """Cache rows matching current taxonomy × EAP × F&B × resolved."""
-    cache = enrich_cache.read_cache()
+    """Live classifier rows matching F&B × classified state × trust_level==high.
+
+    Reads classified.parquet (the embedding→head classify-stage output, one row
+    per input_hash). Country is filtered later at the join sites (from
+    products_input / the raw CSV), since classified.parquet carries no country.
+    No taxonomy_version filter: classified.parquet is regenerated wholesale each
+    `prices process` run, so there is no stale-version drift to guard against.
+    """
+    if not enrich_config.CLASSIFIED_PARQUET.exists():
+        return pd.DataFrame(columns=CACHE_KEEP_COLS)
+    cache = pd.read_parquet(enrich_config.CLASSIFIED_PARQUET)
     if cache.empty:
         return cache
-    cache = cache[cache["taxonomy_version"] == TAXONOMY_VERSION]
-    cache = cache[cache["country"].isin(EAP_COUNTRIES)]
     cache = cache[cache["coicop_code"].astype(str).str.startswith(FNB_COICOP_PREFIXES)]
-    cache = cache[cache["state"] == "resolved"].copy()
-    cache = cache.sort_values("created_at").drop_duplicates(
-        subset=JOIN_KEYS, keep="last"
-    )
+    # Live classify states: narrow_source / classified carry trust_level==high;
+    # rejected / flagged_basis are demoted by the basis audit. Keep the two
+    # trustworthy-and-classified states, then re-assert trust_level defensively.
+    cache = cache[cache["state"].isin(["narrow_source", "classified"])].copy()
     if "trust_level" not in cache.columns:
         cache["trust_level"] = "high"
     else:
@@ -89,7 +107,7 @@ def _iter_raw_chunks(csv_path: Path) -> Iterator[pd.DataFrame]:
     return pd.read_csv(
         csv_path,
         usecols=[
-            "product_name", "price", "currency",
+            "product_name", "product_url", "price", "currency",
             "country", "source", "date",
         ],
         chunksize=CSV_CHUNK_SIZE,
@@ -98,41 +116,42 @@ def _iter_raw_chunks(csv_path: Path) -> Iterator[pd.DataFrame]:
 
 
 def _join_chunk(chunk: pd.DataFrame, cache: pd.DataFrame) -> pd.DataFrame:
-    """Inner-join a raw-CSV chunk to cache on (name, country, currency)."""
+    """Inner-join a raw-CSV chunk to classified.parquet on input_hash.
+
+    Recompute input_hash per raw row via the SAME _row_input_dict basis prepare
+    used (name+url when a URL exists, else name+country+currency). product_url is
+    read into the chunk so the URL branch matches prepare exactly — otherwise
+    every row would fall to the URL-less fallback and mismatch the snapshot hashes.
+    """
     chunk = chunk[chunk["country"].isin(EAP_COUNTRIES)].copy()
     if chunk.empty:
         return chunk
-    # The cache's product_name_original column holds the value that prepare
-    # put under that key — which itself came from raw row["product_name"].
-    # So join the raw CSV's `product_name` to cache's `product_name_original`.
-    chunk["product_name_original_join"] = chunk["product_name"].astype(str)
-    merged = chunk.merge(
-        cache,
-        left_on=["product_name_original_join", "country", "currency"],
-        right_on=JOIN_KEYS,
-        how="inner",
-        suffixes=("_raw", ""),
+    chunk["input_hash"] = chunk.apply(
+        lambda r: input_hash(_row_input_dict(r)), axis=1
     )
-    return merged.drop(columns=["product_name_original_join"])
+    merged = chunk.merge(cache, on="input_hash", how="inner", suffixes=("_raw", ""))
+    return merged.drop(columns=["input_hash"])
 
 
 def _canonicalize_units(df: pd.DataFrame) -> pd.DataFrame:
-    """Per sub_label_id, drop rows whose standard_unit is not the modal unit.
+    """Per coicop_code leaf, drop rows whose standard_unit is not the modal unit.
 
-    Cross-country medians are meaningless when half a sub_label is in lt
+    Cross-country medians are meaningless when half a leaf is priced in lt
     and the other half in kg, so we collapse to the dominant unit. The
-    minority rows are flagged for follow-up enrichment, not silently kept.
+    minority rows are dropped, not silently kept. The cell is coicop_code (the
+    deepest leaf the classifier assigns) because the live pipeline no longer
+    produces sub_label_id; see the module docstring.
     """
     if df.empty:
         return df
     canonical = (
-        df.dropna(subset=["sub_label_id", "standard_unit"])
-        .groupby("sub_label_id")["standard_unit"]
+        df.dropna(subset=["coicop_code", "standard_unit"])
+        .groupby("coicop_code")["standard_unit"]
         .agg(lambda s: s.value_counts().idxmax())
         .to_dict()
     )
     df = df.copy()
-    df["canonical_unit"] = df["sub_label_id"].map(canonical)
+    df["canonical_unit"] = df["coicop_code"].map(canonical)
     kept = df[df["standard_unit"] == df["canonical_unit"]]
     dropped = len(df) - len(kept)
     if dropped:
@@ -232,8 +251,8 @@ def build_observations(csv_path: Path | None = None) -> pd.DataFrame:
         raise RuntimeError("Raw CSV produced no joinable rows for the basket.")
     df = pd.concat(pieces, ignore_index=True)
     logger.info(
-        "[observations] joined: %d rows × %d countries × %d sub_labels",
-        len(df), df["country"].nunique(), df["sub_label_id"].nunique(),
+        "[observations] joined: %d rows × %d countries × %d coicop leaves",
+        len(df), df["country"].nunique(), df["coicop_code"].nunique(),
     )
 
     df = df.rename(columns={"date": "observation_date"})

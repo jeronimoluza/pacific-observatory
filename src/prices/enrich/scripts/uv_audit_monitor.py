@@ -21,7 +21,7 @@ from prices.enrich import config
 OUT_DIR = config.REPO_ROOT / "data" / "prices" / "enrich" / "_monitor"
 
 TRIAGE_COLS = [
-    "sub_label_id",
+    "coicop_code",
     "country",
     "uv_cell_n",
     "product_name_original",
@@ -64,18 +64,18 @@ def main() -> None:
 
     cell_med = (
         df[df["trust_uv"] == "high"]
-        .groupby(["sub_label_id", "country"])["unit_value_local"]
+        .groupby(["coicop_code", "country"])["unit_value_local"]
         .median()
         .rename("cell_median_uv")
     )
-    outliers = outliers.merge(cell_med, on=["sub_label_id", "country"], how="left")
+    outliers = outliers.merge(cell_med, on=["coicop_code", "country"], how="left")
 
     keep = [c for c in TRIAGE_COLS if c in outliers.columns] + [
         "cell_median_uv",
         "_build",
     ]
     out = outliers[keep].sort_values(
-        ["sub_label_id", "country", "uv_robust_z"], ascending=[True, True, False]
+        ["coicop_code", "country", "uv_robust_z"], ascending=[True, True, False]
     )
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -87,7 +87,7 @@ def main() -> None:
     print("thin-cell (flag, not outlier) rows:", thin)
     print(
         "distinct outlier cells:",
-        out[["sub_label_id", "country"]].drop_duplicates().shape[0],
+        out[["coicop_code", "country"]].drop_duplicates().shape[0],
     )
     print("wrote", out_csv)
 

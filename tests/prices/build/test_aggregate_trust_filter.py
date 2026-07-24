@@ -1,34 +1,22 @@
 from __future__ import annotations
 
-import sys
-import types
-
 import pandas as pd
 import pytest
-
-# Pre-existing, unrelated environment gap: src/prices/enrich/stages/prepare.py
-# (committed since da1667b2, 2026-07-14) imports prices.enrich.boilerplate,
-# which does not exist in this worktree, breaking the whole aggregate.py
-# import chain (also breaks tests/prices/enrich/test_prepare.py). Stub it
-# here only, so this test file can exercise the real aggregate module.
-if "prices.enrich.boilerplate" not in sys.modules:
-    _stub = types.ModuleType("prices.enrich.boilerplate")
-    _stub.strip_boilerplate = lambda name: name
-    sys.modules["prices.enrich.boilerplate"] = _stub
 
 from prices.build import aggregate
 
 pytestmark = pytest.mark.unit
 
 
-def _fake_cache_rows() -> pd.DataFrame:
+def _fake_classified_rows() -> pd.DataFrame:
+    """A classified.parquet-shaped frame (one row per input_hash).
+
+    Covers the two live "keep" states (narrow_source / classified) across every
+    trust_level, plus a `rejected` row that the state filter must drop.
+    """
     base = {
-        "country": "testland",
-        "currency": "USD",
         "coicop_code": "01.1.1.0.0",
-        "sub_label_id": "sub_1",
-        "taxonomy_version": aggregate.TAXONOMY_VERSION,
-        "state": "resolved",
+        "state": "classified",
         "pricing_basis": "mass",
         "amount_value": 0.5,
         "standard_unit": "kg",
@@ -40,42 +28,43 @@ def _fake_cache_rows() -> pd.DataFrame:
         "confidence": 0.9,
     }
     rows = [
-        {**base, "product_name_original": "prod_high", "trust_level": "high",
-         "created_at": pd.Timestamp("2026-01-01")},
-        {**base, "product_name_original": "prod_low", "trust_level": "low",
-         "created_at": pd.Timestamp("2026-01-02")},
-        {**base, "product_name_original": "prod_flagged", "trust_level": "flagged",
-         "created_at": pd.Timestamp("2026-01-03")},
-        {**base, "product_name_original": "prod_missing", "trust_level": None,
-         "created_at": pd.Timestamp("2026-01-04")},
+        {**base, "input_hash": "h_high", "trust_level": "high"},
+        {**base, "input_hash": "h_low", "trust_level": "low"},
+        {**base, "input_hash": "h_flagged", "trust_level": "flagged"},
+        {**base, "input_hash": "h_missing", "trust_level": None},
+        {**base, "input_hash": "h_rejected", "state": "rejected",
+         "trust_level": "low"},
     ]
     return pd.DataFrame(rows)
 
 
-def test_load_filtered_cache_excludes_non_high_trust(monkeypatch):
-    monkeypatch.setattr(aggregate.enrich_cache, "read_cache", _fake_cache_rows)
-    monkeypatch.setattr(aggregate, "EAP_COUNTRIES", frozenset({"testland"}))
+def _patch_classified(tmp_path, monkeypatch) -> None:
+    path = tmp_path / "classified.parquet"
+    _fake_classified_rows().to_parquet(path)
+    monkeypatch.setattr(aggregate.enrich_config, "CLASSIFIED_PARQUET", path)
     monkeypatch.setattr(aggregate, "FNB_COICOP_PREFIXES", ("01.",))
+
+
+def test_load_filtered_cache_excludes_non_high_trust(tmp_path, monkeypatch):
+    _patch_classified(tmp_path, monkeypatch)
 
     out = aggregate.load_filtered_cache()
 
-    assert set(out["product_name_original"]) == {"prod_high", "prod_missing"}
+    # low/flagged dropped by the trust filter; rejected dropped by the state
+    # filter; None trust_level defaults to high and is kept.
+    assert set(out["input_hash"]) == {"h_high", "h_missing"}
     assert set(out["trust_level"]) == {"high"}
 
 
-def test_compute_unit_values_never_sees_non_high_trust(monkeypatch):
-    monkeypatch.setattr(aggregate.enrich_cache, "read_cache", _fake_cache_rows)
-    monkeypatch.setattr(aggregate, "EAP_COUNTRIES", frozenset({"testland"}))
-    monkeypatch.setattr(aggregate, "FNB_COICOP_PREFIXES", ("01.",))
+def test_compute_unit_values_never_sees_non_high_trust(tmp_path, monkeypatch):
+    _patch_classified(tmp_path, monkeypatch)
 
     cache = aggregate.load_filtered_cache()
-    # In the real pipeline, `price` arrives from the products_input/raw-CSV
-    # side of the join, not from cache (not in CACHE_KEEP_COLS) — attach it
-    # here to simulate the post-join frame that _compute_unit_values expects.
-    cache = cache.assign(price=10.0)
+    # In the real pipeline `price`/`currency` arrive from the
+    # products_input/raw-CSV side of the join (not in CACHE_KEEP_COLS) — attach
+    # them here to simulate the post-join frame _compute_unit_values expects.
+    cache = cache.assign(price=10.0, currency="USD")
     result = aggregate._compute_unit_values(cache)
 
-    assert "prod_low" not in set(result["product_name_original"])
-    assert "prod_flagged" not in set(result["product_name_original"])
-    assert set(result["product_name_original"]) == {"prod_high", "prod_missing"}
+    assert set(result["input_hash"]) == {"h_high", "h_missing"}
     assert result["unit_value_local"].notna().all()
