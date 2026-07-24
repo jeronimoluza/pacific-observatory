@@ -6,7 +6,6 @@ import pandas as pd
 
 from core.config import load_countries
 from prices.enrich import config
-from prices.enrich.boilerplate import strip_boilerplate
 from prices.enrich.versioning import input_hash
 
 # Currencies that use European-style number formatting:
@@ -151,11 +150,6 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
         df["observation_date"] = pd.NaT
     df["price"] = df.apply(lambda r: parse_price(r["price"], r.get("currency")), axis=1)
     df["input_hash"] = df.apply(lambda r: input_hash(_row_input_dict(r)), axis=1)
-    # Strip retailer boilerplate (keeping quantity) after the observation hash is
-    # fixed, so canonical keys downstream see clean names but input_hash identity
-    # stays tied to the raw scraped name.
-    _boiler = {n: strip_boilerplate(n) for n in df["product_name_original"].unique()}
-    df["product_name_original"] = df["product_name_original"].map(_boiler)
     lang_map = _build_country_lang_map()
     df["lang"] = df["country"].map(lang_map).fillna("").astype(str)
 
