@@ -76,7 +76,7 @@
     <span id="lookback"></span> days (cutoff <span id="cutoff"></span>; data through
     <span id="datathrough"></span>). Rows are grouped by COICOP 2018 category
     (division → group → class → subclass). The Region Median column shows the EAP
-    median (median of country medians) for each item. Cells with fewer than
+    median (median of country medians) for each COICOP leaf. Cells with fewer than
     <span id="minobs1"></span> observations are hidden. Color scale within each row
     — green=cheapest, red=most expensive.
   </div>
@@ -87,9 +87,9 @@
   <div class="sub">
     Monthly median USD per canonical unit. FX history starts
     <span id="fxfloor"></span>; earlier observations are excluded.
-    Minimum <span id="minobs2"></span> observations per (sub_label, country, month).
+    Minimum <span id="minobs2"></span> observations per (COICOP leaf, country, month).
   </div>
-  <label>Sub-label: <select id="sublabel"></select></label>
+  <label>COICOP leaf: <select id="leafsel"></select></label>
   <canvas id="chart"></canvas>
 </div>
 
@@ -132,7 +132,6 @@
       ['Products', (k.products ?? 0).toLocaleString()],
       ['Countries', k.countries ?? 0],
       ['COICOP leaves', k.coicop_leaves ?? 0],
-      ['Items (sub-labels)', k.sub_labels ?? 0],
     ];
     const root = document.getElementById('kpis');
     tiles.forEach(([label, value]) => {
@@ -145,34 +144,30 @@
 
   // --- Current snapshot heat table ---
   const countries = Object.keys(DATA.country_names);
-  const labelFor = (code, sub) => (DATA.sub_labels[code] || {})[sub] || sub;
   const titleFor = (code) => DATA.coicop_titles[code] || '';
-  const regionMedianFor = (code, sub) => (DATA.region_medians[code] || {})[sub];
-  const regionNFor = (code, sub) => (DATA.region_n_countries[code] || {})[sub];
+  const regionMedianFor = (code) => DATA.region_medians[code];
+  const regionNFor = (code) => DATA.region_n_countries[code];
 
   const cells = {};
   const cellOrder = [];
   DATA.current.forEach(r => {
-    const k = r.coicop_code + '|' + r.sub_label_id;
+    const k = r.coicop_code;
     if (!cells[k]) {
-      cells[k] = {coicop_code: r.coicop_code, sub_label_id: r.sub_label_id, byCountry: {}};
+      cells[k] = {coicop_code: r.coicop_code, byCountry: {}};
       cellOrder.push(k);
     }
     cells[k].byCountry[r.country] = r;
   });
-  const ordered = cellOrder.map(k => cells[k]).sort((a, b) => {
-    const c = cmpCoicop(a.coicop_code, b.coicop_code);
-    if (c !== 0) return c;
-    return labelFor(a.coicop_code, a.sub_label_id)
-      .localeCompare(labelFor(b.coicop_code, b.sub_label_id));
-  });
+  const ordered = cellOrder
+    .map(k => cells[k])
+    .sort((a, b) => cmpCoicop(a.coicop_code, b.coicop_code));
 
   const heat = document.getElementById('heat');
   const thead = document.createElement('thead');
   const hrow = document.createElement('tr');
   const corner = document.createElement('th');
   corner.className = 'corner';
-  corner.textContent = 'COICOP category / item';
+  corner.textContent = 'COICOP category / leaf';
   hrow.appendChild(corner);
   const regionTh = document.createElement('th');
   regionTh.className = 'region-th';
@@ -216,14 +211,14 @@
     if (l1 !== lastL1) { tbody.appendChild(groupRow(1, l1)); lastL1 = l1; lastL2 = ''; lastL3 = ''; lastL4 = ''; }
     if (l2 !== lastL2) { tbody.appendChild(groupRow(2, l2)); lastL2 = l2; lastL3 = ''; lastL4 = ''; }
     if (l3 !== lastL3) { tbody.appendChild(groupRow(3, l3)); lastL3 = l3; lastL4 = ''; }
-    if (l4 !== lastL4 && titleFor(l4)) { tbody.appendChild(groupRow(4, l4)); lastL4 = l4; }
+    if (l4 !== lastL4 && l4 !== cell.coicop_code && titleFor(l4)) { tbody.appendChild(groupRow(4, l4)); lastL4 = l4; }
 
     const tr = document.createElement('tr');
     const lbl = document.createElement('td'); lbl.className = 'label';
     const unit = countries.map(c => cell.byCountry[c]?.standard_unit).find(Boolean);
     const groupCodes = new Set([lastL1, lastL2, lastL3, lastL4].filter(Boolean));
     const name = document.createElement('span');
-    name.textContent = labelFor(cell.coicop_code, cell.sub_label_id);
+    name.textContent = titleFor(cell.coicop_code) || cell.coicop_code;
     if (!groupCodes.has(cell.coicop_code)) {
       const code = document.createElement('span'); code.className = 'code';
       code.textContent = cell.coicop_code;
@@ -236,7 +231,7 @@
     }
     tr.appendChild(lbl);
 
-    const regionVal = regionMedianFor(cell.coicop_code, cell.sub_label_id);
+    const regionVal = regionMedianFor(cell.coicop_code);
     const countryVals = countries.map(c => cell.byCountry[c]?.median_usd).filter(v => v != null);
     const lo = Math.min(...countryVals), hi = Math.max(...countryVals);
 
@@ -244,7 +239,7 @@
     rTd.className = 'region';
     if (regionVal != null && !isNaN(regionVal)) {
       rTd.textContent = regionVal.toFixed(2);
-      const n = regionNFor(cell.coicop_code, cell.sub_label_id);
+      const n = regionNFor(cell.coicop_code);
       if (n != null) {
         const tag = document.createElement('span');
         tag.className = 'nctry'; tag.textContent = 'n=' + n;
@@ -272,16 +267,13 @@
   heat.appendChild(tbody);
 
   // --- Historical chart ---
-  const monthlySubs = [...new Set(DATA.monthly.map(r => r.sub_label_id))].sort();
-  const select = document.getElementById('sublabel');
-  monthlySubs.forEach(s => {
+  const monthlyLeaves = [...new Set(DATA.monthly.map(r => r.coicop_code))].sort(cmpCoicop);
+  const select = document.getElementById('leafsel');
+  monthlyLeaves.forEach(code => {
     const o = document.createElement('option');
-    o.value = s;
-    let nice = s;
-    for (const code of Object.keys(DATA.sub_labels)) {
-      if (DATA.sub_labels[code][s]) { nice = DATA.sub_labels[code][s]; break; }
-    }
-    o.textContent = nice + ' (' + s + ')';
+    o.value = code;
+    const nice = titleFor(code) || code;
+    o.textContent = nice + ' (' + code + ')';
     select.appendChild(o);
   });
   let chart;
@@ -289,8 +281,8 @@
     const palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'];
     return palette[i % palette.length];
   }
-  function renderChart(sub) {
-    const rows = DATA.monthly.filter(r => r.sub_label_id === sub);
+  function renderChart(code) {
+    const rows = DATA.monthly.filter(r => r.coicop_code === code);
     const months = [...new Set(rows.map(r => r.month))].sort();
     const cs = [...new Set(rows.map(r => r.country))].sort();
     const datasets = cs.map((c, i) => ({
@@ -316,7 +308,7 @@
     });
   }
   select.addEventListener('change', e => renderChart(e.target.value));
-  if (monthlySubs.length) { select.value = monthlySubs[0]; renderChart(monthlySubs[0]); }
+  if (monthlyLeaves.length) { select.value = monthlyLeaves[0]; renderChart(monthlyLeaves[0]); }
 </script>
 </body>
 </html>

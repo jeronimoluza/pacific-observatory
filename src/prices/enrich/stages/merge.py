@@ -14,7 +14,6 @@ ENRICHMENT_COLS = [
     "count",
     "multiplier",
     "coicop_code",
-    "sub_label_id",
     "is_promotion",
     "is_bundle",
     "is_multipack",

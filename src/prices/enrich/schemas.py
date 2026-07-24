@@ -37,10 +37,9 @@ class ProductEnrichment(BaseModel):
     multiplier: int | None
     dimensions: list[Dimension] = Field(default_factory=list)
     coicop_code: str
-    sub_label_id: str  # non-null; "_other" if no leaf entry fits
     flags: Flags
     confidence: float = Field(ge=0.0, le=1.0)
-    state: Literal["resolved", "ambiguous", "unusable"]
+    state: Literal["narrow_source", "classified", "rejected", "flagged_basis"]
 
 
 class EnrichmentBatch(BaseModel):

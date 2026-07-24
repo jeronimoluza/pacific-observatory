@@ -2,10 +2,14 @@
 
 Two views, one HTML file, vendored Chart.js inlined (WB intranet
 blocks cdn.jsdelivr.net):
-  - Current snapshot: COICOP-grouped country × sub_label heat table
-    of median USD/unit from the dedup'd snapshot.
-  - Historical: per-sub_label line chart of monthly USD/unit medians,
+  - Current snapshot: COICOP-leaf country heat table of median USD/unit
+    from the dedup'd snapshot.
+  - Historical: per-COICOP-leaf line chart of monthly USD/unit medians,
     one line per country, gated to 2024-03-06+ (FX coverage floor).
+
+The unit-value grain is `coicop_code` (the deepest leaf the classifier
+assigns); the retired cascade's `sub_label_id` sub-grain is no longer
+produced, so each COICOP leaf is one row/series.
 """
 from __future__ import annotations
 
@@ -28,9 +32,6 @@ VENDOR_CHART_JS = (
 HTML_TEMPLATE_PATH = Path(__file__).resolve().parent / "_publish_template.html"
 DASHBOARD_HTML = REPO_ROOT / "outputs" / "prices" / "eap_fnb_dashboard.html"
 COICOP_XLSX = REPO_ROOT / "data" / "prices" / "_enrich" / "coicop_categories.xlsx"
-COICOP_SUBCATS_JSON = (
-    REPO_ROOT / "src" / "prices" / "enrich" / "static" / "coicop_subcategories.json"
-)
 COUNTRIES_YAML = REPO_ROOT / "src" / "configs" / "countries.yaml"
 
 CURRENT_LOOKBACK_DAYS = 60
@@ -64,17 +65,6 @@ def _load_coicop_titles() -> dict[str, str]:
     return dict(zip(df["code"], df["title"]))
 
 
-def _load_sub_label_labels() -> dict[tuple[str, str], str]:
-    if not COICOP_SUBCATS_JSON.exists():
-        return {}
-    raw = json.loads(COICOP_SUBCATS_JSON.read_text())
-    out: dict[tuple[str, str], str] = {}
-    for code, entries in raw.items():
-        for e in entries:
-            out[(code, e["id"])] = e["label"]
-    return out
-
-
 def _load_country_names() -> dict[str, str]:
     if not COUNTRIES_YAML.exists():
         return {}
@@ -83,24 +73,21 @@ def _load_country_names() -> dict[str, str]:
 
 
 def _humanize_slug(slug: str) -> str:
-    if slug == "_other":
-        return "Other"
     return slug.replace("-", " ").replace("_", " ").strip().title()
 
 
 def _current_snapshot(df: pd.DataFrame) -> pd.DataFrame:
     """Aggregate observations within the last CURRENT_LOOKBACK_DAYS to a
-    (coicop_code, sub_label, country) median. Rows without a parseable
-    observation_date are excluded.
+    (coicop_code, country) median. Rows without a parseable observation_date
+    are excluded.
     """
     df = df.copy()
     df["coicop_code"] = df["coicop_code"].map(_normalize_coicop)
-    df = df[df["sub_label_id"] != "_other"]
     cutoff = pd.Timestamp.now().normalize() - pd.Timedelta(days=CURRENT_LOOKBACK_DAYS)
     df = df[df["observation_date"] >= cutoff]
     g = (
-        df.dropna(subset=["unit_value_usd", "sub_label_id", "coicop_code"])
-        .groupby(["coicop_code", "sub_label_id", "country"])
+        df.dropna(subset=["unit_value_usd", "coicop_code"])
+        .groupby(["coicop_code", "country"])
         .agg(
             median_usd=("unit_value_usd", "median"),
             n_obs=("unit_value_usd", "size"),
@@ -114,10 +101,12 @@ def _current_snapshot(df: pd.DataFrame) -> pd.DataFrame:
 
 def _monthly_series(df: pd.DataFrame) -> pd.DataFrame:
     sub = df[df["observation_date"] >= FX_HISTORY_FLOOR].copy()
-    sub = sub.dropna(subset=["unit_value_usd", "sub_label_id"])
+    sub = sub.dropna(subset=["unit_value_usd", "coicop_code"])
+    sub["coicop_code"] = sub["coicop_code"].map(_normalize_coicop)
+    sub = sub[sub["coicop_code"].notna()]
     sub["month"] = sub["observation_date"].dt.to_period("M").dt.to_timestamp()
     g = (
-        sub.groupby(["sub_label_id", "country", "month"])
+        sub.groupby(["coicop_code", "country", "month"])
         .agg(
             median_usd=("unit_value_usd", "median"),
             n_obs=("unit_value_usd", "size"),
@@ -130,7 +119,6 @@ def _monthly_series(df: pd.DataFrame) -> pd.DataFrame:
 
 def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
     coicop_titles = _load_coicop_titles()
-    sub_label_labels = _load_sub_label_labels()
     country_names = _load_country_names()
 
     used_countries = sorted(
@@ -141,7 +129,7 @@ def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
         c: country_names.get(c, _humanize_slug(c)) for c in used_countries
     }
 
-    # Hierarchy titles for all ancestor levels of codes we actually display
+    # Hierarchy titles for all ancestor levels of the leaves we actually display
     coicop_used: dict[str, str] = {}
     for code in current["coicop_code"].dropna().unique():
         parts = str(code).split(".")
@@ -150,32 +138,17 @@ def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
             if anc in coicop_titles:
                 coicop_used[anc] = coicop_titles[anc]
 
-    # Sub-label label per (coicop_code, sub_label_id) pair in the snapshot
-    sub_labels_used: dict[str, dict[str, str]] = {}
-    pairs = (
-        current[["coicop_code", "sub_label_id"]]
-        .drop_duplicates()
-        .itertuples(index=False)
-    )
-    for code, sub in pairs:
-        label = sub_label_labels.get((code, sub)) or _humanize_slug(sub)
-        sub_labels_used.setdefault(code, {})[sub] = label
-
-    # Regional (EAP) median per (coicop_code, sub_label_id) — median of
-    # country-level medians (each country one observation, unweighted).
-    region_medians: dict[str, dict[str, float]] = {}
-    region_n_countries: dict[str, dict[str, int]] = {}
-    grouped = current.groupby(["coicop_code", "sub_label_id"])["median_usd"]
-    for (code, sub), s in grouped:
-        region_medians.setdefault(code, {})[sub] = float(s.median())
-        region_n_countries.setdefault(code, {})[sub] = int(s.notna().sum())
+    # Regional (EAP) median per coicop leaf — median of country-level medians
+    # (each country one observation, unweighted).
+    region_medians: dict[str, float] = {}
+    region_n_countries: dict[str, int] = {}
+    for code, s in current.groupby("coicop_code")["median_usd"]:
+        region_medians[code] = float(s.median())
+        region_n_countries[code] = int(s.notna().sum())
 
     kpi = {
         "countries": len(country_display),
         "coicop_leaves": int(current["coicop_code"].nunique()),
-        "sub_labels": int(
-            current[["coicop_code", "sub_label_id"]].drop_duplicates().shape[0]
-        ),
         "products": int(current["n_obs"].sum()),
     }
 
@@ -198,7 +171,6 @@ def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
         "fx_floor": FX_HISTORY_FLOOR.date().isoformat(),
         "country_names": country_display,
         "coicop_titles": coicop_used,
-        "sub_labels": sub_labels_used,
         "region_medians": region_medians,
         "region_n_countries": region_n_countries,
         "kpi": kpi,
