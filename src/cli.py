@@ -381,6 +381,7 @@ from prices.enrich.census import census_command as _prices_census  # noqa: E402
 from prices.enrich.classifier.cli import (  # noqa: E402
     train_classifier_command as _prices_train_classifier,
 )
+from prices.enrich.label_cli import label_group as _prices_label  # noqa: E402
 
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
@@ -390,6 +391,7 @@ prices.add_command(_prices_eval, name="eval")
 prices.add_command(_prices_match_record, name="match-record")
 prices.add_command(_prices_census, name="census")
 prices.add_command(_prices_train_classifier, name="train-classifier")
+prices.add_command(_prices_label, name="label")
 
 
 @prices.command("build")
