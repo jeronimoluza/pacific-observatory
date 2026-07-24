@@ -356,6 +356,26 @@ def _render_fcp_dashboard(region: str, region_json: Path) -> Path | None:
     return generate_dashboard_from_json(region_json, region)
 
 
+def _refresh_database_status():
+    """Regenerate the global outputs/text/database_status/sources.{csv,json,xlsx} snapshot.
+
+    Scope-independent: always reflects the whole data/text/ database. Failures
+    here never block dashboard publishing.
+    """
+    from text.status import compute_database_status, write_database_status
+
+    try:
+        data = compute_database_status()
+        write_database_status(data)
+        t = data["totals"]
+        click.echo(
+            f"  Database status: {t['sources']} sources · "
+            f"{t['articles_total']:,} articles → outputs/text/database_status/"
+        )
+    except Exception as e:  # noqa: BLE001
+        click.echo(f"  Database status refresh failed: {e}")
+
+
 def run_publish(region=None, subregion=None, country=None):
     """Build dashboard_data.json, per-region panels, and EPU dashboards.
 
@@ -370,6 +390,8 @@ def run_publish(region=None, subregion=None, country=None):
     click.echo()
     click.echo("  Text publish (dashboards)")
     click.echo("  " + "-" * 40)
+
+    _refresh_database_status()
 
     if not units:
         click.echo("  No units with EPU data found. Run 'po text build' first.")
