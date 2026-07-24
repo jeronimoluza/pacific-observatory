@@ -37,9 +37,12 @@ UNOBSERVED = "UNOBSERVED"
 def _load_cached_names() -> list[str]:
     corpus = pd.read_parquet(config.PRODUCTS_INPUT_PARQUET)
     names_all = corpus["product_name_original"].astype(str).drop_duplicates().tolist()
-    z = np.load(config.CLASSIFIER_EMBED_CACHE_DIR / "vectors.npz", allow_pickle=True)
-    cached = set(z["keys"].tolist())
-    return [n for n in names_all if embedding._key(n) in cached]
+    # names already embedded (keyed by raw name in the per-block ensemble caches);
+    # gate on the slowest block (8B) so we only predict rows whose vectors exist.
+    tag = config.CLASSIFIER_EMBED_ENSEMBLE[-1]["tag"]
+    z = np.load(embedding._block_cache_path(tag), allow_pickle=False)
+    cached = {str(k) for k in z["keys"]}
+    return [n for n in names_all if n in cached]
 
 
 def _predict_and_count(cached_names, denylist):

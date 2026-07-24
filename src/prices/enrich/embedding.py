@@ -1,67 +1,54 @@
-"""Qwen3-Embedding of raw product names for the (embedding → head) classifier.
+"""Ensemble Qwen3-Embedding of raw product names for the (embedding → head) head.
 
-The head classifies COICOP over L2-normalized Qwen3-Embedding vectors of the
-*raw* product name (normalization/canonicalization hurts — feed raw text). Each
-name is prefixed with an instruction prompt, encoded fp16, L2-normalized, and
-cached on disk keyed by sha256(model || prompt || name) so repeated runs and the
-gold/corpus overlap never re-embed.
+The head classifies COICOP over the CONCATENATION of three frozen Qwen3-Embedding
+encoders — 0.6B + 4B + 8B(q8) — of the *raw* product name (normalization hurts —
+feed raw text). Each block is L2-normalized independently, then the blocks are
+joined with NO global renorm (per-block L2 keeps any one encoder from dominating
+by magnitude; this concat is the biggest cov@98 lever, ~47% → ~63% on div-01).
 
-The model (`sentence-transformers`) is an optional heavy dependency loaded lazily
-on the first cache miss; a fully-cached call never imports it.
+Backends are mixed per block, matching the recipe that produced that number:
+
+  - 0.6B → sentence-transformers, IN-PROCESS, seq-len 48 (the recipe used ST; mlx
+    loading of the raw 0.6B is flaky).
+  - 4B / 8B-q8 → `mlx_embeddings` in the sibling `.venv_mlx`, seq-len 512, reached
+    by a subprocess to `embedding_mlx.py` (the 8B only fits 16GB as an mlx q8).
+
+Per-block vectors are cached on disk keyed by name (one `.npz` per block) so the
+gold/corpus overlap and repeat runs never re-embed; a fully-cached call touches
+neither the ST model nor the mlx subprocess.
 """
 
 from __future__ import annotations
 
-import hashlib
+import json
+import subprocess
+import tempfile
 from pathlib import Path
-from typing import Optional, Sequence
+from typing import Sequence
 
 import numpy as np
 
 from prices.enrich import config
 
-_MODEL = None
+_RUNNER = Path(__file__).resolve().parent / "embedding_mlx.py"
+_ST_MODELS: dict[str, object] = {}
 
 
-def _load_model():
-    global _MODEL
-    if _MODEL is None:
-        from sentence_transformers import SentenceTransformer
-
-        _MODEL = SentenceTransformer(
-            config.CLASSIFIER_EMBED_MODEL,
-            trust_remote_code=True,
-            model_kwargs={"torch_dtype": "float16"},
-        )
-    return _MODEL
+def _block_cache_path(tag: str) -> Path:
+    return config.CLASSIFIER_EMBED_CACHE_DIR / f"block_{tag}.npz"
 
 
-def _key(name: str) -> str:
-    h = hashlib.sha256()
-    h.update(config.CLASSIFIER_EMBED_MODEL.encode("utf-8"))
-    h.update(b"\x00")
-    h.update(config.CLASSIFIER_EMBED_PROMPT.encode("utf-8"))
-    h.update(b"\x00")
-    h.update(name.encode("utf-8"))
-    return h.hexdigest()
-
-
-def _cache_path() -> Path:
-    return config.CLASSIFIER_EMBED_CACHE_DIR / "vectors.npz"
-
-
-def _load_cache() -> dict[str, np.ndarray]:
-    p = _cache_path()
+def _load_block_cache(tag: str) -> dict[str, np.ndarray]:
+    p = _block_cache_path(tag)
     if not p.exists():
         return {}
     with np.load(p, allow_pickle=False) as z:
-        keys = z["keys"]
-        mat = z["mat"]
+        keys, mat = z["keys"], z["mat"]
     return {str(k): mat[i] for i, k in enumerate(keys)}
 
 
-def _save_cache(cache: dict[str, np.ndarray]) -> None:
-    p = _cache_path()
+def _save_block_cache(tag: str, cache: dict[str, np.ndarray]) -> None:
+    p = _block_cache_path(tag)
     p.parent.mkdir(parents=True, exist_ok=True)
     keys = list(cache.keys())
     mat = np.vstack([cache[k] for k in keys]) if keys else np.empty((0, 0), np.float32)
@@ -71,33 +58,91 @@ def _save_cache(cache: dict[str, np.ndarray]) -> None:
     tmp.replace(p)
 
 
-def embed_names(
-    names: Sequence[str], use_cache: bool = True, batch_size: Optional[int] = None
-) -> np.ndarray:
-    """Return an (N, dim) float32 L2-normalized embedding matrix, row-aligned to
-    `names`. Cache hits skip the model; only misses are encoded and persisted."""
+def _encode_st(block: dict, names: Sequence[str]) -> np.ndarray:
+    """In-process sentence-transformers encode (used for the 0.6B block)."""
+    model_id = block["model"]
+    model = _ST_MODELS.get(model_id)
+    if model is None:
+        from sentence_transformers import SentenceTransformer
+
+        model = SentenceTransformer(model_id, trust_remote_code=True)
+        _ST_MODELS[model_id] = model
+    model.max_seq_length = int(block["seq"])
+    prompt = config.CLASSIFIER_EMBED_PROMPT
+    return model.encode(
+        [prompt + n for n in names],
+        batch_size=config.CLASSIFIER_EMBED_BATCH,
+        normalize_embeddings=True,
+        show_progress_bar=False,
+    ).astype(np.float32)
+
+
+def _encode_mlx(block: dict, names: Sequence[str]) -> np.ndarray:
+    """Subprocess encode via `mlx_embeddings` in `.venv_mlx` (4B / 8B blocks)."""
+    with tempfile.TemporaryDirectory() as td:
+        out = Path(td) / "vecs.npz"
+        payload = Path(td) / "payload.json"
+        payload.write_text(
+            json.dumps(
+                {
+                    "model": block["model"],
+                    "prompt": config.CLASSIFIER_EMBED_PROMPT,
+                    "names": list(names),
+                    "out": str(out),
+                    "chunk": config.CLASSIFIER_EMBED_BATCH,
+                    "seq": int(block["seq"]),
+                }
+            )
+        )
+        proc = subprocess.run(
+            [str(config.MLX_VENV_PYTHON), str(_RUNNER), str(payload)],
+            capture_output=True,
+            text=True,
+        )
+        if proc.returncode != 0:
+            raise RuntimeError(
+                f"mlx embed subprocess failed for {block['model']} "
+                f"(python={config.MLX_VENV_PYTHON}):\n{proc.stderr[-2000:]}"
+            )
+        with np.load(out, allow_pickle=False) as z:
+            keys, mat = z["keys"], z["mat"]
+    by_name = {str(k): mat[i] for i, k in enumerate(keys)}
+    return np.vstack([by_name[n] for n in names]).astype(np.float32)
+
+
+def _encode_block(block: dict, names: Sequence[str]) -> np.ndarray:
+    """Embed `names` with one block's encoder. Returns an (N, dim) per-row
+    L2-normalized float32 matrix, row-aligned to `names`."""
+    if block["backend"] == "st":
+        return _encode_st(block, names)
+    return _encode_mlx(block, names)
+
+
+def _embed_one_block(block: dict, names: list[str], use_cache: bool) -> np.ndarray:
+    tag = block["tag"]
+    cache = _load_block_cache(tag) if use_cache else {}
+    missing = list(dict.fromkeys(n for n in names if n not in cache))
+    if missing:
+        vecs = _encode_block(block, missing)
+        for n, v in zip(missing, vecs):
+            cache[n] = v
+        if use_cache:
+            _save_block_cache(tag, cache)
+    block_mat = np.vstack([cache[n] for n in names]).astype(np.float32)
+    # per-block L2 (idempotent — the backend already unit-normalizes; defensive)
+    return block_mat / (np.linalg.norm(block_mat, axis=1, keepdims=True) + 1e-9)
+
+
+def embed_names(names: Sequence[str], use_cache: bool = True) -> np.ndarray:
+    """Return the (N, sum-of-block-dims) float32 ensemble matrix, row-aligned to
+    `names`: each configured encoder's per-row L2 vector, concatenated in config
+    order with no global renorm. Cache hits skip both the ST model and the mlx
+    subprocess entirely."""
     names = [str(n) for n in names]
     if not names:
         return np.empty((0, 0), np.float32)
-
-    cache = _load_cache() if use_cache else {}
-    keys = [_key(n) for n in names]
-    missing = sorted({k: n for k, n in zip(keys, names) if k not in cache}.items())
-
-    if missing:
-        miss_keys = [k for k, _ in missing]
-        miss_names = [n for _, n in missing]
-        model = _load_model()
-        prompt = config.CLASSIFIER_EMBED_PROMPT
-        vecs = model.encode(
-            [prompt + n for n in miss_names],
-            batch_size=batch_size or config.CLASSIFIER_EMBED_BATCH,
-            normalize_embeddings=True,
-            show_progress_bar=False,
-        ).astype(np.float32)
-        for k, v in zip(miss_keys, vecs):
-            cache[k] = v
-        if use_cache:
-            _save_cache(cache)
-
-    return np.vstack([cache[k] for k in keys])
+    blocks = [
+        _embed_one_block(block, names, use_cache)
+        for block in config.CLASSIFIER_EMBED_ENSEMBLE
+    ]
+    return np.hstack(blocks).astype(np.float32)

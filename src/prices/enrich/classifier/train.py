@@ -76,7 +76,7 @@ def fit(version: str) -> dict:
         "classes": classes,
         "tau": tau,
         "division": division,
-        "embed_model": config.CLASSIFIER_EMBED_MODEL,
+        "embed_models": [m for _, m in config.CLASSIFIER_EMBED_ENSEMBLE],
     }
     vdir = version_dir(version)
     vdir.mkdir(parents=True, exist_ok=True)

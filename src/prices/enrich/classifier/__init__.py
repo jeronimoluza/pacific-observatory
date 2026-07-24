@@ -3,7 +3,7 @@
 A logistic-regression head over Qwen3-Embedding vectors of the RAW product
 name, predicting the COICOP leaf (see ``train.py`` / ``predict.py``). Trained on
 the canonical gold set (``dataset.py``); each bundle is one ``model.joblib``
-carrying {clf, classes, tau, division, embed_model}.
+carrying {clf, classes, tau, division, embed_models}.
 
 Artifacts are versioned under
 ``data/prices/_enrich/_models/classifier/{version}/`` with a ``latest.txt``

@@ -34,9 +34,10 @@ overlays both onto the row:
    regex that resolves `pricing_basis`, `amount_value`, `standard_unit`,
    `count`, `multiplier`, and promo flags. Never decides COICOP. This is the
    stable, high-value core.
-2. **COICOP classification** — an embedding of the **raw** product name
-   (Qwen3-Embedding-4B) → a logistic-regression head predicting the COICOP leaf,
-   then a veto pass. Feeds only `coicop_code` + `confidence`.
+2. **COICOP classification** — an **ensemble embedding** of the **raw** product
+   name (Qwen3-Embedding 0.6B + 4B + 8B concatenated, `embedding.py`) → a
+   logistic-regression head predicting the COICOP leaf, then a veto pass. Feeds
+   only `coicop_code` + `confidence`.
 
 They are independent by design: the structural fields are a physical fact about
 the name (how it's priced), the leaf is a semantic judgment. Keeping them
@@ -60,6 +61,28 @@ prompt/taxonomy version.
 **Feed the RAW name to the embedder.** No boilerplate strip, no
 normalization/canonicalization before embedding — it is a measured ~-4.5pp
 regression. The `prepare` boilerplate strip was removed for this reason.
+
+**Ensemble embedder — concat of 0.6B + 4B + 8B (`embedding.py`).** The head is
+fit over the CONCATENATION of three frozen Qwen3-Embedding encoders — 0.6B
+(1024-d) + 4B (2560-d) + 8B-q8 (4096-d) → 7680-d. Each block is L2-normalized
+*independently*, then concatenated with **no global renorm** (so each block
+vector stays unit-norm and the full vector has norm √3). *Why:* per-block L2 is
+the whole trick — it stops any one encoder dominating by raw magnitude — and the
+concat is the single biggest cov@98 lever, lifting div-01 gold from ~47%
+(single-4B) to ~63%. The block **order is load-bearing**: it fixes the column
+layout the head learned, so predict must reproduce it exactly (guarded by the
+config order + provenance `embed_models` in the bundle).
+
+*Backend is mixed by block*, matching the recipe that produced ~63%: the 0.6B is
+encoded in-process by sentence-transformers at seq-len 48; the 4B and 8B go
+through `mlx_embeddings` in the sibling `.venv_mlx` (seq-len 512) via a
+subprocess to `embedding_mlx.py`. *Why mixed:* the 8B only fits 16 GB as an 8-bit
+mlx build, and only the locally-converted q8 dir (`config.MLX_8B_MODEL_DIR`,
+model_type=`qwen3`) loads — the HF `tierralibre/…-q8` id does not; the 0.6B in
+turn is the block the recipe encoded with ST. Per-block vectors are cached on
+disk keyed by raw name (`block_{tag}.npz`), so the gold/corpus overlap and repeat
+runs never re-embed — a fully-cached call touches neither the ST model nor the
+mlx subprocess.
 
 **Single global tau, derived out-of-fold.** `train.py` fits the LR head on 100%
 of gold, but derives the accept threshold `tau` from 5-fold out-of-fold
