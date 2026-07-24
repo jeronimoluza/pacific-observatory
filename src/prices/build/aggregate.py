@@ -37,6 +37,7 @@ import pandas as pd
 
 from prices.build.basket import EAP_COUNTRIES, FNB_COICOP_PREFIXES
 from prices.build.fx import attach_fx_and_usd
+from prices.build.unit_value_audit import flag_uv_outliers
 from prices.enrich.tier_b import cache as enrich_cache
 from prices.enrich import config as enrich_config
 from prices.enrich.stages.merge import compute_unit_value
@@ -165,6 +166,7 @@ def _finalize(df: pd.DataFrame) -> pd.DataFrame:
     """Shared tail: canonicalize unit, compute unit_value, attach FX → USD."""
     df = _canonicalize_units(df)
     df = _compute_unit_values(df)
+    df = flag_uv_outliers(df)
     df = df[df["price_local"].notna()].copy()
     df = attach_fx_and_usd(df)
     df["unit_value_usd"] = df.apply(
