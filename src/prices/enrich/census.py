@@ -156,12 +156,12 @@ def run_census(names_or_df, out_dir=None, chunk_size=50_000, limit=None):
 def census_command(out_dir, limit):
     """Run the read-only shape × regex_id census over the deduped corpus.
 
-    Reads config.PRODUCTS_PARQUET (dropping channel == "aggregator"), chunk-runs
-    extract() under the §9 recorder, and writes the fire-distribution parquet to
-    a gitignored scratch dir. Writes nothing under data/ or outputs/.
+    Reads config.PRODUCTS_INPUT_PARQUET (dropping channel == "aggregator"),
+    chunk-runs extract() under the §9 recorder, and writes the fire-distribution
+    parquet to a gitignored scratch dir. Writes nothing under data/ or outputs/.
     """
     target = Path(out_dir) if out_dir else DEFAULT_OUT_DIR
-    counter = run_census(config.PRODUCTS_PARQUET, out_dir=target, limit=limit)
+    counter = run_census(config.PRODUCTS_INPUT_PARQUET, out_dir=target, limit=limit)
     total = sum(counter.values())
     click.echo(f"census: {len(counter)} (shape, regex_id) pairs, {total} fires")
     click.echo(f"wrote {target / CENSUS_PARQUET_NAME}")

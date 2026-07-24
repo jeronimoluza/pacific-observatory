@@ -16,9 +16,6 @@ ENRICHED_PRICES_CSV = (
 )
 ENRICH_DIR = REPO_ROOT / "data" / "prices" / "_enrich"
 PRODUCTS_INPUT_PARQUET = ENRICH_DIR / "products_input.parquet"
-# products.parquet is the coverage-census grain (read by `prices census`), a
-# separate concept from the classify pipeline's per-input_hash products_input.
-PRODUCTS_PARQUET = ENRICH_DIR / "products.parquet"
 COICOP_XLSX = ENRICH_DIR / "coicop_categories.xlsx"
 CACHE_DIR = ENRICH_DIR / "cache"
 VETO_LEXICON_PARQUET = (
@@ -80,7 +77,6 @@ MLX_VENV_PYTHON = Path(
 
 PROMPTS_DIR = Path(__file__).resolve().parent / "prompts"
 ENRICH_PROMPT_PATH = PROMPTS_DIR / "enrich_system.md"
-TAXONOMY_PROMPT_PATH = PROMPTS_DIR / "taxonomy_system.md"
 
 # Proactive rate-limit ceilings per model (free-tier baseline). Values match
 # the Google AI Studio quota panel. Override via `RATE_LIMITS_OVERRIDE_PATH`

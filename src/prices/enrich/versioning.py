@@ -21,7 +21,6 @@ def _read_bytes(path: Path) -> bytes:
 # cambodia/lager + malaysia/lip-balm buckets only (see drop_flagged_from_cache.py).
 PROMPT_SEMVER = "v2"
 PROMPT_BYTES_HASH = _sha12(_read_bytes(config.ENRICH_PROMPT_PATH))
-TAXONOMY_PROMPT_VERSION = _sha12(_read_bytes(config.TAXONOMY_PROMPT_PATH))
 SCHEMA_VERSION = _sha12(
     json.dumps(EnrichmentBatch.model_json_schema(), sort_keys=True).encode()
 )

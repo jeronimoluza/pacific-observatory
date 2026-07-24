@@ -1,7 +1,7 @@
 """Read-only SC5 smoke test for the shape × regex_id census.
 
 Runs `run_census` over a tiny synthetic fixture (never the real
-products.parquet) into a pytest `tmp_path`, and proves the three census
+products_input.parquet) into a pytest `tmp_path`, and proves the three census
 contracts: aggregator-channel rows are excluded, a non-empty
 `census_shape_regex.parquet` with the expected columns is emitted to `tmp_path`,
 and the returned Counter is non-empty. A hard read-only guard snapshots the
