@@ -44,6 +44,12 @@ _KEYWORDS = [
 _LDJSON_RE = re.compile(r"<script[^>]*application/ld\+json[^>]*>(.*?)</script>", re.S)
 _ICODE_RE = re.compile(r"i_code=(\d+)")
 
+# momo is a general marketplace: a broad keyword search keeps returning a full
+# page of ever-weaker matches indefinitely (relevance-sorted, no natural end).
+# Cap pages per keyword to keep the pull bounded and F&B-relevant; the top pages
+# hold the real SKUs and the COICOP classifier filters the tail.
+_MAX_PAGES = 15
+
 
 class MomoTwSpider(scrapy.Spider):
     name = "momo_tw"
@@ -61,11 +67,14 @@ class MomoTwSpider(scrapy.Spider):
 
     async def start(self):
         for kw in _KEYWORDS:
-            yield scrapy.Request(
-                _SEARCH + quote(kw),
-                callback=self.parse_search,
-                meta={"keyword": kw},
-            )
+            yield self._page_request(kw, page=1)
+
+    def _page_request(self, kw, page):
+        return scrapy.Request(
+            f"{_SEARCH}{quote(kw)}&curPage={page}",
+            callback=self.parse_search,
+            meta={"keyword": kw, "page": page},
+        )
 
     @staticmethod
     def _iter_products(payload):
@@ -82,6 +91,7 @@ class MomoTwSpider(scrapy.Spider):
 
     def parse_search(self, response):
         kw = response.meta["keyword"]
+        page = response.meta["page"]
         found = 0
         scraped_at = datetime.now(timezone.utc).isoformat()
         for block in _LDJSON_RE.findall(response.text):
@@ -108,7 +118,10 @@ class MomoTwSpider(scrapy.Spider):
                     "language": self.language,
                     "scraped_at_utc": scraped_at,
                 }
-        logger.info("momo_tw: keyword=%s products=%d", kw, found)
+        logger.info("momo_tw: keyword=%s page=%d products=%d", kw, page, found)
+        # Paginate until an empty page or the relevance cap, whichever comes first.
+        if found and page < _MAX_PAGES:
+            yield self._page_request(kw, page + 1)
 
     def errback(self, failure):
         logger.error(

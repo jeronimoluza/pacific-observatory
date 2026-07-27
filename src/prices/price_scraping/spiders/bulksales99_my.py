@@ -50,14 +50,18 @@ class Bulksales99MySpider(scrapy.Spider):
 
     async def start(self):
         for slug in _CATEGORIES:
-            yield scrapy.Request(
-                _CAT_URL.format(slug=slug),
-                callback=self.parse_category,
-                meta={"category": slug},
-            )
+            yield self._page_request(slug, page=1)
+
+    def _page_request(self, slug, page):
+        return scrapy.Request(
+            f"{_CAT_URL.format(slug=slug)}&page={page}",
+            callback=self.parse_category,
+            meta={"category": slug, "page": page},
+        )
 
     def parse_category(self, response):
         slug = response.meta["category"]
+        page = response.meta["page"]
         scraped_at = datetime.now(timezone.utc).isoformat()
         count = 0
         for a in response.css('a[href*="/shop/product/"]'):
@@ -80,7 +84,12 @@ class Bulksales99MySpider(scrapy.Spider):
                 "language": self.language,
                 "scraped_at_utc": scraped_at,
             }
-        logger.info("bulksales99_my: category=%s products=%d", slug, count)
+        logger.info(
+            "bulksales99_my: category=%s page=%d products=%d", slug, page, count
+        )
+        # Paginate until a page yields no products (high pages return empty, no clamp).
+        if count:
+            yield self._page_request(slug, page + 1)
 
     def errback(self, failure):
         logger.error(

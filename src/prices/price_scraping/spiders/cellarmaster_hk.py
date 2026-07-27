@@ -24,11 +24,16 @@ class CellarmasterHkSpider(scrapy.Spider):
     currency = "HKD"
     language = "en"
 
+    # Chained /products.json pagination: a page that exhausts retries breaks the
+    # chain and silently truncates the tail. Pace gently and retry hard so
+    # Shopify's 429 throttle never wins.
     custom_settings = {
-        "CONCURRENT_REQUESTS_PER_DOMAIN": 2,
-        "DOWNLOAD_DELAY": 1.0,
-        "RETRY_TIMES": 3,
-        "RETRY_HTTP_CODES": [500, 502, 503, 504, 408, 429],
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
+        "DOWNLOAD_DELAY": 2.0,
+        "AUTOTHROTTLE_ENABLED": True,
+        "AUTOTHROTTLE_MAX_DELAY": 30.0,
+        "RETRY_TIMES": 8,
+        "RETRY_HTTP_CODES": [429, 500, 502, 503, 504, 408],
     }
 
     async def start(self):
