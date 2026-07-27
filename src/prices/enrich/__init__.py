@@ -1,4 +1,4 @@
-"""AI-driven product enrichment pipeline (concatenate → prepare → dedupe → taxonomy → match → merge)."""
+"""Product enrichment pipeline (concatenate → prepare → classify → merge)."""
 
 from pathlib import Path
 

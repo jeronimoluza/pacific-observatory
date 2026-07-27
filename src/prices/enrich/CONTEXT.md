@@ -24,6 +24,12 @@ collect → outputs/prices/raw/raw_prices.csv        (per-source spiders/fetcher
     ▼  prices publish → outputs/prices/eap_fnb_dashboard.html
 ```
 
+`concatenate` only reads the scraped shapes (`raw_items/`, `wayback_items/`,
+`common_crawl_data/`). Fetcher sources (`price_observations.csv`) are
+**intentionally not wired into `process`** — they carry non-grocery lines
+(services, rentals, etc.) that are deferred until the messy-product classifier is
+solid. This is a deliberate scope boundary, not a gap to "fix".
+
 ## Two independent jobs on each product name
 
 The `classify` stage runs two *independent* enrichers per unique name and

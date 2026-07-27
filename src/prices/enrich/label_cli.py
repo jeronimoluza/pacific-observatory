@@ -14,8 +14,8 @@ Stages of one labeling round:
 
 `merge` runs in-process; the model-driven / pandas stages shell out to the
 `scripts/` implementations so their resumable CLIs stay the single source of
-truth. `pull` (candidate selection) is not yet wired here — it still imports the
-removed `boilerplate` module.
+truth. `pull` (candidate selection) is not wired here — the candidate builders
+(`build_gold_roundN_candidates.py`, `pull_label_candidates.py`) run ad-hoc.
 """
 
 from __future__ import annotations

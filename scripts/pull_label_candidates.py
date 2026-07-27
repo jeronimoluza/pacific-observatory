@@ -30,7 +30,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build_gold_roundN_candidates import _gold_leaf_counts, _load_leaves  # noqa: E402
-from prices.enrich.boilerplate import strip_boilerplate  # noqa: E402
 from prices.enrich.classifier.predict import load_predictor  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -113,7 +112,7 @@ def _grep(anchors: dict) -> dict:
     for nm in names:
         if _NONLATIN.search(nm):
             continue
-        toks = _content_tokens(strip_boilerplate(nm))
+        toks = _content_tokens(nm)
         if len(toks) < 2:
             continue
         grams = _ngrams(toks)
