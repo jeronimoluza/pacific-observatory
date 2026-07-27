@@ -7,6 +7,7 @@ a stub head and a patched embedder), and the gold-sourced dataset builder.
 
 import joblib
 import numpy as np
+import pandas as pd
 import pytest
 
 from prices.enrich import vetoes
@@ -78,6 +79,25 @@ def test_predict_gate_and_veto(tmp_path, monkeypatch):
 @pytest.mark.unit
 def test_dataset_build_filters_division_and_support(tmp_path, monkeypatch):
     monkeypatch.setattr("prices.enrich.classifier.MODELS_DIR", tmp_path)
+    gold_dir = tmp_path / "gold"
+    gold_dir.mkdir()
+    monkeypatch.setattr(dataset, "GOLD_DIR", gold_dir)
+    rows = []
+    for i in range(dataset.MIN_SUPPORT):
+        rows.append(
+            {"product_name": f"milk {i}", "code": "01.1.4.1.1", "verdict": "leaf"}
+        )
+        rows.append(
+            {"product_name": f"cola {i}", "code": "01.2.6.0.0", "verdict": "leaf"}
+        )
+        rows.append(
+            {"product_name": f"soap {i}", "code": "05.6.1.1.0", "verdict": "leaf"}
+        )
+    rows.append(
+        {"product_name": "lone", "code": "01.1.9.9.9", "verdict": "leaf"}
+    )  # below support
+    pd.DataFrame(rows).to_parquet(gold_dir / "gold_labels.parquet", index=False)
+
     manifest = dataset.build("v0", division="01")
     table = dataset.load_table("v0")
     assert manifest["division"] == "01"

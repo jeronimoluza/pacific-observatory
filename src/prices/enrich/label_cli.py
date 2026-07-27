@@ -10,7 +10,8 @@ Stages of one labeling round:
     (adjudicate) a 3rd model family (Claude/opus) writes adjud_out_*.json —
                 this is an out-of-band agent step, not a script
     gate1-verify recompute matches + validate the adjudications
-    assemble    consensus + adjudications -> gold_v5_final.parquet
+    assemble    consensus + adjudications -> gold_v5_roundN_final.parquet
+    consolidate union all gold_v5_* rounds -> gold_labels.parquet (training gold)
 
 `merge` runs in-process; the model-driven / pandas stages shell out to the
 `scripts/` implementations so their resumable CLIs stay the single source of
@@ -118,3 +119,13 @@ def gate1_verify_cmd():
 def assemble_cmd(merged, out):
     """Assemble consensus + adjudications → gold_v5_final.parquet."""
     _run_script("build_gold_v5_final.py", ["--merged", merged, "--out", out])
+
+
+@label_group.command("consolidate")
+def consolidate_cmd():
+    """Union the gold_v5_* rounds → the canonical gold_labels.parquet (training gold)."""
+    from prices.enrich.classifier import dataset
+
+    summary = dataset.consolidate_gold()
+    click.echo(f"consolidate: {summary['n_rows']} rows → {summary['out']}")
+    click.echo(f"  sources: {', '.join(summary['sources'])}")
