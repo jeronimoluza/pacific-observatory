@@ -3,6 +3,16 @@ Spider for WalterMart Delivery (Philippines) - waltermartdelivery.com.ph.
 
 Uses the NCR Freshop catalog API directly (api.freshop.ncrcloud.com) with the
 public app_key `walter_mart` - no auth required. Bypasses the storefront SPA.
+
+The /2/products endpoint hard-caps a response at 100 rows and IGNORES offset /
+page / token pagination (offset=0 and offset=5000 return the identical slice),
+so the catalogue cannot be walked by paging. Instead we shard on leaf
+department_id: the /1/departments taxonomy is a parent/child tree, and each leaf
+department is narrow enough to fit under the 100-row cap for most nodes.
+Departments that still exceed the cap are logged as a coverage gap rather than
+silently truncated. Items belong to several departments, so the collect run's
+DuplicationPipeline (url_hash) folds the overlap.
+
 Category text is derived from each item's canonical_url path (the numeric
 `category` field is an opaque code, not useful for downstream classification).
 """
@@ -17,10 +27,12 @@ import scrapy
 logger = logging.getLogger(__name__)
 
 _APP_KEY = "walter_mart"
-_API = "https://api.freshop.ncrcloud.com/2/products"
-# Freshop caps page size (~24); larger limits 502. Keep it small + gentle delay
-# to avoid the host's TLS-layer IP throttle.
-_PAGE_SIZE = 24
+_BASE = "https://api.freshop.ncrcloud.com"
+_DEPARTMENTS = _BASE + "/1/departments"
+_PRODUCTS = _BASE + "/2/products"
+# /2/products returns at most 100 rows and ignores offset/page/token, so this is
+# a hard ceiling per department shard, not a page size we can advance past.
+_PAGE_CAP = 100
 
 
 class WaltermartSpider(scrapy.Spider):
@@ -31,21 +43,47 @@ class WaltermartSpider(scrapy.Spider):
 
     custom_settings = {
         "ROBOTSTXT_OBEY": False,
-        "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
-        "DOWNLOAD_DELAY": 1.5,
-        "RETRY_TIMES": 2,
-        "RETRY_HTTP_CODES": [500, 503, 504, 408, 429],
+        # The curl_cffi impersonate handler raises SSLError against this Freshop
+        # host (and the same requests 502 through it); a plain Twisted client
+        # negotiates TLS cleanly. Disable RandomBrowserMiddleware so requests
+        # skip curl_cffi and route through the standard handler. The API 403s a
+        # non-browser UA, so keep CustomUserAgentMiddleware in place.
+        "DOWNLOADER_MIDDLEWARES": {
+            "scrapy_impersonate.middleware.RandomBrowserMiddleware": None,
+        },
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 2,
+        "DOWNLOAD_DELAY": 0.8,
+        "RETRY_TIMES": 3,
+        "RETRY_HTTP_CODES": [500, 502, 503, 504, 408, 429],
     }
 
     async def start(self):
-        yield self._page_request(offset=0)
+        yield scrapy.Request(
+            f"{_DEPARTMENTS}?app_key={_APP_KEY}&limit=2000",
+            callback=self.parse_departments,
+            headers={"Accept": "application/json"},
+        )
 
-    def _page_request(self, offset):
-        url = f"{_API}?app_key={_APP_KEY}&limit={_PAGE_SIZE}&offset={offset}"
+    def parse_departments(self, response):
+        try:
+            depts = json.loads(response.text).get("items") or []
+        except json.JSONDecodeError:
+            logger.error("waltermart: non-JSON departments response")
+            return
+        parent_ids = {d.get("parent_id") for d in depts if d.get("parent_id")}
+        leaves = [d["id"] for d in depts if d.get("id") and d["id"] not in parent_ids]
+        logger.info(
+            "waltermart: %d departments, %d leaf shards", len(depts), len(leaves)
+        )
+        for did in leaves:
+            yield self._department_request(did)
+
+    def _department_request(self, department_id):
         return scrapy.Request(
-            url,
+            f"{_PRODUCTS}?app_key={_APP_KEY}&limit={_PAGE_CAP}"
+            f"&sort=id&department_id={department_id}",
             callback=self.parse_page,
-            meta={"offset": offset},
+            meta={"department_id": department_id},
             headers={"Accept": "application/json"},
         )
 
@@ -60,20 +98,25 @@ class WaltermartSpider(scrapy.Spider):
         return " > ".join(parts) if parts else None
 
     def parse_page(self, response):
-        offset = response.meta["offset"]
+        department_id = response.meta["department_id"]
         try:
             payload = json.loads(response.text)
         except json.JSONDecodeError:
-            logger.error("waltermart: non-JSON response at offset %d", offset)
+            logger.error(
+                "waltermart: non-JSON response for department %s", department_id
+            )
             return
 
         items = payload.get("items") or []
         total = payload.get("total") or 0
-        logger.info(
-            "waltermart: offset=%d items=%d total=%d", offset, len(items), total
-        )
-        if not items:
-            return
+        if total > _PAGE_CAP:
+            logger.warning(
+                "waltermart: department=%s total=%d exceeds cap %d — %d rows missed",
+                department_id,
+                total,
+                _PAGE_CAP,
+                total - _PAGE_CAP,
+            )
 
         scraped_at = datetime.now(timezone.utc).isoformat()
         for it in items:
@@ -91,10 +134,6 @@ class WaltermartSpider(scrapy.Spider):
                 "language": self.language,
                 "scraped_at_utc": scraped_at,
             }
-
-        next_offset = offset + _PAGE_SIZE
-        if next_offset < total:
-            yield self._page_request(offset=next_offset)
 
     def errback(self, failure):
         logger.error(

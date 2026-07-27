@@ -7,10 +7,15 @@ url: https://www.waltermartdelivery.com.ph
 language: en
 cadence: daily
 channel: supermarket
-active: false
+active: true
 notes: >
   NCR Freshop catalog API (api.freshop.ncrcloud.com, app_key=walter_mart), no
-  auth. ~14k SKUs; category derived from canonical_url path. Probe-verified
-  (total=14,364) but the host TLS-throttles our IP under paging — see
-  known_blockers.md (api.freshop.ncrcloud.com). active:false until re-tested
-  from a cooled/clean IP; spider is already gentled (limit=24, delay 1.5, conc 1).
+  auth. Two bugs fixed 2026-07-27: (1) the earlier 502/SSLError failures were
+  NOT an IP throttle — they were the curl_cffi impersonate handler's TLS
+  fingerprint being rejected; fixed by disabling RandomBrowserMiddleware so
+  requests use the plain Twisted handler. (2) /2/products ignores offset/page/
+  token pagination and hard-caps at 100 rows, so the old offset walk only ever
+  got ~100 unique items; rewritten to shard on leaf department_id from the
+  /1/departments tree. Full run now yields ~9,495 unique SKUs. Residual gap: 45
+  leaf departments exceed the 100-row cap (~3k rows in their tails unreached,
+  logged per-department); close later with dual-sort or price-range sub-sharding.
