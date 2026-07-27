@@ -1,0 +1,12 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: cellarmaster_hk
+url: https://cellarmasterwines.com
+language: en
+cadence: daily
+channel: supermarket
+notes: >
+  Shopify storefront; public /products.json feed. Mostly alcoholic beverages
+  (02.1) plus some glassware/accessories — left to Gemini to classify.

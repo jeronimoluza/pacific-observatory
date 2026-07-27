@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: momo_tw
+url: https://www.momoshop.com.tw
+language: zh
+cadence: daily
+channel: hypermarket
+notes: >
+  General marketplace, seeded with F&B search keywords. Products come from a
+  schema.org JSON-LD ItemList in the server-rendered search page (no JS).
+  channel=hypermarket so tier-c narrowing is skipped; category = seed keyword.

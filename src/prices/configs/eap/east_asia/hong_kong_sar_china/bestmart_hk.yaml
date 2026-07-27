@@ -1,0 +1,12 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: bestmart_hk
+url: https://www.bestmart360.com
+language: zh
+cadence: daily
+channel: supermarket
+notes: >
+  優品360 discount grocery. Listing-card extraction from server-rendered /cat/
+  pages (PDP is JS-routed). Price string keeps pack suffix (e.g. "$168.0 / 2 件").

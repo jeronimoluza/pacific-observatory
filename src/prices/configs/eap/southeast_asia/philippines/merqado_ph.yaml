@@ -1,0 +1,11 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: merqado_ph
+url: https://www.merqadoph.com
+language: en
+cadence: daily
+channel: supermarket
+notes: >
+  Shopify storefront; public /products.json feed. Specialty-foods basket.

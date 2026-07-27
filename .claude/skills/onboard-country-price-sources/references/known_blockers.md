@@ -35,6 +35,7 @@ Akamai's bot manager either 403s upfront or, for marketplaces with a softer prof
 
 - **woolworths.co.nz**, **newworld.co.nz**, **paknsave.co.nz**, **chemistwarehouse.co.nz** (NZ) — Foodstuffs/Akamai stack. One bypass effort would unlock all four.
 - **watsons.com.tw** (TW, AS Watson) — persistent 403.
+- **watsonswine.com** (HK, AS Watson) — HTTP 403, `AkamaiGHost` server header; same AS-Watson tenant. Probed 2026-07-27.
 - **watsons.com.hk/en/macau-click-collect-express-delivery/\*** (HK/MO, AS Watson) — HTTP 403 from non-HK/MO IP on the Macao Click & Collect catalogue; same AS-Watson Akamai tenant profile as watsons.com.tw. Probed 2026-06-10.
 - **shopping.coupang.com**, **lazada.\*.\<tld\>**, **shopee.\*.\<tld\>** — marketplace platforms with Akamai bot manager. Only viable via official affiliate APIs.
 
@@ -43,6 +44,7 @@ Akamai's bot manager either 403s upfront or, for marketplaces with a softer prof
 Site returns a tiny (~212-byte) HTML stub containing a JS challenge. `scrapy-impersonate` alone returns the stub — not a real product page. The diagnostic is body length + presence of the Incapsula JS bootstrap. See [[coles_au_ua_impersonate_mismatch]] in engram for the full probe protocol (Coles AU). Also includes the gotcha that scrapy `custom_settings` dict-replace can mask the real failure.
 
 - **makro.co.th** (TH, Siam Makro) — Incapsula 403 on curl AND Playwright.
+- **rt-mart.com.tw** (TW, 大潤發) — HTTP 503 Incapsula challenge page (`Request unsuccessful. Incapsula incident ID`). Shopee alt storefront also blocked (Akamai). Probed 2026-07-27.
 - **coles.com.au** (AU) — Incapsula JS challenge; 212-byte stub on bare `scrapy-impersonate`.
 - **comfy.ua** (UA) — `_Incapsula_Resource` script stub (~1KB body, HTTP 200 with `<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">` + an iframe to `/_Incapsula_Resource?SWUDNSAI=...`).
 - **lifecell.ua** (UA) — same Incapsula tenant signature as comfy.ua; ~960-byte stub. Likely same protection profile across the AS Watson-style cohort.
@@ -73,6 +75,8 @@ Real-browser requests from a non-target-country IP are dropped at the CDN before
 - **nhathuocankhang.com** (VN, also MWG) — same signature. Both MWG sites share infrastructure; a single bypass effort would unlock both.
 - **villamarket.com** (TH) — `ERR_CONNECTION_RESET` on curl AND Playwright `goto`.
 - **sendo.vn** (VN, general e-commerce) — redirects to sendofarm.vn; main catalog is a SPA with content-hashed CSS class names (d7ed-* prefix). Zero product prices in SSR HTML. Confirmed 2026-06-15.
+- **metro.cn** + **www.maidelong.com** (CN, Metro China) — TLS handshake starts then stalls mid-handshake (same IP 220.196.43.244), classic GFW-style reset from non-CN IP. Probed 2026-07-27.
+- **api.freshop.ncrcloud.com** (PH, WalterMart's Freshop catalog API) — endpoint is real and public (`app_key=walter_mart`, `total: 14,364`, verified 2026-07-27), BUT throttles aggressively: `limit>~24` returns 502, and rapid paging trips a sustained TLS-layer IP block (`SSL_ERROR_SYSCALL` / connection-reset) that persists for a while. Same shape as the Wayback L4 blackhole. Spider MUST use `limit<=24`, `CONCURRENT_REQUESTS_PER_DOMAIN: 1`, `DOWNLOAD_DELAY: 1.5+`. Re-test from a cooled/clean IP.
 
 ## API requires dynamic security key / JWT
 
@@ -81,7 +85,6 @@ Bare curl returns 401/429 regardless of headers because a non-trivial token is r
 - **marketplace.com.mm** (MM) `/api/products/all` — dynamic `x-security-key` header (CryptoJS "Salted__" prefix, AES with client-side-derived key). 429 without it.
 - **sayurbox.com** (ID) `/graphql/v1` — requires `authorization: Bearer <JWT>` + 10+ custom `x-sbox-*` headers + per-session `deliveryConfigId` base64 blob in the GraphQL variables.
 - **alfagift.id** (ID) `webcommerce-gw.alfagift.id/v2/products/category/{id}` — 401 without auth token; init flow not investigated.
-- **emartmall.mn** (MN) — SPA shell returns nothing useful to non-JS clients; needs a real Playwright probe to identify any API.
 
 ## Cloudflare "One moment please" interstitial (JS challenge, intermittent)
 
@@ -95,10 +98,16 @@ Site loads, renders skeleton cards, but never hydrates fully within a reasonable
 
 - **telemor.tl/Home/Broadband** (TL, Telemor broadband) — SPA-gated; broadband/FTTH pricing not in page source; directs to contact email `esd@telemor.tl`. No public retail price list. Skip; mobile plans page (`/Home/Products?parentCode=MOBILE`) has prices in SSR HTML — probe that instead. Checked 2026-06-10.
 - **unitel.com.la/en/mobile/packages** (LA, Unitel Laos — ~50% mobile market share) — Angular SPA; package names/prices not in SSR HTML (`{{ t('text') }}` visible). No API endpoint found. SKIP; use laotel.com FTTH as telco alternative. Probed 2026-06-10.
+- **www.samsclub.cn** (CN, Sam's Club China / 山姆会员商店 — Walmart membership grocery retailer) — UMI/React SPA shell; all routes (including guessed API paths `/api/node/search/v2/...`, `/api/node/items/search`) return the same 1,230-byte HTML SPA bootstrap with `<div id="root"></div>`. No server-rendered product data; no open API endpoint found without JS execution. Probed 2026-06-30.
+- **freshippo.com / Hema (盒马)**, **chaoshi.tmall.com (Tmall Supermarket)** (CN) — Alibaba "ICE" framework CSR shells (`<div id="ice-container">`, `"renderMode":"CSR"`); zero product/price in raw HTML. Even JS-render risky (mtop signed APIs). Probed 2026-07-27.
+- **maicai.meituan.com (Meituan Maicai)**, **pupumall.com (Pupu 朴朴)** (CN) — bespoke React/Vue CSR SPA shells (`<title>加载中</title>`, empty `#root`); require city/store selection; aggressive anti-scrape. Probed 2026-07-27.
+- **jddj.com (JD Daojia/秒送)** (CN) — small React landing page, same JD corporate family as the JDR_shields-blocked jd.com. SKIP. Probed 2026-07-27.
+- **suning.com (苏宁易购)** (CN) — search-results SSR HTML has real product cards (name, SKU id) but `hasPrice="false"`; PDP price is an unfilled client template (`{{promotionPrice}}`) fed by an unidentified AJAX call. The ONE China lead worth a Playwright/DevTools network-trace to find the price microservice endpoint. Probed 2026-07-27.
 - **winmart.vn** *(HTML front-end)* — products render via `product-card-skeleton` divs that don't hydrate within 8s Playwright wait. **NOTE**: winmart's *JSON API* at `api-crownx.winmart.vn/it/api/web/v3/item/category` works with no auth — see `src/prices/price_scraping/spiders/winmart.py`. Tier 1B, not Tier 2.
 - **shop.com.mm** (MM, Daraz Myanmar) — SPA confirmed June 2026. Category pages (`/health-care/`, `/medicines/`) return only navigation chrome in SSR HTML; zero product cards or prices. Alibaba/Daraz platform. No public API endpoint found. SKIP.
 - **cargillsonline.com** (LK) — Angular SPA. After 12s wait + scroll, dump contains `{{...}}` placeholder syntax (Angular templates) for product details and only category-level `/Product/<cat>` links — `/ProductDetails/<sku>` URLs never hydrate.
 - **osudpotro.com** (BD) — listing URL `/category/buy-over-the-counter-medicine-online-in-dhaka` renders **disease cards** (`<a href="/disease/...">`) not product cards. Catalog is by-disease; needs a different entry URL or direct PDP list.
+- **giant.sg** (SG, DFI Retail Group — Giant hypermarket) — jQuery + Algolia InstantSearch v2 SPA; all product routes return HTTP 404 server-side (client-side routing only). Product catalog exclusively served via Algolia index `giant_product_live` (app `PFCHI1YM66`). Algolia DSN (`pfchi1ym66-dsn.algolia.net`) and all three fallback shards (`pfchi1ym66-{1,2,3}.algolianet.com`) return DNS NXDOMAIN from non-SG IPs — not resolvable even from Playwright/headless Chromium. PDP pages return HTTP 404 with 250KB SPA shell; 12s Playwright wait yields no product name, price, or JSON-LD product data. Sitemap (`/sitemap_product.xml`) has 15,630 product slugs (e.g. `uht-full-cream-milk-1l-5001968`) but URLs are client-side routes only. No alternative server-side product API found. Viable only from a Singapore residential IP with a working Algolia DSN route. Probed 2026-06-30.
 
 ## Hashed-CSS-class SPAs (content-hashed class names)
 
@@ -142,6 +151,12 @@ Distinct from the CDN connection-reset section: these sites complete the TCP han
 
 Supermarkets — silpo.ua, atbmarket.com, auchan.ua, varus.ua, megamarket.ua. Pharmacies — tabletki.ua, apteka911.ua, anc.ua. Marketplaces / electronics — rozetka.com.ua (429, rate-limit not 403), allo.ua, foxtrot.com.ua. Personal care — eva.ua, brocard.ua (404 on /uk/ — branded error). Utility/transport — naftogaz.com, booking.uz.gov.ua, minagro.gov.ua. Delivery — glovoapp.com/ua. Some of these may genuinely run Cloudflare strict — re-probe individually from a UA residential IP before deciding per-source.
 
+## JD proprietary bot detection — JDR_shields + login wall (200 OK + bot-challenge stub)
+
+JD.com runs its own in-house bot detection stack called `JDR_shields`. Curl to product or category pages returns HTTP 200 but body is a ~2,704-byte JS challenge page (title "京东验证" = "JD Verification", `window.bp_bizid="JDR_shields"`). Playwright with `--disable-blink-features=AutomationControlled` reaches JD's login page (title "京东-欢迎登录"), not product listings — all returned "product-like" links are `passport.jd.com/new/login.aspx` login redirects. No API endpoint is reachable without a valid JD account session. This is a proprietary challenge, not Cloudflare or Akamai. Bypass requires a registered JD account + residential CN IP + captcha solver or official JD Open Platform API key.
+
+- **www.jd.com / channel.jd.com / item.jd.com** (CN, JD.com — largest CN online retailer; covers groceries, pharmacy, apparel, electronics, personal care) — JDR_shields 2704-byte bot challenge on curl; login wall on Playwright. Confirmed blocked 2026-06-30. Probed food category (`channel.jd.com/food.html`) + product PDP + JD supermarket subdomain. COICOP 01/02/05/06/08/13 gap; no public food-retailer coverage available without auth.
+
 ## App-only / no scrapeable web catalogue
 
 The site exists but products are not browsable on the web. Skip — no amount of scraping helps.
@@ -181,8 +196,22 @@ Site has products but each one is a modal within a shop page, not a canonical `/
 Domain exists and renders but has no e-commerce — corporate/brand portal.
 
 - **pxmart.com.tw** (TW) — corporate Next.js portal. Links go to /about-us, /bulletin, /esg. No catalog.
+- **www.yonghui.com.cn** (CN, 永辉超市 Yonghui Superstore — major CN grocery chain) — corporate news/IR site. Links are exclusively news article paths (`/html/web/latestnews/...`). Zero prices, zero product links in 49KB HTML. Yonghui's consumer-facing stores operate via app (永辉生活) not a public web catalogue. Probed 2026-06-30. COICOP 01 gap remains.
 - **brianbell.com.pg** (PNG) — corporate portal. `/product-category/appliances` 404s. `homecentres.brianbell.com.pg/shop/` redirects to "/" with no e-commerce markup. B2C division has no public web storefront.
 - **e-mart.mn** (MN) — corporate marketing site for eMart. Actual store is at **emartmall.mn** (SPA shell — see above).
+- **www.superindo.co.id** (ID, Super Indo — Indonesia's 2nd-largest supermarket chain) — marketing/promo portal; no online catalog and no individual product PDPs. Homepage has a rotating "Super Hemat" carousel with ~10 weekly promotional items (SSR HTML text, product name + price, but ZERO href links on the items). All product paths (/produk, /product, /kategori, /category) redirect to homepage. `/promosi/katalog-super-hemat/` serves the weekly catalog as JPEG flyer images (HEMAT_E_26_(N)_DKI.jpg, FLYER_E_26_DKI.jpg). No subdomains (shop.superindo.co.id etc. all ECONNREFUSED). No wp-json, no sitemap, no JSON API. Probed 2026-06-30. DEMOTE: promo-flyer-image-only + no per-product catalog.
+- **www.robinsonssupermarket.com.ph** (PH, Robinsons Supermarket — PH's 2nd-largest supermarket chain, 151 branches) — corporate marketing/branding site; no per-product catalog, no pricing API. Homepage APIs (`/api/carouselApi`, `/api/regionApi`, `/api/branchApi`, `/api/promos/offers/featured`) serve promo carousels, branch/store-locator data, and news only. Promo catalogs (`/catalogs`) are PDF flyers. "Order Online" nav link leads to a news article about third-party delivery partners. Subdomains (shop/delivery/order/grocery/online) all ECONNREFUSED. `robinsonsdelivery.com.ph` is a ParkLogic parked domain. `gorobinsons.ph` SSL broken. `gocart.ph` ECONNREFUSED. Robinsons SKUs already covered by the existing `pickaroo` spider via `ops.pickaroo.com/groceries/brands/supermarket/`. Probed 2026-06-30. DEMOTE: no standalone web product catalog.
+- **villagegrocer.com.my**, **big.com.my (Ben's Independent Grocer)**, **aeonbig.com.my**, **heromarket.com.my** (MY) — brochure/recipe WordPress; ordering routed to Foodpanda app deep-links. No `/shop` catalog. **giant.com.my** + **econsave.com.my** have WooCommerce themes but empty/absent `/shop` (dead storefronts). Probed 2026-07-27.
+- **yiguo.com (易果生鲜)** (CN) — static archived placeholder (`<!-- saved from url=... -->`), banner JPEGs only, effectively defunct. **carrefour.com.cn** — Carrefour exited mainland China Aug 2025 (rebranded CACIOUS under Suning), no live domain. **Missfresh (每日优鲜)** — bankrupt 2023. Probed 2026-07-27.
+- **kaibo.com.hk** (HK, Kai Bo Food Supermarket) — brochure-only 1.7KB page (company blurb + store-address nav), no `/shop` or product paths. Probed 2026-07-27.
+
+## DataDome bot-protection (HTTP 403, `x-datadome` header)
+
+- **myaeon2go.com** (MY, AEON's q-commerce) — HTTP 403 on every request, `server: DataDome` + `x-datadome: protected`. Needs a real browser + DataDome solver; skip. Probed 2026-07-27.
+
+## SSL certificate mismatch (retired/consolidated domain)
+
+- **uselect.com.hk** (HK, U Select — China Resources Vanguard brand) — TLS cert covers `crc.com.hk` siblings, not this hostname; HTTP 403 even with `-k`. Domain likely retired/folded into the CRV group platform. Probed 2026-07-27.
 
 ## Cloudflare strict — Pacific Island portals (522 timeout + Cloudflare headers)
 
