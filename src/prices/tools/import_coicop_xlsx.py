@@ -1,4 +1,4 @@
-"""Import data/prices/_enrich/coicop_categories.xlsx → keywords/coicop/_class_tree.json.
+"""Import data/prices/enrich/coicop_categories.xlsx → keywords/coicop/_class_tree.json.
 
 Deterministic by design — re-running emits a byte-identical store so the
 CI idempotency gate (§3.6) can compare before/after.
@@ -22,7 +22,7 @@ from pathlib import Path
 import pandas as pd
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_DEFAULT_XLSX = _REPO_ROOT / "data" / "prices" / "_enrich" / "coicop_categories.xlsx"
+_DEFAULT_XLSX = _REPO_ROOT / "data" / "prices" / "enrich" / "coicop_categories.xlsx"
 _DEFAULT_OUT = _REPO_ROOT / "src" / "prices" / "enrich" / "keywords" / "coicop"
 _DEFAULT_SUBCATS = (
     _REPO_ROOT / "src" / "prices" / "enrich" / "static" / "coicop_subcategories.json"

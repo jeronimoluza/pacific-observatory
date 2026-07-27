@@ -17,7 +17,7 @@ RAW_PRICES_CSV = REPO_ROOT / "outputs" / "prices" / "raw" / "raw_prices.csv"
 ENRICHED_PRICES_CSV = (
     REPO_ROOT / "outputs" / "prices" / "enriched" / "enriched_prices.csv"
 )
-ENRICH_DIR = REPO_ROOT / "data" / "prices" / "_enrich"
+ENRICH_DIR = REPO_ROOT / "data" / "prices" / "enrich"
 PRODUCTS_INPUT_PARQUET = ENRICH_DIR / "products_input.parquet"
 COICOP_XLSX = ENRICH_DIR / "coicop_categories.xlsx"
 CACHE_DIR = ENRICH_DIR / "cache"
@@ -84,7 +84,7 @@ ENRICH_PROMPT_PATH = PROMPTS_DIR / "enrich_system.md"
 # Proactive rate-limit ceilings per model (free-tier baseline). Values match
 # the Google AI Studio quota panel. Override via `RATE_LIMITS_OVERRIDE_PATH`
 # yaml (one model per top-level key with rpm/tpm/rpd) when on paid tier.
-# Daily counters persist in `data/prices/_enrich/_rate_limits.json` so RPD
+# Daily counters persist in `data/prices/enrich/_rate_limits.json` so RPD
 # survives process restarts.
 RATE_LIMITS: dict[str, dict[str, int]] = {
     "gemini-3.1-flash-lite": {"rpm": 15, "tpm": 250_000, "rpd": 500},

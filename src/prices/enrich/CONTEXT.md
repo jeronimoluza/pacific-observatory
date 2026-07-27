@@ -13,8 +13,8 @@ collect → outputs/prices/raw/raw_prices.csv        (per-source spiders/fetcher
     │
     ▼  prices process   (STAGE_ORDER in enrich/cli.py)
   concatenate → outputs/prices/raw/raw_prices.csv   (unify raw_items/wayback/CC → one CSV)
-  prepare     → data/prices/_enrich/products_input.parquet   (dedup to one row / input_hash)
-  classify    → data/prices/_enrich/cache/classified.parquet
+  prepare     → data/prices/enrich/products_input.parquet   (dedup to one row / input_hash)
+  classify    → data/prices/enrich/cache/classified.parquet
   merge       → outputs/prices/enriched/enriched_prices.csv   (raw × enrichment, per obs)
     │
     ▼  prices build   (build/aggregate.py)
@@ -153,10 +153,11 @@ canonicalize unit per leaf → compute unit_value → Layer-2 flag → attach FX
 - **Declared `coicop_codes`** — per-source YAML COICOP commitment, written at
   onboarding.
 - **`products_input.parquet`** — dedup identity table (one row / input_hash),
-  the classify input. Distinct from `products.parquet` (the `prices census`
-  coverage grain) and the dead `enrichments.parquet`.
-- **`data/prices/enrich/`** (no underscore) — curated gold/veto/denylist home.
-  **`data/prices/_enrich/`** (underscore) — working/scratch dir. Do not confuse.
+  the classify input, under `data/prices/enrich/`.
+- **`data/prices/enrich/`** — the single enrich home: curated gold/veto/denylist
+  (`gold/`) alongside the working artifacts (`products_input.parquet`, `cache/`,
+  `_models/`, embed caches). The former `_enrich/` scratch dir was folded in;
+  the dead `enrichments.parquet` and orphan `products.parquet` were removed.
 
 ## Regex patterns tree
 

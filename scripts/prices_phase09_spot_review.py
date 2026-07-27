@@ -6,9 +6,9 @@ to sign off on the atomization output (SC-5b).
 Usage:
 
   python scripts/prices_phase09_spot_review.py \
-      --old data/prices/_enrich/_audit/_sub_labels_store.pre_atomization.json \
+      --old data/prices/enrich/_audit/_sub_labels_store.pre_atomization.json \
       --new src/prices/enrich/keywords/coicop/_sub_labels_store.json \
-      [--out data/prices/_enrich/_audit/SPOT-REVIEW.diff.md] [--seed 0]
+      [--out data/prices/enrich/_audit/SPOT-REVIEW.diff.md] [--seed 0]
 
 The reviewer captures `--old` (a snapshot of the pre-atomization store) BEFORE
 Wave 1 runs; `--new` defaults to the current/atomized store. In Wave 0 the

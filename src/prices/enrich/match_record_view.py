@@ -246,7 +246,7 @@ def render_summary(match_df, suppression_df, residual_df):
     "log_dir",
     type=click.Path(file_okay=False),
     default=None,
-    help="Override the log dir (default: data/prices/_enrich/_match_record/).",
+    help="Override the log dir (default: data/prices/enrich/_match_record/).",
 )
 @click.option("--summary-only", is_flag=True, help="Print only the summary header.")
 def match_record_command(limit, row, country, reason, shape, log_dir, summary_only):

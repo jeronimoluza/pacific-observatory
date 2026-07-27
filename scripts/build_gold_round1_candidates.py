@@ -27,7 +27,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 GOLD_DIR = ROOT / "data" / "prices" / "enrich" / "gold"
 BATCH_DIR = GOLD_DIR / "batches"
-CORPUS = ROOT / "data" / "prices" / "_enrich" / "products_input.parquet"
+CORPUS = ROOT / "data" / "prices" / "enrich" / "products_input.parquet"
 LEAVES_TXT = GOLD_DIR / "coicop_leaves.txt"
 GOLD_MAIN = GOLD_DIR / "gold_v5_8k_final.parquet"
 GOLD_EXTRA = GOLD_DIR / "gold_v5_fnb_extra.parquet"

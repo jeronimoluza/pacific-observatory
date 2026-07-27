@@ -7,11 +7,11 @@ no pydantic_ai, no rate_limit, no API key):
   1. `python scripts/prices_phase09_atomize_sub_labels.py stage`
      Reads the current sub-label store (via keywords._registry) + the COICOP
      xlsx, writes one grounded input bundle per leaf to
-     data/prices/_enrich/_audit/atomize_inputs/{leaf}.json. No LLM calls.
+     data/prices/enrich/_audit/atomize_inputs/{leaf}.json. No LLM calls.
 
   2. (fan-out) The executing session dispatches Sonnet subagents over the 538
      bundles; each leaf gets one AtomizedLeaf proposal JSON written to
-     data/prices/_enrich/_audit/atomize_proposals/{leaf}.json.
+     data/prices/enrich/_audit/atomize_proposals/{leaf}.json.
 
   3. `python scripts/prices_phase09_atomize_sub_labels.py merge`
      Validates every proposal against the AtomizedLeaf pydantic schema (the

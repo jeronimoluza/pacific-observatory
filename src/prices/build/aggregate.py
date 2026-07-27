@@ -3,18 +3,18 @@
 Two outputs, two sources:
 
   1. SNAPSHOT (current-state tab):
-     - read data/prices/_enrich/products_input.parquet (dedup'd, one row per
+     - read data/prices/enrich/products_input.parquet (dedup'd, one row per
        input_hash), which already carries `input_hash`
      - inner-join the classifier output (classified.parquet) on `input_hash`
      - no date; FX dated to today
-     → data/prices/_build/eap_fnb_snapshot.parquet
+     → data/prices/build/eap_fnb_snapshot.parquet
 
   2. OBSERVATIONS (historical tab):
      - stream outputs/prices/raw/raw_prices.csv
      - recompute `input_hash` per raw row (same _row_input_dict basis prepare
        used) and inner-join classified.parquet on it
      - has `date` (rename to observation_date) → monthly history
-     → data/prices/_build/eap_fnb_observations.parquet
+     → data/prices/build/eap_fnb_observations.parquet
 
 Both paths:
   - filter classified.parquet → COICOP 01/02 × live states × trust_level==high
@@ -58,10 +58,10 @@ from prices.enrich.versioning import input_hash
 logger = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-BUILD_DIR = REPO_ROOT / "data" / "prices" / "_build"
+BUILD_DIR = REPO_ROOT / "data" / "prices" / "build"
 OBSERVATIONS_PARQUET = BUILD_DIR / "eap_fnb_observations.parquet"
 SNAPSHOT_PARQUET = BUILD_DIR / "eap_fnb_snapshot.parquet"
-PRODUCTS_INPUT_PARQUET = REPO_ROOT / "data" / "prices" / "_enrich" / "products_input.parquet"
+PRODUCTS_INPUT_PARQUET = REPO_ROOT / "data" / "prices" / "enrich" / "products_input.parquet"
 CSV_CHUNK_SIZE = 50_000
 FX_HISTORY_FLOOR = pd.Timestamp("2024-03-06")
 

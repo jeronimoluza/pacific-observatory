@@ -6,7 +6,7 @@ the canonical gold set (``dataset.py``); each bundle is one ``model.joblib``
 carrying {clf, classes, tau, division, embed_models}.
 
 Artifacts are versioned under
-``data/prices/_enrich/_models/classifier/{version}/`` with a ``latest.txt``
+``data/prices/enrich/_models/classifier/{version}/`` with a ``latest.txt``
 pointer promoted only by ``prices train-classifier --bless``.
 """
 

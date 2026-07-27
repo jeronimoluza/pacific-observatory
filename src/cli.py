@@ -402,7 +402,7 @@ def prices_build(region, subregion, country):
     """Construct CPI indices from the enriched prices dataset.
 
     PoC scope: writes the EAP × F&B basket parquet at
-    data/prices/_build/eap_fnb_observations.parquet. Region/subregion/
+    data/prices/build/eap_fnb_observations.parquet. Region/subregion/
     country flags are accepted but ignored until the basket widens
     beyond the EAP PoC.
     """

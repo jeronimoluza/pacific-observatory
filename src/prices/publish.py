@@ -24,14 +24,14 @@ import yaml
 logger = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-BUILD_DIR = REPO_ROOT / "data" / "prices" / "_build"
+BUILD_DIR = REPO_ROOT / "data" / "prices" / "build"
 OBSERVATIONS_PARQUET = BUILD_DIR / "eap_fnb_observations.parquet"
 VENDOR_CHART_JS = (
     REPO_ROOT / "src" / "text" / "plotting" / "vendor" / "chart.umd.min.js"
 )
 HTML_TEMPLATE_PATH = Path(__file__).resolve().parent / "_publish_template.html"
 DASHBOARD_HTML = REPO_ROOT / "outputs" / "prices" / "eap_fnb_dashboard.html"
-COICOP_XLSX = REPO_ROOT / "data" / "prices" / "_enrich" / "coicop_categories.xlsx"
+COICOP_XLSX = REPO_ROOT / "data" / "prices" / "enrich" / "coicop_categories.xlsx"
 COUNTRIES_YAML = REPO_ROOT / "src" / "configs" / "countries.yaml"
 
 CURRENT_LOOKBACK_DAYS = 60

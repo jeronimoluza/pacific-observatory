@@ -24,7 +24,7 @@ from typing import Any
 import pandas as pd
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
-_DEFAULT_CORPUS = _REPO_ROOT / "data" / "prices" / "_enrich" / "prepared_cache.parquet"
+_DEFAULT_CORPUS = _REPO_ROOT / "data" / "prices" / "enrich" / "prepared_cache.parquet"
 
 # Fields that must be byte-identical per §5.2.
 _COMPARE_FIELDS = (

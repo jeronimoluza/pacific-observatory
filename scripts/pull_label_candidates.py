@@ -34,7 +34,7 @@ from prices.enrich.classifier.predict import load_predictor  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 GOLD_DIR = ROOT / "data" / "prices" / "enrich" / "gold"
-CORPUS = ROOT / "data" / "prices" / "_enrich" / "products_input.parquet"
+CORPUS = ROOT / "data" / "prices" / "enrich" / "products_input.parquet"
 PROBE = GOLD_DIR / "corpus_ngram_head_probe.parquet"
 OUT = GOLD_DIR / "label_candidates.parquet"
 
