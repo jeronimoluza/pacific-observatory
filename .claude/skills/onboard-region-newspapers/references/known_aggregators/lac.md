@@ -1,7 +1,7 @@
 # Known Online-Newspaper Aggregators — Latin America & Caribbean (`lac`)
 
-Pre-extracted per-country newspaper lists from four online-newspaper
-aggregators. Used by `/onboard-region-newspapers` step 2a as a static
+Pre-extracted per-country newspaper lists from four online-newspaper aggregators
+plus GDELT's domains-by-country list. Used by `/onboard-region-newspapers` step 2a as a static
 seed instead of refetching aggregator homepages every run.
 
 See `references/known_aggregators/README.md` for the ignore rules and
@@ -36,6 +36,20 @@ the populator script that generated this file.
 - Antigua News Room — https://antiguanewsroom.com/
 - News Room Antigua — https://newsroomantigua.com/
 - Antigua Observer — https://antiguaobserver.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (12 domains by GDELT monitoring volume)
+- antiguaobserver.com — https://antiguaobserver.com/
+- abstvradio.com — https://abstvradio.com/
+- caribarena.com — https://caribarena.com/
+- antigua-barbuda.com — https://antigua-barbuda.com/
+- thevpme.com — https://thevpme.com/
+- seahorsemagazine.com — https://seahorsemagazine.com/
+- rudygiron.com — https://rudygiron.com/
+- healthcaretrainingandeducation.com — https://healthcaretrainingandeducation.com/
+- michaelsherer.com — https://michaelsherer.com/
+- southerntravelagency.com — https://southerntravelagency.com/
+- wasfatnowfit.co.uk — https://wasfatnowfit.co.uk/
+- winner.com — https://winner.com/
 
 ## aruba (caribbean) — Aruba
 
@@ -92,6 +106,24 @@ the populator script that generated this file.
 - Amigoe — https://www.amigoe.com/
 - Diario — https://diario.aw/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (16 domains by GDELT monitoring volume)
+- 24ora.com — https://24ora.com/
+- aruba.com — https://aruba.com/
+- diario.aw — https://diario.aw/
+- mamalovesfood.com — https://mamalovesfood.com/
+- atlanticpassenger.com — https://atlanticpassenger.com/
+- fierceenterprisecommunications.com — https://fierceenterprisecommunications.com/
+- pmoaruba.com — https://pmoaruba.com/
+- aruba-daily.com — https://aruba-daily.com/
+- webaruba.com — https://webaruba.com/
+- redeszone.net — https://redeszone.net/
+- venturereports.com — https://venturereports.com/
+- arubacrown.com — https://arubacrown.com/
+- myguardiangroup.com — https://myguardiangroup.com/
+- ocagpc.org — https://ocagpc.org/
+- turmadochapeu.com.br — https://turmadochapeu.com.br/
+- worldventureproject.com — https://worldventureproject.com/
+
 ## bahamas_the (caribbean) — Bahamas, The
 
 ### w3newspapers — https://www.w3newspapers.com/bahamas/
@@ -136,6 +168,48 @@ the populator script that generated this file.
 - Bahama Journal — http://jonesbahamas.com/
 - Nassau Guardian — https://thenassauguardian.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 149 by GDELT monitoring volume)
+- tribune242.com — https://tribune242.com/
+- thenassauguardian.com — https://thenassauguardian.com/
+- thebahamasweekly.com — https://thebahamasweekly.com/
+- bahamaislandsinfo.com — https://bahamaislandsinfo.com/
+- bahamaspress.com — https://bahamaspress.com/
+- ewnews.com — https://ewnews.com/
+- grandbahamainfo.com — https://grandbahamainfo.com/
+- jonesbahamas.com — https://jonesbahamas.com/
+- nassauguardian.net — https://nassauguardian.net/
+- nassaubahamasinfo.com — https://nassaubahamasinfo.com/
+- eleutheranews.com — https://eleutheranews.com/
+- theabaconian.com — https://theabaconian.com/
+- znsbahamas.com — https://znsbahamas.com/
+- magneticmediatv.com — https://magneticmediatv.com/
+- caribjournal.com — https://caribjournal.com/
+- weblogbahamas.com — https://weblogbahamas.com/
+- 7thheavenproperties.com — https://7thheavenproperties.com/
+- moonfruit.com — https://moonfruit.com/
+- ginkandgasoline.com — https://ginkandgasoline.com/
+- coastalanglermag.com — https://coastalanglermag.com/
+- facesofony.com — https://facesofony.com/
+- fishandfly.com — https://fishandfly.com/
+- charterworld.com — https://charterworld.com/
+- cruisersnet.net — https://cruisersnet.net/
+- bahamapundit.com — https://bahamapundit.com/
+- bonefishonthebrain.com — https://bonefishonthebrain.com/
+- uncommoncaribbean.com — https://uncommoncaribbean.com/
+- gonewiththewynns.com — https://gonewiththewynns.com/
+- rumshopryan.com — https://rumshopryan.com/
+- nativestew.com — https://nativestew.com/
+- thefreeportnews.com — https://thefreeportnews.com/
+- cruisingsea.com — https://cruisingsea.com/
+- bahamastourcenter.com — https://bahamastourcenter.com/
+- coldwellbankerbahamas.com — https://coldwellbankerbahamas.com/
+- rentalo.com — https://rentalo.com/
+- sandals.com — https://sandals.com/
+- associatestimes.com — https://associatestimes.com/
+- viyachts.com — https://viyachts.com/
+- japersmcjapperson.com — https://japersmcjapperson.com/
+- shoreexcursioneer.com — https://shoreexcursioneer.com/
+
 ## barbados (caribbean) — Barbados
 
 ### w3newspapers — https://www.w3newspapers.com/barbados/
@@ -178,6 +252,48 @@ the populator script that generated this file.
 - Loop — http://www.loopnewsbarbados.com/
 - Daily Nation — https://www.nationnews.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 62 by GDELT monitoring volume)
+- barbadostoday.bb — https://barbadostoday.bb/
+- nationnews.com — https://nationnews.com/
+- barbadosadvocate.com — https://barbadosadvocate.com/
+- gisbarbados.gov.bb — https://gisbarbados.gov.bb/
+- loopnewsbarbados.com — https://loopnewsbarbados.com/
+- bajanreporter.com — https://bajanreporter.com/
+- barbadosunderground.net — https://barbadosunderground.net/
+- cbc.bb — https://cbc.bb/
+- businessbarbados.com — https://businessbarbados.com/
+- bajansunonline.com — https://bajansunonline.com/
+- freshmilkbarbados.com — https://freshmilkbarbados.com/
+- dlpbarbados.org — https://dlpbarbados.org/
+- nakeddeparture.com — https://nakeddeparture.com/
+- socanews.com — https://socanews.com/
+- barbadospropertynews.com — https://barbadospropertynews.com/
+- barbadosparliament.com — https://barbadosparliament.com/
+- trinituner.com — https://trinituner.com/
+- cruise-adviser.com — https://cruise-adviser.com/
+- robsrum.com — https://robsrum.com/
+- socalsailingnews.com — https://socalsailingnews.com/
+- writeups24.com — https://writeups24.com/
+- termitenewyork.com — https://termitenewyork.com/
+- broadstreetjournalbarbados.com — https://broadstreetjournalbarbados.com/
+- rihannadaily.com — https://rihannadaily.com/
+- biba.bb — https://biba.bb/
+- bitgmx.com — https://bitgmx.com/
+- hausofrihanna.com — https://hausofrihanna.com/
+- totallybarbados.com — https://totallybarbados.com/
+- altituderealtybarbados.com — https://altituderealtybarbados.com/
+- caribbeannewsservice.com — https://caribbeannewsservice.com/
+- loveahappyending.com — https://loveahappyending.com/
+- barbadossapphirebeach.com — https://barbadossapphirebeach.com/
+- bridelifemagazine.com — https://bridelifemagazine.com/
+- etceterabuzz.com — https://etceterabuzz.com/
+- colinsnotes.com — https://colinsnotes.com/
+- sooofabulous.com — https://sooofabulous.com/
+- butterflyresidential.com — https://butterflyresidential.com/
+- thetokenizer.io — https://thetokenizer.io/
+- ihb.io — https://ihb.io/
+- sixtblog.de — https://sixtblog.de/
+
 ## british_virgin_islands (caribbean) — British Virgin Islands
 
 ### w3newspapers — https://www.w3newspapers.com/british-virgin-islands/
@@ -209,6 +325,13 @@ the populator script that generated this file.
 - BVI Beacon — https://www.bvibeacon.com/
 - Island Sun — https://www.islandsun.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (5 domains by GDELT monitoring volume)
+- bvinews.com — https://bvinews.com/
+- nagicobvi.com — https://nagicobvi.com/
+- nagicobviinsurance.com — https://nagicobviinsurance.com/
+- windtraveler.net — https://windtraveler.net/
+- bvitourism.com — https://bvitourism.com/
+
 ## cayman_islands (caribbean) — Cayman Islands
 
 ### w3newspapers — (not listed)
@@ -231,6 +354,35 @@ the populator script that generated this file.
 - Real Cayman News — https://realcaymannews.com/
 - Cayman Compass — https://www.caymancompass.com/
 - Caymanian Times — https://www.caymaniantimes.ky/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (27 domains by GDELT monitoring volume)
+- ieyenews.com — https://ieyenews.com/
+- compasscayman.com — https://compasscayman.com/
+- caymannewsservice.com — https://caymannewsservice.com/
+- radiocayman.gov.ky — https://radiocayman.gov.ky/
+- caymancompass.com — https://caymancompass.com/
+- cayman27.com.ky — https://cayman27.com.ky/
+- z99.ky — https://z99.ky/
+- cayman27.ky — https://cayman27.ky/
+- cnsbusiness.com — https://cnsbusiness.com/
+- journal.ky — https://journal.ky/
+- caymanfinancialreview.com — https://caymanfinancialreview.com/
+- cnslocallife.com — https://cnslocallife.com/
+- legislativeassembly.ky — https://legislativeassembly.ky/
+- caymanislands.ky — https://caymanislands.ky/
+- cayrock.ky — https://cayrock.ky/
+- hot1041.ky — https://hot1041.ky/
+- traveltitans.com — https://traveltitans.com/
+- caymanfinances.com — https://caymanfinances.com/
+- whatshot.ky — https://whatshot.ky/
+- fleet-air-arm.net — https://fleet-air-arm.net/
+- goldfieldsolar.com — https://goldfieldsolar.com/
+- tieonline.com — https://tieonline.com/
+- minitime.com — https://minitime.com/
+- rebeccadavidson.com — https://rebeccadavidson.com/
+- naturenotes19n79w.ky — https://naturenotes19n79w.ky/
+- freedomskn.com — https://freedomskn.com/
+- bestdesignoptions.com — https://bestdesignoptions.com/
 
 ## cuba (caribbean) — Cuba
 
@@ -354,6 +506,48 @@ the populator script that generated this file.
 - Opciones — http://www.opciones.cu/
 - Trabajadores — http://www.trabajadores.cu/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 517 by GDELT monitoring volume)
+- prensa-latina.cu — https://prensa-latina.cu/
+- cubadebate.cu — https://cubadebate.cu/
+- plenglish.com — https://plenglish.com/
+- cuba.cu — https://cuba.cu/
+- cubanet.org — https://cubanet.org/
+- diariodecuba.com — https://diariodecuba.com/
+- martinoticias.com — https://martinoticias.com/
+- havanatimes.org — https://havanatimes.org/
+- 14ymedio.com — https://14ymedio.com/
+- ellugareno.com — https://ellugareno.com/
+- babalublog.com — https://babalublog.com/
+- capitolhillcubans.com — https://capitolhillcubans.com/
+- granma.cu — https://granma.cu/
+- cibercuba.com — https://cibercuba.com/
+- cubaverdad.net — https://cubaverdad.net/
+- radiotelevisionmarti.com — https://radiotelevisionmarti.com/
+- prensalatina.com.br — https://prensalatina.com.br/
+- cubaencuentro.com — https://cubaencuentro.com/
+- caribbeannewsdigital.com — https://caribbeannewsdigital.com/
+- cubaholidays.co.uk — https://cubaholidays.co.uk/
+- cubajournal.co — https://cubajournal.co/
+- cigaraficionado.com — https://cigaraficionado.com/
+- cubaminrex.cu — https://cubaminrex.cu/
+- negracubanateniaqueser.com — https://negracubanateniaqueser.com/
+- cubaheadlines.com — https://cubaheadlines.com/
+- adncuba.com — https://adncuba.com/
+- periodicocubano.com — https://periodicocubano.com/
+- cartasdesdecuba.com — https://cartasdesdecuba.com/
+- cubacontemporanea.com — https://cubacontemporanea.com/
+- dimecuba.com — https://dimecuba.com/
+- cubanartnews.org — https://cubanartnews.org/
+- eichikawa.com — https://eichikawa.com/
+- eldiariodelamarina.com — https://eldiariodelamarina.com/
+- ipscuba.net — https://ipscuba.net/
+- excelenciascuba.com — https://excelenciascuba.com/
+- baconismagic.ca — https://baconismagic.ca/
+- impela.net — https://impela.net/
+- asere.com — https://asere.com/
+- cubastandard.com — https://cubastandard.com/
+- mybigfatcubanfamily.com — https://mybigfatcubanfamily.com/
+
 ## curacao (caribbean) — Curacao
 
 ### w3newspapers — (not listed)
@@ -372,6 +566,9 @@ the populator script that generated this file.
 - Knipselkrant Curacao — http://www.knipselkrant-curacao.com/
 - Noticias Curazao — http://noticiascurazao.com/
 - Amigoe — https://www.amigoe.com/
+
+### gdelt — (not listed)
+- (no entries)
 
 ## dominica (caribbean) — Dominica
 
@@ -408,6 +605,28 @@ the populator script that generated this file.
 - Dominican Post — http://dominicanpost.com/
 - EMO News — https://emonewsdm.com/
 - Sun — http://sundominica.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (20 domains by GDELT monitoring volume)
+- news.gov.dm — https://news.gov.dm/
+- dominicanewsonline.com — https://dominicanewsonline.com/
+- dbcradio.net — https://dbcradio.net/
+- dominicavibes.dm — https://dominicavibes.dm/
+- stormcarib.com — https://stormcarib.com/
+- opm.gov.dm — https://opm.gov.dm/
+- dominica.gov.dm — https://dominica.gov.dm/
+- thedominican.net — https://thedominican.net/
+- eccourts.org — https://eccourts.org/
+- presidentoffice.gov.dm — https://presidentoffice.gov.dm/
+- cananewsonline.com — https://cananewsonline.com/
+- planet.si — https://planet.si/
+- sidsdock.org — https://sidsdock.org/
+- dominica-weekly.com — https://dominica-weekly.com/
+- dejavufm.com — https://dejavufm.com/
+- 4mamaearth.org — https://4mamaearth.org/
+- graddoor.by — https://graddoor.by/
+- nccudominica.com — https://nccudominica.com/
+- fkraca.sk — https://fkraca.sk/
+- pearlandcoc.com — https://pearlandcoc.com/
 
 ## dominican_republic (caribbean) — Dominican Republic
 
@@ -568,6 +787,48 @@ the populator script that generated this file.
 - La Informacion — http://www.lainformacion.com.do/
 - Listin Diario — https://listindiario.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 102 by GDELT monitoring volume)
+- dominicantoday.com — https://dominicantoday.com/
+- nicepeoplenetworking.com — https://nicepeoplenetworking.com/
+- periodicozumbandodigital.com — https://periodicozumbandodigital.com/
+- dr1.com — https://dr1.com/
+- presidencia.gob.do — https://presidencia.gob.do/
+- pld.org.do — https://pld.org.do/
+- travelwith2ofus.com — https://travelwith2ofus.com/
+- mytripolog.com — https://mytripolog.com/
+- sublet.com — https://sublet.com/
+- dbarealty.com — https://dbarealty.com/
+- travelinespecials.com — https://travelinespecials.com/
+- proudpotato.co.uk — https://proudpotato.co.uk/
+- selectcaribbean.com — https://selectcaribbean.com/
+- thegamblogger.com — https://thegamblogger.com/
+- dominicanrepublicvacations.com — https://dominicanrepublicvacations.com/
+- victoryinstitute.org — https://victoryinstitute.org/
+- 4katy.pl — https://4katy.pl/
+- dea-latis.com — https://dea-latis.com/
+- nuevocronista.com — https://nuevocronista.com/
+- relampagofurioso.com — https://relampagofurioso.com/
+- katie-brown.co.uk — https://katie-brown.co.uk/
+- topreviewjournal.com — https://topreviewjournal.com/
+- aspiringgentleman.com — https://aspiringgentleman.com/
+- bahia-principe.com — https://bahia-principe.com/
+- thebluedotpost.com — https://thebluedotpost.com/
+- puntacananow.com — https://puntacananow.com/
+- universaal.nl — https://universaal.nl/
+- coffee-jiten.com — https://coffee-jiten.com/
+- edify.org — https://edify.org/
+- diningforwomen.org — https://diningforwomen.org/
+- homespotters.com — https://homespotters.com/
+- k12espanola.org — https://k12espanola.org/
+- raipoong.com — https://raipoong.com/
+- cococozy.com — https://cococozy.com/
+- shishuvan.com — https://shishuvan.com/
+- joshuawilderness.org — https://joshuawilderness.org/
+- orbitsoft.ru — https://orbitsoft.ru/
+- apartmentsapart.com — https://apartmentsapart.com/
+- country105.fm — https://country105.fm/
+- maternitateabucur-scoalamamei.ro — https://maternitateabucur-scoalamamei.ro/
+
 ## grenada (caribbean) — Grenada
 
 ### w3newspapers — https://www.w3newspapers.com/grenada/
@@ -596,6 +857,24 @@ the populator script that generated this file.
 - Spice Islander — http://spiceislander.com/
 - Spice Vibes — https://www.spicevibes.com/
 - New Today — https://thenewtoday.gd/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (16 domains by GDELT monitoring volume)
+- nowgrenada.com — https://nowgrenada.com/
+- grenadabroadcast.com — https://grenadabroadcast.com/
+- thegrenadainformer.com — https://thegrenadainformer.com/
+- www.gov.gd — https://www.gov.gd/
+- gbn.gd — https://gbn.gd/
+- nnp.gd — https://nnp.gd/
+- drealfmgrenada.com — https://drealfmgrenada.com/
+- spiceislander.com — https://spiceislander.com/
+- barnaclegrenada.com — https://barnaclegrenada.com/
+- haromszekirmdsz.ro — https://haromszekirmdsz.ro/
+- artandsoulgrenada.com — https://artandsoulgrenada.com/
+- c21.gd — https://c21.gd/
+- sb-medisystems.de — https://sb-medisystems.de/
+- thecommunalcu.com — https://thecommunalcu.com/
+- platz.ro — https://platz.ro/
+- nnpgrenada.org — https://nnpgrenada.org/
 
 ## haiti (caribbean) — Haiti
 
@@ -662,6 +941,48 @@ the populator script that generated this file.
 - Le Matin Haiti — https://lematin.ht/
 - Le Nouvelliste — https://www.lenouvelliste.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 281 by GDELT monitoring volume)
+- haitilibre.com — https://haitilibre.com/
+- lenouvelliste.com — https://lenouvelliste.com/
+- icihaiti.com — https://icihaiti.com/
+- alterpresse.org — https://alterpresse.org/
+- haitian-truth.org — https://haitian-truth.org/
+- metropolehaiti.com — https://metropolehaiti.com/
+- canalplushaiti.net — https://canalplushaiti.net/
+- haitiantimes.com — https://haitiantimes.com/
+- haitiprogres.com — https://haitiprogres.com/
+- hpnhaiti.com — https://hpnhaiti.com/
+- haiti-progres.com — https://haiti-progres.com/
+- sentinel.ht — https://sentinel.ht/
+- fokal.org — https://fokal.org/
+- haitienmarche.com — https://haitienmarche.com/
+- infohaiti.net — https://infohaiti.net/
+- bostonhaitian.com — https://bostonhaitian.com/
+- haiti-liberte.com — https://haiti-liberte.com/
+- radiotelevisioncaraibes.com — https://radiotelevisioncaraibes.com/
+- kreyolicious.com — https://kreyolicious.com/
+- hougansydney.com — https://hougansydney.com/
+- radiokiskeya.com — https://radiokiskeya.com/
+- newsjunkiepost.com — https://newsjunkiepost.com/
+- pih.org — https://pih.org/
+- csfilm.org — https://csfilm.org/
+- noticialibre.com — https://noticialibre.com/
+- haitiaction.net — https://haitiaction.net/
+- thirdeyemom.com — https://thirdeyemom.com/
+- missionnewswire.org — https://missionnewswire.org/
+- primature.gouv.ht — https://primature.gouv.ht/
+- loophaiti.com — https://loophaiti.com/
+- totalmixradio.com — https://totalmixradio.com/
+- hcnn.ht — https://hcnn.ht/
+- livesayhaiti.com — https://livesayhaiti.com/
+- radiolumiere.org — https://radiolumiere.org/
+- norwichdiocese.org — https://norwichdiocese.org/
+- vernamagazine.com — https://vernamagazine.com/
+- lenational.org — https://lenational.org/
+- mh4h.org — https://mh4h.org/
+- haitixchange.com — https://haitixchange.com/
+- piklizfm.com — https://piklizfm.com/
+
 ## jamaica (caribbean) — Jamaica
 
 ### w3newspapers — https://www.w3newspapers.com/jamaica/
@@ -715,6 +1036,48 @@ the populator script that generated this file.
 - Jamaica Gleaner — http://jamaica-gleaner.com/
 - Jamaica Observer — http://www.jamaicaobserver.com/
 - Jamaica Star — http://jamaica-star.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 269 by GDELT monitoring volume)
+- jamaicaobserver.com — https://jamaicaobserver.com/
+- jamaica-gleaner.com — https://jamaica-gleaner.com/
+- loopjamaica.com — https://loopjamaica.com/
+- jis.gov.jm — https://jis.gov.jm/
+- beaches.com — https://beaches.com/
+- jamaica-star.com — https://jamaica-star.com/
+- rjrnewsonline.com — https://rjrnewsonline.com/
+- jamaicans.com — https://jamaicans.com/
+- caribseek.com — https://caribseek.com/
+- go-jamaica.com — https://go-jamaica.com/
+- yardflex.com — https://yardflex.com/
+- radiojamaicanewsonline.com — https://radiojamaicanewsonline.com/
+- opm.gov.jm — https://opm.gov.jm/
+- jablogz.com — https://jablogz.com/
+- westernmirror.com — https://westernmirror.com/
+- loopnews.com — https://loopnews.com/
+- yardhype.com — https://yardhype.com/
+- dancehallmag.com — https://dancehallmag.com/
+- caribbeannationalweekly.com — https://caribbeannationalweekly.com/
+- trackalerts.com — https://trackalerts.com/
+- loopslu.com — https://loopslu.com/
+- urbanislandz.com — https://urbanislandz.com/
+- falmouthpo.com — https://falmouthpo.com/
+- wicnews.com — https://wicnews.com/
+- loopcayman.com — https://loopcayman.com/
+- caribank.org — https://caribank.org/
+- digjamaica.com — https://digjamaica.com/
+- antillean.org — https://antillean.org/
+- jamaicatakeout.com — https://jamaicatakeout.com/
+- iriefm.net — https://iriefm.net/
+- hypelifemagazine.com — https://hypelifemagazine.com/
+- unitedreggae.com — https://unitedreggae.com/
+- gleanerblogs.com — https://gleanerblogs.com/
+- reggaeville.com — https://reggaeville.com/
+- mjmagazine.org — https://mjmagazine.org/
+- tropicalfete.com — https://tropicalfete.com/
+- televisionjamaica.com — https://televisionjamaica.com/
+- cocktailwonk.com — https://cocktailwonk.com/
+- 3jamaica.com — https://3jamaica.com/
+- whiskyfun.com — https://whiskyfun.com/
 
 ## puerto_rico (caribbean) — Puerto Rico
 
@@ -775,6 +1138,26 @@ the populator script that generated this file.
 - El Vocero de Puerto Rico — https://www.elvocero.com/
 - Primera Hora — https://www.primerahora.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (18 domains by GDELT monitoring volume)
+- newsismybusiness.com — https://newsismybusiness.com/
+- laesquina.com — https://laesquina.com/
+- theweeklyjournal.com — https://theweeklyjournal.com/
+- aasd.k12.wi.us — https://aasd.k12.wi.us/
+- drivers-licenses.org — https://drivers-licenses.org/
+- puertoricodaytrips.com — https://puertoricodaytrips.com/
+- microsoftstore.com — https://microsoftstore.com/
+- mistribus.com — https://mistribus.com/
+- cb.pr — https://cb.pr/
+- portocapital.com — https://portocapital.com/
+- petsmart.com — https://petsmart.com/
+- daytonastateinmotion.com — https://daytonastateinmotion.com/
+- crutchfield.com — https://crutchfield.com/
+- zamansky.com — https://zamansky.com/
+- puertorico-herald.org — https://puertorico-herald.org/
+- puertoricosun.org — https://puertoricosun.org/
+- ello.co — https://ello.co/
+- nsuspartans.com — https://nsuspartans.com/
+
 ## sint_maarten_dutch_part (caribbean) — Sint Maarten (Dutch part)
 
 ### w3newspapers — (not listed)
@@ -796,6 +1179,9 @@ the populator script that generated this file.
 - SXM Island Time — http://sxmislandtime.com/
 - SXM Talks — https://www.sxm-talks.com/
 - Daily Herald — https://www.thedailyherald.sx/
+
+### gdelt — (not listed)
+- (no entries)
 
 ## st_kitts_and_nevis (caribbean) — St. Kitts and Nevis
 
@@ -836,6 +1222,14 @@ the populator script that generated this file.
 - St. Kitts Gazette — http://www.stkittsgazette.com/
 - St. Kitts Nevis Observer — http://www.thestkittsnevisobserver.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (6 domains by GDELT monitoring volume)
+- sknvibes.com — https://sknvibes.com/
+- zizonline.com — https://zizonline.com/
+- labourspokesman.com — https://labourspokesman.com/
+- sknlist.com — https://sknlist.com/
+- midwayliquors.com — https://midwayliquors.com/
+- brothers-sons.dk — https://brothers-sons.dk/
+
 ## st_lucia (caribbean) — St. Lucia
 
 ### w3newspapers — https://www.w3newspapers.com/saint-lucia/
@@ -872,6 +1266,18 @@ the populator script that generated this file.
 - St. Lucia Star — https://stluciastar.com/
 - Voice — https://thevoiceslu.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (10 domains by GDELT monitoring volume)
+- thevoiceslu.com — https://thevoiceslu.com/
+- stlucianewsonline.com — https://stlucianewsonline.com/
+- htsstlucia.org — https://htsstlucia.org/
+- stluciastar.com — https://stluciastar.com/
+- stluciatimes.com — https://stluciatimes.com/
+- rcistlucia.com — https://rcistlucia.com/
+- slucia.com — https://slucia.com/
+- dbstvstlucia.com — https://dbstvstlucia.com/
+- dazzlethemag.com — https://dazzlethemag.com/
+- electoral.gov.lc — https://electoral.gov.lc/
+
 ## st_martin_french_part (caribbean) — St. Martin (French part)
 
 ### w3newspapers — (not listed)
@@ -889,6 +1295,9 @@ the populator script that generated this file.
 - St. Martin News Network — https://www.smn-news.com/french-news.html
 - SXM Info — https://www.sxminfo.fr/
 - Le Pelican — http://www.lepelican-journal.com/
+
+### gdelt — (not listed)
+- (no entries)
 
 ## st_vincent_and_the_grenadines (caribbean) — St. Vincent and the Grenadines
 
@@ -917,6 +1326,17 @@ the populator script that generated this file.
 - Searchlight — https://www.searchlight.vc/
 - St. Vincent Times — https://www.stvincenttimes.com/
 - Vincentian — https://thevincentian.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (9 domains by GDELT monitoring volume)
+- searchlight.vc — https://searchlight.vc/
+- nbcsvg.com — https://nbcsvg.com/
+- urban.gov.vc — https://urban.gov.vc/
+- www.gov.vc — https://www.gov.vc/
+- thevincentian.com — https://thevincentian.com/
+- security.gov.vc — https://security.gov.vc/
+- iwnsvg.com — https://iwnsvg.com/
+- vincentgrupperne.dk — https://vincentgrupperne.dk/
+- newsmemory.com — https://newsmemory.com/
 
 ## trinidad_and_tobago (caribbean) — Trinidad and Tobago
 
@@ -961,6 +1381,47 @@ the populator script that generated this file.
 - Trinidad and Tobago Guardian — http://www.guardian.co.tt/
 - Trinidad and Tobago Newsday — https://newsday.co.tt/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (39 domains by GDELT monitoring volume)
+- newsday.co.tt — https://newsday.co.tt/
+- trinidadexpress.com — https://trinidadexpress.com/
+- guardian.co.tt — https://guardian.co.tt/
+- cnc3.co.tt — https://cnc3.co.tt/
+- wired868.com — https://wired868.com/
+- tv6tnt.com — https://tv6tnt.com/
+- news.gov.tt — https://news.gov.tt/
+- looptt.com — https://looptt.com/
+- discovertnt.com — https://discovertnt.com/
+- ctntworld.com — https://ctntworld.com/
+- trinidadandtobagonews.com — https://trinidadandtobagonews.com/
+- caribbean-beat.com — https://caribbean-beat.com/
+- ttonline.org — https://ttonline.org/
+- power102fm.com — https://power102fm.com/
+- thetobagonews.com — https://thetobagonews.com/
+- catholicnewstt.com — https://catholicnewstt.com/
+- news.co.tt — https://news.co.tt/
+- foreign.gov.tt — https://foreign.gov.tt/
+- ctvtt.com — https://ctvtt.com/
+- panonthenet.com — https://panonthenet.com/
+- ebctt.com — https://ebctt.com/
+- unctt.org — https://unctt.org/
+- jclist.com — https://jclist.com/
+- ebuzztt.com — https://ebuzztt.com/
+- 96wefm.com — https://96wefm.com/
+- sokah2soca.com — https://sokah2soca.com/
+- triniview.com — https://triniview.com/
+- retailbankingreview.com.au — https://retailbankingreview.com.au/
+- trinizagada.com — https://trinizagada.com/
+- firstcitizenstt.com — https://firstcitizenstt.com/
+- ybtt.org — https://ybtt.org/
+- andrewsords.com — https://andrewsords.com/
+- field-of-fire.com — https://field-of-fire.com/
+- khelpanda.com — https://khelpanda.com/
+- trinigourmet.com — https://trinigourmet.com/
+- genesisradiobirmingham.com — https://genesisradiobirmingham.com/
+- vob929.com — https://vob929.com/
+- briantissot.com — https://briantissot.com/
+- caribbeanfutureforum.com — https://caribbeanfutureforum.com/
+
 ## turks_and_caicos_islands (caribbean) — Turks and Caicos Islands
 
 ### w3newspapers — (not listed)
@@ -978,6 +1439,11 @@ the populator script that generated this file.
 - Magnetic Media — https://magneticmediatv.com/
 - Turks and Caicos Sun — https://suntci.com/
 - Turks and Caicos Weekly News — https://tcweeklynews.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (3 domains by GDELT monitoring volume)
+- tcweeklynews.com — https://tcweeklynews.com/
+- timespub.tc — https://timespub.tc/
+- beachmaniac.com — https://beachmaniac.com/
 
 ## virgin_islands_us (caribbean) — Virgin Islands (U.S.)
 
@@ -999,6 +1465,14 @@ the populator script that generated this file.
 - Virgin Islands Consortium — https://viconsortium.com/
 - Virgin Islands Free Press — http://vifreepress.com/
 - Virgin Islands Daily News — http://www.virginislandsdailynews.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (6 domains by GDELT monitoring volume)
+- virginislandsnewsonline.com — https://virginislandsnewsonline.com/
+- bviplatinum.com — https://bviplatinum.com/
+- bvi.org.uk — https://bvi.org.uk/
+- gov.vg — https://gov.vg/
+- uvi.edu — https://uvi.edu/
+- my-stcroix.com — https://my-stcroix.com/
 
 ## belize (central_america) — Belize
 
@@ -1033,6 +1507,48 @@ the populator script that generated this file.
 - Digital Belize — https://digitalbelize.live/
 - Amandala — https://amandala.com.bz/
 - Reporter — https://www.thereporter.bz/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 120 by GDELT monitoring volume)
+- channel5belize.com — https://channel5belize.com/
+- amandala.com.bz — https://amandala.com.bz/
+- 7newsbelize.com — https://7newsbelize.com/
+- breakingbelizenews.com — https://breakingbelizenews.com/
+- guardian.bz — https://guardian.bz/
+- lovefm.com — https://lovefm.com/
+- reporter.bz — https://reporter.bz/
+- belizehub.com — https://belizehub.com/
+- sanpedrosun.com — https://sanpedrosun.com/
+- belizetimes.bz — https://belizetimes.bz/
+- ambergristoday.com — https://ambergristoday.com/
+- mybelize.net — https://mybelize.net/
+- sanpedroscoop.com — https://sanpedroscoop.com/
+- patrickjonesbelize.com — https://patrickjonesbelize.com/
+- belizean.com — https://belizean.com/
+- lovetv.com.bz — https://lovetv.com.bz/
+- krembz.com — https://krembz.com/
+- ninebelize.com — https://ninebelize.com/
+- tacogirl.com — https://tacogirl.com/
+- chaacreek.com — https://chaacreek.com/
+- hopkinsbaybelize.com — https://hopkinsbaybelize.com/
+- belizeadventure.ca — https://belizeadventure.ca/
+- rippleeffectbelize.com — https://rippleeffectbelize.com/
+- hamanasi.com — https://hamanasi.com/
+- quepasacorozal.com — https://quepasacorozal.com/
+- caricom.org — https://caricom.org/
+- twocanview.com — https://twocanview.com/
+- vacayster.com — https://vacayster.com/
+- aroundmyfamilytable.com — https://aroundmyfamilytable.com/
+- kaanabelize.com — https://kaanabelize.com/
+- vengavalevamos.com — https://vengavalevamos.com/
+- belizeinamerica.net — https://belizeinamerica.net/
+- orionibc.com — https://orionibc.com/
+- belizetravelcentral.com — https://belizetravelcentral.com/
+- belizeambassador.com — https://belizeambassador.com/
+- belizefirst.com — https://belizefirst.com/
+- cahalpech.com — https://cahalpech.com/
+- latesail.com — https://latesail.com/
+- heintendsvictory.org — https://heintendsvictory.org/
+- windandturnclothing.com — https://windandturnclothing.com/
 
 ## costa_rica (central_america) — Costa Rica
 
@@ -1149,6 +1665,48 @@ the populator script that generated this file.
 - La Republica — https://www.larepublica.net/
 - La Teja — https://www.lateja.cr/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 209 by GDELT monitoring volume)
+- qcostarica.com — https://qcostarica.com/
+- news.co.cr — https://news.co.cr/
+- ticotimes.net — https://ticotimes.net/
+- crhoy.com — https://crhoy.com/
+- todaycostarica.com — https://todaycostarica.com/
+- costaricantimes.com — https://costaricantimes.com/
+- thecostaricanews.com — https://thecostaricanews.com/
+- ucr.cr — https://ucr.cr/
+- yuplon.com — https://yuplon.com/
+- mytanfeet.com — https://mytanfeet.com/
+- amcostarica.com — https://amcostarica.com/
+- costarica.com — https://costarica.com/
+- bargaintravel4u.net — https://bargaintravel4u.net/
+- vozdeguanacaste.com — https://vozdeguanacaste.com/
+- insidecostarica.com — https://insidecostarica.com/
+- ticoblogger.com — https://ticoblogger.com/
+- twoweeksincostarica.com — https://twoweeksincostarica.com/
+- costaricatravelblog.com — https://costaricatravelblog.com/
+- liveincostarica.com — https://liveincostarica.com/
+- fuerzapublica.go.cr — https://fuerzapublica.go.cr/
+- birdingcraft.com — https://birdingcraft.com/
+- delfino.cr — https://delfino.cr/
+- visitcostarica.com — https://visitcostarica.com/
+- anywherecostarica.com — https://anywherecostarica.com/
+- ballenatales.com — https://ballenatales.com/
+- valledoradotours.cr — https://valledoradotours.cr/
+- entercostarica.com — https://entercostarica.com/
+- propertiesincostarica.com — https://propertiesincostarica.com/
+- comex.go.cr — https://comex.go.cr/
+- zovue.com — https://zovue.com/
+- crossfit100.com — https://crossfit100.com/
+- all-inclusive-costarica.com — https://all-inclusive-costarica.com/
+- nosararealestatereport.com — https://nosararealestatereport.com/
+- acruisingcouple.com — https://acruisingcouple.com/
+- puravidaguide.com — https://puravidaguide.com/
+- thebigtodolist.com — https://thebigtodolist.com/
+- mycostaricaproperty.com — https://mycostaricaproperty.com/
+- studyandtravelcostarica.com — https://studyandtravelcostarica.com/
+- costaricarealestateservice.com — https://costaricarealestateservice.com/
+- redpalmvillascostarica.com — https://redpalmvillascostarica.com/
+
 ## el_salvador (central_america) — El Salvador
 
 ### w3newspapers — https://www.w3newspapers.com/el-salvador/
@@ -1240,6 +1798,48 @@ the populator script that generated this file.
 - El Mundo — https://diario.elmundo.sv/
 - La Prensa Grafica — https://www.laprensagrafica.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (40 domains by GDELT monitoring volume)
+- elsalvador.com — https://elsalvador.com/
+- lapagina.com.sv — https://lapagina.com.sv/
+- diario1.com — https://diario1.com/
+- diariocolatino.com — https://diariocolatino.com/
+- periodicoequilibrium.com — https://periodicoequilibrium.com/
+- elfaro.net — https://elfaro.net/
+- presidencia.gob.sv — https://presidencia.gob.sv/
+- elsalvadornoticias.net — https://elsalvadornoticias.net/
+- rree.gob.sv — https://rree.gob.sv/
+- asamblea.gob.sv — https://asamblea.gob.sv/
+- fiscalia.gob.sv — https://fiscalia.gob.sv/
+- contrapunto.com.sv — https://contrapunto.com.sv/
+- fmln.org.sv — https://fmln.org.sv/
+- arena.org.sv — https://arena.org.sv/
+- culebritamacheteada.com.sv — https://culebritamacheteada.com.sv/
+- mined.gob.sv — https://mined.gob.sv/
+- arzobispadosansalvador.org — https://arzobispadosansalvador.org/
+- cortedecuentas.gob.sv — https://cortedecuentas.gob.sv/
+- gana.org.sv — https://gana.org.sv/
+- rjan.net — https://rjan.net/
+- elsalvadorperspectives.com — https://elsalvadorperspectives.com/
+- tse.gob.sv — https://tse.gob.sv/
+- ultimahora.sv — https://ultimahora.sv/
+- solonoticias.com — https://solonoticias.com/
+- cronio.sv — https://cronio.sv/
+- cja.org — https://cja.org/
+- prensaturistica.ru — https://prensaturistica.ru/
+- lungtalife.com — https://lungtalife.com/
+- wanderingsouls.be — https://wanderingsouls.be/
+- share-elsalvador.org — https://share-elsalvador.org/
+- metrolatinousa.com — https://metrolatinousa.com/
+- revistafactum.com — https://revistafactum.com/
+- diariolibresv.com — https://diariolibresv.com/
+- isd.org.sv — https://isd.org.sv/
+- diputado85.com — https://diputado85.com/
+- thedailydogooder.com — https://thedailydogooder.com/
+- diariolavoz.news — https://diariolavoz.news/
+- svventured.com — https://svventured.com/
+- imprentanacional.gob.sv — https://imprentanacional.gob.sv/
+- bpeace.org — https://bpeace.org/
+
 ## guatemala (central_america) — Guatemala
 
 ### w3newspapers — https://www.w3newspapers.com/guatemala/
@@ -1304,6 +1904,48 @@ the populator script that generated this file.
 - El Siglo — http://elsiglo.com.gt/
 - La Hora — https://lahora.gt/
 - Prensa Libre — https://www.prensalibre.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 218 by GDELT monitoring volume)
+- prensalibre.com — https://prensalibre.com/
+- elperiodico.com.gt — https://elperiodico.com.gt/
+- publinews.gt — https://publinews.gt/
+- deguate.com — https://deguate.com/
+- lahora.gt — https://lahora.gt/
+- agn.com.gt — https://agn.com.gt/
+- monitoreodemedios.gt — https://monitoreodemedios.gt/
+- emisorasunidas.com — https://emisorasunidas.com/
+- newsinamerica.com — https://newsinamerica.com/
+- guatevision.com — https://guatevision.com/
+- canalantigua.tv — https://canalantigua.tv/
+- antorchadeportiva.com — https://antorchadeportiva.com/
+- dca.gob.gt — https://dca.gob.gt/
+- sonora.com.gt — https://sonora.com.gt/
+- somosguate.com — https://somosguate.com/
+- cicig.org — https://cicig.org/
+- republicagt.com — https://republicagt.com/
+- nomada.gt — https://nomada.gt/
+- elquetzalteco.com.gt — https://elquetzalteco.com.gt/
+- guatemala.gob.gt — https://guatemala.gob.gt/
+- cerigua.org — https://cerigua.org/
+- noticias.com.gt — https://noticias.com.gt/
+- congreso.gob.gt — https://congreso.gob.gt/
+- mingob.gob.gt — https://mingob.gob.gt/
+- antiguadailyphoto.com — https://antiguadailyphoto.com/
+- mcd.gob.gt — https://mcd.gob.gt/
+- contrapoder.com.gt — https://contrapoder.com.gt/
+- radiocircuitosanjuan.com — https://radiocircuitosanjuan.com/
+- diariodigital.gt — https://diariodigital.gt/
+- mineco.gob.gt — https://mineco.gob.gt/
+- marn.gob.gt — https://marn.gob.gt/
+- cmiguate.org — https://cmiguate.org/
+- oj.gob.gt — https://oj.gob.gt/
+- conred.gob.gt — https://conred.gob.gt/
+- reportajede.com — https://reportajede.com/
+- deguate.com.gt — https://deguate.com.gt/
+- fashgt.com — https://fashgt.com/
+- icefi.org — https://icefi.org/
+- tse.org.gt — https://tse.org.gt/
+- soy502.com — https://soy502.com/
 
 ## honduras (central_america) — Honduras
 
@@ -1412,6 +2054,48 @@ HN — https://confidencialhn.com/
 - La Prensa — https://www.laprensa.hn/
 - La Tribuna — https://www.latribuna.hn/
 - Mas — https://www.diariomas.hn/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 136 by GDELT monitoring volume)
+- laprensa.hn — https://laprensa.hn/
+- proceso.hn — https://proceso.hn/
+- elheraldo.hn — https://elheraldo.hn/
+- latribuna.hn — https://latribuna.hn/
+- tiempo.hn — https://tiempo.hn/
+- diez.hn — https://diez.hn/
+- abriendobrecha.tv — https://abriendobrecha.tv/
+- radiohrn.hn — https://radiohrn.hn/
+- radioprogresohn.net — https://radioprogresohn.net/
+- presidencia.gob.hn — https://presidencia.gob.hn/
+- radioamericahn.net — https://radioamericahn.net/
+- canal6.com.hn — https://canal6.com.hn/
+- congresonacional.hn — https://congresonacional.hn/
+- televicentro.hn — https://televicentro.hn/
+- sag.gob.hn — https://sag.gob.hn/
+- embahonduras.es — https://embahonduras.es/
+- conatel.gob.hn — https://conatel.gob.hn/
+- pettengillmissionaries.org — https://pettengillmissionaries.org/
+- serna.gob.hn — https://serna.gob.hn/
+- criterio.hn — https://criterio.hn/
+- hondured.tv — https://hondured.tv/
+- revistamym.com — https://revistamym.com/
+- hondudiario.com — https://hondudiario.com/
+- resilientworld.com — https://resilientworld.com/
+- libertaddigitalhn.com — https://libertaddigitalhn.com/
+- tnh.gob.hn — https://tnh.gob.hn/
+- caribbeanpressreleases.com — https://caribbeanpressreleases.com/
+- sre.gob.hn — https://sre.gob.hn/
+- xeologosdelmundu.org — https://xeologosdelmundu.org/
+- h2hcv.org — https://h2hcv.org/
+- cholusatsur.com — https://cholusatsur.com/
+- nuttybirder.com — https://nuttybirder.com/
+- conexihon.hn — https://conexihon.hn/
+- cubiclethrowdown.com — https://cubiclethrowdown.com/
+- elinformativo.hn — https://elinformativo.hn/
+- ellibertador.hn — https://ellibertador.hn/
+- bch.hn — https://bch.hn/
+- hondurastierralibre.com — https://hondurastierralibre.com/
+- hondurasweekly.com — https://hondurasweekly.com/
+- aquihonduras.com — https://aquihonduras.com/
 
 ## mexico (central_america) — Mexico
 
@@ -1860,6 +2544,48 @@ HN — https://confidencialhn.com/
 - Reforma — http://www.reforma.com/
 - Uno Mas Uno — http://www.unomasuno.com.mx/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1893 by GDELT monitoring volume)
+- zocalo.com.mx — https://zocalo.com.mx/
+- lasillarota.com — https://lasillarota.com/
+- debate.com.mx — https://debate.com.mx/
+- eluniversal.com.mx — https://eluniversal.com.mx/
+- oem.com.mx — https://oem.com.mx/
+- milenio.com — https://milenio.com/
+- pulsoslp.com.mx — https://pulsoslp.com.mx/
+- quadratin.com.mx — https://quadratin.com.mx/
+- eldiariodecoahuila.com.mx — https://eldiariodecoahuila.com.mx/
+- vanguardia.com.mx — https://vanguardia.com.mx/
+- razon.com.mx — https://razon.com.mx/
+- informador.com.mx — https://informador.com.mx/
+- televisa.com — https://televisa.com/
+- e-consulta.com — https://e-consulta.com/
+- sinembargo.mx — https://sinembargo.mx/
+- hoytamaulipas.net — https://hoytamaulipas.net/
+- excelsior.com.mx — https://excelsior.com.mx/
+- sdpnoticias.com — https://sdpnoticias.com/
+- unam.mx — https://unam.mx/
+- yucatan.com.mx — https://yucatan.com.mx/
+- noroeste.com.mx — https://noroeste.com.mx/
+- elsiglodetorreon.com.mx — https://elsiglodetorreon.com.mx/
+- eleconomista.com.mx — https://eleconomista.com.mx/
+- terra.com — https://terra.com/
+- periodicocentral.mx — https://periodicocentral.mx/
+- radioformula.com.mx — https://radioformula.com.mx/
+- planoinformativo.com — https://planoinformativo.com/
+- lineadirectaportal.com — https://lineadirectaportal.com/
+- diario.mx — https://diario.mx/
+- notimex.gob.mx — https://notimex.gob.mx/
+- terra.com.mx — https://terra.com.mx/
+- elperiodicodemexico.com — https://elperiodicodemexico.com/
+- elsiglodedurango.com.mx — https://elsiglodedurango.com.mx/
+- eldiariodechihuahua.mx — https://eldiariodechihuahua.mx/
+- sipse.com — https://sipse.com/
+- diariocambio.com.mx — https://diariocambio.com.mx/
+- elsoldemexico.com.mx — https://elsoldemexico.com.mx/
+- proceso.com.mx — https://proceso.com.mx/
+- siete24.mx — https://siete24.mx/
+- tribuna.com.mx — https://tribuna.com.mx/
+
 ## nicaragua (central_america) — Nicaragua
 
 ### w3newspapers — https://www.w3newspapers.com/nicaragua/
@@ -1915,6 +2641,48 @@ HN — https://confidencialhn.com/
 - Today Nicaragua — http://todaynicaragua.com/
 - El Nuevo Diario — https://www.elnuevodiario.com.ni/
 - La Prensa — https://www.laprensa.com.ni/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 171 by GDELT monitoring volume)
+- laprensa.com.ni — https://laprensa.com.ni/
+- lavozdelsandinismo.com — https://lavozdelsandinismo.com/
+- el19digital.com — https://el19digital.com/
+- elnuevodiario.com.ni — https://elnuevodiario.com.ni/
+- radiolaprimerisima.com — https://radiolaprimerisima.com/
+- nuevaya.com.ni — https://nuevaya.com.ni/
+- confidencial.com.ni — https://confidencial.com.ni/
+- trincheraonline.com — https://trincheraonline.com/
+- hoy.com.ni — https://hoy.com.ni/
+- lajornadanet.com — https://lajornadanet.com/
+- vicepresidencia.gob.ni — https://vicepresidencia.gob.ni/
+- 100noticias.com.ni — https://100noticias.com.ni/
+- tn8.tv — https://tn8.tv/
+- asamblea.gob.ni — https://asamblea.gob.ni/
+- cigar-coop.com — https://cigar-coop.com/
+- todaynicaragua.com — https://todaynicaragua.com/
+- ejercito.mil.ni — https://ejercito.mil.ni/
+- vivanicaragua.com.ni — https://vivanicaragua.com.ni/
+- bolsadenoticias.com.ni — https://bolsadenoticias.com.ni/
+- cigardojo.com — https://cigardojo.com/
+- diariometro.com.ni — https://diariometro.com.ni/
+- violetachamorro.org.ni — https://violetachamorro.org.ni/
+- innicanow.com — https://innicanow.com/
+- cen-nicaragua.org — https://cen-nicaragua.org/
+- famous-smoke.com — https://famous-smoke.com/
+- vostv.com.ni — https://vostv.com.ni/
+- cigarjournal.com — https://cigarjournal.com/
+- nicaraguadispatch.com — https://nicaraguadispatch.com/
+- nicaraguahoy.info — https://nicaraguahoy.info/
+- qhubo.com.ni — https://qhubo.com.ni/
+- envio.org.ni — https://envio.org.ni/
+- stogiereview.com — https://stogiereview.com/
+- cse.gob.ni — https://cse.gob.ni/
+- elperiodicocr.com — https://elperiodicocr.com/
+- peacewinds.org — https://peacewinds.org/
+- toniaallengould.com — https://toniaallengould.com/
+- jicarolodge.com — https://jicarolodge.com/
+- unica.edu.ni — https://unica.edu.ni/
+- norceca.net — https://norceca.net/
+- desdechinandega.com — https://desdechinandega.com/
 
 ## panama (central_america) — Panama
 
@@ -2007,6 +2775,48 @@ HN — https://confidencialhn.com/
 - La Estrella de Panama — https://www.laestrella.com.pa/
 - La Prensa — https://www.prensa.com/
 - Panama America — https://www.panamaamerica.com.pa/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 227 by GDELT monitoring volume)
+- prensa.com — https://prensa.com/
+- laestrella.com.pa — https://laestrella.com.pa/
+- telemetro.com — https://telemetro.com/
+- panamaamerica.com.pa — https://panamaamerica.com.pa/
+- critica.com.pa — https://critica.com.pa/
+- tvn-2.com — https://tvn-2.com/
+- panamaon.com — https://panamaon.com/
+- diaadia.com.pa — https://diaadia.com.pa/
+- elsiglo.com.pa — https://elsiglo.com.pa/
+- midiario.com — https://midiario.com/
+- radiopanama.com.pa — https://radiopanama.com.pa/
+- elsiglo.com — https://elsiglo.com/
+- sertv.gob.pa — https://sertv.gob.pa/
+- newsroompanama.com — https://newsroompanama.com/
+- revistasumma.com — https://revistasumma.com/
+- thepanamanews.com — https://thepanamanews.com/
+- kwcontinente.com — https://kwcontinente.com/
+- mire.gob.pa — https://mire.gob.pa/
+- internationalliving.com — https://internationalliving.com/
+- asamblea.gob.pa — https://asamblea.gob.pa/
+- chiriquion.com — https://chiriquion.com/
+- tupolitica.com — https://tupolitica.com/
+- thebulletinpanama.com — https://thebulletinpanama.com/
+- contabilidadpanama.com — https://contabilidadpanama.com/
+- thebocasbreeze.com — https://thebocasbreeze.com/
+- liveandinvestoverseas.com — https://liveandinvestoverseas.com/
+- tribunal-electoral.gob.pa — https://tribunal-electoral.gob.pa/
+- centralamericadata.com — https://centralamericadata.com/
+- thepanamadigest.com — https://thepanamadigest.com/
+- metrolibre.com — https://metrolibre.com/
+- hippie-inheels.com — https://hippie-inheels.com/
+- hablayapanama.com — https://hablayapanama.com/
+- tvmax-9.com — https://tvmax-9.com/
+- laopinionpanama.com — https://laopinionpanama.com/
+- sinaproc.gob.pa — https://sinaproc.gob.pa/
+- quiuboestereo.com — https://quiuboestereo.com/
+- panamarelocationtours.com — https://panamarelocationtours.com/
+- eventostoppanama.com — https://eventostoppanama.com/
+- dicyt.com — https://dicyt.com/
+- embassyofpanamainjapan.org — https://embassyofpanamainjapan.org/
 
 ## argentina (south_america) — Argentina
 
@@ -2382,6 +3192,48 @@ HN — https://confidencialhn.com/
 - Primicias Ya — http://www.primiciasya.com/
 - Tiempo Argentino — https://www.tiempoar.com.ar
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1165 by GDELT monitoring volume)
+- surenio.com.ar — https://surenio.com.ar/
+- clarin.com — https://clarin.com/
+- lavoz.com.ar — https://lavoz.com.ar/
+- lavoz901.com — https://lavoz901.com/
+- lagaceta.com.ar — https://lagaceta.com.ar/
+- tucumanoticias.com.ar — https://tucumanoticias.com.ar/
+- lanacion.com.ar — https://lanacion.com.ar/
+- taringa.net — https://taringa.net/
+- cronista.com — https://cronista.com/
+- rionegro.com.ar — https://rionegro.com.ar/
+- perfil.com — https://perfil.com/
+- cadena3.com — https://cadena3.com/
+- pagina12.com.ar — https://pagina12.com.ar/
+- p23.com.ar — https://p23.com.ar/
+- mdzol.com — https://mdzol.com/
+- lt10.com.ar — https://lt10.com.ar/
+- iprofesional.com — https://iprofesional.com/
+- ellitoral.com — https://ellitoral.com/
+- analisisdigital.com.ar — https://analisisdigital.com.ar/
+- sinmordaza.com — https://sinmordaza.com/
+- eldia.com — https://eldia.com/
+- misionesonline.net — https://misionesonline.net/
+- ellitoral.com.ar — https://ellitoral.com.ar/
+- contextotucuman.com — https://contextotucuman.com/
+- elancasti.com.ar — https://elancasti.com.ar/
+- ambito.com — https://ambito.com/
+- lacapital.com.ar — https://lacapital.com.ar/
+- elintransigente.com — https://elintransigente.com/
+- telam.com.ar — https://telam.com.ar/
+- elcordillerano.com.ar — https://elcordillerano.com.ar/
+- tn.com.ar — https://tn.com.ar/
+- agenciafe.com — https://agenciafe.com/
+- losandes.com.ar — https://losandes.com.ar/
+- inforegion.com.ar — https://inforegion.com.ar/
+- urgente24.com — https://urgente24.com/
+- diariopanorama.com — https://diariopanorama.com/
+- elliberal.com.ar — https://elliberal.com.ar/
+- elesquiu.com — https://elesquiu.com/
+- lanueva.com — https://lanueva.com/
+- totalnews.com.ar — https://totalnews.com.ar/
+
 ## bolivia (south_america) — Bolivia
 
 ### w3newspapers — https://www.w3newspapers.com/bolivia/
@@ -2494,6 +3346,48 @@ HN — https://confidencialhn.com/
 - Urgente BO — https://www.urgente.bo/
 - El Deber — https://eldeber.com.bo/
 - La Razon — https://www.la-razon.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 188 by GDELT monitoring volume)
+- lapatriaenlinea.com — https://lapatriaenlinea.com/
+- lostiempos.com — https://lostiempos.com/
+- paginasiete.bo — https://paginasiete.bo/
+- hoybolivia.com — https://hoybolivia.com/
+- opinion.com.bo — https://opinion.com.bo/
+- la-razon.com — https://la-razon.com/
+- eju.tv — https://eju.tv/
+- fmbolivia.com.bo — https://fmbolivia.com.bo/
+- elpaisonline.com — https://elpaisonline.com/
+- eldeber.com.bo — https://eldeber.com.bo/
+- cambio.bo — https://cambio.bo/
+- correodelsur.com — https://correodelsur.com/
+- laprensa.com.bo — https://laprensa.com.bo/
+- jornadanet.com — https://jornadanet.com/
+- elpotosi.net — https://elpotosi.net/
+- erbol.com.bo — https://erbol.com.bo/
+- eldia.com.bo — https://eldia.com.bo/
+- gol.com.bo — https://gol.com.bo/
+- radiofides.com — https://radiofides.com/
+- diez.com.bo — https://diez.com.bo/
+- bolivia.com — https://bolivia.com/
+- diputados.bo — https://diputados.bo/
+- sociales.com.bo — https://sociales.com.bo/
+- hidrocarburosbolivia.com — https://hidrocarburosbolivia.com/
+- presidencia.gob.bo — https://presidencia.gob.bo/
+- bolpress.com — https://bolpress.com/
+- unitel.tv — https://unitel.tv/
+- eabolivia.com — https://eabolivia.com/
+- jornada.com.bo — https://jornada.com.bo/
+- elmundo.com.bo — https://elmundo.com.bo/
+- reporteenergia.com — https://reporteenergia.com/
+- senado.gob.bo — https://senado.gob.bo/
+- periodicobolivia.bo — https://periodicobolivia.bo/
+- fmbolivia.tv — https://fmbolivia.tv/
+- senado.bo — https://senado.bo/
+- eldiario.net — https://eldiario.net/
+- fmbolivia.net — https://fmbolivia.net/
+- cedib.org — https://cedib.org/
+- boliviabella.com — https://boliviabella.com/
+- elsajama.com — https://elsajama.com/
 
 ## brazil (south_america) — Brazil
 
@@ -2826,6 +3720,48 @@ HN — https://confidencialhn.com/
 ### abyznewslinks — http://www.abyznewslinks.com/brazi.htm
 - (no entries)
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 2491 by GDELT monitoring volume)
+- globo.com — https://globo.com/
+- uol.com.br — https://uol.com.br/
+- clicrbs.com.br — https://clicrbs.com.br/
+- istoe.com.br — https://istoe.com.br/
+- bemparana.com.br — https://bemparana.com.br/
+- dgabc.com.br — https://dgabc.com.br/
+- r7.com — https://r7.com/
+- terra.com.br — https://terra.com.br/
+- jb.com.br — https://jb.com.br/
+- abril.com.br — https://abril.com.br/
+- ig.com.br — https://ig.com.br/
+- em.com.br — https://em.com.br/
+- estadao.com.br — https://estadao.com.br/
+- segs.com.br — https://segs.com.br/
+- bahianoticias.com.br — https://bahianoticias.com.br/
+- otempo.com.br — https://otempo.com.br/
+- olhardireto.com.br — https://olhardireto.com.br/
+- brasil247.com — https://brasil247.com/
+- correiobraziliense.com.br — https://correiobraziliense.com.br/
+- ebc.com.br — https://ebc.com.br/
+- diariodepernambuco.com.br — https://diariodepernambuco.com.br/
+- folhavitoria.com.br — https://folhavitoria.com.br/
+- verdesmares.com.br — https://verdesmares.com.br/
+- gazetadopovo.com.br — https://gazetadopovo.com.br/
+- faxaju.com.br — https://faxaju.com.br/
+- istoedinheiro.com.br — https://istoedinheiro.com.br/
+- lance.com.br — https://lance.com.br/
+- opovo.com.br — https://opovo.com.br/
+- correio24horas.com.br — https://correio24horas.com.br/
+- maxpressnet.com.br — https://maxpressnet.com.br/
+- midianews.com.br — https://midianews.com.br/
+- tribunadonorte.com.br — https://tribunadonorte.com.br/
+- alagoas24horas.com.br — https://alagoas24horas.com.br/
+- correiodopovo.com.br — https://correiodopovo.com.br/
+- gazetadigital.com.br — https://gazetadigital.com.br/
+- tribunahoje.com — https://tribunahoje.com/
+- meionorte.com — https://meionorte.com/
+- jornaldebrasilia.com.br — https://jornaldebrasilia.com.br/
+- emtempo.com.br — https://emtempo.com.br/
+- infonet.com.br — https://infonet.com.br/
+
 ## chile (south_america) — Chile
 
 ### w3newspapers — https://www.w3newspapers.com/chile/
@@ -3049,6 +3985,48 @@ HN — https://confidencialhn.com/
 - La Tercera — http://www.latercera.com/
 - Las Ultimas Noticias — http://www.lun.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 604 by GDELT monitoring volume)
+- biobiochile.cl — https://biobiochile.cl/
+- latercera.com — https://latercera.com/
+- elmostrador.cl — https://elmostrador.cl/
+- emol.com — https://emol.com/
+- cooperativa.cl — https://cooperativa.cl/
+- publimetro.cl — https://publimetro.cl/
+- uchile.cl — https://uchile.cl/
+- economiaynegocios.cl — https://economiaynegocios.cl/
+- lanacion.cl — https://lanacion.cl/
+- puranoticia.cl — https://puranoticia.cl/
+- soychile.cl — https://soychile.cl/
+- radioagricultura.cl — https://radioagricultura.cl/
+- adnradio.cl — https://adnradio.cl/
+- 24horas.cl — https://24horas.cl/
+- lacuarta.com — https://lacuarta.com/
+- diariofutrono.cl — https://diariofutrono.cl/
+- diariopaillaco.cl — https://diariopaillaco.cl/
+- cnnchile.com — https://cnnchile.com/
+- elciudadano.cl — https://elciudadano.cl/
+- redgol.cl — https://redgol.cl/
+- eldivisadero.cl — https://eldivisadero.cl/
+- radiopolar.com — https://radiopolar.com/
+- prensafutbol.cl — https://prensafutbol.cl/
+- diariolaguino.cl — https://diariolaguino.cl/
+- chanarcillo.cl — https://chanarcillo.cl/
+- theclinic.cl — https://theclinic.cl/
+- laprensaaustral.cl — https://laprensaaustral.cl/
+- elobservatodo.cl — https://elobservatodo.cl/
+- elrancaguino.cl — https://elrancaguino.cl/
+- ahoranoticias.cl — https://ahoranoticias.cl/
+- eltipografo.cl — https://eltipografo.cl/
+- elgraficochile.cl — https://elgraficochile.cl/
+- radiosantiago.cl — https://radiosantiago.cl/
+- eldinamo.cl — https://eldinamo.cl/
+- piensachile.com — https://piensachile.com/
+- elclarin.cl — https://elclarin.cl/
+- diariolongino.cl — https://diariolongino.cl/
+- elperiscopio.cl — https://elperiscopio.cl/
+- pulso.cl — https://pulso.cl/
+- elpinguino.com — https://elpinguino.com/
+
 ## colombia (south_america) — Colombia
 
 ### w3newspapers — https://www.w3newspapers.com/colombia/
@@ -3225,6 +4203,48 @@ HN — https://confidencialhn.com/
 - El Espectador — http://www.elespectador.com/
 - El Tiempo — http://www.eltiempo.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 641 by GDELT monitoring volume)
+- eltiempo.com — https://eltiempo.com/
+- elespectador.com — https://elespectador.com/
+- eluniversal.com.co — https://eluniversal.com.co/
+- caracol.com.co — https://caracol.com.co/
+- hsbnoticias.com — https://hsbnoticias.com/
+- vanguardia.com — https://vanguardia.com/
+- elcolombiano.com — https://elcolombiano.com/
+- colarte.com — https://colarte.com/
+- elnuevodia.com.co — https://elnuevodia.com.co/
+- cronicadelquindio.com — https://cronicadelquindio.com/
+- radiosantafe.com — https://radiosantafe.com/
+- elnuevosiglo.com.co — https://elnuevosiglo.com.co/
+- laopinion.com.co — https://laopinion.com.co/
+- elmundo.com — https://elmundo.com/
+- elheraldo.co — https://elheraldo.co/
+- tecnoautos.com — https://tecnoautos.com/
+- lapatria.com — https://lapatria.com/
+- lanacion.com.co — https://lanacion.com.co/
+- colombia.com — https://colombia.com/
+- pulzo.com — https://pulzo.com/
+- rcnradio.com — https://rcnradio.com/
+- minuto30.com — https://minuto30.com/
+- elpais.com.co — https://elpais.com.co/
+- wradio.com.co — https://wradio.com.co/
+- publimetro.co — https://publimetro.co/
+- hoydiariodelmagdalena.com.co — https://hoydiariodelmagdalena.com.co/
+- caracoltv.com — https://caracoltv.com/
+- diariodelsur.com.co — https://diariodelsur.com.co/
+- las2orillas.co — https://las2orillas.co/
+- semana.com — https://semana.com/
+- eldiario.com.co — https://eldiario.com.co/
+- futbolred.com — https://futbolred.com/
+- larepublica.co — https://larepublica.co/
+- lafm.com.co — https://lafm.com.co/
+- elpilon.com.co — https://elpilon.com.co/
+- portafolio.co — https://portafolio.co/
+- diariodelhuila.com — https://diariodelhuila.com/
+- elfrente.com.co — https://elfrente.com.co/
+- pacocol.org — https://pacocol.org/
+- dinero.com — https://dinero.com/
+
 ## ecuador (south_america) — Ecuador
 
 ### w3newspapers — https://www.w3newspapers.com/ecuador/
@@ -3323,6 +4343,48 @@ HN — https://confidencialhn.com/
 - El Financiero — http://www.elfinanciero.com/
 - El Universo — http://www.eluniverso.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 232 by GDELT monitoring volume)
+- ecuadorinmediato.com — https://ecuadorinmediato.com/
+- elheraldo.com.ec — https://elheraldo.com.ec/
+- eluniverso.com — https://eluniverso.com/
+- elcomercio.com — https://elcomercio.com/
+- ecuadorenvivo.com — https://ecuadorenvivo.com/
+- lahora.com.ec — https://lahora.com.ec/
+- eltelegrafo.com.ec — https://eltelegrafo.com.ec/
+- eltiempo.com.ec — https://eltiempo.com.ec/
+- elmercurio.com.ec — https://elmercurio.com.ec/
+- ecuavisa.com — https://ecuavisa.com/
+- expreso.ec — https://expreso.ec/
+- andes.info.ec — https://andes.info.ec/
+- eldiario.ec — https://eldiario.ec/
+- larepublica.ec — https://larepublica.ec/
+- extra.ec — https://extra.ec/
+- telegrafo.com.ec — https://telegrafo.com.ec/
+- confirmado.net — https://confirmado.net/
+- futbolizados.com — https://futbolizados.com/
+- diariopinion.com — https://diariopinion.com/
+- ecuadortimes.net — https://ecuadortimes.net/
+- cronica.com.ec — https://cronica.com.ec/
+- diariocorreo.com.ec — https://diariocorreo.com.ec/
+- discovercuencaecuador.com — https://discovercuencaecuador.com/
+- cre.com.ec — https://cre.com.ec/
+- ppelverdadero.com.ec — https://ppelverdadero.com.ec/
+- lagaceta.com.ec — https://lagaceta.com.ec/
+- radiocre.com — https://radiocre.com/
+- ultimasnoticias.ec — https://ultimasnoticias.ec/
+- elperiodicodelecuador.com — https://elperiodicodelecuador.com/
+- latarde.com.ec — https://latarde.com.ec/
+- latinamericacurrentevents.com — https://latinamericacurrentevents.com/
+- asambleanacional.gob.ec — https://asambleanacional.gob.ec/
+- diariolosandes.com.ec — https://diariolosandes.com.ec/
+- periodismoecuador.com — https://periodismoecuador.com/
+- diario-extra.com — https://diario-extra.com/
+- ppdigital.com.ec — https://ppdigital.com.ec/
+- cne.gob.ec — https://cne.gob.ec/
+- prensalaverdad.com — https://prensalaverdad.com/
+- metroecuador.com.ec — https://metroecuador.com.ec/
+- emelec.com.ec — https://emelec.com.ec/
+
 ## guyana (south_america) — Guyana
 
 ### w3newspapers — https://www.w3newspapers.com/guyana/
@@ -3380,6 +4442,48 @@ HN — https://confidencialhn.com/
 - Guyana Chronicle — http://guyanachronicle.com/
 - Kaieteur News — http://www.kaieteurnewsonline.com/
 - Stabroek News — http://www.stabroeknews.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 69 by GDELT monitoring volume)
+- stabroeknews.com — https://stabroeknews.com/
+- guyanachronicle.com — https://guyanachronicle.com/
+- kaieteurnewsonline.com — https://kaieteurnewsonline.com/
+- gina.gov.gy — https://gina.gov.gy/
+- demerarawaves.com — https://demerarawaves.com/
+- inewsguyana.com — https://inewsguyana.com/
+- newssourcegy.com — https://newssourcegy.com/
+- caribnewsdesk.com — https://caribnewsdesk.com/
+- guyanatimesgy.com — https://guyanatimesgy.com/
+- guyanaguardian.com — https://guyanaguardian.com/
+- blada.com — https://blada.com/
+- finnewsweek.com — https://finnewsweek.com/
+- minfor.gov.gy — https://minfor.gov.gy/
+- guyanagraphic.com — https://guyanagraphic.com/
+- newberryjournal.com — https://newberryjournal.com/
+- wsconfidential.com — https://wsconfidential.com/
+- akronregister.com — https://akronregister.com/
+- xpressblogg.com — https://xpressblogg.com/
+- augustaherald.com — https://augustaherald.com/
+- buckeyebusinessreview.com — https://buckeyebusinessreview.com/
+- cedarvillenews.com — https://cedarvillenews.com/
+- conversationtree.gy — https://conversationtree.gy/
+- claytonnewsreview.com — https://claytonnewsreview.com/
+- highlanddigest.com — https://highlanddigest.com/
+- 97320.com — https://97320.com/
+- citizensreportgy.com — https://citizensreportgy.com/
+- amountainofcrushedice.com — https://amountainofcrushedice.com/
+- tauedu.org — https://tauedu.org/
+- markjacobs.co — https://markjacobs.co/
+- skvnews.com — https://skvnews.com/
+- valuethemarkets.com — https://valuethemarkets.com/
+- ctechguyana.com — https://ctechguyana.com/
+- dailyprss.co.uk — https://dailyprss.co.uk/
+- topindustrynews24.com — https://topindustrynews24.com/
+- smallestforest.net — https://smallestforest.net/
+- caribbeanamericanforum.com — https://caribbeanamericanforum.com/
+- reevesbusinessreview.com — https://reevesbusinessreview.com/
+- riverdalestandard.com — https://riverdalestandard.com/
+- bongonewstz.com — https://bongonewstz.com/
+- caribbeantrakker.com — https://caribbeantrakker.com/
 
 ## paraguay (south_america) — Paraguay
 
@@ -3447,6 +4551,48 @@ HN — https://confidencialhn.com/
 - ABC Color — https://www.abc.com.py/
 - La Nacion — https://www.lanacion.com.py/
 - Ultima Hora — https://www.ultimahora.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 116 by GDELT monitoring volume)
+- abc.com.py — https://abc.com.py/
+- ultimahora.com — https://ultimahora.com/
+- lanacion.com.py — https://lanacion.com.py/
+- hoy.com.py — https://hoy.com.py/
+- paraguay.com — https://paraguay.com/
+- adndigital.com.py — https://adndigital.com.py/
+- nanduti.com.py — https://nanduti.com.py/
+- presidencia.gov.py — https://presidencia.gov.py/
+- 5dias.com.py — https://5dias.com.py/
+- cronica.com.py — https://cronica.com.py/
+- radio1000.com.py — https://radio1000.com.py/
+- senado.gov.py — https://senado.gov.py/
+- arp.org.py — https://arp.org.py/
+- 780am.com.py — https://780am.com.py/
+- deportesconcarlosareco.com — https://deportesconcarlosareco.com/
+- sen.gov.py — https://sen.gov.py/
+- radio970am.com.py — https://radio970am.com.py/
+- diputados.gov.py — https://diputados.gov.py/
+- tsje.gov.py — https://tsje.gov.py/
+- mdi.gov.py — https://mdi.gov.py/
+- anr.org.py — https://anr.org.py/
+- monumental.com.py — https://monumental.com.py/
+- infonegocios.com.py — https://infonegocios.com.py/
+- vanguardia.com.py — https://vanguardia.com.py/
+- ministeriopublico.gov.py — https://ministeriopublico.gov.py/
+- television.com.py — https://television.com.py/
+- episcopal.org.py — https://episcopal.org.py/
+- neike.com.py — https://neike.com.py/
+- uip.org.py — https://uip.org.py/
+- dementesx.com — https://dementesx.com/
+- ip.gov.py — https://ip.gov.py/
+- ppn.com.py — https://ppn.com.py/
+- maquila.org.py — https://maquila.org.py/
+- cpdp.com.py — https://cpdp.com.py/
+- jettchoquette.com — https://jettchoquette.com/
+- apf.org.py — https://apf.org.py/
+- rdn.com.py — https://rdn.com.py/
+- cmtefontana.com.ar — https://cmtefontana.com.ar/
+- mbertoni.org.py — https://mbertoni.org.py/
+- paraguayti.com — https://paraguayti.com/
 
 ## peru (south_america) — Peru
 
@@ -3559,6 +4705,48 @@ HN — https://confidencialhn.com/
 - El Peruano — http://www.elperuano.pe/
 - La Republica — http://www.larepublica.pe/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 501 by GDELT monitoring volume)
+- larepublica.pe — https://larepublica.pe/
+- elcomercio.pe — https://elcomercio.pe/
+- diariocorreo.pe — https://diariocorreo.pe/
+- peru.com — https://peru.com/
+- peru21.pe — https://peru21.pe/
+- gestion.pe — https://gestion.pe/
+- rpp.pe — https://rpp.pe/
+- expreso.com.pe — https://expreso.com.pe/
+- elbocon.pe — https://elbocon.pe/
+- chimbotenlinea.com — https://chimbotenlinea.com/
+- cronicaviva.com.pe — https://cronicaviva.com.pe/
+- elperuano.com.pe — https://elperuano.com.pe/
+- eltiempo.pe — https://eltiempo.pe/
+- trome.pe — https://trome.pe/
+- peruinforma.com — https://peruinforma.com/
+- americatv.com.pe — https://americatv.com.pe/
+- depor.com — https://depor.com/
+- elpopular.pe — https://elpopular.pe/
+- publimetro.pe — https://publimetro.pe/
+- panamericana.pe — https://panamericana.pe/
+- libero.pe — https://libero.pe/
+- ojo.pe — https://ojo.pe/
+- losandes.com.pe — https://losandes.com.pe/
+- elperuano.pe — https://elperuano.pe/
+- agenciaorbita.org — https://agenciaorbita.org/
+- radionacional.com.pe — https://radionacional.com.pe/
+- eleconomistaamerica.pe — https://eleconomistaamerica.pe/
+- jcmagazine.com — https://jcmagazine.com/
+- generaccion.com — https://generaccion.com/
+- tvperu.gob.pe — https://tvperu.gob.pe/
+- servindi.org — https://servindi.org/
+- rpp.com.pe — https://rpp.com.pe/
+- inforegion.pe — https://inforegion.pe/
+- andina.pe — https://andina.pe/
+- teleserviciosperu.com — https://teleserviciosperu.com/
+- canaln.pe — https://canaln.pe/
+- atv.pe — https://atv.pe/
+- pachamamaradio.org — https://pachamamaradio.org/
+- diariodechimbote.com — https://diariodechimbote.com/
+- larazon.pe — https://larazon.pe/
+
 ## suriname (south_america) — Suriname
 
 ### w3newspapers — https://www.w3newspapers.com/suriname/
@@ -3600,6 +4788,48 @@ HN — https://confidencialhn.com/
 - World News Suriname — http://worldnieuws.com/
 - De Ware Tijd — http://www.dwtonline.com/
 - De West — http://www.dewest-online.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 50 by GDELT monitoring volume)
+- dwtonline.com — https://dwtonline.com/
+- starnieuws.com — https://starnieuws.com/
+- waterkant.net — https://waterkant.net/
+- dbsuriname.com — https://dbsuriname.com/
+- surinametimes.com — https://surinametimes.com/
+- gov.sr — https://gov.sr/
+- srherald.com — https://srherald.com/
+- gfcnieuws.org — https://gfcnieuws.org/
+- de-surinaamse-krant.com — https://de-surinaamse-krant.com/
+- dagonline.nl — https://dagonline.nl/
+- suriname.nu — https://suriname.nu/
+- justalittlefurther.com — https://justalittlefurther.com/
+- saltwaterstories.net — https://saltwaterstories.net/
+- culturu.com — https://culturu.com/
+- lpmnews.com — https://lpmnews.com/
+- loopsuriname.com — https://loopsuriname.com/
+- werkgroepcaraibischeletteren.nl — https://werkgroepcaraibischeletteren.nl/
+- going-natural.com — https://going-natural.com/
+- globespanradio.com — https://globespanradio.com/
+- peggytjin.com — https://peggytjin.com/
+- kkc-curacao.com — https://kkc-curacao.com/
+- womanmagazine.info — https://womanmagazine.info/
+- josegaillou.com — https://josegaillou.com/
+- gfcnieuws.com — https://gfcnieuws.com/
+- nljewgen.org — https://nljewgen.org/
+- aqua-aquapress.com — https://aqua-aquapress.com/
+- closequarters.us — https://closequarters.us/
+- healthsolutionproducts.com — https://healthsolutionproducts.com/
+- radio10.sr — https://radio10.sr/
+- allesinsu.com — https://allesinsu.com/
+- pratapura.com — https://pratapura.com/
+- cahayasiang.com — https://cahayasiang.com/
+- act-suriname.org — https://act-suriname.org/
+- surinameview.com — https://surinameview.com/
+- goodtimes.org — https://goodtimes.org/
+- plus1876.net — https://plus1876.net/
+- surinaamsmuseum.net — https://surinaamsmuseum.net/
+- zeiljachthelena.nl — https://zeiljachthelena.nl/
+- jucumnorte.com.ar — https://jucumnorte.com.ar/
+- kareldonk.com — https://kareldonk.com/
 
 ## uruguay (south_america) — Uruguay
 
@@ -3739,6 +4969,48 @@ HN — https://confidencialhn.com/
 - El Observador — https://www.elobservador.com.uy/
 - El Pais — https://www.elpais.com.uy/
 - La Republica — https://www.republica.com.uy/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 150 by GDELT monitoring volume)
+- eltelegrafo.com — https://eltelegrafo.com/
+- elpais.com.uy — https://elpais.com.uy/
+- diariocambio.com.uy — https://diariocambio.com.uy/
+- elobservador.com.uy — https://elobservador.com.uy/
+- diarioelpueblo.com.uy — https://diarioelpueblo.com.uy/
+- republica.com.uy — https://republica.com.uy/
+- ovaciondigital.com.uy — https://ovaciondigital.com.uy/
+- lr21.com.uy — https://lr21.com.uy/
+- subrayado.com.uy — https://subrayado.com.uy/
+- carasycaretas.com.uy — https://carasycaretas.com.uy/
+- radiomontecarlo.com.uy — https://radiomontecarlo.com.uy/
+- presidencia.gub.uy — https://presidencia.gub.uy/
+- espectador.com — https://espectador.com/
+- elacontecer.com.uy — https://elacontecer.com.uy/
+- ladiaria.com.uy — https://ladiaria.com.uy/
+- diarionorte.com.uy — https://diarionorte.com.uy/
+- tvshow.com.uy — https://tvshow.com.uy/
+- teledoce.com — https://teledoce.com/
+- 180.com.uy — https://180.com.uy/
+- referi.uy — https://referi.uy/
+- infonegocios.biz — https://infonegocios.biz/
+- facepolitica.com — https://facepolitica.com/
+- radiouruguay.com.uy — https://radiouruguay.com.uy/
+- radionacional.com.uy — https://radionacional.com.uy/
+- telenoche.com.uy — https://telenoche.com.uy/
+- telenocheonline.com — https://telenocheonline.com/
+- brecha.com.uy — https://brecha.com.uy/
+- carve850.com.uy — https://carve850.com.uy/
+- busqueda.com.uy — https://busqueda.com.uy/
+- diariolajuventud.com — https://diariolajuventud.com/
+- hoycanelones.com.uy — https://hoycanelones.com.uy/
+- mvotma.gub.uy — https://mvotma.gub.uy/
+- vtv.com.uy — https://vtv.com.uy/
+- sarandi690.com.uy — https://sarandi690.com.uy/
+- elheraldo.com.uy — https://elheraldo.com.uy/
+- primerahora.com.uy — https://primerahora.com.uy/
+- fau.mil.uy — https://fau.mil.uy/
+- unoticias.com.uy — https://unoticias.com.uy/
+- uypress.net — https://uypress.net/
+- partidonacional.org.uy — https://partidonacional.org.uy/
 
 ## venezuela_rb (south_america) — Venezuela, RB
 
@@ -3988,3 +5260,45 @@ HN — https://confidencialhn.com/
 - El Universal — http://www.eluniversal.com/
 - Tal Cual — http://talcualdigital.com/
 - Ultimas Noticias — http://www.ultimasnoticias.com.ve/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 414 by GDELT monitoring volume)
+- entornointeligente.com — https://entornointeligente.com/
+- aporrea.org — https://aporrea.org/
+- noticierodigital.com — https://noticierodigital.com/
+- el-nacional.com — https://el-nacional.com/
+- radiomundial.com.ve — https://radiomundial.com.ve/
+- lapatilla.com — https://lapatilla.com/
+- correodelorinoco.gob.ve — https://correodelorinoco.gob.ve/
+- eluniversal.com — https://eluniversal.com/
+- avn.info.ve — https://avn.info.ve/
+- vtv.gob.ve — https://vtv.gob.ve/
+- el-carabobeno.com — https://el-carabobeno.com/
+- noticiaaldia.com — https://noticiaaldia.com/
+- notitarde.com — https://notitarde.com/
+- analitica.com — https://analitica.com/
+- noticias24.com — https://noticias24.com/
+- panorama.com.ve — https://panorama.com.ve/
+- talcualdigital.com — https://talcualdigital.com/
+- noticiasvenezuela.info — https://noticiasvenezuela.info/
+- versionfinal.com.ve — https://versionfinal.com.ve/
+- laverdad.com — https://laverdad.com/
+- diarioeltiempo.com.ve — https://diarioeltiempo.com.ve/
+- ciudadccs.info — https://ciudadccs.info/
+- venezuelaaldia.com — https://venezuelaaldia.com/
+- diariodecaracas.com — https://diariodecaracas.com/
+- informe21.com — https://informe21.com/
+- correodelcaroni.com — https://correodelcaroni.com/
+- globovision.com — https://globovision.com/
+- 2001.com.ve — https://2001.com.ve/
+- elimpulso.com — https://elimpulso.com/
+- confirmado.com.ve — https://confirmado.com.ve/
+- meridiano.com.ve — https://meridiano.com.ve/
+- runrun.es — https://runrun.es/
+- ultimasnoticias.com.ve — https://ultimasnoticias.com.ve/
+- elvenezolanonews.com — https://elvenezolanonews.com/
+- elsoldemargarita.com.ve — https://elsoldemargarita.com.ve/
+- noticierovenevision.net — https://noticierovenevision.net/
+- mundinews.com — https://mundinews.com/
+- psuv.org.ve — https://psuv.org.ve/
+- unionradio.net — https://unionradio.net/
+- ntn24.com — https://ntn24.com/

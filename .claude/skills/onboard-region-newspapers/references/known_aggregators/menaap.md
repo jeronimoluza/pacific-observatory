@@ -1,7 +1,7 @@
 # Known Online-Newspaper Aggregators — Middle East, North Africa, Afghanistan & Pakistan (`menaap`)
 
-Pre-extracted per-country newspaper lists from four online-newspaper
-aggregators. Used by `/onboard-region-newspapers` step 2a as a static
+Pre-extracted per-country newspaper lists from four online-newspaper aggregators
+plus GDELT's domains-by-country list. Used by `/onboard-region-newspapers` step 2a as a static
 seed instead of refetching aggregator homepages every run.
 
 See `references/known_aggregators/README.md` for the ignore rules and
@@ -71,6 +71,48 @@ the populator script that generated this file.
 - Voice of Bahrain — http://www.vob.org/?lang=arabic
 - Akhbar Al Khaleej — http://www.akhbar-alkhaleej.com/
 - Al Ayam — http://www.alayam.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 102 by GDELT monitoring volume)
+- bna.bh — https://bna.bh/
+- akhbar-alkhaleej.com — https://akhbar-alkhaleej.com/
+- newsofbahrain.com — https://newsofbahrain.com/
+- albiladpress.com — https://albiladpress.com/
+- alayam.com — https://alayam.com/
+- alwasatnews.com — https://alwasatnews.com/
+- alwatannews.net — https://alwatannews.net/
+- amazonaws.com — https://amazonaws.com/
+- ttnworldwide.com — https://ttnworldwide.com/
+- gulf-daily-news.com — https://gulf-daily-news.com/
+- bahrainthisweek.com — https://bahrainthisweek.com/
+- startupmgzn.com — https://startupmgzn.com/
+- bahrainmirror.com — https://bahrainmirror.com/
+- alwefaq.net — https://alwefaq.net/
+- works.gov.bh — https://works.gov.bh/
+- dt.bh — https://dt.bh/
+- gulfweekly.com — https://gulfweekly.com/
+- thediplomatmagazine.com — https://thediplomatmagazine.com/
+- gpblog.com — https://gpblog.com/
+- gpfans.com — https://gpfans.com/
+- timeoutbahrain.com — https://timeoutbahrain.com/
+- bizbahrain.com — https://bizbahrain.com/
+- f1i.com — https://f1i.com/
+- bahrainpower.com — https://bahrainpower.com/
+- mclaren.com — https://mclaren.com/
+- f1tothemax.com — https://f1tothemax.com/
+- bahrainpa.org — https://bahrainpa.org/
+- islamicbusinessandfinance.net — https://islamicbusinessandfinance.net/
+- birdbh.org — https://birdbh.org/
+- f1.co.uk — https://f1.co.uk/
+- thisisf1.com — https://thisisf1.com/
+- derapate.it — https://derapate.it/
+- bahrainhash.com — https://bahrainhash.com/
+- meetmiddleeast.com — https://meetmiddleeast.com/
+- mystartupworld.com — https://mystartupworld.com/
+- adhrb.org — https://adhrb.org/
+- lmra.bh — https://lmra.bh/
+- blancpain-gt-series.com — https://blancpain-gt-series.com/
+- grondamorin.com — https://grondamorin.com/
+- talkingaboutf1.com — https://talkingaboutf1.com/
 
 ## kuwait (gulf_states) — Kuwait
 
@@ -147,6 +189,48 @@ the populator script that generated this file.
 - Al Seyassah — http://www.al-seyassah.com/
 - Al Watan — http://alwatan.kuwait.tt/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 81 by GDELT monitoring volume)
+- annaharkw.com — https://annaharkw.com/
+- aljarida.com — https://aljarida.com/
+- kuna.net.kw — https://kuna.net.kw/
+- alraimedia.com — https://alraimedia.com/
+- alanba.com.kw — https://alanba.com.kw/
+- arabtimesonline.com — https://arabtimesonline.com/
+- alqabas.com.kw — https://alqabas.com.kw/
+- al-seyassah.com — https://al-seyassah.com/
+- kuwaittimes.net — https://kuwaittimes.net/
+- alshahedkw.com — https://alshahedkw.com/
+- kuwait.tt — https://kuwait.tt/
+- sabr.cc — https://sabr.cc/
+- alkhaleej-kw.com — https://alkhaleej-kw.com/
+- alrayalaam.com — https://alrayalaam.com/
+- soutalkhaleej.net — https://soutalkhaleej.net/
+- e.gov.kw — https://e.gov.kw/
+- alkhabarkw.com — https://alkhabarkw.com/
+- mobashernews.net — https://mobashernews.net/
+- aljaridaonline.com — https://aljaridaonline.com/
+- indiansinkuwait.com — https://indiansinkuwait.com/
+- media.gov.kw — https://media.gov.kw/
+- 248am.com — https://248am.com/
+- alaan.cc — https://alaan.cc/
+- alwasat.com.kw — https://alwasat.com.kw/
+- gulf-recruitments.com — https://gulf-recruitments.com/
+- alshahed.com.kw — https://alshahed.com.kw/
+- q8dailynews.com — https://q8dailynews.com/
+- news.gov.kw — https://news.gov.kw/
+- intelligentcio.com — https://intelligentcio.com/
+- altaleea.com — https://altaleea.com/
+- alialawadhi.com — https://alialawadhi.com/
+- frankom.com — https://frankom.com/
+- kfas.org — https://kfas.org/
+- enferaad.com — https://enferaad.com/
+- readspeaker.com — https://readspeaker.com/
+- studentalk-online.com — https://studentalk-online.com/
+- etfstrategy.com — https://etfstrategy.com/
+- universalnews.org — https://universalnews.org/
+- milestonevision.com — https://milestonevision.com/
+- arazzaqlaw.com — https://arazzaqlaw.com/
+
 ## oman (gulf_states) — Oman
 
 ### w3newspapers — https://www.w3newspapers.com/oman/
@@ -201,6 +285,48 @@ the populator script that generated this file.
 - Al Shabiba — http://www.shabiba.com/
 - Al Watan — http://alwatan.com/
 - Oman Daily — http://omandaily.om/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 86 by GDELT monitoring volume)
+- omandaily.om — https://omandaily.om/
+- alwatan.com — https://alwatan.com/
+- timesofoman.com — https://timesofoman.com/
+- shabiba.com — https://shabiba.com/
+- omanobserver.om — https://omanobserver.om/
+- muscatdaily.com — https://muscatdaily.com/
+- azamn.com — https://azamn.com/
+- omantribune.com — https://omantribune.com/
+- alroya.om — https://alroya.om/
+- albaladoman.com — https://albaladoman.com/
+- theweek.co.om — https://theweek.co.om/
+- atheer.om — https://atheer.om/
+- muscatads.com — https://muscatads.com/
+- omannews.gov.om — https://omannews.gov.om/
+- arabianoilandgas.com — https://arabianoilandgas.com/
+- omangbnews.com — https://omangbnews.com/
+- omanjobs77.com — https://omanjobs77.com/
+- themaritimestandard.com — https://themaritimestandard.com/
+- catsailingnews.com — https://catsailingnews.com/
+- curtis.com — https://curtis.com/
+- extremesailingseries.com — https://extremesailingseries.com/
+- s2nn.com — https://s2nn.com/
+- emeoutlookmag.com — https://emeoutlookmag.com/
+- omantourism.gov.om — https://omantourism.gov.om/
+- ammannews.com.jo — https://ammannews.com.jo/
+- aaco.org — https://aaco.org/
+- customerservice.ae — https://customerservice.ae/
+- cargotrends.in — https://cargotrends.in/
+- wisal.fm — https://wisal.fm/
+- rafmuseum.org.uk — https://rafmuseum.org.uk/
+- nahimunkar.com — https://nahimunkar.com/
+- britishmuslim-magazine.com — https://britishmuslim-magazine.com/
+- fastnews.lk — https://fastnews.lk/
+- smartomantour.com — https://smartomantour.com/
+- cookiesound.com — https://cookiesound.com/
+- theduncanadventures.com — https://theduncanadventures.com/
+- cisabroad.com — https://cisabroad.com/
+- ecomyachting.com — https://ecomyachting.com/
+- ttgmena.com — https://ttgmena.com/
+- bonjourdubai.com — https://bonjourdubai.com/
 
 ## qatar (gulf_states) — Qatar
 
@@ -260,6 +386,48 @@ the populator script that generated this file.
 - Al Raya — http://www.raya.com/
 - Al Sharq — http://www.al-sharq.com/
 - Al Watan — http://www.al-watan.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 142 by GDELT monitoring volume)
+- raya.com — https://raya.com/
+- thepeninsulaqatar.com — https://thepeninsulaqatar.com/
+- al-watan.com — https://al-watan.com/
+- alarab.qa — https://alarab.qa/
+- al-sharq.com — https://al-sharq.com/
+- gulf-times.com — https://gulf-times.com/
+- qatar-tribune.com — https://qatar-tribune.com/
+- iloveqatar.net — https://iloveqatar.net/
+- qatarliving.com — https://qatarliving.com/
+- dohanews.co — https://dohanews.co/
+- alkass.net — https://alkass.net/
+- qatarairways.com — https://qatarairways.com/
+- marhaba.qa — https://marhaba.qa/
+- qatarscoop.com — https://qatarscoop.com/
+- timeoutdoha.com — https://timeoutdoha.com/
+- star-ware.com — https://star-ware.com/
+- gulfnewsjournal.com — https://gulfnewsjournal.com/
+- justhere.qa — https://justhere.qa/
+- alarab.com.qa — https://alarab.com.qa/
+- jobvacanciez.com — https://jobvacanciez.com/
+- qna.org.qa — https://qna.org.qa/
+- travelingformiles.com — https://travelingformiles.com/
+- qatartodayonline.com — https://qatartodayonline.com/
+- moj.gov.qa — https://moj.gov.qa/
+- migrant-rights.org — https://migrant-rights.org/
+- qatarchamber.com — https://qatarchamber.com/
+- tacticalreport.com — https://tacticalreport.com/
+- airfreight-logistics.com — https://airfreight-logistics.com/
+- alarabcdn.com — https://alarabcdn.com/
+- paddleyourownkanoo.com — https://paddleyourownkanoo.com/
+- allarabnewspaper.com — https://allarabnewspaper.com/
+- ituc-csi.org — https://ituc-csi.org/
+- alarabnewspapers.com — https://alarabnewspapers.com/
+- playthegame.org — https://playthegame.org/
+- marcvds.com — https://marcvds.com/
+- alarabcdn.info — https://alarabcdn.info/
+- xn--mgbc0a5a6c.xn--wgbl6a — https://xn--mgbc0a5a6c.xn--wgbl6a/
+- albalad.news — https://albalad.news/
+- textontechs.com — https://textontechs.com/
+- yamahamotogp.com — https://yamahamotogp.com/
 
 ## saudi_arabia (gulf_states) — Saudi Arabia
 
@@ -379,6 +547,48 @@ the populator script that generated this file.
 - Asharq Al Awsat — http://www.aawsat.com/
 - Okaz — http://www.okaz.com.sa/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 579 by GDELT monitoring volume)
+- haraj.com.sa — https://haraj.com.sa/
+- spa.gov.sa — https://spa.gov.sa/
+- alriyadh.com — https://alriyadh.com/
+- okaz.com.sa — https://okaz.com.sa/
+- hamrinnews.net — https://hamrinnews.net/
+- arabnews.com — https://arabnews.com/
+- sabq.org — https://sabq.org/
+- aleqt.com — https://aleqt.com/
+- almowaten.net — https://almowaten.net/
+- alsharq.net.sa — https://alsharq.net.sa/
+- argaam.com — https://argaam.com/
+- saudigazette.com.sa — https://saudigazette.com.sa/
+- alyaum.com — https://alyaum.com/
+- akhbrksa.com — https://akhbrksa.com/
+- ksaday.net — https://ksaday.net/
+- alweeam.com.sa — https://alweeam.com.sa/
+- arabianbusiness.com — https://arabianbusiness.com/
+- bab.com — https://bab.com/
+- slaati.com — https://slaati.com/
+- al-khaleeg.com — https://al-khaleeg.com/
+- twasul.info — https://twasul.info/
+- hasatoday.com — https://hasatoday.com/
+- alwatan.com.sa — https://alwatan.com.sa/
+- dhal3.com — https://dhal3.com/
+- 3seer.net — https://3seer.net/
+- al-madina.com — https://al-madina.com/
+- faifaonline.net — https://faifaonline.net/
+- gulfbusiness.com — https://gulfbusiness.com/
+- birdsofsaudiarabia.com — https://birdsofsaudiarabia.com/
+- arriyadiyah.com — https://arriyadiyah.com/
+- gulfbase.com — https://gulfbase.com/
+- gulf-24.com — https://gulf-24.com/
+- makkahnewspaper.com — https://makkahnewspaper.com/
+- alekhbariya.net — https://alekhbariya.net/
+- motsil.com — https://motsil.com/
+- al-jazirah.com — https://al-jazirah.com/
+- akhbrcairo.com — https://akhbrcairo.com/
+- worldakhbar.com — https://worldakhbar.com/
+- jredty.com — https://jredty.com/
+- bareqnews.com — https://bareqnews.com/
+
 ## united_arab_emirates (gulf_states) — United Arab Emirates
 
 ### w3newspapers — https://www.w3newspapers.com/uae/
@@ -470,6 +680,48 @@ the populator script that generated this file.
 - Al Bayan — http://www.albayan.ae/
 - Al Ittihad — http://www.alittihad.ae/
 - Al Khaleej — http://www.alkhaleej.ae/portal
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 333 by GDELT monitoring volume)
+- albayan.ae — https://albayan.ae/
+- wam.ae — https://wam.ae/
+- zawya.com — https://zawya.com/
+- gulfnews.com — https://gulfnews.com/
+- alittihad.ae — https://alittihad.ae/
+- emaratalyoum.com — https://emaratalyoum.com/
+- alkhaleej.ae — https://alkhaleej.ae/
+- khaleejtimes.com — https://khaleejtimes.com/
+- alroeya.ae — https://alroeya.ae/
+- tradearabia.com — https://tradearabia.com/
+- thenational.ae — https://thenational.ae/
+- araanews.ae — https://araanews.ae/
+- alldubai.ae — https://alldubai.ae/
+- dubaicityguide.com — https://dubaicityguide.com/
+- emirates247.com — https://emirates247.com/
+- wam.org.ae — https://wam.org.ae/
+- gulftoday.ae — https://gulftoday.ae/
+- whatson.ae — https://whatson.ae/
+- uaeinteract.com — https://uaeinteract.com/
+- timeoutdubai.com — https://timeoutdubai.com/
+- emiratesweek.com — https://emiratesweek.com/
+- emaratyah.ae — https://emaratyah.ae/
+- cpifinancial.net — https://cpifinancial.net/
+- hoteliermiddleeast.com — https://hoteliermiddleeast.com/
+- constructionweekonline.com — https://constructionweekonline.com/
+- web-release.info — https://web-release.info/
+- abudhabicityguide.com — https://abudhabicityguide.com/
+- middleeastevents.com — https://middleeastevents.com/
+- ameinfo.com — https://ameinfo.com/
+- mubasher.info — https://mubasher.info/
+- dotemirates.com — https://dotemirates.com/
+- itp.net — https://itp.net/
+- bi-me.com — https://bi-me.com/
+- lastdubai.com — https://lastdubai.com/
+- moi.gov.ae — https://moi.gov.ae/
+- alwatannewspaper.ae — https://alwatannewspaper.ae/
+- dubaichronicle.com — https://dubaichronicle.com/
+- 7days.ae — https://7days.ae/
+- tag911.ae — https://tag911.ae/
+- arabianaerospace.aero — https://arabianaerospace.aero/
 
 ## iran (middle_east) — Iran, Islamic Rep.
 
@@ -652,6 +904,48 @@ the populator script that generated this file.
 - Iran Varzeshi — http://www.iran-varzeshi.com/
 - Kayhan — http://kayhan.ir/ar
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 690 by GDELT monitoring volume)
+- farsnews.com — https://farsnews.com/
+- irna.ir — https://irna.ir/
+- shafaqna.com — https://shafaqna.com/
+- balatarin.com — https://balatarin.com/
+- radiofarda.com — https://radiofarda.com/
+- manilatimescollege.com — https://manilatimescollege.com/
+- ana.ir — https://ana.ir/
+- iranherald.com — https://iranherald.com/
+- radiozamaneh.com — https://radiozamaneh.com/
+- ebtekarnews.com — https://ebtekarnews.com/
+- gooya.com — https://gooya.com/
+- hamshahrionline.ir — https://hamshahrionline.ir/
+- theiranproject.com — https://theiranproject.com/
+- iranian.com — https://iranian.com/
+- kaleme.com — https://kaleme.com/
+- presstv.com — https://presstv.com/
+- ncr-iran.org — https://ncr-iran.org/
+- hispantv.com — https://hispantv.com/
+- gulfeyes.net — https://gulfeyes.net/
+- blogsky.com — https://blogsky.com/
+- tasnimnews.com — https://tasnimnews.com/
+- iranfocus.com — https://iranfocus.com/
+- aftabeyazd.ir — https://aftabeyazd.ir/
+- iranpressnews.com — https://iranpressnews.com/
+- al-ain.com — https://al-ain.com/
+- islamidavet.com — https://islamidavet.com/
+- presstv.ir — https://presstv.ir/
+- blogfa.com — https://blogfa.com/
+- payvand.com — https://payvand.com/
+- financialtribune.com — https://financialtribune.com/
+- irannewsupdate.com — https://irannewsupdate.com/
+- hra-news.org — https://hra-news.org/
+- alarabiya.net — https://alarabiya.net/
+- irdiplomacy.ir — https://irdiplomacy.ir/
+- roozonline.com — https://roozonline.com/
+- ifpnews.com — https://ifpnews.com/
+- kar-online.com — https://kar-online.com/
+- trtworld.com — https://trtworld.com/
+- mfs-theothernews.com — https://mfs-theothernews.com/
+- nafeza2world.com — https://nafeza2world.com/
+
 ## iraq (middle_east) — Iraq
 
 ### w3newspapers — https://www.w3newspapers.com/iraq/
@@ -759,6 +1053,48 @@ the populator script that generated this file.
 - Al Mutmar — http://www.almutmar.com/
 - Al Sabaah — http://www.alsabaah.iq
 - Al Zaman — http://www.azzaman.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 248 by GDELT monitoring volume)
+- iraqakhbar.com — https://iraqakhbar.com/
+- sotaliraq.com — https://sotaliraq.com/
+- akhbaar.org — https://akhbaar.org/
+- almadapaper.net — https://almadapaper.net/
+- iraqicp.com — https://iraqicp.com/
+- middle-east-online.com — https://middle-east-online.com/
+- irakna.com — https://irakna.com/
+- annabaa.org — https://annabaa.org/
+- iraqsun.com — https://iraqsun.com/
+- alqurtasnews.com — https://alqurtasnews.com/
+- newsabah.com — https://newsabah.com/
+- aliraqnews.com — https://aliraqnews.com/
+- non14.net — https://non14.net/
+- azzaman.com — https://azzaman.com/
+- kitabat.com — https://kitabat.com/
+- almasalah.com — https://almasalah.com/
+- alsabaah.iq — https://alsabaah.iq/
+- altaakhipress.com — https://altaakhipress.com/
+- alsumaria.tv — https://alsumaria.tv/
+- aina.org — https://aina.org/
+- mustaqila.com — https://mustaqila.com/
+- iraqyoon.net — https://iraqyoon.net/
+- shafaaq.com — https://shafaaq.com/
+- albasrah.net — https://albasrah.net/
+- kululiraq.com — https://kululiraq.com/
+- rudaw.net — https://rudaw.net/
+- iraqinews.com — https://iraqinews.com/
+- ekurd.net — https://ekurd.net/
+- baghdad-times.net — https://baghdad-times.net/
+- alghadpress.com — https://alghadpress.com/
+- kurdistan24.net — https://kurdistan24.net/
+- alakhbaar.org — https://alakhbaar.org/
+- iraq-businessnews.com — https://iraq-businessnews.com/
+- pukmedia.com — https://pukmedia.com/
+- albaghdadia.com — https://albaghdadia.com/
+- imn.iq — https://imn.iq/
+- alrafidayn.net — https://alrafidayn.net/
+- iraqhurr.org — https://iraqhurr.org/
+- albadeeliraq.com — https://albadeeliraq.com/
+- centcom.mil — https://centcom.mil/
 
 ## israel (middle_east) — Israel
 
@@ -941,6 +1277,48 @@ the populator script that generated this file.
 - Yedioth Ahronoth — http://www.ynetnews.com/home/0,7340,L-3083,00.html
 - Yedioth Ahronoth — http://www.ynet.co.il/home/0,7340,L-8,00.html
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1467 by GDELT monitoring volume)
+- wafa.ps — https://wafa.ps/
+- palestinemonitor.org — https://palestinemonitor.org/
+- timesofisrael.com — https://timesofisrael.com/
+- alghad.com — https://alghad.com/
+- alwatanvoice.com — https://alwatanvoice.com/
+- jpost.com — https://jpost.com/
+- ynet.co.il — https://ynet.co.il/
+- karamapress.com — https://karamapress.com/
+- alquds.com — https://alquds.com/
+- mako.co.il — https://mako.co.il/
+- globes.co.il — https://globes.co.il/
+- pnn.ps — https://pnn.ps/
+- haaretz.com — https://haaretz.com/
+- walla.co.il — https://walla.co.il/
+- themarker.com — https://themarker.com/
+- israelnationalnews.com — https://israelnationalnews.com/
+- alquds.co.uk — https://alquds.co.uk/
+- maariv.co.il — https://maariv.co.il/
+- inn.co.il — https://inn.co.il/
+- ynetnews.com — https://ynetnews.com/
+- algemeiner.com — https://algemeiner.com/
+- middleeastmonitor.com — https://middleeastmonitor.com/
+- one.co.il — https://one.co.il/
+- raialyoum.com — https://raialyoum.com/
+- wattan.tv — https://wattan.tv/
+- haaretz.co.il — https://haaretz.co.il/
+- panet.co.il — https://panet.co.il/
+- calcalist.co.il — https://calcalist.co.il/
+- felesteen.ps — https://felesteen.ps/
+- jewishpress.com — https://jewishpress.com/
+- mondoweiss.net — https://mondoweiss.net/
+- alhaya.ps — https://alhaya.ps/
+- qudspress.com — https://qudspress.com/
+- maannews.net — https://maannews.net/
+- al-monitor.com — https://al-monitor.com/
+- jns.org — https://jns.org/
+- kikar.co.il — https://kikar.co.il/
+- israelherald.com — https://israelherald.com/
+- addustour.com — https://addustour.com/
+- alarab.com — https://alarab.com/
+
 ## jordan (middle_east) — Jordan
 
 ### w3newspapers — https://www.w3newspapers.com/jordan/
@@ -1032,6 +1410,48 @@ the populator script that generated this file.
 - Al Arab Al Yawm — http://alarabalyawm.net/
 - Al Ghad — http://www.alghad.com/
 - Al Rai — http://www.alrai.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 291 by GDELT monitoring volume)
+- petra.gov.jo — https://petra.gov.jo/
+- alrai.com — https://alrai.com/
+- ammonnews.net — https://ammonnews.net/
+- sarayanews.com — https://sarayanews.com/
+- alanbatnews.net — https://alanbatnews.net/
+- jordantimes.com — https://jordantimes.com/
+- khaberni.com — https://khaberni.com/
+- maqar.com — https://maqar.com/
+- jo24.net — https://jo24.net/
+- almadenahnews.com — https://almadenahnews.com/
+- ammannet.net — https://ammannet.net/
+- islahnews.net — https://islahnews.net/
+- kicksonfire.com — https://kicksonfire.com/
+- alarabalyawm.net — https://alarabalyawm.net/
+- solecollector.com — https://solecollector.com/
+- gaynews.it — https://gaynews.it/
+- sneakerbardetroit.com — https://sneakerbardetroit.com/
+- jordanembassyus.org — https://jordanembassyus.org/
+- sneakerfiles.com — https://sneakerfiles.com/
+- sneakernews.com — https://sneakernews.com/
+- venturemagazine.me — https://venturemagazine.me/
+- royanews.tv — https://royanews.tv/
+- sneakerfreaker.com — https://sneakerfreaker.com/
+- nicekicks.com — https://nicekicks.com/
+- sneakerwatch.com — https://sneakerwatch.com/
+- shamarrallen.com — https://shamarrallen.com/
+- climatedesk.org — https://climatedesk.org/
+- theshoegame.com — https://theshoegame.com/
+- modern-notoriety.com — https://modern-notoriety.com/
+- culture.gov.jo — https://culture.gov.jo/
+- freshnessmag.com — https://freshnessmag.com/
+- weartesters.com — https://weartesters.com/
+- newhiphopmusikshop.net — https://newhiphopmusikshop.net/
+- jordansdaily.com — https://jordansdaily.com/
+- saleandpurchase.com.pk — https://saleandpurchase.com.pk/
+- azbsc.com — https://azbsc.com/
+- hjemmet.dk — https://hjemmet.dk/
+- ebodyfit.com — https://ebodyfit.com/
+- icmc.net — https://icmc.net/
+- daytimeconfidential.com — https://daytimeconfidential.com/
 
 ## lebanon (middle_east) — Lebanon
 
@@ -1269,6 +1689,48 @@ the populator script that generated this file.
 - An Nahar — http://www.annahar.com/
 - As Safir — http://www.assafir.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 186 by GDELT monitoring volume)
+- lebanese-forces.com — https://lebanese-forces.com/
+- alankabout.com — https://alankabout.com/
+- almustaqbal.com — https://almustaqbal.com/
+- tayyar.org — https://tayyar.org/
+- lebanon24.com — https://lebanon24.com/
+- aljoumhouria.com — https://aljoumhouria.com/
+- lbcgroup.tv — https://lbcgroup.tv/
+- lebanondebate.com — https://lebanondebate.com/
+- nna-leb.gov.lb — https://nna-leb.gov.lb/
+- al-akhbar.com — https://al-akhbar.com/
+- aliwaa.com — https://aliwaa.com/
+- cedarnews.net — https://cedarnews.net/
+- alahednews.com.lb — https://alahednews.com.lb/
+- anbaaonline.com — https://anbaaonline.com/
+- almarkazia.net — https://almarkazia.net/
+- annahar.com — https://annahar.com/
+- dailystar.com.lb — https://dailystar.com.lb/
+- addiyar.com — https://addiyar.com/
+- beirutobserver.com — https://beirutobserver.com/
+- aliwaa.com.lb — https://aliwaa.com.lb/
+- mtv.com.lb — https://mtv.com.lb/
+- elsharkonline.com — https://elsharkonline.com/
+- elnashra.com — https://elnashra.com/
+- almarkazia.com — https://almarkazia.com/
+- yalibnan.com — https://yalibnan.com/
+- onlylebanon.net — https://onlylebanon.net/
+- lebanonfiles.com — https://lebanonfiles.com/
+- albaladonline.com — https://albaladonline.com/
+- greenarea.me — https://greenarea.me/
+- ekherelakhbar.com — https://ekherelakhbar.com/
+- executive-magazine.com — https://executive-magazine.com/
+- saidaonline.com — https://saidaonline.com/
+- libnanews.com — https://libnanews.com/
+- vdl.com.lb — https://vdl.com.lb/
+- blogbaladi.com — https://blogbaladi.com/
+- addiyarcomcarloscharlesnet.com — https://addiyarcomcarloscharlesnet.com/
+- moqawama.org — https://moqawama.org/
+- lecommercedulevant.com — https://lecommercedulevant.com/
+- otv.com.lb — https://otv.com.lb/
+- arabweek.com.lb — https://arabweek.com.lb/
+
 ## syria (middle_east) — Syrian Arab Republic
 
 ### w3newspapers — https://www.w3newspapers.com/syria/
@@ -1336,6 +1798,48 @@ the populator script that generated this file.
 - Al Thawra — http://thawra.sy/
 - Al Watan — http://www.alwatan.sy/
 - Tishreen — http://tishreen.news.sy/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 907 by GDELT monitoring volume)
+- nt.am — https://nt.am/
+- sana.sy — https://sana.sy/
+- all4syria.info — https://all4syria.info/
+- almanar.com.lb — https://almanar.com.lb/
+- dampress.net — https://dampress.net/
+- elaph.com — https://elaph.com/
+- jpnews-sy.com — https://jpnews-sy.com/
+- syrianownews.com — https://syrianownews.com/
+- syriahr.com — https://syriahr.com/
+- alalam.ir — https://alalam.ir/
+- alwast.net — https://alwast.net/
+- almasdarnews.com — https://almasdarnews.com/
+- syrianow.sy — https://syrianow.sy/
+- reliefweb.int — https://reliefweb.int/
+- aksalser.com — https://aksalser.com/
+- assafir.com — https://assafir.com/
+- alaraby.co.uk — https://alaraby.co.uk/
+- arabherald.com — https://arabherald.com/
+- islamicinvitationturkey.com — https://islamicinvitationturkey.com/
+- alarab.co.uk — https://alarab.co.uk/
+- aawsat.com — https://aawsat.com/
+- champress.net — https://champress.net/
+- dp-news.com — https://dp-news.com/
+- al-binaa.com — https://al-binaa.com/
+- enabbaladi.net — https://enabbaladi.net/
+- stepagency-sy.net — https://stepagency-sy.net/
+- naharnet.com — https://naharnet.com/
+- alhayat.com — https://alhayat.com/
+- eldorar.com — https://eldorar.com/
+- aranews.org — https://aranews.org/
+- syrianobserver.com — https://syrianobserver.com/
+- 24.ae — https://24.ae/
+- aljadeed.tv — https://aljadeed.tv/
+- orient-news.net — https://orient-news.net/
+- syriadirect.org — https://syriadirect.org/
+- awsatnews.net — https://awsatnews.net/
+- islamtoday.net — https://islamtoday.net/
+- 7n27.com — https://7n27.com/
+- alhadassonline.com — https://alhadassonline.com/
+- alhadathnews.net — https://alhadathnews.net/
 
 ## west_bank_and_gaza (middle_east) — West Bank and Gaza
 
@@ -1420,6 +1924,30 @@ the populator script that generated this file.
 - Al Hayat Al Jadidah — http://www.alhayat-j.com/newsite/
 - Al Quds — http://www.alquds.com/
 - Al Quds Al Arabi — http://www.alquds.co.uk/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (22 domains by GDELT monitoring volume)
+- payngo.co.il — https://payngo.co.il/
+- prague-tribune.cz — https://prague-tribune.cz/
+- eifl.net — https://eifl.net/
+- emrabc.ca — https://emrabc.ca/
+- marshillonline.com — https://marshillonline.com/
+- briancimins.com — https://briancimins.com/
+- nepalinks.com — https://nepalinks.com/
+- ajsiasi.ro — https://ajsiasi.ro/
+- mancodebook.com — https://mancodebook.com/
+- zh51home.com — https://zh51home.com/
+- sabah.gov.my — https://sabah.gov.my/
+- atticacoast.gr — https://atticacoast.gr/
+- youthministryunleashed.com — https://youthministryunleashed.com/
+- vamanufacturers.com — https://vamanufacturers.com/
+- cocoasustainability.com — https://cocoasustainability.com/
+- conwayscchamber.com — https://conwayscchamber.com/
+- redepara.com.br — https://redepara.com.br/
+- unlockingthebible.org — https://unlockingthebible.org/
+- aubreyhordmauiblog.com — https://aubreyhordmauiblog.com/
+- boyleconstruction.com — https://boyleconstruction.com/
+- ccsofia.org — https://ccsofia.org/
+- visitpalestine.tech — https://visitpalestine.tech/
 
 ## yemen (middle_east) — Yemen, Rep.
 
@@ -1526,6 +2054,48 @@ the populator script that generated this file.
 - Yemeress — https://www.yemeress.com/
 - Yen News — http://www.yen-news.net/
 - Al Thawra — http://www.althawranews.net/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 147 by GDELT monitoring volume)
+- yemenakhbar.com — https://yemenakhbar.com/
+- momyznews.com — https://momyznews.com/
+- barakish.net — https://barakish.net/
+- hournews.net — https://hournews.net/
+- alsahwa-yemen.net — https://alsahwa-yemen.net/
+- khabaragency.net — https://khabaragency.net/
+- almasdaronline.com — https://almasdaronline.com/
+- althawranews.net — https://althawranews.net/
+- freitag.de — https://freitag.de/
+- bawabatii.com — https://bawabatii.com/
+- akhbryemen.com — https://akhbryemen.com/
+- alkhabarnow.net — https://alkhabarnow.net/
+- adenghad.net — https://adenghad.net/
+- nabdhadhramout.com — https://nabdhadhramout.com/
+- adenalghad.net — https://adenalghad.net/
+- aleshteraky.com — https://aleshteraky.com/
+- sabanews.net — https://sabanews.net/
+- abarahpress.com — https://abarahpress.com/
+- 7adramout.net — https://7adramout.net/
+- almontasaf.net — https://almontasaf.net/
+- ew3t.com — https://ew3t.com/
+- alhadath-yemen.com — https://alhadath-yemen.com/
+- from-yemen.com — https://from-yemen.com/
+- al-ayyam.info — https://al-ayyam.info/
+- adenalgd.net — https://adenalgd.net/
+- nationalyemen.com — https://nationalyemen.com/
+- akhbaralasr.net — https://akhbaralasr.net/
+- mdeena.com — https://mdeena.com/
+- 26sep.net — https://26sep.net/
+- alomanaa.net — https://alomanaa.net/
+- saba.ye — https://saba.ye/
+- yemenajel.com — https://yemenajel.com/
+- today-news.co — https://today-news.co/
+- alahale.net — https://alahale.net/
+- yemenonline.info — https://yemenonline.info/
+- al-council.com — https://al-council.com/
+- yementimes.com — https://yementimes.com/
+- aloulaye.com — https://aloulaye.com/
+- sada-yemen.com — https://sada-yemen.com/
+- ababiil.net — https://ababiil.net/
 
 ## algeria (north_africa) — Algeria
 
@@ -1708,6 +2278,48 @@ the populator script that generated this file.
 - La Tribune — https://www.latribune-algerie.com/
 - Liberte — https://www.liberte-algerie.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 158 by GDELT monitoring volume)
+- djazairess.com — https://djazairess.com/
+- al-fadjr.com — https://al-fadjr.com/
+- aps.dz — https://aps.dz/
+- echoroukonline.com — https://echoroukonline.com/
+- liberte-algerie.com — https://liberte-algerie.com/
+- elwatan.com — https://elwatan.com/
+- lequotidien-oran.com — https://lequotidien-oran.com/
+- forum-algerie.com — https://forum-algerie.com/
+- elmoudjahid.com — https://elmoudjahid.com/
+- annasronline.com — https://annasronline.com/
+- elbilad.net — https://elbilad.net/
+- akhbarelyoum.dz — https://akhbarelyoum.dz/
+- ennaharonline.com — https://ennaharonline.com/
+- lecourrier-dalgerie.com — https://lecourrier-dalgerie.com/
+- depechedekabylie.com — https://depechedekabylie.com/
+- lnr-dz.com — https://lnr-dz.com/
+- lemaghrebdz.com — https://lemaghrebdz.com/
+- lexpressiondz.com — https://lexpressiondz.com/
+- elkhabar.com — https://elkhabar.com/
+- maghrebemergent.info — https://maghrebemergent.info/
+- akhersaa-dz.com — https://akhersaa-dz.com/
+- algeria-watch.de — https://algeria-watch.de/
+- entv.dz — https://entv.dz/
+- maghrebemergent.com — https://maghrebemergent.com/
+- tsa-algerie.com — https://tsa-algerie.com/
+- algerie1.com — https://algerie1.com/
+- algerie-focus.com — https://algerie-focus.com/
+- lematindz.net — https://lematindz.net/
+- letempsdz.com — https://letempsdz.com/
+- presse-dz.com — https://presse-dz.com/
+- lequotidienalgerie.org — https://lequotidienalgerie.org/
+- dzfoot.com — https://dzfoot.com/
+- sawt-alahrar.net — https://sawt-alahrar.net/
+- autoalgerie.com — https://autoalgerie.com/
+- eldjoumhouria.dz — https://eldjoumhouria.dz/
+- reflexiondz.net — https://reflexiondz.net/
+- forumactif.info — https://forumactif.info/
+- infosoir.com — https://infosoir.com/
+- horizons-dz.com — https://horizons-dz.com/
+- radioalgerie.dz — https://radioalgerie.dz/
+
 ## djibouti (north_africa) — Djibouti
 
 ### w3newspapers — https://www.w3newspapers.com/djibouti/
@@ -1730,6 +2342,48 @@ the populator script that generated this file.
 - Djib Net — http://www.djibnet.com/
 - Al Qarn — http://www.alqarn.dj/
 - La Nation — http://www.lanationdj.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 41 by GDELT monitoring volume)
+- lanationdj.com — https://lanationdj.com/
+- alqarn.dj — https://alqarn.dj/
+- africom.mil — https://africom.mil/
+- presidence.dj — https://presidence.dj/
+- dahaboo.com — https://dahaboo.com/
+- djibnet.com — https://djibnet.com/
+- somalilandinformer.com — https://somalilandinformer.com/
+- djibtalk.com — https://djibtalk.com/
+- safaripost.net — https://safaripost.net/
+- tooshnews.net — https://tooshnews.net/
+- acp-europa.eu — https://acp-europa.eu/
+- galgalanews.com — https://galgalanews.com/
+- thelondonpost.co.uk — https://thelondonpost.co.uk/
+- marketresearchtab.com — https://marketresearchtab.com/
+- renounceorrun.com — https://renounceorrun.com/
+- somaliland.org — https://somaliland.org/
+- mapsoftheworldc.xyz — https://mapsoftheworldc.xyz/
+- spe15.fr — https://spe15.fr/
+- hubaalmedia.net — https://hubaalmedia.net/
+- medeshivalley.com — https://medeshivalley.com/
+- godaalonews.net — https://godaalonews.net/
+- hawdarea.com — https://hawdarea.com/
+- shipmanagementinternational.com — https://shipmanagementinternational.com/
+- govprnews.com — https://govprnews.com/
+- halganpress.com — https://halganpress.com/
+- radiowidhwidh.com — https://radiowidhwidh.com/
+- voiceofafrica.news — https://voiceofafrica.news/
+- lepartidegauche.fr — https://lepartidegauche.fr/
+- sdwo.com — https://sdwo.com/
+- xariiradnews.com — https://xariiradnews.com/
+- clip98.co — https://clip98.co/
+- girl-independent.com — https://girl-independent.com/
+- guulwade.net — https://guulwade.net/
+- maalincusub.com — https://maalincusub.com/
+- ogaden24.info — https://ogaden24.info/
+- warbahinta.com — https://warbahinta.com/
+- allsomaali.com — https://allsomaali.com/
+- hargeele.com — https://hargeele.com/
+- lauraannegilman.net — https://lauraannegilman.net/
+- angelackerman.com — https://angelackerman.com/
 
 ## egypt (north_africa) — Egypt, Arab Rep.
 
@@ -1998,6 +2652,48 @@ the populator script that generated this file.
 - Al Wafd — https://alwafd.news/
 - Youm 7 — https://www.youm7.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1004 by GDELT monitoring volume)
+- elbadil.com — https://elbadil.com/
+- elbalad.news — https://elbalad.news/
+- 24.com.eg — https://24.com.eg/
+- albawabhnews.com — https://albawabhnews.com/
+- dostor.org — https://dostor.org/
+- vetogate.com — https://vetogate.com/
+- ahram.org.eg — https://ahram.org.eg/
+- almasryalyoum.com — https://almasryalyoum.com/
+- bwabtk.com — https://bwabtk.com/
+- aleqtisady.com — https://aleqtisady.com/
+- source-7.com — https://source-7.com/
+- shorouknews.com — https://shorouknews.com/
+- alufuqnews.com — https://alufuqnews.com/
+- el-balad.com — https://el-balad.com/
+- elnahar-news.com — https://elnahar-news.com/
+- elwatannews.com — https://elwatannews.com/
+- elfagr.org — https://elfagr.org/
+- alarab-news.com — https://alarab-news.com/
+- elfagr.com — https://elfagr.com/
+- elbashayeronline.com — https://elbashayeronline.com/
+- elghad.co — https://elghad.co/
+- elhadas.com — https://elhadas.com/
+- soutalomma.com — https://soutalomma.com/
+- mansheet.net — https://mansheet.net/
+- almrsd.co — https://almrsd.co/
+- akhbarelyom.com — https://akhbarelyom.com/
+- news24.com.eg — https://news24.com.eg/
+- egynews.net — https://egynews.net/
+- elmonzar.net — https://elmonzar.net/
+- almogaz.com — https://almogaz.com/
+- nmisr.com — https://nmisr.com/
+- 3ajlnews.com — https://3ajlnews.com/
+- swxbt.com — https://swxbt.com/
+- youm7.com — https://youm7.com/
+- eremnews.com — https://eremnews.com/
+- elmethaq.net — https://elmethaq.net/
+- misrday.com — https://misrday.com/
+- alnabaa.net — https://alnabaa.net/
+- 3yoon.co — https://3yoon.co/
+- almalnews.com — https://almalnews.com/
+
 ## libya (north_africa) — Libya
 
 ### w3newspapers — https://www.w3newspapers.com/libya/
@@ -2077,6 +2773,48 @@ the populator script that generated this file.
 - New Libya — http://www.newlibya.net/
 - Brnieq — http://brnieq.ly/
 - February — http://febp.ly/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 100 by GDELT monitoring volume)
+- libyaakhbar.com — https://libyaakhbar.com/
+- alwasat.ly — https://alwasat.ly/
+- lana-news.ly — https://lana-news.ly/
+- afrigatenews.net — https://afrigatenews.net/
+- libya-al-mostakbal.org — https://libya-al-mostakbal.org/
+- akhbarlibya24.net — https://akhbarlibya24.net/
+- infosplusgabon.com — https://infosplusgabon.com/
+- libyaherald.com — https://libyaherald.com/
+- libyanexpress.com — https://libyanexpress.com/
+- iom.int — https://iom.int/
+- libyaobserver.ly — https://libyaobserver.ly/
+- panapress.com — https://panapress.com/
+- akhbar-libya.ly — https://akhbar-libya.ly/
+- eanlibya.com — https://eanlibya.com/
+- qurynanew.com — https://qurynanew.com/
+- libyaschannel.com — https://libyaschannel.com/
+- libyaprospect.com — https://libyaprospect.com/
+- almotawaset.com — https://almotawaset.com/
+- hnec.ly — https://hnec.ly/
+- turkishjournal.com — https://turkishjournal.com/
+- zenith.me — https://zenith.me/
+- lavoixdelalibye.com — https://lavoixdelalibye.com/
+- oceancitytoday.com — https://oceancitytoday.com/
+- libyaalahrar.tv — https://libyaalahrar.tv/
+- enjeux.info — https://enjeux.info/
+- annrachelmarlowe.com — https://annrachelmarlowe.com/
+- libyanbusiness.tv — https://libyanbusiness.tv/
+- lalettremed.com — https://lalettremed.com/
+- apibestinclass.net — https://apibestinclass.net/
+- pm.gov.ly — https://pm.gov.ly/
+- brnieq.com — https://brnieq.com/
+- fondation-res-publica.org — https://fondation-res-publica.org/
+- maghreb-info.com — https://maghreb-info.com/
+- atlasweb.it — https://atlasweb.it/
+- al-hakeka.com — https://al-hakeka.com/
+- cambridgeglobalist.org — https://cambridgeglobalist.org/
+- conservativewatchnews.org — https://conservativewatchnews.org/
+- wethepeoplefree.com — https://wethepeoplefree.com/
+- migrantsatsea.org — https://migrantsatsea.org/
+- al3omk.com — https://al3omk.com/
 
 ## morocco (north_africa) — Morocco
 
@@ -2278,6 +3016,48 @@ the populator script that generated this file.
 - Bayane Al Yaoume — http://bayanealyaoume.press.ma/
 - Le Matin — https://lematin.ma/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 428 by GDELT monitoring volume)
+- lopinion.ma — https://lopinion.ma/
+- hespress.com — https://hespress.com/
+- marocpress.com — https://marocpress.com/
+- akhbarona.com — https://akhbarona.com/
+- alyaoum24.com — https://alyaoum24.com/
+- ahdath.info — https://ahdath.info/
+- cawalisse.com — https://cawalisse.com/
+- voitureaumaroc.com — https://voitureaumaroc.com/
+- medias24.com — https://medias24.com/
+- almountakhab.com — https://almountakhab.com/
+- hibapress.com — https://hibapress.com/
+- le360.ma — https://le360.ma/
+- lematin.ma — https://lematin.ma/
+- khbirate.com — https://khbirate.com/
+- bladi.net — https://bladi.net/
+- leconomiste.com — https://leconomiste.com/
+- maghress.com — https://maghress.com/
+- aujourdhui.ma — https://aujourdhui.ma/
+- khabarpress.com — https://khabarpress.com/
+- maroc.ma — https://maroc.ma/
+- leseco.ma — https://leseco.ma/
+- moroccoworldnews.com — https://moroccoworldnews.com/
+- lnt.ma — https://lnt.ma/
+- libe.ma — https://libe.ma/
+- menara.ma — https://menara.ma/
+- oujdacity.net — https://oujdacity.net/
+- telquel.ma — https://telquel.ma/
+- bladna.nl — https://bladna.nl/
+- yabiladi.com — https://yabiladi.com/
+- huffpostmaghreb.com — https://huffpostmaghreb.com/
+- assabah.press.ma — https://assabah.press.ma/
+- lemag.ma — https://lemag.ma/
+- bayanealyaoume.press.ma — https://bayanealyaoume.press.ma/
+- andaluspress.com — https://andaluspress.com/
+- lavieeco.com — https://lavieeco.com/
+- spsrasd.info — https://spsrasd.info/
+- maroc-hebdo.press.ma — https://maroc-hebdo.press.ma/
+- atlasinfo.fr — https://atlasinfo.fr/
+- h24info.ma — https://h24info.ma/
+- jadidpresse.com — https://jadidpresse.com/
+
 ## tunisia (north_africa) — Tunisia
 
 ### w3newspapers — https://www.w3newspapers.com/tunisia/
@@ -2408,6 +3188,48 @@ the populator script that generated this file.
 - La Presse — http://www.lapresse.tn/
 - Le Temps — http://www.letemps.com.tn/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 82 by GDELT monitoring volume)
+- webmanagercenter.com — https://webmanagercenter.com/
+- tap.info.tn — https://tap.info.tn/
+- businessnews.com.tn — https://businessnews.com.tn/
+- africanmanager.com — https://africanmanager.com/
+- lapresse.tn — https://lapresse.tn/
+- tuniscope.com — https://tuniscope.com/
+- leconomistemaghrebin.com — https://leconomistemaghrebin.com/
+- attounissia.com.tn — https://attounissia.com.tn/
+- webdo.tn — https://webdo.tn/
+- letemps.com.tn — https://letemps.com.tn/
+- arrakmia.com — https://arrakmia.com/
+- leaders.com.tn — https://leaders.com.tn/
+- realites.com.tn — https://realites.com.tn/
+- tunisienumerique.com — https://tunisienumerique.com/
+- shemsfm.net — https://shemsfm.net/
+- gnet.tn — https://gnet.tn/
+- essahafa.tn — https://essahafa.tn/
+- radioexpressfm.com — https://radioexpressfm.com/
+- jawharafm.net — https://jawharafm.net/
+- assabah.com.tn — https://assabah.com.tn/
+- essahafa.info.tn — https://essahafa.info.tn/
+- mosaiquefm.net — https://mosaiquefm.net/
+- tunisia-live.net — https://tunisia-live.net/
+- pm.gov.tn — https://pm.gov.tn/
+- utica.org.tn — https://utica.org.tn/
+- kapitalis.com — https://kapitalis.com/
+- espacemanager.com — https://espacemanager.com/
+- tekiano.com — https://tekiano.com/
+- nawaat.org — https://nawaat.org/
+- tunisien.tn — https://tunisien.tn/
+- tunisie.gov.tn — https://tunisie.gov.tn/
+- nessma.tv — https://nessma.tv/
+- tendancemag.com — https://tendancemag.com/
+- investir-en-tunisie.net — https://investir-en-tunisie.net/
+- tunivisions.net — https://tunivisions.net/
+- babnet.net — https://babnet.net/
+- ween.tn — https://ween.tn/
+- ilboursa.com — https://ilboursa.com/
+- tunisie-telegraph.com — https://tunisie-telegraph.com/
+- arabesque.tn — https://arabesque.tn/
+
 ## afghanistan (afghanistan) — Afghanistan
 
 ### w3newspapers — https://www.w3newspapers.com/afghanistan/
@@ -2489,6 +3311,48 @@ the populator script that generated this file.
 
 ### abyznewslinks — http://www.abyznewslinks.com/afgha.htm
 - (no entries)
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 212 by GDELT monitoring volume)
+- tolonews.com — https://tolonews.com/
+- haqiqat.se — https://haqiqat.se/
+- afghanistansun.com — https://afghanistansun.com/
+- avapress.com — https://avapress.com/
+- afghanpaper.com — https://afghanpaper.com/
+- khaama.com — https://khaama.com/
+- pajhwok.com — https://pajhwok.com/
+- bakhtarnews.com.af — https://bakhtarnews.com.af/
+- dailyafghanistan.com — https://dailyafghanistan.com/
+- afghanistannews.net — https://afghanistannews.net/
+- afghanistantimes.af — https://afghanistantimes.af/
+- mandegardaily.com — https://mandegardaily.com/
+- outlookafghanistan.net — https://outlookafghanistan.net/
+- ariananews.af — https://ariananews.af/
+- centralasiatimes.com — https://centralasiatimes.com/
+- afghanistan.ru — https://afghanistan.ru/
+- aihrc.org.af — https://aihrc.org.af/
+- afghanistan-analysts.org — https://afghanistan-analysts.org/
+- bokhdinews.af — https://bokhdinews.af/
+- tolafghan.com — https://tolafghan.com/
+- mfa.gov.af — https://mfa.gov.af/
+- rawa.org — https://rawa.org/
+- wadsam.com — https://wadsam.com/
+- taand.com — https://taand.com/
+- humanitarianresponse.info — https://humanitarianresponse.info/
+- longwarjournal.org — https://longwarjournal.org/
+- afghannews.com.af — https://afghannews.com.af/
+- usip.org — https://usip.org/
+- iwpr.net — https://iwpr.net/
+- mail.gov.af — https://mail.gov.af/
+- afghanembassy.in — https://afghanembassy.in/
+- syrianwardaily.com — https://syrianwardaily.com/
+- bbc.af — https://bbc.af/
+- aopnews.com — https://aopnews.com/
+- afghanistanembassy.no — https://afghanistanembassy.no/
+- mrrd.gov.af — https://mrrd.gov.af/
+- afghan-review.com — https://afghan-review.com/
+- afghanistanembassy.org.uk — https://afghanistanembassy.org.uk/
+- kabulpress.org — https://kabulpress.org/
+- awwproject.org — https://awwproject.org/
 
 ## pakistan (pakistan) — Pakistan
 
@@ -2824,3 +3688,45 @@ the populator script that generated this file.
 - Daily Nawa i Waqt — http://www.nawaiwaqt.com.pk/
 - Dawn — http://www.dawn.com/
 - News International — http://www.thenews.com.pk/Default.aspx
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 511 by GDELT monitoring volume)
+- thenews.com.pk — https://thenews.com.pk/
+- dawn.com — https://dawn.com/
+- tribune.com.pk — https://tribune.com.pk/
+- dailytimes.com.pk — https://dailytimes.com.pk/
+- nation.com.pk — https://nation.com.pk/
+- jang.com.pk — https://jang.com.pk/
+- javedch.com — https://javedch.com/
+- dunya.com.pk — https://dunya.com.pk/
+- dunyanews.tv — https://dunyanews.tv/
+- geo.tv — https://geo.tv/
+- pakistantelegraph.com — https://pakistantelegraph.com/
+- dawnnews.tv — https://dawnnews.tv/
+- express.pk — https://express.pk/
+- thefrontierpost.com — https://thefrontierpost.com/
+- brecorder.com — https://brecorder.com/
+- pakobserver.net — https://pakobserver.net/
+- dailypakistan.com.pk — https://dailypakistan.com.pk/
+- newageislam.com — https://newageislam.com/
+- dailyausaf.com — https://dailyausaf.com/
+- samaa.tv — https://samaa.tv/
+- pakistantoday.com.pk — https://pakistantoday.com.pk/
+- app.com.pk — https://app.com.pk/
+- southeastasiapost.com — https://southeastasiapost.com/
+- dailyaaj.com.pk — https://dailyaaj.com.pk/
+- dnd.com.pk — https://dnd.com.pk/
+- dailypakistan.pk — https://dailypakistan.pk/
+- propakistani.pk — https://propakistani.pk/
+- aaj.tv — https://aaj.tv/
+- nawaiwaqt.com.pk — https://nawaiwaqt.com.pk/
+- urduvoa.com — https://urduvoa.com/
+- radio.gov.pk — https://radio.gov.pk/
+- newsmakers.pk — https://newsmakers.pk/
+- customstoday.com.pk — https://customstoday.com.pk/
+- naibaat.pk — https://naibaat.pk/
+- dailynht.com — https://dailynht.com/
+- paperpk.com — https://paperpk.com/
+- pakistanlink.org — https://pakistanlink.org/
+- onlinenews.com.pk — https://onlinenews.com.pk/
+- arynews.tv — https://arynews.tv/
+- dailymailnews.com — https://dailymailnews.com/

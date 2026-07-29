@@ -1,7 +1,7 @@
 # Known Online-Newspaper Aggregators — Europe & Central Asia (`eca`)
 
-Pre-extracted per-country newspaper lists from four online-newspaper
-aggregators. Used by `/onboard-region-newspapers` step 2a as a static
+Pre-extracted per-country newspaper lists from four online-newspaper aggregators
+plus GDELT's domains-by-country list. Used by `/onboard-region-newspapers` step 2a as a static
 seed instead of refetching aggregator homepages every run.
 
 See `references/known_aggregators/README.md` for the ignore rules and
@@ -136,6 +136,48 @@ the populator script that generated this file.
 - Karavan — http://www.caravan.kz/
 - Zhas Alash — http://www.zhasalash.kz/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 228 by GDELT monitoring volume)
+- inform.kz — https://inform.kz/
+- kazpravda.kz — https://kazpravda.kz/
+- baq.kz — https://baq.kz/
+- forbes.kz — https://forbes.kz/
+- nur.kz — https://nur.kz/
+- bnews.kz — https://bnews.kz/
+- egemen.kz — https://egemen.kz/
+- kt.kz — https://kt.kz/
+- zonakz.net — https://zonakz.net/
+- today.kz — https://today.kz/
+- kursiv.kz — https://kursiv.kz/
+- time.kz — https://time.kz/
+- 365info.kz — https://365info.kz/
+- zhasalash.kz — https://zhasalash.kz/
+- express-k.kz — https://express-k.kz/
+- azh.kz — https://azh.kz/
+- newskaz.ru — https://newskaz.ru/
+- azattyq.org — https://azattyq.org/
+- caravan.kz — https://caravan.kz/
+- kazakh-tv.kz — https://kazakh-tv.kz/
+- astanatimes.com — https://astanatimes.com/
+- tengrinews.kz — https://tengrinews.kz/
+- np.kz — https://np.kz/
+- astanatv.kz — https://astanatv.kz/
+- interfax.kz — https://interfax.kz/
+- kapital.kz — https://kapital.kz/
+- gazeta.kz — https://gazeta.kz/
+- baigenews.kz — https://baigenews.kz/
+- ng.kz — https://ng.kz/
+- mfa.kz — https://mfa.kz/
+- nomad.su — https://nomad.su/
+- dn.kz — https://dn.kz/
+- forum18.org — https://forum18.org/
+- sayasat.org — https://sayasat.org/
+- and.kz — https://and.kz/
+- internews.kz — https://internews.kz/
+- kazworld.info — https://kazworld.info/
+- astanafm.kz — https://astanafm.kz/
+- crudeaccountability.org — https://crudeaccountability.org/
+- dknews.kz — https://dknews.kz/
+
 ## kyrgyz_republic (central_asia) — Kyrgyz Republic
 
 ### w3newspapers — https://www.w3newspapers.com/kyrgyzstan/
@@ -184,6 +226,48 @@ the populator script that generated this file.
 - Kyrgyzstan News — http://www.kyrgyzstannews.net/
 - Slovo Kyrgystana — http://www.sk.kg/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 116 by GDELT monitoring volume)
+- kabar.kg — https://kabar.kg/
+- akipress.org — https://akipress.org/
+- akipress.com — https://akipress.com/
+- ca-news.org — https://ca-news.org/
+- vb.kg — https://vb.kg/
+- 24.kg — https://24.kg/
+- knews.kg — https://knews.kg/
+- timesca.com — https://timesca.com/
+- azattyk.org — https://azattyk.org/
+- tazabek.kg — https://tazabek.kg/
+- turmush.kg — https://turmush.kg/
+- slovo.kg — https://slovo.kg/
+- 24kg.org — https://24kg.org/
+- catoday.org — https://catoday.org/
+- zpress.kg — https://zpress.kg/
+- pr.kg — https://pr.kg/
+- vof.kg — https://vof.kg/
+- kloop.kg — https://kloop.kg/
+- for.kg — https://for.kg/
+- zanoza.kg — https://zanoza.kg/
+- uncorneredmarket.com — https://uncorneredmarket.com/
+- sputnik.kg — https://sputnik.kg/
+- pagetour.org — https://pagetour.org/
+- kyrtag.kg — https://kyrtag.kg/
+- gezitter.org — https://gezitter.org/
+- mvd.kg — https://mvd.kg/
+- msn.kg — https://msn.kg/
+- border.kg — https://border.kg/
+- gps.gov.kg — https://gps.gov.kg/
+- mfa.gov.kg — https://mfa.gov.kg/
+- snowleopard.org — https://snowleopard.org/
+- silkroadexplore.com — https://silkroadexplore.com/
+- customs.kg — https://customs.kg/
+- epickyrgyzjourneys.com — https://epickyrgyzjourneys.com/
+- blonde-gypsy.com — https://blonde-gypsy.com/
+- fsa.kg — https://fsa.kg/
+- minfin.kg — https://minfin.kg/
+- gskn.kg — https://gskn.kg/
+- minjust.gov.kg — https://minjust.gov.kg/
+- birduino.kg — https://birduino.kg/
+
 ## tajikistan (central_asia) — Tajikistan
 
 ### w3newspapers — https://www.w3newspapers.com/tajikistan/
@@ -209,6 +293,48 @@ the populator script that generated this file.
 - Asia Plus — http://www.asiaplus.tj/ru/newspaper
 - Jumhuriyat — http://www.jumhuriyat.tj/
 - Tojikiston — http://www.pressa.tj/ru
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 51 by GDELT monitoring volume)
+- khovar.tj — https://khovar.tj/
+- news.tj — https://news.tj/
+- asiaplus.tj — https://asiaplus.tj/
+- avesta.tj — https://avesta.tj/
+- ozodi.org — https://ozodi.org/
+- untj.org — https://untj.org/
+- theopenasia.net — https://theopenasia.net/
+- cabar.asia — https://cabar.asia/
+- tajinfo.org — https://tajinfo.org/
+- sputnik-tj.com — https://sputnik-tj.com/
+- livingasia.online — https://livingasia.online/
+- dialog.tj — https://dialog.tj/
+- rus4all.ru — https://rus4all.ru/
+- theglobegwu.com — https://theglobegwu.com/
+- gefter.ru — https://gefter.ru/
+- mfa.tj — https://mfa.tj/
+- riss.ru — https://riss.ru/
+- tjknews.com — https://tjknews.com/
+- pressa.tj — https://pressa.tj/
+- culturaltravels.com — https://culturaltravels.com/
+- businessweek.com — https://businessweek.com/
+- centreline.com.pk — https://centreline.com.pk/
+- foodperestroika.com — https://foodperestroika.com/
+- siliconrus.com — https://siliconrus.com/
+- csabusiness.com — https://csabusiness.com/
+- sarez-lake.ru — https://sarez-lake.ru/
+- akhbor.com — https://akhbor.com/
+- anthropology-news.org — https://anthropology-news.org/
+- catv24.com — https://catv24.com/
+- onnik-krikorian.com — https://onnik-krikorian.com/
+- gadgethacks.com — https://gadgethacks.com/
+- vecherka.tj — https://vecherka.tj/
+- marout.eu — https://marout.eu/
+- palestine.com — https://palestine.com/
+- devj.org — https://devj.org/
+- nm.tj — https://nm.tj/
+- prayformuslims.org — https://prayformuslims.org/
+- rcc.ru — https://rcc.ru/
+- livedead.org — https://livedead.org/
+- freedex.org — https://freedex.org/
 
 ## turkmenistan (central_asia) — Turkmenistan
 
@@ -252,6 +378,48 @@ Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
 - Turkmenistan Live — http://turkmenistanlive.com/
 - Turkmenistan News — http://www.turkmenistannews.net/
 - Zaman — http://zamanturkmenistan.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 42 by GDELT monitoring volume)
+- turkmenistan.gov.tm — https://turkmenistan.gov.tm/
+- tdh.gov.tm — https://tdh.gov.tm/
+- turkmenistan.ru — https://turkmenistan.ru/
+- chrono-tm.org — https://chrono-tm.org/
+- newscentralasia.net — https://newscentralasia.net/
+- turkmeninform.com — https://turkmeninform.com/
+- turkmenportal.com — https://turkmenportal.com/
+- habartm.org — https://habartm.org/
+- gundogar.org — https://gundogar.org/
+- azathabar.com — https://azathabar.com/
+- varlamov.ru — https://varlamov.ru/
+- republic.ru — https://republic.ru/
+- russiancouncil.ru — https://russiancouncil.ru/
+- bolshoi.by — https://bolshoi.by/
+- dental-tribune.com — https://dental-tribune.com/
+- thecaspiantimes.com — https://thecaspiantimes.com/
+- futuretravel.today — https://futuretravel.today/
+- ivandrums.com — https://ivandrums.com/
+- thefrontierpost.pk — https://thefrontierpost.pk/
+- hronikatm.com — https://hronikatm.com/
+- neftianka.ru — https://neftianka.ru/
+- adventurous-travels.com — https://adventurous-travels.com/
+- techten.in — https://techten.in/
+- global-security-news.com — https://global-security-news.com/
+- theshowbiznews.com — https://theshowbiznews.com/
+- iran-un.org — https://iran-un.org/
+- tfeb.gov.tm — https://tfeb.gov.tm/
+- pakistannewswire.net — https://pakistannewswire.net/
+- totallynailedit.com — https://totallynailedit.com/
+- planelesstravellers.com — https://planelesstravellers.com/
+- abonewscast.com — https://abonewscast.com/
+- arabsforchrist.org — https://arabsforchrist.org/
+- pozitiflife.com — https://pozitiflife.com/
+- springlives.com — https://springlives.com/
+- thefaultlines.com — https://thefaultlines.com/
+- exploration-online.com — https://exploration-online.com/
+- hyundaiilbo.com — https://hyundaiilbo.com/
+- tribunaperm.ru — https://tribunaperm.ru/
+- british-consulate.org — https://british-consulate.org/
+- kamilakielar.pl — https://kamilakielar.pl/
 
 ## uzbekistan (central_asia) — Uzbekistan
 
@@ -321,6 +489,48 @@ Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
 - Narodnoe Slovo — http://narodnoeslovo.uz/
 - Pravda Vostoka — http://www.pv.uz/
 - Xalq Sozi — http://xs.uz/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 109 by GDELT monitoring volume)
+- jahonnews.uz — https://jahonnews.uz/
+- fergananews.com — https://fergananews.com/
+- uzdaily.com — https://uzdaily.com/
+- uzdaily.uz — https://uzdaily.uz/
+- mytashkent.uz — https://mytashkent.uz/
+- uza.uz — https://uza.uz/
+- vesti.uz — https://vesti.uz/
+- narodnoeslovo.uz — https://narodnoeslovo.uz/
+- pv.uz — https://pv.uz/
+- nuz.uz — https://nuz.uz/
+- uz24.uz — https://uz24.uz/
+- harakat.net — https://harakat.net/
+- mvd.uz — https://mvd.uz/
+- ozodlik.org — https://ozodlik.org/
+- zamondosh.com — https://zamondosh.com/
+- elections.uz — https://elections.uz/
+- gazeta.uz — https://gazeta.uz/
+- uzmetronom.com — https://uzmetronom.com/
+- asiaterra.info — https://asiaterra.info/
+- caa-network.org — https://caa-network.org/
+- kun.uz — https://kun.uz/
+- gov.uz — https://gov.uz/
+- podrobno.uz — https://podrobno.uz/
+- sputniknews-uz.com — https://sputniknews-uz.com/
+- uzbekgermanforum.org — https://uzbekgermanforum.org/
+- eurasiatimes.org — https://eurasiatimes.org/
+- noviyvek.uz — https://noviyvek.uz/
+- uzbekistan.or.kr — https://uzbekistan.or.kr/
+- uzreport.news — https://uzreport.news/
+- norma.uz — https://norma.uz/
+- uzbekembassy.in — https://uzbekembassy.in/
+- mfa.uz — https://mfa.uz/
+- prokuratura.uz — https://prokuratura.uz/
+- 12news.uz — https://12news.uz/
+- review.uz — https://review.uz/
+- ijf.org — https://ijf.org/
+- ozodlik.mobi — https://ozodlik.mobi/
+- foreign-intrigue.com — https://foreign-intrigue.com/
+- sergeykorol.ru — https://sergeykorol.ru/
+- ut.uz — https://ut.uz/
 
 ## armenia (south_caucasus) — Armenia
 
@@ -484,6 +694,48 @@ Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
 - Hayastany Hanrapetutyun — http://www.hhpress.am/
 - Haykakan Zhamanak — http://armtimes.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 218 by GDELT monitoring volume)
+- armenpress.am — https://armenpress.am/
+- panorama.am — https://panorama.am/
+- aysor.am — https://aysor.am/
+- news.am — https://news.am/
+- aravot.am — https://aravot.am/
+- panarmenian.net — https://panarmenian.net/
+- hraparak.am — https://hraparak.am/
+- golosarmenii.am — https://golosarmenii.am/
+- yerkir.am — https://yerkir.am/
+- lragir.am — https://lragir.am/
+- armenews.com — https://armenews.com/
+- arminfo.info — https://arminfo.info/
+- yerkramas.org — https://yerkramas.org/
+- azatutyun.am — https://azatutyun.am/
+- nyut.am — https://nyut.am/
+- 1in.am — https://1in.am/
+- armtimes.com — https://armtimes.com/
+- armradio.am — https://armradio.am/
+- arminfo.am — https://arminfo.am/
+- hetq.am — https://hetq.am/
+- asbarez.com — https://asbarez.com/
+- times.am — https://times.am/
+- hayernaysor.am — https://hayernaysor.am/
+- lurer.com — https://lurer.com/
+- nv.am — https://nv.am/
+- aztagdaily.com — https://aztagdaily.com/
+- armenianweekly.com — https://armenianweekly.com/
+- tert.am — https://tert.am/
+- hhpress.am — https://hhpress.am/
+- oratert.com — https://oratert.com/
+- mediamax.am — https://mediamax.am/
+- armenianow.com — https://armenianow.com/
+- yerkirmedia.am — https://yerkirmedia.am/
+- azg.am — https://azg.am/
+- massispost.com — https://massispost.com/
+- horizonweekly.ca — https://horizonweekly.ca/
+- diarioarmenia.org.ar — https://diarioarmenia.org.ar/
+- a1plus.am — https://a1plus.am/
+- mirrorspectator.com — https://mirrorspectator.com/
+- orer.eu — https://orer.eu/
+
 ## azerbaijan (south_caucasus) — Azerbaijan
 
 ### w3newspapers — https://www.w3newspapers.com/azerbaijan/
@@ -618,6 +870,48 @@ Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
 - Yeni Musavat — http://musavat.com/
 - Zerkalo — http://www.zerkalo.az/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 120 by GDELT monitoring volume)
+- azertag.az — https://azertag.az/
+- trend.az — https://trend.az/
+- yeniazerbaycan.com — https://yeniazerbaycan.com/
+- day.az — https://day.az/
+- 525.az — https://525.az/
+- azerbaijan-news.az — https://azerbaijan-news.az/
+- apa.az — https://apa.az/
+- azernews.az — https://azernews.az/
+- kaspi.az — https://kaspi.az/
+- abc.az — https://abc.az/
+- haqqin.az — https://haqqin.az/
+- milli.az — https://milli.az/
+- today.az — https://today.az/
+- 1news.az — https://1news.az/
+- xalqqazeti.com — https://xalqqazeti.com/
+- vesti.az — https://vesti.az/
+- news.az — https://news.az/
+- xalqcebhesi.az — https://xalqcebhesi.az/
+- br.az — https://br.az/
+- interfax.az — https://interfax.az/
+- sherg.az — https://sherg.az/
+- musavat.com — https://musavat.com/
+- lent.az — https://lent.az/
+- adalet.az — https://adalet.az/
+- serqqapisi.az — https://serqqapisi.az/
+- yenicag.az — https://yenicag.az/
+- artsakhtert.com — https://artsakhtert.com/
+- turan.az — https://turan.az/
+- president.az — https://president.az/
+- azeri.ru — https://azeri.ru/
+- ayna.az — https://ayna.az/
+- caspianbarrel.org — https://caspianbarrel.org/
+- anspress.com — https://anspress.com/
+- zaman.az — https://zaman.az/
+- azeriamericanews.com — https://azeriamericanews.com/
+- oley.az — https://oley.az/
+- maliyye.gov.az — https://maliyye.gov.az/
+- moscow-baku.ru — https://moscow-baku.ru/
+- salamnews.org — https://salamnews.org/
+- azerireport.com — https://azerireport.com/
+
 ## georgia (south_caucasus) — Georgia
 
 ### w3newspapers — https://www.w3newspapers.com/georgia/
@@ -703,6 +997,40 @@ Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
 - Kviris Palitra — http://www.kvirispalitra.ge/
 - Rezonansi — http://www.resonancedaily.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (32 domains by GDELT monitoring volume)
+- sputnik-georgia.com — https://sputnik-georgia.com/
+- sputnik-georgia.ru — https://sputnik-georgia.ru/
+- geotimes.ge — https://geotimes.ge/
+- georgianjournal.ge — https://georgianjournal.ge/
+- georgiatoday.ge — https://georgiatoday.ge/
+- civil.ge — https://civil.ge/
+- kvirispalitra.ge — https://kvirispalitra.ge/
+- rustavi2.com — https://rustavi2.com/
+- 1tv.ge — https://1tv.ge/
+- dfwatch.net — https://dfwatch.net/
+- vinoge.com — https://vinoge.com/
+- mfaapsny.org — https://mfaapsny.org/
+- abkhazworld.com — https://abkhazworld.com/
+- 2tv.ge — https://2tv.ge/
+- hvino.com — https://hvino.com/
+- rustavi2.ge — https://rustavi2.ge/
+- 24saati.ge — https://24saati.ge/
+- thewanderlustkitchen.com — https://thewanderlustkitchen.com/
+- mrdi.gov.ge — https://mrdi.gov.ge/
+- government.gov.ge — https://government.gov.ge/
+- abkhazia.com — https://abkhazia.com/
+- rsonews.org — https://rsonews.org/
+- loctier.com — https://loctier.com/
+- salzgeber.de — https://salzgeber.de/
+- radianceofyoga.com — https://radianceofyoga.com/
+- studioriley.com — https://studioriley.com/
+- prashanthiblog.com — https://prashanthiblog.com/
+- jennifermack.net — https://jennifermack.net/
+- writersblocpresents.com — https://writersblocpresents.com/
+- chromobile.net — https://chromobile.net/
+- lavozderioseco.com — https://lavozderioseco.com/
+- winenous.co.uk — https://winenous.co.uk/
+
 ## belarus (eastern_europe) — Belarus
 
 ### w3newspapers — https://www.w3newspapers.com/belarus/
@@ -763,6 +1091,48 @@ Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
 - Belorusskaia Delovaia Gazeta — http://bdg.by/
 - Belorusskaia Gazeta — http://www.belgazeta.by/
 - Sovetskaia Belorussiia — http://www.sb.by/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 261 by GDELT monitoring volume)
+- charter97.org — https://charter97.org/
+- belta.by — https://belta.by/
+- sb.by — https://sb.by/
+- tut.by — https://tut.by/
+- belaruspartisan.org — https://belaruspartisan.org/
+- interfax.by — https://interfax.by/
+- belapan.by — https://belapan.by/
+- belapan.com — https://belapan.com/
+- naviny.by — https://naviny.by/
+- gazetaby.com — https://gazetaby.com/
+- euroradio.fm — https://euroradio.fm/
+- vgr.by — https://vgr.by/
+- kp.by — https://kp.by/
+- afn.by — https://afn.by/
+- belgazeta.by — https://belgazeta.by/
+- ont.by — https://ont.by/
+- nv-online.info — https://nv-online.info/
+- mk.by — https://mk.by/
+- bdg.by — https://bdg.by/
+- zautra.by — https://zautra.by/
+- mst.by — https://mst.by/
+- belaruspartisan.by — https://belaruspartisan.by/
+- vsr.mil.by — https://vsr.mil.by/
+- belmarket.by — https://belmarket.by/
+- belarusdigest.com — https://belarusdigest.com/
+- tvr.by — https://tvr.by/
+- dneprovec.by — https://dneprovec.by/
+- vb.by — https://vb.by/
+- nb.by — https://nb.by/
+- vitebsk.cc — https://vitebsk.cc/
+- mininform.gov.by — https://mininform.gov.by/
+- gs.by — https://gs.by/
+- house.gov.by — https://house.gov.by/
+- eurobelarus.info — https://eurobelarus.info/
+- government.by — https://government.by/
+- belchas.by — https://belchas.by/
+- belarusinfocus.info — https://belarusinfocus.info/
+- babruysk.by — https://babruysk.by/
+- mfa.gov.by — https://mfa.gov.by/
+- president.gov.by — https://president.gov.by/
 
 ## moldova (eastern_europe) — Moldova
 
@@ -847,6 +1217,48 @@ Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
 - Nezavisimaya Moldova — http://www.nm.md/
 - Timpul — http://www.timpul.md/
 - Ziarul National — http://www.ziarulnational.md/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 154 by GDELT monitoring volume)
+- yam.md — https://yam.md/
+- timpul.md — https://timpul.md/
+- europalibera.org — https://europalibera.org/
+- radiochisinau.md — https://radiochisinau.md/
+- publika.md — https://publika.md/
+- ziarulnational.md — https://ziarulnational.md/
+- kp.md — https://kp.md/
+- sputnik.md — https://sputnik.md/
+- moldpres.md — https://moldpres.md/
+- vedomosti.md — https://vedomosti.md/
+- tribuna.md — https://tribuna.md/
+- newsmaker.md — https://newsmaker.md/
+- zdg.md — https://zdg.md/
+- try.md — https://try.md/
+- trm.md — https://trm.md/
+- moldova-suverana.md — https://moldova-suverana.md/
+- jurnal.md — https://jurnal.md/
+- civic.md — https://civic.md/
+- infotag.md — https://infotag.md/
+- interlic.md — https://interlic.md/
+- gov.md — https://gov.md/
+- jurnaltv.md — https://jurnaltv.md/
+- protv.md — https://protv.md/
+- cuvintul.md — https://cuvintul.md/
+- radioorhei.info — https://radioorhei.info/
+- cec.md — https://cec.md/
+- presedinte.md — https://presedinte.md/
+- socialistii.md — https://socialistii.md/
+- inprofunzime.md — https://inprofunzime.md/
+- radionoroc.md — https://radionoroc.md/
+- parlament.md — https://parlament.md/
+- newsmoldova.md — https://newsmoldova.md/
+- crimemoldova.com — https://crimemoldova.com/
+- perfecte.md — https://perfecte.md/
+- unghiul.info — https://unghiul.info/
+- vipmagazin.md — https://vipmagazin.md/
+- info.md — https://info.md/
+- contrafort.md — https://contrafort.md/
+- cojocari.ro — https://cojocari.ro/
+- expresul.com — https://expresul.com/
 
 ## ukraine (eastern_europe) — Ukraine
 
@@ -1041,6 +1453,48 @@ Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
 ### abyznewslinks — http://www.abyznewslinks.com/ukrai.htm
 - (no entries)
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1861 by GDELT monitoring volume)
+- unn.com.ua — https://unn.com.ua/
+- gazeta.ua — https://gazeta.ua/
+- zik.ua — https://zik.ua/
+- 24tv.ua — https://24tv.ua/
+- interfax.com.ua — https://interfax.com.ua/
+- tsn.ua — https://tsn.ua/
+- censor.net.ua — https://censor.net.ua/
+- ukranews.com — https://ukranews.com/
+- depo.ua — https://depo.ua/
+- segodnya.ua — https://segodnya.ua/
+- korrespondent.net — https://korrespondent.net/
+- svodka.net — https://svodka.net/
+- meta.ua — https://meta.ua/
+- unian.ua — https://unian.ua/
+- unian.net — https://unian.net/
+- radiosvoboda.org — https://radiosvoboda.org/
+- gordonua.com — https://gordonua.com/
+- pressorg24.com — https://pressorg24.com/
+- 112.ua — https://112.ua/
+- obozrevatel.com — https://obozrevatel.com/
+- ukrinform.ua — https://ukrinform.ua/
+- golos.ua — https://golos.ua/
+- nv.ua — https://nv.ua/
+- pravda.if.ua — https://pravda.if.ua/
+- news-front.info — https://news-front.info/
+- rbc.ua — https://rbc.ua/
+- podrobnosti.ua — https://podrobnosti.ua/
+- galinfo.com.ua — https://galinfo.com.ua/
+- telegraf.com.ua — https://telegraf.com.ua/
+- allkharkov.ua — https://allkharkov.ua/
+- rian.com.ua — https://rian.com.ua/
+- vgolos.com.ua — https://vgolos.com.ua/
+- liga.net — https://liga.net/
+- espreso.tv — https://espreso.tv/
+- kp.ua — https://kp.ua/
+- online.ua — https://online.ua/
+- hi-fidelity-forum.com — https://hi-fidelity-forum.com/
+- focus.ua — https://focus.ua/
+- dialog.ua — https://dialog.ua/
+- from-ua.com — https://from-ua.com/
+
 ## albania (western_balkans) — Albania
 
 ### w3newspapers — https://www.w3newspapers.com/albania/
@@ -1202,6 +1656,48 @@ Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
 - Zhurnal — http://www.zhurnal.al/
 - Shekulli — http://www.shekulli.com.al/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 178 by GDELT monitoring volume)
+- fax.al — https://fax.al/
+- kohajone.com — https://kohajone.com/
+- telegraf.al — https://telegraf.al/
+- oranews.tv — https://oranews.tv/
+- botasot.info — https://botasot.info/
+- gazeta-shqip.com — https://gazeta-shqip.com/
+- gazetatema.net — https://gazetatema.net/
+- albaniannews.com — https://albaniannews.com/
+- sot.com.al — https://sot.com.al/
+- ata.gov.al — https://ata.gov.al/
+- balkanweb.com — https://balkanweb.com/
+- noa.al — https://noa.al/
+- gazetadielli.com — https://gazetadielli.com/
+- tvklan.al — https://tvklan.al/
+- gazeta55.al — https://gazeta55.al/
+- tiranaobserver.al — https://tiranaobserver.al/
+- rtsh.al — https://rtsh.al/
+- 24-ore.com — https://24-ore.com/
+- albeu.com — https://albeu.com/
+- tiranatimes.com — https://tiranatimes.com/
+- thealbanian.co.uk — https://thealbanian.co.uk/
+- shekulli.com.al — https://shekulli.com.al/
+- panorama.com.al — https://panorama.com.al/
+- channel-one.al — https://channel-one.al/
+- himara.gr — https://himara.gr/
+- ps.al — https://ps.al/
+- rilindjademokratike.com — https://rilindjademokratike.com/
+- faxweb.al — https://faxweb.al/
+- kld.al — https://kld.al/
+- balkaneu.com — https://balkaneu.com/
+- zeri-popullit.com — https://zeri-popullit.com/
+- gazetatelegraf.com — https://gazetatelegraf.com/
+- bankofalbania.org — https://bankofalbania.org/
+- standard.al — https://standard.al/
+- aaf.mil.al — https://aaf.mil.al/
+- zeriamerikes.com — https://zeriamerikes.com/
+- parlament.al — https://parlament.al/
+- exit.al — https://exit.al/
+- pdiu.al — https://pdiu.al/
+- albeu.al — https://albeu.al/
+
 ## bosnia_and_herzegovina (western_balkans) — Bosnia and Herzegovina
 
 ### w3newspapers — https://www.w3newspapers.com/bosnia-and-herzegovina/
@@ -1306,6 +1802,48 @@ Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
 - Nezavisne Novine — http://www.nezavisne.com/
 - Oslobodenje — http://www.oslobodjenje.ba/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 53 by GDELT monitoring volume)
+- avaz.ba — https://avaz.ba/
+- oslobodjenje.ba — https://oslobodjenje.ba/
+- klix.ba — https://klix.ba/
+- slobodna-bosna.ba — https://slobodna-bosna.ba/
+- bhrt.ba — https://bhrt.ba/
+- fokus.ba — https://fokus.ba/
+- banjalukain.com — https://banjalukain.com/
+- federalna.ba — https://federalna.ba/
+- 24sata.info — https://24sata.info/
+- hayat.ba — https://hayat.ba/
+- rtvusk.ba — https://rtvusk.ba/
+- faktor.ba — https://faktor.ba/
+- bosnjaci.net — https://bosnjaci.net/
+- sarajevotimes.com — https://sarajevotimes.com/
+- sodalive.ba — https://sodalive.ba/
+- seebiz.net — https://seebiz.net/
+- cin.ba — https://cin.ba/
+- fbihvlada.gov.ba — https://fbihvlada.gov.ba/
+- icty.org — https://icty.org/
+- fup.gov.ba — https://fup.gov.ba/
+- israelreturns.org — https://israelreturns.org/
+- 7dana.info — https://7dana.info/
+- parlament.ba — https://parlament.ba/
+- tuzilastvobih.gov.ba — https://tuzilastvobih.gov.ba/
+- fena.ba — https://fena.ba/
+- rtvtk.ba — https://rtvtk.ba/
+- bhinfo.fr — https://bhinfo.fr/
+- stlbosnians.com — https://stlbosnians.com/
+- yorkshire.com — https://yorkshire.com/
+- r3bl.me — https://r3bl.me/
+- muchaclase.es — https://muchaclase.es/
+- polskikosz.pl — https://polskikosz.pl/
+- sartr.ba — https://sartr.ba/
+- vzs.ba — https://vzs.ba/
+- storiesforsociety.com — https://storiesforsociety.com/
+- jurnal.net — https://jurnal.net/
+- sff.ba — https://sff.ba/
+- lodonet.com — https://lodonet.com/
+- chrisleslie.com — https://chrisleslie.com/
+- dresdencommunity.co.uk — https://dresdencommunity.co.uk/
+
 ## kosovo (western_balkans) — Kosovo
 
 ### w3newspapers — (not listed)
@@ -1348,6 +1886,48 @@ Novosti Turkmenistana — https://habartm.org/archives/category/news-in-english
 Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Koha Ditore — http://koha.net/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 59 by GDELT monitoring volume)
+- telegrafi.com — https://telegrafi.com/
+- gazetaexpress.com — https://gazetaexpress.com/
+- kosova-sot.info — https://kosova-sot.info/
+- zeri.info — https://zeri.info/
+- gazetatribuna.com — https://gazetatribuna.com/
+- lajmi.net — https://lajmi.net/
+- kosovalive360.com — https://kosovalive360.com/
+- kosovarja-ks.com — https://kosovarja-ks.com/
+- revistaekonomia.com — https://revistaekonomia.com/
+- insajderi.com — https://insajderi.com/
+- kosovapress.com — https://kosovapress.com/
+- mfa-ks.net — https://mfa-ks.net/
+- evropaelire.org — https://evropaelire.org/
+- klankosova.tv — https://klankosova.tv/
+- kosovotwopointzero.com — https://kosovotwopointzero.com/
+- koha.net — https://koha.net/
+- bqk-kos.org — https://bqk-kos.org/
+- lajmeshqip.com — https://lajmeshqip.com/
+- rtv21.tv — https://rtv21.tv/
+- shprehja.com — https://shprehja.com/
+- digjitale.com — https://digjitale.com/
+- newkosovareport.com — https://newkosovareport.com/
+- prishtinainsight.com — https://prishtinainsight.com/
+- arbresh.info — https://arbresh.info/
+- ballkani.info — https://ballkani.info/
+- kossev.info — https://kossev.info/
+- albswiss.com — https://albswiss.com/
+- mesazhi.com — https://mesazhi.com/
+- buletiniekonomik.com — https://buletiniekonomik.com/
+- ditori.com — https://ditori.com/
+- prizrenpost.com — https://prizrenpost.com/
+- llapi.info — https://llapi.info/
+- iurisprudentes.it — https://iurisprudentes.it/
+- lajme247.com — https://lajme247.com/
+- magazinealbania.com — https://magazinealbania.com/
+- veriu.info — https://veriu.info/
+- kosovalive.org — https://kosovalive.org/
+- gazetasheshi.com — https://gazetasheshi.com/
+- gazetaeprizrenit.net — https://gazetaeprizrenit.net/
+- florianbieber.org — https://florianbieber.org/
+
 ## montenegro (western_balkans) — Montenegro
 
 ### w3newspapers — https://www.w3newspapers.com/montenegro/
@@ -1386,6 +1966,34 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Dan — http://www.dan.co.me/
 - Pobjeda — http://www.pobjeda.co.me/
 - Vijesti — http://www.vijesti.me/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (26 domains by GDELT monitoring volume)
+- rtcg.me — https://rtcg.me/
+- portalanalitika.me — https://portalanalitika.me/
+- dan.co.me — https://dan.co.me/
+- pcnen.com — https://pcnen.com/
+- predsjednik.gov.me — https://predsjednik.gov.me/
+- www.gov.me — https://www.gov.me/
+- radiojadran.com — https://radiojadran.com/
+- skupstina.me — https://skupstina.me/
+- total-montenegro-news.com — https://total-montenegro-news.com/
+- cdm.me — https://cdm.me/
+- landcoalition.org — https://landcoalition.org/
+- phillipreeve.net — https://phillipreeve.net/
+- mina-info.me — https://mina-info.me/
+- mountainphotographer.com — https://mountainphotographer.com/
+- fatonovo.com.br — https://fatonovo.com.br/
+- cb-cg.org — https://cb-cg.org/
+- visit-montenegro.com — https://visit-montenegro.com/
+- rubybenz.com — https://rubybenz.com/
+- pozitivnacrnagora.me — https://pozitivnacrnagora.me/
+- carnivalcities.org — https://carnivalcities.org/
+- webbloggirl.com — https://webbloggirl.com/
+- 44cup.org — https://44cup.org/
+- tombraiderforums.com — https://tombraiderforums.com/
+- bjorn3d.com — https://bjorn3d.com/
+- escserbia.com — https://escserbia.com/
+- trutnovak.cz — https://trutnovak.cz/
 
 ## north_macedonia (western_balkans) — North Macedonia
 
@@ -1525,6 +2133,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Nova Makedonija — http://www.novamakedonija.com.mk/
 - Utrinski Vesnik — http://www.utrinski.mk/
 - Vecer — http://vecer.mk/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 270 by GDELT monitoring volume)
+- time.mk — https://time.mk/
+- daily.mk — https://daily.mk/
+- ekipa.mk — https://ekipa.mk/
+- mia.mk — https://mia.mk/
+- utrinski.mk — https://utrinski.mk/
+- makfax.com.mk — https://makfax.com.mk/
+- republika.mk — https://republika.mk/
+- kanal5.com.mk — https://kanal5.com.mk/
+- vecer.mk — https://vecer.mk/
+- press24.mk — https://press24.mk/
+- sitel.com.mk — https://sitel.com.mk/
+- kurir.mk — https://kurir.mk/
+- dnevnik.mk — https://dnevnik.mk/
+- mkd.mk — https://mkd.mk/
+- portalb.mk — https://portalb.mk/
+- novamakedonija.com.mk — https://novamakedonija.com.mk/
+- skopjeinfo.mk — https://skopjeinfo.mk/
+- netpress.com.mk — https://netpress.com.mk/
+- plusinfo.mk — https://plusinfo.mk/
+- lajmpress.com — https://lajmpress.com/
+- denesen.mk — https://denesen.mk/
+- novatv.mk — https://novatv.mk/
+- mvr.gov.mk — https://mvr.gov.mk/
+- almakos.com — https://almakos.com/
+- telegraf.mk — https://telegraf.mk/
+- iris.mk — https://iris.mk/
+- maktel.mk — https://maktel.mk/
+- libertas.mk — https://libertas.mk/
+- vest.mk — https://vest.mk/
+- alfa.mk — https://alfa.mk/
+- telma.com.mk — https://telma.com.mk/
+- vlada.mk — https://vlada.mk/
+- koha.mk — https://koha.mk/
+- 24.mk — https://24.mk/
+- macedoniaonline.eu — https://macedoniaonline.eu/
+- vmro-dpmne.org.mk — https://vmro-dpmne.org.mk/
+- slobodnaevropa.mk — https://slobodnaevropa.mk/
+- ohridnews.com — https://ohridnews.com/
+- sky.mk — https://sky.mk/
+- strugalajm.com — https://strugalajm.com/
 
 ## serbia (western_balkans) — Serbia
 
@@ -1673,6 +2323,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Glas Javnosti — http://www.glas-javnosti.rs/
 - Politika — http://www.politika.rs/scc
 - Vecernje Novosti — http://www.novosti.rs/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 178 by GDELT monitoring volume)
+- naslovi.net — https://naslovi.net/
+- blic.rs — https://blic.rs/
+- b92.net — https://b92.net/
+- rts.rs — https://rts.rs/
+- krstarica.com — https://krstarica.com/
+- novosti.rs — https://novosti.rs/
+- danas.rs — https://danas.rs/
+- tanjug.rs — https://tanjug.rs/
+- rtv.rs — https://rtv.rs/
+- dnevnik.rs — https://dnevnik.rs/
+- ekapija.com — https://ekapija.com/
+- politika.rs — https://politika.rs/
+- nspm.rs — https://nspm.rs/
+- novimagazin.rs — https://novimagazin.rs/
+- vesti-online.com — https://vesti-online.com/
+- glaszapadnesrbije.rs — https://glaszapadnesrbije.rs/
+- alo.rs — https://alo.rs/
+- informer.rs — https://informer.rs/
+- telegraf.rs — https://telegraf.rs/
+- kurir.rs — https://kurir.rs/
+- happytv.tv — https://happytv.tv/
+- slobodnaevropa.org — https://slobodnaevropa.org/
+- srbija.gov.rs — https://srbija.gov.rs/
+- autonomija.info — https://autonomija.info/
+- zurnal.rs — https://zurnal.rs/
+- 021.rs — https://021.rs/
+- studiob.rs — https://studiob.rs/
+- pressonline.rs — https://pressonline.rs/
+- juznevesti.com — https://juznevesti.com/
+- vaseljenska.com — https://vaseljenska.com/
+- smedia.rs — https://smedia.rs/
+- preshevajone.com — https://preshevajone.com/
+- pravda.rs — https://pravda.rs/
+- glasamerike.net — https://glasamerike.net/
+- pecat.co.rs — https://pecat.co.rs/
+- glas-javnosti.rs — https://glas-javnosti.rs/
+- kamatica.com — https://kamatica.com/
+- pescanik.net — https://pescanik.net/
+- e-novine.com — https://e-novine.com/
+- vreme.com — https://vreme.com/
 
 ## bulgaria (central_europe) — Bulgaria
 
@@ -1881,6 +2573,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Standart — http://www.standartnews.com/bg/
 - Trud — http://www.trud.bg/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 336 by GDELT monitoring volume)
+- focus-news.net — https://focus-news.net/
+- bnr.bg — https://bnr.bg/
+- bta.bg — https://bta.bg/
+- cross.bg — https://cross.bg/
+- frognews.bg — https://frognews.bg/
+- blitz.bg — https://blitz.bg/
+- actualno.com — https://actualno.com/
+- trud.bg — https://trud.bg/
+- focus-fen.net — https://focus-fen.net/
+- standartnews.com — https://standartnews.com/
+- dnevnik.bg — https://dnevnik.bg/
+- dir.bg — https://dir.bg/
+- novinite.com — https://novinite.com/
+- 24chasa.bg — https://24chasa.bg/
+- novini.bg — https://novini.bg/
+- capital.bg — https://capital.bg/
+- dnesplus.bg — https://dnesplus.bg/
+- segabg.com — https://segabg.com/
+- news.bg — https://news.bg/
+- monitor.bg — https://monitor.bg/
+- fakti.bg — https://fakti.bg/
+- btvnovinite.bg — https://btvnovinite.bg/
+- vesti.bg — https://vesti.bg/
+- duma.bg — https://duma.bg/
+- mediapool.bg — https://mediapool.bg/
+- kanal3.bg — https://kanal3.bg/
+- marica.bg — https://marica.bg/
+- ekipnews.com — https://ekipnews.com/
+- investor.bg — https://investor.bg/
+- dnes.bg — https://dnes.bg/
+- borbabg.com — https://borbabg.com/
+- bradva.bg — https://bradva.bg/
+- bgonair.bg — https://bgonair.bg/
+- burgasnews.com — https://burgasnews.com/
+- sofiaglobe.com — https://sofiaglobe.com/
+- novinite.bg — https://novinite.bg/
+- offnews.bg — https://offnews.bg/
+- bnews.bg — https://bnews.bg/
+- burgasinfo.com — https://burgasinfo.com/
+- 168chasa.bg — https://168chasa.bg/
+
 ## croatia (central_europe) — Croatia
 
 ### w3newspapers — https://www.w3newspapers.com/croatia/
@@ -2041,6 +2775,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - 24 Sata — http://www.24sata.hr/
 - Jutarnji List — http://www.jutarnji.hr/
 - Vecernji List — http://www.vecernji.hr/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 427 by GDELT monitoring volume)
+- novilist.hr — https://novilist.hr/
+- slobodnadalmacija.hr — https://slobodnadalmacija.hr/
+- vecernji.hr — https://vecernji.hr/
+- jutarnji.hr — https://jutarnji.hr/
+- index.hr — https://index.hr/
+- rtl.hr — https://rtl.hr/
+- tportal.hr — https://tportal.hr/
+- glas-slavonije.hr — https://glas-slavonije.hr/
+- net.hr — https://net.hr/
+- dnevnik.hr — https://dnevnik.hr/
+- 24sata.hr — https://24sata.hr/
+- poslovni.hr — https://poslovni.hr/
+- slobodnadalmacija.com — https://slobodnadalmacija.com/
+- glasistre.hr — https://glasistre.hr/
+- dnevno.hr — https://dnevno.hr/
+- nacional.hr — https://nacional.hr/
+- hrt.hr — https://hrt.hr/
+- seebiz.eu — https://seebiz.eu/
+- dnevnik.ba — https://dnevnik.ba/
+- croportal.net — https://croportal.net/
+- vecernji.ba — https://vecernji.ba/
+- zadarskilist.hr — https://zadarskilist.hr/
+- dalje.com — https://dalje.com/
+- varazdinske-vijesti.hr — https://varazdinske-vijesti.hr/
+- poduzetnistvo.org — https://poduzetnistvo.org/
+- telegram.hr — https://telegram.hr/
+- dubrovacki.hr — https://dubrovacki.hr/
+- glas-koncila.hr — https://glas-koncila.hr/
+- soundset.hr — https://soundset.hr/
+- portalnovosti.com — https://portalnovosti.com/
+- matis.hr — https://matis.hr/
+- limun.hr — https://limun.hr/
+- liderpress.hr — https://liderpress.hr/
+- total-croatia-news.com — https://total-croatia-news.com/
+- privredni.hr — https://privredni.hr/
+- narodni-list.hr — https://narodni-list.hr/
+- evarazdin.hr — https://evarazdin.hr/
+- croatiaweek.com — https://croatiaweek.com/
+- bug.hr — https://bug.hr/
+- monitor.hr — https://monitor.hr/
 
 ## czech_republic (central_europe) — Czech Republic
 
@@ -2253,6 +3029,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Pravo — http://pravo.novinky.cz/
 - Sport — http://isport.blesk.cz/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 632 by GDELT monitoring volume)
+- denik.cz — https://denik.cz/
+- radio.cz — https://radio.cz/
+- parlamentnilisty.cz — https://parlamentnilisty.cz/
+- aktualne.cz — https://aktualne.cz/
+- blesk.cz — https://blesk.cz/
+- ceskenoviny.cz — https://ceskenoviny.cz/
+- eurozpravy.cz — https://eurozpravy.cz/
+- novinky.cz — https://novinky.cz/
+- policie.cz — https://policie.cz/
+- ceskatelevize.cz — https://ceskatelevize.cz/
+- ihned.cz — https://ihned.cz/
+- e15.cz — https://e15.cz/
+- praguemonitor.com — https://praguemonitor.com/
+- idnes.cz — https://idnes.cz/
+- rozhlas.cz — https://rozhlas.cz/
+- senat.cz — https://senat.cz/
+- tyden.cz — https://tyden.cz/
+- halonoviny.cz — https://halonoviny.cz/
+- archiweb.cz — https://archiweb.cz/
+- lidovky.cz — https://lidovky.cz/
+- nova.cz — https://nova.cz/
+- praguepost.com — https://praguepost.com/
+- reflex.cz — https://reflex.cz/
+- euro.cz — https://euro.cz/
+- prvnizpravy.cz — https://prvnizpravy.cz/
+- prague.tv — https://prague.tv/
+- tnbiz.cz — https://tnbiz.cz/
+- krajskelisty.cz — https://krajskelisty.cz/
+- tiscali.cz — https://tiscali.cz/
+- mediaguru.cz — https://mediaguru.cz/
+- tol.org — https://tol.org/
+- agris.cz — https://agris.cz/
+- impuls.cz — https://impuls.cz/
+- frekvence1.cz — https://frekvence1.cz/
+- expats.cz — https://expats.cz/
+- vecernikpv.cz — https://vecernikpv.cz/
+- blisty.cz — https://blisty.cz/
+- denikreferendum.cz — https://denikreferendum.cz/
+- euractiv.cz — https://euractiv.cz/
+- financninoviny.cz — https://financninoviny.cz/
+
 ## hungary (central_europe) — Hungary
 
 ### w3newspapers — https://www.w3newspapers.com/hungary/
@@ -2431,6 +3249,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Nepszabadsag — http://nol.hu/index.html
 - Nepszava — http://www.nepszava.hu/
 - Vilaggazdasag — http://www.vg.hu/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 447 by GDELT monitoring volume)
+- ehfcl.com — https://ehfcl.com/
+- hirmutato.hu — https://hirmutato.hu/
+- zaol.hu — https://zaol.hu/
+- veol.hu — https://veol.hu/
+- origo.hu — https://origo.hu/
+- nepszava.hu — https://nepszava.hu/
+- boon.hu — https://boon.hu/
+- hirado.hu — https://hirado.hu/
+- agroinform.hu — https://agroinform.hu/
+- vaol.hu — https://vaol.hu/
+- webradio.hu — https://webradio.hu/
+- haon.hu — https://haon.hu/
+- szon.hu — https://szon.hu/
+- delmagyar.hu — https://delmagyar.hu/
+- feol.hu — https://feol.hu/
+- kisalfold.hu — https://kisalfold.hu/
+- hvg.hu — https://hvg.hu/
+- atv.hu — https://atv.hu/
+- napi.hu — https://napi.hu/
+- profitline.hu — https://profitline.hu/
+- kemma.hu — https://kemma.hu/
+- 24.hu — https://24.hu/
+- szoljon.hu — https://szoljon.hu/
+- sonline.hu — https://sonline.hu/
+- index.hu — https://index.hu/
+- blikk.hu — https://blikk.hu/
+- xpatloop.com — https://xpatloop.com/
+- beol.hu — https://beol.hu/
+- baon.hu — https://baon.hu/
+- kultura.hu — https://kultura.hu/
+- vg.hu — https://vg.hu/
+- teol.hu — https://teol.hu/
+- hungarytoday.hu — https://hungarytoday.hu/
+- demokrata.hu — https://demokrata.hu/
+- portfolio.hu — https://portfolio.hu/
+- ma.hu — https://ma.hu/
+- mno.hu — https://mno.hu/
+- bama.hu — https://bama.hu/
+- heol.hu — https://heol.hu/
+- promenad.hu — https://promenad.hu/
 
 ## poland (central_europe) — Poland
 
@@ -2688,6 +3548,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Rzeczpospolita — http://www.rp.pl/
 - Super Express — http://www.se.pl/
 - Zycie Warszawy — http://www.zw.com.pl/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1245 by GDELT monitoring volume)
+- naszemiasto.pl — https://naszemiasto.pl/
+- wp.pl — https://wp.pl/
+- tvn24.pl — https://tvn24.pl/
+- onet.pl — https://onet.pl/
+- niezalezna.pl — https://niezalezna.pl/
+- pap.pl — https://pap.pl/
+- wnp.pl — https://wnp.pl/
+- rp.pl — https://rp.pl/
+- polskieradio.pl — https://polskieradio.pl/
+- interia.pl — https://interia.pl/
+- portalsamorzadowy.pl — https://portalsamorzadowy.pl/
+- dziennikzachodni.pl — https://dziennikzachodni.pl/
+- dziennikpolski24.pl — https://dziennikpolski24.pl/
+- radiopik.pl — https://radiopik.pl/
+- pomorska.pl — https://pomorska.pl/
+- polskatimes.pl — https://polskatimes.pl/
+- money.pl — https://money.pl/
+- gazetakrakowska.pl — https://gazetakrakowska.pl/
+- dziennikbaltycki.pl — https://dziennikbaltycki.pl/
+- nto.pl — https://nto.pl/
+- dziennikwschodni.pl — https://dziennikwschodni.pl/
+- tvp.info — https://tvp.info/
+- to.com.pl — https://to.com.pl/
+- niedziela.pl — https://niedziela.pl/
+- dzieje.pl — https://dzieje.pl/
+- nowosci.com.pl — https://nowosci.com.pl/
+- wspolczesna.pl — https://wspolczesna.pl/
+- gloswielkopolski.pl — https://gloswielkopolski.pl/
+- dzienniklodzki.pl — https://dzienniklodzki.pl/
+- wirtualnemedia.pl — https://wirtualnemedia.pl/
+- pb.pl — https://pb.pl/
+- gazetaprawna.pl — https://gazetaprawna.pl/
+- gazetalubuska.pl — https://gazetalubuska.pl/
+- wpolityce.pl — https://wpolityce.pl/
+- expressilustrowany.pl — https://expressilustrowany.pl/
+- gazetawroclawska.pl — https://gazetawroclawska.pl/
+- nowiny24.pl — https://nowiny24.pl/
+- radio.opole.pl — https://radio.opole.pl/
+- trojmiasto.pl — https://trojmiasto.pl/
+- gs24.pl — https://gs24.pl/
 
 ## romania (central_europe) — Romania
 
@@ -2983,6 +3885,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Ziarul Financiar — http://www.zfenglish.com/
 - Ziarul Financiar — http://www.zf.ro/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 868 by GDELT monitoring volume)
+- ziarelive.ro — https://ziarelive.ro/
+- ziar.com — https://ziar.com/
+- indexstiri.ro — https://indexstiri.ro/
+- ziuanews.ro — https://ziuanews.ro/
+- ziare-pe-net.ro — https://ziare-pe-net.ro/
+- adevarul.ro — https://adevarul.ro/
+- agerpres.ro — https://agerpres.ro/
+- antena3.ro — https://antena3.ro/
+- romaniapress.com — https://romaniapress.com/
+- ziarulevenimentul.ro — https://ziarulevenimentul.ro/
+- stiripesurse.ro — https://stiripesurse.ro/
+- realitatea.net — https://realitatea.net/
+- bursa.ro — https://bursa.ro/
+- mediafax.ro — https://mediafax.ro/
+- romaniatv.net — https://romaniatv.net/
+- dcnews.ro — https://dcnews.ro/
+- jurnalul.ro — https://jurnalul.ro/
+- monitorulsv.ro — https://monitorulsv.ro/
+- ziare.com — https://ziare.com/
+- evz.ro — https://evz.ro/
+- amosnews.ro — https://amosnews.ro/
+- zf.ro — https://zf.ro/
+- gds.ro — https://gds.ro/
+- rador.ro — https://rador.ro/
+- cugetliber.ro — https://cugetliber.ro/
+- hotnews.ro — https://hotnews.ro/
+- bzi.ro — https://bzi.ro/
+- ziuaconstanta.ro — https://ziuaconstanta.ro/
+- libertatea.ro — https://libertatea.ro/
+- digi24.ro — https://digi24.ro/
+- stirileprotv.ro — https://stirileprotv.ro/
+- rtv.net — https://rtv.net/
+- presaonline.com — https://presaonline.com/
+- cotidianul.ro — https://cotidianul.ro/
+- gandul.info — https://gandul.info/
+- b1.ro — https://b1.ro/
+- ziarulfaclia.ro — https://ziarulfaclia.ro/
+- zi-de-zi.ro — https://zi-de-zi.ro/
+- capital.ro — https://capital.ro/
+- rri.ro — https://rri.ro/
+
 ## slovak_republic (central_europe) — Slovak Republic
 
 ### w3newspapers — https://www.w3newspapers.com/slovakia/
@@ -3083,6 +4027,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Sport — http://sport.aktuality.sk/
 - Uj Szo — http://ujszo.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 132 by GDELT monitoring volume)
+- sme.sk — https://sme.sk/
+- teraz.sk — https://teraz.sk/
+- 24hod.sk — https://24hod.sk/
+- pozri.sk — https://pozri.sk/
+- aktuality.sk — https://aktuality.sk/
+- cas.sk — https://cas.sk/
+- topky.sk — https://topky.sk/
+- dennikn.sk — https://dennikn.sk/
+- parameter.sk — https://parameter.sk/
+- zivotpo.sk — https://zivotpo.sk/
+- pravda.sk — https://pravda.sk/
+- pluska.sk — https://pluska.sk/
+- etrend.sk — https://etrend.sk/
+- bratislavskenoviny.sk — https://bratislavskenoviny.sk/
+- svkonline.sk — https://svkonline.sk/
+- bakurier.sk — https://bakurier.sk/
+- hnonline.sk — https://hnonline.sk/
+- ta3.com — https://ta3.com/
+- atlas.sk — https://atlas.sk/
+- noviny.sk — https://noviny.sk/
+- buongiornoslovacchia.sk — https://buongiornoslovacchia.sk/
+- nasenovinky.sk — https://nasenovinky.sk/
+- gov.sk — https://gov.sk/
+- euractiv.sk — https://euractiv.sk/
+- rtvs.sk — https://rtvs.sk/
+- zilinskyvecernik.sk — https://zilinskyvecernik.sk/
+- plus1den.sk — https://plus1den.sk/
+- centrum.sk — https://centrum.sk/
+- plus7dni.sk — https://plus7dni.sk/
+- zive.sk — https://zive.sk/
+- birdz.sk — https://birdz.sk/
+- tasr.sk — https://tasr.sk/
+- mosr.sk — https://mosr.sk/
+- tyzden.sk — https://tyzden.sk/
+- plusden.sk — https://plusden.sk/
+- livestreaming.cz — https://livestreaming.cz/
+- expres.sk — https://expres.sk/
+- minzp.sk — https://minzp.sk/
+- prezident.sk — https://prezident.sk/
+- i-news.sk — https://i-news.sk/
+
 ## slovenia (central_europe) — Slovenia
 
 ### w3newspapers — https://www.w3newspapers.com/slovenia/
@@ -3156,6 +4142,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Dnevnik — http://www.dnevnik.si/
 - Vecer — http://www.vecer.com/
 - Zurnal — http://www.zurnal24.si/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 202 by GDELT monitoring volume)
+- bukla.si — https://bukla.si/
+- rtvslo.si — https://rtvslo.si/
+- gorenjskiglas.si — https://gorenjskiglas.si/
+- vecer.com — https://vecer.com/
+- delo.si — https://delo.si/
+- primorske.si — https://primorske.si/
+- siol.net — https://siol.net/
+- slovenskenovice.si — https://slovenskenovice.si/
+- reporter.si — https://reporter.si/
+- 24ur.com — https://24ur.com/
+- total-slovenia-news.com — https://total-slovenia-news.com/
+- demokracija.si — https://demokracija.si/
+- dolenjskilist.si — https://dolenjskilist.si/
+- zurnal24.si — https://zurnal24.si/
+- primorski.eu — https://primorski.eu/
+- morel.si — https://morel.si/
+- dnevnik.si — https://dnevnik.si/
+- primorski.it — https://primorski.it/
+- obala.net — https://obala.net/
+- mladina.si — https://mladina.si/
+- sloveniatimes.com — https://sloveniatimes.com/
+- druzina.si — https://druzina.si/
+- finance.si — https://finance.si/
+- sta.si — https://sta.si/
+- sodisce.si — https://sodisce.si/
+- preberi.si — https://preberi.si/
+- snportal.si — https://snportal.si/
+- policija.si — https://policija.si/
+- marketingmagazin.si — https://marketingmagazin.si/
+- slovenia.info — https://slovenia.info/
+- svet24.si — https://svet24.si/
+- novice24.net — https://novice24.net/
+- bicikel.com — https://bicikel.com/
+- up-rs.si — https://up-rs.si/
+- ekipa24.si — https://ekipa24.si/
+- cosmopolitan.si — https://cosmopolitan.si/
+- avtomobilizem.com — https://avtomobilizem.com/
+- aktivni.si — https://aktivni.si/
+- avto.info — https://avto.info/
+- racunalniske-novice.com — https://racunalniske-novice.com/
 
 ## estonia (baltic_states) — Estonia
 
@@ -3241,6 +4269,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Maaleht — http://maaleht.delfi.ee/
 - Ohtuleht — http://www.ohtuleht.ee/
 - Postimees — http://www.postimees.ee/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 227 by GDELT monitoring volume)
+- postimees.ee — https://postimees.ee/
+- err.ee — https://err.ee/
+- pealinn.ee — https://pealinn.ee/
+- delfi.ee — https://delfi.ee/
+- ohtuleht.ee — https://ohtuleht.ee/
+- le.ee — https://le.ee/
+- aripaev.ee — https://aripaev.ee/
+- vorumaateataja.ee — https://vorumaateataja.ee/
+- saartehaal.ee — https://saartehaal.ee/
+- lounaeestlane.ee — https://lounaeestlane.ee/
+- eesti.ca — https://eesti.ca/
+- kylauudis.ee — https://kylauudis.ee/
+- mu.ee — https://mu.ee/
+- tallinn.ee — https://tallinn.ee/
+- prospekt.ee — https://prospekt.ee/
+- kesknadal.ee — https://kesknadal.ee/
+- riigikogu.ee — https://riigikogu.ee/
+- eestikirik.ee — https://eestikirik.ee/
+- sirp.ee — https://sirp.ee/
+- estonianworld.com — https://estonianworld.com/
+- opleht.ee — https://opleht.ee/
+- pollumajandus.ee — https://pollumajandus.ee/
+- hiiuleht.ee — https://hiiuleht.ee/
+- bestmarketing.ee — https://bestmarketing.ee/
+- meiemaa.ee — https://meiemaa.ee/
+- saarlane.ee — https://saarlane.ee/
+- harjuelu.ee — https://harjuelu.ee/
+- ituudised.ee — https://ituudised.ee/
+- vm.ee — https://vm.ee/
+- auto24.ee — https://auto24.ee/
+- ehitusuudised.ee — https://ehitusuudised.ee/
+- vooremaa.ee — https://vooremaa.ee/
+- logistikauudised.ee — https://logistikauudised.ee/
+- toostusuudised.ee — https://toostusuudised.ee/
+- pohjarannik.ee — https://pohjarannik.ee/
+- kaubandus.ee — https://kaubandus.ee/
+- linnaleht.ee — https://linnaleht.ee/
+- muurileht.ee — https://muurileht.ee/
+- ajaleht.ee — https://ajaleht.ee/
+- raamatupidaja.ee — https://raamatupidaja.ee/
 
 ## latvia (baltic_states) — Latvia
 
@@ -3361,6 +4431,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Nasz Czas — http://nasz-czas.tripod.com/
 - Neatkariga Rita Avize — http://nra.lv
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 166 by GDELT monitoring volume)
+- delfi.lv — https://delfi.lv/
+- tvnet.lv — https://tvnet.lv/
+- la.lv — https://la.lv/
+- nra.lv — https://nra.lv/
+- diena.lv — https://diena.lv/
+- lsm.lv — https://lsm.lv/
+- bnn.lv — https://bnn.lv/
+- vesti.lv — https://vesti.lv/
+- reitingi.lv — https://reitingi.lv/
+- leta.lv — https://leta.lv/
+- bnn-news.com — https://bnn-news.com/
+- db.lv — https://db.lv/
+- bnn-news.ru — https://bnn-news.ru/
+- gorod.lv — https://gorod.lv/
+- baltic-course.com — https://baltic-course.com/
+- ventasbalss.lv — https://ventasbalss.lv/
+- ir.lv — https://ir.lv/
+- latgaleslaiks.lv — https://latgaleslaiks.lv/
+- mfa.gov.lv — https://mfa.gov.lv/
+- baltictimes.com — https://baltictimes.com/
+- ogrenet.lv — https://ogrenet.lv/
+- zz.lv — https://zz.lv/
+- sam.gov.lv — https://sam.gov.lv/
+- dzirkstele.lv — https://dzirkstele.lv/
+- brivalatvija.lv — https://brivalatvija.lv/
+- novaja.lv — https://novaja.lv/
+- president.lv — https://president.lv/
+- anglobalticnews.co.uk — https://anglobalticnews.co.uk/
+- ntz.lv — https://ntz.lv/
+- ovv.lv — https://ovv.lv/
+- mod.gov.lv — https://mod.gov.lv/
+- apollo.lv — https://apollo.lv/
+- ziemellatvija.lv — https://ziemellatvija.lv/
+- vm.gov.lv — https://vm.gov.lv/
+- latviansonline.com — https://latviansonline.com/
+- eu2015.lv — https://eu2015.lv/
+- 220.lv — https://220.lv/
+- labsoflatvia.com — https://labsoflatvia.com/
+- rigaslaiks.lv — https://rigaslaiks.lv/
+- ferretingoutthefun.com — https://ferretingoutthefun.com/
+
 ## lithuania (baltic_states) — Lithuania
 
 ### w3newspapers — https://www.w3newspapers.com/lithuania/
@@ -3476,6 +4588,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Litovskiy Kurier — http://www.kurier.lt/
 - Valstieciu Laikrastis — http://valstietis.balsas.lt/
 - Verslo Zinios — http://vz.lt/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 158 by GDELT monitoring volume)
+- diena.lt — https://diena.lt/
+- pasienis.lt — https://pasienis.lt/
+- delfi.lt — https://delfi.lt/
+- tv3.lt — https://tv3.lt/
+- lrt.lt — https://lrt.lt/
+- 15min.lt — https://15min.lt/
+- ve.lt — https://ve.lt/
+- respublika.lt — https://respublika.lt/
+- lrytas.lt — https://lrytas.lt/
+- skrastas.lt — https://skrastas.lt/
+- vz.lt — https://vz.lt/
+- alfa.lt — https://alfa.lt/
+- bns.lt — https://bns.lt/
+- lzinios.lt — https://lzinios.lt/
+- kurier.lt — https://kurier.lt/
+- voruta.lt — https://voruta.lt/
+- elta.lt — https://elta.lt/
+- zw.lt — https://zw.lt/
+- silutesnaujienos.lt — https://silutesnaujienos.lt/
+- balsas.lt — https://balsas.lt/
+- kam.lt — https://kam.lt/
+- lrv.lt — https://lrv.lt/
+- urm.lt — https://urm.lt/
+- kurierwilenski.lt — https://kurierwilenski.lt/
+- lsdp.lt — https://lsdp.lt/
+- veidas.lt — https://veidas.lt/
+- aidas.us — https://aidas.us/
+- lrkm.lt — https://lrkm.lt/
+- policija.lt — https://policija.lt/
+- alytausnaujienos.lt — https://alytausnaujienos.lt/
+- draugas.org — https://draugas.org/
+- vrk.lt — https://vrk.lt/
+- tax.lt — https://tax.lt/
+- lrs.lt — https://lrs.lt/
+- kmintys.lt — https://kmintys.lt/
+- investlithuania.com — https://investlithuania.com/
+- baltic-review.com — https://baltic-review.com/
+- socmin.lt — https://socmin.lt/
+- sam.lt — https://sam.lt/
+- vrm.lt — https://vrm.lt/
 
 ## turkiye (turkiye) — Türkiye
 
@@ -3767,6 +4921,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Turkiye — http://www.turkiyegazetesi.com.tr/
 - Zaman — http://www.zaman.com.tr/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 2889 by GDELT monitoring volume)
+- haberx.com — https://haberx.com/
+- haberler.com — https://haberler.com/
+- aydinses.com — https://aydinses.com/
+- memleket.com.tr — https://memleket.com.tr/
+- haberflash.com — https://haberflash.com/
+- istanbulhaber.com.tr — https://istanbulhaber.com.tr/
+- malatyaguncel.com — https://malatyaguncel.com/
+- konhaber.com — https://konhaber.com/
+- beyazgazete.com — https://beyazgazete.com/
+- mynet.com — https://mynet.com/
+- yeniakit.com.tr — https://yeniakit.com.tr/
+- haber7.com — https://haber7.com/
+- haberturk.com — https://haberturk.com/
+- milliyet.com.tr — https://milliyet.com.tr/
+- f5haber.com — https://f5haber.com/
+- bursadabugun.com — https://bursadabugun.com/
+- ogunhaber.com — https://ogunhaber.com/
+- iha.com.tr — https://iha.com.tr/
+- star.com.tr — https://star.com.tr/
+- timeturk.com — https://timeturk.com/
+- sabah.com.tr — https://sabah.com.tr/
+- sozcu.com.tr — https://sozcu.com.tr/
+- cumhuriyet.com.tr — https://cumhuriyet.com.tr/
+- hurriyet.com.tr — https://hurriyet.com.tr/
+- memurlar.net — https://memurlar.net/
+- turkiyegazetesi.com.tr — https://turkiyegazetesi.com.tr/
+- aktifmedya.com — https://aktifmedya.com/
+- gercekgundem.com — https://gercekgundem.com/
+- yenisafak.com — https://yenisafak.com/
+- aa.com.tr — https://aa.com.tr/
+- internethaber.com — https://internethaber.com/
+- gunes.com — https://gunes.com/
+- t24.com.tr — https://t24.com.tr/
+- gazetevatan.com — https://gazetevatan.com/
+- borsagundem.com — https://borsagundem.com/
+- malatyagercek.com — https://malatyagercek.com/
+- pusulahaber.com.tr — https://pusulahaber.com.tr/
+- haber3.com — https://haber3.com/
+- 61saat.com — https://61saat.com/
+- dunyabulteni.net — https://dunyabulteni.net/
+
 ## andorra (western_europe) — Andorra
 
 ### w3newspapers — https://www.w3newspapers.com/andorra/
@@ -3794,6 +4990,19 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Ara — http://www.ara.ad/
 - Forum — http://forum.ad/
 - Diari d'Andorra — http://www.diariandorra.ad/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (11 domains by GDELT monitoring volume)
+- bondia.ad — https://bondia.ad/
+- diariandorra.ad — https://diariandorra.ad/
+- bondia.cat — https://bondia.cat/
+- andorradifusio.ad — https://andorradifusio.ad/
+- govern.ad — https://govern.ad/
+- mes.ad — https://mes.ad/
+- apremiumstyle.com — https://apremiumstyle.com/
+- uha.ad — https://uha.ad/
+- ordinojardinsdart.com — https://ordinojardinsdart.com/
+- uda.ad — https://uda.ad/
+- e-e.ad — https://e-e.ad/
 
 ## austria (western_europe) — Austria
 
@@ -3932,6 +5141,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Wiener Zeitung — http://www.wienerzeitung.at/
 - Wirtschafts Blatt — http://wirtschaftsblatt.at/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 696 by GDELT monitoring volume)
+- ots.at — https://ots.at/
+- tt.com — https://tt.com/
+- vol.at — https://vol.at/
+- orf.at — https://orf.at/
+- karriere.at — https://karriere.at/
+- meinbezirk.at — https://meinbezirk.at/
+- kleinezeitung.at — https://kleinezeitung.at/
+- tips.at — https://tips.at/
+- derstandard.at — https://derstandard.at/
+- diepresse.com — https://diepresse.com/
+- vienna.at — https://vienna.at/
+- kurier.at — https://kurier.at/
+- wienerzeitung.at — https://wienerzeitung.at/
+- krone.at — https://krone.at/
+- boerse-social.com — https://boerse-social.com/
+- transfermarkt.at — https://transfermarkt.at/
+- heute.at — https://heute.at/
+- regionews.at — https://regionews.at/
+- salzburg.com — https://salzburg.com/
+- salzburg24.at — https://salzburg24.at/
+- noen.at — https://noen.at/
+- sn.at — https://sn.at/
+- oe-journal.at — https://oe-journal.at/
+- wirtschaftsblatt.at — https://wirtschaftsblatt.at/
+- oe24.at — https://oe24.at/
+- pressetext.com — https://pressetext.com/
+- kathpress.at — https://kathpress.at/
+- volksblatt.at — https://volksblatt.at/
+- boerse-express.com — https://boerse-express.com/
+- news.at — https://news.at/
+- vn.at — https://vn.at/
+- thelocal.at — https://thelocal.at/
+- vorarlbergernachrichten.at — https://vorarlbergernachrichten.at/
+- tourismuspresse.at — https://tourismuspresse.at/
+- bvz.at — https://bvz.at/
+- furche.at — https://furche.at/
+- unsertirol24.com — https://unsertirol24.com/
+- trend.at — https://trend.at/
+- laola1.at — https://laola1.at/
+- leadersnet.at — https://leadersnet.at/
+
 ## belgium (western_europe) — Belgium
 
 ### w3newspapers — https://www.w3newspapers.com/belgium/
@@ -4058,6 +5309,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Le Soir — http://www.lesoir.be/
 - L'Echo — http://www.lecho.be/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 551 by GDELT monitoring volume)
+- knack.be — https://knack.be/
+- lecho.be — https://lecho.be/
+- rtbf.be — https://rtbf.be/
+- lavenir.net — https://lavenir.net/
+- voetbalnieuws.be — https://voetbalnieuws.be/
+- hln.be — https://hln.be/
+- sudinfo.be — https://sudinfo.be/
+- nieuwsblad.be — https://nieuwsblad.be/
+- levif.be — https://levif.be/
+- lesoir.be — https://lesoir.be/
+- lalibre.be — https://lalibre.be/
+- dhnet.be — https://dhnet.be/
+- lameuse.be — https://lameuse.be/
+- standaard.be — https://standaard.be/
+- lacapitale.be — https://lacapitale.be/
+- hbvl.be — https://hbvl.be/
+- gva.be — https://gva.be/
+- 7sur7.be — https://7sur7.be/
+- nordeclair.be — https://nordeclair.be/
+- lanouvellegazette.be — https://lanouvellegazette.be/
+- demorgen.be — https://demorgen.be/
+- metrotime.be — https://metrotime.be/
+- laprovince.be — https://laprovince.be/
+- deredactie.be — https://deredactie.be/
+- tijd.be — https://tijd.be/
+- kw.be — https://kw.be/
+- brusselstimes.com — https://brusselstimes.com/
+- brf.be — https://brf.be/
+- euractiv.es — https://euractiv.es/
+- vtm.be — https://vtm.be/
+- persgroep.net — https://persgroep.net/
+- newsmonkey.be — https://newsmonkey.be/
+- xpats.com — https://xpats.com/
+- belga.be — https://belga.be/
+- ostbelgiendirekt.be — https://ostbelgiendirekt.be/
+- sporza.be — https://sporza.be/
+- thebulletin.be — https://thebulletin.be/
+- retaildetail.be — https://retaildetail.be/
+- persinfo.org — https://persinfo.org/
+- dpgmedia.be — https://dpgmedia.be/
+
 ## channel_islands (western_europe) — Channel Islands
 
 ### w3newspapers — (not listed)
@@ -4070,6 +5363,9 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - (no entries)
 
 ### abyznewslinks — (not listed)
+- (no entries)
+
+### gdelt — (not listed)
 - (no entries)
 
 ## cyprus (western_europe) — Cyprus
@@ -4195,6 +5491,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Kibris — http://www.kibrisgazetesi.com/
 - Phileleftheros — http://www.philenews.com/
 - Politis — http://politis.com.cy/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 168 by GDELT monitoring volume)
+- kathimerini.com.cy — https://kathimerini.com.cy/
+- sigmalive.com — https://sigmalive.com/
+- philenews.com — https://philenews.com/
+- kibrispostasi.com — https://kibrispostasi.com/
+- cna.org.cy — https://cna.org.cy/
+- kibrisgazetesi.com — https://kibrisgazetesi.com/
+- yeniduzen.com — https://yeniduzen.com/
+- gundemkibris.com — https://gundemkibris.com/
+- newsit.com.cy — https://newsit.com.cy/
+- tothemaonline.com — https://tothemaonline.com/
+- riknews.com.cy — https://riknews.com.cy/
+- politis.com.cy — https://politis.com.cy/
+- ikypros.com — https://ikypros.com/
+- offsite.com.cy — https://offsite.com.cy/
+- ant1iwo.com — https://ant1iwo.com/
+- dialogos.com.cy — https://dialogos.com.cy/
+- cyprus-mail.com — https://cyprus-mail.com/
+- in-cyprus.com — https://in-cyprus.com/
+- cyprusscene.com — https://cyprusscene.com/
+- typos.com.cy — https://typos.com.cy/
+- kerkida.net — https://kerkida.net/
+- onlycy.com — https://onlycy.com/
+- parikiaki.com — https://parikiaki.com/
+- famagusta-gazette.com — https://famagusta-gazette.com/
+- cyprusexpat.co.uk — https://cyprusexpat.co.uk/
+- financialmirror.com — https://financialmirror.com/
+- cyprus.gov.cy — https://cyprus.gov.cy/
+- alfanews.com.cy — https://alfanews.com.cy/
+- maxhnews.com — https://maxhnews.com/
+- cyprus-property-buyers.com — https://cyprus-property-buyers.com/
+- cyprusbusinessmail.com — https://cyprusbusinessmail.com/
+- disy.org.cy — https://disy.org.cy/
+- ant1.com.cy — https://ant1.com.cy/
+- cyprusreporter.com — https://cyprusreporter.com/
+- police.gov.cy — https://police.gov.cy/
+- newsincyprus.com — https://newsincyprus.com/
+- inews.com.cy — https://inews.com.cy/
+- about-larnaca.info — https://about-larnaca.info/
+- visitcyprus.com — https://visitcyprus.com/
+- cyprus.com — https://cyprus.com/
 
 ## denmark (western_europe) — Denmark
 
@@ -4344,6 +5682,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Politiken — http://politiken.dk/
 - Weekend Avisen — http://www.weekendavisen.dk/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 497 by GDELT monitoring volume)
+- sn.dk — https://sn.dk/
+- fyens.dk — https://fyens.dk/
+- bt.dk — https://bt.dk/
+- jv.dk — https://jv.dk/
+- information.dk — https://information.dk/
+- lokalavisen.dk — https://lokalavisen.dk/
+- tv2.dk — https://tv2.dk/
+- jyllands-posten.dk — https://jyllands-posten.dk/
+- dr.dk — https://dr.dk/
+- nordjyske.dk — https://nordjyske.dk/
+- politiken.dk — https://politiken.dk/
+- skivefolkeblad.dk — https://skivefolkeblad.dk/
+- ekstrabladet.dk — https://ekstrabladet.dk/
+- folketidende.dk — https://folketidende.dk/
+- mx.dk — https://mx.dk/
+- kristeligt-dagblad.dk — https://kristeligt-dagblad.dk/
+- bold.dk — https://bold.dk/
+- finans.dk — https://finans.dk/
+- amtsavisen.dk — https://amtsavisen.dk/
+- aoh.dk — https://aoh.dk/
+- newsbreak.dk — https://newsbreak.dk/
+- borsen.dk — https://borsen.dk/
+- mja.dk — https://mja.dk/
+- b.dk — https://b.dk/
+- tv2lorry.dk — https://tv2lorry.dk/
+- hsfo.dk — https://hsfo.dk/
+- bornholmstidende.dk — https://bornholmstidende.dk/
+- stiften.dk — https://stiften.dk/
+- tv2fyn.dk — https://tv2fyn.dk/
+- viborg-folkeblad.dk — https://viborg-folkeblad.dk/
+- tidende.dk — https://tidende.dk/
+- dagbladet-holstebro-struer.dk — https://dagbladet-holstebro-struer.dk/
+- tv2bornholm.dk — https://tv2bornholm.dk/
+- tv2oj.dk — https://tv2oj.dk/
+- computerworld.dk — https://computerworld.dk/
+- tvsyd.dk — https://tvsyd.dk/
+- idag.dk — https://idag.dk/
+- tveast.dk — https://tveast.dk/
+- tv2nord.dk — https://tv2nord.dk/
+- business.dk — https://business.dk/
+
 ## faroe_islands (western_europe) — Faroe Islands
 
 ### w3newspapers — (not listed)
@@ -4362,6 +5742,13 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Portal — http://portal.fo/forsida.html
 - Sosialurin — http://www.sosialurin.fo/
 - Vikubladid — http://www.vikublad.fo/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (5 domains by GDELT monitoring volume)
+- in.fo — https://in.fo/
+- government.fo — https://government.fo/
+- lms.fo — https://lms.fo/
+- dimma.fo — https://dimma.fo/
+- portal.fo — https://portal.fo/
 
 ## finland (western_europe) — Finland
 
@@ -4582,6 +5969,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Ilta Sanomat — http://www.iltasanomat.fi/
 - Iltalehti — http://www.iltalehti.fi/etusivu/
 - Kauppalehti — http://www.kauppalehti.fi/5/i/etusivu/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 585 by GDELT monitoring volume)
+- yle.fi — https://yle.fi/
+- kauppalehti.fi — https://kauppalehti.fi/
+- hs.fi — https://hs.fi/
+- ts.fi — https://ts.fi/
+- kaleva.fi — https://kaleva.fi/
+- iltalehti.fi — https://iltalehti.fi/
+- pohjalainen.fi — https://pohjalainen.fi/
+- is.fi — https://is.fi/
+- ilkka.fi — https://ilkka.fi/
+- demokraatti.fi — https://demokraatti.fi/
+- ess.fi — https://ess.fi/
+- hameensanomat.fi — https://hameensanomat.fi/
+- ksml.fi — https://ksml.fi/
+- esaimaa.fi — https://esaimaa.fi/
+- aamulehti.fi — https://aamulehti.fi/
+- karjalainen.fi — https://karjalainen.fi/
+- ilkkapohjalainen.fi — https://ilkkapohjalainen.fi/
+- kouvolansanomat.fi — https://kouvolansanomat.fi/
+- savonsanomat.fi — https://savonsanomat.fi/
+- lapinkansa.fi — https://lapinkansa.fi/
+- satakunnankansa.fi — https://satakunnankansa.fi/
+- lansi-savo.fi — https://lansi-savo.fi/
+- kainuunsanomat.fi — https://kainuunsanomat.fi/
+- maaseuduntulevaisuus.fi — https://maaseuduntulevaisuus.fi/
+- sss.fi — https://sss.fi/
+- talouselama.fi — https://talouselama.fi/
+- hbl.fi — https://hbl.fi/
+- kp24.fi — https://kp24.fi/
+- iltasanomat.fi — https://iltasanomat.fi/
+- kymensanomat.fi — https://kymensanomat.fi/
+- mtv.fi — https://mtv.fi/
+- uusisuomi.fi — https://uusisuomi.fi/
+- uusimaa.fi — https://uusimaa.fi/
+- ita-savo.fi — https://ita-savo.fi/
+- ls24.fi — https://ls24.fi/
+- verkkouutiset.fi — https://verkkouutiset.fi/
+- menaiset.fi — https://menaiset.fi/
+- arvopaperi.fi — https://arvopaperi.fi/
+- mtvuutiset.fi — https://mtvuutiset.fi/
+- tekniikkatalous.fi — https://tekniikkatalous.fi/
 
 ## france (western_europe) — France
 
@@ -4806,6 +6235,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Les Echos — http://www.lesechos.fr/
 - L'Humanite — http://www.humanite.fr/
 - Liberation — http://www.liberation.fr/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 3599 by GDELT monitoring volume)
+- francetvinfo.fr — https://francetvinfo.fr/
+- maville.com — https://maville.com/
+- ladepeche.fr — https://ladepeche.fr/
+- ouest-france.fr — https://ouest-france.fr/
+- letelegramme.fr — https://letelegramme.fr/
+- leparisien.fr — https://leparisien.fr/
+- lamontagne.fr — https://lamontagne.fr/
+- actu.fr — https://actu.fr/
+- lefigaro.fr — https://lefigaro.fr/
+- paris-normandie.fr — https://paris-normandie.fr/
+- lepoint.fr — https://lepoint.fr/
+- lanouvellerepublique.fr — https://lanouvellerepublique.fr/
+- lexpress.fr — https://lexpress.fr/
+- lavoixdunord.fr — https://lavoixdunord.fr/
+- lesechos.fr — https://lesechos.fr/
+- la-croix.com — https://la-croix.com/
+- 20minutes.fr — https://20minutes.fr/
+- lemonde.fr — https://lemonde.fr/
+- liberation.fr — https://liberation.fr/
+- laprovence.com — https://laprovence.com/
+- sudouest.fr — https://sudouest.fr/
+- linternaute.com — https://linternaute.com/
+- lepetitjournal.com — https://lepetitjournal.com/
+- ledauphine.com — https://ledauphine.com/
+- rtl.be — https://rtl.be/
+- zonebourse.com — https://zonebourse.com/
+- vosgesmatin.fr — https://vosgesmatin.fr/
+- nouvelobs.com — https://nouvelobs.com/
+- midilibre.fr — https://midilibre.fr/
+- lyonne.fr — https://lyonne.fr/
+- francebleu.fr — https://francebleu.fr/
+- bfmtv.com — https://bfmtv.com/
+- corsematin.com — https://corsematin.com/
+- europe1.fr — https://europe1.fr/
+- l-echo.info — https://l-echo.info/
+- estrepublicain.fr — https://estrepublicain.fr/
+- courrier-picard.fr — https://courrier-picard.fr/
+- franceantilles.fr — https://franceantilles.fr/
+- leprogres.fr — https://leprogres.fr/
+- latribune.fr — https://latribune.fr/
 
 ## germany (western_europe) — Germany
 
@@ -5285,6 +6756,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 ### abyznewslinks — http://www.abyznewslinks.com/germa.htm
 - (no entries)
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 3151 by GDELT monitoring volume)
+- finanznachrichten.de — https://finanznachrichten.de/
+- gaeubote.de — https://gaeubote.de/
+- welt.de — https://welt.de/
+- sueddeutsche.de — https://sueddeutsche.de/
+- merkur.de — https://merkur.de/
+- t-online.de — https://t-online.de/
+- berliner-kurier.de — https://berliner-kurier.de/
+- tz.de — https://tz.de/
+- hna.de — https://hna.de/
+- kreiszeitung.de — https://kreiszeitung.de/
+- n-tv.de — https://n-tv.de/
+- focus.de — https://focus.de/
+- freiepresse.de — https://freiepresse.de/
+- presseschleuder.com — https://presseschleuder.com/
+- finanzen.net — https://finanzen.net/
+- stern.de — https://stern.de/
+- pnp.de — https://pnp.de/
+- tagesspiegel.de — https://tagesspiegel.de/
+- mopo.de — https://mopo.de/
+- boersennews.de — https://boersennews.de/
+- badische-zeitung.de — https://badische-zeitung.de/
+- moz.de — https://moz.de/
+- ksta.de — https://ksta.de/
+- az-online.de — https://az-online.de/
+- pressnetwork.de — https://pressnetwork.de/
+- morgenpost.de — https://morgenpost.de/
+- rheinpfalz.de — https://rheinpfalz.de/
+- schwaebische.de — https://schwaebische.de/
+- rundschau-online.de — https://rundschau-online.de/
+- come-on.de — https://come-on.de/
+- mz-web.de — https://mz-web.de/
+- berliner-zeitung.de — https://berliner-zeitung.de/
+- handelsblatt.com — https://handelsblatt.com/
+- rga.de — https://rga.de/
+- aktiencheck.de — https://aktiencheck.de/
+- volksstimme.de — https://volksstimme.de/
+- abendblatt.de — https://abendblatt.de/
+- krankenkassen-direkt.de — https://krankenkassen-direkt.de/
+- rp-online.de — https://rp-online.de/
+- faz.net — https://faz.net/
+
 ## gibraltar (western_europe) — Gibraltar
 
 ### w3newspapers — (not listed)
@@ -5305,6 +6818,22 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Gib News — http://www.gibnews.net/
 - Your Gibraltar TV — http://www.yourgibraltartv.com/
 - Gibraltar Chronicle — http://www.chronicle.gi/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (14 domains by GDELT monitoring volume)
+- chronicle.gi — https://chronicle.gi/
+- vox.gi — https://vox.gi/
+- gbc.gi — https://gbc.gi/
+- gibnews.net — https://gibnews.net/
+- wheatstone.com — https://wheatstone.com/
+- gibraltar.gov.gi — https://gibraltar.gov.gi/
+- gibraltarolivepress.com — https://gibraltarolivepress.com/
+- tryrolling.com — https://tryrolling.com/
+- pasoti.co.uk — https://pasoti.co.uk/
+- thesnookerblog.com — https://thesnookerblog.com/
+- vegasspins.com — https://vegasspins.com/
+- partypoker.com — https://partypoker.com/
+- prideofnottingham.co.uk — https://prideofnottingham.co.uk/
+- williamhillcasino.com — https://williamhillcasino.com/
 
 ## greece (western_europe) — Greece
 
@@ -5614,6 +7143,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Ta Nea — http://www.tanea.gr/
 - To Vima — http://www.tovima.gr/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1278 by GDELT monitoring volume)
+- athina984.gr — https://athina984.gr/
+- inewsgr.com — https://inewsgr.com/
+- multi-news.gr — https://multi-news.gr/
+- protothema.gr — https://protothema.gr/
+- pelop.gr — https://pelop.gr/
+- makedonias.gr — https://makedonias.gr/
+- capital.gr — https://capital.gr/
+- imerisia.gr — https://imerisia.gr/
+- iefimerida.gr — https://iefimerida.gr/
+- in.gr — https://in.gr/
+- newsnowgr.com — https://newsnowgr.com/
+- newsbeast.gr — https://newsbeast.gr/
+- pronews.gr — https://pronews.gr/
+- real.gr — https://real.gr/
+- newsit.gr — https://newsit.gr/
+- kathimerini.gr — https://kathimerini.gr/
+- madata.gr — https://madata.gr/
+- tovima.gr — https://tovima.gr/
+- naftemporiki.gr — https://naftemporiki.gr/
+- sofokleousin.gr — https://sofokleousin.gr/
+- thetoc.gr — https://thetoc.gr/
+- skaipatras.gr — https://skaipatras.gr/
+- tanea.gr — https://tanea.gr/
+- bankingnews.gr — https://bankingnews.gr/
+- newpost.gr — https://newpost.gr/
+- newsbomb.gr — https://newsbomb.gr/
+- dikaiologitika.gr — https://dikaiologitika.gr/
+- topontiki.gr — https://topontiki.gr/
+- patrasevents.gr — https://patrasevents.gr/
+- avgi.gr — https://avgi.gr/
+- ethnos.gr — https://ethnos.gr/
+- thebest.gr — https://thebest.gr/
+- dimokratiki.gr — https://dimokratiki.gr/
+- athensvoice.gr — https://athensvoice.gr/
+- news247.gr — https://news247.gr/
+- euro2day.gr — https://euro2day.gr/
+- lifo.gr — https://lifo.gr/
+- sofokleous10.gr — https://sofokleous10.gr/
+- makthes.gr — https://makthes.gr/
+- ert.gr — https://ert.gr/
+
 ## greenland (western_europe) — Greenland
 
 ### w3newspapers — (not listed)
@@ -5627,6 +7198,26 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 
 ### abyznewslinks — http://www.abyznewslinks.com/green.htm
 - Atuagagdliutit — http://sermitsiaq.ag/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (18 domains by GDELT monitoring volume)
+- sermitsiaq.ag — https://sermitsiaq.ag/
+- arcticjournal.com — https://arcticjournal.com/
+- comicsforum.org — https://comicsforum.org/
+- steampowered.com — https://steampowered.com/
+- oceanresearchproject.org — https://oceanresearchproject.org/
+- icyseas.org — https://icyseas.org/
+- rsoe.hu — https://rsoe.hu/
+- scienceandbelief.org — https://scienceandbelief.org/
+- greenland.is — https://greenland.is/
+- saroselectronics.com — https://saroselectronics.com/
+- theatrefutures.org.uk — https://theatrefutures.org.uk/
+- jollyjunketeer.com — https://jollyjunketeer.com/
+- sternaparadisaea.net — https://sternaparadisaea.net/
+- arctickingdom.com — https://arctickingdom.com/
+- ulb.be — https://ulb.be/
+- beartotheright.com — https://beartotheright.com/
+- bowlerhatscience.org — https://bowlerhatscience.org/
+- sporttechie.com — https://sporttechie.com/
 
 ## iceland (western_europe) — Iceland
 
@@ -5690,6 +7281,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Sport — http://www.sport.is/
 - Visir — http://www.visir.is/section/FRONTPAGE
 - Morgunbladid — http://www.mbl.is/frettir/english/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 437 by GDELT monitoring volume)
+- pressan.is — https://pressan.is/
+- fotbolti.net — https://fotbolti.net/
+- mbl.is — https://mbl.is/
+- visir.is — https://visir.is/
+- ruv.is — https://ruv.is/
+- eyjafrettir.is — https://eyjafrettir.is/
+- dv.is — https://dv.is/
+- skessuhorn.is — https://skessuhorn.is/
+- fiskifrettir.is — https://fiskifrettir.is/
+- bb.is — https://bb.is/
+- vb.is — https://vb.is/
+- grapevine.is — https://grapevine.is/
+- icenews.is — https://icenews.is/
+- kjarninn.is — https://kjarninn.is/
+- althingi.is — https://althingi.is/
+- vf.is — https://vf.is/
+- feykir.is — https://feykir.is/
+- icelandreview.com — https://icelandreview.com/
+- eyjar.net — https://eyjar.net/
+- kvennabladid.is — https://kvennabladid.is/
+- huni.is — https://huni.is/
+- frettatiminn.is — https://frettatiminn.is/
+- eidfaxi.is — https://eidfaxi.is/
+- vikudagur.is — https://vikudagur.is/
+- guidetoiceland.is — https://guidetoiceland.is/
+- austurfrett.is — https://austurfrett.is/
+- hestafrettir.is — https://hestafrettir.is/
+- volcanocafe.org — https://volcanocafe.org/
+- menn.is — https://menn.is/
+- sedlabanki.is — https://sedlabanki.is/
+- dagskrain.is — https://dagskrain.is/
+- herdubreid.is — https://herdubreid.is/
+- stuckiniceland.com — https://stuckiniceland.com/
+- cryptocoinupdates.com — https://cryptocoinupdates.com/
+- logreglan.is — https://logreglan.is/
+- andriki.is — https://andriki.is/
+- touristguide.is — https://touristguide.is/
+- livelifewithaview.com — https://livelifewithaview.com/
+- deiglan.is — https://deiglan.is/
+- reykjavik.com — https://reykjavik.com/
 
 ## ireland (western_europe) — Ireland
 
@@ -5882,6 +7515,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Socialist Worker — http://www.swp.ie/
 - Irish Post — http://www.irishpost.co.uk/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1161 by GDELT monitoring volume)
+- independent.ie — https://independent.ie/
+- irishtimes.com — https://irishtimes.com/
+- irishsun.com — https://irishsun.com/
+- irishexaminer.com — https://irishexaminer.com/
+- irishmirror.ie — https://irishmirror.ie/
+- thejournal.ie — https://thejournal.ie/
+- rte.ie — https://rte.ie/
+- breakingnews.ie — https://breakingnews.ie/
+- the42.ie — https://the42.ie/
+- hotpress.com — https://hotpress.com/
+- newstalk.com — https://newstalk.com/
+- irishcentral.com — https://irishcentral.com/
+- hoganstand.com — https://hoganstand.com/
+- afloat.ie — https://afloat.ie/
+- farmersjournal.ie — https://farmersjournal.ie/
+- leinsterexpress.ie — https://leinsterexpress.ie/
+- thesun.ie — https://thesun.ie/
+- longfordleader.ie — https://longfordleader.ie/
+- midwestradio.ie — https://midwestradio.ie/
+- agriland.ie — https://agriland.ie/
+- offalyexpress.ie — https://offalyexpress.ie/
+- leitrimobserver.ie — https://leitrimobserver.ie/
+- joe.ie — https://joe.ie/
+- eveningecho.ie — https://eveningecho.ie/
+- highlandradio.com — https://highlandradio.com/
+- limerickleader.ie — https://limerickleader.ie/
+- businessworld.ie — https://businessworld.ie/
+- talkofthetown.ie — https://talkofthetown.ie/
+- herald.ie — https://herald.ie/
+- sundayworld.com — https://sundayworld.com/
+- dundalkdemocrat.ie — https://dundalkdemocrat.ie/
+- connachttribune.ie — https://connachttribune.ie/
+- leinsterleader.ie — https://leinsterleader.ie/
+- siliconrepublic.com — https://siliconrepublic.com/
+- waterford-news.ie — https://waterford-news.ie/
+- extratime.ie — https://extratime.ie/
+- donegaldemocrat.ie — https://donegaldemocrat.ie/
+- meathchronicle.ie — https://meathchronicle.ie/
+- carlow-nationalist.ie — https://carlow-nationalist.ie/
+- dublinlive.ie — https://dublinlive.ie/
+
 ## isle_of_man (western_europe) — Isle of Man
 
 ### w3newspapers — (not listed)
@@ -5898,6 +7573,9 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Isle News — http://isleofman.isle-news.com/
 - Manx — http://www.manx.net/
 - Isle of Man Courier — http://www.iomtoday.co.im/
+
+### gdelt — (not listed)
+- (no entries)
 
 ## italy (western_europe) — Italy
 
@@ -6340,6 +8018,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - La Repubblica — http://www.repubblica.it/
 - La Stampa — http://www.lastampa.it/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 5805 by GDELT monitoring volume)
+- zazoom.it — https://zazoom.it/
+- gelocal.it — https://gelocal.it/
+- ansa.it — https://ansa.it/
+- repubblica.it — https://repubblica.it/
+- corriere.it — https://corriere.it/
+- radioradicale.it — https://radioradicale.it/
+- ilmessaggero.it — https://ilmessaggero.it/
+- tuttomercatoweb.com — https://tuttomercatoweb.com/
+- lastampa.it — https://lastampa.it/
+- libero.it — https://libero.it/
+- askanews.it — https://askanews.it/
+- ilgazzettino.it — https://ilgazzettino.it/
+- tiscali.it — https://tiscali.it/
+- ilsecoloxix.it — https://ilsecoloxix.it/
+- aise.it — https://aise.it/
+- liberoquotidiano.it — https://liberoquotidiano.it/
+- informazione.it — https://informazione.it/
+- ilsole24ore.com — https://ilsole24ore.com/
+- larena.it — https://larena.it/
+- affaritaliani.it — https://affaritaliani.it/
+- ilmattino.it — https://ilmattino.it/
+- ilfattoquotidiano.it — https://ilfattoquotidiano.it/
+- meteoweb.eu — https://meteoweb.eu/
+- ilgiornale.it — https://ilgiornale.it/
+- adnkronos.com — https://adnkronos.com/
+- bresciaoggi.it — https://bresciaoggi.it/
+- gds.it — https://gds.it/
+- borsaitaliana.it — https://borsaitaliana.it/
+- ilgiorno.it — https://ilgiorno.it/
+- oggitreviso.it — https://oggitreviso.it/
+- italiannetwork.it — https://italiannetwork.it/
+- lagazzettadelmezzogiorno.it — https://lagazzettadelmezzogiorno.it/
+- sanremonews.it — https://sanremonews.it/
+- agi.it — https://agi.it/
+- prealpina.it — https://prealpina.it/
+- alguer.it — https://alguer.it/
+- dagospia.com — https://dagospia.com/
+- leggo.it — https://leggo.it/
+- iltempo.it — https://iltempo.it/
+- ilsussidiario.net — https://ilsussidiario.net/
+
 ## liechtenstein (western_europe) — Liechtenstein
 
 ### w3newspapers — https://www.w3newspapers.com/liechtenstein/
@@ -6360,6 +8080,19 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Liechtenstein Online — http://www.lol.li/
 - Liechtensteiner Vaterland — http://www.vaterland.li/
 - Liechtensteiner Volksblatt — http://www.volksblatt.li/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (11 domains by GDELT monitoring volume)
+- vu-online.li — https://vu-online.li/
+- joker.com — https://joker.com/
+- vaterland.li — https://vaterland.li/
+- llb.li — https://llb.li/
+- freieliste.li — https://freieliste.li/
+- tourismus.li — https://tourismus.li/
+- canampay.com — https://canampay.com/
+- wherefoodis.com — https://wherefoodis.com/
+- easyvoyage.de — https://easyvoyage.de/
+- mundomagic.org — https://mundomagic.org/
+- naijacompetitions.com — https://naijacompetitions.com/
 
 ## luxembourg (western_europe) — Luxembourg
 
@@ -6405,6 +8138,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Italians in Lux — http://www.italiansinlux.com/
 - Luxemburger Wort — http://www.wort.lu/de
 - Tagebatt — http://www.tageblatt.lu/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 133 by GDELT monitoring volume)
+- wort.lu — https://wort.lu/
+- lessentiel.lu — https://lessentiel.lu/
+- paperjam.lu — https://paperjam.lu/
+- tageblatt.lu — https://tageblatt.lu/
+- chronicle.lu — https://chronicle.lu/
+- lequotidien.lu — https://lequotidien.lu/
+- gouvernement.lu — https://gouvernement.lu/
+- delano.lu — https://delano.lu/
+- luxtimes.lu — https://luxtimes.lu/
+- woxx.lu — https://woxx.lu/
+- public.lu — https://public.lu/
+- revue.lu — https://revue.lu/
+- berryrecorder.com — https://berryrecorder.com/
+- tuckermantimes.com — https://tuckermantimes.com/
+- land.lu — https://land.lu/
+- melvillereview.com — https://melvillereview.com/
+- trionjournal.com — https://trionjournal.com/
+- uniontradejournal.com — https://uniontradejournal.com/
+- genevajournal.com — https://genevajournal.com/
+- aikenadvocate.com — https://aikenadvocate.com/
+- baldwinjournal.com — https://baldwinjournal.com/
+- earlebusinessunion.com — https://earlebusinessunion.com/
+- sheridandaily.com — https://sheridandaily.com/
+- danvilledaily.com — https://danvilledaily.com/
+- piedmontregister.com — https://piedmontregister.com/
+- jctynews.com — https://jctynews.com/
+- lenoxledger.com — https://lenoxledger.com/
+- baxternewsreview.com — https://baxternewsreview.com/
+- ozarktimes.com — https://ozarktimes.com/
+- rockvilleregister.com — https://rockvilleregister.com/
+- stockpressdaily.com — https://stockpressdaily.com/
+- davidsonregister.com — https://davidsonregister.com/
+- darcnews.com — https://darcnews.com/
+- stockdailyreview.com — https://stockdailyreview.com/
+- thewallstreetreview.com — https://thewallstreetreview.com/
+- haydenbusinessjournal.com — https://haydenbusinessjournal.com/
+- institutionalassetmanager.co.uk — https://institutionalassetmanager.co.uk/
+- orobulletin.com — https://orobulletin.com/
+- itnation.lu — https://itnation.lu/
+- fontaneau.com — https://fontaneau.com/
 
 ## malta (western_europe) — Malta
 
@@ -6456,6 +8231,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - L Orizzont — http://www.orizzont.com.mt/
 - Times — http://www.timesofmalta.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 192 by GDELT monitoring volume)
+- timesofmalta.com — https://timesofmalta.com/
+- maltatoday.com.mt — https://maltatoday.com.mt/
+- independent.com.mt — https://independent.com.mt/
+- gozonews.com — https://gozonews.com/
+- lovinmalta.com — https://lovinmalta.com/
+- bay.com.mt — https://bay.com.mt/
+- newsbook.com.mt — https://newsbook.com.mt/
+- daphnecaruanagalizia.com — https://daphnecaruanagalizia.com/
+- theshiftnews.com — https://theshiftnews.com/
+- maltastar.com — https://maltastar.com/
+- maltawinds.com — https://maltawinds.com/
+- casinocruise.com — https://casinocruise.com/
+- betatcasino.com — https://betatcasino.com/
+- tvm.com.mt — https://tvm.com.mt/
+- investineu.com — https://investineu.com/
+- gozo.news — https://gozo.news/
+- slottyvegas.com — https://slottyvegas.com/
+- pokerlistings.com — https://pokerlistings.com/
+- royalpanda.com — https://royalpanda.com/
+- spinit.com — https://spinit.com/
+- triciaannemitchell.com — https://triciaannemitchell.com/
+- scubadivermag.com — https://scubadivermag.com/
+- europeangaming.eu — https://europeangaming.eu/
+- akkuza.com — https://akkuza.com/
+- maltabusinessweekly.com — https://maltabusinessweekly.com/
+- gov.mt — https://gov.mt/
+- vacanciesinmalta.com — https://vacanciesinmalta.com/
+- meikepeters.com — https://meikepeters.com/
+- corpidelite.net — https://corpidelite.net/
+- bcfocus.com — https://bcfocus.com/
+- holdemindicator49.com — https://holdemindicator49.com/
+- taucher.net — https://taucher.net/
+- mrringo.com — https://mrringo.com/
+- grahamhancock.com — https://grahamhancock.com/
+- holiday-weather.com — https://holiday-weather.com/
+- maltanow.com.mt — https://maltanow.com.mt/
+- betweenlifeandgames.com — https://betweenlifeandgames.com/
+- vegashero.com — https://vegashero.com/
+- jeangalea.com — https://jeangalea.com/
+- sven-giegold.de — https://sven-giegold.de/
+
 ## monaco (western_europe) — Monaco
 
 ### w3newspapers — https://www.w3newspapers.com/monaco/
@@ -6486,6 +8303,30 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Monaco Life — http://www.monacolife.net/
 - Journal de Monaco — http://cloud.gouv.mc/dataweb/Jourmon.nsf?OpenDatabase
 - Monaco Matin — http://www.monacomatin.mc/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (22 domains by GDELT monitoring volume)
+- monacolife.net — https://monacolife.net/
+- monacohebdo.mc — https://monacohebdo.mc/
+- hellomonaco.com — https://hellomonaco.com/
+- altopascio.info — https://altopascio.info/
+- conseil-national.mc — https://conseil-national.mc/
+- fiaformula2.com — https://fiaformula2.com/
+- monaco-tribune.com — https://monaco-tribune.com/
+- calibre11.com — https://calibre11.com/
+- palais.mc — https://palais.mc/
+- ggcarvalho.dev — https://ggcarvalho.dev/
+- monacoreporter.com — https://monacoreporter.com/
+- wanderlustliving.com — https://wanderlustliving.com/
+- bodegassingulares.com — https://bodegassingulares.com/
+- rallyssimo.it — https://rallyssimo.it/
+- visualstudio.com — https://visualstudio.com/
+- asm-supporters.fr — https://asm-supporters.fr/
+- uslnordovest.toscana.it — https://uslnordovest.toscana.it/
+- rebecca-marshall.com — https://rebecca-marshall.com/
+- yomanchic.com — https://yomanchic.com/
+- brabham.co.uk — https://brabham.co.uk/
+- asmfoot.fr — https://asmfoot.fr/
+- girondins33.com — https://girondins33.com/
 
 ## netherlands (western_europe) — Netherlands
 
@@ -6725,6 +8566,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - NRC Handelsblad — http://www.nrc.nl/
 - Reformatorisch Dagblad — http://www.refdag.nl/
 - Trouw — http://www.trouw.nl/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1642 by GDELT monitoring volume)
+- nieuwsbank.nl — https://nieuwsbank.nl/
+- rtvutrecht.nl — https://rtvutrecht.nl/
+- noordhollandsdagblad.nl — https://noordhollandsdagblad.nl/
+- drimble.nl — https://drimble.nl/
+- haarlemsdagblad.nl — https://haarlemsdagblad.nl/
+- nu.nl — https://nu.nl/
+- telegraaf.nl — https://telegraaf.nl/
+- dvhn.nl — https://dvhn.nl/
+- twentefm.nl — https://twentefm.nl/
+- alarmeringen.nl — https://alarmeringen.nl/
+- rtvoost.nl — https://rtvoost.nl/
+- nos.nl — https://nos.nl/
+- omroepzeeland.nl — https://omroepzeeland.nl/
+- ijmuidercourant.nl — https://ijmuidercourant.nl/
+- elfvoetbal.nl — https://elfvoetbal.nl/
+- nrc.nl — https://nrc.nl/
+- metronieuws.nl — https://metronieuws.nl/
+- rtlnieuws.nl — https://rtlnieuws.nl/
+- limburger.nl — https://limburger.nl/
+- leidschdagblad.nl — https://leidschdagblad.nl/
+- rtvnoord.nl — https://rtvnoord.nl/
+- gelderlander.nl — https://gelderlander.nl/
+- gooieneemlander.nl — https://gooieneemlander.nl/
+- destentor.nl — https://destentor.nl/
+- dichtbij.nl — https://dichtbij.nl/
+- voetbalprimeur.nl — https://voetbalprimeur.nl/
+- nieuws.nl — https://nieuws.nl/
+- lc.nl — https://lc.nl/
+- omroepgelderland.nl — https://omroepgelderland.nl/
+- welingelichtekringen.nl — https://welingelichtekringen.nl/
+- waldnet.nl — https://waldnet.nl/
+- rtvnh.nl — https://rtvnh.nl/
+- dutchnews.nl — https://dutchnews.nl/
+- tubantia.nl — https://tubantia.nl/
+- pzc.nl — https://pzc.nl/
+- bndestem.nl — https://bndestem.nl/
+- omroepbrabant.nl — https://omroepbrabant.nl/
+- at5.nl — https://at5.nl/
+- ed.nl — https://ed.nl/
+- rd.nl — https://rd.nl/
 
 ## norway (western_europe) — Norway
 
@@ -7109,6 +8992,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Handelsbladet — http://handelsbladet.no/
 - Verdens Gang — http://www.vg.no/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 805 by GDELT monitoring volume)
+- aftenposten.no — https://aftenposten.no/
+- nrk.no — https://nrk.no/
+- vg.no — https://vg.no/
+- nettavisen.no — https://nettavisen.no/
+- abcnyheter.no — https://abcnyheter.no/
+- dagsavisen.no — https://dagsavisen.no/
+- dn.no — https://dn.no/
+- newsinenglish.no — https://newsinenglish.no/
+- dagbladet.no — https://dagbladet.no/
+- klassekampen.no — https://klassekampen.no/
+- e24.no — https://e24.no/
+- aftenbladet.no — https://aftenbladet.no/
+- hegnar.no — https://hegnar.no/
+- tv2.no — https://tv2.no/
+- bt.no — https://bt.no/
+- rbnett.no — https://rbnett.no/
+- adressa.no — https://adressa.no/
+- an.no — https://an.no/
+- folkebladet.no — https://folkebladet.no/
+- lofotposten.no — https://lofotposten.no/
+- altaposten.no — https://altaposten.no/
+- vl.no — https://vl.no/
+- nordlys.no — https://nordlys.no/
+- itromso.no — https://itromso.no/
+- ifinnmark.no — https://ifinnmark.no/
+- fremover.no — https://fremover.no/
+- vol.no — https://vol.no/
+- tk.no — https://tk.no/
+- h-avis.no — https://h-avis.no/
+- smp.no — https://smp.no/
+- dagen.no — https://dagen.no/
+- ta.no — https://ta.no/
+- rb.no — https://rb.no/
+- tb.no — https://tb.no/
+- tu.no — https://tu.no/
+- forskning.no — https://forskning.no/
+- fvn.no — https://fvn.no/
+- ringblad.no — https://ringblad.no/
+- ba.no — https://ba.no/
+- nye-troms.no — https://nye-troms.no/
+
 ## portugal (western_europe) — Portugal
 
 ### w3newspapers — https://www.w3newspapers.com/portugal/
@@ -7309,6 +9234,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Publico — http://www.publico.pt/
 - Record — http://www.record.xl.pt/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 816 by GDELT monitoring volume)
+- sapo.pt — https://sapo.pt/
+- abola.pt — https://abola.pt/
+- noticiasaominuto.com — https://noticiasaominuto.com/
+- rtp.pt — https://rtp.pt/
+- observador.pt — https://observador.pt/
+- dn.pt — https://dn.pt/
+- iol.pt — https://iol.pt/
+- dnoticias.pt — https://dnoticias.pt/
+- publico.pt — https://publico.pt/
+- jn.pt — https://jn.pt/
+- dinheirovivo.pt — https://dinheirovivo.pt/
+- sabado.pt — https://sabado.pt/
+- jornaldenegocios.pt — https://jornaldenegocios.pt/
+- cmjornal.pt — https://cmjornal.pt/
+- destak.pt — https://destak.pt/
+- portugalglobal.pt — https://portugalglobal.pt/
+- tsf.pt — https://tsf.pt/
+- xl.pt — https://xl.pt/
+- zerozero.pt — https://zerozero.pt/
+- ojogo.pt — https://ojogo.pt/
+- acorianooriental.pt — https://acorianooriental.pt/
+- bomdia.lu — https://bomdia.lu/
+- ptjornal.com — https://ptjornal.com/
+- serbenfiquista.com — https://serbenfiquista.com/
+- futebol365.pt — https://futebol365.pt/
+- theportugalnews.com — https://theportugalnews.com/
+- noticiasdecoimbra.pt — https://noticiasdecoimbra.pt/
+- jm-madeira.pt — https://jm-madeira.pt/
+- rostos.pt — https://rostos.pt/
+- sulinformacao.pt — https://sulinformacao.pt/
+- ionline.pt — https://ionline.pt/
+- ambitur.pt — https://ambitur.pt/
+- omirante.pt — https://omirante.pt/
+- presstur.com — https://presstur.com/
+- esquerda.net — https://esquerda.net/
+- sol.pt — https://sol.pt/
+- regiao-sul.pt — https://regiao-sul.pt/
+- correiodominho.com — https://correiodominho.com/
+- regiaodeleiria.pt — https://regiaodeleiria.pt/
+- diarioleiria.pt — https://diarioleiria.pt/
+
 ## san_marino (western_europe) — San Marino
 
 ### w3newspapers — (not listed)
@@ -7330,6 +9297,14 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Notizie di San Marino — http://www.notiziesanmarino.com/
 - San Marino Notizie — http://www.sanmarinonotizie.com/
 - La Tribuna Sanmarinese — http://www.latribunasammarinese.net/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (6 domains by GDELT monitoring volume)
+- sanmarinonotizie.com — https://sanmarinonotizie.com/
+- esteri.sm — https://esteri.sm/
+- segreteria.sm — https://segreteria.sm/
+- bcsm.sm — https://bcsm.sm/
+- nederob.nl — https://nederob.nl/
+- toplistsmania.com — https://toplistsmania.com/
 
 ## spain (western_europe) — Spain
 
@@ -7785,6 +9760,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Marca — http://www.marca.com/
 - Sport — http://www.sport.es/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 2112 by GDELT monitoring volume)
+- lainformacion.com — https://lainformacion.com/
+- 20minutos.es — https://20minutos.es/
+- europapress.es — https://europapress.es/
+- eldia.es — https://eldia.es/
+- gentedigital.es — https://gentedigital.es/
+- eleconomista.es — https://eleconomista.es/
+- abc.es — https://abc.es/
+- elpais.com — https://elpais.com/
+- elpuntavui.cat — https://elpuntavui.cat/
+- andaluciainformacion.es — https://andaluciainformacion.es/
+- ideal.es — https://ideal.es/
+- lavanguardia.com — https://lavanguardia.com/
+- elconfidencial.com — https://elconfidencial.com/
+- lacerca.com — https://lacerca.com/
+- diariosigloxxi.com — https://diariosigloxxi.com/
+- eldiario.es — https://eldiario.es/
+- elperiodico.com — https://elperiodico.com/
+- as.com — https://as.com/
+- cadenaser.com — https://cadenaser.com/
+- elmundo.es — https://elmundo.es/
+- lavozdigital.es — https://lavozdigital.es/
+- diariocordoba.com — https://diariocordoba.com/
+- huelvainformacion.es — https://huelvainformacion.es/
+- mundodeportivo.com — https://mundodeportivo.com/
+- diarioinformacion.com — https://diarioinformacion.com/
+- farodevigo.es — https://farodevigo.es/
+- diariosur.es — https://diariosur.es/
+- diariovasco.com — https://diariovasco.com/
+- hoy.es — https://hoy.es/
+- diariodesevilla.es — https://diariodesevilla.es/
+- granadahoy.com — https://granadahoy.com/
+- telecinco.es — https://telecinco.es/
+- eldiariomontanes.es — https://eldiariomontanes.es/
+- laverdad.es — https://laverdad.es/
+- elcorreo.com — https://elcorreo.com/
+- europasur.es — https://europasur.es/
+- goal.com — https://goal.com/
+- elperiodico.cat — https://elperiodico.cat/
+- larazon.es — https://larazon.es/
+- elperiodicodearagon.com — https://elperiodicodearagon.com/
+
 ## sweden (western_europe) — Sweden
 
 ### w3newspapers — https://www.w3newspapers.com/sweden/
@@ -8056,6 +10073,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Svenska Dagbladet — https://www.svd.se/
 - Syd Svenska Dagbladet — https://www.sydsvenskan.se/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1116 by GDELT monitoring volume)
+- nsd.se — https://nsd.se/
+- norran.se — https://norran.se/
+- kuriren.nu — https://kuriren.nu/
+- vt.se — https://vt.se/
+- unt.se — https://unt.se/
+- helagotland.se — https://helagotland.se/
+- expressen.se — https://expressen.se/
+- nt.se — https://nt.se/
+- svt.se — https://svt.se/
+- sverigesradio.se — https://sverigesradio.se/
+- aftonbladet.se — https://aftonbladet.se/
+- hd.se — https://hd.se/
+- corren.se — https://corren.se/
+- dn.se — https://dn.se/
+- svd.se — https://svd.se/
+- gp.se — https://gp.se/
+- sydsvenskan.se — https://sydsvenskan.se/
+- ekuriren.se — https://ekuriren.se/
+- svenskafans.com — https://svenskafans.com/
+- sydostran.se — https://sydostran.se/
+- blt.se — https://blt.se/
+- bohuslaningen.se — https://bohuslaningen.se/
+- di.se — https://di.se/
+- bt.se — https://bt.se/
+- kkuriren.se — https://kkuriren.se/
+- pt.se — https://pt.se/
+- vk.se — https://vk.se/
+- smp.se — https://smp.se/
+- sn.se — https://sn.se/
+- folkbladet.nu — https://folkbladet.nu/
+- nwt.se — https://nwt.se/
+- folkbladet.se — https://folkbladet.se/
+- dt.se — https://dt.se/
+- na.se — https://na.se/
+- tv4.se — https://tv4.se/
+- thelocal.se — https://thelocal.se/
+- dalademokraten.se — https://dalademokraten.se/
+- fotbolldirekt.se — https://fotbolldirekt.se/
+- hallandsposten.se — https://hallandsposten.se/
+- ystadsallehanda.se — https://ystadsallehanda.se/
+
 ## switzerland (western_europe) — Switzerland
 
 ### w3newspapers — https://www.w3newspapers.com/switzerland/
@@ -8300,6 +10359,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Sonntags Zeitung — http://www.sonntagszeitung.ch/
 - Tages Anzeiger — http://www.tagesanzeiger.ch/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 862 by GDELT monitoring volume)
+- 24heures.ch — https://24heures.ch/
+- tdg.ch — https://tdg.ch/
+- tagesanzeiger.ch — https://tagesanzeiger.ch/
+- swissinfo.ch — https://swissinfo.ch/
+- bernerzeitung.ch — https://bernerzeitung.ch/
+- lematin.ch — https://lematin.ch/
+- derbund.ch — https://derbund.ch/
+- toponline.ch — https://toponline.ch/
+- aargauerzeitung.ch — https://aargauerzeitung.ch/
+- 20min.ch — https://20min.ch/
+- solothurnerzeitung.ch — https://solothurnerzeitung.ch/
+- limmattalerzeitung.ch — https://limmattalerzeitung.ch/
+- grenchnertagblatt.ch — https://grenchnertagblatt.ch/
+- nzz.ch — https://nzz.ch/
+- badenertagblatt.ch — https://badenertagblatt.ch/
+- oltnertagblatt.ch — https://oltnertagblatt.ch/
+- bzbasel.ch — https://bzbasel.ch/
+- tagblatt.ch — https://tagblatt.ch/
+- tio.ch — https://tio.ch/
+- bazonline.ch — https://bazonline.ch/
+- landbote.ch — https://landbote.ch/
+- basellandschaftlichezeitung.ch — https://basellandschaftlichezeitung.ch/
+- cdt.ch — https://cdt.ch/
+- blick.ch — https://blick.ch/
+- berneroberlaender.ch — https://berneroberlaender.ch/
+- letemps.ch — https://letemps.ch/
+- laliberte.ch — https://laliberte.ch/
+- zsz.ch — https://zsz.ch/
+- watson.ch — https://watson.ch/
+- fuw.ch — https://fuw.ch/
+- srf.ch — https://srf.ch/
+- thunertagblatt.ch — https://thunertagblatt.ch/
+- zuonline.ch — https://zuonline.ch/
+- ticinonews.ch — https://ticinonews.ch/
+- cash.ch — https://cash.ch/
+- luzernerzeitung.ch — https://luzernerzeitung.ch/
+- gdp.ch — https://gdp.ch/
+- rro.ch — https://rro.ch/
+- suedostschweiz.ch — https://suedostschweiz.ch/
+- arcinfo.ch — https://arcinfo.ch/
+
 ## united_kingdom (western_europe) — United Kingdom
 
 ### w3newspapers — (not listed)
@@ -8313,6 +10414,48 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 
 ### abyznewslinks — http://www.abyznewslinks.com/uking.htm
 - (no entries)
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 7304 by GDELT monitoring volume)
+- independent.co.uk — https://independent.co.uk/
+- heraldscotland.com — https://heraldscotland.com/
+- express.co.uk — https://express.co.uk/
+- telegraph.co.uk — https://telegraph.co.uk/
+- mirror.co.uk — https://mirror.co.uk/
+- investegate.co.uk — https://investegate.co.uk/
+- belfasttelegraph.co.uk — https://belfasttelegraph.co.uk/
+- manchestereveningnews.co.uk — https://manchestereveningnews.co.uk/
+- pressandjournal.co.uk — https://pressandjournal.co.uk/
+- dailyrecord.co.uk — https://dailyrecord.co.uk/
+- standard.co.uk — https://standard.co.uk/
+- thecourier.co.uk — https://thecourier.co.uk/
+- eveningexpress.co.uk — https://eveningexpress.co.uk/
+- scotsman.com — https://scotsman.com/
+- eadt.co.uk — https://eadt.co.uk/
+- walesonline.co.uk — https://walesonline.co.uk/
+- wandsworthguardian.co.uk — https://wandsworthguardian.co.uk/
+- eveningtelegraph.co.uk — https://eveningtelegraph.co.uk/
+- thenorthernecho.co.uk — https://thenorthernecho.co.uk/
+- theweek.co.uk — https://theweek.co.uk/
+- surreycomet.co.uk — https://surreycomet.co.uk/
+- theargus.co.uk — https://theargus.co.uk/
+- birminghammail.co.uk — https://birminghammail.co.uk/
+- yourlocalguardian.co.uk — https://yourlocalguardian.co.uk/
+- thisislocallondon.co.uk — https://thisislocallondon.co.uk/
+- southwalesargus.co.uk — https://southwalesargus.co.uk/
+- thenational.scot — https://thenational.scot/
+- thisiswiltshire.co.uk — https://thisiswiltshire.co.uk/
+- thewestmorlandgazette.co.uk — https://thewestmorlandgazette.co.uk/
+- clactonandfrintongazette.co.uk — https://clactonandfrintongazette.co.uk/
+- swindonadvertiser.co.uk — https://swindonadvertiser.co.uk/
+- bristolpost.co.uk — https://bristolpost.co.uk/
+- oxfordmail.co.uk — https://oxfordmail.co.uk/
+- dailyecho.co.uk — https://dailyecho.co.uk/
+- chroniclelive.co.uk — https://chroniclelive.co.uk/
+- aol.co.uk — https://aol.co.uk/
+- yorkshirepost.co.uk — https://yorkshirepost.co.uk/
+- bournemouthecho.co.uk — https://bournemouthecho.co.uk/
+- thesun.co.uk — https://thesun.co.uk/
+- www.gov.uk — https://www.gov.uk/
 
 ## russian_federation (russian_federation) — Russian Federation
 
@@ -8624,3 +10767,45 @@ Radio Liberty — http://www.rferl.org/section/see_kosovo/168.html
 - Uchitelskaia Gazeta — http://www.ug.ru/
 - Vedomosti — http://www.vedomosti.ru/
 - Versia — https://versia.ru
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 3833 by GDELT monitoring volume)
+- kp.ru — https://kp.ru/
+- tass.ru — https://tass.ru/
+- regnum.ru — https://regnum.ru/
+- sputniknews.com — https://sputniknews.com/
+- ria.ru — https://ria.ru/
+- msk.ru — https://msk.ru/
+- rg.ru — https://rg.ru/
+- mskagency.ru — https://mskagency.ru/
+- rbc.ru — https://rbc.ru/
+- rt.com — https://rt.com/
+- riadagestan.ru — https://riadagestan.ru/
+- rueconomics.ru — https://rueconomics.ru/
+- riafan.ru — https://riafan.ru/
+- 19rus.info — https://19rus.info/
+- themoscowtimes.com — https://themoscowtimes.com/
+- interfax.com — https://interfax.com/
+- polit.ru — https://polit.ru/
+- lenta.ru — https://lenta.ru/
+- lratvakan.com — https://lratvakan.com/
+- inosmi.ru — https://inosmi.ru/
+- aif.ru — https://aif.ru/
+- fedpress.ru — https://fedpress.ru/
+- informpskov.ru — https://informpskov.ru/
+- ura.news — https://ura.news/
+- kommersant.ru — https://kommersant.ru/
+- vm.ru — https://vm.ru/
+- iz.ru — https://iz.ru/
+- 33live.ru — https://33live.ru/
+- vedomosti.ru — https://vedomosti.ru/
+- vz.ru — https://vz.ru/
+- russiaherald.com — https://russiaherald.com/
+- 1prime.ru — https://1prime.ru/
+- energyland.info — https://energyland.info/
+- superomsk.ru — https://superomsk.ru/
+- pravda.ru — https://pravda.ru/
+- svoboda.org — https://svoboda.org/
+- life.ru — https://life.ru/
+- rosbalt.ru — https://rosbalt.ru/
+- dp.ru — https://dp.ru/
+- ren.tv — https://ren.tv/

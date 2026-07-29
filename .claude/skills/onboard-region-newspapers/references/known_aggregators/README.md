@@ -1,6 +1,6 @@
 # Known Online-Newspaper Aggregators
 
-Pre-extracted per-country newspaper lists from four online-newspaper aggregator sites. Used by `/onboard-region-newspapers` step 2a as a static seed instead of refetching aggregator homepages every run.
+Pre-extracted per-country newspaper lists from five sources — four online-newspaper aggregator sites plus GDELT's domains-by-country monitoring list. Used by `/onboard-region-newspapers` step 2a as a static seed instead of refetching aggregator homepages every run.
 
 ## File layout
 
@@ -13,7 +13,7 @@ One file per region, in this directory:
 - `ssa.md` — Sub-Saharan Africa
 - `lac.md` — Latin America & Caribbean
 
-Each file groups countries by H2 sections keyed on the country slug (e.g. `## china`), with four nested H3 sub-sections — one per aggregator — each followed by a bullet list of `<outlet name> — <outlet url>` lines. When an aggregator has no entry for a country, the H3 reads `(not listed)` and the bullet list reads `- (no entries)`.
+Each file groups countries by H2 sections keyed on the country slug (e.g. `## china`), with five nested H3 sub-sections — one per aggregator — each followed by a bullet list of `<outlet name> — <outlet url>` lines. When an aggregator has no entry for a country, the H3 reads `(not listed)` and the bullet list reads `- (no entries)`.
 
 To find a country fast: grep `^## <country_slug>` in the relevant region file.
 
@@ -25,6 +25,7 @@ To find a country fast: grep `^## <country_slug>` in the relevant region file.
 | **onlinenewspapers** | `httpx` — regional sitemaps at `/sitemap/<continent>.shtml` enumerate per-country `.shtml` URLs |
 | **allyoucanread** | `httpx` — top-level `/newspapers/` page enumerates per-country `<slug>-newspapers/` URLs |
 | **abyznewslinks** | `httpx` — `allco.htm` enumerates per-country `.htm` URLs; per-country pages are pre-classified by media type, populator filters to **Internet + Newspaper** sections only (skips Broadcast TV/radio and Press Agency wires) |
+| **gdelt** | `httpx` — one flat CSV ([2015-2021 domains-by-country](https://blog.gdeltproject.org/mapping-the-media-a-geographic-lookup-of-gdelts-sources-2015-2021/)), *not* per-country pages. Each domain is argmax-assigned to its highest-affinity country (FIPS 10-4 → ISO3 → slug via `countries.yaml`), then ranked by GDELT monitoring volume and capped per country (default top 40; the section header shows `top N of M`). Entries are bare domains with no curated outlet name, so the tail is noisier than the four curated aggregators (government, tourism, airline, party sites survive) — apply the local-only filter and the `/assess-newspaper-source` gate harder here. Its strength is *recall* of genuine local outlets the curated four miss (e.g. small Pacific markets: `fijitimes.com`, `fbc.com.fj`, `samoaobserver.ws`, `postcourier.com.pg`). Crosswalk + harvest live in `scripts/gdelt_source.py`. |
 
 ## Ignore rules (applied during population)
 
@@ -56,6 +57,18 @@ poetry run python ~/.claude/skills/onboard-region-newspapers/scripts/populate_kn
 Idempotent — re-running overwrites the per-region files. Wall time ~15-25 minutes for all 215 countries (Playwright per-page latency dominates).
 
 If a single country needs refresh while iterating on the populator, use `--limit N` to cap.
+
+To refresh **only** the GDELT section (fast — one CSV download, no Playwright, leaves the four HTML-aggregator sections byte-for-byte), pass `--gdelt-only`:
+
+```bash
+poetry run python .../scripts/populate_known_aggregators.py \
+  --regions .../src/configs/regions.yaml \
+  --countries .../src/configs/countries.yaml \
+  --out .../references/known_aggregators/ \
+  --gdelt-only            # optional: --gdelt-cap N (default 40, 0=uncapped)
+```
+
+Idempotent: any existing `### gdelt` section is replaced in place. The CSV is cached at `<out>/.gdelt_domains.csv` (override with `--gdelt-cache`).
 
 ## Country-slug ↔ aggregator-name mapping
 

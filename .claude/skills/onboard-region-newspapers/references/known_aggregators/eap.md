@@ -1,7 +1,7 @@
 # Known Online-Newspaper Aggregators — East Asia & Pacific (`eap`)
 
-Pre-extracted per-country newspaper lists from four online-newspaper
-aggregators. Used by `/onboard-region-newspapers` step 2a as a static
+Pre-extracted per-country newspaper lists from four online-newspaper aggregators
+plus GDELT's domains-by-country list. Used by `/onboard-region-newspapers` step 2a as a static
 seed instead of refetching aggregator homepages every run.
 
 See `references/known_aggregators/README.md` for the ignore rules and
@@ -252,6 +252,48 @@ the populator script that generated this file.
 - Zhongguo Ribao — http://cn.chinadaily.com.cn/
 - Zhongguo Tiyubao — http://www.sportsol.com.cn/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 4772 by GDELT monitoring volume)
+- bjhmoh.cn — https://bjhmoh.cn/
+- sina.com.cn — https://sina.com.cn/
+- ifeng.com — https://ifeng.com/
+- eastmoney.com — https://eastmoney.com/
+- cnfol.com — https://cnfol.com/
+- sina.com.tw — https://sina.com.tw/
+- cfi.net.cn — https://cfi.net.cn/
+- xinhuanet.com — https://xinhuanet.com/
+- kaixian.tv — https://kaixian.tv/
+- china.com.cn — https://china.com.cn/
+- gmw.cn — https://gmw.cn/
+- qianlong.com — https://qianlong.com/
+- huanqiu.com — https://huanqiu.com/
+- dahe.cn — https://dahe.cn/
+- southcn.com — https://southcn.com/
+- people.com.cn — https://people.com.cn/
+- qq.com — https://qq.com/
+- chinadaily.com.cn — https://chinadaily.com.cn/
+- wenxuecity.com — https://wenxuecity.com/
+- syd.com.cn — https://syd.com.cn/
+- jrj.com.cn — https://jrj.com.cn/
+- china.com — https://china.com/
+- 163.com — https://163.com/
+- caijing.com.cn — https://caijing.com.cn/
+- fjsen.com — https://fjsen.com/
+- chinanews.com — https://chinanews.com/
+- sdnews.com.cn — https://sdnews.com.cn/
+- sznews.com — https://sznews.com/
+- usofarn.com — https://usofarn.com/
+- hebei.com.cn — https://hebei.com.cn/
+- ycwb.com — https://ycwb.com/
+- sohu.com — https://sohu.com/
+- xinmin.cn — https://xinmin.cn/
+- hangzhou.com.cn — https://hangzhou.com.cn/
+- arar-news.com — https://arar-news.com/
+- dayoo.com — https://dayoo.com/
+- aboluowang.com — https://aboluowang.com/
+- shm.com.cn — https://shm.com.cn/
+- nbd.com.cn — https://nbd.com.cn/
+- yangtse.com — https://yangtse.com/
+
 ## hong_kong_sar_china (east_asia) — Hong Kong SAR, China
 
 ### w3newspapers — https://www.w3newspapers.com/hong-kong/
@@ -325,6 +367,48 @@ the populator script that generated this file.
 - Sing Tao — http://std.stheadline.com/index.html
 - South China Morning Post — http://www.scmp.com/frontpage/international
 - Sun — http://the-sun.on.cc/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 141 by GDELT monitoring volume)
+- stheadline.com — https://stheadline.com/
+- inmediahk.net — https://inmediahk.net/
+- on.cc — https://on.cc/
+- hkgolden.com — https://hkgolden.com/
+- post852.com — https://post852.com/
+- mingpao.com — https://mingpao.com/
+- news.gov.hk — https://news.gov.hk/
+- hk01.com — https://hk01.com/
+- hongkongfp.com — https://hongkongfp.com/
+- rthk.hk — https://rthk.hk/
+- passiontimes.hk — https://passiontimes.hk/
+- hkcd.com.hk — https://hkcd.com.hk/
+- vjmedia.com.hk — https://vjmedia.com.hk/
+- dcfever.com — https://dcfever.com/
+- asiatatler.com — https://asiatatler.com/
+- metrohk.com.hk — https://metrohk.com.hk/
+- thestandnews.com — https://thestandnews.com/
+- unwire.hk — https://unwire.hk/
+- christiantimes.org.hk — https://christiantimes.org.hk/
+- am730.com.hk — https://am730.com.hk/
+- info.gov.hk — https://info.gov.hk/
+- saikung.com — https://saikung.com/
+- cosmopolitan.com.hk — https://cosmopolitan.com.hk/
+- eprice.com.hk — https://eprice.com.hk/
+- harbourtimes.com — https://harbourtimes.com/
+- ulifestyle.com.hk — https://ulifestyle.com.hk/
+- hk-magazine.com — https://hk-magazine.com/
+- hktdc.com — https://hktdc.com/
+- prestigeonline.com — https://prestigeonline.com/
+- squarefoot.com.hk — https://squarefoot.com.hk/
+- memehk.com — https://memehk.com/
+- timeout.com.hk — https://timeout.com.hk/
+- orangenews.hk — https://orangenews.hk/
+- mysinablog.com — https://mysinablog.com/
+- thinkhk.com — https://thinkhk.com/
+- lifestyleasia.com — https://lifestyleasia.com/
+- linepost.hk — https://linepost.hk/
+- e-zone.com.hk — https://e-zone.com.hk/
+- speakout.hk — https://speakout.hk/
+- hkcnews.com — https://hkcnews.com/
 
 ## japan (east_asia) — Japan
 
@@ -593,6 +677,48 @@ the populator script that generated this file.
 - Shimbun Akahata — http://www.jcp.or.jp/akahata/index.html
 - Yomiuri Shimbun — http://www.yomiuri.co.jp/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 2457 by GDELT monitoring volume)
+- nikkei.com — https://nikkei.com/
+- chibanippo.co.jp — https://chibanippo.co.jp/
+- sankei.com — https://sankei.com/
+- japantimes.co.jp — https://japantimes.co.jp/
+- asahi.com — https://asahi.com/
+- cnet.com — https://cnet.com/
+- mainichi.jp — https://mainichi.jp/
+- nhk.or.jp — https://nhk.or.jp/
+- yomiuri.co.jp — https://yomiuri.co.jp/
+- kyodo.co.jp — https://kyodo.co.jp/
+- rakuten.ne.jp — https://rakuten.ne.jp/
+- excite.co.jp — https://excite.co.jp/
+- saga-s.co.jp — https://saga-s.co.jp/
+- ameba.jp — https://ameba.jp/
+- yahoo.co.jp — https://yahoo.co.jp/
+- kyoto-np.co.jp — https://kyoto-np.co.jp/
+- walkerplus.com — https://walkerplus.com/
+- natalie.mu — https://natalie.mu/
+- livedoor.com — https://livedoor.com/
+- nishinippon.co.jp — https://nishinippon.co.jp/
+- famitsu.com — https://famitsu.com/
+- okinawatimes.co.jp — https://okinawatimes.co.jp/
+- japantoday.com — https://japantoday.com/
+- jomo-news.co.jp — https://jomo-news.co.jp/
+- caymanreporter.com — https://caymanreporter.com/
+- nikkan.co.jp — https://nikkan.co.jp/
+- topics.or.jp — https://topics.or.jp/
+- tokyo-np.co.jp — https://tokyo-np.co.jp/
+- agara.co.jp — https://agara.co.jp/
+- japanherald.com — https://japanherald.com/
+- ryukyushimpo.jp — https://ryukyushimpo.jp/
+- jiji.com — https://jiji.com/
+- the-miyanichi.co.jp — https://the-miyanichi.co.jp/
+- cyprustraveller.com — https://cyprustraveller.com/
+- ascii.jp — https://ascii.jp/
+- nikkeibp.co.jp — https://nikkeibp.co.jp/
+- the-japan-news.com — https://the-japan-news.com/
+- chugoku-np.co.jp — https://chugoku-np.co.jp/
+- kobe-np.co.jp — https://kobe-np.co.jp/
+- animenewsnetwork.com — https://animenewsnetwork.com/
+
 ## korea_dem_peoples_rep (east_asia) — Korea, Dem. People's Rep.
 
 ### w3newspapers — https://www.w3newspapers.com/north-korea/
@@ -624,6 +750,48 @@ the populator script that generated this file.
 - Choson Sinbo — http://chosonsinbo.com/
 - Rodong Sinmun — http://www.rodong.rep.kp/ko/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 102 by GDELT monitoring volume)
+- northkoreatimes.com — https://northkoreatimes.com/
+- nknews.org — https://nknews.org/
+- dailynk.com — https://dailynk.com/
+- 38north.org — https://38north.org/
+- freekorea.us — https://freekorea.us/
+- asiapress.org — https://asiapress.org/
+- kcna.co.jp — https://kcna.co.jp/
+- sinonk.com — https://sinonk.com/
+- wisconsinproject.org — https://wisconsinproject.org/
+- briefreport.co.uk — https://briefreport.co.uk/
+- missiledefenseadvocacy.org — https://missiledefenseadvocacy.org/
+- newfocusintl.com — https://newfocusintl.com/
+- nkeconwatch.com — https://nkeconwatch.com/
+- cbrneportal.com — https://cbrneportal.com/
+- borderlessnewsonline.com — https://borderlessnewsonline.com/
+- alt-market.com — https://alt-market.com/
+- freeforums.org — https://freeforums.org/
+- sophiesworld.net — https://sophiesworld.net/
+- northkoreatech.org — https://northkoreatech.org/
+- uskoreainstitute.org — https://uskoreainstitute.org/
+- televisionafrica.com — https://televisionafrica.com/
+- anonews.co — https://anonews.co/
+- etramping.com — https://etramping.com/
+- traditionalchildrengames.com — https://traditionalchildrengames.com/
+- topbuzz.com — https://topbuzz.com/
+- roughlyexplained.com — https://roughlyexplained.com/
+- the.me — https://the.me/
+- freedomcollection.org — https://freedomcollection.org/
+- mcafee.com — https://mcafee.com/
+- ctc.edu — https://ctc.edu/
+- epicthings.com — https://epicthings.com/
+- goldmadesimplenews.com — https://goldmadesimplenews.com/
+- flixxy.com — https://flixxy.com/
+- backtojerusalem.com — https://backtojerusalem.com/
+- humanrightsfoundation.org — https://humanrightsfoundation.org/
+- theobserver24.com — https://theobserver24.com/
+- international-issues.org — https://international-issues.org/
+- ampedasia.com — https://ampedasia.com/
+- masters.edu — https://masters.edu/
+- sadoh2004.com — https://sadoh2004.com/
+
 ## macao_sar_china (east_asia) — Macao SAR, China
 
 ### w3newspapers — (not listed)
@@ -641,6 +809,25 @@ the populator script that generated this file.
 - Macau News — http://www.macaunews.com.mo/index.php?lang=english
 - Macau News — http://www.macaunews.net/
 - Macau Daily News — http://www.macaodaily.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (17 domains by GDELT monitoring volume)
+- hojemacau.com.mo — https://hojemacau.com.mo/
+- jtm.com.mo — https://jtm.com.mo/
+- ggrasia.com — https://ggrasia.com/
+- macaubusinessdaily.com — https://macaubusinessdaily.com/
+- macaunews.com.mo — https://macaunews.com.mo/
+- gcs.gov.mo — https://gcs.gov.mo/
+- exmoo.com — https://exmoo.com/
+- macaodaily.com — https://macaodaily.com/
+- macaunews.mo — https://macaunews.mo/
+- tdm.com.mo — https://tdm.com.mo/
+- frankfoodandtravel.com — https://frankfoodandtravel.com/
+- isa-guide.de — https://isa-guide.de/
+- vakiodaily.com — https://vakiodaily.com/
+- mgm.mo — https://mgm.mo/
+- itsgoa.com — https://itsgoa.com/
+- casino.com — https://casino.com/
+- soundandimagechallenge.com — https://soundandimagechallenge.com/
 
 ## mongolia (east_asia) — Mongolia
 
@@ -706,6 +893,48 @@ the populator script that generated this file.
 - MAD — http://www.mad-mongolia.com/
 - Udriin Sonin — http://dnn.mn/
 - Zuunii Medee — http://www.zuuniimedee.mn/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 96 by GDELT monitoring volume)
+- sonin.mn — https://sonin.mn/
+- montsame.mn — https://montsame.mn/
+- olloo.mn — https://olloo.mn/
+- unen.mn — https://unen.mn/
+- shuud.mn — https://shuud.mn/
+- news.mn — https://news.mn/
+- chuhal.mn — https://chuhal.mn/
+- mnb.mn — https://mnb.mn/
+- mongolnews.mn — https://mongolnews.mn/
+- conscourt.gov.mn — https://conscourt.gov.mn/
+- revistamongolia.com — https://revistamongolia.com/
+- tsahimurtuu.mn — https://tsahimurtuu.mn/
+- ebmconsulting.com.hk — https://ebmconsulting.com.hk/
+- mad-intelligence.com — https://mad-intelligence.com/
+- babakaps.net — https://babakaps.net/
+- theubpost.mn — https://theubpost.mn/
+- transrivers.org — https://transrivers.org/
+- stonehorsemongolia.com — https://stonehorsemongolia.com/
+- embassyofmongolia.co.uk — https://embassyofmongolia.co.uk/
+- gogo.mn — https://gogo.mn/
+- ildaro.com — https://ildaro.com/
+- dymusings.com — https://dymusings.com/
+- placestoseeinyourlifetime.com — https://placestoseeinyourlifetime.com/
+- tseg.mn — https://tseg.mn/
+- frontiers-capital.com — https://frontiers-capital.com/
+- mongolia-web.com — https://mongolia-web.com/
+- foxstudio.biz — https://foxstudio.biz/
+- geopolitica-rivista.org — https://geopolitica-rivista.org/
+- khanlex.mn — https://khanlex.mn/
+- thenorwichguidon.org — https://thenorwichguidon.org/
+- business-mongolia.com — https://business-mongolia.com/
+- heykino.net — https://heykino.net/
+- un-mongolia.mn — https://un-mongolia.mn/
+- gertoger.net — https://gertoger.net/
+- travelbuddies.info — https://travelbuddies.info/
+- welcome-mongolia.com — https://welcome-mongolia.com/
+- mongoliannature.info — https://mongoliannature.info/
+- manifestoajans.com — https://manifestoajans.com/
+- vizaca.com — https://vizaca.com/
+- weareparis.be — https://weareparis.be/
 
 ## south_korea (east_asia) — Korea, Rep.
 
@@ -904,6 +1133,48 @@ the populator script that generated this file.
 - Segye Times — http://www.segye.com/
 - Seoul Shinmun — http://www.seoul.co.kr/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 714 by GDELT monitoring volume)
+- joins.com — https://joins.com/
+- donga.com — https://donga.com/
+- ohmynews.com — https://ohmynews.com/
+- yonhapnews.co.kr — https://yonhapnews.co.kr/
+- kamuturk.net — https://kamuturk.net/
+- chosun.com — https://chosun.com/
+- kbs.co.kr — https://kbs.co.kr/
+- heraldcorp.com — https://heraldcorp.com/
+- diodeo.com — https://diodeo.com/
+- news1.kr — https://news1.kr/
+- mt.co.kr — https://mt.co.kr/
+- hani.co.kr — https://hani.co.kr/
+- hankookilbo.com — https://hankookilbo.com/
+- seoul.co.kr — https://seoul.co.kr/
+- koreaherald.com — https://koreaherald.com/
+- koreatimes.co.kr — https://koreatimes.co.kr/
+- newspim.com — https://newspim.com/
+- yna.co.kr — https://yna.co.kr/
+- edaily.co.kr — https://edaily.co.kr/
+- metroseoul.co.kr — https://metroseoul.co.kr/
+- etoday.co.kr — https://etoday.co.kr/
+- womannews.net — https://womannews.net/
+- viva100.com — https://viva100.com/
+- busan.com — https://busan.com/
+- kmib.co.kr — https://kmib.co.kr/
+- fnnews.com — https://fnnews.com/
+- heraldk.com — https://heraldk.com/
+- nate.com — https://nate.com/
+- newsway.kr — https://newsway.kr/
+- newstomato.com — https://newstomato.com/
+- daum.net — https://daum.net/
+- segye.com — https://segye.com/
+- koreabizwire.com — https://koreabizwire.com/
+- ilyo.co.kr — https://ilyo.co.kr/
+- nspna.com — https://nspna.com/
+- mk.co.kr — https://mk.co.kr/
+- ihalla.com — https://ihalla.com/
+- voakorea.com — https://voakorea.com/
+- naver.com — https://naver.com/
+- insight.co.kr — https://insight.co.kr/
+
 ## taiwan_china (east_asia) — Taiwan, China
 
 ### w3newspapers — https://www.w3newspapers.com/taiwan/
@@ -1009,6 +1280,48 @@ the populator script that generated this file.
 - Liberty Times — http://www.ltn.com.tw/
 - UDN — http://www.udn.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 507 by GDELT monitoring volume)
+- udn.com — https://udn.com/
+- cna.com.tw — https://cna.com.tw/
+- ltn.com.tw — https://ltn.com.tw/
+- chinatimes.com — https://chinatimes.com/
+- coolloud.org.tw — https://coolloud.org.tw/
+- setn.com — https://setn.com/
+- cnyes.com — https://cnyes.com/
+- hinet.net — https://hinet.net/
+- money-link.com.tw — https://money-link.com.tw/
+- nownews.com — https://nownews.com/
+- yam.com — https://yam.com/
+- newtalk.tw — https://newtalk.tw/
+- cnabc.com — https://cnabc.com/
+- cts.com.tw — https://cts.com.tw/
+- focustaiwan.tw — https://focustaiwan.tw/
+- taipeitimes.com — https://taipeitimes.com/
+- ettoday.net — https://ettoday.net/
+- appledaily.com.tw — https://appledaily.com.tw/
+- thenewslens.com — https://thenewslens.com/
+- ctee.com.tw — https://ctee.com.tw/
+- taiwannews.com.tw — https://taiwannews.com.tw/
+- tvbs.com.tw — https://tvbs.com.tw/
+- pts.org.tw — https://pts.org.tw/
+- eyeontaiwan.com — https://eyeontaiwan.com/
+- chinapost.com.tw — https://chinapost.com.tw/
+- bnext.com.tw — https://bnext.com.tw/
+- cardu.com.tw — https://cardu.com.tw/
+- idn.com.tw — https://idn.com.tw/
+- housefun.com.tw — https://housefun.com.tw/
+- ithome.com.tw — https://ithome.com.tw/
+- ettvamerica.com — https://ettvamerica.com/
+- taihainet.com — https://taihainet.com/
+- taiwantoday.tw — https://taiwantoday.tw/
+- ebc.net.tw — https://ebc.net.tw/
+- eprice.com.tw — https://eprice.com.tw/
+- gamer.com.tw — https://gamer.com.tw/
+- bltv.tv — https://bltv.tv/
+- ustv.com.tw — https://ustv.com.tw/
+- mohw.gov.tw — https://mohw.gov.tw/
+- ketagalanmedia.com — https://ketagalanmedia.com/
+
 ## american_samoa (pacific_islands) — American Samoa
 
 ### w3newspapers — (not listed)
@@ -1024,6 +1337,9 @@ the populator script that generated this file.
 ### abyznewslinks — http://www.abyznewslinks.com/asamo.htm
 - Talanei — https://www.talanei.com/
 - Samoa News — https://www.samoanews.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (1 domains by GDELT monitoring volume)
+- asrec.net — https://asrec.net/
 
 ## australia (pacific_islands) — Australia
 
@@ -1489,6 +1805,48 @@ the populator script that generated this file.
 ### abyznewslinks — http://www.abyznewslinks.com/austr.htm
 - (no entries)
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 3157 by GDELT monitoring volume)
+- dailytelegraph.com.au — https://dailytelegraph.com.au/
+- smh.com.au — https://smh.com.au/
+- couriermail.com.au — https://couriermail.com.au/
+- heraldsun.com.au — https://heraldsun.com.au/
+- theage.com.au — https://theage.com.au/
+- news.com.au — https://news.com.au/
+- brisbanetimes.com.au — https://brisbanetimes.com.au/
+- sunshinecoastdaily.com.au — https://sunshinecoastdaily.com.au/
+- adelaidenow.com.au — https://adelaidenow.com.au/
+- abc.net.au — https://abc.net.au/
+- whitsundaytimes.com.au — https://whitsundaytimes.com.au/
+- thechronicle.com.au — https://thechronicle.com.au/
+- theaustralian.com.au — https://theaustralian.com.au/
+- gattonstar.com.au — https://gattonstar.com.au/
+- noosanews.com.au — https://noosanews.com.au/
+- gympietimes.com.au — https://gympietimes.com.au/
+- northernstar.com.au — https://northernstar.com.au/
+- goldcoastbulletin.com.au — https://goldcoastbulletin.com.au/
+- caboolturenews.com.au — https://caboolturenews.com.au/
+- themorningbulletin.com.au — https://themorningbulletin.com.au/
+- theherald.com.au — https://theherald.com.au/
+- byronnews.com.au — https://byronnews.com.au/
+- news-mail.com.au — https://news-mail.com.au/
+- frasercoastchronicle.com.au — https://frasercoastchronicle.com.au/
+- coffscoastadvocate.com.au — https://coffscoastadvocate.com.au/
+- ballinaadvocate.com.au — https://ballinaadvocate.com.au/
+- cqnews.com.au — https://cqnews.com.au/
+- dailymercury.com.au — https://dailymercury.com.au/
+- cairnspost.com.au — https://cairnspost.com.au/
+- coolum-news.com.au — https://coolum-news.com.au/
+- gladstoneobserver.com.au — https://gladstoneobserver.com.au/
+- warwickdailynews.com.au — https://warwickdailynews.com.au/
+- bendigoadvertiser.com.au — https://bendigoadvertiser.com.au/
+- centraltelegraph.com.au — https://centraltelegraph.com.au/
+- tweeddailynews.com.au — https://tweeddailynews.com.au/
+- sbs.com.au — https://sbs.com.au/
+- qt.com.au — https://qt.com.au/
+- dailyexaminer.com.au — https://dailyexaminer.com.au/
+- ipswichadvertiser.com.au — https://ipswichadvertiser.com.au/
+- illawarramercury.com.au — https://illawarramercury.com.au/
+
 ## fiji (pacific_islands) — Fiji
 
 ### w3newspapers — https://www.w3newspapers.com/fiji/
@@ -1526,6 +1884,48 @@ the populator script that generated this file.
 - Fiji Sun — https://fijisun.com.fj/
 - Fiji Times — https://www.fijitimes.com.fj/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 129 by GDELT monitoring volume)
+- fijitimes.com — https://fijitimes.com/
+- fijisun.com.fj — https://fijisun.com.fj/
+- fijivillage.com — https://fijivillage.com/
+- fbc.com.fj — https://fbc.com.fj/
+- pina.com.fj — https://pina.com.fj/
+- pireport.org — https://pireport.org/
+- fijilive.com — https://fijilive.com/
+- fijione.tv — https://fijione.tv/
+- fiji.gov.fj — https://fiji.gov.fj/
+- thejetnewspaper.com — https://thejetnewspaper.com/
+- fbcnews.com.fj — https://fbcnews.com.fj/
+- islandsbusiness.com — https://islandsbusiness.com/
+- pasifik.news — https://pasifik.news/
+- flp.org.fj — https://flp.org.fj/
+- radiofiji.com.fj — https://radiofiji.com.fj/
+- coup5.com — https://coup5.com/
+- fijivacations.com — https://fijivacations.com/
+- fijiairways.com — https://fijiairways.com/
+- solivakasama.info — https://solivakasama.info/
+- tvafterdark.com — https://tvafterdark.com/
+- writeonthewater.com — https://writeonthewater.com/
+- coupfourandahalf.com — https://coupfourandahalf.com/
+- guru3d.com — https://guru3d.com/
+- svapropos.com — https://svapropos.com/
+- fiji.travel — https://fiji.travel/
+- insidesurvivor.com — https://insidesurvivor.com/
+- thinkpacific.com — https://thinkpacific.com/
+- semiaccurate.com — https://semiaccurate.com/
+- quirrow.com — https://quirrow.com/
+- paradisecourses.com — https://paradisecourses.com/
+- cruisesalefinder.com.au — https://cruisesalefinder.com.au/
+- eworldwire.com — https://eworldwire.com/
+- skytraxratings.com — https://skytraxratings.com/
+- footyalmanac.com.au — https://footyalmanac.com.au/
+- hardware.fr — https://hardware.fr/
+- lolomafoundation.org — https://lolomafoundation.org/
+- noblerealty.com.fj — https://noblerealty.com.fj/
+- pimpiknows.com — https://pimpiknows.com/
+- tvserieshub.tv — https://tvserieshub.tv/
+- tinyoranges.com — https://tinyoranges.com/
+
 ## french_polynesia (pacific_islands) — French Polynesia
 
 ### w3newspapers — (not listed)
@@ -1547,6 +1947,19 @@ the populator script that generated this file.
 - La Depeche de Tahiti — http://www.ladepeche.pf/
 - Tahiti Infos — https://www.tahiti-infos.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (11 domains by GDELT monitoring volume)
+- fenuanews.com — https://fenuanews.com/
+- aquabase.org — https://aquabase.org/
+- pictureofnectar.com — https://pictureofnectar.com/
+- knihy-a.cz — https://knihy-a.cz/
+- vina2015publimetro.cl — https://vina2015publimetro.cl/
+- yoti.com.au — https://yoti.com.au/
+- humantouchofchemistry.com — https://humantouchofchemistry.com/
+- kalisher.com — https://kalisher.com/
+- repandre.com — https://repandre.com/
+- careergirldaily.com — https://careergirldaily.com/
+- ciudadcolonial.net — https://ciudadcolonial.net/
+
 ## guam (pacific_islands) — Guam
 
 ### w3newspapers — (not listed)
@@ -1566,6 +1979,18 @@ the populator script that generated this file.
 - Pacific Island Times — https://www.pacificislandtimes.com/
 - Pacific Daily News — https://www.guampdn.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (10 domains by GDELT monitoring volume)
+- guampdn.com — https://guampdn.com/
+- kuam.com — https://kuam.com/
+- pacificnewscenter.com — https://pacificnewscenter.com/
+- mvguam.com — https://mvguam.com/
+- guam-organization.org — https://guam-organization.org/
+- pncguam.com — https://pncguam.com/
+- himarketing.es — https://himarketing.es/
+- smcgaels.com — https://smcgaels.com/
+- iconnectguam.com — https://iconnectguam.com/
+- rotaractmarianas.org — https://rotaractmarianas.org/
+
 ## kiribati (pacific_islands) — Kiribati
 
 ### w3newspapers — https://www.w3newspapers.com/kiribati/
@@ -1580,6 +2005,12 @@ the populator script that generated this file.
 
 ### abyznewslinks — http://www.abyznewslinks.com/kirib.htm
 - Kiribati Updates — http://kiribatiupdates.com.ki/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (4 domains by GDELT monitoring volume)
+- kiribatitourism.gov.ki — https://kiribatitourism.gov.ki/
+- flyfishingnation.de — https://flyfishingnation.de/
+- leithermagazine.com — https://leithermagazine.com/
+- dx-world.net — https://dx-world.net/
 
 ## marshall_islands (pacific_islands) — Marshall Islands
 
@@ -1597,6 +2028,10 @@ the populator script that generated this file.
 ### abyznewslinks — http://www.abyznewslinks.com/marsh.htm
 - Marshall Islands Journal — http://marshallislandsjournal.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (2 domains by GDELT monitoring volume)
+- marshallislandsjournal.com — https://marshallislandsjournal.com/
+- artlife24.ru — https://artlife24.ru/
+
 ## micronesia_fed_sts (pacific_islands) — Micronesia, Fed. Sts.
 
 ### w3newspapers — https://www.w3newspapers.com/micronesia/
@@ -1611,6 +2046,15 @@ the populator script that generated this file.
 ### abyznewslinks — http://www.abyznewslinks.com/micro.htm
 - FSMPIO — http://www.fsmpio.fm/
 - Kaselehlie Press — http://www.kpress.info/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (7 domains by GDELT monitoring volume)
+- kpress.info — https://kpress.info/
+- fsmpio.fm — https://fsmpio.fm/
+- gov.fm — https://gov.fm/
+- naathamnews.com — https://naathamnews.com/
+- wheresfran.org — https://wheresfran.org/
+- pohnpeisurfclub.com — https://pohnpeisurfclub.com/
+- mu-bi.org — https://mu-bi.org/
 
 ## nauru (pacific_islands) — Nauru
 
@@ -1629,6 +2073,9 @@ the populator script that generated this file.
 - Nauru Bulletin — http://www.naurugov.nr/government-information-office/nauru-bulletin.aspx
 - Nauru News — http://nauru-news.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (1 domains by GDELT monitoring volume)
+- autonomousactionradio.com — https://autonomousactionradio.com/
+
 ## new_caledonia (pacific_islands) — New Caledonia
 
 ### w3newspapers — (not listed)
@@ -1644,6 +2091,12 @@ the populator script that generated this file.
 ### abyznewslinks — http://www.abyznewslinks.com/newca.htm
 - Caledo Sphere — https://caledosphere.com/
 - Les Nouvelles Caledoniennes — https://www.lnc.nc/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (4 domains by GDELT monitoring volume)
+- gouv.nc — https://gouv.nc/
+- congres.nc — https://congres.nc/
+- ffvoile.fr — https://ffvoile.fr/
+- unchefchezvous.net — https://unchefchezvous.net/
 
 ## new_zealand (pacific_islands) — New Zealand
 
@@ -1791,6 +2244,48 @@ the populator script that generated this file.
 - New Zealand Herald — https://www.nzherald.co.nz/
 - NZ Catholic — https://www.nzcatholic.org.nz/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1244 by GDELT monitoring volume)
+- nzherald.co.nz — https://nzherald.co.nz/
+- scoop.co.nz — https://scoop.co.nz/
+- stuff.co.nz — https://stuff.co.nz/
+- sunlive.co.nz — https://sunlive.co.nz/
+- voxy.co.nz — https://voxy.co.nz/
+- livenews.co.nz — https://livenews.co.nz/
+- nzcity.co.nz — https://nzcity.co.nz/
+- waateanews.com — https://waateanews.com/
+- radionz.co.nz — https://radionz.co.nz/
+- gisborneherald.co.nz — https://gisborneherald.co.nz/
+- interest.co.nz — https://interest.co.nz/
+- newshub.co.nz — https://newshub.co.nz/
+- rnz.co.nz — https://rnz.co.nz/
+- newstalkzb.co.nz — https://newstalkzb.co.nz/
+- odt.co.nz — https://odt.co.nz/
+- newzealandstar.com — https://newzealandstar.com/
+- whaleoil.co.nz — https://whaleoil.co.nz/
+- thestandard.org.nz — https://thestandard.org.nz/
+- nbr.co.nz — https://nbr.co.nz/
+- tvnz.co.nz — https://tvnz.co.nz/
+- sharechat.co.nz — https://sharechat.co.nz/
+- geekzone.co.nz — https://geekzone.co.nz/
+- undertheradar.co.nz — https://undertheradar.co.nz/
+- kiwiblog.co.nz — https://kiwiblog.co.nz/
+- thedailyblog.co.nz — https://thedailyblog.co.nz/
+- nzdoctor.co.nz — https://nzdoctor.co.nz/
+- nzgeo.com — https://nzgeo.com/
+- thespinoff.co.nz — https://thespinoff.co.nz/
+- infonews.co.nz — https://infonews.co.nz/
+- 3news.co.nz — https://3news.co.nz/
+- maoritelevision.com — https://maoritelevision.com/
+- police.govt.nz — https://police.govt.nz/
+- tangatawhenua.com — https://tangatawhenua.com/
+- indianweekender.co.nz — https://indianweekender.co.nz/
+- noted.co.nz — https://noted.co.nz/
+- localmatters.co.nz — https://localmatters.co.nz/
+- newsroom.co.nz — https://newsroom.co.nz/
+- reseller.co.nz — https://reseller.co.nz/
+- oamarumail.co.nz — https://oamarumail.co.nz/
+- cio.co.nz — https://cio.co.nz/
+
 ## northern_mariana_islands (pacific_islands) — Northern Mariana Islands
 
 ### w3newspapers — (not listed)
@@ -1806,6 +2301,9 @@ the populator script that generated this file.
 
 ### abyznewslinks — http://www.abyznewslinks.com/nmari.htm
 - Saipan Tribune — https://www.saipantribune.com/
+
+### gdelt — (not listed)
+- (no entries)
 
 ## palau (pacific_islands) — Palau
 
@@ -1825,6 +2323,11 @@ the populator script that generated this file.
 ### abyznewslinks — http://www.abyznewslinks.com/palau.htm
 - Pacific Note — https://www.pacificnote.com/
 - Island Times — https://islandtimes.org/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (3 domains by GDELT monitoring volume)
+- polen-heute.de — https://polen-heute.de/
+- talktrafficking.org — https://talktrafficking.org/
+- fanapi.org — https://fanapi.org/
 
 ## papua_new_guinea (pacific_islands) — Papua New Guinea
 
@@ -1858,6 +2361,48 @@ the populator script that generated this file.
 - National — https://www.thenational.com.pg/
 - Post Courier — https://postcourier.com.pg/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 51 by GDELT monitoring volume)
+- postcourier.com.pg — https://postcourier.com.pg/
+- emtv.com.pg — https://emtv.com.pg/
+- thenational.com.pg — https://thenational.com.pg/
+- looppng.com — https://looppng.com/
+- onepng.com — https://onepng.com/
+- businessadvantagepng.com — https://businessadvantagepng.com/
+- transparency.org — https://transparency.org/
+- wetpixel.com — https://wetpixel.com/
+- seedstheatre.org — https://seedstheatre.org/
+- ntm.org — https://ntm.org/
+- ethnos360.org — https://ethnos360.org/
+- digicelpngfoundation.org — https://digicelpngfoundation.org/
+- trishnicholsonswordsinthetreehouse.com — https://trishnicholsonswordsinthetreehouse.com/
+- bellyrumbles.com — https://bellyrumbles.com/
+- yachtadina.co.uk — https://yachtadina.co.uk/
+- thelandy.com — https://thelandy.com/
+- withoutapreacher.com — https://withoutapreacher.com/
+- sasb.org — https://sasb.org/
+- asiapacificnazarene.org — https://asiapacificnazarene.org/
+- wanderlustandlipstick.com — https://wanderlustandlipstick.com/
+- knowingneurons.com — https://knowingneurons.com/
+- tribalartbrokers.net — https://tribalartbrokers.net/
+- bukanscam.com — https://bukanscam.com/
+- maersklinesocial.com — https://maersklinesocial.com/
+- drkim.com — https://drkim.com/
+- blogs-mri.org — https://blogs-mri.org/
+- proboscis.org.uk — https://proboscis.org.uk/
+- energy-pubs.com.au — https://energy-pubs.com.au/
+- illustradolife.com — https://illustradolife.com/
+- jewelryaustralia.org — https://jewelryaustralia.org/
+- pbtpng.org — https://pbtpng.org/
+- pressfreedom.org.au — https://pressfreedom.org.au/
+- sciworthy.com — https://sciworthy.com/
+- beyondgoodbusiness.org — https://beyondgoodbusiness.org/
+- papuakita.com — https://papuakita.com/
+- ipbc.com.pg — https://ipbc.com.pg/
+- papuamining.com — https://papuamining.com/
+- print21.com.au — https://print21.com.au/
+- birkbeckhistoryphd.org — https://birkbeckhistoryphd.org/
+- diversiondivetravel.com.au — https://diversiondivetravel.com.au/
+
 ## samoa (pacific_islands) — Samoa
 
 ### w3newspapers — https://www.w3newspapers.com/samoa/
@@ -1887,6 +2432,16 @@ the populator script that generated this file.
 - W Samoa — http://www.wsamoa.ws/
 - Samoa Observer — http://www.samoaobserver.ws/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (8 domains by GDELT monitoring volume)
+- samoaobserver.ws — https://samoaobserver.ws/
+- samoanews.com — https://samoanews.com/
+- sobserver.ws — https://sobserver.ws/
+- samoa.travel — https://samoa.travel/
+- samoagovt.ws — https://samoagovt.ws/
+- koepferl.de — https://koepferl.de/
+- talamua.com — https://talamua.com/
+- pipso.org — https://pipso.org/
+
 ## solomon_islands (pacific_islands) — Solomon Islands
 
 ### w3newspapers — https://www.w3newspapers.com/solomon-islands/
@@ -1911,6 +2466,17 @@ the populator script that generated this file.
 - Solomon Times Online — http://www.solomontimes.com/
 - Solomon Star — http://www.solomonstarnews.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (9 domains by GDELT monitoring volume)
+- solomonstarnews.com — https://solomonstarnews.com/
+- solomontimes.com — https://solomontimes.com/
+- sibconline.com.sb — https://sibconline.com.sb/
+- parliament.gov.sb — https://parliament.gov.sb/
+- islandsun.com.sb — https://islandsun.com.sb/
+- pmc.gov.sb — https://pmc.gov.sb/
+- sendmoneypacific.org — https://sendmoneypacific.org/
+- equalrightstrust.org — https://equalrightstrust.org/
+- theislandsun.com — https://theislandsun.com/
+
 ## tonga (pacific_islands) — Tonga
 
 ### w3newspapers — https://www.w3newspapers.com/tonga/
@@ -1934,6 +2500,18 @@ the populator script that generated this file.
 - Tonga Daily News — http://www.tongadailynews.to/
 - Taimi o Tonga — http://taimiotonga.net/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (10 domains by GDELT monitoring volume)
+- parliament.gov.to — https://parliament.gov.to/
+- matangitonga.to — https://matangitonga.to/
+- tonga-broadcasting.net — https://tonga-broadcasting.net/
+- planet-tonga.com — https://planet-tonga.com/
+- mic.gov.to — https://mic.gov.to/
+- psc.gov.to — https://psc.gov.to/
+- culturesofoblivion.com — https://culturesofoblivion.com/
+- heilala-holiday-lodge.com — https://heilala-holiday-lodge.com/
+- digiceltonga.com — https://digiceltonga.com/
+- digicelgroup.com — https://digicelgroup.com/
+
 ## tuvalu (pacific_islands) — Tuvalu
 
 ### w3newspapers — https://www.w3newspapers.com/tuvalu/
@@ -1949,6 +2527,10 @@ the populator script that generated this file.
 
 ### abyznewslinks — http://www.abyznewslinks.com/tuval.htm
 - (no entries)
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (2 domains by GDELT monitoring volume)
+- timelesstuvalu.com — https://timelesstuvalu.com/
+- worldtidings.com — https://worldtidings.com/
 
 ## vanuatu (pacific_islands) — Vanuatu
 
@@ -1971,6 +2553,18 @@ the populator script that generated this file.
 - Vanuatu Daily Post — http://dailypost.vu/
 - Vanuatu Independent — https://vanuatuindependent.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (10 domains by GDELT monitoring volume)
+- dailypost.vu — https://dailypost.vu/
+- worldanimalprotection.org — https://worldanimalprotection.org/
+- pacmas.org — https://pacmas.org/
+- healthlytrends.com — https://healthlytrends.com/
+- vmm.vu — https://vmm.vu/
+- rescuenet.org.au — https://rescuenet.org.au/
+- gov.vu — https://gov.vu/
+- volcanoadventures.com — https://volcanoadventures.com/
+- ncpresse.nc — https://ncpresse.nc/
+- crossfitcarbon.com — https://crossfitcarbon.com/
+
 ## brunei_darussalam (southeast_asia) — Brunei Darussalam
 
 ### w3newspapers — (not listed)
@@ -1988,6 +2582,17 @@ the populator script that generated this file.
 - Borneo Bulletin — http://borneobulletin.com.bn/
 - Brunei Times — http://www.bt.com.bn/
 - Media Permata — http://mediapermata.com.bn/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (9 domains by GDELT monitoring volume)
+- brudirect.com — https://brudirect.com/
+- bt.com.bn — https://bt.com.bn/
+- rtb.gov.bn — https://rtb.gov.bn/
+- jpm.gov.bn — https://jpm.gov.bn/
+- pmo.gov.bn — https://pmo.gov.bn/
+- thescoop.co — https://thescoop.co/
+- totalgaming.co.uk — https://totalgaming.co.uk/
+- bizbrunei.com — https://bizbrunei.com/
+- drnikrahim.com — https://drnikrahim.com/
 
 ## cambodia (southeast_asia) — Cambodia
 
@@ -2048,6 +2653,48 @@ the populator script that generated this file.
 - Cambodian Times — http://www.cambodiantimes.com/
 - Koh Santepheap — https://kohsantepheapdaily.com.kh/
 - Reaksmei Kampuchea — http://www.rkdnews.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 185 by GDELT monitoring volume)
+- phnompenhpost.com — https://phnompenhpost.com/
+- akp.gov.kh — https://akp.gov.kh/
+- khmertimeskh.com — https://khmertimeskh.com/
+- cambodiadaily.com — https://cambodiadaily.com/
+- voacambodia.com — https://voacambodia.com/
+- cnv.org.kh — https://cnv.org.kh/
+- sea-globe.com — https://sea-globe.com/
+- cambodianewsgazette.com — https://cambodianewsgazette.com/
+- khmerbird.com — https://khmerbird.com/
+- phnompenhweek.com — https://phnompenhweek.com/
+- asean-community.com — https://asean-community.com/
+- southeastasianarchaeology.com — https://southeastasianarchaeology.com/
+- theadvisorcambodia.com — https://theadvisorcambodia.com/
+- aippnet.org — https://aippnet.org/
+- aseaneconomist.com — https://aseaneconomist.com/
+- cambopedia.com — https://cambopedia.com/
+- oudam.com — https://oudam.com/
+- akpnews.info — https://akpnews.info/
+- fauna-flora.org — https://fauna-flora.org/
+- cambodiatravelforum.net — https://cambodiatravelforum.net/
+- yourphnompenh.com — https://yourphnompenh.com/
+- giz-cambodia.com — https://giz-cambodia.com/
+- habitatcambodia.org — https://habitatcambodia.org/
+- camnews.org — https://camnews.org/
+- bookbridge.org — https://bookbridge.org/
+- madmonkeyhostels.com — https://madmonkeyhostels.com/
+- cambodia.org — https://cambodia.org/
+- top-travel.info — https://top-travel.info/
+- thepoelog.com — https://thepoelog.com/
+- southeastasiaglobe.com — https://southeastasiaglobe.com/
+- timothylogan.com — https://timothylogan.com/
+- vodhotnews.com — https://vodhotnews.com/
+- beyondblighty.com — https://beyondblighty.com/
+- openendedsocialstudies.org — https://openendedsocialstudies.org/
+- i4share.com — https://i4share.com/
+- cwcc.org.kh — https://cwcc.org.kh/
+- newphiladelphiachurch.com — https://newphiladelphiachurch.com/
+- thegabbar.com — https://thegabbar.com/
+- earthrights.org — https://earthrights.org/
+- lengpleng.com — https://lengpleng.com/
 
 ## indonesia (southeast_asia) — Indonesia
 
@@ -2177,6 +2824,48 @@ the populator script that generated this file.
 - Rakyat Merdeka — http://www.rakyatmerdeka.co.id/
 - Republika — http://www.republika.co.id/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 968 by GDELT monitoring volume)
+- tribunnews.com — https://tribunnews.com/
+- antaranews.com — https://antaranews.com/
+- liputan6.com — https://liputan6.com/
+- republika.co.id — https://republika.co.id/
+- kompas.com — https://kompas.com/
+- okezone.com — https://okezone.com/
+- bisnis.com — https://bisnis.com/
+- tempo.co — https://tempo.co/
+- cnnindonesia.com — https://cnnindonesia.com/
+- inilah.com — https://inilah.com/
+- beritasatu.com — https://beritasatu.com/
+- merdeka.com — https://merdeka.com/
+- viva.co.id — https://viva.co.id/
+- rri.co.id — https://rri.co.id/
+- metrotvnews.com — https://metrotvnews.com/
+- sindonews.com — https://sindonews.com/
+- pikiran-rakyat.com — https://pikiran-rakyat.com/
+- beritajatim.com — https://beritajatim.com/
+- kontan.co.id — https://kontan.co.id/
+- thejakartapost.com — https://thejakartapost.com/
+- krjogja.com — https://krjogja.com/
+- harianjogja.com — https://harianjogja.com/
+- mediaindonesia.com — https://mediaindonesia.com/
+- jawapos.com — https://jawapos.com/
+- lampost.co — https://lampost.co/
+- harianterbit.com — https://harianterbit.com/
+- poskotanews.com — https://poskotanews.com/
+- elshinta.com — https://elshinta.com/
+- bolaindo.com — https://bolaindo.com/
+- medanbisnisdaily.com — https://medanbisnisdaily.com/
+- solopos.com — https://solopos.com/
+- rimanews.com — https://rimanews.com/
+- jpnn.com — https://jpnn.com/
+- koran-jakarta.com — https://koran-jakarta.com/
+- waspada.co.id — https://waspada.co.id/
+- inilahkoran.com — https://inilahkoran.com/
+- sumeks.co.id — https://sumeks.co.id/
+- sumutpos.co — https://sumutpos.co/
+- kompasiana.com — https://kompasiana.com/
+- mongabay.co.id — https://mongabay.co.id/
+
 ## lao_pdr (southeast_asia) — Lao PDR
 
 ### w3newspapers — https://www.w3newspapers.com/laos/
@@ -2200,6 +2889,48 @@ the populator script that generated this file.
 - Laos News — http://www.laosnews.net/
 - Vientiane Times — http://www.vientianetimes.com/
 - Vientiane Mai — http://www.vientianemai.net/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 124 by GDELT monitoring volume)
+- vientianetimes.la — https://vientianetimes.la/
+- mofa.gov.la — https://mofa.gov.la/
+- vientianetimes.com — https://vientianetimes.com/
+- vientianetimes.org.la — https://vientianetimes.org.la/
+- laotimes.com — https://laotimes.com/
+- lerenovateur.org.la — https://lerenovateur.org.la/
+- laovoices.com — https://laovoices.com/
+- jclao.com — https://jclao.com/
+- sombath.org — https://sombath.org/
+- manonthelam.com — https://manonthelam.com/
+- gastronomictraveler.blog — https://gastronomictraveler.blog/
+- littlelaosontheprairie.org — https://littlelaosontheprairie.org/
+- losviajeros.com — https://losviajeros.com/
+- 977thezone.com — https://977thezone.com/
+- eyecibus.com — https://eyecibus.com/
+- planettrekker.info — https://planettrekker.info/
+- indochinahighlight.com — https://indochinahighlight.com/
+- explore-laos.com — https://explore-laos.com/
+- awalkaboutwithlarry.com — https://awalkaboutwithlarry.com/
+- exoticvoyages.com — https://exoticvoyages.com/
+- mtlakenews.com — https://mtlakenews.com/
+- dailynewsdir.com — https://dailynewsdir.com/
+- englishkyoto-seas.org — https://englishkyoto-seas.org/
+- jubilating.net — https://jubilating.net/
+- laurastraveltales.com — https://laurastraveltales.com/
+- wetooktheredpill.com — https://wetooktheredpill.com/
+- theasiancinemablog.com — https://theasiancinemablog.com/
+- kpl.gov.la — https://kpl.gov.la/
+- lifetimebackpacker.com — https://lifetimebackpacker.com/
+- swisscooperationmekong.org — https://swisscooperationmekong.org/
+- lettersfromthailand.com — https://lettersfromthailand.com/
+- tysongibb.net — https://tysongibb.net/
+- youripinsider.eu — https://youripinsider.eu/
+- heraldjournalism24.com — https://heraldjournalism24.com/
+- laoamericanmagazine.com — https://laoamericanmagazine.com/
+- ifreedomtv.com — https://ifreedomtv.com/
+- jcnn.com.au — https://jcnn.com.au/
+- shaireproductions.com — https://shaireproductions.com/
+- goodoldboots.com — https://goodoldboots.com/
+- wrongwayhome.com — https://wrongwayhome.com/
 
 ## malaysia (southeast_asia) — Malaysia
 
@@ -2300,6 +3031,48 @@ the populator script that generated this file.
 - Star — http://www.thestar.com.my/
 - Utusan Malaysia — http://www.utusan.com.my/index.asp?pub=Utusan_Express
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 399 by GDELT monitoring volume)
+- thestar.com.my — https://thestar.com.my/
+- malaysia-chronicle.com — https://malaysia-chronicle.com/
+- themalaymailonline.com — https://themalaymailonline.com/
+- freemalaysiatoday.com — https://freemalaysiatoday.com/
+- thesundaily.my — https://thesundaily.my/
+- malaysiakini.com — https://malaysiakini.com/
+- theedgemarkets.com — https://theedgemarkets.com/
+- nst.com.my — https://nst.com.my/
+- bernama.com — https://bernama.com/
+- theborneopost.com — https://theborneopost.com/
+- dailyexpress.com.my — https://dailyexpress.com.my/
+- malaysiandigest.com — https://malaysiandigest.com/
+- malaysiasun.com — https://malaysiasun.com/
+- malaymail.com — https://malaymail.com/
+- astroawani.com — https://astroawani.com/
+- themalaysianinsider.com — https://themalaysianinsider.com/
+- therakyatpost.com — https://therakyatpost.com/
+- malaysia-today.net — https://malaysia-today.net/
+- guangming.com.my — https://guangming.com.my/
+- bernama.com.my — https://bernama.com.my/
+- themalaysianreserve.com — https://themalaysianreserve.com/
+- soyacincau.com — https://soyacincau.com/
+- themalaysianinsight.com — https://themalaysianinsight.com/
+- mysinchew.com — https://mysinchew.com/
+- paultan.org — https://paultan.org/
+- limkitsiang.com — https://limkitsiang.com/
+- worldofbuzz.com — https://worldofbuzz.com/
+- aswaqpress.com — https://aswaqpress.com/
+- mpoc.org.my — https://mpoc.org.my/
+- aliran.com — https://aliran.com/
+- star2.com — https://star2.com/
+- mis-asia.com — https://mis-asia.com/
+- harakahdaily.net — https://harakahdaily.net/
+- lipstiq.com — https://lipstiq.com/
+- mmail.com.my — https://mmail.com.my/
+- gurlstudio.com — https://gurlstudio.com/
+- lowyat.net — https://lowyat.net/
+- digitalnewsasia.com — https://digitalnewsasia.com/
+- carsifu.my — https://carsifu.my/
+- themalaysianoutsider.com — https://themalaysianoutsider.com/
+
 ## myanmar (southeast_asia) — Myanmar
 
 ### w3newspapers — https://www.w3newspapers.com/myanmar/
@@ -2359,6 +3132,48 @@ the populator script that generated this file.
 - Mizzima — http://www.mizzimaburmese.com/
 - Myanmar News — http://www.myanmarnews.net/
 - Myanmar News Hub — http://www.myanmarnewshub.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 135 by GDELT monitoring volume)
+- irrawaddy.com — https://irrawaddy.com/
+- mmtimes.com — https://mmtimes.com/
+- mizzima.com — https://mizzima.com/
+- dvb.no — https://dvb.no/
+- elevenmyanmar.com — https://elevenmyanmar.com/
+- bnionline.net — https://bnionline.net/
+- irrawaddy.org — https://irrawaddy.org/
+- karennews.org — https://karennews.org/
+- burmanet.org — https://burmanet.org/
+- panglong.org — https://panglong.org/
+- frontiermyanmar.net — https://frontiermyanmar.net/
+- mmbiztoday.com — https://mmbiztoday.com/
+- ndphr.net — https://ndphr.net/
+- myanmore.com — https://myanmore.com/
+- burmatimes.net — https://burmatimes.net/
+- president-office.gov.mm — https://president-office.gov.mm/
+- narinjara.com — https://narinjara.com/
+- kachinnews.com — https://kachinnews.com/
+- freeburmarangers.org — https://freeburmarangers.org/
+- kachinlandnews.com — https://kachinlandnews.com/
+- tni.org — https://tni.org/
+- myanmar-now.org — https://myanmar-now.org/
+- burmacampaign.org.uk — https://burmacampaign.org.uk/
+- transbordernews.in.th — https://transbordernews.in.th/
+- rohingyablogger.com — https://rohingyablogger.com/
+- rehmonnya.org — https://rehmonnya.org/
+- taunggyitime.com — https://taunggyitime.com/
+- sjonhauser.nl — https://sjonhauser.nl/
+- kicnews.org — https://kicnews.org/
+- thepost.co.in — https://thepost.co.in/
+- globalnewlightofmyanmar.com — https://globalnewlightofmyanmar.com/
+- mrtv.gov.mm — https://mrtv.gov.mm/
+- paintedstork.com — https://paintedstork.com/
+- insidevietnamblog.com — https://insidevietnamblog.com/
+- weekendblitz.com — https://weekendblitz.com/
+- wired2theworld.com — https://wired2theworld.com/
+- heritage-line.com — https://heritage-line.com/
+- moi.gov.mm — https://moi.gov.mm/
+- consult-myanmar.com — https://consult-myanmar.com/
+- burmalink.org — https://burmalink.org/
 
 ## philippines (southeast_asia) — Philippines
 
@@ -2461,6 +3276,48 @@ the populator script that generated this file.
 - Philippine Daily Inquirer — http://www.inquirer.net/
 - Philippine Star — http://www.philstar.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 902 by GDELT monitoring volume)
+- philstar.com — https://philstar.com/
+- inquirer.net — https://inquirer.net/
+- sunstar.com.ph — https://sunstar.com.ph/
+- mb.com.ph — https://mb.com.ph/
+- rappler.com — https://rappler.com/
+- manilatimes.net — https://manilatimes.net/
+- philippinetimes.com — https://philippinetimes.com/
+- visayandailystar.com — https://visayandailystar.com/
+- pia.gov.ph — https://pia.gov.ph/
+- abs-cbn.com — https://abs-cbn.com/
+- cnnphilippines.com — https://cnnphilippines.com/
+- bworldonline.com — https://bworldonline.com/
+- tribune.net.ph — https://tribune.net.ph/
+- interaksyon.com — https://interaksyon.com/
+- malaya.com.ph — https://malaya.com.ph/
+- radyonatin.com — https://radyonatin.com/
+- tempo.com.ph — https://tempo.com.ph/
+- thestandard.com.ph — https://thestandard.com.ph/
+- gmanetwork.com — https://gmanetwork.com/
+- businessmirror.com.ph — https://businessmirror.com.ph/
+- abs-cbnnews.com — https://abs-cbnnews.com/
+- canadianinquirer.net — https://canadianinquirer.net/
+- thedailyguardian.net — https://thedailyguardian.net/
+- outoftownblog.com — https://outoftownblog.com/
+- manilastandardtoday.com — https://manilastandardtoday.com/
+- manilastandard.net — https://manilastandard.net/
+- mindanews.com — https://mindanews.com/
+- pna.gov.ph — https://pna.gov.ph/
+- senate.gov.ph — https://senate.gov.ph/
+- asianjournal.com — https://asianjournal.com/
+- journal.com.ph — https://journal.com.ph/
+- davaotoday.com — https://davaotoday.com/
+- zamboangatoday.ph — https://zamboangatoday.ph/
+- bulatlat.com — https://bulatlat.com/
+- www.gov.ph — https://www.gov.ph/
+- punto.com.ph — https://punto.com.ph/
+- ucanews.com — https://ucanews.com/
+- baguiomidlandcourier.com.ph — https://baguiomidlandcourier.com.ph/
+- congress.gov.ph — https://congress.gov.ph/
+- untvweb.com — https://untvweb.com/
+
 ## singapore (southeast_asia) — Singapore
 
 ### w3newspapers — https://www.w3newspapers.com/singapore/
@@ -2508,6 +3365,48 @@ the populator script that generated this file.
 - Singapore News — http://www.singaporenews.net/
 - Lianhe Zaobao — http://www.zaobao.com.sg/
 - Straits Times — http://www.straitstimes.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 729 by GDELT monitoring volume)
+- asiaone.com — https://asiaone.com/
+- straitstimes.com — https://straitstimes.com/
+- sglinks.com — https://sglinks.com/
+- theonlinecitizen.com — https://theonlinecitizen.com/
+- tnp.sg — https://tnp.sg/
+- sbr.com.sg — https://sbr.com.sg/
+- theindependent.sg — https://theindependent.sg/
+- fool.sg — https://fool.sg/
+- sgblogs.com — https://sgblogs.com/
+- marketing-interactive.com — https://marketing-interactive.com/
+- mothership.sg — https://mothership.sg/
+- myanmarroom.com — https://myanmarroom.com/
+- tremeritus.com — https://tremeritus.com/
+- beritaharian.sg — https://beritaharian.sg/
+- humanresourcesonline.net — https://humanresourcesonline.net/
+- thesmartlocal.com — https://thesmartlocal.com/
+- thehoneycombers.com — https://thehoneycombers.com/
+- goodyfeed.com — https://goodyfeed.com/
+- utusan.com.my — https://utusan.com.my/
+- bharian.com.my — https://bharian.com.my/
+- mustsharenews.com — https://mustsharenews.com/
+- sethlui.com — https://sethlui.com/
+- classy.sg — https://classy.sg/
+- connectedtoindia.com — https://connectedtoindia.com/
+- danielfooddiary.com — https://danielfooddiary.com/
+- 99.co — https://99.co/
+- enterpriseinnovation.net — https://enterpriseinnovation.net/
+- computerworld.com.sg — https://computerworld.com.sg/
+- btinvest.com.sg — https://btinvest.com.sg/
+- moneysmart.sg — https://moneysmart.sg/
+- mumbrella.asia — https://mumbrella.asia/
+- omy.sg — https://omy.sg/
+- mas.gov.sg — https://mas.gov.sg/
+- mypaper.sg — https://mypaper.sg/
+- ladyironchef.com — https://ladyironchef.com/
+- police.gov.sg — https://police.gov.sg/
+- fintechnews.sg — https://fintechnews.sg/
+- shipandbunker.com — https://shipandbunker.com/
+- www.gov.sg — https://www.gov.sg/
+- popspoken.com — https://popspoken.com/
 
 ## thailand (southeast_asia) — Thailand
 
@@ -2624,6 +3523,48 @@ the populator script that generated this file.
 - Naew Na — http://www.naewna.com/
 - Thai Rath — http://www.thairath.co.th/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 766 by GDELT monitoring volume)
+- thairath.co.th — https://thairath.co.th/
+- pantip.com — https://pantip.com/
+- newswit.com — https://newswit.com/
+- bangkokbiznews.com — https://bangkokbiznews.com/
+- bangkokpost.com — https://bangkokpost.com/
+- dailynews.co.th — https://dailynews.co.th/
+- ryt9.com — https://ryt9.com/
+- skyscrapercity.com — https://skyscrapercity.com/
+- posttoday.com — https://posttoday.com/
+- sanook.com — https://sanook.com/
+- prachachat.net — https://prachachat.net/
+- innnews.co.th — https://innnews.co.th/
+- banmuang.co.th — https://banmuang.co.th/
+- thephuketnews.com — https://thephuketnews.com/
+- thaivisa.com — https://thaivisa.com/
+- nationmultimedia.com — https://nationmultimedia.com/
+- kapook.com — https://kapook.com/
+- thaipr.net — https://thaipr.net/
+- springnews.co.th — https://springnews.co.th/
+- voicetv.co.th — https://voicetv.co.th/
+- mthai.com — https://mthai.com/
+- komchadluek.net — https://komchadluek.net/
+- khaosod.co.th — https://khaosod.co.th/
+- prachatai.org — https://prachatai.org/
+- khaosodenglish.com — https://khaosodenglish.com/
+- koratdaily.com — https://koratdaily.com/
+- ttrweekly.com — https://ttrweekly.com/
+- phuketgazette.net — https://phuketgazette.net/
+- chiangraitimes.com — https://chiangraitimes.com/
+- thailandblog.nl — https://thailandblog.nl/
+- ch7.com — https://ch7.com/
+- thaipbs.or.th — https://thaipbs.or.th/
+- thethaiger.com — https://thethaiger.com/
+- mgronline.com — https://mgronline.com/
+- pattayamail.com — https://pattayamail.com/
+- siamevent.com — https://siamevent.com/
+- prd.go.th — https://prd.go.th/
+- asiatraveltips.com — https://asiatraveltips.com/
+- muslimthaipost.com — https://muslimthaipost.com/
+- thaipublica.org — https://thaipublica.org/
+
 ## timor_leste (southeast_asia) — Timor-Leste
 
 ### w3newspapers — (not listed)
@@ -2638,6 +3579,16 @@ the populator script that generated this file.
 ### abyznewslinks — http://www.abyznewslinks.com/etimo.htm
 - Sapo — http://www.sapo.tl/pt
 - Suara Timor Lorosae — http://www.suaratimorlorosae.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (8 domains by GDELT monitoring volume)
+- rttlep.tl — https://rttlep.tl/
+- mof.gov.tl — https://mof.gov.tl/
+- sapo.tl — https://sapo.tl/
+- mj.gov.tl — https://mj.gov.tl/
+- timor-diaspora.com — https://timor-diaspora.com/
+- thediliweekly.com — https://thediliweekly.com/
+- suara-timor-lorosae.com — https://suara-timor-lorosae.com/
+- bairopiteclinic.org — https://bairopiteclinic.org/
 
 ## vietnam (southeast_asia) — Vietnam
 
@@ -2804,3 +3755,45 @@ the populator script that generated this file.
 - Thanh Nien — https://thanhnien.vn/
 - Tien Phong — https://www.tienphong.vn/
 - Tuoi Tre — https://tuoitre.vn/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1031 by GDELT monitoring volume)
+- baomoi.com — https://baomoi.com/
+- tin247.com — https://tin247.com/
+- vietnamnet.vn — https://vietnamnet.vn/
+- vietgiaitri.com — https://vietgiaitri.com/
+- vietnamplus.vn — https://vietnamplus.vn/
+- dantri.com.vn — https://dantri.com.vn/
+- vietbao.vn — https://vietbao.vn/
+- danviet.vn — https://danviet.vn/
+- vov.vn — https://vov.vn/
+- nhandan.org.vn — https://nhandan.org.vn/
+- 24h.com.vn — https://24h.com.vn/
+- vnexpress.net — https://vnexpress.net/
+- tienphong.vn — https://tienphong.vn/
+- hanoimoi.com.vn — https://hanoimoi.com.vn/
+- thanhnien.vn — https://thanhnien.vn/
+- cafef.vn — https://cafef.vn/
+- zing.vn — https://zing.vn/
+- kienthuc.net.vn — https://kienthuc.net.vn/
+- tintuc.vn — https://tintuc.vn/
+- vtc.vn — https://vtc.vn/
+- datviet.com — https://datviet.com/
+- kinhtedothi.vn — https://kinhtedothi.vn/
+- tinnhanhchungkhoan.vn — https://tinnhanhchungkhoan.vn/
+- bizlive.vn — https://bizlive.vn/
+- nhandan.com.vn — https://nhandan.com.vn/
+- baophapluat.vn — https://baophapluat.vn/
+- motthegioi.vn — https://motthegioi.vn/
+- vtv.vn — https://vtv.vn/
+- thethaovanhoa.vn — https://thethaovanhoa.vn/
+- vir.com.vn — https://vir.com.vn/
+- nld.com.vn — https://nld.com.vn/
+- daidoanket.vn — https://daidoanket.vn/
+- cafebiz.vn — https://cafebiz.vn/
+- baodautu.vn — https://baodautu.vn/
+- lecourrier.vn — https://lecourrier.vn/
+- tuoitrenews.vn — https://tuoitrenews.vn/
+- tuoitre.vn — https://tuoitre.vn/
+- vnanet.vn — https://vnanet.vn/
+- anninhthudo.vn — https://anninhthudo.vn/
+- eva.vn — https://eva.vn/

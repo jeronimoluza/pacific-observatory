@@ -33,9 +33,11 @@ For each country, aim for **3 sources**, ideally **2 local-language + 1 English*
 
 Process countries one at a time. For each country, build a candidate list (~5-8 URLs), then run each candidate through `/assess-newspaper-source` and probe Tier 0/1 results — this yields the highest-quality scrapers.
 
-**2a. Static aggregator harvest (mandatory first step).** Read `references/known_aggregators/<region>.md` and locate the `## <country_slug>` block (each region file is structured by H2 sections per country, with four H3 sub-sections — one per aggregator — listing pre-extracted outlets).
+**2a. Static aggregator harvest (mandatory first step).** Read `references/known_aggregators/<region>.md` and locate the `## <country_slug>` block (each region file is structured by H2 sections per country, with five H3 sub-sections — one per aggregator — listing pre-extracted outlets).
 
-The four aggregators covered are `w3newspapers`, `onlinenewspapers`, `allyoucanread`, `abyznewslinks`. The ignore rules (Wikipedia, BBC profiles, CIA Factbook, wire hubs, social platforms, aggregator self-links) were already applied at population time — see `references/known_aggregators/README.md` for the full ruleset and refresh instructions. **Do not** re-fetch the aggregator homepages live; the static reference replaces that step.
+The five aggregators covered are `w3newspapers`, `onlinenewspapers`, `allyoucanread`, `abyznewslinks`, and `gdelt`. The ignore rules (Wikipedia, BBC profiles, CIA Factbook, wire hubs, social platforms, aggregator self-links) were already applied at population time — see `references/known_aggregators/README.md` for the full ruleset and refresh instructions. **Do not** re-fetch the aggregator homepages live; the static reference replaces that step.
+
+The `gdelt` section is different from the other four: entries are **bare domains ranked by GDELT monitoring volume** (top of the list = genuine national outlets; the tail is noisier — government, tourism, airline, party sites survive), with no curated outlet name. Its value is recall of real local outlets the curated four miss (especially small Pacific markets). Apply the local-only filter (below) and the `/assess-newspaper-source` gate **harder** to `gdelt` candidates, and prefer the top few by volume.
 
 If the country's H2 block is missing entirely, or every aggregator H3 reads `(no entries)`, treat the static reference as exhausted for this country and skip straight to step 2c (WebSearch fallback) below.
 

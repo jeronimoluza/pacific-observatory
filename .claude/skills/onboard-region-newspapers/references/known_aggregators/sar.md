@@ -1,7 +1,7 @@
 # Known Online-Newspaper Aggregators — South Asia (`sar`)
 
-Pre-extracted per-country newspaper lists from four online-newspaper
-aggregators. Used by `/onboard-region-newspapers` step 2a as a static
+Pre-extracted per-country newspaper lists from four online-newspaper aggregators
+plus GDELT's domains-by-country list. Used by `/onboard-region-newspapers` step 2a as a static
 seed instead of refetching aggregator homepages every run.
 
 See `references/known_aggregators/README.md` for the ignore rules and
@@ -703,6 +703,48 @@ the populator script that generated this file.
 - The Daily Janakantha — https://www.dailyjanakantha.com/
 - The Daily Jugantor — http://www.jugantor.us/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 263 by GDELT monitoring volume)
+- dhakatoday.com — https://dhakatoday.com/
+- banglanews24.com — https://banglanews24.com/
+- thedailystar.net — https://thedailystar.net/
+- jagonews24.com — https://jagonews24.com/
+- bdnews24.com — https://bdnews24.com/
+- kalerkantho.com — https://kalerkantho.com/
+- bd-pratidin.com — https://bd-pratidin.com/
+- dhakatribune.com — https://dhakatribune.com/
+- ittefaq.com.bd — https://ittefaq.com.bd/
+- bssnews.net — https://bssnews.net/
+- newstoday.com.bd — https://newstoday.com.bd/
+- thedailynewnation.com — https://thedailynewnation.com/
+- comillarkagoj.com — https://comillarkagoj.com/
+- bangladeshsun.com — https://bangladeshsun.com/
+- risingbd.com — https://risingbd.com/
+- mzamin.com — https://mzamin.com/
+- alokitobangladesh.com — https://alokitobangladesh.com/
+- daily-sun.com — https://daily-sun.com/
+- latestbdnews.com — https://latestbdnews.com/
+- prothom-alo.com — https://prothom-alo.com/
+- priyo.com — https://priyo.com/
+- dailynayadiganta.com — https://dailynayadiganta.com/
+- 1newsbd.com — https://1newsbd.com/
+- arthosuchak.com — https://arthosuchak.com/
+- banglamail24.com — https://banglamail24.com/
+- parbattanews.com — https://parbattanews.com/
+- dainikamadershomoy.com — https://dainikamadershomoy.com/
+- clickittefaq.com — https://clickittefaq.com/
+- suprobhat.com — https://suprobhat.com/
+- samakal.net — https://samakal.net/
+- timenewsbd.com — https://timenewsbd.com/
+- bdmorning.com — https://bdmorning.com/
+- chandpurtimes.com — https://chandpurtimes.com/
+- thefinancialexpress-bd.com — https://thefinancialexpress-bd.com/
+- thebangladeshtoday.com — https://thebangladeshtoday.com/
+- bonikbarta.com — https://bonikbarta.com/
+- businessnews-bd.com — https://businessnews-bd.com/
+- newsbd71.com — https://newsbd71.com/
+- dailyinqilab.com — https://dailyinqilab.com/
+- amardeshonline.com — https://amardeshonline.com/
+
 ## bhutan (south_asia) — Bhutan
 
 ### w3newspapers — https://www.w3newspapers.com/bhutan/
@@ -730,6 +772,48 @@ the populator script that generated this file.
 - Bhutan News Service — http://www.bhutannewsservice.com/
 - Kuensel — http://www.dzkuensel.bt/
 - Kuensel — http://www.kuenselonline.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 109 by GDELT monitoring volume)
+- kuenselonline.com — https://kuenselonline.com/
+- bbs.bt — https://bbs.bt/
+- moaf.gov.bt — https://moaf.gov.bt/
+- thebhutanese.bt — https://thebhutanese.bt/
+- mfa.gov.bt — https://mfa.gov.bt/
+- bhutannewsnetwork.com — https://bhutannewsnetwork.com/
+- bhutannewsservice.com — https://bhutannewsservice.com/
+- bhutannewsservice.org — https://bhutannewsservice.org/
+- nationalcouncil.bt — https://nationalcouncil.bt/
+- thenewsrecorder.in — https://thenewsrecorder.in/
+- bhutanobserver.bt — https://bhutanobserver.bt/
+- election-bhutan.org.bt — https://election-bhutan.org.bt/
+- drukson.com — https://drukson.com/
+- bhutanculturalatlas.org — https://bhutanculturalatlas.org/
+- bhutanmajestictravel.com — https://bhutanmajestictravel.com/
+- cabinet.gov.bt — https://cabinet.gov.bt/
+- lhayul.com — https://lhayul.com/
+- bhutanyouth.org — https://bhutanyouth.org/
+- fatboo.com — https://fatboo.com/
+- keystobhutan.com — https://keystobhutan.com/
+- drukasia.com — https://drukasia.com/
+- anjci.com — https://anjci.com/
+- rcsc.gov.bt — https://rcsc.gov.bt/
+- bt.bt — https://bt.bt/
+- businessbhutan.bt — https://businessbhutan.bt/
+- geoex.com — https://geoex.com/
+- motownindia.com — https://motownindia.com/
+- bhutanfound.org — https://bhutanfound.org/
+- aborrowedbackpack.com — https://aborrowedbackpack.com/
+- itscamilleco.com — https://itscamilleco.com/
+- alwaysbhutan.com — https://alwaysbhutan.com/
+- mitzitup.com — https://mitzitup.com/
+- taxiautofare.com — https://taxiautofare.com/
+- trekmatesindia.com — https://trekmatesindia.com/
+- tourismbhutan.com — https://tourismbhutan.com/
+- totallybhutan.com — https://totallybhutan.com/
+- pronewsreport.com — https://pronewsreport.com/
+- digitalintelligencetoday.com — https://digitalintelligencetoday.com/
+- photosafari.com.my — https://photosafari.com.my/
+- leggypeggy.com — https://leggypeggy.com/
 
 ## india (south_asia) — India
 
@@ -1258,6 +1342,48 @@ the populator script that generated this file.
 ### abyznewslinks — http://www.abyznewslinks.com/india.htm
 - (no entries)
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 2971 by GDELT monitoring volume)
+- indiatimes.com — https://indiatimes.com/
+- business-standard.com — https://business-standard.com/
+- aninews.in — https://aninews.in/
+- thehindu.com — https://thehindu.com/
+- newsnow.in — https://newsnow.in/
+- india.com — https://india.com/
+- jagran.com — https://jagran.com/
+- indianexpress.com — https://indianexpress.com/
+- firstpost.com — https://firstpost.com/
+- ndtv.com — https://ndtv.com/
+- hindustantimes.com — https://hindustantimes.com/
+- oneindia.com — https://oneindia.com/
+- intoday.in — https://intoday.in/
+- indiankanoon.org — https://indiankanoon.org/
+- dnaindia.com — https://dnaindia.com/
+- amarujala.com — https://amarujala.com/
+- ptinews.com — https://ptinews.com/
+- newindianexpress.com — https://newindianexpress.com/
+- financialexpress.com — https://financialexpress.com/
+- prabhatkhabar.com — https://prabhatkhabar.com/
+- prokerala.com — https://prokerala.com/
+- bhaskar.com — https://bhaskar.com/
+- daijiworld.com — https://daijiworld.com/
+- indiatvnews.com — https://indiatvnews.com/
+- newshub.org — https://newshub.org/
+- deccanchronicle.com — https://deccanchronicle.com/
+- siasat.com — https://siasat.com/
+- livehindustan.com — https://livehindustan.com/
+- sify.com — https://sify.com/
+- ianslive.in — https://ianslive.in/
+- moneycontrol.com — https://moneycontrol.com/
+- abplive.in — https://abplive.in/
+- indiagazette.com — https://indiagazette.com/
+- sakshi.com — https://sakshi.com/
+- news18.com — https://news18.com/
+- asianage.com — https://asianage.com/
+- tribuneindia.com — https://tribuneindia.com/
+- thehindubusinessline.com — https://thehindubusinessline.com/
+- timesnownews.com — https://timesnownews.com/
+- dailyexcelsior.com — https://dailyexcelsior.com/
+
 ## maldives (south_asia) — Maldives
 
 ### w3newspapers — https://www.w3newspapers.com/maldives/
@@ -1301,6 +1427,48 @@ the populator script that generated this file.
 - MV Headlines — http://mvheadlines.com/
 - Sun — http://www.sun.mv/
 - Haveeru Daily — http://www.haveeru.com.mv/dhivehi/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 72 by GDELT monitoring volume)
+- maldivesindependent.com — https://maldivesindependent.com/
+- edition.mv — https://edition.mv/
+- raajje.mv — https://raajje.mv/
+- avas.mv — https://avas.mv/
+- haveeru.com.mv — https://haveeru.com.mv/
+- miadhu.com — https://miadhu.com/
+- minivannews.com — https://minivannews.com/
+- maldiveshighcommission.org — https://maldiveshighcommission.org/
+- mvhotelsonline.com — https://mvhotelsonline.com/
+- scubaverse.com — https://scubaverse.com/
+- mdp.org.mv — https://mdp.org.mv/
+- maldivestourismarchives.com — https://maldivestourismarchives.com/
+- dotwnews.com — https://dotwnews.com/
+- oneandonlyresorts.com — https://oneandonlyresorts.com/
+- dreamingofmaldives.com — https://dreamingofmaldives.com/
+- mma.gov.mv — https://mma.gov.mv/
+- hungryhongkong.net — https://hungryhongkong.net/
+- maldives.com — https://maldives.com/
+- minivannewsarchive.com — https://minivannewsarchive.com/
+- tourtipstravelguide.com — https://tourtipstravelguide.com/
+- iwmbuzz.com — https://iwmbuzz.com/
+- maldivesdivetravel.com — https://maldivesdivetravel.com/
+- maldivesembassy.us — https://maldivesembassy.us/
+- bollywoodnewsworld.com — https://bollywoodnewsworld.com/
+- millzero.com — https://millzero.com/
+- boubouteatime.com — https://boubouteatime.com/
+- seethinkexplore.com — https://seethinkexplore.com/
+- youtheworldwandering.com — https://youtheworldwandering.com/
+- fullkover.com — https://fullkover.com/
+- brosome.com — https://brosome.com/
+- greenglobe.com — https://greenglobe.com/
+- pateshestvenik.com — https://pateshestvenik.com/
+- ecocare.mv — https://ecocare.mv/
+- luxe.net — https://luxe.net/
+- southindiafashion.com — https://southindiafashion.com/
+- traveluto.com — https://traveluto.com/
+- mcsuk.org — https://mcsuk.org/
+- vazeefaa.org — https://vazeefaa.org/
+- kurumbamaldivesresort.com — https://kurumbamaldivesresort.com/
+- maldivestraveller.mv — https://maldivestraveller.mv/
 
 ## nepal (south_asia) — Nepal
 
@@ -1443,6 +1611,48 @@ the populator script that generated this file.
 - Himalayan Times — http://www.thehimalayantimes.com/
 - Nepal Samacharpatra — http://www.newsofnepal.com/
 - Rajdhani — http://www.rajdhani.com.np/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 420 by GDELT monitoring volume)
+- ekantipur.com — https://ekantipur.com/
+- ratopati.com — https://ratopati.com/
+- gorkhapatraonline.com — https://gorkhapatraonline.com/
+- onlinekhabar.com — https://onlinekhabar.com/
+- thehimalayantimes.com — https://thehimalayantimes.com/
+- myrepublica.com — https://myrepublica.com/
+- nagariknetwork.com — https://nagariknetwork.com/
+- annapurnapost.com — https://annapurnapost.com/
+- ehimalayatimes.com — https://ehimalayatimes.com/
+- nepalitimes.com — https://nepalitimes.com/
+- himalkhabar.com — https://himalkhabar.com/
+- abhiyan.com.np — https://abhiyan.com.np/
+- karobardaily.com — https://karobardaily.com/
+- inseconline.org — https://inseconline.org/
+- reviewnepal.com — https://reviewnepal.com/
+- spotlightnepal.com — https://spotlightnepal.com/
+- peoplesreview.com.np — https://peoplesreview.com.np/
+- avenues.tv — https://avenues.tv/
+- nepalireporter.com — https://nepalireporter.com/
+- setopati.com — https://setopati.com/
+- rajdhani.com.np — https://rajdhani.com.np/
+- nepalisansar.com — https://nepalisansar.com/
+- mysansar.com — https://mysansar.com/
+- xnepali.net — https://xnepali.net/
+- nepalnews.com — https://nepalnews.com/
+- setopati.net — https://setopati.net/
+- nepal24hours.com — https://nepal24hours.com/
+- cityof7lakes.com — https://cityof7lakes.com/
+- kollywoodworld.com — https://kollywoodworld.com/
+- theannapurnaexpress.com — https://theannapurnaexpress.com/
+- fncci.org — https://fncci.org/
+- kathmandutribune.com — https://kathmandutribune.com/
+- alanarnette.com — https://alanarnette.com/
+- thelongestwayhome.com — https://thelongestwayhome.com/
+- chitawan.com — https://chitawan.com/
+- nepaliheadlines.com — https://nepaliheadlines.com/
+- explorersweb.com — https://explorersweb.com/
+- avasstv.com — https://avasstv.com/
+- telegraphnepal.com — https://telegraphnepal.com/
+- nepalguidetreks.com — https://nepalguidetreks.com/
 
 ## sri_lanka (south_asia) — Sri Lanka
 
@@ -1685,3 +1895,45 @@ the populator script that generated this file.
 - Uthayan — http://onlineuthayan.com/
 - Virakesari — http://www.virakesari.lk/
 - Tamil Guardian — http://www.tamilguardian.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 235 by GDELT monitoring volume)
+- dailymirror.lk — https://dailymirror.lk/
+- colombopage.com — https://colombopage.com/
+- lakbima.lk — https://lakbima.lk/
+- lankaweb.com — https://lankaweb.com/
+- ft.lk — https://ft.lk/
+- sundaytimes.lk — https://sundaytimes.lk/
+- dailynews.lk — https://dailynews.lk/
+- island.lk — https://island.lk/
+- srilankasource.com — https://srilankasource.com/
+- mawbima.lk — https://mawbima.lk/
+- tamilnet.com — https://tamilnet.com/
+- virakesari.lk — https://virakesari.lk/
+- newsfirst.lk — https://newsfirst.lk/
+- hirunews.lk — https://hirunews.lk/
+- divaina.com — https://divaina.com/
+- colombogazette.com — https://colombogazette.com/
+- economynext.com — https://economynext.com/
+- dbsjeyaraj.com — https://dbsjeyaraj.com/
+- asiantribune.com — https://asiantribune.com/
+- slguardian.org — https://slguardian.org/
+- thesundayleader.lk — https://thesundayleader.lk/
+- adaderana.lk — https://adaderana.lk/
+- lankabusinessonline.com — https://lankabusinessonline.com/
+- dinamina.lk — https://dinamina.lk/
+- uktamilnews.com — https://uktamilnews.com/
+- itnnews.lk — https://itnnews.lk/
+- news.lk — https://news.lk/
+- lankanewspapers.com — https://lankanewspapers.com/
+- colombotelegraph.com — https://colombotelegraph.com/
+- lankadeepa.lk — https://lankadeepa.lk/
+- srilankamirror.com — https://srilankamirror.com/
+- ravaya.lk — https://ravaya.lk/
+- tamilguardian.com — https://tamilguardian.com/
+- ada.lk — https://ada.lk/
+- nation.lk — https://nation.lk/
+- sundayobserver.lk — https://sundayobserver.lk/
+- vikalpa.org — https://vikalpa.org/
+- groundviews.org — https://groundviews.org/
+- slbc.lk — https://slbc.lk/
+- srilankaguardian.org — https://srilankaguardian.org/

@@ -36,6 +36,12 @@ from urllib.parse import urlparse
 import httpx
 import yaml
 from bs4 import BeautifulSoup
+from gdelt_source import (
+    build_iso3_to_fips,
+    gdelt_block_for_country,
+    harvest_gdelt_domains,
+    inject_gdelt_into_text,
+)
 from playwright.sync_api import sync_playwright
 
 UA = (
@@ -633,7 +639,13 @@ def host_of(url: str) -> str:
     return (urlparse(url).hostname or "").lower()
 
 
-AGGREGATORS = ("w3newspapers", "onlinenewspapers", "allyoucanread", "abyznewslinks")
+AGGREGATORS = (
+    "w3newspapers",
+    "onlinenewspapers",
+    "allyoucanread",
+    "abyznewslinks",
+    "gdelt",
+)
 
 
 def write_region_file(
@@ -648,9 +660,9 @@ def write_region_file(
     lines = [
         f"# Known Online-Newspaper Aggregators — {region_name} (`{region}`)",
         "",
-        "Pre-extracted per-country newspaper lists from four online-newspaper",
-        "aggregators. Used by `/onboard-region-newspapers` step 2a as a static",
-        "seed instead of refetching aggregator homepages every run.",
+        "Pre-extracted per-country newspaper lists from four online-newspaper aggregators",
+        "plus GDELT's domains-by-country list. Used by `/onboard-region-newspapers` step 2a",
+        "as a static seed instead of refetching aggregator homepages every run.",
         "",
         "See `references/known_aggregators/README.md` for the ignore rules and",
         "the populator script that generated this file.",
@@ -676,6 +688,47 @@ def write_region_file(
     (out_dir / f"{region}.md").write_text("\n".join(lines))
 
 
+def load_slug_iso3(countries_path: Path) -> dict[str, str]:
+    with open(countries_path) as f:
+        countries = yaml.safe_load(f)
+    return {slug: (c or {}).get("iso3", "") for slug, c in countries.items()}
+
+
+def run_gdelt_only(regions_path, countries_path, out_dir, cache_path, cap):
+    """Inject/refresh only the GDELT section in existing region files.
+
+    Leaves the four HTML-aggregator sections byte-for-byte; touches only the
+    per-country '### gdelt' section. Idempotent.
+    """
+    with open(regions_path) as f:
+        regions_yaml = yaml.safe_load(f)
+    slug_iso3 = load_slug_iso3(countries_path)
+    by_fips = harvest_gdelt_domains(cache_path)
+    i2f = build_iso3_to_fips()
+
+    def resolve(slug):
+        return gdelt_block_for_country(
+            slug_iso3.get(slug, ""), i2f, by_fips, is_ignored, cap
+        )
+
+    for region in regions_yaml:
+        path = out_dir / f"{region}.md"
+        if not path.exists():
+            print(f"[gdelt-only] skip {region}.md (not found)")
+            continue
+        text = path.read_text()
+        text = text.replace(
+            "from four online-newspaper\naggregators.",
+            "from four online-newspaper aggregators\nplus GDELT's domains-by-country list.",
+        )
+        text = inject_gdelt_into_text(text, resolve)
+        path.write_text(text)
+        have = text.count("### gdelt — https")
+        total = text.count("\n## ")
+        print(f"[gdelt-only] {region}.md: {have}/{total} countries with GDELT outlets")
+    print("[gdelt-only] done")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--regions", required=True, type=Path)
@@ -692,9 +745,36 @@ def main():
         action="store_true",
         help="Skip w3newspapers (Playwright) — useful for fast iteration",
     )
+    parser.add_argument(
+        "--gdelt-only",
+        action="store_true",
+        help="Only (re)inject the GDELT section into existing region files; "
+        "skip the four HTML aggregators (fast, no Playwright).",
+    )
+    parser.add_argument(
+        "--gdelt-cap",
+        type=int,
+        default=40,
+        help="Max GDELT domains per country, ranked by monitoring volume "
+        "(0 = no cap). Default 40.",
+    )
+    parser.add_argument(
+        "--gdelt-cache",
+        type=Path,
+        default=None,
+        help="Where to cache the downloaded GDELT CSV "
+        "(default: <out>/.gdelt_domains.csv).",
+    )
     args = parser.parse_args()
 
     args.out.mkdir(parents=True, exist_ok=True)
+
+    gdelt_cache = args.gdelt_cache or (args.out / ".gdelt_domains.csv")
+    if args.gdelt_only:
+        run_gdelt_only(
+            args.regions, args.countries, args.out, gdelt_cache, args.gdelt_cap
+        )
+        return
 
     print("[load] topology")
     topology = load_topology(args.regions, args.countries)
@@ -710,6 +790,11 @@ def main():
     online_idx = harvest_onlinenewspapers_index()
     ayr_idx = harvest_allyoucanread_index()
     abyz_idx = harvest_abyz_index()
+
+    # GDELT is a single flat CSV grouped by us — no per-country page fetch.
+    gdelt_by_fips = harvest_gdelt_domains(gdelt_cache)
+    gdelt_i2f = build_iso3_to_fips()
+    slug_iso3 = load_slug_iso3(args.countries)
 
     # Resolve per-country URLs
     print("[resolve] mapping our slugs → aggregator URLs")
@@ -795,6 +880,18 @@ def main():
                     outlets = extract_abyz_outlets(html)
                     country_pages["abyznewslinks"] = (urls["abyznewslinks"], outlets)
                     print(f"  [abyz] {len(outlets)} outlets")
+
+            # gdelt — from the pre-harvested CSV (no per-country fetch)
+            g_ann, g_outlets = gdelt_block_for_country(
+                slug_iso3.get(slug, ""),
+                gdelt_i2f,
+                gdelt_by_fips,
+                is_ignored,
+                args.gdelt_cap,
+            )
+            if g_outlets:
+                country_pages["gdelt"] = (g_ann, g_outlets)
+                print(f"  [gdelt] {len(g_outlets)} outlets")
 
             pages[slug] = country_pages
             time.sleep(0.4)

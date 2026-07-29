@@ -1,7 +1,7 @@
 # Known Online-Newspaper Aggregators — Sub-Saharan Africa (`ssa`)
 
-Pre-extracted per-country newspaper lists from four online-newspaper
-aggregators. Used by `/onboard-region-newspapers` step 2a as a static
+Pre-extracted per-country newspaper lists from four online-newspaper aggregators
+plus GDELT's domains-by-country list. Used by `/onboard-region-newspapers` step 2a as a static
 seed instead of refetching aggregator homepages every run.
 
 See `references/known_aggregators/README.md` for the ignore rules and
@@ -115,6 +115,48 @@ the populator script that generated this file.
 - Yaounde Info — http://www.yaoundeinfo.com/
 - Cameroon Tribune — https://www.cameroon-tribune.cm/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 143 by GDELT monitoring volume)
+- camerounlink.com — https://camerounlink.com/
+- camer.be — https://camer.be/
+- cameroun24.net — https://cameroun24.net/
+- cameroon-tribune.cm — https://cameroon-tribune.cm/
+- cameroon-info.net — https://cameroon-info.net/
+- journalducameroun.com — https://journalducameroun.com/
+- 237online.com — https://237online.com/
+- cameroon-one.com — https://cameroon-one.com/
+- cameroononline.org — https://cameroononline.org/
+- cameroon-concord.com — https://cameroon-concord.com/
+- crtv.cm — https://crtv.cm/
+- investiraucameroun.com — https://investiraucameroun.com/
+- camerpost.com — https://camerpost.com/
+- africapresse.com — https://africapresse.com/
+- businessincameroon.com — https://businessincameroon.com/
+- cameroonjournal.com — https://cameroonjournal.com/
+- cameroun-online.com — https://cameroun-online.com/
+- cameroonpostline.com — https://cameroonpostline.com/
+- lanouvelleexpression.info — https://lanouvelleexpression.info/
+- africa-info.org — https://africa-info.org/
+- stopblablacam.com — https://stopblablacam.com/
+- camernews.com — https://camernews.com/
+- agenceecofin.com — https://agenceecofin.com/
+- cameroonvoice.com — https://cameroonvoice.com/
+- tinzwei.com — https://tinzwei.com/
+- newsducamer.com — https://newsducamer.com/
+- laminute.info — https://laminute.info/
+- lebledparle.com — https://lebledparle.com/
+- spm.gov.cm — https://spm.gov.cm/
+- bamendaonline.net — https://bamendaonline.net/
+- icicemac.com — https://icicemac.com/
+- ticmag.net — https://ticmag.net/
+- lions4life.com — https://lions4life.com/
+- culturebene.com — https://culturebene.com/
+- canalblog.com — https://canalblog.com/
+- leffortcamerounais.com — https://leffortcamerounais.com/
+- cameroonblog.info — https://cameroonblog.info/
+- postnewsline.com — https://postnewsline.com/
+- bonaberi.com — https://bonaberi.com/
+- teles-relay.com — https://teles-relay.com/
+
 ## central_african_republic (central_africa) — Central African Republic
 
 ### w3newspapers — https://www.w3newspapers.com/central-african-republic/
@@ -157,6 +199,21 @@ the populator script that generated this file.
 - Sango Ti Kodro — http://www.sango-ti-kodro.com/
 - Taka Parler — http://takaparlenews.over-blog.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (13 domains by GDELT monitoring volume)
+- centrafrique-presse.info — https://centrafrique-presse.info/
+- over-blog.com — https://over-blog.com/
+- journaldebangui.com — https://journaldebangui.com/
+- corbeaunews.ca — https://corbeaunews.ca/
+- centrafriquelibre.info — https://centrafriquelibre.info/
+- rjdh-rca.net — https://rjdh-rca.net/
+- invisiblechildren.com — https://invisiblechildren.com/
+- acap-cf.info — https://acap-cf.info/
+- allafrica.com — https://allafrica.com/
+- thedublinreview.com — https://thedublinreview.com/
+- info-centrafrique.com — https://info-centrafrique.com/
+- aidsfreeworld.org — https://aidsfreeworld.org/
+- cpiu.us — https://cpiu.us/
+
 ## chad (central_africa) — Chad
 
 ### w3newspapers — https://www.w3newspapers.com/chad/
@@ -189,6 +246,31 @@ the populator script that generated this file.
 - Tchad Hanana Press — http://tchadhanana.info/
 - Tchad Infos — http://tchadinfos.com/
 - Zoom Tchad — http://zoomtchad.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (23 domains by GDELT monitoring volume)
+- journaldutchad.com — https://journaldutchad.com/
+- makaila.fr — https://makaila.fr/
+- tchadactuel.com — https://tchadactuel.com/
+- tchadonline.com — https://tchadonline.com/
+- ndjamena-matin.com — https://ndjamena-matin.com/
+- tchadenligne.com — https://tchadenligne.com/
+- hisseinhabre.com — https://hisseinhabre.com/
+- tchadinfos.com — https://tchadinfos.com/
+- lmiroir.com — https://lmiroir.com/
+- celebratingthesoaps.com — https://celebratingthesoaps.com/
+- freedomactionnetwork.com — https://freedomactionnetwork.com/
+- zongonews.com — https://zongonews.com/
+- eway.com.au — https://eway.com.au/
+- mikepetticord.com — https://mikepetticord.com/
+- motorradreisender.de — https://motorradreisender.de/
+- lionindomptable.com — https://lionindomptable.com/
+- thenewbusinessblog.com — https://thenewbusinessblog.com/
+- forgivenwife.com — https://forgivenwife.com/
+- newtrent.com — https://newtrent.com/
+- ultimatesandbagtraining.com — https://ultimatesandbagtraining.com/
+- darfurunited.com — https://darfurunited.com/
+- nichols.edu — https://nichols.edu/
+- tri-medinc.com — https://tri-medinc.com/
 
 ## congo_dem_rep (central_africa) — Congo, Dem. Rep.
 
@@ -253,6 +335,37 @@ the populator script that generated this file.
 - La Prosperite — https://laprosperiteonline.net/
 - Le Potentiel — http://www.lepotentielonline.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (29 domains by GDELT monitoring volume)
+- mediacongo.net — https://mediacongo.net/
+- radiookapi.net — https://radiookapi.net/
+- lephareonline.net — https://lephareonline.net/
+- digitalcongo.net — https://digitalcongo.net/
+- groupelavenir.org — https://groupelavenir.org/
+- lobservateur.cd — https://lobservateur.cd/
+- direct.cd — https://direct.cd/
+- who.int — https://who.int/
+- presidentrdc.cd — https://presidentrdc.cd/
+- acpcongo.com — https://acpcongo.com/
+- actualite.cd — https://actualite.cd/
+- journaldekin.com — https://journaldekin.com/
+- saudeglobal.org — https://saudeglobal.org/
+- politico.cd — https://politico.cd/
+- congoplanete.com — https://congoplanete.com/
+- diaspordc.com — https://diaspordc.com/
+- sarwatch.org — https://sarwatch.org/
+- kinshasatimes.cd — https://kinshasatimes.cd/
+- africa243.com — https://africa243.com/
+- ladynamiquecongolaise.com — https://ladynamiquecongolaise.com/
+- kivupress.info — https://kivupress.info/
+- stoprapeinconflict.org — https://stoprapeinconflict.org/
+- dgcoy.me — https://dgcoy.me/
+- jacksons-security.co.uk — https://jacksons-security.co.uk/
+- necsi.edu — https://necsi.edu/
+- lindfamily.org — https://lindfamily.org/
+- nextstagearts.org — https://nextstagearts.org/
+- cousenegal.sn — https://cousenegal.sn/
+- deeplearningindaba.com — https://deeplearningindaba.com/
+
 ## congo_rep (central_africa) — Congo, Rep.
 
 ### w3newspapers — https://www.w3newspapers.com/congo/
@@ -299,6 +412,48 @@ the populator script that generated this file.
 - Zenga Mambu — http://www.zenga-mambu.com/
 - Les Depeches de Brazzaville — http://www.lesdepechesdebrazzaville.fr/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 66 by GDELT monitoring volume)
+- adiac-congo.com — https://adiac-congo.com/
+- laprosperiteonline.net — https://laprosperiteonline.net/
+- dac-presse.com — https://dac-presse.com/
+- congo24.net — https://congo24.net/
+- lasemaineafricaine.net — https://lasemaineafricaine.net/
+- kongotimes.info — https://kongotimes.info/
+- lepotentielonline.com — https://lepotentielonline.com/
+- portail242.info — https://portail242.info/
+- lesoftonline.net — https://lesoftonline.net/
+- starducongo.com — https://starducongo.com/
+- congopage.com — https://congopage.com/
+- oeildafrique.com — https://oeildafrique.com/
+- demainlenouveaucongobrazzaville.org — https://demainlenouveaucongobrazzaville.org/
+- mwinda.org — https://mwinda.org/
+- lecongolais.cd — https://lecongolais.cd/
+- liberationafrique.org — https://liberationafrique.org/
+- congo-site.com — https://congo-site.com/
+- congomikili.com — https://congomikili.com/
+- congoone.net — https://congoone.net/
+- mbokamosika.com — https://mbokamosika.com/
+- brazzanews.fr — https://brazzanews.fr/
+- friendsofthecongo.org — https://friendsofthecongo.org/
+- congoplanet.com — https://congoplanet.com/
+- justinmorel.info — https://justinmorel.info/
+- business-et-finances.com — https://business-et-finances.com/
+- congoforum.be — https://congoforum.be/
+- brazza-news.com — https://brazza-news.com/
+- ohada.com — https://ohada.com/
+- planeteafrique.com — https://planeteafrique.com/
+- lagencedinformation.com — https://lagencedinformation.com/
+- paceperilcongo.it — https://paceperilcongo.it/
+- vox.cg — https://vox.cg/
+- presidence.cg — https://presidence.cg/
+- basango.info — https://basango.info/
+- afrique-centrale.fr — https://afrique-centrale.fr/
+- zoom-eco.net — https://zoom-eco.net/
+- diablesrougescongo.com — https://diablesrougescongo.com/
+- operationspaix.net — https://operationspaix.net/
+- tgais.com — https://tgais.com/
+- congo.cg — https://congo.cg/
+
 ## equatorial_guinea (central_africa) — Equatorial Guinea
 
 ### w3newspapers — https://www.w3newspapers.com/equatorial-guinea/
@@ -337,6 +492,14 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Guinea Info Market — https://www.guineainfomarket.com/
 - La Gaceta de Guinea Ecuatorial — https://www.gacetadeguinea.com/
 - La Gaceta de Guinea Ecuatorial — http://www.lagacetadeguinea.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (6 domains by GDELT monitoring volume)
+- egjustice.org — https://egjustice.org/
+- nepad-caadp.net — https://nepad-caadp.net/
+- cwceg.com — https://cwceg.com/
+- investineg.com — https://investineg.com/
+- diariorombe.es — https://diariorombe.es/
+- yearofenergy2019.com — https://yearofenergy2019.com/
 
 ## gabon (central_africa) — Gabon
 
@@ -391,6 +554,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Sport 241 — http://sport241.com/
 - L'Union — https://www.union.sonapresse.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 59 by GDELT monitoring volume)
+- alibreville.com — https://alibreville.com/
+- gabonactu.com — https://gabonactu.com/
+- sonapresse.com — https://sonapresse.com/
+- gabonews.com — https://gabonews.com/
+- gaboneco.com — https://gaboneco.com/
+- agpgabon.ga — https://agpgabon.ga/
+- gouvernement.ga — https://gouvernement.ga/
+- moubamba.com — https://moubamba.com/
+- info241.com — https://info241.com/
+- gabonreview.com — https://gabonreview.com/
+- lenouveaugabon.com — https://lenouveaugabon.com/
+- africtelegraph.com — https://africtelegraph.com/
+- presidence-gabon.ga — https://presidence-gabon.ga/
+- infosgabon.com — https://infosgabon.com/
+- gabonlibre.com — https://gabonlibre.com/
+- legabon.org — https://legabon.org/
+- currencydispatch.com — https://currencydispatch.com/
+- pyramidmediagabon.com — https://pyramidmediagabon.com/
+- timesgabon.com — https://timesgabon.com/
+- lalibreville.com — https://lalibreville.com/
+- martinbusinesstelegraph.com — https://martinbusinesstelegraph.com/
+- ledefigabon.com — https://ledefigabon.com/
+- gaboninitiatives.com — https://gaboninitiatives.com/
+- le-gabon.net — https://le-gabon.net/
+- directinfosgabon.com — https://directinfosgabon.com/
+- mays-mouissi.com — https://mays-mouissi.com/
+- generation-nouvelle.org — https://generation-nouvelle.org/
+- gabonpub.com — https://gabonpub.com/
+- africafc.org — https://africafc.org/
+- gabonvoice.com — https://gabonvoice.com/
+- skormu.com — https://skormu.com/
+- cemacbusiness.com — https://cemacbusiness.com/
+- pensoft.net — https://pensoft.net/
+- sikkatv.info — https://sikkatv.info/
+- 2012un-nouveau-paradigme.com — https://2012un-nouveau-paradigme.com/
+- agencequateur.com — https://agencequateur.com/
+- salinenews.com — https://salinenews.com/
+- catholique.org — https://catholique.org/
+- kultursmakarna.se — https://kultursmakarna.se/
+- rainbowradio.co.uk — https://rainbowradio.co.uk/
+
 ## sao_tome_and_principe (central_africa) — Sao Tome and Principe
 
 ### w3newspapers — https://www.w3newspapers.com/sao-tome-and-principe/
@@ -409,6 +614,11 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 ### abyznewslinks — http://www.abyznewslinks.com/saoto.htm
 - STP Digital — https://stpdigital.net/en/
 - Tela Non — https://www.telanon.info/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (3 domains by GDELT monitoring volume)
+- telanon.info — https://telanon.info/
+- jornaltropical.st — https://jornaltropical.st/
+- vitrina.st — https://vitrina.st/
 
 ## burundi (east_africa) — Burundi
 
@@ -456,6 +666,32 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Yaga Burundi — https://www.yaga-burundi.com/
 - Iwacu — http://www.iwacu-burundi.org/englishnews/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (24 domains by GDELT monitoring volume)
+- arib.info — https://arib.info/
+- netpress.bi — https://netpress.bi/
+- burundi-agnews.org — https://burundi-agnews.org/
+- iwacu-burundi.org — https://iwacu-burundi.org/
+- regionweek.com — https://regionweek.com/
+- bonesha.bi — https://bonesha.bi/
+- gov.bi — https://gov.bi/
+- burundibwacu.info — https://burundibwacu.info/
+- burundi-information.com — https://burundi-information.com/
+- burundi-gov.bi — https://burundi-gov.bi/
+- burundirealite.org — https://burundirealite.org/
+- beninmondeinfos.com — https://beninmondeinfos.com/
+- theglobalobservatory.org — https://theglobalobservatory.org/
+- collaborativecoffeesource.com — https://collaborativecoffeesource.com/
+- todlindberg.net — https://todlindberg.net/
+- langhornepres.org — https://langhornepres.org/
+- worldreview.info — https://worldreview.info/
+- counterpart.org — https://counterpart.org/
+- tribulation-now.org — https://tribulation-now.org/
+- youthvision.org.au — https://youthvision.org.au/
+- focuslivenews.com — https://focuslivenews.com/
+- newgenerationburundi.org — https://newgenerationburundi.org/
+- songaenergy.com — https://songaenergy.com/
+- bytebell.com — https://bytebell.com/
+
 ## comoros (east_africa) — Comoros
 
 ### w3newspapers — https://www.w3newspapers.com/comoros/
@@ -489,6 +725,17 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Le Mohelien — http://lemohelien.com/
 - Al Watwan — http://www.alwatwan.net/
 - La Gazette des Comores — http://lagazettedescomores.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (9 domains by GDELT monitoring volume)
+- alwatwan.net — https://alwatwan.net/
+- lagazettedescomores.com — https://lagazettedescomores.com/
+- beit-salam.km — https://beit-salam.km/
+- lejournaldemayotte.yt — https://lejournaldemayotte.yt/
+- curacaowebhosting.com — https://curacaowebhosting.com/
+- comores-online.com — https://comores-online.com/
+- meridian.org — https://meridian.org/
+- slotland.eu — https://slotland.eu/
+- winadaycasino.eu — https://winadaycasino.eu/
 
 ## eritrea (east_africa) — Eritrea
 
@@ -543,6 +790,27 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Shabait — http://www.shabait.com/
 - Tesfa News — https://www.tesfanews.net/
 - ZENA — https://zenazajel.net/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (19 domains by GDELT monitoring volume)
+- shabait.com — https://shabait.com/
+- tesfanews.net — https://tesfanews.net/
+- assenna.com — https://assenna.com/
+- awate.com — https://awate.com/
+- asmarino.com — https://asmarino.com/
+- eritreadaily.net — https://eritreadaily.net/
+- caperi.com — https://caperi.com/
+- hrc-eritrea.org — https://hrc-eritrea.org/
+- farajat.net — https://farajat.net/
+- jeberti.com — https://jeberti.com/
+- madote.com — https://madote.com/
+- eastafro.com — https://eastafro.com/
+- eritrea-chat.com — https://eritrea-chat.com/
+- perfectly-plain.com — https://perfectly-plain.com/
+- gidilounge.com — https://gidilounge.com/
+- tulipe.org — https://tulipe.org/
+- merhawie.com — https://merhawie.com/
+- vomcanada.com — https://vomcanada.com/
+- wholeheartedhome.com — https://wholeheartedhome.com/
 
 ## ethiopia (east_africa) — Ethiopia
 
@@ -622,6 +890,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Walta Information Center — http://www.waltainfo.com/index.php?locale=am
 - Ze Habesha — http://www.zehabesha.com/amharic/
 - Addis Admass — http://www.addisadmassnews.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 222 by GDELT monitoring volume)
+- durame.com — https://durame.com/
+- zehabesha.com — https://zehabesha.com/
+- nazret.com — https://nazret.com/
+- newbusinessethiopia.com — https://newbusinessethiopia.com/
+- tadias.com — https://tadias.com/
+- capitalethiopia.com — https://capitalethiopia.com/
+- addisfortune.net — https://addisfortune.net/
+- geeskaafrika.com — https://geeskaafrika.com/
+- thereporterethiopia.com — https://thereporterethiopia.com/
+- addisstandard.com — https://addisstandard.com/
+- waltainfo.com — https://waltainfo.com/
+- addistar.com — https://addistar.com/
+- 2merkato.com — https://2merkato.com/
+- ethpress.gov.et — https://ethpress.gov.et/
+- borkena.com — https://borkena.com/
+- ethiosun.com — https://ethiosun.com/
+- ethiomedia.com — https://ethiomedia.com/
+- ecadforum.com — https://ecadforum.com/
+- ethioobserver.net — https://ethioobserver.net/
+- ezega.com — https://ezega.com/
+- onlineethiopia.net — https://onlineethiopia.net/
+- ethiopianreview.com — https://ethiopianreview.com/
+- gadaa.com — https://gadaa.com/
+- ethiopia-insight.com — https://ethiopia-insight.com/
+- satenaw.com — https://satenaw.com/
+- abugidainfo.com — https://abugidainfo.com/
+- au.int — https://au.int/
+- oromianeconomist.com — https://oromianeconomist.com/
+- opride.com — https://opride.com/
+- uneca.org — https://uneca.org/
+- awrambatimes.com — https://awrambatimes.com/
+- cyberethiopia.com — https://cyberethiopia.com/
+- hornaffairs.com — https://hornaffairs.com/
+- oromiatimes.org — https://oromiatimes.org/
+- zegabi.com — https://zegabi.com/
+- finfinnetribune.com — https://finfinnetribune.com/
+- africatimes.com — https://africatimes.com/
+- gambellamedia.com — https://gambellamedia.com/
+- march4freedom.org — https://march4freedom.org/
+- addisinsight.com — https://addisinsight.com/
 
 ## kenya (east_africa) — Kenya
 
@@ -716,6 +1026,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Standard — https://www.standardmedia.co.ke/
 - The East African — https://www.theeastafrican.co.ke/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 537 by GDELT monitoring volume)
+- standardmedia.co.ke — https://standardmedia.co.ke/
+- nation.co.ke — https://nation.co.ke/
+- the-star.co.ke — https://the-star.co.ke/
+- kenyastar.com — https://kenyastar.com/
+- capitalfm.co.ke — https://capitalfm.co.ke/
+- businessdailyafrica.com — https://businessdailyafrica.com/
+- sde.co.ke — https://sde.co.ke/
+- mediamaxnetwork.co.ke — https://mediamaxnetwork.co.ke/
+- tuko.co.ke — https://tuko.co.ke/
+- news24.co.ke — https://news24.co.ke/
+- coastweek.com — https://coastweek.com/
+- kenyan-post.com — https://kenyan-post.com/
+- kenyans.co.ke — https://kenyans.co.ke/
+- citizentv.co.ke — https://citizentv.co.ke/
+- kbc.co.ke — https://kbc.co.ke/
+- kenya-today.com — https://kenya-today.com/
+- nairobiwire.com — https://nairobiwire.com/
+- futaa.com — https://futaa.com/
+- ghafla.co.ke — https://ghafla.co.ke/
+- kachwanya.com — https://kachwanya.com/
+- ghettoradio.co.ke — https://ghettoradio.co.ke/
+- president.go.ke — https://president.go.ke/
+- hapakenya.com — https://hapakenya.com/
+- hivisasa.com — https://hivisasa.com/
+- nation.africa — https://nation.africa/
+- asokoinsight.com — https://asokoinsight.com/
+- kenyabuzz.com — https://kenyabuzz.com/
+- cio.co.ke — https://cio.co.ke/
+- theeastafrican.co.ke — https://theeastafrican.co.ke/
+- mwakilishi.com — https://mwakilishi.com/
+- sokodirectory.com — https://sokodirectory.com/
+- techmoran.com — https://techmoran.com/
+- techweez.com — https://techweez.com/
+- kbctv.co.ke — https://kbctv.co.ke/
+- theelephant.info — https://theelephant.info/
+- kdrtv.com — https://kdrtv.com/
+- mod.go.ke — https://mod.go.ke/
+- africabusinesscommunities.com — https://africabusinesscommunities.com/
+- voaswahili.com — https://voaswahili.com/
+- pulselive.co.ke — https://pulselive.co.ke/
+
 ## madagascar (east_africa) — Madagascar
 
 ### w3newspapers — https://www.w3newspapers.com/madagascar/
@@ -769,6 +1121,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - L'Express de Madagascar — https://www.lexpressmada.com/
 - Madagascar Tribune — https://www.madagascar-tribune.com/
 - Midi Madigasikara — http://www.midi-madagasikara.mg/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 104 by GDELT monitoring volume)
+- midi-madagasikara.mg — https://midi-madagasikara.mg/
+- newsmada.com — https://newsmada.com/
+- lexpressmada.com — https://lexpressmada.com/
+- lagazette-dgi.com — https://lagazette-dgi.com/
+- madagascar-tribune.com — https://madagascar-tribune.com/
+- lakroa.mg — https://lakroa.mg/
+- madagate.org — https://madagate.org/
+- presidence.gov.mg — https://presidence.gov.mg/
+- madagate.com — https://madagate.com/
+- madonline.com — https://madonline.com/
+- fmf.mg — https://fmf.mg/
+- orange.mg — https://orange.mg/
+- watchwebmovies.com — https://watchwebmovies.com/
+- lactualite.mg — https://lactualite.mg/
+- cyber-diego.com — https://cyber-diego.com/
+- edgeofexistence.org — https://edgeofexistence.org/
+- eatglobe.com — https://eatglobe.com/
+- mineau.gov.mg — https://mineau.gov.mg/
+- inforeunion.net — https://inforeunion.net/
+- responsibletravel.com — https://responsibletravel.com/
+- madmissions.com — https://madmissions.com/
+- uncover.travel — https://uncover.travel/
+- ani-shah.com — https://ani-shah.com/
+- neaq.org — https://neaq.org/
+- waynevisser.com — https://waynevisser.com/
+- amphibians.org — https://amphibians.org/
+- theliving360.com — https://theliving360.com/
+- c-3.org.uk — https://c-3.org.uk/
+- gustafsonphotosafari.net — https://gustafsonphotosafari.net/
+- jonfleming.co.uk — https://jonfleming.co.uk/
+- justice.gov.mg — https://justice.gov.mg/
+- machronique.com — https://machronique.com/
+- mercyships.org — https://mercyships.org/
+- peche.gov.mg — https://peche.gov.mg/
+- thecleanestwave.com — https://thecleanestwave.com/
+- downloadtx.com — https://downloadtx.com/
+- etraveltrips.com — https://etraveltrips.com/
+- impressivemagazine.com — https://impressivemagazine.com/
+- lejournaldemayotte.com — https://lejournaldemayotte.com/
+- ecumenicalwomen.org — https://ecumenicalwomen.org/
 
 ## malawi (east_africa) — Malawi
 
@@ -829,6 +1223,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Nyasa Times — http://www.nyasatimes.com/
 - Daily Times — http://www.times.mw/
 - Nation — https://mwnation.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 83 by GDELT monitoring volume)
+- nyasatimes.com — https://nyasatimes.com/
+- mwnation.com — https://mwnation.com/
+- maravipost.com — https://maravipost.com/
+- malawi24.com — https://malawi24.com/
+- manaonline.gov.mw — https://manaonline.gov.mw/
+- malawivoice.com — https://malawivoice.com/
+- faceofmalawi.com — https://faceofmalawi.com/
+- zodiakmalawi.com — https://zodiakmalawi.com/
+- capitalradiomalawi.com — https://capitalradiomalawi.com/
+- nkhanimchitumbuka.com — https://nkhanimchitumbuka.com/
+- lilongwewildlife.org — https://lilongwewildlife.org/
+- amalawi.info — https://amalawi.info/
+- malawitoday.com — https://malawitoday.com/
+- santegidio.org — https://santegidio.org/
+- malawiace.com — https://malawiace.com/
+- unicefstories.org — https://unicefstories.org/
+- malawi-music.com — https://malawi-music.com/
+- irishruleoflaw.ie — https://irishruleoflaw.ie/
+- mesnmw.org — https://mesnmw.org/
+- ronaldzimmerman.nl — https://ronaldzimmerman.nl/
+- malawianwatchdog.com — https://malawianwatchdog.com/
+- indigotrust.org.uk — https://indigotrust.org.uk/
+- actionaid.org.uk — https://actionaid.org.uk/
+- withchangeinmind.org — https://withchangeinmind.org/
+- times.mw — https://times.mw/
+- madonna.com — https://madonna.com/
+- africansafarico.com — https://africansafarico.com/
+- malawichildrensvillage.org — https://malawichildrensvillage.org/
+- swelluk.com — https://swelluk.com/
+- mission2malawi-eng.com — https://mission2malawi-eng.com/
+- fomoe.org — https://fomoe.org/
+- malawiproject.org — https://malawiproject.org/
+- kusamala.org — https://kusamala.org/
+- attain.education — https://attain.education/
+- andiamotrust.org — https://andiamotrust.org/
+- themaru.org — https://themaru.org/
+- christineboswell.com — https://christineboswell.com/
+- lakescientist.com — https://lakescientist.com/
+- drownedmadonna.com — https://drownedmadonna.com/
+- latinabloggersconnect.com — https://latinabloggersconnect.com/
 
 ## mauritius (east_africa) — Mauritius
 
@@ -892,6 +1328,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Le Mauricien — http://www.lemauricien.com/
 - L'Express — https://www.lexpress.mu/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 86 by GDELT monitoring volume)
+- lexpress.mu — https://lexpress.mu/
+- defimedia.info — https://defimedia.info/
+- lemauricien.com — https://lemauricien.com/
+- maurice-info.mu — https://maurice-info.mu/
+- mauritiustimes.com — https://mauritiustimes.com/
+- govmu.org — https://govmu.org/
+- mbcradio.tv — https://mbcradio.tv/
+- mega.mu — https://mega.mu/
+- ecoaustral.com — https://ecoaustral.com/
+- 5plus.mu — https://5plus.mu/
+- lematinal.com — https://lematinal.com/
+- ilemaurice-tourisme.info — https://ilemaurice-tourisme.info/
+- islandcrisis.net — https://islandcrisis.net/
+- 24heuresinfo.com — https://24heuresinfo.com/
+- topratedtravel.co.uk — https://topratedtravel.co.uk/
+- grandbaie.mu — https://grandbaie.mu/
+- starpress.info — https://starpress.info/
+- indian-ocean.com — https://indian-ocean.com/
+- africamoney.info — https://africamoney.info/
+- windsurf.co.uk — https://windsurf.co.uk/
+- guruonlinenews.com — https://guruonlinenews.com/
+- indischerozean.de — https://indischerozean.de/
+- dxnews.com — https://dxnews.com/
+- fastnewsmedia.com — https://fastnewsmedia.com/
+- iksurfmag.com — https://iksurfmag.com/
+- jcicurepipe.org — https://jcicurepipe.org/
+- edubeanz.com — https://edubeanz.com/
+- happycity-blog.com — https://happycity-blog.com/
+- ecotourismblog.com — https://ecotourismblog.com/
+- cryptonewsbyte.com — https://cryptonewsbyte.com/
+- indian-ocean-times.com — https://indian-ocean-times.com/
+- inside.news — https://inside.news/
+- yashvinblogs.com — https://yashvinblogs.com/
+- capitalmarketsinafrica.com — https://capitalmarketsinafrica.com/
+- hotel-ilemaurice.fr — https://hotel-ilemaurice.fr/
+- northyorkshirenews.com — https://northyorkshirenews.com/
+- rethinkweddings.com — https://rethinkweddings.com/
+- lakelandtravels.com — https://lakelandtravels.com/
+- abaxservices.com — https://abaxservices.com/
+- enrichco.com — https://enrichco.com/
+
 ## mozambique (east_africa) — Mozambique
 
 ### w3newspapers — https://www.w3newspapers.com/mozambique/
@@ -945,6 +1423,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Stop — http://www.stop.co.mz/
 - Zitamar News — https://zitamar.com/
 - Noticias — http://www.jornalnoticias.co.mz/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 53 by GDELT monitoring volume)
+- blogs.com — https://blogs.com/
+- verdade.co.mz — https://verdade.co.mz/
+- sapo.mz — https://sapo.mz/
+- jornalnoticias.co.mz — https://jornalnoticias.co.mz/
+- macua.us — https://macua.us/
+- portaldogoverno.gov.mz — https://portaldogoverno.gov.mz/
+- tvm.co.mz — https://tvm.co.mz/
+- frelimo.org.mz — https://frelimo.org.mz/
+- zitamar.com — https://zitamar.com/
+- poptel.org.uk — https://poptel.org.uk/
+- clubofmozambique.com — https://clubofmozambique.com/
+- cip.org.mz — https://cip.org.mz/
+- thebusinessyear.com — https://thebusinessyear.com/
+- zammagazine.com — https://zammagazine.com/
+- fimdesemana.co.mz — https://fimdesemana.co.mz/
+- malariaconsortium.org — https://malariaconsortium.org/
+- mmo.co.mz — https://mmo.co.mz/
+- averdadeonline.com — https://averdadeonline.com/
+- wcs.org — https://wcs.org/
+- renamo.org.mz — https://renamo.org.mz/
+- cipmoz.org — https://cipmoz.org/
+- theafricalogistics.com — https://theafricalogistics.com/
+- maguineeinfos.com — https://maguineeinfos.com/
+- latestfashiontips.com — https://latestfashiontips.com/
+- cbmjournal.com — https://cbmjournal.com/
+- energymixreport.com — https://energymixreport.com/
+- forestecosyst.com — https://forestecosyst.com/
+- mozambique-gas-summit.com — https://mozambique-gas-summit.com/
+- therovingambassador.com — https://therovingambassador.com/
+- voxafrica.com — https://voxafrica.com/
+- sandonadipiave.net — https://sandonadipiave.net/
+- africadream.cl — https://africadream.cl/
+- davidmckee.org — https://davidmckee.org/
+- datinglab.net — https://datinglab.net/
+- geckotime.com — https://geckotime.com/
+- steps-centre.org — https://steps-centre.org/
+- societyandspace.com — https://societyandspace.com/
+- reisfloris-janenanneke.nl — https://reisfloris-janenanneke.nl/
+- tickerstrading.review — https://tickerstrading.review/
+- thedigitalcircuit.com — https://thedigitalcircuit.com/
 
 ## rwanda (east_africa) — Rwanda
 
@@ -1023,6 +1543,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Imvaho Nshya — http://imvahonshya.co.rw/
 - New Times — https://www.newtimes.co.rw/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 103 by GDELT monitoring volume)
+- newtimes.co.rw — https://newtimes.co.rw/
+- rnanews.com — https://rnanews.com/
+- ktpress.rw — https://ktpress.rw/
+- rwandaises.com — https://rwandaises.com/
+- igihe.com — https://igihe.com/
+- therwandan.com — https://therwandan.com/
+- taarifa.rw — https://taarifa.rw/
+- focus.rw — https://focus.rw/
+- rwandaeye.com — https://rwandaeye.com/
+- france-rwanda.info — https://france-rwanda.info/
+- newsofrwanda.com — https://newsofrwanda.com/
+- rwandaexpress.rw — https://rwandaexpress.rw/
+- greatlakesvoice.com — https://greatlakesvoice.com/
+- chwezitraveller.com — https://chwezitraveller.com/
+- jambonews.net — https://jambonews.net/
+- onceinalifetimejourney.com — https://onceinalifetimejourney.com/
+- embassy.gov.rw — https://embassy.gov.rw/
+- inyenyerinews.org — https://inyenyerinews.org/
+- africaglobalvillage.com — https://africaglobalvillage.com/
+- gorillafund.org — https://gorillafund.org/
+- akilah.net — https://akilah.net/
+- techinafrica.com — https://techinafrica.com/
+- cleanleap.com — https://cleanleap.com/
+- christopher-black.com — https://christopher-black.com/
+- dove.rw — https://dove.rw/
+- hirondellenews.com — https://hirondellenews.com/
+- diosav.org — https://diosav.org/
+- theafricangourmet.com — https://theafricangourmet.com/
+- imagesfrancophones.org — https://imagesfrancophones.org/
+- alleyesonafrica.com — https://alleyesonafrica.com/
+- aegistrust.org — https://aegistrust.org/
+- kukindiho.org — https://kukindiho.org/
+- gariwo.net — https://gariwo.net/
+- rwandinfo.com — https://rwandinfo.com/
+- bakolokongo.com — https://bakolokongo.com/
+- mindsky.com — https://mindsky.com/
+- akiit.com — https://akiit.com/
+- peaceoneday.org — https://peaceoneday.org/
+- acetforafrica.org — https://acetforafrica.org/
+- paxchristi.be — https://paxchristi.be/
+
 ## seychelles (east_africa) — Seychelles
 
 ### w3newspapers — https://www.w3newspapers.com/seychelles/
@@ -1049,6 +1611,18 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 
 ### abyznewslinks — http://www.abyznewslinks.com/seych.htm
 - Nation — http://www.nation.sc/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (10 domains by GDELT monitoring volume)
+- nation.sc — https://nation.sc/
+- seychellesnewsagency.com — https://seychellesnewsagency.com/
+- statehouse.gov.sc — https://statehouse.gov.sc/
+- virtualseychelles.sc — https://virtualseychelles.sc/
+- topvpnchoice.com — https://topvpnchoice.com/
+- asantemanusa.org — https://asantemanusa.org/
+- thepeopleonline.net — https://thepeopleonline.net/
+- oceaniacruisesblog.com — https://oceaniacruisesblog.com/
+- pfsr.org — https://pfsr.org/
+- aerolines.ro — https://aerolines.ro/
 
 ## somalia (east_africa) — Somalia
 
@@ -1148,6 +1722,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Warqaad Press — https://www.warqaad.info/category/english/
 - Warsom — http://warsom.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 234 by GDELT monitoring volume)
+- hillaac.net — https://hillaac.net/
+- jowhar.com — https://jowhar.com/
+- qaranimo.com — https://qaranimo.com/
+- garoweonline.com — https://garoweonline.com/
+- somaliamediamonitoring.org — https://somaliamediamonitoring.org/
+- shabellenews.com — https://shabellenews.com/
+- somalilandsun.com — https://somalilandsun.com/
+- radiomuqdisho.net — https://radiomuqdisho.net/
+- horseedmedia.net — https://horseedmedia.net/
+- mareeg.com — https://mareeg.com/
+- baidoanews.com — https://baidoanews.com/
+- alshahid.net — https://alshahid.net/
+- wardheernews.com — https://wardheernews.com/
+- geeska.net — https://geeska.net/
+- somalilandpress.com — https://somalilandpress.com/
+- allsbc.com — https://allsbc.com/
+- raxanreeb.com — https://raxanreeb.com/
+- radiodalsan.com — https://radiodalsan.com/
+- mustaqbalradio.com — https://mustaqbalradio.com/
+- radiodanan.net — https://radiodanan.net/
+- radioshabelle.com — https://radioshabelle.com/
+- midnimo.com — https://midnimo.com/
+- somalimemo.net — https://somalimemo.net/
+- newsomali.com — https://newsomali.com/
+- halgan.net — https://halgan.net/
+- sunatimes.com — https://sunatimes.com/
+- ishabaydhaba.com — https://ishabaydhaba.com/
+- aqbaar.com — https://aqbaar.com/
+- goobjoog.com — https://goobjoog.com/
+- amisom-au.org — https://amisom-au.org/
+- warsheekh.com — https://warsheekh.com/
+- djiboutination.com — https://djiboutination.com/
+- somaliweyn.org — https://somaliweyn.org/
+- waagacusub.net — https://waagacusub.net/
+- kismaayonews.com — https://kismaayonews.com/
+- codkasoomaalida.com — https://codkasoomaalida.com/
+- waaheen.com — https://waaheen.com/
+- diplomat.so — https://diplomat.so/
+- somaliupdate.com — https://somaliupdate.com/
+- harowo.com — https://harowo.com/
+
 ## south_sudan (east_africa) — South Sudan
 
 ### w3newspapers — https://www.w3newspapers.com/southsudan/
@@ -1182,6 +1798,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Sudan Tribune — http://www.sudantribune.com/
 - Talk of Juba — http://www.talkofjuba.com/
 - Juba Monitor — http://www.jubamonitor.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 53 by GDELT monitoring volume)
+- radiotamazuj.org — https://radiotamazuj.org/
+- gurtong.net — https://gurtong.net/
+- southsudannation.com — https://southsudannation.com/
+- eyeradio.org — https://eyeradio.org/
+- unmissions.org — https://unmissions.org/
+- upperniletimes.net — https://upperniletimes.net/
+- borglobe.com — https://borglobe.com/
+- radio-miraya.org — https://radio-miraya.org/
+- wvi.org — https://wvi.org/
+- internews.org — https://internews.org/
+- advance-africa.com — https://advance-africa.com/
+- nyamile.com — https://nyamile.com/
+- ssnationaldialogue.org — https://ssnationaldialogue.org/
+- jrs.net — https://jrs.net/
+- acted.org — https://acted.org/
+- plan-international.org — https://plan-international.org/
+- womenundersiegeproject.org — https://womenundersiegeproject.org/
+- nyamile.co — https://nyamile.co/
+- worldvision.org.nz — https://worldvision.org.nz/
+- liliireducationproject.org — https://liliireducationproject.org/
+- seedeffect.org — https://seedeffect.org/
+- africanspress.org — https://africanspress.org/
+- fieldsoflife.org — https://fieldsoflife.org/
+- rcssmideast.org — https://rcssmideast.org/
+- hotinjuba.com — https://hotinjuba.com/
+- info-cooperazione.it — https://info-cooperazione.it/
+- thesosanews.com — https://thesosanews.com/
+- prayafrica.org — https://prayafrica.org/
+- africahumanitarian.org — https://africahumanitarian.org/
+- projectbazia.com — https://projectbazia.com/
+- wangdunkonmedia.org — https://wangdunkonmedia.org/
+- aipssa.org — https://aipssa.org/
+- civiliansinconflict.org — https://civiliansinconflict.org/
+- cloudwaysapps.com — https://cloudwaysapps.com/
+- onenurseatatime.org — https://onenurseatatime.org/
+- miamingi.com — https://miamingi.com/
+- thesentry.org — https://thesentry.org/
+- filmstar.space — https://filmstar.space/
+- aotmr.com — https://aotmr.com/
+- equatoriasun.com — https://equatoriasun.com/
 
 ## sudan (east_africa) — Sudan
 
@@ -1292,6 +1950,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Tag Press — https://www.tagpress.net/
 - Al Jareeda — http://aljareeda-sd.net/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 125 by GDELT monitoring volume)
+- alnilin.com — https://alnilin.com/
+- sudantribune.com — https://sudantribune.com/
+- sudantribune.net — https://sudantribune.net/
+- hurriyatsudan.com — https://hurriyatsudan.com/
+- smc.sd — https://smc.sd/
+- dabangasudan.org — https://dabangasudan.org/
+- sudanile.com — https://sudanile.com/
+- altaghyeer.info — https://altaghyeer.info/
+- sudanvisiondaily.com — https://sudanvisiondaily.com/
+- sudanjem.org — https://sudanjem.org/
+- alsadda.net — https://alsadda.net/
+- sudanjem.com — https://sudanjem.com/
+- innercitypress.com — https://innercitypress.com/
+- southsudannewsagency.com — https://southsudannewsagency.com/
+- mugrn.net — https://mugrn.net/
+- nubareports.org — https://nubareports.org/
+- enoughproject.org — https://enoughproject.org/
+- sudanradio.info — https://sudanradio.info/
+- securitycouncilreport.org — https://securitycouncilreport.org/
+- sudanow.info.sd — https://sudanow.info.sd/
+- paanluelwel.com — https://paanluelwel.com/
+- msar-news.com — https://msar-news.com/
+- riftvalley.net — https://riftvalley.net/
+- barca-news.net — https://barca-news.net/
+- midan.net — https://midan.net/
+- sudanow-magazine.net — https://sudanow-magazine.net/
+- alsudani.net — https://alsudani.net/
+- morningstarnews.org — https://morningstarnews.org/
+- sudanews.net — https://sudanews.net/
+- sudanreeves.org — https://sudanreeves.org/
+- newsudanvision.com — https://newsudanvision.com/
+- icrtopblog.org — https://icrtopblog.org/
+- actforsudan.org — https://actforsudan.org/
+- khartoumpost.net — https://khartoumpost.net/
+- dehai.org — https://dehai.org/
+- sadaalahdas.com — https://sadaalahdas.com/
+- sudanvoices.com — https://sudanvoices.com/
+- kidsforkids.org.uk — https://kidsforkids.org.uk/
+- sahafisyon.com — https://sahafisyon.com/
+- ibrahim.foundation — https://ibrahim.foundation/
+
 ## tanzania (east_africa) — Tanzania
 
 ### w3newspapers — https://www.w3newspapers.com/tanzania/
@@ -1353,6 +2053,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Tanzania Today — http://www.tanzaniatoday.co.tz/
 - Citizen — https://www.thecitizen.co.tz/
 - Mwananchi — https://www.mwananchi.co.tz/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 107 by GDELT monitoring volume)
+- tanzaniatoday.co.tz — https://tanzaniatoday.co.tz/
+- dailynews.co.tz — https://dailynews.co.tz/
+- habarileo.co.tz — https://habarileo.co.tz/
+- ippmedia.com — https://ippmedia.com/
+- mtanzania.co.tz — https://mtanzania.co.tz/
+- udakuspecially.com — https://udakuspecially.com/
+- 24tanzania.com — https://24tanzania.com/
+- thecitizen.co.tz — https://thecitizen.co.tz/
+- in2eastafrica.net — https://in2eastafrica.net/
+- mzalendo.net — https://mzalendo.net/
+- businesstimes.co.tz — https://businesstimes.co.tz/
+- raiamwema.co.tz — https://raiamwema.co.tz/
+- tanzanianewsreports.com — https://tanzanianewsreports.com/
+- ibn-tv.com — https://ibn-tv.com/
+- mwanahalisi.co.tz — https://mwanahalisi.co.tz/
+- mwananchi.co.tz — https://mwananchi.co.tz/
+- foreign.go.tz — https://foreign.go.tz/
+- globalpublishers.info — https://globalpublishers.info/
+- helpage.org — https://helpage.org/
+- bizcommunity.co.tz — https://bizcommunity.co.tz/
+- mwanaspoti.co.tz — https://mwanaspoti.co.tz/
+- spoti.co.tz — https://spoti.co.tz/
+- lolaakinmade.com — https://lolaakinmade.com/
+- seedglobalhealth.org — https://seedglobalhealth.org/
+- tsn.go.tz — https://tsn.go.tz/
+- noble-caledonia.co.uk — https://noble-caledonia.co.uk/
+- dullonet.com — https://dullonet.com/
+- developmentgateway.org — https://developmentgateway.org/
+- israel-actualites.tv — https://israel-actualites.tv/
+- africatravelresource.com — https://africatravelresource.com/
+- mghaber.com — https://mghaber.com/
+- tzaffairs.org — https://tzaffairs.org/
+- mcl.co.tz — https://mcl.co.tz/
+- sardc.net — https://sardc.net/
+- shalinry.org — https://shalinry.org/
+- carbontanzania.com — https://carbontanzania.com/
+- makdaily.com — https://makdaily.com/
+- simonandbaker.com — https://simonandbaker.com/
+- nifahamishe.com — https://nifahamishe.com/
+- isurfwebster.com — https://isurfwebster.com/
 
 ## uganda (east_africa) — Uganda
 
@@ -1459,6 +2201,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Monitor — https://www.monitor.co.ug/
 - New Vision — https://www.newvision.co.ug/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 289 by GDELT monitoring volume)
+- monitor.co.ug — https://monitor.co.ug/
+- newvision.co.ug — https://newvision.co.ug/
+- observer.ug — https://observer.ug/
+- chimpreports.com — https://chimpreports.com/
+- independent.co.ug — https://independent.co.ug/
+- kawowo.com — https://kawowo.com/
+- redpepper.co.ug — https://redpepper.co.ug/
+- ntv.co.ug — https://ntv.co.ug/
+- theugandanjobline.com — https://theugandanjobline.com/
+- theinvestigatornews.com — https://theinvestigatornews.com/
+- ugandaradionetwork.com — https://ugandaradionetwork.com/
+- kfm.co.ug — https://kfm.co.ug/
+- ugandandiasporanews.com — https://ugandandiasporanews.com/
+- pctechmag.com — https://pctechmag.com/
+- oilinuganda.org — https://oilinuganda.org/
+- pmldaily.com — https://pmldaily.com/
+- softpower.ug — https://softpower.ug/
+- busiweek.com — https://busiweek.com/
+- statehouse.go.ug — https://statehouse.go.ug/
+- theinsider.ug — https://theinsider.ug/
+- mediacentre.go.ug — https://mediacentre.go.ug/
+- kampalapost.com — https://kampalapost.com/
+- ugandansatheart.org — https://ugandansatheart.org/
+- blackstarnews.com — https://blackstarnews.com/
+- dispatch.ug — https://dispatch.ug/
+- ugandaonline.net — https://ugandaonline.net/
+- 76crimes.com — https://76crimes.com/
+- eagle.co.ug — https://eagle.co.ug/
+- kmaupdates.com — https://kmaupdates.com/
+- radioonefm90.com — https://radioonefm90.com/
+- ugchristiannews.com — https://ugchristiannews.com/
+- dignited.com — https://dignited.com/
+- keycorrespondents.org — https://keycorrespondents.org/
+- thetowerpost.com — https://thetowerpost.com/
+- techjaja.com — https://techjaja.com/
+- simba.fm — https://simba.fm/
+- accu.or.ug — https://accu.or.ug/
+- constructionreviewonline.com — https://constructionreviewonline.com/
+- wbs.ug — https://wbs.ug/
+- thelondoneveningpost.com — https://thelondoneveningpost.com/
+
 ## angola (southern_africa) — Angola
 
 ### w3newspapers — https://www.w3newspapers.com/angola/
@@ -1526,6 +2310,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Voz de Angola — http://www.vozdeangola.com/
 - Jornal de Angola — http://jornaldeangola.sapo.ao/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 108 by GDELT monitoring volume)
+- unitaangola.org — https://unitaangola.org/
+- angop.ao — https://angop.ao/
+- sapo.ao — https://sapo.ao/
+- portalangop.co.ao — https://portalangop.co.ao/
+- portaldeangola.com — https://portaldeangola.com/
+- angonoticias.com — https://angonoticias.com/
+- macauhub.com.mo — https://macauhub.com.mo/
+- angolabelazebelo.com — https://angolabelazebelo.com/
+- gov.ao — https://gov.ao/
+- makaangola.org — https://makaangola.org/
+- rna.ao — https://rna.ao/
+- angola.org — https://angola.org/
+- africamonitor.net — https://africamonitor.net/
+- jornalf8.net — https://jornalf8.net/
+- africaoilandpower.com — https://africaoilandpower.com/
+- ibinda.com — https://ibinda.com/
+- radiodespertarangola.net — https://radiodespertarangola.net/
+- vigworld.net — https://vigworld.net/
+- voaportugues.com — https://voaportugues.com/
+- angola24horas.com — https://angola24horas.com/
+- vacaguru.com — https://vacaguru.com/
+- mediatecas.ao — https://mediatecas.ao/
+- inventa.com — https://inventa.com/
+- angoadventistas.com — https://angoadventistas.com/
+- peroladasacacias.net — https://peroladasacacias.net/
+- ingpeaceproject.com — https://ingpeaceproject.com/
+- luanda-nightlife.com — https://luanda-nightlife.com/
+- africa21digital.com — https://africa21digital.com/
+- angola-luanda-pitigrili.com — https://angola-luanda-pitigrili.com/
+- oilandgasrepublic.com — https://oilandgasrepublic.com/
+- redeangola.info — https://redeangola.info/
+- furtherafrica.com — https://furtherafrica.com/
+- novojornal.co.ao — https://novojornal.co.ao/
+- alvaladepremium.co.ao — https://alvaladepremium.co.ao/
+- sfbff.org — https://sfbff.org/
+- presalt.com — https://presalt.com/
+- jumia.co.ao — https://jumia.co.ao/
+- gazetauigense.com — https://gazetauigense.com/
+- blogambiental.com.br — https://blogambiental.com.br/
+- mountaingazette.com — https://mountaingazette.com/
+
 ## botswana (southern_africa) — Botswana
 
 ### w3newspapers — https://www.w3newspapers.com/botswana/
@@ -1563,6 +2389,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 ### abyznewslinks — http://www.abyznewslinks.com/botsw.htm
 - (no entries)
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 82 by GDELT monitoring volume)
+- mmegi.bw — https://mmegi.bw/
+- sundaystandard.info — https://sundaystandard.info/
+- weekendpost.co.bw — https://weekendpost.co.bw/
+- thepatriot.co.bw — https://thepatriot.co.bw/
+- thevoicebw.com — https://thevoicebw.com/
+- themidweeksun.co.bw — https://themidweeksun.co.bw/
+- botswanaguardian.co.bw — https://botswanaguardian.co.bw/
+- gabzfm.com — https://gabzfm.com/
+- gov.bw — https://gov.bw/
+- ub.bw — https://ub.bw/
+- botswanaunplugged.com — https://botswanaunplugged.com/
+- gazettebw.com — https://gazettebw.com/
+- ngamitimes.com — https://ngamitimes.com/
+- africasustainableconservation.com — https://africasustainableconservation.com/
+- chobe-safari-lodges.com — https://chobe-safari-lodges.com/
+- chiromt.com — https://chiromt.com/
+- tips-healthy.com — https://tips-healthy.com/
+- boidus.co.bw — https://boidus.co.bw/
+- providencestandard.com — https://providencestandard.com/
+- minetravel.co.bw — https://minetravel.co.bw/
+- pristinemag.com — https://pristinemag.com/
+- botswanayouth.com — https://botswanayouth.com/
+- botswanainsider.com — https://botswanainsider.com/
+- investis.com — https://investis.com/
+- knottinbotswana.com — https://knottinbotswana.com/
+- underonebotswanasky.com — https://underonebotswanasky.com/
+- gaynation.co — https://gaynation.co/
+- airbornelifeline.org — https://airbornelifeline.org/
+- africabriefing.org — https://africabriefing.org/
+- kwerfeldein.de — https://kwerfeldein.de/
+- letakasafaris.com — https://letakasafaris.com/
+- quatr.us — https://quatr.us/
+- bloggingoverthyme.com — https://bloggingoverthyme.com/
+- hanoverpost.com — https://hanoverpost.com/
+- wildlifesafariadventures.com — https://wildlifesafariadventures.com/
+- businessweekly.co.bw — https://businessweekly.co.bw/
+- disfordentist.com — https://disfordentist.com/
+- wheretostay.co.za — https://wheretostay.co.za/
+- babymilkaction.org — https://babymilkaction.org/
+- taste.co.za — https://taste.co.za/
+
 ## eswatini (southern_africa) — Eswatini
 
 ### w3newspapers — https://www.w3newspapers.com/swaziland/
@@ -1587,6 +2455,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Swaziland News — http://www.swazilandnews.co.za/
 - Swazi Observer — http://new.observer.org.sz/
 - Times of Swaziland — http://www.times.co.sz/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 41 by GDELT monitoring volume)
+- observer.org.sz — https://observer.org.sz/
+- times.co.sz — https://times.co.sz/
+- misaswaziland.com — https://misaswaziland.com/
+- gov.sz — https://gov.sz/
+- sntc.org.sz — https://sntc.org.sz/
+- swazilive.com — https://swazilive.com/
+- swazitravelguide.com — https://swazitravelguide.com/
+- swazilandonlinenews.com — https://swazilandonlinenews.com/
+- goista.com — https://goista.com/
+- siyimbali.com — https://siyimbali.com/
+- dealsoncovercomplete.xyz — https://dealsoncovercomplete.xyz/
+- swazimobile.com — https://swazimobile.com/
+- allaroundafrica.net — https://allaroundafrica.net/
+- seanokelly.us — https://seanokelly.us/
+- riverwoodinswaziland.com — https://riverwoodinswaziland.com/
+- swazilandterrorism.tk — https://swazilandterrorism.tk/
+- getjoassabroad.com — https://getjoassabroad.com/
+- sengala.com — https://sengala.com/
+- salo.org.za — https://salo.org.za/
+- twrcanada.org — https://twrcanada.org/
+- dbnonline.co.za — https://dbnonline.co.za/
+- germansinswaziland.com — https://germansinswaziland.com/
+- steve-r.de — https://steve-r.de/
+- travelwithkatchie.com — https://travelwithkatchie.com/
+- terroirtravel.net — https://terroirtravel.net/
+- xoafrica.com — https://xoafrica.com/
+- ccie-salary.com — https://ccie-salary.com/
+- ilkestonlife.com — https://ilkestonlife.com/
+- kenyanweekly.co.ke — https://kenyanweekly.co.ke/
+- beliciousmuse.com — https://beliciousmuse.com/
+- eglobalpost.com — https://eglobalpost.com/
+- minervaonline.org — https://minervaonline.org/
+- standardbank.co.sz — https://standardbank.co.sz/
+- thecustodianonline.com — https://thecustodianonline.com/
+- tradingplaces2night.co.za — https://tradingplaces2night.co.za/
+- cmcas.com — https://cmcas.com/
+- greenanglicans.org — https://greenanglicans.org/
+- holidaysinfo.xyz — https://holidaysinfo.xyz/
+- lyngse.eu — https://lyngse.eu/
+- plustvafrica.com — https://plustvafrica.com/
 
 ## lesotho (southern_africa) — Lesotho
 
@@ -1617,6 +2527,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Lesotho Times — https://lestimes.com/
 - Public Eye — https://www.publiceyenews.com/
 - Sunday Express — https://sundayexpress.co.ls/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (40 domains by GDELT monitoring volume)
+- lestimes.com — https://lestimes.com/
+- informativenews.co.ls — https://informativenews.co.ls/
+- thepost.co.ls — https://thepost.co.ls/
+- sundayexpress.co.ls — https://sundayexpress.co.ls/
+- thesilo.co.ls — https://thesilo.co.ls/
+- bausim.eu — https://bausim.eu/
+- publiceyenews.com — https://publiceyenews.com/
+- thewittenbergtorch.com — https://thewittenbergtorch.com/
+- tunnellingjournal.com — https://tunnellingjournal.com/
+- unlesotho.org — https://unlesotho.org/
+- mghihp.edu — https://mghihp.edu/
+- theweekly.co.za — https://theweekly.co.za/
+- soniamarsh.com — https://soniamarsh.com/
+- heatherawsumb.com — https://heatherawsumb.com/
+- betterwork.org — https://betterwork.org/
+- diamondne.ws — https://diamondne.ws/
+- underabigbluesky.com — https://underabigbluesky.com/
+- ailishinwonderland.com — https://ailishinwonderland.com/
+- dhxgenerator.com — https://dhxgenerator.com/
+- cool2visit.com — https://cool2visit.com/
+- bloomafrica.org — https://bloomafrica.org/
+- greattodaynews.com — https://greattodaynews.com/
+- manilaspoon.com — https://manilaspoon.com/
+- proteamedia.com — https://proteamedia.com/
+- eyeopener.co.ls — https://eyeopener.co.ls/
+- mtblily.be — https://mtblily.be/
+- apexanthologies.com — https://apexanthologies.com/
+- mychicagoathlete.com — https://mychicagoathlete.com/
+- hushhushbiz.com — https://hushhushbiz.com/
+- newslogical.com — https://newslogical.com/
+- kayafm.co.za — https://kayafm.co.za/
+- uphondo.com — https://uphondo.com/
+- bigstamp.uk — https://bigstamp.uk/
+- ibn.co.za — https://ibn.co.za/
+- ityafrica.net — https://ityafrica.net/
+- joinnoba.com — https://joinnoba.com/
+- fairtradeshoes.org — https://fairtradeshoes.org/
+- rechtersvoorrechters.nl — https://rechtersvoorrechters.nl/
+- unitednoshes.com — https://unitednoshes.com/
+- vandaliadrummernews.com — https://vandaliadrummernews.com/
 
 ## namibia (southern_africa) — Namibia
 
@@ -1667,6 +2619,48 @@ Ecuatorial — http://geconfidencial.blogspot.com/
 - Namibia Focus — https://namibiafocus.com/
 - Namibia News Digest — https://www.namibianewsdigest.com/
 - Namibian — https://www.namibian.com.na/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 123 by GDELT monitoring volume)
+- namibian.com.na — https://namibian.com.na/
+- newera.com.na — https://newera.com.na/
+- namibiansun.com — https://namibiansun.com/
+- az.com.na — https://az.com.na/
+- republikein.com.na — https://republikein.com.na/
+- neweralive.na — https://neweralive.na/
+- thevillager.com.na — https://thevillager.com.na/
+- web.na — https://web.na/
+- gov.na — https://gov.na/
+- observer.com.na — https://observer.com.na/
+- southernafrican.news — https://southernafrican.news/
+- hitradio.com.na — https://hitradio.com.na/
+- namibtimes.net — https://namibtimes.net/
+- economist.com.na — https://economist.com.na/
+- southerntimesafrica.com — https://southerntimesafrica.com/
+- ecn.na — https://ecn.na/
+- radiowave.com.na — https://radiowave.com.na/
+- nbc.na — https://nbc.na/
+- thepatriot.com.na — https://thepatriot.com.na/
+- insight.com.na — https://insight.com.na/
+- namibiaembassyusa.org — https://namibiaembassyusa.org/
+- tracks4africa.co.za — https://tracks4africa.co.za/
+- brendansadventures.com — https://brendansadventures.com/
+- observer24.com.na — https://observer24.com.na/
+- namibianembassyusa.org — https://namibianembassyusa.org/
+- bizcommunity.com.na — https://bizcommunity.com.na/
+- martinbaileyphotography.com — https://martinbaileyphotography.com/
+- classicsafaricamps.com — https://classicsafaricamps.com/
+- dxcoffee.com — https://dxcoffee.com/
+- suricate-safaris.com — https://suricate-safaris.com/
+- wild-places.com — https://wild-places.com/
+- globalgaz.com — https://globalgaz.com/
+- fishersisland.net — https://fishersisland.net/
+- tammiematson.com — https://tammiematson.com/
+- touring-afrika.de — https://touring-afrika.de/
+- justonewayticket.com — https://justonewayticket.com/
+- sayonarapushek.com — https://sayonarapushek.com/
+- confidente.com.na — https://confidente.com.na/
+- tourism4world.com — https://tourism4world.com/
+- caprivijusticeactionnetwork.org — https://caprivijusticeactionnetwork.org/
 
 ## south_africa (southern_africa) — South Africa
 
@@ -1864,6 +2858,48 @@ Africa — https://www.greengazette.co.za/
 - Daily Sun — https://www.dailysun.co.za/
 - Sunday Times — https://www.timeslive.co.za/sunday-times/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1267 by GDELT monitoring volume)
+- iol.co.za — https://iol.co.za/
+- news24.com — https://news24.com/
+- citizen.co.za — https://citizen.co.za/
+- ewn.co.za — https://ewn.co.za/
+- bizcommunity.com — https://bizcommunity.com/
+- dailymaverick.co.za — https://dailymaverick.co.za/
+- timeslive.co.za — https://timeslive.co.za/
+- polity.org.za — https://polity.org.za/
+- thesouthafrican.com — https://thesouthafrican.com/
+- enca.com — https://enca.com/
+- africaleader.com — https://africaleader.com/
+- engineeringnews.co.za — https://engineeringnews.co.za/
+- fin24.com — https://fin24.com/
+- moneyweb.co.za — https://moneyweb.co.za/
+- sowetanlive.co.za — https://sowetanlive.co.za/
+- netwerk24.com — https://netwerk24.com/
+- politicsweb.co.za — https://politicsweb.co.za/
+- biznews.com — https://biznews.com/
+- mg.co.za — https://mg.co.za/
+- capetalk.co.za — https://capetalk.co.za/
+- 702.co.za — https://702.co.za/
+- saps.gov.za — https://saps.gov.za/
+- itweb.co.za — https://itweb.co.za/
+- rekordeast.co.za — https://rekordeast.co.za/
+- bdlive.co.za — https://bdlive.co.za/
+- dailysun.co.za — https://dailysun.co.za/
+- miningweekly.com — https://miningweekly.com/
+- kickoff.com — https://kickoff.com/
+- iafrica.com — https://iafrica.com/
+- businesstech.co.za — https://businesstech.co.za/
+- ann7.com — https://ann7.com/
+- it-online.co.za — https://it-online.co.za/
+- ofm.co.za — https://ofm.co.za/
+- thenewage.co.za — https://thenewage.co.za/
+- jacarandafm.com — https://jacarandafm.com/
+- channel24.co.za — https://channel24.co.za/
+- sanews.gov.za — https://sanews.gov.za/
+- lowvelder.co.za — https://lowvelder.co.za/
+- defenceweb.co.za — https://defenceweb.co.za/
+- thegremlin.co.za — https://thegremlin.co.za/
+
 ## zambia (southern_africa) — Zambia
 
 ### w3newspapers — https://www.w3newspapers.com/zambia/
@@ -1953,6 +2989,48 @@ Africa — https://www.greengazette.co.za/
 - Daily Nation — https://www.dailynation.info/
 - Times of Zambia — http://www.times.co.zm/
 - Zambia Daily Mail — https://www.daily-mail.co.zm
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 128 by GDELT monitoring volume)
+- lusakatimes.com — https://lusakatimes.com/
+- times.co.zm — https://times.co.zm/
+- daily-mail.co.zm — https://daily-mail.co.zm/
+- postzambia.com — https://postzambia.com/
+- znbc.co.zm — https://znbc.co.zm/
+- zambiareports.com — https://zambiareports.com/
+- diggers.news — https://diggers.news/
+- zambiadailynation.com — https://zambiadailynation.com/
+- themastonline.com — https://themastonline.com/
+- ukzambians.co.uk — https://ukzambians.co.uk/
+- zambiawatchdog.com — https://zambiawatchdog.com/
+- zambianwatchdog.com — https://zambianwatchdog.com/
+- mwebantu.com — https://mwebantu.com/
+- tiozambia.com — https://tiozambia.com/
+- zibanizambia.com — https://zibanizambia.com/
+- zambiaembassy.org — https://zambiaembassy.org/
+- comesa.int — https://comesa.int/
+- zambiabusinesstimes.com — https://zambiabusinesstimes.com/
+- barotselandpost.com — https://barotselandpost.com/
+- eliasmunshya.org — https://eliasmunshya.org/
+- zambia-invest.com — https://zambia-invest.com/
+- elections.org.zm — https://elections.org.zm/
+- farmersreviewafrica.com — https://farmersreviewafrica.com/
+- bizcommunity.co.zm — https://bizcommunity.co.zm/
+- laz.org.zm — https://laz.org.zm/
+- africatouroperators.org — https://africatouroperators.org/
+- lusakavoice.com — https://lusakavoice.com/
+- wilderness-safaris.com — https://wilderness-safaris.com/
+- zambianroadsafety.org — https://zambianroadsafety.org/
+- muvitv.com — https://muvitv.com/
+- colalife.org — https://colalife.org/
+- conradmbewe.com — https://conradmbewe.com/
+- zambianeye.com — https://zambianeye.com/
+- zambian-economist.com — https://zambian-economist.com/
+- africaag.org — https://africaag.org/
+- elephantopia.org — https://elephantopia.org/
+- polkadotbride.com — https://polkadotbride.com/
+- icfafrica.org — https://icfafrica.org/
+- sewpowerful.org — https://sewpowerful.org/
+- gonzagainzambezi.org — https://gonzagainzambezi.org/
 
 ## zimbabwe (southern_africa) — Zimbabwe
 
@@ -2123,6 +3201,48 @@ Africa — https://www.greengazette.co.za/
 - News Day — https://www.newsday.co.zw/
 - Zimbabwean — http://www.thezimbabwean.co/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 175 by GDELT monitoring volume)
+- bulawayo24.com — https://bulawayo24.com/
+- herald.co.zw — https://herald.co.zw/
+- thezimbabwedaily.com — https://thezimbabwedaily.com/
+- thezimbabwemail.com — https://thezimbabwemail.com/
+- chronicle.co.zw — https://chronicle.co.zw/
+- nehandaradio.com — https://nehandaradio.com/
+- newsday.co.zw — https://newsday.co.zw/
+- zimbabwestar.com — https://zimbabwestar.com/
+- dailynews.co.zw — https://dailynews.co.zw/
+- zimbabwesituation.com — https://zimbabwesituation.com/
+- newzimbabwe.com — https://newzimbabwe.com/
+- zimeye.net — https://zimeye.net/
+- newsdzezimbabwe.co.uk — https://newsdzezimbabwe.co.uk/
+- sundaymail.co.zw — https://sundaymail.co.zw/
+- thestandard.co.zw — https://thestandard.co.zw/
+- thezimbabwean.co — https://thezimbabwean.co/
+- sundaynews.co.zw — https://sundaynews.co.zw/
+- theindependent.co.zw — https://theindependent.co.zw/
+- financialgazette.co.zw — https://financialgazette.co.zw/
+- zimbabwe-today.com — https://zimbabwe-today.com/
+- myzimbabwe.co.zw — https://myzimbabwe.co.zw/
+- voazimbabwe.com — https://voazimbabwe.com/
+- insiderzim.com — https://insiderzim.com/
+- radiovop.com — https://radiovop.com/
+- zimdaily.com — https://zimdaily.com/
+- thezimbabwenewslive.com — https://thezimbabwenewslive.com/
+- zbc.co.zw — https://zbc.co.zw/
+- manicapost.co.zw — https://manicapost.co.zw/
+- zimeye.com — https://zimeye.com/
+- techzim.co.zw — https://techzim.co.zw/
+- pindula.co.zw — https://pindula.co.zw/
+- manicapost.com — https://manicapost.com/
+- zimnews.net — https://zimnews.net/
+- zwnews.com — https://zwnews.com/
+- masasieharare.com — https://masasieharare.com/
+- sunrise2all.com — https://sunrise2all.com/
+- mdc.co.zw — https://mdc.co.zw/
+- pazimbabwe.com — https://pazimbabwe.com/
+- technomag.co.zw — https://technomag.co.zw/
+- iharare.com — https://iharare.com/
+
 ## benin (west_africa) — Benin
 
 ### w3newspapers — https://www.w3newspapers.com/benin/
@@ -2172,6 +3292,48 @@ Africa — https://www.greengazette.co.za/
 - Fraternite — http://www.fraternitebj.info/
 - La Nation — http://www.lanationbenin.info/
 - Le Matinal — http://quotidien-lematinal.info/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 53 by GDELT monitoring volume)
+- acotonou.com — https://acotonou.com/
+- 24haubenin.info — https://24haubenin.info/
+- lanouvelletribune.info — https://lanouvelletribune.info/
+- levenementprecis.com — https://levenementprecis.com/
+- lapressedujour.net — https://lapressedujour.net/
+- actubenin.com — https://actubenin.com/
+- journal-adjinakou-benin.info — https://journal-adjinakou-benin.info/
+- www.gouv.bj — https://www.gouv.bj/
+- visages-du-benin.com — https://visages-du-benin.com/
+- benininfo.com — https://benininfo.com/
+- lebeninois.net — https://lebeninois.net/
+- ortb.info — https://ortb.info/
+- beninwebtv.com — https://beninwebtv.com/
+- lanation.gouv.bj — https://lanation.gouv.bj/
+- quotidien-lematinal.info — https://quotidien-lematinal.info/
+- sonangnon.org — https://sonangnon.org/
+- yes-saveprice.xyz — https://yes-saveprice.xyz/
+- fraternitebj.info — https://fraternitebj.info/
+- lespharaons.com — https://lespharaons.com/
+- discoursemedia.org — https://discoursemedia.org/
+- matinlibre.com — https://matinlibre.com/
+- lanationbenin.info — https://lanationbenin.info/
+- energypedia.info — https://energypedia.info/
+- beninto.info — https://beninto.info/
+- benin24television.com — https://benin24television.com/
+- jetolu.com — https://jetolu.com/
+- newsposts247.com — https://newsposts247.com/
+- nouvellesmutations.com — https://nouvellesmutations.com/
+- aed-france.org — https://aed-france.org/
+- mewyovo.net — https://mewyovo.net/
+- self.org — https://self.org/
+- leystradamus.com.ng — https://leystradamus.com.ng/
+- urhokpotareporters.com — https://urhokpotareporters.com/
+- ortb.bj — https://ortb.bj/
+- reformeronline.com — https://reformeronline.com/
+- suoloesalute.it — https://suoloesalute.it/
+- freepress.com.ng — https://freepress.com.ng/
+- theafricanmag.com — https://theafricanmag.com/
+- savinggracereporters.com — https://savinggracereporters.com/
+- acceleratetv.com — https://acceleratetv.com/
 
 ## burkina_faso (west_africa) — Burkina Faso
 
@@ -2225,6 +3387,48 @@ Africa — https://www.greengazette.co.za/
 - L'Observateur Paalga — http://www.lobservateur.bf/
 - Sidwaya — http://www.sidwaya.info/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 67 by GDELT monitoring volume)
+- fasopresse.net — https://fasopresse.net/
+- aouaga.com — https://aouaga.com/
+- lefaso.net — https://lefaso.net/
+- sidwaya.bf — https://sidwaya.bf/
+- aib.bf — https://aib.bf/
+- burkina24.com — https://burkina24.com/
+- lepays.bf — https://lepays.bf/
+- fasozine.com — https://fasozine.com/
+- rtb.bf — https://rtb.bf/
+- burkinapmepmi.com — https://burkinapmepmi.com/
+- presidence.bf — https://presidence.bf/
+- lobservateur.bf — https://lobservateur.bf/
+- ouestaf.com — https://ouestaf.com/
+- gouvernement.gov.bf — https://gouvernement.gov.bf/
+- reporterbf.net — https://reporterbf.net/
+- evenement-bf.net — https://evenement-bf.net/
+- burkina-ntic.net — https://burkina-ntic.net/
+- courrierconfidentiel.net — https://courrierconfidentiel.net/
+- mutationsbf.net — https://mutationsbf.net/
+- zedcom.bf — https://zedcom.bf/
+- lesechosdufaso.net — https://lesechosdufaso.net/
+- sig.bf — https://sig.bf/
+- safetravelsmagazine.com — https://safetravelsmagazine.com/
+- faso-dev.net — https://faso-dev.net/
+- leconomistedufaso.bf — https://leconomistedufaso.bf/
+- raregoldnuggets.com — https://raregoldnuggets.com/
+- infowakat.net — https://infowakat.net/
+- getluckyhotels.com — https://getluckyhotels.com/
+- afriyelba.net — https://afriyelba.net/
+- burkina24.org — https://burkina24.org/
+- gggi.org — https://gggi.org/
+- corbeaunews-centrafrique.com — https://corbeaunews-centrafrique.com/
+- groundswellinternational.org — https://groundswellinternational.org/
+- lexpressdufaso-bf.com — https://lexpressdufaso-bf.com/
+- mdh-limoges.org — https://mdh-limoges.org/
+- goldrushresources.ca — https://goldrushresources.ca/
+- villedeouaga.com — https://villedeouaga.com/
+- informateur.info — https://informateur.info/
+- identitejuive.com — https://identitejuive.com/
+- manganeseinvestingnews.com — https://manganeseinvestingnews.com/
+
 ## cabo_verde (west_africa) — Cabo Verde
 
 ### w3newspapers — https://www.w3newspapers.com/cape-verde/
@@ -2265,6 +3469,15 @@ Africa — https://www.greengazette.co.za/
 - Sapo — http://www.sapo.cv/
 - Sports Midia — http://sportsmidia.cv/
 - Expresso das Ilhas — https://expressodasilhas.cv/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (7 domains by GDELT monitoring volume)
+- publ.cv — https://publ.cv/
+- rtc.cv — https://rtc.cv/
+- brava.news — https://brava.news/
+- governo.cv — https://governo.cv/
+- parlamento.cv — https://parlamento.cv/
+- just.co.za — https://just.co.za/
+- gerardvelthuizen.nl — https://gerardvelthuizen.nl/
 
 ## cote_divoire (west_africa) — Cote d'Ivoire
 
@@ -2330,6 +3543,48 @@ Africa — https://www.greengazette.co.za/
 - Sport Ivoire — http://www.sport-ivoire.ci/
 - Fraternite Matin — https://www.fratmat.info/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 51 by GDELT monitoring volume)
+- abidjan.net — https://abidjan.net/
+- apanews.net — https://apanews.net/
+- cote-d-ivoire.net — https://cote-d-ivoire.net/
+- koaci.com — https://koaci.com/
+- connectionivoirienne.net — https://connectionivoirienne.net/
+- notrevoie.com — https://notrevoie.com/
+- lepointsur.com — https://lepointsur.com/
+- www.gouv.ci — https://www.gouv.ci/
+- fratmat.info — https://fratmat.info/
+- lepatriote.net — https://lepatriote.net/
+- linfodrome.com — https://linfodrome.com/
+- rti.ci — https://rti.ci/
+- ladepechedabidjan.info — https://ladepechedabidjan.info/
+- aip.ci — https://aip.ci/
+- presidence.ci — https://presidence.ci/
+- ivorian.net — https://ivorian.net/
+- gbich.com — https://gbich.com/
+- abidjantv.net — https://abidjantv.net/
+- lenouveaureveil.com — https://lenouveaureveil.com/
+- lintelligentdabidjan.ci — https://lintelligentdabidjan.ci/
+- afrique-sur7.fr — https://afrique-sur7.fr/
+- ladiplomatiquedabidjan.com — https://ladiplomatiquedabidjan.com/
+- cotedivoire.news — https://cotedivoire.news/
+- abidjan911.com — https://abidjan911.com/
+- akody.com — https://akody.com/
+- poleafrique.info — https://poleafrique.info/
+- abidjanshow.com — https://abidjanshow.com/
+- pdcirda.org — https://pdcirda.org/
+- ivoirediaspo.net — https://ivoirediaspo.net/
+- regionale.info — https://regionale.info/
+- tribuneouest.com — https://tribuneouest.com/
+- ivoiresoir.net — https://ivoiresoir.net/
+- pressecotedivoire.ci — https://pressecotedivoire.ci/
+- lintelligentdabidjan.info — https://lintelligentdabidjan.info/
+- ampsnews.org — https://ampsnews.org/
+- drogbascountry.com — https://drogbascountry.com/
+- infopresse.net — https://infopresse.net/
+- foodnouveau.com — https://foodnouveau.com/
+- laseve.info — https://laseve.info/
+- echosmedias.ci — https://echosmedias.ci/
+
 ## gambia (west_africa) — Gambia, The
 
 ### w3newspapers — https://www.w3newspapers.com/gambia/
@@ -2381,6 +3636,48 @@ Africa — https://www.greengazette.co.za/
 - Latest Gambia News — https://gambianewstoday.com/
 - What's On Gambia — http://whatson-gambia.com/
 - Point — http://thepoint.gm/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 68 by GDELT monitoring volume)
+- thepoint.gm — https://thepoint.gm/
+- freedomnewspaper.com — https://freedomnewspaper.com/
+- foroyaa.gm — https://foroyaa.gm/
+- observer.gm — https://observer.gm/
+- gambianewsonline.com — https://gambianewsonline.com/
+- askanisenegambia.com — https://askanisenegambia.com/
+- jollofnews.com — https://jollofnews.com/
+- voicegambia.com — https://voicegambia.com/
+- ihrda.org — https://ihrda.org/
+- statehouse.gm — https://statehouse.gm/
+- gainako.com — https://gainako.com/
+- senegambianews.com — https://senegambianews.com/
+- ckle.fm — https://ckle.fm/
+- achpr.org — https://achpr.org/
+- banjulfocus.com — https://banjulfocus.com/
+- kaironews.com — https://kaironews.com/
+- gunjur.online — https://gunjur.online/
+- thevoicegambia.com — https://thevoicegambia.com/
+- acdhrs.org — https://acdhrs.org/
+- kibaaro.com — https://kibaaro.com/
+- foroyaa.net — https://foroyaa.net/
+- gambiaaffairs.com — https://gambiaaffairs.com/
+- ospreys.org.uk — https://ospreys.org.uk/
+- thegambiapartnership.co.uk — https://thegambiapartnership.co.uk/
+- enhancedif.org — https://enhancedif.org/
+- freedomradiogambia.com — https://freedomradiogambia.com/
+- thegambiainquirer.com — https://thegambiainquirer.com/
+- wisafricana.com — https://wisafricana.com/
+- relacionesinternacionales.net — https://relacionesinternacionales.net/
+- elmundoentubolsillo.es — https://elmundoentubolsillo.es/
+- ghanaclass.com — https://ghanaclass.com/
+- petersinghatey.net — https://petersinghatey.net/
+- markandjim.com — https://markandjim.com/
+- unitednews.com.pk — https://unitednews.com.pk/
+- cecast-knust.com — https://cecast-knust.com/
+- korabroadcasting.com — https://korabroadcasting.com/
+- yea.gm — https://yea.gm/
+- ukeducationnews.co.uk — https://ukeducationnews.co.uk/
+- africlaw.com — https://africlaw.com/
+- letitan.com — https://letitan.com/
 
 ## ghana (west_africa) — Ghana
 
@@ -2476,6 +3773,48 @@ Africa — https://www.greengazette.co.za/
 - Vibe Ghana — http://vibeghana.com/
 - Yen — https://yen.com.gh/
 - Daily Graphic — https://www.graphic.com.gh/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 299 by GDELT monitoring volume)
+- ghanaweb.com — https://ghanaweb.com/
+- modernghana.com — https://modernghana.com/
+- ghanavisions.com — https://ghanavisions.com/
+- peacefmonline.com — https://peacefmonline.com/
+- businessghana.com — https://businessghana.com/
+- graphic.com.gh — https://graphic.com.gh/
+- myjoyonline.com — https://myjoyonline.com/
+- ghananewsagency.org — https://ghananewsagency.org/
+- pulse.com.gh — https://pulse.com.gh/
+- ghanamma.com — https://ghanamma.com/
+- citifmonline.com — https://citifmonline.com/
+- starrfmonline.com — https://starrfmonline.com/
+- newsghana.com.gh — https://newsghana.com.gh/
+- gbcghana.com — https://gbcghana.com/
+- ghanastar.com — https://ghanastar.com/
+- ghanaiantimes.com.gh — https://ghanaiantimes.com.gh/
+- yen.com.gh — https://yen.com.gh/
+- thebftonline.com — https://thebftonline.com/
+- thechronicle.com.gh — https://thechronicle.com.gh/
+- spyghana.com — https://spyghana.com/
+- theheraldghana.com — https://theheraldghana.com/
+- dailyguideghana.com — https://dailyguideghana.com/
+- vibeghana.com — https://vibeghana.com/
+- ghanavibes.com — https://ghanavibes.com/
+- thestatesmanonline.com — https://thestatesmanonline.com/
+- primenewsghana.com — https://primenewsghana.com/
+- allghananews.com — https://allghananews.com/
+- businessdayghana.com — https://businessdayghana.com/
+- ghana.gov.gh — https://ghana.gov.gh/
+- dailyguideafrica.com — https://dailyguideafrica.com/
+- myarkfmonline.com — https://myarkfmonline.com/
+- happyghana.com — https://happyghana.com/
+- ghanabusinessnews.com — https://ghanabusinessnews.com/
+- kasapafmonline.com — https://kasapafmonline.com/
+- theghanaianjournal.com — https://theghanaianjournal.com/
+- enewsgh.com — https://enewsgh.com/
+- ghanafilla.net — https://ghanafilla.net/
+- africanewsanalysis.com — https://africanewsanalysis.com/
+- ghanafa.org — https://ghanafa.org/
+- omgvoice.com — https://omgvoice.com/
 
 ## guinea (west_africa) — Guinea
 
@@ -2583,6 +3922,48 @@ Africa — https://www.greengazette.co.za/
 - Ziama — http://www.ziama.info/
 - Le Jour — http://www.lejourguinee.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 111 by GDELT monitoring volume)
+- guineematin.com — https://guineematin.com/
+- africaguinee.com — https://africaguinee.com/
+- kababachir.com — https://kababachir.com/
+- rispito.com — https://rispito.com/
+- guineenews.org — https://guineenews.org/
+- guinee7.com — https://guinee7.com/
+- aminata.com — https://aminata.com/
+- kaloumpresse.com — https://kaloumpresse.com/
+- lexpressguinee.com — https://lexpressguinee.com/
+- mediaguinee.net — https://mediaguinee.net/
+- guineepresse.info — https://guineepresse.info/
+- tamtamguinee.com — https://tamtamguinee.com/
+- guineaecuatorialpress.com — https://guineaecuatorialpress.com/
+- lejourguinee.com — https://lejourguinee.com/
+- guinee58.com — https://guinee58.com/
+- guineeconakry.info — https://guineeconakry.info/
+- ramatoulaye.com — https://ramatoulaye.com/
+- africalog.com — https://africalog.com/
+- radio-kankan.com — https://radio-kankan.com/
+- guineemining.info — https://guineemining.info/
+- nlsguinee.com — https://nlsguinee.com/
+- lediplomateguinee.com — https://lediplomateguinee.com/
+- guinee24.com — https://guinee24.com/
+- guinee360.com — https://guinee360.com/
+- gaznot.com — https://gaznot.com/
+- guineeinformation.fr — https://guineeinformation.fr/
+- gacetadeguinea.com — https://gacetadeguinea.com/
+- guineetime.com — https://guineetime.com/
+- ledjely.com — https://ledjely.com/
+- mosaiqueguinee.com — https://mosaiqueguinee.com/
+- actuconakry.com — https://actuconakry.com/
+- aujourdhui-en-guinee.com — https://aujourdhui-en-guinee.com/
+- tron-net.de — https://tron-net.de/
+- mediaguinee.org — https://mediaguinee.org/
+- espacioseuropeos.com — https://espacioseuropeos.com/
+- guineeplus.net — https://guineeplus.net/
+- guinee28.info — https://guinee28.info/
+- newsdeguinee.com — https://newsdeguinee.com/
+- guinea-forum.org — https://guinea-forum.org/
+- aluminiumtoday.com — https://aluminiumtoday.com/
+
 ## guinea_bissau (west_africa) — Guinea-Bissau
 
 ### w3newspapers — https://www.w3newspapers.com/guinea-bissau/
@@ -2624,6 +4005,18 @@ Denunciante — http://dokainternacionaldenunciante.blogspot.com/
 - Notabanca — http://notabanca.blogspot.com/
 - Rispito — http://www.rispito.com/
 - O Democrata — http://www.odemocratagb.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (10 domains by GDELT monitoring volume)
+- bissaudigital.com — https://bissaudigital.com/
+- luandadigital.com — https://luandadigital.com/
+- jwcooney.com — https://jwcooney.com/
+- onebook.ca — https://onebook.ca/
+- anthronow.com — https://anthronow.com/
+- africaneyenews.com — https://africaneyenews.com/
+- progressiveafrica.com — https://progressiveafrica.com/
+- aucareers.org — https://aucareers.org/
+- fundacaogalp.com — https://fundacaogalp.com/
+- ua.pt — https://ua.pt/
 
 ## liberia (west_africa) — Liberia
 
@@ -2680,6 +4073,48 @@ Denunciante — http://dokainternacionaldenunciante.blogspot.com/
 - TLC Africa — http://www.tlcafrica.com/
 - Daily Observer — https://www.liberianobserver.com/
 - Front Page Africa — https://frontpageafricaonline.com/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 114 by GDELT monitoring volume)
+- frontpageafricaonline.com — https://frontpageafricaonline.com/
+- thenewrepublicliberia.com — https://thenewrepublicliberia.com/
+- liberianobserver.com — https://liberianobserver.com/
+- gnnliberia.com — https://gnnliberia.com/
+- thenewdawnliberia.com — https://thenewdawnliberia.com/
+- bushchicken.com — https://bushchicken.com/
+- liberianewsagency.org — https://liberianewsagency.org/
+- thenewslib.com — https://thenewslib.com/
+- theperspective.org — https://theperspective.org/
+- emansion.gov.lr — https://emansion.gov.lr/
+- heritageliberia.net — https://heritageliberia.net/
+- tlcafrica.com — https://tlcafrica.com/
+- theliberiandialogue.org — https://theliberiandialogue.org/
+- inprofiledaily.com — https://inprofiledaily.com/
+- newliberian.com — https://newliberian.com/
+- monroviainquirer.com — https://monroviainquirer.com/
+- liberianembassyus.org — https://liberianembassyus.org/
+- monroviaschools.net — https://monroviaschools.net/
+- necliberia.org — https://necliberia.org/
+- micatliberia.com — https://micatliberia.com/
+- bloggingonaccountability.org — https://bloggingonaccountability.org/
+- seashepherdglobal.org — https://seashepherdglobal.org/
+- micat.gov.lr — https://micat.gov.lr/
+- afrikanheritage.com — https://afrikanheritage.com/
+- justicehub.org — https://justicehub.org/
+- cmiliberia.org — https://cmiliberia.org/
+- cicutadry.es — https://cicutadry.es/
+- musicliberia.com — https://musicliberia.com/
+- publicagendanews.com — https://publicagendanews.com/
+- bengoma.org — https://bengoma.org/
+- libpermission.org — https://libpermission.org/
+- mohsw.gov.lr — https://mohsw.gov.lr/
+- itz-sold.com — https://itz-sold.com/
+- awakeafrica.org — https://awakeafrica.org/
+- buildingmarkets.org — https://buildingmarkets.org/
+- liberiafa.com — https://liberiafa.com/
+- simusa.org — https://simusa.org/
+- aureus-mining.com — https://aureus-mining.com/
+- monrovianow.com — https://monrovianow.com/
+- morethanme.org — https://morethanme.org/
 
 ## mali (west_africa) — Mali
 
@@ -2741,6 +4176,48 @@ Denunciante — http://dokainternacionaldenunciante.blogspot.com/
 - Niarela — https://niarela.net/
 - Studio Tamani — https://www.studiotamani.org/
 - L'Essor — https://www.essor.ml/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 102 by GDELT monitoring volume)
+- koulouba.com — https://koulouba.com/
+- mali-web.org — https://mali-web.org/
+- bamada.net — https://bamada.net/
+- malijet.com — https://malijet.com/
+- maliweb.net — https://maliweb.net/
+- abamako.com — https://abamako.com/
+- maliactu.net — https://maliactu.net/
+- afribone.com — https://afribone.com/
+- essor.ml — https://essor.ml/
+- studiotamani.org — https://studiotamani.org/
+- journaldumali.com — https://journaldumali.com/
+- afropages.fr — https://afropages.fr/
+- malijet.co — https://malijet.co/
+- hirondelle.org — https://hirondelle.org/
+- brightthemag.com — https://brightthemag.com/
+- centre4s.org — https://centre4s.org/
+- oxadel.com — https://oxadel.com/
+- ortm.ml — https://ortm.ml/
+- sahel-intelligence.com — https://sahel-intelligence.com/
+- mali24.info — https://mali24.info/
+- bamanet.net — https://bamanet.net/
+- mali-interest-hub.com — https://mali-interest-hub.com/
+- iamgold.com — https://iamgold.com/
+- intellivoire.net — https://intellivoire.net/
+- farafara.net — https://farafara.net/
+- eurogendfor.org — https://eurogendfor.org/
+- gogi.in — https://gogi.in/
+- ambafrance-ml.org — https://ambafrance-ml.org/
+- footmali.com — https://footmali.com/
+- malinet.net — https://malinet.net/
+- rootsworld.com — https://rootsworld.com/
+- africaonlinedaily.com — https://africaonlinedaily.com/
+- mondoblog.org — https://mondoblog.org/
+- tamoudre.org — https://tamoudre.org/
+- malivaleurs.net — https://malivaleurs.net/
+- gfxtra.biz — https://gfxtra.biz/
+- jelongenuitjelijf.nl — https://jelongenuitjelijf.nl/
+- hrcp-web.org — https://hrcp-web.org/
+- lactualite-dz.info — https://lactualite-dz.info/
+- mediaslibres.com — https://mediaslibres.com/
 
 ## mauritania (west_africa) — Mauritania
 
@@ -2835,6 +4312,43 @@ Denunciante — http://dokainternacionaldenunciante.blogspot.com/
 - Horizons — http://fr.ami.mr/
 - Le Calame — http://www.lecalame.info/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (35 domains by GDELT monitoring volume)
+- alakhbar.info — https://alakhbar.info/
+- ami.mr — https://ami.mr/
+- cridem.org — https://cridem.org/
+- mauritanie-web.com — https://mauritanie-web.com/
+- aqlame.com — https://aqlame.com/
+- lecalame.info — https://lecalame.info/
+- journaltahalil.com — https://journaltahalil.com/
+- rapideinfo.net — https://rapideinfo.net/
+- saharamedias.net — https://saharamedias.net/
+- lauthentic.info — https://lauthentic.info/
+- ani.mr — https://ani.mr/
+- taqadoumy.com — https://taqadoumy.com/
+- mmandc.com — https://mmandc.com/
+- assembleenationale.mr — https://assembleenationale.mr/
+- pointschauds.info — https://pointschauds.info/
+- zahraa.mr — https://zahraa.mr/
+- elhourriya.net — https://elhourriya.net/
+- senat.mr — https://senat.mr/
+- lereflet.net — https://lereflet.net/
+- senalioune.com — https://senalioune.com/
+- yourdecommissioningnews.com — https://yourdecommissioningnews.com/
+- maurisahel.net — https://maurisahel.net/
+- brownbook.me — https://brownbook.me/
+- frontlinedefenders.org — https://frontlinedefenders.org/
+- theafricacollective.com — https://theafricacollective.com/
+- thatshelf.com — https://thatshelf.com/
+- charismaticplanet.com — https://charismaticplanet.com/
+- wavesmagazine.in — https://wavesmagazine.in/
+- tusna.es — https://tusna.es/
+- myza.co.za — https://myza.co.za/
+- bajoelagua.com — https://bajoelagua.com/
+- thefilmagazine.com — https://thefilmagazine.com/
+- iyezine.com — https://iyezine.com/
+- solidairesdumonde.org — https://solidairesdumonde.org/
+- winfieldnews.com — https://winfieldnews.com/
+
 ## niger (west_africa) — Niger
 
 ### w3newspapers — https://www.w3newspapers.com/niger/
@@ -2870,6 +4384,45 @@ Denunciante — http://dokainternacionaldenunciante.blogspot.com/
 - Tam Tam Info — http://www.tamtaminfo.com/
 - Le Sahel — http://www.lesahel.org/
 - Agence Nigerienne de Presse — http://www.anp.ne/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (37 domains by GDELT monitoring volume)
+- nigerdiaspora.net — https://nigerdiaspora.net/
+- actuniger.com — https://actuniger.com/
+- lesahel.org — https://lesahel.org/
+- tamtaminfo.com — https://tamtaminfo.com/
+- presidence.ne — https://presidence.ne/
+- gouv.ne — https://gouv.ne/
+- planeteafrique.com — https://planeteafrique.com/
+- niameyetles2jours.com — https://niameyetles2jours.com/
+- chirana.biz — https://chirana.biz/
+- aniamey.com — https://aniamey.com/
+- pnds-tarayya.net — https://pnds-tarayya.net/
+- mnsdnassara.org — https://mnsdnassara.org/
+- iciniger.com — https://iciniger.com/
+- opecfund.org — https://opecfund.org/
+- anp.ne — https://anp.ne/
+- liberation-niger.com — https://liberation-niger.com/
+- niameysoir.com — https://niameysoir.com/
+- landscapes.org — https://landscapes.org/
+- ancientpages.com — https://ancientpages.com/
+- cddwestafrica.org — https://cddwestafrica.org/
+- projeteducatifniger.org — https://projeteducatifniger.org/
+- ericjschmidt.com — https://ericjschmidt.com/
+- nigeriensdebelgique.be — https://nigeriensdebelgique.be/
+- terrigoldimageryblog.com — https://terrigoldimageryblog.com/
+- gltrends.com — https://gltrends.com/
+- rc1023.fm — https://rc1023.fm/
+- hibe-online.com — https://hibe-online.com/
+- nationaltimes.in — https://nationaltimes.in/
+- queenanneboleyn.com — https://queenanneboleyn.com/
+- unicef-irc.org — https://unicef-irc.org/
+- aguayriego.com — https://aguayriego.com/
+- almendron.com — https://almendron.com/
+- notreafrik.com — https://notreafrik.com/
+- allinfo.site — https://allinfo.site/
+- blogcollectifdom.com — https://blogcollectifdom.com/
+- groupeakomili.com — https://groupeakomili.com/
+- persecution.com — https://persecution.com/
 
 ## nigeria (west_africa) — Nigeria
 
@@ -3130,6 +4683,48 @@ Denunciante — http://dokainternacionaldenunciante.blogspot.com/
 ### abyznewslinks — http://www.abyznewslinks.com/nigei.htm
 - (no entries)
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 1047 by GDELT monitoring volume)
+- allafrica.com — https://allafrica.com/
+- thenationonlineng.net — https://thenationonlineng.net/
+- onlinenigeria.com — https://onlinenigeria.com/
+- thisdaylive.com — https://thisdaylive.com/
+- punchng.com — https://punchng.com/
+- vanguardngr.com — https://vanguardngr.com/
+- nairaland.com — https://nairaland.com/
+- sunnewsonline.com — https://sunnewsonline.com/
+- tribuneonlineng.com — https://tribuneonlineng.com/
+- dailytrust.com.ng — https://dailytrust.com.ng/
+- premiumtimesng.com — https://premiumtimesng.com/
+- dailypost.ng — https://dailypost.ng/
+- leadership.ng — https://leadership.ng/
+- today.ng — https://today.ng/
+- guardian.ng — https://guardian.ng/
+- pulse.ng — https://pulse.ng/
+- naij.com — https://naij.com/
+- dailytimes.com.ng — https://dailytimes.com.ng/
+- omojuwa.com — https://omojuwa.com/
+- nigeriatoday.ng — https://nigeriatoday.ng/
+- nigerianeye.com — https://nigerianeye.com/
+- thecable.ng — https://thecable.ng/
+- naija247news.com — https://naija247news.com/
+- saharareporters.com — https://saharareporters.com/
+- thetidenewsonline.com — https://thetidenewsonline.com/
+- nigeriasun.com — https://nigeriasun.com/
+- nigerianpilot.com — https://nigerianpilot.com/
+- theeagleonline.com.ng — https://theeagleonline.com.ng/
+- pmnewsnigeria.com — https://pmnewsnigeria.com/
+- 360nobs.com — https://360nobs.com/
+- peoplesdailyng.com — https://peoplesdailyng.com/
+- thenewsnigeria.com.ng — https://thenewsnigeria.com.ng/
+- businessdayonline.com — https://businessdayonline.com/
+- informationng.com — https://informationng.com/
+- thestreetjournal.org — https://thestreetjournal.org/
+- channelstv.com — https://channelstv.com/
+- olufamous.com — https://olufamous.com/
+- ngrguardiannews.com — https://ngrguardiannews.com/
+- promptnewsonline.com — https://promptnewsonline.com/
+- ynaija.com — https://ynaija.com/
+
 ## senegal (west_africa) — Senegal
 
 ### w3newspapers — https://www.w3newspapers.com/senegal/
@@ -3294,6 +4889,48 @@ Denunciante — http://dokainternacionaldenunciante.blogspot.com/
 - Sud Quotidien — http://www.sudonline.sn/
 - Walf Quotidien — http://www.walf-groupe.com/
 
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 257 by GDELT monitoring volume)
+- seneweb.com — https://seneweb.com/
+- sen360.com — https://sen360.com/
+- xalimasn.com — https://xalimasn.com/
+- aps.sn — https://aps.sn/
+- senego.com — https://senego.com/
+- lesoleil.sn — https://lesoleil.sn/
+- leral.net — https://leral.net/
+- adakar.com — https://adakar.com/
+- lequotidien.sn — https://lequotidien.sn/
+- sudonline.sn — https://sudonline.sn/
+- rewmi.com — https://rewmi.com/
+- senenews.com — https://senenews.com/
+- dakaractu.com — https://dakaractu.com/
+- pressafrik.com — https://pressafrik.com/
+- ferloo.com — https://ferloo.com/
+- senepeople.com — https://senepeople.com/
+- setal.net — https://setal.net/
+- 00221.info — https://00221.info/
+- ndarinfo.com — https://ndarinfo.com/
+- senxibar.com — https://senxibar.com/
+- au-senegal.com — https://au-senegal.com/
+- lejecos.com — https://lejecos.com/
+- dakarposte.com — https://dakarposte.com/
+- rts.sn — https://rts.sn/
+- galsen221.com — https://galsen221.com/
+- actusen.com — https://actusen.com/
+- homeviewsenegal.com — https://homeviewsenegal.com/
+- laviesenegalaise.com — https://laviesenegalaise.com/
+- senegaldirect.net — https://senegaldirect.net/
+- metrodakar.net — https://metrodakar.net/
+- wiwsport.com — https://wiwsport.com/
+- koldanews.com — https://koldanews.com/
+- sec.gouv.sn — https://sec.gouv.sn/
+- www.gouv.sn — https://www.gouv.sn/
+- senegaldirect.com — https://senegaldirect.com/
+- teledakar.net — https://teledakar.net/
+- lactuacho.com — https://lactuacho.com/
+- senegal7.com — https://senegal7.com/
+- reussirbusiness.com — https://reussirbusiness.com/
+- xibaaru.sn — https://xibaaru.sn/
+
 ## sierra_leone (west_africa) — Sierra Leone
 
 ### w3newspapers — https://www.w3newspapers.com/sierra-leone/
@@ -3376,6 +5013,48 @@ Denunciante — http://dokainternacionaldenunciante.blogspot.com/
 - Awoko — http://awoko.org/
 - Concord Times — http://slconcordtimes.com/
 - Standard Times Press — http://standardtimespress.org/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 64 by GDELT monitoring volume)
+- thesierraleonetelegraph.com — https://thesierraleonetelegraph.com/
+- awoko.org — https://awoko.org/
+- news.sl — https://news.sl/
+- politicosl.com — https://politicosl.com/
+- expotimesonline.net — https://expotimesonline.net/
+- sierraexpressmedia.com — https://sierraexpressmedia.com/
+- slconcordtimes.com — https://slconcordtimes.com/
+- thepatrioticvanguard.com — https://thepatrioticvanguard.com/
+- cocorioko.net — https://cocorioko.net/
+- cocorioko.info — https://cocorioko.info/
+- switsalone.com — https://switsalone.com/
+- globaltimes-sl.com — https://globaltimes-sl.com/
+- statehouse.gov.sl — https://statehouse.gov.sl/
+- standardtimespress.org — https://standardtimespress.org/
+- africayoungvoices.com — https://africayoungvoices.com/
+- critiqueecho.com — https://critiqueecho.com/
+- salonemonitor.net — https://salonemonitor.net/
+- thisissierraleone.com — https://thisissierraleone.com/
+- thenewrisingsun.net — https://thenewrisingsun.net/
+- health.gov.sl — https://health.gov.sl/
+- sierraloaded.net — https://sierraloaded.net/
+- salonetoday.com — https://salonetoday.com/
+- makonitimes.com — https://makonitimes.com/
+- joestrummerfoundation.org — https://joestrummerfoundation.org/
+- capitalradio.sl — https://capitalradio.sl/
+- nazarethhouseap.org — https://nazarethhouseap.org/
+- advocaidsl.com — https://advocaidsl.com/
+- fortrileypost.com — https://fortrileypost.com/
+- motleyvision.org — https://motleyvision.org/
+- publishwhatyoufund.org — https://publishwhatyoufund.org/
+- storyful.com — https://storyful.com/
+- capacare.org — https://capacare.org/
+- breadandwaterforafrica.org.uk — https://breadandwaterforafrica.org.uk/
+- corgenix.com — https://corgenix.com/
+- fambultokblog.org — https://fambultokblog.org/
+- blackottawascene.com — https://blackottawascene.com/
+- africasiaeuro.com — https://africasiaeuro.com/
+- midwife-in-sierra-leone.com — https://midwife-in-sierra-leone.com/
+- recipesfromapantry.com — https://recipesfromapantry.com/
+- junglelightspeed.com — https://junglelightspeed.com/
 
 ## togo (west_africa) — Togo
 
@@ -3461,3 +5140,45 @@ Denunciante — http://dokainternacionaldenunciante.blogspot.com/
 - Togolais — http://www.togolais.info
 - UFC Togo — http://www.ufctogo.com/
 - Togo Presse — http://togopresse.tg/
+
+### gdelt — https://blog.gdeltproject.org/wp-content/uploads/2021-news-outlets-by-countrycode-2015-2021.csv (top 40 of 74 by GDELT monitoring volume)
+- icilome.com — https://icilome.com/
+- alome.com — https://alome.com/
+- togosite.com — https://togosite.com/
+- republicoftogo.com — https://republicoftogo.com/
+- telegramme228.com — https://telegramme228.com/
+- savoirnews.net — https://savoirnews.net/
+- togofirst.com — https://togofirst.com/
+- manationtogo.com — https://manationtogo.com/
+- icilome.net — https://icilome.net/
+- togozine.com — https://togozine.com/
+- independantexpress.com — https://independantexpress.com/
+- letogolais.com — https://letogolais.com/
+- editogo.tg — https://editogo.tg/
+- togotopinfos.com — https://togotopinfos.com/
+- letempstg.com — https://letempstg.com/
+- lomeinfos.com — https://lomeinfos.com/
+- togopresse.tg — https://togopresse.tg/
+- l-frii.com — https://l-frii.com/
+- peuplesobservateurs2014.com — https://peuplesobservateurs2014.com/
+- diastode.org — https://diastode.org/
+- tcbresistencias.com — https://tcbresistencias.com/
+- sursauttogo.org — https://sursauttogo.org/
+- pelerin.info — https://pelerin.info/
+- tvt.tg — https://tvt.tg/
+- assemblee-nationale.tg — https://assemblee-nationale.tg/
+- africardv.com — https://africardv.com/
+- publichealthnews24.com — https://publichealthnews24.com/
+- courconstitutionnelle.tg — https://courconstitutionnelle.tg/
+- elitedafrique.com — https://elitedafrique.com/
+- fightnewsaustralia.com — https://fightnewsaustralia.com/
+- togomedia24.com — https://togomedia24.com/
+- ufctogo.com — https://ufctogo.com/
+- industrynewstoday24.com — https://industrynewstoday24.com/
+- aidboard.com — https://aidboard.com/
+- ancetogo.org — https://ancetogo.org/
+- technologysector24.com — https://technologysector24.com/
+- autogo.tg — https://autogo.tg/
+- full-news.info — https://full-news.info/
+- stationry.com — https://stationry.com/
+- firstreporter24.com — https://firstreporter24.com/
