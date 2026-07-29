@@ -1,0 +1,29 @@
+# TIER 2 — needs custom code before enabling (remove the _0_ prefix once fixed).
+# lauthentic.info is a custom CMS. Categories exist (/category/Politique/, /category/Affaires/,
+# /category/economics-/ ...) and articles are root-level hyphenated slugs
+# (e.g. /Politique--Le-RFD-appelle-les-acteurs.../). Homepage/categories are server-rendered HTML.
+# Blocker:
+#   - No working numbered pagination. /category/Politique/page/2/ returns a small 404-ish page,
+#     and /category/Politique/2/ returns ~the same 16 cards as page 1 (14/16 overlap).
+#     The listing is almost certainly AJAX / infinite-scroll -> needs the XHR endpoint discovered.
+# Article cards use root-slug <a> links (no <article> tags); a container selector must be derived
+# from the category DOM once the pagination/XHR mechanism is known.
+#
+# Starting point (NON-FUNCTIONAL until the AJAX pagination endpoint is found):
+# name: L'Authentic
+# country: mauritania
+# language: fr
+# base_url: https://www.lauthentic.info
+# listing:
+#   type: pagination
+#   url_template: "<AJAX/XHR listing endpoint with {num} TBD>"
+#   start_page: 1
+#   step: 1
+# selectors:
+#   thumbnail:
+#     container: "<article-card selector TBD>"
+#     title: "a::text"
+#     url: "a::attr(href)"
+#   article:
+#     body: "<article body p selector TBD>"
+#     date: "meta[property='article:published_time']::attr(content)"

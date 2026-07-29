@@ -2,7 +2,9 @@ name: Vecernji List
 language: hr
 country: croatia
 base_url: https://www.vecernji.hr
-# /vijesti/?page=N returns identical content; /vijesti/hrvatska?page=N paginates.
+# Neither /vijesti/?page nor /vijesti/hrvatska?page actually paginate — every
+# page returns the same 39 thumbnails (verified 2026-05-22). max_pages: 1 caps
+# discovery to the visible listing; no historical backfill available.
 listing:
   type: pagination
   start_url: https://www.vecernji.hr/vijesti/hrvatska
@@ -11,7 +13,7 @@ listing:
   batch_size: 5
 client: http
 concurrency: 3
-rate_limit: 1.0
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -32,6 +34,5 @@ selectors:
     date: script[type='application/ld+json']::text
 cleaning:
   date: parse_date_from_jsonld
-max_pages: null
+max_pages: 1
 max_articles: null
-stop_date: '2025-12-01'

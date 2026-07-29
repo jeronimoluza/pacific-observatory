@@ -1,0 +1,10 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: no WordPress API (custom CMS). Category pages
+#   (e.g. /الأخبار) and the /morearticles/<section> "load more" endpoint
+#   return identical article sets regardless of ?page=N — pagination is
+#   client-side/AJAX and could not be reverse-engineered via static
+#   httpx/BeautifulSoup probing (Tier 2).
+name: Al Yaum
+language: ar
+country: saudi_arabia
+base_url: https://www.alyaum.com

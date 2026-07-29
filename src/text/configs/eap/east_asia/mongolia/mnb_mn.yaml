@@ -11,7 +11,7 @@ listing:
 
 client: "http"
 concurrency: 5
-rate_limit: 0.5
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 
@@ -25,10 +25,10 @@ selectors:
     url: "a::attr(href)"
   article:
     date: "meta[property='article:published_time']::attr(content)"
-    body: "div.news-content-text p"
+    body: "div.news-content-text"
 
 cleaning:
   date: "handle_mixed_dates"
 
-max_pages: null
+max_pages: 5
 max_articles: null

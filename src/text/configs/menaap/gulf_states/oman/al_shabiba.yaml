@@ -1,0 +1,32 @@
+name: Al Shabiba
+language: ar
+country: oman
+base_url: https://shabiba.com
+
+listing:
+  type: pagination
+  url_template: "https://shabiba.com/category/بلادنا?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "h2.post-title"
+    title: "a::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.post-details p"
+    date: "span.mr-2.fs-12::text"
+
+cleaning:
+  date: clean_shabiba_date
+  url: clean_url
+
+max_pages: null
+max_articles: null

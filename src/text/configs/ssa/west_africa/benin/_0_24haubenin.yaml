@@ -1,0 +1,17 @@
+# TIER 2 — needs custom code, not onboarded.
+# Platform: SPIP 4.4.16. Server-rendered HTML (200 OK; WebFetch's UA was 403'd,
+# but curl with a browser UA works).
+# Blocker 1 (pagination): rubrique pages (./?-Actualite-, ./?-Economie-,
+#   ./?-Politique-, ./?-Sport-5-, ...) show a fixed article set with NO numbered
+#   pagination. SPIP's &debut_articles=N is ignored (page2 == page1). Only a
+#   spip.php?page=backend RSS feed is exposed, not HTML paging.
+# Blocker 2 (URLs): article links are query-string relative form "./?Slug"
+#   (e.g. ./?Le-president-Yayi-choisit-de-sieger-au-Senat) — needs a SPIP-specific
+#   relative-URL cleaner (clean_url won't resolve the ./? prefix correctly).
+# Next step: build a SPIP strategy (RSS-feed discovery or &debut_articles walk if
+#   a paginating template is found) + relative-URL cleaner before enabling.
+#
+# name: 24 Heures au Benin
+# country: benin
+# language: fr
+# base_url: https://www.24haubenin.bj

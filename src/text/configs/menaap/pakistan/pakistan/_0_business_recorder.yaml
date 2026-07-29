@@ -1,0 +1,22 @@
+# Unusable with current pipeline strategies (deferred, revisit later).
+# Reason: Cloudflare managed-challenge protects the whole domain. curl is
+#   blocked outright ("Just a moment..." on every path, incl. /wp-json/).
+#   httpx initially passed on plain category pages (/pakistan,
+#   /business-finance -> 200), but ANY subsequent request (including a
+#   re-fetch of the same URL that worked moments earlier, or /pakistan/2,
+#   /pakistan?page=2, /pakistan/archives) started returning 403 — i.e. the
+#   challenge triggers after only a handful of requests in a short window,
+#   which is fatal for a pipeline that needs to paginate through many pages
+#   per collect run.
+# Reason: No pagination/archive URL pattern was confirmed before the block
+#   kicked in (no page=, /page/, or /archives links found in the one
+#   category page HTML that was captured).
+# Verdict: Tier 2/3. Same failure mode as dawn.com (same anti-bot vendor
+#   config, quite possibly the same underlying CMS/CDN operator). Would need
+#   browser-automation client or much slower/session-aware fetching to be
+#   viable — not a quick YAML-only win.
+
+name: Business Recorder
+language: en
+country: pakistan
+base_url: https://www.brecorder.com

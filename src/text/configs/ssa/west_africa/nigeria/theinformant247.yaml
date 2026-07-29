@@ -1,0 +1,32 @@
+name: The Informant247
+country: nigeria
+language: en
+base_url: https://theinformant247.com
+
+listing:
+  type: pagination
+  url_template: "https://theinformant247.com/latest-news/page/{num}/"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "article.loop-entry"
+    title: "h2.entry-title a::text"
+    url: "h2.entry-title a::attr(href)"
+  article:
+    body: "div.entry-content p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

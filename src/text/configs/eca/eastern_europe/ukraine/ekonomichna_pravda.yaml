@@ -9,8 +9,8 @@ listing:
   start_date: '2005-01-01'
   batch_size: 5
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:

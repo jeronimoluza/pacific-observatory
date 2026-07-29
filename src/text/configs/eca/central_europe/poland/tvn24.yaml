@@ -11,9 +11,17 @@ listing:
   url_template: https://tvn24.pl/najnowsze/{num}
   start_page: 2
   batch_size: 5
+  # Thumbnail selector catches kontakt24/eurosport subdomains and /autorzy/
+  # bio pages (URL substring "-st" matches surnames like "stachowiak").
+  filters:
+    allow_domains:
+      - tvn24.pl
+      - www.tvn24.pl
+    deny_path_prefixes:
+      - "/autorzy/"
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -27,10 +35,11 @@ selectors:
     title: a[href*="tvn24.pl/"][href*="-st"]:not([href*="eurosport"])::text
     url: a[href*="tvn24.pl/"][href*="-st"]:not([href*="eurosport"])::attr(href)
   article:
-    body: main p
+    body:
+      - main p
+      - h1
     date: time::attr(datetime)
 cleaning:
   date: handle_mixed_dates
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

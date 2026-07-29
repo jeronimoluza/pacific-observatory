@@ -1,0 +1,8 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: homepage is a legacy meta-refresh redirect to /index.htm (pre-2015
+#   static-HTML template, non-standard structure); would need bespoke selector
+#   work and archive-path reverse-engineering beyond a first-pass onboarding.
+name: Al Jazirah
+language: ar
+country: saudi_arabia
+base_url: https://www.al-jazirah.com

@@ -1,0 +1,14 @@
+# TIER 2 — needs custom code, do NOT probe (_0_ excluded from discovery).
+# lessor.ml (nginx, no wp-json). Category pages /categories/{id} DO server-render
+# article cards linking to /posts/<slug>-<hash> (~30 posts, container likely a card
+# wrapping the /posts/ anchor). BUT numbered pagination is broken: /categories/2?page=2,
+# ?start=20, ?p=2 all return 200 with the IDENTICAL 30 posts as page 1 (params ignored);
+# /categories/2/page/2 and /categories/2/2 are 404. No JSON API found (/api/* = 404,
+# no axios/fetch/load-more endpoint in the served JS, no X-Requested-With JSON variant).
+# Homepage carries JS template literals (${category.id}) => content beyond the first page
+# is loaded via client-side infinite scroll with no static page param. A custom fetcher
+# (headless render or reverse-engineered XHR endpoint) is required to page past the first 30.
+name: L'Essor
+country: mali
+language: fr
+base_url: https://lessor.ml

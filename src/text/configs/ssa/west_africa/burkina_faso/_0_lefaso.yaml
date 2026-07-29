@@ -1,0 +1,32 @@
+# TIER 2 — SPIP CMS (lefaso.net). Scrapeable but needs custom code; NOT probed (_0_ excluded from discovery).
+# Findings (2026-07-22):
+#  - Pagination: OFFSET via `spip.php?rubrique4&debut_articles={num}` (page size 20).
+#    `&page=2` is IGNORED (serves identical content). Would be start_page:0 step:20.
+#  - Listing container: bootstrap grid `div.col-md-8` shared with sidebar (21 vs 20 real cards);
+#    title in `h3 a`, article hrefs are RELATIVE (`spip.php?articleNNNN`) — pipeline urljoin handles these.
+#  - Article body: `div.article_content p` — BUT class `article_content` is ALSO used by the
+#    newsletter-signup widget (multiple h1.entry-title on page), so body needs disambiguation.
+#  - DATE BLOCKER: publication date is in an UNCLASSED <p> after the real <h1>, as French prose
+#    "Publié le mercredi 22 juillet 2026 à ..." — no clean CSS selector, and handle_mixed_dates
+#    does NOT parse French month names (only Slavic/Turkic). Needs a custom French-date cleaner
+#    + a position/text-based date extractor.
+#
+# name: LeFaso.net
+# country: burkina_faso
+# language: fr
+# base_url: https://lefaso.net
+#
+# listing:
+#   type: pagination
+#   url_template: "https://lefaso.net/spip.php?rubrique4&debut_articles={num}"
+#   start_page: 0
+#   step: 20
+#
+# selectors:
+#   thumbnail:
+#     container: "div.col-md-8"
+#     title: "div.col-md-8 h3 a::text"
+#     url: "div.col-md-8 h3 a::attr(href)"
+#   article:
+#     body: "div.article_content p"      # needs de-pollution from newsletter widget
+#     date: "<needs custom French-date extractor + cleaner>"

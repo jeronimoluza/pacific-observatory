@@ -1,0 +1,18 @@
+# TIER 2 - needs custom code. NOT discovered (leading _0_).
+# GhanaWeb NewsArchive has NO numbered pagination. The only working paginator is
+# date-based: browse.archive.php?date=YYYYMMDD (each date = distinct article set,
+# 0 overlap). ?page=N and ?more=N are ignored (identical to page 1); "More News"
+# is an AJAX load_more (XHR), not a server-rendered numbered page.
+# The generic pagination strategy only emits numeric num = start_page + i*step,
+# so it cannot walk dates -> requires a custom date-iterating listing strategy.
+#
+# Known-good bits for whoever writes the custom code:
+#   listing:   https://www.ghanaweb.com/GhanaHomePage/NewsArchive/browse.archive.php?date=YYYYMMDD
+#   article card links: a[href*='/GhanaHomePage/NewsArchive/'] ending in -NNNNNNN (~33-50/day)
+#   article date: meta[property='article:published_time']::attr(content)  (present, ISO)
+#   article body: TBD (not .article-content / #news / .article_content)
+#
+# name: GhanaWeb
+# country: ghana
+# language: en
+# base_url: https://www.ghanaweb.com

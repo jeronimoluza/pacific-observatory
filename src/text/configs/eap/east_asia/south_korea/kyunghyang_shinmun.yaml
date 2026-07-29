@@ -16,7 +16,7 @@ listing:
 
 client: "http"
 concurrency: 5
-rate_limit: 0.3
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 

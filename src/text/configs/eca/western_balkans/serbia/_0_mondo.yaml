@@ -31,4 +31,3 @@ cleaning:
   date: handle_mixed_dates
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

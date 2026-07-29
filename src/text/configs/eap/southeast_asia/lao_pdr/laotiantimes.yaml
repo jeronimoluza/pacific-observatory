@@ -1,7 +1,7 @@
 # The Korea Times Configuration
 
 name: "The Laotian Times"
-country: "lao"
+country: "lao_pdr"
 language: "en"
 base_url: "https://www.laotiantimes.com/"
 

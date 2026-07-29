@@ -10,10 +10,14 @@ listing:
   sitemap_index_url: https://moldpres.md/sitemap.xml
   sitemap_regex: "/allNews_rom_"
   url_regex: "^https://moldpres\\.md/rom/"
+  # /rom/stiri-in-imagini/ = image galleries with no div.news__info body
+  filters:
+    deny_path_prefixes:
+      - "/rom/stiri-in-imagini/"
 
 client: http
 concurrency: 5
-rate_limit: 0.5
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 

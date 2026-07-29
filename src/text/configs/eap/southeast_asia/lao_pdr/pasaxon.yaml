@@ -1,7 +1,7 @@
 # Pasaxon Configuration
 
 name: "Pasaxon"
-country: "lao"
+country: "lao_pdr"
 base_url: "https://pasaxon.org.la/"
 language: lao
 

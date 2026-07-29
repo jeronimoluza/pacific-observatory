@@ -1,0 +1,32 @@
+name: Journal de Conakry
+country: guinea
+language: fr
+base_url: https://journaldeconakry.com
+
+listing:
+  type: pagination
+  url_template: "https://journaldeconakry.com/page/{num}/?s=guinee"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "article"
+    title: "h2.entry-title a::text"
+    url: "h2.entry-title a::attr(href)"
+  article:
+    body: "div.entry-content p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

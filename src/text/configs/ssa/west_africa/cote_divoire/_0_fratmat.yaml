@@ -1,0 +1,15 @@
+# TIER 2 — needs custom code (AJAX load-more pagination). NOT probed (_0_ excluded from discovery).
+#
+# www.fratmat.info (Cloudflare, but returns full server-rendered HTML with UA header) has a
+# working card layout on section pages:
+#   section: https://www.fratmat.info/politique   (also /economie, /societe, ...)
+#   cards:   container "div.article-info", title/url "h2 a" -> absolute /article/<id>/<section>/<slug>
+#
+# BLOCKER: there is NO numbered-pagination URL scheme. Every tested variant returns the SAME
+# first ~9 cards (identical content): ?page=2, /page/2, /politique/2, ?start=20, ?paged=2.
+# The site loads more articles via AJAX — the page ships an "ajaxArticles" hook and a
+# "more-articles" (fratmat-more-articles) container, i.e. an XHR "load more" endpoint rather
+# than a stable page= URL. No WordPress REST API either (/wp-json -> 404).
+# Promote to Tier 1 by reverse-engineering the ajaxArticles endpoint (likely a POST/GET returning
+# an HTML fragment or JSON keyed by offset/last-id) and wiring it as an api-type listing, or add
+# a follow-link/load-more strategy. Cards + body selectors above are otherwise ready.

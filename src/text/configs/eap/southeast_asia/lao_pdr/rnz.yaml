@@ -1,7 +1,7 @@
 # Radio New Zealand (RNZ) Lao Configuration
 
 name: "RNZ Lao"
-country: "lao"
+country: "lao_pdr"
 language: "en"
 base_url: "https://www.rnz.co.nz"
 

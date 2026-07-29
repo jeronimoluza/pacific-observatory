@@ -1,0 +1,23 @@
+# TIER 2 - needs custom code. NOT discovered (leading _0_).
+# Listing IS clean: server-rendered numbered pagination works
+#   https://thebftonline.com/category/news?page={num}   (?page=N -> distinct 13 cards/page,
+#   page1..3 zero-overlap; /page/N/ 404s, ?paged=N is ignored). No WP REST API
+#   (wp-json 404, ?rest_route returns HTML). Site is a Next.js SSR/RSC app.
+#
+# BLOCKER = article body. The server HTML only renders the article's LEAD paragraph
+# inside <article data-reading-root="true">; the rest of that element is comment
+# boilerplate + nested teasers of ~8 OTHER articles (data-testid="card-*"), so a plain
+# `article p` / `article[data-reading-root='true'] p` body selector bleeds across
+# articles. The full body text lives ONLY in the Next.js RSC flight payload
+# (self.__next_f = ... script chunks), NOT in <p> tags -> the http/CSS scraper cannot
+# extract it. Needs either a custom __next_f flight-payload parser or a JS-rendering
+# client (playwright), or the /_next/data/<buildId>/article/<slug>.json data endpoint.
+#
+# Known-good bits:
+#   listing card container: a[href*='/article/']   title: h2, h3, h4::text   url: ::attr(href)
+#   article date: meta[property='article:published_time']::attr(content)  (present, ISO)
+#
+# name: The B&FT Online
+# country: ghana
+# language: en
+# base_url: https://thebftonline.com

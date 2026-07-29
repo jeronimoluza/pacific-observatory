@@ -1,0 +1,8 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: same publisher/platform as Oman Observer (sister paper, Apex
+#   Press & Publishing) — no WordPress API, AJAX/client-side pagination
+#   that could not be reverse-engineered via static probing (Tier 2).
+name: Oman Daily
+language: ar
+country: oman
+base_url: https://www.omandaily.om

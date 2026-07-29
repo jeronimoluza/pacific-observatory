@@ -1,0 +1,32 @@
+name: Pakistan Today
+language: en
+country: pakistan
+base_url: https://www.pakistantoday.com.pk
+
+# Category: National — matches priority-1 national-news rule
+listing:
+  type: pagination
+  url_template: "https://www.pakistantoday.com.pk/category/national?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.grid.gap-6 > div"
+    title: "h3::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.article-prose p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

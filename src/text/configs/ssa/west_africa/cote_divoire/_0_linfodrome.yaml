@@ -1,0 +1,14 @@
+# TIER 2 — needs custom code (JSON API, not HTML pagination). NOT probed (_0_ excluded from discovery).
+#
+# www.linfodrome.com is a client-side SPA: the homepage and every section page return an ~8 KB
+# shell (class="isloading") with NO server-rendered article HTML. The mobile site
+# m.linfodrome.com is AMP but is likewise rendered client-side via amp-list + amp-mustache
+# templates ("Loading ...", "{{#category_details}}") — so plain HTML scraping yields no cards.
+#
+# There IS a usable JSON API (so this is Tier 2, not Tier 3):
+#   https://www.linfodrome.com/frontapi/single-category?category_alias=politique
+#   -> application/json, keys: category_details, category_post, category_posts, has_more
+#   (has_more drives pagination — likely a &page= / offset param on the same endpoint).
+# Promote to Tier 1/usable by wiring this as an api-type listing (json_paths for url/title/date/body,
+# pagination via the has_more flag). Categories seen: politique (+ economie, societe, etc. via
+# category_alias). Article pages are also SPA — bodies likely need a per-article frontapi call too.

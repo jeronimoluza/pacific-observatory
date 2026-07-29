@@ -1,0 +1,37 @@
+name: Le360 Economie
+country: morocco
+language: fr
+base_url: https://fr.le360.ma
+
+# Arc Publishing CMS. Homepage/category pages have no ?page=N pagination and
+# no WP API, but the site exposes a per-category Arc sitemap-index with ~100
+# offset-paginated sub-sitemaps (?size=100&from=N) reaching back to 2022 —
+# archive_depth: large. Scoped to the economie category (highest-priority
+# non-national bucket available; no dedicated "national"/politique combo
+# index exists at this nesting level).
+listing:
+  type: sitemap
+  sitemap_index_url: https://fr.le360.ma/arc/outboundfeeds/sitemap-index/category/economie/
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    body: "article.article-body-wrapper p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

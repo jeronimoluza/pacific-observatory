@@ -1,0 +1,12 @@
+# TIER 2 — needs custom code. The Republic (rpublc.com) is a Next.js site
+# (Vercel) whose article cards ARE server-rendered (/story/YYYY/MM/DD/...), but
+# listing pages (/region/west-africa, etc.) have NO numbered pagination:
+# ?page=2 and /page/2 return the identical first batch. More items load via
+# client-side Next.js data-fetch (infinite scroll / load-more), not an HTML
+# pager, so the pagination strategy cannot walk the archive. Would need a custom
+# AJAX/__NEXT_DATA__ handler. Long-form editorial magazine, low article volume.
+# Do NOT probe (_0_ excluded from discovery).
+name: The Republic
+country: nigeria
+language: en
+base_url: https://rpublc.com

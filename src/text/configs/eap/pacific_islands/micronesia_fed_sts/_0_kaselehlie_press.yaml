@@ -1,0 +1,43 @@
+# DEFERRED: Kaselehlie Press (Pohnpei/FSM national paper, GDELT top-of-list for
+# micronesia_fed_sts). Genuine local content confirmed (COVID border-closure
+# coverage, FSM fuel prices, Pohnpei mangrove assessment, Japan-FSM aid).
+# Blockers found during assess-newspaper-source pass:
+#   - Joomla-style SEF URLs (index-option-com_content-view-article-id-NNNN-...html),
+#     no query-string pagination found (?start=N loads but article ids don't advance).
+#   - Article date field is broken at the source: "Published: Monday, 30 November
+#     -0001 00:00" (invalid year) on every article checked — handle_mixed_dates
+#     cannot recover a valid date from this.
+#   - Newest article IDs on the homepage/category-8 listing are still COVID-era
+#     (2020-2021) content — site may no longer be actively maintained.
+# Tier 2/3 — needs custom date-source investigation (RSS? different template?)
+# before this is viable.
+name: Kaselehlie Press
+country: micronesia_fed_sts
+language: en
+base_url: https://kpress.info
+
+listing:
+  type: pagination
+  url_template: "https://kpress.info/index-option-com_content-view-category-id-8-Itemid-103.html?start={num}"
+  start_page: 0
+  step: 20
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

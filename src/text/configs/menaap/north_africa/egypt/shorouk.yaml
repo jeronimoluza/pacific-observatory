@@ -1,0 +1,42 @@
+name: Al-Shorouk
+language: arabic
+country: egypt
+base_url: https://www.shorouknews.com
+
+# No WP API. Homepage/category listing pagination is ASP.NET __doPostBack
+# (JS postback, not a URL param -- ?page=N is silently ignored). Section pages
+# expose real RSS 2.0 feeds instead (Content-Type: application/rss+xml):
+#   /egypt/rss (مصر/national), /Economy/rss (مال وأعمال/economy),
+#   /Politics/rss (شئون خارجية/politics). Reusing the sitemap strategy's
+#   generic fetch+select loop against these feeds (sitemap_urls, no index).
+# GOTCHA: RSS <link> is parsed as the void HTML <link> tag by BeautifulSoup's
+# html.parser, so its text is dropped -- use <guid isPermaLink="true"> instead,
+# which carries the same article URL.
+listing:
+  type: sitemap
+  sitemap_urls:
+    - "https://www.shorouknews.com/egypt/rss"
+    - "https://www.shorouknews.com/Economy/rss"
+    - "https://www.shorouknews.com/Politics/rss"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: item
+    title: "title::text"
+    url: "guid::text"
+    date: "pubDate::text"
+  article:
+    body: "div.eventContent p"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

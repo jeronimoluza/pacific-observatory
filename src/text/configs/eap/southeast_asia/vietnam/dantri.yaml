@@ -19,8 +19,8 @@ listing:
 
 # Client configuration
 client: "http"
-concurrency: 10
-rate_limit: 0.2
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 
@@ -40,7 +40,7 @@ selectors:
       - time.author-time::attr(datetime)
       - time.e-magazine__meta-item::attr(datetime)
     body:
-      - div.singular-content p
+      - article.dt-flex-col p
       - div.e-magazine__body p
 
 # Data cleaning configuration

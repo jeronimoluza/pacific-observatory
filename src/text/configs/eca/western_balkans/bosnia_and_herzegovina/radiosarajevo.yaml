@@ -11,7 +11,7 @@ listing:
   url_regex: "^https://radiosarajevo\\.ba/[a-z0-9-]+/[a-z0-9-]+/[a-z0-9-]+/[0-9]+/?$"
 client: http
 concurrency: 3
-rate_limit: 1.0
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -35,4 +35,3 @@ cleaning:
   date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

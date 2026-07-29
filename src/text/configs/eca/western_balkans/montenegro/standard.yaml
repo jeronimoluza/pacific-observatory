@@ -13,9 +13,22 @@ listing:
     url: link
     title: title.rendered
     date: date
+  # 2026-06-09: drop non-EPU categories (~87k URLs / 31% of corpus).
+  filters:
+    deny_path_prefixes:
+      - /zivot/
+      - /hronika/
+      - /sport/
+      - /tehnologija/
+      - /kultura/
+      - /promo/
+      - /video/
+      - /video-dana/
+      - /uncategorized/
+      - /preporuceno/
 client: http
-concurrency: 5
-rate_limit: 0.5
+concurrency: 8
+rate_limit: 0.2
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -35,4 +48,3 @@ cleaning:
   date: handle_mixed_dates
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

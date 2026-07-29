@@ -26,7 +26,7 @@ selectors:
     title: filler
     url: filler
   article:
-    body: ".td-post-content p"
+    body: ".td-post-content h3, .td-post-content p"
     date: "meta[property='article:published_time']::attr(content)"
 
 cleaning:

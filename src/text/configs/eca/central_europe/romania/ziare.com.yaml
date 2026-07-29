@@ -36,4 +36,3 @@ cleaning:
   date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

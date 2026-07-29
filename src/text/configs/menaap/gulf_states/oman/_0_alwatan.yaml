@@ -1,0 +1,9 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: AJAX-loaded category listing (documented Tier 2 example in
+#   assess-newspaper-source SKILL.md's tier table: "Al Watan Oman (AJAX)").
+#   Static HTML fetch of /local, /politics, /economy returns the shell only;
+#   no per-article containers reachable via httpx/BeautifulSoup.
+name: Alwatan (Oman)
+language: ar
+country: oman
+base_url: https://alwatan.om

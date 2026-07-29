@@ -1,0 +1,29 @@
+# TIER 2 — needs custom code before enabling (remove the _0_ prefix once fixed).
+# alhassad.net is a SPIP CMS (spip.php?rubriqueN listings, spip.php?articleNNNN articles).
+# Server-rendered HTML, no JS/Cloudflare wall, so scraping is feasible.
+# Blockers:
+#   1. Article/rubrique hrefs are RELATIVE with no leading slash ("spip.php?article8712")
+#      -> requires a relative-URL cleaner to join against base_url.
+#   2. SPIP offset pagination is spip.php?rubriqueN&debut_articles=20 (step 20). It DOES advance,
+#      but the rubrique page is dominated by sidebar "derniers articles" blocks: page 0 vs
+#      debut_articles=20 shared 28/35 article links, so a naive container selector scrapes mostly
+#      sidebar duplicates. Needs a container selector scoped to the main rubrique list only.
+#
+# Starting point (NON-FUNCTIONAL until url cleaner + main-list container are resolved):
+# name: Al Hassad
+# country: mauritania
+# language: arabic
+# base_url: http://www.alhassad.net
+# listing:
+#   type: pagination
+#   url_template: "http://www.alhassad.net/spip.php?rubrique3&debut_articles={num}"
+#   start_page: 0
+#   step: 20
+# selectors:
+#   thumbnail:
+#     container: "<main-rubrique-list card selector TBD, exclude sidebar>"
+#     title: "a::text"
+#     url: "a::attr(href)"                # relative -> needs base_url join cleaner
+#   article:
+#     body: "<article body p selector TBD>"
+#     date: "<date selector TBD>"

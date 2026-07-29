@@ -1,0 +1,6 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: Cloudflare "Just a moment..." challenge page on homepage. Tier 3.
+name: Lusail
+language: ar
+country: qatar
+base_url: https://lusailnews.net

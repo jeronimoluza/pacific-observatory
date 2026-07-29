@@ -13,8 +13,8 @@ listing:
   url_regex: "^https://tengrinews\\.kz/[a-z_-]+/.+-[0-9]+/?$"
 
 client: http
-concurrency: 3
-rate_limit: 0.5
+concurrency: 8
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 
@@ -33,7 +33,7 @@ selectors:
     title:
       - 'meta[property="og:title"]::attr(content)'
       - 'h1::text'
-    body: div.content_main_text p
+    body: div.content p
     date: meta[property='article:published_time']::attr(content)
 
 cleaning:

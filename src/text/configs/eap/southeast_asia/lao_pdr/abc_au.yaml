@@ -1,7 +1,7 @@
 # ABC AU (Australia) Lao Configuration
 
 name: "ABC AU Lao"
-country: "lao"
+country: "lao_pdr"
 language: "en"
 base_url: "https://www.abc.net.au"
 

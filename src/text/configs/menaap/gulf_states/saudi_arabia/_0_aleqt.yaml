@@ -1,0 +1,9 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: Next.js SPA (client-rendered app shell, no wp-json). No static
+#   listing/category endpoint found via httpx/BeautifulSoup crawl of the
+#   homepage — would need a JS-rendering fetch or the site's internal API
+#   reverse-engineered (Tier 2).
+name: Al Eqtisadiah
+language: ar
+country: saudi_arabia
+base_url: https://www.aleqt.com

@@ -17,7 +17,7 @@ listing:
 # Client configuration
 client: "http"
 concurrency: 10
-rate_limit: 0.2
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 

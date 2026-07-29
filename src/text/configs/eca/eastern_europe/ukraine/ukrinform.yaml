@@ -10,7 +10,7 @@ listing:
   url_regex: "/rubric-[^/]+/[0-9]+-[^/]+\\.html$"
 
 client: http
-concurrency: 3
+concurrency: 5
 rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0

@@ -1,0 +1,23 @@
+# Unusable with current pipeline strategies (deferred, revisit later).
+# Reason: Cloudflare managed-challenge protects the whole domain and is
+#   INCONSISTENT — some requests to /pakistan, /world etc. return 200 via
+#   httpx, but repeated requests (and any /archives or /pakistan/archives
+#   path) return a "Just a moment..." challenge page (403), even via httpx
+#   with a standard desktop UA. curl is blocked outright on every path.
+# Reason: No stable pagination/archive URL pattern found. /pakistan/2,
+#   /pakistan?page=2, /archives, /pakistan/archives all 403. The homepage
+#   category pages show no numbered-page or offset links in the HTML.
+# Reason: robots.txt exposes a sitemap (https://www.dawn.com/feeds/sitemap)
+#   but it is a static SECTION sitemap (145 <url> entries: /pakistan,
+#   /business, /sport, ...), not a dated article-archive sitemap — no
+#   per-article <url> entries, so it cannot be used as a listing strategy.
+# Verdict: Tier 2/3. Would need browser-automation client (to survive the
+#   managed challenge reliably) plus a reverse-engineered pagination
+#   endpoint before this is viable. High-value source (Pakistan's most
+#   prominent English-language daily) — worth revisiting with `client: browser`
+#   if/when that's supported for Cloudflare-challenge sites.
+
+name: Dawn
+language: en
+country: pakistan
+base_url: https://www.dawn.com

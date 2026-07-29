@@ -1,0 +1,41 @@
+# DEFERRED: A Semana (asemana.cv) — one of Cabo Verde's major national dailies
+# (top of w3newspapers list; distinct from noticias_do_norte.yaml which is a
+# regional Barlavento title on the same publ.cv network).
+# Blocker found during assess-newspaper-source pass: intermittent JS
+# "Checking your browser... Just a moment" challenge page (403) served to
+# Python httpx even when a plain curl with a browser UA succeeds — classic
+# TLS-fingerprint-based bot mitigation (see skill's "curl vs httpx give
+# different responses" pitfall). Homepage does carry genuine dated archive
+# links (/2026/... paths, 17 seen in one fetch) when the challenge doesn't fire.
+# Tier 2 — needs browser automation or a more careful client to reliably get
+# past the challenge before this is viable for scheduled collection.
+name: A Semana
+country: cabo_verde
+language: portuguese
+base_url: https://asemana.cv
+
+listing:
+  type: pagination
+  url_template: "https://asemana.cv/?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

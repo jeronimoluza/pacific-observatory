@@ -1,0 +1,14 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: site's WordPress feed appears COMPROMISED — probe returned
+#   100/100 "scraped" mechanically (Tier 0 WP API works fine structurally),
+#   but the newest ~100 posts across every category checked (محليات/19,
+#   أخبار/5, عاجل/74) are black-hat SEO spam (foreign-language online
+#   casino/gambling articles), not Kuwaiti news. Older posts in category 4
+#   (economy) and 20 (security) show genuine 2020-era Kuwaiti news, so the
+#   site was legitimate before being hijacked. Do not activate until the
+#   spam wave is confirmed cleared (re-check categories=5,19,74 for clean
+#   recent content).
+name: Al Masila
+language: ar
+country: kuwait
+base_url: https://www.masilanews.com

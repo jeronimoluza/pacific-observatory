@@ -10,7 +10,7 @@ listing:
   batch_size: 5
 client: http
 concurrency: 3
-rate_limit: 1.0
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -25,9 +25,8 @@ selectors:
     url: a::attr(href)
   article:
     body: div#pagrindas p
-    date: meta[property='article:published_time']::attr(content)
+    date: script[type='application/ld+json']::text
 cleaning:
-  date: handle_mixed_dates
+  date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

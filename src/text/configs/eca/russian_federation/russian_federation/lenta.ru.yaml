@@ -2,39 +2,37 @@ name: Lenta.ru
 language: ru
 country: russian_federation
 base_url: https://lenta.ru
-
+# 2026-06-04: BACKFILL MODE — migrated from paginated_archive to sitemap.
+# sitemap.xml.gz indexes 35 numbered sub-sitemaps (sitemap1.xml.gz ..
+# sitemap35.xml.gz, gzipped, ~5.7MB each uncompressed) covering 2010-05-30
+# to 2026-06-04 (~16 years). sitemap0 is empty. No WAF observed; no auth.
+# After backfill catches up, dial back to concurrency: 3, rate_limit: 1.0
+# and consider narrowing to the most recent sub-sitemap for routine refresh.
 listing:
-  type: paginated_archive
-  date_format: daily
-  start_url: "https://lenta.ru/news/{year}/{month}/{day}/"
-  url_template: "https://lenta.ru/news/{year}/{month}/{day}/page/{num}/"
-  start_date: "2022-01-01"
-  start_page: 2
-  batch_size: 5
-
+  type: sitemap
+  sitemap_index_url: https://lenta.ru/sitemap.xml.gz
+  sitemap_regex: "sitemap\\d+\\.xml\\.gz$"
+  url_regex: "^https://lenta\\.ru/(news|articles)/"
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 10
+rate_limit: 0.3
 retries: 6
 retry_seconds: 5.0
-
 headers:
   User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
     like Gecko) Chrome/131.0.0.0 Safari/537.36
   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
   Accept-Language: ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7
-
 selectors:
   thumbnail:
-    container: "li[class*='archive-page__item']"
-    title: "h3.card-full-news__title::text"
-    url: "a[class*='card-full-news']::attr(href)"
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
     body: "div[class*='topic-body__content'] p"
     date: "script[type='application/ld+json']::text"
-
 cleaning:
   date: parse_date_from_jsonld
-
 max_pages: null
 max_articles: null

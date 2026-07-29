@@ -11,10 +11,15 @@ listing:
   sitemap_index_url: https://moldova.europalibera.org/sitemap.xml
   sitemap_regex: "sitemap_15_[0-9]+\\.xml"
   url_regex: "^https://moldova\\.europalibera\\.org/a/.+\\.html$"
+  # /a/{ID}.html (no slug) = audio/podcast stubs with empty div.wsw
+  # /a/{slug}/{ID}.html = real text articles (keep)
+  filters:
+    deny_url_regex:
+      - "^https://moldova\\.europalibera\\.org/a/[0-9]+\\.html$"
 
 client: http
 concurrency: 3
-rate_limit: 1.0
+rate_limit: 0.1
 retries: 3
 retry_seconds: 3.0
 

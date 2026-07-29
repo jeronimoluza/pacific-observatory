@@ -1,0 +1,28 @@
+# TIER 2 — needs custom code before enabling (remove the _0_ prefix once fixed).
+# cridem.org is a custom PHP CMS (C_InfoCat.php?cat=N listings, C_Info.php?article=N articles).
+# Blockers:
+#   1. Article/category hrefs are RELATIVE with no leading slash ("C_Info.php?article=795133")
+#      -> requires a relative-URL cleaner to join against base_url.
+#   2. Numbered pagination not found: C_InfoCat.php?cat=6&page=2 returns byte-identical content
+#      to page 1 (param ignored). Real pagination mechanism (POST / different param) unknown.
+# Homepage renders server-side HTML (no Cloudflare/JS wall), so scraping is feasible once the
+# URL cleaner + correct pagination param are implemented.
+#
+# Starting point (NON-FUNCTIONAL until pagination + url cleaner resolved):
+# name: Cridem
+# country: mauritania
+# language: fr
+# base_url: http://www.cridem.org
+# listing:
+#   type: pagination
+#   url_template: "http://www.cridem.org/C_InfoCat.php?cat=6&page={num}"   # param currently ignored
+#   start_page: 1
+#   step: 1
+# selectors:
+#   thumbnail:
+#     container: "<article-card selector TBD>"
+#     title: "a::text"
+#     url: "a::attr(href)"                # relative -> needs base_url join cleaner
+#   article:
+#     body: "<article body p selector TBD>"
+#     date: "<date selector TBD>"

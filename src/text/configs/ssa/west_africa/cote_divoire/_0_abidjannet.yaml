@@ -1,0 +1,51 @@
+# TIER 2 — needs custom code (French-text date cleaner). NOT probed (_0_ excluded from discovery).
+#
+# news.abidjan.net is a server-rendered portal with clean HTML numbered pagination:
+#   listing:  https://news.abidjan.net/articles/politique?page={num}   (30 cards/page,
+#             confirmed page1/2/3 all distinct — 30 new of 30 each). The aggregate
+#             /articles endpoint does NOT paginate; per-section /articles/<section> does.
+#   cards:    container "a.grd-item.ebloc-default" (the card IS the <a>);
+#             title  "span.title::text";  url falls back to the container's own href
+#             (relative /articles/ID/... -> clean_url resolves against base_url).
+#   body:     "div.article-content div.txt p"  (works)
+#
+# BLOCKER: dates are French free text only ("Publié le mercredi 22 juillet 2026 | Abidjan.net"
+# on the article, "Abidjan.net - 22 juillet 2026" on the card). There is NO machine-readable
+# date on the page — no meta[article:published_time], no <time datetime>, no JSON-LD datePublished.
+# handle_mixed_dates cannot parse French month names ("juillet"), so every row would fail
+# (empty date). Promote to Tier 1 by adding a French-month date cleaner (register a cleaner that
+# maps janvier..decembre -> English/numeric, strips "Publié le" prefix + "| Abidjan.net" suffix),
+# then move this file to abidjannet.yaml with the selectors below.
+#
+# name: Abidjan.net
+# country: cote_divoire
+# language: fr
+# base_url: https://news.abidjan.net
+#
+# listing:
+#   type: pagination
+#   url_template: "https://news.abidjan.net/articles/politique?page={num}"
+#   start_page: 1
+#   step: 1
+#
+# client: http
+# concurrency: 3
+# rate_limit: 1.0
+# retries: 3
+# retry_seconds: 2.0
+#
+# selectors:
+#   thumbnail:
+#     container: "a.grd-item.ebloc-default"
+#     title: "span.title::text"
+#     url: "::attr(href)"
+#   article:
+#     body: "div.article-content div.txt p"
+#     date: "span.date::text"           # French text -> needs custom cleaner
+#
+# cleaning:
+#   date: <custom_french_date_cleaner>
+#   url: clean_url
+#
+# max_pages: null
+# max_articles: null

@@ -14,7 +14,7 @@ listing:
   url_regex: ^https://www\.capital\.bg/[a-z0-9_/-]+/\d{4}/\d{2}/\d{2}/\d+_
 client: http
 concurrency: 3
-rate_limit: 1.0
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -37,4 +37,3 @@ cleaning:
   date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

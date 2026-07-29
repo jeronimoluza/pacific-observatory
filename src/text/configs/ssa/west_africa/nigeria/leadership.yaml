@@ -1,0 +1,39 @@
+name: Leadership Newspaper
+country: nigeria
+language: en
+base_url: https://leadership.ng
+
+# Categories: Business(10,n=24979), Politics(5,n=13066)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://leadership.ng/wp-json/wp/v2/posts?per_page=100&page={page}&categories=10,5"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 2
+rate_limit: 0.5
+retries: 8
+retry_seconds: 8.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: ".entry-content p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

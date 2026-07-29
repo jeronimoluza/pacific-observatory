@@ -1,0 +1,10 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: /news/local category page (533KB) has no static per-article containers —
+#   the only numeric-slug article links found (/YYYY/MM/DD/HHMMSS) live in a
+#   "most read" sidebar widget, not the main feed, which is client-rendered.
+# Reason: ?page=2 on the category URL returns byte-identical content to page 1
+#   (pagination param ignored).
+name: Atheer
+language: ar
+country: oman
+base_url: https://www.atheer.om

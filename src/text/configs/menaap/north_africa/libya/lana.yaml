@@ -1,0 +1,38 @@
+name: Libyan News Agency (LANA)
+language: arabic
+country: libya
+base_url: https://lana.gov.ly
+
+# Custom PHP CMS (not WordPress) - no categories= composite param support,
+# so using the unfiltered index (mixed feed) as the "latest" fallback per
+# category_lookup.md rule 4. Sampled 3 pages (60 cards): tag-21/tag-5/tag-8
+# (general/political) dominate ~80%, tag-6/tag-9 (economic) ~12%; sports
+# (tag-10/11)/weather(tag-18)/science(tag-13/19)/culture(tag-14/20) are rare
+# noise (~7% combined) and not separately filterable on this CMS.
+listing:
+  type: pagination
+  url_template: "https://lana.gov.ly/index.php?lang=ar&page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.card.h-100.tag"
+    title: "h5.card-title a::text"
+    url: "h5.card-title a::attr(href)"
+  article:
+    body: "div.text-dark.w-100.mt-4 p"
+    date: "article time::attr(datetime)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

@@ -14,7 +14,7 @@ listing:
 
 client: http
 concurrency: 3
-rate_limit: 0.5
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 
@@ -33,7 +33,7 @@ selectors:
     title:
       - 'meta[property="og:title"]::attr(content)'
       - 'h1::text'
-    body: div.default-item-in p
+    body: article p
     date: time.news-date::attr(datetime)
 
 cleaning:

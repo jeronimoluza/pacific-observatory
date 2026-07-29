@@ -1,0 +1,10 @@
+# TIER 2 — needs custom code. Server-rendered HTML (Apache), article URLs like
+# /<slug>-news-<id>.html with sequential IDs, but the /news.html listing has NO
+# working pagination: ?page=N, ?p=N, ?start=N and /news-N.html all return the
+# identical 12-item landing page. Only way to walk the archive is sequential
+# article-ID iteration (…-news-{id}.html), which the pagination strategy's
+# listing→card model does not support. Do NOT probe (_0_ excluded from discovery).
+name: Financial Nigeria
+country: nigeria
+language: en
+base_url: https://www.financialnigeria.com

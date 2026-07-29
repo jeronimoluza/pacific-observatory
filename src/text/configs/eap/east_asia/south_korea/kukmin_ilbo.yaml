@@ -16,7 +16,7 @@ listing:
 
 client: "http"
 concurrency: 5
-rate_limit: 0.3
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 
@@ -28,6 +28,7 @@ selectors:
     container: "article.test2"
     title: "h3"
     url: "a::attr(href)"
+    date: "time::attr(datetime)"
   article:
     date: "div.publishDate span"
     body: "div.newsview_content.smartOutput"

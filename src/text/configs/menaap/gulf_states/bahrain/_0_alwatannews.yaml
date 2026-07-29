@@ -1,0 +1,7 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: Cloudflare "Just a moment..." challenge page on homepage and category
+#   pages alike. No public API found. Tier 3.
+name: Al Watan (Bahrain)
+language: ar
+country: bahrain
+base_url: https://alwatannews.net

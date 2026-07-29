@@ -1,0 +1,15 @@
+# TIER 2 — needs custom code, not onboarded.
+# Server-rendered HTML at /rubrique/{politique,societe,economie,...}; article
+# cards present (~20 per page, container div.item / div.information.card).
+# Blocker (pagination): no working numbered pagination. Tried ?page=2 (404),
+#   /page/2 (500), /rubrique/politique/page/2 (404), ?paged=2 (200 but IDENTICAL
+#   to page1), ?start=20 (404), /rubrique/politique/2 (500). page2 content never
+#   differs from page1 => listing loads more via AJAX / infinite scroll.
+# Article URLs are absolute (https://www.banouto.bj/<section>/article/<date>-<slug>),
+#   so no URL cleaner needed — pagination is the sole blocker.
+# Next step: find the AJAX "load more" endpoint (XHR) and add a cursor/AJAX strategy.
+#
+# name: Banouto
+# country: benin
+# language: fr
+# base_url: https://www.banouto.bj

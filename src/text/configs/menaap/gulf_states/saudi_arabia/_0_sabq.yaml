@@ -1,0 +1,8 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: React/Next-style CSR (`<div id="root">`, `sabq-build-id` meta tag);
+#   category listing not present in static HTML, only a hidden accessibility
+#   nav with category links. No verified JSON API found.
+name: Sabq
+language: ar
+country: saudi_arabia
+base_url: https://sabq.org

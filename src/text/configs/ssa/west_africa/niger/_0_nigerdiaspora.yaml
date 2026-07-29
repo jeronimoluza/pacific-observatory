@@ -1,0 +1,14 @@
+# TIER 2 — needs custom code, not onboarded.
+# Platform: Joomla + YOOtheme/UIkit (item-NNN, el-item uk-panel). Server-rendered
+# HTML; category pages (/politique, /societe, /niger/economie, ...) list articles.
+# Blocker 1 (pagination): Joomla ?start=N is ignored — ?start=10 and ?start=20 both
+#   return the SAME first articles as page1 (homepage-style "Plus d'actualites"
+#   block, not a paginating blog layout) => more content loaded via AJAX.
+# Blocker 2 (URLs): article links are root-relative SEF paths ("/politique/<slug>")
+#   — need clean_url/base_url joining (feasible, but pagination must be solved first).
+# Next step: locate the AJAX/category feed endpoint or a true paginating menu item.
+#
+# name: Niger Diaspora
+# country: niger
+# language: fr
+# base_url: https://nigerdiaspora.net

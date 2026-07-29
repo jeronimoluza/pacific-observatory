@@ -13,7 +13,9 @@ listing:
   type: sitemap
   sitemap_index_url: https://www.mk.ru/sitemap/index.xml
   sitemap_regex: "articles_sitemap_\\d+_map\\.xml$"
-  url_regex: "^https://www\\.mk\\.ru/(politics|social|incident|economics|science|culture|moscow|mosobl)/"
+  # 2026-06-09: further narrowed — dropped incident (243k crime/accidents),
+  # culture (49k entertainment), science (36k) as non-EPU. Saves ~328k URLs.
+  url_regex: "^https://www\\.mk\\.ru/(politics|social|economics|moscow|mosobl)/"
 client: http
 # 2026-06-04: dialed down from c:10 r:0.3 — backfill flooded the origin and
 # every request returned HTTP 429 after the 4-attempt retry budget.

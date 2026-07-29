@@ -13,8 +13,8 @@ listing:
     - https://www.vedomosti.ru/sitemap_news3.xml
   url_regex: "^https://www\\.vedomosti\\.ru/.+/(news|articles|galleries)/20(2[5-9]|[3-9][0-9])/"
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -38,4 +38,3 @@ cleaning:
   date: handle_mixed_dates
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

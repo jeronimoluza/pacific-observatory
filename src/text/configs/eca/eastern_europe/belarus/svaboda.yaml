@@ -13,7 +13,7 @@ listing:
 
 client: http
 concurrency: 5
-rate_limit: 0.5
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 
@@ -33,7 +33,7 @@ selectors:
       - 'meta[property="og:title"]::attr(content)'
       - 'h1::text'
     body: div.wsw
-    date: meta[property='article:published_time']::attr(content)
+    date: time::attr(datetime)
 
 cleaning:
   date: handle_mixed_dates

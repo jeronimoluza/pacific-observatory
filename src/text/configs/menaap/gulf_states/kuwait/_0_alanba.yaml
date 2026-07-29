@@ -1,0 +1,6 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: Cloudflare "Just a moment..." challenge page on homepage. Tier 3.
+name: Al Anbaa
+language: ar
+country: kuwait
+base_url: https://www.alanba.com.kw

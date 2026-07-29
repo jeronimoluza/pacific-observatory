@@ -11,8 +11,8 @@ listing:
     - https://www.yenicaggazetesi.com/export/sitemap
   url_regex: "^https://www\\.yenicaggazetesi\\.com/[a-z0-9-]+-[0-9]+h\\.htm$"
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 5
+rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -36,4 +36,3 @@ cleaning:
   date: handle_mixed_dates
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

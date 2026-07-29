@@ -1,0 +1,49 @@
+name: La Voix de Djibouti
+language: fr
+country: djibouti
+base_url: https://lavoixdedjibouti.info
+
+# CAVEAT: opposition/diaspora outlet edited from exile in France (not
+# government-aligned) - included as the de-facto secondary national outlet
+# given Djibouti's very sparse local media landscape. Content is substantively
+# about Djibouti domestic affairs (politics, arrests, protests, constitution).
+# Categories: Actualites(12) - the ONLY category with real article bodies.
+# Falanqaynta(14), Emissions(4), HomeActu(36), Debats societaux(25),
+# Les journaux(24), Interviews(23) are radio/TV segment posts with EMPTY
+# content.rendered (just embedded Facebook/YouTube video iframes) - verified
+# via wp-json content field, would produce 0-length article bodies.
+# Editions-ecrites(11) are PDF-edition teaser posts (~70-100 char stubs only).
+# Opinions(37) skipped per category filter rule (commentary, not reporting).
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://lavoixdedjibouti.info/wp-json/wp/v2/posts?per_page=100&page={page}&categories=12&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: ".entry-content p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

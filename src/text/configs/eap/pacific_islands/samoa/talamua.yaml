@@ -31,5 +31,5 @@ selectors:
 cleaning:
   date: handle_mixed_dates
 
-max_pages: null
+max_pages: 10
 max_articles: null

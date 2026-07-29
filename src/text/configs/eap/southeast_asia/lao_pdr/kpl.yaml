@@ -1,7 +1,7 @@
 # KPL Configuration
 
 name: "KPL"
-country: "lao"
+country: "lao_pdr"
 base_url: "https://kpl.gov.la/"
 language: lao
 

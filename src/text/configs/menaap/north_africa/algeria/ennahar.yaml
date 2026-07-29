@@ -1,0 +1,32 @@
+name: Ennahar El Djadid
+country: algeria
+language: arabic
+base_url: https://www.ennaharonline.com
+
+listing:
+  type: pagination
+  url_template: "https://www.ennaharonline.com/national/page/{num}/"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "article.card"
+    title: "h2.card__title a::text"
+    url: "h2.card__title a::attr(href)"
+  article:
+    body: "div.artx p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

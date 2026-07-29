@@ -1,0 +1,40 @@
+# Unusable with current pipeline strategies.
+# Reason: no WordPress REST API (plain /wp-json/ or ?rest_route= both return HTML/404
+# across ~25 candidate Iranian outlets tested in this pass — Persian news sites almost
+# uniformly run custom domestic CMSs, not WordPress). Khabar Online has clean category
+# nav (/service/Politics, /service/Economy) but the listing is client-rendered: repeated
+# fetches of /service/Politics with ?page=N / ?pageNumber=N return byte-identical HTML
+# (no server-side pagination), so the pagination_template can't page through it without
+# JS execution or a hidden AJAX endpoint. hamshahrionline.ir's /archive?pi=N pagination
+# does vary by page but the ty=/ms= params tested land on a photo-gallery feed, not text
+# news — needs the right param values reverse-engineered before this is viable.
+# Other domestic outlets tried (also no WP API): ettelaat.com, mehrnews.com, farsnews.com,
+# jamejamonline.ir, javanonline.ir, asriran.com, mashreghnews.ir, alef.ir, ilna.ir, snn.ir,
+# yjc.ir, aftabnews.ir, fararu.com, tabnak.ir, kayhan.ir, entekhab.ir, donya-e-eqtesad.com.
+# etemadnewspaper.ir, khorasannews.com, tasnimnews.com, isna.ir returned connection
+# failures entirely (geo-blocking / heavy anti-bot).
+name: Khabar Online
+language: farsi
+country: iran
+base_url: https://www.khabaronline.ir
+listing:
+  type: pagination
+  url_template: "https://www.khabaronline.ir/service/Politics?page={num}"
+  start_page: 1
+  step: 1
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+cleaning:
+  date: handle_mixed_dates
+max_pages: null
+max_articles: null

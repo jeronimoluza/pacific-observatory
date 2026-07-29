@@ -8,6 +8,11 @@ listing:
   date_format: daily
   start_date: '2022-01-01'
   batch_size: 5
+  # -or-NNNN and -or-naczelni paths are audio podcast pages (no text body)
+  filters:
+    deny_url_regex:
+      - "-or-[0-9]+/[a-z0-9]+$"
+      - "-or-naczelni/[a-z0-9]+$"
 client: http
 concurrency: 5
 rate_limit: 0.5
@@ -30,4 +35,3 @@ cleaning:
   date: parse_date_from_jsonld
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

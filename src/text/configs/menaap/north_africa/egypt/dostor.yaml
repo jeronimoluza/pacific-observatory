@@ -1,0 +1,39 @@
+name: Al Dostor
+language: arabic
+country: egypt
+base_url: https://www.dostor.org
+
+# No WP API. The bare "/" homepage is served as a stripped shell via httpx
+# (Cloudflare-proxied domain, but only the root path is affected) -- use
+# /default1.aspx or /category/N pages instead, which return full content and
+# are NOT blocked. Categories: مصر/Egypt(1), اقتصاد/Economy(5), سياسي/Politics(9).
+listing:
+  type: pagination
+  url_template:
+    - "https://www.dostor.org/category/1?page={num}"
+    - "https://www.dostor.org/category/5?page={num}"
+    - "https://www.dostor.org/category/9?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.item-li"
+    title: "h3::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.paragraph-list p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

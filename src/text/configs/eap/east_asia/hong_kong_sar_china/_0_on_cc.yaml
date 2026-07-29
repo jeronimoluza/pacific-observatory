@@ -1,0 +1,40 @@
+name: on.cc (東網)
+country: hong_kong_sar_china
+language: chinese_traditional
+base_url: https://hk.on.cc
+
+# Oriental Press Group's news portal, top GDELT-volume HK outlet. Tier 2 —
+# deferred: no WP API; category page (/hk/news/index.html) returns byte-identical
+# content to the homepage (no distinct listing/pagination reachable via plain
+# GET). Article URLs follow a date-based pattern
+# (/hk/bkn/cnt/news/YYYYMMDD/bkn-<id>.html) but no archive index was found that
+# enumerates them beyond what's already on the homepage feed.
+# Needs custom code: reverse-engineer the homepage feed refresh/archive API or
+# use a browser client to discover further listing pages.
+listing:
+  type: pagination
+  url_template: "https://hk.on.cc/hk/news/index.html?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "STUB"
+    title: "STUB"
+    url: "STUB"
+  article:
+    body: "STUB"
+    date: "STUB"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

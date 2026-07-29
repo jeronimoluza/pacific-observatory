@@ -17,8 +17,8 @@ listing:
     body: "content.rendered"
 
 client: http
-concurrency: 5
-rate_limit: 0.3
+concurrency: 8
+rate_limit: 0.1
 retries: 8
 retry_seconds: 5.0
 

@@ -34,10 +34,10 @@ listing:
   - https://www.dnevnik.bg/dnevnik_stories_uragan1300000.xml.gz
   - https://www.dnevnik.bg/dnevnik_stories_uragan1350000.xml.gz
   - https://www.dnevnik.bg/dnevnik_news0.xml
-  url_regex: ^https://www\.dnevnik\.bg/[a-z0-9_/-]+/\d{4}/\d{2}/\d{2}/\d+_
+  url_regex: ^https://www\.dnevnik\.bg/(bulgaria|biznes|sviat|evropa|analizi|politika|dnevnikplus|tehnologii|zelen|morski|intervju|burzi-novini|izbori_[0-9]+|istorii_na_denia|print/(arhiv_pari|marketing_reklama|gazova_kriza|finansovata_kriza|industry_watch|komentari_i_analizi|specialni_izdaniia))(/[a-z0-9_-]+)*/\d{4}/\d{2}/\d{2}/\d+_
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 12
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -60,4 +60,3 @@ cleaning:
   date: handle_mixed_dates
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

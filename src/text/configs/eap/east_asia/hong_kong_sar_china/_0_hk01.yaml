@@ -1,0 +1,38 @@
+name: HK01 (香港01)
+country: hong_kong_sar_china
+language: chinese_traditional
+base_url: https://www.hk01.com
+
+# Top GDELT-volume HK outlet. Tier 2 — deferred: Next.js client-rendered app
+# (__NEXT_DATA__ shell in initial HTML, no server-rendered article list). An
+# internal API path (/api/v1/...) is referenced in the bundle but its shape
+# was not reverse-engineered.
+# Needs custom code: browser client, or reverse-engineer the /api/v1 endpoint
+# used by the Next.js app for article listings.
+listing:
+  type: pagination
+  url_template: "https://www.hk01.com/latest?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "STUB"
+    title: "STUB"
+    url: "STUB"
+  article:
+    body: "STUB"
+    date: "STUB"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

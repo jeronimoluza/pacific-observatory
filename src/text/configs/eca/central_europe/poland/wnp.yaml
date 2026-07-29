@@ -39,10 +39,9 @@ selectors:
     title:
       - 'meta[property="og:title"]::attr(content)'
       - 'h1::text'
-    body: div.post-content p
+    body: main.post
     date: time::attr(datetime)
 cleaning:
   date: handle_mixed_dates
 max_pages: null
 max_articles: null
-stop_date: '2025-12-01'

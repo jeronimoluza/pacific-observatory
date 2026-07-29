@@ -1,0 +1,14 @@
+# TIER 2 — needs custom code, not onboarded.
+# Platform: AngularJS (ng-article view-type list-item). Initial HTML IS
+# server-rendered (curl returns ~6 article cards under /toutes-les-rubriques/<sec>).
+# Blocker 1 (pagination): no working numbered pagination. ?page=2, ?paged=2 and
+#   ?start=20 all return byte-identical page1 (same size, same article hrefs);
+#   /page/2 => 404. Additional articles are fetched by the Angular app via AJAX.
+# Blocker 2 (URLs): article links are root-relative
+#   ("/toutes-les-rubriques/eco-finance/<slug>") — need clean_url/base_url joining.
+# Next step: find the Angular JSON/AJAX article endpoint and add a cursor strategy.
+#
+# name: Republique Togolaise
+# country: togo
+# language: fr
+# base_url: https://www.republicoftogo.com

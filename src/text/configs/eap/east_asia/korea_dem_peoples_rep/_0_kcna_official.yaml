@@ -1,0 +1,41 @@
+name: KCNA (Official)
+country: korea_dem_peoples_rep
+language: en
+base_url: http://kcna.kp
+
+# Genuine official DPRK state news agency domain (distinct from kcna_watch.yaml,
+# a US-based mirror/monitoring project). Reachable over plain HTTP, has an
+# English tab at /en with real article/detail pages (meta article:published_time
+# present). Tier 2 — deferred: category listing pages (/en/article/list/<hash>)
+# render 0 articles server-side; the article rows are fetched client-side via a
+# POST to the same URL with a CSRF token (form fields page_num/cnt_per_page/_csrf,
+# JS var `total`/`cur_page`). No GET-based page={N} pattern exists.
+# Needs custom code: either a browser client or a POST-request strategy that
+# extracts and replays the _csrf token per category hash.
+listing:
+  type: pagination
+  url_template: "http://kcna.kp/en/article/list/6a47505ba5268fd7749c0fe11e4b24b4?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "STUB"
+    title: "STUB"
+    url: "STUB"
+  article:
+    body: "STUB"
+    date: "STUB"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

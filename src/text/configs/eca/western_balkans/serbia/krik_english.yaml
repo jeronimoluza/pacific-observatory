@@ -39,4 +39,3 @@ cleaning:
   body: clean_wp_html_body
 max_pages: null
 max_articles: null
-stop_date: '2018-01-01'  # Site publishes infrequently (latest = 2025-10), keep all

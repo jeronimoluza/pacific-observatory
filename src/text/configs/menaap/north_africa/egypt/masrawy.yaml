@@ -1,0 +1,40 @@
+name: Masrawy
+language: arabic
+country: egypt
+base_url: https://www.masrawy.com
+
+# No WP API; homepage/category pages have no URL-based pagination (?page=N is
+# silently ignored, category pages are JS "load more"). robots.txt exposes a
+# per-category sitemap-index system instead:
+#   /feeds/sitemap                       -> top index of 6 categoryid sitemapindexes
+#   /feeds/sitemap?categoryid=25         -> sitemapindex of ~624 dated pageIndex sub-sitemaps
+#   /feeds/sitemap?categoryid=25&pageIndex=N&pageSize=100 -> ~30 <url> entries each
+# categoryid=25 mixes news_egypt/news_economy/news_cases (national+economy);
+# other categoryids (210 arts, 217 health, 27 sports, 373 autos, 262 islamic)
+# are excluded per the national>economy>politics rule. Archive depth is large
+# (pageIndex=624 reaches back to 2020-11-26).
+listing:
+  type: sitemap
+  sitemap_index_url: "https://www.masrawy.com/feeds/sitemap?categoryid=25"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: "news\\:publication_date::text"
+  article:
+    body: "div.ArticleDetails.details p"
+    date: "script[type='application/ld+json']::text"
+
+cleaning:
+  date: parse_date_from_jsonld
+
+max_pages: null
+max_articles: null

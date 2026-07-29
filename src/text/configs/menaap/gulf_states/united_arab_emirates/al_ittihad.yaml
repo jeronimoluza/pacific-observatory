@@ -1,0 +1,32 @@
+name: Al Ittihad
+language: ar
+country: united_arab_emirates
+base_url: https://www.aletihad.ae
+
+listing:
+  type: pagination
+  url_template: "https://www.aletihad.ae/category/الإمارات?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.inner2"
+    title: "a[href*='/news/']::text"
+    url: "a[href*='/news/']::attr(href)"
+  article:
+    body: "div.art-text p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

@@ -1,0 +1,50 @@
+# Deferred (Tier 2). Not activated — pipeline skips files prefixed with `_`.
+# Site: https://www.leaders.com.tn/ (custom PHP CMS, French, economy/business).
+# Listing works cleanly: `/categorie/news?page={num}` pagination, per-article
+# container `div.news` (15 articles/page, verified via BeautifulSoup), body
+# selector `div.content p` on the article page both verified working.
+# Blocker: NO usable date source out of the box.
+#   - No `article:published_time` meta tag (or any other date meta/ld+json).
+#   - Only date source is `div.infos` text, rendered as
+#     "<a><strong>News</strong></a> - 23.07.2026" — get_text() on the div
+#     yields "News - 23.07.2026", which handle_mixed_dates() cannot parse
+#     (it only strips known prefixes like Published/Posted/Date/On/Updated,
+#     not an arbitrary category label like "News"/"Economie"/etc.).
+# Fix needed: a small (~10-15 line) country-specific cleaning function in
+# src/text/scrapers/pipelines/cleaning/tunisia.py that strips the leading
+# category-label text before the " - DD.MM.YYYY" tail, then delegates to
+# handle_mixed_dates. Not written here per task scope (config-writing only,
+# no code changes) — revisit if this source is prioritized.
+
+name: Leaders
+language: fr
+country: tunisia
+base_url: https://www.leaders.com.tn
+
+listing:
+  type: pagination
+  url_template: "https://www.leaders.com.tn/categorie/news?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.news"
+    title: "div.title a::text"
+    url: "div.title a::attr(href)"
+  article:
+    body: "div.content p"
+    date: "div.infos::text"   # TODO: needs custom cleaner, see comment above
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

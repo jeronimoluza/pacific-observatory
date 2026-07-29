@@ -2,6 +2,9 @@ name: Jutarnji List
 language: hr
 country: croatia
 base_url: https://www.jutarnji.hr
+# /vijesti/?page={n} returns page-2 content for any n>=2 (server ignores n).
+# max_pages: 1 limits discovery to start_url + page 2 (~277 unique URLs).
+# Backfill from this source is bounded; ongoing refresh works.
 listing:
   type: pagination
   start_url: https://www.jutarnji.hr/vijesti/
@@ -10,7 +13,7 @@ listing:
   batch_size: 5
 client: http
 concurrency: 3
-rate_limit: 1.0
+rate_limit: 0.1
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -28,6 +31,5 @@ selectors:
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates
-max_pages: null
+max_pages: 1
 max_articles: null
-stop_date: '2025-12-01'

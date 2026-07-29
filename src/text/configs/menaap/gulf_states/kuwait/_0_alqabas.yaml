@@ -1,0 +1,7 @@
+# Unusable with current pipeline strategies (deferred, not fabricated).
+# Reason: Cloudflare "Just a moment..." challenge page AND Next.js CSR
+#   (__NEXT_DATA__ present, empty static HTML shell). Tier 3.
+name: Al Qabas
+language: ar
+country: kuwait
+base_url: https://www.alqabas.com

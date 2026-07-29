@@ -3,20 +3,23 @@ language: hr
 country: croatia
 base_url: https://www.novilist.hr
 # /novosti/page/N/ returns near-identical content (fake pagination, 90% overlap).
-# Using WordPress REST API.
+# WP REST API works but discovery is sequential (see TODO.md re: api.py).
+# Yoast sitemap_index.xml lists 625 post-sitemapN.xml; the unnumbered
+# post-sitemap.xml is the rolling current file (updated daily), the numbered
+# ones are frozen historic archives from 2011 onwards.
+# 2026-06-04: BACKFILL MODE — widened regex to match all post-sitemap*.xml.
+# After backfill catches up, narrow regex back to "/post-sitemap\\.xml$" and
+# drop concurrency to 3, rate_limit to 1.0 for routine refresh.
+# Note: sitemap.py:113 lex-sorts descending, so historic walk order is messy
+# (post-sitemap9.xml before post-sitemap89.xml), but every file gets walked.
 listing:
-  type: api
-  pagination_type: page
-  page_start: 1
-  page_step: 1
-  url_template: https://www.novilist.hr/wp-json/wp/v2/posts?per_page=100&page={page}&_fields=id,date,link,title
-  json_paths:
-    url: link
-    title: title.rendered
-    date: date
+  type: sitemap
+  sitemap_index_url: https://www.novilist.hr/sitemap_index.xml
+  sitemap_regex: "/post-sitemap\\d*\\.xml$"
+  url_regex: "^https://www\\.novilist\\.hr/"
 client: http
-concurrency: 3
-rate_limit: 1.0
+concurrency: 10
+rate_limit: 0.3
 retries: 3
 retry_seconds: 2.0
 headers:
@@ -26,9 +29,10 @@ headers:
   Accept-Language: hr-HR,hr;q=0.9,en;q=0.8
 selectors:
   thumbnail:
-    container: filler
-    title: filler
-    url: filler
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
   article:
     title:
       - 'meta[property="og:title"]::attr(content)'
@@ -37,6 +41,5 @@ selectors:
     date: meta[property='article:published_time']::attr(content)
 cleaning:
   date: handle_mixed_dates
-max_pages: null
+max_pages: 700
 max_articles: null
-stop_date: '2025-12-01'

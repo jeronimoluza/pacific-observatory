@@ -1,0 +1,20 @@
+# TIER 2 — deferred: needs custom code, not plain numbered pagination.
+# investiraucameroun.com (Cameroon economic news, Drupal-ish custom theme).
+# Why deferred:
+#   1. Section pagination is inert. /gestion-publique?page=1 and ?page=2 return
+#      byte-identical article sets to the base section page (overlap 36/36 and
+#      12/12, zero new links) — the ?page= param does not advance the list, so a
+#      generic pagination listing would re-scrape page 1 forever. A working pager
+#      (AJAX endpoint or a different URL scheme) must be discovered first.
+#   2. No standard article-card container. article / div.views-row / div.node /
+#      .teaser / div.post all return 0 elements; the listing uses a bespoke
+#      wrapper class that must be identified.
+#   3. Listing links are polluted with off-domain hrefs (rapports.investiraucameroun.com,
+#      agenceecofin.com) that a custom url filter must strip to keep only
+#      on-site /<section>/<id>-<slug> articles.
+# Homepage serves full server-rendered HTML (no Cloudflare wall on GET), so the
+# content IS reachable — this is a selector+pagination engineering task, not a Tier 3.
+name: Investir au Cameroun
+country: cameroon
+language: fr
+base_url: https://www.investiraucameroun.com

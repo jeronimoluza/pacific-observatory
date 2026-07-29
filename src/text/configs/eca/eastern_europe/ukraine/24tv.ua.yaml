@@ -12,7 +12,7 @@ listing:
   url_regex: "^https://24tv\\.ua/[^/]+_n[0-9]+$"
 
 client: http
-concurrency: 3
+concurrency: 5
 rate_limit: 0.5
 retries: 3
 retry_seconds: 2.0
