@@ -1,0 +1,9 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: zairyo
+url: https://zairyo.com.sg
+language: en
+cadence: daily
+channel: supermarket

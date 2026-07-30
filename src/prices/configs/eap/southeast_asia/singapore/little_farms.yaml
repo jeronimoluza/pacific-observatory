@@ -1,0 +1,9 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: little_farms
+url: https://www.littlefarms.com
+language: en
+cadence: daily
+channel: supermarket
