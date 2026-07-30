@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: lemon_farm
+url: https://shop.lemonfarm.com
+language: th
+cadence: daily
+channel: supermarket
+notes: >
+  Shopify storefront; public /products.json endpoint, no auth, paginates via
+  ?page=N&limit=250. Product titles stay Thai even under the /en UI path —
+  only chrome localizes, not catalog data. product_type is null for most
+  items, so category is often null (fine per skill guidance).
