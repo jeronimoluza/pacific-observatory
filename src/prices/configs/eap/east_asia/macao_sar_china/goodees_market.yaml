@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: goodees_market
+url: https://goodees.market
+language: en
+cadence: daily
+channel: supermarket
+active: true
+notes: >
+  Macau boutique grocery e-commerce (Magento 2), MOP pricing. Small catalog
+  (~5 listing pages under /all.html). Price/SKU only render on the PDP, not
+  the listing card, so the spider is two-hop: list pages for product URLs,
+  then one request per PDP. Other Macau candidates ruled out during 2026-07-30
+  triage: Royal Supermarket and San Miu are info-only sites with no online
+  shop; ParknShop (pns.hk) is Akamai-blocked (403) and its eShop is likely
+  Hong Kong-delivery-only anyway (Macau has a separate "PARKnSHOP Macau" app
+  with no confirmed web storefront) - not pursued further.
