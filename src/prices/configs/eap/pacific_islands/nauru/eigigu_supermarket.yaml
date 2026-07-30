@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+channel: supermarket
+spider: eigigu_supermarket
+url: https://eigigu.net/
+language: en
+cadence: daily
+notes: >
+  Ecwid "Instant Site" storefront. The Ecwid Storefront REST API
+  (app.ecwid.com/api/v3/<store_id>/products, store_id=26387184) 403s without an
+  OAuth/public token, and none is exposed client-side on this Instant Site (unlike
+  the JS-widget Ecwid embed, which does carry a public token) — so this ships as
+  scrapy_html against the server-rendered category pages instead of scrapy_api.
+  9 top-level categories crawled (BABY-CARE, CEREAL, CHILLED-JUICES-&-DRINKS,
+  LAUNDRY-&-HOUSEHOLD, PANTRY, PERSONAL-CARE, POULTRY-MEAT-&-SEAFOOD,
+  SNACKS-&-CONFECTIONERY, TIN-FOODS). Pagination beyond page 1 is client-side JS
+  (`.pager__button--next`, `?page=N` returns page 1 again server-side) and is not
+  crawled — first-page-only coverage per category (~12-60 items each). Rows with
+  a $0.00 placeholder price (out-of-stock / unpriced items) are dropped.
