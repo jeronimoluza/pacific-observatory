@@ -67,6 +67,17 @@ _BONUS_PLUS_RE = re.compile(r"\d\s*\+\s*$")
 _ORDER_GUARDED_IDS = frozenset({"EN_SACHETS", "EN_APOS_S"})
 _COUNT_BEFORE_MEASURE_CAP = 30
 
+# Explicit multiplication operator immediately preceding a promoted count-noun
+# match ("1.5g × 20개", "90g*3개입") is the unambiguous "per-unit measure ×
+# counter" multipack shape: the counter multiplies the measure, so it belongs
+# in `multiplier`, not the UV-inert `count` (Convention A, merge.py:
+# compute_unit_value). "x"/"X" additionally require a non-letter neighbor on
+# both sides so a brand token ending in the letter x ("Kleenex 20개") never
+# misreads as an operator; "×"/"✕"/"*" are unambiguous symbols (never a word's
+# trailing letter, e.g. the unit-letter-adjacent "90g*3") so no such guard
+# applies to them.
+_MULTIPLY_OP_ADJ_RE = re.compile(r"(?:(?<![A-Za-z0-9])[xX](?![A-Za-z])|[×✕*])\s*$")
+
 
 def _clean_promote_count(ec_cand, stripped: str):
     """The count-noun integer eligible to compose into a measure's count, or None.
@@ -330,9 +341,13 @@ def _rung_pack_unit_emit(st):
             # "<per-unit measure>. Pack N" (e.g. "17.5g. Pack 60sachets") is a
             # MULTIPACK: the measure is per-unit and N multiplies it, whatever the
             # basis. "N Pack <total>" ("Thin Sausages 24 Pack 1.8kg") does NOT
-            # match `Pack\s*N`, so its count stays inert as before.
-            if um["basis"] == "volume" or re.search(
-                rf"[Pp]ack\s*0*{n}(?!\d)", st.item_name
+            # match `Pack\s*N`, so its count stays inert as before. Likewise an
+            # explicit multiply operator joining the measure and N ("1.5g × 20개")
+            # is an unambiguous multipack signal on mass basis too.
+            if (
+                um["basis"] == "volume"
+                or st.noun_count_via_operator
+                or re.search(rf"[Pp]ack\s*0*{n}(?!\d)", st.item_name)
             ):
                 multiplier = n
             else:
@@ -361,8 +376,14 @@ def _rung_basis_marker_pred(st):
 
 
 def _rung_basis_marker_emit(st):
+    # A bare "Per KG"/"Per L" marker means the price IS already stated per
+    # standard unit, i.e. amount_value=1.0 (one kg / one litre) so
+    # compute_unit_value's denominator (amount_value * multiplier) collapses to
+    # 1 and unit_value == price. amount_value=None (the old behavior) instead
+    # made Convention A's mass/volume branch return None outright, silently
+    # dropping the unit value for every bare-marker name.
     return _finish(
-        st, st.basis_marker, _BASIS_TO_SU.get(st.basis_marker, "item"), None, 1, 1
+        st, st.basis_marker, _BASIS_TO_SU.get(st.basis_marker, "item"), 1.0, 1, 1
     )
 
 
@@ -470,7 +491,17 @@ def decide(
     # pack-size token — never the loose single-suffix matchers (bare `\d+s` /
     # `\d+'s`, which fire on brands/sizes), never an implausible size, and never
     # a numeric-range low bound (e.g. "9-11pcs" is a size range, not a pack of 11).
-    noun_count_raw = _clean_promote_count(by.get("extra_count"), stripped)
+    ec_cand = by.get("extra_count")
+    noun_count_raw = _clean_promote_count(ec_cand, stripped)
+
+    # Was the promoted count-noun joined to the measure by an explicit
+    # multiplication operator ("1.5g × 20개")? If so rung 3 routes it to
+    # `multiplier` instead of `count` — see _MULTIPLY_OP_ADJ_RE above.
+    noun_count_via_operator = False
+    if noun_count_raw is not None and ec_cand is not None and ec_cand.span:
+        span = ec_cand.span
+        window = stripped[max(0, span[0] - 6) : span[0]]
+        noun_count_via_operator = bool(_MULTIPLY_OP_ADJ_RE.search(window))
 
     basis_marker = None
     if pack_unit is None and extra_entry is None:
@@ -492,6 +523,7 @@ def decide(
         extra_value=extra_value,
         extra_count=extra_count,
         noun_count_raw=noun_count_raw,
+        noun_count_via_operator=noun_count_via_operator,
         basis_marker=basis_marker,
         multi_pack=multi_pack,
     )

@@ -10,7 +10,7 @@ from prices.enrich.versioning import input_hash
 
 # Currencies that use European-style number formatting:
 # '.' = thousands separator, ',' = decimal separator.
-_EU_FORMAT_CURRENCIES = {"EUR", "ARS", "BRL", "CLP", "COP", "IDR"}
+_EU_FORMAT_CURRENCIES = {"EUR", "ARS", "BRL", "CLP", "COP", "IDR", "VND"}
 
 
 def parse_price(price_str, currency: Optional[str] = None) -> Optional[float]:
