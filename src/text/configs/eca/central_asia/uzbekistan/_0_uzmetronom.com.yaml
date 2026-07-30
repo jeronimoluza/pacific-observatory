@@ -1,0 +1,13 @@
+# Unusable -- site is frozen, not dead-domain but dead-content.
+# Reason: homepage and article archive links are all dated 2021-2022;
+# newest article found via crawl is 2026-04-07 -- actually the whole
+# reachable archive tops out at 2022-04-07 (confirmed via cf-cache-status:
+# DYNAMIC, i.e. not a stale CDN cache -- the origin genuinely serves no
+# newer content). Over 4 years stale as of this onboarding pass (2026-07).
+# Was previously flagged as "known independent Uzbek news/opinion site,
+# worth pursuing" -- that assessment is now stale; the outlet appears to
+# have stopped publishing. Revisit only if the site resumes publishing.
+name: UzMetronom
+language: ru
+country: uzbekistan
+base_url: https://uzmetronom.com

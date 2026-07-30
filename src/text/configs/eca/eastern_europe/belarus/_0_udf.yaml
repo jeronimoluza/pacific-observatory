@@ -1,0 +1,42 @@
+# Unusable with current pipeline: SSL certificate verify failure.
+# Reason: udf.name's TLS cert chain fails httpx's default verify=True
+# (curl/browsers may tolerate it via a different trust store, but the
+# pipeline's AsyncHttpClient has no per-source verify=False option).
+# Confirmed via `text collect --source udf`:
+#   [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed:
+#   unable to get local issuer certificate (_ssl.c:1010)
+# Selectors/pagination below were otherwise verified working (real
+# pagination, JSON-LD date). Revisit if the site fixes its cert chain or
+# the pipeline gains a verify-disable knob.
+name: UDF.by
+language: ru
+country: belarus
+base_url: https://udf.name
+
+listing:
+  type: pagination
+  url_template: "https://udf.name/news/page/{num}/"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.article1"
+    title: "div.article_title_news a::text"
+    url: "div.article_title_news a::attr(href)"
+  article:
+    body: "div.content p"
+    date: "script[type='application/ld+json']::text"
+
+cleaning:
+  date: parse_date_from_jsonld
+  url: clean_url
+
+max_pages: null
+max_articles: null

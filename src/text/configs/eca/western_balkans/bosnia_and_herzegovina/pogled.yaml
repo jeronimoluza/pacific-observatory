@@ -1,0 +1,44 @@
+name: Pogled.ba
+language: bs
+country: bosnia_and_herzegovina
+base_url: https://pogled.ba
+
+# Categories: Novosti(41), BiH(43), Politika(47), Gospodarstvo(48)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: https://pogled.ba/wp-json/wp/v2/posts?per_page=100&page={page}&categories=41,43,47,48&_fields=id,date,link,title,content
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: application/json
+  Accept-Language: bs-BA,bs;q=0.9,hr;q=0.8,sr;q=0.7,en;q=0.6
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: div.post_content p
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

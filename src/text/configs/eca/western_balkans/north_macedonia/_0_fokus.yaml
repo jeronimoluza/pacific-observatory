@@ -1,0 +1,7 @@
+# Unusable with current pipeline strategies.
+# Reason: Cloudflare "Attention Required!" challenge blocks both the
+# homepage and the wp-json/wp/v2/posts endpoint.
+name: Fokus
+country: north_macedonia
+language: mk
+base_url: https://fokus.mk

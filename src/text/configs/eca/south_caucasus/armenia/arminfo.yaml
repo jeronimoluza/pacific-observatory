@@ -1,0 +1,42 @@
+name: ArmInfo
+language: ru
+country: armenia
+base_url: https://arminfo.info
+
+# ArmInfo news agency, Russian-language wire (arminfo.am 301-redirects here).
+# Legacy PHP CMS (not WordPress) — no JSON API. HTML pagination via
+# news.php?n={num}&lang=2 (lang=2 = Russian; lang=1 Armenian, lang=3 English
+# exist but untested). No thematic category split found in the crawled nav,
+# so this pulls the general all-news firehose (verified on-topic: politics/
+# economy/business, not sports/lifestyle).
+listing:
+  type: pagination
+  url_template: "https://arminfo.info/news.php?n={num}&lang=2"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+
+selectors:
+  thumbnail:
+    container: tr
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: 'div.intrig_style > div[style*="font-size:14px"] p'
+    date: 'div.intrig_style div[style*="17708d"]::text'
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

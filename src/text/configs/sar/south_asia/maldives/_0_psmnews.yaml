@@ -1,0 +1,21 @@
+# TIER 2 STUB — not activated (filename prefixed `_0_` so the pipeline skips it).
+# Public Service Media (psmnews.mv) — Maldives state broadcaster news portal.
+# Findings (2026-07-29):
+#   - Custom CMS (no WP API, no RSS). Categories via clean paths: /news, /political,
+#     /business, /world, /sports (Dhivehi labels).
+#   - Pagination via ?page=N on category pages WORKS (verified 0 overlap between
+#     /news?page=1 and /news?page=2, ~15 articles/page).
+#   - BUT article title+url anchors have no stable shared CSS class — cards are
+#     laid out with per-instance Tailwind utility classes (e.g. "bg-white flex m-3
+#     md:m-0 mb-0 flex-col md:flex-col w-1/2 md:ml-4") that vary between the image
+#     link and the title link and between card positions. A robust selector needs
+#     either an href-pattern match (CSS can't do `href~=/\d+$`) or custom parsing
+#     code — hence Tier 2, not Tier 1.
+#   - Article page date meta not yet located; body container not yet located.
+# Next step if revisited: write a small custom extraction rule (regex on href
+# ending in /<digits>) instead of a CSS container selector, similar to how
+# Eswatini Times needed a custom cleaner (see known_quirks.md).
+name: Public Service Media Maldives
+country: maldives
+language: dv
+base_url: https://psmnews.mv

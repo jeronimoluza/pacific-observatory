@@ -1,0 +1,40 @@
+# United Daily News (聯合報) Configuration
+# Taiwan's largest-circulation national daily newspaper
+# Breaking-news listing page has ~28 articles loaded server-side; no working
+# pagination (?page=N returns identical content, /news/breaknews/2 returns HTTP 410),
+# so this is a single-page follow_link; terminates naturally when follow_selector
+# finds nothing.
+
+name: "United Daily News"
+country: "taiwan_china"
+language: "zh"
+base_url: "https://udn.com/"
+
+listing:
+  type: "follow_link"
+  start_url: "https://udn.com/news/breaknews/1"
+  follow_selector: "a.next-page::attr(href)"
+
+client: "http"
+concurrency: 5
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
+selectors:
+  thumbnail:
+    container: "div.story-list__text"
+    title: "h2 a::text"
+    url: "h2 a::attr(href)"
+  article:
+    date: "meta[property='article:published_time']::attr(content)"
+    body: "section.article-content__wrapper p"
+
+cleaning:
+  date: "handle_mixed_dates"
+
+max_pages: null
+max_articles: null

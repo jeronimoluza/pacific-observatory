@@ -1,0 +1,7 @@
+# Unusable with current pipeline strategies.
+# Reason: wp-json/wp/v2/posts endpoint returns bare "Forbidden" (bot
+# protection), not JSON.
+name: Gazeta Sheshi
+country: kosovo
+language: sq
+base_url: https://gazetasheshi.com

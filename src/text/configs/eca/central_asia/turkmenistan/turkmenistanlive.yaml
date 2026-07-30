@@ -1,0 +1,43 @@
+name: Turkmenistan Live
+country: turkmenistan
+language: ru
+base_url: https://turkmenistanlive.com
+
+# Categories: Politika(4), Ekonomika(3) -- both Cyrillic slugs URL-encode
+# oddly so category IDs are used instead of slugs. Feed mixes genuine
+# Turkmenistan reporting (MFA meetings, president decrees, Ashgabat/Caspian
+# affairs, TM-Uzbek trade) with some syndicated generic world-wire items
+# (~25-35% off-topic) -- accepted given Turkmenistan's thin source pool.
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://turkmenistanlive.com/wp-json/wp/v2/posts?per_page=100&page={page}&categories=4,3&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "article p"
+    date: "time.entry-date::attr(datetime)"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

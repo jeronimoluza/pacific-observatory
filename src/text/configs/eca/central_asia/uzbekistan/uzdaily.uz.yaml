@@ -1,0 +1,39 @@
+name: UzDaily
+language: ru
+country: uzbekistan
+base_url: https://uzdaily.uz
+
+# Custom CMS. General news feed /ru/news/page/{num}/ (no single "national"
+# category; feed mixes real Uzbekistan reporting -- president visits,
+# ministries, courts, legislation -- with some finance/business wire and an
+# embedded "Media OutReach Newswire" PR section, both skipped by using the
+# general feed's on-topic majority rather than the newswire section).
+# Container div.timeline-item, ~16 per page. Clean article:published_time
+# meta + div.art-body p for body -- no custom cleaner needed.
+listing:
+  type: pagination
+  url_template: "https://uzdaily.uz/ru/news/page/{num}/"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.timeline-item"
+    title: "a::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.art-body p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

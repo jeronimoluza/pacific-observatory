@@ -1,0 +1,38 @@
+name: Fakty.ua
+language: uk
+country: ukraine
+base_url: https://fakty.ua
+
+# No WP API, custom CMS. sitemap_index.xml exposes monthly sub-sitemaps back
+# to 1999 (archive_depth: large) in both uk (default) and ru (-ru suffix)
+# variants -- keep only the default (Ukrainian) ones.
+listing:
+  type: sitemap
+  sitemap_index_url: https://fakty.ua/sitemap_index.xml
+  sitemap_regex: "sitemap/sitemap\\d{4}-\\d{2}\\.xml\\.gz$"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: "div#article_content3 p"
+    date: "meta[property='og:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

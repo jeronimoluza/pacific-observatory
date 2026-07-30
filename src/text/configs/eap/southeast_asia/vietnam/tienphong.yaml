@@ -1,0 +1,34 @@
+name: Tiền Phong
+country: vietnam
+language: vi
+base_url: "https://tienphong.vn"
+
+# Xa hoi (society/national news) listing. No real archive pagination found --
+# max_pages: null accepts front-page-only depth (~25 articles) going forward.
+listing:
+  type: pagination
+  url_template: "https://tienphong.vn/xa-hoi.html?p={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: ".story"
+    title: ".story__heading a::text"
+    url: ".story__heading a::attr(href)"
+  article:
+    body: ".article__body p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

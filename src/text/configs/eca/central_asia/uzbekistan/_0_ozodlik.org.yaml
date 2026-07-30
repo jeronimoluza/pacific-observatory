@@ -1,0 +1,53 @@
+# BROKEN -- deferred after a live probe, not just a pre-check guess.
+# Reason: Ozodlik (Ozodlik Radiosi), RFE/RL Uzbek service, same Pangea CMS
+# as azathabar.com (Turkmen, onboarded) and ozodi.org (Tajik, onboarded).
+# Sitemap structure is identical (sitemap_13_N.xml.gz + latest/news/
+# sections/videos), and the same selectors (div.wsw / time[pubdate]) work
+# on this outlet's genuine text articles. BUT unlike azathabar, the
+# majority of /a/<id>.html URLs in this outlet's sitemaps (including the
+# dedicated "news" sub-sitemap) resolve to radio-program placeholder pages
+# (title "Радиодастур", empty div.wsw) rather than text articles.
+# `text collect --source ozodlik.org --max-articles 50` scored 3/49
+# scraped (46 empty-body failures) -- far below the 0.7 GREEN threshold.
+# Revisit only if a URL-level filter can distinguish text articles from
+# radio-program pages within the sitemap (e.g. a path/slug pattern), which
+# a quick pass did not find.
+name: Ozodlik
+language: uz
+country: uzbekistan
+base_url: https://www.ozodlik.org
+
+listing:
+  type: sitemap
+  sitemap_index_url: https://www.ozodlik.org/sitemap.xml
+  sitemap_regex: "sitemap_13_(latest|news|[0-9]+)\\.xml\\.gz$"
+  url_regex: "^https://www\\.ozodlik\\.org/a/(?:[a-z0-9-]+/)?[0-9]+\\.html$"
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+
+selectors:
+  thumbnail:
+    container: url
+    title: loc::text
+    url: loc::text
+    date: lastmod::text
+  article:
+    title:
+      - 'meta[property="og:title"]::attr(content)'
+      - 'h1::text'
+    body: div.wsw
+    date: time[pubdate]::attr(datetime)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

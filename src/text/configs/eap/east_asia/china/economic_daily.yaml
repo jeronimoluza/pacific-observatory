@@ -1,0 +1,39 @@
+# Economic Daily (经济日报) — official web portal China Economic Net (中国经济网, ce.cn)
+# National domestic-affairs/politics section (国内时政, "gdxw"). Non-WordPress
+# static .shtml portal; page 1 = directory index, subsequent pages are index_{N}.shtml
+# (index_0.shtml 404s — pagination starts at index_1.shtml for page 2).
+# Listing hrefs are relative ("./202607/..."); base_url MUST be the section path
+# (not domain root) so urljoin resolves correctly.
+
+name: "Economic Daily (China Economic Net)"
+country: "china"
+language: "zh"
+base_url: "http://www.ce.cn/xwzx/gnsz/gdxw/"
+
+listing:
+  type: "pagination"
+  start_url: "http://www.ce.cn/xwzx/gnsz/gdxw/"
+  url_template: "http://www.ce.cn/xwzx/gnsz/gdxw/index_{num}.shtml"
+  start_page: 1
+  step: 1
+
+client: "http"
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "ul.con li"
+    title: "span.f1 a::text"
+    url: "span.f1 a::attr(href)"
+  article:
+    body: ".content p"
+    date: "meta[name='publishdate']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

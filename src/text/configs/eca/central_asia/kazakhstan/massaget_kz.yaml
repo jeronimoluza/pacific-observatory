@@ -1,0 +1,40 @@
+name: Massaget.kz
+language: kk
+country: kazakhstan
+base_url: https://massaget.kz
+
+# Kazakh-language national news portal. No dedicated national/economy/politics
+# section found (only aimaq/regions, layfstayl/lifestyle, sport, press_release) —
+# falls back to the general /news/ listing per the category rule.
+listing:
+  type: pagination
+  url_template: https://massaget.kz/news/page/{num}
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: kk-KZ,kk;q=0.9,ru;q=0.8,en;q=0.7
+
+selectors:
+  thumbnail:
+    container: div.ms-article-grid-item
+    title: a::text
+    url: a::attr(href)
+  article:
+    body: div.my-app p
+    date: meta[property='article:published_time']::attr(content)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

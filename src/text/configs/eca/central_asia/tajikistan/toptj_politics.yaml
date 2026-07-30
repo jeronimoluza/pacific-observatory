@@ -1,0 +1,38 @@
+name: TopTJ Politics
+language: ru
+country: tajikistan
+base_url: https://toptj.com
+
+# Custom CMS (not WordPress). HTML pagination on /news/politika?page={num}.
+# Container div.news-card inside div.folder-grid, ~20 per page, deep archive
+# (sliding-window pagination confirmed past page 5). Article date lives in
+# div.article__meta as "29 июля 2026, 12:35" (Russian month name) -- no
+# article:published_time meta tag -- handle_mixed_dates already covers
+# Russian month-name substitution so no custom cleaner needed.
+listing:
+  type: pagination
+  url_template: "https://toptj.com/news/politika?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.news-card"
+    title: "h3.news-card__title a::text"
+    url: "h3.news-card__title a::attr(href)"
+  article:
+    body: "div.article__body p"
+    date: "div.article__meta::text"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

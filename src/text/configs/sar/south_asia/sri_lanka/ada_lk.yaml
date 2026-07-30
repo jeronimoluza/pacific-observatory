@@ -1,0 +1,35 @@
+name: Ada.lk
+country: sri_lanka
+language: si
+base_url: https://www.ada.lk
+
+# Breaking/Local news(11) + Business(7); offset-paginated in steps of 30
+listing:
+  type: pagination
+  url_template:
+    - "https://www.ada.lk/breaking_news/11/{num}"
+    - "https://www.ada.lk/business/7/{num}"
+  start_page: 0
+  step: 30
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.cat-b-row"
+    title: "h5 a::text"
+    url: "h5 a::attr(href)"
+  article:
+    body: "div.single-body-wrap p"
+    date: "meta[itemprop='datePublished']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

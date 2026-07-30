@@ -1,0 +1,42 @@
+# Unusable with current pipeline strategies (deferred, needs custom code).
+# Reason: Caucasus Business Week (cbw.ge) has clean HTML pagination
+#   (/category/economy?page=N works, ~248 pages deep) and a verified
+#   per-article container (div.col-xl-4.col-sm-6.col-xs-12, 9/page), but
+#   article pages expose NO absolute publish date anywhere (no meta tag,
+#   no JSON-LD) -- only a relative string like "Posted: 1 month ago" in
+#   div.date. handle_mixed_dates only resolves French/Spanish relative
+#   phrases (_parse_relative_date); it does not parse English "N month(s)
+#   ago" / "N day(s) ago". Would need a small custom cleaner to convert
+#   English relative dates to YYYY-MM-DD before this is a zero-code Tier 1.
+name: Caucasus Business Week
+language: en
+country: georgia
+base_url: https://cbw.ge
+
+listing:
+  type: pagination
+  url_template: "https://cbw.ge/category/economy?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.col-xl-4.col-sm-6.col-xs-12"
+    title: "a::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.date"
+    date: "div.date::text"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

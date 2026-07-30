@@ -1,0 +1,13 @@
+# Deferred: Tier2, needs custom code.
+# Reason: yerkir.am (Yerkir Media) is SSR with clean article URLs
+#   (https://yerkir.am/hy/article/YYYY/MM/DD/<id>) but the homepage listing is
+#   filtered client-side via jQuery tabs (#perDay/#perMonth/#perWeek) with no
+#   discoverable ?page=N or archive endpoint on the current domain. The site's
+#   own /sitemap.xml points to a stale legacy domain (yerkirmedia.am,
+#   50k-url sitemap capped at lastmod 2022-06-21) that predates the current
+#   yerkir.am relaunch — not usable for current content. Needs either reverse-
+#   engineering the tab AJAX call or a fresh sitemap probe on yerkir.am itself.
+name: Yerkir Media
+language: hy
+country: armenia
+base_url: https://yerkir.am

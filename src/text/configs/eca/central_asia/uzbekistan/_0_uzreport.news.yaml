@@ -1,0 +1,11 @@
+# Unusable with current pipeline strategies (deferred, not confirmed dead).
+# Reason: not WordPress (wp-json and ?rest_route both fail). Has real
+# category nav (siyosat/politics, iqtisodiyot/economy) with substantive
+# content, but /politics?page=2 returns byte-identical HTML to page 1 --
+# pagination is silently ignored (same failure mode as Times of Eswatini).
+# No visible "load more" AJAX endpoint found on a quick pass. Would need a
+# `follow_link` or AJAX-endpoint investigation to unlock; revisit later.
+name: UzReport
+language: uz
+country: uzbekistan
+base_url: https://uzreport.news

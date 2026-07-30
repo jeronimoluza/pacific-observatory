@@ -1,0 +1,7 @@
+# Unusable with current pipeline strategies.
+# Reason: Cloudflare JS challenge ("Just a moment...") blocks both the
+# homepage and the wp-json/wp/v2/posts endpoint. Would need browser client.
+name: Politiko
+country: albania
+language: sq
+base_url: https://politiko.al

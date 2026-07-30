@@ -1,0 +1,8 @@
+# Unusable with current pipeline strategies.
+# Reason: domain appears compromised/repurposed. The wp-json/wp/v2/posts
+# endpoint returns JSON but the most recent "posts" are Thai-language
+# gambling/spam content (dated back to 2023), not real Kosovo news.
+name: KosovaLive360
+country: kosovo
+language: sq
+base_url: https://kosovalive360.com

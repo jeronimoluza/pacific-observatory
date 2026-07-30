@@ -1,0 +1,44 @@
+# Unusable with current pipeline strategies.
+# Reason: probed live via `text collect` — wp-json/wp/v2/posts endpoint
+# returns HTTP 403 to the pipeline's requests-based client (curl succeeds
+# manually, so this is bot-fingerprint blocking, not a broken URL/category).
+# 0 thumbnails / 0 articles scraped.
+name: Standard
+country: albania
+language: sq
+base_url: https://www.standard.al
+
+# Categories: Kryesore(25), Politike(27), Aktualitet-2(39)
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://www.standard.al/wp-json/wp/v2/posts?per_page=100&page={page}&categories=25,27,39&_fields=id,date,link,title,excerpt,content"
+  json_paths:
+    url: "link"
+    title: "title.rendered"
+    date: "date"
+    body: "content.rendered"
+
+client: http
+concurrency: 5
+rate_limit: 0.3
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: ".entry-content p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

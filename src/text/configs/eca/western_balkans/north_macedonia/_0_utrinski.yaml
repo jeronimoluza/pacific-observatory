@@ -1,0 +1,8 @@
+# Unusable with current pipeline strategies.
+# Reason: legacy proprietary ASP CMS (default.asp?ItemID=<GUID> URLs),
+# no wp-json API, no clean numbered pagination. Would need a bespoke
+# listing strategy.
+name: Utrinski Vesnik
+country: north_macedonia
+language: mk
+base_url: https://utrinski.com.mk

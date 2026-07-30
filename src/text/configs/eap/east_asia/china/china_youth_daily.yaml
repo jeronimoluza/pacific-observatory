@@ -1,0 +1,37 @@
+# China Youth Daily (中国青年报) — 时政 (current-affairs/politics) channel on
+# news.cyol.com. Non-WordPress static portal; the channel page uses a
+# client-side "show more" jQuery plugin ($.showMore) that reveals ~100
+# already-present <li> items rather than true numbered pagination, so this
+# is a single-page listing (same pattern as global_times.yaml) — follow_selector
+# points to a non-existent "next" link so scraping terminates after one page.
+
+name: "China Youth Daily"
+country: "china"
+language: "zh"
+base_url: "http://news.cyol.com/"
+
+listing:
+  type: "follow_link"
+  start_url: "http://news.cyol.com/gb/news/8Dgl5Jkx/index.html"
+  follow_selector: "a.no-such-next-page::attr(href)"
+
+client: "http"
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "ul.showMoreNChildren li"
+    title: "h2 a::text"
+    url: "h2 a::attr(href)"
+  article:
+    body: "div.zhengwen p"
+    date: "meta[name='publishdate']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

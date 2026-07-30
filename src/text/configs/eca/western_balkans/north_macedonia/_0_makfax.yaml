@@ -1,0 +1,8 @@
+# Unusable with current pipeline strategies.
+# Reason: wp-json/wp/v2/posts endpoint returns
+# {"code":"rest_api_authentication_required", ...} HTTP 401 — REST API is
+# locked to authenticated users.
+name: MakFax
+country: north_macedonia
+language: mk
+base_url: https://makfax.com.mk

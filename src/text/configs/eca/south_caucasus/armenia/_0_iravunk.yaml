@@ -1,0 +1,12 @@
+# Deferred: Tier2, needs custom code.
+# Reason: iravunk.com (Iravunk newspaper) is a genuinely distinct, live domain
+#   from the already-covered (and now DNS-dead) iravunq.com — confirmed via
+#   masthead title and separate hosting. Custom PHP CMS, no WordPress API.
+#   Listing is by category only (/?cat=N&l=am), articles at /?p=ID&l=am; no
+#   ?page=N or offset param was found on category listing pages, so pagination
+#   depth is currently undiscoverable without deeper reverse-engineering
+#   (possible AJAX "load more" not seen in static HTML).
+name: Iravunk
+language: hy
+country: armenia
+base_url: https://iravunk.com

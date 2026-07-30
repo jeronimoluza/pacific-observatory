@@ -1,0 +1,42 @@
+# Unusable with current pipeline strategies (Tier 2 — needs custom code).
+# Reason: no WordPress REST API (wp-json/rest_route both return raw HTML).
+# Reason: /news listing pagination is client-side/AJAX (`data-next-page="2"`
+#   attribute on the page, but no discoverable simple GET endpoint); a plain
+#   `?page=2` request returns the SAME zero-article HTML as an unpaginated
+#   fetch, not page 2 content. Would need a real AJAX endpoint reverse-engineered
+#   from the site's JS bundle before this can become a `pagination` config.
+# Otherwise promising: homepage loads fine (200, ~86KB), well-known AZ outlet,
+# /news category has genuine national-news article links (haqqin.az/newsarchive/<id>).
+
+name: Haqqin.az
+country: azerbaijan
+language: ru
+base_url: https://haqqin.az
+
+listing:
+  type: pagination
+  url_template: "https://haqqin.az/news?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "filler"
+    title: "filler"
+    url: "filler"
+  article:
+    body: "filler"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

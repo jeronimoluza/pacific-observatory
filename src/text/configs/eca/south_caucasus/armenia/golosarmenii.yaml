@@ -1,0 +1,46 @@
+name: Golos Armenii
+language: ru
+country: armenia
+base_url: https://golosarmenii.am
+
+# Golos Armenii ("Голос Армении" = Voice of Armenia), Russian-language Armenian
+# daily. Open WordPress REST API.
+# Categories: NOVOSTI/news(52), POLITIKA/politics(32), EKONOMIKA/economy(34).
+# Excludes SPORT(42), DOSUG/leisure(44).
+listing:
+  type: api
+  pagination_type: page
+  page_start: 1
+  page_step: 1
+  url_template: "https://golosarmenii.am/wp-json/wp/v2/posts?per_page=100&page={page}&categories=32,34,52"
+  json_paths:
+    url: link
+    title: title.rendered
+    date: date
+    body: content.rendered
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: application/json
+
+selectors:
+  thumbnail:
+    container: filler
+    title: filler
+    url: filler
+  article:
+    body: div.elementor-widget-container p
+    date: "time::text"
+
+cleaning:
+  date: handle_mixed_dates
+  body: clean_wp_html_body
+
+max_pages: null
+max_articles: null

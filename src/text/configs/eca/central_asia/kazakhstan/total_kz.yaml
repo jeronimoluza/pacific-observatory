@@ -1,0 +1,40 @@
+name: Total.kz
+language: ru
+country: kazakhstan
+base_url: https://total.kz
+
+# Business/economy news portal. Category pages are /ru/news/<slug> with
+# ?page=N query pagination (verified page 1 vs page 2 differ). Economy
+# category chosen per the category rule (no dedicated "national" category).
+listing:
+  type: pagination
+  url_template: https://total.kz/ru/news/ekonomika?page={num}
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML,
+    like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: ru-RU,ru;q=0.9,en;q=0.8
+
+selectors:
+  thumbnail:
+    container: div.b-news-list__item
+    title: h3.item-title::text
+    url: a.item-img::attr(href)
+  article:
+    body: div.article__post__body p
+    date: span.meta__date::text
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

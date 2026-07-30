@@ -1,0 +1,38 @@
+# Southern Weekly (南方周末, infzm.com) — 深度 (In-depth/investigative)
+# channel, term_id=202. Homepage nav categories are a Vue "MoreContents"
+# component with no real pagination on the /topics/tNNN.html pages, but the
+# equivalent /contents?term_id=NNN&page=N endpoint DOES paginate server-side
+# (verified: page 1 vs page 2 return disjoint article sets). Other homepage
+# "更多" sections (term_id 151/153/313) are ad/announcement panels — skipped.
+
+name: "Southern Weekly"
+country: "china"
+language: "zh"
+base_url: "https://www.infzm.com"
+
+listing:
+  type: "pagination"
+  url_template: "https://www.infzm.com/contents?term_id=202&page={num}"
+  start_page: 1
+  step: 1
+
+client: "http"
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "article ul li"
+    title: "h5::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.nfzm-content__fulltext p"
+    date: "span.nfzm-content__publish::attr(data-time)"
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

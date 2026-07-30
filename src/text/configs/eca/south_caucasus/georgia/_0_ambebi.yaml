@@ -1,0 +1,44 @@
+# Unusable with current pipeline strategies (deferred, needs custom code).
+# Reason: ambebi.ge has clean HTML pagination (/category/politika/?page=N
+#   etc., 15 articles/page in div.maintopnewsitem, verified real /article/
+#   pages with body in div.article_content) but the only date signal is a
+#   combined string in .maintopnewsdate like "22:08 / 29-07-2026" (time,
+#   slash, then DD-MM-YYYY). handle_mixed_dates only strips a leading
+#   "HH:MM | " (pipe) timestamp, not "HH:MM / " (slash) -- its slash-
+#   normalizer instead collapses it into "22:08/29-07-2026", which matches
+#   none of the strptime patterns. Would need a small custom cleaner (or a
+#   generalized time-prefix-before-slash regex) to unlock this as Tier 1.
+#   Also note: wp-json and ?rest_route both return raw HTML -- this is NOT
+#   a WordPress site despite appearances, confirm pagination-only path.
+name: Ambebi.ge
+language: ka
+country: georgia
+base_url: https://www.ambebi.ge
+
+listing:
+  type: pagination
+  url_template: "https://www.ambebi.ge/category/politika/?page={num}"
+  start_page: 1
+  step: 1
+
+client: http
+concurrency: 3
+rate_limit: 1.0
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "div.maintopnewsitem"
+    title: "a::text"
+    url: "a::attr(href)"
+  article:
+    body: "div.article_content p"
+    date: "div.maintopnewsdate::text"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

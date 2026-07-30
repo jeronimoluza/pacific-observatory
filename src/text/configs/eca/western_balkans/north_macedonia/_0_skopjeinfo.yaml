@@ -1,0 +1,11 @@
+# Unusable with current pipeline strategies (as-is).
+# Reason: real HTML pagination confirmed (Drupal, /vesti?page=N, container
+# article.teaser, title h2.teaser__headline a) but article dates render as
+# Macedonian Cyrillic month names (e.g. "29. јули 2026") with no meta
+# article:published_time tag. No existing cleaning function maps Macedonian
+# month names; would need a new ~20-30 line cleaner in
+# src/text/scrapers/pipelines/cleaning/ (no Macedonian file exists yet).
+name: SkopjeInfo
+country: north_macedonia
+language: mk
+base_url: https://skopjeinfo.mk
