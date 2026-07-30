@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: suning
+url: https://www.suning.com
+language: zh
+cadence: daily
+channel: supermarket
+active: true
+notes: >
+  Mainland China's first working grocery/F&B retailer source (2026-07-30) -
+  China previously had zero real supermarket sources. Two-step scrape: HTML
+  search-result cards (search.suning.com/{keyword}/) for product id/vendor/
+  name, then a separate JSONP price microservice (pas.suning.com/nspcsale_0_
+  ...) keyed by padded partNumber + vendorCode + a static city tuple
+  (180_377_3770100). See docstring in
+  src/prices/price_scraping/spiders/suning.py for the full URL-construction
+  writeup. Seed keywords bias toward COICOP 01 deep leaves: fresh fruit
+  (01.1.6), fresh vegetables (01.1.7), fish/seafood incl. dried/salted
+  (01.1.3), dairy (01.1.4), plus staples/meat/beverages. category is a coarse
+  keyword-derived hint, not a scraped breadcrumb - real COICOP tagging is
+  deferred to src/cpi/coicopping/.
