@@ -1,0 +1,12 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: niront
+url: https://niront.com
+language: km
+cadence: daily
+channel: aggregator
+notes: |
+  Shopify marketplace, many independent Khmer F&B vendors. Prices listed
+  in USD. channel=aggregator so tier-c COICOP-priors narrowing is skipped.
