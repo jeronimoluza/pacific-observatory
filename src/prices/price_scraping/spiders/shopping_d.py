@@ -17,14 +17,24 @@ class ShoppingDSpider(CrawlSpider):
     name = "shopping_d"
     allowed_domains = ["shopping-d.com", "www.shopping-d.com"]
     start_urls = [
-        "https://www.shopping-d.com/collections/fresh-market-vegetables",
-        "https://www.shopping-d.com/collections/organic-market",
+        "https://www.shopping-d.com/collections",
     ]
     currency = "LAK"
 
     SELECTORS = get_selectors("shopping_d")
 
     rules = (
+        # Collections index is paginated (14+ pages) and each collection page
+        # is itself paginated; follow both so the crawl discovers every
+        # category (fresh produce, dairy, meats, seafood, bakery, etc.)
+        # instead of only the 2 collections previously hardcoded.
+        Rule(
+            LinkExtractor(
+                allow=r"/collections(/[^/?#]+)?(\?page=\d+)?$",
+                deny=r"(cart|checkout|account|/policies/|search\?)",
+            ),
+            follow=True,
+        ),
         Rule(
             LinkExtractor(
                 allow=r"/products/[^/?#]+",
