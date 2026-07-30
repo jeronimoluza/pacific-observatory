@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: amicashop_jp
+channel: supermarket
+url: https://www.amicashop.com/
+language: ja
+cadence: daily
+notes: |
+  Deep-leaf specialty pass — targets keyword searches for edible seaweed
+  (01.1.7.4.6: kombu/wakame/nori/hijiki), dried/salted/smoked fish
+  (01.1.3.2.x/01.1.3.5.x: shirasu/katsuobushi/niboshi), and tubers
+  (01.1.7.5.x: satsumaimo/satoimo/yamaimo) rather than a full-catalog
+  crawl. Amica is a food-service wholesale distributor (JFDA-affiliated)
+  with a plain server-rendered catalog and no delivery-area login gate,
+  unlike AEON Netsuper / Rakuten Mart (both probed and rejected — see
+  onboarding notes). Site pagination (page=/pageno= query params) did not
+  change results in manual probing, so keywords with >96 hits (e.g. kombu,
+  143 total) are capped at the first 96 via disp_number=96.
