@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: goodzay
+url: https://goodzay.com
+language: my
+cadence: daily
+channel: aggregator
+notes: |
+  Shopify multi-vendor marketplace (many independent sellers under one
+  storefront). Products expose a `vendor` field per seller; catalogue
+  spans groceries, pharmacy, bakery, beverages, snacks, and beauty.
+  Full catalogue via /products.json (root, paginated 250/page).
