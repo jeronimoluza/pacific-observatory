@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: ayamkitafresh_my
+url: https://www.ayamkitafresh.com
+language: ms
+cadence: daily
+channel: supermarket
+notes: >
+  Malaysian online wet-market grocer (Shopline platform, server-rendered
+  PDPs). Scoped to fresh/specialty collections rather than the full catalogue
+  to target thin deep leaves: buah-buahan (tropical fruit incl. cempedak),
+  sayur-sayuran (veg + tubers: ubi kayu/cassava, keledek/sweet potato),
+  minyak-masak (incl. Saji palm cooking oil, 01.1.5.1.2), fish/ikan-frozen/
+  ikan-masin-1 (fresh + dried fish incl. ikan bilis, 01.1.3.5.1). No durian
+  or rambutan as fresh fruit found on-site (only durian-flavored / rambutan
+  rice-brand SKUs) — a dedicated durian source would be needed for that leaf.

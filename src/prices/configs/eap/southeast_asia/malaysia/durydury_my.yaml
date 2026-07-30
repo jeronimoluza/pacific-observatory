@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["01.1.6.1"]
+spider: durydury_my
+url: https://durydury.com
+language: ms
+cadence: daily
+channel: supermarket
+notes: >
+  Fresh-durian specialty vendor (WooCommerce), Musang King / Black Thorn /
+  D24 Sultan / D197 / D200 / D168 / D198 / D28 clones sold as fresh pulp
+  packs. Narrow single-leaf source for tropical fruit COICOP 01.1.6.1 -
+  fills the durian/premium-fruit gap that ayamkitafresh_my does not cover
+  (that site had no fresh durian or rambutan SKUs, only durian-flavored
+  processed items and a rambutan-brand rice). Price extracted from the
+  first `span.price` block on the PDP (base/whole-fruit price); product
+  pages also list 2-pack/3-pack/6-pack price tiers that are not separately
+  captured.
