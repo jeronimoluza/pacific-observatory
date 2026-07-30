@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: jy_ocean_trading
+url: https://jyocean.tv
+language: en
+cadence: daily
+channel: supermarket
+notes: >
+  First retail price source for Tuvalu (prior coverage was aggregator-only:
+  expatistan/livingcost/mylifeelsewhere). Shopify storefront; /products.json
+  is the full public catalog (~186 published products across supermarket
+  goods, hardware, and general merchandise). product_type/tags are empty on
+  every product and no supermarket-only collection exists, so scoping stays
+  broad — deferred_gemini COICOP classification sorts food vs non-food
+  downstream. Many items are marked sold-out; price is still captured, with
+  an extra `available` field on each row.
