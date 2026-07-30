@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: tongamarket
+url: https://tongamarket.com/product-category/groceries/
+language: en
+cadence: daily
+channel: aggregator
+notes: >
+  Multi-vendor WooCommerce marketplace (many independent sellers under one
+  storefront). Scraped via the public WooCommerce Store API filtered to the
+  Groceries category (id=97, ~466 items), not the full catalogue. Prices
+  come back in NZD (confirmed via Store API currency_code) even though
+  Tonga's own currency in countries.yaml is TOP — apply WB FX downstream.
