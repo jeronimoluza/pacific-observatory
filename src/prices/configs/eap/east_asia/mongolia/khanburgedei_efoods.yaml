@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: khanburgedei_efoods
+url: https://efoods.khanburgedei.mn/
+language: mn
+cadence: daily
+channel: supermarket
+notes: |
+  Khanburgedei is a premium Mongolian supermarket chain (TTEM LLC, ~8 stores).
+  This is its dedicated grocery storefront (separate from the general-
+  merchandise estore.khanburgedei.mn, which is mostly apparel/cosmetics
+  brands and out of scope here). Crawl restricted to food department
+  roots (daily food incl. meat/dairy/bread, produce, processed/pantry,
+  liquid food/beverages incl. alcohol, sweets, frozen) via category_root
+  allow-list in the spider. Product cards on listing pages carry a clean
+  numeric price (data-ct-price attribute) — no PDP visit needed.
