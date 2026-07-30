@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: woolworths_nz
+channel: supermarket
+url: https://www.woolworths.co.nz
+language: en
+cadence: daily
+notes: |
+  NZ's only online supermarket source (Pak'nSave/New World are Foodstuffs/
+  Akamai-blocked). Public /api/v1/products?target=search JSON endpoint,
+  no auth required. Plain curl gets a bare TCP reset on this domain (Akamai
+  edge); the project's default RandomBrowserMiddleware curl_cffi TLS
+  impersonation gets a clean 200 through the same edge. Requires
+  Origin/Referer/x-requested-with headers matching the real front-end, or the
+  API 400s with "Header is missing or is invalid." Searches a curated term
+  list covering fresh produce/meat/fish/dairy/bakery/pantry/beverages —
+  categoryId/browse-slug filtering on the API was tried and does not filter
+  (always returns the same generic default set), so search-term iteration is
+  the working approach.
