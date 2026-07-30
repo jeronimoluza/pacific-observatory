@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: metromart_ph
+url: https://www.metromart.com
+language: en
+cadence: daily
+channel: aggregator
+notes: >
+  MetroMart is a multi-vendor grocery-delivery marketplace (wet-market /
+  farmers-market / sari-sari vendors), not a single-catalog retailer, hence
+  channel=aggregator (skips tier-c COICOP-priors narrowing). No auth-free
+  full-catalog browse exists; the public keyword-search endpoint
+  (api.metromart.com/api/v1/search/grouped-shops-and-products,
+  include=products) requires no auth and returns priced product records.
+  Spider walks a fixed keyword list targeting specialty produce and
+  dried/salted fish thin on other PH sources: tubers (kamote, kamoteng
+  kahoy/cassava, gabi/taro, ube), dried/salted fish (tuyo, daing, dilis,
+  tinapa), tropical fruits (langka, rambutan, lanzones, calamansi). Scoped to
+  filter[shop.area.id]=214 (Bel-Air, Makati - NCR), same metro scope as the
+  existing waltermart spider. No breadcrumb/category available on the
+  product record - category left null.
