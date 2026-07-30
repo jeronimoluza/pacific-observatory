@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: harris_farm_markets
+language: en
+channel: supermarket
+notes: |
+  Shopify storefront. Hits /collections/buy-groceries-online/products.json
+  directly (paginated, limit=250) - no auth, plain requests work with a
+  browser UA. RandomBrowserMiddleware disabled in spider custom_settings.
+  ~4600 products confirmed at probe time. NSW/QLD/ACT retailer; some
+  variants sold out (available=false) and are skipped.
