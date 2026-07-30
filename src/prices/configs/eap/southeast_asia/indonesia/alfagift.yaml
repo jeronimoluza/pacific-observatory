@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: alfagift
+url: https://alfagift.id/
+language: id
+cadence: daily
+channel: supermarket
+notes: |
+  Alfamart minimarket online storefront. No auth token needed (custom
+  fingerprint/devicetype/trxid headers only) - see spider docstring. No
+  category-browse endpoint exists; catalog is reached via keyword search
+  shards, each capped at 100 rows with no working pagination past start=0.
+  Convenience-store catalog is packaged/branded goods only - no raw fresh
+  produce (salak/rambutan/singkong/ubi jalar all return 0 hits). Strong hit
+  for COICOP 01.1.5.1.2 palm & specialty cooking oil (minyak goreng: 48 SKUs
+  incl. Bimoli/Filma/Sania/SunCo/Fortune/Sovia). channel=supermarket is the
+  closest fit in the closed enum; there's no dedicated convenience/minimarket
+  bucket.
