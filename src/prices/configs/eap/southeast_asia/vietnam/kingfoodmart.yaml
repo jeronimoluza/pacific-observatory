@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: kingfoodmart
+url: https://kingfoodmart.com
+language: vi
+cadence: daily
+channel: supermarket
+notes: |
+  Premium HCMC fresh-food supermarket on a Next.js storefront over the
+  Onelife/Kariba backend. buildId read from homepage __NEXT_DATA__, then
+  /_next/data/<buildId>/<category-slug>.json?page=N returns
+  pageProps.categoryData.products with pagination.last_page. No auth.

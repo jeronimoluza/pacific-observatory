@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: mm_mega_market
+url: https://online.mmvietnam.com
+language: vi
+cadence: daily
+channel: hypermarket
+notes: |
+  MM Mega Market VN cash-and-carry/hypermarket. JS SPA fronting an open
+  Magento 2 (Adobe Commerce) GraphQL endpoint at /graphql (no auth). Spider
+  walks categoryList, collects leaf categories, paginates products via
+  category_uid=base64(category_id) filter. Prices are numeric VND in
+  price_range.minimum_price.final_price.
