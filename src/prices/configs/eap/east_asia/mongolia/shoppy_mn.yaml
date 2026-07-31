@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: shoppy_mn
+url: https://shoppy.mn
+language: mn
+cadence: daily
+channel: aggregator
+currency: MNT
+notes: |
+  Mongolia's largest marketplace (1000+ vendor storefronts). Vue SPA backed by
+  a Cody.mn Elasticsearch endpoint at https://elastic.cody.mn/shoppy/_search
+  (Basic guest auth guest:ShoppyGuest, discovered via Playwright network
+  capture). Direct JSON POST works with browser headers; ~59k in-stock
+  products. Paginated with Elasticsearch search_after over
+  sort [created_at asc, sku asc] (from+size caps at 10k). Prices in MNT.
+  Playwright used only at discovery time; runtime is a fast API spider.

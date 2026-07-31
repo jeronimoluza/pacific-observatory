@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: friday_shopping
+url: https://ec-w.shopping.friday.tw
+language: zh
+cadence: daily
+channel: aggregator
+currency: TWD
+notes: |
+  friDay Shopping (Far EasTone) marketplace, general-merchandise-heavy. Its
+  browse feed (k8aiapi getalist) and search are session-gated AI endpoints;
+  the category feed is a personalized recommendation stream with no clean
+  paginated catalog. Workable stateless path (discovered via Playwright):
+  aisearch-web.shopping.friday.tw/aisearch accepts a self-generated
+  target_value and returns up to 100 pids/keyword, and
+  frontend-gateway .../product/v3/productinfo batch-resolves TWD prices
+  (memberPrice / bestDiscountPrice). Spider is food-keyword-seeded to surface
+  grocery SKUs (~35 CJK food terms x <=100 hits). Runtime is a fast API spider;
+  Playwright used only at discovery time.

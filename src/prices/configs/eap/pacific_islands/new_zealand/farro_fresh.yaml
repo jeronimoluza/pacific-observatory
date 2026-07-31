@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: farro_fresh
+url: https://www.farro.co.nz
+language: en
+cadence: daily
+channel: supermarket
+currency: NZD
+notes: |
+  Premium Auckland grocer (7 stores), NOT Foodstuffs-affiliated so outside the
+  Akamai block on woolworths/newworld/paknsave NZ. Blazor WebAssembly SPA
+  backed by a REST API at /api/ViewModel/Search/Search (POST, skip/take
+  pagination, ~4811 products). Discovered via Playwright response-body capture;
+  runtime is a fast API spider. Prices in NZD; unitOfMeasure appended to
+  product_name for downstream extraction.
