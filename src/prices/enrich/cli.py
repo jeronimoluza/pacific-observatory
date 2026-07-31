@@ -1,6 +1,9 @@
+import shutil
+
 import click
 
 from prices.enrich import config
+from prices.enrich.classifier import batch_embed
 from prices.enrich.stages import classify as classify_stage
 from prices.enrich.stages import concatenate as concatenate_stage
 from prices.enrich.stages import merge as merge_stage
@@ -21,8 +24,16 @@ def _invalidate_for(stage: str | None) -> None:
         concatenate_stage.STATE_FILE.unlink()
     if stage == "prepare" and config.PRODUCTS_INPUT_PARQUET.exists():
         config.PRODUCTS_INPUT_PARQUET.unlink()
-    if stage == "classify" and config.CLASSIFIED_PARQUET.exists():
-        config.CLASSIFIED_PARQUET.unlink()
+    if stage == "classify":
+        if config.CLASSIFIED_PARQUET.exists():
+            config.CLASSIFIED_PARQUET.unlink()
+        # Prediction shards cache head scores per name-bucket; a shard is reused
+        # whenever its cached names cover the request, so a bucket untouched by a
+        # new batch keeps scores from before a veto-lexicon change and silently
+        # reverts the veto. Drop them on --rebuild: re-scoring reruns from the
+        # banked embeddings (cheap), it does NOT re-embed.
+        if batch_embed.PRED_DIR.exists():
+            shutil.rmtree(batch_embed.PRED_DIR)
 
 
 @click.command(name="process")
