@@ -143,10 +143,39 @@ Validated end-to-end: `dominican_today` flipped to `body_in_feed: true` → 20/2
 bodies (733–2106 chars, median 1247), dates populated, no article-page fetch. Unit test:
 `tests/unit/test_strategies_split.py::test_rss_strategy_factory_and_in_feed_body`.
 
+## All-region gap sweep + production onboarding (2026-07-31)
+
+Six sonnet agents (one per region) hunted outlets **not already onboarded** with a verified RSS
+feed, deduped against existing configs. Yield: **57 verified net-new candidates** (ECA 15, SSA 10,
+MENAAP 14, EAP 4, LAC 7, SAR 7). SSA/MENAAP were richest in full-body WordPress; EAP/LAC thinnest
+(already well-covered). **Dedup gotcha:** the agents' base_url grep missed *quoted* `base_url:`
+values — a quote-aware re-dedup across the whole tree caught 1 already-onboarded domain (irna.ir).
+Always quote-aware-dedup before onboarding.
+
+**Onboarded 23 new sources (all validated end-to-end), commits `8128c7e6` + `595ca94b`:**
+- **21 full-body (`body_in_feed: true`), 21/21 with full text:** ECA hnonline_sk / 444.hu /
+  atavatan_turkmenistan; SSA beto.cd / rjdh / midi_madagasikara / habarileo / softpower_ug /
+  taarifa_rw / panorama_rw / burundi_times / al_comorya; MENAAP days_of_palestine / sana_sy /
+  north_press / syriahr / roya_news (Atom, `feed_body_tags: [content]`); EAP dnc_nc; LAC
+  antigua_observer / panama_america (Drupal body-in-description); SAR deshbandhu (280 items/feed).
+- **2 listing-only** (teaser feed + generic WP `entry-content` article selector): vanuatu_independent,
+  nationwide_jm.
+- Configs generated from a template script (deterministic, no LLM variance); `page_param: paged`
+  set only where the agent confirmed the feed walks; generic `div.entry-content p` article.body
+  fallback (a required field even when the body comes from the feed).
+
+Thin-country wins: Turkmenistan, CAR, Comoros, Burundi, Madagascar, New Caledonia, Antigua, Panama,
+and Hindi (Deshbandhu) / Swahili (HabariLeo) / Kinyarwanda (Panorama) coverage.
+
 ## Backlog
 
-- Revive `_0_dawn`, `_0_gulf_news` and onboard citizen.digital / thepress.mv using `body_in_feed`
-  (their article pages are WAF/JS-blocked, but the feeds carry full content).
-- All-region **gap sweep** for outlets not yet onboarded that are RSS-only (esp. ECA/Central Asia).
+- **Tier-2 teaser feeds (~34 remaining):** carry only an excerpt, so they need a per-site
+  `article.body` selector (assess-newspaper-source). The 5 WP-teaser ones tried by generic selector
+  failed on WAF/JS-blocked article pages (actualite.cd, ewnews, guyanachronicle, vishvasnews,
+  nknews) — need bespoke handling. The custom-CMS teasers (Czech/Slovak/Slovenian majors, Iranian
+  wires, etc.) need per-site selectors. Good candidates for a follow-up onboarding agent wave.
+- Revive `_0_dawn`, `_0_gulf_news` and onboard citizen.digital / thepress.mv using `body_in_feed`.
 - Maldives: sun.mv is headline-only (no body anywhere); thepress.mv carries Dhivehi body in
   `<description>` → `body_in_feed` target.
+- **Data hygiene:** the LAC sweep flagged that an already-onboarded source, `reporter.bz`, now
+  resolves to a hijacked feed serving lottery/gambling spam — its config needs review/removal.
