@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: yahoo_shopping_tw
+url: https://tw.buy.yahoo.com
+language: zh
+cadence: daily
+channel: aggregator
+notes: >
+  Yahoo!奇摩購物中心 (Taiwan) — distinct market from the already-covered Japan
+  yahoo_shopping. General marketplace, seeded with F&B search keywords
+  (COICOP 01 + 02.1). Search-results page embeds a server-rendered
+  isoredux-data Redux state block (search.ecsearch.hits) with name/price/id/
+  category — no auth needed. channel=aggregator so tier-c narrowing is
+  skipped. Conservative DOWNLOAD_DELAY (2.5s, 1 concurrent/domain) — WAF risk
+  flagged medium in discovery.

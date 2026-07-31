@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: costco_taiwan
+url: https://www.costco.com.tw
+language: zh
+cadence: daily
+channel: supermarket
+notes: >
+  SAP Commerce Cloud (Spartacus/Angular SSR), not Salesforce as originally
+  guessed. sitemap_taiwan_product.xml lists ~15k PDP URLs; each PDP embeds a
+  server-rendered schemaorg_product JSON-LD block (name/sku/price/currency) —
+  no auth, no JS needed. category = URL path segment before the product slug.
