@@ -59,9 +59,7 @@ class AmpmPharmacySpider(scrapy.Spider):
         page = response.meta["page"]
         logger.info(f"ampm_pharmacy page={page} count={len(products)}")
         for p in products:
-            item = self._item(p)
-            if item:
-                yield item
+            yield from self._rows(p)
         if len(products) >= PER_PAGE and page < MAX_PAGES:
             nxt = page + 1
             yield scrapy.Request(
@@ -70,16 +68,19 @@ class AmpmPharmacySpider(scrapy.Spider):
                 meta={"page": nxt},
             )
 
-    def _item(self, p: dict):
-        prices = p.get("prices") or {}
-        raw = prices.get("price")
-        if raw is None:
-            return None
+    def _rescale(self, prices: dict, raw):
         try:
             minor = int(prices.get("currency_minor_unit", 0) or 0)
-            value = int(raw) / (10**minor) if minor else int(raw)
+            return int(raw) / (10**minor) if minor else int(raw)
         except (TypeError, ValueError):
-            value = raw
+            return raw
+
+    def _label(self, v: dict):
+        return " / ".join(
+            str(a.get("value")) for a in (v.get("attributes") or []) if a.get("value")
+        ).strip()
+
+    def _row(self, p: dict, prices: dict, pid: str, name: str, value):
         cats = p.get("categories") or []
         cat = (
             " > ".join(
@@ -88,8 +89,8 @@ class AmpmPharmacySpider(scrapy.Spider):
             or None
         )
         return {
-            "product_id": str(p.get("sku") or p.get("id")),
-            "product_name": str(p.get("name") or "").strip()[:500],
+            "product_id": pid,
+            "product_name": name.strip()[:500],
             "category": cat,
             "price": str(value),
             "currency": prices.get("currency_code") or self.currency,
@@ -98,3 +99,75 @@ class AmpmPharmacySpider(scrapy.Spider):
             "language": self.language,
             "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
         }
+
+    def _rows(self, p: dict):
+        prices = p.get("prices") or {}
+        raw = prices.get("price")
+        if raw is None:
+            return
+        base_id = str(p.get("sku") or p.get("id"))
+        name = str(p.get("name") or "")
+        variations = p.get("variations") or []
+        prange = prices.get("price_range") or None
+        differ = (
+            prange
+            and prange.get("min_amount") is not None
+            and prange.get("max_amount") is not None
+            and str(prange.get("min_amount")) != str(prange.get("max_amount"))
+        )
+        if differ and len(variations) > 1:
+            yield self._variation_request(p)
+            return
+        value = self._rescale(prices, raw)
+        if variations:
+            for v in variations:
+                label = self._label(v)
+                vname = f"{name} - {label}" if label else name
+                yield self._row(p, prices, f"{base_id}_{v.get('id')}", vname, value)
+        else:
+            yield self._row(p, prices, base_id, name, value)
+
+    def _variation_request(self, p: dict):
+        pid = p.get("id")
+        labels = {str(v.get("id")): self._label(v) for v in (p.get("variations") or [])}
+        return scrapy.Request(
+            f"{BASE}?type=variation&parent={pid}&per_page=100",
+            callback=self.parse_variations,
+            meta={
+                "parent": {
+                    "name": str(p.get("name") or ""),
+                    "base_id": str(p.get("sku") or p.get("id")),
+                    "categories": p.get("categories") or [],
+                    "permalink": p.get("permalink") or "",
+                    "is_in_stock": p.get("is_in_stock", True),
+                    "labels": labels,
+                }
+            },
+        )
+
+    def parse_variations(self, response):
+        try:
+            variations = response.json()
+        except ValueError:
+            logger.warning(f"non-JSON variations at {response.url}")
+            return
+        if not isinstance(variations, list):
+            return
+        parent = response.meta["parent"]
+        base_id = parent["base_id"]
+        name = parent["name"]
+        labels = parent["labels"]
+        for v in variations:
+            prices = v.get("prices") or {}
+            raw = prices.get("price")
+            if raw is None:
+                continue
+            value = self._rescale(prices, raw)
+            label = labels.get(str(v.get("id"))) or self._label(v)
+            vname = f"{name} - {label}" if label else name
+            row_src = {
+                "categories": v.get("categories") or parent["categories"],
+                "permalink": v.get("permalink") or parent["permalink"],
+                "is_in_stock": v.get("is_in_stock", parent["is_in_stock"]),
+            }
+            yield self._row(row_src, prices, f"{base_id}_{v.get('id')}", vname, value)
