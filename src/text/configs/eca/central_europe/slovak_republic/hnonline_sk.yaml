@@ -1,0 +1,36 @@
+name: HNonline.sk
+country: slovak_republic
+language: sk
+base_url: https://hnonline.sk
+
+listing:
+  type: rss
+  feed_urls:
+    - "https://hnonline.sk/rss"
+  body_in_feed: true
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "item"
+    url: "link::text"
+    title: "title::text"
+    date: "pubDate::text"
+  article:
+    body:
+      - "div.entry-content p"
+      - "article p"
+      - "main p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

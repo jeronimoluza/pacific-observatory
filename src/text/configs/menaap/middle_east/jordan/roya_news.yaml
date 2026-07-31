@@ -1,0 +1,38 @@
+name: Roya News
+country: jordan
+language: arabic
+base_url: https://www.royanews.tv
+
+listing:
+  type: rss
+  feed_urls:
+    - "https://www.royanews.tv/rss"
+  body_in_feed: true
+  feed_body_tags:
+    - "content"
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "entry"
+    url: "link::attr(href)"
+    title: "title::text"
+    date: "published::text"
+  article:
+    body:
+      - "div.entry-content p"
+      - "article p"
+      - "main p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null
