@@ -1,0 +1,9 @@
+spider: lohaco
+language: ja
+channel: supermarket
+notes: |
+  LOHACO by ASKUL (lohaco.yahoo.co.jp) — distinct ASKUL retail catalog on a
+  yahoo.co.jp subdomain, own /store/h-lohaco/item/{id}/ SKU namespace. Not
+  the general yahoo_shopping marketplace already covered for Japan.
+  Category landing pages are server-rendered (Nuxt SSR); ?page=/?p= params
+  are a no-op so each category yields one capped ~80-item page.

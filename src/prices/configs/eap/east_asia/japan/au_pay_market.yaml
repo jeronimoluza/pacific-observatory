@@ -1,0 +1,10 @@
+spider: au_pay_market
+language: ja
+channel: aggregator
+notes: |
+  au PAY Market (formerly Wowma!) — 2-3M SKU marketplace aggregating many
+  third-party shops (incl. LOHACO). Storefront is a client-rendered Next.js
+  app; scraped via the unauthenticated categoryRanking JSON API on
+  api.wowma.net (Referer: https://wowma.jp/ required, no auth). limit caps
+  at 100 items/category server-side — a ranked top-N slice per category,
+  not a full catalog crawl.
