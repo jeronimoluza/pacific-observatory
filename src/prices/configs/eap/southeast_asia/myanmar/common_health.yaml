@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: common_health
+url: https://www.commonhealth.com.mm
+language: my
+cadence: daily
+channel: pharmacy
+notes: |
+  Shopify storefront for a chronic-disease pharmacy (insulin, pen needles,
+  glucose-monitoring supplies). Full catalogue via /products.json (root,
+  paginated 250/page). Single vendor ("Common Health Myanmar").

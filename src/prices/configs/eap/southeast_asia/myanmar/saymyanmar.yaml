@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: saymyanmar
+url: https://saymyanmar.com
+language: my
+cadence: daily
+channel: pharmacy
+notes: |
+  Nationwide online pharmacy on a custom Laravel/Mongo stack with an
+  OpenCart-style SSR catalogue. Homepage lists /category/{objectid} pages;
+  each renders product cards (div.product-layout) with name + numeric MMK
+  price, paginated via ?page=N. Some out-of-stock SKUs show price 0
+  (kept, flagged available=false).
