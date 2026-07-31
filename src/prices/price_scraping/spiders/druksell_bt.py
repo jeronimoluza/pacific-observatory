@@ -78,7 +78,7 @@ class DruksellBtSpider(scrapy.Spider):
                     "category": category,
                     "price": str(price).replace(",", "").strip(),
                     "currency": self.currency,
-                    "url": url,
+                    "url": f"{url}?variant={variant.get('id')}",
                     "scraped_at_utc": scraped_at,
                 }
 

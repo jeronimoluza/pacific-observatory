@@ -59,7 +59,7 @@ class JyOceanTradingSpider(scrapy.Spider):
                     "currency": self.currency,
                     "category": category,
                     "available": variant.get("available"),
-                    "url": f"{self.base_url}/products/{product['handle']}",
+                    "url": f"{self.base_url}/products/{product['handle']}?variant={variant.get('id')}",
                     "scraped_at": scraped_at,
                 }
 

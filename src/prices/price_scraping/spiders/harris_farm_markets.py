@@ -72,7 +72,7 @@ class HarrisFarmMarketsSpider(scrapy.Spider):
                     "price": str(price),
                     "currency": self.currency,
                     "category": product_type or None,
-                    "url": f"https://www.harrisfarm.com.au/products/{handle}"
+                    "url": f"https://www.harrisfarm.com.au/products/{handle}?variant={variant.get('id')}"
                     if handle
                     else None,
                     "scraped_at": response.headers.get("Date", b"").decode("utf-8"),

@@ -50,7 +50,7 @@ class ChemistPlusSpider(scrapy.Spider):
                     "price": price,
                     "currency": self.currency,
                     "category": category,
-                    "url": f"{self.base_url}/products/{product['handle']}",
+                    "url": f"{self.base_url}/products/{product['handle']}?variant={variant.get('id')}",
                     "scraped_at": scraped_at,
                 }
 

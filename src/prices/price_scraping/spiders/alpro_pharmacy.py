@@ -83,7 +83,7 @@ class AlproPharmacySpider(scrapy.Spider):
                     "price": price,
                     "currency": self.currency,
                     "category": category,
-                    "url": url,
+                    "url": f"{url}?variant={v.get('id')}" if url else None,
                     "language": self.language,
                     "scraped_at_utc": scraped_at,
                 }

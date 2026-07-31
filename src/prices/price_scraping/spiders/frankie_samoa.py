@@ -93,7 +93,7 @@ class FrankieSamoaSpider(scrapy.Spider):
                 "price": str(price),
                 "currency": self.currency,
                 "available": bool(v.get("available", True)),
-                "url": f"https://frankiesamoa.com/products/{handle}",
+                "url": f"https://frankiesamoa.com/products/{handle}?variant={v.get('id')}",
                 "language": self.language,
                 "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
             }

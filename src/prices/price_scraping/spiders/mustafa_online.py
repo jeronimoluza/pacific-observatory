@@ -79,7 +79,7 @@ class MustafaOnlineSpider(scrapy.Spider):
                     "price": price,
                     "currency": self.currency,
                     "category": category,
-                    "url": f"{self.base_url}/products/{handle}",
+                    "url": f"{self.base_url}/products/{handle}?variant={variant.get('id')}",
                     "language": self.language,
                     "scraped_at_utc": scraped_at,
                 }

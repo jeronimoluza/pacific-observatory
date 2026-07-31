@@ -63,7 +63,7 @@ class LemonFarmSpider(scrapy.Spider):
                 "price": str(price),
                 "currency": self.currency,
                 "category": p.get("product_type") or None,
-                "url": f"https://shop.lemonfarm.com/products/{handle}"
+                "url": f"https://shop.lemonfarm.com/products/{handle}?variant={variant.get('id')}"
                 if handle
                 else None,
                 "scraped_at": response.headers.get("Date", b"").decode("utf-8"),

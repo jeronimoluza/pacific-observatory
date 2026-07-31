@@ -89,7 +89,7 @@ class CommonHealthSpider(scrapy.Spider):
                 "price": str(price),
                 "currency": self.currency,
                 "available": bool(v.get("available", True)),
-                "url": f"https://www.commonhealth.com.mm/products/{handle}",
+                "url": f"https://www.commonhealth.com.mm/products/{handle}?variant={v.get('id')}",
                 "language": self.language,
                 "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
             }
