@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: paskomnas_trading
+url: https://trading.paskomnas.id/
+language: id
+cadence: daily
+channel: supermarket
+notes: |
+  Online storefront of Pasar Induk Osowilangun Surabaya (Paskomnas
+  wholesale/retail fresh-produce hub). carisayur.com 302-redirects here.
+  Server-rendered /product?page=N&limit=20 listing (no category filter) -
+  ~24 pages / ~480 SKUs total per bootpag total on page 1. Strong fresh
+  produce/meat/fish coverage (COICOP 01.1.x) alongside groceries/staples.
+  channel=supermarket is the closest fit in the closed enum; this is a
+  fresh_produce-leaning wholesale/retail hybrid, not a conventional
+  hypermarket.

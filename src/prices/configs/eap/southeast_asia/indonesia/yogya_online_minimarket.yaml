@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: yogya_online_minimarket
+url: https://minimarket.yogyaonline.co.id/
+language: id
+cadence: daily
+channel: supermarket
+notes: |
+  Yogya Group minimarket (convenience-store) storefront, West/Central Java.
+  Server-rendered category listing pages carry name+SKU+price inline; no
+  PDP visits needed. 85 category slugs walked directly (no ?page= support -
+  category page returns a fixed ~24-42 rows regardless of page param).
+  channel=supermarket is the closest fit in the closed enum; sibling to
+  yogya_online_supermarket (same operator, different storefront/catalog).

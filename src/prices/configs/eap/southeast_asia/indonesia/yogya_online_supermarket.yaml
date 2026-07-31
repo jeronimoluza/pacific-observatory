@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: yogya_online_supermarket
+url: https://supermarket.yogyaonline.co.id/
+language: id
+cadence: daily
+channel: supermarket
+notes: |
+  Yogya Group supermarket storefront - sibling to yogya_online_minimarket
+  (same operator, different catalog/storefront). The homepage flash-sale
+  carousel needs a delivery-address/store context, but the category listing
+  pages at /supermarket/<slug>/category are plain server-rendered HTML with
+  no login or store-select gate - verified directly, contrary to the
+  original "gated behind store-select" scouting note. 53 category slugs
+  walked directly (no ?page= support). The storefront's own
+  category-web/load JSON endpoint 200s with an AntiBot-rejection body
+  unless a same-origin Referer header is sent; the category pages
+  themselves are unaffected.
