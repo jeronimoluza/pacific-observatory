@@ -120,6 +120,83 @@ soup = BeautifulSoup(r.text, 'html.parser')
 print('container matches:', len(soup.select(container)))  # expect 10-30
 ```
 
+## 2b. RSS / Atom feed (listing-only)
+
+Use when the site publishes a valid RSS 2.0 / Atom feed but has no WordPress API and no clean HTML pagination — or when pagination/API is blocked (WAF/SPA) yet `/feed/` still serves XML. The feed supplies the article **URL + title + date**; the body is fetched from the article page via the `article` selectors (same as pagination). Best for incremental "latest-N" refresh; most feeds are front-page-only.
+
+**Confirm it's a real feed first** (a known Cloudflare trick serves an HTML 403 wrapper at `/feed/`):
+```bash
+curl -sIL --max-time 20 -A "Mozilla/5.0" <feed_url>   # content-type must be application/rss+xml / atom+xml / xml — NOT text/html
+curl -sL  --max-time 20 -A "Mozilla/5.0" <feed_url> | head -c 2000   # must open with <rss / <feed / <rdf:RDF and repeat <item>/<entry>
+```
+
+**RSS 2.0** (the overwhelmingly dominant format — WordPress `/feed/`, Arc Publishing `/arc/outboundfeeds/rss/`, most CMSs):
+```yaml
+name: <Display Name>
+country: <country_slug>
+language: <en|fr|es|arabic|portuguese|...>
+base_url: <https://example.com>
+
+listing:
+  type: rss
+  feed_urls:
+    - "<https://example.com/feed/>"      # one or more; section feeds are fine
+  # page_param: paged                      # ONLY for WordPress feeds that honor ?paged=N (walks older items). Omit for front-page-only.
+  # url_regex: "/20\\d\\d/"               # optional: keep only item <link>s matching this
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "item"
+    url: "link::text"
+    title: "title::text"
+    date: "pubDate::text"
+  article:
+    body: "<article-page-body p selector>"   # real selector, verify with BeautifulSoup — same as pagination
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null
+```
+
+**Atom variant** — change the thumbnail selectors only:
+```yaml
+selectors:
+  thumbnail:
+    container: "entry"
+    url: "link::attr(href)"
+    title: "title::text"
+    date: "published::text"      # or "updated::text"
+```
+
+**Critical mechanics (feeds are parsed with the lxml XML parser, which behaves differently from `html.parser`):**
+- **Selectors are CASE-SENSITIVE.** Use exact tag case: `pubDate::text`, not `pubdate::text` — the latter silently matches nothing. Same for `link`, `title`, `published`.
+- `<link>` text survives (it's a void element only in `html.parser`), so `link::text` is correct for RSS. Atom's URL is the `href` attribute → `link::attr(href)`.
+- `content:encoded` / `description` (full or partial body carried in the feed) are **not usable** here — the namespaced colon breaks CSS `select`, and this strategy fetches the body from the article page. (Pulling body straight from `content:encoded` is a separate not-yet-shipped mode.)
+- **Front-page-only by default.** RSS feeds serve only the latest ~10–100 items. Set `page_param: paged` ONLY when you've confirmed the site is WordPress and `<feed>?paged=2` returns genuinely older items (Arc Publishing and most custom CMSs ignore it).
+
+**Verify the feed extraction before committing** (mirrors the pipeline's own extractor):
+```python
+import httpx; from bs4 import BeautifulSoup
+xml = httpx.get(feed_url, headers={'User-Agent':'Mozilla/5.0'}, timeout=20, follow_redirects=True).text
+soup = BeautifulSoup(xml, 'xml')
+items = soup.select('item')  # or 'entry' for Atom
+print('items:', len(items))
+it = items[0]
+print('url  :', it.select_one('link').get_text(strip=True))   # Atom: it.select_one('link').get('href')
+print('title:', it.select_one('title').get_text(strip=True))
+print('date :', it.select_one('pubDate').get_text(strip=True)) # Atom: 'published'
+```
+
 ## 3. Regional aggregator fallback (per country)
 
 Use as a 3rd source when native sources are sparse, OR when no native WP API exists at all. **Only valid when a region-appropriate aggregator exists.** Do not invent one and do not reuse an aggregator outside its actual geographic coverage.

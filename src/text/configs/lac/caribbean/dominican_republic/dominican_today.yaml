@@ -1,0 +1,33 @@
+name: Dominican Today
+country: dominican_republic
+language: en
+base_url: https://dominicantoday.com
+
+listing:
+  type: rss
+  feed_urls:
+    - "https://dominicantoday.com/feed/"
+  page_param: paged
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+selectors:
+  thumbnail:
+    container: "item"
+    url: "link::text"
+    title: "title::text"
+    date: "pubDate::text"
+  article:
+    body: "div.content-single p"
+    date: "meta[property='article:published_time']::attr(content)"
+
+cleaning:
+  date: handle_mixed_dates
+  url: clean_url
+
+max_pages: null
+max_articles: null

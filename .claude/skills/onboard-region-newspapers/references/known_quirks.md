@@ -100,7 +100,16 @@ Known paywall: `namibiansun.com`.
 Identifying mark: `data-arc-site="..."` in the HTML. No WP API. Bundle paths are obfuscated. Tier 2/3, defer.
 
 ### `/feed/` returns HTML (403 wrapper)
-Some Cloudflare sites block `/feed/` while serving an HTML "403 Forbidden" wrapper. Don't mistake it for an RSS feed; verify `Content-Type: application/rss+xml`.
+Some Cloudflare sites block `/feed/` while serving an HTML "403 Forbidden" wrapper. Don't mistake it for an RSS feed; verify `Content-Type: application/rss+xml`. Also verify with a GET, not just HEAD — CDN/WAF-fronted domains can return a valid XML content-type on an access-denied or empty stub (seen on `eleconomista.com.mx` → S3 `<Error><Code>AccessDenied`, `pulzo.com` → empty body). The body must open with `<rss`/`<feed`/`<rdf:RDF` and contain repeating `<item>`/`<entry>`.
+
+### RSS/Atom feed strategy (`type: rss`) — onboarding quirks
+The `rss` listing strategy (see `yaml_templates.md` §2b) parses feeds with the lxml **XML** parser, which differs from `html.parser`:
+- **Selectors are case-sensitive** — `pubDate::text` works, `pubdate::text` matches nothing. Same for `link`/`title`/`published`.
+- Feeds are **front-page-only** (latest ~10–100 items) unless the site is WordPress and `<feed>?paged=N` returns genuinely older items — only then set `page_param: paged`. Arc Publishing (`/arc/outboundfeeds/rss/`, common on big LAC/digital outlets) and most custom CMSs **ignore** pagination params.
+- RSS 2.0 dominates globally; working Atom/RDF feeds are rare. WordPress feeds expose `content:encoded` (full body) + honor `?paged=N`; non-WP CMSs (Nuxt, Drupal, in-house "Witter"/"feeder") often ship only a truncated `<description>` teaser.
+- Some feeds CDATA-wrap even `<link>` (The Hindu's `/feeder/default.rss`) — the XML parser unwraps CDATA transparently, so `link::text` still works.
+- **Language-tag mismatch:** a feed's own `<language>` tag can lie (Online Khabar declares `en-US` but is Nepali). Always set the YAML `language:` explicitly from the actual content, never trust the feed tag.
+- The strategy fetches the **body from the article page** via `article.body` (like pagination). Feeds that carry full `content:encoded` but have JS/WAF-blocked article pages (e.g. `citizen.digital` Nuxt) are NOT yet fully onboardable — a body-from-feed mode is a separate follow-up.
 
 ## Pagination on category-only sites (no per-page archive)
 

@@ -9,6 +9,7 @@ Convention: one file per session, `YYYY-MM-DD-<slug>.md`, dates in UTC.
 
 | Date (UTC) | Session |
 |---|---|
+| 2026-07-31 | [RSS/Atom listing strategy: recon, build, production start](2026-07-31-rss-listing-strategy.md) |
 | 2026-07-29 | [Aggregator coverage audit + two onboarding rounds (110 new sources)](2026-07-29-aggregator-audit-and-onboarding.md) |
 | 2026-07-28 | [Local ASR probe (radio news → transcript on Apple M5)](2026-07-28-asr-local-probe.md) |
 | 2026-07-28 | [AFW radio-source scouting (radio → ASR → EPU)](2026-07-28-afw-radio-source-scouting.md) |
