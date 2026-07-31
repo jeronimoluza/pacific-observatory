@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: makro_pro
+url: https://www.makro.pro/en
+language: th
+cadence: daily
+channel: supermarket
+notes: >
+  #1 Thai grocery e-commerce (Makro/Mango platform). Next.js storefront backed
+  by a public Typesense search proxy at
+  search.maknet.siammakro.cloud/search/api/v1/indexes/products/search — no auth,
+  POST {"q":"","page":N}, fixed 20 hits/page (~54k catalog). Reads Thai `title`
+  + THB `displayPrice` + `deepestCategory` per hit. PDP at /th/p/{makroId}.

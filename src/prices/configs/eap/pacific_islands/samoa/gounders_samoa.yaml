@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: gounders_samoa
+url: https://gounderssamoa.com
+language: en
+cadence: daily
+channel: supermarket
+notes: |
+  Shopify grocery store. Custom domain gounderssamoa.com is behind an
+  Apache/WAF that 403s the homepage and 404s the Shopify catalogue paths;
+  scraped via the backing myshopify domain (gounderssamoa.myshopify.com)
+  /products.json feed, which is unprotected. Currency WST (confirmed via
+  meta.json). Small catalogue (~39 products). Zero-price variants are
+  placeholders and skipped.

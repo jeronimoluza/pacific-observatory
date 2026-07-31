@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: new_world_fiji
+url: https://www.newworld.com.fj
+language: en
+cadence: daily
+channel: supermarket
+notes: |
+  19-store IGA-affiliated chain. Angular SPA backed by a Vendure GraphQL API
+  at https://api.newworld.com.fj/shop-api (search plugin disabled; walked via
+  the products query with take/skip pagination). Pricing is per-store: the
+  vendure-token header selects a store channel — pinned to the Suva flagship
+  S0033 (NEWWORLD IGA Suva, Greig St); the default channel returns no prices.
+  Currency FJD. priceWithTax is an integer in thousandths of a dollar (frontend
+  divides by 1000), rescaled in the spider. ~12,900 products.
