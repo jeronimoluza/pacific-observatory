@@ -93,7 +93,9 @@ class PickarooSpider(scrapy.Spider):
 
         items_found = 0
         detail_fallbacks = 0
-        for item_or_req in self._extract_listing_products(response, category):
+        for item_or_req in self._extract_listing_products(
+            response, category, location_slug
+        ):
             if isinstance(item_or_req, scrapy.Request):
                 detail_fallbacks += 1
                 yield item_or_req
@@ -164,6 +166,7 @@ class PickarooSpider(scrapy.Spider):
                 "price": price,
                 "currency": self.currency,
                 "details": details,
+                "store": response.meta.get("store"),
                 "url": url,
                 "scraped_at": response.headers.get("Date", b"").decode("utf-8"),
             }
@@ -240,7 +243,7 @@ class PickarooSpider(scrapy.Spider):
             return f"{name} {details}"
         return name
 
-    def _extract_listing_products(self, response, category: str):
+    def _extract_listing_products(self, response, category: str, store: str = None):
         seen_urls: set[str] = set()
         links = response.css("a[href*='product-detail/']")
         for link in links:
@@ -276,6 +279,7 @@ class PickarooSpider(scrapy.Spider):
                     "category": category,
                     "price": price_text.strip(),
                     "currency": self.currency,
+                    "store": store,
                     "url": abs_url,
                     "scraped_at": response.headers.get("Date", b"").decode("utf-8"),
                 }
@@ -286,7 +290,7 @@ class PickarooSpider(scrapy.Spider):
                 yield scrapy.Request(
                     abs_url,
                     callback=self.parse_product_detail,
-                    meta={"category": category},
+                    meta={"category": category, "store": store},
                 )
 
     def _find_next_page_url(self, response) -> str | None:

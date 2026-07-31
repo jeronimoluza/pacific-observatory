@@ -97,7 +97,7 @@ class AeonOnlineSpider(scrapy.Spider):
                 "image": p.get("image"),
                 "is_out_of_stock": bool(p.get("isOutOfStock")),
                 "quantity": p.get("quantity"),
-                "store_slug": slug,
+                "store": slug,
                 "url": f"https://aeononlineshopping.com/product/{slug}/{product_id}",
                 "scraped_at": scraped_at,
             }
