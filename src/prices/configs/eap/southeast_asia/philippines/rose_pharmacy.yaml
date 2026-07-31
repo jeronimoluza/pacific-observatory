@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: rose_pharmacy
+url: https://www.rosepharmacy.com
+language: en
+cadence: daily
+channel: pharmacy
+notes: >
+  Rose Pharmacy - national PH drugstore chain. WooCommerce (Porto theme)
+  storefront that server-renders product cards (name + PHP price) directly in
+  category-listing HTML; no JS hydration or auth. The wp-json WooCommerce Store
+  API returns 403 (security plugin) but the SSR category pages are open. Spider
+  discovers /product-category/ URLs from the /pharmacy/ shop page, crawls each
+  with page/N pagination, dedupes by the WP post id in the card class. category
+  derived from the product-category URL slug (per-product rel=tag labels
+  occasionally carry promo text). Catalog includes white-label "Guardian"
+  personal-care lines alongside pharmacy SKUs.

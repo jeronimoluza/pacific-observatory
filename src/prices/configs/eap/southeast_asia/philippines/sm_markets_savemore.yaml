@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: sm_markets_savemore
+url: https://smmarkets.ph
+language: en
+cadence: daily
+channel: supermarket
+notes: >
+  SM Markets / SM Supermarket / Savemore - the SM group's national grocery
+  banner. Magento 2 PWA whose public GraphQL endpoint (smmarkets.ph/graphql)
+  answers unauthenticated queries. The spider gathers nested child category
+  IDs under 12 food/grocery/personal-care top-level anchor categories via one
+  categoryList query, then paginates the products query (pageSize=100) per
+  category, deduping by SKU. Prices in PHP from minimum_price.final_price. No
+  auth, no delivery-address gate. category = product's deepest categories[]
+  name.
