@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: basic_homemart
+url: https://basichomemart.com
+language: en
+cadence: daily
+channel: supermarket
+currency: USD
+notes: |
+  Vue3 SPA (Cloudflare-fronted) backed by public JSON API at
+  /dev-api/api/products/list?page=N&pageSize=M (~385 products). Direct API
+  fetch works with a browser UA; prices in USD (Timor-Leste). uom carries the
+  pack unit; appended to product_name for downstream extraction.

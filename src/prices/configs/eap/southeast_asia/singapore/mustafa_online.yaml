@@ -1,0 +1,9 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: mustafa_online
+url: https://shopmustafa.sg
+language: en
+cadence: daily
+channel: hypermarket

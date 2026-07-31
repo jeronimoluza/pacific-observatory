@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["01.2.1"]
+spider: cafe_letefoho
+url: https://cafeletefoho.com
+language: en
+cadence: weekly
+channel: supermarket
+currency: USD
+notes: |
+  Specialty single coffee roaster (channel enum has no `specialty`; narrow
+  coicop_codes short-circuits tier-b/c so channel is inert). WooCommerce;
+  ~9 products, all coffee
+  (beans / drip bags / cascara), so narrow to COICOP 01.2.1. Public Store API
+  /wp-json/wc/store/v1/products; prices in USD, integer minor units
+  (minor_unit=2 → 800 = $8.00).
