@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: gmarket
+url: https://www.gmarket.co.kr
+language: ko
+cadence: daily
+channel: aggregator
+notes: |
+  eBay Korea / Shinsegae (Emart) open marketplace. Scoped to the three
+  grocery large-category groups on /n/best (신선식품 fresh 100000006,
+  가공식품 processed 100000005, 생필품/육아 daily-necessities 100000007).
+  Best-seller lists are Next.js SSR — products parsed from the __NEXT_DATA__
+  script tag (goodsCode/goodsName/sellPrice), ~200 ranked items per group.
+  Cloudflare __cf_bm passes under curl_cffi chrome impersonation on a
+  datacenter IP; meta['impersonate']='chrome' with the random-browser
+  middleware disabled.
