@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: chemist_warehouse
+url: https://www.chemistwarehouse.com.au
+language: en
+channel: pharmacy
+notes: |
+  AU's largest pharmacy. Next.js storefront; product listing served by a
+  public Algolia index (app 42NP1V2I98, index prod_cwr-cw-au_products_en,
+  search-only key embedded in site JS). Spider POSTs directly to the Algolia
+  query endpoint - no Akamai on the Algolia CDN, no Playwright. ~36k products.
+  Algolia caps paging at a 1000-hit window, so the spider recursively bisects
+  the calculatedPrice range into disjoint bands (<=1000 hits each) for full
+  catalogue coverage. Price is calculatedPrice in cents -> AUD dollars.
+  Category from categories.en breadcrumb; out-of-stock / zero-price skipped.
