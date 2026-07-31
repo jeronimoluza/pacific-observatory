@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: pasar_tani
+url: https://pasartani.net
+language: ms
+cadence: weekly
+channel: aggregator
+notes: |
+  Farmer-direct DJ-Classifieds marketplace; thin catalogue (~tens of ads).
+  Category listing rows scraped directly (name from img alt, integer MYR
+  price from span.price_val). Location-facet categories skipped. Decimal
+  price precision lives only in free-text descriptions and is not extracted.

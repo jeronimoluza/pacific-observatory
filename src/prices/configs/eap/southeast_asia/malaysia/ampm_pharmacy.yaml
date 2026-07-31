@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: ampm_pharmacy
+url: https://store.pmg2u.com
+language: en
+cadence: daily
+channel: pharmacy
+notes: |
+  AM PM Pharmacy (ampmpharmacy.com redirects here). WooCommerce Store API
+  /wp-json/wc/store/v1/products; ~1479 products. Integer prices in minor
+  units rescaled via currency_minor_unit. Prices in MYR.

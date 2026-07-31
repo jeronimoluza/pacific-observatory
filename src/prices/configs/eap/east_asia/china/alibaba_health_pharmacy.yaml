@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: alibaba_health_pharmacy
+url: https://www.liangxinyao.com/
+language: zh
+cadence: daily
+channel: pharmacy
+notes: >
+  Alibaba Health Pharmacy (阿里健康大药房), a Tmall shop at
+  maiyao.liangxinyao.com. GBK-encoded PC home page lists the full
+  category-<catId>.htm tree; per-category products load from the shop's async
+  search module (/i/asynSearch.htm?mid=w-15101647109-0&wid=15101647109
+  &catId=<catId>&pageNo=<n>) which returns a GBK JS-string HTML fragment with
+  dl.item[data-id] + .item-name + .c-price. Widget id 15101647109 is shop-global.
+  Prices CNY; category is the decoded shop catName hint, real COICOP tagging
+  deferred to src/cpi/coicopping/. See spider docstring.

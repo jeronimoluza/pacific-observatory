@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: pasar_segar
+url: https://pasarsegar.co.id/
+language: id
+cadence: daily
+channel: supermarket
+notes: |
+  WooCommerce (Martfury theme) multi-vendor fresh-market marketplace with
+  physical outlets (Grogol/Bekasi/Ciputat/Bandung/Surabaya/Semarang).
+  Server-rendered /product-category/<slug>/ listing pages carry name,
+  merchant, price and PDP URL inline - no PDP visits. 15 categories
+  (buah/sayur/daging/seafood/frozen/bahan-pokok/bumbu-dapur/etc.), deep
+  pagination (buah alone ~153 pages). Strong fresh produce/meat/fish
+  coverage (COICOP 01.1.x) plus groceries. `merchant` field carries the
+  vendor (pedagang) name. channel=supermarket is the closest fit in the
+  closed enum; this is a fresh_market-leaning multi-vendor marketplace.

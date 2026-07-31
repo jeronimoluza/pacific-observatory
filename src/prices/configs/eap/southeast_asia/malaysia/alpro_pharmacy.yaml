@@ -1,0 +1,11 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: alpro_pharmacy
+url: https://alpropharmacy.com
+language: en
+cadence: daily
+channel: pharmacy
+notes: |
+  Shopify storefront; reads public /products.json feed. Prices in MYR.
