@@ -9,6 +9,8 @@ Convention: one file per session, `YYYY-MM-DD-<slug>.md`, dates in UTC.
 
 | Date (UTC) | Session |
 |---|---|
+| 2026-07-31 | [Systemic variant-drop fix + re-scrape + stale-run prune (26 exploder spiders, 133k rows recovered)](2026-07-31-variant-drop-fix.md) |
+| 2026-07-31 | [Wayback bulk-CDX discovery + weekly collapse; fetch-bottleneck research (A/C next)](2026-07-31-wayback-bulk-cdx-and-fetch-research.md) |
 | 2026-07-31 | [EAP retail candidate fan-out (batch 3) + WAF/Playwright spike — 25 sources shipped (→299 sources)](2026-07-31-eap-retail-candidate-onboarding.md) |
 | 2026-07-30 | [EAP retail source expansion — discovery methodology + 24-source onboarding (238→260 sources)](2026-07-30-eap-retail-source-expansion.md) |
 | 2026-07-29 | [First full classify + downstream feedback exploration](2026-07-29-classify-and-downstream-exploration.md) |
