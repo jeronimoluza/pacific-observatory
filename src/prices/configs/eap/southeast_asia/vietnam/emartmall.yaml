@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: emartmall
+url: https://www.emartmall.com.vn
+language: vi
+cadence: daily
+channel: supermarket
+notes: |
+  South Korean E-mart chain's standalone VN web storefront (OpenCart, not
+  app-gated). Category pages index.php?route=product/category&path=1..110
+  (gaps expected; empty pages are skipped), paginated via &page=N.

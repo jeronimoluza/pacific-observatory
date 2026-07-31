@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: trungson_pharma
+url: https://trungsoncare.com
+language: vi
+cadence: weekly
+channel: pharmacy
+notes: |
+  200+ store Mekong Delta pharmacy chain (CS-Cart storefront). Category
+  pages paginate via ?page=N; not every listing card shows an inline price
+  (some require login/quote) - those are skipped.

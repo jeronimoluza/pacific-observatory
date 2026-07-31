@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+spider: dichonhanh
+url: https://www.dichonhanh.vn
+language: vi
+cadence: daily
+channel: supermarket
+notes: |
+  Wet-market-style HCMC online grocer sourcing from Binh Dien wholesale
+  market. Server-rendered /nhom-san-pham/<slug>/ category pages list the
+  full product set inline (no pagination needed per category observed).
