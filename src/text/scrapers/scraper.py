@@ -389,6 +389,35 @@ class NewspaperScraper:
             logger.debug(f"Data: {thumb_data}")
             return None
 
+    def _maybe_prefetch_feed_body(self, thumb_elem, thumbnail) -> None:
+        """
+        For listing strategies that carry the body in the feed item (RSS
+        body_in_feed), read the body straight from the element and register it as a
+        prefetched article so the per-URL article fetch is skipped. Items without an
+        in-feed body are left alone and fall back to the article page.
+        """
+        if not getattr(self.listing_strategy, "body_in_feed", False):
+            return
+        body = self.listing_strategy.extract_body(thumb_elem)
+        if not body:
+            return
+        article_dict = {
+            "url": str(thumbnail.url),
+            "title": thumbnail.title,
+            "date": thumbnail.date or "",
+            "body": body,
+            "tags": [],
+            "source": self.name,
+            "country": self.country,
+            "language": self.language,
+        }
+        try:
+            self.prefetched_articles.append(ArticleRecord(**article_dict))
+        except Exception as e:
+            logger.error(
+                f"Failed to build prefetched ArticleRecord from feed body: {e}"
+            )
+
     # ==========================================================================
     # Original methods (prefixed with _original_ for Phase 1)
     # These will be migrated to orchestrators in Phase 2
@@ -496,6 +525,7 @@ class NewspaperScraper:
                             seen_urls.add(url_str)
                             batch_new_count += 1
                             thumbnails.append(thumbnail)
+                            self._maybe_prefetch_feed_body(thumb_elem, thumbnail)
 
             logger.info(
                 f"Processed batch: {len(result_batch)} pages, {len(thumbnails)} total thumbnails, {batch_new_count} new"
@@ -1857,6 +1887,7 @@ class NewspaperScraper:
                             )
                             if thumbnail:
                                 batch_thumbnails.append(thumbnail)
+                                self._maybe_prefetch_feed_body(thumb_elem, thumbnail)
 
                 logger.info(
                     f"Processed batch: {len(result_batch)} pages, {len(batch_thumbnails)} thumbnails"

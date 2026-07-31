@@ -109,7 +109,7 @@ The `rss` listing strategy (see `yaml_templates.md` §2b) parses feeds with the 
 - RSS 2.0 dominates globally; working Atom/RDF feeds are rare. WordPress feeds expose `content:encoded` (full body) + honor `?paged=N`; non-WP CMSs (Nuxt, Drupal, in-house "Witter"/"feeder") often ship only a truncated `<description>` teaser.
 - Some feeds CDATA-wrap even `<link>` (The Hindu's `/feeder/default.rss`) — the XML parser unwraps CDATA transparently, so `link::text` still works.
 - **Language-tag mismatch:** a feed's own `<language>` tag can lie (Online Khabar declares `en-US` but is Nepali). Always set the YAML `language:` explicitly from the actual content, never trust the feed tag.
-- The strategy fetches the **body from the article page** via `article.body` (like pagination). Feeds that carry full `content:encoded` but have JS/WAF-blocked article pages (e.g. `citizen.digital` Nuxt) are NOT yet fully onboardable — a body-from-feed mode is a separate follow-up.
+- The strategy fetches the **body from the article page** via `article.body` (like pagination) **unless** `body_in_feed: true` is set — then the body is read straight from the feed item (`content:encoded`, then `description`) and the article-page fetch is skipped. Use `body_in_feed` for feeds carrying the full body (esp. WordPress) and for full-content feeds whose article pages are JS/WAF-blocked (e.g. `citizen.digital` Nuxt, `thepress.mv`). Verify it's the *full* body not a teaser before enabling. Gotcha: `el.find("content:encoded")` resolves only because real feeds declare `xmlns:content` on `<rss>` — test fixtures must include that namespace.
 
 ## Pagination on category-only sites (no per-page archive)
 

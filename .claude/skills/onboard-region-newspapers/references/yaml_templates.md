@@ -142,6 +142,7 @@ listing:
   feed_urls:
     - "<https://example.com/feed/>"      # one or more; section feeds are fine
   # page_param: paged                      # ONLY for WordPress feeds that honor ?paged=N (walks older items). Omit for front-page-only.
+  # body_in_feed: true                     # set when the feed carries the full body (content:encoded); skips the article-page fetch (see below)
   # url_regex: "/20\\d\\d/"               # optional: keep only item <link>s matching this
 
 client: http
@@ -181,8 +182,8 @@ selectors:
 **Critical mechanics (feeds are parsed with the lxml XML parser, which behaves differently from `html.parser`):**
 - **Selectors are CASE-SENSITIVE.** Use exact tag case: `pubDate::text`, not `pubdate::text` — the latter silently matches nothing. Same for `link`, `title`, `published`.
 - `<link>` text survives (it's a void element only in `html.parser`), so `link::text` is correct for RSS. Atom's URL is the `href` attribute → `link::attr(href)`.
-- `content:encoded` / `description` (full or partial body carried in the feed) are **not usable** here — the namespaced colon breaks CSS `select`, and this strategy fetches the body from the article page. (Pulling body straight from `content:encoded` is a separate not-yet-shipped mode.)
-- **Front-page-only by default.** RSS feeds serve only the latest ~10–100 items. Set `page_param: paged` ONLY when you've confirmed the site is WordPress and `<feed>?paged=2` returns genuinely older items (Arc Publishing and most custom CMSs ignore it).
+- **In-feed body (`body_in_feed: true`)** — when the feed carries the full body (WordPress `content:encoded`, sometimes `description`), set this and the body is read straight from the feed item; the article-page fetch is skipped entirely (no per-site `article.body` selector needed, and immune to article-page WAF/JS blocks). Items lacking an in-feed body fall back to the article page automatically. The strategy re-parses the CDATA HTML to text; override the source tags with `feed_body_tags: [...]` if needed. **Verify the feed actually carries the *full* body, not a teaser**, before enabling — check `content:encoded` length vs the live article. Combined with `page_param: paged` on WordPress this gives a self-contained, months-deep, full-body collector.
+- **Front-page-only by default.** RSS feeds serve only the latest ~10–100 items. Set `page_param: paged` ONLY when you've confirmed the site is WordPress and `<feed>?paged=2` returns genuinely older items (Arc Publishing and most custom CMSs ignore it — Drupal/Nuxt return the identical front page at every N). WordPress feeds walk back months (bounded by a per-site page ceiling, often a few hundred pages); `posts_per_rss` (10 vs 99 items/page) sets how many requests that costs.
 
 **Verify the feed extraction before committing** (mirrors the pipeline's own extractor):
 ```python

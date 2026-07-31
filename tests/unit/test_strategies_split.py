@@ -94,6 +94,41 @@ def test_create_strategy_factory_works():
     assert isinstance(strategy, PaginatedArchiveStrategy)
 
 
+def test_rss_strategy_factory_and_in_feed_body():
+    """RSS factory dispatch + in-feed body flattening of CDATA HTML."""
+    from bs4 import BeautifulSoup
+    from text.scrapers.strategies import create_listing_strategy, RssStrategy
+
+    config = {
+        "type": "rss",
+        "feed_urls": ["https://example.com/feed/"],
+        "page_param": "paged",
+        "body_in_feed": True,
+    }
+    strategy = create_listing_strategy(config)
+    assert isinstance(strategy, RssStrategy)
+    assert strategy.body_in_feed is True
+
+    feed = (
+        '<rss xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel>'
+        "<item><title>T</title><link>https://example.com/a</link>"
+        "<content:encoded><![CDATA[<p>Hello <b>world</b></p>"
+        "<p>Second line.</p>]]></content:encoded></item>"
+        "<item><title>T</title><link>https://example.com/b</link>"
+        "<description><![CDATA[<p>Just a teaser.</p>]]></description></item>"
+        "<item><link>https://example.com/c</link></item>"
+        "</channel></rss>"
+    )
+    items = BeautifulSoup(feed, "xml").select("item")
+
+    # content:encoded (CDATA HTML) is flattened to text.
+    assert strategy.extract_body(items[0]) == "Hello world Second line."
+    # Falls back to description when content:encoded is absent.
+    assert strategy.extract_body(items[1]) == "Just a teaser."
+    # No body tags -> empty string (caller falls back to article page).
+    assert strategy.extract_body(items[2]) == ""
+
+
 def test_backwards_compatibility_removed():
     """Test that old deprecated imports have been removed."""
     import importlib

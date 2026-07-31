@@ -33,6 +33,10 @@ class RssStrategy(ListingStrategy):
     - page_param: optional query param (e.g. "paged") to walk older items. Each
       feed URL is requested with ?<page_param>=N until a page yields no new items
       or max_pages is reached. Leave unset for the common front-page-only feed.
+    - body_in_feed: optional bool. When true, the article body is read straight
+      from the feed item (content:encoded, then description) and the article-page
+      fetch is skipped. Items without an in-feed body fall back to the article page.
+    - feed_body_tags: optional list overriding which tags carry the body.
 
     Thumbnail selectors in the YAML target the item's children. Selector matching
     is case-sensitive under the XML parser, so use exact tag case. RSS 2.0:
@@ -62,6 +66,33 @@ class RssStrategy(ListingStrategy):
         )
         self.page_param = config.get("page_param")
         self.rate_limit = float(config.get("rate_limit", 0.3))
+
+        self.body_in_feed = bool(config.get("body_in_feed", False))
+        self.feed_body_tags = config.get("feed_body_tags") or [
+            "content:encoded",
+            "description",
+        ]
+
+    def extract_body(self, el) -> str:
+        """
+        Extract the article body from a feed item, when the feed carries it.
+
+        Tries each tag in feed_body_tags in order (default content:encoded, then
+        description). content:encoded/description hold CDATA-wrapped HTML, so the
+        raw string is re-parsed with html.parser and flattened to text. Returns ""
+        when no tag yields usable text; the caller then falls back to the article page.
+        """
+        for tag in self.feed_body_tags:
+            node = el.find(tag)
+            if node is None:
+                continue
+            raw = node.get_text()
+            if not raw or not raw.strip():
+                continue
+            text = BeautifulSoup(raw, "html.parser").get_text(" ", strip=True)
+            if text:
+                return text
+        return ""
 
     async def _fetch(self, client, url: str) -> Optional[str]:
         async with httpx.AsyncClient() as http_client:

@@ -102,21 +102,51 @@ _Flagged, not touched_: `eap/pacific_islands/pacific/islands_business.yaml` sets
 in a `pacific/` dir not listed in `regions.yaml` — likely intentional (pan-Pacific magazine), left
 for a human taxonomy decision.
 
-## Phase 2 (planned, not built): in-feed body extraction
+## Historical depth via `?paged=N` — the CMS decides, not the outlet (measured)
 
-For feeds carrying full `content:encoded`/`description`, extract the body straight from the feed
-item and skip the article-page fetch. This is the unlock for the deferred stubs and WAF/JS-blocked
-sources (buckets 2–3 above), and is more robust everywhere (no per-site body selector, immune to
-article-page WAFs). Implementation shape: route the feed body to `prefetched_articles` exactly as
-the API strategy does at `scraper.py:428-447`, gated on a config flag (e.g. `body_in_feed: true`)
-and a namespace-aware extractor (`element.find("content:encoded")`, not CSS `select`). Bounded,
-well-understood change; deferred to keep this pass scoped to the listing strategy.
+Empirical probes settled the "do feeds only cover recent months?" question. It is the **CMS**, not
+the site, that determines depth:
+
+| Feed | CMS | `?paged=N` | Reach (measured 2026-07-31) |
+|---|---|---|---|
+| dominican_today | WordPress | walks, 10/pg | today → **May 5** (~95 pages ≈ 950 articles), hard 404 at pg 100 |
+| prensalibre | WordPress | walks, **99/pg** | pg 30 → Jun 20 (~3000 articles) and continuing |
+| radio_okapi | Drupal | **ignored** | pg 1/10/30/60/100 all return the identical 50 items, same oldest date |
+
+Laws: **WordPress feeds are a real (bounded) backfill mechanism** — months deep, occasionally
+further; `posts_per_rss` (10 vs 99) sets how many requests that depth costs, and each site has a
+page ceiling (often a few hundred). **Non-WP feeds (Drupal/Arc/Nuxt) are a front-page snapshot with
+zero feed-side history.** `RssStrategy` already exploits this via `page_param: paged` (walks until an
+empty page). Still shallower than a WP REST API / sitemap, which reach the full archive — so where
+those exist, prefer them for deep backfill and use RSS for incremental + medium-depth.
+
+## Phase 2 (BUILT 2026-07-31): in-feed body extraction
+
+Shipped. For feeds carrying `content:encoded`/`description`, the body is read straight from the feed
+item and the per-article fetch is skipped — no per-site body selector, immune to article-page WAFs,
+and combined with `?paged=N` a WordPress feed becomes a self-contained, months-deep, full-body
+collector.
+
+- `RssStrategy.extract_body(el)` — tries `feed_body_tags` (default `content:encoded`, then
+  `description`); each holds CDATA-wrapped HTML, so the raw string is re-parsed with `html.parser`
+  and flattened to text. Returns `""` when nothing usable → caller falls back to the article page.
+- `scraper._maybe_prefetch_feed_body(thumb_elem, thumbnail)` — appends an `ArticleRecord` to
+  `prefetched_articles`; the existing generic consumption (`scraper.py` ~1144 / ~1388) streams them
+  and only HTML-scrapes the thumbnails *without* an in-feed body. Called from both live element
+  loops (`_original_discover_and_scrape_thumbnails` via the orchestrator, and
+  `_discover_thumbnails_incremental`).
+- Config: `listing.body_in_feed: true` (opt `feed_body_tags: [...]`).
+- **Gotcha:** `el.find("content:encoded")` resolves only when the `content:` namespace is declared
+  on `<rss>` (always true in real feeds; test fixtures must include `xmlns:content=...`).
+
+Validated end-to-end: `dominican_today` flipped to `body_in_feed: true` → 20/20 rows with full feed
+bodies (733–2106 chars, median 1247), dates populated, no article-page fetch. Unit test:
+`tests/unit/test_strategies_split.py::test_rss_strategy_factory_and_in_feed_body`.
 
 ## Backlog
 
-- Build phase-2 in-feed body; then revive `_0_dawn`, `_0_gulf_news`, and onboard citizen.digital.
-- Onboard the remaining confirmed feeds that are genuine gaps (esp. more ECA/Central Asia).
-- Maldives market: sun.mv is headline-only (no body via any path) — RSS gives dates+titles only;
-  thepress.mv carries Dhivehi body in `<description>` → a phase-2 in-feed-body target.
-- Deep backfill (`--rebuild`) is inherently shallow for RSS (front-page-only) — pair RSS with the
-  existing sitemap/pagination strategies where historical depth is needed.
+- Revive `_0_dawn`, `_0_gulf_news` and onboard citizen.digital / thepress.mv using `body_in_feed`
+  (their article pages are WAF/JS-blocked, but the feeds carry full content).
+- All-region **gap sweep** for outlets not yet onboarded that are RSS-only (esp. ECA/Central Asia).
+- Maldives: sun.mv is headline-only (no body anywhere); thepress.mv carries Dhivehi body in
+  `<description>` → `body_in_feed` target.

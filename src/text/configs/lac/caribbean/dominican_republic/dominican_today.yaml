@@ -8,6 +8,7 @@ listing:
   feed_urls:
     - "https://dominicantoday.com/feed/"
   page_param: paged
+  body_in_feed: true
 
 client: http
 concurrency: 3
