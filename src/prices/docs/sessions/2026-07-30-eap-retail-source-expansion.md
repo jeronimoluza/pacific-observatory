@@ -52,7 +52,7 @@ Full-catalog scrape row counts verified post-commit (`prices collect --source X
 |---|---|---|---|---|
 | Malaysia | sunshine_online | OpenCart SSR listing | supermarket | 32,534 |
 | Vietnam | emartmall | OpenCart SSR (`route=product/category`) | supermarket | 19,557 |
-| Taiwan | costco_taiwan | SAP Commerce; sitemap → JSON-LD PDPs | supermarket | ~15k (full-crawl) |
+| Taiwan | costco_taiwan | SAP Commerce; sitemap → JSON-LD PDPs | supermarket | 12,412 |
 | Taiwan | yahoo_shopping_tw | SSR Redux `isoredux-data`, F&B-kw seeded | aggregator | 7,978 |
 | Malaysia | health_lane | OpenCart-derived O2O white-label | pharmacy | 5,291 |
 | Australia | harris_farm_markets | Shopify `/products.json` | supermarket | 4,612 |
@@ -75,7 +75,10 @@ Full-catalog scrape row counts verified post-commit (`prices collect --source X
 | Vietnam | rautuoi247 | Sapo/Bizweb `/products.json` (fresh) | supermarket | 62 |
 | Malaysia | apex_pharmacy | ASP.NET WebForms SSR | pharmacy | 89 |
 
-Repo went **238 → 260** discoverable sources (`prices collect --list`).
+Repo went **238 → 260** discoverable sources (`prices collect --list`). Full-scrape
+verification run (no item cap, all 24) produced **104,118 rows at 100% price-fill**;
+currency overrides (niront USD, tongamarket NZD-descaled) and clean integer VND
+confirmed by content spot-check.
 
 ### Platform-endpoint cheatsheet (reused across the batch, scaffold near-free)
 
