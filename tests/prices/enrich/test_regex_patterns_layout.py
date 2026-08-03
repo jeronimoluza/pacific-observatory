@@ -123,6 +123,12 @@ GOLDEN_EXTRA_COUNT: tuple[str, ...] = tuple(RENAME[x] for x in _PRE_RENAME_EXTRA
 GOLDEN_MULTI_PACK: tuple[str, ...] = tuple(RENAME[x] for x in _PRE_RENAME_MULTI_PACK)
 GOLDEN_PRICING_BASIS_MARKERS: tuple[str, ...] = tuple(
     RENAME[x] for x in _PRE_RENAME_PRICING_BASIS_MARKERS
+) + (
+    # 2026-08-03 KG-marker widening: slash/bare per-unit markers appended after
+    # the four PER_* markers (new SCREAMING_SNAKE ids, no pre-rename form).
+    "SLASH_KG",
+    "BARE_KG",
+    "SLASH_LITRE",
 )
 
 GOLDEN_PROMO_LANGS: tuple[str, ...] = (

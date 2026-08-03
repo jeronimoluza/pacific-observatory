@@ -27,7 +27,7 @@ _BUCKETS = {"per_unit_marker", "single_measure", "multipack", "count_pack", "_un
 _SCREAMING_SNAKE = re.compile(r"^[A-Z0-9_]+$")
 
 _EXPECTED_CARDINALITY = {
-    "per_unit_marker": 4,
+    "per_unit_marker": 7,  # 2026-08-03: +SLASH_KG, BARE_KG, SLASH_LITRE
     "single_measure": 4,
     "multipack": 11,
     "count_pack": 31,

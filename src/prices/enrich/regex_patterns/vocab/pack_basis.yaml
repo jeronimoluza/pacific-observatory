@@ -11,11 +11,18 @@ pack:
   VALUE_UNIT_X_NUM: {form: measure_sep_num}
 
 # B-class per-unit markers (verbatim regex; parens + casing variants preserved).
+# SLASH_/BARE_ markers (2026-08-03) widen the detector to slash notation ("/kg")
+# and a trailing standalone unit ("... FLAME KG") -- both mean the price is
+# already per standard unit. They sit AFTER the numeric pack/measure rungs, so a
+# real "500g" still wins; these only rescue names that would fall through to item.
 basis_markers:
   PER_KG_PARENS:    {basis: mass,   regex: '\(\s*[Pp]er\s*/?\s*[Kk][Gg]\s*\)'}
   PER_KG:           {basis: mass,   regex: '\b[Pp]er\s+[Kk][Gg]\b'}
   PER_LITRE_PARENS: {basis: volume, regex: '\(\s*[Pp]er\s*/?\s*[Ll]\s*\)'}
   PER_LITRE:        {basis: volume, regex: '\b[Pp]er\s+[Ll]it(?:er|re)\b'}
+  SLASH_KG:         {basis: mass,   regex: '(?<![A-Za-z])/\s*[Kk][Gg]\b'}
+  BARE_KG:          {basis: mass,   regex: '\b[Kk][Gg]\b(?![-\w])'}
+  SLASH_LITRE:      {basis: volume, regex: '(?<![A-Za-z])/\s*[Ll]\b'}
 
 # M-class + extra_unit fallbacks (verbatim where case-sensitive).
 extra_unit:

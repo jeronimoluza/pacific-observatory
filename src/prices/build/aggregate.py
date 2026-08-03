@@ -19,9 +19,10 @@ Two outputs, two sources:
 Both paths:
   - filter classified.parquet → COICOP 01/02 × live states × trust_level==high
   - compute_unit_value via merge.compute_unit_value (multipack C-fix wired)
-  - canonicalize standard_unit per coicop_code leaf (modal; drop minority)
-  - flag Layer-2 unit-value outliers (trust_uv)
+  - require a leaf + standard_unit; keep every pricing basis (no modal collapse)
+  - flag Layer-2 unit-value outliers per (coicop_code, country, standard_unit)
   - attach FX (USD-base) → price_usd, unit_value_usd
+  - compute composable QA gates + categorical qa_status
 
 Design notes (why it is wired this way):
   - The join key is `input_hash`, NOT the (name, country, currency) triple used
@@ -30,14 +31,18 @@ Design notes (why it is wired this way):
     between), so the two frames' hashes are identical by construction and the
     join is exact. The old triple-key workaround existed only because the retired
     LLM cascade recomputed the hash on a divergent basis; that no longer applies.
-  - The unit-value CELL (for canonicalize + Layer-2 audit) is `coicop_code` at the
-    deepest leaf the classifier assigns. The retired cascade emitted a finer
-    `sub_label_id`, but the embedding→head classifier has no sub-leaf output and
-    leaves that column null. coicop_code is the finest granularity the live
-    pipeline populates; using the leaf (never rolling up) keeps distinct products
-    (e.g. apples vs oranges) in separate cells wherever the taxonomy separates
-    them. This is a coarsening vs sub_label_id: Layer-2 under-covers (withholds
-    trust on more rows) but never mis-rejects — consistent with precision-first.
+  - The unit-value CELL (for the Layer-2 audit and the consumable grain) is
+    (coicop_code, country, standard_unit) at the deepest leaf the classifier
+    assigns. The retired cascade emitted a finer `sub_label_id`, but the
+    embedding→head classifier has no sub-leaf output and leaves that column
+    null. coicop_code is the finest granularity the live pipeline populates;
+    using the leaf (never rolling up) keeps distinct products (e.g. apples vs
+    oranges) in separate cells wherever the taxonomy separates them. Adding
+    standard_unit to the cell keeps each pricing basis as its own homogeneous
+    series instead of collapsing a leaf to one modal unit — a country priced
+    per-count survives alongside a per-kg country. This is a coarsening vs
+    sub_label_id: Layer-2 under-covers (withholds trust on more rows) but never
+    mis-rejects — consistent with precision-first.
 """
 from __future__ import annotations
 
@@ -49,7 +54,12 @@ import pandas as pd
 
 from prices.build.basket import EAP_COUNTRIES, FNB_COICOP_PREFIXES
 from prices.build.fx import attach_fx_and_usd
+from prices.build.qa import compute_qa
 from prices.build.unit_value_audit import flag_uv_outliers
+from prices.build.unit_value_summary import (
+    build_unit_value_summary,
+    trusted_observations,
+)
 from prices.enrich import config as enrich_config
 from prices.enrich.stages.merge import compute_unit_value
 from prices.enrich.stages.prepare import _row_input_dict, parse_price
@@ -61,6 +71,8 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 BUILD_DIR = REPO_ROOT / "data" / "prices" / "build"
 OBSERVATIONS_PARQUET = BUILD_DIR / "eap_fnb_observations.parquet"
 SNAPSHOT_PARQUET = BUILD_DIR / "eap_fnb_snapshot.parquet"
+TRUSTED_OBS_PARQUET = BUILD_DIR / "eap_fnb_trusted_observations.parquet"
+UNIT_VALUE_SUMMARY_PARQUET = BUILD_DIR / "eap_fnb_unit_value_summary.parquet"
 PRODUCTS_INPUT_PARQUET = REPO_ROOT / "data" / "prices" / "enrich" / "products_input.parquet"
 CSV_CHUNK_SIZE = 50_000
 FX_HISTORY_FLOOR = pd.Timestamp("2024-03-06")
@@ -133,33 +145,28 @@ def _join_chunk(chunk: pd.DataFrame, cache: pd.DataFrame) -> pd.DataFrame:
     return merged.drop(columns=["input_hash"])
 
 
-def _canonicalize_units(df: pd.DataFrame) -> pd.DataFrame:
-    """Per coicop_code leaf, drop rows whose standard_unit is not the modal unit.
+def _require_unit(df: pd.DataFrame) -> pd.DataFrame:
+    """Drop only rows with no coicop_code or standard_unit; keep every basis.
 
-    Cross-country medians are meaningless when half a leaf is priced in lt
-    and the other half in kg, so we collapse to the dominant unit. The
-    minority rows are dropped, not silently kept. The cell is coicop_code (the
-    deepest leaf the classifier assigns) because the live pipeline no longer
-    produces sub_label_id; see the module docstring.
+    The unit-value CELL is (coicop_code, country, standard_unit), so each cell
+    is unit-homogeneous by construction and no modal-unit collapse is needed:
+    eggs-by-dozen and eggs-by-kg live in two distinct cells and both survive as
+    separate trusted series. Rows lacking a leaf or a unit can't be placed in a
+    cell (no comparable distribution), so they are dropped here. This replaces
+    the earlier global per-coicop modal-unit filter, which deleted a country's
+    rows whenever its pricing basis differed from the cross-country mode.
     """
     if df.empty:
         return df
-    canonical = (
-        df.dropna(subset=["coicop_code", "standard_unit"])
-        .groupby("coicop_code")["standard_unit"]
-        .agg(lambda s: s.value_counts().idxmax())
-        .to_dict()
-    )
     df = df.copy()
-    df["canonical_unit"] = df["coicop_code"].map(canonical)
-    kept = df[df["standard_unit"] == df["canonical_unit"]]
+    kept = df.dropna(subset=["coicop_code", "standard_unit"])
     dropped = len(df) - len(kept)
     if dropped:
         logger.info(
-            "Canonical-unit filter dropped %d / %d rows (off-modal standard_unit)",
+            "Unit filter dropped %d / %d rows (null coicop_code/standard_unit)",
             dropped, len(df),
         )
-    return kept.drop(columns=["canonical_unit"])
+    return kept
 
 
 def _compute_unit_values(df: pd.DataFrame) -> pd.DataFrame:
@@ -182,10 +189,12 @@ def _compute_unit_values(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _finalize(df: pd.DataFrame) -> pd.DataFrame:
-    """Shared tail: canonicalize unit, compute unit_value, attach FX → USD."""
-    df = _canonicalize_units(df)
+    """Shared tail: require unit, compute unit_value, Layer-2 audit, FX, QA."""
+    df = _require_unit(df)
     df = _compute_unit_values(df)
-    df = flag_uv_outliers(df)
+    df = flag_uv_outliers(
+        df, group_cols=("coicop_code", "country", "standard_unit")
+    )
     df = df[df["price_local"].notna()].copy()
     df = attach_fx_and_usd(df)
     df["unit_value_usd"] = df.apply(
@@ -194,6 +203,7 @@ def _finalize(df: pd.DataFrame) -> pd.DataFrame:
         else None,
         axis=1,
     )
+    df = compute_qa(df)
     return df
 
 
@@ -256,8 +266,13 @@ def build_observations(csv_path: Path | None = None) -> pd.DataFrame:
     )
 
     df = df.rename(columns={"date": "observation_date"})
+    # format="mixed" (not "ISO8601"): sources write dates in heterogeneous forms
+    # — RFC 2822 HTTP headers ("Sat, 24 Jan 2026 02:31:06 GMT"), compact numeric
+    # ("20250623125358"), and ISO. ISO8601 coerced the non-ISO forms to NaT, and
+    # NaT >= FX_HISTORY_FLOOR is False, so ~5.7M valid EAP rows (whole leaves:
+    # baby cereals, mandarins, flour of rice) were silently dropped by the floor.
     df["observation_date"] = pd.to_datetime(
-        df["observation_date"], errors="coerce", utc=True, format="ISO8601"
+        df["observation_date"], errors="coerce", utc=True, format="mixed"
     ).dt.tz_localize(None)
     before = len(df)
     df = df[df["observation_date"] >= FX_HISTORY_FLOOR]
@@ -272,9 +287,26 @@ def build_observations(csv_path: Path | None = None) -> pd.DataFrame:
     return df
 
 
+def _write_consumables(df: pd.DataFrame) -> None:
+    """Derive the two curated deliverables from the finalized observations frame.
+
+    Built from observations (real dated history) rather than the snapshot, whose
+    date is a synthetic "today". trusted_observations is the row-level ship set;
+    unit_value_summary is the monthly (period, leaf, country, unit) rollup.
+    """
+    BUILD_DIR.mkdir(parents=True, exist_ok=True)
+    obs = trusted_observations(df)
+    obs.to_parquet(TRUSTED_OBS_PARQUET, index=False)
+    logger.info("wrote %s (%d trusted rows)", TRUSTED_OBS_PARQUET, len(obs))
+    summary = build_unit_value_summary(df)
+    summary.to_parquet(UNIT_VALUE_SUMMARY_PARQUET, index=False)
+    logger.info("wrote %s (%d cells)", UNIT_VALUE_SUMMARY_PARQUET, len(summary))
+
+
 def build(csv_path: Path | None = None) -> None:
     build_snapshot()
-    build_observations(csv_path=csv_path)
+    obs = build_observations(csv_path=csv_path)
+    _write_consumables(obs)
 
 
 def run() -> None:

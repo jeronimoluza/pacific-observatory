@@ -200,6 +200,29 @@ _META = {
         kind="pricing_basis_marker",
         bucket="per_unit_marker",
     ),
+    # Slash / bare-unit variants: lang="any" — the kg/L symbol is
+    # language-universal, so these also fire on CJK/Thai names.
+    "SLASH_KG": dict(
+        groups=(),
+        lang="any",
+        role="extract",
+        kind="pricing_basis_marker",
+        bucket="per_unit_marker",
+    ),
+    "BARE_KG": dict(
+        groups=(),
+        lang="any",
+        role="extract",
+        kind="pricing_basis_marker",
+        bucket="per_unit_marker",
+    ),
+    "SLASH_LITRE": dict(
+        groups=(),
+        lang="any",
+        role="extract",
+        kind="pricing_basis_marker",
+        bucket="per_unit_marker",
+    ),
     # count_pack/latin (extra_count, script=latin)
     "EN_CAPS": dict(lang="any", script="latin"),
     "EN_TABLETS": dict(lang="any", script="latin"),

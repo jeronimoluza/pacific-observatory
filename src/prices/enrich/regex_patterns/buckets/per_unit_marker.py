@@ -16,4 +16,7 @@ PATTERNS: tuple[PackPattern, ...] = grammar.build_ids(
     "PER_KG",
     "PER_LITRE_PARENS",
     "PER_LITRE",
+    "SLASH_KG",
+    "BARE_KG",
+    "SLASH_LITRE",
 )
