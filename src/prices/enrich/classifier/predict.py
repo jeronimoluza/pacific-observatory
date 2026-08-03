@@ -35,12 +35,15 @@ class Predictor:
         self.tau = float(bundle["tau"])
         self.division = bundle.get("division")
 
-    def predict(self, names) -> Prediction:
+    def score_matrix(self, x: np.ndarray, names) -> Prediction:
+        """Run the head + operating point over an already-embedded matrix.
+
+        `x` is the (N, sum-of-block-dims) ensemble embedding row-aligned to
+        `names`. Split out from `predict` so the chunked full-corpus driver
+        (`classifier/batch_embed.py`) can score staged embeddings without
+        re-embedding, keeping tau/veto logic in one place.
+        """
         names = [str(n) for n in names]
-        if not names:
-            empty_s = np.empty(0, object)
-            return Prediction(empty_s, np.empty(0), np.empty(0, bool))
-        x = embedding.embed_names(names)
         p = self.clf.predict_proba(x)
         top = p.argmax(axis=1)
         leaf = np.array(self.classes[top], dtype=object)
@@ -56,6 +59,14 @@ class Predictor:
                 leaf[i] = action
                 accepted[i] = True
         return Prediction(leaf, conf, accepted)
+
+    def predict(self, names, use_cache: bool = True) -> Prediction:
+        names = [str(n) for n in names]
+        if not names:
+            empty_s = np.empty(0, object)
+            return Prediction(empty_s, np.empty(0), np.empty(0, bool))
+        x = embedding.embed_names(names, use_cache=use_cache)
+        return self.score_matrix(x, names)
 
 
 @lru_cache(maxsize=4)

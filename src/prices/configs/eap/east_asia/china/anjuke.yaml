@@ -2,6 +2,7 @@ scaffolding: spider
 extraction_pattern: scrapy_html
 analytical_role: retailer_sku
 coicop_classification: source_curated
+coicop_codes: ["04.1.1"]
 spider: anjuke
 url: https://bj.zu.anjuke.com/fangyuan/
 language: zh

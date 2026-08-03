@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: deferred_gemini
+channel: supermarket
+spider: capelle_nr
+url: https://www.cponlinedelivery.com
+language: en
+cadence: daily
+notes: >
+  Wix-hosted grocery delivery tied to Nauru's main brick-and-mortar Capelle &
+  Partner store. Extraction uses Schema.org Product JSON-LD (name, sku, price,
+  priceCurrency) present on every PDP. 8 category pages crawled; ~200 SKUs total.
+  No sitemap — category pages are the discovery layer. Category attribution follows
+  the first CATEGORY_URLS entry that lists a product; ~60% of SKUs are cross-listed
+  across multiple category pages (Wix store behaviour), so rely on product_name for
+  COICOP classification rather than category.

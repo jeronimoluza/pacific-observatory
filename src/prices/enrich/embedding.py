@@ -110,6 +110,97 @@ def _encode_mlx(block: dict, names: Sequence[str]) -> np.ndarray:
     return np.vstack([by_name[n] for n in names]).astype(np.float32)
 
 
+def _l2(mat: np.ndarray) -> np.ndarray:
+    return (mat / (np.linalg.norm(mat, axis=1, keepdims=True) + 1e-9)).astype(
+        np.float32
+    )
+
+
+def encode_st_block(block: dict, names: Sequence[str]) -> np.ndarray:
+    """Public per-row-L2 0.6B encode for the block-outer driver."""
+    return _l2(_encode_st(block, names))
+
+
+def free_st() -> None:
+    """Release the cached sentence-transformers model + its MPS allocations.
+
+    The block-outer driver calls this after the 0.6B block so its ~2.5 GB does
+    not sit resident (on unified memory) while the 8B mlx worker holds 7.5 GB.
+    """
+    _ST_MODELS.clear()
+    try:
+        import torch
+
+        if torch.backends.mps.is_available():
+            torch.mps.empty_cache()
+    except Exception:
+        pass
+    import gc
+
+    gc.collect()
+
+
+class MlxWorker:
+    """A long-lived `.venv_mlx` subprocess that loads one model once and embeds
+    successive chunks over stdin (see `embedding_mlx.py --serve`). Used by the
+    full-corpus driver so the 8B/4B weights load a single time per run instead
+    of once per chunk."""
+
+    def __init__(self, model_id: str):
+        self.proc = subprocess.Popen(
+            [str(config.MLX_VENV_PYTHON), str(_RUNNER), "--serve", model_id],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            text=True,
+        )
+        self._await("READY")
+
+    def _await(self, token: str) -> None:
+        while True:
+            line = self.proc.stdout.readline()
+            if line == "":
+                raise RuntimeError(f"mlx worker exited before '{token}'")
+            if line.strip() == token:
+                return
+
+    def encode(self, block: dict, names: Sequence[str]) -> np.ndarray:
+        """Embed `names` with this worker's model; returns an (N, dim) per-row
+        L2-normalized float32 matrix row-aligned to `names`."""
+        names = [str(n) for n in names]
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "vecs.npz"
+            payload = Path(td) / "payload.json"
+            payload.write_text(
+                json.dumps(
+                    {
+                        "prompt": config.CLASSIFIER_EMBED_PROMPT,
+                        "names": names,
+                        "out": str(out),
+                        "chunk": config.CLASSIFIER_EMBED_BATCH,
+                        "seq": int(block["seq"]),
+                    }
+                )
+            )
+            self.proc.stdin.write(str(payload) + "\n")
+            self.proc.stdin.flush()
+            self._await("OK")
+            with np.load(out, allow_pickle=False) as z:
+                keys, mat = z["keys"], z["mat"]
+        by_name = {str(k): mat[i] for i, k in enumerate(keys)}
+        return _l2(np.vstack([by_name[n] for n in names]).astype(np.float32))
+
+    def close(self) -> None:
+        try:
+            self.proc.stdin.write("__STOP__\n")
+            self.proc.stdin.flush()
+        except Exception:
+            pass
+        try:
+            self.proc.wait(timeout=60)
+        except Exception:
+            self.proc.kill()
+
+
 def _encode_block(block: dict, names: Sequence[str]) -> np.ndarray:
     """Embed `names` with one block's encoder. Returns an (N, dim) per-row
     L2-normalized float32 matrix, row-aligned to `names`."""

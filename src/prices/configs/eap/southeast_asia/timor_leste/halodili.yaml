@@ -2,8 +2,8 @@ scaffolding: spider
 extraction_pattern: scrapy_html
 analytical_role: retailer_sku
 coicop_classification: deferred_gemini
-spider: jianke
-url: https://www.jianke.com/
-language: zh
+spider: halodili
+url: https://halodili.com/zdsupermarket
+language: en
 cadence: daily
-channel: pharmacy
+channel: supermarket

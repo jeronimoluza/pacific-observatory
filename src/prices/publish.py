@@ -198,7 +198,14 @@ def publish() -> Path:
     obs = pd.read_parquet(OBSERVATIONS_PARQUET)
     obs["observation_date"] = pd.to_datetime(obs["observation_date"], errors="coerce")
     obs = obs[obs["observation_date"].notna()]
-    if "trust_level" in obs.columns:
+    if "qa_status" in obs.columns:
+        # qa_status == "trusted" already ANDs Layer-1 basis-ok, real quantity,
+        # Layer-2 uv-inlier, and FX; it is the single publish gate when present.
+        before = len(obs)
+        obs = obs[obs["qa_status"] == "trusted"]
+        logger.info("qa_status=='trusted' filter kept %d of %d rows", len(obs), before)
+    elif "trust_level" in obs.columns:
+        # Fallback for parquets predating the QA layer.
         before = len(obs)
         obs = obs[obs["trust_level"].fillna("high").isin(PUBLISH_TRUST_LEVELS)]
         logger.info(

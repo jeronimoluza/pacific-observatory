@@ -61,8 +61,8 @@ MLX_8B_MODEL_DIR = os.environ.get(
 # backend ("st" in-process | "mlx" subprocess), model id/path, and encode seq-len.
 CLASSIFIER_EMBED_ENSEMBLE = [
     {"tag": "0p6b", "backend": "st", "model": "Qwen/Qwen3-Embedding-0.6B", "seq": 48},
-    {"tag": "4b", "backend": "mlx", "model": "Qwen/Qwen3-Embedding-4B", "seq": 512},
-    {"tag": "8b_q8", "backend": "mlx", "model": MLX_8B_MODEL_DIR, "seq": 512},
+    {"tag": "4b", "backend": "mlx", "model": "Qwen/Qwen3-Embedding-4B", "seq": 176},
+    {"tag": "8b_q8", "backend": "mlx", "model": MLX_8B_MODEL_DIR, "seq": 176},
 ]
 CLASSIFIER_EMBED_BATCH = int(os.environ.get("QWEN_EMBED_BATCH", "32"))
 CLASSIFIER_EMBED_CACHE_DIR = ENRICH_DIR / "_embed_cache_qwen"

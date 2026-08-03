@@ -23,6 +23,7 @@ from typing import Optional
 import pandas as pd
 
 from prices.enrich import audit, config, coicop_codes
+from prices.enrich.classifier import batch_embed, fb_filter
 from prices.enrich.classifier.predict import load_predictor
 from prices.enrich.extract import extract
 from prices.enrich.stages.merge import ENRICHMENT_COLS
@@ -52,11 +53,14 @@ def classify_products(
     names = products["product_name_original"].astype(str)
 
     # Head predicts once per unique name (embedding is the cost), mapped back.
+    # Block-outer + checkpointed so the full-corpus embed fits in 16 GB and
+    # resumes (see classifier/batch_embed.py). The cheap F&B pre-filter narrows
+    # the unique names to the in-scope division first, so only survivors pay the
+    # ensemble embed; the rest fall through to state="rejected" below.
     uniq = pd.Index(names.unique())
-    pred = predictor.predict(uniq.tolist())
-    leaf_by = dict(zip(uniq, pred.leaf))
-    conf_by = dict(zip(uniq, pred.conf))
-    ok_by = dict(zip(uniq, pred.accepted))
+    scoped = fb_filter.in_scope_names(uniq, division)
+    uniq = pd.Index([n for n in uniq if n in scoped])
+    leaf_by, conf_by, ok_by = batch_embed.embed_and_predict(predictor, uniq)
 
     out_rows: list[dict] = []
     for _, p in products.iterrows():

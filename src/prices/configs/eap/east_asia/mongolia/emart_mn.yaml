@@ -1,9 +1,9 @@
 scaffolding: spider
-extraction_pattern: scrapy_html
+extraction_pattern: scrapy_api
 analytical_role: retailer_sku
 coicop_classification: deferred_gemini
-spider: nomin
-url: https://www.nomin.mn/
+spider: emart_mn
+url: https://emartmall.mn/
 language: mn
 cadence: daily
-channel: pharmacy
+channel: hypermarket

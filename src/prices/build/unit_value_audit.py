@@ -7,13 +7,15 @@ put a non-apple into apples). Either way the row is untrustworthy for
 unit-value aggregation, which is exactly what Layer-1's basis audit does not
 catch (it only rejects physically-impossible (leaf, pricing_basis) pairs).
 
-Cell = (coicop_code, country). `_canonicalize_units` in aggregate.py already
-collapses each coicop_code leaf to its modal standard_unit, so every
-unit_value_local inside a cell is unit-homogeneous and comparable; country
-pins the currency, so no FX is needed -- we score unit_value_LOCAL. coicop_code
-is the deepest leaf the live classifier assigns (the retired sub_label_id is no
-longer produced); the leaf is never rolled up, so distinct products stay in
-distinct cells wherever the taxonomy separates them.
+Cell = (coicop_code, country, standard_unit). The standard_unit in the key
+makes every unit_value_local inside a cell unit-homogeneous and comparable
+without collapsing a leaf to one modal unit, so a per-count series and a per-kg
+series for the same leaf are audited independently; country pins the currency,
+so no FX is needed -- we score unit_value_LOCAL. coicop_code is the deepest leaf
+the live classifier assigns (the retired sub_label_id is no longer produced);
+the leaf is never rolled up, so distinct products stay in distinct cells
+wherever the taxonomy separates them. The caller passes group_cols; the default
+below is the two-column cell for standalone use.
 
 Method (one code path for snapshot and observations):
   - log space (prices are multiplicative / right-skewed)

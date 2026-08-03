@@ -12,9 +12,12 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import random
 import time
+from collections.abc import Iterator
 from datetime import date
+from urllib.parse import urlsplit
 
 import requests
 
@@ -107,6 +110,171 @@ def discover_snapshots(
     timestamps.sort()
     logger.info("[wayback] %d snapshots for %s after %s", len(timestamps), url, cutoff)
     return timestamps
+
+
+def collapse_timestamps(timestamps: list[str], granularity: str) -> list[str]:
+    """Client-side dedup of 14-digit timestamps to one per calendar bucket.
+
+    granularity ∈ {"day","week","month","year"}. Keeps the earliest snapshot
+    in each bucket. `week` uses the ISO calendar (year-week), which has no
+    digit-prefix equivalent — the reason weekly collapse can't be pushed to
+    the CDX server and must happen here.
+    """
+    buckets: dict[str, str] = {}
+    for ts in sorted(timestamps):
+        if len(ts) < 8:
+            continue
+        if granularity == "year":
+            key = ts[:4]
+        elif granularity == "month":
+            key = ts[:6]
+        elif granularity == "week":
+            d = parse_timestamp_to_date(ts)
+            if d is None:
+                continue
+            iy, iw, _ = d.isocalendar()
+            key = f"{iy}{iw:02d}"
+        else:  # day (default)
+            key = ts[:8]
+        buckets.setdefault(key, ts)  # sorted asc → first seen is earliest
+    return sorted(buckets.values())
+
+
+def _norm_url(u: str) -> str | None:
+    """Scheme-insensitive key for intersecting CDX `original` with our URLs."""
+    try:
+        s = urlsplit(u if "//" in u else f"//{u}")
+    except ValueError:
+        return None
+    host = s.netloc.lower()
+    if not host:
+        return None
+    path = s.path.rstrip("/")
+    query = f"?{s.query}" if s.query else ""
+    return f"{host}{path}{query}"
+
+
+def _derive_scopes(urls: list[str]) -> list[tuple[str, str]]:
+    """Group URLs by host → (scope, matchType='prefix') per host.
+
+    The scope is the host plus the longest common path prefix (trimmed to the
+    last '/'), so a single-tenant retailer collapses to a tight product prefix
+    while a multi-tenant host (item.rakuten.co.jp) falls back to host-level.
+    """
+    by_host: dict[str, list[str]] = {}
+    for u in urls:
+        try:
+            s = urlsplit(u if "//" in u else f"//{u}")
+        except ValueError:
+            continue
+        if s.netloc:
+            by_host.setdefault(s.netloc.lower(), []).append(s.path)
+    scopes: list[tuple[str, str]] = []
+    for host, paths in by_host.items():
+        lcp = os.path.commonprefix(paths)
+        cut = lcp.rfind("/")
+        prefix_path = lcp[: cut + 1] if cut >= 0 else ""
+        scopes.append((f"{host}{prefix_path}", "prefix"))
+    return scopes
+
+
+# Safety cap on CDX pages per scope — a runaway backstop, not a real limit.
+_MAX_BULK_PAGES = 500
+
+
+def iter_bulk_captures(
+    session: requests.Session,
+    scope: str,
+    match_type: str,
+    cutoff: date,
+    *,
+    timeout: int = 60,
+) -> Iterator[tuple[str, str]]:
+    """Yield (original_url, timestamp) for every 200/text-html capture in scope.
+
+    One prefix/host CDX query paged via the CDX-server `page=` API — the bulk
+    analogue of per-URL discovery. Pages until an empty page rather than
+    trusting `showNumPages` (which is flaky under load and returns non-integer
+    output when `output=json` is set); a single unpaged call is unsafe because
+    CDX caps rows and, sorted by urlkey, the cap can fill entirely with sibling
+    paths (e.g. `/product-category/`) before reaching the product pages.
+
+    No server-side collapse: collapsing adjacent rows on a multi-URL query
+    would drop the first capture of a URL whenever it shares a bucket with the
+    previous URL's last capture. Dedup is the caller's via `collapse_timestamps`.
+    """
+    base = {
+        "url": scope,
+        "matchType": match_type,
+        "output": "json",
+        "fl": "original,timestamp",
+        "filter": ["statuscode:200", "mimetype:text/html"],
+        "from": cutoff.strftime("%Y%m%d"),
+    }
+    for pg in range(_MAX_BULK_PAGES):
+        resp = _request_with_retry(
+            session,
+            CDX_URL,
+            params=dict(base, page=pg),
+            timeout=timeout,
+            label=f"wayback CDX p{pg}",
+        )
+        if resp is None:
+            # Transient failure after retries — stop rather than risk skipping
+            # a page silently; the caller keeps whatever was yielded so far.
+            logger.warning("[wayback] bulk paging stopped early at page %d", pg)
+            break
+        try:
+            data = resp.json()
+        except (json.JSONDecodeError, ValueError):
+            break
+        rows = data[1:] if len(data) >= 2 else []
+        if not rows:
+            break  # empty page → past the end
+        for row in rows:
+            if len(row) >= 2 and row[0] and row[1]:
+                yield row[0], row[1]
+    else:
+        logger.warning(
+            "[wayback] hit _MAX_BULK_PAGES=%d for scope=%s — captures may be truncated",
+            _MAX_BULK_PAGES,
+            scope,
+        )
+
+
+def bulk_discover(
+    session: requests.Session,
+    universe: list[dict],
+    cutoff: date,
+    *,
+    granularity: str = "week",
+    timeout: int = 60,
+) -> dict[str, list[str]]:
+    """Return {url_hash: collapsed_timestamps} for a source's whole URL set.
+
+    Replaces one CDX call per URL with one paged CDX query per host. Captures
+    are intersected with `universe` (keyed by normalized URL) so only products
+    we actually collected get backfilled, then collapsed to `granularity`.
+    """
+    normmap: dict[str, str] = {}
+    for e in universe:
+        n = _norm_url(e["url"])
+        if n:
+            normmap[n] = e["url_hash"]
+
+    buckets: dict[str, list[str]] = {}
+    scopes = _derive_scopes([e["url"] for e in universe])
+    for scope, match_type in scopes:
+        logger.info("[wayback] bulk CDX scope=%s match=%s", scope, match_type)
+        for original, ts in iter_bulk_captures(
+            session, scope, match_type, cutoff, timeout=timeout
+        ):
+            n = _norm_url(original)
+            h = normmap.get(n) if n else None
+            if h:
+                buckets.setdefault(h, []).append(ts)
+
+    return {h: collapse_timestamps(v, granularity) for h, v in buckets.items()}
 
 
 def fetch_snapshot(

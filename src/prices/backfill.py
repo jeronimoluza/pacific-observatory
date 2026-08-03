@@ -21,15 +21,14 @@ from typing import Any
 
 from bs4 import BeautifulSoup
 
-import click
-
 from core.http import make_session
 from prices._shared.wayback import (
+    bulk_discover,
+    collapse_timestamps,
     discover_snapshots,
     fetch_snapshot,
     parse_timestamp_to_date,
 )
-from prices.config import PriceSourceConfig, discover_prices_configs
 from prices.price_scraping.selectors import extract_with_fallback, get_selectors
 
 logger = logging.getLogger(__name__)
@@ -61,9 +60,7 @@ def load_url_universe(source_dir: Path) -> list[dict[str, Any]]:
                 # Aggregator spiders disable DuplicationPipeline (one URL
                 # emits ~50 rows), so url_hash isn't set on those rows.
                 # Synthesize from URL — matches the md5(url) used elsewhere.
-                url_hash = row.get("url_hash") or hashlib.md5(
-                    url.encode()
-                ).hexdigest()
+                url_hash = row.get("url_hash") or hashlib.md5(url.encode()).hexdigest()
                 scraped_at = _parse_iso_utc(row.get("scraped_at_utc"))
                 prior = by_hash.get(url_hash)
                 if prior is None:
@@ -148,12 +145,18 @@ def backfill_one_url(
     collapse_digits: int = 8,
     max_snapshots: int | None = None,
     parse_html_fn=None,
+    timestamps: list[str] | None = None,
+    granularity: str = "week",
 ) -> list[dict[str, Any]]:
     """Discover, fetch, parse all wayback snapshots for one URL.
 
     Returns the list of row dicts to append. Rows are dropped (not returned)
     when the spider's price selector finds nothing — but the ledger is still
     updated for those timestamps so we don't retry dead snapshots.
+
+    When `timestamps` is supplied (bulk-discovery path) it is used as-is —
+    already intersected and collapsed. Otherwise a per-URL CDX query runs and
+    its result is collapsed to `granularity` here.
 
     Dispatch:
     - When `parse_html_fn` is supplied (aggregator spiders that expose a
@@ -162,9 +165,11 @@ def backfill_one_url(
     - Otherwise (retailer spiders), the existing per-field SPIDER_SELECTORS
       path runs and emits one row per snapshot.
     """
-    timestamps = discover_snapshots(
-        session, url, cutoff, collapse_digits=collapse_digits
-    )
+    if timestamps is None:
+        discovered = discover_snapshots(
+            session, url, cutoff, collapse_digits=collapse_digits
+        )
+        timestamps = collapse_timestamps(discovered, granularity)
     pending = [ts for ts in timestamps if not ledger.is_done(url_hash, ts)]
     if max_snapshots is not None:
         pending = pending[:max_snapshots]
@@ -177,18 +182,14 @@ def backfill_one_url(
             continue
         snap_date = parse_timestamp_to_date(ts)
         snap_iso = (
-            f"{snap_date.isoformat()}T00:00:00+00:00"
-            if snap_date is not None
-            else None
+            f"{snap_date.isoformat()}T00:00:00+00:00" if snap_date is not None else None
         )
 
         if parse_html_fn is not None:
             try:
                 parsed = list(parse_html_fn(html, url))
             except Exception:
-                logger.exception(
-                    "[wayback] parse_html failed for %s @ %s", url, ts
-                )
+                logger.exception("[wayback] parse_html failed for %s @ %s", url, ts)
                 continue
             if not parsed:
                 logger.debug(
@@ -267,9 +268,7 @@ def _load_spider_parse_html(spider_name: str):
     import importlib
 
     try:
-        mod = importlib.import_module(
-            f"prices.price_scraping.spiders.{spider_name}"
-        )
+        mod = importlib.import_module(f"prices.price_scraping.spiders.{spider_name}")
     except ImportError:
         logger.debug(
             "[wayback] no spider module prices.price_scraping.spiders.%s",
@@ -302,6 +301,8 @@ def run_source_backfill(
     max_snapshots_per_url: int | None = None,
     max_urls: int | None = None,
     workers: int = 4,
+    discovery: str = "bulk",
+    granularity: str = "week",
 ) -> dict[str, int]:
     """Backfill one source. Returns stats dict.
 
@@ -329,6 +330,30 @@ def run_source_backfill(
     selectors = get_selectors(spider) if parse_html_fn is None else {}
     currency = _resolve_currency(source_dir)
 
+    # CDX `from=` is the EARLIEST snapshot date to include. For backfill we
+    # want every archived snapshot (older than what live collection already
+    # covers), so default to a very early year. Narrow with --from.
+    cutoff = cutoff_override or date(2010, 1, 1)
+
+    # Bulk discovery: one paged CDX query per host instead of one per URL.
+    bulk_ts: dict[str, list[str]] | None = None
+    if discovery == "bulk":
+        disc_session = make_session()
+        try:
+            bulk_ts = bulk_discover(
+                disc_session, universe, cutoff, granularity=granularity
+            )
+        finally:
+            disc_session.close()
+        logger.info(
+            "[%s] bulk discovery: %d/%d urls have snapshots, %d total after %s collapse",
+            source_dir.name,
+            len(bulk_ts),
+            len(universe),
+            sum(len(v) for v in bulk_ts.values()),
+            granularity,
+        )
+
     run_ts = datetime.now(timezone.utc).strftime(_RUN_TS_FMT)
     out_path = wayback_dir / f"{source_dir.name}_{run_ts}.jsonl"
     write_lock = Lock()
@@ -337,11 +362,11 @@ def run_source_backfill(
     def _process(entry: dict[str, Any]) -> int:
         url = entry["url"]
         url_hash = entry["url_hash"]
-        # CDX `from=` is the EARLIEST snapshot date to include. For backfill
-        # we want every archived snapshot (older than what live collection
-        # already covers), so default to a very early year. The user can
-        # narrow with --from if they only want recent history.
-        cutoff = cutoff_override or date(2010, 1, 1)
+        ts_list = None
+        if bulk_ts is not None:
+            ts_list = bulk_ts.get(url_hash, [])
+            if not ts_list:
+                return 0
         session = make_session()
         try:
             rows = backfill_one_url(
@@ -355,6 +380,8 @@ def run_source_backfill(
                 collapse_digits=collapse_digits,
                 max_snapshots=max_snapshots_per_url,
                 parse_html_fn=parse_html_fn,
+                timestamps=ts_list,
+                granularity=granularity,
             )
         finally:
             session.close()
@@ -407,132 +434,3 @@ def run_source_backfill(
         stats["rows_written"],
     )
     return stats
-
-
-_PRICES_DIR = Path(__file__).resolve().parent
-_PROJECT_ROOT = _PRICES_DIR.parent.parent
-
-
-def _load_manifests(
-    region: str | None,
-    subregion: str | None,
-    country: str | None,
-    source: str | None,
-) -> list[PriceSourceConfig]:
-    paths = discover_prices_configs(region=region, subregion=subregion, country=country)
-    if source is not None:
-        paths = [p for p in paths if p.stem == source]
-    return [PriceSourceConfig.load(p) for p in paths]
-
-
-def _source_dir_for(manifest: PriceSourceConfig) -> Path:
-    return (
-        _PROJECT_ROOT
-        / "data"
-        / "prices"
-        / manifest.region
-        / manifest.subregion
-        / manifest.country
-        / manifest.source
-    )
-
-
-def _parse_iso_date(value: str | None) -> date | None:
-    if value is None:
-        return None
-    return datetime.strptime(value, "%Y-%m-%d").date()
-
-
-@click.command()
-@click.option("--region", "-r", default=None, help="Region slug (e.g. eap)")
-@click.option("--subregion", "-S", default=None, help="Subregion slug")
-@click.option("--country", "-c", default=None, help="Country slug")
-@click.option("--source", "-s", default=None, help="Run a single source slug")
-@click.option(
-    "--from",
-    "from_date",
-    default=None,
-    help="CDX cutoff (YYYY-MM-DD). Default: earliest live row for the source.",
-)
-@click.option(
-    "--collapse",
-    type=click.Choice(["day", "month", "year"]),
-    default="day",
-    show_default=True,
-    help="CDX collapse granularity",
-)
-@click.option(
-    "--max-snapshots-per-url",
-    type=int,
-    default=None,
-    help="Cap snapshots fetched per URL (testing/cost control).",
-)
-@click.option(
-    "--max-urls", type=int, default=None, help="Cap URLs processed per source."
-)
-@click.option(
-    "--workers",
-    type=int,
-    default=4,
-    show_default=True,
-    help="Thread pool size per source.",
-)
-@click.option("--dry-run", is_flag=True, help="List sources + URL counts; don't fetch.")
-def backfill_command(
-    region,
-    subregion,
-    country,
-    source,
-    from_date,
-    collapse,
-    max_snapshots_per_url,
-    max_urls,
-    workers,
-    dry_run,
-):
-    """Recover historical prices from the Wayback Machine."""
-    manifests = _load_manifests(region, subregion, country, source)
-    if not manifests:
-        raise click.ClickException(
-            "No matching sources. Check --region/--subregion/--country/--source."
-        )
-
-    active = [m for m in manifests if m.active]
-    if not active:
-        raise click.ClickException("No active sources to back-fill.")
-
-    collapse_digits = {"day": 8, "month": 6, "year": 4}[collapse]
-    cutoff = _parse_iso_date(from_date)
-
-    plan = []
-    for m in active:
-        sd = _source_dir_for(m)
-        n_urls = len(load_url_universe(sd))
-        plan.append((m, sd, n_urls))
-
-    for m, sd, n in plan:
-        click.echo(
-            f"  {m.region}/{m.subregion}/{m.country}/{m.source}  "
-            f"(spider={m.spider}, urls={n})"
-        )
-    click.echo(f"\n{len(plan)} sources, {sum(n for _, _, n in plan)} unique URLs")
-
-    if dry_run:
-        return
-
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
-
-    for m, sd, n in plan:
-        if n == 0:
-            click.echo(f"Skipping {m.source}: no raw_items found at {sd}/raw_items/")
-            continue
-        click.echo(f"\n=== {m.source} ({n} URLs) ===")
-        run_source_backfill(
-            source_dir=sd,
-            spider=m.spider,
-            cutoff_override=cutoff,
-            collapse_digits=collapse_digits,
-            max_snapshots_per_url=max_snapshots_per_url,
-            max_urls=max_urls,
-            workers=workers,
-        )
