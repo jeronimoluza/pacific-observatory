@@ -84,6 +84,30 @@ Most prior documentation referred to "type A / type B / type F" etc. The mapping
 
 The A–F letters are not used in v4 YAMLs.
 
+## Enrichment-operational fields
+
+The four axes above route a source through the pipeline. A *separate* set of YAML fields drives the tier-a/b/c enrichment cascade itself — what `enrich.py` and `tier_c.py` actually read. Authors MUST populate these explicitly for every new `deferred_gemini` or narrow-`source_curated` source; the skill's Phase-5 scaffolding step should not finish until all required entries below are set.
+
+| Field | Required? | Author rule | What it drives downstream |
+|---|---|---|---|
+| `channel` | **required** (for any source whose rows reach the cascade — i.e. `scaffolding: spider`) | Pick from the closed enum in `src/prices/configs/_examples/template.yaml`. Use `null` for non-retail sources where `analytical_role ∈ {cpi_benchmark, official_avg, tariff, aggregate_proxy}`. Use `aggregator` or `hypermarket` when the catalog genuinely cross-sells, so the tier-c COICOP-priors narrowing is skipped. | Tier-b cluster_key shard; tier-c `channel_coicop_priors` soft prior |
+| `coicop_codes` | **required for narrow sources**; optional for wide | A *narrow source* is one whose entire catalog falls under a single COICOP 3-digit class (e.g. residential rentals → `04.1`; gasoline retail → `07.2`). Declare every code the source emits — `["04.1.1"]`, `["04.1.1", "04.1.2"]`, etc. For wide sources (supermarkets, hypermarkets), leave the field unset and the tier-b index build will derive top-level prefixes from the cache at ≥ 5% frequency. Declare on a wide source ONLY when you want to override cache derivation (rare; usually only to cap an outlier top-level the source shouldn't emit). | Tier-b KNN pool filter (narrow → source-curated short-circuit; wide → in-set filtering, mechanism TBD by bake-off); also feeds the Phase-8 coverage report |
+| `language` | optional, recommended | ISO 639-1 of the dominant product-name language (e.g. `ja`, `ko`, `th`, `id`). Falls back to the country's first language in `src/configs/countries.yaml`, then to `"en"`. | Tier-a structural regex variants (unit-detection patterns differ by language) |
+
+### Narrowness rule
+
+A source is **narrow** iff `len({c[:4] for c in coicop_codes}) == 1`, where `c[:4]` is the 3-digit class prefix (e.g. `"04.1"`, `"07.2"`). `["04.1.1"]` and `["04.1.1", "04.1.2"]` are both narrow. `["07.2.2", "07.3.2"]` is wide (different classes — fuel vs transit fares are not substitutable). When narrow, the source's rows bypass tier-b and tier-c entirely; see [ADR-0002](../../../docs/adr/0002-source-curated-short-circuit.md).
+
+### Worked examples
+
+- **Residential rentals spider** (e.g. propertyguru, lamudi, ddproperty): `coicop_codes: ["04.1.1"]` → narrow → short-circuit. Tier-a still extracts pricing_basis=`monthly` and amount from `"RM 2,200 /mo"`-style strings. `sub_label_id` stays null.
+- **Supermarket** (e.g. emart, coles, fairprice): leave `coicop_codes` unset. The tier-b index build derives the source's top-level distribution from already-resolved cache rows; the filter applies to KNN neighbors only.
+- **Pharmacy chain** (e.g. watsons, boots): same — leave `coicop_codes` unset. Cache-derived codes will pick up the dominant 06.x / 13.x top-levels.
+- **Fuel retailer** (e.g. shell, BP price listings, if scraped): `coicop_codes: ["07.2.2"]` → narrow → short-circuit. Same shape as rentals.
+- **Cross-country aggregator** (e.g. livingcost, expatistan): `channel: aggregator`, leave `coicop_codes` unset (item breadcrumbs cover too much surface for a narrow declaration to be honest).
+
+The fields above are independent of the four axes — a `coicop_classification: source_curated` spider source MUST still set both `channel` AND `coicop_codes`, because routing classification ≠ operational codes.
+
 ## Repo entry points
 
 - Country topology / slug validation: `src/configs/regions.yaml`, `src/configs/countries.yaml`
