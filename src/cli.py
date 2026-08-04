@@ -370,7 +370,7 @@ _register_text_storage(
 
 
 from prices.collect import collect as _prices_collect  # noqa: E402
-from prices.backfill import backfill_command as _prices_backfill  # noqa: E402
+from prices.backfill_cli import backfill_command as _prices_backfill  # noqa: E402
 from prices.cc_warc_fetcher import common_crawl_command as _prices_common_crawl  # noqa: E402
 from prices.enrich.cli import process_command as _prices_process  # noqa: E402
 from prices.enrich.eval.cli import eval_command as _prices_eval  # noqa: E402
