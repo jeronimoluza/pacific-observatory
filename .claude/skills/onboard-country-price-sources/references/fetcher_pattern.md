@@ -56,7 +56,7 @@ The YAML's `coicop_classification` field declares who tags COICOP for this sourc
 
 | `coicop_classification` | Fetcher behavior |
 |---|---|
-| `deferred_gemini` | Fetcher does NOT populate `coicop_code`. Downstream `src/cpi/coicopping/` (Gemini-based) handles it. Typical for retailer SKU spiders and stats-office tables with long free-text item lists. |
+| `deferred_gemini` | Fetcher does NOT populate `coicop_code`. The downstream classifier at `src/prices/enrich/classifier/` (ensemble embedding → LR head) handles it. Typical for retailer SKU spiders and stats-office tables with long free-text item lists. The value name is historical — the Gemini pipeline it referred to is retired. |
 | `source_curated` | Fetcher populates `coicop_code` from a module-level `_COICOP_MAP` keyed by commodity / item / plan name. The skill author writes this map once during onboarding. Typical for fuel, electricity, water, telco, real-estate, tariff schedules — sources whose domain unambiguously determines COICOP. |
 | `publisher_labeled` | Fetcher reads `coicop_code` from labels the publisher itself emits. May need a language-translation map (e.g. Bahasa → COICOP codes for BPS Indonesia). Typical for CPI indexes. |
 

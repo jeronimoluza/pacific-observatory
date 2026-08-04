@@ -63,45 +63,32 @@ Declares who tags COICOP for the rows this source emits. Drives where the COICOP
 
 | Value | Used for | Handler |
 |---|---|---|
-| `deferred_gemini` | Retailer SKU spiders, stats-office tables with long free-text item lists | `src/cpi/coicopping/` (existing Gemini pipeline; classifies post-fetch at 4-digit COICOP using `product_name + category`) |
+| `deferred_gemini` | Retailer SKU spiders, stats-office tables with long free-text item lists | `src/prices/enrich/classifier/` — the ensemble-embedding → logistic-regression head, run by `prices process --stage classify`. Predicts the COICOP **leaf** from the raw product name. (The value is named `deferred_gemini` for historical reasons; the Gemini pipeline at `src/cpi/coicopping/` it once referred to is **retired** — do not route new sources there.) |
 | `source_curated` | Fuel, electricity, water, telco, real-estate, tariff schedules, restaurant aggregators — sources whose domain unambiguously determines COICOP | Fetcher module carries a `_COICOP_MAP` constant written by the skill author at onboarding |
 | `publisher_labeled` | CPI publications (publisher emits its own COICOP labels) | Fetcher reads the publisher's labels; may need a translation map (e.g. Bahasa → COICOP codes) |
 
 Rows that should carry `coicop_code` but for which the map fails MUST be dropped with a logged warning — a null `coicop_code` row that should have been populated is pollution masquerading as coverage.
 
-### Translation table — old A–F taxonomy → new axes
-
-Most prior documentation referred to "type A / type B / type F" etc. The mapping for back-reference:
-
-| Old | New `scaffolding` | New `analytical_role` | Common `extraction_pattern` |
-|---|---|---|---|
-| type A | `spider` | `retailer_sku` | scrapy_html, scrapy_api, scrapy_playwright |
-| type B | `fetcher` | `official_avg` or `aggregate_proxy` | rest_api, pdf |
-| type C | `fetcher` | `official_avg` | tabular_download |
-| type D | `fetcher` | `tariff` | html_scrape, pdf |
-| type E | `spider` | `retailer_sku` (listings layer) | scrapy_listing |
-| type F | `fetcher` | `cpi_benchmark` | rest_api, tabular_download, pdf |
-
-The A–F letters are not used in v4 YAMLs.
-
 ## Enrichment-operational fields
 
-The four axes above route a source through the pipeline. A *separate* set of YAML fields drives the tier-a/b/c enrichment cascade itself — what `enrich.py` and `tier_c.py` actually read. Authors MUST populate these explicitly for every new `deferred_gemini` or narrow-`source_curated` source; the skill's Phase-5 scaffolding step should not finish until all required entries below are set.
+The four axes above route a source through the pipeline. A *separate* set of YAML fields is read by the enrichment stage and the build. Authors MUST populate these explicitly for every new source; the skill's Phase-5 scaffolding step should not finish until all required entries below are set.
 
 | Field | Required? | Author rule | What it drives downstream |
 |---|---|---|---|
-| `channel` | **required** (for any source whose rows reach the cascade — i.e. `scaffolding: spider`) | Pick from the closed enum in `src/prices/configs/_examples/template.yaml`. Use `null` for non-retail sources where `analytical_role ∈ {cpi_benchmark, official_avg, tariff, aggregate_proxy}`. Use `aggregator` or `hypermarket` when the catalog genuinely cross-sells, so the tier-c COICOP-priors narrowing is skipped. | Tier-b cluster_key shard; tier-c `channel_coicop_priors` soft prior |
-| `coicop_codes` | **required for narrow sources**; optional for wide | A *narrow source* is one whose entire catalog falls under a single COICOP 3-digit class (e.g. residential rentals → `04.1`; gasoline retail → `07.2`). Declare every code the source emits — `["04.1.1"]`, `["04.1.1", "04.1.2"]`, etc. For wide sources (supermarkets, hypermarkets), leave the field unset and the tier-b index build will derive top-level prefixes from the cache at ≥ 5% frequency. Declare on a wide source ONLY when you want to override cache derivation (rare; usually only to cap an outlier top-level the source shouldn't emit). | Tier-b KNN pool filter (narrow → source-curated short-circuit; wide → in-set filtering, mechanism TBD by bake-off); also feeds the Phase-8 coverage report |
-| `language` | optional, recommended | ISO 639-1 of the dominant product-name language (e.g. `ja`, `ko`, `th`, `id`). Falls back to the country's first language in `src/configs/countries.yaml`, then to `"en"`. | Tier-a structural regex variants (unit-detection patterns differ by language) |
+| `channel` | **required on every manifest — the key must be present even when the value is `null`** | Pick from the closed enum `Channel` in **`src/prices/enrich/schemas.py`** (that module is the authority; `configs/_examples/template.yaml` only shows one example value). Use `null` for non-retail sources where `analytical_role ∈ {cpi_benchmark, official_avg, tariff, aggregate_proxy}`. | Source-mix reporting and per-channel slicing in the build. **Gotcha:** a value outside the enum, or an omitted `channel:` key, raises at load time and takes down the *global* `prices collect --list` — not just that one source. Both have happened (a `fresh_market` value; a fetcher YAML with no `channel:`). |
+| `coicop_codes` | **required for narrow sources**; omit for wide | A *narrow source* is one whose entire catalog falls under a single COICOP 3-digit class (e.g. residential rentals → `04.1`; gasoline retail → `07.2`). Declare every code the source emits — `["04.1.1"]`, `["04.1.1", "04.1.2"]`. For wide sources (supermarkets, hypermarkets, marketplaces), leave unset — the classifier assigns leaves per product. | Lets `source_curated` / `publisher_labeled` rows carry a COICOP code without going through the classifier at all; feeds the Phase-8 coverage report |
+| `language` | optional, recommended | ISO 639-1 of the dominant product-name language (e.g. `ja`, `ko`, `th`, `id`). Falls back to the country's first language in `src/configs/countries.yaml`, then to `"en"`. | Tier-a structural regex variants (unit-detection patterns differ by language). Note `_resolve_lang()` returns the *effective* language, which is not always the country's official one. |
 
 ### Narrowness rule
 
-A source is **narrow** iff `len({c[:4] for c in coicop_codes}) == 1`, where `c[:4]` is the 3-digit class prefix (e.g. `"04.1"`, `"07.2"`). `["04.1.1"]` and `["04.1.1", "04.1.2"]` are both narrow. `["07.2.2", "07.3.2"]` is wide (different classes — fuel vs transit fares are not substitutable). When narrow, the source's rows bypass tier-b and tier-c entirely; see [ADR-0002](../../../docs/adr/0002-source-curated-short-circuit.md).
+A source is **narrow** iff `len({c[:4] for c in coicop_codes}) == 1`, where `c[:4]` is the 3-digit class prefix (e.g. `"04.1"`, `"07.2"`). `["04.1.1"]` and `["04.1.1", "04.1.2"]` are both narrow. `["07.2.2", "07.3.2"]` is wide (different classes — fuel vs transit fares are not substitutable). Narrow sources take their COICOP code straight from the manifest instead of from the classifier.
+
+> The historical justification for this rule was that narrow sources "bypass tier-b and tier-c." That cascade was **removed on 2026-07-24** — `src/prices/enrich/tier_b/` is now empty and there is no `tier_c.py`. [ADR-0002](../../../docs/adr/0002-source-curated-short-circuit.md) and ADR-0003 describe the retired design; the rule itself survives because declaring a known COICOP code is still strictly better than asking a classifier to rediscover it.
 
 ### Worked examples
 
 - **Residential rentals spider** (e.g. propertyguru, lamudi, ddproperty): `coicop_codes: ["04.1.1"]` → narrow → short-circuit. Tier-a still extracts pricing_basis=`monthly` and amount from `"RM 2,200 /mo"`-style strings. `sub_label_id` stays null.
-- **Supermarket** (e.g. emart, coles, fairprice): leave `coicop_codes` unset. The tier-b index build derives the source's top-level distribution from already-resolved cache rows; the filter applies to KNN neighbors only.
+- **Supermarket** (e.g. emart, coles, fairprice): leave `coicop_codes` unset. A supermarket catalog spans most of divisions 01–13; the classifier assigns a leaf per product.
 - **Pharmacy chain** (e.g. watsons, boots): same — leave `coicop_codes` unset. Cache-derived codes will pick up the dominant 06.x / 13.x top-levels.
 - **Fuel retailer** (e.g. shell, BP price listings, if scraped): `coicop_codes: ["07.2.2"]` → narrow → short-circuit. Same shape as rentals.
 - **Cross-country aggregator** (e.g. livingcost, expatistan): `channel: aggregator`, leave `coicop_codes` unset (item breadcrumbs cover too much surface for a narrow declaration to be honest).
@@ -120,14 +107,14 @@ The fields above are independent of the four axes — a `coicop_classification: 
   - Bucket 1 (country-bound, ~80% of fetchers): `src/prices/fetchers/<region>/<subregion>/<country>/<source>.py`
   - Bucket 2 (regional aggregator covering multiple countries in one region): `src/prices/fetchers/_shared/<region>/<source>.py` with thin per-country wrappers at `<region>/<subregion>/<country>/<source>.py`
   - Bucket 3 (truly global aggregate, e.g. commodity benchmarks): `src/prices/fetchers/_global/<source>.py`
-- **Existing COICOP classifier** (used by `coicop_classification: deferred_gemini`): `src/cpi/coicopping/` — Gemini-based, runs post-fetch on retailer SKU rows
+- **Existing COICOP classifier** (used by `coicop_classification: deferred_gemini`): `src/prices/enrich/classifier/` — ensemble embedding → logistic-regression head, run by `python run.py prices process --stage classify`
 - Scrapy + Playwright settings: `src/prices/price_scraping/settings.py` (do not edit unless explicitly asked)
 - CLI:
-  - `python run.py prices collect --source <name> --max-items N` (`scaffolding: spider`) — exists
-  - `python run.py prices fetch --source <source_key>` (`scaffolding: fetcher`) — **DESIGNED, NOT YET IMPLEMENTED**. The fetcher loader, CSV writer, and cutoff layer don't exist in the repo yet. Until they do, run Phase 6 for fetchers via the stand-alone runner pattern documented under "Fallback Phase-6 runner" below. Also note: `src/prices/config.py`'s `PriceSourceConfig` model requires `spider:` and ignores v4 fetcher fields — fetcher YAMLs are not loaded by the existing discovery layer.
-  - `python run.py prices collect --list` (lists everything)
+  - `python run.py prices collect --source <name> --max-items N` — runs **both** scaffoldings. `collect.py` dispatches on `scaffolding`: spiders go to Scrapy, fetchers go to `_run_fetcher()`, which resolves `module:function`, computes the cutoff from the existing CSV (falling back to `fallback_date`), and writes the columns for the source's `analytical_role`.
+  - `python run.py prices collect --list` (lists everything, both scaffoldings)
+  - There is **no separate `prices fetch` command** — earlier drafts of this skill said one was planned. Fetchers are collected, listed, and tested through `prices collect` like any other source.
 - Data output:
-  - Spiders (raw SKU items, pre-coicopping/): `data/prices/<region>/<subregion>/<country>/<source>/raw_items/<source>_<ts>.jsonl`
+  - Spiders (raw SKU items, pre-classification): `data/prices/<region>/<subregion>/<country>/<source>/raw_items/<source>_<ts>.jsonl` (one file per run)
   - Fetchers emitting PriceObservation: `data/prices/<region>/<subregion>/<country>/<source>/price_observations.csv`
   - Fetchers emitting IndexObservation: `data/prices/<region>/<subregion>/<country>/<source>/index_observations.csv`
   - Bucket 3 global: `data/prices/_global/<source>/price_observations.csv`
@@ -306,7 +293,7 @@ For each non-skipped candidate, open the dumped HTML (Tier 2) or the live page (
 - **product_name**: prefer a stable attribute like `[data-test="product_name"]` (Long Chau) or `<img>` alt text on a product card (City Mall MM). Avoid `<a>::attr(title)` as a high-priority fallback — overlay badges (e.g. "sale") frequently steal that selector. Always try `meta[property='og:title']::attr(content)` as a fallback for PDPs.
 - **price**: look for a specific class like `att-product-detail-latest-price` (Co.opmart) or `data-price` attribute (Carrefour TW). On atomic-CSS sites (Sayurbox-style Twitter/RN-Web classes), there is no clean selector — extract via text regex (`Rp\s?[0-9.,]+`) instead.
 - **product_id**: SKU / barcode / canonical-URL-trailing-id. Often a `meta[property='product:retailer_item_id']`, an `<input name='id'>`, or parsable from the URL.
-- **category**: breadcrumb. Many sites have no inline breadcrumb on PDP — leave it null rather than invent one. The `category` field is the key input for `coicopping/`'s Gemini classifier, so capturing a reliable breadcrumb is high-value even when it requires extra work.
+- **category**: breadcrumb. Many sites have no inline breadcrumb on PDP — leave it null rather than invent one. A reliable breadcrumb is high-value even when it costs extra work: it's what makes a product auditable and what a human labeller reads when adjudicating a hard case.
 
 Verification rule: **before scaffolding, every selector must have been observed matching the right text in a real dumped HTML file.** This is the single biggest determinant of whether the spider works on first run.
 
@@ -319,7 +306,8 @@ For each viable spider candidate, create three things:
 1. **Spider file**: `src/prices/price_scraping/spiders/<source>.py`
    - File name and class name must be valid Python identifiers (`street11_kr.py` / `Street11KrSpider`, not `11street_kr.py`)
    - The spider's `name = "<source>"` attribute can be anything; this becomes the `--source` CLI value
-   - Currency: 3-letter ISO 4217 (VND, IDR, KRW, MMK, ...) from `countries.yaml` — set at the spider class level, never parse from price symbol
+   - Currency: 3-letter ISO 4217 (VND, IDR, KRW, MMK, ...) set at the spider class level. **Never** derive it from the displayed symbol — "$" is BND in Brunei, USD in Cambodia, NZD in several Pacific markets. `countries.yaml` is the *default*, not the override: when the site returns an explicit machine-readable currency code (`prices.currency_code` on Shopify/WooCommerce, a `currency` field in a JSON API), use **what the site returns**. Real cases: `tongamarket` prices in NZD and `niront` (KH) in USD, both against a different `countries.yaml` default.
+   - **Minor-unit traps.** Some platform APIs return integer minor units, not decimals: WooCommerce Store API returns minor units alongside a `currency_minor_unit` exponent (divide by `10**currency_minor_unit`); Vendure `shop-api` returns **thousandths** (divide by 1000). A 100× or 1000× price error that reaches the corpus is far more damaging than a missing source — always eyeball the first extracted price against the rendered page.
 2. **Selectors entry** in `src/prices/price_scraping/selectors.py` — only for `extraction_pattern: scrapy_html` spiders that use the shared `SelectorExtractor` pattern. `scrapy_api` and `scrapy_playwright` (listing-card) spiders bypass the registry and put selectors directly in the spider.
 3. **YAML manifest**: `src/prices/configs/<region>/<subregion>/<country>/<source>.yaml` — see "YAML manifest schema" below.
 
@@ -348,7 +336,7 @@ A multi-country source that emits *per-country* rows (e.g. WB ICP publishing one
 
 **The fetcher module's contract** is in `references/fetcher_pattern.md` § 1. In short: one public `fetch_<source_key>(cutoff)` function; emit `PriceObservation` or `IndexObservation` rows per `analytical_role`; idempotent skip on `observation_date <= cutoff`; `observation_hash` set last; drop unmappable COICOP rows; return `None` for no-new-data. The doc also covers helpers (optional toolbox at `src/prices/fetchers/utils.py`) and worked examples (REST API, PDF+OCR, XLS, HTML tariff, CPI).
 
-After scaffolding, run `python run.py prices fetch --list` and grep for each new `source_key` to confirm discovery. **If `prices fetch --list` is not yet implemented**, manually list the new YAML files and `import` each fetcher module to confirm it loads — the fallback Phase-6 runner in the next phase will exercise it end-to-end. Then proceed to Phase 6.
+After scaffolding, run `python run.py prices collect --list` and grep for each new `source_key` to confirm discovery — the listing shows `fetcher=<module>:<function>` for fetcher-backed sources. If a manifest doesn't appear, the usual causes are a wrong country slug or a missing `channel:` key (see the Enrichment-operational fields table). Then proceed to Phase 6.
 
 ### YAML manifest schema
 
@@ -501,43 +489,36 @@ After the run, find the output files with `find data/prices -name "*.jsonl" | xa
 - correct `currency`
 - a working `url`
 - a real `product_id` (or `null` if the site doesn't expose one — fine)
-- non-null `category` (needed by `coicopping/` downstream; if missing, the row will fail Gemini classification)
+- non-null `category` (the audit trail for downstream classification; a null here isn't fatal but makes the row much harder to adjudicate later)
 
-**`scaffolding: fetcher`:** run each fetcher against a cutoff far in the past so it returns all available rows. When the `prices fetch` CLI exists:
+**`scaffolding: fetcher`:** run each fetcher through the same `collect` command as spiders. The cutoff comes from the manifest's `fallback_date` on the first run (there's no CSV yet to read a cutoff from), so set `fallback_date` far enough back that the first run returns real history:
 
 ```bash
-cd <repo_root>
-for src in <source_key1> <source_key2>; do
-  poetry run python run.py prices fetch --source $src --cutoff 2020-01-01 > /tmp/$src.fetch.log 2>&1 &
+cd /Users/jeronimoluza/wb/pacificobservatory/repo/template-repo
+for src in <source1> <source2>; do
+  poetry run python run.py prices collect --source $src > /tmp/$src.fetch.log 2>&1 &
 done
-sleep 60
-pkill -TERM -f "run.py prices fetch" 2>/dev/null
+sleep 120
+pkill -TERM -f "run.py prices collect" 2>/dev/null
 
-for src in <source_key1> <source_key2>; do
-  echo "--- $src ---"
-  grep -E "rows|new rows|Error" /tmp/$src.fetch.log | tail -5
+for src in <source1> <source2>; do
+  echo "--- $src ---"; tail -5 /tmp/$src.fetch.log
 done
 ```
 
-**Fallback Phase-6 runner (while `prices fetch` CLI is unbuilt).** Write a short stand-alone script under `$CLAUDE_JOB_DIR/run_fetchers.py` that imports each new fetcher and calls it with a backdated cutoff, then validates schema. The runner does not persist CSVs — its only job is to verify ≥5 rows and required-field population:
+If the fetcher raises during development and you want a tighter loop than a full `collect`, import and call it directly — same contract, no persistence:
 
 ```python
-import sys
+import sys; sys.path.insert(0, "src")
 from datetime import date
-sys.path.insert(0, "<repo_root>/src")
-
 from prices.fetchers.<region>.<subregion>.<country>.<source> import fetch_<source_key>
 
 df = fetch_<source_key>(date(2020, 1, 1))
 assert df is not None and len(df) >= 5, f"only {0 if df is None else len(df)} rows"
-required = ["observation_date", "period_kind", "country", "source_key",
-            "price_local" or "index_value", "observation_hash"]
-assert all(c in df.columns for c in required)
-assert df[required].notna().all().all()
 print(f"OK: {len(df)} rows, span {df['observation_date'].min()} → {df['observation_date'].max()}")
 ```
 
-This is the verification gate even without the CLI — record output in Phase 8 the same way.
+The shipping gate is the `collect` run, not the direct call — only `collect` exercises the cutoff layer and the writer.
 
 A successful fetcher writes to `data/prices/<region>/<subregion>/<country>/<source>/price_observations.csv` (or `index_observations.csv` for `analytical_role: cpi_benchmark`) and the first row should have:
 - non-null `observation_date` (ISO YYYY-MM-DD)
@@ -631,9 +612,10 @@ Don't bundle these into a routine country onboarding. Each is its own dedicated 
 - Don't write per-country YAMLs for truly global aggregate series (oil benchmarks, IMF FX). They live as a single `_global/<source>.yaml` because the rows are global by definition.
 - Don't re-do Phase 2 discovery from scratch when `references/inventories/<region>/<country>.md` already exists. The warm-start path is the seed; supplement only for documented gaps. (Outside EAP, the cold-start path is expected — write back the inventory at Phase 8.)
 - Don't leave old-schema YAMLs unmigrated when the skill runs on a country. Phase 1 upgrades them in place via inventory lookup — that's how the repo migrates organically.
-- Don't add a spider's currency by parsing the price symbol — set it at the spider class level (`currency = "VND"`). Sites that display "$" for Brunei dollars (BND) will be miscoded otherwise.
+- Don't add a spider's currency by parsing the price symbol — set it at the spider class level (`currency = "VND"`). Sites that display "$" for Brunei dollars (BND) will be miscoded otherwise. But don't blindly take `countries.yaml` either when the site states its own currency code — see Phase 5A.
 - Don't batch multiple countries in one run. Each country has its own retailers, CDNs, stats-office release format, and product URL conventions — the discovery work is what costs time, not the scaffolding.
 - Don't treat CPI (`analytical_role: cpi_benchmark`) as a fallback "when nothing else exists for division X." It's the benchmark series that every country needs *in addition to* its price-level sources, because the downstream PPP / inflation-nowcasting analysis compares the two.
 - Don't ship a source that probe-passes but returns 0–4 rows in the Phase 6 test. Record it as skipped with a hypothesis; revisit later.
 - Don't trust scout sub-agents that say "selectors_unknown: true" — that's a signal to do a real Playwright probe, not to invent selectors anyway.
-- Don't try to do COICOP classification in retailer SKU spiders. `src/cpi/coicopping/` (Gemini-based) is the existing downstream classifier — spiders just emit `product_name` + `category`. Duplicating or pre-empting Gemini classification in the spider weakens both layers.
+- Don't try to do COICOP classification in retailer SKU spiders. `src/prices/enrich/classifier/` is the downstream classifier — spiders just emit `product_name` + `category`. Note the classifier consumes the **raw** product name: normalizing or canonicalizing text in the spider measurably *hurts* accuracy, so emit the name exactly as the site renders it.
+- Don't route anything to `src/cpi/coicopping/`. That Gemini classifier is retired. A handful of older spider docstrings and YAML `notes:` still name it — they're stale comments, not live wiring.
