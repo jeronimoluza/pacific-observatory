@@ -82,9 +82,16 @@ def _parse_iso_date(value: str | None) -> date | None:
 @click.option(
     "--workers",
     type=int,
-    default=4,
+    default=2,
     show_default=True,
-    help="Thread pool size per source.",
+    help="Thread pool size per source (kept low — IA blackholes under concurrency).",
+)
+@click.option(
+    "--requests-per-second",
+    type=float,
+    default=1.5,
+    show_default=True,
+    help="Global fetch rate cap across workers; 0 disables pacing.",
 )
 @click.option("--dry-run", is_flag=True, help="List sources + URL counts; don't fetch.")
 def backfill_command(
@@ -98,6 +105,7 @@ def backfill_command(
     max_snapshots_per_url,
     max_urls,
     workers,
+    requests_per_second,
     dry_run,
 ):
     """Recover historical prices from the Wayback Machine."""
@@ -147,4 +155,5 @@ def backfill_command(
             workers=workers,
             discovery=discovery,
             granularity=collapse,
+            requests_per_second=requests_per_second,
         )

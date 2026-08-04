@@ -21,6 +21,8 @@ from urllib.parse import urlsplit
 
 import requests
 
+from prices._shared.pacing import CircuitBreaker, RateLimiter
+
 logger = logging.getLogger(__name__)
 
 CDX_URL = "https://web.archive.org/cdx/search/cdx"
@@ -28,6 +30,29 @@ WAYBACK_RAW = "https://web.archive.org/web/{ts}id_/{url}"
 
 _RETRY_ATTEMPTS = 4
 _RETRY_BASE_DELAY = 2.0  # seconds; doubles each attempt
+_THROTTLE_STATUS = (429, 503)
+
+
+def _retry_after_seconds(exc: requests.RequestException) -> float | None:
+    """Return the Retry-After delay (seconds form) for a 429/503, else None."""
+    resp = getattr(exc, "response", None)
+    if resp is None or resp.status_code not in _THROTTLE_STATUS:
+        return None
+    raw = resp.headers.get("Retry-After")
+    if not raw:
+        return None
+    try:
+        return max(0.0, float(raw))
+    except (TypeError, ValueError):
+        return None  # HTTP-date form is unsupported; fall back to backoff
+
+
+def _is_throttle_failure(exc: requests.RequestException) -> bool:
+    """True for connection-refused (TCP blackhole) and 429/503 responses."""
+    if isinstance(exc, requests.ConnectionError):
+        return True
+    resp = getattr(exc, "response", None)
+    return resp is not None and resp.status_code in _THROTTLE_STATUS
 
 
 def _request_with_retry(
@@ -37,20 +62,37 @@ def _request_with_retry(
     params: dict | None = None,
     timeout: int = 60,
     label: str = "wayback",
+    limiter: RateLimiter | None = None,
+    breaker: CircuitBreaker | None = None,
 ) -> requests.Response | None:
     last_exc: Exception | None = None
     for attempt in range(_RETRY_ATTEMPTS):
+        if breaker is not None:
+            breaker.wait_if_open()
+        if limiter is not None:
+            limiter.wait()
         try:
             resp = session.get(
                 url, params=params, timeout=timeout, allow_redirects=True
             )
             resp.raise_for_status()
+            if breaker is not None:
+                breaker.record_success()
             return resp
         except requests.RequestException as exc:
             last_exc = exc
+            retry_after = _retry_after_seconds(exc)
+            if breaker is not None and _is_throttle_failure(exc):
+                cooldown = breaker.record_failure()
+                if cooldown is not None:
+                    logger.warning(
+                        "[%s] circuit breaker tripped — pausing %.0fs", label, cooldown
+                    )
             if attempt + 1 < _RETRY_ATTEMPTS:
                 base = _RETRY_BASE_DELAY * (2**attempt)
                 delay = base + random.uniform(0, base / 2)
+                if retry_after is not None:
+                    delay = max(delay, retry_after)
                 logger.debug(
                     "[%s] transient error (attempt %d/%d): %s — retrying in %.1fs",
                     label,
@@ -283,6 +325,8 @@ def fetch_snapshot(
     url: str,
     *,
     timeout: int = 60,
+    limiter: RateLimiter | None = None,
+    breaker: CircuitBreaker | None = None,
 ) -> str | None:
     """Fetch a single Wayback snapshot's raw HTML (no toolbar injection).
 
@@ -292,7 +336,12 @@ def fetch_snapshot(
     """
     snap_url = WAYBACK_RAW.format(ts=timestamp, url=url)
     resp = _request_with_retry(
-        session, snap_url, timeout=timeout, label=f"wayback snap {timestamp}"
+        session,
+        snap_url,
+        timeout=timeout,
+        label=f"wayback snap {timestamp}",
+        limiter=limiter,
+        breaker=breaker,
     )
     return resp.text if resp is not None else None
 

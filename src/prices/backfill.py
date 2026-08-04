@@ -16,12 +16,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from contextlib import suppress
 from datetime import date, datetime, timezone
 from pathlib import Path
-from threading import Lock
+from threading import Lock, local
 from typing import Any
 
 from bs4 import BeautifulSoup
 
 from core.http import make_session
+from prices._shared.pacing import CircuitBreaker, RateLimiter
 from prices._shared.wayback import (
     bulk_discover,
     collapse_timestamps,
@@ -147,6 +148,8 @@ def backfill_one_url(
     parse_html_fn=None,
     timestamps: list[str] | None = None,
     granularity: str = "week",
+    limiter: RateLimiter | None = None,
+    breaker: CircuitBreaker | None = None,
 ) -> list[dict[str, Any]]:
     """Discover, fetch, parse all wayback snapshots for one URL.
 
@@ -176,7 +179,7 @@ def backfill_one_url(
 
     rows: list[dict[str, Any]] = []
     for ts in pending:
-        html = fetch_snapshot(session, ts, url)
+        html = fetch_snapshot(session, ts, url, limiter=limiter, breaker=breaker)
         ledger.record(url_hash, ts)
         if html is None:
             continue
@@ -300,9 +303,10 @@ def run_source_backfill(
     collapse_digits: int = 8,
     max_snapshots_per_url: int | None = None,
     max_urls: int | None = None,
-    workers: int = 4,
+    workers: int = 2,
     discovery: str = "bulk",
     granularity: str = "week",
+    requests_per_second: float = 1.5,
 ) -> dict[str, int]:
     """Backfill one source. Returns stats dict.
 
@@ -359,6 +363,23 @@ def run_source_backfill(
     write_lock = Lock()
     out_fh = open(out_path, "w", encoding="utf-8")
 
+    # Gentle global pacing + shared circuit-breaker so a run rides out IA's
+    # burst-triggered TCP blackhole instead of hammering it to death.
+    limiter = RateLimiter.per_second(requests_per_second)
+    breaker = CircuitBreaker()
+    thread_sessions = local()
+    sessions: list[Any] = []
+    sessions_lock = Lock()
+
+    def _worker_session():
+        session = getattr(thread_sessions, "session", None)
+        if session is None:
+            session = make_session()
+            thread_sessions.session = session
+            with sessions_lock:
+                sessions.append(session)
+        return session
+
     def _process(entry: dict[str, Any]) -> int:
         url = entry["url"]
         url_hash = entry["url_hash"]
@@ -367,24 +388,22 @@ def run_source_backfill(
             ts_list = bulk_ts.get(url_hash, [])
             if not ts_list:
                 return 0
-        session = make_session()
-        try:
-            rows = backfill_one_url(
-                session=session,
-                url=url,
-                url_hash=url_hash,
-                cutoff=cutoff,
-                selectors=selectors,
-                ledger=ledger,
-                currency=currency,
-                collapse_digits=collapse_digits,
-                max_snapshots=max_snapshots_per_url,
-                parse_html_fn=parse_html_fn,
-                timestamps=ts_list,
-                granularity=granularity,
-            )
-        finally:
-            session.close()
+        rows = backfill_one_url(
+            session=_worker_session(),
+            url=url,
+            url_hash=url_hash,
+            cutoff=cutoff,
+            selectors=selectors,
+            ledger=ledger,
+            currency=currency,
+            collapse_digits=collapse_digits,
+            max_snapshots=max_snapshots_per_url,
+            parse_html_fn=parse_html_fn,
+            timestamps=ts_list,
+            granularity=granularity,
+            limiter=limiter,
+            breaker=breaker,
+        )
         if rows:
             with write_lock:
                 for r in rows:
@@ -422,6 +441,9 @@ def run_source_backfill(
         out_fh.close()
         with suppress(OSError):
             ledger.save()
+        for session in sessions:
+            with suppress(Exception):
+                session.close()
 
     if stats["rows_written"] == 0:
         with suppress(OSError):
