@@ -1,6 +1,6 @@
 # EAP price-source inventory
 
-Pre-verified discovery seed for the `onboard-country-price-sources` skill.
+Pre-verified discovery seed for the `onboard-price-sources` skill.
 One file per country; `_aggregators.md` holds cross-country aggregators + COICOP gap notes.
 
 ## Origin
