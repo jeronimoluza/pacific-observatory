@@ -2,7 +2,7 @@
 Spider for Suning (China) - www.suning.com / search.suning.com.
 
 Two-step scrape, no WAF (confirmed 2026-07-27 probe in
-onboard-country-price-sources/references/known_blockers.md - "the one CN lead
+onboard-price-sources/references/known_blockers.md - "the one CN lead
 that pans out, overturning China = 0"):
 
 1. Server-rendered search-result HTML (search.suning.com/{keyword}/) yields
