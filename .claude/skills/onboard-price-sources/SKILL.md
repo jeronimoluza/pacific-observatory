@@ -96,7 +96,9 @@ A source is **narrow** iff `len({c[:4] for c in coicop_codes}) == 1`, where `c[:
 - **Supermarket** (e.g. emart, coles, fairprice): leave `coicop_codes` unset. A supermarket catalog spans most of divisions 01–13; the classifier assigns a leaf per product.
 - **Pharmacy chain** (e.g. watsons, boots): same — leave `coicop_codes` unset. Cache-derived codes will pick up the dominant 06.x / 13.x top-levels.
 - **Fuel retailer** (e.g. shell, BP price listings, if scraped): `coicop_codes: ["07.2.2"]` → narrow → short-circuit. Same shape as rentals.
-- **Cross-country aggregator** (e.g. livingcost, expatistan): `channel: aggregator`, leave `coicop_codes` unset (item breadcrumbs cover too much surface for a narrow declaration to be honest).
+- **Cost-of-living survey publisher** (e.g. livingcost, expatistan, mylifeelsewhere, numbeo): not an outlet — it publishes modelled averages, not a catalog. `channel: null`, `analytical_role: aggregate_proxy`, leave `coicop_codes` unset.
+
+For every other source, pick the `channel` value whose discriminating test matches, from the table in `src/prices/docs/GLOSSARY.md`. Do not copy the value list into this skill — one list, one place.
 
 The fields above are independent of the four axes — a `coicop_classification: source_curated` spider source MUST still set both `channel` AND `coicop_codes`, because routing classification ≠ operational codes.
 

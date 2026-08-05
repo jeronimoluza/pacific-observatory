@@ -104,14 +104,14 @@ notes: |
   13 is folded into 12 by BPS). Translation map: Bahasa → COICOP codes.
 ```
 
-Regional aggregator (Shopee in Singapore, thin per-country wrapper):
+Marketplace — third-party sellers (Shopee in Singapore, thin per-country wrapper):
 
 ```yaml
 scaffolding: fetcher
 extraction_pattern: rest_api
 analytical_role: retailer_sku
 coicop_classification: classifier
-channel: aggregator
+channel: marketplace
 source_key: sg_shopee
 module: eap.southeast_asia.singapore.shopee
 function: fetch_sg_shopee
@@ -120,6 +120,11 @@ language: en
 cadence: daily
 fallback_date: 2024-01-01
 ```
+
+Platforms selling through **third-party sellers** (Shopee, Lazada, Rakuten,
+Yahoo Shopping) are marketplaces — long-tail catalogs with seller-authored
+product names. The authoritative value list, with a discriminating test for
+each, is the `channel` entry in `src/prices/docs/GLOSSARY.md`.
 
 Truly global aggregate (World Bank Pink Sheet, at `configs/_global/wb_pink_sheet.yaml`):
 
