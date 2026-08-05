@@ -7,8 +7,8 @@ replacement instead. This file is the single arbiter when a name is ambiguous.
 Scope note: this glossary is prices-specific. Project-wide terms (Region,
 Subregion, Country slug, Effective language) live in `CLAUDE.md`.
 
-Last reconciled against code: 2026-08-05 (channel taxonomy; see
-`docs/superpowers/specs/2026-08-05-map-price-sources-design.md`).
+Last reconciled against code: 2026-08-05 (channel taxonomy retag — see
+`git log --grep="channel"` and the `Retired` table below).
 
 ---
 
