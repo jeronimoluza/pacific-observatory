@@ -1,6 +1,8 @@
 from typing import Literal
 from pydantic import BaseModel, Field
 
+# Value definitions and discriminating tests: src/prices/docs/GLOSSARY.md
+# (authoritative). The grouping comments below are a reading aid only.
 Channel = Literal[
     # Food-dominant retail
     "supermarket",
