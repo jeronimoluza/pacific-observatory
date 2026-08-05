@@ -62,6 +62,11 @@ OUTPUT_COLS = [
     "category",
 ]
 
+# The coicop_classification value that routes a fetcher manifest's rows into
+# the classifier corpus (see _build_classifier_csv_map). Shared here so a
+# future rename of the marker only needs one edit.
+CLASSIFIER_MARKER = "classifier"
+
 
 _CHANNEL_MAP_CACHE: Optional[dict[tuple[str, str], str]] = None
 
@@ -82,10 +87,10 @@ def _build_source_channel_map() -> dict[tuple[str, str], str]:
     return out
 
 
-_DEFERRED_CSV_MAP_CACHE: Optional[dict[tuple[str, str], str]] = None
+_CLASSIFIER_CSV_MAP_CACHE: Optional[dict[tuple[str, str], str]] = None
 
 
-def _build_deferred_csv_map() -> dict[tuple[str, str], str]:
+def _build_classifier_csv_map() -> dict[tuple[str, str], str]:
     """Return {(country, source): channel} for ``scaffolding: fetcher`` sources
     whose COICOP is ``classifier`` — the fetcher price_observations.csv rows
     that belong in the classifier corpus (e.g. wholesale live-animals). Keyed by
@@ -103,18 +108,18 @@ def _build_deferred_csv_map() -> dict[tuple[str, str], str]:
         if not isinstance(y, dict):
             continue
         if (
-            y.get("coicop_classification") == "classifier"
+            y.get("coicop_classification") == CLASSIFIER_MARKER
             and y.get("scaffolding") == "fetcher"
         ):
             out[(path.parent.name, path.stem)] = y.get("channel") or ""
     return out
 
 
-def _deferred_csv_map() -> dict[tuple[str, str], str]:
-    global _DEFERRED_CSV_MAP_CACHE
-    if _DEFERRED_CSV_MAP_CACHE is None:
-        _DEFERRED_CSV_MAP_CACHE = _build_deferred_csv_map()
-    return _DEFERRED_CSV_MAP_CACHE
+def _classifier_csv_map() -> dict[tuple[str, str], str]:
+    global _CLASSIFIER_CSV_MAP_CACHE
+    if _CLASSIFIER_CSV_MAP_CACHE is None:
+        _CLASSIFIER_CSV_MAP_CACHE = _build_classifier_csv_map()
+    return _CLASSIFIER_CSV_MAP_CACHE
 
 
 def _channel_for(country: str, source: str) -> str:
@@ -124,7 +129,7 @@ def _channel_for(country: str, source: str) -> str:
     ch = _CHANNEL_MAP_CACHE.get((country, source))
     if ch:
         return ch
-    return _deferred_csv_map().get((country, source), "")
+    return _classifier_csv_map().get((country, source), "")
 
 
 def _url_hash(url: Optional[str]) -> Optional[str]:
@@ -204,7 +209,7 @@ def _iter_source_files(
     """Return [(shape, path), ...] for all raw artifacts under a source dir.
 
     A fetcher's ``price_observations.csv`` is included only for sources declared
-    ``classifier`` (see ``_deferred_csv_map``); tariff/fuel/telco fetchers
+    ``classifier`` (see ``_classifier_csv_map``); tariff/fuel/telco fetchers
     are source-curated and must not enter the div-01 classifier corpus."""
     out: list[tuple[str, Path]] = []
     raw = source_dir / "raw_items"
@@ -217,7 +222,7 @@ def _iter_source_files(
     if cc.is_dir():
         out.extend(("cc", p) for p in cc.glob("*.json"))
     obs = source_dir / "price_observations.csv"
-    if obs.is_file() and (country, source) in _deferred_csv_map():
+    if obs.is_file() and (country, source) in _classifier_csv_map():
         out.append(("price_obs", obs))
     return out
 
