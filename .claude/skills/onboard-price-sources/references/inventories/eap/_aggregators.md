@@ -1,5 +1,7 @@
 # EAP multi-country sources and COICOP coverage gaps
 
+_Inventory written: 2026-08-04_
+
 ## Multi-country sources
 
 | Source                                             |                                               Countries in panel | COICOP coverage                                                 | Cadence                              | Usefulness                                | Notes                                                                                                       |

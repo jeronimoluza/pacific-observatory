@@ -1,5 +1,7 @@
 # Solomon Islands
 
+_Inventory written: 2026-08-04_
+
 | Source name                                                 | URL                                                                                       | COICOP divisions covered                     | Source type           | Cadence          | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs?     | Notes                                                                      |
 | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------- | --------------------- | ---------------- | -------------- | ----------------- | ------------- | ---------------- | ---------------- | -------------------------------------------------------------------------- |
 | Solomon Islands National Statistics Office CPI              | https://statistics.gov.sb/category/statistics/economic-statistics/consumer-price-index/   | 01–13 CPI groups                             | NSO CPI               | Monthly          | No             | PDF/HTML          | Low           | Yes              | No               | Official CPI bulletins available; 2025/2026 updates present. ([SINSO][27]) |

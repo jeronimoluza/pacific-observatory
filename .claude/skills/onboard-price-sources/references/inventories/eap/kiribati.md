@@ -1,5 +1,7 @@
 # Kiribati
 
+_Inventory written: 2026-08-04_
+
 | Source name                           | URL                                              | COICOP divisions covered           | Source type           | Cadence                     | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes                                                                                     |
 | ------------------------------------- | ------------------------------------------------ | ---------------------------------- | --------------------- | --------------------------- | -------------- | ----------------- | ------------- | ---------------- | ------------ | ----------------------------------------------------------------------------------------- |
 | Kiribati NSO CPI                      | https://nso.gov.ki/statistics/economy/cpi/       | 01–13 CPI groups                   | NSO CPI report/tables | Quarterly/monthly irregular | No             | PDF/XLS tables    | Low           | Yes              | No           | CPI report/tables available; latest page showed September 2024 report. ([nso.gov.ki][18]) |

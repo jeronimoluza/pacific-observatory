@@ -1,5 +1,7 @@
 # French Polynesia
 
+_Inventory written: 2026-08-04_
+
 | Source name                                         | URL                                          | COICOP divisions covered                                 | Source type                   | Cadence          | Auth required? | Machine-readable?   | Anti-bot risk | Wayback coverage | Per-SKU IDs?     | Notes                                                                      |
 | --------------------------------------------------- | -------------------------------------------- | -------------------------------------------------------- | ----------------------------- | ---------------- | -------------- | ------------------- | ------------- | ---------------- | ---------------- | -------------------------------------------------------------------------- |
 | ISPF / French Polynesia CPI                         | https://www.ispf.pf/                         | 01–13 CPI groups                                         | Territorial statistics office | Monthly          | No             | HTML/PDF/XLS likely | Low           | Yes              | No               | CPI/price-level source; direct machine-readable endpoint needs validation. |

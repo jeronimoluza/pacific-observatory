@@ -1,5 +1,7 @@
 # Northern Mariana Islands
 
+_Inventory written: 2026-08-04_
+
 | Source name                                                | URL                                                                                                              | COICOP divisions covered                  | Source type            | Cadence          | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs?     | Notes                                                                                                |
 | ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ---------------------- | ---------------- | -------------- | ----------------- | ------------- | ---------------- | ---------------- | ---------------------------------------------------------------------------------------------------- |
 | CNMI Department of Commerce statistics                     | https://commerce.gov.mp/                                                                                         | 01–13 CPI groups if CPI reports available | Territorial statistics | Quarterly/annual | No             | PDF/HTML          | Low           | Yes              | No               | Needs direct CPI archive validation; likely similar to Guam/American Samoa but weaker public access. |

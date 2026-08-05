@@ -1,5 +1,7 @@
 # Indonesia
 
+_Inventory written: 2026-08-04_
+
 | Source name                                            | URL                                                                                                                                                              | COICOP divisions covered                              | Source type                 | Cadence       | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs?  | Notes                                                                 |
 | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | --------------------------- | ------------- | -------------- | ----------------- | ------------- | ---------------- | ------------- | --------------------------------------------------------------------- |
 | Bank Indonesia PIHPS                                   | https://www.bi.go.id/hargapangan                                                                                                                                 | 01 food staples                                       | Official food price tracker | Daily         | No             | HTML/API likely   | Low/med       | Yes              | Commodity IDs | Daily average food commodity prices by region. ([Bank Indonesia][33]) |

@@ -1,6 +1,6 @@
 ---
 name: onboard-price-sources
-description: "Discover, scaffold, and end-to-end-test new price-data sources for the `prices` pipeline, targeting full COICOP 2018 basket coverage for PPP / Real-Exchange-Rate analysis. Use whenever the user wants to expand price-source coverage — for one country ('find new sources for Indonesia', 'add supermarkets in Brunei', 'we have no sources for Korea'), for a region ('expand EAP retail', 'more wholesale feeds'), for a commodity gap ('nothing covers fresh seaweed', 'fill the live-animal leaves'), or for one named URL. Also triggers on references to `src/prices/configs/`, price spiders, or price fetchers. Runs: depth audit of existing sources → platform/marketplace-first discovery → feasibility probing → spider OR fetcher scaffolding + YAML manifest → automated test → coverage report."
+description: "Discover, scaffold, and end-to-end-test new price-data sources for the `prices` pipeline, targeting full COICOP 2018 basket coverage for PPP / Real-Exchange-Rate analysis. Use whenever the user wants to expand price-source coverage — for one country ('find new sources for Indonesia', 'add supermarkets in Brunei', 'we have no sources for Korea'), for a region ('expand EAP retail', 'more wholesale feeds'), for a commodity gap ('nothing covers fresh seaweed', 'fill the live-animal leaves'), or for one named URL. Also triggers on references to `src/prices/configs/`, price spiders, or price fetchers. Runs: depth audit of existing sources → marketplace-first discovery → feasibility probing → spider OR fetcher scaffolding + YAML manifest → automated test → coverage report."
 ---
 
 # Onboard Price Sources
@@ -14,11 +14,25 @@ The unit of *scaffolding* is a source. The unit of *discovery* is usually **not*
 | You were given | Start at | Notes |
 |---|---|---|
 | **A country** ("sources for Indonesia") | Phase 0 → 0.5 → 1 → 2 | The classic path. Discovery still leads with platforms and marketplaces, not a country-wide search. |
-| **A region or "expand coverage"** | Phase 2 (platform sweep), then loop Phases 3–7 per surviving source | Do **not** re-run per-country discovery N times. Sweep once across the region, then onboard each hit. Countries only decide where the YAML file lands. |
+| **A region or "expand coverage"** | Phase 2 (marketplace sweep), then loop Phases 3–7 per surviving source | Do **not** re-run per-country discovery N times. Sweep once across the region, then onboard each hit. Countries only decide where the YAML file lands. |
 | **A commodity or COICOP gap** ("nothing covers fresh seaweed") | **Phase 0.5 first — this is the one that saves the most work** | Most "sourcing gaps" turn out to be depth gaps in sources already scraped. |
 | **A single named URL** | Phase 3 | Skip discovery entirely. |
+| **A ready-made candidate list** (spreadsheet, inventory dump, hand-off from another team) | Phase 2.5, after de-duplicating against the corpus | Discovery is already done — the work is disambiguation, not search. See "Working from a supplied candidate list" below. |
 
 Anti-bot infrastructure clusters by *tenant* and storefront software clusters by *platform* — both cut across borders. Country-by-country discovery rediscovers the same platform and re-loses to the same WAF once per country. Per-country work is right for probing, selector extraction, and scaffolding; it is wrong for finding candidates.
+
+### Coverage density decides what to chase
+
+Two opposite target-selection rules, and picking the wrong one wastes the run. The switch is **per country**, not a project phase — countries sit on different sides of it at the same time.
+
+| Country's state | Rule | Why |
+|---|---|---|
+| **Little or no coverage** (the default outside EAP) | **Take whatever verifies.** Onboard every candidate that passes the probe, in whatever order is cheapest. Do not rank by COICOP gap. | When every leaf is empty, every source fills a gap, so gap-ranking sorts by a constant. It costs real effort and returns nothing. |
+| **Established coverage** | **Rank by gap.** Target the leaves and divisions nothing reaches yet. | Once the easy cells are full, an unranked source mostly re-covers ground you already have. |
+
+**The trigger to flip a country:** its sweeps stop opening new leaves — the last pass's candidates carry leaves already covered. Judge this per country, from that country's own results.
+
+**EAP food-and-beverage has already flipped, and adding sources there is close to worthless.** The measured finding: of 22 division-01 leaves flagged `sourcing_gap`, most were *already collected* and merely sitting below `MIN_SUPPORT` in gold, so the classifier never routed anything to them. Roughly 7 were genuinely unscraped. The binding constraint in EAP F&B is **gold labels, not sources** — a grocery sweep there moves coverage by approximately zero. Route that ask to gold-growth, not to this skill.
 
 **Fan-out note:** the proven pattern for large expansions is one agent per country, each invoking this skill with a pre-built candidate list, with the orchestrator doing the sweep and the commits. In that mode the agent enters at Phase 3 and never reads `references/discovery.md`.
 
@@ -58,7 +72,7 @@ Tells the reader (and the next skill run) what shape of code lives in the module
 | `official_avg` | SingStat ARP, BPS HK-58, JP Retail Price Survey | Item-level averages for basket |
 | `tariff` | SP Group SG, PLN ID, FCCC fuel, Singtel plans | Administered-price layer |
 | `cpi_benchmark` | DOSM CPI, PSA CPI, SBS CPI, ABS CPI, BPS CPI | Index benchmark (NOT a fallback for missing price-level coverage) |
-| `aggregate_proxy` | WB Pink Sheet, Brent/WTI, IMF FX | Commodity / FX reference series |
+| `aggregate_proxy` | Two distinct populations. **(a)** Commodity / FX reference series — WB Pink Sheet, Brent/WTI, IMF FX. **(b)** Cost-of-living survey publishers — livingcost, expatistan, mylifeelsewhere, numbeo. | Reference series. **(b) is the larger population by far** — 103 of 302 manifests carry this role and most are survey publishers, not commodity feeds. They are already onboarded for most countries; never add more, and never count them as coverage (see the anti-patterns). |
 
 Replaces the old `priority` field — sources of different analytical roles are **complements**, not substitutes. The PPP analyst wants all roles populated, not a "best one wins" ranking.
 
@@ -88,7 +102,7 @@ The four axes above route a source through the pipeline. A *separate* set of YAM
 
 A source is **narrow** iff `len({c[:4] for c in coicop_codes}) == 1`, where `c[:4]` is the 3-digit class prefix (e.g. `"04.1"`, `"07.2"`). `["04.1.1"]` and `["04.1.1", "04.1.2"]` are both narrow. `["07.2.2", "07.3.2"]` is wide (different classes — fuel vs transit fares are not substitutable). Narrow sources take their COICOP code straight from the manifest instead of from the classifier.
 
-> The historical justification for this rule was that narrow sources "bypass tier-b and tier-c." That cascade was **removed on 2026-07-24** — `src/prices/enrich/tier_b/` is now empty and there is no `tier_c.py`. [ADR-0002](../../../docs/adr/0002-source-curated-short-circuit.md) and ADR-0003 describe the retired design; the rule itself survives because declaring a known COICOP code is still strictly better than asking a classifier to rediscover it.
+> The historical justification for this rule was that narrow sources "bypass tier-b and tier-c." That cascade was **removed on 2026-07-24** — there is no `tier_b` package and no `tier_c.py` (the `src/prices/enrich/tier_b/` path holds nothing but a stale, untracked `__pycache__`). [ADR-0002](../../../docs/adr/0002-source-curated-short-circuit.md) and ADR-0003 describe the retired design; the rule itself survives because declaring a known COICOP code is still strictly better than asking a classifier to rediscover it.
 
 ### Worked examples
 
@@ -167,6 +181,14 @@ A depth gap and a sourcing gap need opposite fixes. Onboarding a new source to s
 3. List **already-covered sources** for the country by reading `src/prices/configs/<region>/<subregion>/<country>/*.yaml`. Cross-check against `src/prices/price_scraping/spiders/<source>.py` (spiders are flat) and `src/prices/fetchers/<region>/<subregion>/<country>/<source>.py` (country-bound fetchers). Also note which `_global/<source>.yaml` and `_shared/<region>/<source>.py` aggregators *cover* this country — they're "already-covered" too.
 4. **Upgrade old-schema manifests in place.** Many existing YAMLs predate the four-axis schema and only have `spider: + language:` or `source_type: + coicop_divisions:`. For each old-schema YAML:
    - Look the source up by name in `references/inventories/<region>/<country>.md`
+   - **Translate the inventory's column vocabulary — it predates the four-axis schema.** The columns are descriptive prose, not manifest fields, and one of them is a false friend:
+
+     | Inventory column | Maps to | Watch out |
+     |---|---|---|
+     | `Source type` | informs `analytical_role` | **Not** the retired YAML `source_type:` field. The inventory column holds free text ("NSO CPI reports", "Utility/telco tariffs"); the banned YAML key held A–F letters. Same name, unrelated. Never copy this column into a manifest. |
+     | `COICOP divisions covered` | informs `coicop_codes` | Divisions are 2-digit; `coicop_codes` wants the actual codes the source emits. Narrow the value, don't transcribe it. |
+     | `Cadence` | `cadence:` | Declared in prices manifests but enforced only by the `fuel` pipeline — documentation, not behaviour. |
+     | `Machine-readable?` | hints `extraction_pattern` | "HTML/PDF" means you still have to probe which one the price table actually lives in. |
    - Backfill the four classification fields: `scaffolding`, `extraction_pattern`, `analytical_role`, `coicop_classification`
    - Backfill `coicop_codes:` (the COICOP codes this source's rows will carry — used for the Phase-8 coverage report)
    - Backfill infrastructure fields where applicable: `source_key`, `module`, `function`, `url`, `fallback_date`
@@ -175,15 +197,24 @@ A depth gap and a sourcing gap need opposite fixes. Onboarding a new source to s
    - Write back to the same file
    - If the source isn't in the inventory, leave it untouched and record it as "unknown coverage" for the Phase 8 report
 5. Read `src/configs/countries.yaml` to learn the country's `languages:` and `currency:` — these inform fetcher / spider defaults.
-6. Compute the **COICOP gap set**: COICOP 2-digit divisions [01..13] minus divisions covered by the upgraded `coicop_codes:` union (taking the 2-digit prefix of each entry). Divisions in the gap set are the priority targets for this onboarding run.
+6. Compute the **COICOP gap set**: COICOP 2-digit divisions [01..13] minus divisions covered by the upgraded `coicop_codes:` union (taking the 2-digit prefix of each entry).
+   - **Whether the gap set should drive targeting depends on the country's coverage density** — see "Coverage density decides what to chase" in the scope router. On a low-coverage country the gap set is nearly all 13 divisions, which makes it useless as a ranking; record it for the Phase 8 report and onboard whatever verifies. Rank by it only once the country has established coverage.
 
-### Phase 2 — Build the candidate list (platform-first)
+### Phase 2 — Build the candidate list (marketplace-first)
 
-Full doctrine — the discovery-method ladder, the inverse-correlation law, the wholesale-feed guidance, and the cold-start 17-category table — lives in **`references/discovery.md`**. Read it when you are actually discovering. The order of operations:
+Full doctrine — candidate generators vs cost multipliers, the inverse-correlation law, the two source regimes, the wholesale-feed guidance, and the cold-start 17-category table — lives in **`references/discovery.md`**. Read it when you are actually discovering. The order of operations:
 
 **1. Inventory first.** `references/inventories/<region>/<country>.md` is a pre-verified seed (EAP is populated; other regions cold-start and get a seed written back at Phase 8). Read it plus `references/inventories/<region>/_aggregators.md`, then subtract Phase 1's already-covered set. Free candidates, no search.
 
-**2. Platform and marketplace enumeration** — the highest-yield method and the default first move for anything wider than one country. One marketplace API surfaces 5-20 retailers; one platform fingerprint makes scaffolding near-free. See `references/platform_fingerprints.md` for the endpoint table.
+> **The dead ends in that file are findings too.** Rows like "No online supermarket found" or "No qualifying public source found" are the record of a search that already happened and came back empty — honour them and move on rather than re-running the same search. Every inventory file carries an `_Inventory written: YYYY-MM-DD_` line: treat a null older than roughly six months as worth one cheap re-check (WAF posture and storefront launches both drift), and a recent one as settled.
+
+**2. Marketplace enumeration — the primary candidate generator.** The default first move for anything wider than one country, and the only high-yield way we have of *finding* sites that nobody handed us.
+
+> **A marketplace is a directory, not a source.** The deliverable is its **seller/store list** — the first-party retailers behind it, each onboarded as its own source. Scraping the marketplace's own catalog is the consolation prize, not the goal: those rows are seller-authored, and `src/prices/enrich/census.py` excludes `channel: marketplace` from the corpus census outright because long-tail seller-written names are unreliable tier-a input. Onboard the marketplace itself only when its directory is unreachable and the catalog is the only thing on offer — and tag it `channel: marketplace` so downstream knows what it is.
+>
+> This also softens the inverse-correlation law: the hardened market leaders are hardened against *catalog* scraping. Their store directories are frequently a much lighter surface, so a leader can still be worth a visit as a directory even when it is hopeless as a source.
+
+Then **platform-fingerprint each name the directory gives you** — that is what makes scaffolding near-free, but note it finds nothing on its own (see the generator/multiplier split in `references/discovery.md`). Endpoint table: `references/platform_fingerprints.md`.
 
 **3. Apply the inverse-correlation law before spending probe budget.** In EAP, aggregator size and scrapeability are inversely correlated — market leaders (Coupang, Naver, JD, Tmall, HKTVmall, Shopee, GrabMart) are WAF-hardened, while mid-tier and small-market grocers on off-the-shelf platforms verify first try. Aim the budget at the second group; treat the leaders as a separate, explicitly-scoped anti-bot effort.
 
@@ -211,6 +242,20 @@ For each candidate from Phase 2, open the URL and assign each of the four manife
 If two shapes coexist on one site (e.g. an NSO publishes both CPI indexes and an average-retail-prices table), split into two YAML manifests — one with `analytical_role: cpi_benchmark`, one with `analytical_role: official_avg`. They emit different row schemas (IndexObservation vs PriceObservation) — see `references/fetcher_pattern.md`.
 
 If a "supermarket" turns out to only show category pages with no per-product price (very common for legacy retail sites), demote to skip rather than forcing it into a spider — see `references/known_blockers.md`.
+
+### Working from a supplied candidate list
+
+When someone hands you a list — a spreadsheet, another team's inventory, a dump from a prior run — Phase 2 is already done. Skip it. The work that replaces it is **disambiguation**: deciding which rows are things we already have, which are the same thing twice, and which are real.
+
+Do this before probing anything, because probe budget spent on a duplicate is pure loss:
+
+1. **Resolve each row to a registrable domain.** A supplied list identifies sources however its author felt like — brand name, storefront URL, corporate parent, sometimes a mobile app. The domain is the only key that joins reliably.
+2. **De-duplicate within the list**, then **against the corpus** (`src/prices/configs/**/*.yaml`, which is authoritative for what is already onboarded). Match on registrable domain plus path prefix — a country storefront under `/th/` is not the same source as one under `/my/`.
+3. **Collapse multi-TLD tenants** (`lazada.co.th` / `lazada.com.my`, the AS-Watson properties). These are one platform with N country storefronts: one probe answers for the tenant, and the blocker list is organised the same way.
+4. **Drop the cost-of-living survey publishers** on sight — supplied lists are full of them, and they are not price sources (see the anti-patterns).
+5. Feed survivors into Phase 2.5 and continue normally.
+
+> **Not yet built:** there is no automated resolver for this today — no candidate table, no fuzzy name matcher, no alias file for multi-TLD tenants. A run working from a list does the above by hand. Note that name-keyed lists and domain-keyed lists need different matchers; don't assume one will serve both.
 
 ### Phase 3 — Tier classification + feasibility probing *(scaffolding=spider only)*
 
@@ -393,7 +438,9 @@ Output a final summary **to chat** (no in-tree artifacts file for now — that d
   - **Division grain overstates coverage** — it reads "covered" off a single SKU. When the run targeted specific commodities or leaves, report at **leaf grain** instead, against the worklist in `src/prices/build/leaf_support.py`. Division tables are for orientation; leaf tables are for deciding what to do next.
 - **Depth-audit outcomes** from Phase 0.5 — for each targeted commodity, say explicitly whether it was a *depth gap* (and which spider needs deepening), a *sourcing gap* (and what you onboarded), or a *structural absence* (and why retail discovery can't fix it). This is what stops the next session from re-chasing the same item.
 - Append new blockers to `references/known_blockers.md` so the next run skips them faster — match the existing **blocker-class headings** (Cloudflare strict, AWS WAF, Akamai tenant, Imperva Incapsula, PerimeterX, CDN connection-reset, etc.). One-line entry per site under the heading whose signature matched.
-- **Cold-start writeback only:** write `references/inventories/<region>/<country>.md` from the Phase 2 sub-agent's output. If the agent surfaced cross-country aggregators, append them to `references/inventories/<region>/_aggregators.md` (create the file if it doesn't exist).
+- **Cold-start writeback only:** write `references/inventories/<region>/<country>.md` from the Phase 2 sub-agent's output. If the agent surfaced cross-country aggregators, append them to `references/inventories/<region>/_aggregators.md` (create the file if it doesn't exist). Two requirements, because this file is what the *next* run trusts instead of searching:
+  - Open with `_Inventory written: YYYY-MM-DD_` under the H1. An undated inventory can't be aged, so a later run has to redo the work to know whether to believe it.
+  - **Write the dead ends down as rows.** "No online supermarket found", "no marketplace with a reachable seller directory", "no NSO price table published" — a search that came back empty is a finding, and leaving it out is what makes the next run repeat it. Match the existing style: a row whose source name states the negative, with the reason in Notes.
 
 Then save an engram memory observation (type: `discovery`) titled "Onboarded N price sources for <country>" with the working list, the new blockers, and the COICOP coverage table. The engram observation is the **only** cross-conversation persistence for the onboarding report today — revisit whether to also write an in-tree `_onboarding.md` after the third country.
 
@@ -403,7 +450,7 @@ Load only what the current phase needs — these are not meant to be read togeth
 
 | Reference | Load when |
 |---|---|
-| `references/discovery.md` | Phase 2 — finding candidates. Method ladder, inverse-correlation law, wholesale feeds, cold-start 17-category table. |
+| `references/discovery.md` | Phase 2 — finding candidates. Generators vs cost multipliers, marketplace-as-directory, inverse-correlation law, the two source regimes, wholesale feeds, recording dead ends, cold-start 17-category table. |
 | `references/platform_fingerprints.md` | Phase 2–3 — identifying the storefront platform, finding the open JSON backend, id-walk, anti-bot cross-checks. |
 | `references/known_blockers.md` | Before **any** probe — skip-on-sight list. Append to it after every run. |
 | `references/probe_patterns.md` | Phase 3 — curl, Playwright dump, API sniffer, PDF/XLS inspectors. |
@@ -429,7 +476,7 @@ After the first country onboarding pass lands the easy fetcher wins (REST APIs, 
 
 Prioritise in this order:
 
-- **Gap-COICOPs first**: any source whose COICOP code is not yet covered by the country's already-onboarded set. PropertyGuru-class rental aggregators usually fall here (04.1.1).
+- **Gap-COICOPs first**: any source whose COICOP code is not yet covered by the country's already-onboarded set. PropertyGuru-class rental aggregators usually fall here (04.1.1). This ranking assumes the country has **established coverage** — it is the gap-driven branch of the density rule in the scope router, and it is the right one here because a country only reaches a residual-source pass after its easy sources have already landed.
 - **Redundancy second**, and *only after* the anti-bot template has already been built for a higher-priority site. Cracking Cloudflare/Akamai twice in a row before the first one's template lands is wasted effort — build the template once on the gap-COICOP source, then reuse.
 
 Don't bundle these into a routine country onboarding. Each is its own dedicated effort. Surface them in the Phase 8 report as "Next gaps to target (priority order)" so the next session has a clear queue.
@@ -451,7 +498,11 @@ Don't bundle these into a routine country onboarding. Each is its own dedicated 
 - Don't leave old-schema YAMLs unmigrated when the skill runs on a country. Phase 1 upgrades them in place via inventory lookup — that's how the repo migrates organically.
 - Don't add a spider's currency by parsing the price symbol — set it at the spider class level (`currency = "VND"`). Sites that display "$" for Brunei dollars (BND) will be miscoded otherwise. But don't blindly take `countries.yaml` either when the site states its own currency code — see Phase 5A.
 - Don't run per-country discovery N times for a region. Anti-bot clusters by tenant and storefronts cluster by platform — both cut across borders, so sweep once and onboard per source. Probing, selectors, and scaffolding stay per-site; only *discovery* generalizes.
-- Don't open with a generic English web search. It is the lowest-yield discovery method measured. Inventory → platform fingerprint → marketplace enumeration → local-language search all come first.
+- Don't open with a generic English web search. It is the lowest-yield discovery method measured. Inventory → marketplace enumeration → local-language search all come first, and platform fingerprinting is applied to whatever those return.
+- Don't scrape a marketplace's catalog when its seller directory is reachable. The directory yields first-party retailers with clean names; the catalog yields seller-authored names that `census.py` throws out. Same URL, opposite value.
+- Don't rank targets by COICOP gap in a country that has little coverage. Every division is a gap there, so the ranking sorts by a constant while costing real analysis time. Take whatever verifies until the country stops yielding new leaves.
+- Don't re-run a search an inventory file already recorded as empty. A "No online supermarket found" row is a result, not a blank. Re-check it only if it's stale (older than ~6 months) — and then update the date.
+- Don't send an EAP food-and-beverage coverage complaint to this skill. That corpus is gold-bound, not source-bound; more grocery sources there change nothing. Route it to gold-growth.
 - Don't spend probe budget on the market leader. In EAP, aggregator size and scrapeability are inversely correlated — Coupang/Naver/JD/Tmall/HKTVmall/Shopee will consume the run and yield nothing. Probe the mid-tier chains instead.
 - Don't declare a site blocked without a network trace. The front page 403 says nothing about the backend; several "blocked" retailers had wide-open JSON APIs.
 - Don't onboard a new source before running the Phase 0.5 depth audit. Most reported sourcing gaps are depth gaps in sources already scraped, and a new source doesn't fix those.

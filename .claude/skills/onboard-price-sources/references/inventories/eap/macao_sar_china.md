@@ -1,5 +1,7 @@
 # Macao SAR, China
 
+_Inventory written: 2026-08-04_
+
 <!-- Last updated: 2026-06-10. Phase 2/2.5 inventory extension completed. Phase 3 probing NOT done — desk research only. -->
 <!-- Currency: MOP. Languages: en, chinese_traditional. Subregion: eap/east_asia. -->
 <!-- scaffolding / extraction_pattern / analytical_role / coicop_classification per Phase 2.5 classification. -->

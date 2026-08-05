@@ -1,5 +1,7 @@
 # American Samoa
 
+_Inventory written: 2026-08-04_
+
 | Source name                                  | URL                                                  | COICOP divisions covered        | Source type              | Cadence   | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes                                                                                                         |
 | -------------------------------------------- | ---------------------------------------------------- | ------------------------------- | ------------------------ | --------- | -------------- | ----------------- | ------------- | ---------------- | ------------ | ------------------------------------------------------------------------------------------------------------- |
 | American Samoa Department of Commerce CPI    | https://www.doc.as.gov/resource-center               | 01–13 CPI groups                | Territorial CPI reports  | Quarterly | No             | PDF               | Low           | Yes              | No           | CPI reports are available via resource center; useful for inflation, weak for PPP price levels. ([ASDOC][11]) |

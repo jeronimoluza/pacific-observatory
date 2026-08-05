@@ -1,5 +1,7 @@
 # Tonga
 
+_Inventory written: 2026-08-04_
+
 | Source name                        | URL                                                                                                       | COICOP divisions covered       | Source type           | Cadence          | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs?     | Notes                                                                        |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------ | --------------------- | ---------------- | -------------- | ----------------- | ------------- | ---------------- | ---------------- | ---------------------------------------------------------------------------- |
 | Tonga Statistics Department CPI    | https://tongastats.gov.to/statistics/economics/consumer-price-index/                                      | 01–13 CPI groups               | NSO CPI               | Monthly          | No             | HTML/PDF/XLS      | Low           | Yes              | No               | TSD publishes CPI monthly. ([Tonga Statistics Department][28])               |

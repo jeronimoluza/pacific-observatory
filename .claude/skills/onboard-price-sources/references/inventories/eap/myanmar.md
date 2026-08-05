@@ -1,5 +1,7 @@
 # Myanmar
 
+_Inventory written: 2026-08-05_
+
 | Source name                                   | URL                                                                                          | COICOP divisions covered                                                    | Source type                     | Cadence        | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes                                                                                         |
 | --------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------- | -------------- | -------------- | ----------------- | ------------- | ---------------- | ------------ | --------------------------------------------------------------------------------------------- |
 | Central Statistical Organization — CPI (benchmark) | https://www.csostat.gov.mm/MonthlyPublication/PriceAnalysis | 01–13 (CPI all divisions) | NSO CPI benchmark | Monthly | No | XLSX | Low | Yes | No | "Consumer Price Index (Union) and Rate of Inflation" XLSX confirmed machine-readable as of June 2026. Base 2017=100. scaffolding=fetcher, extraction_pattern=tabular_download, analytical_role=cpi_benchmark, coicop_classification=publisher_labeled. fallback_date: 2017-01-01. |

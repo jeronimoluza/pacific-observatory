@@ -1,5 +1,7 @@
 # Timor-Leste
 
+_Inventory written: 2026-08-05_
+
 Probed 2026-06-10. Languages: tetum, en, pt. Currency: USD (official; no local currency). Timor-Leste is one of the few countries where USD is the sole legal tender — all domestic retail prices are USD-denominated. No IDR-denominated cross-border sources identified: NTT (Indonesia) cross-border trade is predominantly informal/cash with no public machine-readable price series. Country uses a 10-group CPI structure (COICOP 01–10; divisions 11–13 not published as separate groups).
 
 | Source name | URL | COICOP divisions covered | Source type | Cadence | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes |

@@ -1,5 +1,7 @@
 # Micronesia, Federated States of
 
+_Inventory written: 2026-08-04_
+
 | Source name                       | URL                                                                       | COICOP divisions covered           | Source type           | Cadence          | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs?     | Notes                                                                      |
 | --------------------------------- | ------------------------------------------------------------------------- | ---------------------------------- | --------------------- | ---------------- | -------------- | ----------------- | ------------- | ---------------- | ---------------- | -------------------------------------------------------------------------- |
 | FSM Statistics CPI                | https://stats.gov.fm/topics/economic-statistics/consumer-price-index/     | 01–13 CPI groups by state          | NSO CPI report/tables | Quarterly/annual | No             | HTML/PDF          | Low           | Yes              | No               | FSM publishes CPI for the federation and four states. ([stats.gov.fm][20]) |

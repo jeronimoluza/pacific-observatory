@@ -1,5 +1,7 @@
 # Marshall Islands
 
+_Inventory written: 2026-08-04_
+
 | Source name                    | URL                                                            | COICOP divisions covered           | Source type            | Cadence        | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs?     | Notes                                                                       |
 | ------------------------------ | -------------------------------------------------------------- | ---------------------------------- | ---------------------- | -------------- | -------------- | ----------------- | ------------- | ---------------- | ---------------- | --------------------------------------------------------------------------- |
 | EPPSO CPI / RMI data portal    | https://rmi-data.sprep.org/dataset/consumer-price-index        | 01–13 CPI groups                   | NSO CPI dataset/report | Quarterly      | No             | Dataset/PDF       | Low           | Yes              | No               | EPPSO CPI dataset available via RMI data portal. ([rmi-data.sprep.org][19]) |

@@ -1,5 +1,7 @@
 # ECA multi-country sources
 
+_Inventory written: 2026-08-04_
+
 Cross-region aggregators surfaced during ECA country onboarding runs. When onboarding a new ECA country, check whether any of these already cover it before scaffolding country-specific equivalents.
 
 | Source name | URL | COICOP divisions covered | Source type | Cadence | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes |

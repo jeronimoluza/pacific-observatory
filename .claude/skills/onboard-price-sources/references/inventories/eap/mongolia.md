@@ -1,5 +1,7 @@
 # Mongolia
 
+_Inventory written: 2026-08-04_
+
 | Source name                                      | URL                                                                                                   | COICOP divisions covered                                                     | Source type             | Cadence        | Auth required? | Machine-readable?          | Anti-bot risk | Wayback coverage | Per-SKU IDs?     | Notes                                                                                                              |
 | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------- | -------------- | -------------- | -------------------------- | ------------- | ---------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------ |
 | National Statistics Office / 1212.mn CPI         | https://www.1212.mn/                                                                                  | 01–13 CPI divisions; some food/petrol market prices                          | NSO CPI/data portal     | Monthly        | No             | XLS/PDF/API-like downloads | Low           | Yes              | No               | IMF metadata notes weekly collection of main food items and petrol prices for CPI calculation. ([dsbb.imf.org][7]) |

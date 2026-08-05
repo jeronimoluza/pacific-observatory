@@ -263,7 +263,9 @@ CDN-fronted document servers (Magnolia, Adobe AEM, similar) sometimes serve a 20
 
 ## How to use this list
 
-Before probing, grep this file for the candidate's domain. If it's listed:
+Before probing, grep this file for the candidate's domain — **and then again for its operator or brand**. Blocking is applied per tenant, not per hostname: one AS-Watson, Foodstuffs, MWG, Lazada, or Delivery Hero property being walled means its siblings in other countries almost certainly are too, even when the exact domain you hold has never been probed. A domain-only grep misses that and sends you off to re-lose the same fight under a different TLD.
+
+If it's listed:
 
 - **CDN / WAF / PerimeterX**: skip entirely. Optionally do a quick 1-call curl to confirm the wall is still in place (sometimes sites change), but don't invest more than 30 seconds.
 - **No products / app-only / no per-product URLs**: structural — skip permanently.

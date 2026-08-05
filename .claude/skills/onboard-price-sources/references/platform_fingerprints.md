@@ -1,6 +1,8 @@
 # Platform fingerprints
 
-Most storefronts are off-the-shelf software. Identify the platform and the endpoint is already known — no selector work, no Playwright at runtime. This is the second-best discovery method on the ladder and by far the cheapest to scaffold.
+Most storefronts are off-the-shelf software. Identify the platform and the endpoint is already known — no selector work, no Playwright at runtime.
+
+**This is not a discovery method.** Fingerprinting never produces a site you didn't already have; it makes a candidate you *do* have dramatically cheaper to scaffold. Apply it to whatever the generators in `discovery.md` return — and don't let a run report it as the reason it found anything.
 
 ## Fingerprint first
 

@@ -1,5 +1,7 @@
 # Thailand
 
+_Inventory written: 2026-08-04_
+
 | Source name                                                 | URL                                                                                                                                          | COICOP divisions covered                                 | Source type                   | Cadence       | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes                                                          |
 | ----------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ----------------------------- | ------------- | -------------- | ----------------- | ------------- | ---------------- | ------------ | -------------------------------------------------------------- |
 | Ministry of Commerce / Trade Policy and Strategy Office CPI | https://www.tpso.go.th/                                                                                                                      | 01–13 CPI groups                                         | Official CPI/price statistics | Monthly       | No             | Excel/PDF/HTML    | Low           | Yes              | No           | Official CPI and price monitoring; endpoint validation needed. |

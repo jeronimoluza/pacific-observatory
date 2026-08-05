@@ -1,5 +1,7 @@
 # Brunei Darussalam
 
+_Inventory written: 2026-08-04_
+
 <!-- Last updated: 2026-06-10. Phase 2/2.5/3 probing completed. -->
 <!-- Currency: BND. Languages: en, ms (Malay). Subregion: eap/southeast_asia. -->
 

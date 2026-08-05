@@ -1,5 +1,7 @@
 # Lao PDR
 
+_Inventory written: 2026-08-05_
+
 Probed 2026-06-10. Languages: lao, en. Currency: LAK (Laotian Kip). Lao PDR has a thin e-commerce market; Vientiane dominates online retail. Many price sources are government announcements or regulator pages. CPI is being rebased in 2026 (base year update underway per IMF Article IV 2025).
 
 | Source name | URL | COICOP divisions covered | Source type | Cadence | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes |

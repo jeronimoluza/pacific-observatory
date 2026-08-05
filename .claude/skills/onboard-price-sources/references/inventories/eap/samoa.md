@@ -1,5 +1,7 @@
 # Samoa
 
+_Inventory written: 2026-08-04_
+
 | Source name                         | URL                                                                                                                                       | COICOP divisions covered                     | Source type           | Cadence          | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs?     | Notes                                                                                         |
 | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | --------------------- | ---------------- | -------------- | ----------------- | ------------- | ---------------- | ---------------- | --------------------------------------------------------------------------------------------- |
 | Samoa Bureau of Statistics CPI      | https://www.sbs.gov.ws/cpi/                                                                                                               | 01–13 CPI groups                             | NSO CPI tables        | Monthly          | No             | Tables/PDF/XLS    | Low           | Yes              | No               | CPI page has downloadable monthly CPI tables and archives. ([Samoa Bureau of Statistics][26]) |

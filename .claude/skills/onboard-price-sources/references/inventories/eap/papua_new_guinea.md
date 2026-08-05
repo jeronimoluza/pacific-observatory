@@ -1,5 +1,7 @@
 # Papua New Guinea
 
+_Inventory written: 2026-08-05_
+
 <!-- Axes legend: scaffolding = spider|fetcher ; analytical_role = retailer_sku|official_avg|tariff|cpi_benchmark|aggregate_proxy ; extraction_pattern per skill taxonomy -->
 
 | Source name | URL | COICOP divisions covered | Source category | Cadence | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | scaffolding | analytical_role | extraction_pattern | coicop_classification | Notes |

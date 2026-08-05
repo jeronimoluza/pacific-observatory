@@ -1,5 +1,7 @@
 # Cambodia
 
+_Inventory written: 2026-08-04_
+
 Probed 2026-06-10. Languages: km (Khmer), en. Currency: KHR (Cambodian Riel). Cambodia is heavily dollarised — many retailers price in USD; aeon_online is the main KHR-native retailer.
 
 | Source name | URL | COICOP divisions covered | Source type | Cadence | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes |

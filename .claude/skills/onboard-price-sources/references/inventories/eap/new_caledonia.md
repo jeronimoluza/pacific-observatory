@@ -1,5 +1,7 @@
 # New Caledonia
 
+_Inventory written: 2026-08-04_
+
 | Source name                           | URL                                          | COICOP divisions covered                                 | Source type                   | Cadence          | Auth required? | Machine-readable?   | Anti-bot risk | Wayback coverage | Per-SKU IDs?     | Notes                                                                                                      |
 | ------------------------------------- | -------------------------------------------- | -------------------------------------------------------- | ----------------------------- | ---------------- | -------------- | ------------------- | ------------- | ---------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
 | ISEE New Caledonia CPI                | https://www.isee.nc/                         | 01–13 CPI groups                                         | Territorial statistics office | Monthly          | No             | HTML/PDF/XLS likely | Low           | Yes              | No               | CPI data available; Trading Economics identifies ISEE as source for current CPI. ([Trading Economics][22]) |

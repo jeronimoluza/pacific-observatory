@@ -1,5 +1,7 @@
 # Nauru
 
+_Inventory written: 2026-08-04_
+
 | Source name                     | URL                                                                                | COICOP divisions covered     | Source type           | Cadence          | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs?     | Notes                                                           |
 | ------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------- | --------------------- | ---------------- | -------------- | ----------------- | ------------- | ---------------- | ---------------- | --------------------------------------------------------------- |
 | Nauru Bureau of Statistics CPI  | https://stats.gov.nr/category/statistics/economic-statistics/                      | 01–13 CPI groups             | NSO CPI reports       | Quarterly        | No             | HTML/PDF          | Low           | Yes              | No               | CPI reports; quarterly price-index source. ([stats.gov.nr][21]) |

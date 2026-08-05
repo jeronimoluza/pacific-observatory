@@ -1,5 +1,7 @@
 # Vietnam
 
+_Inventory written: 2026-08-04_
+
 | Source name                                           | URL                                                                                                                                          | COICOP divisions covered                                 | Source type                | Cadence       | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes                              |
 | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | -------------------------- | ------------- | -------------- | ----------------- | ------------- | ---------------- | ------------ | ---------------------------------- |
 | National Statistics Office CPI                        | https://www.nso.gov.vn/en/cpi/                                                                                                               | 01–13 CPI groups                                         | NSO CPI release            | Monthly       | No             | HTML/PDF          | Low           | Yes              | No           | Official CPI releases. ([NSO][40]) |

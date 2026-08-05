@@ -1,5 +1,7 @@
 # Ukraine
 
+_Inventory written: 2026-08-04_
+
 | Source name | URL | COICOP divisions covered | Source type | Cadence | Auth required? | Machine-readable? | Anti-bot risk | Wayback coverage | Per-SKU IDs? | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Silpo | https://silpo.ua/ | 01, 02 | Retail / e-commerce / pharmacy | daily | no | HTML | high | yes | yes | 403 to non-UA IPs (Cloudflare/Imperva); UK only; PDPs exist but require UA-resident probe to confirm selectors |
