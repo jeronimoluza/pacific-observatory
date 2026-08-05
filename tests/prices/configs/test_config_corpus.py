@@ -60,3 +60,37 @@ def test_no_retired_channel_named_in_prose():
             if f"channel={retired}" in text or f"channel: {retired}" in text:
                 offenders.append(f"{path}: {retired}")
     assert offenders == []
+
+
+DECLARED_ELSEWHERE = {"region", "subregion", "country", "source", "config_path"}
+
+
+def test_no_manifest_key_is_silently_dropped():
+    """Every key used anywhere in the corpus must be a declared model field."""
+    from prices.config import PriceSourceConfig
+
+    fields = set(PriceSourceConfig.model_fields) | DECLARED_ELSEWHERE
+    used: set[str] = set()
+    for _, data in _manifests():
+        used |= set(data)
+    assert used - fields == set()
+
+
+def test_unknown_keys_are_rejected():
+    from pydantic import ValidationError
+    from prices.config import PriceSourceConfig
+
+    with pytest.raises(ValidationError):
+        PriceSourceConfig.model_validate(
+            {
+                "scaffolding": "spider",
+                "spider": "x",
+                "channel": None,
+                "region": "r",
+                "subregion": "s",
+                "country": "c",
+                "source": "t",
+                "config_path": "/tmp/t.yaml",
+                "typoed_key": 1,
+            }
+        )

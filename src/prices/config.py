@@ -26,7 +26,7 @@ class PriceSourceConfig(BaseModel):
     path and never appear in the YAML body itself.
     """
 
-    model_config = ConfigDict(extra="ignore")
+    model_config = ConfigDict(extra="forbid")
 
     scaffolding: str | None = None
     spider: str | None = None
@@ -37,9 +37,23 @@ class PriceSourceConfig(BaseModel):
     analytical_role: str | None = None
 
     language: str | None = None
+
+    # Declared on manifests and read by tooling outside the model. Kept as
+    # model fields so `extra="forbid"` cannot silently drop them.
+    url: str | None = None
+    extraction_pattern: str | None = None
+    coicop_classification: str | None = None
+    currency: str | None = None
+    inactive_reason: str | None = None
+
+    # Declared in prices, enforced only in the `fuel` pipeline
+    # (cpi/fuel_prices/collect/pipeline.py). Prices has no cadence-skip logic;
+    # the field documents intended refresh rate and nothing more.
+    cadence: str | None = None
+
     # `channel` is required: every YAML must set it (use `null` for non-retail
     # sources where analytical_role is cpi_benchmark / official_avg / tariff /
-    # aggregate_proxy). Backfill applied 2026-06-11 covers all 215 manifests.
+    # aggregate_proxy). Backfill applied 2026-06-11 covers all 302 manifests.
     channel: Channel | None
     coicop_codes: list[str] | None = None
     active: bool = True
