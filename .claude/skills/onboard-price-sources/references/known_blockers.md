@@ -31,7 +31,11 @@ WAF that returns 403 + a challenge token from `awswaf.com`. Blocks both HTML sit
 
 ## Akamai tenant rate-limit / bot manager
 
-Akamai's bot manager either 403s upfront or, for marketplaces with a softer profile, tarpits the session after ~1.9k items per spider with `curl(28)` timeouts (not 403s). When two Akamai-tenant spiders run in parallel, both die at roughly the same item count — that's the tenant's rate-limit signature. See [[watsons_akamai_2k_tarpit]] and [[watsons_requeue_strategy]] in engram for the requeue protocol.
+Akamai's bot manager either 403s upfront or, for marketplaces with a softer profile, tarpits the session with `curl(28)` timeouts (not 403s).
+
+**The tarpit cap is country-specific, not tenant-wide.** An earlier version of this file claimed two spiders on the same Akamai tenant die at the same item count, and that a shared tenant pool was the mechanism. The 2026-06-08/09 Watsons run disproves it: SG (11,473), HK (10,627), PH (12,598) and ID (9,706) all finished their full sitemaps on the same AS-Watson Akamai tenant — PH and ID concurrently for 4+ hours — while only TH (1,897) and MY (1,873) tarpitted, within five minutes of each other. Five to six times the supposed ceiling, same tenant, at the same time. Do not extrapolate one country's death cap to the rest of a fleet.
+
+Diagnostic signature for the real TH/MY tarpit: `curl: (28)` + `0 bytes received`, ~2h38m elapsed, at ~1,900 items. A country that dies well outside that window with the same exit code is a different problem — check whether the sitemap was simply exhausted before calling it a tarpit.
 
 - **woolworths.co.nz**, **newworld.co.nz**, **paknsave.co.nz**, **chemistwarehouse.co.nz** (NZ) — Foodstuffs/Akamai stack. One bypass effort would unlock all four.
 - **watsons.com.tw** (TW, AS Watson) — persistent 403.
@@ -41,7 +45,16 @@ Akamai's bot manager either 403s upfront or, for marketplaces with a softer prof
 
 ## Imperva Incapsula (212-byte JS-challenge stub)
 
-Site returns a tiny (~212-byte) HTML stub containing a JS challenge. `scrapy-impersonate` alone returns the stub — not a real product page. The diagnostic is body length + presence of the Incapsula JS bootstrap. See [[coles_au_ua_impersonate_mismatch]] in engram for the full probe protocol (Coles AU). Also includes the gotcha that scrapy `custom_settings` dict-replace can mask the real failure.
+Site returns a tiny (~212-byte) HTML stub containing a JS challenge. `scrapy-impersonate` alone returns the stub — not a real product page. JS execution is the wall, so TLS impersonation cannot help.
+
+**Probe protocol for any "200 OK but tiny response" source** — do this before blaming a UA/TLS mismatch. Fetch one URL with `curl_cffi.requests.get(url, impersonate="chrome120")` and read the body:
+
+- `_Incapsula_Resource` in a `<script src>`, `x-iinfo` header, or `visid_incap_*` cookies → Incapsula JS challenge. `scrapy-impersonate` will not bypass it.
+- `Server: AkamaiGHost` or `akamai-grn` → real Akamai, and UA/TLS alignment may be worth trying.
+
+Coles AU (2026-06-08) is the worked case: plain Playwright fails too. A stealth-patched headless Chromium with an en-AU locale and a successful homepage warm-up (590KB, full Incapsula cookie suite including `reese84`) is still blocked on the next navigation — a 974-byte page with `<iframe id="main-iframe">Request unsuccessful. Incapsula incident ID: …</iframe>` and `edet=12`. Incapsula fingerprints headless Chromium below the layer the stealth JS patches. Realistic options are `playwright-stealth`, a residential proxy exit with warmed cookies, `undetected-playwright`, or dropping the source.
+
+**Gotcha that masks all of the above:** a spider setting `DOWNLOADER_MIDDLEWARES` in `custom_settings` **replaces** the whole dict rather than merging with the project-level one, silently dropping `RandomBrowserMiddleware`. Respell the full middleware list when overriding any single entry, or you will diagnose the wrong failure.
 
 - **makro.co.th** (TH, Siam Makro) — Incapsula 403 on curl AND Playwright.
 - **rt-mart.com.tw** (TW, 大潤發) — HTTP 503 Incapsula challenge page (`Request unsuccessful. Incapsula incident ID`). Shopee alt storefront also blocked (Akamai). Probed 2026-07-27.
@@ -64,7 +77,9 @@ WAF that issues per-session tokens via JS. Bare clients see only `*.px-cloud.net
 
 ## CDN connection-reset at TCP layer (`ERR_CONNECTION_RESET`)
 
-Real-browser requests from a non-target-country IP are dropped at the CDN before any HTTP response. Headless Chromium does not bypass — the connection is reset pre-response. Bypass requires a residential proxy in-country. Distinct from Wayback-IA's intermittent L4 blackhole (see [[wayback_ia_blackhole_risk]]) which only fires under sustained parallel load.
+Real-browser requests from a non-target-country IP are dropped at the CDN before any HTTP response. Headless Chromium does not bypass — the connection is reset pre-response. Bypass requires a residential proxy in-country.
+
+Distinct from the Internet Archive's intermittent L4 blackhole, which produces the same symptom but only under sustained parallel Wayback backfill and clears on its own — a geo-fence resets every time, from the first request.
 
 - **shop.cpl.com.pg** (PNG, CPL Group — Stop & Shop supermarket, PNG's largest retailer) — `ECONNREFUSED` on WebFetch from non-PNG IP. Online grocery/pharmacy/hardware shop at shop.cpl.com.pg. Likely CDN geo-fence restricting to PNG residential IPs. Probed 2026-06-10. Revisit with PNG residential proxy before attempting to onboard as retailer_sku spider.
 - **bachhoaxanh.com** (VN, Mobile World Group) — `ERR_CONNECTION_RESET` on `/` and product paths. WebFetch returns "socket connection was closed unexpectedly".
@@ -175,10 +190,12 @@ The site exists but products are not browsable on the web. Skip — no amount of
 
 ## Brochure-only WordPress / no online store
 
-WordPress site for an offline retailer — pages exist, products do not. No /shop/, no /product/, no PDPs. See [[caring2u_kimia_brochure_only]] in engram.
+WordPress site for an offline retailer — pages exist, products do not. No /shop/, no /product/, no PDPs.
 
-- **caring2u.com** (MY) — pharmacy chain WP brochure; flagged on v2 retry list, no online store.
-- **kimiafarmaapotek.co.id** (ID) — same shape.
+**A 200 here is not a connectivity win.** Both sites below were flagged "worth retrying from a SEA-origin IP" after earlier probes failed at the network layer, and both did start returning HTTP 200 — with brochure content. The earlier network failure was a red herring; the sites have no catalog to reach. Read the body before treating a status-code change as progress.
+
+- **caring2u.com** (MY, Caring Pharmacy) — WordPress + Elementor brochure; `/products` 404s. For MY pharmacy coverage use `guardian_my` (live Tier 1B) instead.
+- **kimiafarmaapotek.co.id** (ID, Kimia Farma) — same shape: Elementor Pro + OceanWP, zero e-commerce hooks. For ID pharmacy coverage `k24klik` is already in the tree.
 
 ## sgcaptcha / SignalGate CAPTCHA (200 OK + 168-byte JS redirect stub)
 

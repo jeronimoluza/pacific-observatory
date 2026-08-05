@@ -442,7 +442,15 @@ Output a final summary **to chat** (no in-tree artifacts file for now — that d
   - Open with `_Inventory written: YYYY-MM-DD_` under the H1. An undated inventory can't be aged, so a later run has to redo the work to know whether to believe it.
   - **Write the dead ends down as rows.** "No online supermarket found", "no marketplace with a reachable seller directory", "no NSO price table published" — a search that came back empty is a finding, and leaving it out is what makes the next run repeat it. Match the existing style: a row whose source name states the negative, with the reason in Notes.
 
-Then save an engram memory observation (type: `discovery`) titled "Onboarded N price sources for <country>" with the working list, the new blockers, and the COICOP coverage table. The engram observation is the **only** cross-conversation persistence for the onboarding report today — revisit whether to also write an in-tree `_onboarding.md` after the third country.
+**Everything that must outlive the session goes in-tree**, in the files the next run already reads:
+
+| What | Where it persists |
+|---|---|
+| Sources that worked | the manifests themselves, under `src/prices/configs/<region>/<subregion>/<country>/` |
+| Sites that are walled | `references/known_blockers.md`, under the matching blocker class |
+| Candidates found, and dead ends confirmed | `references/inventories/<region>/<country>.md`, with its written-on date |
+
+Between them, the next session can reconstruct what happened without the chat log. Nothing about the run should depend on a personal note-keeping tool the next operator may not have — if a finding matters, it belongs in one of the three files above.
 
 ## Quick reference
 
