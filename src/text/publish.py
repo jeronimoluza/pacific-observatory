@@ -251,11 +251,13 @@ def _build_dashboard_json(units: list) -> dict:
 _ID_COLS = ["date", "ym", "region", "subregion", "unit_slug", "level", "label"]
 
 
-def _stack_family(units: list, family_filename: str) -> pd.DataFrame:
-    """Read one EPU-family CSV (epu/topics_epu/actors_epu) across units, stacked."""
+def _stack_family(
+    units: list, family_filename: str, subdir: str = "epu"
+) -> pd.DataFrame:
+    """Read one family CSV (default epu/) across units, stacked."""
     rows = []
     for u in units:
-        path = u["output_dir"] / "epu" / family_filename
+        path = u["output_dir"] / subdir / family_filename
         if not path.exists():
             continue
         df = pd.read_csv(path, encoding="utf-8")
@@ -282,7 +284,8 @@ def _export_region_panel(region: str, units: list) -> Path:
     JSON: hierarchical dashboard payload (same shape as the global JSON,
     scoped to this region). CSV/DTA: long-on-unit, wide-on-index panel
     merging EPU + topics + actors. XLSX: one sheet per family plus a
-    combined ``panel`` sheet.
+    combined ``panel`` sheet, plus standalone ``topics_framing``/
+    ``actors_framing`` sheets for the uncertainty-attribution data.
     """
     json_dir = DASHBOARD_DATA_DIR / "json"
     csv_dir = DASHBOARD_DATA_DIR / "csv"
@@ -298,8 +301,16 @@ def _export_region_panel(region: str, units: list) -> Path:
     epu_df = _stack_family(units, "epu.csv")
     topics_df = _stack_family(units, "topics_epu.csv")
     actors_df = _stack_family(units, "actors_epu.csv")
+    topics_framing_df = _stack_family(units, "topics.csv", "uncertainty_attribution")
+    actors_framing_df = _stack_family(units, "actors.csv", "uncertainty_attribution")
 
-    if epu_df.empty and topics_df.empty and actors_df.empty:
+    if (
+        epu_df.empty
+        and topics_df.empty
+        and actors_df.empty
+        and topics_framing_df.empty
+        and actors_framing_df.empty
+    ):
         return region_json
 
     merged: pd.DataFrame | None = None
@@ -313,21 +324,22 @@ def _export_region_panel(region: str, units: list) -> Path:
         new_cols = merge_keys + [c for c in df.columns if c not in merged.columns]
         merged = merged.merge(df[new_cols], on=merge_keys, how="outer")
 
-    merged = (
-        _front_id_cols(merged)
-        .sort_values(["unit_slug", "date"], kind="stable")
-        .reset_index(drop=True)
-    )
+    if merged is not None:
+        merged = (
+            _front_id_cols(merged)
+            .sort_values(["unit_slug", "date"], kind="stable")
+            .reset_index(drop=True)
+        )
 
-    csv_path = csv_dir / f"{region}.csv"
-    merged.to_csv(csv_path, index=False, encoding="utf-8")
+        csv_path = csv_dir / f"{region}.csv"
+        merged.to_csv(csv_path, index=False, encoding="utf-8")
 
-    dta_path = dta_dir / f"{region}.dta"
-    dta_df = merged.copy()
-    dta_df["date"] = pd.to_datetime(dta_df["date"], errors="coerce")
-    for c in dta_df.select_dtypes(include="object").columns:
-        dta_df[c] = dta_df[c].fillna("").astype(str)
-    dta_df.to_stata(dta_path, write_index=False, version=118)
+        dta_path = dta_dir / f"{region}.dta"
+        dta_df = merged.copy()
+        dta_df["date"] = pd.to_datetime(dta_df["date"], errors="coerce")
+        for c in dta_df.select_dtypes(include="object").columns:
+            dta_df[c] = dta_df[c].fillna("").astype(str)
+        dta_df.to_stata(dta_path, write_index=False, version=118)
 
     xlsx_path = xlsx_dir / f"{region}.xlsx"
     with pd.ExcelWriter(xlsx_path, engine="openpyxl") as xw:
@@ -335,11 +347,14 @@ def _export_region_panel(region: str, units: list) -> Path:
             ("epu", epu_df),
             ("topics", topics_df),
             ("actors", actors_df),
+            ("topics_framing", topics_framing_df),
+            ("actors_framing", actors_framing_df),
         ):
             if df.empty:
                 continue
             _front_id_cols(df).to_excel(xw, sheet_name=sheet, index=False)
-        _front_id_cols(merged).to_excel(xw, sheet_name="panel", index=False)
+        if merged is not None:
+            _front_id_cols(merged).to_excel(xw, sheet_name="panel", index=False)
 
     return region_json
 
