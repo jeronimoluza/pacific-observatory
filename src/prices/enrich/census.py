@@ -1,8 +1,12 @@
 """Read-only SC5 census: shape × regex_id fire distribution over the corpus.
 
 Runs `extract()` under the armed §9 match recorder over every unique product
-name with `channel != "aggregator"` (aggregators bypass tier-a by design),
-chunk-flushing so a ~1.1M-row corpus never retains all recorder events in RAM
+name whose `channel` is not in EXCLUDED_CHANNELS — `marketplace` (seller-
+authored, long-tail names are unreliable tier-a input) and `real-estate`
+(property listings, not products at all); `aggregator` is kept for corpus
+snapshots written before the 2026-08-05 retag split it into those two values
+plus `channel: null`. Chunk-flushing so a ~1.1M-row corpus never retains all
+recorder events in RAM
 (Pitfall 3). Each chunk arms the recorder into a throwaway shard dir, flushes,
 reads the shard's `residual_log` (carries the Phase-1.65 `shape`) and
 `match_log_long` (carries `regex_id`), tallies a running `(shape, regex_id)`
@@ -30,7 +34,14 @@ from prices.enrich.extract import extract
 NAME_CANDIDATES = ("product_name_original", "first_name")
 NAME_COLUMN = NAME_CANDIDATES[0]
 CHANNEL_COLUMN = "channel"
-EXCLUDED_CHANNEL = "aggregator"
+# `aggregator` was split into `marketplace` / `real-estate` / null on 2026-08-05.
+# `marketplace` inherits the rationale — seller-authored names are unreliable
+# input for tier-a. `real-estate` is excluded too: property-listing titles are
+# not products and confirmed (read-only) to reach products_input.parquet via
+# spiders like propertyguru_my / lamudi_ph / realestate_co_nz. The retired
+# value is kept so this filter still applies to corpus snapshots written
+# before the retag.
+EXCLUDED_CHANNELS = frozenset({"marketplace", "real-estate", "aggregator"})
 CENSUS_PARQUET_NAME = "census_shape_regex.parquet"
 DEFAULT_OUT_DIR = config.REPO_ROOT / ".planning" / "census"
 
@@ -51,10 +62,11 @@ def _load_population(names_or_df):
 
 
 def _unique_names(df, limit=None):
-    """Drop aggregator-channel rows, then the non-empty, order-preserving unique
-    `product_name_original` values (optionally capped at `limit`)."""
+    """Drop excluded-channel rows (see EXCLUDED_CHANNELS), then the non-empty,
+    order-preserving unique `product_name_original` values (optionally capped
+    at `limit`)."""
     if CHANNEL_COLUMN in df.columns:
-        df = df[df[CHANNEL_COLUMN] != EXCLUDED_CHANNEL]
+        df = df[~df[CHANNEL_COLUMN].isin(EXCLUDED_CHANNELS)]
     name_col = next((c for c in NAME_CANDIDATES if c in df.columns), None)
     if name_col is None:
         return []
@@ -156,7 +168,7 @@ def run_census(names_or_df, out_dir=None, chunk_size=50_000, limit=None):
 def census_command(out_dir, limit):
     """Run the read-only shape × regex_id census over the deduped corpus.
 
-    Reads config.PRODUCTS_INPUT_PARQUET (dropping channel == "aggregator"),
+    Reads config.PRODUCTS_INPUT_PARQUET (dropping EXCLUDED_CHANNELS rows),
     chunk-runs extract() under the §9 recorder, and writes the fire-distribution
     parquet to a gitignored scratch dir. Writes nothing under data/ or outputs/.
     """

@@ -2,11 +2,12 @@
 
 Runs `run_census` over a tiny synthetic fixture (never the real
 products_input.parquet) into a pytest `tmp_path`, and proves the three census
-contracts: aggregator-channel rows are excluded, a non-empty
-`census_shape_regex.parquet` with the expected columns is emitted to `tmp_path`,
-and the returned Counter is non-empty. A hard read-only guard snapshots the
-`data/` and `outputs/` subtrees before and after the run and asserts nothing
-under either was created or modified (CLAUDE.md data-safety hard constraint).
+contracts: excluded-channel rows (`aggregator` and its `marketplace` successor)
+are excluded, a non-empty `census_shape_regex.parquet` with the expected
+columns is emitted to `tmp_path`, and the returned Counter is non-empty. A hard
+read-only guard snapshots the `data/` and `outputs/` subtrees before and after
+the run and asserts nothing under either was created or modified (CLAUDE.md
+data-safety hard constraint).
 """
 
 from __future__ import annotations
@@ -46,7 +47,8 @@ def _fixture_df():
                 "Rice per kg",  # per-kg
                 "Plain Notebook",  # bare item
                 "Soda 500ml x 6",  # multipack measure
-                "Aggregator Combo 2kg",  # excluded (aggregator channel)
+                "Aggregator Combo 2kg",  # excluded (legacy aggregator channel)
+                "Marketplace Bundle 3kg",  # excluded (marketplace channel)
             ],
             "channel": [
                 "supermarket",
@@ -55,17 +57,19 @@ def _fixture_df():
                 "supermarket",
                 "hypermarket",
                 "aggregator",
+                "marketplace",
             ],
         }
     )
 
 
-def test_census_excludes_aggregators_and_is_read_only(tmp_path):
+def test_census_excludes_aggregator_and_marketplace_and_is_read_only(tmp_path):
     df = _fixture_df()
 
-    # (a) aggregator row excluded at the population-filter boundary.
+    # (a) aggregator and marketplace rows excluded at the population-filter boundary.
     names = census._unique_names(df)
     assert "Aggregator Combo 2kg" not in names
+    assert "Marketplace Bundle 3kg" not in names
     assert "Milk 1L" in names
 
     data_root = config.REPO_ROOT / "data"
