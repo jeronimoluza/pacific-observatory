@@ -1,61 +1,101 @@
-# Supermarket / retailer price source manifest.
+# Price source manifest.
 #
-# Region, subregion, country, and source slug are derived from the file's path:
+# Region, subregion, country and source slug are derived from the file's path:
 #   src/prices/configs/{region}/{subregion}/{country}/{source}.yaml
-# They MUST NOT be duplicated in the body of this file.
+# They MUST NOT be repeated in the body.
 #
-# Copy this template to the appropriate location and edit.
+# Unknown keys are a load error (extra="forbid"). If you need a new field, add
+# it to PriceSourceConfig in src/prices/config.py first.
 
-# REQUIRED: must match a Scrapy spider's `name` attribute under
+# REQUIRED: "spider" or "fetcher".
+#   spider  -> needs `spider:` (a Scrapy spider `name`)
+#   fetcher -> needs `module:` and `function:` (dotted path under
+#              src/prices/fetchers/ + the fetch_xxx(cutoff: date) function
+#              name), plus `source_key:` (used as a dedup/identity column
+#              downstream) and usually `fallback_date:` (first-run cutoff
+#              when no prior observations exist; defaults to 1970-01-01).
+scaffolding: spider
+
+# REQUIRED for scaffolding: spider. Must match a spider under
 # src/prices/price_scraping/spiders/.
 spider: example_spider
 
-# OPTIONAL: ISO 639-1 / common language code (en, ja, zh, th, vi, id, km, mn, ms, fil).
-# Informational only; downstream COICOP / index code may use it.
-language: en
+# REQUIRED for scaffolding: fetcher. Dotted module path under
+# src/prices/fetchers/ and the function name inside it.
+# module: eap.east_asia.taiwan_china.example_source
+# function: fetch_example_source
 
-# REQUIRED for new sources (validation is currently soft to allow audit-script
-# backfill of existing manifests). Closed enum identifying the retailer type;
-# fed into the tier-b cluster_key and the tier-c COICOP-priors prompt.
+# REQUIRED for scaffolding: fetcher. Identity key used in the dedup/index
+# columns (see src/prices/writers.py); conventionally "{country}_{source}".
+# source_key: tw_example_source
+
+# OPTIONAL, fetcher only. First-run cutoff date when no prior observations
+# exist. Defaults to 1970-01-01 if unset.
+# fallback_date: 2024-01-01
+
+# REQUIRED: the outlet type.
 #
-# Allowed values:
-#   supermarket       (Coles, Tesco, Emart, Pak'nSave)
-#   pharmacy          (Watsons, Boots, Kimia Farma, Caring2u)
-#   fuel-station      (Shell, BP, fuel-watch portals)
-#   dept-store        (Macy's, Marks & Spencer, Mitsukoshi)
-#   electronics       (JB Hi-Fi, MediaMarkt, Yodobashi)
-#   home-improvement  (Bunnings, B&Q, Home Depot)
-#   cosmetics         (Sephora, Sasa, drugstore-cosmetics)
-#   pet               (PetSmart, dedicated pet retailers)
-#   fashion           (Uniqlo, fast-fashion online stores)
-#   aggregator        (Numbeo, Expatistan, Livingcost, Mylifeelsewhere)
-#   hypermarket       (physical hypermarkets that genuinely cross-sell: Carrefour, Walmart, AEON, Hypermart)
+# The full value list with a discriminating test for each lives in
+# src/prices/docs/GLOSSARY.md — the "channel" entry. It is NOT repeated here:
+# a second copy is how this template went stale in the first place.
 #
-# Use `channel: null` for non-retail sources (CPI publications, NSO official
-# averages, utility/telecom tariffs, commodity benchmarks). The
-# `analytical_role` field already distinguishes those.
-#
-# `hypermarket` and `aggregator` skip the tier-c COICOP-priors narrowing
-# (empty priors); the item breadcrumb (ProductItem.category) carries the
-# disambiguation instead.
+# Use `channel: null` for non-outlet sources (CPI publications, NSO averages,
+# tariffs, cost-of-living surveys); `analytical_role` carries the meaning there.
 channel: supermarket
 
-# OPTIONAL: whether to include this source when running `prices collect`.
-# Defaults to true. Set false to skip a spider that is currently broken without
-# deleting its manifest.
+# OPTIONAL: how the source's COICOP codes are assigned.
+#   classifier        -> assigned downstream by the (embedding -> head) classifier
+#   source_curated    -> `coicop_codes:` below is authoritative
+#   publisher_labeled -> the publisher ships COICOP codes
+coicop_classification: classifier
+
+# OPTIONAL: what the rows are, analytically.
+#   retailer_sku | cpi_benchmark | official_avg | tariff | aggregate_proxy
+# Only `cpi_benchmark` changes runtime behaviour (writers.py picks index
+# columns); the rest are documentation the source registry consumes.
+analytical_role: retailer_sku
+
+# OPTIONAL: how the data is obtained. Documentation only.
+#   scrapy_html | scrapy_api | scrapy_listing | scrapy_playwright
+#   rest_api | html_scrape | tabular_download | pdf
+extraction_pattern: scrapy_html
+
+# OPTIONAL: landing or catalog URL.
+url: https://example.com
+
+# OPTIONAL: ISO 639-1 language code (en, ja, zh, th, vi, id, km, mn, ms, fil).
+language: en
+
+# OPTIONAL: currency code for the prices this source emits. Documentation
+# only — not auto-injected into the spider/fetcher.
+# currency: USD
+
+# OPTIONAL: intended refresh rate. NOT enforced in the prices pipeline — there
+# is no cadence-skip logic here (the `fuel` pipeline does enforce it).
+#   daily | weekly | monthly | quarterly | irregular
+cadence: weekly
+
+# OPTIONAL: declared COICOP leaves. When they share one 3-digit prefix the
+# source is a "narrow source" and its rows short-circuit the classifier.
+coicop_codes: null
+
+# OPTIONAL: include this source in `prices collect`. Default true.
 active: true
 
-# OPTIONAL: per-source cap on items emitted (for testing). null = no cap.
+# OPTIONAL: why it is off. Set alongside `active: false`.
+inactive_reason: ""
+
+# OPTIONAL: per-source item cap, for testing. null = uncapped.
 max_items: null
 
 # OPTIONAL: override the spider's start_urls. Rarely needed.
 start_urls: null
 
-# OPTIONAL: keyword args passed to spider __init__.
+# OPTIONAL: kwargs passed to the spider's __init__.
 spider_kwargs: {}
 
-# OPTIONAL: Scrapy setting overrides for this source only.
+# OPTIONAL: Scrapy setting overrides scoped to this source.
 scrapy_settings: {}
 
-# OPTIONAL: free-text notes / gotchas.
+# OPTIONAL: free-text notes and gotchas.
 notes: ""
