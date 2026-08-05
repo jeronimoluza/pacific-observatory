@@ -6,4 +6,4 @@ spider: hotpepper_jp
 url: https://www.hotpepper.jp/SA11/S00070/1/
 language: ja
 cadence: weekly
-channel: aggregator
+channel: other

@@ -6,7 +6,7 @@ spider: yahoo_shopping_tw
 url: https://tw.buy.yahoo.com
 language: zh
 cadence: daily
-channel: aggregator
+channel: marketplace
 notes: >
   Yahoo!奇摩購物中心 (Taiwan) — distinct market from the already-covered Japan
   yahoo_shopping. General marketplace, seeded with F&B search keywords

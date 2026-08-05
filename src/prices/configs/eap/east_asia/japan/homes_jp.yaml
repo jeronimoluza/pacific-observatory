@@ -6,4 +6,4 @@ spider: homes_jp
 url: https://www.homes.co.jp/chintai/tokyo/list/
 language: ja
 cadence: weekly
-channel: aggregator
+channel: real-estate

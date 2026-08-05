@@ -22,4 +22,4 @@ notes: |
 
   Cloudflare bypass: curl_cffi chrome120 TLS impersonation, confirmed
   clean 200 on 2026-05-21 (no Turnstile interactive challenge observed).
-channel: aggregator
+channel: real-estate

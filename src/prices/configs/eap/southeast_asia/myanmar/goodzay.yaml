@@ -6,7 +6,7 @@ spider: goodzay
 url: https://goodzay.com
 language: my
 cadence: daily
-channel: aggregator
+channel: marketplace
 notes: |
   Shopify multi-vendor marketplace (many independent sellers under one
   storefront). Products expose a `vendor` field per seller; catalogue

@@ -6,7 +6,7 @@ spider: gmarket
 url: https://www.gmarket.co.kr
 language: ko
 cadence: daily
-channel: aggregator
+channel: marketplace
 notes: |
   eBay Korea / Shinsegae (Emart) open marketplace. Scoped to the three
   grocery large-category groups on /n/best (신선식품 fresh 100000006,

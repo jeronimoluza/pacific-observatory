@@ -10,7 +10,7 @@ url: https://gateway.chotot.com/v1/public/ad-listing
 language: vi
 cadence: weekly
 fallback_date: 2023-01-01
-channel: aggregator
+channel: marketplace
 notes: |
   Cho Tot Vietnam classifieds — REST API at gateway.chotot.com/v1/public/ad-listing.
   Covers used cars (cg=2010 → COICOP 07.1.2) and motorcycles (cg=2020 → COICOP 07.1.4).

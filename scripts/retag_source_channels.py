@@ -39,6 +39,67 @@ RETAG: dict[str, tuple[str | None, str | None]] = {
     slug: (None, "aggregate_proxy") for slug in SURVEY_SLUGS
 }
 
+# Property listing portals — a genuine division-04 (rent) source, not retail.
+RETAG.update(
+    {
+        slug: ("real-estate", None)
+        for slug in (
+            "anjuke",
+            "squarefoot_hk",
+            "athome_jp",
+            "homes_jp",
+            "homes_jp_pw",
+            "realestate_co_nz",
+            "realestate_com_kh",
+            "infokost",
+            "propertyguru_my",
+            "propertyguru_sg",
+            "dotproperty_ph",
+            "lamudi_ph",
+            "ddproperty_th",
+            "batdongsan_vn",
+            "mogi_vn",
+        )
+    }
+)
+
+# Third-party-seller platforms: long-tail catalog, seller-authored names.
+# niront retagged marketplace (not the originally-proposed supermarket): its
+# spider docstring and manifest notes both state it is a Shopify multi-vendor
+# storefront, and its collected categories span motor oil, construction,
+# hotel rooms, and events alongside F&B -- the opposite of a first-party
+# grocery chain's inventory.
+RETAG.update(
+    {
+        slug: ("marketplace", None)
+        for slug in (
+            "au_pay_market",
+            "gmarket",
+            "friday_shopping",
+            "yahoo_shopping_tw",
+            "lazada_ph_lazmart",
+            "shoppy_mn",
+            "goodzay",
+            "chotot_vn",
+            "niront",
+        )
+    }
+)
+
+# First-party grocery that was mistagged as an aggregator.
+RETAG.update(
+    {
+        "tongamarket": ("supermarket", None),
+        "metromart_ph": ("supermarket", None),
+        "pasar_tani": ("fresh-market", None),
+        # Restaurant/dining listings — division 11 catering, no retail catalog.
+        # GLOSSARY.md's channel-values table already cites hotpepper_jp as the
+        # canonical `other` example, corroborating this from the spider itself
+        # (it scrapes restaurant names + lunch/dinner budget ranges, not SKUs).
+        "hotpepper_jp": ("other", None),
+    }
+)
+
 
 def iter_source_yamls(root: Path):
     for path in sorted(root.rglob("*.yaml")):

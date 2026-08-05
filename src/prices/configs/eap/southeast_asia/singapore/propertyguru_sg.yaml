@@ -27,4 +27,4 @@ notes: |
   documented as cf-mitigated:challenge in known_blockers.md; that posture
   has relaxed (no Turnstile observed 2026-05-20). If the challenge
   returns, swap meta to playwright + stealth — settings already wired.
-channel: aggregator
+channel: real-estate

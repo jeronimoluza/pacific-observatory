@@ -6,4 +6,4 @@ spider: squarefoot_hk
 url: https://www.squarefoot.com.hk/rent/
 language: zh-HK
 cadence: weekly
-channel: aggregator
+channel: real-estate

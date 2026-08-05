@@ -1,6 +1,6 @@
 spider: au_pay_market
 language: ja
-channel: aggregator
+channel: marketplace
 notes: |
   au PAY Market (formerly Wowma!) — 2-3M SKU marketplace aggregating many
   third-party shops (incl. LOHACO). Storefront is a client-rendered Next.js

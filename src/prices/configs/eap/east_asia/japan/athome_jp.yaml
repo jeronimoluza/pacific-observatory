@@ -7,4 +7,4 @@ url: https://www.athome.co.jp/chintai/tokyo/list/
 language: ja
 cadence: weekly
 # Imperva WAF: subsequent prefecture URLs return 405 after first request; Tokyo loads but cards selector returned 0 in smoke — needs further DOM inspection of p-property__room containers (link/name fields not in card scope)
-channel: aggregator
+channel: real-estate

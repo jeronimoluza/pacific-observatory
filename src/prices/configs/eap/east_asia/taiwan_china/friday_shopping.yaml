@@ -6,7 +6,7 @@ spider: friday_shopping
 url: https://ec-w.shopping.friday.tw
 language: zh
 cadence: daily
-channel: aggregator
+channel: marketplace
 currency: TWD
 notes: |
   friDay Shopping (Far EasTone) marketplace, general-merchandise-heavy. Its

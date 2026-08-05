@@ -6,7 +6,7 @@ spider: shoppy_mn
 url: https://shoppy.mn
 language: mn
 cadence: daily
-channel: aggregator
+channel: marketplace
 currency: MNT
 notes: |
   Mongolia's largest marketplace (1000+ vendor storefronts). Vue SPA backed by

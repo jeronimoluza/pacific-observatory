@@ -6,7 +6,7 @@ spider: metromart_ph
 url: https://www.metromart.com
 language: en
 cadence: daily
-channel: aggregator
+channel: supermarket
 notes: >
   MetroMart is a multi-vendor grocery-delivery marketplace (wet-market /
   farmers-market / sari-sari vendors), not a single-catalog retailer, hence

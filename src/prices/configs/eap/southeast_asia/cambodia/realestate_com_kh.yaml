@@ -6,4 +6,4 @@ spider: realestate_com_kh
 url: https://www.realestate.com.kh/
 language: en
 cadence: weekly
-channel: aggregator
+channel: real-estate

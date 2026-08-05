@@ -6,7 +6,7 @@ spider: lazada_ph_lazmart
 url: https://www.lazada.com.ph
 language: en
 cadence: daily
-channel: aggregator
+channel: marketplace
 notes: >
   Lazada Philippines / LazMart grocery channel - marketplace aggregator that
   resells Puregold / Mercury Drug / Rose Pharmacy / TGP alongside third-party

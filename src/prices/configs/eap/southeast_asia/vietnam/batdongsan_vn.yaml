@@ -27,4 +27,4 @@ notes: |
   Cloudflare bypass: curl_cffi `safari17_0` (NOT chrome120 — chrome120
   hits a 403 + interactive challenge on the rental landing as of
   2026-05-21; safari17_0 passes cleanly).
-channel: aggregator
+channel: real-estate
