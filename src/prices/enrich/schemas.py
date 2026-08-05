@@ -26,8 +26,6 @@ Channel = Literal[
     "real-estate",
     # Pressure valve — accumulation is the signal to add a value
     "other",
-    # Retired 2026-08-05, removed in a later commit once manifests are retagged
-    "aggregator",
 ]
 
 

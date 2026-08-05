@@ -7,8 +7,8 @@ replacement instead. This file is the single arbiter when a name is ambiguous.
 Scope note: this glossary is prices-specific. Project-wide terms (Region,
 Subregion, Country slug, Effective language) live in `CLAUDE.md`.
 
-Last reconciled against code: 2026-07-27 (see
-`sessions/2026-07-27-docs-consolidation.md` for the audit that produced it).
+Last reconciled against code: 2026-08-05 (channel taxonomy; see
+`docs/superpowers/specs/2026-08-05-map-price-sources-design.md`).
 
 ---
 
@@ -83,7 +83,6 @@ Last reconciled against code: 2026-07-27 (see
 | `fuel-station` | Forecourt retail (the `fuel` pipeline is separate) | *(none in prices)* |
 | `real-estate` | Property listing portal — a genuine division-04 rent source | `propertyguru_my`, `lamudi_ph` |
 | `other` | Legal and tracked. Accumulation is the signal to add a value. | `hotpepper_jp` (dining) |
-| `aggregator` | **Retiring — do not use for new sources.** Superseded by the more specific values above; ~126 legacy manifests still carry this tag as of 2026-08-05 pending retag. | *(126 manifests being retagged)* |
 
 <!-- channel-values:end -->
 
@@ -118,6 +117,7 @@ as current, it is stale.
 | oracle, blind set, gold v3, `_gold_v3_misses.csv`, iteration gate, cascade-iter branch, disagreement set, headline scalar | gold v5 (`_load_gold()`); `prices eval` / `head_eval.py` OOF coverage |
 | base_items, base_items.parquet, gazetteer.parquet, validation_runs/, CANDIDATE / GREEN, `prices classify` | none — no such subsystem in live code; use `prices process` + `train-classifier` + `eval` |
 | consensus / witness (cascade multi-model sense) | veto + audit layers (keep "consensus" only for gold two-labeler agreement) |
+| `channel: aggregator` | Split three ways: `marketplace` (third-party sellers), `real-estate` (property portals), `channel: null` + `analytical_role: aggregate_proxy` (cost-of-living survey publishers) |
 | `_enrich/` scratch dir | `enrich/` (the single live home) |
 | boilerplate strip in `prepare` | removed (−4.5pp regression); the RAW name is fed to the embedder |
 
