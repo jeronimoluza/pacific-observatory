@@ -25,4 +25,4 @@ notes: >
   modest. To re-audit coverage, run: po prices aggregators probe-cities
   --source livingcost --country vietnam (utility TBD). USD-canonical.
   Recommended cadence: weekly.
-channel: aggregator
+channel: null

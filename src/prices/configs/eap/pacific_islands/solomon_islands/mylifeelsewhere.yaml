@@ -3,7 +3,7 @@ extraction_pattern: scrapy_html
 analytical_role: aggregate_proxy
 coicop_classification: deferred_gemini
 spider: mylifeelsewhere
-channel: aggregator
+channel: null
 language: en
 cadence: weekly
 spider_kwargs:

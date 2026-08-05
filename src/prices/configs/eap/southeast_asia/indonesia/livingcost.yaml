@@ -10,4 +10,5 @@ notes: >
   from the country landing page. Larger-country pattern, useful baseline
   for whether auto-discover yields all 48 cities. USD-canonical.
   Recommended cadence: weekly.
-channel: aggregator
+channel: null
+analytical_role: aggregate_proxy

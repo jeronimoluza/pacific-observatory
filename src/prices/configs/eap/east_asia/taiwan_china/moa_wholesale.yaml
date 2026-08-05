@@ -1,0 +1,23 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: deferred_gemini
+channel: wholesale
+source_key: tw_moa_wholesale
+module: eap.east_asia.taiwan_china.moa_wholesale
+function: fetch_tw_moa_wholesale
+url: https://data.moa.gov.tw/Service/OpenData/FromM/
+language: zh
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Taiwan MOA (Ministry of Agriculture) open-data wholesale prices. General
+  source spanning four endpoints in one fetcher: produce (FarmTransData 037,
+  900+ fruit/veg crops + cut flowers by market), live hogs (AnimalTransData
+  026), goats & sheep (SheepTransData 276), and broiler chicken + eggs
+  (PoultryTransBoiledChickenData 056). The animal endpoints cover the COICOP
+  live-animal leaves (01.1.2.1.x); produce covers the fresh fruit/veg sourcing
+  gaps. No auth; each endpoint returns its most-recent window newest-first
+  (capped ~5.5k–10k rows) so daily runs accumulate history. Prices NT$/kg;
+  per-market origin kept in notes + dedup hash. Cut flowers in the produce feed
+  are dropped downstream by the division-01 food gate. COICOP deferred.

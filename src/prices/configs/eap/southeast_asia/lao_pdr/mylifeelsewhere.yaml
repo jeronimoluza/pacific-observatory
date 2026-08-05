@@ -1,12 +1,12 @@
 scaffolding: spider
 extraction_pattern: scrapy_html
-analytical_role: retailer_sku
+analytical_role: aggregate_proxy
 coicop_classification: deferred_gemini
 spider: mylifeelsewhere
 url: https://www.mylifeelsewhere.com/cost-of-living/laos
 language: en
 cadence: weekly
-channel: aggregator
+channel: null
 spider_kwargs:
   country_slug: laos
 notes: >

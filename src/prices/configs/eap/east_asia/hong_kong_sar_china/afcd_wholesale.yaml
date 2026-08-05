@@ -1,0 +1,21 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: deferred_gemini
+channel: wholesale
+source_key: hk_afcd_wholesale
+module: eap.east_asia.hong_kong_sar_china.afcd_wholesale
+function: fetch_hk_afcd_wholesale
+url: https://www.afcd.gov.hk/english/agriculture/agr_fresh/files/Wholesale_Prices.csv
+language: en
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  Hong Kong AFCD fresh-food wholesale prices — a single daily CSV of average
+  wholesale prices at the Cheung Sha Wan / FMO markets. General source: covers
+  live animals (pig, cattle, chicken), marine fish, freshwater fish, vegetables
+  and eggs in one file. The only clean EAP source for the live-animal COICOP
+  leaves (01.1.2.1.x) that retail never carries. Prices HK$/catty (HK$/egg for
+  eggs); "-" marks missing and is skipped; the "Last Revision Date" column is
+  the observation date and the file carries ~2 weeks of history, accumulated
+  across runs. Repeated section-header rows are dropped. COICOP deferred.

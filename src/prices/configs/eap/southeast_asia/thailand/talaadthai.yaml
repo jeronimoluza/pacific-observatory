@@ -1,0 +1,22 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: deferred_gemini
+channel: null
+source_key: th_talaadthai
+module: eap.southeast_asia.thailand.talaadthai
+function: fetch_th_talaadthai
+url: https://talaadthai.com
+language: th
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  Talaad Thai — Thailand's largest wholesale produce market. Daily min/max
+  reference prices for ~2,000 fresh commodities (fruit, vegetables, herbs,
+  tubers, meat, fish & seafood). Enumerated by walking numeric product ids
+  over robots-allowed /en/products/<id> HTML pages and parsing __NEXT_DATA__
+  (the catalog backend is WAF-blocked from outside TH; the *.json data
+  endpoint is robots-disallowed). Wholesale price basis (min/max per kg),
+  emitted as the midpoint. COICOP deferred to the downstream classifier.
+  Snapshot tracker: current + previous daily snapshot, accumulates over runs.
+  Bump _MAX_ID in the module as the catalog grows past id ~5300.

@@ -9,4 +9,5 @@ notes: >
   record per (city, item) pair, USD-canonical (apply WB FX feed
   downstream for local-currency). Serves PPP + soft inflation proxy;
   not stickiness. Recommended cadence: weekly.
-channel: aggregator
+channel: null
+analytical_role: aggregate_proxy

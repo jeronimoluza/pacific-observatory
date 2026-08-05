@@ -8,4 +8,5 @@ notes: >
   country, no city dimension). Both price (local) and price_usd are
   populated from source (USD in direct text, local in nested div); no
   downstream FX needed for USD. Recommended cadence: weekly.
-channel: aggregator
+channel: null
+analytical_role: aggregate_proxy

@@ -9,4 +9,5 @@ notes: >
   Groceries, Other). Prices are USD-canonical; apply WB FX feed downstream
   to derive FJD values. Serves PPP + soft inflation proxy; NOT stickiness.
   Recommended cadence: weekly.
-channel: aggregator
+channel: null
+analytical_role: aggregate_proxy

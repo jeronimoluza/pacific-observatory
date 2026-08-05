@@ -6,7 +6,7 @@ spider: expatistan
 url: https://www.expatistan.com/cost-of-living/country/china
 language: en
 cadence: weekly
-channel: aggregator
+channel: null
 spider_kwargs:
   country_slug: china
   currency: CNY

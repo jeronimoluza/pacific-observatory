@@ -11,4 +11,5 @@ notes: >
   Includes two summary rows per city (Family-of-four / Single-person monthly
   costs) as category="Summary" — CPI-analog city totals. Serves PPP + soft
   inflation proxy; not stickiness. Recommended cadence: weekly.
-channel: aggregator
+channel: null
+analytical_role: aggregate_proxy
