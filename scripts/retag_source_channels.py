@@ -7,12 +7,18 @@ field in 2026-06 and hardcoded its own (now stale) copy of the value list.
   python scripts/retag_source_channels.py --apply    # rewrite YAMLs
 
 Idempotent: a file already at its target value is left untouched.
+
+Two passes: a pre-flight parse of every matching manifest (abort before
+writing anything if any of them fail to parse), then the write pass. Each
+write is re-read and re-parsed to confirm the line-oriented text surgery in
+`set_scalar` actually produced the intended value.
 """
 from __future__ import annotations
 
 import argparse
 import csv
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import get_args
 
@@ -23,7 +29,7 @@ from prices.enrich.schemas import Channel  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CONFIGS_DIR = REPO_ROOT / "src" / "prices" / "configs"
-CSV_OUT = REPO_ROOT / "data" / "prices" / "_enrich" / "_channel_retag_proposed.csv"
+CSV_DIR = REPO_ROOT / "data" / "prices" / "_enrich"
 
 # Cost-of-living survey publishers. Not outlets: modelled averages, no catalog.
 SURVEY_SLUGS = {"expatistan", "livingcost", "mylifeelsewhere", "numbeo"}
@@ -69,19 +75,37 @@ def main() -> int:
             print(f"FATAL: {slug} -> unknown channel {channel!r}", file=sys.stderr)
             return 2
 
+    matching = [p for p in iter_source_yamls(CONFIGS_DIR) if p.stem in RETAG]
+
+    # Pre-flight: parse every matching manifest before writing anything. A
+    # single bad file must abort cleanly, not leave the corpus half-rewritten.
+    parsed: dict[Path, dict] = {}
+    parse_errors: list[tuple[Path, yaml.YAMLError]] = []
+    for path in matching:
+        try:
+            parsed[path] = load(path)
+        except yaml.YAMLError as exc:
+            parse_errors.append((path, exc))
+
+    if parse_errors:
+        for path, exc in parse_errors:
+            print(f"FATAL: failed to parse {path}: {exc}", file=sys.stderr)
+        return 2
+
+    run_utc = datetime.now(timezone.utc)
+    csv_out = CSV_DIR / f"_channel_retag_{run_utc.strftime('%Y%m%dT%H%M%SZ')}.csv"
+
     rows, changed = [], 0
-    for path in iter_source_yamls(CONFIGS_DIR):
-        target = RETAG.get(path.stem)
-        if target is None:
-            continue
-        data = load(path)
-        new_channel, new_role = target
+    for path in matching:
+        data = parsed[path]
+        new_channel, new_role = RETAG[path.stem]
         cur_channel = data.get("channel")
         cur_role = data.get("analytical_role")
         if cur_channel == new_channel and (new_role is None or cur_role == new_role):
             continue
         rows.append(
             {
+                "run_utc": run_utc.isoformat(),
                 "path": str(path.relative_to(REPO_ROOT)),
                 "slug": path.stem,
                 "channel_from": cur_channel,
@@ -98,11 +122,28 @@ def main() -> int:
                 text = set_scalar(text, "analytical_role", new_role)
             path.write_text(text, encoding="utf-8")
 
-    CSV_OUT.parent.mkdir(parents=True, exist_ok=True)
-    with CSV_OUT.open("w", newline="", encoding="utf-8") as fh:
+            verify = load(path)
+            if verify.get("channel") != new_channel:
+                print(
+                    f"FATAL: {path} channel is {verify.get('channel')!r}, "
+                    f"expected {new_channel!r}",
+                    file=sys.stderr,
+                )
+                return 2
+            if new_role is not None and verify.get("analytical_role") != new_role:
+                print(
+                    f"FATAL: {path} analytical_role is {verify.get('analytical_role')!r}, "
+                    f"expected {new_role!r}",
+                    file=sys.stderr,
+                )
+                return 2
+
+    CSV_DIR.mkdir(parents=True, exist_ok=True)
+    with csv_out.open("w", newline="", encoding="utf-8") as fh:
         writer = csv.DictWriter(
             fh,
             fieldnames=[
+                "run_utc",
                 "path",
                 "slug",
                 "channel_from",
@@ -115,7 +156,7 @@ def main() -> int:
         writer.writerows(rows)
 
     verb = "Applied" if args.apply else "Proposed"
-    print(f"{verb} {changed} retags. Detail: {CSV_OUT.relative_to(REPO_ROOT)}")
+    print(f"{verb} {changed} retags. Detail: {csv_out.relative_to(REPO_ROOT)}")
     return 0
 
 
