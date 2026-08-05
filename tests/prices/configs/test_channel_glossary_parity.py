@@ -12,18 +12,24 @@ GLOSSARY = (
 )
 
 # Rows look like: | `supermarket` | General grocery chain … | coles_au … |
+# Only lowercase-with-hyphens values parse. That invariant is enforced
+# separately by test_channel_literal_is_non_empty_lowercase_strings; if it ever
+# relaxes, widen this class or rows will silently fail to parse.
 ROW = re.compile(r"^\|\s*`([a-z-]+)`\s*\|", re.MULTILINE)
 START = "<!-- channel-values:start -->"
 END = "<!-- channel-values:end -->"
 
 
-def _table_values() -> set[str]:
+def _channel_block() -> str:
     text = GLOSSARY.read_text(encoding="utf-8")
     assert (
         START in text and END in text
     ), f"missing channel-values markers in {GLOSSARY}"
-    block = text.split(START, 1)[1].split(END, 1)[0]
-    return set(ROW.findall(block))
+    return text.split(START, 1)[1].split(END, 1)[0]
+
+
+def _table_values() -> set[str]:
+    return set(ROW.findall(_channel_block()))
 
 
 def test_glossary_table_matches_channel_literal():
@@ -33,9 +39,7 @@ def test_glossary_table_matches_channel_literal():
 def test_every_glossary_row_has_a_discriminating_test():
     """Second column must be non-empty — a value without a test is how the
     taxonomy drifted the first time."""
-    text = GLOSSARY.read_text(encoding="utf-8")
-    block = text.split(START, 1)[1].split(END, 1)[0]
-    for line in block.splitlines():
+    for line in _channel_block().splitlines():
         if not line.strip().startswith("| `"):
             continue
         cells = [c.strip() for c in line.strip().strip("|").split("|")]

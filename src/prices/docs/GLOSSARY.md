@@ -83,7 +83,7 @@ Last reconciled against code: 2026-07-27 (see
 | `fuel-station` | Forecourt retail (the `fuel` pipeline is separate) | *(none in prices)* |
 | `real-estate` | Property listing portal — a genuine division-04 rent source | `propertyguru_my`, `lamudi_ph` |
 | `other` | Legal and tracked. Accumulation is the signal to add a value. | `hotpepper_jp` (dining) |
-| `aggregator` | **RETIRING (Task 7).** Do not use for new sources. | *(126 manifests being retagged)* |
+| `aggregator` | **Retiring — do not use for new sources.** Superseded by the more specific values above; ~126 legacy manifests still carry this tag as of 2026-08-05 pending retag. | *(126 manifests being retagged)* |
 
 <!-- channel-values:end -->
 
