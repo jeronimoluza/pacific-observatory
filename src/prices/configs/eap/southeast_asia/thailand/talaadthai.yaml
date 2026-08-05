@@ -2,7 +2,7 @@ scaffolding: fetcher
 extraction_pattern: html_scrape
 analytical_role: official_avg
 coicop_classification: deferred_gemini
-channel: null
+channel: wholesale
 source_key: th_talaadthai
 module: eap.southeast_asia.thailand.talaadthai
 function: fetch_th_talaadthai
