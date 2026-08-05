@@ -2,17 +2,30 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 Channel = Literal[
+    # Food-dominant retail
     "supermarket",
-    "pharmacy",
-    "fuel-station",
+    "hypermarket",
+    "convenience",
+    "fresh-market",
+    "specialty-food",
+    # Cross-division retail
+    "marketplace",
     "dept-store",
+    # Specialty non-food
+    "pharmacy",
+    "cosmetics",
     "electronics",
     "home-improvement",
-    "cosmetics",
-    "pet",
     "fashion",
+    "pet",
+    # Non-retail outlets
+    "wholesale",
+    "fuel-station",
+    "real-estate",
+    # Pressure valve — accumulation is the signal to add a value
+    "other",
+    # Retired 2026-08-05, removed in a later commit once manifests are retagged
     "aggregator",
-    "hypermarket",
 ]
 
 

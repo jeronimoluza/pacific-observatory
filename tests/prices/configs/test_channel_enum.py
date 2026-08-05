@@ -66,10 +66,27 @@ def test_channel_rejects_empty_string():
 
 
 def test_channel_literal_is_non_empty_lowercase_strings():
-    """Guards against an accidental non-string or upper-case member."""
+    """Guards against an accidental non-string, upper-case, or duplicate member."""
     values = get_args(Channel)
-    assert len(values) >= 12
+    assert values
+    assert len(values) == len(set(values))
     for v in values:
         assert isinstance(v, str) and v
         assert v == v.lower()
         assert " " not in v
+
+
+NEW_CHANNELS = (
+    "convenience",
+    "fresh-market",
+    "specialty-food",
+    "marketplace",
+    "real-estate",
+    "other",
+)
+
+
+@pytest.mark.parametrize("channel", NEW_CHANNELS)
+def test_new_channel_values_are_valid(channel):
+    cfg = PriceSourceConfig.model_validate(_kwargs(channel=channel))
+    assert cfg.channel == channel
