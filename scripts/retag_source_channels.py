@@ -87,10 +87,17 @@ RETAG.update(
 )
 
 # First-party grocery that was mistagged as an aggregator.
+# tongamarket and metromart_ph corrected marketplace (not the originally
+# proposed supermarket): both spider docstrings state they are multi-vendor
+# platforms -- tongamarket a "Multi-vendor WooCommerce marketplace on
+# WordPress", metromart_ph a "grocery-delivery marketplace aggregating
+# multiple wet-market / farmers-market / sari-sari vendors (not a single
+# retailer catalog)" -- the same grocery-looking-URL trap that mistagged
+# niront.
 RETAG.update(
     {
-        "tongamarket": ("supermarket", None),
-        "metromart_ph": ("supermarket", None),
+        "tongamarket": ("marketplace", None),
+        "metromart_ph": ("marketplace", None),
         "pasar_tani": ("fresh-market", None),
         # Restaurant/dining listings — division 11 catering, no retail catalog.
         # GLOSSARY.md's channel-values table already cites hotpepper_jp as the

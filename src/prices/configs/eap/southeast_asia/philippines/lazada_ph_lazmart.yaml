@@ -8,9 +8,8 @@ language: en
 cadence: daily
 channel: marketplace
 notes: >
-  Lazada Philippines / LazMart grocery channel - marketplace aggregator that
-  resells Puregold / Mercury Drug / Rose Pharmacy / TGP alongside third-party
-  sellers, hence channel=aggregator (skips tier-c COICOP-priors narrowing).
+  Lazada Philippines / LazMart grocery channel - a marketplace that resells
+  Puregold / Mercury Drug / Rose Pharmacy / TGP alongside third-party sellers.
   Unlike the WAF-blocked lazada.vn, the .ph catalog AJAX endpoint answers
   unauthenticated requests: GET /catalog/?ajax=true&q=<kw>&page=<n> returns
   JSON with mods.listItems (40/page) carrying name/itemId/sku/price/seller.

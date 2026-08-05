@@ -6,12 +6,12 @@ spider: metromart_ph
 url: https://www.metromart.com
 language: en
 cadence: daily
-channel: supermarket
+channel: marketplace
 notes: >
   MetroMart is a multi-vendor grocery-delivery marketplace (wet-market /
-  farmers-market / sari-sari vendors), not a single-catalog retailer, hence
-  channel=aggregator (skips tier-c COICOP-priors narrowing). No auth-free
-  full-catalog browse exists; the public keyword-search endpoint
+  farmers-market / sari-sari vendors); not a single-catalog retailer, it
+  aggregates multiple partner vendors. No auth-free full-catalog browse
+  exists; the public keyword-search endpoint
   (api.metromart.com/api/v1/search/grouped-shops-and-products,
   include=products) requires no auth and returns priced product records.
   Spider walks a fixed keyword list targeting specialty produce and

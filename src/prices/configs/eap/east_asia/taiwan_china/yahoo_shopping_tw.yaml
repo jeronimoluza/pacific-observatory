@@ -12,6 +12,5 @@ notes: >
   yahoo_shopping. General marketplace, seeded with F&B search keywords
   (COICOP 01 + 02.1). Search-results page embeds a server-rendered
   isoredux-data Redux state block (search.ecsearch.hits) with name/price/id/
-  category — no auth needed. channel=aggregator so tier-c narrowing is
-  skipped. Conservative DOWNLOAD_DELAY (2.5s, 1 concurrent/domain) — WAF risk
-  flagged medium in discovery.
+  category — no auth needed. Conservative DOWNLOAD_DELAY (2.5s, 1
+  concurrent/domain) — WAF risk flagged medium in discovery.
