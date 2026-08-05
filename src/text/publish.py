@@ -278,14 +278,18 @@ def _front_id_cols(df: pd.DataFrame) -> pd.DataFrame:
     return df[front + rest]
 
 
-def _export_region_panel(region: str, units: list) -> Path:
+def _export_region_panel(
+    region: str, units: list, database_status: dict | None = None
+) -> Path:
     """Write outputs/text/dashboard_data/{json,csv,xlsx,dta}/<region>.<ext>.
 
     JSON: hierarchical dashboard payload (same shape as the global JSON,
     scoped to this region). CSV/DTA: long-on-unit, wide-on-index panel
     merging EPU + topics + actors. XLSX: one sheet per family plus a
-    combined ``panel`` sheet, plus standalone ``topics_framing``/
-    ``actors_framing`` sheets for the uncertainty-attribution data.
+    combined ``panel`` sheet, standalone ``topics_framing``/
+    ``actors_framing`` sheets for the uncertainty-attribution data, and a
+    ``sources`` sheet (per-source provenance) when ``database_status`` is
+    available for this region.
     """
     json_dir = DASHBOARD_DATA_DIR / "json"
     csv_dir = DASHBOARD_DATA_DIR / "csv"
@@ -355,8 +359,30 @@ def _export_region_panel(region: str, units: list) -> Path:
             _front_id_cols(df).to_excel(xw, sheet_name=sheet, index=False)
         if merged is not None:
             _front_id_cols(merged).to_excel(xw, sheet_name="panel", index=False)
+        _write_sources_sheet(xw, database_status, region)
 
     return region_json
+
+
+def _write_sources_sheet(xw, database_status: dict | None, region: str) -> None:
+    """Append a ``sources`` sheet scoped to ``region``, if status data allows.
+
+    Never raises: a status failure or empty region slice just skips the sheet.
+    """
+    if not database_status:
+        return
+    try:
+        from text.status import DATABASE_STATUS_FIELDS
+
+        rows = [
+            r for r in database_status.get("sources", []) if r.get("region") == region
+        ]
+        if rows:
+            pd.DataFrame(rows, columns=DATABASE_STATUS_FIELDS).to_excel(
+                xw, sheet_name="sources", index=False
+            )
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def _render_fcp_dashboard(region: str, region_json: Path) -> Path | None:
@@ -375,7 +401,8 @@ def _refresh_database_status():
     """Regenerate the global outputs/text/database_status/sources.{csv,json,xlsx} snapshot.
 
     Scope-independent: always reflects the whole data/text/ database. Failures
-    here never block dashboard publishing.
+    here never block dashboard publishing. Returns the computed data dict (also
+    used to populate the per-region ``sources`` xlsx sheet), or None on failure.
     """
     from text.status import compute_database_status, write_database_status
 
@@ -387,8 +414,10 @@ def _refresh_database_status():
             f"  Database status: {t['sources']} sources · "
             f"{t['articles_total']:,} articles → outputs/text/database_status/"
         )
+        return data
     except Exception as e:  # noqa: BLE001
         click.echo(f"  Database status refresh failed: {e}")
+        return None
 
 
 def run_publish(region=None, subregion=None, country=None):
@@ -406,7 +435,7 @@ def run_publish(region=None, subregion=None, country=None):
     click.echo("  Text publish (dashboards)")
     click.echo("  " + "-" * 40)
 
-    _refresh_database_status()
+    database_status = _refresh_database_status()
 
     if not units:
         click.echo("  No units with EPU data found. Run 'po text build' first.")
@@ -456,7 +485,7 @@ def run_publish(region=None, subregion=None, country=None):
     for rgn in regions_in_scope:
         rgn_units = [u for u in units if u["region"] == rgn]
         click.echo(f"  Building {rgn}/ panel from outputs/text/...")
-        region_json = _export_region_panel(rgn, rgn_units)
+        region_json = _export_region_panel(rgn, rgn_units, database_status)
         click.echo(
             f"  Written: {DASHBOARD_DATA_DIR.relative_to(PROJECT_ROOT)}/"
             f"{{json,csv,xlsx,dta}}/{rgn}.<ext>"
