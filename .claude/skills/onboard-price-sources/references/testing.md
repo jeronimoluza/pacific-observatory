@@ -81,5 +81,5 @@ A successful fetcher writes `data/prices/<region>/<subregion>/<country>/<source>
 - non-null `price_local` for PriceObservation, or `index_value` for IndexObservation
 - correct `currency` (PriceObservation only)
 - the right `source_key`, matching the manifest
-- `coicop_code` populated when `coicop_classification ∈ {source_curated, publisher_labeled}`; absent for `deferred_gemini`
+- `coicop_code` populated when `coicop_classification ∈ {source_curated, publisher_labeled}`; absent for `classifier`
 - `subnational_area` set for sources that break down sub-nationally, `null` otherwise

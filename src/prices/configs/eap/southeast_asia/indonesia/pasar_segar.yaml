@@ -1,7 +1,7 @@
 scaffolding: spider
 extraction_pattern: scrapy_html
 analytical_role: retailer_sku
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 spider: pasar_segar
 url: https://pasarsegar.co.id/
 language: id

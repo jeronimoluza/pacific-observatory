@@ -1,7 +1,7 @@
 scaffolding: spider
 extraction_pattern: scrapy_api
 analytical_role: retailer_sku
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 spider: sm_markets_savemore
 url: https://smmarkets.ph
 language: en

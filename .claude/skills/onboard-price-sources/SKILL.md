@@ -68,7 +68,7 @@ Declares who tags COICOP for the rows this source emits. Drives where the COICOP
 
 | Value | Used for | Handler |
 |---|---|---|
-| `deferred_gemini` | Retailer SKU spiders, stats-office tables with long free-text item lists | `src/prices/enrich/classifier/` — the ensemble-embedding → logistic-regression head, run by `prices process --stage classify`. Predicts the COICOP **leaf** from the raw product name. (The value is named `deferred_gemini` for historical reasons; the Gemini pipeline at `src/cpi/coicopping/` it once referred to is **retired** — do not route new sources there.) |
+| `classifier` | Retailer SKU spiders, stats-office tables with long free-text item lists | `src/prices/enrich/classifier/` — the ensemble-embedding → logistic-regression head, run by `prices process --stage classify`. Predicts the COICOP **leaf** from the raw product name. (Renamed 2026-08-05 from `deferred_gemini`, which named a retired Gemini reranker at `src/cpi/coicopping/` — do not route new sources there.) |
 | `source_curated` | Fuel, electricity, water, telco, real-estate, tariff schedules, restaurant aggregators — sources whose domain unambiguously determines COICOP | Fetcher module carries a `_COICOP_MAP` constant written by the skill author at onboarding |
 | `publisher_labeled` | CPI publications (publisher emits its own COICOP labels) | Fetcher reads the publisher's labels; may need a translation map (e.g. Bahasa → COICOP codes) |
 
@@ -112,7 +112,7 @@ The fields above are independent of the four axes — a `coicop_classification: 
   - Bucket 1 (country-bound, ~80% of fetchers): `src/prices/fetchers/<region>/<subregion>/<country>/<source>.py`
   - Bucket 2 (regional aggregator covering multiple countries in one region): `src/prices/fetchers/_shared/<region>/<source>.py` with thin per-country wrappers at `<region>/<subregion>/<country>/<source>.py`
   - Bucket 3 (truly global aggregate, e.g. commodity benchmarks): `src/prices/fetchers/_global/<source>.py`
-- **Existing COICOP classifier** (used by `coicop_classification: deferred_gemini`): `src/prices/enrich/classifier/` — ensemble embedding → logistic-regression head, run by `python run.py prices process --stage classify`
+- **Existing COICOP classifier** (used by `coicop_classification: classifier`): `src/prices/enrich/classifier/` — ensemble embedding → logistic-regression head, run by `python run.py prices process --stage classify`
 - Scrapy + Playwright settings: `src/prices/price_scraping/settings.py` (do not edit unless explicitly asked)
 - CLI:
   - `python run.py prices collect --source <name> --max-items N` — runs **both** scaffoldings. `collect.py` dispatches on `scaffolding`: spiders go to Scrapy, fetchers go to `_run_fetcher()`, which resolves `module:function`, computes the cutoff from the existing CSV (falling back to `fallback_date`), and writes the columns for the source's `analytical_role`.
@@ -168,7 +168,7 @@ A depth gap and a sourcing gap need opposite fixes. Onboarding a new source to s
    - Backfill the four classification fields: `scaffolding`, `extraction_pattern`, `analytical_role`, `coicop_classification`
    - Backfill `coicop_codes:` (the COICOP codes this source's rows will carry — used for the Phase-8 coverage report)
    - Backfill infrastructure fields where applicable: `source_key`, `module`, `function`, `url`, `fallback_date`
-   - For spider-backed sources, `scaffolding: spider`, `extraction_pattern: scrapy_*` (pick based on what the spider actually does), `analytical_role: retailer_sku`, `coicop_classification: deferred_gemini`. Keep the existing `spider:` field.
+   - For spider-backed sources, `scaffolding: spider`, `extraction_pattern: scrapy_*` (pick based on what the spider actually does), `analytical_role: retailer_sku`, `coicop_classification: classifier`. Keep the existing `spider:` field.
    - Remove the legacy `source_type:`, `priority:`, `observation_level:`, `coicop_divisions:` fields.
    - Write back to the same file
    - If the source isn't in the inventory, leave it untouched and record it as "unknown coverage" for the Phase 8 report
@@ -199,9 +199,9 @@ For each candidate from Phase 2, open the URL and assign each of the four manife
 
 | Confirm by looking at… | Assign to |
 |---|---|
-| Product detail pages with SKU IDs, add-to-cart, per-unit price | `scaffolding: spider`, `analytical_role: retailer_sku`, `coicop_classification: deferred_gemini` |
+| Product detail pages with SKU IDs, add-to-cart, per-unit price | `scaffolding: spider`, `analytical_role: retailer_sku`, `coicop_classification: classifier` |
 | Filterable / queryable price endpoint returning many commodities per call, often per region or per date | `scaffolding: fetcher`, `extraction_pattern: rest_api`, `analytical_role: official_avg` or `aggregate_proxy` |
-| A page listing CSV / XLS / PDF downloads of national averages | `scaffolding: fetcher`, `extraction_pattern: tabular_download`, `analytical_role: official_avg`, `coicop_classification: source_curated` (if items are stable) or `deferred_gemini` (long free-text lists) |
+| A page listing CSV / XLS / PDF downloads of national averages | `scaffolding: fetcher`, `extraction_pattern: tabular_download`, `analytical_role: official_avg`, `coicop_classification: source_curated` (if items are stable) or `classifier` (long free-text lists) |
 | A static page (or PDF) listing utility / telco / transport plans with per-plan tariff | `scaffolding: fetcher`, `extraction_pattern: html_scrape` or `pdf`, `analytical_role: tariff`, `coicop_classification: source_curated` (single constant COICOP for the whole source) |
 | Paginated listing of individual properties / vehicles / classifieds | `scaffolding: spider`, `extraction_pattern: scrapy_listing`, `analytical_role: retailer_sku` (listings layer), `coicop_classification: source_curated` (whole source = COICOP 04.1.1 rentals, etc.) |
 | A national CPI index publication with COICOP division indexes | `scaffolding: fetcher`, `extraction_pattern: rest_api`/`tabular_download`/`pdf`, `analytical_role: cpi_benchmark`, `coicop_classification: publisher_labeled` |

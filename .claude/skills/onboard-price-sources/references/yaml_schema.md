@@ -9,9 +9,9 @@ The manifest sits at `src/prices/configs/<region>/<subregion>/<country>/<source>
 | `scaffolding` | yes | `spider` or `fetcher` |
 | `extraction_pattern` | yes | One of `scrapy_html`, `scrapy_api`, `scrapy_playwright`, `scrapy_listing`, `rest_api`, `tabular_download`, `pdf`, `html_scrape` |
 | `analytical_role` | yes | One of `retailer_sku`, `official_avg`, `tariff`, `cpi_benchmark`, `aggregate_proxy` |
-| `coicop_classification` | yes | One of `deferred_gemini`, `source_curated`, `publisher_labeled` |
+| `coicop_classification` | yes | One of `classifier`, `source_curated`, `publisher_labeled` |
 | `channel` | **yes — the key must be present even when the value is `null`** | From the `Channel` enum in `src/prices/enrich/schemas.py`. `null` for non-retail sources. An out-of-enum value *or* an omitted key breaks global `prices collect --list`, not just this source. |
-| `coicop_codes` | conditional | Required when `coicop_classification ∈ {source_curated, publisher_labeled}`. List of codes the source's rows carry (e.g. `["07.2.2", "04.5.4"]` for fuel). Absent for `deferred_gemini`. |
+| `coicop_codes` | conditional | Required when `coicop_classification ∈ {source_curated, publisher_labeled}`. List of codes the source's rows carry (e.g. `["07.2.2", "04.5.4"]` for fuel). Absent for `classifier`. |
 | `source_key` | yes for `fetcher` | Stable identifier; matches the fetcher function name (`fetch_<source_key>`) |
 | `spider` | yes for `spider` | The Scrapy spider's `name` attribute |
 | `module` | yes for `fetcher` | Dotted path under `src/prices/fetchers/`, package prefix omitted — `eap.southeast_asia.indonesia.pertamina`, `_shared.eap.shopee`, `_global.wb_pink_sheet` |
@@ -54,7 +54,7 @@ Spider (FairPrice Singapore, retailer SKU):
 scaffolding: spider
 extraction_pattern: scrapy_api
 analytical_role: retailer_sku
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 channel: supermarket
 spider: fairprice
 url: https://www.fairprice.com.sg
@@ -68,7 +68,7 @@ Wholesale market feed (general catalog walker, `official_avg`):
 scaffolding: fetcher
 extraction_pattern: rest_api
 analytical_role: official_avg
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 channel: wholesale
 source_key: th_talaadthai
 module: eap.southeast_asia.thailand.talaadthai
@@ -110,7 +110,7 @@ Regional aggregator (Shopee in Singapore, thin per-country wrapper):
 scaffolding: fetcher
 extraction_pattern: rest_api
 analytical_role: retailer_sku
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 channel: aggregator
 source_key: sg_shopee
 module: eap.southeast_asia.singapore.shopee

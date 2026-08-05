@@ -1,7 +1,7 @@
 scaffolding: spider
 extraction_pattern: scrapy_api
 analytical_role: retailer_sku
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 spider: rautuoi247
 url: https://rautuoi247.vn
 language: vi

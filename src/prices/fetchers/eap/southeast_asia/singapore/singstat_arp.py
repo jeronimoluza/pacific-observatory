@@ -2,7 +2,7 @@
 
 Public TableBuilder JSON endpoint, monthly. Items are stable-ish but the
 2024-based basket switch in January 2024 reshuffled some entries — leave
-COICOP tagging to the downstream Gemini classifier (`deferred_gemini`).
+COICOP tagging to the downstream embedding->head classifier (`coicop_classification: classifier`).
 
 Each commodity row has a header like ``Premium Thai Rice (Per 5 Kilogram)``;
 the unit-of-account is the bracketed suffix.

@@ -56,7 +56,7 @@ The YAML's `coicop_classification` field declares who tags COICOP for this sourc
 
 | `coicop_classification` | Fetcher behavior |
 |---|---|
-| `deferred_gemini` | Fetcher does NOT populate `coicop_code`. The downstream classifier at `src/prices/enrich/classifier/` (ensemble embedding → LR head) handles it. Typical for retailer SKU spiders and stats-office tables with long free-text item lists. The value name is historical — the Gemini pipeline it referred to is retired. |
+| `classifier` | Fetcher does NOT populate `coicop_code`. The downstream classifier at `src/prices/enrich/classifier/` (ensemble embedding → LR head) handles it. Typical for retailer SKU spiders and stats-office tables with long free-text item lists. |
 | `source_curated` | Fetcher populates `coicop_code` from a module-level `_COICOP_MAP` keyed by commodity / item / plan name. The skill author writes this map once during onboarding. Typical for fuel, electricity, water, telco, real-estate, tariff schedules — sources whose domain unambiguously determines COICOP. |
 | `publisher_labeled` | Fetcher reads `coicop_code` from labels the publisher itself emits. May need a language-translation map (e.g. Bahasa → COICOP codes for BPS Indonesia). Typical for CPI indexes. |
 
@@ -80,7 +80,7 @@ Used for: retailer SKU spiders (downstream — see `references/spider_templates.
 | `price_local` | yes | Numeric. Bounds-check before emitting; currency-display shorthand (IDR `"12,90"` meaning `12,900`) is the most common 10×/100× error source. |
 | `currency` | yes | ISO 4217 code (`"IDR"`, `"SGD"`, `"FJD"`). Never parse from price-display symbol — set from `countries.yaml`. |
 | `unit` | yes | The physical unit `price_local` is denominated in (`"L"`, `"kg"`, `"kWh"`, `"month"`, `"each"`). |
-| `coicop_code` | conditional | Required when `coicop_classification ∈ {source_curated, publisher_labeled}`. Absent when `deferred_gemini`. Typically 4-digit COICOP-2018 (e.g. `"01.1.1"`); coarser is acceptable when the source doesn't support finer. |
+| `coicop_code` | conditional | Required when `coicop_classification ∈ {source_curated, publisher_labeled}`. Absent when `classifier`. Typically 4-digit COICOP-2018 (e.g. `"01.1.1"`); coarser is acceptable when the source doesn't support finer. |
 | `observation_hash` | yes | SHA-1 of the identifying tuple. Set LAST. |
 | `subnational_area` | no | State / region / province for sources that break down sub-nationally. Null otherwise. |
 | `city` | no | City name where applicable. |
@@ -226,7 +226,7 @@ Per-country YAML (`src/prices/configs/eap/southeast_asia/singapore/shopee.yaml`)
 scaffolding: fetcher
 extraction_pattern: rest_api
 analytical_role: retailer_sku
-coicop_classification: deferred_gemini   # SKU names go through Gemini
+coicop_classification: classifier   # SKU names go through the embedding->head classifier
 source_key: sg_shopee
 module: eap.southeast_asia.singapore.shopee
 function: fetch_sg_shopee
@@ -497,7 +497,7 @@ def fetch_fj_fccc_fuel(cutoff: date) -> pd.DataFrame | None:
 
 ### 5.3 Tabular download (XLS) — SingStat ARP (Singapore, average retail prices)
 
-`analytical_role: official_avg`. `coicop_classification: source_curated` if items are stable (recommended for SingStat ARP — fewer than 50 stable items); `deferred_gemini` if the table churns.
+`analytical_role: official_avg`. `coicop_classification: source_curated` if items are stable (recommended for SingStat ARP — fewer than 50 stable items); `classifier` if the table churns.
 
 ```python
 """SingStat Average Retail Prices of Selected Consumer Items — XLS download."""

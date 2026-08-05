@@ -1,7 +1,7 @@
 scaffolding: spider
 extraction_pattern: scrapy_html
 analytical_role: aggregate_proxy
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 spider: livingcost
 url: https://livingcost.org/cost/brunei
 language: en

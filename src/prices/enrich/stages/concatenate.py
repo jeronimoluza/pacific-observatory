@@ -33,6 +33,7 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 import pandas as pd
+import yaml
 
 from prices.enrich import config
 
@@ -81,11 +82,49 @@ def _build_source_channel_map() -> dict[tuple[str, str], str]:
     return out
 
 
+_DEFERRED_CSV_MAP_CACHE: Optional[dict[tuple[str, str], str]] = None
+
+
+def _build_deferred_csv_map() -> dict[tuple[str, str], str]:
+    """Return {(country, source): channel} for ``scaffolding: fetcher`` sources
+    whose COICOP is ``classifier`` — the fetcher price_observations.csv rows
+    that belong in the classifier corpus (e.g. wholesale live-animals). Keyed by
+    the config's path components (country dir, filename stem) to match the data
+    walk. Read via raw YAML because PriceSourceConfig rejects fetcher manifests."""
+    out: dict[tuple[str, str], str] = {}
+    cfg_root = config.REPO_ROOT / "src" / "prices" / "configs"
+    if not cfg_root.is_dir():
+        return out
+    for path in cfg_root.rglob("*.yaml"):
+        try:
+            y = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except Exception:  # malformed YAML — skip silently
+            continue
+        if not isinstance(y, dict):
+            continue
+        if (
+            y.get("coicop_classification") == "classifier"
+            and y.get("scaffolding") == "fetcher"
+        ):
+            out[(path.parent.name, path.stem)] = y.get("channel") or ""
+    return out
+
+
+def _deferred_csv_map() -> dict[tuple[str, str], str]:
+    global _DEFERRED_CSV_MAP_CACHE
+    if _DEFERRED_CSV_MAP_CACHE is None:
+        _DEFERRED_CSV_MAP_CACHE = _build_deferred_csv_map()
+    return _DEFERRED_CSV_MAP_CACHE
+
+
 def _channel_for(country: str, source: str) -> str:
     global _CHANNEL_MAP_CACHE
     if _CHANNEL_MAP_CACHE is None:
         _CHANNEL_MAP_CACHE = _build_source_channel_map()
-    return _CHANNEL_MAP_CACHE.get((country, source), "")
+    ch = _CHANNEL_MAP_CACHE.get((country, source))
+    if ch:
+        return ch
+    return _deferred_csv_map().get((country, source), "")
 
 
 def _url_hash(url: Optional[str]) -> Optional[str]:
@@ -135,8 +174,38 @@ def _emit_cc(path: Path) -> Iterable[dict]:
     }
 
 
-def _iter_source_files(source_dir: Path) -> list[tuple[str, Path]]:
-    """Return [(shape, path), ...] for all raw artifacts under a source dir."""
+def _emit_price_obs(path: Path) -> Iterable[dict]:
+    """Map a fetcher price_observations.csv row to the corpus schema. The item
+    name is the product; the observation hash gives a stable url_hash."""
+    try:
+        df = pd.read_csv(path, low_memory=False)
+    except Exception:  # noqa: BLE001 — unreadable CSV
+        return
+    for r in df.to_dict("records"):
+        name = r.get("item_name")
+        if not isinstance(name, str) or not name.strip():
+            continue
+        yield {
+            "product_name": name,
+            "price": r.get("price_local"),
+            "currency": r.get("currency"),
+            "date": r.get("observation_date"),
+            "product_url": r.get("source_url"),
+            "product_id": None,
+            "url_hash": r.get("observation_hash") or _url_hash(r.get("source_url")),
+            "wayback": False,
+            "category": "",
+        }
+
+
+def _iter_source_files(
+    source_dir: Path, country: Optional[str] = None, source: Optional[str] = None
+) -> list[tuple[str, Path]]:
+    """Return [(shape, path), ...] for all raw artifacts under a source dir.
+
+    A fetcher's ``price_observations.csv`` is included only for sources declared
+    ``classifier`` (see ``_deferred_csv_map``); tariff/fuel/telco fetchers
+    are source-curated and must not enter the div-01 classifier corpus."""
     out: list[tuple[str, Path]] = []
     raw = source_dir / "raw_items"
     if raw.is_dir():
@@ -147,6 +216,9 @@ def _iter_source_files(source_dir: Path) -> list[tuple[str, Path]]:
     cc = source_dir / "common_crawl_data" / "items"
     if cc.is_dir():
         out.extend(("cc", p) for p in cc.glob("*.json"))
+    obs = source_dir / "price_observations.csv"
+    if obs.is_file() and (country, source) in _deferred_csv_map():
+        out.append(("price_obs", obs))
     return out
 
 
@@ -164,7 +236,7 @@ def _load_source(
     country: str,
     source: str,
 ) -> Optional[pd.DataFrame]:
-    files = _iter_source_files(source_dir)
+    files = _iter_source_files(source_dir, country, source)
     if not files:
         return None
     rows: list[dict] = []
@@ -175,6 +247,8 @@ def _load_source(
             rows.extend(_emit_jsonl(path, wayback=True))
         elif shape == "cc":
             rows.extend(_emit_cc(path))
+        elif shape == "price_obs":
+            rows.extend(_emit_price_obs(path))
     if not rows:
         return None
     df = pd.DataFrame(rows)
@@ -264,7 +338,7 @@ def run(force: bool = False) -> Path:
         DATA_PRICES_ROOT
     ):
         key = f"{region}/{subregion}/{country}/{source}"
-        files = _iter_source_files(source_dir)
+        files = _iter_source_files(source_dir, country, source)
         if not files:
             continue
         n_total += 1

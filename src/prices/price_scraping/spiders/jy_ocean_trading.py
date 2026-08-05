@@ -8,7 +8,7 @@ retail price source for Tuvalu (prior coverage was aggregator-only).
 The storefront mixes supermarket goods with hardware/electronics under a
 single Shopify catalog (product_type/tags are unset on every product, and
 no supermarket-only collection exists), so scoping is broad by design;
-downstream COICOP classification (deferred_gemini) sorts food vs non-food.
+downstream COICOP classification (`coicop_classification: classifier`) sorts food vs non-food.
 Many items are marked sold-out but remain price-bearing, so `available` is
 captured alongside price.
 """

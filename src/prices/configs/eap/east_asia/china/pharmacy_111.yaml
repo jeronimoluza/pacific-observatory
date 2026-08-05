@@ -1,7 +1,7 @@
 scaffolding: spider
 extraction_pattern: scrapy_html
 analytical_role: retailer_sku
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 spider: pharmacy_111
 url: https://m.111.com.cn/
 language: zh

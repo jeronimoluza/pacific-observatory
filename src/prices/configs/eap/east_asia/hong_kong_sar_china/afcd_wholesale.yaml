@@ -1,7 +1,7 @@
 scaffolding: fetcher
 extraction_pattern: tabular_download
 analytical_role: official_avg
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 channel: wholesale
 source_key: hk_afcd_wholesale
 module: eap.east_asia.hong_kong_sar_china.afcd_wholesale

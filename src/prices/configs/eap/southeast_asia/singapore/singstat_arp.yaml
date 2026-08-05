@@ -1,7 +1,7 @@
 scaffolding: fetcher
 extraction_pattern: rest_api
 analytical_role: official_avg
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 source_key: sg_singstat_arp
 module: eap.southeast_asia.singapore.singstat_arp
 function: fetch_sg_singstat_arp

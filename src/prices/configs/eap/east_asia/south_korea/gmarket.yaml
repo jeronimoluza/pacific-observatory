@@ -1,7 +1,7 @@
 scaffolding: spider
 extraction_pattern: scrapy_html
 analytical_role: retailer_sku
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 spider: gmarket
 url: https://www.gmarket.co.kr
 language: ko

@@ -1,7 +1,7 @@
 scaffolding: fetcher
 extraction_pattern: rest_api
 analytical_role: official_avg
-coicop_classification: deferred_gemini
+coicop_classification: classifier
 channel: wholesale
 source_key: tw_moa_wholesale
 module: eap.east_asia.taiwan_china.moa_wholesale
