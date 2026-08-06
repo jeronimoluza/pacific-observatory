@@ -141,6 +141,10 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
         df["category"] = ""
     else:
         df["category"] = df["category"].fillna("").astype(str)
+    if "details" not in df.columns:
+        df["details"] = ""
+    else:
+        df["details"] = df["details"].fillna("").astype(str)
     if "product_url" not in df.columns:
         df["product_url"] = ""
     df["product_url"] = df["product_url"].map(_clean_url)
@@ -180,6 +184,7 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
         product_name_original=("product_name_original", "first"),
         product_url=("product_url", _first_non_empty),
         category=("category", _first_non_empty),
+        details=("details", _first_non_empty),
         country=("country", "first"),
         currency=("currency", "first"),
         lang=("lang", "first"),

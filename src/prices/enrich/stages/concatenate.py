@@ -10,13 +10,17 @@ Shapes handled:
   - wayback_items/*.jsonl              (Wayback Machine)
   - common_crawl_data/items/*.json     (Common Crawl, one product per file)
 
-Output schema (14 cols, raw-only — no enrichment-derived columns):
+Output schema (15 cols, raw-only — no enrichment-derived columns):
   url_hash, product_name, price, currency, country, source, date,
-  product_url, product_id, region, subregion, wayback, channel, category
+  product_url, product_id, region, subregion, wayback, channel, category,
+  details
 
 `channel` is per-row, looked up from the source YAML's `channel:` field at
 startup. `category` is the per-item breadcrumb captured by Scrapy spiders
-(`ProductItem.category`). Both default to "" when absent.
+(`ProductItem.category`). `details` is the per-item size/pack string some
+spiders capture separately from the name (e.g. pickaroo "~500 g"); it carries
+the quantity the product_name omits and is consulted by the structural
+extractor as a fallback. All default to "" when absent.
 
 product_name_original is NOT emitted here — prepare derives it. Currency for
 Common Crawl rows (which often lack a currency field) is back-filled with the
@@ -60,6 +64,7 @@ OUTPUT_COLS = [
     "wayback",
     "channel",
     "category",
+    "details",
 ]
 
 # The coicop_classification value that routes a fetcher manifest's rows into
@@ -158,6 +163,7 @@ def _emit_jsonl(path: Path, wayback: bool) -> Iterable[dict]:
                 "url_hash": obj.get("url_hash") or _url_hash(obj.get("url")),
                 "wayback": wayback,
                 "category": obj.get("category") or "",
+                "details": obj.get("details") or "",
             }
 
 
@@ -176,6 +182,7 @@ def _emit_cc(path: Path) -> Iterable[dict]:
         "url_hash": _url_hash(obj.get("url")),
         "wayback": False,
         "category": obj.get("category") or "",
+        "details": obj.get("details") or "",
     }
 
 
@@ -279,6 +286,10 @@ def _load_source(
         df["category"] = ""
     else:
         df["category"] = df["category"].fillna("").astype(str)
+    if "details" not in df.columns:
+        df["details"] = ""
+    else:
+        df["details"] = df["details"].fillna("").astype(str)
 
     required = ["product_name", "price", "currency", "country"]
     before = len(df)

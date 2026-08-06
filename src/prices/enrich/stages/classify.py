@@ -31,14 +31,26 @@ from prices.enrich.stages.merge import ENRICHMENT_COLS
 _EMPTY = {c: None for c in ENRICHMENT_COLS}
 
 
-def _structural_fields(name, category, country, lang) -> dict:
+_QTY_BASES = frozenset({"mass", "volume", "length", "count"})
+
+
+def _structural_fields(name, category, country, lang, details=None) -> dict:
     sf = extract(str(name), category or None, country or None, lang or None)
+    # Quantity fallback: some sources (e.g. pickaroo, aldi_au) publish the pack
+    # size in a separate `details` string ("~500 g", "10 pcs") the product_name
+    # omits, so the name alone resolves to `item`. When that happens, read the
+    # quantity off `details`; keep the name's promo/bundle flags.
+    qs = sf
+    if sf.pricing_basis == "item" and details and str(details).strip():
+        sf2 = extract(str(details), category or None, country or None, lang or None)
+        if sf2.pricing_basis in _QTY_BASES:
+            qs = sf2
     return {
-        "pricing_basis": sf.pricing_basis,
-        "amount_value": sf.amount_value,
-        "standard_unit": sf.standard_unit,
-        "count": sf.count,
-        "multiplier": sf.multiplier,
+        "pricing_basis": qs.pricing_basis,
+        "amount_value": qs.amount_value,
+        "standard_unit": qs.standard_unit,
+        "count": qs.count,
+        "multiplier": qs.multiplier,
         "is_promotion": sf.is_promotion,
         "is_bundle": sf.is_bundle,
         "is_multipack": sf.is_multipack,
@@ -68,7 +80,13 @@ def classify_products(
         row = dict(_EMPTY)
         row["input_hash"] = p["input_hash"]
         row.update(
-            _structural_fields(name, p.get("category"), p.get("country"), p.get("lang"))
+            _structural_fields(
+                name,
+                p.get("category"),
+                p.get("country"),
+                p.get("lang"),
+                p.get("details"),
+            )
         )
 
         declared = str(p.get("declared_coicop_codes") or "")
