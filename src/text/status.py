@@ -11,6 +11,7 @@ CACHE_PATH = Path("data/.po_cache.json")
 DATA_BASE = Path("data/text")
 OUTPUTS_BASE = Path("outputs/text")
 CONFIGS_DIR = Path(__file__).resolve().parent / "configs"
+DATABASE_STATUS_DIR = OUTPUTS_BASE / "database_status"
 
 
 def read_status_cache(cache_path: Path = CACHE_PATH) -> dict | None:
@@ -124,3 +125,131 @@ def compute_text_status() -> dict:
             "last_published_at": last_published_at,
         },
     }
+
+
+DATABASE_STATUS_FIELDS = [
+    "region",
+    "subregion",
+    "country",
+    "newspaper",
+    "name",
+    "base_url",
+    "language",
+    "article_count",
+    "earliest_date",
+    "latest_date",
+]
+
+
+def compute_database_status() -> dict:
+    """Scan every configured text source and return rows with verified article counts + date ranges.
+
+    Only includes sources whose news.csv exists and contains at least one article.
+    Skips template/example configs that don't sit under a region/subregion/country path.
+    Dates are parsed with pandas (errors coerced to NaT) so min/max reflect real
+    timestamps, not lexicographic order over mixed-format strings.
+    """
+    import pandas as pd
+    import yaml
+
+    from core.config import discover_pipeline_configs, parse_config_path
+
+    configs = discover_pipeline_configs(CONFIGS_DIR)
+
+    rows: list[dict] = []
+    for cfg in sorted(configs):
+        region, subregion, country = parse_config_path(cfg, CONFIGS_DIR)
+        if "unknown" in (region, subregion, country):
+            continue
+        newspaper = cfg.stem
+        news_csv = DATA_BASE / region / subregion / country / newspaper / "news.csv"
+        if not news_csv.exists():
+            continue
+
+        try:
+            df = pd.read_csv(news_csv, usecols=["date"], dtype=str)
+        except Exception:  # noqa: BLE001
+            continue
+        if df.empty:
+            continue
+
+        meta = {"name": None, "base_url": None, "language": None}
+        try:
+            with open(cfg, encoding="utf-8") as f:
+                loaded = yaml.safe_load(f) or {}
+            for key in meta:
+                val = loaded.get(key)
+                if isinstance(val, str) and val.strip():
+                    meta[key] = val.strip()
+        except Exception:  # noqa: BLE001
+            pass
+
+        parsed = pd.to_datetime(df["date"], errors="coerce", utc=True)
+        valid = parsed.dropna()
+        rows.append(
+            {
+                "region": region,
+                "subregion": subregion,
+                "country": country,
+                "newspaper": newspaper,
+                "name": meta["name"],
+                "base_url": meta["base_url"],
+                "language": meta["language"],
+                "article_count": int(len(df)),
+                "earliest_date": valid.min().strftime("%Y-%m-%d")
+                if not valid.empty
+                else None,
+                "latest_date": valid.max().strftime("%Y-%m-%d")
+                if not valid.empty
+                else None,
+            }
+        )
+
+    articles_total = sum(r["article_count"] for r in rows)
+    earliest_overall = min(
+        (r["earliest_date"] for r in rows if r["earliest_date"]), default=None
+    )
+    latest_overall = max(
+        (r["latest_date"] for r in rows if r["latest_date"]), default=None
+    )
+    countries = sorted({r["country"] for r in rows})
+
+    return {
+        "generated_at": datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "totals": {
+            "sources": len(rows),
+            "countries": len(countries),
+            "articles_total": articles_total,
+            "earliest_date": earliest_overall,
+            "latest_date": latest_overall,
+        },
+        "sources": rows,
+    }
+
+
+def write_database_status(data: dict, base_dir: Path = DATABASE_STATUS_DIR) -> dict:
+    """Persist database status as sources.{csv,json,xlsx}. Returns file paths."""
+    import csv
+
+    import pandas as pd
+
+    base_dir.mkdir(parents=True, exist_ok=True)
+    json_path = base_dir / "sources.json"
+    csv_path = base_dir / "sources.csv"
+    xlsx_path = base_dir / "sources.xlsx"
+
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, default=str)
+
+    with open(csv_path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(
+            f, fieldnames=DATABASE_STATUS_FIELDS, extrasaction="ignore"
+        )
+        writer.writeheader()
+        for row in data["sources"]:
+            writer.writerow(row)
+
+    df = pd.DataFrame(data["sources"], columns=DATABASE_STATUS_FIELDS)
+    df.to_excel(xlsx_path, index=False, sheet_name="sources", engine="openpyxl")
+
+    return {"json": str(json_path), "csv": str(csv_path), "xlsx": str(xlsx_path)}
