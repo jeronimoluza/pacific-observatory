@@ -200,8 +200,14 @@ def _finalize(df: pd.DataFrame) -> pd.DataFrame:
     df = _require_unit(df)
     df = convert_item_rows(df)
     df = _compute_unit_values(df)
+    # Only rows that measured their own quantity may define what "normal" is in
+    # a cell; a typical-mass conversion is scored against them, never with them.
     df = flag_uv_outliers(
-        df, group_cols=("coicop_code", "country", "standard_unit")
+        df,
+        group_cols=("coicop_code", "country", "standard_unit"),
+        baseline_mask=df.get(
+            "mass_source", pd.Series(index=df.index, dtype=object)
+        ).ne("derived_typical"),
     )
     df = df[df["price_local"].notna()].copy()
     df = attach_fx_and_usd(df)
