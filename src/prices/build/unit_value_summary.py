@@ -35,6 +35,7 @@ TRUSTED_OBS_COLS = [
     "product_name", "product_name_original", "source",
     "price_local", "currency", "unit_value_local", "unit_value_usd",
     "confidence", "trust_level", "trust_uv", "uv_robust_z", "qa_status",
+    "mass_source",
 ]
 
 
