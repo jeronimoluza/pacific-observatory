@@ -52,9 +52,11 @@ from typing import Iterator
 
 import pandas as pd
 
+from prices.build.analytical import write_analytical
 from prices.build.basket import EAP_COUNTRIES, FNB_COICOP_PREFIXES
 from prices.build.fx import attach_fx_and_usd
 from prices.build.qa import compute_qa
+from prices.build.sold_by_item import convert_item_rows
 from prices.build.unit_value_audit import flag_uv_outliers
 from prices.build.unit_value_summary import (
     build_unit_value_summary,
@@ -189,8 +191,14 @@ def _compute_unit_values(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _finalize(df: pd.DataFrame) -> pd.DataFrame:
-    """Shared tail: require unit, compute unit_value, Layer-2 audit, FX, QA."""
+    """Shared tail: require unit, convert item rows, unit_value, Layer-2, FX, QA.
+
+    The typical-mass conversion runs before unit values are computed, so a
+    converted row is indistinguishable from a measured one to every stage that
+    follows. That is what keeps the change local to this one line.
+    """
     df = _require_unit(df)
+    df = convert_item_rows(df)
     df = _compute_unit_values(df)
     df = flag_uv_outliers(
         df, group_cols=("coicop_code", "country", "standard_unit")
@@ -301,6 +309,7 @@ def _write_consumables(df: pd.DataFrame) -> None:
     summary = build_unit_value_summary(df)
     summary.to_parquet(UNIT_VALUE_SUMMARY_PARQUET, index=False)
     logger.info("wrote %s (%d cells)", UNIT_VALUE_SUMMARY_PARQUET, len(summary))
+    write_analytical(df)
 
 
 def build(csv_path: Path | None = None) -> None:

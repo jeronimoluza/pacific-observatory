@@ -26,7 +26,19 @@ trustworthy.
 """
 from __future__ import annotations
 
+import logging
+
 import pandas as pd
+
+from prices.build.leaf_typical_mass import (
+    MEASURED_BASES,
+    UNIT_TO_BASIS,
+    accepted_lookup,
+    derive_typical_mass,
+    write_typical_mass,
+)
+
+logger = logging.getLogger(__name__)
 
 # COICOP leaves whose `item`-basis rows are GENUINE per-piece unit values.
 # Human-authored, F&B-only. Keep this conservative -- an over-broad entry
@@ -59,3 +71,68 @@ def is_sold_by_item(coicop_code) -> bool:
     if coicop_code is None or pd.isna(coicop_code):
         return False
     return str(coicop_code) in SOLD_BY_ITEM_LEAVES
+
+
+def convert_item_rows(df: pd.DataFrame) -> pd.DataFrame:
+    """Route every `item`-basis row into one of three buckets, and tag provenance.
+
+    The three buckets, in strict priority order:
+
+      1. GENUINE per-piece (`SOLD_BY_ITEM_LEAVES`) -- left exactly as it was.
+         Checked FIRST, so a leaf already declared per-piece can never be
+         converted, even if it happens to have a stable derived mass. The
+         ordering is load-bearing, not cosmetic: pineapples carry a spurious
+         0.02 kg entry in the mass table that this priority renders inert.
+      2. CONVERTIBLE -- the leaf has an accepted typical mass, so the row is
+         relabeled as a mass/volume row carrying that amount. It then flows
+         through the unchanged unit-value, Layer-2 and QA stages exactly like a
+         measured row, which is why none of those needed modifying.
+      3. STILL MISSING QUANTITY -- no accepted mass, so the row is untouched and
+         quarantines downstream as before.
+
+    Rows are tagged in ``mass_source`` (`measured`, `genuine_item`,
+    `derived_typical`, or unset) so a downstream consumer can always exclude
+    conversions. A derived row must never be mistakable for a measured one.
+
+    The mass table is derived from THIS frame rather than read from the build's
+    own output parquet, which would make the build depend on its previous run.
+    """
+    if df.empty:
+        return df
+    df = df.copy()
+
+    table = derive_typical_mass(df)
+    write_typical_mass(table)
+    typical = accepted_lookup(table)
+
+    df["mass_source"] = pd.NA
+    df.loc[df["pricing_basis"].isin(MEASURED_BASES), "mass_source"] = "measured"
+
+    is_item = df["pricing_basis"] == "item"
+    genuine = is_item & df["coicop_code"].apply(is_sold_by_item)
+    df.loc[genuine, "mass_source"] = "genuine_item"
+
+    candidates = is_item & ~genuine
+    if not typical or not candidates.any():
+        return df
+
+    mapped = df.loc[candidates, "coicop_code"].astype(str).map(typical)
+    convertible = mapped[mapped.notna()]
+    if convertible.empty:
+        logger.info("typical-mass conversion: 0 of %d candidate item rows convertible",
+                    int(candidates.sum()))
+        return df
+
+    idx = convertible.index
+    units = convertible.apply(lambda t: t[1])
+    df.loc[idx, "amount_value"] = convertible.apply(lambda t: t[0])
+    df.loc[idx, "standard_unit"] = units
+    df.loc[idx, "pricing_basis"] = units.map(UNIT_TO_BASIS)
+    df.loc[idx, "mass_source"] = "derived_typical"
+
+    logger.info(
+        "typical-mass conversion: %d of %d candidate item rows converted "
+        "(%d genuine per-piece left untouched)",
+        len(idx), int(candidates.sum()), int(genuine.sum()),
+    )
+    return df
