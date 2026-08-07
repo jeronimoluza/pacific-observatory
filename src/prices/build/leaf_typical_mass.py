@@ -12,10 +12,16 @@ The mass comes from rows the pipeline already measured: every `mass`/`volume`
 row whose amount was extracted from the product name. Those are pooled ACROSS
 COUNTRIES per leaf, deliberately -- a typical loaf weighs the same in Fiji and
 Vietnam, because mass is a physical property of the product. Price is never
-pooled: it is an economic quantity and stays country-local. This module reads
-only ``amount_value``; no price column is touched anywhere in it.
+pooled: it is an economic quantity and stays country-local.
 
-A leaf earns a typical mass only if the measured rows agree. The three gates:
+DERIVING the mass reads only ``amount_value``. VALIDATING it has to look at
+price, because the failure that matters is invisible in the amounts: a leaf
+whose measured rows agree beautifully can still have `item` rows drawn from a
+completely different population -- catering crates, cases, bulk sacks -- and
+dividing a crate price by a single-portion mass yields a per-kilo figure that is
+wrong by orders of magnitude. The amounts cannot see this; only the prices can.
+
+A leaf earns a typical mass only if the measured rows agree. The four gates:
 
   * ``insufficient_support`` -- fewer than MIN_SUPPORT measured rows. Too few
     to call the central value typical.
@@ -27,10 +33,19 @@ A leaf earns a typical mass only if the measured rows agree. The three gates:
     against extraction artifacts, deliberately wide: single tea sachets are
     real at a few grams and rice sacks are real at several kilos, so this gate
     should almost never fire on a healthy corpus.
+  * ``implausible_price_ratio`` -- the empirical check. Within a country,
+    compare the unit values the conversion WOULD produce against the ones
+    measured rows actually produce; the ratio is dimensionless, so per-country
+    ratios pool across countries with no FX and no price-level contamination.
+    A leaf whose pooled ratio sits outside RATIO_BOUNDS is not converting, it is
+    fabricating. This is the gate that catches apples (10.1x) and tomatoes
+    (70x), where the `item` rows are wholesale cases rather than single fruit.
 
 Rejected leaves are written to the artifact WITH their reason rather than
 dropped, so the table doubles as the audit of what could not be converted and
-why.
+why. A leaf with no country carrying RATIO_MIN_SIDE rows on both sides gets no
+ratio and is left alone here -- unverifiable is not the same as wrong, and the
+Layer-2 baseline rule is what withholds trust from those rows downstream.
 """
 from __future__ import annotations
 
@@ -40,6 +55,9 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+from prices.enrich.stages.merge import compute_unit_value
+from prices.enrich.stages.prepare import parse_price
 
 logger = logging.getLogger(__name__)
 
@@ -68,8 +86,19 @@ VOLUME_BOUNDS = (0.001, 10.0)
 # standard_unit -> the pricing_basis a converted row should carry.
 UNIT_TO_BASIS = {"kg": "mass", "lt": "volume"}
 
+# Acceptable range for median(derived unit value) / median(measured unit value),
+# pooled over countries. "Within a factor of two" -- generous, because a real
+# typical mass will not be off by that much, and anything worse is a different
+# product population rather than an imprecise average.
+RATIO_BOUNDS = (0.5, 2.0)
+
+# Rows required on EACH side of a country's ratio before it counts. Below this
+# the country contributes nothing rather than a noisy vote.
+RATIO_MIN_SIDE = 5
+
 TABLE_COLS = [
     "coicop_code", "unit", "n", "median_amount", "mad", "robust_cv",
+    "price_ratio", "ratio_countries",
     "accepted", "rejected_reason", "generated_at",
 ]
 
@@ -129,7 +158,7 @@ def derive_typical_mass(df: pd.DataFrame) -> pd.DataFrame:
             "generated_at": generated_at,
         })
 
-    table = pd.DataFrame(rows, columns=TABLE_COLS)
+    table = apply_ratio_gate(pd.DataFrame(rows, columns=TABLE_COLS), df)
     if not table.empty:
         n_ok = int(table["accepted"].sum())
         logger.info(
@@ -137,6 +166,117 @@ def derive_typical_mass(df: pd.DataFrame) -> pd.DataFrame:
             len(table), n_ok, len(table) - n_ok,
         )
     return table
+
+
+def _local_price(df: pd.DataFrame) -> pd.Series:
+    """Local-currency price, whether or not ``price_local`` exists yet.
+
+    The gate runs before the build parses prices, but the same function is
+    useful against an already-finalized frame, so accept either shape.
+    """
+    if "price_local" in df.columns:
+        parsed = pd.to_numeric(df["price_local"], errors="coerce")
+        if parsed.notna().any():
+            return parsed
+    return pd.to_numeric(
+        df.apply(lambda r: parse_price(r.get("price"), r.get("currency")), axis=1),
+        errors="coerce",
+    )
+
+
+def leaf_price_ratios(df: pd.DataFrame, table: pd.DataFrame) -> pd.DataFrame:
+    """Per-leaf median of the per-country derived/measured unit-value ratios.
+
+    Only leaves the amount-based gates already accepted are checked, and only
+    the `item` rows that would ACTUALLY convert -- a leaf in the sold_by_item
+    prior keeps its per-piece rows, so including them here would gate a mass on
+    rows it will never touch.
+    """
+    from prices.build.sold_by_item import is_sold_by_item
+
+    empty = pd.DataFrame(columns=["coicop_code", "price_ratio", "ratio_countries"])
+    if df.empty or table.empty or not table["accepted"].any():
+        return empty
+
+    cand = table[table["accepted"]]
+    mass = {str(r.coicop_code): float(r.median_amount) for r in cand.itertuples()}
+    unit = {str(r.coicop_code): str(r.unit) for r in cand.itertuples()}
+
+    code = df["coicop_code"].astype(str)
+    in_cand = code.isin(mass)
+    convertible = (
+        in_cand
+        & (df["pricing_basis"] == "item")
+        & ~df["coicop_code"].apply(is_sold_by_item)
+    )
+    measured = in_cand & df["pricing_basis"].isin(MEASURED_BASES)
+    sel = convertible | measured
+    if not sel.any():
+        return empty
+
+    sub = df.loc[sel].copy()
+    sub["_code"] = code[sel]
+    sub["_derived"] = convertible[sel].to_numpy()
+    # A convertible row is priced as if it already carried the leaf's typical
+    # amount -- exactly what convert_item_rows would give it.
+    amount = sub["amount_value"].where(~sub["_derived"], sub["_code"].map(mass))
+    basis = sub["pricing_basis"].where(
+        ~sub["_derived"], sub["_code"].map(unit).map(UNIT_TO_BASIS)
+    )
+    sub["_uv"] = pd.to_numeric(pd.Series(
+        [
+            compute_unit_value(p, b, a, c, m)
+            for p, b, a, c, m in zip(
+                _local_price(sub), basis, amount,
+                sub.get("count", pd.Series(index=sub.index, dtype=float)),
+                sub.get("multiplier", pd.Series(index=sub.index, dtype=float)),
+            )
+        ],
+        index=sub.index,
+    ), errors="coerce")
+    sub = sub[sub["_uv"].notna() & (sub["_uv"] > 0)]
+    if sub.empty:
+        return empty
+
+    keys = ["_code", "country"]
+    d = sub[sub["_derived"]].groupby(keys)["_uv"].agg(md="median", nd="size")
+    m = sub[~sub["_derived"]].groupby(keys)["_uv"].agg(mm="median", nm="size")
+    j = d.join(m, how="inner")
+    j = j[(j["nd"] >= RATIO_MIN_SIDE) & (j["nm"] >= RATIO_MIN_SIDE) & (j["mm"] > 0)]
+    if j.empty:
+        return empty
+
+    j["ratio"] = j["md"] / j["mm"]
+    out = j.groupby(level="_code").agg(
+        price_ratio=("ratio", "median"), ratio_countries=("ratio", "size")
+    )
+    return out.reset_index().rename(columns={"_code": "coicop_code"})
+
+
+def apply_ratio_gate(table: pd.DataFrame, df: pd.DataFrame) -> pd.DataFrame:
+    """Demote accepted leaves whose conversion does not reproduce measured prices."""
+    if table.empty:
+        return table
+    table = table.drop(columns=["price_ratio", "ratio_countries"], errors="ignore")
+    table = table.merge(leaf_price_ratios(df, table), on="coicop_code", how="left")
+
+    lo, hi = RATIO_BOUNDS
+    bad = (
+        table["accepted"]
+        & table["price_ratio"].notna()
+        & ((table["price_ratio"] < lo) | (table["price_ratio"] > hi))
+    )
+    if bad.any():
+        table.loc[bad, "rejected_reason"] = [
+            f"implausible_price_ratio (derived/measured={r.price_ratio:.2f} outside "
+            f"{RATIO_BOUNDS} over {int(r.ratio_countries)} countries)"
+            for r in table.loc[bad].itertuples()
+        ]
+        table.loc[bad, "accepted"] = False
+        logger.info(
+            "typical mass: %d leaves demoted by the price-ratio gate", int(bad.sum())
+        )
+    return table[TABLE_COLS]
 
 
 def write_typical_mass(table: pd.DataFrame) -> None:
