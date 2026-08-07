@@ -25,7 +25,13 @@ qa_status precedence (a row wears the first gate it fails):
                          RETAINED and triageable, never shipped
   review_uv_outlier   -> Layer-2 flagged (outlier or thin cell)
   review_fx           -> local unit value fine, but no FX -> no USD
-  trusted             -> all gates pass; ships in the consumable deliverable
+  modelled_estimate   -> every gate passed, but the row is a cost-of-living
+                         city average rather than a shelf price. Its own tier
+                         because for ~90% of these no retail row exists in the
+                         cell to score against, so "passed every gate" would
+                         really mean "was never tested". Ships labelled.
+  trusted             -> all gates pass on an observed retail price; ships in
+                         the consumable deliverable
 """
 from __future__ import annotations
 
@@ -58,10 +64,19 @@ def _status(row) -> str:
     if not row["qa_quantity"]:
         # item-basis with no per-item prior: unknown quantity, quarantined.
         return "review_missing_qty"
-    if not row["qa_uv_inlier"]:
+    modelled = row.get("evidence") == "modelled"
+    # A modelled row whose cell holds no retail row is flagged by Layer-2 for
+    # having no baseline at all, not for failing a comparison -- `uv_outlier`
+    # stays False. Reporting that as `review_uv_outlier` would claim a test that
+    # never ran. Retail rows are untouched by this branch and keep the existing
+    # behaviour exactly.
+    untested = modelled and not row.get("uv_outlier", False)
+    if not row["qa_uv_inlier"] and not untested:
         return "review_uv_outlier"
     if not row["qa_fx"]:
         return "review_fx"
+    if modelled:
+        return "modelled_estimate"
     return "trusted"
 
 

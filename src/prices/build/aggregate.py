@@ -79,6 +79,15 @@ PRODUCTS_INPUT_PARQUET = REPO_ROOT / "data" / "prices" / "enrich" / "products_in
 CSV_CHUNK_SIZE = 50_000
 FX_HISTORY_FLOOR = pd.Timestamp("2024-03-06")
 
+# Cost-of-living aggregators publish a modelled city average per item, not a
+# retailer listing, and several quote it in USD regardless of the country.
+# They are kept rather than dropped -- for nine countries, all of them Pacific
+# island states, they are the only price data that exists -- but they are marked
+# `evidence == "modelled"` and barred from the Layer-2 baseline below. They can
+# be judged against shelf prices; they never judge them. Dropping them instead
+# costs those nine countries and changes no retail verdict either way.
+AGGREGATOR_SOURCES = frozenset({"livingcost", "expatistan", "mylifeelsewhere"})
+
 JOIN_KEYS = ["input_hash"]
 
 CACHE_KEEP_COLS = [
@@ -198,16 +207,36 @@ def _finalize(df: pd.DataFrame) -> pd.DataFrame:
     follows. That is what keeps the change local to this one line.
     """
     df = _require_unit(df)
+    source = df.get("source", pd.Series(index=df.index, dtype=object))
+    df["evidence"] = source.isin(AGGREGATOR_SOURCES).map(
+        {True: "modelled", False: "retail"}
+    )
+    logger.info(
+        "[finalize] %d modelled rows, %d retail rows",
+        int(df["evidence"].eq("modelled").sum()),
+        int(df["evidence"].eq("retail").sum()),
+    )
     df = convert_item_rows(df)
     df = _compute_unit_values(df)
-    # Only rows that measured their own quantity may define what "normal" is in
-    # a cell; a typical-mass conversion is scored against them, never with them.
+    # Two independent restrictions on who defines "normal" in a cell, both for
+    # the same reason -- a population that shares a denominator, or that was
+    # never observed on a shelf, cannot be the yardstick for one that was:
+    #   * only rows that measured their own quantity (a typical-mass conversion
+    #     is scored against them, never with them);
+    #   * only retail rows (a modelled city average is scored against shelf
+    #     prices, never with them).
+    # `currency` is part of the cell key: unit_value_local is comparable only
+    # within one currency, and sources in a single country do not all quote the
+    # same one. Without it a USD-quoting source and a local-currency one pool
+    # into a single median, and whichever is more numerous flags the other as
+    # outliers -- which is the failure William warned about directly.
+    measured = df.get("mass_source", pd.Series(index=df.index, dtype=object)).ne(
+        "derived_typical"
+    )
     df = flag_uv_outliers(
         df,
-        group_cols=("coicop_code", "country", "standard_unit"),
-        baseline_mask=df.get(
-            "mass_source", pd.Series(index=df.index, dtype=object)
-        ).ne("derived_typical"),
+        group_cols=("coicop_code", "country", "standard_unit", "currency"),
+        baseline_mask=measured & df["evidence"].eq("retail"),
     )
     df = df[df["price_local"].notna()].copy()
     df = attach_fx_and_usd(df)

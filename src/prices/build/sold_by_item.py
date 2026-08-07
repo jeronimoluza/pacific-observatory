@@ -101,7 +101,12 @@ def convert_item_rows(df: pd.DataFrame) -> pd.DataFrame:
         return df
     df = df.copy()
 
-    table = derive_typical_mass(df)
+    # The mass table is a retail object. A modelled city average declares no
+    # pack size, and its price must not vote in the ratio gate that decides
+    # whether a leaf converts at all. Conversions are still APPLIED to every
+    # row; only the evidence used to build the table is restricted.
+    basis = df[df["evidence"].eq("retail")] if "evidence" in df.columns else df
+    table = derive_typical_mass(basis)
     write_typical_mass(table)
     typical = accepted_lookup(table)
 
