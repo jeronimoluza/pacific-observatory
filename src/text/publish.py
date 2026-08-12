@@ -385,16 +385,18 @@ def _write_sources_sheet(xw, database_status: dict | None, region: str) -> None:
         pass
 
 
-def _render_fcp_dashboard(region: str, region_json: Path) -> Path | None:
-    """Render the regional Fuel Crisis Policy + EPU HTML if an addon exists."""
+def _render_fcp_dashboard(
+    region: str, region_json: Path, tracker: str | None = None
+) -> Path | None:
+    """Render the regional policy + EPU HTML if an addon exists."""
     from text.plotting.small_dashboard_integrated_w_policy import (
         available_regions,
         generate_dashboard_from_json,
     )
 
-    if region not in available_regions():
+    if region not in available_regions(tracker):
         return None
-    return generate_dashboard_from_json(region_json, region)
+    return generate_dashboard_from_json(region_json, region, tracker)
 
 
 def _refresh_database_status():
@@ -420,7 +422,13 @@ def _refresh_database_status():
         return None
 
 
-def run_publish(region=None, subregion=None, country=None):
+def run_publish(
+    region=None,
+    subregion=None,
+    country=None,
+    tracker=None,
+    skip_database_status=False,
+):
     """Build dashboard_data.json, per-region panels, and EPU dashboards.
 
     Always writes the global ``outputs/text/dashboard_data/dashboard_data.json``
@@ -435,7 +443,11 @@ def run_publish(region=None, subregion=None, country=None):
     click.echo("  Text publish (dashboards)")
     click.echo("  " + "-" * 40)
 
-    database_status = _refresh_database_status()
+    if skip_database_status:
+        click.echo("  Database status: skipped (--skip-database-status)")
+        database_status = None
+    else:
+        database_status = _refresh_database_status()
 
     if not units:
         click.echo("  No units with EPU data found. Run 'po text build' first.")
@@ -492,9 +504,9 @@ def run_publish(region=None, subregion=None, country=None):
         )
 
         try:
-            fcp_html = _render_fcp_dashboard(rgn, region_json)
+            fcp_html = _render_fcp_dashboard(rgn, region_json, tracker)
         except (FileNotFoundError, ValueError) as exc:
-            click.echo(f"  Fuel Crisis Policy dashboard for {rgn}: {exc}")
+            click.echo(f"  Policy dashboard for {rgn}: {exc}")
             continue
         if fcp_html is not None:
             click.echo(f"  Written: {fcp_html.relative_to(PROJECT_ROOT)}")

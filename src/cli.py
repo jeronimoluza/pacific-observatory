@@ -292,11 +292,29 @@ def text_build(
 @_region_opt
 @_subregion_opt
 @_country_opt
-def text_publish(region, subregion, country):
+@click.option(
+    "--tracker",
+    default="fuel",
+    type=click.Choice(["fuel", "food"]),
+    help="Policy-tracker variant for the policy tab. Default: fuel.",
+)
+@click.option(
+    "--skip-database-status",
+    is_flag=True,
+    default=False,
+    help="Skip the slow global database-status refresh.",
+)
+def text_publish(region, subregion, country, tracker, skip_database_status):
     """Generate EPU dashboards and charts."""
     from text.publish import run_publish
 
-    run_publish(region=region, subregion=subregion, country=country)
+    run_publish(
+        region=region,
+        subregion=subregion,
+        country=country,
+        tracker=tracker,
+        skip_database_status=skip_database_status,
+    )
 
 
 @text.command("build-policy-addons")
@@ -312,11 +330,17 @@ def text_publish(region, subregion, country):
     default=None,
     help="Optional chart title embedded in the HTML. Defaults to today's date.",
 )
-def text_build_policy_addons(region, chart_title):
-    """Build Fuel Crisis Policy addon HTMLs from data/text/policy_tracker/<region>.xlsx."""
+@click.option(
+    "--tracker",
+    default="fuel",
+    type=click.Choice(["fuel", "food"]),
+    help="Policy-tracker variant to build. Default: fuel.",
+)
+def text_build_policy_addons(region, chart_title, tracker):
+    """Build policy addon HTMLs from data/text/policy_tracker/<region>.xlsx."""
     from text.plotting.policy_dashboards import build_addons
 
-    build_addons(region=region, chart_title=chart_title)
+    build_addons(region=region, chart_title=chart_title, tracker=tracker)
 
 
 @text.command("status")

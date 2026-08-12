@@ -28,6 +28,13 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from openpyxl import load_workbook
 
+from text.plotting.trackers import (
+    DEFAULT_TRACKER,
+    TRACKERS,
+    addon_filename,
+    workbook_dir,
+)
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_INPUT_DIR = PROJECT_ROOT / "data" / "text" / "policy_tracker"
@@ -1216,7 +1223,11 @@ def find_workbook(input_dir: Path, region_key: str) -> Path:
 
 
 def generate_region(
-    region_cfg: Dict[str, Any], input_dir: Path, output_dir: Path, chart_title: str
+    region_cfg: Dict[str, Any],
+    input_dir: Path,
+    output_dir: Path,
+    chart_title: str,
+    tracker: Optional[str] = None,
 ) -> Dict[str, Any]:
     key = region_cfg["key"]
     display = region_cfg.get("display_name", key)
@@ -1241,7 +1252,7 @@ def generate_region(
     )
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    out_path = output_dir / f"{key}_fuel_crisis_policy_dashboard.html"
+    out_path = output_dir / addon_filename(key, tracker)
 
     if has_v6_columns(rows):
         print("  taxonomy: v6 (Category + Subcategory)")
@@ -1290,9 +1301,10 @@ def build_addons(
     chart_title: Optional[str] = None,
     input_dir: Optional[Path] = None,
     output_dir: Optional[Path] = None,
+    tracker: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Programmatic entry point used by the ``po text build-policy-addons`` CLI."""
-    in_dir = input_dir or DEFAULT_INPUT_DIR
+    in_dir = workbook_dir(input_dir or DEFAULT_INPUT_DIR, tracker)
     out_dir = output_dir or DEFAULT_OUTPUT_DIR
     if not in_dir.exists():
         raise FileNotFoundError(f"Input directory does not exist: {in_dir}")
@@ -1301,7 +1313,7 @@ def build_addons(
     regions = _resolve_regions(only)
     summary: List[Dict[str, Any]] = []
     for region_cfg in regions:
-        summary.append(generate_region(region_cfg, in_dir, out_dir, title))
+        summary.append(generate_region(region_cfg, in_dir, out_dir, title, tracker))
     return summary
 
 
@@ -1340,6 +1352,12 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         help="Editable chart title embedded in each HTML. Defaults to today's date.",
     )
     parser.add_argument(
+        "--tracker",
+        default=DEFAULT_TRACKER,
+        choices=sorted(TRACKERS),
+        help="Policy-tracker variant to build. Default: fuel.",
+    )
+    parser.add_argument(
         "--zip",
         action="store_true",
         help="Also zip all generated HTML files into output-dir.",
@@ -1355,8 +1373,9 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
 
 def main(argv: Optional[List[str]] = None) -> int:
     args = parse_args(argv)
-    if not args.input_dir.exists():
-        print(f"Input directory does not exist: {args.input_dir}", file=sys.stderr)
+    in_dir = workbook_dir(args.input_dir, args.tracker)
+    if not in_dir.exists():
+        print(f"Input directory does not exist: {in_dir}", file=sys.stderr)
         return 2
     title = args.chart_title or dt.date.today().strftime("%-d %B %Y")
 
@@ -1371,7 +1390,9 @@ def main(argv: Optional[List[str]] = None) -> int:
     for region_cfg in regions:
         try:
             summary.append(
-                generate_region(region_cfg, args.input_dir, args.output_dir, title)
+                generate_region(
+                    region_cfg, in_dir, args.output_dir, title, args.tracker
+                )
             )
         except Exception as exc:
             errors.append((region_cfg["key"], str(exc)))

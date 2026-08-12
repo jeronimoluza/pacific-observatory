@@ -13,6 +13,13 @@ from pathlib import Path
 
 import pandas as pd
 
+from text.plotting.trackers import (
+    addon_filename,
+    addon_suffix,
+    get_tracker,
+    tracker_label,
+)
+
 
 EXCLUDE_COUNTRIES = []
 
@@ -29,15 +36,15 @@ def _vendor(name: str) -> str:
     return _VENDOR_CACHE[name]
 
 
-def _addon_path(region: str) -> Path:
-    return ADDONS_DIR / f"{region}_fuel_crisis_policy_dashboard.html"
+def _addon_path(region: str, tracker: str | None = None) -> Path:
+    return ADDONS_DIR / addon_filename(region, tracker)
 
 
-def available_regions() -> list[str]:
+def available_regions(tracker: str | None = None) -> list[str]:
     """Region slugs with an addon HTML in src/text/plotting/addons/."""
     if not ADDONS_DIR.exists():
         return []
-    suffix = "_fuel_crisis_policy_dashboard.html"
+    suffix = addon_suffix(tracker)
     return sorted(
         p.name[: -len(suffix)]
         for p in ADDONS_DIR.iterdir()
@@ -1088,13 +1095,13 @@ def build_epu_iframe_html(
     )
 
 
-def _load_addon_html(region: str) -> str:
-    path = _addon_path(region)
+def _load_addon_html(region: str, tracker: str | None = None) -> str:
+    path = _addon_path(region, tracker)
     if not path.exists():
-        regions = available_regions()
+        regions = available_regions(tracker)
         raise FileNotFoundError(
-            f"Fuel Crisis Policy addon HTML not found for region '{region}': {path}. "
-            f"Available regions: {regions or '(none)'}"
+            f"{tracker_label(tracker)} addon HTML not found for region '{region}': "
+            f"{path}. Available regions: {regions or '(none)'}"
         )
     return path.read_text(encoding="utf-8")
 
@@ -1213,13 +1220,13 @@ body {
             <div class="subtitle">__HOST_SUBTITLE__</div>
         </div>
         <div class="tabs" role="tablist">
-            <label for="r0">Fuel Crisis Policy</label>
+            <label for="r0">__POLICY_TAB_LABEL__</label>
             <label for="r1">Uncertainty Topics</label>
             <label for="r2">Topics EPU</label>
             <label for="r3">Actors EPU</label>
         </div>
     </div>
-    <div class="tab-panel" id="p0"><div class="panel-body"><iframe class="tab-frame" srcdoc='__POLICY_SRCDOC__' title="Fuel Crisis Policy"></iframe></div></div>
+    <div class="tab-panel" id="p0"><div class="panel-body"><iframe class="tab-frame" srcdoc='__POLICY_SRCDOC__' title="__POLICY_TAB_LABEL__"></iframe></div></div>
     <div class="tab-panel" id="p1"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPIC_SRCDOC__' title="Uncertainty Topics"></iframe></div></div>
     <div class="tab-panel" id="p2"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPICS_EPU_SRCDOC__' title="Topics EPU"></iframe></div></div>
     <div class="tab-panel" id="p3"><div class="panel-body"><iframe class="tab-frame" srcdoc='__ACTORS_EPU_SRCDOC__' title="Actors EPU"></iframe></div></div>
@@ -1235,10 +1242,12 @@ def build_host_html(
     actors_epu_html,
     host_title,
     host_subtitle,
+    policy_tab_label="Fuel Crisis Policy",
 ):
     return (
         HOST_TEMPLATE.replace("__HOST_TITLE__", host_title)
         .replace("__HOST_SUBTITLE__", host_subtitle)
+        .replace("__POLICY_TAB_LABEL__", policy_tab_label)
         .replace("__POLICY_SRCDOC__", escape_srcdoc(policy_html))
         .replace("__TOPIC_SRCDOC__", escape_srcdoc(topic_html))
         .replace("__TOPICS_EPU_SRCDOC__", escape_srcdoc(topics_epu_html))
@@ -1287,7 +1296,7 @@ def _resolve_region_label(region_subtree: list, region: str) -> str:
     return region
 
 
-def generate_dashboard_from_json(json_path, region: str):
+def generate_dashboard_from_json(json_path, region: str, tracker: str | None = None):
     """Generate the special EPU+Fuel-Crisis-Policy dashboard for ``region``.
 
     Reads dashboard_data.json, filters units to the region, and writes
@@ -1346,7 +1355,7 @@ def generate_dashboard_from_json(json_path, region: str):
 
     hier_options = _build_hierarchical_options(region_subtree)
 
-    addon_html = _load_addon_html(region)
+    addon_html = _load_addon_html(region, tracker)
     topic_html = build_topic_iframe_html(topic_data, dropdown_options_html=hier_options)
     topics_epu_html = build_epu_iframe_html(
         topics_data,
@@ -1370,8 +1379,10 @@ def generate_dashboard_from_json(json_path, region: str):
     )
 
     region_label = _resolve_region_label(region_subtree, region)
-    host_title = f"{region_label} — Fuel Crisis Policy & EPU Dashboard"
-    host_subtitle = "Fuel crisis policy, uncertainty topics, and EPU views"
+    tracker_cfg = get_tracker(tracker)
+    policy_tab_label = tracker_cfg["label"]
+    host_title = f"{region_label} — {policy_tab_label} & EPU Dashboard"
+    host_subtitle = f"{policy_tab_label.lower()}, uncertainty topics, and EPU views"
 
     out = build_host_html(
         addon_html,
@@ -1380,12 +1391,14 @@ def generate_dashboard_from_json(json_path, region: str):
         actors_epu_html,
         host_title=host_title,
         host_subtitle=host_subtitle,
+        policy_tab_label=policy_tab_label,
     )
 
     project_root = Path(__file__).resolve().parents[3]
     output_dir = project_root / "outputs" / "text" / "dashboards"
     output_dir.mkdir(parents=True, exist_ok=True)
-    dashboard_path = output_dir / f"{region}_policy_dashboard.html"
+    suffix = "" if tracker_cfg["slug"] == "fuel" else f"_{tracker_cfg['slug']}"
+    dashboard_path = output_dir / f"{region}{suffix}_policy_dashboard.html"
     dashboard_path.write_text(out, encoding="utf-8")
     print(f"Created {dashboard_path}")
     return dashboard_path
