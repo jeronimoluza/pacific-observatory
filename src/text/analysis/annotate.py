@@ -30,6 +30,7 @@ from text.analysis.utils import (
     _is_word_boundary,
     load_all_groups,
     load_topics_words,
+    resolved_language,
 )
 
 
@@ -49,6 +50,7 @@ class KeywordBundle:
     epu: dict[str, list[str]]
     topics: dict[str, list[str]]
     actors: dict[str, list[str]]
+    script_language: str = ""
 
     @classmethod
     def for_language(cls, language: str) -> "KeywordBundle":
@@ -58,6 +60,7 @@ class KeywordBundle:
             epu=load_topics_words(language=lang),
             topics=load_all_groups("topics", language=lang),
             actors=load_all_groups("actors", language=lang),
+            script_language=resolved_language(lang, "topics.json"),
         )
 
 
@@ -97,7 +100,13 @@ def _bundle_cache_key(bundle: KeywordBundle) -> tuple:
     )
     topics_key = tuple((k, tuple(v)) for k, v in sorted(bundle.topics.items()))
     actors_key = tuple((k, tuple(v)) for k, v in sorted(bundle.actors.items()))
-    return (bundle.language, epu_key, topics_key, actors_key)
+    return (
+        bundle.language,
+        bundle.script_language or bundle.language,
+        epu_key,
+        topics_key,
+        actors_key,
+    )
 
 
 @lru_cache(maxsize=64)
@@ -109,7 +118,7 @@ def _build_combined_automaton_cached(cache_key: tuple) -> CombinedAutomaton:
     overwrites the prior value, so we must accumulate the FULL list of (tag,
     term) tuples for each word and emit them all on match.
     """
-    language, epu_key, topics_key, actors_key = cache_key
+    language, script_language, epu_key, topics_key, actors_key = cache_key
     categories: list[str] = []
     by_word: dict[str, list[tuple[str, str]]] = {}
 
@@ -138,7 +147,7 @@ def _build_combined_automaton_cached(cache_key: tuple) -> CombinedAutomaton:
     return CombinedAutomaton(
         automaton=A,
         categories=tuple(categories),
-        check_boundaries=language not in NON_SPACE_DELIMITED,
+        check_boundaries=script_language not in NON_SPACE_DELIMITED,
     )
 
 

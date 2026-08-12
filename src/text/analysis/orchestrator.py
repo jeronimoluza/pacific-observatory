@@ -18,9 +18,23 @@ import pandas as pd
 from src.text.analysis import annotate, source_counts
 from src.text.analysis.outputs import build_outputs
 from src.text.analysis.standardize import standardize_unit
-from src.text.analysis.utils import LANGUAGE_ALIASES, load_all_groups
+from src.text.analysis.utils import (
+    LANGUAGE_ALIASES,
+    active_keyword_set,
+    load_all_groups,
+)
 
 KEYWORDS_ROOT = Path(__file__).parent / "keywords"
+
+
+def keyword_pack_root() -> Path | None:
+    """Directory of the active keyword set, or None when the shared pack is used."""
+    name = active_keyword_set()
+    if not name:
+        return None
+    pack = Path(__file__).parent / f"keywords_{name}"
+    return pack if pack.exists() else None
+
 
 _logger = logging.getLogger("po.text.build")
 
@@ -134,7 +148,9 @@ def _ensure_country_source_counts(
     """
     source_keys = sorted(_source_key(fp) for fp in news_dirs)
     languages = _languages_used(source_languages)
-    keyword_hashes = source_counts.keyword_hash_bundle(KEYWORDS_ROOT, languages)
+    keyword_hashes = source_counts.keyword_hash_bundle(
+        KEYWORDS_ROOT, languages, keyword_pack_root()
+    )
 
     sk_to_fp = {_source_key(fp): fp for fp in news_dirs}
 

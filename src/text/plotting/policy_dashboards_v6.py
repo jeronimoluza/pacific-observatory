@@ -153,7 +153,12 @@ def build_v6_dashboard_data(
     return data, colors
 
 
-def make_v6_html(data: Dict[str, Any], chart_title: str) -> str:
+def make_v6_html(
+    data: Dict[str, Any],
+    chart_title: str,
+    page_title: str = "Fuel Crisis Policy Dashboard",
+    chart_aria_subject: str = "fuel-crisis",
+) -> str:
     data_json = json.dumps(data, ensure_ascii=False, indent=2)
     safe_title = json.dumps(chart_title, ensure_ascii=False)
 
@@ -162,7 +167,7 @@ def make_v6_html(data: Dict[str, Any], chart_title: str) -> str:
 <head>
 <meta charset=\"utf-8\" />
 <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />
-<title>Fuel Crisis Policy Dashboard</title>
+<title>{page_title}</title>
 <style>
   html, body {{ margin: 0; padding: 0; background: #f5f6f8; font-family: Calibri, Arial, Helvetica, sans-serif; color: #555; }}
   .page {{ max-width: 1180px; margin: 24px auto; padding: 0 16px 32px; }}
@@ -227,7 +232,7 @@ def make_v6_html(data: Dict[str, Any], chart_title: str) -> str:
     <h1 id=\"chartTitle\" class=\"chart-title\"></h1>
     <div class=\"chart-subtitle\" id=\"subtitle\"></div>
     <div class=\"chart-wrap\">
-      <svg id=\"chart\" aria-label=\"Stacked bar chart of fuel-crisis policy responses by country, category and subcategory\"></svg>
+      <svg id=\"chart\" aria-label=\"Stacked bar chart of {chart_aria_subject} policy responses by country, category and subcategory\"></svg>
       <div id=\"tooltip\" class=\"tooltip\"></div>
     </div>
     <div id=\"legend\" class=\"legend\"></div>

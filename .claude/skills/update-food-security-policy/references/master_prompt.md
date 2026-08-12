@@ -1,4 +1,4 @@
-# Master prompt — Food Security Crisis Policy tracker update
+# Master prompt — Food Security Policy tracker update
 
 This is the research brief for the `update-food-security-policy` skill.
 It governs how the regional Excel workbooks under

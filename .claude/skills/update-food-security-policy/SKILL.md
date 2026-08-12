@@ -1,11 +1,11 @@
 ---
 name: update-food-security-policy
-description: "Update the regional Food Security Crisis Policy trackers and regenerate the per-region addon dashboards that feed `po text publish --tracker food`. Trigger when the user wants to refresh food-security policy data for EAP / ECA / MENAAP / SAR / LAC / SSA, asks to 'update the food security tracker', references `data/text/policy_tracker/food_security/<region>.xlsx`, or wants to publish the Food Security Crisis Policy + EPU dashboard for a region. Orchestrates: (1) research-driven workbook updates per `references/master_prompt.md` (per-country search across food prices, production shocks, trade measures, input costs and climate/weather shocks; two-part demand/consumption typology; SAR excludes AFG/PAK; EAP includes the 12-PIC view), (2) `po text build-policy-addons --region <r> --tracker food` to convert workbooks into HTML addons under `src/text/plotting/addons/`, (3) `po text publish --region <r> --tracker food` to render the final four-tab dashboard. Stops after publish — does NOT modify any other pipeline state."
+description: "Update the regional Food Security Policy trackers and regenerate the per-region addon dashboards that feed `po text publish --tracker food`. Trigger when the user wants to refresh food-security policy data for EAP / ECA / MENAAP / SAR / LAC / SSA, asks to 'update the food security tracker', references `data/text/policy_tracker/food_security/<region>.xlsx`, or wants to publish the Food Security Policy + EPU dashboard for a region. Orchestrates: (1) research-driven workbook updates per `references/master_prompt.md` (per-country search across food prices, production shocks, trade measures, input costs and climate/weather shocks; two-part demand/consumption typology; SAR excludes AFG/PAK; EAP includes the 12-PIC view), (2) `po text build-policy-addons --region <r> --tracker food` to convert workbooks into HTML addons under `src/text/plotting/addons/`, (3) `po text publish --region <r> --tracker food` to render the final four-tab dashboard. Stops after publish — does NOT modify any other pipeline state."
 ---
 
-# Update Food Security Crisis Policy
+# Update Food Security Policy
 
-Refresh the regional Food Security Crisis Policy trackers and rebuild the
+Refresh the regional Food Security Policy trackers and rebuild the
 standalone HTML dashboards that the `publish` command embeds as iframe
 srcdoc.
 
@@ -19,7 +19,7 @@ tracker so the two never overwrite each other.
 
 - Update food-security policy data for one region
   (`eap | eca | menaap | sar | lac | ssa`) or all six.
-- Republish a region's Food Security Crisis Policy + EPU dashboard after
+- Republish a region's Food Security Policy + EPU dashboard after
   research is done.
 - User says "the EAP food security tracker is stale", "regenerate the
   SAR food policy dashboard", "add export bans to the tracker", or
@@ -66,7 +66,7 @@ data/text/policy_tracker/food_security/YYYY-MM-DD/excel/<region>.xlsx   (dated s
 po text build-policy-addons --region <r> --tracker food
    |  (converter: src/text/plotting/policy_dashboards.py)
    v
-src/text/plotting/addons/<region>_food_security_crisis_policy_dashboard.html
+src/text/plotting/addons/<region>_food_security_policy_addon.html
    |
    v
 po text publish --region <r> --tracker food
@@ -75,10 +75,25 @@ po text publish --region <r> --tracker food
 outputs/text/dashboards/<region>_food_security_policy_dashboard.html
 ```
 
+The other three tabs (Uncertainty Topics, Topics EPU, Actors EPU) come
+from a **separate keyword pack**, not from the workbook:
+
+```
+src/text/analysis/keywords_food/<lang>/{topics,actors}.json
+   |  (18 food topics, 11 food actors; en/ is the source of truth)
+   v
+po text build --region <r> --keyword-set food
+   |  (annotator: src/text/analysis/annotate.py)
+   v
+outputs/text/<r>/**/uncertainty_attribution/{topics,actors}.csv
+outputs/text/<r>/**/epu/{topics,actors}_epu.csv
+```
+
 The fuel tracker's paths (`policy_tracker/<region>.xlsx`,
 `<region>_fuel_crisis_policy_dashboard.html`,
 `<region>_policy_dashboard.html`) are untouched by any `--tracker food`
-run.
+run, and the shared keyword pack (`src/text/analysis/keywords/`, 31
+topics / 17 actors) is untouched by any `--keyword-set food` run.
 
 ## Step 1 — Update the workbook
 
@@ -147,11 +162,33 @@ poetry run po text build-policy-addons --region <r> --tracker food
 The converter reads
 `data/text/policy_tracker/food_security/<region>.xlsx`, normalizes alias
 headers, and writes
-`src/text/plotting/addons/<region>_food_security_crisis_policy_dashboard.html`.
+`src/text/plotting/addons/<region>_food_security_policy_addon.html`.
 
 **Verify**: the run printed `included rows: N` with N > 0, no errors,
 and the HTML mtime is fresh
-(`ls -la src/text/plotting/addons/<region>_food_security_*.html`).
+(`ls -la src/text/plotting/addons/<region>_food_security_policy_addon.html`).
+
+## Step 3b — Rebuild the EPU/Topics numbers (only when keywords change)
+
+Skip this on a routine workbook refresh — the three EPU tabs read
+already-computed CSVs. Run it only after editing
+`src/text/analysis/keywords_food/`:
+
+```bash
+poetry run po text build --region <r> --keyword-set food
+```
+
+`--keyword-set food` swaps in `src/text/analysis/keywords_food/` for
+`topics.json` and `actors.json`. `epu.json` (the economic × policy ×
+uncertainty gate) is **not** overridden — it stays shared with the fuel
+pack, so the EPU denominator is identical across trackers.
+
+Resolution is contained: a language missing from `keywords_food/` falls
+back to `keywords_food/en/`, **never** to the shared 31-topic pack. A
+silent mix would produce mismatched topic columns across sources.
+
+**Verify**: `uncertainty_attribution/topics.csv` has 18 `*_framing`
+columns and `actors.csv` has 11, not 31/17.
 
 ## Step 4 — Publish
 
@@ -159,9 +196,9 @@ and the HTML mtime is fresh
 poetry run po text publish --region <r> --tracker food
 ```
 
-Renders the **full four-tab dashboard** — the Food Security Crisis
-Policy tab plus the three EPU/Topics tabs (Uncertainty Topics, Topics
-EPU, Actors EPU), exactly as the fuel dashboard does. Output:
+Renders the **full four-tab dashboard** — the Food Security Policy tab
+plus the three EPU/Topics tabs (Uncertainty Topics, Topics EPU, Actors
+EPU), exactly as the fuel dashboard does. Output:
 `outputs/text/dashboards/<region>_food_security_policy_dashboard.html`.
 
 Add `--skip-database-status` to skip the slow global database-status
@@ -173,10 +210,11 @@ refresh when you only need the dashboard (prototype / iteration runs).
   and the pair is in the closed v6 enum (see `Taxonomy` sheet).
 - Legend shows the 6 v6 categories — not the legacy Label values.
 - Filter pair (Category + cascading Subcategory) is functional.
-- **All four tabs render**: Food Security Crisis Policy, Uncertainty
-  Topics, Topics EPU, Actors EPU.
-- Tab 1 is titled `Food Security Crisis Policy`, not `Fuel Crisis
-  Policy`.
+- **All four tabs render**: Food Security Policy, Uncertainty Topics,
+  Topics EPU, Actors EPU.
+- Tab 1 is titled `Food Security Policy`, not `Fuel Crisis Policy`.
+- The EPU/Topics tabs were built with `--keyword-set food` (18 topics,
+  11 actors), not the shared 31-topic/17-actor pack.
 - SAR has no Afghanistan / Pakistan rows.
 - EAP shows `World Bank PICs only (12)` in the country-view dropdown.
 - Every row whose trigger is a climate/weather shock names that shock in
@@ -190,10 +228,10 @@ refresh when you only need the dashboard (prototype / iteration runs).
 ## Output format (after a full run)
 
 ```
-## Food Security Crisis Policy refresh: <region>
+## Food Security Policy refresh: <region>
 - Workbook: data/text/policy_tracker/food_security/<region>.xlsx  (last edited: <mtime>)
 - Snapshot: data/text/policy_tracker/food_security/YYYY-MM-DD/excel/<region>.xlsx
-- Addon:    src/text/plotting/addons/<region>_food_security_crisis_policy_dashboard.html
+- Addon:    src/text/plotting/addons/<region>_food_security_policy_addon.html
             (rows=<n>, excluded=<n>, countries=<n>)
 - Final:    outputs/text/dashboards/<region>_food_security_policy_dashboard.html
 - New rows: <n>; revised rows: <n>; superseded/excluded: <n>

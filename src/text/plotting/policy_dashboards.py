@@ -32,6 +32,8 @@ from text.plotting.trackers import (
     DEFAULT_TRACKER,
     TRACKERS,
     addon_filename,
+    get_tracker,
+    tracker_label,
     workbook_dir,
 )
 
@@ -1261,7 +1263,12 @@ def generate_region(
         data, colors = build_v6_dashboard_data(
             rows, region_cfg, workbook, sheet_name, excluded, groups, display_names
         )
-        html = make_v6_html(data, chart_title=chart_title)
+        html = make_v6_html(
+            data,
+            chart_title=chart_title,
+            page_title=f"{tracker_label(tracker)} Dashboard",
+            chart_aria_subject=get_tracker(tracker)["aria_subject"],
+        )
         labels_summary = data["categories"]
     else:
         print("  taxonomy: legacy Label")

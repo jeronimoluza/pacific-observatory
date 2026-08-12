@@ -69,20 +69,25 @@ def _sha256_file(path: Path) -> str:
 
 
 def keyword_hash_bundle(
-    keywords_root: Path, languages: Iterable[str]
+    keywords_root: Path, languages: Iterable[str], pack_root: Path | None = None
 ) -> dict[str, dict[str, str]]:
     """Return ``{filename: {language: sha256}}`` covering every language used.
 
     Falls back to ``en`` for languages whose folder lacks a particular file
-    (mirroring the resolution rules in ``utils._resolve_keywords_dir``).
+    (mirroring the resolution rules in ``utils._resolve_keywords_dir``). When
+    ``pack_root`` is given it takes precedence for the files it defines, so a
+    keyword-set switch invalidates the cache.
     """
     out: dict[str, dict[str, str]] = {fname: {} for fname in KEYWORD_FILES}
     seen = set(languages)
     for lang in sorted(seen):
         for fname in KEYWORD_FILES:
-            candidate = keywords_root / lang / fname
+            roots = [keywords_root]
+            if pack_root is not None and (pack_root / "en" / fname).exists():
+                roots = [pack_root]
+            candidate = roots[0] / lang / fname
             if not candidate.exists():
-                candidate = keywords_root / "en" / fname
+                candidate = roots[0] / "en" / fname
             if candidate.exists():
                 out[fname][lang] = _sha256_file(candidate)
     return out

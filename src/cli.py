@@ -262,6 +262,12 @@ def text_collect(
     show_default=True,
     help="Bound on concurrent per-source annotation. Increase for speed; keep at 1 for memory safety.",
 )
+@click.option(
+    "--keyword-set",
+    default=None,
+    type=click.Choice(["food"]),
+    help="Alternate keyword pack (src/text/analysis/keywords_<set>/). Default: shared pack.",
+)
 def text_build(
     region,
     subregion,
@@ -270,6 +276,7 @@ def text_build(
     cutoff_end_date,
     rebuild,
     max_parallel_sources,
+    keyword_set,
 ):
     """Run EPU index calculation and analysis."""
     from text.process import run_build
@@ -285,6 +292,7 @@ def text_build(
         cutoff_end_date=cutoff_end_date,
         rebuild=rebuild,
         max_parallel_sources=max_parallel_sources,
+        keyword_set=keyword_set,
     )
 
 

@@ -14,11 +14,15 @@ TRACKERS = {
     "fuel": {
         "slug": "fuel",
         "label": "Fuel Crisis Policy",
+        "addon_stem": "fuel_crisis_policy_dashboard",
+        "aria_subject": "fuel-crisis",
         "subdir": "",
     },
     "food": {
         "slug": "food_security",
-        "label": "Food Security Crisis Policy",
+        "label": "Food Security Policy",
+        "addon_stem": "food_security_policy_addon",
+        "aria_subject": "food-security",
         "subdir": "food_security",
     },
 }
@@ -36,11 +40,11 @@ def get_tracker(name: str | None) -> dict:
 
 
 def addon_filename(region: str, tracker: str | None = None) -> str:
-    return f"{region}_{get_tracker(tracker)['slug']}_crisis_policy_dashboard.html"
+    return f"{region}_{get_tracker(tracker)['addon_stem']}.html"
 
 
 def addon_suffix(tracker: str | None = None) -> str:
-    return f"_{get_tracker(tracker)['slug']}_crisis_policy_dashboard.html"
+    return f"_{get_tracker(tracker)['addon_stem']}.html"
 
 
 def workbook_dir(base_dir: Path, tracker: str | None = None) -> Path:

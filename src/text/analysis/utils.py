@@ -17,11 +17,15 @@ import ahocorasick
 NON_SPACE_DELIMITED = frozenset(
     {
         "thai",
+        "th",
         "km",
         "lao",
         "chinese_simplified",
         "chinese_traditional",
+        "zh",
         "japanese",
+        "ja",
+        "my",
         "arabic",
         "farsi",
         "hebrew",
@@ -302,6 +306,35 @@ def generate_continous_df(
 
 _FALLBACK_WARNED: set[tuple[str, str]] = set()
 
+_ACTIVE_KEYWORD_SET: str | None = None
+
+
+def set_keyword_set(name: str | None) -> None:
+    """Select an alternate keyword pack directory (`keywords_{name}/`).
+
+    A pack owns every file it defines under its own `en/`. For those files
+    resolution never escapes the pack, so a missing translation falls back to
+    the pack's English rather than silently mixing in the shared pack's groups.
+    """
+    global _ACTIVE_KEYWORD_SET
+    _ACTIVE_KEYWORD_SET = name or None
+
+
+def active_keyword_set() -> str | None:
+    return _ACTIVE_KEYWORD_SET
+
+
+def resolved_language(language: str, filename: str = "topics.json") -> str:
+    """Name of the directory a language's keyword file actually resolves to.
+
+    A source tagged ``zh`` or ``ja`` resolves to a Chinese/Japanese keyword
+    directory when one exists and to ``en`` when it does not. Word-boundary
+    checking has to follow the script of the terms that were loaded, not the
+    tag on the source, or CJK terms get rejected and English fallback terms
+    get matched inside longer words.
+    """
+    return _resolve_keywords_dir(language, filename).name
+
 
 def _resolve_keywords_dir(language: str, filename: str) -> Path:
     """
@@ -313,6 +346,10 @@ def _resolve_keywords_dir(language: str, filename: str) -> Path:
         3. keywords_new/en/{filename}
         4. keywords/en/{filename}
 
+    When a keyword set is active (see `set_keyword_set`) and that set defines
+    `en/{filename}`, only `keywords_{set}/{language}` and `keywords_{set}/en`
+    are considered.
+
     Emits a one-shot stderr warning per (language, filename) when falling back
     to English so missing per-language keyword sets surface during builds.
     """
@@ -320,6 +357,24 @@ def _resolve_keywords_dir(language: str, filename: str) -> Path:
 
     language = LANGUAGE_ALIASES.get(language, language)
     base = Path(__file__).parent
+
+    if _ACTIVE_KEYWORD_SET:
+        pack = base / f"keywords_{_ACTIVE_KEYWORD_SET}"
+        if (pack / "en" / filename).exists():
+            if (pack / language / filename).exists():
+                return pack / language
+            key = (f"{_ACTIVE_KEYWORD_SET}:{language}", filename)
+            if key not in _FALLBACK_WARNED:
+                _FALLBACK_WARNED.add(key)
+                print(
+                    f"WARNING: no {filename} for language '{language}' in "
+                    f"keywords_{_ACTIVE_KEYWORD_SET}/; falling back to English. "
+                    f"Generate per-language keywords with the "
+                    f"`translate-english-keywords` skill.",
+                    file=sys.stderr,
+                )
+            return pack / "en"
+
     for kw_dir_name in ("keywords_new", "keywords"):
         lang_dir = base / kw_dir_name / language
         if (lang_dir / filename).exists():
