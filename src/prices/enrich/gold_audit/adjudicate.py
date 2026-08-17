@@ -104,10 +104,12 @@ def _prompt(pair: list[str], definitions: str, examples: dict[str, list[str]]) -
     lines += [
         "## Output",
         "",
-        "One JSON object per input line, same order:",
-        '`{"gold_row_id": "...", "new_code": "...", "reason": "..."}`',
+        "A single JSON object with one entry per input line, in the same order:",
+        '`{"verdicts": [{"gold_row_id": "...", "new_code": "...", '
+        '"reason": "..."}, ...]}`',
         "",
-        "Keep `reason` to one short clause. Do not skip lines.",
+        "Keep `reason` to one short clause. Return every input line — a missing",
+        "`gold_row_id` is re-asked, which costs a second pass over the same batch.",
     ]
     return "\n".join(lines)
 
@@ -236,9 +238,18 @@ def ingest(run_id: str, verdicts_path: str) -> dict:
     ctrl, m = m[is_control], m[~is_control].copy()
     ctrl_flipped = int((ctrl["new_code"].astype(str) != ctrl["code"].astype(str)).sum())
 
+    # A verdict may name a code outside the two candidates — that is the escape
+    # hatch for "both are wrong" — but the adjudicator sometimes lands on an
+    # intermediate node rather than a leaf (`01.1.8.9` for `01.1.8.9.x`). Those
+    # get their own status so a bulk promotion of `review` can never sweep an
+    # unclassifiable code into gold.
+    valid = coicop_taxonomy.load_taxonomy_index()[0]
+    unusable = ~m["new_code"].astype(str).isin(valid)
+
     changed = m["new_code"].astype(str) != m["code"].astype(str)
     m["status"] = "agree"
     m.loc[changed, "status"] = "review"
+    m.loc[unusable, "status"] = "invalid"
     m["old_code"] = m["code"]
     m["run_id"] = run_id
 
@@ -251,8 +262,9 @@ def ingest(run_id: str, verdicts_path: str) -> dict:
         "run_id": run_id,
         "out": str(out),
         "n_verdicts": int(len(m)),
-        "n_changed": int(changed.sum()),
+        "n_changed": int((changed & ~unusable).sum()),
         "n_agreed": int((~changed).sum()),
+        "n_invalid_code": int(unusable.sum()),
         "confirm_rate": float((~changed).mean()) if len(m) else 0.0,
         "n_controls": int(len(ctrl)),
         "n_control_flips": ctrl_flipped,

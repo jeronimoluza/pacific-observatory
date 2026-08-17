@@ -395,3 +395,14 @@ class TestCorrectionsRoundTrip:
     def test_absent_corrections_dir_is_a_no_op(self, tmp_path):
         out = _apply_corrections(self._gold(), tmp_path)
         assert list(out["code"]) == ["01.1.1", "01.2.2"]
+
+    def test_invalid_status_never_reaches_gold(self, tmp_path):
+        # codex sometimes answers with an intermediate node rather than a leaf;
+        # ingest marks those "invalid" and they must stay inert even if a human
+        # bulk-promotes a round.
+        gold_dir = self._write(
+            tmp_path,
+            [{"gold_row_id": "a", "new_code": "01.1.8.9", "status": "invalid"}],
+        )
+        out = _apply_corrections(self._gold(), gold_dir)
+        assert out.loc[0, "code"] == "01.1.1"

@@ -23,6 +23,7 @@ import click
 
 from prices.enrich.gold_audit import (
     adjudicate,
+    codex_pass,
     experiment,
     neighbors,
     new_run_id,
@@ -135,6 +136,31 @@ def export_command(run_id, division, n, subset, max_pairs, batch_size):
             max_pairs=max_pairs,
         )
     )
+
+
+@gold_audit_group.command("codex")
+@_run_opt
+@click.option(
+    "--only", type=int, default=None, help="Adjudicate a single batch index only."
+)
+@click.option("--model", default=codex_pass.MODEL, show_default=True)
+def codex_command(run_id, only, model):
+    """Run the codex CLI over the exported batches (skips ones already done)."""
+    _echo(codex_pass.run(resolve_run(run_id), only=only, model=model))
+
+
+@gold_audit_group.command("check")
+@_run_opt
+def check_command(run_id):
+    """Score the planted controls. Writes nothing — read this before ingesting."""
+    _echo(codex_pass.report(resolve_run(run_id)))
+
+
+@gold_audit_group.command("collect")
+@_run_opt
+def collect_command(run_id):
+    """Flatten the per-batch verdicts into one JSONL for ``ingest``."""
+    click.echo(str(codex_pass.collect(resolve_run(run_id))))
 
 
 @gold_audit_group.command("ingest")
