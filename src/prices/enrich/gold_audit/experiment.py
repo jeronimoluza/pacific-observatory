@@ -42,7 +42,8 @@ def _rate(mask: pd.Series, errs: pd.Series) -> float:
 
 def _two_by_two(flag: pd.Series, errs: pd.Series) -> dict:
     """Error rate with and without the flag, plus lift and error recall."""
-    flagged, unflagged = flag.fillna(False), ~flag.fillna(False)
+    filled = flag.astype("boolean").fillna(False).astype(bool)
+    flagged, unflagged = filled, ~filled
     r_flag, r_base = _rate(flagged, errs), _rate(unflagged, errs)
     n_errs = int(errs.sum())
     return {

@@ -126,8 +126,12 @@ def build(run_id: str) -> dict:
         "n_rows": int(len(base)),
         "n_oof_scored": int((base["oof_status"] == oof.STATUS_OK).sum()),
         "n_oof_disagrees": int(base["oof_disagrees"].sum()),
-        "n_neighbor_disagrees": int(base["neighbor_disagrees"].fillna(False).sum()),
-        "n_dupe_conflict": int(base["dupe_conflict"].fillna(False).sum()),
+        "n_neighbor_disagrees": int(
+            base["neighbor_disagrees"].astype("boolean").fillna(False).sum()
+        ),
+        "n_dupe_conflict": int(
+            base["dupe_conflict"].astype("boolean").fillna(False).sum()
+        ),
         "n_confusion_pair": int(base["confusion_pair"].sum()),
         "n_confusion_cells": len(pairs),
     }
