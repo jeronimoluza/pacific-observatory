@@ -4,12 +4,21 @@ No LLM is called here. ``export`` writes JSONL batches, an out-of-band labeler
 (codex / gemini / opus, same as the original gold rounds) fills in a verdict per
 line, and ``ingest`` turns the returned file into a corrections CSV.
 
-The payload deliberately gives the adjudicator more than the original pass got.
-The original prompt was ``raw title -> choose COICOP``; here each line also
-carries the plausible candidate codes, their COICOP definitions, nearby
-high-trust gold examples, and the current label presented as a claim to confirm
-or overturn. The point is a *better-informed* second opinion, not a second
-sample of the same process.
+Batches are grouped by dispute pair (see ``batching.py``), so every line in a
+file asks the same binary question and the COICOP definitions load once instead
+of once per row.
+
+**The payload is blind.** It carries the product, the two candidate codes in a
+shuffled order, their definitions, and trusted examples of each — and nothing
+that identifies which candidate is the current gold label. The current label,
+the head's prediction, the neighbourhood majority and the suspicion score are
+all withheld, because any one of them lets the adjudicator infer the model's
+answer and agree with it. That would launder the classifier's own opinion into
+gold and make the retrain look like an improvement it isn't. The verdicts are
+compared against gold at ingest time, where the adjudicator cannot see it.
+
+A verdict may name a code outside the two candidates; ingest accepts it. Forced
+binary choice would hide the case where gold and the head are *both* wrong.
 
 Ingest never replaces a label on its own. Verdicts land in
 ``gold/corrections/{run_id}.csv`` with ``status="review"``, and
@@ -22,38 +31,26 @@ from __future__ import annotations
 
 import json
 
+import numpy as np
 import pandas as pd
 
 from prices.enrich import coicop_taxonomy
 from prices.enrich.gold_audit import (
     BATCH_DIR,
     CORRECTIONS_DIR,
+    batching,
     ensure_run_dir,
+    run_dir,
     score,
 )
 
-DEFAULT_BATCH_SIZE = 200
-N_CANDIDATES = 5
+DEFAULT_BATCH_SIZE = batching.DEFAULT_BATCH_SIZE
 N_EXAMPLES = 5
+MANIFEST_FILE = "manifest.json"
 
 # Rows the adjudicator sees as trusted exemplars: unanimous originally, and the
 # head agrees with them out of fold. Circular if it included suspects.
 TRUSTED_MAX_SCORE = 0.0
-
-
-def _candidates(row: pd.Series) -> list[str]:
-    """Current gold, the head's OOF pick, and the neighbourhood majority."""
-    out = [row.get("code")]
-    for key in ("oof_pred", "neighbor_majority_code", "top1_code"):
-        val = row.get(key)
-        if isinstance(val, str) and val and val != "None":
-            out.append(val)
-    seen, uniq = set(), []
-    for c in out:
-        if isinstance(c, str) and c and c not in seen:
-            seen.add(c)
-            uniq.append(c)
-    return uniq[:N_CANDIDATES]
 
 
 def _trusted_examples(pool: pd.DataFrame, codes: list[str]) -> dict[str, list[str]]:
@@ -65,72 +62,149 @@ def _trusted_examples(pool: pd.DataFrame, codes: list[str]) -> dict[str, list[st
     return out
 
 
-def _payload(row: pd.Series, pool: pd.DataFrame) -> dict:
-    codes = _candidates(row)
+def _payload(row: pd.Series, pair: list[str], rng: np.random.Generator) -> dict:
+    """One blind line: the product and the candidates, in a shuffled order.
+
+    Definitions and examples live in the batch's prompt file, not here — every
+    line in a batch asks the same question, so repeating the reference material
+    forty times is exactly the cost pair-grouping exists to remove."""
+    codes = [pair[i] for i in rng.permutation(len(pair))]
     return {
         "gold_row_id": row["gold_row_id"],
         "product_name": str(row["product_name"]),
         "country": row.get("country"),
-        "current_gold_code": row.get("code"),
         "candidate_codes": codes,
-        "coicop_definitions": coicop_taxonomy.load_coicop_context(frozenset(codes)),
-        "trusted_examples": _trusted_examples(pool, codes),
-        "why_flagged": row.get("reasons", ""),
-        "suspicion_score": float(row.get("suspicion_score", 0.0)),
-        "signals": {
-            "oof_pred": row.get("oof_pred"),
-            "oof_conf": None
-            if pd.isna(row.get("oof_conf"))
-            else float(row["oof_conf"]),
-            "neighbor_majority_code": row.get("neighbor_majority_code"),
-            "purity_at_k": None
-            if pd.isna(row.get("purity_at_k"))
-            else float(row["purity_at_k"]),
-            "original_disagreement": row.get("disagreement_type"),
-        },
     }
+
+
+def _prompt(pair: list[str], definitions: str, examples: dict[str, list[str]]) -> str:
+    """The batch's instruction block: one question, stated once."""
+    lines = [
+        f"# Adjudicate: {pair[0]} vs {pair[1]}",
+        "",
+        "Every product below has been assigned one of two COICOP leaves, and two",
+        "independent checks disagree about which. For each line, decide which leaf",
+        "the product belongs to. You are not told the current label — judge the",
+        "product on its own merits.",
+        "",
+        "If neither candidate is right, answer with the correct COICOP code instead;",
+        "a forced choice between two wrong options is worse than a third answer.",
+        "",
+        "## Candidate definitions",
+        "",
+        definitions,
+        "",
+        "## Confirmed examples of each leaf",
+        "",
+    ]
+    for code in pair:
+        lines.append(f"**{code}**")
+        lines += [f"- {n}" for n in examples.get(code, [])] or ["- (none available)"]
+        lines.append("")
+    lines += [
+        "## Output",
+        "",
+        "One JSON object per input line, same order:",
+        '`{"gold_row_id": "...", "new_code": "...", "reason": "..."}`',
+        "",
+        "Keep `reason` to one short clause. Do not skip lines.",
+    ]
+    return "\n".join(lines)
 
 
 def export(
     run_id: str,
     n: int,
     division: str | None = None,
+    subset: str | None = None,
     batch_size: int = DEFAULT_BATCH_SIZE,
+    max_pairs: int | None = None,
+    control_share: float = batching.CONTROL_SHARE,
 ) -> dict:
-    """Write the top-`n` suspects as JSONL batches under the run's ``batches/``."""
+    """Write pair-grouped, control-seeded JSONL batches under the run's ``batches/``.
+
+    `n <= 0` exports every row in the subset; `max_pairs` keeps only the largest
+    dispute groups, which is how a calibration slice is cut."""
     suspects = score.load(run_id)
     trusted = suspects[suspects["suspicion_score"] <= TRUSTED_MAX_SCORE]
-    picked = score.top(run_id, n, division=division)
+    pool = batching.control_pool(suspects)
+    picked = score.top(run_id, n, division=division, subset=subset)
+
+    plans = batching.plan(
+        picked,
+        pool,
+        batch_size=batch_size,
+        control_share=control_share,
+        max_pairs=max_pairs,
+    )
 
     bdir = ensure_run_dir(run_id) / BATCH_DIR
     bdir.mkdir(parents=True, exist_ok=True)
+    rng = np.random.default_rng(batching.SEED)
 
-    files = []
-    for start in range(0, len(picked), batch_size):
-        chunk = picked.iloc[start : start + batch_size]
-        path = bdir / f"batch_{start // batch_size:03d}.jsonl"
-        path.write_text(
+    manifest = []
+    for i, batch in enumerate(plans):
+        pair = batch["pair"]
+        definitions = coicop_taxonomy.load_coicop_context(frozenset(pair))
+        examples = _trusted_examples(trusted, pair)
+
+        name = f"batch_{i:03d}.jsonl"
+        (bdir / name).write_text(
             "\n".join(
-                json.dumps(_payload(r, trusted), ensure_ascii=False)
-                for _, r in chunk.iterrows()
+                json.dumps(_payload(r, pair, rng), ensure_ascii=False)
+                for _, r in batch["rows"].iterrows()
             )
             + "\n",
             encoding="utf-8",
         )
-        files.append(path.name)
+        prompt_name = f"batch_{i:03d}.md"
+        (bdir / prompt_name).write_text(
+            _prompt(pair, definitions, examples), encoding="utf-8"
+        )
+        manifest.append(
+            {
+                "file": name,
+                "prompt": prompt_name,
+                "pair": pair,
+                "n_lines": int(len(batch["rows"])),
+                "n_real": batch["n_real"],
+                "n_controls": len(batch["control_row_ids"]),
+                "control_expected": batch["control_expected"],
+            }
+        )
 
+    (bdir / MANIFEST_FILE).write_text(
+        json.dumps({"run_id": run_id, "batches": manifest}, indent=2, default=str),
+        encoding="utf-8",
+    )
+
+    ungated = [m["file"] for m in manifest if m["n_controls"] == 0]
     return {
         "run_id": run_id,
         "division": division,
-        "n_requested": n,
-        "n_exported": int(len(picked)),
-        "n_batches": len(files),
+        "subset": subset,
+        "n_selected": int(len(picked)),
+        "n_real_exported": sum(m["n_real"] for m in manifest),
+        "n_controls": sum(m["n_controls"] for m in manifest),
+        "n_batches": len(manifest),
+        "n_pairs": len({tuple(m["pair"]) for m in manifest}),
         "batch_dir": str(bdir),
-        "files": files,
+        "batches_without_controls": ungated,
     }
 
 
 VERDICT_COLS = {"gold_row_id", "new_code"}
+
+
+def _load_manifest(run_id: str) -> dict:
+    path = run_dir(run_id) / BATCH_DIR / MANIFEST_FILE
+    if not path.exists():
+        return {}
+    data = json.loads(path.read_text(encoding="utf-8"))
+    out: dict[str, str] = {}
+    for b in data.get("batches", []):
+        out.update(b.get("control_expected", {}))
+    return out
 
 
 def ingest(run_id: str, verdicts_path: str) -> dict:
@@ -139,7 +213,11 @@ def ingest(run_id: str, verdicts_path: str) -> dict:
     Accepts JSONL or CSV with at least ``gold_row_id`` and ``new_code``. Rows
     whose verdict matches the current gold are recorded as ``status="agree"``
     so the round's confirm rate is measurable; only genuine changes are written
-    as ``status="review"``, awaiting a human flip to ``apply``."""
+    as ``status="review"``, awaiting a human flip to ``apply``.
+
+    Planted controls are scored separately and excluded from the corrections
+    file. A non-zero control flip rate means the adjudicator moved labels that
+    nothing disputed — read the round as unreliable before promoting any row."""
     path = str(verdicts_path)
     if path.endswith(".jsonl"):
         v = pd.DataFrame([json.loads(ln) for ln in open(path) if ln.strip()])
@@ -152,6 +230,11 @@ def ingest(run_id: str, verdicts_path: str) -> dict:
 
     current = score.load(run_id)[["gold_row_id", "code", "product_name"]]
     m = v.merge(current, on="gold_row_id", how="left")
+
+    controls = _load_manifest(run_id)
+    is_control = m["gold_row_id"].astype(str).isin(controls)
+    ctrl, m = m[is_control], m[~is_control].copy()
+    ctrl_flipped = int((ctrl["new_code"].astype(str) != ctrl["code"].astype(str)).sum())
 
     changed = m["new_code"].astype(str) != m["code"].astype(str)
     m["status"] = "agree"
@@ -171,5 +254,8 @@ def ingest(run_id: str, verdicts_path: str) -> dict:
         "n_changed": int(changed.sum()),
         "n_agreed": int((~changed).sum()),
         "confirm_rate": float((~changed).mean()) if len(m) else 0.0,
+        "n_controls": int(len(ctrl)),
+        "n_control_flips": ctrl_flipped,
+        "control_flip_rate": float(ctrl_flipped / len(ctrl)) if len(ctrl) else None,
         "note": "status='review' — flip to 'apply' by hand before retraining",
     }

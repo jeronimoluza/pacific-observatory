@@ -12,7 +12,14 @@ import pandas as pd
 import pytest
 
 from prices.enrich.classifier.dataset import _apply_corrections
-from prices.enrich.gold_audit import neighbors, oof, score, signals
+from prices.enrich.gold_audit import (
+    adjudicate,
+    batching,
+    neighbors,
+    oof,
+    score,
+    signals,
+)
 
 pytestmark = pytest.mark.unit
 
@@ -184,6 +191,176 @@ class TestScoring:
     def test_every_weight_has_a_matching_indicator(self):
         ind = score._indicators(self._signals())
         assert set(ind.columns) == set(score.DEFAULT_WEIGHTS)
+
+
+def _suspects(n_disputed: int = 10, n_clean: int = 8) -> pd.DataFrame:
+    """Disputed rows on one pair, plus undisputed rows eligible as controls."""
+    disputed = pd.DataFrame(
+        {
+            "gold_row_id": [f"d{i}" for i in range(n_disputed)],
+            "product_name": [f"disputed {i}" for i in range(n_disputed)],
+            "code": ["01.1.1"] * n_disputed,
+            "oof_pred": ["01.1.2"] * n_disputed,
+            "oof_correct": [False] * n_disputed,
+            "purity_at_k": [0.2] * n_disputed,
+            "suspicion_score": [5.0] * n_disputed,
+            "neighbor_disagrees": [True] * n_disputed,
+            "oof_disagrees": [True] * n_disputed,
+        }
+    )
+    clean = pd.DataFrame(
+        {
+            "gold_row_id": [f"c{i}" for i in range(n_clean)],
+            "product_name": [f"clean {i}" for i in range(n_clean)],
+            "code": ["01.1.1", "01.1.2"] * (n_clean // 2),
+            "oof_pred": ["01.1.1", "01.1.2"] * (n_clean // 2),
+            "oof_correct": [True] * n_clean,
+            "purity_at_k": [1.0] * n_clean,
+            "suspicion_score": [0.0] * n_clean,
+            "neighbor_disagrees": [False] * n_clean,
+            "oof_disagrees": [False] * n_clean,
+        }
+    )
+    return pd.concat([disputed, clean], ignore_index=True)
+
+
+class TestDisputePair:
+    def test_pair_is_unordered(self):
+        assert batching.dispute_pair("01.2", "01.1") == batching.dispute_pair(
+            "01.1", "01.2"
+        )
+
+    def test_agreement_is_not_a_dispute(self):
+        assert batching.dispute_pair("01.1", "01.1") is None
+
+    def test_missing_prediction_is_not_a_dispute(self):
+        assert batching.dispute_pair("01.1", None) is None
+
+
+class TestControlPool:
+    def test_only_undisputed_pure_rows_qualify(self):
+        pool = batching.control_pool(_suspects())
+        assert set(pool["gold_row_id"]) == {f"c{i}" for i in range(8)}
+
+    def test_impure_neighbourhood_disqualifies_a_control(self):
+        df = _suspects()
+        df.loc[df["gold_row_id"] == "c0", "purity_at_k"] = 0.9
+        assert "c0" not in set(batching.control_pool(df)["gold_row_id"])
+
+    def test_any_suspicion_disqualifies_a_control(self):
+        df = _suspects()
+        df.loc[df["gold_row_id"] == "c1", "suspicion_score"] = 0.5
+        assert "c1" not in set(batching.control_pool(df)["gold_row_id"])
+
+
+class TestPairBatching:
+    def _plan(self, **kw):
+        df = _suspects()
+        picked = df[df["suspicion_score"] > 0]
+        return batching.plan(picked, batching.control_pool(df), **kw)
+
+    def test_rows_are_split_evenly_with_no_runt_batch(self):
+        # 10 rows at batch_size 4 -> three near-equal batches, not 4+4+2
+        plans = self._plan(batch_size=4)
+        assert [b["n_real"] for b in plans] == [4, 3, 3]
+
+    def test_no_batch_carries_more_controls_than_real_rows(self):
+        for b in self._plan(batch_size=4):
+            assert len(b["control_row_ids"]) <= b["n_real"]
+
+    def test_every_batch_carries_controls(self):
+        for b in self._plan(batch_size=4):
+            assert len(b["control_row_ids"]) >= 1
+
+    def test_controls_are_never_reused_across_batches(self):
+        seen = [i for b in self._plan(batch_size=4) for i in b["control_row_ids"]]
+        assert len(seen) == len(set(seen))
+
+    def test_controls_share_the_batch_pair_so_they_blend_in(self):
+        for b in self._plan(batch_size=4):
+            expected = b["control_expected"]
+            assert all(code in b["pair"] for code in expected.values())
+
+    def test_control_ids_are_present_in_the_exported_rows(self):
+        for b in self._plan(batch_size=4):
+            assert set(b["control_row_ids"]) <= set(b["rows"]["gold_row_id"])
+
+    def test_max_pairs_keeps_only_the_largest_disputes(self):
+        df = _suspects()
+        extra = df.iloc[:1].copy()
+        extra["gold_row_id"] = ["rare"]
+        extra["code"] = ["09.9.9"]
+        extra["oof_pred"] = ["09.9.8"]
+        picked = pd.concat([df[df["suspicion_score"] > 0], extra], ignore_index=True)
+        plans = batching.plan(picked, batching.control_pool(df), max_pairs=1)
+        assert {tuple(b["pair"]) for b in plans} == {("01.1.1", "01.1.2")}
+
+    def test_planning_is_deterministic(self):
+        first, second = self._plan(batch_size=4), self._plan(batch_size=4)
+        assert [b["control_row_ids"] for b in first] == [
+            b["control_row_ids"] for b in second
+        ]
+
+
+class TestBlindPayload:
+    def _payload(self, seed: int = 0):
+        row = pd.Series({"gold_row_id": "d0", "product_name": "X", "country": "PHL"})
+        return adjudicate._payload(
+            row, ["01.1.1", "01.1.2"], np.random.default_rng(seed)
+        )
+
+    def test_payload_never_names_the_current_gold_label(self):
+        leaky = {
+            "current_gold_code",
+            "code",
+            "oof_pred",
+            "neighbor_majority_code",
+            "suspicion_score",
+            "signals",
+            "why_flagged",
+        }
+        assert leaky.isdisjoint(self._payload())
+
+    def test_both_candidates_are_offered(self):
+        assert sorted(self._payload()["candidate_codes"]) == ["01.1.1", "01.1.2"]
+
+    def test_candidate_order_is_not_fixed_to_gold_first(self):
+        orders = {tuple(self._payload(s)["candidate_codes"]) for s in range(12)}
+        assert len(orders) == 2
+
+    def test_prompt_carries_the_definitions_and_examples_once(self):
+        text = adjudicate._prompt(
+            ["01.1.1", "01.1.2"], "DEFBLOCK", {"01.1.1": ["ex a"], "01.1.2": []}
+        )
+        assert text.count("DEFBLOCK") == 1
+        assert "ex a" in text
+        assert "(none available)" in text
+
+    def test_prompt_permits_a_third_answer(self):
+        text = adjudicate._prompt(["01.1.1", "01.1.2"], "D", {})
+        assert "neither candidate is right" in text
+
+
+class TestSubsets:
+    def test_both_disagree_needs_two_independent_signals(self):
+        df = pd.DataFrame(
+            {
+                "neighbor_disagrees": [True, True, False, None],
+                "oof_disagrees": [True, False, True, True],
+                "suspicion_score": [5.0, 2.0, 2.0, 2.0],
+            }
+        )
+        assert list(score.SUBSETS["both-disagree"](df)) == [True, False, False, False]
+
+    def test_unknown_subset_is_rejected(self, monkeypatch):
+        monkeypatch.setattr(score, "load", lambda _: _suspects())
+        with pytest.raises(ValueError, match="unknown subset"):
+            score.top("run", 10, subset="nope")
+
+    def test_non_positive_n_means_no_limit(self, monkeypatch):
+        monkeypatch.setattr(score, "load", lambda _: _suspects())
+        assert len(score.top("run", 0, subset="both-disagree")) == 10
+        assert len(score.top("run", 3, subset="both-disagree")) == 3
 
 
 class TestCorrectionsRoundTrip:

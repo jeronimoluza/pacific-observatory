@@ -102,8 +102,40 @@ def load(run_id: str) -> pd.DataFrame:
     return pd.read_parquet(run_dir(run_id) / SUSPECTS_FILE)
 
 
-def top(run_id: str, n: int, division: str | None = None) -> pd.DataFrame:
+def _both_disagree(df: pd.DataFrame) -> pd.Series:
+    """Head and neighbourhood independently contradict the gold label.
+
+    The sharpest subset the experiment found: 54% of these are OOF errors
+    against a 2.4% base, and the two estimators pick the *same* replacement only
+    37% of the time — so they are correlated but not the same opinion twice."""
+    return df["neighbor_disagrees"].astype("boolean").fillna(False) & df[
+        "oof_disagrees"
+    ].astype("boolean").fillna(False)
+
+
+SUBSETS = {
+    "both-disagree": _both_disagree,
+    "any-signal": lambda df: df["suspicion_score"] > 0,
+}
+
+
+def top(
+    run_id: str, n: int, division: str | None = None, subset: str | None = None
+) -> pd.DataFrame:
+    """Highest-scoring suspects, optionally restricted to a division and subset.
+
+    `n <= 0` means no limit — needed when the caller selects whole dispute
+    groups rather than a rank prefix."""
     df = load(run_id)
     if division:
         df = df[df["division"] == division]
-    return df[df["suspicion_score"] > 0].head(n)
+    if subset is None:
+        mask = SUBSETS["any-signal"]
+    elif subset in SUBSETS:
+        mask = SUBSETS[subset]
+    else:
+        raise ValueError(
+            f"unknown subset {subset!r}; expected one of {sorted(SUBSETS)}"
+        )
+    df = df[mask(df)]
+    return df if n <= 0 else df.head(n)

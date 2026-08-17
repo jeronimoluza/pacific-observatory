@@ -10,7 +10,7 @@ Ordinary sequence:
     prices gold-audit signals
     prices gold-audit experiment              # <- decide here whether to spend
     prices gold-audit score
-    prices gold-audit export --n 2000 --division 01
+    prices gold-audit export --subset both-disagree --n 0 --max-pairs 5
     # ... adjudicate the JSONL out of band ...
     prices gold-audit ingest verdicts.jsonl
 """
@@ -103,19 +103,36 @@ def score_command(run_id):
 @_run_opt
 @_division_opt
 @click.option(
-    "--n", default=1000, show_default=True, help="How many suspects to export."
+    "--n", default=1000, show_default=True, help="Suspect cap; 0 means no limit."
+)
+@click.option(
+    "--subset",
+    type=click.Choice(sorted(score.SUBSETS)),
+    default=None,
+    help="Which suspects to draw from (default: any-signal).",
+)
+@click.option(
+    "--max-pairs",
+    type=int,
+    default=None,
+    help="Keep only the N largest dispute pairs — how a calibration slice is cut.",
 )
 @click.option(
     "--batch-size",
     default=adjudicate.DEFAULT_BATCH_SIZE,
     show_default=True,
-    help="Rows per JSONL batch file.",
+    help="Real rows per JSONL batch file, before controls are seeded.",
 )
-def export_command(run_id, division, n, batch_size):
-    """Write enriched re-adjudication batches as JSONL."""
+def export_command(run_id, division, n, subset, max_pairs, batch_size):
+    """Write blind, pair-grouped, control-seeded adjudication batches as JSONL."""
     _echo(
         adjudicate.export(
-            resolve_run(run_id), n, division=division, batch_size=batch_size
+            resolve_run(run_id),
+            n,
+            division=division,
+            subset=subset,
+            batch_size=batch_size,
+            max_pairs=max_pairs,
         )
     )
 
