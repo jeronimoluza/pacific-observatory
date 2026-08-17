@@ -54,21 +54,26 @@ TRUSTED_MAX_SCORE = 0.0
 
 
 def _trusted_examples(pool: pd.DataFrame, codes: list[str]) -> dict[str, list[str]]:
-    """A few unambiguous gold product names per candidate code."""
+    """A few unambiguous gold product names per candidate code.
+
+    Thinned as the batch widens: a two-code batch can afford five exemplars each,
+    a thirty-code bucket cannot without burying the products it is asking about."""
+    n = N_EXAMPLES if len(codes) <= 6 else 3 if len(codes) <= 16 else 2
     out: dict[str, list[str]] = {}
     for code in codes:
-        names = pool.loc[pool["code"] == code, "product_name"].head(N_EXAMPLES)
-        out[code] = [str(n) for n in names]
+        names = pool.loc[pool["code"] == code, "product_name"].head(n)
+        out[code] = [str(x) for x in names]
     return out
 
 
-def _payload(row: pd.Series, pair: list[str], rng: np.random.Generator) -> dict:
-    """One blind line: the product and the candidates, in a shuffled order.
+def _payload(row: pd.Series, rng: np.random.Generator) -> dict:
+    """One blind line: the product and its own candidates, in a shuffled order.
 
-    Definitions and examples live in the batch's prompt file, not here — every
-    line in a batch asks the same question, so repeating the reference material
-    forty times is exactly the cost pair-grouping exists to remove."""
-    codes = [pair[i] for i in rng.permutation(len(pair))]
+    Definitions and examples live in the batch's prompt file, not here — the
+    lines in a batch draw on the same reference material, so repeating it forty
+    times is exactly the cost grouping exists to remove."""
+    cands = list(row["candidates"])
+    codes = [cands[i] for i in rng.permutation(len(cands))]
     return {
         "gold_row_id": row["gold_row_id"],
         "product_name": str(row["product_name"]),
@@ -77,18 +82,20 @@ def _payload(row: pd.Series, pair: list[str], rng: np.random.Generator) -> dict:
     }
 
 
-def _prompt(pair: list[str], definitions: str, examples: dict[str, list[str]]) -> str:
-    """The batch's instruction block: one question, stated once."""
+def _prompt(codes: list[str], definitions: str, examples: dict[str, list[str]]) -> str:
+    """The batch's instruction block: the reference material, stated once."""
     lines = [
-        f"# Adjudicate: {pair[0]} vs {pair[1]}",
+        f"# Adjudicate {len(codes)} COICOP leaves",
         "",
         "Every product below has been assigned one of two COICOP leaves, and two",
-        "independent checks disagree about which. For each line, decide which leaf",
-        "the product belongs to. You are not told the current label — judge the",
-        "product on its own merits.",
+        "independent checks disagree about which. **Each line names its own two",
+        "candidates** in `candidate_codes` — decide which of those two the product",
+        "belongs to. You are not told the current label; judge the product on its",
+        "own merits.",
         "",
         "If neither candidate is right, answer with the correct COICOP code instead;",
         "a forced choice between two wrong options is worse than a third answer.",
+        "Answer with a leaf code, never an intermediate node.",
         "",
         "## Candidate definitions",
         "",
@@ -97,7 +104,7 @@ def _prompt(pair: list[str], definitions: str, examples: dict[str, list[str]]) -
         "## Confirmed examples of each leaf",
         "",
     ]
-    for code in pair:
+    for code in codes:
         lines.append(f"**{code}**")
         lines += [f"- {n}" for n in examples.get(code, [])] or ["- (none available)"]
         lines.append("")
@@ -114,6 +121,16 @@ def _prompt(pair: list[str], definitions: str, examples: dict[str, list[str]]) -
     return "\n".join(lines)
 
 
+def _already_adjudicated(bdir) -> set[str]:
+    """Row ids that already have a verdict, from any earlier round of this run."""
+    vdir = bdir / "verdicts"
+    done: set[str] = set()
+    for f in sorted(vdir.glob("verdict_batch_*.json")) if vdir.exists() else []:
+        for v in json.loads(f.read_text(encoding="utf-8")).get("verdicts", []):
+            done.add(str(v.get("gold_row_id")))
+    return done
+
+
 def export(
     run_id: str,
     n: int,
@@ -122,38 +139,55 @@ def export(
     batch_size: int = DEFAULT_BATCH_SIZE,
     max_pairs: int | None = None,
     control_share: float = batching.CONTROL_SHARE,
+    resume: bool = False,
 ) -> dict:
-    """Write pair-grouped, control-seeded JSONL batches under the run's ``batches/``.
+    """Write grouped, control-seeded JSONL batches under the run's ``batches/``.
 
     `n <= 0` exports every row in the subset; `max_pairs` keeps only the largest
-    dispute groups, which is how a calibration slice is cut."""
+    dispute groups, which is how a calibration slice is cut.
+
+    `resume` drops rows an earlier round already answered and numbers the new
+    files after the existing ones. Without it a second export renumbers from
+    zero, and ``codex_pass.run`` — which skips a batch whose verdict file exists
+    — would match new batches against old verdicts by filename alone."""
     suspects = score.load(run_id)
     trusted = suspects[suspects["suspicion_score"] <= TRUSTED_MAX_SCORE]
     pool = batching.control_pool(suspects)
     picked = score.top(run_id, n, division=division, subset=subset)
 
+    bdir = ensure_run_dir(run_id) / BATCH_DIR
+    bdir.mkdir(parents=True, exist_ok=True)
+
+    kept, offset, prior = picked, 0, []
+    if resume:
+        done = _already_adjudicated(bdir)
+        kept = picked[~picked["gold_row_id"].astype(str).isin(done)]
+        existing = sorted(bdir.glob("batch_*.jsonl"))
+        offset = len(existing)
+        path = bdir / MANIFEST_FILE
+        if path.exists():
+            prior = json.loads(path.read_text(encoding="utf-8")).get("batches", [])
+
     plans = batching.plan(
-        picked,
+        kept,
         pool,
         batch_size=batch_size,
         control_share=control_share,
         max_pairs=max_pairs,
     )
 
-    bdir = ensure_run_dir(run_id) / BATCH_DIR
-    bdir.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(batching.SEED)
 
     manifest = []
-    for i, batch in enumerate(plans):
-        pair = batch["pair"]
-        definitions = coicop_taxonomy.load_coicop_context(frozenset(pair))
-        examples = _trusted_examples(trusted, pair)
+    for i, batch in enumerate(plans, start=offset):
+        codes = batch["codes"]
+        definitions = coicop_taxonomy.load_coicop_context(frozenset(codes))
+        examples = _trusted_examples(trusted, codes)
 
         name = f"batch_{i:03d}.jsonl"
         (bdir / name).write_text(
             "\n".join(
-                json.dumps(_payload(r, pair, rng), ensure_ascii=False)
+                json.dumps(_payload(r, rng), ensure_ascii=False)
                 for _, r in batch["rows"].iterrows()
             )
             + "\n",
@@ -161,13 +195,14 @@ def export(
         )
         prompt_name = f"batch_{i:03d}.md"
         (bdir / prompt_name).write_text(
-            _prompt(pair, definitions, examples), encoding="utf-8"
+            _prompt(codes, definitions, examples), encoding="utf-8"
         )
         manifest.append(
             {
                 "file": name,
                 "prompt": prompt_name,
-                "pair": pair,
+                "group": batch["group"],
+                "codes": codes,
                 "n_lines": int(len(batch["rows"])),
                 "n_real": batch["n_real"],
                 "n_controls": len(batch["control_row_ids"]),
@@ -176,7 +211,9 @@ def export(
         )
 
     (bdir / MANIFEST_FILE).write_text(
-        json.dumps({"run_id": run_id, "batches": manifest}, indent=2, default=str),
+        json.dumps(
+            {"run_id": run_id, "batches": prior + manifest}, indent=2, default=str
+        ),
         encoding="utf-8",
     )
 
@@ -185,11 +222,13 @@ def export(
         "run_id": run_id,
         "division": division,
         "subset": subset,
+        "resume": resume,
         "n_selected": int(len(picked)),
+        "n_new": int(len(kept)),
         "n_real_exported": sum(m["n_real"] for m in manifest),
         "n_controls": sum(m["n_controls"] for m in manifest),
         "n_batches": len(manifest),
-        "n_pairs": len({tuple(m["pair"]) for m in manifest}),
+        "n_groups": len({m["group"] for m in manifest}),
         "batch_dir": str(bdir),
         "batches_without_controls": ungated,
     }

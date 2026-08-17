@@ -276,10 +276,17 @@ class TestPairBatching:
         seen = [i for b in self._plan(batch_size=4) for i in b["control_row_ids"]]
         assert len(seen) == len(set(seen))
 
-    def test_controls_share_the_batch_pair_so_they_blend_in(self):
+    def test_controls_share_the_batch_codes_so_they_blend_in(self):
         for b in self._plan(batch_size=4):
             expected = b["control_expected"]
-            assert all(code in b["pair"] for code in expected.values())
+            assert all(code in b["codes"] for code in expected.values())
+
+    def test_controls_are_asked_a_two_candidate_question_like_real_rows(self):
+        for b in self._plan(batch_size=4):
+            ctrl = b["rows"][b["rows"]["gold_row_id"].isin(b["control_row_ids"])]
+            for _, r in ctrl.iterrows():
+                assert len(set(r["candidates"])) == 2
+                assert r["code"] in r["candidates"]
 
     def test_control_ids_are_present_in_the_exported_rows(self):
         for b in self._plan(batch_size=4):
@@ -293,7 +300,7 @@ class TestPairBatching:
         extra["oof_pred"] = ["09.9.8"]
         picked = pd.concat([df[df["suspicion_score"] > 0], extra], ignore_index=True)
         plans = batching.plan(picked, batching.control_pool(df), max_pairs=1)
-        assert {tuple(b["pair"]) for b in plans} == {("01.1.1", "01.1.2")}
+        assert {tuple(b["codes"]) for b in plans} == {("01.1.1", "01.1.2")}
 
     def test_planning_is_deterministic(self):
         first, second = self._plan(batch_size=4), self._plan(batch_size=4)
@@ -302,12 +309,57 @@ class TestPairBatching:
         ]
 
 
+class TestTailMerging:
+    def _tail_picked(self):
+        """Ten rows, every one a singleton dispute — the shape that would
+        otherwise produce ten batches carrying twenty controls."""
+        df = _suspects()
+        picked = df[df["suspicion_score"] > 0].copy().reset_index(drop=True)
+        picked["code"] = [f"01.1.3.{i}" for i in range(len(picked))]
+        picked["oof_pred"] = [f"01.1.7.{i}" for i in range(len(picked))]
+        return picked, batching.control_pool(df)
+
+    def test_deepest_shared_node_is_the_bucket(self):
+        assert batching.shared_ancestor(("01.1.3.1.1", "01.1.3.1.9")) == "01.1.3.1"
+        assert batching.shared_ancestor(("01.1.2.5.9", "01.1.9.1.2")) == "01.1"
+
+    def test_codes_that_diverge_immediately_still_bucket(self):
+        assert batching.shared_ancestor(("01.1.1.1", "02.2.2.2")) == "01"
+
+    def test_singleton_pairs_merge_into_one_batch(self):
+        picked, pool = self._tail_picked()
+        plans = batching.plan(picked, pool, batch_size=40)
+        assert len(plans) == 1
+        assert plans[0]["n_real"] == 10
+
+    def test_merged_batch_keeps_each_row_on_its_own_two_candidates(self):
+        picked, pool = self._tail_picked()
+        rows = batching.plan(picked, pool, batch_size=40)[0]["rows"]
+        real = rows[~rows["gold_row_id"].isin({"c0", "c1"})]
+        for _, r in real.iterrows():
+            assert sorted(r["candidates"]) == sorted([r["code"], r["oof_pred"]])
+
+    def test_a_fat_pair_still_gets_its_own_batch(self):
+        picked, pool = self._tail_picked()
+        picked.loc[:7, "code"] = "01.1.1.1"
+        picked.loc[:7, "oof_pred"] = "01.1.1.2"
+        plans = batching.plan(picked, pool, batch_size=40, tail_threshold=8)
+        groups = {b["group"] for b in plans}
+        assert "01.1.1.1|01.1.1.2" in groups
+        assert any(g.endswith(".*") for g in groups)
+
+
 class TestBlindPayload:
     def _payload(self, seed: int = 0):
-        row = pd.Series({"gold_row_id": "d0", "product_name": "X", "country": "PHL"})
-        return adjudicate._payload(
-            row, ["01.1.1", "01.1.2"], np.random.default_rng(seed)
+        row = pd.Series(
+            {
+                "gold_row_id": "d0",
+                "product_name": "X",
+                "country": "PHL",
+                "candidates": ["01.1.1", "01.1.2"],
+            }
         )
+        return adjudicate._payload(row, np.random.default_rng(seed))
 
     def test_payload_never_names_the_current_gold_label(self):
         leaky = {

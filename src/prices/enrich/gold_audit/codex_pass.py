@@ -166,7 +166,7 @@ def run(run_id: str, only: int | None = None, model: str = MODEL) -> dict:
                 json.dumps(
                     {
                         "batch": entry["file"],
-                        "pair": entry["pair"],
+                        "group": entry.get("group") or "|".join(entry.get("pair", [])),
                         "model": model,
                         "n_expected": len(wanted),
                         "n_returned": len(verdicts),
@@ -244,7 +244,7 @@ def report(run_id: str) -> dict:
         per_batch.append(
             {
                 "batch": data["batch"],
-                "pair": data["pair"],
+                "group": data.get("group") or "|".join(data.get("pair", [])),
                 "n_real": b_real,
                 "n_overturned": b_changed,
                 "overturn_rate": round(b_changed / b_real, 3) if b_real else None,

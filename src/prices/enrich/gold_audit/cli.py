@@ -124,8 +124,13 @@ def score_command(run_id):
     show_default=True,
     help="Real rows per JSONL batch file, before controls are seeded.",
 )
-def export_command(run_id, division, n, subset, max_pairs, batch_size):
-    """Write blind, pair-grouped, control-seeded adjudication batches as JSONL."""
+@click.option(
+    "--resume",
+    is_flag=True,
+    help="Skip rows already adjudicated and number new batches after the old ones.",
+)
+def export_command(run_id, division, n, subset, max_pairs, batch_size, resume):
+    """Write blind, grouped, control-seeded adjudication batches as JSONL."""
     _echo(
         adjudicate.export(
             resolve_run(run_id),
@@ -134,6 +139,7 @@ def export_command(run_id, division, n, subset, max_pairs, batch_size):
             subset=subset,
             batch_size=batch_size,
             max_pairs=max_pairs,
+            resume=resume,
         )
     )
 
