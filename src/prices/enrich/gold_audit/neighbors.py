@@ -3,8 +3,8 @@
 A gold label that disagrees with the labels of its nearest neighbours in
 embedding space is either a genuinely hard case or a mistake. Either way it is
 worth an adjudicator's attention, and finding it costs nothing: the vectors are
-already on disk under ``_embed_store/``, so this is a matrix multiply, not an
-LLM call.
+already on disk under ``_embed_cache_qwen/``, so this is a matrix multiply, not
+an LLM call.
 
 Neighbours are searched **within a division**. Cross-division neighbours are
 uninformative here — a head only ever chooses among leaves of one division, and
@@ -92,13 +92,18 @@ def compute(
     frames: list[pd.DataFrame] = []
     skipped: dict[str, int] = {}
 
+    # One embed call for the whole gold set, then slice per division.
+    # `embed_names` is row-aligned to its input, but each call re-reads ~1.7 GB
+    # of block cache and rebuilds a 50k-entry lookup — calling it per division
+    # would pay that thirteen times.
+    x_all = embedding.embed_names(gold["product_name"].astype(str).tolist())
+
     for div in wanted:
         part = gold[gold["division"] == div]
         if len(part) < 2:
             skipped[div] = int(len(part))
             continue
-        mat = embedding.embed_names(part["product_name"].astype(str).tolist())
-        idx, sim = _topk_within(mat, k)
+        idx, sim = _topk_within(x_all[part.index.to_numpy()], k)
         frames.append(
             _division_frame(
                 part["code"].to_numpy(dtype=object),
