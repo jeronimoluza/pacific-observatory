@@ -47,11 +47,6 @@ def _eligible(gold: pd.DataFrame, min_support: int) -> pd.Series:
     return status
 
 
-def _division_oof(names: list[str], codes: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    x = embedding.embed_names(names)
-    return train.cross_val_oof(x, codes)
-
-
 def compute(
     run_id: str,
     divisions: list[str] | None = None,
@@ -69,6 +64,12 @@ def compute(
     wanted = divisions or sorted(gold["division"].dropna().unique())
     per_division: dict[str, dict] = {}
 
+    # Embed the whole gold set once, then slice per division. `embed_names`
+    # reads ~1.7 GB of block cache and rebuilds a 50k-entry dict on every call,
+    # and rewrites the cache whenever a name is missing — calling it inside the
+    # division loop would pay both costs thirteen times over.
+    x_all = embedding.embed_names(gold["product_name"].astype(str).tolist())
+
     for div in wanted:
         rows = gold.index[(gold["division"] == div) & (gold["oof_status"] == STATUS_OK)]
         codes = gold.loc[rows, "code"].to_numpy()
@@ -83,8 +84,7 @@ def compute(
             }
             continue
 
-        names = gold.loc[rows, "product_name"].astype(str).tolist()
-        pred, conf = _division_oof(names, codes)
+        pred, conf = train.cross_val_oof(x_all[rows.to_numpy()], codes)
         gold.loc[rows, "oof_pred"] = pred.astype(str)
         gold.loc[rows, "oof_conf"] = conf
         per_division[div] = {
