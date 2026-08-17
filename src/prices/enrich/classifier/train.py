@@ -8,7 +8,8 @@ own `tau` so prediction never depends on a stale config default.
 
 Operating point config E (global tau + trap vetoes) reproduces ~98% precision at
 ~82% coverage in 5-fold CV on the food/bev gold. Persists one joblib bundle
-{clf, classes, tau, division}.
+{clf, classes, tau, division} plus `oof.parquet` — the out-of-fold predictions
+those same folds produced, which the gold audit reads.
 """
 
 from __future__ import annotations
@@ -17,11 +18,12 @@ import time
 
 import joblib
 import numpy as np
+import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 
 from prices.enrich import config, embedding
-from prices.enrich.classifier import MODEL_FILE, version_dir
+from prices.enrich.classifier import MODEL_FILE, OOF_FILE, version_dir
 from prices.enrich.classifier.dataset import load_table
 
 C_INV_REG = 10.0
@@ -40,7 +42,12 @@ def _global_tau(conf: np.ndarray, correct: np.ndarray, target: float) -> float:
     return float(conf[order][ok[-1]]) if len(ok) else 1.01
 
 
-def _derive_tau(x: np.ndarray, y: np.ndarray) -> float:
+def cross_val_oof(x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Out-of-fold `(pred, conf)` over the tau-setting fold split.
+
+    Exposed so the gold audit scores labels against the *same* folds that set
+    `tau`; a second StratifiedKFold elsewhere would drift from the frontier the
+    audit reports against."""
     skf = StratifiedKFold(OOF_FOLDS, shuffle=True, random_state=OOF_SEED)
     pred = np.empty(len(y), object)
     conf = np.zeros(len(y))
@@ -49,7 +56,12 @@ def _derive_tau(x: np.ndarray, y: np.ndarray) -> float:
         p = lr.predict_proba(x[te])
         pred[te] = lr.classes_[p.argmax(1)]
         conf[te] = p.max(1)
-    return _global_tau(conf, pred == y, TARGET_PRECISION)
+    return pred, conf
+
+
+def _derive_tau(x: np.ndarray, y: np.ndarray) -> tuple[float, np.ndarray, np.ndarray]:
+    pred, conf = cross_val_oof(x, y)
+    return _global_tau(conf, pred == y, TARGET_PRECISION), pred, conf
 
 
 def fit(version: str) -> dict:
@@ -65,7 +77,7 @@ def fit(version: str) -> dict:
     embed_secs = time.time() - t0
 
     t0 = time.time()
-    tau = _derive_tau(x, y)
+    tau, oof_pred, oof_conf = _derive_tau(x, y)
     clf = LogisticRegression(max_iter=MAX_ITER, C=C_INV_REG).fit(x, y)
     fit_secs = time.time() - t0
 
@@ -81,6 +93,14 @@ def fit(version: str) -> dict:
     vdir = version_dir(version)
     vdir.mkdir(parents=True, exist_ok=True)
     joblib.dump(bundle, vdir / MODEL_FILE)
+    pd.DataFrame(
+        {
+            "name": names,
+            "label": y,
+            "oof_pred": oof_pred.astype(str),
+            "oof_conf": oof_conf,
+        }
+    ).to_parquet(vdir / OOF_FILE, index=False)
 
     return {
         "version": version,

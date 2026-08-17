@@ -21,6 +21,9 @@ LATEST_POINTER = MODELS_DIR / "latest.txt"
 
 MODEL_FILE = "model.joblib"
 TRAIN_FILE = "train.parquet"
+# Out-of-fold predictions from the same folds that set `tau`, kept so the gold
+# audit can score labels against the operating point actually in force.
+OOF_FILE = "oof.parquet"
 MANIFEST_FILE = "training_manifest.json"
 EVAL_METRICS_FILE = "eval_metrics.json"
 

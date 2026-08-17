@@ -1,0 +1,128 @@
+"""``prices gold-audit {oof,neighbors,signals,experiment,score,export,ingest}``.
+
+The stages run in that order and chain through the ``latest`` run pointer, so
+after ``oof`` starts a run the rest can be invoked without repeating ``--run``.
+
+Ordinary sequence:
+
+    prices gold-audit oof                     # slow: one head per division
+    prices gold-audit neighbors               # slow: kNN over the embed store
+    prices gold-audit signals
+    prices gold-audit experiment              # <- decide here whether to spend
+    prices gold-audit score
+    prices gold-audit export --n 2000 --division 01
+    # ... adjudicate the JSONL out of band ...
+    prices gold-audit ingest verdicts.jsonl
+"""
+
+from __future__ import annotations
+
+import json
+
+import click
+
+from prices.enrich.gold_audit import (
+    adjudicate,
+    experiment,
+    neighbors,
+    new_run_id,
+    oof,
+    resolve_run,
+    score,
+    signals,
+    write_latest,
+)
+
+
+def _echo(payload: dict) -> None:
+    click.echo(json.dumps(payload, indent=2, default=str))
+
+
+_run_opt = click.option(
+    "--run", "run_id", default=None, help="Audit run id (default: latest)."
+)
+_division_opt = click.option(
+    "--division", default=None, help="Restrict to one COICOP division (default: all)."
+)
+
+
+@click.group("gold-audit")
+def gold_audit_group():
+    """Find likely-wrong gold labels without relabeling the whole corpus."""
+
+
+@gold_audit_group.command("oof")
+@_division_opt
+@click.option("--run", "run_id", default=None, help="Reuse an existing run id.")
+def oof_command(division, run_id):
+    """Fit a throwaway head per division; persist out-of-fold predictions."""
+    rid = run_id or new_run_id()
+    result = oof.compute(rid, divisions=[division] if division else None)
+    write_latest(rid)
+    _echo(result)
+
+
+@gold_audit_group.command("neighbors")
+@_run_opt
+@_division_opt
+@click.option(
+    "-k", default=neighbors.DEFAULT_K, show_default=True, help="Neighbours per row."
+)
+def neighbors_command(run_id, division, k):
+    """Compute local embedding-neighbourhood agreement for every gold row."""
+    rid = resolve_run(run_id)
+    _echo(neighbors.compute(rid, k=k, divisions=[division] if division else None))
+
+
+@gold_audit_group.command("signals")
+@_run_opt
+def signals_command(run_id):
+    """Join OOF, neighbourhood, provenance and duplicate signals."""
+    _echo(signals.build(resolve_run(run_id)))
+
+
+@gold_audit_group.command("experiment")
+@_run_opt
+@click.option(
+    "--json", "as_json", is_flag=True, help="Emit raw JSON instead of the table."
+)
+def experiment_command(run_id, as_json):
+    """Test whether neighbourhood disagreement predicts out-of-fold error."""
+    result = experiment.run(resolve_run(run_id))
+    _echo(result) if as_json else click.echo(experiment.format_report(result))
+
+
+@gold_audit_group.command("score")
+@_run_opt
+def score_command(run_id):
+    """Rank every gold row by suspicion score."""
+    _echo(score.rank(resolve_run(run_id)))
+
+
+@gold_audit_group.command("export")
+@_run_opt
+@_division_opt
+@click.option(
+    "--n", default=1000, show_default=True, help="How many suspects to export."
+)
+@click.option(
+    "--batch-size",
+    default=adjudicate.DEFAULT_BATCH_SIZE,
+    show_default=True,
+    help="Rows per JSONL batch file.",
+)
+def export_command(run_id, division, n, batch_size):
+    """Write enriched re-adjudication batches as JSONL."""
+    _echo(
+        adjudicate.export(
+            resolve_run(run_id), n, division=division, batch_size=batch_size
+        )
+    )
+
+
+@gold_audit_group.command("ingest")
+@click.argument("verdicts", type=click.Path(exists=True, dir_okay=False))
+@_run_opt
+def ingest_command(verdicts, run_id):
+    """Turn returned verdicts into a reviewable gold corrections CSV."""
+    _echo(adjudicate.ingest(resolve_run(run_id), verdicts))
