@@ -24,6 +24,7 @@ import click
 from prices.enrich.gold_audit import (
     adjudicate,
     codex_pass,
+    leaf_audit,
     experiment,
     neighbors,
     new_run_id,
@@ -175,3 +176,28 @@ def collect_command(run_id):
 def ingest_command(verdicts, run_id):
     """Turn returned verdicts into a reviewable gold corrections CSV."""
     _echo(adjudicate.ingest(resolve_run(run_id), verdicts))
+
+
+@gold_audit_group.command("leaf-export")
+@_run_opt
+@click.option("--division", default="01", show_default=True)
+def leaf_export_command(run_id, division):
+    """Write one definition-check batch per COICOP leaf."""
+    _echo(leaf_audit.export(resolve_run(run_id), division=division))
+
+
+@gold_audit_group.command("leaf-codex")
+@_run_opt
+@click.option("--jobs", default=4, show_default=True, help="Parallel codex processes.")
+@click.option("--limit", type=int, default=None, help="Only the first N leaves.")
+@click.option("--model", default=None)
+def leaf_codex_command(run_id, jobs, limit, model):
+    """Run codex over the leaf batches, `jobs` at a time (resumable)."""
+    _echo(leaf_audit.run(resolve_run(run_id), jobs=jobs, model=model, limit=limit))
+
+
+@gold_audit_group.command("leaf-report")
+@_run_opt
+def leaf_report_command(run_id):
+    """Score planted foreigners, rank leaves by rejection rate. Writes nothing."""
+    _echo(leaf_audit.report(resolve_run(run_id)))
