@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: otto_de
+url: https://www.otto.de/
+language: de
+currency: EUR
+cadence: weekly
+channel: dept-store
+notes: |
+  Otto.de — large German general-merchandise department-store retailer.
+  Verified live 2026-08-17: real EUR prices server-rendered in category
+  listing HTML (Svelte SSR components), no WAF challenge on listing pages.
+
+  Two structural limits, both confirmed live 2026-08-17:
+  - Pagination is client-state/JS only: the page-2/3/... controls are
+    `<button>` elements with no href, and `?page=2` silently re-renders
+    page 1 (identical data-product-id set observed on both).
+  - Product detail pages ARE behind Kasada bot-protection (KPSDK challenge,
+    HTTP 400 on a plain HTTP fetch) even though category listing pages are
+    not, so there is no PDP fallback for price data.
+  Each category listing page also only server-renders price for its first
+  ~18-27 cards; the rest of that page's ~88 cards are lazy-load placeholders
+  (name/url present, price absent) that never populate over plain HTTP.
+
+  Given both limits, this scopes to 30 leaf categories x one page each (the
+  only page reachable) spanning apparel (women's/men's), major household
+  appliances, furniture, toys, tools, auto accessories, watches, camping,
+  home textiles, garden, office supplies, decor, bags, e-bikes and personal
+  care — kept only cards with a real price attached. [row count pending
+  full scrape]

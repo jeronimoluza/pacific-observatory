@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: katapulk_cu
+url: https://www.katapulk.com/cu/home
+language: es
+currency: USD
+cadence: weekly
+channel: marketplace
+notes: |
+  Diaspora remittance/delivery marketplace: ships to Cuba, priced in USD for
+  the sending (non-Cuban) buyer. This is a real, usable Cuba price signal
+  but it is NOT a domestic Cuban retail price in CUP -- do not treat rows
+  from this source as domestic CUP retail.
+
+  Live re-verified 2026-08-17: the Angular Universal SSR shell serves zero
+  structured price data on PDPs. Catalog is enumerable via /sitemap.xml
+  (254 distinct /cu/products/<slug> URLs). Each slug resolves via
+  api-services.katapulk.com/api/v2/Catalog/Search/ProductDetails (curl_cffi
+  chrome124; plain HTTP gets the empty Angular shell) -- sample: "Gonher Sae
+  Mineral Motor Oil 15W40 CJ (946 ml)" USD 6.16.
+
+  Smoke run: 60/60 rows, 0 null product_name, 0 null price, single currency
+  USD. Full scrape still pending (orchestrator-queued).

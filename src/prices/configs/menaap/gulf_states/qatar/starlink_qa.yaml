@@ -1,0 +1,40 @@
+scaffolding: spider
+spider: starlink_qa
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://starlink.qa/
+language: en
+currency: QAR
+cadence: weekly
+notes: |
+  Starlink Qatar electronics/mobile retailer. Shopify-backed (gid://shopify/
+  object IDs) but the storefront is a custom Vue/Quasar app that overrides
+  the standard JSON storefront routes — /products.json returns app-shell
+  HTML, not JSON, and the underlying starlink1.myshopify.com store 401s.
+  Not a ShopifyBaseSpider candidate for this reason; standalone spider.
+  robots.txt open, no ClaudeBot/anthropic-ai disallow.
+  Enumerability: every /en/collections/<handle> page server-renders
+  window.__INITIAL_STATE__ with the full Shopify Storefront GraphQL
+  response for that collection. Confirmed live 2026-08-17: ?page=N is
+  ignored server-side at EVERY level — /collections/all page=1/2/3 return
+  identical 20-item sets, and this holds inside a single category too
+  (mobile-phones page=1/2/3 identical) — so within-category pagination is a
+  dead end here, the same trap this wave is watching for. The catalog is
+  still walkable by CATEGORY, not by page: the site's own allCategoriesMenu
+  lists 123 real leaf handles, and each one SSRs a genuinely distinct
+  ~20-item slice (confirmed: /collections/all vs /collections/mobile-phones
+  share only 7/20 handles; mobile-phones vs laptops vs accessories are all
+  disjoint samples). Caveat: each category caps at its SSR'd first page
+  (~17-20 items) with no way found to page deeper within a category, so
+  total addressable catalog via this route is bounded by 123 categories x
+  ~20 items minus cross-category overlap, not the site's true full catalog.
+  Prices verified sane (Apple EarPods USB-C QAR 69, Apple Watch Ultra 3 QAR
+  2949, Samsung Galaxy Z Fold8 Ultra QAR 8349) — plain decimal QAR amounts,
+  not minor units. currencyCode is null in this tenant's GraphQL response so
+  currency is hardcoded QAR from the site's own displayed prices.
+  Smoke test (--max-items 60) returned 64 rows (closespider fires slightly
+  over the cap), 0 null names/prices, 1 currency (QAR), 64/64 distinct
+  product_id, price range QAR 15.00-14999.00. Full 123-category walk is NOT
+  run here — orchestrator queues it.

@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: fravega_ar
+url: https://www.fravega.com/
+language: es
+currency: ARS
+cadence: weekly
+channel: electronics
+notes: |
+  Electronics/appliances chain, independent VTEX tenant. Live re-verified 2026-08-17:
+  products/search?_from=0&_to=4 -> HTTP 206, real JSON (e.g. 'Aire Acondicionado Split
+  Frio/Calor Hisense 3400W'). Currency ARS, matches countries.yaml. Full scrape: <ROWS> rows.

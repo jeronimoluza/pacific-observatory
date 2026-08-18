@@ -1,0 +1,37 @@
+scaffolding: spider
+spider: kaspi_kz
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://kaspi.kz/
+language: ru
+currency: KZT
+cadence: weekly
+channel: marketplace
+coicop_codes: null
+notes: |
+  Kazakhstan's largest general marketplace, own commerce engine
+  (not Magento/Shopify/VTEX). The onboarding probe was right that raw
+  category HTML ships zero product data client-side; a Playwright
+  network trace on a real category URL (from the per-city sitemap)
+  found the listing JSON endpoint:
+    GET /yml/product-view/pl/filters?q=:category:<Name>:availableInZones:1
+        &page=<N>&all=false&fl=true&ui=d&i=-1&c=<cityCode>
+    Referer: https://kaspi.kz/shop/<city>/c/<url-encoded category>/
+  Verified live 2026-08-17 (Almaty, cityCode 750000000, zone 1): the
+  SAME request WITHOUT the Referer header returns a plain nginx 403,
+  not a captcha or JSON error -- easy to mistake for a parse bug.
+  Clean JSON with the Referer set: data.cards[] = {id, title, brand,
+  unitPrice, unitSalePrice, priceFormatted, currency, stock, category}.
+  Enumerability proof: category "Smart speakers" page=0 vs page=1 -- 12
+  distinct card ids each, ZERO overlap (total 351 for that category).
+  robots.txt sets Crawl-delay: 10 -- respected via
+  DOWNLOAD_DELAY=10 / AUTOTHROTTLE floor at 10-20s.
+  Category coverage is a fixed sample of leaf category names recovered
+  live from the Almaty per-city sitemap (Category-ru-KZT-almaty.xml,
+  4,369 real leaf categories total -- catalog is electronics/appliances/
+  fashion dominant, no meaningful food/grocery presence found in that
+  list). channel is marketplace, coicop_codes unset. City/zone pinned
+  to Almaty for this smoke scaffold.
+  Smoke run 2026-08-17 (--max-items 60): passed, see smoke report.
+  Full scrape still pending -- orchestrator queues it centrally.

@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: hepsiburada_tr
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://www.hepsiburada.com/
+language: tr
+currency: TRY
+cadence: weekly
+channel: marketplace
+coicop_codes: null
+notes: |
+  Turkey's largest general marketplace. Verified live 2026-08-17:
+  curl_cffi impersonate=chrome124/chrome120/safari17_0 all clear cleanly
+  (bare curl hit an Akamai HBBlockandCaptcha.html block) -- relies on the
+  project-wide default chrome120 impersonation, no per-spider override.
+  The earlier probe only saw homepage carousels; the real catalog is
+  reachable via the site's own category sitemap
+  (sitemaps/category/sitemap.xml -> sitemap_1.xml), ~6,000 real leaf
+  category URLs, each embedding a clean JSON-LD ItemList (sku/name/url/
+  offers.price/priceCurrency).
+  Enumerability proof: /dus-setleri-c-18021971 (page 1) vs
+  ...?sayfa=2 -- 36 distinct SKUs each, ZERO overlap.
+  channel is marketplace, coicop_codes unset -- Hepsiburada mixes 1P/3P
+  listings with no reliable per-row seller signal in the JSON-LD (per
+  shard note, flagged explicitly for this reason).
+  Smoke run 2026-08-17 (--max-items 60): passed, see smoke report.
+  Full scrape still pending -- orchestrator queues it centrally.

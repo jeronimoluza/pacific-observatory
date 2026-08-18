@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kellysbahamas_bs
+url: https://www.kellysbahamas.com/
+language: en
+currency: BSD
+cadence: weekly
+channel: dept-store
+notes: |
+  General-merchandise department store (housewares, hardware, electronics,
+  toys, sporting goods) -- no dedicated grocery department found in the
+  live nav (/c/departments lists automotive, baby, building supplies,
+  china, electric/general housewares, hardware, home decor, lawn/garden,
+  linens, office/school, outdoor living, paint, plumbing, seasonal,
+  sporting goods, toys). Not F&B-bearing; coicop_codes intentionally unset
+  (wide, non-food catalog).
+
+  Live re-verified 2026-08-17: /products and the sitemap's stale category
+  URLs (one silently 200-redirects to the homepage) carry no price data,
+  confirming the onboarding probe's read. The reliable path is the site's
+  own schema.org SearchAction endpoint, /s?keywords=<term>&page=N, which is
+  plain server-rendered HTML. Enumerability proof: keywords=food page=1 vs
+  page=2 return 36 + 36 fully disjoint SKUs (sample page1 SKU 1515-95506 vs
+  page2 SKU 1510-57040). This spider seeds one query per department name
+  since there is no single "browse everything" listing.
+
+  Smoke run: 60/60 rows, 0 null product_name, 0 null price, single currency
+  BSD (B$, pegged 1:1 to USD). PDP url is a best-effort search-query
+  reconstruction, not the true /pd/<slug>/<id> path (not captured by the
+  search-result regex). Full scrape still pending (orchestrator-queued).

@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: max_gt
+url: https://www.max.com.gt/
+language: es
+currency: GTQ
+cadence: weekly
+channel: dept-store
+notes: |
+  Max Guatemala (Grupo Distelsa), general-merchandise retailer --
+  electronics, appliances, furniture, toys across 22 departments
+  (linea-blanca, celulares, muebles, videojuegos, ...), not narrowly
+  home-improvement despite one "mejora-del-hogar" department. Re-verified
+  live 2026-08-17: Next.js storefront; category listing pages embed a
+  productsList array in __NEXT_DATA__.props.pageProps.productsList but it
+  carries no price -- real price is on the individual product detail page
+  at props.pageProps.product.cachedPrices.salesPrice (fallback
+  regularPrice). Two-hop spider: category page for the slug universe,
+  then one request per /producto/<slug>.
+  In-category ?page=2/?p=2 pagination did NOT change results (client-side
+  listing runs on Constructor.io, cnstrc.com, not URL-drivable).
+  Enumerability instead proven across the site's 590 real leaf categories
+  (server-sitemap.xml): two distinct leaf categories
+  (linea-blanca/refrigeracion/vineras, celulares/accesorios/protectores-
+  de-pantalla) returned fully disjoint SKU sets. Category discovery
+  samples those leaves at stride 12. Real GTQ prices confirmed, e.g.
+  salesPrice 5299 GTQ for a 19-cubic-foot refrigerator. Smoke run: 60
+  rows requested, see collect output for actual count.
+  FULL SCRAPE STILL PENDING -- this manifest only covers the smoke test.

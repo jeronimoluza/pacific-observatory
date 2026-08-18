@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sodimac_cl
+url: https://www.sodimac.cl/sodimac-cl/
+language: es
+currency: CLP
+cadence: weekly
+channel: home-improvement
+notes: |
+  Sodimac Chile, the Falabella Group hardware/home-improvement banner.
+  Re-verified live 2026-08-17: same Falabella Next.js SSR platform as
+  falabella_cl.py (business unit SO_COM instead of FA_COM) -- category
+  listing pages embed the full result set in __NEXT_DATA__.props.pageProps
+  .results, ?page=N advances. Category discovery samples the site's own
+  category sitemap (categories_cl_SO_COM-0.xml, 1150 leaf categories) at
+  stride 25.
+  Enumerability proven on CATG36366 (Brocas): page 1 returned 51 unique
+  productIds, page 2 returned 52 unique productIds, only 2 in common.
+  Real CLP prices confirmed, e.g. eventPrice 15.990 CLP for a drill-bit
+  set. Smoke run: 60 rows requested, see collect output for actual count.
+  FULL SCRAPE STILL PENDING -- this manifest only covers the smoke test.

@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: olx_pk
+url: https://www.olx.com.pk/
+language: en
+currency: PKR
+cadence: weekly
+channel: marketplace
+notes: |
+  Verified live 2026-08-17: OLX Pakistan — peer-to-peer classifieds
+  (mixed catalog: electronics, mobiles, furniture, fashion, vehicles,
+  property, jobs, services). Real SSR PKR listing prices confirmed
+  ("Rs 60,000" plain, or "Rs 1.48 Lac" / "Rs X Crore" for higher-value
+  items — lakh/crore parsed to numeric PKR in-spider). Scoped in-spider to
+  18 consumer-goods top-level categories only (electronics, appliances,
+  computers, cameras, fashion, footwear, clothes, furniture, home decor,
+  musical instruments, books, kids gear, sports, pets, beauty, gym,
+  gaming) — vehicles, real estate, jobs and services excluded as out of
+  scope for a retail price basket (used vehicles are covered separately
+  by pakwheels.com). Pagination via `?page=N`, capped at 60 pages/category
+  (raised from an initial 8-page smoke cap once bench numbers showed
+  large time-budget headroom); each category self-limits once its real
+  page depth is exhausted (stops as soon as a page returns 0 cards).
+  channel=marketplace (peer-to-peer, not a single storefront) — no
+  coicop_codes set, catalog spans multiple COICOP divisions across the
+  18 scoped categories.

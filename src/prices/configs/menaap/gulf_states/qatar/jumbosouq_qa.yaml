@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jumbosouq_qa
+url: https://jumbosouq.com/
+language: en
+currency: QAR
+cadence: weekly
+channel: electronics
+notes: |
+  Verified live 2026-08-17: Jumbo Souq (jumbosouq.com / JS.qa) — "1st
+  Dedicated Online Electronics store in Qatar" per its own homepage title;
+  catalog sampled across ACs, appliances, phones, TVs = pure electronics
+  and home appliances, no general merchandise. `jumbosouq.com` 307s to
+  `/en` (locale prefix). Prices are QAR (e.g. QAR 4449.00 for an iPhone 15
+  Plus PDP), confirming the shard's currency call and the shard's Qatar
+  candidate. robots.txt points at a real product sitemap
+  (https://jumbosouq.com/sitemap/sitemap.xml -> sitemap-product-en-1.xml +
+  sitemap-product-en-2.xml, ~9k URLs total). Spider walks the two English
+  sitemaps and parses the schema.org Product JSON-LD embedded on each PDP
+  (Offer.price/priceCurrency/availability, sku). Category left null — PDPs
+  don't expose a clean category field outside the site's own internal nav.
+  channel=electronics (matches the catalog; not a wide dept-store) — no
+  coicop_codes set since electronics still spans several COICOP leaves
+  (TVs, phones, small/large appliances). Cap set to 9,500 (above the full
+  ~9,022-URL catalog across both English sitemaps) at
+  CONCURRENT_REQUESTS_PER_DOMAIN=16, so the run is bounded by the actual
+  catalog size, not an artificial ceiling — est. ~20min at the ishtari_lb
+  bench rate, inside the collect-run time budget.

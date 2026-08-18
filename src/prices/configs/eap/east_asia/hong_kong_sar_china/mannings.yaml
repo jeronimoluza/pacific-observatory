@@ -2,3 +2,5 @@ spider: mannings
 language: en
 active: false
 channel: pharmacy
+archive_prefix: "www.mannings.com.hk/"
+archive_path_re: "/[^/]+/p/\\d+"

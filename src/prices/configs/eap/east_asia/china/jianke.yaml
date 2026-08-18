@@ -7,3 +7,5 @@ url: https://www.jianke.com/
 language: zh
 cadence: daily
 channel: pharmacy
+archive_prefix: "www.jianke.com/product/"
+archive_path_re: "^/product/\\d+\\.html$"

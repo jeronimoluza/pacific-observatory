@@ -1,0 +1,24 @@
+scaffolding: spider
+spider: farmacenter_py
+url: https://www.farmacenter.com.py/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: es
+currency: PYG
+cadence: weekly
+coicop_codes: null
+notes: |
+  Paraguayan pharmacy chain. Homepage/category HTML is a client-rendered
+  shell with no price tokens, matching the original probe - but individual
+  product pages ARE server-rendered with full schema.org Product+Offer
+  microdata (itemprop="price"/"priceCurrency"). No impersonation needed,
+  confirmed live 2026-08-17 with plain requests. robots.txt points at
+  /sitemap but the actual product-URL sitemap is
+  /sitemap/catalogo-articulos.xml (10,080 URLs) - this single file is the
+  whole enumerable product universe (not a curated homepage subset), so it
+  clears the enumerability gate on its own; every URL in it is a distinct
+  product page. Currency PYG, confirmed directly from each product's own
+  itemprop="priceCurrency" content (e.g. 23665 == PYG 23,665). Smoke run:
+  60 rows, see report. Full scrape pending.

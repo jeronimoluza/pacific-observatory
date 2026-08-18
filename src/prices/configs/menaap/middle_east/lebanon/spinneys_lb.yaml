@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: spinneys_lb
+url: https://www.spinneyslebanon.com/
+language: en
+currency: USD
+cadence: weekly
+channel: supermarket
+notes: |
+  Verified live 2026-08-17: spinneyslebanon.com — Spinneys, a Lebanese
+  supermarket chain, on a Magento storefront. Prices are quoted in USD on
+  the site itself (e.g. "CANDIA UHT MILK ENTIER" -> $ 1.85,
+  data-price-amount="1.85"), alongside a live LBP FX-rate widget for
+  reference only ("USD = 89,700"); GraphQL is admin-auth-gated (403) and a
+  guessed VTEX endpoint 404's, so this scrapes SSR category listing pages.
+  Walks all 25 top-level grocery/household categories from the homepage nav
+  (fruits-vegetables, deli-dairy-eggs, meat-seafood, bakery, frozen,
+  beverages, alcohol, food-cupboards, snacks-candy, ice-cream,
+  cleaning-household, beauty-personal-care, baby-child,
+  electronics-appliances, healthy-living, home-outdoor, imported-for-you,
+  min-el-dayaa, party-shop, petfection, summer-essentials, tobacco,
+  waitrose, world-foods, cellar) with Magento `?p=N` pagination, capped at
+  60 pages/category. This is a full-line supermarket — the highest
+  food-coverage source in this onboarding batch.
+  coicop_divisions: 01, 02, 03, 05, 12, 13; divisions_basis: sampled_rows
+  (60/60 product cards parsed cleanly on a fruits-vegetables sample page).

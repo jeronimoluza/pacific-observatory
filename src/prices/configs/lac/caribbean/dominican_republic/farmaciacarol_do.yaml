@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: farmaciacarol_do
+url: https://tienda.farmaciacarol.com/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: es
+currency: DOP
+cadence: weekly
+coicop_codes: null
+notes: |
+  Dominican pharmacy chain. The public domain (farmaciacarol.com) is a
+  SharePoint corporate page with no storefront - the real store is
+  tienda.farmaciacarol.com, a legacy ASP.NET WebForms site. 212 category
+  slugs enumerated live 2026-08-17 from catalog.aspx. Each *-list.aspx page
+  server-renders ~30 products (tag_url + RetailPriceValue markup), no
+  impersonation needed. Pagination is an ASP.NET AJAX UpdatePanel postback
+  (__doPostBack on uxNextLinkButton) - plain `?page=2` silently redirects
+  to the category's own canonical URL instead of paginating (the original
+  probe's plan of catalog.aspx-as-listing was correctly ruled out; the
+  postback trap on top of that is new). Confirmed live: replaying the FULL
+  original form (~100 hidden fields incl. __VIEWSTATE) with __EVENTTARGET
+  overridden to uxNextLinkButton returns a disjoint 30-item AJAX delta (0
+  overlap vs page 1). This spider fetches page 1 + one postback page per
+  category; deeper pagination is unverified this session and intentionally
+  not attempted. Currency DOP (Dominican Republic's official currency; the
+  markup carries no explicit priceCurrency field, so this is inferred from
+  country + price magnitude, not confirmed on-page). Smoke run: 60 rows,
+  see report. Full scrape pending.

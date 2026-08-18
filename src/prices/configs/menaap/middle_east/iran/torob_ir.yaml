@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: classifier
+spider: torob_ir
+url: https://torob.com/
+language: fa
+currency: IRR
+cadence: weekly
+channel: other
+notes: |
+  Verified live 2026-08-17: torob.com is an Iranian PRICE-COMPARISON
+  aggregator, not a retailer — each result is the CHEAPEST price torob has
+  found across participating merchants ("price_prefix":"cheapest", a
+  "shop_text" naming the winning store), i.e. cross-merchant minima rather
+  than one outlet's shelf price. Set analytical_role: aggregate_proxy and
+  channel: other (no existing enum value fits "price-comparison engine")
+  to keep this from being read as a single retailer's pricing.
+  CAVEAT for downstream use: torob rows are a lower-bound/"best available"
+  signal across the Iranian market, not representative of typical retail
+  price levels — do not average them into retailer_sku series without
+  accounting for this.
+  Prices on-site are quoted in Toman; the scraped integer price is
+  multiplied by 10 and reported as IRR (same convention as sheypoor_ir —
+  ISO 4217 has no Toman code). Confirmed live: "برنج عنبربو درجه یک" (rice)
+  price=3477000 == price_text "۳٫۴۷۷٫۰۰۰ تومان".
+  A bare curl UA gets a silently truncated response (matching
+  content-length, JSON cut mid-string); normal Accept/Accept-Language/
+  Referer headers fix it, no impersonation needed. Guessed /category/
+  browsing URLs 404'd, so this walks 13 representative search queries
+  (rice, oil, milk, chicken, meat, sugar, tea, cheese, mobile, fridge,
+  laptop, washing machine, TV) via /search/?query=...&page=N, capped at
+  10 pages/query — a sample across the catalog, not the full index.

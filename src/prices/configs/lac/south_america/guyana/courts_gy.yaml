@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: courts_gy
+url: https://www.courts.com/guyana/
+language: en
+currency: GYD
+cadence: weekly
+channel: dept-store
+notes: |
+  Courts Guyana (Unicomer Group). See lac/caribbean/jamaica/courts_jm.yaml
+  for the full platform writeup -- shared multi-website Magento instance,
+  11 country storefronts confirmed via the open /rest/V1/store/storeConfigs
+  endpoint, store-scoped REST (/rest/sc_guyana_sv/V1/products) required to
+  get real GYD prices past the 999999/9999999/0 default-scope sentinel.
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

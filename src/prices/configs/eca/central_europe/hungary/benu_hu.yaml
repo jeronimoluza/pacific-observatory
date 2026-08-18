@@ -1,0 +1,20 @@
+scaffolding: spider
+spider: benu_hu
+url: https://benu.hu/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: hu
+currency: HUF
+cadence: weekly
+coicop_codes: null
+notes: |
+  BENU Hungary national pharmacy chain webshop (OTC drugs, supplements,
+  medical devices). Open Shopify /products.json catalog. Verified live
+  2026-08-17: currency confirmed HUF via /cart.js. Wide catalog --
+  coicop_codes left unset for classifier assignment.
+  Full scrape 2026-08-17: 1,000 rows (4 pages) before benu.hu started
+  returning 429 on further pagination (Shopify-side throttling; the
+  base class's 2.0s delay was not enough under sustained load). Live
+  catalog is larger -- re-run after a cooldown for fuller coverage.

@@ -1,0 +1,33 @@
+scaffolding: spider
+spider: miswag_iq
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+url: https://miswag.com/
+language: en
+currency: IQD
+cadence: weekly
+notes: |
+  Verified live 2026-08-17. Cross-COICOP marketplace (electronics, home,
+  fashion, groceries) — canonical domain is miswag.com; the miswag.net
+  shard entry redirects/serves the same Nuxt.js storefront-web-app.
+  Content API (`/content/v1/...`) requires a bearer JWT. The JWT carries no
+  `exp` claim but is minted client-side on page load with no plain-HTTP
+  token-issuing endpoint, so it cannot safely be hardcoded — this spider
+  runs a single scrapy-playwright bootstrap request against the homepage to
+  read the `__anonToken` cookie the browser context mints, then replays that
+  header (plus fixed client-id/bundle-version headers) on every subsequent
+  plain scrapy.Request for the rest of the crawl.
+  Catalog walk: /content/v1/l1_categories -> per-alias
+  /content/v1/l1_categories/<alias> (page-builder JSON; product CATEGORY
+  tiles carry action.target == "collection") -> /content/v1/collections/
+  <cid>?cursor=<base64 {"per_page":16,"page":N}>, a real product listing with
+  page-based cursor pagination.
+  Enumerability proven live: collection "tablets-smartphones-tab" page 1 vs
+  page 2 returned disjoint product-id sets, and page 2 carries its own
+  page:3 cursor for further paging.
+  Smoke test (--max-items 60): 132 rows (in-flight requests overshoot the
+  60-item close signal), IQD prices, 0 null names/prices, 132 distinct
+  product_ids, single currency. Full scrape still pending
+  (orchestrator-queued).

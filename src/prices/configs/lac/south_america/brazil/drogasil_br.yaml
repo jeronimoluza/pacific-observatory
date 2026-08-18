@@ -1,0 +1,25 @@
+scaffolding: spider
+spider: drogasil_br
+url: https://www.drogasil.com.br/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: pt
+currency: BRL
+cadence: weekly
+coicop_codes: null
+notes: |
+  Brazilian pharmacy chain. Next.js SSR storefront behind an Akamai WAF
+  (bare curl 403'd for the original probe); curl_cffi impersonate=chrome124
+  clears every path, so it stays on despite the block being intermittent
+  today. Category pages embed a `__NEXT_DATA__` script with TWO listings -
+  `categoryListingJsonLd` (a static ~45-item bestseller carousel that does
+  NOT change across the `page`/`p` query param - a homepage-style trap, the
+  original probe's plan) and `pageProps.pageProps.results.products` (the
+  real catalog, paginated via `?p=N`). Enumerability proven on this second
+  one: p=1 vs p=2 on /medicamentos.html returned 0 overlap out of 45+45
+  ids. Price is `priceService`, confirmed against a PDP's own schema.org
+  Offer to the cent (10.9 == BRL 10.90). Category roots walked from
+  `pageProps.data.menuItems`. Smoke run: 60 rows, see report. Full scrape
+  pending.

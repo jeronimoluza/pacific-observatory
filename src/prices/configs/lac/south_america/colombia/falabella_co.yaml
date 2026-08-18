@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: falabella_co
+url: https://www.falabella.com.co/falabella-co/
+language: es
+currency: COP
+cadence: weekly
+channel: dept-store
+notes: |
+  Falabella Colombia. Root domain falabella.com.co redirects to
+  /falabella-co/ (a different national storefront path than Chile's
+  /falabella-cl/); category-id space (CATG33175, cat1001066, ...) does
+  not overlap Chile's -- confirmed live 2026-08-17, NOT a duplicate of
+  falabella_cl. Same __NEXT_DATA__ / category-sitemap pattern as
+  falabella_cl.py. Category discovery samples every 55th entry (~50
+  categories) from the CO category sitemap (2765 leaf categories total)
+  at 5 pages/category cap. Price priority internetPrice > eventPrice >
+  normalPrice > cmrPrice, same rationale as falabella_cl.
+  QA sweep flagged NO_CATEGORY (0% populated) 2026-08-17: same root cause
+  and fix as falabella_cl -- breadCrumbData read per category page and
+  stamped onto every product from it (e.g. "Belleza, higiene y salud -
+  Cuidado personal").
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

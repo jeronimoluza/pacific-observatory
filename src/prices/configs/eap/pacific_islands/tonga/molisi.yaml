@@ -2,3 +2,5 @@ spider: molisi
 language: en
 active: false
 channel: pharmacy
+archive_prefix: "molisi.to/"
+archive_path_re: "^/(baby-maternity|beverage|grocery|meat-seafood|personal-care)/[^/?]+"

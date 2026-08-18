@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: 999_md
+url: https://999.md/
+language: ru
+cadence: weekly
+channel: marketplace
+notes: |
+  999.md — Moldova's largest peer-to-peer classifieds marketplace (custom
+  Next.js app-router storefront, not a curated retail catalog). Verified
+  live 2026-08-17: listing pages are unhydrated skeletons in raw HTTP
+  responses (curl gets empty title/price divs; no product data in
+  __NEXT_DATA__/RSC either; /api/ is robots-disallowed and every guessed
+  REST/GraphQL path 404s/502s) — real cards only appear after Playwright
+  render, so this ships as a Playwright spider despite extraction_pattern
+  being the classifieds default. Per-listing currency varies by seller
+  (MDL / EUR "€" / USD "$" all observed), parsed per-row from the price
+  text rather than assumed constant. The `currency:` field is deliberately
+  OMITTED rather than set to MDL: no single value is representative, and a
+  dominant-case label invites a reader to assume uniformity. Nothing consumes
+  the manifest field (build/fx.py reads only the per-row column), so omitting
+  it costs nothing and states the truth.
+
+  Scoped to 7 leaf categories (out of hundreds) capped at 6 pages each
+  (~84 cards/page): transport/cars, real-estate/apartments-and-rooms (the
+  two dominant categories on the site by nav structure/listing volume —
+  chosen deliberately, not discovered by this crawl, since the sample below
+  caps every category at the same page count), plus phone-and-communication/
+  mobile-phones, household-appliances/refrigerators, household-appliances/
+  washing-machines, computers-and-office-equipment/laptops, furniture-and-
+  interior/sofas. Full scrape 2026-08-17: 3,489 rows (3,421 distinct
+  product_id), 0 null names/prices, currency mix MDL 1,911 / EUR 1,572 /
+  USD 6 (per-seller, not per-catalog), price range 1-447,000 (sensible:
+  cheap accessories up to cars/apartments). Category counts came out even
+  (~490-503 each) by construction of the page cap, so no dominant category
+  can be read off this sample; qualitatively, transport and real-estate are
+  believed to be the largest sections site-wide.
+  coicop_classification left as classifier — mixed general marketplace.

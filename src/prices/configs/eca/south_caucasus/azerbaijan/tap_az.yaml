@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tap_az
+url: https://tap.az/
+language: az
+currency: AZN
+cadence: weekly
+channel: marketplace
+notes: |
+  tap.az — Azerbaijan's largest classifieds marketplace. Verified live
+  2026-08-17: Next.js SSR, real AZN ("₼") prices embedded as clean numeric
+  fields (no locale text parsing needed) inside __NEXT_DATA__'s
+  props.pageProps.apolloState Ad objects on every /elanlar/<category> page.
+  Sitewide catalog is huge (450k+ ads; 89k in Elektronika alone per the
+  page's own SEO copy). ?page=N does NOT paginate here (see the spider
+  docstring), so instead of walking fake pages the spider requests the 9
+  top-level categories plus every category/subcategory leaf discovered from
+  the site's own ad sitemap — ~110 leaves, each fetched once. Not an
+  exhaustive crawl.
+  coicop_classification left as classifier.
+  Full scrape 2026-08-17: 2,785 rows, 2,785 distinct product_id, all AZN,
+  117 distinct categories, price range 0-3,350,000 (median 100). Largest
+  categories Təmir və tikinti (repair/construction, 53) and Digər (other,
+  49); the 9 top-level categories sit at exactly 28 each, which is one SSR
+  batch, so top-level counts are a batch-size artifact and only the
+  subcategory leaves carry real signal.
+  GOTCHA — the sitemap index 302-redirects to tap.azstatic.com. That host
+  MUST stay in allowed_domains: without it Scrapy silently drops the sitemap
+  as offsite/filtered, subcategory discovery never runs, and the spider
+  "finishes" cleanly at 245 rows (9% of the real yield) with no error.

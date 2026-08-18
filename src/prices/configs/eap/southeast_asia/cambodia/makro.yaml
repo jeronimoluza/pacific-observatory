@@ -2,3 +2,5 @@ spider: makro
 language: en
 active: false
 channel: supermarket
+archive_prefix: "www.makrocambodiaclick.com/en/products/"
+archive_path_re: "^/en/products/\\d+"

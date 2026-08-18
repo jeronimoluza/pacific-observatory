@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: somon_tj
+url: https://somon.tj/
+language: tg
+currency: TJS
+cadence: weekly
+channel: marketplace
+notes: |
+  somon.tj — Tajikistan's largest classifieds marketplace. Verified live
+  2026-08-17: schema.org Offer microdata (meta itemprop=price/priceCurrency)
+  confirms TJS pricing. Walks 13 top-level category listings (real estate,
+  transport, electronics, phones, kids, hobby, business services,
+  construction/repair, home goods, business supplies, animals/plants,
+  clothing/shoes, computers), excluding vakansii (job listings, no price)
+  and otdam-darom (giveaways, zero price). Two card layouts observed and
+  both handled: "card" (schema.org microdata, used on nedvizhimost/transport)
+  and "advert-grid" (text-only price, used on most goods categories).
+  coicop_classification left as classifier (mixed catalog).
+  Full scrape 2026-08-17: 23,885 rows, 23,885 distinct product_id, 0 null
+  names or prices, all TJS, price range 1-15,400,000 (small goods up to
+  property). No dominant category can be read off this scrape: every
+  category lands at ~2,400 rows because all 13 hit the same page cap, so
+  the even split is an artifact of the cap rather than a property of the
+  site. Treat category share here as uninformative.

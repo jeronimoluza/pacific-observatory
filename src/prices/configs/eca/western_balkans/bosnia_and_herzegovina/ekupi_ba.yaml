@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ekupi_ba
+url: https://ekupi.ba/
+language: bs
+currency: BAM
+cadence: weekly
+channel: dept-store
+notes: |
+  eKupi Bosnia and Herzegovina — SAP Commerce/Hybris general department-store
+  storefront (electronics, computers, appliances, tools, auto, home & garden,
+  toys, fitness, perfumery, plus a "supermarket" grocery department). Verified
+  live 2026-08-17: real server-rendered product cards with BAM prices (site
+  displays "KM", ISO code BAM). Spider walks the full category mega-menu
+  (BFS, deduped by category code) and paginates each leaf category via
+  ?page=N until no new products. coicop_classification left as classifier —
+  wide general catalog, no single COICOP prefix applies.

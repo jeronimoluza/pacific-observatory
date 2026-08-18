@@ -1,0 +1,39 @@
+scaffolding: spider
+spider: kabulshop_af
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+url: https://kabulshop.com/
+language: fa
+currency: AFN
+cadence: weekly
+notes: |
+  Afghanistan has almost no coverage in the corpus, so this one got extra
+  effort before considering a skip.
+  Cross-COICOP marketplace ("Kabul Shop" / "Badrang" backend). No robots.txt
+  restriction on either kabulshop.com or api.kabulshop.com (both just
+  re-serve the Angular SPA shell for any path — no ClaudeBot/anthropic-ai
+  disallow anywhere).
+  Verified live 2026-08-17: GET https://api.kabulshop.com/productservice/
+  products (no auth) returns the full flat catalog in one call — NOT the
+  small homepage carousel the original shard probe found (24
+  trending + 24 recentlyAdded curated items). Enumerability proof: the
+  endpoint's page/size query params are non-functional — page=0, page=1,
+  and no params at all all return the identical 477-product-id set — this
+  is the whole catalog served in one shot, not a paginated or curated rail.
+  Prices are AFN (site's own `currency` field is the Dari word for
+  Afghani). Rows with price=0 (unpriced "contact us" placeholders) are
+  skipped in the spider; one live-observed extreme outlier (~795M AFN on a
+  skincare item, clearly a data-entry error) is intentionally NOT filtered
+  here, per this repo's convention of leaving unit-value outlier gating to
+  the enrich layer.
+  PDP URL is a best-effort SPA route guess (unverifiable — every path 200s
+  identically off the same SPA shell); product_id is the reliable identity
+  key.
+  Smoke test (--max-items 60): 397 rows (of 477 raw catalog entries — 9
+  inactive + ~70 zero-priced placeholders dropped; single non-paginated
+  endpoint so max_items caps output rather than requests), AFN prices
+  (median 800, includes the one known outlier above), 0 null
+  names/prices, 397 distinct product_ids, single currency. Full scrape
+  still pending (orchestrator-queued).

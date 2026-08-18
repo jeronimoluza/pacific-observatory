@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: fahorro_mx
+url: https://www.fahorro.com/
+language: es
+currency: MXN
+cadence: weekly
+channel: pharmacy
+notes: |
+  Farmacias del Ahorro (Mexico) -- large national pharmacy chain, Magento
+  2. Shard listed SSR-HTML with Incapsula present-but-not-blocking; a
+  re-probe live 2026-08-17 found /rest/V1/products WAF-blocked (403
+  Incapsula) but /graphql open and unauthenticated -- used
+  MagentoGraphQLBaseSpider. Root category id=2 carries the whole catalog
+  (68,009 products at probe time) directly, WALK_ROOT_DIRECTLY=True.
+  Catalog is broader than pure pharmacy (electronics, home, toys, sports
+  all present as departments) but the brand identity and category mix are
+  pharmacy-led, hence channel: pharmacy. A meaningful root-level slice
+  carries a 0 placeholder price (verified: 5/5 of the first root page);
+  `_item` drops those. Real MXN prices confirmed on Farmacia dept (id=7404,
+  e.g. "Meloxicam 15 mg 10 Caps Marca del Ahorro" at 105 MXN).
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

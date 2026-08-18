@@ -7,3 +7,5 @@ url: https://m.111.com.cn/
 language: zh
 cadence: daily
 channel: pharmacy
+archive_prefix: "m.111.com.cn/item/"
+archive_path_re: "^/item/\\d+\\.html$"

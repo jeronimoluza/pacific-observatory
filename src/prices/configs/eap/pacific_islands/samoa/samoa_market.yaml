@@ -1,3 +1,5 @@
 spider: samoa_market
 language: en
 channel: supermarket
+archive_prefix: "samoamarket.com/products/"
+archive_path_re: "^/products/[^/?]+"

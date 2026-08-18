@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: tradeling_ae
+channel: wholesale
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+url: https://www.tradeling.com/ae-en
+language: en
+currency: AED
+cadence: weekly
+notes: |
+  B2B WHOLESALE marketplace, NOT retail. Every row carries a minOrderQty and
+  supplier-level unitsPerCarton packaging; prices are wholesale/bulk unit
+  prices, not walk-in retail shelf prices, and are NOT directly comparable
+  downstream to retailer_sku rows scraped from consumer storefronts.
+  Registered as covering ~22 MENA countries, but this spider is scoped to
+  the `ae-en` (United Arab Emirates, AED) locale ONLY — no other country is
+  scraped by this source.
+  Verified live 2026-08-17: guest-session POST to
+  api.tradeling.com/api/catalog-search/v4/products/search (categorySlug=
+  one of 14 top-level slugs from the site's own parent-category sitemap)
+  returns priced rows with x-jwt-token sent empty — no login/quote flow
+  needed. Plain `requests` (no TLS impersonation) gets a clean 200.
+  Enumerability proven live: categorySlug=canned-food page 1 vs page 2
+  returned fully disjoint product-id sets (0 overlap); top-level slugs
+  report totalPages: 50 at pageSize 40.
+  Smoke test (--max-items 60): 240 rows (in-flight requests overshoot the
+  60-item close signal), AED prices AED 2.10-2,509.50, 0 null
+  names/prices, 240 distinct product_ids, single currency. Full scrape
+  still pending (orchestrator-queued).

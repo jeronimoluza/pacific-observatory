@@ -7,3 +7,5 @@ url: https://www.fairprice.com.sg
 language: en
 cadence: daily
 channel: supermarket
+archive_prefix: "www.fairprice.com.sg/product/"
+archive_path_re: "^/product/[^/?]+"

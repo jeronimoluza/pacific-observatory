@@ -1,3 +1,5 @@
 spider: doctor_oncall
 language: en
 channel: pharmacy
+archive_prefix: "www.doctoroncall.com.my/pharmacy/"
+archive_path_re: "^/pharmacy/[^/]+/?$"

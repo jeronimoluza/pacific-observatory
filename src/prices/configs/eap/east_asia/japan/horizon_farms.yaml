@@ -1,3 +1,5 @@
 spider: horizon_farms
 language: ja
 channel: supermarket
+archive_prefix: "en.horizonfarms.jp/products/"
+archive_path_re: "^/products/[^/?]+"

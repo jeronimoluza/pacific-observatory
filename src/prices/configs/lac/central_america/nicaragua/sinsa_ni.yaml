@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sinsa_ni
+url: https://www.sinsa.com.ni/
+language: es
+currency: NIO
+cadence: weekly
+channel: home-improvement
+notes: |
+  Hardware/home-improvement chain, independent VTEX tenant. Live re-verified 2026-08-17:
+  www.sinsa.com.ni/api/catalog_system/pub/products/search?_from=0&_to=4 -> HTTP/2 206, real JSON
+  (e.g. 'Tenaza picuda...ACE', commertialOffer.Price 68.65). The shard's "HTTPS times out" note
+  did not reproduce -- www.sinsa.com.ni has a valid Let's Encrypt cert and answers HTTP/2 206
+  cleanly; no special SSL handling needed. Currency NIO (Nicaraguan Cordoba, shown as "C$" on
+  site), matches countries.yaml. Full scrape 2026-08-17: 47,831 rows.
+  QA sweep flagged 1 row with mojibake in product_name (productId
+  100671151, "...SEGURIDAD NIÐO EAGLE"). Confirmed root cause 2026-08-17:
+  genuine upstream data defect, not our decoding -- curl of the live VTEX
+  search API (fq=productId:100671151) returns "NIÐO" verbatim in the JSON
+  productName field itself. Isolated to this one SKU; left as-is.

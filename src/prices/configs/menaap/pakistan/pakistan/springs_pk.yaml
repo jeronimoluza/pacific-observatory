@@ -1,0 +1,21 @@
+scaffolding: spider
+spider: springs_pk
+url: https://springs.com.pk/
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: PKR
+cadence: weekly
+coicop_codes: null
+notes: |
+  Springs (Pakistan) general household retailer -- crockery is the
+  largest single category, plus skincare/cosmetics, confectionary,
+  packaged food, kitchen appliances, healthcare devices. Not
+  pharmacy-narrow despite the shard's "pharmacy" catalog label. Open
+  Shopify /products.json catalog. Verified live 2026-08-17: currency
+  confirmed PKR via /cart.js. coicop_codes left unset for classifier
+  assignment.
+  Full scrape 2026-08-17: 24,817 rows (100 pages), clean finish with no
+  429s -- full catalog captured.

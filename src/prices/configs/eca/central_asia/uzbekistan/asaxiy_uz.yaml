@@ -1,0 +1,30 @@
+scaffolding: spider
+spider: asaxiy_uz
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://asaxiy.uz/
+language: uz
+currency: UZS
+cadence: weekly
+channel: dept-store
+coicop_codes: null
+notes: |
+  Uzbekistan general retailer (electronics/appliances/books/household).
+  Verified live 2026-08-17: curl_cffi impersonate=chrome124 clears
+  cleanly (bare curl got Cloudflare "Attention Required"; chrome120/
+  safari17_0 also clear). robots.txt explicitly Allows GPTBot/
+  ClaudeBot/anthropic-ai/etc.
+  The earlier probe only sampled the homepage discount rail (curated,
+  unpaginated). The real catalog lives under /uz/product/<category-path>
+  (e.g. telefony-i-gadzhety/telefony/smartfony), discovered live from
+  homepage links. Each category page embeds a JSON-LD ItemList
+  (name/url, 24/page) with price recovered separately from HTML tiles
+  (span.product__item-price.product-main-price-id-<id>, space-grouped
+  UZS) -- zipped by document order (verified 1:1 index match live).
+  Enumerability proof: smartphones category page 1 vs ?page=2 -- 24
+  distinct product URLs each, ZERO overlap.
+  channel is dept-store (electronics/books/household spans multiple
+  COICOP divisions); coicop_codes left unset.
+  Smoke run 2026-08-17 (--max-items 60): passed, see smoke report.
+  Full scrape still pending -- orchestrator queues it centrally.

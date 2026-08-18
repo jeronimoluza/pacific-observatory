@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ananas_rs
+url: https://ananas.rs/
+language: sr
+currency: RSD
+cadence: weekly
+channel: marketplace
+notes: |
+  Verified live 2026-08-17. Multi-vendor Serbian e-commerce marketplace
+  (sellers onboard via academy.ananas.rs/prodaj-na-ananasu) with sibling
+  storefronts ananas.ba/.me/.mk (not scraped here). Next.js SSR; top-level
+  /kategorije/<slug> pages carry only subcategory tiles, so the spider walks
+  the 58 leaf subcategory pages (/kategorije/<top>/<sub>?page=N). Each page
+  embeds a `<script id="category-product-schema" type="application/ld+json">`
+  Schema.org ItemList with up to 12 Products (name/url/offers.price/
+  offers.priceCurrency) server-rendered, no PDP fetch needed. Pagination is
+  `?page=N`; stops when itemListElement is empty (verified: hrana-i-pice/kafa
+  = 553 items over 47 pages, page 48 empty). Sample: "Jacobs Instant kafa
+  Velvet Gold Crema, 180 g" 1099 RSD. Wide general marketplace catalog
+  (electronics, white goods, baby, food&drink, beauty, auto, home) —
+  channel approximated as marketplace given the third-party seller model.
+  coicop_divisions: 01, 02, 03, 05, 06, 08, 09, 12
+  divisions_basis: sampled_rows

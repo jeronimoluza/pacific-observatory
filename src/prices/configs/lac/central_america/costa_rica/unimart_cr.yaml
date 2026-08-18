@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: unimart_cr
+url: https://unimart.com/
+language: es
+currency: CRC
+cadence: weekly
+channel: dept-store
+notes: |
+  Onboarded 2026-08-17 from the global candidate workbook triage
+  (inputs/triage_20260817/). Shopify tenant with an open /products.json
+  catalog (verified live, HTTP 200). Workbook called it electronics, but a
+  263-row smoke pull returned mostly sports nutrition and supplements
+  (NutraBio, Pro Tan) alongside appliances/computing -- it is a general
+  department store, so channel is dept-store not electronics.
+  coicop_divisions: 01, 05, 06, 08, 09
+  divisions_basis: sampled_rows (263 rows from the smoke-test pull)

@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tehnomanija_rs
+url: https://www.tehnomanija.rs/
+language: sr
+currency: RSD
+cadence: weekly
+channel: electronics
+notes: |
+  Verified live 2026-08-17. Serbian electronics/appliance retailer, Magento
+  SSR storefront behind Cloudflare -- bare requests 403 (cf-mitigated:
+  challenge); curl_cffi impersonate=chrome124 clears cleanly. /rest/V1/products
+  401s so this walks server-rendered category HTML (product-item-link +
+  data-price-amount) rather than REST/GraphQL.
+  Enumerability proven: /bela-tehnika/aspiratori?p=1 vs ?p=2 return 23 + 23
+  product ids, zero overlap. Category set (78 leaf paths, e.g.
+  bela-tehnika/frizideri) discovered from the site's own categories.xml
+  sitemap, not guessed -- a guessed nav path 404s on this Magento install.
+  Sample smoke row: "Bosch Ugradni aspirator DLN53AA70" 18999 RSD.
+  Full scrape still pending -- orchestrator queues it.

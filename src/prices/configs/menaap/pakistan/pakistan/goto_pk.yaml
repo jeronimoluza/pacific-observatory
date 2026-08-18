@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: dept-store
+spider: goto_pk
+url: https://goto.com.pk/
+language: en
+currency: PKR
+cadence: weekly
+notes: |
+  Verified live 2026-08-17: goto.com.pk — a first-party Pakistani online
+  general retailer (grocery, mobile phones, health & beauty, home
+  appliances, fashion, electronics — broad non-grocery-led catalog, not a
+  third-party marketplace). TLS cert is EXPIRED (curl -v fails without -k;
+  a maintenance defect, not a WAF), so the spider passes
+  impersonate_args={"verify": False} on every request via the project-wide
+  RandomBrowserMiddleware (precedent: mojsupermarket_me.py, a different TLS
+  defect fixed the same way). Custom PHP storefront with Magento-flavoured
+  theme classes, but /rest/V1/products and /graphql both return the plain
+  HTML shell — no real API, genuine HTML scrape. Category landing pages
+  (seeded from the homepage nav) embed an ItemList JSON-LD and ~90 product
+  cards each; query-string pagination (?page=2, ?limit=200) is a no-op that
+  re-renders page 1, so coverage per category caps at that first batch.
+  PDPs embed a Product JSON-LD (sku/name/category/offers), confirmed PKR
+  e.g. 910.00 for Nestle Everyday 1000gm. coicop_divisions: 01 (grocery),
+  05 (appliances), 08 (mobiles/electronics), 03 (fashion); divisions_basis:
+  sampled_rows.

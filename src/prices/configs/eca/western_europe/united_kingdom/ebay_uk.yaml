@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ebay_uk
+url: https://www.ebay.co.uk/
+language: en
+currency: GBP
+cadence: weekly
+channel: marketplace
+notes: |
+  eBay UK — large general C2C/B2C marketplace. Verified live 2026-08-17:
+  real GBP "Buy It Now" prices server-rendered in search-results HTML
+  (LH_BIN=1 filter restricts to fixed-price listings, EXCLUDING live
+  auctions — auction bids are not comparable shelf prices, per onboarding
+  brief). Each real card carries its own https://www.ebay.co.uk/itm/<id>
+  link; the first card slot on every results page is a generic "Shop on
+  eBay" promo with a fake ebay.com/itm/123456 link and a USD placeholder
+  price — excluded by requiring the real www.ebay.co.uk host on the href.
+
+  Site has a Human Security bot-check: a cookie-less request 403s but sets
+  tracking cookies on that response that let the next request through
+  (confirmed live). Spider primes with one throwaway homepage request
+  before firing real search requests, sharing Scrapy's default
+  session-persistent cookiejar.
+
+  Scoped to 12 keyword searches (laptop, smartphone, headphones, trainers,
+  jeans, sofa, bicycle, power drill, coffee machine, vacuum cleaner,
+  camera, watch) spanning electronics/apparel/furniture/tools/hobby goods,
+  2 pages/keyword at _ipg=240 (~240 cards/page) — a bounded basket, not a
+  full-catalog crawl. [row count pending full scrape]

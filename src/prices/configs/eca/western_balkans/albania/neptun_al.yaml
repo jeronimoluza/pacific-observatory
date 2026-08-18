@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: neptun_al
+url: https://www.neptun.al/
+language: sq
+currency: ALL
+cadence: weekly
+channel: electronics
+notes: |
+  Verified live 2026-08-17. Albanian electronics/appliance retailer, .NET
+  MVC backend behind a Nuxt-ish SPA shell. Raw category page HTML carries
+  no product/price markup; a Playwright network trace found the real data
+  source: a same-origin POST JSON endpoint,
+  NeptunCategories/LoadProductsForCategory, keyed by CategoryId. Category
+  ids are not guessable from the .nspx slugs, so a live sweep of ids 1-699
+  against the endpoint found 282 ids returning a nonempty product batch;
+  those are hardcoded in the spider.
+  Enumerability proven: CategoryId=173 (largest, 1081 items),
+  CurrentPage=1 vs CurrentPage=2 (ItemsPerPage=20) return 20 + 20 distinct
+  product ids, zero overlap.
+  Currency is Albanian Lek; API returns display label "LEKE", not an ISO
+  code, so currency is hardcoded to ALL rather than parsed from the API.
+  Full scrape still pending -- orchestrator queues it.

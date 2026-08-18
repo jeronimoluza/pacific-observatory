@@ -268,7 +268,8 @@ For each candidate, classify into one of four tiers. **Don't write selectors bef
                         │ Build: CrawlSpider, no Playwright     │
                         └───────────────────────────────────────┘
                                        ↑ yes
-curl with browser UA → does the response have h1, og: meta, AND a price visible in raw HTML?
+curl_cffi with impersonate="chrome124" (NOT bare curl — see the TLS rule below) → does the
+response have h1, og: meta, AND a price visible in raw HTML?
                                        ↓ no
                                        ↓
                         ┌───────────────────────────────────────┐
@@ -310,11 +311,67 @@ Concrete probe commands and scripts live in `references/probe_patterns.md`. Pre-
 
 **Mandatory gate: never reach SKIP without a network trace.** A 403 on the front page says nothing about the backend. Render the page once in Playwright, read the network tab, and look for the internal JSON endpoint — many hardened fronts have a completely open JSON API behind them (confirmed on chemist_warehouse, makro_pro, mm_mega_market, sm_markets_savemore, lazada.ph, shoppy_mn, farro_fresh, basic_homemart). When you find one, the spider hits it directly over plain HTTP and Playwright never runs at collection time. That is the **"Playwright to discover, plain HTTP to scrape"** pattern and it is the single highest-yield move in this phase.
 
-Before concluding a block, also rule out the cheap false positives: a UA↔TLS mismatch (Chrome TLS + Scrapy UA = 403, + Chrome UA = 200), a *different TLD of the same platform* being open, and simple burst-throttling that clears at `concurrency=1`.
+**Mandatory gate: a bare-`curl` 403 is NOT evidence of a WAF. Never record a WAF/blocked verdict
+without re-probing through a real browser TLS fingerprint.** Cloudflare, Akamai and DataDome
+overwhelmingly fingerprint the **TLS handshake (JA3)**, not the User-Agent — so plain `curl` with
+a spoofed browser UA gets a 403 from sites that a stock `chrome124` fingerprint walks straight
+into, with no headers, cookies, proxy, or captcha solving:
+
+```bash
+poetry run python -c "
+from curl_cffi import requests as r
+x = r.get('https://DOMAIN/', impersonate='chrome124', timeout=30)
+print(x.status_code, len(x.text))"
+```
+
+Try `chrome124`, then `chrome120`, then `safari17_0` — they are **not** interchangeable
+(mall.cz/allegro.cz 403s on both Chrome profiles and clears only on `safari17_0`).
+
+**Measured 2026-08-17:** a 279-domain triage probed with bare `curl` + browser UA produced 112
+`SKIP_WAF` verdicts. Re-probing those with `curl_cffi` impersonation alone recovered a large
+share on the first lever, including sites behind Cloudflare Turnstile *and* Akamai
+(hepsiburada.com's Akamai bot-block, tehnomax.me and tehnomanija.rs's `cf-mitigated: challenge`,
+olx.ro, list.am, docmorris.de, gamma.nl, wallashops.co.il). Those 112 verdicts were mostly
+measuring curl's TLS handshake, not a real defense.
+
+What survives impersonation is a genuinely different class, and each has its own tell — record
+which one rather than a generic "blocked":
+- **Content-level proof-of-work** (Amazon's `x-amzn-waf-action: challenge`, JS-execution stubs) — TLS won't touch it.
+- **IP / geo blocks** (Fastly error codes, cf-ray resolving to the wrong continent, origin-level refusals) — needs an exit node in-country, not a fingerprint.
+- **Genuine SPA shells** that clear the WAF at 200 but ship no embedded product JSON — that is a Tier 2 problem, not a block. elcorteingles.es is exactly this.
+
+Also rule out the remaining cheap false positives: a *different TLD of the same platform* being
+open, sitemaps served WAF-exempt even when HTML pages 403 (argos.co.uk, leroymerlin.it — good for
+a URL-seed list), and simple burst-throttling that clears at `concurrency=1`.
+
+**"WAF beaten" is not "catalog enumerable" — they are separate claims and a probe must prove
+both.** Clearing the block gets you the homepage, and a homepage carousel will happily yield 20-50
+name/price pairs that look exactly like a passing probe. It is not a catalog: carousels are
+curated, unpaginated, and reshuffle per visit. A probe that reports "38 products" from `/` has
+demonstrated nothing about whether the source can be crawled.
+
+Record the two verdicts separately, and only the second one licenses scaffolding:
+1. **Access** — a non-homepage URL returns 200 with real content.
+2. **Enumerability** — a *category or listing* URL yields products, AND page 2 of that same
+   listing yields a *different* set. Without the page-2 check you cannot distinguish a paginating
+   catalog from a single fixed page.
+
+Measured on the 2026-08-17 recovery pass: of four domains reported `RECOVERED`, three were counted
+off homepage carousels. Re-probing real category paths confirmed tehnomax.me and hepsiburada.com
+as genuinely enumerable, while tehnomanija.rs was not — its Magento REST returns 401 and its
+category paths 404. Same access verdict, opposite scaffolding decision.
+
+This is the probe-time twin of the Phase 6 ≥5-rows gate, and it is also why a Magento row count is
+never a catalog size — see the short-page truncation trap in `references/known_blockers.md`.
 
 For Tier 2 sites, the Playwright probe should also dump the HTML to `/tmp/probe_<key>_listing.html` and `/tmp/probe_<key>_pdp.html` so the selector-extraction phase has files to grep instead of re-fetching.
 
-**When both curl and Playwright return 403 on the same site, stop.** Headless Chromium without a residential proxy and a captcha solver will not break a real Cloudflare/Akamai/Incapsula challenge. Don't iterate on it — add the site to `references/known_blockers.md` (Cloudflare / AWS WAF / Akamai section) and move on. Past attempts to push through with longer waits or stealth flags have not paid off.
+**When `curl_cffi` impersonation AND Playwright both return 403 on the same site, stop.** At that
+point you are facing a real challenge, and headless Chromium without a residential proxy and a
+captcha solver will not break Cloudflare/Akamai/Incapsula. Don't iterate — add the site to
+`references/known_blockers.md` (Cloudflare / AWS WAF / Akamai section), **naming the lever that
+failed and the tell you saw**, and move on. Longer waits and stealth flags have never paid off.
+Note the ordering: bare curl failing is not the trigger for this rule — `curl_cffi` failing is.
 
 ### Phase 3-fetcher — Feasibility probing *(scaffolding=fetcher)*
 
@@ -519,5 +576,7 @@ Don't bundle these into a routine country onboarding. Each is its own dedicated 
 - Don't treat CPI (`analytical_role: cpi_benchmark`) as a fallback "when nothing else exists for division X." It's the benchmark series that every country needs *in addition to* its price-level sources, because the downstream PPP / inflation-nowcasting analysis compares the two.
 - Don't ship a source that probe-passes but returns 0–4 rows in the Phase 6 test. Record it as skipped with a hypothesis; revisit later.
 - Don't trust scout sub-agents that say "selectors_unknown: true" — that's a signal to do a real Playwright probe, not to invent selectors anyway.
+- Don't record a WAF/blocked verdict from bare `curl`. It measures curl's TLS handshake, not the site's defenses. Re-probe with `curl_cffi impersonate="chrome124"` (then `chrome120`, `safari17_0`) before writing anything to `known_blockers.md` — 112 such verdicts were re-probed on 2026-08-17 and a large share fell to that one lever.
+- Don't count homepage products as a passing probe. Carousels are curated and unpaginated; "38 products from `/`" says nothing about enumerability. Prove a *category* page paginates — page 2 must return a different set — before scaffolding.
 - Don't try to do COICOP classification in retailer SKU spiders. `src/prices/enrich/classifier/` is the downstream classifier — spiders just emit `product_name` + `category`. Note the classifier consumes the **raw** product name: normalizing or canonicalizing text in the spider measurably *hurts* accuracy, so emit the name exactly as the site renders it.
 - Don't route anything to `src/cpi/coicopping/`. That Gemini classifier is retired. A handful of older spider docstrings and YAML `notes:` still name it — they're stale comments, not live wiring.

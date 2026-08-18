@@ -1,3 +1,5 @@
 spider: hypermart
 language: id
 channel: hypermarket
+archive_prefix: "shop.hypermart.co.id/hypermart/product/"
+archive_path_re: "^/hypermart/product/[^/?]+"

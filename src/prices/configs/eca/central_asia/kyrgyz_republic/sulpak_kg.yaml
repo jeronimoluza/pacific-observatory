@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sulpak_kg
+url: https://www.sulpak.kg/
+language: ru
+currency: KGS
+cadence: weekly
+channel: electronics
+notes: |
+  sulpak.kg — Kyrgyz Republic electronics/appliances retailer (part of the
+  Kazakhstan-based Sulpak chain, localized .kg storefront). Verified live
+  2026-08-17: server-rendered category listing pages, real KGS prices
+  ("сом"). Full category tree (~470 slugs) discovered via the site's own
+  AJAX menu endpoint (/Home/GetMainMenuView, JSON-escaped HTML fragment) —
+  no static sitewide category nav or working sitemap.xml exists. Paginates
+  each category via ?page=N, capped at 6 pages/category using the on-page
+  "Страница X из Y" counter.
+  coicop_classification left as classifier.
+  Full scrape 2026-08-17: 3,029 rows, 3,029 distinct product_id, 0 null names
+  or prices, all KGS, price range 90-786,490 (phone cases up to large
+  appliances). Cards carrying data-price="0" are a genuine "no price shown"
+  state on this site and are dropped at the spider, not emitted as zeros.
+  Category labels are SEO strings carrying a city suffix ("... в Бишкеке");
+  the leading segment is the real category. Spread is wide within
+  electronics/home (computer mice, screen protectors, fridges, washing
+  machines, frying pans, phone cases), so channel stays electronics but
+  coicop_codes is left unset.

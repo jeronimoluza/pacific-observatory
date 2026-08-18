@@ -1,0 +1,20 @@
+scaffolding: spider
+spider: ekissaan_pk
+url: https://ekissaan.com/
+channel: specialty-food
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: PKR
+cadence: weekly
+coicop_codes: null
+notes: |
+  Pakistani direct-from-farm dry fruit / preserves / oils shop (Dry Fruits,
+  Fruits, Oil, Jam & Honey, Food Products categories). WooCommerce Store
+  API confirmed live 2026-08-17
+  (https://ekissaan.com/wp-json/wc/store/v1/products), 46 items on one page
+  (small catalog), prices.currency_code=PKR, minor_unit=0 (e.g. 450 ->
+  Rs450). Whole catalog is food but spans multiple COICOP classes
+  (fruit/nuts, oils, jam, spices) so coicop_codes left unset. Full scrape:
+  see report for row count.

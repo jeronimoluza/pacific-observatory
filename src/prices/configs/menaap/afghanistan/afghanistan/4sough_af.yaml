@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+spider: 4sough_af
+url: https://4sough.com/
+language: fa
+currency: AFN
+cadence: weekly
+notes: |
+  Verified live 2026-08-17: 4sough.com (چهارسوق) — a general-merchandise
+  online marketplace/store for Afghanistan (groceries, clothing, home
+  goods, electronics sampled via breadcrumbs). Next.js app-router SSR; no
+  open product API (api.4sough.com only serves image storage; /api/v1/products
+  404s). Spider walks the product sitemap
+  (https://4sough.com/sitemap_index/fa-sitemap/product.xml, 12,422 URLs) and
+  parses the schema.org Product JSON-LD embedded on each PDP (AggregateOffer
+  lowPrice/priceCurrency, confirmed AFN e.g. 600 for a yoga mat) plus the
+  sibling BreadcrumbList JSON-LD for leaf category. Prices are Dari/Farsi
+  digits rendered as plain HTML text on the visible page but the JSON-LD
+  price field is plain ASCII decimal, so no digit-conversion needed.
+  channel=marketplace (single storefront selling a mixed catalog directly,
+  not a peer-to-peer classifieds board) — no coicop_codes set, catalog spans
+  multiple COICOP divisions.
+
+  Each PDP renders a large recommendation rail (~5.7MB decoded HTML, ~1MB
+  gzip on the wire); bench at CONCURRENT_REQUESTS_PER_DOMAIN=24 measured
+  96.6 items/min, so the full 12,422-URL sitemap would take 2+ hours. Capped
+  in-spider to the first 2,200 sitemap URLs (~23 min) to stay inside the
+  collect-run time budget.

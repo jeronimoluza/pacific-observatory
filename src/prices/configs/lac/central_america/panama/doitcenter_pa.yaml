@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: doitcenter_pa
+url: https://www.doitcenter.com.pa/
+language: es
+currency: USD
+cadence: weekly
+channel: home-improvement
+notes: |
+  Do it Center -- Panama home-improvement / hardware chain (Next.js
+  storefront on the Webscale platform; the shard's Magento-REST evidence
+  was a dead end -- /rest/V1/products 301s to the homepage). Category grid
+  is server-rendered (Algolia-backed per CSP, but page 1 ships inline in
+  HTML, no JS execution required). channel: home-improvement matches the
+  dominant nav taxonomy (ferreteria, herramientas, construccion,
+  electricidad, plomeria, pintura), though the catalog also carries general
+  merchandise (muebles, recamara, mascotas, deportes) -- crawled per
+  whole-catalog convention across all 25 top-nav categories.
+
+  Re-verified live 2026-08-17: GET /categorias/automovil -> 200, 48
+  products/page, "totalPages":43 embedded in page JSON. Real USD prices,
+  e.g. "Hidrolavadora Electrica 2000 Psi 1600W" JET MATE $49.99 (reg.
+  $89.99). Pagination `?page=N`, capped at 15 pages/category (~720
+  items/category ceiling) to bound runtime across 25 categories.

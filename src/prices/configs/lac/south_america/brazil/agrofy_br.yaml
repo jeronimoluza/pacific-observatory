@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: agrofy_br
+url: https://www.agrofy.com.br/
+language: pt
+currency: BRL
+cadence: weekly
+channel: other
+notes: |
+  Agrofy Brasil -- used farm-machinery classifieds marketplace (React/Next.js
+  SSR), NOT food or standardized retail: listings are individually-priced
+  used tractors, combine harvesters, seeders, sprayers, etc. `channel: other`
+  reflects that it doesn't fit any retail-outlet value in the enum (closest
+  would be `marketplace`, but that's reserved for cross-division general
+  retail, not a single-vertical used-equipment classifieds site). Excludes
+  the site's real-estate ("Imoveis") and services/financing categories --
+  only the machinery/equipment nav categories are crawled.
+
+  Each category page embeds a `__NEXT_DATA__` JSON blob with a clean
+  listing.Hits array (id/name/price/currency/url/category) -- parsed as
+  JSON-in-HTML, not CSS selectors. Pagination is `?p=N` (verified live
+  2026-08-17 that `?page=N` and `?pagina=N` both silently return page 1
+  again; only `?p=N` advances).
+
+  Re-verified live 2026-08-17: GET /colheitadeiras -> 200, "Colheitadeira
+  New Holland TC55 ano 1995" R$ 120.000. Currency uniformly "R$" (BRL)
+  across sampled categories (tratores, colheitadeiras, semeadoras).
+  coicop_divisions: none (excluded from division-01 scope; used machinery
+  is not a COICOP-classified consumer good).

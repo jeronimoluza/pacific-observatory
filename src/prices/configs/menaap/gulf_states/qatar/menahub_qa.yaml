@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: menahub_qa
+url: https://menahub.com/
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: QAR
+cadence: weekly
+coicop_codes: null
+notes: |
+  MenaHub (Qatar) general household/appliance retailer sourced from
+  multiple trading companies (Gline Trading, Grandhome, Zainal
+  Electronics, Western International Marketing) -- appliances (Zenan,
+  Polti, Westinghouse, Midea), furniture, baby gear, sporting goods.
+  Site body text fingerprints as VTEX but the working storefront is
+  Shopify (a /api/catalog_system/pub/products/search probe 404'd). Open
+  Shopify /products.json catalog. Verified live 2026-08-17: currency
+  confirmed QAR via /cart.js. coicop_codes left unset for classifier
+  assignment.
+  Full scrape 2026-08-17: 24,820 rows (100 pages), clean finish with no
+  429s -- full catalog captured.
+  QA sweep flagged 120 rows with mojibake in product_name. Confirmed root
+  cause 2026-08-17: upstream Shopify catalog data corruption, not a
+  decoding bug. Direct curl of the live products/<handle>.json endpoint
+  (e.g. mhskuen0hy165) returns the garbled bytes verbatim inside otherwise
+  valid UTF-8 JSON -- title field is multi-layer mojibake (repeated
+  UTF-8-as-Latin1 re-encoding) baked in at the source, likely from the
+  merchant's own import pipeline. Left as-is per instruction not to strip
+  characters to mask a genuine upstream defect.

@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: diunsa_hn
+url: https://www.diunsa.hn/
+language: es
+currency: HNL
+cadence: weekly
+channel: dept-store
+notes: |
+  Diunsa Honduras, general-merchandise department store (TVs, phones,
+  appliances, furniture). Re-verified live 2026-08-17 via a Playwright
+  network trace (the raw category HTML only carries a schema placeholder
+  "price":"0"): the real data rides on a separate multi-tenant
+  commerce-platform API host, apicsm.dapplications.tech ("CSM" -- watch
+  for this same host on other Central American department-store domains
+  in future shards). GET /api/em/material_group/get_cb/1 returns the
+  category tree (263 nodes, 171 leaf/numeric-code); POST
+  /api/em/material/paginate?skip=N&take=N with a JSON body
+  {"businessPartner":1,"groupCode":"<leaf code>",...} and header
+  x-company-id: DIUNSAPRD (required) returns data[]/totalItems with
+  newPrice/oldPrice. Category discovery samples the 171 leaf groupCodes
+  at stride 4.
+  Enumerability proven on groupCode=103 (a subcategory under
+  Electrónica): skip=0/take=15 and skip=15/take=15 returned fully
+  disjoint `code` sets (0 overlap) against totalItems=117. Real HNL
+  prices confirmed, e.g. newPrice 5790 for a 43" smart TV. The API's own
+  `slug` field is always null, so `url` falls back to the site's own
+  search page (/todos?search=<name>, a confirmed live pattern) rather
+  than a guessed PDP path.
+  Fixed 2026-08-17: the spider's paginate POST merged a lowercase
+  "content-type" header (already in the shared _HEADERS dict) with an
+  explicit "Content-Type" override, which Scrapy folded into a single
+  wire header sent as "Content-Type: application/json, application/json".
+  The backend's body parser choked on the doubled value and silently
+  dropped the JSON body, so every field read as missing and the API
+  400'd with "groupCode should not be empty..." on every request (0
+  rows). Removed the redundant header override; smoke run now returns
+  110 rows, 0 null names/prices, 1 currency (HNL), 110/110 distinct ids.
+  FULL SCRAPE STILL PENDING -- this manifest only covers the smoke test.

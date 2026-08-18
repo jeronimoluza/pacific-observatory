@@ -1,0 +1,25 @@
+scaffolding: spider
+spider: telemart_pk
+url: https://telemart.pk/
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: PKR
+cadence: weekly
+coicop_codes: null
+notes: |
+  Telemart (Pakistan) is a multi-vendor marketplace, not a single-brand
+  electronics retailer as the discovery-shard catalog label suggested --
+  sampled vendor field shows Welcome, AUHWEAR, Ardor, Zarar Clothing,
+  A4Tech, SA Elite Store, Bin Adam Group, Weststyle, Sony, The Fone World
+  across appliances/fashion/electronics/gaming. Open Shopify
+  /products.json catalog. Verified live 2026-08-17: currency confirmed
+  PKR via /cart.js (redirects to www.telemart.pk on that endpoint only;
+  bare-domain /products.json returns 200 directly). coicop_codes left
+  unset for classifier assignment.
+  Full scrape 2026-08-17: 629 rows (3 pages) before 429s from the site
+  truncated further pagination (Shopify-side throttling under sustained
+  load; base class DOWNLOAD_DELAY=2.0s not enough). Live catalog likely
+  larger -- re-run after a cooldown for fuller coverage.

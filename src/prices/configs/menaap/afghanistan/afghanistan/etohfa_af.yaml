@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: etohfa_af
+url: https://www.e-tohfa.com/
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+notes: |
+  General online marketplace serving Kabul, Afghanistan (title tag: "online
+  shopping market in kabul Afghanistan"; contact page lists Kabul,
+  Kandahar). Catalog spans electronics, watches, appliances, printers -
+  cross-division, so channel=marketplace not electronics. WooCommerce
+  Store API confirmed live 2026-08-17
+  (https://www.e-tohfa.com/wp-json/wc/store/v1/products), prices.
+  currency_code=USD (not AFN, despite Afghan operations - shard probe
+  reported no detected currency; the API's own currency_code field
+  resolves it), minor_unit=2. Apex domain 301s to www but drops the
+  /wp-json/ path onto the homepage, so the spider targets www.e-tohfa.com
+  directly. The site's WAF 403s on the exact UA string baked into
+  WooBaseSpider's default custom_settings (Chrome/120.0.0.0, on every
+  path including "/"); the spider overrides custom_settings with a
+  Chrome/124.0.0.0 UA, which passes. Full scrape: see report for row
+  count.

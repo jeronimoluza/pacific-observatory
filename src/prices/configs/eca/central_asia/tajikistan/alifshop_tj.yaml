@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: alifshop_tj
+url: https://alifshop.tj/
+language: ru
+currency: TJS
+cadence: weekly
+channel: marketplace
+notes: |
+  Verified live 2026-08-17. Next.js SSR storefront run by Alif (Tajik
+  fintech) with onboarded third-party "partners" (see /new-partners) —
+  mixed catalog: perfume, beauty tech, electronics, books, auto parts,
+  sport/hobby, construction, groceries. Category listing pages
+  (/category/<slug>?cityId=1&page=N) server-render product cards
+  (div.product-card: a[href^="/product/"], h4 price, p.line-clamp-2 name) —
+  no PDP fetch needed. Only 10 /category/<slug> links plus a top-level
+  /groceries link are exposed server-side on the homepage nav (no deeper
+  tree without JS), so the spider walks those 11 sections with ?page=N
+  pagination until an empty page. Sample: "Духи Chase Fragrances White
+  King, 100 мл" 6 160 с. (TJS, abbreviated "с." for somoni).
+  coicop_divisions: 01, 02, 03, 05, 06, 08, 09, 12 (mixed; groceries section
+  covers 01/02, beauty/electronics sections cover the rest)
+  divisions_basis: sampled_rows

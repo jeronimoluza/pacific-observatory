@@ -1,0 +1,25 @@
+scaffolding: spider
+spider: cruzverde_cl
+url: https://www.cruzverde.cl/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: es
+currency: CLP
+cadence: weekly
+coicop_codes: null
+notes: |
+  Chilean pharmacy chain. www.cruzverde.cl is an Angular SPA shell for
+  every path (no server-rendered catalog); the real data host is
+  api.cruzverde.cl. Anonymous GET to product-service/products/detail/{id}
+  401s INVALID_SESSION - fixed with a guest-session POST to
+  https://api.cruzverde.cl/customer-service/login (empty JSON body, 201,
+  sets an auth cookie) before detail calls. No TLS impersonation needed for
+  either host, confirmed live 2026-08-17 with plain requests. Product-id
+  universe comes from the site's own sitemap (sitemap_{0,1,2}-product.xml,
+  ~12.6k URLs total; id is the numeric segment before ".html").
+  Enumerability proven: the three sitemap files return disjoint URL/id
+  sets. Currency CLP, confirmed directly from the detail response's own
+  `priceCurrency` field (e.g. price 27990 = CLP 27,990). Smoke run: 60
+  rows, see report. Full scrape pending.

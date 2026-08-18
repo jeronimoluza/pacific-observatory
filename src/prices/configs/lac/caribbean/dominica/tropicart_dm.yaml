@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tropicart_dm
+url: https://tropicart.app/
+language: en
+currency: XCD
+cadence: weekly
+channel: marketplace
+notes: |
+  Vite/React SPA built on Supabase (Postgres + auto-generated PostgREST
+  API). The shipped JS bundle (/assets/index-*.js) embeds the Supabase
+  project URL (bqjypvuvtcobhjinmwmg.supabase.co) and a public "anon"-role
+  JWT in plaintext -- this is Supabase's intended model, RLS gates access,
+  not key secrecy (confirmed by decoding the JWT payload: role=anon).
+
+  Live re-verified 2026-08-17: GET /rest/v1/products?select=...&limit=20
+  &offset=0 vs offset=20 both return HTTP 200 with fully disjoint product
+  ids; Prefer: count=exact reports 544 active rows total. Default currency
+  constant in the bundle is XCD (matches Dominica's official currency;
+  multi-store instances could in principle price differently -- not
+  observed in this sample).
+
+  Smoke run: 60/60 rows, 0 null product_name, 0 null price, single currency
+  XCD. Full scrape still pending (orchestrator-queued).

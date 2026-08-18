@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: reklama5_mk
+url: https://www.reklama5.mk/
+language: mk
+cadence: weekly
+channel: marketplace
+notes: |
+  reklama5.mk — North Macedonia classifieds marketplace. Verified live
+  2026-08-17: /Search?pageView=1&page=<N> is a server-rendered "all ads,
+  newest first" feed across every category (~375k ads total). Cards:
+  a.SearchAdTitle (title+href), span.search-ad-price (price text, dot as
+  thousands separator), p.ad-category-div a (category label). No dedicated
+  category-tree endpoint found server-side, so the spider walks the mixed
+  feed (max_pages=40) rather than per-category listings.
+  Currency is NOT uniform — sellers price ads in either EUR ("€" suffix,
+  majority) or MKD/denar ("МКД" suffix); live sample was 33 EUR / 8 MKD.
+  The `currency:` field is deliberately OMITTED rather than set to EUR: no
+  single value is representative of a genuinely mixed source, and a
+  dominant-case label invites a reader to assume uniformity. Nothing consumes
+  the manifest field (build/fx.py reads only the per-row column). The spider
+  emits the correct per-row currency (EUR or MKD) parsed from each ad's price
+  suffix. Ads priced "По Договор" (negotiable) are dropped.
+  NOTE for Wayback backfill: backfill._resolve_currency() takes the FIRST
+  row's currency and stamps it on every historical row, which would be wrong
+  for this source. Exclude it from backfill or parse currency per snapshot.
+  coicop_classification left as classifier.
+  Full scrape 2026-08-17: 1,537 rows, 1,537 distinct product_id, 0 null names
+  or prices. Currency mix EUR 1,232 / MKD 305 — confirming the per-row parse
+  works and that EUR really is the majority. Dominant category is Автомобили
+  (cars, 581 = 38%), then Станови (apartments, 108) and Авто делови (car parts,
+  94); this is a genuine dominant-category reading, not an artifact of the page
+  cap, because the /Search feed is a single mixed newest-first stream.
+  CAVEAT for downstream: prices are seller-typed free text and the tail is
+  garbage — the top observed values are 1,111,111,111 EUR and 11,111,111 EUR on
+  ordinary used cars and land plots. These are real upstream values, not parse
+  errors, so any use of this source needs winsorizing or a sanity band.

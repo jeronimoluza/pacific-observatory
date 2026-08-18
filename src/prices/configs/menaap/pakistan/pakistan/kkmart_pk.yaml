@@ -1,0 +1,23 @@
+scaffolding: spider
+spider: kkmart_pk
+url: https://kkmart.pk/
+channel: convenience
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: PKR
+cadence: weekly
+coicop_codes: null
+notes: |
+  KK Mart (Pakistan) general convenience-store webshop -- bakery items
+  (dawn bread), spices, baby/household goods, cosmetics, decor. Open
+  Shopify /products.json catalog. Verified live 2026-08-17: currency
+  confirmed PKR via /cart.js (redirects to www.kkmart.pk on that endpoint
+  only; bare-domain /products.json returns 200 directly). coicop_codes
+  left unset for classifier assignment.
+  Full scrape 2026-08-17: 500 rows (2 pages) before 429s from the site
+  truncated further pagination (Shopify-side throttling under sustained
+  load; base class DOWNLOAD_DELAY=2.0s not enough). A page-5 probe
+  confirmed the live catalog is well over 1,000 products -- re-run after
+  a cooldown for fuller coverage.

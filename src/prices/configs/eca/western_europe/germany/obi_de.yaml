@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: obi_de
+url: https://www.obi.de/
+language: de
+currency: EUR
+cadence: weekly
+channel: home-improvement
+notes: |
+  OBI Germany — DIY / home-improvement chain. Nuxt 3 SSR storefront.
+  Verified live 2026-08-17: TLS impersonation not required (plain curl_cffi
+  chrome124 clears both robots.txt and sitemap/PDP fetches at 200; no WAF
+  challenge seen). Enumerability proved on the site's own sitemap, not a
+  homepage: robots.txt -> /sitemaps/obi_de_de/sitemap_index.xml ->
+  de_pdp_index.xml -> sitemap_obi-products_0.xml vs
+  sitemap_obi-products_1.xml, each 50000 product URLs, zero product-id
+  overlap between the two shards. PDP price lives in the __NUXT_DATA__
+  devalue-flattened array under indirection (grossPrice key holds an array
+  INDEX, not the price — must resolve arr[index]); confirmed live e.g.
+  product 8938128 resolved to EUR 75.66, not the raw index 731 a naive
+  regex would have returned. Smoke run: 60/60 valid rows, single shard-0
+  crawl only (shards 1-2 unused at this cap). Full scrape still pending —
+  orchestrator queues it; 150k+ product sitemap universe across 3 shards
+  plus seller-product shards not yet touched.

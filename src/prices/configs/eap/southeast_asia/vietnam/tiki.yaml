@@ -7,3 +7,5 @@ url: https://tiki.vn
 language: vi
 cadence: daily
 channel: supermarket
+archive_prefix: "tiki.vn/"
+archive_path_re: "^/[^/]+-p\\d+\\.html$"

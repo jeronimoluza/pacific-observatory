@@ -1,0 +1,25 @@
+scaffolding: spider
+spider: apharmasolutions_lb
+url: https://apharmasolutions.com/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+notes: |
+  Medical-supplies distributor (ampoules, IV sets, intravenous solutions).
+  Shard listed Iraq/Jordan/Lebanon/Palestine as candidates; the contact
+  page (https://apharmasolutions.com/contact-us/) gives an address in
+  Nabi Ayla, Lebanon and a +961 phone number, so country=lebanon.
+  WooCommerce Store API confirmed live 2026-08-17
+  (https://apharmasolutions.com/wp-json/wc/store/v1/products),
+  prices.currency_code=USD, minor_unit=0 (e.g. price "20" -> $20, matching
+  shard evidence) - USD pricing is standard for Lebanese online retail
+  given LBP instability. Full scrape: see report for row count.
+  QA sweep flagged 5 ZERO_PRICES rows 2026-08-17 (IV-solution SKUs, ids
+  279-283). Confirmed live: Store API prices.price="0", price_html="" --
+  genuine get-a-quote listings with no fixed price set, not a parse
+  failure. Fixed at the spider: `_item` now drops price<=0 rows.

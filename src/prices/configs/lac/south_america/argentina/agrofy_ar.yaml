@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: agrofy_ar
+url: https://www.agrofy.com.ar/
+language: es
+cadence: weekly
+channel: other
+notes: |
+  Onboarded from the shard's `agrofy.com.co` entry (nominally Colombia): the
+  .co domain 301s to agrofy.com:443, which 302s to www.agrofy.com.ar, with
+  no Colombia-specific catalog anywhere in the chain (verified live
+  2026-08-17). Shipped here as Argentina rather than skipped -- agrofy.com.ar
+  is a large, distinct catalog (same Agrofy platform as agrofy_br.py, but
+  Argentina's own used-machinery inventory, not a re-serve of the Brazil
+  listings) -- and worth sourcing in its own right for the `lac` region.
+
+  Same used farm-machinery classifieds nature as agrofy_br.py; `channel:
+  other` for the same reason (single-vertical used-equipment marketplace,
+  not general retail). Excludes real-estate ("campos") and
+  services/financing categories.
+
+  Gotcha: currency is NOT uniform within the source. Listings mix ARS ("$")
+  and USD ("U$") per item -- e.g. a used tractor priced in pesos next to an
+  imported combine priced in dollars on the same category page (verified
+  live 2026-08-17: /tractores had "$"-priced and "U$"-priced hits
+  side by side; /cosechadoras was almost entirely "U$"). The spider reads
+  the per-hit currency field rather than hardcoding one currency, so no
+  single `currency:` value here is fully representative -- see the spider's
+  `_CURRENCY_MAP` ('$' -> ARS, 'U$' -> USD).
+
+  coicop_divisions: none (used machinery is not a COICOP-classified
+  consumer good).
+
+  QA sweep flagged 6 ZERO_PRICES rows and MULTI_CURRENCY 2026-08-17.
+  MULTI_CURRENCY (15 ARS, 59 USD) is expected/legitimate per the gotcha
+  above, not a parse bug. The 6 zero-price rows (all "Tractor John Deere
+  ..." under a "John Deere planes de ahorro" seller/financing program)
+  were confirmed live: __NEXT_DATA__ shows paymentMethod="A Convenir."
+  (price to be negotiated) with productData.product.price=0 -- genuinely
+  no fixed price, not a scrape failure. Fixed at the spider: hits with
+  price<=0 are now skipped rather than emitted as a 0-price row.
