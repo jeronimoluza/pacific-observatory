@@ -1,5 +1,5 @@
 scaffolding: spider
-extraction_pattern: scrapy_playwright
+extraction_pattern: scrapy_html
 analytical_role: retailer_sku
 coicop_classification: classifier
 spider: fairprice
@@ -9,3 +9,34 @@ cadence: daily
 channel: supermarket
 archive_prefix: "www.fairprice.com.sg/product/"
 archive_path_re: "^/product/[^/?]+"
+notes: |
+  Singapore's largest grocery retailer. Next.js SSR; product hrefs are in
+  the served HTML, and each product page carries Schema.org Product JSON-LD
+  (name, sku, brand, offers.price/priceCurrency/availability). Needs
+  impersonate=safari17_0 -- the site is behind Akamai bot manager.
+
+  extraction_pattern corrected 2026-08-18 from scrapy_playwright to
+  scrapy_html: the Playwright implementation was replaced long ago (it hung
+  on the first category request), but the manifest still advertised it.
+
+  REPAIRED 2026-08-18. The spider was stuck at ~111 rows per run against a
+  historical max of 454. Root cause: it walked exactly ten hard-coded
+  top-level category hubs, and each hub renders only ~20 product cards.
+  There is no working pagination to add -- ?page=2 and ?pageSize=100 both
+  return the SAME 20 hrefs, and the internal JSON API
+  (website-api.omni.fairprice.com.sg) answers every guessed query with an
+  empty {"code":200,"status":"SUCCESS"} envelope and 405s on POST.
+
+  The lever is the SUBcategory links, which are present in the same SSR
+  HTML but were never followed. A breadth-first walk measured 2026-08-18
+  found 131 categories and 1,909 distinct product URLs, exhausting the tree
+  at depth 2 (depth cap set to 3). That is ~17x the previously reachable
+  set.
+
+  Smoke 2026-08-18: 317 rows in 66s, 440/440 responses HTTP 200, 317
+  distinct product ids across 39 categories (was 10), single currency SGD,
+  price range 1.00-47.37 SGD. Full scrape pending.
+
+  Minor, pre-existing and NOT introduced by this repair: some prices arrive
+  as float artifacts (e.g. "14.349999999999998") because that is the literal
+  value in the site's own JSON-LD offers block.

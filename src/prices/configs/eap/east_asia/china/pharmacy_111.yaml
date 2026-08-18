@@ -1,5 +1,5 @@
 scaffolding: spider
-extraction_pattern: scrapy_html
+extraction_pattern: scrapy_listing
 analytical_role: retailer_sku
 coicop_classification: classifier
 spider: pharmacy_111
@@ -9,3 +9,53 @@ cadence: daily
 channel: pharmacy
 archive_prefix: "m.111.com.cn/item/"
 archive_path_re: "^/item/\\d+\\.html$"
+notes: |
+  Chinese online pharmacy (1药网 / 111 Pharmacy). Collected from the mobile
+  site's leaf category pages, which server-render ten product cards each
+  with item id, name and live price -- no product-page fetch needed, so
+  extraction_pattern moved from scrapy_html to scrapy_listing.
+
+  REPAIRED 2026-08-18. The spider was pinned at ~96 products on every run
+  since March 2026 (112 runs, historical max 98) -- a flat cap that looks
+  like a working scraper. Root cause: it crawled outward from the mobile
+  HOMEPAGE, which exposes only 22 item links and NO category links at all,
+  so the crawl never had anywhere to go.
+
+  Desktop host is unusable: www.111.com.cn serves its category index, but
+  every product and category URL linked from that index returns 404 to us
+  (verified on /product/971851.html and /categories/953710, with and
+  without a Referer). Only the m. host serves real content.
+
+  Category ids are swept numerically rather than crawled because the mobile
+  navigation is client-side and absent from the served HTML -- a plain-HTTP
+  crawl finds zero /categories/ links to follow -- and the underlying JSON
+  API (gateway.fangkuaiyi.com/mobile/category/getItemSecondCategory)
+  requires an md5 request signature. A sparse sweep on 2026-08-18 found live
+  leaf categories from 1001020 to 1002220; the spider scans 1001000-1002300.
+  Ids outside the live window answer HTTP 500, so 500 was removed from the
+  retry codes.
+
+  GOTCHA -- the real price is fragmented by an inline tag,
+  `<span class="price">¥<i>9</i>.9</span>`, so a naive currency regex skips
+  it and matches `<span class="del_price">¥15.00</span>` instead. That
+  del_price is a CONSTANT template placeholder rendered identically on every
+  card, not a was-price: parsing it yields an entire catalog priced at a
+  uniform 15.00 CNY. The smoke run below is checked against exactly this --
+  1.1% of rows land on 15.00, not 100%.
+
+  GOTCHA -- responses are intermittently truncated to a ~1.9KB stub with
+  HTTP 200 and no cards. Retried in-spider; a stub is not an empty category.
+
+  LIMITATION -- each leaf renders only its FIRST ten products. Pagination is
+  client-side (?page=N, ?currentPage=N, ?limit=N all return the same ten;
+  ?pageSize=N and ?pageNum=N return HTTP 500), so per-category depth is
+  capped at ten until the signed API is worked out. Breadth across ~500 live
+  categories is what carries the volume.
+
+  Smoke 2026-08-18: 270 rows in 67s across 28 categories -- i.e. it exceeds
+  its own former FULL-run total roughly 3x during a smoke test. 270 distinct
+  product ids, single currency CNY, price range 2.80-3,750.00 CNY. Full
+  scrape pending.
+
+  Note: the "pharmacy_111" entry in price_scraping/selectors.py is now
+  unused by this spider (left in place, not deleted).

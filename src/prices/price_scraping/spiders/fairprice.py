@@ -47,6 +47,13 @@ CATEGORIES = [
 ]
 
 PRODUCT_HREF_RE = re.compile(r'href="(/product/[^"]+)"')
+CATEGORY_HREF_RE = re.compile(r'href="(/category/[^"?#]+)"')
+
+# The ten seeded categories above are top-level hubs that each render only
+# ~20 product cards. Their SUBcategory links are also in the SSR HTML, and
+# walking them is what turns ~125 reachable products into ~1,900. A BFS on
+# 2026-08-18 found 131 categories and exhausted the tree at depth 2.
+MAX_CATEGORY_DEPTH = 3
 
 
 class FairPriceSpider(scrapy.Spider):
@@ -72,21 +79,30 @@ class FairPriceSpider(scrapy.Spider):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.scraped_urls: set[str] = set()
+        self.seen_categories: set[str] = set()
 
     async def start(self):
         for cat_url, cat_name in CATEGORIES:
+            self.seen_categories.add(cat_url)
             yield scrapy.Request(
                 cat_url,
                 callback=self.parse_category,
-                meta={"impersonate": self.IMPERSONATE_PROFILE, "category": cat_name},
+                meta={
+                    "impersonate": self.IMPERSONATE_PROFILE,
+                    "category": cat_name,
+                    "depth": 0,
+                },
                 errback=self.errback,
             )
 
     def parse_category(self, response):
         category = response.meta["category"]
+        depth = response.meta.get("depth", 0)
         # Product hrefs are rendered SSR as <a href="/product/<slug>-<id>">.
         paths = set(PRODUCT_HREF_RE.findall(response.text))
-        logger.info(f"category={category} discovered {len(paths)} product URLs")
+        logger.info(
+            f"category={category} depth={depth} discovered {len(paths)} product URLs"
+        )
         for path in paths:
             url = response.urljoin(path)
             if url in self.scraped_urls:
@@ -96,6 +112,25 @@ class FairPriceSpider(scrapy.Spider):
                 url,
                 callback=self.parse_product,
                 meta={"impersonate": self.IMPERSONATE_PROFILE, "category": category},
+                errback=self.errback,
+            )
+
+        if depth >= MAX_CATEGORY_DEPTH:
+            return
+        for sub_path in sorted(set(CATEGORY_HREF_RE.findall(response.text))):
+            sub_url = response.urljoin(sub_path)
+            if sub_url in self.seen_categories:
+                continue
+            self.seen_categories.add(sub_url)
+            sub_name = sub_path.rsplit("/", 1)[-1].replace("-", " ").title()
+            yield scrapy.Request(
+                sub_url,
+                callback=self.parse_category,
+                meta={
+                    "impersonate": self.IMPERSONATE_PROFILE,
+                    "category": sub_name,
+                    "depth": depth + 1,
+                },
                 errback=self.errback,
             )
 
