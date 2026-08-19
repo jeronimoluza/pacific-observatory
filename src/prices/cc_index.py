@@ -24,6 +24,7 @@ import re
 import subprocess
 import time
 from pathlib import Path
+from collections import OrderedDict
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
@@ -33,7 +34,18 @@ CC_DATA_BASE = "https://data.commoncrawl.org"
 
 # One cluster.idx is ~100MB and never changes once a collection is published,
 # so it is cached on disk and reused across spiders and runs.
-_CLUSTER_CACHE: Dict[str, Tuple[List[str], List[Tuple[str, int, int]]]] = {}
+#
+# The parsed form is held in memory too, but strictly bounded. Parsing one
+# index into Python lists costs ~0.25-0.30 GB of RSS, and a backfill walks 103
+# of them, so an unbounded dict reaches ~25 GB and takes the machine down --
+# which is what it did on a 4 GB Raspberry Pi. The bound costs nothing,
+# because a run visits each index exactly once inside a single process: the
+# entries were never read back. Reuse across sources comes from the on-disk
+# copy, not this.
+_CLUSTER_MAX_RESIDENT = 2
+_CLUSTER_CACHE: "OrderedDict[str, Tuple[List[str], List[Tuple[str, int, int]]]]" = (
+    OrderedDict()
+)
 
 
 def cache_dir(project_root: Optional[Path] = None) -> Path:
@@ -95,6 +107,7 @@ def _download_cluster(index: str, dest: Path) -> None:
 def load_cluster(index: str) -> Tuple[List[str], List[Tuple[str, int, int]]]:
     """Return (sorted SURT keys, (shard, offset, length) per key) for ``index``."""
     if index in _CLUSTER_CACHE:
+        _CLUSTER_CACHE.move_to_end(index)
         return _CLUSTER_CACHE[index]
     path = cache_dir() / f"cluster_{index}.idx"
     if not path.exists():
@@ -115,6 +128,8 @@ def load_cluster(index: str) -> Tuple[List[str], List[Tuple[str, int, int]]]:
     if not keys:
         raise RuntimeError(f"cluster.idx for {index} parsed to zero blocks")
     _CLUSTER_CACHE[index] = (keys, blocks)
+    while len(_CLUSTER_CACHE) > _CLUSTER_MAX_RESIDENT:
+        _CLUSTER_CACHE.popitem(last=False)
     return keys, blocks
 
 
