@@ -28,6 +28,7 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from .cc_config import all_cc_configs
+from .cc_samples import SampleKeeper
 from .cc_index import query_prefix
 from .backfill import _load_spider_parse_html
 from .price_scraping.archived import row_from_meta, rows_from_jsonld
@@ -91,6 +92,7 @@ class CommonCrawlScraper:
                 self.selectors = {}
         self.scraped_at = datetime.now(timezone.utc).isoformat()
         self._file_lock = threading.Lock()
+        self._samples: Optional[SampleKeeper] = None
 
     # -- helpers --
 
@@ -343,6 +345,9 @@ class CommonCrawlScraper:
             return "parse_failed"
         rows = self._parse_rows(html, rec["url"])
         if not rows:
+            # The only page worth keeping is one the parser could not read.
+            if self._samples is not None:
+                self._samples.offer(html, rec["url"], rec["timestamp"])
             return "no_extract"
         try:
             for i, row in enumerate(rows):
@@ -389,6 +394,12 @@ class CommonCrawlScraper:
             "capped": 0,
         }
         existing = self._existing_hashes(location)
+        self._samples = SampleKeeper(self._items_dir(location).parent / "samples")
+        # Yield summed over 103 crawls hides the failure it most needs to
+        # show: a site redesign breaks the parser at one moment in time, and
+        # the aggregate reads as a mediocre-but-plausible ratio rather than a
+        # cliff. Recorded per crawl so the boundary year is visible.
+        per_index: Dict[str, Dict[str, int]] = {}
         logger.info(
             f"Found {len(existing)} existing CC items for "
             f"{self.spider_name}/{location[2]}"
@@ -418,6 +429,7 @@ class CommonCrawlScraper:
                 stats["capped"] += len(todo) - max_per_index
                 todo = todo[:max_per_index]
 
+            here: Dict[str, int] = {"queried": len(records)}
             pbar = tqdm(total=len(todo), desc=f"{index} fetch+parse")
             with ThreadPoolExecutor(max_workers=num_workers) as ex:
                 futures = {
@@ -426,6 +438,7 @@ class CommonCrawlScraper:
                 for fut in as_completed(futures):
                     outcome = fut.result()
                     stats[outcome] = stats.get(outcome, 0) + 1
+                    here[outcome] = here.get(outcome, 0) + 1
                     if outcome == "parsed":
                         existing.add(
                             self._record_hash(
@@ -434,5 +447,27 @@ class CommonCrawlScraper:
                         )
                     pbar.update(1)
             pbar.close()
+            per_index[index] = here
 
+        self._write_index_yield(location, per_index)
         return stats
+
+    def _write_index_yield(
+        self, location: Tuple[str, str, str], per_index: Dict[str, Dict[str, int]]
+    ) -> None:
+        """Persist the per-crawl breakdown next to the items it describes.
+
+        Merged with any previous run's file rather than overwritten: a source
+        is often finished across several sessions, and a crawl absent from
+        this run still happened.
+        """
+        path = self._items_dir(location).parent / "index_yield.json"
+        merged: Dict[str, Dict[str, int]] = {}
+        if path.exists():
+            try:
+                merged = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                merged = {}
+        merged.update(per_index)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(merged, indent=1, sort_keys=True), encoding="utf-8")

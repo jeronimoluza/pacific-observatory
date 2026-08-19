@@ -149,7 +149,7 @@ def common_crawl_command(
     click.echo()
     click.echo(f"Run stats for {spider_name} ({region}/{subregion}/{country}):")
     for k, v in stats.items():
-        click.echo(f"  {k:<14} {v}")
+        click.echo(f"  {k:<16} {v}")
 
 
 if __name__ == "__main__":
