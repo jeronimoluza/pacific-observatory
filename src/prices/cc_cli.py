@@ -7,6 +7,7 @@ mirroring the ``backfill.py`` / ``backfill_cli.py`` pair.
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from typing import Optional, Tuple
 
 import click
@@ -79,6 +80,16 @@ from prices.cc_warc_fetcher import CommonCrawlScraper, get_prices_data_root
     ),
 )
 @click.option(
+    "--manifest",
+    type=click.Path(exists=True, dir_okay=False, path_type=Path),
+    default=None,
+    help=(
+        "Fetch from a pre-resolved manifest instead of querying the crawl "
+        "indexes. Skips cluster.idx entirely, so this runs on a machine "
+        "without the 13 GB index cache."
+    ),
+)
+@click.option(
     "--dry-run",
     is_flag=True,
     help="List configured spiders with prefix + path_re, then exit.",
@@ -91,6 +102,7 @@ def common_crawl_command(
     workers: int,
     max_per_index: Optional[int],
     interleave: bool,
+    manifest: Optional[Path],
     dry_run: bool,
 ) -> None:
     """Fetch historical product data from Common Crawl WARC archives."""
@@ -117,7 +129,7 @@ def common_crawl_command(
         raise click.UsageError(
             "--country is required to place output under data/prices/<region>/<sub>/<country>/"
         )
-    if not indexes:
+    if not indexes and not manifest:
         indexes = tuple(resolve_cc_indexes(since_year))
         click.echo(
             f"No --index given; querying {len(indexes)} crawls since {since_year} "
@@ -140,11 +152,18 @@ def common_crawl_command(
         output_dir=output_dir,
         indexes=list(indexes),
     )
-    stats = scraper.run_scrape_cc(
-        (region, subregion, country),
-        num_workers=workers,
-        max_per_index=max_per_index,
-    )
+    if manifest:
+        from prices.cc_fetch import run_from_manifest
+
+        stats = run_from_manifest(
+            scraper, (region, subregion, country), manifest, num_workers=workers
+        )
+    else:
+        stats = scraper.run_scrape_cc(
+            (region, subregion, country),
+            num_workers=workers,
+            max_per_index=max_per_index,
+        )
 
     click.echo()
     click.echo(f"Run stats for {spider_name} ({region}/{subregion}/{country}):")

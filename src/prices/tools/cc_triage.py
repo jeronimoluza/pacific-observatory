@@ -39,6 +39,7 @@ FLAKY_FETCH_RATIO = 0.20
 # ordering here is the operator's reading order.
 _PRIORITY = [
     "CRASHED",
+    "NO_MANIFEST",
     "NO_ARCHIVE",
     "PARSER_DEAD",
     "PARSER_WEAK",

@@ -122,6 +122,7 @@ def _run_one(
     cap: int,
     indexes: List[str],
     max_per_index: Optional[int],
+    manifest_dir: Optional[Path],
 ) -> Dict:
     from prices.tools import cc_triage
 
@@ -142,10 +143,36 @@ def _run_one(
         str(since),
         "--interleave",
     ]
-    if max_per_index:
-        cmd += ["--max-per-index", str(max_per_index)]
-    for idx in indexes:
-        cmd += ["--index", idx]
+    # A manifest replaces index resolution wholesale: no cluster.idx is read,
+    # so this path runs on a machine that cannot hold the 13 GB index cache.
+    manifest = (manifest_dir / f"{src.spider}.jsonl") if manifest_dir else None
+    if manifest and manifest.exists():
+        cmd += ["--manifest", str(manifest)]
+    else:
+        if manifest_dir:
+            return {
+                "spider": src.spider,
+                "country": src.country,
+                "region": src.region,
+                "status": "error",
+                "verdict": "NO_MANIFEST",
+                "flags": ["NO_MANIFEST"],
+                "rows_written": 0,
+                "rows_total": _count_items(_items_dir(root, src)),
+                "yield": 0.0,
+                "elapsed_sec": 0.0,
+                "stats": {},
+                "cliff": {},
+                "samples": 0,
+                "n_403": 0,
+                "n_503": 0,
+                "finished_at": _now(),
+                "log": "",
+            }
+        if max_per_index:
+            cmd += ["--max-per-index", str(max_per_index)]
+        for idx in indexes:
+            cmd += ["--index", idx]
 
     items = _items_dir(root, src)
     rows_before = _count_items(items)
@@ -246,6 +273,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     ap.add_argument("--limit", type=int, default=0, help="stop after N sources")
     ap.add_argument("--only", default="", help="comma-separated spider names")
+    ap.add_argument(
+        "--manifest-dir",
+        type=Path,
+        default=None,
+        help="fetch from per-source manifests (by_source/) instead of resolving "
+        "crawl indexes locally; the machine then needs no cluster.idx cache",
+    )
     ap.add_argument("--min-free-gb", type=float, default=2.0)
     ap.add_argument("--cooldown", type=int, default=600, help="seconds after a ban")
     ap.add_argument("--list", action="store_true", help="print the worklist and exit")
@@ -273,10 +307,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.limit:
         pending = pending[: args.limit]
 
-    indexes = _resolve_indexes_once(work, args.since)
+    indexes = [] if args.manifest_dir else _resolve_indexes_once(work, args.since)
+    mode = (
+        f"manifests from {args.manifest_dir}"
+        if args.manifest_dir
+        else (f"{len(indexes)} crawl indexes resolved locally")
+    )
     print(
         f"{len(sources)} scoped sources, {len(done)} already recorded, "
-        f"{len(pending)} to run, {len(indexes)} crawl indexes",
+        f"{len(pending)} to run, {mode}",
         flush=True,
     )
 
@@ -310,6 +349,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             args.cap,
             indexes,
             args.max_per_index,
+            args.manifest_dir,
         )
         with results_path.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(rec) + "\n")
