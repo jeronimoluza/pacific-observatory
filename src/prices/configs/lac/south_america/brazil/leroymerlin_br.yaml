@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: leroymerlin_br
 url: https://www.leroymerlin.com.br/
+archive_prefix: "www.leroymerlin.com.br/"
+archive_path_re: '^/[^/]+_\d+$'
 language: pt
 currency: BRL
 cadence: weekly

@@ -19,9 +19,12 @@ $89.99, -44% badge). Pagination is `?page=N`.
 """
 
 from datetime import datetime, timezone
+from typing import Iterator
 from urllib.parse import urljoin
 
 import scrapy
+
+from ..archived import row_from_meta, rows_from_jsonld
 
 _BASE = "https://www.doitcenter.com.pa"
 _CATEGORIES = [
@@ -119,3 +122,25 @@ class DoitcenterPaSpider(scrapy.Spider):
                 callback=self.parse_category,
                 meta={"slug": slug, "page": page + 1},
             )
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). Archived
+    # snapshots here are individual /productos/<slug> PDPs (a different
+    # page from the /categorias/<slug> listings the live crawl walks), but
+    # confirmed live 2026-08-18 on 2 PDPs: this Webscale/Next.js theme
+    # emits a full Product JSON-LD block, so the shared jsonld tier covers
+    # this spider on its own (the OpenGraph meta tier also works here as a
+    # fallback, but its product_name carries a " | Do it Center" suffix
+    # jsonld's does not).
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived Do it Center PDP page."""
+        rows = rows_from_jsonld(html_text, url)
+        if not rows:
+            row = row_from_meta(html_text, url)
+            rows = [row] if row else []
+        for row in rows:
+            row.setdefault("currency", cls.currency)
+            row.setdefault("language", cls.language)
+            yield row

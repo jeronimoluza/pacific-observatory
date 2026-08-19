@@ -7,6 +7,8 @@ url: https://www.dia.es/
 language: es
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.dia.es/"
+archive_path_re: '/p/[A-Za-z0-9]+/?$'
 notes: |
   Discounter; independent tracking finds DIA wins most head-to-heads vs
   Mercadona/Carrefour per shard. sitemap.xml lists 289 category URLs of

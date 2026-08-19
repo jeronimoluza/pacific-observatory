@@ -7,6 +7,8 @@ url: https://vasarlas.coop.hu/
 language: hu
 cadence: weekly
 channel: supermarket
+archive_prefix: "vasarlas.coop.hu/"
+archive_path_re: '^/[^/]+/?$'
 notes: |
   Platform correction: CSV listed OpenCart (its route=product/list /
   route=product/quickview&product_id=N URLs look OpenCart-shaped), but

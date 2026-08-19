@@ -5,11 +5,15 @@ CrawlSpider Pattern A — WooCommerce. PDPs at /product/<slug>/.
 """
 
 import logging
+from typing import Iterator
 
+import scrapy
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 
 from price_scraping.utils import SelectorExtractor
+
+from ..archived import row_from_meta, rows_from_jsonld
 
 logger = logging.getLogger(__name__)
 
@@ -81,3 +85,54 @@ class BioBhutanSpider(CrawlSpider):
             }
         else:
             logger.warning(f"Could not extract product data from {response.url}")
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). Confirmed
+    # live 2026-08-18 on 2 PDPs: this WooCommerce theme emits a standard
+    # Product JSON-LD block, so the shared jsonld tier covers it. Falls
+    # back to the same bespoke selectors the live parse uses, for archived
+    # snapshots predating the JSON-LD plugin or on a theme swap.
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived Bio Bhutan PDP page."""
+        rows = rows_from_jsonld(html_text, url)
+        if not rows:
+            row = row_from_meta(html_text, url)
+            rows = [row] if row else []
+        if rows:
+            for row in rows:
+                row.setdefault("currency", cls.currency)
+                yield row
+            return
+
+        sel = scrapy.Selector(text=html_text)
+        name = None
+        for csel in cls.SELECTORS["product_name"]:
+            name = sel.css(csel).get()
+            if name and name.strip():
+                name = name.strip()
+                break
+        if not name:
+            return
+        price = None
+        for csel in cls.SELECTORS["price"]:
+            price = sel.css(csel).get()
+            if price and price.strip():
+                price = price.strip()
+                break
+        if not price:
+            return
+        product_id = None
+        for csel in cls.SELECTORS["product_id"]:
+            product_id = sel.css(csel).get()
+            if product_id and product_id.strip():
+                product_id = product_id.strip()
+                break
+        yield {
+            "product_id": product_id,
+            "product_name": name[:500],
+            "price": price,
+            "currency": cls.currency,
+            "url": url,
+        }

@@ -7,6 +7,8 @@ url: https://glomark.lk/
 language: en
 cadence: weekly
 channel: supermarket
+archive_prefix: "glomark.lk/"
+archive_path_re: '^/[a-z0-9-]+/p/\d+$'
 notes: |
   Server-rendered category pages, Custom PHP (ZENEDGE-fronted), no WAF hit.
   Full grocery taxonomy: bakery, beverages, chilled dairy, fresh (fish/

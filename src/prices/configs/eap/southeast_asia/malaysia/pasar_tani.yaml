@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: pasar_tani
 url: https://pasartani.net
+archive_prefix: "pasartani.net/browse/ad/"
+archive_path_re: '^/browse/ad/[^/]+/[^/]+\.html$'
 language: ms
 cadence: weekly
 channel: fresh-market

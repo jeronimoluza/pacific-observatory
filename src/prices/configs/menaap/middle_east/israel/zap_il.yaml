@@ -8,6 +8,8 @@ language: he
 currency: ILS
 cadence: weekly
 channel: other
+archive_prefix: "www.zap.co.il/model.aspx?modelid="
+archive_path_re: '^/model\.aspx$'
 notes: |
   Verified live 2026-08-17: zap.co.il is an Israeli general
   price-comparison shopping site (electronics, appliances, beauty, home,

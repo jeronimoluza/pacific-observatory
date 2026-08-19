@@ -8,6 +8,8 @@ language: hy
 currency: AMD
 cadence: weekly
 channel: dept-store
+archive_prefix: "vega.am/"
+archive_path_re: '\.html$'
 notes: |
   vega.am — Armenia electronics/appliances hypermarket, OpenCart-based
   ("chameleon" theme). Verified live 2026-08-17: real AMD ("֏") prices in

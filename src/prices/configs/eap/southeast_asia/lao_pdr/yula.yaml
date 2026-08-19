@@ -6,6 +6,8 @@ coicop_codes: ["04.1.1"]
 spider: yula
 active: false
 url: https://www.yula.la/en/real-estate
+archive_prefix: "www.yula.la/"
+archive_path_re: '^(/en)?/[a-z0-9-]+-\d+/?$'
 language: en
 cadence: daily
 channel: null

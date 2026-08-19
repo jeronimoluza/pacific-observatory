@@ -8,6 +8,8 @@ url: https://www.extra.com/en-sa
 language: en
 currency: SAR
 cadence: weekly
+archive_prefix: "www.extra.com/en-sa/"
+archive_path_re: '^/en-sa/.+/p/[A-Za-z0-9]+$'
 notes: |
   Verified live 2026-08-07: eXtra Stores Saudi Arabia. SAP Commerce Cloud
   (Hybris) storefront, server-rendered schema.org Product JSON-LD (name,

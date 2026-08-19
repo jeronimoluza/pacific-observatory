@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: vissan_mart
 url: https://vissanmart.com/thuc-pham-tuoi-song.html
+archive_prefix: "vissanmart.com/"
+archive_path_re: '^/(?!thuc-pham-tuoi-song\.html$|thuc-pham-che-bien\.html$)[a-z0-9-]+\.html$'
 language: vi
 cadence: daily
 channel: supermarket

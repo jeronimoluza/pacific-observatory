@@ -1,5 +1,7 @@
 spider: othoba
 language: en
+archive_prefix: "othoba.com/"
+archive_path_re: '^/[a-z0-9-]+-\d{4,8}$'
 notes: >
   Bangladesh general e-commerce + daily-bazar grocery. CrawlSpider, server-rendered HTML.
   PDPs match /<slug>-<6+digit-id>.

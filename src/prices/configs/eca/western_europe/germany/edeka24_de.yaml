@@ -7,6 +7,8 @@ url: https://www.edeka24.de/
 language: de
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.edeka24.de/"
+archive_path_re: '\.html$'
 notes: |
   Nationwide shipping, shelf-stable only per CSV (no fresh produce/meat/
   dairy) -- reaches pantry/packaged/bakery/some frozen but not the

@@ -11,7 +11,12 @@ from typing import Optional, Tuple
 
 import click
 
-from prices.cc_config import DEFAULT_CC_SINCE_YEAR, all_cc_configs, resolve_cc_indexes
+from prices.cc_config import (
+    DEFAULT_CC_SINCE_YEAR,
+    all_cc_configs,
+    interleave_indexes,
+    resolve_cc_indexes,
+)
 from prices.cc_warc_fetcher import CommonCrawlScraper, get_prices_data_root
 
 
@@ -55,6 +60,25 @@ from prices.cc_warc_fetcher import CommonCrawlScraper, get_prices_data_root
     help="WARC fetch concurrency.",
 )
 @click.option(
+    "--max-per-index",
+    type=int,
+    default=None,
+    help=(
+        "Cap new records fetched per crawl. Without it a truncated run spends "
+        "its whole budget on the first few crawls; with it the same budget "
+        "spreads across the period, which is what yields repeat observations "
+        "of the same product rather than a one-off census."
+    ),
+)
+@click.option(
+    "--interleave",
+    is_flag=True,
+    help=(
+        "Bisect the crawl order (ends, then midpoints) so an interrupted run "
+        "still spans the full period instead of only the newest crawls."
+    ),
+)
+@click.option(
     "--dry-run",
     is_flag=True,
     help="List configured spiders with prefix + path_re, then exit.",
@@ -65,6 +89,8 @@ def common_crawl_command(
     indexes: Tuple[str, ...],
     since_year: int,
     workers: int,
+    max_per_index: Optional[int],
+    interleave: bool,
     dry_run: bool,
 ) -> None:
     """Fetch historical product data from Common Crawl WARC archives."""
@@ -98,6 +124,9 @@ def common_crawl_command(
             f"({indexes[0]} … {indexes[-1]})"
         )
 
+    if interleave:
+        indexes = tuple(interleave_indexes(list(indexes)))
+
     from core.config import get_country_path  # local import to keep startup cheap
 
     try:
@@ -111,7 +140,11 @@ def common_crawl_command(
         output_dir=output_dir,
         indexes=list(indexes),
     )
-    stats = scraper.run_scrape_cc((region, subregion, country), num_workers=workers)
+    stats = scraper.run_scrape_cc(
+        (region, subregion, country),
+        num_workers=workers,
+        max_per_index=max_per_index,
+    )
 
     click.echo()
     click.echo(f"Run stats for {spider_name} ({region}/{subregion}/{country}):")

@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: waltermart
 url: https://www.waltermartdelivery.com.ph
+archive_prefix: "www.waltermartdelivery.com.ph/"
+archive_path_re: '/p/\d+$'
 language: en
 cadence: daily
 channel: supermarket

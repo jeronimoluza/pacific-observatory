@@ -7,6 +7,8 @@ url: https://www.megamarket.ro/
 language: ro
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.megamarket.ro/"
+archive_path_re: '^(?:/[^/]+){4}/?$'
 notes: |
   Old-style server-rendered PHP storefront, table-based markup with
   per-product id="p_<id>_..." widgets. Parent category pages only show a

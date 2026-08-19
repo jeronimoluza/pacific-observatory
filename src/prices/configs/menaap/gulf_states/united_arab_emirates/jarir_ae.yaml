@@ -8,6 +8,8 @@ url: https://www.jarir.com/ae-en/
 language: en
 currency: AED
 cadence: weekly
+archive_prefix: "www.jarir.com/ae-en/"
+archive_path_re: '^/ae-en/[A-Za-z0-9._-]+-\d+\.html$'
 notes: |
   Verified live 2026-08-07: Jarir Bookstore UAE. Same Vue-SSR/Magento-style
   platform as jarir_sa (see that manifest) — server-rendered schema.org

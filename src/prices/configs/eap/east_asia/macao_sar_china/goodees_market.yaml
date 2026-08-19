@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: goodees_market
 url: https://goodees.market
+archive_prefix: "goodees.market/"
+archive_path_re: '^/(?!all\.html$|dairy-products\.html$|hams-sausages\.html$|bakery\.html$|fresh-vegetables\.html$|pantry\.html$|freezer\.html$|drinks\.html$|made-in-macau\.html$|organic-vegan\.html$|nutrition-supplements\.html$|snacks\.html$|flowers-gifts\.html$|household-books\.html$|recipe-ideas\.html$|store\.html$|packages\.html$)[^/?]+\.html$'
 language: en
 cadence: daily
 channel: supermarket

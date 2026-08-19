@@ -7,6 +7,8 @@ url: https://www.tata.com.uy/
 language: es
 cadence: weekly
 channel: supermarket
+archive_prefix: "tatauy.myvtex.com/"
+archive_path_re: '^/[^/]+/p$'
 notes: |
   Full-line Uruguayan chain (Grupo Ta-Ta), VTEX. Custom domain
   www.tata.com.uy 404s on /api/catalog_system/pub/... (Gatsby front-end

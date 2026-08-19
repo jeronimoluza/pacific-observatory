@@ -23,9 +23,12 @@ import json
 import logging
 import re
 from datetime import datetime, timezone
+from typing import Iterator
 from urllib.parse import unquote
 
 import scrapy
+
+from ..archived import rows_from_jsonld
 
 logger = logging.getLogger(__name__)
 
@@ -110,3 +113,22 @@ class FSoughAfSpider(scrapy.Spider):
             return json.loads(block)
         except (ValueError, TypeError):
             return None
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). Confirmed
+    # live 2026-08-18: the Product JSON-LD block on these PDPs uses an
+    # AggregateOffer with lowPrice/highPrice directly, no nested `offers`
+    # list -- `rows_from_jsonld`'s price extraction was widened to fall
+    # back to `lowPrice` for exactly this shape (see archived.py). The
+    # shared OpenGraph meta tier is deliberately NOT used as a fallback
+    # here: this site's `og:title` is the SEO page title ("Buy X in
+    # Afghanistan - 4sough"), not the clean product name -- confirmed on
+    # 2 live pages -- so falling back to it would write polluted names.
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived 4sough.com PDP page."""
+        for row in rows_from_jsonld(html_text, url):
+            row.setdefault("currency", cls.currency)
+            row.setdefault("language", cls.language)
+            yield row

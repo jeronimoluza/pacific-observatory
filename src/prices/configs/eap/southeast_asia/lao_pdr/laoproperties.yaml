@@ -6,6 +6,8 @@ coicop_codes: ["04.1.1"]
 spider: laoproperties
 active: false
 url: https://laoproperties.com/
+archive_prefix: "laoproperties.com/property/"
+archive_path_re: '^/property/[^/]+/?$'
 language: en
 cadence: daily
 channel: null

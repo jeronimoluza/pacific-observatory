@@ -7,6 +7,8 @@ url: https://www.reklama5.mk/
 language: mk
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.reklama5.mk/AdDetails"
+archive_path_re: '^/AdDetails/?$'
 notes: |
   reklama5.mk — North Macedonia classifieds marketplace. Verified live
   2026-08-17: /Search?pageView=1&page=<N> is a server-rendered "all ads,

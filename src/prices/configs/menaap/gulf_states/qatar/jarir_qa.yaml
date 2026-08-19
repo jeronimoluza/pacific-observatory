@@ -7,6 +7,8 @@ spider: jarir_qa
 url: https://www.jarir.com/qa-en/
 language: en
 cadence: daily
+archive_prefix: "www.jarir.com/qa-en/"
+archive_path_re: '^/qa-en/[A-Za-z0-9._-]+-\d+\.html$'
 notes: |
   Re-verified live 2026-08-06: Jarir Bookstore Qatar. Same Vue-SSR/Magento
   backend as jarir_sa/jarir_ae (both already onboarded elsewhere in this

@@ -5,6 +5,8 @@ coicop_classification: source_curated
 coicop_codes: ["04.1.1"]
 spider: batdongsan_vn
 url: https://batdongsan.com.vn/nha-dat-cho-thue
+archive_prefix: "batdongsan.com.vn/"
+archive_path_re: '^/[a-z0-9_-]+/[a-z0-9_-]+-pr\d{6,}$'
 language: vi
 cadence: weekly
 spider_kwargs:

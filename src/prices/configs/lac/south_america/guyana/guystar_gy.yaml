@@ -7,6 +7,8 @@ url: https://www.guystar.gy/
 language: en
 cadence: weekly
 channel: supermarket
+archive_prefix: "guystar.gy/index.php"
+archive_path_re: '^/index\.php$'
 notes: |
   Georgetown online grocery/general store, classic Zen Cart storefront.
   Re-verified live 2026-08-06: GET ?main_page=index&cPath=12_261_262 ->

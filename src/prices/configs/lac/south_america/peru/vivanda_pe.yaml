@@ -7,6 +7,8 @@ url: https://www.vivanda.com.pe/
 language: es
 cadence: weekly
 channel: hypermarket
+archive_prefix: "vivanda.myvtex.com/"
+archive_path_re: '^/[^/]+/p$'
 notes: |
   Round 3 platform-fingerprint reversal: prior round claimed vivanda.com.pe had "migrated off
   VTEX" (saw a Next.js storefront and stopped). It has not -- the underlying `vivanda.myvtex.com`

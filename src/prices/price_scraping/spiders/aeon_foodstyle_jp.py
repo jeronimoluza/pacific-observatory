@@ -36,8 +36,12 @@ import json
 import logging
 import urllib.parse
 from datetime import datetime, timezone
+from typing import Iterator
 
 import scrapy
+
+from ..archived import row_from_meta, rows_from_jsonld
+from ..archived_embedded import extract_flight_candidates
 
 logger = logging.getLogger(__name__)
 
@@ -135,3 +139,34 @@ class AeonFoodstyleJpSpider(scrapy.Spider):
                 callback=self.parse_page,
                 meta={"page_index": page_index + 1},
             )
+
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived AEON Food Style article page.
+
+        This Next.js App Router page has no JSON-LD or OpenGraph price meta
+        (confirmed live 2026-08-18), so those are tried first for parity
+        with every other spider but are expected to come back empty here --
+        the product grid is server-rendered as a React Server Components
+        "flight" payload instead (see `archived_embedded.py`). Unlike that
+        module's own generic fallback tier, this page's archived captures
+        are article-listing pages that legitimately carry ~20 distinct
+        products each, so every extracted candidate is yielded rather than
+        narrowed to a single URL-matching row.
+        """
+        rows = rows_from_jsonld(html_text, url)
+        if not rows:
+            row = row_from_meta(html_text, url)
+            rows = [row] if row else []
+        if rows:
+            for row in rows:
+                row.setdefault("currency", cls.currency)
+                row.setdefault("language", cls.language)
+                yield row
+            return
+
+        for row, _ids in extract_flight_candidates(html_text):
+            row["url"] = url
+            row["currency"] = cls.currency
+            row["language"] = cls.language
+            yield row

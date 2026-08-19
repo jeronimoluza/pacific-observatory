@@ -7,6 +7,8 @@ url: https://gtplaza.com/
 language: en
 cadence: weekly
 channel: supermarket
+archive_prefix: "gtplaza.com/"
+archive_path_re: '^/[^/]+/\d+-[^/]+\.html$'
 notes: |
   CSV listed the platform as Custom; re-verification found itemprop-tagged
   PrestaShop category HTML (data-id-product + schema.org/Product microdata),

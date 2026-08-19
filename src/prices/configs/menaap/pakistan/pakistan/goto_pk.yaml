@@ -8,6 +8,8 @@ url: https://goto.com.pk/
 language: en
 currency: PKR
 cadence: weekly
+archive_prefix: "www.goto.com.pk/"
+archive_path_re: '^/(?!(?:baby-toys-kids|backend|boys-clothing|cart|checkout|compare|computing-gaming|cooling-air-treatment|customer|customers|digital-cameras|drone|exercise-fitness|fitness-smart-watches|food-supplements|girls-clothing|grocery|health-beauty|home-lifestyle|led-tvs-1996|login|makeup|mens-fashion|mens-fragrances|mens-tshirts|mobile-phones|my-account|online-grocery-shop|refrigerators-freezers|register|search|security-cameras|small-appliances|smart-phones|smart-tv|tvs-home-appliances|vacuums-floor-care|wishlist|womens-fashion|womens-fragrances)/?$)[A-Za-z0-9][A-Za-z0-9._&-]*$'
 notes: |
   Verified live 2026-08-17: goto.com.pk — a first-party Pakistani online
   general retailer (grocery, mobile phones, health & beauty, home

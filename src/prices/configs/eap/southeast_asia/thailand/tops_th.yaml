@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: tops_th
 url: https://www.tops.co.th
+archive_prefix: "www.tops.co.th/en/"
+archive_path_re: '^/en/[a-z0-9-]+-\d{8,}$'
 language: en
 cadence: daily
 channel: supermarket

@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: fptshop_vn
 url: https://fptshop.com.vn/dien-thoai
+archive_prefix: "fptshop.com.vn/"
+archive_path_re: '^/(dien-thoai|may-tinh-xach-tay|may-tinh-bang|dong-ho-thong-minh|tai-nghe|may-anh|may-doc-sach)/[a-z0-9-]+$'
 language: vi
 cadence: weekly
 channel: electronics

@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: emartmall
 url: https://www.emartmall.com.vn
+archive_prefix: "emartmall.com.vn/index.php"
+archive_path_re: '^/index\.php$'
 language: vi
 cadence: daily
 channel: supermarket

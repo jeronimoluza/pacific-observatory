@@ -7,6 +7,8 @@ url: https://www.shwapno.com/
 language: en
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.shwapno.com/"
+archive_path_re: '^/(?!(?i:my-account|wishlist|my-orders|confirm|checkout|api|login|contact-us|our-outlets|privacy-policy|sitemap))[^/?]+$'
 notes: |
   Bangladesh's largest supermarket chain (ACI-owned). React Server
   Components (Next.js app router) storefront -- category listing pages are

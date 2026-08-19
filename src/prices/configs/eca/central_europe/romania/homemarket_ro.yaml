@@ -7,6 +7,8 @@ url: https://www.homemarket.ro/
 language: ro
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.homemarket.ro/product.php"
+archive_path_re: '^/product\.php$'
 notes: |
   Legacy server-rendered PHP storefront (Bucharest area, 14,000+ products
   per shard). /sitemap.xml lists 144 category ids (companion

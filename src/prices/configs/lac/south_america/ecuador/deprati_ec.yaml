@@ -8,6 +8,8 @@ language: es
 currency: USD
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.deprati.com.ec/"
+archive_path_re: '^/[^/]+/p/[A-Za-z0-9]+$'
 notes: |
   De Prati -- Ecuadorian department-store chain, SAP Commerce Cloud
   (Hybris) storefront. Bare curl hits a Cloudflare "Attention Required"

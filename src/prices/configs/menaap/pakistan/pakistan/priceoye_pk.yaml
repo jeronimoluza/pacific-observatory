@@ -8,6 +8,8 @@ language: en
 currency: PKR
 cadence: weekly
 channel: electronics
+archive_prefix: "priceoye.pk/"
+archive_path_re: '^/[^/?]+/[^/?]+/[^/?]+$'
 notes: |
   Verified live 2026-08-17: priceoye.pk — a Pakistani electronics/mobile
   online retailer (sells directly, checkout flow present; not purely a

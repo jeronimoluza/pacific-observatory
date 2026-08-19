@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: homedepot_mx
 url: https://www.homedepot.com.mx/
+archive_prefix: "www.homedepot.com.mx/"
+archive_path_re: '^/(?:p|g)/[^/?]+$'
 language: es
 currency: MXN
 cadence: weekly

@@ -22,13 +22,99 @@ import html as _html
 import json
 import re
 from typing import Any, Iterator
+from urllib.parse import urljoin, urlsplit
 
-_LDJSON_RE = re.compile(
-    r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
-    re.DOTALL | re.IGNORECASE,
-)
+_SCRIPT_OPEN_RE = re.compile(r"<script\b", re.IGNORECASE)
+_SCRIPT_ATTR_RE = re.compile(r'\s*([\w:.-]+)(?:\s*=\s*(?:"([^"]*)"|\'([^\']*)\'))?')
 _META_RE = re.compile(r"<meta\b[^>]*>", re.IGNORECASE)
 _ATTR_RE = re.compile(r'(\w[\w:.-]*)\s*=\s*["\']([^"\']*)["\']')
+_CURRENCY_RE = re.compile(r"^[A-Za-z]{3}$")
+
+
+def _iter_script_tags(html_text: str) -> Iterator[tuple[dict[str, str], str]]:
+    """Yield ``(attrs, body)`` for every ``<script>`` tag.
+
+    A hand-rolled scanner rather than a ``[^>]*`` regex: some React/Nuxt
+    themes (confirmed on billa.sk) put JSON-LD in a ``children="..."``
+    attribute whose value legitimately contains an unescaped ``>`` (e.g. a
+    category string ``"LEAFLET > KW 37/2026 > Inside"``) — a regex treating
+    ``>`` as always closing the tag truncates the attribute value right
+    there and drops the JSON-LD entirely.
+    """
+    n = len(html_text)
+    pos = 0
+    while True:
+        m = _SCRIPT_OPEN_RE.search(html_text, pos)
+        if not m:
+            return
+        i = m.end()
+        attrs: dict[str, str] = {}
+        while i < n and html_text[i] != ">":
+            am = _SCRIPT_ATTR_RE.match(html_text, i)
+            if not am or am.end() == i:
+                i += 1
+                continue
+            name, dq, sq = am.groups()
+            attrs[name.lower()] = (
+                dq if dq is not None else (sq if sq is not None else "")
+            )
+            i = am.end()
+        if i >= n:
+            return
+        body_start = i + 1
+        close = html_text.find("</script>", body_start)
+        if close == -1:
+            return
+        yield attrs, html_text[body_start:close]
+        pos = close + len("</script>")
+
+
+def _valid_currency(code: Any) -> str | None:
+    """Reject junk `priceCurrency`/meta values that aren't a 3-letter code.
+
+    Some sites (4sough.com confirmed) ship a literal descriptive string —
+    e.g. ``"Afghanistan fiat currency"`` — in the currency meta tag instead
+    of an ISO code. Passing that through would silently corrupt the
+    `currency` column downstream.
+    """
+    if not code:
+        return None
+    code = str(code).strip()
+    return code.upper() if _CURRENCY_RE.match(code) else None
+
+
+def _same_page(row_url: str, page_url: str) -> bool:
+    """Compare scheme+host+path only — query strings/fragments legitimately vary."""
+    a, b = urlsplit(row_url), urlsplit(page_url)
+    return (a.netloc, a.path.rstrip("/")) == (b.netloc, b.path.rstrip("/"))
+
+
+def _dedupe_product_rows(rows: list[dict], page_url: str) -> list[dict]:
+    """Collapse same-SKU price duplicates and drop off-page recommendation rails.
+
+    A multi-offer Product node emits one row per offer, which doubles up when
+    a site lists both a list price and a promo price for the same SKU
+    (confirmed on sodimac.com.pe, falabella.com.co) — keep only the cheapest
+    offer per (name, sku). Keying on the sku as well as the name preserves
+    genuine multi-variant products, whose offers share a name but differ by
+    sku; collapsing those to the cheapest would silently drop the dearer
+    variants for the 17+ spiders already calling this. Some listing/detail pages also embed several
+    unrelated Product nodes as a "similar items" rail (confirmed on
+    pakwheels.com) rather than the single item the URL is for — once more
+    than one distinct product name is present, keep only the row(s) whose url
+    matches the page url, falling back to the first row if none match,
+    instead of writing every recommendation as a historical price point.
+    """
+    by_sku: dict[tuple, list[dict]] = {}
+    for row in rows:
+        by_sku.setdefault((row["product_name"], row.get("product_id")), []).append(row)
+    collapsed = [
+        min(group, key=lambda r: float(r["price"])) for group in by_sku.values()
+    ]
+    if len(collapsed) <= 1:
+        return collapsed
+    on_page = [r for r in collapsed if _same_page(r["url"], page_url)]
+    return on_page or collapsed[:1]
 
 
 def normalize_price(raw: Any) -> str | None:
@@ -60,7 +146,15 @@ def normalize_price(raw: Any) -> str | None:
 
 
 def iter_jsonld_nodes(html_text: str) -> Iterator[dict]:
-    """Every JSON-LD object in the page, flattening ``@graph`` and arrays."""
+    """Every JSON-LD object in the page, flattening ``@graph`` and arrays.
+
+    Most themes put the JSON in the ``<script type="application/ld+json">``
+    body, but some React/Nuxt themes (confirmed on billa.sk) instead render
+    it into a ``children="..."`` attribute on an otherwise-empty script tag,
+    HTML-entity-escaped (``&quot;`` for every ``"``) because it went through
+    a JSX/Vue attribute serializer rather than being written as page markup.
+    Both surfaces are checked; body wins when a tag somehow has both.
+    """
 
     def walk(data):
         if isinstance(data, list):
@@ -73,9 +167,14 @@ def iter_jsonld_nodes(html_text: str) -> Iterator[dict]:
                 for item in graph:
                     yield from walk(item)
 
-    for block in _LDJSON_RE.findall(html_text):
+    for attrs, body in _iter_script_tags(html_text):
+        if attrs.get("type", "").lower() != "application/ld+json":
+            continue
+        raw = body.strip() or _html.unescape(attrs.get("children", "")).strip()
+        if not raw:
+            continue
         try:
-            data = json.loads(block.strip())
+            data = json.loads(raw)
         except (json.JSONDecodeError, ValueError):
             continue
         yield from walk(data)
@@ -109,13 +208,18 @@ def _price_of(offer: dict) -> Any:
             price = spec.get("price")
         elif isinstance(spec, list) and spec:
             price = (spec[0] or {}).get("price")
+    if price is None:
+        # Some AggregateOffer nodes carry lowPrice/highPrice directly with no
+        # nested `offers` list (schema.org allows this) -- e.g. 4sough_af.
+        price = offer.get("lowPrice")
     return price
 
 
 def rows_from_jsonld(html_text: str, url: str) -> list[dict]:
     """Price rows from every schema.org Product node in the page.
 
-    One row per offer, so multi-variant products yield several rows.
+    One row per distinct product name -- see `_dedupe_product_rows` for how
+    multi-offer and multi-node pages are collapsed.
     """
     rows: list[dict] = []
     for node in iter_jsonld_nodes(html_text):
@@ -134,14 +238,16 @@ def rows_from_jsonld(html_text: str, url: str) -> list[dict]:
             row = {
                 "product_name": _html.unescape(str(name)).strip()[:500],
                 "price": price,
-                "url": offer.get("url") or node.get("url") or url,
+                "url": urljoin(url, offer.get("url") or node.get("url") or url),
             }
             sku = offer.get("sku") or node.get("sku") or node.get("productID")
             if sku:
                 row["product_id"] = str(sku)
-            currency = offer.get("priceCurrency") or node.get("priceCurrency")
+            currency = _valid_currency(
+                offer.get("priceCurrency") or node.get("priceCurrency")
+            )
             if currency:
-                row["currency"] = str(currency)
+                row["currency"] = currency
             if category:
                 row["category"] = str(category)
             availability = offer.get("availability")
@@ -152,7 +258,7 @@ def rows_from_jsonld(html_text: str, url: str) -> list[dict]:
                 elif "instock" in low or "limitedavailability" in low:
                     row["available"] = True
             rows.append(row)
-    return rows
+    return _dedupe_product_rows(rows, url)
 
 
 def meta_tags(html_text: str) -> dict[str, str]:
@@ -188,9 +294,11 @@ def row_from_meta(html_text: str, url: str) -> dict | None:
     row = {
         "product_name": _html.unescape(name).strip()[:500],
         "price": price,
-        "url": meta.get("og:url") or url,
+        "url": urljoin(url, meta.get("og:url") or url),
     }
-    currency = meta.get("product:price:currency") or meta.get("og:price:currency")
+    currency = _valid_currency(
+        meta.get("product:price:currency") or meta.get("og:price:currency")
+    )
     if currency:
         row["currency"] = currency
     avail = meta.get("product:availability") or meta.get("og:availability")

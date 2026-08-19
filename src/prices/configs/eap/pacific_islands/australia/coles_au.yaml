@@ -1,6 +1,8 @@
 spider: coles_au
 language: en
 active: false
+archive_prefix: "coles.com.au/product/"
+archive_path_re: '^/product/[a-z0-9][a-z0-9.-]*-\d+/?$'
 # Imperva Incapsula with active headless-detection. Tested 2026-06-08:
 # - curl_cffi (chrome120 TLS): 212-byte JS-challenge stub
 # - Vanilla Playwright headless: 211-byte stub

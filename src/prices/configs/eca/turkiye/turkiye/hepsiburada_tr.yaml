@@ -8,6 +8,8 @@ language: tr
 currency: TRY
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.hepsiburada.com/"
+archive_path_re: '-pm?-[A-Za-z0-9]+'
 coicop_codes: null
 notes: |
   Turkey's largest general marketplace. Verified live 2026-08-17:

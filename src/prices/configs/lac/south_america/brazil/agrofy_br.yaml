@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: agrofy_br
 url: https://www.agrofy.com.br/
+archive_prefix: "www.agrofy.com.br/"
+archive_path_re: '^/[^/]+\.html$'
 language: pt
 currency: BRL
 cadence: weekly

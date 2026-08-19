@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: epa_cr
 url: https://cr.epaenlinea.com/
+archive_prefix: "cr.epaenlinea.com/"
+archive_path_re: '^/(?!(?:banos|cocinas|construccion|decoracion|electricidad|electrodomesticos|exteriores|ferreteria-y-cerrajeria|herramientas|lamparas|limpieza|maderas-y-puertas|muebles-y-organizacion|pinturas|pisos|plomeria|seguridad)\.html$)[^/]+\.html$'
 language: es
 currency: CRC
 cadence: weekly

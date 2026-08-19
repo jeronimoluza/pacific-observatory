@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: cabitonlineshop_sb
 url: https://take.app/cabitonlineshop
+archive_prefix: "take.app/cabitonlineshop/p/"
+archive_path_re: '^/cabitonlineshop/p/[^/?]+$'
 language: en
 cadence: weekly
 channel: convenience

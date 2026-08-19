@@ -8,6 +8,8 @@ language: fr
 currency: TND
 cadence: weekly
 channel: electronics
+archive_prefix: "www.tunisianet.com.tn/"
+archive_path_re: '^/[^/]+/\d+-[^/]+\.html$'
 notes: |
   Verified live 2026-08-17 (needed -k for a curl cert-hostname mismatch;
   Scrapy's default TLS context is not strict about this the way curl is).

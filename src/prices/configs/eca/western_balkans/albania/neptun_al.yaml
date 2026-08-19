@@ -8,6 +8,8 @@ language: sq
 currency: ALL
 cadence: weekly
 channel: electronics
+archive_prefix: "www.neptun.al/"
+archive_path_re: '\.nspx$'
 notes: |
   Verified live 2026-08-17. Albanian electronics/appliance retailer, .NET
   MVC backend behind a Nuxt-ish SPA shell. Raw category page HTML carries

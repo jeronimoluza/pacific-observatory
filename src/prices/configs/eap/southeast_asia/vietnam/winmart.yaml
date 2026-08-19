@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: winmart
 url: https://winmart.vn
+archive_prefix: "winmart.vn/"
+archive_path_re: '(?i)^/[a-z0-9._-]+--s\d+$'
 language: vi
 cadence: daily
 notes: Uses internal JSON API at api-crownx.winmart.vn. No Playwright required.

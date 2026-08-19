@@ -30,6 +30,7 @@ from prices._shared.wayback import (
     fetch_snapshot,
     parse_timestamp_to_date,
 )
+from prices.price_scraping.archived import row_from_meta, rows_from_jsonld
 from prices.price_scraping.selectors import extract_with_fallback, get_selectors
 
 logger = logging.getLogger(__name__)
@@ -218,19 +219,38 @@ def backfill_one_url(
             value = extract_with_fallback(soup, selector_list)
             if value:
                 extracted[field] = value
-        if not extracted.get("price"):
-            logger.debug("[wayback] dropping %s @ %s: no price extracted", url, ts)
+        if extracted.get("price"):
+            rows.append(
+                {
+                    "url": url,
+                    "url_hash": url_hash,
+                    "currency": currency,
+                    "source_kind": "wayback",
+                    "wayback_timestamp": ts,
+                    "scraped_at_utc": snap_iso,
+                    **extracted,
+                }
+            )
             continue
-        row = {
-            "url": url,
-            "url_hash": url_hash,
-            "currency": currency,
-            "source_kind": "wayback",
-            "wayback_timestamp": ts,
-            "scraped_at_utc": snap_iso,
-            **extracted,
-        }
-        rows.append(row)
+        if not selectors:
+            # Neither a parse_html hook nor registered selectors -- try the
+            # spider-independent schema.org/OpenGraph surfaces before giving
+            # up on the snapshot (see prices.price_scraping.archived).
+            generic_rows = rows_from_jsonld(html, url)
+            if not generic_rows:
+                generic_row = row_from_meta(html, url)
+                generic_rows = [generic_row] if generic_row else []
+            for rec in generic_rows:
+                rec.setdefault("url", url)
+                rec["url_hash"] = url_hash
+                rec["source_kind"] = "wayback"
+                rec["wayback_timestamp"] = ts
+                rec["scraped_at_utc"] = snap_iso
+                if currency and not rec.get("currency"):
+                    rec["currency"] = currency
+                rows.append(rec)
+            continue
+        logger.debug("[wayback] dropping %s @ %s: no price extracted", url, ts)
     return rows
 
 
@@ -283,31 +303,56 @@ def _load_spider_parse_html(spider_name: str):
                 "prices.price_scraping"
             )
 
+    def _parse_html_from(mod):
+        for attr_name in dir(mod):
+            obj = getattr(mod, attr_name)
+            if not isinstance(obj, type):
+                continue
+            if getattr(obj, "name", None) != spider_name:
+                continue
+            parse_html = getattr(obj, "parse_html", None)
+            if callable(parse_html):
+                logger.info(
+                    "[wayback] using parse_html hook from %s.%s",
+                    mod.__name__,
+                    obj.__name__,
+                )
+                return parse_html
+        return None
+
     try:
         mod = importlib.import_module(f"prices.price_scraping.spiders.{spider_name}")
     except ImportError:
+        # Fast path assumes filename == spider `name`, which fails whenever
+        # they diverge — e.g. `name = "173brunei"` can't be a module name
+        # (leading digit), so it lives in `brunei173.py`. Scrapy's own
+        # SpiderLoader tolerates this by scanning every module in the
+        # package for a matching `.name` attribute instead of importing by
+        # name directly; fall back to the same scan here.
+        import pkgutil
+
+        spiders_pkg = importlib.import_module("prices.price_scraping.spiders")
+        for info in pkgutil.iter_modules(spiders_pkg.__path__):
+            if info.name.startswith("_"):
+                continue
+            try:
+                mod = importlib.import_module(
+                    f"prices.price_scraping.spiders.{info.name}"
+                )
+            except ImportError:
+                continue
+            found = _parse_html_from(mod)
+            if found is not None:
+                return found
         logger.warning(
-            "[wayback] cannot import prices.price_scraping.spiders.%s — "
-            "any parse_html hook it has will be skipped",
+            "[wayback] cannot import prices.price_scraping.spiders.%s and no "
+            "module in the package defines a spider named %r — any "
+            "parse_html hook it has will be skipped",
             spider_name,
-            exc_info=True,
+            spider_name,
         )
         return None
-    for attr_name in dir(mod):
-        obj = getattr(mod, attr_name)
-        if not isinstance(obj, type):
-            continue
-        if getattr(obj, "name", None) != spider_name:
-            continue
-        parse_html = getattr(obj, "parse_html", None)
-        if callable(parse_html):
-            logger.info(
-                "[wayback] using parse_html hook from %s.%s",
-                mod.__name__,
-                obj.__name__,
-            )
-            return parse_html
-    return None
+    return _parse_html_from(mod)
 
 
 def run_source_backfill(
@@ -366,7 +411,16 @@ def run_source_backfill(
     wayback_dir.mkdir(parents=True, exist_ok=True)
     ledger = Ledger.load(wayback_dir / ".ledger.json")
     parse_html_fn = _load_spider_parse_html(spider)
-    selectors = get_selectors(spider) if parse_html_fn is None else {}
+    if parse_html_fn is None:
+        try:
+            selectors = get_selectors(spider)
+        except KeyError:
+            # No bespoke hook and no registered CSS selectors -- the
+            # per-snapshot loop falls back to the generic JSON-LD/OpenGraph
+            # extractors instead of erroring the whole source out.
+            selectors = {}
+    else:
+        selectors = {}
     currency = currency_override or _resolve_currency(source_dir)
 
     # CDX `from=` is the EARLIEST snapshot date to include. For backfill we

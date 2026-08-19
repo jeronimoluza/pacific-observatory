@@ -8,6 +8,8 @@ language: hr
 currency: EUR
 cadence: weekly
 channel: dept-store
+archive_prefix: "ekupi.hr/"
+archive_path_re: '/p/EK\d+/?$'
 notes: |
   eKupi Croatia — SAP Commerce/Hybris general department-store storefront
   (electronics, computers, appliances, tools, auto, home & garden, toys,

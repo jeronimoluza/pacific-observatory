@@ -24,8 +24,11 @@ import json
 import logging
 import re
 from datetime import datetime, timezone
+from typing import Iterator
 
 import scrapy
+
+from ..archived import row_from_meta, rows_from_jsonld
 
 logger = logging.getLogger(__name__)
 
@@ -119,3 +122,22 @@ class AceuaeAeSpider(scrapy.Spider):
             return json.loads(block)
         except (ValueError, TypeError):
             return None
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). Confirmed
+    # live 2026-08-18 on 2 PDPs (curl_cffi chrome124, plain requests were
+    # reset by the site's WAF): the same server-rendered Product JSON-LD
+    # the live parse reads is present verbatim on the archived page, so
+    # the shared jsonld tier alone covers this spider.
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived aceuae.com PDP page."""
+        rows = rows_from_jsonld(html_text, url)
+        if not rows:
+            row = row_from_meta(html_text, url)
+            rows = [row] if row else []
+        for row in rows:
+            row.setdefault("currency", cls.currency)
+            row.setdefault("language", cls.language)
+            yield row

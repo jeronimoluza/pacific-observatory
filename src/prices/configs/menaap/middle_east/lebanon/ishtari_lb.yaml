@@ -8,6 +8,8 @@ language: en
 currency: USD
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.ishtari.com/"
+archive_path_re: '^/[^/]+/p=\d+$'
 notes: |
   Verified live 2026-08-17: Ishtari.com — a general-merchandise online store
   for Lebanon (electronics, home appliances, fashion, phone accessories,

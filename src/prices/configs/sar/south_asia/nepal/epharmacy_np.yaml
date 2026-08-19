@@ -1,4 +1,6 @@
 spider: epharmacy_np
 language: en
+archive_prefix: "www.epharmacy.com.np/"
+archive_path_re: '^/[a-z0-9-]{20,}$'
 notes: Nepal pharmacy; server-rendered HTML; PDPs at /<long-product-slug>.
 channel: pharmacy

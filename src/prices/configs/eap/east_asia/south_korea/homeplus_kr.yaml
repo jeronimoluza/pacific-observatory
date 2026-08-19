@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: homeplus_kr
 url: https://mfront.homeplus.co.kr
+archive_prefix: "mfront.homeplus.co.kr/item"
+archive_path_re: '^/item$'
 language: ko
 cadence: daily
 channel: hypermarket

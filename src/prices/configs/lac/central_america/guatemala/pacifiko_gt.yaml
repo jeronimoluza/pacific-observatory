@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: pacifiko_gt
 url: https://www.pacifiko.com/
+archive_prefix: "www.pacifiko.com/compras-en-linea/"
+archive_path_re: '^/compras-en-linea/.+&pid=[A-Za-z0-9]+$'
 language: es
 currency: GTQ
 cadence: weekly

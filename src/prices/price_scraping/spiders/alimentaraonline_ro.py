@@ -26,8 +26,11 @@ import logging
 import re
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Iterator
 
 import scrapy
+
+from ..archived import row_from_meta, rows_from_jsonld
 
 logger = logging.getLogger(__name__)
 
@@ -123,3 +126,65 @@ class AlimentaraonlineRoSpider(scrapy.Spider):
                 callback=self.parse_page,
                 meta={"slug": slug, "page": next_page},
             )
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). Archived
+    # snapshots here are individual /cumpara/<slug> PDPs (the real permalink
+    # this spider's own ItemList JSON-LD points `url` at -- see module
+    # docstring), a different page from the /catalog/<slug> listings the
+    # live crawl walks. NOT independently live-verified this session (the
+    # host reset every connection attempt -- curl, curl_cffi with 4 browser
+    # TLS profiles, and Anthropic's own WebFetch infra all failed identically,
+    # so this looks like a host-side block rather than a local network
+    # issue). Written from strong circumstantial evidence instead: the site's
+    # templating layer already proven (module docstring, re-verified live
+    # 2026-08-06) to emit a rich schema.org ItemList of Product nodes on
+    # category pages is very likely to emit a standalone Product node on the
+    # PDP itself -- the standard pattern for this kind of PHP storefront.
+    # Falls back to re-parsing the category-style ItemList block in case a
+    # PDP snapshot embeds that shape instead.
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived AlimentaraOnline PDP page. UNVERIFIED against
+        a live fetch this session -- see comment above."""
+        rows = rows_from_jsonld(html_text, url)
+        if not rows:
+            row = row_from_meta(html_text, url)
+            rows = [row] if row else []
+        if rows:
+            for row in rows:
+                row.setdefault("currency", cls.currency)
+                row.setdefault("language", cls.language)
+                yield row
+            return
+
+        for block in _LD_JSON_RE.findall(html_text):
+            try:
+                data = json.loads(block)
+            except ValueError:
+                continue
+            candidates = data if isinstance(data, list) else [data]
+            for entry in candidates:
+                if entry.get("@type") != "ItemList":
+                    continue
+                for li in entry.get("itemListElement") or []:
+                    p = li.get("item") or {}
+                    if p.get("@type") != "Product":
+                        continue
+                    name = str(p.get("name") or "").strip()
+                    offers = p.get("offers") or {}
+                    price = offers.get("lowPrice")
+                    row_url = p.get("url") or url
+                    sku = p.get("sku")
+                    if not name or price is None:
+                        continue
+                    yield {
+                        "product_id": str(sku or row_url),
+                        "product_name": name[:500],
+                        "price": str(price),
+                        "currency": offers.get("priceCurrency") or cls.currency,
+                        "available": True,
+                        "url": row_url,
+                        "language": cls.language,
+                    }

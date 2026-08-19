@@ -7,6 +7,8 @@ url: https://www.santaisabel.cl/
 language: es
 cadence: weekly
 channel: supermarket
+archive_prefix: "santaisabel.myvtex.com/"
+archive_path_re: '^/[^/]+/p$'
 notes: |
   Round 3 platform-fingerprint reversal: rounds 1-2 probed santaisabel.cl, saw a custom storefront
   404 the catalog API on the retail domain, and predicted Jumpseller/gave up. It is VTEX -- the

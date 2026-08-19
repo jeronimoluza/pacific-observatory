@@ -8,6 +8,8 @@ url: https://www.xcite.com/
 language: en
 currency: KWD
 cadence: weekly
+archive_prefix: "www.xcite.com/"
+archive_path_re: '^/[A-Za-z0-9._~-]+/p$'
 notes: |
   Alghanim "Xcite" electronics retailer, Kuwait. Next.js Pages Router
   storefront; the shard's Algolia-proxy lever needed an index name never

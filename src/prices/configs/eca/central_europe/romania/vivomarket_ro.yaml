@@ -7,6 +7,8 @@ url: https://www.vivomarket.ro/
 language: ro
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.vivomarket.ro/"
+archive_path_re: '\.html$'
 notes: |
   Gomag-platform storefront (Romanian e-commerce SaaS, gomagcdn.ro assets).
   Re-verified live 2026-08-06: /bacanie -> 200, 1.4MB, real product cards

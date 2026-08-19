@@ -5,6 +5,8 @@ coicop_classification: source_curated
 coicop_codes: ["01.1.6.1"]
 spider: durydury_my
 url: https://durydury.com
+archive_prefix: "durydury.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 language: ms
 cadence: daily
 channel: supermarket

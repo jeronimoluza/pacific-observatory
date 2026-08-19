@@ -8,6 +8,8 @@ language: ro
 currency: RON
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.emag.ro/"
+archive_path_re: '/pd/[A-Z0-9]+/?$'
 notes: |
   eMAG Romania — Romania's largest general marketplace (own-stock + 3rd-party
   sellers). Verified live 2026-08-17: server-rendered category listing pages

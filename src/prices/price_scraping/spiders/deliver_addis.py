@@ -23,6 +23,7 @@ complexity.
 import logging
 import re
 from datetime import datetime, timezone
+from typing import Iterator
 
 import scrapy
 
@@ -50,6 +51,21 @@ _CARD_RE = re.compile(
     r'<a class="product-card" href="([^"]+)">.*?'
     r'product-name montserrat">\s*([^<]+?)\s*</div>.*?'
     r'<p class="price">([\d,]+\.\d{2}) ETB</p>',
+    re.S,
+)
+
+# Archived-page-only: a captured URL under /market/<category>/<slug> is a
+# single-product detail page (a different template from the /market/<category>
+# listing pages the live crawl walks), whose `og:title` meta is polluted with
+# a "Deliver Addis - Market - " site-name prefix (confirmed live 2026-08-18,
+# so the shared meta tier is skipped for this spider) and has no price meta
+# at all. The real name/price sit in plain markup instead:
+# `<input type="hidden" value="ID" name="product" /><h1 class="title">NAME
+# </h1><h3 data-base-price="PRICE" class="price">`.
+_PDP_RE = re.compile(
+    r'<input type="hidden" value="(\d+)" name="product" />\s*'
+    r'<h1 class="title">\s*([^<]+?)\s*</h1>\s*'
+    r'<h3 data-base-price="([\d.]+)" class="price">',
     re.S,
 )
 
@@ -97,3 +113,42 @@ class DeliverAddisSpider(scrapy.Spider):
                 "language": self.language,
                 "scraped_at_utc": scraped_at,
             }
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). Archived
+    # snapshots can be either page type this spider itself produces urls
+    # for -- a category listing (`_CARD_RE`, one row per card, same as live)
+    # or a single-product detail page (`_PDP_RE`, see its comment). Neither
+    # carries JSON-LD; the shared meta tier is skipped (og:title here is
+    # site-name-prefixed, not the clean product name).
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived Deliver Addis page (category listing or PDP)."""
+        cards = _CARD_RE.findall(html_text)
+        if cards:
+            for product_id, url_path, name, price in cards:
+                yield {
+                    "product_id": product_id,
+                    "product_name": name.strip()[:500],
+                    "price": price.replace(",", ""),
+                    "currency": cls.currency,
+                    "available": True,
+                    "url": f"{_BASE}{url_path}",
+                    "language": cls.language,
+                }
+            return
+
+        m = _PDP_RE.search(html_text)
+        if not m:
+            return
+        product_id, name, price = m.groups()
+        yield {
+            "product_id": product_id,
+            "product_name": name.strip()[:500],
+            "price": price,
+            "currency": cls.currency,
+            "available": True,
+            "url": url,
+            "language": cls.language,
+        }

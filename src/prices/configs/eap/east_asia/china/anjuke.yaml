@@ -5,6 +5,8 @@ coicop_classification: source_curated
 coicop_codes: ["04.1.1"]
 spider: anjuke
 url: https://bj.zu.anjuke.com/fangyuan/
+archive_prefix: "bj.zu.anjuke.com/fangyuan/"
+archive_path_re: '^/fangyuan/\d+'
 language: zh
 cadence: weekly
 channel: real-estate

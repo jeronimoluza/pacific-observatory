@@ -5,6 +5,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 channel: dept-store
 url: https://www.guamshoppingnetwork.com/food
+archive_prefix: "guamshoppingnetwork.com/food/"
+archive_path_re: '^/food/\d+-[a-z0-9-]+/?$'
 language: en
 cadence: daily
 notes: >

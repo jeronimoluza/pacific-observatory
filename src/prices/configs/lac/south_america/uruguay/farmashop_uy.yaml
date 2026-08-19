@@ -8,6 +8,8 @@ language: es
 currency: UYU
 cadence: weekly
 channel: pharmacy
+archive_prefix: "tienda.farmashop.com.uy/"
+archive_path_re: '^/[^/]+\.html$'
 notes: |
   Pharmacy chain, Magento 2 storefront. Root (www.farmashop.com.uy) 301-redirects to
   tienda.farmashop.com.uy. REST (/rest/V1/products) is auth-gated (401 "not authorized" --

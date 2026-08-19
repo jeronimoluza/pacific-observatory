@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: kellysbahamas_bs
 url: https://www.kellysbahamas.com/
+archive_prefix: "www.kellysbahamas.com/pd/"
+archive_path_re: '^/pd/[^/?]+/\d+'
 language: en
 currency: BSD
 cadence: weekly

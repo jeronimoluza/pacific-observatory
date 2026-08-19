@@ -1,4 +1,6 @@
 spider: tata_1mg
 language: en
+archive_prefix: "www.1mg.com/"
+archive_path_re: '^/(otc|drugs)/[a-z0-9-]+(?:otc|-)\d+$'
 notes: India pharmacy; partial SPA but PDPs server-render h1 + meta tags.
 channel: pharmacy

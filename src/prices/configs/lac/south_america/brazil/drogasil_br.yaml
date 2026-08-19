@@ -1,6 +1,8 @@
 scaffolding: spider
 spider: drogasil_br
 url: https://www.drogasil.com.br/
+archive_prefix: "www.drogasil.com.br/"
+archive_path_re: '^/[^/]+\.html$'
 channel: pharmacy
 coicop_classification: classifier
 analytical_role: retailer_sku

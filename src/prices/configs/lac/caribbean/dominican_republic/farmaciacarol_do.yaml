@@ -1,6 +1,8 @@
 scaffolding: spider
 spider: farmaciacarol_do
 url: https://tienda.farmaciacarol.com/
+archive_prefix: "tienda.farmaciacarol.com/"
+archive_path_re: '-details\.aspx$'
 channel: pharmacy
 coicop_classification: classifier
 analytical_role: retailer_sku

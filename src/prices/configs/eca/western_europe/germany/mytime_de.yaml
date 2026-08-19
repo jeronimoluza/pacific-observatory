@@ -7,6 +7,8 @@ url: https://www.mytime.de/
 language: de
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.mytime.de/"
+archive_path_re: '^/[^/]+_\d+\.html$'
 notes: |
   Custom PHP storefront, server-rendered category pages. Round-1 found
   partial price evidence mixed with cart placeholders; full category-page

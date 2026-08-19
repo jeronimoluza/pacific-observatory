@@ -5,6 +5,8 @@ coicop_classification: source_curated
 coicop_codes: ["01.2.1"]
 spider: cafe_letefoho
 url: https://cafeletefoho.com
+archive_prefix: "cafeletefoho.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 language: en
 cadence: weekly
 channel: supermarket

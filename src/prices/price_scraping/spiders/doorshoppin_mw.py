@@ -16,6 +16,7 @@ import html
 import logging
 import re
 from datetime import datetime, timezone
+from typing import Iterator
 
 import scrapy
 
@@ -62,4 +63,26 @@ class DoorshoppinMwSpider(scrapy.Spider):
                 "url": f"{_URL}#{product_id}",
                 "language": self.language,
                 "scraped_at_utc": scraped_at,
+            }
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). This site has
+    # exactly one URL worth archiving (`_URL`, the single page carrying the
+    # whole 501-product catalog inline) and no JSON-LD/meta at all -- the
+    # live parse's own `_CARD_RE` is the correct and only extraction, reused
+    # verbatim against the archived snapshot.
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived DoorShoppin catalog page."""
+        for product_id, name, price in _CARD_RE.findall(html_text):
+            yield {
+                "product_id": product_id,
+                "product_name": html.unescape(name).strip()[:500],
+                "category": "Groceries",
+                "price": price,
+                "currency": cls.currency,
+                "available": True,
+                "url": f"{url}#{product_id}",
+                "language": cls.language,
             }

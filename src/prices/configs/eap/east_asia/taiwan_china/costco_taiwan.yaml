@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: costco_taiwan
 url: https://www.costco.com.tw
+archive_prefix: "costco.com.tw"
+archive_path_re: '/p/[^/]+$'
 language: zh
 cadence: daily
 channel: supermarket

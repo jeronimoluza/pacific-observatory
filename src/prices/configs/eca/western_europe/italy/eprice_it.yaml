@@ -8,6 +8,8 @@ language: it
 currency: EUR
 cadence: weekly
 channel: electronics
+archive_prefix: "www.eprice.it/d-"
+archive_path_re: '^/d-\d+/?$'
 notes: |
   Verified live 2026-08-17. Italian electronics/appliance retailer -- a
   genuine marketplace (checked: product detail pages carry a real

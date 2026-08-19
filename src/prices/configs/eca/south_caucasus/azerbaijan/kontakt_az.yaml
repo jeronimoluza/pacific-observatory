@@ -8,6 +8,8 @@ language: az
 currency: AZN
 cadence: weekly
 channel: electronics
+archive_prefix: "kontakt.az/"
+archive_path_re: '^/[^/]+/?$'
 coicop_codes: null
 notes: |
   Azerbaijan electronics/appliances retailer, Magento 2 (Swissup Breeze

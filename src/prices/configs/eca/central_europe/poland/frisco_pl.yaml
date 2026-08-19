@@ -7,6 +7,8 @@ url: https://www.frisco.pl/
 language: pl
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.frisco.pl/pid,"
+archive_path_re: '^/pid,\d+/'
 notes: |
   React online supermarket. Category/search-results pages are fully
   client-hydrated (0 prices, 0 product names in raw response) -- confirmed

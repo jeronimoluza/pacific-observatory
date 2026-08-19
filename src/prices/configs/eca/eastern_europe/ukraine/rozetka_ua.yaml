@@ -8,6 +8,8 @@ language: uk
 currency: UAH
 cadence: weekly
 channel: marketplace
+archive_prefix: "rozetka.com.ua/ua/"
+archive_path_re: '/[gp]\d+/?$'
 coicop_codes: null
 notes: |
   Ukraine's largest general marketplace. Verified live 2026-08-17:

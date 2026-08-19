@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: mallhabana_cu
 url: https://mallhabana.com/
+archive_prefix: "mallhabana.com/"
+archive_path_re: '^/[^/]+/\d+-[^/]+\.html$'
 language: es
 currency: USD
 cadence: weekly

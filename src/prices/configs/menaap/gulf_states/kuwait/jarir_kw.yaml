@@ -7,6 +7,8 @@ spider: jarir_kw
 url: https://www.jarir.com/kw-en/
 language: en
 cadence: daily
+archive_prefix: "www.jarir.com/kw-en/"
+archive_path_re: '^/kw-en/[A-Za-z0-9._-]+-\d+\.html$'
 notes: |
   Re-verified live 2026-08-06: Jarir Bookstore Kuwait. Same Vue-SSR/Magento
   backend as jarir_sa/jarir_ae/jarir_qa — schema.org Product JSON-LD

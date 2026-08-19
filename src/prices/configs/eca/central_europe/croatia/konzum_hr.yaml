@@ -7,6 +7,8 @@ url: https://www.konzum.hr/kreni-u-kupnju
 language: hr
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.konzum.hr/web/products/"
+archive_path_re: '^/web/products/[^/?]+'
 notes: |
   Custom PHP/Symfony-style storefront (round 1's Next.js platform guess did
   not reproduce -- no __NEXT_DATA__/__NUXT__ marker on the live page). Most

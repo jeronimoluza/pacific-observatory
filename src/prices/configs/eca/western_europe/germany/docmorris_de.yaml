@@ -8,6 +8,8 @@ language: de
 currency: EUR
 cadence: weekly
 channel: pharmacy
+archive_prefix: "www.docmorris.de/"
+archive_path_re: '^/[^/]+/[^/]+/[^/]+/?$'
 notes: |
   DocMorris Germany — online pharmacy. Next.js SSR storefront backed by an
   Algolia index (pro_docmorris_products). Verified live 2026-08-17: the

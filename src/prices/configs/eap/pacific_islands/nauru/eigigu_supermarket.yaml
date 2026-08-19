@@ -5,6 +5,8 @@ coicop_classification: classifier
 channel: supermarket
 spider: eigigu_supermarket
 url: https://eigigu.net/
+archive_prefix: "eigigu.net/"
+archive_path_re: '^/[^/]+-p\d+$'
 language: en
 cadence: daily
 notes: >

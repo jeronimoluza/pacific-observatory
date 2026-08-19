@@ -8,6 +8,8 @@ language: hu
 currency: HUF
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.emag.hu/"
+archive_path_re: '/pd/[A-Z0-9]+/?$'
 notes: |
   eMAG Hungary — Hungarian storefront of the same eMAG marketplace platform
   already onboarded as emag_ro (Romania). Direct port: same card markup,

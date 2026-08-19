@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: aelanbasket_vu
 url: https://www.aelanbasket.com/
+archive_prefix: "www.aelanbasket.com/product/"
+archive_path_re: '^/product/[a-zA-Z0-9\-]+$'
 language: en
 cadence: weekly
 channel: supermarket

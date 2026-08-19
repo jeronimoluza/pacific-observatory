@@ -7,6 +7,8 @@ spider: jarir_bh
 url: https://www.jarir.com/bh-en/
 language: en
 cadence: daily
+archive_prefix: "www.jarir.com/bh-en/"
+archive_path_re: '^/bh-en/[A-Za-z0-9._-]+-\d+\.html$'
 notes: |
   Re-verified live 2026-08-06: Jarir Bookstore Bahrain. Same Vue-SSR/Magento
   backend as jarir_sa/jarir_ae/jarir_qa/jarir_kw — schema.org Product

@@ -1,6 +1,8 @@
 scaffolding: spider
 spider: cruzverde_cl
 url: https://www.cruzverde.cl/
+archive_prefix: "www.cruzverde.cl/"
+archive_path_re: '^/[^/]+/\d+\.html$'
 channel: pharmacy
 coicop_classification: classifier
 analytical_role: retailer_sku

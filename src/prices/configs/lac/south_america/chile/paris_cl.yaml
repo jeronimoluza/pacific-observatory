@@ -8,6 +8,8 @@ language: es
 currency: CLP
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.paris.cl/"
+archive_path_re: '^/[a-z0-9]+(-[a-z0-9]+)*-[A-Za-z0-9]{6,}\.html$'
 notes: |
   Chilean department store (Cencosud group). Re-verified live 2026-08-17:
   category page /tecnologia/ -> 200, real CLP prices via a schema.org

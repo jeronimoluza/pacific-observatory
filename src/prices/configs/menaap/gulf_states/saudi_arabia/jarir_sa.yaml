@@ -8,6 +8,8 @@ url: https://www.jarir.com/sa-en/
 language: en
 currency: SAR
 cadence: weekly
+archive_prefix: "www.jarir.com/sa-en/"
+archive_path_re: '^/sa-en/[A-Za-z0-9._-]+-\d+\.html$'
 notes: |
   Verified live 2026-08-07: Jarir Bookstore Saudi Arabia. Vue-SSR storefront
   (data-vue-meta, window.__INITIAL_STATE__) on a Magento-style backend

@@ -10,8 +10,11 @@ span.money[data-ori-price] as a clean decimal string (avoids parsing the
 
 import logging
 from datetime import datetime, timezone
+from typing import Iterator
 
 import scrapy
+
+from ..archived import row_from_meta, rows_from_jsonld
 
 logger = logging.getLogger(__name__)
 
@@ -76,3 +79,25 @@ class Brunei173Spider(scrapy.Spider):
                 response.urljoin(next_href),
                 callback=self.parse_listing,
             )
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). Archived
+    # snapshots of this EasyStore theme are PDP pages under
+    # /collections/all/products/<slug>, not the listing pages the live
+    # crawl walks. The theme injects schema.org JSON-LD client-side via JS
+    # (no static <script type="application/ld+json"> in the raw HTML), but
+    # OpenGraph tags -- og:title, og:price:amount, og:price:currency -- are
+    # server-rendered and carry the same data, so the shared meta tier is
+    # sufficient on its own here.
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived 173 Brunei PDP page (EasyStore theme)."""
+        rows = rows_from_jsonld(html_text, url)
+        if not rows:
+            row = row_from_meta(html_text, url)
+            rows = [row] if row else []
+        for row in rows:
+            row.setdefault("currency", cls.currency)
+            row.setdefault("language", cls.language)
+            yield row

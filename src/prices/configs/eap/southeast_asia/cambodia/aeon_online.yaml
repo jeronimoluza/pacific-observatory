@@ -1,3 +1,5 @@
 spider: aeon_online
+archive_prefix: "aeononlineshopping.com/product/"
+archive_path_re: '^/product/[^/]+/\d+$'
 language: en
 channel: hypermarket

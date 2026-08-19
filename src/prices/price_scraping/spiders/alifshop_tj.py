@@ -16,8 +16,11 @@ there is no deeper category tree exposed without JS.
 import logging
 import re
 from datetime import datetime, timezone
+from typing import Iterator
 
 import scrapy
+
+from ..archived import row_from_meta, rows_from_jsonld
 
 logger = logging.getLogger(__name__)
 
@@ -114,3 +117,22 @@ class AlifshopTjSpider(scrapy.Spider):
             callback=self.parse_list,
             cb_kwargs={"slug": slug, "page": next_page, "top_level": top_level},
         )
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). Archived
+    # snapshots here are individual /product/<slug> PDPs (not the /category/
+    # listing pages the live crawl walks), but confirmed live 2026-08-18: the
+    # PDP template embeds a full server-rendered Product JSON-LD block, so
+    # the shared jsonld tier covers this spider on its own.
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived Alif Shop PDP page."""
+        rows = rows_from_jsonld(html_text, url)
+        if not rows:
+            row = row_from_meta(html_text, url)
+            rows = [row] if row else []
+        for row in rows:
+            row.setdefault("currency", cls.currency)
+            row.setdefault("language", cls.language)
+            yield row

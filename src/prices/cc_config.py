@@ -83,6 +83,35 @@ def resolve_cc_indexes(since_year: int = DEFAULT_CC_SINCE_YEAR) -> List[str]:
     return indexes
 
 
+def interleave_indexes(indexes: List[str]) -> List[str]:
+    """Reorder crawls so a truncated run still spans the whole period.
+
+    ``collinfo.json`` is newest-first, and the fetcher walks the list in order,
+    so any source that exhausts its time budget partway through gets only the
+    most recent crawls -- a large catalogue ends up with a few months of
+    history instead of a decade of it. Bisecting the range repeatedly (ends
+    first, then midpoints, then quarter-points) means whatever prefix of the
+    list actually runs is spread evenly across time rather than piled at one
+    end.
+    """
+    remaining = list(indexes)
+    if len(remaining) <= 2:
+        return remaining
+    ordered: List[str] = []
+    segments = [(0, len(remaining) - 1)]
+    ordered.append(remaining[0])
+    ordered.append(remaining[-1])
+    while segments:
+        lo, hi = segments.pop(0)
+        mid = (lo + hi) // 2
+        if mid not in (lo, hi):
+            ordered.append(remaining[mid])
+            segments.append((lo, mid))
+            segments.append((mid, hi))
+    seen = set()
+    return [i for i in ordered if not (i in seen or seen.add(i))]
+
+
 @lru_cache(maxsize=1)
 def all_cc_configs() -> Dict[str, Dict[str, str]]:
     """Return ``{spider: {"prefix", "path_re"}}`` for every manifest with a scope.

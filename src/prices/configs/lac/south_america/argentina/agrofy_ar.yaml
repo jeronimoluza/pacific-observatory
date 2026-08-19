@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: agrofy_ar
 url: https://www.agrofy.com.ar/
+archive_prefix: "www.agrofy.com.ar/"
+archive_path_re: '^/[^/]+\.html$'
 language: es
 cadence: weekly
 channel: other
