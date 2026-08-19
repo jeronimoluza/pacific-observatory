@@ -74,6 +74,7 @@ class CommonCrawlScraper:
         cfg = configs[spider_name]
         self.url_prefix: str = cfg["prefix"]
         self.path_re = re.compile(cfg["path_re"] or "")
+        self.declared_currency: str = (cfg.get("currency") or "").strip().upper()
         self.parse_html_fn = _load_spider_parse_html(spider_name)
         # Platform-base spiders (Woo/Shopify/VTEX/...) scrape JSON APIs and have
         # no CSS selectors; their `parse_html` hook is the only archived-HTML
@@ -310,6 +311,13 @@ class CommonCrawlScraper:
                 "scraped_at": self.scraped_at,
                 **extracted,
             }
+            # A manifest currency is human-set per storefront; the archived
+            # page's own priceCurrency is whatever its SEO plugin emitted, and
+            # a wrong one is silent and gets multiplied by FX downstream. Where
+            # the manifest declares nothing, the page value stands and
+            # concatenate.py back-fills the rest from the source's modal value.
+            if self.declared_currency:
+                payload["currency"] = self.declared_currency
             with open(out_file, "w", encoding="utf-8") as f:
                 json.dump(payload, f, indent=2, ensure_ascii=False)
             return out_file

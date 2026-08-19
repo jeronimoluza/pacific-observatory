@@ -28,7 +28,34 @@ _SCRIPT_OPEN_RE = re.compile(r"<script\b", re.IGNORECASE)
 _SCRIPT_ATTR_RE = re.compile(r'\s*([\w:.-]+)(?:\s*=\s*(?:"([^"]*)"|\'([^\']*)\'))?')
 _META_RE = re.compile(r"<meta\b[^>]*>", re.IGNORECASE)
 _ATTR_RE = re.compile(r'(\w[\w:.-]*)\s*=\s*["\']([^"\']*)["\']')
-_CURRENCY_RE = re.compile(r"^[A-Za-z]{3}$")
+# Active ISO 4217 codes, minus the fund/metal/test codes (XAU, XDR, USN, ...)
+# that never price retail goods. A three-letter regex is not validation: it
+# accepts ISO 3166 country codes, which is how `NIC` reaches the currency
+# column of a Nicaraguan storefront that actually trades in NIO.
+_ISO_4217 = frozenset(
+    """
+    AED AFN ALL AMD ANG AOA ARS AUD AWG AZN
+    BAM BBD BDT BGN BHD BIF BMD BND BOB BRL BSD BTN BWP BYN BZD
+    CAD CDF CHF CLP CNY COP CRC CUP CVE CZK
+    DJF DKK DOP DZD EGP ERN ETB EUR FJD FKP
+    GBP GEL GHS GIP GMD GNF GTQ GYD HKD HNL HTG HUF
+    IDR ILS INR IQD IRR ISK JMD JOD JPY
+    KES KGS KHR KMF KPW KRW KWD KYD KZT
+    LAK LBP LKR LRD LSL LYD
+    MAD MDL MGA MKD MMK MNT MOP MRU MUR MVR MWK MXN MYR MZN
+    NAD NGN NIO NOK NPR NZD OMR
+    PAB PEN PGK PHP PKR PLN PYG QAR RON RSD RUB RWF
+    SAR SBD SCR SDG SEK SGD SHP SLE SOS SRD SSP STN SVC SYP SZL
+    THB TJS TMT TND TOP TRY TTD TWD TZS
+    UAH UGX USD UYU UZS VED VES VND VUV WST
+    XAF XCD XCG XOF XPF YER ZAR ZMW ZWG
+    """.split()
+)
+
+# IRT (Iranian Toman) is not ISO 4217, but it is what Iranian WooCommerce
+# tenants report and eleven spiders already carry a x10 PRICE_MULTIPLIER for
+# it. Accepted so this gate does not silently change their behaviour.
+_ACCEPTED_CURRENCIES = _ISO_4217 | frozenset({"IRT"})
 
 
 def _iter_script_tags(html_text: str) -> Iterator[tuple[dict[str, str], str]]:
@@ -70,17 +97,19 @@ def _iter_script_tags(html_text: str) -> Iterator[tuple[dict[str, str], str]]:
 
 
 def _valid_currency(code: Any) -> str | None:
-    """Reject junk `priceCurrency`/meta values that aren't a 3-letter code.
+    """Reject `priceCurrency`/meta values that aren't a real currency code.
 
     Some sites (4sough.com confirmed) ship a literal descriptive string —
     e.g. ``"Afghanistan fiat currency"`` — in the currency meta tag instead
-    of an ISO code. Passing that through would silently corrupt the
-    `currency` column downstream.
+    of an ISO code. Others ship a three-letter value that is not a currency
+    at all: lacuracaonline_ni's markup says ``NIC``, Nicaragua's ISO 3166
+    country code, where the store trades in ``NIO``. Both would silently
+    corrupt the `currency` column downstream, where FX multiplies it.
     """
     if not code:
         return None
-    code = str(code).strip()
-    return code.upper() if _CURRENCY_RE.match(code) else None
+    code = str(code).strip().upper()
+    return code if code in _ACCEPTED_CURRENCIES else None
 
 
 def _same_page(row_url: str, page_url: str) -> bool:

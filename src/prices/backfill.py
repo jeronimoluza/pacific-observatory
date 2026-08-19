@@ -208,7 +208,9 @@ def backfill_one_url(
                 rec["source_kind"] = "wayback"
                 rec["wayback_timestamp"] = ts
                 rec["scraped_at_utc"] = snap_iso
-                if currency and not rec.get("currency"):
+                # Resolved source currency beats the archived page's markup —
+                # see cc_warc_fetcher._save_item for why.
+                if currency:
                     rec["currency"] = currency
                 rows.append(rec)
             continue
@@ -220,17 +222,20 @@ def backfill_one_url(
             if value:
                 extracted[field] = value
         if extracted.get("price"):
-            rows.append(
-                {
-                    "url": url,
-                    "url_hash": url_hash,
-                    "currency": currency,
-                    "source_kind": "wayback",
-                    "wayback_timestamp": ts,
-                    "scraped_at_utc": snap_iso,
-                    **extracted,
-                }
-            )
+            row = {
+                "url": url,
+                "url_hash": url_hash,
+                "currency": currency,
+                "source_kind": "wayback",
+                "wayback_timestamp": ts,
+                "scraped_at_utc": snap_iso,
+                **extracted,
+            }
+            # ``**extracted`` would otherwise let a scraped currency outrank the
+            # resolved source currency, inverting the precedence used above.
+            if currency:
+                row["currency"] = currency
+            rows.append(row)
             continue
         if not selectors:
             # Neither a parse_html hook nor registered selectors -- try the
@@ -246,7 +251,9 @@ def backfill_one_url(
                 rec["source_kind"] = "wayback"
                 rec["wayback_timestamp"] = ts
                 rec["scraped_at_utc"] = snap_iso
-                if currency and not rec.get("currency"):
+                # Resolved source currency beats the archived page's markup —
+                # see cc_warc_fetcher._save_item for why.
+                if currency:
                     rec["currency"] = currency
                 rows.append(rec)
             continue
