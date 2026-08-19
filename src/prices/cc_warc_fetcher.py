@@ -19,7 +19,7 @@ import logging
 import re
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -31,6 +31,7 @@ from .cc_config import all_cc_configs
 from .cc_index import query_prefix
 from .backfill import _load_spider_parse_html
 from .price_scraping.archived import row_from_meta, rows_from_jsonld
+from .price_scraping.archived_embedded import rows_from_next_flight
 from .price_scraping.selectors import extract_with_fallback, get_selectors
 
 logger = logging.getLogger(__name__)
@@ -87,7 +88,7 @@ class CommonCrawlScraper:
                 self.selectors = get_selectors(spider_name)
             except KeyError:
                 self.selectors = {}
-        self.scraped_at = datetime.now().isoformat()
+        self.scraped_at = datetime.now(timezone.utc).isoformat()
         self._file_lock = threading.Lock()
 
     # -- helpers --
@@ -273,12 +274,15 @@ class CommonCrawlScraper:
             return [extracted]
         if not self.selectors:
             # Neither a hook nor selectors — try the spider-independent
-            # schema.org/OpenGraph surfaces before giving up on the page.
+            # schema.org/OpenGraph surfaces, then a framework hydration
+            # payload (Next.js flight), before giving up on the page.
             rows = rows_from_jsonld(html, url)
             if rows:
                 return rows
             row = row_from_meta(html, url)
-            return [row] if row else []
+            if row:
+                return [row]
+            return rows_from_next_flight(html, url)
         return []
 
     # -- save --
@@ -343,12 +347,26 @@ class CommonCrawlScraper:
             return "save_failed"
 
     def run_scrape_cc(
-        self, location: Tuple[str, str, str], num_workers: int = 8
+        self,
+        location: Tuple[str, str, str],
+        num_workers: int = 8,
+        max_per_index: Optional[int] = None,
     ) -> Dict[str, Any]:
         """Iterate over ``self.indexes`` and fetch/parse each new record.
 
         ``location`` is ``(region, subregion, country)``. Existing record
         hashes (URL + timestamp) are skipped — safe to interrupt and resume.
+
+        ``max_per_index`` bounds how many *new* records each crawl may
+        contribute. A wall-clock budget spent without one goes entirely to
+        whichever crawls come first, so a large storefront yields many URLs
+        from one moment in time instead of the same URLs across many — which
+        is a price census, not a price series. Capping per crawl spreads the
+        same budget over the whole period. The cap keeps the head of the cdx
+        listing rather than a random sample on purpose: cdx order is stable
+        across crawls, so the same URLs tend to be picked each time, which is
+        what produces a repeated observation of one product. Records dropped
+        to the cap are counted in ``capped`` so the truncation is visible.
         """
         stats: Dict[str, Any] = {
             "indexes": len(self.indexes),
@@ -360,6 +378,7 @@ class CommonCrawlScraper:
             "parse_failed": 0,
             "no_extract": 0,
             "save_failed": 0,
+            "capped": 0,
         }
         existing = self._existing_hashes(location)
         logger.info(
@@ -384,6 +403,12 @@ class CommonCrawlScraper:
             if not todo:
                 logger.info(f"{index}: nothing new to fetch")
                 continue
+            if max_per_index is not None and len(todo) > max_per_index:
+                logger.info(
+                    f"{index}: {len(todo)} new records, capped to {max_per_index}"
+                )
+                stats["capped"] += len(todo) - max_per_index
+                todo = todo[:max_per_index]
 
             pbar = tqdm(total=len(todo), desc=f"{index} fetch+parse")
             with ThreadPoolExecutor(max_workers=num_workers) as ex:

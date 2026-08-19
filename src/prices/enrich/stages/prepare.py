@@ -149,7 +149,12 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
         df["product_url"] = ""
     df["product_url"] = df["product_url"].map(_clean_url)
     if "date" in df.columns:
-        df["observation_date"] = pd.to_datetime(df["date"], errors="coerce")
+        # format="mixed": Common Crawl writes compact numeric timestamps
+        # ("20251212100333") while live scrapes write ISO. Inferring a single
+        # format from the first row coerces every other shape to NaT.
+        df["observation_date"] = pd.to_datetime(
+            df["date"], errors="coerce", format="mixed"
+        )
     else:
         df["observation_date"] = pd.NaT
     df["price"] = df.apply(lambda r: parse_price(r["price"], r.get("currency")), axis=1)
