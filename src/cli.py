@@ -371,7 +371,8 @@ _register_text_storage(
 
 from prices.collect import collect as _prices_collect  # noqa: E402
 from prices.backfill_cli import backfill_command as _prices_backfill  # noqa: E402
-from prices.cc_warc_fetcher import common_crawl_command as _prices_common_crawl  # noqa: E402
+from prices.cc_cli import common_crawl_command as _prices_common_crawl  # noqa: E402
+from prices.cc_table_cli import cc_table_group as _prices_cc_table  # noqa: E402
 from prices.enrich.cli import process_command as _prices_process  # noqa: E402
 from prices.enrich.eval.cli import eval_command as _prices_eval  # noqa: E402
 from prices.enrich.match_record_view import (  # noqa: E402
@@ -389,6 +390,7 @@ from prices.enrich.gold_audit.cli import (  # noqa: E402
 prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
 prices.add_command(_prices_common_crawl, name="common-crawl")
+prices.add_command(_prices_cc_table, name="cc-table")
 prices.add_command(_prices_process, name="process")
 prices.add_command(_prices_eval, name="eval")
 prices.add_command(_prices_match_record, name="match-record")
@@ -428,6 +430,19 @@ def prices_publish(region, subregion):
     from prices.publish import run as _publish_run
 
     _publish_run()
+
+
+@prices.command("consumable")
+def prices_consumable():
+    """Regenerate the curated ~10k consumable dataset family.
+
+    Reads the `trusted` slice of the EAP F&B build and writes the
+    outputs/prices/consumable_datasets/ parquets, coicop_titles.dta,
+    Stata bundle, and README. No re-classify/re-embed — run after `build`.
+    """
+    from prices.build.consumable import run as _consumable_run
+
+    _consumable_run()
 
 
 # ── Cross-cutting commands ──────────────────────────────────────────
