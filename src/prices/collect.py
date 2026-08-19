@@ -134,8 +134,45 @@ def _run_fetcher(m: PriceSourceConfig) -> None:
     is_flag=True,
     help="Skip the synchronous fetcher phase and go straight to Scrapy spiders.",
 )
+@click.option(
+    "-P",
+    "--parallel",
+    type=int,
+    default=1,
+    show_default=True,
+    help=(
+        "Run this many sources at once, one detached child process each, so a "
+        "hung source cannot stall the rest. 1 keeps every source in a single "
+        "Scrapy reactor."
+    ),
+)
+@click.option(
+    "--timeout",
+    type=int,
+    default=5400,
+    show_default=True,
+    help="Per-source wall-clock cap in seconds. Only applies with -P > 1.",
+)
+@click.option(
+    "--resume",
+    is_flag=True,
+    help=(
+        "With -P > 1, skip sources already recorded ok/ok_norows in any prior "
+        "logs/prices/_fullrun_*/status.jsonl."
+    ),
+)
 def collect(
-    region, subregion, country, source, max_items, dry_run, list_sources, skip_fetchers
+    region,
+    subregion,
+    country,
+    source,
+    max_items,
+    dry_run,
+    list_sources,
+    skip_fetchers,
+    parallel,
+    timeout,
+    resume,
 ):
     """Run Scrapy spiders and/or Python fetchers to collect price data."""
 
@@ -159,8 +196,36 @@ def collect(
     if not active:
         raise click.ClickException("No active sources to run.")
 
+    if parallel < 1:
+        raise click.BadParameter("-P/--parallel must be >= 1")
+
     run_ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     runs_dir, _ = _setup_run_logging(run_ts)
+
+    if parallel > 1:
+        from prices.collect_parallel import DiskSpaceError, run_parallel, summarize
+
+        try:
+            run_dir = run_parallel(
+                active,
+                workers=parallel,
+                timeout=timeout,
+                project_root=_PROJECT_ROOT,
+                data_root=_DATA_ROOT,
+                resume=resume,
+                max_items=max_items,
+            )
+        except DiskSpaceError as exc:
+            raise click.ClickException(str(exc)) from exc
+        result = summarize(run_dir)
+        logger.info(
+            "Prices collect -P %d done: %s, %d new rows; ledger: %s",
+            parallel,
+            result["counts"],
+            result["new_rows"],
+            run_dir / "status.jsonl",
+        )
+        return
 
     fetchers = [m for m in active if m.scaffolding == "fetcher"]
     spiders = [m for m in active if m.scaffolding == "spider"]

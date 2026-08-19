@@ -38,6 +38,28 @@ Spiders write `raw_items/*.jsonl`; the resumable Wayback runner (`backfill/`) an
 the Common-Crawl WARC ingest (`common-crawl`) write their own shapes. Sources are
 declared as per-region/subregion/country YAML under `configs/`.
 
+**Fleet runs use `-P N` (`collect_parallel.py`).** At the default `-P 1` every
+matched spider is scheduled into a single Scrapy reactor, so one hung source
+stalls the whole run — fine for a country, unusable for 1,000+ sources. `-P N`
+dispatches N sources at a time as detached single-source children
+(`collect --country X --source Y -P 1`), bounding a hung source to itself so
+`--timeout` (default 5400s, below Scrapy's `CLOSESPIDER_TIMEOUT`) can kill it.
+Workers hit different domains, so `CONCURRENT_REQUESTS_PER_DOMAIN` still holds
+per site.
+
+Sources dispatch longest-first: a runtime measured in a prior ledger outranks an
+on-disk footprint guess, and a brand-new source gets the median footprint rather
+than last place. Each run writes `logs/prices/_fullrun_<UTC_TS>/status.jsonl`,
+one record per source — `region / country / source / scaffolding / status / rc /
+secs / new_rows / log`, status one of `ok`, `ok_norows`, `timeout`, `fail`,
+`runner_error` — plus a per-source log. `--resume` skips pairs already `ok` or
+`ok_norows` in *every* prior `_fullrun_*` ledger, not just the last. The driver
+refuses to start below 10 GiB free and halts if free space drops there mid-run.
+
+`new_rows` is the observations-CSV delta, so a source whose catalog is already on
+disk lands at `ok_norows` despite scraping normally; real per-run yield is
+`item_scraped_count` in that source's log.
+
 ### process (`enrich/`) — the four sub-stages
 - **concatenate** — unifies the scraped shapes (`raw_items/`, `wayback_items/`,
   `common_crawl_data/`) into one `raw_prices.csv`. Fetcher `price_observations.csv`
