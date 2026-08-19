@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: freshmart_az
+url: https://freshmart.az/en-gb/
+language: az
+cadence: weekly
+channel: supermarket
+archive_prefix: "freshmart.az/en-gb/product/"
+archive_path_re: '^/en\-gb/product/[^/?]+'
+notes: |
+  OpenCart storefront, clean-SEO category URLs (no route=/path=), reusing
+  the shared _opencart_base.py CATEGORY_URLS mode with 53 leaf subcategory
+  paths pulled from the site's own top nav 2026-08-06. Re-verified live:
+  GET /en-gb/catalog/meyve-ve-terevez/meyve -> 200, real product-thumb
+  cards e.g. 'BANAN KQ' 3.39₼ (discounted from 3.49₼), ?page=2 pagination
+  confirmed present. Produce+meat+dairy+bakery+household+petshop+childcare
+  categories, whole catalog (not food-filtered). Product/category names
+  are Azerbaijani (Latin script) despite the en-gb URL prefix -- language
+  overridden from the shard's en to az. Currency AZN matches
+  countries.yaml.

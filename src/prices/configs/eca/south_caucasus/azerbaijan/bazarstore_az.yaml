@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bazarstore_az
+url: https://bazarstore.az/en/
+language: az
+cadence: weekly
+channel: supermarket
+archive_prefix: "bazarstore.az/en/products/"
+archive_path_re: '^/en/products/[^/?]+'
+notes: |
+  Shopify storefront, /en/products.json?limit=250&page=N, no auth. Re-verified
+  live 2026-08-06: HTTP 200, real SKUs (e.g. 'MAGNUM DONDURMA 100 ML DUBAY
+  SOKOLAD' 7.50 AZN). Currency AZN matches countries.yaml. Product titles are
+  Azerbaijani (Latin script), not English, so language is set to az despite
+  the shard's en starting point. 217K stock lines per prior probe notes;
+  categories span meat/fish, staples, dairy, snacks, bakery.

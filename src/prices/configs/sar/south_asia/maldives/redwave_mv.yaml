@@ -1,4 +1,6 @@
 spider: redwave_mv
 language: en
+archive_prefix: "redwave.mv/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: Maldives hypermarket; WooCommerce, PDPs at /product/<slug>/.
 channel: pharmacy

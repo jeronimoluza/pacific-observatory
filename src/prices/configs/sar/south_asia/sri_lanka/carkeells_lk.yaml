@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: carkeells_lk
+url: https://carkeells.lk/en-gb/catalog/grocery
+language: en
+cadence: weekly
+channel: pharmacy
+archive_prefix: "carkeells.lk/en-gb/product/"
+archive_path_re: '^/en\-gb/product/[^/?]+'
+notes: |
+  OpenCart 4 SEO theme. Two grocery subcategories walked (food-products,
+  beverages) -- a small tail (~55 SKUs per shard notes) bolted onto an
+  otherwise cosmetics/health/haircare-dominant OpenCart pharmacy store, so
+  channel is pharmacy not supermarket. Re-verified live: e.g. "Batapolal
+  Rice - Sobako Traditional Healthy Sri Lankan Rice" Rs.525.00.
+
+  cfg_currency (LKR) matches what the probe saw. Low priority per shard
+  notes -- everything it carries is already covered more deeply by
+  Glomark/OnlineKade/SPAR2U.

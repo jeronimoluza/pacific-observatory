@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dia_ar
+url: https://diaonline.supermercadosdia.com.ar/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "diaonline.supermercadosdia.com.ar/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Discount/proximity format, packaged-goods heavy, thinner fresh section. Re-verified live:
+  products/search?_from=0&_to=9 -> HTTP 206, 173KB, 'Azucar Plus DIA Comun tipo A 1 Kg.' ARS
+  1389.00. Currency matches countries.yaml (ARS).

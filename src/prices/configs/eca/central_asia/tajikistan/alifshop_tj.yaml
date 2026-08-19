@@ -8,6 +8,8 @@ language: ru
 currency: TJS
 cadence: weekly
 channel: marketplace
+archive_prefix: "alifshop.tj/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Verified live 2026-08-17. Next.js SSR storefront run by Alif (Tajik
   fintech) with onboarded third-party "partners" (see /new-partners) —

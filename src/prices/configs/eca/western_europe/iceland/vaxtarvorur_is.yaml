@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vaxtarvorur_is
+url: https://vaxtarvorur.is/
+language: is
+cadence: weekly
+channel: pharmacy
+archive_prefix: "vaxtarvorur.is/vara/"
+archive_path_re: '^/vara/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5
+  -> HTTP 200, 28KB JSON, standard WooCommerce Store API, no auth.
+  currency_code ISK / currency_minor_unit 0 explicitly confirmed in the
+  response, matching countries.yaml. Sample: 'HMB FORMULA CAPS 240cap' ISK
+  5490, 'ESSENSEY D3 K2 MK-7 90cap' ISK 3790. Sports-nutrition/supplement
+  retailer -- whole-catalog walk, no category filter. Checked against the
+  known Bonus-gift-card trap (BRIEF section 2): this is a distinct,
+  unrelated retailer with 5+ real varied products in the smoke sample, not
+  a single-SKU catalog. First non-proxy Icelandic price manifest in the
+  repo.

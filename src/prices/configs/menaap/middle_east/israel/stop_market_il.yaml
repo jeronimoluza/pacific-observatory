@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+source_key: il_stop_market
+module: menaap.middle_east.israel.stop_market_il
+function: fetch_il_stop_market
+url: ftp://url.retail.publishedprices.co.il/
+language: he
+cadence: daily
+fallback_date: 2020-01-01
+channel: supermarket
+notes: |
+  Israel's 2014 Food Price Transparency Law statutory feed via the shared
+  publishedprices.co.il FTPS portal (see rami_levy_il.yaml for the shared
+  architecture note). Login "Stop_Market", blank password. Fetches one
+  representative branch's PriceFull snapshot per run. Re-verified live
+  2026-08-06: 14,837 items, e.g. 'יין דומיין רוזר נובו' (Domaine Rosier
+  Nouveau wine) ILS 120.00, 'שניצל תירס 700 גרם' (corn schnitzel 700g)
+  ILS 31.90. Currency ILS. Full-line supermarket -- catalog includes
+  alcohol.
+  coicop_divisions: 01, 02, 13
+  divisions_basis: sampled_rows (14,837-item branch catalog, not fully
+  walked by department)

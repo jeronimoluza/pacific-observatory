@@ -91,9 +91,11 @@ def append(df, path=LABEL_STORE_PATH) -> pd.DataFrame:
 
     if "created_at" in rows.columns:
         rows["created_at"] = rows["created_at"].map(
-            lambda v: _utcnow()
-            if v is None or (isinstance(v, float) and pd.isna(v))
-            else _ensure_utc(v)
+            lambda v: (
+                _utcnow()
+                if v is None or (isinstance(v, float) and pd.isna(v))
+                else _ensure_utc(v)
+            )
         )
     else:
         rows["created_at"] = _utcnow()

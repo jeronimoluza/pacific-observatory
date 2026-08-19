@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: superfoodplaza_aw
+url: https://shop.superfoodaruba.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "shop.superfoodaruba.com/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  Round 3 platform-fingerprint reversal: prior round dropped shop.superfoodaruba.com as
+  brochure-only WordPress. It runs the NCR Freshop hosted catalog API (asset.freshop.ncrcloud.com
+  script tag, app_key=super_food_plaza_aruba discovered in that tag). Verified live 2026-08-07:
+  /2/stores confirms store_id=4592 ("Super Food Plaza Aruba", Oranjestad); /2/products returns
+  11,254 items. Sampled rows: branded groceries (Nestle ice cream, Glad plastic wrap, Simply
+  Lemonade), frozen foods, dairy/juice, household paper goods, personal care (vitamins/beauty).
+  Price display string uses the "ƒ" (florin) symbol, confirming AWG -- matches countries.yaml.
+  Aruba's prior only source was lingandsons.yaml; this is a much larger full-line supermarket
+  catalog.
+  coicop_divisions: 01, 05, 06, 13
+  divisions_basis: sampled_rows (5 of 11254; categories seen: frozen foods, dairy/juice,
+  household/paper, vitamins/beauty -- full catalog breadth not walked)

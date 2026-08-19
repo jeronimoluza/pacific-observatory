@@ -1,0 +1,27 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: my_pricecatcher
+module: eap.southeast_asia.malaysia.pricecatcher
+function: fetch_my_pricecatcher
+url: https://storage.data.gov.my/pricecatcher/
+language: en
+cadence: daily
+fallback_date: 2026-07-31
+notes: |
+  KPDNHEP PriceCatcher — Malaysia's official daily price-monitoring program
+  across 500+ registered premises nationwide (wet markets, supermarkets,
+  minimarkets, hypermarkets), 758 SKUs. Re-verified live 2026-08-06:
+  pricecatcher_2026-08.csv HTTP 200, 9.9MB, 384,270 rows so far this month
+  (date,premise_code,item_code,price); lookup_item.csv HTTP 200, 758-row
+  item master (item_code,item,unit,item_group,item_category);
+  lookup_premise.csv HTTP 200, premise_code -> premise/address/premise_type/
+  state/district. ~600 of 758 items are food/beverage (chicken, meat,
+  seafood, vegetables, fruit, rice, flour, noodles, oils, eggs, dairy,
+  nuts, spices, sauces, sugar, beverages); the remainder (toiletries,
+  stationery, diapers) rides the same program and is excluded downstream
+  by the food gate. Whole-catalog walker: one monthly bulk CSV per month
+  since cutoff, no auth, no pagination. Malaysia had zero official_avg
+  manifest before this. Currency MYR confirmed, matches cfg_currency.

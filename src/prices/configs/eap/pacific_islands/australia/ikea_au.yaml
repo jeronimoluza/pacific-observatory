@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ikea_au
+channel: home-improvement
+url: https://www.ikea.com/au/en/
+language: en
+cadence: weekly
+archive_prefix: "www.ikea.com/au/en/p/"
+archive_path_re: '^/au/en/p/[^/?]+'
+notes: |
+  Onboarded 2026-08-07 (round-3 non-food shard, COICOP 03/05/08/09 gap).
+  Same shared platform as ikea_jp — see _ikea_base.py docstring. No
+  WAF/anti-bot observed on storefront or the sik.search.blue.cdtapps.com
+  API host as of this date. Australia's other non-food candidates probed
+  in this same run (Kmart, Big W, Officeworks — Akamai/AWS-WAF/unreachable
+  respectively) all failed; IKEA AU is the round's only working non-food
+  source for this country. See skipped-candidates report.
+  coicop_divisions: 01, 05, 08, 09
+  divisions_basis: walked_categories (same mega-nav taxonomy as ikea_jp —
+  furniture/kitchenware/textiles/lighting dominant 05; pantry/food minor
+  01; cables/chargers/smart-lighting minor 08; toys/decoration/outdoor 09)

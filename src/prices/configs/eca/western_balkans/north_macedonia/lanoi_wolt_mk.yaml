@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lanoi_wolt_mk
+url: https://wolt.com/en/mkd/skopje/venue/la-noi-shop
+language: mk
+cadence: weekly
+channel: marketplace
+archive_prefix: "wolt.com/en/mkd/skopje/venue/"
+archive_path_re: '^/en/mkd/skopje/venue/[^/?]+'
+notes: |
+  La Noi Market (Skopje, tagged "Supermarket" on Wolt) on the Wolt delivery
+  marketplace. Same SSR query-state walk as ab_vassilopoulos_wolt_gr (shared
+  base `_wolt_base.py`). Re-verified live 2026-08-06: /venue/la-noi-shop ->
+  200, category-listing resolves, per-category /items/<slug> pages carry
+  real MKD-priced SKUs with barcode_gtin. Synthetic url =
+  f"{venue_url}#{item_id}". channel:marketplace (Wolt aggregates the
+  first-party retailer's catalog). Also confirms Wolt is NOT live in
+  Turkiye: /v1/pages/front for Istanbul coordinates returns a
+  nearest-available-cities fallback listing only Albanian cities -- Wolt
+  has no Turkish presence, so no Wolt source was scaffolded for turkiye.

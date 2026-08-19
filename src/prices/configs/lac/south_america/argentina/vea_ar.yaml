@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vea_ar
+url: https://www.vea.com.ar/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.vea.com.ar/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Cencosud AR discount banner, same tenant family as Jumbo AR/Disco AR. Re-verified live:
+  products/search?_from=0&_to=9 -> HTTP 206, 313KB, 'Azucar 1 Kg Azucel' ARS 1390.00. Currency
+  matches countries.yaml (ARS).

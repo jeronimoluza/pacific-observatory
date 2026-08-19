@@ -1,0 +1,28 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_irn
+module: _shared.menaap.wfp_food_prices
+function: fetch_wfp_irn
+url: https://data.humdata.org/dataset/6df76343-1bd9-488a-af3c-1e5aec3fc78c
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Iran via HDX (shared MENAAP fetcher
+  _shared.menaap.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_irn.csv (200, 286KB, only 2,280
+  rows — far thinner than the other MENAAP panels), currency IRR throughout
+  (matches countries.yaml). Max observation date is 2026-08-15 (priceflag
+  'aggregate', not 'actual', on the most recent rows — WFP dates its monthly
+  aggregate to the 15th of the posting month; this is current, not a
+  forecast row, and the fetcher's existing forecast filter only drops
+  priceflag=='forecast'). 41 commodities incl. apples, beans, local cheese,
+  eggplant, lentils, beef/chicken, pasteurized milk, rice, tomato + tomato
+  paste, wheat flour, yogurt. Sample at max date: 'Bread', 240 G,
+  IRR 90000. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

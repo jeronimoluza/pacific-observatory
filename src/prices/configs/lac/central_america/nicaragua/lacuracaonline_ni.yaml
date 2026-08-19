@@ -8,6 +8,8 @@ language: es
 currency: NIO
 cadence: weekly
 channel: electronics
+archive_prefix: "www.lacuracaonline.com/nicaragua/"
+archive_path_re: '^/nicaragua/[^/?]+'
 notes: |
   Electronics/appliances/general-merchandise chain (TVs, motorcycles,
   mattresses, appliances, sporting goods). Site also serves

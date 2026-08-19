@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: amarket_bo
+url: https://amarket.com.bo/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "amarket.com.bo/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth — the source
+  CSV listed the platform as Custom, but it is actually Shopify. Re-verified
+  live 2026-08-06: HTTP 200, 250 products, real SKUs (e.g. 'Shampoo Más
+  Acondicionador Pantene 2 En 1' 69.30 BOB; a phone-topup card at 50.00 BOB
+  also confirms the platform). Currency BOB matches countries.yaml. Product
+  titles are Spanish, so language is set to es despite the shard's en
+  starting point. General e-commerce store, cosmetics/personal-care heavy
+  with moderate grocery share.

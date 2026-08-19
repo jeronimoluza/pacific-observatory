@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sakanal
+url: https://sakanal.sn/fr/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "sakanal.sn/fr/"
+archive_path_re: '^/fr/[^/]+/\d+-[^/]+\.html$'
+notes: |
+  PrestaShop SSR category HTML, no public webservice key available.
+  Re-verified live: sakanal.sn/fr/ 200, category tree auto-discovered from
+  the homepage nav (id-slug hrefs, e.g. /fr/111-epicerie), paginated via
+  ?page=N. Product cards carry data-id-product + itemprop=name/price
+  microdata across theme variants.
+
+  Price gotcha: line items show a TTC headline price plus two per-payment-
+  method discount rows (div.remise: "ESPECES: 7 752 FCFA (-5%)" / "CARTE:
+  7 996 FCFA (-2%)"). All three are captured -- the spider emits the TTC
+  price under the plain product_id and the espece/carte rows as suffixed
+  variants (<id>_especes / <id>_carte) of the same product, rather than
+  only the TTC headline.
+
+  cfg_currency (XOF) matches what the probe saw; no currency divergence.

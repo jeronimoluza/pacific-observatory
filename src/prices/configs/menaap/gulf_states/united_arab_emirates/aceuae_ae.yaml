@@ -8,6 +8,8 @@ url: https://www.aceuae.com/
 language: en
 currency: AED
 cadence: weekly
+archive_prefix: "www.aceuae.com/en/products/"
+archive_path_re: '^/en/products/[^/?]+'
 notes: |
   Al-Futtaim ACE hardware/home-living retailer, UAE. Custom Next.js
   storefront behind an F5/TSPD stub that is unimpersonated-only defensive JS

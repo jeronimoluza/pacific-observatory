@@ -9,6 +9,8 @@ language: en
 currency: QAR
 cadence: weekly
 coicop_codes: null
+archive_prefix: "menahub.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   MenaHub (Qatar) general household/appliance retailer sourced from
   multiple trading companies (Gline Trading, Grandhome, Zainal

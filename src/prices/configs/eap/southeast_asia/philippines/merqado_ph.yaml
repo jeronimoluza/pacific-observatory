@@ -7,5 +7,7 @@ url: https://www.merqadoph.com
 language: en
 cadence: daily
 channel: supermarket
+archive_prefix: "www.merqadoph.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: >
   Shopify storefront; public /products.json feed. Specialty-foods basket.

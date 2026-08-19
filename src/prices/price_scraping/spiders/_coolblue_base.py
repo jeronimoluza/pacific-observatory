@@ -27,8 +27,11 @@ import json
 import logging
 import re
 from datetime import datetime, timezone
+from typing import Iterator
 
 import scrapy
+
+from ..archived import row_from_meta, rows_from_jsonld
 
 logger = logging.getLogger(__name__)
 
@@ -148,3 +151,30 @@ class CoolblueBaseSpider(scrapy.Spider):
             return json.loads(block)
         except (ValueError, TypeError):
             return None
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). Live scrape
+    # (parse_pdp, above) already reads this exact page type -- Coolblue PDPs
+    # are the same JSON-LD-bearing surface whether fetched live or replayed
+    # from an archive, so this is a thin wrapper over the shared
+    # archived-page tier rather than a reimplementation. Measured on 16
+    # archived pages across both tenants (coolblue.nl, coolblue.be): 16/16
+    # hit the shared JSON-LD tier -- no bespoke DOM walk was needed.
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived Coolblue product-detail page.
+
+        Pure/stateless: no Scrapy Response, no network, no class state.
+        Yields 0 or more rows; yields nothing when the page isn't a product
+        page. Does NOT stamp `scraped_at_utc` -- the backfiller stamps the
+        snapshot time itself.
+        """
+        rows = rows_from_jsonld(html_text, url)
+        if not rows:
+            row = row_from_meta(html_text, url)
+            rows = [row] if row else []
+        for row in rows:
+            row.setdefault("currency", cls.currency)
+            row.setdefault("language", cls.language)
+            yield row

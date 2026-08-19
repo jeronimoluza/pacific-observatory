@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rimi_lv
+url: https://www.rimi.lv/e-veikals/en
+language: lv
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.rimi.lv/e-veikals/lv/"
+archive_path_re: '^/e\-veikals/lv/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: no category-browse API or working
+  ?start=N grid pagination found (homepage/guessed category slugs render
+  empty 0,00€ placeholders pre-JS). The site-search endpoint IS fully
+  SSR and paginates: GET
+  /e-veikals/lv/meklesana?query=piens&currentPage=N -> HTTP 200, 40 hits
+  with data-gtm-eec-product='{"id":...,"name":...,"price":...,"currency":
+  ...}' JSON per hit, currentPage links up to 30 present for a common
+  term. Sample: 'Piens Rimi pudele 2% 1l' EUR 0.99; 'Piens Annele
+  pasterizēts 2,5% 2l' EUR 2.58. Shared base `_rimi_baltic_base.py` (same
+  Baltic Rimi platform as rimi_lt/rimi_ee). Coverage is a keyword-search
+  sweep across common grocery nouns (shared base, 3 pages/term), not a
+  full category walk. 8,000+ goods per shard notes; explicit Omnibus
+  30-day-lowest-price field + separate beverage deposit fee not yet
+  extracted (deferred to classifier/regex layer).

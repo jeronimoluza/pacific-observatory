@@ -8,6 +8,8 @@ language: ru
 currency: KGS
 cadence: weekly
 channel: electronics
+archive_prefix: "www.sulpak.kg/g/"
+archive_path_re: '^/g/[^/?]+'
 notes: |
   sulpak.kg — Kyrgyz Republic electronics/appliances retailer (part of the
   Kazakhstan-based Sulpak chain, localized .kg storefront). Verified live

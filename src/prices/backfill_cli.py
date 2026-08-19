@@ -54,7 +54,7 @@ def _parse_iso_date(value: str | None) -> date | None:
     "--from",
     "from_date",
     default=None,
-    help="CDX cutoff (YYYY-MM-DD). Default: earliest live row for the source.",
+    help="CDX cutoff (YYYY-MM-DD), the earliest snapshot to include. Default: 2010-01-01.",
 )
 @click.option(
     "--collapse",
@@ -71,6 +71,19 @@ def _parse_iso_date(value: str | None) -> date | None:
     help="bulk = one paged CDX query per host; per-url = one CDX call per URL.",
 )
 @click.option(
+    "--universe",
+    "universe_mode",
+    type=click.Choice(["scraped", "archive"]),
+    default="scraped",
+    show_default=True,
+    help=(
+        "scraped = only URLs we collected live; archive = every product URL "
+        "Wayback holds under the manifest's archive_prefix, including products "
+        "delisted before we started scraping. Requires --discovery bulk and an "
+        "archive_prefix on the manifest."
+    ),
+)
+@click.option(
     "--max-snapshots-per-url",
     type=int,
     default=None,
@@ -82,9 +95,13 @@ def _parse_iso_date(value: str | None) -> date | None:
 @click.option(
     "--workers",
     type=int,
-    default=2,
+    default=8,
     show_default=True,
-    help="Thread pool size per source (kept low — IA blackholes under concurrency).",
+    help=(
+        "Concurrent URLs per source. Measured against IA 2026-08-18: 8 sustains "
+        "~0.91 fetch/s with no connection refusals; 16 collapses to 4% success "
+        "and 32 to zero (per-IP TCP blackhole, ~100s to recover). Do not raise."
+    ),
 )
 @click.option(
     "--requests-per-second",
@@ -101,6 +118,7 @@ def backfill_command(
     source,
     from_date,
     collapse,
+    universe_mode,
     discovery,
     max_snapshots_per_url,
     max_urls,
@@ -128,12 +146,22 @@ def backfill_command(
         n_urls = len(load_url_universe(sd))
         plan.append((m, sd, n_urls))
 
+    archive = universe_mode == "archive"
     for m, sd, n in plan:
+        scope = f", archive_prefix={m.archive_prefix or 'MISSING'}" if archive else ""
         click.echo(
             f"  {m.region}/{m.subregion}/{m.country}/{m.source}  "
-            f"(spider={m.spider}, urls={n})"
+            f"(spider={m.spider}, urls={n}{scope})"
         )
     click.echo(f"\n{len(plan)} sources, {sum(n for _, _, n in plan)} unique URLs")
+
+    if archive:
+        no_prefix = [m.source for m, _, _ in plan if not m.archive_prefix]
+        if no_prefix:
+            click.echo(
+                f"\n{len(no_prefix)} source(s) have no archive_prefix: and will be "
+                f"skipped — {', '.join(sorted(no_prefix)[:10])}"
+            )
 
     if dry_run:
         return
@@ -141,7 +169,10 @@ def backfill_command(
     logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
 
     for m, sd, n in plan:
-        if n == 0:
+        if archive and not m.archive_prefix:
+            click.echo(f"Skipping {m.source}: no archive_prefix: on the manifest")
+            continue
+        if n == 0 and not archive:
             click.echo(f"Skipping {m.source}: no raw_items found at {sd}/raw_items/")
             continue
         click.echo(f"\n=== {m.source} ({n} URLs) ===")
@@ -156,4 +187,8 @@ def backfill_command(
             discovery=discovery,
             granularity=collapse,
             requests_per_second=requests_per_second,
+            universe_mode=universe_mode,
+            archive_prefix=m.archive_prefix,
+            archive_path_re=m.archive_path_re,
+            currency_override=m.currency,
         )

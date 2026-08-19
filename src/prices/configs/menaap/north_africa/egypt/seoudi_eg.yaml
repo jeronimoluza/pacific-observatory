@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: seoudi_eg
+url: https://seoudisupermarket.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "seoudisupermarket.com/"
+archive_path_re: '^/[^/]+/?$'
+notes: |
+  Established Cairo chain. Nuxt SPA fronting Magento 2, same
+  mcprod.<domain>/graphql backend pattern as Hyper One and Spinneys Egypt
+  (three confirmed sites on this shared Egyptian storefront agency stack).
+  categoryList's root category (id=2) itself has zero directly-assigned
+  products; the spider walks its children (Fruits & Vegetables, Meat/
+  Poultry/Fishery, Dairy/Eggs/Cheese, Cold Cuts & Deli, Bakery, Frozen, Hot
+  Drinks, etc.) — verified live: root-only query returns total_count=0,
+  children query lists the full department tree with real product_counts.
+  Live re-verify: POST mcprod.seoudisupermarket.com/graphql
+  products(search:"rice") -> 200, "Al Doha Beyti Rice, Easy Rice Edition -
+  320 g" EGP 25.75. Currency EGP matches countries.yaml.

@@ -1,0 +1,22 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: ki_nso_cpi
+module: eap.pacific_islands.kiribati.nso_cpi
+function: fetch_ki_nso_cpi
+url: https://nso.gov.ki/statistics/economy/cpi/
+language: en
+cadence: quarterly
+fallback_date: 2005-12-31
+notes: |
+  Kiribati NSO quarterly CPI. Only the newest bulletin currently carries a
+  machine-readable XLSX (older releases are PDF-only); fetcher reads the
+  CPI landing page for the newest linked .xlsx under the
+  consumer-price-index download category. That workbook's "Quarterly Price
+  Index" table carries the full COICOP-division series back to 2006, so one
+  fetch backfills the whole history. Base period 2024 Q2=100 (NSO
+  re-normalised Q2-2024 as the base quarter). 12 COICOP groups; division
+  "0" (All-Items headline) dropped — no sanctioned sentinel code yet.

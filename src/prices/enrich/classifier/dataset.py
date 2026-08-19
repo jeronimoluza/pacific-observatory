@@ -58,6 +58,29 @@ def consolidate_gold(gold_dir: Path | None = None) -> dict:
     return {"out": str(out), "n_rows": int(len(g)), "sources": [p.name for p in srcs]}
 
 
+def _apply_corrections(g: pd.DataFrame, gold_dir: Path) -> pd.DataFrame:
+    """Overlay reviewed label corrections at read time, keyed by gold_row_id.
+
+    Reversible: the gold_v5_* parquets and gold_labels.parquet stay untouched, so
+    a correction survives re-consolidation and is undone by removing its CSV. Each
+    corrections/*.csv carries gold_row_id/new_code/status; only status=='apply'
+    rows are overlaid onto the `code` column. Bake into the parquets only once a
+    retrain confirms the corrections help."""
+    cdir = gold_dir / "corrections"
+    files = sorted(cdir.glob("*.csv")) if cdir.exists() else []
+    if not files or "gold_row_id" not in g.columns:
+        return g
+    remap: dict[str, str] = {}
+    for f in files:
+        c = pd.read_csv(f, dtype=str)
+        c = c[c["status"] == "apply"]
+        remap.update(dict(zip(c["gold_row_id"], c["new_code"])))
+    if remap:
+        ids = g["gold_row_id"].astype(str)
+        g.loc[ids.isin(remap), "code"] = ids.map(remap)[ids.isin(remap)]
+    return g
+
+
 def _load_gold(gold_dir: Path | None = None) -> pd.DataFrame:
     gold_dir = gold_dir or GOLD_DIR
     labels = gold_dir / "gold_labels.parquet"
@@ -67,6 +90,8 @@ def _load_gold(gold_dir: Path | None = None) -> pd.DataFrame:
             "run `prices label consolidate` to build it from the gold_v5_* sources"
         )
     g = pd.read_parquet(labels)
+    g["code"] = g["code"].astype(str)
+    g = _apply_corrections(g, gold_dir)
     g["code"] = g["code"].astype(str)
     g["division"] = g["code"].str.split(".").str[0]
     return g

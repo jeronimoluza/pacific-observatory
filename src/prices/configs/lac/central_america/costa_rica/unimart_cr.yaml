@@ -8,6 +8,8 @@ language: es
 currency: CRC
 cadence: weekly
 channel: dept-store
+archive_prefix: "unimart.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Onboarded 2026-08-17 from the global candidate workbook triage
   (inputs/triage_20260817/). Shopify tenant with an open /products.json

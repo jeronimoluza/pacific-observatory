@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tia_ec
+url: https://www.tia.com.ec/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.tia.com.ec/catalog/product/view/id/"
+archive_path_re: '^/catalog/product/view/id/[^/?]+'
+notes: |
+  Grupo El Rosado general-merchandise + grocery chain (Magento 2).
+  /rest/V1/products and /graphql both need an auth token (401/403), but
+  every category page embeds the GA4 dataLayer ecommerce.items JSON
+  inline (item_name/item_id/price/item_category) alongside the SSR grid
+  -- a hydration-payload parse, not the raw HTML grid. Re-verified live
+  2026-08-06: GET /supermercado -> HTTP 200, 418KB, 12 item_name/price
+  pairs/page e.g. 'ACEITE CON ACHIOTE ALESOL 200 ML' USD 0.99. Currency
+  USD matches countries.yaml (Ecuador is dollarized). 13 top-level nav
+  categories crawled (grocery = "supermercado"; rest is general
+  merchandise -- bebes, moda, electrodomesticos, etc -- per whole-catalog
+  convention). Pagination via Magento's ?p=N + "next" link, capped at 100
+  pages/category. Synthetic-url-safe: item_id is a real, globally unique
+  Magento SKU id, used to build a generic /catalog/product/view/id/<id>
+  permalink.

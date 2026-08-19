@@ -7,6 +7,8 @@ url: https://cellarmasterwines.com
 language: en
 cadence: daily
 channel: supermarket
+archive_prefix: "cellarmasterwines.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: >
   Shopify storefront; public /products.json feed. Mostly alcoholic beverages
   (02.1) plus some glassware/accessories — left to Gemini to classify.

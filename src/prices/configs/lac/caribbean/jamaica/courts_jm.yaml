@@ -8,6 +8,8 @@ language: en
 currency: JMD
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.courts.com/jamaica/"
+archive_path_re: '^/jamaica/[^/?]+'
 notes: |
   Courts Jamaica (Unicomer Group). shopcourts.com 301s -> courts.com ->
   www.courts.com, one shared multi-website Magento 2 instance. Investigated

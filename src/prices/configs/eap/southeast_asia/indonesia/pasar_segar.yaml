@@ -7,6 +7,8 @@ url: https://pasarsegar.co.id/
 language: id
 cadence: daily
 channel: supermarket
+archive_prefix: "pasarsegar.co.id/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   WooCommerce (Martfury theme) multi-vendor fresh-market marketplace with
   physical outlets (Grogol/Bekasi/Ciputat/Bandung/Surabaya/Semarang).

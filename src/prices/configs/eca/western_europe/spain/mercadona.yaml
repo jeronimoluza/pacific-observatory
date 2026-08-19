@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mercadona
+url: https://tienda.mercadona.es/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "tienda.mercadona.es/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Public JSON API, no auth. GET /api/categories/ -> 26 top-level groups
+  each nesting leaf subcategory ids (151 total, re-verified live
+  2026-08-06). GET /api/categories/{leaf_id}/ returns nested
+  categories[].products[] with price_instructions.bulk_price (the actual
+  shelf price, EUR) — unit_price is a per-kg/per-l reference, not the
+  charged price. Sample: 'Aceite de oliva 0,4º Hacendado' (Garrafa) EUR
+  3.55. No per-category pagination needed; walk all 151 leaf ids. Market
+  leader with dominant private label; product names in Spanish (language
+  overridden from shard's cfg_lang=en).

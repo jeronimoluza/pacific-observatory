@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: aonesupermarkets
+url: https://aonesupermarkets.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "aonesupermarkets.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
+  live 2026-08-06: HTTP 200, 250 products, real SKUs (e.g. 'A1 Cookie
+  Croissants', product_type 'Pastries', tags ['A1','Bakery','Pastries']).
+  Currency BBD matches countries.yaml. Catalog skews general-merchandise
+  (hangers, cards) alongside grocery per prior probe notes.

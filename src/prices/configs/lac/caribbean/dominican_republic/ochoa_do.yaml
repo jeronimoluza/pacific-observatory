@@ -8,6 +8,8 @@ language: es
 currency: DOP
 cadence: weekly
 channel: home-improvement
+archive_prefix: "ochoa.com.do/producto/"
+archive_path_re: '^/producto/[^/?]+'
 notes: |
   Home-improvement/hardware chain (materiales de construccion, ferreteria,
   plomeria, electricos, limpieza, jardineria, etc. -- 27 top-level

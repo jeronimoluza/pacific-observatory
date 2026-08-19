@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dmarketmovers
+url: https://dmarketmovers.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "dmarketmovers.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
+  live 2026-08-06: HTTP 200, real SKUs (e.g. 'Snapper (Espeara TT)' 160.00
+  TTD, tags ['seafood']). Currency TTD matches countries.yaml. Strong local
+  produce/fish focus per prior probe notes; moderate catalog size (~184
+  items), not a full-line supermarket.

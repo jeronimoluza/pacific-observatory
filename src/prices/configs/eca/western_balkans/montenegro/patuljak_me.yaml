@@ -8,6 +8,8 @@ language: sr
 currency: EUR
 cadence: weekly
 channel: marketplace
+archive_prefix: "patuljak.me/oglas/"
+archive_path_re: '^/oglas/[^/?]+'
 notes: |
   Patuljak.me — Montenegro peer-to-peer classifieds site (schema.org Offer
   microdata listings), not a retailer. Verified live 2026-08-17: real EUR

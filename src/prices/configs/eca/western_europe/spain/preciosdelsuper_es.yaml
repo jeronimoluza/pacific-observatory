@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: preciosdelsuper_es
+url: https://preciosdelsuper.es/
+language: es
+cadence: weekly
+channel: marketplace
+archive_prefix: "preciosdelsuper.es/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Independent Spanish price-tracking aggregator republishing several
+  supermarket chains' catalogs (product image domains reveal the source
+  retailer, e.g. dia.es) with per-product price history. Custom SSR site,
+  no WAF. Homepage widgets are only small highlight carousels (round 1) --
+  the real catalog walk is the /nuevos ("new products") feed: its
+  application/ld+json ItemList declares numberOfItems=138075 and the page
+  paginates ?page=1..6904 (20 products/page * 6904 ~= 138075, i.e. this feed
+  is effectively a full paginated catalog walk in date-added order).
+
+  Re-verified live 2026-08-06: GET /nuevos?page=2 -> 200, 269KB, 20 real
+  products incl. "Compresa con alas Cottonlike Super Plus Evax 20 unidades"
+  EUR, "Moras ecológicas categoría 1a bandeja 125 g", "Uva Cotton Candy
+  categoría 1a bandeja 300 g" -- product cards carry name + price directly
+  (a[href^="/producto/"] > p.product-name + strong.product-price-tag).
+
+  Multi-retailer aggregator, not itself a first-party retailer -- tagged
+  channel: marketplace. EUR-only, matches countries.yaml for Spain.

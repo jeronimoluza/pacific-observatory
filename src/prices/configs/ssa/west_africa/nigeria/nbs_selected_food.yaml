@@ -1,0 +1,46 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: nbs_ng_food
+module: ssa.west_africa.nigeria.nbs_selected_food
+function: fetch_nbs_ng_food
+url: https://nigerianstat.gov.ng/elibrary?queries%5Bsearch%5D=Selected+food+prices
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Nigeria National Bureau of Statistics "Selected Food Prices Watch" —
+  monthly item-level national average retail prices (NGN) for ~40 food
+  staples, discovered dynamically each run from the NBS elibrary catalog
+  (no stable per-month URL; filenames are irregular). Verified live
+  2026-08-06: downloaded the latest available edition, "Selected Food
+  Prices Watch (October 2024)" (XLSX, selected_food_oct_2024.xlsx, 200,
+  23KB), sheet 'Selected Food oct 2024', columns Items Label / Average of
+  Oct-23 / Average of Sep-24 / Average of Oct-24 / MoM / YoY / Highest /
+  Lowest — 43 items incl. eggs, beans, beef, bread, rice, fish (dried/
+  fresh/smoked), garri, yam, chicken. Sample: 'Beef Bone in', NGN. A
+  second sheet ('ZONE all item') carries the same items broken out by the
+  6 geopolitical zones — not consumed by this fetcher (would need a
+  second manifest with a distinct analytical grain).
+  DEFECT: NBS's public elibrary catalog for this series has not been
+  updated since 2024-11-24 as of this 2026-08-06 check (~21 months
+  stale) — verified live with a no-cache request
+  (Cache-Control: no-store, no-cache, must-revalidate), not a caching
+  artifact. NBS's own internal release-schedule widget on the same page
+  lists "Selected food prices" editions scheduled through late 2026, so
+  the bureau appears to have stopped publishing to the public document
+  repository while continuing to claim a live cadence internally. Ship
+  decision: shipped anyway because the discovery logic is dynamic (finds
+  whatever the latest posted edition is, not a hardcoded URL) and will
+  pick up new editions automatically if NBS resumes uploading; the
+  current single snapshot is real government data, just old. Flagged for
+  the orchestrator as a genuine "shipped stale" case distinct from the
+  CKAN-metadata-lies pattern — the frontend, not the metadata, is stale.
+  coicop_divisions: 01
+  divisions_basis: walked_categories (all 43 items in the single available
+  edition's sheet enumerated; food only — this manifest excludes NBS's
+  separate Premium Motor Spirit / Diesel / Kerosene / LPG / Transport Fare
+  price-watch series, each a distinct COICOP-narrow source better scoped
+  as its own manifest — see report for leads not yet built)

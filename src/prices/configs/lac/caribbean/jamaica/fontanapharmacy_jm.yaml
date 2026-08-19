@@ -8,6 +8,8 @@ language: en
 currency: JMD
 cadence: weekly
 channel: pharmacy
+archive_prefix: "fontanapharmacy.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Fontana Pharmacy, Jamaica. CS-Cart-flavored SSR storefront. Category
   pages carry a homepage-style "featured" owl-carousel widget alongside

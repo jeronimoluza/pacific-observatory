@@ -1,0 +1,38 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: lb_moet_price_monitor
+module: menaap.middle_east.lebanon.moet_price_monitor
+function: fetch_lb_moet_price_monitor
+url: https://www.economy.gov.lb/en/services/center-for-pricing-policies/lebanon-monthly-price-monitor
+language: en
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  Lebanon Monthly Price Monitor -- joint Ministry of Economy and Trade (MoET)
+  / WFP essential-goods price bulletin, ~75 food + non-food items across
+  ~800 shops in Lebanon's 8 governorates, collected weekly and published
+  monthly as PDF. Re-verified live 2026-08-07: economy.gov.lb sits behind a
+  Cloudflare JS challenge (plain requests/urllib -> 403 "Just a moment...");
+  confirmed passable via a real Playwright/Chromium session AND via
+  curl_cffi impersonate="chrome120" (TLS-fingerprint check, not a real JS
+  challenge -- no headless browser needed at collection time). Listing page
+  links PDFs back to July 2024; latest at probe time was April 2025 (~16
+  months stale vs today, cadence has visibly slowed, but the page is not
+  lying about dates -- not the CKAN staleness-trap pattern). Sample from
+  April 2025 Annex: 'Egyptian Rice' 900g, Beirut avg $1.02; 'Chicken Breast'
+  1000g, North avg $9.38. Prices are USD, not LBP -- Lebanon's retail sector
+  re-dollarized post-crisis and the bulletin explicitly prices in "$"; per
+  the site-states-its-own-currency rule this overrides countries.yaml's LBP
+  default. The ministry's older "Info Price -- Top Ten Supermarkets" and
+  "Consumer Basket -- Monthly" pages on the same site are dead ends (last
+  PDF Sept/July 2020) -- do not re-probe those.
+  coicop_divisions: 01, 13
+  divisions_basis: sampled_rows (75-item annex: food dominant -- beverages,
+  canned food, cereals, condiments, dairy, eggs, fats/oils, poultry, fruit,
+  luncheon meat, pulses, sugar, vegetables -- plus a non-food tail: baby
+  diapers, bleach, dishwashing liquid, laundry powder, sanitary napkins,
+  shampoo, soap, which fall under COICOP 13 (personal care / household
+  cleaning), not division 01)

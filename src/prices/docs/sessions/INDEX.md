@@ -9,6 +9,8 @@ Convention: one file per session, `YYYY-MM-DD-<slug>.md`, dates in UTC.
 
 | Date (UTC) | Session |
 |---|---|
+| 2026-08-04 | [Gold quality audit + labeling-architecture strategy — structural audit (clean) → note-grounded convention fleet (26 fixes via reversible overlay) → accuracy-per-token labeling doctrine; + `channel: wholesale`](2026-08-04-gold-quality-and-labeling-architecture.md) |
+| 2026-08-03 | [Populating `SOLD_BY_ITEM_LEAVES` — 10 per-piece produce leaves from the review_missing_qty backlog (~3.8k new trusted rows)](2026-08-03-sold-by-item-leaves.md) |
 | 2026-07-31 | [Systemic variant-drop fix + re-scrape + stale-run prune (26 exploder spiders, 133k rows recovered)](2026-07-31-variant-drop-fix.md) |
 | 2026-07-31 | [Wayback bulk-CDX discovery + weekly collapse; fetch-bottleneck research (A/C next)](2026-07-31-wayback-bulk-cdx-and-fetch-research.md) |
 | 2026-07-31 | [EAP retail candidate fan-out (batch 3) + WAF/Playwright spike — 25 sources shipped (→299 sources)](2026-07-31-eap-retail-candidate-onboarding.md) |

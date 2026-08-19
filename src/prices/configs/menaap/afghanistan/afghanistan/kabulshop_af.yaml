@@ -8,6 +8,8 @@ url: https://kabulshop.com/
 language: fa
 currency: AFN
 cadence: weekly
+archive_prefix: "kabulshop.com/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Afghanistan has almost no coverage in the corpus, so this one got extra
   effort before considering a skip.

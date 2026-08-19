@@ -1,0 +1,34 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: mv_ecpi_male
+module: sar.south_asia.maldives.ecpi_male
+function: fetch_mv_ecpi_male
+url: https://statisticsmaldives.gov.mv/ecpi-july-2026/
+language: en
+cadence: monthly
+fallback_date: 2022-11-01
+notes: |
+  Maldives Essential Commodities Price Index (ECPI) for Male', published
+  monthly by the National Bureau of Statistics as a WordPress post at
+  /ecpi-<month>-<year>/ linking a "Tables" XLSX. Maldives had zero
+  government price/index source before this. Re-verified live 2026-08-07:
+  /ecpi-july-2026/ -> 200, links ECPI-July-2026-Tables-Male.xlsx (uploaded
+  to /2026/08/ -- genuinely current, not a stale archive). Single sheet
+  "Summary (Male')" is a wide COICOP_2016-coded index table, Nov 2022 (base
+  100) through Jul 2026, covering TOTAL CONSUMPTION EXPENDITURE (00), FOOD
+  AND BEVERAGES (01, full 01.1.x/01.2.x subclass detail), GAS AND OTHER
+  FUEL (04), PERSONAL CARE PRODUCTS (13) -- a genuinely narrow "essential
+  commodities" basket, not a sampling artifact of this fetcher. A second
+  "Month-on-Month Inflation Rate" table follows in the same sheet and is
+  excluded (different metric, would corrupt index_value if merged). Each
+  month's XLSX carries the full cumulative series back to Nov 2022, so the
+  fetcher locates only the latest resolving month page (tolerating gaps --
+  e.g. ecpi-may-2026/ 404s while April and June both resolve) rather than
+  walking every month. coicop_code "00" (all-items) is dropped per the
+  skill's open design question (no sanctioned all-items sentinel yet).
+  coicop_divisions: 01, 04, 13
+  divisions_basis: walked_categories (every COICOP row in the published
+  table was read directly from the XLSX header column, not sampled)

@@ -9,6 +9,8 @@ language: en
 currency: PKR
 cadence: weekly
 coicop_codes: null
+archive_prefix: "springs.com.pk/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Springs (Pakistan) general household retailer -- crockery is the
   largest single category, plus skincare/cosmetics, confectionary,

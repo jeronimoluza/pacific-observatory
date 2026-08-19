@@ -9,6 +9,8 @@ language: es
 currency: PEN
 cadence: weekly
 coicop_codes: null
+archive_prefix: "inkafarma.pe/producto/"
+archive_path_re: '^/producto/[^/?]+'
 notes: |
   Peruvian pharmacy chain. Angular SPA over a mixed backend; the practical
   scrape surface is Algolia (app id 15W622LAQ4, index "products"), key

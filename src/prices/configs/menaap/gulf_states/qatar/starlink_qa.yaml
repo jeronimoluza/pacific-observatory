@@ -8,6 +8,8 @@ url: https://starlink.qa/
 language: en
 currency: QAR
 cadence: weekly
+archive_prefix: "starlink.qa/en/products/"
+archive_path_re: '^/en/products/[^/?]+'
 notes: |
   Starlink Qatar electronics/mobile retailer. Shopify-backed (gid://shopify/
   object IDs) but the storefront is a custom Vue/Quasar app that overrides

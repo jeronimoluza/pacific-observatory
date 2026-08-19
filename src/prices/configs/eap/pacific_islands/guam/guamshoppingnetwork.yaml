@@ -1,0 +1,18 @@
+spider: guamshoppingnetwork
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: dept-store
+url: https://www.guamshoppingnetwork.com/food
+language: en
+cadence: daily
+notes: >
+  First-party, cross-category storefront (auto/beauty/clothing/food/
+  gadgets/kids/kitchen/medical/pets/souvenirs) on GrooveKart (PrestaShop-
+  derived SaaS; cdn.groovekart.com assets, despite a "thirtybees"-named
+  session cookie). Scoped to the /food category only per onboarding
+  target. Prices server-rendered directly on the listing page -- no PDP
+  visit needed. THIN CATEGORY: "Showing 1 - 6 of 6 items", no pagination
+  -- only 6 products total. Clears the >=5-row ship gate but only just;
+  revisit if the catalog grows.

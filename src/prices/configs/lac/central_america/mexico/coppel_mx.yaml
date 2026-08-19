@@ -8,6 +8,8 @@ language: es
 currency: MXN
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.coppel.com/pdp/"
+archive_path_re: '^/pdp/[^/?]+'
 notes: |
   Coppel -- Mexican department-store / consumer-credit chain. Bare curl
   to the bare domain hung (Akamai tarpit); curl_cffi impersonate=chrome124

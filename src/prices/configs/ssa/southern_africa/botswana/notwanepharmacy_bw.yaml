@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: notwanepharmacy_bw
+url: https://notwanepharmacy.store/
+language: en
+cadence: weekly
+channel: pharmacy
+archive_prefix: "notwanepharmacy.store/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  WooCommerce Store API, /wp-json/wc/store/v1/products?per_page=100&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, real Gaborone pharmacy/
+  perfumery SKUs — 'Euphoria 100ml' BWP 1360.00, 'Chole Le Parfum 100ml'
+  BWP 1320.00, "L'eau D'Issey Pour Homme Eau Essentielle 125ml"
+  BWP 2080.00, 'Gift set, Afnan 9PM Rebel' BWP 1200.00, "Gift set,
+  Supremacy Collector's Edition" BWP 1450.00. currency_code=BWP from the
+  API matches countries.yaml, minor_unit=2 (thebe). Names come through the
+  JSON with HTML entities (e.g. &#8217;) — handled by the shared WooBase
+  html.unescape(). First Botswana source in the repo: no live WFP HDX panel
+  exists for Botswana (checked, 404), and Choppies/Sefalana/Pick n Pay
+  Botswana/Shoprite Botswana were skipped or dead-ended per the
+  inverse-correlation law (pnpbotswana.co.bw is WordPress but the Store API
+  route 404s — WhatsApp-order only, not a real catalog scrape target).

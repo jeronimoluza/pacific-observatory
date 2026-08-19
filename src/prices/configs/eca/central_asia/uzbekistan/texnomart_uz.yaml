@@ -8,6 +8,8 @@ language: uz
 currency: UZS
 cadence: weekly
 channel: electronics
+archive_prefix: "texnomart.uz/product/detail/"
+archive_path_re: '^/product/detail/[^/?]+'
 notes: |
   texnomart.uz — Uzbekistan electronics/appliances retailer. Verified live
   2026-08-17: the homepage itself is a Nuxt client-shell (unusable devalue

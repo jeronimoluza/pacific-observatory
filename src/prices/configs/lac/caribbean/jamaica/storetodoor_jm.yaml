@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: storetodoor_jm
+url: https://storetodoorja.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "storetodoorja.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 9.4KB JSON. Sample: 'Panibo Ketchup 1 Gallon (4/cs)' price
+  120000 minor units / currency_minor_unit=2 -> JMD 1200.00. currency_code
+  JMD matches countries.yaml. Mixed domestic/diaspora model (barrel-shipping
+  packages alongside regular grocery SKUs) — filter barrel/package line
+  items at classification time, not a blocker to onboarding. Whole-catalog
+  walk (no category filter).

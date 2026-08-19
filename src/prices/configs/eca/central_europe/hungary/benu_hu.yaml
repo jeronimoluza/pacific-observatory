@@ -9,6 +9,8 @@ language: hu
 currency: HUF
 cadence: weekly
 coicop_codes: null
+archive_prefix: "benu.hu/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   BENU Hungary national pharmacy chain webshop (OTC drugs, supplements,
   medical devices). Open Shopify /products.json catalog. Verified live

@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: estore_newyaohan
+url: https://estore.newyaohan.com/en/new-category/supermarket.html
+language: en
+cadence: daily
+archive_prefix: "estore.newyaohan.com/en/catalog/product/view/id/"
+archive_path_re: '^/en/catalog/product/view/id/[^/?]+'
+notes: |
+  New Yaohan eStore (Macau department store), Magento 2 storefront (with a
+  Next.js shell on some marketing pages -- the scraped catalog paths are
+  plain server-rendered Magento HTML, no Playwright needed). Only the
+  "Supermarket" mega-menu branch is seeded -- the parent site is a broad
+  department store (beauty/appliances/kids/home), but this manifest scopes
+  to grocery-relevant categories only, hence channel: supermarket rather
+  than dept-store. Most individual leaf category pages carry only a
+  handful of direct product links (the rest render via a lazy widget this
+  spider doesn't chase); tea-beverages-coffee.html alone yielded 10 in the
+  probe. 14 leaf categories seeded (rice/oil, seasoning, noodles, canned,
+  drinks, tea/coffee, snacks, breakfast/jam, wine-spirits, health food,
+  personal care, baby food/products, festival gifts). Price via
+  span[data-price-type='finalPrice'] (the current/sale price -- Luma
+  always also renders an oldPrice span even with no discount, so
+  finalPrice is the one to read unconditionally). Currency MOP confirmed
+  via data-price-amount + on-page "MOP xxx.xx" text. Discovered 2026-08-11.

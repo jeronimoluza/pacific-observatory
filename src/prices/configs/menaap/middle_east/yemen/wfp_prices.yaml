@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_yem
+module: _shared.menaap.wfp_food_prices
+function: fetch_wfp_yem
+url: https://data.humdata.org/dataset/98574e10-6866-4f13-a2b1-3c8312801af5
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Yemen via HDX (shared MENAAP fetcher
+  _shared.menaap.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_yem.csv (200, 7.5MB, 58,721 rows),
+  currency column is uniformly YER (no dual old/new-rial split observed in
+  the live currency column). Max observation date is 2026-06-15 — current.
+  Thinnest of the WFP MENAAP panels (28 commodities) — cereal-security
+  staples only, no dairy/fruit. Sample at max date: 'Rice (imported)', KG,
+  YER 2200. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

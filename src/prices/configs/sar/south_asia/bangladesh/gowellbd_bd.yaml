@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gowellbd_bd
+url: https://gowellbd.com/
+language: en
+cadence: weekly
+channel: dept-store
+archive_prefix: "gowellbd.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  WooCommerce Store API confirmed live 2026-08-18: GET
+  /wp-json/wc/store/v1/products?per_page=100&page=N -> 200, BDT
+  minor-unit JSON prices. Pagination confirmed real (x-wp-total: 645,
+  x-wp-totalpages: 65; page 1 vs page 2 return disjoint product ids).
+  Catalog is medical/health-equipment led (anatomical models, BP
+  monitors, thermometers, glucometers, supports) with Beauty and Baby &
+  Mom Care as secondary categories -- first-party, broad, non-grocery,
+  hence channel: dept-store rather than pharmacy (no dispensing).
+  Sample: "VGR Professional Hair Trimmer V937 AFA Edition" BDT 1920.00.

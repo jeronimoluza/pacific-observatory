@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: massy_stores_tt
+url: https://www.shopmassystorestt.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.shopmassystorestt.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Massy Stores Trinidad -- separate WooCommerce tenant from massy_stores_bb
+  (Barbados), distinct catalog/currency per territory (precedent for
+  per-territory Massy tenants already in-repo). Re-verified live
+  2026-08-06: GET /wp-json/wc/store/v1/products?per_page=3 -> HTTP 200
+  (default path works directly, no ?rest_route= workaround needed here).
+  Sample: 'Pizza & Wings Game Night Combo' price minor-unit 20000 /
+  currency_minor_unit=2 -> TTD 200.00 (family combo meal, plausible).
+  currency_code TTD matches countries.yaml. Whole-catalog walk (no category
+  filter).

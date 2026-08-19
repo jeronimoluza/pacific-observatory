@@ -7,6 +7,8 @@ spider: ddproperty_th
 url: https://www.ddproperty.com/en/property-for-rent
 language: en
 cadence: weekly
+archive_prefix: "www.ddproperty.com/en/property/"
+archive_path_re: '^/en/property/[^/?]+'
 notes: |
   Rental listings from DDProperty TH (PropertyGuru's Thailand brand) —
   listings-layer source for COICOP 04.1.1 (actual rentals paid by

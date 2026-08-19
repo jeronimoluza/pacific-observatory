@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_syr
+module: _shared.menaap.wfp_food_prices
+function: fetch_wfp_syr
+url: https://data.humdata.org/dataset/aa40b3a8-2bc4-4826-9d82-82189bc5f392
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Syria via HDX (shared MENAAP fetcher
+  _shared.menaap.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_syr.csv (200, 33.5MB, 275,971 rows —
+  by far the largest panel in the whole scaffolding wave), currency SYP
+  throughout (matches countries.yaml). Max observation date is
+  2026-05-15 — current. 77 distinct commodities across all 8 categories,
+  including parallel-market bread/pasta variants tracked separately for
+  crisis monitoring. Sample at max date: 'Bread (bakery)', 1.1 KG,
+  SYP 29.58. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

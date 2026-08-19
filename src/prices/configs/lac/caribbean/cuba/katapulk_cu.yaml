@@ -8,6 +8,8 @@ language: es
 currency: USD
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.katapulk.com/cu/products/"
+archive_path_re: '^/cu/products/[^/?]+'
 notes: |
   Diaspora remittance/delivery marketplace: ships to Cuba, priced in USD for
   the sending (non-Cuban) buyer. This is a real, usable Cuba price signal

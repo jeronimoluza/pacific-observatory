@@ -7,3 +7,5 @@ url: https://www.watsons.co.th
 language: en
 cadence: daily
 channel: pharmacy
+archive_prefix: "www.watsons.co.th/en/"
+archive_path_re: '(?i)^/en/.+/p/bp_\d+$'

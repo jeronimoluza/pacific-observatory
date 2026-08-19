@@ -9,6 +9,8 @@ language: es
 currency: COP
 cadence: weekly
 coicop_codes: null
+archive_prefix: "www.farmatodo.com.co/producto/"
+archive_path_re: '^/producto/[^/?]+'
 notes: |
   Colombian pharmacy chain. Angular storefront; catalog served by a public
   Algolia search-only key pulled live 2026-08-17 out of the site's own JS

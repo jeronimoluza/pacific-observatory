@@ -7,5 +7,7 @@ url: https://alpropharmacy.com
 language: en
 cadence: daily
 channel: pharmacy
+archive_prefix: "alpropharmacy.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Shopify storefront; reads public /products.json feed. Prices in MYR.

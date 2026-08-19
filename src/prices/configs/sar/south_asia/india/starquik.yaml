@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: starquik
+url: https://www.starquik.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.starquik.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
+  live 2026-08-06: HTTP 200, real SKUs (e.g. 'Brinjal Round Violet Small,
+  250 g' 19.00 INR from the prior probe; this session's sample page led with
+  non-food stationery/school items, confirming the catalog is general
+  merchandise plus grocery — a whole-catalog walk). Currency INR matches
+  countries.yaml. Tata-owned mid-tier chain (Mumbai/Pune/Bangalore); sits
+  open to plain HTTP while the market-leader BigBasket is Akamai-hardened.

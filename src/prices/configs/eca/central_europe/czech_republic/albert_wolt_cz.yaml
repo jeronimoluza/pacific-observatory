@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: albert_wolt_cz
+url: https://wolt.com/en/cze/prague/venue/albert-sokolovska
+language: cs
+cadence: weekly
+channel: marketplace
+archive_prefix: "wolt.com/en/cze/prague/venue/"
+archive_path_re: '^/en/cze/prague/venue/[^/?]+'
+notes: |
+  Albert (Sokolovská branch, Prague) on the Wolt delivery marketplace. Same
+  SSR query-state walk as the existing wolt subclasses (shared base
+  `_wolt_base.py`): venue page -> category-listing (104 categories) ->
+  per-leaf-category `/items/<slug>` page 1. Albert is Ahold Delhaize's
+  Czech banner -- their OWN storefront would hit the group-wide Akamai
+  block documented for Delhaize (see known_blockers.md), but this is
+  Wolt's infrastructure serving the listing, not Albert's, so the blocker
+  does not apply here.
+
+  Discovered via Wolt Prague city-page venue slugs; confirmed live
+  2026-08-07: /venue/albert-sokolovska -> 200, category-listing returns
+  104 categories. Sample from ovoce-7 (fruit): "Banány" CZK 24.90, "Jablka
+  Golden Delicious" CZK 39.90, "Jablka Red Delicious" CZK 49.90 -- real
+  Czech produce names, plausible CZK magnitudes, 33 items in this one leaf
+  alone.
+
+  Extends Wolt coverage in this shard from 6 to 10 markets -- Czech
+  Republic had only billa_cz previously, a thin single-source country.
+
+  Smoke run (--max-items 12) landed entirely in KOČKY (cat supplies: wet
+  food, kibble, litter -- COICOP 09.3.4 pet products), confirming breadth
+  beyond fresh produce.
+
+  coicop_divisions: 01, 09
+  divisions_basis: sampled_rows (2 leaf categories sampled; full
+  104-category tree plausibly spans 02/13 too but those were not directly
+  observed)

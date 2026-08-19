@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shufersal_il
+url: https://prices.shufersal.co.il/
+language: he
+cadence: weekly
+channel: supermarket
+notes: |
+  Repo previously had ZERO manifests for israel. Israel's 2014 Food Price
+  Transparency Law requires every chain with 3+ branches to publish a
+  machine-readable full-catalog snapshot at least daily -- this is a
+  government-mandated open-data feed, not a scraped storefront. Shufersal
+  (Israel's largest chain, ~300 branches) publishes one gzip XML file per
+  branch at prices.shufersal.co.il; the homepage's paginated grid lists
+  each branch's file as a same-day Azure Blob SAS-signed URL, re-resolved
+  per run. Spider targets store 001 (present on listing page 1) as a
+  representative single-branch snapshot. Re-verified live 2026-08-06: GET
+  / -> HTTP 200; store 001's Price*.gz (~2KB) downloaded and parsed via
+  lxml. Real items: 'שזיף אבטיח לב אדום 5.5' (red-heart watermelon plum)
+  ILS 14.90, 'מלון גולדן סוויט' (golden sweet melon). Currency ILS.
+  FOLLOW-UP: the same law covers ~49 chains (Rami Levy, Victory, Mega,
+  Yellow, etc.), most publishing through similar per-branch gz/XML portals
+  (some via a shared publishedprices.co.il aggregator) -- only Shufersal
+  was scaffolded this round; the other chains are a strong lever for a
+  follow-up pass.

@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: irajgallery_ir
+url: https://irajgallery.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: cosmetics
+archive_prefix: "irajgallery.ir/shop/"
+archive_path_re: '/P\d+-[^/?]+\.html$'
+notes: |
+  Verified live 2026-08-18: irajgallery.ir is "Iraj Gallery" (ایرج
+  گالری), a 20+-year cosmetics/hair-dye store. No JSON API found; the
+  single sitemap (https://irajgallery.ir/sitemap.xml, ~650KB, ~2.8k
+  URLs) mixes category pages (/shop/<id>-<category-slug>/) with real
+  product-detail pages (/shop/<category>/P<id>-<slug>.html) -- the
+  spider filters on the /P<digits>- marker. PDPs embed a clean
+  schema.org Product JSON-LD block. Confirmed live: "مام ژله‌ای سکرت
+  بدون عطر ۴۸ ساعته" (Secret unscented 48h deodorant gel) -> IRR
+  11,000,000.

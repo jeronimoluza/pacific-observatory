@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vandentweel_cw
+url: https://shopvdtcuracao.com/
+language: nl
+cadence: weekly
+channel: supermarket
+archive_prefix: "shopvdtcuracao.com/producten/"
+archive_path_re: '^/producten/[\w\-]+/[\w\-]+'
+notes: |
+  Full-line CW chain; Albert Heijn-sourced private label suggests Dutch
+  supply chain. Magento 2, open GraphQL at /graphql, no auth. Live
+  re-verify: POST /graphql products(search:"melk") -> 200, "AH Magere
+  melk" ANG 2.89. categoryList under the default root has a single child
+  department ("Producten", ~1,800 products) covering the whole catalog.
+  Currency ANG matches countries.yaml. language overridden to nl (Dutch
+  product names), not the shard's cfg_lang "en".

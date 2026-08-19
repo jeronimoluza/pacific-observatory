@@ -8,6 +8,8 @@ language: mk
 currency: MKD
 cadence: weekly
 channel: electronics
+archive_prefix: "setec.mk/mk/proizvod/"
+archive_path_re: '^/mk/proizvod/[^/?]+'
 notes: |
   Verified live 2026-08-17. North Macedonian electronics retailer, Next.js
   App Router over a self-hosted Medusa.js backend; product data never lands

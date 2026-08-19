@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lafourche_fr
+url: https://lafourche.fr/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "lafourche.fr/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Organic-groceries membership store, Next.js on Shopify. Native Shopify
+  /products.json and /collections/<h>/products.json are not proxied (404 ->
+  app's own 404 page). Full catalog is reachable via the "all products"
+  collection page's embedded Algolia hydration payload in __NEXT_DATA__
+  (props.pageProps.searchServerState.initialResults): re-verified live
+  2026-08-06, GET /collections/all -> 200, 1.85MB, nbHits=4842, nbPages=25,
+  hitsPerPage=40; ?page=2 confirmed to return a distinct, non-overlapping
+  page of hits. Sample hit: 'Olives Kalamata dénoyautées bio' 2.87 EUR.
+  Names pulled from JSON are html.unescape()'d per the wave-wide gotcha.
+  Membership-fee model means listed prices are the members' price, not a
+  walk-in price -- narrower assortment than a full hypermarket per the
+  original shard note.

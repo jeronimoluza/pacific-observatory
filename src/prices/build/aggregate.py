@@ -44,6 +44,7 @@ Design notes (why it is wired this way):
     sub_label_id: Layer-2 under-covers (withholds trust on more rows) but never
     mis-rejects — consistent with precision-first.
 """
+
 from __future__ import annotations
 
 import logging
@@ -75,7 +76,9 @@ OBSERVATIONS_PARQUET = BUILD_DIR / "eap_fnb_observations.parquet"
 SNAPSHOT_PARQUET = BUILD_DIR / "eap_fnb_snapshot.parquet"
 TRUSTED_OBS_PARQUET = BUILD_DIR / "eap_fnb_trusted_observations.parquet"
 UNIT_VALUE_SUMMARY_PARQUET = BUILD_DIR / "eap_fnb_unit_value_summary.parquet"
-PRODUCTS_INPUT_PARQUET = REPO_ROOT / "data" / "prices" / "enrich" / "products_input.parquet"
+PRODUCTS_INPUT_PARQUET = (
+    REPO_ROOT / "data" / "prices" / "enrich" / "products_input.parquet"
+)
 CSV_CHUNK_SIZE = 50_000
 FX_HISTORY_FLOOR = pd.Timestamp("2024-03-06")
 
@@ -83,9 +86,16 @@ JOIN_KEYS = ["input_hash"]
 
 CACHE_KEEP_COLS = [
     "input_hash",
-    "pricing_basis", "amount_value", "standard_unit",
-    "count", "multiplier", "coicop_code",
-    "is_promotion", "is_bundle", "is_multipack", "confidence",
+    "pricing_basis",
+    "amount_value",
+    "standard_unit",
+    "count",
+    "multiplier",
+    "coicop_code",
+    "is_promotion",
+    "is_bundle",
+    "is_multipack",
+    "confidence",
     "trust_level",
 ]
 
@@ -121,8 +131,13 @@ def _iter_raw_chunks(csv_path: Path) -> Iterator[pd.DataFrame]:
     return pd.read_csv(
         csv_path,
         usecols=[
-            "product_name", "product_url", "price", "currency",
-            "country", "source", "date",
+            "product_name",
+            "product_url",
+            "price",
+            "currency",
+            "country",
+            "source",
+            "date",
         ],
         chunksize=CSV_CHUNK_SIZE,
         low_memory=False,
@@ -140,9 +155,7 @@ def _join_chunk(chunk: pd.DataFrame, cache: pd.DataFrame) -> pd.DataFrame:
     chunk = chunk[chunk["country"].isin(EAP_COUNTRIES)].copy()
     if chunk.empty:
         return chunk
-    chunk["input_hash"] = chunk.apply(
-        lambda r: input_hash(_row_input_dict(r)), axis=1
-    )
+    chunk["input_hash"] = chunk.apply(lambda r: input_hash(_row_input_dict(r)), axis=1)
     merged = chunk.merge(cache, on="input_hash", how="inner", suffixes=("_raw", ""))
     return merged.drop(columns=["input_hash"])
 
@@ -166,7 +179,8 @@ def _require_unit(df: pd.DataFrame) -> pd.DataFrame:
     if dropped:
         logger.info(
             "Unit filter dropped %d / %d rows (null coicop_code/standard_unit)",
-            dropped, len(df),
+            dropped,
+            len(df),
         )
     return kept
 
@@ -205,16 +219,18 @@ def _finalize(df: pd.DataFrame) -> pd.DataFrame:
     df = flag_uv_outliers(
         df,
         group_cols=("coicop_code", "country", "standard_unit"),
-        baseline_mask=df.get(
-            "mass_source", pd.Series(index=df.index, dtype=object)
-        ).ne("derived_typical"),
+        baseline_mask=df.get("mass_source", pd.Series(index=df.index, dtype=object)).ne(
+            "derived_typical"
+        ),
     )
     df = df[df["price_local"].notna()].copy()
     df = attach_fx_and_usd(df)
     df["unit_value_usd"] = df.apply(
-        lambda r: (r["unit_value_local"] / r["fx_rate"])
-        if pd.notna(r["unit_value_local"]) and pd.notna(r["fx_rate"])
-        else None,
+        lambda r: (
+            (r["unit_value_local"] / r["fx_rate"])
+            if pd.notna(r["unit_value_local"]) and pd.notna(r["fx_rate"])
+            else None
+        ),
         axis=1,
     )
     df = compute_qa(df)
@@ -238,7 +254,8 @@ def build_snapshot() -> pd.DataFrame:
     merged = pi.merge(cache, on=JOIN_KEYS, how="inner")
     logger.info(
         "[snapshot] joined rows: %d across %d countries",
-        len(merged), merged["country"].nunique(),
+        len(merged),
+        merged["country"].nunique(),
     )
 
     today = pd.Timestamp.now(tz="UTC").tz_localize(None).normalize()
@@ -248,8 +265,12 @@ def build_snapshot() -> pd.DataFrame:
     df = _finalize(merged)
     BUILD_DIR.mkdir(parents=True, exist_ok=True)
     df.to_parquet(SNAPSHOT_PARQUET, index=False)
-    logger.info("wrote %s (%d rows, %d countries)",
-                SNAPSHOT_PARQUET, len(df), df["country"].nunique())
+    logger.info(
+        "wrote %s (%d rows, %d countries)",
+        SNAPSHOT_PARQUET,
+        len(df),
+        df["country"].nunique(),
+    )
     return df
 
 
@@ -269,14 +290,17 @@ def build_observations(csv_path: Path | None = None) -> pd.DataFrame:
         if (i + 1) % 20 == 0:
             logger.info(
                 "[observations] scanned %d chunks; joined rows: %d",
-                i + 1, sum(len(p) for p in pieces),
+                i + 1,
+                sum(len(p) for p in pieces),
             )
     if not pieces:
         raise RuntimeError("Raw CSV produced no joinable rows for the basket.")
     df = pd.concat(pieces, ignore_index=True)
     logger.info(
         "[observations] joined: %d rows × %d countries × %d coicop leaves",
-        len(df), df["country"].nunique(), df["coicop_code"].nunique(),
+        len(df),
+        df["country"].nunique(),
+        df["coicop_code"].nunique(),
     )
 
     df = df.rename(columns={"date": "observation_date"})
@@ -292,7 +316,9 @@ def build_observations(csv_path: Path | None = None) -> pd.DataFrame:
     df = df[df["observation_date"] >= FX_HISTORY_FLOOR]
     logger.info(
         "[observations] date floor (%s) kept %d of %d rows",
-        FX_HISTORY_FLOOR.date(), len(df), before,
+        FX_HISTORY_FLOOR.date(),
+        len(df),
+        before,
     )
     df = _finalize(df)
     BUILD_DIR.mkdir(parents=True, exist_ok=True)
@@ -325,5 +351,7 @@ def build(csv_path: Path | None = None) -> None:
 
 
 def run() -> None:
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
+    logging.basicConfig(
+        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
+    )
     build()

@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: aelanbasket_vu
+url: https://www.aelanbasket.com/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Small Port Vila online supermarket. Next.js SSR PDPs -- product name, price
+  (VT<amount>, VUV per countries.yaml, never parsed from a symbol), and a
+  category breadcrumb all present in raw HTML. Tier 1A, plain scrapy (no
+  Playwright needed). `/shop` is a client-rendered filter view and returns
+  no product links via plain HTTP; discovery instead crawls from the
+  homepage (~14 linked SKUs) plus each PDP's "related products" rail, which
+  surfaces additional SKUs (confirmed via a probe PDP: coffee, soft drinks,
+  juice, bottled water not linked from the homepage). Verified 2026-08-11,
+  test run (--max-items 5) returned 5/5 valid rows spanning drinks-beverages
+  and other categories.

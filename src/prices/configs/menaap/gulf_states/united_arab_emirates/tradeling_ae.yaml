@@ -8,6 +8,8 @@ url: https://www.tradeling.com/ae-en
 language: en
 currency: AED
 cadence: weekly
+archive_prefix: "www.tradeling.com/ae-en/product-details/"
+archive_path_re: '^/ae\-en/product\-details/[^/?]+'
 notes: |
   B2B WHOLESALE marketplace, NOT retail. Every row carries a minOrderQty and
   supplier-level unitsPerCarton packaging; prices are wholesale/bulk unit

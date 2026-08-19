@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: maxiks_ks
+url: https://maxiks.shop/
+language: sq
+cadence: weekly
+channel: supermarket
+archive_prefix: "maxiks.shop/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Prishtina supermarket chain (18 outlets per CSV). Custom PHP storefront;
+  full catalog server-rendered at /products?page=N with no category filter
+  needed -- plain pagination walks the whole assortment. EUR is Kosovo's
+  domestic currency so this passes the currency-authenticity check cleanly.
+
+  Re-verified live 2026-08-06: /products -> 200, 20 items/page, real product
+  card "RITTER SPORT COK ME RRUSH LAJTHI..." 2.09€; /products?page=97 -> 200,
+  7 items (final partial page); /products?page=98 -> 200, 0 items, confirming
+  the catalog plateaus at 97 pages.

@@ -8,6 +8,8 @@ language: es
 currency: USD
 cadence: weekly
 channel: dept-store
+archive_prefix: "sv.siman.com/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
 notes: |
   Regional Central American department store chain (fashion, accessories, home). www.siman.com
   is a country-selector hub (El Salvador/Guatemala/Nicaragua/Costa Rica) with no products of its

@@ -1,0 +1,23 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+channel: null
+source_key: li_eurostat_electricity
+module: _shared.eca.eurostat_energy
+function: fetch_li_eurostat_electricity
+url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_pc_204
+language: en
+cadence: biannual
+fallback_date: 2015-01-01
+notes: |
+  Eurostat household electricity price (dataset nrg_pc_204), band DC
+  (2,500-4,999 kWh/yr), all taxes and levies included (I_TAX), reported in
+  national currency (NAC). Half-yearly cadence; fetcher emits only the latest
+  published half-year (idempotent on cutoff). Verified live 2026-08-07 via
+  the Eurostat JSON-stat 2.0 REST API, single-geo filter (e.g. Bulgaria
+  2025-S2 = 0.265 BGN/kWh). Shared module _shared/eca/eurostat_energy.py
+  covers 41 ECA countries with one implementation.
+  coicop_divisions: 04
+  divisions_basis: walked_categories (dataset scope is electricity retail price only)

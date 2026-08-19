@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kiwaba_ao
+url: https://www.kiwaba.online/
+language: pt
+cadence: weekly
+channel: supermarket
+notes: |
+  React/Vite SPA backed by an open Supabase PostgREST API. Anon JWT key is
+  embedded in the shipped JS bundle (/assets/index-*.js) -- this is
+  Supabase's standard public anon-key model (RLS gates access, not key
+  secrecy). Re-verified live 2026-08-06 with the key found this session:
+  GET .../rest/v1/products?select=id,name,price,unit,category:categories(name)
+  &active=eq.true -> 200, count=exact confirms 302 active products total,
+  e.g. 'LABIO DE VACA cax 15kg' Kz 48,500.00. Mixed grocery+pharmacy
+  catalog; food categories (Carnes, Peixe & Marisco, Horticolas, Cereais &
+  Graos, Bebidas, Fubas e farinhas, Lacticinios) are real but shallow
+  (single digits to low tens of SKUs each). Currency AOA matches
+  countries.yaml.

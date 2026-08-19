@@ -8,6 +8,8 @@ language: fa
 currency: IRR
 cadence: weekly
 channel: other
+archive_prefix: "torob.com/p/"
+archive_path_re: '^/p/[^/?]+'
 notes: |
   Verified live 2026-08-17: torob.com is an Iranian PRICE-COMPARISON
   aggregator, not a retailer — each result is the CHEAPEST price torob has

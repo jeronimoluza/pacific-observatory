@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: coursesnet_dz
+url: https://coursesnet.dz/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.coursesnet.dz/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 16.5KB JSON. Sample: 'Préparation Pour Brownies Mix By Ghanou -
+  300g'. currency_code DZD matches countries.yaml, currency_minor_unit=2
+  (do not assume a shared exponent across countries — Tunisia's Otrity uses
+  3). Packaged-goods/pantry grocer, ~2500 category-tagged items; 'Légumes'
+  category has only 3 items and there is no meat/fish category — no fresh
+  coverage. Whole-catalog walk (no category filter).

@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rimi_ee
+url: https://www.rimi.ee/epood/en
+language: et
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.rimi.ee/epood/ee/"
+archive_path_re: '^/epood/ee/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: same Baltic Rimi platform as rimi_lv/
+  rimi_lt (shared base `_rimi_baltic_base.py`). No category-browse API
+  found (homepage/guessed category URL 404'd, no price pattern). The SSR
+  site-search endpoint paginates: GET
+  /epood/ee/otsing?query=piim&currentPage=N -> HTTP 200, 40 hits with
+  data-gtm-eec-product JSON per hit. Coverage is a keyword-search sweep
+  across common grocery nouns, not a full category walk. Explicit
+  Omnibus 30-day-lowest-price field per shard notes, not yet extracted.

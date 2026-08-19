@@ -43,6 +43,8 @@ from datetime import datetime, timezone
 
 import scrapy
 
+from ..archived import row_from_meta, rows_from_jsonld
+
 logger = logging.getLogger(__name__)
 
 CAT_HREF_RE = re.compile(
@@ -135,3 +137,26 @@ class IkeaBaseSpider(scrapy.Spider):
                 "language": self.language,
                 "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
             }
+
+    @classmethod
+    def parse_html(cls, html: str, url: str):
+        """Parse one archived IKEA PDP into row dicts.
+
+        The live spider reads the sik.search.blue.cdtapps.com listing API;
+        archived Wayback/CC snapshots only hold the storefront PDP HTML.
+        Verified across 7 markets (KR/AU/PH/TH/MY/SA/AE, 42 archived pages,
+        2026-08-18): every PDP carries a full schema.org Product/Offer
+        JSON-LD block, so the shared `rows_from_jsonld` tier in archived.py
+        resolves 100% of them -- no IKEA-specific extraction was needed.
+        `row_from_meta` is kept as a last-resort fallback for any page shape
+        not covered by that sample. Does NOT stamp `scraped_at_utc` -- the
+        caller sets it to the snapshot time.
+        """
+        rows = rows_from_jsonld(html, url)
+        if not rows:
+            meta_row = row_from_meta(html, url)
+            rows = [meta_row] if meta_row else []
+        for row in rows:
+            row.setdefault("currency", cls.currency)
+            row.setdefault("language", cls.language)
+            yield row

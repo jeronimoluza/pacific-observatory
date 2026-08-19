@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: aswak_assalam_ma
+url: https://www.aswakassalam.com/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "aswakassalam.com/produit/"
+archive_path_re: '^/produit/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 14.9KB JSON. Sample: 'PATE A TARTINER 350G NUTELLA' price 4550
+  minor units / currency_minor_unit=2 -> MAD 45.50. currency_code MAD matches
+  countries.yaml. Full-line WooCommerce hypermarket (Ynna Group), ~5260 SKUs,
+  100 categories including butchery, poultry, deli, bakery, dairy, canned
+  goods, beverages. Whole-catalog walk (no category filter).

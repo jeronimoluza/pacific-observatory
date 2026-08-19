@@ -8,6 +8,8 @@ language: es
 currency: USD
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.supermarket23.com/es/producto/"
+archive_path_re: '^/es/producto/[^/?]+'
 notes: |
   Diaspora grocery delivery: ships to Cuba, priced in USD for the sending
   (non-Cuban) buyer. This is a real, usable Cuba price signal but it is NOT

@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ikea_ae
+channel: home-improvement
+url: https://www.ikea.com/ae/en/
+language: en
+cadence: weekly
+archive_prefix: "www.ikea.com/ae/en/p/"
+archive_path_re: '^/ae/en/p/[^/?]+'
+notes: |
+  Verified live 2026-08-07: same shared IKEA platform as ikea_au/ikea_jp
+  (see _ikea_base.py docstring) — open JSON listing API at
+  sik.search.blue.cdtapps.com, no WAF/anti-bot observed on either the
+  storefront nav or the API host for the ae market. Found + fixed a
+  market-specific defect during onboarding: the ae/sa markets reject
+  size>1000 (400 "Size parameter cannot exceed 1000"), unlike the other
+  markets this base class was verified against; LISTING_SIZE lowered
+  2000->1000 globally in _ikea_base.py (safe — still well above the
+  largest observed category). Smoke test (--max-items 20, closed early)
+  actually scraped 790 rows before hitting the item cap: kitchen storage,
+  textiles, furniture, all AED non-zero and plausible.
+  coicop_divisions: 05, 08, 09
+  divisions_basis: sampled_rows (205 category keys discovered from the mega-nav; only the first few queried before hitting --max-items)

@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: barbora_lv
+url: https://barbora.lv/
+language: lv
+cadence: weekly
+channel: supermarket
+archive_prefix: "barbora.lv/produkti/"
+archive_path_re: '^/produkti/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: same platform and posture as barbora_ee
+  (different WAF profile than the Cloudflare-gated barbora.lt). Two-hop
+  harvest: (1) public Constructor.io search key embedded in the homepage
+  (`key_Ud2GfuuTdK6bx4xS`) resolves search terms to product slugs — GET
+  ac.cnstrc.com/search/piens?key=... -> 200, 2,050 hits — no price field;
+  (2) each product page is SSR with price in
+  `"units":[{"id":0,"price":N.NN,...}]` — GET
+  https://barbora.lv/produkti/piens-tere-2-5-proc-1-5-l -> 200, price
+  1.37 EUR. 8,000+ goods per shard notes; coverage withdrawn from
+  Daugavpils/Liepāja/several regions Nov 2025 — Riga-area only now
+  (geographic staleness, not a collection blocker).

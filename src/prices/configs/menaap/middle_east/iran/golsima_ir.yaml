@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: golsima_ir
+url: https://golsima.com/
+language: fa
+currency: IRR
+cadence: weekly
+channel: cosmetics
+archive_prefix: "golsima.com/"
+archive_path_re: '^/(?!skincare|makeup|body|hair|brand|about|account|club|contact|terms|products)[a-z0-9\-]+/?$'
+notes: |
+  Verified live 2026-08-18: golsima.com is "Golsima" (فروشگاه آنلاین
+  گلسیما), an Iranian K-beauty cosmetics store -- .com TLD but IRR
+  pricing, Persian-language site. Next.js storefront; no JSON API found
+  and category pages don't embed inline product JSON, so this walks
+  https://golsima.com/sitemap.xml (62 category/brand listing pages, no
+  products listed there directly) and picks up product links rendered
+  on each listing page -- any single-segment path whose first segment
+  isn't one of the known category/utility roots (skincare, makeup,
+  body, hair, brand, about, account, club, contact, terms, products).
+  PDPs embed a clean schema.org Product JSON-LD block. Confirmed live:
+  "کرم مرطوب کننده ۵ سراماید برنج سیاه هاروهارو وان" (Haruharu Wonder
+  Black Rice 5-Ceramide moisturizer) -> IRR 31,990,000.

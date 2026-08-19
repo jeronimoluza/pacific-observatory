@@ -1,0 +1,31 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_kgz
+module: _shared.eca.wfp_food_prices
+function: fetch_wfp_kgz
+url: https://data.humdata.org/dataset/5e8246e9-e0b9-4b80-b5b7-f97c4409dcf9
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Kyrgyz Republic via HDX (shared ECA fetcher
+  _shared.eca.wfp_food_prices, new module -- no _shared/eca/ existed before
+  this). Re-verified live 2026-08-06: CKAN package_show resolves
+  wfp_food_prices_kgz.csv (200, 96,694 rows), currency KGS throughout
+  (matches countries.yaml). Max observation date in the live CSV is
+  2026-06-15 -- current. Sample at max date: 'Meat (beef)' KG, KGS 382.85;
+  'Oil (sunflower)' L, KGS 98.18. Per-market rows collapsed to a national
+  monthly average per commodity/unit/currency/price-type; market count + USD
+  value kept in notes; retail vs wholesale kept in the dedup hash. COICOP
+  deferred to the classifier (item_name = WFP commodity).
+
+  Uzbekistan and Turkmenistan checked in the same pass: no
+  wfp-food-prices-for-<country> dataset exists on HDX for either (CKAN
+  package_show 404, package_search surfaces no match) -- not scaffolded.
+  Belarus checked and dropped: wfp-food-prices-for-belarus resolves but the
+  CSV's max observation date is 2022-05-15 (currency still shown as the
+  pre-2016-redenomination BYR code) -- a dead/stale panel per the brief's
+  explicit staleness caveat, not a live source.

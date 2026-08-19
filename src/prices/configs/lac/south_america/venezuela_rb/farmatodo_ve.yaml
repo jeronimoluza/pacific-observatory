@@ -9,6 +9,8 @@ language: es
 currency: VES
 cadence: weekly
 coicop_codes: null
+archive_prefix: "www.farmatodo.com.ve/producto/"
+archive_path_re: '^/producto/[^/?]+'
 notes: |
   Venezuelan pharmacy chain (same brand/platform as farmatodo_co, distinct
   Algolia index). App id VCOJEYD2PO, index "products-venezuela", key pulled

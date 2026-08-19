@@ -1,0 +1,40 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "03", "04", "05", "06", "07", "08", "10", "13"]
+channel: null
+source_key: br_ibge_sidra_ipca
+module: lac.south_america.brazil.ibge_sidra_ipca
+function: fetch_br_ibge_sidra_ipca
+url: https://servicodados.ibge.gov.br/api/v3/agregados/7060
+language: pt
+cadence: monthly
+fallback_date: 2019-12-01
+notes: |
+  IBGE SIDRA IPCA (Indice Nacional de Precos ao Consumidor Amplo),
+  table 7060 -- documented REST API (servicodados.ibge.gov.br/api/v3),
+  no auth. Re-verified live 2026-08-06: GET .../7060/metadados -> 200,
+  9 top-level (nivel=1) groups from Jan/2020 to Jun/2026; GET
+  .../periodos/202001-202607/variaveis/63?localidades=N1[all]&
+  classificacao=315[7170] -> 200, real monthly % variation series
+  (e.g. Alimentacao e bebidas: +0.39% Jan/2020 ... ). IMPORTANT: table
+  7060 only publishes % monthly variation per group, not an index
+  level -- IBGE's own number-index series (table 1737) is national
+  all-items only, no COICOP breakdown. This fetcher chain-links each
+  group's published % variation into a synthetic index level (base
+  2020-01=100), disclosed in index_base_period on every row; this is a
+  fetcher-side construction, not an IBGE-published level. IBGE's 9-group
+  taxonomy does not map 1:1 onto COICOP 2018 -- alcohol/tobacco (02),
+  recreation (09), restaurants (11), and insurance/financial (12) are
+  folded into other groups by IBGE's own classification and are NOT
+  separately emitted (see _GROUP_TO_COICOP comments in the module for
+  the exact fold-in per group). https://api.sidra.ibge.gov.br (the
+  legacy http endpoint referenced in older docs) has an expired/
+  mismatched TLS cert for that hostname -- use
+  servicodados.ibge.gov.br instead, which is the current documented
+  entry point.
+  coicop_divisions: 01, 03, 04, 05, 06, 07, 08, 10, 13
+  divisions_basis: walked_categories (all 9 of IBGE's nivel=1 IPCA
+  groups enumerated via /metadados; each mapped to its single nearest
+  COICOP division per the fold-in notes above)

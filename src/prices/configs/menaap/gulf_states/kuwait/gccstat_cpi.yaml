@@ -1,0 +1,31 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: kw_gccstat_cpi
+module: menaap.gulf_states.kuwait.gccstat_cpi
+function: fetch_kw_gccstat_cpi
+url: https://dp.marsa.gccstat.org/dataset/consumer-prices
+language: en
+cadence: monthly
+fallback_date: 2014-12-01
+notes: |
+  Re-verified live 2026-08-06: GCC Statistical Centre (GCC-Stat) harmonised
+  regional CPI, dataset GCCSTAT.ES,DF_ES_CPI,1.0 ("Consumer Prices"), served
+  via a Fusion Registry SDMX REST endpoint behind the DKAN data portal at
+  dp.marsa.gccstat.org. Bucket-2 shared module
+  (src/prices/fetchers/_shared/menaap/gccstat_cpi.py) — one CSV covers all
+  six GCC states plus a regional aggregate row; this manifest is the Kuwait
+  wrapper. 36,765 total rows across all countries, monthly + annual +
+  pct-change series; only UNIT="Index"/FREQUENCY="Monthly" rows kept here.
+  Fresh through 2025-12 at probe time (~8-month lag, typical for a
+  harmonised regional CPI). 12-indicator COICOP-2018-style grouping
+  (division 13 absent); all-items headline indicator dropped, no sanctioned
+  sentinel yet. Kuwait's own Central Statistical Bureau (csb.gov.kw)
+  publishes CPI only as monthly PDF/XLS bulletins with no stable machine-
+  readable endpoint found this round (see Phase 8 report) — this GCC-Stat
+  series is Kuwait's only cpi_benchmark source onboarded so far.
+  coicop_divisions: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12
+  divisions_basis: walked_categories (all 13 INDICATOR values enumerated from the full CSV)

@@ -7,3 +7,5 @@ url: https://zairyo.com.sg
 language: en
 cadence: daily
 channel: supermarket
+archive_prefix: "zairyo.com.sg/products/"
+archive_path_re: '^/products/[^/?]+'

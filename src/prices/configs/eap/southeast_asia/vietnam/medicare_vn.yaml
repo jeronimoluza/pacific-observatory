@@ -7,3 +7,5 @@ url: https://medicare.vn/
 language: vi
 cadence: weekly
 channel: pharmacy
+archive_prefix: "medicare.vn/products/"
+archive_path_re: '^/products/[^/?]+'

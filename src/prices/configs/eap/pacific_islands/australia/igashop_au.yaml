@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: igashop_au
+url: https://www.igashop.com.au/store/iga-kennington
+language: en
+cadence: daily
+channel: supermarket
+archive_prefix: "www.igashop.com.au/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  IGA is a banner group of independently priced stores — this manifest is
+  scoped to ONE representative store, "Stonemans Village IGA" in Kennington,
+  VIC (storeId=32600, slug=iga-kennington). A different store needs its own
+  spider/storeId. Next.js front-end backed by an open JSON API on the same
+  host (/api/storefront/stores/{id}/categoryHierarchy +
+  /api/storefront/stores/{id}/search?q=...), real backend revealed as
+  storefrontgateway.igashop.com.au via the response's _links. Walks every
+  leaf category name from categoryHierarchy as a search term (no clean
+  category-id filter found; a facet-filter probe 400'd). Prices are plain
+  decimal AUD (priceNumeric), no minor-unit rescaling. coles_au (existing
+  manifest) has zero corpus rows per known_blockers.md (Incapsula-blocked);
+  this is a genuine addition for AU supermarket coverage.

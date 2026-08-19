@@ -7,6 +7,8 @@ url: https://shop.lemonfarm.com
 language: th
 cadence: daily
 channel: supermarket
+archive_prefix: "shop.lemonfarm.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: >
   Shopify storefront; public /products.json endpoint, no auth, paginates via
   ?page=N&limit=250. Product titles stay Thai even under the /en UI path —

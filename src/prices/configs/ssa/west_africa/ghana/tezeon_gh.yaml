@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tezeon_gh
+url: https://tezeon.com/grocery
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "tezeon.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  General marketplace (electronics/fashion/home dominate the 295-category
+  tree) surfaced via a Django-REST-style open JSON API at api.tezeon.com
+  (found via Playwright network trace, reproduced with plain curl, no
+  auth). Re-verified live 2026-08-06: GET /api/products/?page_size=100 ->
+  200, cursor pagination via a follow-able `next` URL, e.g. 'OBA CLASSIC
+  SPAGHETTI 400G' present under category_slug=groceries-food. The prior
+  probe's category=/category filter params 400'd; category_slug= does
+  work but per convention we walk the whole catalog unfiltered and let the
+  classifier route each item -- "Groceries & Food" is a real but modest
+  slice of a much larger non-food catalog. Currency GHS matches
+  countries.yaml. channel set to marketplace (not supermarket) to reflect
+  the catalog's actual composition.

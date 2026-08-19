@@ -29,11 +29,42 @@ Underscored filename -- Scrapy's SpiderLoader skips classes without `name`.
 import logging
 import re
 from datetime import datetime, timezone
+from typing import Iterator
 from urllib.parse import urljoin
 
 import scrapy
 
+from ..archived import row_from_meta, rows_from_jsonld
+
 logger = logging.getLogger(__name__)
+
+# Archived-page-only fallback: covers themes with neither JSON-LD nor
+# OpenGraph price meta (e.g. big.ly's X-Cart-flavoured OpenCart theme, which
+# has none of NAME_SELECTORS/PRICE_SELECTORS' classes but does carry a plain
+# `.pro-price` node next to a single page `<h1>`).
+_ARCHIVE_PDP_PRICE_SELECTORS = (
+    ".price-new::text",
+    ".price-normal::text",
+    ".price-special::text",
+    ".pro-price::text",
+    ".price ::text",
+)
+
+
+def _archive_product_id(url: str) -> str:
+    """Same convention as `OpencartBaseSpider._product_id` (below), reimplemented
+    as a free function so the archived-page path needs no spider instance."""
+    m = re.search(r"[?&]product_id=(\d+)", url)
+    if m:
+        return m.group(1)
+    m = re.search(r"/product/([^/?]+)", url)
+    if m:
+        return m.group(1)
+    m = re.search(r"-(\d+)$", url.split("?")[0].rstrip("/"))
+    if m:
+        return m.group(1)
+    return url.rstrip("/").rsplit("/", 1)[-1]
+
 
 PATH_RE = re.compile(r"path=([0-9_]+)")
 PRICE_NUM_RE = re.compile(r"\d[\d\s.,]*\d|\d")
@@ -216,3 +247,105 @@ class OpencartBaseSpider(scrapy.Spider):
         if m:
             return m.group(1)
         return response.meta.get("cat_url", response.url).rstrip("/").rsplit("/", 1)[-1]
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). Live scrape
+    # (parse_category/_item, above) walks server-rendered category listing
+    # pages; archives hold whatever page type Common Crawl happened to
+    # capture -- product-detail pages, category listing pages, or (rarely)
+    # neither. Tries, in order: the shared schema.org/OpenGraph tiers (most
+    # OpenCart themes emit one or the other); the SAME product-card
+    # selectors `_item`/`_product_cards` use, for when the captured page is
+    # a category listing rather than a PDP (yields one row per card); and a
+    # bespoke single-product fallback (`<h1>` + a widened price-selector
+    # list) for themes with neither -- confirmed needed on big.ly, whose
+    # archived PDPs have no JSON-LD/meta price tags but a plain
+    # `<h1>name</h1>` + `.pro-price` pair.
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived OpenCart page (product-detail or category listing).
+
+        Pure/stateless: no Scrapy Response, no network, no class state.
+        Yields 0 or more rows; yields nothing when neither a product nor a
+        product listing can be found. Does NOT stamp `scraped_at_utc` -- the
+        backfiller stamps the snapshot time itself.
+        """
+        rows = rows_from_jsonld(html_text, url)
+        if not rows:
+            row = row_from_meta(html_text, url)
+            rows = [row] if row else []
+        if rows:
+            for row in rows:
+                row.setdefault("currency", cls.currency)
+                row.setdefault("language", cls.language)
+                yield row
+            return
+
+        sel = scrapy.Selector(text=html_text)
+        cards = sel.css("div.product-thumb") or sel.css("div.product-layout")
+        if cards:
+            yield from cls._archived_listing_items(cards, url)
+            return
+
+        item = cls._archived_pdp_item(sel, url)
+        if item:
+            yield item
+
+    @classmethod
+    def _archived_listing_items(cls, cards, base_url: str) -> Iterator[dict]:
+        for card in cards:
+            name, href = None, None
+            for csel in NAME_SELECTORS:
+                a = card.css(csel)
+                text = a.css("::text").get()
+                if text and text.strip():
+                    name = text.strip()
+                    href = a.css("::attr(href)").get()
+                    break
+            if not name:
+                continue
+            price_text = None
+            for psel in PRICE_SELECTORS:
+                val = card.css(psel).get()
+                if val and val.strip():
+                    price_text = val
+                    break
+            price = normalize_price(price_text) if price_text else None
+            if not price:
+                continue
+            full_url = urljoin(base_url, href) if href else base_url
+            yield {
+                "product_id": _archive_product_id(full_url),
+                "product_name": name[:500],
+                "price": price,
+                "currency": cls.currency,
+                "available": True,
+                "url": full_url,
+                "language": cls.language,
+            }
+
+    @classmethod
+    def _archived_pdp_item(cls, sel, url: str) -> dict | None:
+        name = sel.css("h1::text").get()
+        name = name.strip() if name else None
+        if not name:
+            return None
+        price_text = None
+        for psel in _ARCHIVE_PDP_PRICE_SELECTORS:
+            val = sel.css(psel).get()
+            if val and val.strip():
+                price_text = val
+                break
+        price = normalize_price(price_text) if price_text else None
+        if not price:
+            return None
+        return {
+            "product_id": _archive_product_id(url),
+            "product_name": name[:500],
+            "price": price,
+            "currency": cls.currency,
+            "available": True,
+            "url": url,
+            "language": cls.language,
+        }

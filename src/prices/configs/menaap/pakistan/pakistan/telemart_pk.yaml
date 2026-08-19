@@ -9,6 +9,8 @@ language: en
 currency: PKR
 cadence: weekly
 coicop_codes: null
+archive_prefix: "telemart.pk/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Telemart (Pakistan) is a multi-vendor marketplace, not a single-brand
   electronics retailer as the discovery-shard catalog label suggested --

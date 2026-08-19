@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vivomarket_ro
+url: https://www.vivomarket.ro/
+language: ro
+cadence: weekly
+channel: supermarket
+notes: |
+  Gomag-platform storefront (Romanian e-commerce SaaS, gomagcdn.ro assets).
+  Re-verified live 2026-08-06: /bacanie -> 200, 1.4MB, real product cards
+  with Lei prices ('44,40 Lei', '41,38 Lei', '33,01 Lei', ...). Pagination
+  is `?p=N` (0-indexed), up to 77 pages observed on the largest category.
+  191 top-level category slugs walked (from 208 nav links, minus
+  account/legal/utility pages) -- see _vivomarket_ro_categories.txt.
+  Carries both retail and HoReCa (food-service bulk) lines per the source
+  shard; tagged channel=supermarket since retail dominates.
+
+  Caution during re-verification: a stray fetch of the bare domain briefly
+  rendered generic "homemarket.ro" placeholder content instead of
+  VivoMarket branding (transient CDN/routing anomaly) -- all other fetches
+  (including the one this manifest is based on) returned correctly branded
+  VivoMarket/Gomag content with real VivoMarket product imagery and prices.
+  If the smoke test ever shows homemarket.ro branding/products, treat the
+  source as compromised and re-probe before trusting collected data.

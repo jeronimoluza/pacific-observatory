@@ -8,6 +8,8 @@ language: en
 cadence: daily
 channel: supermarket
 currency: USD
+archive_prefix: "basichomemart.com/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Vue3 SPA (Cloudflare-fronted) backed by public JSON API at
   /dev-api/api/products/list?page=N&pageSize=M (~385 products). Direct API

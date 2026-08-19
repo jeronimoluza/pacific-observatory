@@ -8,6 +8,8 @@ language: es
 currency: GTQ
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.max.com.gt/producto/"
+archive_path_re: '^/producto/[^/?]+'
 notes: |
   Max Guatemala (Grupo Distelsa), general-merchandise retailer --
   electronics, appliances, furniture, toys across 22 departments

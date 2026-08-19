@@ -7,3 +7,5 @@ url: https://www.lotuss.com/th/
 language: th
 cadence: daily
 channel: supermarket
+archive_prefix: "www.lotuss.com/th/product/"
+archive_path_re: '^/th/product/[^/?]+'

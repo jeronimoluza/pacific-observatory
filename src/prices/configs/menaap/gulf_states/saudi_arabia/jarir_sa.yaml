@@ -1,0 +1,24 @@
+scaffolding: spider
+spider: jarir_sa
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.jarir.com/sa-en/
+language: en
+currency: SAR
+cadence: weekly
+notes: |
+  Verified live 2026-08-07: Jarir Bookstore Saudi Arabia. Vue-SSR storefront
+  (data-vue-meta, window.__INITIAL_STATE__) on a Magento-style backend
+  (numeric SKU + slug URL, /media/sitemap/ index) — no Playwright needed,
+  every PDP is server-rendered with a schema.org Product JSON-LD block
+  (name, sku, offers.price, offers.priceCurrency, category). Seeded off
+  /media/sitemap/sitemap_sa_ar.xml -> 4 product sitemaps (~50k URLs each,
+  bare Arabic-default slugs), each slug re-requested under /sa-en/ for the
+  English PDP + SAR pricing. Smoke test (--max-items 20) returned 20 rows,
+  all real SKUs (electronics, stationery, books, appliances), SAR prices in
+  the tens-to-thousands range, non-zero. Primarily electronics/
+  books/office/stationery, NOT a grocery source.
+  coicop_divisions: 05, 08, 09, 13
+  divisions_basis: sampled_rows (20-row smoke sample across stationery, computer accessories, appliances, books; category tree not fully walked)

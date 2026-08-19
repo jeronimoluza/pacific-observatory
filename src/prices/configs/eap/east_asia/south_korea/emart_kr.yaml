@@ -1,3 +1,5 @@
 spider: emart_kr
 language: ko
 channel: supermarket
+archive_prefix: "emart.ssg.com/item/itemview.ssg"
+archive_path_re: '(?i)^/item/itemview\.ssg$'

@@ -1,0 +1,31 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_zmb
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_zmb
+url: https://data.humdata.org/dataset/wfp-food-prices-for-zambia
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (round 3, 2026-08-07): WFP food prices for Zambia via HDX
+  (shared SSA fetcher _shared.ssa.wfp_food_prices). Zambia previously had
+  one retailer_sku manifest (lusakadelivery) but no official_avg source.
+  Verified live: CKAN package_show resolves wfp_food_prices_zmb.csv,
+  currency ZMW throughout (matches countries.yaml). Max observation date
+  is 2026-06-15 — current. 29 commodities: maize meal (3 grades), maize
+  (white), millet, sorghum, rice x2, beans x2, groundnuts, cassava meal,
+  bananas, sweet potatoes, rape leaves, eggs, milk (fresh), dried/fresh
+  fish (incl. kapenta, bream), cooking oil x2, sugar, salt, soy chunks,
+  plus Fuel (diesel) and Fuel (petrol-gasoline). Sample at max date:
+  'Maize meal'. Per-market rows collapsed to a national monthly average
+  per commodity/unit/currency/price-type; market count + USD value kept
+  in notes; retail vs wholesale kept in the dedup hash. COICOP deferred
+  to the classifier (item_name = WFP commodity).
+  coicop_divisions: 01, 07
+  divisions_basis: walked_categories (full 29-commodity list enumerated
+  from the CSV; 27 are food, 2 are transport fuel — Fuel (diesel), Fuel
+  (petrol-gasoline) — the "non-food" category's only members)

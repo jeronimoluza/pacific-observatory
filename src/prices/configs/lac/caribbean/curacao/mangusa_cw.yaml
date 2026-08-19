@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mangusa_cw
+url: https://www.mangusahypermarket.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.mangusahypermarket.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 19.4KB JSON. Sample: 'Unoli Canola oil 2ltr (6 pieces)' price
+  8410 minor units / currency_minor_unit=2 -> XCG 84.10. Curacao's currency
+  migrated from ANG to the new Caribbean Guilder (XCG); countries.yaml still
+  declares ANG but the live API already returns XCG, which we trust per the
+  probe. Hypermarket format, bulk/wholesale-leaning SKUs. Whole-catalog walk
+  (no category filter).

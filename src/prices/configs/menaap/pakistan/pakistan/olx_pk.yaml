@@ -8,6 +8,8 @@ language: en
 currency: PKR
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.olx.com.pk/item/"
+archive_path_re: '^/item/[^/?]+'
 notes: |
   Verified live 2026-08-17: OLX Pakistan — peer-to-peer classifieds
   (mixed catalog: electronics, mobiles, furniture, fashion, vehicles,

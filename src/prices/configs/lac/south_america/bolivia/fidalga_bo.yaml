@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: fidalga_bo
+url: https://www.fidalga.com/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.fidalga.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth — the source
+  CSV listed the platform as Custom, but it is actually Shopify. Re-verified
+  live 2026-08-06: HTTP 200, 250 products, real SKUs (e.g. 'Lavandina Mr.
+  Cloro 250 ml' 3.80 BOB; prior probe also cites 'pan frances' 0.90/unit,
+  'leche Pil 900ml' 9.70, 'azucar 5kg' 33.50). Currency BOB matches
+  countries.yaml. Product titles are Spanish, so language is set to es
+  despite the shard's en starting point. Strong staple/basic-basket
+  coverage.

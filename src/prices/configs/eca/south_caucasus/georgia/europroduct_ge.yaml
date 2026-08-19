@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: europroduct_ge
+url: https://europroduct.ge/
+language: ka
+cadence: weekly
+channel: supermarket
+archive_prefix: "europroduct.ge/products/product/"
+archive_path_re: '^/products/product/[^/?]+'
+notes: |
+  Custom PHP-ish supermarket storefront. Server-rendered category listings
+  at /products?pcat_idIn=<id> (page 1) and /products/page-<n>?pcat_idIn=<id>
+  (page n>1). Re-verified live 2026-08-06: GET /products?pcat_idIn=126 ->
+  200, 91KB, 21 product cards, e.g. 'კურკუმა (50გ)' (turmeric) 3,15 GEL
+  (Lari sign ₾ used consistently -- matches countries.yaml GEL; no currency
+  mismatch, despite an earlier probe's note about non-Lari symbols).
+  16 top-level category ids cover the whole catalog (their subcategory ids
+  are a refinement of the same listing, not disjoint, so top-level-only
+  walk is sufficient). Product names are Georgian on both / and /en/ paths,
+  so language is set to ka despite the shard's en starting point.

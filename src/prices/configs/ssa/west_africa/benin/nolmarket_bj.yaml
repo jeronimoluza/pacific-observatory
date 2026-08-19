@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nolmarket_bj
+url: https://nolmarket.com/
+language: fr
+cadence: weekly
+channel: supermarket
+notes: |
+  React SPA (CRA) with a fully open Laravel JSON API, no auth needed.
+  Re-verified live 2026-08-06: GET /api/products?page=1 -> 200, paginated
+  24/page, total_pages=121, total=2887, e.g. 'Champagne MOET IMPERIAL'
+  45000 XOF. Full-line catalog: Animalerie, Boissons, Epicerie, Produits
+  Frais (meat/fish/eggs, dairy, bakery), and a dedicated Produits Locaux
+  section (local grain/flour/oil forms). Currency XOF matches
+  countries.yaml.

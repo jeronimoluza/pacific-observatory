@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: yaynot_bitan_carrefour_il
+url: https://prices.carrefour.co.il/
+language: he
+cadence: daily
+channel: hypermarket
+archive_prefix: "prices.carrefour.co.il/20260807/"
+archive_path_re: '^/20260807/[^/?]+'
+notes: |
+  Israel's 2014 Food Price Transparency Law statutory feed, published via
+  the PublishPrice platform (a dedicated prices.carrefour.co.il portal
+  whose HTML embeds the day's branch-file list as inline JS) -- shared
+  base class at
+  price_scraping/spiders/_israel_transparency_base.py:PublishPriceTransparencyBase.
+  Targets one representative branch's PriceFull (full-catalog) snapshot,
+  matching the shufersal_il precedent. This is Carrefour's Israeli license
+  holder (Electra Consumer Products, trading as Yaynot Bitan/Carrefour).
+  Re-verified live 2026-08-06: branch 002, 6,241 items, e.g. 'עגבניות שרי
+  שלמות' (whole cherry tomatoes) ILS 9.90, 'סילאן טבעי לחיץ' (natural date
+  syrup) ILS 16.90. Currency ILS.
+  coicop_divisions: 01, 02, 13
+  divisions_basis: sampled_rows (6,241-item branch catalog, not fully
+  walked by department)

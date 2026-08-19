@@ -8,6 +8,8 @@ url: https://miswag.com/
 language: en
 currency: IQD
 cadence: weekly
+archive_prefix: "miswag.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Verified live 2026-08-17. Cross-COICOP marketplace (electronics, home,
   fashion, groceries) — canonical domain is miswag.com; the miswag.net

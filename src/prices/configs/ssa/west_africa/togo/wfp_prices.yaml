@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_tgo
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_tgo
+url: https://data.humdata.org/dataset/wfp-food-prices-for-togo
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (round 3, 2026-08-07): WFP food prices for Togo via HDX
+  (shared SSA fetcher _shared.ssa.wfp_food_prices). Togo previously had
+  two retailer_sku manifests (assivito_tg, miabemarche_tg) but no
+  official_avg source. Verified live: CKAN package_show resolves
+  wfp_food_prices_tgo.csv, currency XOF throughout (matches
+  countries.yaml). Max observation date is 2026-06-15 — current. Small,
+  focused panel: 10 commodities — maize (white), millet, sorghum x2, rice
+  x2, beans x2, cassava meal (gari), soybeans. Sample at max date:
+  'Maize (white)'. Per-market rows collapsed to a national monthly
+  average per commodity/unit/currency/price-type; market count + USD
+  value kept in notes; retail vs wholesale kept in the dedup hash. COICOP
+  deferred to the classifier (item_name = WFP commodity).
+  coicop_divisions: 01
+  divisions_basis: walked_categories (full 10-commodity list enumerated
+  from the CSV; only 2 WFP categories present — cereals and tubers,
+  pulses and nuts — both food, no non-food category in this panel)

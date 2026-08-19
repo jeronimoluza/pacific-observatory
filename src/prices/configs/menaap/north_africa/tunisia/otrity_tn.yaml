@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: otrity_tn
+url: https://otrity.com/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "otrity.com/produit/"
+archive_path_re: '^/produit/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 26.1KB JSON. Sample: 'Lait Concentré sucré SMART CHEF' price
+  9120 minor units / currency_minor_unit=3 -> TND 9.120. currency_code TND
+  matches countries.yaml. Packaged-goods/pantry grocer — no fresh produce,
+  meat, or fish categories in the 100+ category list, but good Tunisian
+  pantry depth (couscous, conserves, harissa, chorba). Whole-catalog walk
+  (no category filter).

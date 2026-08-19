@@ -1,5 +1,7 @@
 spider: smartdoko
 language: en
+archive_prefix: "smartdoko.com/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: >
   SPA — uses Playwright listing-card extraction. Schema.org microdata
   (itemprop="price", /product/<slug> anchors) is stable.

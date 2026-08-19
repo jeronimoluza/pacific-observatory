@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: smartmarket_lu
+url: https://smartmarket.lu/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "smartmarket.lu/produit/"
+archive_path_re: '^/produit/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5
+  -> HTTP 200, 16.3KB JSON, standard WooCommerce Store API, no auth.
+  X-WP-Total header confirms 8,484 products. currency_code EUR /
+  currency_minor_unit 2 matches countries.yaml. Sample spans wine
+  ('JACK DAPALERMO Nero d'Avola Sicilia 75cl' EUR 8.18) through frozen and
+  chilled groceries ('BONI kebab precuit 1kg' EUR 20.33, 'IGLO Kombinos
+  Fromage & Persil 300g' EUR 8.93) -- a genuine full-range 30-minute grocery
+  delivery service, not a wine-only shop despite the first page being
+  alcohol-heavy. Whole-catalog walk, no category filter. First non-proxy
+  Luxembourgish price manifest in the repo.

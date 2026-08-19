@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: greenspoon_ke
+url: https://greenspoon.co.ke/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "greenspoon.co.ke/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 22.3KB JSON. Sample: 'Santa Lucia Spaghetti Pasta - 1Kg', prior
+  probe also saw 'Hobby Pomegranate Blossom Body Wash' KES 498. currency_code
+  KES matches countries.yaml (currency_minor_unit=0). Organic/artisan
+  grocer. DATA QUALITY FLAG: some products' `description` field carries
+  ~2KB of unrelated leftover CMS/chat-UI HTML — not used by the spider
+  (only name/prices/categories/permalink are read). Whole-catalog walk (no
+  category filter).

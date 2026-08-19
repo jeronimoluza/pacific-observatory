@@ -9,6 +9,8 @@ currency: KZT
 cadence: weekly
 channel: marketplace
 coicop_codes: null
+archive_prefix: "kaspi.kz/p/"
+archive_path_re: '^/p/[^/?]+'
 notes: |
   Kazakhstan's largest general marketplace, own commerce engine
   (not Magento/Shopify/VTEX). The onboarding probe was right that raw

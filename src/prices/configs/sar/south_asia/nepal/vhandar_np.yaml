@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vhandar_np
+url: https://www.vhandar.com/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Vhandar (Nepal). Next.js frontend backed by a separate API host,
+  api.vhandar.com. Re-verified live 2026-08-06: GET
+  https://api.vhandar.com/products?status=active&page=1&limit=50 -> 200,
+  143KB JSON, plain curl, no auth, pagination.total=1180. Sample: 'Sip &
+  Seal Matcha Powder' unit=g unitValue=100 pricePerUnit=1600. Categories via
+  /categories: Dairy/Bread/Eggs, Packaged & Instant Food, Rice/Atta/Flour,
+  Dals/Pulses, Oil/Ghee, Masala/Dry Fruits, Sauces/Spreads, Tea/Coffee,
+  Sweet Tooth, Snacks, Cold Drinks/Juice, Bakery/Biscuits, Horeca,
+  Beauty/Cleaning/Personal-care/Baby (non-food). No fresh-produce, meat, or
+  fish category — packaged/shelf-stable goods only, plus a HORECA wholesale
+  vertical. No explicit currency field on products; NPR matches
+  countries.yaml.

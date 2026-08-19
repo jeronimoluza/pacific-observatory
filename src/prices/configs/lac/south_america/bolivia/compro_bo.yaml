@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: compro_bo
+url: https://compro.bo/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "compro.bo/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth — the source
+  CSV listed the platform as Custom, but it is actually Shopify. Re-verified
+  live 2026-08-06: HTTP 200, 250 products, real SKUs (e.g. 'SOBAQUERA 3
+  PLUMAS 200ML' 10.00 BOB, product_type 'BEBIDAS CON ALCOHOL'). Currency BOB
+  matches countries.yaml. Product titles are Spanish, so language is set to
+  es despite the shard's en starting point. Prior probe cites a 38-category
+  tree focused on national/domestic production.

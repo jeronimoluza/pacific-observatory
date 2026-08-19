@@ -9,6 +9,8 @@ language: en
 currency: PKR
 cadence: weekly
 coicop_codes: null
+archive_prefix: "hpharmacy.pk/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Pakistani pharmacy/personal-care retailer. WooCommerce Store API
   confirmed live 2026-08-17

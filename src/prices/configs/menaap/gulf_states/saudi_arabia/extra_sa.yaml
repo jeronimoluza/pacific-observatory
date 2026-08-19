@@ -1,0 +1,24 @@
+scaffolding: spider
+spider: extra_sa
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.extra.com/en-sa
+language: en
+currency: SAR
+cadence: weekly
+notes: |
+  Verified live 2026-08-07: eXtra Stores Saudi Arabia. SAP Commerce Cloud
+  (Hybris) storefront, server-rendered schema.org Product JSON-LD (name,
+  sku, offers.price, offers.priceCurrency) on every PDP — no Playwright
+  needed. Seeded off /en-sa/sitemap.xml -> ~50 dedicated Product-en-SAR-N-*
+  sitemap files (small-appliances, computers/accessories, electronics
+  categories confirmed in sampled URLs). No `category` field in the JSON-LD
+  itself; category is derived from the PDP URL path segments instead.
+  Same platform also serves en-bh and en-om (robots.txt Sitemap: lines) but
+  NOT en-ae — no UAE storefront on this domain, so this manifest is SA-only.
+  Smoke test (--max-items 20) returned 20 rows, real SKUs (small appliances,
+  computer accessories), SAR prices non-zero and plausible.
+  coicop_divisions: 05, 08, 09
+  divisions_basis: sampled_rows (20-row smoke sample across small-appliances/computer-accessories categories; category tree not fully walked)

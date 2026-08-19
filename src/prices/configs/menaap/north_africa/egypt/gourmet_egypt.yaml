@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gourmet_egypt
+url: https://gourmetegypt.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "gourmetegypt.com/"
+archive_path_re: '^/[^/]+/?$'
+notes: |
+  Premium/imported grocer. Magento 2 storefront, open GraphQL at /graphql
+  (no auth; REST /rest/V1/products 401s as expected). categoryList under
+  the default root category (id=2) exposes Meat/Poultry/Seafood, Bakery,
+  Dairy & Eggs, Fruits & Vegetables, Frozen, Food Cupboard, Beverages,
+  Desserts, Chips & Snacks, Chocolate & Sweets, etc. Live re-verify:
+  POST /graphql products(search:"rice") -> 200, "Altahya Basmati Rice"
+  EGP 215/360. Currency EGP matches countries.yaml.

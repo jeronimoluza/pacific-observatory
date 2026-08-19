@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ellbeauty_ir
+url: https://ellbeauty.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: cosmetics
+archive_prefix: "ellbeauty.ir/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  Verified live 2026-08-18: ellbeauty.ir — "Cosmetics + Beauty Products -
+  ELL BEAUTY". WooCommerce storefront (permalinks under /shop/<slug>/,
+  not /product/<slug>/ like the sibling Iranian WooCommerce stores in
+  this batch); GET /wp-json/wc/store/v1/products -> 200, real product
+  "Clinique Take The Day Off Makeup Remover For Lids, Lashes & Lips
+  125ml", prices.price=1296000, currency_code="IRT" (non-ISO Toman
+  marker), currency_minor_unit=0.
+  Toman/Rial: same storefront family and convention as sibling Iranian
+  cosmetics stores onboarded alongside this one (arayeshishahin_ir,
+  dubaik_ir) — ISO 4217 has no Toman code, so per the sheypoor_ir/
+  torob_ir convention the spider's `_item` override multiplies the
+  Store API price by 10 and reports IRR.

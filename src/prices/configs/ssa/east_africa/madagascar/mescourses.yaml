@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mescourses
+url: https://mescourses.mg/fr/
+language: fr
+cadence: weekly
+channel: supermarket
+notes: |
+  Rebrand of supermarche.mg (same investor-backed Antananarivo operator);
+  supermarche.mg now 302-redirects to mescourses.mg (the old domain's TLS
+  cert doesn't match, hence the plain-HTTP-style probe). PrestaShop SSR
+  category HTML, data-id-product + itemprop microdata confirmed live on
+  /fr/41-alimentaire with real MGA prices (e.g. "Promos Iodized Salt -
+  737g" 185 Ar). Category tree auto-discovered from the homepage nav.
+
+  cfg_currency (MGA) matches what the probe saw ("Ar" = Ariary).

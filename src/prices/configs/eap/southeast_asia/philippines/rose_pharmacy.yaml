@@ -7,6 +7,8 @@ url: https://www.rosepharmacy.com
 language: en
 cadence: daily
 channel: pharmacy
+archive_prefix: "www.rosepharmacy.com/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: >
   Rose Pharmacy - national PH drugstore chain. WooCommerce (Porto theme)
   storefront that server-renders product cards (name + PHP price) directly in

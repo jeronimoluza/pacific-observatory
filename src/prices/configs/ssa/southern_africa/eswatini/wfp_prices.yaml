@@ -1,0 +1,23 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_swz
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_swz
+url: https://data.humdata.org/dataset/wfp-food-prices-for-eswatini
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Eswatini via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_swz.csv (200, 7,105 rows),
+  currency SZL throughout (matches countries.yaml). Max observation date is
+  2026-04-15 — current. 16 commodities incl. maize (white), maize meal,
+  beans, rice, sugar, bread, cooking oil. Sample: 'Maize (white)', 50 KG,
+  SZL 57.5. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ab_vassilopoulos_wolt_gr
+url: https://wolt.com/en/grc/athens/venue/ab-vassilopoulos-mets
+language: el
+cadence: weekly
+channel: marketplace
+archive_prefix: "wolt.com/en/grc/athens/venue/"
+archive_path_re: '^/en/grc/athens/venue/[^/?]+'
+notes: |
+  AB Vassilopoulos (major Greek supermarket chain) storefront on the Wolt
+  delivery marketplace. Wolt's web app SSRs its React-Query cache into a
+  `<script class="query-state">` JSON blob on every page -- no JS execution
+  needed. Walk: venue page -> `venue-assortment/category-listing` query gives
+  every category slug (24 for this branch); each `/items/<slug>` sub-page ->
+  `venue-assortment/category` query's first page carries up to 50 full items
+  (name, price in eurocents, unit_info, barcode_gtin). Capped at page 1/category
+  (client-side infinite-scroll pagination via next_page_token is not reachable
+  by plain GET -- SSR always renders page 1). Shared base
+  `price_scraping/spiders/_wolt_base.py`, reusable for any Wolt grocery venue.
+  Synthetic url = f"{venue_url}#{item_id}" (DuplicationPipeline url-dedup).
+  Re-verified live 2026-08-06: /venue/ab-vassilopoulos-mets/items/menucategory-2
+  -> 200, 50 items. Sample: 'Αγγουράκια Χύμα' (loose cucumbers) EUR 1.55,
+  115 g; 'ΑΒ ΒΙΟ Ντομάτες Βιολογικής Γεωργίας Ελληνικές' (organic tomatoes)
+  EUR 4.58, 1.2 kg. channel:marketplace per scope rules (Wolt is a delivery
+  aggregator, not the retailer itself); analytical_role stays retailer_sku
+  since every item is a real AB Vassilopoulos SKU with a barcode.

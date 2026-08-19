@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: continente_pt
+url: https://www.continente.pt/mercearia/
+language: pt
+cadence: weekly
+channel: hypermarket
+archive_prefix: "www.continente.pt/on/demandware.store/Sites-continente-Site/default/"
+archive_path_re: '^/on/demandware\.store/Sites\-continente\-Site/default/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: Salesforce Commerce Cloud, fully SSR. Every
+  product tile carries a data-product-tile-impression='{"name":...,
+  "id":...,"price":...,"brand":...,"category":...}' JSON attribute — a
+  complete structured record in the raw HTML, no JS/API call needed.
+  Sample: 'Atum Posta em Óleo sem Glúten Bom Petisco' EUR 1.54; 'Massa
+  Esparguete Nº5 Barilla' EUR 1.08. Pagination via ?start=N&sz=36,
+  confirmed live (?start=36 -> next distinct page). data-total-count on
+  each department's first page gives the stop point (Mercearia alone:
+  5,401 products). Walks all 16 first-party product departments (frescos,
+  mercearia, laticinios-e-ovos, congelados, bebidas-e-garrafeira, limpeza,
+  beleza-e-higiene, bio-e-saudavel, bebe, animais, casa-e-jardim,
+  casa-bricolage-e-jardim, desporto-e-viagem, brinquedos-e-jogos,
+  papelaria, livros). Largest PT chain (Sonae); delivers to mainland +
+  Madeira + S. Miguel per shard notes.

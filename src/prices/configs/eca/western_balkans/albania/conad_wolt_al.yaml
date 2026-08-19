@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: conad_wolt_al
+url: https://wolt.com/en/alb/tirana/venue/conad-albania-bulevardi-zogu-i
+language: sq
+cadence: weekly
+channel: marketplace
+archive_prefix: "wolt.com/en/alb/tirana/venue/"
+archive_path_re: '^/en/alb/tirana/venue/[^/?]+'
+notes: |
+  Conad Albania (Italian supermarket chain operating in Albania) Bulevardi
+  Zogu I branch on the Wolt delivery marketplace. Same SSR query-state walk
+  as ab_vassilopoulos_wolt_gr (shared base `_wolt_base.py`): venue page ->
+  category-listing (13 category slugs, Albanian: fruta-perime,
+  buke-e-fresket-e-paketuar, ushqimore-te-paketuara, ...) -> per-category
+  `/items/<slug>` page 1 (up to 50 items each). Synthetic url =
+  f"{venue_url}#{item_id}".
+  Re-verified live 2026-08-06: /venue/conad-albania-bulevardi-zogu-i -> 200,
+  real Albanian-language SKUs with ALL prices and barcode_gtin.
+  channel:marketplace (Wolt aggregates the first-party retailer's catalog).

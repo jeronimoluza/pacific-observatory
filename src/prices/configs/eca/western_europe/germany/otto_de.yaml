@@ -8,6 +8,8 @@ language: de
 currency: EUR
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.otto.de/p/"
+archive_path_re: '^/p/[^/?]+'
 notes: |
   Otto.de — large German general-merchandise department-store retailer.
   Verified live 2026-08-17: real EUR prices server-rendered in category

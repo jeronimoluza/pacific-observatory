@@ -9,6 +9,8 @@ language: es
 currency: USD
 cadence: weekly
 coicop_codes: null
+archive_prefix: "arrocha.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Farmacias Arrocha (Panama) drugstore chain webshop -- broad assortment
   spanning personal care, cosmetics, fragrances, packaged food, toys, and

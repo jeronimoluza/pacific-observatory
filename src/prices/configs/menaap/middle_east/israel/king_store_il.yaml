@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: king_store_il
+url: https://kingstore.binaprojects.com/
+language: he
+cadence: daily
+channel: supermarket
+archive_prefix: "kingstore.binaprojects.com/Download/"
+archive_path_re: '^/Download/[^/?]+'
+notes: |
+  Israel's 2014 Food Price Transparency Law statutory feed, published via
+  the Bina platform (binaprojects.com) -- shared base class at
+  price_scraping/spiders/_israel_transparency_base.py:BinaTransparencyBase.
+  Targets one representative branch's PriceFull (full-catalog) snapshot,
+  matching the shufersal_il precedent. Re-verified live 2026-08-06: branch
+  001 store 001, 6,837 items, e.g. 'פסטרמה מקסיקנית' (Mexican pastrami)
+  ILS 99.00, 'פיקדון בקבוקים' (bottle deposit) ILS 0.30. Currency ILS.
+  King Store is a full-line supermarket chain.
+  coicop_divisions: 01, 02, 13
+  divisions_basis: sampled_rows (6,837-item branch catalog, not fully
+  walked by department)

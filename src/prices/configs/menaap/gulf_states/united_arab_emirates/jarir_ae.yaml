@@ -1,0 +1,24 @@
+scaffolding: spider
+spider: jarir_ae
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.jarir.com/ae-en/
+language: en
+currency: AED
+cadence: weekly
+notes: |
+  Verified live 2026-08-07: Jarir Bookstore UAE. Same Vue-SSR/Magento-style
+  platform as jarir_sa (see that manifest) — server-rendered schema.org
+  Product JSON-LD, no Playwright needed. The UAE storefront's own sitemap
+  (sitemap_ae_ar.xml) returns a binary image payload instead of XML, so this
+  spider reuses the Saudi Arabia product-sitemap index for URL discovery and
+  re-requests each slug under /ae-en/ — confirmed the same slug serves a
+  distinct AED price + stock status from the SA storefront (spot-checked:
+  SAR 75.00/InStock on -sa vs AED 83.00/OutOfStock on -ae for the same SKU).
+  Smoke test (--max-items 20) returned 20 rows, all real SKUs, AED prices
+  non-zero. Not every SA slug is stocked in the UAE storefront; the spider
+  silently skips PDPs with no price.
+  coicop_divisions: 05, 08, 09, 13
+  divisions_basis: sampled_rows (20-row smoke sample; category tree not fully walked)

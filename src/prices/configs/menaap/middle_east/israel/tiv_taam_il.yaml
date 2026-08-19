@@ -1,0 +1,23 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+source_key: il_tiv_taam
+module: menaap.middle_east.israel.tiv_taam_il
+function: fetch_il_tiv_taam
+url: ftp://url.retail.publishedprices.co.il/
+language: he
+cadence: daily
+fallback_date: 2020-01-01
+channel: supermarket
+notes: |
+  Israel's 2014 Food Price Transparency Law statutory feed via the shared
+  publishedprices.co.il FTPS portal (see rami_levy_il.yaml for the shared
+  architecture note). Login "TivTaam", blank password. Fetches one
+  representative branch's PriceFull snapshot per run. Re-verified live
+  2026-08-06: 21,366 items, e.g. 'ניילון נצמד דיימונד 30 מטר' (cling film)
+  ILS 16.90, 'בוזנינה לבנה להב' (a cheese) ILS 145.00. Currency ILS. Tiv
+  Taam is a general-merchandise chain (deli/imported goods emphasis).
+  coicop_divisions: 01, 02, 13
+  divisions_basis: sampled_rows (21,366-item branch catalog, not fully
+  walked by department)

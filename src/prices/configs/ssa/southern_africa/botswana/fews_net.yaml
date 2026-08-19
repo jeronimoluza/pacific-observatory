@@ -1,0 +1,30 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: fews_bwa
+module: _shared.ssa.fews_net
+function: fetch_fews_bwa
+url: https://fdw.fews.net/api/marketpricefacts/?country_code=BW
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (round 3 resume, 2026-08-07): USAID FEWS NET market price facts
+  REST API (fdw.fews.net/api/marketpricefacts/), shared SSA fetcher
+  _shared.ssa.fews_net. Botswana's only prior manifest was a retailer_sku
+  spider (notwanepharmacy_bw) — this is the country's first official_avg
+  source. Verified live: 2339 total facts for country_code=BW, currency BWP
+  (matches countries.yaml), max period_date 2026-06-30, source organization
+  "Statistics Botswana". Market grain is already national ("National
+  Average") for this country. Sample at max date: Wheat Flour, 5_kg, BWP,
+  Retail. Server-side start_date filter confirmed narrowing (used instead of
+  client-side date filtering to avoid walking full history). Per-market rows
+  collapsed to a national monthly average per commodity/unit/currency/
+  price-type; market count + USD value kept in notes; retail vs wholesale
+  kept in the dedup hash. COICOP deferred to the classifier (item_name =
+  FEWS NET product label).
+  coicop_divisions: 01
+  divisions_basis: walked_categories (whole-catalog API walk, no commodity
+  filter applied; food staples only per FEWS NET's own product scope)

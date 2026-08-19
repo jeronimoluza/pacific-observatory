@@ -8,6 +8,8 @@ language: es
 currency: GTQ
 cadence: weekly
 channel: dept-store
+archive_prefix: "cemaco.com/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
 notes: |
   Cemaco -- Guatemalan department-store chain (home goods, furniture,
   electronics, toys; general merchandise, not food). Shard flagged this as

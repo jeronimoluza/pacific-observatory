@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ghbasket_gh
+url: https://ghbasket.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "ghbasket.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 13.8KB JSON. Sample: 'Cow Leg' price 11000 minor units /
+  currency_minor_unit=2 -> GHS 110.00. currency_code GHS matches
+  countries.yaml. Whole-catalog walk (no category filter). Local-unit-measure
+  claims in prior probe notes (koobi, apatre, olonka) not independently
+  re-verified this pass but platform/endpoint confirmed live.

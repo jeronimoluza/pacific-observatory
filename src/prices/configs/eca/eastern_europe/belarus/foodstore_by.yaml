@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: foodstore_by
+url: https://food-store.by/
+language: ru
+cadence: weekly
+channel: supermarket
+notes: |
+  Food-store.by -- Minsk online grocer. 1C-Bitrix storefront (the CIS-region
+  e-commerce platform equivalent to Shopify/WooCommerce -- fingerprinted
+  explicitly per the brief), server-rendered, no WAF hit. Bespoke spider
+  (`foodstore_by.py`) walks 77 leaf `/catalog/{path}/` category URLs from
+  the homepage nav; product cards carry a structured
+  `data-currency="BYN" data-value="PRICE"` attribute (no text-price
+  parsing needed). Re-verified live 2026-08-06: /catalog/bakaleya/krupy_/ris/
+  -> 200, 8 real rice SKUs incl. 'Рис Жасмин Bravolli!' BYN 5.00, 'Рис
+  Басмати Села Золотой шлифованный' BYN 30.25 -- plausible varied local
+  prices, currency BYN (matches countries.yaml; note the still-live WFP
+  Belarus panel checked in this same wave uses the pre-2016-redenomination
+  BYR code and was dropped as stale, unrelated to this retailer feed).
+  24shop.by and a-dostavka.by were also fingerprinted as 1C-Bitrix but not
+  scaffolded (breadth already achieved with this one; picking the smallest
+  viable win per the coverage-density rule).

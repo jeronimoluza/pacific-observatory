@@ -1,0 +1,30 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_bdi
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_bdi
+url: https://data.humdata.org/dataset/wfp-food-prices-for-burundi
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (round 3, 2026-08-07): WFP food prices for Burundi via HDX
+  (shared SSA fetcher _shared.ssa.wfp_food_prices). Burundi had zero
+  manifests before this. Verified live: CKAN package_show resolves
+  wfp_food_prices_bdi.csv, currency BIF throughout (matches
+  countries.yaml). Max observation date is 2026-07-15 — current. 25
+  commodities: cereals (maize x2, sorghum, rice x3 grades), pulses
+  (beans x2), tubers (Irish + sweet potatoes, cassava flour), oils
+  (palm/vegetable), fruit/veg (avocados, bananas, onions, tomatoes), goat
+  meat, dried fish, plus Fuel (diesel) and Fuel (petrol-gasoline). Sample
+  at max date: 'Maize'. Per-market rows collapsed to a national monthly
+  average per commodity/unit/currency/price-type; market count + USD
+  value kept in notes; retail vs wholesale kept in the dedup hash. COICOP
+  deferred to the classifier (item_name = WFP commodity).
+  coicop_divisions: 01, 07
+  divisions_basis: walked_categories (full 25-commodity list enumerated
+  from the CSV; 23 are food, 2 are transport fuel — Fuel (diesel), Fuel
+  (petrol-gasoline) — the "non-food" category's only members)

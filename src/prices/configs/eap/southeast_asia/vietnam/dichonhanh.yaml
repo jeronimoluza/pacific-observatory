@@ -7,6 +7,8 @@ url: https://www.dichonhanh.vn
 language: vi
 cadence: daily
 channel: supermarket
+archive_prefix: "www.dichonhanh.vn/san-pham/"
+archive_path_re: '^/san\-pham/[^/?]+'
 notes: |
   Wet-market-style HCMC online grocer sourcing from Binh Dien wholesale
   market. Server-rendered /nhom-san-pham/<slug>/ category pages list the

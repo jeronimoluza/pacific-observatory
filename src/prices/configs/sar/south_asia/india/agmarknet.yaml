@@ -1,0 +1,46 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: in_agmarknet
+module: sar.south_asia.india.agmarknet
+function: fetch_in_agmarknet
+url: https://www.data.gov.in/resource/variety-wise-daily-market-prices-data-commodity
+language: en
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  AGMARKNET — India's national wholesale mandi (market) price reporting
+  system (Ministry of Agriculture and Farmers Welfare / Directorate of
+  Marketing and Inspection), republished on the OGD platform as
+  "Variety-wise Daily Market Prices Data of Commodity". agmarknet.gov.in
+  itself 403s from outside India (confirmed via curl AND a real headless
+  Chromium session -- a network geofence, not a bot check); the e-NAM
+  mirror at enam.gov.in/dashboard/agmarknet returns HTTP 500 on every
+  dynamic endpoint (Agm_ctrl/states_name, Agm_ctrl/trade_data_list,
+  Ajax_ctrl/hooks_fun), reproduced with a real Playwright browser network
+  trace -- backend is down site-wide, not blocking us specifically.
+  data.gov.in's resource preview page instead embeds a working sample
+  api-key for its own resource id (35985678-0d79-46b4-9ed6-6f13308a1d24)
+  against the documented api.data.gov.in REST endpoint. Re-verified live
+  2026-08-07: total 81,042,730 records, resource `updated_date` same-day;
+  filters[Arrival_Date]=06/08/2026 -> 17,471 rows (a full day's national
+  catalog), filters[Arrival_Date]=07/08/2026 -> 4 rows (day still posting
+  at probe time). Sample: Commodity 'Ginger(Green)', Variety 'Green
+  Ginger', Market 'Siliguri APMC', District Darjeeling, State West Bengal,
+  Modal_Price INR 11500/quintal (Min 11000 / Max 12000). Unit is
+  Rs./Quintal for every commodity in this resource (data.gov.in's own
+  field description states "Modal Price (Rs./Quintal)"). Whole-catalog
+  walker: every commodity/variety/market/state combination the API returns
+  for a day is emitted unfiltered -- hundreds of commodities across
+  thousands of APMC markets nationwide. Walks backward from today up to 7
+  days (bounded further by cutoff) to keep per-run volume bounded; a full
+  historical backfill of this 81M-row dataset is out of scope for
+  onboarding.
+  coicop_divisions: 01, 02
+  divisions_basis: sampled_rows (spot-checked commodity list across
+  multiple days/states: cereals, pulses, fresh vegetables, fruits, spices,
+  oilseeds, fibres/cotton -- overwhelmingly food; a handful of non-food
+  agricultural inputs (raw cotton, jute, flowers) fall outside COICOP
+  01/02 and are left to the classifier to route or drop.

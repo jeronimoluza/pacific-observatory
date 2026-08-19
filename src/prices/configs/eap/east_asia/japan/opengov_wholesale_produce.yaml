@@ -1,0 +1,32 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: jp_opengov_wholesale_produce
+module: eap.east_asia.japan.opengov_wholesale_produce
+function: fetch_jp_opengov_wholesale_produce
+url: https://opengov.jp/en/prices/vegetable-market/
+language: en
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  Re-publication of MAFF (Ministry of Agriculture, Forestry and Fisheries)
+  daily wholesale trading prices across central produce markets. The item
+  index page (/en/prices/vegetable-market/) lists 71 fresh fruit/vegetable
+  commodity codes; each item page has a "Daily Prices (Last 30 Days)" HTML
+  table (id="daily-table") with real ISO dates, market name, and Mid/High/
+  Low price in JPY/kg (the data-unit="¥/kg" attribute on the adjacent chart
+  canvas, and the table's own "Mid Price (¥/kg)" column header, both confirm
+  the unit). Re-verified live 2026-08-06: /en/prices/vegetable-market/30100/
+  (Daikon radish) -> 200, 391KB, daily-table rows incl. "2026-04-02 Morioka
+  (盛岡) ¥124", "2026-03-06 Sendai (仙台) ¥140 (High ¥189 / Low ¥76)". Not
+  every market reports High/Low every day (many rows show "-") -- only Mid
+  Price is captured as the representative daily wholesale value.
+
+  Substantially overlaps the same crops already covered (at a coarser
+  national-average grain) by the sibling opengov_retail_prices fetcher --
+  the added value here is per-market granularity and named cultivars the
+  retail survey collapses into one line, per round 1's "smaller incremental
+  add" framing. Plain GET, no auth, 71 requests per run with a 0.3s polite
+  delay between item pages.

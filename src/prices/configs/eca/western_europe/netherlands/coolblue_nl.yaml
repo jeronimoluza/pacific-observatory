@@ -8,6 +8,8 @@ language: nl
 currency: EUR
 cadence: weekly
 channel: electronics
+archive_prefix: "www.coolblue.nl/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Coolblue Netherlands (coolblue.nl) — consumer electronics/appliance
   retailer, same platform and product catalog as coolblue.be, run as a

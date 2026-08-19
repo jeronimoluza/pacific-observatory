@@ -8,6 +8,8 @@ language: az
 currency: AZN
 cadence: weekly
 channel: marketplace
+archive_prefix: "tap.az/elanlar/"
+archive_path_re: '^/elanlar/[^/?]+'
 notes: |
   tap.az — Azerbaijan's largest classifieds marketplace. Verified live
   2026-08-17: Next.js SSR, real AZN ("₼") prices embedded as clean numeric

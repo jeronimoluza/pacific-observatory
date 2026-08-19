@@ -1,0 +1,28 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: fews_rwa
+module: _shared.ssa.fews_net
+function: fetch_fews_rwa
+url: https://fdw.fews.net/api/marketpricefacts/?country_code=RW
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (round 3 resume, 2026-08-07): USAID FEWS NET market price facts
+  REST API (fdw.fews.net/api/marketpricefacts/), shared SSA fetcher
+  _shared.ssa.fews_net. Rwanda's only prior manifest was wfp_prices
+  (official_avg via HDX) — this is a second, independent official_avg feed
+  (different upstream agency: FEWS NET/USAID vs WFP), not a duplicate.
+  Verified live: 26994 total facts for country_code=RW, currency RWF
+  (matches countries.yaml), max period_date 2026-05-31. Sample at max date:
+  Beans (mixed), kg, RWF, Retail. Server-side start_date filter confirmed
+  narrowing. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = FEWS NET product label).
+  coicop_divisions: 01
+  divisions_basis: walked_categories (whole-catalog API walk, no commodity
+  filter applied; food staples only per FEWS NET's own product scope)

@@ -1,0 +1,613 @@
+# Product terms matched against Common Crawl's url_path to discover storefronts
+# we have never scraped, including ones that no longer exist.
+#
+# Two provenances, merged:
+#  - hand-written global brands plus staple-food and household nouns in en/es/pt/
+#    fr/id/tr/vi, because gold is EAP-heavy and slug-bearing storefronts are
+#    concentrated in LAC/ECA/SSA;
+#  - terms mined from data/prices/enrich/gold/gold_labels.parquet (50,126 rows),
+#    kept when a term appears in >=15 products and >=70% of them share one COICOP
+#    division, which drops generic modifiers without a stopword list doing all
+#    the work. Divisions 02/03/05/06/08/09/13 only — 04 is housing and 07 is
+#    vehicles, neither of which describes a retail catalogue.
+#
+# Terms shorter than 4 characters are dropped at load; matching is slug-bounded,
+# so `rice` does not match `/price-list`.
+aceite de girasol
+aceite de oliva
+activia
+acucar
+agua mineral
+air mineral
+almonds
+aluminium
+ampoule
+android
+animals
+antibacterial
+antiperspirant
+apple
+apple juice
+arden
+argan
+ariel
+arroz
+arroz branco
+artisans
+atlas
+aveeno
+avene
+avocado
+axion
+aycicek yagi
+azucar
+bacon
+banana
+bandage
+barilla
+barrier
+basmati rice
+bathroom
+beef steak
+beer
+beige
+beras
+beurre
+biere
+bioderma
+bionike
+biopak
+biore
+black beans
+black pepper
+black tea
+blackmores
+blanc
+bleach
+blonde
+bluetooth
+blush
+body lotion
+bonito
+boody
+boots
+bordeaux
+bot mi
+botanical
+breakfast cereal
+bright
+brightening
+brite
+brown sugar
+brush
+budweiser
+burberry
+butter
+ca phe
+cabbage
+cabernet
+cable
+cafe molido
+cafe torrado
+calming
+candle
+canmake
+canned tuna
+capsule
+carne moida
+carne molida
+carrot
+cashew
+casio
+cathy
+ceramide
+cerave
+cerveja
+cerveza
+cetaphil
+charcoal
+chardonnay
+cheddar cheese
+cheek
+chewable
+chews
+chicco
+chicken breast
+chicken thigh
+chickpeas
+chloe
+clarins
+cleaner
+cleaning
+cleanser
+cleansing
+clinique
+clorox
+coach
+coca-cola
+coffee beans
+colgate
+cologne
+colorstay
+complex
+concealer
+condensed milk
+conditioner
+condom
+condoms
+container
+cooker
+cooling
+coral
+corn flakes
+corona extra
+cosmetics
+couches
+cough
+cucumber
+curry powder
+cushion
+daging ayam
+damage
+dandruff
+danone
+darlie
+dau an
+defence
+defense
+dentifrice
+deodorant
+derma
+detergent
+detergente
+deterjan
+diaper
+diapers
+diffuser
+dis macunu
+dish soap
+dishwashing
+disinfectant
+domates salcasi
+domestos
+doritos
+dove soap
+downy
+duong trang
+durex
+eau minerale
+effervescent
+eggs
+ekmek
+elbow
+elizabeth
+emulsion
+enamel
+enchanteur
+essence
+evaporated milk
+evian
+exfoliating
+expiry
+extreme
+eyebrow
+eyeliner
+fabric
+face cream
+facial
+fanta
+farine
+farinha de trigo
+feast
+feeding
+feminine
+fever
+fideos
+finish dishwasher
+firming
+fish sauce
+flawless
+floor
+floss
+fluid
+foaming
+forte
+foundation
+frango
+freshener
+froika
+fromage
+galaxy
+garbage
+garlic
+garnier
+gatsby
+gentle
+gillette
+girls
+gloss
+glossy
+glucosamine
+gluta
+green tea
+ground beef
+ground coffee
+guardian
+gucci
+gula pasir
+gulicc
+gummies
+hand sanitizer
+handle
+haribo
+harina
+head shoulders
+heineken
+heinz ketchup
+hellmanns
+himalaya
+household
+huevos
+huggies
+huile de tournesol
+hyaluronic
+hydra
+hydrating
+hydration
+hydro
+hygiene
+immune
+inaba
+insect
+instant noodles
+intensive
+invisible
+iphone
+ivory
+jabon
+jacobs
+jasmine rice
+johnson
+johnson baby
+johnsons
+joint
+jugo de naranja
+jus orange
+kakato
+kaplet
+kapsul
+kecap manis
+kellogg
+keratin
+kettle
+keychain
+killer
+kitkat
+knife
+knorr
+kodomo
+kopi bubuk
+kotex
+lacquer
+lager
+lait entier
+lasting
+lauder
+laundry
+laundry detergent
+lays
+leche en polvo
+leche entera
+leite integral
+lentils
+lessive
+lettuce
+liner
+lipstick
+lipton
+listerine
+litter
+loreal
+lotion
+lozenges
+luminous
+macarrao
+maden suyu
+maggi
+magnesium
+makarna
+makeup
+mamypoko
+mango
+manicare
+mannings
+manteiga
+mantequilla
+margarine
+mars bar
+mascara
+massage
+matte
+mattress
+maybelline
+mcobeauty
+medicated
+medicine
+merlot
+mi tom
+micellar
+michael
+mie instan
+milka
+mineral water
+minyak goreng
+minyak sayur
+miracle
+moist
+moisture
+moisturiser
+moisturising
+moisturizer
+moisturizing
+molho de tomate
+mortein
+moscato
+mosquito
+mouse
+mouthwash
+mozzarella
+multipurpose
+multivitamin
+nappies
+nappy
+nasal
+natio
+naturals
+nescafe
+nespresso
+nestle
+neutrogena
+newborn
+niacinamide
+nintendo
+nipple
+nivea
+noodles
+nourish
+nourishing
+nuoc khoang
+nuoc mam
+nutella
+oeufs
+ointment
+oleo de soja
+olive oil
+onion
+optic
+orange
+orange juice
+oreal
+oreo
+overnight
+ovos
+pain de mie
+palette
+palm oil
+palmolive
+pampers
+pan blanco
+panales
+pantene
+pants
+pao de forma
+papel higienico
+paper towels
+papier toilette
+paracetamol
+parfum
+paris
+pasta
+pasta dental
+pates
+peanut butter
+pedigree
+pepsi
+peptide
+perfect
+perfume
+perrier
+persil
+perspirant
+peynir
+pharma
+pigeon
+pillow
+pineapple
+pinot
+pirinc
+plaster
+plastic
+plate
+plumping
+plush
+polish
+pollo entero
+ponds
+pork chop
+posay
+potato
+poulet
+powdered milk
+pregnancy
+primer
+pringles
+protect
+protex
+puppy
+purifying
+purina
+quaker oats
+queijo
+queso
+radiance
+radiant
+razor
+red bull
+red wine
+refreshing
+rejoice
+renew
+repellent
+reserva
+reserve
+restore
+retinol
+revitalift
+revlon
+rexona
+rice
+rimmel
+riz
+roche
+rouge
+rum
+sabao em po
+sabun mandi
+salmon fillet
+salon
+salsa de tomate
+samsung
+san pellegrino
+sanitary
+sanitary pads
+sardines
+satin
+sauce tomate
+sausages
+sauvignon
+scalp
+scents
+schick
+schwarzkopf
+scrub
+sebamed
+seker
+sensitive
+sensodyne
+serum
+shadow
+shampoo
+shaver
+shaving
+sheet
+shield
+shine
+shiny
+shiraz
+shiseido
+shokubutsu
+shoulders
+shower
+shrimp
+silky
+sirup
+skincare
+skintific
+sleeve
+smooth
+snail
+snickers
+softener
+soothing
+soy sauce
+soybean oil
+spaghetti
+sparkling water
+speaker
+spinach
+spoon
+sprite
+stainless
+steel
+strip
+styling
+sua tuoi
+suco de laranja
+sucre
+sunflower oil
+sunlight
+sunscreen
+sunsilk
+superstay
+supplements
+surface
+suspension
+susu bubuk
+sut
+swisse
+syrah
+systema
+tabasco
+table salt
+tablet
+tablets
+tavuk
+tefal
+telur ayam
+tepung terigu
+therapy
+thermometer
+thit ga
+throat
+tide
+tinted
+toblerone
+toilet
+toilet paper
+toilette
+tolsen
+tomato
+tomato paste
+tomato sauce
+toner
+toothbrush
+toothpaste
+total
+towel
+treats
+tresemme
+trung ga
+tumbler
+turbo
+twinings
+vacuum
+vaseline
+vegetable oil
+velvet
+vim cleaner
+vitamins
+vodka
+wardah
+washing
+western
+wheat flour
+whiskas
+whisky
+white bread
+white sugar
+white wine
+whitening
+whole milk
+whole wheat bread
+windows
+wipes
+wireless
+wooden
+wound
+wrinkle
+yakult
+yoghurt
+yogurt
+youth
+yumurta
+zeytinyagi

@@ -1,0 +1,45 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+source_key: ru_rosstat_avg_prices
+module: eca.russian_federation.russian_federation.rosstat_avg_prices
+function: fetch_ru_rosstat_avg_prices
+url: https://rosstat.gov.ru/statistics/price
+language: ru
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Re-verified live 2026-08-07: rosstat.gov.ru/statistics/price links a
+  cumulative-year XLSX "sred_potreb_cen_MM-YYYY.xlsx" -- Rosstat's own
+  "Средние потребительские цены (тарифы) на товары и услуги" survey, one
+  sheet per month, ~561 named goods/services x federal/district/oblast/city
+  territory rows. Fetcher takes the Russian Federation (territory code 643)
+  row only -- national-level averages; the same workbook also carries
+  federal-district, oblast, and ~370 surveyed-city rows a future pass could
+  extract for subnational PPP work. fedstat.ru (EMISS) was tried first per
+  the brief's guidance and returned a bare 403 on every probe (plausibly
+  geo/WAF -- not diagnosed further, not worth the budget once rosstat.gov.ru
+  itself verified). rosstat.gov.ru presents a valid *.rosstat.gov.ru leaf
+  cert chained to a Russian government CA ("Russian Trusted Root/Sub CA")
+  absent from any standard trust store, and the server does not send the
+  intermediate in the handshake -- fixed by vendoring
+  _rosstat_gov_ru_chain.pem (sub CA fetched from the leaf cert's own
+  Authority Information Access URL, http://nuc-cdp.digital.gov.ru/cdp/
+  subca_ssl_rsa2024.crt; root CA from the official gosuslugi.ru bundle,
+  https://gu-st.ru/content/Other/doc/russiantrustedca.pem) and passing it as
+  requests `verify=`. Smoke run over the discovered June-2026 file returned
+  6 months x ~561 items = 3348 national-level rows. Sample (June 2026, RF):
+  "Говядина (кроме бескостного мяса)" (beef) 742.67 RUB/kg; "Бензин
+  автомобильный марки АИ-95" (gasoline AI-95) ~65 RUB/L; "Проезд в такси"
+  (taxi ride) per-km fare -- all plausible against public RU price
+  references. Basket spans virtually the whole COICOP basket: food, alcohol,
+  clothing/footwear, housing fuel (firewood) + housing-management services,
+  furnishings, medicines, transport incl. new/used cars and pump fuel,
+  telecom (phone/internet), recreation (cinema, theatre, books), education
+  (vocational/higher-ed tuition), restaurants/hotels, insurance (CASCO), and
+  personal/legal/notary services.
+  coicop_divisions: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13
+  divisions_basis: walked_categories (all 561 item labels in the discovered
+  sheet's header row enumerated and categorized by hand)
+channel: null

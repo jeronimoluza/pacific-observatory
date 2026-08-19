@@ -1,0 +1,26 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: bn_deps_arp
+module: eap.southeast_asia.brunei_darussalam.deps_arp
+function: fetch_bn_deps_arp
+url: https://deps.mofe.gov.bn/edl-consumer-price-index-economy/
+language: en
+cadence: monthly
+fallback_date: 2010-01-01
+notes: |
+  DEPS "eData Library" - Monthly Average Retail Price of Selected Food
+  Items + Non-Food Items XLSX, merged into one official_avg feed (45
+  items at onboarding: rice/cereals, meat, utilities, cement, etc.).
+  Wide year x month layout dating back to 2010. The page's XLSX <a href>
+  goes stale (WordPress re-uploads under a new /YYYY/MM/ path whenever
+  DEPS refreshes the file) - the fetcher resolves the current path via
+  the open WP REST API (/wp-json/wp/v2/media?search=<title>) instead of
+  the hardcoded href. Sibling dataset (CPI index) is a separate manifest,
+  deps_cpi.yaml - different row schema (IndexObservation).
+  Note: deps-1d68840ecf-hehjcxeeeybfdabn.a03.azurefd.net (the "PM Price
+  List" app linked from deps.mofe.gov.bn/pm-price-list/) returns 403 via
+  both curl and Playwright - Azure Front Door WAF block, unrelated to
+  this XLSX pipeline which lives on the deps.mofe.gov.bn origin directly.

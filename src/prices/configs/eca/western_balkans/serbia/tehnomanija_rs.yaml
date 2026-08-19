@@ -8,6 +8,8 @@ language: sr
 currency: RSD
 cadence: weekly
 channel: electronics
+archive_prefix: "www.tehnomanija.rs/"
+archive_path_re: '-\d{6,}$'
 notes: |
   Verified live 2026-08-17. Serbian electronics/appliance retailer, Magento
   SSR storefront behind Cloudflare -- bare requests 403 (cf-mitigated:

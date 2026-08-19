@@ -8,6 +8,8 @@ language: zh
 cadence: daily
 channel: marketplace
 currency: TWD
+archive_prefix: "ec-w.shopping.friday.tw/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   friDay Shopping (Far EasTone) marketplace, general-merchandise-heavy. Its
   browse feed (k8aiapi getalist) and search are session-gated AI endpoints;

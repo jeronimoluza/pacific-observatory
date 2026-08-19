@@ -7,6 +7,8 @@ url: https://goodzay.com
 language: my
 cadence: daily
 channel: marketplace
+archive_prefix: "goodzay.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Shopify multi-vendor marketplace (many independent sellers under one
   storefront). Products expose a `vendor` field per seller; catalogue

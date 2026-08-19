@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: convenience
+spider: gloepointworldmart
+url: https://take.app/gloepointworldmart
+language: en
+cadence: weekly
+archive_prefix: "take.app/gloepointworldmart/p/"
+archive_path_re: '^/gloepointworldmart/p/[^/?]+'
+notes: |
+  Take.app (Vercel/Next.js) storefront SaaS. Server-renders product cards
+  in the initial HTML response (RSC), so plain HTTP suffices - no
+  Playwright needed at collection time. Card anchor href contains
+  "/p/<product_id>"; two "p.mantine-focus-auto" text nodes per card hold
+  [name, price]. Currency verified BND via embedded "currency":"BND" in
+  the page payload, not parsed from the "$" symbol. Small catalog
+  (~19 SKUs at onboarding: cooking oil, packaged snacks, mobile top-up
+  vouchers) - single homepage fetch, no pagination observed.

@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lookyconnect
+url: https://www.lookyconnect.com/to/retail
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.lookyconnect.com/to/products/"
+archive_path_re: '^/to/products/[^/?]+'
+notes: >
+  Verified live 2026-08-11. Handoff URL was lookyconnect.net/tonga/store/
+  fakalotomua-store/section/185/ (.net now 301s to a rebuilt lookyconnect.com
+  Next.js app; that specific store slug no longer exists). Per the onboarding
+  skill's marketplace-as-directory rule, scrapes the "Retail" channel's vendor
+  directory (/to/retail) rather than one store section — 6 first-party Tongan
+  vendors, ~139 listings (2 vendors currently 0 products): MiyahAnaFekauPou
+  Store (general store, Ha'apai, 76 items — the real grocery/household
+  coverage), Waterfront Restaurant (45 prepared-food items), Teima Furniture
+  (17 items), Ngatu Fakatau (1 item), Sausini Pharmacy & Clinic (0), Pate (0).
+  "/to/" = Tonga-locale path (site geo-redirects to "/nz" by default). Fully
+  server-rendered — a plain GET returns the complete per-vendor catalogue, no
+  Playwright needed at scrape time despite the Next.js frontend. Currency is
+  set PER ITEM in the spider (not spider-class-level): each price string
+  carries an explicit "NZ$"/"A$"/"TOP" prefix set by the individual seller,
+  and a single vendor mixes prefixes — no single class constant would be
+  correct. All 6 vendor storefronts show "Store Paused" (site appears to be
+  between launch and go-live) but listings and prices are still present.

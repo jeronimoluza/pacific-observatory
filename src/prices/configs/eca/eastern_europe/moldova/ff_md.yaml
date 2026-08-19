@@ -9,6 +9,8 @@ language: ro
 currency: MDL
 cadence: weekly
 coicop_codes: null
+archive_prefix: "ff.md/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Online pharmacy (supplements, OTC, RX, opticals) serving Moldova. Open
   Shopify /products.json catalog. Verified live 2026-08-17: currency

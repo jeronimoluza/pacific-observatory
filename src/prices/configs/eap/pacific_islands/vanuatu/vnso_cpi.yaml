@@ -1,0 +1,54 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "13"]
+source_key: vu_vnso_cpi
+module: eap.pacific_islands.vanuatu.vnso_cpi
+function: fetch_vu_vnso_cpi
+channel: null
+url: https://vnso.gov.vu/index.php/en/statistics/economic-statistics/consumer-price-index
+language: en
+cadence: quarterly
+fallback_date: 2019-01-01
+notes: |
+  VNSO quarterly CPI. Not a PDF fetch -- the CPI landing page embeds "Table 2:
+  Consumer Price Indices by Expenditure Group" as fully server-rendered HTML
+  (a Joomla raw-HTML content block), so the fetcher scrapes the live page
+  directly with BeautifulSoup rather than downloading a PDF. Table appears to
+  update in place each quarter at this fixed URL; carries the full historical
+  series (2020-Q4 2025 at probe time) split into four location blocks --
+  national ("Vanuatu") plus Port Vila, Luganville, Lenakel. Only the national
+  block is emitted: writers.INDEX_COLUMNS (src/prices/writers.py) has no
+  subnational_area column despite fetcher_pattern.md documenting it as a
+  valid optional IndexObservation field, so town-level rows would collide on
+  (date, coicop_code) once that column is silently dropped at save time --
+  see fetcher docstring for the full reasoning. Base period "1st Quarter
+  2000 = 100" read from the page. 11 COICOP-2018 divisions mapped from
+  VNSO's 12 published columns; the 12th ("All Groups" headline) is dropped
+  -- no sanctioned headline sentinel yet. Divisions 11 (restaurants &
+  accommodation) and 12 (insurance & financial services) are not broken out
+  and are presumed folded into "Miscellaneous" -> COICOP 13 (the official
+  division of that name), verified against
+  data/prices/enrich/gold/coicop_leaves.txt. NOTE: the pre-existing
+  sinso_cpi.py (Solomon Islands, not touched this round) maps the same kind
+  of "Miscellaneous" column to COICOP 12 instead -- looks like the same
+  mis-mapping this fetcher initially had before being corrected; worth a
+  follow-up fix, flagged but out of scope here.
+
+  Site serves an incomplete TLS chain (*.gov.vu, Sectigo-issued, not
+  expired) that macOS/curl silently repair via AIA chasing but python's
+  certifi-only ssl context rejects -- verify=False in the fetcher per the
+  documented workaround for known_blockers.md's "NSO portal SSL certificate
+  failures" class. Not a bot block.
+
+  KNOWN DATA ISSUE from onboarding: an early test run (before the
+  national-only filter and the COICOP-13 fix above were both applied) wrote
+  924 rows to
+  data/prices/eap/pacific_islands/vanuatu/vnso_cpi/index_observations.csv --
+  4x the correct row count (one set per town, indistinguishable once
+  subnational_area is dropped at write time) AND tagged with the wrong
+  "Miscellaneous" code (12 instead of 13). Onboarding rules forbid
+  overwriting existing data/ files by hand, so that file needs a manual
+  rebuild (truncate and re-collect from fallback_date with this corrected
+  fetcher) before this source's data is trusted downstream.

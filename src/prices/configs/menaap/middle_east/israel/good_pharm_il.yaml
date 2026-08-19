@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: good_pharm_il
+url: https://goodpharm.binaprojects.com/
+language: he
+cadence: daily
+channel: pharmacy
+archive_prefix: "goodpharm.binaprojects.com/Download/"
+archive_path_re: '^/Download/[^/?]+'
+notes: |
+  Israel's 2014 Food Price Transparency Law statutory feed, published via
+  the Bina platform (binaprojects.com) -- a 3-request chain (JSON listing
+  -> Download.aspx resolve -> actual file), shared base class at
+  price_scraping/spiders/_israel_transparency_base.py:BinaTransparencyBase.
+  Targets one representative branch's PriceFull (full-catalog) snapshot,
+  matching the shufersal_il precedent. Re-verified live 2026-08-06: branch
+  970, 3,481 items, e.g. 'GOOD PHARM - קיסמי שיניים מברישים' (dental floss
+  picks) ILS 10.00, 'סנו ז'אוול - אקונומיקה לימון 2 ליטר' (Sano bleach 2L)
+  ILS 10.00, "דורקס - ג'ל סיכוך" (Durex lubricant gel) ILS 39.90. Currency
+  ILS. Genuine non-food win: pharmacy/drugstore chain, not a grocery
+  storefront -- catalog spans OTC/toiletries/cleaning/snacks.
+  coicop_divisions: 01, 05, 06, 13
+  divisions_basis: sampled_rows (3,481-item branch catalog, not fully
+  walked by department)

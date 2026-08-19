@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "12"]
+source_key: mo_dsec_cpi
+module: eap.east_asia.macao_sar_china.dsec_cpi
+function: fetch_mo_dsec_cpi
+url: https://www.dsec.gov.mo/en-US/Statistic?id=501
+language: en
+cadence: monthly
+fallback_date: 1997-12-01
+notes: |
+  DSEC TimeSeriesDatabase.asmx -- legacy ASP.NET ASMX web service that also
+  answers plain HTTP GET (no auth, no key): confirmed via
+  https://www.dsec.gov.mo/TimeSeriesDatabase.asmx/getIndicatorLatestNValues
+  with iIndicatorID/vLanguageType/vFunctionType/vDataPeriodType/
+  iLatestNRecords query params, returning XML. Composite CPI groups its
+  basket into 11 divisions (sequential indicator IDs 6004-6014), mapped to
+  COICOP in the fetcher's _DIVISION_MAP. Macao's CPI has NO separate
+  "Restaurants and hotels" group -- COICOP 11 and the remainder of 13 are
+  uncovered (verified via getIndicatorID search). Headline All-items
+  (indicator 6003) is intentionally not emitted -- same no-sentinel
+  convention as sg_singstat_cpi. Base period 7/2023-6/2024=100; monthly
+  history to Jan/1998. Discovered 2026-08-11 via /en-US/Service/WebService
+  -> TimeSeriesDatabase.asmx?WSDL link on the DSEC site; not documented on
+  the DSEC CPI landing page itself (which is a JS-rendered shell with no
+  visible download links).
+channel: null

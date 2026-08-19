@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: carrefour_tn
+url: https://www.carrefour.tn/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.carrefour.tn/"
+archive_path_re: '^/[^/]+/?$'
+notes: |
+  Distinct backend/operator from Carrefour Egypt's MAF/Akamai stack — not
+  WAF-hardened at all. Magento 2, open GraphQL at /graphql, no auth. Live
+  re-verify: POST /graphql products(search:"riz") -> 200, "Riz Basmati"
+  TND 8.49. categoryList under root (id=2) exposes the full taxonomy: Le
+  marché, Épicerie Salée/Sucrée, Crèmerie et Produits Laitiers, Surgelés,
+  Boissons, etc. Currency TND matches countries.yaml. language overridden
+  to fr — product/category names seen in the catalog are French, not the
+  shard's cfg_lang "en".

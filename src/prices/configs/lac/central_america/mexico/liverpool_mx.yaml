@@ -8,6 +8,8 @@ language: es
 currency: MXN
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.liverpool.com.mx/tienda/pdp/"
+archive_path_re: '^/tienda/pdp/[^/?]+'
 notes: |
   Liverpool -- Mexico's largest department-store chain. Next.js App Router
   storefront (RSC flight data, not a single __NEXT_DATA__ blob) behind

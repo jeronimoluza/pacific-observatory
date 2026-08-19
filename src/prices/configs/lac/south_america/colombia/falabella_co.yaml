@@ -8,6 +8,8 @@ language: es
 currency: COP
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.falabella.com.co/falabella-co/product/"
+archive_path_re: '^/falabella\-co/product/[^/?]+'
 notes: |
   Falabella Colombia. Root domain falabella.com.co redirects to
   /falabella-co/ (a different national storefront path than Chile's

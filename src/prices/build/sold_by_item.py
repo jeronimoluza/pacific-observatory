@@ -24,6 +24,7 @@ the default is the safe (quarantine) branch. `count`-basis rows are never
 routed through this prior: they carry an explicit piece marker and are always
 trustworthy.
 """
+
 from __future__ import annotations
 
 import logging
@@ -44,26 +45,28 @@ logger = logging.getLogger(__name__)
 # Human-authored, F&B-only. Keep this conservative -- an over-broad entry
 # ships missing-quantity garbage as trusted. Every entry is a claim that the
 # commodity is naturally an indivisible per-piece sale in the source markets.
-SOLD_BY_ITEM_LEAVES: frozenset[str] = frozenset({
-    # Batch 1 (2026-08-03) -- authored from the review_missing_qty backlog. Each
-    # leaf is piece-dominant (or cut-portion with a tight, unimodal price) with
-    # negligible loose/per-kg contamination and a plausible cheap per-piece USD
-    # median. Rationale + evidence: docs/sessions/2026-08-03-sold-by-item-leaves.md
-    "01.1.6.1.1",  # Avocados, fresh
-    "01.1.6.1.5",  # Mangoes, guavas and mangosteens, fresh
-    "01.1.6.1.6",  # Papayas, fresh
-    "01.1.6.1.7",  # Pineapples, fresh
-    "01.1.6.1.8",  # Coconuts, fresh
-    "01.1.6.2.1",  # Pomelos and grapefruits, fresh
-    "01.1.6.2.2",  # Lemons and limes, fresh
-    "01.1.6.3.2",  # Pears and quinces, fresh
-    "01.1.7.1.4",  # Lettuce and chicory, fresh or chilled (sold per head)
-    "01.1.7.4.8",  # Green maize / green corn (sold per cob)
-    # DEFER (per-kg contamination too high for a leaf-level call; unlock via a
-    # row-level loose guard first): 01.1.6.3.1 apples, 01.1.6.2.3 oranges.
-    # REJECT (weighed/packaged): grapes, bananas, cherries, plums, strawberries,
-    # kiwi, watermelons, all dried/nuts/canned/frozen/tofu, most 01.1.7.x veg.
-})
+SOLD_BY_ITEM_LEAVES: frozenset[str] = frozenset(
+    {
+        # Batch 1 (2026-08-03) -- authored from the review_missing_qty backlog. Each
+        # leaf is piece-dominant (or cut-portion with a tight, unimodal price) with
+        # negligible loose/per-kg contamination and a plausible cheap per-piece USD
+        # median. Rationale + evidence: docs/sessions/2026-08-03-sold-by-item-leaves.md
+        "01.1.6.1.1",  # Avocados, fresh
+        "01.1.6.1.5",  # Mangoes, guavas and mangosteens, fresh
+        "01.1.6.1.6",  # Papayas, fresh
+        "01.1.6.1.7",  # Pineapples, fresh
+        "01.1.6.1.8",  # Coconuts, fresh
+        "01.1.6.2.1",  # Pomelos and grapefruits, fresh
+        "01.1.6.2.2",  # Lemons and limes, fresh
+        "01.1.6.3.2",  # Pears and quinces, fresh
+        "01.1.7.1.4",  # Lettuce and chicory, fresh or chilled (sold per head)
+        "01.1.7.4.8",  # Green maize / green corn (sold per cob)
+        # DEFER (per-kg contamination too high for a leaf-level call; unlock via a
+        # row-level loose guard first): 01.1.6.3.1 apples, 01.1.6.2.3 oranges.
+        # REJECT (weighed/packaged): grapes, bananas, cherries, plums, strawberries,
+        # kiwi, watermelons, all dried/nuts/canned/frozen/tofu, most 01.1.7.x veg.
+    }
+)
 
 
 def is_sold_by_item(coicop_code) -> bool:
@@ -119,8 +122,10 @@ def convert_item_rows(df: pd.DataFrame) -> pd.DataFrame:
     mapped = df.loc[candidates, "coicop_code"].astype(str).map(typical)
     convertible = mapped[mapped.notna()]
     if convertible.empty:
-        logger.info("typical-mass conversion: 0 of %d candidate item rows convertible",
-                    int(candidates.sum()))
+        logger.info(
+            "typical-mass conversion: 0 of %d candidate item rows convertible",
+            int(candidates.sum()),
+        )
         return df
 
     idx = convertible.index
@@ -133,6 +138,8 @@ def convert_item_rows(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(
         "typical-mass conversion: %d of %d candidate item rows converted "
         "(%d genuine per-piece left untouched)",
-        len(idx), int(candidates.sum()), int(genuine.sum()),
+        len(idx),
+        int(candidates.sum()),
+        int(genuine.sum()),
     )
     return df

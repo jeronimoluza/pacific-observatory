@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: maxidespensa_gt
+url: https://www.maxidespensa.com.gt/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "maxidespensa.com.gt/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Bodega-format Walmart Centroamerica banner, fresh produce confirmed. Re-verified live:
+  products/search?_from=0&_to=9 -> HTTP 206, 175KB, 'Tomate De Cocina En Red 3 Libras' GTQ 5.40.
+  Currency matches countries.yaml (GTQ).

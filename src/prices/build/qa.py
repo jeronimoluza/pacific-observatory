@@ -27,6 +27,7 @@ qa_status precedence (a row wears the first gate it fails):
   review_fx           -> local unit value fine, but no FX -> no USD
   trusted             -> all gates pass; ships in the consumable deliverable
 """
+
 from __future__ import annotations
 
 import pandas as pd
@@ -79,7 +80,9 @@ def compute_qa(df: pd.DataFrame) -> pd.DataFrame:
         df["qa_status"] = pd.Series(dtype=object)
         return df
 
-    trust_level = df.get("trust_level", pd.Series("high", index=df.index)).fillna("high")
+    trust_level = df.get("trust_level", pd.Series("high", index=df.index)).fillna(
+        "high"
+    )
     trust_uv = df.get("trust_uv", pd.Series("high", index=df.index)).fillna("high")
 
     price_local = df.get("price_local", pd.Series(1.0, index=df.index))

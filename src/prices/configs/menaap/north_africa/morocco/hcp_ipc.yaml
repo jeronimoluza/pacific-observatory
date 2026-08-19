@@ -1,0 +1,39 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: ma_hcp_ipc
+module: menaap.north_africa.morocco.hcp_ipc
+function: fetch_ma_hcp_ipc
+url: https://www.hcp.ma/
+language: fr
+cadence: monthly
+fallback_date: 2026-04-01
+notes: |
+  Morocco HCP (Haut-Commissariat au Plan) monthly Consumer Price Index note.
+  Re-verified live 2026-08-07: homepage links the current release page
+  (/L-Indice-des-prix-a-la-consommation-IPC-du-mois-de-Juin-2026_a4339.html),
+  whose docx attachment (~75KB) has a table "EVOLUTION PAR DIVISION DE PRODUITS"
+  with month-over-month index levels for all 12 divisions (Mai 2026 vs Juin 2026)
+  -- current, not stale. The page's numeric id is not predictable from month/year,
+  so the fetcher discovers the current release via the homepage link each run.
+  Unlike Jordan's DOS CPI / Tunisia's INS IPC (this shard's other two CPI sources),
+  each note only carries 2 monthly data points, not a cumulative series --
+  fallback_date is set close to today (not a deep backfill claim) because that is
+  what this source shape can actually provide; ongoing monthly runs accumulate
+  history one month at a time with no gap (each note's "previous month" column
+  overlaps the prior run's "current month"). Dead ends investigated and abandoned
+  for this shard: ONICL (onicl.org.ma) and agriculture.gov.ma had no live price
+  feed; HCP's own "Bases de données" catalog page had nothing for IPC either --
+  the monthly note's own docx attachment was the only live path found.
+  coicop_code is a direct passthrough of the publisher's own 2-digit division
+  number (e.g. "01 - Produits alimentaires..." -> "01") -- no translation map
+  needed, division-level granularity only (HCP's note does not break out
+  groups/classes). index_base_period recorded as "not stated in source note" --
+  HCP does not restate the IPC base year in this monthly release and it was not
+  independently confirmed via a methodology page; do not backfill with an assumed
+  year without checking hcp.ma's IPC methodology documentation first.
+  coicop_divisions: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12
+  divisions_basis: walked_categories (all 12 division rows in the note's own
+  division-level table, not sampled)

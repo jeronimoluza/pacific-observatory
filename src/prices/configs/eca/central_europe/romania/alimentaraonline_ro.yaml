@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: alimentaraonline_ro
+url: https://www.alimentaraonline.com/
+language: ro
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.alimentaraonline.com/cumpara/"
+archive_path_re: '^/cumpara/[^/?]+'
+notes: |
+  Custom PHP storefront. Category pages embed a full application/ld+json
+  ItemList of Product entries (name, offers.lowPrice, offers.priceCurrency,
+  real per-product url, sku) -- no rendering needed. Re-verified live
+  2026-08-06: GET /catalog/produse-alimentare-40 -> 200, 392KB,
+  numberOfItems: 4079 across 170 pages (/catalog/<slug>/pN). Sample:
+  'Banane pret/kg - 08031010' RON 11.10, 'Zahar Alb Cristal MARGARITAR 1Kg'
+  RON 7.50, 'Lamai pret/kg - 08055010' RON 21.50. Romanian-products and
+  plant-based verticals confirmed live (produse-romanesti-318, plant-based-319).

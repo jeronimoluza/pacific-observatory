@@ -1,0 +1,27 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "06", "07", "09", "12"]
+channel: null
+source_key: mp_cnmi_cpi
+module: eap.pacific_islands.northern_mariana_islands.cnmi_cpi
+function: fetch_mp_cnmi_cpi
+url: https://ver1.cnmicommerce.com/divisions/central-statistics/report-hub/cnmi-consumer-price-index-saipan/
+language: en
+cadence: quarterly
+fallback_date: 2003-01-01
+notes: |
+  CNMI Dept of Commerce Central Statistics Division official CPI (Saipan),
+  quarterly, index level embedded in a TablePress HTML table (no PDF/XLSX).
+  Live "ver1." host currently 403s from non-CNMI/US IPs (Cloudflare
+  country-wide IP allowlist, "cannot access this website due to your
+  location" branded page -- see known_blockers.md Country-wide IP-fence
+  cohort). No newer non-ver1 host was found (cnmicommerce.com,
+  www.cnmicommerce.com, commerce.gov.mp all also 403). Fetcher tries the
+  live URL first, then falls back to the Wayback Machine mirror (verified
+  against the 2025-11-10 capture, full 2003 Q1-2023 Q1 history). CNMI's own
+  10-column grouping is flatter than COICOP-2018; "Education & Communication"
+  is a combined column with no clean single-division mapping and is dropped
+  (logged); "All Items" headline dropped pending a sanctioned all-items
+  sentinel per the onboarding skill's open design questions.

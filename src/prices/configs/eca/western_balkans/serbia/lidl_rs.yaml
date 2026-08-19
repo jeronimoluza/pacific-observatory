@@ -1,0 +1,51 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lidl_rs
+url: https://www.lidl.rs/
+language: sr
+cadence: weekly
+channel: hypermarket
+archive_prefix: "www.lidl.rs/p/"
+archive_path_re: '^/p/[^/?]+'
+notes: |
+  Same custom Vue SSR storefront platform as lidl_si (see
+  eca/central_europe/slovenia/lidl_si.yaml) -- confirmed by identical
+  numeric category-hub IDs across markets (h10095752=meat, h10071012=fresh
+  produce, h10071050=fish, h10071049=frozen). A prior pass tried Lidl's
+  `assortment`+`locale` search-API route for Serbia and got stuck 400ing on
+  an undocumented required parameter; that detour was unnecessary -- the
+  same public /h/<slug>/h<id> category hub pages that serve lidl_si are
+  live and server-rendered on lidl.rs too, no API needed.
+
+  Re-verified live 2026-08-07: /h/meso-i-zivina/h10095752 -> 200, 617KB, 29
+  data-grid-data tiles parsed cleanly, e.g. itemId 10059166 'PIKOK Dimljeni
+  svinjski vrat' RSD 129.99. Smoke run (--max-items 20) confirmed real
+  Serbian SKUs, non-zero RSD prices, per-product canonicalPath URLs.
+
+  Schema differs from lidl_si: Serbia's tiles carry price at a flat
+  top-level price.price/price.currencyCode block (regionsPrices present but
+  empty), not lidl_si's regionsPrices.1.currentPrice.price nesting -- the
+  spider tries both shapes. `online` is false on every sampled item (a
+  digital catalog/leaflet with real current prices, not an e-commerce cart
+  -- same "promo-led catalog" model lidl_si already documented); items are
+  still emitted, `available` mirrors the online flag rather than gating.
+
+  64 /h/ category hub slugs discovered from the homepage's own top nav
+  (mixed food + non-food, same as lidl_si).
+
+  Leaf note for the next round: the /h/<slug>/h<id> mechanism appears to be
+  a shared platform pattern across most of Lidl's ~30 European markets
+  (identical category IDs seen on both .si and .rs) -- worth a quick check
+  on other uncovered Lidl countries before reaching for the search API.
+
+  coicop_divisions: 01, 02, 03, 05, 06, 08, 09, 13
+  divisions_basis: walked_categories (64 top-level hub slugs from homepage
+  nav: food aisles [meso-i-zivina/mlecni-proizvodi/sveze-voce-i-povrce/
+  zamrznuta-hrana/pekara/pice/slatkisi-i-grickalice -> 01/02], household +
+  kitchenware [kuhinja-i-trpezarija/kuhinjski-aparati/stolnjaci-i-posude
+  -> 05], health/beauty [lepota-i-nega-tela/zdravlje-i-lepota/zdravlje-i-
+  wellness -> 06/13], apparel [muska-odeca/zenska-odeca/decija-odeca ->
+  03], electronics [multimedija-i-tehnika -> 08], sport/hobby [fitnes/
+  biciklizam/kampovanje-outdoor -> 09])

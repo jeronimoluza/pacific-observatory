@@ -8,6 +8,8 @@ url: https://www.ishopping.pk/
 language: en
 currency: PKR
 cadence: weekly
+archive_prefix: "www.ishopping.pk/"
+archive_path_re: 'price-in-pakistan(?:-[a-z0-9]+)*/?$'
 notes: |
   Verified live 2026-08-17: Magento 2 server-rendered Luma theme.
   robots.txt open (only /admin_ao0fl6/ + /lofmarketplace/ disallowed, no

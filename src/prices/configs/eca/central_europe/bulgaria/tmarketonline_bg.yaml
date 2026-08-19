@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tmarketonline_bg
+url: https://tmarketonline.bg/
+language: bg
+cadence: weekly
+channel: supermarket
+archive_prefix: "tmarketonline.bg/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  CloudCart-platform storefront, Maxima-group chain. Re-verified live
+  2026-08-06: /category/svinsko-meso -> 200, real product cards, e.g.
+  'Свински черен дроб 700 г' priced '1,43 €'. Currency trap: Bulgaria
+  adopted the euro (Jan 2026) -- the storefront now shows EUR as the
+  primary displayed price with BGN as a secondary reference figure only;
+  cfg_currency (BGN) is stale, EUR is what the probe actually saw and what
+  is scraped. 187 category slugs walked via /sitemap/category/1.xml -- see
+  _tmarketonline_bg_categories.txt. CSV flags unusually good fresh + local
+  Bulgarian lines (rose tomatoes, Madzharov cheese, banitsa sheets).
+
+  Caution: during re-verification this site returned a transient
+  Cloudflare "Just a moment" challenge after several rapid unpaced curl
+  requests in quick succession; it cleared on its own after ~20 minutes.
+  The spider's mandated 2s+ delay / 1-concurrent settings are far gentler
+  than that burst and a live smoke test post-cooldown succeeded, but a
+  production run should be monitored for repeat challenge pages.

@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: onlinekade_lk
+url: https://onlinekade.lk/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "onlinekade.lk/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 22.4KB JSON. Sample: 'Keells Ice Cube 1KG' price 27000 minor
+  units / currency_minor_unit=2 -> LKR 270.00. currency_code LKR matches
+  countries.yaml. Best packaged-goods depth of any Sri Lanka source found
+  (very large FMCG catalog) but structurally weak on fresh produce/meat.
+  Whole-catalog walk (no category filter).

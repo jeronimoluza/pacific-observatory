@@ -1,0 +1,9 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: homeplus_kr
+url: https://mfront.homeplus.co.kr
+language: ko
+cadence: daily
+channel: hypermarket

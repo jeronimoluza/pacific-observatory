@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: disco_ar
+url: https://www.disco.com.ar/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.disco.com.ar/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Cencosud AR banner, same VTEX tenant/account family as Jumbo AR and Vea AR -- still a distinct
+  banner/price point, separate manifest. Re-verified live: products/search?_from=0&_to=9 -> HTTP
+  206, 240KB, 'Cebolla Superior Por Kg' ARS 2599.00 (same catalog feed as Jumbo AR). Currency
+  matches countries.yaml (ARS).

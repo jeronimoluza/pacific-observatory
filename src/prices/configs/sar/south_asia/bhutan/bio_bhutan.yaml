@@ -1,4 +1,6 @@
 spider: bio_bhutan
 language: en
+archive_prefix: "biobhutan.com/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: Bhutan organic natural products; WooCommerce, PDPs at /product/<slug>/.
 channel: pharmacy

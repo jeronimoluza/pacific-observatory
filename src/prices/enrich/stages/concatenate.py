@@ -27,6 +27,7 @@ Common Crawl rows (which often lack a currency field) is back-filled with the
 modal currency observed in the same source's jsonl rows; rows with no
 resolvable currency are dropped.
 """
+
 from __future__ import annotations
 
 import hashlib

@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: megamarket_ro
+url: https://www.megamarket.ro/
+language: ro
+cadence: weekly
+channel: supermarket
+notes: |
+  Old-style server-rendered PHP storefront, table-based markup with
+  per-product id="p_<id>_..." widgets. Parent category pages only show a
+  curated ~20-item sample; the full catalog lives at leaf category paths
+  (379 of them, companion _megamarket_ro_categories.txt, extracted from the
+  site's own nav which embeds per-category item counts -- CSV probe cited
+  conserve=278, paste=53, both confirmed against the same nav).
+
+  Page size is a session cookie, not a URL param: the spider bootstraps
+  GET /_redirects/limp.php?limp=160&ref=<url> once (the largest of the
+  site's own 20/40/80/160 options) then walks all leaf categories under
+  that Scrapy cookiejar. No leaf category was observed to exceed 160 items.
+
+  Re-verified live 2026-08-06: /bacanie/conserve/conserve-peste -> 200,
+  47/47 product cards parsed cleanly, e.g. 'Merve Hering in Ulei Aromat
+  170g' 9,74 lei. Currency RON matches cfg_currency.

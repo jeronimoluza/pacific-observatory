@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rekoekologiska_se
+url: https://rekoekologiska.se/
+language: sv
+cadence: weekly
+channel: specialty-food
+archive_prefix: "rekoekologiska.se/produkt/"
+archive_path_re: '^/produkt/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5
+  -> HTTP 200, 16KB JSON, standard WooCommerce Store API, no auth.
+  currency_code SEK / currency_minor_unit 0 (SEK whole-krona pricing, no
+  ore) matches countries.yaml. Sample: 'Lebensbaum Solea Espresso koffeinfri
+  mald 250 gr' SEK 119, 'Naturata Madagaskar 55%' SEK 69. Organic/Demeter
+  grocery specialist -- whole-catalog walk, no category filter. First
+  non-proxy Swedish price manifest in the repo.

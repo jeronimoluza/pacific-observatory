@@ -8,6 +8,8 @@ language: zh
 cadence: daily
 channel: supermarket
 active: true
+archive_prefix: "product.suning.com/0000000000/"
+archive_path_re: '^/0000000000/[^/?]+'
 notes: >
   Mainland China's first working grocery/F&B retailer source (2026-07-30) -
   China previously had zero real supermarket sources. Two-step scrape: HTML

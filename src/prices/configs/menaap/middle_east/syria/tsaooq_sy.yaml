@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tsaooq_sy
+url: https://tsaooq.com/
+language: ar
+cadence: weekly
+channel: marketplace
+archive_prefix: "tsaooq.com/product/"
+archive_path_re: '^/product/[^/]+/?$'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products/categories?per_page=100
+  -> HTTP 200, 8.9KB. Category id 19 ('الأغذية والمشروبات' / Food &
+  Beverages, count=4) is the food category — GET
+  /wp-json/wc/store/v1/products?category=19&per_page=20 -> HTTP 200. Sample:
+  'كاتشيتزا – بيتزا محشية الأطراف' (stuffed-crust pizza) SYP 10000. Also
+  'سلطة فواكه' (fruit salad), 'بقلاوة ملكي' (baklava), cake, all SYP 10000.
+  currency_code SYP matches countries.yaml (currency_minor_unit=0). General
+  Syrian Facebook-catalog-style marketplace; SCOPED to category=19 because
+  the F&B slice is only 4 prepared/bakery items and the rest of the catalog
+  is non-food. Thin source (bakery/confectionery/prepared-meal leaves only).

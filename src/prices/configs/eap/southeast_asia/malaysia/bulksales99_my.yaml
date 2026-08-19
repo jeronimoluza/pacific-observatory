@@ -7,6 +7,8 @@ url: https://www.99bulksales.my
 language: en
 cadence: daily
 channel: supermarket
+archive_prefix: "www.99bulksales.my/shop/product/"
+archive_path_re: '^/shop/product/[^/?]+'
 notes: >
   99 Speedmart e-commerce arm. Listing-card extraction from server-rendered
   /shop/category-products pages. Bulk retailer: names encode pack sizes.

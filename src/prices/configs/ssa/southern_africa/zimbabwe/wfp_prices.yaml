@@ -1,0 +1,27 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_zwe
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_zwe
+url: https://data.humdata.org/dataset/wfp-food-prices-for-zimbabwe
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Zimbabwe via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_zwe.csv (200, 3.7MB, 28,595 rows).
+  CURRENCY NOTE: historically dual currency (ZWL 22,502 rows / USD 6,093
+  rows), but every observation dated 2026 is priced in USD only — the live
+  data has fully dedollarized away from countries.yaml's declared ZWG
+  (Zimbabwe Gold); trust the probe. Max observation date is
+  2026-05-15 — current. 31 commodities incl. several biofortified variants
+  (beans, maize yellow, millet, sorghum), cowpeas, dried kapenta fish,
+  standard cereals/oils/sugar/wheat. Sample at max date: 'Maize meal', KG,
+  USD 0.69. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hyperutahiti_pf
+url: https://www.hyperutahiti.com/boutique-catalogue/
+language: fr
+cadence: weekly
+channel: hypermarket
+archive_prefix: "www.hyperutahiti.com/produit/"
+archive_path_re: '^/produit/[^/?]+'
+notes: |
+  Hyper U Tahiti click & collect / delivery storefront. WooCommerce Store API wide
+  open (verified live 2026-08-11, HTTP 200, x-wp-total: 146 products, no auth, no
+  WAF signature). currency_code=XPF, currency_minor_unit=0 confirmed in the API
+  payload -- XPF has no subunit so no minor-unit scaling trap (475 in the API ==
+  "475 F" on the rendered page, eyeballed match). Catalog spans multiple
+  categories (drinks, dairy, stationery, electronics, apparel) per the "Catalogue,
+  rayons, produits U" page title -- wide source, classifier assigns COICOP per
+  product. French Polynesia's first retailer_sku source; prior coverage was only
+  expatistan/mylifeelsewhere (aggregate_proxy, not real SKUs).

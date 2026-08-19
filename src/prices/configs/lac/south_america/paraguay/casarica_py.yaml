@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: casarica_py
+url: https://www.casarica.com.py/
+language: es
+cadence: weekly
+channel: supermarket
+notes: |
+  Full-line Asunción supermarket, WooCommerce (ecommercepro theme;
+  wp-json/wc/store/v1 REST 404s so this is an HTML/parsel spider, not the
+  Woo base). Re-verified live 2026-08-06: GET /catalogo/almacen-c1 -> HTTP
+  200, 287KB, 20 real products/page across 5 paginated pages. Sample:
+  'COQUITIN BLANCO X KG' PYG 29.500 (digits-only parse -> 29500; Guaraní
+  has no minor unit). Currency PYG matches countries.yaml. 261 leaf
+  categories crawled (list in _casarica_py_categories.txt). Product
+  permalinks embed a numeric id (<slug>-p<id>) so no synthetic-url dedup
+  risk.

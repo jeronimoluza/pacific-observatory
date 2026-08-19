@@ -1,0 +1,26 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: no_vinmonopolet
+module: eca.western_europe.norway.vinmonopolet
+function: fetch_no_vinmonopolet
+url: https://www.vinmonopolet.no/vmpws/v2/vmp/products/search
+language: "no"
+cadence: weekly
+fallback_date: 2024-01-01
+notes: |
+  Re-verified live 2026-08-06: public Hybris/SAP-Commerce OCC search API,
+  no auth. GET /vmpws/v2/vmp/products/search?fields=FULL&query=:relevance
+  -> HTTP 200 JSON, pagination.totalResults 35,602. The API silently
+  clamps any requested pageSize to 24, so a full walk is ~1,484 sequential
+  pages (currentPage=0..1483) — cadence set to weekly given the walk time,
+  not because prices move slowly. Sample verified: 'Sierra Tequila
+  Reposado' NOK 450.70 (70 cl); 'Vikingfjord Ice Shot Pure' NOK 188.40
+  (50 cl). Norway's sole legal off-premise alcohol retailer publishes one
+  national administered price per SKU (no per-store variation), so this
+  is treated as official_avg rather than retailer_sku. Only
+  status == "aktiv" rows are kept; the numeric `code` field anchors the
+  dedup identity (not `name`, which repeats across vintages). Currency
+  NOK matches countries.yaml.

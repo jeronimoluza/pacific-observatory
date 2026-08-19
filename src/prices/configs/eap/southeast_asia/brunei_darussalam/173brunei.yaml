@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: convenience
+spider: 173brunei
+url: https://www.173brunei.com
+language: en
+cadence: weekly
+archive_prefix: "www.173brunei.com/collections/all/products/"
+archive_path_re: '^/collections/all/products/[^/?]+'
+notes: |
+  EasyStore platform ("where you buy in bulk"). Listing pages at
+  /collections/all?limit=50&page=N are server-rendered with name + price
+  inline on the product card - no PDP visits needed. Price read from
+  span.money[data-ori-price] (clean decimal, avoids parsing "B$" prefix).
+  Currency confirmed BND via og:price:currency on PDP, not the "$" symbol.

@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tripolimarket_lb
+url: https://tripolimarket.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "tripolimarket.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Round 3 platform-fingerprint reversal + geography correction: prior round tagged this domain
+  "libya" (SKIP, WordPress/WooCommerce, cloudflare+perimeterx blockers claimed) because "Tripoli"
+  is also Libya's capital. The site is actually Tripoli, Lebanon -- phone country code +961 on the
+  homepage, prices in LBP. The WooCommerce Store API (/wp-json/wc/store/v1/products) is open and
+  unblocked (verified live 2026-08-07, HTTP 200, no Cloudflare/PerimeterX challenge on this
+  endpoint despite the homepage fingerprint flagging both). x-wp-total: 3094 products. Sampled 20:
+  branded groceries (Pepsi, Kinder, Gandour, Hamwi, Cosmaline) across beverages, snacks, bakery,
+  cleaning, personal care. Prices plausible for post-crisis LBP (e.g. instant coffee 360,000 LBP
+  ~ USD 4 at ~90,000 LBP/USD). This is Lebanon's first retailer_sku source -- existing Lebanon
+  manifests (wfp_prices, moet_price_monitor) are official_avg/aggregate feeds, not retail SKUs.
+  coicop_divisions: 01, 02, 05, 13
+  divisions_basis: sampled_rows (20 of 3094 products; categories seen: beverages, snacks/candy,
+  bakery, cleaning/household, personal care/beauty -- non-food breadth not confirmed beyond that)

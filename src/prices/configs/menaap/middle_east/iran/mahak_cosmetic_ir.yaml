@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mahak_cosmetic_ir
+url: https://mahak-cosmetic.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: cosmetics
+archive_prefix: "mahak-cosmetic.ir/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Verified live 2026-08-18: mahak-cosmetic.ir — "فروشگاه آرایشی بهداشتی
+  ماهک کازمتیک" (Mahak Cosmetic, a cosmetics/personal-care storefront).
+  WooCommerce storefront; GET /wp-json/wc/store/v1/products -> 200, real
+  product "عطر ادکلن ساواج دیور مردانه اورجینال 100 میل" (Dior Sauvage
+  eau de cologne 100ml), prices.price=1920000, currency_code="IRT"
+  (non-ISO Toman marker), currency_minor_unit=0.
+  Toman/Rial: the product page's own OpenGraph meta tag for this exact
+  item reports product:price:amount=19200000, product:price:
+  currency="IRR" — exactly 10x the Store API's raw price, confirming the
+  Store API quotes Toman while the site's meta tags (mislabeled "IRR")
+  already carry the Rial-equivalent value. ISO 4217 has no Toman code, so
+  per the sheypoor_ir/torob_ir convention the spider's `_item` override
+  multiplies the Store API price by 10 and reports IRR.

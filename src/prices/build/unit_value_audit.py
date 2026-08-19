@@ -53,6 +53,7 @@ Non-destructive: adds four columns, drops nothing. The consumable deliverable
 is the rows where Layer-1 trust_level=="high" AND Layer-2 trust_uv=="high";
 everything else is quarantined for human triage, never auto-fabricated.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -111,7 +112,9 @@ def flag_uv_outliers(
     bw = work[work["_base"]]
     month_med = bw.groupby(group_cols + ["_period"])["_logv"].median().rename("_mm")
     cell_mm = month_med.groupby(level=group_cols).median().rename("_cmm")
-    work = work.join(month_med, on=group_cols + ["_period"]).join(cell_mm, on=group_cols)
+    work = work.join(month_med, on=group_cols + ["_period"]).join(
+        cell_mm, on=group_cols
+    )
     work["_resid"] = work["_logv"] - work["_mm"].fillna(work["_cmm"])
 
     # Cell centre, spread and support, all from baseline rows only.

@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: rest_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: chandarana_ke
+url: https://foodplus.co.ke/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "foodplus.co.ke/"
+archive_path_re: '^/[^/]+\.html$'
+notes: |
+  Premium/expatriate chain. The CSV's domain (chandaranafoodplus.com) is
+  NXDOMAIN; real domain is foodplus.co.ke, which is Magento (not WooCommerce
+  as the CSV's platform column claimed). Unauthenticated REST
+  /rest/V1/products (most Magento REST installs need a bearer token; this
+  one is open) — verified live: pageSize=200/currentPage=1 -> 200, 19,471
+  total products, e.g. "C/CARE SCRUBBING BRUSH HANDLE A14" KES 165.
+  Deepest single-source taxonomy in this shard: Fresh Fruits, Fresh
+  Vegetables, Milk Butter Eggs, Yoghurt, Cheese, Fresh Meat, Deli. Currency
+  KES matches countries.yaml.

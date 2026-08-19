@@ -17,6 +17,7 @@ carries the Layer-1 ``trust_level``, Layer-2 ``trust_uv``, FX, and QA columns):
      ``uv_log_mad`` is the within-cell dispersion -- the "same distribution per
      pricing_basis, per country" tightness check, made explicit.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -30,11 +31,26 @@ SUMMARY_KEYS = ["period", "coicop_code", "country", "standard_unit"]
 MIN_CELL_N = 5
 
 TRUSTED_OBS_COLS = [
-    "observation_date", "country", "coicop_code",
-    "pricing_basis", "standard_unit", "amount_value", "count", "multiplier",
-    "product_name", "product_name_original", "source",
-    "price_local", "currency", "unit_value_local", "unit_value_usd",
-    "confidence", "trust_level", "trust_uv", "uv_robust_z", "qa_status",
+    "observation_date",
+    "country",
+    "coicop_code",
+    "pricing_basis",
+    "standard_unit",
+    "amount_value",
+    "count",
+    "multiplier",
+    "product_name",
+    "product_name_original",
+    "source",
+    "price_local",
+    "currency",
+    "unit_value_local",
+    "unit_value_usd",
+    "confidence",
+    "trust_level",
+    "trust_uv",
+    "uv_robust_z",
+    "qa_status",
     "mass_source",
 ]
 
@@ -79,8 +95,12 @@ def build_unit_value_summary(df: pd.DataFrame) -> pd.DataFrame:
     if trusted.empty:
         summary = total.reset_index()
         summary["n_trusted"] = 0
-        for col in ("median_unit_value_local", "median_unit_value_usd",
-                    "uv_log_mad", "confidence_median"):
+        for col in (
+            "median_unit_value_local",
+            "median_unit_value_usd",
+            "uv_log_mad",
+            "confidence_median",
+        ):
             summary[col] = np.nan
         summary["cell_status"] = "thin"
         return summary

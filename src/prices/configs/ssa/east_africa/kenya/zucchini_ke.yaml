@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: zucchini_ke
+url: https://zucchini.co.ke/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "zucchini.co.ke/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
+  live 2026-08-06: HTTP 200, real SKUs (e.g. 'Pineapple - (Appx 1 piece) per
+  Kg', product_type 'Melons + Pineapples', KES 149; prior probe also saw
+  'Beef Tomatoes' KES 179 and 'Sawa Kahawa Medium Dark Roast 250gm' KES
+  1490). Currency KES matches countries.yaml. Fresh-produce specialist,
+  overlaps foodplus.co.ke on fresh fruit/veg but adds independent price
+  observations.

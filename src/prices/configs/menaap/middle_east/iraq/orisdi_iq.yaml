@@ -9,6 +9,8 @@ language: ar
 currency: USD
 cadence: weekly
 coicop_codes: null
+archive_prefix: "orisdi.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Orisdi (Iraq) perfume/fragrance retailer (Gucci, Paco Rabanne, Carolina
   Herrera, Khadlaj, Bdk Parfums). Open Shopify /products.json catalog.

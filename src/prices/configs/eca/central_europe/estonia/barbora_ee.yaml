@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: barbora_ee
+url: https://barbora.ee/
+language: et
+cadence: weekly
+channel: supermarket
+archive_prefix: "barbora.ee/toode/"
+archive_path_re: '^/toode/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: unlike barbora.lt (Cloudflare-gated per
+  round-1 evidence), barbora.ee has a different WAF posture — plain curl
+  passes everywhere tested, including the category-tree API
+  (/api/eshop/v1/category/offertree, 200 JSON, no auth). Two-hop harvest:
+  (1) the site's public Constructor.io search index (key
+  key_iPrSGZnKPnjLRFDN, embedded in the homepage HTML, meant to be
+  public) resolves a search term to product slugs — GET
+  ac.cnstrc.com/search/piim?key=... -> 200, 262 hits — but carries no
+  price field; (2) each product's own page is SSR with price embedded in
+  `"units":[{"id":0,"price":N.NN,...}]` — GET
+  https://barbora.ee/toode/piim-alma-2-5-proc-1-5-l -> 200, price 1.39
+  (matches displayed price). No category->products listing route was
+  found, so a common-noun search sweep seeds product slugs instead of a
+  category walk. CSV flags coverage withdrawn to Tallinn+Tartu only from
+  1 Nov 2025 — geographic staleness, not a collection blocker.

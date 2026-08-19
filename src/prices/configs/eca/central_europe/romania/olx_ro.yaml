@@ -8,6 +8,8 @@ language: ro
 currency: RON
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.olx.ro/d/oferta/"
+archive_path_re: '^/d/oferta/[^/?]+'
 notes: |
   OLX Romania -- peer-to-peer classifieds (OLX Group platform, same family
   as olx_pk / tap_az already onboarded). Bare curl gets a Cloudflare "Just

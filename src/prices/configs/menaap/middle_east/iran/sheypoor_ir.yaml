@@ -8,6 +8,8 @@ language: fa
 currency: IRR
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.sheypoor.com/v/"
+archive_path_re: '^/v/[^/?]+'
 notes: |
   Verified live 2026-08-17: sheypoor.com — Iranian classifieds marketplace
   (SSR react-virtuoso virtualized list). Confirmed real listings at

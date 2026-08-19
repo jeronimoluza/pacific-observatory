@@ -8,6 +8,8 @@ language: en
 currency: BBD
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.courts.com/barbados/"
+archive_path_re: '^/barbados/[^/?]+'
 notes: |
   Courts Barbados (Unicomer Group). See courts_jm.yaml (Jamaica sibling)
   for the full platform writeup -- shared multi-website Magento instance,

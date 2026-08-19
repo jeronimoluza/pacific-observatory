@@ -1,4 +1,6 @@
 spider: azha_pasa
 language: en
+archive_prefix: "www.azhapasa.com/shop/product/"
+archive_path_re: '^/shop/product/[^/?]+'
 notes: Bhutan supermarket; server-rendered HTML, PDPs at /shop/product/<slug>.
 channel: supermarket

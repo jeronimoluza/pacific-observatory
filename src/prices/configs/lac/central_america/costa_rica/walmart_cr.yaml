@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: walmart_cr
+url: https://www.walmart.co.cr/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "walmart.co.cr/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Walmart Centroamerica's Costa Rica banners (Walmart + MasxMenos) share this one VTEX catalog --
+  one spider covers both storefronts. Re-verified live: products/search?_from=0&_to=9 -> HTTP
+  206, 189KB, 'Huevo Gallina Precio Indicado Por Kilo Don Cristobal Marron Carton de 30 Uds' CRC
+  950.26. Currency matches countries.yaml (CRC).

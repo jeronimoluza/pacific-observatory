@@ -8,6 +8,8 @@ language: en
 currency: GBP
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.ebay.co.uk/itm/"
+archive_path_re: '^/itm/[^/?]+'
 notes: |
   eBay UK — large general C2C/B2C marketplace. Verified live 2026-08-17:
   real GBP "Buy It Now" prices server-rendered in search-results HTML

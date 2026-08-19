@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_ken
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_ken
+url: https://data.humdata.org/dataset/e0d3fba6-f9a2-45d7-b949-140c455197ff
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Kenya via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_ken.csv (200, 3.6MB, 27,838 rows),
+  currency KES throughout (matches countries.yaml). Max observation date is
+  2026-07-15 — current. 51 commodities, retail + wholesale mixed
+  price-type, incl. camel meat/milk not covered by any retailer in this
+  shard. Sample at max date: 'Maize (white)', 90 KG, KES 1480 (wholesale,
+  Mombasa). Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

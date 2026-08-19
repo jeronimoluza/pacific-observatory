@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mafabre_ve
+url: https://mafabre.com/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "mafabre.com/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 36.3KB JSON. Sample: 'Tequeños Premium precocidos de Chocolate
+  K-t-dra' price 120 minor units / currency_minor_unit=2 -> USD 1.20.
+  currency_code USD, not the country's official VES — dollarized retail is
+  standard in Venezuela and this 20+ year Caracas food distributor prices
+  exclusively in USD. Whole-catalog walk (no category filter).

@@ -9,6 +9,8 @@ language: en
 currency: JOD
 cadence: weekly
 coicop_codes: null
+archive_prefix: "smartbuy-me.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Electronics and home-appliance retailer serving Jordan (LG, Apple,
   Samsung, Honor, Xiaomi, small kitchen appliances). Open Shopify

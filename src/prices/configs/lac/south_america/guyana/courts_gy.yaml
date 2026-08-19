@@ -8,6 +8,8 @@ language: en
 currency: GYD
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.courts.com/guyana/"
+archive_path_re: '^/guyana/[^/?]+'
 notes: |
   Courts Guyana (Unicomer Group). See lac/caribbean/jamaica/courts_jm.yaml
   for the full platform writeup -- shared multi-website Magento instance,

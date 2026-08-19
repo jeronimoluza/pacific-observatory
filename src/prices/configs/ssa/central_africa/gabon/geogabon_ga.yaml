@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: geogabon_ga
+url: https://geogabon-shop.com/
+language: fr
+cadence: weekly
+channel: electronics
+archive_prefix: "geogabon-shop.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront on the custom domain, /products.json?limit=250&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, real Libreville
+  electronics/office-supply SKUs — 'Cable USB C/USB C 60W 1,5m tresse
+  blanc' XAF 4000, 'Pile 6LR61 9V Alcaline Power plus' XAF 2000, 'Wifi 6
+  Ampli/Repeteur AX1500 avec port Gigabit' XAF 40000, 'Calculatrice
+  graphique GRAPH 35+E II ed. Python' XAF 75000, 'Marqueur Permanent
+  Biseau noir' XAF 1000. Page bundle confirms `"currency":"XAF"`, matches
+  countries.yaml. Second Gabon source this round (alongside
+  shopenlignegabon_ga) — Gabon's only WFP HDX panel was stale (2017) and
+  dropped.

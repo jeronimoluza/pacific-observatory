@@ -18,7 +18,9 @@ Subclasses set: name, allowed_domains, HOST, currency, language.
 Underscored filename -- Scrapy's SpiderLoader skips classes without `name`.
 """
 
+import json
 import logging
+import re
 from datetime import datetime, timezone
 
 import scrapy
@@ -27,6 +29,27 @@ logger = logging.getLogger(__name__)
 
 PAGE_SIZE = 50
 MAX_PAGES_PER_CATEGORY = 60  # safety cap: 60 * 50 = 3000 items/leaf category
+
+# Archived storefront product-detail pages (not the catalog_system API) embed
+# the page's Apollo-normalized GraphQL cache as a flat dict in a __STATE__
+# <template>/<script> tag -- product entries keyed "Product:<slug>", SKUs
+# under "<slug>.items.<n>", offers under "...sellers.<n>.commertialOffer".
+# Older/legacy (non-IO) VTEX themes may lack it; JSON-LD is the fallback.
+_STATE_RE = re.compile(
+    r'data-varname="__STATE__">\s*<script[^>]*>(\{.*?\})</script>', re.DOTALL
+)
+_JSONLD_RE = re.compile(
+    r'<script type="application/ld\+json"[^>]*>(.*?)</script>', re.DOTALL
+)
+
+
+def _resolve_ref(state, ref):
+    """Follow one Apollo-cache reference: {"type": "id", "id": ...} or {"type": "json", ...}."""
+    if isinstance(ref, dict) and ref.get("type") == "id" and "id" in ref:
+        return state.get(ref["id"])
+    if isinstance(ref, dict) and ref.get("type") == "json":
+        return ref.get("json")
+    return ref
 
 
 class VtexBaseSpider(scrapy.Spider):
@@ -142,4 +165,129 @@ class VtexBaseSpider(scrapy.Spider):
                 "url": url,
                 "language": self.language,
                 "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
+            }
+
+    @classmethod
+    def parse_html(cls, html, url):
+        """Parse one archived VTEX product-detail page into per-SKU price rows.
+
+        Pure and stateless (no Scrapy Response, no network, no `self.seen_skus` --
+        that dedup set only exists on a live crawl instance). Tries the Apollo
+        `__STATE__` cache first since it maps directly onto the same fields
+        `_items()` reads from the catalog_system API; falls back to the page's
+        JSON-LD `Product` block when `__STATE__` is missing or unparsable.
+        Yields nothing for a non-product page. Does not stamp `scraped_at_utc` --
+        the wayback backfiller sets that from the snapshot timestamp.
+        """
+        state = cls._parse_state_blob(html)
+        if state is not None:
+            rows = list(cls._rows_from_state(state))
+            if rows:
+                return rows
+        return list(cls._rows_from_jsonld(html, url))
+
+    @staticmethod
+    def _parse_state_blob(html):
+        m = _STATE_RE.search(html)
+        if not m:
+            return None
+        try:
+            return json.loads(m.group(1))
+        except (ValueError, TypeError):
+            return None
+
+    @classmethod
+    def _rows_from_state(cls, state):
+        # A product-detail page's __STATE__ has exactly one top-level
+        # "Product:<slug>" key (no "." in it -- nested keys are its SKUs/specs).
+        for key, prod in state.items():
+            if (
+                not key.startswith("Product:")
+                or "." in key
+                or not isinstance(prod, dict)
+            ):
+                continue
+            yield from cls._product_rows(state, prod)
+
+    @classmethod
+    def _product_rows(cls, state, prod):
+        categories = _resolve_ref(state, prod.get("categories")) or []
+        category = categories[0].strip("/").replace("/", " > ") if categories else None
+        product_name = str(prod.get("productName") or "").strip()[:500]
+        link_text = prod.get("linkText")
+        page_url = (
+            f"https://{cls.HOST}/{link_text}/p"
+            if link_text
+            else (prod.get("link") or "")
+        )
+
+        for item_ref in prod.get("items") or []:
+            item = _resolve_ref(state, item_ref)
+            if not isinstance(item, dict):
+                continue
+            sku_id = item.get("itemId")
+            if not sku_id:
+                continue
+            sellers = [_resolve_ref(state, s) for s in item.get("sellers") or []]
+            sellers = [s for s in sellers if isinstance(s, dict)]
+            if not sellers:
+                continue
+            seller = next((s for s in sellers if s.get("sellerDefault")), sellers[0])
+            offer = _resolve_ref(state, seller.get("commertialOffer"))
+            if not isinstance(offer, dict):
+                continue
+            price = offer.get("Price")
+            available_qty = offer.get("AvailableQuantity")
+            if available_qty == 0 and not price:
+                continue
+            if price is None:
+                continue
+            yield {
+                "product_id": str(sku_id),
+                "product_name": product_name,
+                "category": category,
+                "price": str(price),
+                "currency": cls.currency,
+                "available": bool(available_qty) if available_qty is not None else True,
+                "url": page_url,
+                "language": cls.language,
+            }
+
+    @classmethod
+    def _rows_from_jsonld(cls, html, url):
+        for m in _JSONLD_RE.finditer(html):
+            try:
+                data = json.loads(m.group(1))
+            except (ValueError, TypeError):
+                continue
+            for obj in data if isinstance(data, list) else [data]:
+                if not isinstance(obj, dict) or obj.get("@type") != "Product":
+                    continue
+                yield from cls._jsonld_product_rows(obj, url)
+
+    @classmethod
+    def _jsonld_product_rows(cls, obj, url):
+        product_name = str(obj.get("name") or "").strip()[:500]
+        offers = obj.get("offers") or {}
+        offer_list = offers.get("offers") if isinstance(offers, dict) else None
+        if (
+            not offer_list
+            and isinstance(offers, dict)
+            and offers.get("@type") == "Offer"
+        ):
+            offer_list = [offers]
+        for off in offer_list or []:
+            if not isinstance(off, dict) or off.get("price") is None:
+                continue
+            sku_id = off.get("sku") or obj.get("sku") or obj.get("mpn")
+            available = "instock" in str(off.get("availability") or "").lower()
+            yield {
+                "product_id": str(sku_id) if sku_id else None,
+                "product_name": product_name,
+                "category": None,
+                "price": str(off.get("price")),
+                "currency": off.get("priceCurrency") or cls.currency,
+                "available": available,
+                "url": obj.get("@id") or url,
+                "language": cls.language,
             }

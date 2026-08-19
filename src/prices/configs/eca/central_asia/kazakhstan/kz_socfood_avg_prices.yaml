@@ -1,0 +1,35 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+source_key: kz_socfood_avg_prices
+module: eca.central_asia.kazakhstan.kz_socfood_avg_prices
+function: fetch_kz_socfood_avg_prices
+url: https://stat.gov.kz/en/industries/economy/prices/
+language: en
+cadence: weekly
+fallback_date: 2020-01-01
+notes: |
+  Verified live 2026-08-07: stat.gov.kz/en/industries/economy/prices/ lists
+  the Bureau of National Statistics' weekly workbook "Price index and
+  average prices for socially important food products in the Republic of
+  Kazakhstan", linked via /api/iblock/element/<id>/file/en/, which
+  302-redirects to a signed /upload/iblock/.../<code> (DD.MM.YYYY) англ.xlsx
+  URL -- no auth, plain GET, default requests UA works (no browser
+  impersonation needed, unlike the JS-rendered gov.kz SPA at a different
+  path). Workbook sheet "5. Average prices for socially important food
+  products as of July 29, 2026" carries a "By surveyed cities" national
+  average column plus ~21 individual city columns (Astana, Almaty,
+  Shymkent, ...) for 31 food items; fetcher takes the national column only.
+  Sample national row (as of 29 Jul 2026): Rice polished 534 KZT/kg; Milk
+  (2.2-6% fat) 663 KZT/liter; Eggs cat.1 dozen ~ (per-dozen unit, split
+  from label); Potato, Carrot, White cabbage, Apples all per kg. Basket is
+  a fixed 31-item "socially important" list dominated by division 01
+  staples (grains, meat, dairy, fish, produce, sugar, salt, tea); no
+  non-food items on this table.
+
+  coicop_divisions: 01
+  divisions_basis: fixed_31_item_socially_important_list (enumerated by
+  hand from the workbook's item column; not a walked category tree -- this
+  is a government-published fixed basket, not a retailer catalog)
+channel: null

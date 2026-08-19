@@ -1,0 +1,18 @@
+spider: cmcwholesalerguam
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: wholesale
+url: https://cmcwholesalerguam.com/shop/
+language: en
+cadence: daily
+archive_prefix: "cmcwholesalerguam.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  Food-service wholesale distributor. WooCommerce Store API at the OLDER
+  namespace /wp-json/wc/store/products (the standard /wc/store/v1/products
+  path 404s -- rest_no_route -- on this tenant). 132 products confirmed via
+  X-WP-Total header. Prices are integer minor units, rescaled by the
+  Store API's currency_minor_unit (raw 7340 -> $73.40, cross-checked
+  against price_html on the same payload).

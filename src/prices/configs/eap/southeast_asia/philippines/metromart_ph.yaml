@@ -7,6 +7,8 @@ url: https://www.metromart.com
 language: en
 cadence: daily
 channel: marketplace
+archive_prefix: "api.metromart.com/api/v1/products/"
+archive_path_re: '^/api/v1/products/[^/?]+'
 notes: >
   MetroMart is a multi-vendor grocery-delivery marketplace (wet-market /
   farmers-market / sari-sari vendors); not a single-catalog retailer, it

@@ -1,3 +1,5 @@
 spider: pchome_24h
 language: zh
 channel: supermarket
+archive_prefix: "24h.pchome.com.tw/prod/"
+archive_path_re: '^/prod/[A-Za-z0-9-]+$'

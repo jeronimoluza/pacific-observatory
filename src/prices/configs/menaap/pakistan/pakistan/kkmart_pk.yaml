@@ -9,6 +9,8 @@ language: en
 currency: PKR
 cadence: weekly
 coicop_codes: null
+archive_prefix: "kkmart.pk/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   KK Mart (Pakistan) general convenience-store webshop -- bakery items
   (dawn bread), spices, baby/household goods, cosmetics, decor. Open

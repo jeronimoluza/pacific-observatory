@@ -1,0 +1,21 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_tha
+module: _shared.eap.wfp_food_prices
+function: fetch_wfp_tha
+url: https://data.humdata.org/dataset/wfp-food-prices-for-thailand
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Thailand via HDX (shared EAP fetcher
+  _shared.eap.wfp_food_prices). Single country CSV of per-market monthly average
+  retail and wholesale prices for staple food commodities — cereals, pulses,
+  tubers, fresh/dried fish, oils, sugar — that retail catalogues do not carry.
+  Per-market rows collapsed to a national monthly average per commodity/unit/
+  currency/price-type; market count + USD value kept in notes; retail vs
+  wholesale kept in the dedup hash. CSV URL resolved at run time from the HDX
+  slug via CKAN. COICOP deferred to the classifier (item_name = WFP commodity).

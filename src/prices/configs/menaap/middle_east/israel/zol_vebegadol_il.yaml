@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: zol_vebegadol_il
+url: https://zolvebegadol.binaprojects.com/
+language: he
+cadence: daily
+channel: supermarket
+archive_prefix: "zolvebegadol.binaprojects.com/Download/"
+archive_path_re: '^/Download/[^/?]+'
+notes: |
+  Israel's 2014 Food Price Transparency Law statutory feed, published via
+  the Bina platform (binaprojects.com) -- shared base class at
+  price_scraping/spiders/_israel_transparency_base.py:BinaTransparencyBase.
+  Targets one representative branch's PriceFull (full-catalog) snapshot,
+  matching the shufersal_il precedent. Re-verified live 2026-08-06: branch
+  003, 2,861 items, e.g. 'חלה רגילה קלועה/מרובעת 500-600 גרם' (braided
+  challah bread) ILS 6.60, "לחמניה מזונות" (multigrain roll) ILS 5.00.
+  Currency ILS. Despite the discount-store name, the sampled branch skews
+  bakery/grocery.
+  coicop_divisions: 01, 13
+  divisions_basis: sampled_rows (2,861-item branch catalog, not fully
+  walked by department)

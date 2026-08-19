@@ -8,6 +8,8 @@ language: ar
 currency: EGP
 cadence: weekly
 channel: marketplace
+archive_prefix: "eg.opensooq.com/en/search/"
+archive_path_re: '^/en/search/[^/?]+'
 notes: |
   Verified live 2026-08-17: OpenSooq is a multi-country classifieds network
   with a per-country subdomain (af/dz/bh/eg/jo/sa/... .opensooq.com, 22+

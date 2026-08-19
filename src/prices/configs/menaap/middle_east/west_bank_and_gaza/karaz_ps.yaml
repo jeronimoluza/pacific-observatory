@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: karaz_ps
+url: https://karaz.ps/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "karaz.ps/shop/product/"
+archive_path_re: '^/shop/product/[^/?]+'
+notes: |
+  Found via Arabic search (سوبر ماركت اونلاين فلسطين). Re-verified live
+  2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 -> HTTP 200,
+  11.3KB JSON. Sample: 'Langers Cranberry Passionfruit Juice 1.89l' ILS
+  27.99, 'Trident Original Gum 28 Sticks' ILS 13.99. currency_code ILS as
+  RENDERED BY THE SITE ITSELF (WooCommerce Store API's own field, not a
+  guess) -- countries.yaml declares USD for west_bank_and_gaza (the known
+  defect flagged in the brief), but this store's own API disagrees with
+  that and quotes ILS; trusted per the "currency from what the site
+  renders" rule. Delivers West Bank + East Jerusalem + "Palestinian
+  interior". Whole-catalog walk (no category filter).

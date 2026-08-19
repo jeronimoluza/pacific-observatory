@@ -8,6 +8,8 @@ language: pl
 currency: PLN
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.olx.pl/d/oferta/"
+archive_path_re: '^/d/oferta/[^/?]+'
 notes: |
   OLX Poland -- peer-to-peer classifieds (OLX Group platform, same family
   as olx_pk / olx_ro already onboarded, different frontend generation).

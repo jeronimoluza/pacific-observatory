@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: carrefour_wolt_ge
+url: https://wolt.com/en/geo/tbilisi/venue/carrefour-vekua
+language: ka
+cadence: weekly
+channel: marketplace
+archive_prefix: "wolt.com/en/geo/tbilisi/venue/"
+archive_path_re: '^/en/geo/tbilisi/venue/[^/?]+'
+notes: |
+  Carrefour Vekua branch (Tbilisi) on the Wolt delivery marketplace. Same
+  SSR query-state walk as the existing wolt subclasses (shared base
+  `_wolt_base.py`): venue page -> category-listing (206 categories) ->
+  per-leaf-category `/items/<slug>` page 1. Synthetic url =
+  f"{venue_url}#{item_id}".
+
+  Discovered via Wolt Tbilisi city-page venue slugs (searched for
+  supermarket-chain keywords); confirmed live 2026-08-07:
+  /venue/carrefour-vekua -> 200, category-listing query returns 206
+  categories. Sample from menucategory-46 (ხორცი, თევზი / meat & fish):
+  "საქონლის არტალა ძვლიანი/BEEF SHANK 1კგ" GEL 32.90, "საქონლის სტეიკი/BEEF
+  TOPSIDE STEAK 1კგ" GEL 42.90, "ანტრიკოტი რბილი/BEEF RIBEYE 1კგ" GEL 49.90
+  -- real Georgian-language + English bilingual names, real barcode_gtin,
+  plausible GEL magnitudes. channel:marketplace (Wolt aggregates the
+  first-party retailer's catalog).
+
+  Extends Wolt coverage in this shard from 6 to 10 markets (see also
+  spar_wolt_hu, albert_wolt_cz, tesco_wolt_sk) -- Wolt confirmed live
+  (HTTP 200 city page) but not yet onboarded in Bulgaria (tried, see
+  known_blockers), Poland, Croatia (established coverage already).
+
+  Smoke run (--max-items 15) crossed 3 categories and confirmed a genuine
+  hypermarket-breadth assortment beyond the meat/fish sample above: cider/
+  cocktail mixers (SOMERSBY cider, GEL 8.50), small kitchen appliances
+  (SOLLEX coffee grinder GEL 99.00, hand mixer GEL 89.90, toaster GEL
+  49.90), a computer mouse (GEL 9.95), and Huggies diapers (GEL 69.90).
+
+  coicop_divisions: 01, 02, 05, 08, 13
+  divisions_basis: sampled_rows (4 leaf categories sampled across the probe
+  + --max-items 15 smoke run; the venue's 206-category tree is much wider
+  than what was directly observed, so this is a floor, not the ceiling)

@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: yorix_cm
+url: https://www.yorix.cm/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  React/Vite SPA backed by a public Supabase project; readable with the
+  publishable anon key (no auth flow). Re-verified live 2026-08-06:
+  GET https://msrymchhhxitdevthvdi.supabase.co/rest/v1/products
+  ?select=id,name_fr,prix,categorie&limit=1000 -> 200, 189 total products,
+  no auth. Sample: 'sac de luxe au cameroun' 60000 XAF. Currency confirmed
+  XAF (matches countries.yaml, whole-number FCFA amounts). General
+  classifieds-style marketplace, not food-specific — only ~13/189 products
+  fall in food-relevant categories (Alimentation, Produits frais); most are
+  Sacs & accessoires, Cosmetiques, Mode, Telephones, Automobile, etc. One
+  row is even mislabeled ('Redmi A5 android' filed under 'Alimentation').
+  Depth is thin but the endpoint is real and the whole catalog is walked
+  per instructions.

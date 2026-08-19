@@ -7,6 +7,8 @@ channel: supermarket
 url: https://www.woolworths.co.nz
 language: en
 cadence: daily
+archive_prefix: "www.woolworths.co.nz/shop/"
+archive_path_re: '^/shop/[^/?]+'
 notes: |
   NZ's only online supermarket source (Pak'nSave/New World are Foodstuffs/
   Akamai-blocked). Public /api/v1/products?target=search JSON endpoint,

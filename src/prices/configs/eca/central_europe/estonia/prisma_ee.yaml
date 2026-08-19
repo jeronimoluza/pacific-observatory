@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: prisma_ee
+url: https://www.prismamarket.ee/
+language: et
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.prismamarket.ee/toode/"
+archive_path_re: '^/toode/[^/?]+'
+notes: |
+  Next.js SSR (S Group). Every /tooted/<slug> category page embeds a full
+  Apollo cache in __NEXT_DATA__.props.pageProps.apolloState, including
+  BOTH the entire site category tree (a Store entry with a recursively
+  nested navigation array — 25 top-level departments, 975 leaf slugs) AND
+  that page's own product listing (Product entries with id/name/price/
+  priceUnit/slug, no PDP fetch needed). The spider fetches one seed page,
+  harvests the full leaf-slug tree live from Store.navigation, then
+  crawls every leaf slug — no hardcoded category list, unlike the other
+  SSR-HTML sources scaffolded in this batch. Re-verified live 2026-08-06:
+  /tooted/puu-ja-koogiviljad -> 200, real product 'Kartul punane pesemata
+  KG' price=0.25 EUR/KPL. A GraphQL backend (graphql-api.prismamarket.ee)
+  also exists but needs a session/store context; the SSR path sidesteps
+  it entirely.

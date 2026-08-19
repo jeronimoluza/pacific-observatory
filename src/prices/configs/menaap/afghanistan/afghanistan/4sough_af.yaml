@@ -8,6 +8,8 @@ url: https://4sough.com/
 language: fa
 currency: AFN
 cadence: weekly
+archive_prefix: "4sough.com/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Verified live 2026-08-17: 4sough.com (چهارسوق) — a general-merchandise
   online marketplace/store for Afghanistan (groceries, clothing, home

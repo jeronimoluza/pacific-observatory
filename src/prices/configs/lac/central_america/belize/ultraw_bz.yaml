@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ultraw_bz
+url: https://ultraw.bz/
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "ultraw.bz/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 24.5KB JSON. currency_code BZD matches countries.yaml
+  (currency_minor_unit=2). Multi-vendor marketplace (Super Buy, Caribbean
+  Cellars) strong on dry goods/dairy/beverages, structurally thin on fresh
+  produce/meat/fish/bakery per prior category-count probe. Whole-catalog
+  walk (no category filter).

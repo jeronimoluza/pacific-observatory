@@ -8,6 +8,8 @@ language: ka
 currency: GEL
 cadence: weekly
 channel: home-improvement
+archive_prefix: "www.domino.com.ge/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Verified live 2026-08-17. Georgian home-improvement/hardware/appliances
   retailer, CS-Cart storefront. Category pages at

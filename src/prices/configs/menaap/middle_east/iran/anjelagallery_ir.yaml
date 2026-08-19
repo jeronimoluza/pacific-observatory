@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: anjelagallery_ir
+url: https://anjelagallery.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: cosmetics
+archive_prefix: "anjelagallery.ir/product/"
+archive_path_re: '^/product/\d+/'
+notes: |
+  Verified live 2026-08-18: not WooCommerce (Store API returns 418).
+  Product URLs discovered via /sitemap-product.xml (/product/<id>/<slug>/,
+  ~thousands of entries). Each PDP embeds a clean Schema.org Product
+  JSON-LD block server-rendered in raw HTML -- name, image, offers.price/
+  priceCurrency. priceCurrency is already "IRR" on this site (not Toman),
+  confirmed against the on-page displayed price, so no unit conversion is
+  applied (unlike the WooCommerce sources onboarded alongside this one).
+  End-to-end test run (--max-items 5) returned real rows, e.g. "رژگونه
+  مایع پددار شیگلم رنگ love cake" priced 12000000 IRR. Same
+  sitemap-static/brand/category/product/tag/page/blog shape and
+  shop-resources/ image path convention as azzaro_perfume_ir (onboarded
+  from the same candidate batch) -- likely the same underlying platform
+  template. Catalog is makeup/cosmetics-led.

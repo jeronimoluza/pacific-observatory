@@ -1,0 +1,23 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_lbr
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_lbr
+url: https://data.humdata.org/dataset/wfp-food-prices-for-liberia
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Liberia via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_lbr.csv (200, 20,372 rows),
+  currency LRD throughout (matches countries.yaml). Max observation date is
+  2026-06-15 — current. 21 commodities incl. rice (imported), cassava,
+  palm oil, groundnuts, fuel (gasoil/petrol-gasoline). Sample:
+  'Rice (imported)', 50 KG, LRD 1112.5. Per-market rows collapsed to a
+  national monthly average per commodity/unit/currency/price-type; market
+  count + USD value kept in notes; retail vs wholesale kept in the dedup
+  hash. COICOP deferred to the classifier (item_name = WFP commodity).

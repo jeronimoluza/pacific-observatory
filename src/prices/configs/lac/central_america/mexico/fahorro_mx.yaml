@@ -8,6 +8,8 @@ language: es
 currency: MXN
 cadence: weekly
 channel: pharmacy
+archive_prefix: "fahorro.com/"
+archive_path_re: '^/[\w][\w\-]*$'
 notes: |
   Farmacias del Ahorro (Mexico) -- large national pharmacy chain, Magento
   2. Shard listed SSR-HTML with Incapsula present-but-not-blocking; a

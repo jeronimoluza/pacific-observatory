@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kaufland_ro
+url: https://www.kaufland.ro/oferte/oferte-saptamanale/saptamana-curenta.html
+language: ro
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.kaufland.ro/oferte/"
+archive_path_re: '^/oferte/[^/?]+'
+notes: |
+  Round-1 misjudged this as a JS shell -- kaufland.ro is actually an AEM
+  corporate/circular site with NO online grocery store (confirmed via
+  robots.txt -> .sitemap.xml walk: only "sortiment/enciclopedia-alimentelor"
+  editorial pages + store locator, no shop route). The weekly-offers page
+  embeds the entire current-week promo catalog inline as a JS object
+  literal (`"offerData":{"cycles":[{"categories":[{...,"offers":[...]}]}]}`)
+  -- brace-matched and JSON-parsed directly out of the raw HTML, no
+  rendering needed. Re-verified live 2026-08-06: GET
+  /oferte/oferte-saptamanale/saptamana-curenta.html -> 301 ->
+  /oferte/prezentare-generala-oferte.html?kloffer-week=current -> 200,
+  1.58MB, 446 offers. Sample: 'Varza alba Romania' RON 1.49/kg (40% off,
+  was 2.49), 'Lamai' RON 7.99/kg. This is the current week's promo/circular
+  catalog (~260 unique SKUs), not Kaufland's full assortment -- refreshes
+  weekly with the leaflet cycle.

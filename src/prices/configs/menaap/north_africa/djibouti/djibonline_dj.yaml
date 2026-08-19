@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: djibonline_dj
+url: https://djibonline.com/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "djibonline.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 34.9KB JSON. Sample: "Flocons d'avoine Five Star - 400 g".
+  currency_code DJF matches countries.yaml (currency_minor_unit=0). Smaller
+  catalog than nirigs_dj (~142 SKUs per prior probe), thin categories
+  (dairy, sweets/breakfast, spices, phone top-up cards) — no fresh, no meat,
+  no bakery. Whole-catalog walk (no category filter).

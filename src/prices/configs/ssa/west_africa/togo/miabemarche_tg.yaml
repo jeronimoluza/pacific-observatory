@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: miabemarche_tg
+url: https://miabemarche.tg/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "miabemarche.tg/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 32.6KB JSON. currency_code XOF matches countries.yaml
+  (currency_minor_unit=0, no division needed). Prior probe sample: 'Piment
+  Antillais (Gboebesse) en Botte, Kg' 700 CFA; 'Poisson Seche Sale (Dzemekpe)
+  500g' 1000 CFA. Strongest Togo source found: local fresh-produce and
+  dried-fish items alongside a packaged/branded-goods catalog. Whole-catalog
+  walk (no category filter).

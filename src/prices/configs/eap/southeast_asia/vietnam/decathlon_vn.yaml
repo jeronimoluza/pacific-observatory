@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: decathlon_vn
+channel: fashion
+url: https://www.decathlon.vn/
+language: en
+cadence: weekly
+archive_prefix: "www.decathlon.vn/p/"
+archive_path_re: '^/p/[^/?]+'
+notes: |
+  Onboarded 2026-08-07 (round-3 non-food shard, COICOP 03/05/08/09 gap).
+  Same shared platform as decathlon_th — see _decathlon_base.py docstring.
+  Per-country Algolia app id/key (index-scoped; do not reuse across
+  countries). Vietnam already has electronics-channel coverage (an
+  existing manifest), so this is a gap-fill within an established-coverage
+  country per the skill's density rule, not a cold-start — added because
+  the platform was already verified across 6 other countries and this
+  storefront was free to check.
+  coicop_divisions: 03, 09
+  divisions_basis: walked_categories (same sport_en facet taxonomy as
+  decathlon_th — sport/recreation goods dominant 09, sportswear/footwear
+  03)

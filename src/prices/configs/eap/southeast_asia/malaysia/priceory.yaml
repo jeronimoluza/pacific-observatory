@@ -1,0 +1,47 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: other
+spider: priceory_my
+url: https://www.priceory.com
+language: en
+cadence: daily
+notes: |
+  Third-party multi-store price-comparison site (catalogue/flyer prices,
+  not live till prices, per the site's own /llms.txt disclosure) covering
+  12 first-party MY retailers: AEON, AEON BiG, 99 Speedmart, Lotus's, Jaya
+  Grocer, Village Grocer, Mydin, Econsave, Giant, NSK, TF Value Mart, KK
+  Super Mart (+ Shopee, quality-gated, excluded here as marketplace-shaped).
+  retailer_sku (not official_avg): rows are real observed per-SKU,
+  per-outlet prices, not a modeled/statistical average -- same shape as the
+  groceryhunt.yaml (SG) precedent.
+  channel: other (not supermarket/hypermarket/one value): unlike
+  groceryhunt.com's 3-store roster (all channel: supermarket), this
+  roster genuinely spans hypermarket (AEON, AEON BiG, Lotus's, Mydin,
+  Giant, NSK), supermarket (Jaya Grocer, Village Grocer, TF Value Mart,
+  Econsave) and convenience (99 Speedmart, KK Super Mart) -- no single
+  enum value describes the source without misrepresenting a third to half
+  of its rows, and GLOSSARY.md ties channel: null to non-retail
+  (cpi_benchmark/official_avg/tariff/aggregate_proxy) sources only, which
+  this is not. Used `other` (the documented "accumulation is the signal to
+  add a value" pressure valve) rather than force a wrong single retail
+  channel; worth revisiting if/when a `channel: multi-retail-aggregator`
+  (or similar) value gets added.
+  Investigated `?merchant=bens-independent-grocer`: BIG is NOT among the
+  tracked merchants (absent from /llms.txt's merchant list and from every
+  RSC payload checked); the query param produces no observable difference
+  in page content vs. no param at all -- it does not route to Ben's
+  Independent Grocer or any per-merchant filtered view. big.com.my itself
+  remains brochure-only per known_blockers.md; priceory does not provide a
+  route to it.
+  No catalog-wide listing exists (/search requires a query and does not
+  paginate). Crawl seeds from /staples (20 hub pages) and /brands (43 hub
+  pages) -- the two pages the site's own /llms.txt names as "indexable
+  main pages... prefer these for discovery" -- and follows every
+  /product/<id> link found there. Village Grocer publishes distinct prices
+  per physical outlet (11-16 rows per product observed, exactly matching
+  each product's ld+json offerCount).
+  item url field is the retailer's own deep-link (line-shop href), not the
+  shared Priceory PDP url, so the run-wide url-dedup pipeline does not
+  collapse multiple stores'/outlets' rows for the same product into one.

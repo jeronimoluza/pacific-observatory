@@ -8,6 +8,8 @@ language: en
 currency: XCD
 cadence: weekly
 channel: marketplace
+archive_prefix: "tropicart.app/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Vite/React SPA built on Supabase (Postgres + auto-generated PostgREST
   API). The shipped JS bundle (/assets/index-*.js) embeds the Supabase

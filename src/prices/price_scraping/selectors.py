@@ -766,6 +766,23 @@ SPIDER_SELECTORS = {
             "input[name='id']::attr(value)",
         ],
     },
+    # --- Northern Mariana Islands (I Love Saipan, Odoo) ---
+    "ilovesaipan": {
+        "product_name": [
+            "h1[itemprop='name']::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span[itemprop='price']::text",
+            "span.oe_price::text",
+        ],
+        "category": [
+            "ol.breadcrumb li a::text",
+        ],
+        "product_id": [
+            "input[name='product_id']::attr(value)",
+        ],
+    },
 }
 
 

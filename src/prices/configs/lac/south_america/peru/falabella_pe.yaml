@@ -8,6 +8,8 @@ language: es
 currency: PEN
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.falabella.com.pe/falabella-pe/product/"
+archive_path_re: '^/falabella\-pe/product/[^/?]+'
 notes: |
   Falabella Peru, the national dept-store banner (not the Sodimac
   hardware banner already onboarded as sodimac_pe). Re-verified live

@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: littlefino_mv
+url: https://fino.com.mv/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "fino.com.mv/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 11.4KB JSON. Sample product on this pass was a trashed/zero-price
+  listing ('Chicken Drumstick -1Kg- CN', slug suffixed __trashed, price=0) —
+  endpoint and pagination confirmed live; the spider naturally skips
+  zero/None-price rows via the base class's price gate. currency_code MVR
+  matches countries.yaml. ~54 categories including Fresh & Chilled, Frozen
+  Meat & Poultry, but only 1 SKU under 'Fruits & Vegetables' per prior probe
+  — packaged/frozen goods dominate over fresh. Whole-catalog walk (no
+  category filter).

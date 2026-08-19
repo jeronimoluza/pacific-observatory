@@ -8,6 +8,8 @@ language: en
 currency: USD
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.spinneyslebanon.com/default/"
+archive_path_re: '^/default/[^/?]+'
 notes: |
   Verified live 2026-08-17: spinneyslebanon.com — Spinneys, a Lebanese
   supermarket chain, on a Magento storefront. Prices are quoted in USD on

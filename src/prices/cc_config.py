@@ -1,19 +1,36 @@
-"""Per-spider Common Crawl config + default index set.
+"""Common Crawl index resolution + per-spider archive scope.
 
-Extracted from ``cc_warc_fetcher.py`` (which was over the 500-line cap).
-``cc_warc_fetcher`` imports :data:`SPIDER_CC_CONFIG` and
-:data:`DEFAULT_CC_INDEXES` from here.
+Both pieces used to be hand-maintained here. Now:
+
+- The per-spider scope is read from the YAML manifests' ``archive_prefix`` /
+  ``archive_path_re`` fields — the same pair the Wayback backfill uses — so a
+  spider gets a Common Crawl path the moment it is onboarded, instead of only
+  when someone remembers to edit this file.
+- The index set is resolved live from ``collinfo.json`` rather than pinned to a
+  handful of recent crawls, because the point of Common Crawl here is
+  historical depth. :data:`_FALLBACK_CC_INDEXES` covers the offline case.
 """
 
 from __future__ import annotations
 
-from typing import Dict, List
+import json
+import logging
+import re
+import subprocess
+from functools import lru_cache
+from typing import Dict, List, Optional
 
-# Curated default CC-MAIN indexes — the most recent monthly crawls, verified
-# live against https://index.commoncrawl.org/collinfo.json (2026-08-04).
-# Used by the `common-crawl` CLI when no --index is passed. Keep small + current;
-# more indexes = more historical coverage but proportionally more index queries.
-DEFAULT_CC_INDEXES: List[str] = [
+logger = logging.getLogger(__name__)
+
+COLLINFO_URL = "https://index.commoncrawl.org/collinfo.json"
+
+# Earliest crawl year worth querying. Common Crawl reaches back to 2008, but
+# the e-commerce product pages this pipeline parses are thin before ~2013 and
+# every extra index is another index query per spider.
+DEFAULT_CC_SINCE_YEAR = 2013
+
+# Used only when collinfo.json is unreachable. Verified live 2026-08-04.
+_FALLBACK_CC_INDEXES: List[str] = [
     "CC-MAIN-2026-30",
     "CC-MAIN-2026-25",
     "CC-MAIN-2026-21",
@@ -24,143 +41,74 @@ DEFAULT_CC_INDEXES: List[str] = [
     "CC-MAIN-2025-51",
 ]
 
-# Per-spider CC config:
-#   prefix  — URL prefix to feed CC index (matchType=prefix). Pick the narrowest
-#             prefix that still covers all product detail pages.
-#   path_re — regex applied to URL path to keep only product detail pages
-#             (filters out homepage / category / static assets that share the prefix).
-SPIDER_CC_CONFIG: Dict[str, Dict[str, str]] = {
-    "guardian_sg": {"prefix": "www.guardian.com.sg/", "path_re": r"/[^/]+/p/\d+"},
-    "mannings": {"prefix": "www.mannings.com.hk/", "path_re": r"/[^/]+/p/\d+"},
-    # guardian.com.my uses a PWA SPA (Adobe Venia) — CC archives are JS shells with no
-    # product data in the initial HTML. prefix covers both www and no-www; path_re matches
-    # root-level product slugs (/<slug>.html). Usable CC data unlikely until site adds SSR.
-    "guardian_my": {"prefix": "guardian.com.my/", "path_re": r"^/[^/]+\.html$"},
-    "cosmed": {
-        "prefix": "shop.cosmed.com.tw/SalePage/",
-        "path_re": r"/SalePage/Index/",
-    },
-    "boots_th": {
-        "prefix": "store.boots.co.th/ecommerce/",
-        "path_re": r"/ecommerce/\d+",
-    },
-    "aldi_au": {
-        "prefix": "www.aldi.com.au/product/",
-        "path_re": r"^/product/[^/]+",
-    },
-    # Tier 1 additions (2026-05-06)
-    # CitySuper HK is a multi-subdomain Shopify store. Product pages archived by CC
-    # live under logon.citysuper.com.hk (648 in CC-MAIN-2024-51) and
-    # bearwithlove.citysuper.com.hk / hamper.citysuper.com.hk (92 in CC-MAIN-2023-50).
-    # www.citysuper.com.hk/products/ has zero CC captures.
-    # Run a second pass with prefix=bearwithlove.citysuper.com.hk/ to pick up the older records.
-    "citysuper_hk": {
-        "prefix": "logon.citysuper.com.hk/products/",
-        "path_re": r"^/products/[^/?]+",
-    },
-    "cold_storage_sg": {
-        "prefix": "www.coldstorage.com.sg/",
-        "path_re": r"/product/[^/?]+",
-    },
-    "carrefour_tw": {
-        "prefix": "online.carrefour.com.tw/",
-        "path_re": r"/[^/?]+\.html",
-    },
-    # --- Vanuatu ---
-    "dynamic_vanuatu": {
-        "prefix": "retail.dynamicvanuatu.com/products/",
-        "path_re": r"^/products/[^/?]+",
-    },
-    # --- Mongolia ---
-    "citypharm": {
-        "prefix": "citypharm.mn/shop/",
-        "path_re": r"^/shop/\d+-",
-    },
-    # --- Malaysia ---
-    "doctor_oncall": {
-        "prefix": "www.doctoroncall.com.my/pharmacy/",
-        # Product pages: /pharmacy/<slug> — exactly one path segment after /pharmacy/
-        # Excludes category sub-paths like /pharmacy/medicines/weight-loss
-        "path_re": r"^/pharmacy/[^/]+/?$",
-    },
-    # --- Thailand ---
-    "exta": {
-        "prefix": "www.exta.co.th/product/",
-        "path_re": r"^/product/[^/]+",
-    },
-    # --- Singapore ---
-    "fairprice": {
-        "prefix": "www.fairprice.com.sg/product/",
-        "path_re": r"^/product/[^/?]+",
-    },
-    # --- Papua New Guinea ---
-    "food_pro": {
-        "prefix": "fpr.com.pg/product/",
-        "path_re": r"^/product/[^/?]+",
-    },
-    # --- Japan ---
-    "horizon_farms": {
-        "prefix": "en.horizonfarms.jp/products/",
-        "path_re": r"^/products/[^/?]+",
-    },
-    # --- Indonesia ---
-    "hypermart": {
-        "prefix": "shop.hypermart.co.id/hypermart/product/",
-        "path_re": r"^/hypermart/product/[^/?]+",
-    },
-    # --- China ---
-    "jianke": {
-        "prefix": "www.jianke.com/product/",
-        "path_re": r"^/product/\d+\.html$",
-    },
-    "pharmacy_111": {
-        "prefix": "m.111.com.cn/item/",
-        "path_re": r"^/item/\d+\.html$",
-    },
-    # --- Cambodia ---
-    "makro": {
-        "prefix": "www.makrocambodiaclick.com/en/products/",
-        "path_re": r"^/en/products/\d+",
-    },
-    # --- Fiji ---
-    "mh_online": {
-        "prefix": "mh.com.fj/product/",
-        "path_re": r"^/product/[^/?]+",
-    },
-    "rbpatel": {
-        "prefix": "rbpatel.com.fj/product/",
-        "path_re": r"^/product/[^/?]+",
-    },
-    # --- Tonga ---
-    "molisi": {
-        "prefix": "molisi.to/",
-        "path_re": r"^/(baby-maternity|beverage|grocery|meat-seafood|personal-care)/[^/?]+",
-    },
-    # --- Samoa ---
-    "samoa_market": {
-        "prefix": "samoamarket.com/products/",
-        "path_re": r"^/products/[^/?]+",
-    },
-    # --- Philippines ---
-    "pickaroo": {
-        "prefix": "pickaroo.com/",
-        "path_re": r"^/[^/]+/products/[^/]+/product-detail/\d+",
-    },
-    "south_star_drug": {
-        "prefix": "southstardrug.com.ph/products/",
-        "path_re": r"^/products/[^/?]+",
-    },
-    # --- Japan ---
-    "rakuten": {
-        # Product detail pages: item.rakuten.co.jp/<shop>/<item>/
-        # Excludes category-listing pages which have /c/<id> as the second segment
-        "prefix": "item.rakuten.co.jp/",
-        "path_re": r"^/[^/]+/(?!c/)[^/]+",
-    },
-    # --- Vietnam ---
-    "tiki": {
-        # Product pages: tiki.vn/<slug>-p<id>.html (all at root, no category prefix)
-        "prefix": "tiki.vn/",
-        "path_re": r"^/[^/]+-p\d+\.html$",
-    },
-}
+_INDEX_ID_RE = re.compile(r"^CC-MAIN-(\d{4})-\d+$")
+
+
+@lru_cache(maxsize=4)
+def resolve_cc_indexes(since_year: int = DEFAULT_CC_SINCE_YEAR) -> List[str]:
+    """Return every ``CC-MAIN-<year>-<week>`` index from `since_year` on.
+
+    Newest first, matching the order ``collinfo.json`` publishes. Falls back to
+    :data:`_FALLBACK_CC_INDEXES` when the fetch fails, so an offline run still
+    does something useful rather than crashing.
+    """
+    try:
+        result = subprocess.run(
+            ["curl", "-s", "--connect-timeout", "20", "--max-time", "60", COLLINFO_URL],
+            capture_output=True,
+            text=True,
+            timeout=90,
+        )
+        collections = json.loads(result.stdout)
+    except (subprocess.SubprocessError, json.JSONDecodeError, ValueError) as exc:
+        logger.warning(
+            "Could not resolve CC indexes from %s (%s) — falling back to the "
+            "pinned recent set of %d",
+            COLLINFO_URL,
+            exc,
+            len(_FALLBACK_CC_INDEXES),
+        )
+        return list(_FALLBACK_CC_INDEXES)
+
+    indexes = []
+    for entry in collections:
+        cid = entry.get("id", "")
+        m = _INDEX_ID_RE.match(cid)
+        if m and int(m.group(1)) >= since_year:
+            indexes.append(cid)
+    if not indexes:
+        logger.warning("collinfo.json yielded no indexes since %d", since_year)
+        return list(_FALLBACK_CC_INDEXES)
+    logger.info("Resolved %d CC indexes since %d", len(indexes), since_year)
+    return indexes
+
+
+@lru_cache(maxsize=1)
+def all_cc_configs() -> Dict[str, Dict[str, str]]:
+    """Return ``{spider: {"prefix", "path_re"}}`` for every manifest with a scope.
+
+    A spider served by several manifests takes the first scope encountered in
+    manifest-discovery order; the scope is a property of the storefront, not of
+    the country the manifest files it under.
+    """
+    from prices.config import PriceSourceConfig, discover_prices_configs
+
+    out: Dict[str, Dict[str, str]] = {}
+    for path in discover_prices_configs():
+        try:
+            cfg = PriceSourceConfig.load(path)
+        except Exception as exc:
+            logger.debug("Skipping unloadable manifest %s: %s", path, exc)
+            continue
+        if not (cfg.spider and cfg.archive_prefix):
+            continue
+        out.setdefault(
+            cfg.spider,
+            {"prefix": cfg.archive_prefix, "path_re": cfg.archive_path_re or ""},
+        )
+    return out
+
+
+def get_cc_config(spider: str) -> Optional[Dict[str, str]]:
+    """Return one spider's archive scope, or None when no manifest declares it."""
+    return all_cc_configs().get(spider)

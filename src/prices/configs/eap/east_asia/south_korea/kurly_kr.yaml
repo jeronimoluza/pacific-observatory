@@ -7,3 +7,5 @@ url: https://www.kurly.com
 language: ko
 cadence: daily
 channel: supermarket
+archive_prefix: "www.kurly.com/goods/"
+archive_path_re: '^/goods/[^/?]+'

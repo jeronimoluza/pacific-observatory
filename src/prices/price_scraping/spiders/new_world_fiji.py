@@ -123,8 +123,7 @@ class NewWorldFijiSpider(scrapy.Spider):
             bad = self._first_bad_index(errors)
             if bad is None:
                 logger.error(
-                    "new_world_fiji: poisoned skip=%d take=%d no path index; "
-                    "bisecting",
+                    "new_world_fiji: poisoned skip=%d take=%d no path index; bisecting",
                     skip,
                     take,
                 )

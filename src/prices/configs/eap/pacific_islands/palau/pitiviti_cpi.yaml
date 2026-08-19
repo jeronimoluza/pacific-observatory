@@ -1,0 +1,40 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: pw_pitiviti_cpi
+module: eap.pacific_islands.palau.pitiviti_cpi
+function: fetch_pw_pitiviti_cpi
+url: https://pubs.pitiviti.org/palau-fy25-economic-statistics-preliminary
+language: en
+cadence: annual
+fallback_date: 2016-06-30
+notes: |
+  Graduate School USA / PITI-VITI EconMAP annual Palau economic statistics
+  workbook (with Office of Planning and Statistics, Ministry of Finance).
+  The "Cpi" sheet's Table 7a (all items, COICOP format) is a quarterly
+  index series since 2016 Q3 embedded in one file, so a single fetch
+  backfills the whole history. Base period 2016 Q3=100. 12 COICOP groups;
+  division 13 absent. All-items headline ("CPI") dropped — no sanctioned
+  sentinel code yet.
+
+  The same workbook has Table 7b (domestic items) and Table 7c (imported
+  items) by the same 12 groups, and a "CpiOld" sheet (pre-2017, different
+  base) — not ingested here; a future pass could add the domestic/imported
+  split the way FSM Statistics already does.
+
+  Staleness risk: URL is a fixed per-fiscal-year slug
+  ("palau-fy25-economic-statistics-preliminary"). GS-USA publishes a new
+  slug annually (FY22/FY23/FY25 confirmed to exist) — this fetcher will
+  need its URL bumped to the next fiscal year's release once FY25 is
+  superseded.
+
+  Same EconMAP/PITI-VITI program also publishes FSM and RMI (Marshall
+  Islands) economic-statistics workbooks under pubs.pitiviti.org
+  (rmi-fy18-economic-review, fsm-fy18-economic-review, etc.) — discovered
+  incidentally while confirming this candidate's publication history, not
+  onboarded here (out of this run's assigned scope). Worth a dedicated
+  future pass, especially for RMI where microdata.pacificdata.org is
+  Cloudflare-blocked and this may be the only reachable CPI source.

@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: guystar_gy
+url: https://www.guystar.gy/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Georgetown online grocery/general store, classic Zen Cart storefront.
+  Re-verified live 2026-08-06: GET ?main_page=index&cPath=12_261_262 ->
+  HTTP 200, 55KB, 13 real products incl. 'Cellophane Bean Thread Noodles
+  Roland 250g' GY$995 (-> GYD 995). Currency GYD (GY$ price prefix)
+  matches countries.yaml. Parent categories only render subcategory boxes
+  (cPath=12 "Grocery" alone returns 0 products) so the crawl walks 154
+  leaf cPath ids extracted from the homepage nav tree (list in
+  _guystar_gy_categories.txt). No pagination observed on probed
+  categories; a defensive page=N follow is wired in case a larger leaf
+  paginates. Products have a numeric products_id in the permalink, no
+  synthetic-url dedup risk.

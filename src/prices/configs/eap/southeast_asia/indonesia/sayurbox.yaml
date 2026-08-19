@@ -7,3 +7,5 @@ url: https://www.sayurbox.com/
 language: id
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.sayurbox.com/product/"
+archive_path_re: '^/product/[^/?]+'

@@ -1,0 +1,26 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_eth
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_eth
+url: https://data.humdata.org/dataset/wfp-food-prices-for-ethiopia
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Ethiopia via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_eth.csv (200, 7.5MB, 62,130 rows),
+  currency ETB throughout (matches countries.yaml). Max observation date is
+  2026-05-15 — current. Richest SSA WFP panel — 96 distinct commodities:
+  full cereal set (wheat/barley/maize/sorghum/teff, multiple sub-varieties
+  each), legumes, dairy incl. camel milk, live animals (bull/camel/cattle/
+  donkey/goat/ox/sheep), full produce list, coffee, honey, oils, pasta,
+  salt, sesame, sugar. Sample at max date: 'Maize (white)', 100 KG,
+  ETB 5600. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

@@ -1,0 +1,11 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: aeon_foodstyle_jp
+url: https://aeonfoodstyle.netsuper.aeon.com/articles/43877?store_code=0000807570
+language: ja
+cadence: daily
+channel: supermarket
+archive_prefix: "aeonfoodstyle.netsuper.aeon.com/articles/"
+archive_path_re: '^/articles/[^/?]+'

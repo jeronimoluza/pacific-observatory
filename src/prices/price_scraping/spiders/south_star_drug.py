@@ -76,4 +76,6 @@ class SouthStarDrugSpider(scrapy.Spider):
                     "scraped_at": response.headers.get("Date", b"").decode("utf-8"),
                 }
             else:
-                logger.warning(f"Could not extract product data from a card on {response.url}")
+                logger.warning(
+                    f"Could not extract product data from a card on {response.url}"
+                )

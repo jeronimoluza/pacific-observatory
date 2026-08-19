@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_lby
+module: _shared.menaap.wfp_food_prices
+function: fetch_wfp_lby
+url: https://data.humdata.org/dataset/dc632a15-d376-496f-976f-c3282e67bc28
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Libya via HDX (shared MENAAP fetcher
+  _shared.menaap.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_lby.csv (200, 7.9MB, 69,167 rows),
+  currency LYD throughout (matches countries.yaml). Max observation date in
+  the live CSV is 2026-05-15 — current. 36 commodities across 8 categories
+  (cereals/tubers, meat/fish/eggs, milk/dairy, misc food, oil/fats,
+  pulses/nuts, veg/fruits, non-food). Sample at max date: 'Bread', 5 pcs,
+  LYD 1.25. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in notes;
+  retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

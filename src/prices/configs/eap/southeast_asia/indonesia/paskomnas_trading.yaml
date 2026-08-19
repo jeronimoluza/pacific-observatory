@@ -7,6 +7,8 @@ url: https://trading.paskomnas.id/
 language: id
 cadence: daily
 channel: supermarket
+archive_prefix: "trading.paskomnas.id/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Online storefront of Pasar Induk Osowilangun Surabaya (Paskomnas
   wholesale/retail fresh-produce hub). carisayur.com 302-redirects here.

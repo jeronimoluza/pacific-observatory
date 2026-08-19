@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gracia_cosmetics_bg
+url: https://gracia-cosmetics.com/
+language: bg
+cadence: weekly
+channel: cosmetics
+archive_prefix: "gracia-cosmetics.com/"
+archive_path_re: '^/[a-z0-9\-]+-\d+\.html$'
+notes: |
+  Custom PHP storefront, server-rendered. URL discovery via
+  /sitemap.xml (3,751 URLs, all product detail pages -- every entry
+  ends in a numeric -<id>.html suffix, no category/blog noise). Each
+  PDP embeds a Schema.org Product JSON-LD block (name, sku, category,
+  offers.price/priceCurrency) -- no rendering needed. Confirmed live
+  2026-08-18: perfumes/cosmetics catalog, prices in EUR. Currency
+  trap: countries.yaml still lists BGN for Bulgaria, but the site's
+  own priceCurrency is EUR (Bulgaria adopted the euro Jan 2026) -- the
+  site-declared currency wins per the onboarding skill's currency
+  rule, same pattern already noted on tmarketonline_bg.yaml. Country
+  confirmed via the site's +359 (Bulgaria) contact number, not just
+  the .com TLD. Sample: "Martin lion U 31 (EDP) Unisex parfum..." EUR
+  8.70.

@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: deliver_addis
+url: https://deliveraddis.com/market
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "deliveraddis.com/market/"
+archive_path_re: '^/market/[^/?]+'
+notes: |
+  Delivery-app grocery catalog. Server-rendered category pages under
+  /market/<category> (and two nested subcategory pages), each carrying
+  name + ETB price directly in the HTML — no numeric pagination observed
+  per category. Re-verified live 2026-08-06: GET /market -> 200, 47KB,
+  real ETB prices ('550.00 ETB', '1,200.00 ETB'); GET /market/coffee ->
+  200, 8 real product cards incl. 'Galani Coffee - House Blend' 890.00
+  ETB. Currency ETB matches countries.yaml. The site's aggregate
+  /market/full overview page also SSRs but truncates some sections behind
+  a JS "load more" (POST /GetMore) we chose not to follow; walking the
+  named category pages directly gives simpler, still-real coverage.
+  Packaged-goods-leaning catalog (sauces, coffee, canned/bottled foods,
+  honey, cured meats) rather than a full hypermarket aisle set.

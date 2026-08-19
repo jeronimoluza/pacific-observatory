@@ -1,0 +1,23 @@
+scaffolding: spider
+spider: simma_io
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.simma.io/
+language: en
+currency: IQD
+cadence: weekly
+archive_prefix: "www.simma.io/en/stores/"
+archive_path_re: '^/en/stores/[^/]+/products/[^/?]+'
+notes: |
+  Verified live 2026-08-18. Multi-vendor marketplace -- products live under
+  per-seller storefronts (e.g. /en/stores/shein/products/<slug>), confirmed
+  third-party sellers (SHEIN etc.), so channel=marketplace. Next.js SSR.
+  URL discovery: /sitemap.xml -> /sitemap-store-products.xml (product URLs
+  triplicated across ar/en/ku locale variants; only /en/ crawled). Each PDP
+  embeds Schema.org Product/Offer JSON-LD server-side with a correctly
+  labeled priceCurrency (IQD), confirmed live -- no currency override
+  needed here (unlike mamame_iq).
+  Smoke test (--max-items 5): 5 rows, IQD, real names + prices, e.g.
+  "SHEGLAM Camera On Soft & Blurry Primer" @ 7276 IQD.

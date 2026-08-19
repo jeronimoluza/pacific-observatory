@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: linella_md
+url: https://linella.md/
+language: ro
+cadence: weekly
+channel: supermarket
+archive_prefix: "linella.md/ro/catalog/"
+archive_path_re: '^/ro/catalog/[^/?]+'
+notes: |
+  Server-rendered category pages at /ro/catalog/<slug>?page=N, 266
+  category slugs (companion _linella_md_categories.txt, pulled from the
+  site's own /ro/catalog nav 2026-08-06). Product cards carry name +
+  price directly; the charged price uses one of three classes depending
+  on discount state — price-products-catalog-content__new (discounted),
+  __static (regular, no discount), __old (struck-through original, only
+  alongside __new) — the spider tries them in that priority order per
+  card. Re-verified live: 'CHEILE BICAZULUI Apa minerala plata 2l' 19.99
+  MDL (discounted from 23.79); page=2 returns 40 different products, zero
+  overlap with page=1. 206 stores, 14,500+ products per shard notes.

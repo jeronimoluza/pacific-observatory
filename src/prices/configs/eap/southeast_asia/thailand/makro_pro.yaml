@@ -7,6 +7,8 @@ url: https://www.makro.pro/en
 language: th
 cadence: daily
 channel: supermarket
+archive_prefix: "www.makro.pro/th/p/"
+archive_path_re: '^/th/p/[^/?]+'
 notes: >
   #1 Thai grocery e-commerce (Makro/Mango platform). Next.js storefront backed
   by a public Typesense search proxy at

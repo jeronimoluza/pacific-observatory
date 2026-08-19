@@ -34,11 +34,16 @@ Underscored filename -- Scrapy's SpiderLoader skips classes without `name`.
 
 import json
 import logging
+import re
 from datetime import datetime, timezone
 
 import scrapy
 
+from ..archived import row_from_meta, rows_from_jsonld
+
 logger = logging.getLogger(__name__)
+
+_NEXT_DATA_RE = re.compile(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', re.DOTALL)
 
 HITS_PER_PAGE = 1000
 MAX_PAGES_PER_FACET = 2
@@ -60,6 +65,63 @@ ATTRS = [
     "categoriesHierarchical_zh",
     "available",
 ]
+
+
+def _rows_from_next_data(html_text: str, url: str, base_url: str) -> list[dict]:
+    """Rows from Decathlon's Next.js `__NEXT_DATA__` PDP payload.
+
+    Decathlon PDPs carry no schema.org JSON-LD and no OpenGraph price meta
+    (verified 0/37 archived pages across 6 storefronts, 2026-08-18) -- the
+    shared tiers in archived.py never fire here. `props.pageProps.product`
+    holds the full product record instead, with one entry per variant in
+    `items` -- the same JSON shape the Next.js client itself hydrates from.
+    """
+    match = _NEXT_DATA_RE.search(html_text)
+    if not match:
+        return []
+    try:
+        data = json.loads(match.group(1))
+    except (json.JSONDecodeError, ValueError):
+        return []
+    page_props = (data.get("props") or {}).get("pageProps") or {}
+    product = page_props.get("product")
+    if not isinstance(product, dict):
+        return []
+
+    names = [
+        b.get("name")
+        for b in (page_props.get("breadcrumbs") or [])
+        if isinstance(b, dict) and b.get("name")
+    ]
+    category = " > ".join(names[-3:]) if names else None
+
+    fallback_currency = (product.get("price") or {}).get("currency")
+    fallback_path = product.get("url") or ""
+
+    rows: list[dict] = []
+    for item in product.get("items") or []:
+        if not isinstance(item, dict):
+            continue
+        item_id = item.get("itemId")
+        price = item.get("currentPrice")
+        if not item_id or price is None:
+            continue
+        name = item.get("name") or product.get("name")
+        if not name:
+            continue
+        path = item.get("url") or fallback_path
+        row = {
+            "product_id": str(item_id),
+            "product_name": str(name).strip()[:500],
+            "price": str(price),
+            "currency": item.get("currency") or fallback_currency,
+            "url": f"{base_url}{path}" if path else url,
+            "available": not bool(item.get("desactivated")),
+        }
+        if category:
+            row["category"] = category
+        rows.append(row)
+    return rows
 
 
 class DecathlonBaseSpider(scrapy.Spider):
@@ -196,3 +258,30 @@ class DecathlonBaseSpider(scrapy.Spider):
         nb_pages = data.get("nbPages", 0)
         if page + 1 < min(nb_pages, MAX_PAGES_PER_FACET):
             yield self._page_request(response.meta["sport_value"], page + 1)
+
+    @classmethod
+    def parse_html(cls, html: str, url: str):
+        """Parse one archived Decathlon PDP into row dicts.
+
+        The live spider reads the Algolia query API; archived Wayback/CC
+        snapshots only hold the storefront PDP HTML. Verified across 6
+        storefronts (HK/TW/AU/ID/PH/VN, 37 archived pages, 2026-08-18):
+        Decathlon's Next.js PDPs carry neither schema.org JSON-LD nor
+        OpenGraph price meta, so the shared tiers in archived.py never fire
+        here -- `_rows_from_next_data` reads the `__NEXT_DATA__` script tag's
+        `props.pageProps.product` record instead (the same JSON the Next.js
+        client hydrates from), one row per variant in `product.items`. The
+        shared tiers are still tried as a fallback for any page shape not
+        covered by that sample. Does NOT stamp `scraped_at_utc` -- the
+        caller sets it to the snapshot time.
+        """
+        rows = _rows_from_next_data(html, url, cls.BASE_URL)
+        if not rows:
+            rows = rows_from_jsonld(html, url)
+        if not rows:
+            meta_row = row_from_meta(html, url)
+            rows = [meta_row] if meta_row else []
+        for row in rows:
+            row.setdefault("currency", cls.currency)
+            row.setdefault("language", cls.language)
+            yield row

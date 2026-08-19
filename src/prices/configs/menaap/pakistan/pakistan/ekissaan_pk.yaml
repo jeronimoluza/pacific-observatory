@@ -9,6 +9,8 @@ language: en
 currency: PKR
 cadence: weekly
 coicop_codes: null
+archive_prefix: "ekissaan.com/shop/"
+archive_path_re: '^/shop/[^/?]+'
 notes: |
   Pakistani direct-from-farm dry fruit / preserves / oils shop (Dry Fruits,
   Fruits, Oil, Jam & Honey, Food Products categories). WooCommerce Store

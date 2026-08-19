@@ -1,3 +1,5 @@
 spider: k24klik
 language: id
 channel: pharmacy
+archive_prefix: "www.k24klik.com/p/"
+archive_path_re: '^/p/[a-z0-9-]+$'

@@ -9,6 +9,8 @@ currency: TRY
 cadence: weekly
 channel: marketplace
 coicop_codes: null
+archive_prefix: "n11.com/urun/"
+archive_path_re: '^/urun/[^/?]+'
 notes: |
   Turkish general marketplace. Verified live 2026-08-17: curl_cffi
   impersonate=chrome124/chrome120 clear the Cloudflare "Attention

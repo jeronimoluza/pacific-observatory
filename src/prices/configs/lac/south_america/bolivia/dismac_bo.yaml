@@ -8,7 +8,17 @@ language: es
 currency: BOB
 cadence: weekly
 channel: electronics
+archive_prefix: "www.dismac.com.bo/"
+archive_path_re: '^/[^/]+\.html$'
 notes: |
+  Common Crawl archive note: the live scraper's product URLs are a bare
+  root-level slug with no suffix, but CC-MAIN-2026-30 only holds an older
+  URL scheme ending `.html` (21 records within the first 4 cdx blocks).
+  That shape is not product-exclusive on this flat single-level CMS --
+  spot-checking the 21 hits found ~17/21 (81%) real products, the rest
+  static pages (marcas.html, contactos-cliente.html, promo landing
+  pages) that happen to share the same one-segment `.html` shape; there
+  is no further path signal to exclude them with.
   Dismac (Bolivia) -- electronics/appliances retailer, Magento 2. Shard
   flagged this TIER_1A_HTML (REST 401), but re-probing live 2026-08-17
   found /graphql open and unauthenticated -- used MagentoGraphQLBaseSpider

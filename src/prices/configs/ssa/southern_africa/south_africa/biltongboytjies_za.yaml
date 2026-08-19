@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: biltongboytjies_za
+url: https://biltongboytjies.co.za/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "biltongboytjies.co.za/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront on the custom domain (no myshopify redirect needed),
+  /products.json?limit=250&page=N, no auth. Re-verified live 2026-08-06:
+  HTTP 200, real snack-shop SKUs — 'FLASH SALE: Superior Mouthwatering
+  Wagyu Drywors' ZAR 289.99, 'Roasted and Salted Cashews Snack Pack Sets'
+  ZAR 399.99, 'Dried Mango Snack Pack Sets' ZAR 429.99, 'C Grade Sliced
+  Biltong Snack Pack Sets' ZAR 539.99, 'FLASH SALE: Pistachio Nuts'
+  ZAR 199.99. Page body confirms 'ZAR' currency strings, matches
+  countries.yaml. Mixed catalog (dried meat, nuts, dried fruit) spans more
+  than one COICOP leaf, so coicop_codes is omitted (classifier assigns
+  per-SKU).

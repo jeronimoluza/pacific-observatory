@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jumbo_ar
+url: https://www.jumbo.com.ar/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.jumbo.com.ar/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Cencosud AR flagship hypermarket, full-line incl. fresh produce/meat. Re-verified live:
+  products/search?_from=0&_to=9 -> HTTP 206, 244KB JSON, 'Cebolla Superior Por Kg' ARS 2599.00.
+  Verified category-path requirement live: fq=C:/<leaf-id>/ alone returns [], the FULL root-to-
+  leaf id path (fq=C:/1/17/134/) is required. Same VTEX tenant/account family as Disco AR and Vea
+  AR (Cencosud) -- separate manifest, high catalog overlap. Currency matches countries.yaml
+  (ARS).

@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["01.1.6"]
+channel: wholesale
+source_key: qa_moci_fruits
+module: menaap.gulf_states.qatar.moci_fruits
+function: fetch_qa_moci_fruits
+url: https://www.moci.gov.qa/en/our-services/consumer/commodities-daily-prices/imported-fruits-prices/
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Re-verified live 2026-08-06: same MOCI Central Market statutory feed as
+  moci_vegetables.yaml, id=16. UNLIKE the vegetable/fish endpoints (fresh at
+  probe time), this one is stale — every row dated 2024-09-05 at probe time,
+  ~23 months old. Ministry appears to have stopped refreshing this specific
+  page while keeping the other three live. Kept for the real historical
+  rows (39/125 non-zero); expect the fetcher to emit the same fixed set on
+  every run until/unless the ministry resumes publishing. cadence set to
+  irregular rather than daily to reflect this.
+  coicop_divisions: 01
+  divisions_basis: walked_categories (single-endpoint imported-fruit category enumerated in full)

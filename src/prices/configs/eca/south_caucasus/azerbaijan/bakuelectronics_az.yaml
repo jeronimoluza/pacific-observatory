@@ -9,6 +9,8 @@ currency: AZN
 cadence: weekly
 channel: electronics
 coicop_codes: null
+archive_prefix: "bakuelectronics.az/mehsul/"
+archive_path_re: '^/mehsul/[^/?]+'
 notes: |
   Azerbaijan electronics/appliances retailer, Next.js pages router.
   Verified live 2026-08-17: plain curl_cffi impersonate=chrome124, zero

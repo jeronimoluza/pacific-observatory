@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: megaalina_md
+url: https://www.megaalina.md/
+language: ro
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.megaalina.md/ro/catalog/"
+archive_path_re: '^/ro/catalog/[^/?]+'
+notes: |
+  Custom PHP storefront. Re-verified live 2026-08-06: /ro/catalog/lapte ->
+  200, 508KB, real product cards with MDL prices ('16.15 MDL', '20.99 MDL',
+  ...). Pagination is `?page=N`, stop when a page returns zero cards. 344
+  category slugs walked (whole catalog, food + household + general
+  merchandise) -- see _megaalina_md_categories.txt. Strike-through
+  discount pairs across food, dairy, juice, household per the source shard.

@@ -1,0 +1,33 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: tv_stats_cpi
+module: eap.pacific_islands.tuvalu.stats_gov_tv_cpi
+function: fetch_tv_stats_cpi
+url: https://stats.gov.tv/category/economics/consumer-price-index/
+language: en
+cadence: quarterly
+fallback_date: 2018-01-01
+notes: |
+  Verified live 2026-08-11: Tuvalu Central Statistics Division (TCSD) quarterly
+  CPI. RSS feed at /category/economics/consumer-price-index/feed/ enumerates
+  every release back to 2018 (used to confirm cadence/history); fetcher itself
+  walks the Documents Library page (stats.gov.tv/documents-library/, WP File
+  Download plugin) for the newest "cpi-release-tables" download link, which
+  serves an XLSX directly (no separate release-page hop needed). Each release's
+  "T2" sheet ("PRICES INDICES BY QUARTERS") carries the FULL cumulative series
+  back to 2017/2018, so only the latest release needs fetching. Base period
+  2019 Q4 = 1000 (confirmed in raw data, not a documented constant). TCSD's own
+  item-group scheme is a flatter Tuvalu-specific basket, not standard
+  COICOP-2018 — mapped label-by-label in the fetcher's _COICOP_MAP; the
+  all-items headline row and two genuinely ambiguous/catch-all group rows
+  ("VEGETABLES AND FRUITS" combines 01.1.6+01.1.7; "MISCELLANEOUS" is a true
+  catch-all) are dropped rather than force-mapped. HIES 2022 microdata
+  (pacific-data.sprep.org) was also assessed this round: one-off survey used to
+  rebase the CPI basket, license "Other (Not Open)", not a recurring price
+  series — not onboarded (structural absence, not a sourcing gap).
+  coicop_divisions: 01, 02, 03, 04, 05, 07, 08, 09, 10, 12
+  divisions_basis: walked_categories (all 22 mapped rows of the T2 sheet read
+  directly from the latest release)

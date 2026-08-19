@@ -7,6 +7,8 @@ url: https://store.pmg2u.com
 language: en
 cadence: daily
 channel: pharmacy
+archive_prefix: "store.pmg2u.com/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   AM PM Pharmacy (ampmpharmacy.com redirects here). WooCommerce Store API
   /wp-json/wc/store/v1/products; ~1479 products. Integer prices in minor

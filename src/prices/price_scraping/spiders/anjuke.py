@@ -64,7 +64,9 @@ class AnjukeSpider(scrapy.Spider):
             area_sqm = am.group(1) if am else None
 
             district_parts = [
-                t.strip() for t in card.css(self.SELECTORS["district"]).getall() if t.strip()
+                t.strip()
+                for t in card.css(self.SELECTORS["district"]).getall()
+                if t.strip()
             ]
             district = district_parts[1] if len(district_parts) > 1 else None
 

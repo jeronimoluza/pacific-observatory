@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: walmart_hn
+url: https://www.walmart.com.hn/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "walmart.com.hn/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Full-line, fresh produce confirmed. Re-verified live: products/search?_from=0&_to=9 -> HTTP
+  206, 142KB, 'Banano Maduro Seleccion Especial - 3 Unidades Por Libra' HNL 10.00. Currency
+  matches countries.yaml (HNL).

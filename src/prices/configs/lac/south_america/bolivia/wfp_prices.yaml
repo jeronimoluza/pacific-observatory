@@ -1,0 +1,32 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_bol
+module: _shared.lac.wfp_food_prices
+function: fetch_wfp_bol
+url: https://data.humdata.org/dataset/wfp-food-prices-for-bolivia-plurinational-state-of
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Bolivia via HDX (shared LAC fetcher
+  _shared.lac.wfp_food_prices; added to _PANELS as "bol"). Re-verified live
+  2026-08-06: CKAN package_show resolves wfp_food_prices_bol.csv (200,
+  3.3MB, 24,607 rows), currency BOB throughout (matches countries.yaml).
+  Max observation date is 2026-06-15 — current. 27 unique commodity
+  strings (bread, eggs, maize, meats, milk, noodles, potato varieties,
+  quinoa, rice varieties, etc), both Retail and Wholesale pricetype rows
+  present. Sample at max date: 'Rice (long grain)', KG, BOB 10.69.
+  Per-market rows collapsed to a national monthly average per commodity/
+  unit/currency/price-type; market count + USD value kept in notes; retail
+  vs wholesale kept in the dedup hash. COICOP deferred to the classifier
+  (item_name = WFP commodity).
+
+  Also checked and DROPPED as stale: Venezuela panel
+  (wfp-food-prices-for-venezuela-bolivarian-republic-of, currency USD —
+  confirms the dollarization warning — but max obs date 2025-05-15, >14mo
+  stale) and Peru/Paraguay panels (wfp-food-prices-for-peru /
+  -for-paraguay, both max obs date 2022-06-15, >4yr stale). Do not re-add
+  those three without re-checking the live max date first.

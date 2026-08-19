@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lusakadelivery
+url: https://lusakadelivery.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "lusakadelivery.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
+  live 2026-08-06: HTTP 200, 250 products on page 1, real SKUs (e.g. 'Copy of
+  Chicken Portion Pieces 5kg' — note the "Copy of" prefix is a leftover
+  duplicate-product-entry artifact worth flagging to any downstream cleaner;
+  prior probe also saw 'Lancewood sour cream 250ml' 145.00 ZMW). Currency
+  ZMW matches countries.yaml. Best Zambia source found: condiments, canned,
+  carbohydrates, per-kg fresh produce, and wine/liquor SKUs all present.

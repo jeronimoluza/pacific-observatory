@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: glomark_lk
+url: https://glomark.lk/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Server-rendered category pages, Custom PHP (ZENEDGE-fronted), no WAF hit.
+  Full grocery taxonomy: bakery, beverages, chilled dairy, fresh (fish/
+  fruit/meat by cut/vegetables by tier), frozen, grocery, household,
+  pharmaceuticals. Crawl list is a de-duplicated leaf-category walk (398
+  URLs in the companion _glomark_lk_categories.txt, kept out of the .py
+  file to respect the 500-line cap) built from the site's own shop-now nav
+  (487 raw /c/ and /sc/ links 2026-08-06), dropping parent /c/ categories
+  whose products are already covered by their /sc/ children. Product cards
+  carry name + price directly in listing HTML — no PDP visits needed.
+  Re-verified live: /bakery/bread/c/118 -> 10 real products incl. 'Cheese
+  And Garlic Bread 350G' Rs 520.00. No numeric pagination observed (page=2
+  on a small subcategory returned identical content); categories appear to
+  render their full set in one response.

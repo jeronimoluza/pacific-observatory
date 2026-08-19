@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_gtm
+module: _shared.lac.wfp_food_prices
+function: fetch_wfp_gtm
+url: https://data.humdata.org/dataset/wfp-food-prices-for-guatemala
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Guatemala via HDX (shared LAC fetcher
+  _shared.lac.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_gtm.csv (200, 2.3MB, 16,177 rows),
+  currency GTQ throughout (matches countries.yaml). Max observation date is
+  2026-06-15 — current. Wholesale + some retail channel (La Terminal
+  market, Guatemala City, and others); complements but barely overlaps
+  supermarket SKUs (fresh produce/grains/pulses focus, incl. coffee,
+  bananas). Sample at max date: 'Maize (white)', 100 Pounds, GTQ 67.75
+  (wholesale). Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+source_key: il_rami_levy
+module: menaap.middle_east.israel.rami_levy_il
+function: fetch_il_rami_levy
+url: ftp://url.retail.publishedprices.co.il/
+language: he
+cadence: daily
+fallback_date: 2020-01-01
+channel: supermarket
+notes: |
+  Israel's 2014 Food Price Transparency Law statutory feed, published via
+  the shared publishedprices.co.il FTPS aggregator portal rather than a
+  dedicated web portal (contrast shufersal_il, a spider on a dedicated
+  site) -- scaffolded as a fetcher because the transport is genuine FTP_TLS,
+  not HTTP, and Scrapy's downloader stack does not do FTPS cleanly. Login
+  "RamiLevi", blank password, government-published for public access.
+  Fetches one representative branch's PriceFull (full-catalog) snapshot per
+  run, matching the shufersal precedent of one branch rather than the
+  chain's ~150+ stores. Re-verified live 2026-08-06: branch 001 store 001,
+  13,023 items, e.g. 'רביעיית פחיות שוופס' (Schweppes 4-pack) ILS 12.50,
+  'שקד * קלוי 200 גר' (roasted almonds 200g) ILS 15.10. Currency ILS.
+  Rami Levy is a full discount supermarket chain -- catalog spans grocery,
+  household, and personal care.
+  coicop_divisions: 01, 02, 05, 13
+  divisions_basis: sampled_rows (13,023-item branch catalog, not fully
+  walked by department)

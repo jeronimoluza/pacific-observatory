@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gorillapets_in
+url: https://gorillapets.com/
+language: en
+cadence: weekly
+channel: pet
+archive_prefix: "gorillapets.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  WooCommerce Store API confirmed live 2026-08-18: GET
+  /wp-json/wc/store/v1/products?per_page=100&page=N -> 200, INR
+  minor-unit JSON prices. Pet food and supplies (Acana, Bio-Groom,
+  etc.). Sample: "Acana Adult Indoor Sterilized Cat Dry Food Chicken
+  with Herring - 1.8 Kg" INR 2430.00 (sale price on a 269900/243000
+  minor-unit regular/sale pair).

@@ -8,6 +8,8 @@ language: es
 currency: USD
 cadence: weekly
 channel: pharmacy
+archive_prefix: "www.fybeca.com/on/demandware.store/Sites-FybecaEcuador-Site/es_EC/"
+archive_path_re: '^/on/demandware\.store/Sites\-FybecaEcuador\-Site/es_EC/[^/?]+'
 notes: |
   Fybeca, Ecuador's largest pharmacy chain. Bare domain is a meta-
   refresh stub to www.fybeca.com (200 SSR). Salesforce Commerce Cloud

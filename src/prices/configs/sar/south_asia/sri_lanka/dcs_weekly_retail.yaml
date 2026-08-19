@@ -1,0 +1,28 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: lk_dcs_weekly_retail
+module: sar.south_asia.sri_lanka.dcs_weekly_retail
+function: fetch_lk_dcs_weekly_retail
+url: https://www.statistics.gov.lk/DashBoard/Prices/
+language: en
+cadence: weekly
+fallback_date: 2020-01-01
+notes: |
+  Government of Sri Lanka Department of Census & Statistics weekly retail
+  price series (absolute prices, not an index), collected across 14 markets
+  in the Colombo district. Re-verified live 2026-08-06: GET
+  https://www.statistics.gov.lk/DashBoard/Prices/Prices_Data.php -> 200,
+  1.85MB raw JS data file with `var pip=[...]` (122 named products across 23
+  categories: vegetables, spices, rice, pulses/flour, sea fish, milk powder,
+  meat/poultry, fruits, coconut, eggs, onions, oils/fats, sugar, canned
+  fish, bakery goods) and `var prices=[...]` (456 weekly rows back to 2017,
+  latest observed 'W4.June.2026'). Sample: 'Ash Plantain  1kg' (Low Country
+  Vegetables) 281.43 LKR. Missing values are the invalid-JSON literal `''`
+  and are cleaned to null before parsing; week labels are converted to an
+  approximate date (first day of month + (week-1) weeks) since no exact day
+  is published. Currency LKR matches countries.yaml. Estimate is
+  conservative: 122 named products collapse to fewer distinct COICOP leaves
+  (multiple rice/onion/fish grades share a leaf).

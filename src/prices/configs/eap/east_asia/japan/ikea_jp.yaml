@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ikea_jp
+channel: home-improvement
+url: https://www.ikea.com/jp/en/
+language: en
+cadence: weekly
+archive_prefix: "www.ikea.com/jp/en/p/"
+archive_path_re: '^/jp/en/p/[^/]+/$'
+notes: |
+  Onboarded 2026-08-07 (round-3 non-food shard, COICOP 03/05/08/09 gap).
+  IKEA's storefront exposes an unauthenticated JSON listing API at
+  sik.search.blue.cdtapps.com/<market>/<lang>/product-list-page?category=<key>.
+  Category keys (~200-300 per market) are discovered from the mega-nav
+  embedded in /cat/products-products/. See _ikea_base.py docstring for
+  full detail. No WAF/anti-bot observed on either the storefront or the
+  API host as of this date.
+  coicop_divisions: 01, 05, 08, 09
+  divisions_basis: walked_categories (full mega-nav enumerated via
+  /cat/products-products/: furniture bm/st/fu series + kitchenware kt003 +
+  textiles tl003/tl004 + lighting li001 (05 dominant); pantry/christmas-food
+  16200/49227 (01, minor); cables/chargers 40845 + smart-lighting hub
+  36812/36813 (08, minor); toys 18734/18716/18738/18740 + decoration +
+  outdoor recreation (09))

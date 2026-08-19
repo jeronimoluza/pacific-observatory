@@ -8,6 +8,8 @@ language: es
 currency: COP
 cadence: weekly
 channel: home-improvement
+archive_prefix: "www.homecenter.com.co/homecenter-co/product/"
+archive_path_re: '^/homecenter\-co/product/[^/?]+'
 notes: |
   Homecenter (Sodimac) Colombia -- home-improvement/hardware banner.
   No prior spider covered it (grepped src/prices/configs/ and the

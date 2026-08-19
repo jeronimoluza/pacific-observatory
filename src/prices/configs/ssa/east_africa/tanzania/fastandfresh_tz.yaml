@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: fastandfresh_tz
+url: https://www.fastandfresh.co.tz/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.fastandfresh.co.tz/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Server-rendered custom Bootstrap storefront. Full catalog paginated at
+  /products?page=N, 12 items/page, name + price both in the raw HTML;
+  paginate until a page returns zero product cards (confirmed page=8 is
+  empty for the current catalog size). Re-verified live 2026-08-06: GET
+  /products?page=1 -> 200, 77KB, 12 real product cards incl. 'Lemon Grass'
+  TZS 1,000.00, 'Chicken (Local)' TZS 23,000.00. Currency TZS matches
+  countries.yaml. Per-kg/per-tray pricing on rice/eggs/beef/produce per
+  prior research — explicit-unit fresh-produce/meat depth is above-average
+  for a delivery-style operator.

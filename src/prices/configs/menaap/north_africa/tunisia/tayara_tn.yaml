@@ -8,6 +8,8 @@ language: fr
 currency: TND
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.tayara.tn/item/"
+archive_path_re: '^/item/[^/?]+'
 notes: |
   Verified live 2026-08-17: tayara.tn — Tunisia's general classifieds
   marketplace (Next.js app). /annonces 308-redirects to a client-only 404

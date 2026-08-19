@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: elvi_lv
+url: https://elvi.lv/
+language: lv
+cadence: weekly
+channel: supermarket
+archive_prefix: "elvi.lv/produkti/"
+archive_path_re: '^/produkti/[^/?]+'
+notes: |
+  Bespoke WordPress storefront, no category-listing catalog -- the sitemap
+  (https://elvi.lv/sitemap.xml) is the only enumeration surface and lists
+  ~2870 individual /produkti/<slug>/ product pages directly. Each page is
+  plain SSR HTML. Re-verified live 2026-08-06: /produkti/banani-17/ -> 200,
+  <h1>BANĀNI</h1>, price block '0.89€'. National chain, bespoke storefront,
+  prices render server-side. cfg_currency (EUR) matches what the probe saw.

@@ -9,6 +9,8 @@ language: en
 currency: USD
 cadence: weekly
 coicop_codes: null
+archive_prefix: "apharmasolutions.com/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Medical-supplies distributor (ampoules, IV sets, intravenous solutions).
   Shard listed Iraq/Jordan/Lebanon/Palestine as candidates; the contact

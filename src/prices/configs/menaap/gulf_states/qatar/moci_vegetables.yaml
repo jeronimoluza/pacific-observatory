@@ -1,0 +1,26 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["01.1.7"]
+channel: wholesale
+source_key: qa_moci_vegetables
+module: menaap.gulf_states.qatar.moci_vegetables
+function: fetch_qa_moci_vegetables
+url: https://www.moci.gov.qa/en/our-services/consumer/commodities-daily-prices/
+language: en
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  Re-verified live 2026-08-06: Ministry of Commerce and Industry Central
+  Market daily prices, statutory price-transparency feed. Two category pages
+  ("Daily Vegetable Prices" id=12 domestic, "Imported Vegetable Prices" id=13)
+  share one underlying jQuery ajax JSON endpoint at
+  wp-content/themes/2018_mec_v1/api/dailyPrice.php?id=<id>&lang=en — QAR per
+  kilogram, wholesale central-market prices with country-of-origin in the
+  `Source` field (kept in notes). id=13 (imported) is fresh (dated
+  29/07/2026 at probe time); id=12 (domestic) trails by ~11 months
+  (18/09/2025) — the ministry updates the two pages on different cadences.
+  Rows with price=0.00 (out of season / not traded) are dropped at source.
+  coicop_divisions: 01
+  divisions_basis: walked_categories (both vegetable endpoints enumerated in full)

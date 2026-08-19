@@ -8,6 +8,8 @@ language: en
 currency: TTD
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.courts.com/trinidadandtobago/"
+archive_path_re: '^/trinidadandtobago/[^/?]+'
 notes: |
   Courts Trinidad and Tobago (Unicomer Group). See
   lac/caribbean/jamaica/courts_jm.yaml for the full platform writeup --

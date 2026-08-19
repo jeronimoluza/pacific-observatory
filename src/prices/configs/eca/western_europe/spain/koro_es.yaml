@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: koro_es
+language: es
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.koro.com/es/detail/"
+archive_path_re: '^/es/detail/[^/?]+'
+notes: |
+  Nuxt3 frontend over the shared Shopware 6 backend (bff.koro.com); one
+  sales channel per country, this is koro_es. Store API POST
+  /store-api/product with sw-access-key header. Requires
+  "total-count-mode":1 or Shopware reports total==page size. Access key is
+  channel-scoped -- do not reuse across KoRo country storefronts. Full
+  platform writeup: see eca/western_europe/austria/koro_at.yaml.
+
+  Verified live 2026-08-07: POST with the ES access key returns real ES
+  catalog rows priced in EUR. URL built as www.koro.com/es/detail/{id}.
+  Complementary to the existing mercadona/dia_es full-line grocers -- koro_es
+  is specialty/organic bulk food, not a substitute.
+
+  coicop_divisions: 01, 05, 06
+  divisions_basis: walked_categories (14 top-level nav categories enumerated
+  via /store-api/navigation on the shared platform; same category tree
+  across all KoRo channels)

@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dodomarket_mu
+url: https://dodomarket.mu/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "dodomarket.mu/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront on the custom domain, /products.json?limit=250&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, real Mauritius grocery/
+  patisserie SKUs — 'Mestemacher Protein Toastrolls 260g' MUR 181.00,
+  'San Sebastian Vanilla Cheesecake' MUR 3000.00, 'Plant-Based Patisserie
+  Loaf' MUR 2290.00, 'Carnation Kiss Bouquet' MUR 1350.00, 'Graduate Joy
+  Bouquet with Scholar Teddy' MUR 600.00 (also carries flowers/gifting,
+  non-food, alongside DodoFresh groceries). Page bundle confirms
+  `"currency":"MUR"`, matches countries.yaml.

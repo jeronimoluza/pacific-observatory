@@ -1,0 +1,59 @@
+coicop_leaf,n_corpus_candidates,verdict,failure_mode_verified,bottleneck,misrouted_to,evidence_countries,note
+01.1.1.1.1,17,thin_present,sourcing_gap,sourcing,,NZ/TH/SG/AU/VU/PH/FJ/MY,bulgur+farro+2 wheat-grain; all dropped
+01.1.1.1.3,6,thin_present,sourcing_gap,sourcing,,MY/SG/HK/TW/KH,sorghum grain; label WRONG; niront KH retailer
+01.1.1.1.6,5,thin_present,sourcing_gap,sourcing,,KH/PH/SG/MM/JP,maize; grits/hominy forms only; whole-kernel~0
+01.1.1.1.8,1,thin_present,sourcing_gap,sourcing,,HK,teff grain; 1 SKU; weak label change (oor→sg)
+01.1.1.2.3,2,thin_present,sourcing_gap,sourcing,,HK/SG,flour of sorghum; label WRONG (Bob's Red Mill)
+01.1.1.2.4,0,true_zero,out_of_region,true_absence,,,"barley flour=0 (barley grain heavily retailed, flour not)"
+01.1.1.2.5,3,thin_present,sourcing_gap,sourcing,,KH/FJ,flour of millet; label WRONG
+01.1.1.2.7,8,thin_present,sourcing_gap,sourcing,,TH/KH/FJ/SG/MV,flour of quinoa; label WRONG; cleanest 8/8 genuine
+01.1.1.2.8,2,thin_present,sourcing_gap,sourcing,01.1.1.2.9,KH/HK,flour of teff; label WRONG; 1 misrouted
+01.1.2.2.5,1,thin_present,out_of_region,true_absence,,JP,single gourmet rabbit import; boundary
+01.1.2.2.6,290,abundant_dropped,sourcing_gap,gold_labeling,01.1.2.5.9,JP,basashi horse meat; 290 SKUs; label WRONG
+01.1.2.2.7,0,true_zero,out_of_region,true_absence,,,no camel/camelid meat SKU anywhere
+01.1.2.3.1,327,abundant_dropped,sourcing_gap,gold_labeling,01.1.9.3.9,TW/VN/KR/ID+15,beef jerky/floss; 19 countries; 315 dropped
+01.1.3.1.3,65,thin_present,sourcing_gap,sourcing,,KR/TW/HK/PH/SG,flatfish/halibut; KR 가자미/광어 cluster
+01.1.3.1.6,20,thin_present,sourcing_gap,sourcing,01.1.3.3.2,JP/KR/VN,JP unsalted frozen mackerel; canned→3.3.2 correct
+01.1.3.2.2,16,thin_present,sourcing_gap,sourcing,,KR/PH,KR 황태/코다리 dried pollock
+01.1.3.4.5,17,thin_present,sourcing_gap,sourcing,,KR/JP/VN/TL,abalone+sea-snail ONLY; KR live abalone 완도
+01.1.3.5.2,28,thin_present,sourcing_gap,sourcing,01.1.9.3.9,KR/KH,게장 gejang brine-crab; naive-EN blind spot
+01.1.3.5.3,9,thin_present,sourcing_gap,sourcing,01.1.9.3.9,CN/KR/HK/TW,dried scallop/conpoy; 干貝 fresh/dried overload
+01.1.3.5.5,3,thin_present,sourcing_gap,sourcing,,HK,"weakest; dried conch only, dried abalone=0"
+01.1.3.6.2,25,thin_present,sourcing_gap,sourcing,,KH/HK/FJ/TO/TV,prepared crab meat; Pacific spread; surimi→3.3.9 correct
+01.1.3.7.0,25,thin_present,sourcing_gap,sourcing,,JP/KR/TW/SG/VU,roes/offal; deepest cluster; Vanuatu scallop roe
+01.1.4.1.2,1,thin_present,out_of_region,true_absence,01.1.4.1.1,SG,1 Amul buffalo milk import; misrouted to cattle
+01.1.4.1.3,19,thin_present,sourcing_gap,sourcing,01.1.4.1.1,TW/TH/SG/NZ/MV/BN,goat/sheep milk; 3 misrouted to cattle; label WRONG
+01.1.4.1.4,1,thin_present,out_of_region,true_absence,,AU,1 boutique camel dairy; boundary
+01.1.4.8.2,0,true_zero,out_of_region,true_absence,,,"eggs of OTHER ANIMALS=turtle(~0 EAP); the 98 duck/quail are BIRDS->01.1.4.8.1(3298 classified,correct); overlay over-counted (r14 def-check)"
+01.1.4.9.0,16,thin_present,sourcing_gap,sourcing,01.1.4.5.0,JP/HK/SG/NZ,residual dairy; clotted cream/quark; def-boundary limited
+01.1.5.9.2,12,thin_present,sourcing_gap,sourcing,,AU/NZ/JP/VN/MY,edible beef tallow; label WRONG
+01.1.5.9.3,0,true_zero,out_of_region,true_absence,,,"fish oil = Omega-3 supplements (pharma, not div-01)"
+01.1.6.1.3,9,thin_present,sourcing_gap,sourcing,01.1.6.7.9,SG/KH/PH/MY,fresh dates; 1 misrouted to dried-fruit
+01.1.6.3.3,1,thin_present,sourcing_gap,sourcing,,FJ,razor-thin; ~all dried/jam/cosmetic 杏-color
+01.1.6.4.1,2,thin_present,sourcing_gap,sourcing,,HK/SG,razor-thin; blackcurrant-flavor noise
+01.1.6.4.2,6,thin_present,sourcing_gap,sourcing,,TH/MY/SG,mostly Cape/Physalis gooseberry (botanical caveat)
+01.1.6.4.3,6,thin_present,sourcing_gap,sourcing,,PH/SG/HK,"Driscoll's; sibling blue/black-berry route, raspberry drops"
+01.1.6.4.7,0,true_zero,out_of_region,true_absence,,,cranberries all juice/dried; cold-climate; label WRONG (sg→oor)
+01.1.6.5.5,13,thin_present,sourcing_gap,sourcing,,PH/MY/SG/KH/TH/VN,persimmons; best recovery target; 6 countries
+01.1.6.5.6,0,true_zero,out_of_region,true_absence,,,cashew apple; 100% Cajun collision
+01.1.6.8.8,7,thin_present,sourcing_gap,sourcing,01.1.6.9.4,KH/MY/BT/AU/SG,raw peanuts; 2 misrouted to roasted-nuts
+01.1.7.1.6,4,thin_present,sourcing_gap,sourcing,,TH/SG/VN,fresh artichoke; SG-brand line at Tops TH
+01.1.7.1.7,10,thin_present,sourcing_gap,sourcing,,ID,cassava leaves; Indonesia-only (pasar spiders)
+01.1.7.3.1,0,true_zero,out_of_region,true_absence,,,"fresh SHELLED beans ~0 EAP; 212 string/long/green->sibling 01.1.7.3.2(315 classified,emittable); overlay over-counted (r14 def-check)"
+01.1.7.3.4,0,true_zero,sourcing_gap,sourcing,,,"fresh fava; eaten JP/CN but 0 in corpus (unscraped, in-region)"
+01.1.7.3.5,25,thin_present,sourcing_gap,gold_labeling,,JP+6,edamame; JP farm-direct dozens; all dropped
+01.1.7.4.6,12,thin_present,sourcing_gap,sourcing,,KH/PH/FJ/SG/JP,fresh sea-grapes/lato + raw wakame/miyeok
+01.1.7.4.7,0,true_zero,out_of_region,true_absence,,,raw olives inedible; all cured/brand homonym
+01.1.7.5.3,7,thin_present,sourcing_gap,sourcing,,FJ/PH/MY/VN/TV,fresh cassava root; frozen→1.7.8.0 correct
+01.1.7.5.4,18,thin_present,sourcing_gap,sourcing,,TW/HK/MY/NZ/KH/VN/KR,fresh yam tuber; 7 countries; Tom-Yam noise stripped
+01.1.7.5.6,0,true_zero,out_of_region,true_absence,,,yautia; Britannia collision; Andean/African crop
+01.1.7.6.2,3,thin_present,sourcing_gap,sourcing,,SG/AU/KH,dried fava; snack form dominates
+01.1.7.6.3,25,thin_present,sourcing_gap,sourcing,,MY/KH/BD/FJ+7,dried chickpea/chana; 11 countries; canned dominates
+01.1.7.6.6,3,thin_present,sourcing_gap,sourcing,,MY/HK/KH,cow peas/black-eyed; label WRONG (oor→sg)
+01.1.7.6.7,16,thin_present,sourcing_gap,sourcing,01.1.7.6.5,FJ/MM/SG,pigeon peas/toor dal; label WRONG; 1 misrouted
+01.1.7.6.8,1,thin_present,out_of_region,true_absence,,TH,bambara; 1 ambiguous snack SKU; borderline
+01.1.8.1.2,9,thin_present,sourcing_gap,sourcing,,JP/TW/HK,beet sugar; explicit 甜菜糖; label WRONG
+01.1.8.5.2,17,thin_present,sourcing_gap,sourcing,,JP/BN/MM+7,cocoa beans/nibs; 10 countries; label WRONG
+01.1.8.9.1,37,thin_present,sourcing_gap,sourcing,01.1.6.9.2,VN/TW/JP/TH+6,sugar-preserved fruit; biggest; 1 misrouted
+01.2.2.0.2,9,thin_present,sourcing_gap,gold_labeling,01.2.2.0.9,JP/KH/AU/NZ/PH/KR,coffee substitutes; label WRONG; dumped to .9
+01.2.3.0.5,10,thin_present,sourcing_gap,gold_labeling,01.2.3.0.9,HK/JP/TH/SG,maté; label WRONG; dumped to .9

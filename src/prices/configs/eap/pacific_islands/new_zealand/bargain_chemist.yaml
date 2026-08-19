@@ -1,3 +1,5 @@
 spider: bargain_chemist
 language: en
 channel: pharmacy
+archive_prefix: "www.bargainchemist.co.nz/products/"
+archive_path_re: '^/products/[^/?]+'

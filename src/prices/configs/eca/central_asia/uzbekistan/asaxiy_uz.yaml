@@ -9,6 +9,8 @@ currency: UZS
 cadence: weekly
 channel: dept-store
 coicop_codes: null
+archive_prefix: "asaxiy.uz/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Uzbekistan general retailer (electronics/appliances/books/household).
   Verified live 2026-08-17: curl_cffi impersonate=chrome124 clears

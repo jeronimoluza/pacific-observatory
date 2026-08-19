@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: riteway_vg
+url: https://www.riteway.vg/shop-groceries.html
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "riteway.vg/"
+archive_path_re: '^/[a-z0-9][a-z0-9\-]*\.html$'
+notes: |
+  60-year BVI chain, 9 stores. Magento 2 ("Roadtown" theme) SSR HTML;
+  /graphql 404s via the Varnish edge (module disabled), so the spider
+  reads the server-rendered shop-groceries.html category listing directly.
+  Live re-verify: GET /shop-groceries.html -> 200, 1.9MB, real product
+  cards incl. "Fresh Ground Beef" USD 4.99. Standard Magento ?p=N
+  pagination. Currency USD matches countries.yaml.

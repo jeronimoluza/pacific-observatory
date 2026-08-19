@@ -8,6 +8,8 @@ language: es
 currency: CLP
 cadence: weekly
 channel: dept-store
+archive_prefix: "www.falabella.com/falabella-cl/product/"
+archive_path_re: '^/falabella\-cl/product/[^/?]+'
 notes: |
   Falabella Chile, the national dept-store banner. Re-verified live
   2026-08-17: homepage is a Next.js CSR shell, but category listing

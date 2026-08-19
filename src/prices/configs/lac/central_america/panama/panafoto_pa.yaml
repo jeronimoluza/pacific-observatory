@@ -8,6 +8,8 @@ language: es
 currency: USD
 cadence: weekly
 channel: electronics
+archive_prefix: "panafoto.com/"
+archive_path_re: '^/[\w][\w\-]*$'
 notes: |
   Electronics/appliances chain, Magento 2 storefront. REST (/rest/V1/products) is auth-gated
   (401 "not authorized"); the GraphQL endpoint (/graphql) is open and unauthenticated. Live

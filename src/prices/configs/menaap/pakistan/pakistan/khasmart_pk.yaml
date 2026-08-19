@@ -9,6 +9,8 @@ language: en
 currency: PKR
 cadence: weekly
 coicop_codes: null
+archive_prefix: "khasmart.pk/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Pakistani pharmacy retailer (medicine, personal care) with a smaller
   grocery/baby-shop section mixed in. WooCommerce Store API confirmed live

@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_sdn
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_sdn
+url: https://data.humdata.org/dataset/369e003b-f0af-4e48-99d7-34fc85b44635
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Sudan via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_sdn.csv (200, 2.8MB, 22,225 rows),
+  currency SDG throughout (matches countries.yaml). Max observation date is
+  2026-06-15 — current. Thinnest SSA panel by commodity count (16) —
+  war-affected data collection constrained. Sorghum, wheat, wheat flour,
+  beef/goat meat, powdered milk, onions, iodised salt, sugar. Sample at max
+  date: 'Millet', 3.5 KG, SDG 9188. Per-market rows collapsed to a national
+  monthly average per commodity/unit/currency/price-type; market count +
+  USD value kept in notes; retail vs wholesale kept in the dedup hash.
+  COICOP deferred to the classifier (item_name = WFP commodity).

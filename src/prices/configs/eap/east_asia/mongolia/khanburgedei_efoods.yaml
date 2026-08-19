@@ -7,6 +7,8 @@ url: https://efoods.khanburgedei.mn/
 language: mn
 cadence: daily
 channel: supermarket
+archive_prefix: "efoods.khanburgedei.mn/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Khanburgedei is a premium Mongolian supermarket chain (TTEM LLC, ~8 stores).
   This is its dedicated grocery storefront (separate from the general-

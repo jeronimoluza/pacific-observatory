@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: maxi_wolt_rs
+url: https://wolt.com/en/srb/belgrade/venue/maxi-bulevar-osloboenja
+language: sr
+cadence: weekly
+channel: marketplace
+archive_prefix: "wolt.com/en/srb/belgrade/venue/"
+archive_path_re: '^/en/srb/belgrade/venue/[^/?]+'
+notes: |
+  Maxi (Delhaize's major Serbian supermarket chain) Bulevar Oslobodjenja
+  branch on the Wolt delivery marketplace. Same SSR query-state walk as
+  ab_vassilopoulos_wolt_gr (shared base `_wolt_base.py`): venue page ->
+  category-listing (36 category slugs, Serbian: sveze-voce-i-povrce,
+  pekara, meso-i-riba, ...) -> per-category `/items/<slug>` page 1 (up to
+  50 items each). Synthetic url = f"{venue_url}#{item_id}".
+  Re-verified live 2026-08-06: /venue/maxi-bulevar-osloboenja -> 200, real
+  Serbian-language SKUs with RSD prices and barcode_gtin.
+  channel:marketplace (Wolt aggregates the first-party retailer's catalog).

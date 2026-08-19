@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: billa_sk
+url: https://www.billa.sk/
+language: sk
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.billa.sk/produkt/"
+archive_path_re: '^/produkt/[^/?]+'
+notes: |
+  Same Nuxt/React hybrid platform family as Billa CZ, scaffolded as an
+  independent one-off spider file per the wave's convention. 79 top-level
+  category slugs (English-language internal codenames, e.g. "beef-2761")
+  cover the whole assortment; listed in _billa_sk_categories.txt. Pagination
+  via ?page=N is cumulative (same mechanism as Billa CZ) -- the spider walks
+  page=1,2,3... and stops once item count stops growing.
+
+  Re-verified live 2026-08-06: /produkty -> 200, 592KB SSR, real product
+  tile "FRANC.BAGETA STREDNÁ 120G(110G) LA LORR." 0,35 €. Overturns shard's
+  D-tier "SUSPECT" prediction -- plain curl works, no WAF encountered.

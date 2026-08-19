@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: yemenbox
+url: https://yemenbox.com/collections/grocery/products.json
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "yemenbox.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, but only the grocery collection is scoped
+  (/collections/grocery/products.json?limit=250&page=N) rather than the
+  bare /products.json root. Re-verified live 2026-08-06: HTTP 200, real SKUs
+  (e.g. 'Kraft Cheddar Cheese (190 g )' 3.99 USD, tags:['GROCERY']).
+  Currency is USD, not YER (countries.yaml declares YER) — this is a
+  diaspora-shipping storefront pricing in USD, not domestic Yemeni retail;
+  treat accordingly downstream. Catalog is imported packaged/shelf-stable
+  goods (cheese, desserts, canned), not fresh produce or meat.

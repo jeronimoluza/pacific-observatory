@@ -8,6 +8,8 @@ language: bs
 currency: BAM
 cadence: weekly
 channel: electronics
+archive_prefix: "domod.ba/shop/proizvod/"
+archive_path_re: '^/shop/proizvod/[^/?]+'
 notes: |
   Verified live 2026-08-17. Bosnian electronics/appliances/home retailer.
   Server-rendered category pages at /shop/<department>?page=N — product

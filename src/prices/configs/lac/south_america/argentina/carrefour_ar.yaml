@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: carrefour_ar
+url: https://www.carrefour.com.ar/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.carrefour.com.ar/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Full-line hypermarket, independent VTEX tenant from the Cencosud AR banners. Re-verified live:
+  products/search?_from=0&_to=9 -> HTTP 206, 240KB, 'Rollo de cocina Sussex clasico 50 panos 3
+  uni' ARS 2044.00. Currency matches countries.yaml (ARS).

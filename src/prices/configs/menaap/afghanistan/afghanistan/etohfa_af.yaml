@@ -9,6 +9,8 @@ language: en
 currency: USD
 cadence: weekly
 coicop_codes: null
+archive_prefix: "www.e-tohfa.com/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   General online marketplace serving Kabul, Afghanistan (title tag: "online
   shopping market in kabul Afghanistan"; contact page lists Kabul,

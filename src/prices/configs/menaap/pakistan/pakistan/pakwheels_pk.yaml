@@ -10,6 +10,8 @@ language: en
 currency: PKR
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.pakwheels.com/used-cars/"
+archive_path_re: '^/used\-cars/[^/?]+'
 notes: |
   Verified live 2026-08-17: PakWheels — Pakistan's dominant vehicle
   classifieds site. The catalog is overwhelmingly (effectively 100% of

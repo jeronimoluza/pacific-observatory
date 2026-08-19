@@ -8,6 +8,8 @@ language: nl
 currency: EUR
 cadence: weekly
 channel: home-improvement
+archive_prefix: "www.gamma.nl/assortiment/"
+archive_path_re: '^/assortiment/[^/?]+'
 notes: |
   GAMMA Netherlands — DIY / home-improvement chain (Next.js App Router /
   RSC storefront). Verified live 2026-08-17: plain curl_cffi chrome124

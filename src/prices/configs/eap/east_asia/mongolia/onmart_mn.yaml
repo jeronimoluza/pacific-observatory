@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: onmart_mn
+url: https://onmart.mn/
+language: mn
+cadence: daily
+channel: supermarket
+archive_prefix: "onmart.mn/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Next.js front-end; product list served by an open JSON API on the sibling
+  host api.onmart.mn (/api/products, no auth). ~2,346 products, paginated
+  20/page. Prices already whole MNT (no minor-unit rescaling). Product
+  title/description are Cyrillic Mongolian under a "title.en" key (site has
+  no other locale wired up) — verified Cyrillic survives intact through the
+  API, matching the rendered PDP text.

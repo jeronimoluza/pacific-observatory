@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: yombouna_sn
+url: https://yombouna.sn/
+language: fr
+cadence: weekly
+channel: supermarket
+notes: |
+  SvelteKit SPA whose homepage bootstrap script inlines
+  PUBLIC_SUPABASE_URL + PUBLIC_SUPABASE_ANON_KEY directly (not a hidden
+  bundle) -- backed by a wide-open Supabase PostgREST `products` table.
+  UPGRADE over the shard's original WooCommerce guess, which 404s.
+  Re-verified live 2026-08-06 with the key found this session: GET
+  .../rest/v1/products?select=* -> 200, count=exact confirms 1,677 total
+  rows, e.g. 'farine de manioc 500G' 1500 XOF (category "Produits
+  Locaux"). Categories span Accessoire Cuisine, Boulangerie et Patisserie,
+  Bebe, Cosmetique, Drogerie & Entretien maison, Epicerie Salee-Cuisine,
+  Epicerie Sucree, Produits Frais, Produits Locaux. Currency XOF matches
+  countries.yaml.

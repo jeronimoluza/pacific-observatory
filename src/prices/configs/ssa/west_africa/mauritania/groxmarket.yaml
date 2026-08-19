@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: groxmarket
+url: https://groxmarket.com/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "groxmarket.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth — confirmed
+  in this session with a clean JSON endpoint (prior probe only checked the
+  homepage HTML). Re-verified live 2026-08-06: HTTP 200, real SKUs (e.g.
+  'Creme de soin nutrition' 600 MRU, 'Shampooing' 550 MRU). Currency MRU
+  matches countries.yaml. Product titles are French (Nouakchott,
+  Mauritania), so language is set to fr despite the shard's en starting
+  point. Sampled page skews personal-care/cosmetics; whole-catalog walk will
+  surface the grocery side.

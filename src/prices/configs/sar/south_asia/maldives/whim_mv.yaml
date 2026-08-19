@@ -1,4 +1,6 @@
 spider: whim_mv
 language: en
+archive_prefix: "whim.com.mv/shop/"
+archive_path_re: '^/shop/[^/?]+'
 notes: Maldives online supermarket on Odoo; PDPs at /shop/<slug>-<id>.
 channel: supermarket

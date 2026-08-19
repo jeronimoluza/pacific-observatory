@@ -8,6 +8,8 @@ language: es
 currency: CRC
 cadence: weekly
 channel: dept-store
+archive_prefix: "gollo.com/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
 notes: |
   Gollo, Costa Rica. Magento-flavored SSR storefront; GraphQL (/graphql)
   is explicitly disabled (403 "GraphQL disabled", Varnish) -- confirmed

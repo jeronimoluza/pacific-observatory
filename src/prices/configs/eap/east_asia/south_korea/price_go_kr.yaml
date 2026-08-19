@@ -1,0 +1,37 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: kr_price_go
+module: eap.east_asia.south_korea.price_go_kr
+function: fetch_kr_price_go
+url: https://www.price.go.kr/tprice/portal/dailynecessitypriceinfo/priceiteminfo/getPriceItemInfoList.do
+language: ko
+cadence: weekly
+fallback_date: 2020-01-01
+notes: |
+  Korea Consumer Agency (한국소비자원) 참가격 daily-necessities item price info.
+  Government cross-retailer price-comparison survey — fills the official_avg
+  gap for South Korea (existing KR sources are single-retailer spiders:
+  gmarket, oasis_kr, kurly_kr, ikea_kr).
+
+  `getPriceItemInfoList.do` is a JSP form-POST grid (SSR), not a JSON AJAX
+  endpoint — the site's own "조회" button does a real form submit and the
+  server re-renders the page with results embedded. The filter dropdowns
+  (item groups/small classes/products, inspection year/month/day) ARE small
+  JSON endpoints and are used to discover the taxonomy and the latest
+  inspection date dynamically at fetch time; see price_go_kr.py docstring for
+  the full quirk list (goodClassCode must be the group HIGH_CODE not the
+  small-class code; goodId must be explicit; stateless, no session/CSRF
+  needed; verify=False required — server sends only its leaf TLS cert).
+
+  Basket: 13 item groups / 168 small classes / ~450 named branded products
+  spanning food, personal care (이미용품), and household cleaning/kitchen
+  (세탁·주방·가사용품) — wide, not narrow, hence coicop_classification:
+  classifier. Emits one row per product per inspection date: the "전국 전체
+  판매점 평균" (nationwide all-outlet average), not per-outlet rows.
+  Inspection cadence is biweekly (Wed dept-store/convenience, Thu
+  hypermarket/supermarket); getInspectYear.do confirms real history back to
+  2020. A full-catalog run is ~620 requests (168 small-class lookups + ~450
+  product-price fetches), threaded 8-way, ~2-3 min wall time.

@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: wizashopping_ls
+url: https://wizashopping.co.ls/
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "wizashopping.co.ls/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 19.5KB JSON. Sample: 'Pork Chops per KG' price 11555 minor units
+  / currency_minor_unit=2 -> LSL 115.55 (per-kg meat pricing). currency_code
+  LSL matches countries.yaml (unlike lesothovirtualmall.co.ls, no
+  misconfiguration seen here). Price-comparison hub across multiple Lesotho
+  retailers — likely overlaps with virtualmall_ls SKUs. Whole-catalog walk
+  (no category filter).

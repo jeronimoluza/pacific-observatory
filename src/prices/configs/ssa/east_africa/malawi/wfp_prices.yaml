@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_mwi
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_mwi
+url: https://data.humdata.org/dataset/wfp-food-prices-for-malawi
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Malawi via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_mwi.csv (200, 10.6MB, 82,818 rows).
+  Currency is overwhelmingly MWK (matches countries.yaml); a small legacy
+  batch of 717 rows carries currency SOS (Somali Shilling) but those are all
+  dated 1998, well before this fetcher's fallback_date of 2020-01-01, so
+  they never surface in output — no filtering change needed. Max
+  observation date is 2026-07-15 — current. 63 distinct commodities,
+  notably rich in Malawi-specific leafy greens (amaranthus, blackjack,
+  cowpea, mustard, pumpkin, rape leaves) and dried small fish (bonya,
+  kapenta, matemba, usipa, utaka). Sample at max date (MWK rows): 'Fuel
+  (diesel)', L, MWK 6307 — food-commodity samples at the same date include
+  maize/rice/beans lines. Per-market rows collapsed to a national monthly
+  average per commodity/unit/currency/price-type; market count + USD value
+  kept in notes; retail vs wholesale kept in the dedup hash. COICOP
+  deferred to the classifier (item_name = WFP commodity).

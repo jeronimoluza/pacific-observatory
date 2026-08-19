@@ -1,0 +1,27 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_egy
+module: _shared.menaap.wfp_food_prices
+function: fetch_wfp_egy
+url: https://data.humdata.org/dataset/wfp-food-prices-for-egypt
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Egypt via HDX (shared MENAAP fetcher
+  _shared.menaap.wfp_food_prices). Re-verified live 2026-08-07: CKAN
+  package_show resolves wfp_food_prices_egy.csv (200, 3,652 rows), currency
+  EGP throughout (matches countries.yaml). Max observation date 2026-06-15
+  -- current (checked max(date) directly on the pulled CSV, not the CKAN
+  last_modified field). 40 commodities incl. wheat flour, rice, beans,
+  lentils, cooking oil, sugar, bread, milk, eggs, chicken, potatoes,
+  onions, tomatoes -- narrower market coverage than Algeria/Djibouti
+  (fewer WFP-monitored markets in Egypt) but same commodity/price-type
+  structure. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type. COICOP deferred to the classifier.
+  coicop_divisions: 01
+  divisions_basis: sampled_rows (commodity list is entirely division-01
+  staple foods)

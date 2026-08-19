@@ -269,13 +269,28 @@ def _load_spider_parse_html(spider_name: str):
     the backfiller falls back to the SPIDER_SELECTORS path.
     """
     import importlib
+    import sys
+
+    # Concrete spiders import their base as `price_scraping.spiders._woo_base`
+    # — the Scrapy-project-relative path, which only resolves when the project
+    # root is on sys.path. Alias the package instead of touching sys.path:
+    # `src/prices` on the path would shadow the stdlib-adjacent `build`
+    # package with `prices/build/`. Without this every platform-base spider's
+    # `parse_html` silently resolves to None.
+    if "price_scraping" not in sys.modules:
+        with suppress(ImportError):
+            sys.modules["price_scraping"] = importlib.import_module(
+                "prices.price_scraping"
+            )
 
     try:
         mod = importlib.import_module(f"prices.price_scraping.spiders.{spider_name}")
     except ImportError:
-        logger.debug(
-            "[wayback] no spider module prices.price_scraping.spiders.%s",
+        logger.warning(
+            "[wayback] cannot import prices.price_scraping.spiders.%s — "
+            "any parse_html hook it has will be skipped",
             spider_name,
+            exc_info=True,
         )
         return None
     for attr_name in dir(mod):
@@ -307,23 +322,43 @@ def run_source_backfill(
     discovery: str = "bulk",
     granularity: str = "week",
     requests_per_second: float = 1.5,
+    universe_mode: str = "scraped",
+    archive_prefix: str | None = None,
+    archive_path_re: str | None = None,
+    currency_override: str | None = None,
 ) -> dict[str, int]:
     """Backfill one source. Returns stats dict.
+
+    `universe_mode="scraped"` backfills only URLs we collected live.
+    `universe_mode="archive"` backfills every product URL Wayback holds under
+    `archive_prefix`, including products delisted before we started scraping.
 
     Writes:
       {source_dir}/wayback_items/{source}_{run_ts}.jsonl
       {source_dir}/wayback_items/.ledger.json
     """
+    archive = universe_mode == "archive"
+    if archive:
+        if discovery != "bulk":
+            raise ValueError("universe_mode=archive requires discovery=bulk")
+        if not archive_prefix:
+            raise ValueError(
+                "universe_mode=archive requires archive_prefix — without it the "
+                "CDX scope is derived from the scraped set, which is the thing "
+                "archive mode exists to ignore"
+            )
+
     universe = load_url_universe(source_dir)
     if max_urls is not None:
         universe = universe[:max_urls]
 
     stats = {
         "urls_total": len(universe),
+        "urls_discovered": 0,
         "urls_processed": 0,
         "rows_written": 0,
     }
-    if not universe:
+    if not universe and not archive:
         logger.info("[%s] no URLs to backfill", source_dir.name)
         return stats
 
@@ -332,7 +367,7 @@ def run_source_backfill(
     ledger = Ledger.load(wayback_dir / ".ledger.json")
     parse_html_fn = _load_spider_parse_html(spider)
     selectors = get_selectors(spider) if parse_html_fn is None else {}
-    currency = _resolve_currency(source_dir)
+    currency = currency_override or _resolve_currency(source_dir)
 
     # CDX `from=` is the EARLIEST snapshot date to include. For backfill we
     # want every archived snapshot (older than what live collection already
@@ -344,19 +379,34 @@ def run_source_backfill(
     if discovery == "bulk":
         disc_session = make_session()
         try:
-            bulk_ts = bulk_discover(
-                disc_session, universe, cutoff, granularity=granularity
+            bulk_ts, extra = bulk_discover(
+                disc_session,
+                universe,
+                cutoff,
+                granularity=granularity,
+                include_unmatched=archive,
+                scope_prefix=archive_prefix,
+                path_re=archive_path_re,
             )
         finally:
             disc_session.close()
+        if extra:
+            universe = universe + extra
+            stats["urls_discovered"] = len(extra)
+            stats["urls_total"] = len(universe)
         logger.info(
-            "[%s] bulk discovery: %d/%d urls have snapshots, %d total after %s collapse",
+            "[%s] bulk discovery: %d/%d urls have snapshots (%d never scraped), "
+            "%d total after %s collapse",
             source_dir.name,
             len(bulk_ts),
             len(universe),
+            len(extra),
             sum(len(v) for v in bulk_ts.values()),
             granularity,
         )
+        if not universe:
+            logger.info("[%s] no URLs to backfill", source_dir.name)
+            return stats
 
     run_ts = datetime.now(timezone.utc).strftime(_RUN_TS_FMT)
     out_path = wayback_dir / f"{source_dir.name}_{run_ts}.jsonl"

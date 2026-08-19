@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: downtoearth_ie
+url: https://downtoearth.ie/
+language: en
+cadence: weekly
+channel: pharmacy
+archive_prefix: "downtoearth.ie/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /products.json?limit=6 -> HTTP 200,
+  30.5KB JSON, standard Shopify storefront, no auth. Homepage confirms
+  Shopify.currency active=EUR, matching countries.yaml. Sample: 'Dr.
+  Hauschka Regenerating Day Cream Complexion 40ml' EUR 62.50, 'Three Hills
+  Deodorant Morning Dew For Women 50g' EUR 8.60. Dublin health-food store
+  and homeopathic dispensary -- whole-catalog walk, no collection filter.
+  Existing supermarket_ie.yaml is a basket-comparison aggregate_proxy, not
+  itemized -- this is Ireland's first non-proxy, SKU-level manifest.

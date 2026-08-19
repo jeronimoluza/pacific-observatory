@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_col
+module: _shared.lac.wfp_food_prices
+function: fetch_wfp_col
+url: https://data.humdata.org/dataset/wfp-food-prices-for-colombia
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Colombia via HDX (shared LAC fetcher
+  _shared.lac.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_col.csv (200, 9.8MB, 71,565 rows),
+  currency COP throughout (matches countries.yaml). Max observation date is
+  2026-06-15 — current (CKAN last_modified metadata reports 2026-08-03,
+  which is separate from data currency — always check the max date column,
+  not the CKAN metadata). ~80 unique commodity strings, mostly fresh
+  produce/grains/legumes/fish, wholesale price basis. Sample at max date:
+  'Maize (local)', KG, COP 1650. Per-market rows collapsed to a national
+  monthly average per commodity/unit/currency/price-type; market count +
+  USD value kept in notes; retail vs wholesale kept in the dedup hash.
+  COICOP deferred to the classifier (item_name = WFP commodity).

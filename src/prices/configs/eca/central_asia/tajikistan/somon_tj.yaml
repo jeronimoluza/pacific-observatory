@@ -8,6 +8,8 @@ language: tg
 currency: TJS
 cadence: weekly
 channel: marketplace
+archive_prefix: "somon.tj/adv/"
+archive_path_re: '^/adv/[^/?]+'
 notes: |
   somon.tj — Tajikistan's largest classifieds marketplace. Verified live
   2026-08-17: schema.org Offer microdata (meta itemprop=price/priceCurrency)

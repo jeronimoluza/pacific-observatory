@@ -1,0 +1,50 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "13"]
+source_key: fj_statsfiji_cpi
+module: eap.pacific_islands.fiji.statsfiji_cpi
+function: fetch_fj_statsfiji_cpi
+channel: null
+url: https://www.statsfiji.gov.fj/statistics/economic-statistics/prices/
+language: en
+cadence: monthly
+fallback_date: 2023-01-01
+notes: |
+  FBoS monthly CPI. Checked per the onboarding doctrine whether Fiji
+  publishes BOTH a CPI index and a separate retail-price-level series
+  (which would need two manifests, cpi_benchmark + official_avg) -- it does
+  not. The prices landing page covers CPI, Producer Price Index, Building
+  Material Price Index, and International Merchandise Trade Indexes; all
+  four are index series, none are price-level PriceObservation data. One
+  manifest is correct here; the PPI/BMPI/trade-index siblings are separate
+  future sources, not this one.
+
+  Discovery: the listing page's post links are titled "CONSUMER PRICE INDEX
+  – <Month> <Year>"; fetcher picks the max by (year, month) rather than
+  trusting DOM order, then downloads that post's single linked PDF. Table 3
+  ("CONSUMER PRICE INDEX: NATIONAL, BASE: AVERAGE 12 MONTHS 2019 = 100.0")
+  text-extracts cleanly with pdfplumber -- no OCR needed. Gotcha: the plain
+  string "Table 3" also appears earlier on the cover page (in the list of
+  attached tables), so the parser anchors on the specific "Table 3\nCONSUMER
+  PRICE INDEX: NATIONAL" pairing, not the first "Table 3" match -- the
+  naive anchor silently parsed zero rows. Only monthly rows are emitted;
+  the redundant annual-average summary block (irregular column count for
+  the 2019 base year) is skipped.
+
+  12 COICOP-2018 divisions covered, including Restaurants & Hotels (11).
+  Division 12 (insurance & financial services) not broken out, presumed
+  folded into "Miscellaneous" -> COICOP 13 (verified against
+  data/prices/enrich/gold/coicop_leaves.txt, not assumed -- same fix
+  applied to this round's vnso_cpi.py / nso_cpi.py Pacific CPI fetchers).
+  Source PDF also has a confirmed typo: 2026 rows spell February as
+  "Feruary" -- handled as an explicit alias in _MONTH_NUM.
+
+  Verified 2026-08-11 with a backdated cutoff (2019-01-01) via direct
+  function call before running through `prices collect` (lesson learned
+  from this round's other two Pacific CPI fetchers, both of which wrote
+  bad rows to real data/ output on their first collect-pipeline run before
+  a mapping bug was caught) -- correctly parsed 372 rows (12 codes x 31
+  months, 2024-01 through 2026-07) with values cross-checked by hand
+  against the source PDF text.

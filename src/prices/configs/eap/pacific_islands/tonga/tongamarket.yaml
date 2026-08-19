@@ -7,6 +7,8 @@ url: https://tongamarket.com/product-category/groceries/
 language: en
 cadence: daily
 channel: marketplace
+archive_prefix: "tongamarket.com/shop/"
+archive_path_re: '^/shop/[^/?]+'
 notes: >
   Multi-vendor WooCommerce marketplace (many independent sellers under one
   storefront). Scraped via the public WooCommerce Store API filtered to the

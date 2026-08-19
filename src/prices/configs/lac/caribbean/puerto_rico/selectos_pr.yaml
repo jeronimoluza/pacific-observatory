@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: selectos_pr
+url: https://www.selectoseasyshop.com/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.selectoseasyshop.com/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  Largest verified PR find: 40-store chain, full-line (produce/meat/dairy/
+  beverages confirmed), same NCR Freshop platform already used in-repo for
+  waltermart (PH). Live re-verify: GET
+  api.freshop.ncrcloud.com/2/products?app_key=selectos&limit=5&store_id=5988
+  -> 200, 17,742 items at this store, "ARROZ RICO GRANO MEDIANO" USD 2.69.
+  Unlike walter_mart, this tenant honors skip-based pagination (verified:
+  skip=0 vs skip=3 return different items), so the spider walks
+  limit=100&skip=N to exhaustion instead of department-sharding. Currency
+  USD matches countries.yaml. language overridden to es (Spanish product
+  names), not the shard's cfg_lang "en".

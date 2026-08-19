@@ -1,0 +1,21 @@
+spider: cokonutexpress
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+url: https://www.cokonutexpress.com/
+language: en
+cadence: daily
+archive_prefix: "www.cokonutexpress.com/products/p/"
+archive_path_re: '^/products/p/[^/?]+'
+notes: >
+  Asian/Pacific specialty grocer (Japanese, Filipino, Pacific-islander
+  snacks and staples) shipping to Guam AND CNMI (also serves Saipan) from
+  Burien, WA. Squarespace commerce; /products?format=json returns the
+  full catalog (~57 items, no pagination observed). Each item's own
+  structuredContent.priceMoney is always 0.00 -- real price lives on
+  structuredContent.variants[*].priceMoney (currency USD confirmed in
+  payload). NOTE: this source also serves CNMI, which is being onboarded
+  separately by another agent -- do not duplicate a CNMI manifest for
+  this domain; it lives here under Guam only.

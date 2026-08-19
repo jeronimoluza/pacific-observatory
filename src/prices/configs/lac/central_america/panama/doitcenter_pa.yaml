@@ -8,6 +8,8 @@ language: es
 currency: USD
 cadence: weekly
 channel: home-improvement
+archive_prefix: "www.doitcenter.com.pa/productos/"
+archive_path_re: '^/productos/[^/?]+'
 notes: |
   Do it Center -- Panama home-improvement / hardware chain (Next.js
   storefront on the Webscale platform; the shard's Magento-REST evidence

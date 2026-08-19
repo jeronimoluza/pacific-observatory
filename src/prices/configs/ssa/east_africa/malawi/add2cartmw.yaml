@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: add2cartmw
+url: https://www.add2cartmw.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.add2cartmw.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
+  live 2026-08-06: HTTP 200, real SKUs (e.g. 'BIG TREE APPY 500ML',
+  product_type 'soft drink', tags ['Grocery','Lilongwe','Malawi']). Currency
+  MWK matches countries.yaml.

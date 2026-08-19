@@ -1,3 +1,5 @@
 spider: nz_online_chemist
 language: en
 channel: pharmacy
+archive_prefix: "www.nzonlinechemist.co.nz/products/"
+archive_path_re: '^/products/[^/?]+'

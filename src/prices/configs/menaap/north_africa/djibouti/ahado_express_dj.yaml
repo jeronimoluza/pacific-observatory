@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ahado_express_dj
+url: https://ahadoexpress.net/
+language: fr
+cadence: weekly
+channel: supermarket
+notes: |
+  AHADO EXPRESS (Djibouti). Static site whose catalog is client-rendered from
+  a public Google Sheets gviz endpoint, not a normal REST API. Re-verified
+  live 2026-08-06: GET
+  https://docs.google.com/spreadsheets/d/1WnLMz5rtsKa0cCmbqNN_Fh3d_5nm99kJVmzrN4427-Y/gviz/tq?tqx=out:json&sheet=Produits
+  -> HTTP 200, 44KB gviz-wrapped JSON, 174 rows. Sample: 'Bio' with pack tiers
+  '1 paquet' 500 FDJ / 'Pack (x6)' 2900 FDJ / 'Pack (x12)' 5700 FDJ. One item
+  is emitted per populated pack-size tier. Currency FDJ matches
+  countries.yaml. Product/category names are French (Riz, Epices, Lait
+  Poudre, Huiles, ...) so language is set to fr, overriding the shard's
+  cfg_lang=en. Fragile source (a spreadsheet, not a database) but fully
+  open, no auth, no WAF. Narrow assortment: mostly packaged/shelf-stable
+  goods (rice, pasta, powdered milk, oils, canned goods) plus cleaning
+  products in the same catalog; almost no fresh produce.

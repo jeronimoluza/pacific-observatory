@@ -9,6 +9,8 @@ language: en
 currency: AED
 cadence: weekly
 coicop_codes: null
+archive_prefix: "medicinaonline.ae/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Online pharmacy/supplements retailer serving the UAE (SWISSE, Cica
   Hyalon, Celimax, Some By Mi, Numbuzin, skincare + supplements). Open

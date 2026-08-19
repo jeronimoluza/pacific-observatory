@@ -8,6 +8,8 @@ language: sr
 currency: RSD
 cadence: weekly
 channel: marketplace
+archive_prefix: "ananas.rs/proizvod/"
+archive_path_re: '^/proizvod/[^/?]+'
 notes: |
   Verified live 2026-08-17. Multi-vendor Serbian e-commerce marketplace
   (sellers onboard via academy.ananas.rs/prodaj-na-ananasu) with sibling

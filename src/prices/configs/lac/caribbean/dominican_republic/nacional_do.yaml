@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nacional_do
+url: https://www.supermercadosnacional.com/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "supermercadosnacional.com/"
+archive_path_re: '^/[a-z0-9][a-z0-9\-]*-\d+$'
+notes: |
+  Full-line DR chain. Magento 2, open GraphQL at /graphql, no auth. Live
+  re-verify: POST /graphql products(search:"arroz") -> 200, "Arroz Selecto
+  Líder 10 Lb" DOP 327.95. categoryList under the default root exposes the
+  full department taxonomy (Carnes/Pescados y Mariscos, Frutas y Vegetales,
+  Lácteos y Huevos, Despensa, Bebidas, Cervezas/Vinos y Licores, Limpieza,
+  Salud y Belleza, etc.). Currency DOP matches countries.yaml. language
+  overridden to es (Spanish product names), not the shard's cfg_lang "en".

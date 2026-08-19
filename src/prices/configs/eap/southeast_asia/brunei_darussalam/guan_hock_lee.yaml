@@ -1,3 +1,5 @@
 spider: guan_hock_lee
 language: en
 channel: supermarket
+archive_prefix: "ghl.com.bn/product/"
+archive_path_re: '^/product/[a-z0-9-]+/?$'

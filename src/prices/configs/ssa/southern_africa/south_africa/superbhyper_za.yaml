@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: superbhyper_za
+url: https://superbhyper.co.za/
+language: en
+cadence: weekly
+channel: hypermarket
+archive_prefix: "superbhyper.co.za/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  WooCommerce Store API, /wp-json/wc/store/v1/products?per_page=100&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, X-WP-Total header reports
+  13,136 products. Smoke sample (5 rows): 'Heat And Eat Chicken Croissants
+  6s' ZAR 49.99, 'Heat And Eat Chicken Scharwama 6s' ZAR 49.99, 'Heat And
+  Eat Chicken Bagels 6s' ZAR 49.99, 'Heat And Eat Puri Patha 6s' ZAR 59.99,
+  'Heat And Eat Chicken Buns 6s' ZAR 49.99 — real, varied, plausibly priced
+  Durban/North Coast hypermarket SKUs. currency_code=ZAR from the API
+  matches countries.yaml, minor_unit=2 (cents). One of the first two
+  scaffolded South Africa sources in the repo (was zero-coverage).

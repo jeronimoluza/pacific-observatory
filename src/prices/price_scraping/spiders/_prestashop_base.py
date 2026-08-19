@@ -36,11 +36,16 @@ Underscored filename -- Scrapy's SpiderLoader skips classes without `name`.
 import logging
 import re
 from datetime import datetime, timezone
+from typing import Iterator
 from urllib.parse import urljoin
 
 import scrapy
 
+from ..archived import meta_tags, row_from_meta, rows_from_jsonld
+
 logger = logging.getLogger(__name__)
+
+_ARCHIVE_PRODUCT_ID_RE = re.compile(r"/(\d+)-[a-z0-9\-]+\.html")
 
 CATEGORY_HREF_RE = re.compile(r'href="(https?://[^"\s]+?/(\d+)-[a-z0-9\-]+/?)"')
 SKIP_URL_RE = re.compile(
@@ -235,3 +240,47 @@ class PrestashopBaseSpider(scrapy.Spider):
             return h1.strip()
         m = re.search(r"/(\d+)-([a-z0-9\-]+)/?$", response.url.split("?")[0])
         return m.group(2).replace("-", " ") if m else None
+
+    # ------------------------------------------------------------------
+    # Crawl backfiller (prices/backfill.py's parse_html hook). Live scrape
+    # (_items, above) walks server-rendered category listing pages; archives
+    # only ever hold individual product-detail pages, a different surface.
+    # Measured on the one PrestaShop tenant with Common Crawl coverage in
+    # this wave (galerietata, 8/8 archived PDPs): every page emits standard
+    # OpenGraph/`product:price:*` meta, so the shared archived-page meta
+    # tier alone is the whole implementation -- no schema.org JSON-LD was
+    # present on any sampled page, and no bespoke DOM walk was needed. The
+    # only PrestaShop-specific touch is stripping the `<title> - <site
+    # name>` suffix PrestaShop's default theme appends to `og:title`, and
+    # recovering `product_id` from the `/{id}-{slug}.html` URL convention
+    # the same way the live crawl does.
+    # ------------------------------------------------------------------
+    @classmethod
+    def parse_html(cls, html_text: str, url: str) -> Iterator[dict]:
+        """Parse one archived PrestaShop product-detail page.
+
+        Pure/stateless: no Scrapy Response, no network, no class state.
+        Yields 0 or more rows; yields nothing when the page isn't a product
+        page. Does NOT stamp `scraped_at_utc` -- the backfiller stamps the
+        snapshot time itself.
+        """
+        rows = rows_from_jsonld(html_text, url)
+        if not rows:
+            row = row_from_meta(html_text, url)
+            rows = [row] if row else []
+        for row in rows:
+            row["product_name"] = cls._strip_site_suffix(row["product_name"], html_text)
+            if "product_id" not in row:
+                m = _ARCHIVE_PRODUCT_ID_RE.search(row.get("url") or url)
+                if m:
+                    row["product_id"] = m.group(1)
+            row.setdefault("currency", cls.currency)
+            row.setdefault("language", cls.language)
+            yield row
+
+    @staticmethod
+    def _strip_site_suffix(name: str, html_text: str) -> str:
+        site = meta_tags(html_text).get("og:site_name")
+        if site and name.endswith(f" - {site}"):
+            return name[: -(len(site) + 3)].strip()
+        return name

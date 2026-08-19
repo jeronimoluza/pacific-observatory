@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shwapno_bd
+url: https://www.shwapno.com/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Bangladesh's largest supermarket chain (ACI-owned). React Server
+  Components (Next.js app router) storefront -- category listing pages are
+  client-fetched (no SSR product cards), but the sitemap gives a full URL
+  enumeration: /sitemap-products.xml -> 22 numbered sub-sitemaps
+  (sitemap-products-1.xml .. -22.xml), each ~1,000+ product PDP URLs.
+
+  Each PDP embeds a schema.org Product JSON-LD block inside a React-flight
+  streaming chunk (self.__next_f.push([1,"..."])), not a plain
+  <script type="application/ld+json"> tag -- the escaped string has to be
+  unescaped before regexing it out. Re-verified live 2026-08-06: GET
+  /7up-pet-bottle-2-25ltr- -> 200, h1 "7Up 1.75Ltr. (Pet Bottle)", JSON-LD
+  offers.price=140 offers.priceCurrency=BDT sku=2303753. Confirmed grocery
+  categories in the nav: Canned Fish/Fruits/Meat/Vegetables, Cheese, Coffee,
+  multiple Milk grades, Tea, Frozen, Noodles, Biscuits.
+
+  Full-catalog walk = sitemap crawl (22 sub-sitemaps) + one PDP fetch per
+  product URL (~22,000 products total). No auth, no WAF observed throughout.

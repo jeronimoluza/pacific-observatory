@@ -1,0 +1,35 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: wholesale
+source_key: odepa_cl_wholesale
+module: lac.south_america.chile.odepa_wholesale
+function: fetch_odepa_cl_wholesale
+url: https://datos.odepa.gob.cl/dataset/precios-mayoristas-de-frutas-y-hortalizas
+language: en
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  ODEPA (Chilean Ministry of Agriculture) wholesale fruit & vegetable
+  prices, CKAN open-data portal — NOT a WFP/HDX panel despite sharing the
+  CKAN platform; this is a bespoke fetcher with its own schema
+  (min/max/avg wholesale price + volume per product/variety/quality/
+  market/region, updated daily on business days), so it is not built on
+  the wfp_food_prices.py engine. Re-verified live 2026-08-06: CKAN
+  package_show for precios-mayoristas-de-frutas-y-hortalizas resolves the
+  2026 CSV resource (200, 24.3MB, 108,989 rows), currency CLP (nominal
+  peso, not in the raw CSV but assumed and standard for this dataset). Max
+  observation date is 2026-07-31 — 1 week old, current. 79 unique products
+  (Acelga, Ajo, Alcachofa, Apio, Arveja Verde, Betarraga, Brocoli, Camote,
+  Cebolla, Choclo, Coliflor, Espinaca, Jengibre, etc) across Chile's
+  regional wholesale markets (Femacal, Lo Valledor, etc) — fresh-produce
+  leaves that retail supermarkets under-stock. Sample: 'Acelga', Femacal de
+  La Calera market, $/docena de atados (6 kilos), CLP 4000 average. Prices
+  use Chilean-locale decimal commas (e.g. '4000,0000'), parsed by the
+  fetcher. The fetcher pulls the current + prior calendar year's CSV every
+  run (year-partitioned dataset) so a year turnover needs no code change.
+  Per-market rows collapsed to a national daily average per product/
+  variety/quality/unit; market count and min/max price range kept in
+  notes. COICOP deferred to the classifier (item_name = ODEPA product/
+  variety label).
