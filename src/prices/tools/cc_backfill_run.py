@@ -84,6 +84,31 @@ def _done_spiders(results_path: Path) -> Dict[str, str]:
     return out
 
 
+def _resolve_indexes_once(work: Path, since: int) -> List[str]:
+    """Resolve the crawl list once, then pin it for every later run.
+
+    collinfo.json 504s intermittently, and the library's fallback is 8 recent
+    crawls against the ~123 a full backfill needs. Falling back mid-sweep would
+    quietly convert "all the history we can get" into "the last few months",
+    with the run still reporting success. So: resolve strictly, write the list
+    down, and reuse the file afterwards -- which also makes the set identical
+    across machines and across resumes.
+    """
+    from prices.cc_config import resolve_cc_indexes
+
+    pinned = work / f"indexes_since_{since}.txt"
+    if pinned.exists():
+        names = [
+            ln.strip() for ln in pinned.read_text("utf-8").splitlines() if ln.strip()
+        ]
+        if names:
+            return names
+    names = resolve_cc_indexes(since, strict=True)
+    work.mkdir(parents=True, exist_ok=True)
+    pinned.write_text("\n".join(names) + "\n", encoding="utf-8")
+    return names
+
+
 def _free_gb(path: Path) -> float:
     return shutil.disk_usage(path).free / 1e9
 
@@ -130,7 +155,7 @@ def _run_one(
     text = ""
     try:
         proc = subprocess.run(
-            cmd, cwd=root, capture_output=True, text=True, timeout=cap
+            cmd, cwd=root, capture_output=True, text=True, timeout=cap or None
         )
         text = (proc.stdout or "") + "\n" + (proc.stderr or "")
         if proc.returncode != 0:
@@ -200,9 +225,25 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--workdir", type=Path, default=default_work)
     ap.add_argument("--workers", type=int, default=8)
-    ap.add_argument("--since", type=int, default=2016)
-    ap.add_argument("--cap", type=int, default=7200, help="per-source seconds")
-    ap.add_argument("--max-per-index", type=int, default=400)
+    ap.add_argument(
+        "--since",
+        type=int,
+        default=2013,
+        help="earliest crawl year; 2013 is ~123 crawls, 2016 only ~103",
+    )
+    ap.add_argument(
+        "--cap",
+        type=int,
+        default=14400,
+        help="per-source seconds; 0 disables. Not destructive -- a timed-out "
+        "source resumes from what it already saved on the next pass.",
+    )
+    ap.add_argument(
+        "--max-per-index",
+        type=int,
+        default=0,
+        help="cap new records per crawl; 0 = unlimited (full history)",
+    )
     ap.add_argument("--limit", type=int, default=0, help="stop after N sources")
     ap.add_argument("--only", default="", help="comma-separated spider names")
     ap.add_argument("--min-free-gb", type=float, default=2.0)
@@ -232,9 +273,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.limit:
         pending = pending[: args.limit]
 
-    from prices.cc_config import resolve_cc_indexes
-
-    indexes = resolve_cc_indexes(args.since)
+    indexes = _resolve_indexes_once(work, args.since)
     print(
         f"{len(sources)} scoped sources, {len(done)} already recorded, "
         f"{len(pending)} to run, {len(indexes)} crawl indexes",

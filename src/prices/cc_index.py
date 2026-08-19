@@ -187,12 +187,18 @@ def query_prefix(
     url_prefix: str,
     path_re: re.Pattern,
     *,
-    max_blocks: int = 400,
+    max_blocks: Optional[int] = None,
 ) -> List[Dict[str, Any]]:
     """All status-200 records under ``url_prefix`` whose path matches ``path_re``.
 
     Returns the same record shape the old index-API path produced:
     ``{url, timestamp, filename, offset, length, digest}``.
+
+    ``max_blocks`` bounds how many cdx blocks are scanned. It defaults to
+    unlimited because a bound here truncates *enumeration* -- the URLs beyond
+    it are never discovered, so nothing downstream can tell they existed, and
+    the warning it logs is the only trace. A source whose prefix spans many
+    blocks is exactly the source with the most history to recover.
     """
     keys, blocks = load_cluster(index)
     key = surt_prefix(url_prefix)
@@ -202,7 +208,7 @@ def query_prefix(
     records: List[Dict[str, Any]] = []
     scanned = 0
     pos = start
-    while pos < len(keys) and scanned < max_blocks:
+    while pos < len(keys) and (max_blocks is None or scanned < max_blocks):
         if keys[pos] > stop:
             break
         shard, offset, length = blocks[pos]
@@ -244,7 +250,7 @@ def query_prefix(
         scanned += 1
         pos += 1
 
-    if scanned >= max_blocks:
+    if max_blocks is not None and scanned >= max_blocks:
         logger.warning(
             "%s: stopped at max_blocks=%d for %s — more records may exist "
             "beyond the %d kept",

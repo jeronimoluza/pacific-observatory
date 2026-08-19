@@ -44,13 +44,20 @@ _FALLBACK_CC_INDEXES: List[str] = [
 _INDEX_ID_RE = re.compile(r"^CC-MAIN-(\d{4})-\d+$")
 
 
-@lru_cache(maxsize=4)
-def resolve_cc_indexes(since_year: int = DEFAULT_CC_SINCE_YEAR) -> List[str]:
+@lru_cache(maxsize=8)
+def resolve_cc_indexes(
+    since_year: int = DEFAULT_CC_SINCE_YEAR, strict: bool = False
+) -> List[str]:
     """Return every ``CC-MAIN-<year>-<week>`` index from `since_year` on.
 
     Newest first, matching the order ``collinfo.json`` publishes. Falls back to
     :data:`_FALLBACK_CC_INDEXES` when the fetch fails, so an offline run still
     does something useful rather than crashing.
+
+    ``strict`` raises instead of falling back. A backfill wants that: the
+    fallback is 8 recent crawls against the ~120 a full run needs, so a
+    transient 504 from collinfo.json silently converts "all the history we can
+    get" into "the last few months" with no error and no missing-data marker.
     """
     try:
         result = subprocess.run(
@@ -61,6 +68,12 @@ def resolve_cc_indexes(since_year: int = DEFAULT_CC_SINCE_YEAR) -> List[str]:
         )
         collections = json.loads(result.stdout)
     except (subprocess.SubprocessError, json.JSONDecodeError, ValueError) as exc:
+        if strict:
+            raise RuntimeError(
+                f"could not resolve Common Crawl indexes from {COLLINFO_URL}: "
+                f"{exc}. Refusing to fall back to {len(_FALLBACK_CC_INDEXES)} "
+                f"recent crawls, which would silently truncate history."
+            ) from exc
         logger.warning(
             "Could not resolve CC indexes from %s (%s) — falling back to the "
             "pinned recent set of %d",
@@ -77,6 +90,8 @@ def resolve_cc_indexes(since_year: int = DEFAULT_CC_SINCE_YEAR) -> List[str]:
         if m and int(m.group(1)) >= since_year:
             indexes.append(cid)
     if not indexes:
+        if strict:
+            raise RuntimeError(f"collinfo.json yielded no indexes since {since_year}")
         logger.warning("collinfo.json yielded no indexes since %d", since_year)
         return list(_FALLBACK_CC_INDEXES)
     logger.info("Resolved %d CC indexes since %d", len(indexes), since_year)

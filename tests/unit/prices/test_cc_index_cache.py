@@ -60,3 +60,13 @@ def test_reuse_refreshes_recency_so_the_active_index_is_not_evicted(
 
     assert "A" in cc_index._CLUSTER_CACHE
     assert "B" not in cc_index._CLUSTER_CACHE
+
+
+def test_enumeration_is_unlimited_by_default(tmp_path, monkeypatch):
+    # A bound here truncates discovery itself: URLs past it are never seen, so
+    # nothing downstream can tell they existed.
+    monkeypatch.setattr(cc_index, "cache_dir", lambda *a, **k: tmp_path)
+    import inspect
+
+    sig = inspect.signature(cc_index.query_prefix)
+    assert sig.parameters["max_blocks"].default is None
