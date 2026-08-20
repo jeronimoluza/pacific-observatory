@@ -41,6 +41,14 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--only", default="", help="comma-separated spider names")
     ap.add_argument("--limit-indexes", type=int, default=0, help="stop after N crawls")
     ap.add_argument(
+        "--only-indexes",
+        default="",
+        help=(
+            "comma-separated crawl ids to resolve instead of the whole "
+            "horizon, e.g. a one-per-year sample"
+        ),
+    )
+    ap.add_argument(
         "--consolidate-every",
         type=int,
         default=3,
@@ -90,6 +98,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     # in 2026, so a newest-first resolve reported it as absent from the
     # archive entirely. Walking ends-then-midpoints means whatever prefix of
     # the run actually completes spans the whole period.
+    if args.only_indexes:
+        wanted = [i.strip() for i in args.only_indexes.split(",") if i.strip()]
+        # A crawl id that is not in the pinned horizon is a typo, and a typo
+        # that silently resolves nothing is the failure mode this whole
+        # subsystem keeps producing. Name it and stop.
+        unknown = [i for i in wanted if i not in set(indexes)]
+        if unknown:
+            raise SystemExit(f"not crawls in the horizon: {', '.join(unknown)}")
+        indexes = wanted
     pending = interleave_indexes([i for i in indexes if i not in done])
     if args.limit_indexes:
         pending = pending[: args.limit_indexes]
