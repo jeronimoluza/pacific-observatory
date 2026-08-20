@@ -75,8 +75,31 @@ def _get(url, timeout=180):
         return fh.read().decode("utf-8", "replace")
 
 
+def _get_retrying(url, timeout=60, tries=4, pause=10.0):
+    """_get with backoff. The index drops connections when it is busy."""
+    last = None
+    for attempt in range(tries):
+        try:
+            return _get(url, timeout=timeout)
+        except Exception as exc:
+            last = exc
+            if attempt < tries - 1:
+                time.sleep(pause * (attempt + 1))
+    raise last
+
+
 def list_crawls(from_year):
-    crawls = json.loads(_get(COLLINFO, timeout=60))
+    try:
+        body = _get_retrying(COLLINFO)
+    except Exception as exc:
+        raise SystemExit(
+            "Could not reach the Common Crawl index after 4 tries (%s: %s).\n"
+            "This is usually the index being busy rather than anything wrong on your\n"
+            "side -- it refuses connections under load. Wait a few minutes and re-run.\n"
+            "If it persists, check https://index.commoncrawl.org/collinfo.json in a browser."
+            % (type(exc).__name__, exc)
+        )
+    crawls = json.loads(body)
     rows = []
     for c in crawls:
         year = None
