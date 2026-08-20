@@ -155,10 +155,14 @@ def _run_fetcher(m: PriceSourceConfig) -> None:
 )
 @click.option(
     "--resume",
-    is_flag=True,
+    is_flag=False,
+    flag_value="ALL",
+    default=None,
     help=(
-        "With -P > 1, skip sources already recorded ok/ok_norows in any prior "
-        "logs/prices/_fullrun_*/status.jsonl."
+        "With -P > 1, skip sources already recorded ok/ok_norows. Pass a run "
+        "directory (logs/prices/_fullrun_<TS>) to continue that run only; bare "
+        "--resume reads EVERY prior ledger, including stale ones, and will skip "
+        "sources that are overdue for a refresh."
     ),
 )
 def collect(
@@ -203,7 +207,12 @@ def collect(
     runs_dir, _ = _setup_run_logging(run_ts)
 
     if parallel > 1:
-        from prices.collect_parallel import DiskSpaceError, run_parallel, summarize
+        from prices.collect_parallel import (
+            DiskSpaceError,
+            ResumeTargetError,
+            run_parallel,
+            summarize,
+        )
 
         try:
             run_dir = run_parallel(
@@ -215,7 +224,7 @@ def collect(
                 resume=resume,
                 max_items=max_items,
             )
-        except DiskSpaceError as exc:
+        except (DiskSpaceError, ResumeTargetError) as exc:
             raise click.ClickException(str(exc)) from exc
         result = summarize(run_dir)
         logger.info(

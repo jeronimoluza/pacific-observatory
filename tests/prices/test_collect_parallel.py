@@ -327,3 +327,78 @@ def test_run_parallel_refuses_to_start_below_the_disk_floor(tmp_path, monkeypatc
             project_root=project_root,
             data_root=tmp_path / "data",
         )
+
+
+# --- scoped resume --------------------------------------------------------
+
+
+def test_resume_scoped_to_one_run_ignores_stale_ledgers(tmp_path):
+    project_root = tmp_path / "repo"
+    _stub_run_py(project_root, "pass\n")
+    logs = project_root / "logs" / "prices"
+    _write_ledger(
+        logs / "_fullrun_20260101_000000",
+        [{"country": "peru", "source": "stale", "status": "ok", "secs": 3}],
+    )
+    _write_ledger(
+        logs / "_fullrun_20260601_000000",
+        [{"country": "chile", "source": "today", "status": "ok", "secs": 3}],
+    )
+
+    run_dir = cp.run_parallel(
+        [_manifest("peru", "stale"), _manifest("chile", "today")],
+        workers=2,
+        timeout=60,
+        project_root=project_root,
+        data_root=tmp_path / "data",
+        resume=logs / "_fullrun_20260601_000000",
+    )
+
+    records = [
+        json.loads(line) for line in (run_dir / "status.jsonl").read_text().splitlines()
+    ]
+    assert [r["source"] for r in records] == ["stale"]
+
+
+def test_scoped_resume_accepts_the_ledger_file_itself(tmp_path):
+    project_root = tmp_path / "repo"
+    _stub_run_py(project_root, "pass\n")
+    logs = project_root / "logs" / "prices"
+    _write_ledger(
+        logs / "_fullrun_20260601_000000",
+        [{"country": "chile", "source": "today", "status": "ok", "secs": 3}],
+    )
+
+    ledgers = cp.resume_ledgers(
+        project_root, logs / "_fullrun_20260601_000000" / "status.jsonl"
+    )
+
+    assert ledgers == [logs / "_fullrun_20260601_000000" / "status.jsonl"]
+
+
+def test_bare_resume_still_reads_every_ledger(tmp_path):
+    project_root = tmp_path / "repo"
+    logs = project_root / "logs" / "prices"
+    _write_ledger(logs / "_fullrun_20260101_000000", [{"country": "a", "source": "x"}])
+    _write_ledger(logs / "_fullrun_20260601_000000", [{"country": "b", "source": "y"}])
+
+    assert len(cp.resume_ledgers(project_root, cp.RESUME_ALL)) == 2
+
+
+def test_scoped_resume_rejects_a_missing_run(tmp_path):
+    with pytest.raises(cp.ResumeTargetError):
+        cp.resume_ledgers(tmp_path, tmp_path / "nope")
+
+
+def test_cost_ordering_still_uses_every_ledger_under_scoped_resume(tmp_path):
+    """A stale ledger is the only place a long pole's runtime is recorded."""
+    project_root = tmp_path / "repo"
+    logs = project_root / "logs" / "prices"
+    _write_ledger(
+        logs / "_fullrun_20260101_000000",
+        [{"country": "peru", "source": "long_pole", "status": "ok", "secs": 5000}],
+    )
+
+    _, measured = cp.prior_status(project_root)
+
+    assert measured[("peru", "long_pole")] == 5000

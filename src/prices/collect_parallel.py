@@ -36,9 +36,15 @@ _MEASURED_OFFSET = 10**12
 
 _DONE_STATUSES = {"ok", "ok_norows"}
 
+RESUME_ALL = "ALL"
+
 
 class DiskSpaceError(RuntimeError):
     """Raised when free disk is already below the floor at launch."""
+
+
+class ResumeTargetError(RuntimeError):
+    """Raised when --resume names a run that has no status ledger."""
 
 
 def _pair(m: PriceSourceConfig) -> tuple[str, str]:
@@ -65,13 +71,34 @@ def child_command(
     return cmd
 
 
-def prior_status(project_root: Path) -> tuple[set[tuple[str, str]], dict]:
-    """Fold every prior wave's ledger into (already-collected pairs, slowest secs)."""
+def _all_ledgers(project_root: Path) -> list[Path]:
+    return sorted((project_root / "logs" / "prices").glob("_fullrun_*/status.jsonl"))
+
+
+def resume_ledgers(project_root: Path, resume) -> list[Path]:
+    """Which ledgers `--resume` consults.
+
+    RESUME_ALL means every prior wave, which is only what you want while
+    continuing a run that was chunked across ledgers the same day. Weeks-old
+    ledgers would otherwise skip sources that are long overdue for a refresh,
+    so a run directory (or its status.jsonl) can be named to scope the skip to
+    that run alone.
+    """
+    if resume in (RESUME_ALL, True):
+        return _all_ledgers(project_root)
+    target = Path(resume)
+    if target.is_dir():
+        target = target / "status.jsonl"
+    if not target.is_file():
+        raise ResumeTargetError(f"no status ledger at {target}")
+    return [target]
+
+
+def prior_status(project_root: Path, ledgers=None) -> tuple[set[tuple[str, str]], dict]:
+    """Fold ledgers into (already-collected pairs, slowest measured secs)."""
     done: set[tuple[str, str]] = set()
     measured: dict[tuple[str, str], float] = {}
-    for ledger in sorted(
-        (project_root / "logs" / "prices").glob("_fullrun_*/status.jsonl")
-    ):
+    for ledger in _all_ledgers(project_root) if ledgers is None else ledgers:
         for line in ledger.read_text().splitlines():
             if not line.strip():
                 continue
@@ -214,12 +241,18 @@ def run_parallel(
     project_root = Path(project_root)
     data_root = Path(data_root)
 
-    done, measured = prior_status(project_root)
+    # Cost ordering always reads every ledger: a stale one may hold the only
+    # recorded runtime for a long pole. Only the skip set honours the scope.
+    _, measured = prior_status(project_root)
     if resume:
+        ledgers = resume_ledgers(project_root, resume)
+        done, _ = prior_status(project_root, ledgers=ledgers)
         before = len(manifests)
         manifests = [m for m in manifests if _pair(m) not in done]
         logger.info(
-            "resume: skipping %d already-collected source(s)", before - len(manifests)
+            "resume: skipping %d already-collected source(s) from %d ledger(s)",
+            before - len(manifests),
+            len(ledgers),
         )
 
     ordered = order_sources(
