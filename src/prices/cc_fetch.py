@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import logging
+import threading
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -132,10 +133,19 @@ def run_from_manifest(
             continue
 
         pbar = tqdm(total=len(todo), desc=f"{index} fetch+parse")
+        banned = threading.Event()
+
+        def one(rec):
+            # The worker reads the 403 counter itself rather than waiting to
+            # be stopped from outside. ``Future.cancel`` only stops work that
+            # has not started, and a flag set by the consumer arrives late --
+            # a queue already draining runs to the end either way.
+            if getattr(scraper, "http_403", 0) >= max_403:
+                return "aborted"
+            return scraper._process_one(rec, location, index)
+
         with ThreadPoolExecutor(max_workers=num_workers) as ex:
-            futures = {
-                ex.submit(scraper._process_one, r, location, index): r for r in todo
-            }
+            futures = {ex.submit(one, r): r for r in todo}
             for fut in as_completed(futures):
                 outcome = fut.result()
                 stats[outcome] = stats.get(outcome, 0) + 1
@@ -147,9 +157,24 @@ def run_from_manifest(
                         )
                     )
                 pbar.update(1)
+                # The ban check belongs here, not only at the crawl boundary.
+                # A crawl can hold thousands of records: one source spent 29
+                # minutes and 20.3k refusals inside a single crawl before the
+                # boundary check got its first look. Checking per record turns
+                # a half-hour of refusals into seconds of them.
+                if not banned.is_set() and getattr(scraper, "http_403", 0) >= max_403:
+                    banned.set()
+                    logger.warning(
+                        "%s: %d x HTTP 403 during %s -- abandoning this crawl",
+                        manifest.stem,
+                        getattr(scraper, "http_403", 0),
+                        index,
+                    )
         pbar.close()
         per_index[index] = here
-        stats["attempted"] += len(todo)
+        # Abandoned records were never tried, so counting them as attempts
+        # would make a banned source look like a dead parser.
+        stats["attempted"] += len(todo) - here.get("aborted", 0)
         stats["http_403"] = getattr(scraper, "http_403", 0)
 
         stop = _stop_reason(

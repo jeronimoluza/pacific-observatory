@@ -316,3 +316,32 @@ def test_rows_written_in_one_run_are_skipped_by_the_next(tmp_path, monkeypatch):
     assert first["parsed"] == 5
     assert second["parsed"] == 0
     assert second["skipped"] == 5
+
+
+def test_a_ban_aborts_the_crawl_in_progress_not_just_the_next_one(
+    tmp_path, monkeypatch
+):
+    # Checking only at crawl boundaries makes the guard blind for the length of
+    # a crawl, and crawls are not small: one source burned 29 minutes and 20.3k
+    # refusals inside a single crawl before the boundary check ran once.
+    s = _scraper(tmp_path)
+    s.http_403 = 0
+    attempts = []
+    rows = [_row(i, "CC-MAIN-2026-01") for i in range(500)]
+
+    def banned(rec):
+        attempts.append(rec["url"])
+        s.http_403 += 1
+        return None
+
+    monkeypatch.setattr(s, "_fetch_warc_record", banned)
+    stats = run_from_manifest(
+        s,
+        ("eap", "sub", "country"),
+        _manifest(tmp_path, rows),
+        num_workers=1,
+        max_403=10,
+        dead_after=10_000,
+    )
+    assert stats["stop_reason"] == "cc_403_ban"
+    assert len(attempts) < 50, f"kept fetching through a ban: {len(attempts)} of 500"

@@ -147,8 +147,14 @@ class CommonCrawlScraper:
                 if r.status_code in (200, 206):
                     return r.content
                 if r.status_code == 403:
+                    # Never retry a block: a 403 is Common Crawl refusing
+                    # this address for minutes to hours, so a retry cannot
+                    # succeed and only triples the offence rate. Measured:
+                    # 6.7k blocked records became 20.3k 403s.
                     with self._file_lock:
                         self.http_403 += 1
+                    logger.debug(f"WARC fetch HTTP 403 (blocked) for {url}")
+                    return None
                 logger.debug(
                     f"WARC fetch HTTP {r.status_code} for {url} "
                     f"(attempt {attempt + 1}/3)"
