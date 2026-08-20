@@ -13,7 +13,6 @@ gzip member containing one WARC response record.
 from __future__ import annotations
 
 import gzip
-import hashlib
 import json
 import logging
 import re
@@ -28,6 +27,7 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from .cc_config import all_cc_configs
+from . import cc_storage
 from .cc_samples import SampleKeeper
 from .cc_index import query_prefix
 from .backfill import _load_spider_parse_html
@@ -102,7 +102,7 @@ class CommonCrawlScraper:
     # -- helpers --
 
     def _record_hash(self, url: str, timestamp: str) -> str:
-        return hashlib.md5(f"{url}#{timestamp}".encode()).hexdigest()
+        return cc_storage.record_hash(url, timestamp)
 
     def _items_dir(self, location: Tuple[str, str, str]) -> Path:
         """Return ``<output_dir>/<region>/<sub>/<country>/<spider>/common_crawl_data/items``."""
@@ -117,11 +117,11 @@ class CommonCrawlScraper:
             / "items"
         )
 
+    def _items_file(self, location: Tuple[str, str, str], cc_index: str) -> Path:
+        return self._items_dir(location) / f"{cc_index}.jsonl"
+
     def _existing_hashes(self, location: Tuple[str, str, str]) -> set:
-        d = self._items_dir(location)
-        if not d.exists():
-            return set()
-        return {f.stem for f in d.glob("*.json")}
+        return cc_storage.existing_hashes(self._items_dir(location))
 
     # -- index step --
 
@@ -298,22 +298,29 @@ class CommonCrawlScraper:
 
     # -- save --
 
-    def _save_item(
+    def _save_rows(
         self,
         url: str,
         timestamp: str,
         cc_index: str,
-        extracted: Dict[str, Any],
+        rows: List[Dict[str, Any]],
         location: Tuple[str, str, str],
-        seq: int = 0,
-    ) -> Path:
-        rec_hash = self._record_hash(url, timestamp)
-        if seq:
-            rec_hash = f"{rec_hash}_{seq}"
-        out_dir = self._items_dir(location)
-        with self._file_lock:
-            out_dir.mkdir(parents=True, exist_ok=True)
-            out_file = out_dir / f"{rec_hash}.json"
+    ) -> int:
+        """Append one line per row to this crawl's JSONL.
+
+        One file per (source, crawl) rather than one file per record. Measured
+        on the fetch machine: 28,989 records were 17 MB of data but 120 MB on
+        disk and 28,989 inodes, because a ~600-byte file still occupies a 4 KB
+        block. A fleet-wide crawl is roughly half a million records, so the
+        card's fixed inode table ran out after ~8 of 123 crawls while df still
+        reported free bytes. It also matches how the Wayback half already
+        stores its output.
+
+        A page's rows are written in one call so a kill lands between pages
+        rather than between a page's own rows.
+        """
+        payloads = []
+        for extracted in rows:
             payload = {
                 "url": url,
                 "cc_timestamp": timestamp,
@@ -328,9 +335,15 @@ class CommonCrawlScraper:
             # concatenate.py back-fills the rest from the source's modal value.
             if self.declared_currency:
                 payload["currency"] = self.declared_currency
-            with open(out_file, "w", encoding="utf-8") as f:
-                json.dump(payload, f, indent=2, ensure_ascii=False)
-            return out_file
+            payloads.append(json.dumps(payload, ensure_ascii=False))
+        if not payloads:
+            return 0
+        path = self._items_file(location, cc_index)
+        with self._file_lock:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with open(path, "a", encoding="utf-8") as fh:
+                fh.write("\n".join(payloads) + "\n")
+        return len(payloads)
 
     # -- orchestrator --
 
@@ -358,10 +371,7 @@ class CommonCrawlScraper:
                 self._samples.offer(html, rec["url"], rec["timestamp"])
             return "no_extract"
         try:
-            for i, row in enumerate(rows):
-                self._save_item(
-                    rec["url"], rec["timestamp"], cc_index, row, location, seq=i
-                )
+            self._save_rows(rec["url"], rec["timestamp"], cc_index, rows, location)
             return "parsed"
         except Exception as e:
             logger.debug(f"Save failed: {e}")

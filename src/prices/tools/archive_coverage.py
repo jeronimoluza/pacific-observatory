@@ -48,11 +48,7 @@ def _snapshot_date(stamp: str) -> str:
 def _iter_cc(root: Path) -> Iterator[Row]:
     for items in root.glob("*/*/*/*/common_crawl_data/items"):
         region, subregion, country, source = items.parts[-6:-2]
-        for path in items.glob("*.json"):
-            try:
-                rec = json.loads(path.read_text(encoding="utf-8"))
-            except (OSError, ValueError):
-                continue
+        for rec in _cc_records(items):
             day = _snapshot_date(rec.get("cc_timestamp", ""))
             if day:
                 yield (
@@ -64,6 +60,19 @@ def _iter_cc(root: Path) -> Iterator[Row]:
                     rec.get("url", ""),
                     day,
                 )
+
+
+def _cc_records(items: Path) -> Iterator[dict]:
+    """Both layouts: one JSON per record, and one JSONL per crawl."""
+    from prices.cc_storage import iter_jsonl
+
+    for path in items.glob("*.json"):
+        try:
+            yield json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+    for path in items.glob("*.jsonl"):
+        yield from iter_jsonl(path)
 
 
 def _iter_wayback(root: Path) -> Iterator[Row]:

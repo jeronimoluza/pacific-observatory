@@ -62,9 +62,9 @@ def _items_dir(root: Path, src) -> Path:
 
 
 def _count_items(path: Path) -> int:
-    if not path.exists():
-        return 0
-    return sum(1 for _ in path.glob("*.json"))
+    from prices.cc_storage import count_rows
+
+    return count_rows(path)
 
 
 def _count_samples(path: Path) -> int:

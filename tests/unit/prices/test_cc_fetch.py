@@ -282,3 +282,37 @@ def test_why_a_source_stopped_is_written_next_to_its_items(tmp_path, monkeypatch
     assert state["stop_reason"] == ""
     assert state["covered_through"] == "CC-MAIN-2024-01"
     assert state["indexes_walked"] == 1
+
+
+def test_a_page_becomes_lines_in_its_crawls_jsonl_not_files(tmp_path, monkeypatch):
+    # One inode and one 4 KB block per ~600-byte record is what filled the
+    # fetch machine after ~8 of 123 crawls while df still showed free bytes.
+    s = _scraper(tmp_path)
+    rows = [_row(0, "CC-MAIN-2024-01"), _row(1, "CC-MAIN-2019-04")]
+    _always_parses(s, monkeypatch, rows_per_page=3)
+    run_from_manifest(
+        s, ("eap", "sub", "country"), _manifest(tmp_path, rows), num_workers=1
+    )
+    items = Path(s._items_dir(("eap", "sub", "country")))
+    assert not list(items.glob("*.json")), "no per-record files"
+    assert sorted(p.name for p in items.glob("*.jsonl")) == [
+        "CC-MAIN-2019-04.jsonl",
+        "CC-MAIN-2024-01.jsonl",
+    ]
+    # Three rows per page, and each row carries the crawl it came from.
+    lines = (items / "CC-MAIN-2024-01.jsonl").read_text().strip().split("\n")
+    assert len(lines) == 3
+    assert json.loads(lines[0])["cc_index"] == "CC-MAIN-2024-01"
+
+
+def test_rows_written_in_one_run_are_skipped_by_the_next(tmp_path, monkeypatch):
+    # The skip set is the whole resume mechanism; JSONL has to preserve it.
+    s = _scraper(tmp_path)
+    loc = ("eap", "sub", "country")
+    rows = [_row(i, "CC-MAIN-2024-01") for i in range(5)]
+    _always_parses(s, monkeypatch)
+    first = run_from_manifest(s, loc, _manifest(tmp_path, rows), num_workers=1)
+    second = run_from_manifest(s, loc, _manifest(tmp_path, rows), num_workers=1)
+    assert first["parsed"] == 5
+    assert second["parsed"] == 0
+    assert second["skipped"] == 5
