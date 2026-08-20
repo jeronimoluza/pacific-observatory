@@ -83,3 +83,20 @@ def test_consolidate_regroups_crawls_into_per_source_manifests(tmp_path, patched
     alpha = (tmp_path / "by_source" / "alpha.jsonl").read_text(encoding="utf-8")
     assert alpha.count("\n") == 4
     assert "beta" not in alpha
+
+
+def test_the_resolver_spreads_a_truncated_run_across_the_whole_period():
+    # A newest-first resolve stopped after 7 crawls returned 7 consecutive
+    # 2026 crawls. That is not merely suboptimal ordering: one source holds
+    # 64,856 URLs across 91 crawls from 2015-2025 and none at all in 2026, so
+    # newest-first reported it as absent from Common Crawl rather than as
+    # not-yet-looked-for.
+    from prices.cc_config import interleave_indexes
+
+    newest_first = [
+        f"CC-MAIN-{y}-{w:02d}" for y in range(2026, 2012, -1) for w in (4, 30)
+    ]
+    first_seven = interleave_indexes(newest_first)[:7]
+    years = {int(i.split("-")[2]) for i in first_seven}
+    assert 2026 in years and min(years) <= 2014, first_seven
+    assert len(years) >= 4, f"still piled at one end of time: {sorted(years)}"

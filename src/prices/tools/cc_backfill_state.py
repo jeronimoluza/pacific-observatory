@@ -43,7 +43,7 @@ def _last_records(results_path: Path) -> Dict[str, Dict]:
 _PARKED_REASONS = {"dead_parser", "empty_crawls"}
 
 
-def _should_run(rec: Optional[Dict], horizon_oldest: str, retry_stopped: bool) -> bool:
+def _should_run(rec: Optional[Dict], horizon_count: int, retry_stopped: bool) -> bool:
     """Whether a source with this prior result is owed another pass."""
     if rec is None:
         return True
@@ -55,13 +55,16 @@ def _should_run(rec: Optional[Dict], horizon_oldest: str, retry_stopped: bool) -
     if reason:
         # cc_403_ban and anything else unrecognised: transient, try again.
         return True
-    if not horizon_oldest:
+    if horizon_count <= 0:
         return False
-    # Walked the whole manifest it was given. Owed another pass only once the
-    # resolve side has pushed the manifest further back than it reached --
-    # otherwise a source that finished a three-crawl prefix would be filed as
-    # having no more history.
-    return rec.get("covered_through", "") > horizon_oldest
+    # Walked the whole manifest it was given. Owed another pass once the
+    # resolve side has published crawls it has not seen -- counted, not
+    # compared against the horizon's oldest crawl. The resolver bisects, so
+    # the second crawl it ever resolves is already the oldest one there will
+    # be: an "is my coverage older than the oldest?" test goes false on pass
+    # two and stays false while 116 crawls arrive in the middle, filing every
+    # source as finished on a two-crawl manifest and never revisiting it.
+    return int(rec.get("horizon_count", 0)) < horizon_count
 
 
 def _free_gb(path: Path) -> float:

@@ -14,44 +14,68 @@ def _rec(**kw):
         "status": "completed",
         "stop_reason": "",
         "covered_through": "CC-MAIN-2013-20",
+        "horizon_count": 7,
     }
     base.update(kw)
     return base
 
 
 def test_a_source_never_run_is_owed_a_pass():
-    assert _should_run(None, "CC-MAIN-2013-20", False) is True
+    assert _should_run(None, 7, False) is True
 
 
 def test_a_source_that_walked_the_whole_manifest_is_left_alone():
-    assert _should_run(_rec(), "CC-MAIN-2013-20", False) is False
+    assert _should_run(_rec(), 7, False) is False
 
 
-def test_a_source_is_requeued_when_the_manifest_reaches_further_back():
+def test_a_source_is_requeued_when_the_resolve_publishes_more_crawls():
     # Resolution is index-major, so every manifest grows one crawl at a time.
-    # A source that finished the three-crawl prefix it was handed has not
+    # A source that finished the seven-crawl prefix it was handed has not
     # finished its history, and filing it as complete is how a decade of
     # archive silently becomes a few months.
-    rec = _rec(covered_through="CC-MAIN-2024-10")
-    assert _should_run(rec, "CC-MAIN-2019-04", False) is True
-    assert _should_run(rec, "CC-MAIN-2024-10", False) is False
+    assert _should_run(_rec(horizon_count=7), 8, False) is True
+    assert _should_run(_rec(horizon_count=7), 7, False) is False
+
+
+def test_a_bisected_resolve_does_not_strand_a_source_on_a_two_crawl_manifest():
+    # The resolver walks ends-then-midpoints, so the second crawl it resolves
+    # is already the oldest one there will ever be. Deciding "owed another
+    # pass" by asking whether coverage stops short of the oldest crawl
+    # therefore goes false on pass two and stays false while the remaining 116
+    # crawls land in the middle -- every source filed as finished on two
+    # crawls, in silence.
+    walked_to_the_end_of_a_two_crawl_horizon = _rec(
+        covered_through="CC-MAIN-2013-20", horizon_count=2
+    )
+    assert _should_run(walked_to_the_end_of_a_two_crawl_horizon, 2, False) is False
+    assert _should_run(walked_to_the_end_of_a_two_crawl_horizon, 3, False) is True
+    assert _should_run(walked_to_the_end_of_a_two_crawl_horizon, 123, False) is True
+
+
+def test_a_record_written_before_the_horizon_was_counted_is_re_run_once():
+    # Results predating the counter carry no horizon_count. Re-running them is
+    # the safe reading: held records are skipped by hash, so the pass costs
+    # only the crawls the source has genuinely never seen.
+    rec = _rec()
+    del rec["horizon_count"]
+    assert _should_run(rec, 7, False) is True
 
 
 def test_a_parked_source_waits_for_a_human_then_reruns_on_demand():
     for reason in ("dead_parser", "empty_crawls"):
         rec = _rec(stop_reason=reason, covered_through="CC-MAIN-2019-04")
-        assert _should_run(rec, "CC-MAIN-2013-20", False) is False
-        assert _should_run(rec, "CC-MAIN-2013-20", True) is True
+        assert _should_run(rec, 123, False) is False
+        assert _should_run(rec, 123, True) is True
 
 
 def test_a_ban_is_transient_and_retries_without_being_asked():
     rec = _rec(stop_reason="cc_403_ban", covered_through="CC-MAIN-2024-10")
-    assert _should_run(rec, "CC-MAIN-2013-20", False) is True
+    assert _should_run(rec, 7, False) is True
 
 
 def test_a_source_that_did_not_complete_is_always_retried():
-    assert _should_run(_rec(status="timeout"), "CC-MAIN-2013-20", False) is True
-    assert _should_run(_rec(status="error"), "CC-MAIN-2013-20", False) is True
+    assert _should_run(_rec(status="timeout"), 7, False) is True
+    assert _should_run(_rec(status="error"), 7, False) is True
 
 
 def test_the_latest_record_for_a_spider_wins(tmp_path):

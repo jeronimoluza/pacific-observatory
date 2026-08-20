@@ -22,7 +22,11 @@ def _repo_root() -> Path:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    from prices.cc_config import all_cc_configs, resolve_cc_indexes
+    from prices.cc_config import (
+        all_cc_configs,
+        interleave_indexes,
+        resolve_cc_indexes,
+    )
     from prices.cc_resolve import (
         consolidate,
         resolve_index,
@@ -78,7 +82,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     # write manifests that look complete while covering months, not years.
     indexes = resolve_cc_indexes(args.since, strict=True)
     done = set(resolved_indexes(out))
-    pending = [i for i in indexes if i not in done]
+    # Bisected rather than newest-first. A source's presence in Common Crawl
+    # arrives in bursts, and which crawl holds the burst is unguessable: one
+    # source keeps 64,856 URLs across 91 crawls spanning 2015-2025 and *none*
+    # in 2026, so a newest-first resolve reported it as absent from the
+    # archive entirely. Walking ends-then-midpoints means whatever prefix of
+    # the run actually completes spans the whole period.
+    pending = interleave_indexes([i for i in indexes if i not in done])
     if args.limit_indexes:
         pending = pending[: args.limit_indexes]
 
@@ -97,9 +107,11 @@ def main(argv: Optional[List[str]] = None) -> int:
             flush=True,
         )
         # Republishing mid-run is what lets the fetch machine work in parallel
-        # instead of idling until all ~123 crawls are in. Crawls resolve
-        # newest-first and the fetch walks newest-first, so what it picks up is
-        # always a correct prefix -- never a manifest with holes in it.
+        # instead of idling until all ~123 crawls are in. What it picks up is a
+        # manifest with holes, because crawls resolve bisected rather than
+        # newest-first: the fetch side must therefore decide "owed another
+        # pass" from how many crawls the horizon covers, never from how far
+        # back its oldest one reaches.
         if args.consolidate_every and n % args.consolidate_every == 0:
             counts = consolidate(out)
             h = write_horizon(out)

@@ -108,6 +108,7 @@ def _run_one(
     indexes: List[str],
     max_per_index: Optional[int],
     manifest_dir: Optional[Path],
+    horizon_count: int,
 ) -> Dict:
     from prices.tools import cc_triage
 
@@ -153,6 +154,7 @@ def _run_one(
                 "stopped_at": "",
                 "covered_through": "",
                 "indexes_walked": 0,
+                "horizon_count": horizon_count,
                 "n_403": 0,
                 "n_503": 0,
                 "finished_at": _now(),
@@ -246,6 +248,10 @@ def _run_one(
         "stopped_at": fstate.get("stopped_at", ""),
         "covered_through": fstate.get("covered_through", ""),
         "indexes_walked": fstate.get("indexes_walked", 0),
+        # How much archive existed when this ran. The resume test compares it
+        # against the horizon of the day rather than reading covered_through,
+        # which a bisected resolve makes meaningless.
+        "horizon_count": horizon_count,
         "n_403": int(fstate.get("http_403", 0)) or text.count("HTTP 403"),
         "n_503": text.count("HTTP 503"),
         "finished_at": _now(),
@@ -363,10 +369,11 @@ def main(argv: Optional[List[str]] = None) -> int:
 
         horizon = read_horizon(args.manifest_dir)
     horizon_oldest = str(horizon.get("oldest", ""))
+    horizon_count = int(horizon.get("count", 0))
     pending = [
         s
         for s in sources
-        if _should_run(done.get(s.spider), horizon_oldest, args.retry_stopped)
+        if _should_run(done.get(s.spider), horizon_count, args.retry_stopped)
     ]
     parked = [
         s.spider
@@ -440,6 +447,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             indexes,
             args.max_per_index,
             args.manifest_dir,
+            horizon_count,
         )
         with results_path.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(rec) + "\n")

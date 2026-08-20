@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from datetime import date
 from unittest.mock import MagicMock
 
@@ -179,5 +180,78 @@ def test_bulk_discover_intersects_universe_and_collapses(monkeypatch):
 
     monkeypatch.setattr(wayback, "iter_bulk_captures", fake_iter)
 
-    out = wayback.bulk_discover(MagicMock(), universe, date(2020, 1, 1))
-    assert out == {"AA": ["20240101000000"], "BB": ["20240108000000"]}
+    buckets, discovered = wayback.bulk_discover(MagicMock(), universe, date(2020, 1, 1))
+    assert buckets == {"AA": ["20240101000000"], "BB": ["20240108000000"]}
+    assert discovered == []
+
+
+@pytest.mark.unit
+def test_bulk_discover_matches_when_only_the_query_string_differs(monkeypatch):
+    """Storefronts serve /p/foo?variant=1; Wayback archives /p/foo."""
+    universe = [
+        {"url": "https://x.test/p/foo?variant=123", "url_hash": "AA"},
+        {"url": "https://x.test/p/bar?variant=9", "url_hash": "BB"},
+    ]
+
+    def fake_iter(session, scope, match_type, cutoff, *, timeout=60):
+        yield ("https://x.test/p/foo", "20240101000000")  # canonical, no query
+        yield ("https://x.test/p/bar?variant=9", "20240108000000")  # exact match
+
+    monkeypatch.setattr(wayback, "iter_bulk_captures", fake_iter)
+
+    buckets, discovered = wayback.bulk_discover(MagicMock(), universe, date(2020, 1, 1))
+    assert buckets == {"AA": ["20240101000000"], "BB": ["20240108000000"]}
+    assert discovered == []
+
+
+@pytest.mark.unit
+def test_bulk_discover_archive_universe_keeps_never_scraped_urls(monkeypatch):
+    universe = [{"url": "https://x.test/p/a", "url_hash": "AA"}]
+
+    def fake_iter(session, scope, match_type, cutoff, *, timeout=60):
+        yield ("https://x.test/p/a", "20240101000000")
+        yield ("https://x.test/p/delisted", "20180101000000")  # gone before we scraped
+        yield ("https://x.test/category/food", "20180101000000")  # not a product page
+
+    monkeypatch.setattr(wayback, "iter_bulk_captures", fake_iter)
+
+    buckets, discovered = wayback.bulk_discover(
+        MagicMock(),
+        universe,
+        date(2010, 1, 1),
+        include_unmatched=True,
+        scope_prefix="x.test/",
+        path_re=r"^/p/[^/]+$",
+    )
+
+    assert len(discovered) == 1
+    entry = discovered[0]
+    assert entry["url"] == "https://x.test/p/delisted"
+    assert entry["url_hash"] == hashlib.md5(entry["url"].encode()).hexdigest()
+    assert entry["earliest_scraped_at"] is None
+    # The category page was filtered out by path_re; the delisted product wasn't.
+    assert buckets[entry["url_hash"]] == ["20180101000000"]
+    assert buckets["AA"] == ["20240101000000"]
+    assert len(buckets) == 2
+
+
+@pytest.mark.unit
+def test_bulk_discover_scope_prefix_overrides_the_scraped_set(monkeypatch):
+    """Archive mode must not let the scraped set bound the CDX query."""
+    universe = [{"url": "https://x.test/p/deep/nested/only-one", "url_hash": "AA"}]
+    seen: list[str] = []
+
+    def fake_iter(session, scope, match_type, cutoff, *, timeout=60):
+        seen.append(scope)
+        return iter(())
+
+    monkeypatch.setattr(wayback, "iter_bulk_captures", fake_iter)
+
+    wayback.bulk_discover(MagicMock(), universe, date(2010, 1, 1))
+    assert seen == ["x.test/p/deep/nested/"]  # LCP of the scraped set
+
+    seen.clear()
+    wayback.bulk_discover(
+        MagicMock(), universe, date(2010, 1, 1), scope_prefix="x.test/p/"
+    )
+    assert seen == ["x.test/p/"]
