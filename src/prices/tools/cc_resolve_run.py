@@ -22,11 +22,8 @@ def _repo_root() -> Path:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    from prices.cc_config import (
-        all_cc_configs,
-        interleave_indexes,
-        resolve_cc_indexes,
-    )
+    from prices.cc_config import all_cc_configs, interleave_indexes
+    from prices.tools.cc_backfill_run import _resolve_indexes_once
     from prices.cc_resolve import (
         consolidate,
         resolve_index,
@@ -78,9 +75,14 @@ def main(argv: Optional[List[str]] = None) -> int:
         )
         return 0
 
-    # Strict: the fallback is 8 recent crawls, and resolving against it would
-    # write manifests that look complete while covering months, not years.
-    indexes = resolve_cc_indexes(args.since, strict=True)
+    # Pinned on first success, then reused. ``collinfo.json`` lives on
+    # index.commoncrawl.org, which returns 504s and empty replies for hours at
+    # a time -- it was down again the day this was written, while
+    # data.commoncrawl.org served 206 from the same address. Without the pin a
+    # transient outage of the flaky host stops the half of the backfill that
+    # does not otherwise depend on it at all. Resolution stays strict, so the
+    # 8-crawl fallback can never quietly become the horizon.
+    indexes = _resolve_indexes_once(out, args.since)
     done = set(resolved_indexes(out))
     # Bisected rather than newest-first. A source's presence in Common Crawl
     # arrives in bursts, and which crawl holds the burst is unguessable: one
