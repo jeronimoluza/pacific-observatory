@@ -16,20 +16,46 @@ Re-running is safe: records already in the JSONL are not appended twice.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 
 
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[3]
 
 
+def _line_key(rec: dict) -> str:
+    """Identity of one stored row.
+
+    NOT the record hash. A page that yields several product rows was stored as
+    ``<hash>_0.json``, ``<hash>_1.json``, ... -- every one of them the same URL
+    and timestamp but a *different* row. Keying on the record hash collapses
+    them into one and silently deletes the rest, which is exactly what an
+    earlier version of this tool did to 17,456 rows. The row itself is the only
+    honest identity.
+    """
+    return hashlib.md5(_line(rec).encode("utf-8")).hexdigest()
+
+
+def _line(rec: dict) -> str:
+    return json.dumps(rec, ensure_ascii=False)
+
+
+def _jsonl_line_keys(items: Path) -> Set[str]:
+    from prices.cc_storage import iter_jsonl
+
+    out: Set[str] = set()
+    for path in items.glob("*.jsonl"):
+        for rec in iter_jsonl(path):
+            out.add(_line_key(rec))
+    return out
+
+
 def compact_dir(items: Path, delete_originals: bool) -> Dict[str, int]:
     """Compact one ``.../common_crawl_data/items`` directory."""
-    from prices.cc_storage import record_hash
-
     legacy = sorted(items.glob("*.json"))
     out = {"legacy": len(legacy), "appended": 0, "removed": 0, "verified": 0}
     if not legacy:
@@ -37,9 +63,9 @@ def compact_dir(items: Path, delete_originals: bool) -> Dict[str, int]:
 
     # Read once, not per file: a source with 30k legacy records would otherwise
     # rescan every JSONL 30k times.
-    before = _jsonl_hashes(items)
+    present = _jsonl_line_keys(items)
     by_index: Dict[str, List[str]] = defaultdict(list)
-    # path -> hash, so verification can name the file it could not confirm.
+    # path -> key, so verification can name the file it could not confirm.
     owned: Dict[Path, str] = {}
     for path in legacy:
         try:
@@ -48,16 +74,13 @@ def compact_dir(items: Path, delete_originals: bool) -> Dict[str, int]:
             # Unreadable, so nothing can confirm it was carried over; leave it
             # on disk rather than delete a record we never managed to read.
             continue
-        h = record_hash(rec.get("url", ""), rec.get("cc_timestamp", ""))
-        owned[path] = h
-        if h in before:
-            # Already carried over by an earlier pass. Still owned, so it can
-            # be removed, but appending it again would duplicate the row.
+        key = _line_key(rec)
+        owned[path] = key
+        if key in present:
+            # Carried over by an earlier pass, or a byte-identical duplicate.
             continue
-        by_index[rec.get("cc_index") or "unknown"].append(
-            json.dumps(rec, ensure_ascii=False)
-        )
-        before.add(h)
+        by_index[rec.get("cc_index") or "unknown"].append(_line(rec))
+        present.add(key)
 
     for index, lines in by_index.items():
         with open(items / f"{index}.jsonl", "a", encoding="utf-8") as fh:
@@ -67,8 +90,8 @@ def compact_dir(items: Path, delete_originals: bool) -> Dict[str, int]:
     # Verify against what is actually on disk now, not against what we believe
     # we wrote -- the whole point is to not delete on the strength of an
     # assumption.
-    after = _jsonl_hashes(items)
-    unverified = [p for p, h in owned.items() if h not in after]
+    after = _jsonl_line_keys(items)
+    unverified = [p for p, k in owned.items() if k not in after]
     out["verified"] = len(owned) - len(unverified)
     if unverified:
         out["unverified"] = len(unverified)
@@ -80,16 +103,6 @@ def compact_dir(items: Path, delete_originals: bool) -> Dict[str, int]:
                 out["removed"] += 1
             except OSError:
                 pass
-    return out
-
-
-def _jsonl_hashes(items: Path) -> set:
-    from prices.cc_storage import iter_jsonl, record_hash
-
-    out = set()
-    for path in items.glob("*.jsonl"):
-        for rec in iter_jsonl(path):
-            out.add(record_hash(rec.get("url", ""), rec.get("cc_timestamp", "")))
     return out
 
 

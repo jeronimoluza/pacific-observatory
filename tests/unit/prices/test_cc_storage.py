@@ -78,6 +78,34 @@ def test_compaction_groups_by_crawl_and_removes_only_what_it_verified(tmp_path):
     assert existing_hashes(items) == before
 
 
+def test_a_multi_row_page_keeps_every_row(tmp_path):
+    # The regression that mattered. A page yielding several products was stored
+    # as <hash>_0.json, <hash>_1.json, ... -- same URL and timestamp, different
+    # rows. Keying compaction on the record hash collapsed each page to one row
+    # and deleted the rest: 17,456 rows across 4 sources, silently.
+    items = tmp_path / "items"
+    items.mkdir(parents=True)
+    h = record_hash("http://x/page", "20240101000000")
+    for i, name in enumerate(["shirt", "shoes", "socks"]):
+        (items / f"{h}_{i}.json").write_text(
+            json.dumps(
+                {
+                    "url": "http://x/page",
+                    "cc_timestamp": "20240101000000",
+                    "cc_index": "CC-MAIN-2024-10",
+                    "product_name": name,
+                }
+            ),
+            encoding="utf-8",
+        )
+    got = compact_dir(items, delete_originals=True)
+    assert got["appended"] == 3, "one row per product, not one row per page"
+    names = sorted(
+        r["product_name"] for r in iter_jsonl(items / "CC-MAIN-2024-10.jsonl")
+    )
+    assert names == ["shirt", "shoes", "socks"]
+
+
 def test_compacting_twice_does_not_duplicate_rows(tmp_path):
     items = tmp_path / "items"
     for i in range(3):
