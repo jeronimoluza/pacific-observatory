@@ -139,6 +139,17 @@ def load_cluster(index: str) -> Tuple[List[str], List[Tuple[str, int, int]]]:
 _BLOCK_ATTEMPTS = 6
 _BLOCK_RETRY_SECONDS = 10
 
+# A cdx block is ~240 KB and takes about a second, but the connection sometimes
+# establishes and then stalls at the TCP layer rather than failing -- measured
+# at 2.5 minutes and still running while an independent fetch of the same range
+# finished in 1.0 s. --connect-timeout does not cover it, because the connect
+# succeeded; only a throughput floor does. Aborting a transfer that spends 20 s
+# under 10 KB/s turns a five-minute hang into a twenty-second one, and the
+# retry then usually lands on a healthy connection.
+_BLOCK_MIN_BYTES_PER_SEC = "10000"
+_BLOCK_STALL_SECONDS = "20"
+_BLOCK_MAX_SECONDS = "120"
+
 
 def _fetch_block(index: str, shard: str, offset: int, length: int) -> str:
     url = f"{CC_DATA_BASE}/cc-index/collections/{index}/indexes/{shard}"
@@ -150,9 +161,13 @@ def _fetch_block(index: str, shard: str, offset: int, length: int) -> str:
                 "-sS",
                 "--fail",
                 "--connect-timeout",
-                "60",
+                "20",
                 "--max-time",
-                "300",
+                _BLOCK_MAX_SECONDS,
+                "--speed-limit",
+                _BLOCK_MIN_BYTES_PER_SEC,
+                "--speed-time",
+                _BLOCK_STALL_SECONDS,
                 "--retry",
                 "3",
                 "--retry-delay",

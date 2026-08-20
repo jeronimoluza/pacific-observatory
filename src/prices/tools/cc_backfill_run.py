@@ -66,9 +66,14 @@ def _count_samples(path: Path) -> int:
     return sum(1 for _ in path.glob("*/*.html"))
 
 
-def _done_spiders(results_path: Path) -> Dict[str, str]:
-    """Spider -> status for every source already recorded."""
-    out: Dict[str, str] = {}
+def _last_records(results_path: Path) -> Dict[str, Dict]:
+    """Spider -> the most recent result recorded for it.
+
+    The whole record, not just the status: whether a source should run again
+    depends on *why* it stopped and how far the manifest reached at the time,
+    and both live in the record.
+    """
+    out: Dict[str, Dict] = {}
     if not results_path.exists():
         return out
     for line in results_path.read_text(encoding="utf-8").splitlines():
@@ -80,8 +85,35 @@ def _done_spiders(results_path: Path) -> Dict[str, str]:
         except ValueError:
             continue
         if rec.get("spider"):
-            out[rec["spider"]] = rec.get("status", "")
+            out[rec["spider"]] = rec
     return out
+
+
+# Guards that mean "this source is waiting on a human", not "this source is
+# finished". Re-running them unchanged just re-derives the same stop, so they
+# stay parked until --retry-stopped says the parser has been looked at.
+_PARKED_REASONS = {"dead_parser", "empty_crawls"}
+
+
+def _should_run(rec: Optional[Dict], horizon_oldest: str, retry_stopped: bool) -> bool:
+    """Whether a source with this prior result is owed another pass."""
+    if rec is None:
+        return True
+    if rec.get("status") != "completed":
+        return True
+    reason = rec.get("stop_reason", "")
+    if reason in _PARKED_REASONS:
+        return retry_stopped
+    if reason:
+        # cc_403_ban and anything else unrecognised: transient, try again.
+        return True
+    if not horizon_oldest:
+        return False
+    # Walked the whole manifest it was given. Owed another pass only once the
+    # resolve side has pushed the manifest further back than it reached --
+    # otherwise a source that finished a three-crawl prefix would be filed as
+    # having no more history.
+    return rec.get("covered_through", "") > horizon_oldest
 
 
 def _resolve_indexes_once(work: Path, since: int) -> List[str]:
@@ -164,6 +196,10 @@ def _run_one(
                 "stats": {},
                 "cliff": {},
                 "samples": 0,
+                "stop_reason": "",
+                "stopped_at": "",
+                "covered_through": "",
+                "indexes_walked": 0,
                 "n_403": 0,
                 "n_503": 0,
                 "finished_at": _now(),
@@ -222,6 +258,23 @@ def _run_one(
         if primary == "OK":
             primary = "DATE_CLIFF"
 
+    # Why the fetch stopped, read from disk rather than scraped from stdout:
+    # the distinction between "walked the whole manifest" and "hit a guard" is
+    # what the resume decision turns on, and a stdout format change would
+    # silently turn every parked source into a finished one.
+    fstate: Dict = {}
+    state_file = items.parent / "fetch_state.json"
+    if manifest_dir and state_file.exists():
+        try:
+            fstate = json.loads(state_file.read_text("utf-8"))
+        except (OSError, ValueError):
+            fstate = {}
+    reason = str(fstate.get("stop_reason", ""))
+    if reason:
+        flags.append(reason.upper())
+        if primary == "OK":
+            primary = reason.upper()
+
     return {
         "spider": src.spider,
         "country": src.country,
@@ -236,6 +289,10 @@ def _run_one(
         "stats": stats,
         "cliff": cliff,
         "samples": _count_samples(items.parent / "samples"),
+        "stop_reason": reason,
+        "stopped_at": fstate.get("stopped_at", ""),
+        "covered_through": fstate.get("covered_through", ""),
+        "indexes_walked": fstate.get("indexes_walked", 0),
         "n_403": text.count("HTTP 403"),
         "n_503": text.count("HTTP 503"),
         "finished_at": _now(),
@@ -282,6 +339,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     )
     ap.add_argument("--min-free-gb", type=float, default=2.0)
     ap.add_argument("--cooldown", type=int, default=600, help="seconds after a ban")
+    ap.add_argument(
+        "--retry-stopped",
+        action="store_true",
+        help="also re-run sources parked by a dead_parser / empty_crawls guard; "
+        "use after fixing a parser. Already-saved records are skipped by hash, "
+        "so a re-run costs only the pages that yielded nothing.",
+    )
     ap.add_argument("--list", action="store_true", help="print the worklist and exit")
     args = ap.parse_args(argv)
 
@@ -302,8 +366,23 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(f"# {len(sources)} sources", file=sys.stderr)
         return 0
 
-    done = _done_spiders(results_path)
-    pending = [s for s in sources if done.get(s.spider) != "completed"]
+    done = _last_records(results_path)
+    horizon = {}
+    if args.manifest_dir:
+        from prices.cc_resolve import read_horizon
+
+        horizon = read_horizon(args.manifest_dir)
+    horizon_oldest = str(horizon.get("oldest", ""))
+    pending = [
+        s
+        for s in sources
+        if _should_run(done.get(s.spider), horizon_oldest, args.retry_stopped)
+    ]
+    parked = [
+        s.spider
+        for s in sources
+        if (done.get(s.spider) or {}).get("stop_reason", "") in _PARKED_REASONS
+    ]
     if args.limit:
         pending = pending[: args.limit]
 
@@ -313,11 +392,23 @@ def main(argv: Optional[List[str]] = None) -> int:
         if args.manifest_dir
         else (f"{len(indexes)} crawl indexes resolved locally")
     )
+    if args.manifest_dir:
+        mode += (
+            f", horizon {horizon.get('newest', '?')}..{horizon_oldest or '?'} "
+            f"({horizon.get('count', 0)} crawls)"
+        )
     print(
         f"{len(sources)} scoped sources, {len(done)} already recorded, "
         f"{len(pending)} to run, {mode}",
         flush=True,
     )
+    if parked and not args.retry_stopped:
+        print(
+            f"{len(parked)} parked awaiting a parser fix (--retry-stopped to "
+            f"include): {', '.join(parked[:8])}"
+            f"{' ...' if len(parked) > 8 else ''}",
+            flush=True,
+        )
 
     if not triage_path.exists():
         triage_path.write_text(

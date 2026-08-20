@@ -138,3 +138,47 @@ def consolidate(root: Path) -> Dict[str, int]:
             out_dir / f"{spider}.jsonl",
         )
     return counts
+
+
+def horizon_path(root: Path) -> Path:
+    return by_source_dir(root) / "_horizon.json"
+
+
+def write_horizon(root: Path) -> Dict[str, object]:
+    """Record which crawls the per-source manifests currently cover.
+
+    Resolution is index-major, so no source is ever "finished" on its own --
+    every manifest grows by one crawl each time a crawl is resolved. Because
+    crawls resolve newest-first and the fetch walks newest-first, a manifest
+    written part-way through is a correct *prefix* of the final one, and the
+    fetch side can start on it immediately.
+
+    What the fetch side cannot know without this file is whether it reached
+    the end of the history or merely the end of what has been resolved so far.
+    Recording the horizon is what lets a source that exhausted a partial
+    manifest be re-queued when the manifest grows, instead of being filed as
+    complete with a fraction of its history.
+    """
+    indexes = sorted(resolved_indexes(root), reverse=True)
+    payload = {
+        "indexes": indexes,
+        "count": len(indexes),
+        "newest": indexes[0] if indexes else "",
+        "oldest": indexes[-1] if indexes else "",
+    }
+    by_source_dir(root).mkdir(parents=True, exist_ok=True)
+    tmp = horizon_path(root).with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    os.replace(tmp, horizon_path(root))
+    return payload
+
+
+def read_horizon(by_source: Path) -> Dict[str, object]:
+    """Horizon as seen from a shipped ``by_source/`` directory."""
+    path = by_source / "_horizon.json"
+    if not path.exists():
+        return {"indexes": [], "count": 0, "newest": "", "oldest": ""}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except ValueError:
+        return {"indexes": [], "count": 0, "newest": "", "oldest": ""}

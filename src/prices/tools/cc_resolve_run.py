@@ -23,7 +23,12 @@ def _repo_root() -> Path:
 
 def main(argv: Optional[List[str]] = None) -> int:
     from prices.cc_config import all_cc_configs, resolve_cc_indexes
-    from prices.cc_resolve import consolidate, resolve_index, resolved_indexes
+    from prices.cc_resolve import (
+        consolidate,
+        resolve_index,
+        resolved_indexes,
+        write_horizon,
+    )
     from prices.tools.cc_worklist import build_worklist
 
     root = _repo_root()
@@ -34,6 +39,16 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--since", type=int, default=2013)
     ap.add_argument("--only", default="", help="comma-separated spider names")
     ap.add_argument("--limit-indexes", type=int, default=0, help="stop after N crawls")
+    ap.add_argument(
+        "--consolidate-every",
+        type=int,
+        default=3,
+        help=(
+            "refresh the per-source manifests every N crawls so the fetch "
+            "machine can start before the whole resolve finishes (0 = only "
+            "at the end)"
+        ),
+    )
     ap.add_argument(
         "--consolidate-only",
         action="store_true",
@@ -52,7 +67,11 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.consolidate_only:
         counts = consolidate(out)
-        print(f"consolidated {sum(counts.values())} records for {len(counts)} sources")
+        h = write_horizon(out)
+        print(
+            f"consolidated {sum(counts.values())} records for {len(counts)} "
+            f"sources, horizon {h['newest']}..{h['oldest']} ({h['count']} crawls)"
+        )
         return 0
 
     # Strict: the fallback is 8 recent crawls, and resolving against it would
@@ -77,11 +96,25 @@ def main(argv: Optional[List[str]] = None) -> int:
             f"in {time.time() - start:.0f}s",
             flush=True,
         )
+        # Republishing mid-run is what lets the fetch machine work in parallel
+        # instead of idling until all ~123 crawls are in. Crawls resolve
+        # newest-first and the fetch walks newest-first, so what it picks up is
+        # always a correct prefix -- never a manifest with holes in it.
+        if args.consolidate_every and n % args.consolidate_every == 0:
+            counts = consolidate(out)
+            h = write_horizon(out)
+            print(
+                f"    published {sum(counts.values())} records / "
+                f"{len(counts)} sources, horizon through {h['oldest']}",
+                flush=True,
+            )
 
     counts = consolidate(out)
+    h = write_horizon(out)
     print(
         f"consolidated {sum(counts.values())} records for {len(counts)} sources "
-        f"into {out / 'by_source'}",
+        f"into {out / 'by_source'} (horizon {h['newest']}..{h['oldest']}, "
+        f"{h['count']} crawls)",
         flush=True,
     )
     return 0

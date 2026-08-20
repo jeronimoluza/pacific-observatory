@@ -93,6 +93,11 @@ class CommonCrawlScraper:
         self.scraped_at = datetime.now(timezone.utc).isoformat()
         self._file_lock = threading.Lock()
         self._samples: Optional[SampleKeeper] = None
+        # A Common Crawl block is a 403, not a 429, and three retries turn it
+        # into an ordinary `fetch_failed` -- indistinguishable from a WARC that
+        # genuinely is not there. Counted separately so a ban is detectable
+        # rather than spending hours producing zeros at full speed.
+        self.http_403 = 0
 
     # -- helpers --
 
@@ -139,6 +144,9 @@ class CommonCrawlScraper:
                 r = requests.get(url, headers=headers, timeout=120)
                 if r.status_code in (200, 206):
                     return r.content
+                if r.status_code == 403:
+                    with self._file_lock:
+                        self.http_403 += 1
                 logger.debug(
                     f"WARC fetch HTTP {r.status_code} for {url} "
                     f"(attempt {attempt + 1}/3)"
