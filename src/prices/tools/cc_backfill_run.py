@@ -246,11 +246,34 @@ def _run_one(
         "stopped_at": fstate.get("stopped_at", ""),
         "covered_through": fstate.get("covered_through", ""),
         "indexes_walked": fstate.get("indexes_walked", 0),
-        "n_403": text.count("HTTP 403"),
+        "n_403": int(fstate.get("http_403", 0)) or text.count("HTTP 403"),
         "n_503": text.count("HTTP 503"),
         "finished_at": _now(),
         "log": str(log_path),
     }
+
+
+def _wait_for_unblock(cooldown: int, max_wait: int) -> bool:
+    """Sleep until Common Crawl answers this host again, or until fed up."""
+    from prices.cc_index import reachable
+
+    waited = 0
+    while waited < max_wait:
+        print(
+            f"    blocked by Common Crawl — waiting {cooldown}s ({waited}s so far)",
+            flush=True,
+        )
+        time.sleep(cooldown)
+        waited += cooldown
+        if reachable():
+            print(f"    unblocked after {waited}s", flush=True)
+            return True
+    print(
+        f"    still blocked after {waited}s; continuing so the sweep records "
+        f"what it finds rather than stalling forever",
+        flush=True,
+    )
+    return False
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -300,6 +323,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         "with a fixed inode table",
     )
     ap.add_argument("--cooldown", type=int, default=600, help="seconds after a ban")
+    ap.add_argument(
+        "--max-ban-wait",
+        type=int,
+        default=7200,
+        help="give up waiting out a block after this many seconds and carry on",
+    )
     ap.add_argument(
         "--retry-stopped",
         action="store_true",
@@ -436,9 +465,13 @@ def main(argv: Optional[List[str]] = None) -> int:
             flush=True,
         )
 
-        if rec["n_403"] or rec["n_503"] >= 3:
-            print(f"    ban signal — cooling down {args.cooldown}s", flush=True)
-            time.sleep(args.cooldown)
+        if rec.get("stop_reason") == "cc_403_ban" or rec["n_403"]:
+            # Waiting beats continuing. The block is per address and expires on
+            # its own -- an IPv4 block cleared inside an hour of rest -- but the
+            # previous behaviour walked straight into it source after source,
+            # which is how one ban cost 165 sources and 9.7 hours for 5,104
+            # rows. Sleeping here is the cheapest thing the sweep can do.
+            _wait_for_unblock(args.cooldown, args.max_ban_wait)
         else:
             time.sleep(3)
 

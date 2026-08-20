@@ -99,3 +99,31 @@ def test_the_sweep_watches_inodes_not_only_bytes(tmp_path):
     assert _free_gb(tmp_path) > 0
     inodes = _free_inodes(tmp_path)
     assert inodes == -1 or inodes > 0
+
+
+def test_a_ban_makes_the_sweep_wait_rather_than_march_on(monkeypatch):
+    # The block is per address and expires by itself -- an IPv4 block cleared
+    # inside an hour of rest. The old code counted 403s in stdout, but they are
+    # logged at debug level, so the count was always zero and the cooldown never
+    # fired: one ban cost 165 sources and 9.7 hours for 5,104 rows.
+    import prices.cc_index as cc_index
+    import prices.tools.cc_backfill_run as driver
+
+    slept = []
+    monkeypatch.setattr(driver.time, "sleep", slept.append)
+    answers = iter([False, False, True])
+    monkeypatch.setattr(cc_index, "reachable", lambda: next(answers))
+
+    assert driver._wait_for_unblock(cooldown=60, max_wait=7200) is True
+    assert slept == [60, 60, 60], "one sleep per probe until it clears"
+
+
+def test_waiting_out_a_ban_eventually_gives_up(monkeypatch):
+    # Never returning would stall the sweep forever on an unusually long block;
+    # carrying on at least keeps recording what it finds.
+    import prices.cc_index as cc_index
+    import prices.tools.cc_backfill_run as driver
+
+    monkeypatch.setattr(driver.time, "sleep", lambda s: None)
+    monkeypatch.setattr(cc_index, "reachable", lambda: False)
+    assert driver._wait_for_unblock(cooldown=600, max_wait=1800) is False

@@ -137,6 +137,11 @@ def choose_family() -> Optional[int]:
     return chosen
 
 
+def reachable() -> bool:
+    """Whether Common Crawl answers this host on either address family."""
+    return _ok(_probe_family("-4")) or _ok(_probe_family("-6"))
+
+
 def family_curl_flag() -> List[str]:
     """``-4``/``-6`` for the chosen family, so curl matches the requests path."""
     if _FAMILY is None:
