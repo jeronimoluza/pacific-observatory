@@ -16,3 +16,4 @@ notes: |
   737g" 185 Ar). Category tree auto-discovered from the homepage nav.
 
   cfg_currency (MGA) matches what the probe saw ("Ar" = Ariary).
+timeout: 14400

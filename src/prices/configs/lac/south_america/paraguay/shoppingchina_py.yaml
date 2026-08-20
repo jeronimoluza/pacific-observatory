@@ -29,3 +29,4 @@ notes: |
 
   Smoke run: 60/60 rows, 0 null product_name, 0 null price, single currency
   PYG. Full scrape still pending (orchestrator-queued).
+timeout: 14400

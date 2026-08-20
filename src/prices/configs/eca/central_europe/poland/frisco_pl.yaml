@@ -19,3 +19,4 @@ notes: |
   <loc> entries each (~13.7k products total). Spider walks sitemap shards
   then fetches each product detail page individually -- a slow but proven
   SSR path since the category listing route is closed to plain HTTP.
+timeout: 14400

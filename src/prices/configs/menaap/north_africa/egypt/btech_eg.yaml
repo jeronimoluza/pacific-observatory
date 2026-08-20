@@ -25,3 +25,4 @@ notes: |
   full 7,206-URL crawl fits inside the collect-run time budget without a cap.
   coicop_divisions: 05 (appliances), 08 (mobiles/tech), 09 (audio/gaming);
   divisions_basis: sampled_rows.
+timeout: 14400

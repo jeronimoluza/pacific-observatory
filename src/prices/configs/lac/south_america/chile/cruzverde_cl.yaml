@@ -25,3 +25,4 @@ notes: |
   sets. Currency CLP, confirmed directly from the detail response's own
   `priceCurrency` field (e.g. price 27990 = CLP 27,990). Smoke run: 60
   rows, see report. Full scrape pending.
+timeout: 14400

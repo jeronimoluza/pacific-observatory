@@ -26,3 +26,4 @@ notes: |
   /api/catalog_system/pub/products/search -> 206, real GTQ prices e.g. "Set
   de Cama Colchon + Base Beautysleep Pillow Top" offers lowPrice 5028
   priceCurrency GTQ.
+timeout: 28800

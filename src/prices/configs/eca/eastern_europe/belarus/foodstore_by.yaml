@@ -23,3 +23,4 @@ notes: |
   24shop.by and a-dostavka.by were also fingerprinted as 1C-Bitrix but not
   scaffolded (breadth already achieved with this one; picking the smallest
   viable win per the coverage-density rule).
+timeout: 14400

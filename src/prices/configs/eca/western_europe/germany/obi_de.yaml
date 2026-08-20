@@ -26,3 +26,4 @@ notes: |
   crawl only (shards 1-2 unused at this cap). Full scrape still pending —
   orchestrator queues it; 150k+ product sitemap universe across 3 shards
   plus seller-product shards not yet touched.
+timeout: 14400

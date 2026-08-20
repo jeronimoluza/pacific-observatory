@@ -9,3 +9,4 @@ archive_path_re: '^/en/[a-z0-9-]+-\d{8,}$'
 language: en
 cadence: daily
 channel: supermarket
+timeout: 14400

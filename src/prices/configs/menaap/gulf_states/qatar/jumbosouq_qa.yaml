@@ -30,3 +30,4 @@ notes: |
   CONCURRENT_REQUESTS_PER_DOMAIN=16, so the run is bounded by the actual
   catalog size, not an artificial ceiling — est. ~20min at the ishtari_lb
   bench rate, inside the collect-run time budget.
+timeout: 14400

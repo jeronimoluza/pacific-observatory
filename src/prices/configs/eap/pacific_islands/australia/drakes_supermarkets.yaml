@@ -17,3 +17,4 @@ notes: |
   087.drakes.com.au/sitemap.xml (~14.8k /lines/ URLs) and parses JSON-LD.
   Plain requests (browser UA), no Playwright/impersonation. Prices are the 087
   store's; zero-price lines skipped.
+timeout: 14400

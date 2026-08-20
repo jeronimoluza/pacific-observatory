@@ -14,3 +14,4 @@ notes: |
   83KB JSON, 'Bio Bolsa PLAZAVEA Mediana' PEN 0.20. Tested sc= sales-channel param live on a
   category-scoped query (fq=C:/2/6/950/): identical results with and without sc=1, so the spider
   does not set sc=. Currency matches countries.yaml (PEN).
+timeout: 14400

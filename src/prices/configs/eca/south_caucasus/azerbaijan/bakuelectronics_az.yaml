@@ -33,3 +33,4 @@ notes: |
   stale sitemap URL (404) verified live and handled by dropping that
   response, not failing the shard.
   Full scrape still pending -- orchestrator queues it centrally.
+timeout: 14400

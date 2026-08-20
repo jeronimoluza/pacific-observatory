@@ -211,20 +211,32 @@ class MagentoSSRBaseSpider(scrapy.Spider):
     def parse_listing(self, response):
         body = response.text
         page = response.meta["page"]
+        # Tracked per listing branch, not per spider: two categories legitimately
+        # share products, and a shared set would cut the second one off at page 1.
+        seen = response.meta.get("seen")
+        if seen is None:
+            seen = set()
         matches = _PRODUCT_BLOCK_RE.findall(body)
         logger.info(f"{self.name}: {response.url} page={page} matches={len(matches)}")
+        fresh = 0
         for url, name, price in matches:
+            if url in seen:
+                continue
+            seen.add(url)
             item = self._item(url, name, price)
             if item:
+                fresh += 1
                 yield item
-        if matches and page < self.MAX_PAGES:
+        # Some storefronts re-serve the last page forever rather than returning an
+        # empty one, so a non-empty `matches` never ends pagination on its own.
+        if fresh and page < self.MAX_PAGES:
             base = response.meta["base"]
             sep = "&" if "?" in base else "?"
             nxt = page + 1
             yield scrapy.Request(
                 f"{base}{sep}{self.PAGE_PARAM}={nxt}",
                 callback=self.parse_listing,
-                meta={"page": nxt, "base": base},
+                meta={"page": nxt, "base": base, "seen": seen},
             )
 
     def _item(self, url: str, name: str, price: str):

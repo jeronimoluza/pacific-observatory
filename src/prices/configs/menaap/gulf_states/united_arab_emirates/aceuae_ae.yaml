@@ -28,3 +28,4 @@ notes: |
   because sitemap URLs are walked in alphabetical order and this slice
   landed on low-turnover SKUs — not a spider defect. Full 11.6k-URL scrape
   is NOT run here — orchestrator queues it.
+timeout: 14400

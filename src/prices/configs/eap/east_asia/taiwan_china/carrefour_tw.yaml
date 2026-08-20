@@ -3,3 +3,4 @@ language: zh
 channel: hypermarket
 archive_prefix: "online.carrefour.com.tw/"
 archive_path_re: "/[^/?]+\\.html"
+timeout: 28800

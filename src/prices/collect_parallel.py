@@ -34,6 +34,10 @@ MIN_FREE_GB = 10
 # counts, so the offset has to sit above any plausible directory size.
 _MEASURED_OFFSET = 10**12
 
+# A source that sets its own budget expects Scrapy to close itself at that mark;
+# the driver's kill must land after that, or the graceful flush never happens.
+SHUTDOWN_GRACE = 600
+
 _DONE_STATUSES = {"ok", "ok_norows"}
 
 RESUME_ALL = "ALL"
@@ -68,7 +72,16 @@ def child_command(
     ]
     if max_items is not None:
         cmd += ["--max-items", str(max_items)]
+    if m.timeout:
+        cmd += ["--closespider-timeout", str(m.timeout)]
     return cmd
+
+
+def kill_cap(m: PriceSourceConfig, timeout: int) -> int:
+    """The wall-clock cap for one source, never below the run-wide one."""
+    if not m.timeout:
+        return timeout
+    return max(timeout, m.timeout + SHUTDOWN_GRACE)
 
 
 def _all_ledgers(project_root: Path) -> list[Path]:
@@ -82,16 +95,20 @@ def resume_ledgers(project_root: Path, resume) -> list[Path]:
     continuing a run that was chunked across ledgers the same day. Weeks-old
     ledgers would otherwise skip sources that are long overdue for a refresh,
     so a run directory (or its status.jsonl) can be named to scope the skip to
-    that run alone.
+    that run alone. Several may be given comma-separated, which unions them —
+    that is how a run split across waves is continued.
     """
     if resume in (RESUME_ALL, True):
         return _all_ledgers(project_root)
-    target = Path(resume)
-    if target.is_dir():
-        target = target / "status.jsonl"
-    if not target.is_file():
-        raise ResumeTargetError(f"no status ledger at {target}")
-    return [target]
+    ledgers = []
+    for part in str(resume).split(","):
+        target = Path(part.strip())
+        if target.is_dir():
+            target = target / "status.jsonl"
+        if not target.is_file():
+            raise ResumeTargetError(f"no status ledger at {target}")
+        ledgers.append(target)
+    return ledgers
 
 
 def prior_status(project_root: Path, ledgers=None) -> tuple[set[tuple[str, str]], dict]:
@@ -191,7 +208,7 @@ def _collect_one(m, *, project_root, data_root, run_dir, timeout, max_items) -> 
                 start_new_session=True,
             )
             try:
-                rc = proc.wait(timeout=timeout)
+                rc = proc.wait(timeout=kill_cap(m, timeout))
             except subprocess.TimeoutExpired:
                 _terminate(proc)
                 status, rc = "timeout", -9

@@ -15,3 +15,4 @@ notes: >
   search.maknet.siammakro.cloud/search/api/v1/indexes/products/search — no auth,
   POST {"q":"","page":N}, fixed 20 hits/page (~54k catalog). Reads Thai `title`
   + THB `displayPrice` + `deepestCategory` per hit. PDP at /th/p/{makroId}.
+timeout: 28800

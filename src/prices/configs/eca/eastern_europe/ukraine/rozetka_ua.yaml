@@ -31,3 +31,4 @@ notes: |
   probing -- RETRY_TIMES raised to 6 and concurrency kept conservative
   (CONCURRENT_REQUESTS_PER_DOMAIN=2, DOWNLOAD_DELAY=1.5) to ride that out.
   Full scrape still pending -- orchestrator queues it centrally.
+timeout: 28800

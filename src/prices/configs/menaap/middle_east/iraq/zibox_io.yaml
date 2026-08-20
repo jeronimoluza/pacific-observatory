@@ -22,3 +22,4 @@ notes: |
   override needed here (unlike mamame_iq).
   Smoke test (--max-items 5): 5 rows, IQD, real names + prices, e.g.
   "Dove Intensive Repair Shampoo – Nourishing Care – 400ml" @ 4929 IQD.
+timeout: 14400

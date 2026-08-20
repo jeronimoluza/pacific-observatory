@@ -20,3 +20,4 @@ notes: |
   and paginates each with standard Magento ?p=N. Confirmed food category
   (Canned Food, cat=805) real product: "Angela Mia Pizza Sauce 3 kg / 6.61
   lb" JMD 2,473.76. Currency JMD matches countries.yaml.
+timeout: 14400

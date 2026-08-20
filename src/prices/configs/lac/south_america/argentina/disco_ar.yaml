@@ -14,3 +14,4 @@ notes: |
   banner/price point, separate manifest. Re-verified live: products/search?_from=0&_to=9 -> HTTP
   206, 240KB, 'Cebolla Superior Por Kg' ARS 2599.00 (same catalog feed as Jumbo AR). Currency
   matches countries.yaml (ARS).
+timeout: 28800

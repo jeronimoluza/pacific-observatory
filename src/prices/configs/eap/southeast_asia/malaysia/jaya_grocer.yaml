@@ -3,3 +3,4 @@ language: en
 channel: supermarket
 archive_prefix: "www.jayagrocer.com/products/"
 archive_path_re: '^/products/[^/?]+'
+timeout: 14400

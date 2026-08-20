@@ -24,3 +24,4 @@ notes: |
   computer accessories), SAR prices non-zero and plausible.
   coicop_divisions: 05, 08, 09
   divisions_basis: sampled_rows (20-row smoke sample across small-appliances/computer-accessories categories; category tree not fully walked)
+timeout: 14400

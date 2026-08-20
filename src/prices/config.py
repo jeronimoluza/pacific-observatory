@@ -65,6 +65,7 @@ class PriceSourceConfig(BaseModel):
     coicop_codes: list[str] | None = None
     active: bool = True
     max_items: int | None = None
+    timeout: int | None = None
     start_urls: list[str] | None = None
     spider_kwargs: dict[str, Any] = {}
     scrapy_settings: dict[str, Any] = {}

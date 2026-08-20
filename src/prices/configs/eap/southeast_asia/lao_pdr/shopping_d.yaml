@@ -9,3 +9,4 @@ cadence: daily
 channel: supermarket
 archive_prefix: "www.shopping-d.com/products/"
 archive_path_re: '^/products/[^/?]+$'
+timeout: 14400

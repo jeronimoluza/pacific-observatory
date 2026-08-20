@@ -24,3 +24,4 @@ notes: |
   product page. Currency PYG, confirmed directly from each product's own
   itemprop="priceCurrency" content (e.g. 23665 == PYG 23,665). Smoke run:
   60 rows, see report. Full scrape pending.
+timeout: 14400

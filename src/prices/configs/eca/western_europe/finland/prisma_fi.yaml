@@ -29,3 +29,4 @@ notes: |
   rendered '4,95 €', confirmed against raw HTML). Sample: /kategoriat/17/
   kauneus-ja-hyvinvointi -> 'Emendo 100ml hierontaöljy rentouttava' 4.95
   EUR. Currency EUR matches countries.yaml.
+timeout: 28800

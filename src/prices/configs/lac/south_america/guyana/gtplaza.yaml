@@ -18,3 +18,4 @@ notes: |
   products returns e.g. "Ovaltine 300g Refill Pack" $860.00 GYD.
 
   cfg_currency (GYD) matches what the probe saw.
+timeout: 14400

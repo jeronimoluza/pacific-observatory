@@ -16,3 +16,4 @@ notes: |
   leaf id path (fq=C:/1/17/134/) is required. Same VTEX tenant/account family as Disco AR and Vea
   AR (Cencosud) -- separate manifest, high catalog overlap. Currency matches countries.yaml
   (ARS).
+timeout: 28800

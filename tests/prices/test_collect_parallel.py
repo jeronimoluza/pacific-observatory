@@ -17,12 +17,13 @@ from prices import collect_parallel as cp
 from prices.config import PriceSourceConfig
 
 
-def _manifest(country, source, region="lac", role=None):
+def _manifest(country, source, region="lac", role=None, timeout=None):
     return PriceSourceConfig(
         scaffolding="spider",
         spider=source,
         channel=None,
         analytical_role=role,
+        timeout=timeout,
         region=region,
         subregion="sub",
         country=country,
@@ -81,6 +82,88 @@ def test_child_command_forwards_max_items():
     )
 
     assert cmd[-2:] == ["--max-items", "500"]
+
+
+def test_resume_accepts_several_runs_and_unions_their_ledgers(tmp_path):
+    """Continuing a run split across waves must skip what EITHER wave finished."""
+    logs = tmp_path / "logs" / "prices"
+    _write_ledger(
+        logs / "_fullrun_20260819_234809",
+        [{"country": "peru", "source": "wave1_done", "status": "ok", "secs": 10}],
+    )
+    _write_ledger(
+        logs / "_fullrun_20260820_125718",
+        [
+            {
+                "country": "peru",
+                "source": "wave2_done",
+                "status": "ok_norows",
+                "secs": 10,
+            },
+            {
+                "country": "peru",
+                "source": "still_todo",
+                "status": "timeout",
+                "secs": 5400,
+            },
+        ],
+    )
+    _write_ledger(
+        logs / "_fullrun_20260101_000000",
+        [{"country": "peru", "source": "stale", "status": "ok", "secs": 10}],
+    )
+
+    ledgers = cp.resume_ledgers(
+        tmp_path,
+        f"{logs / '_fullrun_20260819_234809'},{logs / '_fullrun_20260820_125718'}",
+    )
+    done, _ = cp.prior_status(tmp_path, ledgers=ledgers)
+
+    assert len(ledgers) == 2
+    assert ("peru", "wave1_done") in done
+    assert ("peru", "wave2_done") in done
+    assert ("peru", "still_todo") not in done
+    assert (
+        "peru",
+        "stale",
+    ) not in done, "a run not named must stay out of the skip set"
+
+
+# --- per-source scrape budget ---------------------------------------------
+
+
+def test_child_command_forwards_the_source_scrape_budget():
+    cmd = cp.child_command(
+        Path("/repo"), _manifest("peru", "plazavea_pe", timeout=14400), max_items=None
+    )
+
+    assert cmd[-2:] == ["--closespider-timeout", "14400"]
+
+
+def test_child_command_omits_budget_when_source_sets_none():
+    cmd = cp.child_command(
+        Path("/repo"), _manifest("peru", "plazavea_pe"), max_items=None
+    )
+
+    assert "--closespider-timeout" not in cmd
+
+
+def test_source_budget_raises_the_kill_cap_above_it():
+    """The child must get room to shut down gracefully before the driver kills it."""
+    m = _manifest("peru", "plazavea_pe", timeout=14400)
+
+    assert cp.kill_cap(m, 5400) == 14400 + cp.SHUTDOWN_GRACE
+
+
+def test_run_wide_cap_applies_when_the_source_sets_no_budget():
+    assert cp.kill_cap(_manifest("peru", "plazavea_pe"), 5400) == 5400
+
+
+def test_source_budget_never_lowers_the_run_wide_cap():
+    """A generous --timeout on the CLI must not be shrunk by a small YAML budget."""
+    m = _manifest("peru", "plazavea_pe", timeout=600)
+
+    assert cp.kill_cap(m, 9000) == 9000
 
 
 # --- prior-run ledger -----------------------------------------------------

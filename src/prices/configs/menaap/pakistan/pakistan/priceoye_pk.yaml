@@ -27,3 +27,4 @@ notes: |
   sources; collection here is for price-index research, not AI training.
   Electronics/mobiles retailer, NOT a grocery source.
   coicop_divisions: 05, 08, 09; divisions_basis: sampled_rows.
+timeout: 14400

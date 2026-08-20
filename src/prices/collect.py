@@ -122,6 +122,12 @@ def _run_fetcher(m: PriceSourceConfig) -> None:
     default=None,
     help="Per-source item cap (passed as Scrapy CLOSESPIDER_ITEMCOUNT, applies independently to every spider).",
 )
+@click.option(
+    "--closespider-timeout",
+    type=int,
+    default=None,
+    help="Per-spider scrape budget in seconds (Scrapy CLOSESPIDER_TIMEOUT); the spider closes itself gracefully at this mark.",
+)
 @click.option("--dry-run", is_flag=True, help="List sources without running")
 @click.option(
     "--list",
@@ -171,6 +177,7 @@ def collect(
     country,
     source,
     max_items,
+    closespider_timeout,
     dry_run,
     list_sources,
     skip_fetchers,
@@ -275,6 +282,8 @@ def collect(
     settings = get_project_settings()
     if max_items is not None:
         settings.set("CLOSESPIDER_ITEMCOUNT", int(max_items))
+    if closespider_timeout is not None:
+        settings.set("CLOSESPIDER_TIMEOUT", int(closespider_timeout))
 
     process = CrawlerProcess(settings, install_root_handler=False)
     loader = process.spider_loader

@@ -30,3 +30,4 @@ notes: |
   present in priceSpecification and deliberately NOT used. Smoke run:
   60/60 valid rows. Full scrape still pending — orchestrator queues it;
   42490 SKU-PDP universe untouched beyond the smoke sample.
+timeout: 14400

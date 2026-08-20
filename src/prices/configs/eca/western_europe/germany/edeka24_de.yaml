@@ -25,3 +25,4 @@ notes: |
   incl. "10,49 €", "20,98 €". /Pralinen/ -> 200, 30 real product cards incl.
   "Ferrero Giotto Pastel de Nata 4ST 154G - Abverkauf" 3,00 €;
   /Pralinen/?pgNr=1 -> 200, 8 more distinct cards confirming real pagination.
+timeout: 14400

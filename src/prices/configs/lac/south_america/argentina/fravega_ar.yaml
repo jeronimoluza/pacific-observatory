@@ -19,3 +19,4 @@ notes: |
   holds an older URL scheme, `/p/<slug>-<id>/` (8,965 records within the first 4
   cdx blocks, 100% match against that shape). archive_path_re targets the CC-era
   shape, not the current live-scrape shape.
+timeout: 28800
