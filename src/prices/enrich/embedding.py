@@ -69,6 +69,7 @@ def _encode_st(block: dict, names: Sequence[str]) -> np.ndarray:
             model_id,
             trust_remote_code=True,
             config_kwargs=block.get("config_kwargs") or {},
+            model_kwargs=block.get("model_kwargs") or {},
         )
         _ST_MODELS[model_id] = model
     model.max_seq_length = int(block["seq"])
@@ -137,6 +138,11 @@ def free_st() -> None:
 
         if torch.backends.mps.is_available():
             torch.mps.empty_cache()
+        # On CUDA the caching allocator keeps the freed blocks, so a pod running
+        # several blocks in one process would still be holding 8B's ~16 GB when
+        # 4B loads. Dropping the dict is not enough there.
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
     except Exception:
         pass
     import gc
