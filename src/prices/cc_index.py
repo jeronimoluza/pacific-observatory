@@ -33,24 +33,117 @@ logger = logging.getLogger(__name__)
 CC_DATA_BASE = "https://data.commoncrawl.org"
 
 
-def force_ipv4() -> None:
-    """Pin outbound Common Crawl traffic to IPv4.
+_PROBE_OBJECT = "cc-index/collections/CC-MAIN-2026-30/indexes/cdx-00100.gz"
 
-    Common Crawl blocks per *address*, and a host with a global IPv6 address
-    prefers it. Measured: the fetch machine got 403 on every object over IPv6
-    -- cdx blocks included -- while another machine behind the same NAT and the
-    same public IPv4 fetched the identical byte range with 206. Its EUI-64
-    address is derived from the MAC, so the block does not rotate away.
+# Address family this process talks to Common Crawl on. None = let the OS pick.
+_FAMILY: Optional[int] = None
 
-    Consequence worth stating: on IPv4 the machines share one address and
-    therefore one concurrency budget, which they did not while one of them was
-    on IPv6.
-    """
+
+def force_family(family: Optional[int]) -> None:
+    """Pin outbound Common Crawl traffic to one address family."""
+    global _FAMILY
     import socket
 
     import urllib3.util.connection as urllib3_cn
 
-    urllib3_cn.allowed_gai_family = lambda: socket.AF_INET
+    _FAMILY = family
+    if family is None:
+        urllib3_cn.allowed_gai_family = lambda: socket.AF_UNSPEC
+    else:
+        urllib3_cn.allowed_gai_family = lambda: family
+
+
+def _probe_family(flag: str, attempts: int = 2) -> str:
+    """HTTP code Common Crawl answers this family with; "000" if it cannot.
+
+    Retried, because one 25-second timeout would otherwise decide the family
+    for a run lasting hours -- and a false "blocked" on the good family is the
+    expensive direction to be wrong in.
+    """
+    code = "000"
+    for _ in range(attempts):
+        try:
+            out = subprocess.run(
+                [
+                    "curl",
+                    flag,
+                    "-sS",
+                    "--max-time",
+                    "25",
+                    "-o",
+                    "/dev/null",
+                    "-w",
+                    "%{http_code}",
+                    "-r",
+                    "0-2000",
+                    f"{CC_DATA_BASE}/{_PROBE_OBJECT}",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=40,
+            )
+        except (subprocess.SubprocessError, OSError):
+            continue
+        code = out.stdout.strip() or "000"
+        if code in ("200", "206"):
+            return code
+    return code
+
+
+def _ok(code: str) -> bool:
+    return code in ("200", "206")
+
+
+def choose_family() -> Optional[int]:
+    """Pick an address family Common Crawl is not currently blocking.
+
+    Common Crawl blocks per *address*, and a dual-stack host has two. Pinning
+    to one is a coin flip that stays flipped: this machine's IPv6 was blocked
+    one day and its IPv4 the next, and a hard IPv4 pin then spent 9.7 hours
+    sending every request to the blocked address for 5,104 rows.
+
+    The blocks expire -- the IPv6 one lifted overnight -- so the family is a
+    runtime decision, not a constant. Two addresses also means two budgets:
+    whichever is rested gets used.
+
+    Returns None when both answer, leaving the choice to the OS, and also when
+    neither does, since no pin helps a host that is blocked either way.
+    """
+    import socket
+
+    c4, c6 = _probe_family("-4"), _probe_family("-6")
+    v4, v6 = _ok(c4), _ok(c6)
+    if v4 and not v6:
+        chosen = socket.AF_INET
+    elif v6 and not v4:
+        chosen = socket.AF_INET6
+    else:
+        chosen = None
+    # The code matters: 403 is a block that expires, 000 is no route at all,
+    # and treating the second as the first sends someone hunting a ban that
+    # was never there.
+    logger.info(
+        "Common Crawl reachability: IPv4=%s IPv6=%s -> %s",
+        c4,
+        c6,
+        {socket.AF_INET: "IPv4", socket.AF_INET6: "IPv6"}.get(chosen, "OS default"),
+    )
+    if not (v4 or v6):
+        logger.warning(
+            "Common Crawl is blocking both address families on this host. The "
+            "block expires, so this is a wait rather than a fix."
+        )
+    force_family(chosen)
+    return chosen
+
+
+def family_curl_flag() -> List[str]:
+    """``-4``/``-6`` for the chosen family, so curl matches the requests path."""
+    if _FAMILY is None:
+        return []
+    import socket
+
+    return ["-4"] if _FAMILY == socket.AF_INET else ["-6"]
 
 
 # One cluster.idx is ~100MB and never changes once a collection is published,
@@ -179,7 +272,7 @@ def _fetch_block(index: str, shard: str, offset: int, length: int) -> str:
         result = subprocess.run(
             [
                 "curl",
-                "-4",
+                *family_curl_flag(),
                 "-sS",
                 "--fail",
                 "--connect-timeout",

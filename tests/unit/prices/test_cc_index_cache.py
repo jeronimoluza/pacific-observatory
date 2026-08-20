@@ -72,16 +72,36 @@ def test_enumeration_is_unlimited_by_default(tmp_path, monkeypatch):
     assert sig.parameters["max_blocks"].default is None
 
 
-def test_cc_traffic_is_pinned_to_ipv4():
-    # Common Crawl blocks per address. A host with a global IPv6 address
-    # prefers it, and the fetch machine was 403 on every object over IPv6
-    # while another machine behind the same NAT fetched the identical byte
-    # range with 206.
+def test_the_address_family_follows_whichever_one_is_not_blocked(monkeypatch):
+    # Common Crawl blocks per address and a dual-stack host has two. Pinning to
+    # one is a coin flip that stays flipped: this machine's IPv6 was blocked one
+    # day and its IPv4 the next, and the hard IPv4 pin then spent 9.7 hours
+    # sending every request to the blocked address.
     import socket
 
-    import urllib3.util.connection as urllib3_cn
+    import prices.cc_index as cc_index
 
-    from prices.cc_index import force_ipv4
+    def only(flag_that_works):
+        return lambda flag, attempts=2: "206" if flag == flag_that_works else "403"
 
-    force_ipv4()
-    assert urllib3_cn.allowed_gai_family() == socket.AF_INET
+    monkeypatch.setattr(cc_index, "_probe_family", only("-6"))
+    assert cc_index.choose_family() == socket.AF_INET6
+    assert cc_index.family_curl_flag() == ["-6"]
+
+    monkeypatch.setattr(cc_index, "_probe_family", only("-4"))
+    assert cc_index.choose_family() == socket.AF_INET
+    assert cc_index.family_curl_flag() == ["-4"]
+
+
+def test_no_pin_when_both_families_answer_or_neither_does(monkeypatch):
+    # Both fine: nothing to gain from overriding the OS. Neither fine: no pin
+    # rescues a host that is blocked either way, and pretending otherwise hides
+    # that the only cure is waiting for the block to expire.
+    import prices.cc_index as cc_index
+
+    monkeypatch.setattr(cc_index, "_probe_family", lambda flag, attempts=2: "206")
+    assert cc_index.choose_family() is None
+    assert cc_index.family_curl_flag() == []
+
+    monkeypatch.setattr(cc_index, "_probe_family", lambda flag, attempts=2: "403")
+    assert cc_index.choose_family() is None
