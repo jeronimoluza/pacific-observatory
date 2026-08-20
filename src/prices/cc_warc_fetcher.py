@@ -28,6 +28,7 @@ from tqdm import tqdm
 
 from .cc_config import all_cc_configs
 from . import cc_storage
+from .cc_index import force_ipv4
 from .cc_samples import SampleKeeper
 from .cc_index import query_prefix
 from .backfill import _load_spider_parse_html
@@ -91,6 +92,7 @@ class CommonCrawlScraper:
             except KeyError:
                 self.selectors = {}
         self.scraped_at = datetime.now(timezone.utc).isoformat()
+        force_ipv4()
         self._file_lock = threading.Lock()
         self._samples: Optional[SampleKeeper] = None
         # A Common Crawl block is a 403, not a 429, and three retries turn it

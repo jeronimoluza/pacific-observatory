@@ -70,3 +70,18 @@ def test_enumeration_is_unlimited_by_default(tmp_path, monkeypatch):
 
     sig = inspect.signature(cc_index.query_prefix)
     assert sig.parameters["max_blocks"].default is None
+
+
+def test_cc_traffic_is_pinned_to_ipv4():
+    # Common Crawl blocks per address. A host with a global IPv6 address
+    # prefers it, and the fetch machine was 403 on every object over IPv6
+    # while another machine behind the same NAT fetched the identical byte
+    # range with 206.
+    import socket
+
+    import urllib3.util.connection as urllib3_cn
+
+    from prices.cc_index import force_ipv4
+
+    force_ipv4()
+    assert urllib3_cn.allowed_gai_family() == socket.AF_INET

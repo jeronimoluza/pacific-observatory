@@ -32,6 +32,27 @@ logger = logging.getLogger(__name__)
 
 CC_DATA_BASE = "https://data.commoncrawl.org"
 
+
+def force_ipv4() -> None:
+    """Pin outbound Common Crawl traffic to IPv4.
+
+    Common Crawl blocks per *address*, and a host with a global IPv6 address
+    prefers it. Measured: the fetch machine got 403 on every object over IPv6
+    -- cdx blocks included -- while another machine behind the same NAT and the
+    same public IPv4 fetched the identical byte range with 206. Its EUI-64
+    address is derived from the MAC, so the block does not rotate away.
+
+    Consequence worth stating: on IPv4 the machines share one address and
+    therefore one concurrency budget, which they did not while one of them was
+    on IPv6.
+    """
+    import socket
+
+    import urllib3.util.connection as urllib3_cn
+
+    urllib3_cn.allowed_gai_family = lambda: socket.AF_INET
+
+
 # One cluster.idx is ~100MB and never changes once a collection is published,
 # so it is cached on disk and reused across spiders and runs.
 #
@@ -158,6 +179,7 @@ def _fetch_block(index: str, shard: str, offset: int, length: int) -> str:
         result = subprocess.run(
             [
                 "curl",
+                "-4",
                 "-sS",
                 "--fail",
                 "--connect-timeout",
