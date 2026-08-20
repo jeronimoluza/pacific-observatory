@@ -22,13 +22,20 @@ from __future__ import annotations
 
 import argparse
 import json
-import shutil
 import subprocess
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
+
+from prices.tools.cc_backfill_state import (
+    _PARKED_REASONS,
+    _free_gb,
+    _free_inodes,
+    _last_records,
+    _should_run,
+)
 
 
 def _repo_root() -> Path:
@@ -66,56 +73,6 @@ def _count_samples(path: Path) -> int:
     return sum(1 for _ in path.glob("*/*.html"))
 
 
-def _last_records(results_path: Path) -> Dict[str, Dict]:
-    """Spider -> the most recent result recorded for it.
-
-    The whole record, not just the status: whether a source should run again
-    depends on *why* it stopped and how far the manifest reached at the time,
-    and both live in the record.
-    """
-    out: Dict[str, Dict] = {}
-    if not results_path.exists():
-        return out
-    for line in results_path.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            rec = json.loads(line)
-        except ValueError:
-            continue
-        if rec.get("spider"):
-            out[rec["spider"]] = rec
-    return out
-
-
-# Guards that mean "this source is waiting on a human", not "this source is
-# finished". Re-running them unchanged just re-derives the same stop, so they
-# stay parked until --retry-stopped says the parser has been looked at.
-_PARKED_REASONS = {"dead_parser", "empty_crawls"}
-
-
-def _should_run(rec: Optional[Dict], horizon_oldest: str, retry_stopped: bool) -> bool:
-    """Whether a source with this prior result is owed another pass."""
-    if rec is None:
-        return True
-    if rec.get("status") != "completed":
-        return True
-    reason = rec.get("stop_reason", "")
-    if reason in _PARKED_REASONS:
-        return retry_stopped
-    if reason:
-        # cc_403_ban and anything else unrecognised: transient, try again.
-        return True
-    if not horizon_oldest:
-        return False
-    # Walked the whole manifest it was given. Owed another pass only once the
-    # resolve side has pushed the manifest further back than it reached --
-    # otherwise a source that finished a three-crawl prefix would be filed as
-    # having no more history.
-    return rec.get("covered_through", "") > horizon_oldest
-
-
 def _resolve_indexes_once(work: Path, since: int) -> List[str]:
     """Resolve the crawl list once, then pin it for every later run.
 
@@ -139,10 +96,6 @@ def _resolve_indexes_once(work: Path, since: int) -> List[str]:
     work.mkdir(parents=True, exist_ok=True)
     pinned.write_text("\n".join(names) + "\n", encoding="utf-8")
     return names
-
-
-def _free_gb(path: Path) -> float:
-    return shutil.disk_usage(path).free / 1e9
 
 
 def _run_one(
@@ -338,6 +291,14 @@ def main(argv: Optional[List[str]] = None) -> int:
         "crawl indexes locally; the machine then needs no cluster.idx cache",
     )
     ap.add_argument("--min-free-gb", type=float, default=2.0)
+    ap.add_argument(
+        "--min-free-inodes",
+        type=int,
+        default=200_000,
+        help="halt when the filesystem is running out of inodes; one item is "
+        "one file, so this is exhausted long before the byte quota on a card "
+        "with a fixed inode table",
+    )
     ap.add_argument("--cooldown", type=int, default=600, help="seconds after a ban")
     ap.add_argument(
         "--retry-stopped",
@@ -422,6 +383,15 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(
                 f"STOPPING: {free:.1f} GB free, below --min-free-gb "
                 f"{args.min_free_gb}. Move data off this disk and resume.",
+                flush=True,
+            )
+            return 2
+        inodes = _free_inodes(work)
+        if 0 <= inodes < args.min_free_inodes:
+            print(
+                f"STOPPING: {inodes:,} inodes free, below --min-free-inodes "
+                f"{args.min_free_inodes:,}. There may still be free bytes; "
+                f"saves would fail one by one without the byte guard noticing.",
                 flush=True,
             )
             return 2

@@ -3,7 +3,7 @@ import json
 import pytest
 
 from prices.cc_resolve import read_horizon, write_horizon
-from prices.tools.cc_backfill_run import _last_records, _should_run
+from prices.tools.cc_backfill_state import _last_records, _should_run
 
 pytestmark = pytest.mark.unit
 
@@ -87,3 +87,15 @@ def test_a_missing_horizon_reads_as_empty_rather_than_raising(tmp_path):
     # The fetch machine may be handed manifests before the file exists; an
     # exception there would stop the sweep on a cosmetic problem.
     assert read_horizon(tmp_path / "nope")["count"] == 0
+
+
+def test_the_sweep_watches_inodes_not_only_bytes(tmp_path):
+    # One item is one small JSON file, so a fleet-wide crawl costs ~half a
+    # million inodes and only a couple of gigabytes. The byte guard stays happy
+    # while saves start failing one by one -- free bytes are not evidence that
+    # a file can be created.
+    from prices.tools.cc_backfill_state import _free_gb, _free_inodes
+
+    assert _free_gb(tmp_path) > 0
+    inodes = _free_inodes(tmp_path)
+    assert inodes == -1 or inodes > 0
