@@ -1,0 +1,2817 @@
+{
+  "n_records": 25705,
+  "wall_seconds": 1375.3,
+  "statuses": {
+    "ok": 25703,
+    "empty_body": 2
+  },
+  "n_ok": 25703,
+  "n_hit": 13100,
+  "n_miss": 12603,
+  "converted": {
+    "microdata": 1821,
+    "ANY": 1884,
+    "namefill": 206,
+    "charset": 54,
+    "rdfa": 9
+  },
+  "verdicts": {
+    "unexplained": 2583,
+    "probably_not_product_page": 6391,
+    "client_rendered": 1583,
+    "fixable_now": 1884,
+    "soft_404": 161,
+    "not_html": 1
+  },
+  "platforms": {
+    "nextjs": 3712,
+    "null": 7530,
+    "vtex": 979,
+    "magento1": 173,
+    "woocommerce": 12,
+    "shopify": 9,
+    "nuxt": 165,
+    "magento2": 15,
+    "prestashop": 2,
+    "opencart": 6
+  },
+  "charsets": {
+    "utf-8": 11836,
+    "euc-jp": 339,
+    "shift_jis": 130,
+    "iso-8859-1": 110,
+    "big5": 56,
+    "windows-1255": 44,
+    "ms950": 40,
+    "null": 37,
+    "utf8": 8,
+    "windows-1252": 3
+  },
+  "miss_signals": {
+    "has_ldjson_script": 4634,
+    "has_itemprop": 3807,
+    "has_price_meta": 9,
+    "has_cart": 3381,
+    "soft_404": 162,
+    "not_html": 1
+  },
+  "by_crawl": {
+    "CC-MAIN-2013-20": {
+      "ok": 492,
+      "hit": 38,
+      "v_probably_not_product_page": 403,
+      "conv_microdata": 42,
+      "conv_ANY": 42,
+      "v_fixable_now": 42,
+      "conv_namefill": 4,
+      "v_unexplained": 9
+    },
+    "CC-MAIN-2014-23": {
+      "ok": 625,
+      "hit": 43,
+      "v_probably_not_product_page": 373,
+      "conv_microdata": 114,
+      "conv_ANY": 114,
+      "v_fixable_now": 114,
+      "v_unexplained": 74,
+      "v_client_rendered": 21,
+      "conv_namefill": 6
+    },
+    "CC-MAIN-2015-22": {
+      "ok": 752,
+      "hit": 103,
+      "v_probably_not_product_page": 413,
+      "conv_microdata": 200,
+      "conv_ANY": 200,
+      "v_fixable_now": 200,
+      "v_client_rendered": 27,
+      "conv_namefill": 32,
+      "v_unexplained": 9
+    },
+    "CC-MAIN-2016-26": {
+      "ok": 606,
+      "hit": 182,
+      "v_probably_not_product_page": 364,
+      "conv_microdata": 49,
+      "conv_ANY": 49,
+      "v_fixable_now": 49,
+      "v_unexplained": 6,
+      "v_client_rendered": 5,
+      "conv_namefill": 2
+    },
+    "CC-MAIN-2017-26": {
+      "ok": 1030,
+      "hit": 264,
+      "conv_microdata": 176,
+      "conv_ANY": 184,
+      "v_fixable_now": 184,
+      "v_probably_not_product_page": 512,
+      "v_unexplained": 64,
+      "conv_charset": 7,
+      "conv_rdfa": 1,
+      "conv_namefill": 22,
+      "v_client_rendered": 6
+    },
+    "CC-MAIN-2018-26": {
+      "ok": 1099,
+      "hit": 334,
+      "conv_microdata": 221,
+      "conv_ANY": 241,
+      "v_fixable_now": 241,
+      "v_unexplained": 219,
+      "v_probably_not_product_page": 303,
+      "conv_charset": 18,
+      "conv_namefill": 16,
+      "v_soft_404": 1,
+      "conv_rdfa": 2,
+      "v_client_rendered": 1
+    },
+    "CC-MAIN-2019-26": {
+      "ok": 1210,
+      "hit": 517,
+      "conv_microdata": 214,
+      "conv_namefill": 59,
+      "conv_ANY": 228,
+      "v_fixable_now": 228,
+      "v_unexplained": 192,
+      "conv_charset": 9,
+      "v_probably_not_product_page": 260,
+      "v_client_rendered": 13,
+      "conv_rdfa": 5
+    },
+    "CC-MAIN-2020-24": {
+      "ok": 1210,
+      "hit": 505,
+      "conv_microdata": 155,
+      "conv_ANY": 161,
+      "v_fixable_now": 161,
+      "v_unexplained": 181,
+      "v_probably_not_product_page": 321,
+      "conv_charset": 5,
+      "v_soft_404": 30,
+      "conv_namefill": 6,
+      "v_client_rendered": 12,
+      "conv_rdfa": 1
+    },
+    "CC-MAIN-2021-25": {
+      "ok": 1270,
+      "hit": 605,
+      "v_probably_not_product_page": 352,
+      "v_client_rendered": 10,
+      "conv_charset": 8,
+      "conv_ANY": 161,
+      "v_fixable_now": 161,
+      "v_unexplained": 138,
+      "conv_microdata": 153,
+      "conv_namefill": 11,
+      "v_soft_404": 4
+    },
+    "CC-MAIN-2022-27": {
+      "ok": 1330,
+      "hit": 755,
+      "v_client_rendered": 69,
+      "v_unexplained": 138,
+      "v_probably_not_product_page": 241,
+      "conv_microdata": 116,
+      "conv_ANY": 123,
+      "v_fixable_now": 123,
+      "conv_namefill": 45,
+      "conv_charset": 7,
+      "v_soft_404": 4
+    },
+    "CC-MAIN-2023-23": {
+      "ok": 970,
+      "hit": 531,
+      "v_unexplained": 137,
+      "v_probably_not_product_page": 276,
+      "conv_microdata": 6,
+      "conv_ANY": 6,
+      "v_fixable_now": 6,
+      "v_soft_404": 11,
+      "v_client_rendered": 8,
+      "conv_namefill": 2,
+      "v_not_html": 1
+    },
+    "CC-MAIN-2024-26": {
+      "ok": 1390,
+      "hit": 811,
+      "v_probably_not_product_page": 335,
+      "v_unexplained": 150,
+      "v_client_rendered": 77,
+      "v_soft_404": 16,
+      "conv_microdata": 1,
+      "conv_namefill": 1,
+      "conv_ANY": 1,
+      "v_fixable_now": 1
+    },
+    "CC-MAIN-2025-26": {
+      "ok": 1330,
+      "hit": 803,
+      "v_unexplained": 121,
+      "v_probably_not_product_page": 259,
+      "v_client_rendered": 130,
+      "conv_microdata": 5,
+      "conv_ANY": 5,
+      "v_fixable_now": 5,
+      "v_soft_404": 12
+    },
+    "CC-MAIN-2025-47": {
+      "ok": 1390,
+      "hit": 772,
+      "v_unexplained": 183,
+      "v_client_rendered": 129,
+      "v_probably_not_product_page": 263,
+      "conv_microdata": 39,
+      "conv_ANY": 39,
+      "v_fixable_now": 39,
+      "v_soft_404": 4
+    },
+    "CC-MAIN-2025-51": {
+      "ok": 1390,
+      "hit": 739,
+      "v_probably_not_product_page": 259,
+      "conv_microdata": 38,
+      "conv_ANY": 38,
+      "v_fixable_now": 38,
+      "v_unexplained": 174,
+      "v_client_rendered": 171,
+      "v_soft_404": 9
+    },
+    "CC-MAIN-2026-04": {
+      "ok": 1390,
+      "hit": 874,
+      "v_client_rendered": 155,
+      "v_unexplained": 135,
+      "conv_microdata": 44,
+      "conv_ANY": 44,
+      "v_fixable_now": 44,
+      "v_probably_not_product_page": 172,
+      "v_soft_404": 10
+    },
+    "CC-MAIN-2026-08": {
+      "ok": 1389,
+      "hit": 882,
+      "v_probably_not_product_page": 198,
+      "v_unexplained": 122,
+      "v_client_rendered": 133,
+      "conv_microdata": 45,
+      "conv_ANY": 45,
+      "v_fixable_now": 45,
+      "v_soft_404": 9
+    },
+    "CC-MAIN-2026-12": {
+      "ok": 1390,
+      "hit": 886,
+      "v_client_rendered": 131,
+      "v_unexplained": 134,
+      "v_probably_not_product_page": 185,
+      "conv_microdata": 49,
+      "conv_ANY": 49,
+      "v_fixable_now": 49,
+      "v_soft_404": 5
+    },
+    "CC-MAIN-2026-17": {
+      "ok": 1390,
+      "hit": 902,
+      "v_client_rendered": 135,
+      "v_probably_not_product_page": 194,
+      "v_unexplained": 116,
+      "conv_microdata": 32,
+      "conv_ANY": 32,
+      "v_fixable_now": 32,
+      "v_soft_404": 11
+    },
+    "CC-MAIN-2026-21": {
+      "ok": 1390,
+      "hit": 869,
+      "v_probably_not_product_page": 207,
+      "v_client_rendered": 142,
+      "v_unexplained": 120,
+      "conv_microdata": 43,
+      "conv_ANY": 43,
+      "v_fixable_now": 43,
+      "v_soft_404": 9
+    },
+    "CC-MAIN-2026-25": {
+      "ok": 1330,
+      "hit": 810,
+      "v_client_rendered": 135,
+      "v_unexplained": 111,
+      "v_probably_not_product_page": 196,
+      "conv_microdata": 62,
+      "conv_ANY": 62,
+      "v_fixable_now": 62,
+      "v_soft_404": 16
+    },
+    "CC-MAIN-2026-30": {
+      "ok": 1330,
+      "hit": 875,
+      "v_unexplained": 50,
+      "v_client_rendered": 73,
+      "v_probably_not_product_page": 305,
+      "v_soft_404": 10,
+      "conv_microdata": 17,
+      "conv_ANY": 17,
+      "v_fixable_now": 17
+    }
+  },
+  "by_source": {
+    "999_md": {
+      "ok": 7,
+      "hit": 1,
+      "conv_ANY": 2
+    },
+    "aceuae_ae": {
+      "ok": 3,
+      "hit": 3
+    },
+    "add2cartmw": {
+      "ok": 1,
+      "hit": 1
+    },
+    "agrofy_ar": {
+      "ok": 24,
+      "hit": 1
+    },
+    "agrofy_br": {
+      "ok": 4,
+      "hit": 1
+    },
+    "albert_wolt_cz": {
+      "ok": 1,
+      "hit": 0
+    },
+    "aldi_au": {
+      "ok": 5,
+      "hit": 5
+    },
+    "alfatah_pk": {
+      "ok": 5,
+      "hit": 5
+    },
+    "alifshop_tj": {
+      "ok": 16,
+      "hit": 5
+    },
+    "amarket_bo": {
+      "ok": 2,
+      "hit": 2
+    },
+    "amicashop_jp": {
+      "ok": 6,
+      "hit": 0
+    },
+    "ananas_rs": {
+      "ok": 2,
+      "hit": 2
+    },
+    "anjelagallery_ir": {
+      "ok": 3,
+      "hit": 3
+    },
+    "aonesupermarkets": {
+      "ok": 2,
+      "hit": 2
+    },
+    "apex_pharmacy": {
+      "ok": 1,
+      "hit": 0
+    },
+    "apteka_ru": {
+      "ok": 25,
+      "hit": 22
+    },
+    "arayeshishahin_ir": {
+      "ok": 1,
+      "hit": 1
+    },
+    "arrocha_pa": {
+      "ok": 5,
+      "hit": 5
+    },
+    "asaxiy_uz": {
+      "ok": 14,
+      "hit": 3,
+      "conv_ANY": 9
+    },
+    "aswak_assalam_ma": {
+      "ok": 16,
+      "hit": 16
+    },
+    "athome_jp": {
+      "ok": 6,
+      "hit": 6
+    },
+    "au_pay_market": {
+      "ok": 1080,
+      "hit": 230,
+      "conv_ANY": 54
+    },
+    "auchan_ro": {
+      "ok": 19,
+      "hit": 11
+    },
+    "auchan_sn": {
+      "ok": 3,
+      "hit": 3
+    },
+    "azha_pasa": {
+      "ok": 1,
+      "hit": 0
+    },
+    "azzaro_perfume_ir": {
+      "ok": 6,
+      "hit": 6
+    },
+    "barbora_ee": {
+      "ok": 6,
+      "hit": 0,
+      "conv_ANY": 6
+    },
+    "barbora_lv": {
+      "ok": 12,
+      "hit": 0,
+      "conv_ANY": 11
+    },
+    "bargain_chemist": {
+      "ok": 2,
+      "hit": 2
+    },
+    "batdongsan_vn": {
+      "ok": 254,
+      "hit": 0
+    },
+    "bazarstore_az": {
+      "ok": 1,
+      "hit": 1
+    },
+    "bigly_ly": {
+      "ok": 3,
+      "hit": 0
+    },
+    "bilkatogo_dk": {
+      "ok": 1,
+      "hit": 0
+    },
+    "biltongboytjies_za": {
+      "ok": 1,
+      "hit": 1
+    },
+    "bizma_ir": {
+      "ok": 3,
+      "hit": 3
+    },
+    "btech_eg": {
+      "ok": 13,
+      "hit": 13
+    },
+    "bulksales99_my": {
+      "ok": 2,
+      "hit": 0
+    },
+    "canineandco_za": {
+      "ok": 4,
+      "hit": 4
+    },
+    "capelle_nr": {
+      "ok": 1,
+      "hit": 1
+    },
+    "carrefour_ar": {
+      "ok": 17,
+      "hit": 0
+    },
+    "carrefour_tw": {
+      "ok": 47,
+      "hit": 46
+    },
+    "casarica_py": {
+      "ok": 21,
+      "hit": 0
+    },
+    "celineshops_ir": {
+      "ok": 1,
+      "hit": 0
+    },
+    "cellarmaster_hk": {
+      "ok": 1,
+      "hit": 1
+    },
+    "cemaco_gt": {
+      "ok": 2,
+      "hit": 2
+    },
+    "central_th": {
+      "ok": 1,
+      "hit": 1
+    },
+    "chawan_ir": {
+      "ok": 1,
+      "hit": 1
+    },
+    "chedraui_mx": {
+      "ok": 660,
+      "hit": 586
+    },
+    "chemist_plus": {
+      "ok": 3,
+      "hit": 3
+    },
+    "chemist_warehouse": {
+      "ok": 59,
+      "hit": 0,
+      "conv_ANY": 44
+    },
+    "cima_ma": {
+      "ok": 8,
+      "hit": 8
+    },
+    "citymall_mm": {
+      "ok": 1,
+      "hit": 1
+    },
+    "citypharm": {
+      "ok": 3,
+      "hit": 3
+    },
+    "cjenoteka_hr": {
+      "ok": 2,
+      "hit": 1
+    },
+    "cold_storage_sg": {
+      "ok": 15,
+      "hit": 4
+    },
+    "coles_au": {
+      "ok": 3,
+      "hit": 0
+    },
+    "compro_bo": {
+      "ok": 2,
+      "hit": 2
+    },
+    "continente_pt": {
+      "ok": 1,
+      "hit": 0
+    },
+    "coolblue_be": {
+      "ok": 45,
+      "hit": 37
+    },
+    "coolblue_nl": {
+      "ok": 77,
+      "hit": 66
+    },
+    "coolmarket_jm": {
+      "ok": 6,
+      "hit": 6
+    },
+    "coop_hu": {
+      "ok": 1,
+      "hit": 1
+    },
+    "coopmart": {
+      "ok": 1,
+      "hit": 1
+    },
+    "coppel_mx": {
+      "ok": 19,
+      "hit": 19
+    },
+    "cosmed": {
+      "ok": 45,
+      "hit": 45
+    },
+    "costco_taiwan": {
+      "ok": 39,
+      "hit": 30
+    },
+    "costuless_ky": {
+      "ok": 2,
+      "hit": 0
+    },
+    "costuless_sx": {
+      "ok": 4,
+      "hit": 0
+    },
+    "coursesnet_dz": {
+      "ok": 2,
+      "hit": 2
+    },
+    "courts_gy": {
+      "ok": 1,
+      "hit": 1
+    },
+    "courts_tt": {
+      "ok": 1,
+      "hit": 0
+    },
+    "cruzverde_cl": {
+      "ok": 7,
+      "hit": 0
+    },
+    "cruzverde_gt": {
+      "ok": 1,
+      "hit": 0
+    },
+    "daraz_np": {
+      "ok": 3,
+      "hit": 0
+    },
+    "ddproperty_th": {
+      "ok": 16,
+      "hit": 14,
+      "conv_ANY": 1
+    },
+    "decathlon_au": {
+      "ok": 7,
+      "hit": 3
+    },
+    "decathlon_id": {
+      "ok": 3,
+      "hit": 0
+    },
+    "decathlon_ph": {
+      "ok": 15,
+      "hit": 5
+    },
+    "decathlon_tw": {
+      "ok": 1,
+      "hit": 0
+    },
+    "decathlon_vn": {
+      "ok": 3,
+      "hit": 0
+    },
+    "denner_ch": {
+      "ok": 7,
+      "hit": 4
+    },
+    "deprati_ec": {
+      "ok": 42,
+      "hit": 42
+    },
+    "dia_ar": {
+      "ok": 12,
+      "hit": 4
+    },
+    "dia_es": {
+      "ok": 61,
+      "hit": 33,
+      "conv_ANY": 23
+    },
+    "dichonhanh": {
+      "ok": 1,
+      "hit": 1
+    },
+    "diggbox_no": {
+      "ok": 6,
+      "hit": 6
+    },
+    "disco_ar": {
+      "ok": 2,
+      "hit": 2
+    },
+    "docmorris_de": {
+      "ok": 37,
+      "hit": 0
+    },
+    "doctor_oncall": {
+      "ok": 1,
+      "hit": 1
+    },
+    "doitcenter_pa": {
+      "ok": 8,
+      "hit": 8
+    },
+    "domino_ge": {
+      "ok": 2,
+      "hit": 0
+    },
+    "domod_ba": {
+      "ok": 10,
+      "hit": 10
+    },
+    "door_to_door_tt": {
+      "ok": 1,
+      "hit": 1
+    },
+    "dotproperty_ph": {
+      "ok": 5,
+      "hit": 4
+    },
+    "downtoearth_ie": {
+      "ok": 8,
+      "hit": 8
+    },
+    "drluxe_ir": {
+      "ok": 3,
+      "hit": 2
+    },
+    "drogasil_br": {
+      "ok": 82,
+      "hit": 71,
+      "conv_ANY": 9
+    },
+    "dubaik_ir": {
+      "ok": 1,
+      "hit": 1
+    },
+    "easy_ar": {
+      "ok": 11,
+      "hit": 11
+    },
+    "ebay_uk": {
+      "ok": 840,
+      "hit": 0,
+      "conv_ANY": 342
+    },
+    "edeka24_de": {
+      "ok": 35,
+      "hit": 0
+    },
+    "ekupi_ba": {
+      "ok": 14,
+      "hit": 0
+    },
+    "ekupi_hr": {
+      "ok": 77,
+      "hit": 0
+    },
+    "eldorado_uy": {
+      "ok": 11,
+      "hit": 9
+    },
+    "ellbeauty_ir": {
+      "ok": 1,
+      "hit": 0
+    },
+    "elmachetazo_pa": {
+      "ok": 16,
+      "hit": 15
+    },
+    "elvi_lv": {
+      "ok": 21,
+      "hit": 0
+    },
+    "emag_hu": {
+      "ok": 4,
+      "hit": 1
+    },
+    "emag_ro": {
+      "ok": 94,
+      "hit": 8,
+      "conv_ANY": 15
+    },
+    "emart_kr": {
+      "ok": 8,
+      "hit": 7
+    },
+    "emartmall": {
+      "ok": 4,
+      "hit": 0
+    },
+    "epa_cr": {
+      "ok": 12,
+      "hit": 12
+    },
+    "epharmacy_np": {
+      "ok": 1,
+      "hit": 0,
+      "conv_ANY": 1
+    },
+    "europroduct_ge": {
+      "ok": 5,
+      "hit": 5
+    },
+    "eurosupermercados_co": {
+      "ok": 8,
+      "hit": 7
+    },
+    "expatistan": {
+      "ok": 41,
+      "hit": 0
+    },
+    "exta": {
+      "ok": 3,
+      "hit": 2
+    },
+    "extra_sa": {
+      "ok": 5,
+      "hit": 5
+    },
+    "fairprice": {
+      "ok": 960,
+      "hit": 78
+    },
+    "falabella_cl": {
+      "ok": 126,
+      "hit": 58
+    },
+    "falabella_co": {
+      "ok": 26,
+      "hit": 15
+    },
+    "falabella_pe": {
+      "ok": 48,
+      "hit": 23
+    },
+    "farmacenter_py": {
+      "ok": 22,
+      "hit": 22
+    },
+    "farmaciacarol_do": {
+      "ok": 2,
+      "hit": 0
+    },
+    "farmaciasannicolas_sv": {
+      "ok": 1,
+      "hit": 0
+    },
+    "farmacity_ar": {
+      "ok": 12,
+      "hit": 9
+    },
+    "farmacorp_bo": {
+      "ok": 3,
+      "hit": 3
+    },
+    "farmashop_uy": {
+      "ok": 21,
+      "hit": 19
+    },
+    "farmatodo_co": {
+      "ok": 41,
+      "hit": 38
+    },
+    "farmatodo_ve": {
+      "ok": 36,
+      "hit": 20
+    },
+    "farmer_joe": {
+      "ok": 1,
+      "hit": 1
+    },
+    "ff_md": {
+      "ok": 6,
+      "hit": 6
+    },
+    "fidalga_bo": {
+      "ok": 1,
+      "hit": 1
+    },
+    "fontanapharmacy_jm": {
+      "ok": 3,
+      "hit": 3
+    },
+    "fptshop_vn": {
+      "ok": 47,
+      "hit": 3
+    },
+    "frankie_samoa": {
+      "ok": 1,
+      "hit": 0,
+      "conv_ANY": 1
+    },
+    "fravega_ar": {
+      "ok": 19,
+      "hit": 13
+    },
+    "friday_shopping": {
+      "ok": 3,
+      "hit": 0
+    },
+    "frisco_pl": {
+      "ok": 50,
+      "hit": 9,
+      "conv_ANY": 20
+    },
+    "gamma_nl": {
+      "ok": 1105,
+      "hit": 555,
+      "conv_ANY": 357
+    },
+    "geogabon_ga": {
+      "ok": 2,
+      "hit": 2
+    },
+    "ghbasket_gh": {
+      "ok": 1,
+      "hit": 1
+    },
+    "glomark_lk": {
+      "ok": 3,
+      "hit": 2
+    },
+    "gmarket": {
+      "ok": 135,
+      "hit": 0
+    },
+    "gollo_cr": {
+      "ok": 5,
+      "hit": 5
+    },
+    "golsima_ir": {
+      "ok": 3,
+      "hit": 2
+    },
+    "gomlaexpress_eg": {
+      "ok": 1,
+      "hit": 1
+    },
+    "gonglowuaeph_ae": {
+      "ok": 2,
+      "hit": 2
+    },
+    "good_food_mv": {
+      "ok": 2,
+      "hit": 2
+    },
+    "goodees_market": {
+      "ok": 2,
+      "hit": 2
+    },
+    "goods2door_tc": {
+      "ok": 2,
+      "hit": 2
+    },
+    "goodzay": {
+      "ok": 2,
+      "hit": 2
+    },
+    "gorillapets_in": {
+      "ok": 2,
+      "hit": 2
+    },
+    "goto_pk": {
+      "ok": 18,
+      "hit": 10
+    },
+    "gourmet_egypt": {
+      "ok": 3,
+      "hit": 2
+    },
+    "gourmet_versand_de": {
+      "ok": 19,
+      "hit": 4,
+      "conv_ANY": 5
+    },
+    "greenspoon_ke": {
+      "ok": 7,
+      "hit": 2
+    },
+    "gtplaza": {
+      "ok": 2,
+      "hit": 1
+    },
+    "guan_hock_lee": {
+      "ok": 3,
+      "hit": 2
+    },
+    "guardian_sg": {
+      "ok": 10,
+      "hit": 3,
+      "conv_ANY": 2
+    },
+    "guystar_gy": {
+      "ok": 1,
+      "hit": 0
+    },
+    "harris_farm_markets": {
+      "ok": 19,
+      "hit": 19
+    },
+    "hepsiburada_tr": {
+      "ok": 1087,
+      "hit": 571,
+      "conv_ANY": 249
+    },
+    "homecenter_co": {
+      "ok": 105,
+      "hit": 76
+    },
+    "homedepot_mx": {
+      "ok": 5,
+      "hit": 4
+    },
+    "homehr_ir": {
+      "ok": 7,
+      "hit": 4
+    },
+    "homemarket_ro": {
+      "ok": 4,
+      "hit": 0
+    },
+    "homeplus_kr": {
+      "ok": 4,
+      "hit": 3
+    },
+    "homes_jp": {
+      "ok": 4,
+      "hit": 2
+    },
+    "horizon_farms": {
+      "ok": 1,
+      "hit": 1
+    },
+    "hoshmandshop_ir": {
+      "ok": 5,
+      "hit": 3
+    },
+    "hotpepper_jp": {
+      "ok": 308,
+      "hit": 0
+    },
+    "hoursmarket_ng": {
+      "ok": 4,
+      "hit": 3
+    },
+    "hpharmacy_pk": {
+      "ok": 4,
+      "hit": 4
+    },
+    "hypermart": {
+      "ok": 15,
+      "hit": 15
+    },
+    "igashop_au": {
+      "ok": 8,
+      "hit": 8
+    },
+    "ikea_ae": {
+      "ok": 10,
+      "hit": 10
+    },
+    "ikea_au": {
+      "ok": 4,
+      "hit": 4
+    },
+    "ikea_jp": {
+      "ok": 2,
+      "hit": 2
+    },
+    "ikea_kr": {
+      "ok": 2,
+      "hit": 2
+    },
+    "ikea_my": {
+      "ok": 3,
+      "hit": 3
+    },
+    "ikea_ph": {
+      "ok": 1,
+      "hit": 1
+    },
+    "ikea_sa": {
+      "ok": 1,
+      "hit": 1
+    },
+    "ilovesaipan": {
+      "ok": 1,
+      "hit": 1
+    },
+    "infokost": {
+      "ok": 4,
+      "hit": 4
+    },
+    "inkafarma_pe": {
+      "ok": 4,
+      "hit": 0
+    },
+    "irajgallery_ir": {
+      "ok": 1,
+      "hit": 1
+    },
+    "jackspng_pg": {
+      "ok": 3,
+      "hit": 2
+    },
+    "jianke": {
+      "ok": 5,
+      "hit": 5
+    },
+    "jumbo_ar": {
+      "ok": 18,
+      "hit": 9
+    },
+    "jumbo_co": {
+      "ok": 17,
+      "hit": 15
+    },
+    "jumbo_nl": {
+      "ok": 21,
+      "hit": 5
+    },
+    "jumbosouq_qa": {
+      "ok": 2,
+      "hit": 2
+    },
+    "k24klik": {
+      "ok": 14,
+      "hit": 11
+    },
+    "karaz_ps": {
+      "ok": 11,
+      "hit": 11
+    },
+    "kaufland_ro": {
+      "ok": 5,
+      "hit": 0
+    },
+    "khaivai": {
+      "ok": 1,
+      "hit": 1
+    },
+    "khajikala_ir": {
+      "ok": 4,
+      "hit": 3
+    },
+    "khasmart_pk": {
+      "ok": 2,
+      "hit": 2
+    },
+    "khayamdaru_ir": {
+      "ok": 1,
+      "hit": 0
+    },
+    "komus_ru": {
+      "ok": 21,
+      "hit": 19,
+      "conv_ANY": 1
+    },
+    "kontakt_az": {
+      "ok": 4,
+      "hit": 0
+    },
+    "konzum_hr": {
+      "ok": 37,
+      "hit": 35
+    },
+    "kurly_kr": {
+      "ok": 660,
+      "hit": 46
+    },
+    "lacolonia_hn": {
+      "ok": 8,
+      "hit": 8
+    },
+    "lacuracaonline_ni": {
+      "ok": 11,
+      "hit": 9
+    },
+    "lafourche_fr": {
+      "ok": 18,
+      "hit": 18
+    },
+    "latorre_gt": {
+      "ok": 2,
+      "hit": 2
+    },
+    "launion_ni": {
+      "ok": 4,
+      "hit": 4
+    },
+    "lazada_ph_lazmart": {
+      "ok": 29,
+      "hit": 0
+    },
+    "leroymerlin_br": {
+      "ok": 10,
+      "hit": 6
+    },
+    "lidl_rs": {
+      "ok": 1,
+      "hit": 1
+    },
+    "lidl_si": {
+      "ok": 1,
+      "hit": 0
+    },
+    "liefershop_de": {
+      "ok": 6,
+      "hit": 4
+    },
+    "life_pharmacy_nz": {
+      "ok": 1,
+      "hit": 1
+    },
+    "linella_md": {
+      "ok": 6,
+      "hit": 0
+    },
+    "lingandsons": {
+      "ok": 1,
+      "hit": 1
+    },
+    "liverpool_mx": {
+      "ok": 909,
+      "hit": 60,
+      "conv_ANY": 9
+    },
+    "livingcost": {
+      "ok": 42,
+      "hit": 0
+    },
+    "lohaco": {
+      "ok": 780,
+      "hit": 660
+    },
+    "long_chau": {
+      "ok": 11,
+      "hit": 1
+    },
+    "lotuss_th": {
+      "ok": 10,
+      "hit": 0
+    },
+    "lusakadelivery": {
+      "ok": 3,
+      "hit": 3
+    },
+    "magnit_tj": {
+      "ok": 6,
+      "hit": 0
+    },
+    "magnumopt_kz": {
+      "ok": 17,
+      "hit": 0
+    },
+    "makro": {
+      "ok": 2,
+      "hit": 0
+    },
+    "mallhabana_cu": {
+      "ok": 1,
+      "hit": 0
+    },
+    "mamame_iq": {
+      "ok": 3,
+      "hit": 3
+    },
+    "mambo_br": {
+      "ok": 3,
+      "hit": 2
+    },
+    "mangusa_cw": {
+      "ok": 7,
+      "hit": 6
+    },
+    "mannings": {
+      "ok": 8,
+      "hit": 1
+    },
+    "mantrafoods_mu": {
+      "ok": 1,
+      "hit": 1
+    },
+    "massy_stores_bb": {
+      "ok": 5,
+      "hit": 5
+    },
+    "maxidespensa_gt": {
+      "ok": 11,
+      "hit": 8
+    },
+    "maxiks_ks": {
+      "ok": 1,
+      "hit": 0
+    },
+    "medicare_vn": {
+      "ok": 7,
+      "hit": 0
+    },
+    "medicinaonline_ae": {
+      "ok": 6,
+      "hit": 4
+    },
+    "megaalina_md": {
+      "ok": 2,
+      "hit": 0
+    },
+    "megamarket_ro": {
+      "ok": 2,
+      "hit": 0
+    },
+    "mercadona": {
+      "ok": 22,
+      "hit": 0
+    },
+    "mercocaribe_habana_cu": {
+      "ok": 1,
+      "hit": 1
+    },
+    "metro_pe": {
+      "ok": 15,
+      "hit": 13
+    },
+    "mh_online": {
+      "ok": 5,
+      "hit": 5
+    },
+    "miswag_iq": {
+      "ok": 3,
+      "hit": 3
+    },
+    "mogi_vn": {
+      "ok": 15,
+      "hit": 0
+    },
+    "momo_tw": {
+      "ok": 137,
+      "hit": 24
+    },
+    "mpreis_at": {
+      "ok": 23,
+      "hit": 23
+    },
+    "mytime_de": {
+      "ok": 48,
+      "hit": 37,
+      "conv_ANY": 9
+    },
+    "n11_tr": {
+      "ok": 21,
+      "hit": 20
+    },
+    "nacional_do": {
+      "ok": 4,
+      "hit": 4
+    },
+    "neptun_al": {
+      "ok": 6,
+      "hit": 0
+    },
+    "new_world_fiji": {
+      "ok": 2,
+      "hit": 0
+    },
+    "nirigs_dj": {
+      "ok": 1,
+      "hit": 1
+    },
+    "nomin": {
+      "ok": 21,
+      "hit": 21
+    },
+    "nu3_ch": {
+      "ok": 1,
+      "hit": 1
+    },
+    "nz_online_chemist": {
+      "ok": 2,
+      "hit": 2
+    },
+    "oasis_kr": {
+      "ok": 24,
+      "hit": 0
+    },
+    "obi_de": {
+      "ok": 79,
+      "hit": 44
+    },
+    "ochoa_do": {
+      "ok": 8,
+      "hit": 0
+    },
+    "olx_pk": {
+      "ok": 27,
+      "hit": 1
+    },
+    "olx_pl": {
+      "ok": 73,
+      "hit": 44
+    },
+    "olx_ro": {
+      "ok": 68,
+      "hit": 36
+    },
+    "onlinekade_lk": {
+      "ok": 1,
+      "hit": 1
+    },
+    "onlinesaathi": {
+      "ok": 1,
+      "hit": 0
+    },
+    "opensooq_eg": {
+      "ok": 1,
+      "hit": 0
+    },
+    "organica_vn": {
+      "ok": 1,
+      "hit": 1
+    },
+    "orisdi_iq": {
+      "ok": 4,
+      "hit": 4
+    },
+    "ostyle_shop": {
+      "ok": 2,
+      "hit": 2
+    },
+    "othoba": {
+      "ok": 1,
+      "hit": 1
+    },
+    "otrity_tn": {
+      "ok": 2,
+      "hit": 2
+    },
+    "otto_de": {
+      "ok": 807,
+      "hit": 410,
+      "conv_ANY": 396
+    },
+    "pacifiko_gt": {
+      "ok": 10,
+      "hit": 10
+    },
+    "paiz_gt": {
+      "ok": 5,
+      "hit": 4
+    },
+    "pakwheels_pk": {
+      "ok": 1320,
+      "hit": 799,
+      "conv_ANY": 40
+    },
+    "pametnokupuj_ba": {
+      "ok": 1,
+      "hit": 1
+    },
+    "panafoto_pa": {
+      "ok": 1,
+      "hit": 1
+    },
+    "paotrolado_ve": {
+      "ok": 2,
+      "hit": 2
+    },
+    "paris_cl": {
+      "ok": 57,
+      "hit": 33,
+      "conv_ANY": 1
+    },
+    "parma_am": {
+      "ok": 2,
+      "hit": 0
+    },
+    "pasar_segar": {
+      "ok": 6,
+      "hit": 6
+    },
+    "patuljak_me": {
+      "ok": 5,
+      "hit": 0,
+      "conv_ANY": 3
+    },
+    "paykar_tj": {
+      "ok": 5,
+      "hit": 5
+    },
+    "pchome_24h": {
+      "ok": 1143,
+      "hit": 840
+    },
+    "pharmacy_111": {
+      "ok": 2,
+      "hit": 2
+    },
+    "pharmeasy": {
+      "ok": 900,
+      "hit": 896
+    },
+    "pickaroo": {
+      "ok": 34,
+      "hit": 34
+    },
+    "plazavea_pe": {
+      "ok": 11,
+      "hit": 0
+    },
+    "praktiker_hu": {
+      "ok": 39,
+      "hit": 39
+    },
+    "preciosdelsuper_es": {
+      "ok": 13,
+      "hit": 12
+    },
+    "priceoye_pk": {
+      "ok": 3,
+      "hit": 2
+    },
+    "prisma_ee": {
+      "ok": 16,
+      "hit": 0
+    },
+    "prisma_fi": {
+      "ok": 37,
+      "hit": 25
+    },
+    "propertyguru_my": {
+      "ok": 189,
+      "hit": 21,
+      "conv_ANY": 32
+    },
+    "propertyguru_sg": {
+      "ok": 8,
+      "hit": 3,
+      "conv_ANY": 2
+    },
+    "rakuten": {
+      "ok": 1260,
+      "hit": 1143
+    },
+    "rautuoi247": {
+      "ok": 1,
+      "hit": 1
+    },
+    "rbpatel": {
+      "ok": 6,
+      "hit": 6
+    },
+    "realestate_com_kh": {
+      "ok": 13,
+      "hit": 0
+    },
+    "redwave_mv": {
+      "ok": 1,
+      "hit": 1
+    },
+    "reklama5_mk": {
+      "ok": 25,
+      "hit": 0
+    },
+    "rekoekologiska_se": {
+      "ok": 1,
+      "hit": 0
+    },
+    "ribasmith_pa": {
+      "ok": 24,
+      "hit": 0
+    },
+    "rimi_ee": {
+      "ok": 15,
+      "hit": 6
+    },
+    "rimi_lt": {
+      "ok": 8,
+      "hit": 4
+    },
+    "rimi_lv": {
+      "ok": 22,
+      "hit": 10
+    },
+    "riteway_vg": {
+      "ok": 3,
+      "hit": 3
+    },
+    "rose_pharmacy": {
+      "ok": 8,
+      "hit": 8
+    },
+    "rozetka_ua": {
+      "ok": 8,
+      "hit": 8
+    },
+    "samoa_market": {
+      "ok": 2,
+      "hit": 2
+    },
+    "savegnago_br": {
+      "ok": 18,
+      "hit": 17
+    },
+    "saymyanmar": {
+      "ok": 2,
+      "hit": 0
+    },
+    "sayurbox": {
+      "ok": 32,
+      "hit": 24
+    },
+    "scotthomedelivery_mu": {
+      "ok": 1,
+      "hit": 1
+    },
+    "scotts_mt": {
+      "ok": 15,
+      "hit": 15
+    },
+    "selectos_pr": {
+      "ok": 4,
+      "hit": 0
+    },
+    "sherza": {
+      "ok": 3,
+      "hit": 3
+    },
+    "sheypoor_ir": {
+      "ok": 1,
+      "hit": 0
+    },
+    "shophive_pk": {
+      "ok": 17,
+      "hit": 5
+    },
+    "shoponline_bt": {
+      "ok": 1,
+      "hit": 1
+    },
+    "shopping_d": {
+      "ok": 5,
+      "hit": 5
+    },
+    "shoppingchina_py": {
+      "ok": 19,
+      "hit": 17
+    },
+    "shwapno_bd": {
+      "ok": 5,
+      "hit": 0
+    },
+    "siman_sv": {
+      "ok": 3,
+      "hit": 1
+    },
+    "singer_lk": {
+      "ok": 6,
+      "hit": 6
+    },
+    "sinsa_ni": {
+      "ok": 3,
+      "hit": 3
+    },
+    "sirena_do": {
+      "ok": 1,
+      "hit": 1
+    },
+    "smartbuy_jo": {
+      "ok": 1,
+      "hit": 1
+    },
+    "sodimac_cl": {
+      "ok": 7,
+      "hit": 6
+    },
+    "sodimac_pe": {
+      "ok": 12,
+      "hit": 11
+    },
+    "sodimac_uy": {
+      "ok": 9,
+      "hit": 9
+    },
+    "somon_tj": {
+      "ok": 58,
+      "hit": 46
+    },
+    "south_star_drug": {
+      "ok": 8,
+      "hit": 4
+    },
+    "spar_si": {
+      "ok": 1,
+      "hit": 0
+    },
+    "spar_wolt_hu": {
+      "ok": 1,
+      "hit": 0
+    },
+    "spinneys_lb": {
+      "ok": 28,
+      "hit": 18
+    },
+    "springs_pk": {
+      "ok": 2,
+      "hit": 2
+    },
+    "starlink_qa": {
+      "ok": 7,
+      "hit": 3
+    },
+    "storetodoor_jm": {
+      "ok": 7,
+      "hit": 7
+    },
+    "sulpak_kg": {
+      "ok": 4,
+      "hit": 1
+    },
+    "suning": {
+      "ok": 12,
+      "hit": 0
+    },
+    "sunshine_online": {
+      "ok": 2,
+      "hit": 1
+    },
+    "superbhyper_za": {
+      "ok": 8,
+      "hit": 8
+    },
+    "superfoodplaza_aw": {
+      "ok": 42,
+      "hit": 24
+    },
+    "supermarket23_cu": {
+      "ok": 1,
+      "hit": 0
+    },
+    "supermart_ng": {
+      "ok": 3,
+      "hit": 3
+    },
+    "superxtra_pa": {
+      "ok": 3,
+      "hit": 3
+    },
+    "tap_az": {
+      "ok": 8,
+      "hit": 1
+    },
+    "tata_1mg": {
+      "ok": 1080,
+      "hit": 318
+    },
+    "tayara_tn": {
+      "ok": 14,
+      "hit": 12
+    },
+    "tehnomanija_rs": {
+      "ok": 2,
+      "hit": 0
+    },
+    "tgp_ph": {
+      "ok": 2,
+      "hit": 1
+    },
+    "thai_huot": {
+      "ok": 1,
+      "hit": 0
+    },
+    "tiki": {
+      "ok": 1262,
+      "hit": 1124,
+      "conv_ANY": 115
+    },
+    "tmarketonline_bg": {
+      "ok": 1,
+      "hit": 1
+    },
+    "torob_ir": {
+      "ok": 34,
+      "hit": 24
+    },
+    "tradeling_ae": {
+      "ok": 30,
+      "hit": 28
+    },
+    "tripolimarket_lb": {
+      "ok": 4,
+      "hit": 4
+    },
+    "trungson_pharma": {
+      "ok": 10,
+      "hit": 0
+    },
+    "tunisianet_tn": {
+      "ok": 34,
+      "hit": 33
+    },
+    "tus_si": {
+      "ok": 3,
+      "hit": 3
+    },
+    "unimart_cr": {
+      "ok": 24,
+      "hit": 24
+    },
+    "vaxtarvorur_is": {
+      "ok": 1,
+      "hit": 1
+    },
+    "vea_ar": {
+      "ok": 10,
+      "hit": 9
+    },
+    "vega_am": {
+      "ok": 9,
+      "hit": 8
+    },
+    "venavo_nl": {
+      "ok": 4,
+      "hit": 4
+    },
+    "virtualmart_jm": {
+      "ok": 2,
+      "hit": 2
+    },
+    "vissan_mart": {
+      "ok": 1,
+      "hit": 0
+    },
+    "vivomarket_ro": {
+      "ok": 7,
+      "hit": 7
+    },
+    "walmart_cr": {
+      "ok": 3,
+      "hit": 2
+    },
+    "walmart_hn": {
+      "ok": 5,
+      "hit": 5
+    },
+    "walmart_ni": {
+      "ok": 5,
+      "hit": 5
+    },
+    "walmart_sv": {
+      "ok": 1,
+      "hit": 1
+    },
+    "waltermart": {
+      "ok": 32,
+      "hit": 14
+    },
+    "watsons_hk": {
+      "ok": 26,
+      "hit": 23
+    },
+    "watsons_id": {
+      "ok": 21,
+      "hit": 17
+    },
+    "watsons_my": {
+      "ok": 61,
+      "hit": 55,
+      "conv_ANY": 1
+    },
+    "watsons_ph": {
+      "ok": 63,
+      "hit": 45,
+      "conv_ANY": 10
+    },
+    "watsons_sg": {
+      "ok": 67,
+      "hit": 55,
+      "conv_ANY": 5
+    },
+    "watsons_th": {
+      "ok": 43,
+      "hit": 35
+    },
+    "watsons_tw": {
+      "ok": 901,
+      "hit": 708,
+      "conv_ANY": 22
+    },
+    "wellcome_hk": {
+      "ok": 16,
+      "hit": 16
+    },
+    "wellnutrifood_be": {
+      "ok": 2,
+      "hit": 2
+    },
+    "whim_mv": {
+      "ok": 2,
+      "hit": 0,
+      "conv_ANY": 2
+    },
+    "wong_pe": {
+      "ok": 1020,
+      "hit": 59
+    },
+    "woolworths_nz": {
+      "ok": 37,
+      "hit": 0
+    },
+    "xcite_kw": {
+      "ok": 7,
+      "hit": 0,
+      "conv_ANY": 3
+    },
+    "yahoo_shopping": {
+      "ok": 1259,
+      "hit": 607
+    },
+    "yahoo_shopping_tw": {
+      "ok": 1171,
+      "hit": 778,
+      "conv_ANY": 62
+    },
+    "yandex_market": {
+      "ok": 21,
+      "hit": 15
+    },
+    "yogya_online_minimarket": {
+      "ok": 1,
+      "hit": 0
+    },
+    "zap_il": {
+      "ok": 60,
+      "hit": 0,
+      "conv_ANY": 20
+    },
+    "zonasul_br": {
+      "ok": 8,
+      "hit": 8
+    },
+    "zucchini_ke": {
+      "ok": 3,
+      "hit": 3
+    }
+  },
+  "examples": [
+    {
+      "s": "ebay_uk",
+      "c": "CC-MAIN-2017-26",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "10.0",
+          "currency": "AUD",
+          "product_name": "Music",
+          "url": "http://www.ebay.co.uk/itm/BIM-SKALA-BIM-EYES-EARS-CD-SKA-REGGAE-2TONE-PUNK-SPECIALS-BOSSTONES-/370671145290?pt=AU_Audio_CDs&hash=item564db8d14a"
+        }
+      }
+    },
+    {
+      "s": "ebay_uk",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "13.99",
+          "currency": "GBP",
+          "product_name": "Sporting Goods",
+          "url": "https://www.ebay.co.uk/itm/4-Mtr-Agility-Speed-Ladder-Football-Rugby-Hockey-Coaching-Circuit-Training-Kit/331987498766?hash=item4d4bff370e:g:AiEAAOSwzaJX79TR"
+        }
+      }
+    },
+    {
+      "s": "gourmet_versand_de",
+      "c": "CC-MAIN-2023-23",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "2.78",
+          "currency": "EUR",
+          "product_name": "Bruschettine con rosmarino, Ger\u00c3\u00b6stete Brotscheiben mit Rosmarin, Bonta Lucane",
+          "url": "https://www.gourmet-versand.com/de/article11559/bruschettine-con-rosmarino-geroestete-brotscheiben-mit-rosmarin-bonta-lucane-150-g.html"
+        }
+      }
+    },
+    {
+      "s": "pakwheels_pk",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "microdata",
+        "namefill"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "830000.0",
+          "currency": "PKR",
+          "product_name": null,
+          "url": "https://www.pakwheels.com/used-cars/search/-/mk_suzuki/md_mehran/cl_white/ctg_small/"
+        },
+        "namefill": {
+          "name": "Used White Suzuki Mehran Small Cars for sale in Pakistan - Verified Car Ads | PakWheels",
+          "source": "og:title"
+        }
+      }
+    },
+    {
+      "s": "gamma_nl",
+      "c": "CC-MAIN-2025-51",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "13.69",
+          "currency": "EUR",
+          "product_name": "SKIL mes voor grasmaaier 43cm 2610S00817 voor model 0140",
+          "url": "https://www.gamma.nl/assortiment/skil-mes-voor-grasmaaier-43cm-2610s00817-voor-model-0140/p/B124727"
+        }
+      }
+    },
+    {
+      "s": "otto_de",
+      "c": "CC-MAIN-2020-24",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "94.95",
+          "currency": "EUR",
+          "product_name": "variationId",
+          "url": "https://www.otto.de/p/igi-co-leder-sneaker-803428500/"
+        }
+      }
+    },
+    {
+      "s": "hepsiburada_tr",
+      "c": "CC-MAIN-2022-27",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "121.13",
+          "currency": "TRY",
+          "product_name": "\u00d6nder Rainbow Colors Collection Klas\u00f6r 4 Halka - Mor",
+          "url": "https://www.hepsiburada.com/onder-rainbow-colors-collection-klasor-4-halka-mor-p-HBV00000JISVQ"
+        }
+      }
+    },
+    {
+      "s": "tiki",
+      "c": "CC-MAIN-2014-23",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "78.0",
+          "currency": "VND",
+          "product_name": "Steve Jobs - S\u1ee9c M\u1ea1nh C\u1ee7a S\u1ef1 Kh\u00e1c Bi\u1ec7t (The Power of Think Different)",
+          "url": "http://tiki.vn/steve-jobs-suc-manh-cua-su-khac-biet-p33405.html"
+        }
+      }
+    },
+    {
+      "s": "gamma_nl",
+      "c": "CC-MAIN-2026-25",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "3.99",
+          "currency": "EUR",
+          "product_name": "GAMMA Professional radiatorkwast voor watergedragen verf 25 mm",
+          "url": "https://www.gamma.nl/assortiment/gamma-professional-radiatorkwast-voor-watergedragen-verf-25-mm/p/B559918"
+        }
+      }
+    },
+    {
+      "s": "hepsiburada_tr",
+      "c": "CC-MAIN-2020-24",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "4.14",
+          "currency": "TRY",
+          "product_name": "T\u00fcrk\u00e7e\u2019de Deyimler",
+          "url": "https://www.hepsiburada.com/turkce-de-deyimler-pm-HB000000WSFJ"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2021-25",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "gamma_nl",
+      "c": "CC-MAIN-2026-04",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "6.59",
+          "currency": "EUR",
+          "product_name": "GAMMA SDS-boor \u00d8 5 mm 160 mm",
+          "url": "https://www.gamma.nl/assortiment/gamma-sds-boor-5-mm-160-mm/p/B544748"
+        }
+      }
+    },
+    {
+      "s": "tiki",
+      "c": "CC-MAIN-2015-22",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "87.0",
+          "currency": "VND",
+          "product_name": "Nghe N\u00f3i Nh\u00e2n Duy\u00ean Do Tr\u1eddi \u0110\u1ecbnh",
+          "url": "http://tiki.vn/nghe-noi-nhan-duyen-do-troi-dinh-p80829.html"
+        }
+      }
+    },
+    {
+      "s": "ebay_uk",
+      "c": "CC-MAIN-2017-26",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "10.99",
+          "currency": "GBP",
+          "product_name": "Clothes, Shoes & Accessories",
+          "url": "http://www.ebay.co.uk/itm/Ed-Hardy-Unisex-Hats-Two-Sword-Beanie-/150739286374?pt=UK_Hats&var=&hash=item68cb8a718c"
+        }
+      }
+    },
+    {
+      "s": "ebay_uk",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "7.99",
+          "currency": "GBP",
+          "product_name": "Music",
+          "url": "https://www.ebay.co.uk/itm/Engelbert-Humperdinck-16-Greatest-Love-Songs-Vinyl-Record-LP-Album-CN-2070/382813814711?_trkparms=aid%3D333200%26algo%3DCOMP.MBE%26ao%3D1%26asc%3D20171012094517%26meid%3Db3dbba0d5d22429b9d1c28f498e3d02e%26pid%3D100008%26rk%3D12%26rkt%3D12%26sd%3D362618312457%26itm%3D382813814711&_trksid=p2047675.c100008.m2219"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "ebay_uk",
+      "c": "CC-MAIN-2017-26",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "29.99",
+          "currency": "GBP",
+          "product_name": "Clothes, Shoes & Accessories",
+          "url": "http://www.ebay.co.uk/itm/BNWT-PRETTY-PROM-BRIDESMAID-FLORAL-EVENING-DRESS-10-18/110548066915?_trkparms=aid%3D555012%26algo%3DPW.MBE%26ao%3D1%26asc%3D20131025134803%26meid%3D5036605703795940907%26pid%3D100028%26prg%3D20131025134803%26rk%3D0%26rkt%3D15%26sd%3D380755186860"
+        }
+      }
+    },
+    {
+      "s": "ebay_uk",
+      "c": "CC-MAIN-2017-26",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "149.99",
+          "currency": "GBP",
+          "product_name": "Clothes, Shoes & Accessories",
+          "url": "http://www.ebay.co.uk/itm/GENUINE-LEG-AVENUE-DELUXE-VAMPIRE-QUEEN-COSTUME-UK-8-10-12-ELVIRA-MORTICIA-ADAMS-/151258038430"
+        }
+      }
+    },
+    {
+      "s": "ebay_uk",
+      "c": "CC-MAIN-2013-20",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "15.99",
+          "currency": "GBP",
+          "product_name": "Tenn Deluxe Padded Boxer Shorts Cycling Undershort",
+          "url": "http://www.ebay.co.uk/itm/180850493115"
+        }
+      }
+    },
+    {
+      "s": "gamma_nl",
+      "c": "CC-MAIN-2026-04",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "9.89",
+          "currency": "EUR",
+          "product_name": "GAMMA houtdraadbout verzinkt M7x120 mm 6 stuks",
+          "url": "https://www.gamma.nl/assortiment/gamma-houtdraadbout-verzinkt-m7x120-mm-6-stuks/p/B458054"
+        }
+      }
+    },
+    {
+      "s": "otto_de",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "22.9",
+          "currency": "EUR",
+          "product_name": "variationId",
+          "url": "https://www.otto.de/p/marika-funktionsshirt-audrey-863736540/"
+        }
+      }
+    },
+    {
+      "s": "gamma_nl",
+      "c": "CC-MAIN-2025-47",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "92.99",
+          "currency": "EUR",
+          "product_name": "Sanivesk radiator Image Duo wit zij-aansluiting T22 60 x 40 cm",
+          "url": "https://www.gamma.nl/assortiment/sanivesk-radiator-image-duo-wit-zij-aansluiting-t22-60-x-40-cm/p/B151639?base_click=true"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "xcite_kw",
+      "c": "CC-MAIN-2023-23",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "74.9",
+          "currency": "KWD",
+          "product_name": "Lenovo Yoga Tab 11 YT-J706X Tablet - 4G - 128GB 4GB Ram - 11inch - Grey",
+          "url": "https://www.xcite.com/lenovo-yoga-tab-11-yt-j706x-tablet-4g-128gb-4gb-ram-11inch-grey/p"
+        }
+      }
+    },
+    {
+      "s": "otto_de",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "9.95",
+          "currency": "EUR",
+          "product_name": "variationId",
+          "url": "https://www.otto.de/p/posterlounge-wandbild-dominic-davison-mediterraner-morgen-659772122/"
+        }
+      }
+    },
+    {
+      "s": "ebay_uk",
+      "c": "CC-MAIN-2016-26",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "14.59",
+          "currency": "GBP",
+          "product_name": "Business, Office & Industrial",
+          "url": "http://www.ebay.co.uk/itm/Expanding-Desk-Organiser-Box-File-Portrait-13-Part-BLACK-Fast-Dispatch-/160766920682"
+        }
+      }
+    },
+    {
+      "s": "ebay_uk",
+      "c": "CC-MAIN-2016-26",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "15.99",
+          "currency": "GBP",
+          "product_name": "Sporting Goods",
+          "url": "http://www.ebay.co.uk/itm/Vavert-50mm-Fixed-Mudguard-24-Tyre-Size-Road-Racing-Bike-Cycle-Bicycle-Cycling/130984603274?_trkparms=aid%3D444000%26algo%3DSOI.DEFAULT%26ao%3D1%26asc%3D20131113144648%26meid%3D5956552313938424226%26pid%3D100029%26prg%3D20131113144648%26rk%3D6%26rkt%3D15%26sd%3D380699981410"
+        }
+      }
+    },
+    {
+      "s": "hepsiburada_tr",
+      "c": "CC-MAIN-2022-27",
+      "by": [
+        "microdata"
+      ],
+      "sample": {
+        "microdata": {
+          "price": "489.99",
+          "currency": "TRY",
+          "product_name": "A\u00e7elya Okcu \u00c7i\u00e7ekli Cut Out Detayl\u0131 \u015eortlu Elbise",
+          "url": "https://www.hepsiburada.com/acelya-okcu-cicekli-cut-out-detayli-sortlu-elbise-p-HBCV000028J0E4"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2020-24",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2022-27",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "drogasil_br",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "rdfa",
+        "namefill"
+      ],
+      "sample": {
+        "rdfa": {
+          "price": "36.9",
+          "currency": "\u201cBRL\u201d",
+          "product_name": null,
+          "url": "https://www.drogasil.com.br/mamae-e-bebe.html?amp%3Bmarca=3775&cat=451&marca=3647"
+        },
+        "namefill": {
+          "name": "Mam\u00e3e & Beb\u00ea",
+          "source": "h1"
+        }
+      }
+    },
+    {
+      "s": "drogasil_br",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "rdfa",
+        "namefill"
+      ],
+      "sample": {
+        "rdfa": {
+          "price": "36.9",
+          "currency": "\u201cBRL\u201d",
+          "product_name": null,
+          "url": "https://www.drogasil.com.br/drogasil-marcas-exclusivas.html?amp%3Bmarca=3556&amp%3Border=most_viewed&dir=asc&price=18-20"
+        },
+        "namefill": {
+          "name": "Nossas Marcas",
+          "source": "h1"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2017-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2017-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "drogasil_br",
+      "c": "CC-MAIN-2017-26",
+      "by": [
+        "rdfa",
+        "namefill"
+      ],
+      "sample": {
+        "rdfa": {
+          "price": "110.11",
+          "currency": "\u201cBRL\u201d",
+          "product_name": null,
+          "url": "http://www.drogasil.com.br/nivea-body.html"
+        },
+        "namefill": {
+          "name": "Nivea Body Q10",
+          "source": "h1"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "drogasil_br",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "rdfa",
+        "namefill"
+      ],
+      "sample": {
+        "rdfa": {
+          "price": "36.9",
+          "currency": "\u201cBRL\u201d",
+          "product_name": null,
+          "url": "https://www.drogasil.com.br/lencos-umedecidos.html"
+        },
+        "namefill": {
+          "name": "Len\u00e7os Umedecidos",
+          "source": "h1"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2017-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2017-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "drogasil_br",
+      "c": "CC-MAIN-2020-24",
+      "by": [
+        "rdfa",
+        "namefill"
+      ],
+      "sample": {
+        "rdfa": {
+          "price": "29.8",
+          "currency": "\u201cBRL\u201d",
+          "product_name": null,
+          "url": "https://www.drogasil.com.br/nivea-q10-corporal-vitamina-c.html"
+        },
+        "namefill": {
+          "name": "Nivea Q10 Corporal Vitamina C",
+          "source": "h1"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2021-25",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "drogasil_br",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "rdfa",
+        "namefill"
+      ],
+      "sample": {
+        "rdfa": {
+          "price": "36.9",
+          "currency": "\u201cBRL\u201d",
+          "product_name": null,
+          "url": "https://www.drogasil.com.br/cuidados-diarios.html?amp%3Bmarca=475&amp%3Border=most_viewed&dir=asc&price=13-15"
+        },
+        "namefill": {
+          "name": "Cuidados Di\u00e1rios",
+          "source": "h1"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2022-27",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2022-27",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "au_pay_market",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "charset"
+      ],
+      "sample": {
+        "charset": {
+          "tier": "jsonld",
+          "charset": "shift_jis"
+        }
+      }
+    },
+    {
+      "s": "drogasil_br",
+      "c": "CC-MAIN-2019-26",
+      "by": [
+        "rdfa",
+        "namefill"
+      ],
+      "sample": {
+        "rdfa": {
+          "price": "36.9",
+          "currency": "\u201cBRL\u201d",
+          "product_name": null,
+          "url": "https://www.drogasil.com.br/kit-needs-masculino.html"
+        },
+        "namefill": {
+          "name": "Kit Needs Masculino",
+          "source": "h1"
+        }
+      }
+    },
+    {
+      "s": "drogasil_br",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "rdfa",
+        "namefill"
+      ],
+      "sample": {
+        "rdfa": {
+          "price": "45.99",
+          "currency": "\u201cBRL\u201d",
+          "product_name": null,
+          "url": "https://www.drogasil.com.br/descontos-imperdiveis-nexxus.html"
+        },
+        "namefill": {
+          "name": "Descontos Imperd\u00edveis: Nexxus",
+          "source": "h1"
+        }
+      }
+    },
+    {
+      "s": "drogasil_br",
+      "c": "CC-MAIN-2018-26",
+      "by": [
+        "rdfa",
+        "namefill"
+      ],
+      "sample": {
+        "rdfa": {
+          "price": "45.99",
+          "currency": "\u201cBRL\u201d",
+          "product_name": null,
+          "url": "https://www.drogasil.com.br/beleza.html?marca=1165marca=1165"
+        },
+        "namefill": {
+          "name": "Beleza",
+          "source": "h1"
+        }
+      }
+    }
+  ],
+  "finished_utc": "2026-08-27T19:41:15Z",
+  "instance_id": "i-0f741bd02694685cd"
+}
