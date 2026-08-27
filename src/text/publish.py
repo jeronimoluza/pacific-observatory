@@ -420,8 +420,11 @@ def _refresh_database_status():
         return None
 
 
-def run_publish(region=None, subregion=None, country=None):
+def run_publish(region=None, subregion=None, country=None, skip_database_status=False):
     """Build dashboard_data.json, per-region panels, and EPU dashboards.
+
+    ``skip_database_status`` bypasses the global raw-data rescan, which is
+    pointless when the published regions have no local ``data/text/`` copy.
 
     Always writes the global ``outputs/text/dashboard_data/dashboard_data.json``
     and renders the basic integrated HTML. When the scope covers full
@@ -435,7 +438,7 @@ def run_publish(region=None, subregion=None, country=None):
     click.echo("  Text publish (dashboards)")
     click.echo("  " + "-" * 40)
 
-    database_status = _refresh_database_status()
+    database_status = None if skip_database_status else _refresh_database_status()
 
     if not units:
         click.echo("  No units with EPU data found. Run 'po text build' first.")
