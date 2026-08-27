@@ -292,11 +292,21 @@ def text_build(
 @_region_opt
 @_subregion_opt
 @_country_opt
-def text_publish(region, subregion, country):
+@click.option(
+    "--skip-database-status",
+    is_flag=True,
+    help="Skip the global raw-data rescan; only build dashboards",
+)
+def text_publish(region, subregion, country, skip_database_status):
     """Generate EPU dashboards and charts."""
     from text.publish import run_publish
 
-    run_publish(region=region, subregion=subregion, country=country)
+    run_publish(
+        region=region,
+        subregion=subregion,
+        country=country,
+        skip_database_status=skip_database_status,
+    )
 
 
 @text.command("build-policy-addons")
@@ -334,19 +344,55 @@ def text_status(region, subregion, country, show_all):
 
 
 @text.command("database-status")
-def text_database_status():
-    """Export verified per-source article counts + date ranges to outputs/text/database_status/."""
-    from text.status import compute_database_status, write_database_status
+@_region_opt
+@click.option(
+    "--merge-only",
+    is_flag=True,
+    help="Skip scanning; rebuild sources.xlsx from existing per-region exports",
+)
+def text_database_status(region, merge_only):
+    """Export verified per-source article counts + date ranges to outputs/text/database_status/.
 
-    click.echo("  Scanning data/text/ for news.csv files...")
-    data = compute_database_status()
-    paths = write_database_status(data)
-    t = data["totals"]
+    With --region, scans just that region and writes sources_<region>.*, then
+    refreshes the combined sources.xlsx (one sheet per region) from every
+    per-region export on disk. Regions whose raw data is currently archived
+    keep their sheet — they are merged from their own export, not re-scanned.
+    """
+    from text.status import (
+        compute_database_status,
+        merge_region_exports,
+        write_database_status,
+    )
+
+    if not merge_only:
+        click.echo(
+            f"  Scanning data/text/{region + '/' if region else ''} for news.csv files..."
+        )
+        data = compute_database_status(region_filter=region)
+        paths = write_database_status(data, region=region)
+        t = data["totals"]
+        click.echo(
+            f"\n  {t['sources']} sources · {t['articles_total']:,} articles · "
+            f"{t['countries']} countries\n"
+            f"  Coverage: {t['earliest_date'] or '—'} → {t['latest_date'] or '—'}\n"
+            f"  Wrote {paths['csv']}\n  Wrote {paths['json']}\n  Wrote {paths['xlsx']}\n"
+        )
+
+    if not region and not merge_only:
+        return  # a full unscoped scan already wrote the global export
+
+    merged = merge_region_exports()
+    click.echo("  Combined workbook (one sheet per region):")
+    for row in merged["regions"]:
+        click.echo(
+            f"    {row['region'].upper():<8} {row['sources']:>4} sources · "
+            f"{(row['articles_total'] or 0):>10,} articles · scanned {row['scanned_at']}"
+        )
+    m = merged["totals"]
     click.echo(
-        f"\n  {t['sources']} sources · {t['articles_total']:,} articles · "
-        f"{t['countries']} countries\n"
-        f"  Coverage: {t['earliest_date'] or '—'} → {t['latest_date'] or '—'}\n"
-        f"  Wrote {paths['csv']}\n  Wrote {paths['json']}\n  Wrote {paths['xlsx']}\n"
+        f"\n  {m['regions']} regions · {m['sources']} sources · "
+        f"{m['articles_total']:,} articles · {m['countries']} countries\n"
+        f"  Wrote {merged['xlsx']}\n"
     )
 
 
@@ -379,6 +425,7 @@ from prices.enrich.match_record_view import (  # noqa: E402
     match_record_command as _prices_match_record,
 )
 from prices.enrich.census import census_command as _prices_census  # noqa: E402
+from prices.enrich.coverage import coverage_command as _prices_coverage  # noqa: E402
 from prices.enrich.classifier.cli import (  # noqa: E402
     train_classifier_command as _prices_train_classifier,
 )
@@ -395,6 +442,7 @@ prices.add_command(_prices_process, name="process")
 prices.add_command(_prices_eval, name="eval")
 prices.add_command(_prices_match_record, name="match-record")
 prices.add_command(_prices_census, name="census")
+prices.add_command(_prices_coverage, name="coverage")
 prices.add_command(_prices_train_classifier, name="train-classifier")
 prices.add_command(_prices_label, name="label")
 prices.add_command(_prices_gold_audit, name="gold-audit")
