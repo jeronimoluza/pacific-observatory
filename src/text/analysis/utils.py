@@ -38,6 +38,15 @@ LANGUAGE_ALIASES: dict[str, str] = {
     "ar": "arabic",
     "fa": "farsi",
     "he": "hebrew",
+    "id": "indo",
+    "ja": "japanese",
+    "ko": "korean",
+    "ms": "malay",
+    "pt": "portuguese",
+    "tet": "tetum",
+    "th": "thai",
+    "vi": "vietnamese",
+    "zh": "chinese_simplified",
     "az": "azerbaijani",
     "be": "belarusian",
     "bg": "bulgarian",
@@ -306,26 +315,47 @@ def generate_continous_df(
 
 _FALLBACK_WARNED: set[tuple[str, str]] = set()
 
-_ACTIVE_KEYWORD_SET: str | None = None
+# Keyword families split into per-theme files under
+# ``keywords/{language}/{family}/{theme}.json``. One theme is one subject area
+# a tracker can draw on; ``core`` carries the general EPU vocabulary every
+# tracker shares. ``epu.json`` stays a single flat file — it is the gate all
+# trackers share, not a themed group set.
+KEYWORD_FAMILIES = ("topics", "actors")
 
 
-def set_keyword_set(name: str | None) -> None:
-    """Select an alternate keyword pack directory (`keywords_{name}/`).
+def available_themes(family: str = "topics") -> List[str]:
+    """Theme names defined for a family. The English pack is the source of truth."""
+    en_dir = Path(__file__).parent / "keywords" / "en" / family
+    return sorted(p.stem for p in en_dir.glob("*.json"))
 
-    A pack owns every file it defines under its own `en/`. For those files
-    resolution never escapes the pack, so a missing translation falls back to
-    the pack's English rather than silently mixing in the shared pack's groups.
+
+def _resolve_theme_file(language: str, family: str, theme: str) -> Path:
+    """Path to one theme file, falling back to English per theme.
+
+    Fallback is per theme rather than per language, so a source keeps its own
+    translated ``core`` even when no translation exists yet for a newer theme.
     """
-    global _ACTIVE_KEYWORD_SET
-    _ACTIVE_KEYWORD_SET = name or None
+    import sys
+
+    language = LANGUAGE_ALIASES.get(language, language)
+    base = Path(__file__).parent / "keywords"
+    candidate = base / language / family / f"{theme}.json"
+    if candidate.exists():
+        return candidate
+    key = (language, f"{family}/{theme}")
+    if key not in _FALLBACK_WARNED:
+        _FALLBACK_WARNED.add(key)
+        print(
+            f"WARNING: no {family}/{theme}.json for language '{language}'; "
+            f"falling back to English. Generate per-language keywords with the "
+            f"`translate-english-keywords` skill.",
+            file=sys.stderr,
+        )
+    return base / "en" / family / f"{theme}.json"
 
 
-def active_keyword_set() -> str | None:
-    return _ACTIVE_KEYWORD_SET
-
-
-def resolved_language(language: str, filename: str = "topics.json") -> str:
-    """Name of the directory a language's keyword file actually resolves to.
+def resolved_language(language: str, family: str = "topics") -> str:
+    """Name of the directory whose script the loaded terms follow.
 
     A source tagged ``zh`` or ``ja`` resolves to a Chinese/Japanese keyword
     directory when one exists and to ``en`` when it does not. Word-boundary
@@ -333,7 +363,11 @@ def resolved_language(language: str, filename: str = "topics.json") -> str:
     tag on the source, or CJK terms get rejected and English fallback terms
     get matched inside longer words.
     """
-    return _resolve_keywords_dir(language, filename).name
+    language = LANGUAGE_ALIASES.get(language, language)
+    base = Path(__file__).parent / "keywords"
+    if any((base / language / family).glob("*.json")):
+        return language
+    return "en"
 
 
 def _resolve_keywords_dir(language: str, filename: str) -> Path:
@@ -346,9 +380,8 @@ def _resolve_keywords_dir(language: str, filename: str) -> Path:
         3. keywords_new/en/{filename}
         4. keywords/en/{filename}
 
-    When a keyword set is active (see `set_keyword_set`) and that set defines
-    `en/{filename}`, only `keywords_{set}/{language}` and `keywords_{set}/en`
-    are considered.
+    Themed families (`topics`, `actors`) resolve through `_resolve_theme_file`
+    instead; this function serves the flat `epu.json`.
 
     Emits a one-shot stderr warning per (language, filename) when falling back
     to English so missing per-language keyword sets surface during builds.
@@ -357,23 +390,6 @@ def _resolve_keywords_dir(language: str, filename: str) -> Path:
 
     language = LANGUAGE_ALIASES.get(language, language)
     base = Path(__file__).parent
-
-    if _ACTIVE_KEYWORD_SET:
-        pack = base / f"keywords_{_ACTIVE_KEYWORD_SET}"
-        if (pack / "en" / filename).exists():
-            if (pack / language / filename).exists():
-                return pack / language
-            key = (f"{_ACTIVE_KEYWORD_SET}:{language}", filename)
-            if key not in _FALLBACK_WARNED:
-                _FALLBACK_WARNED.add(key)
-                print(
-                    f"WARNING: no {filename} for language '{language}' in "
-                    f"keywords_{_ACTIVE_KEYWORD_SET}/; falling back to English. "
-                    f"Generate per-language keywords with the "
-                    f"`translate-english-keywords` skill.",
-                    file=sys.stderr,
-                )
-            return pack / "en"
 
     for kw_dir_name in ("keywords_new", "keywords"):
         lang_dir = base / kw_dir_name / language
@@ -438,37 +454,52 @@ def load_topics_words(
             raw = json.load(f)
         return {cat: _extract_terms(val) for cat, val in raw.items()}
     else:
-        lang_dir = _resolve_keywords_dir(language, "topics.json")
-        topics_path = lang_dir / "topics.json"
-        with open(topics_path, "r", encoding="utf-8") as f:
-            topics_data = json.load(f)
-        if additional_name not in topics_data:
+        groups = load_all_groups("topics", language=language)
+        if additional_name not in groups:
             raise KeyError(
-                f"additional_name '{additional_name}' not found in {topics_path}. "
-                f"Available options: {list(topics_data.keys())}"
+                f"additional_name '{additional_name}' not found in any topics theme "
+                f"for language '{language}'. Available options: {list(groups.keys())}"
             )
-        return _extract_terms(topics_data[additional_name])
+        return groups[additional_name]
 
 
 def load_all_groups(
-    source_file: str = "topics", language: str = "en"
+    source_file: str = "topics",
+    language: str = "en",
+    themes: Union[List[str], None] = None,
 ) -> Dict[str, List[str]]:
     """
-    Load all keyword groups from topics.json or actors.json.
+    Load keyword groups for a family, merging every theme file it defines.
 
     Args:
-        source_file: Base name of the JSON file ('topics' or 'actors').
-        language: Language code. Falls back to 'en' if not found.
+        source_file: Keyword family ('topics' or 'actors').
+        language: Language code. Each theme falls back to 'en' independently.
+        themes: Theme names to load. Defaults to every theme in the English pack.
 
     Returns:
         Dict mapping group names to keyword lists.
+
+    Raises:
+        ValueError: If two themes claim the same group name, which would make
+            the merged result depend on file order.
     """
-    filename = f"{source_file}.json"
-    lang_dir = _resolve_keywords_dir(language, filename)
-    filepath = lang_dir / filename
-    with open(filepath, "r", encoding="utf-8") as f:
-        raw = json.load(f)
-    return {group: _extract_terms(val) for group, val in raw.items()}
+    wanted = available_themes(source_file) if themes is None else list(themes)
+    merged: Dict[str, List[str]] = {}
+    origin: Dict[str, str] = {}
+    for theme in wanted:
+        path = _resolve_theme_file(language, source_file, theme)
+        with open(path, "r", encoding="utf-8") as f:
+            raw = json.load(f)
+        for group, val in raw.items():
+            if group in origin:
+                raise ValueError(
+                    f"keyword group '{group}' is defined in both "
+                    f"{source_file}/{origin[group]}.json and {source_file}/{theme}.json "
+                    f"for language '{language}'; a group belongs to exactly one theme"
+                )
+            merged[group] = _extract_terms(val)
+            origin[group] = theme
+    return merged
 
 
 def generate_news_statistics_table(country_folder: Path) -> str:

@@ -62,7 +62,7 @@ def _classify_units(
     auto-build during processing).
     """
     from src.text.analysis import source_counts as sc
-    from src.text.analysis.orchestrator import KEYWORDS_ROOT, keyword_pack_root
+    from src.text.analysis.orchestrator import KEYWORDS_ROOT
     from src.text.analysis.utils import LANGUAGE_ALIASES
 
     matching: list[str] = []
@@ -80,9 +80,7 @@ def _classify_units(
             LANGUAGE_ALIASES.get(lang, lang)
             for lang in (unit.get("source_languages") or {}).values()
         }
-        keyword_hashes = sc.keyword_hash_bundle(
-            KEYWORDS_ROOT, languages, keyword_pack_root()
-        )
+        keyword_hashes = sc.keyword_hash_bundle(KEYWORDS_ROOT, languages)
         stale, _ = sc.is_stale(cached_params, source_keys, keyword_hashes)
         (rebuild if stale else matching).append(unit["name"])
     return matching, rebuild
@@ -96,20 +94,8 @@ def run_build(
     cutoff_end_date=None,
     rebuild=False,
     max_parallel_sources: int = 1,
-    keyword_set: str | None = None,
 ):
     """Run EPU analysis for matching units (countries + aggregates)."""
-    if keyword_set:
-        # `text.analysis.utils` and `src.text.analysis.utils` resolve to two
-        # distinct module objects here; both are used for keyword loading, so
-        # the selection has to be applied to each.
-        from src.text.analysis.utils import set_keyword_set as _set_src
-        from text.analysis.utils import set_keyword_set as _set_text
-
-        _set_text(keyword_set)
-        _set_src(keyword_set)
-        click.echo(f"Keyword set: keywords_{keyword_set}/")
-
     countries = set()
     configs = discover_pipeline_configs(
         CONFIGS_DIR, region=region, subregion=subregion, country=country

@@ -60,7 +60,7 @@ class KeywordBundle:
             epu=load_topics_words(language=lang),
             topics=load_all_groups("topics", language=lang),
             actors=load_all_groups("actors", language=lang),
-            script_language=resolved_language(lang, "topics.json"),
+            script_language=resolved_language(lang, "topics"),
         )
 
 

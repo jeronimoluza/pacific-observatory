@@ -17,6 +17,7 @@ from text.plotting.trackers import (
     addon_filename,
     addon_suffix,
     get_tracker,
+    tracker_groups,
     tracker_label,
 )
 
@@ -76,6 +77,35 @@ def load_actors_epu_data(country, data_dir):
     df = pd.read_csv(f)
     df["date"] = pd.to_datetime(df["date"], format="mixed")
     return df.sort_values("date")
+
+
+_GROUP_COL_SUFFIXES = ("_absolute", "_framing")
+
+
+def _group_of(col: str) -> str | None:
+    """Keyword group a data column belongs to, or None for an id column."""
+    if col.startswith("EPU_") and col.endswith("_index"):
+        return col[len("EPU_") : -len("_index")]
+    for suffix in _GROUP_COL_SUFFIXES:
+        if col.endswith(suffix):
+            return col[: -len(suffix)]
+    return None
+
+
+def _keep_groups(rows: list, groups: set) -> list:
+    """Drop columns for groups this tracker does not display.
+
+    Every build computes every theme, so the per-unit CSVs carry all groups.
+    A tracker shows its own slice; the numbers are shared, only the view differs.
+    """
+    return [
+        {
+            col: val
+            for col, val in row.items()
+            if _group_of(col) is None or _group_of(col) in groups
+        }
+        for row in rows
+    ]
 
 
 def load_attribution_data(country, data_dir, source_file):
@@ -1342,6 +1372,14 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
                 for col in row:
                     if col.startswith("EPU_") and col.endswith("_index"):
                         actors_set.add(col[4:-6])
+
+    shown_topics = set(tracker_groups("topics", tracker))
+    shown_actors = set(tracker_groups("actors", tracker))
+    topic_data = {k: _keep_groups(v, shown_topics) for k, v in topic_data.items()}
+    topics_data = {k: _keep_groups(v, shown_topics) for k, v in topics_data.items()}
+    actors_data = {k: _keep_groups(v, shown_actors) for k, v in actors_data.items()}
+    topics_set &= shown_topics
+    actors_set &= shown_actors
 
     topics_items = sorted(topics_set)
     topics_defaults = [

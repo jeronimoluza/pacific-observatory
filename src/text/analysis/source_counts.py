@@ -25,9 +25,9 @@ from typing import Iterable
 import pandas as pd
 
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
-KEYWORD_FILES = ("epu.json", "topics.json", "actors.json")
+KEYWORD_FAMILIES = ("topics", "actors")
 
 # Order-preserving column groups. `topic_*_count`, `topic_*_U_count`,
 # `actor_*_count`, `actor_*_U_count` are appended dynamically from the bundle.
@@ -69,27 +69,29 @@ def _sha256_file(path: Path) -> str:
 
 
 def keyword_hash_bundle(
-    keywords_root: Path, languages: Iterable[str], pack_root: Path | None = None
+    keywords_root: Path, languages: Iterable[str]
 ) -> dict[str, dict[str, str]]:
-    """Return ``{filename: {language: sha256}}`` covering every language used.
+    """Return ``{keyword_file: {language: sha256}}`` covering every language used.
 
-    Falls back to ``en`` for languages whose folder lacks a particular file
-    (mirroring the resolution rules in ``utils._resolve_keywords_dir``). When
-    ``pack_root`` is given it takes precedence for the files it defines, so a
-    keyword-set switch invalidates the cache.
+    Covers the flat ``epu.json`` plus every theme file of the ``topics`` and
+    ``actors`` families, so adding or editing a single theme invalidates the
+    cache. Falls back to ``en`` per file, mirroring the resolution rules in
+    ``utils._resolve_theme_file``.
     """
-    out: dict[str, dict[str, str]] = {fname: {} for fname in KEYWORD_FILES}
-    seen = set(languages)
-    for lang in sorted(seen):
-        for fname in KEYWORD_FILES:
-            roots = [keywords_root]
-            if pack_root is not None and (pack_root / "en" / fname).exists():
-                roots = [pack_root]
-            candidate = roots[0] / lang / fname
+    themed = {
+        f"{family}/{path.stem}.json": family
+        for family in KEYWORD_FAMILIES
+        for path in sorted((keywords_root / "en" / family).glob("*.json"))
+    }
+    keys = ["epu.json", *sorted(themed)]
+    out: dict[str, dict[str, str]] = {key: {} for key in keys}
+    for lang in sorted(set(languages)):
+        for key in keys:
+            candidate = keywords_root / lang / key
             if not candidate.exists():
-                candidate = roots[0] / "en" / fname
+                candidate = keywords_root / "en" / key
             if candidate.exists():
-                out[fname][lang] = _sha256_file(candidate)
+                out[key][lang] = _sha256_file(candidate)
     return out
 
 

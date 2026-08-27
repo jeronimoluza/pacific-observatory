@@ -76,24 +76,34 @@ outputs/text/dashboards/<region>_food_security_policy_dashboard.html
 ```
 
 The other three tabs (Uncertainty Topics, Topics EPU, Actors EPU) come
-from a **separate keyword pack**, not from the workbook:
+from the **shared keyword pack**, not from the workbook:
 
 ```
-src/text/analysis/keywords_food/<lang>/{topics,actors}.json
-   |  (18 food topics, 11 food actors; en/ is the source of truth)
+src/text/analysis/keywords/<lang>/topics/{core,food}.json
+src/text/analysis/keywords/<lang>/actors/{core,food}.json
+   |  (one file per theme; en/ is the source of truth for group names)
    v
-po text build --region <r> --keyword-set food
-   |  (annotator: src/text/analysis/annotate.py)
+po text build --region <r>
+   |  (annotator: src/text/analysis/annotate.py — computes EVERY theme)
    v
 outputs/text/<r>/**/uncertainty_attribution/{topics,actors}.csv
 outputs/text/<r>/**/epu/{topics,actors}_epu.csv
 ```
 
+One build serves every tracker. The CSVs carry all 43 topics and 24
+actors; `--tracker` selects which slice a dashboard displays, per the
+`themes` / `extra_topics` / `extra_actors` keys in
+`src/text/plotting/trackers.py`. Food shows 18 topics and 11 actors: its
+own 12 + 7, plus the macro-context groups it shares with fuel.
+
+Because the definitions are shared, a group named on two dashboards is
+the same series on both — `inflation_prices` on the food dashboard is
+the `inflation_prices` on the fuel dashboard.
+
 The fuel tracker's paths (`policy_tracker/<region>.xlsx`,
 `<region>_fuel_crisis_policy_dashboard.html`,
 `<region>_policy_dashboard.html`) are untouched by any `--tracker food`
-run, and the shared keyword pack (`src/text/analysis/keywords/`, 31
-topics / 17 actors) is untouched by any `--keyword-set food` run.
+run.
 
 ## Step 1 — Update the workbook
 
@@ -172,23 +182,25 @@ and the HTML mtime is fresh
 
 Skip this on a routine workbook refresh — the three EPU tabs read
 already-computed CSVs. Run it only after editing
-`src/text/analysis/keywords_food/`:
+`src/text/analysis/keywords/<lang>/{topics,actors}/food.json`:
 
 ```bash
-poetry run po text build --region <r> --keyword-set food
+poetry run po text build --region <r>
 ```
 
-`--keyword-set food` swaps in `src/text/analysis/keywords_food/` for
-`topics.json` and `actors.json`. `epu.json` (the economic × policy ×
-uncertainty gate) is **not** overridden — it stays shared with the fuel
-pack, so the EPU denominator is identical across trackers.
+There is no keyword-set flag: the build computes every theme in one
+pass, so a rebuild refreshes the fuel and food numbers together. Editing
+any theme file changes the cache hash and triggers the rebuild.
 
-Resolution is contained: a language missing from `keywords_food/` falls
-back to `keywords_food/en/`, **never** to the shared 31-topic pack. A
-silent mix would produce mismatched topic columns across sources.
+Fallback is **per theme**: a language with its own `core.json` but no
+`food.json` keeps its translated core and falls back to English only for
+food. `epu.json` (the economic × policy × uncertainty gate) is a single
+flat file shared by every tracker, so the EPU denominator is identical
+across them.
 
-**Verify**: `uncertainty_attribution/topics.csv` has 18 `*_framing`
-columns and `actors.csv` has 11, not 31/17.
+**Verify**: `uncertainty_attribution/topics.csv` has 43 `*_framing`
+columns and `actors.csv` has 24 — all themes, with the dashboard doing
+the selection.
 
 ## Step 4 — Publish
 
@@ -213,8 +225,8 @@ refresh when you only need the dashboard (prototype / iteration runs).
 - **All four tabs render**: Food Security Policy, Uncertainty Topics,
   Topics EPU, Actors EPU.
 - Tab 1 is titled `Food Security Policy`, not `Fuel Crisis Policy`.
-- The EPU/Topics tabs were built with `--keyword-set food` (18 topics,
-  11 actors), not the shared 31-topic/17-actor pack.
+- The EPU/Topics tabs show 18 topics and 11 actors — the food selection
+  from `trackers.py`, not all 43/24 the build computes.
 - SAR has no Afghanistan / Pakistan rows.
 - EAP shows `World Bank PICs only (12)` in the country-view dropdown.
 - Every row whose trigger is a climate/weather shock names that shock in
