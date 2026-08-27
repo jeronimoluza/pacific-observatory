@@ -5,8 +5,11 @@ base_url: https://365info.kz
 
 # Independent Russian-language news portal. Sitemap index references 15
 # numbered sub-sitemaps (sitemap-NXXXXXXXXXXX.xml). Article URLs follow
-# /YYYY/MM/{slug}. Article body rendered through a WP markdown plugin; the
-# outermost wrapper is div.markdown. Date only via <time datetime=...>.
+# /YYYY/MM/{slug}. Site has been re-templated since this config was first
+# written: newer articles (~2024+) render body through a markdown-prose
+# wrapper (div.markdown p), but older archive pages still serve the prior
+# WP template (div.singular__content p) -- try both. Date only via
+# <time datetime=...> (class "updated" on both templates).
 listing:
   type: sitemap
   sitemap_index_url: https://365info.kz/sitemap.xml
@@ -33,7 +36,9 @@ selectors:
     title:
       - 'meta[property="og:title"]::attr(content)'
       - 'h1::text'
-    body: div.markdown p
+    body:
+      - div.markdown p
+      - div.singular__content p
     date: time[datetime]::attr(datetime)
 
 cleaning:
