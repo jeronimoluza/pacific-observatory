@@ -1,0 +1,1126 @@
+{
+ "stat": {
+  "miss_pages": 8744,
+  "no_ld_script": 6420,
+  "has_ld_script": 2324,
+  "confirmed_ld_miss": 2324,
+  "rescued_by_repair": 697,
+  "unparseable_even_repaired": 2
+ },
+ "block": {
+  "json_malformed_repairable": 697,
+  "no_product_node_at_all": 1216,
+  "product_has_no_offers_and_no_price": 154,
+  "product_nested_below_graph": 59,
+  "product_type_not_accepted": 122,
+  "offers_present_but_price_unusable": 67,
+  "product_only_in_repaired_blob": 7,
+  "json_would_not_parse": 2
+ },
+ "ladder": {
+  "L5_jsonrepair": 633,
+  "L1_deepwalk": 56,
+  "L2_widetypes": 109,
+  "L3_nodeprice": 109,
+  "L4_namefill": 109,
+  "L0_shipped": 1
+ },
+ "marginal": {
+  "L5_jsonrepair": 524,
+  "L1_deepwalk": 55,
+  "L2_widetypes": 53,
+  "L0_shipped": 1
+ },
+ "parse_how": {
+  "strict_partial": 389,
+  "strict": 2340,
+  "jslit": 185,
+  "escape": 57,
+  "ctrl_partial": 34,
+  "htmlattr": 32,
+  "ctrl": 7,
+  "unparseable": 3
+ },
+ "types_deep": {
+  "organization": 1138,
+  "product": 984,
+  "offer": 881,
+  "aggregaterating": 733,
+  "listitem": 614,
+  "breadcrumblist": 585,
+  "thing": 549,
+  "review": 426,
+  "rating": 426,
+  "postaladdress": 400,
+  "imageobject": 298,
+  "website": 277,
+  "webpage": 220,
+  "offershippingdetails": 213,
+  "monetaryamount": 213,
+  "definedregion": 213,
+  "geocoordinates": 196,
+  "contactpoint": 195,
+  "searchaction": 186,
+  "store": 180,
+  "mobileapplication": 180,
+  "restaurant": 178,
+  "reserveaction": 143,
+  "foodestablishmentreservation": 143,
+  "brand": 133,
+  "entrypoint": 114,
+  "itemlist": 86,
+  "memberprogram": 63,
+  "faqpage": 61,
+  "question": 57,
+  "answer": 57,
+  "merchantreturnpolicy": 54,
+  "car": 53,
+  "enginespecification": 53,
+  "propertyvaluespecification": 40,
+  "quantitativevalue": 37,
+  "productgroup": 36,
+  "shippingdeliverytime": 33,
+  "article": 32,
+  "readaction": 32
+ },
+ "by_source": {
+  "fairprice": {
+   "archived_miss": 578,
+   "ld_miss": 427,
+   "conv": 425
+  },
+  "yahoo_shopping_tw": {
+   "archived_miss": 393,
+   "ld_miss": 180
+  },
+  "au_pay_market": {
+   "archived_miss": 850,
+   "ld_miss": 91,
+   "conv": 91
+  },
+  "ebay_uk": {
+   "archived_miss": 564
+  },
+  "rakuten": {
+   "archived_miss": 115,
+   "ld_miss": 2
+  },
+  "gamma_nl": {
+   "archived_miss": 509,
+   "ld_miss": 362
+  },
+  "dia_es": {
+   "archived_miss": 28
+  },
+  "gmarket": {
+   "archived_miss": 133,
+   "ld_miss": 76
+  },
+  "hepsiburada_tr": {
+   "archived_miss": 233,
+   "ld_miss": 21,
+   "conv": 15
+  },
+  "jumbo_nl": {
+   "archived_miss": 12
+  },
+  "yahoo_shopping": {
+   "archived_miss": 552,
+   "ld_miss": 162
+  },
+  "kurly_kr": {
+   "archived_miss": 614
+  },
+  "obi_de": {
+   "archived_miss": 34,
+   "ld_miss": 34,
+   "conv": 34
+  },
+  "lazada_ph_lazmart": {
+   "archived_miss": 29
+  },
+  "watsons_tw": {
+   "archived_miss": 140
+  },
+  "wong_pe": {
+   "archived_miss": 294
+  },
+  "hotpepper_jp": {
+   "archived_miss": 308,
+   "ld_miss": 178
+  },
+  "edeka24_de": {
+   "archived_miss": 29,
+   "ld_miss": 7
+  },
+  "spinneys_lb": {
+   "archived_miss": 7,
+   "ld_miss": 7
+  },
+  "pakwheels_pk": {
+   "archived_miss": 447,
+   "ld_miss": 112,
+   "conv": 53
+  },
+  "drogasil_br": {
+   "archived_miss": 7
+  },
+  "pchome_24h": {
+   "archived_miss": 303
+  },
+  "ekupi_hr": {
+   "archived_miss": 77
+  },
+  "kontakt_az": {
+   "archived_miss": 3
+  },
+  "liverpool_mx": {
+   "archived_miss": 144,
+   "ld_miss": 52
+  },
+  "coolblue_nl": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "homecenter_co": {
+   "archived_miss": 19,
+   "ld_miss": 3
+  },
+  "whim_mv": {
+   "archived_miss": 2
+  },
+  "propertyguru_my": {
+   "archived_miss": 168
+  },
+  "batdongsan_vn": {
+   "archived_miss": 254,
+   "ld_miss": 31
+  },
+  "falabella_pe": {
+   "archived_miss": 21
+  },
+  "livingcost": {
+   "archived_miss": 42,
+   "ld_miss": 31
+  },
+  "chemist_warehouse": {
+   "archived_miss": 58,
+   "ld_miss": 29
+  },
+  "watsons_ph": {
+   "archived_miss": 16,
+   "ld_miss": 15
+  },
+  "ekupi_ba": {
+   "archived_miss": 14
+  },
+  "emag_ro": {
+   "archived_miss": 84,
+   "ld_miss": 3,
+   "conv": 3
+  },
+  "lotuss_th": {
+   "archived_miss": 10
+  },
+  "ochoa_do": {
+   "archived_miss": 8
+  },
+  "otto_de": {
+   "archived_miss": 392,
+   "ld_miss": 187
+  },
+  "plazavea_pe": {
+   "archived_miss": 11
+  },
+  "tiki": {
+   "archived_miss": 126
+  },
+  "frisco_pl": {
+   "archived_miss": 18
+  },
+  "reklama5_mk": {
+   "archived_miss": 25
+  },
+  "falabella_cl": {
+   "archived_miss": 64
+  },
+  "realestate_com_kh": {
+   "archived_miss": 13,
+   "ld_miss": 13
+  },
+  "goto_pk": {
+   "archived_miss": 7,
+   "ld_miss": 5,
+   "conv": 3
+  },
+  "prisma_ee": {
+   "archived_miss": 16,
+   "ld_miss": 16
+  },
+  "mogi_vn": {
+   "archived_miss": 15,
+   "ld_miss": 9
+  },
+  "ellbeauty_ir": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "costco_taiwan": {
+   "archived_miss": 4,
+   "ld_miss": 2
+  },
+  "momo_tw": {
+   "archived_miss": 65
+  },
+  "falabella_co": {
+   "archived_miss": 5
+  },
+  "decathlon_au": {
+   "archived_miss": 4
+  },
+  "rimi_ee": {
+   "archived_miss": 6,
+   "ld_miss": 1,
+   "conv": 1
+  },
+  "agrofy_ar": {
+   "archived_miss": 23,
+   "ld_miss": 10
+  },
+  "jackspng_pg": {
+   "archived_miss": 1
+  },
+  "tata_1mg": {
+   "archived_miss": 67,
+   "ld_miss": 25
+  },
+  "casarica_py": {
+   "archived_miss": 21
+  },
+  "gourmet_versand_de": {
+   "archived_miss": 15,
+   "ld_miss": 1
+  },
+  "waltermart": {
+   "archived_miss": 18,
+   "ld_miss": 18
+  },
+  "torob_ir": {
+   "archived_miss": 10,
+   "ld_miss": 10
+  },
+  "expatistan": {
+   "archived_miss": 41
+  },
+  "selectos_pr": {
+   "archived_miss": 4,
+   "ld_miss": 4
+  },
+  "prisma_fi": {
+   "archived_miss": 11,
+   "ld_miss": 4
+  },
+  "ribasmith_pa": {
+   "archived_miss": 18
+  },
+  "magnit_tj": {
+   "archived_miss": 6
+  },
+  "docmorris_de": {
+   "archived_miss": 37,
+   "ld_miss": 1
+  },
+  "somon_tj": {
+   "archived_miss": 12
+  },
+  "cruzverde_cl": {
+   "archived_miss": 7
+  },
+  "agrofy_br": {
+   "archived_miss": 3,
+   "ld_miss": 3
+  },
+  "lidl_si": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "patuljak_me": {
+   "archived_miss": 5
+  },
+  "woolworths_nz": {
+   "archived_miss": 37,
+   "ld_miss": 37
+  },
+  "costuless_sx": {
+   "archived_miss": 4,
+   "ld_miss": 4
+  },
+  "zap_il": {
+   "archived_miss": 58,
+   "ld_miss": 5
+  },
+  "starlink_qa": {
+   "archived_miss": 4,
+   "ld_miss": 4
+  },
+  "xcite_kw": {
+   "archived_miss": 7,
+   "ld_miss": 7
+  },
+  "neptun_al": {
+   "archived_miss": 4,
+   "ld_miss": 4
+  },
+  "mannings": {
+   "archived_miss": 7
+  },
+  "superfoodplaza_aw": {
+   "archived_miss": 18,
+   "ld_miss": 18
+  },
+  "paris_cl": {
+   "archived_miss": 4
+  },
+  "liefershop_de": {
+   "archived_miss": 2,
+   "ld_miss": 2,
+   "conv": 1
+  },
+  "jumbo_ar": {
+   "archived_miss": 9,
+   "ld_miss": 6
+  },
+  "suning": {
+   "archived_miss": 12,
+   "ld_miss": 8
+  },
+  "fptshop_vn": {
+   "archived_miss": 39,
+   "ld_miss": 5
+  },
+  "barbora_lv": {
+   "archived_miss": 12
+  },
+  "mytime_de": {
+   "archived_miss": 11
+  },
+  "ddproperty_th": {
+   "archived_miss": 2
+  },
+  "decathlon_id": {
+   "archived_miss": 3
+  },
+  "gourmet_egypt": {
+   "archived_miss": 1
+  },
+  "olx_pk": {
+   "archived_miss": 25,
+   "ld_miss": 16
+  },
+  "linella_md": {
+   "archived_miss": 6
+  },
+  "konzum_hr": {
+   "archived_miss": 2
+  },
+  "watsons_sg": {
+   "archived_miss": 11
+  },
+  "elvi_lv": {
+   "archived_miss": 21,
+   "ld_miss": 18
+  },
+  "apteka_ru": {
+   "archived_miss": 2
+  },
+  "daraz_np": {
+   "archived_miss": 3,
+   "ld_miss": 1
+  },
+  "999_md": {
+   "archived_miss": 5
+  },
+  "amicashop_jp": {
+   "archived_miss": 6
+  },
+  "mercadona": {
+   "archived_miss": 22
+  },
+  "alifshop_tj": {
+   "archived_miss": 11,
+   "ld_miss": 7
+  },
+  "maxiks_ks": {
+   "archived_miss": 1
+  },
+  "homemarket_ro": {
+   "archived_miss": 4
+  },
+  "watsons_my": {
+   "archived_miss": 6
+  },
+  "dia_ar": {
+   "archived_miss": 8
+  },
+  "leroymerlin_br": {
+   "archived_miss": 4,
+   "ld_miss": 4
+  },
+  "n11_tr": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "friday_shopping": {
+   "archived_miss": 3
+  },
+  "cruzverde_gt": {
+   "archived_miss": 1
+  },
+  "saymyanmar": {
+   "archived_miss": 2
+  },
+  "homehr_ir": {
+   "archived_miss": 3
+  },
+  "propertyguru_sg": {
+   "archived_miss": 5
+  },
+  "k24klik": {
+   "archived_miss": 3
+  },
+  "oasis_kr": {
+   "archived_miss": 10
+  },
+  "coolblue_be": {
+   "archived_miss": 2,
+   "ld_miss": 2
+  },
+  "greenspoon_ke": {
+   "archived_miss": 1
+  },
+  "decathlon_ph": {
+   "archived_miss": 10,
+   "ld_miss": 1
+  },
+  "sheypoor_ir": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "south_star_drug": {
+   "archived_miss": 4
+  },
+  "medicare_vn": {
+   "archived_miss": 7
+  },
+  "decathlon_vn": {
+   "archived_miss": 3
+  },
+  "guystar_gy": {
+   "archived_miss": 1
+  },
+  "homes_jp": {
+   "archived_miss": 2,
+   "ld_miss": 2
+  },
+  "emag_hu": {
+   "archived_miss": 3,
+   "ld_miss": 3,
+   "conv": 3
+  },
+  "vega_am": {
+   "archived_miss": 1
+  },
+  "kaufland_ro": {
+   "archived_miss": 5
+  },
+  "watsons_hk": {
+   "archived_miss": 2
+  },
+  "tap_az": {
+   "archived_miss": 7,
+   "ld_miss": 7
+  },
+  "watsons_id": {
+   "archived_miss": 3
+  },
+  "shophive_pk": {
+   "archived_miss": 12
+  },
+  "epharmacy_np": {
+   "archived_miss": 1
+  },
+  "supermarket23_cu": {
+   "archived_miss": 1
+  },
+  "emartmall": {
+   "archived_miss": 4
+  },
+  "parma_am": {
+   "archived_miss": 1
+  },
+  "fravega_ar": {
+   "archived_miss": 4
+  },
+  "guardian_sg": {
+   "archived_miss": 7
+  },
+  "shwapno_bd": {
+   "archived_miss": 5
+  },
+  "costuless_ky": {
+   "archived_miss": 2,
+   "ld_miss": 2
+  },
+  "guan_hock_lee": {
+   "archived_miss": 1
+  },
+  "farmatodo_co": {
+   "archived_miss": 2
+  },
+  "rimi_lt": {
+   "archived_miss": 3
+  },
+  "yogya_online_minimarket": {
+   "archived_miss": 1
+  },
+  "watsons_th": {
+   "archived_miss": 3
+  },
+  "inkafarma_pe": {
+   "archived_miss": 4,
+   "ld_miss": 3
+  },
+  "coles_au": {
+   "archived_miss": 3
+  },
+  "shoppingchina_py": {
+   "archived_miss": 2
+  },
+  "celineshops_ir": {
+   "archived_miss": 1,
+   "ld_miss": 1,
+   "conv": 1
+  },
+  "metro_pe": {
+   "archived_miss": 2
+  },
+  "thai_huot": {
+   "archived_miss": 1
+  },
+  "farmacity_ar": {
+   "archived_miss": 1
+  },
+  "bulksales99_my": {
+   "archived_miss": 2
+  },
+  "hoshmandshop_ir": {
+   "archived_miss": 2,
+   "ld_miss": 2
+  },
+  "domino_ge": {
+   "archived_miss": 2,
+   "ld_miss": 2,
+   "conv": 1
+  },
+  "mangusa_cw": {
+   "archived_miss": 1
+  },
+  "long_chau": {
+   "archived_miss": 2,
+   "ld_miss": 2
+  },
+  "savegnago_br": {
+   "archived_miss": 1
+  },
+  "medicinaonline_ae": {
+   "archived_miss": 2,
+   "ld_miss": 1,
+   "conv": 1
+  },
+  "megamarket_ro": {
+   "archived_miss": 2
+  },
+  "barbora_ee": {
+   "archived_miss": 6
+  },
+  "hoursmarket_ng": {
+   "archived_miss": 1
+  },
+  "exta": {
+   "archived_miss": 1
+  },
+  "pharmeasy": {
+   "archived_miss": 2
+  },
+  "lacuracaonline_ni": {
+   "archived_miss": 2
+  },
+  "farmaciasannicolas_sv": {
+   "archived_miss": 1
+  },
+  "emart_kr": {
+   "archived_miss": 1
+  },
+  "sulpak_kg": {
+   "archived_miss": 3
+  },
+  "homeplus_kr": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "vissan_mart": {
+   "archived_miss": 1
+  },
+  "carrefour_tw": {
+   "archived_miss": 1
+  },
+  "priceoye_pk": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "bilkatogo_dk": {
+   "archived_miss": 1
+  },
+  "mallhabana_cu": {
+   "archived_miss": 1
+  },
+  "khajikala_ir": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "apex_pharmacy": {
+   "archived_miss": 1
+  },
+  "khayamdaru_ir": {
+   "archived_miss": 1
+  },
+  "tgp_ph": {
+   "archived_miss": 1
+  },
+  "preciosdelsuper_es": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "tayara_tn": {
+   "archived_miss": 2,
+   "ld_miss": 2
+  },
+  "sayurbox": {
+   "archived_miss": 3,
+   "ld_miss": 2
+  },
+  "asaxiy_uz": {
+   "archived_miss": 1
+  },
+  "megaalina_md": {
+   "archived_miss": 1
+  },
+  "gtplaza": {
+   "archived_miss": 1
+  },
+  "onlinesaathi": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "new_world_fiji": {
+   "archived_miss": 2,
+   "ld_miss": 1
+  },
+  "rekoekologiska_se": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "continente_pt": {
+   "archived_miss": 1
+  },
+  "azha_pasa": {
+   "archived_miss": 1
+  },
+  "dotproperty_ph": {
+   "archived_miss": 1,
+   "ld_miss": 1
+  },
+  "decathlon_tw": {
+   "archived_miss": 1
+  },
+  "golsima_ir": {
+   "archived_miss": 1,
+   "ld_miss": 1,
+   "conv": 1
+  },
+  "tunisianet_tn": {
+   "archived_miss": 1
+  }
+ },
+ "by_crawl": {
+  "CC-MAIN-2026-25": {
+   "ld_miss": 131,
+   "conv": 55
+  },
+  "CC-MAIN-2026-21": {
+   "ld_miss": 116,
+   "conv": 48
+  },
+  "CC-MAIN-2025-26": {
+   "ld_miss": 142,
+   "conv": 43
+  },
+  "CC-MAIN-2017-26": {
+   "ld_miss": 106,
+   "conv": 40
+  },
+  "CC-MAIN-2020-24": {
+   "ld_miss": 189,
+   "conv": 25
+  },
+  "CC-MAIN-2026-17": {
+   "ld_miss": 100,
+   "conv": 41
+  },
+  "CC-MAIN-2019-26": {
+   "ld_miss": 128,
+   "conv": 9
+  },
+  "CC-MAIN-2025-51": {
+   "ld_miss": 153,
+   "conv": 48
+  },
+  "CC-MAIN-2026-12": {
+   "ld_miss": 130,
+   "conv": 45
+  },
+  "CC-MAIN-2025-47": {
+   "ld_miss": 153,
+   "conv": 45
+  },
+  "CC-MAIN-2023-23": {
+   "ld_miss": 56,
+   "conv": 5
+  },
+  "CC-MAIN-2018-26": {
+   "ld_miss": 113,
+   "conv": 27
+  },
+  "CC-MAIN-2021-25": {
+   "ld_miss": 205,
+   "conv": 45
+  },
+  "CC-MAIN-2026-30": {
+   "ld_miss": 93,
+   "conv": 44
+  },
+  "CC-MAIN-2026-04": {
+   "ld_miss": 80,
+   "conv": 41
+  },
+  "CC-MAIN-2016-26": {
+   "ld_miss": 115
+  },
+  "CC-MAIN-2026-08": {
+   "ld_miss": 99,
+   "conv": 45
+  },
+  "CC-MAIN-2022-27": {
+   "ld_miss": 166,
+   "conv": 13
+  },
+  "CC-MAIN-2024-26": {
+   "ld_miss": 49,
+   "conv": 14
+  }
+ },
+ "examples": {
+  "L5_jsonrepair": [
+   [
+    "fairprice",
+    [
+     "product"
+    ],
+    "Kirei Hokkaido Cheese Cake - New Yoke",
+    "21.8"
+   ],
+   [
+    "au_pay_market",
+    [
+     "product"
+    ],
+    "´ÚÊ!!e¨Znôx&_K[TypeL[`F[yk28z",
+    "1598.0"
+   ],
+   [
+    "fairprice",
+    [
+     "product"
+    ],
+    "De Bernard Rose Brut Prosecco Italy Sparkling Wine",
+    "23.6"
+   ],
+   [
+    "au_pay_market",
+    [
+     "product"
+    ],
+    "TuLaduo@_ \\tgU[ V_[obO/4FiT1847j",
+    "7500.0"
+   ],
+   [
+    "au_pay_market",
+    [
+     "product"
+    ],
+    "X[iE[iiSunaUnaj/kJbg\\(yô¦ézt[NGu",
+    "17496.0"
+   ],
+   [
+    "fairprice",
+    [
+     "product"
+    ],
+    "NUK 2 In 1 Sterilizer and Dryer",
+    "199.89"
+   ]
+  ],
+  "notype": [
+   [
+    "gamma_nl",
+    [
+     "organization"
+    ]
+   ],
+   [
+    "gamma_nl",
+    [
+     "organization"
+    ]
+   ],
+   [
+    "gamma_nl",
+    [
+     "organization"
+    ]
+   ],
+   [
+    "gamma_nl",
+    [
+     "organization"
+    ]
+   ],
+   [
+    "yahoo_shopping",
+    [
+     "breadcrumblist",
+     "listitem"
+    ]
+   ],
+   [
+    "gamma_nl",
+    [
+     "organization"
+    ]
+   ],
+   [
+    "edeka24_de",
+    [
+     "aggregaterating",
+     "organization"
+    ]
+   ],
+   [
+    "spinneys_lb",
+    [
+     "organization",
+     "postaladdress",
+     "searchaction",
+     "website"
+    ]
+   ],
+   [
+    "pakwheels_pk",
+    [
+     "itemlist",
+     "webpage"
+    ]
+   ],
+   [
+    "yahoo_shopping",
+    [
+     "breadcrumblist",
+     "listitem"
+    ]
+   ]
+  ],
+  "L1_deepwalk": [
+   [
+    "obi_de",
+    [
+     "product"
+    ],
+    "DELUKE Fahrrad Lastenanhänger FARI Schwarz-grau Bis 65kg Kla",
+    "171.9"
+   ],
+   [
+    "obi_de",
+    [
+     "product"
+    ],
+    "Vicco Badmöbel-Set Beatrice Anthrazit/Sonoma 3 Teile mit Hoc",
+    "390.9"
+   ],
+   [
+    "obi_de",
+    [
+     "product"
+    ],
+    "Kristall-Form Spiegelkachel Fine 30 cm x 30 cm Bronze C-Kant",
+    "15.99"
+   ],
+   [
+    "obi_de",
+    [
+     "product"
+    ],
+    "Aquagart 450m² Gartenvlies Unkrautvlies Mulchvlies 80g 1,8m ",
+    "321.3"
+   ],
+   [
+    "obi_de",
+    [
+     "product"
+    ],
+    "Türzarge Neoline CPL-Folie Seidengrau 61 cm x 198,5 cm x 31 ",
+    "169.99"
+   ],
+   [
+    "obi_de",
+    [
+     "product"
+    ],
+    "Dennerle Plants Aquariumpflanze Hygrophila Corymbosa Kompakt",
+    "6.49"
+   ]
+  ],
+  "othertype": [
+   [
+    "pakwheels_pk",
+    [
+     "car"
+    ]
+   ],
+   [
+    "livingcost",
+    [
+     "imageobject"
+    ]
+   ],
+   [
+    "livingcost",
+    [
+     "imageobject"
+    ]
+   ],
+   [
+    "mogi_vn",
+    [
+     "house"
+    ]
+   ],
+   [
+    "pakwheels_pk",
+    [
+     "car"
+    ]
+   ],
+   [
+    "pakwheels_pk",
+    [
+     "car"
+    ]
+   ],
+   [
+    "superfoodplaza_aw",
+    [
+     "imageobject"
+    ]
+   ],
+   [
+    "pakwheels_pk",
+    [
+     "car"
+    ]
+   ],
+   [
+    "superfoodplaza_aw",
+    [
+     "imageobject"
+    ]
+   ],
+   [
+    "elvi_lv",
+    [
+     "imageobject"
+    ]
+   ]
+  ],
+  "L2_widetypes": [
+   [
+    "pakwheels_pk",
+    [
+     "car"
+    ],
+    "Suzuki Alto 2007 for sale in Mian Wali",
+    "640000.0"
+   ],
+   [
+    "pakwheels_pk",
+    [
+     "car"
+    ],
+    "Suzuki FX 1987 for sale in Khanpur",
+    "180000.0"
+   ],
+   [
+    "pakwheels_pk",
+    [
+     "car"
+    ],
+    "Lexus RX Series 2009 for sale in Karachi",
+    "7400000.0"
+   ],
+   [
+    "pakwheels_pk",
+    [
+     "car"
+    ],
+    "Porsche Panamera 2014 for sale in Lahore",
+    "23500000.0"
+   ],
+   [
+    "pakwheels_pk",
+    [
+     "car"
+    ],
+    "Toyota Corolla 1985 for sale in Khanewal",
+    "220000.0"
+   ],
+   [
+    "pakwheels_pk",
+    [
+     "car"
+    ],
+    "Isuzu D-Max 2019 for sale in Islamabad",
+    "6000000.0"
+   ]
+  ],
+  "L0_shipped": [
+   [
+    "domino_ge",
+    [
+     "product"
+    ],
+    "ბორმანქანა Crown CT13428 150W",
+    "157.0"
+   ]
+  ]
+ },
+ "shards": 8
+}
