@@ -35,6 +35,7 @@ from bs4 import BeautifulSoup                                   # noqa: E402
 SRC_BUCKET = "commoncrawl"
 OUT_BUCKET = os.environ.get("OUT_BUCKET", "@@OUT_BUCKET@@")
 SAMPLE = "/tmp/probe_sample.jsonl.gz"
+RESULT_KEY = os.environ.get("RESULT_KEY", "parse-probe/result.json")
 N_PROC = int(os.environ.get("N_PROC", "16"))
 N_THREAD = int(os.environ.get("N_THREAD", "8"))
 
@@ -262,9 +263,9 @@ def main():
         iid = None
     try:
         boto3.client("s3").put_object(
-            Bucket=OUT_BUCKET, Key="parse-probe/result.json",
+            Bucket=OUT_BUCKET, Key=RESULT_KEY,
             Body=blob.encode(), ContentType="application/json")
-        print("wrote s3://%s/parse-probe/result.json" % OUT_BUCKET)
+        print("wrote s3://%s/%s" % (OUT_BUCKET, RESULT_KEY))
     except Exception as ex:
         print("could not write result:", ex)
     if iid:
