@@ -301,8 +301,9 @@ class CSVWriter:
             return set()
 
         try:
-            # Read CSV file and extract URLs
-            df = pd.read_csv(file_path, encoding="utf-8")
+            # Read only the url column — article bodies are the bulk of this
+            # file and materializing them here costs GBs of RSS per source.
+            df = pd.read_csv(file_path, encoding="utf-8", usecols=["url"], dtype=str)
             urls = set(df["url"].astype(str).unique())
             logger.info(f"Found {len(urls)} existing article URLs")
             return urls
