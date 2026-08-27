@@ -98,6 +98,39 @@ def test_trackers_sharing_a_group_share_its_definition():
                     assert terms[group], f"{group} shared by {a}/{b} but has no terms"
 
 
+def test_dashboard_shows_only_its_own_tracker_groups():
+    """The per-unit CSVs carry every theme; a dashboard must render its slice.
+
+    Without this filter a food dashboard would plot the fuel-only groups that
+    now sit in the same CSV, and vice versa.
+    """
+    from text.plotting.small_dashboard_integrated_w_policy import _keep_groups
+
+    every_topic = sorted(load_all_groups("topics", language="en"))
+    row = {"date": "2020-01-01", "ym": "2020-01"}
+    for group in every_topic:
+        row[f"{group}_absolute"] = 1.0
+        row[f"{group}_framing"] = 2.0
+        row[f"EPU_{group}_index"] = 3.0
+
+    for tracker in sorted(TRACKERS):
+        shown = set(tracker_groups("topics", tracker))
+        kept = _keep_groups([row], shown)[0]
+        assert kept["date"] == row["date"], "id columns must survive"
+        assert kept["ym"] == row["ym"]
+        for group in every_topic:
+            present = f"{group}_framing" in kept
+            assert present is (group in shown), (
+                f"{tracker}: '{group}_framing' "
+                f"{'leaked into' if present else 'missing from'} the dashboard"
+            )
+
+    fuel_only = set(tracker_groups("topics", "fuel")) - set(
+        tracker_groups("topics", "food")
+    )
+    assert fuel_only, "expected fuel to carry groups food does not display"
+
+
 @pytest.mark.parametrize(
     "short,canonical", [("zh", "chinese_simplified"), ("ja", "japanese")]
 )
