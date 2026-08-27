@@ -127,7 +127,11 @@ def scan_block(block, cands):
             payload = json.loads(fields[2])
         except json.JSONDecodeError:
             continue
-        if payload.get("status") != "200":
+        # CC-MAIN-2015-06 and CC-MAIN-2015-11 ship no "status" key at all, so a
+        # bare != "200" drops every row and yields an empty manifest with zero
+        # errors. Absent means unknown, not non-200; only reject a stated one.
+        status = payload.get("status")
+        if status is not None and status != "200":
             continue
         url = payload.get("url", "")
         try:
@@ -186,6 +190,11 @@ def resolve(index, sources, out_dir="/tmp"):
     print("%-20s blocks=%-6d rows=%-9d errs=%-4d %6.1fs  %s"
           % (index, len(todo), n, errs, dt,
              "%.0f blk/s" % (len(todo) / dt) if dt else ""), flush=True)
+    if todo and not n:
+        # Blocks matched but nothing survived the row filter. On S3 this is an
+        # empty .gz indistinguishable from a crawl with no matches, so say so.
+        print("%-20s WARNING: %d blocks matched but 0 rows kept"
+              % (index, len(todo)), flush=True)
     return dst, n, len(todo), errs
 
 
