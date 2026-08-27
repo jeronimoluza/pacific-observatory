@@ -694,6 +694,58 @@ def generate_news_statistics_table(country_folder: Path) -> str:
     return "\n".join(lines)
 
 
+def collapse_to_index_grid(
+    df: pd.DataFrame,
+    daily_tail_start: Union[str, None],
+    ratio_cols: Union[Dict[str, Tuple[str, str]], None] = None,
+) -> pd.DataFrame:
+    """Snap a 'date' column onto the hybrid monthly+daily grid, summing collisions.
+
+    Incremental runs write full-date 'ym' keys while a month is the current
+    month, and never rewrite them once it passes. Those dates match no
+    month-start entry in the continuous index, so merging against the index
+    silently drops them. Flooring pre-tail dates to month start rolls them up
+    into their month instead.
+
+    ratio_cols maps a ratio column to its (numerator, denominator) columns;
+    those are recomputed after aggregation rather than summed.
+    """
+    if df.empty or "date" not in df.columns:
+        return df
+
+    dates = pd.to_datetime(df["date"])
+    floored = dates.dt.to_period("M").dt.to_timestamp()
+    if daily_tail_start is not None:
+        tail_ts = pd.Timestamp(daily_tail_start)
+        snapped = dates.where(dates >= tail_ts, floored)
+    else:
+        snapped = floored
+
+    if snapped.equals(dates):
+        return df
+
+    out = df.copy()
+    out["date"] = snapped
+    if not out["date"].duplicated().any():
+        return out
+
+    ratio_cols = ratio_cols or {}
+    agg_map = {}
+    for col in out.columns:
+        if col == "date":
+            continue
+        if col not in ratio_cols and pd.api.types.is_numeric_dtype(out[col]):
+            agg_map[col] = "sum"
+        else:
+            agg_map[col] = "first"
+
+    grouped = out.groupby("date", as_index=False).agg(agg_map)
+    for ratio_col, (numerator, denominator) in ratio_cols.items():
+        if numerator in grouped.columns and denominator in grouped.columns:
+            grouped[ratio_col] = grouped[numerator] / grouped[denominator]
+    return grouped
+
+
 if __name__ == "__main__":
     from pathlib import Path
 

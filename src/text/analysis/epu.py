@@ -56,6 +56,7 @@ from .baseline import baseline_mask
 from .utils import (
     match_keywords,
     load_topics_words,
+    collapse_to_index_grid,
 )
 
 # Default English topic words (loaded at module level for backward compatibility)
@@ -576,6 +577,20 @@ class EPU:
         # Build hybrid monthly+daily continuous index
         dates_df = self._build_continuous_index(self.min_date, self.max_date)
         self.epu_stats["date"] = pd.to_datetime(self.epu_stats["date"])
+        # Roll up stale daily rows from earlier incremental runs so the merge
+        # below cannot drop them (ratios are recomputed from the summed counts)
+        self.epu_stats = collapse_to_index_grid(
+            self.epu_stats,
+            self.daily_tail_start,
+            ratio_cols={
+                col: (
+                    col[: -len("_ratio")] + "_epu_count",
+                    col[: -len("_ratio")] + "_body_count",
+                )
+                for col in self.epu_stats.columns
+                if col.endswith("_ratio")
+            },
+        )
         self.epu_stats = dates_df.merge(self.epu_stats, how="left", on="date").fillna(0)
 
         # Recompute ym from date so it always reflects the correct daily/monthly format
@@ -599,6 +614,9 @@ class EPU:
                 extended_stats["ym"], format="mixed"
             )
             ext_dates_df = self._build_continuous_index(self.min_date, self.max_date)
+            extended_stats = collapse_to_index_grid(
+                extended_stats, self.daily_tail_start
+            )
             extended_stats = ext_dates_df.merge(
                 extended_stats, how="left", on="date"
             ).fillna(0)

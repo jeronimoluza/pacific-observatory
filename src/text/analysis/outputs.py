@@ -11,7 +11,7 @@ import pandas as pd
 
 from src.text.analysis.baseline import baseline_mask
 from src.text.analysis.indices import IndexCalculator
-from src.text.analysis.utils import load_all_groups
+from src.text.analysis.utils import collapse_to_index_grid, load_all_groups
 
 
 def json_default(x):
@@ -352,6 +352,7 @@ def build_outputs(
         dates_df = build_continuous_index_df(
             e_base.min_date, e_base.max_date, daily_tail_start
         )
+        ug_counts = collapse_to_index_grid(ug_counts, daily_tail_start)
         ug_counts = dates_df.merge(ug_counts, how="left", on="date").fillna(0)
         attr_df = pd.merge(
             attr_df, ug_counts.drop(columns=["ym"]), on="date", how="left"
