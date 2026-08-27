@@ -1,0 +1,71 @@
+{
+  "crawl": "CC-MAIN-2024-26",
+  "n_records": 1000,
+  "runs": [
+    {
+      "concurrency": 1,
+      "requested": 40,
+      "bytes": 2033404,
+      "ok": 40,
+      "failed": 0,
+      "wall_seconds": 7.02,
+      "records_per_sec": 5.7,
+      "MB_per_sec": 0.29,
+      "median_latency_ms": 166.9,
+      "p95_latency_ms": 236.1
+    },
+    {
+      "concurrency": 8,
+      "requested": 120,
+      "bytes": 4181261,
+      "ok": 120,
+      "failed": 0,
+      "wall_seconds": 2.714,
+      "records_per_sec": 44.22,
+      "MB_per_sec": 1.54,
+      "median_latency_ms": 166.9,
+      "p95_latency_ms": 271.8
+    },
+    {
+      "concurrency": 32,
+      "requested": 300,
+      "bytes": 18823208,
+      "ok": 300,
+      "failed": 0,
+      "wall_seconds": 2.045,
+      "records_per_sec": 146.67,
+      "MB_per_sec": 9.2,
+      "median_latency_ms": 176.8,
+      "p95_latency_ms": 405.0
+    },
+    {
+      "concurrency": 64,
+      "requested": 540,
+      "bytes": 38732693,
+      "ok": 540,
+      "failed": 0,
+      "wall_seconds": 2.368,
+      "records_per_sec": 228.07,
+      "MB_per_sec": 16.36,
+      "median_latency_ms": 219.3,
+      "p95_latency_ms": 425.0
+    }
+  ],
+  "errors": [],
+  "single_get_ok": true,
+  "single_get_seconds": 0.2388,
+  "parse_check": {
+    "tried": 12,
+    "gunzip_ok": 12,
+    "html_ok": 12
+  },
+  "cluster_idx_bytes": 137046090,
+  "cdx_block_ok": true,
+  "cdx_block_bytes": 262144,
+  "instance_id": "i-0eaad4c3254914948",
+  "instance_type": "t4g.micro",
+  "az": "us-east-1a",
+  "total_bytes_fetched": 63770566,
+  "finished_utc": "2026-08-27T16:35:13Z",
+  "commoncrawl_bucket_payer": "BucketOwner"
+}
