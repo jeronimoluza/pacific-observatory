@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nha_kretxeu
+url: https://www.nhakretxeu.com/supermercado.html
+language: pt
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.nhakretxeu.com/"
+archive_path_re: '^/[^/]+\.html$'
+notes: |
+  Best Cabo Verde source per the CSV; confirmed structurally. Magento (Luma
+  theme) SSR HTML; /rest/V1/products 401s (auth required), so the spider
+  reads the server-rendered supermercado.html category listing directly.
+  Live re-verify: GET /supermercado.html -> 200, 415KB, real product cards
+  incl. "Melão grande (metade)" 450,00 CVE, "Muesli Com Frutas Emicela
+  750g" 469,00 CVE. Standard Magento ?p=N pagination advances the grid
+  (verified: page 2 returns different product ids than page 1). Fresh
+  produce and packaged goods both present. Currency CVE matches
+  countries.yaml. language overridden to pt (Portuguese product names),
+  not the shard's cfg_lang "en".

@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: source_curated
 spider: squarefoot_hk
 url: https://www.squarefoot.com.hk/rent/
+archive_prefix: "www.squarefoot.com.hk/rent/"
+archive_path_re: '^/rent/[^/]+/property-\d+/?$'
 language: zh-HK
 cadence: weekly
 channel: real-estate

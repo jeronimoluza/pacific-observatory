@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mercocaribe_habana_cu
+url: https://habana.mercocaribe.com/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "habana.mercocaribe.com/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 16.9KB JSON. Sample: 'Jugo de Albaricoque (Goze) 200Ml' price 55
+  minor units / currency_minor_unit=2 -> EUR 0.55. currency_code EUR, NOT the
+  country's official CUP — this is one of Cuba's "MLC"-style virtual stores
+  for foreign-card/diaspora-funded purchases, not the domestic CUP retail
+  network. Assortment is packaged/frozen imports only (juice, chicken,
+  dairy, snacks, canned goods) — no fresh produce/local-market categories
+  seen. Whole-catalog walk (no category filter).

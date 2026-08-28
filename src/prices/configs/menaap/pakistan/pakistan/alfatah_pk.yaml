@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: alfatah_pk
+url: https://alfatah.pk/
+language: en
+cadence: weekly
+channel: dept-store
+archive_prefix: "alfatah.pk/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Round 3 platform-fingerprint reversal: prior round claimed Shopify but marked SKIP (cloudflare
+  blocker on homepage). The /products.json catalog endpoint is unblocked (verified live
+  2026-08-07, HTTP 200). Al-Fatah is a Karachi/Lahore-based department store chain -- broader
+  than the initial fingerprint probe's homeware-only sample suggested (confirmed live in the
+  site: Karachi, Lahore, Pakistan mentioned throughout). Shopify.currency active=PKR confirmed
+  in page source, matches countries.yaml. Full smoke-test pull (339 rows) showed: homeware
+  (crystal-brass toilet brush sets), women's clothing/nightwear (sari nighties), and a "Fruits &
+  Vegitables" category -- spans food, clothing and household, not just non-food.
+  Placed alongside the existing metro_pk/pbs_spi manifests under menaap/pakistan/pakistan
+  (matching the repo's existing directory convention for this country, even though
+  src/configs/regions.yaml nominally places pakistan under sar/pakistan).
+  coicop_divisions: 01, 03, 05, 13
+  divisions_basis: sampled_rows (339 rows from the smoke-test pull; categories seen: Fruits &
+  Vegitables, women's nightwear, homeware -- full catalog not walked)

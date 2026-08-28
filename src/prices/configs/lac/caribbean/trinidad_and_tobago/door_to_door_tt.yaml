@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: door_to_door_tt
+url: https://shop.doortodoortt.com/west/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "shop.doortodoortt.com/west/product/"
+archive_path_re: '^/west/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /west/wp-json/wc/store/v1/products?per_page=5
+  -> HTTP 200, 26.4KB JSON. Sample: 'White Rain Body Wash 15oz Ocean Mist'
+  price 1595 minor units / currency_minor_unit=2 -> TTD 15.95. currency_code
+  TTD matches countries.yaml. Full supermarket range including per-lb fresh
+  pricing per prior probe notes (onion $3.95/lb, chicken breast $23.95/lb).
+  Store is scoped under the /west/ path prefix; whole-catalog walk of that
+  branch (no category filter).

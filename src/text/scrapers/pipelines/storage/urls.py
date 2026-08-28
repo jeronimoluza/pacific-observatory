@@ -162,8 +162,8 @@ class URLTracker:
             return set()
 
         try:
-            # Read CSV file and extract URLs
-            df = pd.read_csv(file_path, encoding="utf-8")
+            # Read only the url column; title/date are unused here.
+            df = pd.read_csv(file_path, encoding="utf-8", usecols=["url"], dtype=str)
             urls = set(df["url"].astype(str).unique())
             logger.info(f"Loaded {len(urls)} existing URLs from urls.csv")
             return urls

@@ -1,0 +1,20 @@
+scaffolding: spider
+spider: hpharmacy_pk
+url: https://hpharmacy.pk/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: PKR
+cadence: weekly
+coicop_codes: null
+archive_prefix: "hpharmacy.pk/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Pakistani pharmacy/personal-care retailer. WooCommerce Store API
+  confirmed live 2026-08-17
+  (https://hpharmacy.pk/wp-json/wc/store/v1/products), 100 items/page,
+  prices.currency_code=PKR, minor_unit=2 (e.g. 350000 -> Rs3,500.00). Shard
+  probe reported no detected currency; the API's own currency_code field
+  resolves it. Full scrape: see report for row count.

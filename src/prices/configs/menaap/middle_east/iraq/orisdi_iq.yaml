@@ -1,0 +1,23 @@
+scaffolding: spider
+spider: orisdi_iq
+url: https://orisdi.com/
+channel: cosmetics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: ar
+currency: USD
+cadence: weekly
+coicop_codes: null
+archive_prefix: "orisdi.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Orisdi (Iraq) perfume/fragrance retailer (Gucci, Paco Rabanne, Carolina
+  Herrera, Khadlaj, Bdk Parfums). Open Shopify /products.json catalog.
+  Verified live 2026-08-17: /cart.js confirms currency is USD (not IQD --
+  the shard's "USD/IQD" ambiguity resolves to USD, common for Iraqi
+  e-commerce). coicop_codes left unset for classifier assignment.
+  Full scrape 2026-08-17: 553 rows (3 pages) before 429s from the site
+  truncated further pagination (Shopify-side throttling under sustained
+  load; base class DOWNLOAD_DELAY=2.0s not enough). Live catalog likely
+  larger -- re-run after a cooldown for fuller coverage.

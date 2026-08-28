@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: decathlon_id
+channel: fashion
+url: https://www.decathlon.co.id/
+language: en
+cadence: weekly
+archive_prefix: "www.decathlon.co.id/p/"
+archive_path_re: '^/p/[^/?]+'
+notes: |
+  Onboarded 2026-08-07 (round-3 non-food shard, COICOP 03/05/08/09 gap).
+  Same shared platform as decathlon_th — see _decathlon_base.py docstring.
+  Per-country Algolia app id/key (index-scoped; do not reuse across
+  countries). Index is prod_pim_v1_index here (v2 on TH) — same field
+  shape, both carry name_en/url_en.
+  coicop_divisions: 03, 09
+  divisions_basis: walked_categories (same sport_en facet taxonomy as
+  decathlon_th — sport/recreation goods dominant 09, sportswear/footwear
+  03)

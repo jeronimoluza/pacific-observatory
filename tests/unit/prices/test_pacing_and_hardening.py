@@ -217,7 +217,7 @@ def test_worker_reuses_one_session_across_urls(tmp_path: Path):
         patch("prices.backfill.make_session", side_effect=fake_make_session),
         patch("prices.backfill.get_selectors", return_value={}),
         patch("prices.backfill._load_spider_parse_html", return_value=None),
-        patch("prices.backfill.bulk_discover", return_value=bulk),
+        patch("prices.backfill.bulk_discover", return_value=(bulk, [])),
         patch("prices.backfill.fetch_snapshot", return_value=None) as m_fetch,
     ):
         stats = backfill.run_source_backfill(

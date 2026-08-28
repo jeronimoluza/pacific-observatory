@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hoursmarket_ng
+url: https://24hoursmarket.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "24hoursmarket.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  WooCommerce Store API, /wp-json/wc/store/v1/products?per_page=100&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, real Lagos grocery SKUs —
+  'White Cowrie Shells x 20 Pcs' NGN 4600.00, 'Sugar Lumps 220g' NGN 5000.00,
+  'Honeywell Wheat Flour 5kg' NGN 10500.00, 'Honeywell Semolina 5kg'
+  NGN 11500.00, 'Vitals Ginger Garlic Seasoning Powder 5g x 10' NGN 1100.00.
+  currency_code=NGN from the API matches countries.yaml, minor_unit=2
+  (kobo). Second Nigeria retailer source shipped this round (alongside
+  supermart_ng + the WFP official_avg feed).

@@ -1,0 +1,43 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: gt_maga_sim
+module: lac.central_america.guatemala.maga_sim
+function: fetch_gt_maga_sim
+url: https://precios.maga.gob.gt/otros/datos-abiertos/
+language: es
+cadence: monthly
+fallback_date: 2025-06-01
+notes: |
+  MAGA (Ministerio de Agricultura, Ganaderia y Alimentacion) Sistema de
+  Informacion de Mercados (SIM) -- statutory open-data monthly wholesale
+  price bulletin across three Guatemala City-area markets (La Terminal,
+  CENMA, 21 Calle), ~160 agricultural products, 1998-current. Verified live
+  2026-08-06: GET otros/datos-abiertos/ -> 200, current month's "... a
+  junio 2026 JSON.zip" download link present; downloaded and parsed ->
+  45,402 flat records (35,554 with a non-null price), fields Actor
+  (all "Mayorista"/wholesale), Periodicidad, Mercado, Producto, Medida,
+  Fecha, Moneda (GTQ), Precio. Date range 1998-01 to 2026-06 (matches the
+  page's current-month label; ~2-month publication lag from today). Sample:
+  market="La Terminal", "Arroz oro, blanco de primera", Medida="Quintal".
+  Overlaps but does not duplicate the already-onboarded wfp_gtm fetcher
+  (_shared.lac.wfp_food_prices): WFP's Guatemala HDX feed shares two of
+  MAGA's three markets (La Terminal, Central de mayoreo CENMA -- confirmed
+  by direct CSV comparison 2026-08-06) and the same max observation month
+  (2026-06), but covers only ~70 curated commodities vs MAGA's own ~160-
+  product catalog (meat cuts, fish, finer produce grades) plus the "21
+  Calle" market WFP omits -- kept as a separate source for the incremental
+  depth, not deduplicated against WFP. Whole-catalog walker (parses every
+  record in the monthly zip, not a targeted extractor). ~1.3% of source
+  rows are exact duplicate records (same market/product/unit/date/price)
+  -- harmless, they collapse to an identical observation_hash.
+  fallback_date backdated only to 2025-06-01 (not the full 1998 history)
+  because this shard's smoke budget favors a fast, high-confidence first
+  run; a future full backfill to 1998 is straightforward (same parser, just
+  widen the cutoff) and is explicitly left as follow-up, not blocked on
+  anything.
+  coicop_divisions: 01
+  divisions_basis: walked_categories (SIM covers only agricultural/food
+  wholesale commodities; no non-food content in this bulletin)

@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: edeka24_de
+url: https://www.edeka24.de/
+language: de
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.edeka24.de/"
+archive_path_re: '\.html$'
+notes: |
+  Nationwide shipping, shelf-stable only per CSV (no fresh produce/meat/
+  dairy) -- reaches pantry/packaged/bakery/some frozen but not the
+  fresh-food leaves. OXID eShop storefront; homepage nav
+  (span[data-link] under ul.nav-list-main) exposes the full category tree.
+  217 leaf category paths (no deeper children) cover the catalog without
+  redundant parent walks; listed in _edeka24_de_categories.txt. Pagination
+  via ?pgNr=N (0-indexed).
+
+  robots.txt declares "Crawl-delay: 20" for all bots -- DOWNLOAD_DELAY set
+  to 20s in the spider accordingly (slower than this wave's usual 2.0s).
+
+  Re-verified live 2026-08-06: curl 200, 1.45MB, real prices in raw HTML
+  incl. "10,49 €", "20,98 €". /Pralinen/ -> 200, 30 real product cards incl.
+  "Ferrero Giotto Pastel de Nata 4ST 154G - Abverkauf" 3,00 €;
+  /Pralinen/?pgNr=1 -> 200, 8 more distinct cards confirming real pagination.
+timeout: 14400

@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: virtualmall_ls
+url: https://www.lesothovirtualmall.co.ls/store/m-grocery/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.lesothovirtualmall.co.ls/"
+archive_path_re: '^/[^/]+/?$'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 56.2KB JSON, 1080+ products. Sample: '1/4 Chicken - Njays Menu'
+  price 8800 minor units / currency_minor_unit=2 -> M88.00. GOTCHA:
+  prices.currency_code returns "TMT" (Turkmenistan Manat, a site
+  misconfiguration) while currency_symbol is "m" (Maloti) and the price
+  scale matches real Lesotho pricing — the spider force-overrides to LSL
+  rather than trusting currency_code from this API. Mixed catalog: pharmacy,
+  prepared restaurant-style meals, and grocery variant-range items.
+  Whole-catalog walk (no category filter).

@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_tza
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_tza
+url: https://data.humdata.org/dataset/wfp-food-prices-for-united-republic-of-tanzania
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Tanzania via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). GOTCHA: the HDX dataset slug follows the
+  ISO 'United Republic of Tanzania' form (wfp-food-prices-for-united-
+  republic-of-tanzania), not the common-name slug — the latter 404s.
+  Re-verified live 2026-08-06: CKAN package_show resolves
+  wfp_food_prices_tza.csv (200, 8.3MB, 65,109 rows), currency TZS
+  throughout (matches countries.yaml). Max observation date is
+  2026-05-15 — current. 31 commodities: beans (4 varieties), cabbage,
+  carrots, fresh fish, lettuce, maize, meat (beef bone-in/out, goat),
+  millet (2 varieties), cotton/sunflower oil, onions, potatoes, rice,
+  sorghum, soybeans, sugar, sweet potatoes, tomatoes (2 varieties), wheat.
+  Sample at max date: 'Maize', 100 KG, TZS 84025. Per-market rows collapsed
+  to a national monthly average per commodity/unit/currency/price-type;
+  market count + USD value kept in notes; retail vs wholesale kept in the
+  dedup hash. COICOP deferred to the classifier (item_name = WFP
+  commodity).

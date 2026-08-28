@@ -1,0 +1,26 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_afg
+module: _shared.menaap.wfp_food_prices
+function: fetch_wfp_afg
+url: https://data.humdata.org/dataset/wfp-food-prices-for-afghanistan
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Afghanistan via HDX (shared MENAAP fetcher
+  _shared.menaap.wfp_food_prices; added as a new _PANELS entry -- repo
+  previously had zero manifests for afghanistan). Re-verified live
+  2026-08-06: CKAN package_show resolves wfp_food_prices_afg.csv (200,
+  5.4MB, 44,317 rows, last_modified 2026-08-02). Max observation date
+  2026-08-15 (WFP dates its monthly aggregate to the 15th). Currency AFN
+  matches countries.yaml. Commodities include bread/wheat flour, rice
+  (low/high quality), oil (cooking), pulses, sugar, plus wage and fuel
+  series (non-food; classifier/downstream can filter). Per-market rows
+  collapsed to a national monthly average per commodity/unit/currency/
+  price-type; market count + USD value kept in notes; retail vs wholesale
+  kept in the dedup hash. COICOP deferred to the classifier (item_name =
+  WFP commodity).

@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+source_key: il_yellow
+module: menaap.middle_east.israel.yellow_il
+function: fetch_il_yellow
+url: ftp://url.retail.publishedprices.co.il/
+language: he
+cadence: daily
+fallback_date: 2020-01-01
+channel: convenience
+notes: |
+  Israel's 2014 Food Price Transparency Law statutory feed via the shared
+  publishedprices.co.il FTPS portal (see rami_levy_il.yaml for the shared
+  architecture note). Login "Paz_bo", password "paz468" -- both published
+  openly by the government registry, not discovered credentials. Fetches
+  one representative branch's PriceFull snapshot per run. Re-verified live
+  2026-08-06: 522 items, e.g. 'מצת אבן' (flint lighter) ILS 4.00, 'מצת
+  אלקטרוני' (electronic lighter) ILS 5.00. Currency ILS. Yellow is Paz's
+  fuel-forecourt convenience brand -- catalog is genuinely non-food-heavy
+  (household sundries, tobacco accessories) alongside snacks/drinks.
+  coicop_divisions: 01, 05, 13
+  divisions_basis: sampled_rows (522-item branch catalog, not fully walked
+  by department)

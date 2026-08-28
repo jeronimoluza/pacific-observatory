@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dayamarketing_tl
+url: https://www.dayamarketing.co/
+language: en
+cadence: weekly
+channel: wholesale
+archive_prefix: "www.dayamarketing.co/product-page/"
+archive_path_re: '^/product\-page/[^/?]+'
+notes: |
+  Distributor storefront, not brochure-only -- checked per the onboarding
+  doctrine's distributor guidance and it does publish real per-SKU prices
+  (Wix Stores, Schema.org Product JSON-LD with clean name/sku/price/
+  currency in raw SSR HTML, Tier 1A). Catalog mixes imported beverages
+  (beer, juice, sodas) with personal-care/cleaning goods in wholesale pack
+  sizes (e.g. "Ellips Ultra Treatment 36box"), consistent with a
+  distributor selling both direct-to-consumer and to retailers -- tagged
+  `wholesale` rather than a consumer-retail channel on that basis. Currency
+  USD confirmed both by JSON-LD (priceCurrency) and countries.yaml.
+  `/shop`'s Wix collection widget yields no product links via plain HTTP;
+  discovery crawls from home + /shop (whose SSR shell still ships one batch
+  of links) plus recursive product-page-to-product-page discovery.
+  Verified 2026-08-11, test run returned >=5 valid rows.

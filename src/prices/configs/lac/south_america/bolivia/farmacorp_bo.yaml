@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmacorp_bo
+url: https://www.farmacorp.com/
+language: es
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.farmacorp.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth — the source
+  CSV claimed VTEX, but it is actually Shopify. Re-verified live 2026-08-06:
+  HTTP 200, real SKUs (e.g. 'Stickers Para Uñas Essence So Cherry Happy'
+  28.30 BOB from prior probe). Currency BOB matches countries.yaml. Product
+  titles are Spanish, so language is set to es despite the shard's en
+  starting point. Pharmacy chain (COICOP 6 focus); only a minor F&B tail
+  (snacks/drinks at checkout).

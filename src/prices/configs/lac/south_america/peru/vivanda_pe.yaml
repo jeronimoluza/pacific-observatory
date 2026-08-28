@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vivanda_pe
+url: https://www.vivanda.com.pe/
+language: es
+cadence: weekly
+channel: hypermarket
+archive_prefix: "vivanda.myvtex.com/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Round 3 platform-fingerprint reversal: prior round claimed vivanda.com.pe had "migrated off
+  VTEX" (saw a Next.js storefront and stopped). It has not -- the underlying `vivanda.myvtex.com`
+  origin serves /api/catalog_system/pub/products/search directly (HTTP 206, verified live
+  2026-08-07: "Pavo con Menudencia LA FLORENCIA Congelado", real product). Category tree
+  (/api/catalog_system/pub/category/tree/3) has 30 top-level departments spanning full
+  hypermarket range: groceries, produce, meat/fish, dairy, beverages/liquor, personal
+  care/health, cleaning, home/furniture, electronics (Tecnologia/Electrohogar), toys, clothing
+  (Moda), pets, sports, office supplies, automotive. Peru already has wong_pe/plazavea_pe/metro_pe
+  (also VTEX/Cencosud-family banners); Vivanda is a distinct premium banner not previously
+  covered.
+  coicop_divisions: 01, 02, 03, 05, 06, 08, 09, 13
+  divisions_basis: walked_categories (30 top-level departments enumerated via category tree)

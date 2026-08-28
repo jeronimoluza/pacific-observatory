@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: nc_prixnc
+module: eap.pacific_islands.new_caledonia.prixnc
+function: fetch_nc_prixnc
+url: https://prix.nc/api/v1/v3/api-docs
+language: fr
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  Official territorial Observatoire des Prix. Documented OpenAPI/Spring-Data-REST
+  catalog (swagger at https://prix.nc/api/v1/swagger-obsprix.html). Whole-catalog
+  walk of the /relevesprix resource — individual price readings tied to
+  (product, store, commune, date), sorted dateReleve desc, paginated at size=500,
+  stopping once a page drops to/below cutoff. ~162k readings / ~22.5k products /
+  191 stores as of onboarding (2026-08), spanning nearly every COICOP division
+  (food, beverages, hygiene/beauty, clothing, home goods, electronics, auto/fuel,
+  telecom) — hence classifier, not source_curated. The API also exposes a
+  "Bouclier Qualité Prix" (price-shield) file endpoint (/bqp/file, /bqp/files)
+  returning PDF/image bytes of the regulated essential-goods price list — not
+  used here since /relevesprix already gives structured whole-catalog data.

@@ -1,5 +1,7 @@
 spider: druksell_bt
 language: en
+archive_prefix: "druksell.bt/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: >
   Shopify storefront for Made-in-Bhutan goods. Uses /products.json endpoint.
 channel: pharmacy

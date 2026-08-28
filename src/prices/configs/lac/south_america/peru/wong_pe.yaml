@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: wong_pe
+url: https://www.wong.pe/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.wong.pe/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Premium/upper-mid Cencosud banner. Re-verified live: products/search?_from=0&_to=4 -> HTTP 206,
+  251KB JSON, 'Huevos Pardos Wong 30un' PEN 17.90. Note: SkuData/ProductData may carry multiple
+  price tiers (online/regular/Prime) per SKU -- this spider takes the default seller's
+  commertialOffer.Price only, does not attempt to disambiguate tiers. Currency matches
+  countries.yaml (PEN).

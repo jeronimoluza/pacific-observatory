@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: metro_pe
+url: https://www.metro.pe/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.metro.pe/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Cencosud discount banner, VTEX full-line supermarket. Re-verified live:
+  products/search?_from=0&_to=4 -> HTTP 206, 209KB JSON, 'Huevos Pardos Metro 30un' PEN 16.50.
+  Category tree (category/tree/3) confirmed live; category-scoped products/search
+  (fq=C:/800/801/806/) confirmed live: 'Platano de Seda Metro x kg'. Currency matches
+  src/configs/countries.yaml (PEN).

@@ -1,0 +1,28 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: bd_tcb_daily_rmps
+module: sar.south_asia.bangladesh.tcb_daily_rmps
+function: fetch_bd_tcb_daily_rmps
+url: https://tcb.gov.bd/pages/daily-rmps
+language: en
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  TCB (Trading Corporation of Bangladesh) daily retail market price survey.
+  Re-verified live 2026-08-06: GET https://tcb.gov.bd/pages/daily-rmps ->
+  200, 90.8KB HTML with a table of dated links directly to XLSX files on
+  Oracle Cloud object storage, no auth, e.g.
+  https://objectstorage.ap-dcc-gazipur-1.oraclecloud15.com/.../416325d7-...xlsx.
+  The first such link on the page is the current day's report. Downloaded
+  and parsed: sheet 'Daily retail price', header carries the report date in
+  Bangla (day/month-name/year, Bangla digits), data rows from row 9 onward:
+  item name (Bangla), unit (Bangla), min price, max price in BDT. Sample:
+  fragrant/polao rice, 'per kg', 160-200 BDT (04-08-2026 report). Narrow
+  essential-commodities basket (rice, edible oil, sugar, lentils/pulses,
+  onion) but trivial to fetch daily. tcb.gov.bd itself serves an incomplete
+  TLS cert chain (verified via openssl s_client, return code 21: unable to
+  verify the first certificate) — the fetcher skips verification for that
+  one request only; the Oracle object-storage xlsx download verifies fine.

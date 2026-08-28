@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: hypermarket
+spider: ilovesaipan
+url: https://shop.ilovesaipan.net/shop/category/grocery-262
+language: en
+cadence: daily
+archive_prefix: "shop.ilovesaipan.net/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  Odoo eCommerce storefront (server: Odoo.sh), server-rendered PDP HTML with
+  raw price in span[itemprop='price']. Crawls 8 catalog categories (grocery,
+  beauty-hygiene, fashion-accessories, house-essentials,
+  kitchen-appliances-supplies, pets, school-office-supplies, souvenirs) via
+  CrawlSpider pagination. Cross-sells food + general merchandise, first-party
+  inventory (brand "AC Pacific LLC" wholesaler) -> channel: hypermarket per
+  GLOSSARY.md discriminating test. Currency USD confirmed both by
+  countries.yaml and the site's own data-product-tracking-info JSON
+  ("currency": "USD").

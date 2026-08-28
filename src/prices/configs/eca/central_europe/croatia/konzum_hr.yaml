@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: konzum_hr
+url: https://www.konzum.hr/kreni-u-kupnju
+language: hr
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.konzum.hr/web/products/"
+archive_path_re: '^/web/products/[^/?]+'
+notes: |
+  Custom PHP/Symfony-style storefront (round 1's Next.js platform guess did
+  not reproduce -- no __NEXT_DATA__/__NUXT__ marker on the live page). Most
+  guessed category/search routes (/kategorije/<slug>, /api/categories,
+  /pretraga, /rezultati-pretrage) 200 but all return an identical ~172KB
+  soft-404 shell with zero product markup -- normal browsing is client-
+  rendered SPA.
+
+  The one confirmed-live SSR page is /kreni-u-kupnju ("start shopping" --
+  data-ga-list literally says "Statička stranica" = static page), a seasonal
+  produce/promo landing page that server-renders real GA tracking attributes
+  per product: data-ga-id/name/price/brand/category on each
+  article.product-item, plus a[.link-to-product] for the URL.
+
+  Re-verified live 2026-08-06: GET /kreni-u-kupnju -> 200, 291KB, 13 real
+  varied products incl. "Grožđe crno" (black grapes) 1,49 €, "Vindon Pureće
+  mljeveno meso 500 g" (turkey mince) 4,39 €, "Barilla Tjestenina fusilli
+  1 kg" 1,85 €.
+
+  SCOPE CAVEAT: only this one static page is reachable this pass -- round 1's
+  "12,000+ products" estimate could not be reproduced without JS execution;
+  widening this source needs Playwright network-tab discovery of the SPA's
+  category API (out of scope for a curl-only probe).

@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: costuless_vi_stx
+url: https://www.costuless.com/
+language: en
+cadence: weekly
+channel: wholesale
+archive_prefix: "shopcostuless.com/shop/"
+archive_path_re: '^/shop/.*/p/\d+$'
+notes: |
+  channel substituted: the source is a US-style warehouse club (bulk
+  buying membership model), which the manifest schema's Channel enum has
+  no dedicated value for — "wholesale" is the closest fit.
+  NCR Freshop tenant app_key=cost_u_less, store_id=1965. Live re-verify:
+  GET api.freshop.ncrcloud.com/2/products?app_key=cost_u_less&limit=5&
+  store_id=1965 -> 200, 2,085 items, "Apothic Red Winemakers Blend 750 Ml"
+  price "$12.98". Distinct catalog from the other three Cost-U-Less
+  territory stores under this app_key (see costuless_ky notes for the
+  cross-store verification), including from costuless_st_thomas — same
+  app_key/country but a separate physical store; SKU overlap with St.
+  Thomas is likely high but assortment/price can differ by island. USVI is
+  USD natively, so the currency assumption is solid.

@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: docmorris_de
+url: https://www.docmorris.de/
+language: de
+currency: EUR
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.docmorris.de/"
+archive_path_re: '^/[^/]+/[^/]+/[^/]+/?$'
+notes: |
+  DocMorris Germany — online pharmacy. Next.js SSR storefront backed by an
+  Algolia index (pro_docmorris_products). Verified live 2026-08-17: the
+  original probe's Cloudflare "Attention Required" block did not reproduce
+  with curl_cffi chrome124 (homepage and category pages both clear at 200).
+  Enumerability proved on a real category, not the homepage:
+  /arzneimittel-gesundheit/schmerzmittel with no query param returned
+  Algolia page=0 (28 hits); ?page=2 returned page=1 with zero product-id
+  overlap against page=0's 28 hits. Guessed subcategory slugs
+  (/beauty-pflege/gesichtspflege etc.) 404 — the category payload has no
+  `children` field to discover them safely — so the spider instead walks
+  the five confirmed top-level department roots directly
+  (arzneimittel-gesundheit, beauty-pflege, vitamine-sport-ernaehrung,
+  kinder-familie, tiergesundheit-tierbedarf), each of which itself returns
+  a live paginated Algolia result set (42k-68k hits, nbPages capped at 36
+  by the Algolia UI). Price read from hits[].pricing.price (the shown
+  "private" consumer price; prescription items also carry
+  payment_exempt/public tiers, not used here). Smoke run: 60+/60 valid
+  rows. Full scrape still pending — orchestrator queues it; only page 1-2
+  of each department touched at this cap.

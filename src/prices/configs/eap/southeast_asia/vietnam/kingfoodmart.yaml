@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: kingfoodmart
 url: https://kingfoodmart.com
+archive_prefix: "kingfoodmart.com/"
+archive_path_re: '(?i)^/[a-z0-9-]+$'
 language: vi
 cadence: daily
 channel: supermarket

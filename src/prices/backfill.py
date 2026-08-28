@@ -30,6 +30,7 @@ from prices._shared.wayback import (
     fetch_snapshot,
     parse_timestamp_to_date,
 )
+from prices.price_scraping.archived import row_from_meta, rows_from_jsonld
 from prices.price_scraping.selectors import extract_with_fallback, get_selectors
 
 logger = logging.getLogger(__name__)
@@ -207,7 +208,9 @@ def backfill_one_url(
                 rec["source_kind"] = "wayback"
                 rec["wayback_timestamp"] = ts
                 rec["scraped_at_utc"] = snap_iso
-                if currency and not rec.get("currency"):
+                # Resolved source currency beats the archived page's markup —
+                # see cc_warc_fetcher._save_item for why.
+                if currency:
                     rec["currency"] = currency
                 rows.append(rec)
             continue
@@ -218,19 +221,43 @@ def backfill_one_url(
             value = extract_with_fallback(soup, selector_list)
             if value:
                 extracted[field] = value
-        if not extracted.get("price"):
-            logger.debug("[wayback] dropping %s @ %s: no price extracted", url, ts)
+        if extracted.get("price"):
+            row = {
+                "url": url,
+                "url_hash": url_hash,
+                "currency": currency,
+                "source_kind": "wayback",
+                "wayback_timestamp": ts,
+                "scraped_at_utc": snap_iso,
+                **extracted,
+            }
+            # ``**extracted`` would otherwise let a scraped currency outrank the
+            # resolved source currency, inverting the precedence used above.
+            if currency:
+                row["currency"] = currency
+            rows.append(row)
             continue
-        row = {
-            "url": url,
-            "url_hash": url_hash,
-            "currency": currency,
-            "source_kind": "wayback",
-            "wayback_timestamp": ts,
-            "scraped_at_utc": snap_iso,
-            **extracted,
-        }
-        rows.append(row)
+        if not selectors:
+            # Neither a parse_html hook nor registered selectors -- try the
+            # spider-independent schema.org/OpenGraph surfaces before giving
+            # up on the snapshot (see prices.price_scraping.archived).
+            generic_rows = rows_from_jsonld(html, url)
+            if not generic_rows:
+                generic_row = row_from_meta(html, url)
+                generic_rows = [generic_row] if generic_row else []
+            for rec in generic_rows:
+                rec.setdefault("url", url)
+                rec["url_hash"] = url_hash
+                rec["source_kind"] = "wayback"
+                rec["wayback_timestamp"] = ts
+                rec["scraped_at_utc"] = snap_iso
+                # Resolved source currency beats the archived page's markup —
+                # see cc_warc_fetcher._save_item for why.
+                if currency:
+                    rec["currency"] = currency
+                rows.append(rec)
+            continue
+        logger.debug("[wayback] dropping %s @ %s: no price extracted", url, ts)
     return rows
 
 
@@ -269,30 +296,70 @@ def _load_spider_parse_html(spider_name: str):
     the backfiller falls back to the SPIDER_SELECTORS path.
     """
     import importlib
+    import sys
+
+    # Concrete spiders import their base as `price_scraping.spiders._woo_base`
+    # — the Scrapy-project-relative path, which only resolves when the project
+    # root is on sys.path. Alias the package instead of touching sys.path:
+    # `src/prices` on the path would shadow the stdlib-adjacent `build`
+    # package with `prices/build/`. Without this every platform-base spider's
+    # `parse_html` silently resolves to None.
+    if "price_scraping" not in sys.modules:
+        with suppress(ImportError):
+            sys.modules["price_scraping"] = importlib.import_module(
+                "prices.price_scraping"
+            )
+
+    def _parse_html_from(mod):
+        for attr_name in dir(mod):
+            obj = getattr(mod, attr_name)
+            if not isinstance(obj, type):
+                continue
+            if getattr(obj, "name", None) != spider_name:
+                continue
+            parse_html = getattr(obj, "parse_html", None)
+            if callable(parse_html):
+                logger.info(
+                    "[wayback] using parse_html hook from %s.%s",
+                    mod.__name__,
+                    obj.__name__,
+                )
+                return parse_html
+        return None
 
     try:
         mod = importlib.import_module(f"prices.price_scraping.spiders.{spider_name}")
     except ImportError:
-        logger.debug(
-            "[wayback] no spider module prices.price_scraping.spiders.%s",
+        # Fast path assumes filename == spider `name`, which fails whenever
+        # they diverge — e.g. `name = "173brunei"` can't be a module name
+        # (leading digit), so it lives in `brunei173.py`. Scrapy's own
+        # SpiderLoader tolerates this by scanning every module in the
+        # package for a matching `.name` attribute instead of importing by
+        # name directly; fall back to the same scan here.
+        import pkgutil
+
+        spiders_pkg = importlib.import_module("prices.price_scraping.spiders")
+        for info in pkgutil.iter_modules(spiders_pkg.__path__):
+            if info.name.startswith("_"):
+                continue
+            try:
+                mod = importlib.import_module(
+                    f"prices.price_scraping.spiders.{info.name}"
+                )
+            except ImportError:
+                continue
+            found = _parse_html_from(mod)
+            if found is not None:
+                return found
+        logger.warning(
+            "[wayback] cannot import prices.price_scraping.spiders.%s and no "
+            "module in the package defines a spider named %r — any "
+            "parse_html hook it has will be skipped",
+            spider_name,
             spider_name,
         )
         return None
-    for attr_name in dir(mod):
-        obj = getattr(mod, attr_name)
-        if not isinstance(obj, type):
-            continue
-        if getattr(obj, "name", None) != spider_name:
-            continue
-        parse_html = getattr(obj, "parse_html", None)
-        if callable(parse_html):
-            logger.info(
-                "[wayback] using parse_html hook from %s.%s",
-                mod.__name__,
-                obj.__name__,
-            )
-            return parse_html
-    return None
+    return _parse_html_from(mod)
 
 
 def run_source_backfill(
@@ -307,23 +374,43 @@ def run_source_backfill(
     discovery: str = "bulk",
     granularity: str = "week",
     requests_per_second: float = 1.5,
+    universe_mode: str = "scraped",
+    archive_prefix: str | None = None,
+    archive_path_re: str | None = None,
+    currency_override: str | None = None,
 ) -> dict[str, int]:
     """Backfill one source. Returns stats dict.
+
+    `universe_mode="scraped"` backfills only URLs we collected live.
+    `universe_mode="archive"` backfills every product URL Wayback holds under
+    `archive_prefix`, including products delisted before we started scraping.
 
     Writes:
       {source_dir}/wayback_items/{source}_{run_ts}.jsonl
       {source_dir}/wayback_items/.ledger.json
     """
+    archive = universe_mode == "archive"
+    if archive:
+        if discovery != "bulk":
+            raise ValueError("universe_mode=archive requires discovery=bulk")
+        if not archive_prefix:
+            raise ValueError(
+                "universe_mode=archive requires archive_prefix — without it the "
+                "CDX scope is derived from the scraped set, which is the thing "
+                "archive mode exists to ignore"
+            )
+
     universe = load_url_universe(source_dir)
     if max_urls is not None:
         universe = universe[:max_urls]
 
     stats = {
         "urls_total": len(universe),
+        "urls_discovered": 0,
         "urls_processed": 0,
         "rows_written": 0,
     }
-    if not universe:
+    if not universe and not archive:
         logger.info("[%s] no URLs to backfill", source_dir.name)
         return stats
 
@@ -331,8 +418,17 @@ def run_source_backfill(
     wayback_dir.mkdir(parents=True, exist_ok=True)
     ledger = Ledger.load(wayback_dir / ".ledger.json")
     parse_html_fn = _load_spider_parse_html(spider)
-    selectors = get_selectors(spider) if parse_html_fn is None else {}
-    currency = _resolve_currency(source_dir)
+    if parse_html_fn is None:
+        try:
+            selectors = get_selectors(spider)
+        except KeyError:
+            # No bespoke hook and no registered CSS selectors -- the
+            # per-snapshot loop falls back to the generic JSON-LD/OpenGraph
+            # extractors instead of erroring the whole source out.
+            selectors = {}
+    else:
+        selectors = {}
+    currency = currency_override or _resolve_currency(source_dir)
 
     # CDX `from=` is the EARLIEST snapshot date to include. For backfill we
     # want every archived snapshot (older than what live collection already
@@ -344,19 +440,34 @@ def run_source_backfill(
     if discovery == "bulk":
         disc_session = make_session()
         try:
-            bulk_ts = bulk_discover(
-                disc_session, universe, cutoff, granularity=granularity
+            bulk_ts, extra = bulk_discover(
+                disc_session,
+                universe,
+                cutoff,
+                granularity=granularity,
+                include_unmatched=archive,
+                scope_prefix=archive_prefix,
+                path_re=archive_path_re,
             )
         finally:
             disc_session.close()
+        if extra:
+            universe = universe + extra
+            stats["urls_discovered"] = len(extra)
+            stats["urls_total"] = len(universe)
         logger.info(
-            "[%s] bulk discovery: %d/%d urls have snapshots, %d total after %s collapse",
+            "[%s] bulk discovery: %d/%d urls have snapshots (%d never scraped), "
+            "%d total after %s collapse",
             source_dir.name,
             len(bulk_ts),
             len(universe),
+            len(extra),
             sum(len(v) for v in bulk_ts.values()),
             granularity,
         )
+        if not universe:
+            logger.info("[%s] no URLs to backfill", source_dir.name)
+            return stats
 
     run_ts = datetime.now(timezone.utc).strftime(_RUN_TS_FMT)
     out_path = wayback_dir / f"{source_dir.name}_{run_ts}.jsonl"

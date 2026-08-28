@@ -11,6 +11,7 @@ The unit-value grain is `coicop_code` (the deepest leaf the classifier
 assigns); the retired cascade's `sub_label_id` sub-grain is no longer
 produced, so each COICOP leaf is one row/series.
 """
+
 from __future__ import annotations
 
 import json

@@ -52,7 +52,7 @@ def _build_store(bucket_names: dict[int, list[str]]) -> None:
                 t0 = time.monotonic()
                 embed_store.append(tag, b, nm, worker.encode(block, nm))
                 print(
-                    f"[embed {tag}] bucket {b} +{len(nm)} in {time.monotonic()-t0:.0f}s",
+                    f"[embed {tag}] bucket {b} +{len(nm)} in {time.monotonic() - t0:.0f}s",
                     flush=True,
                 )
         finally:

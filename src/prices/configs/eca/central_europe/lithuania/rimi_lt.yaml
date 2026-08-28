@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rimi_lt
+url: https://www.rimi.lt/e-parduotuve/en
+language: lt
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.rimi.lt/e-parduotuve/lt/"
+archive_path_re: '^/e\-parduotuve/lt/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: same Baltic Rimi platform as rimi_lv/
+  rimi_ee (shared base `_rimi_baltic_base.py`), first-party direct-site
+  scrape — complements the existing rimi_wolt_lt (Wolt marketplace
+  channel) manifest, does not duplicate it. No category-browse API found;
+  the SSR site-search endpoint paginates: GET
+  /e-parduotuve/lt/paieska?query=pienas&currentPage=N -> HTTP 200, 40 hits
+  with data-gtm-eec-product JSON per hit. Coverage is a keyword-search
+  sweep across common grocery nouns, not a full category walk.
+  Explicit Omnibus 30-day-lowest-price field per shard notes, not yet
+  extracted.

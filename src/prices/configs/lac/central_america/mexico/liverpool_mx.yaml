@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: liverpool_mx
+url: https://www.liverpool.com.mx/
+language: es
+currency: MXN
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.liverpool.com.mx/tienda/pdp/"
+archive_path_re: '^/tienda/pdp/[^/?]+'
+notes: |
+  Liverpool -- Mexico's largest department-store chain. Next.js App Router
+  storefront (RSC flight data, not a single __NEXT_DATA__ blob) behind
+  Akamai. robots.txt Allows ClaudeBot/Claude-SearchBot/Claude-User.
+
+  Verified live 2026-08-17: the site's own /sitemap/sitemap.xml lists
+  per-department sitemap files (electronica.xml, hogar.xml, 1pdp.xml...)
+  but every one of those 404s through the app (site appears mid-migration,
+  `gcp-migrated=true` cookie) -- NOT used.
+
+  Enumerability proof: real category listing pages discovered from the
+  homepage nav (e.g. https://www.liverpool.com.mx/tienda/celulares/cat5150024)
+  paginate via a path segment `/page-N`, NOT `?page=N` (?page=2 returns
+  page 1 again, 51/53 id overlap). /tienda/celulares/cat5150024/page-1 vs
+  /page-2: 52 vs 56 product ids, only 1 in common -- confirmed materially
+  different. Same check repeated for laptops/catst10075558,
+  pantalones/cat3980003, blusas/catst4003088 (0-1 id overlap each).
+
+  Product cards are server-rendered: `data-testid="<id>-card-card-link"`
+  anchor + `<img alt="...">` for the name + a `data-testid="<id>-price"`
+  block (whole/cents split spans) for the price. ~35/56 cards per page
+  parse cleanly (the rest use a generic "Imagen de producto" alt and are
+  skipped, not emitted as nulls).
+
+  Smoke run (--max-items 60) pending in this report. FULL scrape is still
+  pending -- the orchestrator queues it.
+
+  Known gap: cocina/catst61088298 and electrodomesticos-de-cocina/
+  catst42832953 return 0 cards on the plain category path (homepage links
+  to them carry a `?showPLP` query the spider doesn't send) -- not in the
+  scoped category list.

@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shoppi_cd
+url: https://www.shoppi.cd/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.shoppi.cd/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
+  live 2026-08-06: HTTP 200, 250 products on page 1. This session's sample
+  page led with stationery (Weibo-branded rulers, glue, calculators);
+  product titles throughout are in English despite DRC being francophone.
+  Prior probe's product_type breakdown showed salty/sweet groceries, dairy,
+  breakfast, pasta/rice/noodles, sugar/flour/baking, and wines/spirits/beers
+  (3 div-02 leaves most sources in this shard miss), with no fresh produce,
+  meat, or fish categories observed. Currency CDF matches countries.yaml.

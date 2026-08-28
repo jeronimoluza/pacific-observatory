@@ -1,0 +1,26 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_rwa
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_rwa
+url: https://data.humdata.org/dataset/a4a84c1c-81d1-491b-9fbe-1955ae736508
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Rwanda via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_rwa.csv (200, 19.9MB, 151,962
+  rows — richest+largest panel in this shard), currency RWF throughout
+  (matches countries.yaml). Max observation date is 2026-06-15 — current.
+  65 distinct commodities at near-retail resolution: apples, avocados,
+  guava, mangoes, passion fruit, papaya, oranges, cauliflower, greenhouse
+  cucumbers, zucchini, soybeans, sorghum flour, 4+ rice-origin variants, 5
+  live-animal species, 4 meat species. Sample at max date: 'Maize', KG,
+  RWF 550. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

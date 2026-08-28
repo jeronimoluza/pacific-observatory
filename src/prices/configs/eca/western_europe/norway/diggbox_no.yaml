@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: diggbox_no
+url: https://www.diggbox.no/
+language: "no"
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.diggbox.no/butikk/"
+archive_path_re: '^/butikk/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5
+  -> HTTP 200, 56KB JSON, standard WooCommerce Store API, no auth.
+  currency_code NOK / currency_minor_unit 2 matches countries.yaml. Sample:
+  'Uhhmami Easy Meals Mexi Kit OKO, 80 g' NOK 99.00. Organic/health-food
+  webshop (meal kits, pantry, snacks) -- whole-catalog walk, no category
+  filter. Distinct source from Norway's existing Vinmonopolet
+  (official_avg) manifest -- adds retailer_sku coverage.

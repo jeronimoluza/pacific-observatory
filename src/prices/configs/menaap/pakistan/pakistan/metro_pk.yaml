@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: metro_pk
+url: https://www.metro-online.pk/
+language: en
+cadence: weekly
+channel: hypermarket
+notes: |
+  Public JSON API (Xcentric-backend Node.js), no auth, no WAF. GET
+  admin.metro-online.pk/api/read/Categories?&filter=storeId&filterValue=10
+  -> 236 categories, 183 tagged category_assortment_type="Food"
+  (re-verified live 2026-08-06). Each category's own `id` field is the
+  tier2Id used to filter products; GET admin.metro-online.pk/api/read/
+  Products?filter=tier2Id&filterValue=<id>&storeId=10 returns that
+  category's full product list in one response (no pagination observed —
+  confirmed 136 products for id=8353 "Milk" in a single call). Sample:
+  'Nurpur Milk 1.5L x8' price=4100, sell_price=2700 PKR — sell_price is
+  the actual current selling price when set, falls back to price
+  otherwise. Full hypermarket format: fresh produce, dairy, bakery, rice/
+  grains, sauces/seasonings, snacks, beverages, tea/coffee. Pakistan had
+  zero manifests before this.

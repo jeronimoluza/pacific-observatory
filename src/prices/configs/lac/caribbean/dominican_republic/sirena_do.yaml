@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sirena_do
+url: https://www.sirena.do/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "sirena.do/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  La Sirena (Sirena Go) -- major DR department-store/supermarket chain, VTEX
+  platform. Re-verified live 2026-08-06: GET
+  api/catalog_system/pub/products/search?_from=0&_to=9 -> HTTP 206, real
+  varied products. Sample: 'Cilantrico Por Paquete' DOP 48.00, 'Zanahoria
+  Fresca Lb' DOP 26.00, 'Papas Selectas Lb' DOP 46.00. Category tree has 7
+  top nodes (Supermercado, Bebe, Belleza, Electrodomesticos, Hogar,
+  Electronica, ...) -- whole-catalog walk via _vtex_base leaf partitioning.
+  Currency DOP matches countries.yaml.

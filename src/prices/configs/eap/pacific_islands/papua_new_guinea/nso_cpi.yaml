@@ -1,0 +1,44 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "13"]
+source_key: pg_nso_cpi
+module: eap.pacific_islands.papua_new_guinea.nso_cpi
+function: fetch_pg_nso_cpi
+channel: null
+url: https://www.nso.gov.pg/statistics/economic-statistics/consumer-price-index/
+language: en
+cadence: quarterly
+fallback_date: 2019-01-01
+notes: |
+  PNG NSO quarterly CPI, Weighted Average of 8 CPI Towns. No SSL/portal
+  problems found this round (per-brief history noted, but the current site
+  presents a clean chain -- confirmed via curl -vI, cert covers
+  www.nso.gov.pg via SAN, issued by Let's Encrypt, valid). What IS broken:
+  the CPI *listing* page's "latest releases" widget is stale, stopping at
+  June Quarter 2023, even though NSO keeps uploading new quarterly XLSX/PDF
+  releases -- confirmed up to March Quarter 2025 at probe time, all
+  attached to that same June-2023 post's downloads widget rather than a
+  newer post. Fetcher does two hops: find the most recent dated post link
+  on the listing page, then harvest the actual newest *-final-tables*.xlsx
+  from THAT post's downloads widget (not its own nominal quarter) -- see
+  module docstring. Table 3 ("CPI GROUPS, Weighted Average of 8 CPI Towns")
+  gives 12 COICOP-2018 divisions including Restaurants and hotels (11) --
+  the richest of the three Pacific CPI fetchers onboarded this round (VNSO/
+  SINSO both fold division 11 into Miscellaneous; PNG breaks it out).
+  Division 12 (insurance & financial services) not broken out, presumed
+  folded into "Miscellaneous" -> COICOP 13 (verified against
+  data/prices/enrich/gold/coicop_leaves.txt, not assumed). Base period
+  "June Quarter 2012 = 100", confirmed from Table 13's first data column
+  reading exactly 100.0. Verified 2026-08-11 with a backdated cutoff
+  (2019-01-01); parsed the full quarterly series (2012-Q2 through 2025-Q1
+  at probe time) correctly.
+
+  KNOWN DATA ISSUE from onboarding: the first test run (before the COICOP-13
+  fix above) wrote 288 rows to
+  data/prices/eap/pacific_islands/papua_new_guinea/nso_cpi/index_observations.csv
+  with the "Miscellaneous" division mistagged as COICOP 12 instead of 13 (24
+  of the 288 rows). Onboarding rules forbid overwriting existing data/ files
+  by hand; those 24 rows need a manual code correction (12 -> 13) before
+  this source's data is trusted downstream for that division.

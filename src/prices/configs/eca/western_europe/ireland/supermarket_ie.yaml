@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: classifier
+spider: supermarket_ie
+url: https://www.supermarket.ie/compare/supermarket-prices-ireland
+language: en
+cadence: weekly
+channel: null
+archive_prefix: "www.supermarket.ie/compare/"
+archive_path_re: '^/compare/[^/?]+'
+notes: |
+  Real retailer-sourced basket-comparison tool (Tesco/Dunnes/SuperValu/
+  Aldi), not a cost-of-living survey publisher -- but data is at
+  basket/category-total grain (built from a 524-product internal basket,
+  twice-weekly), not an itemized catalogue. Re-verified live 2026-08-06:
+  200, 147KB, true SSR (all figures are raw HTML text, not a hydration
+  payload) -- e.g. category totals 'Aldi ... €35.52' for Dairy, overall
+  basket totals 'Aldi ... €393.77', plus a ~42-item illustrative sample
+  with real per-store prices (e.g. 'Glenisk Organic Low Fat Natural Yogurt
+  500g' Tesco €2.49 / Dunnes €2.49 / SuperValu €2.49). A `/api/products`
+  endpoint exists (allowed in robots.txt for AI crawlers) but always
+  returns the same static 4-item teaser regardless of query params --
+  confirmed not paginable, so not used. Single-page whole-catalog walk (no
+  pagination -- this is the entire public surface). Scaffolded as
+  aggregate_proxy/channel=null per the livingcost/expatistan precedent;
+  does not count toward per-leaf classifier coverage per the source shard.

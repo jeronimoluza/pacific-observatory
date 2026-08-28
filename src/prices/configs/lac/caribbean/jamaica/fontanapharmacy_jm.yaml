@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: fontanapharmacy_jm
+url: https://fontanapharmacy.com/
+language: en
+currency: JMD
+cadence: weekly
+channel: pharmacy
+archive_prefix: "fontanapharmacy.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Fontana Pharmacy, Jamaica. CS-Cart-flavored SSR storefront. Category
+  pages carry a homepage-style "featured" owl-carousel widget alongside
+  the real category grid (`ul.ProductList` with no carousel classes);
+  the spider reads only the plain grid to avoid double-counting.
+  Standard `?page=N` pagination via the "Next »" pagination link.
+  Discovery walks the 15 top-level nav categories, capped at 15 pages
+  each. Re-verified live 2026-08-17: GET /categories/Beauty/ -> 200,
+  36 main-grid products e.g. "Tampax Pearl Regular Unscented Tampon"
+  JMD 980.00. Currency JMD matches countries.yaml.
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

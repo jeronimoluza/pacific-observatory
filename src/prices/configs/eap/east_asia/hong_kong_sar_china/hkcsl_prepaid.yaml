@@ -4,6 +4,8 @@ analytical_role: tariff
 coicop_classification: source_curated
 spider: hkcsl_prepaid
 url: https://www.hkcsl.com/en/prepaid/
+archive_prefix: "www.hkcsl.com/en/"
+archive_path_re: '^/en/[a-z0-9-]+-sim(-card)?/?$'
 language: en
 cadence: weekly
 channel: null

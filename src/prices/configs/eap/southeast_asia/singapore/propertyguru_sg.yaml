@@ -5,6 +5,8 @@ coicop_classification: source_curated
 coicop_codes: ["04.1.1"]
 spider: propertyguru_sg
 url: https://www.propertyguru.com.sg/property-for-rent
+archive_prefix: "www.propertyguru.com.sg/listing/"
+archive_path_re: '^/listing/(?:[a-z]+-)?for-rent-[a-z0-9-]+-\d{6,}$'
 language: en
 cadence: weekly
 notes: |

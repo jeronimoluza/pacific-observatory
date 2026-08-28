@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dia_es
+url: https://www.dia.es/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.dia.es/"
+archive_path_re: '/p/[A-Za-z0-9]+/?$'
+notes: |
+  Discounter; independent tracking finds DIA wins most head-to-heads vs
+  Mercadona/Carrefour per shard. sitemap.xml lists 289 category URLs of
+  shape /<dept>/<subdept>/c/L<id> (flat two-level taxonomy, no parent/child
+  redundancy); listed in _dia_es_categories.txt. Category pages are
+  server-rendered with real product cards (div.search-product-card).
+  Pagination inserts /pag-N/ before the /c/L<id> suffix; robots.txt only
+  allows /pag-1/ through /pag-5/ (disallows */pag-* otherwise), so the
+  spider caps at page 5 per category to stay within what the site invites
+  crawlers to fetch -- larger categories will be undercounted.
+
+  Re-verified live 2026-08-06: GET -> 200, 218KB SSR, direct price "4,99€"
+  in HTML. /carnes/cerdo/c/L2014 -> 200, 10 real product cards incl.
+  "Cerdo a tacos Selección de Dia 650 g aprox." 3,89 €;
+  /carnes/cerdo/pag-2/c/L2014 -> 200, 5 more distinct cards confirming real
+  pagination.

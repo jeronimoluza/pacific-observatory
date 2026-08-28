@@ -1,0 +1,35 @@
+scaffolding: spider
+spider: ishopping_pk
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.ishopping.pk/
+language: en
+currency: PKR
+cadence: weekly
+archive_prefix: "www.ishopping.pk/"
+archive_path_re: 'price-in-pakistan(?:-[a-z0-9]+)*/?$'
+notes: |
+  Verified live 2026-08-17: Magento 2 server-rendered Luma theme.
+  robots.txt open (only /admin_ao0fl6/ + /lofmarketplace/ disallowed, no
+  ClaudeBot/anthropic-ai entry). curl_cffi chrome124 and plain `requests`
+  both 200 cleanly — no TLS impersonation used.
+  Enumerability — the pagination param was RE-VERIFIED and turned out to
+  be the opposite of an earlier note on this exact domain: `?p=N` is the
+  real Magento pager (`/electronics?p=2` returns 150 fully different
+  product cards vs `?p=1`; `/tv-s-and-entertainment/led-tv?p=2`, a
+  28-item single-page category, correctly returns an EMPTY grid — genuine
+  out-of-range paging). `?page=N` is a no-op here — `?page=1` and
+  `?page=2` return byte-identical first-page content. Uses
+  `MagentoSSRBaseSpider`, whose default `PAGE_PARAM` is already `p`, so no
+  override was needed.
+  Built on the shared `_magento_base.py` `MagentoSSRBaseSpider` — not
+  hand-rolled. Category start URLs are a curated cross-department sample
+  (electronics, mens/womens/kids stores, TV, computers, tablets,
+  office-media, health-beauty) from the site's own sitemap.
+  Smoke test (--max-items 60): 300 rows (in-flight requests overshoot the
+  60-item close signal; 2 category pages fetched before close), PKR
+  prices PKR 250-615,998.9, 0 null names/prices, 300 distinct
+  product_ids, single currency. Full scrape still pending
+  (orchestrator-queued).

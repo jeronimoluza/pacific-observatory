@@ -1,0 +1,23 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_mli
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_mli
+url: https://data.humdata.org/dataset/wfp-food-prices-for-mali
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Mali via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_mli.csv (200, 136,737 rows),
+  currency XOF throughout (matches countries.yaml). Max observation date is
+  2026-06-15 — current. 49 commodities incl. millet, sorghum, maize, rice,
+  cowpeas, groundnuts, cotton, live cattle/goat/sheep. Sample: 'Millet',
+  KG, XOF 185.42. Per-market rows collapsed to a national monthly average
+  per commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

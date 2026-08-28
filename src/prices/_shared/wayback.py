@@ -10,10 +10,12 @@ Adapted from src/fuel/fetchers/_shared/sar/wayback.py. Differences:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
 import random
+import re
 import time
 from collections.abc import Iterator
 from datetime import date
@@ -196,6 +198,17 @@ def _norm_url(u: str) -> str | None:
     return f"{host}{path}{query}"
 
 
+def _strip_query(norm: str) -> str:
+    """Drop the query string from a `_norm_url` key.
+
+    Storefronts hand out per-variant URLs (`/products/foo?variant=123`) while
+    Wayback archives the canonical `/products/foo`. Matching on the full key
+    alone silently discards those captures, so `bulk_discover` falls back to
+    this looser key when the exact one misses.
+    """
+    return norm.split("?", 1)[0]
+
+
 def _derive_scopes(urls: list[str]) -> list[tuple[str, str]]:
     """Group URLs by host → (scope, matchType='prefix') per host.
 
@@ -291,32 +304,76 @@ def bulk_discover(
     *,
     granularity: str = "week",
     timeout: int = 60,
-) -> dict[str, list[str]]:
-    """Return {url_hash: collapsed_timestamps} for a source's whole URL set.
+    include_unmatched: bool = False,
+    scope_prefix: str | None = None,
+    path_re: str | None = None,
+) -> tuple[dict[str, list[str]], list[dict]]:
+    """Return ({url_hash: collapsed_timestamps}, newly_discovered_entries).
 
-    Replaces one CDX call per URL with one paged CDX query per host. Captures
-    are intersected with `universe` (keyed by normalized URL) so only products
-    we actually collected get backfilled, then collapsed to `granularity`.
+    Replaces one CDX call per URL with one paged CDX query per host.
+
+    Matching is two-pass: exact normalized URL first, then the same key with
+    its query string dropped (see `_strip_query`).
+
+    `include_unmatched=False` (the default, "scraped" universe) intersects
+    captures with `universe`, so only products we collected live get
+    backfilled. `include_unmatched=True` (the "archive" universe) also keeps
+    captures for URLs absent from `universe` — products delisted before we
+    ever scraped the site — synthesizing `url_hash = md5(url)` to match the
+    convention in `backfill.load_url_universe`. Those entries are returned as
+    the second element, shaped like `universe` rows, for the caller to append.
+
+    `scope_prefix` overrides the CDX scope derived from `universe` — required
+    in archive mode, where the scraped set is exactly what must not bound the
+    query. `path_re` filters newly discovered URLs by path (matched URLs are
+    never filtered; we already know they are product pages).
     """
     normmap: dict[str, str] = {}
+    normmap_noq: dict[str, str] = {}
     for e in universe:
         n = _norm_url(e["url"])
         if n:
             normmap[n] = e["url_hash"]
+            normmap_noq.setdefault(_strip_query(n), e["url_hash"])
+
+    pattern = re.compile(path_re) if path_re else None
+    if include_unmatched and pattern is None:
+        logger.warning(
+            "[wayback] archive universe with no path_re — category and static "
+            "pages under the scope will be fetched and parsed as products"
+        )
 
     buckets: dict[str, list[str]] = {}
-    scopes = _derive_scopes([e["url"] for e in universe])
+    discovered: dict[str, dict] = {}
+    if scope_prefix:
+        scopes = [(scope_prefix, "prefix")]
+    else:
+        scopes = _derive_scopes([e["url"] for e in universe])
     for scope, match_type in scopes:
         logger.info("[wayback] bulk CDX scope=%s match=%s", scope, match_type)
         for original, ts in iter_bulk_captures(
             session, scope, match_type, cutoff, timeout=timeout
         ):
             n = _norm_url(original)
-            h = normmap.get(n) if n else None
-            if h:
-                buckets.setdefault(h, []).append(ts)
+            if not n:
+                continue
+            h = normmap.get(n) or normmap_noq.get(_strip_query(n))
+            if h is None:
+                if not include_unmatched:
+                    continue
+                if pattern is not None and not pattern.search(urlsplit(original).path):
+                    continue
+                h = hashlib.md5(original.encode()).hexdigest()
+                discovered.setdefault(
+                    h,
+                    {"url": original, "url_hash": h, "earliest_scraped_at": None},
+                )
+            buckets.setdefault(h, []).append(ts)
 
-    return {h: collapse_timestamps(v, granularity) for h, v in buckets.items()}
+    return (
+        {h: collapse_timestamps(v, granularity) for h, v in buckets.items()},
+        sorted(discovered.values(), key=lambda r: r["url_hash"]),
+    )
 
 
 def fetch_snapshot(

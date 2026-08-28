@@ -1,3 +1,5 @@
 spider: yahoo_shopping
 language: ja
 channel: hypermarket
+archive_prefix: "store.shopping.yahoo.co.jp/"
+archive_path_re: '^/[^/]+/[^/]+$'

@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: ff_md
+url: https://ff.md/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: ro
+currency: MDL
+cadence: weekly
+coicop_codes: null
+archive_prefix: "ff.md/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Online pharmacy (supplements, OTC, RX, opticals) serving Moldova. Open
+  Shopify /products.json catalog. Verified live 2026-08-17: currency
+  confirmed MDL via /cart.js. Wide catalog spanning RX/OTC/ETR product
+  types -- coicop_codes left unset for classifier assignment.
+  Full scrape 2026-08-17: 12,250 rows (49 pages). ff.md throttles
+  aggressively under sustained pagination -- the base class's
+  DOWNLOAD_DELAY=2.0s eventually draws 429s that exhaust RETRY_TIMES=3
+  and silently truncate the crawl (Scrapy drops the request and no
+  further "next page" gets scheduled). Repeated re-runs the same session
+  got 0-3.5k rows once a 429 streak had already been triggered, so this
+  12,250-row file (from an early, uninterrupted run) is the best capture
+  to date -- the live catalog is larger. A future run should retry after
+  a cooldown period or from a fresh IP for a fuller pull.

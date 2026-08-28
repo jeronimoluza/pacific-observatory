@@ -7,6 +7,8 @@ url: https://alfagift.id/
 language: id
 cadence: daily
 channel: supermarket
+archive_prefix: "alfagift.id/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Alfamart minimarket online storefront. No auth token needed (custom
   fingerprint/devicetype/trxid headers only) - see spider docstring. No

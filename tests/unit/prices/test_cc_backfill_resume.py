@@ -1,0 +1,153 @@
+import json
+
+import pytest
+
+from prices.cc_resolve import read_horizon, write_horizon
+from prices.tools.cc_backfill_state import _last_records, _should_run
+
+pytestmark = pytest.mark.unit
+
+
+def _rec(**kw):
+    base = {
+        "spider": "s",
+        "status": "completed",
+        "stop_reason": "",
+        "covered_through": "CC-MAIN-2013-20",
+        "horizon_count": 7,
+    }
+    base.update(kw)
+    return base
+
+
+def test_a_source_never_run_is_owed_a_pass():
+    assert _should_run(None, 7, False) is True
+
+
+def test_a_source_that_walked_the_whole_manifest_is_left_alone():
+    assert _should_run(_rec(), 7, False) is False
+
+
+def test_a_source_is_requeued_when_the_resolve_publishes_more_crawls():
+    # Resolution is index-major, so every manifest grows one crawl at a time.
+    # A source that finished the seven-crawl prefix it was handed has not
+    # finished its history, and filing it as complete is how a decade of
+    # archive silently becomes a few months.
+    assert _should_run(_rec(horizon_count=7), 8, False) is True
+    assert _should_run(_rec(horizon_count=7), 7, False) is False
+
+
+def test_a_bisected_resolve_does_not_strand_a_source_on_a_two_crawl_manifest():
+    # The resolver walks ends-then-midpoints, so the second crawl it resolves
+    # is already the oldest one there will ever be. Deciding "owed another
+    # pass" by asking whether coverage stops short of the oldest crawl
+    # therefore goes false on pass two and stays false while the remaining 116
+    # crawls land in the middle -- every source filed as finished on two
+    # crawls, in silence.
+    walked_to_the_end_of_a_two_crawl_horizon = _rec(
+        covered_through="CC-MAIN-2013-20", horizon_count=2
+    )
+    assert _should_run(walked_to_the_end_of_a_two_crawl_horizon, 2, False) is False
+    assert _should_run(walked_to_the_end_of_a_two_crawl_horizon, 3, False) is True
+    assert _should_run(walked_to_the_end_of_a_two_crawl_horizon, 123, False) is True
+
+
+def test_a_record_written_before_the_horizon_was_counted_is_re_run_once():
+    # Results predating the counter carry no horizon_count. Re-running them is
+    # the safe reading: held records are skipped by hash, so the pass costs
+    # only the crawls the source has genuinely never seen.
+    rec = _rec()
+    del rec["horizon_count"]
+    assert _should_run(rec, 7, False) is True
+
+
+def test_a_parked_source_waits_for_a_human_then_reruns_on_demand():
+    for reason in ("dead_parser", "empty_crawls"):
+        rec = _rec(stop_reason=reason, covered_through="CC-MAIN-2019-04")
+        assert _should_run(rec, 123, False) is False
+        assert _should_run(rec, 123, True) is True
+
+
+def test_a_ban_is_transient_and_retries_without_being_asked():
+    rec = _rec(stop_reason="cc_403_ban", covered_through="CC-MAIN-2024-10")
+    assert _should_run(rec, 7, False) is True
+
+
+def test_a_source_that_did_not_complete_is_always_retried():
+    assert _should_run(_rec(status="timeout"), 7, False) is True
+    assert _should_run(_rec(status="error"), 7, False) is True
+
+
+def test_the_latest_record_for_a_spider_wins(tmp_path):
+    # The results file is append-only on purpose, so a spider appears once per
+    # pass and only the last line describes where it actually got to.
+    path = tmp_path / "results.jsonl"
+    path.write_text(
+        json.dumps({"spider": "a", "status": "timeout"})
+        + "\n"
+        + json.dumps({"spider": "a", "status": "completed", "covered_through": "x"})
+        + "\n",
+        encoding="utf-8",
+    )
+    got = _last_records(path)
+    assert got["a"]["status"] == "completed"
+    assert got["a"]["covered_through"] == "x"
+
+
+def test_the_horizon_records_how_far_back_the_manifests_reach(tmp_path):
+    by_index = tmp_path / "by_index"
+    by_index.mkdir()
+    for name in ("CC-MAIN-2026-30", "CC-MAIN-2019-04", "CC-MAIN-2024-10"):
+        (by_index / f"{name}.jsonl").write_text("", encoding="utf-8")
+
+    payload = write_horizon(tmp_path)
+    assert payload["newest"] == "CC-MAIN-2026-30"
+    assert payload["oldest"] == "CC-MAIN-2019-04"
+    assert payload["count"] == 3
+    assert read_horizon(tmp_path / "by_source") == payload
+
+
+def test_a_missing_horizon_reads_as_empty_rather_than_raising(tmp_path):
+    # The fetch machine may be handed manifests before the file exists; an
+    # exception there would stop the sweep on a cosmetic problem.
+    assert read_horizon(tmp_path / "nope")["count"] == 0
+
+
+def test_the_sweep_watches_inodes_not_only_bytes(tmp_path):
+    # One item is one small JSON file, so a fleet-wide crawl costs ~half a
+    # million inodes and only a couple of gigabytes. The byte guard stays happy
+    # while saves start failing one by one -- free bytes are not evidence that
+    # a file can be created.
+    from prices.tools.cc_backfill_state import _free_gb, _free_inodes
+
+    assert _free_gb(tmp_path) > 0
+    inodes = _free_inodes(tmp_path)
+    assert inodes == -1 or inodes > 0
+
+
+def test_a_ban_makes_the_sweep_wait_rather_than_march_on(monkeypatch):
+    # The block is per address and expires by itself -- an IPv4 block cleared
+    # inside an hour of rest. The old code counted 403s in stdout, but they are
+    # logged at debug level, so the count was always zero and the cooldown never
+    # fired: one ban cost 165 sources and 9.7 hours for 5,104 rows.
+    import prices.cc_index as cc_index
+    import prices.tools.cc_backfill_run as driver
+
+    slept = []
+    monkeypatch.setattr(driver.time, "sleep", slept.append)
+    answers = iter([False, False, True])
+    monkeypatch.setattr(cc_index, "reachable", lambda: next(answers))
+
+    assert driver._wait_for_unblock(cooldown=60, max_wait=7200) is True
+    assert slept == [60, 60, 60], "one sleep per probe until it clears"
+
+
+def test_waiting_out_a_ban_eventually_gives_up(monkeypatch):
+    # Never returning would stall the sweep forever on an unusually long block;
+    # carrying on at least keeps recording what it finds.
+    import prices.cc_index as cc_index
+    import prices.tools.cc_backfill_run as driver
+
+    monkeypatch.setattr(driver.time, "sleep", lambda s: None)
+    monkeypatch.setattr(cc_index, "reachable", lambda: False)
+    assert driver._wait_for_unblock(cooldown=600, max_wait=1800) is False

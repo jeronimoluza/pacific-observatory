@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: spar2u_lk
+url: https://spar2u.lk/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "spar2u.lk/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
+  live 2026-08-06: HTTP 200, 41KB for a 5-item sample, real SKUs (e.g. 'PORK
+  Curry (Bone In)' product_type Meat, 5850.00 LKR). Currency LKR matches
+  countries.yaml. Strongest fresh-meat depth seen for Sri Lanka (68 meat SKUs
+  on page 1 in the prior probe: pork curry, beef liver, chicken thigh
+  boneless); also carries vegetables, fruits, beverages, chilled, frozen.

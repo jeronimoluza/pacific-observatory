@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jackspng_pg
+url: https://jackspng.com/
+language: en
+cadence: weekly
+channel: fashion
+archive_prefix: "www.jackspng.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Round 3 platform-fingerprint reversal: never dispatched by prior rounds. WooCommerce Store API
+  is open (verified live 2026-08-07, HTTP 200, x-wp-total: 508 products). Jacks is a PNG clothing/
+  apparel department store chain; sampled rows span multiple in-house/licensed brands (Kumuls
+  national rugby jerseys, Rip Curl, Chauka ya, Kokonas Pasifik, Mini Kundu kidswear) -- all
+  clothing (COICOP 03). PNG's existing manifests are all aggregate_proxy cost-of-living survey
+  publishers (livingcost, mylifeelsewhere, expatistan) plus food_pro; this is PNG's first
+  retailer_sku source and its first division-03 (clothing) coverage of any kind. Round-3 brief
+  flags EAP F&B as gold-bound/low-value but explicitly calls out non-food divisions as still
+  valuable -- this is non-food.
+  coicop_divisions: 03
+  divisions_basis: sampled_rows (~55 of 508 products across 2 pages; entire catalog observed as
+  apparel, no other divisions seen)

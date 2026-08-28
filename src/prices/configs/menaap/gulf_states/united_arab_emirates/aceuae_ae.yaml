@@ -1,0 +1,31 @@
+scaffolding: spider
+spider: aceuae_ae
+channel: home-improvement
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.aceuae.com/
+language: en
+currency: AED
+cadence: weekly
+archive_prefix: "www.aceuae.com/en/products/"
+archive_path_re: '^/en/products/[^/?]+'
+notes: |
+  Al-Futtaim ACE hardware/home-living retailer, UAE. Custom Next.js
+  storefront behind an F5/TSPD stub that is unimpersonated-only defensive JS
+  (curl_cffi impersonate=chrome124 clears it cleanly to a plain 200, no
+  challenge markup). robots.txt open, no ClaudeBot/anthropic-ai disallow,
+  points at https://www.aceuae.com/sitemap/sitemap-ae.xml.
+  Enumerability verified live 2026-08-17: sitemap index -> 8 sub-sitemaps ->
+  sitemap-ae-hardware-en-products.xml alone lists 11,591 distinct
+  /en/products/<slug>/<id> URLs, a real walkable catalog (not a homepage
+  carousel). Each PDP server-renders a schema.org Product JSON-LD block with
+  name/sku/category/priceCurrency/price/availability; confirmed live:
+  "O Cedar ProMist MAX Microfiber Sponge Mop Refill (23 cm)" -> AED 2.00.
+  Smoke test (--max-items 60) returned 64 rows (closespider fires slightly
+  over the cap), 0 null names/prices, 1 currency (AED), 64/64 distinct
+  product_id, price range AED 1.75-4499.00. Sample skews availability=False
+  because sitemap URLs are walked in alphabetical order and this slice
+  landed on low-turnover SKUs — not a spider defect. Full 11.6k-URL scrape
+  is NOT run here — orchestrator queues it.
+timeout: 14400

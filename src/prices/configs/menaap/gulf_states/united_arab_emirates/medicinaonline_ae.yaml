@@ -1,0 +1,23 @@
+scaffolding: spider
+spider: medicinaonline_ae
+url: https://medicinaonline.ae/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: AED
+cadence: weekly
+coicop_codes: null
+archive_prefix: "medicinaonline.ae/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Online pharmacy/supplements retailer serving the UAE (SWISSE, Cica
+  Hyalon, Celimax, Some By Mi, Numbuzin, skincare + supplements). Open
+  Shopify /products.json catalog. Verified live 2026-08-17: currency
+  confirmed AED via /cart.js. coicop_codes left unset for classifier
+  assignment.
+  Full scrape 2026-08-17: 750 rows (3 pages) before 429s from the site
+  truncated further pagination (Shopify-side throttling under sustained
+  load; base class DOWNLOAD_DELAY=2.0s not enough). Live catalog likely
+  larger -- re-run after a cooldown for fuller coverage.

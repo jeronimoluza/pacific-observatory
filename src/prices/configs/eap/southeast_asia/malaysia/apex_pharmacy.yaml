@@ -7,3 +7,5 @@ url: https://www.apexpharmacy.com.my/
 language: en
 cadence: daily
 channel: pharmacy
+archive_prefix: "www.apexpharmacy.com.my/Shop/"
+archive_path_re: '^/Shop/[^/?]+'

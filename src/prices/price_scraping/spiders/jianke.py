@@ -29,10 +29,18 @@ class JiankeSpider(CrawlSpider):
     SELECTORS = get_selectors("jianke")
 
     rules = (
-        # Follow category listing pages (/list-XXXX.html)
+        # Follow category listing pages (/Category/XXXX.html).
+        #
+        # GOTCHA -- this rule used to allow r"/list-\d+\.html". Those URLs
+        # exist but serve a byte-identical copy of the homepage (verified
+        # 2026-08-18: /list-1001.html and / both return 239,377 bytes), and
+        # only 2 of them are linked anywhere, so the crawl never left the
+        # front page and the spider was pinned at ~175 products across every
+        # run since March. The real category pages are /Category/<id>.html --
+        # 180 are linked from the homepage and carry ~19 products each.
         Rule(
             LinkExtractor(
-                allow=r"/list-\d+\.html",
+                allow=r"/Category/\d+\.html",
                 deny=r"(cart|checkout|account|login|search|ask|doctor|hospital|jibing|news|yyzd|help)",
             ),
             follow=True,

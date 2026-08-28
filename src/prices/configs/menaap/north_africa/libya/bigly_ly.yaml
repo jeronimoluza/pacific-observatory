@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bigly_ly
+url: https://big.ly/food
+language: ar
+cadence: weekly
+channel: supermarket
+archive_prefix: "big.ly/food/"
+archive_path_re: '^/food/[^/?]+'
+notes: |
+  OpenCart (theme "renoxa"), fully SEO-rewritten clean URLs (`/food/<Slug>`
+  for both subcategories and products, no numeric ids anywhere), so
+  categories are listed explicitly. The original probe only paginated
+  /food itself (fresh produce); re-probing found four more subcategories
+  behind it (chocolate/drinks/fruits/goods), all included here. Re-verified
+  live: e.g. "باذنجان" (Eggplant) 6.00 د.ل, "بازلاء خضراء" (Green peas)
+  6.00 د.ل.
+
+  cfg_currency (LYD) matches what the probe saw.

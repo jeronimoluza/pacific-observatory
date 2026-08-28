@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: koro_at
+language: de
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.koro-shop.at/detail/"
+archive_path_re: '^/detail/[^/?]+'
+notes: |
+  Nuxt3 frontend over a shared Shopware 6 backend (bff.koro.com) with one
+  sales channel per country. Store API POST /store-api/product with
+  sw-access-key header (extracted from window.__NUXT__.config.public in the
+  homepage SSR payload) -- 1B JSON, no Playwright needed. Requires
+  "total-count-mode":1 in the body or Shopware silently reports total==page
+  size. Access key is index/channel-scoped: the AT key 403s / serves a
+  different catalog on a sibling KoRo storefront -- do not reuse across
+  countries.
+
+  Verified live 2026-08-07: POST returns total=... items with name,
+  productNumber, calculatedPrice.unitPrice (context-resolved to channel
+  currency, not shared EUR), available, ean. Sample (via the DE channel,
+  same platform): "Veganer Spekulatius Aufstrich 400 g" EUR 5.00,
+  "Salzreduzierte Bio Sojasauce 1 L" EUR 14.50. URL built from Shopware's
+  built-in non-SEO canonical route /detail/{id} (per-product unique, avoids
+  DuplicationPipeline url-collapse).
+
+  Catalog is specialty/organic/bulk food (nut butters, dried fruit, snacks,
+  breakfast, baking) plus a small "Proteine & Vitamine" (supplements) and
+  "Non-food" (kitchenware) section -- not a full-line grocer.
+
+  coicop_divisions: 01, 05, 06
+  divisions_basis: walked_categories (14 top-level nav categories enumerated
+  via /store-api/navigation; Non-food subcategories include Küchenhelfer/
+  Geschirr -> 05, Proteine & Vitamine -> 06 supplements per COICOP 2018
+  06.1.1)

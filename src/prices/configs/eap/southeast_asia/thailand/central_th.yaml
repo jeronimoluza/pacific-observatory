@@ -1,5 +1,7 @@
 spider: central_th
 language: th
+archive_prefix: "www.central.co.th/th/"
+archive_path_re: '^/th/[a-z0-9-]+-cds\d{6,}$'
 notes: >
   Listing-card extraction (Tier 2 / Playwright). Category pages render cards
   with atomic Tailwind-style classes; the `p.text-central-red` class uniquely

@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cima_ma
+url: https://cima.ma/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "cima.ma/produit/"
+archive_path_re: '^/produit/[^/?]+'
+notes: |
+  Found via marketplace-adjacent French-language search (mid-tier grocer,
+  not the WAF-hardened Carrefour/Marjane leaders). Re-verified live
+  2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 -> HTTP 200,
+  10.3KB JSON. Sample: 'NESTLE CERELAC BLE 300G' MAD 27.95, 'MIXA CREME
+  CICA REPARATION 400ML' MAD 105.00. currency_code MAD matches
+  countries.yaml, currency_minor_unit=2. CIMAMARKET, Tangier-based grocer
+  with home delivery. Whole-catalog walk (no category filter).

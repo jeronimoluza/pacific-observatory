@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: patuljak_me
+url: https://patuljak.me/
+language: sr
+currency: EUR
+cadence: weekly
+channel: marketplace
+archive_prefix: "patuljak.me/oglas/"
+archive_path_re: '^/oglas/[^/?]+'
+notes: |
+  Patuljak.me — Montenegro peer-to-peer classifieds site (schema.org Offer
+  microdata listings), not a retailer. Verified live 2026-08-17: real EUR
+  listing prices in SSR HTML. By listing count the site is dominated by
+  "nekretnine" (real estate, ~733 pages / ~16.9k listings) and "vozila"
+  (vehicles) — both far larger than the goods categories (electronics,
+  clothing, toys, sporting goods, pets, computers, mobile devices, home).
+  Given that scale, the spider caps each of the 11 top-level categories at
+  20 pages (~460 listings/category max) rather than a full crawl.
+  coicop_classification left as classifier.

@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: drsalem_ir
+url: https://drsalem.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: pharmacy
+archive_prefix: "drsalem.ir/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  Verified live 2026-08-18: drsalem.ir is "Dr. Azadeh Salem" (فروشگاه
+  اینترنتی دکتر آزاده سالم), a 24/7 online pharmacy selling supplements,
+  cosmetics and personal-care products. Open, unauthenticated WooCommerce
+  Store API at /wp-json/wc/store/v1/products?per_page=100&page=N -- uses
+  the shared WooBaseSpider (src/prices/price_scraping/spiders/_woo_base.py).
+  The API reports currency_code="IRT" (Toman, no ISO 4217 code); the
+  spider multiplies price by 10 and reports IRR, matching the site's own
+  PDP JSON-LD conversion (confirmed on the same tenant pattern via
+  hami.ir: API price 3,280,000 Toman == JSON-LD 32,800,000 IRR) and the
+  existing torob_ir/sheypoor_ir convention.

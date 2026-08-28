@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mantrafoods_mu
+url: https://mantrafoods.mu/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "mantrafoods.mu/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront on the custom domain, /products.json?limit=250&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, real Mauritius shelf-
+  stable/organic SKUs — 'Healthy Low Gi Rice 1KG' MUR 250.00, 'Creme
+  Liquide UHT 35% (Whipping Cream) - 1LT' MUR 450.00, 'Almond Chips SEA
+  SALT - 25GM' MUR 60.00, 'Almond Chips ORIGINAL - 25GM' MUR 60.00, 'Whole
+  Wheat Chips ORIGINAL - 30GM' MUR 65.00. Page bundle confirms
+  `"currency":"MUR"`, matches countries.yaml.

@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bravosupermarket_ps
+url: https://bravosupermarket.ps/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "bravosupermarket.ps/product/"
+archive_path_re: '^/product/[^/]+/?$'
+notes: |
+  Found via Arabic search (سوبر ماركت اونلاين فلسطين). Re-verified live
+  2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 -> HTTP 200,
+  25KB JSON. Sample: 'Danish Coffeecake' USD 15.00, 'Fruit Cheesecake' USD
+  15.00. currency_code USD AS RENDERED BY THE SITE'S OWN API -- distinct
+  from karaz_ps.yaml (same country, ILS) and from countries.yaml's blanket
+  USD claim; this store genuinely prices in USD (own choice, not the
+  countries.yaml defect) while karaz.ps genuinely prices in ILS -- currency
+  is store-specific here, not country-uniform, confirming the brief's
+  warning to always take currency from the site, never assume by country.
+  Bakery-heavy assortment sampled at per_page=5; whole-catalog walk (no
+  category filter) covers the full store.

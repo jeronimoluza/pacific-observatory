@@ -1,0 +1,42 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["07.2.2", "04.5.4"]
+channel: null
+source_key: br_anp_fuel
+module: lac.south_america.brazil.anp_fuel
+function: fetch_br_anp_fuel
+url: https://www.gov.br/anp/pt-br/centrais-de-conteudo/dados-abertos/serie-historica-de-precos-de-combustiveis
+language: pt
+cadence: weekly
+fallback_date: 2026-06-01
+notes: |
+  ANP (national oil/gas/biofuels regulator) statutory weekly fuel price
+  survey -- CSV downloads linked from the gov.br dados-abertos page, one
+  row per (station, product, collection date), semicolon-delimited,
+  Brazilian-locale decimal commas. Re-verified live 2026-08-06: GET
+  index page -> 200; discovered
+  .../dsan/2026/07-dados-abertos-precos-gasolina-etanol.csv -> 200,
+  8.4MB, real per-station rows (e.g. Alagoas/Rio Largo, GASOLINA,
+  01/07/2026, R$ 6.69/litro, bandeira VIBRA). Covers GASOLINA/GASOLINA
+  ADITIVADA/ETANOL/DIESEL/DIESEL S10/GNV (-> COICOP 07.2.2) and GLP,
+  bottled cooking gas (-> COICOP 04.5.4). Aggregated to a
+  (Estado, Produto, Data da Coleta) mean before emitting -- raw files
+  are tens of thousands of station rows/month, too granular to emit
+  1:1; this mirrors the ODEPA Chile wholesale collapse-to-national-avg
+  pattern but keeps state-level granularity (subnational_area=Estado
+  sigla) since ANP's data supports it. GOTCHA for future maintainers:
+  filenames under .../dsan/{year}/ are NOT consistently named
+  month-to-month (2026 has both "01-dados-abertos-precos-glp.csv" and a
+  typo'd "02-cados-abertos-preco-gasolina-etanol.csv"; April 2026 is
+  simply absent from the index) -- this fetcher re-scrapes the index
+  page every run and matches hrefs by fuel-type substring restricted to
+  the current year's path segment, never constructs URLs from a fixed
+  pattern. fallback_date set to 2026-06-01 (recent) to keep run 1
+  bounded to ~3 files; a full backfill through 2023-2026 (~40 files) is
+  possible by walking prior-year index pages, left as future work.
+  coicop_divisions: 04, 07
+  divisions_basis: walked_categories (all 3 published fuel-type CSVs --
+  diesel/gnv, gasolina/etanol, glp -- enumerated and mapped by Produto
+  value)

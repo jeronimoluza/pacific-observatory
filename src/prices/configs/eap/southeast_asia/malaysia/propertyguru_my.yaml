@@ -7,6 +7,8 @@ spider: propertyguru_my
 url: https://www.propertyguru.com.my/property-for-rent
 language: en
 cadence: weekly
+archive_prefix: "www.propertyguru.com.my/property-listing/"
+archive_path_re: '^/property\-listing/[^/?]+'
 notes: |
   Rental listings from PropertyGuru MY — listings-layer source for COICOP
   04.1.1 (actual rentals paid by tenants). Twin of propertyguru_sg: same

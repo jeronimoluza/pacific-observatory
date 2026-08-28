@@ -6,6 +6,7 @@ prices-only behaviors on top of the fuel primitive (fuel is left untouched):
 input currency normalization (e.g. ``FJ`` -> ``FJD``) and a latest-rate
 fallback so rows with a NaT/unmatched observation_date still get a USD value.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -45,9 +46,7 @@ def _fill_from_latest_rate(out: pd.DataFrame, cache_path: Path) -> pd.DataFrame:
     if cache.empty:
         return out
 
-    latest = (
-        cache.sort_values("date").groupby("currency")["rate_usd_to_local"].last()
-    )
+    latest = cache.sort_values("date").groupby("currency")["rate_usd_to_local"].last()
     price_local = pd.to_numeric(out["price_local"], errors="coerce")
     for currency, rate in latest.items():
         if pd.isna(rate) or rate == 0:
@@ -60,7 +59,9 @@ def _fill_from_latest_rate(out: pd.DataFrame, cache_path: Path) -> pd.DataFrame:
     return out
 
 
-def attach_fx_and_usd(df: pd.DataFrame, cache_path: Path = PRICES_FX_CACHE) -> pd.DataFrame:
+def attach_fx_and_usd(
+    df: pd.DataFrame, cache_path: Path = PRICES_FX_CACHE
+) -> pd.DataFrame:
     """Wrapper around fuel.fx.attach_fx_and_usd using the prices cache.
 
     Normalizes the input ``currency`` column to ISO 4217 before conversion,

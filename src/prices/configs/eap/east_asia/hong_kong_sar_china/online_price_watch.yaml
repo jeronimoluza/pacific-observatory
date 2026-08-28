@@ -1,0 +1,22 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: hk_online_price_watch
+module: eap.east_asia.hong_kong_sar_china.online_price_watch
+function: fetch_hk_online_price_watch
+url: https://online-price-watch.consumer.org.hk/opw/list/018/010/030
+language: en
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  Consumer Council of Hong Kong official daily price comparison across 9
+  supermarket/chain retailers (Wellcome, PARKnSHOP, Market Place, Watsons,
+  Mannings, AEON, DCH Food Mart, Sasa, Lung Fung). Backing JSON endpoint
+  (POST /opw/getPriceList/<cat1>/<cat2>/<cat3>) is open, no auth. Category
+  tree (~360 leaves across 10 divisions) is discovered at runtime by parsing
+  the site's own nav markup, not hardcoded. One row per (item, supermarket);
+  supermarket code recorded in `notes` (no dedicated retailer column in
+  PriceObservation). Spans multiple COICOP divisions (food, personal care,
+  household, alcohol) — wide, so coicop_codes is left unset.

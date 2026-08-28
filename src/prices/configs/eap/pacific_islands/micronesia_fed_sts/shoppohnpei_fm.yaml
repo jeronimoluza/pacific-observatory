@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shoppohnpei_fm
+url: https://www.shoppohnpei.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.shoppohnpei.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Round 3 platform-fingerprint reversal: brief flagged this for re-test rather than assuming
+  brochure-only. Shopify /products.json is open and unblocked (verified live 2026-08-07, HTTP
+  200, 66 products total -- small single-page catalog). Shopify.currency active=USD confirmed
+  in page source, matches countries.yaml (FSM uses USD). Sampled rows: Pure Pacific rice, WaKa
+  bottled water/canned tuna/mackerel/kimchi/ramen -- grocery store, food-only assortment.
+  Micronesia's existing manifests were aggregate_proxy survey publishers only; this and
+  saki4you_fm (added same round) are Micronesia's first retailer_sku sources.
+  coicop_divisions: 01
+  divisions_basis: sampled_rows (6 of 66 -- small catalog, but every sampled row was food)

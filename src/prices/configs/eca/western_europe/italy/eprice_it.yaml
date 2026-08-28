@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: eprice_it
+url: https://www.eprice.it/
+language: it
+currency: EUR
+cadence: weekly
+channel: electronics
+archive_prefix: "www.eprice.it/d-"
+archive_path_re: '^/d-\d+/?$'
+notes: |
+  Verified live 2026-08-17. Italian electronics/appliance retailer -- a
+  genuine marketplace (checked: product detail pages carry a real
+  "AGGIUNGI AL CARRELLO" add-to-cart flow and a "Venduto e spedito da
+  <seller>" fulfillment line naming a single third-party seller per SKU;
+  no "confronta prezzi" / multi-store comparison UI anywhere in listing or
+  detail markup), NOT a price-comparison aggregator -- retailer_sku is
+  correct. Custom PHP/JSP storefront behind Akamai; bare curl 403s
+  (AkamaiGHost), curl_cffi impersonate=chrome124 clears both homepage and
+  category pages cleanly, no challenge markup.
+  16 top-level category slugs discovered from the homepage nav (all
+  electronics/appliances: smartphone, smart-tv, computer-portatile,
+  frigorifero, lavatrice, ...). Pagination uses the `pp` query param
+  (robots.txt explicitly allows `/pr/*?pp=*`) -- `?page=2` silently
+  returns page 1 unchanged, a trap for this site specifically.
+  Enumerability proven: /pr/smartphone (pp=1 implicit) vs
+  /pr/smartphone?pp=2 return 36 + 36 distinct product ids, zero overlap.
+  Sample smoke row: "SAMSUNG - Galaxy S26 Ultra 5G AI 256GB..." EUR 885.59.
+  Full scrape still pending -- orchestrator queues it. A fuller category
+  set is available via the site's per-department XML sitemaps
+  (sitemap/https/SiteMapIndex_20110310.xml) if 16 categories proves thin.

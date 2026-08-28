@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: halodili
 url: https://halodili.com/zdsupermarket
+archive_prefix: "halodili.com/"
+archive_path_re: '^/(?!zdsupermarket$|food-delivery$)[a-zA-Z0-9][a-zA-Z0-9\-./]*$'
 language: en
 cadence: daily
 channel: supermarket

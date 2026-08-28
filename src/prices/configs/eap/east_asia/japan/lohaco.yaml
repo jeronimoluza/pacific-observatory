@@ -1,6 +1,8 @@
 spider: lohaco
 language: ja
 channel: supermarket
+archive_prefix: "lohaco.yahoo.co.jp/store/"
+archive_path_re: '^/store/[^/?]+'
 notes: |
   LOHACO by ASKUL (lohaco.yahoo.co.jp) — distinct ASKUL retail catalog on a
   yahoo.co.jp subdomain, own /store/h-lohaco/item/{id}/ SKU namespace. Not

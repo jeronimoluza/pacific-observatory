@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: leroymerlin_br
+url: https://www.leroymerlin.com.br/
+archive_prefix: "www.leroymerlin.com.br/"
+archive_path_re: '^/[^/]+_\d+$'
+language: pt
+currency: BRL
+cadence: weekly
+channel: home-improvement
+notes: |
+  Leroy Merlin Brazil, hardware/home-improvement. Re-verified live
+  2026-08-17: DataDome blocks chrome124/chrome120 curl_cffi impersonation
+  (403 "enable JS" stub) but safari17_0 clears both '/' and a category
+  page. Category pages server-render a full Algolia InstantSearch
+  response inline (a "results":[{"hits":[...],"nbHits":N,"nbPages":N,
+  "page":N}] JSON block, second occurrence in the HTML -- the first is an
+  empty placeholder). ?page=N (1-indexed) on the category URL changes
+  which page the SSR embeds. No flat `price` field on a hit; used
+  medianPromotionalPrice (confirmed equal to
+  regionalAttributes.grande_sao_paulo.promotionalPrice, the largest
+  metro) with averagePromotionalPrice as fallback. Category discovery
+  uses the CDN sitemap (cdn.leroymerlin.com.br/sitemaps/departamentos_1
+  .xml, in allowed_domains) filtered to 216 clean single-segment category
+  slugs, sampled at stride 5.
+  Enumerability proven on /tintas: ?page=1 and ?page=2 returned fully
+  disjoint objectID sets (36 each, 0 overlap) against nbHits=391,
+  nbPages=11. Real BRL prices confirmed, e.g. medianPromotionalPrice
+  379.9 for a 20L acrylic paint. Smoke run: 60 rows requested, see
+  collect output for actual count.
+  FULL SCRAPE STILL PENDING -- this manifest only covers the smoke test.

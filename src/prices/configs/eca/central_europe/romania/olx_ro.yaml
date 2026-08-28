@@ -1,0 +1,45 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: olx_ro
+url: https://www.olx.ro/
+language: ro
+currency: RON
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.olx.ro/d/oferta/"
+archive_path_re: '^/d/oferta/[^/?]+'
+notes: |
+  OLX Romania -- peer-to-peer classifieds (OLX Group platform, same family
+  as olx_pk / tap_az already onboarded). Bare curl gets a Cloudflare "Just
+  a moment" 403; curl_cffi impersonate=chrome124 clears it fully.
+
+  Enumerability proof: https://www.olx.ro/electronice-si-electrocasnice/
+  page 1 vs `?page=2` -- confirmed live 2026-08-17, disjoint ad-id sets
+  (materially different, not a repeat).
+
+  Category listing pages are React SSR and embed the full 52-ad result set
+  as a JSON-in-JS-string blob, `window.__PRERENDERED_STATE__`, at
+  `listing.listing.ads[]`; each ad carries a numeric `price.regularPrice`
+  plus an ISO currency code, so no locale-string parsing is needed. Same
+  frontend generation as olx_pl.
+
+  GOTCHA -- the first version of this spider parsed the page's schema.org
+  `Offer` JSON-LD block instead. That block is SEO markup: present ONLY on
+  page 1 and listing only 20 of the 52 ads. Pages 2+ contain zero `Offer`
+  objects, so the parser found nothing, the "stop when a page yields no new
+  ids" rule fired at once, and the first full scrape exited `finished`
+  after 12 requests with 119 rows -- a clean-looking run at ~2% of real
+  yield. Fixed 2026-08-17 by switching to `__PRERENDERED_STATE__`; page 2
+  now returns 49-52 new rows per category.
+
+  Scoped in-spider to 6 consumer-goods top-level categories
+  (electronics/appliances, home & garden, hobby/sport/tourism,
+  mother & child, fashion/beauty, pets) -- vehicles, real estate, auto
+  parts, jobs, services and rentals excluded as out of scope for a retail
+  price basket. Not dominated by cars or real estate (those top-level
+  categories are excluded from the scoped list).
+
+  Smoke run (--max-items 60): see report. FULL scrape is still pending --
+  the orchestrator queues it.

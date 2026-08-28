@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: source_curated
 spider: hotpepper_jp
 url: https://www.hotpepper.jp/SA11/S00070/1/
+archive_prefix: "hotpepper.jp/str"
+archive_path_re: '^/strJ\d+/?$'
 language: ja
 cadence: weekly
 channel: other

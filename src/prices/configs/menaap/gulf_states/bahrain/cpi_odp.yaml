@@ -1,0 +1,27 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: bh_cpi_odp
+module: menaap.gulf_states.bahrain.cpi_odp
+function: fetch_bh_cpi_odp
+url: https://www.data.gov.bh/explore/dataset/01-consumer-price-index-division-and-group-index-number/
+language: en
+cadence: monthly
+fallback_date: 2016-12-01
+notes: |
+  Re-verified live 2026-08-06: Information & eGovernment Authority (iGA)
+  Bahrain Open Data Portal, OpenDataSoft platform (v2.1 explore API, NOT
+  CKAN). Dataset 01-consumer-price-index-division-and-group-index-number,
+  7866 records, monthly back to 2017-01, current through 2026-06 at probe
+  time (~2-month publication lag, normal for CPI). Base April 2019=100.
+  Rows at COICOP division/group/class grain (level 2/3/4); the all-items
+  headline row (coicop_code="0") is dropped per the skill's open headline-CPI
+  question. Source coicop_code values are inconsistently zero-padded
+  ("1.1" vs "01.1.2") — normalized in the fetcher. Division 13 does not
+  exist in this publisher's grouping (COICOP-1999-style 12-division scheme,
+  division 12 is the catch-all) — same pattern as BPS Indonesia.
+  coicop_divisions: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12
+  divisions_basis: walked_categories (all 69 division/group/class rows enumerated for the latest month)

@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: zakupy_biedronka_pl
+url: https://zakupy.biedronka.pl/
+language: pl
+cadence: weekly
+channel: supermarket
+archive_prefix: "zakupy.biedronka.pl/p/"
+archive_path_re: '^/p/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: Salesforce Commerce Cloud, SSR — round 1's
+  TIER_2 label was wrong (it only checked the homepage/a 410'd guessed
+  slug, both empty-cart placeholders). A real leaf category returns
+  prices directly in the HTML. GET
+  https://zakupy.biedronka.pl/artykuly-spozywcze/kawy/ -> HTTP 200, 560KB.
+  Sample: 'Jacobs Kronung Kawa ziarnista 1 kg' 89,99 PLN; 'Lavazza Crema E
+  Gusto Classico Kawa ziarnista palona 1000 g' 99,99 PLN. No working
+  ?start=N pagination found for this theme (identical products at
+  start=0 and start=24), so the spider walks one page per leaf category
+  across all 90 leaf slugs in the site nav — food and non-food alike.
+  Real per-category counts are larger than one page (e.g. Artykuły
+  spożywcze 577 SKUs per shard notes), so coverage is a partial slice per
+  category, not the full per-category catalogue. Poland's largest
+  discounter; home delivery currently Warsaw-only per shard note.

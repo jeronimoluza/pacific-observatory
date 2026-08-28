@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cemaco_gt
+url: https://www.cemaco.com/
+language: es
+currency: GTQ
+cadence: weekly
+channel: dept-store
+archive_prefix: "cemaco.com/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Cemaco -- Guatemalan department-store chain (home goods, furniture,
+  electronics, toys; general merchandise, not food). Shard flagged this as
+  Tier-1A custom HTML (apex `cemaco.com` is a 383-byte S3 meta-refresh stub
+  to www.cemaco.com), but re-verification found the www SSR pages embed
+  schema.org JSON-LD with `cemacogt.vtexassets.com` image URLs -- it's an
+  open VTEX tenant, so this is built on VtexBaseSpider (extraction_pattern
+  reclassified scrapy_api, not scrapy_html) rather than a hand-rolled HTML
+  scrape. `extraction_pattern: scrapy_api` per the VTEX convention used by
+  carrefour_ar.yaml etc.
+
+  Re-verified live 2026-08-17: GET /api/catalog_system/pub/category/tree/3
+  -> 200, 44 top-level category nodes. GET
+  /api/catalog_system/pub/products/search -> 206, real GTQ prices e.g. "Set
+  de Cama Colchon + Base Beautysleep Pillow Top" offers lowPrice 5028
+  priceCurrency GTQ.
+timeout: 28800

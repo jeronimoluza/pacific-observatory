@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: falabella_pe
+url: https://www.falabella.com.pe/falabella-pe/
+language: es
+currency: PEN
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.falabella.com.pe/falabella-pe/product/"
+archive_path_re: '^/falabella\-pe/product/[^/?]+'
+notes: |
+  Falabella Peru, the national dept-store banner (not the Sodimac
+  hardware banner already onboarded as sodimac_pe). Re-verified live
+  2026-08-17: same Falabella Next.js SSR platform as falabella_cl.py --
+  category listing pages embed the full result set directly in
+  __NEXT_DATA__.props.pageProps.results, ?page=N advances, identical
+  contract. Category discovery samples the site's own category sitemap
+  (categories_pe_FA_COM-0.xml, 1795 leaf categories) at stride 40.
+  Enumerability proven on cat40691 (Microondas): page 1 and page 2 each
+  returned 48 unique productIds with zero overlap. Real PEN prices
+  confirmed, e.g. eventPrice 259 PEN for a microwave. Smoke run: 60 rows
+  requested, see collect output for actual count.
+  FULL SCRAPE STILL PENDING -- this manifest only covers the smoke test.

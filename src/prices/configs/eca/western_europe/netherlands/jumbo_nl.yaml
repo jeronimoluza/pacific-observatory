@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jumbo_nl
+url: https://www.jumbo.com/producten/
+language: nl
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.jumbo.com/producten/"
+archive_path_re: '^/producten/[^/?]+'
+notes: |
+  Vue/Nuxt storefront, server-rendered category grids. Overturns round 1's
+  D-tier "SUSPECT" call: no WAF, plain curl with a Chrome UA gets a full SSR
+  product grid.
+
+  Re-verified live 2026-08-06: GET /producten/zuivel,-boter-en-eieren/ ->
+  200, 1.3MB, 76 real product cards with data-testid="product-card-N"
+  data-product-id, name in the image alt, price in
+  span[data-testid="product-price"]. Sample: "Jumbo Crunchy Muesli Pure
+  Chocolade 900 g" EUR 3,25, "Jumbo Magere Kwark met Yoghurt Aardbei
+  Framboos 0% Vet 500 g" EUR 1,55. GET .../?offSet=24 confirmed to return a
+  genuinely different 24-product page (real server-side pagination, not a
+  static snapshot).
+
+  27 top-level category slugs discovered from the /producten/ landing page's
+  own nav links (a mix of grocery aisles and a few brand pages like
+  /producten/hema/, /producten/knorr/ -- harmless, still real SKUs). Spider
+  discovers these once, then paginates each in steps of 24 via ?offSet=N.

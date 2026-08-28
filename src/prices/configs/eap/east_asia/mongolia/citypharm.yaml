@@ -1,3 +1,5 @@
 spider: citypharm
 language: mn
 channel: pharmacy
+archive_prefix: "citypharm.mn/shop/"
+archive_path_re: "^/shop/\\d+-"

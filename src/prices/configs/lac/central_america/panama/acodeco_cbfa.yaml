@@ -1,0 +1,44 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: pa_acodeco_cbfa
+module: lac.central_america.panama.acodeco_cbfa
+function: fetch_pa_acodeco_cbfa
+url: https://www.acodeco.gob.pa/inicio/estadisticas-precios/precios-2/
+language: es
+cadence: monthly
+fallback_date: 2014-12-01
+notes: |
+  ACODECO (consumer-protection authority) statutory monthly average-price
+  survey of the 59-product Canasta Basica Familiar de Alimentos across
+  supermarkets in Panama province -- the "mandated price-comparison list
+  for basic-basket goods" class called out in the onboarding brief.
+  Published as a single wide PDF, one row per product x one column per
+  month, Jan/2015 through the current bulletin (title observed
+  2026-08-06: "Historico_CBA59_2015-Abr2025.pdf", 3 pages, 125 months).
+  Re-verified live 2026-08-06: GET precios-2/ index page -> 200; PDF
+  link discovered and downloaded -> 200, real text (not scanned),
+  pdfplumber.extract_text() returns clean rows, e.g. "Babilla (Carne de
+  res de Primera) 1 Kilogramo 6.32 6.33 ...". TWO GOTCHAS documented in
+  the fetcher module docstring: (1) month-year column headers are
+  rendered character-reversed by the PDF generator ("51-enE" displays as
+  "Ene-15") -- every header token must be string-reversed before
+  parsing; (2) the wide table is paginated by COLUMN not by row -- only
+  the first page carries product name + unit, continuation pages are
+  pure numeric columns in the same row order, followed by 11 trailing
+  category-subtotal rows (Costo Carne, ..., COSTO TOTAL) that are NOT
+  per-product and are excluded by capping at the known 59-product count.
+  Currency: ACODECO's table carries no currency symbol; countries.yaml
+  lists Panama as PAB, which is 1:1 pegged to and used interchangeably
+  with USD for retail pricing (Panama has no circulating PAB paper
+  currency) -- price magnitudes (e.g. USD/PAB 6.32/kg beef) are
+  consistent with that assumption but not independently confirmed
+  against a currency-labeled source. fallback_date backdated to
+  2014-12-01 so run 1 pulls the full available 2015-2025 history in one
+  shot (whole-document parse, not incremental).
+  coicop_divisions: 01
+  divisions_basis: walked_categories (all 59 products in the published
+  Canasta Basica Familiar de Alimentos are food items; no non-food
+  content in this bulletin)

@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: spesalia_it
+url: https://spesalia.com/
+language: it
+cadence: weekly
+channel: supermarket
+notes: |
+  Spesalia -- regional online grocer serving Avellino/Salerno/Napoli
+  provinces (Campania, Italy). PrestaShop storefront on a "tt" theme with no
+  schema.org Product microdata, so the shared `_prestashop_base.py`
+  (selects `[itemtype$="/Product"]`) finds zero items here -- confirmed live
+  (165 category pages, 0 matches) before switching to a bespoke spider that
+  regexes the theme's actual `data-id-product` / `product-title` /
+  `class="price"` markup directly. /api/products webservice 401s without a
+  key (category discovery still uses the generic id-slug href walk).
+  Re-verified live 2026-08-06: homepage -> 200, 119 real product cards on
+  the first 2 responses incl. 'RUMMO 88 CASARECCE GR 500' EUR 1.12,
+  'GRANA PADANO PORZIONATO DOP KG 1' EUR 20.04. Inverse-correlation pick:
+  skipped Esselunga (market leader, "Esselunga a Casa") and
+  piccolospesaonline.it (403 on plain curl) in favour of this smaller
+  regional chain.

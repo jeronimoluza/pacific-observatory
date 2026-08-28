@@ -7,6 +7,8 @@ url: https://www.ayamkitafresh.com
 language: ms
 cadence: daily
 channel: supermarket
+archive_prefix: "www.ayamkitafresh.com/collections/"
+archive_path_re: '^/collections/[^/?]+'
 notes: >
   Malaysian online wet-market grocer (Shopline platform, server-rendered
   PDPs). Scoped to fresh/specialty collections rather than the full catalogue

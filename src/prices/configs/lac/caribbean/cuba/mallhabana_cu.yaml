@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mallhabana_cu
+url: https://mallhabana.com/
+archive_prefix: "mallhabana.com/"
+archive_path_re: '^/[^/]+/\d+-[^/]+\.html$'
+language: es
+currency: USD
+cadence: weekly
+channel: marketplace
+notes: |
+  Cuba diaspora grocery/general-merchandise delivery site (pay abroad, deliver
+  to Cuba). Re-verified live 2026-08-17: PrestaShop storefront, but this theme
+  drops schema.org [itemtype$="/Product"] microdata so the shared
+  _prestashop_base.py can't be reused as-is (standalone spider instead).
+  Category page /77-alimentos-envios-a-cuba-mallhabana -> 200, real SSR
+  products e.g. "Cañada de res 4lbs" 30,00 $. Currency is USD, confirmed via
+  the page's inline PrestaShop config ("currency":{"iso_code":"USD"}) and
+  body_classes currency-USD — not the diaspora-vague "$" the shard guessed.
+  Catalog spans groceries + household + electronics + auto parts (75
+  categories from the homepage nav), so channel is marketplace rather than
+  supermarket.

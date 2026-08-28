@@ -11,6 +11,7 @@ side so a human can decide; it never mutates the build outputs.
 Run:
     PYTHONPATH=src <venv>/bin/python src/prices/enrich/scripts/uv_audit_monitor.py
 """
+
 from __future__ import annotations
 
 import pandas as pd

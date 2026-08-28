@@ -431,6 +431,9 @@ def run_publish(
 ):
     """Build dashboard_data.json, per-region panels, and EPU dashboards.
 
+    ``skip_database_status`` bypasses the global raw-data rescan, which is
+    pointless when the published regions have no local ``data/text/`` copy.
+
     Always writes the global ``outputs/text/dashboard_data/dashboard_data.json``
     and renders the basic integrated HTML. When the scope covers full
     regions (no ``--subregion``/``--country`` filter), also writes per-region

@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ogimarket_bg
+url: https://ogimarket.bg/
+language: bg
+cadence: weekly
+channel: supermarket
+archive_prefix: "ogimarket.bg/"
+archive_path_re: '^/[^/]+/[^/?]+$'
+notes: |
+  OpenCart, fully SEO-rewritten clean URLs (no route=/path= params visible
+  anywhere), so the 14 catalog categories are listed explicitly in the
+  spider rather than auto-discovered. Re-verified live on the dairy/eggs
+  category (/mlechni-i-yaica): 52+ products, e.g. "Прясно мляко - Верея -
+  3% - 1л." at "1,74лв." dual-priced with a leading EUR figure.
+
+  Currency: prices render as EUR-primary with BGN in parentheses (e.g.
+  "0,21€ (0.41лв.)") -- Bulgaria's Euro changeover. cfg_currency says BGN;
+  trusting the probe/headline value instead per instructions, so this
+  manifest is EUR. The parenthetical BGN figure is not captured.
+
+  Personal-shopper model per CSV; dairy/confectionery/cured-meat categories
+  confirmed live.

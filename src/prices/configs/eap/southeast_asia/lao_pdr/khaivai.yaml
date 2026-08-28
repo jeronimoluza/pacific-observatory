@@ -7,6 +7,8 @@ url: https://khaivai.com/
 language: lo
 cadence: daily
 channel: hypermarket
+archive_prefix: "khaivai.com/product/"
+archive_path_re: '^/product/[^/]+$'
 notes: |
   Lao e-commerce marketplace (WooCommerce variant). Covers clothing/
   footwear (COICOP 03), household goods (05), electronics/appliances (09).

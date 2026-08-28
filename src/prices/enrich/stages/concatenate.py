@@ -27,6 +27,7 @@ Common Crawl rows (which often lack a currency field) is back-filled with the
 modal currency observed in the same source's jsonl rows; rows with no
 resolvable currency are dropped.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -172,7 +173,18 @@ def _emit_cc(path: Path) -> Iterable[dict]:
         obj = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return
-    yield {
+    yield _cc_row(obj)
+
+
+def _emit_cc_jsonl(path: Path) -> Iterable[dict]:
+    from prices.cc_storage import iter_jsonl
+
+    for obj in iter_jsonl(path):
+        yield _cc_row(obj)
+
+
+def _cc_row(obj: dict) -> dict:
+    return {
         "product_name": obj.get("product_name"),
         "price": obj.get("price"),
         "currency": obj.get("currency"),
@@ -227,7 +239,10 @@ def _iter_source_files(
         out.extend(("wayback", p) for p in wb.glob("*.jsonl"))
     cc = source_dir / "common_crawl_data" / "items"
     if cc.is_dir():
+        # Both layouts: one JSON per record (pre-compaction) and one JSONL per
+        # crawl. A corpus captured before the change is still read in place.
         out.extend(("cc", p) for p in cc.glob("*.json"))
+        out.extend(("cc_jsonl", p) for p in cc.glob("*.jsonl"))
     obs = source_dir / "price_observations.csv"
     if obs.is_file() and (country, source) in _classifier_csv_map():
         out.append(("price_obs", obs))
@@ -259,6 +274,8 @@ def _load_source(
             rows.extend(_emit_jsonl(path, wayback=True))
         elif shape == "cc":
             rows.extend(_emit_cc(path))
+        elif shape == "cc_jsonl":
+            rows.extend(_emit_cc_jsonl(path))
         elif shape == "price_obs":
             rows.extend(_emit_price_obs(path))
     if not rows:

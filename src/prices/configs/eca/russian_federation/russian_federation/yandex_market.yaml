@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: yandex_market
+language: ru
+cadence: daily
+archive_prefix: "market.yandex.ru/card/"
+archive_path_re: '^/card/[^/?]+'
+notes: |
+  Verified live 2026-08-07: Yandex Market is Russia's largest homegrown
+  marketplace (COICOP-wide, food and non-food). Search-results pages embed
+  multiple Apiary widget-state JSON blobs; the `@marketfront/SearchSchemaOrg`
+  widget carries a clean schema.org-shaped item list (sku, name, price,
+  priceCurrency, url, description) matching the actually-displayed price --
+  cross-checked against a separate wishlist-toggle widget on the same page
+  whose top-level price field was stale/pre-discount (199 vs the real 120
+  RUB for the same SKU); only SearchSchemaOrg is used. No plain JSON API
+  found, so this walks a fixed keyword list
+  (_yandex_market_keywords.txt, 26 terms spanning food + non-food) up to 3
+  pages each. Smoke run (--max-items 20): 20/20 rows, e.g. "Молоко 3,2%
+  Северная Долина ультрапастеризованное, объем 950 гр" 120 RUB, "Детское
+  молоко \"Из Лавки\", 3,2%, ультрапастеризованное, 200 мл" 45 RUB.
+  coicop_divisions: 01, 03, 05, 06, 08, 09, 13
+  divisions_basis: sampled_rows (26-term keyword list explicitly spans milk/
+  bread/eggs/staples (01), clothing/footwear (03), household equipment (05),
+  vitamins/health (06), electronics (08), books/toys/bicycles (09), personal
+  care (13))
+channel: marketplace

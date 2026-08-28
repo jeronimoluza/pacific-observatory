@@ -1,0 +1,37 @@
+scaffolding: spider
+spider: xcite_kw
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+url: https://www.xcite.com/
+language: en
+currency: KWD
+cadence: weekly
+archive_prefix: "www.xcite.com/"
+archive_path_re: '^/[A-Za-z0-9._~-]+/p$'
+notes: |
+  Alghanim "Xcite" electronics retailer, Kuwait. Next.js Pages Router
+  storefront; the shard's Algolia-proxy lever needed an index name never
+  recovered, so this spider uses the site's own `/_next/data/<buildId>/...`
+  data route instead (buildId read at runtime from the homepage, not
+  hardcoded). robots.txt open, no ClaudeBot/anthropic-ai disallow, points at
+  https://www.xcite.com/sitemaps/sitemap-index.xml.
+  Enumerability verified live 2026-08-17: sitemap-index.xml ->
+  sitemap-pdps.xml -> a 122-shard sitemap index (sitemap-pdps-0.xml ...
+  sitemap-pdps-121.xml), a real multi-thousand-item catalog, not a homepage
+  carousel. Shards overlap heavily (shard-0 vs shard-1 share 1002/1004
+  URLs), so this is not a clean partition — the spider walks a bounded
+  _MAX_SHARDS=40 slice and relies on Scrapy's own request dedup for
+  cross-shard repeats rather than assuming disjoint pages.
+  Each PDP's data-route JSON exposes pageProps.meta.product with
+  name/sku/status/price; confirmed live: "Geparlys Bois D'Iris Eau De
+  Parfum (100 ml)" -> KWD 7.900, InStock. A large share of sampled PDPs
+  (spot sample: 8/10 in one shard) return status=Discontinued with
+  price=null and are skipped by design — this is real catalog turnover on
+  an electronics retailer, not a scraping defect, but it means throughput
+  per shard is lower than a fresh-catalog site; flagging here since it ran
+  higher than this spider's original ~1/3 estimate in this spot check.
+  Smoke test (--max-items 60) returned 60 rows, 0 null names/prices, 1
+  currency (KWD), 60/60 distinct product_id, price range KWD 0.75-1199.50.
+  Full 122-shard scrape is NOT run here — orchestrator queues it.

@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: emag_ro
+url: https://www.emag.ro/
+language: ro
+currency: RON
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.emag.ro/"
+archive_path_re: '/pd/[A-Z0-9]+/?$'
+notes: |
+  eMAG Romania — Romania's largest general marketplace (own-stock + 3rd-party
+  sellers). Verified live 2026-08-17: server-rendered category listing pages
+  return real RON prices (e.g. 'Telefon mobil Samsung Galaxy A17...' RON
+  849.00). Marketplace scale is huge (a single mid category like
+  "telefoane-mobile" alone runs 2931 products / 49 pages), so — same
+  treatment as ebay_co_uk/otto_de — this is scoped to a fixed set of 10
+  top-level category slugs (phones, laptops, TVs, small appliances, books,
+  toys, living-room furniture, sports, cosmetics, garden tools) capped at 15
+  pages/category (~900 items/category max) rather than a full-catalog crawl.
+  coicop_classification left as classifier — wide general catalog.

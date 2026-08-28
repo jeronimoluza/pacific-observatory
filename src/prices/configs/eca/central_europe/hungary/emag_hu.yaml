@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: emag_hu
+url: https://www.emag.hu/
+language: hu
+currency: HUF
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.emag.hu/"
+archive_path_re: '/pd/[A-Z0-9]+/?$'
+notes: |
+  eMAG Hungary — Hungarian storefront of the same eMAG marketplace platform
+  already onboarded as emag_ro (Romania). Direct port: same card markup,
+  same /<slug>/c and /<slug>/p{N}/c pagination pattern. Verified live
+  2026-08-17: the homepage and top-level department (/d) pages are
+  client-hydrated shells with no product data; sub-department hub pages
+  (/<subdept>/sd) link to the real server-rendered category listings
+  (/<slug>/c). Enumerability proved on /okosorak/c (smartwatches): page 1
+  and /okosorak/p2/c each returned 60 data-product-id cards with zero
+  overlap. Unlike RO's HTML-entity price text, each HU card ships a clean
+  HTML-escaped JSON blob in data-product="{&quot;...&quot;}" with price as
+  a plain HUF integer and currency directly — no separator parsing needed.
+  Scoped to a fixed set of 8 category slugs (smartwatches, smart home,
+  activity trackers, irons/steam stations, coffee makers, steam cleaners,
+  sewing machines, percolators) discovered via sub-department hub
+  navigation, capped at 15 pages/category, matching the same scale
+  treatment as emag_ro. coicop_classification left as classifier — wide
+  general marketplace catalog. Smoke run: 60+/60 valid rows. Full scrape
+  still pending — orchestrator queues it. The same platform also serves
+  the RO/BG sibling TLDs; if this spider's pattern generalizes cleanly,
+  emag.bg is a cheap future source using the same recipe.

@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: costuless_vi_stt
+url: https://www.costuless.com/st-thomas
+language: en
+cadence: weekly
+channel: wholesale
+archive_prefix: "shopcostuless.com/shop/"
+archive_path_re: '^/shop/.*/p/\d+$'
+notes: |
+  channel substituted: the source is a US-style warehouse club (bulk
+  buying membership model), which the manifest schema's Channel enum has
+  no dedicated value for — "wholesale" is the closest fit.
+  NCR Freshop tenant app_key=cost_u_less, store_id=1967. Live re-verify:
+  GET api.freshop.ncrcloud.com/2/products?app_key=cost_u_less&limit=5&
+  store_id=1967 -> 200, 2,219 items, "Oh so GOOD! Water 40 Pack" price
+  "$6.98". Distinct catalog from the other three Cost-U-Less territory
+  stores under this app_key (see costuless_ky notes for the cross-store
+  verification), including from costuless_st_croix — same app_key/country
+  but a separate physical store. USVI is USD natively, so this is the one
+  Cost-U-Less territory where the currency assumption is solid.

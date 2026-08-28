@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: walmart_sv
+url: https://www.walmart.com.sv/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "walmart.com.sv/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Walmart Centroamerica banner, full-line, meat confirmed. Re-verified live:
+  products/search?_from=0&_to=9 -> HTTP 206, 210KB, 'Carne Molida Don Cristobal Especial - Precio
+  Indicado Por Libra (454 g)' USD 3.70. El Salvador's official currency is USD, matching
+  countries.yaml.

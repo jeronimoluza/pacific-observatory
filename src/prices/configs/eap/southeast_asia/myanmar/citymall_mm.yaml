@@ -1,3 +1,5 @@
 spider: citymall_mm
+archive_prefix: "www.citymall.com.mm/citymall/my/"
+archive_path_re: '^/citymall/my/.+/p/[A-Za-z0-9_]+$'
 language: my
 channel: supermarket

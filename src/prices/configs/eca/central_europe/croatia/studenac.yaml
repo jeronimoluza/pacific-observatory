@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: studenac
+url: https://www.studenac.hr/tjedna-akcija
+language: hr
+cadence: weekly
+channel: supermarket
+notes: |
+  IMPORTANT SCOPE NOTE: studenac.hr has no browsable full-SKU online
+  storefront (it is a corporate/store-locator site). The only
+  catalogue-shaped surface is the "Tjedna akcija" (weekly offers) section;
+  its product grid is client-rendered but backed by a plain POST to
+  /api/products (fields cat/filter/q/p) that returns pre-rendered HTML
+  cards -- confirmed live 2026-08-06 with a raw POST, no JS needed. Walks
+  all 18 sidebar category ids with `p`-param pagination (verified against
+  the site's own base.min.js) until a response has no trailing
+  data-page="N" marker. This is the CURRENT weekly-promo assortment
+  (varies by promo cycle), not a stable year-round catalogue -- treat
+  fnb_leaves coverage as shallow/volatile relative to a true supermarket
+  SKU feed. Overturns the shard's D-tier 'SUSPECT' framing on the
+  homepage-only prediction; the deeper /api/products endpoint is real.
+  Sample: category 3 (Mliječni proizvodi i jaja) -> 'Dukat Jogurt dukatos'
+  0,89 €. Product names are Croatian; language overridden from the shard's
+  en to hr accordingly. Currency EUR matches countries.yaml.

@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: magnumopt_kz
+url: https://magnumopt.kz/
+language: ru
+cadence: weekly
+channel: wholesale
+archive_prefix: "magnumopt.kz/catalog/product/"
+archive_path_re: '^/catalog/product/[^/?]+'
+notes: |
+  1C-Bitrix wholesale cash-and-carry storefront (Magnum's wholesale arm).
+  CSV flagged "some pricing may need registration" -- untrue for the base
+  unit price: product cards render name + KZT price with no login wall
+  (a "только для..." string on the page is a B2B phone-line label, unrelated
+  to pricing). Re-verified live 2026-08-06: GET
+  /catalog/1365-goroshek-konservirovannyy/ -> 200, 607KB, 12 real products
+  incl. 'Горошек скатерть-самобранка Зел из Мозг Сортов 420гр ж/б
+  (Ресей/Россия)' KZT 825/шт. No numeric pagination param found within
+  probe budget (Bitrix "load more" likely ajax) -- each category page
+  renders a bounded first page; 673-slug category list on the homepage
+  (_magnumopt_kz_categories.txt) spans umbrella + child nodes so the union
+  still reaches deep leaves. Currency KZT matches countries.yaml.

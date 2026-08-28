@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: bn_deps_cpi
+module: eap.southeast_asia.brunei_darussalam.deps_cpi
+function: fetch_bn_deps_cpi
+url: https://deps.mofe.gov.bn/edl-consumer-price-index-economy/
+language: en
+cadence: monthly
+fallback_date: 2010-01-01
+notes: |
+  DEPS "eData Library" - Monthly-Consumer-Price-Index.xlsx, 12-group
+  breakdown (COICOP-1999 style). COICOP 02 (Alcohol & Tobacco) absent
+  from the publisher's grouping - not emitted. "Overall CPI" (all-items
+  headline) intentionally dropped: IndexObservation has no sanctioned
+  sentinel for headline series yet (see SKILL.md open design question).
+  Series rebased in 2015 per the sheet's own footnote (Jan 2010=100 for
+  2010-2014, Jan 2015=100 for 2015 onward) - index_base_period is set
+  per-row accordingly, not a fixed constant.
+  Sibling dataset (average retail prices) is a separate manifest,
+  deps_arp.yaml - different row schema (PriceObservation). Same
+  stale-href fix (WP REST API media search) as deps_arp.py.

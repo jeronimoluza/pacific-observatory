@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jumbo_co
+url: https://www.jumbocolombia.com/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.jumbocolombia.com/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Cencosud CO flagship hypermarket, full-line. Re-verified live: products/search?_from=0&_to=9 ->
+  HTTP 206, 343KB, 'Aceite Cuisine&Co Mezcla Vegetal x3000Ml' COP 22890.00. Currency matches
+  countries.yaml (COP).

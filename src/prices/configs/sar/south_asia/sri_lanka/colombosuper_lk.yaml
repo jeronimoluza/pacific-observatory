@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: colombosuper_lk
+url: https://colombosuper.lk/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "colombosuper.lk/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 13.6KB JSON. Sample: 'Maliban Full Cream Milk Powder Pouch -
+  400.00 g' price 120000 minor units / currency_minor_unit=2 -> LKR 1200.00.
+  currency_code LKR matches countries.yaml. Real fresh produce + dairy
+  categories but essentially no fresh-meat depth (1 SKU per meat type per
+  prior probe). Whole-catalog walk (no category filter).

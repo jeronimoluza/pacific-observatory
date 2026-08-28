@@ -7,6 +7,8 @@ url: https://livingcost.org/cost/china
 language: en
 cadence: weekly
 channel: null
+archive_prefix: "livingcost.org/cost/"
+archive_path_re: '^/cost/[a-z0-9-]+(/[a-z0-9-]+)?$'
 spider_kwargs:
   country_slug: china
 notes: >

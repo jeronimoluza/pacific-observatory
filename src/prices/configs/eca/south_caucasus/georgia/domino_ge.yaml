@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: domino_ge
+url: https://www.domino.com.ge/
+language: ka
+currency: GEL
+cadence: weekly
+channel: home-improvement
+archive_prefix: "www.domino.com.ge/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Verified live 2026-08-17. Georgian home-improvement/hardware/appliances
+  retailer, CS-Cart storefront. Category pages at
+  /products/<department>/page-N/ embed a hidden analytics span per product
+  with clean data-cpga-pid/prodname/price/href attributes server-side, no
+  PDP fetch needed. Pagination is a path segment; page past the last one
+  404s with zero cards (verified: climatic-equipments = 20 real pages,
+  page 21 404s). The 14 top-level department pages already aggregate every
+  descendant subcategory's products (verified: top-level climatic-equipments
+  = 20 pages vs. its own conditioners subcategory alone = 3 pages), so only
+  those 14 departments are walked. Sample: "კონდიციონერი ინვერტორული Midea
+  EZ1-07HRFN8 GO EASY EZ 10-20მ² თეთრი" 999.00 GEL.
+  coicop_divisions: 03, 05, 06
+  divisions_basis: sampled_rows

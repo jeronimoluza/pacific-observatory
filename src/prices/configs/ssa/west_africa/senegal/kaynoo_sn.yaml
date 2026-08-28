@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kaynoo_sn
+url: https://www.kaynoo.sn/
+language: fr
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.kaynoo.sn/"
+archive_path_re: '^/[^/]+/?$'
+notes: |
+  Magento GraphQL storefront, confirmed live 2026-08-06 via POST /graphql
+  (categoryList / products queries both return real data, no auth).
+  Kaynoo is a general marketplace dominated by electronics/fashion/beauty by
+  product_count, so per the WooBaseSpider/MagentoGraphQLBaseSpider
+  convention of scoping a general marketplace to its food-relevant subtree
+  rather than walking the whole non-food catalog, this spider is scoped to
+  ROOT_CATEGORY_ID=194 (ÉPICERIE / "grocery"), which itself is mostly
+  herbal/natural-product powders rather than a broad supermarket range --
+  tagged channel: specialty-food accordingly, not supermarket.
+
+  Verified: category 194 children incl. "Petit déjeuner" (18 products),
+  "Divers" (8); products(category_id:194) total_count=50, e.g. "Poudre de
+  Moringa 100% Naturel -1kg – NÉBÉDAY" XOF 9500, "POUDRE DE CACAO BRUT - 100%
+  NATUREL - 250G" XOF 4000, "Poudre De Petit Cola 100g – 100% Naturel" XOF
+  3000. Real, varied, local (Senegalese herbal/food) products with populated
+  prices, but per round 1's note the value here is depth on a handful of
+  leaves (moringa, cacao, cola, artemisia, baobab-adjacent), not catalog
+  breadth -- heavy overlap with Sakanal/Yombouna's broader épicerie
+  coverage already onboarded for Senegal.

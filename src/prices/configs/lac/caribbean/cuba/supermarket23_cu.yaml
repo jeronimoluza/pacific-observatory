@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: supermarket23_cu
+url: https://www.supermarket23.com/
+language: es
+currency: USD
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.supermarket23.com/es/producto/"
+archive_path_re: '^/es/producto/[^/?]+'
+notes: |
+  Diaspora grocery delivery: ships to Cuba, priced in USD for the sending
+  (non-Cuban) buyer. This is a real, usable Cuba price signal but it is NOT
+  a domestic Cuban retail price in CUP -- do not treat rows from this
+  source as domestic CUP retail.
+
+  Live re-verified 2026-08-17: the site's own Angular Universal SSR shell
+  has zero server-rendered price data (empty <!--SSR-PRODUCT-SCHEMA-->
+  comment). The real catalog lives on a separate shared "Treew" white-label
+  backend, searchengine.treew.com (client_id=241044 identifies this
+  storefront instance). Category ids enumerated from /sitemap.xml (240
+  /es/categoria/<id> URLs). Enumerability proof: category 1072,
+  offset=0 vs offset=20 (limit=50) both return HTTP 200 with total=878 and
+  fully disjoint ProductId sets (e.g. 364771 vs 399086).
+
+  Smoke run: 60/60 rows, 0 null product_name, 0 null price, single currency
+  USD. PDP url is a best-effort /es/producto/<id> guess (Angular
+  client-side routing; no confirmed canonical PDP path found from SSR
+  HTML). Full scrape still pending (orchestrator-queued).

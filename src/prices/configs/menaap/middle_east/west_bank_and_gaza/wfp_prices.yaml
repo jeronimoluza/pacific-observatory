@@ -1,0 +1,26 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_pse
+module: _shared.menaap.wfp_food_prices
+function: fetch_wfp_pse
+url: https://data.humdata.org/dataset/7d06b059-5831-4101-aa68-6d9123ad65b7
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for State of Palestine via HDX (shared MENAAP fetcher
+  _shared.menaap.wfp_food_prices). Repo slug is west_bank_and_gaza (iso3
+  PSE); HDX dataset slug is wfp-food-prices-for-state-of-palestine.
+  Re-verified live 2026-08-06: CKAN package_show resolves
+  wfp_food_prices_pse.csv (200, 3.3MB, 26,814 rows). Max observation date is
+  2026-06-15 — current. CURRENCY NOTE: the live CSV's currency column is
+  ILS throughout, not USD as countries.yaml declares for this slug — trust
+  the probe. 41 commodities: fruit, veg, dairy (incl. goat cheese, labaneh),
+  meat, 3 rice varieties, 2 oil types, semolina, bottled water. Sample at
+  max date: 'Bread', KG, ILS 4.05. Per-market rows collapsed to a national
+  monthly average per commodity/unit/currency/price-type; market count +
+  USD value kept in notes; retail vs wholesale kept in the dedup hash.
+  COICOP deferred to the classifier (item_name = WFP commodity).

@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: walmart_ni
+url: https://www.walmart.com.ni/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "walmart.com.ni/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Walmart Centroamerica banner, full-line, fresh produce confirmed. Re-verified live:
+  products/search?_from=0&_to=9 -> HTTP 206, 180KB, 'Tomate Criollo Hortifruti 4 unidades por
+  libra' NIO 40.00. Currency matches countries.yaml (NIO).

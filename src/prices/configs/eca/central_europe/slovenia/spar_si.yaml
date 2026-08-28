@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: spar_si
+url: https://online.spar.si/
+language: sl
+cadence: weekly
+channel: supermarket
+archive_prefix: "online.spar.si/p/"
+archive_path_re: '^/p/[^/?]+'
+notes: |
+  Next.js App Router storefront (spar.si redirects here). No __NEXT_DATA__
+  script (Pages Router pattern) -- catalog streams via React Server
+  Component payloads (self.__next_f.push chunks); a bounded regex pulls
+  each CatalogProductModel's name/price/sku/slug straight out of the
+  JS-string-escaped text. Re-verified live 2026-08-06: GET
+  /ca/sadje-in-zelenjava/sveza-zelenjava/krompir/S1/S1-1/S1-1-2 -> 200,
+  930KB, 23 real products incl. 'GORENJSKI KROMPIR, SPAR, 3KG' EUR 2.99
+  (sku 493603), 'SLADKI KROMPIR, TEHTANO' EUR 2.49. Category URLs come
+  from /sitemap-categories.xml (668 total, S-coded, e.g. S1-1-2); crawl
+  list (_spar_si_categories.txt, 535 entries) keeps only S-codes with no
+  child S-code present in the sitemap. Product permalink confirmed live:
+  /p/<slug> -> 200.

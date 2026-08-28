@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: mm_mega_market
 url: https://online.mmvietnam.com
+archive_prefix: "online.mmvietnam.com/"
+archive_path_re: '^/[a-z0-9-]+\.html$'
 language: vi
 cadence: daily
 channel: hypermarket

@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+source_key: il_dor_alon
+module: menaap.middle_east.israel.dor_alon_il
+function: fetch_il_dor_alon
+url: ftp://url.retail.publishedprices.co.il/
+language: he
+cadence: daily
+fallback_date: 2020-01-01
+channel: convenience
+notes: |
+  Israel's 2014 Food Price Transparency Law statutory feed via the shared
+  publishedprices.co.il FTPS portal (see rami_levy_il.yaml for the shared
+  architecture note). Login "doralon", blank password. Fetches one
+  representative branch's PriceFull snapshot per run. Re-verified live
+  2026-08-06: 5,045 items, e.g. 'אפונה עדינה סנפרוסט' (Sunfrost fine peas)
+  ILS 22.90. Currency ILS. Dor Alon runs AM:PM convenience stores at fuel
+  forecourts -- catalog is convenience/grocery, not fuel itself (fuel
+  pricing is a separate administered-price layer, not in this feed).
+  coicop_divisions: 01, 02, 13
+  divisions_basis: sampled_rows (5,045-item branch catalog, not fully
+  walked by department)

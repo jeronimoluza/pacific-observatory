@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmacity_ar
+url: https://www.farmacity.com/
+language: es
+currency: ARS
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.farmacity.com/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Pharmacy chain, independent VTEX tenant. Live re-verified 2026-08-17:
+  products/search?_from=0&_to=4 -> real JSON (e.g. 'Protector Termico Tresemme Spray x 120 ml',
+  category 'Cuidado Capilar/Reparacion Y Tratamiento'). Currency ARS, matches countries.yaml.
+  Full scrape: <ROWS> rows.

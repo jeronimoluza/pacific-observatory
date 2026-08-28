@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: seingayhar
 url: https://www.seingayhar.com
+archive_prefix: "www.seingayhar.com/"
+archive_path_re: '^/(beverages-en|bakery-and-breads-en|bean-and-nuts-en|biscuit-en|candy-and-jelly-en|chocolate-en|coffee-en|condiment-en|cooking-oil-en|dairy-and-eggs-en|dry-tea-en|flour-sugar-and-salt-en|frozen-food-en|household-cleaning-en|instant-noodles-en|jam-honey-and-spread-en|meat-and-seafood-en|noodle-and-pasta-en|personal-care-en|rice-and-grains-en|snacks-en|soap-and-detergent-en|vegetable-oils-en)/[^/]+$'
 language: en
 cadence: weekly
 channel: pharmacy

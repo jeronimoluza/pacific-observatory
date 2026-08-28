@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: agroshop_mn
+url: https://agroshop.mn/product-category/%D0%BE%D1%80%D0%B3%D0%B0%D0%BD%D0%B8%D0%BA-%D1%85%D2%AF%D0%BD%D1%81/
+language: mn
+cadence: daily
+channel: specialty-food
+archive_prefix: "agroshop.mn/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  WooCommerce store (/product-category/ tell); reachable via the public
+  Store API (wp-json/wc/store/v1/products), no auth. Small catalog (~28
+  SKUs total: organic food, general food, farming/veterinary/packaging
+  inputs) — walks the whole store since it's already tiny. currency_minor_unit
+  is 0 on this store (prices already whole MNT); read per-row from the
+  payload rather than assumed, per the WooCommerce minor-unit trap.

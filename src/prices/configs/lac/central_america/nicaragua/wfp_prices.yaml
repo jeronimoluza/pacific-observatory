@@ -1,0 +1,26 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_nic
+module: _shared.lac.wfp_food_prices
+function: fetch_wfp_nic
+url: https://data.humdata.org/dataset/wfp-food-prices-for-nicaragua
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Nicaragua via HDX (shared LAC fetcher
+  _shared.lac.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_nic.csv (200, 1.2MB, 8,984 rows).
+  CURRENCY NOTE: historically dual currency (USD 6,087 rows / NIO 2,897
+  rows), but every observation dated 2025+ is priced in USD only — the live
+  data has moved off countries.yaml's declared NIO for recent periods;
+  trust the probe. Max observation date is 2026-05-15 — current. Retail
+  national-average channel, fresh produce focus (plantains, squash,
+  tomatoes). Sample at max date: 'Plantains', Pound, USD 0.44. Per-market
+  rows collapsed to a national monthly average per commodity/unit/
+  currency/price-type; market count + USD value kept in notes; retail vs
+  wholesale kept in the dedup hash. COICOP deferred to the classifier
+  (item_name = WFP commodity).

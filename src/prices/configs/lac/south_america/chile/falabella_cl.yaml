@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: falabella_cl
+url: https://www.falabella.com/falabella-cl/
+language: es
+currency: CLP
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.falabella.com/falabella-cl/product/"
+archive_path_re: '^/falabella\-cl/product/[^/?]+'
+notes: |
+  Falabella Chile, the national dept-store banner. Re-verified live
+  2026-08-17: homepage is a Next.js CSR shell, but category listing
+  pages (e.g. /falabella-cl/category/cat720161/Smartphones) are SSR with
+  the full result set embedded in a __NEXT_DATA__ script tag; real CLP
+  prices e.g. normalPrice "499.990". Category discovery samples every
+  40th entry (~43 categories) from the site's own category sitemap
+  (1707 leaf categories total) at 5 pages/category cap, to keep the
+  whole-catalog walk bounded. Price picked in priority order
+  internetPrice > eventPrice > normalPrice > cmrPrice (cmrPrice needs
+  Falabella's own store credit card, not a price a general shopper
+  pays). Not a duplicate of falabella_co: distinct category-id space,
+  distinct currency, distinct redirect target.
+  QA sweep flagged NO_CATEGORY (0% populated) 2026-08-17: __NEXT_DATA__
+  results[] items carry no per-product category field. Fixed at the
+  source: each category listing page's pageProps also carries
+  breadCrumbData (e.g. "Calzado - Zapatillas"), which is now read once
+  per page and stamped onto every product scraped from it.
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

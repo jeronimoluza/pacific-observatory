@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ekupi_hr
+url: https://ekupi.hr/
+language: hr
+currency: EUR
+cadence: weekly
+channel: dept-store
+archive_prefix: "ekupi.hr/"
+archive_path_re: '/p/EK\d+/?$'
+notes: |
+  eKupi Croatia — SAP Commerce/Hybris general department-store storefront
+  (electronics, computers, appliances, tools, auto, home & garden, toys,
+  fitness, supermarket, pets). Same platform/template as ekupi.ba (BA
+  entity), shipped separately with its own catalog/currency. Verified live
+  2026-08-17: real server-rendered product cards with EUR prices. Spider
+  walks the full category mega-menu (BFS, deduped by category code) and
+  paginates each leaf category via ?page=N until no new products.
+  coicop_classification left as classifier — wide general catalog.

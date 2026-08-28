@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: khajikala_ir
+url: https://khajikala.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: home-improvement
+archive_prefix: "khajikala.ir/product/"
+archive_path_re: '^/product/\d+/[^/?]+'
+notes: |
+  Verified live 2026-08-18: khajikala.ir — Iranian online store for building
+  materials, plumbing/water-supply fittings, electrical & lighting,
+  bathroom/kitchen fixtures, tools and hardware ("لیست قیمت و خرید مصالح و
+  تجهیزات ساختمانی"). Custom (non-WooCommerce) storefront; the
+  wc/store/v1|products Store API paths both 404, so this is a server-
+  rendered Tier 1A HTML spider. URL discovery via
+  /sitemap_categories.xml (full category tree, confirmed non-empty unlike
+  the per-category sitemap_site.xml/category_*.xml files which are
+  stubs); each category paginates via ?PageNumber=N — NOT ?page=N, which
+  silently re-serves page 1 (verified: page=1 and page=2 of
+  /products/kitchen-sinks returned identical 24-id sets; PageNumber=1 vs
+  PageNumber=2 returned disjoint sets, 24 then 20 new ids, PageNumber=3
+  empty — confirming both enumerability and the pagination stop
+  condition).
+  Product pages (/product/<id>/<slug>) carry a Schema.org Product JSON-LD
+  node with a sibling BreadcrumbList. Confirmed real: product 7392
+  "سینک 70*40 تک لگن کورین 701 ( داتیس )" (Datees corian sink), offers.
+  price=34384300, offers.priceCurrency="IRR" — the site's own JSON-LD is
+  already Rial-denominated (unlike the WooCommerce cosmetics/pharmacy
+  batch onboarded alongside this source, which quotes Toman under a
+  non-ISO "IRT" currency_code and needs x10), so no conversion applied
+  here; price taken as-is from offers.price/offers.priceCurrency.
+  Out-of-stock products carry a real JSON-LD Product node but
+  offers.price="0" and offers.availability=OutOfStock (confirmed on
+  several evaporative-cooler SKUs, presumably a seasonal/restock gap) —
+  the spider skips these (float(price) > 0 gate) rather than emitting a
+  zero-price non-observation. Test run (--max-items 5, 2026-08-18): 8
+  rows, all real prices e.g. IRR 616,000 (40x80 cable duct), IRR 398,750
+  (12-hole copper neutral bus bar).

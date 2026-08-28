@@ -1,0 +1,49 @@
+# RE-ENABLED (2026-08): was disabled 2026-04 when a1plus.am sat fully behind
+# Cloudflare's "Attention Required" challenge (every path 403'd regardless of
+# User-Agent). Re-probed live: site now serves plain HTTP 200 with no CF
+# interstitial, sitemap and article pages fetch fine via static httpx.
+name: A1plus English
+language: en
+country: armenia
+base_url: https://a1plus.am
+
+# A1+ English edition. Same custom CMS as the hy edition. Article URLs are
+# https://a1plus.am/en/article/<numeric-id>. /en/sitemap.xml lists ~10,000
+# numeric ids but most of them 302-redirect home when hit under /en/ -- the
+# id space is shared across the hy/ru/en editions and only a subset has an
+# English translation, which the sitemap doesn't distinguish. The
+# /en/articles listing (paginated via ?page=N) only ever links ids that are
+# genuinely live in English, so use that for discovery instead of the sitemap.
+listing:
+  type: pagination
+  start_url: https://a1plus.am/en/articles
+  url_template: https://a1plus.am/en/articles?page={num}
+  start_page: 2
+  batch_size: 5
+
+client: http
+concurrency: 3
+rate_limit: 0.5
+retries: 3
+retry_seconds: 2.0
+
+headers:
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+  Accept-Language: en-US,en;q=0.9
+
+selectors:
+  thumbnail:
+    container: a.news-block
+    title: h3::text
+    url: ::attr(href)
+    date: time[datetime]::attr(datetime)
+  article:
+    body: div.news-content-block
+    date: time[datetime]::attr(datetime)
+
+cleaning:
+  date: handle_mixed_dates
+
+max_pages: null
+max_articles: null

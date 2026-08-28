@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: supermart_ng
+url: https://supermart.ng/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "supermart.ng/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront on the custom domain, /products.json?limit=250&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, real Lagos supermarket
+  SKUs — 'White Pearl Lemon Juice 250 ml' NGN 3050.00, 'Now Organic Virgin
+  Coconut Oil 335 ml' NGN 52000.00, 'Now Iron Complex 100 Tablets'
+  NGN 31250.00, 'Yeah Plain Yogurt Drink 250 ml X24' NGN 14000.00, 'Yeah
+  Wheat Flavoured Milk Drink 250 ml x24' NGN 14000.00. Page bundle confirms
+  `"currency":"NGN"`, matches countries.yaml. Nigeria was one of the two
+  biggest zero-coverage gaps in the repo alongside South Africa; this is
+  the first retailer source shipped for it (WFP official_avg also added
+  this round).

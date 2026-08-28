@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ribasmith_pa
+url: https://www.ribasmith.com/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "ribasmith.com/"
+archive_path_re: '^/[\w][\w\-]*$'
+notes: |
+  Full-line premium PA chain. Magento 2, open GraphQL at /graphql, no auth.
+  Live re-verify: POST /graphql products(search:"arroz") -> 200, "ARROZ
+  PELIN ARROZ ESPECIAL 20 LBS" USD 16.48. categoryList's children under
+  the default root are thin marketing/nav categories (INICIO, RS+, Punto
+  Magenta, etc.) summing to only ~280 products, far short of the catalog;
+  products(filter:{category_id:{eq:"2"}}) directly returns the full flat
+  catalog instead (10000 on an unpaged probe — likely the Elasticsearch
+  max_result_window rather than the true count), so the spider walks the
+  root id directly rather than categoryList children. Currency: probe and
+  countries.yaml both show USD for Panama (not PAB, which cfg_currency in
+  the shard listed) — Panama's own currency IS the US dollar for cash
+  transactions (the balboa is pegged 1:1 and rarely appears in retail
+  pricing), so USD is correct here. language overridden to es (Spanish
+  product names), not the shard's cfg_lang "en".

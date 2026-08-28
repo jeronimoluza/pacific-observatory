@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ikea_th
+channel: home-improvement
+url: https://www.ikea.com/th/en/
+language: en
+cadence: weekly
+archive_prefix: "www.ikea.com/th/en/p/"
+archive_path_re: '^/th/en/p/[^/?]+'
+notes: |
+  Onboarded 2026-08-07 (round-3 non-food shard, COICOP 03/05/08/09 gap).
+  Same shared platform as ikea_jp — see _ikea_base.py docstring. No
+  WAF/anti-bot observed on storefront or the sik.search.blue.cdtapps.com
+  API host as of this date.
+  coicop_divisions: 01, 05, 08, 09
+  divisions_basis: walked_categories (same mega-nav taxonomy as ikea_jp —
+  furniture/kitchenware/textiles/lighting dominant 05; pantry/food minor
+  01; cables/chargers/smart-lighting minor 08; toys/decoration/outdoor 09)

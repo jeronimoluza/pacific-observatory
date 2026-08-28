@@ -65,10 +65,15 @@ def _encode_st(block: dict, names: Sequence[str]) -> np.ndarray:
     if model is None:
         from sentence_transformers import SentenceTransformer
 
-        model = SentenceTransformer(model_id, trust_remote_code=True)
+        model = SentenceTransformer(
+            model_id,
+            trust_remote_code=True,
+            config_kwargs=block.get("config_kwargs") or {},
+            model_kwargs=block.get("model_kwargs") or {},
+        )
         _ST_MODELS[model_id] = model
     model.max_seq_length = int(block["seq"])
-    prompt = config.CLASSIFIER_EMBED_PROMPT
+    prompt = block.get("prompt", config.CLASSIFIER_EMBED_PROMPT)
     return model.encode(
         [prompt + n for n in names],
         batch_size=config.CLASSIFIER_EMBED_BATCH,

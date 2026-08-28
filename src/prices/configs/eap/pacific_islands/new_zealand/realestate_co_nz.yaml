@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: source_curated
 spider: realestate_co_nz
 url: https://www.realestate.co.nz/residential/rent
+archive_prefix: "www.realestate.co.nz/"
+archive_path_re: '^/\d+/residential/rent(/[^/]*)?/?$'
 language: en
 cadence: weekly
 channel: real-estate

@@ -1,5 +1,7 @@
 spider: good_food_mv
 language: en
+archive_prefix: "www.goodfoodmaldives.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: >
   Shopify storefront. Specialty organic/natural goods. Uses /products.json.
 channel: supermarket

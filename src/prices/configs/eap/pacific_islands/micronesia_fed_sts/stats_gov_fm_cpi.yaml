@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: fm_stats_cpi
+module: eap.pacific_islands.micronesia_fed_sts.stats_gov_fm_cpi
+function: fetch_fm_stats_cpi
+url: https://stats.gov.fm/category/economic/cpi/
+language: en
+cadence: quarterly
+fallback_date: 2016-12-31
+notes: |
+  FSM Statistics quarterly CPI bulletin. Fetcher reads the CPI category page
+  to find the newest "consumer-price-index-*" post, then downloads that
+  post's "*_appendix.xlsx" — which carries the full COICOP-division index
+  series since 2017 Q1 for FSM nationally and all 4 states (Chuuk, Kosrae,
+  Pohnpei, Yap) in one workbook, so a single fetch backfills the whole
+  history. Base period 2017 Q1=100. 12 COICOP groups; division 13 absent.
+  All-items headline ("ALL GROUPS") dropped — no sanctioned sentinel code
+  yet (see skill's open design question). subnational_area is null for the
+  FSM national block, else the state name.
+
+  Probe finding: the /wpfd_file/ "detailed <state> CPI" files (e.g.
+  2023_cpi-detailed_pohnpei) are per-state slices of this SAME index table,
+  not an item-level average-price dataset — "detailed" means domestic vs
+  imported + per-division breakdown, still an index. No official_avg source
+  exists on this site.

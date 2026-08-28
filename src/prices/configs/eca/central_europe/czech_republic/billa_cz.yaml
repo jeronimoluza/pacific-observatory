@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: billa_cz
+url: https://www.billa.cz/
+language: cs
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.billa.cz/produkt/"
+archive_path_re: '^/produkt/[^/?]+'
+notes: |
+  Nuxt/React hybrid storefront that server-renders its full catalog under
+  /produkty/<slug>-<id>. 18 top-level category slugs (dairy, meat, fruit &
+  veg, frozen, drinks, household, cosmetics, tobacco, ...) cover the whole
+  assortment; listed in _billa_cz_categories.txt. Pagination via ?page=N is
+  cumulative (page N renders items 1..N*30 in one SSR response, not just
+  page N's slice) rather than incremental, so the spider walks page=1,2,3...
+  and stops once item count stops growing, emitting the last (maximal)
+  page's full list.
+
+  Re-verified live 2026-08-06: /produkty/ovoce-a-zelenina-1165 -> 200, real
+  product tile "Banán" 39,90 Kč; growth 30/60/90...355 items plateauing at
+  page=16 (page=17 returns 0). Overturns shard's D-tier "SUSPECT"
+  prediction -- plain curl works, no WAF encountered.

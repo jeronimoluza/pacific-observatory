@@ -5,6 +5,8 @@ coicop_classification: classifier
 spider: harris_farm_markets
 language: en
 channel: supermarket
+archive_prefix: "www.harrisfarm.com.au/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Shopify storefront. Hits /collections/buy-groceries-online/products.json
   directly (paginated, limit=250) - no auth, plain requests work with a

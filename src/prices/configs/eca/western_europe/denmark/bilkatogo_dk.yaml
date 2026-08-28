@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bilkatogo_dk
+url: https://www.bilkatogo.dk/
+language: da
+cadence: weekly
+channel: hypermarket
+archive_prefix: "www.bilkatogo.dk/produkt/"
+archive_path_re: '^/produkt/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: Nuxt storefront with no product data on the
+  plain homepage, but the app calls Algolia client-side with credentials
+  compiled into the JS bundle (_nuxt/f6afb7b.js): app id F9VBJLR1BK +
+  search-only API key, both meant to be public. POST
+  https://F9VBJLR1BK-dsn.algolia.net/1/indexes/*/queries with
+  indexName=prod_BILKATOGO_PRODUCTS -> HTTP 200 JSON, nbHits 37,259,
+  hitsPerPage=1000 accepted (30 pages for the full catalogue). Sample:
+  'Agurk' (cucumber) sales_price 1100 -> 11.00 DKK; 'Bananer 4 pak øko'
+  1000 -> 10.00 DKK. price/sales_price are minor units (øre) — divided by
+  100 in the spider. This Algolia key is scoped to the Bilka index only
+  (prod_FOETEX_PRODUCTS 403s with the same key) — Føtex needs its own key
+  from its own bundle, not attempted here. Salling Group (same family as
+  Føtex).

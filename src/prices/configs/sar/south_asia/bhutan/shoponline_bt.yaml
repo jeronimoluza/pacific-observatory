@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shoponline_bt
+url: https://shoponline.bt/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "shoponline.bt/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
+  live 2026-08-06: HTTP 200, real SKUs (e.g. 'TER WHISKEY SINGLE MALT, 18
+  YEARS OLD' 7400.00 BTN; prior probe also saw 'sonai milk 1 ltr' 85.00).
+  Currency BTN matches countries.yaml. Full-line packaged grocery, dairy,
+  beverages, and alcohol, comparable in depth to the already-onboarded
+  sherza.bt — no fresh-produce product_type observed in the first 500 SKUs.

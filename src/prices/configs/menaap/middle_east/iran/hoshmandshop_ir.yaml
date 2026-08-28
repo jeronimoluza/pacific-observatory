@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hoshmandshop_ir
+url: https://hoshmandshop.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: cosmetics
+archive_prefix: "hoshmandshop.ir/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Verified live 2026-08-18: hoshmandshop.ir is "Hoshmand Shop" (هوشمند
+  شاپ), a cosmetics/hygiene/perfume store. No JSON API found; walks the
+  sitemap index (https://hoshmandshop.ir/sitemap.xml) -> one product
+  sub-sitemap per month (.../sitemap.xml/products/YYYY-MM back to
+  2019-11), each carrying /product/<slug> URLs. PDPs embed a clean
+  schema.org Product JSON-LD block. Confirmed live: "Layton مشابه بو
+  مارلی لیتون" (Bou Marley Layton-clone perfume) -> IRR 29,429,400.

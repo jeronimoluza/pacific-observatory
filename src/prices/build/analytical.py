@@ -30,6 +30,7 @@ delete precisely the cells that have no measured rows to compare against, which
 are the ones the conversion exists to make visible. It is NaN where no
 comparison is possible.
 """
+
 from __future__ import annotations
 
 import logging
@@ -48,10 +49,16 @@ GRAIN = ["country", "coicop_code", "standard_unit"]
 TRAILING_MONTHS = 3
 
 OUTPUT_COLS = [
-    "country", "coicop_code", "standard_unit",
-    "unit_price_local", "unit_price_usd", "n_obs",
-    "includes_derived_typical", "derived_vs_measured_ratio",
-    "window_start", "window_end",
+    "country",
+    "coicop_code",
+    "standard_unit",
+    "unit_price_local",
+    "unit_price_usd",
+    "n_obs",
+    "includes_derived_typical",
+    "derived_vs_measured_ratio",
+    "window_start",
+    "window_end",
 ]
 
 
@@ -113,8 +120,11 @@ def build_analytical(df: pd.DataFrame) -> pd.DataFrame:
     logger.info(
         "analytical file: %d rows over %s..%s (%d source rows, %d cells use a "
         "derived typical mass)",
-        len(out), out["window_start"].iloc[0], out["window_end"].iloc[0],
-        len(window), int(out["includes_derived_typical"].sum()),
+        len(out),
+        out["window_start"].iloc[0],
+        out["window_end"].iloc[0],
+        len(window),
+        int(out["includes_derived_typical"].sum()),
     )
     return out[OUTPUT_COLS]
 

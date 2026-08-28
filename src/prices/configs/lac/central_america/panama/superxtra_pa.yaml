@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: superxtra_pa
+url: https://www.superxtra.com/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "superxtra.com/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Super Xtra -- Panama supermarket chain, VTEX platform. Re-verified live
+  2026-08-06: GET api/catalog_system/pub/products/search?_from=0&_to=4 ->
+  HTTP 206, real varied products. Sample: 'Tomate Perita Por Media Libra'
+  USD 2.49, 'Pollo Panama Por Media Libra' USD 1.86, 'Cebolla Amarilla
+  Nacional Por Media Libra' USD 1.44. Category tree has 12 top nodes led by
+  Supermercado -- whole-catalog walk via _vtex_base leaf partitioning.
+  Currency: countries.yaml declares PAB; site prices in plain USD-style
+  numbers (Panama circulates US dollar notes at fixed 1:1 parity with the
+  balboa) -- using USD per elmachetazo_pa's confirmed JSON-LD evidence on
+  the same platform/market.

@@ -7,3 +7,5 @@ url: https://frankiesamoa.com
 language: en
 cadence: weekly
 channel: supermarket
+archive_prefix: "frankiesamoa.com/products/"
+archive_path_re: '^/products/[^/?]+'

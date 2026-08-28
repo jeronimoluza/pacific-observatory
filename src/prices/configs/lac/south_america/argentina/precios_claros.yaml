@@ -1,0 +1,47 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: ar_precios_claros
+module: lac.south_america.argentina.precios_claros
+function: fetch_ar_precios_claros
+url: https://www.preciosclaros.gob.ar/
+language: es
+cadence: daily
+fallback_date: 2026-06-01
+notes: |
+  Precios Claros -- Argentina's statutory cross-chain price-transparency
+  system (SEPA / Secretaria de Comercio): every large retail chain is
+  legally required to report per-SKU per-branch prices daily; this is
+  Argentina's equivalent of Israel's Food Price Transparency Law. Live
+  REST API behind CloudFront + API Gateway (base
+  https://d3e6htiiul5ek9.cloudfront.net/prod, x-api-key baked into the
+  public site's own bundled JS -- not a secret, same trust model as the
+  DR MICM Precios Justos source). Verified live 2026-08-06:
+  GET /sucursales?lat=-34.6&lng=-58.4&limit=3 -> 200, real branches
+  (DIA, Vea, ...); GET /categorias -> 200, 2288 categories under 12
+  top-level departments (ALIMENTOS CONGELADOS, ALMACEN, BEBIDAS CON/SIN
+  ALCOHOL, BEBES, ELECTRODOMESTICOS Y EQUIPAMIENTO PARA EL HOGAR, FRESCOS,
+  LIMPIEZA, MASCOTAS, MATERIALES PARA LA CONSTRUCCION, PERFUMERIA Y
+  CUIDADO PERSONAL, SIN CATEGORIA); GET /productos?id_categoria=02&
+  array_sucursales=<ids> -> 200, real SKUs with brand+price (e.g. "Aceite
+  de Girasol Cocinero 1.5 Lt" ARS 6925 max / 5990 min). Whole-catalog
+  walker across the 12 top-level categories, sampled against a panel of
+  up to 20 branches (2 nearest branches at each of 10 points spread
+  across provinces/regions -- CABA, Cordoba, Santa Fe, Mendoza, Salta,
+  Neuquen, Buenos Aires coast, Tucuman, Misiones, Tierra del Fuego) --
+  NOT the full ~3,600-branch national network; widening the panel is
+  future work. price_local = midpoint of the API's precioMin/precioMax
+  across the sampled panel for that product. No per-row date is exposed
+  by the API (current-price snapshot only) -- emitted as
+  period_kind=snapshot dated to the scrape day, matching the MICM /
+  hk_afcd_wholesale convention (accumulated across daily runs, not
+  backfillable). COICOP deferred to the classifier (item_name = raw
+  Precios Claros product name, e.g. brand + descriptor as the site
+  renders it).
+  coicop_divisions: 01, 02, 03, 05, 06, 08, 09, 13
+  divisions_basis: walked_categories (all 12 top-level departments
+  enumerated; division list is a first-pass read of the department
+  names -- BEBES/PERFUMERIA suggest 01/06/13, ELECTRODOMESTICOS suggests
+  05/08/09 -- confirm against actual classifier output after a full run)

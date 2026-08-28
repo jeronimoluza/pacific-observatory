@@ -7,6 +7,8 @@ url: https://www.newworld.com.fj
 language: en
 cadence: daily
 channel: supermarket
+archive_prefix: "www.newworld.com.fj/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   19-store IGA-affiliated chain. Angular SPA backed by a Vendure GraphQL API
   at https://api.newworld.com.fj/shop-api (search plugin disabled; walked via

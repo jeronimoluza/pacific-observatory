@@ -7,3 +7,5 @@ url: https://nhathuoclongchau.com.vn
 language: vi
 cadence: weekly
 channel: pharmacy
+archive_prefix: "nhathuoclongchau.com.vn/"
+archive_path_re: '^/(thuoc|thuc-pham-chuc-nang|duoc-my-pham|trang-thiet-bi-y-te|cham-soc-ca-nhan)/[^/]+\.html$'

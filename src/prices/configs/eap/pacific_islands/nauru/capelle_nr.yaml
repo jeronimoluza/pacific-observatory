@@ -7,6 +7,8 @@ spider: capelle_nr
 url: https://www.cponlinedelivery.com
 language: en
 cadence: daily
+archive_prefix: "www.cponlinedelivery.com/product-page/"
+archive_path_re: '^/product\-page/[^/?]+'
 notes: >
   Wix-hosted grocery delivery tied to Nauru's main brick-and-mortar Capelle &
   Partner store. Extraction uses Schema.org Product JSON-LD (name, sku, price,

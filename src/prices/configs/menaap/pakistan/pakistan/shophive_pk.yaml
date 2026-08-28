@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shophive_pk
+url: https://www.shophive.com/
+language: en
+currency: PKR
+cadence: weekly
+channel: electronics
+archive_prefix: "www.shophive.com/"
+archive_path_re: '^/(?!(?:apple|mobile-phones|laptops-computers|tv|audio|appliances|cameras|tablets|video-games|office-products|smart-watches)/?$)[^/]+/?$'
+notes: |
+  Verified live 2026-08-17: shophive.com — Pakistani electronics retailer on a
+  Magento storefront (MageBig martfury_layout06 theme). No sitemap.xml listed
+  in robots.txt, so the spider walks the ~11 top-level category nav paths
+  (apple, mobile-phones, laptops-computers, tv, audio, appliances, cameras,
+  tablets, video-games, office-products, smart-watches) with standard Magento
+  `?p=N` pagination. Each listing card is `class="product-item-link"` (name +
+  href) followed by a `price-box price-final_price` block with
+  `data-product-id` and `data-price-amount` — confirmed real PKR prices e.g.
+  "Apple iPhone 17 Pro Max 512GB PTA Approved" -> Rs 549,999.00
+  (data-price-amount="549999"). Unreleased/pre-order items (e.g. iPhone 16e,
+  iPhone 18 series) render with no price box and are correctly skipped.
+  Electronics/mobiles/appliances retailer, NOT a grocery source.
+  coicop_divisions: 05, 08, 09; divisions_basis: sampled_rows.

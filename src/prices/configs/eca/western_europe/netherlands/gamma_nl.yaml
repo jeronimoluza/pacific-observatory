@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gamma_nl
+url: https://www.gamma.nl/
+language: nl
+currency: EUR
+cadence: weekly
+channel: home-improvement
+archive_prefix: "www.gamma.nl/assortiment/"
+archive_path_re: '^/assortiment/[^/?]+'
+notes: |
+  GAMMA Netherlands — DIY / home-improvement chain (Next.js App Router /
+  RSC storefront). Verified live 2026-08-17: plain curl_cffi chrome124
+  clears both homepage and sitemap/PDP fetches at 200; the earlier probe's
+  429 "Vercel Security Checkpoint" did not reproduce. Enumerability proved
+  on the site's own sitemap (robots.txt -> sitemap.gamma.nl/index.xml ->
+  product.xml), 45655 PDP URLs total, split /p/B<id> (42490 regular SKUs)
+  vs /p/C<id> (3031 "op maat"/made-to-measure configurator pages with no
+  priced offer, filtered out) — NOT a homepage carousel. Category-page
+  pagination (/assortiment/k/gereedschap?page=2 etc.) was tried and
+  rejected: all guessed params returned the identical 30 product codes,
+  so PDPs are fetched directly from the sitemap instead. Each regular PDP
+  carries a standard schema.org Product JSON-LD block with offers.price /
+  offers.priceCurrency — no RSC/`self.__next_f.push` flight-data parsing
+  needed for price (that path was probed and works for category cards but
+  is unnecessary once JSON-LD is available). offers.price is the plain
+  listed price; a members-only "Voordeelpas" discounted tier price is also
+  present in priceSpecification and deliberately NOT used. Smoke run:
+  60/60 valid rows. Full scrape still pending — orchestrator queues it;
+  42490 SKU-PDP universe untouched beyond the smoke sample.
+timeout: 14400

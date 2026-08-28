@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: homecenter_co
+url: https://www.homecenter.com.co/
+language: es
+currency: COP
+cadence: weekly
+channel: home-improvement
+archive_prefix: "www.homecenter.com.co/homecenter-co/product/"
+archive_path_re: '^/homecenter\-co/product/[^/?]+'
+notes: |
+  Homecenter (Sodimac) Colombia -- home-improvement/hardware banner.
+  No prior spider covered it (grepped src/prices/configs/ and the
+  spiders dir before scaffolding). Runs on the same Falabella-Group
+  Next.js platform as falabella_cl/falabella_co (shared businessUnit/
+  tenant/catalystBaseUrl fields, media.falabella.com CDN in
+  __NEXT_DATA__) but a distinct app template: listing JSON lives at
+  props.pageProps.searchProps.searchData, and pagination uses
+  `?currentpage=N` (confirmed live 2026-08-17 -- `?page=N` is a no-op
+  here, unlike falabella_*). Category discovery samples every 55th entry
+  (~40 categories) from the site's own category sitemap (2220 leaf
+  categories) at 5 pages/category cap. Product URLs use the bare
+  `/homecenter-co/product/{productId}` form, confirmed to 200 and
+  redirect to the full canonical PDP. Price priority INTERNET > NORMAL >
+  CMR (CMR is Falabella-Group's own store credit card price).
+  QA sweep flagged NO_CATEGORY (0% populated) 2026-08-17: search results
+  carry no per-product category, but pageProps.categoryProps.categoryData
+  .results.displayName (a distinct top-level key, sibling of searchProps)
+  gives a clean per-page category label (e.g. "Cortacesped"), now read
+  once per page and stamped onto every product from it.
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

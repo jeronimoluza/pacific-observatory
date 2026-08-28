@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: chawan_ir
+url: https://chawan.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: cosmetics
+archive_prefix: "chawan.ir/shop/"
+archive_path_re: '/P\d+-'
+notes: |
+  Verified live 2026-08-18: not WooCommerce (Store API 404s). Category
+  URLs discovered via /sitemap.xml (~1,095 /shop/<id>-<slug>/ entries; no
+  dedicated product sitemap on this platform). Each category page embeds
+  a Schema.org ItemList JSON-LD block server-rendered in raw HTML, one
+  ListItem per product tile with its own offers.price/priceCurrency, so
+  the spider reads the listing pages directly rather than fetching every
+  individual product page. priceCurrency is already "IRR" on this site
+  (not Toman) -- no unit conversion needed. Pagination via ?page=N
+  confirmed enumerable live: page 1 vs page 2 of the same category
+  ("مراقبت مو") returned 20/20 disjoint product URLs. End-to-end test run
+  (--max-items 5) returned real rows, e.g. "خمیردندان با روغن گیاهی
+  اپتی فرش OPTIFRESH" priced 990000 IRR. Catalog is hygiene/personal-care
+  drugstore-led (oral care, skincare, haircare) -- matches the candidate
+  batch's "مام دئودورانت" (Mum deodorant) sample.

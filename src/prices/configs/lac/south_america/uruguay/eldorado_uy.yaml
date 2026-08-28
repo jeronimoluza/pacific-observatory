@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: eldorado_uy
+url: https://www.eldorado.com.uy/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.eldorado.com.uy/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Full-line Uruguayan chain, fresh produce confirmed (banana). Re-verified live:
+  products/search?_from=0&_to=9 -> HTTP 206, 126KB, 'Banana Boliviana Kg (3430)' UYU 79.00.
+  Currency matches countries.yaml (UYU).

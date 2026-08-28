@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: liefershop_de
+url: https://www.liefershop.de/
+language: de
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.liefershop.de/"
+archive_path_re: '^/[^/]+/?$'
+notes: |
+  WooCommerce Store API confirmed live 2026-08-06: GET
+  /wp-json/wc/store/v1/products?per_page=100&page=N -> 200, EUR minor-unit
+  JSON prices.
+
+  CAVEAT (round 1 confirmed, reproduced here): the catalogue is heavily
+  interleaved with Juice Plus+ MLM shake/supplement products -- the first
+  page sampled was almost entirely "Juice Plus+ Perform Shake Fruit Fusion"
+  EUR 102,00, "Juice Plus+ Complete Chocolate Shakes" EUR 99,00 -- but deeper
+  pages carry genuine F&B SKUs per round 1: "Lamotte & Cie Champagne Brut",
+  "Tavernello Vino Rosato d'Italia", "Kosakenkaffee", "Cinema Popcorn süss",
+  "Nestlé Cerealien Mini Packs", "Corny Müsli-Riegel". Left unfiltered on
+  purpose, per WooBaseSpider convention -- the downstream COICOP
+  classifier/veto layer is the right place to drop MLM rows, not the spider.

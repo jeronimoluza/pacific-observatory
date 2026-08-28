@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: source_curated
 spider: homes_jp
 url: https://www.homes.co.jp/chintai/tokyo/list/
+archive_prefix: "www.homes.co.jp/chintai/room/"
+archive_path_re: '^/chintai/room/[^/]+/?$'
 language: ja
 cadence: weekly
 channel: real-estate

@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jumbosouq_qa
+url: https://jumbosouq.com/
+language: en
+currency: QAR
+cadence: weekly
+channel: electronics
+archive_prefix: "jumbosouq.com/en/"
+archive_path_re: '^/en/(?!(?:974-store|about-us|accessories|accessories-products|all-brands-products|almuftah-store|android-phones|apple-products|apple-store|apple-store-app-back-up|apple-web|best-prices|blog|blueair-products|brand-nutricook-store|brand-sonos-audio|brands-4-all|brother-printers-products|brother-products|brother-stores|brother-supplies-and-accessories-products|cart|category-promotions|category-super-saver|checkout|compare|contact-us|e-voucher|e-voucher-products|e-voucher-store|e-vouchers|emax-store|essentials-products|faq|fifa-official-licensed-products|flowers-and-gifts-store|gaming-products|gift-items|gift-voucher-products|google-store|grand-opening-web|health-wellness-store|high-capacity-10k-20k-power-banks|hmd-products|hmd-smartphone-series|hmd-store|homepage-app-clone-15|homepageold23jan|jbl-products|jbl-store|js-exclusive|jumbo-picks|jumbo-rentals|laptops-web|lg-exclusive|lg-products|lg-store|lg-television|lightning-deals-mob|lightning-deals-web|listingpagebanner-apple-iphone16|login|mannai-home|master|mobile-mart-android-web|mobile-mart-products|mobile-mart-web|mobile-souq|mrlight-products|mukafa-loyalty-program|mukafa-reward|mukafa-reward-dashboard|mukafa-rewards-dashboard|my-account|new-year-deals|new-year-deals-products|nokia-store|nutribullet-products|nutricook-products|oscar-products|oscar-store|oscar-television|our-about-us|phone-recharge-products|platinum-karaoke-products|pre-owned-products|pre-owned-series-category|pre-owned-stores|pre-owned-web|printing|privacy-policy|product-farm-icons|promo-zone|promotions-app-backup|promotions-app-clone1|promotions-products|promozone-store|refund-exchange-policy|register|samsung-preorder|samsung-products|samsung-store|samsung-store-clone|samsung-store-products|samsung-web|search|shop-by-brands|shop-by-categorykitchen-appliances|shopby-brands|shopbybrands|smartphone|smartphones-web|softwares-products|sonos-products|store-pickup-policy|streaming-subscriptions-products|tefal-store|terms-conditions|tier-popup|toys|tv-accessories|tvs|user-account|white-friday|white-friday-web-mob|wishlist|xiaomi-store|year-end-offer-mob|year-end-offer-products|year-end-offer-web)/?$)[A-Za-z0-9][A-Za-z0-9._-]*$'
+notes: |
+  Verified live 2026-08-17: Jumbo Souq (jumbosouq.com / JS.qa) — "1st
+  Dedicated Online Electronics store in Qatar" per its own homepage title;
+  catalog sampled across ACs, appliances, phones, TVs = pure electronics
+  and home appliances, no general merchandise. `jumbosouq.com` 307s to
+  `/en` (locale prefix). Prices are QAR (e.g. QAR 4449.00 for an iPhone 15
+  Plus PDP), confirming the shard's currency call and the shard's Qatar
+  candidate. robots.txt points at a real product sitemap
+  (https://jumbosouq.com/sitemap/sitemap.xml -> sitemap-product-en-1.xml +
+  sitemap-product-en-2.xml, ~9k URLs total). Spider walks the two English
+  sitemaps and parses the schema.org Product JSON-LD embedded on each PDP
+  (Offer.price/priceCurrency/availability, sku). Category left null — PDPs
+  don't expose a clean category field outside the site's own internal nav.
+  channel=electronics (matches the catalog; not a wide dept-store) — no
+  coicop_codes set since electronics still spans several COICOP leaves
+  (TVs, phones, small/large appliances). Cap set to 9,500 (above the full
+  ~9,022-URL catalog across both English sitemaps) at
+  CONCURRENT_REQUESTS_PER_DOMAIN=16, so the run is bounded by the actual
+  catalog size, not an artificial ceiling — est. ~20min at the ishtari_lb
+  bench rate, inside the collect-run time budget.
+timeout: 14400

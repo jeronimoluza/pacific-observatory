@@ -1,0 +1,32 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: tn_ins_ipc
+module: menaap.north_africa.tunisia.ins_ipc
+function: fetch_tn_ins_ipc
+url: https://www.ins.tn/publication/indice-des-prix-la-consommation-juillet-2026
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Tunisia INS (Institut National de la Statistique) monthly Consumer Price Index
+  (2015=100). Re-verified live 2026-08-07: /publication/indice-des-prix-la-
+  consommation-juillet-2026 -> 200, links Resultats_definitifs_IPC_Base_2015_
+  Juillet_2026.xlsx (4.1MB) -- genuinely current. "COICOP" sheet is a wide table:
+  66 French-labeled expenditure categories x monthly index level, Jan 2015 through
+  Jul 2026. Found via INS's own homepage publication list; the parallel Ministry of
+  Commerce (commerce.gov.tn) price-observatory investigation for this same shard
+  found only stale 2021 PDFs at /upload/pdf/ -- dead end, not re-investigated
+  further, this INS CPI series is the live source instead. Each month's XLSX
+  carries the full cumulative series back to 2015, so the fetcher locates only the
+  latest resolving month page. "Ensemble" (all-items) dropped -- no sanctioned
+  COICOP sentinel. Two categories ("Fournitures Scolaires", "Livres Scolaires")
+  dropped -- ambiguous COICOP home under division 10, would collide with sibling
+  codes. One label kept verbatim despite a missing leading "E" in INS's own file
+  ("lectricité, gaz et autres combustibles" -> 04.5) -- confirmed against raw bytes,
+  not a parsing artifact.
+  coicop_divisions: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12
+  divisions_basis: walked_categories (all 66 rows of the published COICOP sheet
+  read directly, not sampled)

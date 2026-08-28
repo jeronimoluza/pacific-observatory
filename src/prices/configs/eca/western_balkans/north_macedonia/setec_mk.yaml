@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: setec_mk
+url: https://setec.mk/
+language: mk
+currency: MKD
+cadence: weekly
+channel: electronics
+archive_prefix: "setec.mk/mk/proizvod/"
+archive_path_re: '^/mk/proizvod/[^/?]+'
+notes: |
+  Verified live 2026-08-17. North Macedonian electronics retailer, Next.js
+  App Router over a self-hosted Medusa.js backend; product data never lands
+  in server-rendered HTML (RSC streaming). A Playwright network trace found
+  the real data source: the product grid POSTs to a Meilisearch instance at
+  search.sp.solslab.dev/indexes/products/search using a search-only Bearer
+  key shipped in the site's own JS bundle (public by design, no auth needed
+  from us). No WAF/TLS impersonation required for that endpoint.
+  Enumerability proven: offset=0 vs offset=60 (limit=60) return 60 + 60
+  distinct product ids, zero overlap. estimatedTotalHits=1000 -- a
+  Meilisearch index cap, not the whole catalog, but a genuine walkable
+  slice (not a homepage carousel).
+  Sample smoke row: "HP Headset 2800" 1499 MKD.
+  Full scrape still pending -- orchestrator queues it.

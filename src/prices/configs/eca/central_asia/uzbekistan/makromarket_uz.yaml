@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: makromarket_uz
+url: https://makromarket.uz/
+language: uz
+cadence: weekly
+channel: supermarket
+archive_prefix: "makromarket.uz/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  MakroMarket -- Tashkent-based Uzbek grocery chain. Next.js storefront
+  (client components, no SSR hydration in the raw HTML) backed by an open,
+  unauthenticated JSON API on api.makromarket.uz found via a one-time
+  Playwright network trace (discovery only -- the spider itself is plain
+  GET, no browser at collection time):
+  `/api/v2/product-list/?category=<id>&limit=N&offset=M`, paginated via
+  count/next. `/api/v2/category-list/` gives the 11 curated top-level
+  collections walked here (no deeper department taxonomy exposed).
+  Re-verified live 2026-08-06: /api/v2/product-list/?category=520 -> 200,
+  real meat-department SKUs incl. 'Rozovaya dudlangan kolbasa Alpiy 1 kg'
+  UZS 104950, 'Gov MS Maxsus Sagban qaynatilgan kolbasa 1 kg' UZS 74950.
+
+  korzinka.uz (Uzbekistan's largest chain, marketplace/directory partner of
+  Uzum Tezkor) was probed first and dropped: plain curl returns a
+  Cloudflare "Just a moment..." challenge on both korzinka.uz and
+  www.korzinka.uz -- market leader, WAF-hardened per the
+  inverse-correlation law.

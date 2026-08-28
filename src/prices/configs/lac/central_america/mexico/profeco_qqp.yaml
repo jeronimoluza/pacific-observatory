@@ -1,0 +1,32 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: mx_profeco_qqp
+module: lac.central_america.mexico.profeco_qqp
+function: fetch_mx_profeco_qqp
+url: https://datos.profeco.gob.mx/datos_abiertos/qqp.php
+language: es
+cadence: monthly
+fallback_date: 2025-11-01
+notes: |
+  PROFECO "Quien es Quien en los Precios" national comparative price survey
+  across dozens of chains (Walmart/Bodega Aurrera, Soriana, Chedraui,
+  Comercial Mexicana, La Comer, ...) and thousands of stores. The dataset
+  page only advertises yearly RAR archives, but a plain-CSV mirror is live
+  at repodatos.atdt.gob.mx/api_update/profeco/programa_quien_es_quien_precios_{year}/
+  {MM}-{year}_{HH}.csv (HH=01/02 = first/second half of month). Re-verified
+  live 2026-08-06: 10-2025_01.csv, 11-2025_01.csv, 11-2025_02.csv all HTTP
+  200 (each 140-170MB, ~500k rows); 12-2025 onward still 503 (publish lag of
+  several months as of this run). No listing/index endpoint exists, so the
+  fetcher discovers availability by walking (year, month, half) forward from
+  cutoff and HEAD-probing each candidate, stopping after 4 consecutive
+  misses. Whole-catalog walker: every row PROFECO publishes is kept (food +
+  non-food); COICOP and the food gate are applied downstream. Columns:
+  producto, presentacion, marca, categoria, catalogo, precio, fecha_registro
+  (YYYY/MM/DD), cadena_comercial, giro, nombre_comercial, direccion, estado,
+  municipio, latitud, longitud. Currency MXN confirmed in raw data (matches
+  cfg_currency). fallback_date set to 2025-11-01 so the first run only pulls
+  the most recent available half-month rather than walking the full archive
+  back to program inception.

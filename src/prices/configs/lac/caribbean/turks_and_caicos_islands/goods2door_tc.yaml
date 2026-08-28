@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: goods2door_tc
+url: https://www.goods2door.com/
+language: en
+currency: USD
+cadence: weekly
+channel: supermarket
+archive_prefix: "goods2door.com/product-page/"
+archive_path_re: '^/product-page/[^/?]+'
+notes: |
+  Wix Stores grocery-delivery site for guests traveling to the Turks and
+  Caicos Islands (footer: "GOODS 2 DOOR is an online grocery delivery
+  service for guest traveling to the Turks & Caicos Islands"). No open
+  JSON API -- catalog is client-rendered -- but Wix auto-publishes
+  /sitemap.xml -> store-products-sitemap.xml with 1,511 product-page URLs,
+  confirmed live 2026-08-18. Each PDP embeds a schema.org Product JSON-LD
+  block server-side (works with plain curl_cffi impersonate=chrome124, no
+  Playwright needed): 'Gerber Pure Water' -> USD 4.25, InStock. The block
+  uses non-standard capitalized keys ("Offers"/"Availability") -- Wix
+  template quirk, parser checks both cases. No breadcrumb data found on
+  the PDP (neither JSON-LD nor DOM) -- category left null. Whole-catalog
+  walk via sitemap, no category filter. End-to-end test run (--max-items 5):
+  5/5 items, real grocery SKUs (cereal, eggs, produce, spirits), all with
+  name + USD price + currency.

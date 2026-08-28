@@ -1,0 +1,36 @@
+scaffolding: spider
+spider: bakuelectronics_az
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://bakuelectronics.az/
+language: az
+currency: AZN
+cadence: weekly
+channel: electronics
+coicop_codes: null
+archive_prefix: "bakuelectronics.az/mehsul/"
+archive_path_re: '^/mehsul/[^/?]+'
+notes: |
+  Azerbaijan electronics/appliances retailer, Next.js pages router.
+  Verified live 2026-08-17: plain curl_cffi impersonate=chrome124, zero
+  auth/session/cookies needed. The homepage's __NEXT_DATA__ only carries
+  banner slider data (the original probe's negative verdict was right
+  about that) but individual product pages (/mehsul/<slug>-<id>) ARE
+  server-rendered with a full prodDetails object (id/title/price/brand/
+  breadcrumb/status) inside their own __NEXT_DATA__.
+  Enumeration is sitemap-driven, not category-pagination: sitemap.xml
+  lists 7 shards (~5,000 URLs each), ~4,600 /mehsul/ product URLs
+  verified live in shard 0 alone (~30k+ products across all shards) --
+  this satisfies enumerability without needing a walkable category
+  listing page (none found; homepage carries no real catalog).
+  channel is electronics; coicop_codes left unset (catalog spans
+  multiple electronics/home-appliance leaves).
+  GOTCHA carried from tap_az: watch for CDN-hosted sitemap/product-image
+  hosts needing allowed_domains -- not hit here, sitemap and product
+  pages are both on bakuelectronics.az itself.
+  Smoke run 2026-08-17 (--max-items 60): passed, see smoke report. One
+  stale sitemap URL (404) verified live and handled by dropping that
+  response, not failing the shard.
+  Full scrape still pending -- orchestrator queues it centrally.
+timeout: 14400

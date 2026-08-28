@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: frisco_pl
+url: https://www.frisco.pl/
+language: pl
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.frisco.pl/pid,"
+archive_path_re: '^/pid,\d+/'
+notes: |
+  React online supermarket. Category/search-results pages are fully
+  client-hydrated (0 prices, 0 product names in raw response) -- confirmed
+  via curl 2026-08-06. Individual product pages ARE server-rendered with
+  schema.org Product/Offer microdata (itemProp="price"/"priceCurrency"),
+  e.g. pid,88437 'FELIX® Party MIX...' 5.99 PLN. The full catalog is
+  enumerable via /sitemap-index.xml -> 13 product-sitemap shards, ~1,000
+  <loc> entries each (~13.7k products total). Spider walks sitemap shards
+  then fetches each product detail page individually -- a slow but proven
+  SSR path since the category listing route is closed to plain HTTP.
+timeout: 14400

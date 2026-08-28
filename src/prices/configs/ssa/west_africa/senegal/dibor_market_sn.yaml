@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dibor_market_sn
+url: https://lafermededibor.com/
+language: fr
+cadence: weekly
+channel: supermarket
+notes: |
+  Round-1 classified TIER_2 (no price pattern on homepage) but re-verified
+  live 2026-08-06: robots.txt discloses a bespoke PHP backend
+  (Disallow: /api.php, /database.sqlite). GET /api.php?type=products ->
+  HTTP 200, ~1.05MB JSON, {"products": [...]}, 159 items, no auth needed.
+  Real, varied, local Senegalese produce -- not a template-demo catalog
+  (round-1's Bazariko/Beryz warning does not apply here). Sample: 'Pomme
+  de terre blanche 25kG' XOF 10000, 'Oignon rouge 5 kG' XOF 1500, 'Cuisse
+  de Poulet (local)' XOF 4000/Kg, 'Mangue Verte' XOF 600/Kg. 9 categories:
+  oignons-et-pomme-de-terre, legumes, fruits, epicerie, viandes, volaille,
+  poissons, produits_locaux, packs_et_promotion. Price field is a plain
+  integer, no minor-unit conversion (matches XOF convention). Currency
+  XOF confirmed against countries.yaml.

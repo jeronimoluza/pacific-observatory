@@ -1,0 +1,35 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_cmr
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_cmr
+url: https://data.humdata.org/dataset/wfp-food-prices-for-cameroon
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (round 3, 2026-08-07): WFP food prices for Cameroon via HDX
+  (shared SSA fetcher _shared.ssa.wfp_food_prices). Cameroon previously
+  had one retailer_sku manifest (yorix_cm) but no official_avg source.
+  Verified live: CKAN package_show resolves wfp_food_prices_cmr.csv,
+  currency XAF throughout (matches countries.yaml). Max observation date
+  is 2026-06-15 — current. 55 commodities: cereals (maize x2, millet,
+  sorghum x2, rice x3, wheat flour), pulses (beans x2, cowpeas,
+  groundnuts x2, soybeans), tubers (cassava x3, cocoyam, taro, potatoes
+  x2, yam), veg/fruit (bananas, plantains, mangoes, onions, garlic,
+  leafy vegetables, okra x2, peppers, tomatoes, watermelons), beef,
+  chicken, eggs, dried/fresh/salted fish, milk (fresh/powder), oils (5
+  variants), sugar, salt, pasta, plus non-COICOP Wage series (excluded
+  below). No fuel/energy commodity present despite a "non-food" category
+  label. Sample at max date: 'Maize (white)'. Per-market rows collapsed
+  to a national monthly average per commodity/unit/currency/price-type;
+  market count + USD value kept in notes; retail vs wholesale kept in the
+  dedup hash. COICOP deferred to the classifier (item_name = WFP
+  commodity).
+  coicop_divisions: 01
+  divisions_basis: walked_categories (full 55-commodity list enumerated
+  from the CSV; all commodities are food; the two Wage series are not
+  COICOP consumption items and are excluded from the tag)

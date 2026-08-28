@@ -1,3 +1,5 @@
 spider: street11_kr
 language: ko
 channel: supermarket
+archive_prefix: "www.11st.co.kr/products/"
+archive_path_re: '^/products/[^/?]+'

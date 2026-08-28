@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: saki4you_fm
+url: https://saki4you.com/
+language: en
+cadence: weekly
+channel: hypermarket
+archive_prefix: "saki4you.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Round 3 platform-fingerprint reversal: brief flagged this for re-test rather than assuming
+  brochure-only. Shopify /products.json is open and unblocked (verified live 2026-08-07, HTTP
+  200, 250 products on page 1 alone -- multi-page catalog). Shopify.currency active=USD
+  confirmed in page source, matches countries.yaml (FSM uses USD). SAKI Stores serves
+  Chuuk/Pohnpei/Kosrae. Sampled rows: cooling fan, water bottle, LDM creme cookies (multiple
+  flavors) -- general hypermarket mix of household goods and packaged food. Micronesia's
+  existing manifests (mylifeelsewhere, expatistan) are both aggregate_proxy cost-of-living
+  survey publishers; this is Micronesia's first retailer_sku source.
+  coicop_divisions: 01, 05, 13
+  divisions_basis: sampled_rows (6 of 250+ on page 1; full catalog not walked)

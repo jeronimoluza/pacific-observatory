@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: homemarket_ro
+url: https://www.homemarket.ro/
+language: ro
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.homemarket.ro/product.php"
+archive_path_re: '^/product\.php$'
+notes: |
+  Legacy server-rendered PHP storefront (Bucharest area, 14,000+ products
+  per shard). /sitemap.xml lists 144 category ids (companion
+  _homemarket_ro_categories.txt) and ~11K product URLs; the spider walks
+  the cheaper category-listing route: index.php?c=<id> renders 20 products
+  per response and accepts an undocumented &page=N param discovered by
+  brute-forcing pagination param names live 2026-08-06 (pag/p/pg/start/
+  offset/inceput all re-returned page 1; page returned a disjoint set),
+  paginating until an empty response. Re-verified live: c=1003 (Coniac si
+  brandy) -> 'alexandrion 5* 40%' 96.57 Lei; c=603 (coffee) walks 8 full
+  pages + 1 short page cleanly with zero id overlap. Currency RON (Lei)
+  matches countries.yaml.

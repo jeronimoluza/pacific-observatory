@@ -1,0 +1,23 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_irq
+module: _shared.menaap.wfp_food_prices
+function: fetch_wfp_irq
+url: https://data.humdata.org/dataset/7d8955eb-37d2-4087-80e9-cae1aaa242f5
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Iraq via HDX (shared MENAAP fetcher
+  _shared.menaap.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_irq.csv (200, 6.7MB, 56,711 rows),
+  currency IQD throughout (matches countries.yaml). Max observation date is
+  2026-06-15 — current. 49 commodities incl. dates, eggplant, local cheese,
+  yogurt, three rice varieties, three wheat-flour sourcing variants. Sample
+  at max date: 'Bulgur', KG, IQD 1500. Per-market rows collapsed to a
+  national monthly average per commodity/unit/currency/price-type; market
+  count + USD value kept in notes; retail vs wholesale kept in the dedup
+  hash. COICOP deferred to the classifier (item_name = WFP commodity).

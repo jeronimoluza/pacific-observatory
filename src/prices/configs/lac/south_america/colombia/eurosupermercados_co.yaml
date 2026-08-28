@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: eurosupermercados_co
+url: https://www.eurosupermercados.com.co/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.eurosupermercados.com.co/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Mid-tier Colombian grocery chain with home delivery. Re-verified live:
+  products/search?_from=0&_to=9 -> HTTP 206, 635KB, 'BOLSA PLASTICA' COP 200.00. Currency matches
+  countries.yaml (COP).

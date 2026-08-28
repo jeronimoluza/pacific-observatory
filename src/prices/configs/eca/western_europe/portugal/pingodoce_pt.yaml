@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pingodoce_pt
+url: https://www.pingodoce.pt/
+language: pt
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.pingodoce.pt/home/produtos/"
+archive_path_re: '^/home/produtos/[^/?]+'
+notes: |
+  PIVOTED FROM SHARD URL: mercadao.pt/store/pingo-doce (the shard's probed
+  Mercadao white-label URL) now hard 301-redirects unconditionally to
+  www.pingodoce.pt, losing the /store/pingo-doce path -- the Mercadao
+  storefront for this retailer appears retired/merged since the probe.
+  Re-verified live 2026-08-06 that pingodoce.pt now runs its own
+  Salesforce Commerce Cloud catalogue directly, so the spider targets
+  pingodoce.pt in place of the stale Mercadao URL. Channel changed from
+  the shard's marketplace to supermarket accordingly (this is Pingo
+  Doce's own direct storefront now, not a third-party marketplace listing
+  it). Each /home/produtos/<slug> department page embeds a
+  Search-UpdateGrid?cgid=<id> AJAX endpoint that is itself server-rendered
+  HTML (plain GET, no JS); walked with start/sz pagination across 26
+  departments. Sample: frutas-e-vegetais (cgid=ec_frutasevegetais_100) ->
+  266 products incl. 'Nossa Fruta e Legumes Tomate Alongado 57/67' 1.79
+  EUR, zero id overlap across pages. Currency EUR matches countries.yaml.

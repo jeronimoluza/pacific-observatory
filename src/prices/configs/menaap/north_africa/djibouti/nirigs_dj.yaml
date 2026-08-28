@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nirigs_dj
+url: https://nirigs.com/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "nirigs.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 64.7KB JSON. Sample: 'Nuna - Céréales au blé et lait dès 6 mois -
+  350 g'. currency_code DJF matches countries.yaml (currency_minor_unit=0).
+  Best Djibouti source by volume (448 SKUs per prior probe) and category
+  breadth (13 categories) — still no fresh produce/meat/bakery, purely
+  packaged/shelf-stable epicerie. Whole-catalog walk (no category filter).

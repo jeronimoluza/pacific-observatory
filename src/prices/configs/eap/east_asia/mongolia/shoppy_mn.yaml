@@ -8,6 +8,8 @@ language: mn
 cadence: daily
 channel: marketplace
 currency: MNT
+archive_prefix: "shoppy.mn/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Mongolia's largest marketplace (1000+ vendor storefronts). Vue SPA backed by
   a Cody.mn Elasticsearch endpoint at https://elastic.cody.mn/shoppy/_search

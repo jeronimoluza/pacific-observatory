@@ -1,0 +1,17 @@
+/product-category/biscuits
+/product-category/breakfast-dips-spreads
+/product-category/chips-biscuits-noodles
+/product-category/cooking-oil-ghee
+/product-category/daal
+/product-category/dal-geda-gudi
+/product-category/dry-fruits
+/product-category/dry-fruits-nuts
+/product-category/flour-flour-products
+/product-category/hot-cold-beverages
+/product-category/laundry-house-hold
+/product-category/lentils-pulses-beans
+/product-category/noodles
+/product-category/personal-care
+/product-category/rice
+/product-category/spices-masala
+/product-category/sugar-salt

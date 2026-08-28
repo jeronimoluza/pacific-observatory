@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: apteka_ru
+language: ru
+cadence: daily
+archive_prefix: "apteka.ru/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-07: apteka.ru is Russia's largest online pharmacy
+  chain/aggregator. Product detail pages are server-rendered with a clean
+  Schema.org Product JSON-LD block (sku, name, brand, offers.price,
+  offers.priceCurrency=RUB) -- confirmed on a live product page (Мig 400,
+  86.99 RUB). Category listing pages are client-hydrated (Next.js) and carry
+  no product links in raw HTML, but /sitemap-product.xml lists ~37,200
+  product URLs directly (lastmod dated today), so discovery goes through the
+  sitemap rather than category crawling. No city cookie needed for the
+  sitemap+JSON-LD path -- prices returned are apteka.ru's own default/online
+  price, not store-specific. Smoke run (20 items): 20/20 rows with plausible
+  RUB prices for real Russian OTC/Rx drug and pharmacy-adjacent names.
+  coicop_divisions: 06, 13
+  divisions_basis: sampled_rows (top-level /category/* names + a sample of
+  ~20 product pages: medicines, medical devices, contact lenses/vitamins,
+  cosmetics/personal-care)
+channel: pharmacy

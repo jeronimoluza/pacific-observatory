@@ -42,6 +42,13 @@ class PriceSourceConfig(BaseModel):
     # model fields so `extra="forbid"` cannot silently drop them.
     url: str | None = None
     extraction_pattern: str | None = None
+
+    # Web-archive scope, shared by the Wayback backfill and the Common Crawl
+    # fetcher. `archive_prefix` is the narrowest host+path prefix that still
+    # covers every product detail page; `archive_path_re` filters listing,
+    # category, and static pages that live under the same prefix.
+    archive_prefix: str | None = None
+    archive_path_re: str | None = None
     coicop_classification: str | None = None
     currency: str | None = None
     inactive_reason: str | None = None
@@ -58,6 +65,7 @@ class PriceSourceConfig(BaseModel):
     coicop_codes: list[str] | None = None
     active: bool = True
     max_items: int | None = None
+    timeout: int | None = None
     start_urls: list[str] | None = None
     spider_kwargs: dict[str, Any] = {}
     scrapy_settings: dict[str, Any] = {}

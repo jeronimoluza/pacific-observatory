@@ -1,0 +1,28 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["01.1.1", "01.1.2", "01.1.3", "01.1.4", "01.1.5", "01.1.6", "01.1.7", "01.1.8", "01.1.9", "01.2.2"]
+channel: null
+source_key: as_doc_bfi
+module: eap.pacific_islands.american_samoa.doc_bfi
+function: fetch_as_doc_bfi
+url: https://www.doc.as.gov/stats
+language: en
+cadence: monthly
+fallback_date: 2021-01-01
+notes: |
+  American Samoa Dept of Commerce Basic Food Index (BFI), monthly, ~20-item
+  basket across 14 retail stores. Full archive (Jan 2021-present, one release
+  per month with 3 exceptions) discovered via the site's Wix FAQ widget API
+  (_api/v1/access-tokens for a public per-visitor token, then
+  _api/faq-server/v2/question-entries/query filtered to the "Basic Food
+  Index" category) -- the /stats page itself renders this tab client-side
+  via Wix, no content in raw HTML. Links resolve to either the Wix media CDN
+  or Google Drive share links (both public, no auth). PDF text
+  extractability is inconsistent release-to-release (~1 in 7 in the archive
+  is a native/digital PDF; the rest are scanned images) -- image-only
+  releases are skipped with a logged warning, no OCR wired (would need
+  pytesseract + pdf2image, not currently a project dependency). Only the
+  release's own (current) month is kept from each PDF's 3-month rolling
+  table, to avoid double-counting overlap across consecutive releases.

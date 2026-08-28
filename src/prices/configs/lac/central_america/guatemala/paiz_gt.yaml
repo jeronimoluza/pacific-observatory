@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: paiz_gt
+url: https://www.paiz.com.gt/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "paiz.com.gt/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Walmart Centroamerica banner, full-line incl. meat. Re-verified live:
+  products/search?_from=0&_to=9 -> HTTP 206, 203KB, 'Separaditos Filete de Pechuga Pollo Rey - 5
+  lb' GTQ 198.00. Currency matches countries.yaml (GTQ).

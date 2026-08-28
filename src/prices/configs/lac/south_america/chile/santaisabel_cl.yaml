@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: santaisabel_cl
+url: https://www.santaisabel.cl/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "santaisabel.myvtex.com/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Round 3 platform-fingerprint reversal: rounds 1-2 probed santaisabel.cl, saw a custom storefront
+  404 the catalog API on the retail domain, and predicted Jumpseller/gave up. It is VTEX -- the
+  underlying `santaisabel.myvtex.com` origin serves /api/catalog_system/pub/products/search
+  directly (HTTP 206, verified live 2026-08-07: "Atun Lomitos en Agua" CLP 1420). Category tree
+  (/api/catalog_system/pub/category/tree/3) has 18 top-level departments: groceries, produce,
+  dairy, meat/fish, prepared foods, liquor (Botilleria), cigarettes, personal care, cleaning,
+  home, pets. No pharmacy or clothing departments (unlike Jumbo Chile), so tagged as supermarket
+  not hypermarket. Chile's second retail SKU source added this round, alongside jumbo_cl.
+  coicop_divisions: 01, 02, 05, 13
+  divisions_basis: walked_categories (18 top-level departments enumerated via category tree)

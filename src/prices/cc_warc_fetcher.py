@@ -13,29 +13,31 @@ gzip member containing one WARC response record.
 from __future__ import annotations
 
 import gzip
-import hashlib
 import json
 import logging
 import re
-import subprocess
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse
 
-import click
 import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-from .cc_config import DEFAULT_CC_INDEXES, SPIDER_CC_CONFIG
+from .cc_config import all_cc_configs
+from . import cc_storage
+from .cc_index import choose_family
+from .cc_samples import SampleKeeper
+from .cc_index import query_prefix
+from .backfill import _load_spider_parse_html
+from .price_scraping.archived import row_from_meta, rows_from_jsonld
+from .price_scraping.archived_embedded import rows_from_next_flight
 from .price_scraping.selectors import extract_with_fallback, get_selectors
 
 logger = logging.getLogger(__name__)
 
-CC_INDEX_API = "https://index.commoncrawl.org"
 CC_DATA_BASE = "https://data.commoncrawl.org"
 
 
@@ -60,29 +62,49 @@ class CommonCrawlScraper:
         spider_name: str,
         output_dir: Path,
         indexes: List[str],
-        cc_limit: int = 5000,
     ):
-        if spider_name not in SPIDER_CC_CONFIG:
+        configs = all_cc_configs()
+        if spider_name not in configs:
             raise KeyError(
-                f"No CC config for {spider_name}. "
-                f"Add an entry in SPIDER_CC_CONFIG. "
-                f"Available: {list(SPIDER_CC_CONFIG.keys())}"
+                f"No archive scope for {spider_name}. Set `archive_prefix:` "
+                f"(and `archive_path_re:`) on its YAML manifest. "
+                f"Available: {sorted(configs)}"
             )
         self.spider_name = spider_name
         self.output_dir = Path(output_dir)
         self.indexes = indexes
-        self.cc_limit = cc_limit
-        cfg = SPIDER_CC_CONFIG[spider_name]
+        cfg = configs[spider_name]
         self.url_prefix: str = cfg["prefix"]
-        self.path_re = re.compile(cfg["path_re"])
-        self.selectors = get_selectors(spider_name)
-        self.scraped_at = datetime.now().isoformat()
+        self.path_re = re.compile(cfg["path_re"] or "")
+        self.declared_currency: str = (cfg.get("currency") or "").strip().upper()
+        self.parse_html_fn = _load_spider_parse_html(spider_name)
+        # Platform-base spiders (Woo/Shopify/VTEX/...) scrape JSON APIs and have
+        # no CSS selectors; their `parse_html` hook is the only archived-HTML
+        # parser they have. Only demand selectors when there is no hook.
+        # A spider with neither a hook nor selectors used to raise here, which
+        # closed the archived-parse path to every such source rather than
+        # letting the generic JSON-LD/meta tiers try.
+        if self.parse_html_fn:
+            self.selectors = {}
+        else:
+            try:
+                self.selectors = get_selectors(spider_name)
+            except KeyError:
+                self.selectors = {}
+        self.scraped_at = datetime.now(timezone.utc).isoformat()
+        choose_family()
         self._file_lock = threading.Lock()
+        self._samples: Optional[SampleKeeper] = None
+        # A Common Crawl block is a 403, not a 429, and three retries turn it
+        # into an ordinary `fetch_failed` -- indistinguishable from a WARC that
+        # genuinely is not there. Counted separately so a ban is detectable
+        # rather than spending hours producing zeros at full speed.
+        self.http_403 = 0
 
     # -- helpers --
 
     def _record_hash(self, url: str, timestamp: str) -> str:
-        return hashlib.md5(f"{url}#{timestamp}".encode()).hexdigest()
+        return cc_storage.record_hash(url, timestamp)
 
     def _items_dir(self, location: Tuple[str, str, str]) -> Path:
         """Return ``<output_dir>/<region>/<sub>/<country>/<spider>/common_crawl_data/items``."""
@@ -97,148 +119,17 @@ class CommonCrawlScraper:
             / "items"
         )
 
+    def _items_file(self, location: Tuple[str, str, str], cc_index: str) -> Path:
+        return self._items_dir(location) / f"{cc_index}.jsonl"
+
     def _existing_hashes(self, location: Tuple[str, str, str]) -> set:
-        d = self._items_dir(location)
-        if not d.exists():
-            return set()
-        return {f.stem for f in d.glob("*.json")}
+        return cc_storage.existing_hashes(self._items_dir(location))
 
     # -- index step --
 
-    # Safety cap: max pages per index (prevents runaway loops if CC misbehaves).
-    # cc_limit=5000 × MAX_PAGES_PER_INDEX=40 = 200k records ceiling per (spider, index).
-    MAX_PAGES_PER_INDEX = 40
-
-    def _fetch_index_page(
-        self, index: str, from_urlkey: Optional[str] = None
-    ) -> Optional[str]:
-        """Single CC index API call. Returns raw stdout (JSONL) or None on failure."""
-        api = (
-            f"{CC_INDEX_API}/{index}-index"
-            f"?url={self.url_prefix}&matchType=prefix"
-            f"&output=json&limit={self.cc_limit}"
-        )
-        if from_urlkey:
-            # CC index uses urlkey ordering; `from=` is inclusive.
-            api += f"&from={from_urlkey}"
-        try:
-            result = subprocess.run(
-                [
-                    "curl",
-                    "-s",
-                    "--connect-timeout",
-                    "60",
-                    "--max-time",
-                    "180",
-                    "--retry",
-                    "5",
-                    "--retry-delay",
-                    "10",
-                    "--retry-all-errors",
-                    api,
-                ],
-                capture_output=True,
-                text=True,
-                timeout=240,
-            )
-        except subprocess.TimeoutExpired:
-            logger.warning(f"CC index timeout for {index} (from={from_urlkey})")
-            return None
-        if result.returncode != 0:
-            logger.warning(f"CC index query failed for {index}: {result.stderr[:200]}")
-            return None
-        return result.stdout
-
     def _query_index(self, index: str) -> List[Dict[str, Any]]:
-        """Query the CC index API for this spider's URL prefix.
-
-        Pages through all results via the ``from=<urlkey>`` cursor. Returns
-        records that have ``status=200`` AND match the product-path regex.
-        """
-        records: List[Dict[str, Any]] = []
-        # dedupe across page boundaries (`from=` is inclusive)
-        seen_urlkeys: set = set()
-        from_urlkey: Optional[str] = None
-        page = 0
-
-        for page in range(self.MAX_PAGES_PER_INDEX):
-            stdout = self._fetch_index_page(index, from_urlkey=from_urlkey)
-            if stdout is None:
-                break
-
-            raw_rows = 0
-            last_urlkey: Optional[str] = None
-            page_kept = 0
-
-            for line in stdout.splitlines():
-                line = line.strip()
-                if not line.startswith("{"):
-                    continue
-                try:
-                    d = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                raw_rows += 1
-                urlkey = d.get("urlkey")
-                if urlkey:
-                    last_urlkey = urlkey
-                    if urlkey in seen_urlkeys:
-                        continue
-                    seen_urlkeys.add(urlkey)
-                if d.get("status") != "200":
-                    continue
-                url = d.get("url", "")
-                try:
-                    if not self.path_re.search(urlparse(url).path):
-                        continue
-                except Exception:
-                    continue
-                try:
-                    offset = int(d["offset"])
-                    length = int(d["length"])
-                except (KeyError, ValueError):
-                    continue
-                records.append(
-                    {
-                        "url": url,
-                        "timestamp": d.get("timestamp", ""),
-                        "filename": d.get("filename", ""),
-                        "offset": offset,
-                        "length": length,
-                        "digest": d.get("digest", ""),
-                    }
-                )
-                page_kept += 1
-
-            logger.info(
-                f"{index} page {page + 1}: {raw_rows} raw rows, "
-                f"+{page_kept} product records (running total {len(records)})"
-            )
-
-            if raw_rows < self.cc_limit:
-                break
-            if last_urlkey is None:
-                logger.warning(
-                    f"{index}: page {page + 1} hit limit but had no urlkey to advance; stopping"
-                )
-                break
-            if last_urlkey == from_urlkey:
-                logger.warning(
-                    f"{index}: page {page + 1} returned same boundary urlkey ({last_urlkey}); stopping"
-                )
-                break
-            from_urlkey = last_urlkey
-        else:
-            logger.warning(
-                f"{index}: hit MAX_PAGES_PER_INDEX={self.MAX_PAGES_PER_INDEX} — "
-                f"more records may exist beyond {len(records)} kept"
-            )
-
-        logger.info(
-            f"{index}: {len(records)} total product-page records across {page + 1} page(s) "
-            f"(prefix={self.url_prefix}, path_re={self.path_re.pattern})"
-        )
-        return records
+        """Records for this spider's URL prefix in one CC collection."""
+        return query_prefix(index, self.url_prefix, self.path_re)
 
     # -- WARC fetch + parse --
 
@@ -255,6 +146,15 @@ class CommonCrawlScraper:
                 r = requests.get(url, headers=headers, timeout=120)
                 if r.status_code in (200, 206):
                     return r.content
+                if r.status_code == 403:
+                    # Never retry a block: a 403 is Common Crawl refusing
+                    # this address for minutes to hours, so a retry cannot
+                    # succeed and only triples the offence rate. Measured:
+                    # 6.7k blocked records became 20.3k 403s.
+                    with self._file_lock:
+                        self.http_403 += 1
+                    logger.debug(f"WARC fetch HTTP 403 (blocked) for {url}")
+                    return None
                 logger.debug(
                     f"WARC fetch HTTP {r.status_code} for {url} "
                     f"(attempt {attempt + 1}/3)"
@@ -376,21 +276,59 @@ class CommonCrawlScraper:
             self._extract_nextdata_fallback(soup, out)
         return out
 
+    def _parse_rows(self, html: str, url: str) -> List[Dict[str, Any]]:
+        """Rows for one archived page: the spider's hook, else the selectors.
+
+        A `parse_html` hook may yield several rows per page (product variants,
+        SKUs); the selector path always yields at most one.
+        """
+        if self.parse_html_fn is not None:
+            try:
+                return [r for r in self.parse_html_fn(html, url) if r]
+            except Exception:
+                logger.debug(f"parse_html failed for {url}", exc_info=True)
+                return []
+        extracted = self._extract_data_from_html(html)
+        if extracted:
+            return [extracted]
+        if not self.selectors:
+            # Neither a hook nor selectors — try the spider-independent
+            # schema.org/OpenGraph surfaces, then a framework hydration
+            # payload (Next.js flight), before giving up on the page.
+            rows = rows_from_jsonld(html, url)
+            if rows:
+                return rows
+            row = row_from_meta(html, url)
+            if row:
+                return [row]
+            return rows_from_next_flight(html, url)
+        return []
+
     # -- save --
 
-    def _save_item(
+    def _save_rows(
         self,
         url: str,
         timestamp: str,
         cc_index: str,
-        extracted: Dict[str, Any],
+        rows: List[Dict[str, Any]],
         location: Tuple[str, str, str],
-    ) -> Path:
-        rec_hash = self._record_hash(url, timestamp)
-        out_dir = self._items_dir(location)
-        with self._file_lock:
-            out_dir.mkdir(parents=True, exist_ok=True)
-            out_file = out_dir / f"{rec_hash}.json"
+    ) -> int:
+        """Append one line per row to this crawl's JSONL.
+
+        One file per (source, crawl) rather than one file per record. Measured
+        on the fetch machine: 28,989 records were 17 MB of data but 120 MB on
+        disk and 28,989 inodes, because a ~600-byte file still occupies a 4 KB
+        block. A fleet-wide crawl is roughly half a million records, so the
+        card's fixed inode table ran out after ~8 of 123 crawls while df still
+        reported free bytes. It also matches how the Wayback half already
+        stores its output.
+
+        A page's rows are written in one call so a kill lands between pages
+        rather than between a page's own rows.
+        """
+        payloads = []
+        for extracted in rows:
             payload = {
                 "url": url,
                 "cc_timestamp": timestamp,
@@ -398,9 +336,22 @@ class CommonCrawlScraper:
                 "scraped_at": self.scraped_at,
                 **extracted,
             }
-            with open(out_file, "w", encoding="utf-8") as f:
-                json.dump(payload, f, indent=2, ensure_ascii=False)
-            return out_file
+            # A manifest currency is human-set per storefront; the archived
+            # page's own priceCurrency is whatever its SEO plugin emitted, and
+            # a wrong one is silent and gets multiplied by FX downstream. Where
+            # the manifest declares nothing, the page value stands and
+            # concatenate.py back-fills the rest from the source's modal value.
+            if self.declared_currency:
+                payload["currency"] = self.declared_currency
+            payloads.append(json.dumps(payload, ensure_ascii=False))
+        if not payloads:
+            return 0
+        path = self._items_file(location, cc_index)
+        with self._file_lock:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with open(path, "a", encoding="utf-8") as fh:
+                fh.write("\n".join(payloads) + "\n")
+        return len(payloads)
 
     # -- orchestrator --
 
@@ -421,26 +372,44 @@ class CommonCrawlScraper:
         html = self._extract_html_from_record(raw)
         if html is None:
             return "parse_failed"
-        extracted = self._extract_data_from_html(html)
-        if not extracted:
+        rows = self._parse_rows(html, rec["url"])
+        if not rows:
+            # The only page worth keeping is one the parser could not read.
+            if self._samples is not None:
+                self._samples.offer(html, rec["url"], rec["timestamp"])
             return "no_extract"
         try:
-            self._save_item(rec["url"], rec["timestamp"], cc_index, extracted, location)
+            self._save_rows(rec["url"], rec["timestamp"], cc_index, rows, location)
             return "parsed"
         except Exception as e:
             logger.debug(f"Save failed: {e}")
             return "save_failed"
 
     def run_scrape_cc(
-        self, location: Tuple[str, str, str], num_workers: int = 8
+        self,
+        location: Tuple[str, str, str],
+        num_workers: int = 8,
+        max_per_index: Optional[int] = None,
     ) -> Dict[str, Any]:
         """Iterate over ``self.indexes`` and fetch/parse each new record.
 
         ``location`` is ``(region, subregion, country)``. Existing record
         hashes (URL + timestamp) are skipped — safe to interrupt and resume.
+
+        ``max_per_index`` bounds how many *new* records each crawl may
+        contribute. A wall-clock budget spent without one goes entirely to
+        whichever crawls come first, so a large storefront yields many URLs
+        from one moment in time instead of the same URLs across many — which
+        is a price census, not a price series. Capping per crawl spreads the
+        same budget over the whole period. The cap keeps the head of the cdx
+        listing rather than a random sample on purpose: cdx order is stable
+        across crawls, so the same URLs tend to be picked each time, which is
+        what produces a repeated observation of one product. Records dropped
+        to the cap are counted in ``capped`` so the truncation is visible.
         """
         stats: Dict[str, Any] = {
             "indexes": len(self.indexes),
+            "indexes_failed": 0,
             "queried": 0,
             "skipped": 0,
             "parsed": 0,
@@ -448,15 +417,27 @@ class CommonCrawlScraper:
             "parse_failed": 0,
             "no_extract": 0,
             "save_failed": 0,
+            "capped": 0,
         }
         existing = self._existing_hashes(location)
+        self._samples = SampleKeeper(self._items_dir(location).parent / "samples")
+        # Yield summed over 103 crawls hides the failure it most needs to
+        # show: a site redesign breaks the parser at one moment in time, and
+        # the aggregate reads as a mediocre-but-plausible ratio rather than a
+        # cliff. Recorded per crawl so the boundary year is visible.
+        per_index: Dict[str, Dict[str, int]] = {}
         logger.info(
             f"Found {len(existing)} existing CC items for "
             f"{self.spider_name}/{location[2]}"
         )
 
         for index in self.indexes:
-            records = self._query_index(index)
+            try:
+                records = self._query_index(index)
+            except Exception as e:
+                logger.warning(f"{index}: query failed, skipping this crawl: {e}")
+                stats["indexes_failed"] += 1
+                continue
             stats["queried"] += len(records)
             todo = [
                 r
@@ -467,7 +448,14 @@ class CommonCrawlScraper:
             if not todo:
                 logger.info(f"{index}: nothing new to fetch")
                 continue
+            if max_per_index is not None and len(todo) > max_per_index:
+                logger.info(
+                    f"{index}: {len(todo)} new records, capped to {max_per_index}"
+                )
+                stats["capped"] += len(todo) - max_per_index
+                todo = todo[:max_per_index]
 
+            here: Dict[str, int] = {"queried": len(records)}
             pbar = tqdm(total=len(todo), desc=f"{index} fetch+parse")
             with ThreadPoolExecutor(max_workers=num_workers) as ex:
                 futures = {
@@ -476,6 +464,7 @@ class CommonCrawlScraper:
                 for fut in as_completed(futures):
                     outcome = fut.result()
                     stats[outcome] = stats.get(outcome, 0) + 1
+                    here[outcome] = here.get(outcome, 0) + 1
                     if outcome == "parsed":
                         existing.add(
                             self._record_hash(
@@ -484,116 +473,27 @@ class CommonCrawlScraper:
                         )
                     pbar.update(1)
             pbar.close()
+            per_index[index] = here
 
+        self._write_index_yield(location, per_index)
         return stats
 
+    def _write_index_yield(
+        self, location: Tuple[str, str, str], per_index: Dict[str, Dict[str, int]]
+    ) -> None:
+        """Persist the per-crawl breakdown next to the items it describes.
 
-# ── CLI ─────────────────────────────────────────────────────────────
-
-
-@click.command("common-crawl")
-@click.option(
-    "--spider",
-    "-s",
-    "spider_name",
-    default=None,
-    help="Spider name (e.g. mh_online). Required unless --dry-run.",
-)
-@click.option(
-    "--country",
-    "-c",
-    default=None,
-    help="Country slug to attribute the records to (resolves region + subregion via regions.yaml).",
-)
-@click.option(
-    "--index",
-    "indexes",
-    multiple=True,
-    help=(
-        "CC index name like 'CC-MAIN-2024-51'. Repeatable. "
-        "Defaults to the recent-crawl set in cc_config.DEFAULT_CC_INDEXES when omitted."
-    ),
-)
-@click.option(
-    "--workers",
-    "-w",
-    type=int,
-    default=8,
-    show_default=True,
-    help="WARC fetch concurrency.",
-)
-@click.option(
-    "--limit",
-    type=int,
-    default=5000,
-    show_default=True,
-    help="CC index page size (cc_limit).",
-)
-@click.option(
-    "--dry-run",
-    is_flag=True,
-    help="List configured spiders with prefix + path_re, then exit.",
-)
-def common_crawl_command(
-    spider_name: Optional[str],
-    country: Optional[str],
-    indexes: Tuple[str, ...],
-    workers: int,
-    limit: int,
-    dry_run: bool,
-) -> None:
-    """Fetch historical product data from Common Crawl WARC archives."""
-    logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s  %(levelname)s  %(message)s"
-    )
-
-    if dry_run:
-        target = (
-            {spider_name: SPIDER_CC_CONFIG[spider_name]}
-            if spider_name
-            else SPIDER_CC_CONFIG
-        )
-        if spider_name and spider_name not in SPIDER_CC_CONFIG:
-            raise click.BadParameter(
-                f"unknown spider '{spider_name}'. Available: {sorted(SPIDER_CC_CONFIG)}"
-            )
-        click.echo(f"{'SPIDER':<22} {'PREFIX':<48} PATH_RE")
-        click.echo("-" * 100)
-        for name, cfg in sorted(target.items()):
-            click.echo(f"{name:<22} {cfg['prefix']:<48} {cfg['path_re']}")
-        return
-
-    if not spider_name:
-        raise click.UsageError("--spider is required (or use --dry-run)")
-    if not country:
-        raise click.UsageError(
-            "--country is required to place output under data/prices/<region>/<sub>/<country>/"
-        )
-    if not indexes:
-        indexes = tuple(DEFAULT_CC_INDEXES)
-        click.echo(f"No --index given; using default set: {', '.join(indexes)}")
-
-    from core.config import get_country_path  # local import to keep startup cheap
-
-    try:
-        region, subregion, _ = get_country_path(country)
-    except ValueError as exc:
-        raise click.BadParameter(str(exc))
-
-    output_dir = get_prices_data_root()
-    scraper = CommonCrawlScraper(
-        spider_name=spider_name,
-        output_dir=output_dir,
-        indexes=list(indexes),
-        cc_limit=limit,
-    )
-    stats = scraper.run_scrape_cc((region, subregion, country), num_workers=workers)
-
-    click.echo()
-    click.echo(f"Run stats for {spider_name} ({region}/{subregion}/{country}):")
-    for k, v in stats.items():
-        click.echo(f"  {k:<14} {v}")
-
-
-if __name__ == "__main__":
-    common_crawl_command()
+        Merged with any previous run's file rather than overwritten: a source
+        is often finished across several sessions, and a crawl absent from
+        this run still happened.
+        """
+        path = self._items_dir(location).parent / "index_yield.json"
+        merged: Dict[str, Dict[str, int]] = {}
+        if path.exists():
+            try:
+                merged = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                merged = {}
+        merged.update(per_index)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(merged, indent=1, sort_keys=True), encoding="utf-8")

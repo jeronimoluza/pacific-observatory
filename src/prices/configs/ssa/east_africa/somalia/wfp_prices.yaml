@@ -1,0 +1,31 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_som
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_som
+url: https://data.humdata.org/dataset/wfp-food-prices-for-somalia
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (round 3, 2026-08-07): WFP food prices for Somalia via HDX
+  (shared SSA fetcher _shared.ssa.wfp_food_prices). Somalia had zero
+  manifests before this. Verified live: CKAN package_show resolves
+  wfp_food_prices_som.csv, currency SOS with some SLS (Somaliland
+  shilling) rows — countries.yaml default is SOS, kept as-emitted per
+  row. Max observation date is 2026-06-15 — current. 22 commodities:
+  cereals (maize, sorghum x3, wheat flour x2, rice), pulses (cowpeas),
+  milk (camel, cow), meat (camel, goat), live goat, oil (vegetable),
+  sugar, salt, onions, potatoes, pasta, plus Fuel (Super Petrol) and Fuel
+  (diesel). Sample at max date: 'Maize (white)'. Per-market rows collapsed
+  to a national monthly average per commodity/unit/currency/price-type;
+  market count + USD value kept in notes; retail vs wholesale kept in the
+  dedup hash. COICOP deferred to the classifier (item_name = WFP
+  commodity).
+  coicop_divisions: 01, 07
+  divisions_basis: walked_categories (full 22-commodity list enumerated
+  from the CSV; 20 are food, 2 are transport fuel — Fuel (Super Petrol),
+  Fuel (diesel) — the "non-food" category's only members)

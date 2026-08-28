@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: wellnutrifood_be
+url: https://wellnutrifood.be/
+language: fr
+cadence: weekly
+channel: specialty-food
+archive_prefix: "wellnutrifood.be/produit/"
+archive_path_re: '^/produit/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5
+  -> HTTP 200, 13KB JSON, standard WooCommerce Store API, no auth.
+  currency_code EUR / currency_minor_unit 2 matches countries.yaml. Sample:
+  'Tournesol graines bio 350g' EUR 3.75, other rows EUR 4.73. Certified
+  organic (BE-BIO-02) grocery specialist -- whole-catalog walk, no category
+  filter. First non-proxy Belgian price manifest in the repo.

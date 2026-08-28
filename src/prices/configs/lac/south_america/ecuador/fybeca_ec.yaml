@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: fybeca_ec
+url: https://www.fybeca.com/
+language: es
+currency: USD
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.fybeca.com/on/demandware.store/Sites-FybecaEcuador-Site/es_EC/"
+archive_path_re: '^/on/demandware\.store/Sites\-FybecaEcuador\-Site/es_EC/[^/?]+'
+notes: |
+  Fybeca, Ecuador's largest pharmacy chain. Bare domain is a meta-
+  refresh stub to www.fybeca.com (200 SSR). Salesforce Commerce Cloud
+  (Demandware) storefront: category pages embed a clean `data-gtm`
+  impressions JSON per product tile (id/name/price/category); further
+  pages are fetched from the AJAX grid endpoint
+  `Search-UpdateGrid?cgid=<id>&start=<N>&sz=18`, confirmed live to
+  return the same tagged markup. `cgid` = last URL path segment with
+  `-` -> `_`. Discovery walks the 12 top-level nav categories, capped at
+  25 pages (450 items) each. Re-verified live 2026-08-17: GET /belleza/
+  -> 200, cgid=belleza, data-count=2545, real USD prices e.g. 6.24.
+  Ecuador is dollarized; currency USD matches countries.yaml.
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

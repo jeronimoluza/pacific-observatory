@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.2"]
+channel: null
+source_key: pl_eurostat_gas
+module: _shared.eca.eurostat_energy
+function: fetch_pl_eurostat_gas
+url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_pc_202
+language: en
+cadence: biannual
+fallback_date: 2015-01-01
+notes: |
+  Eurostat household natural gas price (dataset nrg_pc_202), band D2
+  (20-199 GJ/yr), all taxes and levies included (I_TAX), reported in
+  national currency (NAC). Half-yearly cadence; fetcher emits only the latest
+  published half-year (idempotent on cutoff). Verified live 2026-08-07 via
+  the Eurostat JSON-stat 2.0 REST API, single-geo filter. Shared module
+  _shared/eca/eurostat_energy.py covers 34 ECA countries with one
+  implementation (7 countries have no reported gas grid and are excluded:
+  Cyprus, Malta, Finland, Iceland, Norway, Montenegro, Kosovo).
+  coicop_divisions: 04
+  divisions_basis: walked_categories (dataset scope is natural gas retail price only)

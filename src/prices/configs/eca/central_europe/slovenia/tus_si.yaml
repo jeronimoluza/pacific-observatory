@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tus_si
+url: https://www.tus.si/
+language: sl
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.tus.si/izdelki/"
+archive_path_re: '^/izdelki/[^/?]+'
+notes: |
+  WooCommerce confirmed (round-1 flagged the "woocommerce" string but
+  didn't confirm the Store API). /wp-json/ lists a "wc/store" namespace,
+  but the versioned /wp-json/wc/store/v1/products route 404s -- the older
+  non-versioned /wp-json/wc/store/products route works (same gotcha as
+  vipspar_mz.py). Re-verified live 2026-08-06: GET
+  /wp-json/wc/store/products?per_page=5 -> 200, real product 'Ledena
+  kava, 1 l' EUR 1.34 (on sale, regular 2.69), minor_unit=2.

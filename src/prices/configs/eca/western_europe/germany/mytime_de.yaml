@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mytime_de
+url: https://www.mytime.de/
+language: de
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.mytime.de/"
+archive_path_re: '^/[^/]+_\d+\.html$'
+notes: |
+  Custom PHP storefront, server-rendered category pages. Round-1 found
+  partial price evidence mixed with cart placeholders; full category-page
+  probe confirms real product cards. Re-verified live 2026-08-06: GET
+  /aepfel_210002501.html -> 200, 350KB, 8 product cards incl. 'Apfel Elstar'
+  (2 kg) EUR 4.09, 'Apfel Pink Lady' EUR 0.82. Pagination via ?page=N.
+  450 category slugs on the homepage nav (_mytime_de_categories.txt),
+  full-assortment nationwide shipping grocer per CSV.

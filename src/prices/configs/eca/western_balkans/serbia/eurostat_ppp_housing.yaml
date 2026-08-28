@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: cpi_benchmark
+coicop_classification: source_curated
+coicop_codes: ["04"]
+channel: null
+source_key: rs_eurostat_ppp_housing
+module: _shared.eca.eurostat_ppp_pli
+function: fetch_rs_eurostat_ppp_housing
+url: https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_ppp_ind
+language: en
+cadence: annual
+fallback_date: 2015-01-01
+notes: |
+  Eurostat PPP price level index (dataset prc_ppp_ind, na_item=PLI_EU27_2020,
+  ppp_cat=A0104), Housing, water, electricity, gas and other fuels, EU27_2020=100 base. Annual cadence; fetcher
+  emits only the latest published year (idempotent on cutoff). Verified live
+  2026-08-07 via the Eurostat JSON-stat 2.0 REST API, single-geo filter.
+  Shared module _shared/eca/eurostat_ppp_pli.py covers 38 ECA countries x 3
+  divisions (04/07/11) with one implementation. This is a *relative* price
+  level index (how expensive the category is vs. the EU average), not an
+  absolute local price -- emitted as IndexObservation like a CPI benchmark.
+  coicop_divisions: 04
+  divisions_basis: walked_categories (dataset's own COICOP-1999 analytical
+  category taxonomy maps 1:1 to this single COICOP-2018 division)

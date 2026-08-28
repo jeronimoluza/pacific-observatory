@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: decathlon_th
+channel: fashion
+url: https://www.decathlon.co.th/
+language: en
+cadence: weekly
+archive_prefix: "www.decathlon.co.th/p/"
+archive_path_re: '^/p/[^/?]+'
+notes: |
+  Onboarded 2026-08-07 (round-3 non-food shard, COICOP 03/05/08/09 gap).
+  Next.js storefront embeds a search-only Algolia app id + API key in page
+  HTML (NEXT_PUBLIC_ALGOLIA_APP_ID / NEXT_PUBLIC_ALGOLIA_APP_KEY). No
+  auth beyond those, no WAF observed. See _decathlon_base.py docstring —
+  whole-catalog crawl partitions by the sport_en facet since the plain
+  query endpoint caps at ~1000 results regardless of true nbHits.
+  coicop_divisions: 03, 09
+  divisions_basis: walked_categories (sport_en facet enumerated live:
+  team/racket/ball sports, running, cycling, camping/hiking gear, water
+  sports, fitness/strength equipment — 09 dominant; branded sportswear/
+  footwear across the same facets — 03)

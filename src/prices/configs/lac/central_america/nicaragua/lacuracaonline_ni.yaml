@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lacuracaonline_ni
+url: https://www.lacuracaonline.com/nicaragua/
+language: es
+currency: NIO
+cadence: weekly
+channel: electronics
+archive_prefix: "www.lacuracaonline.com/nicaragua/"
+archive_path_re: '^/nicaragua/[^/?]+'
+notes: |
+  Electronics/appliances/general-merchandise chain (TVs, motorcycles,
+  mattresses, appliances, sporting goods). Site also serves
+  honduras/guatemala/el_salvador under sibling /<country>/ paths on the
+  same domain -- this source covers nicaragua only, priced in NIO
+  (Cordoba, C$); the other three country paths are candidate future
+  sources with their own local currencies.
+
+  Live re-verified 2026-08-17: the bare domain root is a genuinely empty
+  LcoSplash country-picker splash page (confirms the onboarding probe's
+  read), and GraphQL is firewalled (POST /graphql -> 403 "GraphQL
+  disabled" from a Varnish edge, confirming the probe's REST ACL finding).
+  But one path segment deeper, /nicaragua/ is a plain server-rendered
+  Magento 2 Luma storefront, not a headless/SPA front -- reused
+  MagentoSSRBaseSpider as-is (product-item-link + data-price-amount
+  markup). Enumerability proof: c/electrodomesticos/cafeteras ?p=1 vs
+  ?p=2 return 24 + 1 fully disjoint product URLs (25-item leaf category,
+  Magento's default page size of 24). Sample: "Cafetera Black + Decker 12
+  Tazas Negro Café Craft" C$1,529.00 (data-price-amount="1529").
+
+  Subclass overrides MagentoSSRBaseSpider._item only to fix product_id:
+  every PDP URL on this install ends in the literal segment "/p", so the
+  base class's "last path segment" default would collapse all products to
+  id "p"; this spider instead pulls the trailing numeric SKU out of the
+  slug.
+
+  Smoke run: 60/60 rows, 0 null product_name, 0 null price, single currency
+  NIO. Full scrape still pending (orchestrator-queued).

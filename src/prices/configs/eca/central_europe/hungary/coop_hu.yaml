@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: coop_hu
+url: https://vasarlas.coop.hu/
+language: hu
+cadence: weekly
+channel: supermarket
+archive_prefix: "vasarlas.coop.hu/"
+archive_path_re: '^/[^/]+/?$'
+notes: |
+  Platform correction: CSV listed OpenCart (its route=product/list /
+  route=product/quickview&product_id=N URLs look OpenCart-shaped), but
+  re-verification shows the storefront is actually served by Shoprenter
+  (cdn.shoprenter.hu assets, HUF Currency JS global) -- a different
+  Hungarian SaaS platform that kept OpenCart-compatible route params,
+  likely a legacy-migration artifact. Scaffolded as a one-off scrapy_html
+  spider, not on the OpenCart base (none of its selectors match this
+  theme).
+
+  Category discovery uses the homepage nav's `<li id="cat_N"
+  class="...category-list...">` marker rather than URL shape, because
+  product URLs on this platform share the exact same trailing `-<id>`
+  pattern as category URLs. Re-verified live: e.g. "Top Taste Ropogós sült
+  hagymadarabok 100 g" 659 Ft.
+
+  cfg_currency (HUF) matches what the probe saw. Shelf-stable focus per
+  CSV (no fresh) -- reaches rural Hungary but the basket isn't comparable
+  to a full supermarket; also carries general merchandise (LEGO,
+  household/DIY) alongside food.

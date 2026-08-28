@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: panafoto_pa
+url: https://panafoto.com/
+language: es
+currency: USD
+cadence: weekly
+channel: electronics
+archive_prefix: "panafoto.com/"
+archive_path_re: '^/[\w][\w\-]*$'
+notes: |
+  Electronics/appliances chain, Magento 2 storefront. REST (/rest/V1/products) is auth-gated
+  (401 "not authorized"); the GraphQL endpoint (/graphql) is open and unauthenticated. Live
+  re-verified 2026-08-17: products(search:"tv") -> real USD prices (e.g. 'Televisor LED Nisato
+  55" | Google TV', final_price 289.95 USD). categoryList's root id=2 returns ~5.4k products
+  directly, matching the top-level "Categorias" node (id=3, ~5.2k) and avoiding double-counting
+  from overlapping seasonal/marketing categories (Black Friday, Navidad, Wish List, Dia del
+  Padre, etc.), so the spider walks the root id directly (WALK_ROOT_DIRECTLY) rather than
+  categoryList children, matching the Riba Smith (PA) precedent. Currency USD -- Panama's
+  official currency, confirmed in the GraphQL response itself. Full scrape: <ROWS> rows.

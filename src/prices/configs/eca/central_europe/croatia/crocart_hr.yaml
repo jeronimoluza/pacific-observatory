@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: classifier
+spider: crocart_hr
+url: https://www.cro-cart.hr/cijene
+language: hr
+cadence: weekly
+channel: other
+archive_prefix: "www.cro-cart.hr/cijene/"
+archive_path_re: '^/cijene/[^/?]+'
+notes: |
+  Cross-retailer price aggregator, not a retailer itself: CroCart ingests the
+  official daily price lists (cjenici) of 5 Croatian chains (Lidl, Kaufland,
+  Spar, Plodine, Eurospin) and republishes 23 fixed commodity comparison
+  pages (/cijene/<slug>). Re-verified live 2026-08-06: SSR HTML table with
+  real prices, e.g. 'Dukat Mlijeko UHT 2,8% m.m. 1 L' 0,85 EUR at Plodine.
+  Each row yields the lowest price + the single retailer offering it (an
+  "attributed_retailer" field on the item), not a full 5-way price matrix --
+  narrow (23 commodities) but high-fidelity official-price provenance.
+  channel set to "other" since CroCart itself is an aggregator, not a
+  supermarket/hypermarket/etc outlet.

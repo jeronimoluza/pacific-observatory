@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: mamame_iq
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.mamame.iq/
+language: en
+currency: IQD
+cadence: weekly
+archive_prefix: "www.mamame.iq/p/"
+archive_path_re: '^/p/[^/?]+'
+notes: |
+  Verified live 2026-08-18. Mother/baby-focused general retailer (feeding,
+  diapers, formula) alongside broader womens/mens wear and electronics
+  categories -- single first-party seller, no seller marketplace signal
+  found, so channel=dept-store not marketplace. Next.js SSR (App Router).
+  URL discovery: /sitemap.xml -> 10 /product-details/N.xml shards -> /p/
+  <slug> PDPs. Each PDP embeds Schema.org Product/Offer JSON-LD server-side.
+  CURRENCY QUIRK: offers.priceCurrency is hardcoded "AED" store-wide on
+  every product checked, but every other signal disagrees -- the page's
+  embedded site-config JSON states "currency":"IQD", and the rendered price
+  text reads e.g. "15,000 دينار" (dinar, not dirham). The JSON-LD price
+  *number* is correct; only the currency label is wrong. Spider hardcodes
+  IQD and ignores the JSON-LD currency field.
+  Smoke test (--max-items 5): 5 rows, IQD, real names + prices, e.g.
+  "Philips Avent - Natural Response Baby Plastic Bottle - 1+ months 260ml -
+  white" @ 15000 IQD.

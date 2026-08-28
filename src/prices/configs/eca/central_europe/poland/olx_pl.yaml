@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: olx_pl
+url: https://www.olx.pl/
+language: pl
+currency: PLN
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.olx.pl/d/oferta/"
+archive_path_re: '^/d/oferta/[^/?]+'
+notes: |
+  OLX Poland -- peer-to-peer classifieds (OLX Group platform, same family
+  as olx_pk / olx_ro already onboarded, different frontend generation).
+  The shard's original probe hit a generic CloudFront "Request blocked"
+  stub; curl_cffi impersonate=chrome124 did not reproduce it at all --
+  homepage and category pages both cleared at 200 on the first try.
+
+  Enumerability proof: https://www.olx.pl/elektronika/ page 1 vs
+  `?page=2` -- confirmed live 2026-08-17, only 2 of 52 ad ids shared
+  between the two pages (materially different).
+
+  Category listing pages embed the full result set as a JSON-in-JS-string
+  blob (`window.__PRERENDERED_STATE__= "<escaped JSON>"`) at
+  `listing.listing.ads[]`; each ad's `price.regularPrice.value` is a clean
+  numeric PLN value with `currencyCode`, no locale-string parsing needed.
+
+  Scoped in-spider to 6 consumer-goods top-level categories (electronics,
+  fashion, kids, pets, agriculture/garden, music & education) --
+  vehicles, real estate, jobs and services excluded as out of scope for a
+  retail price basket. Not dominated by cars or real estate.
+
+  Smoke run (--max-items 60): see report. FULL scrape is still pending --
+  the orchestrator queues it.

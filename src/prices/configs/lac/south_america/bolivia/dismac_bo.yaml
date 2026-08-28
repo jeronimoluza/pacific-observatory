@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dismac_bo
+url: https://www.dismac.com.bo/
+language: es
+currency: BOB
+cadence: weekly
+channel: electronics
+archive_prefix: "www.dismac.com.bo/"
+archive_path_re: '^/[^/]+\.html$'
+notes: |
+  Common Crawl archive note: the live scraper's product URLs are a bare
+  root-level slug with no suffix, but CC-MAIN-2026-30 only holds an older
+  URL scheme ending `.html` (21 records within the first 4 cdx blocks).
+  That shape is not product-exclusive on this flat single-level CMS --
+  spot-checking the 21 hits found ~17/21 (81%) real products, the rest
+  static pages (marcas.html, contactos-cliente.html, promo landing
+  pages) that happen to share the same one-segment `.html` shape; there
+  is no further path signal to exclude them with.
+  Dismac (Bolivia) -- electronics/appliances retailer, Magento 2. Shard
+  flagged this TIER_1A_HTML (REST 401), but re-probing live 2026-08-17
+  found /graphql open and unauthenticated -- used MagentoGraphQLBaseSpider
+  instead of hand-rolled SSR HTML regex. Root category id=3 carries the
+  full catalog (6,315 products at probe time) directly, so
+  WALK_ROOT_DIRECTLY=True. Real BOB prices confirmed (e.g. "Parlante JVC
+  Speaker XL LED 230W" at 3699 BOB).
+  Full scrape 2026-08-17: 6,299 rows (16 zero-priced warranty-addon rows
+  dropped), 0 nulls, 1 currency, 6,299/6,299 distinct product_id, category
+  100% populated (real leaf-level labels).

@@ -1,0 +1,29 @@
+scaffolding: spider
+spider: inkafarma_pe
+url: https://inkafarma.pe/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: es
+currency: PEN
+cadence: weekly
+coicop_codes: null
+archive_prefix: "inkafarma.pe/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Peruvian pharmacy chain. Angular SPA over a mixed backend; the practical
+  scrape surface is Algolia (app id 15W622LAQ4, index "products"), key
+  pulled live 2026-08-17 from the site's main JS bundle. The original
+  probe's AWS Lambda product-detail lever
+  (execute-api.us-east-1.amazonaws.com) is a confirmed dead end - 200 with
+  content-length:0 even replaying a valid anonymous Firebase idToken and
+  matching headers. Empty-query pagination walks the full catalog
+  (nbHits=45,944 at hitsPerPage=100). Enumerability proven: page=0 vs
+  page=1 returned disjoint id sets. Price is `priceList` (regular shelf
+  price, before loyalty-card discount). Currency: no priceCurrency field is
+  exposed by the API or a server-rendered PDP (the product page is a
+  client-rendered SPA shell); PEN is Peru's official currency and matches
+  observed price magnitudes (e.g. S/67.90 for adult diapers) - not
+  confirmed on-page the way farmatodo_ve's VES was. Smoke run: 60 rows, see
+  report. Full scrape pending.

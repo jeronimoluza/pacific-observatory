@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cabitonlineshop_sb
+url: https://take.app/cabitonlineshop
+archive_prefix: "take.app/cabitonlineshop/p/"
+archive_path_re: '^/cabitonlineshop/p/[^/?]+$'
+language: en
+cadence: weekly
+channel: convenience
+notes: |
+  CAB'IT Online Shop -- household grocery storefront on the shared take.app
+  Next.js SaaS platform (store alias "cabitonlineshop"). Server-rendered:
+  category pages at https://take.app/<alias>/c/<category_id> carry product
+  cards with name (img alt) + price ($x.xx) directly in raw HTML, no
+  Playwright/API call needed at collection time. Category ids discovered
+  from /c/ links on the store home page (15 categories). Store metadata
+  (embedded RSC payload) confirms country=SB, currency=SBD -- set at spider
+  class level, not parsed from the "$" glyph. ~39 unique SKUs measured
+  during probing (small storefront; sibling cabitfoody_sb is the larger
+  ~300-SKU store under the same CAB'IT brand). Verified 2026-08-11, test
+  run returned >=5 valid rows. Platform pattern generalizes to every
+  take.app storefront (see spider docstring) -- also used by cabitfoody_sb;
+  a Brunei take.app storefront is being onboarded separately.

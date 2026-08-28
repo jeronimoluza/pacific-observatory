@@ -8,3 +8,5 @@ url: https://www.lamudi.com.ph/rent/
 language: en
 cadence: weekly
 channel: real-estate
+archive_prefix: "www.lamudi.com.ph/property/"
+archive_path_re: '^/property/[^/?]+'

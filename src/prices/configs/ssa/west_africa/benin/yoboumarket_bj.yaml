@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: yoboumarket_bj
+url: https://www.yoboumarket.com/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  Next.js app with an open, unauthenticated JSON API. GET
+  https://www.yoboumarket.com/api/products?limit=all&includeInactive=true
+  -> 200, 578KB, 778 products, no auth (re-verified live 2026-08-06).
+  Sample: 'Chou' (cabbage) 500 FCFA, 'Biscottes au froment' 600 XOF.
+  Currency XOF matches countries.yaml; prices are plain integers, no
+  minor-unit division. Thinner and more general-merchandise than
+  NolMarket; food is roughly 130-180 of 778 SKUs once the 539
+  uncategorized rows are triaged downstream by the classifier. Category
+  breakdown seen: Alimentation, Cuisine, Fruits et Legumes, Petit
+  Dejeuner, Hygiene et Cosmetique, Nettoyages, Electromenagers,
+  Pagnes/tissus, Grignoter, Epices, Savon, plus many uncategorized.

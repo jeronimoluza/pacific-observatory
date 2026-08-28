@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hyperone_eg
+url: https://www.hyperone.com.eg/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.hyperone.com.eg/"
+archive_path_re: '^/[^/]+/?$'
+notes: |
+  Large Egyptian-owned hypermarket, welfare-relevant. Nuxt SPA fronting
+  Magento 2; the storefront's own /graphql proxy 400s on a raw POST body,
+  so the spider hits the mcprod.hyperone.com.eg/graphql backend directly
+  (discovered via window.__NUXT__.config.apiUrl), no auth required. Live
+  re-verify: POST mcprod.hyperone.com.eg/graphql products(search:"rice")
+  -> 200, "Top Value Luxury Egyptian Rice - 1K" EGP 26.95. Categories incl.
+  Fruits & Vegetables, Butchery & Poultry, Seafood, Dairy/Eggs/Cheese,
+  Bakery, Herbs & Spices, Pickles. Currency EGP matches countries.yaml.

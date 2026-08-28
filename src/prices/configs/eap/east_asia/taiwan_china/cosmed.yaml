@@ -1,3 +1,5 @@
 spider: cosmed
 language: zh
 channel: hypermarket
+archive_prefix: "shop.cosmed.com.tw/SalePage/"
+archive_path_re: "/SalePage/Index/"

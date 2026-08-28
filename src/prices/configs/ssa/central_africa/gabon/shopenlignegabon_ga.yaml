@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shopenlignegabon_ga
+url: https://shopenlignegabon.net/
+language: fr
+cadence: weekly
+channel: dept-store
+archive_prefix: "shopenlignegabon.net/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  WooCommerce Store API, /wp-json/wc/store/v1/products?per_page=100&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, real Libreville general-
+  merchandise SKUs — 'Chaussures Richelieu Brogue Noires pour Homme'
+  XAF 33500, 'Machine a Espresso Portable Sans Fil' XAF 28500, 'Chargeur
+  Rapide iPhone 25W' XAF 2950, 'Batterie Externe 10000 mAh' XAF 8500, 'Cle
+  USB 16 Go' XAF 5950. currency_code=XAF from the API matches
+  countries.yaml, minor_unit=0 (correct, XAF has no subdivision). Non-food
+  (footwear, small appliances, electronics/accessories) — fair game per
+  scope rules. First Gabon source in the repo: the shared WFP fetcher's
+  Gabon HDX panel was checked and is stale (max obs 2017-06-15, only 4
+  commodities) so it was dropped, leaving Gabon at zero coverage until
+  this.

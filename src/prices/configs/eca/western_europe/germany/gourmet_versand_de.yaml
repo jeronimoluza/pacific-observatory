@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gourmet_versand_de
+url: https://www.gourmet-versand.com/
+language: de
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.gourmet-versand.com/de/article"
+archive_path_re: '^/de/article\d+/'
+notes: |
+  Custom in-house PHP storefront (no CMS generator tag). URL discovery
+  via the Google sitemap listed in robots.txt (sitemap_de.xml, 14,421
+  URLs; 13,624 of them are /de/article<id>/... product-detail pages,
+  filtered by that path segment). Each PDP embeds a Schema.org Product
+  JSON-LD block; unlike most sites, price lives under
+  offers.priceSpecification.price/priceCurrency, not offers.price
+  directly -- confirmed live 2026-08-18, no rendering needed. Some
+  "TAGESPREIS" truffle/caviar items are unit-priced per gram via the
+  JSON-LD's own referenceQuantity; left as the site declares it rather
+  than normalized to a per-pack price.
+
+  Gourmet/delicatessen catalog -- truffles, caviar, cheese, oils.
+  Samples: "Trueffel Winter - Edeltrueffel frisch aus Frankreich..."
+  EUR 2.23/g; "Desietra Baeriskaya Kaviar (baerii)... 50 g" EUR 50.99.
+timeout: 14400

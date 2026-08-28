@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: courts_jm
+url: https://www.courts.com/jamaica/
+language: en
+currency: JMD
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.courts.com/jamaica/"
+archive_path_re: '^/jamaica/[^/?]+'
+notes: |
+  Courts Jamaica (Unicomer Group). shopcourts.com 301s -> courts.com ->
+  www.courts.com, one shared multi-website Magento 2 instance. Investigated
+  the "one storefront or many" question the onboarding brief flagged: GET
+  /rest/V1/store/storeConfigs (open, unauthenticated) lists 11 separate
+  Caribbean-country storefronts (Antigua, Barbados, Belize, Dominica,
+  Grenada, Guyana, Jamaica, St Kitts and Nevis, St Lucia, St Vincent,
+  Trinidad and Tobago) plus a distinct "Omni" Curacao banner on
+  shopomni.com -- genuinely separate storefronts sharing one product
+  catalog table, not one storefront. /graphql is closed (403). The
+  unscoped /rest/V1/products surface (what the shard probed) returns each
+  product's default-scope price, which is a 999999/9999999/0 sentinel for
+  most SKUs ("not sold in the default view"); store-scoped requests at
+  /rest/<store_code>/V1/products return real per-country prices (verified
+  live 2026-08-17: SKU T1827SP priced at 40 TTD on Trinidad's storefront
+  while showing 9999999 on Jamaica/Barbados/Guyana). Shipped one spider per
+  country storefront (courts_jm/courts_bb/courts_gy/courts_tt), matching
+  the existing jarir_* multi-country convention. General merchandise/
+  appliance/furniture catalog -> channel: dept-store, not electronics.
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

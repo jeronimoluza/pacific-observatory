@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mojsupermarket_me
+url: https://mojsupermarket.me/
+language: sr
+cadence: weekly
+channel: supermarket
+notes: |
+  mojSupermarket -- Montenegro's first online grocery store with home
+  delivery (Podgorica). Custom PHP storefront, plain server-rendered HTML,
+  no WAF hit. Bespoke spider (`mojsupermarket_me.py`) walks nested
+  `/{slug}-{id}.html` category links recursively; product cards are
+  `<li class="product">` with a `title` attr name and
+  `<span class="amount">PRICE &euro;</span>`. Montenegro uses the euro
+  unofficially (no local currency of its own -- matches countries.yaml).
+  Re-verified live 2026-08-06: /Konzerve+i+tegle-7/Ajvar-51.html -> 200, 14
+  real product cards incl. 'Ajvar domaći blagi 550g - Bakina Tajna' EUR
+  5.45, 'Ajvar blagi 350g - Podravka' EUR 1.85.
+
+  Wolt checked and confirmed NOT live in Montenegro: /v1/pages/front for
+  both Podgorica and Budva coordinates returns a no-content /
+  nearest-city-fallback page, unlike the 6 other Western
+  Balkans/Baltic/Mediterranean markets it does serve (see the wolt sources
+  in this wave). bonella.me (WooCommerce) was checked and dropped: every
+  product returns price=0 with an identical scrambled placeholder
+  description across unrelated product names -- a demo/template storefront,
+  not real inventory (same defect class as round-1's Bazariko/Beryz).

@@ -1,0 +1,36 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_ssd
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_ssd
+url: https://data.humdata.org/dataset/wfp-food-prices-for-south-sudan
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (round 3, 2026-08-07): WFP food prices for South Sudan via
+  HDX (shared SSA fetcher _shared.ssa.wfp_food_prices). South Sudan had
+  zero manifests before this. Verified live: CKAN package_show resolves
+  wfp_food_prices_ssd.csv, currency SSP throughout (matches
+  countries.yaml). Max observation date is 2026-07-15 — current. 54
+  commodities, richest panel in this batch: cereals (maize x3, sorghum
+  x6 variants, rice, millet, wheat flour), pulses (beans x2, cowpeas,
+  groundnuts x2), tubers/veg (cassava x3, potatoes, cabbage, onions,
+  tomatoes, pumpkin/cassava leaves, sukuma wiki), livestock (cattle, goat,
+  sheep) and meat (beef, goat, chicken), milk, dried/fresh fish, sugar,
+  salt, oil, charcoal, plus Fuel (diesel/petrol, incl. separate parallel-
+  market series) and non-COICOP wage/milling-cost series (excluded from
+  the division tag below). Sample at max date: 'Maize (white)'.
+  Per-market rows collapsed to a national monthly average per commodity/
+  unit/currency/price-type; market count + USD value kept in notes;
+  retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).
+  coicop_divisions: 01, 04, 07
+  divisions_basis: walked_categories (full 54-commodity list enumerated
+  from the CSV; food items -> 01, Charcoal -> 04 (other fuels), Fuel
+  (diesel/petrol, incl. parallel-market variants) -> 07; Wage and Milling
+  cost series are not COICOP consumption items and are excluded from the
+  tag)

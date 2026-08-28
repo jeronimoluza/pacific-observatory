@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: canineandco_za
+url: https://canineandco.co.za/
+language: en
+cadence: weekly
+channel: pet
+archive_prefix: "canineandco.co.za/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront on the custom domain, /products.json?limit=250&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, real pet-store SKUs —
+  'Pets Elite Ostrich Liver Biltong Dog Chew Treats - Limited' ZAR 25.00,
+  'PetSafe Sport Remote Trainer 700m' ZAR 6930.00, 'Amigo Karoo Ostrich
+  Chips Dog Treats' ZAR 57.00, 'Amigo Karoo Ostrich Jerky Dog Treats'
+  ZAR 111.00, "Hill's Science Plan Puppy Medium Welcome Home Pack"
+  ZAR 350.00. Page bundle confirms `"currency":"ZAR"`, matches
+  countries.yaml. Mixed catalog (pet food, treats, hardware/accessories);
+  coicop_codes omitted (classifier assigns per-SKU).

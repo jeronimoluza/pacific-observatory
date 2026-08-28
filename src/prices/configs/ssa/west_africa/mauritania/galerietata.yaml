@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: galerietata
+url: http://galerietata.com/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "galerietata.com/accueil/"
+archive_path_re: '^/accueil/[^/?]+'
+notes: |
+  PrestaShop SSR category HTML. Plain HTTP: the site's TLS cert doesn't
+  match the hostname (curl needs -k), so the spider is pinned to http://.
+  Re-verified live: category page /3-alimentaire returns real MRU-priced
+  products (e.g. "AMORA KETCHUP 280G" 58,00MRU). Category tree
+  auto-discovered from the homepage nav.
+
+  cfg_currency (MRU) matches what the probe saw.

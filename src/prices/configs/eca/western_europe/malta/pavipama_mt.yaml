@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pavipama_mt
+url: https://www.pavipama.com.mt/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Public JSON API on pavipama.com.mt (Origin/Referer headers set to the
+  www subdomain, matching the confirmed-working probe). GET
+  /api/cli/ecommerce/products/featured?p=0&store= is actually the full
+  paginated catalog browse despite the "featured" name — re-verified live
+  2026-08-06: totalElements=3191, totalPages=160 at size=20. Sample:
+  'ACQUA FRIZZANTE 500ML' price=0.25 EUR, brand CONAD. 23 top-level
+  categories incl. fruit&veg, fish, butcher, frozen, chilled, bakery,
+  beverages, cellar, pasta shop. The domain implied by an older CSV export
+  (pavishopping.com) is DEAD (NXDOMAIN); pavipama.com.mt is the live
+  domain, found via search during probing.

@@ -1,3 +1,5 @@
 spider: food_pro
 language: en
 channel: supermarket
+archive_prefix: "fpr.com.pg/product/"
+archive_path_re: "^/product/[^/?]+"

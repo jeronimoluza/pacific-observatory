@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: koro_ie
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.koro.com/ie/detail/"
+archive_path_re: '^/ie/detail/[^/?]+'
+notes: |
+  Nuxt3 frontend over the shared Shopware 6 backend (bff.koro.com); one
+  sales channel per country, this is koro_ie. Store API POST
+  /store-api/product with sw-access-key header. Requires
+  "total-count-mode":1 or Shopware reports total==page size. Access key is
+  channel-scoped -- do not reuse across KoRo country storefronts. Full
+  platform writeup: see eca/western_europe/austria/koro_at.yaml.
+
+  Verified live 2026-08-07: POST with the IE access key returns real IE
+  catalog rows priced in EUR, product names in English. URL built as
+  www.koro.com/ie/detail/{id}.
+
+  coicop_divisions: 01, 05, 06
+  divisions_basis: walked_categories (14 top-level nav categories enumerated
+  via /store-api/navigation on the shared platform; same category tree
+  across all KoRo channels)

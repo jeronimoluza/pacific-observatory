@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: telesur_sr
+url: https://www.telesur.sr/
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: nl
+currency: SRD
+cadence: weekly
+coicop_codes: null
+archive_prefix: "www.telesur.sr/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Suriname's national telecom's device shop (phones, cases, chargers,
+  routers). WooCommerce Store API confirmed live 2026-08-17
+  (https://www.telesur.sr/wp-json/wc/store/v1/products); the bare
+  telesur.sr domain 301s to www but drops the /wp-json/ path onto the
+  homepage, so the spider targets www.telesur.sr directly. prices.currency_
+  code=SRD, minor_unit=2. Descriptions are Dutch. Full scrape: see report
+  for row count.
+  QA sweep flagged NO_CATEGORY (0% populated) and 2 ZERO_PRICES rows
+  2026-08-17. Category confirmed genuinely absent upstream, not a spider
+  bug: curl of the live Store API (wp-json/wc/store/v1/products) and the
+  categories endpoint show the entire 37-product catalog dumped into a
+  single literal "Geen categorie" ("No category" in Dutch) WooCommerce
+  category -- the store never assigned real categories. Left as null;
+  _woo_base already extracts `categories` correctly when a site provides
+  them. The 2 ZERO_PRICES rows were "Opwaarderen"/"Beltegoed Opwaarderen"
+  (Dutch: prepaid mobile-credit top-up), a variable-amount product with no
+  fixed price -- genuine, not a parse failure. Fixed at the spider: `_item`
+  now drops price<=0 rows before they're yielded.

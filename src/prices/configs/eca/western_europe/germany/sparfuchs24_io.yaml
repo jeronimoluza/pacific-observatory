@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sparfuchs24_io
+url: https://sparfuchs24.io/
+language: de
+cadence: weekly
+channel: marketplace
+active: false
+inactive_reason: "Affiliate deals aggregator: every product is WooCommerce type: external, so the listed price is a deal price captured from a third-party seller, not a price this outlet authors. Same class as grabthedeals.com and vitalityhealth.io, both rejected on 2026-08-18. Spider and manifest kept intact so it can be switched on if aggregator prices are ever brought into scope."
+archive_prefix: "sparfuchs24.io/produkt/"
+archive_path_re: '^/produkt/[^/?]+'
+notes: |
+  WordPress/WooCommerce deals-aggregator ("Preisvergleich & Top
+  Angebote" -- price comparison / top deals). Every product is
+  WooCommerce type: external (an affiliate link out to the real
+  seller, e.g. Amazon) -- prices are the deal price the site captured
+  at listing time, not a first-party retail price, hence channel:
+  marketplace (matches the "third-party seller, price not authored by
+  the outlet" test; this already excludes it from
+  enrich/census.py's corpus census).
+
+  curl_cffi (chrome124/120/116) 403s on every request including
+  /sitemap.xml -- but a real headless Chromium clears the challenge on
+  first navigation with no CAPTCHA (confirmed live 2026-08-18: plain
+  Playwright goto to / -> 200). scrapy-playwright's default browser
+  context is shared across requests in one spider run, so a warmup
+  request to / earns the Cloudflare clearance cookie the subsequent
+  WooCommerce Store API requests (/wp-json/wc/store/v1/products) need.
+  Navigating Playwright directly to the JSON API URL wraps the body in
+  Chrome's built-in JSON viewer HTML, so the spider strips the <pre>
+  wrapper and runs one html.unescape() pass before json.loads().
+
+  Sample confirmed: "OOONO Co-Driver NO2 [NEUES Modell 2025]..." EUR
+  56.00.

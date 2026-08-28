@@ -6,6 +6,8 @@ spider: drakes_supermarkets
 url: https://online.drakes.com.au
 language: en
 channel: supermarket
+archive_prefix: "087.drakes.com.au/lines/"
+archive_path_re: '^/lines/[^/?]+'
 notes: |
   Largest independent AU grocer. Per-store "Shopfront" (Marketplacer) app on
   numbered store subdomains (087 = Drakes McDowall, used as representative
@@ -15,3 +17,4 @@ notes: |
   087.drakes.com.au/sitemap.xml (~14.8k /lines/ URLs) and parses JSON-LD.
   Plain requests (browser UA), no Playwright/impersonation. Prices are the 087
   store's; zero-price lines skipped.
+timeout: 14400

@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: magik_tn
+url: https://magik.tn/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "magik.tn/produit/"
+archive_path_re: '^/produit/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /produits?category_id=1&data_from=category
+  &page=1 -> HTTP 200, 205KB SSR HTML (round-1 flagged the product-detail
+  page, which IS a client-hydrated Next.js shell, but the category listing
+  page is plain server-rendered HTML with both name and price in the raw
+  bytes -- not the API round-1 was looking for). Sample: 'Courge rouge قرع
+  أحمر' TND 1.800 (was TND 2.000 -- <del> strikethrough is the pre-discount
+  price, <span class="text-accent"> is current), 'Tomates طماطم' TND 1.800.
+  27 categories (Légumes, Fruits, Volaille, Poissons, Epicerie, Fromages,
+  Charcuterie, Salaisons, Boissons, Biscuits & Chocolats, Huiles, ...),
+  unbounded page=N pagination stopping at first empty page. Gabès-area
+  fresh grocer -- fills the fresh-produce/meat/fish gap Carrefour TN and
+  Otrity leave (per CSV note). Currency TND matches countries.yaml.

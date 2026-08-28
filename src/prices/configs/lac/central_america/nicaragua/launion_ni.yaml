@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: launion_ni
+url: https://www.launion.com.ni/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "launion.com.ni/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Second, independent VTEX tenant for Nicaragua (not the Walmart-Centroamerica one), meat
+  confirmed. Re-verified live: products/search?_from=0&_to=9 -> HTTP 206, 171KB, 'Filete Pechuga
+  Pollo Sin Piel - 1Lb' NIO 132.00. Currency matches countries.yaml (NIO).

@@ -8,6 +8,8 @@ language: en
 cadence: daily
 channel: supermarket
 currency: NZD
+archive_prefix: "www.farro.co.nz/shop/product/"
+archive_path_re: '^/shop/product/[^/?]+'
 notes: |
   Premium Auckland grocer (7 stores), NOT Foodstuffs-affiliated so outside the
   Akamai block on woolworths/newworld/paknsave NZ. Blazor WebAssembly SPA

@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gomlaexpress_eg
+url: https://gomlaexpress.com/
+language: ar
+cadence: weekly
+channel: dept-store
+archive_prefix: "gomlaexpress.com/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  WooCommerce Store API confirmed live 2026-08-18: GET
+  /wp-json/wc/store/v1/products?per_page=100&page=N -> 200, EGP JSON
+  prices (currency_minor_unit=0, whole EGP, no division needed).
+  Broad first-party catalog -- shoes/bags, home textiles, cleaning
+  supplies, packaging materials, a "Gomla Go"/"جملة الجملة" wholesale
+  line -- plus smaller food categories (dates, spices, frozen
+  vegetables, cheese, ice cream); shoes/textiles/packaging dominate by
+  count so channel: dept-store rather than specialty-food. Product
+  names are Arabic. Sample: "علبة حصالة كرتون دائرية" EGP 8.00.

@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sheypoor_ir
+url: https://www.sheypoor.com/
+language: fa
+currency: IRR
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.sheypoor.com/v/"
+archive_path_re: '^/v/[^/?]+'
+notes: |
+  Verified live 2026-08-17: sheypoor.com — Iranian classifieds marketplace
+  (SSR react-virtuoso virtualized list). Confirmed real listings at
+  /s/tehran/<category>?page=N, e.g. "کارتخوان سیار" (mobile card reader)
+  priced ۹,۰۰۰,۰۰۰ (9,000,000) Toman. Prices on-site are quoted in Toman,
+  not Rial; the spider multiplies the scraped value by 10 and reports it
+  as IRR (ISO 4217 has no Toman code, and Toman is simply Rial/10 — not a
+  separate currency). Ads with no listed price (negotiable/توافقی,
+  common on real-estate and jobs listings) are correctly skipped —
+  16/26 cards on a sampled Tehran page carried a real price.
+  Walks the 10 top-level Tehran category slugs (vehicles, real-estate,
+  jobs, services, home, sports-games-hobbies, electronics,
+  industrial-commercial, mobile-tablet-accessories, personal-stuff) with
+  `?page=N` pagination, capped at 60 pages/category. Scope is Tehran city
+  only (the site's default region); by volume expect vehicles/real-estate
+  to dominate, consistent with general classifieds sites in this batch
+  (tayara_tn, patuljak_me).

@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: courts_tt
+url: https://www.courts.com/trinidadandtobago/
+language: en
+currency: TTD
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.courts.com/trinidadandtobago/"
+archive_path_re: '^/trinidadandtobago/[^/?]+'
+notes: |
+  Courts Trinidad and Tobago (Unicomer Group). See
+  lac/caribbean/jamaica/courts_jm.yaml for the full platform writeup --
+  shared multi-website Magento instance, 11 country storefronts confirmed
+  via the open /rest/V1/store/storeConfigs endpoint, store-scoped REST
+  (/rest/sc_trinidadandtobago_sv/V1/products) required to get real TTD
+  prices past the 999999/9999999/0 default-scope sentinel.
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

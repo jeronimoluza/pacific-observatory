@@ -7,6 +7,8 @@ url: https://minimarket.yogyaonline.co.id/
 language: id
 cadence: daily
 channel: supermarket
+archive_prefix: "minimarket.yogyaonline.co.id/minimarket/detail/"
+archive_path_re: '^/minimarket/detail/[^/?]+'
 notes: |
   Yogya Group minimarket (convenience-store) storefront, West/Central Java.
   Server-rendered category listing pages carry name+SKU+price inline; no

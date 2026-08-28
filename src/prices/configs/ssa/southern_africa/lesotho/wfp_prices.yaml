@@ -1,0 +1,30 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_lso
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_lso
+url: https://data.humdata.org/dataset/wfp-food-prices-for-lesotho
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (round 3, 2026-08-07): WFP food prices for Lesotho via HDX
+  (shared SSA fetcher _shared.ssa.wfp_food_prices). Lesotho previously
+  had two retailer_sku manifests (virtualmall_ls, wizashopping_ls) but no
+  official_avg source. Verified live: CKAN package_show resolves
+  wfp_food_prices_lso.csv, currency LSL throughout (matches
+  countries.yaml). Max observation date is 2026-06-15 — current. Small,
+  focused panel: 9 commodities — maize meal (incl. imported), wheat flour,
+  wheat meal, rice, brown bread, beans (sugar-red), split peas, sunflower
+  oil. Sample at max date: 'Maize meal'. Per-market rows collapsed to a
+  national monthly average per commodity/unit/currency/price-type; market
+  count + USD value kept in notes; retail vs wholesale kept in the dedup
+  hash. COICOP deferred to the classifier (item_name = WFP commodity).
+  coicop_divisions: 01
+  divisions_basis: walked_categories (full 9-commodity list enumerated
+  from the CSV; only 3 WFP categories present — cereals and tubers, oil
+  and fats, pulses and nuts — all food, no non-food category in this
+  panel)

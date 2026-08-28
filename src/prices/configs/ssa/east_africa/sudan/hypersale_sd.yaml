@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hypersale_sd
+url: https://www.hypersale.sd/category/hypersale-super-market
+language: ar
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.hypersale.sd/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Laravel/6valley-theme marketplace; the grocery vertical is a dedicated
+  category distinct from the general marketplace (electronics/fashion/
+  beauty also on this domain). Re-verified live 2026-08-06: HTTP 200,
+  430KB SSR HTML, 27 pages of ?page=N pagination, real product cards with
+  price+name e.g. 'Karim Coconut Milk 400ml' 900 SDG. Catalog is
+  predominantly Arabic-language product names (re-verified this pass;
+  shard evidence sampled a differently-ordered, more English-leaning page).
+  CURRENCY GOTCHA: prices render as "24.000SDG" and also bare "800SDG" with
+  no separator at all on the same page -- confirms '.' is a thousands
+  separator (European/PHP number_format convention), NOT a decimal point.
+  The spider strips '.' rather than treating it as cents. Currency SDG
+  matches countries.yaml.

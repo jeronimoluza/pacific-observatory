@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: massy_stores_bb
+url: https://www.shopmassystoresbb.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.shopmassystoresbb.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: default /wp-json/wc/store/v1/products 500s on
+  this install; GET /?rest_route=/wc/store/v1/products&per_page=5 -> HTTP
+  200, 22.5KB JSON. Sample: 'SELECT PASTA Shells 340g' price 329 minor units
+  / currency_minor_unit=2 -> BBD 3.29. currency_code BBD matches
+  countries.yaml. Real supermarket chain (Massy Group). Whole-catalog walk
+  (no category filter) via the ?rest_route= REST-route form.

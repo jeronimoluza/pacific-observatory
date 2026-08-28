@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tata_uy
+url: https://www.tata.com.uy/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "tatauy.myvtex.com/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Full-line Uruguayan chain (Grupo Ta-Ta), VTEX. Custom domain
+  www.tata.com.uy 404s on /api/catalog_system/pub/... (Gatsby front-end
+  only calls the API from the tenant's myvtex.com origin) -- VTEX origin
+  bypass used: tatauy.myvtex.com. Re-verified live 2026-08-06:
+  tatauy.myvtex.com/api/catalog_system/pub/products/search?_from=0&_to=4
+  -> HTTP 206, 44.6KB JSON, e.g. 'Lunchera Wilson Térmica' UYU 890.
+  Category tree endpoint also live (200) from the same origin. Currency
+  UYU matches countries.yaml.

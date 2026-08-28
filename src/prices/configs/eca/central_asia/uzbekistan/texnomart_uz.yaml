@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: texnomart_uz
+url: https://texnomart.uz/
+language: uz
+currency: UZS
+cadence: weekly
+channel: electronics
+archive_prefix: "texnomart.uz/product/detail/"
+archive_path_re: '^/product/detail/[^/?]+'
+notes: |
+  texnomart.uz — Uzbekistan electronics/appliances retailer. Verified live
+  2026-08-17: the homepage itself is a Nuxt client-shell (unusable devalue
+  payload; the api.texnomart.uz subdomain referenced in it does not resolve
+  from here), but category listing pages under /katalog/<slug>/ are
+  properly server-rendered with real UZS ("so'm") prices and accept
+  ?page=N pagination. 95 top-level category slugs discovered from
+  /katalog/. Exact per-category page count parsed from the on-page
+  "1 - 20 of N items" counter, capped at 10 pages/category.
+  coicop_classification left as classifier.
+  Full scrape 2026-08-17: 2,528 rows, 2,528 distinct product_id, 0 null names
+  or prices, all UZS, price range 2,000-74,290,000, 55 distinct categories.
+  Category labels are SEO strings carrying a "Toshkentda" (in Tashkent) suffix;
+  the leading segment is the real category. The catalog reaches well past
+  electronics into houseware and home care (kitchen dishes, clothing-care
+  products, home-care goods alongside smartphones and kitchen appliances), so
+  coicop_codes is left unset and the classifier assigns leaves per product.
+  Per-category counts saturate near 200 at the page cap, so category rank
+  reflects the cap rather than true catalog share.
+  NOTE: an earlier run of this source reported only 104 rows. That was a
+  truncated run, not a catalog ceiling — do not treat 104 as a baseline.

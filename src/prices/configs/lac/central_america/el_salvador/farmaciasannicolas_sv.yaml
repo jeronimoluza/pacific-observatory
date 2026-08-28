@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmaciasannicolas_sv
+url: https://www.farmaciasannicolas.com/
+language: es
+currency: USD
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.farmaciasannicolas.com/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Farmacias San Nicolas, El Salvador. Blazor Server-rendered storefront;
+  each category page prerenders 20 product cards server-side, but the
+  "Siguiente" / numbered pagination is `href="javascript:;"` bound to a
+  live SignalR circuit -- confirmed live 2026-08-17 that `?page=N` on a
+  category URL is a no-op (identical page-1 content), so only page 1 per
+  category is reachable via plain HTTP. Swept broadly instead: ~190 leaf
+  categories scraped from the homepage nav (`/category/<slug>/<code>`),
+  page 1 each. El Salvador is dollarized; prices render as "$X.XX",
+  currency USD matches countries.yaml.
+  QA sweep flagged NO_CATEGORY (0% populated) 2026-08-17: the category
+  slug was already discovered per-page during the homepage nav walk but
+  wasn't threaded through to the item dict. Fixed: category slug now
+  passed via cb_kwargs and stamped onto every product from that page
+  (e.g. "hongos").
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

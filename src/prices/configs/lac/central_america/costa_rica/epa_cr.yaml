@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: epa_cr
+url: https://cr.epaenlinea.com/
+archive_prefix: "cr.epaenlinea.com/"
+archive_path_re: '^/(?!(?:banos|cocinas|construccion|decoracion|electricidad|electrodomesticos|exteriores|ferreteria-y-cerrajeria|herramientas|lamparas|limpieza|maderas-y-puertas|muebles-y-organizacion|pinturas|pisos|plomeria|seguridad)\.html$)[^/]+\.html$'
+language: es
+currency: CRC
+cadence: weekly
+channel: home-improvement
+notes: |
+  EPA en Linea -- Costa Rica hardware / home-improvement chain (Magento 2
+  SSR). Shard listed the apex `epaenlinea.com` domain; the apex is a
+  country-selector page with no catalog of its own and 301-redirects any
+  /productos/<slug>.html request to the country subdomain (verified live
+  2026-08-17: -> https://cr.epaenlinea.com/<slug>.html). Onboarded on the
+  cr subdomain directly per the brief's subdomain-redirect convention. The
+  shard's other candidate country, Venezuela, has no confirmed live
+  equivalent subdomain and was not pursued.
+
+  Shard's `catalog: grocery` is wrong -- the real top-nav taxonomy (banos,
+  construccion, electricidad, electrodomesticos, ferreteria-y-cerrajeria,
+  herramientas, plomeria, pinturas, ...) is hardware/home-improvement, not
+  food. channel set accordingly.
+
+  Standard Magento markup: `li.product-item`, price read from
+  `.price-final_price [data-price-amount]` (colones symbol in the rendered
+  text confirms CRC). Product identity uses the add-to-cart form's
+  `data-product-sku`. Pagination `?p=N`.
+
+  Re-verified live 2026-08-17: GET /ferreteria-y-cerrajeria.html -> 200,
+  real CRC prices e.g. 'Tornillo para madera #9 3" 10 uds' cent680 (CRC
+  680.00), SKU 100010696.

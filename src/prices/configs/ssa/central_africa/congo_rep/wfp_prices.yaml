@@ -1,0 +1,31 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_cog
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_cog
+url: https://data.humdata.org/dataset/wfp-food-prices-for-congo
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (round 3, 2026-08-07): WFP food prices for the Republic of the
+  Congo via HDX (shared SSA fetcher _shared.ssa.wfp_food_prices). Congo
+  (Republic) had zero manifests before this — not to be confused with the
+  existing wfp_cod (Democratic Republic of the Congo) panel. Verified live:
+  CKAN package_show resolves wfp_food_prices_cog.csv, currency XAF
+  throughout (matches countries.yaml). Max observation date is 2026-04-15
+  — current (thinner panel: 6,414 rows vs. 100k+ for larger SSA panels).
+  19 commodities: cassava (fresh/flour/meal), plantains, beans, rice,
+  wheat flour, groundnuts, fish (fresh/salted/smoked), beef, chicken,
+  bread, oils (palm/vegetable), salt. Sample at max date: 'Cassava meal
+  (foufou)'. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to
+  the classifier (item_name = WFP commodity).
+  coicop_divisions: 01
+  divisions_basis: walked_categories (full 19-commodity list enumerated
+  from the CSV; all 6 WFP categories present are food-only — no non-food
+  category in this panel)

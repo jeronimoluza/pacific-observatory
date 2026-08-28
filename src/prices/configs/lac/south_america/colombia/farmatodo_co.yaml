@@ -1,0 +1,25 @@
+scaffolding: spider
+spider: farmatodo_co
+url: https://www.farmatodo.com.co/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: es
+currency: COP
+cadence: weekly
+coicop_codes: null
+archive_prefix: "www.farmatodo.com.co/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Colombian pharmacy chain. Angular storefront; catalog served by a public
+  Algolia search-only key pulled live 2026-08-17 out of the site's own JS
+  bundle (main-es2020 chunk 14358/49726) - app id VCOJEYD2PO, index
+  "products-colombia". POST https://vcojeyd2po-dsn.algolia.net/1/indexes/
+  products-colombia/query with an empty query paginates the full catalog
+  (nbHits=154,751 at hitsPerPage=100). Enumerability proven: page=0 vs
+  page=1 returned disjoint id sets. Price is `offerPrice` when set (>0)
+  else `fullPrice`; currency COP (Colombia's official currency; the
+  original probe's static-JS grep only surfaced an unrelated Braze SDK
+  key, not the real Algolia key, which only appears in the compiled chunk
+  used here). Smoke run: 60 rows, see report. Full scrape pending.

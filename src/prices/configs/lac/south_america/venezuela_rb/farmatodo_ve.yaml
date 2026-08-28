@@ -1,0 +1,27 @@
+scaffolding: spider
+spider: farmatodo_ve
+url: https://www.farmatodo.com.ve/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: es
+currency: VES
+cadence: weekly
+coicop_codes: null
+archive_prefix: "www.farmatodo.com.ve/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Venezuelan pharmacy chain (same brand/platform as farmatodo_co, distinct
+  Algolia index). App id VCOJEYD2PO, index "products-venezuela", key pulled
+  live 2026-08-17 from the site's main JS bundle (module 32196; the CO
+  probe's Playwright trace only caught the properties/store-locator key
+  because products-venezuela only fires on a live search-box keystroke, not
+  a plain page load). Empty-query pagination walks the full catalog
+  (nbHits=43,258 at hitsPerPage=100). Enumerability proven: page=0 vs
+  page=1 returned disjoint id sets. Currency confirmed VES directly from a
+  product page's schema.org JSON-LD (priceCurrency:"VES"), matching the
+  Algolia `fullPrice` field exactly (Venezuela is officially VES, unlike
+  some dollarized VE grocers already in this repo - do not assume USD here
+  without checking, this one is genuinely bolivar-priced). Smoke run: 60
+  rows, see report. Full scrape pending.

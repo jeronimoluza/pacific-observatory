@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lidl_si
+url: https://www.lidl.si/
+language: sl
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.lidl.si/p/"
+archive_path_re: '^/p/[^/?]+'
+notes: |
+  Custom Vue SSR storefront. Homepage/category promo widgets only embed a
+  curated dozen items, but the site's 46 /h/ category hub pages (top nav,
+  e.g. /h/meso-in-perutnina/h10095752) server-render a full grid of product
+  tiles, each carrying a data-grid-data="{&quot;...&quot;}" HTML-entity-
+  escaped JSON blob with itemId, fullTitle, and regionsPrices.
+
+  Re-verified live 2026-08-06: /h/meso-in-perutnina/h10095752 -> 200, 928KB,
+  48/48 tiles parsed cleanly, e.g. itemId 11002048 'GRILLMEISTER Nurnberske
+  pecenice XXL' 4.99 EUR. Currency EUR matches cfg_currency.
+
+  Discounter, promo-led catalog per CSV -- some items are Lidl-Plus-loyalty
+  exclusive and only carry a loyalty price (currentLidlPlusPrice) rather
+  than a regular one; the spider falls back to that price for those items
+  rather than dropping them. No further pagination found beyond each hub
+  page's first SSR batch (?page=2 returns identical itemIds); the visible
+  "Nalozi vec izdelkov" load-more button is client-side infinite scroll
+  against an unidentified XHR endpoint, so this is a single-page-per-hub
+  walk, not the fully deep-paginated catalog.

@@ -1,0 +1,42 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: nz_baskt
+module: eap.pacific_islands.new_zealand.baskt_nz
+function: fetch_nz_baskt
+url: https://www.baskt.nz
+language: en
+cadence: daily
+fallback_date: 2026-05-01
+notes: |
+  Third-party NZ grocery price-comparison database, not a single retailer.
+  Scrapes latest observed prices across 7 chains (Woolworths/Countdown, New
+  World, PAK'nSAVE, Farro, Fresh Choice, SuperValue, The Warehouse) — 333
+  stores, ~3.37M observed prices, ~468k active SKUs at probe time. NZ's own
+  chains (paknsave.co.nz, newworld.co.nz, woolworths.co.nz) are individually
+  Foodstuffs/Akamai-blocked (known_blockers.md); Baskt is the only realistic
+  route to cross-store price dispersion for NZ grocery at this granularity.
+  Public, unauthenticated REST API documented at /developers (also an MCP
+  endpoint at /api/mcp, not used here). One
+  GET /api/v1/items?q=<term>&chain=<slug>&limit=25 per (search term, chain)
+  returns item metadata plus a latestPrices array of per-location
+  observations; those are collapsed to one national-average row per
+  (item, chain), store count + price range kept in notes. The per-item
+  /api/v1/items/comparison endpoint gives a fuller price panel but costs one
+  request per item, which the rate limit makes unaffordable.
+  RATE LIMIT: 45 req/min (x-ratelimit-limit: 45; 429 carries retry-after ~39s).
+  The fetcher paces at 1.6s/request and honours retry-after; do NOT let
+  requests.Retry blind-retry 429s — that was the first implementation and it
+  thrashed for 12+ min without writing a row. Curated ~16-term list (not a
+  full-catalog walk) — /developers explicitly asks integrators not to use the
+  API as a bulk export feed.
+  Currency confirmed NZD via the item page's schema.org priceCurrency (matches
+  countries.yaml); priceCents is minor units, divided by 100.
+  analytical_role=official_avg (item-level cross-store averages/comparison,
+  not a single retailer's SKU catalog and not a modeled cost-of-living index
+  like Numbeo/Expatistan) with channel=null, since no Channel enum value
+  describes a multi-retailer observational aggregator.
+  coicop_classification=classifier — search terms span most COICOP-01/02
+  leaves, so codes are not narrow enough to declare via coicop_codes.

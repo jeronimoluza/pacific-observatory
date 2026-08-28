@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: opensooq_eg
+url: https://eg.opensooq.com/en/
+language: ar
+currency: EGP
+cadence: weekly
+channel: marketplace
+archive_prefix: "eg.opensooq.com/en/search/"
+archive_path_re: '^/en/search/[^/?]+'
+notes: |
+  Verified live 2026-08-17: OpenSooq is a multi-country classifieds network
+  with a per-country subdomain (af/dz/bh/eg/jo/sa/... .opensooq.com, 22+
+  countries) — the shard's four candidate countries were Afghanistan,
+  Algeria, Bahrain, Egypt (shard's primary_country_slug was "afghanistan").
+  Overrode that pick and shipped Egypt instead: eg.opensooq.com's own page
+  data confirms country_id=2, abbreviation="eg", currency_en="EGP",
+  name_english="Egypt", and a direct A/B fetch of the same
+  /en/electronics category page on both subdomains found af.opensooq.com
+  has NO ItemList/product data at all (empty catalog, 454KB placeholder
+  page) versus eg.opensooq.com's real 30-item ItemList (707KB) — Egypt is
+  both the larger economy of the four candidates and, empirically, the
+  only one with a non-empty electronics catalog. Real EGP prices confirmed
+  (e.g. EGP 4500 for a TV listing). Category pages embed a clean
+  schema.org ItemList of real Products (name/price/priceCurrency/
+  availability) inside a `<script type="application/ld+json">` block
+  nested under "@graph" (not a bare top-level ItemList). Scoped to 11
+  consumer-goods categories (electronics, appliances, mobile/tablets,
+  computers, gaming, fashion, home/garden, beauty/health, books/hobbies,
+  food supplements) — cars, real estate and jobs excluded as out of scope
+  for a retail price basket. Pagination via `?page=N`, capped at 10
+  pages/category (confirmed page 2 returns 30 distinct listing IDs).
+  language=ar: listing names are user-submitted Arabic text even though
+  the URL path uses the `/en/` UI-language prefix. channel=marketplace
+  (peer-to-peer, not a single storefront) — no coicop_codes set, catalog
+  spans multiple COICOP divisions across the 11 scoped categories.
+  Pagination cap raised from an initial 10-page smoke cap to 100
+  pages/category once bench numbers showed large time-budget headroom
+  (~2.16s/request at CONCURRENT_REQUESTS_PER_DOMAIN=8); each category
+  self-limits once its real page depth is exhausted.

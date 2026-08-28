@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: koro_de
+language: de
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.korodrogerie.de/detail/"
+archive_path_re: '^/detail/[^/?]+'
+notes: |
+  Nuxt3 frontend over the shared Shopware 6 backend (bff.koro.com); one
+  sales channel per country, this is koro_de (own domain korodrogerie.de).
+  Store API POST /store-api/product with sw-access-key header. Requires
+  "total-count-mode":1 or Shopware reports total==page size. Access key is
+  channel-scoped -- do not reuse across KoRo country storefronts. Full
+  platform writeup: see eca/western_europe/austria/koro_at.yaml.
+
+  Verified live 2026-08-07: POST with the DE access key returns total=1035
+  products priced in EUR. Sample: "Veganer Spekulatius Aufstrich 400 g"
+  EUR 5.00, "Kürbiskernmus 12 x 500 g" EUR 98.50, "Salzreduzierte Bio
+  Sojasauce 1 L" EUR 14.50. Pagination confirmed real (page=2 returns
+  different products). URL built as www.korodrogerie.de/detail/{id}.
+
+  coicop_divisions: 01, 05, 06
+  divisions_basis: walked_categories (14 top-level nav categories enumerated
+  via /store-api/navigation: Nussmuse/Snacks/Nüsse/Frühstück/Trockenfrüchte/
+  Kochen/Backen -> 01; Non-food subcategories Küchenhelfer/Geschirr -> 05;
+  Proteine & Vitamine -> 06 supplements per COICOP 2018 06.1.1)

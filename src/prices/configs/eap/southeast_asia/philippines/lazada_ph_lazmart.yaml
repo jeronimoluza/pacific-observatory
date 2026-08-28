@@ -7,6 +7,8 @@ url: https://www.lazada.com.ph
 language: en
 cadence: daily
 channel: marketplace
+archive_prefix: "www.lazada.com.ph/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: >
   Lazada Philippines / LazMart grocery channel - a marketplace that resells
   Puregold / Mercury Drug / Rose Pharmacy / TGP alongside third-party sellers.

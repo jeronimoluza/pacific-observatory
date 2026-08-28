@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tayara_tn
+url: https://www.tayara.tn/
+language: fr
+currency: TND
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.tayara.tn/item/"
+archive_path_re: '^/item/[^/?]+'
+notes: |
+  Verified live 2026-08-17: tayara.tn — Tunisia's general classifieds
+  marketplace (Next.js app). /annonces 308-redirects to a client-only 404
+  shell; the real listing feed lives at /ads/?page=N, which embeds a
+  `__NEXT_DATA__` JSON blob (props.pageProps.searchedListingsAction) with
+  real TND prices, e.g. price:280 (land-sale ad), price:120000
+  (apartment). Bare Accept/Accept-Language/Referer headers were required —
+  without them the server returns a 200 with a matching content-length but
+  a silently truncated JSON body (no TLS/UA impersonation involved, just
+  normal browser headers).
+  totalHitsCount at scrape time was 49,850 nationwide; by volume this feed
+  is dominated by "immobilier" (real estate) and "vehicules" (vehicles)
+  listings, consistent with a general classifieds site. Capped at 150
+  pages (~4,500 listings) of the ?page=N feed rather than a full crawl of
+  the ~1,662-page catalog, to bound runtime.
+  `category` is the raw metadata.subCategory ID (not human-readable — no
+  id->name mapping was exposed on the listing feed itself).

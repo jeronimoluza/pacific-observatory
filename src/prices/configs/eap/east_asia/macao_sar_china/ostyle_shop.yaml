@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: ostyle_shop
+url: https://www.ostyle-shop.com
+language: zh
+cadence: daily
+archive_prefix: "www.ostyle-shop.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Orange Lifestyle 橙式生活 - "澳門本地的網上超市" (local Macau online
+  supermarket), WooCommerce (Flatsome theme). Category/PDP HTML is
+  server-rendered and open to plain curl; the WooCommerce Store API
+  (/wp-json/wc/store/v1/products) is Cloudflare-challenged (403) so the
+  spider uses the HTML two-hop instead. Currency confirmed machine-readable
+  via meta[itemprop='priceCurrency'] on the PDP (= MOP). Product names are
+  Traditional Chinese (language: zh) -- note this country's
+  countries.yaml lists languages: [en, chinese_traditional], so
+  _resolve_lang() alone would default to "en" and silently skip CJK tier-a
+  patterns; setting language explicitly here is required for correct
+  regex dispatch. Seeded on 8 top-level categories (meat, seafood, fruit,
+  groceries, drinks, dailysupplies, snacks, hotpotfood); subcategory
+  products carry the parent category class too (verified: a pork PDP has
+  both product_cat-meat and product_cat-pork), so the seed set reaches
+  subcategory catalogs without enumerating every leaf. Discovered
+  2026-08-11.

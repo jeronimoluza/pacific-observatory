@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: ws_sbs_cpi
+module: eap.pacific_islands.samoa.sbs_cpi
+function: fetch_ws_sbs_cpi
+url: https://www.sbs.gov.ws/cpi/
+language: en
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  Verified live 2026-08-11: Samoa Bureau of Statistics monthly CPI, base
+  period Feb 2016=100. Fetcher walks to the latest release under
+  /documents/economics/CPI/<year>/ and parses the "Table 1&2" sheet's
+  "Table 1. CONSUMER PRICE INDEX" block (12 named divisions, division 13
+  absent from Samoa's own basket). Same workbook also has a "Table 3. AVERAGE
+  RETAIL PRICES OF SELECTED COMMODITIES" sheet — ~190 named commodities
+  across all 13 divisions (Chicken leg quarters, Bread, Milk Anchor, Soft
+  Drink Coke, Electricity Cashpower, ...), a genuinely rich whole-basket
+  official_avg series, arguably richer than the Local Market Survey onboarded
+  this same round. NOT built this pass — its header is a 2-row merged
+  year/month layout that needs careful merged-cell resolution to get right;
+  flagged as the strongest follow-up target from this session, not a dead
+  end. Tables 4-9 in the same workbook (imported-goods CPI, local-goods CPI,
+  inflation-rate derivatives) also out of scope this round.
+  coicop_divisions: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12
+  divisions_basis: walked_categories (all 12 mapped columns of Table 1)

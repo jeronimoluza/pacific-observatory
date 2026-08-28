@@ -1,0 +1,34 @@
+scaffolding: spider
+spider: rozetka_ua
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://rozetka.com.ua/
+language: uk
+currency: UAH
+cadence: weekly
+channel: marketplace
+archive_prefix: "rozetka.com.ua/ua/"
+archive_path_re: '/[gp]\d+/?$'
+coicop_codes: null
+notes: |
+  Ukraine's largest general marketplace. Verified live 2026-08-17:
+  curl_cffi impersonate=chrome124 clears the Cloudflare "Just a moment"
+  challenge (bare curl gets cf-mitigated:challenge). The 15 top-level nav
+  categories (e.g. /ua/bytovaya-himiya/c4429255/) are empty umbrella hubs
+  with 0 product tiles -- the spider crawls those hubs once to discover
+  true leaf categories one level down (e.g. /ua/sredstva-dlya-stirki/
+  c4625084/, "laundry detergent"), then walks each leaf's listing pages.
+  Each listing page embeds a clean JSON-LD ItemList (60 products/page:
+  name, url, offers.price/priceCurrency/availability) -- no HTML tile
+  parsing needed.
+  Enumerability proof: /ua/sredstva-dlya-stirki/c4625084/ (page 1, no
+  suffix) -> 76 distinct product ids; .../page=2/ -> 68 distinct ids,
+  ZERO overlap with page 1.
+  Smoke run 2026-08-17 (--max-items 60): passed, see smoke report. channel
+  is marketplace (general retail, all COICOP divisions), coicop_codes left
+  unset. Cloudflare's challenge was intermittent even for chrome124 during
+  probing -- RETRY_TIMES raised to 6 and concurrency kept conservative
+  (CONCURRENT_REQUESTS_PER_DOMAIN=2, DOWNLOAD_DELAY=1.5) to ride that out.
+  Full scrape still pending -- orchestrator queues it centrally.
+timeout: 28800

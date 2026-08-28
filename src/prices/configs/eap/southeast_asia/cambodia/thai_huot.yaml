@@ -3,3 +3,5 @@ language: en
 active: false
 inactive_reason: "Site migrated to brochure-only React SPA on 2026-04-06; product catalog no longer published on the web. Ordering moved to per-branch Telegram channels (t.me/thaihuot*)."
 channel: pharmacy
+archive_prefix: "www.thaihuot.com/product-detail/"
+archive_path_re: '^/product-detail/.+$'

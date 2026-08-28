@@ -141,8 +141,10 @@ DATABASE_STATUS_FIELDS = [
 ]
 
 
-def compute_database_status() -> dict:
+def compute_database_status(region_filter: str | None = None) -> dict:
     """Scan every configured text source and return rows with verified article counts + date ranges.
+
+    When ``region_filter`` is given, only sources under that region are scanned.
 
     Only includes sources whose news.csv exists and contains at least one article.
     Skips template/example configs that don't sit under a region/subregion/country path.
@@ -160,6 +162,8 @@ def compute_database_status() -> dict:
     for cfg in sorted(configs):
         region, subregion, country = parse_config_path(cfg, CONFIGS_DIR)
         if "unknown" in (region, subregion, country):
+            continue
+        if region_filter and region != region_filter:
             continue
         newspaper = cfg.stem
         news_csv = DATA_BASE / region / subregion / country / newspaper / "news.csv"
@@ -227,16 +231,23 @@ def compute_database_status() -> dict:
     }
 
 
-def write_database_status(data: dict, base_dir: Path = DATABASE_STATUS_DIR) -> dict:
-    """Persist database status as sources.{csv,json,xlsx}. Returns file paths."""
+def write_database_status(
+    data: dict, base_dir: Path = DATABASE_STATUS_DIR, region: str | None = None
+) -> dict:
+    """Persist database status as sources.{csv,json,xlsx}. Returns file paths.
+
+    A ``region`` scopes the filenames to ``sources_<region>.*`` so a per-region
+    export never overwrites the global one.
+    """
     import csv
 
     import pandas as pd
 
     base_dir.mkdir(parents=True, exist_ok=True)
-    json_path = base_dir / "sources.json"
-    csv_path = base_dir / "sources.csv"
-    xlsx_path = base_dir / "sources.xlsx"
+    stem = f"sources_{region}" if region else "sources"
+    json_path = base_dir / f"{stem}.json"
+    csv_path = base_dir / f"{stem}.csv"
+    xlsx_path = base_dir / f"{stem}.xlsx"
 
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, default=str)
@@ -253,3 +264,84 @@ def write_database_status(data: dict, base_dir: Path = DATABASE_STATUS_DIR) -> d
     df.to_excel(xlsx_path, index=False, sheet_name="sources", engine="openpyxl")
 
     return {"json": str(json_path), "csv": str(csv_path), "xlsx": str(xlsx_path)}
+
+
+def merge_region_exports(base_dir: Path = DATABASE_STATUS_DIR) -> dict:
+    """Assemble every per-region export into one workbook, a sheet per region.
+
+    Reads whatever ``sources_<region>.json`` files exist and writes
+    ``sources.xlsx`` with one uppercase-named sheet per region (matching the
+    legacy ``sources_list.xlsx`` layout), preceded by an ``_index`` sheet
+    recording when each region was last scanned.
+
+    Regions are merged from their own exports rather than re-scanned, so a
+    region whose raw data currently lives on the archive drive keeps its sheet
+    instead of being silently dropped.
+    """
+    import pandas as pd
+
+    exports = sorted(base_dir.glob("sources_*.json"))
+    if not exports:
+        raise FileNotFoundError(
+            f"no per-region exports found in {base_dir} — "
+            "run `text database-status --region <r>` first"
+        )
+
+    regions: dict[str, dict] = {}
+    for path in exports:
+        region = path.stem[len("sources_") :]
+        with open(path, encoding="utf-8") as f:
+            regions[region] = json.load(f)
+
+    index_rows = []
+    all_rows: list[dict] = []
+    for region in sorted(regions):
+        payload = regions[region]
+        rows = payload.get("sources", [])
+        totals = payload.get("totals", {})
+        all_rows.extend(rows)
+        index_rows.append(
+            {
+                "region": region,
+                "sources": totals.get("sources", len(rows)),
+                "countries": totals.get("countries"),
+                "articles_total": totals.get("articles_total"),
+                "earliest_date": totals.get("earliest_date"),
+                "latest_date": totals.get("latest_date"),
+                "scanned_at": payload.get("generated_at"),
+            }
+        )
+
+    xlsx_path = base_dir / "sources.xlsx"
+    with pd.ExcelWriter(xlsx_path, engine="openpyxl") as writer:
+        pd.DataFrame(index_rows).to_excel(writer, index=False, sheet_name="_index")
+        for region in sorted(regions):
+            df = pd.DataFrame(
+                regions[region].get("sources", []), columns=DATABASE_STATUS_FIELDS
+            )
+            df.to_excel(writer, index=False, sheet_name=region.upper()[:31])
+
+    merged = {
+        "generated_at": datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "regions": index_rows,
+        "totals": {
+            "regions": len(regions),
+            "sources": len(all_rows),
+            "countries": len({r["country"] for r in all_rows}),
+            "articles_total": sum(r.get("article_count", 0) for r in all_rows),
+        },
+        "sources": all_rows,
+    }
+    with open(base_dir / "sources.json", "w", encoding="utf-8") as f:
+        json.dump(merged, f, indent=2, default=str)
+    pd.DataFrame(all_rows, columns=DATABASE_STATUS_FIELDS).to_csv(
+        base_dir / "sources.csv", index=False, encoding="utf-8"
+    )
+
+    return {
+        "xlsx": str(xlsx_path),
+        "csv": str(base_dir / "sources.csv"),
+        "json": str(base_dir / "sources.json"),
+        "regions": index_rows,
+        "totals": merged["totals"],
+    }

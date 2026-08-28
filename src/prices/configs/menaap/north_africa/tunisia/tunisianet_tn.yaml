@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tunisianet_tn
+url: https://www.tunisianet.com.tn/
+language: fr
+currency: TND
+cadence: weekly
+channel: electronics
+archive_prefix: "www.tunisianet.com.tn/"
+archive_path_re: '^/[^/]+/\d+-[^/]+\.html$'
+notes: |
+  Verified live 2026-08-17 (needed -k for a curl cert-hostname mismatch;
+  Scrapy's default TLS context is not strict about this the way curl is).
+  tunisianet.com.tn — Tunisian electronics/computing retailer on
+  PrestaShop (confirmed via embedded `prestashop = {...}` JS config and
+  real TND category-listing prices, e.g. `itemprop="price"
+  class="price">1 169,000 DT`, French decimal-comma formatting). Sitemap
+  at https://www.tunisianet.com.tn/1_fr_0_sitemap.xml (single file,
+  CDATA-wrapped <loc>) lists 10,237 product URLs
+  (/<category-slug>/<id>-<slug>.html); each PDP has a clean
+  `<h1 itemprop="name">` title and `<span itemprop="price" content="19.9">`
+  (no JSON-LD on this theme) — confirmed live on a toner PDP: "Toner
+  Adaptable Universel HP 05A/80A / NOIR" -> content="19.9". Electronics/
+  computing retailer, NOT a grocery source.
+  coicop_divisions: 05, 08, 09; divisions_basis: sampled_rows.

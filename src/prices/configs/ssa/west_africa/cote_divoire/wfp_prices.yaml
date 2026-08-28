@@ -1,0 +1,23 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_civ
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_civ
+url: https://data.humdata.org/dataset/e6ff12e6-0670-4a0e-af9f-3750688e6c8d
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Cote d'Ivoire via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_civ.csv (200, 1.3MB, 10,699 rows),
+  currency XOF throughout (matches countries.yaml). Max observation date is
+  2026-06-15 — current. 27 commodities: cashew nut, cocoa, coffee, yam
+  (+florido), cassava meal (attieke), appolo/dry/fresh/smoked fish. Sample
+  at max date: 'Cassava', KG, XOF 500. Per-market rows collapsed to a
+  national monthly average per commodity/unit/currency/price-type; market
+  count + USD value kept in notes; retail vs wholesale kept in the dedup
+  hash. COICOP deferred to the classifier (item_name = WFP commodity).

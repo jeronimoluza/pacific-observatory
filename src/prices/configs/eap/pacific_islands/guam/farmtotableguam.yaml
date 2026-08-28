@@ -1,0 +1,22 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["01.1.7"]
+channel: null
+source_key: gu_farmtotableguam_csa
+module: eap.pacific_islands.guam.farmtotableguam
+function: fetch_gu_farmtotableguam_csa
+url: https://farmtotableguam.org/csa-app/
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: >
+  CSA (Community Supported Agriculture) farm-box share pricing. NOT a
+  WooCommerce product catalog despite the site running the plugin (Store
+  API returns zero rows) -- the 8 share tiers (Small/Large share x
+  Weekly/Every-Other-Week x Pickup/Delivery) are fixed prices hard-coded
+  into a <select> dropdown on the sign-up form. Whole source is farm
+  produce -> COICOP 01.1.7 (vegetables) per the narrowness rule. Snapshot
+  cadence: re-fetches the current sign-up page each run; no publication
+  schedule to anchor on.

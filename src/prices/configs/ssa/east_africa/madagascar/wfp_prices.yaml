@@ -1,0 +1,27 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_mdg
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_mdg
+url: https://data.humdata.org/dataset/wfp-food-prices-for-madagascar
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Madagascar via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_mdg.csv (200, 4.8MB, 34,219 rows),
+  currency MGA throughout (matches countries.yaml). Max observation date is
+  2026-01-15 (7 months old — within the ~18-month freshness window, but
+  noticeably staler than the other SSA panels in this shard; worth a
+  freshness recheck on the next refresh pass). Narrow panel: 20
+  commodities, cereal/legume/tuber-only — dry beans (4 varieties), cassava
+  (dry/fresh), Bambara groundnuts, maize, oils, rice, sugar, wheat flour.
+  Sample at max date: 'Cassava (dry)', KG, MGA 1000. Per-market rows
+  collapsed to a national monthly average per commodity/unit/currency/
+  price-type; market count + USD value kept in notes; retail vs wholesale
+  kept in the dedup hash. COICOP deferred to the classifier (item_name =
+  WFP commodity).

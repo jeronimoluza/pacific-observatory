@@ -1,0 +1,20 @@
+scaffolding: spider
+spider: khasmart_pk
+url: https://khasmart.pk/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: PKR
+cadence: weekly
+coicop_codes: null
+archive_prefix: "khasmart.pk/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Pakistani pharmacy retailer (medicine, personal care) with a smaller
+  grocery/baby-shop section mixed in. WooCommerce Store API confirmed live
+  2026-08-17 (https://khasmart.pk/wp-json/wc/store/v1/products), 100
+  items/page, prices.currency_code=PKR, minor_unit=0 (e.g. 395 -> Rs395).
+  Shard probe reported no detected currency; the API's own currency_code
+  field resolves it. Full scrape: see report for row count.

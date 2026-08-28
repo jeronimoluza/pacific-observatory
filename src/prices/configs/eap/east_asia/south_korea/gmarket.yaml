@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: gmarket
 url: https://www.gmarket.co.kr
+archive_prefix: "item.gmarket.co.kr/Item"
+archive_path_re: '(?i)^/Item$'
 language: ko
 cadence: daily
 channel: marketplace

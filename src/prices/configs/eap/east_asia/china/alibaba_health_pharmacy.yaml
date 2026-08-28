@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: alibaba_health_pharmacy
 url: https://www.liangxinyao.com/
+archive_prefix: "detail.tmall.com/item.htm"
+archive_path_re: '(?i)^/item\.htm$'
 language: zh
 cadence: daily
 channel: pharmacy

@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ishtari_lb
+url: https://www.ishtari.com/
+language: en
+currency: USD
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.ishtari.com/"
+archive_path_re: '^/[^/]+/p=\d+$'
+notes: |
+  Verified live 2026-08-17: Ishtari.com — a general-merchandise online store
+  for Lebanon (electronics, home appliances, fashion, phone accessories,
+  toys sampled). `ishtari.com` 301s to `www.ishtari.com`; SSR prices are USD
+  (e.g. "$36"/"$250" on the homepage widgets; PDP ld+json Offer confirmed
+  USD 0.5 for sku "max5813"), matching the shard's currency call. robots.txt
+  points at a real product sitemap (https://sitemap.ishtari.com/sitemap.xml,
+  13 `products<N>.xml` child sitemaps out of 17 total — sellers/manufacturers/
+  categories/information sitemaps are filtered out, ~3000 URLs each, ~39k
+  products). Spider walks the sitemap and parses the schema.org Product
+  JSON-LD embedded on each PDP (Offer.price/priceCurrency/availability, sku)
+  — the PDP's single ld+json script holds a JSON array of entities, not one
+  script per entity. BreadcrumbList JSON-LD is
+  present but shallow (Home -> product name only, no category level), so
+  category is left null. channel=dept-store (single storefront selling a
+  wide general-merchandise catalog) — no coicop_codes set, catalog spans
+  multiple COICOP divisions. Capped in-spider to the first 8,000 sitemap
+  URLs (of ~39k) to stay inside the collect-run time budget — bench on a
+  2,000-cap run (2026-08-17): 2,014 requests in 274s at
+  CONCURRENT_REQUESTS_PER_DOMAIN=16, so 8,000 is ~18min.

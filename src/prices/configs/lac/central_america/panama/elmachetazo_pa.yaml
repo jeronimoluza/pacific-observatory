@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: elmachetazo_pa
+url: https://www.elmachetazo.com/
+language: es
+cadence: weekly
+channel: dept-store
+archive_prefix: "elmachetazo.com/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  El Machetazo -- Panama's largest department-store/supermarket chain, VTEX
+  platform. Re-verified live 2026-08-06: GET
+  api/catalog_system/pub/products/search?_from=0&_to=4 -> HTTP 206, real
+  varied products. Sample: 'Pollo Entero Empacado Pilgrims|Por Kilo' USD
+  2.60, 'Huevo Mediano Empacado|30 Unidades' USD 6.03, 'Aceite de Girasol
+  Girol|1 Litro' USD 4.06. Category tree has 12 top nodes incl. Farmacia,
+  Supermercado, Tecnologia, Hogar -- whole-catalog walk via _vtex_base leaf
+  partitioning. Currency: countries.yaml declares PAB (balboa), but the
+  site's own JSON-LD declares priceCurrency USD -- Panama circulates US
+  dollar notes alongside the balboa at fixed 1:1 parity, so this is a
+  labeling choice not a value discrepancy; using USD per live site evidence.

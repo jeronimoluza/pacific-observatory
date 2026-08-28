@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: paykar_tj
+url: https://paykar.shop/
+language: ru
+cadence: weekly
+channel: supermarket
+archive_prefix: "paykar.shop/catalog/"
+archive_path_re: '^/catalog/[^/?]+'
+notes: |
+  Dushanbe online supermarket/grocery delivery, 1C-Bitrix storefront.
+  24 top-level categories at /catalog/<slug>/ (e.g. bakaleya, molochnye_produkty,
+  myaso_ptitsa) each render their own product grid directly, paginated via
+  ?PAGEN_1=N; out-of-range pages silently fall back to page 1 content, so
+  the spider stops a category once the returned product-id set matches
+  page 1's.
+
+  Re-verified live 2026-08-06: /catalog/bakaleya/gotovye_zavtraki_kashi_khlopya/137220/
+  -> 200, h1 'Хлопья овсяные РП 500г Геркулес монастырский'. Parent category
+  page /catalog/bakaleya/ -> 200, 21 product cards with
+  data-currency="TJS" data-value="21.2" attributes -- prices already in
+  whole somoni, no minor-unit scaling. Currency TJS matches cfg_currency.

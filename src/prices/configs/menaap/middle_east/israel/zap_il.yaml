@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: aggregate_proxy
+coicop_classification: classifier
+spider: zap_il
+url: https://www.zap.co.il/
+language: he
+currency: ILS
+cadence: weekly
+channel: other
+archive_prefix: "www.zap.co.il/model.aspx?modelid="
+archive_path_re: '^/model\.aspx$'
+notes: |
+  Verified live 2026-08-17: zap.co.il is an Israeli general
+  price-comparison shopping site (electronics, appliances, beauty, home,
+  kids, sports, tools, etc. — not electronics-only), NOT a single
+  retailer. The homepage has no visible prices (client-side search only);
+  category pages (models.aspx?sog=<code>) are server-rendered but only
+  expose a thin sponsored "bids" panel (a handful of real ₪ prices;
+  ?pg=N does not paginate it — the full model grid of 1,000+ items/
+  category is client-rendered and not reachable via plain HTTP GET).
+  What DOES carry rich real pricing is each model's own comparison page
+  (model.aspx?modelid=<id>): confirmed live on an Apple iPhone 17 256GB
+  page — 56 store-offer rows (class="product-name" / class="price" span
+  pairs in strict alternation), real ILS prices from 2,699 to well above.
+  Spider two-hops: scrape every category page for referenced model ids
+  (capped at 25/category), then scrape each model's comparison page for
+  all its store-offer rows. Set analytical_role: aggregate_proxy and
+  channel: other (no existing enum fits "price-comparison engine") — each
+  row IS one store's own listed price (unlike torob_ir's cross-merchant
+  minimum), but the source itself is a comparison site aggregating many
+  merchants per model, not a single outlet's catalog.
+  `product_id` is synthesized as "<model_id>_<row_index>" since not every
+  offer row carries a stable bid/offer id in the static HTML; `url` is
+  shared (the model comparison page) across a model's offer rows.

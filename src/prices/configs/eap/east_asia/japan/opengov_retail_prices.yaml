@@ -1,0 +1,33 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: jp_opengov_retail_prices
+module: eap.east_asia.japan.opengov_retail_prices
+function: fetch_jp_opengov_retail_prices
+url: https://opengov.jp/en/prices/retail-prices/
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Re-publication of the MIC (Ministry of Internal Affairs and
+  Communications) Statistics Bureau retail price survey. The item index
+  page (/en/prices/retail-prices/) lists 541 item codes with English names;
+  each item's own page (/en/prices/retail-prices/<code>/) embeds a
+  Chart.js data-chart-data attribute holding the FULL monthly series back
+  to 2000-01 (313 points as of this pass), resolving round 1's open
+  question -- yes, the full series is exposed, not just a latest-month
+  snapshot. Re-verified live 2026-08-06: /en/prices/retail-prices/01001/
+  (Rice A) -> 200, chart labels 2000-01..2026-01, latest JPY 5,317
+  (Tokyo Special Wards survey area, the MIC's national-representative area).
+
+  Scoped to item-code prefixes 01 (food, ~200 items) and 02 (alcohol,
+  ~28 items) via a live list call -- 228 items confirmed in scope this pass.
+  Named fish species (tuna, horse mackerel, sardine, salmon, mackerel, sea
+  bream, yellowtail, squid, octopus, shrimp, clam, oyster, scallop ->
+  COICOP 01.1.3.x), named vegetables (cabbage, lettuce, daikon, broccoli,
+  spinach, onion, ginger -> 01.1.7.x), noodles/rice/bread/flour, dairy, and
+  Sake/Shochu/Chuhai for div-02. Plain GET, no auth, ~228 requests per run
+  with a 0.3s polite delay between item pages. COICOP deferred to the
+  classifier (item_name = the site's own English item label).

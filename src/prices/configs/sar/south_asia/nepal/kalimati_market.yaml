@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: np_kalimati_market
+module: sar.south_asia.nepal.kalimati_market
+function: fetch_np_kalimati_market
+url: https://kalimatimarket.gov.np/price
+language: en
+cadence: daily
+fallback_date: 2020-01-01
+notes: |
+  Kalimati Fruits and Vegetable Market Development Board (Nepal) — wholesale
+  reference prices, Nepal's largest wholesale market. Re-verified live
+  2026-08-06: GET /price for a `_token` + session cookie, then POST the same
+  URL with `_token` + `datePricing=YYYY-MM-DD` -> 200, ~31KB HTML
+  fragment/table, 98 commodity rows/day (many varieties per crop, e.g. 3
+  tomato types, 4 potato types), min/max/avg per unit in NPR. Sample:
+  'गोलभेडा ठूलो(नेपाली)' (tomato, large, local), unit के.जी. (kg), min रू
+  ५०.००, max रू ६०.००, avg रू ५५.०० — prices are rendered with Devanagari
+  digits, translated to ASCII before parsing. Whole-catalog walker covering
+  nearly all fresh vegetables + fruits traded through the market; the
+  fetcher walks up to 30 days backward from today (bounded by cutoff) since
+  each day requires a separate POST with a fresh datePricing value.

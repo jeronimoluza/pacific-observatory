@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: electronics
+spider: jarir_qa
+url: https://www.jarir.com/qa-en/
+language: en
+cadence: daily
+archive_prefix: "www.jarir.com/qa-en/"
+archive_path_re: '^/qa-en/[A-Za-z0-9._-]+-\d+\.html$'
+notes: |
+  Re-verified live 2026-08-06: Jarir Bookstore Qatar. Same Vue-SSR/Magento
+  backend as jarir_sa/jarir_ae (both already onboarded elsewhere in this
+  round) — schema.org Product JSON-LD embedded server-side on every PDP, no
+  Playwright needed. The /qa-en/ storefront's own sitemap
+  (sitemap_qa_ar.xml) returns a binary image payload instead of XML (same
+  defect A1 documented for AE), so this spider reuses jarir_sa's product-
+  sitemap index for URL discovery and re-requests each slug under /qa-en/.
+  Confirmed genuinely localized (not a fallback): SKU 27177 prices at 89.00
+  QAR here vs 6.90 KWD / 8.69 BHD on the sibling storefronts. Books,
+  electronics, stationery, arts & crafts, toys — mixed catalog, channel
+  approximated as electronics (dominant category) though divisions below
+  span further.
+  coicop_divisions: 05, 08, 09, 13
+  divisions_basis: sampled_rows (PDP spot-checks across arts-crafts, laptops/electronics, stationery categories; full-catalog category tree not walked)

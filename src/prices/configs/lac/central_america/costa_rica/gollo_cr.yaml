@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gollo_cr
+url: https://www.gollo.com/
+language: es
+currency: CRC
+cadence: weekly
+channel: dept-store
+archive_prefix: "gollo.com/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Gollo, Costa Rica. Magento-flavored SSR storefront; GraphQL (/graphql)
+  is explicitly disabled (403 "GraphQL disabled", Varnish) -- confirmed
+  live 2026-08-17 -- so this uses MagentoSSRBaseSpider's SSR-HTML path
+  (data-price-amount / product-item-link markup), not an API. Catalog is
+  a general dept store (automotriz, colchones, deportes-y-aire-libre,
+  electrodomesticos, ferreteria, hogar, muebles, salud-y-belleza,
+  tecnologia, telefonia) despite the shard's "electronics" catalog
+  guess, hence channel: dept-store. Discovery walks the 15 top-level nav
+  categories, capped at 20 pages each. Re-verified live: GET
+  /c/telefonia/celulares-y-telefonos/celulares -> 200, real CRC prices
+  e.g. data-price-amount="49900".
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

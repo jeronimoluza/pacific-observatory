@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: virtualmart_jm
+url: https://www.virtualmartja.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "virtualmartja.com/default/"
+archive_path_re: '^/default/[^/?]+'
+notes: |
+  Mixed grocery + hardware/business-supplies catalog (F&B is a subset of a
+  broader general-merchandise store, per the CSV). Magento SSR HTML with
+  data-price-amount markup. Live re-verify: bare domain 302-redirects to a
+  session-scoped URL (virtualmartja.com/default/?SID=...); Scrapy's default
+  cookie jar follows this transparently. Per the "whole-catalog walker"
+  rule, the spider discovers all 42 shop-by-category.html?cat=N department
+  pages (groceries through automotive/hardware) from the category directory
+  and paginates each with standard Magento ?p=N. Confirmed food category
+  (Canned Food, cat=805) real product: "Angela Mia Pizza Sauce 3 kg / 6.61
+  lb" JMD 2,473.76. Currency JMD matches countries.yaml.
+timeout: 14400

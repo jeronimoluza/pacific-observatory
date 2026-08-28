@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: macauwineshop
+url: https://www.macauwineshop.com
+language: en
+cadence: daily
+archive_prefix: "macauwineshop.com/item/"
+archive_path_re: '^/item/[^/?]+'
+notes: |
+  MacauWineShop.com, on "CUBE.mo" (a shared multi-tenant Macau storefront
+  SaaS -- same POST /api/ backend keyed by now_domain powers other CUBE.mo
+  merchants). The brief's literal prod_listing.php URL 404s -- the store
+  migrated to a client-rendered PWA fed by one JSON endpoint, found via
+  Playwright network trace: POST /api/ with
+  todo=get_category_v2&category_id=0&warehouse_id=1972 (warehouse_id is
+  required; other todo/param combos silently return an empty item_list
+  behind a swallowed SQL error). category_id=0 = "all products", 902 SKUs
+  in one call, no pagination needed. NOT alcohol-only despite the domain
+  name and the brief's narrow-source hypothesis -- confirmed non-alcohol
+  SKUs in the same catalog (Ferrarini Parmigiano Reggiano cheese, Funny Eye
+  sparkling tea), so this ships wide (coicop_classification: classifier),
+  not narrow to COICOP 02.1. Currency MOP (Macau-only store, not a
+  minor-unit platform -- min_price is already decimal, e.g. "97.8").
+  Discovered 2026-08-11.

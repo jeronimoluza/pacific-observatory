@@ -1,0 +1,30 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["01.1.1.1.2"]
+channel: null
+source_key: kp_dailynk
+module: eap.east_asia.korea_dem_peoples_rep.dailynk
+function: fetch_kp_dailynk
+url: https://www.dailynk.com/english/north-korea-market-trends-rice/
+language: en
+cadence: weekly
+fallback_date: 2009-08-01
+notes: >
+  Daily NK's "Rice Prices" data page — the only structured, non-narrative
+  page found on an otherwise journalism-only site. Table + charts render
+  client-side from a JS array literal (const RP_DATA = [...]) embedded in
+  the HTML; no JSON API, parsed via regex. One row per (date, city) for
+  Pyongyang/Sinuiju/Hyesan, KPW/kg, roughly biweekly back to 2009. Sourced
+  from Daily NK's in-country informal-market network, not a retail catalog
+  or official statistics office — the only price-level series available
+  for North Korea, which has zero scrapeable retail/e-commerce channels.
+  analytical_role=official_avg is a lower-confidence fit here (informal
+  market monitoring, not a formal average-price survey) but is the closest
+  existing role for a country with no other price-level option. A sibling
+  "Currency Exchange Rate Tracker" sub-page
+  (https://www.dailynk.com/english/market-trends-exchange-rate/) uses the
+  same embedded-array pattern for informal USD->KPW rates per city, back to
+  2009 — not onboarded here (out of scope for this single-source pass; it
+  prices a currency, not a COICOP good) but flagged for a future pass.

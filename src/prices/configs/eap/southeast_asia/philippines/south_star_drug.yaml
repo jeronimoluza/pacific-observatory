@@ -1,3 +1,5 @@
 spider: south_star_drug
 language: en
 channel: pharmacy
+archive_prefix: "southstardrug.com.ph/products/"
+archive_path_re: "^/products/[^/?]+"

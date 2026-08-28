@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: elyahwehventures_ug
+url: https://elyahwehventures.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "elyahwehventures.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  WooCommerce Store API, /wp-json/wc/store/v1/products?per_page=100&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, real Kampala grocery
+  SKUs — 'Aqua Sipi Bottled Drinking Water 12Pcs * 500mls' UGX 5000,
+  'Krystal Mineral Water(carton) 500ML * 24Pcs' UGX 16500, 'Riham Skyview
+  Green Soda Pack *12(Carton) 320Ml' UGX 10900, 'Mirinda Apple * 6Pcs 2L'
+  UGX 20500, 'Mountain Dew 6Pcs 2L' UGX 20500. currency_code=UGX from the
+  API matches countries.yaml, minor_unit=0 (correct, UGX has no
+  subdivision in practice). Second Uganda source this round alongside the
+  WFP official_avg feed.

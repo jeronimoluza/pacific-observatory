@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shoppingchina_py
+url: https://www.shoppingchina.com.py/
+language: es
+currency: PYG
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.shoppingchina.com.py/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  General-merchandise marketplace (electronics, toys, perfume, footwear --
+  sample PDPs pulled span all of these). Server-rendered HTML with
+  Alpine.js for interactivity, not a client-only SPA -- the original probe
+  correctly flagged Alpine x-data attributes and unrendered homepage
+  template artifacts, but individual product pages ARE fully
+  server-rendered with the price baked directly into the page as a plain
+  `price: N,` literal inside an Alpine x-data JSON block.
+
+  Live re-verified 2026-08-17: /sitemap.xml (5MB) lists 30243 URLs, 29563
+  matching /producto/<slug>-<id>. This is the enumeration surface used
+  (sitemap-driven PDP walk rather than a category-page crawl -- the sheer
+  count and distinctness of ids across the sitemap satisfies the
+  enumerability requirement more directly than a paginated category would).
+  Sample: "CELULAR OPPO A6 PRO 5G 8GB 256GB PINK" PYG 2585000 (no minor
+  unit, matches Guarani convention already used by casarica_py).
+
+  Smoke run: 60/60 rows, 0 null product_name, 0 null price, single currency
+  PYG. Full scrape still pending (orchestrator-queued).
+timeout: 14400

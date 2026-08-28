@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: latorre_gt
+url: https://www.latorre.com.gt/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "latorre.com.gt/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Premium GT chain, full-line. Re-verified live: products/search?_from=0&_to=9 -> HTTP 206, 74KB,
+  'Huevos Blancos Fatima' GTQ 46.40. Currency matches countries.yaml (GTQ).

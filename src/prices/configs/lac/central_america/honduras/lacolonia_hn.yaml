@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lacolonia_hn
+url: https://www.lacolonia.com/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "lacolonia.com/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Supermercados La Colonia -- major Honduras supermarket chain (Tegucigalpa
+  + San Pedro Sula), VTEX platform. Re-verified live 2026-08-06: GET
+  api/catalog_system/pub/products/search?_from=0&_to=4 -> HTTP 206, real
+  varied products. Sample: 'Bebida En Polvo Tang Pina 13 Gr' HNL 6.05,
+  'Bebida En Polvo Tang Fresa 13 Gr' HNL 6.05. Category tree top node is
+  Supermercado -- whole-catalog walk via _vtex_base leaf partitioning.
+  Currency HNL matches countries.yaml.

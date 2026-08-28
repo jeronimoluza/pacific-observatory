@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vega_am
+url: https://vega.am/
+language: hy
+currency: AMD
+cadence: weekly
+channel: dept-store
+archive_prefix: "vega.am/"
+archive_path_re: '\.html$'
+notes: |
+  vega.am — Armenia electronics/appliances hypermarket, OpenCart-based
+  ("chameleon" theme). Verified live 2026-08-17: real AMD ("֏") prices in
+  SSR HTML. Category tree (673 paths, 624 leaves) discovered from
+  sitemap-categories.xml; leaves paginated via ?page=N, capped at 5
+  pages/category. Price read from the numeric data-price-value /
+  data-special-value attributes on div.price (special/discounted price
+  wins when present), not parsed from display text. Standalone spider —
+  this theme's markup (div.product-name, div.price[data-*]) doesn't match
+  the shared OpencartBaseSpider's selector set, and that base class is not
+  to be edited.
+  coicop_classification left as classifier.
+  Full scrape 2026-08-17: 18,557 rows, 18,557 distinct product_id, 0 null
+  names or prices, all AMD, price range 0-3,529,900 (the single 0 is one
+  out-of-stock generator, not a parse failure). 542 distinct categories.
+  channel is dept-store, NOT electronics, on the evidence of that scrape:
+  the catalog is led by TVs but runs through blankets, orthopaedic and sprung
+  mattresses, carpets, bed linen, sofas, shampoos, deodorants, jewellery,
+  interior doors, sandals, socks, stationery, pillows and plates. It spans
+  most of divisions 01-13, so coicop_codes is deliberately left unset.
+  Per-category counts saturate at the 5-page cap (200/category for the large
+  ones), so category rank here reflects the cap, not true catalog share.

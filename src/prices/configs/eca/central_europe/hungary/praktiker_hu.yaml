@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: praktiker_hu
+url: https://praktiker.hu/
+language: hu
+currency: HUF
+cadence: weekly
+channel: home-improvement
+archive_prefix: "praktiker.hu/"
+archive_path_re: '/p/\d+/?$'
+notes: |
+  Praktiker Hungary — DIY/home-improvement department store (Next.js
+  storefront, Meilisearch-backed catalog: garden, construction/renovation,
+  bathroom, furniture, kitchen, home decor, tools/machines, leisure; ~38k
+  products across 8 departments). Verified live 2026-08-17: real HUF prices
+  in the page's embedded __NEXT_DATA__ JSON payload (more reliable than the
+  duplicated-per-breakpoint rendered HTML). Spider only scrapes true leaf
+  categories (empty subcategories list) to avoid re-scraping the same
+  products via parent aggregate nodes, and paginates each leaf via ?page=N
+  against the JSON's productCount. coicop_classification left as classifier
+  — wide general catalog, no single COICOP prefix applies.

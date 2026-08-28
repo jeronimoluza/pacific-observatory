@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_mrt
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_mrt
+url: https://data.humdata.org/dataset/wfp-food-prices-for-mauritania
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Mauritania via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_mrt.csv (200, 2.9MB, 22,658 rows),
+  currency MRU throughout (matches countries.yaml). Max observation date is
+  2026-06-15 — current. 50 commodities: live bull/camel/cattle/goat/sheep,
+  camel meat/milk, cow milk, milk powder, dates, couscous, non-food feed,
+  full cereal/legume/produce set, iodised salt. Sample at max date:
+  'Livestock (camel)', Head, MRU 28000. Per-market rows collapsed to a
+  national monthly average per commodity/unit/currency/price-type; market
+  count + USD value kept in notes; retail vs wholesale kept in the dedup
+  hash. COICOP deferred to the classifier (item_name = WFP commodity).

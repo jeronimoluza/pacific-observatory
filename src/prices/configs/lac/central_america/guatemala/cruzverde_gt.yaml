@@ -1,0 +1,19 @@
+scaffolding: spider
+spider: cruzverde_gt
+url: https://cruzverde.com.gt/
+channel: pharmacy
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: es
+currency: GTQ
+cadence: weekly
+coicop_codes: null
+archive_prefix: "cruzverde.com.gt/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Guatemalan pharmacy. WooCommerce Store API confirmed live 2026-08-17
+  (https://cruzverde.com.gt/wp-json/wc/store/v1/products), 100 items/page,
+  prices.currency_code=GTQ, minor_unit=2 (e.g. 32500 -> Q325.00). Category
+  taxonomy is brand names (BENESSI, ABBOTT, NEUTROGENA...), not product
+  types. Full scrape: see report for row count.

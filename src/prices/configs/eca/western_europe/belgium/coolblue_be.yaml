@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: coolblue_be
+url: https://www.coolblue.be/
+language: nl
+currency: EUR
+cadence: weekly
+channel: electronics
+archive_prefix: "www.coolblue.be/nl/product/"
+archive_path_re: '^/nl/product/[^/?]+'
+notes: |
+  Coolblue Belgium (coolblue.be/nl/) — consumer electronics/appliance
+  retailer, same platform and product catalog as coolblue.nl, run as a
+  separate source under Belgium. Verified live 2026-08-17: real EUR prices
+  in a schema.org Product JSON-LD block on every product detail page
+  (offers.priceCurrency=EUR). Belgian site defaults to the /nl/ (Dutch)
+  locale (there is also /fr/); used /nl/ throughout for consistency with
+  coolblue.nl.
+
+  Category "filter" listing pages are server-rendered with a fixed ~22
+  product page and no server-side pagination link (further results load via
+  client-side JS the site blocks headless browsers from executing — a bare
+  Playwright fetch returned a stub interstitial page instead of the catalog,
+  confirmed live). Scoped to 24 leaf categories spanning consumer
+  electronics + major appliances (laptops, smartphones, tablets, TVs,
+  monitors, fridges, washers/dryers, dishwashers, ovens/microwaves,
+  airfryers, coffee machines, kitchen machines, vacuums/robot vacuums, ACs,
+  smartwatches, earbuds, printers, desktops, cameras, drones, projectors) at
+  one page/category (~22 products/category ceiling). [row count pending
+  full scrape] Site rate-limits bursty requests (403s after ~15 rapid
+  unthrottled hits from one IP) — spider runs at DOWNLOAD_DELAY=1.5s,
+  concurrency=2.

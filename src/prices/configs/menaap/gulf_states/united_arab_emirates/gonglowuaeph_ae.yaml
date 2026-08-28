@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gonglowuaeph_ae
+url: https://www.gonglowuaeph.com/
+language: en
+cadence: weekly
+channel: cosmetics
+archive_prefix: "www.gonglowuaeph.com/product-page/"
+archive_path_re: '^/product-page/[^/?]+'
+notes: |
+  Wix storefront ("Wix.com Website Builder" generator tag). Product
+  URLs discovered via the Wix-generated /store-products-sitemap.xml
+  (1,664 URLs, all under /product-page/, no category/blog noise). Each
+  PDP embeds one Schema.org Product JSON-LD block with name + AED
+  price -- confirmed live 2026-08-18, no rendering needed. Wix's
+  JSON-LD casing is inconsistent ("Offers"/"offers",
+  "Availability"/"availability") -- the spider looks up keys
+  case-insensitively. Cosmetics/beauty catalog (serums, mascara,
+  vitamins). Sample: "GMEELAN PEACH NIACINAMIDE WHITENING SERUM" AED
+  30.00.

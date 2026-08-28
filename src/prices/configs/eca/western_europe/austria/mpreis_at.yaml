@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mpreis_at
+url: https://www.mpreis.at/
+language: de
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.mpreis.at/shop/p/"
+archive_path_re: '^/shop/p/[^/?]+'
+notes: |
+  Custom Vue/Nuxt-style storefront, server-rendered (`data-v-*` markup
+  present in raw HTML, not a client-only shell). Category pages embed the
+  entire category tree as a double-JSON-encoded `window.__INITIAL_STATE__`
+  blob (shop._categoryById). Re-verified live 2026-08-06: root category
+  "Lebensmittel" (id 50234186) resolves a tree of 332 categories / 236
+  leaves summing to exactly 12,773 products; a sampled leaf ("Riegel", 92
+  products) returned real prices in raw HTML ('2,79', '1,79', ...) with a
+  producer+name span. CSV flagged Algolia as present but not yet extracted
+  -- not needed: the embedded category-tree JSON plus SSR product cards on
+  each leaf category page is sufficient and simpler than reverse-engineering
+  an Algolia key. Tyrol-based regional chain, ~150 stores. Pagination is
+  cumulative (`?currentPage=N` re-renders pages 1..N), so one request per
+  leaf at a computed page covers the full leaf.

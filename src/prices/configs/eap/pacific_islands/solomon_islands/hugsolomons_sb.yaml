@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hugsolomons_sb
+url: https://www.hugsolomons.com/
+language: en
+cadence: weekly
+channel: other
+archive_prefix: "www.hugsolomons.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Not a multi-vendor marketplace despite "marketplace" framing in discovery
+  notes -- checked for a seller directory per the onboarding doctrine and
+  found none; this is a single WooCommerce storefront with a bolted-on
+  affiliate/MLM membership program (product categories "Rank Level", "Cash
+  Deposit", "Digital Products" are membership mechanics, not real SKUs --
+  filtered out in the spider's _item() override). Legitimate catalog is
+  Food (68), Body Care (16), Drugs (7, e.g. albendazole/amoxicillin sold
+  OTC), Clothes (3), Others (21) -- mixed enough that no single retail
+  `channel` value fits cleanly (not dispensing-led enough for `pharmacy`,
+  not narrow enough for `specialty-food`), hence `other`. WooCommerce Store
+  API open, no WAF (verified 2026-08-11, x-wp-total: 134, currency_minor_unit
+  confirmed against rendered price_html -- 2400 minor units = $24.00 SBD).
+  Test run returned >=5 valid rows after MLM-category filtering.

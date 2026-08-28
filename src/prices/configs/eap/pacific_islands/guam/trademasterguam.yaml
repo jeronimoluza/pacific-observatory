@@ -1,0 +1,20 @@
+spider: trademasterguam
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+url: https://www.trademasterguam.com/
+language: en
+cadence: daily
+archive_prefix: "www.trademasterguam.com/product-page/"
+archive_path_re: '^/product\-page/[^/?]+'
+notes: >
+  Wix online store selling prepared Filipino dishes (adobo, afritada,
+  chopsuey, dinuguan, kaldereta, ...) in small consumer portions (~$6-9
+  each). No public catalog API on this tenant, but every /product-page/
+  PDP server-renders a schema.org Product JSON-LD block (name +
+  Offers.price + Offers.priceCurrency="USD") -- no Playwright needed.
+  ~29 products total, all linked from the homepage (no further
+  pagination). JSON-LD seller.name reads "New Fresh Bread" -- likely the
+  underlying business name behind the trademasterguam.com domain.

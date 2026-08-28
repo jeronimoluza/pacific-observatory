@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: daraz_np
+url: https://www.daraz.com.np/
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.daraz.com.np/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Lazada-derived marketplace. The catalog-search AJAX surface is
+  unauthenticated and unsigned (unlike Daraz's `mtop` product-detail API):
+  GET /catalog/?ajax=true&isFirstRequest=true&page=N&q=<keyword> -> 200,
+  plain JSON, mods.listItems with name/price/originalPrice/discount/
+  sellerName/itemUrl. Re-verified live 2026-08-06: q=rice page=1 -> 40 items
+  incl. "Hilife Pulao Basmati Rice 1 Kg" Rs 264, "Local Kalanamak Rice 1 Kg"
+  Rs 320 (seller "गाउँघर अर्गानिक स्टाेर").
+
+  No single category crawl reaches deep leaf breadth on this marketplace
+  (per round 1), so this walks a fixed keyword list of ~48 food/staple
+  terms (_daraz_np_keywords.txt: rice, dal, oil, sugar, salt, flour, tea,
+  milk, ghee, vegetables by name, fruits by name, spices, noodles, meat/
+  fish/egg, etc.), 3 pages/keyword cap (120 items/keyword). Third-party
+  seller names are carried in the raw item but not in our item schema; flash
+  -sale price volatility is a known caveat (price field is the current/sale
+  price shown to a buyer, matching what a consumer actually pays).

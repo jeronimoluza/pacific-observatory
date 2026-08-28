@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: venavo_nl
+url: https://www.venavo.nl/
+language: nl
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.venavo.nl/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5
+  -> HTTP 200, 29KB JSON, standard WooCommerce Store API, no auth.
+  currency_code EUR / currency_minor_unit 2 matches countries.yaml. Sample:
+  'Scutellaria complex' EUR 24.95, 'Kaneelstokjes Ceylon' EUR 6.00, 'Visolie
+  Forte 400 EPA - 300 DHA' EUR 24.95. Dutch health-food/supplement
+  specialist (herbs, tea, vitamins, natural remedies) -- whole-catalog walk,
+  no category filter.

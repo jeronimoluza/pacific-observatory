@@ -1,0 +1,33 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: ae_gccstat_cpi
+module: menaap.gulf_states.united_arab_emirates.gccstat_cpi
+function: fetch_ae_gccstat_cpi
+url: https://dp.marsa.gccstat.org/dataset/consumer-prices
+language: en
+cadence: monthly
+fallback_date: 2014-12-01
+notes: |
+  Verified live 2026-08-07: same GCC Statistical Centre (GCC-Stat) harmonised
+  regional CPI dataset (GCCSTAT.ES,DF_ES_CPI,1.0) already wired for
+  bahrain/kuwait/oman/qatar this round — one SDMX CSV covers all six GCC
+  states, filtered here to COUNTRY="Emirates" (the dataset's own label for
+  the UAE, not "United Arab Emirates" — see _COUNTRIES map in the shared
+  module). Bucket-2 shared module
+  (src/prices/fetchers/_shared/menaap/gccstat_cpi.py); this manifest is the
+  UAE wrapper (fetch_ae_gccstat_cpi, already present in the shared module's
+  _COUNTRIES map, function added this round). 12-indicator COICOP-2018-style
+  grouping (division 13 absent); all-items headline indicator dropped, no
+  sanctioned sentinel yet. UAE FCSC's own opendata.fcsc.gov.ae portal
+  (Cloudflare-protected, connection timeouts on every probe attempt this
+  round) would be a stronger item-level source if it opens up later — see
+  Phase 8 report. This GCC-Stat series is the UAE's only cpi_benchmark
+  source onboarded so far. Smoke test (full fetch, no --max-items on
+  fetchers) returned 1188 rows, monthly Jan-2015 onward, index values in a
+  plausible 90-110 range.
+  coicop_divisions: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12
+  divisions_basis: walked_categories (all 12 mapped INDICATOR values enumerated from the full CSV)

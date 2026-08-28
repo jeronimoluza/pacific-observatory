@@ -1,4 +1,6 @@
 spider: onlinesaathi
 language: en
+archive_prefix: "onlinesaathi.com/"
+archive_path_re: '^/[a-z0-9-]{30,}$'
 notes: Nepal general e-commerce; PDPs at /<long-product-slug>.
 channel: supermarket

@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ikea_sa
+channel: home-improvement
+url: https://www.ikea.com/sa/en/
+language: en
+cadence: weekly
+archive_prefix: "www.ikea.com/sa/en/p/"
+archive_path_re: '^/sa/en/p/[^/?]+'
+notes: |
+  Verified live 2026-08-07: same shared IKEA platform as ikea_au/ikea_jp/
+  ikea_ae (see _ikea_base.py docstring) — open JSON listing API at
+  sik.search.blue.cdtapps.com, no WAF/anti-bot observed on either the
+  storefront nav or the API host for the sa market. Found + fixed a
+  market-specific defect during onboarding: the ae/sa markets reject
+  size>1000 (400 "Size parameter cannot exceed 1000"); LISTING_SIZE lowered
+  2000->1000 globally in _ikea_base.py (see ikea_ae.yaml notes). Smoke test
+  (--max-items 20, closed early) actually scraped 421 rows before hitting
+  the item cap: baby textiles, kitchen storage, furniture, all SAR
+  non-zero and plausible.
+  coicop_divisions: 05, 08, 09
+  divisions_basis: sampled_rows (217 category keys discovered from the mega-nav; only the first few queried before hitting --max-items)

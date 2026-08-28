@@ -1,0 +1,36 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: pf_dgae_meteo_prix
+module: eap.pacific_islands.french_polynesia.dgae_meteo_prix
+function: fetch_pf_dgae_meteo_prix
+url: https://www.service-public.pf/dgae/releve-des-prix/la-meteo-des-prix/
+language: fr
+cadence: monthly
+fallback_date: 2025-01-01
+notes: |
+  DGAE (Direction Generale des Affaires Economiques) official monthly multi-store
+  price survey, "La Meteo des Prix". Four editions per month, one PDF each:
+  Tahiti hypers & grands supermarches (HGS, ~11 stores), Tahiti moyens & petits
+  supermarches (MPS, ~20 stores), Moorea (~12 stores), Raiatea (~6 stores).
+  200+ everyday consumer products (groceries, dairy, produce, hygiene) per
+  edition, one price column per surveyed store, no ruling lines between
+  columns. Discovered via the WordPress media REST API
+  (wp-json/wp/v2/media?search=meteo) rather than scraping the listing page's
+  HTML -- gives a clean island/month/year straight from the attachment title.
+  Table extraction is x-position column clustering (pdfplumber extract_tables()
+  glues adjacent store columns into one string); verified live 2026-08-11 on
+  the Fevrier 2026 Tahiti-HGS edition (11 stores, 1785 (item, store, price)
+  rows from 232 products) and cross-checked against Moorea and Raiatea
+  editions (12 and 6 stores respectively) -- all three produce clean item
+  names and correct store attribution. Known limitation: the Tahiti-MPS
+  edition packs ~20 stores into the same page width via slanted two-line
+  store-name text; (item, price) pairs still parse correctly but the
+  store label in `notes` occasionally blends two adjacent stores' names.
+  Currency XPF confirmed both by countries.yaml and the PDF's own "F CFP"
+  column headers. Wide COICOP source (01 groceries/dairy/produce dominant,
+  some 12/13 hygiene) -> coicop_classification: classifier.
+  Sibling product "Le Panier fute" on the same DGAE page was probed and
+  skipped -- see known_blockers.md.

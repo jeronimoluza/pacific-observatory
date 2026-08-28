@@ -1,0 +1,30 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "06", "07", "09", "12"]
+channel: null
+source_key: as_doc_cpi
+module: eap.pacific_islands.american_samoa.doc_cpi
+function: fetch_as_doc_cpi
+url: https://www.doc.as.gov/stats
+language: en
+cadence: quarterly
+fallback_date: 2019-01-01
+notes: |
+  American Samoa Dept of Commerce Consumer Price Index, quarterly, Modified
+  Laspeyres, base year 2007 (per the newsletter's own methodology text).
+  Discovered via the same Wix FAQ widget API as doc_bfi.yaml (see
+  _wix_faq.py), "Consumer Price Index" category. Each quarter publishes two
+  linked PDFs: a short "CPI Press Release" (verified image-only/scanned in
+  every sample -- not used) and a fuller "CPI Newsletter" (verified
+  text-native for every quarter checked 2021 Q3 onward -- this is what the
+  fetcher parses). Press-Release-only quarters (2019 through most of 2021)
+  are skipped for lack of an extractable Newsletter. "Education and
+  Communications" is a combined column with no single COICOP division and
+  is dropped (logged); "All Items" headline dropped pending a sanctioned
+  all-items sentinel per the onboarding skill's open design questions. The
+  Newsletter also carries a full multi-year quarterly index history table
+  and item-level "Quarterly/Annually Averaged Prices" tables (~30 commodities)
+  on later pages -- not parsed here, flagged as a follow-up (would need its
+  own fetcher/manifest, official_avg role, similar to doc_bfi.yaml).

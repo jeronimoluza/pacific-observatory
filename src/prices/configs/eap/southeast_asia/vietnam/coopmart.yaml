@@ -7,3 +7,5 @@ url: https://www.coopmart.vn
 language: vi
 cadence: weekly
 channel: supermarket
+archive_prefix: "cooponline.vn/"
+archive_path_re: '^/[^/]+--s\d+$'

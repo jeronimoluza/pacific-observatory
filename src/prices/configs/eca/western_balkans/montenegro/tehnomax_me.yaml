@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tehnomax_me
+url: https://www.tehnomax.me/
+language: sr
+currency: EUR
+cadence: weekly
+channel: electronics
+archive_prefix: "www.tehnomax.me/tv-audio-video/"
+archive_path_re: '^/tv\-audio\-video/[^/?]+'
+notes: |
+  Verified live 2026-08-17. Montenegrin electronics/appliance retailer,
+  custom PHP storefront behind Cloudflare -- bare requests 403 (cf-mitigated:
+  challenge); curl_cffi impersonate=chrome124 clears cleanly. Category set
+  discovered from the site's own sitemap.xml (472 two-segment category
+  paths), not guessed.
+  Enumerability proven: /bijela-tehnika/frizideri (page 1) vs
+  /bijela-tehnika/frizideri/2 return 60 + 60 product ids from the
+  `fnc-product-name-<id>` markup, zero overlap (listing reports 255 total
+  for that one category alone).
+  Sample smoke row: "HLADNJAK WHIRLPOOL WHK 26362 XBR4E" 729.00 EUR.
+  Full scrape still pending -- orchestrator queues it.

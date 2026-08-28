@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: groceryhunt_sg
+url: https://groceryhunt.com
+language: en
+cadence: daily
+notes: |
+  Third-party price-comparison site, not a retailer -- but every row is a
+  real per-SKU price scraped from one of three first-party SG supermarket
+  chains (Sheng Siong, Cold Storage, FairPrice), all channel: supermarket,
+  so retailer_sku/channel: supermarket is the accurate tag (same shape as
+  the FairPrice worked example in yaml_schema.md), not official_avg --
+  official_avg in this repo is reserved for single averaged series from
+  statutory/NGO bodies (SingStat, WFP HDX), which this is not: GroceryHunt
+  publishes per-store, per-SKU breakdowns, not a composite average.
+  Server-rendered HTML (Laravel + Inertia/React, but plain curl with a
+  browser UA returns the fully rendered price table -- Tier 1A, no
+  Playwright at collection time). Catalog enumerated via /search?page=N
+  (empty query paginates the full ~1,000-item catalog; page 50 has items,
+  page 51 is empty). /categories/<slug> listing pages are a fixed 30-item
+  sample only, not usable for full enumeration.
+  Adds new coverage for Sheng Siong (not otherwise onboarded in this repo);
+  FairPrice/Cold Storage rows overlap with fairprice.yaml/cold_storage_sg.yaml
+  but are kept (each spider is independently useful and the sources are
+  complements, not substitutes, per the skill's analytical_role doctrine).
+  item url field is the retailer's own deep-link (not the shared
+  GroceryHunt PDP url) so the run-wide url-dedup pipeline does not collapse
+  the 3 stores' rows for the same product into one.

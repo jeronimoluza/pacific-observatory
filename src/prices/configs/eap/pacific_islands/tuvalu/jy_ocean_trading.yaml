@@ -7,6 +7,8 @@ url: https://jyocean.tv
 language: en
 cadence: daily
 channel: supermarket
+archive_prefix: "jyocean.tv/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: >
   First retail price source for Tuvalu (prior coverage was aggregator-only:
   expatistan/livingcost/mylifeelsewhere). Shopify storefront; /products.json

@@ -1,3 +1,5 @@
 spider: boots_th
 language: th
 channel: pharmacy
+archive_prefix: "store.boots.co.th/ecommerce/"
+archive_path_re: "/ecommerce/\\d+"

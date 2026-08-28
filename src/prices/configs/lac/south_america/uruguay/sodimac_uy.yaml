@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sodimac_uy
+url: https://www.sodimac.com.uy/sodimac-uy/
+language: es
+currency: UYU
+cadence: weekly
+channel: home-improvement
+archive_prefix: "www.sodimac.com.uy/sodimac-uy/product/"
+archive_path_re: '^/sodimac\-uy/product/[^/?]+'
+notes: |
+  Sodimac Uruguay, hardware/home-improvement banner. Re-verified live
+  2026-08-17: same Falabella-Group "Catalyst" Next.js platform as
+  homecenter_co.py (Sodimac Colombia) -- listing JSON at __NEXT_DATA__
+  .props.pageProps.searchProps.searchData.results, ?currentpage=N
+  advances. Not VTEX despite the earlier probe's guess -- confirmed no
+  myvtex.com host anywhere. Category discovery samples the site's own
+  category sitemap (souy-browse-category-sitemap.xml, 830 leaf
+  categories) at stride 18.
+  Enumerability proven on cat1770009 (insecticidas-y-repelentes, 84 total
+  items, 40/page): page 1 and page 2 each returned 40 unique productIds
+  with 19 in common (21 new) -- a real second page, not a repeat. Real
+  UYU prices confirmed, e.g. NORMAL 189,00 UYU. Smoke run: 60 rows
+  requested, see collect output for actual count.
+  FULL SCRAPE STILL PENDING -- this manifest only covers the smoke test.

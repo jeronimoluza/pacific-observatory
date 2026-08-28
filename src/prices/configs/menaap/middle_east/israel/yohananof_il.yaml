@@ -1,0 +1,23 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+source_key: il_yohananof
+module: menaap.middle_east.israel.yohananof_il
+function: fetch_il_yohananof
+url: ftp://url.retail.publishedprices.co.il/
+language: he
+cadence: daily
+fallback_date: 2020-01-01
+channel: supermarket
+notes: |
+  Israel's 2014 Food Price Transparency Law statutory feed via the shared
+  publishedprices.co.il FTPS portal (see rami_levy_il.yaml for the shared
+  architecture note). Login "yohananof", blank password. Fetches one
+  representative branch's PriceFull snapshot per run. Re-verified live
+  2026-08-06: 10,846 items, e.g. 'גבינה צהובה קלאסית 2' (classic yellow
+  cheese) ILS 31.00. Currency ILS. Yohananof is a mid-size full-line
+  supermarket chain.
+  coicop_divisions: 01, 02, 13
+  divisions_basis: sampled_rows (10,846-item branch catalog, not fully
+  walked by department)

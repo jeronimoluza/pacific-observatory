@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shopitnepal_np
+url: https://www.shopitnepal.com/
+language: en
+cadence: weekly
+channel: convenience
+notes: |
+  ShopIt Nepal. Next.js frontend backed by a mobile JSON API. Re-verified
+  live 2026-08-06: GET https://shopitnepal.com/api/mobile/products -> 200,
+  paginated 20 items/page, meta.total=1376, meta.totalPages=69; `?page=2`
+  confirmed to return a distinct page. Sample: 'NIVEA Shea Smooth 75ml'
+  price=185 mrp=200. Quick-commerce convenience-store catalog (cloud
+  kitchen, liquor, smokes, sweets, daily groceries) with no visible category
+  reference on product objects, so category is left null in the emitted
+  items. Currency NPR matches countries.yaml.

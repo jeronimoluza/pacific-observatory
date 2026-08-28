@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: deprati_ec
+url: https://www.deprati.com.ec/
+language: es
+currency: USD
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.deprati.com.ec/"
+archive_path_re: '^/[^/]+/p/[A-Za-z0-9]+$'
+notes: |
+  De Prati -- Ecuadorian department-store chain, SAP Commerce Cloud
+  (Hybris) storefront. Bare curl hits a Cloudflare "Attention Required"
+  403; curl_cffi impersonate=chrome124 clears both homepage and PDP urls
+  with a normal 200.
+
+  Enumerability proof: https://www.deprati.com.ec/sitemap.xml is a real
+  sitemap index carrying ~22 `Product-es-USD-<n>-<hash>.xml` shards
+  (re-discovered per-run, not hardcoded -- the hash is a signed context
+  token). Shard 0 (verified live 2026-08-17) is a urlset of 1,024 real
+  `/p/<slug>/p/<code>` PDP urls, e.g.
+  /camiseta-huntington-estampada/p/112017755205605001. Consecutive shards
+  carry disjoint product codes -- direct product-URL enumeration off the
+  site's own sitemap, not a crawled listing page.
+
+  Ecuador is dollarized (USD) but formats prices with EU-style separators
+  (e.g. "$1.939,00" -- comma decimal, period thousands). This spider does
+  NOT parse that string: each PDP embeds a `:rawproduct='{...}'` Vue
+  attribute with a clean numeric `price.value` and `price.currencyIso`
+  already resolved server-side, sidestepping the EU-separator trap
+  entirely (verified: `price.value` 2.0585 matches `formattedValue`
+  "$2,06" to the cent).
+
+  Bounded to the first 6 product shards x first 200 urls/shard to keep a
+  full run's request count bounded (full catalog is ~22 shards x ~1,024
+  urls = ~22.5k products).
+
+  Smoke run (--max-items 60): see report. FULL scrape is still pending --
+  the orchestrator queues it.

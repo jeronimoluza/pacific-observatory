@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: costuless_sx
+url: https://www.costuless.com/st-maarten
+language: en
+cadence: weekly
+channel: wholesale
+archive_prefix: "www.shopcostuless.com/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  channel substituted: the source is a US-style warehouse club (bulk
+  buying membership model), which the manifest schema's Channel enum has
+  no dedicated value for — "wholesale" is the closest fit.
+  NCR Freshop tenant app_key=cost_u_less, store_id=1966. Live re-verify:
+  GET api.freshop.ncrcloud.com/2/products?app_key=cost_u_less&limit=5&
+  store_id=1966 -> 200, 1,704 items, "Pnf Org Coconut Bev Original 32"
+  price "ƒ5,99". Distinct catalog from the other three Cost-U-Less
+  territory stores under this app_key (see costuless_ky notes for the
+  cross-store verification). CURRENCY CORRECTED FROM SHARD: the shard
+  recorded USD (an assumption, since the payload has no currency_code
+  field), but this store's price display string consistently uses the "ƒ"
+  guilder/florin symbol across a spot-check of 10+ items, not "$" — clear
+  live evidence this store prices in ANG, matching countries.yaml's ANG
+  for sint_maarten_dutch_part, not the shard's USD guess.

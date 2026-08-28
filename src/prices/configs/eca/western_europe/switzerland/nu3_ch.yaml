@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nu3_ch
+url: https://www.nu3.ch/
+language: de
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.nu3.ch/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /products.json?limit=5 -> HTTP 200,
+  10.9KB JSON, standard Shopify storefront, no auth. Homepage confirms
+  Shopify.currency active=CHF, matching countries.yaml. Sample: 'BEAVITA
+  Fettblocker' CHF 21.95, 'nu3 Vital Life Blend Raspberry Flavour'
+  CHF 42.95. German-market nutrition/supplement retailer's Swiss storefront
+  (nu3.ch, distinct catalogue/domain from nu3.de) -- whole-catalog walk, no
+  collection filter. First non-proxy Swiss price manifest in the repo.

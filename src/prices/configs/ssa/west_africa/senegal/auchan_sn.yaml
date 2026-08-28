@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: auchan_sn
+url: https://www.auchan.sn/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.auchan.sn/"
+archive_path_re: '^/[^/]+/\d+-[^/]+\.html$'
+notes: |
+  Elementor-themed frontend proxying a core PrestaShop cart backend
+  (ps_shoppingcart ajax module, data-id-product / itemprop="price" markup
+  identical to the other Senegal Presta stores in this wave). Re-verified
+  live: category page /104-epicerie-salee returns real FCFA-priced products
+  (e.g. "AUCHAN SAUCE NUOC MAM 150ML" 1 650 FCFA). Category tree
+  auto-discovered from the homepage nav.
+
+  cfg_currency (XOF) matches what the probe saw. DRIVE operation across
+  multiple Dakar stores per prior research; full-line catalog, not just the
+  frozen-desserts skew seen on the homepage sample.

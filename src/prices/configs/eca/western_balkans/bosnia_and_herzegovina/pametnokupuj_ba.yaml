@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pametnokupuj_ba
+url: https://pametnokupuj.ba/
+language: bs
+cadence: weekly
+channel: marketplace
+archive_prefix: "pametnokupuj.ba/proizvod/"
+archive_path_re: '^/proizvod/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 16.0KB JSON. Sample: 'PALMOLIVE KUPKA ZA TUŠIRANJE BLACK ORCHID
+  750 ml' price 545 minor units / currency_minor_unit=2 -> BAM 5.45.
+  currency_code BAM matches countries.yaml. ~22,000-article marketplace with
+  a dedicated 'Hrana i pice' (Food & Drink) category and chilled-goods
+  delivery — largest BiH catalogue found. Whole-catalog walk (no category
+  filter).

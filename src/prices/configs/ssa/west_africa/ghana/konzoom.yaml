@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: konzoom
+url: https://konzoom.shop/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "konzoom.shop/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
+  live 2026-08-06: HTTP 200, real SKUs (e.g. 'Dolait Apricot 200ml' 14.99
+  GHS). Currency GHS matches countries.yaml. Sampled pages lean
+  personal-care/household plus beverages; the "Local Delicacies" food
+  category cited in the prior probe was not independently re-sampled this
+  session — whole-catalog walk will surface it regardless.

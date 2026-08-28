@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: prisma_fi
+url: https://www.prisma.fi/
+language: fi
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.prisma.fi/tuotteet/"
+archive_path_re: '^/tuotteet/[^/?]+'
+notes: |
+  IMPORTANT: this is prisma.fi's general-merchandise online store, NOT a
+  grocery catalogue. __NEXT_DATA__.props.pageProps.categories on the
+  homepage lists exactly 13 top-level departments (Elektroniikka,
+  Kodinkoneet, Kirjat, Koti, Muoti, Lelut ja lastentarvikkeet, Urheilu ja
+  vapaa-aika, Piha ja puutarha, Remontointi, Autoilu, Kauneus ja
+  hyvinvointi, Lemmikit, Ajankohtaista) and NONE of them are food/grocery
+  -- confirmed live 2026-08-06. S Group's Finnish grocery delivery is a
+  separate site (s-kaupat.fi, same family as prismamarket.ee which DOES
+  carry groceries). Overrides the shard's channel:supermarket assumption
+  to dept-store and expect ZERO 01.x COICOP coverage from this source;
+  it is scaffolded only for non-food (electronics/home/beauty/pets/books/
+  sports/garden/renovation/automotive) leaf coverage. Every /kategoriat/
+  <id>/<slug>?page=N page embeds its product batch (48/page),
+  productTotalCount, and subCategories directly in __NEXT_DATA__ (SSR, no
+  client fetch needed); the spider seeds the 13 top-level ids and
+  recurses into subCategories. Prices are minor-unit cents (price=495 ->
+  rendered '4,95 €', confirmed against raw HTML). Sample: /kategoriat/17/
+  kauneus-ja-hyvinvointi -> 'Emendo 100ml hierontaöljy rentouttava' 4.95
+  EUR. Currency EUR matches countries.yaml.
+timeout: 28800

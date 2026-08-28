@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: magnit_tj
+url: https://magnit.tj/
+language: ru
+cadence: weekly
+channel: supermarket
+archive_prefix: "magnit.tj/product/show/"
+archive_path_re: '^/product/show/[^/?]+'
+notes: |
+  Dushanbe online supermarket, free home delivery. Custom PHP storefront;
+  category pages at /category?id=<n>&page=<n> server-render product cards
+  directly (no JS hydration needed). 164 category ids walked from the
+  homepage nav, listed in _magnit_tj_categories.txt; each category page also
+  renders its own name in <h1 class="title">, so names aren't hardcoded.
+  Pagination is genuinely incremental (distinct product ids per page, ~36
+  items/page), confirmed by diffing page=1 vs page=2 of the dairy category.
+
+  Re-verified live 2026-08-06: /category?id=3 -> 200, 151KB, 36 real product
+  cards incl. "Йогурт Epica® клубника 4.8% 130 г" 24.50 сом. Currency TJS
+  matches cfg_currency.

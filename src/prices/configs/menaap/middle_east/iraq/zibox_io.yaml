@@ -1,0 +1,25 @@
+scaffolding: spider
+spider: zibox_io
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://zibox.io/
+language: en
+currency: IQD
+cadence: weekly
+archive_prefix: "zibox.io/en/product/"
+archive_path_re: '^/en/product/\d+/[^/?]+'
+notes: |
+  Verified live 2026-08-18. Multi-vendor marketplace -- first-party "ZiBox"
+  shop plus third-party shops (e.g. /en/shops/247/Maf-Company), confirmed
+  via the /sitemaps/markets.xml shop directory, so channel=marketplace.
+  Next.js SSR. URL discovery: /sitemap.xml -> 5 /sitemaps/products-N.xml
+  shards (large: shard 1 alone is ~12MB of URLs) -> /en/product/<id>/<slug>
+  PDPs (also triplicated across en/ar/ku; only /en/ crawled). Each PDP
+  embeds a clean Schema.org Product/Offer JSON-LD block server-side with a
+  correctly labeled priceCurrency (IQD), confirmed live -- no currency
+  override needed here (unlike mamame_iq).
+  Smoke test (--max-items 5): 5 rows, IQD, real names + prices, e.g.
+  "Dove Intensive Repair Shampoo – Nourishing Care – 400ml" @ 4929 IQD.
+timeout: 14400

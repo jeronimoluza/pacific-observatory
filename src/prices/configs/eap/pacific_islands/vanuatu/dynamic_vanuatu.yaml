@@ -1,3 +1,5 @@
 spider: dynamic_vanuatu
 language: en
 channel: supermarket
+archive_prefix: "retail.dynamicvanuatu.com/products/"
+archive_path_re: "^/products/[^/?]+"

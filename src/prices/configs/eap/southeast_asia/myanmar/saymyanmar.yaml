@@ -7,6 +7,8 @@ url: https://saymyanmar.com
 language: my
 cadence: daily
 channel: pharmacy
+archive_prefix: "saymyanmar.com/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: |
   Nationwide online pharmacy on a custom Laravel/Mongo stack with an
   OpenCart-style SSR catalogue. Homepage lists /category/{objectid} pages;

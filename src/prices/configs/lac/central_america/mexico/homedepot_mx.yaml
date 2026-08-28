@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: homedepot_mx
+url: https://www.homedepot.com.mx/
+archive_prefix: "www.homedepot.com.mx/"
+archive_path_re: '^/(?:p|g)/[^/?]+$'
+language: es
+currency: MXN
+cadence: weekly
+channel: home-improvement
+notes: |
+  Home Depot Mexico. Re-verified live 2026-08-17: backend is legacy IBM
+  WebSphere Commerce (WCS), not the Algolia app-id visible in page JS (a
+  dead end -- 403 on a guessed key). REST layer at
+  /search/resources/api/v2/products serves category search (categoryId +
+  pageNumber/pageSize) but price.value is always "0.0"/empty there; real
+  prices come from a second call with
+  profileName=HCL_V2_findProductByPartNumber_Details and up to 20 batched
+  partNumber= params (confirmed live, e.g. partNumber=103065P -> 217.0
+  MXN). Category discovery uses /search/resources/api/v2/categories
+  (found via a Playwright network trace of a real category page -- the
+  homepage mega-menu hrefs are slug-only and carry no numeric id), 767
+  leaf categories, sampled at stride 12.
+  Enumerability proven on categoryId=10001 (Materiales de Construcción):
+  page 1 (pageSize=50) and page 2 returned fully disjoint partNumber sets
+  (0 overlap) against total=2424. robots.txt disallows only legacy WCS
+  URL patterns (CategoryDisplayView, ProductListingView, SearchDisplay),
+  not this REST path. Smoke run: 60 rows requested, see collect output
+  for actual count.
+  FULL SCRAPE STILL PENDING -- this manifest only covers the smoke test.

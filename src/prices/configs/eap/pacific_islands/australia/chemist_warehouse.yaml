@@ -6,6 +6,8 @@ spider: chemist_warehouse
 url: https://www.chemistwarehouse.com.au
 language: en
 channel: pharmacy
+archive_prefix: "www.chemistwarehouse.com.au/buy/"
+archive_path_re: '^/buy/[^/?]+'
 notes: |
   AU's largest pharmacy. Next.js storefront; product listing served by a
   public Algolia index (app 42NP1V2I98, index prod_cwr-cw-au_products_en,

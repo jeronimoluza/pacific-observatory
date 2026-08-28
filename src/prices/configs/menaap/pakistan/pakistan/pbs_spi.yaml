@@ -1,0 +1,30 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: pk_pbs_spi
+module: menaap.pakistan.pakistan.pbs_spi
+function: fetch_pk_pbs_spi
+url: https://www.pbs.gov.pk/spi
+language: en
+cadence: weekly
+fallback_date: 2020-01-01
+notes: |
+  Pakistan Bureau of Statistics — Weekly Sensitive Price Indicator (SPI).
+  The vanity URL /spi 404s (stale); each week's bulletin instead lives at a
+  dated WordPress page
+  weekly-sensitive-price-indicator-spi-for-the-week-ended-on-DD-MM-YYYY/
+  which links to a stable-pattern Annex XLSX
+  (wp-content/uploads/2020/07/Annex_DD.MM.YYYY.xlsx). Re-verified live
+  2026-08-06: the week-ended-30-07-2026 bulletin page -> 200, Annex xlsx ->
+  200, 55.8KB, sheet 'Appendix-A' / 'CONSUMER PRICES OF ESSENTIAL ITEMS',
+  MIN/AVG/MAX price per item across 7 cities visible in this Annex
+  (Islamabad, Rawalpindi, Gujranwala, Sialkot, Lahore, Faisalabad,
+  Sargodha). Sample: 'Wheat Flour Bag', '20 Kg', Islamabad AVG PKR 3085.42.
+  There is no reliable index of the current week (the WordPress
+  "publication" archive redirects to an old post), so the fetcher discovers
+  the latest bulletin by probing the last 8 Thursdays going backward from
+  today. 51 essential items (food + non-food); food-relevant subset covers
+  flour, rice, bread, beef, mutton, chicken, milk, curd, powdered milk,
+  eggs, cooking oils, ghee, sugar, tea, pulses, onion, potato.

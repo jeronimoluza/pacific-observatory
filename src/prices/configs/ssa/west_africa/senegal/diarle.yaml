@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: diarle
+url: https://diarle.sn/fr/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "diarle.sn/fr/"
+archive_path_re: '^/fr/[^/]+/\d+-[^/]+\.html$'
+notes: |
+  PrestaShop SSR category HTML; same operator/theme family as Sakanal but a
+  different ("tvproduct") theme skin that drops the itemprop="price"
+  microdata in favour of a plain span.price -- the spider falls back to
+  that. Re-verified live: category page /fr/12-fruits-legumes-viande
+  returns 20+ real products with FCFA prices (e.g. "AUBERGINE AMERE
+  (DIAKHATOU) 1Kg" 700 FCFA). Category tree auto-discovered from the
+  homepage nav, no hardcoded category id needed (the original probe's
+  /epicerie guess 404'd, but this doesn't require guessing a slug).
+
+  cfg_currency (XOF) matches what the probe saw.

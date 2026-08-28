@@ -1,3 +1,5 @@
 spider: chemist_plus
 language: en
 channel: pharmacy
+archive_prefix: "chemistplus.co.nz/products/"
+archive_path_re: '^/products/[^/?]+'

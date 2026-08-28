@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: homehr_ir
+url: https://homehr.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: cosmetics
+archive_prefix: "homehr.ir/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Verified live 2026-08-18: homehr.ir is "HomeHR" (فروشگاه اینترنتی
+  هومهر), a Mashhad-based cosmetics/personal-care store. No JSON API
+  found; walks the WordPress-style sitemap index
+  (https://homehr.ir/sitemap.xml) -> product-sitemap1..5.xml (~2k URLs
+  each, ~10k total). PDPs carry no schema.org JSON-LD; price/name
+  extraction falls back to OpenGraph / product: meta tags (row_from_meta
+  in price_scraping/archived.py). Confirmed live: "سرم تقویت کننده ابرو
+  اکسیلیا" -> IRR 1,186,000.

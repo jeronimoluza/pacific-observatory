@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: milanwholesale_np
+url: https://www.milanwholesale.com/
+language: en
+cadence: weekly
+channel: wholesale
+archive_prefix: "www.milanwholesale.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  MilanWholesale (Nepal). Server-rendered HTML, bespoke PHP app (wp-json/wc
+  endpoints 404, not WordPress despite the storefront look). Re-verified
+  live 2026-08-06: GET /product-category/rice -> 301 to www.milanwholesale.com
+  -> 200, 104587 bytes SSR HTML, real product cards, e.g. 'Rajhans Royal
+  Pulao Basmati Rice 20kg' Rs.3400. 17 category URLs walked from the
+  homepage nav (see _milanwholesale_np_categories.txt), each paginated via
+  ?page=N until a page returns zero cards. Wholesale bulk pricing on dry
+  staples only (rice, dal/pulses, oil/ghee, spices, sugar/salt, dry fruits,
+  noodles, biscuits) — no fresh produce, dairy, or meat; prices are bulk-pack
+  (e.g. 20kg sacks). High category overlap with Vhandar so mostly
+  incremental leaf coverage, different channel/analytical_role. Currency NPR
+  matches countries.yaml.

@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_sen
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_sen
+url: https://data.humdata.org/dataset/wfp-food-prices-for-senegal
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Senegal via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_sen.csv (200, 6.2MB, 51,578 rows),
+  currency XOF throughout (matches countries.yaml). Max observation date is
+  2026-06-15 — current. 28 commodities: bananas, niebe beans, cabbage,
+  carrots, cassava, fonio, groundnuts, live goat/sheep/cattle, maize,
+  mangoes, millet, onions, oranges, potatoes, 3 rice grades, sorghum, sweet
+  potatoes, tomatoes, watermelons. Sample at max date: 'Cassava', KG,
+  XOF 500. Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

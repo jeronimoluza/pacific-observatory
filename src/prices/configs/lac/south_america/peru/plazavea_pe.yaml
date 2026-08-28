@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: plazavea_pe
+url: https://www.plazavea.com.pe/supermercado
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.plazavea.com.pe/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Intercorp mass-market chain, VTEX. Re-verified live: products/search?_from=0&_to=4 -> HTTP 206,
+  83KB JSON, 'Bio Bolsa PLAZAVEA Mediana' PEN 0.20. Tested sc= sales-channel param live on a
+  category-scoped query (fq=C:/2/6/950/): identical results with and without sc=1, so the spider
+  does not set sc=. Currency matches countries.yaml (PEN).
+timeout: 14400

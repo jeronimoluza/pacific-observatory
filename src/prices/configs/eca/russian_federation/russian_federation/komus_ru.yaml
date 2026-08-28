@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: komus_ru
+language: ru
+cadence: daily
+archive_prefix: "www.komus.ru/katalog/"
+archive_path_re: '^/katalog/[^/?]+'
+notes: |
+  Re-verified live 2026-08-07: komus.ru is a national Russian office/
+  household/workwear retailer (originally B2B office-supplies, now a broad
+  consumer catalog: furniture, appliances, workwear, stationery, seasonal
+  goods). Product pages are server-rendered with Schema.org Product
+  microdata (meta itemprop="price"/"priceCurrency"=RUB/"availability",
+  brand) but the product title itself is Vue-hydrated client-side with no
+  server-rendered <h1> or itemprop="name" -- recovered instead from the
+  always-present og:title meta tag by stripping the " - купить..."
+  marketing suffix (verified on 2 live product pages: office desk 8217.00
+  RUB, modelling board 194.00 RUB). /sitemap.xml -> 33 sub-sitemaps of
+  ~10,000 product URLs each (/katalog/.../p/<id>/), no city/address cookie
+  required to see prices. Smoke run (20 items): 20/20 rows with plausible
+  RUB prices.
+  coicop_divisions: 03, 05, 08, 09
+  divisions_basis: sampled_rows (2 product pages read in full; ~10 further
+  sitemap URL paths eyeballed for category breadth -- furniture/appliances/
+  workwear/school-hobby/seasonal decor -- not a systematic category walk)
+channel: dept-store

@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: doorshoppin_mw
+url: https://doorshoppin.com/Doorshoppin/category.php?cat_id=Groceries
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "doorshoppin.com/Doorshoppin/"
+archive_path_re: '^/Doorshoppin/[^/?]+'
+notes: |
+  Custom PHP site; index.php homepage is broken ("Catalog unavailable"), so
+  the spider hits category.php?cat_id=Groceries directly. Re-verified live
+  2026-08-06: HTTP 200, 808KB SSR HTML, all 501 grocery products rendered
+  on a single page (product-card data-id/data-name/data-price attributes),
+  e.g. 'Apple Red PP 1kg Bag' MK10,899. Currency MWK matches
+  countries.yaml.

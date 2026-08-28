@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: happycenter_tr
+url: https://www.happycenter.com.tr/
+language: tr
+cadence: weekly
+channel: supermarket
+notes: |
+  Happy Center -- mid-tier Turkish discount supermarket chain (self-described
+  "world's first shelf-system virtual market"). Custom PHP storefront, plain
+  server-rendered HTML, no WAF hit. Bespoke spider (`happycenter_tr.py`)
+  crawls the 65 leaf category/subcategory URLs from the `<nav id="anaMenu">`
+  mega-menu, paginating each via `?page=N` until a page repeats the previous
+  page's product-id set. Turkish decimal-comma prices normalized (60,95 ->
+  60.95). Re-verified live 2026-08-06:
+  /Kuru_Gıda/Çay_-_Şeker_-_Bakliyat_-_Un_-_Makarna -> 200, 26 real product
+  cards incl. 'Balküpü Küp Şeker Gold 1000 gr' TRY 60.95, 'Filiz Spagetti
+  Makarna 500 gr'; page=1 vs page=2 have zero product-id overlap (real
+  pagination, not a repeat). Inverse-correlation pick: avoided Migros
+  (market leader) and Wolt (confirmed NOT live in Turkiye -- front-page API
+  falls back to nearest-city listing in Albania for Istanbul coordinates).

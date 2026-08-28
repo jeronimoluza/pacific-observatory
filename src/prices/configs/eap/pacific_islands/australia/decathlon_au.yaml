@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: decathlon_au
+channel: fashion
+url: https://www.decathlon.com.au/
+language: en
+cadence: weekly
+archive_prefix: "www.decathlon.com.au/p/"
+archive_path_re: '^/p/[^/?]+'
+notes: |
+  Onboarded 2026-08-07 (round-3 non-food shard, COICOP 03/05/08/09 gap).
+  Same shared platform as decathlon_th — see _decathlon_base.py docstring.
+  Per-country Algolia app id/key (index-scoped; do not reuse across
+  countries). Complements ikea_au (05-dominant) with a 09/03-dominant
+  source for the same country — Australia's other AU-native non-food
+  candidates probed this run (Kmart/Big W/Officeworks) all failed
+  (Akamai / AWS WAF captcha / unreachable).
+  coicop_divisions: 03, 09
+  divisions_basis: walked_categories (same sport_en facet taxonomy as
+  decathlon_th — sport/recreation goods dominant 09, sportswear/footwear
+  03)

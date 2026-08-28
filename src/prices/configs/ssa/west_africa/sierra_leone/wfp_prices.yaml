@@ -1,0 +1,27 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_sle
+module: _shared.ssa.wfp_food_prices
+function: fetch_wfp_sle
+url: https://data.humdata.org/dataset/wfp-food-prices-for-sierra-leone
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Sierra Leone via HDX (shared SSA fetcher
+  _shared.ssa.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_sle.csv (200, 20,681 rows). Max
+  observation date is 2026-05-15 — current. 24 commodities incl. rice
+  (imported/local), cassava, groundnuts, palm oil, fish. Sample:
+  'Rice (imported)', KG, SLL 3600. CURRENCY CAVEAT: the CSV reports the
+  legacy Leone code SLL (pre-2022 redenomination), not the new-Leone code
+  SLE that src/configs/countries.yaml uses (1000 old SLL = 1 new SLE) —
+  ingested as-is (SLL) since that is what the source actually emits; flag
+  for a 1000x rescale if merged against SLE-denominated retailer prices.
+  Per-market rows collapsed to a national monthly average per
+  commodity/unit/currency/price-type; market count + USD value kept in
+  notes; retail vs wholesale kept in the dedup hash. COICOP deferred to the
+  classifier (item_name = WFP commodity).

@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: leaderprice_mg
+url: https://www.leaderprice.mg/
+language: fr
+cadence: weekly
+channel: supermarket
+notes: |
+  9-store drive-to-store chain (MVola payment). Re-verified live 2026-08-06:
+  homepage GET -> 200, real SSR price on the page ('50.000Ar'). The
+  department nav (Boissons, Frais, Fruits et legumes, etc.) is client-side
+  with no discoverable GET route this pass -- /Rayon/<id> and similar
+  guesses 404/500. What IS confirmed reachable and fully SSR are three
+  fixed collection pages: /Nouv (17 products), /Promo (76 products), /Bio
+  (76 products, largely genuine grocery items). ~150 distinct SSR products
+  total, well short of the claimed ~4,000-reference full catalog -- this is
+  an honest partial scaffold, not the whole store. Currency MGA matches
+  countries.yaml. Price format "39 900,00 Ar" uses space-thousands/comma-
+  decimal, normalized in the spider.

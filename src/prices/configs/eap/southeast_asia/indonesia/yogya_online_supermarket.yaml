@@ -7,6 +7,8 @@ url: https://supermarket.yogyaonline.co.id/
 language: id
 cadence: daily
 channel: supermarket
+archive_prefix: "supermarket.yogyaonline.co.id/supermarket/detail/"
+archive_path_re: '^/supermarket/detail/[^/?]+'
 notes: |
   Yogya Group supermarket storefront - sibling to yogya_online_minimarket
   (same operator, different catalog/storefront). The homepage flash-sale

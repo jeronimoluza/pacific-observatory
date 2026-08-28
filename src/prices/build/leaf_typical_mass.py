@@ -47,6 +47,7 @@ why. A leaf with no country carrying RATIO_MIN_SIDE rows on both sides gets no
 ratio and is left alone here -- unverifiable is not the same as wrong, and the
 Layer-2 baseline rule is what withholds trust from those rows downstream.
 """
+
 from __future__ import annotations
 
 import logging
@@ -97,13 +98,23 @@ RATIO_BOUNDS = (0.5, 2.0)
 RATIO_MIN_SIDE = 5
 
 TABLE_COLS = [
-    "coicop_code", "unit", "n", "median_amount", "mad", "robust_cv",
-    "price_ratio", "ratio_countries",
-    "accepted", "rejected_reason", "generated_at",
+    "coicop_code",
+    "unit",
+    "n",
+    "median_amount",
+    "mad",
+    "robust_cv",
+    "price_ratio",
+    "ratio_countries",
+    "accepted",
+    "rejected_reason",
+    "generated_at",
 ]
 
 
-def _gate(unit: str, n: int, median_amount: float, robust_cv: float) -> tuple[bool, str]:
+def _gate(
+    unit: str, n: int, median_amount: float, robust_cv: float
+) -> tuple[bool, str]:
     """Accept/reject one leaf's derived mass. Returns (accepted, reason)."""
     if n < MIN_SUPPORT:
         return False, f"insufficient_support (n={n}<{MIN_SUPPORT})"
@@ -146,24 +157,28 @@ def derive_typical_mass(df: pd.DataFrame) -> pd.DataFrame:
             continue
         unit = units.iloc[0]
         accepted, reason = _gate(unit, len(group), median_amount, robust_cv)
-        rows.append({
-            "coicop_code": str(code),
-            "unit": unit,
-            "n": len(group),
-            "median_amount": median_amount,
-            "mad": mad,
-            "robust_cv": robust_cv,
-            "accepted": accepted,
-            "rejected_reason": reason,
-            "generated_at": generated_at,
-        })
+        rows.append(
+            {
+                "coicop_code": str(code),
+                "unit": unit,
+                "n": len(group),
+                "median_amount": median_amount,
+                "mad": mad,
+                "robust_cv": robust_cv,
+                "accepted": accepted,
+                "rejected_reason": reason,
+                "generated_at": generated_at,
+            }
+        )
 
     table = apply_ratio_gate(pd.DataFrame(rows, columns=TABLE_COLS), df)
     if not table.empty:
         n_ok = int(table["accepted"].sum())
         logger.info(
             "typical mass: %d leaves with measured support, %d accepted, %d rejected",
-            len(table), n_ok, len(table) - n_ok,
+            len(table),
+            n_ok,
+            len(table) - n_ok,
         )
     return table
 
@@ -223,17 +238,22 @@ def leaf_price_ratios(df: pd.DataFrame, table: pd.DataFrame) -> pd.DataFrame:
     basis = sub["pricing_basis"].where(
         ~sub["_derived"], sub["_code"].map(unit).map(UNIT_TO_BASIS)
     )
-    sub["_uv"] = pd.to_numeric(pd.Series(
-        [
-            compute_unit_value(p, b, a, c, m)
-            for p, b, a, c, m in zip(
-                _local_price(sub), basis, amount,
-                sub.get("count", pd.Series(index=sub.index, dtype=float)),
-                sub.get("multiplier", pd.Series(index=sub.index, dtype=float)),
-            )
-        ],
-        index=sub.index,
-    ), errors="coerce")
+    sub["_uv"] = pd.to_numeric(
+        pd.Series(
+            [
+                compute_unit_value(p, b, a, c, m)
+                for p, b, a, c, m in zip(
+                    _local_price(sub),
+                    basis,
+                    amount,
+                    sub.get("count", pd.Series(index=sub.index, dtype=float)),
+                    sub.get("multiplier", pd.Series(index=sub.index, dtype=float)),
+                )
+            ],
+            index=sub.index,
+        ),
+        errors="coerce",
+    )
     sub = sub[sub["_uv"].notna() & (sub["_uv"] > 0)]
     if sub.empty:
         return empty

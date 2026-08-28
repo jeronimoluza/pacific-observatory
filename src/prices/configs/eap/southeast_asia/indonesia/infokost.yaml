@@ -7,3 +7,5 @@ url: https://infokost.id/
 language: id
 cadence: weekly
 channel: real-estate
+archive_prefix: "infokost.id/listings/"
+archive_path_re: '^/listings/[^/?]+'

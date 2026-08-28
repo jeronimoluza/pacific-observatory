@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: denner_ch
+url: https://www.denner.ch/de/weinshop/wein-sortiment
+language: de
+cadence: weekly
+channel: specialty-food
+coicop_codes: ["02.1.1"]
+archive_prefix: "www.denner.ch/de/weinshop/"
+archive_path_re: '^/de/weinshop/[^/?]+'
+notes: |
+  Denner's main grocery assortment is physical-store-only (no online
+  groceries) -- the "Weinshop" (wine shop) is the one part of the site
+  that sells online, and it is server-rendered (Nuxt SSR, not a
+  client-only shell as round-1 assumed): product cards carry title/price/
+  permalink directly in raw HTML. Re-verified live 2026-08-06: GET
+  /de/weinshop/wein-sortiment -> 200, 1.13MB, 24 real products incl.
+  'Porta Leone Extra Dry Prosecco Superiore Valdobbiadene DOCG' CHF 51.00,
+  'Céline Rosé Côtes de Provence AOC' CHF 47.70. Pagination via ?page=N.
+  Narrow catalog (wine only), coicop_codes scoped to 02.1.1.

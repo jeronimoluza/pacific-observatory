@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ochoa_do
+url: https://ochoa.com.do/
+language: es
+currency: DOP
+cadence: weekly
+channel: home-improvement
+archive_prefix: "ochoa.com.do/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Home-improvement/hardware chain (materiales de construccion, ferreteria,
+  plomeria, electricos, limpieza, jardineria, etc. -- 27 top-level
+  categories). Not primarily F&B; coicop_codes intentionally unset.
+
+  Live re-verified 2026-08-17: bare curl 403s (Cloudflare JS-challenge
+  snippet present), curl_cffi chrome124 clears it and every /productos/
+  category page renders full server-side HTML. Category slugs discovered
+  once from the homepage nav. Enumerability proof: /productos/limpieza-16
+  ?pag=1 vs ?pag=2 return 64 + 64 fully disjoint product ids (0 overlap).
+  Price lives in <p class="price"><span class="offscreen">724.28</span>
+  (RD$ display symbol alongside); product id in
+  data-omd_product_listitem="<id>"; name in the <h2><a title="...">.
+
+  Smoke run: 60/60 rows, 0 null product_name, 0 null price, single currency
+  DOP. One product per category page (~1/64) legitimately lacks a price
+  block (likely out-of-stock) and is skipped, not misparsed. Full scrape
+  still pending (orchestrator-queued).

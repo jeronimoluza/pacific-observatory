@@ -1,3 +1,5 @@
 spider: wellcome_hk
 language: zh
 channel: supermarket
+archive_prefix: "www.wellcome.com.hk/zh-hant/wellcome/p/"
+archive_path_re: '^/zh\-hant/wellcome/p/[^/?]+'

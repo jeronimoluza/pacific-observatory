@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes:
+  - "07.1.1.2"
+spider: pakwheels_pk
+url: https://www.pakwheels.com/used-cars/search/-/
+language: en
+currency: PKR
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.pakwheels.com/used-cars/"
+archive_path_re: '^/used\-cars/[^/?]+'
+notes: |
+  Verified live 2026-08-17: PakWheels — Pakistan's dominant vehicle
+  classifieds site. The catalog is overwhelmingly (effectively 100% of
+  what's crawled here) used cars, not a general classifieds board, so this
+  is scoped to /used-cars/search/-/ only and declared narrow:
+  coicop_codes=["07.1.1.2"] (second-hand motor cars). Real PKR prices
+  confirmed in-listing ld+json Offer (e.g. PKR 4,699,000 for a 2016 Honda
+  Civic), plain integer PKR — not the "lacs/crore" abbreviated text shown
+  on the homepage marketing copy. Each search-results `<li>` embeds its own
+  schema.org Product block server-side (28/page). Pagination is
+  `/used-cars/search/-/?page=N`; the site reports ~3225 total pages, so
+  this is capped at 250 pages (~7,000 rows) to stay inside the collect-run
+  time budget — all 250 page requests are fanned out from `start()` up
+  front rather than chained one page at a time, so
+  CONCURRENT_REQUESTS_PER_DOMAIN=6 actually parallelizes the fetch.
+  channel=marketplace (peer-to-peer classifieds, not a dealership
+  storefront).

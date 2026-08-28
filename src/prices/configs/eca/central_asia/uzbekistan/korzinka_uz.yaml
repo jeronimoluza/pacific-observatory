@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: korzinka_uz
+url: https://www.korzinka.uz/
+language: ru
+cadence: weekly
+channel: supermarket
+archive_prefix: "catalog.korzinka.uz/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: the customer site sits behind a Cloudflare
+  managed challenge (curl 403 "Just a moment..." even on robots.txt), but
+  catalog.korzinka.uz/api/catalogs/categories/ is a separate, un-gated
+  subdomain — GET -> HTTP 200, 458KB JSON, no auth, no challenge. Endpoint
+  found via the open-source Flutter client
+  github.com/professorDeveloper/Korzinka-Texnomart-Full-Api. Returns 10
+  curated homepage category sections with 322 unique nested products.
+  Sample: 'Виноград Шохона Узб. вес 1кг' 19 990 UZS;
+  'НАПИТОК COCA COLA П/Б 1,5Л' 24 790 UZS. This is a curated cross-category
+  slice (no deeper category-tree/product-listing route found — a guessed
+  .../categories/tree 500s, per-category product routes 404), not the full
+  250+ store catalog, but every row is a real priced SKU. 250+ stores, 12
+  regions per shard notes. Currency UZS matches countries.yaml.

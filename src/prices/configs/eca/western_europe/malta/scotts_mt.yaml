@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: scotts_mt
+url: https://www.scotts.com.mt/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.scotts.com.mt/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 20.1KB JSON. Sample: 'LOACKER 45G PEANUT BUTTER' price 85 minor
+  units / currency_minor_unit=2 -> EUR 0.85. currency_code EUR matches
+  countries.yaml. CSV's original scottssupermarket.com domain is dead
+  (NXDOMAIN); correct live domain is scotts.com.mt. Whole-catalog walk (no
+  category filter).

@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmashop_uy
+url: https://tienda.farmashop.com.uy/
+language: es
+currency: UYU
+cadence: weekly
+channel: pharmacy
+archive_prefix: "tienda.farmashop.com.uy/"
+archive_path_re: '^/[^/]+\.html$'
+notes: |
+  Pharmacy chain, Magento 2 storefront. Root (www.farmashop.com.uy) 301-redirects to
+  tienda.farmashop.com.uy. REST (/rest/V1/products) is auth-gated (401 "not authorized" --
+  re-confirmed live 2026-08-17); the GraphQL endpoint (/graphql) is open and unauthenticated.
+  Live re-verified: products(search:"vitamina") -> real UYU prices (e.g. 'Vitamina C Qualivits
+  1000 mg Tabletas', final_price 1383 UYU). categoryList's root id=2 returns ~19.5k products
+  directly, close to the sum of its department children (marketing categories like
+  Promociones/Ofertas/Outlet/Configurables overlap with department categories), so the spider
+  walks the root id directly (WALK_ROOT_DIRECTLY) rather than categoryList children, matching
+  the Riba Smith (PA) precedent. Currency UYU, confirmed in the GraphQL response itself.
+  Full scrape: <ROWS> rows.

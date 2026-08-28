@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: coppel_mx
+url: https://www.coppel.com/
+language: es
+currency: MXN
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.coppel.com/pdp/"
+archive_path_re: '^/pdp/[^/?]+'
+notes: |
+  Coppel -- Mexican department-store / consumer-credit chain. Bare curl
+  to the bare domain hung (Akamai tarpit); curl_cffi impersonate=chrome124
+  clears it cleanly. robots.txt disallows the legacy `/p/*` and `/c/*`
+  paths but not `/pdp/*`, which is also what the site's own sitemap
+  advertises -- no ClaudeBot/anthropic-ai disallow.
+
+  Enumerability proof: https://www.coppel.com/l/sitemap/sitemap-pdp.xml
+  is a real sitemap index of ~46 per-department shards; celulares.xml
+  alone (verified live 2026-08-17) is a urlset of 21,923 real
+  /pdp/<slug>-<sellerCode>-<id> product URLs, e.g.
+  /pdp/celular-samsung-s22-ultra-128gb-negro-reacondicionado-mkp-104210562.
+  This is direct product-URL enumeration off the site's own sitemap, not a
+  crawled listing page.
+
+  Each PDP embeds `pageProps.product` in `__NEXT_DATA__`: clean `name`,
+  `sku`, `price.discountedPrice`/`salesPrice` (bare numeric MXN, no locale
+  string parsing needed), `breadcrumb` for category. Spider is bounded to
+  6 curated department shards (celulares, electronica, hogar-muebles,
+  juguetes, zapateria, perfumes-cosmeticos) x first 300 urls/shard to keep
+  a full run's request count bounded (full sitemap is ~46 shards x up to
+  ~22k urls each).
+
+  Smoke run (--max-items 60): see report. FULL scrape is still pending --
+  the orchestrator queues it.

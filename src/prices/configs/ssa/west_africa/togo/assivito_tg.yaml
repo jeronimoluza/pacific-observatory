@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: assivito_tg
+url: https://www.assivito.com/
+language: fr
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.assivito.com/tkg/"
+archive_path_re: '^/tkg/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products/categories?per_page=100
+  -> HTTP 200, 7.1KB, 21 categories. Category id 173 ('Produits transformes',
+  89 products) is the only genuinely food category — GET
+  /wp-json/wc/store/v1/products?category=173&per_page=5 -> HTTP 200. Sample:
+  'Puree de sesame 100% naturelle' 4000 FCFA, "Pate d'arachide 100%
+  naturelle" 5000 FCFA. currency_code XOF matches countries.yaml
+  (currency_minor_unit=0). General local-products marketplace (agri/health,
+  artisans, fashion, real estate, vehicles dominate the other 20
+  categories); SCOPED to category=173 because the unfiltered catalog is
+  overwhelmingly non-food.

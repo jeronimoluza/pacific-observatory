@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: votrepoteage_mu
+url: https://votrepoteage.mu/
+language: fr
+cadence: weekly
+channel: fresh-market
+archive_prefix: "votrepoteage.mu/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  WooCommerce Store API, /wp-json/wc/store/v1/products?per_page=100&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, real Mauritius fresh
+  produce/fish SKUs — 'LONGANE KG' MUR 675.00, 'BABY GEM SQUASH (BQT)'
+  MUR 155.00, 'Baby Beetroot - Bqt 200g' MUR 155.00, 'Baby Carrot Rainbow -
+  Bqt 200G' MUR 155.00, 'Fillet Vieille Rouge (Price will vary according
+  to weight) - KG' MUR 1575.00. currency_code=MUR from the API matches
+  countries.yaml, minor_unit=2 (cents). Names carry &#8211; HTML entities
+  from JSON, handled by the shared WooBase html.unescape().

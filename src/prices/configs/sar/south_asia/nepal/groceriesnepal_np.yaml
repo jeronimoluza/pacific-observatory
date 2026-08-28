@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: groceriesnepal_np
+url: https://groceriesnepal.com/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Groceries Nepal. React/Vite SPA backed by a plain JSON API. Re-verified
+  live 2026-08-06: GET https://groceriesnepal.com/api/products -> 200,
+  26446 bytes JSON, plain curl, no auth, 97 products in one response (no
+  pagination). Sample: 'Tomato (Goalbheda)' category=Vegetables price=100
+  prevPrice=90 unit=kg; product objects also carry a Nepali name (nameNp).
+  Small catalog but genuinely carries fresh Vegetables/Leafy
+  Vegetables/Fruits categories alongside Dairy/Grocery, complementing the
+  packaged-only Nepal sources in this wave. Currency NPR matches
+  countries.yaml.

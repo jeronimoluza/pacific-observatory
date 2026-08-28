@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vipspar_mz
+url: https://vipspar.com/
+language: pt
+cadence: weekly
+channel: supermarket
+archive_prefix: "vipspar.com/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: the versioned /wp-json/wc/store/v1/products
+  route 404s on this install; GET /wp-json/wc/store/products?per_page=5
+  (older, non-versioned Store API namespace) -> HTTP 200, 13.3KB JSON.
+  currency_code MZN matches countries.yaml (currency_minor_unit=0 on this
+  install, e.g. price=680 needs no division per prior probe of
+  'LOTUS RICE ARROZ JASMIN'). Multi-vendor (Dokan) WooCommerce, zero auth.
+  Whole-catalog walk (no category filter).

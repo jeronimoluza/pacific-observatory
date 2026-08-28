@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dubaik_ir
+url: https://dubaik.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: cosmetics
+archive_prefix: "dubaik.ir/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Verified live 2026-08-18: dubaik.ir — "خرید محصولات آرایشی و بهداشتی
+  اصل | فروشگاه دبیک" (Dubaik, cosmetics/skincare imported from Dubai).
+  WooCommerce storefront; GET /wp-json/wc/store/v1/products -> 200, real
+  product "کرم دور چشم رتینول نامبوزین مدل NAD+ Retinal + 50 Peptides"
+  (Namboozin NAD+ Retinal eye cream), prices.price=2217000,
+  currency_code="IRT" (non-ISO Toman marker), currency_minor_unit=0.
+  Toman/Rial: this site's own product-page meta tag for the same item
+  states product:price:currency="IRT" at the same value (2217000),
+  confirming the Store API price is genuinely Toman-denominated. ISO
+  4217 has no Toman code, so per the sheypoor_ir/torob_ir convention the
+  spider's `_item` override multiplies the Store API price by 10 and
+  reports IRR.

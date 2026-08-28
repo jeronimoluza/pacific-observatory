@@ -1,0 +1,37 @@
+scaffolding: spider
+spider: kontakt_az
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://kontakt.az/
+language: az
+currency: AZN
+cadence: weekly
+channel: electronics
+archive_prefix: "kontakt.az/"
+archive_path_re: '^/[^/]+/?$'
+coicop_codes: null
+notes: |
+  Azerbaijan electronics/appliances retailer, Magento 2 (Swissup Breeze
+  theme). Verified live 2026-08-17: curl_cffi impersonate=chrome124
+  clears cleanly (bare curl gets cf-mitigated:challenge). /rest/V1/
+  products 401s (no token); POSTs to /graphql are themselves
+  Cloudflare-challenged even with a warm cookie jar, so this is a
+  standalone spider (not MagentoRestBaseSpider/MagentoGraphQLBaseSpider)
+  crawling server-rendered Swissup Breeze category HTML.
+  Each product tile embeds a clean GTM datalayer JSON blob
+  (id/sku/name/brand/price/category) in
+  <div class="prodItem product-item" id="..." data-sku="..."
+       data-gtm='{...}'> -- more reliable than the visible "₼" price
+  text (a naive JSON price regex on the page picked up an unrelated
+  field during the onboarding probe).
+  Enumerability proof: /telefoniya/smartfonlar (page 1) vs ...?p=2 -- 20
+  distinct tile ids each, ZERO overlap.
+  channel is electronics (catalog is phones/appliances/electronics
+  dominant per the categories crawled); coicop_codes left unset since
+  coverage spans multiple COICOP leaves.
+  Category list is a fixed set of leaf paths recovered from live
+  homepage promo banners -- no reachable full nav/sitemap category list
+  found in the time budget; thin but real.
+  Smoke run 2026-08-17 (--max-items 60): passed, see smoke report.
+  Full scrape still pending -- orchestrator queues it centrally.

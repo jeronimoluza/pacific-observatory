@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: costco_taiwan
 url: https://www.costco.com.tw
+archive_prefix: "costco.com.tw"
+archive_path_re: '/p/[^/]+$'
 language: zh
 cadence: daily
 channel: supermarket
@@ -12,3 +14,4 @@ notes: >
   guessed. sitemap_taiwan_product.xml lists ~15k PDP URLs; each PDP embeds a
   server-rendered schemaorg_product JSON-LD block (name/sku/price/currency) —
   no auth, no JS needed. category = URL path segment before the product slug.
+timeout: 14400

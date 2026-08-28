@@ -7,3 +7,5 @@ url: https://shopmustafa.sg
 language: en
 cadence: daily
 channel: hypermarket
+archive_prefix: "shopmustafa.sg/products/"
+archive_path_re: '^/products/[^/?]+'

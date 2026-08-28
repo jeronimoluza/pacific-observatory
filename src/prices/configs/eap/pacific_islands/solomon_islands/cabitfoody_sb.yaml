@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cabitfoody_sb
+url: https://take.app/cabitfoody
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "take.app/cabitfoody/p/"
+archive_path_re: '^/cabitfoody/p/[^/?]+'
+notes: |
+  CAB'IT Foody -- broader grocery storefront, sibling of cabitonlineshop_sb
+  under the same CAB'IT brand, on the same shared take.app Next.js SaaS
+  platform (store alias "cabitfoody"). Same server-rendered category-page
+  pattern -- see cabitonlineshop_sb.yaml / the spider docstring for the
+  platform fingerprint. 16 categories, ~303 unique SKUs measured during
+  probing (vs ~39 for cabitonlineshop_sb) -- tagged `supermarket` rather
+  than `convenience` on catalog breadth. Currency SBD (store metadata
+  confirms country=SB). Verified 2026-08-11, test run returned >=5 valid
+  rows.

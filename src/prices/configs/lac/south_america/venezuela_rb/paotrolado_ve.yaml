@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: paotrolado_ve
+url: https://supermercados-paotrolado.com/
+language: es
+cadence: weekly
+channel: supermarket
+archive_prefix: "supermercados-paotrolado.com/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, 16.4KB JSON. Sample: 'Centro de Cama Mimlot 10 unidades' (non-food
+  home-goods item on first page) price 738 minor units / currency_minor_unit=2
+  -> USD 7.38. currency_code USD, not the country's official VES — dollarized
+  retail is standard in Venezuela. Mixed household/grocery online store; food
+  categories present in nav but the sampled page was non-food. Whole-catalog
+  walk (no category filter).

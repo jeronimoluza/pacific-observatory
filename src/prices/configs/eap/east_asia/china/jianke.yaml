@@ -7,3 +7,28 @@ url: https://www.jianke.com/
 language: zh
 cadence: daily
 channel: pharmacy
+archive_prefix: "www.jianke.com/product/"
+archive_path_re: "^/product/\\d+\\.html$"
+notes: |
+  Chinese online pharmacy (Jianke). CrawlSpider: walks category pages and
+  parses each /product/<id>.html page for name, price and breadcrumb.
+
+  REPAIRED 2026-08-18. The spider was pinned at ~175 products on EVERY run
+  since March 2026 (112 runs, historical max 176) -- a flat cap that reads
+  like a working scraper but is not one. Root cause: the category-following
+  rule allowed r"/list-\d+\.html". Those URLs resolve, but serve a
+  byte-identical copy of the HOMEPAGE (verified live: /list-1001.html and /
+  both return 239,377 bytes), and only 2 are linked anywhere on the site.
+  The crawl therefore never left the front page and only ever saw the ~193
+  product links rendered there.
+
+  The real category pages are /Category/<id>.html -- 180 are linked from the
+  homepage. Measured 2026-08-18: a 60-category sample yielded 1,116 distinct
+  products, extrapolating to ~3,300 site-wide, roughly 19x the old ceiling.
+  Category pages are single-page (no pagination parameter exists; ?page=N
+  returns the same set), so the category list is the whole enumeration.
+
+  Smoke 2026-08-18: hit the 200-item cap in 210s with 216/216 useful
+  responses -- i.e. it now exceeds its own former FULL-run total during a
+  smoke test. 204 distinct product URLs, single currency CNY, price range
+  5.80-1,979.00 CNY. Full scrape pending.

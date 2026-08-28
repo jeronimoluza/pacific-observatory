@@ -1,0 +1,32 @@
+scaffolding: spider
+spider: n11_tr
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://n11.com/
+language: tr
+currency: TRY
+cadence: weekly
+channel: marketplace
+coicop_codes: null
+archive_prefix: "n11.com/urun/"
+archive_path_re: '^/urun/[^/?]+'
+notes: |
+  Turkish general marketplace. Verified live 2026-08-17: curl_cffi
+  impersonate=chrome124/chrome120 clear the Cloudflare "Attention
+  Required" 403 (bare curl 403s; safari17_0 alone still 403s on this
+  site specifically) -- relies on the project-wide default chrome120
+  impersonation, no per-spider override.
+  No discovered category-browse sitemap; catalog surface is the Vue-SSR
+  search endpoint /arama?q=<term>&pg=<N>, server-rendered product cards
+  (name in h2.product-item-title, current price in h3.price-currency,
+  Turkish-locale formatted "17.400 TL"). Walks a fixed list of Turkish
+  category search terms.
+  Enumerability proof: /arama?q=telefon&pg=1 vs ...&pg=2 -- 26 distinct
+  product ids each, only 1 overlapping.
+  channel is marketplace, coicop_codes unset -- n11 mixes 1P/3P sellers
+  with no reliable per-card seller signal in the server-rendered markup
+  (grouped with hepsiburada_tr per shard note as "large Turkish
+  marketplaces").
+  Smoke run 2026-08-17 (--max-items 60): passed, see smoke report.
+  Full scrape still pending -- orchestrator queues it centrally.

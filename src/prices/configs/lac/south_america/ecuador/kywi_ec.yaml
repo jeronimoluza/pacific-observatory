@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kywi_ec
+url: https://www.kywi.com.ec/
+language: es
+currency: USD
+cadence: weekly
+channel: home-improvement
+archive_prefix: "www.kywi.com.ec/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Hardware/construction/home chain (categories: Construccion, Ferreteria, Hogar, Decoracion y
+  Acabados), independent VTEX tenant. Live re-verified 2026-08-17: products/search?_from=0&_to=4
+  -> HTTP 206, real JSON (e.g. Karcher vertical vacuum, Installments Value 39.99). Apex domain
+  kywi.com.ec has an EXPIRED SSL cert; www.kywi.com.ec has a valid one, used as HOST. Currency
+  USD -- Ecuador's official currency, matches countries.yaml. Full scrape: <ROWS> rows.

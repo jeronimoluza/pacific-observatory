@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rimi_wolt_lt
+url: https://wolt.com/en/ltu/vilnius/venue/rimi-mylia
+language: lt
+cadence: weekly
+channel: marketplace
+archive_prefix: "wolt.com/en/ltu/vilnius/venue/"
+archive_path_re: '^/en/ltu/vilnius/venue/[^/?]+'
+notes: |
+  Rimi (major Baltic supermarket chain) Mylia branch on the Wolt delivery
+  marketplace. Same SSR query-state walk as ab_vassilopoulos_wolt_gr
+  (shared base `_wolt_base.py`): venue page -> category-listing (25
+  category slugs, Lithuanian: vaisiai-darzoves, pienas-kiausiniai,
+  suriai, ...) -> per-category `/items/<slug>` page 1 (up to 50 items
+  each). Synthetic url = f"{venue_url}#{item_id}".
+  Re-verified live 2026-08-06: /venue/rimi-mylia -> 200, real
+  Lithuanian-language SKUs with EUR prices and barcode_gtin.
+  channel:marketplace (Wolt aggregates the first-party retailer's catalog).

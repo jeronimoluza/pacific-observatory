@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: paris_cl
+url: https://www.paris.cl/
+language: es
+currency: CLP
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.paris.cl/"
+archive_path_re: '^/[a-z0-9]+(-[a-z0-9]+)*-[A-Za-z0-9]{6,}\.html$'
+notes: |
+  Chilean department store (Cencosud group). Re-verified live 2026-08-17:
+  category page /tecnologia/ -> 200, real CLP prices via a schema.org
+  WebPage/ItemList JSON-LD block embedded in a Next.js RSC stream chunk
+  (self.__next_f.push), e.g. "iPhone 15 128GB Negro" CLP 649990.
+  Gotcha: the site's own ?page=N pagination link does NOT change the SSR
+  JSON-LD (page 2 returns the identical page-1 items) -- pagination past
+  page 1 is client-side/API-only and out of scope for a plain-HTTP HTML
+  spider, so this source is scoped breadth-first across 66 leaf/department
+  category URLs (tecnologia/mujer/hombre/belleza/deportes/dormitorio/
+  supermercado + their subcategories) rather than depth-paginating one
+  category. General department-store catalog (electronics, fashion, home,
+  small supermarket section), so channel is dept-store.

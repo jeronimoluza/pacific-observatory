@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tambalamarket_mw
+url: https://www.tambalamarket.store/categories/food-beverages
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.tambalamarket.store/categories/"
+archive_path_re: '^/categories/[^/?]+'
+notes: |
+  Next.js multi-seller marketplace. Category pages are a client-hydrated
+  shell, but the full product listing is embedded server-side in the React
+  Server Component flight payload (self.__next_f.push(...)) as escaped
+  JSON — a hydration-payload SSR pass, not a later XHR fetch. Re-verified
+  live 2026-08-06: GET /categories/food-beverages -> 200, 338KB, 17
+  distinct products (confirms prior research: small, wine-heavy). Sample:
+  'Milled Rice' 4000 MWK, '1Kg PEANUT BUTTER' 18500 MWK. Currency MWK
+  matches countries.yaml; prices are raw MWK integers, no minor-unit
+  division. /categories lists 19 top-level categories; walked all of them
+  (not just food-beverages) per whole-catalog instructions — low net-new
+  food value beyond add2cartmw, but technically a real, distinct catalog.

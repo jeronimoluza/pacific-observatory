@@ -76,7 +76,7 @@ class DotPropertyPhSpider(scrapy.Spider):
         yielded = 0
         seen = set()
         for card in cards:
-            href = card.css(f'{self.SELECTORS["card_link"]}::attr(href)').get()
+            href = card.css(f"{self.SELECTORS['card_link']}::attr(href)").get()
             if not href:
                 continue
             m = ID_RE.search(href)

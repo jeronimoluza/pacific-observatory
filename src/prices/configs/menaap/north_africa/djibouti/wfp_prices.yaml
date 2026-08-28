@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_dji
+module: _shared.menaap.wfp_food_prices
+function: fetch_wfp_dji
+url: https://data.humdata.org/dataset/wfp-food-prices-for-djibouti
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Djibouti via HDX (shared MENAAP fetcher
+  _shared.menaap.wfp_food_prices). Re-verified live 2026-08-07: CKAN
+  package_show resolves wfp_food_prices_dji.csv (200, 10,476 rows), currency
+  DJF throughout (matches countries.yaml). Max observation date 2026-06-15
+  -- current (checked max(date) directly on the pulled CSV, not the CKAN
+  last_modified field). 36 commodities incl. rice, wheat flour, sorghum,
+  imported/local vegetables, milk, meat, oil, sugar, khat. Per-market rows
+  collapsed to a national monthly average per commodity/unit/currency/
+  price-type. COICOP deferred to the classifier.
+  coicop_divisions: 01
+  divisions_basis: sampled_rows (commodity list is entirely division-01
+  staple foods)

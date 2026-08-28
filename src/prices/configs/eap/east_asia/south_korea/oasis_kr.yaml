@@ -7,6 +7,8 @@ url: https://www.oasis.co.kr
 language: ko
 cadence: daily
 channel: supermarket
+archive_prefix: "www.oasis.co.kr/product/detail/"
+archive_path_re: '^/product/detail/[^/?]+'
 notes: |
   Organic/fresh grocer, specialty-leaf sweep. Scoped to categories/searches
   that fill thin deep leaves: edible seaweed (01.1.7.4.6, cats 19/215),

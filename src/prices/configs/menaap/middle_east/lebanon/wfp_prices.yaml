@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_lbn
+module: _shared.menaap.wfp_food_prices
+function: fetch_wfp_lbn
+url: https://data.humdata.org/dataset/db0b4fb1-ce11-458e-94e0-3342365a117a
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Lebanon via HDX (shared MENAAP fetcher
+  _shared.menaap.wfp_food_prices). Re-verified live 2026-08-06: CKAN
+  package_show resolves wfp_food_prices_lbn.csv (200, 5.1MB, 39,875 rows),
+  currency LBP throughout (matches countries.yaml). Max observation date is
+  2026-06-15 — current. 33 commodities: fruit, veg, dairy (picon cheese,
+  milk powder), canned beef, frozen chicken, canned fish, lentils, cereals
+  (pita bread, bulgur, pasta, rice, wheat flour), sunflower oil, tea, sugar,
+  salt. Sample at max date: 'Bread (pita)', 800 G, LBP 82270.74. Per-market
+  rows collapsed to a national monthly average per commodity/unit/currency/
+  price-type; market count + USD value kept in notes; retail vs wholesale
+  kept in the dedup hash. COICOP deferred to the classifier (item_name =
+  WFP commodity).

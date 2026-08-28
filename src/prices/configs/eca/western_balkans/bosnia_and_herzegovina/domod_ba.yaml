@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: domod_ba
+url: https://domod.ba/
+language: bs
+currency: BAM
+cadence: weekly
+channel: electronics
+archive_prefix: "domod.ba/shop/proizvod/"
+archive_path_re: '^/shop/proizvod/[^/?]+'
+notes: |
+  Verified live 2026-08-17. Bosnian electronics/appliances/home retailer.
+  Server-rendered category pages at /shop/<department>?page=N — product
+  cards (article.list-product) carry name (h2), price (span[data-price],
+  KM), and url server-side, no PDP fetch needed. Pagination is plain
+  ?page=N, ~12/page; stops when a page has zero cards (verified:
+  bijela-tehnika = 42 real pages, page 43 empty). Walks the 12 top-level
+  department slugs from the /shop nav; each already lists its full
+  department across pages, no subcategory drill-down needed. Sample: "Vox
+  klima uređaj SFE12-AA ON-OFF" 429,00 KM.
+  coicop_divisions: 05, 06, 08, 09
+  divisions_basis: sampled_rows

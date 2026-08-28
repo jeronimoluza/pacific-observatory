@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mecindo_dk
+url: https://mecindo.dk/
+language: da
+cadence: weekly
+channel: pharmacy
+archive_prefix: "mecindo.dk/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Re-verified live 2026-08-06: GET /products.json?limit=5 -> HTTP 200,
+  21.4KB JSON, standard Shopify storefront, no auth. Homepage confirms
+  Shopify.currency active=DKK, matching countries.yaml. Sample: 'Winter
+  Warmer te O Pukka' DKK 46.95, 'Gaveaeske Masculinity' DKK 289.95. Danish
+  helsekost (health-food/supplement/personal-care) retailer -- whole-catalog
+  walk, no collection filter.

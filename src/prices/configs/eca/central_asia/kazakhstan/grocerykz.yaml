@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: grocerykz
+url: https://grocerykz.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "grocerykz.com/catalog/"
+archive_path_re: '^/catalog/[^/?]+'
+notes: |
+  Bitrix-powered SSR category pages under /catalog/<...>/. English
+  interface confirmed live 2026-08-06 (GET / -> 200, 161KB, real KZT
+  prices e.g. '3 750 KZT'). Category nav has ~300 nested URLs; walk list
+  is the 230 leaf paths (companion _grocerykz_categories.txt) that are not
+  a prefix of a longer path. Product cards carry name/price/numeric SKU
+  (data-id) directly in listing HTML, no PDP fetch needed. No pagination
+  observed on any category tested (7- and 24-product categories both
+  rendered fully in one response; ?PAGEN_1=2 returned the same product
+  set, not a next page), so each leaf is fetched once. Sample: /catalog/
+  beverages/water/still_water/ -> 24 products incl. 'Tassay still water,
+  5 l' 1 200 KZT. Currency KZT matches countries.yaml.

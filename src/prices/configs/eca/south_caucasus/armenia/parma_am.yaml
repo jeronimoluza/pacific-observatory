@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: parma_am
+url: https://parma.am/en/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "parma.am/en/product/"
+archive_path_re: '^/en/product/[^/?]+'
+notes: |
+  Server-rendered category pages at /en/product/category?slug=<slug>&page=N,
+  167 category slugs (hardcoded list, pulled from the site's own shop nav
+  2026-08-06) spanning baby food, alcohol, bakery, fresh/cured meat, dairy,
+  produce. Product cards carry name + dram price directly in listing HTML
+  (data-price attribute). Re-verified live: 'Croissant "Parma" French,
+  classic 30g' data-price=160 AMD. Pagination does NOT self-terminate —
+  requesting a page past the real last page silently clamps to the last
+  page's content (confirmed with page=20/50/200/1000 on a 2-page category
+  all returning identical content) — the spider stops once a page yields
+  no new product ids rather than on empty/short response. UI labels prices
+  in ֏ (dram); currency confirmed AMD, matches cfg_currency.

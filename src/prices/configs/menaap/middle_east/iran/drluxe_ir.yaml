@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: drluxe_ir
+url: https://drluxe.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: pharmacy
+archive_prefix: "drluxe.ir/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Verified live 2026-08-18: drluxe.ir is "Dr Luxe" (داروخانه آنلاین دکتر
+  لوکس), a 24/7 online pharmacy selling supplements, baby products,
+  personal-care and cosmetics -- IRR pricing. No JSON API found; the
+  product sitemap (https://drluxe.ir/sitemap/products, paginated
+  ?page=2..9) is the walkable catalog, ~9k URLs total. PDPs carry no
+  schema.org JSON-LD; price/name extraction falls back to OpenGraph /
+  product: meta tags (row_from_meta in price_scraping/archived.py).
+  Confirmed live: "عصاره خوری کودک مناسب بالای 6 ماه بی بی لند کد 285"
+  -> IRR 4,047,000.

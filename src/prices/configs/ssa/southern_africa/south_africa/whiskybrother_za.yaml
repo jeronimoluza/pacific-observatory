@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: whiskybrother_za
+url: https://whiskybrother.myshopify.com/
+language: en
+cadence: weekly
+channel: specialty-food
+coicop_codes: ["02.1.1", "02.1.2"]
+archive_prefix: "whiskybrother.myshopify.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront (myshopify.com origin, no custom-domain gate),
+  /products.json?limit=250&page=N, no auth. Re-verified live 2026-08-06:
+  HTTP 200, real wine/spirits SKUs — 'Khulu Umqhele 2018' ZAR 390.00,
+  'Capensis Chardonnay 2022' ZAR 1000.00, 'Benguela Cove Estate Cabernet
+  Sauvignon 2022' ZAR 350.00, 'Capensis Silene Cabernet Sauvignon 2023'
+  ZAR 430.00, 'Lomond Candelabra Cab Sav 2018' ZAR 285.00. Page bundle
+  confirms `"currency":"ZAR"`, matches countries.yaml. Narrow catalog
+  (wine/spirits only), coicop_codes scoped to wine (02.1.1) + spirits (02.1.2).

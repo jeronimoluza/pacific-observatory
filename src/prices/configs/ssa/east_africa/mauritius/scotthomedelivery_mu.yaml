@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: scotthomedelivery_mu
+url: https://scotthomedelivery.mu/
+language: en
+cadence: weekly
+channel: specialty-food
+coicop_codes: ["02.1.1", "02.1.2"]
+archive_prefix: "scotthomedelivery.mu/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Shopify storefront on the custom domain, /products.json?limit=250&page=N,
+  no auth. Re-verified live 2026-08-06: HTTP 200, real Mauritius wine/
+  spirits SKUs — 'Pearly Bay Natural Sweet White (Damaged Label)'
+  MUR 392.00, 'LaCheteau Cremant de Loire Brut (Damaged Label)' MUR 672.00,
+  'KWV Sparkling Annabelle Sweet Red 75cl' MUR 695.00, 'Domaine Tournon
+  Landsborough Viognier (Bio) 2017 (PROMO)' MUR 914.00, 'Cape of Good Hope
+  Serruria Chardonnay 2019 / 2023 (PROMO)' MUR 907.00. Page bundle confirms
+  `"currency":"MUR"`, matches countries.yaml. Narrow catalog (wine/spirits
+  only), coicop_codes scoped to wine (02.1.1) + spirits (02.1.2).

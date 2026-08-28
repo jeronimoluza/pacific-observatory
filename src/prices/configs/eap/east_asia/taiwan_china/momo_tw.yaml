@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: momo_tw
 url: https://www.momoshop.com.tw
+archive_prefix: "momoshop.com.tw"
+archive_path_re: '^/goods/GoodsDetail\.jsp$|^/TP/TP\d+/goodsDetail/TP\d+$'
 language: zh
 cadence: daily
 channel: hypermarket

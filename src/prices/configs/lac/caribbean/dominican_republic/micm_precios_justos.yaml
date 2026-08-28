@@ -1,0 +1,34 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: do_micm_precios_justos
+module: lac.caribbean.dominican_republic.micm_precios_justos
+function: fetch_do_micm_precios_justos
+url: https://preciosjustos.micm.gob.do/
+language: es
+cadence: weekly
+fallback_date: 2026-07-01
+notes: |
+  MICM "Precios Justos" -- Dominican Republic Ministry of Industry, Commerce
+  and MSMEs statutory price-monitoring feed, live public dashboard at
+  preciosjustos.micm.gob.do. React SPA, catalog pulled from same-origin
+  /api/productos (found via the bundled JS `$.get("/api/productos", ...)`
+  call). Re-verified live 2026-08-06: GET /api/productos -> HTTP 200,
+  ~305KB JSON, 681 products. Sample: 'ARROZ' 10 LIBRA DOP 318.90, 'AJO
+  SUPER SELECTO' LIBRA DOP 141.95, 'POLLO FRESCO' LIBRA DOP 72.60. Currency
+  confirmed DOP live via the site's marquee ticker ("RD$ <price>"), matches
+  countries.yaml. Whole-catalog walker (Canasta Basica plus general
+  categories: Pan, Vegetales, Carnes, Lacteos, Granos, Embutidos, Navidad,
+  Juguetes, Otros). No per-row date in the API -- treated as a same-run
+  snapshot (period_kind=snapshot) like hk_afcd_wholesale, accumulated across
+  runs. inMarketsSpecial (per-product market list) kept in notes.
+  RELIABILITY CAVEAT: the origin is a small Cloudflare-fronted .gob.do
+  server that returns intermittent 520s under load -- two independent
+  manual pulls this session succeeded with full real data (verified
+  samples above), but a later re-check sustained 520 for several minutes
+  straight. The fetcher retries 520 up to 4x with backoff but this may not
+  be enough if the origin is down for extended periods; weekly cadence
+  should still pick up a good pull eventually. Re-verify before trusting a
+  first run's absence of rows as "no data."

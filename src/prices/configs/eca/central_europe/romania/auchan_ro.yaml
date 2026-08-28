@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: auchan_ro
+url: https://www.auchan.ro/
+language: ro
+cadence: weekly
+channel: hypermarket
+archive_prefix: "www.auchan.ro/"
+archive_path_re: '^/[^/]+/p/?$'
+notes: |
+  CSV/round-1 labeled this "Custom/Enterprise" -- platform misidentification.
+  robots.txt references VTEX-specific paths (/routing/vtex.store@2.x/,
+  /salesforce/); confirmed VTEX via the standard catalog endpoint working
+  directly on the custom domain. Re-verified live 2026-08-06: GET
+  /api/catalog_system/pub/products/search?_from=0&_to=9 -> HTTP 206, 107KB
+  JSON, `resources: 0-9/59683` header (59,683 total SKUs). Sample: 'Banane,
+  +/- 1 kg' RON 6.99, 'Apa carbogazoasa minerala Borsec, 1.5 l' RON 3.79,
+  'Hartie igienica Auchan 16 role, 3 straturi' RON 25.99. No myvtex.com
+  origin bypass needed. MyCLUB loyalty-price field exists per CSV but not
+  captured -- standard commertialOffer.Price used.

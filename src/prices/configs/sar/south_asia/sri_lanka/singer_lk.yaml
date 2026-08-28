@@ -1,5 +1,7 @@
 spider: singer_lk
 language: en
+archive_prefix: "www.singersl.com/product/"
+archive_path_re: '^/product/[^/?]+'
 notes: >
   Sri Lanka electronics/appliances. PDP URLs are /product/<slug> (singular,
   not /products/). Extracts from JSON-LD Product blocks.

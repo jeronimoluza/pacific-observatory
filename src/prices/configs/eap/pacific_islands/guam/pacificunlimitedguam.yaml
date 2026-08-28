@@ -1,0 +1,17 @@
+spider: pacificunlimitedguam
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: wholesale
+url: https://shop.pacificunlimitedguam.com/
+language: en
+cadence: daily
+archive_prefix: "shop.pacificunlimitedguam.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Food-service / HORECA wholesale distributor -- bulk pastries, cakes,
+  gelato, and BBQ/meat case packs (e.g. "35lbs", "12 servings per
+  container"). Shopify catalog, open /products.json, 132 products on
+  page 1 alone. Currency confirmed USD via Shopify.currency on the
+  storefront (matches countries.yaml).

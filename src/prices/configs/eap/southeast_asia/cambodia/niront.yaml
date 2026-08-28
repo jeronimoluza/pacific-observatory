@@ -7,6 +7,8 @@ url: https://niront.com
 language: km
 cadence: daily
 channel: marketplace
+archive_prefix: "niront.com/products/"
+archive_path_re: '^/products/[^/?]+'
 notes: |
   Shopify marketplace, many independent Khmer F&B vendors. Prices listed
   in USD.

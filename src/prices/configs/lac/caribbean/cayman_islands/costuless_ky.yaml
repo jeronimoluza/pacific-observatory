@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: costuless_ky
+url: https://www.costuless.com/grand-cayman
+language: en
+cadence: weekly
+channel: wholesale
+archive_prefix: "www.shopcostuless.com/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  channel substituted: the source is a US-style warehouse club (bulk
+  buying membership model), which the manifest schema's Channel enum has
+  no dedicated value for — "wholesale" is the closest fit.
+  NCR Freshop tenant app_key=cost_u_less, store_id=3821. Live re-verify:
+  GET api.freshop.ncrcloud.com/2/products?app_key=cost_u_less&limit=5&
+  store_id=3821 -> 200, 1,574 items, "Mango Red/Green" price "$ 1.99".
+  Distinct catalog from the other three Cost-U-Less territory stores under
+  this app_key — verified live across all four: differing totals (1574/
+  1704/2219/2085) and differing SKUs per store_id, NOT one catalog
+  duplicated across countries. Currency caveat: no currency_code field on
+  the product payload; the price string here is plain "$", ambiguous
+  between USD and KYD (Cayman's own $ symbol) — Cayman is USD-pegged and
+  this is a US warehouse chain, so USD is the working assumption,
+  unconfirmed from the API alone (unlike costuless_sx in Sint Maarten,
+  where the price string's guilder symbol gave unambiguous live evidence).

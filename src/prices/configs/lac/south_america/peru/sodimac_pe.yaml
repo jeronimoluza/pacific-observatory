@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sodimac_pe
+url: https://www.sodimac.com.pe/sodimac-pe/
+language: es
+currency: PEN
+cadence: weekly
+channel: home-improvement
+archive_prefix: "www.sodimac.com.pe/sodimac-pe/articulo/"
+archive_path_re: '^/sodimac\-pe/articulo/[^/?]+'
+notes: |
+  Sodimac Peru -- home-improvement/hardware banner (Falabella Group).
+  Checked for an existing Sodimac spider first: homecenter_co.py covers
+  Sodimac's Colombian banner, but that runs the newer Falabella "Catalyst"
+  Next.js template (searchProps.searchData JSON, ?currentpage=N,
+  sitemap-driven discovery) -- confirmed live 2026-08-17 that Peru is a
+  DIFFERENT backend wearing a similar Next.js shell: legacy Endeca-commerce
+  URL/facet scheme (/sodimac-pe/lista/<catId>/<slug>,
+  f.product.L1_category_paths=...), no sitemap in robots.txt,
+  __NEXT_DATA__.props.pageProps.results (not nested under searchProps),
+  plain ?page=N pagination. So this is a standalone spider, not a
+  homecenter_co subclass. Category discovery crawls the homepage's own
+  SSR'd mega-menu (~642 leaf category links), sampled at stride 6 (~107
+  categories) x 5 pages/category cap to stay bounded. Price picked as the
+  `prices[]` entry with crossed=false (the actually-charged price; crossed
+  entries are the pre-discount strikethrough price). Real PEN prices
+  confirmed (e.g. "Canaleta PVC Blanca 10X15" at S/ 8).
+  FULL_SCRAPE_ROWCOUNT_PLACEHOLDER

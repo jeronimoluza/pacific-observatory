@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: savegnago_br
+url: https://www.savegnago.com.br/
+language: pt
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.savegnago.com.br/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Sao Paulo interior full-line chain, fresh produce confirmed. Re-verified live:
+  products/search?_from=0&_to=9 -> HTTP 206, 193KB, 'Tomate Italiano 1kg' BRL 4.45. Language
+  overridden to pt (Portuguese product names). Currency matches countries.yaml (BRL).

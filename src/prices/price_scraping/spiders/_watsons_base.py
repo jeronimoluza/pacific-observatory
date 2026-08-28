@@ -26,10 +26,69 @@ from urllib.parse import unquote
 
 import scrapy
 
+from ..archived import (
+    iter_jsonld_nodes,
+    normalize_price,
+    row_from_meta,
+    rows_from_jsonld,
+)
+
 logger = logging.getLogger(__name__)
 
 LOC_RE = re.compile(r"<loc>([^<]+)</loc>")
 ID_RE = re.compile(r"/p/(BP_\d+)")
+
+
+def _is_product_group(node: dict) -> bool:
+    t = node.get("@type")
+    if isinstance(t, list):
+        return any(str(x).lower() == "productgroup" for x in t)
+    return str(t).lower() == "productgroup"
+
+
+def _rows_from_product_group(html_text: str, url: str) -> list[dict]:
+    """Rows from schema.org ``ProductGroup`` nodes -- Watsons-specific.
+
+    Most Watsons PDPs emit a plain ``Product`` node that `rows_from_jsonld`
+    already handles. A minority (multi-variant color/shade pages, verified
+    on watsons.co.th archived samples) emit ``ProductGroup`` instead, with
+    the price on the group's ``AggregateOffer`` rather than per-variant --
+    a shape `rows_from_jsonld` does not recognize since it only matches
+    ``@type: Product``. One row per group (using the group price), not per
+    variant, since `hasVariant` entries carry no price of their own.
+    """
+    rows: list[dict] = []
+    for node in iter_jsonld_nodes(html_text):
+        if not _is_product_group(node):
+            continue
+        name = node.get("name")
+        if not name:
+            continue
+        offers = node.get("offers") or {}
+        price = normalize_price(offers.get("price") or offers.get("lowPrice"))
+        if not price:
+            continue
+        row = {
+            "product_name": str(name).strip()[:500],
+            "price": price,
+            "url": node.get("url") or url,
+        }
+        group_id = node.get("productGroupID") or node.get("sku")
+        if group_id:
+            row["product_id"] = str(group_id)
+        currency = offers.get("priceCurrency")
+        if currency:
+            row["currency"] = str(currency)
+        category = node.get("category")
+        if isinstance(category, dict):
+            category = category.get("name")
+        if category:
+            row["category"] = str(category)
+        availability = offers.get("availability")
+        if availability:
+            row["available"] = "instock" in str(availability).lower()
+        rows.append(row)
+    return rows
 
 
 class WatsonsBaseSpider(scrapy.Spider):
@@ -177,3 +236,33 @@ class WatsonsBaseSpider(scrapy.Spider):
             except Exception:
                 continue
         return None
+
+    @classmethod
+    def parse_html(cls, html: str, url: str):
+        """Parse one archived Watsons PDP into row dicts.
+
+        The live spider reads server-rendered PDP HTML directly (there is no
+        separate JSON API), so archived Wayback/CC snapshots are the *same*
+        page shape the live parser already targets -- but the shared
+        `rows_from_jsonld` tier in archived.py is tried first since it is
+        cheaper and, per onboarding measurement across 7 countries (HK/TW/
+        ID/MY/PH/SG/TH, 42 archived pages, 2026-08-18), resolved 35/42 pages
+        (83%) outright via the plain schema.org ``Product`` node every PDP
+        carries. The remaining misses split two ways: a `ProductGroup`
+        fallback (this module's `_rows_from_product_group`) recovers
+        multi-variant pages that emit ``@type: ProductGroup`` with an
+        ``AggregateOffer`` instead of a plain ``Product`` node (2/42, all on
+        watsons.co.th); the other 3/42 (HK/TW/ID) are Angular SSR shells
+        Common Crawl captured before client-side hydration populated any
+        product data at all -- `cx-state` shows empty `product`/`details`
+        entities, so no text-level parser can recover them. Does NOT stamp
+        `scraped_at_utc` -- the caller sets it to the snapshot time.
+        """
+        rows = rows_from_jsonld(html, url) or _rows_from_product_group(html, url)
+        if not rows:
+            meta_row = row_from_meta(html, url)
+            rows = [meta_row] if meta_row else []
+        for row in rows:
+            row.setdefault("currency", cls.currency)
+            row.setdefault("language", cls.language)
+            yield row

@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: blejeseshkoj
+url: https://blejeseshkoj.com/
+language: sq
+cadence: weekly
+channel: supermarket
+archive_prefix: "blejeseshkoj.com/index.php"
+archive_path_re: '^/index\.php$'
+notes: |
+  archive_path_re can only filter on the URL path (query strings are
+  invisible to it), and every OpenCart route on this store — product,
+  category, cart — shares the single literal path /index.php. So this
+  scope pulls ALL index.php hits from Common Crawl/Wayback, not just
+  route=product/product; downstream WARC parsing must recognise and skip
+  non-product routes itself. This is the narrowest expressible scope given
+  the query-string routing.
+
+  Classic OpenCart, route=product/category&path=<id[_id...]> hierarchy.
+  The spider fetches the homepage nav, extracts every path= value, computes
+  leaf categories (92 of ~108 seen), and walks each with limit=100.
+  Re-verified live: e.g. "Torku helva kakao-500g" price-new 2.99EUR (was
+  3.79EUR).
+
+  cfg_currency (EUR) matches what the probe saw. Prizren-only delivery, 10
+  EUR minimum, small catalogue per CSV -- expect a limited SKU count
+  despite the wide category tree.

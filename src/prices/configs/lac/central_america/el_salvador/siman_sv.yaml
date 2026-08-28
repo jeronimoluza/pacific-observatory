@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: siman_sv
+url: https://sv.siman.com/
+language: es
+currency: USD
+cadence: weekly
+channel: dept-store
+archive_prefix: "sv.siman.com/"
+archive_path_re: '^/[\w][\w\- ]*/p$'
+notes: |
+  Regional Central American department store chain (fashion, accessories, home). www.siman.com
+  is a country-selector hub (El Salvador/Guatemala/Nicaragua/Costa Rica) with no products of its
+  own; sv.siman.com is the actual VTEX tenant for the El Salvador storefront (meta generator
+  vtex.render-server, vteximg.com.br assets). Live re-verified 2026-08-17:
+  sv.siman.com/api/catalog_system/pub/products/search?_from=0&_to=4 -> HTTP 206, real JSON
+  (e.g. 'Camiseta deportiva Teammate navy solida para hombre'). Currency USD -- El Salvador's
+  official currency. Full scrape 2026-08-17: 27,140 rows.
+  QA sweep flagged 68 rows with mojibake in product_name (e.g. "DiseÃ±o",
+  "NiÃ±o"). Confirmed root cause 2026-08-17: genuine upstream data defect,
+  not our decoding -- curl of the live VTEX search API for sibling SKUs
+  (e.g. ft=Sandalias Mickey) shows most records correctly encoded
+  ("Diseño De Niño Pequeño") while a handful of specific productIds
+  (e.g. 10064785) return "DiseÃ±o De NiÃ±o" verbatim in the raw
+  productName JSON field -- the corruption is per-record, baked in at
+  the source (some catalog entries were double-encoded before upload).
+  Left as-is per instruction not to strip characters to mask a genuine
+  upstream defect.

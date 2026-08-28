@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: coolmarket_jm
+url: https://www.coolmarket.com/groceries.html
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "coolmarket.com/"
+archive_path_re: '^/[a-z0-9][a-z0-9\-]*\.html$'
+notes: |
+  Best Jamaica source per the CSV; confirmed. Magento SSR HTML with
+  data-price-amount markup throughout. Live re-verify: GET
+  /groceries.html -> 200, 4.0MB, real product cards incl. "Fresh
+  Strawberries - 454g / 1lb" JMD 1,378.85. Deep grocery catalog (CSV: 1,386
+  items). Standard Magento ?p=N pagination. Currency JMD matches
+  countries.yaml.

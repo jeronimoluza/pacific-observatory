@@ -4,6 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: health_lane
 url: https://estore.healthlane.com.my/
+archive_prefix: "estore.healthlane.com.my/"
+archive_path_re: '^/(supplement|mother-baby-care|young-beauty|personal_care|OTC-First-Aid|House-Hold|food-and-beverage|nutrition)/[^/]+$'
 language: en
 cadence: daily
 channel: pharmacy

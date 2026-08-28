@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pacifiko_gt
+url: https://www.pacifiko.com/
+archive_prefix: "www.pacifiko.com/compras-en-linea/"
+archive_path_re: '^/compras-en-linea/.+&pid=[A-Za-z0-9]+$'
+language: es
+currency: GTQ
+cadence: weekly
+channel: electronics
+notes: |
+  Guatemala electronics/appliances/small-home-goods retailer. Shard flagged
+  the /api/catalog_system/pub/products/search VTEX path as a red herring
+  (301s to homepage) -- re-verified live 2026-08-17: genuine OpenCart
+  backend on a custom theme, server-rendered category pages, real GTQ
+  prices e.g. "Laptop Dell Inspiron 15 3535..." Q5,499.00 on /laptops.
+  21 curated category entry points (18 SEO-clean slugs from the homepage
+  megamenu + 3 route=product/category ids for categories only reachable
+  that way). No sitemap.xml/robots.txt (both 403 from CloudFront WAF), so
+  full-catalog discovery isn't possible; this is a bounded, not exhaustive,
+  crawl. Catalog is electronics/appliances-led (laptops, phones, audio,
+  small appliances) not general/food, so channel is electronics.

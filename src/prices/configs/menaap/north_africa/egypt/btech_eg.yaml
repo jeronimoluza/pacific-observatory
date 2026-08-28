@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: electronics
+spider: btech_eg
+url: https://btech.com/
+language: ar
+currency: EGP
+cadence: weekly
+archive_prefix: "btech.com/ar/p/"
+archive_path_re: '^/ar/p/[^/?]+'
+notes: |
+  Verified live 2026-08-17: btech.com — B.TECH, an Egyptian electronics and
+  home-appliance retail chain (laptops/PCs, mobiles, TVs, large/small home
+  appliances, personal care, gaming, air conditioners per its own category
+  tree). Custom Next.js-style SSR storefront redirecting / -> /ar. Spider
+  walks the sitemap (https://btech.com/sitemap.xml, 7,206 /ar/p/<slug>
+  product URLs) and parses the schema.org Product JSON-LD embedded on each
+  PDP (offers.price/priceCurrency/availability, confirmed EGP e.g. 295 for a
+  Speedlink mouse) plus the sibling BreadcrumbList JSON-LD for leaf category.
+  Category listing pages themselves render no inline product data (client
+  XHR), so the sitemap-of-products walk is the reliable path — same pattern
+  as jarir_kw/4sough_af. PDPs are light (~72KB gzip / 391KB decoded), so the
+  full 7,206-URL crawl fits inside the collect-run time budget without a cap.
+  coicop_divisions: 05 (appliances), 08 (mobiles/tech), 09 (audio/gaming);
+  divisions_basis: sampled_rows.
+timeout: 14400
