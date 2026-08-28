@@ -133,23 +133,50 @@ OLD_JSONLD_CUR = '''            currency = _valid_currency(
 NEW_JSONLD_CUR = '''            if currency:
                 row["currency"] = currency'''
 
-# --- call site 2: row_from_meta
+# --- call site 2: row_from_meta. One atomic replacement spanning the whole
+# body, not an insert plus a delete: the hoisted text is byte-identical to the
+# original copy below it, so a separate `replace(old, "", 1)` deletes the hoist
+# instead of the original and leaves `currency` unbound in the loop.
 OLD_META = '''    meta = meta_tags(html_text)
     price = None
     for key in ("product:price:amount", "og:price:amount", "price"):
-        candidate = normalize_price(meta.get(key))'''
+        candidate = normalize_price(meta.get(key))
+        if candidate and float(candidate) > 0:
+            price = candidate
+            break
+    name = meta.get("og:title") or meta.get("twitter:title")
+    if not (price and name):
+        return None
+    row = {
+        "product_name": _html.unescape(name).strip()[:500],
+        "price": price,
+        "url": urljoin(url, meta.get("og:url") or url),
+    }
+    currency = _valid_currency(
+        meta.get("product:price:currency") or meta.get("og:price:currency")
+    )
+    if currency:'''
 NEW_META = '''    meta = meta_tags(html_text)
+    # Read above the loop: `normalize_price` needs it to tell a grouping dot
+    # from a decimal point, and the row needs it below.
     currency = _valid_currency(
         meta.get("product:price:currency") or meta.get("og:price:currency")
     )
     price = None
     for key in ("product:price:amount", "og:price:amount", "price"):
-        candidate = normalize_price(meta.get(key), currency)'''
-
-OLD_META_CUR = '''    currency = _valid_currency(
-        meta.get("product:price:currency") or meta.get("og:price:currency")
-    )
-'''
+        candidate = normalize_price(meta.get(key), currency)
+        if candidate and float(candidate) > 0:
+            price = candidate
+            break
+    name = meta.get("og:title") or meta.get("twitter:title")
+    if not (price and name):
+        return None
+    row = {
+        "product_name": _html.unescape(name).strip()[:500],
+        "price": price,
+        "url": urljoin(url, meta.get("og:url") or url),
+    }
+    if currency:'''
 
 # --- call site 3: archived_embedded
 OLD_EMB = '''        price = normalize_price(_find_price(obj))
@@ -207,8 +234,6 @@ def main():
         (OLD_JSONLD, NEW_JSONLD),
         (OLD_JSONLD_CUR, NEW_JSONLD_CUR),
         (OLD_META, NEW_META),
-        # the hoisted copy in row_from_meta leaves the original behind; drop it
-        (OLD_META_CUR, ""),
     ], "normalize_price + sites")
     print("archived_embedded.py")
     e_src, e_ok = patch(EMBEDDED, [(OLD_EMB, NEW_EMB)], "flight-data call site")
