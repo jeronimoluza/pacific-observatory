@@ -32,13 +32,13 @@ data/text/policy_tracker/YYYY-MM-DD/excel/<region>.xlsx   (dated snapshot — au
 po text build-policy-addons --region <r>
    |  (converter: src/text/plotting/policy_dashboards.py)
    v
-src/text/plotting/addons/<region>_fuel_crisis_policy_dashboard.html
+src/text/plotting/addons/fuel/<region>_policy_addon.html
    |
    v
 po text publish --region <r>
    |  (orchestrator: src/text/publish.py:run_publish)
    v
-outputs/text/dashboards/<region>_policy_dashboard.html
+outputs/text/dashboards/fuel/<region>_policy_dashboard.html
 ```
 
 ## Step 1 — Update the workbook
@@ -130,12 +130,12 @@ The converter (`src/text/plotting/policy_dashboards.py`):
   `Status/date`, etc.) into the dashboard schema.
 - Maps legacy `Reduce demand` rows into the two-part typology using
   policy/description/reason text.
-- Writes `src/text/plotting/addons/<region>_fuel_crisis_policy_dashboard.html`
+- Writes `src/text/plotting/addons/fuel/<region>_policy_addon.html`
   and `dashboard_generation_summary.json`.
 
 **Verify**: confirm the run printed `included_rows > 0`, no entries
 under `errors`, and the per-region HTML mtime is fresh
-(`ls -la src/text/plotting/addons/<region>_*.html`).
+(`ls -la src/text/plotting/addons/fuel/<region>_policy_addon.html`).
 
 ## Step 4 — Publish
 
@@ -149,7 +149,7 @@ This calls `src/text/publish.py:run_publish`, which (for each region in scope):
 3. Loads the addon HTML from step 2 via
    `src/text/plotting/small_dashboard_integrated_w_policy.py:_load_addon_html`.
 4. Composes the final four-tab dashboard:
-   `outputs/text/dashboards/<region>_policy_dashboard.html`.
+   `outputs/text/dashboards/fuel/<region>_policy_dashboard.html`.
 
 The skill may run this directly — side effects are local file writes
 only.
@@ -179,9 +179,9 @@ Open the final HTML and confirm against the checklist at the end of
 ## Fuel Crisis Policy refresh: <region>
 - Workbook: data/text/policy_tracker/<region>.xlsx  (last edited: <mtime>)
 - Snapshot: data/text/policy_tracker/YYYY-MM-DD/excel/<region>.xlsx
-- Addon:    src/text/plotting/addons/<region>_fuel_crisis_policy_dashboard.html
+- Addon:    src/text/plotting/addons/fuel/<region>_policy_addon.html
             (rows=<n>, excluded=<n>, countries=<n>)
-- Final:    outputs/text/dashboards/<region>_policy_dashboard.html
+- Final:    outputs/text/dashboards/fuel/<region>_policy_dashboard.html
 - Reclassified `Reduce demand` rows: <n>
 - New rows: <n>; revised rows: <n>; superseded/excluded: <n>
 - Open follow-ups: <bulleted list>

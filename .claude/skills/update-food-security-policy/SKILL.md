@@ -66,13 +66,13 @@ data/text/policy_tracker/food_security/YYYY-MM-DD/excel/<region>.xlsx   (dated s
 po text build-policy-addons --region <r> --tracker food
    |  (converter: src/text/plotting/policy_dashboards.py)
    v
-src/text/plotting/addons/<region>_food_security_policy_addon.html
+src/text/plotting/addons/food_security/<region>_policy_addon.html
    |
    v
 po text publish --region <r> --tracker food
    |  (orchestrator: src/text/publish.py:run_publish)
    v
-outputs/text/dashboards/<region>_food_security_policy_dashboard.html
+outputs/text/dashboards/food_security/<region>_policy_dashboard.html
 ```
 
 The other three tabs (Uncertainty Topics, Topics EPU, Actors EPU) come
@@ -101,9 +101,9 @@ the same series on both — `inflation_prices` on the food dashboard is
 the `inflation_prices` on the fuel dashboard.
 
 The fuel tracker's paths (`policy_tracker/<region>.xlsx`,
-`<region>_fuel_crisis_policy_dashboard.html`,
-`<region>_policy_dashboard.html`) are untouched by any `--tracker food`
-run.
+`addons/fuel/<region>_policy_addon.html`,
+`dashboards/fuel/<region>_policy_dashboard.html`) are untouched by any
+`--tracker food` run.
 
 ## Step 1 — Update the workbook
 
@@ -172,11 +172,11 @@ poetry run po text build-policy-addons --region <r> --tracker food
 The converter reads
 `data/text/policy_tracker/food_security/<region>.xlsx`, normalizes alias
 headers, and writes
-`src/text/plotting/addons/<region>_food_security_policy_addon.html`.
+`src/text/plotting/addons/food_security/<region>_policy_addon.html`.
 
 **Verify**: the run printed `included rows: N` with N > 0, no errors,
 and the HTML mtime is fresh
-(`ls -la src/text/plotting/addons/<region>_food_security_policy_addon.html`).
+(`ls -la src/text/plotting/addons/food_security/<region>_policy_addon.html`).
 
 ## Step 3b — Rebuild the EPU/Topics numbers (only when keywords change)
 
@@ -211,7 +211,7 @@ poetry run po text publish --region <r> --tracker food
 Renders the **full four-tab dashboard** — the Food Security Policy tab
 plus the three EPU/Topics tabs (Uncertainty Topics, Topics EPU, Actors
 EPU), exactly as the fuel dashboard does. Output:
-`outputs/text/dashboards/<region>_food_security_policy_dashboard.html`.
+`outputs/text/dashboards/food_security/<region>_policy_dashboard.html`.
 
 Add `--skip-database-status` to skip the slow global database-status
 refresh when you only need the dashboard (prototype / iteration runs).
@@ -233,8 +233,8 @@ refresh when you only need the dashboard (prototype / iteration runs).
   `Reason` with a source.
 - No row is a bare hazard description with no government action.
 - Source URLs open (spot-check 3–5).
-- The fuel artifacts are untouched: `<region>_fuel_crisis_policy_dashboard.html`
-  and `outputs/text/dashboards/<region>_policy_dashboard.html` mtimes
+- The fuel artifacts are untouched: `addons/fuel/<region>_policy_addon.html`
+  and `outputs/text/dashboards/fuel/<region>_policy_dashboard.html` mtimes
   unchanged.
 
 ## Output format (after a full run)
@@ -243,9 +243,9 @@ refresh when you only need the dashboard (prototype / iteration runs).
 ## Food Security Policy refresh: <region>
 - Workbook: data/text/policy_tracker/food_security/<region>.xlsx  (last edited: <mtime>)
 - Snapshot: data/text/policy_tracker/food_security/YYYY-MM-DD/excel/<region>.xlsx
-- Addon:    src/text/plotting/addons/<region>_food_security_policy_addon.html
+- Addon:    src/text/plotting/addons/food_security/<region>_policy_addon.html
             (rows=<n>, excluded=<n>, countries=<n>)
-- Final:    outputs/text/dashboards/<region>_food_security_policy_dashboard.html
+- Final:    outputs/text/dashboards/food_security/<region>_policy_dashboard.html
 - New rows: <n>; revised rows: <n>; superseded/excluded: <n>
 - Countries with no verified measure found: <list>
 - Open follow-ups: <bulleted list>

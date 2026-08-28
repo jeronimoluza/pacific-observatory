@@ -26,7 +26,7 @@ TRACKERS = {
     "fuel": {
         "slug": "fuel",
         "label": "Fuel Crisis Policy",
-        "addon_stem": "fuel_crisis_policy_dashboard",
+        "out_subdir": "fuel",
         "aria_subject": "fuel-crisis",
         "subdir": "",
         "themes": ["core"],
@@ -36,7 +36,7 @@ TRACKERS = {
     "food": {
         "slug": "food_security",
         "label": "Food Security Policy",
-        "addon_stem": "food_security_policy_addon",
+        "out_subdir": "food_security",
         "aria_subject": "food-security",
         "subdir": "food_security",
         "themes": ["food"],
@@ -72,12 +72,25 @@ def get_tracker(name: str | None) -> dict:
     return TRACKERS[key]
 
 
-def addon_filename(region: str, tracker: str | None = None) -> str:
-    return f"{region}_{get_tracker(tracker)['addon_stem']}.html"
+ADDON_SUFFIX = "_policy_addon.html"
+DASHBOARD_SUFFIX = "_policy_dashboard.html"
 
 
-def addon_suffix(tracker: str | None = None) -> str:
-    return f"_{get_tracker(tracker)['addon_stem']}.html"
+def addon_filename(region: str) -> str:
+    return f"{region}{ADDON_SUFFIX}"
+
+
+def dashboard_filename(region: str) -> str:
+    return f"{region}{DASHBOARD_SUFFIX}"
+
+
+def tracker_dir(base_dir: Path, tracker: str | None = None) -> Path:
+    """Per-tracker subdirectory of an addon or dashboard output tree.
+
+    The directory carries the lens, so filenames stay uniform across
+    trackers and a new lens needs no naming decision.
+    """
+    return base_dir / get_tracker(tracker)["out_subdir"]
 
 
 def workbook_dir(base_dir: Path, tracker: str | None = None) -> Path:

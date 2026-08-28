@@ -3,7 +3,7 @@ addons consumed by ``small_dashboard_integrated_w_policy``.
 
 Pipeline:
     data/text/policy_tracker/<region>.xlsx
-      -> src/text/plotting/addons/<region>_fuel_crisis_policy_dashboard.html
+      -> src/text/plotting/addons/<tracker>/<region>_policy_addon.html
 
 CLI:
     poetry run po text build-policy-addons --region eap
@@ -33,6 +33,7 @@ from text.plotting.trackers import (
     TRACKERS,
     addon_filename,
     get_tracker,
+    tracker_dir,
     tracker_label,
     workbook_dir,
 )
@@ -1253,8 +1254,9 @@ def generate_region(
         make_v6_html,
     )
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-    out_path = output_dir / addon_filename(key, tracker)
+    out_dir = tracker_dir(output_dir, tracker)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / addon_filename(key)
 
     if has_v6_columns(rows):
         print("  taxonomy: v6 (Category + Subcategory)")

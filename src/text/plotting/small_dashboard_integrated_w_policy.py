@@ -1,11 +1,11 @@
-"""Generate a standalone dashboard HTML with a regional Fuel Crisis Policy
-tab plus the three EPU/Topics views. Each tab lives in its own iframe srcdoc,
-and tab switching is CSS-only (radio + label) so the host page contains zero
-inline <script> blocks. This shape is what survives corporate sanitizers that
-strip inline scripts on upload.
+"""Generate a standalone dashboard HTML with a regional policy tab plus the
+three EPU/Topics views. Each tab lives in its own iframe srcdoc, and tab
+switching is CSS-only (radio + label) so the host page contains zero inline
+<script> blocks. This shape is what survives corporate sanitizers that strip
+inline scripts on upload.
 
-The Fuel Crisis Policy iframe is sourced from the per-region HTML files in
-``src/text/plotting/addons/{region}_fuel_crisis_policy_dashboard.html``.
+The policy iframe is sourced from the per-region HTML files in
+``src/text/plotting/addons/{tracker}/{region}_policy_addon.html``.
 """
 
 import json
@@ -14,9 +14,11 @@ from pathlib import Path
 import pandas as pd
 
 from text.plotting.trackers import (
+    ADDON_SUFFIX,
     addon_filename,
-    addon_suffix,
+    dashboard_filename,
     get_tracker,
+    tracker_dir,
     tracker_groups,
     tracker_label,
 )
@@ -38,18 +40,18 @@ def _vendor(name: str) -> str:
 
 
 def _addon_path(region: str, tracker: str | None = None) -> Path:
-    return ADDONS_DIR / addon_filename(region, tracker)
+    return tracker_dir(ADDONS_DIR, tracker) / addon_filename(region)
 
 
 def available_regions(tracker: str | None = None) -> list[str]:
-    """Region slugs with an addon HTML in src/text/plotting/addons/."""
-    if not ADDONS_DIR.exists():
+    """Region slugs with an addon HTML in the tracker's addons subdirectory."""
+    addons_dir = tracker_dir(ADDONS_DIR, tracker)
+    if not addons_dir.exists():
         return []
-    suffix = addon_suffix(tracker)
     return sorted(
-        p.name[: -len(suffix)]
-        for p in ADDONS_DIR.iterdir()
-        if p.is_file() and p.name.endswith(suffix)
+        p.name[: -len(ADDON_SUFFIX)]
+        for p in addons_dir.iterdir()
+        if p.is_file() and p.name.endswith(ADDON_SUFFIX)
     )
 
 
@@ -1327,10 +1329,10 @@ def _resolve_region_label(region_subtree: list, region: str) -> str:
 
 
 def generate_dashboard_from_json(json_path, region: str, tracker: str | None = None):
-    """Generate the special EPU+Fuel-Crisis-Policy dashboard for ``region``.
+    """Generate the special EPU+policy dashboard for ``region``.
 
     Reads dashboard_data.json, filters units to the region, and writes
-    ``outputs/text/{region}_small_dashboard_integrated_w_policy.html``.
+    ``outputs/text/dashboards/{tracker}/{region}_policy_dashboard.html``.
     """
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
@@ -1433,10 +1435,9 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
     )
 
     project_root = Path(__file__).resolve().parents[3]
-    output_dir = project_root / "outputs" / "text" / "dashboards"
+    output_dir = tracker_dir(project_root / "outputs" / "text" / "dashboards", tracker)
     output_dir.mkdir(parents=True, exist_ok=True)
-    suffix = "" if tracker_cfg["slug"] == "fuel" else f"_{tracker_cfg['slug']}"
-    dashboard_path = output_dir / f"{region}{suffix}_policy_dashboard.html"
+    dashboard_path = output_dir / dashboard_filename(region)
     dashboard_path.write_text(out, encoding="utf-8")
     print(f"Created {dashboard_path}")
     return dashboard_path
