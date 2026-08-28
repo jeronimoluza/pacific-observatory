@@ -173,14 +173,14 @@ def extract_flight_candidates(html_text: str) -> list[tuple[dict, set[str]]]:
         name = _find_name(obj)
         if not name:
             continue
-        price = normalize_price(_find_price(obj))
+        currency = _valid_currency(obj.get("currency") or obj.get("priceCurrency"))
+        price = normalize_price(_find_price(obj), currency)
         if not price or float(price) <= 0:
             continue
         row = {"product_name": name[:500], "price": price}
         pid = _find_id(obj)
         if pid:
             row["product_id"] = pid
-        currency = _valid_currency(obj.get("currency") or obj.get("priceCurrency"))
         if currency:
             row["currency"] = currency
         ids = {str(obj[k]) for k in _ID_KEYS if obj.get(k) not in (None, "", _SENTINEL)}

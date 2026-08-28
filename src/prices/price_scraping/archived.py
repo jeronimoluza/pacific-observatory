@@ -19,10 +19,11 @@ historical series into a single date.
 from __future__ import annotations
 
 import html as _html
-import json
 import re
 from typing import Any, Iterator
 from urllib.parse import urljoin, urlsplit
+
+from .archived_ldrepair import parse_ld
 
 _SCRIPT_OPEN_RE = re.compile(r"<script\b", re.IGNORECASE)
 _SCRIPT_ATTR_RE = re.compile(r'\s*([\w:.-]+)(?:\s*=\s*(?:"([^"]*)"|\'([^\']*)\'))?')
@@ -146,13 +147,68 @@ def _dedupe_product_rows(rows: list[dict], page_url: str) -> list[dict]:
     return on_page or collapsed[:1]
 
 
-def normalize_price(raw: Any) -> str | None:
+# ISO 4217 currencies with minor unit 0 — a fractional price is not expressible.
+_ISO_ZERO_DECIMAL = {
+    "BIF",
+    "CLP",
+    "DJF",
+    "GNF",
+    "ISK",
+    "JPY",
+    "KMF",
+    "KRW",
+    "PYG",
+    "RWF",
+    "UGX",
+    "VND",
+    "VUV",
+    "XAF",
+    "XOF",
+    "XPF",
+}
+
+# Officially 2 minor digits, but retail prices are integer-only in practice and
+# the written convention is dot-as-thousands. Kept separate from the ISO set so
+# the distinction stays visible: these are judgement calls, the set above is not.
+_DE_FACTO_INTEGER = {
+    "COP",
+    "IDR",
+    "IRR",
+    "KHR",
+    "LAK",
+    "MMK",
+    "UZS",
+    "HUF",
+}
+
+ZERO_DECIMAL_CURRENCIES = _ISO_ZERO_DECIMAL | _DE_FACTO_INTEGER
+
+
+def _no_minor_unit(currency: str | None) -> bool:
+    return bool(currency) and str(currency).strip().upper() in ZERO_DECIMAL_CURRENCIES
+
+
+def normalize_price(raw: Any, currency: str | None = None) -> str | None:
     """Strip currency symbols and thousands separators.
 
     Resolves the EU (``1.234,56``) vs US (``1,234.56``) decimal convention by
     which separator appears last. A lone comma is a decimal point only when
     exactly two digits follow it — ``1,50`` is one-fifty, ``1,500`` is fifteen
     hundred.
+
+    A lone dot is a decimal point unless the value cannot have one. Structured
+    markup never needs this — schema.org asks for a machine-readable number, and
+    across 8,744 archived pages JSON-LD and ``content=`` attributes produced
+    zero 3-digit dot tails — but the microdata tier falls back to element text
+    (``<span itemprop="price">78.000</span>``) and every CSS selector reads
+    rendered text, where the grouping dot is normal. Only one shape is
+    ambiguous, so only that one consults ``currency``:
+
+        1.234.567   more than one dot   -> thousands, always
+        1.5 / 1.50  tail is not 3       -> decimal, always
+        78.000      tail is exactly 3   -> thousands iff no minor unit
+
+    Passing no ``currency`` leaves the ambiguous case exactly as it shipped.
     """
     if raw is None:
         return None
@@ -168,6 +224,12 @@ def normalize_price(raw: Any) -> str | None:
     elif has_comma:
         tail = s.split(",")[-1]
         s = s.replace(",", ".") if len(tail) == 2 else s.replace(",", "")
+    elif has_dot:
+        if s.count(".") > 1:
+            # a decimal point cannot repeat, so these are grouping separators
+            s = s.replace(".", "")
+        elif len(s.split(".")[-1]) == 3 and _no_minor_unit(currency):
+            s = s.replace(".", "")
     try:
         return str(float(s))
     except ValueError:
@@ -186,6 +248,7 @@ def iter_jsonld_nodes(html_text: str) -> Iterator[dict]:
     """
 
     def walk(data):
+        """Top level plus one ``@graph`` level -- the long-shipped traversal."""
         if isinstance(data, list):
             for item in data:
                 yield from walk(item)
@@ -196,24 +259,86 @@ def iter_jsonld_nodes(html_text: str) -> Iterator[dict]:
                 for item in graph:
                     yield from walk(item)
 
+    def walk_deep(data, depth=0):
+        """Every nested dict, not just ``@graph``.
+
+        Some themes hang the Product off ``mainEntity``, ``itemListElement``
+        or a bare custom key, which ``walk`` cannot see. Depth is capped
+        because a self-referential ``@context`` would otherwise not terminate.
+        """
+        if depth > 12:
+            return
+        if isinstance(data, list):
+            for item in data:
+                yield from walk_deep(item, depth + 1)
+        elif isinstance(data, dict):
+            yield data
+            for key, value in data.items():
+                if key == "@context":
+                    continue
+                if isinstance(value, (dict, list)):
+                    yield from walk_deep(value, depth + 1)
+
     for attrs, body in _iter_script_tags(html_text):
         if attrs.get("type", "").lower() != "application/ld+json":
             continue
         raw = body.strip() or _html.unescape(attrs.get("children", "")).strip()
         if not raw:
             continue
-        try:
-            data = json.loads(raw)
-        except (json.JSONDecodeError, ValueError):
-            continue
-        yield from walk(data)
+        values, _how = parse_ld(raw)
+        for data in values:
+            # Shipped order first, deeper nodes appended: a page that parses
+            # today must keep returning the same row, and `_dedupe_product_rows`
+            # resolves ties by position when nothing matches the page url.
+            seen = set()
+            for node in walk(data):
+                seen.add(id(node))
+                yield node
+            for node in walk_deep(data):
+                if id(node) not in seen:
+                    yield node
+
+
+# Types beyond bare Product that carry a real retail price in practice. Worth
+# 53 additional pages of the 8,744-page miss corpus on their own. A node still
+# has to hold a name and a positive price to become a row, so widening the type
+# gate cannot by itself invent one.
+_PRODUCT_TYPES = frozenset(
+    {
+        "product",
+        "productgroup",
+        "individualproduct",
+        "productmodel",
+        "vehicle",
+        "car",
+        "book",
+        "softwareapplication",
+        "mobileapplication",
+        "videogame",
+        "movie",
+        "musicalbum",
+        "menuitem",
+        "hotelroom",
+        "trip",
+        "event",
+        "course",
+        "service",
+        "creativework",
+        "imageobject",
+        "tvseries",
+        "apartment",
+        "house",
+        "singlefamilyresidence",
+        "realestatelisting",
+    }
+)
 
 
 def _is_product(node: dict) -> bool:
     t = node.get("@type")
-    if isinstance(t, list):
-        return any(str(x).lower() == "product" for x in t)
-    return str(t).lower() == "product"
+    values = t if isinstance(t, list) else [t]
+    # `@type` is often a full schema.org IRI rather than a bare token.
+    return any(str(x).rsplit("/", 1)[-1].lower() in _PRODUCT_TYPES for x in values)
 
 
 def _offer_list(node: dict) -> list[dict]:
@@ -261,7 +386,10 @@ def rows_from_jsonld(html_text: str, url: str) -> list[dict]:
         if isinstance(category, dict):
             category = category.get("name")
         for offer in _offer_list(node):
-            price = normalize_price(_price_of(offer))
+            currency = _valid_currency(
+                offer.get("priceCurrency") or node.get("priceCurrency")
+            )
+            price = normalize_price(_price_of(offer), currency)
             if not price or float(price) <= 0:
                 continue
             row = {
@@ -272,9 +400,6 @@ def rows_from_jsonld(html_text: str, url: str) -> list[dict]:
             sku = offer.get("sku") or node.get("sku") or node.get("productID")
             if sku:
                 row["product_id"] = str(sku)
-            currency = _valid_currency(
-                offer.get("priceCurrency") or node.get("priceCurrency")
-            )
             if currency:
                 row["currency"] = currency
             if category:
@@ -311,9 +436,14 @@ def row_from_meta(html_text: str, url: str) -> dict | None:
     silently write a 0.00 into the series.
     """
     meta = meta_tags(html_text)
+    # Read above the loop: `normalize_price` needs it to tell a grouping dot
+    # from a decimal point, and the row needs it below.
+    currency = _valid_currency(
+        meta.get("product:price:currency") or meta.get("og:price:currency")
+    )
     price = None
     for key in ("product:price:amount", "og:price:amount", "price"):
-        candidate = normalize_price(meta.get(key))
+        candidate = normalize_price(meta.get(key), currency)
         if candidate and float(candidate) > 0:
             price = candidate
             break
@@ -325,9 +455,6 @@ def row_from_meta(html_text: str, url: str) -> dict | None:
         "price": price,
         "url": urljoin(url, meta.get("og:url") or url),
     }
-    currency = _valid_currency(
-        meta.get("product:price:currency") or meta.get("og:price:currency")
-    )
     if currency:
         row["currency"] = currency
     avail = meta.get("product:availability") or meta.get("og:availability")

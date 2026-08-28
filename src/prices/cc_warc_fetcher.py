@@ -33,6 +33,7 @@ from .cc_samples import SampleKeeper
 from .cc_index import query_prefix
 from .backfill import _load_spider_parse_html
 from .price_scraping.archived import row_from_meta, rows_from_jsonld
+from .price_scraping.archived_microdata import rows_from_microdata
 from .price_scraping.archived_embedded import rows_from_next_flight
 from .price_scraping.selectors import extract_with_fallback, get_selectors
 
@@ -276,33 +277,62 @@ class CommonCrawlScraper:
             self._extract_nextdata_fallback(soup, out)
         return out
 
+    def _generic_rows(self, html: str, url: str) -> List[Dict[str, Any]]:
+        """Spider-independent tiers: schema.org/OpenGraph, Next.js flight, then
+        inline microdata.
+
+        These surfaces are standardised, so they survive the site redesigns
+        that invalidate a spider's era-specific selectors. That makes them the
+        right last resort for archived HTML of any age.
+
+        Microdata is last on purpose. It is the era-appropriate tier -- 1.71x
+        uplift on pre-2020 captures against 1.04x on 2023+ -- but it was
+        measured only on pages the tiers above already fail, so appending it
+        is the one placement that cannot change a page that parses today.
+        """
+        rows = rows_from_jsonld(html, url)
+        if rows:
+            return rows
+        row = row_from_meta(html, url)
+        if row:
+            return [row]
+        rows = rows_from_next_flight(html, url)
+        if rows:
+            return rows
+        return rows_from_microdata(html, url)
+
     def _parse_rows(self, html: str, url: str) -> List[Dict[str, Any]]:
-        """Rows for one archived page: the spider's hook, else the selectors.
+        """Rows for one archived page: the spider's hook, then the selectors,
+        then the generic tiers.
 
         A `parse_html` hook may yield several rows per page (product variants,
         SKUs); the selector path always yields at most one.
+
+        Every tier falls through to the next. The hook and the selectors are
+        both written against *current* markup, so on an old capture they
+        routinely match nothing — or match a name but not a price. Stopping
+        there returned a silent zero for the page and never tried the
+        standardised surfaces that would still have parsed it.
         """
         if self.parse_html_fn is not None:
             try:
-                return [r for r in self.parse_html_fn(html, url) if r]
+                rows = [r for r in self.parse_html_fn(html, url) if r]
             except Exception:
                 logger.debug(f"parse_html failed for {url}", exc_info=True)
-                return []
-        extracted = self._extract_data_from_html(html)
-        if extracted:
-            return [extracted]
-        if not self.selectors:
-            # Neither a hook nor selectors — try the spider-independent
-            # schema.org/OpenGraph surfaces, then a framework hydration
-            # payload (Next.js flight), before giving up on the page.
-            rows = rows_from_jsonld(html, url)
+                rows = []
             if rows:
                 return rows
-            row = row_from_meta(html, url)
-            if row:
-                return [row]
-            return rows_from_next_flight(html, url)
-        return []
+            return self._generic_rows(html, url)
+        extracted = self._extract_data_from_html(html)
+        # A row without a price is not a usable observation: half-matching
+        # selectors (name still resolves, price class renamed) are the common
+        # wrong-era failure, so treat that as a miss and fall through.
+        if extracted.get("price"):
+            return [extracted]
+        generic = self._generic_rows(html, url)
+        if generic:
+            return generic
+        return [extracted] if extracted else []
 
     # -- save --
 
