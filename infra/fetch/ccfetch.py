@@ -41,6 +41,7 @@ CC_BUCKET = "commoncrawl"
 CONC = int(os.environ.get("CONC", "64"))
 OUT_BUCKET = os.environ.get("OUT_BUCKET", "")
 OUT_PREFIX = os.environ.get("OUT_PREFIX", "parsed")
+MISS_PREFIX = os.environ.get("MISS_PREFIX", "misses")
 MANIFEST_BUCKET = os.environ.get("MANIFEST_BUCKET", OUT_BUCKET)
 MANIFEST_PREFIX = os.environ.get("MANIFEST_PREFIX", "resolve/manifests")
 SHARD = int(os.environ.get("SHARD", "0"))
@@ -228,68 +229,97 @@ def already_done(out_key):
     return any(o["Key"] == out_key for o in resp.get("Contents", []))
 
 
+def miss_row(rec, reason):
+    """A miss, recorded at its WARC address so it can be re-read later.
+
+    The raw payload is discarded in flight, so a page that parses to nothing is
+    gone unless its address survives. Keeping filename/offset/length means a
+    future parser can be tried against exactly these captures for cents, rather
+    than by repeating the whole run.
+    """
+    return {
+        "url": rec.get("url"),
+        "filename": rec.get("filename"),
+        "offset": rec.get("offset"),
+        "length": rec.get("length"),
+        "timestamp": rec.get("timestamp"),
+        "source": rec.get("spider"),
+        "reason": reason,
+    }
+
+
 # ----------------------------------------------------------------------- main
 
 def run_crawl(index):
     out_key = "%s/%s/shard-%02d.jsonl.gz" % (OUT_PREFIX, index, SHARD)
+    miss_key = "%s/%s/shard-%02d.jsonl.gz" % (MISS_PREFIX, index, SHARD)
     if already_done(out_key):
         print("%-20s skip (already written)" % index, flush=True)
         return 0
     os.makedirs(WORK, exist_ok=True)
     dst = os.path.join(WORK, "%s-%02d.jsonl.gz" % (index, SHARD))
+    mdst = os.path.join(WORK, "%s-%02d.miss.jsonl.gz" % (index, SHARD))
 
     t0 = time.time()
     state = {"s403": 0}
-    n_rec = n_row = 0
+    n = {"rec": 0, "row": 0, "miss": 0}
     tiers = {}
     banned = False
 
-    with gzip.open(dst, "wt", encoding="utf-8") as fh:
+    with gzip.open(dst, "wt", encoding="utf-8") as fh, \
+            gzip.open(mdst, "wt", encoding="utf-8") as mfh:
+
+        def consume(fut, rec):
+            """Fold one finished future into rows or misses. Ban propagates."""
+            n["rec"] += 1
+            try:
+                rows, tier = fut.result()
+            except Ban:
+                raise
+            except Exception as exc:
+                tier = "error:%s" % type(exc).__name__
+                tiers[tier] = tiers.get(tier, 0) + 1
+                mfh.write(json.dumps(miss_row(rec, tier)) + "\n")
+                n["miss"] += 1
+                return
+            tiers[tier] = tiers.get(tier, 0) + 1
+            if rows:
+                for row in rows:
+                    fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+                    n["row"] += 1
+            else:
+                mfh.write(json.dumps(miss_row(rec, tier)) + "\n")
+                n["miss"] += 1
+
         with cf.ThreadPoolExecutor(max_workers=CONC) as pool:
             pending = {}
             for rec in iter_manifest(index):
-                pending[pool.submit(fetch_one, rec, state)] = None
+                pending[pool.submit(fetch_one, rec, state)] = rec
                 if len(pending) < CONC * 8:
                     continue
                 done, _ = cf.wait(pending, return_when=cf.FIRST_COMPLETED)
                 for fut in done:
-                    del pending[fut]
-                    n_rec += 1
                     try:
-                        rows, tier = fut.result()
+                        consume(fut, pending.pop(fut))
                     except Ban as exc:
                         print("%-20s BAN: %s" % (index, exc), flush=True)
                         banned = True
                         break
-                    except Exception as exc:
-                        tiers["error:%s" % type(exc).__name__] = tiers.get(
-                            "error:%s" % type(exc).__name__, 0) + 1
-                        continue
-                    tiers[tier] = tiers.get(tier, 0) + 1
-                    if rows:
-                        for row in rows:
-                            fh.write(json.dumps(row, ensure_ascii=False) + "\n")
-                            n_row += 1
                 if banned:
                     break
             for fut in cf.as_completed(pending):
-                n_rec += 1
                 try:
-                    rows, tier = fut.result()
-                except Exception as exc:
-                    tiers["error:%s" % type(exc).__name__] = tiers.get(
-                        "error:%s" % type(exc).__name__, 0) + 1
-                    continue
-                tiers[tier] = tiers.get(tier, 0) + 1
-                if rows:
-                    for row in rows:
-                        fh.write(json.dumps(row, ensure_ascii=False) + "\n")
-                        n_row += 1
+                    consume(fut, pending[fut])
+                except Ban as exc:
+                    print("%-20s BAN: %s" % (index, exc), flush=True)
+                    banned = True
+                    break
 
     dt = time.time() - t0
     top = sorted(tiers.items(), key=lambda kv: -kv[1])[:6]
-    print("%-20s recs=%-8d rows=%-8d %6.0fs %5.1f rec/s  %s"
-          % (index, n_rec, n_row, dt, n_rec / dt if dt else 0, dict(top)),
+    print("%-20s recs=%-8d rows=%-8d miss=%-8d %6.0fs %5.1f rec/s  %s"
+          % (index, n["rec"], n["row"], n["miss"], dt,
+             n["rec"] / dt if dt else 0, dict(top)),
           flush=True)
 
     if banned:
@@ -299,7 +329,9 @@ def run_crawl(index):
         return 1
     if OUT_BUCKET:
         _s3.upload_file(dst, OUT_BUCKET, out_key)
+        _s3.upload_file(mdst, OUT_BUCKET, miss_key)
         os.remove(dst)
+        os.remove(mdst)
     return 0
 
 
