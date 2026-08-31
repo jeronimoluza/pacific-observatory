@@ -1,0 +1,47 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: automercado_cr
+url: https://www.automercado.cr/
+language: es
+currency: CRC
+cadence: weekly
+channel: supermarket
+timeout: 1800
+notes: |
+  Auto Mercado, Costa Rica's largest independent supermarket chain
+  (24 physical stores; www.automercado.cr, domain resolves and confirmed
+  live 2026-08-31 via curl_cffi impersonate=chrome124 -- a bare curl to
+  the apex without impersonation gets redirected/blocked, matching the
+  "bare curl 403 is not a real block" trap).
+
+  Storefront is Angular Universal (SSR shell only; product catalog is
+  client-side). Catalog is public via a search-only Algolia key found in
+  a lazy-loaded chunk of the Angular bundle (app id FU5XFX7KNL, index
+  Product_CatalogueV2) -- queried directly, no Playwright. Verified live:
+  empty-query search against
+  https://fu5xfx7knl-dsn.algolia.net/1/indexes/Product_CatalogueV2/query
+  returns nbHits=19053 real SKUs with CRC prices, e.g. "SERVILLETA PAPEL
+  LISA CUADRADA BLANCA 100 U AUTO SELECCION paquete 150 g" CRC 785,
+  uomPrice "₡5.23/g" confirming colones.
+
+  Facet query on categoryPageId/parentProductid2 shows this is a real
+  grocery catalog, not general merchandise: ABARROTES 2904, BEBIDAS NO
+  ALCOHOLICAS 2353, LACTEOS Y EMBUTIDOS 1097, SNACK Y GOLOSINA 1059,
+  PANADERIA REPOSTERIA Y TORTILLAS 994, BEBIDAS ALCOHOLICAS 623,
+  CONGELADOS Y REFRIGERADOS 574, FRUTAS Y VERDURAS 543, CARNES Y PESCADO
+  371, COMIDAS PREPARADAS 160 -- roughly 56% of rows are food/beverage.
+
+  Each hit's storeDetail map (24 stores) carries near-identical national
+  pricing with minor regional variance; spider takes the lowest present
+  store id per item rather than assuming store "01" is always populated
+  (~12% of sampled items omit it).
+
+  No static per-product route exists on the SPA (every guessed path,
+  including /producto/<id> and /p/<id>, 200s to the same catch-all SSR
+  shell, proving nothing) -- product_id is the Algolia objectID and the
+  emitted url is a /buscar?query=<SKU> deep link on the real domain,
+  unique per row for DuplicationPipeline dedup.
+
+  timeout raised for the ~191-page full walk at 100 items/page.
