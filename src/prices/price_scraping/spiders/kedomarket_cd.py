@@ -39,6 +39,9 @@ ANON_KEY = (
     "lWcnlRC1SO2BsPHUJe15s1Wd-kTKgSdfIcR-OVxX8sc"
 )
 PAGE_SIZE = 500
+
+# Floor below which a CDF-denominated retail price is not credible (~USD 0.35).
+_CDF_MIN_PLAUSIBLE = 1000.0
 MAX_PAGES = 40  # safety cap; catalog observed at 99 rows
 
 
@@ -116,12 +119,26 @@ class KedomarketCdSpider(scrapy.Spider):
         price = row.get("price")
         if not pid or not name or price is None:
             return None
+        currency = row.get("currency") or self.currency
+        # Sellers pick their own currency on this marketplace, and a few tag a
+        # USD figure as CDF. 1,000 CDF is roughly USD 0.35, so any CDF price
+        # below that floor is a mislabel, not a real retail price — dropping
+        # beats shipping an observation understated by ~2,900x.
+        if currency == "CDF" and float(price) < _CDF_MIN_PLAUSIBLE:
+            logger.warning(
+                "%s: dropping implausible CDF price %s for %r "
+                "(likely a USD figure mislabelled by the seller)",
+                self.name,
+                price,
+                str(name)[:60],
+            )
+            return None
         return {
             "product_id": str(pid),
             "product_name": str(name).strip()[:500],
             "category": row.get("category") or None,
             "price": str(price),
-            "currency": row.get("currency") or self.currency,
+            "currency": currency,
             "available": bool(row.get("is_active", True)),
             "url": f"https://www.kedomarket.com/produit/{pid}",
             "language": self.language,
