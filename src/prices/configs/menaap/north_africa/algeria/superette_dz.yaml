@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: superette_dz
+url: https://superette-dz.com/
+language: fr
+cadence: weekly
+channel: supermarket
+timeout: 1800
+notes: |
+  Verified live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=50 ->
+  HTTP 200, currency_code DZD (matches countries.yaml), currency_minor_unit=0
+  (whole-dinar prices, no division needed). Dedicated Algerian online grocer
+  (fr/ar storefronts, same catalogue served with or without the /fr/
+  prefix). X-WP-Total reports 1,458 products across 30 pages. Overwhelmingly
+  food/beverage: Epicerie 349, Conserves et Conditionnés 142, Produits
+  laitiers 137, Epices et herbes 134, Boissons 120, Petit déjeuner 119,
+  Tomates et sauces 78, Fromages 76, Légumes et fruits secs 74, Pâtisserie
+  71, Boissons gazeuses 58, Biscuiterie et snacks 48, Chocolats et
+  confiseries 44, Jus 43, Cafés 32 -- vs. a smaller non-food tail
+  (Détergents 262, Produits nettoyants 95, Cosmétique 50, Couches et
+  lingettes 42). Zero-price rate 0/200 sampled (e.g. Ahmed Abdi Thé Vert de
+  Chine 200g = 425 DZD). NOTE: is_in_stock=false on ~98% of sampled rows
+  (site marks most SKUs "Out of stock" in its own stock_availability text)
+  but is_purchasable=true on all 200 -- these are still orderable
+  (backorder-style), prices are per-SKU and non-placeholder, and the
+  homepage carries an 2026-08-29 timestamp confirming the storefront is
+  live and current, not abandoned. Mapped to item field `available` as-is
+  (is_in_stock) per the base spider; downstream consumers should not treat
+  `available=false` here as "delisted". Whole-catalog walk, no category
+  filter.

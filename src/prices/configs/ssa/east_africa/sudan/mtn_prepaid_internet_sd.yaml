@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+spider: mtn_prepaid_internet_sd
+url: https://www.mtn.sd/bundle-type/20
+language: en
+cadence: weekly
+channel: null
+notes: |
+  Probed 2026-08-31 with curl_cffi impersonate="chrome124": HTTP 200,
+  Next.js page but fully server-rendered (unlike Zain's SharePoint page) --
+  17 bundle cards with data volume, price and validity already present in
+  the raw HTML, no JS execution needed. CURRENCY/FORMAT GOTCHA: the "Price
+  Vat Inc" label is inconsistently rendered across cards -- most read
+  "Price Vat Inc: 1800" but 3 of 17 (5GB/100GB/250GB Month) render
+  "Price Vat Inc:15000" (no space) or "Price Vat Inc88000" (colon dropped
+  entirely); a naive "Price Vat Inc: (\d+)" regex silently drops those 3.
+  Bundles range 100MB/Day @ 1,800 SDG to 500GB/Month @ 132,000 SDG. No
+  stable per-bundle SKU on the page -- product_id is a slug of the bundle
+  name (e.g. "1gb-month"). All 17 cards live on this one physical page, and
+  DuplicationPipeline dedups on item['url'] alone (see prices memory on
+  url-dedup collapsing single-page catalogs, same pattern as
+  zain_prepaid_internet_sd.yaml) -- fixed with a per-item URL fragment
+  (#1gb-month). A query param (?bundle=...) was tried first and rejected
+  with a flat 400 Bad Request by this route for ANY query string; a
+  fragment is never sent to the server, so it keeps urls distinct for the
+  pipeline while still resolving 200 on re-fetch.

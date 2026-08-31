@@ -1,0 +1,62 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+coicop_codes: ["08.1", "08.2", "08.3"]
+spider: digicel_ag
+url: https://www.digicelgroup.com/ag/en/mobile/prepaid
+language: en
+currency: XCD
+cadence: weekly
+channel: other
+timeout: 300
+notes: |
+  Locality: /ag/en is Digicel's dedicated Antigua & Barbuda market site
+  (Digicel is the incumbent Eastern Caribbean mobile/broadband operator,
+  HQ presence in Antigua). Confirmed XCD pricing directly in the rendered
+  HTML -- the price banner literally renders "XCD\xa0132.00" next to the
+  "132" plan price -- not inferred from the currency code alone, so this
+  is a genuine Antigua-priced storefront, not a USD diaspora shop (the
+  HARD CONSTRAINT this round is checking for).
+
+  Site is a Next.js App Router build; plan cards are not behind a JSON
+  API. They are React Server Component "flight" payloads inlined in the
+  raw HTML as `self.__next_f.push([1, "<json-escaped chunk>"])` script
+  tags -- curl_cffi's plain response body already contains the fully
+  server-rendered chunks, no Playwright/JS execution needed. Concatenating
+  and JSON-decoding every chunk's string argument reassembles one blob
+  containing `PlanItemRecord` objects: id, slug, name,
+  productCategory{slug,name}, originalPriceValue. Regex-extracted (not a
+  documented API, so scrapy_html rather than scrapy_api).
+
+  Three category pages probed and confirmed priced: /mobile/prepaid (11
+  plan objects), /mobile/postpaid (12), /home-and-entertainment/internet
+  (3) -- 26 raw matches, 19 AFTER dedup on plan id (some roaming plans are
+  referenced/rendered on more than one page, e.g. a "Caribbean Roam" plan
+  surfaced by both the prepaid and postpaid pages under its own stable
+  plan id). `seen_ids` on the spider instance keeps only the first copy.
+  /bundles/internet-tv returned zero matches and was dropped rather than
+  guessed at further -- narrow candidate list, not exhaustive discovery of
+  every Digicel AG page.
+
+  `category` is Digicel's OWN CMS `productCategory.name` tag on the plan
+  record, verified by hand against the raw JSON (not a regex artifact) --
+  it is occasionally "Postpaid" for a plan physically rendered on the
+  /mobile/prepaid page (e.g. "14 Day Roam Easy International", a roaming
+  add-on Digicel itself filed under the Postpaid taxonomy). Left as-is:
+  it is the source's own labeling, not a scraping defect.
+
+  coicop_codes narrowed to communication (08.1 telephone equipment / 08.2
+  n/a here / 08.3 telephone & internet services) per onboarding brief's
+  guidance for telco sources -- classifier still assigns per-row since
+  plan names don't cleanly split equipment vs service, but scope is
+  communication only.
+
+  DuplicationPipeline dedups on item['url']; every plan on a page shares
+  response.url, so the plan slug is appended as a URL fragment
+  (`...#<slug>`), same pattern as apua_rates_ag.py.
+
+  Smoke-verified 2026-08-31 via `po prices collect --source digicel_ag
+  --max-items 200`: 19 rows, 19 distinct product_id, all currency XCD,
+  prices EC$11-350 (single-day prepaid bundles through postpaid/home-
+  internet monthly plans) -- plausible range, no blank names.

@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: carrefour_dz
+url: https://www.carrefour.dz/
+language: fr
+cadence: weekly
+channel: hypermarket
+notes: |
+  Verified live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=50 ->
+  HTTP 200, currency_code DZD (matches countries.yaml), currency_minor_unit=2.
+  Real Carrefour-branded hypermarket storefront (not a lookalike/diaspora
+  shop) -- carrefour.dz, Algiers-hosted (PleskLin), prices in DZD. X-WP-Total
+  reports only 171 products total; confirmed this is the whole live
+  catalogue, not a truncated page, by walking all pages and finding 0
+  duplicate ids. Category counts: Alimentaire 36, Épicerie sucrée 20,
+  Épicerie salée 11, Fromage et Charcuterie 4, Le marché frais 4, Boisson 1
+  -- ~76/171 (~44%) food/beverage SKUs; remainder is electroménager,
+  hi-tech, mode, jardinage. Zero-price rate 0/171 sampled (e.g. Double
+  concentré de tomate THIKA 255.00 DZD, Sauce tomate DELICIA 150.00 DZD).
+  Whole-catalog walk, no category filter.

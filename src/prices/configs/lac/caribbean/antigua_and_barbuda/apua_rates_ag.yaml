@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1", "04.5.1"]
+spider: apua_rates_ag
+url: https://www.apua.ag/customer-service/rates/
+language: en
+currency: XCD
+cadence: monthly
+channel: other
+notes: |
+  Discovery source. APUA (Antigua Public Utilities Authority) is the sole
+  electricity and water utility for Antigua and Barbuda -- the rates page
+  is the direct source for the water (04.4.1) and electricity (04.5.1)
+  COICOP divisions, narrow tariff source, coicop_codes set.
+
+  Page is a WPBakery tabbed-accordion widget (div.vc_tta-panel per
+  utility/customer-class: electricity domestic/commercial, water
+  domestic/commercial, telephone domestic/commercial), server-rendered
+  plain HTML with the tariff schedule as <li> bullet lines, not a table.
+  Telephone tabs carry no priced bullet lines (prose only, no $ amounts)
+  and are naturally skipped by the price regex.
+
+  Each tab's <li> list is nested -- a summary "Consumption Charge: <...>"
+  li wraps the same text as separate child <li>s -- so the spider only
+  emits leaf <li>s (no nested <ul>), else every sub-rate would double-
+  count under its wrapping bullet (verified by hand: find_all("li") gives
+  6 li for electricity-dom incl. 2 duplicative wrapper lines; leaf-only
+  filter gives the correct 4).
+
+  A flat row count run-to-run is expected here -- this is a single static
+  tariff-schedule page, not a paginated catalog, so it is NOT the
+  "capped spider" failure signature the onboarding brief warns about.
+
+  Smoke run: 17/17 rows across 4 priced tabs (electricity-dom 4,
+  electricity-com 6, water-dom 4, water-com 3), single currency XCD.
