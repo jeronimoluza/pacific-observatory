@@ -29,15 +29,25 @@ git add \
   src/prices/price_scraping/archived_bysource.py \
   src/prices/price_scraping/archived_lohaco.py \
   src/prices/price_scraping/archived_eu.py \
+  src/prices/price_scraping/archived_gmarket.py \
+  src/prices/price_scraping/archived_chemist.py \
+  src/prices/price_scraping/archived_ekupi.py \
+  src/prices/price_scraping/archived_momo.py \
+  src/prices/price_scraping/archived_frisco.py \
   src/prices/cc_warc_fetcher.py \
   tests/unit/prices/test_archived_bysource.py \
   tests/unit/prices/test_archived_lohaco.py \
-  tests/unit/prices/test_archived_eu.py
+  tests/unit/prices/test_archived_eu.py \
+  tests/unit/prices/test_archived_gmarket.py \
+  tests/unit/prices/test_archived_chemist.py \
+  tests/unit/prices/test_archived_ekupi.py \
+  tests/unit/prices/test_archived_momo.py \
+  tests/unit/prices/test_archived_frisco.py
 
 PRE_COMMIT_ALLOW_NO_CONFIG=1 git commit -F - <<'MSG'
-infra(parse): per-source tier for seven archived sources, measured
+infra(parse): per-source tier for twelve archived sources, measured
 
-Seven sources hold 6.4M of the 18M misses and published no portable surface in
+Twelve sources hold 8.6M of the 18M misses and published no portable surface in
 the era Common Crawl captured them, so every generic tier abstains and the page
 banks nothing. This tier reads each one on its own terms. It runs after every
 generic surface and returns nothing for any source without an extractor, so it
@@ -125,6 +135,41 @@ per capture it was scouted at came from counting the classes page-wide, which
 mostly counted a related-products rail. What it does bank is composed entirely
 of discounted prices, which is a bias any consumer of the series has to know
 about.
+
+Five more sources followed, and measuring them exposed a flaw in how every
+projection above was made. Yield had been estimated as miss volume times rows
+per capture, but the miss corpus predates the microdata tier, so some of those
+captures are no longer misses: the generic chain reads them and the per-source
+tier never runs. Measured instead in production order over each sealed
+held-out set, which is the only figure worth quoting:
+
+  gmarket             0.78 rows per capture, 0% already generic   ~690k
+  ekupi_hr            1.00                   0%                   ~141k
+  momo_tw             0.51                   0%                   ~176k
+  frisco_pl           0.75                   0%                    ~80k
+  chemist_warehouse   0.05                  80%                    ~24k
+
+chemist_warehouse is the whole lesson: 474,111 misses project to ~379k on the
+naive multiply and ~24k measured, a 16x overstatement, because the microdata
+tier's type check matches only the last URL path segment and so accepts
+data-vocabulary.org/Offer, picking up a whole era of that source. Every other
+source measured 0% already-generic, so the staleness is not systemic -- but it
+cannot be assumed either way.
+
+ekupi_hr carries the currency case this corpus was always going to hit.
+Croatia replaced the kuna with the euro on 2023-01-01 and a third of the
+source predates that, so a stamped currency would understate those rows about
+sevenfold with nothing downstream able to tell. Currency is read from the
+price cell's own text rather than inferred from the capture date, which also
+avoids a dual-pricing sibling node holding a converted preview in the other
+currency. Held out: 18 kuna rows and 62 euro rows, none disagreeing with its
+capture era.
+
+Two defects again appeared only on held-out pages. A 2019 chemist_warehouse
+sale template nests three dollar figures with no separating whitespace, which
+read as 499949994999.0 until the price was scoped to its own node. Six of
+gmarket's eighty captures carry a second h1 from a recommendation carousel,
+which a bare one-h1 guard would have failed.
 
 Every extractor abstains rather than guesses, because these pages carry many
 figures that are not the product's price -- postage, loyalty points, a
