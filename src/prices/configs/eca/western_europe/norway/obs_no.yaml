@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: obs_no
+url: https://www.obs.no/
+language: "no"
+cadence: weekly
+channel: hypermarket
+timeout: 5400
+notes: |
+  Verified live 2026-08-31: Coop Norge's corporate site (coop.no) carries no
+  webshop, and Coop's own delivery service (matlevering.coop.no) requires a
+  login. Obs is one of Coop's six in-store chain concepts (hypermarket
+  format) and runs a separate public non-food webshop (home/kitchen/garden/
+  sport/toys/electronics, click&collect or delivery -- no groceries here).
+  https://www.obs.no/sitemap.xml chains to
+  https://www.obs.no/sitemap.xml?batch=<n>&language=nb-no (n=0..2; batch 3
+  -> 404), ~18.9k distinct PDP URLs after de-duping repeated <loc> entries
+  within a batch. Each PDP embeds a schema.org ProductGroup JSON-LD block
+  server-side, one hasVariant entry per SKU (color/size) with its own Offer.
+  Sample: 'SPiiS termoflaske' sku Obs-7025180685673 NOK 99.90, InStock.
+  product_id = variant sku (unique); category from the sibling
+  BreadcrumbList JSON-LD's last entry. Currency NOK matches countries.yaml.
+  timeout raised for the ~18.9k-PDP crawl.
