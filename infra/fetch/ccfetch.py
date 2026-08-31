@@ -67,6 +67,7 @@ from archived import row_from_meta, rows_from_jsonld  # noqa: E402
 from archived_bysource import rows_from_source  # noqa: E402
 from archived_embedded import rows_from_next_flight  # noqa: E402
 from archived_microdata import rows_from_microdata  # noqa: E402
+from archived_nextdata import rows_from_nextdata  # noqa: E402
 
 
 # ----------------------------------------------------------------- WARC layer
@@ -117,9 +118,11 @@ def decode(headers, body):
 def parse_rows(html, url, source=None):
     """The spider-independent tiers, in measured yield order, then per-source.
 
-    Microdata is last among the portable tiers: it was measured only on pages
-    the tiers above already fail, so appending it cannot change a page that
-    parses today.
+    Microdata and then `__NEXT_DATA__` are last among the portable tiers: each
+    was measured only on pages the tiers above already fail, so appending them
+    cannot change a page that parses today. Over the 2,142 cached captures
+    that reach this point the two never read the same page, so their order
+    relative to each other is not load-bearing either.
 
     The per-source tier runs after all of them and returns nothing for any
     source without an extractor, so it too can only add rows to a page that
@@ -142,6 +145,9 @@ def parse_rows(html, url, source=None):
     rows = rows_from_microdata(html, url)
     if rows:
         return rows, "microdata"
+    rows = rows_from_nextdata(html, url)
+    if rows:
+        return rows, "nextdata"
     rows = rows_from_source(html, url, source)
     if rows:
         return rows, "bysource"
