@@ -30,6 +30,7 @@ FILES = [
     ("archived_ldrepair.py", "archived_ldrepair.py"),
     ("archived_microdata.py", "archived_microdata.py"),
     ("archived_nextdata.py", "archived_nextdata.py"),
+    ("archived_livingcost.py", "archived_livingcost.py"),
     ("archived_lohaco.py", "archived_lohaco.py"),
     ("archived_eu.py", "archived_eu.py"),
     ("archived_gmarket.py", "archived_gmarket.py"),
