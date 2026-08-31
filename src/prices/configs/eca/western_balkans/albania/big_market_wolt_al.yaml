@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: big_market_wolt_al
+url: https://wolt.com/en/alb/tirana/venue/big-market-garden
+language: sq
+cadence: weekly
+channel: supermarket
+archive_prefix: "wolt.com/en/alb/tirana/venue/"
+archive_path_re: '^/en/alb/tirana/venue/[^/?]+'
+notes: |
+  Big Market (Albanian supermarket chain, one of the largest in the country)
+  Garden branch on the Wolt delivery marketplace. Same SSR query-state walk
+  as conad_wolt_al / ab_vassilopoulos_wolt_gr (shared base `_wolt_base.py`):
+  venue page -> category-listing (135 leaf category slugs, Albanian:
+  buke/bread, fruta/fruits, perime/vegetables, makarona/pasta, embelsira,
+  bioagros-herbs-tea, gluten-free, ...) -> per-category `/items/<slug>`
+  page 1 (up to 50 items each).  Synthetic url = f"{venue_url}#{item_id}".
+  Probed live 2026-08-31: GET /en/alb/tirana/venue/big-market-garden -> 200,
+  query-state blob present, 135 distinct category slugs enumerated (largest
+  grocery catalogue found among the Tirana Wolt venues probed). Real
+  Albanian-language SKUs, prices in minor ALL units, barcode_gtin present.
+  Discovered by paging wolt.com/en/alb/tirana directly and grepping venue
+  slugs for grocery chains named in the Albania candidate brief (Big
+  Market, Spar). channel:supermarket (Wolt aggregates the first-party
+  retailer's own catalog; Big Market itself has no scrapable direct site
+  found).

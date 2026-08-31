@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: classifier
+spider: unitel_tplus_cv
+url: https://www.uniteltmais.cv/private/mobile/mobile-plans/play
+language: pt
+cadence: monthly
+channel: other
+notes: |
+  Probed live 2026-08-31. Unitel T+ (uniteltmais.cv) is one of Cabo
+  Verde's two mobile/fixed operators (in-country .cv domain, prices in
+  escudos). The site is Next.js; two tariff pages (mobile-plans/play,
+  mobile/internet) server-render their plan data straight into the
+  page's __NEXT_DATA__ JSON (Tier 1A, no separate API call): 3 prepaid
+  voice+data bundles (500/700/1000 CVE) plus 3 standalone 4G data plans
+  and two named data-bundle ladders (5 + 6 tiers), all in CVE. Other
+  tariff pages under /private/mobile and /private/home either lack a
+  `plans`/`*_data_plans` key or only carry pricing inside a CMS rich-text
+  HTML table (mobile-plans/classic, home/home-plus-bundles) -- left
+  unscraped rather than guessed at from embedded markup.
+  17 rows/run, all distinct product_id, currency CVE, prices 500-4299 --
+  a small but real telco tariff catalogue, not a supermarket. Each plan
+  shares its page's URL, so DuplicationPipeline's url-dedup would drop
+  all but one row per page without a per-row '#<id>' url fragment.

@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nasser_pharmacy_bh
+url: https://www.nasserpharmacy.com/
+language: en
+cadence: daily
+channel: pharmacy
+timeout: 5400
+notes: |
+  Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Nasser
+  Pharmacy is a Bahrain pharmacy chain (schema.org contactPoint
+  +97317720800, Bahrain country code). Site is a pure React SPA shell --
+  even product-detail routes return the same ~6KB app shell, no
+  server-rendered content. Hunted the JS bundle
+  (/static/js/main.f61db76c.js) per the post-wave-1 rule instead of
+  reaching for Playwright: it hardcodes a separate API host
+  (newapi.nasserpharmacy.com) and a static "Nasser" auth header shipped to
+  every browser (same class as a public Supabase anon key -- client-
+  exposed by the site itself). The RTK-Query `getProducts` endpoint hits
+  POST /newproduct-list?category_id=&lang=en&currency_code=BHD&start=<N>
+  &in_stock=0&..., returning 15 rows/page plus `total_products` (20,695 at
+  probe time); `start` is walked in steps of 15 and stops when a page
+  returns <15 rows or start reaches total_products, capped at 1500 pages
+  as a hard safety limit. Each row already carries `price_symbol:"BHD"`
+  and a plain decimal `price` (decimal_places:3) -- no rescaling needed.
+  Rows with status!=1, forcedisable, or stock_count<=0 dropped.
+  Verification run: 200 items, all BHD, distinct product_ids, spot-checked
+  product URLs live (200). Pharmacy/health & beauty catalog (medicines,
+  cosmetics, vitamins) -- not food; added as the 4th Bahrain retail source
+  alongside two grocery sources (lulu_bh, aljazira_bh) already onboarded.

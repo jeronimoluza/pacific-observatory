@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmaci_ag_wolt_al
+url: https://wolt.com/en/alb/tirana/venue/farmaci-ag
+language: sq
+cadence: weekly
+channel: pharmacy
+archive_prefix: "wolt.com/en/alb/tirana/venue/"
+archive_path_re: '^/en/alb/tirana/venue/[^/?]+'
+notes: |
+  Farmaci AG, a Tirana pharmacy, on the Wolt delivery marketplace. Same SSR
+  query-state walk as the other Albania Wolt venues (shared base
+  `_wolt_base.py`): venue page -> category-listing (48 leaf category slugs:
+  urgjente-naten/night-emergency, dermokozmetike-beauty, ndihma-e-pare/
+  first-aid, bebe/baby, suplemente-vitamina/supplements-vitamins, ...) ->
+  per-category `/items/<slug>` page 1 (up to 50 items each). Synthetic url
+  = f"{venue_url}#{item_id}".
+  Probed live 2026-08-31: GET /en/alb/tirana/venue/farmaci-ag -> 200,
+  query-state blob present, 48 distinct category slugs enumerated, real
+  Albanian-language SKUs (OTC medicine, cosmetics, baby, supplements),
+  prices in minor ALL units. Added to diversify the country's 5 sources
+  beyond the 3 grocery Wolt venues (conad, big-market, spar) and the
+  electronics retailer (neptun); no independently scrapable Albanian
+  pharmacy chain site was found in the time budget.
+  channel:pharmacy (Wolt aggregates the first-party retailer's catalog).

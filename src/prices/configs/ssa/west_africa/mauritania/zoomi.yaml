@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: zoomi_mrt
+url: https://zoomiapp.com/
+language: fr
+cadence: weekly
+channel: supermarket
+timeout: 900
+notes: |
+  Multi-vendor food-delivery marketplace. Runs on a "Royoorders"-branded
+  white-label template also seen elsewhere, but THIS deployment is
+  confirmed Mauritania-specific: homepage address "Tevragh Zeina,
+  Nouakchott, Mauritanie" and the currency switcher is pinned to MRU
+  (currId=94), not a generic multi-currency demo shell.
+
+  The "Supermarchés" category (/category/supermarches) lists 4 vendors,
+  all food (probed live 2026-08-31): "Dream Market" (full grocery store),
+  two butchers (Boucherie Dagadir, Boucherie et Complexe Morjane), and a
+  fishmonger (Poissonnerie Fresh Fish). Vendor slugs are discovered from
+  that category page at crawl time, not hardcoded, so new grocery vendors
+  are picked up automatically.
+
+  Vendor storefronts are server-rendered HTML (Tier 1A) with real MRU
+  prices and per-product URLs (/vendor/<slug>/product/<sku>), grouped
+  into <section id><h2 class="category-head"> blocks by grocery
+  department (Lait, Riz/Pâtes/Semoule, Épices & condiments, ...).
+
+  Pagination is a genuine ?page=N walk, verified to advance with zero
+  overlap between pages: Dream Market alone returns 263/116/65/38/16
+  distinct products on pages 1-5 and 0 on page 6 (498 distinct SKUs) — the
+  page-1 count alone would have understated the catalog by ~47%. Each
+  vendor is walked to an empty page.
+
+  Currency: MRU is current (site launched post-2018 redenomination); price
+  magnitudes (e.g. "Sel fin extra 750g" 50 MRU) are consistent with
+  new-ouguiya retail pricing, not a 10x-inflated old-MRO figure.

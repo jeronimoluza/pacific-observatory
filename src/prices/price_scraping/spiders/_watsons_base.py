@@ -102,6 +102,19 @@ class WatsonsBaseSpider(scrapy.Spider):
             "scrapy_impersonate.middleware.RandomBrowserMiddleware": None,
             "price_scraping.middlewares.CustomUserAgentMiddleware": None,
         },
+        # Every Watsons storefront sits behind ONE AS Watson edge that
+        # identifies us by client IP, so these numbers are a whole-fleet
+        # budget, not a per-site one. `throttle_group: aswatson` keeps
+        # siblings from running concurrently; do not raise these on top of
+        # that without a fresh measurement.
+        #
+        # 2026-08-27: raising these to 8/16/0.25s was tried and REVERTED
+        # unvalidated. On 2026-08-26 the edge 403-banned this IP across every
+        # storefront (homepage included) after ~29k requests from 7 parallel
+        # children plus a 2h solo crawl. The ban arrived with NO 429 warning
+        # -- the solo crawl saw zero rate-limit responses for two hours first.
+        # Volume over a rolling window is the trigger, so throughput tuning is
+        # the wrong lever here: going faster only reaches the cap sooner.
         "CONCURRENT_REQUESTS_PER_DOMAIN": 4,
         "CONCURRENT_REQUESTS": 8,
         "DOWNLOAD_DELAY": 1.0,

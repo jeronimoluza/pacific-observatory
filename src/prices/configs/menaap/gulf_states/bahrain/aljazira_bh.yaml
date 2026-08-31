@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: aljazira_bh
+url: https://www.aljazirasupermarkets.com/
+language: en
+cadence: daily
+channel: supermarket
+timeout: 3600
+notes: |
+  Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Al Jazira
+  Group, 15-store Bahrain grocery chain since 1965 (own domain, .bh group
+  entity aljaziragroup.com.bh), storefront on the WaveGrocery SaaS platform
+  (Next.js pages router; footer "Made with love by Wave Grocery"). Rendered
+  category HTML only carries i18n strings client-side (dead end, same trap
+  as Lulu's PDP JSON-LD), but Next.js's own data route
+  (/_next/data/<buildId>/categories/<slug>/<subslug>.json, header
+  x-nextjs-data:1) returns the server-fetched pageProps directly, including
+  `categoriesFromFile` (full 23-department category tree) and
+  `initialProducts` for that leaf. Walked all 384 leaf categories
+  (produce, fresh meat/fish, bakery, dairy, beverages, frozen, etc.) via
+  the tree from one bootstrap request. `initialProducts` gives ~30
+  products/leaf with no further pagination cursor found in the payload, so
+  this spider takes that first tranche per leaf -- still a wide,
+  genuinely-food-heavy grocery catalog across the full department
+  breadth. Prices (`finalPrice`) are integer fils
+  (unitOfMeasurementBaseCoefficient=1000 confirms BHD's 3-decimal minor
+  unit) -- divided by 1000 for the BHD amount. Rows with
+  available/enabled=false or isExcludedFromCatalog=true dropped.
+  Verification run: 200 items, all BHD, spot-checked 3 product URLs live
+  (200, name on page). No location/delivery-zone gating was needed to see
+  this default catalog.

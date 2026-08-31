@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+spider: snel_cd
+url: https://www.snel.cd/
+language: fr
+cadence: monthly
+channel: null
+coicop_codes:
+  - "04.5.1.0"
+timeout: 60
+notes: |
+  SNEL is the DRC state electricity utility. Its homepage publishes the
+  full government-set tariff grid (Basse/Moyenne/Haute Tension, by
+  consumption tranche / subscribed-power band / tariff zone) as plain
+  server-rendered HTML tables inside two Bootstrap modals
+  (#modal-tarif-bt, #modal-tarif-mt) plus one accordion pane
+  (#collapseTarifsHT) — no JS, no API. Probed live 2026-08-31: HTTP 200,
+  ~10 distinct tariff tables present verbatim in the response body,
+  covering ~90 numeric tariff cells (residential/commercial/industrial BT,
+  force-motrice/vapeur/office/residential MT by power band, HT by zone).
+  All tariffs quoted in USD (per kWh, or per month for meter rental) —
+  genuine DRC utility billing practice, left unconverted. Single-page
+  source: every row is stamped with a unique #<hash> URL fragment because
+  the DuplicationPipeline dedups on item['url'] and every row otherwise
+  shares this one page. Re-scraped live each run (not a hardcoded table),
+  so no separate staleness tripwire is needed — the spider warns and
+  yields zero rows if the page's markup changes underneath it.

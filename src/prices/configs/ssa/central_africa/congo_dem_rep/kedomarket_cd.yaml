@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kedomarket_cd
+url: https://www.kedomarket.com/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  Kedo Market ("le marché numérique de la RDC") is a multi-vendor React SPA
+  fronted by Supabase. Probed live 2026-08-31: the Vite bundle
+  (/assets/index-B_5QKmX1.js) embeds a public Supabase anon JWT and calls
+  .from("products") via supabase-js — a plain, unauthenticated PostgREST
+  endpoint at https://esofbvltjrrpcowawyyw.supabase.co/rest/v1/products.
+  GET with apikey/Authorization: Bearer <anon> returns 200 with real
+  listings; Content-Range confirms 99 active rows across 29 merchants.
+  Small catalog, mostly fashion (vetements-femme/homme, chaussures,
+  perruques, accessoires, beaute) with a little electronics — no grocery
+  observed. Each seller sets their own price/currency: 72 of 99 rows USD,
+  27 CDF at probe time; both kept unconverted per-row. Locality: Supabase
+  locale fr_CD, "vendeurs congolais" branding, majority of listings in
+  CDF — not a diaspora storefront.

@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tchoop_mrt
+url: https://www.tchoopapp.com/
+language: fr
+cadence: weekly
+channel: supermarket
+timeout: 900
+notes: |
+  Food+grocery delivery SPA for Nouakchott (Firebase project tchoop-15725).
+  No conventional platform API, but the public Firestore REST API exposes
+  the "restaurants" and "menuItems" top-level collections with no auth
+  (most other collection names probed — products, stores, shops, markets,
+  items, menus, dishes — return 403 PERMISSION_DENIED, so this is a narrow
+  security-rule gap, not a general API).
+
+  Of 32 live "restaurants" documents probed 2026-08-31, only one is a real
+  grocery business: "Prime Mart" (categories include Épicerie, Fruits &
+  Légumes, Lait & Crème, Fromages, Charcuterie, Beurre & Œufs, Poissons et
+  fruits de mer). The spider auto-detects grocery stores by the "épicerie"
+  keyword in a restaurant's declared categories so it will pick up any
+  future Tchoop grocery vendor without a hardcoded id; everything else in
+  "restaurants" is a food/dining vendor and is intentionally excluded.
+
+  Prime Mart's menu is pulled via a Firestore structured query
+  (documents:runQuery) filtered on menuItems.restaurantId, confirmed live:
+  163 items, 137 with a real non-zero price (26 unpriced/unavailable
+  placeholders skipped) — real packaged-grocery SKUs, e.g. "Nestlé Nature
+  Ferments Lactiques - 6x100g" 180 MRU, "Aïoli Choví Style Artisanal à
+  l'Huile d'Olive (150ml)" 240 MRU. This is a small but 100% food/beverage
+  catalog (dairy, condiments, produce, packaged goods).
+
+  Currency: site's own JSON-LD declares currenciesAccepted=MRU and the app
+  was founded in 2024 (JSON-LD foundingDate), years after the 2018
+  MRO->MRU redenomination, so prices are new-ouguiya — not a 10x-inflated
+  old-MRO figure. No conversion applied.
+
+  No server-rendered per-product page exists (every route, incl.
+  /restaurants/<slug>, serves the identical SPA shell), so each row's url
+  is synthesized with the Firestore menuItem doc id to keep
+  DuplicationPipeline's url-based dedup from collapsing distinct products.

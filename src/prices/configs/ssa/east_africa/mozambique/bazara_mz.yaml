@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bazara_mz
+url: https://bazara.co.mz/
+language: pt
+cadence: weekly
+channel: marketplace
+timeout: 1800
+notes: |
+  Probed live 2026-08-31. bazara.co.mz is a Magento 2 marketplace based in
+  Maputo, Mozambique ("compras online com confiança", M-Pesa checkout,
+  suporte@bazara.co.mz). The storefront's own POST /graphql is open with no
+  auth. products(filter:{category_id:{eq:"2"}}) (the Default/root category)
+  returns the FULL catalog directly (total_count=9,058/9,041 across two
+  probes) rather than the categoryList-children fan-out most Magento
+  installs need - same shortcut documented for Riba Smith in
+  _magento_base.py. Verified currentPage advances distinct SKUs (150
+  distinct across 3 pages of pageSize=50, no re-serving). All prices MZN.
+  General marketplace (electronics, tools, clothing, books) but with a real
+  grocery slice: top-level categories "Alimentos" (622 products) +
+  "Bebidas" (225) confirmed via categoryList, plus baby/health/beauty.
+  COICOP left to the classifier given the wide catalog.
+
+  URL TRAP (why this is a bespoke spider, not a _magento_base subclass):
+  url_key + the store's url_suffix (".html" per both the global config and
+  the GraphQL url_suffix field) does NOT reliably resolve - spot-checked
+  several products where the .html variant 404s and the bare url_key 200s,
+  and others the reverse, with no pattern by SKU prefix or category.
+  Introspection is disabled and there's no sitemap.xml (robots.txt
+  disallows /). Fix: request GraphQL `id` (entity id) per product and build
+  the URL from Magento's canonical, rewrite-independent route
+  /catalog/product/view/id/<id>/, which resolved 200 for every product
+  sampled regardless of rewrite state. cadence=weekly; polite settings
+  (1 req/domain, 1.5s delay) given ~90 pages at pageSize=100.

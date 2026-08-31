@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lulu_bh
+url: https://gcc.luluhypermarket.com/en-bh/
+language: en
+cadence: daily
+channel: hypermarket
+timeout: 5400
+notes: |
+  Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Next.js
+  storefront on the Akinon platform (bf1af2.akinoncloudcdn.com asset CDN).
+  Product-detail JSON-LD is a dead end (always "price":"0.00",
+  "priceCurrency":null placeholder regardless of real stock) -- the real
+  catalog is embedded as escaped JSON inside a React Server Components
+  stream on *category listing* pages (self.__next_f.push script tags):
+  name/sku/price/in_stock/currency_type("bhd")/retail_price/absolute_url
+  per product, plus a Bahrain-specific attribute
+  (`shipment_type_bahrain`) confirming this is the genuine BH storefront,
+  not a GCC fallback. Category URLs come from the storefront's own sitemap
+  (/en-bh/sitemap/categories-1, 486 category URLs, full tree). Each
+  category is paginated with ?page=N -- verified this genuinely advances
+  (page=1 gave 51 distinct SKUs, page=2 a different 52; a page far past
+  the real last page collapses to ~1 spurious match, confirmed at
+  page=10), so pagination stops per-category once a page yields zero NEW
+  product ids, capped at 10 pages/category as a safety limit. Rows with
+  price "0.00" / in_stock:false are dropped (measure nothing). Verification
+  run: 200 items, currency all BHD, prices in a plausible 0.3-15 BHD range
+  for groceries, spot-checked 3 product URLs live (200, name on page).
+  Mixed grocery/household/electronics catalog -- channel set to
+  hypermarket (dominant format). timeout raised for the ~486-category
+  full-tree crawl.
