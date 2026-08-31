@@ -9,6 +9,11 @@
 # Deliberately ramped rather than launched all at once: 64 concurrent reads from
 # one instance is verified, the fleet-wide rate is not, and a Common Crawl block
 # discovered at hour three costs a lot more than a ten minute check.
+#
+# INPUT selects the workload and is passed through to ccfetch: `manifest` (the
+# default) reads the resolved captures, `misses` re-reads only what failed to
+# parse. Callers normally reach the recovery mode through launch_recovery.sh
+# rather than setting it here.
 set -eu
 
 BASE=${1:?first shard base}
@@ -20,8 +25,17 @@ AMI=ami-0332d564d76dbd8d6
 TYPE=c7i-flex.large
 PROFILE=cc-fetch-ec2-profile
 NSHARDS=16
-TMP=/Users/jeronimoluza/.claude/jobs/f8501cf5/tmp
-CRAWLS=$(paste -sd, "$TMP/crawls.txt")
+INPUT=${INPUT:-manifest}
+MAXSEC=${MAXSEC:-54000}
+CONC=${CONC:-32}
+# In the repo, not the job scratch dir: the scratch dir is deleted with the
+# session, and a launch that silently loses its crawl list is worse than one
+# that fails to start.
+HERE=$(cd "$(dirname "$0")" && pwd)
+CRAWLS=$(paste -sd, "$HERE/crawls.txt")
+# Kept after the run rather than cleaned up: the instances are keyless, so the
+# generated UserData is the only record of what a box was actually told to do.
+UDDIR=${UDDIR:-$(mktemp -d -t ccfetch-userdata)}
 
 # Spread across AZs: eight of one instance type in a single AZ is a capacity
 # refusal waiting to happen.
@@ -32,21 +46,27 @@ i=0
 while [ "$i" -lt "$COUNT" ]; do
   SB=$((BASE + i * 2))
   SUB=${SUBNETS[$((i % ${#SUBNETS[@]}))]}
-  UD=$TMP/userdata-shard-$SB.sh
-  cat > "$UD" <<EOF
-#!/bin/bash
-export CRAWLS=$CRAWLS
-export NSHARDS=$NSHARDS
-export SHARD_BASE=$SB
-export NPROC=2
-export CONC=32
-export OUT_PREFIX=parsed
-export MAXSEC=54000
-export TERMINATE=1
-export AWS_DEFAULT_REGION=$REGION
-aws s3 cp s3://$BUCKET/fetch/run.sh /opt/run.sh
-bash /opt/run.sh
-EOF
+  UD=$UDDIR/userdata-shard-$SB.sh
+  # OUT_PREFIX and MISS_PREFIX are deliberately NOT written when the caller has
+  # not set them: ccfetch derives both from INPUT, and an empty assignment here
+  # would override that derivation with the empty string.
+  {
+    echo "#!/bin/bash"
+    echo "export CRAWLS=$CRAWLS"
+    echo "export NSHARDS=$NSHARDS"
+    echo "export SHARD_BASE=$SB"
+    echo "export NPROC=2"
+    echo "export CONC=$CONC"
+    echo "export INPUT=$INPUT"
+    [ -n "${OUT_PREFIX:-}" ] && echo "export OUT_PREFIX=$OUT_PREFIX"
+    [ -n "${MISS_PREFIX:-}" ] && echo "export MISS_PREFIX=$MISS_PREFIX"
+    [ -n "${MISS_IN_PREFIX:-}" ] && echo "export MISS_IN_PREFIX=$MISS_IN_PREFIX"
+    echo "export MAXSEC=$MAXSEC"
+    echo "export TERMINATE=1"
+    echo "export AWS_DEFAULT_REGION=$REGION"
+    echo "aws s3 cp s3://$BUCKET/fetch/run.sh /opt/run.sh"
+    echo "bash /opt/run.sh"
+  } > "$UD"
 
   ID=$(aws ec2 run-instances --region "$REGION" \
     --image-id "$AMI" --instance-type "$TYPE" --subnet-id "$SUB" \

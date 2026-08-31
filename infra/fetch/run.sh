@@ -6,9 +6,18 @@
 # every 60s, which also means a self-terminating box leaves its evidence behind.
 #
 # Set by UserData: CRAWLS, NSHARDS, SHARD_BASE, NPROC, CONC, OUT_PREFIX,
-#                  MAXSEC, TERMINATE
+#                  MAXSEC, TERMINATE, INPUT
 exec > /var/log/ccfetch-boot.log 2>&1
 set -x
+
+# Exported, not passed on the per-process command line, and only when actually
+# set. ccfetch resolves OUT_PREFIX/MISS_PREFIX from INPUT when they are absent,
+# but `OUT_PREFIX=` in the environment is present-and-empty: os.environ.get
+# returns "" rather than the default, and the run writes to the bucket root.
+export INPUT=${INPUT:-manifest}
+[ -n "${OUT_PREFIX:-}" ] && export OUT_PREFIX || unset OUT_PREFIX
+[ -n "${MISS_PREFIX:-}" ] && export MISS_PREFIX || unset MISS_PREFIX
+[ -n "${MISS_IN_PREFIX:-}" ] && export MISS_IN_PREFIX || unset MISS_IN_PREFIX
 
 BUCKET=pacific-observatory-cc-warc-934494149338
 export AWS_DEFAULT_REGION=us-east-1
@@ -57,7 +66,7 @@ export MANIFEST_BUCKET=$BUCKET
 PIDS=""
 for i in $(seq 0 $((NPROC - 1))); do
   S=$((SHARD_BASE + i))
-  SHARD=$S NSHARDS=$NSHARDS CONC=$CONC OUT_PREFIX=$OUT_PREFIX CRAWLS=$CRAWLS \
+  SHARD=$S NSHARDS=$NSHARDS CONC=$CONC CRAWLS=$CRAWLS \
     nohup python3 /opt/cc/ccfetch.py > "/var/log/ccfetch-shard-$S.log" 2>&1 &
   PIDS="$PIDS $!"
 done
