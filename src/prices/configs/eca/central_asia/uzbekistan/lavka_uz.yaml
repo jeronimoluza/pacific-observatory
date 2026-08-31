@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lavka_uz
+url: https://lavka.yandex.uz/
+language: ru
+currency: UZS
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+notes: |
+  Yandex Lavka -- rapid grocery delivery (Tashkent). Client-rendered React
+  app that serves a fake "demo catalog" with no delivery address (on-page
+  text: "Это демо-каталог. Укажите адрес, чтобы посмотреть настоящий"); a
+  one-time Playwright network trace showed the real catalog unlocks via 3
+  plain JSON POSTs against a fixed, real Tashkent point (Salar embankment,
+  41.3279/69.3137): geo/v1/geocode -> {city,street,house,buildingId}, then
+  v1/layout (layoutSlug=grocery) for the live 21 top-level category slugs
+  (izlavki own-label, bakery, drinks, meat_and_poultry, fish_and_seafood,
+  freezing, desserts, kidsnutrition, forcats/pet, home_cosmetics, pharmacy),
+  then v2/category once per slug for its full flat product list
+  (subcategories pre-merged server-side). Only a session cookie + csrfToken
+  from one GET are needed -- no TLS fingerprinting, plain requests/Scrapy
+  UA works. No cartId required.
+  Verified live 2026-08-31: depot 2025010903, Tashkent, UZS ("сум").
+  Full run --max-items 200: 200 rows, 200 distinct product_id, 0 zero
+  prices, 0 blank names, all UZS. Price range ~2,000-1,000,000+ UZS;
+  sample real SKUs: 'Стейк Рибай Black Angus' 299 990 UZS, 'Филе бедра
+  цыплёнка-бройлера Joja' 42 990 UZS, 'Блины без начинки «Из Лавки»'
+  30 990 UZS -- all plausible for a Tashkent grocery basket.
+  No canonical per-product URL exists in this SPA (/product/<slug> 404s);
+  url is synthesized as the owning category page + #<product_id> fragment
+  (DuplicationPipeline dedups on url, so the fragment must be unique per
+  product -- verified 200 distinct ids -> 200 distinct urls).
+  pharmacy/home_cosmetics/forcats categories are non-food but are part of
+  the same live depot assortment, same as a physical supermarket aisle;
+  left in, channel is supermarket. coicop_classification left as classifier
+  (wide catalog spans multiple COICOP divisions); coicop_codes unset.

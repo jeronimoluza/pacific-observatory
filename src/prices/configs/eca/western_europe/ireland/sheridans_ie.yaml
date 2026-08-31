@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sheridans_ie
+url: https://sheridanscheesemongers.com/
+language: en
+cadence: weekly
+channel: specialty-food
+notes: |
+  Discovered via WebSearch (candidate list exhausted for supermarkets --
+  Aldi/Lidl/Tesco/SuperValu/Dunnes all locked behind enterprise WAFs/
+  Akamai bot-challenges, confirmed live 2026-08-31: direct fetches of
+  their own storefronts return a 200 Akamai JS-challenge shell, not the
+  product page). Sheridans is a real Irish specialty-food retailer
+  (cheese, charcuterie, wine, condiments), Galway-based, standard Shopify
+  storefront.
+
+  Verified live 2026-08-31: GET /products.json?limit=3 -> HTTP 200,
+  standard Shopify JSON, no auth. Homepage confirms Shopify.currency
+  active=EUR, Shopify.country=IE; page text carries "Co. Laois",
+  "Dublin", "Galway", "Ireland". Full catalog walk via /products.json
+  pagination: ~595 products across 3 pages (limit=250). A small number of
+  listed "products" are event tickets (talks, festival entry) at price
+  0.00 -- filtered out in the spider's `_items` override.

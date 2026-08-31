@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: naivas_ke
+url: https://naivas.online/
+language: en
+cadence: weekly
+channel: supermarket
+timeout: 3600
+notes: |
+  Largest Kenyan-owned chain. Corporate naivas.info says "Page Coming Soon"
+  and links out - the real catalogue is naivas.online, NOT naivas.info.
+  Laravel + Livewire (Webkul/Bagisto) storefront, server-rendered (Tier 1A,
+  no JS needed). ~200 leaf category paths off the homepage nav (e.g.
+  /cold-beverage/soda, /breakfast/breakfast-cereals). Verified live
+  2026-08-31: category pages paginate with ?page=N (1-indexed) and return
+  genuinely distinct product_id sets per page (breakfast/breakfast-cereals
+  pages 1-5 = 75 distinct ids, zero overlap), terminating at a page with 0
+  product cards. Sample: 'Grainmill Steel Cut Oats 200G' KES 155,
+  'Coke Zero Sugar 2Ltr Pet' KES 179. Currency KES confirmed in-page.
+  Four price fields visible in HTML (current, struck-through was_price,
+  discount_pct, explicit 'Save KES N') though only current price is
+  emitted per the shared item schema. Carries a NAIVAS PRIVATE LABEL range
+  (sugar, UHT milk, rice, tomato sauce) alongside branded equivalents.
+  Mixed grocery + household + electronics catalogue; category set is
+  heavily food/beverage-weighted (breakfast, cold-beverage, canned-frozen-
+  meals, cold-deli, baby-foods, beer, etc.).

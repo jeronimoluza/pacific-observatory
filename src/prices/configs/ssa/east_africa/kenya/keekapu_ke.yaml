@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: keekapu_ke
+url: https://www.keekapu.com/
+language: en
+cadence: weekly
+channel: specialty-food
+notes: |
+  Nairobi fresh-produce/grocery specialist. Angular SPA, empty HTML shell -
+  the main-*.js bundle embeds a public backend config for the white-label
+  "Elaah" commerce platform: api.elaah.com/v1/ecommerce/public,
+  companyId=5c89b96ffef7d000ce0814a6, plus a client-side apikey (shipped in
+  the JS, not a secret). /items is the product-list endpoint (Tier 1B
+  JSON). categoryIdentifier param is silently ignored by the live API
+  (always returns the whole company catalogue) so this is one flat
+  paginated walk, not per-category. Verified live 2026-08-31: count=100
+  cursor pagination via meta.sortKeys, page 1 = 100 items, page 2 = 85
+  (185-item catalogue), zero id overlap between pages, empty data[] on the
+  page after last = stop condition. currency "kes" on every sampled item.
+  Sample: 'Titus sardines in vegetable oil 125g' variation '125g Can' KES
+  580; 'Ishango tropical red palm oil 2.5l' KES 5250. One row emitted per
+  size/pack variation (each is an independently priced SKU). All sampled
+  categories (Pantry staples, Meats, Grains, nuts/seeds) are food/beverage
+  - pure grocery source, no non-food catalogue at all.

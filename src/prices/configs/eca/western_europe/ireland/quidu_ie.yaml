@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: quidu_ie
+url: https://www.quidu.ie/
+language: en
+cadence: weekly
+channel: supermarket
+timeout: 3600
+notes: |
+  Real-price aggregator (not a survey publisher): Django REST Framework
+  backend, same-origin under www.quidu.ie, republishing live per-store
+  shelf prices scraped from Aldi, Dunnes Stores, SuperValu and Tesco.
+  This is the "Quidu" candidate flagged ACCEPT in the candidate brief
+  (brief noted "Site returned a JS error on fetch - verify" for the
+  SPA shell at `/`, but the underlying JSON API is unaffected).
+
+  Verified live 2026-08-31: `GET /api/categories/` and
+  `/api/supermarkets/` are open with `Accept: application/json`.
+  `/api/products/count/` -> {"all_products":122091,"products":44963,
+  "deals":15802}. 15 categories, food/beverage ones (fruit & vegetables,
+  meat & poultry, bakery, fish & seafood, chilled food, food cupboard,
+  frozen food, drinks, alcohol, beer & cider, wine) account for ~95k of
+  the 122k raw rows.
+
+  `GET /api/products/` REJECTS a missing/empty `search` param (400
+  "Search term is required.") and `category=` alone also 400s -- there is
+  no bare listing endpoint. It is genuine tokenized full-text search over
+  the product name (stop words / single letters return near-zero rows),
+  not substring matching, so the catalog cannot be walked a-z. This
+  spider instead walks ~80 curated grocery search terms spanning every
+  food/beverage category and follows each term's own `next` cursor.
+  Sample: search=milk -> 'SuperValu Organic Whole Milk (1 L)' EUR 1.49,
+  product_info_url pointing at the real shop.supervalu.ie product page.
+
+  This is a keyword-seeded PARTIAL catalog walk, not the full 44,963
+  distinct products -- but every row is a real retailer SKU with a live
+  price and a working retailer product page. product_id = the site's own
+  chain-prefixed in_house_id (e.g. 'S1475578000').
