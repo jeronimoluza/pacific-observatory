@@ -1,0 +1,42 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: civ_cie_tariff
+module: ssa.west_africa.cote_divoire.cie_tariff
+function: fetch_civ_cie_tariff
+channel: null
+url: https://www.cie.ci/particuliers/tarifs-electricite
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Probed live 2026-08-31: CIE (Compagnie Ivoirienne d'Electricite) household
+  "basse tension" tariff page renders 8 accordion categories server-side
+  (Social monophase 5A, General mono 5A/10A/15A, General triphase,
+  Professionnel General, Conventionnel, Eclairage Public), each with a
+  <table> of "Prime fixe par bimestre" + kWh-block line items. 20 line items
+  parsed across the 8 categories; FCFA (TTC) column used as price_local.
+  Sample: Tarif Domestique Social monophase 5A, "Prix du kWh <= 80
+  kWh/bimestre" = 31.72 XOF TTC. Currency XOF matches countries.yaml.
+
+  No effective/decision date is printed on the page, so this is scraped as a
+  live snapshot (period_kind=snapshot, observation_date=scrape date), same
+  convention as our_telekom_plans.py (Solomon Islands).
+
+  CERT TRAP: cie.ci sends only the leaf certificate, no intermediate
+  (confirmed via `openssl s_client -showcerts`: chain length 1). Both
+  curl_cffi (impersonate=chrome124) and plain requests fail cert
+  verification identically -- this is a permanent server misconfiguration,
+  not a transient block. The fetcher passes verify=False; the page is
+  public tariff data with no auth/credentials involved.
+
+  Only the "particuliers" (residential, basse tension) page is scraped. The
+  equivalent "/entreprise/tarifs-electricite" path returns the homepage
+  (client-rendered route with no server-side tariff HTML), so
+  business/medium/high-voltage tariffs are out of scope.
+
+  First tariff/official source for Cote d'Ivoire alongside the two retailer
+  spiders (adjovan_ci, megamarche_ci) and the two official_avg fetchers
+  (fews_net, wfp_prices).

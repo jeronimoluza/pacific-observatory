@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: acehardware_zw
+url: https://acehardware.co.zw/
+language: en
+cadence: weekly
+channel: home-improvement
+notes: |
+  Probed live 2026-08-31 (discovery — original candidate list ran dry
+  after spar_zw/tillpoint_zw/tmpnp_zw; online-spar.co.zw's backend was
+  down, see its own YAML). WordPress/WooCommerce storefront; standard
+  public Store API at /wp-json/wc/store/v1/products, no auth or special
+  headers needed. Prices report currency_code=USD, currency_minor_unit=2
+  (e.g. raw "2500" -> $25.00), matching the rendered price_html on the
+  same row. Handled by the shared _woo_base pagination/scaling logic.
+  Hardware, tools and building-materials catalog — a different COICOP
+  division from the existing grocery/supermarket sources, so left to the
+  classifier. Fourth retailer_sku source for Zimbabwe alongside spar_zw,
+  tillpoint_zw and tmpnp_zw.

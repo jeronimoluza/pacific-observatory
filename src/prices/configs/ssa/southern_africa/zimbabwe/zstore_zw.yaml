@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: zstore_zw
+url: https://zstore.co.zw/
+language: en
+cadence: weekly
+channel: specialty-food
+notes: |
+  Probed live 2026-08-31 (discovery, fifth source for Zimbabwe;
+  reeltecelectronics.co.zw was tried first and parked — 81% of its rows
+  reported a genuine $0 "price on application" price, confirmed against
+  the raw Store API response, not a parsing bug). WordPress/WooCommerce
+  storefront; standard public Store API at /wp-json/wc/store/v1/products,
+  no auth needed. currency_code=USD, currency_minor_unit=2 (e.g. raw
+  "11500" -> $115.00). Handled by the shared _woo_base pagination/scaling
+  logic. Liquor/spirits/wine specialty retailer — 221 products
+  (X-WP-Total header), zero $0-priced rows across the full catalog.
+  Fifth retailer_sku source for Zimbabwe alongside spar_zw, tillpoint_zw,
+  tmpnp_zw and acehardware_zw, reaching the country's target of 5.

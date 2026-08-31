@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: carrefour_ci
+url: https://carrefour.ci/
+language: fr
+cadence: weekly
+channel: supermarket
+notes: |
+  Probed live 2026-08-31: carrefour.ci is a WordPress + Elementor corporate
+  site, NOT a WooCommerce/PrestaShop storefront
+  (/wp-json/wc/store/v1/products 404s; no "promotions" custom post type
+  exposed in /wp-json/wp/v2/types either, so it's HTML-only). The only
+  priced content is the /promotions/ archive: a small rotating in-store
+  flyer, one Elementor page per item. Measured 13 promo items across 2
+  pages (/promotions/ = 11, /promotions/page/2/ = 2; page/3/ 404s, which
+  the spider uses as its natural pagination stop).
+
+  Each promo page has exactly two "<price> FCFA" strings (discounted price
+  first, crossed-out regular price second, confirmed across 3 sampled
+  pages) — the spider emits min(prices) as the shopper-facing price. Product
+  id is the numeric WordPress post id embedded in the inline
+  elementorFrontendConfig JS ("post":{"id":<id>,...}); title from the
+  page's <h1>. Sample: BOÎTE DE STYLOS X50 MAPED, post id 11137, prices
+  [4500, 5000] FCFA -> price=4500.
+
+  This is a thin, narrow catalog (current back-to-school promo theme only,
+  not a general grocery assortment) but it is Carrefour Côte d'Ivoire's
+  only public price signal and a genuine national hypermarket chain
+  (CFAO/Prosuma-operated Carrefour Market franchise). Third retailer_sku
+  source for Côte d'Ivoire alongside adjovan_ci and megamarche_ci.
