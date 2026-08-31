@@ -45,7 +45,7 @@ the eras that hold each source's volume:
   somon_tj      0.95 in 2016, 0.90 in 2017                     ~97k
   pakwheels_pk  0.13 in both 2017 and 2018                     ~36k
 
-Across all 79 rows: every one carries a name, and every banked price appears in
+Across all 57 rows: every one carries a name, and every banked price appears in
 the digits its own page renders.
 
 pakwheels is the reason the rail guard exists, and its held-out rate is a third
