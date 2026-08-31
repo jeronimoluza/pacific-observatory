@@ -1,0 +1,52 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tiendainglesa_uy
+url: https://www.tiendainglesa.com.uy/
+language: es
+currency: UYU
+cadence: weekly
+channel: supermarket
+timeout: 1800
+notes: |
+  Full-line Uruguayan hypermarket chain (Tienda Inglesa), GeneXus/"Hanoi"
+  (com.imasdev.hanoi) storefront on ASP.NET. Probed live 2026-08-31 with
+  curl_cffi impersonate=chrome124.
+
+  Department and search pages embed a real organic product grid as inline
+  JSON (`"Product":[...]`) directly in the server HTML response (Tier 1A,
+  no JS execution). Example: /supermercado/categoria/almacen/78 ->
+  'Papas Fritas Clasicas LAY'S 350 g' UYU 290. /supermercado/busqueda?q=leche
+  -> 'Jamon Cocido Extra TIENDA INGLESA (Kg)' UYU 1.120. Currency confirmed
+  by CurrencySymbol "$" / CurrencyId 1 in the payload and matches
+  countries.yaml (UYU).
+
+  Discovery: (1) 15 top-level department pages scraped from the
+  `vLEVEL1SDTOPTIONS_DESKTOP` nav JSON on /supermercado (Almacen, Frescos,
+  Bebidas, Congelados = food/beverage; Limpieza, Perfumeria, Electro,
+  Jugueteria, Deportes, Hogar, Ferreteria, Textiles, Bebes, Papeleria,
+  Ofertas fill out the rest of the wide catalog); (2) one request to
+  /supermercado/busqueda (no query, labelled "Destacados"). IMPORTANT: this
+  endpoint does NOT run a real per-term search -- every q= value tried
+  (leche, vino, chocolate, papel higienico, 40+ terms) returned the exact
+  same byte-identical 40-item food-heavy grid (harina, agua mineral,
+  huevos, jamon, pizza, ...). It is a generic featured/fallback list, so it
+  is fetched exactly once rather than iterating fake per-keyword requests;
+  it contributes ~40 distinct items not present in any of the 15 department
+  pages.
+
+  KNOWN CAP, verified live: each page (category or search) renders only
+  its first ~40-41 organic product cards (facet payload advertises a much
+  larger TotalCount, e.g. 3,207 for Almacen alone, but only ~1.3% is
+  reachable). Deeper pages are NOT reachable by URL -- ?page=, ?p=,
+  ?pagina=, ?PageIndex=, ?pagesize=, ?rows=, ?take= were all tried on
+  categoria/almacen/78 and returned byte-identical 41-product JSON every
+  time. Brand/subcategory facets are rendered as hidden-input grid state
+  for a stateful GeneXus AJAX postback (GXAjax), not as GET-able URLs, so
+  they can't be walked either without Playwright/browser automation. This
+  is a breadth-not-depth source: coverage comes from walking many distinct
+  category/query slices, not from paginating within one, so the row count
+  will be roughly stable run over run -- that stability is a property of
+  the fixed slice list, not a broken walk (verified: identical-count probe
+  on every pagination param means the URL contract genuinely stops there).
