@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: megamarche_ci
+url: https://www.megamarche.ci/
+language: fr
+cadence: weekly
+channel: supermarket
+notes: |
+  Probed live 2026-08-31. Category pages server-render only the first
+  tranche of cards; the catalog is served by a lazy-load JSON endpoint,
+  GET /api/shop/products/next/<CATEGORY_CODE>/<OFFSET>, returning
+  products[] with pid / b (brand) / t (title) / p ("1 240 FCFA") / pl
+  (slug) / av (in stock), plus totalNbProducts and nextId.
+
+  PAGINATION TRAP: the second path segment is a 1-based OFFSET, not a page
+  number. Measured — walking it as pages 1..9 returned 324 rows holding only
+  44 distinct products, because each increment slides the 36-item window by
+  one product. The cursor walk (1 -> 37 -> 73 -> 109 -> 145, nextId=null)
+  returned 145 unique of totalNbProducts=146 in 5 requests. The spider
+  follows nextId and never synthesises the offset.
+
+  The endpoint needs an XHR-shaped request: Referer on the matching
+  /mes-courses/<slug>/<code> page plus X-Requested-With. Missing either
+  returns 400/404 with a zero-byte body.
+
+  ~76 category codes across 7 top departments — supermarche (27
+  subcategories) plus electronics, phones, DIY — so this is a wide catalog
+  and COICOP tagging is left to the classifier. Second retailer_sku source
+  for Côte d'Ivoire alongside adjovan_ci.
