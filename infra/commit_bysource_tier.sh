@@ -25,19 +25,25 @@ if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
 fi
 
 git add \
+  src/prices/price_scraping/archived.py \
   src/prices/price_scraping/archived_bysource.py \
+  src/prices/price_scraping/archived_lohaco.py \
+  src/prices/price_scraping/archived_eu.py \
   src/prices/cc_warc_fetcher.py \
-  tests/unit/prices/test_archived_bysource.py
+  tests/unit/prices/test_archived_bysource.py \
+  tests/unit/prices/test_archived_lohaco.py \
+  tests/unit/prices/test_archived_eu.py
 
 PRE_COMMIT_ALLOW_NO_CONFIG=1 git commit -F - <<'MSG'
-infra(parse): per-source tier for four archived sources, measured
+infra(parse): per-source tier for seven archived sources, measured
 
-Four sources hold 6.0M of the 18M misses and published no portable surface in
+Seven sources hold 6.4M of the 18M misses and published no portable surface in
 the era Common Crawl captured them, so every generic tier abstains and the page
 banks nothing. This tier reads each one on its own terms. It runs after every
 generic surface and returns nothing for any source without an extractor, so it
 only reaches pages already banked as a miss: over all 711 cached pages, 0 rows
-changed and 187 pages gained.
+changed and 187 pages gained; over all 1,901 once the last three landed, 0
+changed again.
 
 Yield, measured on pages fetched from the miss corpus before the extractors
 were written and never looked at while writing them:
@@ -83,6 +89,42 @@ naming free shipping, not charging for it.
 rakuten's 0.04 is the corpus, not the extractor: 31 of its 55 held-out pages
 are error pages for delisted products and 9 more are multi-variant pages, and
 all 12 of its abstentions were checked by hand and are correct.
+
+Three more sources were added on the same protocol, and two of them corrected
+a scouting estimate rather than confirming it:
+
+  lohaco       19.51 rows per capture over 80 held-out pages   ~4.13M rows
+  edeka24_de    0.96 rows per capture over 121 captures        ~135k
+  elvi_lv       0.06 rows per capture over 816 captures        ~3.4k
+
+That brings the tier to ~7.7M projected rows, +23.4% on the 32.8M banked.
+
+lohaco prices 8 to 52 other products per capture from a ranking rail, on a
+class that is 100% precise. Its wrinkle is identity, not extraction: 284 of 880
+product links route through a signed ad redirect whose query string is unique
+on every occurrence, so banking the href as given would hand the same product a
+new identity on every capture and leave a price series that cannot join to
+itself. The redirect's `code` parameter rebuilds the canonical item path, which
+also exposes 23 same-page duplicates that were invisible before. Its name comes
+from the card title rather than the anchor text, so the rank badge and the
+appended price are never seen and no stripping is written at all.
+
+edeka24_de's `price-note` sits beside the price and looks exactly like one, but
+all 72 values in the design cache carry a unit suffix: it is the Grundpreis,
+the per-kilogram reference price German retailers must print. Banking it would
+have rescaled every price by pack size in both directions at once -- a Riesling
+33% high, a pack of crackers 45% low -- so no magnitude check downstream would
+have found it. The charged figure is the sibling div, scoped to the article
+widget because a recommendation rail reuses both classes up to eight times per
+page.
+
+elvi_lv yields almost nothing, and that is the finding. It is a weekly promo
+flyer rather than a checkout store: a product prints a price only inside its
+promotion window, and 83% of captures say the promotion ended. The 2.77 rows
+per capture it was scouted at came from counting the classes page-wide, which
+mostly counted a related-products rail. What it does bank is composed entirely
+of discounted prices, which is a bias any consumer of the series has to know
+about.
 
 Every extractor abstains rather than guesses, because these pages carry many
 figures that are not the product's price -- postage, loyalty points, a
