@@ -1,8 +1,15 @@
 """Stage the parse modules the EC2 fetch needs, flattened for a bare sys.path.
 
-Four self-contained modules (stdlib + lxml) rather than the whole `prices`
-package: importing the package drags in scrapy, pydantic and every per-spider
-config to reach `parse_html` hooks that cover 0.4% of records.
+Self-contained modules (stdlib + lxml) rather than the whole `prices` package:
+importing the package drags in scrapy, pydantic and every per-spider config to
+reach `parse_html` hooks that cover 0.4% of records.
+
+The per-source tier is bundled even though it is spider-keyed, because it is
+not those hooks and the weight calculus is not theirs. `archived_bysource.py`
+and the two modules it dispatches into cover seven sources holding 6,378,103 of
+17,154,784 misses -- 37.2% -- and depend on nothing outside lxml, so they cost
+three files rather than the whole package. Leaving them out was the same as
+launching with no per-source fix at all.
 
 `selectors.py` is renamed to `selectors_mod.py` because `selectors` shadows a
 stdlib module on a bare sys.path, and the package-relative imports are rewritten
@@ -22,6 +29,9 @@ FILES = [
     ("archived_embedded.py", "archived_embedded.py"),
     ("archived_ldrepair.py", "archived_ldrepair.py"),
     ("archived_microdata.py", "archived_microdata.py"),
+    ("archived_lohaco.py", "archived_lohaco.py"),
+    ("archived_eu.py", "archived_eu.py"),
+    ("archived_bysource.py", "archived_bysource.py"),
     ("selectors.py", "selectors_mod.py"),
 ]
 
@@ -29,6 +39,8 @@ REWRITES = [
     (r"^from \.archived import", "from archived import"),
     (r"^from \.archived_ldrepair import", "from archived_ldrepair import"),
     (r"^from \.archived_microdata import", "from archived_microdata import"),
+    (r"^from \.archived_lohaco import", "from archived_lohaco import"),
+    (r"^from \.archived_eu import", "from archived_eu import"),
     (r"^from \.selectors import", "from selectors_mod import"),
 ]
 

@@ -64,6 +64,7 @@ _s3 = boto3.client("s3", config=_cfg)
 
 sys.path.insert(0, os.environ.get("PARSE_DIR", "/tmp/parse"))
 from archived import row_from_meta, rows_from_jsonld  # noqa: E402
+from archived_bysource import rows_from_source  # noqa: E402
 from archived_embedded import rows_from_next_flight  # noqa: E402
 from archived_microdata import rows_from_microdata  # noqa: E402
 
@@ -113,11 +114,21 @@ def decode(headers, body):
 
 # ---------------------------------------------------------------- parse layer
 
-def parse_rows(html, url):
-    """The four spider-independent tiers, in measured yield order.
+def parse_rows(html, url, source=None):
+    """The spider-independent tiers, in measured yield order, then per-source.
 
-    Microdata is last: it was measured only on pages the tiers above already
-    fail, so appending it cannot change a page that parses today.
+    Microdata is last among the portable tiers: it was measured only on pages
+    the tiers above already fail, so appending it cannot change a page that
+    parses today.
+
+    The per-source tier runs after all of them and returns nothing for any
+    source without an extractor, so it too can only add rows to a page that
+    would otherwise bank nothing. It is worth carrying here rather than being
+    left to a later local pass: the seven sources it covers hold 37.2% of the
+    misses, and re-fetching them is the expensive half of recovering them.
+
+    ``source`` is optional so a caller with no manifest field still parses; it
+    simply gets the portable tiers, which is the behaviour that shipped before.
     """
     rows = rows_from_jsonld(html, url)
     if rows:
@@ -131,6 +142,9 @@ def parse_rows(html, url):
     rows = rows_from_microdata(html, url)
     if rows:
         return rows, "microdata"
+    rows = rows_from_source(html, url, source)
+    if rows:
+        return rows, "bysource"
     return [], "none"
 
 
@@ -181,7 +195,7 @@ def fetch_one(rec, state):
     if headers is None:
         return None, body
     html = decode(headers, body)
-    rows, tier = parse_rows(html, rec["url"])
+    rows, tier = parse_rows(html, rec["url"], rec.get("source"))
     if not rows:
         return None, "no_extract"
 

@@ -120,6 +120,31 @@ def main():
         check("stamp is the capture, not today",
               stamp.startswith("2016-11-22"), stamp)
 
+    # --- the per-source tier is actually reachable from the driver --------
+    # It was bundled but never called for a while: parse_rows ran four tiers
+    # and took no source, so every per-source extractor recovered nothing on
+    # EC2 while passing every test locally. These two checks are the pair --
+    # the same page, with and without a source -- because only the contrast
+    # shows the tier is wired rather than merely importable.
+    grid = (
+        '<div><a href="/store/s/item/9/"><div class="v-card__title">'
+        'ほたて貝柱と昆布のごはん 137g</div><div class="itemPrice">390円</div>'
+        '</a></div>'
+        '<div><a href="/store/s/item/8/"><div class="v-card__title">'
+        'フレグランスミスト おやすみブレンド 28mL</div>'
+        '<div class="itemPrice">1,490円</div></a></div>'
+    )
+    rows, tier = ccfetch.parse_rows(grid, "https://lohaco.yahoo.co.jp/x",
+                                    "lohaco")
+    check("per-source tier fires when the record names its source",
+          tier == "bysource" and len(rows) == 2, "%s %s" % (tier, rows))
+
+    rows_none, tier_none = ccfetch.parse_rows(grid,
+                                              "https://lohaco.yahoo.co.jp/x")
+    check("the same page yields nothing without a source",
+          tier_none == "none" and not rows_none,
+          "%s %s" % (tier_none, rows_none))
+
     print("\n%d checks failed" % len(FAILED))
     return 1 if FAILED else 0
 
