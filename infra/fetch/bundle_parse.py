@@ -31,16 +31,23 @@ FILES = [
     ("archived_microdata.py", "archived_microdata.py"),
     ("archived_lohaco.py", "archived_lohaco.py"),
     ("archived_eu.py", "archived_eu.py"),
+    ("archived_gmarket.py", "archived_gmarket.py"),
+    ("archived_chemist.py", "archived_chemist.py"),
+    ("archived_ekupi.py", "archived_ekupi.py"),
+    ("archived_momo.py", "archived_momo.py"),
+    ("archived_frisco.py", "archived_frisco.py"),
     ("archived_bysource.py", "archived_bysource.py"),
     ("selectors.py", "selectors_mod.py"),
 ]
 
+# One rule for every `archived*` module rather than one per module. Naming them
+# individually meant adding a source could stage a file whose own import was
+# left package-relative, and the per-source tier had already been lost once to
+# exactly that class of omission. The leftover check below still fails the
+# build on anything this does not flatten, so the general rule is not a
+# loosening.
 REWRITES = [
-    (r"^from \.archived import", "from archived import"),
-    (r"^from \.archived_ldrepair import", "from archived_ldrepair import"),
-    (r"^from \.archived_microdata import", "from archived_microdata import"),
-    (r"^from \.archived_lohaco import", "from archived_lohaco import"),
-    (r"^from \.archived_eu import", "from archived_eu import"),
+    (r"^from \.(archived\w*) import", r"from \1 import"),
     (r"^from \.selectors import", "from selectors_mod import"),
 ]
 
