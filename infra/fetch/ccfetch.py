@@ -17,6 +17,14 @@ per-spider config) onto the instance to reach 0.4% is not worth the weight, so
 this ships the four self-contained tiers: JSON-LD, OpenGraph meta, Next.js
 flight data, and inline microdata.
 
+**Two input modes.** `INPUT=manifest` (default) reads the resolved captures.
+`INPUT=misses` re-reads only the captures a previous run failed to parse, which
+is what a newly added tier is worth paying for: 17,972,011 of the 49,165,982
+captures came back `no_extract`, so a recovery run over the manifest would
+re-fetch 2.7x the records and re-bank 32.8M rows that already exist. Every one
+of those misses is a parse failure rather than a fetch failure, so the tiers
+are the entire value of a second pass.
+
 Reading `s3://commoncrawl` is free -- the bucket is `Payer=BucketOwner`,
 verified with `GetBucketRequestPayment` rather than assumed -- and sustains
 concurrency 64 with zero 403s, against a public CDN that bans the whole host at
@@ -40,8 +48,18 @@ CC_BUCKET = "commoncrawl"
 
 CONC = int(os.environ.get("CONC", "64"))
 OUT_BUCKET = os.environ.get("OUT_BUCKET", "")
-OUT_PREFIX = os.environ.get("OUT_PREFIX", "parsed")
-MISS_PREFIX = os.environ.get("MISS_PREFIX", "misses")
+# "manifest" reads the resolved captures; "misses" re-reads only the captures a
+# previous run failed to parse, which is what a new tier is worth re-fetching.
+INPUT = os.environ.get("INPUT", "manifest")
+_RECOVERY = INPUT == "misses"
+# Defaults differ by mode on purpose. A recovery run pointed at `parsed` would
+# be indistinguishable from the first run's output, and one pointed at the miss
+# prefix it is reading would overwrite its own input mid-crawl.
+OUT_PREFIX = os.environ.get("OUT_PREFIX",
+                            "recovered" if _RECOVERY else "parsed")
+MISS_PREFIX = os.environ.get("MISS_PREFIX",
+                             "misses2" if _RECOVERY else "misses")
+MISS_IN_PREFIX = os.environ.get("MISS_IN_PREFIX", "misses")
 MANIFEST_BUCKET = os.environ.get("MANIFEST_BUCKET", OUT_BUCKET)
 MANIFEST_PREFIX = os.environ.get("MANIFEST_PREFIX", "resolve/manifests")
 SHARD = int(os.environ.get("SHARD", "0"))
@@ -210,7 +228,11 @@ def fetch_one(rec, state):
     for row in rows:
         row = dict(row)
         row["scraped_at_utc"] = stamp
-        row["source"] = rec.get("spider")
+        # Manifest records name the source `spider`; miss records name it
+        # `source`, because miss_row renames it on the way out. Reading only
+        # `spider` banks every recovered row with source=None, and the tier
+        # dispatch below reads `source` and works, so the run looks healthy.
+        row["source"] = rec.get("spider") or rec.get("source")
         row["cc_timestamp"] = rec.get("timestamp")
         row["parse_tier"] = tier
         out.append(row)
@@ -235,6 +257,46 @@ def iter_manifest(index):
                 yield json.loads(line)
             except json.JSONDecodeError:
                 continue
+
+
+def iter_misses(index):
+    """Records for this shard of one crawl's misses, streamed from S3.
+
+    The miss objects are already sharded by the run that wrote them, so whole
+    files are dealt out to workers rather than the manifest mode's per-record
+    modulo. The file list is enumerated instead of being reconstructed from
+    NSHARDS: a recovery run at a different width than the run that produced the
+    misses would otherwise skip whole files and look merely low-yield.
+    """
+    prefix = "%s/%s/" % (MISS_IN_PREFIX, index)
+    keys = []
+    token = None
+    while True:
+        kw = {"Bucket": MANIFEST_BUCKET, "Prefix": prefix}
+        if token:
+            kw["ContinuationToken"] = token
+        resp = _s3.list_objects_v2(**kw)
+        keys.extend(o["Key"] for o in resp.get("Contents", ())
+                    if o["Key"].endswith(".jsonl.gz"))
+        token = resp.get("NextContinuationToken")
+        if not resp.get("IsTruncated"):
+            break
+    keys.sort()
+    mine = [k for j, k in enumerate(keys) if j % NSHARDS == SHARD]
+    print("%-20s misses: %d objects, %d for shard %d"
+          % (index, len(keys), len(mine), SHARD), flush=True)
+    for key in mine:
+        body = _s3.get_object(Bucket=MANIFEST_BUCKET, Key=key)["Body"]
+        with gzip.open(io.BytesIO(body.read()), "rt", encoding="utf-8") as fh:
+            for line in fh:
+                try:
+                    yield json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+
+
+def iter_records(index):
+    return iter_misses(index) if _RECOVERY else iter_manifest(index)
 
 
 def already_done(out_key):
@@ -263,7 +325,10 @@ def miss_row(rec, reason):
         "offset": rec.get("offset"),
         "length": rec.get("length"),
         "timestamp": rec.get("timestamp"),
-        "source": rec.get("spider"),
+        # Same rename as in fetch_one: a miss re-read in recovery mode carries
+        # `source`, and dropping it here would strand the record for any
+        # further pass, since the per-source tier dispatches on it.
+        "source": rec.get("spider") or rec.get("source"),
         "reason": reason,
     }
 
@@ -313,7 +378,7 @@ def run_crawl(index):
 
         with cf.ThreadPoolExecutor(max_workers=CONC) as pool:
             pending = {}
-            for rec in iter_manifest(index):
+            for rec in iter_records(index):
                 pending[pool.submit(fetch_one, rec, state)] = rec
                 if len(pending) < CONC * 8:
                     continue
@@ -360,8 +425,19 @@ def main():
     if not crawls:
         print("no CRAWLS given")
         return 1
-    print("crawls=%d shard=%d/%d conc=%d out=s3://%s/%s"
-          % (len(crawls), SHARD, NSHARDS, CONC, OUT_BUCKET, OUT_PREFIX),
+    if INPUT not in ("manifest", "misses"):
+        print("INPUT must be 'manifest' or 'misses', got %r" % INPUT)
+        return 1
+    if _RECOVERY and MISS_PREFIX == MISS_IN_PREFIX:
+        # Refused rather than warned: the misses are the only surviving record
+        # of the captures a tier has not read yet, and overwriting them with
+        # this run's own misses destroys the input for every later pass.
+        print("refusing to run: MISS_PREFIX %r would overwrite the input"
+              % MISS_PREFIX)
+        return 1
+    print("input=%s crawls=%d shard=%d/%d conc=%d out=s3://%s/%s miss=%s"
+          % (INPUT, len(crawls), SHARD, NSHARDS, CONC, OUT_BUCKET,
+             OUT_PREFIX, MISS_PREFIX),
           flush=True)
     rc = 0
     for index in crawls:
