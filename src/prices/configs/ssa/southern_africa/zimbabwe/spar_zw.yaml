@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: spar_zw
+url: https://www.spar.co.zw/products
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Probed live 2026-08-31. Server-rendered ASP.NET; /products returns 24
+  cards plus the full nav of 12 departments / 181 subdepartments. The PDP
+  route (/products/<id>/<slug>) renders an empty shell — no h1, no price —
+  so extraction runs off the listing cards, not the detail pages.
+
+  Pagination is "?pg=N", ZERO-INDEXED. "?page=N" is accepted and silently
+  re-serves page 1; walking on that param yields an identical 24-row page
+  forever, the documented flat-count failure signature. The spider follows
+  the rendered ".paging a.next" href instead of synthesising the counter.
+
+  Prices are entity-encoded ("USD&#36;4.00") in .product-links strong.
+  Zimbabwe is legitimately dollarised so USD is the real quoted currency;
+  the ZWG option is a client-side switcher and never reaches server HTML.
+  Zero-priced cards (unpriced/placeholder lines) are dropped.
+
+  First retailer_sku source for Zimbabwe (previously fews_net +
+  wfp_prices only). Strong staple coverage: maize meal, cooking oil, sugar.

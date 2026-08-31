@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: adjovan_ci
+url: https://www.adjovan.com/
+language: fr
+cadence: weekly
+channel: supermarket
+notes: |
+  Probed live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, x-wp-total=2198. Standard (versioned) Store API namespace, zero
+  auth. currency_code XOF matches countries.yaml; currency_minor_unit=0, so
+  prices need no division (e.g. CALCULATRICE SCIENTIFIQUE DELI D82MS =
+  4500 XOF). Strong local-staple coverage per the candidate note — attieke,
+  adjovan, akpi, gnangnan, gombo baoule, ablo, akassa — with descriptive
+  product text that helps COICOP classification. Whole-catalog walk.
+  First retailer_sku source for Côte d'Ivoire (previously fews_net +
+  wfp_prices only).
