@@ -34,6 +34,7 @@ FILES = [
     ("archived_eu.py", "archived_eu.py"),
     ("archived_gmarket.py", "archived_gmarket.py"),
     ("archived_chemist.py", "archived_chemist.py"),
+    ("archived_classifieds.py", "archived_classifieds.py"),
     ("archived_ekupi.py", "archived_ekupi.py"),
     ("archived_emart.py", "archived_emart.py"),
     ("archived_yahoo_tw.py", "archived_yahoo_tw.py"),
