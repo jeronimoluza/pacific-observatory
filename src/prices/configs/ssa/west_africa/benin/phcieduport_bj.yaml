@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: phcieduport_bj
+url: https://phcieduport.com/
+language: fr
+cadence: weekly
+channel: pharmacy
+notes: |
+  Discovered via WebSearch (not in the candidate brief; that list ran dry
+  after erevan.bj came back NXDOMAIN, zemihidjo.com resolved but 404'd
+  on every path, and martistore.shop was in maintenance, HTTP 503, on
+  every probe). Static HTML site, no WooCommerce/Shopify/etc, but its own
+  bundle (js/supabaseClient.js, js/products.js) hardcodes a public
+  Supabase project reading a non-default schema client-side with the anon
+  key, no auth needed to read:
+    GET https://ampktfwcpopkomrsckjm.supabase.co/rest/v1/products
+        ?select=*&order=id&limit=1000&offset=<n>
+    Headers: apikey: <anon key>, Accept-Profile: pharmacie_port
+  (schema must be set via the Accept-Profile header, not a query param).
+  Probed live 2026-08-31: 4319 total distinct rows walked by offset in
+  1000-row pages, stopping on a short final page (matches the site's own
+  products.js walk). Real distinct FCFA prices, e.g. 'ABZOLE 400MG CP
+  B/100' = 11675 XOF, 'ABZOLE 400MG CP VRAC BL/1' = 125 XOF; currency XOF
+  matches countries.yaml, plain integers, no minor-unit division. Site is
+  explicitly Cotonou (title "Pharmacie du Port – Cotonou", order.html
+  copy "Retrait rapide à Cotonou") — locality confirmed. No per-product
+  detail page (search-modal only), so each row's url is a synthetic
+  "<site>#produit-<supabase-row-id>" fragment to avoid
+  DuplicationPipeline's url-based dedup collapsing every row to one.

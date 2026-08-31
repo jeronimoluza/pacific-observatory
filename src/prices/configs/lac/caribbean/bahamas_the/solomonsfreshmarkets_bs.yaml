@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: solomonsfreshmarkets_bs
+url: https://www.solomonsfreshmarkets.com/
+language: en
+currency: BSD
+cadence: weekly
+channel: supermarket
+timeout: 3600
+notes: |
+  Solomon's Fresh Market (Harbour Bay location), Nassau -- a supermarket
+  chain of AML Foods Ltd., a Bahamian public company (BISX: AML)
+  headquartered in Nassau. www.solomonsfreshmarkets.com redirects to
+  https://harborbaymarkets.storebyweb.com/s/1000-19/, a Vue SPA on the
+  white-label "storebyweb" (WebCart) grocery e-commerce platform. Locality:
+  AML Foods operates exclusively in New Providence/Grand Bahama/Exuma,
+  Bahamas; online orders are pickup or Nassau/mailboat delivery only (see
+  amlfoods.com, thenassauguardian.com launch coverage) -- this is the
+  retailer's own shelf pricing, not a diaspora storefront shipping in.
+
+  The SPA shell carries no product data, but its browse call is a plain
+  JSON POST: /api/b {"pn":<page>,"ps":100,"facets":{}} ->
+  {"totalCount":N,"items":[{"id","name","actualPrice","department",...}]}.
+  Verified live 2026-08-31: totalCount=11359; pn is honoured (5 consecutive
+  100-row pages = 500/500 distinct ids, zero overlap); 500-row sample had
+  0% zero/null-price rows, price range $0.69-$44.99. Item-detail route
+  /i/<id> is server-rendered for SEO (product name in <title>/og:title),
+  re-fetched 3 emitted ids and all returned 200 with the correct name.
+
+  Currency: BSD is pegged 1:1 to USD; the platform's own price formatter
+  is hardcoded to Intl.NumberFormat("en-US", currency:"USD") in the shared
+  frontend bundle (not tenant-configured), same convention already used
+  for kellysbahamas_bs in this country.
+
+  Shared spider base: _storebyweb_base.py (also used by
+  costrightnassau_bs, another AML Foods chain on the same platform).

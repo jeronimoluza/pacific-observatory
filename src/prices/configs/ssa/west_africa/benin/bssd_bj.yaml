@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bssd_bj
+url: https://bssdalimentation.vercel.app/
+language: fr
+cadence: weekly
+channel: convenience
+notes: |
+  Candidate note flagged this as a Vercel-hosted React SPA needing XHR
+  inspection; the page itself has no server-rendered products and no
+  conventional platform API, but its inline JS hardcodes a public Firebase
+  project (bssd-alimentation) with unauthenticated Firestore reads. Probed
+  live 2026-08-31: GET https://firestore.googleapis.com/v1/projects/
+  bssd-alimentation/databases/(default)/documents/produits?pageSize=300
+  -> HTTP 200, 25 live documents (paginated via nextPageToken, no
+  synthesised offset). All 25 carry real distinct FCFA prices (400-32000):
+  rice/oil/conserve packs (10-25k FCFA) plus individual staples
+  (spaghetti, sardines, milk, sugar, coffee, tomato paste). Currency XOF
+  matches countries.yaml; prices are plain integers, no minor-unit
+  division. Site copy is explicit about Cotonou/Calavi delivery and Mobile
+  Money payment (Benin) — locality confirmed. Small épicerie, not a
+  supermarket chain, hence channel=convenience. Single-page app has no
+  per-product URL, so each row's url is a synthetic
+  "<site>#produit-<firestore-doc-id>" fragment to avoid
+  DuplicationPipeline's url-based dedup collapsing every row to one.

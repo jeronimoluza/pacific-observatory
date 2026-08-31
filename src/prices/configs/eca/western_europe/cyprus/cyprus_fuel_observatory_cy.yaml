@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+spider: cyprus_fuel_observatory_cy
+url: https://eforms.eservices.cyprus.gov.cy/MCIT/MCIT/PetroleumPrices
+language: el
+currency: EUR
+cadence: weekly
+channel: fuel-station
+coicop_codes: ["07.2.2"]
+timeout: 900
+notes: |
+  Official Retail Fuel Price Observatory (Παρατηρητήριο Λιανικών Τιμών
+  Καυσίμων) run by Cyprus's Ministry of Energy, Commerce and Industry --
+  the live government fuel-price portal flagged in the fallback brief.
+  Not a retailer storefront: a plain ASP.NET eForm. GET the page for a
+  fresh __RequestVerificationToken + session cookie, then POST once per
+  fuel type (Entity.PetroleumType=1..5, Entity.StationCityEnum=All); the
+  server returns the FULL nationwide results table inline per fuel type,
+  no client-side pagination to fight. Probed live 2026-08-31 with
+  curl_cffi (session + FormRequest replay): diesel (code 3) returned 316
+  distinct stations, each row giving brand/company, station name,
+  district, and price (plain decimal EUR, e.g. "1.859"). Each row's
+  address cell links to /PetroleumPrices/DisplayMap?coordinates=<lat>,<lon>
+  -- a real per-station page (confirmed 200), used as the item url.
+  UI language toggle (_lang=en) only translates the wrapper chrome; the
+  eForm itself is Greek-only (its own JS resource string says so), hence
+  language=el. coicop_codes narrowed to motor fuels since this is a
+  single-class tariff feed, not a wide catalog.

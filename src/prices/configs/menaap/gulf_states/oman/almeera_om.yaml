@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: hypermarket
+spider: almeera_om
+url: https://www.almeera.om/
+language: en
+cadence: weekly
+archive_prefix: "www.almeera.om/product/"
+archive_path_re: '^/product/.+-\d+$'
+notes: |
+  Verified live 2026-08-31: Al Meera Oman (Qatari-origin grocery chain's
+  Oman-specific storefront, almeera.om, distinct from the noon.com/Talabat
+  aggregator listings for the same chain). Runs on a white-label "Blink"/
+  eatmubarak.pk ordering platform (Next.js, restId 55355, matches the
+  `com.blink.almeera` Google Play package). Category listings are client-
+  rendered, but every PDP is server-rendered with a full schema.org
+  Product JSON-LD block (name, offers.price, offers.priceCurrency,
+  offers.availability) plus a `product:retailer_item_id` meta tag for the
+  numeric product id. Seeded off /sitemap.xml -> 11
+  `sitemap-products/N.xml` files, ~3,000 URLs each (30k+ PDPs). Probe
+  sample: /product/kelloggs-coco-pops-balls-225gr-1508711 -> "Kelloggs
+  Coco Pops Balls 225Gr" OMR 1.110; /product/al-ameer-prawn-masala-300-gm-
+  2223185 -> OMR 0.975; /product/geepas-electric-oven-60minute-timer-
+  go4459-2234928 -> OMR 35.000. Sampled sitemap URLs across files 1/3/6 are
+  overwhelmingly food/beverage/household-consumable (snacks, canned/frozen
+  food, spices, dairy, baby food, toiletries) with a minority of small
+  appliances typical of a hypermarket banner. No category field in the
+  JSON-LD or the PDP URL, so `category` is left unset.
+  coicop_divisions: 01, 02, 05, 09, 12
+  divisions_basis: sampled_rows (sitemap-URL sampling across 3 of 11
+  product-sitemap files; full catalogue not walked)
+timeout: 21600

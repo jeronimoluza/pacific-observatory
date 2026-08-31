@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: extra_om
+channel: electronics
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+url: https://www.extra.com/en-om
+language: en
+currency: OMR
+cadence: weekly
+archive_prefix: "www.extra.com/en-om/"
+archive_path_re: '^/en-om/.+/p/[A-Za-z0-9]+$'
+notes: |
+  Verified live 2026-08-31: eXtra Stores Oman. Same SAP Commerce Cloud
+  (Hybris) platform as extra_sa — that manifest's notes flagged "Same
+  platform also serves en-bh and en-om" from robots.txt Sitemap: lines,
+  and en-om resolves to a genuinely localized OMR storefront (not a
+  fallback to SA pricing). Server-rendered schema.org Product JSON-LD
+  (name, sku, offers.price, offers.priceCurrency) on every PDP — no
+  Playwright needed. Seeded off /en-om/sitemap.xml -> ~50
+  Product-en-OMR-N-* sitemap files (one sampled sitemap alone had 900
+  product URLs across computer/electronics/small-appliances categories).
+  No `category` field in the JSON-LD itself; category is derived from the
+  PDP URL path segments instead. Probe sample: SKU 00191326 "Brother
+  Black Toner Cartridge, 1200 Pages" priced at 13.900 OMR.
+  coicop_divisions: 05, 08, 09
+  divisions_basis: sampled_rows (probe sample across computer/electronics/small-appliances categories; full category tree not walked)
+timeout: 14400

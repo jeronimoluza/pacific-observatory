@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: fashion
+spider: namshi_om
+url: https://www.namshi.com/oman-en/
+language: en
+cadence: weekly
+archive_prefix: "www.namshi.com/oman-en/"
+archive_path_re: '^/oman-en/buy-[^/]+/[A-Za-z0-9]+/p/?$'
+notes: |
+  Verified live 2026-08-31: Namshi Oman fashion marketplace. Same platform
+  family as noon.com (product images off f.nooncdn.com, SKUs follow noon's
+  "Z<hex>Z" pzsku pattern) — but noon.com's own `/_svc/catalog/api/v3/
+  search` endpoint defaults to the UAE catalog regardless of the request
+  path's `/oman-en/` prefix (sampled item priced 489 for a Galaxy A16,
+  plausible AED not OMR; no country cookie/param found during onboarding
+  to re-scope it), so this spider reads Namshi's own category *listing*
+  pages instead, which embed genuinely OMR-priced schema.org Product/Offer
+  JSON-LD server-side. That JSON-LD only covers products carrying a rating
+  (nested under aggregateRating.itemReviewed), so each page's ~7-15 Product
+  blocks are a real but partial subset of that page's full grid — not the
+  whole-page catalog. Seeded off 7 fixed top-level category slugs (women-
+  clothing, men-clothing, kids-fashion, beauty, shoes, bags, home) each
+  paginated via ?page=N; category sizes run into the tens of thousands
+  (women-clothing numberOfItems=52,574, men-clothing=26,086), so the
+  MAX_PAGES=60/category safety cap is far below full coverage — this reaches
+  a meaningful sample, not the whole marketplace. Verified pagination
+  genuinely advances: women-clothing pages 1/2/3 returned 15/9/11 distinct
+  SKUs with zero overlap.
+  coicop_divisions: 03
+  divisions_basis: sampled_rows (7 category slugs spot-checked, first few pages of each; full multi-thousand-page catalog not walked)
