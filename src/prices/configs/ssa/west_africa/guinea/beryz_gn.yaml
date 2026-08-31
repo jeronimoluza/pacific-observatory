@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: beryz_gn
+url: https://www.beryz.com/fr/alimentation
+language: fr
+cadence: weekly
+channel: fresh-market
+notes: |
+  Known from earlier probing: Beryz is a Next.js SPA and /fr/catalogue
+  renders zero products server-side -- confirmed again 2026-08-31 (App
+  Router shell, empty client tree). The "GNF prices per litre/kg" the
+  candidate note flagged is NOT a fetched catalogue: it's a fixed
+  6-product homepage/alimentation showcase hardcoded directly into the
+  React Server Component payload (self.__next_f.push(...) chunks), with
+  no /api/ route or __NEXT_DATA__ backing it -- searched for both and
+  found neither.
+
+  Rather than walk away, the spider decodes the RSC chunks (each chunk is
+  itself a JSON string literal -- json.loads(f'"{chunk}"') recovers real
+  unicode, e.g. the em dash in "Fatou Camara — Conakry") and pulls 5
+  parallel field sequences (category badge / product name / vendor+region
+  / retail price / wholesale price) by position; verified all 5 arrays
+  align 6-for-6 in document order even though one product's block streams
+  differently (numbered top-level RSC entries vs. one nested array), which
+  broke an initial single combined regex.
+
+  All 6 items are real named foods across distinct COICOP-relevant
+  categories -- Huiles (huile de palme rouge, Conakry), Céréales (fonio,
+  Labé), Épices (soumbara, Kindia), Poisson (poisson fumé capitaine,
+  Boké), Légumes (oignons, Labé), Boissons (jus de gingembre, Conakry) --
+  each with BOTH a retail and a wholesale ("gros") GNF price, emitted as
+  two rows per product (12 rows total) since the candidate note
+  specifically flagged the dual pricing as valuable for margin analysis.
+  This is a narrow, fixed showcase (not a walkable catalogue -- there is
+  nothing more to page through), but it is 100% real food/beverage data,
+  which this country's source mix otherwise lacks. Fifth source for
+  Guinea, and (with konalivr_gn) its second food-carrying one.

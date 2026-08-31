@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: guishop_gn
+url: https://gui-shop.com/
+language: fr
+cadence: weekly
+channel: electronics
+notes: |
+  Discovery candidate (not on the original brief list) found via WebSearch
+  for Guinean online electronics shops, 2026-08-31. Standard WooCommerce
+  Store API, GET /wp-json/wc/store/v1/products -> HTTP 200, x-wp-total=57.
+  currency_code=GNF, currency_minor_unit=0 -- no scaling needed, prices
+  are literal integers (e.g. "REDMI NOTE15 PRO+ 512GB 12GB RAM" =
+  4,100,000 GNF), unlike the ecomguinee_gn tenant in this same country
+  whose minor_unit is misconfigured. Phones/electronics catalog (Samsung,
+  iPhone, Redmi).
+
+  WAF TRAP: the driver's pinned IMPERSONATE_BROWSERS default (chrome120)
+  gets 403'd by this tenant; chrome124 passes cleanly (confirmed directly
+  with curl_cffi against both fingerprints). Spider overrides
+  IMPERSONATE_BROWSERS=["chrome124"] in custom_settings. Fourth source
+  for Guinea.

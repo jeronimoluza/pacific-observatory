@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: konalivr_gn
+url: https://www.konalivr.com/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  Probed live 2026-08-31. Known trap from earlier probing: this is a
+  restaurant/grocery delivery marketplace, not a single grocer, and the
+  landing-page GNF figures are delivery fees/minimums, not item prices.
+
+  Real prices sit on /merchants/<slug> pages, server-rendered HTML
+  (Tier 1A, no API needed). The homepage links all 16 merchants via
+  plain <a href="/merchants/..."> tags (supermarkets, pharmacies,
+  bakeries, juice bars, restaurants) — the spider crawls that list
+  rather than a fixed slug set.
+
+  Each merchant page groups products under category headers (div.mb-12
+  > h2 + div.rounded-2xl cards with h3 name / span price "XX XXX GNF" /
+  p description). Verified every one of the 16 merchants returns
+  exactly 4 products = 64 total distinct product_ids (merchant-slug +
+  slugified name, since the markup carries no product id). No stock
+  flag on the page; all rows marked available=True.
+
+  Catalog is small and appears fixed (uniform 4-per-merchant across
+  wildly different merchant types suggests seed/demo data rather than a
+  live-managed inventory), but prices are real GNF figures tied to real
+  named products (e.g. "Riz parfumé 5 kg" 75 000 GNF, "Doliprane 1000 mg
+  (8 cp)" 15 000 GNF) so it stands as a retailer_sku source. First
+  retailer source for Guinea.

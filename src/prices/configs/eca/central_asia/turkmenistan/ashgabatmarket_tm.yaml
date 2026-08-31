@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ashgabatmarket_tm
+url: https://ashgabatmarket.com/
+language: ru
+cadence: weekly
+channel: electronics
+notes: |
+  Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Site is
+  hosted at 5.63.156.22 (outside Turkmenistan's own network) and is fully
+  reachable over HTTPS with no challenge. WordPress/WooCommerce install;
+  /wp-json/wc/store/v1/products?per_page=5 -> HTTP 200, unauthenticated
+  JSON. X-WP-Total header reports 7,244 products across 1,449 pages of
+  per_page=5 (i.e. per_page=100 -> ~73 pages). Sample row: id 106880
+  "Для НЕЁ | Louis Vuitton | Coeur Battant | 100ml", prices.price
+  "920000" minor_unit 2 -> 9200.00 TMT (well within plausible range once
+  scaled by the base's minor_unit logic), currency_code TMT matches
+  countries.yaml. Category is a mix of electronics/gadgets/appliances
+  plus a perfume/cosmetics vertical -- catalog is genuinely mixed, not
+  narrow, so channel is left as electronics (its stated core business
+  per meta description: smartphones, TVs, laptops, small appliances)
+  even though perfume SKUs also surface.
+
+  This is the ONLY reachable retailer candidate site found for
+  Turkmenistan hosted with a real, unauthenticated product API; most
+  Turkmen-registered domains (.tm and .com.tm) sit on Turkmentelecom's
+  own IP space (216.250.x.x, 95.85.x.x) and refuse external TCP
+  connections at both :80 and :443 (connection refused in ~200-460ms,
+  not a timeout) -- see the country report for the full reachability
+  matrix.
+
+  FOOD/BEVERAGE NOTE: this is an electronics/appliance store, not a
+  grocer -- but it does carry a thin genuine food/beverage sliver:
+  category id 1400 "Кофейные зерна" (coffee beans, 66 products), 1401
+  "Кофейные капсулы" (coffee capsules, 33 products), and 4591 "Kакао"
+  (cocoa, 11 products), ~99 SKUs total out of 7,244 (~1.4%). Every other
+  Turkmenistan grocery/food e-commerce site found in discovery (Ynamdar,
+  Aşgabat Gipermarket, GIPER, Altyn Açar, Kämil Market) was either
+  unreachable (Turkmentelecom-hosted) or a dead/parked domain -- see the
+  country report's food-coverage table for the full list and reasons.

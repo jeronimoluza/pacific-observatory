@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: autoline_tm
+url: https://autoline-tm.com/-/avtomobili--c1169
+language: ru
+cadence: weekly
+channel: marketplace
+notes: |
+  Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Turkmenistan
+  storefront of the multi-country Autoline used-vehicle classifieds
+  platform (same engine as autoline.info); reachable with no challenge.
+  Category listing page /-/avtomobili--c1169 (cars) server-renders 25
+  listing cards per page with a real per-listing price string: e.g.
+  '<span class="price-value has-tooltip" title="Цена">239 900
+  ТМТ</span>' for a 2022 Audi Q8. Pagination is a plain ?page=N, verified
+  to advance: page=1 and page=2 share zero of 25+25 listing IDs
+  (data-code attribute). Site reports 8,118 active listings under this
+  category; spider caps at 60 pages (~1,500 rows) per run. Currency TMT
+  matches countries.yaml.
+
+  Some listings are auctions ("Аукцион") or negotiated price
+  ("Договорная") with no fixed numeric figure -- those carry a
+  `price-value-negotiated` span instead of a bare "<N> ТМТ" string and
+  are skipped rather than emitted with a fabricated price.
+
+  This is a classifieds marketplace (private/dealer vehicle-sale ads),
+  not a retailer catalog -- channel is marketplace, matching the
+  tayara_tn precedent (menaap/north_africa/tunisia/tayara_tn.yaml) for
+  the same source shape. Used-vehicle prices are noisier than retail SKU
+  prices (condition/negotiation-dependent) but are real, dated,
+  TMT-denominated transactions-in-progress, not survey/aggregator data.

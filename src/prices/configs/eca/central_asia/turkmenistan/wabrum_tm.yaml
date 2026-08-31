@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: wabrum_tm
+url: https://wabrum.com/
+language: ru
+cadence: weekly
+channel: fashion
+timeout: 5400
+notes: |
+  Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Hosted at
+  95.181.224.97 (outside Turkmenistan's own network), fully reachable, no
+  challenge. Platform is CS-Cart (design/themes/.../media/images asset
+  paths, cart_* JS globals; no public REST API endpoint found so this is
+  a Tier 1A HTML/JSON-LD scrape, not scrapy_api). robots.txt sets a
+  generic Crawl-delay: 10 for User-agent: * (also explicitly disallows
+  ClaudeBot/meta-externalagent/several SEO bots) but the project runs
+  with ROBOTSTXT_OBEY=False globally like every other spider here;
+  DOWNLOAD_DELAY is set conservatively at 1.0s per request instead of
+  obeying the directive literally.
+
+  Product URLs are discovered via the CS-Cart sitemap index
+  (wabrum.com/sitemap.xml -> products1.xml..products5.xml). Sitemap file
+  1 alone carries 15,860 <loc> entries, 6,172 of them bare product URLs
+  (the rest are the same products with a `?variation_id=` query for a
+  different size/color) -- catalog is clothing/shoes/accessories for
+  men, women and children, genuinely wide (children's, women's, men's
+  departments each with dozens of subcategories: sweaters, jeans, shoes,
+  underwear...). Each product page embeds a full schema.org Product
+  JSON-LD node (sku, name, offers[0].offers[0].price, priceCurrency
+  TMT) plus a separate BreadcrumbList node used for category. Verified
+  sample: sku "8681365270530-A2R" "Свитер LC Waikiki, акрил, сливовый,
+  водолазка" 152 TMT, availability InStock -- currency and price
+  plausible for a TMT-denominated clothing item.
+
+  Slow to walk in full (5 sitemap files x ~10MB, tens of thousands of
+  product pages at 1 req/s) so per-source timeout raised to 5400s;
+  --max-items verification runs only touch the first sitemap file.
