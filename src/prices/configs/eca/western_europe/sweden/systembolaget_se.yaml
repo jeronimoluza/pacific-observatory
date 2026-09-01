@@ -1,0 +1,47 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: official_avg
+coicop_classification: classifier
+spider: systembolaget_se
+url: https://www.systembolaget.se/
+language: sv
+cadence: weekly
+channel: null
+timeout: 3600
+notes: |
+  Next.js storefront over a public API Management gateway:
+  GET https://api-extern.systembolaget.se/sb-api-ecommerce/v1/productsearch/search?size=30&page=<N>
+  header Ocp-Apim-Subscription-Key: <key>. Key is not a secret -- it is
+  baked into the client bundle at build time (NEXT_PUBLIC_API_KEY_APIM),
+  verified live 2026-08-31 as a literal 32-char hex value in
+  /_next/static/chunks/1-cy4k4fw_1tj.js, the same value the site's own
+  browser JS attaches to every search request. No login, no session cookie.
+
+  `size` is capped server-side at 30 regardless of requested value (tested
+  30/50/60 -> always 30 rows); pagination walks `page` instead. Verified
+  live: pages 1-5 returned 150 distinct productIds with zero repeats, so
+  `page` genuinely advances. Walk stops when a page returns zero products.
+
+  Full assortment, ~27,000 SKUs (metadata.docCount): wine, spirits, beer,
+  cider, alcohol-free alternatives. Systembolaget is the sole legal
+  retailer of alcohol above 3.5% ABV in Sweden and publishes one national
+  price list with no store-level variation (same structure as Norway's
+  Vinmonopolet, see ../norway/vinmonopolet.yaml) -- treated as
+  official_avg, channel null, rather than retailer_sku/specialty-food.
+  Price is SEK, tax-inclusive, matches countries.yaml. COICOP 02.1
+  (alcoholic beverages) -- narrow beverage coverage, not a substitute for
+  grocery/food sources.
+
+  Spider was found mid-work, orphaned with no manifest, and fixed
+  2026-08-31 (see spider docstring for detail): (1) pagination request had
+  no query string at all -- silently re-served page 1 forever, a textbook
+  "flat cap = broken spider" defect; (2) the emitted PDP url
+  produkt/{number}/ 404s, real path is produkt/{category}/{slug}-{number}/
+  -- fixed by ASCII-folding the product name into a slug (exact slug text
+  doesn't matter live, only the two-segment shape + correct number).
+
+  Verified end-to-end 2026-08-31 after both fixes: `po prices collect
+  --source systembolaget_se --max-items 200` landed 210 rows / 210
+  distinct product_id / 210 distinct url, currency SEK throughout, price
+  range 10.7-699.0 SEK, no blank names. Re-fetched 3 emitted PDP urls
+  live -> all HTTP 200 with the product name present on the page.

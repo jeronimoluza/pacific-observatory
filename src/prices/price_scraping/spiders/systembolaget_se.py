@@ -22,6 +22,20 @@ distinct productIds with zero repeats, so `page` genuinely advances (unlike
 the megamarche_ci offset trap). The walk stops when a page returns zero
 products.
 
+FIXED 2026-08-31: this spider was left mid-work with no manifest and two
+bugs. (1) `_page_request` built `scrapy.Request(BASE_URL, ...)` with no
+query string at all, so every request hit the bare endpoint and silently
+re-served page 1 forever (533 requests, 30 distinct items, all subsequent
+rows dropped by the DuplicationPipeline as duplicate URLs) -- size/page
+are now appended to the request URL as documented above. (2) The emitted
+PDP url `produkt/{number}/` 404s -- the real site path is two segments,
+`produkt/{category}/{slug}-{number}/`. Verified live: the site 200s on
+ANY non-empty category/slug text as long as the trailing productNumber is
+correct and the two-segment shape is present, so an ASCII-folded slug of
+the product name (matching the site's own style, e.g. 'Bryggmästarens' ->
+'bryggmastarens') is sufficient without reverse-engineering their exact
+slug algorithm.
+
 Full assortment, ~27,000 SKUs (metadata.docCount) covering wine, spirits,
 beer, cider and alcohol-free alternatives -- this is the country's
 beverage-of-record price source: Systembolaget is the sole legal retailer
@@ -34,6 +48,8 @@ matches countries.yaml.
 """
 
 import logging
+import re
+import unicodedata
 from datetime import datetime, timezone
 
 import scrapy
@@ -43,9 +59,24 @@ logger = logging.getLogger(__name__)
 BASE_URL = (
     "https://api-extern.systembolaget.se/sb-api-ecommerce/v1/productsearch/search"
 )
-PDP_URL = "https://www.systembolaget.se/produkt/{number}/"
+PDP_URL = "https://www.systembolaget.se/produkt/{category}/{slug}-{number}/"
 SUBSCRIPTION_KEY = "8d39a7340ee7439f8b4c1e995c8f3e4a"
 PAGE_SIZE = 30
+
+
+def _slugify(text, fallback="produkt"):
+    """ASCII-fold and hyphenate; matches the site's own PDP slug style
+    (e.g. 'Bryggmästarens' -> 'bryggmastarens'). Verified live 2026-08-31:
+    the site 200s on ANY non-empty slug/category text as long as the
+    trailing productNumber is correct and a two-segment /produkt/<a>/<b>-<n>/
+    path shape is present -- so an approximate slug is sufficient to reach
+    the real product page, it need not be pixel-exact.
+    """
+    if not text:
+        return fallback
+    ascii_text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode()
+    slug = re.sub(r"[^a-z0-9]+", "-", ascii_text.lower()).strip("-")
+    return slug or fallback
 
 
 class SystembolagetSeSpider(scrapy.Spider):
@@ -65,8 +96,9 @@ class SystembolagetSeSpider(scrapy.Spider):
         yield self._page_request(1)
 
     def _page_request(self, page):
+        url = f"{BASE_URL}?size={PAGE_SIZE}&page={page}"
         return scrapy.Request(
-            BASE_URL,
+            url,
             callback=self.parse_page,
             errback=self.errback,
             headers={
@@ -111,6 +143,11 @@ class SystembolagetSeSpider(scrapy.Spider):
                 )
             )
             number = product.get("productNumber") or product_id
+            url = PDP_URL.format(
+                category=_slugify(product.get("categoryLevel1"), fallback="sortiment"),
+                slug=_slugify(name),
+                number=number,
+            )
             yield {
                 "product_id": str(product_id),
                 "product_name": name[:500],
@@ -118,7 +155,7 @@ class SystembolagetSeSpider(scrapy.Spider):
                 "price": str(price),
                 "currency": self.currency,
                 "available": not product.get("isCompletelyOutOfStock", False),
-                "url": PDP_URL.format(number=number),
+                "url": url,
                 "language": self.language,
                 "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
             }
