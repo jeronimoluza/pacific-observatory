@@ -1,0 +1,38 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: classifier
+channel: null
+source_key: mwi_nso_cpi
+module: ssa.east_africa.malawi.nso_cpi_mw
+function: fetch_mwi_nso_cpi
+url: https://nsomalawi.mw/news
+language: en
+cadence: monthly
+fallback_date: 2021-12-01
+notes: |
+  National Statistical Office of Malawi (NSO) monthly Consumer Price Index
+  "Stats Flash" release. Probed live 2026-08-31 via curl_cffi
+  impersonate="chrome124" (site also serves plain requests fine, no bot
+  block). Discovery is live, not hardcoded: GET nsomalawi.mw/news (a Nuxt
+  SSR site) embeds recent post slugs as plain text
+  ("consumer-price-index-july-2026" etc) in its Nuxt payload; the fetcher
+  regexes out all such slugs, picks the newest by (year, month), then GETs
+  that post's own page to find its "NSO-CPI-<Month>-<Year>---Stats-Flash.xlsx"
+  attachment (skipping the sibling "YoY-NSO-Stats-Flash" file, which carries
+  year-on-year inflation rates rather than index levels) served from
+  cms.nsomalawi.mw/api/download/<id>/<filename>, no auth required.
+  Verified: July 2026 release found via slug "consumer-price-index-july-2026",
+  xlsx = cms.nsomalawi.mw/api/download/816/NSO-CPI-July-2026---Stats-Flash.xlsx
+  (200, 62,457 bytes). Parsed with openpyxl: single "Sheet1", 3 stacked
+  location blocks (National/Urban/Rural) x 12 COICOP divisions (Food,
+  Alcohol&Tobacco, Clothing&footwear, Housing/Water/Electricity,
+  Furnishing&Household, Health, Transport, Communication, Recreation&Culture,
+  Education, Restaurants&Hotels, Miscellaneous -> COICOP 01-11 + 13, mirrors
+  eap/pacific_islands/vanuatu/vnso_cpi.py's Miscellaneous->13 convention) x
+  50 months back to base period Dec 2021=100. "All items" headline column
+  and month-to-month/food/non-food inflation-rate columns are dropped (rates,
+  not index levels; headline has no sanctioned sentinel). This is an index
+  series (analytical_role=cpi_benchmark), not raw item prices, so it writes
+  index_observations.csv, not price_observations.csv -- channel is null per
+  the YAML-rules note for cpi_benchmark/official_avg/tariff sources.
