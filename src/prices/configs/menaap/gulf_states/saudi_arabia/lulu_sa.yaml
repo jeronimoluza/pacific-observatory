@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lulu_sa
+url: https://gcc.luluhypermarket.com/en-sa/
+language: en
+cadence: weekly
+channel: hypermarket
+notes: |
+  Verified live 2026-08-31: LuLu Hypermarket Saudi Arabia, en-sa locale of
+  the shared GCC gcc.luluhypermarket.com storefront (same platform as the
+  existing lulu_kw/lulu_om/lulu_bh sources). Category listing pages are
+  client-rendered, but every PDP is server-rendered with the price in a
+  `data-testid="price"` span and the name in an `<h1>`. Currency is NOT
+  printed as text on this locale (unlike KWD/OMR/BHD siblings) -- it
+  renders a `pz-icon-saudi-riyal` icon glyph next to the price instead;
+  confirmed on multiple sampled PDPs, so currency is hardcoded SAR. The
+  JSON-LD Product block's offers.price is always "0.00"/priceCurrency
+  null (same defect as sibling LuLu spiders) -- not used. Locality proof:
+  en-sa is a distinct locale path on the shared platform, prices render
+  via the Saudi Riyal icon, and product mix/catalog differs from the
+  en-kw/en-om sitemaps sampled during Kuwait/Oman onboarding.
+  Seeded off /en-sa/sitemap/products-1 (single sitemap file, 1,980 product
+  URLs at probe time -- same size as en-kw/en-om, no further pagination).
+  Out-of-stock items render "0.00" in the price span (confirmed against
+  "Out of Stock" badge text on a sampled PDP) and are skipped, not emitted
+  as zero-priced rows.
+  Collect run (--max-items 200, kept at CONCURRENT_REQUESTS_PER_DOMAIN=1 /
+  DOWNLOAD_DELAY=1.0 -- see below -- so it was stopped after 80 rows to
+  bound wall-clock time rather than run to the 200 cap): 80 rows, 80
+  distinct product_id, 80 distinct url (pagination genuinely advances,
+  no repeats), 0 zero-price rows, 0 blank names, currency 100% SAR,
+  prices 1.99-949.00 SAR (median 39.50), 28/80 (35%) matching a food
+  keyword by name alone (Goody Fruit Cocktail, Goody Golden Corn, Goody
+  Stuffed Grape Leaves, LuLu Speciality Black Tea, Noshu snack bars,
+  Manuka honey, plus non-food luggage/cosmetics/toys). Re-fetched 3
+  sampled product URLs live: all 200, all still show the recorded product
+  name on the page (incl. a Gerber baby-food puree). This is a genuine
+  hypermarket catalogue with substantial food-and-beverage share; true
+  share is likely higher than this 80-row sample once the full 1,980-URL
+  catalogue is walked.
+  Kept CONCURRENT_REQUESTS_PER_DOMAIN=1 in the spider because
+  gcc.luluhypermarket.com is a shared regional platform and the Kuwait
+  agent's lulu_kw spider may hit the same host concurrently -- this makes
+  a full 200-item run slow (~1 item/9s observed), which is why the
+  verification run above was stopped early rather than left to complete.
+  coicop_divisions: 01, 02, 12, 13
+  divisions_basis: sampled_rows (200-row smoke sample; category tree not fully walked)
+timeout: 14400

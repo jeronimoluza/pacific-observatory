@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: danube_sa
+url: https://danube.sa/en/
+language: en
+cadence: weekly
+channel: hypermarket
+notes: |
+  Verified live 2026-08-31: Danube (danube.sa), a Bindawood Holding
+  hypermarket chain, Saudi Arabia. Storefront is Rails/Spree, but the
+  catalogue itself is served client-side from a public Algolia index
+  (appId 1D2IEWLQAD, search-only apiKey, indexName spree_products) found
+  in the instantsearch.js init block on a category page. `filters:
+  "tenant_id = 1"` scopes to Danube's own tenant (tenant_key "DAN" on
+  every hit) -- not shared with another brand/country on the same index.
+  Locality proof: danube.sa domain, prices rendered/labelled SAR
+  site-wide, tenant_key "DAN" is Danube's own slice of a multi-tenant
+  index (confirmed distinct from other tenant_ids, not inspected further
+  since tenant_id=1 alone is sufficient scoping).
+  Total catalogue: nbHits=33,161 for tenant_id=1. Algolia's query endpoint
+  caps pagination at 1,000 hits per filter and the browse endpoint 403s
+  for this public key, so the spider partitions by a binary split on the
+  numeric `master_id` field (self-terminating recursive range halving,
+  see spider docstring) rather than a page counter -- avoids the
+  "flat/re-served page" trap since every leaf range is disjoint by
+  construction.
+  Smoke test (--max-items 200): 200 rows, 200 distinct product_id
+  (master_id), 200 distinct url, 0 zero-price rows, 0 blank names,
+  currency 100% SAR, real grocery SKUs (Potatoe Baladi (Bag) 8.95 SAR,
+  Banana (Tray) 9.95 SAR, Samoli Bread Big 1.15 SAR, Cucumber (Tray) 8.95
+  SAR, Tomato (Tray) 6.99 SAR). This is a genuine large hypermarket
+  catalogue, heavily food/grocery-weighted based on the sampled rows and
+  the department tree (bakery, beverages-water, canned-food,
+  cereals-corn-flakes, cheese, baking-essentials, etc. all present as
+  top-level departments alongside non-food categories like bags,
+  click-toys, computing).
+  coicop_divisions: 01, 02, 12
+  divisions_basis: sampled_rows (200-row smoke sample; full 33k-item
+  catalogue not exhaustively categorised this round)
+timeout: 14400
