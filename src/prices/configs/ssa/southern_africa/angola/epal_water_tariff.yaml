@@ -1,0 +1,38 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1"]
+channel: null
+source_key: epal_water_tariff_ao
+module: ssa.southern_africa.angola.epal_water_tariff
+function: fetch_epal_water_tariff_ao
+url: https://www.epal.co.ao/comercial.php
+language: pt
+cadence: irregular
+fallback_date: 2015-01-01
+notes: |
+  Wave 10 (2026-09-01). EPAL (Empresa Publica de Aguas de Luanda) publishes
+  its "Tarifario" as a plain server-rendered HTML table on a static
+  Bootstrap page (no PDF, no JS rendering) -- 7 categories: 3 consumption
+  brackets for "Domesticos" (0-10 m3 / 10-15 m3 / >15 m3), "Comercio e
+  Servicos", "Industria", "Chafariz" (public standpipe), "Girafa" (kiosk/
+  tanker fill point). Only the per-m3 variable rate is emitted (fixed
+  monthly charge excluded, same scope choice as
+  seeg_electricity_tariff_ga.py's separate F/kW component).
+
+  AOA CURRENCY TRAP: EPAL's fixed monthly charges use Portuguese formatting
+  (period=thousands, comma=decimal -- "3.900 Kz" = 3900, not 3.9). The
+  variable per-m3 rates on the live table happen to be small enough to
+  need no separator, but the parser handles both forms uniformly.
+
+  No effective/decree date is printed on the page, so period_kind is
+  "snapshot" (scrape date), not "effective_from" -- this is a live re-fetch
+  of whatever EPAL currently publishes, not a dated tariff order.
+
+  Luanda-only utility (EPAL = "Empresa Publica de Aguas de Luanda", ~499,478
+  clients per its own copy) -- subnational_area="Luanda" on every row.
+
+  www.epal.co.ao serves an incomplete TLS chain; verify=False required
+  (same class of issue as ubos_cpi.py / vnso_cpi.py in this repo).
+  fallback_date backdated so run 1 ships the full current schedule.

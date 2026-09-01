@@ -1,0 +1,33 @@
+scaffolding: spider
+spider: souqly_ly
+url: https://souqly.ly/
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: ar
+currency: LYD
+cadence: weekly
+coicop_codes: null
+archive_prefix: "souqly.ly/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Souqly (Libya) -- wave 10 workbook ACCEPT candidate ("Live: 3,800+
+  products, .ly domain, 'made in Libya', delivery to all cities").
+  Verified live 2026-09-01: Next.js (App Router) storefront with an open
+  JSON endpoint, GET https://souqly.ly/api/products?page=<n> (no auth,
+  curl_cffi impersonate=chrome124, 200). Response gives totalProducts,
+  page, productsPerPage, totalPages. Actual live catalog is 16 products
+  across 2 pages (ids 1-16, complete run, no gaps) -- the "3,800+" figure
+  in the workbook is not what the live API serves; recorded honestly
+  rather than padded.
+  General dropship marketplace: electronics/gadgets (gamestick, walkie-
+  talkies), perfume ("French Avenue" line), books (Ibn al-Qayyim
+  religious titles), prayer accessories (tasbih, prayer mats), jewelry.
+  No food/grocery category on the site -- channel: marketplace, does NOT
+  count toward the food total.
+  Currency: API's `salePrice` field is a plain numeric string, no
+  thousands separator, no minor-unit scaling (e.g. "170", "115" = 170/115
+  LYD outright). Cross-checked id=1 "gamestick m8": API salePrice="115",
+  rendered PDP shows "115.00 د.ل" -- consistent, no 1000x trap here.
+  coicop_codes left unset for classifier assignment (wide catalog).

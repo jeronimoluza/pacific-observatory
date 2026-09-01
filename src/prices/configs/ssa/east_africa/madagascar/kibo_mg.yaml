@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: kibo_mg
+url: https://www.kibo.mg/tananarive/
+language: fr
+cadence: weekly
+timeout: 7200
+notes: |
+  Confirmed live 2026-09-01. Custom PrestaShop install ("AngarTheme"),
+  multi-boutique with 4 store paths (Tananarive, Tanjombato, Tamatave,
+  Ivato) -- only Tananarive (capital) is scraped. Distinct operator from
+  mescourses/leaderprice_mg: footer copyright reads "KIBO Tananarive", own
+  TOP BUDGET private-label brand, own PrestaShop token/session -- no shared
+  backend evidence with the other two grocers (checked per rule 19).
+  Theme emits NO schema.org itemprop/itemtype microdata, so this uses a
+  bespoke spider (kibo_mg.py) rather than _prestashop_base.py's generic
+  itemprop-driven extractor -- category walk mirrors the base's regex
+  approach but item extraction reads `article.product-miniature
+  [data-id-product]`, `h3.product-title a`, `span.price` directly.
+  Price format "1 000 Ar" (space thousands, no decimals) -- MGA is a
+  plain-integer currency, not divided by anything. Pagination is standard
+  PrestaShop `?page=N`.

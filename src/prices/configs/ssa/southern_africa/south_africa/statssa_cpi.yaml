@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"]
+channel: null
+source_key: statssa_cpi
+module: ssa.southern_africa.south_africa.statssa_cpi
+function: fetch_statssa_cpi
+url: https://www.statssa.gov.za/publications/P0141/P0141July2026.pdf
+language: en
+cadence: monthly
+fallback_date: 2016-12-01
+notes: |
+  Stats SA "P0141" Consumer Price Index statistical release. Predictable
+  monthly URL: https://www.statssa.gov.za/publications/P0141/P0141<Month><Year>.pdf
+  (e.g. P0141July2026.pdf) -- verified live 2026-09-01 back to January 2017.
+  "Table E - Consumer price indices for all urban areas" gives top-level
+  group indices; parsed via pdfplumber.extract_tables() (structural
+  indentation, not text regex). Two basket eras: pre-2025 (12 groups, "Dec
+  2021=100" and earlier) maps 11 of 12 groups cleanly to COICOP divisions
+  01-11 -- "Miscellaneous goods and services" is dropped (it spans what the
+  2025 rebase split into divisions 12+13 and can't be disaggregated here).
+  From the January 2025 report (Dec 2024=100 base) onward: 13 groups, clean
+  1:1 to COICOP divisions 01-13. "All items (CPI Headline)" is always
+  dropped -- no sanctioned all-items sentinel in IndexObservation (see
+  skill's open design question). fallback_date is set one month before the
+  first wanted observation (2017-01-01) since the fetcher only emits
+  observation_date > cutoff.

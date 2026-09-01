@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: statsmu_cpi
+module: ssa.east_africa.mauritius.statsmu_cpi
+function: fetch_statsmu_cpi
+url: https://statsmauritius.govmu.org/Pages/Statistics/Monthly/Monthly-CPI.aspx
+language: en
+cadence: monthly
+fallback_date: "2025-12-01"
+coicop_codes: ["01","02","03","04","05","06","07","08","09","10","11","12","13"]
+notes: |
+  Statistics Mauritius monthly CPI press release PDF, 13-division COICOP-2018
+  sub-indices table (base Jan-Dec 2023=100). Verified live 2026-09-01: 7 PDFs
+  discovered for 2026 (Jan-Jul), each cleanly text-extractable with
+  pdfplumber. Headline "All Divisions" row dropped (no sanctioned COICOP
+  sentinel for all-items). Only the current-year listing page is walked; the
+  separate "Archive Collections 2014-2025" page exists but mixes a
+  differently-shaped "Core inflation" bulletin with the main release under
+  inconsistent filenames across a decade -- historical backfill from that
+  archive is a documented follow-up, not attempted here. fallback_date set
+  to 2026-01-01 so run 1 picks up the full reliably-discoverable series.

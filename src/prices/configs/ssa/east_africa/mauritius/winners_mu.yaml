@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: hypermarket
+spider: winners_mu
+url: https://www.winners.mu/
+language: en
+cadence: weekly
+timeout: 3600
+notes: |
+  nopCommerce storefront, server-rendered category pages, no auth. Verified
+  live 2026-09-01: HTTP 200 on curl_cffi impersonate=chrome124, no WAF.
+  General-merchandise supermarket with a full grocery range (BOUCHERIE,
+  BOULANGERIE, CHARCUTERIE, CREMERIE, EPICERIE, FRUITS ET LEGUMES,
+  POISSONNERIE) alongside non-food departments (AUTO/VELO,
+  BRICO/MAISON/JARDIN, JOUETS, HYGIENE-BEAUTE) — sample SKUs: 'COLD CHAIN
+  RIB EYE' Rs 979.90+, 'BAGUETTE PARISIENNE 300G' Rs 39.00, 'LUMINARC MUG
+  TRIANON' (non-food). 268 leaf categories discovered via the mega-menu's
+  `lastLevelCategory` markers. Price displayed as "Rs <amount>" — MUR native
+  2-decimal subunit, no minor-unit trap. Currency fixed at MUR (matches
+  countries.yaml; no separate machine-readable currency code found to
+  override it).

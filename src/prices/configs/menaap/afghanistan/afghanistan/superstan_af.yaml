@@ -1,0 +1,93 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: superstan_af
+url: https://superstan.market/
+language: fa
+currency: USD
+cadence: weekly
+notes: |
+  "Superstan - Afghanistan online shopping store" (self-described
+  "Afghanistan's first cryptocurrency supermarket"), delivering staple
+  groceries and household goods inside Afghanistan -- catalog is
+  Kabul-market staples: rice, cooking oil, wheat flour, lentils, sugar,
+  eggs, tea, biscuits, milk powder, fresh tomato/onion/potato, diapers and
+  hygiene items, plus donor-style "Emergency" bundle SKUs (Baby Care
+  Package, Winter Clothing Package, Mahastan Package for Women).
+
+  PRICE BASIS -- THIS IS A DIASPORA GIFTING / REMITTANCE-ADJACENT
+  PLATFORM, NOT AN ORDINARY DOMESTIC RETAIL SHELF (rule 8). Confirmed live
+  2026-09-01 by reading the site's own About Us and Send Money pages, not
+  inferred. About Us states outright: "The idea for Superstan was born
+  when we noticed that there was no online way people could shop for
+  their families and friends in Afghanistan... When the Taliban took
+  control of Afghanistan, banking systems became paralyzed... Building
+  the first online crypto shopping store in Afghanistan so that the
+  Afghans who live outside of Afghanistan can shop for their families or
+  loved ones who were left behind." The site also runs a separate
+  crypto-to-cash remittance product at /send/ ("You send us crypto, the
+  recipient will collect cash directly from our confidants") and solicits
+  donations ("fifty dollars can support a family of six for a month. Food
+  delivery is free for vulnerable families across Afghanistan"). Prices
+  are USD, not AFN, despite genuinely serving Afghanistan -- consistent
+  with a diaspora-facing, not a domestic-facing, price list. Consistent
+  with a delivery-and-donation margin baked in: 0.5L mineral water at
+  $0.80 prices roughly 4x the Kabul street rate, while bulk staples
+  (wheat flour 50kg at $30) price close to market. Use this source's
+  prices as an upper-bound diaspora-gifting price level, not a like-for-
+  like domestic shelf comparator.
+
+  Standard WooCommerce Store API (/wp-json/wc/store/v1/products) behind an
+  "hcdn" bot-wall -- identical signature to the existing dawana_sd (Sudan)
+  spider: curl_cffi impersonate=chrome124/chrome120/chrome131/safari17_0
+  all flat-403 with an identical byte-for-bytes "Checking your browser
+  before accessing..." challenge page, on both the homepage and the API
+  path (re-verified live 2026-09-01, all 4 profiles). Playwright with a
+  real Chromium navigating straight to the API URL passes cold (200, real
+  JSON, X-WP-Total: 93) -- no homepage warm-up needed. Reuses the
+  dawana_sd scaffolding pattern.
+
+  TRIPLE-LANGUAGE DEDUP (fixes a shipped defect -- v1 emitted all 93 raw
+  listings as 93 rows, double/triple-counting real products at
+  DIFFERENT, conflicting prices). The raw catalog is 93 listings across
+  three locales by permalink path: /product/ (English, 43), /fa/product/
+  (Persian, 33), /ar/product/ (Arabic, 17). English and Persian editions
+  of the same physical product share a non-blank `sku` (e.g. sku "0010" =
+  "Sugar 5Kg" en id 958 AND "شکر 5 کیلویی" fa id 3985, both $4.20) and are
+  linked by a WPML hreflang pair on the live page -- 29 such pairs
+  confirmed; deduped on `sku`, English kept as canonical where an English
+  member exists, else the Persian one. The 17 Arabic listings all carry a
+  BLANK sku (confirmed on both list and single-product endpoints) and
+  ZERO WPML hreflang links on their live pages -- not treated as
+  translations of anything by the site itself. Spot-checked 8 Arabic
+  items against their apparent en/fa commodity match: 3 agreed exactly
+  (milk powder, red kidney beans, eggs) and 4 conflicted outright (sugar
+  $5.00 vs canonical $4.20; lentils $4.00 vs $5.50; rice 10kg $17.00 vs
+  $12.00; tomato paste $3.00 vs $1.50) -- a second, disconnected,
+  partially-stale price list with no reliable join key. Rather than
+  fabricate a name-translation match (proven sometimes wrong) or silently
+  multi-count the corpus, the Arabic edition is DROPPED IN FULL, not
+  merged and not kept standalone. 13 more en/fa listings carry a blank
+  sku with no translation partner at all (e.g. "Mineral Water 0.5 Liter",
+  "Baby Care Package") -- kept as-is, nothing to collide with.
+  Net: 93 raw listings -> 47 canonical rows (43 en + 4 fa-only singles;
+  29 sku-matched pairs collapsed to their English member; 17 Arabic
+  listings excluded). `language` is set per row to the emitting locale
+  (en/fa), not a fixed constant.
+
+  currency_minor_unit=2 confirmed on every product (raw "80" -> USD 0.80
+  for 0.5L mineral water) -- standard WooCommerce minor-unit division
+  applied in the spider.
+
+  Product names mix Persian and English (Arabic dropped, see above); left
+  unnormalized beyond entity-decoding -- the classifier consumes the raw
+  name. `&#8211;` (en-dash) ships DOUBLY HTML-entity-escaped on some
+  titles: the WordPress post title itself stores the literal text
+  "&#8211;", and Chromium's <pre> JSON viewer additionally escapes the
+  leading "&" to "&amp;" when serializing page HTML source (what
+  `response.text` reflects here). A single `html.unescape()` only
+  resolves one layer ("&amp;#8211;" -> "&#8211;", still visibly an
+  entity); the spider now loops `html.unescape()` to a fixed point so
+  both layers resolve to the real "–" character.

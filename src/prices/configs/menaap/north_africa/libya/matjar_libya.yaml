@@ -1,0 +1,42 @@
+scaffolding: spider
+spider: matjar_libya
+url: https://www.matjar-libya.com/
+channel: marketplace
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: ar
+currency: LYD
+cadence: weekly
+coicop_codes: null
+archive_prefix: "matjar-libya.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Matjar Libya -- wave 10 workbook P4 spare, reclassified "ACCEPT
+  non-food" ("LYD prices and COD, but catalogue is anti-theft bags,
+  camera detectors, hair oil. Dropship-style general goods, minimal
+  food"). Confirmed live 2026-09-01: general dropship marketplace (home
+  gadgets, beauty/skincare, baby toys, kitchen gadgets, health devices).
+  The "matbakh-libya" (kitchen) category is kitchen GADGETS (vegetable
+  cutters, cutlery sets, food-storage boxes), not food -- channel:
+  marketplace, does NOT count toward the food total.
+  Next.js storefront, server-rendered. Listing pages
+  https://www.matjar-libya.com/products?page=<n> paginate cleanly:
+  page 1-5 each return a distinct, non-overlapping slice of PDP links,
+  page 6+ returns zero -- clean stop condition (not a re-served-last-page
+  loop). Total 112 unique product URLs across pages 1-5, matching the
+  page's own embedded JSON-LD `numberOfItems: 112` exactly.
+  Each PDP carries a clean schema.org Product JSON-LD block with
+  `offers.priceCurrency` / `offers.price` as a plain decimal string in
+  whole LYD (e.g. "199.00") -- spider reads this field, NOT the rendered
+  page text, which displays the same value with a comma decimal separator
+  ("199,00 د.ل.") that could be misread as a thousands separator under
+  the LYD 3-decimal trap. Verified: JSON-LD price "199.00" for a face
+  cream (plausible dropship-marked-up retail price), no 1000x drift.
+  Locality: LYD prices, delivery to Tripoli/Benghazi/Misrata/"all cities"
+  per the site's own About page and schema.org Organization
+  areaServed=Libya. Contact WhatsApp/phone carries a +33 (France) prefix
+  -- noted for transparency (externally-operated dropship-to-Libya
+  storefront is a common pattern), not treated as a locality failure
+  since delivery geography and currency are both Libyan.
+  coicop_codes left unset for classifier assignment (wide catalog).

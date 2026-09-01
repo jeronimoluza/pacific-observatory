@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: melat_shop_af
+url: https://dara.af/
+language: en
+currency: AFN
+cadence: weekly
+notes: |
+  Named first-party grocery merchant "Melat Shop" split out of the Dara.af
+  marketplace (https://dara.af/), per onboarding rule 14, rather than
+  onboarding Dara as one blended marketplace source. Verified live
+  2026-09-01: Dara's backend (backend.dara.af, open REST API, no auth, no
+  WAF) lists only 5 registered sellers total
+  (GET /api/v1/sellers). Of those, Melat Shop is the one genuine grocery
+  merchant -- its 960-product catalog (seller_id
+  019d5e14-465c-76d7-a165-e8dae351dba3) samples as a supermarket mix of
+  fresh dairy (doogh, yogurt -- one line's own `attributes` names the
+  supplier as "سوپرمارکیت‌های هفت‌سین" / Haftsin Supermarkets), packaged
+  food (spices, biscuits, pizza cheese), baby-feeding supplies and personal
+  care. The other 4 sellers were checked and rejected as non-food: Zala
+  (762 products, mostly beauty/fragrance/fashion, food ~24%), Easy Shop
+  (426 products, mostly books/electronics), Asan Mart (584 products, mostly
+  electronics/home), and an inactive "Haftseen" account with zero published
+  products.
+  This spider queries ONLY this seller's slice
+  (`filters[seller_id]=<melat-shop-id>`) -- it does not touch Dara's other
+  4 sellers, so there is no double-count risk with any future
+  whole-marketplace Dara spider (none exists in this repo).
+  Prices are plain AFN amounts, not minor units (spot-checked against
+  realistic Kabul retail prices, e.g. a 300ml yogurt drink at 20 AFN, a
+  power bank at 5,200 AFN). `locale=en` used for clean, boilerplate-free
+  English product names. A product with multiple size variants (e.g. 300ml
+  vs 500ml) is emitted as one row per variant, with the variant id folded
+  into both `product_id` and `url` so DuplicationPipeline's url-dedup does
+  not collapse size variants into a single row.
