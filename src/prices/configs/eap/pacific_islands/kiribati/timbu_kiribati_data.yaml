@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: timbu_kiribati_data
+url: https://timbu.com/kiribati/networks/amalgamated-telecom-holdings-kirbati/dataplan
+language: en
+currency: AUD
+cadence: monthly
+channel: null
+notes: |
+  Timbu third-party listing of Amalgamated Telecom Holdings Kiribati data-plan
+  prices. The page is server-rendered and explicitly states that prices are
+  shown in AUD, but it is not an official operator page; use as fallback
+  coverage only where Kiribati official/retailer online price sources are
+  still sparse.

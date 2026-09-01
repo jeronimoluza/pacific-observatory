@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lacavedetahiti_pf
+url: https://lacavedetahiti.pf/categorie-produit/epicerie/
+language: fr
+currency: XPF
+cadence: weekly
+channel: specialty-food
+notes: |
+  French Polynesia specialty food and beverage retailer with physical shops in
+  Papeete and Arue. WooCommerce Store API is public and unauthenticated:
+  /wp-json/wc/store/v1/products. Re-verified live 2026-09-01: product category
+  id 478 ("EPICERIE") returned 20 priced rows and the payload reports
+  currency_code=XPF with currency_minor_unit=0. This is not a broad supermarket;
+  it is useful as an additional island-market retailer SKU source covering
+  teas, pantry/gourmet food and food-adjacent products.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hardrocksokehs_fm
+url: https://hardrocksokehs.com/
+language: en
+currency: USD
+cadence: weekly
+channel: supermarket
+archive_prefix: "hardrocksokehs.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Hard Rock Sokehs Shopify storefront for Sokehs, Pohnpei, Federated States of
+  Micronesia. The public /products.json endpoint exposes food and household SKU
+  prices in USD; the scraper drops zero-priced placeholder rows. Re-verified
+  live 2026-09-01.

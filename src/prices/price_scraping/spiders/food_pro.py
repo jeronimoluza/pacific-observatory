@@ -24,7 +24,7 @@ class FoodProSpider(CrawlSpider):
     name = "food_pro"
     allowed_domains = ["fpr.com.pg"]
     start_urls = ["https://fpr.com.pg/shop/"]
-    currency = "K"
+    currency = "PGK"
 
     # CSS selector fallbacks for product fields
     SELECTORS = get_selectors("food_pro")

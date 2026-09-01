@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farmboy_fj
+url: https://farmboyfiji.com/product-category/agriculture/
+language: en
+cadence: weekly
+channel: fresh-market
+archive_prefix: "farmboyfiji.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: >
+  Farmboy Fiji WooCommerce storefront. Public Store API returned local FJD
+  prices for jam, tea, meat, produce, grocery, and household items during
+  the 2026-09-01 probe.

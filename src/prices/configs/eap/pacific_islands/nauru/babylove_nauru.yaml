@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: babylove_nauru
+url: https://babylovenauru.com/collections/%F0%9F%8D%BD%EF%B8%8Fsnacks
+language: en
+currency: AUD
+cadence: weekly
+channel: specialty-food
+notes: |
+  Nauru Shopify storefront with a public snacks collection. Re-verified live
+  2026-09-01: the collection JSON endpoint returned priced snack/confectionery
+  products such as gummy candy, bhuja mix and chocolate blocks. Currency is
+  treated as AUD, consistent with Nauru retail pricing and neighbouring Nauru
+  online grocery sources. Limitation: this scraper intentionally scopes to the
+  snacks collection rather than non-food baby goods.

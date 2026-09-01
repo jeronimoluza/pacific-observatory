@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: docx_table
+analytical_role: official_avg
+coicop_classification: classifier
+spider: kaupule_funafuti_market
+url: https://kaupulefunafuti.tv/market
+language: en
+currency: AUD
+cadence: monthly
+channel: null
+notes: |
+  Kaupule Funafuti public market page links to a Word document titled Market.
+  The DOCX contains a simple two-column table of market item prices, including
+  bakery and prepared-food items such as cake, pie, sandwich and bread. Added as
+  an official/local market price source because Tuvalu has very sparse online
+  food-price coverage.

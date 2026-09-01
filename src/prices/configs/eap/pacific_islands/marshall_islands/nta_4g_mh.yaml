@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: nta_4g_mh
+url: https://www.nta.mh/4g-lte-plans/
+language: en
+currency: USD
+cadence: monthly
+channel: null
+notes: |
+  Official Marshall Islands National Telecommunications Authority 4G LTE page.
+  The page has Elementor price tables for monthly LTE plans and a text paragraph
+  listing LTE voucher face values. This is a telecom tariff source, not a food
+  SKU source, but it is scrapeable and locally authoritative.

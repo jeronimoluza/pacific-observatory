@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: helia_nc_mobile
+url: https://www.helia.nc/mobile/forfaits-m
+language: fr
+currency: XPF
+cadence: monthly
+channel: null
+notes: |
+  Official Helia by OPT-NC mobile tariff pages for New Caledonia. The spider
+  combines the postpaid Forfaits M page and the Kits prepayes Liberte page,
+  both of which expose plan names, included services and XPF prices in
+  server-rendered HTML. This source is telecom tariff coverage, not retail SKU
+  coverage.

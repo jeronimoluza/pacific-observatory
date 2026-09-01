@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bula_banquet_fj
+url: https://take.app/bulabanquet
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "take.app/bulabanquet/p/"
+archive_path_re: '^/bulabanquet/p/[^/?]+$'
+notes: >
+  Bula Banquet Fiji prepared-food storefront on take.app. The public
+  Next.js flight payload exposes product ids, names, FJD prices, sold-out
+  flags, and countryCode=FJ. Probe on 2026-09-01 returned eight priced
+  meal items.

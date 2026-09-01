@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: gta_prepaid_mp
+url: https://www.gta.net/mobile/prepaid/
+language: en
+currency: USD
+cadence: monthly
+channel: null
+notes: |
+  GTA prepaid mobile page. The site is Guam-first but its prepaid plan details
+  explicitly include CNMI calls and texts, and all plan/add-on prices are
+  server-rendered in HTML. Added only as regional Guam/CNMI telecom tariff
+  coverage after CNMI-local food catalogs with scrapeable prices remained
+  limited.

@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: wikonomi_pg
+url: https://www.wikonomi.com/products/
+language: en
+currency: PGK
+cadence: weekly
+channel: marketplace
+archive_prefix: "wikonomi.com/product/"
+archive_path_re: '^/product/[0-9]+/?'
+notes: |
+  Wikonomi is a community-built Papua New Guinea product price directory. The
+  spider parses the server-rendered products listing and emits the lowest PGK
+  price shown per product, along with the latest reporting store when listed.
+  It is useful for sparse-country coverage, but observations are community
+  reports rather than a single retailer's official SKU shelf prices.

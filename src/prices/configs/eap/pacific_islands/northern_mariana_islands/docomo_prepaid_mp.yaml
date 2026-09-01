@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: docomo_prepaid_mp
+url: https://www.docomopacific.com/shop/mobile/prepaid/
+language: en
+currency: USD
+cadence: monthly
+channel: null
+notes: |
+  Docomo Pacific prepaid mobile page for Guam/CNMI customers. The page exposes
+  prepaid Flex plan cards and paid usage rates in server-rendered HTML, and the
+  site navigation explicitly references visitors to Guam or CNMI. This is a
+  regional telecom tariff source, not a CNMI-only grocery or supermarket source.

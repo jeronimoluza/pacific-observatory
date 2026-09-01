@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: nextjs_json
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: digicel_nauru_bundles
+url: https://www.digicelpacific.com/mobile/nr/bundles
+language: en
+currency: AUD
+cadence: monthly
+channel: null
+notes: |
+  Official Digicel Nauru mobile bundle page. The public Next.js payload exposes
+  OfferCard records with plan names, features, validity details and AUD prices.
+  Added as a telecom tariff source because repeatable food/beverage retail
+  coverage in Nauru remains limited.

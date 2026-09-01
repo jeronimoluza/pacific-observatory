@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cjs_supermarket_fj
+url: https://www.cjssupermarket.com.fj/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.cjssupermarket.com.fj/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: >
+  CJS Supermarket Fiji WooCommerce storefront. Public Store API returned
+  grocery and household products with FJD prices during the 2026-09-01 probe.

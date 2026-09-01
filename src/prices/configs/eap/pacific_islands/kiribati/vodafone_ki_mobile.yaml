@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: vodafone_ki_mobile
+url: https://www.vodafone.com.ki/Services/Postpaid-Plan/Mobile
+language: en
+currency: AUD
+cadence: monthly
+channel: null
+notes: |
+  Official Vodafone Kiribati postpaid mobile data tariff page. The page exposes
+  two plain HTML tables: seven monthly mobile data plans and five reload data
+  bundles. Prices are written with a dollar sign; Kiribati uses the Australian
+  dollar and Vodafone Kiribati presents the plans as local consumer tariffs.
+  Re-verified live 2026-09-01. This closes Kiribati coverage with a tariff
+  source because no independent Kiribati grocery/e-commerce catalog with at
+  least five current item-level food prices was found in this pass.

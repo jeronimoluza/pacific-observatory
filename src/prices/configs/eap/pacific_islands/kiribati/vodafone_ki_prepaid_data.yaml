@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: static_tariff_from_source_image
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: vodafone_ki_prepaid_data
+url: https://www.vodafone.com.ki/Services/Bundles/Mobile-Data
+language: en
+currency: AUD
+cadence: monthly
+channel: null
+notes: |
+  Official Vodafone Kiribati prepaid mobile data bundles page. The current page
+  renders the tariff table as embedded images rather than machine-readable HTML
+  table rows, so the spider fetches the official page and emits the audited
+  plan rows transcribed from the visible 2026-09-01 image. It should be
+  revisited if Vodafone converts the tariff to HTML or changes the image.

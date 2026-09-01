@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: patricks_transport_pg
+url: https://www.patrickstransport.com/collections/pantry
+language: en
+currency: PGK
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.patrickstransport.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Papua New Guinea retail/wholesale grocery catalog serving Port Moresby.
+  Shopify cart metadata reports PGK and the pantry collection exposes current
+  product and variant prices through /collections/pantry/products.json.
+  Re-verified live 2026-09-01.

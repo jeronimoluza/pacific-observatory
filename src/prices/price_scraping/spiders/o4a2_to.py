@@ -43,3 +43,58 @@ class O4a2ToSpider(ShopifyBaseSpider):
             if cleaned:
                 item["product_name"] = cleaned
             yield item
+
+
+# --- Per-vendor collection spiders -------------------------------------------
+# Contributed 2026-09-01 (EAP handoff). These subclass O4a2ToSpider rather than
+# ShopifyBaseSpider so they inherit the _PICKUP_SUFFIX strip above; the incoming
+# versions did not strip it and shipped 250-row samples whose every name ended
+# in 'PICK UP FROM <STORE>'. They select a vendor by Shopify collection
+# (PRODUCTS_PATH) instead of `vendor_filter`, which is the cheaper request path
+# when the vendor has its own collection URL.
+#
+# Golden Star and Hihifo are deliberately NOT here: they are already onboarded
+# as golden_star_to / hihifo_supermarket_to via vendor_filter, and a second
+# manifest over the same shelf would double-count it.
+
+
+class O4a2ZfCompanyToSpider(O4a2ToSpider):
+    """O4A2 vendor collection for Z & F Vava'u Wholesale & Retail."""
+
+    name = "o4a2_zf_company_to"
+    PRODUCTS_PATH = "/collections/z-f-company-ltd-neiafu-vavau-falekoloa-hanga-ki-pouono/products.json"
+
+
+class O4a2AtlasLiquorToSpider(O4a2ToSpider):
+    """O4A2 vendor collection for Atlas Liquor, Ha'ateiho."""
+
+    name = "o4a2_atlas_liquor_to"
+    PRODUCTS_PATH = "/collections/atlas-liquor/products.json"
+
+
+class O4a2HotPizzaToSpider(O4a2ToSpider):
+    """O4A2 vendor collection for Hot Pizza."""
+
+    name = "o4a2_hot_pizza_to"
+    PRODUCTS_PATH = "/collections/hot-pizza/products.json"
+
+
+class O4a2JuiceLabToSpider(O4a2ToSpider):
+    """O4A2 vendor collection for The Juice Lab."""
+
+    name = "o4a2_juice_lab_to"
+    PRODUCTS_PATH = "/collections/the-juice-lab/products.json"
+
+
+class O4a2TropicalTasteToSpider(O4a2ToSpider):
+    """O4A2 vendor collection for Tropical Taste, Pahu Nuku'alofa."""
+
+    name = "o4a2_tropical_taste_to"
+    PRODUCTS_PATH = "/collections/tropical-taste-pahu-nukualofa-tonga/products.json"
+
+
+class O4a2GoGasToSpider(O4a2ToSpider):
+    """O4A2 vendor collection for Go Gas (LPG)."""
+
+    name = "o4a2_go_gas_to"
+    PRODUCTS_PATH = "/collections/go-gas/products.json"

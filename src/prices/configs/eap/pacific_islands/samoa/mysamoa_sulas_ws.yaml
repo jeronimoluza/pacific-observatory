@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mysamoa_sulas_ws
+url: https://www.mysamoa.co/collections/sula-s-supermarket-bakery
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "mysamoa.co/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  My Samoa marketplace collection for Sula's Supermarket and Bakery in
+  Samoa. Public Shopify collection feed returned grocery, fresh bakery,
+  dairy, pantry, meat, and beverage products with NZD prices during the
+  2026-09-01 probe. Count separately from mysamoa_chan_mow_ws as a distinct
+  local supermarket/merchant feed on the same marketplace host.

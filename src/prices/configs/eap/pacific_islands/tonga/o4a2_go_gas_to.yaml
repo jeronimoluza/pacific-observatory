@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes:
+  - "04.5.2"
+spider: o4a2_go_gas_to
+url: https://o4a2.com/collections/go-gas
+language: en
+currency: NZD
+cadence: weekly
+channel: fuel-station
+archive_prefix: "o4a2.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  O4A2 vendor collection for Go Gas LPG products in Tonga. Fuel/utility-adjacent
+  source only; useful for COICOP 04.5.2 but not food or beverages. This is a
+  vendor-level scrape from the same O4A2 marketplace host. The collection
+  exposed 6 priced rows during live probe on 2026-09-01.

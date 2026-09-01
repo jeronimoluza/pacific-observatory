@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: misco_wholesale_mh
+url: https://miscowholesale.com/
+language: en
+cadence: weekly
+channel: wholesale
+archive_prefix: "miscowholesale.com/products/"
+archive_path_re: '^/products/[0-9]+/?$'
+notes: >
+  MISCO Wholesale Marshall Islands B2B catalog. Live SPA shell points to an
+  open /api/products endpoint that returned 44 products with wholesalePrice,
+  retailPrice, stock, MOQ, package size, brand, and category fields during
+  the 2026-09-01 probe. Price emits wholesalePrice in USD; retail_price is
+  retained as an auxiliary field.

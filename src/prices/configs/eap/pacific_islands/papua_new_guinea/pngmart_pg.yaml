@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: html_scrape
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pngmart_pg
+url: https://www.pngbusinessdirectory.com/mart/category/grocery/1
+language: en
+currency: PGK
+cadence: weekly
+channel: marketplace
+notes: |
+  PNGMart grocery category on PNG Business Directory. The category page is
+  server-rendered and lists product names, seller names and PGK prices in HTML,
+  with pagination over hundreds of grocery rows. Re-verified live 2026-09-01.

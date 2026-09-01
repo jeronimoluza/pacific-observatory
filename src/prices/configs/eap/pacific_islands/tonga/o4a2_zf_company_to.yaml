@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: o4a2_zf_company_to
+url: https://o4a2.com/collections/z-f-company-ltd-neiafu-vavau-falekoloa-hanga-ki-pouono
+language: en
+currency: NZD
+cadence: weekly
+channel: wholesale
+archive_prefix: "o4a2.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  O4A2 vendor collection for Z & F Vava'u Wholesale & Retail in Neiafu, Tonga.
+  This is a vendor-level scrape from the same O4A2 marketplace host, not an
+  independent storefront domain. The collection exposed 250 priced grocery and
+  bulk food rows during live probe on 2026-09-01.
