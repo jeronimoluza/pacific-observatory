@@ -6,7 +6,7 @@ source "$(dirname "$0")/lib.sh"
 
 printf '%-7s %-9s %-26s %s\n' POD STATE BUCKETS LAST
 pods | while read -r id host port lo hi; do
-  n=$(pssh "$host" "$port" "pgrep -f gpu_embed_bf16.py | wc -l" || echo 0)
+  n=$(remote_running "$host" "$port" || echo 0)
   state=$([ "${n:-0}" -gt 0 ] 2>/dev/null && echo running || echo STOPPED)
   counts=$(pssh "$host" "$port" "
     for t in \$(echo $MODELS | tr ',' ' '); do

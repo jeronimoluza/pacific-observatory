@@ -17,8 +17,10 @@ pods | while read -r id host port lo hi; do
     mkdir -p $REMOTE_REPO $REMOTE_LOG /workspace/hf
     export HF_HOME=/workspace/hf
     test -x $REMOTE_VENV/bin/python || python -m venv --system-site-packages $REMOTE_VENV
-    $REMOTE_VENV/bin/pip -q install -U sentence-transformers transformers huggingface_hub pyarrow numpy
-    tar xzf /workspace/pod_kit.tar.gz -C /workspace
+    $REMOTE_VENV/bin/pip -q install -U sentence-transformers transformers huggingface_hub pyarrow numpy python-dotenv
+    # --no-same-owner: tar on the /workspace network mount cannot chown and
+    # otherwise fails every file with "Cannot change ownership".
+    tar xzf /workspace/pod_kit.tar.gz -C /workspace --no-same-owner
     # One --exclude per flag. Multi-arg --exclude makes hf download fetch NOTHING,
     # silently, and the failure only shows up as a fp32 OOM much later.
     for m in Qwen/Qwen3-Embedding-8B Qwen/Qwen3-Embedding-4B Snowflake/snowflake-arctic-embed-l-v2.0; do

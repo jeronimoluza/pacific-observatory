@@ -34,3 +34,15 @@ pods() {
 # ssh -n: without it, a command inside `while read` eats the loop's stdin and the
 # loop runs exactly once instead of once per pod.
 pssh() { local host="$1" port="$2"; shift 2; ssh -n $SSH_OPTS -p "$port" "root@$host" "$@"; }
+
+# Count live embed processes on a pod.
+#
+# `pgrep -f gpu_embed_bf16.py` run over ssh matches the SSH command line ITSELF,
+# so a dead process reports as alive -- the same inversion as the old
+# `grep -c ... || echo 0`, just relocated. The `[g]` class is what breaks it: the
+# remote cmdline contains the literal "[g]pu_embed_bf16", which the regex
+# "[g]pu_embed_bf16" does not match, so neither the grep nor the ssh command
+# counts itself.
+remote_running() {
+  pssh "$1" "$2" 'ps -eo args | grep -c "[g]pu_embed_bf16" || true'
+}

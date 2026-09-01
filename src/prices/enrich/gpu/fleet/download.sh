@@ -45,7 +45,7 @@ while :; do
   one_pass
   [ "$LOOP" = 0 ] && break
   live=$(pods | while read -r id host port lo hi; do
-           pssh "$host" "$port" "pgrep -f gpu_embed_bf16.py | wc -l"; done | awk '{s += $1} END {print s + 0}')
+           remote_running "$host" "$port"; done | awk '{s += $1} END {print s + 0}')
   [ "${live:-0}" -eq 0 ] && { echo "all pods idle; final pass done"; break; }
   sleep "$LOOP"
 done
