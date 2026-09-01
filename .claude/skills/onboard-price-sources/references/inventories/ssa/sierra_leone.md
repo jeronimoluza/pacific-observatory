@@ -1,6 +1,7 @@
 # Sierra Leone
 
 _Inventory written: 2026-09-01_
+_Re-checked: 2026-09-01 (wave 11)_
 
 Wave 9 pass, cold-start (no workbook candidates; confirmed empty in
 `outputs/sources_pending_jero.xlsx` before starting). Already-covered before this pass:
@@ -12,6 +13,27 @@ AND >=2 food-and-beverage sources; needed 3 more, >=2 food.
 despite an extensive, multi-pronged search (11 web searches + ~35 direct domain/endpoint
 probes). This is a genuine, documented shortfall, not a stopped-early one — see the dead
 ends below.
+
+**Wave 11 re-check (same day, independent pass): result unchanged, 6 sources / 1 food.**
+Confirmed both workbooks (`sources_pending_will.xlsx`, `sources_pending_jero.xlsx`) still
+carry zero Sierra Leone rows. Re-verified the marketplace directly rather than trusting
+the wave-9 vendor list: brute-forced `https://247bigmarket.com/store/<slug>/` against
+`freetown`, `kenema`, `icroyale`, `skbuildingmaterials` (all 200, same 4 vendors as wave 9)
+plus 10 guessed food-shaped slugs (`goodies`, `freshmart`, `grocery`, `foodhub`,
+`supermarket`, `market`, `fresh`, `freshfoods`, `bo`, `makeni` — all 404). No new vendor,
+food or otherwise, has appeared on the platform. Two fresh WebSearch passes ("online
+grocery delivery Freetown Sierra Leone website 2025 2026"; "Freetown Sierra Leone
+supermarket online store -jumia") surfaced one candidate not in the wave-9 list —
+**shop2sitesl.com** ("Shop 2 Site" — weekly grocery delivery) — confirmed DEAD: its own
+authoritative A record resolves to `127.0.0.1` against both `8.8.8.8` and `1.1.1.1` (a
+registrar-parking sinkhole, not a sandbox DNS lie), and `curl_cffi` cannot open a TCP
+connection at all. Logged in `known_blockers.md`. Everything else the searches returned
+(Gokkam, SendMe, crowddigitalmedia, Koussa Group/City Supermarket, Facebook-only shops,
+goafricaonline directory) reconfirms the wave-9 dead-ends below, plus one new restaurant
+lead (The Kings Restaurant & Bakery — prepared food, same COICOP-11.1 exclusion as The
+Meat Factory, not pursued). Conclusion: Sierra Leone's online grocery retail genuinely has
+only one scrapeable food source (`choithrams_sl`) as of 2026-09-01; the shortfall is
+confirmed rather than under-searched.
 
 ## Shipped this pass
 
@@ -51,6 +73,8 @@ ends below.
 | Market360 | https://market360.shop/ | **DEAD -- app-only marketplace, general goods not food** | Sitemap and marketing copy confirm this is an app-first marketplace (Google Play / App Store) for electronics/fashion/phones/vehicles; no food/grocery category found, no scrapeable web catalogue. |
 | Ubuy Sierra Leone, African Food Supermarket, Motherland Groceries, Brixton Village | ubuy.sl, shop.africanfoodsupermarket.com, motherlandgroceries.com, brixtonvillage.com | **OUT OF SCOPE -- locality violation** | International resellers / diaspora grocers shipping goods labelled "Sierra Leone" to customers abroad (UK/US-style diaspora grocers), not domestic Freetown retail. Same anti-pattern as the Antigua diaspora grocers removed in an earlier wave. |
 | goafricaonline.com/sl/directory/supermarkets, infosierraleone.jimdofree.com/business/supermarkets | (directory listings) | **NOT SCRAPEABLE -- phone-directory only** | Business directories, not e-commerce. The jimdofree listing in particular is an A-Z phone-book (name/address/phone, e.g. Choithram Supermarket, Freetown Supermarket, Atsons Supermarket, Essentials Supermarket, God's Time Investment Supermarket...) confirming most named Freetown supermarkets are brick-and-mortar only with no web presence at all. |
+| Shop 2 Site ("weekly groceries delivered to site") | https://www.shop2sitesl.com/ | **DEAD -- domain sinkholed** | Wave-11 find, not in the wave-9 list. Own authoritative A record resolves to `127.0.0.1` against both 8.8.8.8 and 1.1.1.1 (registrar-parking sinkhole, confirmed not a sandbox DNS lie); `curl_cffi` cannot open a TCP connection. Still ranks in search despite being derelict. Probed 2026-09-01 (wave 11). |
+| The Kings Restaurant & Bakery | https://www.thekingsbakerysl.com/ | **NOT PURSUED -- restaurant, not retail** | Same COICOP-11.1 exclusion as The Meat Factory below; prepared food only (fried rice, burgers, shawarma), no retail-by-weight section spotted. Not investigated further. Probed 2026-09-01 (wave 11). |
 
 ## Currency note for future passes
 

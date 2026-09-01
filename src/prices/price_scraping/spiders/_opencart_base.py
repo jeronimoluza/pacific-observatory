@@ -140,6 +140,19 @@ class OpencartBaseSpider(scrapy.Spider):
         ),
     }
 
+    # Opt-in per spider. Some CATEGORY_URLS lists mix a parent category with
+    # its own leaves (e.g. bigly_ly's "food" alongside "food/chocolate"), and
+    # a parent listing re-shows every descendant product under a different
+    # context-dependent URL, so url-based dedup downstream never catches it.
+    # Only enable where product_id is verified unique per product: freshmart_az
+    # emits the CATEGORY SLUG as product_id, so deduping on it there would drop
+    # 528 of 979 genuinely distinct products.
+    DEDUPE_PRODUCT_IDS = False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._seen_product_ids: set[str] = set()
+
     async def start(self):
         if self.NAV_URL:
             yield scrapy.Request(self.NAV_URL, callback=self.parse_nav)
@@ -165,13 +178,22 @@ class OpencartBaseSpider(scrapy.Spider):
         cards = self._product_cards(response)
         page = response.meta["page"]
         n = 0
+        dupes = 0
         for card in cards:
             item = self._item(card, response)
-            if item:
-                n += 1
-                yield item
+            if not item:
+                continue
+            if self.DEDUPE_PRODUCT_IDS:
+                pid = item["product_id"]
+                if pid in self._seen_product_ids:
+                    dupes += 1
+                    continue
+                self._seen_product_ids.add(pid)
+            n += 1
+            yield item
         logger.info(
-            f"{self.name}: {response.url} page={page} cards={len(cards)} items={n}"
+            f"{self.name}: {response.url} page={page} cards={len(cards)} "
+            f"items={n} dupes_dropped={dupes}"
         )
 
         cat_url = response.meta["cat_url"]

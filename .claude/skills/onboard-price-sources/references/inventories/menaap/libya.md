@@ -1,6 +1,58 @@
 # Libya — price source inventory (menaap/north_africa/libya)
 
-_Inventory written: 2026-09-01_
+_Inventory written: 2026-09-01_ (wave 10; wave-11 update appended below, same day)
+
+## Wave 11 update (2026-09-01)
+
+Wave-11 brief: same target as wave 10 (>=5 sources AND >=2 food-and-beverage
+sources; started this pass at 5/1). The wave-10 workbook candidates were
+already exhausted and confirmed dead (Nawris/Nesraf/Watti; Souqly and Matjar
+Libya already onboarded; Ubuy Libya a locality fail) — this pass entered
+discovery directly (Phase 2), covering fresh Arabic-language angles wave 10
+had not tried: a general Libyan business directory, a second marketplace
+(LibyaShop) investigated down to its Firebase backend, a Sixam-Mart-family
+delivery app's own API (not just its marketing pages), and several
+freshly-surfaced named-store leads (Mall Tripoli, Tripoli Market, Libyan
+Stores, Arkan Market). **None yielded a second food-and-beverage source.**
+The food bar remains **not cleared** — this is now two independent,
+differently-angled passes (wave 10 + wave 11) reaching the same conclusion,
+which raises confidence this is a genuine structural gap rather than a
+search-phrasing artifact.
+
+New candidates probed and rejected this pass:
+
+| Candidate | URL | Verdict | Notes |
+|---|---|---|---|
+| LibyaShop | libyashop.ly | Non-food marketplace, backend secured | "400+ stores, 140,000+ products" general marketplace. Featured-seller list (12 names) is 100% non-food (supplements, jewelry, perfume, fitness, electronics, toys, fashion). Firebase/Firestore backend properly secured (REST API returns `403 PERMISSION_DENIED` on `stores`/`products`; old Realtime Database explicitly disabled by the owner). No food merchant surfaced and no anonymous read path found — see `known_blockers.md`. |
+| JETAK | jetak.me | DEAD (confirmed at API level, not just marketing pages) | Wave 10 found only marketing pages; this pass went further and hit the live `GET /api/v1/config` + `GET /api/v1/stores/latest` endpoints directly (Sixam Mart/6amMart Laravel stack). Real, unauthenticated API — but the one "grocery" module (`stores_count: 1`) is `slug: "demo-module"` and its one store is `"name":"الحور مول"`, `"phone":"+101511111111"`, `"email":"demo.store@gmail.com"`, `"address":"House, road"` — an unreplaced installer seed, not a live grocer. Rule-14 "named supermarket behind a delivery app" does not apply because there is no real named supermarket behind it. |
+| Drubi | drubi.ly | DEAD, no API either | Re-checked beyond the wave-10 marketing-page verdict for an open API surface (the JETAK pattern): `/api/v1/config` and `/index.php/api/v1/config` both plain-Apache 404, `api.drubi.ly` doesn't resolve. No backend reachable at all. |
+| Mall Tripoli | malltripoli.com | Non-food | YouCan (Moroccan e-commerce SaaS) storefront, LYD currency confirmed in `window.Dotshop` config. `<meta name="keywords">` on `/collections` lists only clothing/electronics/kitchen-appliances/furniture/home-appliances/home-decor — no food category exists. |
+| Tripoli Market | tripolimarket.com | DEAD — Cloudflare, full gate exhausted | 403 on all three curl_cffi profiles (chrome124/chrome120/safari17_0) AND on headless Playwright (`<title>Attention Required! \| Cloudflare</title>`) — genuine block per the mandatory two-lever gate, not a TLS false positive. No platform fingerprint recovered (challenge served before any storefront markup). |
+| Libyan Stores | libyanstores.com | Non-retail | Joomla 4 corporate site for a B2B brand-distribution company ("A gate to the Libyan Markets") — imports/distributes EU-manufactured goods into Libya. `/products` and `/products/` both 404. No cart, no price text. |
+| Arkan Market | arkan.top.ly | DEAD — domain lapsed | NXDOMAIN confirmed against both `8.8.8.8` and `1.1.1.1` explicitly (rule 15). |
+| Libyan Platform Co. for Food Import | lpcffi.com | Non-retail | B2B food-import company corporate site; no shop/cart/price markup anywhere (checked for `price`, `shop`, `السلة`, `أضف إلى`, `د.ل` — all absent). |
+| Libya business directory ("دليل ليبيا التجاري") | sites.google.com/view/libyabd | Not actionable | Lists 39 physical markets/supermarkets by name (e.g. "Elkhairat super market", "الماسة للتسوق", "5150 SUPER MARKET") with **zero URLs** — a Facebook/physical-presence directory, not a lead list. Confirms Libya's grocery retail is overwhelmingly offline/Facebook-only, consistent with wave 10's finding. Not worth probing each name individually without a URL to start from. |
+| Hayat Market, Rocket (talabatak.app) | — | Wrong country | Hayat Market is Mogadishu, Somalia (per its own Wikipedia infobox). Rocket/`talabatak.app`'s own meta description says "مطاعم اسوان" (restaurants in Aswan) — Aswan, Egypt. Both false positives from generic Arabic search terms, same pattern as wave 10's markitworld.com (Beirut)/hasseal.com+shamaam.com (Saudi Arabia). |
+| Libyan wholesale fruit/vegetable market price bulletin | — | Not found | Searched explicitly for an official Tripoli/Benghazi wholesale (سوق الجملة) produce price bulletin, the kind several other MENA NSOs publish (Tunisia/Egypt/Morocco/Yemen equivalents all surfaced instead) — no Libyan equivalent exists online. Would have been a `fresh-market` or `official_avg` channel candidate; genuine structural absence, not a search-phrasing miss. |
+
+**Conclusion carried forward for wave 12+:** treat Libya's food-and-beverage
+gap as settled unless a materially new channel appears (e.g. a currently
+app-only platform — Drubi, JETAK, Dokkan, WDelivery, Presto — launches a web
+catalogue, or a new grocery-delivery startup appears in search that wave
+10/11 haven't already dismissed). Re-running the same discovery angles a
+third time is unlikely to be productive; the food bar for Libya is an
+honest, twice-verified shortfall (5 sources / 1 food).
+
+**Secondary task completed:** `bigly_ly`'s double-counting defect (parent
+"food" category re-listing every descendant product, walked alongside its
+own leaf subcategories) was fixed generically in `_opencart_base.py`
+(product_id dedup within a run) rather than just in this one spider's
+config, since any `CATEGORY_URLS`-mode OpenCart spider that lists a parent
+alongside its own leaves would hit the same defect. Before: 791 rows / 437
+distinct `product_id` (354 duplicate rows, all sharing a product_id but a
+different context-dependent URL, which is why URL-based dedup never caught
+it). After: 437 rows / 437 distinct `product_id` / 437 distinct `url`, 0
+duplicates. See `bigly_ly.yaml` notes and `_opencart_base.py` for detail.
 
 Wave-10 brief: Libya started this pass at 2 sources / 1 food (`wfp_prices`
 shared regional `official_avg` + `bigly_ly` `supermarket`). Target was

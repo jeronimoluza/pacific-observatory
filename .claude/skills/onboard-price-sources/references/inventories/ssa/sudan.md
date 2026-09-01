@@ -29,13 +29,41 @@ Sudan remains at 6 sources / 1 food after this pass. Full evidence for each is f
 No commodity/COICOP-leaf depth audit was in scope this pass — this was a source-count
 task (food channel count), not a leaf-coverage task.
 
+## Wave 11 pass (2026-09-01) — re-confirmed, 3 more fresh-discovery leads, all dead
+
+Wave 11 brief handed the same 6 workbook candidates above (all already dead per the wave-8
+row set — re-confirmed against `known_blockers.md`, not re-probed). Since the candidate
+list was exhausted, this pass did one more round of fresh-discovery search (2 WebSearch
+calls, Arabic + English) specifically chasing the "what's left to try" leads below, plus
+whatever else surfaced. Three new leads, all disqualified:
+
+| Source name | URL | Status | Notes |
+|---|---|---|---|
+| Alburuj Market | alburujmarket.com (from Facebook page `facebook.com/alburuj.online`, Khartoum, phone +249 12 190 0021) | **DEAD — domain does not resolve** | `dig alburujmarket.com @1.1.1.1` returns NXDOMAIN. The Facebook page exists but the website it advertises has no DNS record at all. Closes out the "Alburuj Market" line item from the wave-8 what's-left-to-try list. |
+| Sudan SuperMarket | sudansupermarket.com | **DEAD — empty catalog + diaspora signal** | WordPress/WooCommerce/Divi, 200 OK. `/wp-json/wc/store/v1/products` returns `[]`. `/shop/` renders "No products were found matching your selection." (confirmed via BeautifulSoup text extraction, not just a status code). Tagline is "لكل السودانيين حول العالم" ("for all Sudanese around the world") and the shop nav includes an "India" country-select artifact — reads as an inactive/never-launched diaspora storefront, not a Khartoum retailer. Would fail the locality rule even if it had products. |
+| Green Trees Supermarket | greentreesupermarket.com | **REJECTED-FOR-LOCALITY** | Tagline "تسوق المنتجات المصرية والسودانية أونلاين" ("shop Egyptian and Sudanese products online") — explicitly an ethnic-foods diaspora grocer, same pattern as sudansoug.com / alafnanfoods.com. Not deep-probed beyond this locality check. |
+
+**Conclusion unchanged: Sudan remains at 6 sources / 1 food.** Combined with the wave-8
+pass this is now 13 candidates tried (6 workbook + 4 wave-8 discovery + 3 wave-11
+discovery), all dead, too thin, or locality-disqualified. No new leads are known to be
+outstanding.
+
+Also noted, out of scope to fix here (existing source, not a candidate): `hypersale_sd`'s
+most recent collect run (`hypersale_sd_20260827_013133.jsonl`) is a 0-row empty file,
+where the prior run four runs back (`..._20260820_164609.jsonl`) had 324 rows. The spider
+may have silently broken since 2026-08-20 — worth a look by whoever owns that source, since
+it is currently Sudan's only food source.
+
 ## What's left to try (not exhausted, just not reached this pass)
 
-- Facebook-only storefronts surfaced by search (`Fresh-sudan`/`freshsudan` Facebook page,
-  "Alburuj Market") — not probed; Facebook Shops/Marketplace pages are usually not
-  catalog-API-backed and would need a dedicated feasibility check.
-- Re-check `zaad.delivery`, `dukani.sd`, and the two Google-Play "Dukani" apps in ~6
-  months — Sudan's e-commerce landscape is visibly early-stage/volatile (multiple
-  May-2026-dated seed records seen this pass) and could mature.
+- `Fresh-sudan`/`freshsudan` Facebook page — not probed; Facebook Shops/Marketplace pages
+  are usually not catalog-API-backed and would need a dedicated feasibility check.
+  ("Alburuj Market" closed out above — dead, not this one.)
+- Re-check `zaad.delivery`, `dukani.sd`, `sudansupermarket.com`, and the two Google-Play
+  "Dukani" apps in ~6 months — Sudan's e-commerce landscape is visibly early-stage/volatile
+  (multiple May-2026-dated seed records seen in wave 8, an empty-but-live WooCommerce
+  install seen in wave 11) and could mature.
 - WFP/humanitarian price-monitoring feeds beyond `wfp_prices` were not explored (out of
   scope — food-and-beverage **retail** channel was the ask, not `official_avg`).
+- `hypersale_sd`'s broken latest run (see above) — fixing it doesn't add a second food
+  source, but it currently threatens the first one.
