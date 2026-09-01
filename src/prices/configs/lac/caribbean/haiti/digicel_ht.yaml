@@ -1,0 +1,46 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+coicop_codes: ["08.1", "08.2", "08.3"]
+spider: digicel_ht
+url: https://www.digicelgroup.com/ht/en/mobile/prepaid
+language: en
+currency: HTG
+cadence: weekly
+channel: other
+notes: |
+  Locality: /ht/en is Digicel's dedicated Haiti market site (Digicel is
+  the leading Haiti mobile operator). Confirmed HTG pricing directly in
+  the rendered HTML -- the price banner literally renders "HTG 12.00" next
+  to the "12" plan price, cross-checked 10-for-10 against the parsed JSON
+  originalPriceValue field -- a genuine Haiti-priced storefront, not a
+  USD diaspora page.
+
+  Same platform as digicel_ag.yaml/digicel_ag.py (Next.js App Router;
+  plan cards are React Server Component "flight" payloads inlined as
+  `self.__next_f.push([1, "<json-escaped chunk>"])` script tags in the raw
+  HTML -- no Playwright needed, curl_cffi's plain body already has them).
+  Reused the exact same chunk-concat + regex-extraction approach against
+  the Haiti locale.
+
+  Only /mobile/prepaid scraped (44 raw records -> 43 shipped). /mobile/
+  postpaid was probed and dropped: its 5 core plans (Basic Plus Hybrid,
+  Elite Hybrid, Elite/Platinum/Platinum Pro Postpaid) all carry the
+  identical placeholder originalPriceValue=10 -- not a real per-plan
+  price, most likely a "starting from" marketing teaser for
+  credit-approval plans. One prepaid record is dropped by slug as a
+  confirmed stale CMS duplicate: "14-day-caribbean-plan-roaming" carries
+  originalPriceValue=4, but the same plan appears correctly on the
+  postpaid page under a different slug at 4400 -- kept every other
+  Caribbean/international roaming add-on (1100/2200/900/1800/300, all
+  internally consistent).
+
+  Verified live 2026-09-01 via `po prices collect --source digicel_ht`:
+  43 rows, 43 distinct product_id (plan CMS ids), 43 distinct url (slug
+  fragment appended per DuplicationPipeline's url-dedup requirement),
+  currency 100% HTG, prices HTG 4-3,000 (single-day data bundles through
+  30-day unlimited plans), no blank names.
+
+  coicop_codes narrowed to communication (08.1/08.2/08.3) per onboarding
+  brief guidance for telco sources, same scope as digicel_ag.yaml.

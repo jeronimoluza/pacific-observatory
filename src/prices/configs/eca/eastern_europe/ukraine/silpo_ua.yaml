@@ -1,0 +1,47 @@
+scaffolding: spider
+spider: silpo_ua
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://silpo.ua/
+language: uk
+currency: UAH
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+timeout: 21600
+notes: |
+  Silpo -- Ukraine's largest modern supermarket chain. Verified live
+  2026-09-01: curl_cffi impersonate=chrome124 clears with HTTP 200 (bare
+  curl and a stale 2026-06-09 non-UA-IP probe in known_blockers.md both
+  recorded a 403 -- chrome124 impersonation was the actual fix, not a
+  UA-resident IP or a dead site).
+
+  Nuxt SSR storefront. The category page embeds the internal
+  sf-ecom-api.silpo.ua products response inline as a page-scoped object
+  literal (`{"limit":47,"offset":0,"total":N,"items":[...]}`); calling that
+  API directly 404s without the right request shape (POST body params not
+  reverse-engineered), so this spider regexes the array out of the SSR HTML
+  via a bracket-depth walk on `"items":[` and json.loads it -- no HTML tile
+  parsing, no Playwright. 259 category slugs crawled from
+  `_silpo_ua_categories.txt` (the full site mega-menu; parent hubs with no
+  direct product grid just yield 0 items and the walk moves on).
+
+  Pagination is `?page=N`, incremental: /category/chai-5126 page=1 -> 47
+  unique externalProductIds, page=2 -> 47 unique ids, only 1 id overlapping
+  (a pinned/promoted SKU). The embedded item array appears twice per page
+  (SSR render + hydration cache) -- deduped by externalProductId in-spider
+  and again downstream by the DuplicationPipeline on url.
+
+  product_id = externalProductId (stable numeric id), price = displayPrice
+  (UAH; Silpo prices exclusively in UAH, no currency field in the payload),
+  url = https://silpo.ua/product/<slug>, available = stock > 0.
+
+  Catalogue is Kyiv-priced (unauthenticated default city, no city-selector
+  cookie required -- Ukrainian convention per onboarding brief, city not
+  in _IDENT since only one city is scraped).
+
+  Test run 2026-09-01 (--max-items 60): 60/60 rows, 60 distinct product_id,
+  60 distinct url, 0 zero/negative price, 0 blank names, 100% UAH,
+  price range ~15.90-699.00 UAH. Full unbounded run measured separately --
+  see run notes below for final counts.

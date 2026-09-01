@@ -1,0 +1,64 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cassandraonlinemarket_ht
+url: https://www.cassandraonlinemarket.com/
+language: en
+cadence: weekly
+channel: hypermarket
+notes: |
+  ORCHESTRATOR VERIFICATION 2026-09-01: channel `hypermarket` upheld.
+  Locality confirmed on the live site -- "delivery on the entire Haitian
+  territory", Delmas (Port-au-Prince commune) named, Haiti referenced
+  throughout; USD pricing is normal Haitian retail practice, not a sign of
+  a foreign storefront. Food share measured at ~23% of 4,042 rows across
+  real grocery lines (Beverages 252, Condiments & Oil 93, Breads & Cookies
+  66, Dairy & Eggs 58, Food Packages 45) alongside general merchandise
+  (Health & Beauty 542, Pharmacy 317, Baby Care 163) -- that is genuinely
+  cross-selling food AND general merchandise, which is the GLOSSARY test
+  for `hypermarket`.
+
+  CAVEAT FOR ANALYSTS: 339 rows sit in "Shipping to US & Canada Only"
+  categories. Those are export/diaspora-gifting listings, NOT prices paid
+  in Haiti, and should be excluded from any Haitian price level. A further
+  658 rows carry category=None. 4,042 rows resolve to 4,013 distinct
+  product_id (29 repeats) and 6 rows carry a zero price (unset
+  "variety pack" listings).
+
+  Standard WooCommerce Store API (/wp-json/wc/store/v1/products), no auth,
+  per_page=100 paginates cleanly (4,198 products / 210 pages, page1 vs page2
+  ids disjoint -- confirmed enumerable, not a homepage carousel). Verified
+  live 2026-09-01.
+
+  LOCALITY: site tagline is "Online Grocery and More for Haiti and abroad!"
+  -- customers order online and pick up at one of FOUR physical grocery
+  stores on the ground in Haiti (/ordering-pickup/: "we do have four grocery
+  stores with a variety of products on the ground... whether you are buying
+  for yourself or family members in Haiti, the pick up steps remain the
+  exact same"). This is a genuine Haiti retailer, not a pure US drop-ship
+  shop, though the storefront is diaspora-facing.
+
+  CURRENCY: Store API returns currency_code=USD, currency_minor_unit=2
+  throughout the sampled catalog -- prices are quoted in USD, NOT HTG, and
+  are NOT converted here. Emitted as-is with currency=USD.
+
+  A small minority of listings (~1.2% of a 500-row sample) are a separate,
+  more expensive SKU explicitly priced for direct shipment to the US/Canada
+  rather than Haiti pickup -- e.g. "Alacta Plus Milk 1650 g X 6 (US /
+  CANADA)" at $570 vs "... (Haiti Only)" at $300 for the same product. The
+  WooCommerce `international` category tag is NOT a reliable filter (it
+  appears on both the Haiti-pickup and the US/Canada variant of the same
+  product), so the spider filters on the US/Canada-shipment name suffix
+  instead (regex on "US/CANADA", "USA BULK", etc.) and drops those ~1% of
+  rows to avoid mixing the two price tiers.
+
+  Catalog is broad (own category list runs from Groceries 1,294 SKUs,
+  Fruits & Vegetables 46, Meat & Poultry 18, Bakery 141, Dairy & Eggs 88,
+  Beverages 335 through Pharmacy 444, Health & Beauty 674, Electronics,
+  Appliances, Toys, Clothing) -- genuinely cross-selling food and general
+  merchandise, hence channel=hypermarket rather than supermarket.
+
+  Measured (unbounded test run, 2026-09-01): see collect run notes for row
+  counts, currency distribution and price stats -- kept in sync with the
+  numbers reported in the Phase 8 writeback.

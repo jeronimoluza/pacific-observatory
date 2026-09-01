@@ -1,0 +1,38 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: zamstats_cpi
+module: ssa.southern_africa.zambia.zamstats_cpi
+function: fetch_zamstats_cpi
+url: https://www.zamstats.gov.zm/
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Zambia Statistics Agency ("The Monthly" bulletin), Table 1.2: Consumer
+  Price Index by Division, 2009=100, a 12-division pre-2018-revision
+  COICOP scheme (same vintage as Jordan DOS CPI / Tunisia INS IPC in
+  this corpus). Shares bulletin discovery with the sibling
+  zamstats_avg_prices fetcher (same PDF, different table) -- kept
+  separate per the PriceObservation/IndexObservation split rule.
+
+  Only the latest row is emitted per run (the source PDF places its year
+  label as a rotated axis marker pdfplumber cannot reliably attach to a
+  specific row, so no attempt is made to backfill the full Jan-2023-to-
+  present series from one PDF; the observation month/year is taken from
+  the bulletin's own release period instead). Monthly reruns accumulate
+  history going forward.
+
+  Verified live 2026-09-01 (test run, Volume 281 / August 2026 bulletin):
+  12 rows (All Items dropped, no COICOP sentinel), index values 158.72
+  (division 08, Communication) to 662.92 (division 07, Transport),
+  2009=100 base, plausible trajectory vs the bulletin's own stated 6.2%
+  annual inflation figure. duplicate observation_hash count: 0.
+  channel: null -- statistics-office index publication, not a retail
+  outlet; does not count toward the food-channel tally by design.
+
+  coicop_divisions: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12
+  divisions_basis: publisher_labeled (ZamStats' own division headers
+  mapped 1:1 to COICOP 01-12; "All Items" dropped)

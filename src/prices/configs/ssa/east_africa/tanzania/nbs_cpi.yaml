@@ -1,0 +1,31 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: tz_nbs_cpi
+module: ssa.east_africa.tanzania.nbs_cpi
+function: fetch_tz_nbs_cpi
+url: https://www.nbs.go.tz/statistics/topic/consumer-price-index-2026
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  NBS (National Bureau of Statistics) Tanzania monthly rebased National
+  Consumer Price Index. Confirmed live 2026-09-01: the topic page
+  publishes a "CPI Summary_<MM><YYYY>.xls" download each month; the
+  latest release conveniently republishes the FULL 2020-12-present series
+  across one sheet per year, so a single download reconstructs the whole
+  history. NBS's own 13-row major-groups block maps 1:1 to COICOP-2018
+  divisions 01-13 in S/N order (publisher_labeled -- no translation
+  needed). Headline "ALL ITEMS INDEX" row is dropped (no sanctioned
+  headline-index sentinel yet, per the skill's open design question).
+
+  GOTCHA: the topic-listing URL is year-suffixed
+  (consumer-price-index-2026); the bare consumer-price-index page (no
+  year) 200s but carries no file links. This `url:` will need a manual
+  bump to .../consumer-price-index-2027 etc. each January -- same
+  maintenance pattern as civ_dgh_fuel_tariff.py's hand-updated decisions.
+
+  Base period: 2017/18 weight reference, price-updated to 2020 average
+  (index=100 at 2020).

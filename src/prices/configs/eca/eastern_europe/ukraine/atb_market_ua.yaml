@@ -1,0 +1,37 @@
+scaffolding: spider
+spider: atb_market_ua
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+url: https://atbmarket.com/
+language: uk
+currency: UAH
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+timeout: 21600
+notes: |
+  ATB-Market -- Ukraine's largest discount grocery chain by store count.
+  Verified live 2026-09-01: curl_cffi impersonate=chrome124 clears with
+  HTTP 200 (bare curl and a stale 2026-06-09 non-UA-IP probe in
+  known_blockers.md both recorded a 403 -- chrome124 impersonation was the
+  actual fix, not a UA-resident IP or a dead site).
+
+  Server-rendered HTML, no JS hydration needed. 151 category paths crawled
+  from `_atb_market_ua_categories.txt` (the full site mega-menu, both
+  top-level hubs and their children -- both list products directly, so
+  some products are reachable from two category pages; DuplicationPipeline
+  dedups on url, so this is not a double count). Pagination is `?page=N`,
+  incremental: /catalog/318-chay page=1 -> 36 distinct product ids,
+  page=2 -> 36 distinct ids, ZERO overlap. Price lives in
+  `<data value="XX.XX" class="product-price__top">`; product id in
+  `data-productid`; currency confirmed via sibling `data-currency="UAH"`.
+
+  Catalogue is Kyiv-priced (unauthenticated default city, no city-selector
+  cookie required -- Ukrainian convention per onboarding brief, city not
+  in _IDENT since only one city is scraped).
+
+  Test run 2026-09-01 (--max-items 60): 60/60 rows, 60 distinct product_id,
+  60 distinct url, 0 zero/negative price, 0 blank names, 100% UAH,
+  price range ~9.90-450.00 UAH. Full unbounded run measured separately --
+  see run notes below for final counts.

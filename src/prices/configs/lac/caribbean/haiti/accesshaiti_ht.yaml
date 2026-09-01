@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+coicop_codes: ["08.3"]
+spider: accesshaiti_ht
+url: https://accesshaiti.com/
+language: fr
+currency: USD
+cadence: weekly
+channel: other
+notes: |
+  Locality: Access Haiti is a real Haiti ISP -- Petion-Ville HQ address,
+  +509-2812-6000, WhatsApp order lines to +509-3912-6000, schema.org
+  TelecommunicationsProvider block confirms address/geo in Haiti. Genuine
+  in-country fiber/fixed-wireless internet provider, not a diaspora shop.
+
+  CURRENCY: prices are literal "$XX.XX" strings in the site's own bundle
+  with no ISO currency code anywhere -- a USD-priced Haiti storefront
+  (common for Haiti ISPs), NOT HTG. Emitted as USD, not converted.
+
+  Platform: pure client-rendered React SPA (`<div id="root"></div>`, no
+  server HTML) with NO backing pricing API -- grepped the built JS bundle
+  for `/api` calls and found none. Plan cards are hardcoded directly as
+  JSX string literals inside the Vite-built bundle
+  (`/assets/index-<hash>.js`). The spider fetches the homepage first to
+  read the current content-hashed bundle filename from its <script src>
+  tag, then regexes the plan name / price / headline speed straight out
+  of the bundle text -- no Playwright needed.
+
+  8 AirFiber home-internet plans confirmed live 2026-09-01: Basic $54.54
+  (30/15 Mbps) through tier 6 $350.00 (225/100 Mbps). Only the AirFiber
+  (home internet) plan family matched this bundle's JSX pattern; mobile
+  4G LTE and TV plan sections mentioned in the site's meta description
+  were not found as matching blocks and are not scraped this round.
+
+  Verified live 2026-09-01 via `po prices collect --source accesshaiti_ht`:
+  8 rows, 8 distinct product_id, 8 distinct url (slug fragment appended
+  per DuplicationPipeline's url-dedup requirement), currency 100% USD,
+  prices $54.54-$350.00, no blank names.
+
+  coicop_codes narrowed to 08.3 (telephone & internet services) per
+  onboarding brief guidance for telco/ISP sources.

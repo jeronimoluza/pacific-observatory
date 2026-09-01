@@ -72,6 +72,12 @@ class WooBaseSpider(scrapy.Spider):
     # that code: a tenant that later fixes its currency_code would otherwise
     # start emitting silently 10x prices, with nothing in the row to show it.
     PRICE_MULTIPLIER_CURRENCY: str | None = None
+    # Set when the repo-wide pinned curl_cffi profile (settings.py
+    # IMPERSONATE_BROWSERS, currently chrome120) 403s on this tenant's WAF but
+    # a different browser profile clears it (confirmed case: cassandraonlinemarket_ht
+    # 403s on chrome120, 200s on chrome124/123/safari17_0). None preserves the
+    # prior behaviour (repo-wide pinned profile) for every other subclass.
+    IMPERSONATE_PROFILE: str | None = None
 
     custom_settings = {
         "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
@@ -92,11 +98,17 @@ class WooBaseSpider(scrapy.Spider):
             url += f"&category={self.CATEGORY_ID}"
         return url
 
+    def _meta(self, page: int) -> dict:
+        meta = {"page": page}
+        if self.IMPERSONATE_PROFILE:
+            meta["impersonate"] = self.IMPERSONATE_PROFILE
+        return meta
+
     async def start(self):
         yield scrapy.Request(
             self._page_url(1),
             callback=self.parse_page,
-            meta={"page": 1},
+            meta=self._meta(1),
         )
 
     def parse_page(self, response):
@@ -118,7 +130,7 @@ class WooBaseSpider(scrapy.Spider):
             yield scrapy.Request(
                 self._page_url(nxt),
                 callback=self.parse_page,
-                meta={"page": nxt},
+                meta=self._meta(nxt),
             )
 
     def _item(self, p: dict):

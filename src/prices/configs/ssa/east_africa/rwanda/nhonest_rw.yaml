@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: nhonest_rw
+url: https://www.honestsupermarket.com/
+language: en
+cadence: monthly
+notes: |
+  New source (wave 12, 2026-09-01): N.Honest Supermarket, Kigali's main
+  modern online supermarket chain (30-40 min delivery, Kigali only). The
+  workbook flagged "product API returned HTTP 403 on crawl" -- that was a
+  bare-curl false verdict; curl_cffi impersonate=chrome124 gets a clean 200,
+  and the same-origin JSON API (/api/products, /api/categories,
+  /api/settings/public) is wide open, no auth, no anti-bot. Fully
+  server-side paginated (totalPages/totalCount), plain HTTP, no Playwright.
+  Verified live 2026-09-01: 5,206 products across 29 categories (groceries,
+  fresh food/fish/meat, beverages/beer-wine-liquor, dairy/eggs, personal
+  care, household, clothing, stationery, smoking/condoms) -- a genuine
+  general-merchandise supermarket, channel: supermarket. Currency RWF per
+  /api/settings/public (matches countries.yaml). Site has no per-product
+  detail page/route (single-page catalogue) -- DuplicationPipeline dedups
+  on item['url'], so each row emits a synthetic #product-<_id> fragment on
+  the site root rather than one bare homepage URL for all rows (rule 9).
+  Full unbounded collect run (no --max-items) measured 5,196 valid rows (10
+  of 5,206 dropped by price/name validation), 5,196 distinct product_id,
+  5,196 distinct url -- zero duplicates on either. Zero blank names, zero
+  zero/negative prices, currency 100% RWF, median price 7,000 RWF (range
+  100-245,000). Food share (fresh food/fish/meat + packaged food/drinks +
+  beer-wine-liquor categories) is ~32% of rows -- this is a mixed
+  general-merchandise supermarket, not a grocery specialist. 3 cold
+  re-fetched product_ids (Ani Cangoz biscuits, SIONSE body wash, Zesta soy
+  sauce) matched the shipped name and price exactly against the live API.

@@ -1,0 +1,64 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2", "04.5.4"]
+channel: fuel-station
+source_key: tz_ewura_fuel_caps
+module: ssa.east_africa.tanzania.ewura_fuel_caps
+function: fetch_tz_ewura_fuel_caps
+url: https://www.ewura.go.tz/publications/petroleum-price
+language: en
+cadence: monthly
+fallback_date: 2025-01-01
+notes: |
+  EWURA (Energy and Water Utilities Regulatory Authority) publishes a
+  monthly "Public Notice on Cap Prices for Petroleum Products" PDF
+  (https://www.ewura.go.tz/publications/petroleum-price), Table 3:
+  "Retail Cap Prices - TZS/Litre" listing Petrol/Diesel/Kerosene per
+  town/district across Tanzania Mainland (~186-190 towns/month).
+
+  THESE ARE INDICATIVE CAP PRICES, NOT OBSERVED TRANSACTION PRICES --
+  EWURA sets the legal ceiling retailers must not exceed; actual pump
+  prices can sit at or below this cap. Do not treat as transaction
+  prices in PPP analysis.
+
+  REGIONAL SOURCE -- subnational_area (town/district) is in `_IDENT`
+  alongside source_key/observation_date/item_name, exactly per the
+  onboarding brief's rule 18 (this pattern is the wave-9 Mali defect:
+  omitting subnational_area from _IDENT collapses ~190 towns into one
+  row per date/item and produces mass duplicate hashes). Verified live
+  2026-09-01 with fallback_date 2025-01-01 (pulls the full page-1 listing,
+  10 available months of PDFs -- Nov 2025 through Sep 2026, June 2026
+  missing, see below): 5,679 rows written, 5,679 distinct observation_hash
+  values -- 0 duplicates. 431 distinct subnational_area strings (the true
+  town count is ~190/month; the higher distinct-string count is the
+  cross-month spacing artifact noted below inflating cardinality, not a
+  duplication defect). item_name splits exactly into thirds (1,893 each
+  of Petrol/Diesel/Kerosene). Currency 100% TZS. price_local range
+  2,653-4,950 TZS/L, median 3,722. 0 zero/negative prices, 0 blank
+  subnational_area. coicop_code: 3,786 rows at 07.2.2 (petrol+diesel),
+  1,893 rows at 04.5.4 (kerosene).
+
+  period_kind: effective_from (PriceObservation convention for an
+  administered price that holds until the next schedule change --
+  matches za_dmre_fuel.py / omh_fuel.py / dgh_fuel_tariff.py).
+
+  Row-count varies slightly month to month (186-190 towns) as EWURA adds
+  new town/district rows over time; row FORMAT also varies ("1 Dar es
+  Salaam ..." vs "15. Kibiti ..." -- trailing period after the row number
+  differs by month) -- the fetcher's row regex tolerates both.
+  June 2026's listed PDF (en-1780433786) 404s live -- EWURA's own dead
+  link, not a fetcher bug; that month is silently absent from the series.
+
+  EWURA's PDF text extraction occasionally splits one town name across
+  two tokens with a stray space (e.g. "Pangani" -> "P angani" in the
+  August 2026 PDF) -- cosmetic PDF-generator artifact, not a fetcher
+  defect; does not create duplicate hashes since each month's table has
+  each town once, but the same town's name can differ slightly in
+  spacing across months.
+
+  Currency TZS, plain-integer per-litre (comma thousands separators
+  stripped, no decimal invented) -- matches the country's integer-TZS
+  convention. coicop_codes: 07.2.2 (petrol, diesel) and 04.5.4
+  (kerosene, household fuel).

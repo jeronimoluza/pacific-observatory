@@ -1,0 +1,28 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+channel: null
+source_key: mtn_rw_bundles
+module: ssa.east_africa.rwanda.mtn_rw_bundles
+function: fetch_mtn_rw_bundles
+url: https://www.mtn.co.rw/bundle-category/data-bundles/
+language: en
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  New source (wave 12, 2026-09-01): MTN Rwanda prepaid data-bundle and
+  voice+data combo tariff pages (mtn.co.rw/bundle-category/data-bundles/ and
+  /bundle-category/voice/). WordPress + Elementor site, fully server-rendered
+  HTML (no JS/anti-bot) -- each bundle is an Elementor "loop-item" whose CSS
+  class carries validity (bundle-type-daily/weekly/monthly), with a DATA
+  heading, an optional MIN heading for combo bundles, and a price button
+  (e.g. "Rwf 7000"). RWF is integer -- prices on this site are always whole
+  francs, no fabricated decimals; thousands commas stripped before float().
+  Verified live 2026-09-01: 10 rows from data-bundles (5 weekly, 4 monthly,
+  1 daily; 1MB-30720MB) + 7 rows from voice (4 monthly combo, 3 daily combo;
+  5MB-40GB data / 20min-7500min voice) = 17 rows total, zero duplicates on
+  observation_hash. Locality: MTN Rwanda Ltd, Kigali -- serves Rwanda only,
+  prices quoted in RWF (matches countries.yaml). COICOP 08.1.0 (telephone and
+  internet access services) covers both data-only and combo bundles.

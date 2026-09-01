@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: fresh-market
+spider: haha_rw
+url: https://haha.rw/
+language: en
+cadence: monthly
+notes: |
+  New source (wave 12, 2026-09-01): haha.rw, a Kigali fresh-produce
+  marketplace app sourcing from one physical market (Nyabugogo Market).
+  React/Vite SPA -- homepage ships an empty #root div, so a bare fetch
+  looks dead, but the JS bundle references a wide-open, unauthenticated
+  JSON API at api.haha.rw (GET /items, /categories, /local-markets). No
+  Playwright needed -- "Playwright to discover, plain HTTP to scrape".
+  Verified live 2026-09-01: 58 items total (single page), 4 categories
+  (Vegetables and Legumes 35, Fruits 15, Meat 6, Grain (Cereal) 2), exactly
+  1 active market (Nyabugogo Market, Kigali -- "Major transport and trade
+  hub market", tags include wholesale/food). This is genuinely fresh
+  produce/meat/grain from a named physical market -> channel: fresh-market,
+  counts as food. Currency RWF, prices are decimal strings in the API (e.g.
+  "800.00") but RWF has no minor unit -- that ".00" is the source's own
+  formatting, not fabricated precision. No server-rendered PDP, but the
+  React router exposes /product/:productName/:id -- used to build a
+  stable, real per-product URL (client-rendered, but unique and dereferences
+  to the live app). Small catalogue (58 SKUs) -- clears the >=5-row gate
+  comfortably but this is a boutique single-market app, not a full grocery
+  chain; do not expect deep non-food coverage from it.
