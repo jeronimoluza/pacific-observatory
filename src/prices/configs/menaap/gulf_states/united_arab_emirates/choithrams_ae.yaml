@@ -1,0 +1,61 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: choithrams_ae
+url: https://www.choithrams.com/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Verified live 2026-09-01: Choithrams, Dubai-headquartered UAE supermarket
+  chain, www.choithrams.com. Angular Universal SPA shell with no product
+  data server-rendered; found the backing JSON API via a Playwright
+  network-capture pass on the homepage (front page is not WAF-protected,
+  so the API also answers plain curl_cffi with no special headers).
+  /api/websf/category/getall returns the 3-level category tree (15
+  top-level nodes). /api/websf/product/category/getall?category_ids=<id>
+  &page_index=<n>&page_size=100 accepts TOP-LEVEL category ids directly
+  (aggregates all descendants) and paginates cleanly -- confirmed zero
+  product_id overlap between page 1 and page 2 of a 1,543-row category.
+  Price field is offer_price (was_price is the pre-discount strikethrough,
+  0.0 when undiscounted); spider gates on offer_price > 0.
+  Locality: homepage meta og:locale=en_AE, meta description "fast delivery
+  across the UAE"; Choithrams has no other-country variant of this domain.
+  Currency AED hardcoded (no explicit currency field in the API payload,
+  but price magnitudes are plausible AED grocery prices, e.g. fresh thyme
+  6.95, fresh salad leaves 11.95, Dutch mushrooms 17.95).
+  Category composition (records_total summed per top category, measured
+  2026-09-01): Household 691, Breakfast & Snacking 2100, Cooking &
+  Ingredients 2056, Health & Beauty 1411, Home & Life 597, Frozen 524,
+  Beverages 742, Fresh 1543, Baby 276, Non Halal 102, Kiosk 95, Festives &
+  Events 20, Pets 178, Food To Go 29, Fashion & Beauty 152 -- total 10,516.
+  Food-relevant top categories (Breakfast & Snacking, Cooking &
+  Ingredients, Frozen, Beverages, Fresh, Baby, Kiosk, Food To Go) sum to
+  7,365 of 10,516 listings (~70%) -- a genuine grocery catalogue.
+  Product detail URL is a client-rendered Angular route (/product/<id>)
+  that always 200s (SPA fallback) but is stable and unique per product,
+  used for de-duplication.
+  Collect run (unbounded, no --max-items cap -- catalog is small enough to
+  walk whole; measured 2026-09-01): 113 requests (1 category-tree fetch +
+  112 paginated product-listing calls), finish_reason "finished" (walked
+  every category to exhaustion, not a cap). 10,516 rows, 10,516 distinct
+  product_id, 10,516 distinct url (zero duplicates), 0 zero/negative price
+  rows, 0 blank names, currency 100% AED, prices 0.75-569.95 AED (median
+  18.75). Category composition (top-level breadcrumb segment): Breakfast &
+  Snacking 2094, Cooking & Ingredients 2056, Fresh 1538, Health & Beauty
+  1411, Beverages 740, Household 691, Home & Life 592, Frozen 524, Baby
+  276, Pets 178, Fashion & Beauty 152, Non Halal 102, Kiosk 95, Food To Go
+  29, Festives & Events 20, uncategorized 18. Food-relevant categories
+  (Breakfast & Snacking, Cooking & Ingredients, Fresh, Beverages, Frozen,
+  Baby, Non Halal [pork/meat products], Kiosk, Food To Go) = 7,454/10,516
+  = 70.9% food share -- a genuine grocery catalogue by both category count
+  and row count. Re-verified 3 random rows cold by re-querying their
+  category's live API page and matching product_id (not a URL re-fetch,
+  since /product/<id> is an Angular SPA route that 200s for any path and
+  proves nothing on its own): Oreo Ice Cream Cones 110ml (9.25 AED), Nan
+  Comfort 2 Can 800g (131.5 AED), Igloo Quanta Almond Ice Cream (20.75
+  AED) -- all 3 matched name and price exactly.
+  coicop_divisions: 01, 02, 05, 06, 12
+  divisions_basis: full_catalog_walk (10,516/10,516 rows, unbounded run)
+timeout: 5400

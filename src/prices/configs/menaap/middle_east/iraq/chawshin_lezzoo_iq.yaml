@@ -1,0 +1,48 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: chawshin_lezzoo_iq
+url: https://www.lezzoo.com/erbil/m/chaw-shin-qasab-7108
+language: en
+currency: IQD
+cadence: weekly
+channel: specialty-food
+notes: |
+  Chaw Shin Qasab ("qasab" = butcher) -- a single, named, first-party
+  butcher/meat shop in Erbil, Iraq, storefront hosted on Lezzoo
+  (www.lezzoo.com/erbil/m/chaw-shin-qasab-7108) rather than its own domain.
+  Same platform, discovery path, and locality justification as
+  bakhtiyari_lezzoo_iq (see that manifest's notes for the full account of
+  dead-end candidates tried first: Akamai-blocked carrefour.iq, dead/demo/
+  app-only standalone sites). This spider walks ONLY this one merchant's
+  venue page, not Lezzoo's cross-merchant directory, so channel=
+  specialty-food (this butcher's own inventory), not marketplace.
+
+  Next.js SSR: plain GET embeds a schema.org "Restaurant" JSON-LD node with
+  hasMenu.hasMenuSection[].hasMenuItem[], each item with its own unique PDP
+  url + Offer{price, priceCurrency, availability}. Single GET returns the
+  full page-1 menu; no further pagination reachable via plain GET.
+
+  Verified live 2026-09-01 (--max-items 200, actual venue menu size 24): 24
+  rows, 24 distinct product_id, 24 distinct url, 0 blank names, 0 zero/
+  negative prices, currency IQD throughout (median 9250 IQD, min 1250 IQD,
+  max 16000 IQD), category groups: Meat 11, Lamb Meat 6, Chicken 3, Pickles
+  3, Others 1 -- effectively 100% food (the single "Pickles"/"Others" rows
+  are condiments sold at the same butcher counter, e.g. falafel). Sample:
+  "Beef Back" @ 9500 IQD, "Beef Ribs" @ 8500 IQD, "Beef Minced Meat" @ 11000
+  IQD. Re-fetched 3 emitted product URLs cold (incl. beef-back-1319397 and
+  bakhtiyari's lettuce-87893/beetroot-92550) -- all 200, scraped name +
+  price string both present verbatim in the cold-fetched page.
+  ORCHESTRATOR RE-AUDIT 2026-09-01: rows verified all-distinct, 100% IQD,
+  0 zero-price, 0 blank names, 100% food. Prices are plausible for Erbil
+  (Lettuce 1,500 IQD, Beef Back 9,500 IQD/kg).
+
+  THIN SOURCE, read before relying on it. This venue carries only a few
+  dozen SKUs, so it is a narrow price signal - genuine, but not a basket.
+  It clears the food bar on the same single-venue-on-an-aggregator precedent
+  as the *_wolt_* sources (channel describes the merchant, not the platform).
+  FOLLOW-UP: lezzoo.com exposes a full category tree for Erbil
+  (/erbil/beverages-, /erbil/bakeries-, /erbil/bread-, ...) with many more
+  named food merchants. A larger Lezzoo supermarket venue would be a
+  materially better Iraq source than these two and is worth a future pass.

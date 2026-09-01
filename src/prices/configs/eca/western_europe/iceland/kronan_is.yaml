@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: kronan_is
+url: https://www.kronan.is/
+language: is
+cadence: weekly
+notes: |
+  Krónan, one of Iceland's three main grocery chains. Storefront is a
+  Next.js app; online ordering ("Snjallverslun") is login-gated and the
+  plain `/api/products/` list returns [] anonymously, but the site's own
+  search box hits an open, unauthenticated endpoint:
+  `POST https://backend.kronan.is/api/products/search/ {"query": "<text>"}`
+  (trailing slash required -- the bare path 301s and Scrapy/curl_cffi
+  downgrade the redirect to GET, which 405s). Walked via the 273 leaf
+  category names from the public `GET .../api/categories` tree
+  (`_kronan_is_categories.txt`), de-duped by product id across queries.
+  Full supermarket catalog (fruit, veg, fish, meat, dairy, bakery, frozen,
+  drinks, household, cosmetics, pet) -- wide, left to the classifier.
+  Currency ISK, whole krónur, confirmed from the API's own price field (no
+  minor-unit division). Verified live 2026-09-01.

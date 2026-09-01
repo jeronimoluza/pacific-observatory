@@ -1,0 +1,59 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: o4a2_to
+spider_kwargs:
+  vendor_filter: "Hihifo Supermarket - Fo'ui"
+url: https://o4a2.com/
+language: en
+cadence: weekly
+channel: supermarket
+timeout: 600
+notes: |
+  Discovered 2026-09-01 (wave6, DISCOVER — no candidate list). Hihifo
+  Supermarket - Fo'ui is a named, real Tongan village supermarket (Fo'ui,
+  Tongatapu) with no standalone website; its only online storefront is via
+  O4A2 (https://o4a2.com), a Shopify-based grocery-delivery platform
+  serving Tonga (Shopify.country="TO", Shopify.currency active="NZD" —
+  verified via curl_cffi impersonate=chrome124). See golden_star_to.yaml
+  for the full O4A2-as-marketplace-directory rationale: O4A2 tags every
+  product with its originating vendor's real name in the Shopify `vendor`
+  field, and this manifest scopes the shared o4a2_to spider to
+  vendor="Hihifo Supermarket - Fo'ui" only, per the onboard-price-sources
+  marketplace-as-directory doctrine (onboard the first-party retailer
+  behind the directory, not the blended catalog).
+  Tier 1B: /products.json?limit=250&page=N, no auth, pagination via `page`
+  cursor to exhaustion.
+  Measured 2026-09-01 (full unbounded catalog pull via the vendor-filtered
+  /products.json walk, pre-scaffolding audit): 474 raw product-variant rows
+  tagged vendor="Hihifo Supermarket - Fo'ui" out of 1,250 total O4A2 SKUs —
+  the single largest vendor on the platform. Sample items: canned fish,
+  corned beef, cooking oil, rice, drinks. Currency 100% NZD
+  (Shopify-declared, not inferred from symbol).
+
+  ORCHESTRATOR RE-AUDIT 2026-09-01. Two corrections to the numbers above.
+
+  1. The build-time measurement (238 rows) was TRUNCATED. Shopify's 429
+     throttle is per-IP across all storefronts, and nine other agents were
+     running Shopify spiders concurrently, so the catalogue walk stopped
+     early. A clean re-run gives 483 rows, 483 distinct product_id,
+     483 distinct url, 0 zero-price, 0 blank names, 100% NZD,
+     median 11.00, range 0.90-216.00. Full O4A2 catalogue is 2,396 SKUs across 28
+     named vendors (Golden Star 622, Hihifo 483, Rainbow Top 337, Z&F Vava'u
+     257, Pingi Ha'apai 180), not the 1,250 recorded above.
+
+  2. Every listing appended its collection point to the title, e.g.
+     'Sack of Flour 25kg - "PICK UP FROM GOLDEN STAR, VAVA'U"'. That hit
+     460 of 469 rows (98%) and would have reached the COICOP classifier,
+     which reads product_name. The shared o4a2_to spider now strips the
+     suffix; re-verified 0 remaining across both sources.
+
+  ANALYTICAL CAVEAT, read before using these prices as domestic retail.
+  O4A2 describes itself as "Shop Online today for your family and friends in
+  Tonga ... for all your gifting needs". The buyer is typically diaspora
+  paying in NZD; the recipient collects in-store in Tonga. The retailer,
+  the goods and the collection point are genuinely Tongan (locality holds),
+  but the quoted prices are NZD gifting-platform prices, NOT domestic
+  pa'anga (TOP) shelf prices, and may carry a platform margin and FX spread.
+  Treat as a Tongan retail signal, not as a CPI-grade domestic price.

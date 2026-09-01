@@ -1,0 +1,49 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: almeera_qa
+url: https://www.almeera.com.qa/
+language: en
+cadence: weekly
+timeout: 5400
+notes: |
+  Verified live 2026-09-01: Al Meera Qatar (almeera.com.qa), the leading
+  domestic supermarket/hypermarket chain's OWN-country storefront -- a
+  distinct platform from almeera_om, which runs the white-label "Blink"/
+  eatmubarak.pk stack. This one is a Vue/Vite SPA ("CDS Retail" -- Cowlar
+  Design Studio ecommerce) backed by a public JSON API at
+  api.ecom.almeera.com.qa. The SPA shell ships no product data server-side;
+  the API base URL and the required `vendorKey` header value are both
+  embedded in plaintext in the vendor JS chunk (VITE_APP_API_BASE_URL,
+  VITE_APP_VENDOR_KEY) -- confirmed by fetching the bundle directly, not
+  reverse-engineered.
+  Real endpoint: GET /shop/catalog/category/<id>?storeId=8&page=N&limit=100
+  &type=express -- per-category walk with live per-store pricing (limit
+  caps at 100 server-side; page 2 of an exhausted category returns 0 items,
+  confirmed it doesn't re-serve page 1). storeId=8 ("Hyatt Plaza") is
+  pinned because it is the one flagged isActive=true that was checked;
+  several other branches in /shop/stores are isActive=false (unlaunched).
+  A separate /shop/catalog listing endpoint exists but always returns the
+  literal string "null" for every store's price -- not used; documented in
+  the spider docstring so it isn't rediscovered and mistaken for the real
+  one.
+  10 top-level categories walked (Fresh Food, Value Pack, Food Specials, 3x
+  Wafa, Wafa Points, Home Specials, Grocery Specials, Snacks &
+  Confectionery, Electronics Essentials, Personal Hygiene & Care) --
+  overwhelmingly food/grocery/household by name; only "Electronics
+  Essentials" is clearly non-food.
+  Locality proved: prices are QAR, storeId resolves to a named Qatar
+  address (Hyatt Plaza), and the API host itself is <tenant>.almeera.com.qa.
+  Spot check: barcode 6300900236276 "Baladna Long Life Skimmed Milk 1L" at
+  7.00 QAR; barcode in category 20456 (Fresh Food) "Al Meera Mozzarella
+  Qatar" at 39.75 QAR.
+  Product URL is synthesized as https://www.almeera.com.qa/product/<barcode>
+  from the SPA's Vue-router path (`path:"/product/:barcode"` in the vendor
+  JS) -- correct route, but the page itself is client-rendered, so a cold
+  curl of that URL returns the SPA shell, not the product markup (same as
+  the homepage). This is expected for this platform, not a broken link.
+  coicop_divisions: 01, 02, 05, 06, 12, 13
+  divisions_basis: sampled_rows (10-category test walk; full multi-page
+  crawl not yet run to completion at manifest-authoring time)

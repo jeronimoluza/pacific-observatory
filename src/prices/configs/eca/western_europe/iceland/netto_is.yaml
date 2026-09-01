@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: netto_is
+url: https://www.netto.is/tilbod
+language: is
+cadence: weekly
+notes: |
+  Nettó (Samkaup) runs no online store -- netto.is is a static Webflow
+  marketing site with no search, no category browse, no PDPs. The only page
+  with real structured transaction prices is the weekly deals page
+  `/tilbod`: a server-rendered CMS grid of `.offer-card_wrapper` cards, each
+  with a name/brand/variant and a `.price-label_new-price` + unit
+  (kr./kg., kr./pk., kr./stk.). About a third of cards are brand-only promo
+  banners with no attached price and are skipped rather than faked.
+  No product has an id or its own URL -- rows use a synthetic
+  `#<slug>-<index>` URL fragment (DuplicationPipeline dedups on `url`).
+  Narrow by design: this is one retailer's current weekly offers, not the
+  full assortment. Currency ISK, whole krónur. Verified live 2026-09-01: 34
+  of 100 cards carried a real price, e.g. 'Nauta entrecote' (Kjötborðið,
+  sérvalið) ISK 7959/kg.
+  ORCHESTRATOR RE-AUDIT 2026-09-01: verified 34 rows, 34 distinct
+  product_id, 34 distinct url (synthetic `#<slug>-<index>` fragments, as
+  required by the DuplicationPipeline url-dedup rule), 0 zero-price, 0 blank
+  names, 100% ISK, median 1,334, range 119-17,246. Icelandic characters
+  round-trip intact ("Nauta entrecote Kjotbordid, servalid").
+
+  ANALYTICAL CAVEAT: this source scrapes ONLY the weekly `/tilbod` deals
+  page, so every price is a PROMOTIONAL price, not a regular shelf price,
+  and the basket turns over each week. It is a thin but genuine source (34
+  rows, ~62% food) and it is the only structured price surface netto.is
+  exposes - the rest of the site is a Webflow marketing shell with no store,
+  no search and no product pages. Do not treat this series as a shelf-price
+  panel; a level comparison against kronan_is will be biased downward.
+  kronan_is (8,070 rows, full catalogue) is Iceland's load-bearing food
+  source; netto_is is supporting evidence.

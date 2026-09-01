@@ -8,4 +8,27 @@ archive_prefix: "www.seingayhar.com/"
 archive_path_re: '^/(beverages-en|bakery-and-breads-en|bean-and-nuts-en|biscuit-en|candy-and-jelly-en|chocolate-en|coffee-en|condiment-en|cooking-oil-en|dairy-and-eggs-en|dry-tea-en|flour-sugar-and-salt-en|frozen-food-en|household-cleaning-en|instant-noodles-en|jam-honey-and-spread-en|meat-and-seafood-en|noodle-and-pasta-en|personal-care-en|rice-and-grains-en|snacks-en|soap-and-detergent-en|vegetable-oils-en)/[^/]+$'
 language: en
 cadence: weekly
-channel: pharmacy
+channel: hypermarket
+notes: |
+  Channel corrected 2026-09-01: was `pharmacy`, which does not match either
+  the site or what the spider collects. SeinGayHar is a Myanmar "megastore"
+  (OpenCart, so-megastore theme) selling groceries (beverages, snacks,
+  candy, chocolate, coffee, biscuits, bean/nuts, meat-and-seafood, dry-tea,
+  dairy, rice, cooking oil, condiments) alongside electronics, large/small
+  appliances, mobiles, and cosmetics — the textbook `hypermarket`
+  discriminating test ("big-box genuinely cross-selling food and general
+  merchandise"). It has a minor `medical-products-en` / `health-care-en`
+  department but is not dispensing/medicines-led. The spider itself is
+  deliberately scoped to CATEGORY_ROOTS covering only food/beverage/
+  household-goods aisles (never crawls the electronics/appliance side).
+  Verified live re-run 2026-09-01: 1,423 rows, 1,342 distinct product_id,
+  100% MMK, 0 zero-price, 0 blank-name, price range 150-116,200 MMK
+  (median 4,300). 9 of 23 configured category roots returned products this
+  run (beverages, biscuit, snacks, candy-and-jelly, coffee, chocolate,
+  bean-and-nuts, meat-and-seafood, dry-tea) — 100% of collected rows are
+  food/beverage/confectionery. The other 14 roots (dairy-and-eggs,
+  rice-and-grains, cooking-oil, condiment, frozen-food, instant-noodles,
+  noodle-and-pasta, jam-honey-and-spread, flour-sugar-and-salt,
+  bakery-and-breads, household-cleaning, soap-and-detergent,
+  personal-care) returned 0 products this run — worth a follow-up depth
+  check, but does not change the channel call.

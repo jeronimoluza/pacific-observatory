@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: netease_yanxuan_cn
+url: https://you.163.com
+language: zh
+cadence: weekly
+channel: specialty-food
+notes: >
+  Second working CN retail source (2026-09-01), after suning. NetEase's own
+  D2C brand (you.163.com) is a general multi-category retailer overall, but
+  its "乳饮酒水" (dairy/drinks/wine) L1 vertical (categoryId=1005002) is a
+  genuine narrow food-and-beverage catalog: baijiu, wine, beer, milk, honey,
+  tea, coffee, juice, cereal. Only this vertical is crawled - channel is
+  scoped to what is actually collected, hence specialty-food rather than
+  dept-store. Open JSON endpoint, no auth:
+  GET https://you.163.com/xhr/item/listByCategory?categoryId=<id> ->
+  {"data": {"itemList": [{"id","name","retailPrice","soldOut",...}]}}.
+  Walked 21 leaf category ids under 1005002 (found via the server-rendered
+  /item/saleRank?categoryId=1005002 page's subCateList) for
+  ~580 distinct SKUs with clean per-leaf category labels. The equivalent
+  leaf-category HTML pages (/item/list?categoryId=<leaf id>) are empty CSR
+  shells - only the XHR endpoint and the L1-level HTML pages render data.
+  Product detail: https://you.163.com/item/detail?id=<itemId>, confirmed to
+  serve matching name/price server-side. CNY implicit (no on-page symbol;
+  NetEase is a mainland Chinese company selling only into China). All major
+  CN grocery leaders (Sam's Club China, Freshippo/Hema, Meituan Maicai, Pupu,
+  JDDJ, JD.com, Yonghui) are separately confirmed dead in known_blockers.md.
