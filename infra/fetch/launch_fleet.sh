@@ -61,6 +61,9 @@ while [ "$i" -lt "$COUNT" ]; do
     [ -n "${OUT_PREFIX:-}" ] && echo "export OUT_PREFIX=$OUT_PREFIX"
     [ -n "${MISS_PREFIX:-}" ] && echo "export MISS_PREFIX=$MISS_PREFIX"
     [ -n "${MISS_IN_PREFIX:-}" ] && echo "export MISS_IN_PREFIX=$MISS_IN_PREFIX"
+    # Same reason as above: unset means "let ccfetch use its default", so this
+    # is only written when the caller pointed the run at a different resolve.
+    [ -n "${MANIFEST_PREFIX:-}" ] && echo "export MANIFEST_PREFIX=$MANIFEST_PREFIX"
     echo "export MAXSEC=$MAXSEC"
     echo "export TERMINATE=1"
     echo "export AWS_DEFAULT_REGION=$REGION"

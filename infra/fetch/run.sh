@@ -18,6 +18,7 @@ export INPUT=${INPUT:-manifest}
 [ -n "${OUT_PREFIX:-}" ] && export OUT_PREFIX || unset OUT_PREFIX
 [ -n "${MISS_PREFIX:-}" ] && export MISS_PREFIX || unset MISS_PREFIX
 [ -n "${MISS_IN_PREFIX:-}" ] && export MISS_IN_PREFIX || unset MISS_IN_PREFIX
+[ -n "${MANIFEST_PREFIX:-}" ] && export MANIFEST_PREFIX || unset MANIFEST_PREFIX
 
 BUCKET=pacific-observatory-cc-warc-934494149338
 export AWS_DEFAULT_REGION=us-east-1

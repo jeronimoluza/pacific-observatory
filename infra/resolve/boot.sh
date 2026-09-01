@@ -16,6 +16,10 @@ exec > /tmp/boot.log 2>&1
 BUCKET=pacific-observatory-cc-warc-934494149338
 RUN=${RUN_TAG:-resolve}
 SHARD=${SHARD:-0}
+# A second run over a different source set must not land on the first run's
+# manifests: the writer keys output by crawl, so same prefix means overwrite.
+SRC_KEY=${SRC_KEY:-resolve/sources.json}
+DST_PREFIX=${DST_PREFIX:-resolve/manifests}
 
 ship() {
   aws s3 cp /tmp/boot.log s3://$BUCKET/resolve/$RUN-$SHARD-boot.log
@@ -29,7 +33,7 @@ dnf install -y python3-pip
 pip3 install --quiet boto3
 
 aws s3 cp s3://$BUCKET/resolve/ccresolve.py /tmp/ccresolve.py
-aws s3 cp s3://$BUCKET/resolve/sources.json /tmp/sources.json
+aws s3 cp s3://$BUCKET/$SRC_KEY /tmp/sources.json
 aws s3 cp s3://$BUCKET/resolve/crawls-$SHARD.txt /tmp/crawls.txt
 
 nproc
@@ -38,7 +42,7 @@ wc -l /tmp/crawls.txt
 
 export SOURCES=/tmp/sources.json
 export OUT_BUCKET=$BUCKET
-export OUT_PREFIX=resolve/manifests
+export OUT_PREFIX=$DST_PREFIX
 export CONC=${CONC:-64}
 export CRAWLS=$(tr '\n' ',' < /tmp/crawls.txt)
 
