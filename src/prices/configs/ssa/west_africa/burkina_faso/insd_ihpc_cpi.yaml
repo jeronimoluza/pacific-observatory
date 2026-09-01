@@ -1,0 +1,43 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: insd_ihpc_cpi_bfa
+module: ssa.west_africa.burkina_faso.insd_ihpc_cpi
+function: fetch_insd_ihpc_cpi_bfa
+url: https://www.insd.bf/fr/statistiques/statistiques-economiques/statistiques-des-prix
+language: fr
+cadence: monthly
+fallback_date: 2025-01-01
+notes: |
+  INSD (Institut National de la Statistique et de la Démographie) monthly
+  IHPC (Indice Harmonisé des Prix à la Consommation) release, "NOTE_IHPC_
+  Base_2023_de_<MOIS>_<ANNEE>" workbook. Verified live 2026-09-01: current
+  release is MAI 2026 (.xlsx, 328,916 bytes, 7 sheets). Sheet with the
+  "Libellé" header carries "Tableau 5 : Évolution des indices nationaux
+  suivant les groupes de la NCOA-IHPC" -- a national index table keyed by a
+  4-digit publisher group code (e.g. "0101" PRODUITS ALIMENTAIRES, "0405"
+  ÉLECTRICITÉ GAZ ET AUTRES COMBUSTIBLES) with 5 monthly index columns
+  (one year-ago month + the 4 most recent months, for a rolling comparison).
+  The 4-digit code decomposes as COICOP division (first 2 digits) + group
+  (last 2 digits, leading zero stripped): "0101"->"01.1" (Food), "0203"->
+  "02.3" (Tobacco), "0405"->"04.5" (Electricity/gas/fuels), "1101"->"11.1"
+  (Catering) -- all confirmed against COICOP 2018 group definitions, direct
+  passthrough, no translation map needed. index_base_period = "2023" per
+  the workbook's own "Base 2023" naming.
+  Discovery: the listing page links both PDF and XLS/XLSX releases going
+  back over a year; only .xlsx/.xls links are matched (this fetcher does
+  not parse PDF) -- as of 2026-09-01 spreadsheet format was available for
+  the 2 most recent months only, so a month can be skipped if a PDF-only
+  gap persists across two releases (see `_insd_common.py` docstring).
+  Test run (cutoff=2020-01-01): 250 rows, 50 distinct coicop_code, 5 monthly
+  columns per group, index values in the 85-165 range (base 2023=100).
+  Non-food, index-level coverage -- complements insd_avg_prices_bfa
+  (price-level) and wfp_prices (official_avg commodity series).
+  FIXED 2026-09-01 (coordinator review): fetcher wrote `period_kind:
+  "monthly"`; every other monthly source in the corpus uses the
+  `_avg` convention `"monthly_avg"`. Nothing validates the field so the
+  wrong value wrote silently and rows then failed every downstream filter
+  on `period_kind == 'monthly_avg'`. Fixed to `monthly_avg`; CSV rebuilt
+  from scratch, 250/250 rows now carry the corrected value.

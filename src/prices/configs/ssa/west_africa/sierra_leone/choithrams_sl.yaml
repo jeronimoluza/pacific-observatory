@@ -1,0 +1,53 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: choithrams_sl
+channel: supermarket
+url: https://247bigmarket.com/store/freetown/
+language: en
+cadence: weekly
+notes: |
+  Choithrams (Freetown-headquartered supermarket chain) via its two vendor
+  storefronts on 247bigmarket.com -- Sierra Leone's own WooCommerce +
+  multi-vendor-marketplace platform (Dokan/MVX-style; NOT a foreign
+  aggregator). Vendor pages: /store/freetown/ (19A Wellington Industrial
+  Estate, 14 Rawdon Street, Freetown, Sierra Leone -- address confirmed on
+  the vendor's "about" page) and /store/kenema/ (second branch). Two other
+  vendors exist on the same platform (icroyale, skbuildingmaterials) and are
+  explicitly out of scope for this spider -- they are not Choithrams.
+
+  channel: supermarket, not marketplace: per GLOSSARY.md's discriminating
+  test, `marketplace` means third-party sellers with a long-tail,
+  seller-authored catalog; this storefront is ONE retailer's own first-party
+  inventory (curated names like "Fresh Slice Bread", "Sparkling Wine 75CL"),
+  merely hosted on a shared multi-vendor commerce platform the way another
+  retailer might be hosted on Shopify. The onboarding brief's own guidance
+  ("a named supermarket behind a delivery app is a supermarket") applies
+  directly.
+
+  Server-rendered WooCommerce shop-loop HTML on the vendor archive page
+  (paginated /store/<slug>/page/N/) -- no JS, no WAF, no special UA needed
+  (plain `requests` gets 200). Listing cards already carry name + price +
+  category + numeric product id, so the spider parses listing pages
+  directly instead of visiting per-product detail pages. Page-2 pagination
+  verified to return a genuinely different product-id set (not a re-served
+  page 1) before scaffolding, per the onboarding skill's enumerability gate.
+
+  Verified live 2026-09-01: /store/freetown/ paginates 4 pages, 198 distinct
+  products; /store/kenema/ also live. Combined test run below.
+
+  CURRENCY: site prices everything in USD (WooCommerce Store API confirms
+  currency_code=USD; HTML price markup uses "$"). This is a foreign-currency
+  price for a country whose own currency is SLE -- flagged per the brief's
+  locality rule. It is treated as usable because it is a genuine domestic
+  shelf price (a real Freetown retailer selling into Sierra Leone via
+  Sierra Leone's own marketplace platform, not a diaspora storefront
+  shipping internationally) -- Sierra Leone retail commonly quotes USD
+  alongside SLE given currency volatility. No SLL/SLE redenomination
+  ambiguity applies since the site was never leone-denominated.
+
+  coicop_divisions: 01 (bakery, beverages, groceries observed in sample)
+  divisions_basis: sampled_categories (product_cat classes observed on
+  listing cards during onboarding, e.g. "bakery"; full division breadth to
+  be confirmed by the classifier once run at scale)

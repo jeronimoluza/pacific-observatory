@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: supermax_pr
+url: https://www.supermaxonline.com/
+language: es
+cadence: weekly
+channel: supermarket
+notes: |
+  SuperMax (PR-owned chain, 16 stores, HQ San Juan area — confirmed PR-domestic:
+  storefront is scoped to the Guaynabo store, phone/app targets PR). Bespoke
+  jQuery storefront. Department listing pages ship an empty products grid;
+  the catalog is filled by POSTing to /products-grid-data.html with
+  department=<id>&draw=<n> — plain form POST, no auth/cookie required
+  (verified with a cold curl_cffi session). draw pages through 36 products
+  at a time. Verified live 2026-09-01 on department=1 (Carnes y Mariscos):
+  draw=0/10 return distinct SKU sets, draw>=20 returns a clean empty
+  fragment and stays empty through draw=150 (no re-served-last-page loop).
+  8 of the 9 nav departments expose a working department id (organico is a
+  slug id, not numeric); "cenas" has no products-grid on its own page
+  (likely a deli-mode subview) and was left out rather than guessed.
+  Price text has 4 shapes: "$4.99", "$4.99<i> LB</i>" (per-lb), "2/$5.00"
+  (multi-buy, parsed as amount/count), and "97¢" (cents-only). Currency
+  USD matches countries.yaml (native PR shelf price, not a red flag per
+  wave-9 brief).

@@ -1,0 +1,35 @@
+active: false
+# DEACTIVATED 2026-09-01 by orchestrator audit. Amigo is not an independent
+# shelf: amigo.com's own footer reads "Supermercados Amigo / Pueblo Inc.",
+# the same Carolina PR HQ as pueblo_pr, on the same Alpine.js backend and the
+# same product_id namespace. Measured across the FULL catalogues (not a
+# category sample): 18,678 shared product_ids = 93.0% of the smaller catalogue,
+# and only 8.9% of those carry a different price -- 91% are identical.
+# The onboarding agent's 84%/22% figures came from a 90-SKU sample of
+# category_id=1 only and did not survive full-catalogue measurement.
+# Counting both would double-count 93% of Puerto Rico's shelf.
+# Data is retained (the 8.9% divergent SKUs are real banner-level signal);
+# the source is simply excluded from coverage counts.
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: amigo_pr
+url: https://www.amigo.com/
+language: es
+cadence: weekly
+channel: supermarket
+notes: |
+  Supermercados Amigo (PR chain — footer confirms "Supermercados Amigo, PO
+  BOX 1967, Carolina, Puerto Rico 00984-1967", same HQ as `pueblo_pr`'s
+  Supermercados Pueblo; Wikipedia: "Amigo Supermarkets ... owned by Pueblo").
+  Same bespoke Alpine.js platform and /controllers/products.html endpoint as
+  pueblo_pr, and the same category_id 1-9 scheme. Deliberately onboarded as
+  a separate source (not skipped as a pueblo_pr duplicate) because a live
+  2026-09-01 sample of 90 SKUs from category_id=1 on each domain found only
+  84% SKU overlap, and of the 76 SKUs common to both, 17 (22%) carry
+  genuinely different shelf prices between the two banners (e.g. sku
+  127472: Amigo $0.79 vs Pueblo $0.99) — two independently-priced
+  storefronts sharing a catalog backend, not the same shelf counted twice.
+  Currency USD matches countries.yaml (native PR shelf price, not a red
+  flag per wave-9 brief).

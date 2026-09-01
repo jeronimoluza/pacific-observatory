@@ -1,0 +1,43 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+channel: null
+source_key: uga_era_tariff
+module: ssa.east_africa.uganda.era_electricity_tariff
+function: fetch_uga_era_tariff
+url: https://www.era.go.ug/tariff-schedules/
+language: en
+cadence: quarterly
+fallback_date: 2019-01-01
+notes: |
+  Uganda Electricity Regulatory Authority (ERA) quarterly End-User
+  Electricity Tariff for UEDCL customers. Live discovery: GET
+  www.era.go.ug/wp-json/wp/v2/posts?search=electricity+tariffs+for+the
+  (standard WordPress REST API, no auth) returns recent posts; filter
+  titles containing "Tariff" plus one of
+  Quarter/Approves/Retains/Reduces/Sets/Announces, pick newest by post
+  date. There is no separate tariff-schedule table or download -- ERA
+  states the numbers as plain sentences in the press-release body, so the
+  fetcher regexes them out of content.rendered rather than parsing a
+  table. Verified live 2026-09-01: latest post "ERA Approves Electricity
+  Tariffs for the Third Quarter of 2026" (2026-07-07), 9 consumer
+  categories parsed from "As per the approved Tariff schedule, Domestic
+  Consumers will pay an average of UGX 779.4; Commercial Consumers UGX
+  562.1; ... and the Public Amenities UGX 360.0 per unit" (Domestic,
+  Commercial, Medium/Large/Extra-Large Industrial, Medium/Large/
+  Extra-Large (Service), Public Amenities), plus a Lifeline tariff (UGX
+  250 for the first 15 units, domestic low-consumption customers) and a
+  Cooking tariff (UGX 412/unit, 70-unit bundle) parsed opportunistically
+  -- 11 PriceObservation rows from this one post. Same source_key/
+  category set across quarters; a future post with different phrasing may
+  yield fewer rows if the Lifeline/Cooking sentences aren't present, but
+  the 9-category main block is the load-bearing signal and is stable
+  across at least the last several quarters' post titles checked via
+  wp-json search. COICOP 04.5.1 (electricity), matching
+  ura_electricity_tariff.py (Vanuatu) / cie_tariff.py (Cote d'Ivoire)
+  convention in this repo. observation_date = the post's WordPress publish
+  date (period_kind=quarterly) since ERA does not always state a distinct
+  "effective from" date. No TLS workaround needed (era.go.ug validates
+  fine with a plain requests session, unlike ubos.org).

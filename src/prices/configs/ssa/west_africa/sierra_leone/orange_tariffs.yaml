@@ -1,0 +1,32 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: sl_orange_tariffs
+module: ssa.west_africa.sierra_leone.orange_tariffs
+function: fetch_sl_orange_tariffs
+channel: null
+url: https://www.orange.sl/en/b2c-internet-personal/data-bundles-monthly.html
+language: en
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  Orange Sierra Leone prepaid data-bundle tariffs (Monthly/Weekly/Daily
+  pages). Server-rendered offer-variant cards with a plain Quantity/
+  Validity/Price description list -- no JS needed, no WAF. Verified live
+  2026-09-01: 10 rows across the 3 cadence pages (2.5-20GB monthly, 100MB-1GB
+  weekly, 15-250MB daily).
+  CURRENCY TRAP: every price on this site is labelled "SLL" (e.g. "Price:
+  37.50 SLL" for a monthly 2.5GB bundle), which read literally would be the
+  pre-2022 legacy leone. The magnitudes rule that out: a 20GB/month bundle is
+  "300 SLL" and 100MB/week is "2 SLL" -- as genuine pre-2022 SLL those would
+  be 0.3 and 0.002 new leone (SLE), i.e. a fraction of a US cent for a data
+  bundle, not a plausible price. Cross-checked against Africell SL's
+  data-bundle tariffs scraped the same day (sl_africell_tariffs): Africell's
+  15GB/30-day bundle is "NLe 300" -- the identical face-value number Orange
+  shows for its own 20GB/month bundle ("300 SLL"). That match is decisive:
+  Orange's site still carries the stale pre-redenomination "SLL" currency
+  label, but the numbers themselves are already in new-leone (SLE)
+  magnitude. All rows emitted with currency=SLE and the displayed number
+  used AS-IS (no /1000 rescale) -- only the currency code is corrected.

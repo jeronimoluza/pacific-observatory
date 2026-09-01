@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: supermarket_co_ug
+url: https://supermarket.co.ug/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "supermarket.co.ug/"
+archive_path_re: '^/\d+-[a-z0-9-]+\.html$'
+notes: |
+  PrestaShop storefront (itemprop-tagged category HTML, [id]-[slug] URL
+  convention), scaffolded on the shared _prestashop_base. Kampala grocery
+  delivery: "Online Shopping Supermarket Groceries Pharmacy Uganda |
+  Doorstep Delivery|Fresh Food Vegetables". Verified live 2026-09-01:
+  HTTP 200, real produce/grocery SKUs across categories (Fruits &
+  Vegetables, Frozen, Bakery, Fresh Milk, Meat/Fish/Poultry, Tins & Jars
+  Cooking, Ready Meals, ...), e.g. 'Carrots /KG' $2.20, 'Onions 1KG' $0.49,
+  'Fresh Spinach 200G' $0.55.
+
+  CURRENCY / LOCALITY FLAG: prices and the cart JSON are rendered in US
+  dollars, not UGX, despite the storefront delivering within Kampala/
+  Uganda. schema.org priceCurrency reports "RON" (a stale PrestaShop
+  template default, not a real Romanian-leu price -- no RON symbol or
+  value appears anywhere on the rendered pages). Reads as a diaspora-
+  facing "order groceries online for delivery to family in Uganda" model
+  rather than an ordinary domestic shelf price collected in local
+  currency. Recorded per onboarding rule 8: kept as a real Uganda-
+  delivering source (not a foreign storefront that merely ships
+  worldwide), but explicitly NOT a domestic UGX shelf-price series --
+  currency is set to USD (what is actually charged), and downstream PPP
+  users should treat this source's price level accordingly.

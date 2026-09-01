@@ -1,0 +1,27 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: ky_eso_cpi
+module: lac.caribbean.cayman_islands.eso_cpi
+function: fetch_ky_eso_cpi
+url: https://www.eso.ky/indicators-page.html
+language: en
+cadence: quarterly
+fallback_date: 2008-06-01
+notes: |
+  Cayman Islands ESO (Economics and Statistics Office) publishes "CPI by
+  Divisons <Nq><YYYY>.xlsx" on the static indicators page, overwritten in
+  place each quarter (verified live 2026-09-01: "CPI by Divisons
+  4q2025.xlsx"); the fetcher re-resolves the current link by regex each
+  run rather than hardcoding a quarter tag or numeric storage id, both of
+  which change every release.
+  Single sheet "Table 4", base period JUNE 2008 = 100, quarterly cadence
+  (MARCH/JUNE/SEPTEMBER/DECEMBER rows per year) — verified live coverage
+  2009 Q1 through 2025 Q4 (68 quarters). 12 major groups + ALL ITEMS
+  (headline dropped, no sanctioned coicop_code sentinel yet). No division
+  13 (insurance/financial services) in Cayman's own basket — same 12-group
+  pattern as Samoa/SBS, Solomon Islands/SINSO, Indonesia/BPS in this repo.
+  No anti-bot: eso.ky serves plain HTTPS with a standard browser UA via
+  plain `requests`, no curl_cffi impersonation needed.

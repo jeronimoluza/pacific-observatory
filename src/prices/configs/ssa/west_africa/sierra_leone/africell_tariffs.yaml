@@ -1,0 +1,32 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: sl_africell_tariffs
+module: ssa.west_africa.sierra_leone.africell_tariffs
+function: fetch_sl_africell_tariffs
+channel: null
+url: https://www.africell.sl/services/data-bundles/
+language: en
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  Africell Sierra Leone prepaid/postpaid data-bundle, TikTok-bundle, Mifi/
+  Router unlimited-bundle, and combo-bundle (data+voice+SMS) tariffs. Both
+  pages (data-bundles, combo-bundles) are fully server-rendered HTML tables --
+  no JS, no WAF. Verified live 2026-09-01: 39 rows across 6 sections (Daily/
+  Weekly/Monthly/Long-Validity/Social-Media data bundles, Post-paid bundles,
+  TikTok bundles, Mifi/Router bundles, Ya Mix Plus combo bundles).
+  CURRENCY TRAP: prices are labelled "NLe" on the data-bundles page and "Le"
+  on the combo-bundles page. Both are the SAME post-2022 currency (new
+  Leone, SLE) -- "Le" here is informal shorthand for the new leone, not the
+  pre-2022 SLL. Confirmed by magnitude: 15GB/30-day = "NLe 300" and a 650MB/
+  monthly combo = "Le 30", both in the same low-hundreds-of-units range that
+  is only plausible as new-leone (SLE) pricing -- raw pre-2022 SLL values at
+  this face value would be off by 1000x (a fraction of a cent for a data
+  bundle). All rows emitted with currency=SLE. Cross-checked against
+  Orange SL's data-bundle pricing scraped the same day, which independently
+  confirms the same order of magnitude (see orange_tariffs.py notes) despite
+  Orange mislabeling its own new-leone prices with the legacy "SLL" code --
+  the opposite direction of the same redenomination trap.

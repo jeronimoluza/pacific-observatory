@@ -1,0 +1,36 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1", "04.4.2"]
+channel: null
+source_key: onea_water_tariff_bfa
+module: ssa.west_africa.burkina_faso.onea_water_tariff
+function: fetch_onea_water_tariff_bfa
+url: https://onea.bf/wp-content/uploads/2021/01/Tarifs-ONEA_2021.pdf
+language: fr
+cadence: irregular
+fallback_date: 2020-12-31
+notes: |
+  ONEA (Office National de l'Eau et de l'Assainissement) household water
+  tariff schedule, linked from the "Les tarifs" nav item on onea.bf.
+  Verified live 2026-09-01: 200, 133,072 bytes, one page, text-extractable
+  (not scanned). No archive of prior versions found on the site — this is
+  the only live tariff document, so the fetcher snapshots the CURRENT
+  schedule (period_kind: effective_from, effective_from = 2021-01-01, the
+  PDF's own upload date — the schedule itself carries no revision date in
+  its text) rather than claiming a walked history.
+  Two-column flyer; pdfplumber's linear extraction keeps each bullet's own
+  line intact but interleaves rows from the two columns, so the fetcher
+  matches each of 10 known household-tariff labels with its own anchored
+  regex rather than one generic table parse (safer against layout jumble;
+  logs a warning naming any anchor that stops matching rather than
+  silently emitting a partial schedule).
+  Test run (cutoff=2020-01-01): 10/10 anchors matched. Household ("tarifs
+  ménage") block only — consumption tiers 0-8/9-15/16-25/>25 m3 (188/463/
+  663/1,104 XOF per m3), subscriber service charge (1,000 XOF/facture),
+  two sanitation redevances (21 and 60 XOF/m3), and 3 borne-fontaine unit
+  prices (seau 20L=5, bassine 40L=10, fût 220L=60 XOF). The "sociétés"
+  (business/institutional) block and VAT lines are commercial/tax rows out
+  of scope for a household PPP basket and are not emitted.
+  CURRENCY: XOF, no minor unit — "1 104 FCFA/m3" is 1,104 XOF, not 11.04.

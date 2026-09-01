@@ -1,0 +1,35 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+source_key: malitel_ml_tariff
+module: ssa.west_africa.mali.malitel_ml_tariff
+function: fetch_malitel_ml_tariff
+channel: null
+url: https://malitel.ml/particulier/internet/Pages/Forfaits%20internet%20mobile.aspx
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Moov Africa Malitel (Mali's #2 mobile operator) prepaid mobile-internet
+  data-plan tariff page. Verified live 2026-09-01: 21 server-rendered plan
+  cards (div.dropshadaw), each with price + data allowance + validity
+  window, e.g. "500 FCFA" / "500 Mo" / "30 jours"; also short-validity
+  bundles (1-7 days) and a night-only bundle ("23H- 07H"). Currency
+  displayed inconsistently as "CFA" / "FCFA" across cards -- both stripped
+  to XOF, matching countries.yaml (no minor unit, no /100 division).
+
+  No effective/decision date is printed, so this is scraped as a live
+  snapshot (period_kind=snapshot, observation_date=scrape date), same
+  convention as civ_cie_tariff / our_telekom_plans.
+
+  CERT TRAP: malitel.ml fails TLS certificate verification identically
+  under curl_cffi (impersonate=chrome124) and plain requests -- a
+  permanent server misconfiguration, not a transient block. The fetcher
+  passes verify=False; the page is public tariff data with no
+  auth/credentials involved.
+
+  Non-food tariff source rounding Mali out to 5 sources, alongside
+  wfp_prices + fpma_mli (official_avg) and minicim_ml + lacornichemali_ml
+  (supermarket/food).

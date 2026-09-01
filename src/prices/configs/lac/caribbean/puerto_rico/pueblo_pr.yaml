@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pueblo_pr
+url: https://puebloweb.com/
+language: es
+cadence: weekly
+channel: supermarket
+notes: |
+  Supermercados Pueblo (PR chain, HQ Carolina — confirmed PR-domestic via
+  footer address "PO BOX 1967, Carolina, Puerto Rico 00984-1967"). Storefront
+  is a bespoke Alpine.js site, not one of the reusable base platforms. The
+  listing grid is filled client-side by fetching
+  /controllers/products.html?category_id=<1-9>&category_level=1&type=category
+  &page=<n>&sort=&query= — a plain, unauthenticated, cookie-free HTML
+  fragment endpoint (curl_cffi impersonate=chrome124, no session/cookie
+  needed). 9 top-level departments (category_id 1-9), 18 products/page.
+  Verified live 2026-09-01: category_id=1 (Provisiones) walked 24 pages /
+  432 unique SKUs with zero repeats; category_id=3 (Mascotas) confirmed to
+  return a genuinely empty fragment at page=50 and stays empty through
+  page=500 (no re-served-last-page loop). Exponential-search sizing probe
+  put true last non-empty page between 32 and 512 depending on department.
+  Price text has two shapes: "$1.29 LB" (plain) and "2/$5.00" (multi-buy,
+  parsed as amount/count). Currency USD matches countries.yaml (native PR
+  shelf price, not a red flag per wave-9 brief).

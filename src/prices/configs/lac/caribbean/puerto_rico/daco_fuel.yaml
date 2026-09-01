@@ -1,0 +1,28 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+channel: null
+source_key: pr_daco_fuel
+module: lac.caribbean.puerto_rico.daco_fuel
+function: fetch_pr_daco_fuel
+url: https://daco.pr.gov/
+language: es
+cadence: monthly
+fallback_date: 1999-12-01
+notes: |
+  DACO (Departamento de Asuntos del Consumidor) publishes a single,
+  continuously-updated XLSX of monthly average consumer gasoline and
+  diesel prices (linked from the agency homepage, hosted on a
+  docs.pr.gov document store). No auth, no anti-bot — a plain
+  `requests.get` with a browser UA returns the file directly. One sheet
+  ("Precios Mensuales"), monthly rows from 2000-01 through 2026-07 at
+  probe time (319 rows). Columns: Fecha, Promedio, Regular, Super,
+  Diesel — Promedio (a same-row blend of Regular+Super) is skipped as a
+  derived duplicate; Regular/Super/Diesel are each emitted as their own
+  item_name. Values are in cents per US gallon (Regular 387.10 = $3.8710/
+  gal at 2026-07; sense-checked against Jan-2000 Diesel 122.0 = $1.22/gal)
+  — fetcher divides by 100. Currency USD matches countries.yaml (native
+  PR price, not a red flag per wave-9 brief). fallback_date set before
+  the earliest row so the first run backfills full history.

@@ -1,0 +1,30 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+channel: null
+source_key: ky_ofreg_fuel
+module: lac.caribbean.cayman_islands.ofreg_fuel
+function: fetch_ky_ofreg_fuel
+url: https://www.ofreg.ky/fuel/retail-fuel-prices
+language: en
+cadence: weekly
+fallback_date: 2020-01-01
+notes: |
+  OfReg (Utility Regulation and Competition Office) publishes a weekly
+  "Retail Fuel Prices Report" PDF (ofreg.ky/fuel/retail-fuel-prices),
+  surveyed from gas stations and marinas across Grand Cayman, Cayman Brac,
+  and Little Cayman. The fetcher reads the report's own pre-aggregated
+  "Retail Network Average Weekly Price Analysis" table (Regular Gasoline,
+  Premium Gasoline, Diesel — Cayman-wide averages for the report week),
+  not the messy per-brand/per-station tables on page 1, which have
+  inconsistent column layouts per brand block (Independent stations add
+  mid-grade/E85/bio-diesel columns the others don't have).
+  Listing page shows a rolling ~12-report window (roughly 3 months); the
+  fetcher backfills every report currently listed above the cutoff, not
+  just the latest.
+  Currency: KYD, stated explicitly and unambiguously in the report's own
+  text ("average retail fuel prices are provided in Cayman Islands
+  dollars per imperial gallon") — the one source onboarded this wave with
+  zero currency ambiguity to resolve.
