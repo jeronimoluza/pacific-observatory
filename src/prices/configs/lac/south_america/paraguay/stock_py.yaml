@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: stock_py
+url: https://www.stock.com.py/
+language: es
+cadence: weekly
+channel: supermarket
+timeout: 1800
+notes: |
+  Asuncion-area supermarket, same commercial group as superseis_py per the
+  onboarding brief, but a genuinely different platform: nopCommerce (ASP.NET
+  WebForms postback IDs, literal nopcommerce.com footer credit) vs.
+  Superseis's OpenCart -- confirmed not a duplicate backend before building.
+  Probed 2026-09-01 with curl_cffi impersonate=chrome124.
+  Category URLs are flat and already leaf-level (/category/<id>-<slug>.aspx,
+  slug encodes the full path e.g. almacen-alimentos-secos-arroz) -- 316 found
+  on the homepage nav, no parent/leaf tree to compute. Product cards are
+  div.product-item.product<id>; name in a.product-title-link, price in
+  span.price-label. A .producto-sin-existencia placeholder div appears on
+  every card regardless of real stock (verified on an obviously-in-stock
+  item) so it is NOT used as an availability signal; available defaults to
+  True. Pagination ?pageindex=N confirmed to advance (distinct products on
+  page 2).
+  Currency PYG, no minor unit: price-label "  4.200" -> 4200 (dot = thousands
+  separator, same convention as superseis_py; sanity-checked against
+  countries.yaml and plausible per-item price ranges).
+  Measured 2026-09-01 full unbounded run: 7,344 rows, 7,344 distinct
+  product_id/url (0 duplicates survive the pipeline), 0 zero/negative
+  prices, 0 blank names, 100% PYG, median 13,100 / min 650 / max 752,300.
+  Food share ~62.5% (perecedero/almacen/bebidas/te/yerba/galletitas/
+  fideos-pastas/reposteria/legumbres/chocolates/cafe/cereales etc.) vs
+  ~33% non-food (perfumeria, limpieza, bazar, veterinaria/cotillon,
+  insecticidas) and ~4% promo/ambiguous (mision-de-ofertas). 3 emitted
+  URLs re-fetched cold, name and price both matched the live PDP.
+  One pagination trap found and fixed during onboarding: `?pageindex=N`
+  mostly advances, but at least one category (cremas-dentales) stalled past
+  page 30 re-serving the same handful of items instead of ever emptying --
+  pagination now stops on "no new product ids for this category", not on an
+  empty-cards check alone, with a 30-page safety cap.

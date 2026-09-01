@@ -1,0 +1,47 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: pcbs_avg_prices_ps
+module: menaap.middle_east.west_bank_and_gaza.pcbs_avg_prices_ps
+function: fetch_pcbs_avg_prices_ps
+url: https://www.pcbs.gov.ps/cpiDashboard/en
+language: en
+cadence: monthly
+fallback_date: 2018-01-01
+notes: |
+  Palestinian Central Bureau of Statistics CPI Dashboard, "Commodities" tab.
+  Re-verified live 2026-09-01. This is PCBS's own detailed average-price
+  series by item (the dashboard's "Average Price" view, not the CPI index),
+  covering 74 item categories across nearly the whole COICOP basket (food,
+  fuel, cigarettes, personal care, ...), item-coded with PCBS's own
+  COICOP-shaped codes (e.g. "011100109" = Egyptian Rice 1kg).
+  ENDPOINT: the dashboard is a Plotly Dash SPA; data comes from a POST to
+  /CPIDashBoard/_dash-update-component (no auth, plain `requests` works,
+  curl_cffi impersonation not required). Passing commodity_item=["__ALL__"]
+  bypasses category/item filters and returns the entire commodity table in
+  one call -- no need to walk 74 categories individually. See the fetcher
+  module docstring for the full request shape and the dash-layout/
+  dash-dependencies introspection that found it.
+  CURRENCY: natively ILS (New Israeli Shekel) -- confirmed via the
+  dashboard's own currency-conversion tab, which defaults to NIS and offers
+  USD only as a converted view. countries.yaml declares USD for
+  west_bank_and_gaza (the known defect flagged in the onboarding brief);
+  this source's own values are NIS, same as karaz_ps and wfp_prices for
+  this country. Currency does not vary per row at this source (unlike some
+  West Bank retailers) so a constant ILS is used, not a per-row backfill
+  stamp.
+  REGION: "regions" query param used is "Palestine" (PCBS's own national
+  rollup). PCBS also exposes "West Bank", "Gaza Strip", and "Jerusalem J1"
+  slices behind the same endpoint -- each returns a comparable-sized but
+  distinct set of item/period rows, not a subset of "Palestine" -- left for
+  future subnational work (see fetcher docstring).
+  DATA QUALITY: ~1.2% of (month, item-code) pairs in the "Palestine" pull
+  carry more than one raw "Average Price" quote for the same month (up to 7
+  seen for one diesel item), with no exposed sub-region/collector field to
+  explain the spread. This fetcher averages same-month duplicates (WFP-style
+  collapse) and records the quote count in `notes` per row, rather than
+  emitting the unexplained duplicates as independent observations.
+  Measured live pull (2019-01 through 2026-01, cutoff=2018-01-01):
+  22,973 rows before dedup collapse.

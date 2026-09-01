@@ -1,29 +1,34 @@
 """
-Kona Livr (Guinea) — https://www.konalivr.com/.
+Kona Livr — named supermarket merchants only (Guinea).
 
-Multi-vendor delivery marketplace for Conakry. The homepage lists 16
-merchants (supermarkets, pharmacies, bakeries, juice bars, restaurants)
-via plain <a href="/merchants/<slug>"> links; the candidate note's "app
-promos" landing figures were delivery fees, not item prices.
+konalivr_gn (already onboarded) crawls all 16 merchants behind the Kona
+Livr delivery marketplace at https://www.konalivr.com/ — supermarkets,
+pharmacies, bakeries, juice bars and restaurants blended into one
+channel: marketplace source. Per the onboarding convention, a named
+retailer chain sitting behind a delivery marketplace can also be
+onboarded as its own first-party source ("a named supermarket behind a
+delivery app is a supermarket").
 
-Each merchant page is server-rendered HTML with real product cards,
-grouped under category headers (e.g. "Frais", "Épicerie", "Médicaments",
-"Matériel"): div.mb-12 > h2 (category) + div.rounded-2xl per product,
-each with h3 (name), span.font-bold.text-brand-600 (price, "XX XXX
-GNF") and a p (short description). No product id in the markup, so
-product_id is synthesised from the merchant slug + slugified name.
+This spider targets only the two Kona Livr merchant pages that are
+recognisable supermarket chains — /merchants/carrefour-express-kaloum
+(Carrefour Express, Kaloum) and /merchants/super-u-kipe (Super U,
+Kipé) — and tags the result channel: supermarket. It does not re-crawl
+the marketplace index or the other 14 merchants; those stay inside
+konalivr_gn.
 
-Catalog is small and fixed: 16 merchants x 4 items = 64 products total
-(verified 2026-08-31, every merchant returns exactly 4). No stock/
-availability signal on the page — all treated as available.
-
-SPLIT 2026-09-01: two of the 16 merchants — carrefour-express-kaloum
-(Carrefour Express) and super-u-kipe (Super U) — are named supermarket
-chains and were carved out into their own source, konalivr_supermarket_gn
-(channel: supermarket), per the "named supermarket behind a delivery app
-is a supermarket" convention. This spider EXCLUDES those two slugs so
-the two sources never emit the same shelf twice. Do not re-add them here
-and do not re-merge the two sources — konalivr_supermarket_gn owns them.
+Verified live 2026-09-01: both merchant pages are server-rendered HTML,
+same markup as konalivr_gn (div.mb-12 > h2 category + div.rounded-2xl
+product cards, h3 name / span.font-bold.text-brand-600 price "XX XXX
+GNF"). Each merchant returns exactly 4 products, real named grocery
+SKUs with real GNF prices, e.g. Carrefour Express: "Pack 12 yaourts
+nature" 13 000 GNF, "Beurre 250 g" 20 000 GNF, "Œufs (x30)" 22 000 GNF,
+"Pâtes 500 g (x4)" 14 000 GNF; Super U: "Pack 6 eaux minérales 1,5 L"
+15 000 GNF, "Pack bissap 6x500 ml" 15 000 GNF, "Riz parfumé 5 kg"
+18 000 GNF, "Huile de tournesol 5 L" 15 000 GNF. 8 products total across
+the two merchants (no overlap in SKUs). Same caveat as konalivr_gn: the
+uniform 4-products-per-merchant pattern suggests a small/seed catalogue
+rather than a fully live-managed inventory, but the products and prices
+are real and GNF-denominated.
 """
 
 import logging
@@ -35,10 +40,7 @@ import scrapy
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://www.konalivr.com"
-
-# Owned by konalivr_supermarket_gn (channel: supermarket) — see module
-# docstring. Excluded here to avoid double-counting the same shelf.
-_EXCLUDED_MERCHANTS = {"carrefour-express-kaloum", "super-u-kipe"}
+MERCHANT_SLUGS = ["carrefour-express-kaloum", "super-u-kipe"]
 
 _PRICE_RE = re.compile(r"([\d\s.,]+)\s*GNF")
 _SLUG_RE = re.compile(r"[^a-z0-9]+")
@@ -48,8 +50,8 @@ def _slugify(text):
     return _SLUG_RE.sub("-", text.lower()).strip("-")
 
 
-class KonalivrGnSpider(scrapy.Spider):
-    name = "konalivr_gn"
+class KonalivrSupermarketGnSpider(scrapy.Spider):
+    name = "konalivr_supermarket_gn"
     allowed_domains = ["konalivr.com"]
     currency = "GNF"
     language = "fr"
@@ -62,20 +64,9 @@ class KonalivrGnSpider(scrapy.Spider):
     }
 
     async def start(self):
-        yield scrapy.Request(BASE_URL, callback=self.parse_index, errback=self.errback)
-
-    def parse_index(self, response):
-        hrefs = sorted(set(response.css('a[href^="/merchants/"]::attr(href)').getall()))
-        logger.info(f"{self.name}: merchants found={len(hrefs)}")
-        for href in hrefs:
-            slug = href.rstrip("/").rsplit("/", 1)[-1]
-            if slug in _EXCLUDED_MERCHANTS:
-                logger.info(
-                    f"{self.name}: skipping {slug} (owned by konalivr_supermarket_gn)"
-                )
-                continue
-            yield response.follow(
-                href,
+        for slug in MERCHANT_SLUGS:
+            yield scrapy.Request(
+                f"{BASE_URL}/merchants/{slug}",
                 callback=self.parse_merchant,
                 errback=self.errback,
                 meta={"merchant": slug},

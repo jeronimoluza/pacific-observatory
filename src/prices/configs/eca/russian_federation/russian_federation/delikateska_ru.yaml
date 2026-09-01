@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: delikateska_ru
+url: https://delikateska.ru/
+language: ru
+cadence: daily
+channel: specialty-food
+notes: |
+  Discovered live 2026-09-01 (wave 8, filling Russia's food gap).
+  Delikateska.ru ("online store of groceries and delicacies") is a Moscow
+  specialty-grocery / delicatessen retailer -- premium/gourmet SKUs (black
+  caviar, farm meat and dairy, imported cheeses, seafood, gift hampers) plus
+  a genuine staple-grocery taxonomy (dairy, meat, bread, produce, drinks,
+  groceries). curl_cffi impersonate=chrome124: 200 clean, no WAF, no city
+  cookie needed. React storefront, server-rendered: /catalog lists 53
+  top-level category slugs, each category page embeds its product grid
+  directly in raw HTML as `.product-card-new` anchor cards (id from the
+  card's own /product/<id> href). Price needs the descendant-combinator
+  selector `.product-card-new__price ::text`, not the bare `::text`
+  pseudo-element -- discounted items split the price across a plain text
+  node for whole rubles and a nested `.product-card-new__price__decimal`
+  span for the kopecks fraction (e.g. "139" + ",99" -> 139.99), and the
+  non-recursive `::text` only sees the first part. No working pagination
+  found (?page=N and /N both 404/empty); each category page tops out at its
+  full first-screen grid (observed 20-31 cards/category, no next/show-more
+  control in raw HTML) -- treated as that category's whole listed
+  assortment. ~53 categories x ~20-30 items implies a catalog in the
+  low thousands of SKUs; small relative to a hypermarket but a real,
+  distinct food source. Verified live: "Икра черная стерляди 100г"
+  (sterlet black caviar) 6990 RUB (was 7990); "Икра черная стерляди
+  Деликатеска 25г" 1999 RUB -- both plausible premium-caviar RUB prices.
+  Coverage is intermittently rate-limited, not a hard WAF: at
+  CONCURRENT_REQUESTS_PER_DOMAIN=1 / DOWNLOAD_DELAY=1.5s / RETRY_TIMES=5,
+  three separate full runs on 2026-09-01 each 403'd a different subset of
+  categories after retries (612 rows/38 of 53 categories best run; 526/~33
+  and a third attempt were both worse, suggesting repeated back-to-back
+  runs from one IP make it worse rather than recovering more) -- 612 rows,
+  612 distinct product_id/url, 0 zero/negative prices, 0 blank names, 100%
+  RUB, median 249 RUB, range 29.99-6990 RUB is the reported/shipped
+  snapshot (file timestamped 142424). Treat 612 rows / ~38 categories as a
+  floor, not the full 53-category catalog -- a future run alone, off-peak,
+  may recover more, but do not hammer it with repeated back-to-back runs.

@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ooredoo_devices_ps
+url: https://www.ooredoo.ps/handsets/
+language: ar
+cadence: weekly
+channel: electronics
+notes: |
+  Ooredoo Palestine (mobile network operator, ooredoo.ps -- .ps ccTLD,
+  West-Bank-and-Gaza domestic carrier) device/handset store. Re-verified
+  live 2026-09-01: GET https://www.ooredoo.ps/handsets/ -> HTTP 200,
+  server-rendered HTML with 4 category tabs (smartphones/الأجهزة الذكية,
+  accessories/الإكسسوارات, gaming/أجهزة الألعاب, tablets/الأجهزة اللوحية),
+  27 distinct devices total, price + "ILS" currency suffix already in the
+  server-rendered markup (no JS needed). Sample: 'Samsung Galaxy S26 Ultra'
+  ILS 3150, 'iPhone 17 Pro Max' ILS 5670, 'Samsung A07' ILS 380.
+  CATALOG SIZE: this is a small, deliberately curated carrier device store
+  (not a general electronics marketplace) -- 27 SKUs is the genuine total,
+  not a homepage-carousel undercount. Checked for a bigger catalog behind
+  this: no distinct category/listing URL in nav or breadcrumbs, no /api/
+  or fetch endpoint in either linked JS bundle (ods_v2_build.js,
+  ods_ie_build.js), and a 21-ID probe of /handsets/devices/<id>.html
+  across the 1-3000 range (outside the ~27 known-good IDs) returned 404
+  for every ID tried -- the ID space is sparse, not a walkable sequence.
+  channel: electronics (does not count toward the food-and-beverage bar;
+  West Bank and Gaza already clears that bar via bravosupermarket_ps and
+  karaz_ps). currency ILS matches the country's dominant circulating
+  currency, confirmed by the site's own rendered "ILS" suffix, not assumed
+  from countries.yaml (which wrongly declares USD for this country).

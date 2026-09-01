@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pricesmart_bb
+url: https://www.pricesmart.com/en-BB/category/Groceries/G10D03
+language: en
+cadence: weekly
+channel: hypermarket
+timeout: 900
+notes: |
+  Warehouse-club (PriceSmart, Caribbean/Central America footprint), tagged
+  `hypermarket` per GLOSSARY.md ("big-box genuinely cross-selling food and
+  general merchandise") -- the closed Channel enum has no dedicated
+  warehouse-club value and PriceSmart is consumer retail (membership-based
+  but not a trade/wholesale feed), so `wholesale` would misrepresent it.
+  Category
+  page is a Nuxt SPA shell with zero prices in raw HTML, but the product
+  grid loads from a public Bloomreach Discovery endpoint (POST
+  /api/br_discovery/getProductsByKeyword) that needs no session/cookie --
+  captured via a Playwright network trace 2026-09-01 and confirmed
+  replayable cold with plain curl_cffi (no auth headers, no cookies).
+  account_id/auth_key/domain_key are client-embedded Bloomreach keys, not a
+  secret token. Groceries node (key G10D03) reports numFound=947, matching
+  the brief's "80 pages of grocery" (947/12 ~= 79 at the SPA's own page
+  size). Verified pagination advances: zero product-id overlap between
+  start=0 and start=48 with rows=48.
+
+  Currency is BBD (confirmed in the JSON payload's "currency"/"price_BB"
+  fields and in the storeCurrency/vsf-currency cookies set during the
+  Playwright trace) -- this resolves an earlier wave-5 probe's USD/BBD
+  uncertainty, which never got past the SPA shell to see the real value.
+  Prices are integer minor units (fractionDigits=2); divide by 100.
+
+  Warehouse-club pack sizes (e.g. "2.16 kg", "12 Units", "24 Units") are
+  large multi-unit packs -- normalise per unit before comparing against
+  ordinary-shelf retailers. Locality confirmed: en-BB region path, BBD
+  currency, view_id=BB.
+
+  Scope: this spider walks only the Groceries category (G10D03) requested
+  by the onboarding brief, not the warehouse's full general-merchandise
+  catalog -- keeps the source unambiguously food-and-beverage-weighted.

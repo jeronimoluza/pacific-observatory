@@ -1,0 +1,67 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: seeg_electricity_tariff_ga
+module: ssa.central_africa.gabon.seeg_electricity_tariff
+function: fetch_seeg_electricity_tariff_ga
+channel: null
+url: https://www.seeg-gabon.com/relation_client/tarifs
+language: fr
+cadence: quarterly
+fallback_date: 2015-01-01
+notes: |
+  Built 2026-09-01 in response to the orchestrator's request for a durable
+  official/tariff source after an exhaustive food-and-grocery discovery
+  pass (16+ candidates, all dead domains or brochure sites -- see
+  pharmacie_saintemarie_ga.yaml and the wave-8 report for the full list).
+  This raises Gabon's source count to 5 but is NOT food (channel: null,
+  analytical_role: tariff) -- Gabon's food shortfall (1 of 2 required)
+  remains unresolved and is reported as such.
+
+  SEEG (Société d'Energie et d'Eau du Gabon) is Gabon's state water/
+  electricity utility. Its "Nos tarifs" page is server-rendered HTML that
+  links six PDF tariff schedules; the fetcher re-fetches this HTML page
+  live every run and follows whichever href is currently labelled
+  "Barèmes révisés" (tolerant of the linked filename's embedded timestamp
+  changing on a future revision), so it is not pinned to today's PDF URL.
+
+  Only the "TARIFS BASSE TENSION" (low-voltage/residential) section is
+  scraped -- same scope choice as cie_tariff.py (Côte d'Ivoire) already in
+  this repo. Measured live 2026-09-01: 10 rows -- 2 "tarif social national"
+  bands (1kW/2kW, F/kWh, each capped at a monthly kWh ceiling) + 5 "tarif
+  général national" flat-rate bands for subscribed power <=15kW (F/kWh
+  only, no fixed charge) + 3 "tarif général national" bands for >=18kW
+  (F/kWh component only; a separate F/kW fixed monthly charge exists per
+  band but is not emitted as a separate PriceObservation here).
+
+  PDF STALENESS: the PDF's cover page prints its own effective date
+  ("valable à compter du : 01/01/2020"), so this is genuinely a live
+  network fetch, not a hardcoded table -- but that printed date is 2020,
+  i.e. ~6.7 years old as of this build, despite the tariffs page's own
+  text stating rates are "révisables chaque trimestre". The fetcher logs a
+  loud warning whenever the printed effective date is >730 days old but
+  ships the rows anyway, since this genuinely is what SEEG's live site
+  currently publishes as its in-force schedule -- not a copy we made
+  stale ourselves. observation_date is set to that printed date
+  (period_kind=effective_from), not the scrape date.
+
+  TWO BUGS FOUND AND FIXED DURING BUILD (see module docstring for detail):
+  1. Unicode NFD vs NFC: both the site's HTML and pdfplumber's PDF text
+     extraction emit decomposed accents (e.g. "e" + combining grave), so a
+     literal accented Python string ("barème", "général") never matched
+     via plain `in` -- every accented comparison now goes through
+     unicodedata.normalize("NFC", ...) first.
+  2. <base href="/"> trap: the tariffs page declares a document base of
+     the site root, so its relative PDF hrefs ("med/trf/...") must resolve
+     against the root, not the current page path. A plain
+     urljoin(page_url, href) silently produced a wrong-but-200-OK URL (a
+     small HTML stub, not a PDF) that only surfaced as a downstream
+     pdfminer "No /Root object!" crash. Fixed by parsing <base href> and
+     joining against it; also added a `content.startswith(b"%PDF")` guard
+     so any future wrong-URL case fails as a clean logged warning instead
+     of an unhandled exception.
+
+  fallback_date is set well before any known SEEG tariff revision so the
+  first run backfills the full current schedule.

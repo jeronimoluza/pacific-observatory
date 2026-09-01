@@ -1,0 +1,39 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+channel: null
+source_key: fm_yspsc_electricity_tariff
+module: eap.pacific_islands.micronesia_fed_sts.yspsc_electricity_tariff
+function: fetch_fm_yspsc_electricity_tariff
+url: "https://yspsc.org/"
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Yap State Public Service Corporation (YSPSC) -- Yap Main Island electricity
+  tariff. yspsc.org's homepage links its current rate notice as a PDF
+  ("New Tariff Announcement.<date>.Final.pdf"); the fetcher resolves
+  whichever "Tariff Announcement" link is currently on the homepage rather
+  than hardcoding the dated filename, so a future re-announcement is picked
+  up automatically -- this is the staleness guard (per onboarding rule 3),
+  there is no hardcoded rate table.
+
+  Probed 2026-09-01: PDF dated 2026-05-27, effective 2026-07-01. pdfplumber
+  extracts a clean table with 5 customer-category columns (Residential
+  Tier 1/2, Commercial Tier 1/2, Government) x 2 rate rows: NON-FUEL COST
+  (NFC, $/kWh) and FIXED MONTHLY CHARGE (FMC, $/month). Plus two
+  reconnection fees given only in prose ($125 delinquent, $40
+  non-delinquent-by-request).
+
+  IMPORTANT CAVEAT: the source's own per-kWh tariff is
+  TARIFF = NFC + VFC, where VFC (Variable Fuel Cost) changes monthly with
+  fuel prices and is explicitly published as "***" (undisclosed) in this
+  notice -- only settled on the customer's actual monthly bill. This
+  fetcher therefore emits the NFC component only, i.e. a *partial*
+  administered rate, not FSM Main Island's realized per-kWh bill price.
+  Flagged loudly per onboarding rule 8 on rate-vs-shelf-price distinctions,
+  same class of caveat as Vanuatu's ura_electricity_tariff.yaml.
+
+  Currency is USD -- FSM's actual currency, no FX conversion needed.

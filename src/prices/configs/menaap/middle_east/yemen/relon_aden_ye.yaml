@@ -1,0 +1,94 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: relon_aden_ye
+url: https://mapp.sa/relon/Category/98044/products
+language: ar
+cadence: weekly
+channel: specialty-food
+notes: |
+  "relon aden / ريلون عدن" — a single-tenant storefront on mapp.sa, a Saudi
+  multi-tenant store-builder SaaS (same category of platform as Zid/Salla).
+  LOCALITY confirmed, not a Saudi listing: the storefront's own
+  `getCountryDataByCode?code=ye` XHR resolves to prefix:967 (Yemen's
+  country code), and every category/product is Aden-branded. Found via
+  Playwright network capture on
+  https://mapp.sa/relon/Category/98044/products (Playwright cleared a
+  200; the underlying JSON endpoint then worked standalone with plain
+  curl_cffi + a Referer header). Confirmed live 2026-09-01.
+
+  Aden is the seat of the internationally-recognized government and the
+  "new"/depreciated rial zone — the intended geographic complement to
+  smsm_ye (Sana'a, presumed "old" rial), directly addressing this wave's
+  dual-currency requirement with two zone-distinct sources rather than one.
+
+  CURRENCY CAVEAT: the site renders prices with the generic "﷼" rial glyph
+  (U+FDFC), which is shared by SAR/YER/QAR/OMR display fonts — no explicit
+  3-letter currency code was found anywhere in the page or API responses.
+  Treated as YER on the strength of: (a) the confirmed Yemen country config
+  above, and (b) price magnitude — 200-2,700 for chips/biscuits/instant
+  noodles is plausible for YER and would be absurd as SAR (a bag of Lay's
+  for ~200-2,700 SAR).
+
+  OLD-VS-NEW RIAL: STILL UNRESOLVED, flagging explicitly rather than
+  presenting an inference as settled. No toggle was found on this site, so
+  the "new"/Aden-rial reading was inferred from the Aden branding alone.
+  Cross-checked 2026-09-01 against live spot rates from ye-rial.com: old/
+  Sana'a rial USD/YER ~531-533; new/Aden rial USD/YER ~1,554-1,562. Applied
+  to identifiable branded SKUs on this source: "نوديلز شيف الالمناني علبة"
+  (Chef-brand canned noodles), YER 950 -> $1.79 old vs $0.61 new; "رامن
+  نوديلز كوري حار x3" (Korean spicy ramen, 3-pack), YER 2,500 -> $1.57/pack
+  old vs $0.53/pack new; "تاكيس عيدان الاصابع المنكهه" (Takis), YER 1,750 ->
+  $3.30 old vs $1.12 new. Across all three, the OLD-rate conversion lands
+  closer to typical retail prices for imported snacks/instant noodles in a
+  developing market ($0.53-0.61/unit at the new rate undercuts even
+  wholesale cost for imported Korean ramen) — the same direction as
+  smsm_ye's decisive rice test, but far less decisive here given how small
+  and currency-insensitive snack unit prices are. This creates a genuine
+  tension: the OLD-rial price-plausibility signal points one way, but the
+  site's Aden branding/locality points the other way (Aden is the "new"-
+  rial zone). A third explanation was not ruled out: the catalog may simply
+  be STALE relative to the new rial's fast, ongoing depreciation (i.e.
+  genuinely priced in new rial, but set before the rate reached today's
+  ~1,550, which would also make new-rate math look "too cheap" today
+  without this actually being old-rial at all) — no recency signal (e.g. a
+  last-updated date) was found to rule this out either. Left as YER with
+  BOTH possibilities stated; do not average or normalise against smsm_ye or
+  any other source pending a harder anchor (e.g. a confirmed live price
+  check against a known Aden street price).
+
+  Endpoint: GET /relon/fetchCatProducts?limit=<N>&start=0&main_category_id=<id>&filter=
+  -> {"success", "html"} where html is a raw product-card fragment
+  (div.productItem), parsed directly.
+
+  PAGINATION IS UNRELIABLE on this endpoint, verified live: start=0 and
+  start=1 return the byte-identical page; start=2 returns a different,
+  non-contiguous slice; start>=3 returns empty. `limit` above a category's
+  real size is simply ignored rather than erroring or truncating oddly —
+  limit=50/100/200 for category 98044 all returned the identical 22
+  products. Spider therefore does NOT paginate: one request per category
+  id with limit=200 already returns everything that category has.
+
+  Site structure is two top-level branches: "سوبر ماركت" (Supermarket, id
+  98044 — itself small) with subcategories مشروبات/beverages (98045),
+  شبسات/chips (98046), مستورد/imported (98047), متنوع/misc (98048); plus a
+  fifth food category outside that branch, طعام ونوديلز كوري/Korean food
+  and noodles (99817). All six ids are walked. Two NON-food ids exist on
+  the same tenant — اكسسوارات/accessories (98049) and صناديق عشوائية/
+  mystery boxes (99795) — and are deliberately EXCLUDED from the crawl,
+  which is why this is tagged `channel: specialty-food` (an imported-
+  snacks/beverage corner shop) rather than `supermarket`: no fresh produce,
+  meat, rice, oil, or staples were observed anywhere on the tenant, only
+  packaged snacks, biscuits, instant noodles, and drinks.
+
+  Measured full walk (all 6 category ids) 2026-09-01: 26 rows, 26 distinct
+  product_id, 26 distinct url, 0 zero/negative prices, 0 blank names. All
+  rows YER. Median price YER 600; min YER 200; max YER 2,700 (re-derived
+  from the shipped jsonl with statistics.median — my first report gave
+  700/300/2,500, which was wrong: median of an even-length list needs the
+  average of the two middle values, not a single indexed element, and I
+  misread the max). This is a genuinely small, thin catalog (well above the
+  >=5-row Phase-6 gate but far smaller than smsm_ye's 641) — built anyway
+  for the zone-diversity reason above, not to pad the count; flagged
+  honestly as thin rather than framed as a large grocery source.

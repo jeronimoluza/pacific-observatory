@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: superseis_py
+url: https://www.superseis.com.py/
+language: es
+cadence: weekly
+channel: supermarket
+timeout: 1800
+notes: |
+  Full-line Asuncion-area supermarket chain (one of PY's largest). OpenCart-
+  family storefront (catalog/view/javascript asset paths) served through
+  clean SEO paths (/catalog/<top>/<sub>/<subsub>), not classic
+  index.php?route=...&path=..., so this is a bespoke listing-card walker
+  (like spar_zw), not _opencart_base. Probed 2026-09-01 with curl_cffi
+  impersonate=chrome124.
+  Category tree read once from the homepage's global nav (present on every
+  page): 546 category URLs / 430 leaf categories across almacen, bebidas
+  (con/sin alcohol), carnes, congelados, fiambreria, frescos, lacteos,
+  panaderia, pastas, reposteria (food) plus electrodomesticos, ferreteria,
+  hogar-y-bazar, limpieza, perfumeria, mascotas, juguetes (non-food).
+  Each leaf card carries data-product-id / data-product-price directly on
+  .product-thumb -- verified against a live discounted item (id 3135) that
+  the attribute already reflects the current (price-new) value, not
+  price-old. Paginated ?page=N, clean stop at first empty page (verified
+  arroces: 24+12+0 across pages 1-3, not silent re-serving).
+  Currency PYG, no minor unit: data-product-price="₲ 4.200" -> 4200 (dot =
+  thousands separator, confirmed against countries.yaml and a plausibility
+  check: rice/oil/coffee prices all land in the expected thousands range).
+  Measured 2026-09-01 full unbounded run: 7,230 rows, 7,230 distinct
+  product_id/url (172 cross-listed duplicates dropped by the pipeline), 0
+  zero/negative prices, 0 blank names, 100% PYG, median 13,900 / min 700 /
+  max 2,900,000. Food share ~61% (almacen/bebidas-con-y-sin-alcohol/
+  lacteos/pastas/congelados/reposteria/panaderia/carnes/frescos/fiambreria)
+  vs perfumeria/limpieza/hogar-y-bazar/mascotas/ferreteria/electrodomesticos/
+  juguetes non-food. 3 emitted URLs re-fetched cold, product id and page
+  content both matched.

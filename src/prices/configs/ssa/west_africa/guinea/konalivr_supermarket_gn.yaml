@@ -1,0 +1,76 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: konalivr_supermarket_gn
+url: https://www.konalivr.com/merchants/carrefour-express-kaloum
+language: fr
+cadence: weekly
+channel: supermarket
+notes: |
+  Wave 8, 2026-09-01. Guinea had 7 sources but only 1 food source
+  (beryz_gn, fresh-market). Probed the four brief candidates for a
+  second food source and all four failed:
+    - BraPrime (braprime.com): SPA shell configured against a Supabase
+      project (jeumizxzlwjvgerrcpjr.supabase.co) that no longer resolves
+      (NXDOMAIN) and a live NestJS backend at api.braprime.com that
+      404s on every plausible resource route (/businesses, /shops,
+      /restaurants, /categories, /api/*) -- root returns only the
+      framework's default "Hello World!". Frontend renders, backend is
+      dead. DEAD.
+    - maMakiti (mamakiti.com): marketing landing page for a mobile app
+      only (Google Play / App Store links, no web catalogue). Its own
+      declared API (api.mamakiti.com/api, FastAPI) responds 200 but
+      GET /products returns {"items":[],"total":0}, GET /categories
+      returns []. No data behind a working endpoint. DEAD (for now).
+    - Supermarche Bel Air (belair.gn): DNS does not resolve at all
+      (curl: could not resolve host). DEAD.
+    - Monmarche Guinee (monmarchegn.com): confirmed app-only per the
+      brief -- marketing page links only to Android
+      (com.amasow.Monmarche) and iOS app store listings; grepped every
+      Next.js chunk on the page for an API host and found none. DEAD,
+      not worth reverse-engineering the APK.
+  Also tried French-language discovery per the brief: CICIMARKET
+  (Lambangni-based fresh-produce platform, launched Feb 2026 per
+  mediaguinee.com) has no discoverable website/domain, only
+  WhatsApp/Instagram ordering -- not scrapable. soduga.com and
+  madinagn.com are dead domains (DNS failure / expired-domain parking
+  page). omakiti.com is a live Magento storefront with a "supermarche"
+  category and real Guinean product names (fromage la vache qui rit,
+  huile d'arachide, Nescafe, sac de riz, sucre) but every price on the
+  site is a round-number EUR test value (5,00 EUR / 10,00 EUR /
+  25,00 EUR, etc, only 7 distinct SKUs) -- a demo/placeholder Magento
+  install, not a real Guinean price feed. DEAD. arabinene.com is behind
+  a genuine Cloudflare Turnstile challenge (cf-mitigated: challenge,
+  cf-ray present) that survived chrome124/chrome120/safari17_0
+  impersonation -- recorded as blocked, not chased further.
+
+  Closed the gap instead via the already-onboarded konalivr_gn
+  marketplace (do not rebuild -- per its own notes it crawls all 16
+  Kona Livr merchant pages blended as channel: marketplace). Two of
+  those 16 merchants are recognisable supermarket chains rather than
+  independent small vendors: /merchants/carrefour-express-kaloum
+  (Carrefour Express, Kaloum) and /merchants/super-u-kipe (Super U,
+  Kipe). Per the onboarding convention that a named retailer behind a
+  delivery marketplace can be onboarded as its own first-party source,
+  this spider hits only those two merchant pages directly (does not
+  re-crawl the marketplace index or the other 14 merchants).
+
+  Verified live 2026-09-01: same server-rendered markup as konalivr_gn
+  (div.mb-12 > h2 category + div.rounded-2xl cards, h3 name /
+  span.font-bold.text-brand-600 price "XX XXX GNF"). Carrefour Express
+  yields 4 products (Pack 12 yaourts nature 13 000 GNF, Beurre 250 g
+  20 000 GNF, Oeufs x30 22 000 GNF, Pates 500 g x4 14 000 GNF); Super U
+  yields 4 products (Pack 6 eaux minerales 1,5 L 15 000 GNF, Pack bissap
+  6x500 ml 15 000 GNF, Riz parfume 5 kg 18 000 GNF, Huile de tournesol
+  5 L 15 000 GNF). 8 rows total, all distinct products, all GNF, all
+  plausible grocery-shelf prices.
+
+  Same caveat as konalivr_gn: the uniform 4-products-per-merchant
+  pattern across the whole Kona Livr site suggests a small/seed
+  catalogue rather than a fully live-managed inventory -- flagging this
+  honestly rather than overselling it. The products and GNF prices are
+  real named grocery SKUs at real chains, not fabricated, so it stands
+  as a genuine (if narrow) supermarket source and closes Guinea's food
+  gap. Eighth source for Guinea, second food-carrying one (with
+  beryz_gn).
