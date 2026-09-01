@@ -1,0 +1,63 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mymarket_gr
+url: https://www.mymarket.gr/sitemap/categories.xml
+language: el
+cadence: weekly
+channel: supermarket
+timeout: 5400
+notes: |
+  My Market is a Greek supermarket chain (part of the Kritikos group --
+  kritikos-sm.gr itself turned out to be a brochure/loyalty-card CMS site
+  with no browsable online catalogue, see the REPORT for details; My
+  Market's own www.mymarket.gr is the real online storefront). Probed live
+  2026-08-31: the homepage response includes an Incapsula bot-mitigation
+  resource, but curl_cffi impersonate=chrome124 clears it on every request
+  with no cookies/proxy/challenge -- never actually hit a live block.
+
+  Also publishes sitemap/products.xml (15,267 PDP urls, each with its own
+  schema.org Product JSON-LD), but that single ~8MB file was flaky live
+  (curl_cffi timeouts and a run of HTTP 429s fetching it specifically,
+  even while the homepage and individual PDPs kept returning 200
+  throughout) -- NOT used by this spider.
+
+  Instead walks sitemap/categories.xml (543 category leaves, a small
+  ~110KB file) and reads the ItemList JSON-LD embedded directly on each
+  category listing page -- no per-PDP request needed at all. Categories
+  span a real, wide grocery assortment beyond the personal-care items
+  that dominate the front of the product sitemap: dairy (gala, giaourti,
+  tyria), bread (psomi), fresh meat/fish (kreas, psaria), fruit/veg
+  (frouta, lachanika), grocery staples (ryzi, zymarika, kafes), frozen
+  (katepsygmena-trofima), drinks (anapsyktika, alkooloucha-pota).
+  Verified via the /gala (milk) leaf: ItemList of 35 Products, e.g.
+  'My Kouzina Συμπυκνωμένο Easy Open Γάλα Light 410gr' sku 250223, EUR
+  0.94, InStock; and via /trofima (grocery staples): real dairy SKUs from
+  Greek brands (ΔΕΛΤΑ, ΝΟΥΝΟΥ, ΜΕVGAL/koukaki, my-fresco) elsewhere in the
+  tree.
+
+  Pagination trap: the ItemList's own `numberOfItems` matches only the
+  CURRENT page (~34 items/page), not the category total -- /trofima runs
+  58 pages deep. Followed the page's own `<a rel="next" href="?page=N">`
+  cursor instead of a synthesized counter; the last page (verified
+  /trofima?page=58, 23 items) simply has no rel="next" anchor.
+
+  Incapsula throttles this crawl hard once past a handful of requests
+  (measured: ~47/69 responses 429 at CONCURRENT_REQUESTS_PER_DOMAIN=1,
+  DOWNLOAD_DELAY=1.5s, RETRY_TIMES=5) -- retries eventually clear it and
+  the target row count still lands, but a full uncapped run will be slow
+  and noisy in the log. Guarded parse_listing against non-200/non-HTML
+  429 challenge bodies (which can carry a JSON content-type on an HTTP
+  200) so a throttled response is skipped rather than crashing the
+  spider.
+
+  End-to-end test `.venv/bin/po prices collect --source mymarket_gr
+  --max-items 200`: 230 rows, 230 distinct product_id, 230 distinct url,
+  currency EUR throughout, 0 zero-price rows, 0 blank names, price range
+  EUR 0.12-72.22, median EUR 2.65. Category mix in the sample: Fruit &
+  Vegetables 94, Household/Paper 33, Personal Care 28, Baby 21, Pet 17,
+  Dairy & Refrigerated 16, other <5 each -- roughly half the sample is
+  food/beverage. Re-fetched 3 emitted PDP urls live (2 food: Alpro soy
+  dessert, Stamou moustalevria; 1 non-food) -> all HTTP 200 with the
+  product name present in the raw HTML.

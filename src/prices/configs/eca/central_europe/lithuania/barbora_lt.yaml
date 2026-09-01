@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: barbora_lt
+url: https://barbora.lt/
+language: lt
+cadence: weekly
+channel: supermarket
+timeout: 900
+notes: |
+  Probed live 2026-08-31 with curl_cffi impersonate=chrome124 (200, 57KB).
+  Maxima Group's e-grocery storefront -- a DIFFERENT chain from Rimi
+  (rimi_lt / rimi_wolt_lt), closing the food-source gap for Lithuania.
+  Custom "cshtml" platform, not a known off-the-shelf storefront. The
+  homepage embeds window.b_urls.eShopApiBaseUrl = "/api/eshop/v1/"; its
+  search endpoint is fully open and returns rich per-SKU JSON:
+  GET /api/eshop/v1/search?query=<term>&limit=<n>&offset=<n> ->
+  {"count": <total>, "products": [{id, title, price, category_name_full_path,
+  status, Url, ...}]}. `query=` is the working param name (q/phrase/term/
+  searchString all silently return count:0 -- confirmed by direct probe).
+  limit/offset are honoured: verified offset=0/50/100 on "pienas" each
+  returns 50 products with zero id overlap across pages. No category-browse
+  endpoint was found (guessed /category/<id>, /category-products, etc. all
+  404) -- coverage is a keyword-search sweep across common grocery nouns,
+  same approach as _rimi_baltic_base on this market, since neither platform
+  exposes a full category walk. Product URL = https://barbora.lt/produktai/
+  <Url slug> -- confirmed 200 with the product name present in the raw HTML.
+  No explicit currency field in the payload; site is LT-only, prices are in
+  the expected EUR range for grocery SKUs (e.g. 1.79 EUR sour cream).

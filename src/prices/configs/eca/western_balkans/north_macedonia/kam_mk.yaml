@@ -1,0 +1,62 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+source_key: mk_kam
+module: eca.western_balkans.north_macedonia.kam_mk
+function: fetch_kam_mk
+url: https://www.kam.com.mk/kam-prodavnici.nspx
+language: mk
+cadence: weekly
+fallback_date: 2026-08-01
+notes: |
+  KAM Market — probed live 2026-08-31. KAM's own "webshop" (custom
+  NextSense/nopCommerce-style Angular app on kam.com.mk) has no scrapable
+  everyday catalog: every reachable product-detail page renders only the
+  sitewide rotating weekly-promo carousel, and non-promoted items (e.g. a
+  plain fresh-chicken SKU checked live) show zero price. Rejected per the
+  promo-flyer anti-pattern rather than built as a spider.
+
+  Instead this fetcher uses KAM's statutory price-transparency PDF, one per
+  physical store, discovered via POST /ShopsWeb/LoadShopList (no auth) --
+  each store object carries `ShopFiles[0].RelativePath` (e.g.
+  "2026/08/31/95.pdf") and a `DateUploaded` .NET-epoch timestamp confirmed
+  same-day (the PDF is regenerated every morning). PDF lives at
+  https://www.kam.com.mk/{RelativePath}.
+
+  Walks ONE representative store (Скопје / Аеродром municipality -- tagged
+  bakery+cookedfood+fishfood+parking, a full-format supermarket) rather
+  than all ~90 locations; KAM does not model meaningful per-store price
+  variation for this pipeline and one store's full daily assortment is
+  already a wide catalog.
+
+  PDF structure verified via pdfplumber.extract_tables() (clean bordered
+  table, no OCR needed): columns are product name, "Продажна цена" (sale
+  price -- the price charged right now, used as price_local), unit price,
+  brand/description, in-stock flag, regular price, and an (almost always
+  empty) promo sub-table. ~165 pages x ~11 data rows/page.
+
+  Idempotent on the PDF's own DateUploaded date (not today's scrape date),
+  so a re-run before KAM's next daily regeneration correctly returns None.
+
+  Price-column parsing trap (caught and fixed during this onboarding, not
+  shipped broken): the sale/regular-price cells use "." as a THOUSANDS
+  separator, not a decimal point -- "1.229ден." means 1229 denars, not
+  1.229. Verified every "." occurrence in this column is followed by
+  exactly 3 digits across the full 165-page PDF; the file's only real
+  decimals live in the separate "100 гр = 9.20 ден." unit-price column,
+  which this fetcher does not parse. An initial version that treated "."
+  naively as a decimal point produced a bottle of Jameson at 1.199 MKD --
+  caught by eyeballing the price distribution (min 1.05, which is
+  implausible for any of these SKUs) before shipping.
+
+  Full run 2026-08-31 (single store, no --max-items cap on a fetcher):
+  1813 rows, 1812 distinct item_name (1 legitimate duplicate SKU line in
+  the source PDF), 1812 distinct observation_hash, 0 zero-price rows, 0
+  blank names, currency 100% MKD, price range 3-2499 MKD, median 85 MKD.
+  Sample: cinnamon spice 3 MKD, black pepper 5 MKD, whiskey/liqueur
+  1199-1269 MKD, an air-fryer at 2499 MKD (small-appliance outlier in an
+  otherwise food-and-household-dominated assortment; classifier will
+  route it to its own leaf). Re-fetched the source PDF URL live: HTTP 200,
+  application/pdf, re-parses to the same row shape.

@@ -1,0 +1,70 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ramstore_do_doma_mk
+url: https://ramstoredodoma.com.mk/
+language: mk
+cadence: weekly
+channel: supermarket
+timeout: 3600
+notes: |
+  Ramstore do doma ("Ramstore to home") — the grocery-delivery storefront,
+  distinct from ramstore.com.mk (the corporate brochure site, confirmed
+  DEAD: pure WordPress blog/PDF-flyer site, no /shop/, no WooCommerce, no
+  online catalog of any kind). This do-doma subdomain is a full nopCommerce
+  install (SevenSpikes "Emporium" theme/AjaxFilters plugin) with real
+  per-SKU MKD pricing.
+
+  Probed live 2026-08-31. No WooCommerce Store API present (per-brief
+  probe returned 404). Platform fingerprint via a Playwright network trace
+  of a category page: server-rendered HTML ships an EMPTY product-filter
+  shell (Tier 2 looking at first), but the actual product grid loads via
+  POST https://ramstoredodoma.com.mk/Catalog/OBAjaxFilterProducts (a plain
+  form-encoded XHR, no auth) — Playwright-to-discover, plain-HTTP-to-scrape.
+  Category id (`cid`) is resolved from a 302 redirect Location header on a
+  bare GET of each homepage nav slug (e.g. /леб -> /search?cid=1296), so no
+  JS execution is required at collection time.
+
+  Pagination verified to actually advance (trap #7 in the shared brief):
+  `PagingFilteringContext[PageNumber]` is 1-BASED. PageNumber=0 and
+  PageNumber=1 returned an IDENTICAL 100-row set on the 1,300-SKU root food
+  category (cid=1246); PageNumber=1 vs PageNumber=2 returned disjoint sets
+  (0/100 overlap). Spider walks PageNumber=1,2,3,... at PageSize=100 (the
+  UI's own page-size ceiling) until a short page, capped at 20 pages/
+  category as a safety valve.
+
+  Category discovery: ~330 single-segment Cyrillic nav slugs harvested from
+  the homepage mega-menu, each resolved to a numeric cid via the redirect.
+  Catalog spans the full grocery range (food, drinks, household, personal
+  care, baby, pet) — a genuine wide supermarket assortment, not a promo
+  flyer. Contrast with 3 other MK grocery leads probed the same session and
+  rejected: vero.com.mk (WooCommerce Store API present but only 16 SKUs
+  total across 2 "featured/fresh" categories -- confirmed via its own
+  product-sitemap.xml, real catalog is marketing pages, not a shop), stokomak.com.mk
+  (WooCommerce, 3 SKUs total, same brochure pattern), kam.com.mk (custom
+  "NextSense" nopCommerce-style webshop; every reachable product page is a
+  rotating weekly-promo item with a validity date range -- non-promoted
+  SKUs render zero price -- rejected per the promo-flyer anti-pattern).
+
+  Prices are plain MKD denars in span.price.actual-price (current/selling
+  price, always present); span.price.old-price (pre-discount) is not
+  emitted. No minor-unit scaling needed.
+
+  Full verification run 2026-08-31 (--max-items 200, closed at 202 due to
+  the last in-flight batch): 202 rows, 202 distinct product_id, 202
+  distinct url, 0 blank names, 0 zero-price rows, currency 100% MKD,
+  price range 10-1019 MKD, median 145 MKD. Categories crawled in the
+  sample: производи-за-орална-хигиена (oral hygiene, 54),
+  материјали-за-пецива-и-торти (baking materials, 36), путер-маргарин
+  (butter/margarine, 25), производи-за-нега-на-лице (face care, 13),
+  чоколадно-млеко (chocolate milk, 12), јогурт-со-вкусови (flavoured
+  yogurt, 11), здрава-храна (health food, 11), мајонез (mayo, 8), сол
+  (salt, 8), шминка (makeup, 6), конзервирано-месо (canned meat, 5),
+  производи-за-депилација (depilatory, 4), производи-за-нега-на-коса
+  (hair care, 3), булгур (bulgur, 2), кока-кола (2), 1 home-appliance,
+  1 baby-detergent row -- a genuinely mixed supermarket assortment
+  (~60% food/beverage in this sample), confirming `channel: supermarket`
+  and an unset `coicop_codes` (wide catalog, classifier assigns leaves).
+  Re-fetched 3 emitted product URLs live: all HTTP 200, product name
+  present in the page <title>.

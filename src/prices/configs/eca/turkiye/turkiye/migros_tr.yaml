@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: migros_tr
+url: https://www.migros.com.tr/
+language: tr
+cadence: weekly
+channel: supermarket
+notes: |
+  Migros -- Turkiye's largest supermarket chain, brief's strongest lead.
+  Angular SPA; category HTML ships zero prices client-side. Playwright
+  network trace on a category page found the real client call:
+  GET /rest/search/screens/<category-pretty-name>?sayfa=<page>, no auth,
+  no cookies, no store-selection cookie required (the brief-suggested
+  /rest/products/search endpoint returns hitCount=0 without extra params
+  the client never sends plainly -- this is the endpoint that actually
+  works). Body is XML (custom <AppResponse> schema) despite a
+  Content-Type of application/xhtml+xml; parsed with lxml.etree.
+  Pagination verified real: meyve-sebze-c-2 sayfa=1/2/3 each returned 30
+  distinct SKUs, zero overlap, pageCount=7/hitCount=204 for that one
+  category alone. Price is `shownPrice` (post-discount, what the
+  customer pays) in kurus/100 -- verified vs a rendered PDP: "Patates
+  Yeni Mahsul Kg" (new-crop potato) at 41.95 TRY/kg on 2026-08-31,
+  plausible for Turkiye's high-inflation retail market (sanity-checked
+  per the brief's explicit warning about stale cached catalogues).
+  Category slugs are the ~16 non-special top-level nodes from
+  /rest/categories/top-level (specialCategory=true entries are seasonal
+  promo tabs, excluded) -- each top-level slug's own search-screens
+  endpoint already returns that whole department's paginated catalog, no
+  subcategory descent needed. Mix of food (fruit/veg, meat/poultry/fish,
+  dairy/breakfast, essential groceries, beverages, snacks, ice cream,
+  bakery, ready meals, frozen food) and non-food (cleaning, personal
+  care, baby, home, pet) departments -- food is the majority of
+  categories crawled.
+  Test run 2026-08-31 (--max-items 200): see report for measured counts.

@@ -1,0 +1,48 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dm_ba
+url: https://www.dm-drogeriemarkt.ba/osvijestena-prehrana
+language: bs
+currency: BAM
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.dm-drogeriemarkt.ba/p/d/"
+archive_path_re: '^/p/d/\d+/[^/]+$'
+notes: |
+  Verified live 2026-08-31. dm drogerie markt BiH — a drugstore chain whose
+  overall catalog is mostly personal care/household, but which runs a real
+  grocery department, "Osviještena prehrana" (baking, sauces/spices,
+  breakfast, snacks/sweets, sports nutrition, beverages, milk, coffee/tea/
+  cocoa, side dishes, ready meals/canned goods, tofu/meat substitutes,
+  gluten-free) plus "Hrana i piće za bebe i djecu" (baby/kids food and
+  drink). This spider walks ONLY those two subtrees (64 leaf categories,
+  discovered dynamically from the site's own nav JSON) so the source is a
+  clean food-and-beverage catalogue rather than a food sliver diluted by
+  cosmetics — the rest of dm's catalog is intentionally NOT scraped here.
+
+  No SSR HTML, no auth. Data comes from open dmtech microservices shared
+  across dm's national storefronts (found via a Playwright network trace —
+  the raw HTML shell is ~11KB and the grid hydrates client-side):
+    GET content.services.dmtech.com/rootpage-dm-shop-bs-ba?view=navigation
+      -> full nav tree (CMS ids, not commerce category ids); used to find
+      the leaf category paths under the two food subtrees.
+    GET content.services.dmtech.com/rootpage-dm-shop-bs-ba/<path> -> that
+      category's landing-page content, embedding a DMSearchProductGrid
+      module whose query.filters carries the real commerce category id
+      (e.g. "allCategories.id:041304"), extracted via regex.
+    GET product-search.services.dmtech.com/ba/search/static?
+      allCategories.id=<id>&pageSize=100&searchType=editorial-search&
+      sort=editorial_relevance&type=search-static&currentPage=<n> ->
+      standard {products, count, currentPage, totalPages} page; paginated
+      until currentPage+1 >= totalPages (verified terminates correctly on
+      small categories).
+  Price ships pre-parsed as a float in trackingData.price with
+  trackingData.currency=BAM (site displays "X,XX KM"). Sample: "Prirodna
+  voda, 330 ml" (Lejla) 0.70 KM.
+  coicop_divisions: 01
+  divisions_basis: walked_categories (scope is intentionally narrowed to
+  dm's grocery/baby-food department; COICOP left to the classifier since
+  the department itself spans multiple 01.x leaves — drinks, dairy,
+  bakery/cereals, confectionery, sauces/condiments, ready meals)
