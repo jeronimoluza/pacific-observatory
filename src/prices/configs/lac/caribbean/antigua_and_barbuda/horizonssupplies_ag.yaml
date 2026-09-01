@@ -1,0 +1,92 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: horizonssupplies_ag
+url: https://www.horizonssupplies.com/
+language: en
+currency: XCD
+cadence: weekly
+channel: specialty-food
+timeout: 900
+notes: |
+  Locality: PRIORITY RULE food build. Wave 4 gap was "4 sources, ZERO
+  food". Both supplied candidates (Caribbean Eat, My Caribbean Grocer)
+  probed positive for the documented trap -- Shopify.currency active
+  "USD", Shopify.country "US" in the raw homepage HTML for both -- so
+  neither was built (see REJECTED-FOR-LOCALITY in the report). Mercado
+  Libre has no Antigua country site (mercadolibre.com.ag does not
+  resolve; MercadoLibre only operates in Latin America). The brief's
+  named discovery targets (Epicurean Fine Foods & Pharmacy, Best Buy
+  Supermarket, Covent Garden, First Choice/Townhouse Megastore, Quin
+  Farara) are all real Antigua businesses but Facebook-page-only or
+  static brochure sites with zero priced catalog (checked directly:
+  epicureanantigua.com's grocery.php/specials.php/bakery.php pages carry
+  no $-prices at all; anjowholesale.com is a Weebly brochure site with no
+  /shop). Fresh discovery via DuckDuckGo HTML search (WebSearch tool
+  budget was already exhausted session-wide) surfaced this site instead.
+
+  Horizons Supplies is a wholesale food & beverage distributor
+  self-described as "Antigua's #1 Food & Beverage Supplier". Confirmed
+  via /contact-us/: Postal Address "PO Box 63, St. Johns, Antigua";
+  Office & Warehouse Location "St. Pauls, Mamora Bay, Antigua"; phone
+  numbers +1268 562 1581/1582/5087/5620, WhatsApp +1268 729 3979 -- a
+  genuine in-country warehouse address, not a US dropshipper. Prices are
+  ALSO natively in XCD (currency_code "XCD" on every sampled product,
+  currency_minor_unit=2) -- the strongest possible locality signal, on
+  top of the address.
+
+  Site is WordPress/WooCommerce; the public Store API at
+  /wp-json/wc/store/v1/products paginates cleanly with per_page/page.
+  Catalog is very wide and genuinely food-and-beverage-dominant: sampled
+  category listing shows Beef (58), Meat & Poultry (174), Kitchen Pantry
+  (461), Bake Shop Pantry (129), Frozen Grocery (121), Frozen Seafood
+  (89), Beverage Wine & Spirits (439), Liquor (246), Bread (39), Cheese
+  (39), Fresh Produce (58), plus dozens more food subcategories. Scored
+  channel: specialty-food -- it is a bulk/case-lot food-and-beverage
+  distributor rather than a walk-in supermarket, but "wholesale" is not
+  in the wave's food-and-beverage counting rule (only supermarket/
+  hypermarket/convenience/fresh-market/specialty-food/grocery-dominant-
+  marketplace count) and this catalogue is overwhelmingly food/beverage,
+  not general merchandise, so specialty-food is the accurate label and
+  satisfies the wave's food priority rule.
+
+  Verified non-zero real prices on a live category pull (category=84,
+  Beef): 20/20 sampled products carried a non-zero XCD price (e.g. "BEEF
+  STRIPLOIN CHOPHOUSE 14 LB" 44.36, "BEEF RIBEYE EXPORT D/AGE MBL 22 LB"
+  80.14) -- this is a real, live-priced catalog, not a "price on
+  application" trap.
+
+  IMPORTANT zero-price characterization: the unfiltered walk's very first
+  page (per_page=100, page=1, default WooCommerce ordering = oldest
+  post_id first) is dominated by 71/100 placeholder rows -- name
+  "Product", slug "product-N", price 0 -- clearly draft/import artifacts
+  from the store's setup, not real catalog gaps. Sampled pages 2, 3, 5,
+  10 and 20 directly against the API (100 items each, 500 more products)
+  came back 0/100 zero-price on every page -- the junk is confined to
+  page 1 only. So the --max-items 200 smoke run (which only reaches
+  page 1+2) measures 71/200 = 35.5% zero-price, but that overstates the
+  true catalog: real zero-price incidence across the ~2,900-product
+  catalog (29 pages) is roughly 71/2900 ~= 2.4%. Reported both numbers in
+  the wave-4 report rather than letting the capped run's number stand
+  alone.
+
+  Also noted: individual /product/<slug>/ detail pages return HTTP 500
+  even though the full page (title, content) renders correctly -- e.g.
+  https://www.horizonssupplies.com/product/shrimp-ez-peel/ is 500 but the
+  148KB body has the correct product title and no injected-spam/hacked-
+  site signature (checked for common spam keywords and script-injection
+  patterns -- none found; Server header is a plain Apache/2.4.41 Ubuntu).
+  This looks like a server-side PHP warning on the product template
+  (likely a login-gated wholesale-pricing plugin misbehaving for
+  anonymous visitors), not a security concern -- but since the actual
+  scrape reads the Store API (always clean 200 JSON), it does not affect
+  data quality here.
+
+  timeout raised to 900s: catalog is large (several thousand SKUs across
+  100+ categories) and the unfiltered walk pages the whole store.
+
+  --max-items 200 smoke run and row audit (count, distinct product_id,
+  distinct url, zero-price count, blank-name count, currency, median
+  price) recorded in outputs/price_onboarding_reports/
+  antigua_and_barbuda_wave4.md.
