@@ -41,6 +41,11 @@ FILES = [
     ("archived_yahoo_tw.py", "archived_yahoo_tw.py"),
     ("archived_momo.py", "archived_momo.py"),
     ("archived_frisco.py", "archived_frisco.py"),
+    ("archived_sklavenitis.py", "archived_sklavenitis.py"),
+    ("archived_taw9eel.py", "archived_taw9eel.py"),
+    ("archived_happycenter.py", "archived_happycenter.py"),
+    ("archived_spar_zw.py", "archived_spar_zw.py"),
+    ("archived_mojsupermarket.py", "archived_mojsupermarket.py"),
     ("archived_bysource.py", "archived_bysource.py"),
     ("selectors.py", "selectors_mod.py"),
 ]
