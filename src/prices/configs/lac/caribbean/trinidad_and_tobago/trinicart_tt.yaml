@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: trinicart_tt
+url: https://trinicart.pro/
+language: en
+currency: TTD
+cadence: weekly
+channel: supermarket
+notes: |
+  Probed live 2026-08-31. "TriniCart" / "Maraval Market" -- Maraval is a
+  residential district of Port of Spain. Real Trinidad grocery SKUs priced
+  in TT$: Julie Mango, Christophene, Scotch Bonnet Peppers, Bermudez Crix,
+  Chief seasonings, Caribbean Dreams Sorrel Drink -- locality confirmed by
+  product content and currency, not a diaspora storefront.
+
+  React SPA (Vite build, gpt-engineer scaffold), no server-rendered HTML,
+  no conventional REST API. Catalogue lives in two public,
+  unauthenticated places:
+    1. Seed catalogue hardcoded into the built JS bundle as two literal
+       arrays -- a produce array (first element id "p1") and a set of
+       packaged-goods object-constructor calls `<fn>({name:"...",
+       departmentId:...,price:...})`. Parsed with a balanced-brace scanner
+       + JS-literal-to-JSON normalizer (unquoted keys, !0/!1 booleans,
+       fn("string") wrapper collapse).
+    2. Store-owner additions layered on top via a public Supabase
+       PostgREST endpoint (anon key + project ref both public in the
+       bundle): GET /rest/v1/admin_content?key=eq.maraval-catalog-v1 ->
+       value.custom[] (48 items) + value.removedSeedIds (empty at probe
+       time).
+
+  Smoke-verified: 66 seed packaged + 15 seed produce + 48 supabase custom
+  = 129 total, 129 distinct product_id, zero zero-price rows, zero blank
+  names, price range TT$5-180. 112/129 (87%) sit under food/beverage
+  departments (Fresh Produce, Meat & Seafood, Dairy & Eggs, Bakery,
+  Pantry, Frozen, Beverages, Snacks); the rest are Household/Health &
+  Beauty.
+
+  FRAGILITY: the seed-bundle parse depends on the current Vite build's
+  minified output shape and the literal anchor string
+  '{id:"p1",slug:"' for the produce array. Both stages fail soft (log +
+  skip) if a future redeploy reshapes the bundle, degrading gracefully to
+  the Supabase custom slice (still real, ~48 rows) rather than crashing.
+
+  No server-rendered product URLs exist (client-routed SPA); each row
+  gets a synthetic https://trinicart.pro/product/<slug>#<src> URL so the
+  DuplicationPipeline's url-dedup does not collapse the catalogue to one
+  row (single homepage + single bundle + single Supabase request feed
+  ~129 output rows).
