@@ -15,3 +15,18 @@ notes: >
   Groceries category (id=97, ~466 items), not the full catalogue. Prices
   come back in NZD (confirmed via Store API currency_code) even though
   Tonga's own currency in countries.yaml is TOP — apply WB FX downstream.
+
+
+  FOOD-AND-BEVERAGE EVIDENCE (wave4, 2026-08-31): full 466-item pull
+  (2026-08-26 run) sub-categorized: 281 "Dry Goods", 83 "Cold & Frozen
+  Goods", 4 "Refreshments & Soft Drinks", 4 "Alcoholic Beverages" plus a
+  handful of mixed multi-tag rows = 380/466 (81.5%) in genuinely
+  food/beverage sub-categories (tuna cans, cooking oil, vinegar, sauces,
+  flour, soft drinks, etc. — verified by reading product names, not just
+  category labels). The remaining 86/466 (18.5%) are "Household
+  Essentials" (toilet paper, tissues). This catalogue is grocery-dominant
+  and COUNTS toward the country's food-and-beverage total per the wave4
+  brief's marketplace rule. Re-verified live 2026-08-31 via
+  `po prices collect --source tongamarket --max-items 200`: 200/200 rows,
+  200 distinct product_id, 200 distinct url, 0 zero-price, 0 blank-name,
+  currency 100% NZD, price range $1.29-$452.38, median $10.99.
