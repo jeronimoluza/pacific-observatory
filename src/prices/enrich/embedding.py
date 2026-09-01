@@ -138,6 +138,11 @@ def free_st() -> None:
 
         if torch.backends.mps.is_available():
             torch.mps.empty_cache()
+        # On CUDA the caching allocator keeps the freed blocks, so a pod running
+        # several blocks in one process would still be holding 8B's ~16 GB when
+        # 4B loads. Dropping the dict is not enough there.
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
     except Exception:
         pass
     import gc
