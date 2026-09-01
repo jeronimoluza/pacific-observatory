@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: drcmart_cd
+url: https://www.drcmart.com/
+language: en
+cadence: weekly
+channel: electronics
+notes: |
+  Shopify storefront, /products.json?limit=250&page=N, no auth. Probed
+  live 2026-08-31: HTTP 200, 154 distinct products on page 1, page 2 empty
+  (confirmed full catalogue, not a capped walk). Locality confirmed via
+  the storefront's own Shopify.country = "CD" and homepage title "Online
+  Electronics & Mobile Phones Store in Kinshasa, DRC" — a real DRC
+  retailer, not a diaspora storefront. Catalogue is portable power
+  stations (EcoFlow) and smartphones (Tecno, iPhone); no grocery/food.
+  Dollarised: Shopify.currency active USD, rate 1.0 — matches how DRC
+  electronics retail is genuinely priced, not a CDF mislabel. Sample
+  prices: Tecno Pop 20 $125, iPhone 17 Pro Max 512GB $1,950, EcoFlow
+  DELTA Pro 3 $2,800 — plausible for imported electronics in Kinshasa.
+  Buffer/non-food source; added after the food gap (mabele_coop_cd) was
+  closed.
