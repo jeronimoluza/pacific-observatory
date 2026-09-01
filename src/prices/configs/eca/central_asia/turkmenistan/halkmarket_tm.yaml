@@ -1,0 +1,61 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: halkmarket_tm
+url: https://halkmarket.com.tm/
+language: ru
+cadence: weekly
+channel: supermarket
+notes: |
+  Discovered 2026-08-31 by guessing the .com.tm domain for "Halk Market"
+  (one of the named discovery leads in the wave-4 brief) and confirming it
+  resolves and is reachable: halkmarket.com.tm -> 95.85.117.106, HTTPS
+  200 with curl_cffi impersonate=chrome124, no challenge.
+
+  Nuxt 3 SPA: the initial HTML is an empty shell (no product markup, no
+  price/TMT strings anywhere in the served document). Per rule #6 ("hunt
+  the JS bundle before Playwright"), fetched the single bundled script
+  (/_nuxt/HaWKaeHJ.js) and grepped it for /api/ paths, which surfaced a
+  same-origin JSON API needing no auth or special headers:
+    GET  /api/category      -> category tree (23 top-level categories)
+    POST /api/products/all  -> paginated listing, body {categories: [id],
+         brands: [], shops: [], priceFrom: null, priceTo: null,
+         ordering: "recommended", search: "", page: N, pageSize: 100,
+         discount: false, isLiked: false}
+
+  Verified pagination genuinely advances: page=1 vs page=2 within one
+  category share 0 of 100/100 product ids. Walked all 23 top-level
+  category ids (rather than the unfiltered listing) so every row carries
+  a real category name; summed per-category counts = 1,854 vs the
+  unfiltered catalog total of 1,858 (the ~4-row gap is uncategorized
+  items, skipped rather than double-counted -- no meaningful overlap
+  between categories).
+
+  FOOD: this is overwhelmingly a grocery marketplace, not a
+  supermarket-adjacent general store. Category tree: Молочные продукты и
+  яйца (dairy/eggs, 497 SKUs), Вода/напитки/соки (drinks/juice, 399),
+  Горячие напитки (hot drinks, 242), Мясная продукция (meat, 187),
+  Хлебобулочные изделия (bakery, 70), Сладости и снэки (sweets/snacks,
+  66), Замороженные продукты + Рыба и морепродукты (frozen/seafood, 60
+  each), Фрукты и овощи (fruit/veg, 89), Орехи/сухофрукты (nuts/dried
+  fruit, 48), Макароны/крупы (pasta/grains, 37), Кухня и кулинария
+  (kitchen staples, 28), Здоровое питание (24), Соусы/кетчупы (19),
+  Готовая еда (ready meals, 15), Для детей (baby food, 7), Консервация
+  (canned goods, 6). Non-food buckets (Красота и уход/beauty, Для
+  дома/home, Уборка и гигиена/cleaning, Зоотовары/pet, Одежда/clothing,
+  Блюда быстрого приготовления) all had 0 live listings at probe time --
+  effectively ~100% of the current catalog is food and beverage.
+
+  Sample verified rows: id 10007 "Инжир Турецкий кг" (Turkish figs) 306.8
+  TMT/kg; id 100970 '"ЧЕРНАЯ КАРТА"GOLD Кофе натуральный растворимый 36
+  г' 29.8 TMT; dairy-category sample '"Kalleh" Willie Сыр творожный
+  сливочный 69% 350 г' 33 TMT. Currency is TMT throughout (matches
+  countries.yaml; no explicit currency field on the API row, but no
+  currency/country switcher on the site and prices are in the plausible
+  Turkmenistan manat range).
+
+  No routable per-product page exists (product detail opens in a
+  client-side modal on the SPA's /products route, not a distinct URL);
+  emitted `url` is https://halkmarket.com.tm/products?id=<id>, unique per
+  product id for DuplicationPipeline purposes.
