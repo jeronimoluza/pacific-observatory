@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: electroplanet_ma
+url: https://www.electroplanet.ma/
+language: fr
+cadence: weekly
+channel: electronics
+archive_prefix: "www.electroplanet.ma/p"
+archive_path_re: '^/p[0-9][^/?]*\.html$'
+notes: |
+  Verified live 2026-09-01. Real Electroplanet-branded storefront
+  (Label'Vie group), electronics/home-appliance retailer, prices in MAD.
+  /graphql is 401'd by an Apache htpasswd wall site-wide (checked
+  MagentoGraphQLBaseSpider first). MagentoSSRBaseSpider's shared
+  product-card regex does not match this theme's nested
+  brand+ref spans inside the product-item-link anchor -- bespoke listing-
+  card spider instead, walking 11 top-level category roots down through a
+  3-level family-list-container tree. Price read from
+  `[data-price-type="finalPrice"] data-price-amount` (raw decimal,
+  bypasses the "1 234,56 DH" display-text formatting entirely). Sample:
+  'LENOVO LEGION GOS 8ARP1 ...' 8999.0 MAD (finalPrice, promo item;
+  oldPrice 13998.0 correctly skipped). No food/beverage SKUs -- pure
+  electronics/appliances/home goods, so this source does not count toward
+  the food-and-beverage bar.

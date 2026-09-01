@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: alawao_cu
+url: https://alawao.com/
+language: es
+currency: USD
+cadence: weekly
+channel: marketplace
+notes: |
+  Diaspora remittance/delivery platform: pay abroad in USD, deliver to Cuba.
+  Real, usable Cuba price signal but NOT a domestic Cuban retail price in
+  CUP -- do not treat rows from this source as domestic CUP retail.
+
+  Standard WooCommerce storefront. Live-verified 2026-09-01: the versioned
+  Store API (/wp-json/wc/store/v1/products) is open with no anti-bot gate --
+  plain `requests` + browser UA returns 200, no curl_cffi impersonation
+  needed. X-WP-Total: 2267 products across 454 pages of 5 (per_page=100 in
+  the spider). Enumerability confirmed: page 1 vs page 2 product ids fully
+  disjoint.
+
+  Catalog spans groceries (pasillo/servicio-mercado), pharmacy/OTC
+  (pasillo/servicio-farmacia -- antibioticos, analgesicos, antihistaminicos,
+  etc.), prepared-food cantinas, and general merchandise -- channel is
+  marketplace rather than supermarket or pharmacy, matching the breadth
+  precedent of mallhabana_cu / tuambia_cu.

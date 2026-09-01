@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: compughana_gh
+url: https://compughana.com/
+language: en
+cadence: weekly
+channel: electronics
+archive_prefix: "compughana.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Verified live 2026-09-01: standard Shopify storefront, GET
+  /products.json?limit=250&page=N -> HTTP 200, no auth. Sample: 'SIGMA
+  65INCH LED ... TELEVISION' price 5399.00. Currency confirmed GHS via
+  on-page GH₵/GHS markup (81 GH₵ + 7 GHS occurrences on homepage), matching
+  countries.yaml default. Ghana-domestic electronics/computers/appliances
+  retailer (physical stores in Accra) -- not a diaspora dropship shop.
+  Whole-catalog walk.

@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: multimax_ve
+url: https://www.multimax.com.ve/
+language: es
+cadence: weekly
+channel: dept-store
+archive_prefix: "multimax.com.ve/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Venezuelan appliance/electronics/home-goods retailer (fridges, ACs,
+  audio/TV, kitchen appliances, footwear/apparel, hardware). Custom
+  Astro storefront, no VTEX/Shopify/WooCommerce/Magento fingerprint
+  detected. Category listing pages render inline but expose no
+  pagination control (82 products on /electrodomesticos with no
+  load-more/API call found), so this spider walks the product sitemap
+  instead: /sitemap.xml -> sitemap-productos.xml lists 3,605 distinct
+  /producto/<slug> URLs, verified live 2026-09-01.
+  Currency confirmed USD directly from the PDP's schema.org JSON-LD
+  (priceCurrency: "USD", e.g. a KitchenAid mixer at 480.99). No VES,
+  "Bs.", or "tasa BCV" mention found anywhere on a sampled PDP -- this
+  storefront prices exclusively in USD with no bolivar-equivalent
+  display, unlike locatel_ve/farmatodo_ve which are genuinely
+  VES-priced. Treat as ordinary dollarized-retail pricing, same pattern
+  as mafabre_ve/paotrolado_ve.
+timeout: 28800

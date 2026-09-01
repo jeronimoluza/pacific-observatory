@@ -1,0 +1,49 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "03.1", "03.2", "04", "05", "06", "07", "10", "13"]
+source_key: gy_statisticsguyana_cpi
+module: lac.south_america.guyana.statisticsguyana_cpi
+function: fetch_gy_statisticsguyana_cpi
+channel: null
+url: https://statisticsguyana.gov.gy/subjects/price-indices/
+language: en
+cadence: monthly
+fallback_date: 2018-01-01
+notes: |
+  Guyana Bureau of Statistics -- monthly Consumer Price Index, Georgetown
+  (base Dec 2009 = 100). The subject-taxonomy listing page returns every
+  monthly release post in one GET (no pagination hit; 83 distinct month/year
+  posts spanning March 2019 - July 2026 extracted from a single fetch,
+  verified live 2026-09-01). Post slugs are irregular across the archive
+  (some drop "guyana", some glue month+year with no hyphen, a few carry a
+  "-2" re-publish suffix); the fetcher regex normalizes all variants to a
+  (month, year) key.
+
+  Each release embeds ONE `supsystic-table` HTML table that parses cleanly
+  with pandas.read_html -- no PDF/OCR involved, plain requests works (no
+  curl_cffi impersonation needed; no anti-bot posture observed on this
+  .gov.gy site). Column layout is NOT stable: the number of leading
+  year-over-year trend columns grows every year, AND the number of trailing
+  "% Change" columns varies (2 in most releases, 3 in March 2019) -- a
+  fixed-position rule silently mis-parses the March 2019 release, so the
+  fetcher instead locates the current-period column by matching header text
+  against the release's own month+year token, handling both the pre-2026
+  combined "MON YEAR" header-row format and the 2026-era table redesign that
+  splits month and year across two header rows.
+
+  Guyana's own classification is a legacy 9-group scheme, coarser than
+  COICOP-2018 in two places (Transport+Communication bundled into one group;
+  Education+Recreation/Culture bundled into another -- Guyana does not
+  break these out, so COICOP 08 and 09 are NOT covered by this source) and
+  finer in one place (Clothing and Footwear reported as two separate rows,
+  mapped to 03.1/03.2). See the fetcher module docstring for the full
+  group->COICOP table. The headline ALL ITEMS row is dropped -- no
+  sanctioned sentinel for an all-items index in IndexObservation yet.
+
+  Verified 2026-09-01 with a backdated cutoff (2018-01-01): 657 rows (73
+  months x 9 divisions), spot-checked against 5 releases hand-read from the
+  live pages (Mar 2019, Dec 2019, May 2020, Jan 2022, Jul 2026) across all 3
+  distinct table-column-count layouts (12, 14 columns) before trusting the
+  header-matching approach.

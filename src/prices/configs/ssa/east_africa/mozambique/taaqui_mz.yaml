@@ -1,0 +1,55 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: taaqui_mz
+url: https://www.taaqui.co.mz/
+language: pt
+cadence: weekly
+channel: marketplace
+timeout: 900
+notes: |
+  Probed live 2026-09-01. TaAqui Delivery (TaAqui Mozambique S.A., Maputo)
+  is a Next.js web app; the candidate brief was right that the catalogue
+  sits behind the app, not in server-rendered HTML. Found the backing API
+  on a separate host by reading the `_app-*.js` bundle's route-constant
+  table: https://central.taaqui.co.mz/api/v1/... . Most routes need
+  `zoneId` / `moduleId` / `latitude` / `longitude` custom headers (zone_id=1
+  "Maputo" resolved via /api/v1/config/get-zone-id), but the single-item
+  endpoint GET /api/v1/items/details/<id> needs no headers or auth at all
+  (ids without a real product return 404 or a generic 403 "moduleId
+  required" either way - re-tested a batch of the 403s with moduleId set
+  and they still 404, so 403 is not hiding extra rows). Item ids are small
+  sequential integers; a range walk 1-360 covers the entire live catalogue.
+  Full test run 2026-09-01: 188 items scraped (188 distinct product_id,
+  188 distinct url), 0 zero/negative prices, 0 blank names, currency 100%
+  MZN, price range 20-4120 MZN (median 529). Product URL
+  https://www.taaqui.co.mz/product/<id> spot-checked cold on 3 random rows
+  (ids 165, 303, 315) - name AND price both matched live
+  (product:price:amount meta tag).
+
+  WHAT THIS SOURCE ACTUALLY IS - channel is `marketplace`, not any food
+  channel, and this is deliberate, not a shortcut. `/api/v1/module` lists
+  3 modules: "TáAqui Mall" (module_id=1, labelled `grocery`, stores_count
+  15 lifetime but only 3 live in the Maputo zone), "TáAqui Food"
+  (module_id=2, real restaurants), and "TáAqui Express" (parcel, 0 stores).
+  The "grocery" module's 3 live vendors are NOT grocery: Alma Verde is a
+  houseplant nursery (Filodendro, Calathea, Cróton - all ornamental
+  plants; category "Jardim & Exterior", 26 rows), Bongani Cigars is a
+  tobacco shop ("Tabacaria", 9 rows) that also lists shorts/t-shirts, and
+  Santino Dominance has 1 clothing item. "TáAqui Food"'s 7 vendors are
+  genuine Maputo restaurants (Backyard Burgers, Dope Food & Bar, Frango do
+  Baloi, LOIRINHA CHURASQUEIRA, etc) - the bulk of the catalog is
+  restaurant menu items (Hambúrguer 14, Frango 13, Fast Food 11,
+  Pequeno-Almoço 10, Sandes 9, Pizza 9, etc). A "Calçado" (footwear, 11
+  rows) and small "Moda & Estilo" apparel slice also showed up in the
+  full unbounded run. So the live catalogue is plants + tobacco +
+  footwear/apparel + restaurant meals - a small first-party-merchant
+  marketplace, structurally not a supermarket or any food-retail channel
+  per the brief's enum (restaurant meals are food-away-from-home, not
+  retail grocery). Confirmed real (working MZ phone numbers, Maputo
+  street addresses, MZN prices) but thin (188 items across 10 vendors)
+  and not food-shaped. Left `coicop_codes` unset and
+  coicop_classification=classifier given the mixed catalog (restaurant
+  meals will likely map to 11.1.1, plants/tobacco/footwear/apparel
+  elsewhere).

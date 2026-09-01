@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: franko_trading_gh
+url: https://frankotrading.com/
+language: en
+cadence: weekly
+channel: electronics
+archive_prefix: "frankotrading.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Verified live 2026-09-01. Public site is a Vite SPA (client-side routed;
+  every path incl. /product/<id> serves the same index.html shell). Found
+  the real backend via the JS bundle (assets/index-*.js): a client-embedded
+  x-api-key header calling https://testing.frankotrading.com/GetCTP001Products
+  ?pageNumber=N&recordPerPage=2000 -> HTTP 200, no further auth. Paginates
+  cleanly: pages 1-4 returned 2000 each, page 5 returned 637 (<2000),
+  confirming termination rather than a repeat-last-page loop -- 8,637
+  products total. Payload has productName/productId/sellingPrice1 only, no
+  category or PDP HTML, so `url` is a constructed /product/<id> link (valid
+  route, SPA-rendered) and category is left null for the classifier.
+  Currency GHS/GH₵ confirmed in the JS bundle's on-page markup. Large phone/
+  laptop/appliance retailer with physical Accra showrooms per the brief --
+  domestic Ghana retailer, not diaspora.
+
+  DATA-QUALITY CAVEAT (orchestrator, verified 2026-09-01 on the 8,637-row
+  collect): the backend feed is Franko's internal ERP product master, not a
+  curated storefront catalogue, and it leaks non-retail records.
+    * 904 rows (10.5%) are internal Samsung/Nokia service-part descriptions
+      -- e.g. "IF SUB PBA ASSY-SM-S921B;SM-S921B,OPEN,V",
+      "ASSY VT CAMERA-13M 1/3.06\" (A225F);SM-A2". These are repair
+      components, not consumer SKUs, and their names are ERP part strings
+      that will classify poorly.
+    * 5 rows are obvious test SKUs with numeric-only names ("1234", "9999",
+      "798798479874", "12341234", "1232414342").
+    * 214 rows (2.5%) carry price 0 -- gift/placeholder entries.
+  Left unfiltered deliberately, matching this repo's convention of not
+  filtering in JSON-API spiders, but any consumer-price analysis on this
+  source should drop the ASSY/IF-SUB prefix families first.
