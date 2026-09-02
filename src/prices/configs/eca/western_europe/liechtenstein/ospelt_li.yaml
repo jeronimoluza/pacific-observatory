@@ -1,0 +1,69 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: ospelt_li
+url: https://shop.ospelt.com/
+language: de
+cadence: weekly
+notes: |
+  ORCHESTRATOR FIX 2026-09-01: the shipped run carried 11 rows priced 0.00
+  whose Shopify product_type is "filler" -- nav tiles ("Geschenkideen",
+  "Aktionen", "Merchandise"), section headers, free packaging and a free
+  greeting card. Not products. Added "filler" to the spider's
+  _EXCLUDE_PRODUCT_TYPES and a price>0 guard; re-ran and verified 0 zero-price
+  and 0 filler rows remain. Row count 223 -> 212, food share ~88.7%.
+
+  KNOWN LIMITATION (not fixed here): 212 rows resolve to only 197 distinct
+  product_id. 15 ids are reused across DIFFERENT products at DIFFERENT prices
+  -- e.g. id 16929 is both "Malbuner Party Jerky Beef 60g" (5.95) and
+  "Conower Beef Jerky Classic 60g" (4.70). The id comes from the shared
+  _shopify_base, so fixing it would change behaviour for every Shopify spider
+  in the corpus and was deliberately left alone. Do NOT treat product_id as a
+  primary key for this source; key on (product_id, product_name) or on url.
+
+  Herbert Ospelt Anstalt (Malbuner brand) -- a genuinely DOMESTIC
+  Liechtenstein specialty-food producer/retailer, NOT a Swiss chain, so
+  the Coop/Migros locality debate does not apply. Confirmed headquartered
+  in Bendern, Liechtenstein via the shop's own schema.org PostalAddress
+  JSON-LD: streetAddress "Schaanerstrasse 79", addressLocality "Bendern",
+  addressCountry "LI", postalCode "9487". Direct-to-consumer Shopify
+  webshop for the company's own meat/deli specialties (Rohschinken/Speck,
+  Landjaeger, jerky snacks, Le Parfait tinned meat) plus gift baskets and
+  branded merchandise.
+
+  Standard Shopify /products.json endpoint, no auth, no anti-bot -- plain
+  `requests` (no curl_cffi impersonation needed) returns 200. Currency
+  confirmed CHF via `Shopify.currency = {"active":"CHF"}` on the storefront
+  (not guessed from a symbol). Prices in /products.json are already decimal
+  CHF (verified "Malbuner Landrauchschinken" products.json price 6.12 ==
+  CHF 6.12 rendered on the live product page -- no minor-unit division
+  bug).
+
+  Catalog has 203 distinct products (single /products.json page, under
+  Shopify's 250/page cap); after excluding "Box Builder" (see above),
+  collect --source ospelt_li writes 212 rows (one per variant) -- 208
+  distinct product_id, 223 distinct url (0 URL duplicates -- the
+  DuplicationPipeline's url-based dedup is not at risk), 11 zero-price
+  rows (free greeting cards / empty gift-box containers, 4.9% of rows),
+  0 blank product_name, currency 100% CHF, price range CHF 0-300 (median
+  CHF 7.00). product_type breakdown after the exclusion: Snacks / Jerky /
+  Landjaeger 54, Genusskoerbe und Geschenke 41, Rohschinken/Speck 28,
+  Regionale Spezialitaeten 26, Le Parfait 22, Koerbe 12, Schinken/
+  Fleischkaese 6, Fleisch- & Wurstwaren 2, Fisch 1 -- 192/212 rows (86.1%)
+  fall in a food-named product_type; Merchandise (15) and filler (8) are
+  the non-food remainder. Re-fetched 3 products cold post-run (Culatello
+  CHF 6.60, Salamini Chicken CHF 4.70 via the product:price:amount meta
+  tag, Landjaeger Fan-Packung CHF 15.60) -- all matched the shipped rows.
+
+  Product_id overlap check (rule 19), FULL sets not sampled: unioned
+  product_id across every raw_items run on disk for each source (ospelt_li
+  352 distinct ids across 590 rows spanning two collect runs, one of which
+  still included the since-excluded Box Builder ids) against denner_ch
+  (573 distinct ids / 1,725 rows across 5 runs), koro_ch (988 distinct ids
+  / 4,009 rows across 5 runs), nu3_ch (2,169 distinct ids / 6,852 rows
+  across 5 runs). Overlap = 0 with all three. Different company (Herbert
+  Ospelt Anstalt vs Migros-owned Denner, KoRo's shared Shopware backend,
+  nu3's German-market Shopify tenant), different platform instance,
+  different SKU namespace -- not the same shelf.

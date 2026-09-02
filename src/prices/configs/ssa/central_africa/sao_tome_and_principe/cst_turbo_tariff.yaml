@@ -1,0 +1,51 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+channel: null
+source_key: stp_cst_turbo_tariff
+module: ssa.central_africa.sao_tome_and_principe.cst_turbo_tariff
+function: fetch_stp_cst_turbo_tariff
+url: https://cst.st/PT/turbo/tarifarios
+language: pt
+cadence: irregular
+fallback_date: 2015-01-01
+notes: |
+  New source, wave 13 (2026-09-01). CST (Companhia Santomense de Telecomunicacoes)
+  is the incumbent STP telecom operator. Its /PT/turbo/tarifarios page publishes
+  4 prepaid voice+data bundle tiers (Turbinho, Turbo+Net, Superturbo+Net, Turbo Max
+  +Net), each with Diario/Semanal/Mensal durations -- 12 plans total, prices 10-330
+  Dbs.
+
+  Static server-rendered HTML, no anti-bot. Verified live 2026-09-01:
+  pandas.read_html returns 8 tables that come in DUPLICATE PAIRS -- even-indexed
+  tables are a compact "O que inclui"/"Quanto Custa" rendering, odd-indexed are
+  the SAME 3 rows re-rendered as a wider responsive layout (desktop-vs-mobile-card
+  duplicate, not a second product set). The fetcher uses only the even-indexed
+  tables; the odd ones are dropped entirely, not merged -- confirmed this avoids a
+  2x row inflation (12 canonical plans, not 24).
+
+  Row labels carry a footnote-reference digit directly appended with no space
+  ("REFORCO1", "MENSAL2") -- stripped with a trailing-digit regex before use as
+  item_name.
+
+  Currency: page prints "Dbs" (dobras); magnitude (10-330 Dbs) is consistent with
+  STN, not pre-2018 STD.
+
+  Unitel STP (the other STP mobile operator) was also probed: its
+  tarifario-maxibin.php and general tarifarios.php pages carry only INTERNATIONAL
+  roaming/calling rates (no local bundle prices), and internet-no-telemovel.php
+  (its local data-plan landing page) has zero <table> tags and zero price-bearing
+  text in the raw HTML -- the actual figures are not present in server-rendered
+  form (likely images or JS-only) and its cited "modification dates" for local
+  tariffs read 2016/2017, suggesting a stale/unmaintained section. Not pursued
+  further given CST already covers this analytical_role and coicop_code for STP;
+  recorded as a dead end in the wave-13 inventory rather than built as a weaker
+  duplicate source.
+
+  No effective/publication date is printed on this page -- period_kind is
+  snapshot, observation_date = scrape date.
+
+  fallback_date=2015-01-01 is arbitrary (no dated history to backfill); only
+  matters in that it predates "today" so the first run isn't skipped.

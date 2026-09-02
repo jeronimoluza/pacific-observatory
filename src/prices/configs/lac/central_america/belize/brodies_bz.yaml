@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: brodies_bz
+url: https://brodies.bz/
+language: en
+cadence: weekly
+channel: pharmacy
+notes: |
+  Re-verified live 2026-09-01. Sourcing sheet claimed WordPress/WooCommerce
+  and "Belize's main supermarket chain" -- both wrong (rule 23). Actual
+  domain is brodies.bz (brodiesbelize.com is NXDOMAIN against 8.8.8.8 and
+  1.1.1.1). Platform is GoDaddy "Simple Store" (Starfield Website Builder);
+  catalogue lives on a separate mysimplestore.com sub-origin, JSON, no auth:
+  https://47d773ea-5c80-4654-b764-3d2755162bdb.mysimplestore.com/api/v2/products
+  61 SKUs total (Band-Aid, Benadryl, Bengay, Tylenol, Motrin, Imodium,
+  Desitin, reading glasses) -- a pharmacy/drugstore at 4 Albert St, Belize
+  City, NOT a supermarket. channel: pharmacy -- does not count toward food.
+  Currency is explicit "USD" per product (no BZ$ prefix); recorded as-is,
+  not converted to BZD.
+  Full run 2026-09-01: 61/61 rows, 0 blank names, 0 zero/negative prices,
+  distinct product_id/url both 61/61, price range $1.33-$1,276.00 (the
+  $1,276 row, "BENADRYL ULTRA TABS 24'S #17031", is a genuine site data-
+  entry outlier -- re-fetched cold and confirmed unchanged; recorded as
+  displayed per the "record what the site shows" rule, not corrected),
+  median $13.22.

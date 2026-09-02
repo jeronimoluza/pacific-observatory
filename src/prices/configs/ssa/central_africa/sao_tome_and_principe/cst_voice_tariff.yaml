@@ -1,0 +1,40 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+channel: null
+source_key: stp_cst_voice_tariff
+module: ssa.central_africa.sao_tome_and_principe.cst_voice_tariff
+function: fetch_stp_cst_voice_tariff
+url: https://cst.st/PT/clientes/tarifarios
+language: pt
+cadence: irregular
+fallback_date: 2015-01-01
+notes: |
+  New source, wave 13 (2026-09-01). Sibling to cst_turbo_tariff.yaml -- same
+  operator (CST), but a genuinely different product/coicop_code: per-minute/SMS
+  usage rate cards for CST's two flagship plans ("Principe" postpaid,
+  "Leve Leve" prepaid) rather than bundled data+voice packages. Same relationship
+  as EMAE's electricity/water split (one company, two distinct tariff schedules) --
+  not the same-shelf duplicate the wave brief warns against in rule 19, since the
+  price points and product type (per-use vs bundle) are disjoint from
+  cst_turbo_tariff, verified by inspecting both live pages directly rather than by
+  a sample.
+
+  Each plan's page renders the SAME rate card as several overlapping
+  pandas.read_html tables (a partial voice-only split, a partial SMS-only split,
+  and a fully consolidated call-type x destination table) -- confirmed the LAST
+  table on each page is always the consolidated one (Principe: 4 rows = 2 voice +
+  2 SMS; Leve Leve: 5 rows = 2 voice + 2 SMS + 1 video), so only that last table is
+  used per page; the earlier partial tables are dropped, not merged, to avoid
+  double-counting.
+
+  Currency: "Dbs" (dobras), comma decimal separator in source (e.g.
+  "2,76 Dbs p/ Min."); magnitude consistent with STN.
+
+  No effective/publication date is printed -- period_kind: snapshot,
+  observation_date = scrape date.
+
+  fallback_date=2015-01-01 is arbitrary (no dated history to backfill); only
+  matters in that it predates "today" so the first run isn't skipped.

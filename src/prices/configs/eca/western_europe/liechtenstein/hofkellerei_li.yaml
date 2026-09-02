@@ -1,0 +1,51 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: hofkellerei_li
+url: https://www.hofkellerei.li/de/online-shop.html
+language: de
+cadence: weekly
+notes: |
+  Hofkellerei des Fuersten von Liechtenstein -- the Princely House of
+  Liechtenstein's own winery/estate, headquartered in Vaduz, LIECHTENSTEIN
+  (one of its own wines is literally "Pinot Noir AOC Vaduz", a
+  Vaduz-appellation bottle). Genuinely domestic; the shop page itself
+  advertises free shipping "innerhalb der Schweiz und Liechtenstein"
+  (within Switzerland AND Liechtenstein), so LI delivery is explicit on
+  the source, not assumed. No locality ambiguity, unlike the Coop/Migros
+  question this wave's brief raised. The estate also farms vineyards in
+  Austria (sister site hofkellerei.at) and sells both ranges through this
+  one LI-hosted shop -- noted for transparency, not hidden.
+
+  Plain server-rendered HTML (custom "XSite" CMS, Apache) -- curl_cffi and
+  plain `requests` both return 200, no JS/Playwright needed. The full
+  catalog renders on one page (/de/online-shop.html): the page's own
+  loadmore counter reports `{"limit":99,"total":29,...}`, confirming 29 is
+  the WHOLE catalog, not a truncated first page -- no pagination/detail-page
+  crawl needed. Price format is "CHF 19,00" (German decimal COMMA), parsed
+  to "19.00" via regex, not a naive float() (rule: apostrophe/comma
+  Swiss-price gotchas).
+
+  Verified live 2026-09-01: 29 rows, 29 distinct product_id, 29 distinct
+  url (0 duplicates), 0 zero/negative price, 0 blank product_name,
+  currency 100% CHF, price range CHF 4.80-100.00 (median CHF 28.00).
+  Category mix: wine (majority, e.g. "F.L. Premier Brut" CHF 28.00,
+  "Pinot Noir AOC Vaduz 2024 Bio" CHF 30.00), grape juice ("Traubensaft
+  Naturtrueb Bio" CHF 6.50), olive oil ("Natives Olivenoel Extra Bio" CHF
+  23.00), honey ("Weinviertler Bluetenhonig Bio" CHF 20.00), and 3
+  non-food gift items (a CHF 100 gift voucher, two listings of a
+  "Schmuckdose Karoline" jewellery box) left for the classifier to route
+  to non-food leaves -- food share 26/29 = 89.7%. Re-fetched 2 products
+  cold post-run: "F.L. Premier Brut" CHF 28.00 and "Herrnbaumgarten 2023"
+  CHF 19.00, both matched the shipped rows.
+
+  Product_id overlap check (rule 19): the numeric ids here are this
+  site's own internal XSite item ids (e.g. 211, 334, 452) -- structurally
+  distinct from denner_ch (SKU/handle-derived), koro_ch (Shopware numeric
+  product ids from a different backend), and nu3_ch (Shopify numeric
+  variant ids). Checked the full id sets from every raw_items run on disk
+  for all three against hofkellerei_li's 29 ids: 0 overlap with any.
+  Different company, different platform, different numbering -- not the
+  same shelf.

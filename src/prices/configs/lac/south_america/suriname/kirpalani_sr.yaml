@@ -1,0 +1,28 @@
+scaffolding: spider
+spider: kirpalani_sr
+url: https://www.kirpalani.com/
+channel: dept-store
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_html
+language: nl
+currency: SRD
+cadence: weekly
+coicop_codes: null
+notes: |
+  General/home retailer (Magento 2, Luma theme). GraphQL and REST
+  surfaces both closed (Cloudflare challenge on /graphql; 401 on
+  /rest/V1/products) confirmed 2026-09-01, so this scrapes the
+  server-rendered category HTML via MagentoSSRBaseSpider against a
+  hand-picked allowlist of 27 real product-category slugs.
+
+  No grocery/food department: full top-nav (47 links) has no
+  Levensmiddelen/Voeding/Supermarkt entry; /nl/groothandel (wholesale
+  landing page) renders zero product-item cards. This is the wave-13
+  brief's single supplied candidate (Kirpalani's) -- confirmed general
+  merchandise (appliances, electronics, apparel, furniture, hardware,
+  toys, personal care), not food. channel: dept-store.
+
+  Freshness verified against the post-2020 SRD devaluation: a Brentwood
+  1L electric kettle priced SRD 962.50 as of 2026-09-01 (~USD 25
+  equivalent at the current rate), not a stale pre-devaluation figure.

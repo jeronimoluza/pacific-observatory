@@ -1,0 +1,41 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+channel: null
+source_key: fl1_mobile_li
+module: eca.western_europe.liechtenstein.fl1_mobile_li
+function: fetch_fl1_mobile_li
+url: https://www.fl1.li/mobile/
+language: de
+cadence: monthly
+fallback_date: 2015-01-01
+notes: |
+  FL1 -- the rebranded consumer storefront of Telecom Liechtenstein AG,
+  the country's incumbent DOMESTIC telecom operator. telecom.li now
+  serves as the wholesale-only portal and canonicalises to fl1.li for
+  consumer plans (verified live 2026-09-01: telecom.li's own <title> is
+  "Wholesale - FL1") -- one company, not two sources, despite the brief
+  naming both "Telecom Liechtenstein" and "FL1".
+
+  Plain server-rendered WordPress plan pages (curl_cffi
+  impersonate=chrome124 returns full content, no Playwright/JS needed).
+  Walks four fixed plan-family pages (FL1 FREE! / FREE! Young / LIFE! /
+  LIFE! Young), 5 tiers each (XS/S/M/L/XL), parsed from each plan card's
+  WooCommerce-style product id, name, and monthly CHF price.
+
+  coicop_codes: ["08.3.0"] -- mobile telephone service plans; matches
+  the majority convention in this repo (Sierra Leone africell_tariffs,
+  Burkina Faso orange_mobile_tariff), not the 08.2 outlier used by
+  telia_no.
+
+  period_kind: snapshot (live current price list, no dated "effective
+  from" on the page; a price change surfaces as a new observation_date
+  row on a later run).
+
+  Verified live 2026-09-01: 20 rows, 20 distinct item_name, 20 distinct
+  product_id, 0 duplicate observation_hash. Currency CHF throughout.
+  Price range CHF 15.90-99.90/month (median CHF 39.90). Sample: "FL1
+  LIFE! XS" (product_id 32531) CHF 19.90/mo; "FL1 FREE! XL" (product_id
+  36427) CHF 99.90/mo -- both re-fetched cold and matched the live page.

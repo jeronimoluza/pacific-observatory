@@ -1,0 +1,47 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: ins_cameroun_cpi
+module: ssa.central_africa.cameroon.ins_cameroun_cpi
+function: fetch_ins_cameroun_cpi
+url: https://ins-cameroun.cm/statistiques/
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source (wave 13, 2026-09-01). Institut National de la Statistique du
+  Cameroun (INS) publishes a monthly "Note mensuelle sur l'evolution des
+  prix a la consommation finale des menages au Cameroun" PDF at
+  ins-cameroun.cm. Each PDF's "Tableau 2 : Evolution de l'Indice Harmonise
+  des Prix a la Consommation (Base 100 annee 2022)" carries a rolling
+  12-month window of index levels per COICOP division, so a single,
+  most-recent PDF backfills a year of history in one fetch -- same design
+  as the existing Sierra Leone statssl_cpi fetcher.
+
+  Site is wide open (curl_cffi impersonate=chrome124, no WAF) -- unlike the
+  Knoema/OpenDataForAfrica CPI embed the INS homepage also links to
+  (cameroon.opendataforafrica.org), which sits behind a genuine Cloudflare
+  Turnstile interactive challenge and was tried first, then abandoned as a
+  real hard block (not a TLS-fingerprint issue -- curl_cffi impersonation
+  does not help against Turnstile).
+
+  Verified live 2026-09-01: listing page links the May 2026 note
+  (.../note-mensuelle-...-en-mai-2026/), whose article page links
+  Note-sur-les-prix-au-Cameroun-en-Mai-2026-Rev-DG-ok.pdf. Tableau 2 (page
+  4 of 8) gives 12 monthly columns (Juin-25 through Mai-26) x 12
+  "FONCTION DE CONSOMMATION" division rows, which map 1:1 onto COICOP-2018
+  divisions 01-12 (division 13, insurance/financial services, is absent,
+  matching the regional pattern). Sample: division 01 (Produits
+  alimentaires et boissons non alcoolisees) = 130.8 in Mai-26. The
+  "INDICE GENERAL" headline row and sub-item rows nested under division 01
+  (Pains et cereales, Viandes, ...) are both dropped -- division-level
+  only, matching the Stats SL precedent and the skill's open design
+  question on headline CPI.
+
+  No currency involved (index values, not price levels) -- the XAF
+  thousands-separator trap does not apply to this source. Test run
+  2026-09-01 with fallback_date=2020-01-01 (full first-run backfill):
+  144 rows (12 divisions x 12 months, Jun-2025 through May-2026), 0
+  duplicate observation_hash, 12 distinct coicop_code values (01-12).

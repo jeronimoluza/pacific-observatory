@@ -1,0 +1,44 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.2"]
+channel: null
+source_key: waerme_li_erdgas
+module: eca.western_europe.liechtenstein.waerme_li_erdgas
+function: fetch_waerme_li_erdgas
+url: https://www.waerme.li/downloads
+language: de
+cadence: monthly
+fallback_date: 2015-01-01
+notes: |
+  Liechtenstein Waerme -- the DOMESTIC gas/district-heating utility,
+  formerly branded LGV (Liechtensteinische Gasversorgung). lgv.li now
+  canonicalises to waerme.li (same TYPO3 site, rebranded "LIECHTENSTEIN
+  WAERME"). The /downloads page links dated PDF price sheets; this
+  fetcher discovers Festpreis (annual fixed-price) and Floatpreis
+  (rolling monthly EEX-indexed) PDFs by regex over that page rather than
+  hardcoding filenames, so future periods are picked up automatically.
+
+  Two tariff PRODUCTS captured, both real published household contracts
+  (not duplicates of one series): Festpreis = one composite CHF/kWh price
+  per calendar year; Floatpreis = a rolling 3-month table republished
+  ~bimonthly (the newest month is sometimes still blank and is dropped,
+  not guessed at). ENERGY-COMPONENT price only -- network usage fee,
+  CO2 levy, and 8.10% VAT are explicitly excluded on the source PDFs.
+  A third product (Basispreis/Biogas, mixed excl./incl.-CO2 rows across
+  4 columns) was probed but not parsed -- its layout does not extract
+  reliably as text; Festpreis + Floatpreis alone already clear the
+  5-row bar with genuine historical periods.
+
+  Verified live 2026-09-01: 7 rows, 7 distinct item_name, 0 duplicate
+  observation_hash. Currency CHF throughout. Price range 0.049572-0.075942
+  CHF/kWh (median 0.059434). Sample: "Erdgas Festpreis 2025" CHF
+  0.066537/kWh; "Erdgas Festpreis 2026" CHF 0.049572/kWh; "Erdgas
+  Floatpreis August 2026" CHF 0.075942/kWh -- all spot-checked against the
+  raw PDF text.
+
+  Complementary to (not a duplicate of) eurostat_gas (Eurostat dataset
+  nrg_pc_202, cross-country household gas STATISTIC, band D2, half-yearly)
+  -- this is the utility's own published rate schedule at monthly/annual
+  grain. No shared backend, no shared product_id namespace.

@@ -1,0 +1,31 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "11", "12"]
+channel: null
+source_key: sr_abs_cpi
+module: lac.south_america.suriname.abs_cpi
+function: fetch_sr_abs_cpi
+url: https://statistics-suriname.org/consumenten-prijs-indexcijfers-en-inflatie/
+language: nl
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Algemeen Bureau voor de Statistiek (ABS) monthly CPI PDF. Each release's
+  own table carries a rolling ~24-month trailing window of national
+  division-level index values, so downloading only the single latest
+  PDF backfills ~2 years of history on first run; the cutoff filter
+  handles incremental months thereafter. Confirmed live 2026-09-01:
+  latest release covers July 2026 (published 21 Aug 2026).
+
+  Suriname's own 12-group numbering matches COICOP-2018 divisions
+  directly for groups 1-8, 11, 12. Group "9/10" (Recreatie, Cultuur en
+  Onderwijs = Recreation+Education combined) is dropped -- no single
+  COICOP code applies to a bundled group, following the SingStat
+  precedent in this skill's fetcher_pattern.md. The "Totaal" (all-items
+  headline) column is also dropped per the project's open design
+  question (no sanctioned headline-CPI sentinel in IndexObservation yet).
+
+  Dev-tested 2026-09-01: 240 rows (24 months x 10 divisions), spans
+  2024-08-01 to 2026-07-01, zero duplicate observation_hash.

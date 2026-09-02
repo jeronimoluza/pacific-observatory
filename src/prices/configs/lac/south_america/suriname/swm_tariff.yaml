@@ -1,0 +1,22 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1"]
+channel: null
+source_key: sr_swm_tariff
+module: lac.south_america.suriname.swm_tariff
+function: fetch_sr_swm_tariff
+url: https://swm.sr/over-water/tarieven/
+language: nl
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  SWM (Surinaamsche Waterleiding Maatschappij) drinking-water tariff
+  schedule. One clean HTML table, 9 tariff groups (household, household
+  w/ pool, commercial, public, hospital/social, construction crane) in
+  SRD per m3. Page states no explicit effective-from date, so
+  period_kind is "snapshot" (fetch date) rather than a fabricated
+  effective_from.
+
+  Dev-tested 2026-09-01: 9 rows, zero duplicate observation_hash.

@@ -1,0 +1,52 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+channel: null
+source_key: orange_tariffs_caf
+module: ssa.central_africa.central_african_republic.orange_tariffs
+function: fetch_orange_tariffs_caf
+url: https://www.orangerca.com/fr/catalogue/offres-mobile.html
+language: fr
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Orange Centrafrique (orangerca.com -- the live CAR operator storefront;
+  "orange.cf" resolves but every path 301s to the Orange Group corporate
+  site orange.com/en and is NOT the operator's site despite the ccTLD).
+  Each mobile plan-family page server-renders plan names/description but
+  leaves price blank in raw HTML; Playwright network-capture on
+  forfaits-sakpa.html found the price is hydrated via a same-origin POST to
+  /2/calls/getvariantprices.jsp (Tier 1B). Verified live 2026-09-01: no
+  cookies/session needed -- a plain requests.Session POST with an arbitrary
+  menu_uuid returns 200 with the full variant-price JSON.
+  Walked all product_id values findable in /fr/catalogue/offres-mobile.html's
+  6 linked pages: 4 resolve to purchasable plan families (product_id=10
+  Recharges/bonus tiers, 13 Forfaits internationaux, 14 Forfaits Songo
+  national calls, 15 Forfaits Sakpa internet); product_id=16 (les-profils-
+  tarifaires) is an info page with isShowPrice="0" and excluded by the
+  isShowPrice filter, not a hardcoded skip. catalogs/forfaits-roaming.html
+  uses a different, unwalked mechanism (no product_id found) -- not pursued
+  this pass.
+  IDENTITY: variantName collides within product_id=10 -- two variants both
+  named "Bonus 0" (sku "bonus0" @500 XAF, sku "bonus0bis" @1000 XAF), same
+  class of defect as orange_mobile_tariff_bf. Fixed by folding sku into
+  item_name ("<family> <variantName> [<sku>]").
+  CURRENCY: API's currency_frequency field literally says "FCFA" (common
+  name shared by both CFA zones), not an ISO code -- hardcoded XAF here
+  since CAR is CEMAC, not UEMOA (XOF would be wrong). price field is a
+  clean decimal string, no thousands-separator parsing needed.
+  EFFECTIVE DATE: each variant carries its own updatedOn CMS timestamp
+  (2023-07-04 .. 2025-07-09 across observed rows) used as observation_date
+  (period_kind: effective_from) -- more accurate than stamping every row
+  with today's scrape date, since most prices have been stable for 2-3
+  years. Re-running emits 0 new rows until Orange next edits a price.
+  Test run (cutoff=2020-01-01): 27 rows, 27 distinct item_name, 0 duplicate
+  observation_hash. Price range 50-25,000 XAF (median 750). Spot-checked
+  against live pages: "Sakpa 1000" variant = 1,000 XAF (matches rendered
+  "1 000" card on forfaits-sakpa.html); "Forfait Découverte" = 960 XAF
+  (matches forfaits-internationaux.html).
+  coicop_codes: ["08.3.0"] -- whole catalog (data/voice/SMS/international/
+  recharge-bonus plans) is telecommunication services, matching the
+  orange_mobile_tariff_bf and sl_orange_tariffs convention.
