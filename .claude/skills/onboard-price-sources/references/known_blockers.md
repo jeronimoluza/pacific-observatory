@@ -23,6 +23,10 @@ Not an anti-bot wall — the tenant's Shopify subscription is unpaid/inactive, s
 
 403 even with realistic UA + headers. Often serves a challenge page or interstitial. Headless Chromium without stealth + residential IP fails. Bypass would require a paid proxy/solver stack.
 
+- **liberiafooddelivery.com** (LR) — serves "Checking your browser before accessing. Just a moment..." (HTTP 403, 6.2KB stub) on `curl_cffi chrome124`. Not escalated to Playwright: Liberia already shipped two working sources this pass (`libdelivery_lr`, `banjoo_lr`), so the marginal value was nil. Re-probe with Playwright before recording a final verdict. Probed 2026-09-02 (search-starved re-run).
+- **stokholm.fo** (FO) — same "Checking your browser" 403 stub on `curl_cffi chrome124`. Faroese retailer; unresolved either way. Probed 2026-09-02 (search-starved re-run).
+- **coursesu.com** (FR/MAF) — Cloudflare "Just a moment..." on `/drive-saint-martin`. Note before spending effort: the slug is very likely one of the metropolitan-France communes named Saint-Martin, not the Caribbean COM 97150. Probed 2026-09-02 (search-starved re-run).
+
 - **mymedicine.com.mm** (MM) — 403 on `/shop` and `/categories`. Myanmar online pharmacy; confirmed blocked June 2026. MEDiCARE (medicarehb.com.mm) is a viable alternative for COICOP 06.
 - **blibli.com** (ID) — 403 on category + PDP. Professional anti-bot.
 - **auction.co.kr** (KR, eBay Korea) — 403 on root and category.

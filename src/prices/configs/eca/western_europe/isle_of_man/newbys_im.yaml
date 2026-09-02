@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: newbys_im
+url: https://newbys.im/
+language: en
+cadence: weekly
+channel: convenience
+archive_prefix: "newbys.im/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Newby's Convenience, two stores in Douglas, is the Isle of Man's online
+  grocery storefront (Shopify). Public /products.json returned groceries with
+  GBP prices during the 2026-09-01 probe, and page 2 returned a different set,
+  confirming the catalog paginates. First retail source of any kind for the
+  Isle of Man; the island's former chain, Shoprite, was absorbed into Tesco in
+  June 2024 and Tesco's UK delivery excludes IoM addresses.
