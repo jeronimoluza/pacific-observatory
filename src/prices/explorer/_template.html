@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Global Retail Food Prices — Unit Value Explorer</title>
+<style>
+:root{
+  --bg:#f4f6f8; --card:#fff; --ink:#12212e; --dim:#5b6b7a; --faint:#8c9aa8;
+  --line:#e2e8ee; --head:#0f2233; --accent:#1f6feb; --accent-soft:#e8f0fe;
+  --good:#1a7f4b; --warn:#b3691a; --bad:#c0392b; --flag:#f6e9c9;
+  --r:10px; --gap:16px;
+  --c1:#1f6feb; --c2:#e8833a; --c3:#2aa36b; --c4:#c0392b; --c5:#7c5cc4;
+  --c6:#0e8f9e; --c7:#b8348c; --c8:#8a6d3b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1500px;margin:0 auto;padding:var(--gap)}
+
+/* ---------- header ---------- */
+header{background:var(--head);color:#fff;border-radius:var(--r);padding:16px 20px;margin-bottom:var(--gap)}
+.htop{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+h1{font-size:19px;font-weight:650;letter-spacing:-.2px}
+.scope{font-size:12px;color:#9db3c6;margin-top:3px}
+.modesw{display:flex;background:rgba(255,255,255,.1);border-radius:20px;padding:3px}
+.modesw button{background:none;border:0;color:#b8c9d8;font:inherit;font-size:12.5px;
+  padding:5px 14px;border-radius:16px;cursor:pointer}
+.modesw button.on{background:#fff;color:var(--head);font-weight:600}
+.gctl{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;padding-top:13px;
+  border-top:1px solid rgba(255,255,255,.13)}
+.gctl .grp{display:flex;align-items:center;gap:7px}
+.gctl label{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:#8fa6ba}
+.seg{display:flex;border:1px solid rgba(255,255,255,.22);border-radius:6px;overflow:hidden}
+.seg button{background:none;border:0;color:#cddbe7;font:inherit;font-size:12.5px;
+  padding:4px 11px;cursor:pointer}
+.seg button+button{border-left:1px solid rgba(255,255,255,.22)}
+.seg button.on{background:var(--accent);color:#fff;font-weight:600}
+
+/* ---------- tabs ---------- */
+nav.tabs{display:flex;gap:4px;margin-bottom:var(--gap);flex-wrap:wrap}
+nav.tabs button{background:#fff;border:1px solid var(--line);border-bottom-width:2px;
+  border-radius:var(--r) var(--r) 0 0;padding:9px 17px;font:inherit;font-size:13.5px;
+  color:var(--dim);cursor:pointer}
+nav.tabs button.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:640;background:#fff}
+nav.tabs .num{font-size:11px;color:var(--faint);margin-right:6px;font-weight:600}
+
+/* ---------- cards ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px 20px;margin-bottom:var(--gap)}
+.card>h2{font-size:15px;font-weight:640;margin-bottom:3px}
+.card>.sub{font-size:12.5px;color:var(--dim);margin-bottom:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+.row-side{display:grid;grid-template-columns:340px 1fr;gap:var(--gap);align-items:start}
+@media(max-width:1000px){.row2,.row-side{grid-template-columns:1fr}}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--gap);margin-bottom:var(--gap)}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 17px}
+.kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint)}
+.kpi .v{font-size:25px;font-weight:700;letter-spacing:-.6px;margin-top:2px}
+.kpi .n{font-size:12px;color:var(--dim);margin-top:1px}
+
+/* ---------- explainer ---------- */
+.explain{background:var(--accent-soft);border:1px solid #cfe0fb;border-left:3px solid var(--accent);
+  border-radius:6px;padding:11px 14px;font-size:13px;color:#1c3d63;margin-bottom:14px}
+.explain b{font-weight:640}
+.warnbox{background:#fdf3e3;border:1px solid #f0dcb8;border-left:3px solid var(--warn);
+  border-radius:6px;padding:11px 14px;font-size:12.5px;color:#6d4a12;margin-bottom:14px}
+body.mode-analyst .beginner-only{display:none}
+body:not(.mode-analyst) .analyst-only{display:none}
+
+/* ---------- unit badge ---------- */
+.ub{display:inline-flex;align-items:center;gap:4px;background:#eef3f8;border:1px solid #d6e0ea;
+  color:#2c4457;border-radius:5px;padding:1px 7px;font-size:11.5px;font-weight:640;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.ub.big{font-size:13px;padding:3px 10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:#fff;border:1px solid var(--line);border-radius:16px;padding:4px 12px;
+  font-size:12.5px;cursor:pointer;color:var(--dim)}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.chip .c{opacity:.7;font-size:11px;margin-left:4px}
+.chip[disabled]{opacity:.35;cursor:not-allowed}
+
+/* ---------- hierarchy navigator ---------- */
+.crumb{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12.5px;margin-bottom:10px}
+.crumb a{color:var(--accent);cursor:pointer;text-decoration:none}
+.crumb a:hover{text-decoration:underline}
+.crumb .sep{color:var(--faint)}
+.crumb .cur{font-weight:640}
+.navlist{border:1px solid var(--line);border-radius:8px;overflow:hidden;max-height:430px;overflow-y:auto}
+.navlist .it{display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:8px 12px;border-bottom:1px solid #f1f4f7;cursor:pointer;font-size:13px}
+.navlist .it:last-child{border-bottom:0}
+.navlist .it:hover{background:#f6f9fc}
+.navlist .it.on{background:var(--accent-soft);font-weight:640}
+.navlist .it .m{font-size:11px;color:var(--faint);white-space:nowrap}
+.navlist .it .code{font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+.leafmark{color:var(--faint);font-size:11px}
+
+/* ---------- rank list ---------- */
+.rankscale{position:relative;height:22px;border-bottom:1px solid var(--line);margin-bottom:2px;
+  font-size:10.5px;color:var(--faint)}
+.rankscale span{position:absolute;top:4px;transform:translateX(-50%);white-space:nowrap}
+.rankscale i{position:absolute;top:16px;width:1px;height:6px;background:var(--line)}
+.rankscale .mid{color:var(--ink);font-weight:640}
+.rrow{display:grid;grid-template-columns:30px 190px 1fr 62px;gap:8px;align-items:center;
+  padding:2px 0;cursor:pointer;border-radius:4px}
+.rrow:hover{background:#f4f8fc}
+.rrow .n{font-size:10.5px;color:var(--faint);text-align:right;font-variant-numeric:tabular-nums}
+.rrow .nm{font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rrow .tr{position:relative;height:15px;background:#f2f5f8;border-radius:3px}
+.rrow .tr .zero{position:absolute;top:-1px;bottom:-1px;width:1px;background:#c3ced8}
+.rrow .tr .f{position:absolute;top:2px;bottom:2px;border-radius:2px}
+.rrow .v{font-size:12px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.rrow.thin{opacity:.55}
+
+/* ---------- charts ---------- */
+.cwrap{position:relative;width:100%}
+.cscroll{max-height:560px;overflow-y:auto;overflow-x:hidden}
+canvas{max-width:100%}
+
+/* ---------- table ---------- */
+.tbl-scroll{overflow-x:auto;max-height:560px;overflow-y:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{position:sticky;top:0;background:#fff;text-align:left;padding:8px 10px;
+  border-bottom:2px solid var(--line);font-size:11px;text-transform:uppercase;
+  letter-spacing:.5px;color:var(--faint);cursor:pointer;white-space:nowrap;z-index:2}
+thead th:hover{color:var(--ink)}
+tbody td{padding:7px 10px;border-bottom:1px solid #f2f5f8;white-space:nowrap}
+tbody tr:hover{background:#f8fafc}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+tr.flagged{background:var(--flag)}
+tr.flagged:hover{background:#f2e2bd}
+.pill{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10.5px;font-weight:640}
+.pill.ok{background:#e3f4ea;color:var(--good)}
+.pill.warn{background:#fdefdb;color:var(--warn)}
+.pill.bad{background:#fbe4e1;color:var(--bad)}
+.pill.mod{background:#efe9fa;color:#5b3fa8}
+.linkish{color:var(--accent);cursor:pointer}
+.linkish:hover{text-decoration:underline}
+
+select,input[type=search]{padding:6px 10px;border:1px solid var(--line);border-radius:6px;
+  font:inherit;font-size:13px;background:#fff;color:var(--ink);max-width:100%}
+.muted{color:var(--dim)}
+.tiny{font-size:11.5px;color:var(--faint)}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.empty{padding:40px 20px;text-align:center;color:var(--faint);font-size:13.5px}
+footer{color:var(--faint);font-size:11.5px;text-align:center;padding:6px 0 20px}
+.deco{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:14px}
+.deco .b{border:1px solid var(--line);border-radius:8px;padding:11px 13px}
+.deco .b .l{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint)}
+.deco .b .v{font-size:20px;font-weight:700;margin-top:2px}
+.deco .b.pos .v{color:var(--bad)}
+.deco .b.neg .v{color:var(--good)}
+.samples{font-size:12px;color:var(--dim);margin-top:8px;line-height:1.7}
+.samples code{background:#f2f5f8;border-radius:4px;padding:1px 6px;font-size:11.5px}
+</style>
+</head>
+<body class="mode-explore">
+<div class="wrap">
+
+<header>
+  <div class="htop">
+    <div>
+      <h1>Global Retail Food Prices — Unit Value Explorer</h1>
+      <div class="scope" id="scope"></div>
+    </div>
+    <div class="modesw">
+      <button id="m-explore" class="on" onclick="APP.setMode('explore')">Explore</button>
+      <button id="m-analyst" onclick="APP.setMode('analyst')">Analyst</button>
+    </div>
+  </div>
+  <div class="gctl">
+    <div class="grp"><label>Currency</label>
+      <div class="seg">
+        <button id="cur-usd" class="on" onclick="APP.set('cur','usd')">US$</button>
+        <button id="cur-local" onclick="APP.set('cur','local')">Local</button>
+      </div>
+    </div>
+    <div class="grp"><label>Evidence</label>
+      <div class="seg">
+        <button id="ev-any" onclick="APP.set('evidence','any')">Any</button>
+        <button id="ev-solid" class="on" onclick="APP.set('evidence','solid')">10+ obs</button>
+        <button id="ev-corrob" onclick="APP.set('evidence','corrob')">10+ obs, 2+ sources</button>
+      </div>
+    </div>
+    <div class="grp analyst-only"><label>Sources</label>
+      <div class="seg">
+        <button id="mod-0" class="on" onclick="APP.set('incModelled',false)">Retail only</button>
+        <button id="mod-1" onclick="APP.set('incModelled',true)">+ Modelled</button>
+      </div>
+    </div>
+    <div class="grp analyst-only"><label>Quantity</label>
+      <div class="seg">
+        <button id="der-0" class="on" onclick="APP.set('measuredOnly',false)">All</button>
+        <button id="der-1" onclick="APP.set('measuredOnly',true)">Measured only</button>
+      </div>
+    </div>
+    <div class="grp analyst-only"><label>Flagged cells</label>
+      <div class="seg">
+        <button id="flg-0" class="on" onclick="APP.set('showFlagged',false)">Hide</button>
+        <button id="flg-1" onclick="APP.set('showFlagged',true)">Show</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button id="t-world"   class="on" onclick="APP.go('world')"><span class="num">1</span>World</button>
+  <button id="t-compare" onclick="APP.go('compare')"><span class="num">2</span>Compare countries</button>
+  <button id="t-country" onclick="APP.go('country')"><span class="num">3</span>Country profile</button>
+  <button id="t-trends"  onclick="APP.go('trends')"><span class="num">4</span>Trends &amp; FX</button>
+  <button id="t-quality" class="analyst-only" onclick="APP.go('quality')"><span class="num">5</span>Data quality</button>
+</nav>
+
+<!-- ============ 1. WORLD ============ -->
+<section id="v-world">
+  <div class="kpis" id="kpis"></div>
+  <div class="card">
+    <h2>How expensive is food, country by country?</h2>
+    <div class="sub">Matched-basket price level in US$. The world median country = <b>100</b>.</div>
+    <div class="explain beginner-only">
+      Each country's food prices are compared with the world median <b>item by item</b> —
+      1&nbsp;kg of rice against 1&nbsp;kg of rice, 1&nbsp;litre of milk against 1&nbsp;litre of milk —
+      and then averaged. A country at <b>150</b> pays roughly 50% more in US dollars for the
+      same shopping basket than the typical country here. Click any bar to open that country.
+    </div>
+    <div class="explain analyst-only">
+      Jevons index: <code>exp( median<sub>leaves</sub> ln( P<sub>c,leaf,unit</sub> / P<sub>world,leaf,unit</sub> ) ) × 100</code>,
+      over COICOP&nbsp;leaf&nbsp;×&nbsp;unit cells with n&nbsp;≥&nbsp;3 observations, retail sources only,
+      unflagged. Countries need <span id="minleaves"></span>+ matched leaves, ≥2 sources and
+      &lt;20% flagged cells to be ranked. There are <b>no expenditure weights</b> — this is a
+      price level, not a cost-of-living index.
+    </div>
+    <div class="spread">
+      <div class="chips">
+        <button class="chip on" id="reg-all" onclick="APP.setRegion(null)">All regions</button>
+        <span id="regionChips"></span>
+      </div>
+      <div class="tiny" id="worldCount"></div>
+    </div>
+    <div class="rankscale" id="rankScale"></div>
+    <div class="cscroll" id="rankList"></div>
+  </div>
+  <div class="row2">
+    <div class="card">
+      <h2>What is measured, and in what unit</h2>
+      <div class="sub">Trusted observations by COICOP division and by unit of measure.</div>
+      <div class="cwrap" style="height:260px"><canvas id="cUnits"></canvas></div>
+      <div class="samples" id="unitNote"></div>
+    </div>
+    <div class="card">
+      <h2>Where the data is thickest</h2>
+      <div class="sub">Trusted observations per country (top 25).</div>
+      <div class="cwrap" style="height:400px"><canvas id="cVolume"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. COMPARE ============ -->
+<section id="v-compare" hidden>
+  <div class="explain beginner-only">
+    Pick a food category on the left — start broad (<b>Food</b>), then click down into
+    <b>Cereals</b> → <b>Rice</b>. The chart on the right shows what one <b>kilogram</b>
+    (or litre, or piece) of it costs in each country.
+  </div>
+  <div class="row-side">
+    <div class="card">
+      <h2>Food category</h2>
+      <div class="sub">Click to go deeper. Use the breadcrumb to go back up.</div>
+      <div class="crumb" id="cmpCrumb"></div>
+      <div class="navlist" id="cmpNav"></div>
+      <div style="margin-top:14px">
+        <div class="tiny" style="margin-bottom:6px">Unit of measure &mdash; never mixed</div>
+        <div class="chips" id="cmpUnits"></div>
+      </div>
+      <div class="samples analyst-only" id="cmpSamples"></div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="spread">
+          <div>
+            <h2 id="cmpTitle" style="margin-bottom:2px">&nbsp;</h2>
+            <div class="sub" id="cmpSub" style="margin-bottom:0">&nbsp;</div>
+          </div>
+          <div class="seg" style="border-color:var(--line)">
+            <button id="cmp-abs" class="on" onclick="APP.set('cmpMode','abs')">Price level</button>
+            <button id="cmp-rel" onclick="APP.set('cmpMode','rel')">Relative price (FX-free)</button>
+          </div>
+        </div>
+        <div class="explain analyst-only" id="cmpRelNote" hidden>
+          <b>Relative price</b> divides each country's unit value by that country's own
+          matched-basket level, so a common shift in the exchange rate cancels out.
+          Above 1.00 = this item is <i>dear relative to the local food basket</i>. This is the
+          FX-invariant comparison; the absolute view is not.
+        </div>
+        <div class="cscroll"><div class="cwrap"><canvas id="cCompare"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="spread">
+          <h2 style="margin-bottom:0">Cell detail</h2>
+          <input type="search" id="cmpSearch" placeholder="Filter countries…" oninput="APP.render()">
+        </div>
+        <div class="tbl-scroll"><table id="cmpTbl"></table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. COUNTRY ============ -->
+<section id="v-country" hidden>
+  <div class="card">
+    <div class="spread" style="margin-bottom:0">
+      <div>
+        <h2>Country profile</h2>
+        <div class="sub" style="margin-bottom:0">Everything measured in one country, priced per unit.</div>
+      </div>
+      <select id="ctrySel" onchange="APP.set('country',this.value)"></select>
+    </div>
+  </div>
+  <div class="kpis" id="ctryKpis"></div>
+  <div id="ctryWarn"></div>
+  <div class="row-side">
+    <div class="card">
+      <h2>Category</h2>
+      <div class="sub">Drill down; prices update on the right.</div>
+      <div class="crumb" id="ctryCrumb"></div>
+      <div class="navlist" id="ctryNav"></div>
+    </div>
+    <div>
+      <div class="card">
+        <h2 id="ctryChartTitle">Dearest and cheapest, versus the world</h2>
+        <div class="sub">Ratio of this country's unit value to the world median for the same item and unit.</div>
+        <div class="cscroll"><div class="cwrap"><canvas id="cCountry"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="spread">
+          <h2 style="margin-bottom:0">All priced items</h2>
+          <input type="search" id="ctrySearch" placeholder="Filter items…" oninput="APP.render()">
+        </div>
+        <div class="tbl-scroll"><table id="ctryTbl"></table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. TRENDS ============ -->
+<section id="v-trends" hidden>
+  <div class="card">
+    <h2>Price over time — and how much of it is the exchange rate</h2>
+    <div class="sub">Indexed to the first period with data = 100.</div>
+    <div class="explain beginner-only">
+      When a price in US dollars rises, two different things can be happening: the shop
+      really raised its price, or the local currency lost value against the dollar.
+      The <b>local currency</b> line is the shop; the <b>exchange rate</b> line is the currency.
+      The <b>US$</b> line is what the two do together.
+    </div>
+    <div class="explain analyst-only">
+      Exact identity in logs: <code>Δln P<sup>USD</sup> = Δln P<sup>local</sup> − Δln FX</code>,
+      where FX is local currency per US$. The decomposition below splits the window's total
+      US$ move into the local-price part and the FX part; they add up exactly.
+    </div>
+    <div class="spread">
+      <div class="chips">
+        <select id="trCtry" onchange="APP.set('country',this.value)"></select>
+        <select id="trNode" onchange="APP.set('node',this.value)"></select>
+        <span id="trUnits" class="chips"></span>
+      </div>
+      <div class="seg">
+        <button id="tr-both" class="on" onclick="APP.set('fxMode','both')">Show all three</button>
+        <button id="tr-nofx" onclick="APP.set('fxMode','nofx')">Remove FX</button>
+      </div>
+    </div>
+    <div class="samples" id="trKind" style="margin:0 0 10px"></div>
+    <div id="trWarn"></div>
+    <div class="cwrap" style="height:380px"><canvas id="cTrend"></canvas></div>
+    <div class="deco" id="trDeco"></div>
+  </div>
+  <div class="card">
+    <h2>Same item, several countries</h2>
+    <div class="sub">Each country indexed to its own first period = 100, in the currency selected above.</div>
+    <div class="spread">
+      <div class="chips" id="trMulti"></div>
+    </div>
+    <div class="cwrap" style="height:360px"><canvas id="cTrendMulti"></canvas></div>
+  </div>
+</section>
+
+<!-- ============ 5. QUALITY ============ -->
+<section id="v-quality" hidden>
+  <div class="card">
+    <h2>How an observation earns its way into this dashboard</h2>
+    <div class="sub">Gate outcomes across the whole built corpus.</div>
+    <div class="row2">
+      <div class="cwrap" style="height:280px"><canvas id="cQa"></canvas></div>
+      <div id="qaNotes"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Flagged cells</h2>
+    <div class="sub">Unit values outside the absolute plausibility bounds — almost always a stale
+      currency code or a thousands-separator misparse upstream, not a real price.</div>
+    <div class="tbl-scroll"><table id="flagTbl"></table></div>
+  </div>
+  <div class="card">
+    <h2>Countries held out of the ranking</h2>
+    <div class="sub">Too few matched leaves, a single source, or too many flagged cells.</div>
+    <div class="tbl-scroll"><table id="heldTbl"></table></div>
+  </div>
+  <div class="card">
+    <h2>Reading these numbers honestly</h2>
+    <div id="methodology"></div>
+  </div>
+</section>
+
+<footer id="foot"></footer>
+</div>
+
+<script>/*__CHART_JS__*/</script>
+<script>const DATA = /*__DATA__*/;</script>
+<script>/*__APP_JS__*/</script>
+</body>
+</html>

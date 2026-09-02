@@ -493,6 +493,20 @@ def prices_publish(region, subregion):
     _publish_run()
 
 
+@prices.command("explorer")
+@click.option("--out", "out_path", default=None, help="Override the output HTML path.")
+def prices_explorer(out_path):
+    """Render the interactive unit-value explorer dashboard.
+
+    Writes outputs/prices/global_prices_explorer.html from the build parquet:
+    a world price-level ranking, a COICOP hierarchy browser, per-country
+    profiles and a local/USD/FX decomposition. Self-contained, offline.
+    """
+    from prices.explorer import run as _explorer_run
+
+    _explorer_run(out_path)
+
+
 @prices.command("consumable")
 def prices_consumable():
     """Regenerate the curated ~10k consumable dataset family.
