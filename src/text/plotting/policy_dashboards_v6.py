@@ -265,10 +265,10 @@ def make_v6_html(
     <h1 id=\"chartTitle\" class=\"chart-title\"></h1>
     <div class=\"chart-subtitle\" id=\"subtitle\"></div>
     <div class=\"tabstrip\" role=\"tablist\">
-      <button type=\"button\" class=\"tab-btn active\" data-panel=\"composition\" role=\"tab\">Policy Composition</button>
-      <button type=\"button\" class=\"tab-btn\" data-panel=\"timing\" role=\"tab\">Policy Timing</button>
+      <button type=\"button\" class=\"tab-btn active\" data-panel=\"timing\" role=\"tab\">Policy Timing</button>
+      <button type=\"button\" class=\"tab-btn\" data-panel=\"composition\" role=\"tab\">Policy Composition</button>
     </div>
-    <div id=\"panel-composition\" class=\"panel\">
+    <div id=\"panel-composition\" class=\"panel hidden\">
       <div class=\"chart-wrap\">
         <svg id=\"chart\" aria-label=\"Stacked bar chart of {chart_aria_subject} policy responses by country, category and subcategory\"></svg>
         <div id=\"tooltip\" class=\"tooltip\"></div>
@@ -277,7 +277,7 @@ def make_v6_html(
       <div class=\"detail-panel\"><div class=\"detail-card\" id=\"detailCard\"><h2>Policy details</h2><p>Hover over a shaded bar segment to see an info tip. Click a segment to pin its policy details here.</p></div></div>
       <div class=\"note\">Note: bar color encodes policy category; each stacked segment within a category is a distinct policy subcategory. Subcategory filter cascades off the category selection.</div>
     </div>
-    <div id=\"panel-timing\" class=\"panel hidden\">
+    <div id=\"panel-timing\" class=\"panel\">
       <div class=\"chart-wrap\">
         <svg id=\"timeline\" aria-label=\"Timeline of {chart_aria_subject} policy measures by category and year of first sustained media coverage\"></svg>
       </div>
