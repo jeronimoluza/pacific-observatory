@@ -212,7 +212,7 @@ and both canonicalise the same way.
 `shop.example.com`, `gcc.luluhypermarket.com` — is a *different* SURT key and
 must be written out in full.
 
-### Three ways `archive_path_re` silently never fires
+### Four ways `archive_path_re` silently never fires
 
 1. **A query string in the pattern — a structural impossibility, not a near
    miss.** The regex is `re.search`ed against `urlparse(url).path`
@@ -228,7 +228,16 @@ must be written out in full.
    because its regex demanded lowercase while the site serves
    `/cozmostore/Categories/.../p/<id>`. A prefix that works is no evidence at
    all that a same-cased regex will.
-3. **Over-tight depth anchoring.** `re.search` is unanchored at the right, so
+3. **A character class that assumes ASCII.** Percent-encoding varies *by era
+   within a single source*, because it depends on what the crawler recorded, not
+   on the site. `pisiffik.gl` yields
+   `/da/%C3%B8vrigt-badetilbeh%C3%B8r/71314-...` in CC-MAIN-2025-21 and raw
+   UTF-8 `/da/æggebægere/36-gc-æggebægere-ø14-cm-klar-2-stk.html` in
+   CC-MAIN-2022-21 — the same paths, encoded two ways. A `[^/]+` or `[^/?]+`
+   class matches both. A `\w`-based one silently drops the raw-UTF-8 era, which
+   is *most of the archive* for the Nordic, Faroese and Greenlandic sources.
+   **Default to `[^/?]+`.** Never write `\w+` in a path pattern.
+4. **Over-tight depth anchoring.** `re.search` is unanchored at the right, so
    depth is free. `libdelivery_lr` serves four-segment PDPs
    (`/item/restaurants/oportos/breakfast/omelette-ham-cheese/`) and a plain
    `^/item/` matches all of them. Prefer loose.
@@ -270,6 +279,14 @@ all of them.** Two consequences:
 2. If you *do* find a chain whose prefix is wrong, say so — the sibling
    storefronts have the same defect by construction, and nobody will find them
    by looking at any one config.
+
+**A locale segment is the same failure in miniature — one storefront per
+prefix.** `pisiffik_gl` carried `/da/`, which excluded the entire Greenlandic
+`/gl/` catalogue sitting on the same host with the same PDP shape. Invisible,
+and not obviously wrong to read. This is the identical root as koro's `/befr/`,
+`/dk/`, `/es/`: a per-locale path segment means every locale you did not
+enumerate is dark, and multilingual markets are exactly where you least want to
+lose half the catalogue. The bare host takes all locales at once.
 
 Note also that a technical canonical (`/detail/{id}`, `/p/{sku}`) is a
 particularly seductive wrong answer: it is stable, it appears in the site's own
