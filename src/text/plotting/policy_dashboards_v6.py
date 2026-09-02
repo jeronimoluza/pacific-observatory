@@ -17,6 +17,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+from text.plotting.policy_subregions import ALL_LABEL, build_subregion_groups
 from text.plotting.policy_year_composition import YEAR_CSS, YEAR_JS
 
 
@@ -211,6 +212,15 @@ def build_v6_dashboard_data(
         if kept:
             filtered_groups[name] = kept
 
+    subregion_groups, unmatched_subregion = build_subregion_groups(
+        sorted(present_countries), region_cfg.get("key", "")
+    )
+    if subregion_groups and unmatched_subregion:
+        print(
+            f"  WARN: no subregion for {len(unmatched_subregion)} country cells: "
+            f"{', '.join(unmatched_subregion)}"
+        )
+
     metadata = {
         "generated_on": dt.date.today().isoformat(),
         "source_file": xlsx_path.name,
@@ -241,6 +251,7 @@ def build_v6_dashboard_data(
         "taxonomy": subcats_by_category,
         "coverage": {c: coverage[c] for c in present_countries if coverage.get(c)},
         "countryGroups": filtered_groups,
+        "subregionGroups": subregion_groups,
         "displayName": {
             c: display_names[c] for c in present_countries if c in display_names
         },
@@ -269,7 +280,7 @@ def make_v6_html(
   html, body {{ margin: 0; padding: 0; background: #f5f6f8; font-family: Calibri, Arial, Helvetica, sans-serif; color: #555; }}
   .page {{ max-width: 1180px; margin: 24px auto; padding: 0 16px 32px; }}
   .dashboard {{ background: #fff; border: 1px solid #d0d0d0; box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 20px 24px 28px; }}
-  .controls {{ display: grid; grid-template-columns: minmax(180px, 1fr) minmax(180px, 1.1fr) minmax(180px, 1.2fr) minmax(140px, .8fr) minmax(180px, 1fr); gap: 12px; align-items: end; margin-bottom: 14px; }}
+  .controls {{ display: grid; grid-template-columns: minmax(150px, .9fr) minmax(190px, 1.25fr) minmax(180px, 1.1fr) minmax(195px, 1.3fr) minmax(160px, .95fr); gap: 12px; align-items: end; margin-bottom: 14px; }}
   .control-group label {{ display: block; font-size: 12px; color: #666; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .03em; }}
   select, input[type=\"text\"] {{ width: 100%; box-sizing: border-box; border: 1px solid #cfcfcf; border-radius: 4px; padding: 7px 8px; font-size: 14px; background: #fff; color: #333; }}
   .kpis {{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 4px; }}
@@ -314,11 +325,11 @@ def make_v6_html(
 <div class=\"page\">
   <div class=\"dashboard\">
     <div class=\"controls\">
+      <div class=\"control-group\"><label for=\"subregionSelect\">Subregion view</label><select id=\"subregionSelect\"><option value=\"all\" selected>{ALL_LABEL}</option></select></div>
       <div class=\"control-group\"><label for=\"groupSelect\">Country view</label><select id=\"groupSelect\"></select></div>
       <div class=\"control-group\"><label for=\"categorySelect\">Policy category</label><select id=\"categorySelect\"></select></div>
       <div class=\"control-group\"><label for=\"subcategorySelect\">Policy subcategory</label><select id=\"subcategorySelect\"></select></div>
       <div class=\"control-group\"><label for=\"statusSelect\">Status</label><select id=\"statusSelect\"><option value=\"all\">Active and proposed</option><option value=\"active\">Active only</option><option value=\"proposed\">Proposed only</option></select></div>
-      <div class=\"control-group\"><label for=\"titleInput\">Chart title</label><input id=\"titleInput\" type=\"text\" value={safe_title} /></div>
     </div>
     <div class=\"kpis\">
       <div class=\"kpi\"><div class=\"value\" id=\"kpiPolicies\">0</div><div class=\"label\">Policies in current view</div></div>
@@ -357,7 +368,8 @@ const groupSelect = document.getElementById(\"groupSelect\");
 const categorySelect = document.getElementById(\"categorySelect\");
 const subcategorySelect = document.getElementById(\"subcategorySelect\");
 const statusSelect = document.getElementById(\"statusSelect\");
-const titleInput = document.getElementById(\"titleInput\");
+const subregionSelect = document.getElementById(\"subregionSelect\");
+const CHART_TITLE = {safe_title};
 {YEAR_JS}
 
 initControls();

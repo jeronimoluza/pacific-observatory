@@ -55,6 +55,11 @@ function isActive(r) { return cleanText(r["Active or Proposed Date"]).toLowerCas
 function isProposed(r) { return cleanText(r["Active or Proposed Date"]).toLowerCase().startsWith("proposed"); }
 
 function initControls() {
+  Object.keys(D.subregionGroups || {}).forEach(name => {
+    const opt = document.createElement("option");
+    opt.value = name; opt.textContent = name;
+    subregionSelect.appendChild(opt);
+  });
   Object.keys(D.countryGroups).forEach((name, index) => {
     const opt = document.createElement("option");
     opt.value = name; opt.textContent = name;
@@ -71,7 +76,7 @@ function initControls() {
   });
   refreshSubcategoryOptions();
   categorySelect.addEventListener("input", () => { refreshSubcategoryOptions(); render(); });
-  [groupSelect, subcategorySelect, statusSelect, titleInput].forEach(el => el.addEventListener("input", render));
+  [subregionSelect, groupSelect, subcategorySelect, statusSelect].forEach(el => el.addEventListener("input", render));
   if (discBox) discBox.addEventListener("change", () => {
     ystate.showDiscovered = discBox.checked; render();
   });
@@ -102,13 +107,18 @@ function refreshSubcategoryOptions() {
 }
 
 // The country dropdown still scopes the view; it just no longer sets the axis.
+// Subregion and country view stack: a country must satisfy both.
 function filteredRows() {
   const cat = categorySelect.value;
   const sub = subcategorySelect.value;
   const status = statusSelect.value;
   const allowed = new Set(D.countryGroups[groupSelect.value] || []);
+  const inSub = subregionSelect.value === "all"
+    ? null
+    : new Set((D.subregionGroups || {})[subregionSelect.value] || []);
   return D.policies.filter(r => {
     if (!allowed.has(r.Country)) return false;
+    if (inSub && !inSub.has(r.Country)) return false;
     if (cat !== "all" && r.category !== cat) return false;
     if (sub !== "all" && r.subcategory !== sub) return false;
     if (status === "active" && !isActive(r)) return false;
@@ -208,7 +218,7 @@ function aggregate(rows, years) {
 }
 
 function render() {
-  chartTitle.textContent = titleInput.value || "";
+  chartTitle.textContent = CHART_TITLE || "";
   const scope = filteredRows();
   const rows = scope.filter(r => r.onset_year);
   const undated = scope.length - rows.length;
@@ -238,6 +248,7 @@ function render() {
   document.getElementById("kpiCats").textContent = activeCats.size;
   document.getElementById("kpiMax").textContent = maxTotal;
   subtitle.textContent =
+    (subregionSelect.value === "all" ? "" : `${subregionSelect.value} · `) +
     `${groupSelect.value} · ${categorySelect.options[categorySelect.selectedIndex].text}` +
     ` · ${subcategorySelect.options[subcategorySelect.selectedIndex].text}` +
     ` · ${statusSelect.options[statusSelect.selectedIndex].text}` +
