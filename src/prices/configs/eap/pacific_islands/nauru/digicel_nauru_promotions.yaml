@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: nextjs_json
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: digicel_nauru_promotions
+url: https://www.digicelpacific.com/mobile/nr/promotions/smart-data-sim-plans
+language: en
+currency: AUD
+cadence: monthly
+channel: null
+archive_prefix: "www.digicelpacific.com/mobile/nr/promotions/"
+archive_path_re: '^/mobile/nr/promotions/(smart-data-sim-plans|new-super-magmein-plans)/?$'
+notes: |
+  Official Digicel Nauru promotion pages for Smart Data SIM and Super Magmein
+  prepaid bundles. The public Next.js payload exposes offer cards and JSON
+  tables with plan names, validity, allowances, and AUD prices. This is the same
+  operator domain as the existing Digicel Nauru bundle source, so it improves
+  source-ID coverage but is not an independent food or grocery retailer.

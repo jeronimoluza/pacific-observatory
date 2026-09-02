@@ -1,0 +1,59 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dmart_in
+url: https://www.dmart.in/
+language: en
+cadence: weekly
+channel: hypermarket
+timeout: 5400
+archive_prefix: "dmart.in/"
+archive_path_re: '\d+xx\d+$'
+notes: |
+  Probed 2026-08-31 with curl_cffi impersonate=chrome124: www.dmart.in 200,
+  Next.js App Router storefront (Avenue E-Commerce Ltd, "DMart Ready"). No
+  useful API surface on the homepage bundle (route-level fetch calls are
+  code-split out of it), but /sitemap.xml -> /sitemap/products.xml ->
+  products_1.xml + products_2.xml lists 37,465 real product URLs (counted,
+  not estimated), no pagination cap. No pincode/store selection needed;
+  anonymous requests get a default MRP-anchored price.
+  Tier 1A, but with a trap: price/name/category are not in the DOM, they are
+  in a React Server Component stream chunk
+  (`<script>self.__next_f.push([1,"..."])</script>`), and EVERY quote inside
+  that chunk is backslash-escaped on the wire (`\"priceMRP\":\"9.00\"`, not
+  `"priceMRP":"9.00"`). A regex written against the unescaped form silently
+  matched zero pages end to end (200 crawled, 0 items, all logged as
+  "could not extract") — this is not a rare edge case, it is 100% of pages.
+  Fix: normalize with `text = response.text.replace('\"', '"')` once per
+  page before the field regexes. Also decode `categoryName` through
+  `unicode_escape` — the raw capture carries literal `&` for "&".
+  ~28% of a random 60-URL sample across both sitemap files came back with a
+  live priceSALE; the rest are listed-but-unavailable SKUs (`invType:"UA"`,
+  empty priceMRP/priceSALE) — normal for a 37k-URL sitemap with delisted
+  items still indexed. The spider skips any product with no priceSALE > 0.
+  Verified end to end with `--max-items 200` (re-run after the escaping fix):
+  200 rows, 200 distinct product_id (articleNumber), 200 distinct url, 0
+  zero-price rows, 0 blank names, currency 100% INR, median 177.00,
+  range 21.00-2799.00. Category mix: Personal Care & Beauty 54, Kitchen &
+  Dining 36, Packaged Food 28, Clothing & Accessories 18, Shop By Room 13,
+  Electronics & Appliances 9, Bags & More 9, Grocery 9, Dairy & Beverages 6,
+  Home Cleaners & Bathroom Needs 6, Gifting 5, Fruits & Vegetables 3, Baby
+  Care 2, other 2 -> 46/200 (23%) food-and-beverage rows (Packaged Food +
+  Grocery + Dairy & Beverages + Fruits & Vegetables). This is a genuine
+  hypermarket-format catalog crossing food and general merchandise, not
+  food-only — leave coicop_codes unset, classifier assigns leaves per
+  product. Re-fetched 3 emitted product URLs cold (real_fruit_power_mango,
+  orpat_alarm_analog_clock, mangaldeep_3in1_agarbatti): all 3 returned 200
+  with the product name present in the raw HTML.
+  Known minor defect (2026-08-31, 1371-row sample): 8 rows (0.6%) carry a
+  truncated `category` ('Ot', 'Kitchen & Di', 'Electro') because the
+  categoryName capture cuts where the value straddles a __next_f RSC chunk
+  boundary. price/product_name/url/product_id are unaffected and the COICOP
+  classifier reads product_name, not category, so this is cosmetic. Fix
+  properly by joining all __next_f chunks before matching.
+  Larger sample 2026-08-31: 1371 rows, 1371 distinct product_id, 1371
+  distinct url, 0 zero-price, 0 blank names, 100% INR, median 175.00,
+  range 5.00-7499.00, 26 categories. Food share 319/1371 = 23.3%, matching
+  the 200-row sample — expected for a hypermarket format, which is majority
+  general merchandise by SKU count.

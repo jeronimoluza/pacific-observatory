@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: tariff
+coicop_classification: classifier
+spider: arme_fuel_cv
+url: https://www.arme.cv/index.php/noticia-geral
+language: pt
+cadence: monthly
+channel: fuel-station
+timeout: 1800
+archive_prefix: "www.arme.cv/index.php/noticia-geral/"
+archive_path_re: '^/index\.php/noticia-geral/\d+-[a-z0-9-]+$'
+notes: |
+  Probed live 2026-08-31. ARME (Agência Reguladora Multissetorial da
+  Economia) is Cabo Verde's regulator; it fixes a nationwide maximum
+  retail price for fuel/gas every month. No JSON/table feed exists --
+  each decision is a Joomla news article under /index.php/noticia-geral
+  (mixed with unrelated telecom/water/consumer news and weekly Brent-price
+  PDF digests), so the spider paginates that listing (?start=N, step 20,
+  confirmed to advance) and keeps only articles whose slug mentions both
+  "combustiv" and "preco", excluding the weekly digests and unrelated
+  "esclarece"/"hiace" articles.
+  Verified against 3 live articles (May/Jun/Aug 2026 notices): the prose
+  states each of 12 fuel/gas SKUs inline ("a Gasolina passa a ser vendida
+  a 168,10 ESC/L; ..."), 12/12 regex fields matched every time, values
+  cross-checked against the article text by hand (Aug 2026: Gasolina
+  168.10, Gasóleo Normal 157.60, Gasóleo Eletricidade 143.10, Gasóleo
+  Marinha 125.00, Petróleo 181.10, Fuel 380 88.40, Fuel 180 95.20, Butano
+  granel 141.60, garrafas 12.5/6/3/55kg 1770/850/404/7790). Currency is
+  escudo (ESC == CVE).
+  Older notices (checked Jul 2019) use a different template ("ECV/L" not
+  "ESC/L", "Fueloleo" not "Fuel", "Electricidade" not "Eletricidade") and
+  simply produce 0 regex matches -- logged and skipped, never mis-parsed;
+  this only shortens the walked history depth, never emits a wrong number.
+  Each article yields ~12 rows sharing one URL; DuplicationPipeline dedups
+  on item['url'], so every row's url is the article URL + '#<item-slug>'.

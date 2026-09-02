@@ -1,0 +1,58 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes:
+  - "01.1.7.5.5"
+  - "01.1.7.5.3"
+  - "01.1.7.5.2"
+  - "01.1.7.5.4"
+  - "01.1.7.5.7"
+  - "01.1.6.1.8"
+  - "01.1.6.1.2"
+  - "01.1.6.1.6"
+  - "01.1.6.5.4"
+  - "01.1.7.1.2"
+  - "01.1.7.4.1"
+  - "01.1.7.2.2"
+  - "01.1.7.2.5"
+  - "01.1.7.1.9"
+  - "01.1.7.1.4"
+  - "01.1.7.2.4"
+channel: null
+source_key: vu_vnso_market_survey
+module: eap.pacific_islands.vanuatu.vnso_market_survey
+function: fetch_vu_vnso_market_survey
+url: "https://vnso.gov.vu/index.php/en/statistics/economic-statistics/market-survey"
+language: en
+cadence: quarterly
+fallback_date: 2020-01-01
+notes: |
+  VNSO Port Vila Market Survey -- quarterly weighted-average retail prices
+  for ~20 fresh-produce items sold at Port Vila's central market. The
+  landing page links a per-quarter "Download Tables" .xlsx; this fetcher
+  always reads the CURRENT (top-of-page) workbook, not the historical PDF
+  archive of past quarters also linked lower on the page.
+
+  The xlsx's "Tab 1-2" sheet stacks "Table 1: Quantity Supplied" and
+  "Table 2: Weighted Average Price Per Kilograms (in Vatu)" in one column
+  block -- this fetcher reads Table 2 directly (VNSO's own per-kg price,
+  not something derived here from value/quantity). Prices are whole Vatu,
+  consistent with VUV having no minor unit -- unlike the URA tariff RATES
+  (see ura_electricity_tariff.yaml), which the regulator itself publishes
+  to 2dp.
+
+  coicop_classification: source_curated -- ~20 stable commodities recurring
+  every quarter, hand-mapped to COICOP-2018 leaves in the fetcher's
+  _COICOP_MAP. Two mappings are judgment calls: "Island Cabbage" is a
+  Pacific leafy green (not true cabbage) -> other leafy vegetables
+  (01.1.7.1.9); "Dried coconut" and "Green coconut" (maturity stages of the
+  same fruit, no separate COICOP leaf) both -> coconuts, fresh (01.1.6.1.8).
+
+  Complements the two existing supermarket spiders (aelanbasket_vu,
+  dynamic_vanuatu) with fresh/wet-market prices those catalogs structurally
+  don't carry -- this is the "wholesale/official_avg feed for fresh
+  produce" lead called out in the wave-7 brief.
+
+  vnso.gov.vu TLS chain requires requests(verify=False), same class as
+  vnso_cpi.py (see known_blockers.md "NSO portal SSL certificate failures").

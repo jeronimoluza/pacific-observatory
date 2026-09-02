@@ -1,0 +1,46 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: konalivr_gn
+url: https://www.konalivr.com/
+language: fr
+cadence: weekly
+channel: marketplace
+archive_prefix: "konalivr.com/merchants/"
+archive_path_re: '^/merchants/[^/?]+/?$'
+notes: |
+  Probed live 2026-08-31. Known trap from earlier probing: this is a
+  restaurant/grocery delivery marketplace, not a single grocer, and the
+  landing-page GNF figures are delivery fees/minimums, not item prices.
+
+  Real prices sit on /merchants/<slug> pages, server-rendered HTML
+  (Tier 1A, no API needed). The homepage links all 16 merchants via
+  plain <a href="/merchants/..."> tags (supermarkets, pharmacies,
+  bakeries, juice bars, restaurants) — the spider crawls that list
+  rather than a fixed slug set.
+
+  Each merchant page groups products under category headers (div.mb-12
+  > h2 + div.rounded-2xl cards with h3 name / span price "XX XXX GNF" /
+  p description). Verified every one of the 16 merchants returns
+  exactly 4 products = 64 total distinct product_ids (merchant-slug +
+  slugified name, since the markup carries no product id). No stock
+  flag on the page; all rows marked available=True.
+
+  Catalog is small and appears fixed (uniform 4-per-merchant across
+  wildly different merchant types suggests seed/demo data rather than a
+  live-managed inventory), but prices are real GNF figures tied to real
+  named products (e.g. "Riz parfumé 5 kg" 75 000 GNF, "Doliprane 1000 mg
+  (8 cp)" 15 000 GNF) so it stands as a retailer_sku source. First
+  retailer source for Guinea.
+
+  SPLIT 2026-09-01: carrefour-express-kaloum (Carrefour Express) and
+  super-u-kipe (Super U) are named supermarket chains, not generic
+  small vendors, so they were carved out into their own source,
+  konalivr_supermarket_gn (channel: supermarket), instead of staying
+  blended in this channel: marketplace source. The spider now hard-
+  excludes both slugs so the same shelf is never counted in both
+  sources. Re-verified live: this source now crawls 14 merchants / 56
+  rows (was 16 / 64). Do not re-add those two merchants here — they
+  belong to konalivr_supermarket_gn, and the two sources must stay
+  disjoint by merchant slug.

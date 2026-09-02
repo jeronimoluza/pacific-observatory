@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1"]
+spider: mubawab_ma
+url: https://www.mubawab.ma/
+language: fr
+cadence: weekly
+channel: real-estate
+archive_prefix: "www.mubawab.ma/fr/a/"
+archive_path_re: '^/fr/a/\d+/'
+notes: |
+  Verified live 2026-09-01: server-rendered listing pages, curl_cffi
+  impersonate=chrome124, no WAF. Residential rental listings only
+  (appartements-a-louer, villas-et-maisons-de-luxe-a-louer) across 10
+  major-city slugs -- excludes bureaux-et-commerces-a-louer / locaux-a-louer
+  (commercial, outside COICOP 04.1.1). Price gotcha: `span.priceTag` renders
+  e.g. "10 000 DH" -- a NARROW NO-BREAK SPACE (U+202F) thousands
+  separator, not a plain/nbsp space; handled via the shared
+  `normalize_price()` helper rather than a bespoke regex. Pagination is a
+  URL path suffix `:p:<n>:`, NOT a `?page=` query param -- `?page=2`
+  silently re-serves page 1 (confirmed by comparing first-ad ids). Title
+  taken from `img.sliderImage::attr(alt)` -- the visible `h2.listingTit`
+  text is CSS-ellipsis-truncated with a literal "...".
+
+  Data-quality caveat: agents on this site routinely cross-post SALE ads
+  into the rental category pages (titles containing "vente"/"vendre" with
+  sale prices in the millions of MAD showing up in the rental priceTag
+  field) -- the spider drops any card whose name matches vente|vendre.
+  Even after that filter, 23 of 9,129 rows (0.25%, recounted by the
+  orchestrator on the shipped run 2026-09-01) carry implausible
+  self-reported rents above 200,000 MAD/month, up to 111,111,000 MAD
+  (obvious placeholder/digit-repeat entries or genuine agent error) with
+  no "vente" keyword to catch them on; p99 is a much more sane 95,000 MAD.
+  Left unfiltered rather than guessing a price ceiling -- flagging for the
+  downstream consumer instead of silently capping.

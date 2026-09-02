@@ -1,0 +1,82 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nidadanish_tz
+url: https://www.nidadanish.com/
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.nidadanish.com"
+archive_path_re: '^/[a-z0-9.-]+/?$'
+notes: |
+  CHANNEL CORRECTED BY ORCHESTRATOR 2026-09-01: shipped as `hypermarket`,
+  reclassified to `marketplace`, so this source does NOT count toward
+  Tanzania's food-and-beverage total. Evidence: GLOSSARY defines
+  `hypermarket` as "big-box genuinely cross-selling food AND general
+  merchandise", and this catalogue is not that -- the top categories are
+  Personal Care, Accessories, Construction, Safety, Outdoor/Garden Tools,
+  Measurement & Testing, Hand Tools, Air Tools, Electrical, Computer
+  Components. Food is a thin tail. It matches `marketplace` ("third-party
+  sellers, long-tail catalog, seller-authored names") on three counts: the
+  site runs CS-Cart MULTI-VENDOR edition, product names are keyword-stuffed
+  seller-authored strings (e.g. "remote key finder lightweight key detector
+  key locator device whistle key finder flashing beep sound remote lost key
+  finder en 3"), and the catalogue is dropship-shaped long-tail gadgetry.
+  `dept-store` would be the alternative if the inventory is truly
+  first-party; vendor identity is not exposed so that could not be settled,
+  but neither value counts as food, so the Tanzania tally is unaffected by
+  which of the two is finally chosen.
+
+  MEASUREMENT CAVEAT: the 12,622-row sample came from a 5-minute time-capped
+  run and is NOT representative. Nearly every category stopped at exactly
+  127 rows (Construction, Safety, Air Tools, Pet Care, Hair Care, Storage
+  Baskets ... all 127), which is a per-category cap artifact, not catalogue
+  composition. The "~6% food" figure was computed from that capped sample
+  and should not be relied on -- re-run unbounded before quoting any food
+  share (onboarding rule 3).
+
+  Confirmed live 2026-09-01. CS-Cart storefront ("NidaDanish | Tanzania's
+  Online Store"), ~617 categories from large appliances through groceries
+  (rice-sugar, cooking-oil, baby care, cleaning, etc.), all server-rendered
+  HTML, no JS needed. Category start URLs are scraped from the homepage
+  mega-menu, then each category is fetched at ?items_per_page=128 with
+  page=N pagination followed for the rare category exceeding 128 SKUs.
+
+  GOTCHA (channel call): the site runs CS-Cart's Multi-Vendor edition
+  (embedded theme config has vendor/vendor_plans blocks, footer has
+  "Become a seller") but the buyer-facing UI hides vendor identity
+  entirely -- vendor.show_name_as_link and vendor.show_logo are both "N"
+  in that same config, and /vendors/ and /sellers/ both 404. There is no
+  reachable seller directory and no per-listing seller attribution, so
+  rule 14's "split into named merchants" does not apply -- classified
+  channel: hypermarket, not marketplace, because the storefront presents
+  as one general retailer to a shopper. Flag for re-review if a public
+  vendor directory later appears.
+
+  Prices are plain-integer TZS with comma thousands separators (e.g.
+  "19,000" -> 19000) -- comma stripped, no decimal invented. Many grocery
+  SKUs are sold in bulk retail packs (e.g. "Munawar Premium Mbeya White
+  Rice 5kg" TZS 19,000; "Brown Sugar Sachets 5gm (Pack of 400 Pcs)" TZS
+  23,000) -- pack size is left in product_name verbatim, this is the
+  site's own retail unit, not a separate wholesale listing.
+
+  Test run 2026-09-01 (--closespider-timeout 300, single reactor, from a
+  full 617-category start-URL set enqueued up front so a 5-minute cutoff
+  samples across categories rather than draining one queue's tail):
+  12,622 rows, 12,622 distinct product_id, 12,622 distinct url, 299
+  distinct categories touched, 0 zero/negative prices, 0 blank names,
+  currency 100% TZS, median price 39,000 TZS (min 1,000 -- max
+  100,000,000, the top of the range being genuine industrial diesel
+  generators, not a parsing error). Food-and-beverage categories (Grocery,
+  Coffee Beans & Tea, Sauces & Condiments, Candy & Chocolate, Snacks,
+  Herbs & Spices, Juice & Soda, Canned Food, Dairy, Cooking Oil, Water,
+  Rice & Sugar) totalled 757 of 12,622 rows = 6.0% of this partial-crawl
+  sample. This is a time-capped, not category-capped, sample (rule 3):
+  every category was seeded as a start URL, so the 6.0% figure reflects
+  which categories happened to finish fastest in 5 minutes, not a
+  LIFO-drained tail -- but it is still a partial crawl, not the whole
+  617-category catalog, so treat 6.0% as an estimate, not the definitive
+  whole-catalog food share. channel: hypermarket counts toward the
+  food-and-beverage tally per the onboarding brief's channel enum
+  regardless of the sampled department mix.

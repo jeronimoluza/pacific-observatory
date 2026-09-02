@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pacificsales_fj
+url: https://pacificsales.shop/collections/food-drink
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "pacificsales.shop/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Pacific Sales Fiji Shopify Food & Drink collection. Public collection feed
+  returned canned food, ready meals, beverages, sauces, cereal, coffee, and
+  other food/drink products with FJD prices during the 2026-09-01 probe.

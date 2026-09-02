@@ -4,8 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: little_farms
 url: https://www.littlefarms.com
-archive_prefix: "littlefarms.com/shop-groceries/"
-archive_path_re: '^/shop-groceries/[a-z0-9-]+$'
 language: en
 cadence: daily
 channel: supermarket
+archive_prefix: "littlefarms.com/"
+archive_path_re: '^/(shop-groceries|products)/[a-z0-9-]+$'

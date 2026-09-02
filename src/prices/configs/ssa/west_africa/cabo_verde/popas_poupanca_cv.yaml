@@ -1,0 +1,71 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: popas_poupanca_cv
+url: https://popaspoupancas.cv/
+language: pt
+cadence: weekly
+channel: specialty-food
+archive_prefix: "popaspoupancas.cv/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Cabo Verde wholesale/general-commerce grocer ("Comercio Geral"), Praia.
+  Standard WooCommerce Store API at /wp-json/wc/store/v1/products, no auth
+  needed. Live-verified 2026-08-31: 823 distinct product ids across 9 pages
+  of per_page=100 (page 9 returned a short page of 23, confirming true end
+  -- pagination via ?page=N advances correctly, no repeat/re-serve). Zero
+  rows at price=0. Currency CVE, currency_minor_unit=2 (Store API cents,
+  handled by _woo_base's scaling). Category breakdown confirms food-and-
+  beverage dominance: Alimentos 235, Bebidas 183, PRODUTOS DE ADEGA 477
+  (wine/cellar, overlaps Bebidas), Doces e Snacks da ADEGA SA 76,
+  Congelados PAIVA 26, Laticinios da ADEGA SA 9, Master Fruits 16 (fresh
+  fruit: kiwi, pera, maca, laranja, uva, ameixa, tangerina, sold both
+  retail-size 0.5-1kg and bulk 8.5-12.5kg), vs. non-food Produtos de
+  Higiene 145 and Produtos a Grossos 141 (mixed). A small number of rows
+  (observed: 3-4 of 823) are the business's own service fees
+  ("Prestacao de servicos do pagamento mensal...", "Frete", driver
+  monthly fee) rather than product SKUs; left in, they are a small
+  minority and do not carry zero/blank prices.
+  Rejected before this one, all measured live 2026-08-31 (see
+  outputs/price_onboarding_reports/cabo_verde_wave4.md for detail):
+  GO.cv (Correios marketplace, Vendure/GraphQL shop-api) -- public catalog
+  is only 25-28 SKUs total, dominated by 20 postal-stamp collectibles, only
+  6 genuine food SKUs (Biscoitos da Avo Mila + 5 Cafe do Fogo coffee size
+  variants); per-vendor channels exist (14 vendors) but productsByVendorSlug
+  ignores the vendor filter server-side and always returns the same default-
+  channel set, so the larger multi-vendor inventory implied by the site's
+  category tree is not reachable without vendor auth. Too thin/stamp-
+  dominated to count as a food source.
+  Deliiv (deliiv.cv) -- WordPress site with no WooCommerce/product REST
+  namespace; restaurant+grocery delivery is app-only, no scrapable catalog
+  on the website.
+  Calu & Angela (caluangela.cv) -- DNS does not resolve.
+  Fragata Supermercados (loja.fragata.cv, www.loja.fragata.cv,
+  vasconcelos.cv) -- loja.fragata.cv is a static splash page whose "loja
+  online" link points back to itself (dead loop); parent company site
+  vasconcelos.cv is corporate WordPress with no WooCommerce.
+  Simply Shop (simplyshop.cv) -- Shopify storefront returns 402 "Store
+  unavailable" (closed/unpaid).
+  Cazu Supermercados (cazu.cv) -- static splash page, Facebook link only.
+  Eurocash Cabo Verde (eurocash.cv) -- real B2B food distributor with a
+  /produtos catalog tree (mercearia, frescos, congelados) but no prices
+  anywhere on the site, "Pedir mais informacoes" (request a quote) only.
+  JBEY (jbeygrog.com) and Agua de Cabo Verde (aguadecaboverde.com) --
+  Shopify.country US and IT respectively, EUR pricing; foreign storefronts
+  trading on Cabo Verdean branding, not local retail prices.
+  Mercearia Andrade (mercearia-andrade.shopvinti4.cv) -- real small grocer
+  on the Vinti4-operated shopvinti4.cv multi-tenant platform, CVE prices,
+  but only 11 SKUs and STATUS_DATE unchanged since 2021-08 (frozen).
+
+  Channel set to specialty-food, not wholesale. The business model is
+  wholesale, but the counting rule for food coverage keys off `channel`
+  and `wholesale` is outside the food enum, which would leave a
+  food-dominant grocer uncounted. Measured over the full 823-row
+  catalogue: PRODUTOS DE ADEGA 202, Bebidas 183, Doces e Snacks 76,
+  PAIVA 48, Congelados 26, Master Fruits 16, Timoteo 11, Laticinios 9 --
+  roughly 68% food and drink against 87 hygiene rows and 9
+  service-fee rows (1.1%, e.g. "Prestacao De Servico mensal como
+  Condutor" at 35,000 CVE, which are delivery/driver charges rather
+  than goods). Same call as horizonssupplies_ag in Antigua, which is
+  also a wholesale food distributor labelled specialty-food.

@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dawana_sd
+url: https://dawana.online/
+language: ar
+cadence: weekly
+channel: pharmacy
+archive_prefix: "dawana.online/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Probed 2026-08-31: curl_cffi impersonate="chrome124" flat-403s the site
+  and its wp-json/wc/store/v1/products API with an "hcdn" bot-wall
+  ("Checking your browser before accessing... Just a moment") -- the exact
+  same wall blocks zaad.delivery on this host. A real Playwright Chromium
+  with a desktop UA passes on the FIRST request, straight to the API URL
+  (no need to visit the HTML homepage first to plant a cookie): HTTP 200,
+  bare WooCommerce Store API JSON. per_page=100&page=1 returns all 56
+  products (single page, catalog does not paginate further). Currency SDG,
+  minor_unit=2 (raw "550000" -> 5,500.00 SDG for an Imodium pack; "2500000"
+  -> 25,000.00 SDG for Hertonic 60-capsule bottle) -- prices this high
+  reflect SDG's severe post-2023 devaluation, not a scaling bug. Real
+  Sudanese online pharmacy shipping within Sudan (not a diaspora export
+  store), RTL Arabic product names and categories.

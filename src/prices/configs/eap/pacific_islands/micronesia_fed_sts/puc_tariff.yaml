@@ -1,0 +1,55 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1", "04.4.1"]
+channel: null
+source_key: fm_puc_tariff
+module: eap.pacific_islands.micronesia_fed_sts.puc_tariff
+function: fetch_fm_puc_tariff
+url: "https://www.pohnpeipuc.fm/index.php/pages/powerg-d"
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Pohnpei Utilities Corporation (PUC) "Current Tariff Schedule" -- published
+  directly in static HTML on the Power Generation & Distribution page (no
+  WAF, plain requests). Two small tables side by side (electricity + water),
+  each followed by two "Senior Citizen" lines given as plain text, not table
+  cells.
+
+  Electricity and water are combined into ONE manifest/source_key, unlike
+  Vanuatu's URA split (ura_electricity_tariff.yaml / ura_water_tariff.yaml)
+  -- each individual block here is thin (electricity: Residential/
+  Commercial/Government power @ $0.4988/kWh + Senior rate $0.4489/kWh = 4
+  rows; water: <2100gal $5.00/month, >2100gal $2.37/1000gal, Senior rate
+  $2.133/1000gal = 3 rows; 7 rows total) -- water alone would land under
+  the onboarding skill's 5-row Phase-6 gate. Every row still carries its
+  own correct COICOP leaf (04.5.1 electricity / 04.4.1 water) set in the
+  fetcher code, so the shared source_key does not blur per-leaf coverage
+  reporting.
+
+  The page also publishes a "Senior Citizen Discount rate" line for both
+  electricity and water -- NOT emitted as a row, deliberately. It is
+  (base rate - senior rate), a delta between two rates already emitted as
+  their own rows, not an independent price; mixing a ~0.05 delta into a
+  series of ~0.50 rates would corrupt any average/index built on it. It is
+  also independently unsafe on this page: the water discount is printed as
+  $0.0237, but the page's own two rate rows ($2.37 and $2.133) imply a
+  discount of $0.237 -- 10x off. Electricity's own discount line IS
+  internally consistent ($0.4988 - $0.0499 = $0.4489, a clean 10% senior
+  discount), so this a genuine typo on PUC's page for water specifically,
+  not a parsing artifact on our side. We do not patch or re-derive the
+  number ourselves; we simply don't ship it, and the two rate rows a
+  downstream user actually needs (base + senior) are unaffected.
+
+  Caught during review 2026-09-01 (orchestrator audit) after an initial
+  version emitted the discount rows verbatim; fixed by dropping them, not
+  by hand-correcting the value.
+
+  No effective-date is published -- this is a "currently, the tariffs
+  charged by PUC ... are as follows" live page, edited in place, not a
+  dated determination. Modelled as a daily period_kind=snapshot at scrape
+  time (same pattern as fsmtc_tariff.yaml).
+
+  Currency is USD -- FSM's actual currency, no FX conversion needed.

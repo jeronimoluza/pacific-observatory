@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: aradamart_et
+url: https://www.aradamart.net/shop-all
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Wix Stores grocery-delivery catalogue for Addis Ababa. Re-verified live
+  2026-09-01: /shop-all embeds "totalCount":410 in the Wix gallery state;
+  spider walks /shop-all?page=1..7 (6*60 + a final 50 = 410) and parses
+  each /product-page/<slug> PDP's Schema.org Product JSON-LD for name/sku/
+  price/currency — no CSS selectors, same pattern as the Nauru capelle_nr
+  Wix spider. Currency ETB confirmed per-product from JSON-LD
+  (offers.priceCurrency), matches countries.yaml. Amharic (Ge'ez) glosses
+  appear on a subset of produce names (e.g. "Broccoli ብሮኮሊ 500gm") verified
+  surviving as raw UTF-8 bytes in the shipped JSONL; the catalogue is
+  majority plain-English brand/product names, so language is set to en.
+  No usable in-page category/breadcrumb exists — Wix's own nav category
+  slugs (/fresh-produce, /canned-bottled, etc.) 301-redirect to stale,
+  now-404 collection slugs even though the underlying products are still
+  live under /shop-all — so category ships null rather than invented.
+  Test run 2026-09-01: 396 rows (5 transient curl_cffi retries + 1 dead
+  product-page 404 out of 422 requests attempted against the ~410-item
+  catalogue), 394 distinct product_id (sku), 396 distinct url, 0
+  zero/negative price, 0 blank name, currency 100% ETB, median price
+  ETB 263.0, min ETB 7.0, max ETB 3587.0. The 2 shared product_ids are a
+  genuine merchant SKU-reuse (same barcode on "Mado Roasted Coffee beans
+  500g" vs "Mado ground Coffee 500g", and the 1kg pair) at two distinct
+  URLs, not a spider defect — DuplicationPipeline still dedups on url, so
+  both real rows ship. 3 re-fetched URLs cold post-run matched name+price
+  exactly. 38 of 396 rows carry Amharic (Ge'ez) script in product_name,
+  verified as literal UTF-8 bytes (no \u12xx escapes) in the raw JSONL.

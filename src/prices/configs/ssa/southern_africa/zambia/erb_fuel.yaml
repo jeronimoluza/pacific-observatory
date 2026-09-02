@@ -1,0 +1,43 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+channel: null
+source_key: erb_fuel
+module: ssa.southern_africa.zambia.erb_fuel
+function: fetch_erb_fuel
+url: https://www.erb.org.zm/
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Energy Regulation Board (ERB) national uniform pump prices for Petrol,
+  Diesel, Kerosene (ZMW/litre). Regulated, nationally-uniform (one price
+  countrywide, not per-station -- subnational_area intentionally null).
+  Extracted from the monthly text-native "PUMP-PRICE-BUILD-UP.pdf" (NOT
+  the "CurrentFuelPumpPrices*.pdf" press-statement file, which is
+  image-only / 0 extractable chars -- confirmed via pdfplumber and a
+  manual OCR pass; no pytesseract dependency used or needed). Latest
+  post discovered live via WP REST API (search="Petroleum Pump Prices",
+  date desc); build-up link matched by "PUMP-PRICE-BUILD-UP" excluding
+  "WHOLESALE" (the post also links wholesale/Jet-A-1 build-ups).
+
+  effective_from is set to the 1st of the announced review month (exact
+  announcement day lives only on the image-only press statement and is
+  not parsed here -- documented limitation, see fetcher docstring).
+
+  Verified live 2026-09-01 (test run, September 2026 build-up): 3 rows
+  (Petrol 25.29, Diesel 26.86, Kerosene 27.02 ZMW/litre), 0 zero/negative
+  price, currency 100% ZMW, effective_from=2026-09-01. Cross-checked
+  against two independent sources for the same period: the September
+  2026 ERB press release (OCR'd manually, states "Petrol ... K25.29/litre,
+  Diesel at K26.86/litre, Kerosene at K27.02/litre" verbatim) and
+  ZamStats' Table 7 (Diesel 26.86, Petrol 25.28 for Aug 2026) -- agree to
+  2 decimal places. duplicate observation_hash count: 0. channel: null --
+  a regulator tariff publication, not a retail outlet; does not count
+  toward the food-channel tally by design.
+
+  coicop_divisions: 07
+  divisions_basis: narrow_source (coicop_codes declared directly, no
+  classifier routing)

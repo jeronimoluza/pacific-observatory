@@ -1,0 +1,45 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: zamstats_avg_prices
+module: ssa.southern_africa.zambia.zamstats_avg_prices
+function: fetch_zamstats_avg_prices
+url: https://www.zamstats.gov.zm/
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Zambia Statistics Agency ("The Monthly" bulletin), Table 7: National
+  Average Prices for Selected Products. ~25 items (mealie meal, meat
+  cuts, fresh produce, fuel, cement, medicine, etc.), ZMW throughout,
+  matches countries.yaml. Latest bulletin discovered live via the site's
+  WP REST API (search=Monthly, newest post whose slug starts
+  with 'monthly-inflation-'), not a hardcoded URL -- see fetcher
+  docstring (searching the literal slug fragment "monthly-inflation"
+  instead silently returns a stale result, caught during testing). Only the latest month's column is emitted per run; monthly
+  reruns accumulate the series (idempotent via the observation_date >
+  cutoff filter).
+
+  The onboarding brief described this as "average retail prices for a
+  food basket BY PROVINCE" -- that dataset was NOT found; Table 7 is a
+  national aggregate only (Table 1.4 nearby is CPI by province, an
+  index, not average prices). Shipping what was verified live.
+
+  Verified live 2026-09-01 (test run, Volume 281 / August 2026 bulletin):
+  25 rows, 25 distinct item_name, 0 zero/negative price, currency 100%
+  ZMW, price range 4.75-1,399,626.25 (spans a Toyota Hilux quote down to
+  paracetamol -- a genuinely wide basket, not a food-only one), median
+  ~40. duplicate observation_hash count: 0. Food share of this basket:
+  16 of 25 items are food/beverage (mealie meal x2, maize grain, rice,
+  meat cuts x3, dried kapenta, produce x6, sugar); remainder is fuel,
+  cement, charcoal, candles, medicine, a vehicle, sanitary towels, and a
+  milling-charge fee -- consistent with a general household-basket
+  average-price table, not a food-only series. channel: null because
+  this is not a retail outlet -- it is a statistics-office publication.
+
+  coicop_divisions: 01, 04, 05, 06, 07, 12 (basket spans food, housing
+  materials, health, transport fuel, personal care)
+  divisions_basis: full_table_walked (all 25 rows in Table 7 parsed, not
+  a capped sample)

@@ -43,6 +43,7 @@ _PANELS: dict[str, tuple[str, str]] = {
         "Bolivia (Plurinational State of)",
         "wfp-food-prices-for-bolivia-plurinational-state-of",
     ),
+    "hti": ("Haiti", "wfp-food-prices-for-haiti"),
 }
 
 
@@ -169,3 +170,7 @@ def fetch_wfp_nic(cutoff: date) -> pd.DataFrame | None:
 
 def fetch_wfp_bol(cutoff: date) -> pd.DataFrame | None:
     return _fetch(cutoff, iso3="bol")
+
+
+def fetch_wfp_hti(cutoff: date) -> pd.DataFrame | None:
+    return _fetch(cutoff, iso3="hti")

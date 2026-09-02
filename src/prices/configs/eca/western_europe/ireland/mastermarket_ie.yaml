@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mastermarket_ie
+url: https://www.mastermarketapp.com/
+language: en
+cadence: weekly
+channel: supermarket
+timeout: 5400
+notes: |
+  Real-price aggregator (not a survey publisher): scrapes and republishes
+  live per-store shelf prices from Ireland's five biggest grocery chains
+  (Tesco, Aldi, Lidl, SuperValu, Dunnes Stores); each row's `url` is the
+  actual retailer product page it was pulled from. This is the "8,089
+  products across all 5 Irish chains" lead flagged ACCEPT in the candidate
+  brief -- important for Ireland because Aldi and Lidl carry no real online
+  grocery storefront of their own, so this is the only route to their
+  shelf prices.
+
+  Verified live 2026-08-31: backend api.mastermarketapp.com is a public
+  FastAPI service, schema at /openapi.json. GET
+  /api/products-public/sitemap-ids returns all 8,668 product ids in one
+  call. GET /api/products-public/{id} returns product detail incl.
+  recent_prices: [{price, store_name, currency, scraper_url,
+  has_clubcard_price, ...}], one entry per chain currently stocking that
+  SKU. ~52% of ids had a non-empty recent_prices in a 40-id sample
+  (matches the site's own /api/public/freshness framing of ~4,120 active
+  prices out of ~8,089-8,668 products). `price` is the price a shopper
+  pays right now (clubcard/multi-buy already applied when active).
+  category comes from the product's own taxonomy string (e.g. "Fresh Food
+  / Milk, Butter & Eggs / Fresh Milk"). No auth, no TLS-fingerprint gate
+  (plain urllib gets 200).
+
+  Full catalog walk is ~8,700 detail requests; long timeout set above
+  accordingly.

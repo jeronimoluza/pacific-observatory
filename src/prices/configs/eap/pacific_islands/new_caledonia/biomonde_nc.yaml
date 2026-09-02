@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: biomonde_nc
+url: https://biomonde.nc/vata/
+language: fr
+currency: XPF
+cadence: weekly
+channel: specialty-food
+archive_prefix: "biomonde.nc/vata/"
+archive_path_re: '^/vata/[^/]+/\d+-[^/]+\.html$'
+notes: |
+  Noumea organic and natural-food storefront. The page is PrestaShop HTML, but
+  this theme does not expose schema.org product containers, so the spider uses
+  the site's product-miniature cards directly. Re-verified live 2026-09-01:
+  the landing-page best-seller block exposed stable product ids, URLs and XPF
+  prices for food rows such as bulk bicarbonate, walnuts, oats, coconut sugar,
+  lentils, sardines, cashews and almonds. Limitation: the current scraper uses
+  the visible landing-page product block rather than walking the whole store.

@@ -1,0 +1,51 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sklavenitis_gr
+url: https://www.sklavenitis.gr/katigories/
+language: el
+cadence: weekly
+channel: supermarket
+timeout: 5400
+archive_prefix: "www.sklavenitis.gr/"
+notes: |
+  Sklavenitis is Greece's largest supermarket chain -- the Greek first-party
+  storefront (distinct from the existing sklavenitis_wolt_cy manifest, which
+  is the CYPRIOT Wolt marketplace venue for the same brand). Probed live
+  2026-08-31 with curl_cffi impersonate=chrome124: 200 on the homepage,
+  server-rendered "Atcom Yoda" ASP.NET-style storefront, no JS execution
+  needed.
+
+  /katigories/ links ~140 two-segment leaf category paths spanning the full
+  grocery assortment: fresh fruit/veg, fresh meat, fresh fish, dairy/cheese,
+  cold cuts, frozen, wine/beer/spirits (kava), bakery, grocery staples
+  (trofima-pantopoleioy: rice, pasta, oil, legumes, canned goods), snacks,
+  biscuits/chocolate, baby food, pet food, cleaning/household. This is a
+  real, wide grocery catalogue, not a promo flyer.
+
+  Each category page renders 24 product cards/page in `div.product` blocks.
+  Every card carries `data-plugin-analyticsimpressions`, an HTML-entity-
+  encoded JSON blob with a pre-parsed {item_id, item_name, item_category,
+  price} -- price is already a float in EUR matching the rendered
+  "main-price" (no minor-unit or regex-on-markup risk). PDP url from the
+  sibling a.absLink href.
+
+  Pagination trap: `?page=N` is silently accepted and re-serves page 1 (same
+  shape as the skill brief's known trap). The real parameter is `?pg=N`
+  (1-indexed). Followed the server's own forward-pagination cursor instead
+  of a synthesized counter: `section.pagination.go-next[data-pg]` gives the
+  next page number, and is empty ("") on the last page. Verified on the
+  102-item "lachanika" (vegetables) leaf: pg=1..4 return 24 items each,
+  pg=5 returns the remaining 6, go-next data-pg sequence is 2,3,4,5,"" --
+  and the union of distinct product_id across all 5 pages is exactly 102,
+  matching the page's own "24 από τα 102 προϊόντα" counter. Confirms real
+  pagination, not a re-served single page.
+
+  End-to-end test `.venv/bin/po prices collect --source sklavenitis_gr
+  --max-items 200` (closespider_itemcount overshoots slightly because a
+  full listing response is processed once dequeued): 304 rows, 304
+  distinct product_id, 304 distinct url, currency EUR throughout, 0
+  zero-price rows, 0 blank names, price range EUR 0.68-23.03, median EUR
+  3.86. Re-fetched 3 emitted PDP urls live -> all HTTP 200 with the
+  product name present in the raw HTML.

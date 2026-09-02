@@ -1,0 +1,46 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: superselectos_sv
+url: https://www.superselectos.com/
+language: es
+currency: USD
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.superselectos.com/products?category="
+archive_path_re: '^/products\?category=\w+'
+notes: |
+  Super Selectos, El Salvador's largest domestic supermarket chain.
+  Footer confirms operator "Calleja, S.A de C.V." -- confirmed live
+  2026-09-01 this is NOT a Walmart Centroamerica banner (different
+  corporate parent, different platform: ASP.NET Blazor Server here vs
+  VTEX for walmart_sv). Independence re-verified by the orchestrator 2026-09-01 against
+  the FULL catalogues on disk. The agent's namespace argument was
+  wrong -- the two id spaces DO collide on 424 values, 11.5% of the
+  smaller set. But those collisions are coincidental id reuse across
+  two unrelated namespaces, not shared shelves: normalised
+  product_name overlap is only 118 names, 3.2% of the smaller
+  catalogue, and those are common branded goods (Ferrero Rocher,
+  Colgate) that any two competing supermarkets both stock. The
+  sources are independent. DOWNSTREAM CAVEAT: do not join El Salvador
+  sources on product_id alone -- it is unique only within a source.
+  KNOWN DEFECT (confirmed live 2026-09-01, upstream site bug, not a
+  scraping artifact): the `?category=<code>` query param on `/products`
+  is decorative and does not filter -- verified with a persistent
+  session (cookies incl. branch selection) and with a real Playwright
+  click-through, both returning the same generic item pool regardless
+  of the category requested. `category` is therefore emitted as null
+  (see spider docstring) rather than a fabricated label. What IS real:
+  `&page=N` genuinely changes the result set (a "Pagina X de Y" counter
+  is present), and the underlying pool spans far more than one page --
+  20 sample fetches surfaced 232 distinct product IDs -- so the spider
+  walks many (category-code, page) seeds as a broad sample of the real
+  catalog and relies on a canonicalized `?productId=` URL for dedup.
+  Category codes are seeded from ~50 codes with real hrefs embedded in
+  homepage featured-category widgets, spanning food and non-food alike
+  ("01634 Yogurts", "03695 Atun", "055181 Refrescos", "086264 Cremas
+  dentales"). The site's actual category tree ("Todas las Categorias"
+  flyout) is SignalR-interactive with no hrefs, not reachable via plain
+  HTTP. El Salvador is dollarized; prices render as "$8.31" -> USD,
+  matching countries.yaml.

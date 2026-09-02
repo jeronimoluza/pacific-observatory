@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+spider: areeba_gn
+url: https://areeba.gn/pass-internet/
+language: fr
+cadence: weekly
+channel: null
+archive_prefix: "areeba.gn/"
+archive_path_re: '^/pass-internet/?$'
+notes: |
+  Discovery candidate (not on the original brief list) found via
+  WebSearch for Guinean telco operators, 2026-08-31. Orange Guinée
+  (orange-guinee.com) and SONAP (sonapguinee.com, the state fuel
+  regulator) were both tried first but are unreachable -- every request
+  from this network times out / connection-refuses on port 443 despite
+  DNS resolving cleanly, a real infra/geo-routing issue, not a curl
+  fingerprint block (confirmed with both curl_cffi chrome124 and a plain
+  WebFetch, both fail the same way).
+
+  Areeba (formerly MTN Guinée, now state-controlled) IS reachable.
+  /pass-internet/ is a plain WordPress page with one server-rendered
+  HTML table: columns validity / old volume / bonus / new volume / price,
+  17 rows across 24H/48H/Semaine/Mois tiers, all GNF, e.g. "800 MB / 24H"
+  = 7 000 GNF, "55 GB / Mois" = 350 000 GNF. Narrow single-service tariff
+  source (COICOP 08.3.0, telecom services) -- one row per plan, not a
+  retailer catalog. Third source added for Guinea (telco tariff, joining
+  the retailer_sku konalivr_gn/ecomguinee_gn pair).

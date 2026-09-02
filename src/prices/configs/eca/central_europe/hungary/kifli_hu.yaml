@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kifli_hu
+url: https://www.kifli.hu/
+language: hu
+cadence: weekly
+channel: supermarket
+notes: |
+  Kifli -- Rohlik Group's Hungarian online grocery brand (same group as
+  rohlik.cz/CZ, knuspr.de/DE, gurkerl.at/AT). Distinct company/channel
+  from coop_hu, spar_wolt_hu, emag_hu (marketplace), and praktiker_hu
+  (DIY) already onboarded for Hungary.
+
+  Runs the IDENTICAL Next.js platform and JSON API as rohlik_cz
+  (confirmed live 2026-09-01 -- see that manifest/spider for the full
+  discovery notes, not repeated here):
+    GET /api/v1/categories/normal/{categoryId}/products
+        ?page=<N>&size=100&sort=recommended&filter= -> {"productIds":[...]}
+    GET /api/v1/products/card?products=<id>&...&categoryType=normal
+        -> [{"productId","name","slug","prices":{"originalPrice",
+             "salePrice","currency":"HUF"}}]
+    PDP: /c{categoryId}/{slug} -- verified live HTTP 200
+    (e.g. /c300113038/voeroeshagyma-ledig -- "Vöröshagyma lédig" (loose
+    onion), 39 HUF).
+
+  17 top-level category ids used (Marks & Spencer packaged food range,
+  shelf-stable, fruit & veg, beverages, dairy & eggs, bakery & pastry,
+  frozen, meat & fish, cold cuts & ready meals, beauty, chemical &
+  paper goods, baby & child, home & office, pet food & supplies,
+  plant-based, grilling & BBQ, ready meals & quick dishes) -- same
+  cross-listing behaviour as rohlik_cz (a product can appear under more
+  than one top-level id), so results are deduped by product_id within
+  the crawl.
+
+  Currency HUF, matches countries.yaml; read directly from the payload.

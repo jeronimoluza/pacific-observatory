@@ -1,3 +1,7 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
 spider: epharmacy_np
 language: en
 archive_prefix: "www.epharmacy.com.np/"

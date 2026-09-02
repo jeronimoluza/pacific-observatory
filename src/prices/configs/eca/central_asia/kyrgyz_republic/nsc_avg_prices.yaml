@@ -1,0 +1,51 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: kg_nsc_avg_prices
+module: eca.central_asia.kyrgyz_republic.nsc_avg_prices
+function: fetch_kg_nsc_avg_prices
+url: http://www.stat.kg/ru/daily-prices/
+language: ru
+cadence: monthly
+fallback_date: 2015-12-01
+notes: |
+  National Statistical Committee (stat.gov.kg, historical alias www.stat.kg
+  301-redirects there) -- "Мониторинг цен" monthly average consumer prices
+  for 18 staple food items (mutton, beef, horse meat, potatoes x2 listed
+  varieties, flatbread, unpasteurized whole milk, wheat flour x2 grades,
+  sunflower oil, wheat, rice x2 grades, sugar, wheat bread, green/black tea,
+  eggs), one national average + ~21 named cities/towns per item, monthly,
+  Jan 2016 - Aug 2026 (128 sheets, one per month, in the linked XLS).
+  Two defects found and fixed during onboarding:
+  (1) www.stat.kg 301-redirects to stat.gov.kg; hardcoding the old domain
+  as the base for the page's relative /media/files/... href built a URL
+  that silently read-timed-out (~150s) instead of erroring outright -- now
+  resolved via urljoin against the actual post-redirect response URL.
+  (2) `float(nan) <= 0` is False, so a sheet's blank monthly-average cell
+  (a handful of city x item x month cells are genuinely unfilled in the
+  source) sailed past both numeric guards and shipped 696 NaN-price rows
+  in the first unbounded run, one of them under a bogus "item" name
+  ("- - Товар не наблюдается.", a footnote sentence that landed in the
+  item-name column on one irregular sheet) -- now explicitly pd.isna()
+  guarded, plus an explicit skip for any item label starting with "-" or
+  containing "не наблюдается" ("not observed").
+  Full backfill run 2026-09-01 (fallback_date backdated one month before
+  the source's own first sheet so Jan 2016 is not dropped by the exclusive
+  cutoff): 37,439 rows, 18 distinct item_name, 22 distinct subnational_area
+  (21 named cities + national-level rows carrying subnational_area=null),
+  124 distinct observation_date (2016-01-01 to 2026-08-01, monthly), 0
+  null/zero/negative prices, 0 duplicate observation_hash, all KGS. Price
+  range 5.87-900.00 KGS/kg-or-litre-or-10-units (unit varies by item per
+  the sheet's blanket header, not itemized -- left null), median 72.78.
+  Re-run immediately after (cutoff auto-advanced to 2026-08-01) returned 0
+  new rows, confirming idempotency. 2 spot values cold-verified against a
+  freshly re-parsed copy of the same source XLS 2026-09-01: sunflower oil
+  in г. Кербен (189.6471) and г. Бишкек (197.2568) for August 2026 matched
+  to 4 decimal places.
+  channel: null (non-retail, official statistics office); does not count
+  toward the food-source tally per the onboarding brief's channel enum,
+  despite the item list being 100% food commodities.
+  coicop_classification left as classifier (item_name is free-text
+  commodity labels, same treatment as wfp_prices); coicop_codes unset.

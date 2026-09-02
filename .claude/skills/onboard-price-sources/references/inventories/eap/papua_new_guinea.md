@@ -31,3 +31,52 @@ _Inventory written: 2026-08-05_
 <!-- steamships.com.pg: Logistics/hospitality/property conglomerate; no grocery retail or online shop. -->
 <!-- expatistan.com, livingcost.org, mylifeelsewhere.com: crowd-sourced aggregators — skill says do not onboard. -->
 <!-- food_pro spider (existing config): unknown source; inventory entry missing — leave untouched pending identification. -->
+
+## Wave (2026-09-01) -- retail sweep result
+
+Targeted because PNG sits at 2/6 food sources. Corrections and new leads found:
+
+- **shop.cpl.com.pg (Stop & Shop) -- correction to the 2026-06-10 entry above.**
+  That entry recorded "ECONNREFUSED, likely geo-fenced" -- re-probed 2026-09-01
+  with `curl_cffi impersonate=chrome124/chrome120/safari17_0` per the mandatory
+  gate: the hostname does not resolve at all (`Could not resolve host`), including
+  against 8.8.8.8 directly. This is **not a WAF or geo-fence, the subdomain has
+  been retired/removed** -- `cpl.com.pg` itself resolves fine (200, corporate
+  site) and has no "shop"/"store"/"order online" links anywhere in its HTML.
+  CPL Group currently has no reachable online storefront. Do not re-try
+  `shop.cpl.com.pg` without evidence of a new subdomain.
+- **RH Hypermarket (rhtradingpng.com) -- new candidate, genuinely blocked.**
+  PNG's largest supermarket (45,000+ SKUs, Vision City/Gordons), confirmed via
+  press (thenational.com.pg) to have launched online grocery ordering with
+  pickup/delivery. Probed both levers per the skill's mandatory gate:
+  `curl_cffi` (chrome124/chrome120/chrome99/edge99/safari17_0) all return
+  HTTP 403 with `cf-mitigated: challenge` and a Cloudflare Turnstile CSP: this
+  is a **genuine Cloudflare managed challenge**, not a TLS-fingerprint false
+  positive. Playwright network-trace confirms the same -- page title stays
+  "Just a moment...", the only network call is `challenges.cloudflare.com/turnstile/...`,
+  no product/API endpoint is reachable. Per the skill's stop rule ("when
+  curl_cffi impersonation AND Playwright both return 403/challenge, stop"),
+  this is recorded as a real block, not pursued further this pass. No
+  alternate domain found (visioncitypng.com/rh-hypermarket/ is a mall-directory
+  page about the store, not a storefront -- confirmed no `shop.*`/`order
+  online`/`myrh`/ecommerce links in its HTML). **High-value target for a
+  future dedicated anti-bot effort** (would need a captcha-solving stack).
+- **Tango Ltd** (tangopng.com) -- checked because Tango was named as a Boroko/
+  Tokarara supermarket chain. Site is a bare corporate placeholder ("TangoPNG
+  Portal", "Welcome to Tango Ltd Portal! Connecting all Tango Group [staff]")
+  -- no e-commerce, looks like an internal staff portal, not a public storefront.
+  DEAD END.
+- **stopandshop.com.pg** -- returns a generic Apache 403 error page (no
+  Cloudflare/WAF headers, no cf-ray) -- looks like a stale/misconfigured
+  domain rather than CPL's real site (CPL's actual domain is cpl.com.pg, which
+  has no storefront -- see above). Not pursued further.
+- `pngmart_pg` and `wikonomi_pg` (already onboarded, `channel: marketplace`)
+  were checked for a first-party seller directory per the marketplace-as-
+  directory doctrine; both are community/aggregator price-report sites over
+  many small informal sellers rather than a directory of onboardable retailers
+  with their own catalogs -- not pursued further this pass.
+
+**No new source shipped this wave.** Next agent: RH Hypermarket is the single
+highest-value PNG grocery target but needs a captcha-solving/anti-bot budget
+this pass didn't have; do not re-attempt with bare curl or plain Playwright,
+both are already proven insufficient.

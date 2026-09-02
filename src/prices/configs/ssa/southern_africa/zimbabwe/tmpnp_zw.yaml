@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tmpnp_zw
+url: https://tmpnponline.co.zw/
+language: en
+cadence: weekly
+channel: supermarket
+timeout: 3600
+archive_prefix: "tmpnponline.co.zw/shop/"
+archive_path_re: '^/shop/[^/]+/[^/]+/[^/]+/[^/?]+/?$'
+notes: |
+  Probed live 2026-08-31. Next.js app-router storefront; product cards are
+  client-rendered so the raw HTML shell carries no prices. The
+  `app/layout` JS chunk hardcodes an axios instance with baseURL
+  "https://api.tmpnponline.co.zw" and calls a Laravel API. Confirmed
+  public endpoint (no auth needed for GET):
+
+    GET https://api.tmpnponline.co.zw/api/v1/products?page=<N>
+
+  Standard Laravel pagination: 10 rows/page, fixed — `per_page` is
+  accepted in the query string but silently ignored server-side (tested
+  10/50/100/200, all returned 10 rows). Measured total 2026-08-31:
+  10,719 products across 1,072 pages. The spider follows the response's
+  own `last_page` field as the walk bound rather than hardcoding a page
+  count, so an API-side catalog change doesn't truncate the crawl. Each
+  row also nests a `stock_levels` array with ~70 per-branch stock rows
+  (all TM Pick n Pay / Pick n Pay stores nationwide) which is dropped —
+  not needed for a price observation and would bloat the item.
+
+  Product detail pages ARE server-rendered at /products/<slug> (verified
+  200, name present in body) and are used as the canonical url. No
+  currency field on the row; Zimbabwe is dollarised and the storefront's
+  default display currency is USD (assumed and consistent with spar_zw).
+  `on_sale` rows report `sale_price`, which is used in place of `price`
+  when set. 1,072-page catalog needs a generous timeout for a full run.
+  Wide, non-food-only catalog (health/beauty, household, etc. alongside
+  groceries) so COICOP tagging is left to the classifier. Third
+  retailer_sku source for Zimbabwe alongside spar_zw and tillpoint_zw.

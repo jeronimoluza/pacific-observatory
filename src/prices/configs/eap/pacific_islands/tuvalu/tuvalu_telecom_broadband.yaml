@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+spider: tuvalu_telecom_broadband
+url: https://www.tuvalutelecom.tv/broadband-plans
+language: en
+currency: AUD
+cadence: monthly
+channel: null
+archive_prefix: "www.tuvalutelecom.tv/"
+archive_path_re: '^/(broadband-plans|kasefika-satellite-internet)/?$'
+notes: |
+  Official Tuvalu Telecommunications Corporation broadband and Kasefika
+  satellite internet pages. The spider combines the server-rendered broadband
+  and Kasefika plan pages, yielding six unique AUD-priced internet plans. This
+  is telecom tariff coverage, added because independent Tuvalu food retail
+  catalogs with online prices remain scarce.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: toeak_mh
+url: https://www.toeak.com/menus?menu=toeak-bar--grill
+language: en
+currency: USD
+cadence: weekly
+channel: specialty-food
+archive_prefix: "toeak.com/menus"
+archive_path_re: '^/menus'
+notes: |
+  Toeak Bar & Grill is a Majuro restaurant with online menu prices embedded in
+  Wix warmup JSON. This is a local prepared-food/beverage price source, not a
+  supermarket SKU source, and is included because Marshall Islands coverage is
+  sparse.

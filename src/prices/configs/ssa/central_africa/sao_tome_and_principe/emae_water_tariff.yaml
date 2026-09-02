@@ -1,0 +1,33 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1"]
+channel: null
+source_key: stp_emae_water_tariff
+module: ssa.central_africa.sao_tome_and_principe.emae_water_tariff
+function: fetch_stp_emae_water_tariff
+url: https://emae.st/PT/clientes/tarifarios
+language: pt
+cadence: irregular
+fallback_date: 2015-01-01
+notes: |
+  New source, wave 13 (2026-09-01). EMAE (Empresa de Agua e Electricidade) is Sao
+  Tome and Principe's state water/electricity utility -- this is the WATER half of
+  its tarifarios page; see the sibling emae_electricity_tariff.yaml for the
+  ELECTRICITY half of the same page (one site visit, two sources per the wave brief).
+
+  Static server-rendered HTML, no anti-bot. pandas.read_html parses the page's
+  water table cleanly: price/m3 banded by monthly consumption (<=20 m3, >20 m3),
+  broken out by the same 10 customer categories as the electricity table. Measured
+  live 2026-09-01: see the run's row count (up to 20 rows: 10 categories x 2 bands,
+  fewer if any cells are blank in the source table).
+
+  Currency: page says "em dobras", undated STN vs STD. Magnitude (3.90-6.83 per
+  m3) rules out pre-2018 STD -- recorded as STN.
+
+  No effective/publication date is printed anywhere on the page -- period_kind is
+  snapshot, observation_date = scrape date, not effective_from.
+
+  fallback_date=2015-01-01 is arbitrary (no dated history exists to backfill); it
+  only matters in that it's earlier than "today" so the first run isn't skipped.

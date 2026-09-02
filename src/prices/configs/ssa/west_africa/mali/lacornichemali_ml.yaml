@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: lacornichemali_ml
+source_key: lacornichemali_ml
+url: https://lacornichemali.com/
+language: fr
+cadence: weekly
+archive_prefix: "lacornichemali.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  La Corniche Mali (Bamako) -- WordPress 6.6.7 + WooCommerce 9.8.7 on the
+  "Freshio" grocery theme, public unauthenticated Store API
+  (/wp-json/wc/store/v1/products). Verified live 2026-09-01: 1045 products,
+  category mix is heavily food (Épicerie 247, Épicerie salée 131, Épicerie
+  sucrée 112, Boissons 72, Boissons chaudes 74, Café 40, Conserve 41, Jus
+  de fruits et de légumes 45, Céréales 30, Laits 23, Fruits et légumes 13,
+  Boucherie 12, Boulangerie 6, Fromages 2) against a much smaller non-food
+  tail (Douche/savon 38, Dentaire 22, Entretien/hygiène papier 113,
+  Hygiène et Beauté 1) -- a genuine grocery/supermarket, not a
+  cosmetics-first store with a snack aisle. currency_minor_unit=0 confirmed
+  in the API payload (XOF, no minor unit -- matches the Mali brief's
+  currency trap; no /100 division applied).
+
+  Second retail/food source for Mali, alongside minicim_ml.

@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: malaeimi_wholesale_as
+url: https://malaeimiwholesale.com/
+language: en
+currency: USD
+cadence: weekly
+channel: wholesale
+archive_prefix: "malaeimiwholesale.com/"
+archive_path_re: '^/items$'
+notes: |
+  American Samoa wholesale/retail storefront. The Angular app loads product
+  rows from a public API at https://malaeimi-api.fly.dev/api. Re-verified live
+  2026-09-01: category ids 6, 8 and 9 returned 34 priced rows across beverage,
+  food and grocery categories, including juice, water, milk, cookies, seasonings
+  and condiments. Inventory is emitted as the availability flag. Limitation:
+  the public app has no stable item-detail route, so rows link to the item list
+  filtered by category.

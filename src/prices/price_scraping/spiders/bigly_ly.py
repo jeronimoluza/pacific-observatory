@@ -10,6 +10,11 @@ CATEGORIES = ("food", "food/chocolate", "food/drinks", "food/fruits", "food/good
 
 
 class BiglyLySpider(OpencartBaseSpider):
+    # Parent category "food" re-lists every product already under its own
+    # leaves; verified 2026-09-01 that all 348 repeated ids carry identical
+    # name and price, so this drops 791 rows to 437 real products.
+    DEDUPE_PRODUCT_IDS = True
+
     name = "bigly_ly"
     allowed_domains = ["big.ly"]
     currency = "LYD"

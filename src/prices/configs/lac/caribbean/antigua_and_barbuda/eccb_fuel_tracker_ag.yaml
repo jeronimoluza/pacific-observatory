@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2", "07.2.3"]
+spider: eccb_fuel_tracker_ag
+url: https://www.eccb-centralbank.org/eccu-fuel-price-tracker
+language: en
+currency: XCD
+cadence: monthly
+channel: fuel-station
+notes: |
+  Discovery source (candidate brief only had 3 weak leads, one DEAD).
+  Ministry-of-Finance fuel notices themselves are news-article press
+  releases, not a stable machine-readable feed, so used the ECCB's own
+  fuel price tracker instead -- ECCB is the Antigua and Barbuda central
+  bank (part of the Eastern Caribbean Currency Union) and publishes a
+  per-member-country dashboard covering government-regulated pump prices.
+
+  The dashboard page itself ships no data; a Highcharts widget
+  (fuel-tracker.js) POSTs {chartId, countryId} back to the SAME page URL
+  and gets JSON back. It's a Laravel app: the POST needs the page's
+  meta[name=csrf-token] echoed as X-CSRF-TOKEN plus the session cookie
+  from the GET, else 419 Page Expired (bare POST without the GET-first
+  dance was the first thing tried and failed this way).
+
+  countryId=2 = Antigua and Barbuda (from <select id="chart1Country">
+  options). chartId=1 is the "Average Gasoline and Diesel Prices (EC$ Per
+  Imperial Gallon)" ANNUAL series, 2005-2025 (startYear/latestYear in the
+  response) -- one {name, data:[[year,value]]} series per fuel. Sibling
+  chartId=2 is a 13-month rolling window of the same two fuels, redundant
+  with the tail of chartId=1, so only chartId=1 is scraped for the long
+  history. Values are the government-set/negotiated EC$-per-imperial-
+  gallon price, not a retailer SKU price -- narrow single-purpose source,
+  coicop_codes set accordingly (07.2.2 gasoline / 07.2.3 diesel, transport
+  fuel; distinct from the bottled-LPG chart the same tracker also has,
+  which was not scraped).
+
+  Smoke run: 42/42 rows (21 years x 2 fuels: Gas 2005-2025, Diesel
+  2005-2025 minus 2013/2016 which are null in the source and skipped),
+  single currency XCD.

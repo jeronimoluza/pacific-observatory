@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mivashop_tg
+url: https://mivashop.com/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "mivashop.com/achat-en-ligne-au-togo/"
+notes: |
+  Verified live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=5 ->
+  HTTP 200, WooCommerce Store API. GET
+  /wp-json/wc/store/v1/products/categories?per_page=100 -> category id 16
+  "ALIMENTATION GENERALE" is top-level (parent=0) with 924 products
+  (x-wp-total header), distinct from the site's other big vertical
+  "RESTAURANTS & CUISINE" (per_page=5 unfiltered returns mostly menu items
+  like Panini/Crepe/Sifio, not grocery SKUs). Scoped to category=16 so the
+  spider walks only the genuine grocery catalog. Sample at category=16:
+  'POULET ENTIER' 3500 XOF, 'OLIVES NOIR CONFITES DENOYAUTEES 160G BELLE
+  FRANCE' 1900 XOF, 'FANYOGO MAXI NATURE' 300 XOF, 'BISCUIT MAXI 2000
+  VANILLE' 1650 XOF — real branded packaged goods (Belle France, Hug's,
+  Fanyogo) plus fresh items (Poulet entier). currency_code XOF,
+  currency_minor_unit 0 (no division needed), matches countries.yaml.
+  Candidate brief flagged this as the strongest Togo food source found
+  (CASINO/CADIE/DOLAIT brand lines); confirmed live and rebuilt against
+  the current category id (the brief's category-path URL now 404s, but
+  the Store API category-id filter works).

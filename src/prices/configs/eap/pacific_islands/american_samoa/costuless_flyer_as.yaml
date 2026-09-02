@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: costuless_flyer_as
+url: https://www.costuless.com/american-samoa/flyers
+language: en
+currency: USD
+cadence: weekly
+channel: hypermarket
+notes: |
+  Cost.U.Less American Samoa -- Ottoville Center, Pago Pago. US warehouse-club
+  chain (North West Company); this is a physical store operating IN the
+  territory (confirmed via the site's own /american-samoa store-info page,
+  address + phone + hours, and store-locator), not a mainland shipper.
+  No online shop/e-commerce catalogue exists for this storefront -- only
+  About Us / Store Locator / Flyers in the nav, no shop.*/order.* subdomain.
+  The /american-samoa/flyers page embeds 2-3 rotating weekly circulars via a
+  Flipsnack flipbook viewer. The rendered PAGE IMAGES are not machine
+  readable, but Flipsnack extracts each page's underlying PDF text
+  server-side and serves it in a short-TTL signed CloudFront JSON that only a
+  real browser can obtain (signature minted client-side) -- see the spider's
+  module docstring for the full verified request trace and the conservative
+  name/price pairing rule it uses (drops any ambiguous multi-item text block
+  rather than guessing). Verified live 2026-09-01: 24 clean rows from the
+  2 packaged-grocery brand inserts live that week; the concurrent produce/
+  meat/furniture circular parsed to zero rows and was correctly dropped
+  (scrambled reading order, no recoverable 1:1 name/price pairs). Row count
+  and which flyers survive will vary week to week with what Cost.U.Less
+  posts -- this is a real property of the source, not a bug. Prices are
+  final USD retail ("NOW $X.XX"); no tax-exclusive footnote seen on any
+  flyer observed. This is a promotional weekly-circular snapshot, not the
+  full store catalogue.

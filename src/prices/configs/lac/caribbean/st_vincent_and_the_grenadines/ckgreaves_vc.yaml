@@ -1,0 +1,158 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ckgreaves_vc
+url: https://www.ckgreaves.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.ckgreaves.com/"
+archive_path_re: '^/(?:shop/(?:browse/)?products?/\d+_[^/?]+|departments/\d+-[^/?]+(?:/page/\d+)?)/?$'
+notes: |
+  C.K. Greaves & Company Limited — St Vincent's FIRST price source of any
+  kind. Vincentian grocery chain founded 1954 (Upper Bay Street, Kingstown;
+  three locations, third opened Pembroke 2012). Confirmed SVG-domestic, not a
+  regional platform.
+
+  Measured live 2026-09-01: 30 departments, 15,828 products, prices in XCD
+  (site-declared, matches countries.yaml). Departments span the full grocery
+  range including fresh produce (201), meat (280), seafood (14), dairy (600),
+  bread & bakery (65) as well as household (2,443), beauty (1,705) and
+  snacks (1,679).
+
+  Why this was missed twice: the 2026-09-01 LAC inventory recorded SVG as
+  "0 sources, WebSearch budget exhausted" having checked only Massy Stores
+  SVG and CaribeEats. Massy SVG is brochure-only — re-verified here, all
+  three WooCommerce Store API routes still return rest_no_route — and
+  CaribeEats has no VCT region. C.K. Greaves was never probed. The site does
+  carry WordPress/WooCommerce markers on its homepage but exposes no Store
+  API; the catalogue is plain server-rendered HTML.
+
+  Tier 1A. robots.txt allows everything but /wp-admin/ and sets no
+  crawl-delay.
+
+  PRICE TRAP — the displayed price is split for typography
+  ($ / 4 / 05 in three sibling elements) and the page also renders a literal
+  "$0.00" cart-total placeholder, so text-based selectors return 0.00 or 4.
+  The real value is div.product-card[data-price] as a plain decimal. Same
+  div carries data-id (internal id), data-plu (barcode, used as product_id)
+  and data-url (canonical PDP). Prices are NOT login-gated — the "Please
+  sign in" block gates add-to-cart only.
+
+  Pagination is /departments/<id>-<slug>/page/N/ at 20 cards/page. Page 1
+  reads the department's own stated total ("Showing products 1 - 20 of 201")
+  and fans out every remaining page as an independent request rather than
+  chaining page N -> N+1. Chaining is what silently truncated coop_ci at
+  6,000 of 9,745 rows earlier in this wave: one transient failure drops the
+  entire tail of a department and the crawl still reports finish_reason
+  "finished".
+
+  Enumerability verified per the skill's two-verdict gate: page 1 and page 2
+  of 330-fresh-produce return 20 cards each with ZERO overlapping data-id.
+
+  FULL RUN 2026-09-01: 14,842 rows, finish_reason "finished", all product_ids
+  and URLs distinct, 100% XCD, zero blank names, zero non-positive prices,
+  price range 0.25-750.00, 29 departments.
+
+  The 986-row gap against the site's stated 15,828 is fully accounted for and
+  is CORRECT behaviour, not truncation:
+    - Page coverage is complete: 809 pages expected from the departments' own
+      stated totals, 810 fetched, zero duplicate-URL drops.
+    - The shortfall is entirely items the site publishes with data-price="0",
+      i.e. price-on-request / sold-by-weight goods. Measured on page 1 of each
+      department: ALL 11 deli-meats cards are zero-priced, 4 of 14 seafood,
+      5 of 26 stationery, plus a scattering in meat, fresh produce, dried peas
+      and baking. A zero price is not a price, so these are skipped.
+    - That is also why 29 departments appear rather than 30: 320-deli-meats is
+      100% price-on-request and therefore yields no rows at all.
+
+  ARCHIVE PREFIX WIDENED 2026-09-01 to include DEPARTMENT LISTING pages, and
+  this matters more than the widening: THE PRODUCT-DETAIL ROUTE IS BROKEN.
+  /shop/browse/product/<id>_<slug>/ returns a 301 whose Location doubles the
+  origin --
+    https://www.ckgreaves.com/https://www.ckgreaves.com/shop/products/celery-local/
+  -- so a client follows it until it gives up (curl: 30 redirects exceeded),
+  and the intended target /shop/products/<slug>/ 404s anyway. There is no
+  working PDP on this site. Prices exist ONLY on the department listing
+  pages, which is why this spider reads listings and never visits a PDP.
+  The 1,281 captures Common Crawl holds under the PDP path are therefore
+  likely redirect stubs, not product HTML -- check capture status codes
+  before spending fetch budget on them.
+
+  The `url` field this spider emits is the site's own data-url, i.e. that
+  same broken PDP path. It is unique and stable so dedup is correct, but it
+  does not resolve in a browser.
+
+  NO STRUCTURED DATA OF ANY KIND. Verified on both a department page and a
+  PDP: zero JSON-LD blocks, zero itemtype attributes, no OpenGraph, no
+  itemprop="price" and no itemprop="offers". The only itemprop values present
+  are image / name / options / pricing / savings, and "pricing", "savings"
+  and "options" are not schema.org properties at all. A generic archive
+  parser built on JSON-LD, OpenGraph, Next.js flight data or schema.org
+  microdata will extract NOTHING here. The price lives solely in
+  div.product-card[data-price].
+
+  SPIDER PAGE FAMILY: listing only (/departments/<id>-<slug>/page/N). The
+  ARCHIVE, however, is PDP-heavy -- the common_crawl session measured 1,016 of
+  1,240 unique archived paths once /shop/products/<id>_<slug>/ was admitted,
+  vs 283 for the listing-only pattern. My earlier "this site has no working
+  PDP" note was derived from the LIVE site (the product route 301s to a
+  doubled origin and the target 404s) and was wrong as a statement about the
+  archive: CC captured that route across 2016-2023 while it worked. A live
+  probe is evidence about today only.
+
+  MARKUP -- NO STRUCTURED DATA, AND A 100x PRICE TRAP.
+  WordPress, theme "supershop". Cards are:
+    <article class="col product-grid-item" id="product-<PLU>-<hash>"
+             data-price="61.20" itemscope>
+  The itemscope carries NO itemtype, so [itemtype$="/Product"] cannot match
+  it; the itemprop values are image/name/options/pricing/savings, three of
+  which are not schema.org properties. There is no JSON-LD, no OpenGraph.
+
+  >>> The visible price is split across elements:
+        <span class="sym">$</span><strong class="dol">61</strong><em class="dec">20</em>
+      Flattened text reads "$6120" while data-price reads "61.20". Any
+      text-fallback price parser silently produces a 100x error here. Read
+      data-price and nothing else.
+
+  Authoritative attributes on the <article>: data-price (decimal), data-plu
+  (13-digit EAN/GTIN -- a real cross-source join key), data-id, data-url.
+  Name is h4[itemprop="name"] > a::text; note the decoy <h4>Login for a
+  Better Experience</h4> inside a modal in every card, so anchor on the
+  itemprop and not on h4 position.
+
+  data-price == "0" means price-on-request, not free. That is the whole gap
+  between 14,842 collected rows and the 15,828 the site claims: all 11
+  deli-meats, 4 of 14 seafood, 5 of 26 stationery. Not a scrape defect.
+
+  The card structure belongs to the "supershop" THEME, not to this retailer,
+  so the extractor and the 100x trap apply to any other supershop site.
+
+  MARKUP SPEC ABOVE WAS READ FROM A DEPARTMENT PAGE. The archive holds PDPs,
+  whose card is a DIFFERENT class with the same attributes:
+    department page : <article class="col product-grid-item" data-price=... itemscope>
+    PDP (archived)  : <article class="col col-01 single-product-post" data-price=... itemscope>
+  Keying on product-grid-item rejects all 283 archived captures. Key on an
+  <article> carrying data-price and ignore the class: a PDP embeds five
+  product-grid-item cards in a related-products rail but exactly ONE
+  data-price, so the rail cannot be mistaken for the product.
+
+  THE 100x TRAP IS NOT CONFINED TO PRODUCT PAGES. The theme renders a
+  twelve-item mini-product-card carousel in the chrome of every page, using
+  the same split .dol/.dec markup but carrying NO data-price. Measured live:
+    home page        60 price-now / 48 data-price   (excess 12)
+    department page  52 price-now / 40 data-price   (excess 12)
+    /2025/11/05/<name>/ (an obituary post)
+                     12 price-now /  0 data-price
+  The obituary rail flattens to '$235', '$165', '$205', '$000' -- real
+  hundredfold-wrong prices, not harmless zeros. A text-fallback parser
+  pointed anywhere on this host banks twelve bad rows per page on routes no
+  product regex would ever target. Extract on data-price, never on the
+  rendered figure.
+
+  NO DEEP HISTORY. The common_crawl session measured CC-MAIN-2021-17 at ZERO
+  captures for this host; CC-MAIN-2025-21 holds 467, of which 283 are
+  /shop/browse/product/<id>_<slug>/ and zero are /departments/. Expect
+  breadth, not a long time series. The third route generation I inferred from
+  the live 301 (/shop/products/<slug>/, no numeric id) is NOT in the index.

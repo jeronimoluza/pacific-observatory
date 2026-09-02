@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: supermarket_am
+url: https://supermarket.am/en/
+language: hy
+currency: AMD
+cadence: weekly
+channel: supermarket
+archive_prefix: "supermarket.am/products/"
+archive_path_re: '^/products/_\d+/$'
+notes: |
+  Supermarket.am — second Armenian online supermarket (distinct company
+  and catalog from sas_am; both run on Bitrix CMS, a common CIS platform,
+  but different themes/markup and non-overlapping product_id namespaces —
+  checked: sas_am ids run ~4-900k range from a different id sequence,
+  card markup uses div.td-overally / input.price here vs sas_am's
+  div.product.js-product / price__text, no shared selectors). Category
+  list (269 leaves) scraped from the homepage nav; no sitemap.xml (404).
+  Scraping the root (no /en/ locale) path for Armenian product names, same
+  rationale as sas_am. Verified live 2026-09-01: root path "Armenian
+  cheese" (Հայկական պանիր) category, product id 2425475, price "980 դր"
+  -> 980 AMD.
+  Pagination is classic Bitrix ?PAGEN_1=N and does NOT self-terminate:
+  page 4 of a real 3-page/50-item category wraps back to page 1's content
+  instead of returning empty — spider stops on zero new product ids per
+  category, same trap as sas_am/parma_am.
+  AMD is quoted as whole-dram integers; do NOT divide by 100.

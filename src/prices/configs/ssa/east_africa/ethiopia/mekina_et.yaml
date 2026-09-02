@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mekina_et
+url: https://www.mekina.net/
+language: en
+cadence: daily
+channel: marketplace
+notes: |
+  Mekina.net -- dedicated used/new car marketplace for Ethiopia. The
+  /cars/search listing page is a client-rendered Next.js route with no
+  server-side product data, so this spider instead reads the site's own
+  RSS feeds, which ARE fully server-rendered XML with a structured
+  <price> element already carrying the currency suffix (e.g.
+  "5,450,000 ETB"): /feed, /feed/featured, /feed/private, /feed/brokers,
+  /feed/dealers. Re-verified live 2026-09-01: 5 feeds x 20 <item> entries
+  = 100 raw items, collapsing to 75 distinct <guid>. No PDP crawl needed --
+  name/price/currency/category/url/id are all in the feed itself.
+
+  coicop_classification left as classifier (not narrowed) because the feed
+  mixes brand-new and used vehicles under a shared category shape
+  ("Brand new"/"Vehicle" vs "Used"/"Vehicle") -- forcing a single narrow
+  code (e.g. the used-car 07.1.1.2 pattern pakwheels_pk uses) would
+  mislabel the new-car listings, so this follows tayara_tn's general-
+  classifieds precedent instead.
+
+  A minority of listings carry "Price on request" instead of a numeric
+  price; these have no <price> number to match and are dropped rather than
+  shipped with a fabricated 0/None price.
+
+  Test run 2026-09-01: 68 rows shipped (a handful of the 75 distinct guids
+  seen across the 5 raw feeds were "Price on request" and correctly
+  dropped), 68 distinct product_id, 68 distinct url, 0 zero/negative price,
+  0 blank name, currency 100% ETB, median price ETB 4,175,000, min ETB
+  750,000, max ETB 31,000,000 (used/new car prices, not grocery-scale --
+  expected for this category). category mix: "Used in Ethiopia" dominant
+  (Featured/Broker/Private Seller/Dealer sub-tags), "Brand new" a smaller
+  share, plus a couple of "Not used in Ethiopia" (import-in-transit) and
+  one "Car for rent" row. 3 re-fetched URLs cold post-run matched
+  name+price exactly (verified via the PDP's own <title> tag, which
+  embeds "<name> - ETB <price>").

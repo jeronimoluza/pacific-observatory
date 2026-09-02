@@ -1,0 +1,66 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kilakitu_bi
+url: https://kilakitu.bi/
+language: fr
+cadence: weekly
+channel: marketplace
+notes: |
+  New source (2026-09-01 SSA sweep). Burundi had zero retail manifests
+  before this (only wfp_prices, official_avg). Kilakitu is a general
+  cross-division online store for Bujumbura built on the Yo-Kart
+  multi-vendor marketplace platform (confirmed via /sitemap.xml which
+  still points at the vendor's stale v8.demo.yo-kart.com demo sitemap —
+  seller-subscription i18n strings in the page bundle also confirm the
+  multi-vendor template). Product titles read as seller-authored
+  (inconsistent casing, spec text baked into the name), consistent with
+  `channel: marketplace` per GLOSSARY.md ("third-party sellers, long-tail
+  catalog, seller-authored names").
+
+  Catalogue spans electronics/clothing/toys/cosmetics AND a real
+  food/beverage/alcohol range. This spider scopes to 14 food+beverage+
+  alcohol category slugs only (food-items, canned/jarred foods, candies
+  & chocolates, cookies & biscuits, milk/tea/coffee, nutrition, quick
+  bites, water/soft drinks/juices, beers, gin, red wine, vodka, whiskey,
+  wines & spirits) — COICOP 01 and 02 — and skips the non-food
+  categories entirely.
+
+  Tier 1A confirmed live 2026-09-01 with curl_cffi impersonate=chrome124,
+  no Playwright needed. Category listing pagination is JS-triggered
+  (goToProductListingSearchPage(N)) but the underlying URL is a plain GET
+  (?sort-popularity-desc&pagesize-12&page-N) — verified page 2 returns a
+  distinct product set from page 1 (sniffed via Playwright network
+  capture first, then reproduced with curl_cffi alone). Each PDP carries
+  a clean schema.org Product JSON-LD block (name, offers.price,
+  offers.priceCurrency=BIF, offers.url). Sample: 'Biscuit fourré tout
+  chocolat Prince - 300g' 19,000.00 BIF.
+
+  KNOWN DEFECT ON THE SITE (not ours): JSON-LD `sku` is a static "1" on
+  every product observed — a template bug on the vendor's side. Do not
+  trust it as product_id; the spider derives product_id from the
+  canonical PDP URL slug instead. Two more vendor-markup bugs found and
+  fixed in the spider: (1) every product's JSON-LD embeds a raw
+  unescaped newline inside the "description" field, which fails strict
+  JSON parsing and silently zeroed the whole spider on first run —
+  worked around with json.loads(strict=False); (2) <script> is a
+  raw-text HTML element so the page's own HTML entities (e.g. "&eacute;")
+  are never decoded by parsel's ::text extraction — every accented
+  French name arrived HTML-escaped, worked around with html.unescape().
+  Also confirmed 2 of 286 rows (both olive-oil SKUs) carry a literal
+  "0.00" price on the site — dropped with a price>0 guard in the
+  spider's own _item(), not the shared base (there is no shared base
+  for this spider; it is source-specific).
+
+  Full unbounded run verified 2026-09-01 (post-fix, 411s): 284 rows,
+  284 distinct product_id, 284 distinct url, 0 blank names, 0
+  zero/negative prices (2 dropped by the guard above), currency 100%
+  BIF, price range 6,000-550,000 BIF (median 20,000). 100% of rows fall
+  in the food/alcohol scope by construction (14 category slugs only);
+  within that, ~84.5% food (non-alcoholic) / ~15.5% alcohol by a rough
+  keyword split on product name.
+
+  Cold re-fetch verified 2026-09-01 (post-fix): 'Biscuit fourré tout
+  chocolat Prince - 300g' = 19,000.00 BIF and 'Doritos Sweet Chili
+  Pepper - 170g' = 18,000.00 BIF both matched the live site exactly.

@@ -1,0 +1,49 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: souqmy_ye
+url: https://souqmy.com/search2?min_price=&max_price=&keyword=&sort_by=&page=1
+language: ar
+cadence: weekly
+channel: marketplace
+archive_prefix: "souqmy.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Custom Laravel multi-vendor marketplace, Yemen-scoped: title/meta
+  description are Arabic and explicitly target Yemeni users
+  ("للمستخدمين في اليمن"), phone/WhatsApp contact is a Yemeni number
+  (777900693), prices render in Yemeni Rial. Confirmed live 2026-08-31.
+
+  Every page-level route (/, /category/*, /product/*, even /robots.txt) is
+  behind an obfuscated JS "checking your browser" challenge (server:
+  hcdn) that curl_cffi (impersonate=chrome124) cannot pass — 403. The
+  storefront's own JS calls a separate listing endpoint that is NOT behind
+  that challenge and answers 200 with zero cookies required:
+    GET /search2?min_price=&max_price=&keyword=&sort_by=&page=<N>
+  Verified with Playwright first (page loads, XHR captured), then
+  confirmed the same endpoint works from a cookie-less curl_cffi request —
+  no Playwright needed for the actual harvest.
+
+  Omitting categories[] returns the whole catalog. Walked pages 1-4:
+  page1=24 cards, page2=24, page3=15, page4=0 (empty) — 63 rows, 63
+  DISTINCT product ids, matching the endpoint's own total_product_count=63
+  exactly. Pagination genuinely advances (not a repeat-page bug).
+
+  IMPORTANT — dual rial currency: the site has a client-side currency
+  switcher (changeCurrency('YER') = "old" rial vs changeCurrency('NYER') =
+  "new" rial), POSTed to /currency and held in the Laravel session cookie.
+  Verified live: switching it changes the SAME product's displayed price
+  by exactly 3x (3,500 -> 10,500 YER). This spider sends no cookie and
+  never calls /currency, so every request gets the server's *default*
+  currency_code, which was confirmed to be the "old rial" (smaller
+  figure) both on first-touch (no cookie at all) and via the labeled
+  dropdown. Downstream should treat these as old-rial YER, not new-rial.
+
+  Small catalog (63 SKUs) of general merchandise — jewelry, watches,
+  women's/men's care, small electronics, office furniture. Decoded the
+  full category-slug list from the homepage nav: no food/grocery category
+  exists on this site (confirmed against the candidate brief's Yemen
+  Storez lead, which does have one but is otherwise empty — see that
+  source's rejection notes). Kept as a general-marketplace retailer_sku
+  source, not a food source.

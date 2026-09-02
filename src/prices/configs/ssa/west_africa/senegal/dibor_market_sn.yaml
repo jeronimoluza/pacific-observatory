@@ -7,6 +7,8 @@ url: https://lafermededibor.com/
 language: fr
 cadence: weekly
 channel: supermarket
+archive_prefix: "lafermededibor.com/"
+archive_path_re: '^/?$'
 notes: |
   Round-1 classified TIER_2 (no price pattern on homepage) but re-verified
   live 2026-08-06: robots.txt discloses a bespoke PHP backend

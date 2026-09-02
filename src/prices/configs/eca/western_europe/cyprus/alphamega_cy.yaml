@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: alphamega_cy
+url: https://www.alphamega.com.cy/
+language: en
+cadence: weekly
+channel: hypermarket
+timeout: 1800
+archive_prefix: "alphamega.com.cy/en/groceries/"
+notes: |
+  Alphamega Hypermarkets, largest Cypriot hypermarket chain. No
+  WooCommerce/Shopify/Magento/VTEX surface -- bespoke .NET "Swift"
+  storefront -- but the site's own search widget calls a public Unbxd
+  Search-as-a-Service index (search.unbxd.io) that exposes the full
+  catalog unauthenticated via q=*. SiteKey/apiKey are hardcoded client-side
+  in cdn.alphamega.com.cy/.../Assets/js/custom.js (not secret).
+  Probed live 2026-08-31 with curl_cffi impersonate=chrome124:
+  https://search.unbxd.io/<apiKey>/<siteKey>/search?q=*&rows=100&start=N
+  -> numberOfProducts=15,317. rows is server-capped at 100 regardless of
+  the requested value. Verified pagination advances correctly (4 pages,
+  400 distinct uniqueId, zero overlap) via the start= offset. Fields:
+  title, price (decimal EUR, currency field confirmed "EUR"),
+  categoryPath, availability ("true"/"false").
+
+  Trap: the feed's own `productUrl` (Default.aspx?ID=6751&ProductId=...)
+  is DEAD on every sampled row (real 404 from the CDN, not a WAF block --
+  confirmed even with a warmed session/cookies). The spider instead
+  reconstructs the live friendly URL
+  (/en/groceries/<slug-category-path>/<slug-title>) from title +
+  categoryPath, matching the pattern observed on real rendered listing
+  pages; re-probed a random sample of 15 -> 14/15 (93%) resolved 200 with
+  the product name on the page. No Article-6a "lowest price in last 30
+  days" field observed on this feed (only price/originalPrice/discount).

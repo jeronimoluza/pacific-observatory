@@ -35,12 +35,17 @@ import time
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
+import pyarrow.parquet as pq
 
 from prices.enrich import config, embedding
 from prices.enrich.classifier import embed_store
 
-UNIVERSE = Path("data/prices/_enrich/transfer/embed_universe_20260820.parquet")
+UNIVERSE = Path(
+    os.environ.get(
+        "EMBED_UNIVERSE",
+        "data/prices/_enrich/transfer/embed_universe_cc_20260901.parquet",
+    )
+)
 CHECKPOINT_EVERY = int(os.environ.get("GPU_CHECKPOINT_EVERY", "20000"))
 
 _DTYPE = os.environ.get("EMBED_DTYPE", "bfloat16")
@@ -111,12 +116,18 @@ def bucket_keys(tag: str, b: int) -> set[str]:
 
 def load_names(lo: int, hi: int) -> dict[int, list[str]]:
     """Unique names per bucket for buckets lo..hi inclusive."""
-    df = pd.read_parquet(UNIVERSE, columns=["product_name_original", "bucket"])
-    df = df[(df["bucket"] >= lo) & (df["bucket"] <= hi)]
+    t = pq.read_table(
+        UNIVERSE,
+        columns=["product_name_original", "bucket"],
+        filters=[("bucket", ">=", lo), ("bucket", "<=", hi)],
+    )
     out: dict[int, list[str]] = {}
-    for b, g in df.groupby("bucket"):
-        out[int(b)] = list(dict.fromkeys(g["product_name_original"].astype(str)))
-    return out
+    for name, b in zip(
+        t.column("product_name_original").to_pylist(),
+        t.column("bucket").to_pylist(),
+    ):
+        out.setdefault(int(b), []).append(str(name))
+    return {b: list(dict.fromkeys(v)) for b, v in out.items()}
 
 
 def block_for(tag: str) -> dict:
@@ -208,7 +219,7 @@ def bench(n: int, hourly: float, lo: int, hi: int) -> None:
     """E0: measure names/s and $/million for every block on this GPU."""
     by_bucket = load_names(lo, hi)
     pool = [x for b in sorted(by_bucket) for x in by_bucket[b]][: n * 2]
-    total = len(pd.read_parquet(UNIVERSE, columns=["bucket"]))
+    total = pq.ParquetFile(UNIVERSE).metadata.num_rows
     print(f"dtype={_DTYPE} n={n:,} hourly=${hourly:.2f} universe={total:,}\n")
     print(
         f"{'model':<14}{'batch':>7}{'warm s':>9}{'names/s':>10}{'hours':>9}{'$/M':>9}{'$':>9}"

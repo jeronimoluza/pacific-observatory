@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: douniapharm_dz
+url: https://douniapharm.com/
+language: fr
+cadence: weekly
+channel: pharmacy
+timeout: 1800
+archive_prefix: "douniapharm.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Verified live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=10 ->
+  HTTP 200, currency_code DZD (matches countries.yaml), currency_minor_unit=0
+  (whole-dinar prices, no division needed). Sample: 'Skin1004 Tea-Trica
+  Travel Kit | 4-Step Acne Treatment Set'. X-WP-Total header reports 1,190
+  products across 119 pages. Zero-price placeholder rate 0/200 sampled rows.
+  Whole-catalog walk, no category filter.

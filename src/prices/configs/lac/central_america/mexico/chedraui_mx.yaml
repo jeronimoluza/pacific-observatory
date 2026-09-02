@@ -8,7 +8,7 @@ language: es
 cadence: weekly
 channel: supermarket
 archive_prefix: "chedraui.com.mx/"
-archive_path_re: '^/[\w][\w\- ]*/p$'
+archive_path_re: '^(?:/[\w][\w\- ]*/p|(?:/[^/]+)+/p/\d+)$'
 notes: |
   Full-line supermarket incl. fresh produce (Frutas y Verduras dept confirmed). Re-verified live:
   products/search?_from=0&_to=9 -> HTTP 206, 178KB, 'Tomate Saladet por kg' MXN 17.00. Currency

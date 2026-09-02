@@ -32,6 +32,7 @@ Then try the platform's catalog endpoint directly.
 | **Blazor** | REST backing the component | Verified farro_fresh. |
 | **Next.js** | `__NEXT_DATA__` in page HTML | When the JSON API is WAF'd or robots-blocked, the hydration payload is embedded in the HTML and readable. See the id-walk pattern below. |
 | **Freshop** | app-key-scoped API | **Check which stores the key actually covers** — the `cost_u_less` key returns Caribbean stores, not Guam. A key that resolves is not proof of the right geography. |
+| **Bagisto** (Laravel) | `/api/products/?limit=100&page=N`, `/api/categories` | Create-react-app storefront with an empty initial HTML shell (looks dead on a bare curl/fetch) but the JS bundle (`/static/js/main.*.chunk.js`) references an `api.<domain>` host with a wide-open, unauthenticated REST API — verified fooddepot.am (Armenia), workbook had flagged it `SUSPECT` from the thin-HTML fetch alone. Pagination is clean and self-terminating (`meta.last_page`), unlike most of the custom storefronts in this region. `/api/categories` returns a nested tree, not a flat list — flatten recursively to map `cats` ids to names. |
 
 ## Playwright to discover, plain HTTP to scrape
 

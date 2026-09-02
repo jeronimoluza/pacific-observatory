@@ -9,3 +9,4 @@ cadence: daily
 channel: pharmacy
 archive_prefix: "www.watsons.com.sg/"
 archive_path_re: '(?i)^/.+/p/bp_\d+$'
+throttle_group: aswatson

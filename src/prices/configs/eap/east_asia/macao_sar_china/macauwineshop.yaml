@@ -7,8 +7,8 @@ spider: macauwineshop
 url: https://www.macauwineshop.com
 language: en
 cadence: daily
-archive_prefix: "macauwineshop.com/item/"
-archive_path_re: '^/item/[^/?]+'
+archive_prefix: "macauwineshop.com/details.php"
+archive_path_re: '^/details\.php$'
 notes: |
   MacauWineShop.com, on "CUBE.mo" (a shared multi-tenant Macau storefront
   SaaS -- same POST /api/ backend keyed by now_domain powers other CUBE.mo

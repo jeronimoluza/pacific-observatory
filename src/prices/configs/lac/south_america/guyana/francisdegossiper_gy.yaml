@@ -1,0 +1,28 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: francisdegossiper_gy
+url: https://francisdegossiper.com/
+language: en
+cadence: weekly
+channel: marketplace
+notes: |
+  WooCommerce multi-vendor marketplace (425 products total across many
+  vendor stores), confirmed live via wp-json/wc/store/v1/products. Most of
+  the full catalogue -- INCLUDING categories with grocery-sounding names
+  like "beef-and-mutton", "chicken", "pork", "seafood", "vegetable" -- turned
+  out on sampling to be Chinese-restaurant prepared dishes ("Kung Pao
+  Chicken", "Crispy ToFu", COICOP 11), not retail groceries; those five
+  categories were deliberately EXCLUDED after the first test run showed the
+  contamination. The spider keeps only 9 category IDs sampled and confirmed
+  as genuine packaged-grocery/beverage retail items (Carnation evaporated
+  milk, 2L Coca-Cola, cereal, cookies, cooking oil, seasoning) -- 75 products.
+  `channel: marketplace` because these are third-party vendor listings, not
+  one retailer's own catalogue (this platform also carries a "Courts Guyana
+  Store" vendor page -- same operator as the pre-existing courts_gy
+  dept-store -- but that vendor's products are electronics/furniture and do
+  not appear under any of the 9 selected categories, so no double-count
+  risk).
+  Prices returned in MINOR UNITS (currency_minor_unit=2 confirmed on every
+  sampled product) -- divide by 100. Currency GYD matches countries.yaml.

@@ -7,8 +7,8 @@ url: https://bazarstore.az/en/
 language: az
 cadence: weekly
 channel: supermarket
-archive_prefix: "bazarstore.az/en/products/"
-archive_path_re: '^/en/products/[^/?]+'
+archive_prefix: "bazarstore.az/"
+archive_path_re: '^/en/products/[^/?]+|^/mehsullar/.+-detail$'
 notes: |
   Shopify storefront, /en/products.json?limit=250&page=N, no auth. Re-verified
   live 2026-08-06: HTTP 200, real SKUs (e.g. 'MAGNUM DONDURMA 100 ML DUBAY

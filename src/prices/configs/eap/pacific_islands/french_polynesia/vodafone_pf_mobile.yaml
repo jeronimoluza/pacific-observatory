@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes:
+  - "08.1.0"
+spider: vodafone_pf_mobile
+url: https://www.vodafone.pf/nos-offres/
+language: fr
+currency: XPF
+cadence: weekly
+channel: null
+archive_prefix: "vodafone.pf/nos-offres"
+archive_path_re: '^/nos-offres/?'
+notes: |
+  Official Vodafone Polynesie offers page. The scraper intentionally keeps only
+  mobile and prepaid cards from the mixed offers page, excluding fixed internet
+  cards so the source-curated COICOP code remains mobile-service specific.

@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lacuracaonline_hn
+url: https://www.lacuracaonline.com/honduras/
+language: es
+currency: HNL
+cadence: weekly
+channel: electronics
+archive_prefix: "www.lacuracaonline.com/honduras/"
+archive_path_re: '^/honduras/[^/?]+'
+notes: |
+  Electronics/appliances/general-merchandise chain (TVs, refrigerators,
+  motorcycles, mattresses, appliances, sporting goods). Sibling source to
+  lacuracaonline_ni (Nicaragua) on the same multi-country Magento 2 install
+  -- this source covers honduras only, priced in HNL (Lempira, "L").
+
+  Live-checked 2026-09-01: /honduras/ is a plain server-rendered Magento 2
+  Luma storefront, same as /nicaragua/ -- reused MagentoSSRBaseSpider
+  as-is (product-item-link + data-price-amount markup). Enumerability
+  proof: c/electrodomesticos ?p=1 vs ?p=2 returned 24 + 24 fully disjoint
+  product URLs. Sample: "Refrigeradora Frigidaire FRTS15K3HTS Top Freezer
+  15 ft3" L14,997.00 (data-price-amount="14997").
+
+  Subclass overrides MagentoSSRBaseSpider._item only to fix product_id:
+  every PDP URL on this install ends in the literal segment "/p", so the
+  base class's "last path segment" default would collapse all products to
+  id "p"; this spider instead pulls the trailing numeric SKU out of the
+  slug.

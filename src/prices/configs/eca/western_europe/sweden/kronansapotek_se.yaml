@@ -1,0 +1,46 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kronansapotek_se
+url: https://www.kronansapotek.se/
+language: sv
+cadence: weekly
+channel: pharmacy
+timeout: 7200
+archive_prefix: "kronansapotek.se/"
+archive_path_re: '^(?:/p/[^/?]+/?|/[^/]+/p/\d+/?)$'
+notes: |
+  Verified live 2026-08-31: Gatsby-built storefront (meta generator
+  "Gatsby 5.16.1"). robots.txt points to
+  https://www.kronansapotek.se/_gatsby/sitemap-index.xml, which chains to
+  sitemap-<n>.xml (n=0..7), 37,532 <loc> entries total, 33,940 of them
+  product-detail pages matching /p/<sku>/ (the rest are /c/<slug>/
+  category pages, filtered out). Each PDP embeds one ld+json <script>
+  whose body is a JSON array of Product + BreadcrumbList -- both
+  server-rendered. Sample: 'Ibetin 200 mg Ibuprofen ... 100 tablett(er)'
+  (sku 027263) -> SEK 107.15, InStock. sku is the stable product_id;
+  category from BreadcrumbList's second-to-last item.
+
+  Built as Sweden's 5th source. Priority order was food/beverage first:
+  rekoekologiska_se and koro_se (specialty-food, pre-existing) plus
+  mathem_se (full grocery, built this wave) give 3 food sources, and
+  systembolaget_se (fixed this wave) is the beverage-of-record. Coop,
+  Hemkop, Willys, ICA and City Gross were all probed for this wave and
+  parked: all require a store selection / session before any price is
+  served (client-side fetch to an internal REST namespace that 404s
+  without a store context), which is Tier D engineering, not Tier
+  A/B -- see sweden_wave3.md for detail. Kronans Apotek was picked as the
+  cheapest remaining Tier 1A candidate to close the gap to 5 rather than
+  padding with a weaker food source. Currency SEK matches countries.yaml.
+
+  Verified end-to-end 2026-08-31: `po prices collect --source
+  kronansapotek_se --max-items 200` landed 204 rows / 204 distinct
+  product_id, currency SEK throughout, price range 26.5-22337.04 SEK
+  (highest is a prescription vaccine), no blank names. Re-fetched 3
+  emitted PDP urls live -> all HTTP 200 with the product name present.
+  Category is usually the literal string "Hem" (home) -- most PDPs'
+  BreadcrumbList is only 2 deep (Hem > product name) so the
+  second-to-last-item heuristic degenerates; category is non-critical
+  metadata here, not the core signal (price/name/currency all verified
+  correct). timeout raised for the ~34k-PDP crawl.

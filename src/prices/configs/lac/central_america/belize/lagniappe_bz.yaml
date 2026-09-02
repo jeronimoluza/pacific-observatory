@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lagniappe_bz
+url: https://www.lagniappebelize.com/
+language: en
+cadence: weekly
+channel: specialty-food
+notes: |
+  Live 2026-09-01. Sourcing sheet's URL (belizegrocery.com, plain HTTP) is
+  live but redirects via <base href> tag (not HTTP 301) to the canonical
+  domain lagniappebelize.com -- same IP, same ClickCartPro/Kryptronic
+  backend. NOT stale: homepage shows a dynamic operational notice about
+  3-day lead times and ZELLE payment. This is a villa/tourist provisioning
+  grocery service on Ambergris Caye (San Pedro) -- narrow imported/gourmet
+  range (wine by country of origin, spirits, cheese, deli, bakery) rather
+  than a general domestic supermarket, hence channel: specialty-food. It
+  sells INTO Belize, so it clears the locality bar despite serving mostly
+  tourists/villa renters.
+  Tier 1A server-rendered HTML (no JSON API found). Category listing pages
+  at pretty URLs /Category/<ref> carry name + per-unit description + price
+  inline; ~90 leaf category refs hardcoded in the spider from a one-time
+  nav scrape. Prices printed explicitly as "USD 15.95" etc in raw HTML --
+  recorded as USD, not converted to BZD, per the wave-13 peg trap.
+  Gotcha: the site alternates, per-response, between a query-string
+  product link (?ns=prodshow&ref=<ref>) and a pretty-path link
+  (/Item/<ref>) for the SAME product -- confirmed on two fetches of
+  /Category/snack seconds apart. A regex matching only the query-string
+  form silently returned 0 items for most categories while still finding
+  the surrounding name/price markup; fixed by matching either form.
+  Full unbounded run 2026-09-01: 1075 unique rows (182 cross-category
+  duplicate URLs correctly dropped by DuplicationPipeline out of 1257
+  raw listing rows), 0 blank names, 0 zero/negative prices, all USD,
+  price range $0.35-$299.00, median $10.95. Category mix is strongly
+  food/beverage-led (condiments 50, snack 49, dairy 46, breakfast 44,
+  canned veg 40, deli 39, produce/pasta/spice categories all >30) with a
+  large wine/spirits/beer tail.

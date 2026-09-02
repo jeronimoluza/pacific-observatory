@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mathem_se
+url: https://www.mathem.se/se/products/
+language: sv
+cadence: weekly
+channel: supermarket
+timeout: 5400
+archive_prefix: "mathem.se/"
+archive_path_re: '^/se/products/[^/?]+/?$|^/varor/[^/]+/[^/?]+/?$'
+notes: |
+  Verified live 2026-08-31: Next.js SSR storefront, no open product-search
+  API found. Instead, https://www.mathem.se/sitemap.xml chains to
+  https://www.mathem.se/sitemap/sv/products/<n>.xml (n=1..11, 1000
+  URLs/page except the last -- page 12 -> 404), 10,720 product PDP URLs
+  total. Each PDP embeds a schema.org Product JSON-LD block server-side
+  (price/priceCurrency/availability). Sample: 'Saftig Mango Torkad' SEK
+  89.95, InStock. Category taken from the sibling BreadcrumbList JSON-LD's
+  second-to-last item (last item is the product name itself). Numeric ID
+  prefix on the URL slug (e.g. "68984-finest-seasoning-...") is the stable
+  product_id.
+
+  Mathem is Sweden's leading pure-play online grocer; merged with Norway's
+  Oda (formerly Kolonial.no) in 2023 and now runs on Oda's platform --
+  same sitemap-chain + JSON-LD-PDP pattern as ../norway/oda_no.yaml, and
+  the Next.js page config's PUBLIC_RUNTIME_MAPBOX_ACCESS_TOKEN is
+  registered under Oda's "kolonialno" Mapbox account, confirming the
+  shared backend. Currency SEK matches countries.yaml. Full grocery
+  assortment (dry goods, dairy, produce, frozen, drinks) -- real food and
+  beverage SKUs, not a household/promo-only catalogue.
+
+  Verified end-to-end 2026-08-31: `po prices collect --source mathem_se
+  --max-items 200` landed 204 rows / 204 distinct product_id, currency
+  SEK throughout, price range 9.95-282.98 SEK, no blank names. Re-fetched
+  3 emitted PDP urls live -> all HTTP 200 with the product name present.
+  timeout raised for the ~10.7k-PDP crawl.

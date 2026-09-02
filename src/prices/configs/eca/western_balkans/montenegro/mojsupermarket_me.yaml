@@ -7,6 +7,8 @@ url: https://mojsupermarket.me/
 language: sr
 cadence: weekly
 channel: supermarket
+archive_prefix: "mojsupermarket.me"
+archive_path_re: '^/[^/]+(/[^/]+){0,2}\.html$'
 notes: |
   mojSupermarket -- Montenegro's first online grocery store with home
   delivery (Podgorica). Custom PHP storefront, plain server-rendered HTML,

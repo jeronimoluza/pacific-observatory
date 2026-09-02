@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: tariff
+coicop_classification: source_curated
+spider: zain_prepaid_internet_sd
+url: https://www.sd.zain.com/en/prepaid-internet-offers
+language: en
+cadence: weekly
+channel: null
+archive_prefix: "www.sd.zain.com/en/"
+archive_path_re: '^/en/prepaid-internet-offers/?$'
+notes: |
+  Probed 2026-08-31 with curl_cffi impersonate="chrome124": HTTP 200 but the
+  page is a SharePoint shell with zero pricing text -- all 18 bundle cards
+  are injected client-side. A default headless-Chromium Playwright context
+  (default UA carries "HeadlessChrome") gets a flat 403 Forbidden from the
+  site's bot filter; setting playwright_context_kwargs.user_agent to a
+  desktop Chrome 124 string passes and the page renders 18 distinct prepaid
+  internet bundles (170MB@1,800 SDG ... 300GB@137,000 SDG), each with a
+  unique USSD subscription code used as product_id (only stable identifier
+  on the page -- no SKU). Page explicitly states "Prices are in SDG and VAT
+  included". Single tariff page, narrow single-vertical source (telecom
+  data bundles), left unset per convention for other telco tariff configs
+  in this repo (docomo.yaml, csl_hk_postpaid.yaml).

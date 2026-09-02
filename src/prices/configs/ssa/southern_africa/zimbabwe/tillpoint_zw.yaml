@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tillpoint_zw
+url: https://tillpoint.co.zw/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "tillpoint.co.zw/product/"
+archive_path_re: '^/product/[^/]+$'
+notes: |
+  Probed live 2026-08-31. React Native/Expo web app; the server-rendered
+  HTML is an identical ~52KB static shell for every route ("/" and
+  "/product/<slug>" byte-length-match), so there is no HTML surface —
+  all data loads client-side. The Expo web JS bundle
+  (/_expo/static/js/web/entry-*.js) embeds the app's own Supabase project
+  config (a public anon/RLS-scoped key, shipped to every browser) plus
+  `.from("products")` calls, exposing a plain PostgREST REST API:
+
+    GET https://ojyqiomlnbikncdpbvmh.supabase.co/rest/v1/products
+        ?select=id,name,slug,price,currency,is_available,categories(name)
+
+  Paginated with the standard PostgREST `Range: <start>-<end>` header;
+  the response's Content-Range header ("0-199/345") gives the exact
+  total, so the walk stops on the server-reported count rather than a
+  guessed page count. Measured total 345 products across 9 categories
+  (Groceries, butchery, Fruit & Veg, Hardware & Tools, Building
+  Materials, Farm Inputs, Solar & Electrical, Agri Equipment, General
+  Merchandise) — wide, non-food-only catalog, so COICOP tagging is left
+  to the classifier. Prices are plain numeric USD floats, no
+  entity-encoding. Second retailer_sku source for Zimbabwe alongside
+  spar_zw.

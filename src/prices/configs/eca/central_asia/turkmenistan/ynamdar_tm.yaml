@@ -1,0 +1,84 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ynamdar_tm
+url: https://ynamdar.com/
+language: ru
+cadence: weekly
+channel: hypermarket
+timeout: 5400
+archive_prefix: "ynamdar.com/ru/ag/product/"
+archive_path_re: '^/ru/ag/product/[^/?]+/?$'
+notes: |
+  Re-discovered 2026-08-31. "Ynamdar" is one of the named discovery leads
+  in the wave-4 brief; the existing ashgabatmarket_tm.yaml notes already
+  recorded a dead check for it, but that check hit `ynamdar.tm` /
+  `ynamdar.com.tm` (certificate has expired on .com.tm). The plain `.com`
+  domain -- ynamdar.com -- is live and is a completely different, much
+  larger property: "Ynamdar Online Market", serving Ashgabat only
+  (confirmed via GET /market-api/regions -> single active region, code
+  "ag").
+
+  Nuxt 3 app; the homepage server-renders a `__NUXT_DATA__` payload with
+  real inline product data, but that payload is capped at whatever the
+  homepage widgets show. Full catalogue access required hunting the
+  bundled JS per rule #6: the `$http` client class builds per-service
+  clients as SAME-ORIGIN `/market-api/`, `/store-api/`, `/food-api/`
+  paths (found the literal prefix string `"/market-api/"` in the client
+  class constructor) -- NOT `https://api.ynamdar.com`, which is a red
+  herring subdomain that 404s on every path tried (generic branded admin
+  404 page, not real routing). Confirmed working, unauthenticated,
+  same-origin endpoints:
+    GET  https://ynamdar.com/market-api/categories
+         -> full nested category tree, 14 top-level / 200 leaf nodes
+    POST https://ynamdar.com/market-api/category/products
+         body {"page": N, "category-id": "<uuid>"}
+         -> {"result": {"total","current","products","has-next"}}
+
+  TRAP CAUGHT: the page's own `?page=2` query string does nothing --
+  verified byte-identical product ids to `?page=1` (SSR always renders
+  page 1 from a `useAsyncData` key that ignores the URL). Page 2+ only
+  exists by POSTing the above body directly. Verified real advance:
+  page=1 vs page=2 for the same category id share 0 of 24/24 ids.
+
+  Walked all 200 LEAF categories (not parents, to avoid parent/child
+  double-counting) with a spider-wide product-id dedup set, because one
+  top branch ("Распродажи и Акции" / sales & promos, esp. a 4,395-item
+  "discounted products" bucket) republishes items that also live under
+  their real merchandising category -- first category encountered wins
+  the emitted `category` label.
+
+  Prices are integer minor units = TMT * 100. Verified against two
+  independent samples: "Кукуруза консервированная Heinz 400 г"
+  sale-price 4350 -> 43.50 TMT (plausible canned corn); "Гель для душа
+  Axe" old-price 4200 / sale-price 3780 -> 42.00/37.80 TMT (plausible
+  markdown). Divided by 100 in the spider. `price` = sale-price, falling
+  back to old-price when no discount is active. Currency TMT matches
+  countries.yaml; single-region site, no currency switcher.
+
+  Unlike halkmarket_tm, there IS a real routable product page:
+  `/ru/ag/product/<code>` -- verified server-rendered with the actual
+  product name in the HTML for codes CRN1100114 (Carte Noir coffee) and
+  HNZH241203 (Heinz corn).
+
+  Catalogue is a genuine wide online-hypermarket assortment, not
+  food-only: alongside food it carries cosmetics, cleaning, household,
+  baby, stationery and pet-food branches -- channel set to hypermarket
+  rather than supermarket for that reason. Live leaf-category totals at
+  probe time (2026-08-31) show food branches carrying the bulk of the
+  catalogue: "Продукты питания, кулинария" (food/culinary: bread/flour,
+  oils, cereals, pasta, sugar, instant food, sauces, frozen, canned,
+  nuts, candy, cookies, chocolate, coffee, tea, chips, seeds, corn
+  snacks, gum), "Молочные продукты, яйца, завтрак" (dairy/eggs/
+  breakfast incl. honey/jam/tahini, ice cream), "Мясная продукция"
+  (meat/fish/seafood), "Фрукты и овощи" (fruit/veg/greens), "Напитки
+  безалкогольные" (soft drinks/juice/water), "Правильное питание"
+  (healthy eating), and "Для детей > Детское питание" (baby food) --
+  versus non-food branches "Косметика и уход" (cosmetics), "Уборка и
+  гигиена" (cleaning), "Для дома" (household), "Канцелярия"
+  (stationery), "Зоотовары" (pet food).
+
+  Large catalogue (~580 paginated requests across 200 categories at 24
+  items/page) -- per-source timeout raised to 5400s to match the
+  wabrum_tm precedent for wide, slow-to-fully-walk catalogues.

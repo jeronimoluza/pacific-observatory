@@ -1,0 +1,33 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: wfp_hti
+module: _shared.lac.wfp_food_prices
+function: fetch_wfp_hti
+url: https://data.humdata.org/dataset/wfp-food-prices-for-haiti
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  WFP food prices for Haiti via HDX (shared LAC fetcher
+  _shared.lac.wfp_food_prices -- added Haiti to the existing _PANELS dict
+  alongside col/ecu/gtm/slv/nic/bol). Verified live 2026-09-01: CKAN
+  package_show for slug wfp-food-prices-for-haiti resolves
+  wfp_food_prices_hti.csv (200, 2.1MB, 16,444 raw per-market rows spanning
+  2005-01-15 to 2025-07-15). Currency is HTG throughout the raw CSV --
+  matches countries.yaml, no unit-confusion risk here (no Haitian-dollar or
+  USD rows observed in this feed). Sample raw row: Gonaives market,
+  Artibonite, "Maize meal (local)", Marmite unit, HTG 60.0 (usd~1.41),
+  2005-01-15. Both retail and wholesale price types present across cereals,
+  tubers, pulses, and other WFP food-security commodities -- complements but
+  does not overlap the supermarket SKU catalog. Per-market rows collapsed to
+  a national monthly average per commodity/unit/currency/price-type; market
+  count + USD value kept in notes; retail vs wholesale kept in the dedup
+  hash (same pattern as the other 6 LAC panels). COICOP deferred to the
+  downstream classifier (item_name = WFP's English commodity label).
+  This is a non-retail official_avg feed (channel: null) -- it counts
+  toward Haiti's source total but NOT toward the food/channel count, which
+  requires channel in {supermarket, hypermarket, convenience, fresh-market,
+  specialty-food}.

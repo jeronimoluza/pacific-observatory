@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: minicim_ml
+source_key: minicim_ml
+url: https://minicim.ml/
+language: fr
+cadence: weekly
+archive_prefix: "minicim.ml/shop/"
+archive_path_re: '^/shop/(?!category/|cart$)[^/]+/[^/?]+-\d+/?$'
+notes: |
+  CIM Market (Bamako, Mali) -- Odoo 19 "website_sale" eCommerce storefront,
+  7 physical stores across Bamako, online ordering with pickup/delivery.
+  Verified live 2026-09-01: 10 top-level categories (boissons,
+  epicerie-salee, epicerie-sucree, lait-petit-dej, frais-surgeles,
+  hygiene-beaute, entretien-maison, bazar-jetable, bebe, divers) -- a
+  genuine supermarket catalog, not a specialty store. /shop paginates 106
+  pages x ~100 products (~10,600 SKUs); page 1 vs page 2 of the unscoped
+  /shop listing returned entirely disjoint product sets, confirming real
+  pagination. Server-rendered listing cards carry name + price + url
+  directly (Tier 1A, no PDP visit needed). Sample: "Ajax Maison Pur 1.25L",
+  category "Épicerie salée" area, XOF (site's own session_info declares
+  currency digits=0, i.e. no minor unit -- matches the Mali brief's XOF
+  trap). Odoo's own pager disables the "next" control on the last page of
+  each category (explicit termination signal, unlike a Magento re-served
+  last page).
+
+  First retail/food source for Mali; alongside wfp_prices (official_avg)
+  and fpma_mli (official_avg), this is Mali's first channel:supermarket
+  source.

@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hyanta_bf
+channel: fresh-market
+url: https://www.hyanta.com/
+language: fr
+cadence: weekly
+archive_prefix: "www.hyanta.com/product-detail.php"
+notes: |
+  Hyanta ("Marché de fruits et légumes, Livraison partout au Burkina Faso")
+  — fresh-market grocery delivery based in Ouagadougou. Verified live
+  2026-09-01: static PHP storefront, no anti-bot. Full catalog reached via
+  grid.php?idcat=N (Fruits=2, Légumes=3, Feuilles et épices=4, Viandes et
+  poissons incl. Volaille/Poulet de chair/Charcuterie/Faux filets=6,
+  Divers/Packs=30) plus idcat=31/32 auto-discovered via the Rule's own
+  link-following — no hardcoded id list needed. Pagination confirmed real
+  (idcat=2 numpage=1 returns ids 4-15, numpage=2 returns ids 1-3, not a
+  re-served last page). Everything is read off the listing page itself
+  (name, price, category) — no PDP visit needed, and it's a good thing:
+  the PDP's own category breadcrumb is a site bug that always reads
+  "(Fruit)" regardless of actual category (confirmed on idproduit=50, a
+  poultry item). Some names are served double-UTF-8-encoded by the site
+  itself ("Ã©" for "é" in the raw bytes); repaired in-spider.
+  Test run (`prices collect --source hyanta_bf`, unbounded): 65 rows, 65
+  distinct product_id, 65 distinct url, 0 zero/blank, currency 100% XOF,
+  price range 100–5,000 XOF (median 600). Categories: Légumes 17, Fruits
+  15, Feuilles et épices 15, Divers 8, Charcuterie 7, Volaille 3 — 100%
+  food share (dedicated grocery/butcher catalog, no non-food SKUs).
+  Re-fetched cold 2026-09-01: idproduit=10 "Papaye" still 500 XOF,
+  idproduit=54 "Faux filets (1kg)" still 4,500 XOF, idproduit=4 "Kaki"
+  still 500 XOF.
+  CURRENCY: XOF, no minor unit.
+  channel: fresh-market — counts toward the food-and-beverage target.

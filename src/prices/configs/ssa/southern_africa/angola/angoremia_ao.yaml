@@ -1,0 +1,69 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: angoremia_ao
+url: https://angoremia.shop/
+language: pt
+cadence: weekly
+channel: supermarket
+archive_prefix: "angoremia.shop/produto/"
+archive_path_re: '^/produto/[a-z0-9-]+/?$'
+notes: |
+  Wave 10 (2026-09-01). Luanda online supermarket ("Angoremia -- Supermercado
+  Online em Luanda"; delivery to Luanda/Talatona/Kilamba). React/Vite
+  storefront with a server-rendered shell that hydrates client-side; the
+  minified JS bundle does not expose its Supabase project URL or anon key
+  as a literal string (variable-renamed, no visible base URL) -- both were
+  recovered from a live Playwright network trace of the `/catalogo` route
+  ("Playwright to discover, plain HTTP to scrape"). Anon key is Supabase's
+  standard public key (RLS gates access, not key secrecy).
+
+  Small but genuine live catalog: count=exact confirmed 10 active rows
+  total (ativo=eq.true) as of 2026-09-01 -- not a capped sample, this is
+  the whole thing. `preco` is already whole AOA, no minor-unit division
+  needed: cross-checked "LASANHA COM OVO 10*500g" preco=27500 against the
+  live rendered PDP, which shows "27 500 Kz".
+
+  DATA-QUALITY DEFECT, VERIFIED, NOT A SCRAPER BUG: 6 of 10 rows carry a
+  `slug` (and `categoria_slug`) that names a DIFFERENT product than the
+  current `nome` -- e.g. slug="detergente-liquido-2l" (detergent) but
+  nome="AZEITONA CAMPONES EM PACOTE 25*100G" (olives), categoria_slug=
+  "higiene" even though the description text is a food health-claim
+  ("rico em gorduras monoinsaturadas... colesterol"). This is Angoremia's
+  OWN database, not a spider join bug -- the spider reads slug/nome/preco/
+  categoria_slug from a single row object, never zips separate arrays.
+  Verified three independent ways on 2026-09-01: (1) a fresh Supabase LIST
+  re-pull matches the original byte-for-byte; (2) a per-slug DETAIL query
+  (`?slug=eq.<slug>`, the same shape the site's own PDP code path uses)
+  returns the identical (nome, preco, categoria_slug) tuple for every
+  mismatched slug; (3) live Playwright renders of all 5 non-trivial
+  mismatched PDP URLs (detergente-liquido-2l, ananas-angolano,
+  leite-meio-gordo-1l, oleo-alimentar-1l, cerveja-cuca-33cl) show the SAME
+  name, price, AND on-page "Categoria" field as scraped -- e.g. the
+  detergente-liquido-2l page itself literally displays "Categoria:
+  higiene" under an olives product. Read as: slug+categoria_slug are set
+  once at product creation and were never regenerated after nome was
+  edited/repurposed; nome+preco (what actually ships) are internally
+  consistent with the live PDP every time. `category` is emitted as-is
+  (faithful to what the site currently shows) rather than nulled out,
+  since coicop_classification=classifier uses product_name as its primary
+  signal and categoria_slug is only a weak secondary one -- but treat this
+  source's `category` column as unreliable for roughly half its rows.
+
+  CHANNEL: kept as `supermarket`, NOT relabeled `wholesale`, after
+  checking positioning: the site brands itself "Angoremia Supermercados"
+  and "o seu supermercado de confiança" for "familias angolanas"; its own
+  FAQ asks "Existem precos especiais para revendedores?" (any special
+  prices for RESELLERS?) as a separate inquiry item, implying resale
+  pricing is a side case, not the core model; Terms cap per-customer
+  quantities (anti-hoarding, the opposite of a wholesale incentive); no
+  minimum order, no business/NIF requirement at checkout; prices are
+  VAT-inclusive (B2C convention). Per-unit price sanity check also rules
+  out bulk/wholesale discounting: "AZEITE EXTRA VIRGEM 12*1L" at 110,000
+  Kz is 9,167 Kz/bottle, an ordinary (not discounted) single-bottle retail
+  price for imported olive oil under current AOA inflation. The catalog
+  DOES genuinely mix multi-unit case-listings (most rows, e.g. the 10x500g
+  lasanha pack sold as one SKU) with single retail units (the last row,
+  "Arroz Agulha Extra 1kg" at 1,450 Kz) -- read as a supplier-feed
+  quantity convention, not evidence of a wholesale channel.

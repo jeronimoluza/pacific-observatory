@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: blackgoldfoods_mv
+url: https://blackgoldfoods.mv/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "blackgoldfoods.mv/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Blackgold Foods (Maldives). Shopify storefront, "Quality products from UK
+  & Australia" -- imported specialty/gourmet grocery (pantry, bakery,
+  snacks, Fresh & Chilled, Frozen Food, Cooking Ingredients, Household).
+  Verified live 2026-09-01: GET /products.json?limit=50&page=1 -> HTTP 200,
+  50 products, no auth; page=2 returned 50 distinct products (zero id
+  overlap), confirming real pagination. Sample: 'Twinings Superblends Calm
+  Tea (20 Bags)' price 98.84. Shopify.currency active=MVR confirmed on PDP
+  (also priceCurrency meta = MVR) -- matches countries.yaml. Distinct from
+  the existing Good Food Maldives source (organic/natural local focus):
+  Blackgold is imported-brand gourmet/pantry goods, so tagged
+  channel=specialty-food rather than supermarket to preserve retailer-type
+  breadth.

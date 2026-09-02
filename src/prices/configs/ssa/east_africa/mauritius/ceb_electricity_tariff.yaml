@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+channel: null
+source_key: ceb_electricity_tariff
+module: ssa.east_africa.mauritius.ceb_electricity_tariff
+function: fetch_ceb_electricity_tariff
+url: https://ceb.mu/customer-corner/electricity-tariffs-and-applicable-rates
+language: en
+cadence: irregular
+fallback_date: "2020-01-01"
+coicop_codes: ["04.5.1"]
+notes: |
+  Central Electricity Board (state utility) residential household tariff
+  schedule (Tariffs 110A/110/120/140), 12 consumption bands, Rs/kWh, from
+  the URA-approved CEBTARIFFS.pdf (effective 01 February 2024). Verified
+  live 2026-09-01: HTTP 200, real PDF, text-extractable (page 1). A further
+  increase (up to 15%) becomes effective 1 May 2026 per Government Gazette
+  General Notice No. 473 of 2026, confirmed by reading the notice via
+  OCR page-render, but that PDF's embedded font has no usable text layer
+  (pdfplumber and `pdftotext -layout` both return CID/PUA garbage) --
+  recorded as a known gap, not silently absorbed. Currency MUR matches
+  countries.yaml.

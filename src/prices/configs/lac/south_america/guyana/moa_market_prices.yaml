@@ -1,0 +1,66 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: classifier
+source_key: gy_moa_market_prices
+module: lac.south_america.guyana.moa_market_prices
+function: fetch_gy_moa_market_prices
+channel: null
+url: https://agriculture.gov.gy/category/daily-market-prices/
+language: en
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Guyana Ministry of Agriculture -- "Prevailing Retail Prices for Selected
+  Non-Traditional Agricultural Commodities" bulletin. This is the
+  Bourda/Stabroek-market fresh-produce series the wave-7 brief asked about
+  by name: per-market retail prices (Min/Max/Average are also published but
+  dropped as redundant derivatives) for ~65-73 commodities across
+  vegetables, root crops, spices, beans/cereals, fruits, oil crops, and
+  meat/eggs, surveyed across up to 13 markets nationwide (Bourda, Stabroek,
+  Kumaka, Mon Repos, Mckenzie, Vreed-En-Hoop, Parika, Rosehall, New
+  Amsterdam, Rosignol, Skeldon, Bath Settlement, Mahaicony -- the market
+  roster itself rotates release-to-release).
+
+  IMPORTANT -- this is a DISCONTINUED bulletin, not a live daily feed.
+  Discovery via the WP REST API (`search=daily-market-prices`) found 112
+  posts total, spanning 2024-11-29 to 2025-06-26, with nothing newer as of
+  2026-09-01 (checked live). Onboarded anyway because the archive itself is
+  real, dense, market-level data with no equivalent elsewhere in the
+  Guyana corpus; `prices collect` re-runs will simply find 0 new rows going
+  forward unless the Ministry resumes publishing.
+
+  Each post embeds its PDF via the "embed-any-document" WP plugin (105 of
+  112 posts) or the native WP "File" block (7 of 112, e.g. the 2025-04-07
+  release) -- two different markup shapes. The fetcher does not special-case
+  either; it scopes the href search to the `entry-content` div and takes the
+  first .pdf link found there, which is correct under both mechanisms. (A
+  naive site-wide first-".pdf"-href match instead grabs an unrelated nav-menu
+  PDF -- "Guyana Agri Investment Prospectus 2024" -- present on every page;
+  caught this by getting a 100% failure rate on the first test run and
+  diffing against a manual page fetch.)
+
+  Table layout is not stable either: some releases have a leading blank
+  column before the item name and some don't, so column offsets are located
+  every time by searching for the "Price Unit" header cell rather than
+  hardcoded. Missing cells render as either empty string or the literal
+  "N/A"/"NA" depending on release; both are treated as missing.
+
+  coicop_classification: classifier, not source_curated -- items are named
+  commodities (BORA, CABBAGE, BEEF, EGGS (LOCAL WHITE), ...) spanning many
+  distinct COICOP-01 subclasses, not a single narrow class.
+
+  Known data quirk: 2 of the 112 bulletin dates (2025-01-02, 2025-01-07)
+  each have two separately published posts. Both are kept rather than
+  deduped -- 37 of 803 resulting identity collisions carry genuinely
+  different (corrected) prices, not exact re-publishes, and neither post is
+  reliably identifiable as "the correction" from its own metadata.
+  observation_hash does not include price, so a downstream stage that dedups
+  purely on hash will keep only one of the two for those dates.
+
+  Verified 2026-09-01 with a backdated cutoff (2024-01-01): 49,628 rows
+  across 110 distinct dates, 73 distinct items, 13 distinct markets, all
+  GYD, zero zero/negative prices, zero blank names. Spot-checked BORA at
+  Bourda market on 2025-06-26 ($2,500.00/Bundle) and CABBAGE at Kumaka on
+  2024-11-29 (no data that release day) by hand against the live PDF before
+  trusting the parser.

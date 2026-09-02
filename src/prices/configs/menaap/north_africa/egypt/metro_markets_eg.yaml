@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: metro_markets_eg
+url: https://www.metro-markets.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.metro-markets.com/product/"
+archive_path_re: '^/product/[^/?]+/\d+$'
+notes: |
+  Metro Markets (Egypt) -- real, live supermarket chain (distinct from the
+  pre-existing metro_pk Pakistan source, a different operator). Laravel
+  storefront, fully server-rendered -- confirmed live 2026-09-01 that
+  curl_cffi alone returns full product cards (name+price) in raw HTML; a
+  Playwright render of the same page showed no additional XHR/API call, so
+  this is genuinely SSR, no Tier 2 needed.
+
+  Homepage exposes only 6 featured top-level categories via
+  /categoryl1/<Name>/<id> -- Bakery(9), Confectionary(20), Dairy(6),
+  Metro(39), Paper-Products(25), Yameesh(41). The full "Shop" mega-menu is
+  populated client-side only and a /shop landing page carries no category
+  or product links in its server HTML, so the spider walks these 6 known
+  category ids rather than attempting automatic category discovery.
+
+  Product cards are div.product-card[data-id] with name in a bare <h5>
+  inside the card's own <a>, price in div.price p.after (e.g. " 167  LE").
+  Pagination is a plain ?page=N param; the page's own printed page-link
+  list is NOT a reliable last-page signal (Dairy's own nav topped out at
+  "page=15" but page=16 still returned 8 more real, distinct products), so
+  the spider pages forward until a page returns zero product cards.
+
+  Prices are plain EGP amounts, no minor-unit encoding ("167 LE", "12.95
+  LE" -- LE = Livre Egyptienne = EGP), matching countries.yaml.

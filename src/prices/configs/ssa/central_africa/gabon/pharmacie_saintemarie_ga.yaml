@@ -1,0 +1,68 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pharmacie_saintemarie_ga
+url: https://pharmacie-saintemarie-gabon.com/
+language: fr
+cadence: weekly
+channel: pharmacy
+timeout: 900
+archive_prefix: "pharmacie-saintemarie-gabon.com/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
+notes: |
+  Probed live 2026-09-01. Pharmacie Sainte Marie is a Libreville, Gabon
+  pharmacy (BP 1838 Libreville; Click & Collect + home delivery of medical
+  equipment). Found via WebSearch after every candidate on the Gabon wave-8
+  brief (Malumbi, Chap Chap Gabon, Ceca Gadis .ga) turned out to be dead
+  domains or app-only marketing pages -- see the gabon.md brief report for
+  the full dead-end list.
+
+  WooCommerce Store API is open, no auth: GET
+  /wp-json/wc/store/v1/products?per_page=100&page=N. Measured
+  X-WP-Total: 1678, X-WP-TotalPages: 560 (at a small per_page probe) --
+  large catalogue, standard cursor-free page-number pagination.
+
+  CURRENCY TRAP: the API's own prices.currency_code returns "XOF" (West
+  African CFA), which is wrong -- Gabon is Central African and uses XAF.
+  The site footer identifies the underlying platform as a "DigitecPharma"
+  multisite install; this tenant evidently inherited a West-Africa default
+  and never overrode it. Spider sets FORCE_CURRENCY="XAF" per the brief's
+  explicit XAF-vs-XOF warning (both are FCFA-branded, same peg, different
+  ISO codes) -- do not trust this platform's currency_code for any other
+  Gabon tenant found on it without re-checking.
+
+  channel: pharmacy, not food -- catalogue is medications, supplements,
+  cosmetics and parapharmacy (sample: "ACTIFED Jour et Nuit" 9,630 FCFA,
+  "ADVIL 200mg" 1,265 FCFA, "Perles de peau Radiance" ~28,957 FCFA). This
+  is the honest label; it does not count toward Gabon's food-and-beverage
+  bar.
+
+  DECIMAL-PRICE FIX (orchestrator review 2026-09-01): 4 of 1678 rows
+  (FORTE PHARMA Forté Royal Miel, ACM SEBIONEX, Gum Brossette Trav-Ler,
+  ELGYDIUM PERFORMANCE brosse à dents) landed on non-integer XAF prices
+  (e.g. 12000.1). Checked the raw Store API payload and the divisor: the
+  base's raw/10**currency_minor_unit math (minor_unit=2) is correct and
+  applies uniformly -- the non-round centime is the SITE'S OWN data,
+  confirmed against the live rendered PDP (e.g. "12 000,10 CFA" appears
+  verbatim in that product's own price_html/DOM, not introduced by our
+  fetch). Cross-checked several integer-price SKUs (Elgydium Blancheur
+  545000/100=5450.0, Dercos Neogenic 1309800/100=13098.0) against their
+  live pages too -- all match, so this is isolated source noise on 4 SKUs,
+  not a systematic scaling bug. Since XAF/XOF/FCFA has no real minor unit,
+  the spider now rounds the final price to the nearest whole franc when
+  currency=="XAF" (subclass-only override of _item, not a _woo_base
+  change, since other WooCommerce tenants on real-minor-unit currencies
+  still need genuine decimals). Re-run confirmed 0 non-integer prices,
+  1678/1678/1678 rows/ids/urls unchanged.
+
+  CATEGORY GAP: 491 of 1678 rows (29.3%) carry category: null. Checked
+  the raw Store API payload directly for several of these (e.g. "Phytoxil
+  Sans Sucre 120ml", sku 3582910089599) -- "categories": [] server-side,
+  genuinely uncategorized at the source, and the live PDP renders no
+  WooCommerce breadcrumb for these either (theme only shows one when a
+  category is assigned). Not recoverable from any field this API exposes;
+  left null rather than invented. Category composition reported elsewhere
+  (top leaves: Accessoires-bébé, Hydratants et nourrissants, Douleurs &
+  Fièvres, Gel douche, Compléments alimentaires...) is over the 1187
+  categorized rows, i.e. 70.7% of the catalogue.

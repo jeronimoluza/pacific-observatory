@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pacificislandtrade_mh
+url: https://pacificislandtrade.com/collections/majuro-k-k-store
+language: en
+currency: USD
+cadence: weekly
+channel: supermarket
+archive_prefix: "pacificislandtrade.com/products/"
+archive_path_re: '^/products/[^/?#]+'
+notes: |
+  Pacific Island Trade Shopify collection for the K&K Majuro Store. The
+  unauthenticated collection JSON endpoint is live and exposes item-level names,
+  variants, availability and USD prices without JavaScript. Re-verified live
+  2026-09-01: the collection includes food and beverage staples such as chicken
+  leg quarters, rice, ramen, bottled water, soft drink, juice drinks, tuna,
+  milk and cooking oil. The spider skips gift certificates but keeps the broader
+  store mix for classifier labelling.

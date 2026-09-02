@@ -1,0 +1,56 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cerise_ga
+url: https://cerise.ga/
+language: fr
+cadence: weekly
+channel: supermarket
+timeout: 900
+archive_prefix: "cerise.ga/p/"
+archive_path_re: '^/p/[a-z0-9-]+$'
+notes: |
+  Probed live 2026-08-31. cerise.ga is a Vite/React SPA with no product
+  data in the raw HTML (only a preview window.__INITIAL_STATE__); it is a
+  storefront on the "Jiffy" white-label quick-commerce platform (formerly
+  The Cloud Retail / Native Commerce — same vendor also runs CircleK,
+  Vilo, and other tenants globally), so this walks the platform's real
+  JSON API on api2.jiffygrocery.co.uk instead of the page.
+
+  Reverse-engineered from the SPA's minified bundle (assets/index-*.js):
+  the tenant config object embedded at build time gives company id
+  d93a174a-d1f7-4504-97d5-c075dd86d0f0 (sent as header x-company-id on
+  every call, else 400 COMPANY_ID_IS_MISSING) and warehouse code CERIS.
+  Locality confirmed from the same config: email
+  commande.cerise@priximportbgg.com (operator = Prix Import, one of the
+  candidate leads for Gabon), phone +241 77575280, address "CCJQ+V52,
+  Libreville, Gabon", timeZone Africa/Libreville, currencyCode XAF.
+
+  Walk: GET /catalog/v1/client/categories/tree?warehouseCode=CERIS once
+  (135 nodes / 72 leaves measured), then GET
+  /catalog/v2/tree/categories/{leafId}?warehouseCode=CERIS per leaf.
+  Leaves are overwhelmingly food departments — Fruits & Légumes,
+  Boulangerie & Traiteur, Crèmerie, Viandes, Épicerie du Monde, Conserves
+  & Bocaux, Boissons (Chaudes/Alcoolisées/Non Alcoolisées), Petit-Déjeuner,
+  Snacks & Confiseries — alongside a smaller non-food tail (Hygiène,
+  Électroménager). Local beer (REGAB) and imported groceries side by side.
+
+  PAGINATION TRAP: the SPA's own category-products endpoint
+  (/catalog/v1/client/categories/{id}/products, the route its `getProductsPaged`
+  helper targets) 422s on a `page` query param and silently ignores
+  `pageNumber`/`offset` (pagination.current stays 1, identical product ids
+  returned) — brief trap #7. The v2 tree-categories endpoint used instead
+  needs no page param and returns a larger unpaginated slice per leaf
+  (measured 49 of a reported category total=79 on one leaf), so the leaf
+  category is the unit of pagination; items are deduped by product id
+  across leaves in-spider (a product can appear under more than one leaf).
+
+  Prices are integers at an internal x100 scale regardless of the
+  tenant's real minor unit (XAF has none) — confirmed against the SSR
+  page's own display price for product 75593 (raw JSON price 200000 ->
+  rendered "FCFA 2,000") — so every emitted price is raw/100.
+
+  First Gabon grocery/supermarket source in the repo (the two existing
+  Gabon sources, geogabon_ga and shopenlignegabon_ga, are electronics/
+  dept-store, non-food).

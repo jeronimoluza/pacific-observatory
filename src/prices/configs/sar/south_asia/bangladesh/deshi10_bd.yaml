@@ -1,0 +1,45 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: deshi10_bd
+url: https://www.deshi10.com/
+language: en
+cadence: weekly
+channel: fresh-market
+archive_prefix: "www.deshi10.com/category/"
+archive_path_re: '^/category/[^/?]+'
+notes: |
+  Probed 2026-09-01 with curl_cffi impersonate=chrome124: 200, no WAF.
+  "Deshi10 -- Bangladesh's authentic products" (দেশি১0), a curated
+  fresh/organic grocery storefront -- categories led by Fresh Fruits,
+  Fresh Vegetables, Meat, Chicken & Poultry, Dried/Frozen Fish, Dairy &
+  Eggs, alongside packaged grocery and a smaller personal-care tail (100
+  categories total via /categories). Fills a fresh-market niche distinct
+  from the three existing Bangladesh supermarket-channel sources (chaldal,
+  othoba, shwapno_bd) and from the specialty-food khaasfood_bd (meat/dairy
+  producer, no fresh produce).
+  AIZ/6valley-style marketplace theme (single-vendor storefront, not a
+  seller marketplace -- no distinct seller names on cards). Category
+  listing pages render product cards directly with name (h3 a[title]) and
+  price (span.text-primary, e.g. "৳28.00") -- no PDP visit needed.
+  Pagination via `?page=N`; verified enumerability by page: page=1 on
+  Fresh-Vegetables returned 13 distinct product slugs, page=2 returned 1
+  different slug not in page 1 -- confirms real pagination, not a fixed
+  single page. Spider paginates each of the 100 categories until a page
+  returns zero product cards (MAX_PAGES=50 safety cap, never hit in
+  testing).
+  Verified end to end with a full unbounded run (all 100 categories,
+  paginated to exhaustion): 632 rows, 632 distinct product_id, 632
+  distinct url, 0 blank names, 0 zero/negative prices, 100% BDT, price
+  range 10.00-1400.00 (median 110.00). Food share (division 01/02
+  categories vs. the ~29 personal-care/cleaning categories in the same
+  catalog) approx 76.6% by category-attributed row count. Cold re-fetched
+  2 products live (nutmeg-jayfal-whole-5pcs on Special-Ingredients ->
+  55.00 BDT; chickpea-flour-boot-beshon-500gm PDP -> 49.00 BDT) -- both
+  matched stored values exactly.
+  BDT is integer-denominated in practice on this site; prices render with
+  ".00" but no minor-unit division needed.
+  General grocery catalog spanning many COICOP classes (fresh produce,
+  meat, dairy, packaged food, some non-food personal care) -- coicop_codes
+  left unset for the classifier.

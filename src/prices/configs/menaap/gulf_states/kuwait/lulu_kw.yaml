@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: hypermarket
+spider: lulu_kw
+url: https://gcc.luluhypermarket.com/en-kw
+language: en
+cadence: weekly
+timeout: 5400
+archive_prefix: "gcc.luluhypermarket.com/en-kw/"
+archive_path_re: '^/en-kw/.+/p/\d+/?$'
+notes: |
+  Verified live 2026-08-31: LuLu Hypermarket Kuwait, on the shared multi-
+  country gcc.luluhypermarket.com storefront (robots.txt lists en-ae/en-qa/
+  en-sa/en-om/en-kw/en-bh sitemaps off one host; same pattern already built
+  for lulu_om and lulu_bh). Category listing pages are client-rendered React
+  with no product data in the raw response, so this spider is seeded off
+  /en-kw/sitemap/products-1 (1,980 product URLs, single sitemap file, no
+  further pagination) and reads each server-rendered PDP directly. The
+  page's own schema.org Product JSON-LD is a stub (offers.price always
+  "0.00", priceCurrency null) -- not usable; price comes from the rendered
+  `<span data-testid="price">3.150 KWD</span>` instead.
+  Locality proved: currency on the PDP price span is KWD (not AED/SAR/OMR),
+  and spot-checked prices are distinct, plausible KWD numbers -- Fage Total
+  0% Fat Yogurt Lactose Free 450g at 3.150 KWD, Mima Gardens Grill Cheese
+  250g at 1.055 KWD, Mima Gardens Kashkaval Cheese 350g at 1.320 KWD.
+  290 of the 1,980 sitemap URLs match a food/beverage keyword filter
+  (milk/juice/rice/oil/cheese/coffee/yogurt/meat/etc.) -- a real grocery
+  share, not incidental. Out-of-stock items render "0.000 KWD" in the same
+  span (confirmed on a cable/electronics PDP); those are skipped rather than
+  emitted as zero-priced rows. Mixed catalog (grocery, electronics, fashion,
+  homeware) -- channel approximated as hypermarket.
+  coicop_divisions: 01, 03, 05, 08, 09
+  divisions_basis: sampled_rows (URL keyword sample + spot PDP checks; category not derivable from PDP markup, full tree not walked)

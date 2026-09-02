@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["01.1.1.1.2", "01.1.1.2", "07.2.2"]
+spider: asiapress_kp_market
+url: https://www.asiapress.org/rimjin-gang/north-k-korea-prices/
+language: en
+currency: KPW
+cadence: weekly
+channel: null
+archive_prefix: "www.asiapress.org/rimjin-gang/"
+archive_path_re: '^/rimjin-gang/(?:report/)?north-k-korea-prices/?$'
+notes: |
+  ASIAPRESS / Rimjin-gang "Latest Market Price Index Inside N.Korea" table.
+  The HTML table is public and server-rendered via TablePress, with weekly rows
+  for gasoline, diesel oil, rice, corn, Chinese RMB and USD rates. The spider
+  collects only the four goods prices, skips the exchange-rate columns, and
+  caps collection at the newest 20 observation dates to avoid flooding the raw
+  item corpus with a long historical table.
+  Prices are published in North Korean won per kg. Re-verified live 2026-09-01.
+  This is not an e-commerce source; it is an informal market-monitoring series
+  used because DPRK has no observed scrapeable retail catalog.

@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rizqmarket_sd
+url: https://rizqmarket.com/
+language: ar
+cadence: weekly
+channel: marketplace
+timeout: 1800
+archive_prefix: "rizqmarket.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Probed 2026-08-31: curl_cffi impersonate="chrome124" HTTP 200, standard
+  WooCommerce Store API at /wp-json/wc/store/v1/products?per_page=100,
+  no bot wall, no auth. Currency SDG throughout (minor_unit=2, e.g. raw
+  "500000" -> 5,000.00 SDG for a mango juice). Verified real pagination
+  through page 30 (3,000+ products, still returning full 100-item pages)
+  with zero id overlap between sampled pages -- not a capped/re-served-page
+  spider. timeout: 1800 set for the full unpaginated crawl (WooBaseSpider
+  MAX_PAGES=200 safety cap, DOWNLOAD_DELAY=2s/CONCURRENT_REQUESTS=1).
+
+  FOOD COVERAGE: this is a mixed small-vendor marketplace (categories in a
+  100-product sample: perfumes 34, food 17, fruit/veg 11, fresh juices 7,
+  juices 3, women's fashion 14, electrical appliances 4 -- some products
+  carry more than one category tag) -- roughly a third of the catalog is
+  food/beverage, the rest household goods, appliances, fashion and
+  perfumes. Product photos are WhatsApp-sourced
+  (IMG-YYYYMMDD-WA####.jpg), consistent with individual local sellers
+  listing their own stock rather than one curated grocer -- still real
+  SDG retail pricing, added specifically to broaden this country's thin
+  food-and-beverage coverage (hypersale_sd is otherwise the only grocery
+  source here).
+
+  DATA QUALITY TRAP (same as djeddi_pharmacie_dz.py): 29% of a 200-row
+  sample (58/200) carried a placeholder price of "0" with
+  is_purchasable=false -- sellers who listed a product photo/name but
+  never set a price (medical-visit "services", unpriced clothing/beauty
+  listings). Spider overrides `_item` to drop is_purchasable=false rows
+  before they reach the base class.

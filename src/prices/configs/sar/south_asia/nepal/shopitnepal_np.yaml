@@ -7,6 +7,8 @@ url: https://www.shopitnepal.com/
 language: en
 cadence: weekly
 channel: convenience
+archive_prefix: "www.shopitnepal.com/"
+archive_path_re: '^/?$'
 notes: |
   ShopIt Nepal. Next.js frontend backed by a mobile JSON API. Re-verified
   live 2026-08-06: GET https://shopitnepal.com/api/mobile/products -> 200,

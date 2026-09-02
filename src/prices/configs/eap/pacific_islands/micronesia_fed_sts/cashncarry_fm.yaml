@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cashncarry_fm
+url: https://cnc.fm/product-category/food/
+language: en
+currency: USD
+cadence: weekly
+channel: supermarket
+archive_prefix: "cnc.fm/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Cash N' Carry Chuuk WooCommerce catalog. The public Store API is open and the
+  scraper filters to category 92, the Food category, yielding names, stock
+  status and USD prices. Re-verified live 2026-09-01.

@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: spar_no
+url: https://spar.no/varer
+language: "no"
+cadence: weekly
+channel: supermarket
+timeout: 3600
+notes: |
+  Verified live 2026-08-31. spar.no's own pages render nothing server-side
+  (the "/varer" listing is a client-hydrated skeleton, and its declared
+  anonymous accessTokenUrl /api/auth/getToken returns null with no browser
+  session -- both dead ends). Network-traced with Playwright: the hydrated
+  page calls the NorgesGruppen-wide product API directly with NO auth
+  header at all -- GET https://platform-rest-prod.ngdata.no/api/products/
+  1210/7080001278137?page=<n>&page_size=1000&full_response=true&fieldset=
+  maximal&showNotForSale=true (chainId=1210 is Spar; storeId=7080001278137
+  is the store the site defaults every anonymous visitor to). Elasticsearch
+  -backed: hits.total confirmed 6,947 products live; page_size accepts up
+  to 7000 in one call, walked here in 1,000-row pages. Each hit's _source
+  gives title, ean (barcode -> product_id), pricePerUnit (verified against
+  comparePricePerUnit for weight-priced items), categoryName, isForSale/
+  isOutOfStock, slugifiedUrl (-> https://spar.no/varer<slug>). Sample:
+  'Banan' ean 4011 -> NOK 5.98; 'Norvegia 26%' ean 23027196 -> NOK 332.31
+  (2kg wheel). Real wide grocery catalogue (fruit/veg, dairy, cheese, eggs,
+  meat, pantry). Same api.ngdata.no platform very likely serves Meny/Kiwi/
+  Joker with a different chainId -- worth reusing for those in a future
+  pass. Currency NOK matches countries.yaml; timeout raised for the
+  ~7-page/7k-item crawl.

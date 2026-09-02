@@ -1,0 +1,51 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tuambia_cu
+url: https://tuambia.com/
+language: es
+currency: USD
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.tuambia.com/hab/catalog/"
+archive_path_re: '^/hab/catalog/[a-z0-9\-]+$'
+notes: |
+  Diaspora remittance/delivery platform: pay abroad in USD, deliver to Cuba.
+  Real, usable Cuba price signal but NOT a domestic Cuban retail price in
+  CUP -- do not treat rows from this source as domestic CUP retail.
+
+  Next.js storefront, server-rendered. Live-verified 2026-09-01: each PDP
+  embeds a schema.org application/ld+json Product block with
+  name/sku/price/priceCurrency (sample: "Azucar refino, 4 lb, Dixie Crystals"
+  USD 7.64, sku B-JAM-001-753). Catalog enumerable via
+  https://tuambia.com/sitemap.xml -> per-category sub-sitemaps under three
+  regional URL prefixes (hab/centro/occidente); hab and occidente carry an
+  identical product-slug set on a spot check (589/589), centro is a subset
+  -- only hab (Havana) is crawled, both for Havana-focus consistency with
+  the other Cuba sources and to avoid DuplicationPipeline (keys on
+  item['url']) 2-3x-counting the same SKU under region-prefixed URLs.
+  1,169 distinct /hab/catalog/<slug> PDP URLs across 54 category sitemaps
+  (counted live 2026-09-01). Enumerability proof: category page 1 vs 2 of
+  /hab/catalog/category/alimentos returned fully disjoint product slugs.
+  Category label is taken from the sitemap file name (e.g. "alimentos",
+  "carnicos-y-embutidos") -- PDPs carry no server-rendered breadcrumb text.
+
+  Catalog spans groceries, beverages, cleaning/personal care, small
+  appliances, hardware, and auto accessories -- same breadth as
+  mallhabana_cu -- so channel is marketplace rather than supermarket.
+
+  MEASURED COMPOSITION (orchestrator, 1,113-row unbounded run 2026-09-01):
+  food ~53% (dulces-y-confituras 91, carnes 87, conservas 56, licoreria 53,
+  bebidas-no-alcoholicas 47, snacks 41, despensa-y-desayunos 39,
+  condimentos 38, lacteos-y-huevos 30, cereales-granos-y-pastas 30,
+  salsas 27, pescados 19, frutas-vegetales-y-viandas 8), non-food ~31%
+  (ferreteria 123 -- the single largest category in the whole catalogue --
+  textiles-y-decoracion 52, aseo-personal 48, utiles-del-hogar 31,
+  limpieza-del-hogar 23, electrodomesticos 23), and ~15% mixed/ambiguous
+  (jamazon 125 = Amazon reshipping, mejores-precios-1 47 = a deals rail).
+  30 distinct categories. This confirms `marketplace` as the correct
+  channel: hardware outranks every single food category, and food is
+  around half the catalogue, not the overwhelming majority. Do not
+  reclassify this source as `supermarket` on the strength of its grocery
+  aisles alone.

@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: orchidea_dz
+url: https://orchidea-dz.com/
+language: fr
+cadence: weekly
+channel: pharmacy
+timeout: 1800
+archive_prefix: "orchidea-dz.com/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
+notes: |
+  Verified live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=10 ->
+  HTTP 200, currency_code DZD (matches countries.yaml), currency_minor_unit=2.
+  Sample: 'Centella Masque En Tissu Watergel Skin 1004'. X-WP-Total header
+  reports 1,301 products across 131 pages. Zero-price placeholder rate low
+  (4/200 sampled rows), no filtering needed. Whole-catalog walk, no category
+  filter.

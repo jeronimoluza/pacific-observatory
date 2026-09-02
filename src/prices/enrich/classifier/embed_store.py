@@ -6,8 +6,10 @@ recalibrated tau). So the per-block, per-row-L2 vectors are persisted ONCE as
 float16 (~24 GB) and any head scores over them without re-embedding. Growing the
 corpus embeds only the new names; swapping the head only re-runs prediction.
 
-Layout: ``_embed_store/<tag>/bucket_<b>.npz`` with ``keys`` (names) and ``mat``
-(fp16 (n, dim)). A name hashes to a fixed bucket (stable across corpus versions),
+Layout: ``_embed_store/<tag>/bucket_<b>.npz`` with ``keys_blob``/``keys_off``
+(names, see _pack_keys) and ``mat`` (fp16 (n, dim)). Buckets written before
+2026-08-20 carry a padded ``keys`` array instead and still read.
+A name hashes to a fixed bucket (stable across corpus versions),
 so a bucket holds every name ever embedded for it; build appends only the missing
 ones, and both build and read touch one bucket at a time (bounded memory). fp16
 is upcast to fp32 on read — a ~5e-4 relative perturbation on the unit vectors,
@@ -37,13 +39,35 @@ def _bucket_path(tag: str, b: int) -> Path:
     return STORE_DIR / tag / f"bucket_{b:03d}.npz"
 
 
+def _pack_keys(keys: list[str]) -> tuple[np.ndarray, np.ndarray]:
+    """Names as one UTF-8 blob plus n+1 offsets.
+
+    A numpy ``<U`` array pads every name to the longest in the bucket at 4 bytes
+    per character: ~950 B to hold a 53-character name, which across four blocks is
+    ~20 GB of padding. ``|S`` still pads, just at 1 byte per char. Blob+offsets
+    pads nothing — ~61 B/name, a 14x cut — and slices back exactly.
+    """
+    enc = [k.encode("utf-8") for k in keys]
+    lens = np.array([len(e) for e in enc], dtype=np.int64)
+    off = np.concatenate([np.zeros(1, np.int64), np.cumsum(lens)]).astype(np.int64)
+    return np.frombuffer(b"".join(enc), dtype=np.uint8), off
+
+
+def decode_keys(z) -> list[str]:
+    """Names out of an open bucket npz, either storage format."""
+    if "keys_blob" in z:
+        blob, off = z["keys_blob"].tobytes(), z["keys_off"]
+        return [blob[off[i] : off[i + 1]].decode("utf-8") for i in range(len(off) - 1)]
+    return [str(k) for k in z["keys"]]
+
+
 def _load_bucket(tag: str, b: int) -> dict[str, np.ndarray]:
     p = _bucket_path(tag, b)
     if not p.exists():
         return {}
     with np.load(p, allow_pickle=False) as z:
-        keys, mat = z["keys"], z["mat"]
-    return {str(k): mat[i] for i, k in enumerate(keys)}
+        keys, mat = decode_keys(z), z["mat"]
+    return {k: mat[i] for i, k in enumerate(keys)}
 
 
 def _save_bucket(tag: str, b: int, store: dict[str, np.ndarray]) -> None:
@@ -53,9 +77,10 @@ def _save_bucket(tag: str, b: int, store: dict[str, np.ndarray]) -> None:
     mat = (
         np.vstack([store[k] for k in keys]) if keys else np.empty((0, 0), np.float16)
     ).astype(np.float16)
+    blob, off = _pack_keys(keys)
     tmp = p.with_suffix(".npz.tmp")
     with open(tmp, "wb") as f:  # file handle => numpy won't append ".npz"
-        np.savez(f, keys=np.array(keys), mat=mat)
+        np.savez(f, keys_blob=blob, keys_off=off, mat=mat)
     tmp.replace(p)
 
 

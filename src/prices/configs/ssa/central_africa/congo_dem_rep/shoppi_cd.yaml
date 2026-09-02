@@ -7,8 +7,8 @@ url: https://www.shoppi.cd/
 language: en
 cadence: weekly
 channel: supermarket
-archive_prefix: "www.shoppi.cd/products/"
-archive_path_re: '^/products/[^/?]+'
+archive_prefix: 'www.shoppi.cd/'
+archive_path_re: '^/(?:products|collections)/[^?]+$'
 notes: |
   Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
   live 2026-08-06: HTTP 200, 250 products on page 1. This session's sample

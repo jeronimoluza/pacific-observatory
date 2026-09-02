@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+spider: bpl_fuel_charge_bs
+url: https://www.bplco.com/fuel-charge-update/
+language: en
+currency: BSD
+cadence: monthly
+channel: other
+archive_prefix: "www.bplco.com/"
+archive_path_re: '^/fuel-charge-update/?$'
+notes: |
+  Bahamas Power and Light (BPL) -- sole electricity utility for New
+  Providence and the Family Islands. bplco.com/fuel-charge-update/ is a
+  plain server-rendered HTML table of the monthly "Fuel Charge" (cents per
+  kWh, billed on top of the base consumption rate) split into an
+  under-800-kWh tier and an over-800-kWh tier, republished every
+  Statement Period. Narrow electricity tariff source; coicop_codes set
+  to 04.5.1 (electricity, gas and other fuels).
+
+  Verified live 2026-08-31: regex over the raw table matched 15 Statement
+  Periods (February 2026 back to December 2024), i.e. a real historical
+  series live-published by the utility -- not a single hardcoded snapshot
+  and not a capped crawl (a flat page is expected for this static-schedule
+  page type, same as apua_rates_ag). Values are cents/kWh in the source;
+  divided by 100 so `price` is a plain BSD amount like every other source.
+  Every row on this single page shares response.url, so each row gets a
+  unique url fragment (#<period>-lt800 / -gt800) -- see apua_rates_ag.py
+  for why (DuplicationPipeline dedups on item['url']).
+
+  Smoke run: 30/30 rows (15 periods x 2 tiers), single currency BSD,
+  price range $0.1444-$0.224.

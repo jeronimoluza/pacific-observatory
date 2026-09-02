@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jcscc_jo
+url: https://www.jcsccshop.gov.jo/
+language: ar
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.jcsccshop.gov.jo/Product/"
+archive_path_re: '^/Product/[0-9]+/[^/?]+/?$'
+notes: |
+  Verified live 2026-09-01. JCSCC (Jordan Civil Service Consumer
+  Corporation, jcsccshop.gov.jo) -- a government-affiliated consumer
+  cooperative running physical grocery/hypermarket stores across Jordan
+  (membership program open to civil servants and the public), with a real
+  standalone online catalog and its own price list. One operator, not a
+  marketplace. Custom PHP storefront (0 wp-json/wc hits). 11 top-level
+  divisions walked: dairy/cheese/eggs, fresh meat/poultry, frozen foods,
+  sweets/baking, personal care, home care, bakery/cake, "save more"
+  promos, beverages, groceries, and heaters (seasonal, non-food) --
+  8 of 11 are food/beverage.
+
+  Pagination verified genuine, not a Magento re-served-last-page loop
+  (rule 10): page 1 vs page 2 of the same category return 9 vs 9 fully
+  DISJOINT product ids (0 overlap); pages past the true last page return
+  an empty product list (0 cards), so the spider's stop condition is
+  reliable.
+
+  JOD 3-decimal check done: labneh (لبنة طيبة 4كغم, 4kg tub) site-displays
+  as "10.00 JD" -- parsed float 10.00 JOD = 2.50 JOD/kg, a plausible dairy
+  price; no minor-unit scaling needed, the site's price text already IS
+  the JOD amount.
+
+  Storefront is Arabic-only (no parallel English catalogue instance
+  found) -- product names kept verbatim in Arabic per rule 21/22.

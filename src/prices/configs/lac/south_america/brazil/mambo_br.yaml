@@ -8,7 +8,7 @@ language: pt
 cadence: weekly
 channel: supermarket
 archive_prefix: "www.mambo.com.br/"
-archive_path_re: '^/[^/]+/p$'
+archive_path_re: '^/[^/]+/p(?:/p\d+)?/?$'
 notes: |
   Sao Paulo interior full-line chain, fresh produce confirmed. Re-verified live:
   products/search?_from=0&_to=9 -> HTTP 206, 109KB, 'Cebola Nacional Kg' BRL 8.99. Language

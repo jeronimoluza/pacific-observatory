@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: megamart_bh
+url: https://megamart.bh/en/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "megamart.bh/en/catalogue/"
+archive_path_re: '^/en/catalogue/[^/]+_\d+/?$'
+notes: |
+  Server-rendered Django (django-oscar storefront) online supermarket.
+  Confirmed live 2026-09-01 with plain curl_cffi (impersonate=chrome124),
+  no Playwright needed. Category listing pages
+  (/en/catalogue/category/<path>_<id>/, paginated via ?page=N) render
+  product cards directly — name, price, and PDP url all in the listing
+  HTML, so the spider never visits a PDP. Each category page states its
+  own total ("You've Viewed 99 of 395 Products"), used to compute how many
+  ?page=N requests to issue. Confirmed enumerable: baby-diapers page 1 vs
+  page 2 returned disjoint product-id sets.
+
+  Category seed list (501 category/subcategory URLs) is scraped from the
+  homepage nav. Parent and child category pages both list their products,
+  so the same product appears on more than one category page;
+  DuplicationPipeline collapses on url (stable per product — the
+  slug+id in the PDP href), so re-visits are harmless.
+
+  Currency: BHD, 3 decimals (e.g. "0.550" for Almarai Natural Hummus
+  250g, confirmed against the live PDP) — matches the known
+  BHD-is-a-3-decimal GCC-currency trap (same family as JOD/KWD/OMR).
+
+  Distinct company/catalog from aljazira_bh and lulu_bh (both already
+  onboarded) — not the same shelf.

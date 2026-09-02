@@ -1,0 +1,41 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+channel: null
+source_key: lkw_stromtarife
+module: eca.western_europe.liechtenstein.lkw_stromtarife
+function: fetch_lkw_stromtarife
+url: https://www.lkw.li/angebot-und-leistungen/strom-und-waerme/stromtarife.html
+language: de
+cadence: annual
+fallback_date: 2015-01-01
+notes: |
+  Liechtensteinische Kraftwerke (LKW) -- the DOMESTIC electricity utility
+  (not a Swiss re-export; LKW operates Liechtenstein's own grid). Parses
+  the "LKWclassic" fixed-price product table, plain server-rendered HTML,
+  no JS needed. Two dated periods (effective 2024-01-01 covering the
+  schedule labelled "gultig bis 31.12.2025", and 2026-01-01 "gultig ab
+  1.1.2026"), each with Hochtarif/Niedertarif bands (plus a new
+  Einheitstarif flat band from 2026), each offered in three product tiers
+  sharing the same base price: Basisstrom (plain grid), LiStrom natur
+  (+1.00 Rp/kWh green surcharge), LiStrom natur plus (+5.00 Rp/kWh).
+  Emits the full computed CHF/kWh price for all tiers, not just the
+  surcharge. LKWflex (monthly market-linked time-of-use) and LKWfree
+  (hourly EPEX-indexed) are on the same page but not tabular/dated in a
+  way this fetcher parses -- out of scope.
+
+  Verified live 2026-09-01: 15 rows, 15 distinct item_name, 0 duplicate
+  observation_hash. Currency CHF (source quotes Rp./kWh = Rappen = CHF
+  cents; divided by 100). Price range 0.1055-0.1780 CHF/kWh (median
+  0.1226). Sample: "LKWclassic Basisstrom Hochtarif" (2024-01-01) CHF
+  0.1280/kWh; "LKWclassic Basisstrom Einheitstarif" (2026-01-01) CHF
+  0.1070/kWh; "LKWclassic LiStrom natur plus Hochtarif" (2026-01-01) CHF
+  0.1626/kWh -- all spot-checked against the raw page text.
+
+  Complementary to (not a duplicate of) eurostat_electricity (Eurostat
+  dataset nrg_pc_204, a cross-country household electricity price
+  STATISTIC, half-yearly, country grain) -- this is the utility's own
+  published rate schedule at band/tier granularity Eurostat does not
+  report. No shared backend, no shared product_id namespace.

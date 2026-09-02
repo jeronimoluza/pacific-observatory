@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: small_wolt_kz
+url: https://wolt.com/en/kaz/almaty/venue/small-tole-bi
+language: ru
+cadence: weekly
+channel: marketplace
+archive_prefix: "wolt.com/en/kaz/almaty/venue/"
+archive_path_re: '^/en/kaz/almaty/venue/[^/?]+'
+notes: |
+  Small (major Almaty supermarket chain) Tole Bi branch on the Wolt
+  delivery marketplace. Same SSR query-state walk as rimi_wolt_lt /
+  ab_vassilopoulos_wolt_gr (shared base `_wolt_base.py`): venue page ->
+  category-listing (13 top-level categories, "partial" loading strategy
+  -- item_ids empty at this level) -> 105 leaf category slugs after
+  expanding subcategories (e.g. "Молоко, яйца" -> Йогурты, Кефир, Масло,
+  Молоко, Сметана, Сыры, Творожные продукты, Яйцо) -> per-leaf
+  `/items/<slug>` page 1 (up to 50 items each, real Russian-language SKUs,
+  KZT price in minor units /100, barcode_gtin present on most items).
+  Verified live 2026-08-31: GET /en/kaz/almaty/venue/small-tole-bi -> 200,
+  query-state blob present; GET .../items/menucategory-8 (Бакалея ->
+  Быстро приготовить) -> 50 items incl. 'Суп Podravka говяжий с
+  вермишелью 65 г' 395.00 KZT. Overwhelmingly food/beverage by category
+  count: dairy, meat, fish, produce, bread/bakery, frozen, sweets, drinks
+  are the majority of the 105 leaf categories (non-food is a minority:
+  home/auto, cleaning, tobacco, pet). CAVEAT: the --max-items 200
+  verification run (218 items processed, 8 leaf categories) happened to
+  land mostly in the non-food tail (Для кошек 50, Сигареты 50, Стики 38,
+  Для собак 22 = 160/218) because Scrapy's default LIFO scheduler drains
+  the last-enqueued leaf categories first; only Хлеб/Сухари/Пекарня Small
+  (54/218) were food in this capped sample. A full unbounded run reaches
+  the food-majority categories (dairy, meat, produce, etc.) that sit
+  earlier in the 105-leaf walk order. Wolt robots.txt is fully open
+  (`Disallow:` empty) --
+  unlike arbuz.kz/small.kz's own domain robots.txt, which explicitly
+  disallow ClaudeBot site-wide; sourcing the same chain's catalog via its
+  Wolt storefront avoids that block. channel:marketplace (Wolt aggregates
+  the first-party retailer's catalog, same convention as the other
+  *_wolt_* sources in this repo).

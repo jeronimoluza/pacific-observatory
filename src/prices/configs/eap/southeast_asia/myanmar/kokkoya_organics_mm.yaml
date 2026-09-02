@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kokkoya_organics_mm
+url: https://kokkoyaorganics.com/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "kokkoyaorganics.com/"
+archive_path_re: '^/collections/[^/]+/products/[^/?]+/?$'
+notes: |
+  Discovered 2026-09-01 (myanmore.com "online grocery stores" roundup ->
+  kokkoyaorganics.com). Standard Shopify storefront (Canopy 4.0.0 theme),
+  /products.json paginated, zero auth. Locality confirmed via bootstrap JS:
+  `Shopify.currency = {"active":"MMK","rate":"1.0"}`, `Shopify.country =
+  "MM"` — a Myanmar farm-to-table/organic grocer, not a diaspora store.
+  Verified live 2026-09-01: 105 products (single page), 100% MMK, 0
+  zero-price, 0 blank-name, price range 1,200-91,000 MMK. Catalog is
+  organic/curated food: fresh vegetables (tomato, cabbage, cauliflower),
+  dairy/cheese (Greek yogurt, feta, halloumi), eggs, coffee/tea, jams,
+  sauces, bread, spice powders — narrow food/drink range, hence
+  `specialty-food` rather than `supermarket`. ~5 of 105 SKUs are non-food
+  ancillary items (compost, cooler bag, laundry liquid, a card game).

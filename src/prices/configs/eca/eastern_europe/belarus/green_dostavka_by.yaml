@@ -1,0 +1,47 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: green_dostavka_by
+url: https://green-dostavka.by/
+language: ru
+currency: BYN
+cadence: weekly
+channel: supermarket
+timeout: 21600
+notes: |
+  Green Dostavka ("ГРИНрозница") -- Minsk convenience/grocery chain's own
+  delivery storefront. curl_cffi impersonate=chrome124 clears with HTTP 200
+  on every path probed, no anti-bot layer observed. A sibling Belarusian
+  candidate (edostavka.by / Evroopt's online store) was also probed this
+  wave and has cleaner structured data (JSON-LD via a Next.js __NEXT_DATA__
+  payload) but gates behind a client-side JS "Verification" cookie
+  challenge that also rate-limits hard under repeated probing -- solvable
+  in principle (the challenge cookie value is static, just needs to be
+  read from the served page and replayed) but not pursued this wave in
+  favor of the cleaner, unblocked green-dostavka.by.
+
+  The site publishes `/sitemap.xml` -> one sub-sitemap
+  (`/sub-sitemaps/sitemap-0.xml`) listing ~19,781 `/product/<slug>-<id>/`
+  URLs directly. This is deliberately used INSTEAD of crawling the 3-level
+  `/catalog/<l1>/<l2>/<l3>/` category tree: parent category pages only
+  render a partial product listing (e.g. the "molochnye-produkty-syr-yajca"
+  (dairy) L1 page shows 106 products total, but its own "syry" (cheese) L2
+  child alone already has 60 -- walking the tree to full leaf depth would
+  be required to avoid undercounting, and the sitemap is strictly more
+  complete and far fewer requests).
+
+  Each PDP embeds a clean schema.org `Product` JSON-LD block: `sku`
+  (stable numeric id, matches the URL's trailing digits), `name`,
+  `category` (leaf category name, e.g. "Икра" for caviar), and
+  `offers.price` / `offers.priceCurrency` (BYN, 2 decimals, e.g.
+  "Икра лососевая горбуши Совьет" -> 42.19 BYN). No JS rendering needed.
+
+  Cold re-fetch verified 2026-09-01 against
+  https://green-dostavka.by/product/ikra-lososevaya-gorbushi-sovet-1215115/
+  (42.19 BYN, matches page) and a second SKU sampled from the sitemap.
+
+  Test run (--max-items 20): 20/20 rows, 20 distinct product_id, 20
+  distinct url, 0 blank names, 0 zero/negative price, 100% BYN. Full
+  unbounded run measured separately -- see Phase-8 report for final counts
+  (kicked off in background given ~19.8k PDPs to fetch).

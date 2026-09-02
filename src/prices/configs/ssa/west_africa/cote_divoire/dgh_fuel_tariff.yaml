@@ -1,0 +1,41 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2", "04.5.4", "04.5.3"]
+source_key: civ_dgh_fuel_tariff
+module: ssa.west_africa.cote_divoire.dgh_fuel_tariff
+function: fetch_civ_dgh_fuel_tariff
+channel: fuel-station
+url: https://www.energie.gouv.ci/petrole
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Researched 2026-08-31: DGH (Direction Generale des Hydrocarbures,
+  Ministere des Mines, du Petrole et de l'Energie) sets a mandatory,
+  nationwide maximum pump price each month under Cote d'Ivoire's automatic
+  price-adjustment mechanism -- every station displays the same regulated
+  price, so there is no retailer-level catalog to crawl (this is a
+  tariff/official_avg-style source, not a retailer_sku spider).
+
+  energie.gouv.ci/petrole (the url: field) is the ministry's own petroleum
+  page but is static informational content with no communique archive or
+  PDF feed -- confirmed live, zero FCFA/price mentions on the page. No
+  other stable, scrapable government URL publishing the monthly decision
+  was found. Values are instead hardcoded per decision in
+  _KNOWN_DECISIONS, sourced from the DGH's 2026-07-31 communique as
+  reported identically across koaci.com, financialafrik.com, fratmat.info,
+  and sikafinance.com (cross-checked, all report Super sans plomb 905
+  FCFA/L, Gasoil 725 FCFA/L, Petrole lampant 780 FCFA/L, gaz butane
+  bottles unchanged at 2000/5200/13000 FCFA for 6/12.5/28 kg), effective
+  2026-08-01. This mirrors the evn_vn_tariff.py convention (Vietnam) for a
+  regulator decision with no scrapable primary source.
+
+  _KNOWN_DECISIONS must be updated by hand on each future DGH revision
+  (historically monthly, sometimes held flat). COICOP split: Super/Gasoil
+  are vehicle fuel (07.2.2); petrole lampant is a household fuel (04.5.4);
+  gaz butane is household cooking gas (04.5.3).
+
+  Fourth new source for Cote d'Ivoire in this pass (alongside cie_tariff
+  and carrefour_ci), joining adjovan_ci and megamarche_ci.

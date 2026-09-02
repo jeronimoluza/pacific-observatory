@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pharmaly_dz
+url: https://www.pharmaly-dz.com/
+language: fr
+cadence: weekly
+channel: pharmacy
+timeout: 5400
+archive_prefix: "www.pharmaly-dz.com/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
+notes: |
+  Verified live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=10 ->
+  HTTP 200, currency_code DZD (matches countries.yaml), currency_minor_unit=2.
+  Sample: 'Beln*co Pore Refining Uv Barrier Cream Spf50 50ml'. X-WP-Total
+  header reports 10,416 products across 1,042 pages -- large parapharmacy
+  catalog (skincare, beauty, supplements). Zero-price placeholder rate low
+  (1/200 sampled rows), no filtering needed. Whole-catalog walk, no category
+  filter.

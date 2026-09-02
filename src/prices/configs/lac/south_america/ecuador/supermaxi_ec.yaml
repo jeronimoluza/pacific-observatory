@@ -1,0 +1,52 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: supermaxi_ec
+url: https://www.supermaxi.com/
+language: es
+currency: USD
+cadence: weekly
+channel: supermarket
+timeout: 3600
+archive_prefix: "www.supermaxi.com/producto/"
+archive_path_re: '^/producto/[^/?]+'
+notes: |
+  Supermaxi -- Corporacion Favorita's supermarket chain, Ecuador's largest
+  grocery retailer. WordPress/WooCommerce storefront, but the WooCommerce
+  Store API (/wp-json/wc/store/v1/*) is not registered on this tenant
+  (404, and the wp-json root's namespace list has no "wc" entry).
+  Discovery instead walks the plain WP REST API's `product` custom-post
+  endpoint /wp-json/wp/v2/products (rest_base "products", confirmed via
+  /wp-json/wp/v2/types) -- standard per_page/page pagination, X-WP-Total
+  47,269 / X-WP-TotalPages 473 at per_page=100, re-verified live
+  2026-08-31. That listing payload has no price field; each product's own
+  detail page (the payload's `link`) embeds a JSON-LD Product node
+  server-side with sku/offers.price/offers.priceCurrency/availability,
+  which the spider fetches per product (1 extra request/product -- no
+  live JSON price feed exists here).
+
+  30-item random sample across API pages 1/50/200/500/1000 (2026-08-31):
+  29/30 real non-zero USD prices ($0.49-$22.59); the one $0.00 row was
+  OutOfStock (spider drops price<=0 rows). Real grocery mix confirmed:
+  almendras naturales $1.78, alimento humedo para gatos $0.54, platano
+  fresco $0.99, limon mandarina $0.99, pimiento rojo $0.99, jamaica en
+  flor $0.49, cafe en capsulas Nescafe Dolce Gusto $6.54, agua carbonatada
+  $1.16, cereal Nestle Fitness $5.24, bebida en polvo Tang $3.80 --
+  alongside general-merchandise (pet supplies, USB accessories,
+  housewares), i.e. a genuine whole-catalog supermarket assortment, not a
+  promo flyer.
+
+  Bounded to MAX_LIST_PAGES=40 listing pages (100 products/page) and
+  MAX_PRODUCTS=3000 PDP fetches per run -- full catalogue is ~47k products,
+  too large for one run; timeout set high to let a real run get through
+  as much of that bound as possible.
+
+  Locality: apex domain is a generic .com, not a ccTLD, so locality rests
+  on in-country evidence -- the site's /catalogo/ page's "local" <select>
+  lists 50+ physical Supermaxi store locations across Ecuadorian cities
+  (Guayaquil, Quito, Cuenca, Riobamba, Salinas, Santo Domingo, Tulcan,
+  etc.), and every priced product is in USD, Ecuador's currency. Bare curl
+  is not blocked here, but scrapy_impersonate chrome124 is used for
+  consistency with the rest of the fleet and because the WP REST JSON
+  endpoint is fronted by the same edge as the HTML.

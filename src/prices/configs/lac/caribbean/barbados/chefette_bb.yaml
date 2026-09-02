@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: chefette_bb
+url: https://chefette.com/
+language: en
+cadence: weekly
+channel: other
+archive_prefix: "chefette.com/menu/"
+archive_path_re: '^/menu(?:/[a-z-]+){1,2}/?$'
+notes: |
+  Chefette Restaurants Ltd -- Barbados fast-food chain (fried chicken,
+  pizza, rotis, sandwiches) plus its BBQ Barn steakhouse brand. Single-
+  country chain: +1-246 (Barbados) phone prefix, no country selector on
+  site (unlike the multi-Caribbean Automotive Art franchise found in the
+  same discovery pass) -- locality confirmed.
+
+  Menu page (/menu/<brand>) is a Vue SPA shell, but its own JS calls a
+  plain unauthenticated JSON API confirmed via Playwright network trace
+  2026-09-01 and replayed cold with curl_cffi (no cookies, no auth
+  header needed):
+    GET https://chefette.com/api/v2/food/chefette  -> 137 items / 13 categories
+    GET https://chefette.com/api/v2/food/barn       -> 64 items / 7 categories
+  (/api/v2/cart 403s "Unauthenticated Cart API requests are not allowed" --
+  the menu-read endpoint and the order-write endpoint have separate auth
+  gates; only the read endpoint is scraped.)
+
+  Prices are "$"-prefixed strings in the JSON, e.g. "$22.95" -- BBD is
+  Chefette's only operating currency (single-country chain). No per-item
+  URL exists (single SPA page per brand); synthesized as
+  <category_url>#<microsNo> to avoid DuplicationPipeline collapsing every
+  item in a category onto the one category URL.
+
+  channel: other (dining/restaurant) per GLOSSARY.md's hotpepper_jp
+  precedent -- does NOT count as a food-channel source for the programme's
+  supermarket/hypermarket/etc. tally, only toward the source total.

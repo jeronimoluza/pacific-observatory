@@ -1,0 +1,47 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2", "04.5.4"]
+source_key: tgo_csfppp_fuel_tariff
+module: ssa.west_africa.togo.csfppp_fuel_tariff
+function: fetch_tgo_csfppp_fuel_tariff
+channel: fuel-station
+url: https://www.republiquetogolaise.tg/gouvernance-economique/2705-11937-nouveaux-tarifs-pour-les-produits-petroliers-a-partir-de-ce-mercredi
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Researched 2026-08-31: the CSFPPP (Comite de Suivi des Fluctuations des
+  Prix des Produits Petroliers), acting under an interministerial decree
+  (Economy, Finance, Energy ministers) and Togo's automatic
+  price-adjustment mechanism (decree n°2010-146/PR, 26 Nov 2010), sets a
+  mandatory maximum pump price applied uniformly nationwide -- every
+  filling station displays the same regulated price, so there is no
+  retailer-level catalog to crawl (tariff source, not a retailer_sku
+  spider).
+
+  republiquetogolaise.tg/.../evolution-du-prix-des-produits-petroliers (a
+  natural URL guess) turned out to be a static 2023 article with no table
+  and no communique archive -- checked live, zero FCFA mentions, no
+  scrapable feed. No other stable government URL with a machine-readable
+  price table was found. Values are hardcoded in _KNOWN_DECISIONS instead,
+  sourced from the official government portal republiquetogolaise.tg
+  ("Site officiel du Togo") article on the most recent decree (effective
+  2026-05-27: Super sans plomb 725 FCFA/L, Gasoil 750 FCFA/L, Petrole
+  lampant 1040 FCFA/L, Melange deux temps 811 FCFA/L, up from 680/695
+  FCFA/L for super/gasoil), cross-checked against togofirst.com's
+  independent headline (matches the 725 FCFA/L super price). Mirrors the
+  cote_divoire/dgh_fuel_tariff.py convention for a regulator decision with
+  no scrapable primary source; carries the same _STALE_AFTER_DAYS warning
+  (120 days here, since CSFPPP revisions are irregular rather than
+  monthly) so a future silent staleness is at least logged.
+
+  COICOP split: Super sans plomb / Gasoil / Melange deux temps are vehicle
+  fuel (07.2.2); Petrole lampant (kerosene) is a household heating/lighting
+  fuel (04.5.4). No regulated gaz-butane bottle price table was found for
+  Togo in this pass (unlike Cote d'Ivoire's DGH), so butane is not
+  included.
+
+  Fifth Togo source, alongside assivito_tg, miabemarche_tg (existing),
+  mivashop_tg and kal_tg (new this pass).

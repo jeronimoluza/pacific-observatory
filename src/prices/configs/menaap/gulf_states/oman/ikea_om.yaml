@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ikea_om
+channel: home-improvement
+url: https://www.ikea.com/om/en/
+language: en
+cadence: weekly
+archive_prefix: "www.ikea.com/om/en/p/"
+archive_path_re: '^/om/en/p/[^/?]+'
+notes: |
+  Verified live 2026-08-31: same shared IKEA platform as ikea_ae/ikea_sa
+  (see _ikea_base.py docstring) — open JSON listing API at
+  sik.search.blue.cdtapps.com, no WAF/anti-bot observed on the storefront
+  nav or API host for the om market. /om/en/cat/products-products/ mega-nav
+  yields 210 category keys with a numeric key suffix. Spot check on the
+  first category key returned 42 items, all OMR-priced non-zero (e.g.
+  HELMER storage unit at 25.00 OMR) — a genuinely localized market, not a
+  fallback to another currency.
+  coicop_divisions: 05, 08, 09
+  divisions_basis: sampled_rows (one category spot-checked out of 210 discovered keys)

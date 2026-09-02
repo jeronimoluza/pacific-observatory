@@ -1,0 +1,48 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: classifier
+source_key: instad_ipc_dji
+module: menaap.north_africa.djibouti.instad_ipc_bulletin
+function: fetch_instad_ipc_dji
+channel: null
+url: https://instad.dj/indice/ipc
+language: fr
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  INSTAD (national statistics office) monthly IPC bulletin, "Tableau 4: Prix
+  moyen des produits de première nécessité" -- a national-average RETAIL
+  PRICE table (FDJ/DJF), not the CPI index published alongside it in the
+  same PDF.
+
+  instad.dj is a Nuxt 3 SPA with no prerendered routes (confirmed via
+  /_nuxt/builds/meta/<buildId>.json -> "prerendered": []). Found the real
+  backend by sniffing network calls while loading /indice/ipc: a Node API
+  at instad-dj-6abc7b0eb612.herokuapp.com. GET
+  /fichiers/Indice%20des%20prix%20%C3%A0%20la%20consommation/<year> ->
+  HTTP 200, plain JSON array of monthly bulletin records with an imgUrl
+  pointing to the bulletin PDF on Firebase Storage. No auth, no WAF; a
+  plain requests session works (no curl_cffi impersonation needed).
+
+  Verified live 2026-08-31 against the July 2026 release (year=2026,
+  month=6, 0-indexed): 29 staple items (rice, pasta, meat, vegetables,
+  milk, sugar, flour, cooking oil, plus 3 retail fuel grades GAZOIL/SUPER/
+  KEROZENE) x a rolling 6-month price history per bulletin (header row
+  "Fév-26 Mars-26 Avr-26 Mai-26 Juin-26 Juil-26") = 174 candidate rows, all
+  6 columns parsed, 29/29 item rows matched. Currency FDJ/DJF matches
+  countries.yaml. Re-runs naturally re-assert the same observation_hash
+  for the 5 overlapping months; only the newest month is genuinely new
+  each release.
+
+  Table 3 in the same PDF (the COICOP-division CPI index) is NOT parsed
+  here -- its header row is pdfplumber-mangled by rotated column text, and
+  it's an index series (cpi_benchmark), not a price-level series; left for
+  a future, separate manifest per onboarding doctrine (one manifest per
+  index/price-level series).
+
+  COICOP left to the classifier: item labels are plain French product
+  descriptions (e.g. "Riz Belam (25 kg)", "Huile Alimentaire (1L)"), mostly
+  food/beverage division 01 but the table also carries 3 retail fuel prices
+  (GAZOIL, SUPER, KEROZENE) so it is not single-division and coicop_codes
+  is left unset.

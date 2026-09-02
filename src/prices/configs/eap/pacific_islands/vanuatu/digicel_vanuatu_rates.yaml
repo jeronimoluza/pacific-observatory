@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: nextjs_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: digicel_vanuatu_rates
+url: https://www.digicelpacific.com/mobile/vu/rates
+language: en
+currency: VUV
+cadence: monthly
+channel: null
+archive_prefix: "www.digicelpacific.com/mobile/vu/"
+archive_path_re: '^/mobile/vu/rates/?$'
+notes: |
+  Official Digicel Vanuatu mobile rates page. The page renders prepaid and
+  postpaid rate tables with service type, rate type, unit, charging basis and
+  VUV prices. Added as telecom tariff coverage to supplement Vanuatu's local
+  food and CPI sources.

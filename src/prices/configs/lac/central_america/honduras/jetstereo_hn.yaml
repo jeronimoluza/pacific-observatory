@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jetstereo_hn
+url: https://www.jetstereo.com/
+language: es
+currency: HNL
+cadence: weekly
+channel: electronics
+archive_prefix: "www.jetstereo.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Electronics/appliances/home-goods retailer (workbook candidate, wave 7).
+  Custom Next.js storefront -- not Shopify/WooCommerce/Magento/VTEX, and no
+  bare `<script type="application/ld+json">` tag on the PDP.
+
+  Discovery: `/sitemap.xml` lists all ~6,067 `/product/<slug>` PDP URLs
+  directly (confirmed live 2026-09-01) -- no category crawl needed, so
+  there is no LIFO category-walk bias in a capped run.
+
+  Extraction: each PDP embeds a schema.org Product block JSON-encoded
+  TWICE inside a React Server Components payload rather than as a literal
+  ld+json script tag, so the shared JSON-LD helper does not apply --
+  bespoke double-unescape in the spider. Sample: "Batidora de Pedestal
+  KitchenAid/ Artisan/ 10 Velocidades/ Roja" HNL 14995.00, category
+  "Electrodomésticos", confirming HNL (Lempira) pricing.
+
+  Live-checked 2026-09-01: plain `requests` (no curl_cffi impersonation
+  needed) returns 200 with the full payload -- no Cloudflare TLS
+  fingerprinting on this host despite the Cloudflare Insights beacon
+  script present.

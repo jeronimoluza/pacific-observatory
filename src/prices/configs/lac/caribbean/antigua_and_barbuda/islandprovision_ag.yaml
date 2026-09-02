@@ -1,0 +1,56 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: islandprovision_ag
+url: https://islandprovision.com/
+language: en
+currency: USD
+cadence: weekly
+channel: specialty-food
+timeout: 300
+archive_prefix: "islandprovision.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Locality: second food build for this wave (see horizonssupplies_ag.yaml
+  for the full trap/discovery trail -- both supplied Shopify candidates
+  rejected, Mercado Libre has no Antigua site, the brief's named targets
+  are Facebook-only/brochure-only). Island Provision Group is a real
+  Antigua business found via DuckDuckGo HTML search (Antigua & Barbuda
+  supermarket ecommerce shop): confirmed via /contact-us/ text --
+  physical address "Island Provision Complex, Sir George H. Walter
+  Highway" (a real road in St John's, Antigua) and four +1268-area-code
+  phone lines (Island Provision, Best Cellars, Gourmet Basket) -- a
+  genuine warehouse/storefront complex, not a US dropship operation.
+
+  Site trades in USD, not XCD. Per the onboarding brief this is checked
+  explicitly (not accepted on the domain alone): unlike the rejected
+  Shopify candidates, USD here is not evidence of a US-based shop --
+  Antigua's tourism/yacht-provisioning economy is heavily dollarized (see
+  also horizonssupplies_ag, the sibling food/beverage supplier, which
+  serves the same yacht trade but happens to price natively in XCD). The
+  physical Antigua address is the locality proof for this source; USD is
+  accepted as the plausible currency of this specific niche, not treated
+  as a trap signal by itself.
+
+  Site is one WordPress/WooCommerce install covering four listed
+  divisions -- Island Provision Food Distribution, Gourmet Basket
+  Supermarket, Best Cellars Wines & Spirits, Yacht Provisioning -- behind
+  a single public Store API at /wp-json/wc/store/v1/products. Category
+  listing confirms a genuinely food-and-beverage catalog: Meat (94),
+  Canned Goods (21), Condiments (10), Baked Goods (4), Pantry Items (9),
+  Pasta/Rice/Spices/Oil/Juice (1 each). Total catalog measured at 141
+  products across 2 pages (per_page=100: page1=100, page2=41). Smaller
+  than horizonssupplies_ag but a distinct domain/business, not a
+  duplicate -- kept as a buffer source per the brief's "build 1 more than
+  the minimum if cheap" guidance.
+
+  Sampled products (category=42, Meat) all carried real non-zero USD
+  prices (e.g. "Debragga & Spitler Bulk Jumbo Sweetbread, Avg 1LB (Veal)"
+  45.45, "...Whole Liver (Frozen), Avg 5.6LB (Veal)" 15.00) -- not a
+  "price on application" trap.
+
+  --max-items 200 smoke run and row audit (count, distinct product_id,
+  distinct url, zero-price count, blank-name count, currency, median
+  price) recorded in outputs/price_onboarding_reports/
+  antigua_and_barbuda_wave4.md.

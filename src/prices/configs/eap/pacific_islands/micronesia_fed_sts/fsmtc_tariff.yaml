@@ -1,0 +1,43 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+channel: null
+source_key: fm_fsmtc_tariff
+module: eap.pacific_islands.micronesia_fed_sts.fsmtc_tariff
+function: fetch_fm_fsmtc_tariff
+url: "https://www.fsmtc.fm/internet/adsl"
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  FSM Telecommunications Corporation (FSMTC) published rate cards, combined
+  from three static HTML pages under the same tenant: /internet/adsl (ADSL
+  home + business tiers), /internet/dialup-rates (the current "Kaboom" fixed
+  wireless internet tiers -- URL is a legacy dial-up name, contents are not
+  dial-up), and /cable/rates-info (Pacifica TV + MyTV Kosrae). All plain
+  server-rendered HTML, no WAF, no auth -- probed 2026-09-01 with plain
+  `requests` (no curl_cffi impersonation needed).
+
+  Genuinely state-disaggregated: Pohnpei/Chuuk/Yap share one ADSL and
+  Pacifica-TV rate card (they're fibre-linked); Kosrae has its own separate,
+  lower-tier ADSL card and its own MyTV service, priced independently and
+  extracted from prose (Kosrae's cable rates aren't in a <table>, unlike
+  everything else on the site).
+
+  ~59 tariff line items per snapshot across ADSL (Home/Business x
+  with-line/without-line, both PCY and Kosrae), Kaboom (5 speed tiers,
+  FSM-wide, no state breakdown published), and cable/IPTV (Pacifica TV
+  Pohnpei/Chuuk/Yap + MyTV Kosrae). coicop_codes narrowed to 08.3.0
+  (telephone & internet services) -- single narrow class, per the onboarding
+  skill's narrowness rule, so this whole source short-circuits the
+  classifier the same way digicel_ag.yaml (Antigua) does.
+
+  No effective-date is published on any of these pages -- they are "current
+  rate" pages FSMTC edits in place, not dated tariff orders. Modelled as a
+  daily period_kind=snapshot at scrape time (same pattern as
+  eap/east_asia/south_korea/price_go_kr.py); the fetcher live-reads the page
+  on every run, so there is no hardcoded table needing a staleness tripwire.
+
+  Currency is USD -- FSM's actual currency, no FX conversion needed.

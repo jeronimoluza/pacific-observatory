@@ -1,0 +1,68 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bakhtiyari_lezzoo_iq
+url: https://www.lezzoo.com/erbil/m/bakhtiyari-fruits-and-vegetables-world-855
+language: en
+currency: IQD
+cadence: weekly
+channel: fresh-market
+archive_prefix: "www.lezzoo.com/erbil/m/bakhtiyari-fruits-and-vegetables-world-855/"
+archive_path_re: '^/erbil/m/bakhtiyari-fruits-and-vegetables-world-855/[^/?]+/?$'
+notes: |
+  Bakhtiyari Fruits and Vegetables World -- a single, named, first-party
+  fresh-produce grocer in Erbil, Iraq, storefront hosted on Lezzoo
+  (www.lezzoo.com/erbil/m/bakhtiyari-fruits-and-vegetables-world-855) rather
+  than its own domain. Lezzoo is "Kurdistan & Iraq's leading super app",
+  founded Erbil 2018, per its own Organization JSON-LD (foundingLocation
+  Erbil, addressCountry IQ, areaServed Erbil/Sulaymaniyah/Duhok/
+  Kirkuk/Zakho). This spider walks ONLY this one merchant's venue page, not
+  Lezzoo's cross-merchant directory -- the emitted catalog is this one
+  grocer's inventory, hence channel=fresh-market (not marketplace): the
+  merchant, not Lezzoo, is "the site" for this manifest.
+
+  Discovered because carrefour.iq (the brief's top lead) is Akamai-blocked
+  on all curl_cffi impersonations AND Playwright (Access Denied edge stub,
+  same MAF-Gulf Akamai tenant already recorded in known_blockers.md for
+  carrefourqatar/ksa/uae) and every standalone Iraqi grocery e-commerce
+  candidate found (kurdistansupermarket.com dead DNS, hollandbazar.com
+  WooCommerce install with no live shop/cart flow, meswaghypermarket.com and
+  ezadstore.com are unlaunched WooCommerce demo-theme sites still serving
+  Lorem-ipsum placeholder products, martoo.com is UAE-priced (AED) not
+  Iraq, ishtarmart.com is a SeedProd "coming soon" stub, zadfresh.com is a
+  bare nginx default page, padash.app/lezzoo.com marketing root/grocerjy.com
+  are pure client-rendered app-download shells with no web catalog).
+  Lezzoo's own merchant pages are the one channel that actually surfaces a
+  real, live, IQD-priced Iraqi grocery catalog server-side.
+
+  Next.js SSR: a plain GET (no special headers) embeds a schema.org
+  "Restaurant" JSON-LD node (Lezzoo tags every venue type, incl. produce
+  grocers, as Restaurant) with hasMenu.hasMenuSection[].hasMenuItem[], each
+  item carrying its own unique PDP url + Offer{price, priceCurrency,
+  availability}. Single GET returns the full page-1 menu; no pagination
+  reachable via plain GET (same known limitation as _wolt_base's page-1
+  cap) -- catalog size here (60 items) is likely undercounted vs the live
+  app.
+
+  Verified live 2026-09-01 (--max-items 200, actual venue menu size 60): 60
+  rows, 60 distinct product_id, 60 distinct url, 0 blank names, 0 zero/
+  negative prices, currency IQD throughout (median 1500 IQD, min 500 IQD,
+  max 15000 IQD), 5 category groups all produce ("1 Kilo": 30, "Vegetables":
+  17, "Fruits": 6, "Herbs": 4, "Box": 3) -- 100% food. Sample: "Lettuce" @
+  1500 IQD, "Colorful Pepper" @ 4000 IQD, "Cauliflower" @ 1500 IQD.
+  Re-fetched 3 emitted product URLs cold (lettuce-87893, beetroot-92550, and
+  chawshin's beef-back-1319397) -- all 200, scraped name + price string both
+  present verbatim in the cold-fetched page.
+  ORCHESTRATOR RE-AUDIT 2026-09-01: rows verified all-distinct, 100% IQD,
+  0 zero-price, 0 blank names, 100% food. Prices are plausible for Erbil
+  (Lettuce 1,500 IQD, Beef Back 9,500 IQD/kg).
+
+  THIN SOURCE, read before relying on it. This venue carries only a few
+  dozen SKUs, so it is a narrow price signal - genuine, but not a basket.
+  It clears the food bar on the same single-venue-on-an-aggregator precedent
+  as the *_wolt_* sources (channel describes the merchant, not the platform).
+  FOLLOW-UP: lezzoo.com exposes a full category tree for Erbil
+  (/erbil/beverages-, /erbil/bakeries-, /erbil/bread-, ...) with many more
+  named food merchants. A larger Lezzoo supermarket venue would be a
+  materially better Iraq source than these two and is worth a future pass.

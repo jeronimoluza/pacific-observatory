@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lacomer_mx
+url: https://www.lacomer.com.mx/
+language: es
+cadence: weekly
+channel: supermarket
+timeout: 3600
+archive_prefix: "www.lacomer.com.mx/lacomer/"
+archive_path_re: '^/lacomer/?$'
+notes: |
+  La Comer / Comercial Mexicana supermarket group. Storefront is a legacy
+  AngularJS SPA with no server-rendered product pages (sitemap.xml itself
+  only lists client-side hash-route fragments, e.g. #!/pasillos/...).
+  Catalog search is delegated to a third-party vendor (Amarello/Buscador),
+  exposed as an open, unauthenticated JSON API discovered via
+  /lacomer/js/ng-config.js (_AMARELLO_DOMAIN_PATH) and main.min.js
+  (searchArtPrior endpoint + param names):
+    GET https://lacomer.buscador.amarello.com.mx/searchArtPrior
+        ?s=&succId=363&col=lacomer_2&p=<page>&npagel=200
+  An empty s= term returns the WHOLE catalog rather than a filtered
+  result -- confirmed live: total=28,334 distinct EANs, npagel scales to
+  200 (500 fails with HTTP 500), pagination cursor advances (checked
+  pages 1-5, cumulative distinct EANs grow monotonically: 200/234/415/
+  615/815) with a small number of "patrocinados" (sponsored) rows
+  re-injected near the top of each page -- spider dedupes on artEan.
+  Sample: "Leche Uht Deslactosada" (Bove, 330ml) MXN 30.00; whole-catalog
+  page 1 e.g. "Ensalada Italiana" (Vegetalistos, 175g) MXN 39.90.
+  Price field used is artPrven (precio de venta / current selling price).
+  succId=363 is the store id embedded in the homepage's own dynatrace
+  config as the default web/national catalog context.
+  CAVEAT: because there is no SSR product page anywhere on this domain,
+  the emitted `url` is a best-effort deep link built from the ui-router
+  route signature (/detarticulo/:artEan/:padreId/:pasId/...). It 200s
+  (loads the SPA shell, which is the same response for every route on
+  the site) but will NOT show the product name in the raw HTML -- the
+  page hydrates client-side only via the same searchArtPrior API. This
+  is a structural property of the storefront (confirmed against its own
+  sitemap.xml, which lists only hash-fragment URLs), not a spider defect.
+  Probed with curl_cffi impersonate=chrome124, 2026-08-31.

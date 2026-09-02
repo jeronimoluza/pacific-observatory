@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: epharmacy_cy
+url: https://epharmacy.net/
+language: en
+cadence: weekly
+channel: pharmacy
+archive_prefix: "epharmacy.net/products/"
+archive_path_re: '^/products/[^/?]+/?$'
+notes: |
+  ePharmaCY LTD, online pharmacy based in Limassol, Cyprus. Standard
+  Shopify storefront (shop domain epharmacy-cy.myshopify.com), plain
+  _shopify_base subclass reading /products.json?limit=250&page=N.
+  Probed live 2026-08-31: ~1,205 distinct product ids across 5 pages,
+  real pharmacy/wellness/beauty SKUs (GUAM, Marvis, Caudalie, vitamin
+  gummies, etc). Currency confirmed EUR via the homepage's inline
+  `Shopify.currency = {"active":"EUR","rate":"1.0"}` / `Shopify.country =
+  "CY"` blob (the /products.json endpoint itself carries no currency
+  field). Considered pharmafy.com.cy as an alternative Shopify pharmacy
+  (also live, ~1,250 SKUs) but its catalog is dominated by generic
+  packing/shipping supplies ahead of health products; ePharmaCY reads as
+  the more representative pharmacy channel source.

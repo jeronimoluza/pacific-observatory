@@ -1,0 +1,41 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: voli_me
+url: https://www.voli.me/
+language: sr
+cadence: weekly
+channel: supermarket
+archive_prefix: "voli.me/proizvod/"
+archive_path_re: '^/proizvod/[0-9]+/?$'
+notes: |
+  Voli -- Montenegro's dominant national supermarket chain (the brief's
+  strongest lead). The brief's URL (www.voli.co.me) times out on connect;
+  the live storefront is www.voli.me -- custom Laravel + Vue, plain
+  server-rendered HTML, no WAF (bare `requests` + browser UA clears every
+  page, no curl_cffi impersonation needed).
+
+  Category pages at /kategorije/<id> recurse into subcategories down to
+  leaf categories, which render every product card inline -- no pagination
+  needed (verified: category 44 "Cerealije" renders exactly its 71
+  distinct products in one response, no truncation). Each product card
+  carries an `add-to-cart-button :product="{...}"` attribute holding the
+  full record as HTML-entity-encoded JSON (id, category_id, name,
+  regular_price, special_price, available_on_shop) -- decoded directly
+  from the category listing, no per-product page fetch needed.
+
+  BFS-crawled live 2026-08-31 from all 18 top-level nav categories
+  (drinks, dairy/eggs, fruit/veg, breakfast, meat/fish, sweets/snacks,
+  healthy food, bakery, dessert prep, frozen, baby, household needs, pet
+  food, canned meat/fish, cured meats, pasta, sausages, loyalty club):
+  215 categories total, 3,778 distinct products in 215 page fetches.
+  Overwhelmingly food/beverage -- the only clearly non-food branch is
+  "Kucne potrebe" (household needs). Real Balkan grocery brands and EUR
+  prices (e.g. "Aqua Viva sport force tropic 0.33l" EUR 0.79 on discount
+  from 0.99, "Lino crunch 500 g Podravka" EUR 4.99). Montenegro uses the
+  euro unofficially (no local currency of its own -- matches
+  countries.yaml).
+
+  Verification run --max-items 200: see REPORT_montenegro.md for measured
+  row/id/currency/price counts.

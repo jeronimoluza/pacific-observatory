@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dis_rs
+url: https://www.dis.rs/
+language: sr
+cadence: weekly
+channel: supermarket
+notes: |
+  DIS -- Serbian supermarket chain. Distinct company from lidl_rs and
+  maxi_wolt_rs (different operators). Next.js App Router SPA that
+  returns an identical app-shell for every /artikli/<code> route
+  (verified: two different product codes both returned the same
+  41,767-byte shell) -- content loads client-side.
+
+  Playwright network trace (2026-09-01) found the open backing API, no
+  auth/session needed:
+    GET /api/Dis/Articles?page=<N>&pageSize=20
+        -> {"totalCount": 6799, "data": [{"code","name","categoryCode",
+             "price","discountedPrice",...}]}
+    pageSize is server-clamped to 20 regardless of requested value;
+    page is 1-indexed; page 341 returns empty data (natural end, ~340
+    pages for the full 6,799-item catalog).
+    GET /api/Dis/Categories -> 33 top-level departments incl. fresh
+    meat&fish, dairy&eggs, fresh fruit&veg, soft/alcoholic drinks, pet
+    food, household chemistry -- a normal full-basket supermarket,
+    food-and-beverage led.
+
+  Price field: `price` is 0 on most rows; `discountedPrice` carries the
+  actual current selling price in every sampled row (a genuine promo
+  instead populates both, e.g. price=999.99/discountedPrice=849.99).
+  Spider always takes discountedPrice. Currency RSD, matches
+  countries.yaml (not present in the payload itself).
+
+  Cold re-fetch 2026-09-01: code 063397 "Dobro dimljeni svinjski vrat
+  kg" 849.99 RSD and code 065528 "Dobro Šunka za pizzu kg" 499 RSD both
+  re-confirmed live against /api/Dis/Articles/{code}, matching stored
+  name/price.

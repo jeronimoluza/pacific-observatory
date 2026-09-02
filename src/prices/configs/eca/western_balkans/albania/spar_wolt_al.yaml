@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: spar_wolt_al
+url: https://wolt.com/en/alb/tirana/venue/spar-mine-peza
+language: sq
+cadence: weekly
+channel: supermarket
+archive_prefix: "wolt.com/en/alb/tirana/venue/"
+archive_path_re: '^/en/alb/tirana/venue/[^/?]+'
+notes: |
+  Spar Albania (Mine Peza branch, Tirana) on the Wolt delivery marketplace.
+  Same SSR query-state walk as conad_wolt_al / big_market_wolt_al (shared
+  base `_wolt_base.py`): venue page -> category-listing (54 leaf category
+  slugs, Albanian: makarona/pasta, miell-niseshte/flour-starch,
+  oriz-drithera/rice-cereals, sheqer-kripe/sugar-salt, uthull-vaj/oil-
+  vinegar, salca-kremra, noodles, veze/eggs, ...) -> per-category
+  `/items/<slug>` page 1 (up to 50 items each). Synthetic url =
+  f"{venue_url}#{item_id}".
+  Probed live 2026-08-31: GET /en/alb/tirana/venue/spar-mine-peza -> 200,
+  query-state blob present, 54 distinct category slugs enumerated, real
+  Albanian-language SKUs, prices in minor ALL units, barcode_gtin present.
+  Spar Albania is explicitly named in the Albania candidate brief's grocery
+  target list; no independently scrapable sparalbania site was found, so
+  this is the Wolt marketplace listing of the same retailer.
+  channel:supermarket (Wolt aggregates the first-party retailer's catalog).

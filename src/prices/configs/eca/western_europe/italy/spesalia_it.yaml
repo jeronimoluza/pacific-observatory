@@ -7,6 +7,8 @@ url: https://spesalia.com/
 language: it
 cadence: weekly
 channel: supermarket
+archive_prefix: "spesalia.com"
+archive_path_re: '^/(\d+-[a-z0-9%-]+)?/?$'
 notes: |
   Spesalia -- regional online grocer serving Avellino/Salerno/Napoli
   provinces (Campania, Italy). PrestaShop storefront on a "tt" theme with no

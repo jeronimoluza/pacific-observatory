@@ -66,6 +66,13 @@ class PriceSourceConfig(BaseModel):
     active: bool = True
     max_items: int | None = None
     timeout: int | None = None
+
+    # Sources sharing an upstream edge that rate-limits by client IP rather than
+    # by hostname (AS Watson behind Akamai, every Shopify storefront). Parallel
+    # children cannot see each other's load, so per-spider AutoThrottle backs
+    # off against a ceiling it cannot measure. `collect_parallel` runs at most
+    # one source per group at a time; `None` means no group cap.
+    throttle_group: str | None = None
     start_urls: list[str] | None = None
     spider_kwargs: dict[str, Any] = {}
     scrapy_settings: dict[str, Any] = {}

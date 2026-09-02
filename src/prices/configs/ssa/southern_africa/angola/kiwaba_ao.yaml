@@ -7,6 +7,8 @@ url: https://www.kiwaba.online/
 language: pt
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.kiwaba.online/"
+archive_path_re: '^/?$'
 notes: |
   React/Vite SPA backed by an open Supabase PostgREST API. Anon JWT key is
   embedded in the shipped JS bundle (/assets/index-*.js) -- this is

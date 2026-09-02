@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: montsinai_bj
+url: https://www.supermarchemontsinai.com/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.supermarchemontsinai.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Probed live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=100
+  -> HTTP 200, x-wp-total=485, x-wp-totalpages=5. Standard WooCommerce
+  Store API, zero auth. currency_code XOF matches countries.yaml;
+  currency_minor_unit=0, so prices need no division (e.g. "Water purifier
+  SWS" = 2975 XOF, "Moulinex BL-9003-GS Nasco" = 42500 XOF). Wide
+  general-merchandise supermarket catalog: cosmetics (Mixa/Nivea),
+  groceries (Nutella, Lipton tea, Nescafé, Daddy sugar), pet food
+  (Wooffy/Kiem croquettes), plus small appliances. Site copy explicitly
+  promises delivery "partout à Cotonou" (Benin) — locality confirmed.
+  Whole-catalog walk via the shared _woo_base pagination.

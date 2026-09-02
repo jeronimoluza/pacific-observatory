@@ -1,0 +1,79 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+channel: null
+source_key: orange_mobile_tariff_bf
+module: ssa.west_africa.burkina_faso.orange_mobile_tariff
+function: fetch_orange_mobile_tariff_bf
+url: https://www.orange.bf/fr/offres-mobiles.html
+language: fr
+cadence: irregular
+fallback_date: 2026-07-31
+notes: |
+  Orange Burkina "Canevas du catalogue des offres commerciales de détail
+  des réseaux mobiles" — a standardized template ARCEP (the telecom
+  regulator) requires operators to publish, linked from
+  orange.bf/fr/offres-mobiles.html. Verified live 2026-09-01: 200, 742,809
+  bytes, 35 pages, genuinely tabular (pdfplumber extract_tables() recovers
+  clean rows, not scanned). Sections: acquisition offers, Voix passes, Data
+  passes, SMS passes, roaming, international passes, plus per-country
+  roaming rate tables and several premium SMS/VAS subscriptions.
+  No archive of prior catalog versions found — snapshots the CURRENT
+  catalog each run (period_kind: effective_from = 2026-08-01, this file's
+  approximate publication month; the PDF itself carries no revision date).
+  Table shapes vary by section, and pdfplumber's extract_tables() further
+  splits sections into many small borderless fragments with no repeated
+  header row, so the fetcher does not assume a fixed column layout: for
+  every fragment it auto-detects the price column (most cells parsing as a
+  strict XOF number, tie-broken toward columns with >=4 distinct values so
+  the "N°" row-number column and single-digit "Prio. Voix/SMS/Data" flag
+  columns are not mistaken for price) and the name column (most free-text
+  cells among price-bearing rows).
+  CURRENCY: XOF, no minor unit for the vast majority ("1 575" = 1,575 XOF),
+  but a few per-second fee rows in the source itself use a French decimal
+  comma (e.g. "52,5F"), parsed as 52.5 XOF rather than mishandled as a
+  thousands separator.
+  coicop_codes: ["08.3.0"] — whole catalog is telecom services regardless
+  of plan type (voice/SMS/data/roaming all sit under COICOP 08.3).
+
+  FIXED 2026-09-01 (coordinator review), two defects in the same root
+  cause — the extraction picked the wrong columns, not just a hash issue:
+  (1) IDENTITY: the "Appellation" column is a section label shared by
+  several distinct plans (e.g. 4 "Forfaits Mois" rows priced 1050/1575/
+  4200/10000 XOF), and the original fetcher used the bare label plus a
+  positional "(2)"/"(3)" suffix — 6 duplicate observation_hash values out
+  of 85 rows, and the suffix was not even stable across runs (renumbers if
+  the PDF's row order changes). Fixed by pulling a genuine second
+  attribute column per table fragment (data volume/allowance or
+  duration+destination — "Forfaits Mois 1024 Mo" / "Forfaits Mois 2048
+  Mo", "Pass International 5min (OCI, OFR) + 5min (réseaux nationaux)"),
+  selected by testing whether a column fully distinguishes rows WITHIN
+  each same-label group (not a global distinct-value score, which wrongly
+  favoured a per-row "Réf ARCEP: NNN/ARCEP/OB" regulatory filing number
+  over the real attribute). Rows still ambiguous after this (2 of them:
+  "Actualité Hippique", "News/Voting" — premium SMS/VAS listings whose
+  only per-row difference is a numeric SMS short code, not a textual
+  plan attribute) are dropped rather than shipped with a positional
+  suffix, per the fallback the coordinator specified.
+  (2) PRICE UNIT BUG found while fixing (1): the same premium-SMS/VAS
+  table also contains a purely-numeric "Code court" column (e.g. "3166",
+  "3567") that is just as strict-numeric and just as unique as the real
+  price column ("210F/SMS", "53F/Jour") — the original column-detection
+  shipped the SMS SHORT CODE as the XOF price for every one of these
+  rows. Fixed by preferring, when tied, whichever column's raw cells
+  carry an actual currency marker ("F"/"FCFA"); also extended the price
+  parser to strip a trailing "/SMS", "/Jour" etc. unit suffix before the
+  strict-numeric check (previously rejected outright). This is a currency
+  bug, not just an identity one, and is a more serious defect than the
+  hash collisions that surfaced it — verified fixed against the raw PDF
+  (see re-verification below).
+  Re-verified live 2026-09-01 after the fix: 126 rows (up from 85 — many
+  premium-SMS rows were being silently mis-priced before, not dropped),
+  126 distinct item_name, 0 duplicate observation_hash, price range
+  10–69,900 XOF (median 161.5). Spot-checked against the raw PDF text:
+  "Forfaits Mois 1024 Mo" 1,050 XOF, "Pass International Sahel 10min
+  (Mali, Niger)" 900 XOF, "Tic Analyse" (premium SMS) 10 XOF — all match
+  the source verbatim (the last one was 3304 XOF, an SMS short code,
+  before the price-column fix).

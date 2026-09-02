@@ -1,0 +1,73 @@
+scaffolding: spider
+extraction_pattern: scrapy_playwright
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: express_market_cm
+spider_kwargs:
+  vendor_group: supermarket
+url: https://expressmarketcm.com/
+language: fr
+cadence: weekly
+notes: |
+  ORCHESTRATOR REVIEW 2026-09-01 -- both of Cameroon's food sources come from
+  THIS ONE PLATFORM (expressmarketcm.com), scraped by ONE spider
+  (express_market_cm) and split into two manifests by vendor filter. That
+  split is permitted under the rule-14 merchant-split pattern (same basis as
+  the *_wolt_* sources) and the two share ZERO product_id -- verified, 0
+  overlap on 26 vs 46 rows -- so no shelf is counted twice. But the
+  consequence is that Cameroon's entire food coverage rests on a single
+  storefront: if expressmarketcm.com dies, the country goes from 2 food
+  sources to 0 overnight. Treat this as a fragile pass and re-probe early.
+
+  Three further caveats measured by the orchestrator:
+  - `express_market_bakery_cm` BLENDS SIX different bakery vendors into one
+    manifest. That is the opposite of the rule-14 single-merchant split; it is
+    an aggregate wearing a merchant's label. Splitting per bakery would be more
+    honest if any of them individually clears the row gate.
+  - Vendor grouping is by NAME because the platform's own `type` field is
+    wrong, and it leaks: the "bakery" source carries "Whisky Grant's Triple
+    Wood 75cl" and "Johnnie Walker Red Label", and the "supermarket" source
+    carries 3 Boulangerie rows.
+  - 24 of the supermarket source's 26 rows were stock=0 at scrape time. These
+    are last-posted prices, not observed live offers.
+
+  New source (wave 13, 2026-09-01). Express Market CM is a Cameroonian
+  multi-vendor marketplace (Next-gen React front end over a public
+  PocketBase backend at /hcgi/platform/api/) covering ~195 vendors across
+  many verticals (Alimentation, Pharmacie, Electronique, Mode,
+  Restaurant, ...). The site's front page/API is behind a bot-management
+  challenge that beats curl_cffi impersonation (chrome124/chrome120/
+  safari17_0 all 403 with a "Just a moment..." page) but is a genuine
+  Chromium TLS/HTTP2 fingerprint check -- a real Playwright chromium page
+  navigating DIRECTLY to the API URL, with no homepage warm-up and no
+  cookies, gets 200 every time. Hence scrapy_playwright.
+
+  This manifest is scoped -- per rule 14, onboarding a marketplace as its
+  individual first-party merchants -- to the ONE genuine supermarket
+  vendor in the feed: "Yatch Center" (Bafoussam). Its own vendor
+  `description` field (self-authored prose, not the source's unreliable
+  `type` taxonomy) reads "Courses et alimentation ... Boulangerie et
+  patisserie ... Cave et boissons ... Detente et loisirs" -- a genuine
+  general supermarket with a bar attached. Does NOT cover the full
+  blended marketplace catalog (that would be channel=marketplace,
+  non-food, and would duplicate the existing yorix_cm pattern).
+
+  Verified live 2026-09-01 via
+  GET https://expressmarketcm.com/hcgi/platform/api/collections/products/records
+      ?page=1&perPage=250&expand=vendor_id
+  -> 200, 203 total products across the whole marketplace, 26 of them
+  under Yatch Center. Sample: 'Huile vegetale de palme 100% extra
+  raffinee, 1 L' 1425 XAF. Prices are plain integer XAF (no minor units,
+  no thousands-separator string to strip -- the API returns JSON
+  numbers). All 26 rows are Bafoussam; no Douala/Yaounde coverage from
+  this vendor. Test run 2026-09-01: 26/26 rows, 26 distinct product_id,
+  26 distinct url, 0 zero/negative price, 0 blank name, 0 duplicate
+  product_id. Caveat: the API's own `stock` field shows only 2/26 rows
+  currently in stock (available=True); the rest carry stock=0
+  (available=False), confirmed against the live PDP for one row
+  ('Farine de Ble ... ' shows 'Indisponible' on the rendered page,
+  matching stock=0). Kept as valid rows -- a delisted item's last posted
+  price is real shelf-price data, not fabricated -- but this vendor's
+  catalog is mostly stale at scrape time; re-check freshness on a future
+  pass.

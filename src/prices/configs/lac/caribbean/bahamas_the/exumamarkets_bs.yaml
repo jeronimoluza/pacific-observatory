@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: exumamarkets_bs
+url: https://www.exumamarkets.com/
+language: en
+currency: BSD
+cadence: weekly
+channel: supermarket
+timeout: 1800
+archive_prefix: "exumamarkets.storebyweb.com/i/"
+archive_path_re: '^/i/[^/?]+/?$'
+notes: |
+  Exuma Markets, Great Exuma -- an AML Foods Ltd. supermarket on a Family
+  Island (not New Providence). www.exumamarkets.com redirects to
+  https://exumamarkets.storebyweb.com/s/1000-11/, the same white-label
+  "storebyweb" platform as solomonsfreshmarkets_bs and costrightnassau_bs
+  (see those YAMLs / _storebyweb_base.py for the shared API and the AML
+  Foods Ltd. Bahamian-company locality case).
+
+  Deliberately kept distinct from the two Nassau AML Foods sources rather
+  than treated as a duplicate: Family Island grocery prices in the Bahamas
+  run materially above New Providence due to inter-island freight, so this
+  is a real, separate price series, not source-count padding.
+
+  Verified live 2026-08-31: POST /api/b {"pn","ps":100,"facets":{}}
+  totalCount=5028; 4 pages of ps=100 returned 400/400 distinct ids, 0%
+  zero/null-price rows, price range $0.50-$33.99.

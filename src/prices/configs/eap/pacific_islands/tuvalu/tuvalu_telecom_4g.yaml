@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: tuvalu_telecom_4g
+url: https://www.tuvalutelecom.tv/4g-plan
+language: en
+currency: AUD
+cadence: monthly
+channel: null
+archive_prefix: "www.tuvalutelecom.tv/"
+archive_path_re: '^/4g-plan/?$'
+notes: |
+  Official Tuvalu Telecommunications Corporation 4G mobile internet plan page.
+  The Wix-rendered HTML includes the data allowances and AUD prices as rich text
+  nodes. This is a telecom tariff source, used because independent Tuvalu online
+  food catalog coverage remains extremely sparse.

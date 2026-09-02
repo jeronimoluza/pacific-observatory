@@ -1,0 +1,89 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sxmleshalles_mf
+url: https://www.sxmleshalles.com/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.sxmleshalles.com/"
+archive_path_re: '^/(?:fr|en)/(?:\d+-[^/?]+|[^/]+/\d+-[^/?]+\.html)$'
+notes: |
+  SXM Les Halles -- St Martin's FIRST price source of any kind. Online
+  grocery / villa / yacht provisioning service for the island of St Martin
+  (delivers to both the French and Dutch sides).
+
+  Assigned to st_martin_french_part, not sint_maarten_dutch_part, on the
+  site's own evidence: the PrestaShop page config reports
+  country {"iso_code":"FR","call_prefix":33,"name":"France"} and the bare
+  domain redirects to /fr/ (French is the storefront default language).
+
+  Measured live 2026-09-01: 148 categories, PrestaShop 1.7, server-rendered,
+  no anti-bot. Category pages carry 24 `article.product-miniature` cards each
+  and state their own totals ("There are 215 products" on 12-breakfast, 51 on
+  101-water). Full grocery range plus an unusually deep wine and spirits
+  cellar (Alsace, Burgundy, Rhone, Italian and Spanish wine subcategories).
+
+  CURRENCY IS USD, DIVERGING FROM countries.yaml (EUR). The storefront
+  declares it machine-readably --
+  {"id":2,"name":"UD Dollar","iso_code":"USD","iso_code_num":"840","sign":"$"}
+  -- and renders prices as "$37.00". Per the skill's rule the site's own code
+  wins over the countries.yaml default. This is real, not a display artifact:
+  SXM's provisioning market quotes villa and yacht customers in USD. Flagged
+  explicitly so a later reader does not read it as a spider bug.
+
+  Why St Martin read as empty before: the 2026-09-01 LAC inventory recorded
+  it as "examined but inconclusive -- WebSearch budget exhausted", having
+  only established that CaribeEats has no MAF/SXM region and that Massy does
+  not operate in the French Antilles. No per-country search had been run.
+
+  Uses the shared PrestashopBaseSpider unchanged -- this theme carries no
+  itemprop microdata, so the base's `.price` class fallback is what supplies
+  the price.
+
+  CATEGORY LABEL IS DERIVED FROM THE URL, NOT THE PAGE. The first full run
+  (2,128 rows, finish_reason "finished", 823 pages, all distinct, 100% USD)
+  was structurally clean but put the label "Accueil" on 688 of 2,128 rows --
+  32%. Cause: the shared base parses HOME_URL as a category, and this site's
+  homepage carries a large product grid; because DuplicationPipeline dedups
+  on URL, whichever page is crawled first wins, and that is the homepage. The
+  rows were correct in every other respect and each one's own URL named the
+  real category all along (/fr/beaujolais/, /fr/tofu/, /fr/pates-fraiches/).
+  The spider now takes the category from the URL's own path segment and falls
+  back to the page label only if that fails. The classifier consumes
+  `category`, so this was real signal being discarded.
+
+  ARCHIVE REGEX WIDENED to admit category pages. The first value matched
+  PDPs only ('^/(?:fr|en)/[^/]+/\d+-[^/?]+\.html$'), which is backwards for
+  this site: the SPIDER ITSELF never reads a PDP. It parses product cards off
+  category listings -- all 2,128 rows came from 823 category pages. A page
+  type we have already proven parseable was being excluded from the archive.
+
+  Measured on /fr/101-eaux: 12 distinct products and 12 price nodes in one
+  capture. A PDP capture yields one product.
+
+  Category URLs are /{lang}/<id>-<slug> with no .html and only two segments,
+  so the PDP pattern could never match them. New pattern admits both shapes.
+  Validated against 288 distinct paths from the live home, a category page
+  and a PDP: old accepted 33, new accepts 184 (5.6x), of which 151 are
+  category pages -- including the English storefront (/en/101-water), which
+  the old pattern also reached but had almost nothing to match there. All
+  2,128 collected PDP URLs still match, so nothing regressed.
+
+  SPIDER PAGE FAMILY: listing only. PrestaShop category grids; the spider
+  never fetches a PDP. Slugs are ASCII (PrestaShop strips accents), so unlike
+  pisiffik_gl no percent-encoding era shift is expected here.
+
+  ARCHIVE PARSE YIELD (measured by the common_crawl session, 624 captures):
+    PDP      472 -> parse via JSON-LD Product, 15.50 USD each
+    category 130 -> ZERO rows
+  This INVERTS the widening above. The category pages I added are worth 130
+  paths and 0 rows, because the archive's JSON-LD on those pages is
+  Organization only, with prices left in span.price text. The PDPs -- the
+  family this spider never fetches and whose markup I never characterised --
+  are the ones that carry JSON-LD Product.
+
+  The 5.6x was a real gain FOR THE SPIDER and does not transfer to the
+  ARCHIVE. The widening is harmless so it stays, but do not cite 5.6x as an
+  archive number. A path-count gain is not a row gain.

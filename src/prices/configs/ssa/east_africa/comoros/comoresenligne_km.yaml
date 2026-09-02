@@ -1,0 +1,81 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: comoresenligne_km
+url: https://comores-en-ligne.fr/
+language: fr
+cadence: weekly
+channel: marketplace
+archive_prefix: "comores-en-ligne.fr/"
+archive_path_re: '^/(?:[a-z]{2}/)?catalogue/[^/]+_\d+/?$'
+notes: |
+  Comoros' FIRST price source of any kind (0 manifests before this pass).
+  The prior sweep (2026-09-01, agent B) found only comoresmarket.com — whose
+  TLS handshake fails on every impersonation profile — and recorded Comoros
+  as "no viable online grocery found". This platform was never surfaced by
+  that pass; a French-language search found it immediately.
+
+  Next.js storefront: category pages server-render ZERO products and ZERO
+  price text, so an HTML spider sees nothing and even a hydrated Playwright
+  DOM dump returned no price tokens. A Playwright XHR capture found a
+  same-origin proxy in front of an open Django REST Framework API:
+
+    GET /api-proxy/products?limit=100&offset=<N>[&category=<id>]
+    -> {"count", "next", "previous", "results": [...]}
+
+  No auth, no cookie, no CSRF. `count` is authoritative and `offset`
+  paginates cleanly.
+
+  SCOPE: the whole catalogue, deliberately UNSCOPED (1,527 products). The
+  site is not food-led — hygiene/beauty, small appliances, phones,
+  construction materials and school supplies all outrank food by product
+  count, and only ~172 products sit in the five food categories (epicerie
+  91, produits-frais 33, cremerie 22, les-boissons 20, boucherie 7). Non-food
+  rows are wanted too, so no category filter is applied and the classifier
+  assigns leaves per product. This is a deliberate departure from the
+  dokan_sy / kilakitu_bi scoping pattern.
+
+  channel: marketplace — the `partners` array shows multiple distinct
+  Comorian operators (Moroni Coulée/Ngazidja, Ouani Chitsounguini/Anjouan)
+  selling under one platform, which is the GLOSSARY marketplace test. Note
+  that per the 2026-09-01 measurement, `marketplace` sources run ~88% food
+  in the corpus, so this label does NOT mean "not a food source".
+
+  >>> UNRATIFIED DEFINITIONAL CALL — READ BEFORE TRUSTING THE LEVELS <<<
+  The API returns an explicit price.currency of EUR on every product, not
+  the KMF that countries.yaml lists for Comoros. The goods are physically
+  in-country (products carry a stock_location attribute of "Grande Comore"
+  / "Anjouan"; partners are Moroni and Ouani stores), but the platform bills
+  in EUR because much of its custom is diaspora paying from abroad. Same
+  shape as dokan_sy (Syrian stock, USD pricing) and cleaner than that case,
+  because KMF is on a FIXED peg to EUR (1 EUR = 491.96775 KMF) so the
+  conversion carries no FX noise. Whether diaspora-facing EUR pricing is an
+  acceptable proxy for Comorian domestic retail has NOT been ratified. If
+  the answer is no, drop this manifest and Comoros returns to zero sources.
+
+  price.incl_tax is a plain decimal string — no minor-unit trap.
+
+  Verified live 2026-09-01: count=1527 site-wide; food staples price sanely
+  (Riz Ordinaire Narda 25KG EUR 28.02, Huile de Tournesol Fortune 1L EUR
+  3.65, Rouelles de Sardines Delmonaco 425G EUR 3.07).
+
+  ARCHIVE PREFIX CORRECTED 2026-09-01 after a Common Crawl resolve pass.
+  The first values were derived from the live site and were wrong for the
+  archive: prefix "comores-en-ligne.fr/fr/catalogue/product/" matched 0 of
+  725 available captures. Archived PDPs carry neither the /fr/ locale nor a
+  /product/ segment -- the real shape is /catalogue/<slug>_<id>/, e.g.
+  /catalogue/bouteille-eau-salsabil-1l_123/. The regex could never fire, so
+  the source would have sat silently at zero with no error and no miss
+  record. `[^/]+` excludes /catalogue/category/... listings on its own
+  because those carry extra slashes.
+
+  The live site has since moved to /{lang}/catalogue/category/<island>/
+  <slug>_<id> and now renders products client-side, so today's HTML contains
+  no PDP hrefs at all. The optional locale group covers both eras.
+
+  Separately: the rows this spider emits carry the API's own
+  /api/v1/products/<id>/ URL as their identity (the API's own `url` field),
+  not a browsable page. That is stable and unique so dedup is correct, but it
+  is NOT the customer-facing URL and must never be used to derive archive
+  values.

@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: centralboucherie_bf
+channel: specialty-food
+url: https://www.centralboucherie.com/boutique
+language: fr
+cadence: weekly
+archive_prefix: "www.centralboucherie.com/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
+notes: |
+  CentralBusiness ("CentralBoucherie") — specialty butcher / fine-grocery
+  shop based in Balkui, Ouagadougou ("L'excellence de la boucherie et de
+  l'épicerie fine au Burkina Faso"; contact@centralbusiness.bf, phone
+  +226 07 34 99 11). Verified live 2026-09-01: custom (non-platform)
+  storefront, no anti-bot. Entire ~51-product catalog (Bœuf 21, Épices 15,
+  Charcuterie 6, Volailles 3, Mouton 1, fruits de mer 1, plus a few
+  uncategorized carcass/whole-animal listings) is rendered on the single
+  /boutique listing page — no PDP crawl needed, though each product does
+  have its own canonical URL under /produit/<slug>-<hash> (found via an
+  `onclick="window.location='...'"` attribute, not a plain <a href>, since
+  LinkExtractor would find nothing here). Sample: "Basse Cote" (Bœuf) =
+  4,100 XOF/kg.
+  CURRENCY TRAP: prices use a space as thousands separator, e.g.
+  "36 000 FCFA" (Carcasse de Chèvre) is 36,000 XOF, not 36.
+  Test run (`prices collect --source centralboucherie_bf`): 48 rows, 48
+  distinct product_id, 48 distinct url, 0 zero/blank, currency 100% XOF,
+  price range 750–7,500 XOF (median 4,000). Categories: Bœuf 21, Épices
+  15, Charcuterie 6, Volailles 3, fruits de mer 1, 2 uncategorized (a
+  disabled add-to-cart button correctly flags "Escalope" and "Tête de
+  mouton" as `available: false` — both carry a "BIENTÔT DE RETOUR" ribbon
+  on the live site). 100% food share.
+  Re-fetched cold 2026-09-01: "Basse Cote" still 4,100 XOF, "Poulet" still
+  4,000 XOF, "Pintade" still 7,000 XOF.
+  channel: specialty-food — genuinely a butcher/fine-grocery retailer
+  (meat, charcuterie, spices, seafood), not a pharmacy or general store;
+  counts toward the food-and-beverage target.

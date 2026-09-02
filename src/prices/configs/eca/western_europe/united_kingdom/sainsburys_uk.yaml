@@ -1,0 +1,46 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sainsburys_uk
+url: https://www.sainsburys.co.uk/groceries-api/gol-services/product/v1/product
+language: en
+cadence: weekly
+channel: supermarket
+timeout: 1800
+notes: |
+  Probed 2026-08-31 with curl_cffi impersonate="chrome124": GET
+  /groceries-api/gol-services/product/v1/product?filter[keyword]=milk ->
+  HTTP 200, ~117KB JSON, no auth, no Referer/X-Requested-With required.
+  Public grocery search API behind www.sainsburys.co.uk (UK's 2nd-largest
+  supermarket chain). Pagination verified genuine: walked page_number 1..15
+  for filter[keyword]=milk and got exactly total_record_count (885)
+  distinct product_uids with zero repeats. filter[keyword]= (empty) serves
+  the site's own default ranking across the whole catalogue; controls
+  advertises total_record_count=10000/last=167 but the walk actually 400s
+  at page 166 (165 usable pages x 60/page ~= 9,900 distinct products) --
+  the spider stops on the first non-200/empty page rather than trusting
+  the advertised total. Currency GBP confirmed (site is GBP-only; no
+  currency field in the payload, matches countries.yaml). full_url in the
+  payload is protocol-relative ("://www.sainsburys.co.uk/...") -- spider
+  prepends "https:". `full_url`'s shape is itself inconsistent across
+  requests (sometimes bare-colon protocol-relative, sometimes already
+  fully-qualified) -- the spider normalizes both, a blind prefix produced
+  "httpshttps://..." on the first run and was caught by the audit below.
+
+  Verification run 2026-08-31:
+  `.venv/bin/po prices collect --source sainsburys_uk --max-items 200` ->
+  240 rows / 240 distinct product_id / 240 distinct url, 0 zero-price rows,
+  0 blank names, currency 100% GBP, price range 0.25-12.29, median 1.50.
+  Re-fetched 3 emitted product URLs via curl_cffi impersonate=chrome124:
+  all HTTP 200 on the real sainsburys.co.uk domain, but the PDP itself is
+  a pure client-rendered SPA shell (`<div id="root"></div>`) behind Akamai
+  -- the product name/price are not present in the raw HTML and a
+  Playwright render attempt (even with UA/webdriver spoofing) got an
+  Akamai edge 403, so visual post-hydration confirmation was not possible.
+  Cross-verified instead: re-hit the same public search API for 3 sampled
+  product_uids and confirmed the live retail_price matched the emitted row
+  exactly (0.99/2.50/2.75, all identical). Data provenance is the JSON API
+  itself, not the PDP render, so this is treated as sufficient
+  confirmation. Asymmetric WAF (API open, PDP walled) is a known pattern
+  on other hardened UK/EU retail sites in this repo.

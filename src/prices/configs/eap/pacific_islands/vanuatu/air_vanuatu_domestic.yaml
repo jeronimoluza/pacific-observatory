@@ -1,0 +1,30 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.3.3.1"]
+channel: null
+source_key: vu_air_vanuatu_domestic
+module: eap.pacific_islands.vanuatu.air_vanuatu_domestic
+function: fetch_vu_air_vanuatu_domestic
+url: "https://www.airvanuatu.com/travel-info/domestic-airfare"
+language: en
+cadence: irregular
+fallback_date: 2024-01-01
+notes: |
+  Air Vanuatu domestic route fares. Static HTML route cards
+  (div.card__content-inner), each with an origin/destination pair and a
+  "FROM VUV <amount>*" one-way headline fare -- 7 routes x 2 directions =
+  14 cards observed 2026-09-01. Fares are whole-Vatu integers with
+  thousands commas, consistent with VUV having no minor unit.
+
+  No published "effective from" date for these fares (contrast with the
+  URA electricity/water tariffs in this directory, which do carry one) --
+  they are the site's current lowest "from" fare, not a dated regulator
+  order. Emitted as period_kind=snapshot with observation_date = fetch
+  date, per fetcher_pattern.md's guidance for tariff pages with no archive.
+  Re-running daily/weekly will accumulate a genuine time series of the
+  headline fare even without a source-side date.
+
+  Air Vanuatu entered voluntary administration in May 2024 but has resumed
+  scheduled domestic operations; verify site accessibility periodically.

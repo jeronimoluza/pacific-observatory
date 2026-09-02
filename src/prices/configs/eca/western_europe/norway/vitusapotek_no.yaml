@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vitusapotek_no
+url: https://www.vitusapotek.no/
+language: "no"
+cadence: weekly
+channel: pharmacy
+timeout: 5400
+archive_prefix: "www.vitusapotek.no/"
+archive_path_re: '^/.+/p/\d+/?$'
+notes: |
+  Verified live 2026-08-31: Next.js SSR storefront. No open product-search
+  API found, but https://www.vitusapotek.no/sitemap/sitemap-product-1.xml
+  lists 15,400 distinct PDP URLs (single page -- page 2 -> 404). Each
+  in-stock PDP embeds a schema.org Product JSON-LD block server-side with a
+  clean Offer. Sample: 'Nordic Grip Walking brodder str 37-41 1 par' sku
+  951820 -> NOK 239.90, InStock. Prescription-only medicine PDPs (under
+  /reseptbelagte-legemidler/) carry no Product JSON-LD at all (no public
+  price) and are silently skipped -- confirmed on a live Rx sample page.
+  Category from the sibling BreadcrumbList JSON-LD's second-to-last entry.
+  product_id = schema sku (numeric, matches the URL's trailing id).
+  Currency NOK matches countries.yaml. timeout raised for the large crawl
+  (capped at 6,000 PDPs per run; raise cap if the collect budget grows).

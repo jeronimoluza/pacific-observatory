@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: oda_no
+url: https://oda.com/no/products/
+language: "no"
+cadence: weekly
+channel: supermarket
+timeout: 5400
+archive_prefix: "oda.com/no/products/"
+archive_path_re: '^/no/products/[^/?]+/?$'
+notes: |
+  Verified live 2026-08-31: Next.js SSR storefront, no open product-search
+  API found (the "populært"/search pages are React-hydrated with no stable
+  JSON endpoint). Instead, https://oda.com/sitemap.xml chains to
+  https://oda.com/sitemap/nb/products/<n>.xml (n=1..7, 1000 URLs/page except
+  the last -- page 8 -> 404), 6,639 product PDP URLs total. Each PDP embeds
+  a schema.org Product JSON-LD block server-side (price/priceCurrency/
+  availability). Sample: 'Chilinøtter' NOK 27.80, InStock. Category taken
+  from the sibling BreadcrumbList JSON-LD's second-to-last item (last item
+  is the product name itself). Numeric ID prefix on the URL slug (e.g.
+  "70052-r-chilinotter") is the stable product_id. Oda is Norway's leading
+  online grocer (>NOK 4bn revenue); currency NOK matches countries.yaml.
+  timeout raised for the ~6.6k-PDP crawl.

@@ -1,0 +1,49 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: adeeg_so
+url: https://adeeg.com/
+language: en
+cadence: weekly
+channel: hypermarket
+notes: |
+  New source (2026-09-01 SSA sweep). Somalia had zero retail manifests
+  before this (only wfp_prices, official_avg). Adeeg.com is Hayat
+  Market's official e-commerce platform (Mogadishu), a vanilla Shopify
+  storefront. Verified live 2026-09-01: /products.json?limit=250&page=N
+  paginates cleanly, empties at page 17 (~3,777 total products across
+  16 full pages + a 27-item tail). Shopify.currency on the storefront
+  reports {"active":"USD"} — priced in USD, not the countries.yaml
+  default SOS; read off the page per rule, not inferred from country.
+
+  Catalogue is a real big-box mix: groceries (baby food/milk, dairy &
+  cheese, spices, canned foods, bakery, butchery, breakfast cereals,
+  chips/snacks/nuts) cross-sold with general merchandise (electronics,
+  baby gear, books, cameras, belts/caps) — hence channel: hypermarket
+  rather than supermarket.
+
+  hayatmarket.com (the brand's own domain, discovered in the same
+  search) was checked and rejected as a duplicate: it is a
+  WordPress/Newfold marketing site with no WooCommerce REST or Store
+  API route registered (wp-json/ root namespace list has no wc/*
+  entries) and /shop/ 404s. Adeeg.com is the operator's only real
+  storefront — do not onboard hayatmarket.com separately.
+
+  `_items()` overridden on this subclass only (shared
+  `_shopify_base.ShopifyBaseSpider` untouched) to add a strict price>0
+  guard: the base's own check (`if not price: continue`) does not catch
+  the string "0.00", which is truthy in Python. No zero-price rows were
+  actually observed in this catalog, but the guard is a defensive fix
+  per onboarding rule ("a price of 0 is not an observation").
+
+  Full unbounded run verified 2026-09-01: 4,130 rows, 3,700 distinct
+  product_id (multi-variant products share an id), 4,130 distinct url,
+  0 blank names, 0 zero/negative prices, currency 100% USD, price range
+  0.08-2,260.00 (median 6.00). Rough keyword-based food-share estimate
+  on category+name: ~37% food-like, ~3% alcohol-like, ~60% other
+  (general merchandise) — consistent with channel: hypermarket.
+
+  Cold re-fetch verified 2026-09-01: 'Bread Garazin' = 0.50 USD and
+  'Aptamil 3 Toddler Milk 1+ Year 800g' = 21.00 USD both matched the
+  live products.json payload exactly on re-fetch.

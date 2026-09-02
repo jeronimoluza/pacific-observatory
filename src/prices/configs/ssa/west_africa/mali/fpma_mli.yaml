@@ -1,0 +1,45 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["01.1.1"]
+channel: null
+source_key: fpma_mli
+module: ssa.west_africa.mali.fpma_mli
+function: fetch_fpma_mli
+url: https://fpma.fao.org/giews/fpmat4/
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  FAO GIEWS FPMA Tool (Food Price Monitoring and Analysis), open unauthenticated
+  Django REST API behind the Angular front end at fpma.fao.org/giews/fpmat4/.
+  Verified live 2026-09-01: FpmaSerie/?iso3_country_code=MLI returns 35 series
+  (market x commodity x price_type), reporting partner "Afrique Verte" (a
+  Sahel-wide cereals market-information NGO — distinct from wfp_prices, which
+  draws from HDX/WFP VAM, so this is a genuine complementary official_avg feed,
+  not a re-scrape). Markets: Bamako, Sikasso, Mopti, Gao, Kayes, Segou, Koutiala.
+  Commodities: millet, sorghum, maize, rice (local + imported) at WHOLESALE.
+  Currency XOF throughout (matches countries.yaml). Monthly cadence; most
+  recent end_date 2026-08-01 (current). Sample series: Sikasso, Rice,
+  WHOLESALE, XOF 41000 / 100 kg (2026-08). Price values are exactly as
+  FAO/Afrique Verte publish them, tied per-row to measure_unit_label
+  (typically "100 kg") — NOT converted to a per-kg figure; downstream reads
+  the unit rather than assuming a base unit.
+
+  Each series is (market, commodity, price_type), not commodity alone --
+  market is carried in subnational_area and folded into the row identity
+  hash, so per-market observations for the same commodity/month stay
+  distinct rows. All 5 commodities emitted (Rice, Rice (imported), Millet,
+  Maize, Sorghum) are COICOP 01.1.1 (bread and cereals) -- a single class,
+  so this is a narrow source (coicop_classification: source_curated,
+  coicop_codes: ["01.1.1"]) rather than deferred to the classifier.
+
+  2026-09-01 post-ship fix (coordinator audit): original version collapsed
+  all per-market rows to one identity (item_name/unit/price_type only, and
+  price_type isn't even an emitted column), producing 2190/2585 duplicate
+  observation_hash values and losing the market dimension entirely (worst
+  hash covered 7 different Millet markets on one date). Fixed by adding
+  subnational_area (market name) to _IDENT, dropping the phantom
+  price_type key, switching period_kind to the monthly_avg convention, and
+  populating coicop_code directly instead of nulling it under `classifier`.

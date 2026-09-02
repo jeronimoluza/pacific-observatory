@@ -1,0 +1,61 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01"]
+channel: null
+source_key: faostat_cpi_caf
+module: ssa.central_africa.central_african_republic.faostat_cpi
+function: fetch_faostat_cpi_caf
+url: https://data.humdata.org/dataset/caf-faostat-food-prices
+language: en
+cadence: monthly
+fallback_date: 2000-01-01
+notes: |
+  FAO's bulk-download Consumer Price Indices for Central African Republic,
+  republished on HDX ("caf-faostat-food-prices" dataset, resolved at run
+  time via CKAN package_show so a resource-UUID change does not break the
+  fetcher). Verified live 2026-09-01: 453 rows across 3 Item series --
+  "Consumer Prices, Food Indices (2015 = 100)", "Consumer Prices, General
+  Indices (2015 = 100)", "Food price inflation" -- monthly 2000-01 through
+  2026-01 (General/inflation series only; Food Indices itself only starts
+  2020-01 in this file).
+  Only the Food Indices series is emitted (coicop_code "01", direct
+  passthrough). General/all-items dropped (no sanctioned all-items COICOP
+  sentinel, matching sar/maldives/ecpi_male.py convention). "Food price
+  inflation" dropped -- it's a YoY percent-change series, not an index
+  level. index_base_period = "2015" per the series' own naming and the
+  source CSV's own Note column ("base year is 2015").
+
+  IMPORTANT — chosen over ICASEES this pass: icasees.org (the real CAR NSO)
+  DOES publish a monthly "IHPC" household-price bulletin per its own site
+  navigation, but (1) every individual monthly bulletin PDF download link
+  returns HTTP 200 with 0 BYTES — the files are missing from the CMS across
+  every month checked (2022-2025), and (2) the one non-empty "master" IHPC
+  workbook the site does serve
+  (indice-des-prix-a-la-consommation-ihpc-mensuel-de-2015-2026) is NOT a
+  genuine ICASEES publication: its docProps/core.xml shows
+  `dc:creator: openpyxl`, `lastModifiedBy: hp`, created 2026-08-12T11:02Z,
+  and its own embedded "Notes_Methodologiques" sheet narrates, in the first
+  person, a price-index "reconciliation applied ... at the user's request"
+  — language no national statistics office would ever publish about its
+  own official series. All three of icasees.org's "master" workbook links
+  (mensuel, annuel-par-localite, mensuel-par-localite) share this same
+  openpyxl/"hp"/2026-08-12 signature. This reads as a downstream
+  reconstruction (possibly AI-assisted) that ended up hosted where the
+  real bulletin should be, not as ICASEES's own output, and it was NOT
+  used as a basis for any figure in this fetcher or in the coverage
+  numbers reported for this pass. FAOSTAT's CAR series is FAO's own bulk
+  product, independently re-hosted on HDX with a stable CKAN API, and is
+  used instead.
+
+  Test run (cutoff=2000-01-01): 75 rows (2020-01..2026-03), 75 distinct
+  observation_date, 0 duplicate observation_hash, index values 118.0-156.0
+  (base 2015=100). Spot-checked against the source CSV: 2025-01 Food
+  Indices = 155.311892 (matches a fresh re-download).
+
+  Note for a future wave: the "<iso3>-faostat-food-prices" HDX dataset
+  naming pattern almost certainly exists for every FAO member country —
+  strong Bucket-2 (`_shared/ssa/faostat_cpi.py`) candidate once a second
+  SSA country needs the same series. Built as a country-bound Bucket-1
+  module here to stay in scope for this pass.

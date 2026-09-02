@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+spider: kirkmarket_ky
+url: https://kirkmarket.ky/
+language: en
+cadence: weekly
+archive_prefix: "kirkmarket.ky/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Kirk Market is one of Grand Cayman's two major supermarket chains, but
+  kirkmarket.ky itself is a WordPress brochure site whose only live
+  transactable catalogue is a small WooCommerce "special orders" shop —
+  pre-made platters, cakes, and pastries for catering/pickup (40 SKUs
+  total across Appetizer/Party/Charcuterie/Bakery Platters, Cakes,
+  Pastries; verified via GET .../wp-json/wc/store/v1/products?per_page=1
+  -> X-WP-Total: 40). No everyday grocery-aisle SKU browsing exists on
+  this domain (unlike Foster's, which runs a full NCR Freshop storefront).
+  channel is set to specialty-food (not supermarket) to reflect that
+  honestly — the site sells prepared/catering food, not the store's full
+  shelf.
+  Currency: KYD, read directly from the WooCommerce Store API's own
+  prices.currency_code field (not inferred from "$") — e.g. "Gourmet Mini
+  Chicken Sliders" currency_code="KYD", price="4999", minor_unit=2 ->
+  CI$49.99.

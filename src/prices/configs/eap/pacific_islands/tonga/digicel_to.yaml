@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: digicel_to
+url: https://www.digicelpacific.com/mobile/to/bundles
+language: en
+cadence: weekly
+channel: other
+archive_prefix: "www.digicelpacific.com/mobile/to/"
+archive_path_re: '^/mobile/to/bundles/?$'
+notes: |
+  Probed 2026-08-31. Digicel Pacific's Next.js bundles page for Tonga
+  (/mobile/to/bundles) embeds its offer cards as JSON inside
+  <script id="__NEXT_DATA__"> — no API call needed (Tier 1B via JS-bundle
+  hunt, brief rule #6). 11 prepaid data/voice bundles across 3 sections
+  (Daily And Weekly Data Plans, Monthly Data Plans, Kava Power Plans).
+  Locality: path is Tonga-specific; one plan is literally "Kava Night" /
+  "Kava Power Plans" (a Tongan cultural reference not used elsewhere).
+  Cross-checked against /mobile/fj/bundles — Fiji returns a different set
+  of headings/prices (several suffixed "Fj"), so this is NOT a shared
+  Pacific-wide price table; each island market carries its own local
+  pricing. No ISO currency code anywhere on the page (no priceCurrency /
+  "TOP" / "pa'anga" string) so currency is set to TOP by inference (Tonga's
+  own currency, informally written "$" domestically) — flag for review if
+  a clean source ever surfaces the code explicitly.
+  Single static page, all 11 rows share one URL — DuplicationPipeline
+  dedups on item['url'], so each row is emitted with a synthetic
+  #<card-id> fragment (see apua_rates_ag.py precedent). A flat row count
+  run-to-run is expected here (static plan table), not a pagination
+  failure.
+  Measured (--max-items 200, run 2026-08-31): 11/11 rows, 11 distinct
+  product_id, 11 distinct url, 0 zero-price, 0 blank-name, currency 100%
+  TOP, prices $1-$200, median $6.

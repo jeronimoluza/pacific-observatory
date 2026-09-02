@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: samoa_eats_ws
+url: https://take.app/samoaeats
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "take.app/samoaeats/p/"
+archive_path_re: '^/samoaeats/p/[^/?]+$'
+notes: >
+  SamoaEats prepared-food storefront on take.app. The public Next.js flight
+  payload exposes product ids, names, WST prices, sold-out flags, and
+  countryCode=WS. Probe on 2026-09-01 returned sushi, starters, and other
+  meal items.

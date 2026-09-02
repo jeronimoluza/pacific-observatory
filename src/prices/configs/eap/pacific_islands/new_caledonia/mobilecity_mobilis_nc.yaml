@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.1.0"]
+spider: mobilecity_mobilis_nc
+url: https://www.mobilecity.nc/mobilemania/mobilis/contrats
+language: fr
+currency: XPF
+cadence: monthly
+channel: null
+archive_prefix: "www.mobilecity.nc/mobilemania/mobilis/"
+archive_path_re: '^/mobilemania/mobilis/contrats/?$'
+notes: |
+  MobileCity New Caledonia reference page for OPT/Mobilis mobile tariffs. The
+  page is server-rendered and exposes plan names, monthly XPF prices, and plan
+  features. It is a reseller/reference page rather than the official OPT/Helia
+  site, and the site currently requires TLS verification to be disabled because
+  its certificate chain is invalid.

@@ -1,3 +1,7 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
 spider: whim_mv
 language: en
 archive_prefix: "whim.com.mv/shop/"

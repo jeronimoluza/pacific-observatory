@@ -7,6 +7,8 @@ url: https://ahadoexpress.net/
 language: fr
 cadence: weekly
 channel: supermarket
+archive_prefix: "ahadoexpress.net/"
+archive_path_re: '^/?$'
 notes: |
   AHADO EXPRESS (Djibouti). Static site whose catalog is client-rendered from
   a public Google Sheets gviz endpoint, not a normal REST API. Re-verified

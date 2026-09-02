@@ -1,0 +1,53 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: uga_ubos_cpi
+module: ssa.east_africa.uganda.ubos_cpi
+function: fetch_uga_ubos_cpi
+url: https://www.ubos.org/consumer-price-index/
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Uganda Bureau of Statistics (UBOS) monthly Consumer Price Index. Live
+  discovery, not hardcoded: GET www.ubos.org/wp-json/wp/v2/posts?
+  search=Consumer+Price+Index (a standard WordPress REST endpoint, no
+  auth) returns recent post titles/links; regex-match "Consumer Price
+  Index <Month> <Year>" and pick the newest. That post's own page embeds a
+  direct link to "<MM>_<YYYY>CPI_Excel_Tables_<Month>_<YYYY>.xlsx" under
+  wp-content/uploads/statistics/. Verified live 2026-09-01: latest post
+  "Consumer Price Index August 2026" (2026-08-31), xlsx =
+  08_2026CPI_Excel_Tables_August_2026.xlsx (200, 672,758 bytes).
+
+  Parsed the "Division " sheet (openpyxl via pandas): row 0 = monthly date
+  header (Jul 2017 .. Aug 2026, base Jul2017=100); rows 1-13 (col 0 =
+  division number) are the index-LEVEL block for UBOS's 13 divisions,
+  which are already COICOP-2018's 13 divisions in the standard order (01
+  Food and Non-Alcoholic Beverages ... 13 Personal Care, Social Protection
+  and Miscellaneous Goods) -- confirmed by reading all 13 row labels
+  against the COICOP-2018 division list, so coicop_classification is
+  publisher_labeled with a trivial 1:1 map, not a translation table. Row
+  14 "Grand Total" (all-items headline) is dropped -- no sanctioned
+  headline sentinel in IndexObservation yet, same open design question as
+  every other cpi_benchmark fetcher in this repo. Two further stacked
+  blocks below row 14 ("Annual % Change", "Monthly % Change") repeat the
+  same divisions as growth RATES and are not parsed -- out of scope for
+  IndexObservation (index levels only).
+
+  TLS: www.ubos.org serves its leaf cert without the intermediate in the
+  handshake -- resolves fine in curl/macOS but fails Python's
+  certifi-only chain validation ("unable to get local issuer
+  certificate"). Same class of quirk as vnso_cpi.py / statsdiv_cpi.py /
+  ura_electricity_tariff.py in this repo; verify=False is required on
+  every request (WP API, post page, and xlsx download).
+
+  Tested with a backdated cutoff (2020-01-01): first-run backfill emits
+  the full Jul2017-Aug2026 series x 13 divisions = 1,443 IndexObservation
+  rows. UBOS separately publishes no "average retail prices" table
+  (checked wp-json search for "average retail prices" / "retail prices" /
+  "food prices" -- no matching monthly release found; only CPI and PPI
+  news posts exist) -- so no companion official_avg manifest exists for
+  this source, unlike WFP/FEWS NET. Recorded as a dead end rather than
+  assumed.

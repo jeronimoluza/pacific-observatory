@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: djeddi_pharmacie_dz
+url: https://djeddi-pharmacie-dz.com/
+language: fr
+cadence: weekly
+channel: pharmacy
+timeout: 1800
+archive_prefix: "djeddi-pharmacie-dz.com/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
+notes: |
+  Verified live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=10 ->
+  HTTP 200, currency_code DZD (matches countries.yaml), currency_minor_unit=0.
+  Sample: 'Arencia Vitamin C Booster Shot Mask'. X-WP-Total header reports
+  2,988 products across 299 pages. TRAP: default (newest-first) ordering
+  front-loads recently-added listings with placeholder price "0" and
+  is_purchasable=false (44% of first 200 rows sampled); spider overrides
+  _item to skip is_purchasable=false before those reach the base class.

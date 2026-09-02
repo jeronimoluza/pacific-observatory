@@ -1,0 +1,33 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+channel: null
+source_key: vu_ura_electricity_tariff
+module: eap.pacific_islands.vanuatu.ura_electricity_tariff
+function: fetch_vu_ura_electricity_tariff
+url: "https://ura.gov.vu/index.php?Itemid=180&id=14&lang=en&option=com_content&view=article"
+language: en
+cadence: irregular
+fallback_date: 2010-01-01
+notes: |
+  Vanuatu Utilities Regulatory Authority (URA) "regulated services" page.
+  Server-rendered static HTML table with a rowspan header cell grouping
+  ELECTRICITY (5 providers) and WATER (8 providers) blocks -- this manifest
+  covers only the electricity block; see the sibling ura_water_tariff.yaml
+  for water (04.4.1), split per the onboarding skill's "two shapes on one
+  site" rule.
+
+  Rates are quoted 60.25-78.06 VUV/kWh, i.e. to 2 decimal places, even
+  though VUV itself has no minor unit -- confirmed via direct fetch as the
+  regulator's own published figure, not a parsing artifact. Flagging loudly
+  per onboarding rule 8 on currency-decimal surprises: this is a computed
+  administered RATE (used to calculate a bill, which then rounds to the
+  nearest vatu), not a shelf price for a purchased item.
+
+  *.gov.vu TLS chain requires requests(verify=False) -- same class as
+  vnso_cpi.py / known_blockers.md "NSO portal SSL certificate failures".
+  fallback_date backdated to 2010 to be safe even though observed effective
+  dates only go back to 2024; cadence is irregular (rates change when URA
+  issues a new determination, not on a fixed schedule).

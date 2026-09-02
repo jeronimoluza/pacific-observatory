@@ -1,0 +1,34 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: insd_avg_prices_bfa
+module: ssa.west_africa.burkina_faso.insd_avg_prices
+function: fetch_insd_avg_prices_bfa
+url: https://www.insd.bf/fr/statistiques/statistiques-economiques/statistiques-des-prix
+language: fr
+cadence: monthly
+fallback_date: 2025-01-01
+notes: |
+  Same monthly INSD workbook as insd_ihpc_cpi_bfa (see _insd_common.py).
+  Sheet "Tableau 4 : Prix moyens de quelques produits essentiels au niveau
+  régional" — verified live 2026-09-01 on the May-2026 release: 31 distinct
+  product/unit rows x 13 regions (Kadiogo/Centre, Guiriko/Hauts-Bassins,
+  Goulmou/Est, Yaadga/Nord, Liptako/Sahel, Kuilse/Centre-Nord, Oubri/
+  Plateau-Central, Nakambe/Centre-Est, Nazinon/Centre-Sud, Nando/Centre-
+  Ouest, Bankui/Boucle-du-Mouhoun, Tannounyan/Cascades, Djoro/Sud-Ouest).
+  Test run (cutoff=2020-01-01): 403 rows, price range 31.68–40,000 XOF
+  (median 915.28), all XOF, zero/blank counts = 0. Sample: "Riz brisé local
+  ou importé" (Sac de 25 Kg) = 13,662.70 XOF in Kadiogo.
+  WIDE source: mostly food staples (rice, maize, millet, sorghum, meat,
+  fish, oils, vegetables) but the same table bundles a handful of non-food
+  essentials (firewood, charcoal, bottled-gas refills, super/gasoil fuel) —
+  coicop_codes intentionally left unset (classifier assigns per row) rather
+  than mis-declaring this narrow.
+  channel: null — this is a national-statistics average-price table, not a
+  retail outlet; does not count toward the food/beverage retail-channel
+  target even though most rows are food commodities.
+  Observation date is the release month parsed from the source filename's
+  French month name (no per-row date column in this table) — one snapshot
+  per monthly release, not a time series within the sheet.

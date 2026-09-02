@@ -7,6 +7,8 @@ url: https://mescourses.mg/fr/
 language: fr
 cadence: weekly
 channel: supermarket
+archive_prefix: "mescourses.mg/fr/"
+archive_path_re: '^/fr/(\d+-[a-z0-9-]+)?/?$'
 notes: |
   Rebrand of supermarche.mg (same investor-backed Antananarivo operator);
   supermarche.mg now 302-redirects to mescourses.mg (the old domain's TLS

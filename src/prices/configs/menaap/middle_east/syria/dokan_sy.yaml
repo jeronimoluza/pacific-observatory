@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dokan_sy
+url: https://www.dokan.sy/search2?min_price=&max_price=&keyword=&sort_by=&page=1&categories%5B%5D=66
+language: ar
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.dokan.sy/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Diaspora-facing gift/remittance platform ("your bridge to your loved ones
+  in Syria" — mobile top-ups, Sham Cash transfers, flowers, sweets,
+  electronics, groceries delivered to any Syrian governorate). Runs the
+  same "AIZ"-branded Laravel storefront template already scaffolded for
+  souqmy_ye (identical /search2 listing AJAX, identical aiz-card-box
+  product markup, identical showAddToCartModal(<id>) id marker). No CSRF
+  or cookie required.
+
+  Site as a whole is NOT food-led (top-ups/flowers/electronics dominate),
+  so this spider is deliberately SCOPED to categories[]=66 ("market
+  dukkan" — سوبر ماركت, groceries/provisions), same pattern as tsaooq_sy's
+  category=19 scoping. Confirmed via page <title> ("سوبر ماركت دكان |
+  تسوق المواد الغذائية والتموينية مع توصيل في سوريا") and sample items
+  (fresh cow milk, etc).
+
+  Verified live 2026-09-01: total_product_count=254 for category 66. Page
+  1 and page 2 returned disjoint product-id sets (24 cards each, zero
+  overlap) confirming real pagination, not a homepage-carousel undercount.
+
+  Currency: prices render as "$X.XX" directly in the card markup (e.g.
+  "$3.00", "$22.50") — USD, not SYP, because this platform is paid by
+  diaspora customers abroad. Taken from the page, not inferred from
+  countries.yaml's SYP default.

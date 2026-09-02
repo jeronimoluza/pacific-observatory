@@ -9,7 +9,7 @@ currency: HUF
 cadence: weekly
 channel: home-improvement
 archive_prefix: "praktiker.hu/"
-archive_path_re: '/p/\d+/?$'
+archive_path_re: '/p/\d+/?$|/\d{5,}-[^/]+$'
 notes: |
   Praktiker Hungary — DIY/home-improvement department store (Next.js
   storefront, Meilisearch-backed catalog: garden, construction/renovation,

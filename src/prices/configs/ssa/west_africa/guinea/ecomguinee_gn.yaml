@@ -1,0 +1,25 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ecomguinee_gn
+url: https://www.ecomguinee.com/
+language: fr
+cadence: weekly
+channel: electronics
+archive_prefix: "ecomguinee.com/"
+notes: |
+  Discovery candidate (not on the original brief list) found via WebSearch
+  for Guinean online marketplaces, 2026-08-31. Standard WooCommerce Store
+  API, GET /wp-json/wc/store/v1/products -> HTTP 200, x-wp-total=52.
+  Small dropship-style electronics catalog (GPS/immobiliser trackers,
+  security cameras, solar inverters).
+
+  MINOR-UNIT TRAP: prices.currency_minor_unit reports 3 for GNF, but the
+  raw prices.price integer already equals the storefront-displayed amount
+  (raw 600000 == page shows "600.000 Fr" == 600,000 GNF) -- GNF carries no
+  subdivisions, so the tenant's WooCommerce currency config is simply
+  wrong. The shared _woo_base would divide by 1000 and silently ship
+  prices 1000x too low, so the spider sets PRICE_MULTIPLIER=1000 gated on
+  PRICE_MULTIPLIER_CURRENCY="GNF" to cancel that division. Verified
+  against 2 live product pages. Second retailer source for Guinea.

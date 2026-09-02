@@ -1,0 +1,77 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+source_key: nbs_ng_cpi
+module: ssa.west_africa.nigeria.nbs_ng_cpi
+function: fetch_nbs_ng_cpi
+channel: null
+url: https://nigerianstat.gov.ng/elibrary?queries%5Bsearch%5D=CPI+and+Inflation+Report
+language: en
+cadence: monthly
+fallback_date: 2018-01-01
+notes: |
+  Nigeria National Bureau of Statistics "CPI and Inflation Report" —
+  monthly Composite Consumer Price Index (base November 2009 = 100),
+  discovered dynamically each run from the NBS elibrary catalog (no stable
+  per-month URL; observed filename pattern cpi_<MON><YYYY>.xlsx). This is
+  a SEPARATE source from nbs_selected_food (source_key nbs_ng_food):
+  confirmed by reading nbs_selected_food.py before building this manifest
+  that it emits PriceObservation rows (item-level average retail prices
+  for ~40 food staples, keyed on source_key/observation_date/item_name) —
+  it does NOT emit any index rows, so this cpi_benchmark / IndexObservation
+  source is a genuine complement, not a duplicate.
+
+  Verified live 2026-09-01: elibrary search for "CPI and Inflation Report"
+  returns 153 editions back to 1995; newest is "CPI and Inflation Report
+  October 2024" (doc id 1241583, resource cpi_OCT2024.xlsx, 200, 632KB) —
+  the same ~21-month elibrary staleness already documented on
+  nbs_selected_food (NBS's public document catalog has not been updated
+  since 2024-11-24 despite an internal release-schedule widget listing
+  editions through late 2026). Shipped anyway for the same reason as that
+  sibling source: discovery is dynamic, not a hardcoded URL, and will
+  pick up newer editions automatically if NBS resumes uploading; the
+  current single snapshot (Oct 2024) is real government data, just old.
+
+  The XLSX has 5 sheets (Table1-Table5); this fetcher reads Table2
+  ("Composite Consumer Price Index" — national urban+rural, the fullest
+  divisional breakdown of the five). NBS uses a 12-group legacy scheme
+  (COICOP-1999-shaped) rather than COICOP-2018's 13 divisions — division
+  13 (insurance & financial services) is not broken out and sits folded
+  into "Miscellaneous Goods & Services" (mapped to 12). Headline
+  aggregates (All Items, All items less Farm Produce[.  and Energy],
+  Imported Food, and NBS's own narrower "Food" aggregate — distinct from
+  the COICOP 01 "Food & Non-Alcoholic Beverages" column actually used
+  here) are dropped; no sanctioned IndexObservation sentinel exists yet
+  for an all-items headline (see the skill's open design question).
+
+  GOTCHA confirmed live: the month-name column mixes 3-letter
+  abbreviations ("Jan") and full names ("June", "July") inconsistently —
+  e.g. Jun/Jul 2004 are spelled out while every neighbouring month that
+  year is abbreviated. A literal string match breaks silently on those
+  rows; the fetcher instead matches on the lowercased first 3 characters,
+  which both forms share for every English month name.
+
+  SECOND gotcha confirmed live: the year cell is populated only on each
+  year's January row (blank Feb-Dec) EXCEPT the January row for the
+  newest year in this edition (Jan 2024 ships with a blank year cell too,
+  unlike every earlier January row back to 1995) — a naive forward-fill
+  silently stalls at 2023 and drops all of 2024. Caught because the first
+  test run returned a max observation_date of 2023-12-01 instead of the
+  expected 2024-10-01; fixed by detecting the Dec->Jan month wraparound
+  and incrementing the year even when the cell itself is blank.
+
+  Verified 2026-09-01 via `po prices collect --source nbs_ng_cpi`
+  (fallback_date cutoff 2018-01-01): 972 rows, 81 months (2018-02-01 to
+  2024-10-01, none missing) x 12 divisions, zero nulls/zero/negative
+  index_value, single source_url, single index_base_period
+  (Nov2009=100). Re-ran collect immediately after: cutoff advanced to
+  2024-10-01 from the written CSV and returned 0 new rows (idempotent).
+  Cross-checked 3 divisions by hand against the raw XLSX's Oct 2024 row
+  (Table2, columns 7/13/14): Food & Non-Alcoholic
+  Bev.=1035.467221->01=1035.4672, Transport=692.160653->07=692.1607,
+  Communication=237.867229->08=237.8672 — exact match. Index values rise
+  monotonically 2018->2024 across all divisions (e.g. division 01 median
+  440.26, max 1035.47 in Oct 2024), consistent with Nigeria's known
+  2023-24 inflation/naira-devaluation shock — not implausible or flat.

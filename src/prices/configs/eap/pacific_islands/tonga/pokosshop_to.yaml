@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pokosshop_to
+url: https://www.pokosshop.com.au/
+language: en
+currency: AUD
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.pokosshop.com.au/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Poko's Shop is an Australia-domain Shopify storefront offering same-day
+  grocery collection in Tonga. Shopify cart metadata reports AUD; the scraper
+  skips zero-priced "coming soon" placeholders and keeps live priced grocery
+  rows. Re-verified live 2026-09-01.

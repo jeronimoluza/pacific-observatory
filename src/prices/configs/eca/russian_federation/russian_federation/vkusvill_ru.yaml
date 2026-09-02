@@ -1,0 +1,53 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vkusvill_ru
+url: https://www.vkusvill.ru/
+language: ru
+cadence: daily
+timeout: 5400
+channel: supermarket
+archive_prefix: "vkusvill.ru/goods/"
+notes: |
+  Discovered live 2026-09-01 (wave 8, filling Russia's food gap). VkusVill is
+  a national Russian grocery chain (own-brand supermarket, home delivery +
+  physical stores). curl_cffi impersonate=chrome124: 200 clean, no WAF, no
+  city/store cookie needed to see prices (checked cold -- appears to serve
+  one national online price list). Bitrix-rendered; both category listing
+  pages (/goods/<dept>/) and PDPs embed clean Schema.org JSON-LD -- the
+  listing page's block is a `@graph` array carrying every product card on
+  that page (name, sku, offers.price/priceCurrency=RUB, availability,
+  canonical url), so the spider reads listing pages only and never visits a
+  PDP. /goods/ lists 44 top-level departments spanning a full grocery
+  assortment: molochnye-produkty-yaytso (dairy/eggs), myaso-ptitsa (meat/
+  poultry), ryba-ikra-i-moreprodukty (fish/caviar/seafood), ovoshchi-
+  frukty-yagody-zelen (produce), khleb-i-vypechka (bread), sladosti-i-
+  deserty (sweets), napitki (drinks), alkogol, plus non-food aisles
+  (kosmetika, tovary-dlya-doma, tovary-dlya-zhivotnykh). Pagination is
+  Bitrix `?PAGEN_1=N`; page 1's own `.VV_Pager__Item[data-page]` block gives
+  the department's true last page, and the spider walks every department to
+  its own reported last page -- no fixed page cap. A pre-flight scout of
+  all 44 departments (2026-09-01) found real, distinct-content pagination
+  up to page 161 (svezhie-tsvety/flowers -- confirmed by diffing page 1 vs
+  page 161's product names, not a repeat) and a sum of 1,220 pages across
+  departments, ~29k products before cross-category dedup by url/
+  product_id. `timeout:` set generously (5400s) since a fleet run of the
+  full uncapped walk takes materially longer than a capped sample would.
+  Verified live: "Круассан на масле" (croissant) 110 RUB; "Торт
+  \"Маракуйя\"" (cake) 638 RUB -- both plausible RU retail shelf prices.
+  Product names/categories are HTML-unescaped AND whitespace-normalised
+  (NBSP -> plain space) before emission -- html.unescape() alone leaves
+  U+00A0 in the text, which a naive .strip() does not remove. Full uncapped
+  run (2026-09-01): 17,733 rows, 17,733 distinct product_id/url (10,745
+  cross-department duplicates dropped by DuplicationPipeline, matching the
+  ~29k pre-dedup estimate), 39 departments represented, 1,222 requests /
+  1,221 HTTP 200 / zero errors, 753s wall time. 100% RUB, zero zero/negative
+  prices, zero blank names, zero residual NBSP. Median 308 RUB, range
+  1-119,190 RUB (the top end is premium flower bouquets). Food share ~67%
+  by department (svezhie-tsvety/flowers alone is 3,560 of the 17,733 rows
+  and is the largest single non-food department -- excluding it and the
+  other non-food aisles -- kosmetika, tovary-dlya-doma-i-kukhni,
+  tovary-dlya-detey, tovary-dlya-zhivotnykh, sad-i-ogorod, idei-dlya-
+  podarkov -- leaves ~11,900 genuinely food/beverage rows). 3 cold
+  re-fetches confirmed name+price unchanged.

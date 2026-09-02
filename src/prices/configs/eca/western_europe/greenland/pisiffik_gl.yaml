@@ -1,0 +1,131 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pisiffik_gl
+url: https://www.pisiffik.gl/
+language: da
+cadence: weekly
+channel: dept-store
+archive_prefix: "pisiffik.gl/"
+archive_path_re: '^/(?:da|gl|en)/(?:\d+-[^/?]+|[^/]+/\d+-[^/?]+\.html)$'
+notes: |
+  Greenland's FIRST price source of any kind (0 manifests before this pass).
+  Pisiffik is Greenland's largest privately-owned retail company (~40 stores
+  across the six largest towns) and runs the only real e-commerce catalogue
+  in the territory.
+
+  NOT a food source, and that is expected. Pisiffik's supermarket business is
+  offline; what it sells online is its department-store side — Elgiganten
+  (electronics), Jysk (furniture) and Thansen (auto) franchises, plus
+  appliances, toys and homeware. A prior sweep (2026-09-01) found exactly
+  this and SKIPPED the site for being non-food. It is onboarded here on the
+  explicit instruction that non-food sources are wanted too: a country with
+  one non-food source beats a country with none, and Greenland's two other
+  chains (brugseni.gl, pilersuisoq.gl) are brochure-only — independently
+  re-probed 2026-09-01 at 0 price tokens each, no webshop at all. Greenland
+  therefore has no food e-commerce to onboard, by structural absence rather
+  than by search failure.
+
+  PrestaShop 1.7, Tier 1A — server-rendered, no anti-bot, no JS required.
+  Category pages carry article.product-miniature cards with full schema.org
+  microdata, so prices come from a machine-readable attribute:
+    [itemprop="price"]::attr(content)         -> "5249.25"
+    [itemprop="priceCurrency"]::attr(content) -> "DKK"
+    [itemprop="sku"]::attr(content)           -> "635743"
+  Reading the `content` attribute sidesteps the Danish display format
+  ("5.249,25 kr." — period thousands separator, comma decimal), which a
+  naive digit-strip would turn into 524925.
+
+  >>> CRAWL POLICY — DO NOT RAISE THE RATE, AND READ THIS FIRST <<<
+  pisiffik.gl publishes an unusually explicit robots.txt. It blocks a long
+  list of named AI-training and SEO crawlers outright — GPTBot, ClaudeBot,
+  anthropic-ai, Claude-Web, CCBot, PerplexityBot, Bytespider, AhrefsBot,
+  SemrushBot and ~30 more — with the stated rationale "no SEO benefit, high
+  resource cost", and separately throttles Bingbot for "169 hits in one
+  window". The generic `User-agent: *` group does NOT disallow category or
+  product pages, but it sets Crawl-delay: 5.
+
+  The repo runs ROBOTSTXT_OBEY = False globally, so nothing enforces this
+  automatically. This spider pins DOWNLOAD_DELAY = 5.0 and a single
+  concurrent request in custom_settings, overriding the repo defaults
+  (0.1s / 2 concurrent), and skips every Disallow-ed pattern: the two
+  disallowed category ids (445 in-ear-headphones, 1132 chromecast-appletv)
+  are hard-excluded, and no request uses ?q=, ?name=, ?search_query=,
+  ?orderby=, ?orderway=, ?tag=, ?id_currency=, ?back=, ?n= or
+  ?show=price_drop. Pagination uses ?page=N, which is not Disallow-ed.
+  A full pass is slow BY DESIGN. The operator has made its load concerns
+  explicit; do not "optimise" this spider by raising concurrency.
+
+  Note this is an operator-preference judgement, not a settled policy: the
+  named blocks target AI-training crawlers rather than price collection, and
+  a weekly 5s-delay pass sits inside what the `*` group permits. If that
+  reading is rejected, drop this manifest and Greenland returns to zero.
+
+  channel: dept-store — franchise-operated general merchandise, matching the
+  measured reality of the catalogue rather than Pisiffik's supermarket brand.
+
+  ARCHIVE PREFIX WIDENED 2026-09-01 after a Common Crawl resolve pass.
+  The first prefix "www.pisiffik.gl/da/" was a correct description of the
+  live Danish storefront and a wrong description of the archive: it admitted
+  3,806 of 7,290 available captures, excluding the entire GREENLANDIC
+  storefront under /gl/ (same PDP shape, e.g.
+  /gl/igalaanut-salummaatit/170443-viskerblad-wipez-flex-53-56-cm.html).
+  Bare host plus a locale alternation recovers it. Dedupe across da/gl/en or
+  the same product is counted up to three times.
+
+  Non-ASCII is NOT a problem: 2,653 archived paths are percent-encoded, and
+  `[^/]+` matches a %XX escape as happily as raw UTF-8. Do not write a rule
+  that assumes one encoding.
+
+  SPIDER PAGE FAMILY: listing only (PrestaShop category grids).
+  archive_path_re was widened by the common_crawl session to admit category
+  pages (/{lang}/<id>-<slug>: two segments, no .html) alongside PDPs -- the
+  same defect found on sxmleshalles_mf. 2,902 of 3,889 archived paths matched
+  the PDP-only pattern; the widened one matches 3,846 (+944 category pages).
+
+  ERA NOTE: the gained paths are percent-encoded with UPPERCASE hex
+  (/da/1013-badek%C3%A5ber) in CC-MAIN-2025-21, but the SAME site serves raw
+  UTF-8 (aeggebaegere with the Danish characters) in 2022-21. A lowercase-only
+  or \w+ character class drops one era silently. Keep [^/?]+.
+
+  PAGE-CAP AUTOPSY 2026-09-02. The 250-page cap was still binding and the run
+  it produced (7,295 rows, finish_reason "finished") was truncated. Every
+  structural check passed -- all URLs distinct, 100% DKK, zero blank names,
+  zero non-positive prices -- so nothing in the run itself flagged it.
+
+  What gave it away was `request_depth_max: 250` in the Scrapy stats being
+  exactly MAX_PAGES_PER_CATEGORY. This spider chains pagination (page N -> N+1),
+  so max depth IS the deepest page reached; equalling the cap is a truncation
+  signature, not a coincidence. Confirmed against the live site:
+
+    category /da/2009-dyreartikler, real (non-rail) products per page
+      page 249  9      page 260  9      page 280  0
+      page 250  9      page 270  6      page 290  0
+      page 251  9                       page 300  0
+
+  So the category runs to roughly page 275 and we stopped at 250. It came back
+  with exactly 2,250 rows = 250 pages x 9 products -- a round number that is a
+  cap signature in its own right. Roughly 180 products were lost from this one
+  category.
+
+  TWO THINGS THIS SITE DOES THAT DEFEAT THE OBVIOUS GUARDS:
+
+  1. `len(cards)` CANNOT DETECT THE END. Every category page renders a fixed
+     8-product recommendation rail using the same article.product-miniature
+     markup as real products. A rail-only page past the true end still reports
+     8 cards, so `if cards:` stays true forever. Verified: page 300 has 8 cards
+     and 0 real products. That rail is also the entire explanation for the
+     run's 8,994 duplicate drops -- ~8 per page x ~1,140 pages -- which had
+     looked like a pagination loop.
+  2. `has_next` IS reliable and is the real terminator. Measured present on
+     every page carrying real products (through page 270) and absent on the
+     first page that carries none (280+). The cap must therefore sit well
+     above the deepest category and never be the thing that fires.
+
+  Raised to 1000. At ~275 pages for the deepest category that is ~3.6x
+  headroom, and because has_next terminates naturally the higher value costs
+  nothing on categories that end early.
+
+  Cost note: the robots.txt Crawl-delay of 5s is honoured, so a full run takes
+  ~2.3 hours. That is the price of not being capped.

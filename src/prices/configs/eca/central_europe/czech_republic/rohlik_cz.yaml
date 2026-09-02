@@ -1,0 +1,54 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rohlik_cz
+url: https://www.rohlik.cz/
+language: cs
+cadence: weekly
+channel: supermarket
+timeout: 14400
+notes: |
+  Rohlik.cz -- Czech Republic's largest online grocery delivery service.
+  Distinct company/platform from billa_cz (already onboarded) and
+  albert_wolt_cz (marketplace) -- Rohlik is its own first-party
+  warehouse-delivery operator, Next.js storefront. curl_cffi
+  impersonate=chrome124 clears HTTP 200, no anti-bot layer.
+
+  IMPORTANT -- superseded a broken first draft of this spider (also
+  written into this same file/path by a concurrent onboarding run):
+  that draft assumed `?page=N` on the category URL re-renders a
+  cumulatively-growing `__NEXT_DATA__` React-Query cache (page=0 -> 14
+  ids, page=1 -> 28, claimed strict superset). Re-verified live
+  2026-09-01 and that claim is FALSE: page=0 and page=1 embed the
+  IDENTICAL 28 `productCardInfo` ids -- the query string has no effect,
+  so that approach would have silently capped every category at ~28
+  items regardless of true catalog size, with a dead `#fragment` URL.
+
+  The real pagination is a client-side JSON API (found via Playwright
+  network trace, no auth/session needed):
+    GET /api/v1/categories/normal/{categoryId}/products
+        ?page=<N>&size=100&sort=recommended&filter=
+        -> {"productIds": [...]}  (size=100 confirmed; page N returns a
+        disjoint id set from page N-1 -- verified, unlike the SSR path)
+    GET /api/v1/products/card?products=<id>&products=<id>...&categoryType=normal
+        -> [{"productId","name","slug","unit","textualAmount",
+             "prices":{"originalPrice","salePrice","currency":"CZK"}}]
+        (100-id batch confirmed to work in one call)
+
+  Canonical PDP url is /c{categoryId}/{slug} -- verified live, HTTP 200
+  with both the walked top-level category id and a product's own
+  subcategory id (bare /{slug}, /detail/{slug}, /p/{slug}-{id} all 404).
+  This is a real, fetchable product page (unlike the prior draft's
+  fragment-anchor fallback).
+
+  17 top-level department category ids used (pekarna-a-cukrarna,
+  ovoce-a-zelenina, maso-a-ryby, uzeniny-a-lahudky, mlecne-a-chlazene,
+  trvanlive, mrazene, napoje, drogerie, dite, domacnost-a-zahrada, zvire,
+  specialni-vyziva, grilovani, plant-based, kosmetika, mame-navareno) --
+  a normal full-basket supermarket catalog, food-and-beverage led.
+
+  Cold re-fetch 2026-09-01: productId 1351243 "Mrkev fialová 1ks, volná"
+  4.73 CZK and productId 1350673 "Chilli červené Cayenne 1 ks" 10.08 CZK
+  both re-confirmed live against /api/v1/products/{id} and the category
+  API, matching stored name/price.

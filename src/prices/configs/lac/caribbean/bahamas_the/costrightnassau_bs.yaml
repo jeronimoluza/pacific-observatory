@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: costrightnassau_bs
+url: https://www.costrightnassau.com/
+language: en
+currency: BSD
+cadence: weekly
+channel: wholesale
+archive_prefix: "costrightnassau.storebyweb.com/i/"
+archive_path_re: '^/i/[^/?]+/?$'
+notes: |
+  Cost Right Nassau -- wholesale grocery/general-merchandise club, another
+  chain of AML Foods Ltd. (same Bahamian public company as
+  solomonsfreshmarkets_bs, see that YAML for the locality case).
+  www.costrightnassau.com redirects to
+  https://costrightnassau.storebyweb.com/s/1000-22/, the same white-label
+  "storebyweb" (WebCart) platform on a different store code. Member
+  pricing online is stated to match the physical Nassau store; delivery
+  is Nassau/mailboat only.
+
+  Verified live 2026-08-31 via the shared POST /api/b {"pn","ps":100,
+  "facets":{}} endpoint (see _storebyweb_base.py): totalCount=332 -- a
+  real, smaller wholesale-club assortment, not a capped/broken catalog.
+  4 pages of ps=100 returned 332/332 distinct ids, 0% zero/null-price
+  rows, price range $0.89-$1299.99.

@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: recheio_mz
+url: https://recheio.co.mz/
+language: pt
+cadence: weekly
+channel: hypermarket
+timeout: 900
+archive_prefix: "recheio.co.mz/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Probed live 2026-08-31. Custom .NET storefront (no known e-commerce
+  platform). js/ProductList.js calls POST /api/api/v2/Product/Search with
+  headers {"lang":"1","token":"1234567896543"} (the JS literal, unauthenticated;
+  "lang":"pt" 500s, only the numeric locale id works). Body scopes with
+  {"currentpage":N,"vendorUrlKey":<store>,"pagesize":100,"filter":{"category":null},...} -
+  omitting vendorUrlKey (or the whole request) returns 200 with an empty
+  list, since the storefront is warehouse-scoped. Vendor keys come from
+  GET /api/api/v2/Vendor/vendorsList: Maputo Junta (recheiocashcarryjunta),
+  Matola CMC (recheioccansmmatolacmc), Nampula (recheioccansmnampula) - all
+  three are real Mozambique addresses (Maputo, Matola, Nampula), phone
+  numbers with MZ country code. Used Matola CMC per the candidate brief
+  ("store selector for Matola"). Whole-catalog walk (filter.category=null)
+  measured rc=4963 total products; the mercearia (groceries) category alone
+  is catUrlKey=groceries24A5725, rc=1454, matching the brief's "1,456
+  products in mercearia". Verified DISTINCT productId advances across
+  pages (441 distinct across 5 pages of pagesize=100, no re-serving). Prices
+  are plain MZN decimals (e.g. 180.00, 22000.00), no minor-unit division.
+  specialPrice used over unitPrice when >0 (promo price). Product URL =
+  https://recheio.co.mz/product/<urlKey>; spot-checked 200 with matching
+  product name. cadence=weekly with a 15-min timeout given ~4,963 rows at
+  pagesize=100 (~50 requests) with throttling.

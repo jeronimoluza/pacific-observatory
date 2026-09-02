@@ -46,3 +46,18 @@ an identical-looking "nothing here" verdict purely by searching in the local
 language. Gibraltar is English-speaking, so that particular lever does not
 apply, but a Spanish-language query aimed at the La Línea / Campo de Gibraltar
 cross-border shopping market is untried.
+## Update 2026-09-01 (Tier-1 greenfield pass) — SOURCE SHIPPED
+
+Gibraltar is no longer a zero-source country.
+
+| Source | URL | Channel | Status | Notes |
+|---|---|---|---|---|
+| Sosi's Vege | https://www.sosisvege.com/ | specialty-food | **SHIPPED — `sosisvege_gi`, 180 rows** | Gibraltar-domiciled greengrocer importing Moroccan produce. Domicile proven from the site's own schema.org PostalAddress: 18 Parliament Lane, Gibraltar, GX11 1AA, addressCountry "GI". site123 platform, Tier 1A, no anti-bot. 15 categories; food-weighted (main groceries 44, vegetables 43, fruit 34, spices 12, nuts 10). Prices GIP. **Do not add pagination** — the site accepts `?page=` but ignores it and re-serves page 1 byte-for-byte. |
+| Ramsons | https://order.ramsons.gi/ | — | **DEAD — app-only** | Gibraltar supermarket since 1975 and the territory's most promising grocery lead. `order.ramsons.gi` serves "Ramsons Supermarket - Web Ordering Coming Soon"; ordering is iOS/Android only. Worth re-checking in a future wave — the web storefront is announced, not absent. |
+| NomNoms | https://www.nomnoms.gi/ | — | **NOT APPLICABLE** | Restaurant food-ordering and booking aggregator, not a grocer. |
+| Eroski | https://www.eroski.gi/ | — | **BLOCKED (verdict unchanged)** | reCAPTCHA Enterprise wall confirmed by the earlier pass across three TLS profiles AND headless Playwright. Not re-probed. Separately note `eroski.gi` fronts Eroski's Spanish storefront, so even if unblocked its prices would be Spanish shelf prices in EUR, not Gibraltarian — the same definitional problem Monaco has. |
+
+**Lesson:** the earlier pass searched only for supermarkets and found one blocked
+chain. Widening to any Gibraltar-domiciled food retailer found a shippable source
+on the first search. A greengrocer is not a supermarket, and the bar for a
+zero-source country is "a real priced catalogue", not "a full-range grocer".

@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rice2meatu_mp
+url: https://rice2meatu.com/
+language: en
+currency: USD
+cadence: weekly
+channel: specialty-food
+archive_prefix: "rice2meatu.com/product/"
+archive_path_re: '^/product/[^/?]+(?:/\d+)?/?$'
+notes: |
+  Saipan-based prepared-food and catering retailer. WooCommerce Store API is
+  public and unauthenticated at /wp-json/wc/store/v1/products. Re-verified live
+  2026-09-01: the API returned a large USD-priced prepared-food catalog with
+  categories such as salads, rice and pork trays. This is not a supermarket or
+  grocery source, but it is a local food-price source and adds coverage for
+  Northern Mariana Islands after grocery discovery produced only the existing
+  I Love Saipan storefront.

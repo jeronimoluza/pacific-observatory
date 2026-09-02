@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: fosters_ky
+url: https://shop.fosters.ky/
+language: en
+cadence: weekly
+archive_prefix: "shop.fosters.ky/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  Foster's Food Fair is the dominant Cayman Islands supermarket chain
+  (fosters.ky is a WordPress brochure site with no per-SKU prices;
+  the live catalogue is the NCR Freshop-powered shop.fosters.ky, linked
+  from the brochure site's nav and confirmed via the freshop.js loader
+  tag app_key=fosters, allow_bots=true).
+  GET api.freshop.ncrcloud.com/2/products?app_key=fosters&limit=5&
+  store_id=3748 -> 200, 26,894 items, "Yellow Bananas" price "$1.09".
+  Same platform/pattern as costuless_ky (_freshop_base). Two selectable,
+  product-bearing stores exist under app_key=fosters: store_id=3748
+  ("Foster's" / Camana Bay flagship, 26,894 SKUs — used here) and
+  store_id=6642 ("FOSTER'S Priced Right" discount banner, 2,768 SKUs,
+  different prices for overlapping items — e.g. bananas $1.09 vs $0.99 —
+  not onboarded as a separate source this wave to avoid double-counting
+  the same brand's shelf).
+  Currency: the product payload carries no currency_code field, only a
+  plain "$" price string (same ambiguity as costuless_ky). Foster's is a
+  wholly domestic Cayman chain, not a US chain with a branch here, so the
+  US-warehouse-chain assumption used for costuless_ky does NOT apply.
+  Independent evidence (Cayman Resident consumer coverage, via web search
+  2026-09-01): Cayman grocery prices are quoted in Cayman Islands dollars
+  and shoppers paying in USD must apply the exchange rate. Set
+  currency=KYD on that basis, not inferred from the bare "$".
+  Measured 2026-09-01: an unbounded run plateaus around 9,200 distinct
+  SKUs (34% of the 26,894-item catalog) before the shared
+  api.freshop.ncrcloud.com host's rate limit (see known_blockers.md) stops
+  further progress within a single collect invocation; the spider itself
+  is not capped and continues from skip=0 correctly on every run. 59.1%
+  of the sampled rows are food-department categories (grocery/dairy/
+  produce/deli/pantry/bakery/meat/frozen/seafood); the remainder is
+  pharmacy/HBC, consistent with Foster's own description of carrying
+  "pharmacy, cosmetics, personal care, ... and a dollar section."

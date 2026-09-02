@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: naydizdes_tm
+url: https://www.naydizdes.com/en/ashgabat/nedvijimost
+language: ru
+cadence: weekly
+channel: real-estate
+archive_prefix: "naydizdes.com/en/item/"
+archive_path_re: '^/en/item/[^/?]+\.html/?$'
+notes: |
+  Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Naydizdes
+  ("Free classifieds site #1 in Turkmenistan") is an Osclass-based
+  general classifieds board hosted outside the country
+  (147.135.215.129), reachable with no challenge -- unlike almost every
+  other Turkmen-registered domain probed for this country, which sits on
+  Turkmentelecom's own network (216.250.x.x, 95.85.x.x) and refuses
+  external TCP connections outright.
+
+  The real-estate section (/en/ashgabat/nedvijimost) server-renders up
+  to 100 listing cards per page with a real per-listing price
+  (`<span class="item_price"> 4,500</span>`) and a category label from
+  the trailing item_extra line ("Flats and houses for rent", "Room for
+  rent", "Flats and houses for sale", ...). Site reports 779 active
+  listings under this section; spider caps at 10 pages (~1,000 rows,
+  covers the full current inventory). Verified pagination (?page=N)
+  advances: page=2 and page=3 share only 1 of 101 items each (a
+  pinned/VIP listing that always surfaces), not a re-served page.
+
+  CURRENCY CAVEAT: no currency symbol is printed anywhere on the card or
+  item-detail page. Treated as TMT because this is a Turkmenistan-only
+  site (no country/currency switcher) and a full-page scan of both the
+  rent and sale subcategories found zero "$"/"у.е." (conditional-unit)
+  style listings, while several listing *descriptions* spell out
+  "манат" next to the same figure shown in item_price (e.g. description
+  "...Оплата 4500 манат..." against item_price "4,500" for a 2-room
+  rental). Listings without a visible price ("price on request", no
+  item_price span) are skipped rather than filled in.
+
+  This is a classifieds marketplace of private listings, not a retailer
+  catalog -- channel is real-estate (a listed enum value), matching the
+  precedent set by classifieds sources elsewhere in this repo (e.g.
+  menaap/north_africa/tunisia/tayara_tn.yaml, channel: marketplace).

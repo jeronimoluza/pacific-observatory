@@ -7,8 +7,8 @@ url: https://www.prisma.fi/
 language: fi
 cadence: weekly
 channel: dept-store
-archive_prefix: "www.prisma.fi/tuotteet/"
-archive_path_re: '^/tuotteet/[^/?]+'
+archive_prefix: "www.prisma.fi/"
+archive_path_re: '^(/tuotteet/|/fi/prisma/)[^/?]+'
 notes: |
   IMPORTANT: this is prisma.fi's general-merchandise online store, NOT a
   grocery catalogue. __NEXT_DATA__.props.pageProps.categories on the

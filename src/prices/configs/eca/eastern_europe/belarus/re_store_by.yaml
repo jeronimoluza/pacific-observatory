@@ -1,0 +1,76 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: re_store_by
+url: https://re-store.by/
+language: ru
+currency: BYN
+cadence: weekly
+channel: specialty-food
+timeout: 14400
+notes: |
+  Re-store.by ("Ресторация", OOO "Vodny Mir", UNP 190756996) -- Minsk online
+  delicatessen/specialty-food delivery. Distinct company from foodstore_by
+  (UNP not disclosed on-page but different domain/platform theme) and
+  green_dostavka_by (different UNP), both already onboarded for Belarus.
+  1C-Bitrix storefront, curl_cffi impersonate=chrome124 clears HTTP 200 with
+  no anti-bot layer.
+
+  215 leaf `/catalog/<slug>/` categories reachable from the homepage nav
+  (spider discovers them recursively rather than hardcoding the list, in
+  case the nav changes). Each category-listing card embeds a structured
+  `data-analytics='{"id":..,"name":..,"category":..,"price":..}'` GA-style
+  tracking blob -- parsed as JSON directly rather than the split
+  <strong>/<small> price markup, which has no adjoining currency text.
+
+  Currency: hardcoded BYN at the class level. The tracking blob's own
+  "currency" field reads a stale "RUB" stub on every card sampled --
+  confirmed wrong by magnitude (a 150ml soy sauce bottle at 24.30 "RUB"
+  would be ~$0.25, implausible; at 24.30 BYN, ~$7.6, plausible for an
+  imported specialty item at a self-described delicatessen). No currency
+  symbol/text is rendered anywhere on the page to read directly, so this
+  follows Phase 5A's guidance to declare currency at the spider level
+  against countries.yaml (BYN) rather than trust the analytics stub.
+
+  Pagination via `?PAGEN_1=N` confirmed real: /catalog/bakaleya/ page 1 vs
+  page 2 returned disjoint product-id sets on a cold check (2026-09-01).
+
+  channel=specialty-food (not supermarket): the catalog is delicatessen/
+  imported-goods focused (sauces, cheeses, confectionery, deli meats), not
+  a full grocery basket -- category list includes anchousy (anchovies),
+  belovezhskie-syry (cheese), betty-s-cake, dorblu, etc, and the site's own
+  tagline is "доставка продуктов питания и деликатесов" (food & delicacy
+  delivery).
+
+  Full-run finding (CORRECTED by orchestrator 2026-09-01): the 215
+  "categories" ARE heavily overlapping tag/filter views over a shared SKU
+  pool -- the same cheese SKUs reappear under both a named cheese-type
+  category and a cross-cutting brand category. That observation was right.
+  The conclusion drawn from it was not.
+
+  The first pass emitted a synthetic "<category-url>#<product_id>" url to
+  get past DuplicationPipeline, which dedups on item["url"]. That made a
+  product listed under two category views emit twice, so the crawl spent
+  its time re-walking already-seen products and was stopped at 123 rows /
+  99 distinct product_id. It was then recorded as "the true shape of a
+  curated 100-200 SKU delicatessen catalog." It is not.
+
+  Deduping on product_id inside the spider (the true identity here, since
+  the urls are synthetic) lets the crawl advance instead of circling. The
+  unbounded re-run yields 1,165 rows / 1,165 distinct product_id / 1,165
+  distinct url -- roughly 12x the earlier estimate. 0 blank names, 0
+  zero/negative prices, 100% BYN, 0.46-664.50 BYN, median 17.16. Category
+  mix is food-led (Semper, Nutrilak, Hipp and Fleur Alpine baby food, fish
+  fillet, fruit purees).
+
+  Lesson for the next author: a crawl that "converges" on a small number
+  while most requests re-serve seen products is a duplicate-identity
+  signature, not evidence of a small catalog. Check distinct product_id
+  against row count before concluding the site is small.
+
+  Cold re-fetch (2 products, 2026-09-01): product_id 12289 ("Соус соевый
+  классический с дозатором, 150 мл", Kikkoman) still 24.30 BYN on
+  /catalog/bakaleya/; product_id 48060 ("Сыр с голубой плесенью Дорблю
+  50%, 100 г") still 17.32 BYN on /catalog/dorblu/ -- both matched
+  stored name/price exactly.

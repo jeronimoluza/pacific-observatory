@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes:
+  - "08.1.0"
+spider: vini_recharges_pf
+url: https://www.vini.pf/mobile/offres-prepayees/recharger
+language: fr
+currency: XPF
+cadence: weekly
+channel: null
+archive_prefix: "vini.pf/mobile/offres-prepayees/recharges"
+archive_path_re: '^/mobile/offres-prepayees/recharges'
+notes: |
+  Official Vini prepaid recharge page for French Polynesia. The scraper emits
+  six recharge tariffs with XPF prices and text features from the static
+  Drupal card markup.

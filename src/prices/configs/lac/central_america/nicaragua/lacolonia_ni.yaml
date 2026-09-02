@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lacolonia_ni
+url: https://lacolonia.com.ni/
+language: es
+cadence: weekly
+channel: supermarket
+notes: |
+  Supermercados La Colonia -- Nicaragua storefront, a DIFFERENT platform build
+  from the pre-existing lacolonia_hn (Honduras, VTEX). This one is Next.js
+  (App Router); each /categoria/<slug> page server-renders the whole
+  category's product list as a JSON array (`initialProducts`) embedded inside
+  a React Server Components script payload -- no separate API endpoint, no
+  pagination. Confirmed live 2026-09-01: Abarrotes category alone embedded
+  2,081 products in one response (code 1520122 'ARROZ 96/4 BOLSA 2 KG 051152
+  BAGSA - FAISAN' NIO 143.50). Currency confirmed as Cordoba (C$ prefix on
+  rendered prices) matching countries.yaml (NIO).

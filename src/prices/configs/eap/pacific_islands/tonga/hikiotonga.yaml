@@ -7,5 +7,23 @@ url: https://www.hikiotonga.com
 language: en
 cadence: daily
 channel: supermarket
+active: false
 archive_prefix: "www.hikiotonga.com/products/"
 archive_path_re: '^/products/[^/?]+'
+inactive_reason: >
+  Diagnosed 2026-09-01 (wave6). Had been returning HTTP 409 since ~2026-08-27;
+  re-probed with curl_cffi impersonate=chrome124/chrome120/safari17_0 per the
+  onboarding skill's TLS rule -- all three return 409 with body "DNS
+  resolution error" / Cloudflare Error 1001 (Cloudflare's edge cannot resolve
+  its origin), not a bot challenge page. www.hikiotonga.com CNAMEs through
+  Cloudflare to hikiotonga.myshopify.com. Confirmed the origin itself is gone:
+  both the apex https://hikiotonga.com/ and https://hikiotonga.myshopify.com/
+  return HTTP 404 with Shopify's own "Store unavailable" / class="shop-404"
+  page (and /products.json on the myshopify host returns a plain 404 "Not
+  Found" JSON body). This is Shopify confirming the store was closed/
+  deactivated -- the Cloudflare front end is a dangling DNS record pointing
+  at a shop that no longer exists, not a live site behind a WAF challenge.
+  Genuinely dead, not recoverable by scraping technique. Per the wave6 brief,
+  Tonga's only food channel this way went to zero, so two NEW food sources
+  (golden_star_to, hihifo_supermarket_to) were built to replace it rather
+  than one.

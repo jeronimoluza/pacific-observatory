@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2", "04.5.4"]
+channel: null
+source_key: mg_omh_fuel
+module: ssa.east_africa.madagascar.omh_fuel
+function: fetch_mg_omh_fuel
+url: https://www.omh.mg/index.php?page=prixpompe
+language: fr
+cadence: monthly
+fallback_date: 2005-01-01
+notes: |
+  Office Malgache des Hydrocarbures -- national fuel-price regulator.
+  Confirmed live 2026-09-01: the pump-price page's table is filled
+  client-side from a plain JSON endpoint (no auth) at
+  https://www.omh.mg/codes/page/prix-pompe/fetch_prices.php, one row per
+  administered price-schedule change, 141 rows back to 2006-07-10 at fetch
+  time. _COICOP_MAP: SC (Super Carburant)/ET (Essence Tourisme)/GO (Gasoil)
+  -> 07.2.2; PL (Petrole lampant/kerosene) -> 04.5.4. ET rows are sentinel-
+  valued at the literal integer 1 once that grade is discontinued (from the
+  2026-01-05 schedule onward) and are dropped, not emitted as a 1 MGA/L
+  price. Prices are plain-integer MGA per litre -- do not divide.

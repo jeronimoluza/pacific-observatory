@@ -1,0 +1,70 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: globus_online_kg
+url: https://globus-online.kg/
+language: ru
+currency: KGS
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+archive_prefix: "globus-online.kg/catalog/"
+archive_path_re: '^/catalog/[a-z0-9_]+/[a-z0-9_]+/[a-z0-9_]+/$'
+notes: |
+  ORCHESTRATOR MEASUREMENT 2026-09-01: the 20,150 rows resolve to 13,171
+  distinct product_id. 3,672 ids appear on more than one category page,
+  accounting for ~6,979 redundant rows (~35% of the source). Every one of
+  those repeats carries an IDENTICAL price -- 3,672 same-price, 0
+  different-price -- so this is pure cross-listing redundancy, not branch
+  or variant pricing. The category key is an opaque Lavka hash
+  (e.g. c67f7edfea66e52a9d21) and carries no analytical meaning, so the
+  repeats add nothing. Rows are correct and safe to use; anyone computing
+  a per-product statistic should group on product_id, not count rows.
+  Not deduped at the spider because DuplicationPipeline keys on url and
+  each listing has a distinct url -- see bigly_ly for the opt-in
+  DEDUPE_PRODUCT_IDS pattern if this is ever worth collapsing.
+
+  Globus Online -- rapid grocery delivery, Bishkek. Runs on Yandex's
+  white-label Lavka platform ("grocery-b2b-website"/"lavkaweb", merchant
+  "umai"/ОсОО Умай Групп, host flavor "b2b") -- confirmed via the raw
+  __page_props__-data blob (pageEnv.hostname=globus-online.kg,
+  locale.region=KG, cityId=10309/Bishkek). Same client-rendered React app +
+  JSON API shape as the sibling lavka_uz spider, but the category tree here
+  is keyed by a categoryInfo.id hash (no deepLink slug) -- 71 leaf
+  categories under 19 merchandising groups (Бакалея, Молочный прилавок,
+  Мясная лавка, Хлебобулочная, Овощной прилавок, Замороженные продукты,
+  Сладкое и снеки, Вода и напитки, Алкогольные напитки, Globus-Buffet =
+  food/beverage; Красота и гигиена, Дом и Уют, Стирка и уборка, Товары для
+  детей, Товары для животных, Табачная продукция, Готовимся к школе! =
+  non-food). No TLS fingerprinting needed -- plain requests/Scrapy UA works.
+  Flow: GET any /ru-kg/catalog/grocery/category/<id> page for csrfToken ->
+  POST geo/v1/geocode with a fixed Bishkek point (Ala-Too Square,
+  42.87455/74.59697) -> POST v1/layout (layoutSlug=grocery) for the 71 leaf
+  category ids -> POST v2/category once per id for its flat product list.
+  Site serves both ru-KG and ky-KG locales (meta.common.alternates lists
+  both hreflang variants on every page, rule 21) -- this spider sidesteps
+  the duplicate-catalog trap structurally by sending
+  X-Lavka-Web-Locale: ru-KG on every request and walking the tree exactly
+  once, so no ky-KG rows are ever fetched.
+
+  Full unbounded run 2026-09-01: 20,150 rows, 71 distinct categories, 0
+  zero/negative prices, 0 blank names, all KGS. Price range 1.00-26,337.17
+  KGS, median 169.49. 13,171 distinct product_id vs 20,150 distinct url --
+  the gap is genuine cross-listing (verified: e.g. an air freshener SKU
+  appears under both "Дом и Уют" and a discounts shelf with an identical
+  name/price in both places, not a scrape artifact); url includes the
+  category-id fragment so DuplicationPipeline's url-dedup does not collapse
+  legitimately cross-listed SKUs. Food/beverage share (by distinct
+  product_id, canonicalizing cross-listed items to their first non-promo
+  department) is ~61.7% (8,121 of 13,165 classified products; 7 products
+  only ever appeared under promo-only shelves and are unclassified) --
+  channel is `supermarket` per this majority-food mix, matching lavka_uz.
+  coicop_classification left as classifier (wide catalog spans multiple
+  COICOP divisions); coicop_codes unset.
+  Rule-3 trap hit and confirmed during onboarding: a --max-items 10 capped
+  run drained only the LAST-enqueued category (auto/car-cleaning
+  non-food) -- the reported food share above is from the unbounded run only.
+  3 products cold-refetched via a fresh, unauthenticated session (different
+  categories) 2026-09-01: all 3 matched product_name and price exactly
+  against the shipped JSONL.

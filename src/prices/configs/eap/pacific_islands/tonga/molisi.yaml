@@ -2,5 +2,11 @@ spider: molisi
 language: en
 active: false
 channel: pharmacy
+analytical_role: retailer_sku
 archive_prefix: "molisi.to/"
 archive_path_re: "^/(baby-maternity|beverage|grocery|meat-seafood|personal-care)/[^/?]+"
+inactive_reason: >
+  molisi.to returns HTTP 500 on every path (homepage, wp-json Store API,
+  category pages) as of 2026-08-31 re-check. Last successful archived pull
+  was 2026-03-10; site has been down for ~6 months. Re-probe before
+  reactivating.

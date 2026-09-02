@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.2"]
+spider: telia_no
+url: https://www.telia.no/privat/mobilabonnement
+language: "no"
+cadence: monthly
+channel: other
+archive_prefix: "www.telia.no/"
+archive_path_re: '^/mobilabonnement/?$'
+notes: |
+  Verified live 2026-08-31: Next.js SSR page, single URL, no pagination
+  needed. The listing page embeds a schema.org ProductGroup object inline
+  in __NEXT_DATA__ (props.pageProps.productGroupSchema), one hasVariant
+  entry per mobile-subscription plan with a clean Offer (sku/price/
+  priceCurrency/availability). 11 plans confirmed, e.g. 'Telia X Start' sku
+  TELIA_X_START_2026 -> NOK 499/mnd, InStock; 'Telia X + Viaplay Total' ->
+  NOK 1148/mnd. Narrow single-class tariff source (mobile telephone
+  service plans, COICOP 08.2), not a wide retailer catalogue -- monthly
+  cadence since plan line-ups change infrequently. product_id is the plan
+  sku (stable, unique). Currency NOK matches countries.yaml.

@@ -7,6 +7,8 @@ url: https://www.happycenter.com.tr/
 language: tr
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.happycenter.com.tr"
+archive_path_re: '^/[^/]+(/[^/]+){1,3}/?$'
 notes: |
   Happy Center -- mid-tier Turkish discount supermarket chain (self-described
   "world's first shelf-system virtual market"). Custom PHP storefront, plain

@@ -1,0 +1,59 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: afridelivery_premuni_zm
+url: https://afridelivery.app/
+language: en
+cadence: weekly
+channel: specialty-food
+notes: |
+  Premuni Stores, a South-Asian-import specialty grocer (Parle biscuits,
+  Wagh Bakri tea, spices, pulses, papad, flour, condiments), scraped as
+  its own first-party merchant off the AfriDelivery multi-vendor delivery
+  platform (backend api.afrideliverymall.com) rather than as one blended
+  AfriDelivery aggregate -- rule 14 (a named grocer behind a delivery app
+  is a grocer). AfriDelivery lists only 9 distinct grocery/food vendors
+  across all ~109 Lusaka delivery zones probed (butcheries, a fishmonger,
+  a produce store, etc.) -- not a homogeneous catalog, so the blended
+  platform itself would only be honest as channel:marketplace (does not
+  count as food); Premuni Stores alone is a genuine specialty-food shop.
+
+  Two Lusaka branches hardcoded (vendor ids 527 and 532, "Premuni Stores"
+  / "Premuni Stores Cosmopolitan Mall") -- discovered by walking task=list
+  across all zones; disjoint item-id ranges (40xxx vs 93xxx), no
+  product_id collision. No per-product PDP exists on this platform; each
+  vendor's catalog is served as one AJAX HTML fragment (task=menu) with
+  section headers used as category. Synthetic per-row URL fragment
+  (#<vendor>-<item_id>) per rule 9 since DuplicationPipeline dedups on
+  url and there is one fetched page per branch.
+
+  Verified live 2026-09-01 (test run, both branches, zone=Cairo Road):
+  525 total rows, 525 distinct product_id, 525 distinct url, 0 zero/neg
+  price, 0 blank product_name, currency 100% ZMW, price range K6.30-
+  K378.00, median ~K40.32. Categories: Biscuits, Spices, Tea/Coffee,
+  Pulses, Papad, Flour, Dairy, Frozen, Condiments, Nuts, Sweets,
+  Confectionery, Snacks, Starches -- 100% food (COICOP division 01).
+  duplicate observation_hash count: 0.
+
+  BRANCH OVERLAP (orchestrator-measured 2026-09-01): the 525 rows cover
+  270 distinct product_name values. 255 names appear at BOTH branches;
+  of those, 213 carry an identical price at both and 42 genuinely differ
+  (e.g. "paneer 250g" K75.60 at vendor 527 vs K63.00 at 532, a 20% spread).
+  So the two branches are real, distinct price points and are worth
+  keeping, but ~40% of rows are redundant repeats of the same shelf. The
+  branch is only recoverable from the <vendor> prefix of the synthetic URL
+  fragment -- there is no branch column in the spider item schema. Anyone
+  computing a per-product average should group on product_name, not rows.
+
+  Not the same shelf as lusakadelivery (rule 19): lusakadelivery is a
+  single-storefront Shopify site ("Lusaka Delivery" company); AfriDelivery
+  is an unrelated multi-vendor directory (backend shared with a "250taxi"
+  white-label courier template) and Premuni Stores does not appear in
+  lusakadelivery's catalog. TigmooEats and AfriDelivery's own restaurant
+  vertical were both probed and found dead/out of scope -- see the
+  Zambia inventory writeback for detail.
+
+  coicop_divisions: 01
+  divisions_basis: full_catalog_walked (both branches' full menus parsed,
+  not a capped sample)

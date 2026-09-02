@@ -1,0 +1,273 @@
+Bananar og perur
+Epli
+Melónur
+Ber
+Sítrusávextir
+Suðrænir ávextir
+Steinaldin
+Kál og salat
+Kartöflur
+Rótargrænmeti
+Kryddjurtir
+Sveppir
+Laukur
+Tómatar
+Paprika
+Agúrkur
+Annað grænmeti
+Ferskur fiskur
+Fiskréttir
+Harðfiskur
+Humar
+Rækjur
+Lambakjöt
+Nautakjöt
+Svínakjöt
+Folalda og hrossakjöt
+Kjúklingur
+Fuglakjöt
+Reykt og saltað kjöt
+Pylsur, búðingar og bjúgu
+Slátur og þorramatur
+Mjólk
+Bragðbætt mjólk
+Rjómi
+Brauðostar
+Sneiðar
+Rifinn
+Smur- og rjómaostar
+Kryddostur
+Hvítmyglu
+Blámyglu
+Ferskir
+Ostakökur og eftirréttir
+Harðir ostar
+Smjör
+Smjörlíki
+Feiti
+Skyr
+Jógúrt
+Grísk jógúrt
+AB mjólk og súrmjólk
+Skyr- og jógúrtdrykkir
+Próteinvörur og heilsubót
+Sýrður rjómi
+Jurtamjólk
+Jurtaostar
+Jurtajógúrt
+Kaldar sósur
+Kalt meðlæti
+Egg
+Nýbakað
+Samlokubrauð
+Rúgbrauð, maltbrauð, flatkökur og skonsur
+Hamborgara-, pylsu-, naan-, og pítubrauð
+Hrökkbrauð, rís- og maískökur
+Pizzabotnar
+Glútenlaust
+Kökur
+Sætabrauð
+Kex og smákökur
+Kjötálegg
+Lax og silungur
+Síld og Kavíar
+Kæfa og paté
+Brauðsalöt
+Hnetusmjör og smurálegg
+Hummus
+Sulta
+Pasta
+Tómatvörur
+Pestó og antipasta
+Pizza
+Asía
+Indland
+Mexíkó
+Hrísgrjón
+Kúskús og kínóa
+Olía
+Edik
+Baunir og tófú
+Sósur
+Sinnep
+Dressingar
+Marineringar
+Pakkasósur
+Pakkasúpur
+Kartöflumús, raspur og þurrkað grænmeti
+Niðursoðið grænmeti
+Niðursoðið sjávarfang
+Niðursoðnir ávextir
+Krydd
+Kraftur
+Hveiti og mjöl
+Sykur og sæta
+Ger, lyftiduft og matarsódi
+Bökunarsúkkulaði og spænir
+Kakó
+Marsípan og núggat
+Kökuskraut og matarlitur
+Möndlur, fræ og þurrkaðir ávextir
+Sultugerð, búðingar, hlaup og matarlím
+Bakstursblöndur
+Krem
+Brauðblöndur
+Bökunarkrydd
+Dropar
+Bökunarpappír og -form
+Morgunkorn
+Múslí
+Haframjöl
+Grautar
+Hnetur, fræ og rúsínur
+Þurrkaðir ávextir
+Vítamín og steinefni
+Fæðubótaefni
+Orkustangir
+Heilsa og vellíðan
+Smáréttir
+Sushi stór sett
+Sushi lítil sett
+Sushi delux
+Maki
+Nigiri
+Sashimi
+Meðlæti og sósur
+Veislubakkar
+Skálar
+Samlokur
+Matar- og salatbakkar
+Ferskar pizzur
+Frosnar pizzur
+Lasagna
+Grænmetisréttir
+Meðlæti
+Súpur og sósur
+Grýtur og hraðréttir
+Kjötréttir
+Kjötlíki
+Smyrjur
+Á brauð
+Samlokur, vefjur og salöt
+Tilbúnir réttir
+Snyrtivara
+Nammi
+Snakk
+Jurtaís
+Ávextir og grænmeti
+Brauð
+Franskar og djúpsteiking
+Fiskur
+Skelfiskur
+Kjöt
+Ís og eftirréttir
+Kaffibaunir
+Malað kaffi
+Kaffihylki og púðar
+Instant kaffi og kaffirjómi
+Kaffifilter
+Te
+Ávaxtasafar
+Ávaxtaþeytingar
+Íþróttadrykkir
+Kaldir kaffidrykkir
+Lífstílsdrykkir
+Vatnsdrykkir
+Þykkni, saft og síder
+Appelsínu- og limedrykkir
+Kóladrykkir
+Orkudrykkir
+Léttöl
+Mocktails, búbblur og 0% drykkir
+Skvísur
+Þurrmjólk
+Barnamatur í krukku
+Millimál
+Barnasérvara
+Barnasnyrtivörur
+Blautklútar
+Bleiur
+Sumarleikföng
+Þvottaefni
+Mýkingarefni
+Skóhirða og áburður
+Heimilisþrif
+Baðherbergið
+Eldhúsið og uppvask
+Tuskur og svampar
+Álpappír, plastfilma og bökunarpappír
+Ruslapokar
+Matvælapokar
+Ljósaperur
+Rafhlöður
+Búsáhöld
+Grill
+Bílavörur
+Pappír
+Servíettur
+Kerti
+Einnota borðbúnaður
+Blóm og blómvendir
+Sótthreinsir
+Hanskar
+Ritföng
+Sjampó og hárnæring
+Hárlitur
+Hármótunarvörur
+Hárburstar og greiður
+Hárteygjur og spennur
+Sturtusápa og freyðibað
+Handsápa
+Svitalyktareyðar
+Bómull, tissjú og hreinsiklútar
+Plástur og eyrnapinnar
+Fótsnyrtivörur
+Tíðavörur
+Tannumhirða
+Andlitskrem og serum
+Andlitshreinsun
+Skrúbbar og maskar
+Augn- og varakrem
+Krem og olíur
+Sólarvörur
+Varasalvi
+Rakvélar
+Raksápa
+After shave
+Andlit
+Neglur
+Varir
+Augu
+Fylgihlutir
+Gjafakassar
+Smokkar
+Sleipiefni
+Hundamatur
+Hundavörur
+Kattamatur
+Kattavörur
+Vörur fyrir önnur gæludýr
+Hnetur og nasl
+Flögur og skrúfur
+Popp og poppmaís
+Ídýfa
+Sykurlaust nammi
+Lakkrís
+Hlaup
+Karamellur og möndlur
+Tyggjó
+Opal og sælgætistöflur
+Fínna sælgæti
+Brjóstsykur og sleikjó
+Stykki
+Kúlur
+Plötur
+Bitar og rúsínur
+Kókos- og krembollur
+Konfekt
+Ís
+Frostpinnar
+Ískex og kurl
+Matvæli
+Hreinlætisvara
+Óskilgreint

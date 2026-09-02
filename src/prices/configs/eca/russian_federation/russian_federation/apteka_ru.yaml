@@ -5,8 +5,8 @@ coicop_classification: classifier
 spider: apteka_ru
 language: ru
 cadence: daily
-archive_prefix: "apteka.ru/product/"
-archive_path_re: '^/product/[^/?]+'
+archive_prefix: "apteka.ru/"
+archive_path_re: '^/(product|catalog)/[^/?]+'
 notes: |
   Re-verified live 2026-08-07: apteka.ru is Russia's largest online pharmacy
   chain/aggregator. Product detail pages are server-rendered with a clean

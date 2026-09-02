@@ -1,0 +1,36 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+source_key: sl_statssl_cpi
+module: ssa.west_africa.sierra_leone.statssl_cpi
+function: fetch_sl_statssl_cpi
+channel: null
+url: https://www.statistics.sl/index.php/cpi.html
+language: en
+cadence: monthly
+fallback_date: 2021-01-01
+notes: |
+  Statistics Sierra Leone (Stats SL) monthly CPI press release, published as a
+  PDF at statistics.sl/index.php/cpi.html. Live archive runs continuously from
+  2008 to the present (verified live: July 2026 release found, released 15
+  August 2026). Table 3 of each release ("National Consumer Price Index by
+  Main COICOP Groups", base December 2021=100) carries the FULL monthly index
+  series back to the base period, so fetching only the single most-recent PDF
+  backfills the whole series -- confirmed 67 monthly rows x 12 divisions
+  parsed from the July 2026 release alone (Jan-2021 .. Jul-2026).
+  Site returns HTTP 403 to a bare non-browser User-Agent (confirmed) but is
+  fully open to any realistic browser UA string -- not a WAF, no TLS check,
+  just a naive UA gate. Filenames are inconsistent across years
+  ("July-2026-CPI_Press_Release.pdf" vs "cpi_press_release_for_august_2009.pdf"
+  vs "stats_sl_cpi_for_september2019_press_release.pdf") and are NOT
+  chronologically ordered on the listing page (alphabetical by filename), so
+  the fetcher parses month+year out of every PDF filename and picks the max
+  date rather than trusting page order.
+  12 COICOP groups published; division 13 (restaurants/accommodation is
+  folded into "Restaurant and Hotels" = division 11 here, i.e. Stats SL uses
+  the older 12-group COICOP layout) -- All Items headline row dropped (no
+  sanctioned sentinel code). This is an index series, not a price level, so
+  the SLE/SLL redenomination trap does not apply here (index values are
+  unitless, base December 2021=100).

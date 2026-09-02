@@ -7,3 +7,5 @@ url: https://www.docomo.ne.jp/charge/
 language: ja
 cadence: weekly
 channel: null
+archive_prefix: "www.docomo.ne.jp/"
+archive_path_re: '^/charge/?$'

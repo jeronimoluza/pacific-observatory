@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3"]
+channel: null
+source_key: sr_telesur_tariff
+module: lac.south_america.suriname.telesur_tariff
+function: fetch_sr_telesur_tariff
+url: https://www.telesur.sr/prepaid/
+language: nl
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  NOT a duplicate of the existing telesur_sr source. telesur_sr is a
+  Scrapy spider hitting Telesur's WooCommerce Store API
+  (www.telesur.sr/wp-json/wc/store/v1/products) -- Telesur's device/
+  electronics SHOP (phones, chargers, cases, routers), channel:
+  electronics, analytical_role: retailer_sku. This fetcher is a plain
+  HTML scrape of a different page entirely (www.telesur.sr/prepaid/,
+  the telecom-tariff/plan page), analytical_role: tariff, no shared
+  product_id namespace with the shop spider (fixed prepaid-bundle plan
+  names vs. Store-API SKUs).
+
+  Parses the "Mobiel internet" prepaid data-bundle cards (6 bundles,
+  150MB/12u through 1200GB/30-day-5G, confirmed live 2026-09-01). No
+  effective date stated on the page -- period_kind: snapshot.
+
+  Dev-tested 2026-09-01: 6 rows, zero duplicate observation_hash.

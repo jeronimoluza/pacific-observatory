@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cozmo_jo
+url: https://cozmo.jo/
+language: en
+cadence: weekly
+channel: supermarket
+timeout: 2400
+archive_prefix: "cozmo.jo/cozmostore/"
+archive_path_re: '/p/\d+$'
+notes: |
+  Verified live 2026-09-01. Cozmo (THE Group) -- Amman's largest domestic
+  supermarket chain (founded 2003), real online grocery store at cozmo.jo,
+  not a marketplace/aggregator. Custom PHP storefront (not WooCommerce/
+  Magento/Shopify) -- category AND product-detail pages embed full product
+  records (numeric id, title, price, sku) directly as HTML attributes on
+  every `div.item.productID` card, so a single-hop crawl over category
+  links extracts everything without a separate per-PDP fetch. Real
+  taxonomy sampled: food-cupboard (16 subcategories -- biscuits, cereal,
+  chocolate/sweets, condiments, crisps/snacks/nuts, herbs/spices, hot
+  drinks, jam/honey, pickles/olives, oils/vinegars, pulses/grains/seeds,
+  nuts/dried fruit, rice/pasta, sugar/baking, tins/cans, world food),
+  dairy-eggs-butter, butchery (meat/seafood), laundry-household,
+  organic-free-from-shop, personal-care, baby-kids, homeware,
+  back-to-school, toys.
+
+  JOD 3-decimal check done: "Kitco Bites Cheese Balls Corn Puffs 16g"
+  (SKU 6287006940842) site-displayed price is `<sup>JD</sup>0.1` (= JOD
+  0.100, 100 fils) -- parsed float 0.1 matches exactly, no minor-unit
+  scaling needed; site elides trailing zeros in its own display.
+
+  Storefront serves English only at the URLs crawled (no parallel Arabic
+  catalogue instance found -- product NAMES are still a mix of Arabic and
+  English brand/descriptor terms, kept verbatim per rule 21/22).

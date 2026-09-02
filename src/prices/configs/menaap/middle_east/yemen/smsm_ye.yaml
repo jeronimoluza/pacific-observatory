@@ -1,0 +1,116 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: smsm_ye
+url: https://smsm.market/products?id=82&data_from=category&page=1
+language: ar
+cadence: weekly
+timeout: 900
+channel: supermarket
+archive_prefix: "smsm.market/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Custom Laravel multi-vendor marketplace script (same family as souqmy_ye /
+  yemenbox / the rejected yemenstorez and bab-almandab candidates from this
+  wave), Sana'a-based (footer address: "اليمن - صنعاء - شارع حدة جوار الهئية
+  العامة للإستثمار"). Confirmed live 2026-09-01.
+
+  IMPORTANT — channel judgment call, flag for review if disputed: the parent
+  site ("سمسم اكبر متجر في اليمن" / "Semsem, the biggest store in Yemen")
+  sells far more than groceries — stationery, toys, baby goods, phones/
+  tablets, electronics, fashion, beauty, home/furniture, pharmacy — so it is
+  a general multi-category store, not a dedicated grocer. This source is
+  deliberately SCOPED to crawl ONLY the top-level "السوبر ماركت" (Supermarket)
+  department, category id=82, via:
+    GET /products?id=82&data_from=category&page=<N>
+  id=82 aggregates its full subtree confirmed against the homepage nav:
+  مواد غذائية (rice/pasta, oil/ghee, sugar, grains/legumes, canned goods,
+  snacks), العسل والتمور (honey, dates, nuts), البهارات والتوابل (spices),
+  العصائر والمشروبات (juices, soft drinks, energy drinks, water). Because the
+  crawl only ever requests id=82, every emitted row is a grocery/beverage
+  SKU — that is why this is tagged `channel: supermarket` rather than
+  `marketplace` despite the parent site being wider. A "become a vendor" CTA
+  exists (/vendors, /vendor/auth/*) but no distinct third-party seller name
+  was observed on any product card or PDP checked — single unified branding/
+  checkout/currency throughout — so this is treated as one retailer's
+  grocery department, not a blended multi-seller catalog. If a reviewer
+  disagrees, the honest fallback is `channel: marketplace` (would no longer
+  count toward the food bar) with the same URL scope kept as-is.
+
+  Server-rendered HTML (Tier 1A), no PDP visit needed — each of 20 cards per
+  page (div.product-single-hover) carries name, href, YER price, and a
+  numeric product_id (data-product-id on the quick-view button). Verified
+  pagination genuinely advances: page 1, page 2, and page 32 all return
+  distinct product sets; page 33 returns 1 remaining item; page 34 returns
+  zero cards (confirms end, not a re-served last page). Measured full walk
+  2026-09-01: 641 rows, 641 distinct product_id, 641 distinct url, 0
+  zero/negative prices, 0 blank names. All rows YER. Median price YER
+  1,950; min YER 50; max YER 55,000 (royal sidr honey) — plausible for a
+  grocery catalog spanning single sachets to premium honey and bulk oil.
+
+  NAME TRUNCATION — FIXED 2026-09-01: the listing card's own markup
+  hard-truncates long Arabic names with a literal "..." (measured 403/641 =
+  62.9%). Corrected orchestrator's flag by re-checking, in order: (1) no
+  `title=`/`alt=` attribute on the card's anchor or image carries the full
+  text (`alt=""` is empty on every card) — this route fails; (2) the PDP's
+  `<title>` tag DOES carry the full untruncated name — my first pass wrongly
+  reported this as also-truncated without doing a byte-for-byte check;
+  re-verified against 6 sampled truncated products (all matched cleanly, no
+  site-name suffix or other contamination). Spider now does a second-pass
+  PDP fetch for the 403 truncated items only (not all 641) and patches
+  `product_name` from the PDP `<title>`. Re-ran full collect after the fix:
+  641 rows, 641 distinct product_id/url, 0 zero/negative prices, 0 blank
+  names, 0 remaining truncated names (spot-checked 3 previously-truncated
+  rows against live PDP fetches — all matched). Run time rose from ~2 min to
+  ~7 min (437 requests instead of 34); added `timeout: 900` to this manifest
+  accordingly.
+
+  Currency — DUAL-RIAL: no old/new-rial switcher was found anywhere on this
+  site (unlike souqmy_ye and the rejected bab-almandab candidate, both of
+  which expose one), so this was inferred from the Sana'a address alone.
+  Cross-checked 2026-09-01 against live spot rates from ye-rial.com: Sana'a
+  (old rial) USD/YER ~531-533; Aden (new rial) USD/YER ~1,554-1,562 (~2.9x
+  apart). Applied to an identifiable branded SKU on this source — "Al-
+  Mudhesh Rice (5 kg) Long Grain", YER 3,900 — gives $7.34 at the old rate
+  vs $2.50 at the new rate. $7.34 for 5kg of branded rice is an ordinary
+  retail price; $2.50 (~$0.50/kg) is implausibly cheap for retail rice
+  anywhere, let alone an import-dependent market. Sidr honey ("عسل سدر رقم
+  1", YER 43,000) gives $81 old vs $28 new — both are within range for
+  premium honey, but skew the same direction. This cross-check CONFIRMS the
+  old/Sana'a rial hypothesis rather than merely presuming it from address.
+  Do not average or mix against sources quoting the "new"/Aden rial (e.g.
+  relon_aden_ye).
+
+  Rejected in the same pass, recorded here rather than re-searched next
+  time: Yemen Storez (yemenstorez.com) — only 9 SKUs site-wide via its own
+  /search2 AJAX endpoint, its advertised "food and drink" (طعام ومشروبات,
+  category id 2082) category returns total_product_count=0 both via the
+  static page and the live endpoint — near-empty demo-stage catalog, DEAD.
+  Bazzarry (sanaa.bazzarry.com AND grocery-aden.bazzarry.com) — persistent
+  HTTP 503 app-level "Service Unavailable" error (New Relic-instrumented,
+  not a WAF challenge) across bare domain, www, and both known subdomains,
+  retried across curl_cffi impersonations and over several minutes — whole
+  platform down, DEAD. bab-almandab.com — same Laravel marketplace script,
+  Sana'a-based, Ministry-of-Trade-certified; only 30 SKUs site-wide, its
+  food category (id 48, "الأطعمىة و المشروبات") renders zero product cards
+  both via curl and a full Playwright render — DEAD for food, same near-
+  empty pattern as Yemen Storez. yemensooq.com — classifieds/ads platform
+  (OpenSooq-style "post your ad free"), category filter param is ignored
+  server-side (subcategory pages show generic latest-ads across all
+  categories, mixed USD/SAR/YER pricing, seller-set/negotiable) — not a
+  retail price source. theyemenihouse.com (Shopify, /collections/grocery) —
+  REJECTED FOR LOCALITY: Shopify.currency=USD, ships via
+  USPS/UPS/FedEx/DHL/ARAMEX to "60+ countries", a US/international diaspora
+  shipper of Yemeni-origin goods, not domestic Yemeni retail (same pattern
+  as the already-built yemenbox). jomlah.app — REJECTED FOR LOCALITY: Salla
+  platform, Riyadh phone numbers (+9665...), SAR pricing — a Saudi wholesale
+  food store, not Yemen-domestic despite Arabic branding. zadfresh.com —
+  default "Welcome to nginx!" placeholder page, never deployed, DEAD.
+  wssy.app (Aden) and talabat-aden.com — both are app-only marketing landing
+  pages for a mobile delivery app with no browsable web catalogue (curl/
+  Playwright render only shows an app-store download CTA); wssy.app also
+  403s an hcdn challenge on every impersonation profile. eMahallat
+  (emahallat.com) — DNS does not resolve, dead domain. yemenrise.com — B2B
+  food-ingredients/additives lead-gen catalog for manufacturers, no
+  consumer prices anywhere on the site.

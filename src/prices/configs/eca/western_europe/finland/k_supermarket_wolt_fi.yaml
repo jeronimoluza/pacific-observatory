@@ -1,0 +1,50 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: k_supermarket_wolt_fi
+url: https://wolt.com/en/fin/helsinki/venue/k-supermarket-mustapekka
+language: fi
+cadence: weekly
+channel: marketplace
+archive_prefix: "wolt.com/en/fin/helsinki/venue/"
+archive_path_re: '^/en/fin/helsinki/venue/[^/?]+'
+notes: |
+  K-Supermarket (Kesko's K-ryhmä grocery banner) Mustapekka branch,
+  Helsinki, on the Wolt delivery marketplace. Same SSR query-state walk
+  as albert_wolt_cz / rimi_wolt_lt (shared base `_wolt_base.py`): venue
+  page -> category-listing -> per-leaf-category `/items/<slug>` page 1
+  (up to 50 items each). Synthetic url = f"{venue_url}#{item_id}".
+
+  Discovered via the Helsinki city discovery page's "groceries" section,
+  which lists several genuine Finnish grocery venues (k-market-*,
+  k-supermarket-*, wolt-market-kamppi) alongside smaller ethnic/specialty
+  markets. Picked K-Supermarket Mustapekka because K-ryhmä is Finland's
+  largest grocery chain and this branch's category-listing carries 28
+  top-level departments, nearly all food: hedelmat-ja-vihannekset (fruit
+  & veg, 6 subcats), leivat-keksit-ja-leivonnaiset (bread/biscuits/
+  pastries, 8), liha-ja-kasviproteiinit (meat & plant protein, 8),
+  kala-ja-merenelavat (fish & seafood, 4), valmisruoka (ready meals, 5),
+  maito-juusto-munat-ja-rasvat (dairy/cheese/eggs/fats, 10), kuivat-
+  elintarvikkeet-ja-leivonta (dry goods & baking, 12), sailykkeet-keitot-
+  ja-ateria-ainekset (canned/soup/meal ingredients, 4), oljyt-etikat-ja-
+  salaattikastikkeet (oils/vinegars/dressings, 3), mausteet-ja-
+  maustaminen (spices, 7), texmex-ja-maailman-maut (2), pakasteet
+  (frozen, 10), makeiset-ja-naposteltavat (sweets/snacks, 6), juomat
+  (drinks, 10) -- plus non-food categories (lapset, lemmikit,
+  kosmetiikka-terveys-ja-hygienia, etc).
+
+  Verified live 2026-08-31: GET /en/fin/helsinki/venue/k-supermarket-
+  mustapekka -> 200, query-state category-listing returns 28 categories,
+  Finnish-language SKUs priced in EUR.
+
+  channel:marketplace per repo convention for *_wolt_* sources (Wolt
+  aggregates the first-party retailer's catalog rather than being the
+  retailer itself).
+
+  coicop_divisions: 01, 09 (pattern matches albert_wolt_cz; this venue's
+  own top-level tree is overwhelmingly food/beverage, unlike the CZ
+  example)
+  divisions_basis: sampled_categories (28-category top-level tree read
+  directly from category-listing at onboarding; category-level walk not
+  yet exhaustively sampled item-by-item)

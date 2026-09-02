@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pacificislandtrade_fm
+url: https://pacificislandtrade.com/
+language: en
+currency: USD
+cadence: weekly
+channel: supermarket
+archive_prefix: "pacificislandtrade.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Pacific Island Trade Shopify catalog includes Lei-Side Chuuk Store rows
+  marked with the "(LS CHUUK)" prefix. The dedicated collection slug returned
+  empty during probing, so this scraper reads /products.json and keeps only
+  Chuuk-prefixed grocery rows. Re-verified live 2026-09-01.

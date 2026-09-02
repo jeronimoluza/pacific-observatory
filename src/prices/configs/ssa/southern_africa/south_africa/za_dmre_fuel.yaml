@@ -1,0 +1,31 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+channel: null
+source_key: za_dmre_fuel
+module: ssa.southern_africa.south_africa.za_dmre_fuel
+function: fetch_za_dmre_fuel
+url: https://www.aa.co.za/fuel-pricing
+language: en
+cadence: monthly
+fallback_date: 2007-12-01
+notes: |
+  DMRE (Dept. of Mineral Resources and Energy) regulates South Africa's
+  petrol pump price and diesel/paraffin wholesale price monthly via the
+  Government Gazette basic-fuels-price formula, split Coastal vs Inland
+  (Gauteng) zones. dmre.gov.za and energy.gov.za are both unreachable for
+  automated collection as of 2026-09-01 (dmre.gov.za times out at TCP
+  level; energy.gov.za serves an expired-cert 503 -- confirmed with
+  curl_cffi impersonate=chrome124, DNS re-checked clean against 8.8.8.8 and
+  1.1.1.1). The Automobile Association of South Africa (AA) republishes the
+  identical gazetted schedule; its fuel-price-calculator widget calls a
+  plain, unauthenticated WordPress AJAX endpoint
+  (POST https://aa.co.za/wp-admin/admin-ajax.php,
+  data={"action":"getFuelPricesStart"}) that returns the full 2008-present
+  monthly history (224 records verified live 2026-09-01, 2008-01-02 to
+  2026-08-04). 10 series per month (petrol 93/95 unleaded, petrol 93/95
+  LRP, diesel 500ppm/50ppm, each Coastal + Inland) -- all COICOP 07.2.2,
+  narrow single-class source, short-circuits the classifier. No illuminating
+  paraffin (04.5.4) field is present in this payload.

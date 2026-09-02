@@ -1,5 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
 spider: citymall_mm
-archive_prefix: "www.citymall.com.mm/citymall/my/"
-archive_path_re: '^/citymall/my/.+/p/[A-Za-z0-9_]+$'
+url: https://www.citymall.com.mm/
 language: my
 channel: supermarket
+archive_prefix: "www.citymall.com.mm/"
+archive_path_re: '(^/citymall/my/.+/p/[A-Za-z0-9_]+$)|(^/stores_en/catalog/product/view/id/[0-9]+/s/[^/?]+/?$)'
+notes: |
+  Phase-1 schema upgrade 2026-09-01. Not broken — pre-upgrade YAML lacked the
+  four-axis fields and `url:`, which loader-defaulted to None (matching the
+  brief's "url: None, analytical_role: None" flag), but the spider itself
+  works: verified live re-run 2026-09-01, 200 items in ~90s, real MMK prices,
+  Burmese + English product names, grocery/food-heavy catalog (SAP Hybris
+  backend, sitemap-driven category walk over /citymall/my/search?q=:category:).
+  Most recent full run (2026-08-26) landed 11,029 rows.

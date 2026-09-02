@@ -1,0 +1,62 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+source_key: ag_statsdiv_cpi
+module: lac.caribbean.antigua_and_barbuda.statsdiv_cpi
+function: fetch_ag_statsdiv_cpi
+channel: null
+url: https://statistics.gov.ag/subjects/consumer-price-index/
+language: en
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  Locality: statistics.gov.ag is the Statistics Division of Antigua and
+  Barbuda (Ministry of Finance and Corporate Governance) -- the country's
+  official national statistics office, .gov.ag domain. This is the
+  strongest remaining lead from the discovery brief; never probed before
+  this round.
+
+  The CPI landing page links one PDF per month back to 2013; the fetcher
+  parses every "Monthly-CPI-<Month>-<Year>.pdf" filename linked on the page
+  and picks the max by (year, month) -- NOT by upload path, since several
+  recent releases (e.g. April 2026) are filed under a stale 2022/11 upload
+  folder that has nothing to do with the report period. Filenames are
+  inconsistent across years: some omit the dash before the year
+  ("Monthly-CPI-September2013.pdf"), one has a confirmed typo
+  ("Monthly-CPI-Janaury-2026.pdf"), several carry disambiguating suffixes
+  ("-1", "-2", "-R") -- the parser tolerates all of these.
+
+  statistics.gov.ag (*.gov.ag, Sectigo-issued) serves an incomplete
+  certificate chain -- confirmed with `openssl s_client -showcerts` (only
+  the leaf cert returned, no intermediate). Same "NSO portal SSL
+  certificate failures" class already documented for vnso_cpi.py
+  (Vanuatu) and known_blockers.md, not a bot block. Both curl_cffi and
+  plain `requests` fail cert verification against this host; verify=False
+  is that class's documented workaround.
+
+  Each release's Table 2 ("CPI and Inflation Rate for Main Categories,
+  Sub-groups and Sections") lists per row: category, Jan-2006 weight, then
+  three CPI index levels [report month, prior month, same month last
+  year], then YoY/MoM % change. Only the 12 ALL-CAPS main-category rows are
+  extracted; sub-group/section rows beneath each are ignored. The
+  report-month index (first of the three index columns) is the value
+  emitted; "All Items" (headline) is dropped, no sanctioned headline
+  sentinel.
+
+  Antigua and Barbuda's 12 main categories are, in the PDF's own order,
+  the *standard* pre-2018 COICOP divisions 01-12 verbatim -- Restaurants
+  and Hotels is already its own division 11 and Miscellaneous Goods and
+  Services is division 12. Unlike the sibling Fiji/Vanuatu Pacific CPI
+  fetchers, no COICOP-13 remapping is needed here: confirmed the 12 labels
+  match 1:1 against the same PDF's own "Table 1: Main Expenditure
+  Categories" list.
+
+  Smoke run 2026-08-31: 12/12 rows from the June 2026 release (released 22
+  Jul 2026, the latest available at fetch time), values cross-checked by
+  hand against the raw PDF text (e.g. FOOD AND NON-ALCOHOLIC BEVERAGES
+  132.39, HOUSING WATER ELECTRICITY GAS 112.93 -- exact match).
+  coicop_divisions: 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12
+  divisions_basis: walked_categories (all 12 published main-category rows
+  read directly from Table 2, not sampled).

@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: hurleys_ky
+url: https://shop.hurleys.ky/
+language: en
+cadence: weekly
+archive_prefix: "shop.hurleys.ky/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  Hurley's Marketplace is one of Grand Cayman's major supermarket chains
+  (hurleys.ky is a WordPress brochure site; the live catalogue is the NCR
+  Freshop-powered shop.hurleys.ky, linked from the brochure nav and
+  confirmed via the freshop.js loader tag app_key=hurleys, allow_bots=true
+  — same platform as costuless_ky and fosters_ky).
+  GET api.freshop.ncrcloud.com/2/products?app_key=hurleys&limit=3&
+  store_id=1874 -> 200, 17,074 items, "Limes, each" price "$ 0.49".
+  Two selectable, product-bearing stores exist under app_key=hurleys:
+  store_id=1874 ("Hurley's" flagship, 17,074 SKUs — used here) and
+  store_id=7634 ("Hurley's DASH" delivery-service pricing, 17,048 SKUs,
+  largely overlapping catalogue) — DASH not onboarded separately to avoid
+  double-counting the same shelf, same reasoning as fosters_ky's Priced
+  Right exclusion.
+  Currency: no currency_code field on the product payload, only a plain
+  "$" price string (same gap as costuless_ky/fosters_ky). Hurley's is a
+  wholly domestic Cayman chain. Independent evidence (Cayman Resident
+  consumer coverage, via web search 2026-09-01): Cayman grocery prices are
+  quoted in Cayman Islands dollars, not USD. Set currency=KYD on that
+  basis, consistent with fosters_ky.
+  Measured 2026-09-01: multiple collect attempts on the same day each
+  stalled around 900 distinct SKUs (5.3% of the 17,074-item catalog) on
+  the shared api.freshop.ncrcloud.com host's rate limit (see
+  known_blockers.md) — a smaller sample than fosters_ky got the same day,
+  since the limit's onset is shared/contention-driven, not a property of
+  this spider. 41.4% of sampled rows are food-department categories;
+  a further 46.3% have no category at all because a meaningful share of
+  Hurley's product URLs skip the department path segment entirely
+  (`/shop/<slug>/p/<id>` instead of `/shop/<dept>/.../<slug>/p/<id>`) —
+  category is genuinely absent on the site for those SKUs, not a spider
+  parsing bug (verified against _freshop_base.py's _category_from_url,
+  which correctly returns None when no department segment exists).

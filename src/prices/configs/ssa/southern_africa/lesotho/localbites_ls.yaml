@@ -1,0 +1,68 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: localbites_ls
+url: https://store.localbites.co.ls/
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "store.localbites.co.ls/products/"
+archive_path_re: '^/products/[^/?]+/?$'
+notes: |
+  Wave 8. LocalBites -- a multi-vendor food-delivery marketplace serving
+  Maseru, Lesotho. From the workbook candidate "LocalBites Lesotho"
+  (ACCEPT verdict; groceries flagged 'coming soon' at survey time).
+  Re-verified live 2026-09-01: still NO "Groceries" category
+  (categories/groceries, /categories/supermarket both resolve 200 with
+  "No Products found" -- the coming-soon note is still accurate, not
+  stale). The two live top-level categories are "Food" (~389 products,
+  fast-food/cafe delivery) and "Liquor" (~69 products).
+
+  api.localbites.co.ls/api/stores (open JSON API, no auth) lists 14 named
+  first-party merchants: Barcelos, BiteLiqour, Boba Heaven, Debonairs
+  (Pioneer Mall), Foso Foods, Golden City Palace, Highlands Bliss, Hungry
+  Lion, KFC, Lecholi Family Restaurant, Purple Coffee, Stadium Fast Foods
+  Main North, Steers, Trout Fish Market. All but BiteLiqour are restaurant/
+  QSR chains or cafes selling PREPARED MEALS -- "Trout Fish Market" reads
+  like a fresh-fish grocer by name but its catalog is fish-and-chips-style
+  meals ("Trout wrap", "Half Chicken With Chips"), not fresh fish for sale
+  by weight, so it is not a fresh-market. None of these 13 are supermarkets
+  or grocers -- channel=marketplace is the honest label (this is COICOP 11
+  restaurant/food-away-from-home coverage, not a grocery-retail channel,
+  and correctly does NOT count toward the food-and-beverage-retail bar).
+
+  BiteLiqour is DELIBERATELY EXCLUDED here -- onboarded separately as
+  bite_liqour_ls (channel=specialty-food, single-merchant-on-aggregator
+  pattern) so its rows aren't double-collected under two source keys.
+
+  Currency: site's own settings blob returns currency=LSL, currencySymbol=
+  "L" directly -- no symbol ambiguity to record here (contrast with sites
+  that display "R"/rand; LSL is 1:1 pegged to ZAR and the rand is legal
+  tender in Lesotho, per country notes).
+
+  Crawl: (1) GET api.localbites.co.ls/api/stores -> JSON directory of all
+  stores + slugs (Tier 1B, no auth). (2) For each non-BiteLiqour slug, GET
+  store.localbites.co.ls/stores/<slug> and parse the embedded __NEXT_DATA__
+  JSON blob's pageProps.initialProducts.data.data[] (same Next.js SSR shape
+  used by bite_liqour_ls). Row url = platform's own PDP route
+  /products/<slug>.
+
+  KNOWN LIMITATION (same as _wolt_base and bite_liqour_ls): each store
+  page's SSR payload is capped at page 1 of that store's own listing;
+  ?page=N is silently re-served as page 1 (verified on trout-fish-market
+  and biteliqour: current_page stays 1 across page=1..3). Larger stores
+  (KFC 62, Stadium Fast Foods 53, Steers 49, Lecholi 50 total products per
+  the /api/stores directory) are undercounted at ~24 rows each. Whole-
+  catalog-of-what's-reachable walk across 13 merchants, not a targeted
+  extractor.
+
+  Verified live 2026-09-01 (--max-items 400): 152 rows, 152 distinct
+  product_id, 152 distinct url, 0 blank names, 0 zero/negative prices,
+  currency LSL throughout (median M72, min M7, max M600). Category
+  composition spans ~35 restaurant-menu category labels (KFC Wraps 10,
+  Chicken 15, Food 10, Buckets/Wings/Family Meals ~20 combined, Fine Wine
+  3 from Steers' wine list, etc.) -- effectively 100% prepared food/
+  beverage-away-from-home, 0% packaged grocery. Cold re-fetch of 1 emitted
+  product URL (half-pack, Barcelos) returned 200 with the scraped name and
+  price string present verbatim.

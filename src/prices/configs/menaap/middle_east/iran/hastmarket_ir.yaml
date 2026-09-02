@@ -1,0 +1,39 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: hastmarket_ir
+url: https://hastmarket.ir/
+language: fa
+currency: IRR
+cadence: weekly
+channel: supermarket
+timeout: 3600
+archive_prefix: "hastmarket.ir/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Verified live 2026-09-01: hastmarket.ir is a WooCommerce store with the
+  Store API open at /wp-json/wc/store/v1/products (no auth), paginated
+  cleanly via per_page/page (X-WP-Total: 8610). prices.currency_code
+  returns "IRT" (Toman, non-ISO) with currency_minor_unit 0; the site
+  quotes Toman, not Rial (Iran's ISO 4217 currency). Spider sets
+  FORCE_CURRENCY="IRR" and PRICE_MULTIPLIER=10 (1 Toman = 10 Rial),
+  matching the convention already used by adibmarket_ir/torob_ir/
+  sheypoor_ir for the same reason. STORED VALUE IS RIAL (IRR), scaled
+  from the site's Toman price x10. Genuine grocery catalog: sampled
+  products at build time were real food/beverage SKUs (Nutella 450g,
+  cheese, flour, spices, snacks) across categories like dairy, grains,
+  spices, drinks, snacks — this is a food-and-beverage source, not a
+  cosmetics-adjacent shop with a snack aisle.
+
+  Measured on a --max-items 2000 run (catalog totals ~8610 products):
+  2000/2000 rows, all distinct product_id/url, currency 100% IRR,
+  blank names 0, zero/negative price 86 (4.3%, all correctly flagged
+  available=false / out of stock). Median price 2,862,500 IRR
+  (286,250 Toman); range 0-319,000,000 IRR (imported olive oil, gift tea
+  boxes, premium Manuka honey — plausible under Iran's devalued
+  currency, not a unit-scaling bug). Top-level category split is
+  roughly food ~49% (spices, cooking oils, coffee/tea, biscuits/wafers,
+  snacks, flour/grains, sauces, candy) vs non-food ~51% (health/wellness,
+  detergents, oral hygiene, body care, shampoo) — a genuine mixed
+  supermarket/drugstore aisle mix, consistent with channel: supermarket.

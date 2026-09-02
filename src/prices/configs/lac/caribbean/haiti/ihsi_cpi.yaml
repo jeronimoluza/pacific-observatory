@@ -1,0 +1,41 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]
+channel: null
+source_key: ihsi_cpi
+module: lac.caribbean.haiti.ihsi_cpi
+function: fetch_ihsi_cpi
+url: https://ihsi.gouv.ht/statistiques/statistiques_economiques/ipc
+language: fr
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  IHSI (Institut Haitien de Statistique et d'Informatique) monthly CPI
+  (Indice des Prix a la Consommation). Verified live 2026-09-01.
+
+  The page's own visible HTML tables (`pandas.read_html`) render index
+  levels with the decimal point silently stripped by the page's JS number
+  formatting -- e.g. "629.4" displays as "6294" -- confirmed against the
+  page's own prose ("l'IPC ... chiffre a 624.0 en juin, est passe a 629.4
+  en juillet"). Extracted from the embedded Laravel Livewire `serverMemo`
+  JSON payload (`"divisionData":[...]`) instead, which carries the same
+  values pre-formatting with clean decimals; that payload is HTML-entity
+  escaped in the raw response and is unescaped before parsing.
+
+  Base period per the page's prose: "IPC, base 100 en 2017-2018".
+  divisionData carries 13 rows: "INDICE GENERAL" (all-items headline,
+  dropped -- no sanctioned headline sentinel in IndexObservation, same
+  convention as ag_statsdiv_cpi.py/eso_cpi.py) plus 12 divisions matching
+  the standard pre-2018 12-division COICOP scheme 1:1 (Haiti's IPC has no
+  separate division 13; "Biens et services divers" is division 12, same
+  shape as Antigua and Barbuda's statsdiv_cpi). Each division's `indices`
+  dict is a rolling ~4-month window keyed by abbreviated French month + 2
+  digit year ("juil. 26"); only the latest column is emitted per run.
+
+  Smoke run (fallback_date 2020-01-01): 12/12 division rows extracted for
+  2026-07-01, values cross-checked by hand against the page's own prose
+  (INDICE GENERAL 629.4 -> division 01 "Produits alimentaires..." 788.8).
+  period_kind=monthly_avg per IndexObservation vocabulary (this source
+  writes index_value, not price_local).

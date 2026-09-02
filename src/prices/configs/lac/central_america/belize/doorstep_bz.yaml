@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: doorstep_bz
+url: https://doorstepbelize.com/
+language: en
+cadence: weekly
+channel: convenience
+notes: |
+  Live 2026-09-01, confirmed genuine (not a demo/dead ACCEPT per rule 20 --
+  this one is real). Homepage states "BELMOPAN city only (BEta launch)" --
+  small, single-city grocery delivery startup, not a chain, hence
+  channel: convenience rather than supermarket. Front page 403s under
+  curl_cffi (chrome120/chrome124/safari17_0) behind a Hostinger edge JS
+  challenge ("Checking your browser...", server: hcdn), but Playwright
+  clears it in ~6s -- not a hard WAF. Network trace found the real backend
+  on a separate, unchallenged origin:
+  https://api-ecommerce.hostinger.com/store/store_01K7G82RQFP4P73EKX07679YJF/products
+  Single GET, no auth, no pagination param accepted (page= 400s) -- returns
+  the full 204-SKU catalogue in one response. Roughly half food (Flavora/
+  Kraft/DAK/Takis/Coca-Cola/bread/rice/ice), half household/pharmacy
+  (diapers, pads, cleaners, condoms). Explicit nested currency_code "bzd"
+  per price, values in MINOR UNITS (cents) -- confirmed via min_amount=200
+  = BZ$2.00; divided by 100 in the spider.
+  Full run 2026-09-01 (single unpaginated response, so this IS the whole
+  catalogue): 204/204 rows, 0 blank names, 0 zero/negative prices,
+  distinct product_id/url both 204/204, all BZD, price range
+  $1.25-$120.00, median $6.85.

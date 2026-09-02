@@ -1,0 +1,82 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kampa_kg
+url: https://kampa.kg/
+language: ru
+currency: KGS
+cadence: weekly
+channel: supermarket
+coicop_codes: null
+notes: |
+  ORCHESTRATOR MEASUREMENT 2026-09-01: 5,201 rows / 5,185 distinct
+  product_id. 16 ids repeat; 12 carry an identical price, but 4 carry
+  DIFFERENT prices for the same id -- e.g. id 3940 "Май-з Оливьез класс.
+  35% 210мл" at 26.00 and 51.00, and id 4204 at 172.00/181.00. That is
+  either a promo-vs-regular listing or two products sharing a CS-Cart id.
+  It is 4 rows in 5,201 and does not affect the source's usability, but it
+  means product_id is not perfectly unique here -- do not treat it as a
+  primary key without collapsing on price first.
+
+  kampa.kg -- self-described "мелкооптовый интернет-магазин" (small-wholesale
+  online store), Bishkek. Despite the "wholesale" self-description, prices
+  and pack sizes on every listing are single-consumer-unit retail (e.g. a
+  single 400g pasta bag, a single 250ml gel bottle), not case/pallet lots,
+  and checkout/delivery is standard B2C (pickup points, callback-order form)
+  -- classified `channel: supermarket`, not `wholesale`, on that basis.
+  Independent CS-Cart storefront (theme class prefix `ty-`), unrelated to
+  the Umai Group / Yandex-Lavka pairing already onboarded for this country
+  (globus_online_kg) -- no shared product_id namespace (kampa's ids are
+  CS-Cart's own auto-increment).
+
+  Defect found and fixed during onboarding: a first-attempt CrawlSpider used
+  `allow=r"/vse-kategorii/"` with `deny=r"-\d+/$"` intended to skip
+  individual product-detail pages, on the assumption PDP slugs always end
+  in a numeric id. False: many end in a unit/word instead
+  (`...-pachka`, `...-400gr`, `...-zh-b`), so the crawl fell through onto
+  thousands of PDPs, which render a "related products" widget using the
+  SAME `.ty-compact-list__item` markup as a real category listing -- the
+  first run absorbed those as if they were category contents (`category`
+  came out as the hosting product's own slug) and burned ~4,700 requests
+  (153k links deduped) for under 9,000 rows. Rewritten to walk the category
+  tree structurally instead: `.ty-subcategories__item a` for sub-category
+  tiles, `a.ty-pagination__item` for same-category pagination, product
+  cards parsed only from pages reached that way -- PDPs are never
+  requested. A second bug surfaced immediately after that rewrite: the
+  first pagination selector (`.ty-pagination__item a::attr(href)`, a
+  descendant-anchor pattern) silently matched nothing because the `<a>`
+  itself carries the `ty-pagination__item` class (no nested anchor) --
+  every category was capped at its first page (max count across all
+  categories was exactly 20) with zero errors raised. Fixed to
+  `a.ty-pagination__item::attr(href)`.
+
+  Full unbounded run 2026-09-01 (post-fix): 5,201 rows, 81 distinct
+  categories, 0 zero/negative prices, 0 blank names, all KGS. Price range
+  1.00-936.00 KGS, median 79.00. 5,185 distinct product_id vs 5,201 distinct
+  url (16-row gap is the same kind of genuine cross-listing seen on
+  globus_online_kg: identical product under two different category paths
+  with two different canonical URLs). 3,308 same-run duplicate-url rows
+  (cross-listed products re-encountered via a second category) correctly
+  dropped by DuplicationPipeline, not shipped. One data-quality note from
+  the source itself, not a scrape defect: a handful of product names carry
+  a Cyrillic mis-encoding baked into kampa's own DB (e.g. "цНКНБЙХ Д/РЕК.
+  №7" for what should read "Головки д/рек. №7") -- left as-is, not
+  corrected, since the surrounding rows on the same page decode cleanly and
+  this reflects the retailer's own stored data rather than our decoding.
+  Category mix is food-heavy: leaf-level classification of the 81
+  categories (Бакалея, Готовые блюда и кулинария, Вода напитки соки,
+  Конфеты и шоколад, Молочные продукты сыры яйца, Консервированные
+  продукты, Чай кофе какао, Мясные продукты птица, Крупы, Хлебобулочные,
+  Овощи фрукты ягоды, Рыба и морепродукты, Мёд, etc. = food; Бытовая химия,
+  Личная гигиена, Подгузники, Сигареты, Электротовары, Одежда,
+  Канцелярские товары, etc. = non-food; root-page carousel "vse-kategorii"
+  left unclassified as a mixed promo shelf) gives ~81.5% food by row count
+  (4,239 food / 679 non-food / 283 unclassified-promo).
+  coicop_classification left as classifier (wide catalog spans multiple
+  COICOP divisions); coicop_codes unset.
+  3 products cold-refetched 2026-09-01 (one required walking to its
+  category's page 4 to relocate, since pagination position is not stable
+  across runs): all 3 matched product_name; 2 of 3 matched price exactly,
+  1 (Какао Nesquik 250гр) showed a genuine live price change 140->146 KGS
+  between the scrape and the verification fetch minutes later.

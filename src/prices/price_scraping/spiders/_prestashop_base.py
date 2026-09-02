@@ -41,7 +41,12 @@ from urllib.parse import urljoin
 
 import scrapy
 
-from ..archived import meta_tags, row_from_meta, rows_from_jsonld
+from ..archived import (
+    ZERO_DECIMAL_CURRENCIES,
+    meta_tags,
+    row_from_meta,
+    rows_from_jsonld,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -57,18 +62,50 @@ SKIP_URL_RE = re.compile(
 PRICE_NUM_RE = re.compile(r"\d[\d\s.,]*\d|\d")
 REMISE_RE = re.compile(r"([A-Za-zÀ-ÿ ]+):\s*([^()]+)")
 
+# ISO 4217 currencies whose minor unit is 3 decimal digits (Bahraini/Jordanian/
+# Kuwaiti/Libyan/Omani/Tunisian dinar-family). A trailing 3-digit group after a
+# lone separator is the decimal fraction here, not a thousands group -- e.g.
+# "12,500" TND is 12.5 dinars, not twelve-thousand-five-hundred. Mirrors the
+# fix already carried locally by geant_drive_tn.py's `_normalize_tnd_price`.
+_THREE_DECIMAL_CURRENCIES = {"BHD", "JOD", "KWD", "LYD", "OMR", "TND"}
 
-def normalize_price(raw: str) -> str | None:
+
+def _decimals_for(currency: str | None) -> int:
+    """Number of fractional digits `currency` is conventionally written
+    with. Defaults to 2 (the assumption this function shipped with) when
+    the currency is unknown, so callers that don't pass one keep the
+    original behaviour."""
+    if not currency:
+        return 2
+    c = str(currency).strip().upper()
+    if c in _THREE_DECIMAL_CURRENCIES:
+        return 3
+    if c in ZERO_DECIMAL_CURRENCIES:
+        return 0
+    return 2
+
+
+def normalize_price(raw: str, currency: str | None = None) -> str | None:
     """Locale-aware price cleaner: strips currency symbols/letters, then
     decides whether a lone separator is decimal or thousands based on the
     digit-group length trailing it, and resolves comma+dot combinations by
-    treating whichever separator occurs last as the decimal point."""
+    treating whichever separator occurs last as the decimal point.
+
+    `currency` resolves the one genuinely ambiguous shape -- a lone
+    separator followed by exactly as many digits as the currency's minor
+    unit has (2 normally, 0 for zero-decimal currencies like XOF/JPY, 3 for
+    the dinar family) is read as the decimal point; any other length is a
+    thousands group. Without a currency, 2 decimals is assumed, same as
+    before this parameter existed.
+    """
     if not raw:
         return None
     m = PRICE_NUM_RE.search(raw)
     if not m:
         return None
     s = re.sub(r"\s", "", m.group(0))
+    decimals = _decimals_for(currency)
+    valid_tail_lens = range(1, decimals + 1)
     has_comma, has_dot = "," in s, "." in s
     if has_comma and has_dot:
         if s.rindex(",") > s.rindex("."):
@@ -79,12 +116,12 @@ def normalize_price(raw: str) -> str | None:
         last = s.split(",")[-1]
         s = (
             s.replace(",", ".")
-            if s.count(",") == 1 and len(last) in (1, 2)
+            if s.count(",") == 1 and len(last) in valid_tail_lens
             else s.replace(",", "")
         )
     elif has_dot:
         last = s.split(".")[-1]
-        if not (s.count(".") == 1 and len(last) in (1, 2)):
+        if not (s.count(".") == 1 and len(last) in valid_tail_lens):
             s = s.replace(".", "")
     try:
         float(s)
@@ -98,6 +135,10 @@ class PrestashopBaseSpider(scrapy.Spider):
     name = None
     HOME_URL: str = ""
     MAX_PAGES = 60
+    # Product-card container selector. The default is the schema.org microdata
+    # PrestaShop's stock themes emit; subclasses whose theme drops microdata
+    # entirely (sxmleshalles_mf) override it with a class-based selector.
+    CARD_CSS = '[itemtype$="/Product"]'
 
     custom_settings = {
         "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
@@ -135,7 +176,7 @@ class PrestashopBaseSpider(scrapy.Spider):
     def parse_category(self, response):
         yield from self._new_category_requests(response)
 
-        containers = response.css('[itemtype$="/Product"]')
+        containers = response.css(self.CARD_CSS)
         page = response.meta["page"]
         self.total_category_pages += 1
         n = 0
@@ -178,7 +219,7 @@ class PrestashopBaseSpider(scrapy.Spider):
         price_text = (
             c.css('[itemprop="price"]::text').get() or c.css(".price::text").get()
         )
-        price = normalize_price(price_text) if price_text else None
+        price = normalize_price(price_text, self.currency) if price_text else None
         category = self._category_label(response)
         full_url = urljoin(response.url, url) if url else response.url
 
@@ -214,7 +255,7 @@ class PrestashopBaseSpider(scrapy.Spider):
             if not m:
                 continue
             label = re.sub(r"[^a-z0-9]+", "_", m.group(1).strip().lower()).strip("_")
-            price = normalize_price(m.group(2))
+            price = normalize_price(m.group(2), self.currency)
             if label and price:
                 yield label, price
 

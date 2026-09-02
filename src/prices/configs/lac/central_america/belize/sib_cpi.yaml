@@ -1,0 +1,26 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+coicop_codes: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13"]
+channel: null
+source_key: bz_sib_cpi
+module: lac.central_america.belize.sib_cpi
+function: fetch_bz_sib_cpi
+url: https://sib.org.bz/statistics/economic-statistics/consumer-price-index/
+language: en
+cadence: monthly
+fallback_date: 1990-10-01
+notes: |
+  Statistical Institute of Belize monthly CPI, October 2020=100, COICOP
+  2018 13-division grouping (SIB's own division labels map 1:1 onto
+  COICOP 2018 in order -- no translation table needed). Download URL is
+  discovered live via SIB's own JSON widget endpoint
+  (wp-json/sibr/v1/resources?topic=consumer-price-index-statistics),
+  found via a Playwright network trace -- not linked anywhere in the
+  static HTML. Falls back to the known-stable /dl/monthly-consumer-price-
+  index/ redirect if discovery fails. Headline "All Items" column is
+  dropped (no sanctioned coicop_code sentinel for headline CPI per the
+  onboarding skill's open design question); only the 13 division columns
+  are emitted. Series confirmed live 2026-09-01, Nov 1990 through Jul
+  2026.

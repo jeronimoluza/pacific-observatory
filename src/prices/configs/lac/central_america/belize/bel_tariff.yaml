@@ -1,0 +1,32 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+channel: null
+source_key: bz_bel_tariff
+module: lac.central_america.belize.bel_tariff
+function: fetch_bz_bel_tariff
+url: https://www.bel.com.bz/Rate_Schedule.aspx
+language: en
+cadence: irregular
+fallback_date: 2020-01-01
+notes: |
+  Belize Electricity Limited residential + social (lifeline) rate
+  schedule, approved by the Public Utilities Commission. Effective period
+  is stated in plain text on the page ("...for the period January 1,
+  2026, to June 30, 2026.") and parsed directly; pandas.read_html parses
+  the (heavily nested but structurally plain) HTML table with no
+  Playwright needed. Social/Residential/Commercial 1 all share ONE
+  physical <table> element -- a naive match on "RESIDENTIAL RATES"
+  anywhere in that table pulls in Social's and Commercial 1's
+  identically-labeled block/minimum-charge rows too (5 of 11 rows were
+  exact duplicates on first attempt); rows are now sliced per-section
+  between each header cell and that section's own "Minimum Charge" row.
+  Emits both household-facing classes: RESIDENTIAL RATES (3 usage
+  blocks + minimum charge) and SOCIAL RATES (BEL's lifeline bracket, 1
+  block + minimum charge) = 6 rows, 0 duplicate observation_hash.
+  Commercial/Industrial/Street Light rates are present on the same page
+  but out of scope (non-household). Confirmed live 2026-09-01:
+  residential block 1 (0-50 kWh) $0.34, block 2 (51-200 kWh) $0.42,
+  block 3 (201+ kWh) $0.46, minimum charge $10.00 -- all BZD.

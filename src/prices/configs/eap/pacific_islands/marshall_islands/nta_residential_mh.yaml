@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+spider: nta_residential_mh
+url: https://www.nta.mh/residential/
+language: en
+currency: USD
+cadence: monthly
+channel: null
+archive_prefix: "www.nta.mh/"
+archive_path_re: '^/residential/?$'
+notes: |
+  Official Marshall Islands National Telecommunications Authority residential
+  broadband tariff page. The five Elementor price cards are server-rendered and
+  expose plan names and USD monthly prices in plain HTML without JavaScript.
+  Re-verified live 2026-09-01. This is a non-food tariff source, added only
+  after the Marshall Islands grocery search found one scrapeable K&K Majuro
+  catalog but not enough independent online food catalogs to close the country.

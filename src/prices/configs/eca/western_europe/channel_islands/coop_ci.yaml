@@ -1,0 +1,60 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: coop_ci
+url: https://shop.channelislands.coop/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "shop.channelislands.coop/product-details/"
+archive_path_re: '^/product-details/\d+'
+notes: |
+  Channel Islands' FIRST price source of any kind (the country had 0
+  manifests before this pass). Channel Islands Co-operative Society is the
+  islands' dominant grocer and runs the only real online grocery on either
+  island.
+
+  The storefront is a Flutter web app compiled to canvas ("eLoyalty
+  Customer App", OGS = Online Grocery Shopping) — there is NO DOM product
+  markup, so an HTML spider and a Playwright DOM scrape both see zero
+  products. Playwright was used once to discover the backend host
+  (ogs.channelislands.coop, invisible in main.dart.js because it is
+  injected at runtime); the spider then talks to that backend over plain
+  HTTP and never launches a browser. Classic "Playwright to discover,
+  plain HTTP to scrape".
+
+  Auth: the API requires a Laravel Sanctum bearer token, but it is NOT a
+  user credential — one anonymous app token is compiled into main.dart.js
+  and shipped to every visitor, granting exactly the read-only catalogue
+  access any browser gets. The spider re-extracts it from the bundle each
+  run (regex on the bearer literal) so a rotation cannot silently zero the
+  crawl, with the observed value as fallback.
+
+  Two stores, both inside this one country slug:
+    id=1  Jsy - Millennium Park Grand Marché  (Jersey)    5,058 products
+    id=2  Gsy - St Martin Grand Marché        (Guernsey)  4,687 products
+  = 9,745 SKUs total.
+
+  BOTH are scraped because they are genuinely distinct price points, not
+  one catalogue served twice: of 110 products sharing an id across the two
+  stores, 108 carried DIFFERENT prices, with Guernsey systematically
+  cheaper (Nescafé Gold Blend 190g £10.85 Jsy vs £10.30 Gsy; Kellogg's
+  Rice Krispies 430g £3.55 vs £3.35). Identity is therefore (store, id),
+  and the emitted URL carries `?store=` — product ids ARE reused across
+  stores, so without it DuplicationPipeline (which dedups on item['url'])
+  would drop the Guernsey copy of every shared product.
+
+  MINOR UNITS: the API's `price` field is an integer in PENCE, not pounds
+  — `price: 3150` alongside `unit_price_text: "£31.50 per ITEM"`. Divided
+  by 100 in the spider. Currency GBP for both islands, matching
+  countries.yaml (Jersey/Guernsey pounds are at par with sterling).
+
+  Records also carry EAN barcodes (`ean` / `eans`) and a two-level
+  category breadcrumb (`categories.lvl0` / `lvl1`, e.g. "Fresh Food >
+  Meat Fish & Eggs"), which is emitted as `category`.
+
+  Verified live 2026-09-01: store 1 total=5058 (51 pages @ per_page=100),
+  store 2 total=4687 (47 pages); page 1 and page 2 returned disjoint id
+  sets for BOTH stores, confirming real pagination rather than a repeated
+  first page or a homepage carousel.

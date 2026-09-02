@@ -1,0 +1,40 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mymart_wolt_kz
+url: https://wolt.com/en/kaz/almaty/venue/my-mart-lumiere
+language: ru
+cadence: weekly
+channel: convenience
+archive_prefix: "wolt.com/en/kaz/almaty/venue/"
+archive_path_re: '^/en/kaz/almaty/venue/[^/?]+'
+notes: |
+  My Mart (Almaty convenience/mini-market chain) Lumiere branch on the
+  Wolt delivery marketplace. Second, independent instance of the
+  small_wolt_kz pattern -- same shared base `_wolt_base.py`, different
+  retailer chain, for buffer/diversity. Venue page -> category-listing
+  (28 top-level categories, "partial" loading strategy, item_ids empty)
+  -> leaf category slugs after expanding subcategories -> per-leaf
+  `/items/<slug>` page 1 (up to 50 items each).
+  Category-listing composition is food-majority: 21 of 28 top-level
+  categories are food/beverage (Выпечка, Мясо/птица, Рыба/морепродукты,
+  Мясные деликатесы, Молоко/яйца, Растительные продукты, Готовая еда,
+  Вода/напитки, Кофе/чай/какао, Пиво/сидр, Спиртные напитки, Сладости,
+  Закуски, Замороженные продукты, Мороженное, Бакалея, Консервы,
+  Соусы/масла/специи, Для домашней выпечки, Спортивное питание); the
+  remaining 7 are non-food (cleaning, home/office, cosmetics, health,
+  kids, pets, tobacco, underwear). CAVEAT: the --max-items 200
+  verification run (closespider at 234 items processed, 21 category
+  requests) landed almost entirely in that non-food tail (paper goods,
+  pet food, tobacco accessories, toiletries, cleaning) because Scrapy's
+  default LIFO scheduler drained the last-enqueued (non-food) categories
+  first -- a full unbounded run reaches the food-majority categories too.
+  Verified live 2026-08-31: GET /en/kaz/almaty/venue/my-mart-lumiere ->
+  200, query-state blob present with 28 categories; all sampled prices
+  real KZT, zero blanks/zero-prices.
+  channel:convenience (mini-market format, distinct from Small's
+  supermarket format) -- counts as food-and-beverage per the wave
+  brief's channel list, though the honest per-run food share needs a
+  full (uncapped) crawl to confirm since this verification sample was
+  non-food-skewed by scheduling order, not by catalogue composition.

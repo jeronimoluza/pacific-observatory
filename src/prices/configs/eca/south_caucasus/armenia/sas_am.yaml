@@ -1,0 +1,32 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sas_am
+url: https://www.sas.am/
+language: hy
+currency: AMD
+cadence: weekly
+channel: supermarket
+archive_prefix: 'sas.am/'
+archive_path_re: '^/(?:products/[^/?]+_\d+|(?:en/)?catalog/sok/\d+)/?$'
+notes: |
+  SAS Supermarket — one of Armenia's largest supermarket chains, real
+  online store, custom Bitrix-style storefront (no shared base spider
+  matches this theme). Category list from
+  https://www.sas.am/sitemap-custom-catalog-sections.xml (627 distinct
+  flat /catalog/<slug>/ categories, no parent/child nesting). Scraping
+  the root (no locale prefix) path deliberately: it serves Armenian
+  product names (e.g. "Պանիր լոռի «Դիլի»"), which is the real product
+  language; /en/ and /ru/ siblings exist with identical ids/prices but
+  translated names, per the onboarding brief's preference for the
+  classifier's real-language input. Verified live 2026-09-01: root path
+  "Armenian cheese" category, product id 932542, price "1 545" ->
+  1545 AMD via non-breaking-space thousands separator.
+  Pagination is offset-based (?offset=24, 48, ...) and does NOT
+  self-terminate: offset=120 on a 112-item/5-page category returns the
+  same leading ids as offset=0 (wraps to page 1) rather than an empty
+  page — spider stops on zero new product ids per category, not on a
+  short response, same trap as parma_am.
+  AMD is quoted as whole-dram integers; do NOT divide by 100 (100-luma
+  subunit is obsolete).

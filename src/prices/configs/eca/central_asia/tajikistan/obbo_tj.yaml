@@ -1,0 +1,29 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: obbo_tj
+url: https://obbo.tj/
+language: ru
+currency: TJS
+cadence: weekly
+channel: marketplace
+archive_prefix: "obbo.tj/"
+archive_path_re: '^/[a-zA-Z0-9_\-]+/?$'
+notes: |
+  Verified live 2026-09-01. Self-described "Маркетплейс в Таджикистане"
+  (has a /stat-partnerom/ become-a-partner page) selling electronics,
+  home appliances, furniture, beauty products and kids' goods — no
+  food/grocery categories, cross-division so left to the classifier.
+  CS-Cart storefront (ty-breadcrumbs / ty-price / dispatch[...] form
+  markup). Every PDP ships a server-rendered schema.org Product JSON-LD
+  block with offers in TJS (single flat Offer for plain SKUs; nested
+  AggregateOffer for colour/storage variants, e.g. iPhone 17 Pro 256GB
+  at 12,200 TJS across 10 variants). Category pages carry zero JSON-LD,
+  so the shared jsonld extractor naturally skips them.
+  Discovery via /sitemap.xml (1397 <loc> entries, single file) rather
+  than the site's own /<category>/page-N/ pagination (confirmed real —
+  bytovaya-tehnika alone runs to page 27) — the sitemap is bounded,
+  robots.txt-clean, and already resolves to canonical URLs.
+  category comes from the last a.ty-breadcrumbs__a link on the PDP
+  (e.g. "iPhone" under "Смартфоны"), left null if absent.

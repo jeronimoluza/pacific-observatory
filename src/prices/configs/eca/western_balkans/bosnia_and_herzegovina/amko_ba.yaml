@@ -1,0 +1,38 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: amko_ba
+url: https://amko.ba/shop/
+language: bs
+currency: BAM
+cadence: weekly
+channel: supermarket
+archive_prefix: "amkoshop.ba/shop/proizvod/"
+archive_path_re: '^/shop/proizvod/[^/]+/[0-9a-f-]{36}$'
+notes: |
+  Verified live 2026-08-31. Amko Komerc — Sarajevo-based domestic grocery
+  chain (est. 1995), "Amko Webshop" is its Angular SPA delivery storefront
+  at amkoshop.ba (front door amko.ba/shop/ redirects there). No server HTML;
+  catalog served by a JSON API found via a Playwright network trace:
+    POST /wsh/oauth/token (Basic wshpublicclient:s3cr3t, a public
+      client-credentials pair baked into the JS bundle, not a real secret)
+      -> Bearer token for anonymous CLIENT_PUBLIC role.
+    POST /wsh/api/v1/offered-products/shop with that Bearer token and
+      Accept: application/json (omit it and the same endpoint silently
+      serves XML) -> Spring-Data Page {content, totalElements, totalPages}.
+      Body: {pointOfSale: <uuid>, saleType: ALL, sortType: ASC,
+      pageSize, page, searchMap: {productMerchandiseGroupCode: "<NN.>"}}.
+  Single point of sale (H10 "Amko Webshop"), confirmed via
+  /wsh/api/v1/point-of-sales/shop. Spider discovers the ~15 top-level
+  2-digit merchandise-group codes from /wsh/api/v1/product-merchandise-groups/list
+  and walks each by page (pagination verified: distinct product codes per
+  page, terminates on the server's own totalPages). Prices in BAM (site
+  displays "KM"). Sample: "Prirodna voda Jana 1.5l" 1.25 KM.
+  coicop_divisions: 01, 02, 03, 05, 06, 09, 12, 13
+  divisions_basis: sampled_rows (~78% of the ~2,823-SKU catalog is food and
+  beverage — codes 01 pića, 02 slatki program i grickalice, 03 namirnice za
+  pripremu jela, 04 mliječni program i jaja, 05 meso i prerađevine od mesa,
+  06 voće i povrće, 07 peciva i kolači, 15 zdrava hrana, 16 smrznuta gotova
+  jela i pecivo; remainder is baby/personal-care/household/pet, still
+  emitted since this is a wide grocery catalog, not a narrow source)

@@ -1,0 +1,26 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mabele_coop_cd
+url: https://mabele-coop.com/
+language: fr
+cadence: weekly
+channel: specialty-food
+archive_prefix: "mabele-coop.com/produits/"
+archive_path_re: '^/produits/[^/?]+/?$'
+notes: |
+  Kinshasa "supermarché bio & produits locaux" cooperative. Next.js
+  storefront, /produits server-renders product cards (Tier 1A, no API
+  needed). Probed live 2026-08-31: exactly 12 distinct products, confirmed
+  a full catalogue (not a capped walk) via the page's own embedded RSC
+  `initialData` payload and by requesting ?page=2, which returns zero
+  product cards. 8 of 12 (67%) are food/beverage: category "Aliments"
+  (dried bananas, 4 artisanal chocolate bars from Chocolaterie Lowa, one
+  granola-style pack) and "Boissons" (2 artisanal Congolese fruit wines);
+  the other 4 are "Cosmétiques" (artisanal soaps) — grocery-dominant
+  catalogue, hence specialty-food channel. Prices are FC quoted directly
+  by this single merchant (not a multi-vendor marketplace, so the
+  kedomarket_cd per-seller CDF-mislabel trap does not apply); observed
+  range 3,946-62,510 FC (~USD 1.4-22 at ~2,800 CDF/USD), plausible
+  Kinshasa shelf/artisanal prices. All 12 products in stock at probe time.

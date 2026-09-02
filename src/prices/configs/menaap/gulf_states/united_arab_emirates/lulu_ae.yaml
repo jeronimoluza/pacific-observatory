@@ -1,0 +1,52 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: lulu_ae
+url: https://gcc.luluhypermarket.com/en-ae/
+language: en
+cadence: weekly
+channel: hypermarket
+archive_prefix: "gcc.luluhypermarket.com/en-ae/"
+archive_path_re: '^/en-ae/.+/p/\d+/?$'
+notes: |
+  Verified live 2026-09-01: LuLu Hypermarket UAE, en-ae locale of the shared
+  GCC gcc.luluhypermarket.com storefront (same platform as the existing
+  lulu_kw/lulu_om/lulu_bh/lulu_sa sources). Unlike those siblings, this
+  locale's PDP HTML no longer carries a `data-testid="price"` span at all
+  (newer frontend build), but its schema.org Product JSON-LD -- a
+  permanently-zeroed stub on the sibling locales -- carries a REAL price
+  and "aed" priceCurrency for in-stock items here; only genuinely
+  out-of-stock SKUs fall back to the "0.00"/null stub. availability is not
+  a reliable signal (says InStock even for zero-priced SKUs), so the
+  spider gates on price > 0 instead. A second JSON-LD BreadcrumbList node
+  on the same page supplies category.
+  Locality proof: "Lulu UAE" WebSite JSON-LD name, pz-currency=aed /
+  pz-locale=en-ae cookies, 5.00% VAT (UAE rate) in the page's internal
+  product payload, AED prices distinct from KWD/OMR/BHD/SAR siblings.
+  Seeded off /en-ae/sitemap/products-1 (single sitemap file, 1,980 product
+  URLs at probe time -- same size as en-kw/en-om/en-sa).
+  Sampling note: only 24-42% of sitemap URLs are in-stock at any given
+  time (many discontinued/OOS SKUs in the catalog) -- this is a property
+  of the source, not a spider bug. This is a flat sitemap crawl (no
+  category tree walk), so the Scrapy LIFO-scheduler category-tail bias
+  documented for category-walking spiders does not apply the same way,
+  but a `--max-items` cap still only samples a prefix of the 1,980-URL
+  sitemap.
+  Collect run (--max-items 200, measured 2026-09-01): 488 PDP requests
+  issued (8 timed out and were retried), 480 responses received, 203 rows
+  yielded (in-stock rate ~42% on this slice of the sitemap). 203 rows, 203
+  distinct product_id, 203 distinct url (zero duplicates), 0 zero/negative
+  price rows (filtered before yield by construction), 0 blank names,
+  currency 100% AED, prices 1.5-5199.0 AED (median 49.0). Category
+  composition: Home & Living 106, Grocery 58, Electronics 34, Fresh Food 5
+  -- Grocery+Fresh Food = 63/203 = 31.0% food share (Rahma olive oil spray,
+  Barilla pasta sauce, Heinz Sriracha sauce, Kopiko coffee candy, Everest
+  Sambhar Masala among the sampled food rows). Re-fetched 3 random sampled
+  product URLs cold (fresh curl_cffi requests, no session reuse): all 3
+  returned HTTP 200 with the exact recorded product_name and price still
+  present in the JSON-LD (Giordano trolley 349.0 AED, Everest Sambhar
+  Masala 5.7 AED, Rahma olive oil spray 24.5 AED -- all matched exactly).
+  coicop_divisions: 01, 02, 03, 06, 12
+  divisions_basis: sampled_rows (200-row smoke sample; category tree not fully walked)
+timeout: 14400

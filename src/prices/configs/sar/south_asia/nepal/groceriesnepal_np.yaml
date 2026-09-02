@@ -7,6 +7,8 @@ url: https://groceriesnepal.com/
 language: en
 cadence: weekly
 channel: supermarket
+archive_prefix: "groceriesnepal.com/"
+archive_path_re: '^/$'
 notes: |
   Groceries Nepal. React/Vite SPA backed by a plain JSON API. Re-verified
   live 2026-08-06: GET https://groceriesnepal.com/api/products -> 200,

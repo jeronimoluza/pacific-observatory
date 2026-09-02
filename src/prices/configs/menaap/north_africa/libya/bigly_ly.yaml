@@ -19,3 +19,19 @@ notes: |
   6.00 د.ل.
 
   cfg_currency (LYD) matches what the probe saw.
+
+  2026-09-01 (wave 11): fixed a double-counting defect -- the parent "food"
+  category listing re-shows every descendant product (confirmed: /food's own
+  31 pages alone cover all 437 distinct products), so walking "food" AND its
+  four subcategories emitted every shared product twice under two different
+  context-dependent URLs (same product_id, different url -- so url-based
+  dedup never caught it). Fixed generically in `_opencart_base.py`'s
+  `parse_category` (tracks product_ids seen this run, drops repeats), not
+  just here, since any CATEGORY_URLS-mode spider that lists a parent
+  alongside its own leaves would hit the same defect. Before: 791 rows / 437
+  distinct product_id (354 duplicate rows). After: 437 rows / 437 distinct
+  product_id / 437 distinct url, 0 duplicates. Trade-off: `category` now
+  reflects whichever page reached a product first rather than always its
+  most specific subcategory (e.g. some chocolate/drinks items now carry the
+  generic "food" label) -- cosmetic only, does not feed COICOP
+  classification (product_name does).

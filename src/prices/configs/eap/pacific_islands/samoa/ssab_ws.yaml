@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ssab_ws
+url: https://ssab.ws
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "ssab.ws/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  SSAB eMarket is a broad Samoa Shopify storefront. It declares prices in
+  NZD and currently exposes food SKUs including flour, mayonnaise, frozen
+  produce, beverages, cereal, and canned meat in the public products feed.

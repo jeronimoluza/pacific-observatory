@@ -1,0 +1,63 @@
+scaffolding: spider
+extraction_pattern: scrapy_listing
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes: ["04.1.1"]
+channel: real-estate
+spider: ethiopiapropertycentre_et
+url: https://ethiopiapropertycentre.com/for-rent
+language: en
+cadence: weekly
+timeout: 3600
+archive_prefix: "ethiopiapropertycentre.com/for-rent/"
+archive_path_re: '^/for-rent/[^/]+/[^/]+/[^/]+/[^/]+$'
+notes: |
+  Ethiopia Property Centre (EPC) -- Addis Ababa residential rental listings
+  (part of the regional "PropertyCentre" platform family). Re-verified live
+  2026-09-01: /for-rent/flats-apartments/addis-ababa/showtype -> 200,
+  "1,057 properties" across 53 pages; /for-rent/houses/addis-ababa/showtype
+  -> 200, "1,015 properties". Each PDP embeds a Schema.org RealEstateListing
+  JSON-LD block (name, offers.price, offers.priceCurrency, offers.
+  availability) -- no CSS selectors needed. `timeout: 3600` set because the
+  full catalogue is ~2,072 listings across both categories; the spider
+  itself has no numeric page cap and walks until a showtype page returns
+  zero listing links (page 54 on flats-apartments 302-redirects with 0
+  cards -- verified stop condition, not guessed).
+
+  Scope, this pass: for-rent only (flats-apartments + houses), Addis Ababa
+  only -- these two categories are the COICOP 04.1.1 (actual rentals for
+  housing) match. office-space/commercial/land and the for-sale side of the
+  site are out of scope; for-sale skews toward diaspora investment buyers
+  (one sampled listing's own title: "ideal for diaspora buyers") which is a
+  different locality story than a tenant renting a home to live in. Other
+  regions (amhara, oromia, southern-nations are all present in the site's
+  own nav) are a natural follow-up, not walked here.
+
+  CURRENCY (rule 8, flagged loudly): listings' own JSON-LD priceCurrency is
+  a genuine per-listing MIX of USD and ETB (measured 112 ETB / 90 USD in
+  the 202-row test run below, not all-USD as a small initial 5-listing
+  hand-sample had suggested) -- a well-documented feature of the Addis
+  Ababa rental market, where landlords choose to quote either currency, not
+  a diaspora-remittance mislabel; the properties are physically in Addis
+  Ababa for local occupancy. The site also displays a secondary "Br
+  xxx,xxx" figure next to USD-quoted listings, but that is a live
+  FX-converted estimate for browsing convenience, not the amount the
+  tenant actually pays -- not harvested. `currency` is read per-item from
+  JSON-LD, never hardcoded, precisely because of this mix.
+
+  Test run 2026-09-01 (CLI --max-items 200 cap for onboarding verification;
+  production should run uncapped against the 3600s timeout): 202 rows (the
+  cap is per closespider_itemcount, which lets the in-flight batch finish),
+  202 distinct product_id, 202 distinct url, 0 zero/negative price, 0 blank
+  name. Currency split 112 ETB / 90 USD (both currencies are genuinely
+  present on-site, not a spider artifact -- confirmed real per-item mix,
+  not all-USD as an initial 5-listing hand-sample suggested). Per-currency:
+  ETB median 77,700 min 1.00 max 15,000,000; USD median 2,100 min 1.00 max
+  25,000. category split: flats-apartments 138, houses 64. Data-quality
+  note: 5 of 202 rows (2.5%) carry price=1.00 (1 ETB, 4 USD) -- confirmed
+  live against the source (not a spider bug) as the site's "Price on
+  Application" placeholder value baked into the listing's own JSON-LD;
+  these are not caught by a zero/negative-price filter since 1.00 is
+  positive, but they are not real prices and a downstream consumer should
+  treat sub-$5-equivalent rows as POA noise. 3 re-fetched URLs cold
+  post-run matched name+price+currency exactly.

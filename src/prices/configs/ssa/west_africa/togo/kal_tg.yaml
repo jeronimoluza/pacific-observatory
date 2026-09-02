@@ -1,0 +1,36 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kal_tg
+url: https://www.kal-app.com/
+language: fr
+cadence: weekly
+channel: marketplace
+timeout: 600
+archive_prefix: "www.kal-app.com/partners/"
+archive_path_re: '^/partners/[^/?]+/products/[^/?]+/?$'
+notes: |
+  Verified live 2026-08-31. KAL is a Lome delivery super-app (Next.js) with
+  express/restaurants/courses/pharmacie/boutiques verticals. Listing pages
+  (/products, /partners/<slug>) are client-hydrated and only server-render
+  a capped slice of cards (~24-111 depending on page), but every individual
+  product page IS fully server-rendered: raw HTML response body contains a
+  schema.org Product JSON-LD block with name, sku, brand, offers.price,
+  offers.priceCurrency, offers.availability, and
+  offers.shippingDetails.shippingDestination.addressCountry="TG" — Tier 1A,
+  no Playwright needed. Sample: 'Casque Bluetooth sport Q83' 1500 XOF
+  (ATALACOU GROUP); site-wide LocalBusiness JSON-LD confirms Lome/Togo
+  areaServed (Lome, Sokode, Kara, Kpalime, Atakpame, Tsevie, Anecho,
+  Dapaong), addressCountry TG — locality proven, not a diaspora storefront.
+
+  /sitemap.xml is the URL seed: 180 total <loc> entries, 125 distinct
+  /partners/<slug>/products/<id> URLs across 44 vendors (electronics,
+  restaurants, beauty, small boutiques) as of this run — a real but modest
+  cross-vendor marketplace catalog, not padding (every row is a distinct,
+  verifiable product+price at a named Lome business). No listing-API or
+  pagination cursor was found in the Next.js bundles (no /api/, supabase,
+  algolia, or graphql references) — the sitemap is the most complete
+  enumeration available short of Playwright-driven infinite scroll.
+  category field populated from JSON-LD brand.name (= the selling partner),
+  since KAL has no consistent COICOP-shaped category taxonomy of its own.

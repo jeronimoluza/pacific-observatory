@@ -1,0 +1,44 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: pr_dtrh_ipc
+module: lac.caribbean.puerto_rico.dtrh_ipc
+function: fetch_pr_dtrh_ipc
+url: https://www.mercadolaboral.pr.gov/Publicaciones/Otras_Publicaciones/Indice_Precio.aspx
+language: es
+cadence: monthly
+fallback_date: 2010-12-01
+notes: |
+  DTRH (Departamento del Trabajo y Recursos Humanos) publishes the official
+  Indice de Precios al Consumidor (IPC) monthly, base December 2006=100.
+  The publication page is an ASP.NET WebForms year/month picker with
+  __VIEWSTATE postback, but the postback resolves to a predictable, directly
+  GET-able static PDF URL (verified live 2026-09-01 by submitting the form
+  once and reading the redirect):
+  mercadolaboral.pr.gov/lmi/pdf/IPC/<year>/Indice de Precios al Consumidor
+  <month>.pdf (month = bare 1-12 integer). No postback simulation needed at
+  run time. Confirmed working 2011-01 through 2026-07 (the page's own
+  dropdown floor is 2011; publication lags ~1 month, e.g. 2026-08/09 both
+  404 at probe time).
+
+  Each monthly PDF's "Tabla 1 / Table 1" section states the headline
+  All-Items index as the first of three values on one line (current month,
+  prior month, same month prior year, e.g. "143.805 143.701 138.297 0.1
+  4.0" for July 2026). Only the current-month value is emitted per month.
+  Detection anchors on the "Todos los Grupos" / "All Items" row label
+  rather than the "Tabla 1" caption text — the caption box is not always
+  merged onto the same page by pdfplumber's reading order (the 2025-08 PDF
+  has no "Tabla 1" text anywhere on its Table-1 page, confirmed live).
+
+  Deliberately extracts ONLY the headline all-items index, not the ~15
+  group/subgroup sub-indices in Table 2 further into the PDF — that table
+  is a genuine two-column bilingual layout where pdfplumber interleaves
+  the Spanish/English cells unpredictably; parsing it correctly is a
+  separate, harder effort not attempted this pass.
+
+  coicop_code is set to "00" (all-items) per the skill's own open design
+  question ("Headline CPI has no slot in IndexObservation") — the schema
+  requires a coicop_code and this is the documented placeholder pending a
+  real decision upstream.

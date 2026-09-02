@@ -1,0 +1,62 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kibabo_ao
+url: https://www.kibabo.co.ao/pt/
+language: pt
+cadence: weekly
+channel: supermarket
+notes: |
+  Wave 10 (2026-09-01). General online supermarket in Luanda -- "Redicom
+  Prolepse" custom CMS (AngularJS front-end over server-rendered HTML).
+  Its own meta description ("loja de produtos nao-alimentares") is stale
+  boilerplate: the live nav has a full grocery department (alimentar,
+  bebidas, frutas-legumes, lacticinios) plus non-food (higiene, limpeza,
+  electrodomesticos, brinquedos, casadecoracao, petshop, papelaria,
+  vida-saudavel). Product pages carry a clean schema.org Product+Offer
+  JSON-LD block: price is a plain decimal string ("2545.00", priceCurrency
+  "AOA") independent of the on-page Portuguese-formatted display
+  ("2 545,00 Kz"), so the AOA thousands-separator trap does not apply to
+  the field this spider reads. CrawlSpider walks a 3-level category tree
+  (department -> subcategory -> leaf) via `?page=N`-paginated listing
+  pages down to `_p<id>.html` product pages -- no hand-coded hierarchy.
+  Verified live 2026-09-01.
+
+  CAPPED-TEST-RUN CAVEAT (LIFO tail-drain, do not judge food share from
+  this file): a `--max-items 250` verification run landed 147 rows, 93 of
+  which (63%) are `Limpeza` (cleaning) -- confirmed in the run log to be
+  Scrapy's default LIFO scheduler getting stuck deep in
+  `limpeza_229-241.html`'s own `?page=N` pagination near the item cap
+  (pages 7/9/10 re-served overlapping product sets, most re-drops caught
+  by the url-dedup pipeline). This is the exact failure mode the skill
+  warns about for capped category-walking crawls and is NOT representative
+  of the catalog or of what an uncapped production run will collect --
+  production runs (no --max-items) will eventually walk the whole tree
+  regardless of scheduler order.
+
+  TRUSTED food-share method (2026-09-01): rather than trust the capped
+  crawl's own category mix, sampled each of the site's 12 top-level
+  departments independently by reading ONLY that department's own
+  `schema.org ItemList` JSON-LD (`numberOfItems` + `itemListElement` urls)
+  off its `/pt/<dept>_<id>-<catid>.html` root page (+ page=2 where needed)
+  -- up to 10 products per department, then fetched each product's own
+  Product JSON-LD. This avoids two traps: the scheduler-order bias above,
+  and a naive "follow every category-shaped link on the page" walk, which
+  was tried first and produced nonsense (the SAME ~8 sugar/jam products
+  from `alimentar` showing up under casadecoracao/petshop/papelaria/etc.,
+  traced to picking up the sitewide mega-menu that appears in every page's
+  chrome -- not a defect in the site's own category data, a defect in
+  that first diagnostic script, discarded). Result, scoped strictly to
+  each department's own first-party ItemList: 68 sampled products across
+  10 populated departments (alimentar 10, bebidas 10, frutas-legumes 4,
+  lacticinios 0 -- currently empty at its own top level, higiene 10,
+  limpeza 10, electrodomesticos 10, casadecoracao 9, petshop 1,
+  papelaria-e-livros 3, vida-saudavel 1; brinquedos also 0 at its top
+  level but has real non-food subcategories -- bonecas/carrinhos/
+  desportivos/didaticos/puzzles -- not sampled further since obviously
+  non-food). Food departments (alimentar+bebidas+frutas-legumes+
+  lacticinios) = 24/68 = 35.3%. Every sampled product's own JSON-LD
+  `category` field matched its source department exactly (e.g. everything
+  pulled from `limpeza_229-241.html` carried `"category":"Limpeza"`) --
+  unlike angoremia_ao, `category` on this source IS reliable.

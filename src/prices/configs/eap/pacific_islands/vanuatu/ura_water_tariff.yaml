@@ -1,0 +1,29 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1"]
+channel: null
+source_key: vu_ura_water_tariff
+module: eap.pacific_islands.vanuatu.ura_water_tariff
+function: fetch_vu_ura_water_tariff
+url: "https://ura.gov.vu/index.php?Itemid=180&id=14&lang=en&option=com_content&view=article"
+language: en
+cadence: irregular
+fallback_date: 2010-01-01
+notes: |
+  Sibling manifest to ura_electricity_tariff.yaml -- same URA page, the
+  WATER rowspan block (8 providers/areas) instead of ELECTRICITY. Rates
+  span 52.00-186.00 VUV/m3.
+
+  Two-decimal rates (e.g. 103.41 VUV/m3) are the regulator's own published
+  figure despite VUV having no minor unit -- see ura_electricity_tariff.yaml
+  notes for the full reasoning; not a parsing artifact.
+
+  One row (Bukura Water Supply) carries a messy "Effective As Of" cell --
+  "Price- is effective as of 25 July 2015. Pending Determination new
+  tariff" -- the fetcher regex-extracts the embedded date rather than
+  requiring an exact date-only match.
+
+  *.gov.vu TLS chain requires requests(verify=False), same class as
+  vnso_cpi.py.

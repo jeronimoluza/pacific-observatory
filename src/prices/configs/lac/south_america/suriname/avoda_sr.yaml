@@ -1,0 +1,43 @@
+scaffolding: spider
+spider: avoda_sr
+url: https://www.avoda.sr/
+channel: supermarket
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: nl
+currency: SRD
+cadence: weekly
+coicop_codes: null
+notes: |
+  "De online supermarkt van Suriname" -- HEM Suriname N.V.'s SRD-priced
+  webshop. WooCommerce Store API confirmed live 2026-09-01
+  (https://www.avoda.sr/wp-json/wc/store/v1/products), 1,224 SKUs across
+  42 categories, real grocery lines present (Levensmiddelen 266,
+  Conserven 50, Koffie/thee/cacao 43, Koel- en vriesproducten 23,
+  Broodbeleg en ontbijtgranen 28, Koek/snoep/snacks 28,
+  Soepen/sauzen/smaakmakers 33, Alcoholische/Non-alcoholische dranken 13)
+  plus household/personal-care lines. currency_code=SRD, minor_unit=2.
+
+  Orchestrator re-measurement 2026-09-01 (clean post-fix full run,
+  1,224 rows): food share is 33.4% (409/1,224 rows under the
+  Levensmiddelen top-level), not the 33.9% first reported. Personal
+  care is the single largest top-level at 477 rows. Channel stays
+  `supermarket` per the GLOSSARY rule that a division profile which
+  contradicts a tag is a flag for review, not an automatic
+  reclassification: this is first-party, self-describes as a general
+  grocery webshop, and carries a real full-depth grocery department.
+  Online-grocery baskets skew away from fresh because fresh does not
+  ship, so a ~1/3 food share here is not evidence against the tag.
+  Freshness verified against the post-2020 SRD devaluation: a 24-roll
+  bathroom-tissue pack priced SRD 330.07 (~USD 8-9 equivalent at the
+  current rate), not a stale pre-devaluation figure.
+
+  NOT the same source as now2su.com. HEM Suriname N.V.'s own webshops
+  page (https://www.hem.sr/nl/webshops) explicitly lists both avoda.sr
+  and now2su.com as its own storefronts; a 300-item sample from each
+  Store API found 277/300 (92.3%) identical product names -- same
+  catalog/backend. now2su.com (EUR-priced, diaspora order/pickup)
+  deliberately NOT onboarded as a second source to avoid double-counting
+  this shelf. hem2b.com (same group, B2B wholesale) also not onboarded
+  (wholesale channel; further same-distributor overlap risk).

@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: source_curated
+coicop_codes:
+  - "02.1"
+spider: o4a2_atlas_liquor_to
+url: https://o4a2.com/collections/atlas-liquor
+language: en
+currency: NZD
+cadence: weekly
+channel: specialty-food
+archive_prefix: "o4a2.com/products/"
+archive_path_re: '^/products/.*atlas-liquor'
+notes: |
+  O4A2 vendor collection for Atlas Liquor in Ha'ateiho, Tonga. Alcoholic
+  beverage source only; useful for COICOP 02.1 but not a broad food basket.
+  This is a vendor-level scrape from the same O4A2 marketplace host. The
+  collection exposed 29 priced rows during live probe on 2026-09-01.

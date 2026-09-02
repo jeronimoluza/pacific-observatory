@@ -1,0 +1,45 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: locatel_ve
+url: https://www.locatel.com.ve/
+language: es
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.locatel.com.ve/"
+archive_path_re: '^/[^/]+/p$'
+notes: |
+  Venezuelan pharmacy/health-and-beauty chain (Equipos Medicos, Farmacia,
+  Cuidado Personal, Cuidado Del Bebe, Nutricion Especializada,
+  Dermocosmeticos, plus small Alimentos and Hogar branches), independent
+  VTEX tenant (accountName "locatelvenezuela"). Verified live 2026-09-01:
+  /api/catalog_system/pub/products/search?_from=0&_to=4 -> HTTP 206, JSON.
+  Category tree depth 3 has 219 leaf paths; page 0 vs page 50 of a leaf
+  category returned disjoint productId sets (enumerability confirmed).
+  Full unbounded run 2026-09-01: 10,682 rows. The largest leaf (Farmacia >
+  MEDICAMENTOS > MEDICAMENTOS) topped out at 52 pages (2,548 items) --
+  well short of the _vtex_base 60-page/3,000-item-per-leaf cap; no leaf
+  in this run hit the cap, so this is a complete catalog walk, not a
+  truncated one.
+  Currency is genuinely VES, confirmed three ways on the same product: the
+  catalog API's commertialOffer.Price (5636.48 for a Colgate toothpaste),
+  the product page's schema.org JSON-LD (priceCurrency: "VES", identical
+  figure), and the rendered PDP's "Bs.S" currency literal on the primary
+  shelf price -- all three agree, and this is the value captured here.
+  The PDP ALSO renders a secondary "PrecioUSD" block (blockId
+  custom-price-ven-usd-summary) showing a USD-equivalent figure tied to
+  "tasa BCV" language elsewhere on the same page (used there for a
+  free-shipping-threshold rule: "envios gratis ... 20$ (tasa BCV)") --
+  NOT captured here. IMPORTANT CAVEAT: I could not find an explicit
+  on-site statement of Locatel's own VES repricing cadence (checked
+  /preguntas-frecuentes, /terminos-y-condiciones, /politicas-de-precios --
+  none mention BCV or a repricing schedule), and a single-session probe
+  cannot empirically distinguish a sticky VES shelf price from one
+  re-pegged to the BCV rate on some cadence (daily BCV-linked repricing
+  is common Venezuelan retail practice but is an inference here, not a
+  confirmed fact about this specific site). Whoever consumes this series
+  should treat the VES price as this site's stated shelf price at
+  scrape time and independently re-check repricing cadence via repeat
+  scrapes before building an inflation series on it.
+timeout: 28800

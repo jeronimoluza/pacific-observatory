@@ -1,0 +1,102 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: hypermarket
+spider: taw9eel_kw
+url: https://www.taw9eel.com/
+language: en
+cadence: weekly
+timeout: 5400
+archive_prefix: "www.taw9eel.com/en/"
+archive_path_re: '^/en/[^/]+\.html$'
+notes: |
+  Verified live 2026-09-01: Taw9eel, a Kuwaiti online grocery / general-
+  merchandise storefront (legacy Magento 1 -- not the Luma theme
+  _magento_base.py targets, so this is a bespoke spider). Workbook
+  candidate (sources_pending_jero.xlsx, "General/grocery e-commerce").
+
+  NOT a pure first-party catalog -- checked for a marketplace pattern per
+  onboarding rule 14 and found one: 35/175 (20%) of a random PDP sample
+  carried an explicit "- delivered by <Named Partner>" suffix for a
+  DIFFERENT business than Taw9eel (mainly "The Pharmacy" -- 22/175,
+  vitamins/skincare/medicines -- plus one-off Union Trading, Al Nasser,
+  Thouqi, Petzone, Al Rifai For Nuts, Smart Food, Pharmazone, and pure
+  digital gift cards "Delivered by Whatsapp & Email"). The spider drops
+  every row carrying a non-"Taw9eel Fast" partner name rather than
+  mislabel the blended whole as first-party. Rows with no delivery-
+  partner suffix, or tagged only "delivered by Taw9eel Fast" (Taw9eel's
+  own quick-commerce/dark-store arm -- groceries, frozen meat, produce,
+  dairy, snacks, cleaning, baby care, all under Taw9eel's own name), are
+  kept and the boilerplate suffix is stripped from product_name (rule 5).
+  A few rows double-tag ("Delivered By Pharmazone - delivered by Taw9eel
+  Fast") -- any non-Taw9eel-Fast partner anywhere in the title drops the
+  row regardless of a Taw9eel Fast tag alongside it.
+
+  Front page and every PDP return HTTP 202 with an AWS WAF
+  `x-amzn-waf-action: challenge` JS stub to curl_cffi impersonation
+  (chrome124/chrome120/safari17_0 all 202) -- a content-level
+  proof-of-work class, not a TLS fingerprint block. A real headless
+  Chromium (Playwright) clears it and is issued an `aws-waf-token`
+  cookie; replaying that cookie with plain HTTP (no Playwright, no TLS
+  impersonation -- confirmed with stock `requests` too) then gets 200 on
+  every subsequent page. Spider runs Playwright exactly once per crawl
+  (in `start()`) to mint the token and pull the sitemaps, then scrapes
+  every PDP over bare `scrapy.Request` carrying that cookie --
+  "Playwright to discover, plain HTTP to scrape."
+
+  Enumerability confirmed via robots.txt -> sitemap_en/sitemap_index.xml
+  -> sitemap_products.xml + sitemap_products_1.xml + sitemap_products_2.xml,
+  63,593 distinct PDP URLs across the 3 shards (25000 + 25000 + 13593) --
+  matches the storefront's own "80,000 products" marketing claim in order
+  of magnitude; not a homepage carousel. The combined URL list is
+  shuffled (fixed seed) before any PDP request is enqueued: Scrapy's LIFO
+  scheduler otherwise drains only the last-enqueued shard under a
+  --max-items cap -- confirmed live, an early unshuffled test landed
+  entirely inside one shard's "Taw9eel Fast" household/electronics tail,
+  zero food, exactly the non-representative-capped-sample failure the
+  onboarding brief warns about (rule 3). Shuffling first makes any
+  prefix -- capped or full -- an unbiased sample of the whole catalog.
+
+  KWD 3-decimal check done explicitly (brief requirement) and NOT
+  trivially true here: most sampled prices round to 2 decimals, but real
+  3-decimal (1-fils) prices do occur (e.g. "Lama South African Peaches
+  Box" at KD3.395, "Lama Lebanese Golden Apple Box" at KD2.495) and the
+  `#product-price-<id> .price` selector preserves the digit -- confirmed
+  by a cold re-fetch in a fresh Playwright session (new WAF token, no
+  reuse of crawl state) reproducing 3.395 and 2.495 exactly. An earlier,
+  smaller check that only inspected `product:price:amount` OpenGraph
+  meta (which formats to 2 decimals regardless of the real price) wrongly
+  suggested this site never carries a 3rd digit -- corrected here since
+  the parser reads the rendered price span, not that meta tag.
+
+  Price selector is Magento's `#product-price-<retailer_item_id> .price`
+  span, which holds the currently-charged price net of any discount
+  (verified: Al Safi Milk 4x1L had old-price-60375=KD1.88,
+  product-price-60375=KD1.56 -- the id WITHOUT `old-` is what's charged).
+  product_name comes from the page `<h1>` with the delivery-partner
+  suffix stripped (see above) -- NOT `og:title`, which additionally
+  carries a "Buy " prefix on every sampled PDP.
+
+  Measured run (--max-items 250, capped early after ~10 min. by
+  contention from 9 other agents sharing this checkout's machine/network
+  -- not a spider defect, confirmed by cold re-fetches below): 116 rows,
+  116/116 distinct product_id, 116/116 distinct url, 0 blank names, 0
+  zero/negative prices, 1 currency (KWD), median KWD 1.76, min 0.22, max
+  26.9. Category composition: "Taw9eel Fast" (its own quick-commerce
+  breadcrumb tag) 49/116 (42%), remainder spread across ~40 descriptive
+  categories (Vegetables, Fruits, Ready Meals, Coffee & Tea, Diapers,
+  Toothpaste, Bathroom & Kitchen, Hair Treatment, etc.), each 1-3 rows --
+  a genuine long-tail catalog, not a narrow niche. Food share (by product
+  name -- groceries, frozen meat/poultry, dairy, produce, snacks,
+  condiments, coffee/tea, baby formula, pet food, against household/
+  personal-care/baby-gear/beauty/electronics-accessories): 60/116 = 51.7%
+  on this run; a same-day 175-row run (pre-marketplace-filter fix) came
+  to a consistent ~54-56% on its first-party subset. This is a genuine
+  cross-selling food + general-merchandise catalog, hence channel:
+  hypermarket (matching the lulu_kw precedent for the same catalog
+  shape), not supermarket. 3 URLs re-fetched cold in a brand-new
+  Playwright session (fresh WAF token): all 3 matched the crawled name
+  and price exactly, including both 3-decimal cases above.
+  coicop_divisions: 01, 03, 05, 06, 09, 12, 13
+  divisions_basis: sampled_rows (116-row measured run; full 63.6k-URL catalog not walked in this pass -- orchestrator queues the full run)

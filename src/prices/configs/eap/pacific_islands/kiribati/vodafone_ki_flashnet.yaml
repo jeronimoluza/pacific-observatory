@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: static_tariff_from_source_image
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+spider: vodafone_ki_flashnet
+url: https://www.vodafone.com.ki/Services/Bundles/Flashnet-Wifi-Router
+language: en
+currency: AUD
+cadence: monthly
+channel: null
+archive_prefix: "www.vodafone.com.ki/Services/Bundles/"
+archive_path_re: '^/Services/Bundles/Flashnet-Wifi-Router/?$'
+notes: |
+  Official Vodafone Kiribati Flashnet/Pocket Wifi/Router prepaid broadband
+  bundles page. The price table is embedded as an image, not HTML text, so the
+  spider fetches the source page and emits the audited tariff rows transcribed
+  from the visible 2026-09-01 image. It is scrapeable enough for fallback
+  tariff coverage, but weaker than a text-native catalog.

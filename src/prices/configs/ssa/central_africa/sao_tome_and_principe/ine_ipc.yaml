@@ -1,0 +1,47 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: cpi_benchmark
+coicop_classification: publisher_labeled
+channel: null
+source_key: stp_ine_ipc
+module: ssa.central_africa.sao_tome_and_principe.ine_ipc
+function: fetch_stp_ine_ipc
+url: https://ine.st/index.php/informacoes-estatisticas/ipc
+language: pt
+cadence: monthly
+fallback_date: 2020-01-01
+notes: |
+  New source, wave 13 (2026-09-01): INE STP (Instituto Nacional de Estatistica de Sao
+  Tome e Principe) monthly IPC (Indice de Precos no Consumidor), via its Joomla +
+  Phoca Download document tree at ine.st (no config directory existed for this
+  country before this wave). Verified live 2026-09-01: 12 divisions (01-12, COICOP-1999
+  style, no division 13), base 2014=100, currently published through Julho 2026.
+
+  Each month's category page holds a "Nota_Explicativa" PDF plus one or two
+  "Resultado_IPC_<mes><ano>" spreadsheets. When a month has two, the second
+  ("Publicacao2") is a finer class-level breakdown (~180 rows, COICOP-like 4/5-digit
+  sub-codes) that this fetcher does NOT use -- it takes the division-level
+  ("Publicacao1", or the sole file when there's only one) table, whose row labels carry
+  their own COICOP code as a literal prefix ("01 - Produtos Alimentares...", etc.), so
+  coicop_classification is publisher_labeled, not classifier.
+
+  The LATEST available month's spreadsheet for a given year is cumulative (all months
+  published so far that year, plus one prior-December reference column), so the
+  fetcher downloads exactly ONE file per year -- not one per month -- and parses every
+  month column it finds via a Portuguese-month-name match, dropping the single
+  leading prior-year December reference column (already captured by that year's own
+  pass) rather than trying to parse the source's irregular merged "ANO <year>" header
+  cells.
+
+  GOTCHA: Phoca Download's per-file download is a POST, and the form's anti-abuse
+  hidden field NAME (not value) is a random hex string that changes on every page
+  load -- it must be re-parsed from a fresh GET immediately before each POST, never
+  cached or hardcoded. Plain `requests` (no curl_cffi impersonation needed) worked
+  throughout; the site is a small Joomla install with no WAF observed.
+
+  Currency: none -- this is a dimensionless index (IndexObservation, index_value +
+  index_base_period), so the STN/STD redenomination does not apply here.
+
+  fallback_date=2020-01-01 (fetcher additionally floors at 2018, the earliest year
+  category that exists on the site) backfills the full available modern series on
+  first run.
