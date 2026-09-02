@@ -88,3 +88,44 @@ notes: |
   (/da/1013-badek%C3%A5ber) in CC-MAIN-2025-21, but the SAME site serves raw
   UTF-8 (aeggebaegere with the Danish characters) in 2022-21. A lowercase-only
   or \w+ character class drops one era silently. Keep [^/?]+.
+
+  PAGE-CAP AUTOPSY 2026-09-02. The 250-page cap was still binding and the run
+  it produced (7,295 rows, finish_reason "finished") was truncated. Every
+  structural check passed -- all URLs distinct, 100% DKK, zero blank names,
+  zero non-positive prices -- so nothing in the run itself flagged it.
+
+  What gave it away was `request_depth_max: 250` in the Scrapy stats being
+  exactly MAX_PAGES_PER_CATEGORY. This spider chains pagination (page N -> N+1),
+  so max depth IS the deepest page reached; equalling the cap is a truncation
+  signature, not a coincidence. Confirmed against the live site:
+
+    category /da/2009-dyreartikler, real (non-rail) products per page
+      page 249  9      page 260  9      page 280  0
+      page 250  9      page 270  6      page 290  0
+      page 251  9                       page 300  0
+
+  So the category runs to roughly page 275 and we stopped at 250. It came back
+  with exactly 2,250 rows = 250 pages x 9 products -- a round number that is a
+  cap signature in its own right. Roughly 180 products were lost from this one
+  category.
+
+  TWO THINGS THIS SITE DOES THAT DEFEAT THE OBVIOUS GUARDS:
+
+  1. `len(cards)` CANNOT DETECT THE END. Every category page renders a fixed
+     8-product recommendation rail using the same article.product-miniature
+     markup as real products. A rail-only page past the true end still reports
+     8 cards, so `if cards:` stays true forever. Verified: page 300 has 8 cards
+     and 0 real products. That rail is also the entire explanation for the
+     run's 8,994 duplicate drops -- ~8 per page x ~1,140 pages -- which had
+     looked like a pagination loop.
+  2. `has_next` IS reliable and is the real terminator. Measured present on
+     every page carrying real products (through page 270) and absent on the
+     first page that carries none (280+). The cap must therefore sit well
+     above the deepest category and never be the thing that fires.
+
+  Raised to 1000. At ~275 pages for the deepest category that is ~3.6x
+  headroom, and because has_next terminates naturally the higher value costs
+  nothing on categories that end early.
+
+  Cost note: the robots.txt Crawl-delay of 5s is honoured, so a full run takes
+  ~2.3 hours. That is the price of not being capped.

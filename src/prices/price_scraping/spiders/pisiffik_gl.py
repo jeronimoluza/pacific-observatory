@@ -64,7 +64,12 @@ _CATEGORY_RE = re.compile(r"^/da/(\d+)-[^/?#]+$")
 # Explicitly Disallow-ed in robots.txt for User-agent: * — never request these.
 _BLOCKED_CATEGORY_IDS = {"445", "1132"}
 
-MAX_PAGES_PER_CATEGORY = 250
+# Safety net only -- the real terminator is the site's own `has_next` link,
+# which was verified to disappear exactly when a category runs out of real
+# products. This must stay well above the deepest category or it silently
+# truncates: at 250 it cut "Dyreartikler" (which runs to ~page 275) at exactly
+# 2,250 rows = 250 pages x 9 products. See the manifest for the full autopsy.
+MAX_PAGES_PER_CATEGORY = 1000
 
 
 class PisiffikGlSpider(scrapy.Spider):
@@ -169,6 +174,16 @@ class PisiffikGlSpider(scrapy.Spider):
 
         # Follow pagination only while the page is full-width; an empty or
         # short page ends the category.
+        #
+        # NOTE: `cards` is NOT a usable end-of-category signal on this site.
+        # Every category page carries a fixed 8-product recommendation rail
+        # rendered as article.product-miniature, so len(cards) never reaches
+        # zero -- a rail-only page past the true end still reports 8. That
+        # rail is also the entire source of the run's duplicate drops
+        # (~8 x pages). `has_next` IS reliable: verified present on every page
+        # carrying real products and absent on the first that carries none.
+        # Termination therefore depends on has_next, with the page cap as a
+        # backstop that must never be the thing that fires.
         if cards and page < MAX_PAGES_PER_CATEGORY:
             has_next = response.css(
                 'a.next::attr(href), .pagination a[rel="next"]::attr(href)'
