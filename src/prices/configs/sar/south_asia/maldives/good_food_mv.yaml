@@ -1,3 +1,7 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
 spider: good_food_mv
 language: en
 archive_prefix: "www.goodfoodmaldives.com/products/"

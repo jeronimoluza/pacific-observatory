@@ -1,0 +1,33 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: happilo_in
+url: https://www.happilo.com/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.happilo.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Probed 2026-09-01 with curl_cffi impersonate=chrome124: 200, Shopify
+  storefront, /products.json?limit=250&page=N open with no auth. Specialty
+  dry-fruits / nuts / seeds / healthy-snacks D2C brand — a distinct
+  specialty-food niche from FreshToHome (meat/seafood) and from the
+  existing hypermarket (dmart_in) / supermarket (starquik) India coverage.
+  Uses the shared _shopify_base.ShopifyBaseSpider (opt-in subclass, no
+  changes to the base). Bug found in the shared base: `_items()` guards
+  with `if not price: continue`, which does not catch the string "0.00"
+  (truthy) — 8 of 181 raw happilo.com variants price at exactly 0 and would
+  otherwise ship as zero-price rows. Fixed locally by overriding `_items()`
+  in this subclass only (filters price<=0 after calling super()); the
+  shared _shopify_base.py file itself was NOT modified, since other live
+  spiders depend on its current behavior.
+  Verified end to end with a full unbounded run (single catalog page, 144
+  products / 173 variants after the zero-price filter): 173 rows, 173
+  distinct product_id, 173 distinct url, 0 blank names, 0 zero/negative
+  prices, 100% INR, price range 55.25-3555.00 (median 382.50), food share
+  100% (whole catalog is dry fruits/nuts/seeds/snacks). Cold re-fetched 2
+  products live against /products/<handle>.json: names and prices matched
+  stored values exactly (e.g. "Happilo Essentials Classic Sultan Seedless
+  Dates 500g" 208.25 INR, both stored and live).

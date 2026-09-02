@@ -8,6 +8,8 @@ language: en
 cadence: weekly
 channel: hypermarket
 timeout: 5400
+archive_prefix: "www.dmart.in/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Probed 2026-08-31 with curl_cffi impersonate=chrome124: www.dmart.in 200,
   Next.js App Router storefront (Avenue E-Commerce Ltd, "DMart Ready"). No

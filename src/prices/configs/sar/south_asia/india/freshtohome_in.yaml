@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: freshtohome_in
+url: https://www.freshtohome.com/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.freshtohome.com/buy-fish-meat-online/products/bangalore/"
+archive_path_re: '^/buy-fish-meat-online/products/bangalore/[a-z0-9\-]+\.html$'
+notes: |
+  Probed 2026-09-01 with curl_cffi impersonate=chrome124: 200 on all paths,
+  no WAF. Specialty-food meat/seafood/egg delivery (Bangalore-founded,
+  ~15 metro cities). Magento-family storefront; category listing pages are
+  per delivery city (/buy-fish-meat-online/products/<city>) and list ~425
+  distinct PDP hrefs on a single unpaginated HTML page for Bangalore alone
+  (confirmed via anchor-href regex — the page's own embedded JSON-LD
+  ItemList only samples 9 of these and undercounts the real total, so the
+  spider follows <a> hrefs via LinkExtractor rather than trusting the
+  ItemList block). PDPs carry a schema.org Product JSON-LD block
+  (offers.price, offers.priceCurrency=INR, sku) — this is the ONLY price
+  surface; the theme has no data-price-amount span and no og:price meta.
+  Scoped to Bangalore only: other ~100+ cities serve the same national
+  catalog under city-specific URLs/pricing, and crawling all of them would
+  mostly duplicate SKUs rather than add coverage.
+  Verified end to end with a full unbounded run (all 425 Bangalore PDP
+  URLs): 425 rows, 425 distinct product_id, 425 distinct url, 0 blank
+  names, 0 zero/negative prices, 100% INR, price range 23.00-6375.00
+  (median 342.00), food share 100% (whole catalog is meat/fish/seafood/egg
+  cuts and ready-to-eat meals). Cold re-fetched 2 PDPs live
+  (special-sardine -> "Premium Sardine" 259.00 INR; atlantic-salmon ->
+  "Fresh Atlantic Salmon" 899.00 INR) — both matched stored values exactly.
+  Entire catalog is food (division 01 meat/fish/eggs) — narrow by content
+  but spans multiple COICOP classes (meat 01.1.2, fish 01.1.3, eggs
+  01.1.7), so coicop_codes is left unset for the classifier to assign per
+  product rather than declared narrow.

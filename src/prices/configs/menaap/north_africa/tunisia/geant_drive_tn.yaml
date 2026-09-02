@@ -1,0 +1,73 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: geant_drive_tn
+url: https://www.geantdrive.tn/tunis-city/
+language: fr
+cadence: weekly
+channel: hypermarket
+archive_prefix: "www.geantdrive.tn/tunis-city/"
+archive_path_re: '/\d+-[a-z0-9\-]+\.html$'
+notes: |
+  Geant Drive Tunis City -- click-and-collect arm of Geant Tunisie (a major
+  hypermarket chain). geant.tn (the corporate/catalogue-flyer site) has no
+  catalog itself; it links out to this separate geantdrive.tn domain, a
+  full PrestaShop online supermarket ("Supermarche en ligne tunisie : faire
+  ses courses chez Geant Drive"). Uses the shared PrestashopBaseSpider --
+  standard schema.org Product microdata confirmed (48 cards/page on
+  category 161-legumes). Full hypermarket taxonomy: epicerie-et-boissons,
+  le-frais (fruits/legumes/boucherie-et-volaille/poissonnerie/charcuterie/
+  cremerie-et-surgele), parfumerie-hygiene-et-entretien, univers-bebe,
+  maison-et-exterieur, high-tech-et-multimedia, mode-loisirs-et-sport,
+  animalerie -- ~100 leaf categories under https://www.geantdrive.tn/
+  tunis-city/. Currency TND matches countries.yaml.
+
+  Cert note: the homepage's TLS cert (Sectigo DV, valid to 2026-11-20) fails
+  curl_cffi's default verification chain (missing intermediate in what the
+  server serves) -- verified this is NOT an expired-cert/hijacked-domain
+  signature (openssl s_client confirms a live, in-date Sectigo cert). This
+  project's download handler is scrapy-impersonate (curl_cffi under the
+  hood), which DOES enforce cert validation, unlike vanilla Scrapy -- fixed
+  by vendoring the missing intermediate (`_geant_drive_tn_chain.pem`) and
+  injecting a combined certifi+intermediate bundle via a spider-scoped
+  downloader middleware (`_InjectCaBundleMiddleware` in geant_drive_tn.py),
+  NOT `verify=False` and NOT a change to settings.py or the shared base.
+
+  TND 3-decimal price trap fixed the same way: the shared base's
+  `normalize_price` mis-parsed "14,100 DT" (=14.100 TND) as 14100 TND (a
+  1000x error); a spider-local `_normalize_tnd_price()` override in
+  geant_drive_tn.py fixes it without touching the shared function. Rows
+  with price <= 0 are dropped in this spider's own `_items()` (explicit
+  `float(price) <= 0` guard), not in the shared base.
+
+  Single-store scope: Geant Drive is a multi-pickup-point PrestaShop tenant
+  (corporate copy also references an "Azur City" point). Only tunis-city is
+  scraped this pass to avoid onboarding a possible near-duplicate catalog
+  under a second storefront path -- a future pass could sample azur-city
+  and diff product overlap before deciding whether it's a distinct source.
+
+  MEASUREMENT CAVEAT (2026-09-01): the full unbounded run was cut short by
+  a live geantdrive.tn outage (the whole origin, including the homepage,
+  started timing out mid-crawl -- confirmed independently via direct
+  curl_cffi probes to the bare homepage after the crawl stalled, not a
+  scraper-side bug). On-disk snapshot at cutoff: 16,583 rows, 16,583/16,583
+  distinct product_id and url, 0 blank names, 0 zero/negative prices
+  (explicit guard), all TND, price range 0.25-7,825. Categories actually
+  reached are overwhelmingly general-merchandise (bagagerie/jouets 1,693,
+  art de la table 1,508, vetements 1,284, bricolage 1,252, linge de maison
+  1,194, cuisine[kitchenware] 1,080 ...); measured food-and-beverage share
+  is only ~5.7% (949 rows across genuine division-01 categories: viandes,
+  poissons/poissonnerie, fruits/legumes, boulangerie/patisserie, charcuterie,
+  traiteur, oeufs, epices, aliments-pour-bebe, etc.). The outage hit right
+  as the crawl queue reached `epicerie-et-boissons` and the dairy leaves
+  (`laits`, `fromages`, `yaourts-et-cremes-dessert`) -- the categories a
+  hypermarket's food share would normally lean on most -- so this 5.7%
+  almost certainly UNDERSTATES the true catalog's food share rather than
+  reflecting it; it is NOT yet a reliable measurement of the full catalog.
+  Do not treat this source as a confirmed food-and-beverage win until a
+  completed run (once geantdrive.tn recovers) re-measures the food share
+  across the full ~100-category taxonomy. `channel: hypermarket` is kept
+  because the site itself IS a genuine hypermarket (real food AND general
+  merchandise both confirmed present), independent of this run's food-share
+  number.

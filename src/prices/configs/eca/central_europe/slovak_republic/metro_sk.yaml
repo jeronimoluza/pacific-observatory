@@ -1,0 +1,47 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: metro_sk
+url: https://sortiment.metro.sk/
+language: sk
+currency: EUR
+cadence: weekly
+channel: wholesale
+timeout: 21600
+notes: |
+  METRO Slovakia -- cash-and-carry wholesale chain. NOTE per the wave-12
+  brief's win criteria: `channel: wholesale` is not in the sweep's allowed
+  retail-channel list (supermarket/hypermarket/convenience/fresh-market/
+  specialty-food/marketplace), so this source does NOT count toward the
+  sweep's food-source tally for Slovak Republic -- shipped anyway because
+  it is real, unblocked, and food-and-beverage-led (13,889 food SKUs), and
+  general pipeline coverage benefits from it regardless of this wave's
+  scoring rule. Slovak Republic still has only billa_sk as a counted food
+  source after this addition; see the Phase-8 report for what else was
+  tried and why it didn't verify (kaufland.sk 403 on 3 curl_cffi profiles,
+  rohlik.sk is a parked/for-sale domain, jednota.sk is a single regional
+  co-op's brochure site with no webshop, yeme.sk is a brand/marketing site
+  with no visible catalog).
+
+  Storefront (sortiment.metro.sk) is a JS SPA with no product data in raw
+  HTML. Playwright network trace of a category page found a fully
+  anonymous two-endpoint JSON API (no login/session needed, unlike most
+  B2B wholesale sites):
+    GET /searchdiscover/articlesearch/search?storeId=00021&language=sk-SK
+        &country=SK&query=*&rows=100&page=<N>&filter=category:potraviny
+        -> resultIds + per-id price/isAvailable (page N vs N-1 confirmed
+           disjoint -- amount=13,889, totalPages=139 at rows=100)
+    GET /evaluate.article.v1/betty-variants?storeIds=00021&ids=<id>...
+        -> name (`description`) + category breadcrumb, batched (100 ids
+           per call confirmed working)
+
+  storeId=00021 is one specific physical store (Bratislava area, the
+  site's own default with no location cookie) -- single-city convention,
+  same pattern as goodwill_ge / globus_online_kg.
+
+  Test run (--max-items 20): 20/20 rows, 20 distinct product_id, 0 blank
+  names, 0 zero/negative price, 100% EUR. Sample: "METRO Chef Uhorky
+  hadovky 250+ CZ čerstvé 4,5 kg" 10.76 EUR. Cold re-fetch confirmed
+  against the same search+variants endpoints with no session/cookies.
+  Full unbounded run measured separately -- see Phase-8 report.

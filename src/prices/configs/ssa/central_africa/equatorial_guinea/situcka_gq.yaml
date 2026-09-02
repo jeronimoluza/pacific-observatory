@@ -1,0 +1,30 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: situcka_gq
+url: https://situcka.com/
+language: es
+cadence: weekly
+channel: marketplace
+notes: |
+  Equatorial Guinea's FIRST price source of any kind (country had 0
+  manifests before this pass). Open WooCommerce Store API:
+  GET /wp-json/wc/store/v1/products?category=24&per_page=100 -> HTTP 200,
+  no auth. Scoped to category id 24 ("Supermercados"), the parent
+  aggregating 6 distinct physical supermarket chains that otherwise have
+  no online catalogue of their own -- Martinez Hermanos (id=26, EG's
+  largest chain, whose own site martinezhermanos.com is a dead brochure
+  with 0 products), Guinaco (id=181), Ecua Market (id=774), EGTC (id=487),
+  Mangarams (id=597), Pegasos (id=642) -- 6,931 products per the store
+  API's own category counts, vs. the marketplace's non-food verticals
+  (restaurantes 1,652, cosmeticos 842, ferreteria 442, etc.) which are
+  excluded by the category scope. Tagged channel=marketplace (not
+  supermarket) because the scoped category still aggregates multiple
+  distinct operators under one platform. Situcka's own top-level category
+  counts (restaurantes+supermercados+mercado+finca-de-sampaka =
+  8,636/10,391 = 83%) show the marketplace as a whole is food-and-beverage
+  led, unlike a general marketplace such as assivito_tg. currency_code XAF,
+  currency_minor_unit=0 confirmed live in the store-API payload (integer
+  currency, matches the XAF trap). Sample: "MHS-Arroz perfumado 5 KG -
+  Indra" 4,600 CFA, category "Alimentacion General".

@@ -1,0 +1,54 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: coal_sm
+url: https://spesa.gruppoce.sm/
+language: it
+cadence: weekly
+channel: supermarket
+archive_prefix: "spesa.gruppoce.sm/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  First food-and-beverage source for San Marino (previously 0 sources of
+  any kind). "Spesa Online COAL" -- the online grocery arm of COAL, San
+  Marino's retail/consumer cooperative group. Storefront is a Next.js
+  static-export shell with no build-time data; the real backend is a
+  same-brand SaaS platform on a different domain (spesa.lenny.sm --
+  "Lenny"), found via a Playwright network trace since it never appears as
+  a literal string in any Next.js JS chunk. Two fully open (no-auth) JSON
+  endpoints: GET /api/category/tree (22 top nodes, 210 leaves) and GET
+  /api/product/search?category_id=<id>&page=<n> (20/page, real pagination
+  confirmed -- page 1 vs page 2 on category 479 "Acqua" returned disjoint
+  product sets). Products can be tagged under more than one leaf category,
+  so the spider dedupes globally on `slug`. Re-verified live: PDP
+  https://spesa.gruppoce.sm/product/frizzantino-amab-chiarli-ml-1500 200s
+  and matches the API row (5.69 EUR base price). Currency EUR -- San
+  Marino has no currency of its own and uses the Euro under a monetary
+  agreement with the EU, matching countries.yaml.
+
+  Bug found and worked around (not a shared-base change, this spider is
+  standalone): the search endpoint does not validate `category_id` once a
+  category's real content is exhausted -- it silently falls back to an
+  unrelated, never-empty default listing instead of returning []
+  (confirmed live: category_id=818, tree count=3, still returned 20-row
+  pages of wine products past page 3, identical to category_id=479's
+  listing). Pagination in the spider stops on zero NEW (post-dedup) items
+  per page rather than on an empty array.
+
+  ORCHESTRATOR RE-MEASUREMENT 2026-09-01: the first pass reported 4,000
+  rows. Two independent unbounded runs both returned EXACTLY 4,000 -- that
+  is 200 pages x 20 items, i.e. the spider's own MAX_PAGES safety net, not
+  the catalog size. A reproducible round number is a cap signature.
+
+  Root cause is the backend defect documented above: because an exhausted
+  category_id falls back to a never-empty default listing of real store
+  products, the global seen-slug dedup never sees an empty page, so nothing
+  but MAX_PAGES ever ended the crawl. Every one of the 4,000 rows was valid
+  and distinct -- the catalog was simply cut off mid-stream.
+
+  MAX_PAGES raised 200 -> 2000. The re-run terminates naturally at 9,810
+  rows / 9,810 distinct product_id / 9,810 distinct url, well short of the
+  new ceiling, so this is the real catalog: 0 blank names, 0 zero/negative
+  prices, 100% EUR, 0.22-149.90, median 2.99. Food-led (Preparati, Vino,
+  Biscotti, Pasta, Yogurt) with a household/personal-care tail.

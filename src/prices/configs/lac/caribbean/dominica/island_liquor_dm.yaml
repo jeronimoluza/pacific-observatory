@@ -1,0 +1,31 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: island_liquor_dm
+url: https://backend.caribeeats.com/api/business/island-liquor-dominica
+language: en
+cadence: weekly
+channel: specialty-food
+notes: |
+  Onboarded 2026-09-01. Island Liquor Dominica is a liquor/tobacco
+  storefront on the CaribeEats delivery aggregator (backend.caribeeats.com)
+  -- one of two Dominica ("roseau-dominica" region) vendors on the platform.
+  42 SKUs across 7 categories -- mostly alcohol (Liquor, Rums, Wine,
+  Liqueur = 35 items -> COICOP 02.1) with a tobacco minority (Cigarettes,
+  Cigars = 6 items -> COICOP 02.2). Left coicop_codes unset (classifier
+  assigns per-leaf) rather than declaring a narrow code, since the catalog
+  spans two different 3-digit COICOP classes (02.1 vs 02.2) and the
+  narrowness rule only short-circuits a single-class catalog -- forcing one
+  code here would mislabel whichever division is the minority.
+  currency field in the payload is
+  XCD, matching countries.yaml dominica. No per-product web page exists
+  (app-only PDP); url is synthesized as the endpoint + '#<product_id>'
+  fragment.
+  The other Dominica vendor on the platform, CaribeShop DM
+  (caribeshop-dm), was probed and REJECTED for this F&B pass -- 6206 SKUs
+  but "Foods & Beverages" is only 483 of 6206 (~8%); the catalogue is
+  dominated by Personal Care (3544), OTC (825), and Household -- it fails
+  the food-and-beverage-led criterion despite being the platform's largest
+  Dominica catalog. Recorded so a future non-F&B-scoped pass doesn't waste
+  time re-probing it as "already found, already rejected for THIS reason."

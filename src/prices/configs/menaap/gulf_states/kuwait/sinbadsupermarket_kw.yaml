@@ -1,0 +1,24 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sinbadsupermarket_kw
+url: https://sinbadsupermarket.com/products.json
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "sinbadsupermarket.com/products/"
+archive_path_re: '^/products/[^/?]+/?$'
+notes: |
+  Shopify storefront, standard /products.json catalog (no auth). Confirmed
+  live 2026-09-01: Shopify.country="KW", Shopify.currency.active="KWD"
+  (matches countries.yaml, no locality trap). 1,779 products across a
+  genuine grocery-led collection set (Grocery, Biscuits, Candy, Chips,
+  Chocolates, Coffee & Tea, Drinks, Frozen, Nuts, Pet Food & Supplies,
+  plus Cleaning/Household/Personal Care as normal supermarket departments)
+  — a real online supermarket, not scoped to a single category. Sample:
+  "Maysa Luncheon Meat Plain 800g" KWD 1.000, "Rita Canned Sweet Corn
+  400g" KWD 0.300 — 3-decimal KWD pricing, confirmed from the page.
+
+  Distinct company/catalog from lulu_kw (Lulu Hypermarket, different GCC
+  chain) and taw9eel_kw (different platform) — not the same shelf.

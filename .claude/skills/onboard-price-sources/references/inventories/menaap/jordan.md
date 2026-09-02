@@ -64,3 +64,35 @@ Jordan would sit at 6 sources / 3 food rather than 5/2.
   results instead of Amman due to the shared spelling — worth remembering
   for future MENA passes, prefer "الأردن" (Jordan) or "الاردن" alongside
   "عمان" to disambiguate.
+
+---
+
+## Second pass, 2026-09-01 (MENAAP-A F&B sweep)
+
+A second agent worked Jordan concurrently during the final food-and-beverage
+sweep, before it was told to stand down in favour of the wave-13 pass above.
+It shipped nothing (its one strong lead, sahel25.com, is location-gated) but
+its dead-end evidence is additive and is preserved verbatim below. Note its
+preamble understated the position as "1 food source" - the wave-13 pass above
+had already landed cozmo_jo AND jcscc_jo, so Jordan finished at 5 sources /
+2 food.
+
+## Candidates probed and rejected
+
+| Candidate | URL | Verdict | Notes |
+|---|---|---|---|
+| Sahel Pro | sahel25.com | NOT SHIPPED — location-gate blocked | Real catalog (1,835 SKUs via sitemap, JOD 3-decimal pricing, JSON-LD Product schema per page), but every product/category URL redirects to `/select-location?next=...` from a scrapy-playwright crawl; the gate is non-deterministic and did not reproduce/avoid consistently even with a homepage-first bootstrap request. See `known_blockers.md` → "SPA shell" section for the full technical writeup (worth a fresh attempt with a residential/Jordan-geolocated IP or a scripted click-through of the location picker). |
+| HyperMax (Carrefour Jordan successor) | www.hypermax.com.jo | DEAD — Akamai (MAF tenant, pre-documented) | Same Majid Al Futtaim Akamai tenant as carrefourqatar.com/carrefourksa.com/carrefouruae.com; already in `known_blockers.md` with full detail from a prior wave. Re-confirmed 403 on chrome124/chrome120/safari17_0. |
+| Al Osra Online | alosraonline.com | INCONCLUSIVE — timeout | `curl_cffi` timed out after 20s with 0 bytes; not retried with Playwright this pass (Bahrain candidate list, not Jordan — see below, this was a duplicate search hit). |
+| Aloosh Market | alloshmart.com | DEAD — empty backend | Vite/React/Supabase app; `categories` table readable (22 real departments) but `products` table is verifiably empty (`Content-Range: */0` on every category). Pre-launch install. See `known_blockers.md`. |
+| EjoMarket | ejomarket.com | DEAD — empty catalog | Legacy Yii PHP site; "Food & Beverages" category and a sampled brand page both show zero real products (0.00 JOD placeholder throughout), confirmed via curl AND Playwright. See `known_blockers.md`. |
+| Grocerjy | grocerjy.com | INCONCLUSIVE — thin pre-launch shell | Next.js SPA whose JS bundle carries no API/fetch references at all; not deep-probed with Playwright given the signal. See `known_blockers.md`. |
+| Safeway Jordan | www.safeway.com.jo | SKIPPED — expired SSL cert | Real, actively-maintained ASP.NET site (New Relic RUM present) but `curl_cffi` fails cert verification (genuinely expired, not a hacked-site signature). Not attempted with `verify=False`. Worth a re-check if the cert is renewed. |
+| AlShaeb Click | alshaebclick.com | APP-ONLY | 280KB homepage is entirely app-store links/screenshots; zero internal shop paths, zero mention of "price". |
+| Al Mufeed Trading | almufeedsa.com | REJECTED — wrong country | Zid-platform store; page text and `hreflang=ar-sa` both say Saudi Arabia, not Jordan/Lebanon (appeared in a Lebanon search). Worth a fresh look if/when Saudi Arabia is reached. |
+
+## Dead ends worth remembering
+
+- **This wave's Jordan grocery scene is thick with pre-launch/placeholder installs** (Aloosh Market, EjoMarket, Grocerjy all show real infrastructure but zero-to-negligible real inventory) — check total product counts before investing scaffolding effort, not just whether the storefront loads.
+- **`sahel25.com` is the one to revisit.** It is a genuinely large, well-structured, JOD-priced grocery catalog (schema.org Product markup on every page, a working sitemap with 1,835 URLs) — the only blocker is the delivery-area gate, and the gate's behavior was NOT fully understood this pass (it passed through cleanly on some ad-hoc single-page Playwright probes and consistently blocked an automated scrapy-playwright crawl of the same URLs). A future pass with more budget to either (a) find and complete the actual `/select-location` UI flow, or (b) run from a Jordan-geolocated residential IP, could likely unlock a large win.
+- **The MAF/Carrefour Akamai tenant now covers 5 confirmed countries** (QA, SA, AE from before, plus UG and JO/HyperMax) — treat any new MAF-branded storefront as pre-blocked without re-probing from scratch.

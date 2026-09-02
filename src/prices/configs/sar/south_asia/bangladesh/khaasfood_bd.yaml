@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: khaasfood_bd
+url: https://www.khaasfood.com/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.khaasfood.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Probed 2026-09-01 with curl_cffi impersonate=chrome124: 200, no WAF.
+  Specialty organic/halal food producer-retailer (Dhaka, founded 2018) --
+  ghee, honey, spices, rice, meat/poultry, dairy, superfoods. Fills a
+  specialty-food niche distinct from the existing three supermarket-channel
+  Bangladesh sources (chaldal, othoba, shwapno_bd).
+  Next.js App Router storefront -- same trap as dmart_in: category listing
+  pages render with NO price data (client-fetched), but each PDP embeds a
+  `"product":{...}` object (id, name, variationName, salePrice,
+  regularPrice) inside a React Server Component stream chunk
+  (`self.__next_f.push([1,"..."])`) with every quote backslash-escaped on
+  the wire. Fix: `text = response.text.replace('\"', '"')` before regexing,
+  identical to the dmart_in defect. /sitemap.xml lists 148 /product/<slug>
+  URLs, no pagination cap.
+  Verified end to end with a full unbounded run (all 148 sitemap product
+  URLs): 148 rows, 148 distinct product_id, 148 distinct url, 0 blank
+  names, 0 zero/negative prices, 100% BDT, price range 7.00-4250.00
+  (median 230.00), food share 100% (whole catalog is meat, dairy, spices,
+  oils, honey, grains). Cold re-fetched 2 PDPs live (pure-ghee -> "Pure
+  Ghee - 500 gm" 910 BDT; peanut-butter-diabetics -> "Peanut Butter
+  (Diabatic) - 200 gm" 315 BDT) -- both matched stored values exactly.
+  BDT has 0 decimal places in practice on this site (integer taka values
+  observed throughout); no minor-unit division needed.
+  Whole-catalog food specialist (meat, dairy, spices, oils, grains) --
+  spans multiple COICOP classes, so coicop_codes left unset for the
+  classifier.

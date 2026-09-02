@@ -1,0 +1,35 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: andorra2000_ad
+url: https://alimentacio.andorra2000.ad/
+language: ca
+cadence: weekly
+channel: supermarket
+archive_prefix: "alimentacio.andorra2000.ad/index.php"
+archive_path_re: '^/index\.php$'
+notes: |
+  First food-and-beverage source for Andorra (previously 0 sources of any
+  kind). Carrefour's Andorra-specific online supermarket (distinct legal
+  entity/storefront from carrefour.es/.fr; Andorra is outside the EU
+  customs union, so its own catalogue and pricing). Classic OpenCart,
+  route=product/category&path=<id[_id...]> hierarchy, 584 category path=
+  values on the homepage nav. Theme replaces product-card anchors with a
+  JS quickview handler (onclick="quickview('<product_id>')", no href) --
+  handled by a subclass override, not by the shared _opencart_base.py
+  (left untouched). Re-verified live: "CARREFOUR AIGUA AMB GAS 1,25L"
+  0,39EUR on category path=1_101_10101, and the PDP route
+  (index.php?route=product/product&product_id=1039254570) independently
+  renders the identical product/title/price. Language is Catalan (ca);
+  countries.yaml lists only "en" for Andorra, overridden here to match
+  the site's actual language.
+
+  Bug found and fixed during this pass: the initial `_item()` override used
+  `if not price: return None`, but `price` is the STRING returned by
+  `_opencart_base.normalize_price()` (e.g. "0.00"), and a non-empty string
+  is truthy in Python -- this let zero-priced rows ship silently (10 rows
+  observed in an earlier interrupted run before the fix). Fixed to
+  `if not price or float(price) <= 0: return None`. The full production
+  run below was collected AFTER this fix; the contaminated earlier partial
+  run's output files were deleted, not merged in.

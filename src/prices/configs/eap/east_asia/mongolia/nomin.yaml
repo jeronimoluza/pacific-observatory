@@ -6,6 +6,22 @@ spider: nomin
 url: https://www.nomin.mn/
 language: mn
 cadence: daily
-channel: pharmacy
+channel: hypermarket
 archive_prefix: "nomin.mn/p/"
 archive_path_re: '^/p/\d+$'
+notes: |
+  Channel corrected pharmacy -> hypermarket 2026-09-01. The `pharmacy`
+  tag ("dispensing / medicines-led") did not survive measurement: a
+  648-row run carries zero medicines and instead mixes food (10kg flour,
+  Pepsi, mineral water, jelly sweets, yoghurt rice chips, food ice) with
+  general merchandise (Kawasaki motorcycles, garden furniture, carpets,
+  car-care, toys, nappies). That is the GLOSSARY discriminating test for
+  `hypermarket` - big-box genuinely cross-selling food AND general
+  merchandise - and matches the spider's own docstring ("Mongolian
+  hypermarket") and its site-wide /p/<id> crawl, the same shape as the
+  correctly tagged emart_mn.
+
+  Separately (NOT fixed here): recent runs are near-empty - the
+  2026-08-26 run produced 31 rows against 648 on 2026-05-20, and
+  `category` is null on every row. This source belongs to the known
+  empty-latest-run population and needs a spider repair pass.

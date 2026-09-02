@@ -1,0 +1,36 @@
+spider: deca_commissary_gu
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: wholesale
+url: https://shop.commissaries.com/
+language: en
+currency: USD
+cadence: weekly
+archive_prefix: "shop.commissaries.com/shop/"
+archive_path_re: '^/shop/.+/p/\d+'
+notes: >
+  Defense Commissary Agency (DeCA) "Click2Go" web storefront for the Andersen
+  AFB commissary, Guam. Runs on a Freshop-family catalog API at a different
+  host than the existing _freshop_base tenants:
+  https://api.prd.freshop.retail.ncrgov.com/2/products?app_key=deca -- no
+  auth, no WAF; the storefront's own embedded script tag explicitly declares
+  allow_bots=true. store_id=5944 (Andersen AFB) chosen over the other Guam
+  store, 5947 (Orote/Naval Base) -- spot-checked both live 2026-09-01 and
+  confirmed they are the SAME operator's near-duplicate catalog (shared SKUs
+  price identically, e.g. Heinz Picnic Pack 3ct = $4.98 at both), so only
+  the larger (8,418 vs 8,387 items) is onboarded per the do-not-duplicate-
+  the-same-shelf rule. 238 DeCA stores exist worldwide; do not scaffold a
+  second one for Guam.
+
+  channel substituted: DeCA commissaries are a subsidized/at-cost benefit
+  restricted to authorized US military-affiliated patrons, not an open civilian
+  retailer -- the schema's retail-channel enum has no dedicated
+  "non-market/subsidized" value, so `wholesale` is used (same substitution
+  already established for costuless_ky and malaeimi_wholesale_as). This is
+  deliberate: it keeps commissary prices from being blended into Guam's
+  civilian retail-price series for PPP analysis. Per the onboarding brief's
+  own channel-enum rule, this means the source does NOT count toward Guam's
+  "food channel" source tally even though its catalog is real COICOP 01/02
+  coverage.

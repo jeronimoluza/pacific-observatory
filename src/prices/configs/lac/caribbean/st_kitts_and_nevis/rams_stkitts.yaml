@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rams_stkitts
+url: https://backend.caribeeats.com/api/business/rams-st-kitts
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Onboarded 2026-09-01. RAMS St Kitts is a named supermarket/liquor chain
+  storefront on the CaribeEats delivery aggregator (backend.caribeeats.com) --
+  one of seven St Kitts vendors on the platform (Valu Mart had 0 products;
+  Island Liquor 117 products/USD, deprioritized in favour of this larger,
+  more clearly food-led catalog; Gary Fruits & Flowers, ParisTaylor Boutique,
+  Oomph Florals are non-food). 1013 real branded SKUs across 40 categories
+  (produce, frozen meals, snacks, pantry staples, wine/spirits) -- e.g.
+  "KIT KAT 4 FINGERS - 2 PK" 6.50, "GRAPES GREEN SEEDLESS - 2 LB" 18.50.
+  currency field in the payload is XCD, matching countries.yaml
+  st_kitts_and_nevis. No per-product web page exists (app-only PDP); url is
+  synthesized as the endpoint + '#<product_id>' fragment.
+  Nevis half of the country: caribeshop-nevis on the same platform (1166
+  SKUs, ~65% food-led) was identified but not scaffolded this pass -- flagged
+  for the next agent as a ready-made second St Kitts and Nevis source (same
+  _caribeeats_base.py shared spider, just SLUG="caribeshop-nevis";
+  currency in payload was USD, needs a fresh check since Nevis legally uses
+  XCD like St Kitts).

@@ -1,0 +1,42 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: aziza_tn
+url: https://www.aziza.tn/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "btoc.azizacdn.com/images/"
+archive_path_re: '^/images/[^/?]+'
+notes: |
+  Magasins Aziza -- 350+ store Tunisian supermarket chain. No online shop;
+  the public site is a marketing + weekly-flyer viewer for the loyalty app
+  (tn.aziza.app), backed by an open, unauthenticated JSON API at
+  btoc.azizacdn.com (found via Playwright network trace of
+  https://www.aziza.tn/, no fingerprint needed, plain requests work).
+
+  GET /backend/public/api/aziza/getProducts with NO date filter returns the
+  entire historical promo-flyer archive back to 2022 (18,595 items, most
+  price=0 once lapsed) -- NOT a live catalog and must not be walked whole.
+  The site's own JS instead scopes every call to the current week's
+  oc_debut/oc_fin bounds (Aziza's promo weeks run Wed->Tue, confirmed from a
+  "Mercredi prochain" teaser item). The spider reproduces that same
+  current-week window. Verified live 2026-09-01: current week
+  (2026-08-26..2026-09-01) = 362 items, 361 priced (1 zero-price banner
+  dropped), food (ALIMENTAIRE) share of priced items ~39.6% (143/361).
+
+  Pagination trap: `offset=` is silently ignored by the backend and always
+  returns page 1 (confirmed 100% id overlap between offset=0 and
+  offset=17175); `page=`/`per_page=` is the real pagination param (0%
+  overlap between page=1 and page=2). Spider uses page=/per_page=1000.
+
+  Prices are plain TND float amounts (e.g. 0.47, 26.5, 8.49) -- not minor
+  units, matching the sibling carrefour_tn finding for the same currency.
+  Payload's own `currency` field is always null; TND set at spider level
+  per countries.yaml.
+
+  No per-product URL exists (no PDP anywhere on the site) -- `url` uses the
+  item's own per-SKU CDN image path, which is stable and unique per
+  product. Cold re-fetch verification for this source means re-querying the
+  API by id/name and confirming price, not visiting a web page.

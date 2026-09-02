@@ -1,7 +1,7 @@
 spider: chaldal
 language: en
 archive_prefix: "chaldal.com/p/"
-archive_path_re: '^/p/[^/?]+'
+archive_path_re: '^(?:/p/[^/?]+|/[a-z0-9]+(?:-[a-z0-9]+){3,})$'
 notes: >
   Bangladesh online grocery (largest). Uses catalog.chaldal.com/searchPersonalized
   POST endpoint with hardcoded apiKey. Paginated 50/page, ~72 pages, ~3,557 items.

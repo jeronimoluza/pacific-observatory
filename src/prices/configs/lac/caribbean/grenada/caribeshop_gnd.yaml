@@ -1,0 +1,34 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: caribeshop_gnd
+url: https://backend.caribeeats.com/api/business/caribeshop--gnd
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Onboarded 2026-09-01. CaribeShop is a general-goods storefront on the
+  CaribeEats delivery aggregator (backend.caribeeats.com) -- one of six
+  Grenada vendors on the platform (found via /api/businesses?service_id=
+  groceries&region_id=grenada, which requires a Playwright context with
+  geolocation permission granted -- the plain JSON endpoint is unauthenticated
+  once you have the business slug). 1180 SKUs across 39 categories, majority
+  food/beverage (cereals, canned goods, beverages, teas, snacks, pasta, rice,
+  sauces, jams, coffee, fish, bottled water) with a Personal Care/Baby Care/
+  Cleaners minority. Real branded SKUs with per-unit decimal prices (not
+  minor units). currency field in the payload is XCD, matching
+  countries.yaml. No per-product web page exists (app-only PDP); url is
+  synthesized as the endpoint + '#<product_id>' fragment (DuplicationPipeline
+  dedups on item['url'] and there is no other unique per-row identifier
+  surfaced as a URL).
+  Sibling vendor "Real Value Supermarket Grenada" on the same platform was
+  rejected -- it's a personalized-shopping/shopper-proxy listing (disclaimer
+  field explains a human buys items on your behalf) with an empty
+  categories list, not a real catalog. Also the standalone
+  shop.realvalueiga.com storefront (same operator, different platform --
+  LocalExpress) is gated behind an address-picker flow with no product
+  endpoint reachable anonymously -- see known_blockers.md.
+  RAMS Grenada (same platform) had 0 products (empty categories) -- skipped.
+  De Fish Market (1 category) and Mount Pure Mineral Water (1 category) were
+  not pursued given CaribeShop's much larger catalog covers the gap.

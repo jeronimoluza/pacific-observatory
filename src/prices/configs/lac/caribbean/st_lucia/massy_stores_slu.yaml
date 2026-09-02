@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: massy_stores_slu
+url: https://www.shopmassystoresslu.com/
+language: en
+cadence: weekly
+channel: supermarket
+notes: |
+  Onboarded 2026-09-01. Real supermarket chain (Massy Group), same platform
+  family as massy_stores_bb (Barbados) and massy_stores_tt (Trinidad) --
+  separate WooCommerce tenant, own catalog/currency. Default
+  /wp-json/wc/store/v1/products path 500s on this install ("WordPress >
+  Error"), same as Barbados; GET /?rest_route=/wc/store/v1/products&
+  per_page=5 -> HTTP 200. Sample: 'Kraft Xtra Shp Ched Chunk 227G' price
+  1995 minor units / currency_minor_unit=2 -> XCD 19.95. currency_code XCD
+  matches countries.yaml st_lucia.
+  WAF note: the repo-wide pinned curl_cffi profile (chrome120) 403s on this
+  tenant, as do chrome124/chrome131/chrome99 -- only safari17_0 clears it.
+  Set via WooBaseSpider's existing opt-in IMPERSONATE_PROFILE class flag
+  (does not change shared base-spider behaviour for any other WooCommerce
+  tenant). Whole-catalog walk (no category filter) via the ?rest_route=
+  REST-route form.
+  Bug found and fixed in this subclass only (not in _woo_base.py): (1)
+  IMPERSONATE_PROFILE alone is not sufficient -- scrapy_impersonate's
+  RandomBrowserMiddleware unconditionally overwrites meta["impersonate"]
+  on every request regardless of a pre-set value, silently clobbering it
+  back to the repo-wide chrome120 pin; fixed via the same
+  custom_settings-disables-the-middleware pattern already used by
+  cassandraonlinemarket_ht.py. (2) WooBaseSpider._item() does not guard
+  against a zero price (only checks for None) -- this tenant genuinely
+  emits price="0" for a handful of stale/out-of-stock listings; fixed via
+  an _item() override here that drops any row with numeric price <= 0.
+  Full unbounded run 2026-09-01 (post-fix): 7844 rows, 7844 distinct
+  product_id, 7844 distinct url, 0 blank names, 0 zero/negative prices
+  (7 were dropped by the new guard -- pre-fix run had 7851 rows incl.
+  those 7 at price=0.00, e.g. "Local Produce Sweet Pepper (per KG)",
+  "Snickers King Size (Each)"), 100% XCD, price range 0.25-373.00 (median
+  13.41), ~74.1% food-led by category-keyword heuristic (non-food:
+  Health & Beauty Care, Pharmaceutical, General Merchandise,
+  School/Office, Automotive, Pet, Household Cleaning, Laundry, Paper
+  Products). 2/2 cold re-fetch spot checks matched (name + price, via a
+  fresh ?sku= lookup against the live API).

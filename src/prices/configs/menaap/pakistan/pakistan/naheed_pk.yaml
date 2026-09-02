@@ -1,0 +1,37 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: naheed_pk
+url: https://www.naheed.pk/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.naheed.pk/"
+archive_path_re: '^/[a-z0-9\-]+\.html$'
+notes: |
+  Naheed Supermarket (Pakistan) -- Magento 2, GraphQL open with no auth.
+  Verified live 2026-09-01.
+
+  Redirect trap: bare naheed.pk 302s to www.naheed.pk and the POST body does
+  not survive that redirect (curl_cffi/Scrapy both reproduce it) -- POSTing
+  to the bare domain returns {"errors":[{"message":"Syntax Error: Unexpected
+  <EOF>"}]} (empty body reaching the parser); the identical query against
+  https://www.naheed.pk/graphql (www, no redirect) returns real data.
+  GRAPHQL_URL/BASE_URL both pin the www host.
+
+  Naheed's full root categoryList (id=2) spans ~20 top-level categories --
+  Groceries & Pets (5,304 products), Fresh St! Cafe (89), Pharmacy (2,439),
+  Health & Beauty (13,748), Phones & Computers, TV & Home Appliances,
+  Fashion, Books, Home & Lifestyle, etc. -- Health & Beauty and Fashion
+  alone dwarf groceries, so walking the whole categoryList would make this
+  read as a general department store rather than a supermarket. Pakistan
+  already has three dept-store sources (alfatah_pk, goto_pk, springs_pk)
+  and two pharmacy sources (hpharmacy_pk, khasmart_pk). This spider is
+  scoped to ONLY the two grocery-led categories -- Groceries & Pets
+  (id=46) and Fresh St! Cafe (id=1079, prepared/cafe food) -- so the source
+  is honestly channel=supermarket, not a general marketplace in disguise.
+
+  Prices are plain PKR integers via price_range.minimum_price.final_price.
+  {value,currency} (e.g. 1770, 435); the query's own currency field is
+  asserted "PKR", matching countries.yaml -- no minor-unit scaling.

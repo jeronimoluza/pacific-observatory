@@ -34,3 +34,18 @@ columns — zero hits, confirming the brief).
 - **Marjane's `runtimeConfig.apiUrl` leak is a reusable technique**, not just a dead end: any Next.js SSR storefront that ships its backend config inline (`__NEXT_DATA__.props.pageProps.config` or `.runtimeConfig`) is worth checking even when the rendered HTML carries no price — the leaked API host/key tells you exactly what to probe next, even if this particular key wasn't sufficient alone.
 - **Playwright and curl_cffi disagreeing on the SAME site is itself a signal.** Marjane served curl_cffi's `chrome124` fingerprint the real page every time but blocked Playwright with a geo/access-restricted interstitial from the identical IP — i.e. the block keys off browser-automation tells (not IP/geo), the opposite of the usual "curl fails, Playwright passes" WAF pattern documented elsewhere in `known_blockers.md`.
 - Morocco's `.ma` retail sites that DO work (Electroplanet, and the pre-existing Aswak Assalam / CIMA) are all comma-decimal, narrow-no-break-space-thousands MAD displays exactly as the wave-7 brief warned — but every spider built this pass reads price from a machine-precise data attribute or runs it through `normalize_price()`, so none of them actually needed bespoke comma-parsing logic. Future Morocco spiders should default to that approach rather than regexing the display text.
+
+## Wave-B update (2026-09-01, final F&B sweep, agent B)
+
+Morocco was 2nd on this agent's worklist (n_food=2, tied with Afghanistan)
+but this same inventory shows a thorough wave-7 pass completed the SAME
+day. Per the sweep brief's re-probe rule, `atacadao.ma`'s wave-7 verdict
+("not re-probed with other profiles or Playwright") was re-checked with
+the full mandatory gate: `curl_cffi` chrome124/chrome120/safari17_0 ALL
+403 (`<title>Attention Required! | Cloudflare</title>`, `cf-ray` present),
+AND headless Playwright also 403s with the identical Cloudflare title.
+Genuine block confirmed, not a TLS false negative — closes out the one
+loose end from wave-7's Morocco pass. No new food source found; this
+agent's remaining budget was redirected to Djibouti/Tunisia/Algeria/
+Pakistan/Egypt (lower on the worklist but with less-exhausted search
+history). See `known_blockers.md` for the full atacadao.ma entry.
