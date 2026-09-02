@@ -313,47 +313,76 @@ rendered `bdi` markup. Counting platforms across the 1,462 configs gives
 WooCommerce 146, Shopify 99, Magento 59, VTEX 35, PrestaShop 18 — so the fix
 looked like "one generic WooCommerce tier reaching 146 sources."
 
-Measured, it was not. Of 130 WooCommerce configs with a usable archive pair,
-83 have archived captures and **62 already parse fine** via JSON-LD `Product`.
-Yoast-without-Product is the minority configuration, not the common one. The
-zero-yield remainder is **at most 14 sources and probably fewer** — see the
-sampling caveat below — holding on the order of a few thousand captures,
-against 1.6M rows already banked by the run in flight. A rendered-figure tier
-would have meant carrying the rail exclusion, the `<ins>` preference and the
-decimal-comma rule (a 1000x error class) permanently for that. The tier was
-correctly dropped, and every correction since has only strengthened that.
+Measured, it was not:
+
+    WooCommerce configs with a usable archive pair : 130
+    sources with archived captures                 :  83
+    at least one capture parsed                    :  73
+    every read capture yielded nothing             :  10   = 12% of measured
+    nothing readable                               :   0
+
+Yoast-without-`Product` is the minority configuration, not the common one. The
+addressable population was **10 sources holding 3,760 captures**, against 1.6M
+rows already banked by the run in flight. Across all captures the winning tier
+was JSON-LD 363, none 83, meta 22, per-source 10. A rendered-figure tier would
+have meant carrying the rail exclusion, the `<ins>` preference and the
+decimal-comma rule (a 1000x error class) permanently, for that. Correctly
+dropped.
 
 The one argument that can override raw volume is **country coverage**, since a
 country with no archived history is a gap that more rows elsewhere cannot
-fill. Check it explicitly: here only one of the zero-yield sources was its
-country's only source (`boutiqueacm_mc` for Monaco), and it is Grand Prix
-merchandise — not food, not CPI-relevant. The rest sat in countries with 5-20
-sources each. So that argument failed too.
+fill. Check it explicitly: here exactly one of the ten was its country's only
+source (`boutiqueacm_mc` for Monaco), and it is Grand Prix merchandise — not
+food, not CPI-relevant. The other nine sat in countries with 5-20 sources
+each. So that argument failed too.
+
+**Watch the direction of successive corrections.** This estimate was revised
+three times — 21 sources, then 14, then 10 — while the confirmed successes rose
+62 → 73. A population that only ever shrinks under scrutiny is a signal in its
+own right: the case for not building was strongest after the corrections, not
+before them. Had the number moved the other way, that would have been the cue
+to re-open the decision rather than to keep defending it.
 
 ### Sampling the head of a sorted list is not sampling
 
-The zero-yield count above is quarantined because the study that produced it
-took `recs[:3]` from a cdx result. **cdx is SURT-sorted**, so that is the three
+The first two versions of the count above were wrong because the study took
+`recs[:3]` from a cdx result. **cdx is SURT-sorted**, so that is the three
 alphabetically-first paths, not three representative pages. For one source it
-drew a delivery-info page twice plus one transient fetch error, and scored the
-source as yielding nothing; sampling evenly across the same crawl returned 30,
-9 and 30 rows. The source parses in every crawl from 2016 to 2025.
+drew a delivery-info page twice plus a transient fetch error and scored the
+source as yielding nothing; an even spread across the same crawl returned 30,
+9 and 30 rows, and that source parses in every crawl from 2016 to 2025.
 
 This is the same error as quoting a path count for a row count, in different
 clothes: a number computed off the wrong denominator, reported as if it were
 the quantity of interest.
 
-Two things make it survivable, and both are worth reproducing in any similar
-study. **Know which way the bias runs** — head-of-list sampling manufactures
-false *zeros*, never false successes, so the 62 confirmed successes stand
-while the failure count is only an upper bound. And **fix the study, not the
-conclusion**: re-run with an even spread, more captures per source, and a
-retry on cold objects, rather than arguing the original number down.
+Three practices come out of it, all cheap:
 
-**Also: do not count unmeasurable as failing.** A first pass that scored
-all-fetch-error sources as zero-yield reported 21 sources / 25%. The real
-figure was 14 / 18% of *measured*. Fetch errors on cold archive objects are
-not evidence about markup.
+**Put the sampled inputs in the output.** The first run's verdict was
+*arithmetically correct on the data it had* — the data was just the head of a
+sorted list. Nothing about the verdict alone could reveal that. The corrected
+run was only trustworthy because it printed which paths it sampled, so they
+could be eyeballed as genuine product routes (`/producto/accu-check-...`,
+`/product/d197-musang-king-2-packs/`). A verdict is not checkable without its
+inputs.
+
+**Know which way the bias runs.** Head-of-list sampling manufactures false
+*zeros*, never false successes — so confirmed successes survive a flawed run
+and only the failure count moves, downward. Establish the direction before
+deciding how much of a broken study to keep. Fix the study; do not argue the
+number down.
+
+**Retry cold objects before believing a fetch failure.** Adding one retry took
+the fetch-error count from 88 to 1 and reclassified seven sources from
+"unmeasured" to "parses fine". A 35% error rate that looked like a property of
+the archive was a property of not retrying. And never score an unmeasurable
+source as a failing one — that alone inflated the first estimate from 10 to 21.
+
+Residual caution even in the final number: one of the ten survivors
+(`ekissaan_pk`) is backed by 5 captures that are all `/shop/page/2/`-style
+pagination stubs, which is not evidence about its product pages. A count can
+be correct in aggregate and still rest on a soft row.
+
 
 ## Examples
 
