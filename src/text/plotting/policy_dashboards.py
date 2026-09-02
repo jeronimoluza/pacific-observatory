@@ -1231,6 +1231,7 @@ def generate_region(
     output_dir: Path,
     chart_title: str,
     tracker: Optional[str] = None,
+    timeline_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
     key = region_cfg["key"]
     display = region_cfg.get("display_name", key)
@@ -1258,12 +1259,24 @@ def generate_region(
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / addon_filename(key)
 
+    timeline = None
+    if timeline_path and Path(timeline_path).exists():
+        timeline = json.loads(Path(timeline_path).read_text())
+        print(f"  timeline source: {Path(timeline_path).name} ({len(timeline)} keys)")
+
     if has_v6_columns(rows):
         print("  taxonomy: v6 (Category + Subcategory)")
         groups = build_country_groups(rows, region_cfg)
         display_names = build_display_names(sort_countries_by_count(rows))
         data, colors = build_v6_dashboard_data(
-            rows, region_cfg, workbook, sheet_name, excluded, groups, display_names
+            rows,
+            region_cfg,
+            workbook,
+            sheet_name,
+            excluded,
+            groups,
+            display_names,
+            timeline=timeline,
         )
         html = make_v6_html(
             data,

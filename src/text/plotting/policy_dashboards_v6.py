@@ -62,31 +62,53 @@ def build_v6_dashboard_data(
     excluded_count: int,
     country_groups: Dict[str, List[str]],
     display_names: Dict[str, str],
+    timeline: Dict[str, Any] | None = None,
 ) -> Tuple[Dict[str, Any], Dict[str, str]]:
     """Shape the dashboard payload for the v6 renderer.
 
     ``country_groups`` and ``display_names`` are passed in so that the host
     module owns the region carve-out logic (PICs, regional groups, etc.).
+
+    ``timeline`` optionally maps ``"<Country>||<Policy>"`` to corpus-derived
+    dating from :mod:`text.analysis.policy_retrieval`. The workbook itself
+    carries no effective date, so without it the timeline panel has no x-axis.
     """
-    policies: List[Dict[str, str]] = []
+    timeline = timeline or {}
+    policies: List[Dict[str, Any]] = []
     blank_cat = 0
+    dated = 0
     for row in rows:
         cat = _norm_cat(row.get("Category"))
         if not cat:
             blank_cat += 1
             continue
-        policies.append(
-            {
-                "Country": _clean(row.get("Country")),
-                "Policy": _clean(row.get("Policy")),
-                "Policy Description": _clean(row.get("Policy Description")),
-                "Active or Proposed Date": _clean(row.get("Active or Proposed Date")),
-                "Source": _clean(row.get("Source")),
-                "category": cat,
-                "category_display": CATEGORY_DISPLAY.get(cat, cat),
-                "subcategory": _clean(row.get("Subcategory")),
-            }
-        )
+        country = _clean(row.get("Country"))
+        policy = _clean(row.get("Policy"))
+        entry = {
+            "Country": country,
+            "Policy": policy,
+            "Policy Description": _clean(row.get("Policy Description")),
+            "Active or Proposed Date": _clean(row.get("Active or Proposed Date")),
+            "Source": _clean(row.get("Source")),
+            "category": cat,
+            "category_display": CATEGORY_DISPLAY.get(cat, cat),
+            "subcategory": _clean(row.get("Subcategory")),
+        }
+        found = timeline.get(f"{country}||{policy}")
+        if found and found.get("onset_year"):
+            entry.update(
+                {
+                    "onset_year": found["onset_year"],
+                    "peak_year": found.get("peak_year"),
+                    "n_articles": found.get("n_articles", 0),
+                    "years": found.get("years", {}),
+                    "first_reported": found.get("first_reported"),
+                }
+            )
+            dated += 1
+        policies.append(entry)
+    if timeline:
+        print(f"  timeline: dated {dated}/{len(policies)} policies from corpus")
 
     present = {p["category"] for p in policies}
     categories_order = [c for c in CATEGORY_DISPLAY if c in present]
@@ -209,6 +231,17 @@ def make_v6_html(
   .policy-card .policy-desc {{ color: #666; font-size: 12px; margin-top: 3px; }}
   .policy-card .policy-foot {{ color: #888; font-size: 11px; margin-top: 5px; }}
   .note {{ margin-top: 14px; font-size: 12px; color: #777; }}
+  .tabstrip {{ display: flex; gap: 6px; border-bottom: 1px solid #e3e3e3; margin: 10px 0 4px; }}
+  .tab-btn {{ appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: 9px 16px; font: inherit; font-size: 15px; color: #666; cursor: pointer; }}
+  .tab-btn:hover {{ color: #222; }}
+  .tab-btn.active {{ color: #1f7a8c; border-bottom-color: #1f7a8c; font-weight: 600; }}
+  .panel.hidden {{ display: none; }}
+  .lane-line {{ stroke: #ececec; stroke-width: 1; }}
+  .year-line {{ stroke: #f0f0f0; stroke-width: 1; stroke-dasharray: 3 5; }}
+  .lane-label {{ font-size: 13px; fill: #444; }}
+  .year-label {{ font-size: 12px; fill: #888; }}
+  .dot {{ cursor: pointer; stroke: #fff; stroke-width: 1.2; }}
+  .dot.sel {{ stroke: #222; stroke-width: 2.2; }}
   @media (max-width: 820px) {{ .controls {{ grid-template-columns: 1fr 1fr; }} .kpis {{ grid-template-columns: 1fr 1fr; }} }}
   @media (max-width: 540px) {{ .controls, .kpis {{ grid-template-columns: 1fr; }} .dashboard {{ padding: 14px; }} }}
 </style>
@@ -231,13 +264,26 @@ def make_v6_html(
     </div>
     <h1 id=\"chartTitle\" class=\"chart-title\"></h1>
     <div class=\"chart-subtitle\" id=\"subtitle\"></div>
-    <div class=\"chart-wrap\">
-      <svg id=\"chart\" aria-label=\"Stacked bar chart of {chart_aria_subject} policy responses by country, category and subcategory\"></svg>
-      <div id=\"tooltip\" class=\"tooltip\"></div>
+    <div class=\"tabstrip\" role=\"tablist\">
+      <button type=\"button\" class=\"tab-btn active\" data-panel=\"composition\" role=\"tab\">Policy Composition</button>
+      <button type=\"button\" class=\"tab-btn\" data-panel=\"timing\" role=\"tab\">Policy Timing</button>
     </div>
-    <div id=\"legend\" class=\"legend\"></div>
-    <div class=\"detail-panel\"><div class=\"detail-card\" id=\"detailCard\"><h2>Policy details</h2><p>Hover over a shaded bar segment to see an info tip. Click a segment to pin its policy details here.</p></div></div>
-    <div class=\"note\">Note: bar color encodes policy category; each stacked segment within a category is a distinct policy subcategory. Subcategory filter cascades off the category selection.</div>
+    <div id=\"panel-composition\" class=\"panel\">
+      <div class=\"chart-wrap\">
+        <svg id=\"chart\" aria-label=\"Stacked bar chart of {chart_aria_subject} policy responses by country, category and subcategory\"></svg>
+        <div id=\"tooltip\" class=\"tooltip\"></div>
+      </div>
+      <div id=\"legend\" class=\"legend\"></div>
+      <div class=\"detail-panel\"><div class=\"detail-card\" id=\"detailCard\"><h2>Policy details</h2><p>Hover over a shaded bar segment to see an info tip. Click a segment to pin its policy details here.</p></div></div>
+      <div class=\"note\">Note: bar color encodes policy category; each stacked segment within a category is a distinct policy subcategory. Subcategory filter cascades off the category selection.</div>
+    </div>
+    <div id=\"panel-timing\" class=\"panel hidden\">
+      <div class=\"chart-wrap\">
+        <svg id=\"timeline\" aria-label=\"Timeline of {chart_aria_subject} policy measures by category and year of first sustained media coverage\"></svg>
+      </div>
+      <div class=\"detail-panel\"><div class=\"detail-card\" id=\"timelineCard\"><h2>Measure details</h2><p>Each dot is one policy, placed at the year its measure type first drew sustained coverage in that country's press. Click a dot for details.</p></div></div>
+      <div class=\"note\">Note: the workbook records no effective date, so the x-axis is the onset year derived from the news corpus &mdash; the first year reaching 15% of a measure's peak annual coverage. It dates the <em>measure type</em> in that country, not necessarily the specific instance in the row. Dot size scales with the number of matching articles.</div>
+    </div>
   </div>
 </div>
 <script>
@@ -505,8 +551,116 @@ function render() {{
   el(\"line\", {{x1: margin.left, y1: margin.top + plotH, x2: margin.left + plotW, y2: margin.top + plotH, class: \"axis-line\"}});
   if (countries.length === 0) {{ el(\"text\", {{x: width / 2, y: height / 2, \"text-anchor\": \"middle\", fill: \"#777\", \"font-size\": \"18\"}}, \"No rows match the current filters.\"); }}
 }}
+const timelineSvg = document.getElementById(\"timeline\");
+const timelineCard = document.getElementById(\"timelineCard\");
+const tstate = {{ sel: null }};
+
+function timelineRows() {{
+  const allowed = new Set(D.countryGroups[groupSelect.value] || []);
+  return filteredRows().filter(r => allowed.has(r.Country) && r.onset_year);
+}}
+
+function renderTimeline() {{
+  timelineSvg.innerHTML = \"\";
+  const ns = \"http://www.w3.org/2000/svg\";
+  function el(name, attrs = {{}}, text = null) {{
+    const node = document.createElementNS(ns, name);
+    Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, v));
+    if (text !== null) node.textContent = text;
+    timelineSvg.appendChild(node);
+    return node;
+  }}
+  const rows = timelineRows();
+  const width = 1180;
+  if (!rows.length) {{
+    timelineSvg.setAttribute(\"viewBox\", \"0 0 \" + width + \" 200\");
+    el(\"text\", {{x: width / 2, y: 100, \"text-anchor\": \"middle\", fill: \"#777\", \"font-size\": \"17\"}},
+       \"No dated measures in this view. Run policy retrieval to date the workbook rows.\");
+    return;
+  }}
+  const lanes = D.categories.filter(c => rows.some(r => r.category === c));
+  const years = rows.map(r => r.onset_year);
+  const y0 = Math.min.apply(null, years), y1 = Math.max.apply(null, years);
+  const margin = {{top: 26, right: 30, bottom: 46, left: 210}};
+  const laneH = 62;
+  const height = margin.top + margin.bottom + lanes.length * laneH;
+  const plotW = width - margin.left - margin.right;
+  timelineSvg.setAttribute(\"viewBox\", \"0 0 \" + width + \" \" + height);
+  const xOf = y => margin.left + (y1 === y0 ? plotW / 2 : (y - y0) / (y1 - y0) * plotW);
+  const yOf = c => margin.top + lanes.indexOf(c) * laneH + laneH / 2;
+
+  const step = (y1 - y0) > 18 ? 4 : ((y1 - y0) > 8 ? 2 : 1);
+  for (let y = y0; y <= y1; y += step) {{
+    el(\"line\", {{x1: xOf(y), y1: margin.top - 6, x2: xOf(y), y2: height - margin.bottom + 6, class: \"year-line\"}});
+    el(\"text\", {{x: xOf(y), y: height - margin.bottom + 24, \"text-anchor\": \"middle\", class: \"year-label\"}}, String(y));
+  }}
+  lanes.forEach(c => {{
+    const yy = yOf(c);
+    el(\"line\", {{x1: margin.left, y1: yy, x2: width - margin.right, y2: yy, class: \"lane-line\"}});
+    el(\"text\", {{x: margin.left - 12, y: yy + 4, \"text-anchor\": \"end\", class: \"lane-label\"}},
+       D.categoryDisplay[c] || c);
+  }});
+
+  const maxN = Math.max.apply(null, rows.map(r => r.n_articles || 1));
+  // Spread same-year dots inside the lane so overlapping measures stay clickable.
+  const seen = {{}};
+  rows.slice().sort((a, b) => a.onset_year - b.onset_year).forEach(r => {{
+    const bucket = r.category + \":\" + r.onset_year;
+    const i = seen[bucket] = (seen[bucket] || 0) + 1;
+    const off = ((i - 1) % 5 - 2) * 11;
+    const radius = 5 + 9 * Math.sqrt((r.n_articles || 1) / maxN);
+    const dot = el(\"circle\", {{
+      cx: xOf(r.onset_year), cy: yOf(r.category) + off, r: radius,
+      fill: D.categoryColor[r.category] || \"#888\",
+      \"fill-opacity\": 0.78, class: \"dot\"
+    }});
+    dot.addEventListener(\"click\", () => {{ tstate.sel = r; renderTimeline(); showMeasure(r); }});
+    if (tstate.sel === r) dot.setAttribute(\"class\", \"dot sel\");
+    const t = el(\"title\", {{}});
+    t.textContent = r.Country + \" \\u2014 \" + r.Policy + \" (onset \" + r.onset_year +
+      \", \" + (r.n_articles || 0) + \" articles)\";
+    dot.appendChild(t);
+  }});
+  el(\"line\", {{x1: margin.left, y1: height - margin.bottom, x2: width - margin.right, y2: height - margin.bottom, class: \"axis-line\", stroke: \"#cfcfcf\"}});
+}}
+
+function showMeasure(r) {{
+  const yrs = r.years || {{}};
+  const keys = Object.keys(yrs).sort();
+  const peak = Math.max.apply(null, keys.map(k => yrs[k]).concat([1]));
+  const spark = keys.map(k =>
+    \"<span style='display:inline-block;width:14px;vertical-align:bottom;margin-right:1px;background:\" +
+    (D.categoryColor[r.category] || \"#888\") + \";opacity:.75;height:\" +
+    Math.max(2, Math.round(34 * yrs[k] / peak)) + \"px' title='\" + k + \": \" + yrs[k] + \"'></span>\").join(\"\");
+  timelineCard.innerHTML =
+    \"<h2>\" + cleanText(r.Policy) + \"</h2>\" +
+    \"<p><strong>\" + cleanText(r.Country) + \"</strong> &middot; \" +
+    (D.categoryDisplay[r.category] || r.category) + \" / \" + cleanText(r.subcategory) + \"</p>\" +
+    \"<p>\" + cleanText(r[\"Policy Description\"]) + \"</p>\" +
+    \"<p>Onset year <strong>\" + r.onset_year + \"</strong> &middot; peak <strong>\" + (r.peak_year || \"\\u2013\") +
+    \"</strong> &middot; <strong>\" + (r.n_articles || 0) + \"</strong> matching articles &middot; \" +
+    \"workbook status: <strong>\" + (cleanText(r[\"Active or Proposed Date\"]) || \"\\u2013\") + \"</strong></p>\" +
+    \"<div style='margin-top:8px'>\" + spark + \"</div>\" +
+    \"<p style='font-size:12px;color:#888;margin-top:6px'>Articles per year, \" +
+    (keys[0] || \"\") + \"\\u2013\" + (keys[keys.length - 1] || \"\") + \".</p>\";
+}}
+
+document.querySelectorAll(\".tab-btn\").forEach(btn => {{
+  btn.addEventListener(\"click\", () => {{
+    document.querySelectorAll(\".tab-btn\").forEach(b => b.classList.remove(\"active\"));
+    btn.classList.add(\"active\");
+    document.getElementById(\"panel-composition\").classList.toggle(\"hidden\", btn.dataset.panel !== \"composition\");
+    document.getElementById(\"panel-timing\").classList.toggle(\"hidden\", btn.dataset.panel !== \"timing\");
+    if (btn.dataset.panel === \"timing\") renderTimeline();
+  }});
+}});
+
+function renderAll() {{ render(); renderTimeline(); }}
+[groupSelect, categorySelect, subcategorySelect, statusSelect].forEach(
+  s => s.addEventListener(\"change\", renderTimeline));
+
 initControls();
-render();
+renderAll();
 </script>
 </body>
 </html>"""
