@@ -233,6 +233,49 @@ must be written out in full.
    (`/item/restaurants/oportos/breakfast/omelette-ham-cheese/`) and a plain
    `^/item/` matches all of them. Prefer loose.
 
+### One wrong prefix on a chain becomes N wrong prefixes
+
+The mistake does not stay put. A multi-storefront chain is onboarded from one
+template, so a path prefix that is wrong on the first storefront is wrong on
+every sibling — and they fail *together*, silently, looking exactly like a chain
+that CC never crawled.
+
+`koro` is the worked example. Four storefronts on their own domains
+(`koro_fr`, `koro_at`, `koro_ch`, `koro_it`) carried `/detail/`, which is
+Shopware's **technical canonical**; CC only ever archived the SEO-slug pages, so
+the prefix could not see a single product. Dropping to the bare host recovered
+129-246 records per storefront. Nine further storefronts live on
+`www.koro.com/<locale>/detail/` and carry the same segment — a confirmed
+diagnosis, on the same platform, with a known-good fix, replicated nine times.
+
+A 2026-09-02 census of 890 configs found **660 carrying a path in
+`archive_prefix`**, clustered hard by stem:
+
+| Stem | Sources | Shared path segment |
+|---|---:|---|
+| wolt | 16 | `/en/kaz/almaty/venue` |
+| cosmed | 12 | `/SalePage` |
+| koro | 9 | `/befr/detail` |
+| decathlon | 6 | `/p` |
+| jarir | 5 | `/bh-en` |
+| vodafone | 5 | `/nos-offres` |
+
+`decathlon`'s `/p/` is character-for-character the `fravega_ar` shape, six times
+over.
+
+**So when you onboard one storefront of a chain, you are setting the prefix for
+all of them.** Two consequences:
+
+1. Use the bare host, which is the only value that cannot replicate a mistake.
+2. If you *do* find a chain whose prefix is wrong, say so — the sibling
+   storefronts have the same defect by construction, and nobody will find them
+   by looking at any one config.
+
+Note also that a technical canonical (`/detail/{id}`, `/p/{sku}`) is a
+particularly seductive wrong answer: it is stable, it appears in the site's own
+`<link rel="canonical">`, and it is frequently the URL form CC never archives,
+because crawlers follow the human-facing SEO slugs instead.
+
 ### Derive the pattern from what CC holds, not from the live site
 
 This is the single most common source of a bad pattern. Nearly every one of the
