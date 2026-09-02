@@ -424,6 +424,12 @@ For each viable spider candidate, create three things:
    which may be a family the spider never touches in either direction (see
    `references/yaml_schema.md`). But without it the archive side is guessing.
 
+   Say **which page family you characterised any markup spec from**, too. A
+   spec that is correct about a page the archive barely holds passes review
+   and then returns zero — this happened on `ckgreaves_vc`, where a correct
+   department-page spec was written against an archive that holds PDPs under
+   a different card class.
+
    Note the `API` case specially: a spider reading an API emits collected URLs
    that are permalinks it never fetched (`boutiqueacm_mc`) or bare API routes
    that are not browsable at all (`comoresenligne_km`). Neither can be used to

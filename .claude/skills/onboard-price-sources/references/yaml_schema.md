@@ -243,6 +243,42 @@ own collected URLs and confirm the match count is unchanged (96/96 and
 2,128/2,128 respectively above), then check it against paths harvested from
 the live home and category pages to confirm it actually admits more.
 
+### Price-shaped text is not a price — key on the attribute, and say which page you read
+
+Two failures from `ckgreaves_vc`, both found only after an extractor written
+from a correct spec returned zero on every real capture.
+
+**1. Characterise the page family the ARCHIVE holds, and record which one you
+read.** The spec was accurate — for a *department* page, whose cards are
+`article.product-grid-item`. The archive is PDPs, whose card is
+`article.col.col-01.single-product-post`: different class, same theme, same
+attributes. Keying on the class rejected all 283 captures. Keying on
+`<article>` carrying `data-price` covers both templates and is the safer test
+anyway — a PDP embeds five `product-grid-item` cards in a related-products
+rail but exactly one `data-price`, so the rail cannot be mistaken for the
+product. **Always state in `notes` which page family the markup spec was
+derived from.** A spec that is correct about a page the archive barely holds
+is worse than no spec: it passes review and returns zero.
+
+**2. A recurring price widget makes non-product pages look like product
+pages.** The `supershop` theme renders a twelve-item `mini-product-card`
+carousel in the chrome of *every* page. Measured on the live site: home has 60
+`price-now` against 48 `data-price`, a department page 52 against 40 — the
+excess is exactly 12 both times. On a page with no products at all it is 12
+against **zero**:
+
+    /2025/11/05/<name>/   (an obituary post)   price-now x12, data-price x0
+    rail values flatten to '$235', '$165', '$205', '$000'
+
+So a text-fallback parser pointed anywhere on this host banks twelve
+hundredfold-wrong prices ($2.35 read as 235) attributed to an obituary. The
+damage is not confined to routes a product regex would target, and nothing
+downstream flags it because the output is a plausible number.
+
+**The general rule: extract on the machine-readable attribute, never on the
+rendered figure.** If a source has no such attribute, that is a reason to
+treat it as unparseable rather than to fall back to text.
+
 ## Examples
 
 Country-bound fetcher (Pertamina Indonesia, fuel):

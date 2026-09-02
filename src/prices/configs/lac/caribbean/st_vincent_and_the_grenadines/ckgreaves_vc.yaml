@@ -128,3 +128,31 @@ notes: |
 
   The card structure belongs to the "supershop" THEME, not to this retailer,
   so the extractor and the 100x trap apply to any other supershop site.
+
+  MARKUP SPEC ABOVE WAS READ FROM A DEPARTMENT PAGE. The archive holds PDPs,
+  whose card is a DIFFERENT class with the same attributes:
+    department page : <article class="col product-grid-item" data-price=... itemscope>
+    PDP (archived)  : <article class="col col-01 single-product-post" data-price=... itemscope>
+  Keying on product-grid-item rejects all 283 archived captures. Key on an
+  <article> carrying data-price and ignore the class: a PDP embeds five
+  product-grid-item cards in a related-products rail but exactly ONE
+  data-price, so the rail cannot be mistaken for the product.
+
+  THE 100x TRAP IS NOT CONFINED TO PRODUCT PAGES. The theme renders a
+  twelve-item mini-product-card carousel in the chrome of every page, using
+  the same split .dol/.dec markup but carrying NO data-price. Measured live:
+    home page        60 price-now / 48 data-price   (excess 12)
+    department page  52 price-now / 40 data-price   (excess 12)
+    /2025/11/05/<name>/ (an obituary post)
+                     12 price-now /  0 data-price
+  The obituary rail flattens to '$235', '$165', '$205', '$000' -- real
+  hundredfold-wrong prices, not harmless zeros. A text-fallback parser
+  pointed anywhere on this host banks twelve bad rows per page on routes no
+  product regex would ever target. Extract on data-price, never on the
+  rendered figure.
+
+  NO DEEP HISTORY. The common_crawl session measured CC-MAIN-2021-17 at ZERO
+  captures for this host; CC-MAIN-2025-21 holds 467, of which 283 are
+  /shop/browse/product/<id>_<slug>/ and zero are /departments/. Expect
+  breadth, not a long time series. The third route generation I inferred from
+  the live 301 (/shop/products/<slug>/, no numeric id) is NOT in the index.
