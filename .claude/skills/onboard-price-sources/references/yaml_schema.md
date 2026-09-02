@@ -314,20 +314,41 @@ WooCommerce 146, Shopify 99, Magento 59, VTEX 35, PrestaShop 18 — so the fix
 looked like "one generic WooCommerce tier reaching 146 sources."
 
 Measured, it was not. Of 130 WooCommerce configs with a usable archive pair,
-83 have archived captures, **62 already parse fine** via JSON-LD `Product`,
-and only **14 yield nothing** (18% of measured; 7 unmeasurable because every
-fetch errored). Yoast-without-Product is the minority configuration, not the
-common one. The addressable population was 14 sources holding 5,972 captures,
-against 1.6M rows already banked by the run in flight — and a rendered-figure
-tier would have meant carrying the rail exclusion, the `<ins>` preference and
-the decimal-comma rule (a 1000x error class) permanently for that.
+83 have archived captures and **62 already parse fine** via JSON-LD `Product`.
+Yoast-without-Product is the minority configuration, not the common one. The
+zero-yield remainder is **at most 14 sources and probably fewer** — see the
+sampling caveat below — holding on the order of a few thousand captures,
+against 1.6M rows already banked by the run in flight. A rendered-figure tier
+would have meant carrying the rail exclusion, the `<ins>` preference and the
+decimal-comma rule (a 1000x error class) permanently for that. The tier was
+correctly dropped, and every correction since has only strengthened that.
 
 The one argument that can override raw volume is **country coverage**, since a
 country with no archived history is a gap that more rows elsewhere cannot
-fill. Check it explicitly: here exactly 1 of the 14 was its country's only
-source (`boutiqueacm_mc` for Monaco), and it is Grand Prix merchandise —
-not food, not CPI-relevant. The other 13 sat in countries with 5-20 sources
-each. So that argument failed too, and the tier was correctly dropped.
+fill. Check it explicitly: here only one of the zero-yield sources was its
+country's only source (`boutiqueacm_mc` for Monaco), and it is Grand Prix
+merchandise — not food, not CPI-relevant. The rest sat in countries with 5-20
+sources each. So that argument failed too.
+
+### Sampling the head of a sorted list is not sampling
+
+The zero-yield count above is quarantined because the study that produced it
+took `recs[:3]` from a cdx result. **cdx is SURT-sorted**, so that is the three
+alphabetically-first paths, not three representative pages. For one source it
+drew a delivery-info page twice plus one transient fetch error, and scored the
+source as yielding nothing; sampling evenly across the same crawl returned 30,
+9 and 30 rows. The source parses in every crawl from 2016 to 2025.
+
+This is the same error as quoting a path count for a row count, in different
+clothes: a number computed off the wrong denominator, reported as if it were
+the quantity of interest.
+
+Two things make it survivable, and both are worth reproducing in any similar
+study. **Know which way the bias runs** — head-of-list sampling manufactures
+false *zeros*, never false successes, so the 62 confirmed successes stand
+while the failure count is only an upper bound. And **fix the study, not the
+conclusion**: re-run with an even spread, more captures per source, and a
+retry on cold objects, rather than arguing the original number down.
 
 **Also: do not count unmeasurable as failing.** A first pass that scored
 all-fetch-error sources as zero-yield reported 21 sources / 25%. The real
