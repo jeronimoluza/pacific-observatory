@@ -70,6 +70,10 @@ _BLOCKED_CATEGORY_IDS = {"445", "1132"}
 # truncates: at 250 it cut "Dyreartikler" (which runs to ~page 275) at exactly
 # 2,250 rows = 250 pages x 9 products. See the manifest for the full autopsy.
 MAX_PAGES_PER_CATEGORY = 1000
+# How many pages in a row may fail before a category is abandoned. The errback
+# steps over a dead page to keep the chained pagination alive; this bounds that
+# so an unreachable category cannot walk all the way to the page cap.
+MAX_CONSECUTIVE_FAILS = 3
 
 
 class PisiffikGlSpider(scrapy.Spider):
@@ -121,13 +125,13 @@ class PisiffikGlSpider(scrapy.Spider):
             yield self._category_request(f"{BASE_URL}{path}", 1)
         logger.info(f"{self.name}: discovered {len(seen)} categories")
 
-    def _category_request(self, url, page):
+    def _category_request(self, url, page, fails=0):
         target = url if page == 1 else f"{url}?page={page}"
         return scrapy.Request(
             target,
             callback=self.parse_category,
             errback=self.errback,
-            meta={"cat_url": url, "page": page},
+            meta={"cat_url": url, "page": page, "fails": fails},
             dont_filter=True,
         )
 
@@ -203,3 +207,28 @@ class PisiffikGlSpider(scrapy.Spider):
         logger.error(
             f"{self.name} request failed: {failure.request.url} — {failure.value!r}"
         )
+        # Pagination here is CHAINED -- page N is what yields the request for
+        # page N+1 -- so an abandoned request silently truncates the whole
+        # remainder of its category, and nothing in the item count says so.
+        # Measured across three full runs, "Forside > Pisattat" came back with
+        # 1,624 / 1,050 / 1,357 rows purely on which pages happened to time
+        # out. Stepping over the dead page keeps the chain alive; the cost of
+        # a failure is then the ~9 products on that page instead of every
+        # product after it. Bounded at MAX_CONSECUTIVE_FAILS so a genuinely
+        # unreachable category cannot walk to the page cap.
+        meta = failure.request.meta
+        url, page = meta.get("cat_url"), meta.get("page")
+        if not url or page is None:
+            return
+        fails = meta.get("fails", 0) + 1
+        if fails > MAX_CONSECUTIVE_FAILS or page >= MAX_PAGES_PER_CATEGORY:
+            logger.error(
+                f"{self.name}: giving up on {url} after page={page}; "
+                f"the rest of this category is NOT collected"
+            )
+            return
+        logger.warning(
+            f"{self.name}: stepping over failed page={page} of {url} "
+            f"(consecutive failures {fails})"
+        )
+        yield self._category_request(url, page + 1, fails)
