@@ -100,17 +100,64 @@ Anything other than 0 rejected is a bug in the regex, and it is the cheapest
 place to find it. Run on this wave's seven sources it caught a live one:
 `sosisvege_gi` used `[a-z0-9\-]+` and silently rejected 2 of 180 paths,
 `/shopping-categories/at%C3%BAn-en-tomate` and `.../jud%C3%ADas-verde`.
-**Percent-encoding emits UPPERCASE hex digits**, so a lowercase-only class
-cannot match any non-ASCII slug — and accented product names are the norm in
-Spanish, French, Danish and Greenlandic catalogues. Prefer `[^/?]+` over a
-hand-rolled class.
 
-One legitimate way to fail this check: a 100% rejection rate can mean the
-spider emits **non-browsable URLs**. `comoresenligne_km` scores 0 of 1,524
-because its rows carry the API's own `/api/v1/products/<id>/` as identity.
-That is not a regex bug — but it does mean the archive values cannot be
-derived from the collected rows, and it is exactly how that source's first
-(broken) prefix came to be written.
+### The hand-rolled character class is the single most common defect here
+
+An audit of all 890 configs on 2026-09-02 found **98 using a lowercase-only
+class in `archive_path_re`, 26 of them behaviourally confirmed** to accept a
+plain slug and reject the percent-encoded form of the same path.
+
+**Two independent things must both be right, and fixing one and stopping is
+the natural failure:**
+
+1. the class must contain a literal **`%`**, or a `%XX` escape cannot match
+   *at all*;
+2. it must accept **uppercase** hex, because percent-encoding emits `A-F` in
+   caps and the match is case-sensitive.
+
+Each half is individually fatal, proven by a config that got one right and
+still lost:
+
+- `kingfoodmart` — `(?i)^/[a-z0-9-]+$`. The `(?i)` fixes the casing half
+  completely, and it *still* rejects every encoded path, because `%` is not
+  in the class.
+- `cassandraonlinemarket_ht` (Haiti, French Creole) — `[a-z0-9%-]`. Someone
+  thought about `%` and still lost, because `A-Z` is missing.
+
+**So do not hand-roll the class. Prefer `[^/?]+`,** which is immune to both.
+
+Note this is unsafe *everywhere* but only *costs rows* where the host
+actually serves non-ASCII slugs; on a pure-ASCII catalogue it is free. Rank
+any remediation by measured loss — how many of the URLs CC actually holds for
+that source carry an escape AND are rejected by the configured regex — not by
+pattern shape. `expatistan` and `livingcost` carry unsafe patterns over
+10,748 and 4,304 paths with zero encoded among them, and warrant no fix.
+
+**The general rule behind both this and the `cozmo_jo` casing trap:** any
+stage where the prefix and the regex see *different strings* is a stage where
+one passing tells you nothing about the other. The prefix admitted those
+sosisvege captures perfectly well; only the regex dropped them, so no
+prefix-level check could ever have surfaced it.
+
+### Before writing either value, ask whether the collected URLs are browsable
+
+**A source whose collected URLs are not browsable pages cannot have its
+archive values derived locally at all** — they must be measured against the
+CC index instead. This is a predicate you can check *before* writing
+anything, and it outranks the "derive from the archive" rule because it tells
+you in advance that you are in the dangerous case.
+
+`comoresenligne_km` is the worked example: its rows carry the API's own
+`/api/v1/products/<id>/` as identity, so it scores 0 of 1,524 on the
+validation check above. That is not a regex bug — and it is precisely how
+that source's first prefix came to be written, from a guess, and shipped
+matching 0 of 725 available captures.
+
+**Disambiguating a 100% rejection rate:** it means either the URLs are not
+browsable *or* the regex is simply wrong. Tell them apart by looking at the
+collected URLs — an API route (`/api/v1/...`, `/wp-json/...`) means the
+former, a page route means you have a real regex bug. Do not read this
+section as "0% is always fine and 100% is always benign".
 
 **Also worth recording in `notes`: whether the source emits any structured
 data at all.** The archive fetcher ships four generic parser tiers — JSON-LD,
