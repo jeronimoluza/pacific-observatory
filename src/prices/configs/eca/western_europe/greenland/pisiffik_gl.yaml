@@ -8,7 +8,7 @@ language: da
 cadence: weekly
 channel: dept-store
 archive_prefix: "pisiffik.gl/"
-archive_path_re: '^/(?:da|gl|en)/[^/]+/\d+-[^/?]+\.html$'
+archive_path_re: '^/(?:da|gl|en)/(?:\d+-[^/?]+|[^/]+/\d+-[^/?]+\.html)$'
 notes: |
   Greenland's FIRST price source of any kind (0 manifests before this pass).
   Pisiffik is Greenland's largest privately-owned retail company (~40 stores
@@ -77,3 +77,14 @@ notes: |
   Non-ASCII is NOT a problem: 2,653 archived paths are percent-encoded, and
   `[^/]+` matches a %XX escape as happily as raw UTF-8. Do not write a rule
   that assumes one encoding.
+
+  SPIDER PAGE FAMILY: listing only (PrestaShop category grids).
+  archive_path_re was widened by the common_crawl session to admit category
+  pages (/{lang}/<id>-<slug>: two segments, no .html) alongside PDPs -- the
+  same defect found on sxmleshalles_mf. 2,902 of 3,889 archived paths matched
+  the PDP-only pattern; the widened one matches 3,846 (+944 category pages).
+
+  ERA NOTE: the gained paths are percent-encoded with UPPERCASE hex
+  (/da/1013-badek%C3%A5ber) in CC-MAIN-2025-21, but the SAME site serves raw
+  UTF-8 (aeggebaegere with the Danish characters) in 2022-21. A lowercase-only
+  or \w+ character class drops one era silently. Keep [^/?]+.

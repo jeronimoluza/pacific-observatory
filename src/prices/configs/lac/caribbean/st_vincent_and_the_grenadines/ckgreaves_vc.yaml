@@ -8,7 +8,7 @@ language: en
 cadence: weekly
 channel: supermarket
 archive_prefix: "www.ckgreaves.com/"
-archive_path_re: '^/(?:shop/browse/product/\d+_[^/?]+|departments/\d+-[^/?]+(?:/page/\d+)?)/?$'
+archive_path_re: '^/(?:shop/(?:browse/)?products?/\d+_[^/?]+|departments/\d+-[^/?]+(?:/page/\d+)?)/?$'
 notes: |
   C.K. Greaves & Company Limited — St Vincent's FIRST price source of any
   kind. Vincentian grocery chain founded 1954 (Upper Bay Street, Kingstown;
@@ -92,3 +92,39 @@ notes: |
   parser built on JSON-LD, OpenGraph, Next.js flight data or schema.org
   microdata will extract NOTHING here. The price lives solely in
   div.product-card[data-price].
+
+  SPIDER PAGE FAMILY: listing only (/departments/<id>-<slug>/page/N). The
+  ARCHIVE, however, is PDP-heavy -- the common_crawl session measured 1,016 of
+  1,240 unique archived paths once /shop/products/<id>_<slug>/ was admitted,
+  vs 283 for the listing-only pattern. My earlier "this site has no working
+  PDP" note was derived from the LIVE site (the product route 301s to a
+  doubled origin and the target 404s) and was wrong as a statement about the
+  archive: CC captured that route across 2016-2023 while it worked. A live
+  probe is evidence about today only.
+
+  MARKUP -- NO STRUCTURED DATA, AND A 100x PRICE TRAP.
+  WordPress, theme "supershop". Cards are:
+    <article class="col product-grid-item" id="product-<PLU>-<hash>"
+             data-price="61.20" itemscope>
+  The itemscope carries NO itemtype, so [itemtype$="/Product"] cannot match
+  it; the itemprop values are image/name/options/pricing/savings, three of
+  which are not schema.org properties. There is no JSON-LD, no OpenGraph.
+
+  >>> The visible price is split across elements:
+        <span class="sym">$</span><strong class="dol">61</strong><em class="dec">20</em>
+      Flattened text reads "$6120" while data-price reads "61.20". Any
+      text-fallback price parser silently produces a 100x error here. Read
+      data-price and nothing else.
+
+  Authoritative attributes on the <article>: data-price (decimal), data-plu
+  (13-digit EAN/GTIN -- a real cross-source join key), data-id, data-url.
+  Name is h4[itemprop="name"] > a::text; note the decoy <h4>Login for a
+  Better Experience</h4> inside a modal in every card, so anchor on the
+  itemprop and not on h4 position.
+
+  data-price == "0" means price-on-request, not free. That is the whole gap
+  between 14,842 collected rows and the 15,828 the site claims: all 11
+  deli-meats, 4 of 14 seafood, 5 of 26 stationery. Not a scrape defect.
+
+  The card structure belongs to the "supershop" THEME, not to this retailer,
+  so the extractor and the 100x trap apply to any other supershop site.

@@ -64,3 +64,8 @@ notes: |
   class cannot match. archive_path_re is matched against the RAW path and is
   case-sensitive, so this fails silently -- the prefix admits the capture and
   the regex drops it. Now uses [^/?]+.
+
+  SPIDER PAGE FAMILY: listing only (/shopping-categories/<slug>). site123
+  platform -- ?page=2 re-serves page 1 byte-for-byte, so there is no
+  pagination to follow, and no separate PDP route was found. site123 rewrites
+  templates centrally, so old captures may not resemble the current markup.

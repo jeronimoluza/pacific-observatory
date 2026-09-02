@@ -70,3 +70,7 @@ notes: |
   category pages -- including the English storefront (/en/101-water), which
   the old pattern also reached but had almost nothing to match there. All
   2,128 collected PDP URLs still match, so nothing regressed.
+
+  SPIDER PAGE FAMILY: listing only. PrestaShop category grids; the spider
+  never fetches a PDP. Slugs are ASCII (PrestaShop strips accents), so unlike
+  pisiffik_gl no percent-encoding era shift is expected here.

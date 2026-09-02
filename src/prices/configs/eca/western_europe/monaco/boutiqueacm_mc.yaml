@@ -79,3 +79,10 @@ notes: |
   home pages: the old regex accepted 15, the new one accepts 44 (2.9x), and
   the new one still accepts 96 of 96 collected product URLs, so nothing
   regressed.
+
+  SPIDER PAGE FAMILY: API. The spider reads the WooCommerce Store API at
+  /wp-json/wc/store/v1/products and never fetches a page, so its collected
+  URLs are permalinks it did not visit. They can still be used to check an
+  archive regex for regressions, but they say nothing about what the archive
+  holds -- the archive carries both listing (/collection/, /promotions/) and
+  PDP (/produit/) families, in both the FR and EN storefronts.
