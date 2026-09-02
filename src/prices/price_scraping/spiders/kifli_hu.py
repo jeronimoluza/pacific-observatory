@@ -109,7 +109,13 @@ class KifliHuSpider(scrapy.Spider):
                 callback=self.parse_cards,
                 meta={"cat_id": cat_id},
             )
-        if len(ids) == PAGE_SIZE and page < MAX_PAGES:
+        # `>=`, not `==`. Kifli currently answers `size=100` with exactly 100
+        # productIds, so this is a no-op today (probed 2026-09-01, 4 categories).
+        # It is hardened anyway because the sister site rohlik.cz -- same Rohlik
+        # Group platform, same endpoint -- answers with **101** on some
+        # categories, and the equality test there silently truncated 7 of 17
+        # categories to a single page, losing ~8,000 distinct products.
+        if len(ids) >= PAGE_SIZE and page < MAX_PAGES:
             nxt = page + 1
             yield scrapy.Request(
                 f"{_BASE}/api/v1/categories/normal/{cat_id}/products"

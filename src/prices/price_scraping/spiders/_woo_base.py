@@ -150,6 +150,15 @@ class WooBaseSpider(scrapy.Spider):
                 value = value * self.PRICE_MULTIPLIER
         except (TypeError, ValueError):
             value = raw
+        # The Store API emits the truthy string "0"/"0.00" for out-of-stock
+        # placeholders and price-on-application listings alike -- `if not raw`
+        # would NOT catch it (a non-empty string is truthy), so check the
+        # parsed numeric value. A zero price is not a price observation.
+        try:
+            if float(value) == 0:
+                return None
+        except (TypeError, ValueError):
+            pass
         cats = p.get("categories") or []
         cat = (
             " > ".join(
@@ -219,9 +228,16 @@ class WooBaseSpider(scrapy.Spider):
             tail = s.split(",")[-1]
             s = s.replace(",", ".") if len(tail) == 2 else s.replace(",", "")
         try:
-            return str(float(s))
+            value = float(s)
         except ValueError:
             return None
+        if value == 0:
+            # "0"/"0.00" is a truthy string, so callers' `if not price:`
+            # guard does not catch it. A zero is an out-of-stock/POA
+            # placeholder, not a price observation -- return None here so
+            # every caller's existing falsy check drops the row.
+            return None
+        return str(value)
 
     @staticmethod
     def _woo_iter_json_ld_nodes(data):

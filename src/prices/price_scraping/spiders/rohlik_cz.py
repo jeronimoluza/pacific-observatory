@@ -126,7 +126,15 @@ class RohlikCzSpider(scrapy.Spider):
                 callback=self.parse_cards,
                 meta={"cat_id": cat_id},
             )
-        if len(ids) == PAGE_SIZE and page < MAX_PAGES:
+        # `>=`, not `==`: the API answers `size=100` with **101** productIds on
+        # some categories and exactly 100 on others. An equality test therefore
+        # stopped 7 of 17 categories dead after page 0 -- measured 2026-09-01,
+        # e.g. specialni-vyziva (300112393) returned 101 ids and was truncated
+        # to a single page, silently losing 754 distinct products. Because the
+        # sort is `recommended` (a rotating order), a different set of
+        # categories truncated on each run, so successive runs disagreed by
+        # ~800 products and no single run was complete.
+        if len(ids) >= PAGE_SIZE and page < MAX_PAGES:
             nxt = page + 1
             yield scrapy.Request(
                 f"{_BASE}/api/v1/categories/normal/{cat_id}/products"

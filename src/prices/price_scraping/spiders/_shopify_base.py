@@ -89,6 +89,9 @@ def _rows_from_product_json(html: str, base_url: str):
             price_dec = float(price) / 100.0
         except (TypeError, ValueError):
             continue
+        if price_dec == 0:
+            # A zero (out-of-stock/POA placeholder) is not a price.
+            continue
         v_title = (v.get("title") or "").strip()
         name = title if v_title in ("Default Title", "") else f"{title} ({v_title})"
         rows.append(
@@ -135,6 +138,9 @@ def _rows_from_analytics_meta(html: str, base_url: str):
         try:
             price_dec = float(price) / 100.0
         except (TypeError, ValueError):
+            continue
+        if price_dec == 0:
+            # A zero (out-of-stock/POA placeholder) is not a price.
             continue
         name = (v.get("name") or "").strip()
         if not name:
@@ -187,6 +193,9 @@ def _rows_from_ld_json(html: str):
                     price_dec = float(price)
                 except (TypeError, ValueError):
                     continue
+                if price_dec == 0:
+                    # A zero (out-of-stock/POA placeholder) is not a price.
+                    continue
                 availability = str(offer.get("availability") or "").lower()
                 rows.append(
                     {
@@ -219,6 +228,9 @@ def _rows_from_og_meta(html: str):
     try:
         price_dec = float(price)
     except ValueError:
+        return None
+    if price_dec == 0:
+        # A zero (out-of-stock/POA placeholder) is not a price.
         return None
     currency = tags.get("og:price:currency") or tags.get("product:price:currency")
     return [
@@ -290,7 +302,13 @@ class ShopifyBaseSpider(scrapy.Spider):
             if not isinstance(v, dict):
                 continue
             price = v.get("price")
-            if not price:
+            # Shopify returns price as a string; a truthy "0.00" means
+            # out-of-stock/POA, not a valid observation -- `if not price`
+            # does not catch it, so parse and check numerically.
+            try:
+                if not price or float(price) == 0:
+                    continue
+            except (TypeError, ValueError):
                 continue
             sku = v.get("sku") or v.get("id") or p.get("id")
             v_title = (v.get("title") or "").strip()
