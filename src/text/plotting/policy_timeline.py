@@ -30,21 +30,31 @@ TIMELINE_CSS = """
   .cov-area { fill: #cfd8dc; fill-opacity: .55; }
   .cov-label { font-size: 11px; fill: #90a4ae; }
   .dot { cursor: pointer; stroke: #fff; stroke-width: 1.2; }
-  .dot.sel { stroke: #111; stroke-width: 2.4; }
-  /* A hollow dot was reported by the press but not verified by an analyst. */
-  .dot.disc { stroke-width: 2.2; }
+  /* A ringed, translucent dot was reported by the press but not verified by an
+     analyst. It was drawn white-filled once; on a white page that is invisible,
+     so the ring carries the category colour and the fill is a wash of it. */
+  .dot.disc { stroke: currentColor; stroke-width: 2; }
+  .dot.sel { stroke: #111; stroke-width: 2.6; }
   .tl-key { font-size: 12px; color: #666; display: flex; gap: 14px; align-items: center; }
   .tl-key i { display: inline-block; width: 11px; height: 11px; border-radius: 50%;
-              border: 2px solid #607d8b; margin-right: 5px; vertical-align: -1px; }
-  .tl-key i.filled { background: #607d8b; }
+              border: 2px solid #607d8b; background: rgba(96,125,139,.3);
+              margin-right: 5px; vertical-align: -1px; }
+  .tl-key i.filled { background: #607d8b; border-color: #cfd8dc; }
+  /* Lane labels stay put while the years scroll under them. */
+  .tl-frame { display: flex; align-items: flex-start; width: 100%; }
+  .tl-frame svg { min-width: 0; margin: 0; }
+  #timelineLabels { flex: 0 0 auto; border-right: 1px solid #eceff1; }
+  .tl-scroll { flex: 1 1 auto; overflow-x: auto; overflow-y: hidden; }
 """
 
 TIMELINE_JS = """
 const timelineSvg = document.getElementById("timeline");
+const labelSvg = document.getElementById("timelineLabels");
+const tlScroll = document.getElementById("tlScroll");
 const timelineCard = document.getElementById("timelineCard");
 const collapseBox = document.getElementById("tlCollapse");
 const discBox = document.getElementById("tlDiscovered");
-const tstate = { sel: null, collapsed: false, showDiscovered: true };
+const tstate = { sel: null, collapsed: false, showDiscovered: true, sig: "" };
 const LANE_SEP = " \\u2023 ";
 
 function timelineRows() {
@@ -88,20 +98,30 @@ function coverageSeries() {
 }
 
 function renderTimeline() {
+  const keep = tlScroll ? tlScroll.scrollLeft : 0;
   timelineSvg.innerHTML = "";
+  if (labelSvg) labelSvg.innerHTML = "";
   const ns = "http://www.w3.org/2000/svg";
-  function el(name, attrs, text, parent) {
-    const node = document.createElementNS(ns, name);
-    Object.entries(attrs || {}).forEach(([k, v]) => node.setAttribute(k, v));
-    if (text !== null && text !== undefined) node.textContent = text;
-    (parent || timelineSvg).appendChild(node);
-    return node;
+  function pen(target) {
+    return function (name, attrs, text, parent) {
+      const node = document.createElementNS(ns, name);
+      Object.entries(attrs || {}).forEach(([k, v]) => {
+        if (v !== undefined && v !== null) node.setAttribute(k, v);
+      });
+      if (text !== null && text !== undefined) node.textContent = text;
+      (parent || target).appendChild(node);
+      return node;
+    };
   }
+  const el = pen(timelineSvg);
+  const lab = pen(labelSvg || timelineSvg);
+
   const rows = timelineRows();
-  const width = 1180;
   if (!rows.length) {
-    timelineSvg.setAttribute("viewBox", "0 0 " + width + " 200");
-    el("text", { x: width / 2, y: 100, "text-anchor": "middle", fill: "#777", "font-size": "17" },
+    if (labelSvg) { labelSvg.setAttribute("width", 0); labelSvg.setAttribute("height", 0); }
+    timelineSvg.setAttribute("viewBox", "0 0 900 200");
+    timelineSvg.removeAttribute("width");
+    el("text", { x: 450, y: 100, "text-anchor": "middle", fill: "#777", "font-size": "17" },
        "No dated measures in this view.");
     return;
   }
@@ -113,40 +133,75 @@ function renderTimeline() {
   // how much press there was to find a measure in.
   const y0 = Math.min.apply(null, dotYears.concat(covYears));
   const y1 = Math.max.apply(null, dotYears.concat(covYears));
+  const span = y1 - y0;
+
+  // Cell occupancy is counted up front: it sets both the fan and how much
+  // width a year needs. A workbook is a snapshot, not a history -- every dated
+  // EAP tracker row is 2026 -- so one cell holds fifty measures while its
+  // neighbours hold one, and a fixed-width year would stack them out of sight.
+  const cellSize = {};
+  rows.forEach(r => {
+    const b = laneKeyOf(r) + ":" + r.onset_year;
+    cellSize[b] = (cellSize[b] || 0) + 1;
+  });
+  let maxCols = 5;
+  Object.keys(cellSize).forEach(b => {
+    maxCols = Math.max(maxCols, Math.ceil(cellSize[b] / 3));
+  });
 
   const lanes = buildLanes(rows);
   const laneH = 24, headH = 26, covH = 46;
-  const margin = { top: 18, right: 30, bottom: 52, left: tstate.collapsed ? 230 : 290 };
-  let yCursor = margin.top;
+  const labelW = tstate.collapsed ? 230 : 290;
+  // A fan is centred on its year, so the busiest one overhangs the axis by half
+  // its width in both directions. The padding has to clear that or the densest
+  // cell -- the only one anybody is looking at -- is the one cut off.
+  const overhang = (maxCols - 1) / 2 * 4.5 + 12;
+  const padL = Math.max(30, overhang), padR = Math.max(40, overhang);
+  const top = 18, bottom = 52;
+  let yCursor = top;
   lanes.forEach(l => { l.y = yCursor + (l.head ? headH : laneH) / 2; yCursor += l.head ? headH : laneH; });
   const plotBottom = yCursor;
-  const height = plotBottom + covH + margin.bottom;
-  const plotW = width - margin.left - margin.right;
+  const height = plotBottom + covH + bottom;
+
+  const yearW = Math.max(54, maxCols * 4.5 + 16);
+  const plotW = Math.max(span * yearW, 260);
+
+  const width = padL + plotW + padR;
+
+  if (labelSvg) {
+    labelSvg.setAttribute("width", labelW);
+    labelSvg.setAttribute("height", height);
+    labelSvg.setAttribute("viewBox", "0 0 " + labelW + " " + height);
+  }
+  timelineSvg.setAttribute("width", width);
+  timelineSvg.setAttribute("height", height);
   timelineSvg.setAttribute("viewBox", "0 0 " + width + " " + height);
 
-  const xOf = y => margin.left + (y1 === y0 ? plotW / 2 : (y - y0) / (y1 - y0) * plotW);
+  const xOf = y => padL + (span === 0 ? plotW / 2 : (y - y0) / span * plotW);
   const laneAt = {};
   lanes.forEach(l => { if (l.key) laneAt[l.key] = l.y; });
 
-  const span = y1 - y0;
-  const step = span > 24 ? 4 : (span > 12 ? 3 : (span > 6 ? 2 : 1));
+  const step = yearW >= 46 ? 1 : (yearW >= 28 ? 2 : 4);
   for (let y = y0; y <= y1; y += step) {
-    el("line", { x1: xOf(y), y1: margin.top - 4, x2: xOf(y), y2: plotBottom + covH, class: "year-line" });
-    el("text", { x: xOf(y), y: plotBottom + covH + 22, "text-anchor": "middle", class: "year-label" }, String(y));
+    el("line", { x1: xOf(y), y1: top - 4, x2: xOf(y), y2: plotBottom + covH, class: "year-line" });
+    el("text", { x: xOf(y), y: plotBottom + covH + 22, "text-anchor": "middle", class: "year-label" },
+       String(y));
   }
 
+  // Bands are drawn in both panes so the stripes line up across the seam.
   lanes.forEach((l, i) => {
     if (l.head) {
-      el("text", { x: 14, y: l.y + 4, class: "lane-head" }, l.label);
+      lab("text", { x: 14, y: l.y + 4, class: "lane-head" }, l.label);
       return;
     }
     if (i % 2 === 0) {
-      el("rect", { x: margin.left, y: l.y - laneH / 2, width: plotW, height: laneH, class: "lane-band" });
+      lab("rect", { x: 0, y: l.y - laneH / 2, width: labelW, height: laneH, class: "lane-band" });
+      el("rect", { x: 0, y: l.y - laneH / 2, width: width, height: laneH, class: "lane-band" });
     }
-    el("line", { x1: margin.left, y1: l.y + laneH / 2, x2: width - margin.right, y2: l.y + laneH / 2, class: "lane-line" });
-    const label = l.label.length > 38 ? l.label.slice(0, 36) + "\\u2026" : l.label;
-    const t = el("text", { x: margin.left - 10, y: l.y + 4, "text-anchor": "end", class: "lane-label" }, label);
-    el("title", {}, l.label, t);
+    el("line", { x1: 0, y1: l.y + laneH / 2, x2: width, y2: l.y + laneH / 2, class: "lane-line" });
+    const label = l.label.length > 38 ? l.label.slice(0, 36) + "…" : l.label;
+    const t = lab("text", { x: labelW - 10, y: l.y + 4, "text-anchor": "end", class: "lane-label" }, label);
+    lab("title", {}, l.label, t);
   });
 
   // Corpus coverage band. Drawn as a filled step area under the lanes.
@@ -161,24 +216,14 @@ function renderTimeline() {
       pts.map(p => "L" + p[0] + "," + p[1]).join(" ") +
       " L" + xOf(y1) + "," + (plotBottom + covH) + " Z";
     el("path", { d: d, class: "cov-area" });
-    el("text", { x: margin.left - 10, y: plotBottom + covH - 4, "text-anchor": "end", class: "cov-label" },
-       "corpus articles/yr");
-    el("text", { x: margin.left + 4, y: plotBottom + 12, class: "cov-label" },
-       "peak " + covMax.toLocaleString());
+    lab("text", { x: labelW - 10, y: plotBottom + covH - 4, "text-anchor": "end", class: "cov-label" },
+        "corpus articles/yr");
+    el("text", { x: padL, y: plotBottom + 12, class: "cov-label" }, "peak " + covMax.toLocaleString());
   }
 
   // Fixed-radius dots. Several measures can share a lane-year cell, so they are
   // fanned deterministically rather than scaled -- size would encode coverage
   // at the cost of hiding neighbours.
-  // The cell sizes are counted up front. A workbook is a snapshot, not a
-  // history -- every dated EAP tracker row is 2026 -- so one cell routinely
-  // holds fifty measures while its neighbours hold one. A fixed 5-wide fan
-  // would stack those fifty on top of each other and lose them.
-  const cellSize = {};
-  rows.forEach(r => {
-    const b = laneKeyOf(r) + ":" + r.onset_year;
-    cellSize[b] = (cellSize[b] || 0) + 1;
-  });
   const seen = {};
   rows.slice().sort((a, b) => a.onset_year - b.onset_year || (a.Policy || "").localeCompare(b.Policy || ""))
     .forEach(r => {
@@ -196,23 +241,37 @@ function renderTimeline() {
       const cls = (disc ? "dot disc" : "dot") + (tstate.sel === r ? " sel" : "");
       const dot = el("circle", {
         cx: xOf(r.onset_year) + dx, cy: yy + dy, r: 5,
-        fill: disc ? "#ffffff" : colour,
-        stroke: disc && tstate.sel !== r ? colour : undefined,
-        "fill-opacity": disc ? 1 : 0.85,
+        fill: colour,
+        "fill-opacity": disc ? 0.3 : 0.9,
+        style: "color:" + colour,
         class: cls
       });
       dot.addEventListener("click", () => { tstate.sel = r; renderTimeline(); showMeasure(r); });
-      el("title", {}, r.Country + " \\u2014 " + r.Policy + "\\n" +
+      el("title", {}, r.Country + " — " + r.Policy + "\\n" +
          (D.categoryDisplay[r.category] || r.category) + " / " + r.subcategory + "\\n" +
          (disc
-            ? "found in the news corpus \\u00b7 date basis: " + (r.date_basis || "unknown")
+            ? "found in the news corpus · date basis: " + (r.date_basis || "unknown")
             : "tracker row") +
          "\\n" + "dated " + r.onset_year +
-         " \\u00b7 " + (r.n_articles || 0) + " article(s)", dot);
+         " · " + (r.n_articles || 0) + " article(s)", dot);
     });
 
-  el("line", { x1: margin.left, y1: plotBottom + covH, x2: width - margin.right, y2: plotBottom + covH,
+  el("line", { x1: 0, y1: plotBottom + covH, x2: width, y2: plotBottom + covH,
                class: "axis-line", stroke: "#cfcfcf" });
+
+  // The newest measures are the ones being tracked, so the view opens on them
+  // and older years are reached by scrolling left. A click re-renders, and must
+  // not yank the reader back to the right-hand edge, so the offset is only
+  // reset when the axis itself changed.
+  if (tlScroll) {
+    const sig = y0 + ":" + y1 + ":" + width + ":" + lanes.length;
+    if (sig !== tstate.sig) {
+      tstate.sig = sig;
+      tlScroll.scrollLeft = tlScroll.scrollWidth;
+    } else {
+      tlScroll.scrollLeft = keep;
+    }
+  }
 }
 
 function showMeasure(r) {
@@ -266,7 +325,7 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.classList.add("active");
     document.getElementById("panel-composition").classList.toggle("hidden", btn.dataset.panel !== "composition");
     document.getElementById("panel-timing").classList.toggle("hidden", btn.dataset.panel !== "timing");
-    if (btn.dataset.panel === "timing") renderTimeline();
+    if (btn.dataset.panel === "timing") { tstate.sig = ""; renderTimeline(); }
   });
 });
 """

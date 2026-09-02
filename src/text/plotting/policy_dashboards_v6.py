@@ -354,11 +354,14 @@ def make_v6_html(
         <label><input type=\"checkbox\" id=\"tlDiscovered\" checked> Show measures found in news</label>
         <span class=\"tl-key\"><span><i class=\"filled\"></i>tracker row</span><span><i></i>found in news</span></span>
       </div>
-      <div class=\"chart-wrap\">
-        <svg id=\"timeline\" aria-label=\"Timeline of {chart_aria_subject} policy measures by taxonomy subcategory and year of first sustained media coverage\"></svg>
+      <div class=\"tl-frame\">
+        <svg id=\"timelineLabels\" aria-hidden=\"true\"></svg>
+        <div class=\"tl-scroll\" id=\"tlScroll\">
+          <svg id=\"timeline\" aria-label=\"Timeline of {chart_aria_subject} policy measures by taxonomy subcategory and year the measure was active or proposed\"></svg>
+        </div>
       </div>
-      <div class=\"detail-panel\"><div class=\"detail-card\" id=\"timelineCard\"><h2>Measure details</h2><p>Each dot is one policy, placed at the year its measure type first drew sustained coverage in that country's press. Click a dot for details.</p></div></div>
-      <div class=\"note\">Note: the workbook records no effective date, so the x-axis is the onset year derived from the news corpus &mdash; the first year reaching 15% of a measure's peak annual coverage. It dates the <em>measure type</em> in that country, not necessarily the specific instance in the row. All dots are the same size; several measures in one lane-year are fanned apart rather than merged. The grey band under the lanes is the number of articles that country's press published each year &mdash; a stretch with no dots means little was found only where the band is high.</div>
+      <div class=\"detail-panel\"><div class=\"detail-card\" id=\"timelineCard\"><h2>Measure details</h2><p>Each dot is one measure, placed at the year it was active or proposed. Click a dot for details. Scroll the chart left for earlier years.</p></div></div>
+      <div class=\"note\">Note: a filled dot is a tracker row, dated from its <em>Active or Proposed Date</em>; a ringed, paler dot was found in the news corpus and dated from the article text, and has not been verified against an official source. All dots are the same size; several measures in one lane-year are fanned apart rather than merged. The grey band under the lanes is the number of articles that country's press published each year &mdash; a stretch with no dots means little was found only where the band is high. The trackers record measures that are currently active, so nearly every filled dot sits in the newest year and the earlier years are corpus discoveries.</div>
     </div>
   </div>
 </div>
