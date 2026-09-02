@@ -39,7 +39,6 @@ YEAR_JS = """
 const chartTitle = document.getElementById("chartTitle");
 const subtitle = document.getElementById("subtitle");
 const svg = document.getElementById("chart");
-const tooltip = document.getElementById("tooltip");
 const legend = document.getElementById("legend");
 const detailCard = document.getElementById("detailCard");
 const chartScroll = document.getElementById("chartScroll");
@@ -154,27 +153,6 @@ function yTicks(max) {
   if (t[t.length - 1] !== top) t.push(top);
   return t;
 }
-
-function tooltipHTML(year, cat, sub, policies) {
-  const items = policies.map(r => `
-    <li><strong>${escapeHTML(r.Country)}</strong> — ${escapeHTML(titleCase(r.Policy))}: ${escapeHTML(r["Policy Description"])}
-      <br><span class="meta">${escapeHTML(r["Active or Proposed Date"])}${r.Source ? " · " + escapeHTML(r.Source) : ""}</span>
-    </li>`).join("");
-  const catDisp = D.categoryDisplay[cat] || cat;
-  return `<h3>${year}</h3><h4>${escapeHTML(catDisp)}</h4><h5>${escapeHTML(titleCase(sub))}</h5>` +
-         `<p class="meta">${policies.length} polic${policies.length === 1 ? "y" : "ies"} in this segment</p><ul>${items}</ul>`;
-}
-
-function showTooltip(e, html) { tooltip.innerHTML = html; tooltip.style.display = "block"; moveTooltip(e); }
-function moveTooltip(e) {
-  const pad = 16;
-  const rect = tooltip.getBoundingClientRect();
-  let left = e.clientX + 14, top = e.clientY + 14;
-  if (left + rect.width + pad > window.innerWidth) left = e.clientX - rect.width - 14;
-  if (top + rect.height + pad > window.innerHeight) top = e.clientY - rect.height - 14;
-  tooltip.style.left = Math.max(pad, left) + "px"; tooltip.style.top = Math.max(pad, top) + "px";
-}
-function hideTooltip() { tooltip.style.display = "none"; }
 
 function pinDetails(year, cat, sub, policies) {
   const catDisp = D.categoryDisplay[cat] || cat;
@@ -336,10 +314,6 @@ function render() {
         const rect = el("rect", {x: x, y: y1, width: barW, height: Math.max(1, y0 - y1),
                                  fill: D.categoryColor[cat] || "#999", class: "bar-segment",
                                  "data-year": year, "data-category": cat, "data-subcategory": sub});
-        const tip = tooltipHTML(year, cat, sub, policies);
-        rect.addEventListener("mouseenter", e => showTooltip(e, tip));
-        rect.addEventListener("mousemove", moveTooltip);
-        rect.addEventListener("mouseleave", hideTooltip);
         rect.addEventListener("click", () => pinDetails(year, cat, sub, policies));
         cumulative += policies.length;
       });

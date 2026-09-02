@@ -299,14 +299,6 @@ def make_v6_html(
   .legend {{ display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px 20px; max-width: 900px; margin: 8px auto 0; font-size: 15px; color: #666; }}
   .legend-item {{ display: flex; align-items: center; gap: 5px; white-space: nowrap; }}
   .legend-swatch {{ width: 10px; height: 10px; display: inline-block; }}
-  .tooltip {{ position: fixed; z-index: 20; pointer-events: none; display: none; width: min(440px, calc(100vw - 32px)); background: rgba(255,255,255,0.98); color: #333; border: 1px solid #bdbdbd; border-radius: 6px; box-shadow: 0 4px 18px rgba(0,0,0,0.18); padding: 10px 12px; font-size: 13px; line-height: 1.35; }}
-  .tooltip h3 {{ font-size: 15px; margin: 0 0 4px; color: #333; }}
-  .tooltip h4 {{ font-size: 13px; margin: 0 0 2px; color: #555; font-weight: 600; }}
-  .tooltip h5 {{ font-size: 12px; margin: 0 0 7px; color: #666; font-weight: 500; font-style: italic; }}
-  .tooltip .meta {{ margin: 0 0 7px; color: #666; font-size: 12px; }}
-  .tooltip ul {{ margin: 6px 0 0 18px; padding: 0; }}
-  .tooltip li {{ margin: 0 0 6px; }}
-  .tooltip strong {{ color: #333; }}
   .detail-card {{ border: 1px solid #e2e2e2; border-radius: 6px; background: #fff; padding: 12px 14px; }}
   .detail-card h2 {{ font-size: 17px; font-weight: 600; margin: 0 0 8px; color: #444; }}
   .detail-card p {{ margin: 4px 0; font-size: 13px; color: #666; }}
@@ -354,10 +346,9 @@ def make_v6_html(
         <div id=\"legend\" class=\"legend\"></div>
       </div>
       <aside class=\"detail-col\">
-        <div class=\"detail-card\" id=\"detailCard\"><h2>Policy details</h2><p>Hover a bar segment for a summary of the measures it holds. Click the segment to pin them here.</p></div>
+        <div class=\"detail-card\" id=\"detailCard\"><h2>Policy details</h2><p>Click a bar segment to list the measures it holds here.</p></div>
       </aside>
     </div>
-    <div id=\"tooltip\" class=\"tooltip\"></div>
     <div class=\"note\">Note: bar height is the number of distinct measures dated to that year; colour is the policy category and each segment within a category is one subcategory. The axis begins at the oldest measure in the current view -- scroll left for earlier years. Measures found in the news corpus are dated from the article text and have not been verified against an official source; untick the box above to see tracker rows only.</div>
   </div>
 </div>
