@@ -1,0 +1,43 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sxmleshalles_mf
+url: https://www.sxmleshalles.com/
+language: fr
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.sxmleshalles.com/"
+archive_path_re: '^/(?:fr|en)/[^/]+/\d+-[^/?]+\.html$'
+notes: |
+  SXM Les Halles -- St Martin's FIRST price source of any kind. Online
+  grocery / villa / yacht provisioning service for the island of St Martin
+  (delivers to both the French and Dutch sides).
+
+  Assigned to st_martin_french_part, not sint_maarten_dutch_part, on the
+  site's own evidence: the PrestaShop page config reports
+  country {"iso_code":"FR","call_prefix":33,"name":"France"} and the bare
+  domain redirects to /fr/ (French is the storefront default language).
+
+  Measured live 2026-09-01: 148 categories, PrestaShop 1.7, server-rendered,
+  no anti-bot. Category pages carry 24 `article.product-miniature` cards each
+  and state their own totals ("There are 215 products" on 12-breakfast, 51 on
+  101-water). Full grocery range plus an unusually deep wine and spirits
+  cellar (Alsace, Burgundy, Rhone, Italian and Spanish wine subcategories).
+
+  CURRENCY IS USD, DIVERGING FROM countries.yaml (EUR). The storefront
+  declares it machine-readably --
+  {"id":2,"name":"UD Dollar","iso_code":"USD","iso_code_num":"840","sign":"$"}
+  -- and renders prices as "$37.00". Per the skill's rule the site's own code
+  wins over the countries.yaml default. This is real, not a display artifact:
+  SXM's provisioning market quotes villa and yacht customers in USD. Flagged
+  explicitly so a later reader does not read it as a spider bug.
+
+  Why St Martin read as empty before: the 2026-09-01 LAC inventory recorded
+  it as "examined but inconclusive -- WebSearch budget exhausted", having
+  only established that CaribeEats has no MAF/SXM region and that Massy does
+  not operate in the French Antilles. No per-country search had been run.
+
+  Uses the shared PrestashopBaseSpider unchanged -- this theme carries no
+  itemprop microdata, so the base's `.price` class fallback is what supplies
+  the price.

@@ -23,6 +23,8 @@ Not an anti-bot wall — the tenant's Shopify subscription is unpaid/inactive, s
 
 403 even with realistic UA + headers. Often serves a challenge page or interstitial. Headless Chromium without stealth + residential IP fails. Bypass would require a paid proxy/solver stack.
 
+- **delovery.mc** (MC, Delovery — Monaco-domiciled food delivery platform, `.mc` domain) — 403 with a Cloudflare "Attention Required!" page on `curl_cffi impersonate=chrome124`, `chrome120`, `chrome99` AND `safari17_0` (all four profiles, per the mandatory gate). Identical 4,923-byte body every time, so not a TLS-fingerprint false negative. **This is Monaco's best food lead and the only Monaco-registered grocery-adjacent domain that exists** — carrefour.mc/monoprix.mc/spar.mc all fail DNS. Blocked, not absent; worth a retry if its posture changes. Probed 2026-09-01.
+
 - **naturesbasket.co.in** (IN, Nature's Basket — gourmet/specialty supermarket) — 403 on `curl_cffi impersonate=chrome124`, `chrome120`, AND `safari17_0` (all three profiles), AND 403 on headless Playwright (117-byte body after 6s wait, no hydration to catch). Genuine WAF, not a curl-fingerprint false negative. Probed 2026-09-01 (SAR sweep).
 - **milkbasket.com** (IN, Milkbasket — daily milk/grocery subscription delivery) — same signature: 403 on all three curl_cffi profiles AND on Playwright (175-byte body). Also app-only in spirit ("subscribe now" copy on the little that renders). Probed 2026-09-01 (SAR sweep).
 
@@ -302,6 +304,8 @@ JD.com runs its own in-house bot detection stack called `JDR_shields`. Curl to p
 ## App-only / no scrapeable web catalogue
 
 The site exists but products are not browsable on the web. Skip — no amount of scraping helps.
+
+- **order.ramsons.gi** (GI, Ramsons Supermarket — Gibraltar's main supermarket chain, trading since 1975) — the ordering subdomain returns HTTP 200 with the title "Ramsons Supermarket - Web Ordering Coming Soon" and no catalogue; the only functional links are the iOS App Store and Google Play listings for "Ramsons Delivery". The apex `www.ramsons.gi` is a 13KB Bootstrap brochure page. **Flagged as ANNOUNCED, not absent** — "coming soon" means this is worth re-checking in a future wave, unlike a permanent app-only retailer. Gibraltar coverage currently comes from `sosisvege_gi` instead. Probed 2026-09-01.
 
 - **chipmongretail.com / www.chipmongretail.com** (KH, Chip Mong Retail — Chip Mong Group supermarket/mall chain, COICOP 01/02/05 candidate) — apex and `www` both return a generic nginx 403 with an MSIE/Chrome-friendly-error-page padding comment stub, reproduced identically on plain curl and `curl_cffi impersonate=chrome124` (with and without TLS verification) — looks like a blanket datacenter-IP block rather than a WAF challenge page. `portal.chipmongretail.com` (incl. `/qrdownloads`) is a bare Vite/JS SPA shell whose only visible route is a QR code driving users to the iOS/Android "Chip Mong Retail" app — confirms the retailer's online ordering is app-only. Existing physical/foodpanda-listed branches (271 Mega Mall, Camko) are third-party marketplace listings, not a first-party catalogue. Probed 2026-09-01.
 - **luckysupermarket.com.kh / www.luckysupermarket.com.kh** (KH, Lucky Supermarket — 8+ branches in Phnom Penh/Siem Reap/Battambang, COICOP 01/02/05 candidate) — domain does not resolve (`curl: (6) Could not resolve host`) on both apex and `www`. Chain's only online presence is via foodpanda/GrabMart per-branch storefronts (marketplace, not first-party). Probed 2026-09-01.
@@ -724,3 +728,14 @@ After a probe confirms a new site is unscrapeable, append it under the class who
 One line per site. The goal is to read this file in <30 seconds when starting a new country onboarding.
 
 **Trigger condition.** Add only when *both* curl AND Playwright fail in the same way. A site that 403s on curl but renders fine in Playwright is just Tier 2 — don't add it here. If Playwright returns 200 but the body never hydrates, that's *not* a bot block — try once with a 12s wait before adding to "SPA shell — no productive endpoint".
+
+## Host maintenance mode / suspended account (503 or redirect-to-suspension — TEMPORARY, re-check)
+
+Not anti-bot and not a dead site. These are operator- or host-side states that
+can clear on their own, so they deserve a re-probe in a later wave rather than a
+permanent write-off. Distinguish them from a real block by reading the body:
+a maintenance page says so in plain language, and the origin header often
+reports itself as healthy.
+
+- **cadismarket.com** (MF, Cadismarket — billed locally as "the first online supermarket in Saint-Martin, 100% Saint-Martin") — HTTP 503 with `Retry-After: 3600` and the body "We'll be back soon. We are currently updating our shop", identical on `chrome124`, `chrome120` and `safari17_0`. Response headers show `x-ws-origin: available`, `x-ws-ratelimit-remaining: 998`, `Server: Apache`, `X-Powered-By: PHP/7.3.33` — the origin is up and not rate-limiting; the shop is deliberately in maintenance. **Re-probe in a future wave** — if it returns it is likely a better St Martin source than the shipped `sxmleshalles_mf`, being a general grocer rather than a villa/yacht provisioning service. Probed 2026-09-01.
+- **ehubsvg.com / www.ehubsvg.com** (VC, eHub SVG — personal-shopper grocery delivery, St Vincent) — HTTPS fails at the TLS layer on both apex and `www` (`curl: (60) no alternative certificate subject name matches target hostname`); over plain HTTP it 200s but redirects to `/public/email-suspension`. Hosting/email account suspended. Lower re-check priority than cadismarket — a suspension is a business signal, not a deployment window. Probed 2026-09-01.

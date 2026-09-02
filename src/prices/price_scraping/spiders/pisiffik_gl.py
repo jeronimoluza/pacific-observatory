@@ -64,7 +64,7 @@ _CATEGORY_RE = re.compile(r"^/da/(\d+)-[^/?#]+$")
 # Explicitly Disallow-ed in robots.txt for User-agent: * — never request these.
 _BLOCKED_CATEGORY_IDS = {"445", "1132"}
 
-MAX_PAGES_PER_CATEGORY = 40
+MAX_PAGES_PER_CATEGORY = 250
 
 
 class PisiffikGlSpider(scrapy.Spider):

@@ -1,0 +1,68 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ckgreaves_vc
+url: https://www.ckgreaves.com/
+language: en
+cadence: weekly
+channel: supermarket
+archive_prefix: "www.ckgreaves.com/shop/browse/product/"
+archive_path_re: '^/shop/browse/product/\d+_[^/?]+/?$'
+notes: |
+  C.K. Greaves & Company Limited — St Vincent's FIRST price source of any
+  kind. Vincentian grocery chain founded 1954 (Upper Bay Street, Kingstown;
+  three locations, third opened Pembroke 2012). Confirmed SVG-domestic, not a
+  regional platform.
+
+  Measured live 2026-09-01: 30 departments, 15,828 products, prices in XCD
+  (site-declared, matches countries.yaml). Departments span the full grocery
+  range including fresh produce (201), meat (280), seafood (14), dairy (600),
+  bread & bakery (65) as well as household (2,443), beauty (1,705) and
+  snacks (1,679).
+
+  Why this was missed twice: the 2026-09-01 LAC inventory recorded SVG as
+  "0 sources, WebSearch budget exhausted" having checked only Massy Stores
+  SVG and CaribeEats. Massy SVG is brochure-only — re-verified here, all
+  three WooCommerce Store API routes still return rest_no_route — and
+  CaribeEats has no VCT region. C.K. Greaves was never probed. The site does
+  carry WordPress/WooCommerce markers on its homepage but exposes no Store
+  API; the catalogue is plain server-rendered HTML.
+
+  Tier 1A. robots.txt allows everything but /wp-admin/ and sets no
+  crawl-delay.
+
+  PRICE TRAP — the displayed price is split for typography
+  ($ / 4 / 05 in three sibling elements) and the page also renders a literal
+  "$0.00" cart-total placeholder, so text-based selectors return 0.00 or 4.
+  The real value is div.product-card[data-price] as a plain decimal. Same
+  div carries data-id (internal id), data-plu (barcode, used as product_id)
+  and data-url (canonical PDP). Prices are NOT login-gated — the "Please
+  sign in" block gates add-to-cart only.
+
+  Pagination is /departments/<id>-<slug>/page/N/ at 20 cards/page. Page 1
+  reads the department's own stated total ("Showing products 1 - 20 of 201")
+  and fans out every remaining page as an independent request rather than
+  chaining page N -> N+1. Chaining is what silently truncated coop_ci at
+  6,000 of 9,745 rows earlier in this wave: one transient failure drops the
+  entire tail of a department and the crawl still reports finish_reason
+  "finished".
+
+  Enumerability verified per the skill's two-verdict gate: page 1 and page 2
+  of 330-fresh-produce return 20 cards each with ZERO overlapping data-id.
+
+  FULL RUN 2026-09-01: 14,842 rows, finish_reason "finished", all product_ids
+  and URLs distinct, 100% XCD, zero blank names, zero non-positive prices,
+  price range 0.25-750.00, 29 departments.
+
+  The 986-row gap against the site's stated 15,828 is fully accounted for and
+  is CORRECT behaviour, not truncation:
+    - Page coverage is complete: 809 pages expected from the departments' own
+      stated totals, 810 fetched, zero duplicate-URL drops.
+    - The shortfall is entirely items the site publishes with data-price="0",
+      i.e. price-on-request / sold-by-weight goods. Measured on page 1 of each
+      department: ALL 11 deli-meats cards are zero-priced, 4 of 14 seafood,
+      5 of 26 stationery, plus a scattering in meat, fresh produce, dried peas
+      and baking. A zero price is not a price, so these are skipped.
+    - That is also why 29 departments appear rather than 30: 320-deli-meats is
+      100% price-on-request and therefore yields no rows at all.

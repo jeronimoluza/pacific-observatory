@@ -1,0 +1,62 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: boutiqueacm_mc
+url: https://boutiqueacm.com/
+language: fr
+cadence: weekly
+channel: fashion
+archive_prefix: "boutiqueacm.com/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
+notes: |
+  Boutique ACM (Automobile Club de Monaco official shop) — Monaco's FIRST
+  price source of any kind. The ACM is the Monégasque institution that
+  organises the Monaco Grand Prix; the catalogue is official GP merchandise.
+
+  Standard WooCommerce Store API at /wp-json/wc/store/v1/products, open and
+  unauthenticated. Measured live 2026-09-01: 122 products, EUR,
+  currency_minor_unit=2 (raw "1650" -> 16.50). The shared WooBaseSpider does
+  the minor-unit shift and prefers the API's own currency_code, so no
+  per-source price handling is needed.
+
+  NON-FOOD BY NECESSITY, NOT BY OVERSIGHT. Monaco has no Monaco-registered
+  grocer: carrefour.mc, monoprix.mc and spar.mc all fail DNS resolution, and
+  casino.mc is the Société des Bains de Mer casino, not the French Casino
+  supermarket chain (a false lead worth not re-walking). Grocery retail in
+  the territory runs entirely on French national platforms.
+
+  THIS SOURCE DOES NOT RESOLVE THE OPEN POLICY QUESTION — it avoids needing
+  it. The question carried from the 2026-09-01 ECA sweep is whether a shared
+  French national platform (courses.monoprix.fr, carrefour.fr/magasin/monaco,
+  houra.fr) counts as Monaco coverage and under which country label. That is
+  still open and still the user's call: onboarding one here would risk exact
+  duplication against a future France pass building the same domain, and
+  would double-count an identical catalogue under two country labels.
+  Boutique ACM has no such exposure — the ACM is a Monégasque institution, the
+  shop is Monaco-domiciled, and no France pass would ever build it.
+
+  Rejected for Monaco this pass:
+    - delovery.mc   GENUINE Cloudflare block. 403 on chrome124, chrome120,
+                    chrome99 AND safari17_0 — all four TLS profiles per the
+                    mandatory gate, so not a curl-TLS false negative. This is
+                    Monaco's best food lead and it is blocked, not absent.
+                    Recorded in known_blockers.md.
+    - houra.fr, carrefour.fr/magasin/monaco, courses.monoprix.fr — French
+                    national platforms; see the policy question above.
+
+  Monaco Grand Prix apparel and merchandise (official GP tee-shirts, GANT/ACM
+  collections, silver grille badges), so mostly COICOP 03 with some 12
+  accessories.
+
+  FULL RUN 2026-09-01: 96 rows, all distinct, 100% EUR, zero blank names,
+  price range 10.00-630.00.
+
+  KNOWN COVERAGE LIMIT — 96 of the API's 122 products. The other 26 are
+  WooCommerce `variable` products that publish prices.price = "0" AND
+  prices.price_range = null, so the Store API exposes no product-level price
+  for them at all; their real prices live only in per-variation records. The
+  shared WooBaseSpider drops zero-price rows, which is right. Recovering the
+  26 would need a second call per product to the variations endpoint --
+  not attempted this pass. 96 + 26 = 122 exactly, so nothing else is missing.
+  coicop_codes left unset (not narrow) — the classifier assigns leaves.

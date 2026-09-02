@@ -1,0 +1,48 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sosisvege_gi
+url: https://www.sosisvege.com/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.sosisvege.com/shopping-categories/"
+archive_path_re: '^/shopping-categories/[a-z0-9\-]+$'
+notes: |
+  Sosi's Vege -- Gibraltar's FIRST price source of any kind. Gibraltar-
+  domiciled greengrocer importing Moroccan fruit and vegetables.
+
+  Domicile confirmed from the site's own schema.org PostalAddress:
+  18 Parliament Lane, Gibraltar, GX11 1AA, addressCountry "GI" -- so this is
+  a Gibraltar business, not a Spanish shop delivering across the frontier.
+  That distinction matters here: Gibraltar's other lead, eroski.gi, resolves
+  to Eroski's Spanish storefront and would have priced in EUR against Spanish
+  shelves.
+
+  Measured live 2026-09-01: 15 categories, 203 card entries of which ~190 are
+  products (the remainder are category tiles). Food-weighted -- vegetables 45,
+  main groceries 48, fruit 40, nuts 15, spices 13, plus bread, drinks, olives,
+  oil & honey, Moroccan cakes.
+
+  Platform is site123 ("s123-*" classes, cdn-files-a.com images). Tier 1A,
+  server-rendered, no anti-bot.
+
+  DO NOT ADD PAGINATION. Category pages render their whole product set in one
+  response and the site ignores `?page=` -- `?page=2` re-serves page 1
+  byte-for-byte, so following it would loop forever re-yielding the same
+  products (the same re-served-last-page trap that caused 92,688 duplicate
+  drops on the Magento base).
+
+  Currency GIP per countries.yaml; the site renders the £ symbol, which in
+  Gibraltar denotes the Gibraltar pound (at par with GBP).
+
+  Gibraltar candidates checked and rejected this pass:
+    - eroski.gi        genuine reCAPTCHA Enterprise wall. Verified previously
+                       across chrome124/chrome120/chrome99 AND a headless
+                       Playwright render with an 8s wait. Verdict re-affirmed,
+                       not re-probed. See known_blockers.md.
+    - order.ramsons.gi "Web Ordering Coming Soon". Ramsons (Gibraltar
+                       supermarket since 1975) is app-only -- iOS and Android
+                       only, no web catalogue.
+    - nomnoms.gi       restaurant food-ordering aggregator, not a grocer.

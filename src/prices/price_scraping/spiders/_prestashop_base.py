@@ -135,6 +135,10 @@ class PrestashopBaseSpider(scrapy.Spider):
     name = None
     HOME_URL: str = ""
     MAX_PAGES = 60
+    # Product-card container selector. The default is the schema.org microdata
+    # PrestaShop's stock themes emit; subclasses whose theme drops microdata
+    # entirely (sxmleshalles_mf) override it with a class-based selector.
+    CARD_CSS = '[itemtype$="/Product"]'
 
     custom_settings = {
         "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
@@ -172,7 +176,7 @@ class PrestashopBaseSpider(scrapy.Spider):
     def parse_category(self, response):
         yield from self._new_category_requests(response)
 
-        containers = response.css('[itemtype$="/Product"]')
+        containers = response.css(self.CARD_CSS)
         page = response.meta["page"]
         self.total_category_pages += 1
         n = 0

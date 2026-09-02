@@ -7,6 +7,8 @@ url: https://comores-en-ligne.fr/
 language: fr
 cadence: weekly
 channel: marketplace
+archive_prefix: "comores-en-ligne.fr/fr/catalogue/product/"
+archive_path_re: '^/fr/catalogue/product/[^/?]+_\d+/?$'
 notes: |
   Comoros' FIRST price source of any kind (0 manifests before this pass).
   The prior sweep (2026-09-01, agent B) found only comoresmarket.com — whose

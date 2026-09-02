@@ -26,3 +26,22 @@ Caribbean (Massy operates physical stores here, CK Greaves and other regional na
 are plausible), so a fresh search plus the CaribeEats-style delivery-aggregator
 pattern (which worked for Grenada/St Kitts/Nevis/Dominica) are the two highest-yield
 next moves.
+
+---
+
+## Update 2026-09-01 (Tier-1 greenfield pass) — SOURCE SHIPPED
+
+St Vincent is no longer a zero-source country.
+
+| Source | URL | Channel | Status | Notes |
+|---|---|---|---|---|
+| C.K. Greaves & Company | https://www.ckgreaves.com/ | supermarket | **SHIPPED — `ckgreaves_vc`, 14,842 rows** | Vincentian grocery chain founded 1954 (Upper Bay Street, Kingstown; three locations, third opened Pembroke 2012). A genuine full-catalogue webshop: 30 departments, 15,828 stated products, prices in XCD. Full grocery range including fresh produce (201), dairy (600), meat (280), seafood (14), bread & bakery (65), plus household (2,443), beauty (1,705) and snacks (1,679). Tier 1A, WordPress "supershop" theme, permissive robots.txt. |
+| VincyCart | https://vincycart.com/ | — | **VIABLE BUT NOT SHIPPED — catalogue too small** | Real Laravel/Livewire diaspora gifting storefront ("order groceries for loved ones in SVG"), server-rendered, EC$ prices, genuine grocery SKUs. But the entire catalogue is **34 products** — confirmed two ways: `?per_page=100` reports "Showing 1-34 of 34", and the distinct product-slug count is exactly 34. Superseded by C.K. Greaves at 437x the size. Would be a legitimate second source if a wider SVG basket is ever wanted. |
+| eHub SVG | http://www.ehubsvg.com/ | — | **DEAD — account suspended** | Personal-shopper delivery service. HTTPS fails with an SSL hostname mismatch on both `ehubsvg.com` and `www.ehubsvg.com`; over HTTP it redirects to `/public/email-suspension`. |
+| Massy Stores SVG | https://www.massystoressvg.com/ | — | **DEAD — brochure only (RE-VERIFIED)** | The earlier finding stands. Re-probed this pass: the homepage does carry WooCommerce/wp-content markers, but all three Store API routes (`/wp-json/wc/store/v1/products`, `/?rest_route=…`, `/wp-json/wc/store/products`) still return `rest_no_route`. Theme markers are not a shop. |
+
+**Why this was missed twice.** The earlier pass recorded SVG as "0 sources,
+WebSearch budget exhausted" after checking only Massy Stores SVG and CaribeEats.
+C.K. Greaves — the country's obvious grocery chain, with a live webshop — was
+never probed. It surfaced on the first search of this pass. The recorded dead
+ends were accurate; the problem was that the search stopped after two names.

@@ -7,6 +7,8 @@ url: https://shop.channelislands.coop/
 language: en
 cadence: weekly
 channel: supermarket
+archive_prefix: "shop.channelislands.coop/product-details/"
+archive_path_re: '^/product-details/\d+'
 notes: |
   Channel Islands' FIRST price source of any kind (the country had 0
   manifests before this pass). Channel Islands Co-operative Society is the
