@@ -6,6 +6,13 @@ single-source children (`collect --country X --source Y -P 1`), which bounds the
 blast radius of a hung source to that source and lets a per-source timeout kill
 it. Workers hit different domains, so CONCURRENT_REQUESTS_PER_DOMAIN still
 holds per site.
+
+That per-domain guarantee breaks down when several sources sit behind one
+upstream edge that rate-limits by client IP: the children cannot see each
+other, so each one's AutoThrottle backs off against a ceiling it cannot
+measure and they strangle each other. Sources that share such an edge declare
+a `throttle_group:` in their manifest, and the dispatch loop runs at most one
+member of a group at a time.
 """
 
 from __future__ import annotations
@@ -37,6 +44,23 @@ _MEASURED_OFFSET = 10**12
 # A source that sets its own budget expects Scrapy to close itself at that mark;
 # the driver's kill must land after that, or the graceful flush never happens.
 SHUTDOWN_GRACE = 600
+
+# How long a worker waits after finding a throttle group busy. It re-queues and
+# takes other work, so this only paces the tail case where every remaining
+# source belongs to one occupied group.
+GROUP_BUSY_DELAY = 5.0
+
+# Empty reads to tolerate before a worker retires, covering the get/put window
+# of a deferred source without letting a crashed thread stall the run.
+EMPTY_RETRIES = 3
+
+# Concurrent children allowed per throttle group. One is right where the group
+# is a single upstream tenant (AS Watson's storefronts all sit behind one
+# Akamai edge); groups that merely share a host provider want a measured cap
+# instead, since serialising independent merchants costs more wall-clock than
+# the throttling does.
+GROUP_LIMITS: dict[str, int] = {}
+DEFAULT_GROUP_LIMIT = 1
 
 _DONE_STATUSES = {"ok", "ok_norows"}
 
@@ -321,12 +345,58 @@ def run_parallel(
                 rec["new_rows"],
             )
 
+    has_groups = any(m.throttle_group for m in ordered)
+    group_sems: dict[str, threading.Semaphore] = {}
+    group_guard = threading.Lock()
+
+    def group_sem(name: str) -> threading.Semaphore:
+        with group_guard:
+            sem = group_sems.get(name)
+            if sem is None:
+                sem = threading.Semaphore(GROUP_LIMITS.get(name, DEFAULT_GROUP_LIMIT))
+                group_sems[name] = sem
+            return sem
+
     def worker() -> None:
         while not halt.is_set():
             try:
                 m = pending.get_nowait()
             except queue.Empty:
-                return
+                # A deferred source is off-queue between its get and its put, so
+                # an empty read is not proof the run is done. Retry a bounded
+                # number of times: whichever worker holds that source stays in
+                # the loop and drains its group, so exiting here is safe once
+                # the window has passed. With no group in the run nothing is
+                # ever deferred, and an empty queue is final -- retrying there
+                # would tax every ordinary run with a needless retirement wait.
+                if not has_groups:
+                    return
+                for _ in range(EMPTY_RETRIES):
+                    time.sleep(GROUP_BUSY_DELAY)
+                    if halt.is_set():
+                        return
+                    try:
+                        m = pending.get_nowait()
+                        break
+                    except queue.Empty:
+                        continue
+                else:
+                    return
+            sem = group_sem(m.throttle_group) if m.throttle_group else None
+            if sem is not None and not sem.acquire(blocking=False):
+                # A sibling holds the group. Re-queue and pick up unrelated work
+                # instead of blocking: waiting here would idle a whole slot and
+                # trade throttled children for empty ones.
+                pending.put(m)
+                pending.task_done()
+                logger.debug(
+                    "deferring %s/%s: throttle group %r busy",
+                    m.country,
+                    m.source,
+                    m.throttle_group,
+                )
+                time.sleep(GROUP_BUSY_DELAY)
+                continue
             try:
                 record(
                     _collect_one(
@@ -339,6 +409,8 @@ def run_parallel(
                     )
                 )
             finally:
+                if sem is not None:
+                    sem.release()
                 pending.task_done()
             if _free_gb(project_root) < MIN_FREE_GB:
                 logger.error("halting: free disk fell below %d GiB", MIN_FREE_GB)
