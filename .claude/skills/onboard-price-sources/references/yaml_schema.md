@@ -237,6 +237,27 @@ in paths shifts by era on the same site (`pisiffik_gl` shows `%C3%B8` in
 CC-MAIN-2025-21 and raw `æggebægere` in 2022-21). Never use `\w+` or a
 lowercase-only hex class — `[^/?]+` handles both eras and both cases.
 
+**A path-count gain is not a row gain, and a spider-side gain does not
+transfer to the archive.** Widening a regex is measured in paths accepted;
+what matters is rows parsed. The two came apart badly on both sources widened
+on 2026-09-02, in opposite directions:
+
+- `sxmleshalles_mf` — the widening admitted 151 category pages (33 → 184
+  paths, 5.6x). Run through the real parse chain, those category captures
+  yield **zero rows**: the archive's JSON-LD there is `Organization` only,
+  with prices in `span.price` text. The 472 PDPs — the family the spider
+  never fetches and I never characterised — are the ones that carry JSON-LD
+  `Product` and parse. The 5.6x was a real number *for the spider* and worth
+  nothing for the archive.
+- `ckgreaves_vc` — the reverse: a path count that understated the win, since
+  the newly admitted PDPs were the whole value.
+
+So quote path counts as what they are, and get the archive side to run a
+parse-yield check per route family before treating any widening as a gain.
+`boutiqueacm_mc` is the cautionary case: 449 captures, 302 of them on
+families my regex admits, **0 rows** — its Yoast schema graph carries no
+`Product` node at all, so the price exists only as rendered markup.
+
 **Validate the widening both ways.** A wider pattern is only safe if it still
 accepts everything the old one did. Check the new regex against the spider's
 own collected URLs and confirm the match count is unchanged (96/96 and

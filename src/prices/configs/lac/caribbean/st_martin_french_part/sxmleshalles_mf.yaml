@@ -74,3 +74,16 @@ notes: |
   SPIDER PAGE FAMILY: listing only. PrestaShop category grids; the spider
   never fetches a PDP. Slugs are ASCII (PrestaShop strips accents), so unlike
   pisiffik_gl no percent-encoding era shift is expected here.
+
+  ARCHIVE PARSE YIELD (measured by the common_crawl session, 624 captures):
+    PDP      472 -> parse via JSON-LD Product, 15.50 USD each
+    category 130 -> ZERO rows
+  This INVERTS the widening above. The category pages I added are worth 130
+  paths and 0 rows, because the archive's JSON-LD on those pages is
+  Organization only, with prices left in span.price text. The PDPs -- the
+  family this spider never fetches and whose markup I never characterised --
+  are the ones that carry JSON-LD Product.
+
+  The 5.6x was a real gain FOR THE SPIDER and does not transfer to the
+  ARCHIVE. The widening is harmless so it stays, but do not cite 5.6x as an
+  archive number. A path-count gain is not a row gain.
