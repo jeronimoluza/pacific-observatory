@@ -8,7 +8,7 @@ language: fr
 cadence: weekly
 channel: supermarket
 archive_prefix: "www.sxmleshalles.com/"
-archive_path_re: '^/(?:fr|en)/[^/]+/\d+-[^/?]+\.html$'
+archive_path_re: '^/(?:fr|en)/(?:\d+-[^/?]+|[^/]+/\d+-[^/?]+\.html)$'
 notes: |
   SXM Les Halles -- St Martin's FIRST price source of any kind. Online
   grocery / villa / yacht provisioning service for the island of St Martin
@@ -53,3 +53,20 @@ notes: |
   The spider now takes the category from the URL's own path segment and falls
   back to the page label only if that fails. The classifier consumes
   `category`, so this was real signal being discarded.
+
+  ARCHIVE REGEX WIDENED to admit category pages. The first value matched
+  PDPs only ('^/(?:fr|en)/[^/]+/\d+-[^/?]+\.html$'), which is backwards for
+  this site: the SPIDER ITSELF never reads a PDP. It parses product cards off
+  category listings -- all 2,128 rows came from 823 category pages. A page
+  type we have already proven parseable was being excluded from the archive.
+
+  Measured on /fr/101-eaux: 12 distinct products and 12 price nodes in one
+  capture. A PDP capture yields one product.
+
+  Category URLs are /{lang}/<id>-<slug> with no .html and only two segments,
+  so the PDP pattern could never match them. New pattern admits both shapes.
+  Validated against 288 distinct paths from the live home, a category page
+  and a PDP: old accepted 33, new accepts 184 (5.6x), of which 151 are
+  category pages -- including the English storefront (/en/101-water), which
+  the old pattern also reached but had almost nothing to match there. All
+  2,128 collected PDP URLs still match, so nothing regressed.

@@ -7,8 +7,8 @@ url: https://boutiqueacm.com/
 language: fr
 cadence: weekly
 channel: fashion
-archive_prefix: "boutiqueacm.com/produit/"
-archive_path_re: '^/produit/[^/?]+/?$'
+archive_prefix: "boutiqueacm.com/"
+archive_path_re: '^/(?:en/)?(?:produit|collection)/[^/?]+/?$|^/(?:en/)?promotions/?$'
 notes: |
   Boutique ACM (Automobile Club de Monaco official shop) — Monaco's FIRST
   price source of any kind. The ACM is the Monégasque institution that
@@ -60,3 +60,22 @@ notes: |
   26 would need a second call per product to the variations endpoint --
   not attempted this pass. 96 + 26 = 122 exactly, so nothing else is missing.
   coicop_codes left unset (not narrow) — the classifier assigns leaves.
+
+  ARCHIVE PAIR WIDENED after measuring the live site. The first values --
+  prefix "boutiqueacm.com/produit/" and regex '^/produit/[^/?]+/?$' -- were
+  derived from the French PDP route alone and were wrong twice over:
+
+    1. The site runs a full mirrored ENGLISH storefront at /en/produit/,
+       /en/collection/ and /en/promotions/. The prefix excluded all of it
+       before the regex ever ran. This is the same defect that cost
+       pisiffik_gl its entire /gl/ storefront.
+    2. WooCommerce LISTING pages carry prices in the HTML and carry many
+       products per capture, which a PDP-only cap throws away. Measured:
+       /promotions/ renders 12 distinct products and 24 price nodes in a
+       single page; /collection/<x>/ renders 5. A PDP capture yields one.
+
+  Corrected to a bare-host prefix with the regex doing the selection.
+  Validated against 165 distinct paths harvested from the live FR and EN
+  home pages: the old regex accepted 15, the new one accepts 44 (2.9x), and
+  the new one still accepts 96 of 96 collected product URLs, so nothing
+  regressed.
