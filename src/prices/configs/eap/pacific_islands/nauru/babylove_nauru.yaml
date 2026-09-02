@@ -8,6 +8,8 @@ language: en
 currency: AUD
 cadence: weekly
 channel: specialty-food
+archive_prefix: "babylovenauru.com/products/"
+archive_path_re: '^/products/[^/?]+/?$'
 notes: |
   Nauru Shopify storefront with a public snacks collection. Re-verified live
   2026-09-01: the collection JSON endpoint returned priced snack/confectionery

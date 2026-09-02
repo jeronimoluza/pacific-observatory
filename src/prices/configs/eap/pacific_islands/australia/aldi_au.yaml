@@ -1,5 +1,5 @@
 spider: aldi_au
 language: en
 channel: supermarket
-archive_prefix: "www.aldi.com.au/product/"
-archive_path_re: "^/product/[^/]+"
+archive_prefix: "www.aldi.com.au/"
+archive_path_re: '(^/product/[^/]+)|(/ps/p/[^/?]+/?$)'

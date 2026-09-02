@@ -7,6 +7,8 @@ url: https://www.supermarchemontsinai.com/
 language: fr
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.supermarchemontsinai.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Probed live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=100
   -> HTTP 200, x-wp-total=485, x-wp-totalpages=5. Standard WooCommerce

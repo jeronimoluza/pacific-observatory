@@ -8,6 +8,8 @@ language: ru
 cadence: weekly
 channel: hypermarket
 timeout: 5400
+archive_prefix: "ynamdar.com/ru/ag/product/"
+archive_path_re: '^/ru/ag/product/[^/?]+/?$'
 notes: |
   Re-discovered 2026-08-31. "Ynamdar" is one of the named discovery leads
   in the wave-4 brief; the existing ashgabatmarket_tm.yaml notes already

@@ -8,6 +8,8 @@ url: https://www.kibo.mg/tananarive/
 language: fr
 cadence: weekly
 timeout: 7200
+archive_prefix: "www.kibo.mg/tananarive/"
+archive_path_re: '^/tananarive/[^/]+/[^/]+\.html$'
 notes: |
   Confirmed live 2026-09-01. Custom PrestaShop install ("AngarTheme"),
   multi-boutique with 4 store paths (Tananarive, Tanjombato, Tamatave,

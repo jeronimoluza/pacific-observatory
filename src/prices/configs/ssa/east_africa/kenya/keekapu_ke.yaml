@@ -7,6 +7,8 @@ url: https://www.keekapu.com/
 language: en
 cadence: weekly
 channel: specialty-food
+archive_prefix: "www.keekapu.com/product/"
+archive_path_re: '^/product/[a-z0-9-]+$'
 notes: |
   Nairobi fresh-produce/grocery specialist. Angular SPA, empty HTML shell -
   the main-*.js bundle embeds a public backend config for the white-label

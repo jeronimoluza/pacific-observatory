@@ -9,7 +9,7 @@ currency: USD
 cadence: weekly
 channel: pharmacy
 archive_prefix: "www.farmaciasannicolas.com/producto/"
-archive_path_re: '^/producto/[^/?]+'
+archive_path_re: '(?i)^/producto/[^/?]+'
 notes: |
   Farmacias San Nicolas, El Salvador. Blazor Server-rendered storefront;
   each category page prerenders 20 product cards server-side, but the

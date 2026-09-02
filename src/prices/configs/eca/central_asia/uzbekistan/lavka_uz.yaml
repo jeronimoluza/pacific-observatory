@@ -9,6 +9,8 @@ currency: UZS
 cadence: weekly
 channel: supermarket
 coicop_codes: null
+archive_prefix: "lavka.yandex.uz/catalog/grocery/category/"
+archive_path_re: '^/catalog/grocery/category/[A-Za-z_]+$'
 notes: |
   Yandex Lavka -- rapid grocery delivery (Tashkent). Client-rendered React
   app that serves a fake "demo catalog" with no delivery address (on-page

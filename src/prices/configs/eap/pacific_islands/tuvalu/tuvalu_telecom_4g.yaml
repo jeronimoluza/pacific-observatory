@@ -9,6 +9,8 @@ language: en
 currency: AUD
 cadence: monthly
 channel: null
+archive_prefix: "www.tuvalutelecom.tv/"
+archive_path_re: '^/4g-plan/?$'
 notes: |
   Official Tuvalu Telecommunications Corporation 4G mobile internet plan page.
   The Wix-rendered HTML includes the data allowances and AUD prices as rich text

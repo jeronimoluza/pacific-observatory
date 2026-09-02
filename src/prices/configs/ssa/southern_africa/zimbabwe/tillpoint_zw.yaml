@@ -7,6 +7,8 @@ url: https://tillpoint.co.zw/
 language: en
 cadence: weekly
 channel: supermarket
+archive_prefix: "tillpoint.co.zw/product/"
+archive_path_re: '^/product/[^/]+$'
 notes: |
   Probed live 2026-08-31. React Native/Expo web app; the server-rendered
   HTML is an identical ~52KB static shell for every route ("/" and

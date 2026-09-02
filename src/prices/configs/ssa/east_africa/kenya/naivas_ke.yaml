@@ -8,6 +8,7 @@ language: en
 cadence: weekly
 channel: supermarket
 timeout: 3600
+archive_prefix: "naivas.online/"
 notes: |
   Largest Kenyan-owned chain. Corporate naivas.info says "Page Coming Soon"
   and links out - the real catalogue is naivas.online, NOT naivas.info.

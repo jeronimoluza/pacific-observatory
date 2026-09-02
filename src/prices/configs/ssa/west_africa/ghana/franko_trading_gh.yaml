@@ -7,8 +7,8 @@ url: https://frankotrading.com/
 language: en
 cadence: weekly
 channel: electronics
-archive_prefix: "frankotrading.com/product/"
-archive_path_re: '^/product/[^/?]+'
+archive_prefix: "frankotrading.com/home/"
+archive_path_re: '^/home/\d+-[^/]+\.html$'
 notes: |
   Verified live 2026-09-01. Public site is a Vite SPA (client-side routed;
   every path incl. /product/<id> serves the same index.html shell). Found

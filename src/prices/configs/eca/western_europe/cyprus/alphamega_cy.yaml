@@ -8,6 +8,7 @@ language: en
 cadence: weekly
 channel: hypermarket
 timeout: 1800
+archive_prefix: "alphamega.com.cy/en/groceries/"
 notes: |
   Alphamega Hypermarkets, largest Cypriot hypermarket chain. No
   WooCommerce/Shopify/Magento/VTEX surface -- bespoke .NET "Swift"

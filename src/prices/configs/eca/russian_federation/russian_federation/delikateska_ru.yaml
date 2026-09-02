@@ -7,6 +7,8 @@ url: https://delikateska.ru/
 language: ru
 cadence: daily
 channel: specialty-food
+archive_prefix: "delikateska.ru/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Discovered live 2026-09-01 (wave 8, filling Russia's food gap).
   Delikateska.ru ("online store of groceries and delicacies") is a Moscow

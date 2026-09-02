@@ -8,8 +8,8 @@ language: es
 currency: PEN
 cadence: weekly
 channel: home-improvement
-archive_prefix: "www.sodimac.com.pe/sodimac-pe/articulo/"
-archive_path_re: '^/sodimac\-pe/articulo/[^/?]+'
+archive_prefix: "www.sodimac.com.pe/sodimac-pe/"
+archive_path_re: '^/sodimac\-pe/(articulo|product)/[^/?]+'
 notes: |
   Sodimac Peru -- home-improvement/hardware banner (Falabella Group).
   Checked for an existing Sodimac spider first: homecenter_co.py covers

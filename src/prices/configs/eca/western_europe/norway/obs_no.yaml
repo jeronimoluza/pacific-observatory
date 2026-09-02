@@ -8,6 +8,8 @@ language: "no"
 cadence: weekly
 channel: hypermarket
 timeout: 5400
+archive_prefix: "www.obs.no/"
+archive_path_re: '^/.+/\d{6,8}/?$'
 notes: |
   Verified live 2026-08-31: Coop Norge's corporate site (coop.no) carries no
   webshop, and Coop's own delivery service (matlevering.coop.no) requires a

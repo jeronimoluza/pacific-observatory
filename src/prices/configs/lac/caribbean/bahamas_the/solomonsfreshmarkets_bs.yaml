@@ -9,6 +9,8 @@ currency: BSD
 cadence: weekly
 channel: supermarket
 timeout: 3600
+archive_prefix: "harborbaymarkets.storebyweb.com/i/"
+archive_path_re: '^/i/[^/?]+/?$'
 notes: |
   Solomon's Fresh Market (Harbour Bay location), Nassau -- a supermarket
   chain of AML Foods Ltd., a Bahamian public company (BISX: AML)

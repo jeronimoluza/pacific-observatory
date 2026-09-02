@@ -9,6 +9,8 @@ language: en
 currency: AUD
 cadence: monthly
 channel: null
+archive_prefix: "www.digicelpacific.com/mobile/nr/promotions/"
+archive_path_re: '^/mobile/nr/promotions/(smart-data-sim-plans|new-super-magmein-plans)/?$'
 notes: |
   Official Digicel Nauru promotion pages for Smart Data SIM and Super Magmein
   prepaid bundles. The public Next.js payload exposes offer cards and JSON

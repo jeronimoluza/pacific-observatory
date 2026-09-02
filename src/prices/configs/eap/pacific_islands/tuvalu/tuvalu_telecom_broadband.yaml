@@ -9,6 +9,8 @@ language: en
 currency: AUD
 cadence: monthly
 channel: null
+archive_prefix: "www.tuvalutelecom.tv/"
+archive_path_re: '^/(broadband-plans|kasefika-satellite-internet)/?$'
 notes: |
   Official Tuvalu Telecommunications Corporation broadband and Kasefika
   satellite internet pages. The spider combines the server-rendered broadband

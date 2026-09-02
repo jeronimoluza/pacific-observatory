@@ -7,6 +7,8 @@ url: https://www.digicelpacific.com/mobile/to/bundles
 language: en
 cadence: weekly
 channel: other
+archive_prefix: "www.digicelpacific.com/mobile/to/"
+archive_path_re: '^/mobile/to/bundles/?$'
 notes: |
   Probed 2026-08-31. Digicel Pacific's Next.js bundles page for Tonga
   (/mobile/to/bundles) embeds its offer cards as JSON inside

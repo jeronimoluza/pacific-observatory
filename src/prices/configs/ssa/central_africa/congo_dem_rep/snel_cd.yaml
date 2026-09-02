@@ -10,6 +10,8 @@ channel: null
 coicop_codes:
   - "04.5.1.0"
 timeout: 60
+archive_prefix: "www.snel.cd/"
+archive_path_re: '^/?$'
 notes: |
   SNEL is the DRC state electricity utility. Its homepage publishes the
   full government-set tariff grid (Basse/Moyenne/Haute Tension, by

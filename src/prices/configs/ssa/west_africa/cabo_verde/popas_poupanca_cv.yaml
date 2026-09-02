@@ -7,6 +7,8 @@ url: https://popaspoupancas.cv/
 language: pt
 cadence: weekly
 channel: specialty-food
+archive_prefix: "popaspoupancas.cv/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Cabo Verde wholesale/general-commerce grocer ("Comercio Geral"), Praia.
   Standard WooCommerce Store API at /wp-json/wc/store/v1/products, no auth

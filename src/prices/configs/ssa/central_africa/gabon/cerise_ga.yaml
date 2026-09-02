@@ -8,6 +8,8 @@ language: fr
 cadence: weekly
 channel: supermarket
 timeout: 900
+archive_prefix: "cerise.ga/p/"
+archive_path_re: '^/p/[a-z0-9-]+$'
 notes: |
   Probed live 2026-08-31. cerise.ga is a Vite/React SPA with no product
   data in the raw HTML (only a preview window.__INITIAL_STATE__); it is a

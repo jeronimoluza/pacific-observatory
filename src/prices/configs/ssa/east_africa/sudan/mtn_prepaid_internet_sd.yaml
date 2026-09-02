@@ -7,6 +7,8 @@ url: https://www.mtn.sd/bundle-type/20
 language: en
 cadence: weekly
 channel: null
+archive_prefix: "www.mtn.sd/"
+archive_path_re: '^/bundle-type/20/?$'
 notes: |
   Probed 2026-08-31 with curl_cffi impersonate="chrome124": HTTP 200,
   Next.js page but fully server-rendered (unlike Zain's SharePoint page) --

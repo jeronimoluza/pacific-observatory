@@ -9,6 +9,8 @@ language: en
 currency: BSD
 cadence: monthly
 channel: other
+archive_prefix: "www.bplco.com/"
+archive_path_re: '^/fuel-charge-update/?$'
 notes: |
   Bahamas Power and Light (BPL) -- sole electricity utility for New
   Providence and the Family Islands. bplco.com/fuel-charge-update/ is a

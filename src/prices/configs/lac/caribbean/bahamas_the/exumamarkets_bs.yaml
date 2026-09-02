@@ -9,6 +9,8 @@ currency: BSD
 cadence: weekly
 channel: supermarket
 timeout: 1800
+archive_prefix: "exumamarkets.storebyweb.com/i/"
+archive_path_re: '^/i/[^/?]+/?$'
 notes: |
   Exuma Markets, Great Exuma -- an AML Foods Ltd. supermarket on a Family
   Island (not New Providence). www.exumamarkets.com redirects to

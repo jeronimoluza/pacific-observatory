@@ -6,8 +6,8 @@ spider: koro_at
 language: de
 cadence: weekly
 channel: specialty-food
-archive_prefix: "www.koro-shop.at/detail/"
-archive_path_re: '^/detail/[^/?]+'
+archive_prefix: "www.koro-shop.at/"
+archive_path_re: '^/[a-z0-9\-]+-[0-9]+(-x-[0-9]+)?-(g|kg|ml|l|stk)$'
 notes: |
   Nuxt3 frontend over a shared Shopware 6 backend (bff.koro.com) with one
   sales channel per country. Store API POST /store-api/product with

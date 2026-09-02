@@ -9,6 +9,8 @@ language: fr
 currency: XPF
 cadence: monthly
 channel: null
+archive_prefix: "www.mobilecity.nc/mobilemania/mobilis/"
+archive_path_re: '^/mobilemania/mobilis/contrats/?$'
 notes: |
   MobileCity New Caledonia reference page for OPT/Mobilis mobile tariffs. The
   page is server-rendered and exposes plan names, monthly XPF prices, and plan

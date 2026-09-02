@@ -8,6 +8,8 @@ language: fr
 cadence: weekly
 channel: supermarket
 timeout: 900
+archive_prefix: "zoomiapp.com/vendor/"
+archive_path_re: '^/vendor/[^/]+/product/[^/?]+/?$'
 notes: |
   Multi-vendor food-delivery marketplace. Runs on a "Royoorders"-branded
   white-label template also seen elsewhere, but THIS deployment is

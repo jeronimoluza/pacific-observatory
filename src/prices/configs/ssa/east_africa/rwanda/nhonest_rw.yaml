@@ -7,6 +7,8 @@ spider: nhonest_rw
 url: https://www.honestsupermarket.com/
 language: en
 cadence: monthly
+archive_prefix: "www.honestsupermarket.com/"
+archive_path_re: '^/?$'
 notes: |
   New source (wave 12, 2026-09-01): N.Honest Supermarket, Kigali's main
   modern online supermarket chain (30-40 min delivery, Kigali only). The

@@ -7,6 +7,8 @@ url: https://www.drcmart.com/
 language: en
 cadence: weekly
 channel: electronics
+archive_prefix: "www.drcmart.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Shopify storefront, /products.json?limit=250&page=N, no auth. Probed
   live 2026-08-31: HTTP 200, 154 distinct products on page 1, page 2 empty

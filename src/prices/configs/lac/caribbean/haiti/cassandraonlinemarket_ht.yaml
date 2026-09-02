@@ -7,6 +7,8 @@ url: https://www.cassandraonlinemarket.com/
 language: en
 cadence: weekly
 channel: hypermarket
+archive_prefix: "www.cassandraonlinemarket.com/product/"
+archive_path_re: '^/product/[a-z0-9%-]+/?$'
 notes: |
   ORCHESTRATOR VERIFICATION 2026-09-01: channel `hypermarket` upheld.
   Locality confirmed on the live site -- "delivery on the entire Haitian

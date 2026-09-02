@@ -7,6 +7,8 @@ url: https://www.yoboumarket.com/
 language: fr
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.yoboumarket.com/"
+archive_path_re: '^/?$'
 notes: |
   Next.js app with an open, unauthenticated JSON API. GET
   https://www.yoboumarket.com/api/products?limit=all&includeInactive=true

@@ -9,7 +9,7 @@ currency: BAM
 cadence: weekly
 channel: dept-store
 archive_prefix: "ekupi.ba/"
-archive_path_re: '/p/E[KR]\d+/?$'
+archive_path_re: '(?:/p/E[KR]\d+/?|-g?\d+\.aspx)$'
 notes: |
   eKupi Bosnia and Herzegovina — SAP Commerce/Hybris general department-store
   storefront (electronics, computers, appliances, tools, auto, home & garden,

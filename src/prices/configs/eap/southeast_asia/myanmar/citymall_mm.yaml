@@ -4,10 +4,10 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: citymall_mm
 url: https://www.citymall.com.mm/
-archive_prefix: "www.citymall.com.mm/citymall/my/"
-archive_path_re: '^/citymall/my/.+/p/[A-Za-z0-9_]+$'
 language: my
 channel: supermarket
+archive_prefix: "www.citymall.com.mm/"
+archive_path_re: '(^/citymall/my/.+/p/[A-Za-z0-9_]+$)|(^/stores_en/catalog/product/view/id/[0-9]+/s/[^/?]+/?$)'
 notes: |
   Phase-1 schema upgrade 2026-09-01. Not broken — pre-upgrade YAML lacked the
   four-axis fields and `url:`, which loader-defaulted to None (matching the

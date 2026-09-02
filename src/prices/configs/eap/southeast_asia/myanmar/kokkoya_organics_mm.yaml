@@ -7,6 +7,8 @@ url: https://kokkoyaorganics.com/
 language: en
 cadence: weekly
 channel: specialty-food
+archive_prefix: "kokkoyaorganics.com/"
+archive_path_re: '^/collections/[^/]+/products/[^/?]+/?$'
 notes: |
   Discovered 2026-09-01 (myanmore.com "online grocery stores" roundup ->
   kokkoyaorganics.com). Standard Shopify storefront (Canopy 4.0.0 theme),

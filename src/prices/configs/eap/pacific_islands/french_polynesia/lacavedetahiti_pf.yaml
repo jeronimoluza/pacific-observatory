@@ -8,6 +8,8 @@ language: fr
 currency: XPF
 cadence: weekly
 channel: specialty-food
+archive_prefix: "lacavedetahiti.pf/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
 notes: |
   French Polynesia specialty food and beverage retailer with physical shops in
   Papeete and Arue. WooCommerce Store API is public and unauthenticated:

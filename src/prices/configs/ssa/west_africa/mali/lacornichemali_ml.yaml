@@ -8,6 +8,8 @@ source_key: lacornichemali_ml
 url: https://lacornichemali.com/
 language: fr
 cadence: weekly
+archive_prefix: "lacornichemali.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   La Corniche Mali (Bamako) -- WordPress 6.6.7 + WooCommerce 9.8.7 on the
   "Freshio" grocery theme, public unauthenticated Store API

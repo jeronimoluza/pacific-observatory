@@ -8,6 +8,8 @@ language: lt
 cadence: weekly
 channel: supermarket
 timeout: 900
+archive_prefix: "barbora.lt/produktai/"
+archive_path_re: '^/produktai/[^/?]+/?$'
 notes: |
   Probed live 2026-08-31 with curl_cffi impersonate=chrome124 (200, 57KB).
   Maxima Group's e-grocery storefront -- a DIFFERENT chain from Rimi

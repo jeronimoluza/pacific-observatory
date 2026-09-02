@@ -8,6 +8,8 @@ language: en
 currency: USD
 cadence: monthly
 channel: specialty-food
+archive_prefix: "www.rreinc.com/tidetablemenu.html"
+archive_path_re: '^/tidetablemenu\.html$'
 notes: |
   Official Tide Table Restaurant and Lounge menu page from Robert Reimers
   Enterprises in Majuro. The page exposes beverage names and USD prices as

@@ -8,6 +8,8 @@ url: https://areeba.gn/pass-internet/
 language: fr
 cadence: weekly
 channel: null
+archive_prefix: "areeba.gn/"
+archive_path_re: '^/pass-internet/?$'
 notes: |
   Discovery candidate (not on the original brief list) found via
   WebSearch for Guinean telco operators, 2026-08-31. Orange Guinée

@@ -7,6 +7,8 @@ url: https://www.spar.co.zw/products
 language: en
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.spar.co.zw/products/"
+archive_path_re: '^/products/\d+/[a-z0-9-]+/?$'
 notes: |
   Probed live 2026-08-31. Server-rendered ASP.NET; /products returns 24
   cards plus the full nav of 12 departments / 181 subdepartments. The PDP

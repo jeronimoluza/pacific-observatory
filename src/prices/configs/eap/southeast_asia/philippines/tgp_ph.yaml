@@ -4,8 +4,8 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: tgp_ph
 url: https://tgp.com.ph
-archive_prefix: "tgp.com.ph/"
-archive_path_re: '^/[^/]+/\d+-[a-z0-9-]+\.html$'
 language: en
 cadence: weekly
 channel: pharmacy
+archive_prefix: "tgp.com.ph/"
+archive_path_re: '^(?:/[^/]+/\d+-[a-z0-9-]+\.html|/product/[^/]+/?)$'

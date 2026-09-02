@@ -7,6 +7,8 @@ url: https://onlineshop.aa.com.mm
 language: my
 cadence: daily
 channel: pharmacy
+archive_prefix: "onlineshop.aa.com.mm/all-products"
+archive_path_re: '^/all-products/?$'
 notes: |
   AA Medical Products — largest pharmaceutical distributor in Myanmar.
   Laravel storefront; /all-products?page=N (15/page) embeds each product as

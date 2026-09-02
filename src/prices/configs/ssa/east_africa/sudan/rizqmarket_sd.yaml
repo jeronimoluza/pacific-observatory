@@ -8,6 +8,8 @@ language: ar
 cadence: weekly
 channel: marketplace
 timeout: 1800
+archive_prefix: "rizqmarket.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Probed 2026-08-31: curl_cffi impersonate="chrome124" HTTP 200, standard
   WooCommerce Store API at /wp-json/wc/store/v1/products?per_page=100,

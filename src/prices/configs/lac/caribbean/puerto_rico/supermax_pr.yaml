@@ -7,6 +7,8 @@ url: https://www.supermaxonline.com/
 language: es
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.supermaxonline.com/guaynabo/"
+archive_path_re: '^/guaynabo/[^/]+/[^/]+/\d+/[^/?]+/?$'
 notes: |
   SuperMax (PR-owned chain, 16 stores, HQ San Juan area — confirmed PR-domestic:
   storefront is scoped to the Guaynabo store, phone/app targets PR). Bespoke

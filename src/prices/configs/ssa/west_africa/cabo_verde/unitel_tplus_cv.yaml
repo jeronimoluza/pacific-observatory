@@ -7,6 +7,8 @@ url: https://www.uniteltmais.cv/private/mobile/mobile-plans/play
 language: pt
 cadence: monthly
 channel: other
+archive_prefix: "www.uniteltmais.cv/"
+archive_path_re: '^(?:/private/mobile/(?:internet|mobile-plans/play)/?|/index\.php/oferta/[^/]+/[^/]+-detail)$'
 notes: |
   Probed live 2026-08-31. Unitel T+ (uniteltmais.cv) is one of Cabo
   Verde's two mobile/fixed operators (in-country .cv domain, prices in

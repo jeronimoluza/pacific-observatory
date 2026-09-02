@@ -8,6 +8,8 @@ language: en
 cadence: weekly
 channel: hypermarket
 timeout: 900
+archive_prefix: "www.pricesmart.com/en-bb/product/"
+archive_path_re: '^/en-bb/product/[A-Za-z0-9-]+/\d+$'
 notes: |
   Warehouse-club (PriceSmart, Caribbean/Central America footprint), tagged
   `hypermarket` per GLOSSARY.md ("big-box genuinely cross-selling food and

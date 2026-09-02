@@ -9,6 +9,8 @@ language: en
 currency: XCD
 cadence: monthly
 channel: other
+archive_prefix: "www.apua.ag/customer-service/"
+archive_path_re: '^/customer-service/rates/?$'
 notes: |
   Discovery source. APUA (Antigua Public Utilities Authority) is the sole
   electricity and water utility for Antigua and Barbuda -- the rates page

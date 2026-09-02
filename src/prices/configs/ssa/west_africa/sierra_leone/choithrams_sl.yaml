@@ -7,6 +7,8 @@ channel: supermarket
 url: https://247bigmarket.com/store/freetown/
 language: en
 cadence: weekly
+archive_prefix: "247bigmarket.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Choithrams (Freetown-headquartered supermarket chain) via its two vendor
   storefronts on 247bigmarket.com -- Sierra Leone's own WooCommerce +

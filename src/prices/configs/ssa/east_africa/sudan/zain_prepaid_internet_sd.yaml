@@ -7,6 +7,8 @@ url: https://www.sd.zain.com/en/prepaid-internet-offers
 language: en
 cadence: weekly
 channel: null
+archive_prefix: "www.sd.zain.com/en/"
+archive_path_re: '^/en/prepaid-internet-offers/?$'
 notes: |
   Probed 2026-08-31 with curl_cffi impersonate="chrome124": HTTP 200 but the
   page is a SharePoint shell with zero pricing text -- all 18 bundle cards

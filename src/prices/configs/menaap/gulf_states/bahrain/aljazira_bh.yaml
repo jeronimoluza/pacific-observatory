@@ -8,6 +8,8 @@ language: en
 cadence: daily
 channel: supermarket
 timeout: 3600
+archive_prefix: "www.aljazirasupermarkets.com/categories/"
+archive_path_re: '^/categories/[^/?]+/[^/?]+/?$'
 notes: |
   Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Al Jazira
   Group, 15-store Bahrain grocery chain since 1965 (own domain, .bh group

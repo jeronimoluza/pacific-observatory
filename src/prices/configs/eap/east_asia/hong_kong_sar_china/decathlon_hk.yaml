@@ -7,8 +7,8 @@ channel: fashion
 url: https://www.decathlon.com.hk/
 language: en
 cadence: weekly
-archive_prefix: "www.decathlon.com.hk/p/"
-archive_path_re: '^/p/[^/?]+'
+archive_prefix: "www.decathlon.com.hk/"
+archive_path_re: '^/(?:(?:en|zh)/)?p/[^?]+$'
 notes: |
   Onboarded 2026-08-07 (round-3 non-food shard, COICOP 03/05/08/09 gap).
   Same shared platform as decathlon_th — see _decathlon_base.py docstring.

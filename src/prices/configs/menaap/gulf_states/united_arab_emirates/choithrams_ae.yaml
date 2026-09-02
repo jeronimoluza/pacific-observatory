@@ -7,6 +7,8 @@ url: https://www.choithrams.com/
 language: en
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.choithrams.com/"
+archive_path_re: '(^/product/[0-9]+/?$)|(^/en/shop/catalogue/(?!category/)[^/]+_[0-9]+/?$)'
 notes: |
   Verified live 2026-09-01: Choithrams, Dubai-headquartered UAE supermarket
   chain, www.choithrams.com. Angular Universal SPA shell with no product

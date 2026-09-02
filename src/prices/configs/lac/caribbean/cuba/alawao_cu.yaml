@@ -8,6 +8,8 @@ language: es
 currency: USD
 cadence: weekly
 channel: marketplace
+archive_prefix: "alawao.com/producto/"
+archive_path_re: '^/producto/[^/?]+/?$'
 notes: |
   Diaspora remittance/delivery platform: pay abroad in USD, deliver to Cuba.
   Real, usable Cuba price signal but NOT a domestic Cuban retail price in

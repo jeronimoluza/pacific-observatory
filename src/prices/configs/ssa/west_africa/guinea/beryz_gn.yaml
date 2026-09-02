@@ -7,6 +7,7 @@ url: https://www.beryz.com/fr/alimentation
 language: fr
 cadence: weekly
 channel: fresh-market
+archive_prefix: "www.beryz.com/fr/"
 notes: |
   Known from earlier probing: Beryz is a Next.js SPA and /fr/catalogue
   renders zero products server-side -- confirmed again 2026-08-31 (App

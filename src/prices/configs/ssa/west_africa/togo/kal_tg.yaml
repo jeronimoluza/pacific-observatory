@@ -8,6 +8,8 @@ language: fr
 cadence: weekly
 channel: marketplace
 timeout: 600
+archive_prefix: "www.kal-app.com/partners/"
+archive_path_re: '^/partners/[^/?]+/products/[^/?]+/?$'
 notes: |
   Verified live 2026-08-31. KAL is a Lome delivery super-app (Next.js) with
   express/restaurants/courses/pharmacie/boutiques verticals. Listing pages

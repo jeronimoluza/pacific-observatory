@@ -8,6 +8,8 @@ language: pt
 cadence: weekly
 channel: hypermarket
 timeout: 900
+archive_prefix: "recheio.co.mz/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Probed live 2026-08-31. Custom .NET storefront (no known e-commerce
   platform). js/ProductList.js calls POST /api/api/v2/Product/Search with

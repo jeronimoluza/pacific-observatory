@@ -9,6 +9,8 @@ language: en
 currency: AUD
 cadence: monthly
 channel: null
+archive_prefix: "www.vodafone.com.ki/Services/Postpaid-Plan/"
+archive_path_re: '^/Services/Postpaid-Plan/Mobile/?$'
 notes: |
   Official Vodafone Kiribati postpaid mobile data tariff page. The page exposes
   two plain HTML tables: seven monthly mobile data plans and five reload data

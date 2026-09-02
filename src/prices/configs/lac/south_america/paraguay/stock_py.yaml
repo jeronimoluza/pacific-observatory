@@ -8,6 +8,8 @@ language: es
 cadence: weekly
 channel: supermarket
 timeout: 1800
+archive_prefix: "www.stock.com.py/products/"
+archive_path_re: '^/products/\d+-[^/?]+\.aspx$'
 notes: |
   Asuncion-area supermarket, same commercial group as superseis_py per the
   onboarding brief, but a genuinely different platform: nopCommerce (ASP.NET

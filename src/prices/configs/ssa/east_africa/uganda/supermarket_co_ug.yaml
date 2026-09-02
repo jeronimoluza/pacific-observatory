@@ -8,7 +8,7 @@ language: en
 cadence: weekly
 channel: supermarket
 archive_prefix: "supermarket.co.ug/"
-archive_path_re: '^/\d+-[a-z0-9-]+\.html$'
+archive_path_re: '^/(?:[a-z0-9-]+/)?\d+-+[a-z0-9-]+\.html$'
 notes: |
   PrestaShop storefront (itemprop-tagged category HTML, [id]-[slug] URL
   convention), scaffolded on the shared _prestashop_base. Kampala grocery

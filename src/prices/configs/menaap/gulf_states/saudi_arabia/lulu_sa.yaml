@@ -7,6 +7,8 @@ url: https://gcc.luluhypermarket.com/en-sa/
 language: en
 cadence: weekly
 channel: hypermarket
+archive_prefix: "gcc.luluhypermarket.com/en-sa/"
+archive_path_re: '^/en-sa/.+/p/\d+/?$'
 notes: |
   Verified live 2026-08-31: LuLu Hypermarket Saudi Arabia, en-sa locale of
   the shared GCC gcc.luluhypermarket.com storefront (same platform as the

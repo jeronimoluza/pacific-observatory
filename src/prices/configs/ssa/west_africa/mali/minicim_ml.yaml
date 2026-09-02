@@ -8,6 +8,8 @@ source_key: minicim_ml
 url: https://minicim.ml/
 language: fr
 cadence: weekly
+archive_prefix: "minicim.ml/shop/"
+archive_path_re: '^/shop/(?!category/|cart$)[^/]+/[^/?]+-\d+/?$'
 notes: |
   CIM Market (Bamako, Mali) -- Odoo 19 "website_sale" eCommerce storefront,
   7 physical stores across Bamako, online ordering with pickup/delivery.

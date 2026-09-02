@@ -8,6 +8,8 @@ url: https://dara.af/
 language: en
 currency: AFN
 cadence: weekly
+archive_prefix: "dara.af/en/shop/"
+archive_path_re: '^/en/shop/[a-z0-9-]+$'
 notes: |
   Named first-party grocery merchant "Melat Shop" split out of the Dara.af
   marketplace (https://dara.af/), per onboarding rule 14, rather than

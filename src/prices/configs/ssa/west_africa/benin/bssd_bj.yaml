@@ -7,6 +7,8 @@ url: https://bssdalimentation.vercel.app/
 language: fr
 cadence: weekly
 channel: convenience
+archive_prefix: "bssdalimentation.vercel.app/"
+archive_path_re: '^/$'
 notes: |
   Candidate note flagged this as a Vercel-hosted React SPA needing XHR
   inspection; the page itself has no server-rendered products and no

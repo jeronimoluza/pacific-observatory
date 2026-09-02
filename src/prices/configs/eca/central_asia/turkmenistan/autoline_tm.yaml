@@ -7,6 +7,8 @@ url: https://autoline-tm.com/-/avtomobili--c1169
 language: ru
 cadence: weekly
 channel: marketplace
+archive_prefix: "autoline-tm.com/-/prodazha/avtomobili/"
+archive_path_re: '^/-/prodazha/avtomobili/[^/]+/[^/?]+--[0-9]+/?$'
 notes: |
   Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Turkmenistan
   storefront of the multi-country Autoline used-vehicle classifieds

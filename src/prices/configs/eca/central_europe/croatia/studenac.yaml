@@ -7,6 +7,8 @@ url: https://www.studenac.hr/tjedna-akcija
 language: hr
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.studenac.hr/tjedna-akcija"
+archive_path_re: '^/tjedna-akcija/?$'
 notes: |
   IMPORTANT SCOPE NOTE: studenac.hr has no browsable full-SKU online
   storefront (it is a corporate/store-locator site). The only

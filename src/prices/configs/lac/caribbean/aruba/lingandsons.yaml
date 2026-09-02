@@ -7,8 +7,8 @@ url: https://shop.lingandsons.com/
 language: en
 cadence: weekly
 channel: supermarket
-archive_prefix: "shop.lingandsons.com/products/"
-archive_path_re: '^/products/[^/?]+'
+archive_prefix: "shop.lingandsons.com/product"
+archive_path_re: '^/products?/[^/?]+'
 notes: |
   Shopify storefront, /products.json?limit=250&page=N, no auth. Re-verified
   live 2026-08-06: HTTP 200, real SKUs (e.g. 'Green Cabbage' 4.49 AWG, per

@@ -8,6 +8,8 @@ language: en
 currency: AUD
 cadence: monthly
 channel: null
+archive_prefix: "kaupulefunafuti.tv/"
+archive_path_re: '^/market/?$'
 notes: |
   Kaupule Funafuti public market page links to a Word document titled Market.
   The DOCX contains a simple two-column table of market item prices, including

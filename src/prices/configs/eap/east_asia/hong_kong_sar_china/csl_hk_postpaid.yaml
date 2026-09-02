@@ -7,3 +7,5 @@ url: https://www.hkcsl.com/en/service-plan/
 language: en
 cadence: weekly
 channel: null
+archive_prefix: "www.hkcsl-5g.com/en/"
+archive_path_re: '^/en/5g-tariff-plan/?$'

@@ -7,6 +7,8 @@ url: https://mapp.sa/relon/Category/98044/products
 language: ar
 cadence: weekly
 channel: specialty-food
+archive_prefix: "mapp.sa/relon/product/"
+archive_path_re: '^/relon/product/\d+/details/.+$'
 notes: |
   "relon aden / ريلون عدن" — a single-tenant storefront on mapp.sa, a Saudi
   multi-tenant store-builder SaaS (same category of platform as Zid/Salla).

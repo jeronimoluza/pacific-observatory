@@ -7,6 +7,8 @@ url: https://www.migros.com.tr/
 language: tr
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.migros.com.tr/"
+archive_path_re: '^(?:/[a-z0-9-]+-p-[a-z0-9]+/?|/\d+\.html)$'
 notes: |
   Migros -- Turkiye's largest supermarket chain, brief's strongest lead.
   Angular SPA; category HTML ships zero prices client-side. Playwright

@@ -7,6 +7,8 @@ url: https://epharmacy.net/
 language: en
 cadence: weekly
 channel: pharmacy
+archive_prefix: "epharmacy.net/products/"
+archive_path_re: '^/products/[^/?]+/?$'
 notes: |
   ePharmaCY LTD, online pharmacy based in Limassol, Cyprus. Standard
   Shopify storefront (shop domain epharmacy-cy.myshopify.com), plain

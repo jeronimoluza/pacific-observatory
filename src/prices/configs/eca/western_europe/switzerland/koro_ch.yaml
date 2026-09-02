@@ -6,8 +6,8 @@ spider: koro_ch
 language: de
 cadence: weekly
 channel: specialty-food
-archive_prefix: "www.koro-shop.ch/detail/"
-archive_path_re: '^/detail/[^/?]+'
+archive_prefix: "www.koro-shop.ch/"
+archive_path_re: '^/(fr/|de/)?[a-z0-9\-]+-[0-9]+(-x-[0-9]+)?-(g|kg|ml|l)$'
 notes: |
   Nuxt3 frontend over the shared Shopware 6 backend (bff.koro.com); one
   sales channel per country, this is koro_ch (own domain koro-shop.ch).

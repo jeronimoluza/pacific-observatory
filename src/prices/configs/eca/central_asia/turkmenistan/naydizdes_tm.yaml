@@ -7,6 +7,8 @@ url: https://www.naydizdes.com/en/ashgabat/nedvijimost
 language: ru
 cadence: weekly
 channel: real-estate
+archive_prefix: "naydizdes.com/en/item/"
+archive_path_re: '^/en/item/[^/?]+\.html/?$'
 notes: |
   Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Naydizdes
   ("Free classifieds site #1 in Turkmenistan") is an Osclass-based

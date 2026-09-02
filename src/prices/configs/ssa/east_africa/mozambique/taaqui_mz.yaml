@@ -8,6 +8,8 @@ language: pt
 cadence: weekly
 channel: marketplace
 timeout: 900
+archive_prefix: "www.taaqui.co.mz/product/"
+archive_path_re: '^/product/\d+/?$'
 notes: |
   Probed live 2026-09-01. TaAqui Delivery (TaAqui Mozambique S.A., Maputo)
   is a Next.js web app; the candidate brief was right that the catalogue

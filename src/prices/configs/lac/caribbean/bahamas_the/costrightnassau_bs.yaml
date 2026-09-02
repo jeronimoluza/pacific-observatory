@@ -8,6 +8,8 @@ language: en
 currency: BSD
 cadence: weekly
 channel: wholesale
+archive_prefix: "costrightnassau.storebyweb.com/i/"
+archive_path_re: '^/i/[^/?]+/?$'
 notes: |
   Cost Right Nassau -- wholesale grocery/general-merchandise club, another
   chain of AML Foods Ltd. (same Bahamian public company as

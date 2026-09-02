@@ -7,6 +7,7 @@ url: https://zstore.co.zw/
 language: en
 cadence: weekly
 channel: specialty-food
+archive_prefix: "zstore.co.zw/"
 notes: |
   Probed live 2026-08-31 (discovery, fifth source for Zimbabwe;
   reeltecelectronics.co.zw was tried first and parked — 81% of its rows

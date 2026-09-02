@@ -8,6 +8,8 @@ language: fr
 currency: XPF
 cadence: weekly
 channel: specialty-food
+archive_prefix: "www.nutrigo.nc/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
 notes: |
   Local New Caledonia nutrition and healthy-food storefront running
   WooCommerce. The public Store API exposes names, permalinks, category

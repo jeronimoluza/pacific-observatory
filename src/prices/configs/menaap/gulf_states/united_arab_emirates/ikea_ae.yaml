@@ -7,8 +7,8 @@ channel: home-improvement
 url: https://www.ikea.com/ae/en/
 language: en
 cadence: weekly
-archive_prefix: "www.ikea.com/ae/en/p/"
-archive_path_re: '^/ae/en/p/[^/?]+'
+archive_prefix: "www.ikea.com/ae/en/"
+archive_path_re: '^/ae/en/p/[^/?]+|^/ae/en/catalog/products/[A-Za-z0-9]+/?$'
 notes: |
   Verified live 2026-08-07: same shared IKEA platform as ikea_au/ikea_jp
   (see _ikea_base.py docstring) — open JSON listing API at

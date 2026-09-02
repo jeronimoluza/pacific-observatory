@@ -7,6 +7,8 @@ spider: netto_is
 url: https://www.netto.is/tilbod
 language: is
 cadence: weekly
+archive_prefix: "www.netto.is/tilbod"
+archive_path_re: '^/tilbod/?$'
 notes: |
   Nettó (Samkaup) runs no online store -- netto.is is a static Webflow
   marketing site with no search, no category browse, no PDPs. The only page

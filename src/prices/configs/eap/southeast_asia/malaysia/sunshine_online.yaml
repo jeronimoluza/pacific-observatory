@@ -7,5 +7,5 @@ url: https://sunshineonline.com.my/ssq/
 language: en
 cadence: daily
 channel: supermarket
-archive_prefix: "sunshineonline.com.my/ssq/product/"
-archive_path_re: '^/ssq/product/[^/?]+'
+archive_prefix: 'sunshineonline.com.my/'
+archive_path_re: '^/ss[qc]/product/[^?]+$'

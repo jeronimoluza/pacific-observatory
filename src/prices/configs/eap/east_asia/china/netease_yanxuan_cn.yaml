@@ -7,6 +7,8 @@ url: https://you.163.com
 language: zh
 cadence: weekly
 channel: specialty-food
+archive_prefix: "you.163.com/item/detail"
+archive_path_re: '^/item/detail/?$'
 notes: >
   Second working CN retail source (2026-09-01), after suning. NetEase's own
   D2C brand (you.163.com) is a general multi-category retailer overall, but

@@ -8,6 +8,8 @@ language: en
 cadence: daily
 channel: hypermarket
 timeout: 5400
+archive_prefix: "gcc.luluhypermarket.com/en-bh/"
+archive_path_re: '^/en-bh/.+/p/\d+/?$'
 notes: |
   Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Next.js
   storefront on the Akinon platform (bf1af2.akinoncloudcdn.com asset CDN).

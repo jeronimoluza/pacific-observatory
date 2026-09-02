@@ -10,6 +10,8 @@ cadence: weekly
 channel: fuel-station
 coicop_codes: ["07.2.2"]
 timeout: 900
+archive_prefix: "eforms.eservices.cyprus.gov.cy/MCIT/MCIT/PetroleumPrices"
+archive_path_re: '^/MCIT/MCIT/PetroleumPrices(/DisplayMap)?/?$'
 notes: |
   Official Retail Fuel Price Observatory (Παρατηρητήριο Λιανικών Τιμών
   Καυσίμων) run by Cyprus's Ministry of Energy, Commerce and Industry --

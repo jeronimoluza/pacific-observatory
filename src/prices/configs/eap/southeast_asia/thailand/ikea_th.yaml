@@ -7,8 +7,8 @@ channel: home-improvement
 url: https://www.ikea.com/th/en/
 language: en
 cadence: weekly
-archive_prefix: "www.ikea.com/th/en/p/"
-archive_path_re: '^/th/en/p/[^/?]+'
+archive_prefix: "www.ikea.com/th/en/"
+archive_path_re: '^/th/en/p/[^/?]+|^/th/en/catalog/products/[A-Za-z0-9]+/?$'
 notes: |
   Onboarded 2026-08-07 (round-3 non-food shard, COICOP 03/05/08/09 gap).
   Same shared platform as ikea_jp — see _ikea_base.py docstring. No

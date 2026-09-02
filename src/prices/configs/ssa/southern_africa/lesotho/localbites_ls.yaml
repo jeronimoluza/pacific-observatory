@@ -7,6 +7,8 @@ url: https://store.localbites.co.ls/
 language: en
 cadence: weekly
 channel: marketplace
+archive_prefix: "store.localbites.co.ls/products/"
+archive_path_re: '^/products/[^/?]+/?$'
 notes: |
   Wave 8. LocalBites -- a multi-vendor food-delivery marketplace serving
   Maseru, Lesotho. From the workbook candidate "LocalBites Lesotho"

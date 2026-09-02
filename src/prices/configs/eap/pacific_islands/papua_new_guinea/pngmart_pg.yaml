@@ -8,6 +8,8 @@ language: en
 currency: PGK
 cadence: weekly
 channel: marketplace
+archive_prefix: "pngbusinessdirectory.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   PNGMart grocery category on PNG Business Directory. The category page is
   server-rendered and lists product names, seller names and PGK prices in HTML,

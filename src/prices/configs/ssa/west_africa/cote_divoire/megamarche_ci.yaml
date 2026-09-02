@@ -7,6 +7,8 @@ url: https://www.megamarche.ci/
 language: fr
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.megamarche.ci/"
+archive_path_re: '^/[^/]+/[^/]+/p/?$'
 notes: |
   Probed live 2026-08-31. Category pages server-render only the first
   tranche of cards; the catalog is served by a lazy-load JSON endpoint,

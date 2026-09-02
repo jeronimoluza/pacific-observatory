@@ -8,7 +8,7 @@ language: en
 cadence: weekly
 channel: supermarket
 archive_prefix: "spinneys-egypt.com/"
-archive_path_re: '^/[^/]+/?$'
+archive_path_re: '^/[^/]+/?$|^/en/products/[^/?]+/?$'
 notes: |
   Upper-mid Egyptian chain. Nuxt SPA fronting Magento 2, same
   mcprod.<domain>/graphql backend pattern as Hyper One and Seoudi (the

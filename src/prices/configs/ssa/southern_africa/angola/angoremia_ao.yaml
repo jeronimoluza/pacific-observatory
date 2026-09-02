@@ -7,6 +7,8 @@ url: https://angoremia.shop/
 language: pt
 cadence: weekly
 channel: supermarket
+archive_prefix: "angoremia.shop/produto/"
+archive_path_re: '^/produto/[a-z0-9-]+/?$'
 notes: |
   Wave 10 (2026-09-01). Luanda online supermarket ("Angoremia -- Supermercado
   Online em Luanda"; delivery to Luanda/Talatona/Kilamba). React/Vite

@@ -8,8 +8,8 @@ language: bs
 currency: BAM
 cadence: weekly
 channel: specialty-food
-archive_prefix: "www.dm-drogeriemarkt.ba/p/d/"
-archive_path_re: '^/p/d/\d+/[^/]+$'
+archive_prefix: "www.dm-drogeriemarkt.ba/"
+archive_path_re: '-p\d+\.html$'
 notes: |
   Verified live 2026-08-31. dm drogerie markt BiH — a drugstore chain whose
   overall catalog is mostly personal care/household, but which runs a real

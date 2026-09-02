@@ -9,6 +9,8 @@ language: en
 currency: USD
 cadence: monthly
 channel: null
+archive_prefix: "www.pnccpalau.com/residential-and-personal/mobile/"
+archive_path_re: '^/residential-and-personal/mobile/postpaid-plans/?$'
 notes: |
   Official Palau National Communications Corporation postpaid mobile plan page.
   The visible Inertia/React page loads a public JavaScript bundle containing

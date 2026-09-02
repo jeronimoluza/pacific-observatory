@@ -8,6 +8,8 @@ language: fr
 cadence: weekly
 channel: supermarket
 timeout: 900
+archive_prefix: "www.tchoopapp.com/"
+archive_path_re: '^/$'
 notes: |
   Food+grocery delivery SPA for Nouakchott (Firebase project tchoop-15725).
   No conventional platform API, but the public Firestore REST API exposes

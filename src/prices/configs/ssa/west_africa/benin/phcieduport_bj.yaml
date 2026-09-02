@@ -7,6 +7,8 @@ url: https://phcieduport.com/
 language: fr
 cadence: weekly
 channel: pharmacy
+archive_prefix: "phcieduport.com/"
+archive_path_re: '^/?$'
 notes: |
   Discovered via WebSearch (not in the candidate brief; that list ran dry
   after erevan.bj came back NXDOMAIN, zemihidjo.com resolved but 404'd

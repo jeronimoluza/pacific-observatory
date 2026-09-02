@@ -19,6 +19,8 @@ url: https://www.amigo.com/
 language: es
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.amigo.com/productos/"
+archive_path_re: '^/productos/\d+/[^/?]+/?$'
 notes: |
   Supermercados Amigo (PR chain — footer confirms "Supermercados Amigo, PO
   BOX 1967, Carolina, Puerto Rico 00984-1967", same HQ as `pueblo_pr`'s

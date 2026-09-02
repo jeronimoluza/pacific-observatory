@@ -7,6 +7,8 @@ url: https://gui-shop.com/
 language: fr
 cadence: weekly
 channel: electronics
+archive_prefix: "gui-shop.com/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
 notes: |
   Discovery candidate (not on the original brief list) found via WebSearch
   for Guinean online electronics shops, 2026-08-31. Standard WooCommerce

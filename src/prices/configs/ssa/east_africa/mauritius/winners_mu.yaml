@@ -8,6 +8,8 @@ url: https://www.winners.mu/
 language: en
 cadence: weekly
 timeout: 3600
+archive_prefix: "www.winners.mu"
+archive_path_re: '^/[a-z0-9-]+/?$'
 notes: |
   nopCommerce storefront, server-rendered category pages, no auth. Verified
   live 2026-09-01: HTTP 200 on curl_cffi impersonate=chrome124, no WAF.

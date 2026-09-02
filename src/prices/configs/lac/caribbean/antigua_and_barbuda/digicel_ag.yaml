@@ -10,6 +10,7 @@ currency: XCD
 cadence: weekly
 channel: other
 timeout: 300
+archive_prefix: "www.digicelgroup.com/ag/en/mobile/"
 notes: |
   Locality: /ag/en is Digicel's dedicated Antigua & Barbuda market site
   (Digicel is the incumbent Eastern Caribbean mobile/broadband operator,

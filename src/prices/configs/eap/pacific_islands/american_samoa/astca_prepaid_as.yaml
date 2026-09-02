@@ -9,6 +9,8 @@ language: en
 currency: USD
 cadence: monthly
 channel: null
+archive_prefix: "www.astca.as/"
+archive_path_re: '^/prepaid-mobile-data-plans/?$'
 notes: |
   Official American Samoa Telecommunications Authority prepaid mobile data
   bundle page. The page exposes plan cards with data allowance, validity,

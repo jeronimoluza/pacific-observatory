@@ -8,6 +8,8 @@ language: fr
 cadence: weekly
 channel: pharmacy
 timeout: 1800
+archive_prefix: "orchidea-dz.com/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
 notes: |
   Verified live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=10 ->
   HTTP 200, currency_code DZD (matches countries.yaml), currency_minor_unit=2.

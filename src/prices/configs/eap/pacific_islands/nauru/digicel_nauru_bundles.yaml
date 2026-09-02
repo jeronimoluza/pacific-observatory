@@ -9,6 +9,8 @@ language: en
 currency: AUD
 cadence: monthly
 channel: null
+archive_prefix: "www.digicelpacific.com/mobile/nr/"
+archive_path_re: '^/mobile/nr/bundles/?$'
 notes: |
   Official Digicel Nauru mobile bundle page. The public Next.js payload exposes
   OfferCard records with plan names, features, validity details and AUD prices.

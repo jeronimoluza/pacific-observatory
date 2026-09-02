@@ -11,7 +11,7 @@ currency: NZD
 cadence: weekly
 channel: specialty-food
 archive_prefix: "o4a2.com/products/"
-archive_path_re: '^/products/[^/?]+'
+archive_path_re: '^/products/.*atlas-liquor'
 notes: |
   O4A2 vendor collection for Atlas Liquor in Ha'ateiho, Tonga. Alcoholic
   beverage source only; useful for COICOP 02.1 but not a broad food basket.

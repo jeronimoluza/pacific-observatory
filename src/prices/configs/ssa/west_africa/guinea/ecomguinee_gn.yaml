@@ -7,6 +7,7 @@ url: https://www.ecomguinee.com/
 language: fr
 cadence: weekly
 channel: electronics
+archive_prefix: "ecomguinee.com/"
 notes: |
   Discovery candidate (not on the original brief list) found via WebSearch
   for Guinean online marketplaces, 2026-08-31. Standard WooCommerce Store

@@ -7,6 +7,8 @@ url: https://www.konalivr.com/merchants/carrefour-express-kaloum
 language: fr
 cadence: weekly
 channel: supermarket
+archive_prefix: "konalivr.com/merchants/"
+archive_path_re: '^/merchants/(carrefour-express-kaloum|super-u-kipe)/?$'
 notes: |
   Wave 8, 2026-09-01. Guinea had 7 sources but only 1 food source
   (beryz_gn, fresh-market). Probed the four brief candidates for a

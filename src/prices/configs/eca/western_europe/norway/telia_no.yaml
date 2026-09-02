@@ -8,6 +8,8 @@ url: https://www.telia.no/privat/mobilabonnement
 language: "no"
 cadence: monthly
 channel: other
+archive_prefix: "www.telia.no/"
+archive_path_re: '^/mobilabonnement/?$'
 notes: |
   Verified live 2026-08-31: Next.js SSR page, single URL, no pagination
   needed. The listing page embeds a schema.org ProductGroup object inline

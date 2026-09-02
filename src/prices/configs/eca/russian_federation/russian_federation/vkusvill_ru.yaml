@@ -8,6 +8,7 @@ language: ru
 cadence: daily
 timeout: 5400
 channel: supermarket
+archive_prefix: "vkusvill.ru/goods/"
 notes: |
   Discovered live 2026-09-01 (wave 8, filling Russia's food gap). VkusVill is
   a national Russian grocery chain (own-brand supermarket, home delivery +

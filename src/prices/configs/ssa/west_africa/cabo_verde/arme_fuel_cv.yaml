@@ -8,6 +8,8 @@ language: pt
 cadence: monthly
 channel: fuel-station
 timeout: 1800
+archive_prefix: "www.arme.cv/index.php/noticia-geral/"
+archive_path_re: '^/index\.php/noticia-geral/\d+-[a-z0-9-]+$'
 notes: |
   Probed live 2026-08-31. ARME (Agência Reguladora Multissetorial da
   Economia) is Cabo Verde's regulator; it fixes a nationwide maximum

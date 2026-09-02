@@ -8,6 +8,8 @@ language: en
 currency: IQD
 cadence: weekly
 channel: fresh-market
+archive_prefix: "www.lezzoo.com/erbil/m/bakhtiyari-fruits-and-vegetables-world-855/"
+archive_path_re: '^/erbil/m/bakhtiyari-fruits-and-vegetables-world-855/[^/?]+/?$'
 notes: |
   Bakhtiyari Fruits and Vegetables World -- a single, named, first-party
   fresh-produce grocer in Erbil, Iraq, storefront hosted on Lezzoo

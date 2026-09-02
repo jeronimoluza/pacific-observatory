@@ -7,6 +7,8 @@ url: https://ashgabatmarket.com/
 language: ru
 cadence: weekly
 channel: electronics
+archive_prefix: "ashgabatmarket.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Site is
   hosted at 5.63.156.22 (outside Turkmenistan's own network) and is fully

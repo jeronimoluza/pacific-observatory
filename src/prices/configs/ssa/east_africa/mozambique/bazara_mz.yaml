@@ -8,6 +8,8 @@ language: pt
 cadence: weekly
 channel: marketplace
 timeout: 1800
+archive_prefix: "bazara.co.mz/"
+archive_path_re: '^/(?!robots\.txt$)[a-z0-9][a-z0-9.\-]+$'
 notes: |
   Probed live 2026-08-31. bazara.co.mz is a Magento 2 marketplace based in
   Maputo, Mozambique ("compras online com confiança", M-Pesa checkout,

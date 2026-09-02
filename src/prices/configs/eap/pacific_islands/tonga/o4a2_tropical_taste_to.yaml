@@ -11,7 +11,7 @@ currency: NZD
 cadence: weekly
 channel: specialty-food
 archive_prefix: "o4a2.com/products/"
-archive_path_re: '^/products/[^/?]+'
+archive_path_re: '^/products/.*tropical-taste'
 notes: |
   O4A2 vendor collection for Tropical Taste in Pahu, Nuku'alofa, Tonga.
   Prepared-food source only; useful for COICOP 11.1.1 but not a grocery basket.

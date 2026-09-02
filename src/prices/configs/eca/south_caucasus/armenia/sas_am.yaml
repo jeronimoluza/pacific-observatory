@@ -8,8 +8,8 @@ language: hy
 currency: AMD
 cadence: weekly
 channel: supermarket
-archive_prefix: "sas.am/catalog/"
-archive_path_re: '^/catalog/[^/]+/\d+/$'
+archive_prefix: 'sas.am/'
+archive_path_re: '^/(?:products/[^/?]+_\d+|(?:en/)?catalog/sok/\d+)/?$'
 notes: |
   SAS Supermarket — one of Armenia's largest supermarket chains, real
   online store, custom Bitrix-style storefront (no shared base spider

@@ -8,6 +8,8 @@ language: ar
 cadence: weekly
 timeout: 900
 channel: supermarket
+archive_prefix: "smsm.market/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Custom Laravel multi-vendor marketplace script (same family as souqmy_ye /
   yemenbox / the rejected yemenstorez and bab-almandab candidates from this

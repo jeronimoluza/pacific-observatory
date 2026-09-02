@@ -7,6 +7,8 @@ url: https://www.ooredoo.ps/handsets/
 language: ar
 cadence: weekly
 channel: electronics
+archive_prefix: "www.ooredoo.ps/"
+archive_path_re: '^(?:/handsets/devices/\d+\.html|/ar/handsets/\d+\.html)$'
 notes: |
   Ooredoo Palestine (mobile network operator, ooredoo.ps -- .ps ccTLD,
   West-Bank-and-Gaza domestic carrier) device/handset store. Re-verified

@@ -9,6 +9,8 @@ language: en
 currency: AUD
 cadence: monthly
 channel: null
+archive_prefix: "www.vodafone.com.ki/Services/Bundles/"
+archive_path_re: '^/Services/Bundles/Mobile-Data/?$'
 notes: |
   Official Vodafone Kiribati prepaid mobile data bundles page. The current page
   renders the tariff table as embedded images rather than machine-readable HTML

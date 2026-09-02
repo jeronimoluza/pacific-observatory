@@ -9,6 +9,8 @@ currency: USD
 cadence: weekly
 channel: specialty-food
 timeout: 300
+archive_prefix: "islandprovision.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Locality: second food build for this wave (see horizonssupplies_ag.yaml
   for the full trap/discovery trail -- both supplied Shopify candidates

@@ -8,6 +8,8 @@ language: en
 currency: USD
 cadence: weekly
 channel: specialty-food
+archive_prefix: "rice2meatu.com/product/"
+archive_path_re: '^/product/[^/?]+(?:/\d+)?/?$'
 notes: |
   Saipan-based prepared-food and catering retailer. WooCommerce Store API is
   public and unauthenticated at /wp-json/wc/store/v1/products. Re-verified live

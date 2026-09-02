@@ -8,6 +8,8 @@ language: en
 cadence: weekly
 channel: supermarket
 timeout: 3600
+archive_prefix: "tmpnponline.co.zw/shop/"
+archive_path_re: '^/shop/[^/]+/[^/]+/[^/]+/[^/?]+/?$'
 notes: |
   Probed live 2026-08-31. Next.js app-router storefront; product cards are
   client-rendered so the raw HTML shell carries no prices. The

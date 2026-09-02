@@ -7,6 +7,8 @@ spider: kirkmarket_ky
 url: https://kirkmarket.ky/
 language: en
 cadence: weekly
+archive_prefix: "kirkmarket.ky/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Kirk Market is one of Grand Cayman's two major supermarket chains, but
   kirkmarket.ky itself is a WordPress brochure site whose only live

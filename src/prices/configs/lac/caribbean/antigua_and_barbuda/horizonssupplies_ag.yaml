@@ -9,6 +9,8 @@ currency: XCD
 cadence: weekly
 channel: specialty-food
 timeout: 900
+archive_prefix: "www.horizonssupplies.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Locality: PRIORITY RULE food build. Wave 4 gap was "4 sources, ZERO
   food". Both supplied candidates (Caribbean Eat, My Caribbean Grocer)

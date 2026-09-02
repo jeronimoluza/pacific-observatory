@@ -9,8 +9,8 @@ language: nl
 currency: SRD
 cadence: weekly
 coicop_codes: null
-archive_prefix: "www.telesur.sr/product/"
-archive_path_re: '^/product/[^/?]+'
+archive_prefix: "www.telesur.sr/"
+archive_path_re: '^(?:/product/[^/?]+|/telefoons/mobiele-telefoons/[^/]+/[^/]+/?)$'
 notes: |
   Suriname's national telecom's device shop (phones, cases, chargers,
   routers). WooCommerce Store API confirmed live 2026-08-17

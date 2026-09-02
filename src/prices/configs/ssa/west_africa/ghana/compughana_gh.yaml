@@ -7,8 +7,8 @@ url: https://compughana.com/
 language: en
 cadence: weekly
 channel: electronics
-archive_prefix: "compughana.com/products/"
-archive_path_re: '^/products/[^/?]+'
+archive_prefix: "compughana.com/"
+archive_path_re: '^/.+\.html$'
 notes: |
   Verified live 2026-09-01: standard Shopify storefront, GET
   /products.json?limit=250&page=N -> HTTP 200, no auth. Sample: 'SIGMA

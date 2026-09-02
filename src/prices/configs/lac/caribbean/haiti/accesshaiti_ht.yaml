@@ -9,6 +9,8 @@ language: fr
 currency: USD
 cadence: weekly
 channel: other
+archive_prefix: "accesshaiti.com/assets/"
+archive_path_re: '^/assets/index-[A-Za-z0-9_-]+\.js$'
 notes: |
   Locality: Access Haiti is a real Haiti ISP -- Petion-Ville HQ address,
   +509-2812-6000, WhatsApp order lines to +509-3912-6000, schema.org

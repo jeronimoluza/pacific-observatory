@@ -5,8 +5,8 @@ coicop_classification: classifier
 spider: yandex_market
 language: ru
 cadence: daily
-archive_prefix: "market.yandex.ru/card/"
-archive_path_re: '^/card/[^/?]+'
+archive_prefix: "market.yandex.ru/"
+archive_path_re: '^/card/[^/?]+|^/product/\d+/?$'
 notes: |
   Verified live 2026-08-07: Yandex Market is Russia's largest homegrown
   marketplace (COICOP-wide, food and non-food). Search-results pages embed

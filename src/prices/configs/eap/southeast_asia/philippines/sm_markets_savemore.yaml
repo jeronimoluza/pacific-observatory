@@ -4,11 +4,11 @@ analytical_role: retailer_sku
 coicop_classification: classifier
 spider: sm_markets_savemore
 url: https://smmarkets.ph
-archive_prefix: "smmarkets.ph/"
-archive_path_re: '^/(?=[a-z0-9-]*\d{5,})[a-z0-9-]+$'
 language: en
 cadence: daily
 channel: supermarket
+archive_prefix: "smmarkets.ph/"
+archive_path_re: '^/(?:(?=[a-z0-9-]*\d{5,})[a-z0-9-]+|\d+\.html)$'
 notes: >
   SM Markets / SM Supermarket / Savemore - the SM group's national grocery
   banner. Magento 2 PWA whose public GraphQL endpoint (smmarkets.ph/graphql)

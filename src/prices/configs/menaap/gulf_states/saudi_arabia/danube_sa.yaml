@@ -7,6 +7,8 @@ url: https://danube.sa/en/
 language: en
 cadence: weekly
 channel: hypermarket
+archive_prefix: "danube.sa/en/products/"
+archive_path_re: '^/en/products/[^/?]+/?$'
 notes: |
   Verified live 2026-08-31: Danube (danube.sa), a Bindawood Holding
   hypermarket chain, Saudi Arabia. Storefront is Rails/Spree, but the

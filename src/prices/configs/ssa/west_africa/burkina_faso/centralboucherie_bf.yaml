@@ -7,6 +7,8 @@ channel: specialty-food
 url: https://www.centralboucherie.com/boutique
 language: fr
 cadence: weekly
+archive_prefix: "www.centralboucherie.com/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
 notes: |
   CentralBusiness ("CentralBoucherie") — specialty butcher / fine-grocery
   shop based in Balkui, Ouagadougou ("L'excellence de la boucherie et de

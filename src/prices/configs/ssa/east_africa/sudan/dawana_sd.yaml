@@ -7,6 +7,8 @@ url: https://dawana.online/
 language: ar
 cadence: weekly
 channel: pharmacy
+archive_prefix: "dawana.online/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Probed 2026-08-31: curl_cffi impersonate="chrome124" flat-403s the site
   and its wp-json/wc/store/v1/products API with an "hcdn" bot-wall

@@ -10,6 +10,8 @@ language: en
 cadence: weekly
 channel: supermarket
 timeout: 600
+archive_prefix: "o4a2.com/products/"
+archive_path_re: '^/products/[a-z0-9-]+$'
 notes: |
   Discovered 2026-09-01 (wave6, DISCOVER — no candidate list). Golden Star
   Supermarket & Wholesale is a named, real Tongan supermarket with no

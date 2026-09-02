@@ -9,6 +9,8 @@ language: fr
 currency: XPF
 cadence: monthly
 channel: null
+archive_prefix: "www.helia.nc/mobile/"
+archive_path_re: '^/mobile/(forfaits-m|kits-prepayes-liberte)/?$'
 notes: |
   Official Helia by OPT-NC mobile tariff pages for New Caledonia. The spider
   combines the postpaid Forfaits M page and the Kits prepayes Liberte page,

@@ -7,6 +7,8 @@ spider: kronan_is
 url: https://www.kronan.is/
 language: is
 cadence: weekly
+archive_prefix: "kronan.is/vara/"
+archive_path_re: '^/vara/[a-z0-9-]+/?$'
 notes: |
   Krónan, one of Iceland's three main grocery chains. Storefront is a
   Next.js app; online ordering ("Snjallverslun") is login-gated and the

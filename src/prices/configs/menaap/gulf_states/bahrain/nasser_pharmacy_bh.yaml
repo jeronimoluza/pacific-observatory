@@ -8,6 +8,7 @@ language: en
 cadence: daily
 channel: pharmacy
 timeout: 5400
+archive_prefix: "www.nasserpharmacy.com/bh-ar/"
 notes: |
   Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Nasser
   Pharmacy is a Bahrain pharmacy chain (schema.org contactPoint

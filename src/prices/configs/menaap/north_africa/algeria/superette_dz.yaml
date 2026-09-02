@@ -8,6 +8,8 @@ language: fr
 cadence: weekly
 channel: supermarket
 timeout: 1800
+archive_prefix: "superette-dz.com/"
+archive_path_re: '^/(ar|fr)/product/[^/?]+/?$'
 notes: |
   Verified live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=50 ->
   HTTP 200, currency_code DZD (matches countries.yaml), currency_minor_unit=0

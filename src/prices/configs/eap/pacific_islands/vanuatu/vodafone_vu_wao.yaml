@@ -9,6 +9,8 @@ language: en
 currency: VUV
 cadence: monthly
 channel: null
+archive_prefix: "vodafone.com.vu/pages/"
+archive_path_re: '^/pages/mobile-wao-data/?$'
 notes: |
   Official Vodafone Vanuatu WAO prepaid mobile data page. Plan cards are
   server-rendered with data allowances, validity, rollover details and VUV

@@ -8,8 +8,8 @@ language: sr
 currency: EUR
 cadence: weekly
 channel: electronics
-archive_prefix: "www.tehnomax.me/tv-audio-video/"
-archive_path_re: '^/tv\-audio\-video/[^/?]+'
+archive_prefix: "www.tehnomax.me/"
+archive_path_re: '^(/[^/]+/[^/]+/[^/?]+\.html$)|(/product/view/[0-9]+)'
 notes: |
   Verified live 2026-08-17. Montenegrin electronics/appliance retailer,
   custom PHP storefront behind Cloudflare -- bare requests 403 (cf-mitigated:

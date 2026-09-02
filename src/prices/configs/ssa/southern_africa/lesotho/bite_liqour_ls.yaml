@@ -7,6 +7,8 @@ url: https://store.localbites.co.ls/stores/biteliqour
 language: en
 cadence: weekly
 channel: specialty-food
+archive_prefix: "store.localbites.co.ls/products/"
+archive_path_re: '^/products/[^/?]+/?$'
 notes: |
   Wave 8. BiteLiqour -- a single, named, first-party bottle/liquor store in
   Maseru, hosted on the LocalBites food-delivery platform

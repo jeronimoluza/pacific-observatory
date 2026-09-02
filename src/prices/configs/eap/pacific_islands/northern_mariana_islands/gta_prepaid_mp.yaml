@@ -9,8 +9,8 @@ language: en
 currency: USD
 cadence: monthly
 channel: null
-archive_prefix: "www.gta.net/mobile/"
-archive_path_re: '^/mobile/prepaid/?$'
+archive_prefix: "www.gta.net/"
+archive_path_re: '^(?:/mobile/prepaid/?|/wireless/prepaid-plans/?)$'
 notes: |
   GTA prepaid mobile page. The site is Guam-first but its prepaid plan details
   explicitly include CNMI calls and texts, and all plan/add-on prices are

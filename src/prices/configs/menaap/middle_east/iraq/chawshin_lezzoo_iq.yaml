@@ -8,6 +8,8 @@ language: en
 currency: IQD
 cadence: weekly
 channel: specialty-food
+archive_prefix: "www.lezzoo.com/erbil/m/chaw-shin-qasab-7108/"
+archive_path_re: '^/erbil/m/chaw-shin-qasab-7108/[^/?]+/?$'
 notes: |
   Chaw Shin Qasab ("qasab" = butcher) -- a single, named, first-party
   butcher/meat shop in Erbil, Iraq, storefront hosted on Lezzoo

@@ -8,8 +8,8 @@ language: es
 currency: CLP
 cadence: weekly
 channel: home-improvement
-archive_prefix: "www.sodimac.cl/sodimac-cl/articulo/"
-archive_path_re: '^/sodimac\-cl/articulo/[^/?]+'
+archive_prefix: "www.sodimac.cl/sodimac-cl/"
+archive_path_re: '^/sodimac\-cl/(articulo|product)/[^/?]+'
 notes: |
   Sodimac Chile, the Falabella Group hardware/home-improvement banner.
   Re-verified live 2026-08-17: same Falabella Next.js SSR platform as

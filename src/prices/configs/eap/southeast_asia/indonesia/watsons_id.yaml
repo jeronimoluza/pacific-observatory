@@ -7,6 +7,6 @@ url: https://www.watsons.co.id
 language: en
 cadence: daily
 channel: pharmacy
-archive_prefix: "www.watsons.co.id/en/"
-archive_path_re: '(?i)^/en/.+/p/bp_\d+$'
 throttle_group: aswatson
+archive_prefix: "www.watsons.co.id/"
+archive_path_re: '(?i)^/en/.+/p/bp_\d+$|^/[^/]+/p/bp_\d+$'

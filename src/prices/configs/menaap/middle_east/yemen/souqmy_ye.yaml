@@ -7,6 +7,8 @@ url: https://souqmy.com/search2?min_price=&max_price=&keyword=&sort_by=&page=1
 language: ar
 cadence: weekly
 channel: marketplace
+archive_prefix: "souqmy.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Custom Laravel multi-vendor marketplace, Yemen-scoped: title/meta
   description are Arabic and explicitly target Yemeni users

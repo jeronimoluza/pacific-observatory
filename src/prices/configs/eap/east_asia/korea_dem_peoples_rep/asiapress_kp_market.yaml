@@ -9,6 +9,8 @@ language: en
 currency: KPW
 cadence: weekly
 channel: null
+archive_prefix: "www.asiapress.org/rimjin-gang/"
+archive_path_re: '^/rimjin-gang/(?:report/)?north-k-korea-prices/?$'
 notes: |
   ASIAPRESS / Rimjin-gang "Latest Market Price Index Inside N.Korea" table.
   The HTML table is public and server-rendered via TablePress, with weekly rows

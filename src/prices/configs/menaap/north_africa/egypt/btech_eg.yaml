@@ -8,8 +8,8 @@ url: https://btech.com/
 language: ar
 currency: EGP
 cadence: weekly
-archive_prefix: "btech.com/ar/p/"
-archive_path_re: '^/ar/p/[^/?]+'
+archive_prefix: "btech.com/"
+archive_path_re: '^/ar/(?:p/[^/?]+|[^/]+\.html)$'
 notes: |
   Verified live 2026-08-17: btech.com — B.TECH, an Egyptian electronics and
   home-appliance retail chain (laptops/PCs, mobiles, TVs, large/small home

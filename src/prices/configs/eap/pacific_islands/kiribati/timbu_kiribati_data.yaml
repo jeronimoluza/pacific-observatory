@@ -9,6 +9,8 @@ language: en
 currency: AUD
 cadence: monthly
 channel: null
+archive_prefix: "timbu.com/kiribati/networks/amalgamated-telecom-holdings-kirbati/"
+archive_path_re: '^/kiribati/networks/amalgamated-telecom-holdings-kirbati/dataplan/?$'
 notes: |
   Timbu third-party listing of Amalgamated Telecom Holdings Kiribati data-plan
   prices. The page is server-rendered and explicitly states that prices are

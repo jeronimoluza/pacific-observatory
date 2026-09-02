@@ -8,6 +8,7 @@ language: ru
 cadence: weekly
 channel: fashion
 timeout: 5400
+archive_prefix: "wabrum.com/"
 notes: |
   Probed live 2026-08-31 with curl_cffi impersonate=chrome124. Hosted at
   95.181.224.97 (outside Turkmenistan's own network), fully reachable, no

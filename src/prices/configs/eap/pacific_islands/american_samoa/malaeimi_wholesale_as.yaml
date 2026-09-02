@@ -8,6 +8,8 @@ language: en
 currency: USD
 cadence: weekly
 channel: wholesale
+archive_prefix: "malaeimiwholesale.com/"
+archive_path_re: '^/items$'
 notes: |
   American Samoa wholesale/retail storefront. The Angular app loads product
   rows from a public API at https://malaeimi-api.fly.dev/api. Re-verified live

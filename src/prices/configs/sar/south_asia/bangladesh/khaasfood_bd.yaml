@@ -7,8 +7,8 @@ url: https://www.khaasfood.com/
 language: en
 cadence: weekly
 channel: specialty-food
-archive_prefix: "www.khaasfood.com/product/"
-archive_path_re: '^/product/[^/?]+/?$'
+archive_prefix: "www.khaasfood.com/produc"
+archive_path_re: '^/products?(/details)?/[^/?]+/?$'
 notes: |
   Probed 2026-09-01 with curl_cffi impersonate=chrome124: 200, no WAF.
   Specialty organic/halal food producer-retailer (Dhaka, founded 2018) --

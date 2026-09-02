@@ -9,6 +9,8 @@ language: en
 currency: VUV
 cadence: monthly
 channel: null
+archive_prefix: "www.digicelpacific.com/mobile/vu/"
+archive_path_re: '^/mobile/vu/rates/?$'
 notes: |
   Official Digicel Vanuatu mobile rates page. The page renders prepaid and
   postpaid rate tables with service type, rate type, unit, charging basis and

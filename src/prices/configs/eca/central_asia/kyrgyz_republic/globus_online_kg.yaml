@@ -9,6 +9,8 @@ currency: KGS
 cadence: weekly
 channel: supermarket
 coicop_codes: null
+archive_prefix: "globus-online.kg/catalog/"
+archive_path_re: '^/catalog/[a-z0-9_]+/[a-z0-9_]+/[a-z0-9_]+/$'
 notes: |
   ORCHESTRATOR MEASUREMENT 2026-09-01: the 20,150 rows resolve to 13,171
   distinct product_id. 3,672 ids appear on more than one category page,

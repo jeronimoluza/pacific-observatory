@@ -8,6 +8,8 @@ url: https://www.taw9eel.com/
 language: en
 cadence: weekly
 timeout: 5400
+archive_prefix: "www.taw9eel.com/en/"
+archive_path_re: '^/en/[^/]+\.html$'
 notes: |
   Verified live 2026-09-01: Taw9eel, a Kuwaiti online grocery / general-
   merchandise storefront (legacy Magento 1 -- not the Luma theme

@@ -8,6 +8,8 @@ language: fr
 cadence: weekly
 channel: pharmacy
 timeout: 900
+archive_prefix: "pharmacie-saintemarie-gabon.com/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
 notes: |
   Probed live 2026-09-01. Pharmacie Sainte Marie is a Libreville, Gabon
   pharmacy (BP 1838 Libreville; Click & Collect + home delivery of medical

@@ -7,6 +7,8 @@ url: https://acehardware.co.zw/
 language: en
 cadence: weekly
 channel: home-improvement
+archive_prefix: "acehardware.co.zw/shop/"
+archive_path_re: '^/shop/[^/?]+/?$'
 notes: |
   Probed live 2026-08-31 (discovery — original candidate list ran dry
   after spar_zw/tillpoint_zw/tmpnp_zw; online-spar.co.zw's backend was

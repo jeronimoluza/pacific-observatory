@@ -8,6 +8,8 @@ language: sv
 cadence: weekly
 channel: pharmacy
 timeout: 7200
+archive_prefix: "kronansapotek.se/"
+archive_path_re: '^(?:/p/[^/?]+/?|/[^/]+/p/\d+/?)$'
 notes: |
   Verified live 2026-08-31: Gatsby-built storefront (meta generator
   "Gatsby 5.16.1"). robots.txt points to

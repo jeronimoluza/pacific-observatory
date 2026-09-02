@@ -8,6 +8,7 @@ language: el
 cadence: weekly
 channel: supermarket
 timeout: 5400
+archive_prefix: "www.mymarket.gr/"
 notes: |
   My Market is a Greek supermarket chain (part of the Kritikos group --
   kritikos-sm.gr itself turned out to be a brochure/loyalty-card CMS site

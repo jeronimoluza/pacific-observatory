@@ -7,6 +7,8 @@ url: https://www.leaderprice.mg/
 language: fr
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.leaderprice.mg/"
+archive_path_re: '^/(Bio|Promo|Nouv)$'
 notes: |
   9-store drive-to-store chain (MVola payment). Re-verified live 2026-08-06:
   homepage GET -> 200, real SSR price on the page ('50.000Ar'). The

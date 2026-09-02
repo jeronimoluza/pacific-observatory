@@ -7,8 +7,8 @@ spider: 173brunei
 url: https://www.173brunei.com
 language: en
 cadence: weekly
-archive_prefix: "www.173brunei.com/collections/all/products/"
-archive_path_re: '^/collections/all/products/[^/?]+'
+archive_prefix: "www.173brunei.com/"
+archive_path_re: '/products/[^/?]+$'
 notes: |
   EasyStore platform ("where you buy in bulk"). Listing pages at
   /collections/all?limit=50&page=N are server-rendered with name + price

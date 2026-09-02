@@ -7,6 +7,8 @@ url: https://www.carrefour.dz/
 language: fr
 cadence: weekly
 channel: hypermarket
+archive_prefix: "www.carrefour.dz/produit/"
+archive_path_re: '^/produit/[^/?]+/?$'
 notes: |
   Verified live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=50 ->
   HTTP 200, currency_code DZD (matches countries.yaml), currency_minor_unit=2.

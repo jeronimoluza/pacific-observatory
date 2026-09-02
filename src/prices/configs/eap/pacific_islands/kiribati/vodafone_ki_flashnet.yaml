@@ -9,6 +9,8 @@ language: en
 currency: AUD
 cadence: monthly
 channel: null
+archive_prefix: "www.vodafone.com.ki/Services/Bundles/"
+archive_path_re: '^/Services/Bundles/Flashnet-Wifi-Router/?$'
 notes: |
   Official Vodafone Kiribati Flashnet/Pocket Wifi/Router prepaid broadband
   bundles page. The price table is embedded as an image, not HTML text, so the

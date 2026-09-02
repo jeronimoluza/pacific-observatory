@@ -8,6 +8,8 @@ language: es
 cadence: weekly
 channel: supermarket
 timeout: 1800
+archive_prefix: "www.superseis.com.py/products/"
+archive_path_re: '^/products/\d+-[^/?]+\.aspx$'
 notes: |
   Full-line Asuncion-area supermarket chain (one of PY's largest). OpenCart-
   family storefront (catalog/view/javascript asset paths) served through

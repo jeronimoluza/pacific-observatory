@@ -7,6 +7,7 @@ url: https://mivashop.com/
 language: fr
 cadence: weekly
 channel: supermarket
+archive_prefix: "mivashop.com/achat-en-ligne-au-togo/"
 notes: |
   Verified live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=5 ->
   HTTP 200, WooCommerce Store API. GET

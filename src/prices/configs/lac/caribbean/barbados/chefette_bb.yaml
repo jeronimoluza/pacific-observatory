@@ -7,6 +7,8 @@ url: https://chefette.com/
 language: en
 cadence: weekly
 channel: other
+archive_prefix: "chefette.com/menu/"
+archive_path_re: '^/menu(?:/[a-z-]+){1,2}/?$'
 notes: |
   Chefette Restaurants Ltd -- Barbados fast-food chain (fried chicken,
   pizza, rotis, sandwiches) plus its BBQ Barn steakhouse brand. Single-

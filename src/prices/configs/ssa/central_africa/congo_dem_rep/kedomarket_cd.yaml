@@ -7,6 +7,8 @@ url: https://www.kedomarket.com/
 language: fr
 cadence: weekly
 channel: marketplace
+archive_prefix: "www.kedomarket.com/produit/"
+archive_path_re: '^/produit/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
 notes: |
   Kedo Market ("le marché numérique de la RDC") is a multi-vendor React SPA
   fronted by Supabase. Probed live 2026-08-31: the Vite bundle

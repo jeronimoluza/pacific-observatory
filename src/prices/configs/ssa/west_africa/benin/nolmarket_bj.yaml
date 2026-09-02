@@ -7,6 +7,8 @@ url: https://nolmarket.com/
 language: fr
 cadence: weekly
 channel: supermarket
+archive_prefix: "nolmarket.com/"
+archive_path_re: '^/?$'
 notes: |
   React SPA (CRA) with a fully open Laravel JSON API, no auth needed.
   Re-verified live 2026-08-06: GET /api/products?page=1 -> 200, paginated

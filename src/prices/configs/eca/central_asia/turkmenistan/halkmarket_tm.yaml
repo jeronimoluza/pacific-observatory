@@ -7,6 +7,8 @@ url: https://halkmarket.com.tm/
 language: ru
 cadence: weekly
 channel: supermarket
+archive_prefix: "halkmarket.com.tm/products"
+archive_path_re: '^/products/?$'
 notes: |
   Discovered 2026-08-31 by guessing the .com.tm domain for "Halk Market"
   (one of the named discovery leads in the wave-4 brief) and confirming it

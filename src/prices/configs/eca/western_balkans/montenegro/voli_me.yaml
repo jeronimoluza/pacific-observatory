@@ -7,6 +7,8 @@ url: https://www.voli.me/
 language: sr
 cadence: weekly
 channel: supermarket
+archive_prefix: "voli.me/proizvod/"
+archive_path_re: '^/proizvod/[0-9]+/?$'
 notes: |
   Voli -- Montenegro's dominant national supermarket chain (the brief's
   strongest lead). The brief's URL (www.voli.co.me) times out on connect;

@@ -8,6 +8,8 @@ language: sv
 cadence: weekly
 channel: supermarket
 timeout: 5400
+archive_prefix: "mathem.se/"
+archive_path_re: '^/se/products/[^/?]+/?$|^/varor/[^/]+/[^/?]+/?$'
 notes: |
   Verified live 2026-08-31: Next.js SSR storefront, no open product-search
   API found. Instead, https://www.mathem.se/sitemap.xml chains to

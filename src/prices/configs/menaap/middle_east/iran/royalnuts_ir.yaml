@@ -9,6 +9,8 @@ currency: IRR
 cadence: weekly
 channel: specialty-food
 timeout: 3600
+archive_prefix: "royalnuts.ir/"
+archive_path_re: '^/[^/]+/[^/]+/?$'
 notes: |
   Verified live 2026-09-01: royalnuts.ir is a WooCommerce store with the
   Store API open at /wp-json/wc/store/v1/products (no auth), paginated

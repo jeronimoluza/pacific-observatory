@@ -7,6 +7,8 @@ url: https://www.adjovan.com/
 language: fr
 cadence: weekly
 channel: supermarket
+archive_prefix: "www.adjovan.com/shop/"
+archive_path_re: '^/shop/.+$'
 notes: |
   Probed live 2026-08-31: GET /wp-json/wc/store/v1/products?per_page=5 ->
   HTTP 200, x-wp-total=2198. Standard (versioned) Store API namespace, zero

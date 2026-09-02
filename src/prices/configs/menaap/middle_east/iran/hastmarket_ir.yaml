@@ -9,6 +9,8 @@ currency: IRR
 cadence: weekly
 channel: supermarket
 timeout: 3600
+archive_prefix: "hastmarket.ir/product/"
+archive_path_re: '^/product/[^/?]+/?$'
 notes: |
   Verified live 2026-09-01: hastmarket.ir is a WooCommerce store with the
   Store API open at /wp-json/wc/store/v1/products (no auth), paginated

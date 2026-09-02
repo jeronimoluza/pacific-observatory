@@ -8,6 +8,7 @@ language: mk
 cadence: weekly
 channel: supermarket
 timeout: 3600
+archive_prefix: "ramstoredodoma.com.mk/"
 notes: |
   Ramstore do doma ("Ramstore to home") — the grocery-delivery storefront,
   distinct from ramstore.com.mk (the corporate brochure site, confirmed

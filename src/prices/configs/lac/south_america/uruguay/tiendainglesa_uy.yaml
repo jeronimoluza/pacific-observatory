@@ -9,6 +9,8 @@ currency: UYU
 cadence: weekly
 channel: supermarket
 timeout: 1800
+archive_prefix: "www.tiendainglesa.com.uy/supermercado/"
+archive_path_re: '^/supermercado/[^/]+\.producto$'
 notes: |
   Full-line Uruguayan hypermarket chain (Tienda Inglesa), GeneXus/"Hanoi"
   (com.imasdev.hanoi) storefront on ASP.NET. Probed live 2026-08-31 with

@@ -8,8 +8,8 @@ language: de
 currency: EUR
 cadence: weekly
 channel: home-improvement
-archive_prefix: "www.obi.de/p/"
-archive_path_re: '^/p/[^/?]+'
+archive_prefix: "www.obi.de/"
+archive_path_re: '^/p/[^/?]+|.+/p/\d+$'
 notes: |
   OBI Germany — DIY / home-improvement chain. Nuxt 3 SSR storefront.
   Verified live 2026-08-17: TLS impersonation not required (plain curl_cffi

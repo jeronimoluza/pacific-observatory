@@ -1,8 +1,6 @@
 scaffolding: spider
 spider: cruzverde_cl
 url: https://www.cruzverde.cl/
-archive_prefix: "www.cruzverde.cl/"
-archive_path_re: '^/[^/]+/\d+\.html$'
 channel: pharmacy
 coicop_classification: classifier
 analytical_role: retailer_sku
@@ -11,6 +9,8 @@ language: es
 currency: CLP
 cadence: weekly
 coicop_codes: null
+archive_prefix: "www.cruzverde.cl/"
+archive_path_re: '^/(?:[^/]+/)?\d+\.html$'
 notes: |
   Chilean pharmacy chain. www.cruzverde.cl is an Angular SPA shell for
   every path (no server-rendered catalog); the real data host is

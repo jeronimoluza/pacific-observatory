@@ -9,6 +9,8 @@ url: https://ethiopiapropertycentre.com/for-rent
 language: en
 cadence: weekly
 timeout: 3600
+archive_prefix: "ethiopiapropertycentre.com/for-rent/"
+archive_path_re: '^/for-rent/[^/]+/[^/]+/[^/]+/[^/]+$'
 notes: |
   Ethiopia Property Centre (EPC) -- Addis Ababa residential rental listings
   (part of the regional "PropertyCentre" platform family). Re-verified live

@@ -7,8 +7,8 @@ url: https://www.freshtohome.com/
 language: en
 cadence: weekly
 channel: specialty-food
-archive_prefix: "www.freshtohome.com/buy-fish-meat-online/products/bangalore/"
-archive_path_re: '^/buy-fish-meat-online/products/bangalore/[a-z0-9\-]+\.html$'
+archive_prefix: "www.freshtohome.com/"
+archive_path_re: '^/[a-z0-9-]+\.html$'
 notes: |
   Probed 2026-09-01 with curl_cffi impersonate=chrome124: 200 on all paths,
   no WAF. Specialty-food meat/seafood/egg delivery (Bangalore-founded,

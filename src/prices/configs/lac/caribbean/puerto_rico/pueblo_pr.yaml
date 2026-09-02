@@ -7,6 +7,8 @@ url: https://puebloweb.com/
 language: es
 cadence: weekly
 channel: supermarket
+archive_prefix: "puebloweb.com/productos/"
+archive_path_re: '^/productos/\d+/[^/?]+/?$'
 notes: |
   Supermercados Pueblo (PR chain, HQ Carolina — confirmed PR-domestic via
   footer address "PO BOX 1967, Carolina, Puerto Rico 00984-1967"). Storefront
