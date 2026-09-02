@@ -41,6 +41,19 @@ MIN_LINK_LEAVES = 8
 # moves ~50% between MIN_LINK_LEAVES=3 and 12, so the index is published only
 # where links are thick, and the per-month link count travels with it.
 MIN_CHAIN_PERIODS = 6
+# geography-level series (world / region / subregion / country): a link needs
+# this many matched (country, leaf) pairs, and a series this many months.
+GEO_MIN_LINK_PAIRS = 8
+GEO_MIN_PERIODS = 4
+# the two-way fixed-effects level: sweeps of alternating projection, and the
+# recurring items a period needs before its effect is worth reporting
+FE_ITERATIONS = 40
+FE_MIN_PAIRS = 16
+# how far apart two observations of the same item may be and still link
+FREQ_MAX_GAP = {"Q": 1, "M": 3}
+# an item this far in logs from its own median is a unit/decimal defect,
+# not a price move — ln(20), comfortably above any real swing
+DEFECT_LOG_RATIO = 3.0
 
 # Relative (MAD) gates are structurally blind to systematic errors — a stale
 # currency code or a thousands-separator misparse shifts a whole country by

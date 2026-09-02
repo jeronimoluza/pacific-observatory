@@ -13,7 +13,10 @@ var S = {
   view:"world", mode:"explore", cur:"usd", incModelled:false, measuredOnly:false,
   showFlagged:false, evidence:"solid", region:null, node:"01", unit:null, country:null,
   cmpMode:"abs", fxMode:"both", sortCmp:{k:"val",d:1}, sortCtry:{k:"ratio",d:1},
-  multi:[]
+  multi:[],
+  /* world time series: what to compare, at what category, unit, measure and window */
+  gmode:"region", gsel:[], gnode:"01", gunit:0, gmeasure:"level",
+  gfreq:"Q", gsmooth:0, gwin:36
 };
 var charts = {};
 
@@ -130,6 +133,7 @@ function levelRows() {
 }
 
 function renderWorld() {
+  renderWorldTrends();
   var m = DATA.meta;
   var ranked = DATA.ctyIdx.filter(function (s) { return DATA.cty[s].level_ok; }).length;
   document.getElementById("kpis").innerHTML = [
@@ -236,6 +240,239 @@ function renderRanking() {
       r.level.toFixed(0) + "</div></div>";
   }).join("");
 }
+/* ---------------------------------------------------------------------
+   World time series — one category compared across regions, subregions
+   or countries. The level is the period effect of a two-way fixed-effects
+   fit (see aggregate side), so the line moves with prices rather than
+   with whichever items the scrape happened to catch that period.
+   --------------------------------------------------------------------- */
+var GEOS_BY_KIND = {};
+Object.keys(DATA.geos).forEach(function (g) {
+  var k = DATA.geos[g].kind;
+  (GEOS_BY_KIND[k] = GEOS_BY_KIND[k] || []).push(g);
+});
+var GEO_INDEX = {}, LAST_P = {};
+Object.keys(DATA.gseries).forEach(function (key) {
+  var a = key.split("|"), g = DATA.geos[a[1]], s = DATA.gseries[key];
+  if (!g) return;
+  var f = GEO_INDEX[a[0]] = GEO_INDEX[a[0]] || {};
+  var k = f[g.kind] = f[g.kind] || {};
+  (k[a[2]] = k[a[2]] || {})[a[3]] = 1;
+  var last = s.p[s.p.length - 1];
+  if (!LAST_P[a[0]] || last > LAST_P[a[0]]) LAST_P[a[0]] = last;
+});
+function gser(gk, ni, ui) {
+  return DATA.gseries[S.gfreq + "|" + gk + "|" + ni + "|" + ui] || null;
+}
+
+/* period arithmetic, quarters and months alike */
+function pnum(p) {
+  var a = p.indexOf("Q") > 0 ? p.split("Q") : p.split("-");
+  return p.indexOf("Q") > 0 ? +a[0] * 4 + (+a[1] - 1) : +a[0] * 12 + (+a[1] - 1);
+}
+function pstr(n, f) {
+  if (f === "Q") return Math.floor(n / 4) + "Q" + (n % 4 + 1);
+  var y = Math.floor(n / 12), m = n % 12 + 1;
+  return y + "-" + (m < 10 ? "0" : "") + m;
+}
+function pgrid(lo, hi, f) {
+  var a = pnum(lo), b = pnum(hi), out = [];
+  for (var i = a; i <= b && out.length < 500; i++) out.push(pstr(i, f));
+  return out;
+}
+function winFrom() {
+  var f = S.gfreq, last = LAST_P[f];
+  if (!S.gwin || !last) return "0";
+  var back = f === "Q" ? Math.ceil(S.gwin / 3) : S.gwin;
+  return pstr(pnum(last) - (back - 1), f);
+}
+/* trailing geometric mean — prices compound, so smooth in logs */
+function smooth(pts, w) {
+  if (!w || w < 2) return pts;
+  return pts.map(function (v, i) {
+    /* a smoothed point only where a real one stands — otherwise the average
+       carries a stale value across a gap and the dashed break disappears */
+    if (v == null) return null;
+    var acc = 0, n = 0;
+    for (var j = Math.max(0, i - w + 1); j <= i; j++) {
+      if (pts[j] != null) { acc += Math.log(pts[j]); n++; }
+    }
+    return Math.exp(acc / n);
+  });
+}
+
+function renderWorldTrends() {
+  var f = S.gfreq, kind = S.gmode;
+  if (!GEO_INDEX[f]) { S.gfreq = f = "M"; }
+  var byNode = (GEO_INDEX[f] || {})[kind] || {};
+  var nodes = Object.keys(byNode).map(function (n) { return DATA.nodeIdx[+n]; })
+    .filter(Boolean).sort();
+  var word = f === "Q" ? "quarter" : "month";
+  document.getElementById("ws-2").textContent = "2 " + word + "s";
+  document.getElementById("ws-3").textContent = "3 " + word + "s";
+  ["Q","M"].forEach(function (x) {
+    document.getElementById("wf-" + x).className = f === x ? "on" : ""; });
+  [0,2,3].forEach(function (x) {
+    document.getElementById("ws-" + x).className = S.gsmooth === x ? "on" : ""; });
+  ["level","index"].forEach(function (m) {
+    document.getElementById("wv-" + m).className = S.gmeasure === m ? "on" : ""; });
+  [36,60,0].forEach(function (w) {
+    document.getElementById("ww-" + w).className = S.gwin === w ? "on" : ""; });
+  ["region","subregion","country"].forEach(function (m) {
+    document.getElementById("wm-" + m).className = kind === m ? "on" : ""; });
+
+  var chartId = "cWorldTrend";
+  function nothing(msg) {
+    document.getElementById("wtChips").innerHTML = "";
+    document.getElementById("wtWarn").innerHTML = '<div class="warnbox">' + msg + "</div>";
+    chart(chartId, {type:"line", data:{labels:[], datasets:[]}});
+    document.getElementById("wtNote").innerHTML = "";
+  }
+  if (!nodes.length) return nothing("Nothing repeats often enough at this level to draw a line.");
+  if (nodes.indexOf(S.gnode) < 0) S.gnode = nodes.indexOf("01") >= 0 ? "01" : nodes[0];
+  var ni = DATA.nodeIdx.indexOf(S.gnode);
+
+  var sel = document.getElementById("wtNode");
+  sel.innerHTML = nodes.map(function (c) {
+    var lvl = (DATA.tax[c] || {}).lvl || 1;
+    return '<option value="' + c + '">' + new Array(lvl).join("   ") +
+      esc(title(c)) + " · " + c + "</option>"; }).join("");
+  sel.value = S.gnode;
+
+  var units = Object.keys(byNode[ni] || {}).map(Number).sort();
+  if (units.indexOf(S.gunit) < 0) S.gunit = units[0];
+  var ui = S.gunit, unitCode = DATA.unitIdx[ui];
+  document.getElementById("wtUnits").innerHTML = units.map(function (u) {
+    return '<button class="chip' + (u === ui ? " on" : "") + '" onclick="APP.setGUnit(' + u +
+      ')">' + UNIT_LABEL[DATA.unitIdx[u]] + "</button>"; }).join("");
+  document.getElementById("wtUnitWord").textContent = UNIT_SHORT[unitCode];
+
+  /* candidate geographies — World is always offered as the yardstick */
+  var from = winFrom(), cands = [];
+  ["W"].concat(GEOS_BY_KIND[kind] || []).forEach(function (g) {
+    var s = gser(g, ni, ui);
+    if (!s) return;
+    var n = 0;
+    s.p.forEach(function (p, i) {
+      if (p >= from && (S.gmeasure === "index" ? s.idx[i] : s.lvl[i]) != null) n++; });
+    if (n) cands.push({g:g, t:DATA.geos[g].t, n:n, s:s});
+  });
+  if (!cands.length) return nothing(
+    "No " + (S.gmeasure === "index" ? "matched-item chain" : "series") +
+    " here in this window. Try a broader category, a wider window" +
+    (f === "Q" ? ", monthly periods" : "") + ", or the other measure.");
+  cands.sort(function (a, b) { return b.n - a.n || (a.t < b.t ? -1 : 1); });
+
+  var avail = {};
+  cands.forEach(function (c) { avail[c.g] = c; });
+  S.gsel = S.gsel.filter(function (g) { return avail[g]; });
+  if (!S.gsel.length) {
+    S.gsel = cands.slice(0, kind === "country" ? 6 : 8).map(function (c) { return c.g; });
+    if (S.gsel.indexOf("W") < 0 && avail.W) S.gsel.unshift("W");
+  }
+  document.getElementById("wtChips").innerHTML =
+    (kind === "country" ? cands.slice(0, 18) : cands).map(function (c) {
+      return '<button class="chip' + (S.gsel.indexOf(c.g) >= 0 ? " on" : "") +
+        '" onclick="APP.toggleGeo(' + arg(c.g) + ')">' + esc(c.t) +
+        '<span class="c">' + c.n + "</span></button>"; }).join("");
+  var add = document.getElementById("wtAdd");
+  add.innerHTML = '<option value="">add a place…</option>' + cands
+    .filter(function (c) { return S.gsel.indexOf(c.g) < 0; })
+    .map(function (c) { return '<option value="' + esc(c.g) + '">' + esc(c.t) + "</option>"; }).join("");
+  add.value = "";
+
+  var isLevel = S.gmeasure === "level";
+  var lo = null, hi = null;
+  S.gsel.forEach(function (g) {
+    avail[g].s.p.forEach(function (p, i) {
+      if (p < from || (isLevel ? avail[g].s.lvl[i] : avail[g].s.idx[i]) == null) return;
+      if (lo == null || p < lo) lo = p;
+      if (hi == null || p > hi) hi = p; }); });
+  if (lo == null) return nothing("Nothing to draw for the places selected.");
+  var grid = pgrid(lo, hi, f);
+
+  /* the index rebases every line at the first period they can all share */
+  var baseP = null;
+  if (!isLevel) {
+    S.gsel.forEach(function (g) {
+      var s = avail[g].s, first = null;
+      s.p.forEach(function (p, i) {
+        if (first == null && p >= from && s.idx[i] != null) first = p; });
+      if (first && (baseP == null || first > baseP)) baseP = first; });
+  }
+
+  var ds = [], thin = [], sup = {};
+  S.gsel.forEach(function (g, k) {
+    var c = avail[g], s = c.s, vals = {}, base = null;
+    /* rebase on the shared period, then plot the whole window either side of
+       it — clipping to the base would throw away history a line really has */
+    s.p.forEach(function (p, i) {
+      if (base == null && p >= from && s.idx[i] != null &&
+          (baseP == null || p >= baseP)) base = s.idx[i]; });
+    s.p.forEach(function (p, i) {
+      if (p < from) return;
+      if (isLevel) { if (s.lvl[i] != null) vals[p] = s.lvl[i]; return; }
+      if (s.idx[i] != null && base) vals[p] = s.idx[i] / base * 100;
+    });
+    var pts = smooth(grid.map(function (p) {
+      return vals[p] == null ? null : vals[p]; }), S.gsmooth);
+    if (pts.filter(function (v) { return v != null; }).length < 2) thin.push(c.t);
+    sup[g] = {t:c.t, s:s};
+    ds.push({ label:c.t, data:pts,
+      borderColor: g === "W" ? "#33475b" : PAL[k % PAL.length],
+      borderWidth: g === "W" ? 2.8 : 2.2,
+      borderDash: g === "W" ? [6,3] : undefined,
+      tension:.2, pointRadius:2.4, spanGaps:true, segment:GAP_SEG });
+  });
+
+  var warn = [];
+  if (isLevel) warn.push("The item mix is held fixed by the fit, so this moves with prices — " +
+    "but a " + word + " standing on few recurring items still jumps. Hover to see how many.");
+  else warn.push("Only items priced in <b>two consecutive " + word + "s</b> in the same country " +
+    "are linked, so this is the strictest reading — and the thinnest.");
+  if (S.gsmooth) warn.push("Showing a <b>" + S.gsmooth + "-" + word +
+    " trailing average</b>: turning points lag by about half that.");
+  if (thin.length) warn.push("Too few " + word + "s to draw: <b>" +
+    thin.slice(0, 6).map(esc).join(", ") +
+    (thin.length > 6 ? " and " + (thin.length - 6) + " more" : "") + "</b>.");
+  warn.push("Across the corpus <b>" + (DATA.qa.history.share_last_12m * 100).toFixed(0) +
+    "%</b> of trusted observations fall in the last 12 months; earlier periods rest on sparse " +
+    "archive backfill and are thinner than they look.");
+  document.getElementById("wtWarn").innerHTML = '<div class="warnbox">' + warn.join("<br>") + "</div>";
+
+  chart(chartId, {
+    type:"line", data:{labels:grid, datasets:ds},
+    options:{ interaction:{mode:"index", intersect:false},
+      plugins:{ legend:{position:"top", labels:{usePointStyle:true, padding:14, boxWidth:8}},
+        tooltip:{ callbacks:{
+          label:function (it) {
+            var v = it.parsed.y;
+            return v == null ? null : it.dataset.label + ": " +
+              (isLevel ? "$" + v.toFixed(2) + UNIT_OF[unitCode] : v.toFixed(1)); },
+          afterBody:function (items) {
+            var p = grid[items[0].dataIndex], out = [""];
+            S.gsel.forEach(function (g) {
+              var s = sup[g].s, i = s.p.indexOf(p);
+              if (i < 0 || !s.k[i]) return;
+              out.push(sup[g].t + ": " + s.c[i] + (s.c[i] === 1 ? " country · " : " countries · ") +
+                s.k[i] + " item cells"); });
+            return out.length > 1 ? out : []; } } } },
+      scales:{ y:{ grid:{color:"#eef2f6"},
+          title:{display:true, text: isLevel ? "US$ per " + UNIT_SHORT[unitCode]
+            : "Index, " + (baseP || lo) + " = 100"} },
+        x:{ grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:14} } } }
+  });
+
+  var lead = avail[S.gsel[0]], li = lead ? lead.s.p.length - 1 : -1;
+  document.getElementById("wtNote").innerHTML =
+    "Always in US$ here — the local-currency and exchange-rate split lives in " +
+    '<span class="linkish" onclick="APP.go(\'trends\')">Currency effects</span>. ' +
+    (li >= 0 ? "Latest support: " + esc(lead.t) + " · " + lead.s.c[li] +
+      (lead.s.c[li] === 1 ? " country · " : " countries · ") + fmtN(lead.s.k[li]) +
+      " item cells in " + lead.s.p[li] + ". " : "") +
+    "Dashed segments bridge periods with no data at all.";
+}
+
 function kpi(l, v, n) {
   return '<div class="kpi"><div class="l">' + l + '</div><div class="v">' + v +
          '</div><div class="n">' + n + "</div></div>";
@@ -635,8 +872,6 @@ function renderTrends() {
       '+ observations.</div>';
     chart("cTrend", {type:"line", data:{labels:[], datasets:[]}});
     document.getElementById("trDeco").innerHTML = "";
-    chart("cTrendMulti", {type:"line", data:{labels:[], datasets:[]}});
-    document.getElementById("trMulti").innerHTML = "";
     return;
   }
 
@@ -731,42 +966,6 @@ function renderTrends() {
           (lnFxC * 100).toFixed(1) + "</b> from the currency.") + "</div></div>"
   ].join("");
 
-  /* multi-country overlay */
-  var peers = [];
-  DATA.ctyIdx.forEach(function (slug, k) {
-    var ss = trendSeries(k, ni, ui);
-    if (ss && ss.p.length >= 3) peers.push({slug:slug, name:DATA.cty[slug].name, s:ss, n:ss.p.length});
-  });
-  peers.sort(function (a, b) { return b.n - a.n; });
-  if (!S.multi.length) S.multi = peers.slice(0, 5).map(function (p) { return p.slug; });
-  S.multi = S.multi.filter(function (sl) {
-    return peers.some(function (p) { return p.slug === sl; }); });
-  document.getElementById("trMulti").innerHTML = peers.slice(0, 16).map(function (p) {
-    return '<button class="chip' + (S.multi.indexOf(p.slug) >= 0 ? " on" : "") + '" onclick="APP.toggleMulti(' +
-      arg(p.slug) + ')">' + esc(p.name) + '<span class="c">' + p.n + "m</span></button>"; }).join("");
-
-  var months = [];
-  S.multi.forEach(function (sl) { var p = peers.filter(function (x) { return x.slug === sl; })[0];
-    if (p) { months.push(p.s.p[0]); months.push(p.s.p[p.s.p.length - 1]); } });
-  months.sort();
-  var labels = months.length ? monthGrid([months[0], months[months.length - 1]]) : [];
-  var mds = S.multi.map(function (sl, i) {
-    var p = peers.filter(function (x) { return x.slug === sl; })[0];
-    if (!p) return null;
-    var arr = S.cur === "usd" ? p.s.usd : p.s.loc, b = null, map = {};
-    p.s.p.forEach(function (m, k) { if (b == null && arr[k] > 0) b = arr[k];
-      map[m] = arr[k] > 0 && b ? arr[k] / b * 100 : null; });
-    return { label:p.name, data:labels.map(function (m) { return map[m] == null ? null : map[m]; }),
-      borderColor:PAL[i % PAL.length], borderWidth:2, tension:.2, pointRadius:2,
-      spanGaps:true, segment:GAP_SEG };
-  }).filter(Boolean);
-  chart("cTrendMulti", {
-    type:"line", data:{labels:labels, datasets:mds},
-    options:{ interaction:{mode:"index", intersect:false},
-      plugins:{ legend:{position:"top", labels:{usePointStyle:true, padding:14, boxWidth:8}} },
-      scales:{ y:{ title:{display:true, text:"Index, each country's own first period = 100"}, grid:{color:"#eef2f6"} },
-        x:{ grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:14} } } }
-  });
 }
 function box(l, v, sign) {
   return '<div class="b ' + (sign == null ? "" : sign >= 0 ? "pos" : "neg") + '"><div class="l">' +
@@ -893,6 +1092,17 @@ var APP = {
   pick:function (code) { S.node = code || "01"; S.unit = null; this.render(); },
   openCountry:function (slug) { S.country = slug; S.multi = []; this.go("country"); },
   openNode:function (code, unit) { S.node = code; S.unit = unit; this.go("compare"); },
+  setGeoMode:function (m) { S.gmode = m; S.gsel = []; this.render(); },
+  setGNode:function (c) { S.gnode = c; this.render(); },
+  setGUnit:function (u) { S.gunit = u; this.render(); },
+  setGMeasure:function (m) { S.gmeasure = m; this.render(); },
+  setGWin:function (w) { S.gwin = w; this.render(); },
+  setGFreq:function (f) { S.gfreq = f; this.render(); },
+  setGSmooth:function (w) { S.gsmooth = w; this.render(); },
+  toggleGeo:function (g) { var i = S.gsel.indexOf(g);
+    if (i >= 0) { if (S.gsel.length > 1) S.gsel.splice(i, 1); } else S.gsel.push(g);
+    this.render(); },
+  addGeo:function (g) { if (g && S.gsel.indexOf(g) < 0) S.gsel.push(g); this.render(); },
   toggleMulti:function (slug) { var i = S.multi.indexOf(slug);
     if (i >= 0) S.multi.splice(i, 1); else S.multi.push(slug); this.render(); },
   sort:function (which, k) {
@@ -926,6 +1136,7 @@ window.APP = APP;
     "COICOP divisions " + m.divisions.join(" and ") + " — food, beverages, alcohol, tobacco · " +
     m.n_countries + " countries · " + m.n_sources + " sources · data through " + m.through;
   document.getElementById("minleaves").textContent = DATA.qa.min_basket_leaves;
+  document.getElementById("wtPairs").textContent = m.geo_min_pairs;
   document.getElementById("foot").innerHTML =
     "Generated " + m.generated + " · " + m.n_obs.toLocaleString() +
     " trusted unit values · cells need " + m.min_cell_obs + "+ observations";

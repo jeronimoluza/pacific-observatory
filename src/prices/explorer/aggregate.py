@@ -15,8 +15,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from prices.explorer.geo import build_geo_series
 from prices.explorer.sources import (
     COMPARABLE_UNITS,
+    FE_MIN_PAIRS,
     COUNTRY_DEFECT_SHARE,
     MAX_LINK_GAP_MONTHS,
     MIN_BASKET_LEAVES,
@@ -350,6 +352,8 @@ def build_payload() -> dict:
     for c, g in fx_tbl.sort_values("period").groupby("country"):
         fx[c] = {"p": g.period.tolist(), "r": [round(v, 6) for v in g.fx_rate]}
 
+    gseries_raw, geos = build_geo_series(exploded, tax, cmeta)
+
     node_idx = sorted(nodemeta)
     node_pos = {n: i for i, n in enumerate(node_idx)}
     cty_idx = sorted(cmeta)
@@ -402,6 +406,12 @@ def build_payload() -> dict:
             "k": [int(v) for v in g.n_leaves],
         }
 
+    gseries: dict[str, dict] = {}
+    for k, v in gseries_raw.items():
+        freq, gk, node, unit = k.split("|")
+        if node in node_pos and unit in unit_pos:
+            gseries[f"{freq}|{gk}|{node_pos[node]}|{unit_pos[unit]}"] = v
+
     samples = {}
     for k, v in _samples(trusted).items():
         c, code, unit = k.split("|")
@@ -417,6 +427,7 @@ def build_payload() -> dict:
             "n_nodes": len(node_idx),
             "n_sources": int(trusted.source.nunique()),
             "min_cell_obs": MIN_CELL_OBS,
+            "geo_min_pairs": FE_MIN_PAIRS,
             "divisions": ["01", "02"],
         },
         "tax": {k: v for k, v in tax.items() if k in node_pos},
@@ -429,6 +440,8 @@ def build_payload() -> dict:
         "cells": cell_payload,
         "series": ser,
         "chain": chain,
+        "geos": geos,
+        "gseries": gseries,
         "fx": fx,
         "samples": samples,
         "qa": qa,

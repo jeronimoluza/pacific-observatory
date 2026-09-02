@@ -36,6 +36,13 @@ h1{font-size:19px;font-weight:650;letter-spacing:-.2px}
   padding:4px 11px;cursor:pointer}
 .seg button+button{border-left:1px solid rgba(255,255,255,.22)}
 .seg button.on{background:var(--accent);color:#fff;font-weight:600}
+.card .seg{border-color:var(--line)}
+.card .seg button{color:var(--dim)}
+.card .seg button+button{border-left-color:var(--line)}
+.card .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.ctlbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.ctlbar select{max-width:360px}
+.ctllab{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint)}
 
 /* ---------- tabs ---------- */
 nav.tabs{display:flex;gap:4px;margin-bottom:var(--gap);flex-wrap:wrap}
@@ -209,13 +216,80 @@ footer{color:var(--faint);font-size:11.5px;text-align:center;padding:6px 0 20px}
   <button id="t-world"   class="on" onclick="APP.go('world')"><span class="num">1</span>World</button>
   <button id="t-compare" onclick="APP.go('compare')"><span class="num">2</span>Compare countries</button>
   <button id="t-country" onclick="APP.go('country')"><span class="num">3</span>Country profile</button>
-  <button id="t-trends"  onclick="APP.go('trends')"><span class="num">4</span>Trends &amp; FX</button>
+  <button id="t-trends"  onclick="APP.go('trends')"><span class="num">4</span>Currency effects</button>
   <button id="t-quality" class="analyst-only" onclick="APP.go('quality')"><span class="num">5</span>Data quality</button>
 </nav>
 
 <!-- ============ 1. WORLD ============ -->
 <section id="v-world">
   <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <h2>How have food prices moved?</h2>
+    <div class="sub">Price of one <span id="wtUnitWord">kg</span> in US$, with the item mix held fixed.</div>
+    <div class="explain beginner-only">
+      Pick what to compare — <b>whole regions</b>, <b>parts of a region</b>, or <b>single countries</b> —
+      and which food category. Each line is what a kilogram (or litre, or piece) of it costs there,
+      worked out so that the <b>same items</b> are being compared from one period to the next: the line
+      moves when prices move, not when a different shop happens to get collected. Prices are always in
+      <b>US dollars</b> here, so a line can also move because the currency moved — tab&nbsp;4 splits
+      those two apart. Quiet periods are joined by a dashed line; hover any point to see how much
+      data stands behind it.
+    </div>
+    <div class="explain analyst-only">
+      Two measures. <b>Price level</b> is the period effect of a two-way fixed-effects fit of
+      <code>ln P<sub>item,t</sub> = α<sub>item</sub> + δ<sub>t</sub></code> over the group's
+      (country, leaf) cells, anchored on the mean item effect so it reads in US$ — the item mix is
+      absorbed rather than left to move the line. Periods need ≥<span id="wtPairs"></span> recurring
+      items and items must appear in two of them, so a group with no repeat coverage simply has no
+      line. <b>Matched-item index</b> is the strict alternative: the mean log relative over pairs
+      priced in <i>two consecutive periods</i>, cumulated. <b>Smoothing</b> is a trailing geometric
+      mean over 2 or 3 periods. Hover any point for the countries and item cells behind it.
+    </div>
+
+    <div class="ctlbar">
+      <div class="seg" id="wtMode">
+        <button id="wm-region" class="on" onclick="APP.setGeoMode('region')">Regions</button>
+        <button id="wm-subregion" onclick="APP.setGeoMode('subregion')">Subregions</button>
+        <button id="wm-country" onclick="APP.setGeoMode('country')">Countries</button>
+      </div>
+      <select id="wtNode" onchange="APP.setGNode(this.value)"></select>
+      <span class="chips" id="wtUnits"></span>
+      <select id="wtAdd" class="analyst-only" onchange="APP.addGeo(this.value)"></select>
+    </div>
+    <div class="ctlbar">
+      <span class="ctllab">Measure</span>
+      <div class="seg">
+        <button id="wv-level" class="on" onclick="APP.setGMeasure('level')">Price level US$</button>
+        <button id="wv-index" onclick="APP.setGMeasure('index')">Matched-item index</button>
+      </div>
+      <span class="ctllab">Period</span>
+      <div class="seg">
+        <button id="wf-Q" class="on" onclick="APP.setGFreq('Q')">Quarterly</button>
+        <button id="wf-M" onclick="APP.setGFreq('M')">Monthly</button>
+      </div>
+      <span class="ctllab">Smoothing</span>
+      <div class="seg">
+        <button id="ws-0" class="on" onclick="APP.setGSmooth(0)">Off</button>
+        <button id="ws-2" onclick="APP.setGSmooth(2)"></button>
+        <button id="ws-3" onclick="APP.setGSmooth(3)"></button>
+      </div>
+      <span class="ctllab">Window</span>
+      <div class="seg">
+        <button id="ww-36" class="on" onclick="APP.setGWin(36)">3 years</button>
+        <button id="ww-60" onclick="APP.setGWin(60)">5 years</button>
+        <button id="ww-0" onclick="APP.setGWin(0)">All</button>
+      </div>
+    </div>
+
+    <div class="spread">
+      <div class="chips" id="wtChips"></div>
+    </div>
+    <div id="wtWarn"></div>
+    <div class="cwrap" style="height:400px"><canvas id="cWorldTrend"></canvas></div>
+    <div class="samples" id="wtNote"></div>
+  </div>
+
   <div class="card">
     <h2>How expensive is food, country by country?</h2>
     <div class="sub">Matched-basket price level in US$. The world median country = <b>100</b>.</div>
@@ -347,7 +421,7 @@ footer{color:var(--faint);font-size:11.5px;text-align:center;padding:6px 0 20px}
 <!-- ============ 4. TRENDS ============ -->
 <section id="v-trends" hidden>
   <div class="card">
-    <h2>Price over time — and how much of it is the exchange rate</h2>
+    <h2>How much of a price move is the exchange rate?</h2>
     <div class="sub">Indexed to the first period with data = 100.</div>
     <div class="explain beginner-only">
       When a price in US dollars rises, two different things can be happening: the shop
@@ -375,14 +449,6 @@ footer{color:var(--faint);font-size:11.5px;text-align:center;padding:6px 0 20px}
     <div id="trWarn"></div>
     <div class="cwrap" style="height:380px"><canvas id="cTrend"></canvas></div>
     <div class="deco" id="trDeco"></div>
-  </div>
-  <div class="card">
-    <h2>Same item, several countries</h2>
-    <div class="sub">Each country indexed to its own first period = 100, in the currency selected above.</div>
-    <div class="spread">
-      <div class="chips" id="trMulti"></div>
-    </div>
-    <div class="cwrap" style="height:360px"><canvas id="cTrendMulti"></canvas></div>
   </div>
 </section>
 
