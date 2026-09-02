@@ -170,6 +170,15 @@ function renderTimeline() {
   // Fixed-radius dots. Several measures can share a lane-year cell, so they are
   // fanned deterministically rather than scaled -- size would encode coverage
   // at the cost of hiding neighbours.
+  // The cell sizes are counted up front. A workbook is a snapshot, not a
+  // history -- every dated EAP tracker row is 2026 -- so one cell routinely
+  // holds fifty measures while its neighbours hold one. A fixed 5-wide fan
+  // would stack those fifty on top of each other and lose them.
+  const cellSize = {};
+  rows.forEach(r => {
+    const b = laneKeyOf(r) + ":" + r.onset_year;
+    cellSize[b] = (cellSize[b] || 0) + 1;
+  });
   const seen = {};
   rows.slice().sort((a, b) => a.onset_year - b.onset_year || (a.Policy || "").localeCompare(b.Policy || ""))
     .forEach(r => {
@@ -178,8 +187,10 @@ function renderTimeline() {
       if (yy === undefined) return;
       const bucket = key + ":" + r.onset_year;
       const i = seen[bucket] = (seen[bucket] || 0) + 1;
-      const dx = ((i - 1) % 5 - 2) * 4.5;
-      const dy = (Math.floor((i - 1) / 5) % 3 - 1) * 6;
+      // Three rows is what a 24px lane holds at r=5; width absorbs the rest.
+      const cols = Math.max(5, Math.ceil(cellSize[bucket] / 3));
+      const dx = ((i - 1) % cols - (cols - 1) / 2) * 4.5;
+      const dy = (Math.floor((i - 1) / cols) % 3 - 1) * 6;
       const disc = r.provenance === "corpus";
       const colour = D.categoryColor[r.category] || "#888";
       const cls = (disc ? "dot disc" : "dot") + (tstate.sel === r ? " sel" : "");
@@ -196,7 +207,7 @@ function renderTimeline() {
          (disc
             ? "found in the news corpus \\u00b7 date basis: " + (r.date_basis || "unknown")
             : "tracker row") +
-         "\\n" + (disc ? "dated " : "onset ") + r.onset_year +
+         "\\n" + "dated " + r.onset_year +
          " \\u00b7 " + (r.n_articles || 0) + " article(s)", dot);
     });
 
@@ -223,12 +234,18 @@ function showMeasure(r) {
     "<p><strong>" + cleanText(r.Country) + "</strong> &middot; " +
     (D.categoryDisplay[r.category] || r.category) + " / " + cleanText(r.subcategory) + "</p>" +
     "<p>" + cleanText(r["Policy Description"]) + "</p>" +
-    "<p>Onset year <strong>" + r.onset_year + "</strong> &middot; peak <strong>" + (r.peak_year || "\\u2013") +
-    "</strong> &middot; <strong>" + (r.n_articles || 0) + "</strong> matching articles &middot; " +
-    "workbook status: <strong>" + (cleanText(r["Active or Proposed Date"]) || "\\u2013") + "</strong></p>" +
-    "<div style='margin-top:8px'>" + spark + "</div>" +
-    "<p style='font-size:12px;color:#888;margin-top:6px'>Articles per year, " +
-    (keys[0] || "") + "\\u2013" + (keys[keys.length - 1] || "") + ".</p>";
+    "<p>Dated <strong>" + r.onset_year + "</strong> &middot; " +
+    (r.provenance === "corpus" ? "from the article text" : "from the workbook: ") +
+    (r.provenance === "corpus" ? "" : "<strong>" +
+      (cleanText(r["Active or Proposed Date"]) || "\\u2013") + "</strong>") + "</p>" +
+    (keys.length
+      ? "<div style='margin-top:8px'>" + spark + "</div>" +
+        "<p style='font-size:12px;color:#888;margin-top:6px'>Press coverage of this " +
+        "measure's keywords, " + (keys[0] || "") + "\\u2013" + (keys[keys.length - 1] || "") +
+        " &middot; <strong>" + (r.n_articles || 0) + "</strong> articles, peak <strong>" +
+        (r.peak_year || "\\u2013") + "</strong>. Coverage is context, not the measure's date." +
+        "</p>"
+      : "");
 }
 
 collapseBox.addEventListener("change", () => {

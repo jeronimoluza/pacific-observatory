@@ -52,6 +52,42 @@ def _clean(value: Any) -> str:
     return re.sub(r"\s+", " ", str(value)).strip()
 
 
+_MONTHS = "jan feb mar apr may jun jul aug sep oct nov dec".split()
+_YEAR_RE = re.compile(r"\b(19|20)\d{2}\b")
+# Spelling the months out matters: a bare ``[a-z]{3}`` matches "Act" in
+# "Active 22-Aug-26" and the year is then read off the day.
+_MON_YY_RE = re.compile(r"\b(" + "|".join(_MONTHS) + r")[a-z]*[-\s](\d{2})\b", re.I)
+_BARE_YY_RE = re.compile(r"\b(\d{2})\b\s*$")
+
+
+def _policy_year(raw: Any) -> int | None:
+    """Year the workbook says a measure was active or proposed.
+
+    The column is free text an analyst typed: ``Active 01-Aug-26``,
+    ``Proposed April 2026``, ``Active May-Jun 26``, ``24-Apr-2026``. A
+    four-digit year wins; failing that a ``Mon-YY`` pair; failing that a
+    trailing two-digit year, which only appears after a month name.
+
+    This must decide where a workbook dot sits. The corpus ``onset_year``
+    cannot: it is the first year the policy's keywords reach 15% of their
+    peak coverage, so a recurring measure like the FCCC's monthly fuel
+    price cycle onsets in 2009 while the measure itself dates to 2026.
+    """
+    text = _clean(raw)
+    if not text or text.lower() in {"nan", "none", "tbd", "n/a"}:
+        return None
+    match = _YEAR_RE.search(text)
+    if match:
+        return int(match.group(0))
+    match = _MON_YY_RE.search(text)
+    if match and match.group(1).lower() in _MONTHS:
+        return 2000 + int(match.group(2))
+    match = _BARE_YY_RE.search(text)
+    if match and any(m in text.lower() for m in _MONTHS):
+        return 2000 + int(match.group(1))
+    return None
+
+
 def has_v6_columns(rows: List[Dict[str, str]]) -> bool:
     """Return True if at least one row carries a non-empty Category value."""
     return any(_clean(r.get("Category", "")) for r in rows)
@@ -114,17 +150,20 @@ def build_v6_dashboard_data(
         if found and found.get("onset_year"):
             entry.update(
                 {
-                    "onset_year": found["onset_year"],
+                    "corpus_onset": found["onset_year"],
                     "peak_year": found.get("peak_year"),
                     "n_articles": found.get("n_articles", 0),
                     "years": found.get("years", {}),
                     "first_reported": found.get("first_reported"),
                 }
             )
+        year = _policy_year(row.get("Active or Proposed Date"))
+        if year:
+            entry["onset_year"] = year
+            entry["date_basis"] = "workbook"
             dated += 1
         policies.append(entry)
-    if timeline:
-        print(f"  timeline: dated {dated}/{len(policies)} policies from corpus")
+    print(f"  timeline: dated {dated}/{len(policies)} policies from the workbook date")
 
     for entry in policies:
         entry["provenance"] = "workbook"
