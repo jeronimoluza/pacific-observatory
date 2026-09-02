@@ -5,121 +5,167 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Global Retail Food Prices — Unit Value Explorer</title>
 <style>
+/* ---------------------------------------------------------------------
+   Every number here is a deviation from a reference — the world median,
+   a fixed item mix, a base period. So the datum is the organising device:
+   drawn once, labelled, and everything else positioned against it.
+   Colour belongs to data only; the chrome is ink and paper.
+   --------------------------------------------------------------------- */
 :root{
-  --bg:#f4f6f8; --card:#fff; --ink:#12212e; --dim:#5b6b7a; --faint:#8c9aa8;
-  --line:#e2e8ee; --head:#0f2233; --accent:#1f6feb; --accent-soft:#e8f0fe;
-  --good:#1a7f4b; --warn:#b3691a; --bad:#c0392b; --flag:#f6e9c9;
-  --r:10px; --gap:16px;
-  --c1:#1f6feb; --c2:#e8833a; --c3:#2aa36b; --c4:#c0392b; --c5:#7c5cc4;
-  --c6:#0e8f9e; --c7:#b8348c; --c8:#8a6d3b;
+  --paper:#edece7; --plate:#fbfaf7; --ink:#1b211f; --dim:#5c625f; --faint:#787d7a;
+  --rule:#dad7ce; --hair:#e7e4dc; --wash:#e4e2da;
+  --r:3px; --gap:18px;
+  /* validated categorical order — fixed, never cycled */
+  --c1:#1c6fbe; --c2:#a83f8c; --c3:#cf5a2b; --c4:#0f8f6e; --c5:#a67c10; --c6:#4a4fb5;
+  --cheap:#17627d; --dear:#b5442e; --mid:#b9b5aa;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font:14px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
-.wrap{max-width:1500px;margin:0 auto;padding:var(--gap)}
+body{font:13.5px/1.55 var(--sans);background:var(--paper);color:var(--ink);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.wrap{max-width:1460px;margin:0 auto;padding:0 22px 40px}
+.num,.v,.kpi .v{font-variant-numeric:tabular-nums}
 
-/* ---------- header ---------- */
-header{background:var(--head);color:#fff;border-radius:var(--r);padding:16px 20px;margin-bottom:var(--gap)}
-.htop{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
-h1{font-size:19px;font-weight:650;letter-spacing:-.2px}
-.scope{font-size:12px;color:#9db3c6;margin-top:3px}
-.modesw{display:flex;background:rgba(255,255,255,.1);border-radius:20px;padding:3px}
-.modesw button{background:none;border:0;color:#b8c9d8;font:inherit;font-size:12.5px;
-  padding:5px 14px;border-radius:16px;cursor:pointer}
-.modesw button.on{background:#fff;color:var(--head);font-weight:600}
-.gctl{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;padding-top:13px;
-  border-top:1px solid rgba(255,255,255,.13)}
-.gctl .grp{display:flex;align-items:center;gap:7px}
-.gctl label{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:#8fa6ba}
-.seg{display:flex;border:1px solid rgba(255,255,255,.22);border-radius:6px;overflow:hidden}
-.seg button{background:none;border:0;color:#cddbe7;font:inherit;font-size:12.5px;
-  padding:4px 11px;cursor:pointer}
-.seg button+button{border-left:1px solid rgba(255,255,255,.22)}
-.seg button.on{background:var(--accent);color:#fff;font-weight:600}
-.card .seg{border-color:var(--line)}
-.card .seg button{color:var(--dim)}
-.card .seg button+button{border-left-color:var(--line)}
-.card .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.ctlbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+/* ---------- masthead ---------- */
+header{background:var(--ink);color:var(--paper);margin:0 -22px var(--gap);padding:20px 22px 0}
+.hin{max-width:1416px;margin:0 auto}
+.htop{display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap}
+h1{font:400 25px/1.2 var(--serif);letter-spacing:-.1px}
+.scope{font-size:12px;color:#9fa5a0;margin-top:5px;font-variant-numeric:tabular-nums}
+.modesw{display:flex;gap:16px}
+.modesw button{background:none;border:0;border-bottom:2px solid transparent;color:#9fa5a0;
+  font:inherit;font-size:13px;padding:2px 0 5px;cursor:pointer}
+.modesw button.on{color:var(--paper);border-bottom-color:var(--paper)}
+.gctl{display:flex;gap:26px;flex-wrap:wrap;margin-top:16px;padding:13px 0;
+  border-top:1px solid #2f3634}
+.gctl .grp{display:flex;align-items:center;gap:9px}
+.gctl label,.ctllab{font-size:12px;color:#8e938f;white-space:nowrap}
+.ctllab{color:var(--faint)}
+
+/* segmented control: selected is an ink fill, never a hue */
+.seg{display:flex;border:1px solid #3a413e;border-radius:var(--r);overflow:hidden}
+.seg button{background:none;border:0;color:#c6cbc7;font:inherit;font-size:12.5px;
+  padding:4px 11px;cursor:pointer;white-space:nowrap}
+.seg button+button{border-left:1px solid #3a413e}
+.seg button:hover{color:var(--paper)}
+.seg button.on{background:var(--paper);color:var(--ink);font-weight:600}
+.card .seg,.readout .seg{border-color:var(--rule)}
+.card .seg button,.readout .seg button{color:var(--dim)}
+.card .seg button+button,.readout .seg button+button{border-left-color:var(--rule)}
+.card .seg button:hover,.readout .seg button:hover{color:var(--ink)}
+.card .seg button.on,.readout .seg button.on{background:var(--ink);color:var(--plate)}
+.ctlbar{display:flex;gap:11px;flex-wrap:wrap;align-items:center;margin-bottom:11px}
 .ctlbar select{max-width:360px}
-.ctllab{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint)}
 
 /* ---------- tabs ---------- */
-nav.tabs{display:flex;gap:4px;margin-bottom:var(--gap);flex-wrap:wrap}
-nav.tabs button{background:#fff;border:1px solid var(--line);border-bottom-width:2px;
-  border-radius:var(--r) var(--r) 0 0;padding:9px 17px;font:inherit;font-size:13.5px;
-  color:var(--dim);cursor:pointer}
-nav.tabs button.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:640;background:#fff}
-nav.tabs .num{font-size:11px;color:var(--faint);margin-right:6px;font-weight:600}
+nav.tabs{display:flex;gap:26px;margin:0 0 var(--gap);border-bottom:1px solid var(--rule);
+  flex-wrap:wrap}
+nav.tabs button{background:none;border:0;border-bottom:2px solid transparent;
+  padding:0 0 9px;font:inherit;font-size:14px;color:var(--dim);cursor:pointer;margin-bottom:-1px}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
 
-/* ---------- cards ---------- */
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
-  padding:18px 20px;margin-bottom:var(--gap)}
-.card>h2{font-size:15px;font-weight:640;margin-bottom:3px}
-.card>.sub{font-size:12.5px;color:var(--dim);margin-bottom:14px}
+/* ---------- surfaces ---------- */
+.card{background:var(--plate);border:1px solid var(--rule);border-radius:var(--r);
+  padding:20px 22px;margin-bottom:var(--gap)}
+.card h2,.readout h2{font:400 18px/1.25 var(--serif);margin-bottom:3px}
+.card .sub,.readout .sub{font-size:12.5px;color:var(--dim);margin-bottom:15px}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
-.row-side{display:grid;grid-template-columns:340px 1fr;gap:var(--gap);align-items:start}
+.row-side{display:grid;grid-template-columns:330px 1fr;gap:var(--gap);align-items:start}
 @media(max-width:1000px){.row2,.row-side{grid-template-columns:1fr}}
 
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:var(--gap);margin-bottom:var(--gap)}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 17px}
-.kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint)}
-.kpi .v{font-size:25px;font-weight:700;letter-spacing:-.6px;margin-top:2px}
-.kpi .n{font-size:12px;color:var(--dim);margin-top:1px}
+/* the readout — the instrument face: one reading, its series beside it */
+.readout{background:var(--plate);border:1px solid var(--rule);border-radius:var(--r);
+  padding:20px 22px;margin-bottom:var(--gap)}
+.rdhead{display:grid;grid-template-columns:minmax(250px,330px) 1fr;gap:26px;
+  align-items:start;padding-bottom:16px;border-bottom:1px solid var(--rule);margin-bottom:16px}
+@media(max-width:820px){.rdhead{grid-template-columns:1fr}}
+.rdnum{font:600 47px/1 var(--sans);letter-spacing:-1.6px;font-variant-numeric:tabular-nums;
+  margin-top:10px}
+.rdunit{font-size:20px;font-weight:400;color:var(--faint);letter-spacing:-.3px}
+.rdwhat{font-size:12.5px;color:var(--dim);margin-top:7px}
+.rddelta{font-size:12.5px;margin-top:3px;font-variant-numeric:tabular-nums}
+.rddelta .up{color:var(--dear);font-weight:600}
+.rddelta .dn{color:var(--cheap);font-weight:600}
 
-/* ---------- explainer ---------- */
-.explain{background:var(--accent-soft);border:1px solid #cfe0fb;border-left:3px solid var(--accent);
-  border-radius:6px;padding:11px 14px;font-size:13px;color:#1c3d63;margin-bottom:14px}
-.explain b{font-weight:640}
-.warnbox{background:#fdf3e3;border:1px solid #f0dcb8;border-left:3px solid var(--warn);
-  border-radius:6px;padding:11px 14px;font-size:12.5px;color:#6d4a12;margin-bottom:14px}
+/* ---------- KPI strip: rules, not cards ---------- */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  margin-bottom:var(--gap);background:var(--plate)}
+.kpi{padding:13px 18px;border-left:1px solid var(--hair)}
+.kpi:first-child{border-left:0}
+.kpi .l{font-size:12px;color:var(--dim)}
+.kpi .v{font-size:26px;font-weight:600;letter-spacing:-.7px;margin-top:1px;line-height:1.15}
+.kpi .n{font-size:11.5px;color:var(--faint);margin-top:1px}
+
+/* ---------- notes ---------- */
+.explain{border-left:2px solid var(--ink);padding:2px 0 2px 14px;font-size:13px;
+  color:var(--dim);margin-bottom:15px;max-width:76ch}
+.explain b{font-weight:600;color:var(--ink)}
+.warnbox{border-left:2px solid var(--c5);padding:2px 0 2px 14px;font-size:12.5px;
+  color:var(--dim);margin-bottom:14px;max-width:88ch}
+.warnbox b{color:var(--ink);font-weight:600}
 body.mode-analyst .beginner-only{display:none}
 body:not(.mode-analyst) .analyst-only{display:none}
 
-/* ---------- unit badge ---------- */
-.ub{display:inline-flex;align-items:center;gap:4px;background:#eef3f8;border:1px solid #d6e0ea;
-  color:#2c4457;border-radius:5px;padding:1px 7px;font-size:11.5px;font-weight:640;
+/* ---------- unit badge & chips ---------- */
+.ub{display:inline-flex;align-items:center;gap:4px;background:var(--wash);
+  color:#3d4441;border-radius:var(--r);padding:1px 6px;font-size:11.5px;font-weight:600;
   font-variant-numeric:tabular-nums;white-space:nowrap}
-.ub.big{font-size:13px;padding:3px 10px}
+.ub.big{font-size:13px;padding:2px 9px}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
-.chip{background:#fff;border:1px solid var(--line);border-radius:16px;padding:4px 12px;
-  font-size:12.5px;cursor:pointer;color:var(--dim)}
-.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
-.chip .c{opacity:.7;font-size:11px;margin-left:4px}
+.chip{background:none;border:1px solid var(--rule);border-radius:var(--r);padding:3px 11px;
+  font:inherit;font-size:12.5px;cursor:pointer;color:var(--dim)}
+.chip:hover{border-color:var(--ink);color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--plate);font-weight:600}
+.chip .c{opacity:.65;font-size:11px;margin-left:5px;font-variant-numeric:tabular-nums}
 .chip[disabled]{opacity:.35;cursor:not-allowed}
+/* a series chip is this chart's legend entry — it wears its own line colour,
+   so identity never rests on the plot legend alone */
+.chip.ser{border-left-width:4px;opacity:.45}
+.chip.ser.on{background:none;border-color:var(--rule);border-left-width:4px;
+  color:var(--ink);font-weight:600;opacity:1}
+.chip.ser.on .c{color:var(--faint)}
 
 /* ---------- hierarchy navigator ---------- */
-.crumb{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:12.5px;margin-bottom:10px}
-.crumb a{color:var(--accent);cursor:pointer;text-decoration:none}
-.crumb a:hover{text-decoration:underline}
+.crumb{display:flex;flex-wrap:wrap;align-items:center;gap:5px;font-size:12.5px;margin-bottom:11px}
+.crumb a{color:var(--ink);cursor:pointer;text-decoration:underline;text-decoration-color:var(--rule);
+  text-underline-offset:2px}
+.crumb a:hover{text-decoration-color:var(--ink)}
 .crumb .sep{color:var(--faint)}
-.crumb .cur{font-weight:640}
-.navlist{border:1px solid var(--line);border-radius:8px;overflow:hidden;max-height:430px;overflow-y:auto}
+.crumb .cur{font-weight:600}
+.navlist{border-top:1px solid var(--rule);max-height:430px;overflow-y:auto}
 .navlist .it{display:flex;justify-content:space-between;align-items:center;gap:8px;
-  padding:8px 12px;border-bottom:1px solid #f1f4f7;cursor:pointer;font-size:13px}
-.navlist .it:last-child{border-bottom:0}
-.navlist .it:hover{background:#f6f9fc}
-.navlist .it.on{background:var(--accent-soft);font-weight:640}
-.navlist .it .m{font-size:11px;color:var(--faint);white-space:nowrap}
-.navlist .it .code{font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+  padding:8px 4px;border-bottom:1px solid var(--hair);cursor:pointer;font-size:13px}
+.navlist .it:hover{background:var(--wash)}
+.navlist .it.on{font-weight:600;box-shadow:inset 2px 0 0 var(--ink);padding-left:10px}
+.navlist .it .m{font-size:11.5px;color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums}
+.navlist .it .code{font-size:11px;color:var(--faint);font-variant-numeric:tabular-nums}
 .leafmark{color:var(--faint);font-size:11px}
 
-/* ---------- rank list ---------- */
-.rankscale{position:relative;height:22px;border-bottom:1px solid var(--line);margin-bottom:2px;
-  font-size:10.5px;color:var(--faint)}
-.rankscale span{position:absolute;top:4px;transform:translateX(-50%);white-space:nowrap}
-.rankscale i{position:absolute;top:16px;width:1px;height:6px;background:var(--line)}
-.rankscale .mid{color:var(--ink);font-weight:640}
-.rrow{display:grid;grid-template-columns:30px 190px 1fr 62px;gap:8px;align-items:center;
-  padding:2px 0;cursor:pointer;border-radius:4px}
-.rrow:hover{background:#f4f8fc}
-.rrow .n{font-size:10.5px;color:var(--faint);text-align:right;font-variant-numeric:tabular-nums}
+/* ---------- ranking: bars diverge from a datum that is drawn once ---------- */
+.rankscale{position:relative;height:20px;font-size:11px;color:var(--faint);
+  font-variant-numeric:tabular-nums}
+.rankscale span{position:absolute;top:2px;transform:translateX(-50%);white-space:nowrap}
+.rankscale i{position:absolute;top:15px;width:1px;height:5px;background:var(--rule)}
+.rankscale .mid{color:var(--ink);font-weight:600}
+.rrow{display:grid;grid-template-columns:28px 186px 1fr 54px;gap:9px;align-items:center;
+  cursor:pointer;height:19px}
+.rrow:hover .nm{font-weight:600}
+.rrow .n{font-size:11px;color:var(--faint);text-align:right;font-variant-numeric:tabular-nums}
 .rrow .nm{font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rrow .tr{position:relative;height:15px;background:#f2f5f8;border-radius:3px}
-.rrow .tr .zero{position:absolute;top:-1px;bottom:-1px;width:1px;background:#c3ced8}
-.rrow .tr .f{position:absolute;top:2px;bottom:2px;border-radius:2px}
+.rrow .tr{position:relative;height:19px}
+.rrow .tr .f{position:absolute;top:5px;bottom:5px;border-radius:1px}
 .rrow .v{font-size:12px;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
-.rrow.thin{opacity:.55}
+.rrow.thin{opacity:.5}
+
+.rankwrap{position:relative}
+.rankwrap .cscroll{max-height:551px}
+.rankwrap::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34px;
+  pointer-events:none;background:linear-gradient(transparent,var(--plate))}
+.datum{position:absolute;top:0;bottom:0;left:0;right:0;pointer-events:none}
+.datum i{position:absolute;top:0;bottom:0;width:1px;background:var(--ink);opacity:.55}
 
 /* ---------- charts ---------- */
 .cwrap{position:relative;width:100%}
@@ -129,44 +175,51 @@ canvas{max-width:100%}
 /* ---------- table ---------- */
 .tbl-scroll{overflow-x:auto;max-height:560px;overflow-y:auto}
 table{width:100%;border-collapse:collapse;font-size:12.5px}
-thead th{position:sticky;top:0;background:#fff;text-align:left;padding:8px 10px;
-  border-bottom:2px solid var(--line);font-size:11px;text-transform:uppercase;
-  letter-spacing:.5px;color:var(--faint);cursor:pointer;white-space:nowrap;z-index:2}
+thead th{position:sticky;top:0;background:var(--plate);text-align:left;padding:7px 10px;
+  border-bottom:1px solid var(--ink);font-size:12px;font-weight:600;
+  color:var(--dim);cursor:pointer;white-space:nowrap;z-index:2}
 thead th:hover{color:var(--ink)}
-tbody td{padding:7px 10px;border-bottom:1px solid #f2f5f8;white-space:nowrap}
-tbody tr:hover{background:#f8fafc}
+tbody td{padding:6px 10px;border-bottom:1px solid var(--hair);white-space:nowrap}
+tbody tr:hover{background:var(--wash)}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-tr.flagged{background:var(--flag)}
-tr.flagged:hover{background:#f2e2bd}
-.pill{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10.5px;font-weight:640}
-.pill.ok{background:#e3f4ea;color:var(--good)}
-.pill.warn{background:#fdefdb;color:var(--warn)}
-.pill.bad{background:#fbe4e1;color:var(--bad)}
-.pill.mod{background:#efe9fa;color:#5b3fa8}
-.linkish{color:var(--accent);cursor:pointer}
-.linkish:hover{text-decoration:underline}
+tr.flagged td{background:#f6efdc}
+.pill{display:inline-block;padding:1px 7px;border-radius:var(--r);font-size:11px;font-weight:600}
+.pill.ok{background:#dfe9e5;color:#175c48}
+.pill.warn{background:#f4ead3;color:#7a5c12}
+.pill.bad{background:#f2ddd8;color:#8e3323}
+.pill.mod{background:#e4e2ee;color:#3f3a76}
+.linkish{cursor:pointer;text-decoration:underline;text-decoration-color:var(--rule);
+  text-underline-offset:2px}
+.linkish:hover{text-decoration-color:var(--ink)}
 
-select,input[type=search]{padding:6px 10px;border:1px solid var(--line);border-radius:6px;
-  font:inherit;font-size:13px;background:#fff;color:var(--ink);max-width:100%}
+select,input[type=search]{padding:5px 9px;border:1px solid var(--rule);border-radius:var(--r);
+  font:inherit;font-size:13px;background:var(--plate);color:var(--ink);max-width:100%}
+select:focus-visible,input:focus-visible,button:focus-visible,.rrow:focus-visible,
+.navlist .it:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 .muted{color:var(--dim)}
 .tiny{font-size:11.5px;color:var(--faint)}
-.spread{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:14px;
+  flex-wrap:wrap;margin-bottom:12px}
 .empty{padding:40px 20px;text-align:center;color:var(--faint);font-size:13.5px}
-footer{color:var(--faint);font-size:11.5px;text-align:center;padding:6px 0 20px}
-.deco{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:14px}
-.deco .b{border:1px solid var(--line);border-radius:8px;padding:11px 13px}
-.deco .b .l{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--faint)}
-.deco .b .v{font-size:20px;font-weight:700;margin-top:2px}
-.deco .b.pos .v{color:var(--bad)}
-.deco .b.neg .v{color:var(--good)}
-.samples{font-size:12px;color:var(--dim);margin-top:8px;line-height:1.7}
-.samples code{background:#f2f5f8;border-radius:4px;padding:1px 6px;font-size:11.5px}
+footer{color:var(--faint);font-size:11.5px;padding:16px 0 0;border-top:1px solid var(--rule)}
+.deco{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;margin-top:16px;
+  border-top:1px solid var(--rule)}
+.deco .b{padding:11px 16px;border-left:1px solid var(--hair)}
+.deco .b:first-child{border-left:0;padding-left:0}
+.deco .b .l{font-size:12px;color:var(--dim)}
+.deco .b .v{font-size:22px;font-weight:600;margin-top:1px;font-variant-numeric:tabular-nums}
+.deco .b.pos .v{color:var(--dear)}
+.deco .b.neg .v{color:var(--cheap)}
+.samples{font-size:12px;color:var(--dim);margin-top:10px;line-height:1.65;max-width:96ch}
+.samples code{background:var(--wash);border-radius:var(--r);padding:1px 5px;font-size:11.5px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body class="mode-explore">
 <div class="wrap">
 
 <header>
+  <div class="hin">
   <div class="htop">
     <div>
       <h1>Global Retail Food Prices — Unit Value Explorer</h1>
@@ -210,23 +263,30 @@ footer{color:var(--faint);font-size:11.5px;text-align:center;padding:6px 0 20px}
       </div>
     </div>
   </div>
+  </div>
 </header>
 
 <nav class="tabs">
-  <button id="t-world"   class="on" onclick="APP.go('world')"><span class="num">1</span>World</button>
-  <button id="t-compare" onclick="APP.go('compare')"><span class="num">2</span>Compare countries</button>
-  <button id="t-country" onclick="APP.go('country')"><span class="num">3</span>Country profile</button>
-  <button id="t-trends"  onclick="APP.go('trends')"><span class="num">4</span>Currency effects</button>
-  <button id="t-quality" class="analyst-only" onclick="APP.go('quality')"><span class="num">5</span>Data quality</button>
+  <button id="t-world"   class="on" onclick="APP.go('world')">World</button>
+  <button id="t-compare" onclick="APP.go('compare')">Compare countries</button>
+  <button id="t-country" onclick="APP.go('country')">Country profile</button>
+  <button id="t-trends"  onclick="APP.go('trends')">Currency effects</button>
+  <button id="t-quality" class="analyst-only" onclick="APP.go('quality')">Data quality</button>
 </nav>
 
 <!-- ============ 1. WORLD ============ -->
 <section id="v-world">
   <div class="kpis" id="kpis"></div>
 
-  <div class="card">
-    <h2>How have food prices moved?</h2>
-    <div class="sub">Price of one <span id="wtUnitWord">kg</span> in US$, with the item mix held fixed.</div>
+  <section class="readout">
+    <div class="rdhead">
+      <div>
+        <h2>How have food prices moved?</h2>
+        <div class="rdnum"><span id="rdNum">&mdash;</span><span class="rdunit" id="rdUnit"></span></div>
+        <div class="rdwhat" id="rdWhat">&nbsp;</div>
+        <div class="rddelta" id="rdDelta">&nbsp;</div>
+      </div>
+      <div>
     <div class="explain beginner-only">
       Pick what to compare — <b>whole regions</b>, <b>parts of a region</b>, or <b>single countries</b> —
       and which food category. Each line is what a kilogram (or litre, or piece) of it costs there,
@@ -245,6 +305,8 @@ footer{color:var(--faint);font-size:11.5px;text-align:center;padding:6px 0 20px}
       line. <b>Matched-item index</b> is the strict alternative: the mean log relative over pairs
       priced in <i>two consecutive periods</i>, cumulated. <b>Smoothing</b> is a trailing geometric
       mean over 2 or 3 periods. Hover any point for the countries and item cells behind it.
+    </div>
+      </div>
     </div>
 
     <div class="ctlbar">
@@ -282,17 +344,15 @@ footer{color:var(--faint);font-size:11.5px;text-align:center;padding:6px 0 20px}
       </div>
     </div>
 
-    <div class="spread">
-      <div class="chips" id="wtChips"></div>
-    </div>
     <div id="wtWarn"></div>
+    <div class="chips" id="wtChips" style="margin-bottom:14px"></div>
     <div class="cwrap" style="height:400px"><canvas id="cWorldTrend"></canvas></div>
     <div class="samples" id="wtNote"></div>
-  </div>
+  </section>
 
   <div class="card">
     <h2>How expensive is food, country by country?</h2>
-    <div class="sub">Matched-basket price level in US$. The world median country = <b>100</b>.</div>
+    <div class="sub">Matched-basket price level in US$, item by item.</div>
     <div class="explain beginner-only">
       Each country's food prices are compared with the world median <b>item by item</b> —
       1&nbsp;kg of rice against 1&nbsp;kg of rice, 1&nbsp;litre of milk against 1&nbsp;litre of milk —
@@ -314,7 +374,10 @@ footer{color:var(--faint);font-size:11.5px;text-align:center;padding:6px 0 20px}
       <div class="tiny" id="worldCount"></div>
     </div>
     <div class="rankscale" id="rankScale"></div>
-    <div class="cscroll" id="rankList"></div>
+    <div class="rankwrap">
+      <div class="cscroll" id="rankList"></div>
+      <div class="datum" id="rankDatum"></div>
+    </div>
   </div>
   <div class="row2">
     <div class="card">

@@ -4,7 +4,12 @@
 (function () {
 "use strict";
 
-var PAL = ["#1f6feb","#e8833a","#2aa36b","#c0392b","#7c5cc4","#0e8f9e","#b8348c","#8a6d3b"];
+/* Validated categorical order (lightness band, chroma, CVD, normal-vision and
+   contrast all pass on the paper ground). Six slots, assigned by entity and never
+   cycled by rank, so filtering a place out never repaints the ones that remain. */
+var PAL  = ["#1c6fbe","#a83f8c","#cf5a2b","#0f8f6e","#a67c10","#4a4fb5"];
+var INK  = "#1b211f", RULE = "#e7e4dc", FAINT = "#787d7a", DIM = "#5c625f";
+var CHEAP = "#17627d", DEAR = "#b5442e";
 var UNIT_LABEL = {kg:"per kg", lt:"per litre", unit:"per piece"};
 var UNIT_SHORT  = {kg:"kg", lt:"litre", unit:"piece"};
 var UNIT_OF     = {kg:"/kg", lt:"/L", unit:"/piece"};
@@ -173,7 +178,7 @@ function renderWorld() {
     type:"bar",
     data:{ labels: uk.map(function (u) { return UNIT_SHORT[u]; }),
       datasets:[{ data: uk.map(function (u) { return units[u]; }),
-        backgroundColor: uk.map(function (u, i) { return PAL[i] + "cc"; }),
+        backgroundColor: uk.map(function (u, i) { return PAL[i % PAL.length]; }),
         borderWidth:0, borderRadius:4 }] },
     options:{ plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label:function (c) {
       return c.parsed.y.toLocaleString() + " observations priced " + UNIT_LABEL[uk[c.dataIndex]]; } } } },
@@ -193,7 +198,7 @@ function renderWorld() {
     type:"bar",
     data:{ labels: vol.map(function (r) { return r.n; }),
       datasets:[{ data: vol.map(function (r) { return r.v; }),
-        backgroundColor:"#1f6febcc", borderWidth:0, borderRadius:3 }] },
+        backgroundColor:PAL[0], borderWidth:0, borderRadius:3 }] },
     options:{ indexAxis:"y", plugins:{ legend:{display:false} },
       scales:{ x:{ ticks:{ callback:function (v) {
         return v >= 1e3 ? (v/1e3).toFixed(0)+"k" : v; } } },
@@ -221,9 +226,14 @@ function renderRanking() {
   document.getElementById("rankScale").innerHTML =
     '<div style="position:absolute;left:236px;right:70px;top:0;bottom:0">' +
     ticks.map(function (v) {
+      var lab = v === 100 ? "100 = world median"
+        : Math.abs(v - 100) < (hi - lo) * 0.09 ? "" : v;
       return '<span class="' + (v === 100 ? "mid" : "") + '" style="left:' + pos(v) + '%">' +
-        (v === 100 ? "100 = world median" : v) + '</span><i style="left:' + pos(v) + '%"></i>';
+        lab + '</span><i style="left:' + pos(v) + '%"></i>';
     }).join("") + "</div>";
+  document.getElementById("rankDatum").innerHTML =
+    '<div style="position:absolute;left:236px;right:70px;top:0;bottom:0">' +
+    '<i style="left:' + pos(100) + '%"></i></div>';
 
   document.getElementById("rankList").innerHTML = rows.map(function (r, i) {
     var a = Math.min(r.level, 100), b = Math.max(r.level, 100);
@@ -233,10 +243,10 @@ function renderRanking() {
       " (world = 100) · " + r.level_n + " matched items · " + r.src + " sources · " +
       r.obs.toLocaleString() + ' observations">' +
       '<div class="n">' + (i + 1) + '</div><div class="nm">' + esc(r.name) + "</div>" +
-      '<div class="tr"><div class="zero" style="left:' + pos(100) + '%"></div>' +
+      '<div class="tr">' +
       '<div class="f" style="left:' + pos(a) + "%;width:" + (pos(b) - pos(a)) + "%;background:" +
-      (up ? "#c0392bcc" : "#2aa36bcc") + '"></div></div>' +
-      '<div class="v" style="color:' + (up ? "var(--bad)" : "var(--good)") + '">' +
+      (up ? DEAR : CHEAP) + '"></div></div>' +
+      '<div class="v" style="color:' + (up ? DEAR : CHEAP) + '">' +
       r.level.toFixed(0) + "</div></div>";
   }).join("");
 }
@@ -251,6 +261,12 @@ Object.keys(DATA.geos).forEach(function (g) {
   var k = DATA.geos[g].kind;
   (GEOS_BY_KIND[k] = GEOS_BY_KIND[k] || []).push(g);
 });
+var GEO_SLOT = {};
+["region","subregion","country"].forEach(function (k) {
+  Object.keys(DATA.geos).filter(function (g) { return DATA.geos[g].kind === k; })
+    .sort().forEach(function (g, i) { GEO_SLOT[g] = i; });
+});
+function geoColor(g) { return g === "W" ? INK : PAL[(GEO_SLOT[g] || 0) % PAL.length]; }
 var GEO_INDEX = {}, LAST_P = {};
 Object.keys(DATA.gseries).forEach(function (key) {
   var a = key.split("|"), g = DATA.geos[a[1]], s = DATA.gseries[key];
@@ -301,6 +317,15 @@ function smooth(pts, w) {
   });
 }
 
+/* The reading — one number, what it measures, and how far it moved across the
+   window on screen. It is the first thing anyone sees, so it names its own
+   place and period rather than leaving them to the legend. */
+function readout(v, unit, what, delta) {
+  document.getElementById("rdNum").innerHTML = v == null ? "&mdash;" : v;
+  document.getElementById("rdUnit").textContent = v == null ? "" : unit;
+  document.getElementById("rdWhat").innerHTML = what || "&nbsp;";
+  document.getElementById("rdDelta").innerHTML = delta || "&nbsp;";
+}
 function renderWorldTrends() {
   var f = S.gfreq, kind = S.gmode;
   if (!GEO_INDEX[f]) { S.gfreq = f = "M"; }
@@ -324,6 +349,7 @@ function renderWorldTrends() {
   var chartId = "cWorldTrend";
   function nothing(msg) {
     document.getElementById("wtChips").innerHTML = "";
+    readout(null, "", "", "");
     document.getElementById("wtWarn").innerHTML = '<div class="warnbox">' + msg + "</div>";
     chart(chartId, {type:"line", data:{labels:[], datasets:[]}});
     document.getElementById("wtNote").innerHTML = "";
@@ -345,7 +371,6 @@ function renderWorldTrends() {
   document.getElementById("wtUnits").innerHTML = units.map(function (u) {
     return '<button class="chip' + (u === ui ? " on" : "") + '" onclick="APP.setGUnit(' + u +
       ')">' + UNIT_LABEL[DATA.unitIdx[u]] + "</button>"; }).join("");
-  document.getElementById("wtUnitWord").textContent = UNIT_SHORT[unitCode];
 
   /* candidate geographies — World is always offered as the yardstick */
   var from = winFrom(), cands = [];
@@ -367,13 +392,15 @@ function renderWorldTrends() {
   cands.forEach(function (c) { avail[c.g] = c; });
   S.gsel = S.gsel.filter(function (g) { return avail[g]; });
   if (!S.gsel.length) {
-    S.gsel = cands.slice(0, kind === "country" ? 6 : 8).map(function (c) { return c.g; });
-    if (S.gsel.indexOf("W") < 0 && avail.W) S.gsel.unshift("W");
+    S.gsel = cands.slice(0, 6).map(function (c) { return c.g; });
+    S.gsel = S.gsel.filter(function (g) { return g !== "W"; });
+    if (avail.W) S.gsel.unshift("W");
   }
   document.getElementById("wtChips").innerHTML =
     (kind === "country" ? cands.slice(0, 18) : cands).map(function (c) {
-      return '<button class="chip' + (S.gsel.indexOf(c.g) >= 0 ? " on" : "") +
-        '" onclick="APP.toggleGeo(' + arg(c.g) + ')">' + esc(c.t) +
+      var on = S.gsel.indexOf(c.g) >= 0;
+      return '<button class="chip ser' + (on ? " on" : "") + '" style="border-left-color:' +
+        geoColor(c.g) + '" onclick="APP.toggleGeo(' + arg(c.g) + ')">' + esc(c.t) +
         '<span class="c">' + c.n + "</span></button>"; }).join("");
   var add = document.getElementById("wtAdd");
   add.innerHTML = '<option value="">add a place…</option>' + cands
@@ -419,10 +446,10 @@ function renderWorldTrends() {
     if (pts.filter(function (v) { return v != null; }).length < 2) thin.push(c.t);
     sup[g] = {t:c.t, s:s};
     ds.push({ label:c.t, data:pts,
-      borderColor: g === "W" ? "#33475b" : PAL[k % PAL.length],
+      borderColor: geoColor(g),
       borderWidth: g === "W" ? 2.8 : 2.2,
       borderDash: g === "W" ? [6,3] : undefined,
-      tension:.2, pointRadius:2.4, spanGaps:true, segment:GAP_SEG });
+      tension:.2, pointRadius:2.8, spanGaps:true, segment:GAP_SEG });
   });
 
   var warn = [];
@@ -443,7 +470,7 @@ function renderWorldTrends() {
   chart(chartId, {
     type:"line", data:{labels:grid, datasets:ds},
     options:{ interaction:{mode:"index", intersect:false},
-      plugins:{ legend:{position:"top", labels:{usePointStyle:true, padding:14, boxWidth:8}},
+      plugins:{ legend:{display:false},
         tooltip:{ callbacks:{
           label:function (it) {
             var v = it.parsed.y;
@@ -457,11 +484,34 @@ function renderWorldTrends() {
               out.push(sup[g].t + ": " + s.c[i] + (s.c[i] === 1 ? " country · " : " countries · ") +
                 s.k[i] + " item cells"); });
             return out.length > 1 ? out : []; } } } },
-      scales:{ y:{ grid:{color:"#eef2f6"},
+      scales:{ y:{ grid:{color:RULE},
           title:{display:true, text: isLevel ? "US$ per " + UNIT_SHORT[unitCode]
             : "Index, " + (baseP || lo) + " = 100"} },
         x:{ grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:14} } } }
   });
+
+  /* read the lead line off what is actually drawn, not off the raw series —
+     the window and the smoothing both change what the number should say */
+  var lp = ds.length ? ds[0].data : [], first = null, last = null, lastP = null;
+  lp.forEach(function (v, i) {
+    if (v == null) return;
+    if (first == null) first = v;
+    last = v; lastP = grid[i];
+  });
+  if (last == null) readout(null, "", "", "");
+  else {
+    var leadT = ds[0].label;
+    readout(isLevel ? "$" + last.toFixed(2) : last.toFixed(1),
+      isLevel ? " US$/" + UNIT_SHORT[unitCode] : " index",
+      esc(leadT) + " &middot; " + esc(title(S.gnode)) + " &middot; " + lastP,
+      first && first !== last
+        ? (function () {
+            var d = (last / first - 1) * 100;
+            return '<span class="' + (d >= 0 ? "up" : "dn") + '">' +
+              (d >= 0 ? "\u25b2 " : "\u25bc ") + Math.abs(d).toFixed(1) + "%</span> since " +
+              grid.find(function (p, i) { return lp[i] != null; }); })()
+        : "");
+  }
 
   var lead = avail[S.gsel[0]], li = lead ? lead.s.p.length - 1 : -1;
   document.getElementById("wtNote").innerHTML =
@@ -506,7 +556,7 @@ function navigator(crumbId, listId, node, onPick, countFn) {
       '<div class="m">' + c + "</div></div>";
   }).join("");
   var hint = isSiblings
-    ? '<div class="it" style="cursor:default;background:#f8fafc;color:var(--faint);font-size:11.5px">' +
+    ? '<div class="it" style="cursor:default;color:var(--faint);font-size:11.5px">' +
       "This is a leaf — showing the other items alongside it.</div>"
     : "";
   document.getElementById(listId).innerHTML = hint + html ||
@@ -580,10 +630,10 @@ function renderCompare() {
     data:{ labels: plot.map(function (r) { return r.name; }),
       datasets:[{ data: plot.map(function (r) { return r[metric]; }),
         backgroundColor: plot.map(function (r) {
-          if (r.c.flag) return "#c0392bcc";
-          if (r.c.mod >= 0.5) return "#7c5cc4cc";
-          if (S.cmpMode === "rel") return r.rel >= 1 ? "#e8833acc" : "#0e8f9ecc";
-          return r.c.src === 1 ? "#1f6feb66" : "#1f6febcc"; }),
+          if (r.c.flag) return DEAR;
+          if (r.c.mod >= 0.5) return PAL[5];
+          if (S.cmpMode === "rel") return r.rel >= 1 ? DEAR : CHEAP;
+          return r.c.src === 1 ? PAL[0] + "66" : PAL[0]; }),
         borderWidth:0, borderRadius:3 }] },
     options:{ indexAxis:"y",
       onClick:function (e, els) { if (els.length) { S.country = plot[els[0].index].c.country; APP.go("trends"); } },
@@ -599,7 +649,7 @@ function renderCompare() {
         if (c.mod >= 0.5) out.push("⚠ modelled, not observed retail");
         if (c.mix) out.push("⚠ mixed currencies in cell");
         return out; } } } },
-      scales:{ x:{ beginAtZero:true, position:"top", grid:{color:"#eef2f6"},
+      scales:{ x:{ beginAtZero:true, position:"top", grid:{color:RULE},
           title:{display:true, text: S.cmpMode === "rel" ? "Price relative to the country's own food basket (1.00 = as expected)"
             : (S.cur === "usd" ? "US$ " : "Local currency ") + UNIT_LABEL[unit]} },
         y:{ ticks:{font:{size:11}, autoSkip:false}, grid:{display:false} } } }
@@ -722,7 +772,7 @@ function renderCountry() {
     type:"bar",
     data:{ labels: show.map(function (r) { return r.name + " (" + UNIT_SHORT[r.c.unit] + ")"; }),
       datasets:[{ data: show.map(function (r) { return (r.ratio - 1) * 100; }),
-        backgroundColor: show.map(function (r) { return r.ratio >= 1 ? "#c0392bcc" : "#2aa36bcc"; }),
+        backgroundColor: show.map(function (r) { return r.ratio >= 1 ? DEAR : CHEAP; }),
         borderWidth:0, borderRadius:3 }] },
     options:{ indexAxis:"y",
       onClick:function (e, els) { if (els.length) { S.node = show[els[0].index].c.node;
@@ -733,8 +783,8 @@ function renderCountry() {
                  "world median: $" + r.gmed.toFixed(2) + UNIT_OF[r.c.unit],
                  pct(r.ratio - 1) + " vs world",
                  r.c.obs + " observations" ]; } } } },
-      scales:{ x:{ grid:{color:"#eef2f6"}, position:"top",
-          title:{display:true, text:"% above (red) or below (green) the world median for the same item and unit"} },
+      scales:{ x:{ grid:{color:RULE}, position:"top",
+          title:{display:true, text:"% above or below the world median for the same item and unit"} },
         y:{ ticks:{font:{size:11}, autoSkip:false}, grid:{display:false} } } }
   });
 
@@ -907,8 +957,8 @@ function renderTrends() {
     ds.push({label:"Exchange rate (local per US$)", data:onGrid(grid, s.p, idxFx), borderColor:PAL[1],
              borderWidth:1.8, borderDash:[3,3], tension:.2, pointRadius:0, spanGaps:true});
   }
-  ds.push({label: isIdx ? "Items linked" : "Observations", type:"bar", yAxisID:"y2",
-           data:onGrid(grid, s.p, s.n), backgroundColor:"#8c9aa833", borderWidth:0, order:99});
+  ds.push({label: (isIdx ? "Items" : "Observations") + " behind each point", type:"bar", yAxisID:"y2",
+           data:onGrid(grid, s.p, s.n), backgroundColor:"#b9b5aa55", borderWidth:0, order:99});
 
   var gaps = grid.length - s.p.length;
   var warn = [];
@@ -932,11 +982,8 @@ function renderTrends() {
                  UNIT_OF[DATA.unitIdx[ui]],
                "local " + (s.loc[k] != null ? s.loc[k].toFixed(2) : "—"),
                s.n[k] + " observations"]; } } } },
-      scales:{ y:{ title:{display:true, text:"Index, first period with data = 100"}, grid:{color:"#eef2f6"} },
-        y2:{ position:"right", beginAtZero:true, grid:{display:false},
-             title:{display:true, text: isIdx ? "items linked" : "observations",
-                    font:{size:10}, color:"#8c9aa8"},
-             ticks:{font:{size:10}, color:"#8c9aa8"},
+      scales:{ y:{ title:{display:true, text:"Index, first period with data = 100"}, grid:{color:RULE} },
+        y2:{ display:false, beginAtZero:true,
              /* keep the support bars in the bottom fifth, out of the lines' way */
              afterDataLimits:function (a) { a.max = a.max * 5; } },
         x:{ grid:{display:false}, ticks:{maxRotation:0, autoSkip:true, maxTicksLimit:14} } } }
@@ -988,7 +1035,7 @@ function renderQuality() {
     type:"bar",
     data:{ labels: ks.map(function (k) { return LABEL[k] || k; }),
       datasets:[{ data: ks.map(function (k) { return q.status[k]; }),
-        backgroundColor: ks.map(function (k) { return k === "trusted" ? "#2aa36bcc" : "#c0392b88"; }),
+        backgroundColor: ks.map(function (k) { return k === "trusted" ? CHEAP : DEAR + "88"; }),
         borderWidth:0, borderRadius:3 }] },
     options:{ indexAxis:"y", plugins:{legend:{display:false}},
       scales:{ x:{ ticks:{ callback:function (v) {
@@ -1133,8 +1180,8 @@ window.APP = APP;
 (function () {
   var m = DATA.meta;
   document.getElementById("scope").innerHTML =
-    "COICOP divisions " + m.divisions.join(" and ") + " — food, beverages, alcohol, tobacco · " +
-    m.n_countries + " countries · " + m.n_sources + " sources · data through " + m.through;
+    "COICOP divisions " + m.divisions.join(" and ") + " — food, beverages, alcohol and tobacco, " +
+    "priced per kilogram, litre or piece";
   document.getElementById("minleaves").textContent = DATA.qa.min_basket_leaves;
   document.getElementById("wtPairs").textContent = m.geo_min_pairs;
   document.getElementById("foot").innerHTML =
