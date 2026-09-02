@@ -110,7 +110,15 @@ class PisiffikGlSpider(scrapy.Spider):
             if cid in _BLOCKED_CATEGORY_IDS or cid in seen:
                 continue
             seen.add(cid)
-            yield self._category_request(url, 1)
+            # Request the CLEANED path, never `url`. The home page links some
+            # categories with a query already attached (e.g.
+            # /da/101-skaenke-og-vitriner?page=2). `path` strips it for the
+            # regex match, but passing the raw `url` on meant
+            # _category_request appended a SECOND query -- producing
+            # `?page=2?page=3`, which the server answers by serving page 2
+            # forever. has_next therefore never cleared and the category
+            # paginated to the cap, burning ~560 requests on duplicates.
+            yield self._category_request(f"{BASE_URL}{path}", 1)
         logger.info(f"{self.name}: discovered {len(seen)} categories")
 
     def _category_request(self, url, page):
