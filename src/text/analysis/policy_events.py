@@ -212,6 +212,18 @@ def _merge_tracker(members: Sequence[Dict[str, Any]]) -> str:
     return seen.pop()
 
 
+def implausible_year(event: Dict[str, Any], corpus_start: int = 2000) -> bool:
+    """True when an event's year predates anything the corpus could have reported.
+
+    A statute carries its year in its name -- "Control of Supplies Act 1961" --
+    and an extraction reading the year off the title dates a 2024 enforcement
+    action to 1961. That case arrived with ``date_basis`` of ``explicit``, so
+    confidence alone does not catch it; the corpus's own start does.
+    """
+    year = event.get("event_year")
+    return bool(year) and year < corpus_start
+
+
 def build_events(
     rows: Sequence[Dict[str, Any]], threshold: float = 0.5
 ) -> List[Dict[str, Any]]:
