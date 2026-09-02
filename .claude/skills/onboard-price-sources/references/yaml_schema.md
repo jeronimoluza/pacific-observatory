@@ -383,6 +383,36 @@ Residual caution even in the final number: one of the ten survivors
 pagination stubs, which is not evidence about its product pages. A count can
 be correct in aggregate and still rest on a soft row.
 
+### A bounded traversal must distinguish "nothing there" from "budget ran out"
+
+Three independent instances turned up within two days, on opposite sides of the
+pipeline, all with the same signature: **the run reports success, the stats look
+healthy, and an entire family of pages is silently absent.**
+
+| Traversal | Bound | What went missing |
+|---|---|---|
+| Spider pagination (`pisiffik_gl`) | `MAX_PAGES_PER_CATEGORY = 250` | Everything past page 250 of the two deepest categories. `request_depth_max` was exactly 250. |
+| Spider pagination, chained | a dropped page | The **whole category tail** — page N yields the request for N+1, so one failure ends the chain. |
+| cdx block scan (`query_prefix`) | `max_blocks` | cdx is SURT-sorted, so `/about`, `/blog` and `/robots.txt` consume a small budget before the product family is reached. |
+
+Two checks, both cheap:
+
+**Compare the bound against the observed maximum.** A `request_depth_max`,
+block count, or page count that *equals* its configured cap is a truncation
+signature, not a healthy run. It never means the crawl happened to end there.
+
+**Make the give-up path loud.** In every one of the three, the failure was
+silent — returning quietly at the bound is what let a truncated run pass review.
+Log which family was abandoned and say plainly that the rest was not collected.
+A bounded traversal that exits at its bound must say so; only an exhausted one
+may exit quietly.
+
+**Diff two runs per category to detect it.** Shallow families are byte-identical
+across runs; the truncating ones wobble. On `pisiffik_gl`, 42 of 44 categories
+matched exactly across four runs and the two deep-paginated ones read
+2250/2427/2427/1895 and 1624/1050/1357/501 — which is what exposed the chain
+break. A single run cannot show this; a second run is the cheapest test there is.
+
 
 ## Examples
 
