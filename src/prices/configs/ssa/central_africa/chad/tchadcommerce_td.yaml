@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tchadcommerce_td
+url: https://tchadcommerce.com/
+language: fr
+cadence: monthly
+channel: marketplace
+archive_prefix: "tchadcommerce.com/produit/"
+archive_path_re: '^/produit/[^/?]+'
+notes: >
+  TchadCommerce is a general vendor marketplace in N'Djamena on WooCommerce.
+  The public Store API is open and reports XAF with currency_minor_unit 0
+  (prices need no division). Catalog is small and non-food-dominant: 28
+  categories with fashion, solar equipment and vehicles leading, and only a
+  handful of AgroAlimentaire items. Onboarded as the first retail source of
+  any kind for Chad; the country's other grocers are Facebook-page storefronts
+  with no independent catalog (see references/inventories/ssa/chad.md).

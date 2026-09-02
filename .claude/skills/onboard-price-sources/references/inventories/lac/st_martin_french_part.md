@@ -1,40 +1,41 @@
 # St. Martin (French part)
 
-_Inventory written: 2026-09-01_
+_Inventory written: 2026-09-02_ (search-starved re-run; supersedes the
+2026-09-01 pass, which explicitly asked not to be treated as a confirmed
+absence)
 
-Final F&B sweep, lac-agent-A. Cold start — no `lac/` inventory existed for this
-country before this file. Before this pass: 0 sources total, 0 food.
+Before this pass: 0 sources total, 0 food. **Result: 0 shipped.** The genuine
+per-country French-language WebSearch the previous file named as "the highest-
+yield remaining lever" was run. It did not yield a scrapeable storefront, and
+it turned up an explicit statement of absence.
 
-**Examined but inconclusive — not a confirmed "no online grocery" finding.** The
-session's shared WebSearch budget (capped session-wide across all 12 parallel
-sweep agents, not per-agent) was exhausted by the time this country was reached,
-after being spent primarily on Grenada/St Kitts/St Lucia/Dominica discovery. What
-was tried instead:
+## What the search returned
 
-- CaribeEats (backend.caribeeats.com) — the delivery aggregator that yielded wins
-  for Grenada, St Kitts, Nevis, and Dominica — does **not** cover St Martin or Sint
-  Maarten. Confirmed via its `/api/init` region list (21 regions, none named
-  Martin/Maarten/SXM/MAF).
-- Massy Group (whose St Lucia storefront shipped as `massy_stores_slu`) does not
-  operate in the French Antilles at all (its footprint is Anglophone Caribbean +
-  Guyana).
-- WebFetch against Google/Bing/DuckDuckGo search-results URLs (attempted as a
-  fallback once the WebSearch tool itself was capped) did not return usable
-  results — Google/Bing pages rendered no visible result content to the fetch
-  summarizer, and DuckDuckGo's HTML endpoint served a bot-CAPTCHA challenge.
+The chains the previous pass hypothesised are indeed present on the island —
+Monoprix (Rue de Hollande, Marigot), Leader Price (14 rue Griselle), Saint
+Pierre (6 rue Galisbay), and a Super U — but none has a St-Martin online
+grocery catalog:
 
-**Not tried:** a genuine per-country WebSearch (the highest-yield remaining lever
-for this specific gap), and known French-Antilles chain names one would normally
-search for by hand (Carrefour Market/Contact, Leader Price, Match — all present in
-Guadeloupe/Martinique and plausibly present in St Martin given the shared
-department/COM status, but not verified to have a presence or an online storefront
-on this island specifically).
+| Candidate | URL | Status | Notes |
+|---|---|---|---|
+| Courses U "Drive Saint-Martin" | https://www.coursesu.com/drive-saint-martin | **CLOUDFLARE 403 + wrong Saint-Martin** | Returns a Cloudflare "Just a moment…" interstitial. Beyond the block, this is very likely one of the several metropolitan-France communes named Saint-Martin rather than the Caribbean COM 97150 — the name collides badly in French search and every `coursesu.com` drive slug is a mainland commune. Do not assume this is the island. |
+| Monoprix Marigot | (via Mapstr listing) | **NO OWN STOREFRONT** | Ordering surfaced only through a third-party map app listing, not a catalog. |
+| Leader Price / Saint Pierre / Match | — | **NO ONLINE CATALOG** | Physical presence confirmed; Saint Pierre's delivery offer is for professional/bulk clients by arrangement. |
+| supermarche.tv 97150 page | http://www.supermarche.tv/cp/97150.htm | **EXPLICIT NEGATIVE** | States outright that no general online supermarket serves postal code 97150 and the commune cannot be delivered to by one. |
 
-## Recommendation for the next agent
+Carried forward and unchanged: CaribeEats does not cover St Martin or Sint
+Maarten (confirmed via `/api/init`, 21 regions, no Martin/Maarten/SXM/MAF),
+and Massy Group does not operate in the French Antilles at all.
 
-Do **not** treat this as an exhausted/negative search like the "already exhausted"
-21-country list in the sweep brief — this file records a tooling constraint, not a
-confirmed absence. Re-run Phase 2 discovery with a working WebSearch budget,
-starting with "Saint Martin Guadeloupe supermarché carrefour leader price" style
-queries and the Carrefour/Leader Price online-ordering platforms used elsewhere in
-the French Antilles.
+## Verdict
+
+Now a **searched negative** rather than a tooling artefact. St Martin's food
+retail is physical-only; the French-Antilles e-commerce platforms serve
+Guadeloupe and Martinique, not this island.
+
+## Next steps
+
+- If French-Antilles coverage is ever wanted, aim at Guadeloupe/Martinique
+  (`carrefour.gp`-class domains) as their own countries — not through St
+  Martin.
+- Beware the Saint-Martin name collision in any future French search.

@@ -66,6 +66,9 @@ class PriceSourceConfig(BaseModel):
     active: bool = True
     max_items: int | None = None
     timeout: int | None = None
+    # Sources sharing one CDN edge (e.g. the AS Watson storefronts) are capped
+    # as a family so they cannot exhaust each other's connection budget.
+    throttle_group: str | None = None
     start_urls: list[str] | None = None
     spider_kwargs: dict[str, Any] = {}
     scrapy_settings: dict[str, Any] = {}

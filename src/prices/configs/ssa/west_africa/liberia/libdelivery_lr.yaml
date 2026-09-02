@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: libdelivery_lr
+url: https://libdelivery.com/
+language: en
+cadence: monthly
+channel: marketplace
+archive_prefix: "libdelivery.com/item/"
+archive_path_re: '^/item/'
+notes: >
+  LIBdelivery is a Monrovia delivery marketplace carrying groceries, local
+  products and restaurant plates. WooCommerce front with no exposed Store API,
+  so the spider walks sitemap.xml (~3,300 /item/ URLs) and parses PDP JSON-LD.
+  Liberia is a dual-currency economy; the PDPs state USD.

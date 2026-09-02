@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: alvaro_fo
+url: https://www.alvaro.fo/
+language: fo
+cadence: monthly
+channel: fashion
+archive_prefix: "www.alvaro.fo/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Alvaró, Tórshavn. Shopify; /products.json open and page 2 returns a
+  different set. Catalog is clothing and footwear (winter boots, snowsuits),
+  so channel is fashion, not a food channel. Offers free delivery and
+  same-day delivery in Tórshavn/Hoyvík/Argir. First source of any kind for
+  the Faroe Islands, found only via a Faroese-language search.

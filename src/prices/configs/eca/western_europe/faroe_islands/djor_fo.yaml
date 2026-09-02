@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: djor_fo
+url: https://djor.fo/
+language: fo
+cadence: monthly
+channel: pet
+archive_prefix: "djor.fo/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  Djórahandilin, the Faroe Islands' largest animal-goods retailer.
+  WooCommerce Store API open, 191 categories, reports DKK with
+  currency_minor_unit 2 (19900 -> 199.00 DKK) which the shared base divides
+  out. Non-food (COICOP 09.3 pets), onboarded because any source is worth
+  having for a country that had none.

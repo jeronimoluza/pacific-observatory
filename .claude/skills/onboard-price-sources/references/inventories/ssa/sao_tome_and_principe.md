@@ -96,3 +96,13 @@ division 01 (food) has no price-level source at all, only whatever the classifie
 would eventually see if one existed. This is an honest shortfall on the food bar,
 not a padded count: no source here was relabeled into a food-qualifying `channel`
 that isn't genuinely food-and-beverage retail.
+
+---
+
+_Reviewed 2026-09-02_ (search-starved re-run). No re-search was spent here.
+The 2026-09-01 pass was genuinely exhaustive for food-and-beverage — it probed
+all three workbook retail candidates to a live verdict, walked Entrega.st's
+public store-directory RPC (4 merchants platform-wide, no prices), and
+confirmed the WFP and FEWS NET nulls against those APIs themselves rather than
+assuming them. STP keeps its 5 non-food sources and its 0-food status; the gap
+is structural, not a search failure.
