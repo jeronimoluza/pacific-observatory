@@ -413,6 +413,22 @@ For each viable spider candidate, create three things:
 2. **Selectors entry** in `src/prices/price_scraping/selectors.py` — only for `extraction_pattern: scrapy_html` spiders that use the shared `SelectorExtractor` pattern. `scrapy_api` and `scrapy_playwright` (listing-card) spiders bypass the registry and put selectors directly in the spider.
 3. **YAML manifest**: `src/prices/configs/<region>/<subregion>/<country>/<source>.yaml` — see "YAML manifest schema" below.
 
+4. **Record which page family the spider parses** — one line in the manifest's
+   `notes`: `listing`, `PDP`, `both`, or `API` (for a spider that reads a JSON
+   endpoint and never fetches a page at all). Write it even when it seems
+   obvious.
+
+   This is the single fact the Common Crawl side cannot read off a config, and
+   it is what determines the archive regex shape. It is a *hint*, not the
+   answer — the regex must accept every price-bearing family the archive holds,
+   which may be a family the spider never touches in either direction (see
+   `references/yaml_schema.md`). But without it the archive side is guessing.
+
+   Note the `API` case specially: a spider reading an API emits collected URLs
+   that are permalinks it never fetched (`boutiqueacm_mc`) or bare API routes
+   that are not browsable at all (`comoresenligne_km`). Neither can be used to
+   validate an archive regex locally.
+
 After writing all three for each candidate, run `python run.py prices collect --list` and grep for each new spider name to confirm the discovery layer picks them up. If a manifest doesn't appear, the most common cause is a wrong country slug — the loader silently drops files under unknown country directories.
 
 ### Phase 5B — Scaffold fetcher + manifest *(scaffolding=fetcher)*
