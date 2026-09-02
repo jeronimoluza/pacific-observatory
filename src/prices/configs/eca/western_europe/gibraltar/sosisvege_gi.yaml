@@ -8,7 +8,7 @@ language: en
 cadence: weekly
 channel: specialty-food
 archive_prefix: "www.sosisvege.com/"
-archive_path_re: '^/shopping-categories/[a-z0-9\-]+$'
+archive_path_re: '^/shopping-categories/[^/?]+$'
 notes: |
   Sosi's Vege -- Gibraltar's FIRST price source of any kind. Gibraltar-
   domiciled greengrocer importing Moroccan fruit and vegetables.
@@ -54,3 +54,13 @@ notes: |
   consulted, so a path in the prefix silently caps everything behind it if
   site123 ever changes the route. Bare host + regex is the safe factoring.
   The regex is unchanged and still does all the filtering.
+
+  REGEX CASE/ENCODING FIX 2026-09-02. The first regex used a lowercase-only
+  class, '^/shopping-categories/[a-z0-9\-]+$', which silently rejected 2 of
+  the 180 live product paths -- /shopping-categories/at%C3%BAn-en-tomate and
+  /shopping-categories/jud%C3%ADas-verde. Cause: percent-encoding emits
+  UPPERCASE hex digits, so any non-ASCII product name (atun, judias, and
+  every accented Spanish/French/Danish name) produces a path a lowercase-only
+  class cannot match. archive_path_re is matched against the RAW path and is
+  case-sensitive, so this fails silently -- the prefix admits the capture and
+  the regex drops it. Now uses [^/?]+.

@@ -55,11 +55,17 @@ so any path segment in the prefix silently caps everything behind it.
 `fravega_ar` carried `/p/` and returned 0; dropping to bare host gave
 **40,346 rows spanning 2014–2025**.
 
-**Rule 3 — mind what the regex is matched against.** It runs against
-`urlparse(url).path`, so:
+**Rule 3 — mind what the regex is matched against.** It runs at
+`cc_index.py:366` against `urlparse(url).path`, so:
 - the **query string is excluded** — a regex containing `?` or `&` can never
   fire;
 - it is matched against the **raw** path, so it is **case-sensitive**.
+
+The asymmetry is the trap: `surt_prefix` lowercases the prefix **including its
+path**, while the regex is matched against the raw path. So *a prefix that
+works is no evidence a same-cased regex will* — the prefix will happily admit
+captures the regex then silently rejects on case alone. That is what broke
+`cozmo_jo`, which matched 4 records where it should have had 133.
 
 **Rule 4 — never assume one URL encoding.** The cdx stores both, by era. Same
 site, two crawls:
@@ -68,11 +74,43 @@ site, two crawls:
     CC-MAIN-2022-21  /da/æggebægere/36-gc-æggebæger-ø14-cm-klar-2-stk.html
 
 `[^/]+` matches both (a `%XX` escape contains no slash). A `\w`-based class
-would silently drop every raw-UTF-8 capture — i.e. an entire era.
+would silently drop every raw-UTF-8 capture — i.e. an entire era. Note the
+encoding varies **by era within a single source**: it reflects what the
+crawler recorded at the time, not what the site serves, so probing one crawl
+tells you nothing about the others.
 
 **Rule 5 — `spider` must be set alongside it.** `cc_config.py:147` reads
 `if not (cfg.spider and cfg.archive_prefix): continue`, so a manifest with
 `source_key` but no `spider` is invisible to the resolver, with no error.
+
+**Validate the pair before shipping — it costs one script and catches the
+silent failures.** Run `archive_path_re` against the URLs the spider itself
+just collected:
+
+```python
+import glob, json, re, yaml
+from urllib.parse import urlparse
+rx = re.compile(yaml.safe_load(open(CONFIG))["archive_path_re"])
+rows = [json.loads(l) for l in open(sorted(glob.glob(RAW_ITEMS))[-1])]
+bad = [p for p in (urlparse(r["url"]).path for r in rows) if not rx.search(p)]
+print(len(bad), "rejected of", len(rows), bad[:3])
+```
+
+Anything other than 0 rejected is a bug in the regex, and it is the cheapest
+place to find it. Run on this wave's seven sources it caught a live one:
+`sosisvege_gi` used `[a-z0-9\-]+` and silently rejected 2 of 180 paths,
+`/shopping-categories/at%C3%BAn-en-tomate` and `.../jud%C3%ADas-verde`.
+**Percent-encoding emits UPPERCASE hex digits**, so a lowercase-only class
+cannot match any non-ASCII slug — and accented product names are the norm in
+Spanish, French, Danish and Greenlandic catalogues. Prefer `[^/?]+` over a
+hand-rolled class.
+
+One legitimate way to fail this check: a 100% rejection rate can mean the
+spider emits **non-browsable URLs**. `comoresenligne_km` scores 0 of 1,524
+because its rows carry the API's own `/api/v1/products/<id>/` as identity.
+That is not a regex bug — but it does mean the archive values cannot be
+derived from the collected rows, and it is exactly how that source's first
+(broken) prefix came to be written.
 
 **Also worth recording in `notes`: whether the source emits any structured
 data at all.** The archive fetcher ships four generic parser tiers — JSON-LD,
