@@ -174,6 +174,43 @@ Do **not** add a `platform:` field to record this. `PriceSourceConfig` is
 `extra="forbid"`, so any undeclared key raises at load and takes down the
 **global** `prices collect --list`. Put it in `notes` as prose.
 
+### If the spider parses listing pages, a PDP-only regex is always wrong
+
+Ask which page type the **spider** reads. If it extracts products from
+category / listing pages rather than from PDPs, then a PDP-only
+`archive_path_re` excludes the one page type you have already *proven* is
+parseable — and it excludes the cheaper one, because a listing page carries
+many products per capture while a PDP carries one.
+
+Two of four sources onboarded on 2026-09-02 shipped with exactly this defect,
+both caught only by re-auditing against the live site *after* the manifests
+were written:
+
+| Source | Old regex accepted | New accepts | Why |
+|---|---|---|---|
+| `sxmleshalles_mf` | 33 of 288 live paths | 184 (5.6x) | Spider never fetches a PDP. All 2,128 rows came from 823 **category** pages. Category URLs are `/{lang}/<id>-<slug>` — two segments, no `.html` — so the PDP pattern could not match them at all. `/fr/101-eaux` renders 12 products and 12 price nodes in one capture. |
+| `boutiqueacm_mc` | 15 of 165 live paths | 44 (2.9x) | WooCommerce listing pages carry prices: `/promotions/` renders 12 distinct products and 24 price nodes in one capture, `/collection/<x>/` renders 5. The PDP-only prefix cut all of them. |
+
+**Check both halves of the pair, not just the regex.** `boutiqueacm_mc` also
+had `archive_prefix: "boutiqueacm.com/produit/"`, which cut the site's full
+mirrored English storefront (`/en/produit/`, `/en/collection/`,
+`/en/promotions/`) *before the regex ever ran* — the same defect that cost
+`pisiffik_gl` its entire `/gl/` storefront. Prefer a bare-host prefix and let
+the regex do the selecting; a prefix that carries a path segment is a silent
+cap on everything outside it.
+
+**Locale mirrors are the recurring trap.** Three separate sources
+(`pisiffik_gl`, `comoresenligne_km`, `boutiqueacm_mc`) shipped values that
+excluded an entire language storefront. Before writing either value, fetch the
+home page and list its distinct top-level path segments — a `/en/`, `/fr/`,
+`/gl/` or `/da/` segment there means the pattern must admit it.
+
+**Validate the widening both ways.** A wider pattern is only safe if it still
+accepts everything the old one did. Check the new regex against the spider's
+own collected URLs and confirm the match count is unchanged (96/96 and
+2,128/2,128 respectively above), then check it against paths harvested from
+the live home and category pages to confirm it actually admits more.
+
 ## Examples
 
 Country-bound fetcher (Pertamina Indonesia, fuel):
