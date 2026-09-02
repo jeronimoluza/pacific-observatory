@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = "https://gcc.luluhypermarket.com"
 SITEMAP_URL = f"{BASE_URL}/en-bh/sitemap/categories-1"
-MAX_PAGES_PER_CATEGORY = 10
+MAX_PAGES_PER_CATEGORY = 200  # dedup on seen_ids ends a category at new_count=0
 
 _LOC_RE = re.compile(r"<loc>(.*?)</loc>")
 _PRODUCT_RE = re.compile(

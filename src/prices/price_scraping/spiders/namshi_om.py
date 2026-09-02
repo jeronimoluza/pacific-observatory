@@ -43,7 +43,9 @@ _CATEGORY_SLUGS = [
     "bags",
     "home",
 ]
-_MAX_PAGES = 60  # safety cap per category
+_MAX_PAGES = (
+    1000  # safety cap per category; dedup on seen_skus ends a category at fresh=0
+)
 _LDJSON_RE = re.compile(
     r'<script[^>]*type="application/ld\+json"[^>]*>\s*(.*?)\s*</script>',
     re.DOTALL,

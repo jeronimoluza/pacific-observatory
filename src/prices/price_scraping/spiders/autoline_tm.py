@@ -28,7 +28,9 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = "https://autoline-tm.com"
 LISTING_URL = f"{BASE_URL}/-/avtomobili--c1169"
-MAX_PAGES = 60  # ~1,500 listings; 8,118 total per the site's own count
+MAX_PAGES = 400  # ~10,000 listings, above the site's own 8,118 count.
+# Bounded, not removed: this spider has no seen-id set, so a re-served last
+# page keeps found>0 and would paginate forever without a ceiling.
 
 _PRICE_RE = re.compile(r'title="Цена">\s*([\d\s]+)\s*ТМТ')
 _CAT_RE = re.compile(r'class="cat-name">([^<]+)<')

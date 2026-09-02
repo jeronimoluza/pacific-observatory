@@ -69,7 +69,7 @@ class MubawabMaSpider(scrapy.Spider):
     currency = "MAD"
     language = "fr"
     BASE_URL = "https://www.mubawab.ma/fr/st"
-    MAX_PAGES = 40
+    MAX_PAGES = 100000  # dedup on `seen`: a re-served page yields fresh=0 and stops
 
     custom_settings = {
         "CONCURRENT_REQUESTS_PER_DOMAIN": 2,

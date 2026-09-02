@@ -41,7 +41,7 @@ class LacuracaonlineHnSpider(MagentoSSRBaseSpider):
 
     DISCOVERY_URL = "https://www.lacuracaonline.com/honduras/"
     CATEGORY_URL_RE = _CATEGORY_URL_RE
-    MAX_PAGES = 60
+    MAX_PAGES = 100000  # dedup on `seen`: a re-served page yields fresh=0 and stops
 
     def _item(self, url: str, name: str, price: str):
         name = name.strip()

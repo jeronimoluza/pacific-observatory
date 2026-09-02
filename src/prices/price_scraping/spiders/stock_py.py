@@ -46,7 +46,9 @@ CATEGORY_RE = re.compile(
     r"https://www\.stock\.com\.py/category/(\d+-[a-z0-9\-]+)\.aspx"
 )
 CARD_ID_RE = re.compile(r"product-item product(\d+)")
-MAX_PAGES_PER_CATEGORY = 30
+MAX_PAGES_PER_CATEGORY = (
+    100000  # dedup on new_ids: a re-served page gives new_ids=0 and stops
+)
 
 
 class StockPySpider(scrapy.Spider):

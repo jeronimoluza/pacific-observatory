@@ -31,7 +31,7 @@ _ITEMS = {
     3: ("rice", "Rice", "Food staples", "kg"),
     4: ("corn", "Corn", "Food staples", "kg"),
 }
-_MAX_OBSERVATION_DATES = 20
+_MAX_OBSERVATION_DATES = 100000  # whole table is already in the response; no fetch cost
 
 
 def _clean(text: str | None) -> str:

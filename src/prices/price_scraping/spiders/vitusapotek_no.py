@@ -28,7 +28,6 @@ import scrapy
 logger = logging.getLogger(__name__)
 
 _SITEMAP_URL = "https://www.vitusapotek.no/sitemap/sitemap-product-1.xml"
-_MAX_PRODUCTS = 6000  # safety cap to keep one collect run inside budget
 _LOC_RE = re.compile(r"<loc>([^<]+)</loc>")
 _LDJSON_RE = re.compile(
     r'<script[^>]*type="application/ld\+json"[^>]*>\s*(.*?)\s*</script>',
@@ -53,8 +52,8 @@ class VitusapotekNoSpider(scrapy.Spider):
         yield scrapy.Request(_SITEMAP_URL, callback=self.parse_sitemap)
 
     def parse_sitemap(self, response):
-        urls = _LOC_RE.findall(response.text)[:_MAX_PRODUCTS]
-        logger.info("vitusapotek_no: %d product URLs in sitemap (capped)", len(urls))
+        urls = _LOC_RE.findall(response.text)
+        logger.info("vitusapotek_no: %d product URLs in sitemap", len(urls))
         for url in urls:
             yield scrapy.Request(url, callback=self.parse_product)
 

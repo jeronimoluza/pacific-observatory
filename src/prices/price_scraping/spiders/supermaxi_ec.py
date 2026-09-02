@@ -60,8 +60,8 @@ logger = logging.getLogger(__name__)
 _BASE = "https://www.supermaxi.com"
 _LIST_URL = _BASE + "/wp-json/wp/v2/products"
 PER_PAGE = 100
-MAX_LIST_PAGES = 40
-MAX_PRODUCTS = 3000
+MAX_LIST_PAGES = 500
+MAX_PRODUCTS = 60000
 
 _LD_JSON_RE = re.compile(
     r'<script type="application/ld\+json">(.*?)</script>', re.DOTALL

@@ -61,7 +61,7 @@ class ElectroplanetMaSpider(scrapy.Spider):
     currency = "MAD"
     language = "fr"
     BASE_URL = "https://www.electroplanet.ma"
-    MAX_PAGES = 50
+    MAX_PAGES = 100000  # dedup on `seen`: a re-served page yields fresh=0 and stops
 
     custom_settings = {
         "CONCURRENT_REQUESTS_PER_DOMAIN": 2,
