@@ -17,8 +17,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-from text.plotting.policy_composition import COMPOSITION_JS
-from text.plotting.policy_timeline import TIMELINE_CSS, TIMELINE_JS
+from text.plotting.policy_year_composition import YEAR_CSS, YEAR_JS
 
 
 CATEGORY_DISPLAY: Dict[str, str] = {
@@ -297,7 +296,6 @@ def make_v6_html(
   .tooltip ul {{ margin: 6px 0 0 18px; padding: 0; }}
   .tooltip li {{ margin: 0 0 6px; }}
   .tooltip strong {{ color: #333; }}
-  .detail-panel {{ margin-top: 20px; display: grid; grid-template-columns: 1fr; gap: 10px; }}
   .detail-card {{ border: 1px solid #e2e2e2; border-radius: 6px; background: #fff; padding: 12px 14px; }}
   .detail-card h2 {{ font-size: 17px; font-weight: 600; margin: 0 0 8px; color: #444; }}
   .detail-card p {{ margin: 4px 0; font-size: 13px; color: #666; }}
@@ -307,12 +305,7 @@ def make_v6_html(
   .policy-card .policy-desc {{ color: #666; font-size: 12px; margin-top: 3px; }}
   .policy-card .policy-foot {{ color: #888; font-size: 11px; margin-top: 5px; }}
   .note {{ margin-top: 14px; font-size: 12px; color: #777; }}
-  .tabstrip {{ display: flex; gap: 6px; border-bottom: 1px solid #e3e3e3; margin: 10px 0 4px; }}
-  .tab-btn {{ appearance: none; background: none; border: 0; border-bottom: 3px solid transparent; padding: 9px 16px; font: inherit; font-size: 15px; color: #666; cursor: pointer; }}
-  .tab-btn:hover {{ color: #222; }}
-  .tab-btn.active {{ color: #1f7a8c; border-bottom-color: #1f7a8c; font-weight: 600; }}
-  .panel.hidden {{ display: none; }}
-{TIMELINE_CSS}
+{YEAR_CSS}
   @media (max-width: 820px) {{ .controls {{ grid-template-columns: 1fr 1fr; }} .kpis {{ grid-template-columns: 1fr 1fr; }} }}
   @media (max-width: 540px) {{ .controls, .kpis {{ grid-template-columns: 1fr; }} .dashboard {{ padding: 14px; }} }}
 </style>
@@ -331,59 +324,44 @@ def make_v6_html(
       <div class=\"kpi\"><div class=\"value\" id=\"kpiPolicies\">0</div><div class=\"label\">Policies in current view</div></div>
       <div class=\"kpi\"><div class=\"value\" id=\"kpiCountries\">0</div><div class=\"label\">Countries/economies shown</div></div>
       <div class=\"kpi\"><div class=\"value\" id=\"kpiCats\">0</div><div class=\"label\">Policy categories present</div></div>
-      <div class=\"kpi\"><div class=\"value\" id=\"kpiMax\">0</div><div class=\"label\">Largest country total</div></div>
+      <div class=\"kpi\"><div class=\"value\" id=\"kpiMax\">0</div><div class=\"label\">Measures in busiest year</div></div>
     </div>
     <h1 id=\"chartTitle\" class=\"chart-title\"></h1>
     <div class=\"chart-subtitle\" id=\"subtitle\"></div>
-    <div class=\"tabstrip\" role=\"tablist\">
-      <button type=\"button\" class=\"tab-btn active\" data-panel=\"timing\" role=\"tab\">Policy Timing</button>
-      <button type=\"button\" class=\"tab-btn\" data-panel=\"composition\" role=\"tab\">Policy Composition</button>
+    <div class=\"yc-controls\">
+      <label><input type=\"checkbox\" id=\"ycDiscovered\" checked> Show measures found in news</label>
+      <label><input type=\"checkbox\" id=\"ycSqrt\"> Square-root scale (makes the thin early years readable)</label>
     </div>
-    <div id=\"panel-composition\" class=\"panel hidden\">
-      <div class=\"chart-wrap\">
-        <svg id=\"chart\" aria-label=\"Stacked bar chart of {chart_aria_subject} policy responses by country, category and subcategory\"></svg>
-        <div id=\"tooltip\" class=\"tooltip\"></div>
-      </div>
-      <div id=\"legend\" class=\"legend\"></div>
-      <div class=\"detail-panel\"><div class=\"detail-card\" id=\"detailCard\"><h2>Policy details</h2><p>Hover over a shaded bar segment to see an info tip. Click a segment to pin its policy details here.</p></div></div>
-      <div class=\"note\">Note: bar color encodes policy category; each stacked segment within a category is a distinct policy subcategory. Subcategory filter cascades off the category selection.</div>
-    </div>
-    <div id=\"panel-timing\" class=\"panel\">
-      <div class=\"tl-controls\">
-        <label><input type=\"checkbox\" id=\"tlCollapse\"> Collapse to category lanes</label>
-        <label><input type=\"checkbox\" id=\"tlDiscovered\" checked> Show measures found in news</label>
-        <span class=\"tl-key\"><span><i class=\"filled\"></i>tracker row</span><span><i></i>found in news</span></span>
-      </div>
-      <div class=\"tl-frame\">
-        <svg id=\"timelineLabels\" aria-hidden=\"true\"></svg>
-        <div class=\"tl-scroll\" id=\"tlScroll\">
-          <svg id=\"timeline\" aria-label=\"Timeline of {chart_aria_subject} policy measures by taxonomy subcategory and year the measure was active or proposed\"></svg>
+    <div class=\"panel-split\">
+      <div class=\"chart-col\">
+        <div class=\"chart-frame\">
+          <svg id=\"chartAxis\" aria-hidden=\"true\"></svg>
+          <div class=\"chart-wrap\" id=\"chartScroll\">
+            <svg id=\"chart\" aria-label=\"Stacked bar chart of {chart_aria_subject} policy measures per year, colored by category and split by subcategory\"></svg>
+          </div>
         </div>
+        <div id=\"legend\" class=\"legend\"></div>
       </div>
-      <div class=\"detail-panel\"><div class=\"detail-card\" id=\"timelineCard\"><h2>Measure details</h2><p>Each dot is one measure, placed at the year it was active or proposed. Click a dot for details. Scroll the chart left for earlier years.</p></div></div>
-      <div class=\"note\">Note: a filled dot is a tracker row, dated from its <em>Active or Proposed Date</em>; a ringed, paler dot was found in the news corpus and dated from the article text, and has not been verified against an official source. All dots are the same size; several measures in one lane-year are fanned apart rather than merged. The grey band under the lanes is the number of articles that country's press published each year, so a stretch with no dots only means a measure was missed where the band is high. A tracker refreshed only for currently-active measures piles nearly every filled dot into the newest year; the earlier years here are measures found in the news corpus, in 17 languages.</div>
+      <aside class=\"detail-col\">
+        <div class=\"detail-card\" id=\"detailCard\"><h2>Policy details</h2><p>Hover a bar segment for a summary of the measures it holds. Click the segment to pin them here.</p></div>
+      </aside>
     </div>
+    <div id=\"tooltip\" class=\"tooltip\"></div>
+    <div class=\"note\">Note: bar height is the number of distinct measures dated to that year; colour is the policy category and each segment within a category is one subcategory. The axis begins at the oldest measure in the current view -- scroll left for earlier years. Measures found in the news corpus are dated from the article text and have not been verified against an official source; untick the box above to see tracker rows only.</div>
   </div>
 </div>
 <script>
 const D = {data_json};
-const state = {{ pinned: null }};
 
 const groupSelect = document.getElementById(\"groupSelect\");
 const categorySelect = document.getElementById(\"categorySelect\");
 const subcategorySelect = document.getElementById(\"subcategorySelect\");
 const statusSelect = document.getElementById(\"statusSelect\");
 const titleInput = document.getElementById(\"titleInput\");
-{COMPOSITION_JS}
-
-{TIMELINE_JS}
-
-function renderAll() {{ render(); renderTimeline(); }}
-[groupSelect, categorySelect, subcategorySelect, statusSelect].forEach(
-  s => s.addEventListener(\"change\", renderTimeline));
+{YEAR_JS}
 
 initControls();
-renderAll();
+render();
 </script>
 </body>
 </html>"""
