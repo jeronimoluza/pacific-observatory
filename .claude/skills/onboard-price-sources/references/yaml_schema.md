@@ -300,6 +300,40 @@ downstream flags it because the output is a plausible number.
 rendered figure.** If a source has no such attribute, that is a reason to
 treat it as unparseable rather than to fall back to text.
 
+### A platform-shaped problem still needs a sizing check
+
+When a defect turns out to be a property of the platform rather than of one
+retailer, the reflex is to size the fix by the platform's footprint. That
+footprint is the wrong number. What matters is how many sources actually
+*fail today*.
+
+Worked example, 2026-09-02. `boutiqueacm_mc` parsed to zero because Yoast
+emits a schema graph with no `Product` node, leaving the price only in
+rendered `bdi` markup. Counting platforms across the 1,462 configs gives
+WooCommerce 146, Shopify 99, Magento 59, VTEX 35, PrestaShop 18 — so the fix
+looked like "one generic WooCommerce tier reaching 146 sources."
+
+Measured, it was not. Of 130 WooCommerce configs with a usable archive pair,
+83 have archived captures, **62 already parse fine** via JSON-LD `Product`,
+and only **14 yield nothing** (18% of measured; 7 unmeasurable because every
+fetch errored). Yoast-without-Product is the minority configuration, not the
+common one. The addressable population was 14 sources holding 5,972 captures,
+against 1.6M rows already banked by the run in flight — and a rendered-figure
+tier would have meant carrying the rail exclusion, the `<ins>` preference and
+the decimal-comma rule (a 1000x error class) permanently for that.
+
+The one argument that can override raw volume is **country coverage**, since a
+country with no archived history is a gap that more rows elsewhere cannot
+fill. Check it explicitly: here exactly 1 of the 14 was its country's only
+source (`boutiqueacm_mc` for Monaco), and it is Grand Prix merchandise —
+not food, not CPI-relevant. The other 13 sat in countries with 5-20 sources
+each. So that argument failed too, and the tier was correctly dropped.
+
+**Also: do not count unmeasurable as failing.** A first pass that scored
+all-fetch-error sources as zero-yield reported 21 sources / 25%. The real
+figure was 14 / 18% of *measured*. Fetch errors on cold archive objects are
+not evidence about markup.
+
 ## Examples
 
 Country-bound fetcher (Pertamina Indonesia, fuel):
