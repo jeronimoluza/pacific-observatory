@@ -75,7 +75,7 @@ class SxmleshallesMfSpider(PrestashopBaseSpider):
         yield {
             "product_id": str(product_id),
             "product_name": name[:500],
-            "category": self._category_label(response),
+            "category": self._category_from_url(url) or self._category_label(response),
             "price": price,
             "currency": self.currency,
             "available": True,
@@ -83,3 +83,28 @@ class SxmleshallesMfSpider(PrestashopBaseSpider):
             "language": self.language,
             "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
         }
+
+    @staticmethod
+    def _category_from_url(href):
+        """Category slug out of /{lang}/<category>/<id>-<slug>.html.
+
+        Preferred over the base's page-level label because the homepage
+        carries a large product grid of its own. The base parses HOME_URL as
+        a category, so every product reachable from that grid was being
+        labelled "Accueil" -- and because DuplicationPipeline dedups on URL,
+        whichever page is crawled first wins, which is the homepage. That put
+        a useless label on 688 of 2,128 rows (32%) in the first full run,
+        while each row's own URL named the real category all along
+        (/fr/beaujolais/, /fr/tofu/, /fr/pates-fraiches/, ...). The
+        classifier consumes `category`, so this is signal worth recovering.
+        """
+        if not href:
+            return None
+        parts = [p for p in href.split("?")[0].split("#")[0].split("/") if p]
+        # ['fr', '<category>', '<id>-<slug>.html'] -- need the middle segment
+        if len(parts) < 3 or not parts[-1].endswith(".html"):
+            return None
+        slug = parts[-2]
+        if slug in ("fr", "en"):
+            return None
+        return slug.replace("-", " ").strip() or None

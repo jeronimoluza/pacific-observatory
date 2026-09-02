@@ -41,3 +41,15 @@ notes: |
   Uses the shared PrestashopBaseSpider unchanged -- this theme carries no
   itemprop microdata, so the base's `.price` class fallback is what supplies
   the price.
+
+  CATEGORY LABEL IS DERIVED FROM THE URL, NOT THE PAGE. The first full run
+  (2,128 rows, finish_reason "finished", 823 pages, all distinct, 100% USD)
+  was structurally clean but put the label "Accueil" on 688 of 2,128 rows --
+  32%. Cause: the shared base parses HOME_URL as a category, and this site's
+  homepage carries a large product grid; because DuplicationPipeline dedups
+  on URL, whichever page is crawled first wins, and that is the homepage. The
+  rows were correct in every other respect and each one's own URL named the
+  real category all along (/fr/beaujolais/, /fr/tofu/, /fr/pates-fraiches/).
+  The spider now takes the category from the URL's own path segment and falls
+  back to the page label only if that fails. The classifier consumes
+  `category`, so this was real signal being discarded.
