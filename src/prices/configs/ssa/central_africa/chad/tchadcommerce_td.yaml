@@ -7,7 +7,7 @@ url: https://tchadcommerce.com/
 language: fr
 cadence: monthly
 channel: marketplace
-archive_prefix: "tchadcommerce.com/produit/"
+archive_prefix: "tchadcommerce.com/"
 archive_path_re: '^/produit/[^/?]+'
 notes: >
   TchadCommerce is a general vendor marketplace in N'Djamena on WooCommerce.

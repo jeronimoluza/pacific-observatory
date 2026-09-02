@@ -7,7 +7,7 @@ url: https://www.mbote.shop/
 language: fr
 cadence: monthly
 channel: marketplace
-archive_prefix: "www.mbote.shop/p/"
+archive_prefix: "mbote.shop/"
 archive_path_re: '^/p/[^/?]+'
 notes: >
   Mbote Shop is a Congolese marketplace serving Brazzaville and Kinshasa, ~357

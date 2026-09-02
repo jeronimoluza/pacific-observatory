@@ -34,3 +34,22 @@ NXDOMAIN guesses (`isleofmancoop.co.im`, `iomcoop.co.im`, `iomcoop.com`,
 
 - Re-check `spar.co.im` for a webshop in ~6 months.
 - ShopIOM's Groceries directory is the cheapest route to a second source.
+
+## Common Crawl coverage
+
+Probed 2026-09-02 by the common_crawl session: 8 crawls spanning 2019-2026,
+`max_blocks=40`. Counts are host records in the CC index and, separately, the
+subset matching the manifest's `archive_path_re`.
+
+| Source | Crawls with host | Host records | Matching PDP regex | Verdict |
+|---|---|---|---|---|
+| `newbys_im` (Shopify `/products.json`) | 6/8 | 2163 | 1887 | Strong series. |
+
+
+`archive_prefix` on `newbys_im` was shortened to the bare registrable host on
+2026-09-02. It is a plain **string** prefix applied to cdx lines *before*
+`archive_path_re` is consulted, so a path in the prefix hard-caps what any regex
+can see, and a wrong one fails silently — no manifest, no miss record, no error.
+Filtering is `archive_path_re`'s job. Over-inclusion is free (`surt_prefix`
+rstrips the trailing slash regardless), and a bare host survives the URL-scheme
+migrations that break path prefixes.

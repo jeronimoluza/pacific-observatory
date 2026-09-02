@@ -48,3 +48,22 @@ Tchitunga needs no HTML parsing at all. They should not land under
 - Park'n'Shop / Regal are the largest physical chains with no domain found —
   a targeted French search for those two brand names is the best shot at a
   genuinely XAF-priced second source.
+
+## Common Crawl coverage
+
+Probed 2026-09-02 by the common_crawl session: 8 crawls spanning 2019-2026,
+`max_blocks=40`. Counts are host records in the CC index and, separately, the
+subset matching the manifest's `archive_path_re`.
+
+| Source | Crawls with host | Host records | Matching PDP regex | Verdict |
+|---|---|---|---|---|
+| `mbote_cg` (WooCommerce, sitemap walk) | 4/8 | 575 | 304 | Good. |
+
+
+`archive_prefix` on `mbote_cg` was shortened to the bare registrable host on
+2026-09-02. It is a plain **string** prefix applied to cdx lines *before*
+`archive_path_re` is consulted, so a path in the prefix hard-caps what any regex
+can see, and a wrong one fails silently — no manifest, no miss record, no error.
+Filtering is `archive_path_re`'s job. Over-inclusion is free (`surt_prefix`
+rstrips the trailing slash regardless), and a bare host survives the URL-scheme
+migrations that break path prefixes.

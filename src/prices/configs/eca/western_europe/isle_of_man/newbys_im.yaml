@@ -7,7 +7,7 @@ url: https://newbys.im/
 language: en
 cadence: weekly
 channel: convenience
-archive_prefix: "newbys.im/products/"
+archive_prefix: "newbys.im/"
 archive_path_re: '^/products/[^/?]+'
 notes: >
   Newby's Convenience, two stores in Douglas, is the Isle of Man's online

@@ -40,3 +40,22 @@ self-described first online supermarket.
 
 - Re-check whether Ikuma's Store API 500 is ever fixed; a working API would be
   much cheaper than 761 PDP fetches.
+
+## Common Crawl coverage
+
+Probed 2026-09-02 by the common_crawl session: 8 crawls spanning 2019-2026,
+`max_blocks=40`. Counts are host records in the CC index and, separately, the
+subset matching the manifest's `archive_path_re`.
+
+| Source | Crawls with host | Host records | Matching PDP regex | Verdict |
+|---|---|---|---|---|
+| `ikuma_gw` (WooCommerce, sitemap walk) | 5/8 | 1017 | 797 | Good. |
+
+
+`archive_prefix` on `ikuma_gw` was shortened to the bare registrable host on
+2026-09-02. It is a plain **string** prefix applied to cdx lines *before*
+`archive_path_re` is consulted, so a path in the prefix hard-caps what any regex
+can see, and a wrong one fails silently — no manifest, no miss record, no error.
+Filtering is `archive_path_re`'s job. Over-inclusion is free (`surt_prefix`
+rstrips the trailing slash regardless), and a bare host survives the URL-scheme
+migrations that break path prefixes.

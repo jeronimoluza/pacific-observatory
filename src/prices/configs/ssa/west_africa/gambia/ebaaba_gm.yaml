@@ -7,7 +7,7 @@ url: https://www.ebaaba.com/
 language: en
 cadence: monthly
 channel: marketplace
-archive_prefix: "ebaaba.com/product/"
+archive_prefix: "ebaaba.com/"
 archive_path_re: '^/product/[^/?]+'
 notes: >
   eBaaba is The Gambia's largest online marketplace, groceries alongside
