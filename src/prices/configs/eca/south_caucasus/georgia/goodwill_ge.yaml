@@ -1,0 +1,44 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: goodwill_ge
+url: https://goodwill.ge/
+language: ka
+currency: GEL
+cadence: weekly
+channel: supermarket
+timeout: 14400
+notes: |
+  Goodwill -- Tbilisi grocery-delivery chain (darkstore-style, ~2h delivery
+  window), independent operator from europroduct_ge and zgapari_ge (own
+  branding/app, own JSON API backend, disjoint product_id namespace --
+  no same-shelf risk).
+
+  Next.js SPA; raw HTML shell has no product data. Playwright network
+  capture on https://goodwill.ge/shop/1 found a clean JSON API at
+  api.goodwill.ge (`/v1/Categories?ShopId=<id>`,
+  `/v1/Products/v3?ShopId=<id>&Page=<n>&Limit=50`) that only requires an
+  `Authorization: Bearer <JWT>` header carrying a long-lived (~10yr,
+  exp=2036) anonymous "GroceryWeb" client-credential token -- the exact
+  token the site's own web frontend sends before any login/checkout.
+  Replaying it via curl_cffi (chrome124 impersonation), no browser, no
+  cookies, returns 200 with full product JSON. Confirmed live 2026-09-01.
+  Not a bypass of any auth/paywall -- it's the same anonymous-browse
+  credential every visitor gets.
+
+  Scoped to shop_id=1 ("Goodwill Dighomi", Tbilisi) per this pipeline's
+  single-city convention. Pagination (Limit=50) runs dry between page 50
+  and 100 (no total/pageCount field in the payload; walk stops at 2
+  consecutive empty pages). Category name comes from a top-level
+  `/v1/Categories?ShopId=1` id->name map; subcategory names are not
+  separately resolved (would need one extra call per category) so a
+  product whose categoryId is itself a subcategory falls back to the raw
+  numeric id.
+
+  Test run (--max-items 20): 20/20 rows, 20 distinct product_id, 0 blank
+  names, 0 zero/negative price, 100% GEL. Sample: "Éclair black" 3.55 GEL,
+  "Eggplant roll with walnuts" 6.39 GEL. Cold re-fetch of both against
+  https://api.goodwill.ge/v1/Products/v3?ShopId=1&Page=1&Limit=5 confirmed
+  matching name+price. Full unbounded run measured separately -- see
+  Phase-8 report for final counts.

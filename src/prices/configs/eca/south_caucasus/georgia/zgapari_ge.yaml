@@ -1,0 +1,27 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: zgapari_ge
+url: https://online.zgapari.ge/
+language: ka
+cadence: weekly
+channel: supermarket
+archive_prefix: "online.zgapari.ge/products/product/"
+archive_path_re: '^/products/product/[^/?]+'
+notes: |
+  Zgapari, 25-branch Tbilisi supermarket chain. Independent company from
+  europroduct_ge (different Facebook page: Zgaparisupermarket) but runs
+  the identical custom storefront platform (same product-grid-item /
+  product-name / product-price CSS classes) -- not a same-shelf risk,
+  different operator, disjoint product_id namespace.
+  Verified live 2026-09-01: flat (non-category-chunked) walk over
+  /products, /products/page-2/ ... /products/page-97/; page 1 vs page 2
+  product_id sets have zero overlap (confirmed enumerable, not a
+  homepage carousel). ~12 distinct products/page * 97 pages =~ 1,164 SKUs.
+  Prices in GEL (₾ sign), 2 decimals -- matches countries.yaml. Sale items
+  render <span class="new">/<span class="old">; regular items render a
+  single <span> -- spider takes "new" when present, else the plain price.
+  No server-side category id scheme discovered (category filters are a
+  JS checkbox tree, not URL params like europroduct's pcat_idIn) so
+  category is left null; the flat walk already covers the full catalog.

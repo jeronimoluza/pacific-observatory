@@ -1,0 +1,47 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: idea_rs
+url: https://online.idea.rs/
+language: sr
+currency: RSD
+cadence: weekly
+channel: supermarket
+timeout: 21600
+notes: |
+  IDEA -- major Serbian supermarket chain (part of the same retail group
+  as the Roda and Mercator-S banners; idea.rs/roda.rs/mercator-s.rs
+  cross-link the same store-network news posts). Only IDEA onboarded this
+  wave -- Roda and Mercator-S were not chased further given the
+  same-operator risk (rule 10); a future pass should sample product ids
+  from online.roda.rs before onboarding it, to confirm whether it's a
+  genuinely separate catalog/pricing zone or the identical backend.
+
+  `online.idea.rs` is a hash-routed SPA with no product data in raw HTML.
+  Playwright network capture found an "mStart"-family grocery e-commerce
+  backend (`session/init` reports `machine_hostname:
+  shop2-prod.mstart.local`) with a clean, cookie-gated but unauthenticated
+  JSON API:
+    GET /session/init                          (sets required session
+                                                 cookies; skipping this
+                                                 step -> 406 on everything
+                                                 else)
+    GET /v2/categories                         (full nested tree, 221
+                                                 nodes carry has_products:
+                                                 true)
+    GET /v2/categories/{id}/products?page=<N>  (paginated; page N vs N-1
+                                                 confirmed disjoint ids)
+
+  Price is `price.amount` in MINOR units (e.g. 59999 -> matches the API's
+  own `formatted_price: "599,99 Din"` -- divide by 100). Currency string
+  in the payload is "Din", not an ISO code -- mapped to RSD at the spider
+  level (Serbian Dinar, 2 decimals).
+
+  Test run (--max-items 20): 20/20 rows, 20 distinct product_id, 0 blank
+  names, 0 zero/negative price, 100% RSD. Sample: "Nescafe inst classic
+  hazelnut 95g tin nescafe" 599.99 RSD (discounted from 819.99 RSD -- the
+  API's `offer` block also carries `original_price`, not used here; the
+  spider takes the current selling price only). Cold re-fetch confirmed
+  matching name+price against /v2/categories/60030640/products. Full
+  unbounded run measured separately -- see Phase-8 report.
