@@ -39,6 +39,14 @@ carries `price: 3150` alongside `unit_price_text: "£31.50 per ITEM"`. It is
 divided by 100 here. Currency is GBP for both islands (matches
 countries.yaml; Jersey/Guernsey pounds are at par with sterling).
 
+RATE LIMIT: the API returns HTTP 429 under load. The first full run (2
+concurrent, 0.4s delay) took 8 x 429 and finished at a round 6,000 rows
+against an expected 9,745 -- a round number is a cap signature, not a
+catalogue size. Two changes: the spider now runs single-concurrency at 1.5s
+with 429 in RETRY_HTTP_CODES, and it fans out every page from page 1's
+`last_page` instead of chaining page N -> N+1, so one exhausted page can no
+longer silently truncate the rest of that store.
+
 Verified live 2026-09-01: store 1 total=5058 (51 pages), store 2 total=4687
 (47 pages); page 1 and page 2 returned disjoint id sets for both stores,
 confirming real pagination rather than a repeated first page.
@@ -73,10 +81,15 @@ class CoopCiSpider(scrapy.Spider):
     language = "en"
 
     custom_settings = {
-        "CONCURRENT_REQUESTS_PER_DOMAIN": 2,
-        "DOWNLOAD_DELAY": 0.4,
-        "RETRY_TIMES": 3,
+        # The OGS API rate-limits: a first full run at 2 concurrent / 0.4s
+        # drew 8 x HTTP 429 and truncated at a round 6,000 rows.
+        "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
+        "CONCURRENT_REQUESTS": 1,
+        "DOWNLOAD_DELAY": 1.5,
+        "RETRY_TIMES": 8,
+        "RETRY_HTTP_CODES": [429, 500, 502, 503, 504, 522, 524, 408],
         "AUTOTHROTTLE_ENABLED": True,
+        "AUTOTHROTTLE_TARGET_CONCURRENCY": 1.0,
     }
 
     def __init__(self, *args, **kwargs):
@@ -162,9 +175,13 @@ class CoopCiSpider(scrapy.Spider):
             f"yielded={found} total={meta.get('total')}"
         )
 
-        last_page = meta.get("last_page") or 0
-        if products and page < min(last_page, MAX_PAGES):
-            yield self._api_request(store, page + 1)
+        # Enqueue the whole store from page 1 rather than chaining page N ->
+        # N+1. A chain loses the entire tail when one page exhausts its
+        # retries; fanning out means a lost page costs only itself.
+        if page == 1:
+            last_page = min(meta.get("last_page") or 1, MAX_PAGES)
+            for next_page in range(2, last_page + 1):
+                yield self._api_request(store, next_page)
 
     def errback(self, failure):
         logger.error(
