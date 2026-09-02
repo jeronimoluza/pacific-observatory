@@ -174,13 +174,35 @@ Do **not** add a `platform:` field to record this. `PriceSourceConfig` is
 `extra="forbid"`, so any undeclared key raises at load and takes down the
 **global** `prices collect --list`. Put it in `notes` as prose.
 
-### If the spider parses listing pages, a PDP-only regex is always wrong
+### The regex must accept every price-bearing page family the ARCHIVE holds
 
-Ask which page type the **spider** reads. If it extracts products from
-category / listing pages rather than from PDPs, then a PDP-only
-`archive_path_re` excludes the one page type you have already *proven* is
-parseable — and it excludes the cheaper one, because a listing page carries
-many products per capture while a PDP carries one.
+**This is not a rule about the spider.** The archive regex must accept every
+page family the *archive* holds that carries prices, regardless of which one
+the spider fetches. A listing page the spider never touches is still 5-25x the
+product density in a capture we have already paid for; a PDP route the spider
+never uses may still be most of what CC captured.
+
+The spider's page type is the single most useful *hint* — it tells you one
+family that definitely parses — but it is a floor, not the answer. Write the
+regex from the archive, then use the spider to sanity-check that it did not
+lose anything.
+
+The failure runs in **both directions**, and one source of each has already
+shipped broken:
+
+- `sxmleshalles_mf` — a listing-parsing spider given a PDP-only regex. The
+  spider never fetches a PDP; all 2,128 rows came from 823 category pages,
+  whose URLs the pattern could not match at all.
+- `ckgreaves_vc` — the reverse. A listing-parsing spider whose *archive* is
+  full of PDPs. The live PDP route is broken today (it 301s to a doubled
+  origin and the target 404s), so it was written off as "no working PDP" —
+  but CC captured that route while it worked, and widening to admit it took
+  the source from 283 to 1,016 accepted paths, a 3.6x gain.
+
+**A live-site probe is evidence about today only.** The fetch spans ~102
+crawls back to 2013. A route that is dead now was very likely alive, and
+captured, for most of that window. Never let a live 404 decide what the
+archive contains.
 
 Two of four sources onboarded on 2026-09-02 shipped with exactly this defect,
 both caught only by re-auditing against the live site *after* the manifests
@@ -204,6 +226,16 @@ cap on everything outside it.
 excluded an entire language storefront. Before writing either value, fetch the
 home page and list its distinct top-level path segments — a `/en/`, `/fr/`,
 `/gl/` or `/da/` segment there means the pattern must admit it.
+
+**Record era hints in `notes` when you can see them.** A regex correct for
+2024 markup is routinely wrong for 2017, and route shapes change. Two cheap
+signals: a redirect whose *target* differs in shape from the current route
+names the older route (`ckgreaves_vc` 301s today's
+`/shop/browse/product/<id>_<slug>/` at `/shop/products/<slug>/`, so the
+archive plausibly holds all three shapes); and percent-encoding vs raw UTF-8
+in paths shifts by era on the same site (`pisiffik_gl` shows `%C3%B8` in
+CC-MAIN-2025-21 and raw `æggebægere` in 2022-21). Never use `\w+` or a
+lowercase-only hex class — `[^/?]+` handles both eras and both cases.
 
 **Validate the widening both ways.** A wider pattern is only safe if it still
 accepts everything the old one did. Check the new regex against the spider's
