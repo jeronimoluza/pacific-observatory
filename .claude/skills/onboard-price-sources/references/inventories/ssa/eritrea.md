@@ -21,3 +21,31 @@ knowledge strongly suggests there is no functioning online retail sector
 inside the country. Treat as a likely **structural absence**, but the Asbeza
 app is an open thread — worth one more WebSearch-budget pass specifically to
 find its real domain before writing this off completely.
+
+---
+
+## UPDATE 2026-09-01 (second pass) — Asbeza lead CLOSED. It is ETHIOPIAN, not Eritrean.
+
+The pass above left the Asbeza app (`com.ecwid.ShopAt.Asbeza`) as "an open thread
+— worth one more WebSearch-budget pass specifically to find its real domain". That
+search was run, and it resolves the thread in the negative:
+
+**Asbeza is an Addis Ababa (Ethiopia) grocery-delivery service, not an Eritrean
+one.** Its real domains are `asbeza.net` and `asbeza.et` — both live (HTTP 200,
+~78 KB, Ecwid fingerprint confirmed via `curl_cffi impersonate=chrome124`), both
+describing "Ethiopia's first online grocery delivery service ... in Addis Ababa",
+with a Facebook page located in Addis Ababa. The earlier pass inferred Eritrea
+from the app name; *asbeza* (አስቤዛ) is simply the Amharic word for groceries, and
+Amharic is an Ethiopian language. The parked `asbeza.com` it probed was a
+red herring unrelated to either country.
+
+With the only open thread closed, the pass above's structural read is now the
+settled verdict: **Eritrea has no online retail sector** (single state-run ISP,
+minimal internet penetration, no pan-African delivery marketplace lists the
+country). Treat as a **structural absence**, not a search gap. Do not re-sweep
+Eritrea for grocery e-commerce.
+
+Spillover lead for another country: `asbeza.net` is a live, unblocked Ecwid
+storefront and Ecwid exposes a documented open storefront API. Ethiopia already
+clears the coverage bar (5 manifests), so this is low priority — but it is a
+free, verified candidate if Ethiopian food depth is ever wanted.
