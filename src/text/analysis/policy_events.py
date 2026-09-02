@@ -200,6 +200,18 @@ def _best_date(members: Sequence[Dict[str, Any]], field: str) -> Dict[str, Any]:
     }
 
 
+def _merge_tracker(members: Sequence[Dict[str, Any]]) -> str:
+    """Which tracker an event belongs to, given one verdict per article."""
+    seen = {
+        (m.get("tracker") or "").lower()
+        for m in members
+        if (m.get("tracker") or "").lower() in {"fuel", "food", "both"}
+    }
+    if not seen or "both" in seen or seen == {"fuel", "food"}:
+        return "both"
+    return seen.pop()
+
+
 def build_events(
     rows: Sequence[Dict[str, Any]], threshold: float = 0.5
 ) -> List[Dict[str, Any]]:
@@ -223,6 +235,24 @@ def build_events(
             "cand_ids": [m.get("cand_id") for m in members],
             "article_dates": sorted(
                 {m["article_date"] for m in members if m.get("article_date")}
+            ),
+            # Which dashboard the measure belongs on. Members of one event can
+            # disagree -- a cost-of-living package read as "fuel" by one article
+            # and "food" by another -- and a split verdict is exactly what
+            # "both" means, so disagreement widens rather than picks a side.
+            "tracker": _merge_tracker(members),
+            # An announcement outranks an amendment, which outranks a passing
+            # mention: the event should be named by the strongest thing seen.
+            "action_type": next(
+                (
+                    kind
+                    for kind in ("new", "change", "mention")
+                    if any(m.get("action_type") == kind for m in members)
+                ),
+                "",
+            ),
+            "languages": sorted(
+                {m.get("language", "") for m in members if m.get("language")}
             ),
         }
         for field in ("announced_date", "effective_date", "end_date"):

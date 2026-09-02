@@ -361,7 +361,7 @@ def make_v6_html(
         </div>
       </div>
       <div class=\"detail-panel\"><div class=\"detail-card\" id=\"timelineCard\"><h2>Measure details</h2><p>Each dot is one measure, placed at the year it was active or proposed. Click a dot for details. Scroll the chart left for earlier years.</p></div></div>
-      <div class=\"note\">Note: a filled dot is a tracker row, dated from its <em>Active or Proposed Date</em>; a ringed, paler dot was found in the news corpus and dated from the article text, and has not been verified against an official source. All dots are the same size; several measures in one lane-year are fanned apart rather than merged. The grey band under the lanes is the number of articles that country's press published each year &mdash; a stretch with no dots means little was found only where the band is high. The trackers record measures that are currently active, so nearly every filled dot sits in the newest year and the earlier years are corpus discoveries.</div>
+      <div class=\"note\">Note: a filled dot is a tracker row, dated from its <em>Active or Proposed Date</em>; a ringed, paler dot was found in the news corpus and dated from the article text, and has not been verified against an official source. All dots are the same size; several measures in one lane-year are fanned apart rather than merged. The grey band under the lanes is the number of articles that country's press published each year, so a stretch with no dots only means a measure was missed where the band is high. A tracker refreshed only for currently-active measures piles nearly every filled dot into the newest year; the earlier years here are measures found in the news corpus, in 17 languages.</div>
     </div>
   </div>
 </div>
