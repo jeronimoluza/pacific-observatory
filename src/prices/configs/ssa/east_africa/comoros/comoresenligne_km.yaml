@@ -7,8 +7,8 @@ url: https://comores-en-ligne.fr/
 language: fr
 cadence: weekly
 channel: marketplace
-archive_prefix: "comores-en-ligne.fr/fr/catalogue/product/"
-archive_path_re: '^/fr/catalogue/product/[^/?]+_\d+/?$'
+archive_prefix: "comores-en-ligne.fr/"
+archive_path_re: '^/(?:[a-z]{2}/)?catalogue/[^/]+_\d+/?$'
 notes: |
   Comoros' FIRST price source of any kind (0 manifests before this pass).
   The prior sweep (2026-09-01, agent B) found only comoresmarket.com — whose
@@ -59,3 +59,23 @@ notes: |
   Verified live 2026-09-01: count=1527 site-wide; food staples price sanely
   (Riz Ordinaire Narda 25KG EUR 28.02, Huile de Tournesol Fortune 1L EUR
   3.65, Rouelles de Sardines Delmonaco 425G EUR 3.07).
+
+  ARCHIVE PREFIX CORRECTED 2026-09-01 after a Common Crawl resolve pass.
+  The first values were derived from the live site and were wrong for the
+  archive: prefix "comores-en-ligne.fr/fr/catalogue/product/" matched 0 of
+  725 available captures. Archived PDPs carry neither the /fr/ locale nor a
+  /product/ segment -- the real shape is /catalogue/<slug>_<id>/, e.g.
+  /catalogue/bouteille-eau-salsabil-1l_123/. The regex could never fire, so
+  the source would have sat silently at zero with no error and no miss
+  record. `[^/]+` excludes /catalogue/category/... listings on its own
+  because those carry extra slashes.
+
+  The live site has since moved to /{lang}/catalogue/category/<island>/
+  <slug>_<id> and now renders products client-side, so today's HTML contains
+  no PDP hrefs at all. The optional locale group covers both eras.
+
+  Separately: the rows this spider emits carry the API's own
+  /api/v1/products/<id>/ URL as their identity (the API's own `url` field),
+  not a browsable page. That is stable and unique so dedup is correct, but it
+  is NOT the customer-facing URL and must never be used to derive archive
+  values.

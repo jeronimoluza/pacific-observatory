@@ -7,8 +7,8 @@ url: https://www.pisiffik.gl/
 language: da
 cadence: weekly
 channel: dept-store
-archive_prefix: "www.pisiffik.gl/da/"
-archive_path_re: '^/da/[^/]+/\d+-[^/?]+\.html$'
+archive_prefix: "pisiffik.gl/"
+archive_path_re: '^/(?:da|gl|en)/[^/]+/\d+-[^/?]+\.html$'
 notes: |
   Greenland's FIRST price source of any kind (0 manifests before this pass).
   Pisiffik is Greenland's largest privately-owned retail company (~40 stores
@@ -64,3 +64,16 @@ notes: |
 
   channel: dept-store — franchise-operated general merchandise, matching the
   measured reality of the catalogue rather than Pisiffik's supermarket brand.
+
+  ARCHIVE PREFIX WIDENED 2026-09-01 after a Common Crawl resolve pass.
+  The first prefix "www.pisiffik.gl/da/" was a correct description of the
+  live Danish storefront and a wrong description of the archive: it admitted
+  3,806 of 7,290 available captures, excluding the entire GREENLANDIC
+  storefront under /gl/ (same PDP shape, e.g.
+  /gl/igalaanut-salummaatit/170443-viskerblad-wipez-flex-53-56-cm.html).
+  Bare host plus a locale alternation recovers it. Dedupe across da/gl/en or
+  the same product is counted up to three times.
+
+  Non-ASCII is NOT a problem: 2,653 archived paths are percent-encoded, and
+  `[^/]+` matches a %XX escape as happily as raw UTF-8. Do not write a rule
+  that assumes one encoding.
