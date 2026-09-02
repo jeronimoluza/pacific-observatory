@@ -177,10 +177,16 @@ no zero-row warning. The source simply never appears in a resolve pass. A
 
 Optimise for **recall, not scan time**. Over-inclusion costs almost nothing:
 
-- `surt_prefix()` does `path.rstrip("/")`, so `/products/` already matches
-  `/products-archive` and `/productsale` regardless — the prefix was never the
-  precise filter you thought it was.
+- The cap is looser than "path prefix" suggests. `surt_prefix()` does
+  `path.rstrip("/")`, so `www.fravega.com/p/` becomes the bare string
+  `com,fravega)/p` — which also matches `/panasonic`, `/pampers` and
+  `/philips`. It was never the precise filter it looks like.
 - `archive_path_re` does the real filtering afterwards, on every candidate.
+
+**The asymmetry is the whole argument.** Over-inclusion costs *scan time*.
+Under-inclusion loses *data*, silently, with nothing in any log to say so. Those
+are not comparable costs, which is why the answer is always the bare host and not
+"a carefully chosen prefix."
 
 And a bare host is the only form that **survives a URL-scheme migration**.
 `sheridans_ie` broke when the site moved WooCommerce → Shopify and `/product/`
@@ -208,14 +214,20 @@ must be written out in full.
 
 ### Three ways `archive_path_re` silently never fires
 
-1. **A query string in the pattern.** It is matched with `re.search` against
-   `urlparse(url).path` (`cc_index.py:366`), which **excludes** the query. Any
-   regex containing `?` or `&` can never match. A site that keys products off
-   `?category=` (e.g. `superselectos_sv`) is unfixable through this mechanism —
-   record that, don't ship a pattern that cannot fire.
-2. **Case.** `surt_prefix` lowercases the *prefix*, but `archive_path_re` runs
-   against the **raw** path. `cozmo_jo` was broken solely because its regex
-   demanded lowercase while the site serves `/cozmostore/Categories/.../p/<id>`.
+1. **A query string in the pattern — a structural impossibility, not a near
+   miss.** The regex is `re.search`ed against `urlparse(url).path`
+   (`cc_index.py:366`). The query is *absent from the string being matched*, so
+   a pattern containing `?` or `&` cannot fire under any circumstances. A site
+   that keys products off `?category=` (e.g. `superselectos_sv`) is unfixable
+   through this mechanism — record that; don't ship a pattern that cannot fire.
+2. **Case — the prefix is case-insensitive and the regex is case-sensitive.**
+   This asymmetry is the actual trap. `surt_prefix` lowercases the prefix
+   *including its path* (itself a fix: `shop.cosmed.com.tw/SalePage/` matched
+   nothing until the path was lowercased), but `archive_path_re` is matched
+   against the **raw** path, which is never lowercased. `cozmo_jo` broke solely
+   because its regex demanded lowercase while the site serves
+   `/cozmostore/Categories/.../p/<id>`. A prefix that works is no evidence at
+   all that a same-cased regex will.
 3. **Over-tight depth anchoring.** `re.search` is unanchored at the right, so
    depth is free. `libdelivery_lr` serves four-segment PDPs
    (`/item/restaurants/oportos/breakfast/omelette-ham-cheese/`) and a plain
@@ -229,6 +241,13 @@ matched it. The live site is today's scheme; CC is every scheme the site ever
 had. `djor_fo` shipped `^/product/[^/?]+` — correct against the live site,
 verified against 2,159 freshly scraped rows — and matched **6 of 267** archived
 records.
+
+The failure is live, not historical: `comoresenligne_km` was onboarded in a
+separate session within the same hour as this section was written, and has
+**725 captures with zero reachable**, because its prefix carries a `/fr/` locale
+segment and a `/product/` segment that both exist on the live site and appear
+nowhere in the archive. Two independent authors, same hour, same mistake. Read
+the archive first.
 
 Where a live-site pattern and the archived paths disagree, do not widen the regex
 on a guess. Two very different situations produce the same symptom and need
