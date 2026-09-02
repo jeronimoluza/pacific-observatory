@@ -1232,6 +1232,8 @@ def generate_region(
     chart_title: str,
     tracker: Optional[str] = None,
     timeline_path: Optional[Path] = None,
+    coverage_path: Optional[Path] = None,
+    discovered_path: Optional[Path] = None,
 ) -> Dict[str, Any]:
     key = region_cfg["key"]
     display = region_cfg.get("display_name", key)
@@ -1264,6 +1266,20 @@ def generate_region(
         timeline = json.loads(Path(timeline_path).read_text())
         print(f"  timeline source: {Path(timeline_path).name} ({len(timeline)} keys)")
 
+    coverage = None
+    if coverage_path and Path(coverage_path).exists():
+        coverage = json.loads(Path(coverage_path).read_text())
+        print(
+            f"  coverage source: {Path(coverage_path).name} ({len(coverage)} countries)"
+        )
+
+    discovered = None
+    if discovered_path and Path(discovered_path).exists():
+        discovered = json.loads(Path(discovered_path).read_text())
+        print(
+            f"  discovered source: {Path(discovered_path).name} ({len(discovered)} rows)"
+        )
+
     if has_v6_columns(rows):
         print("  taxonomy: v6 (Category + Subcategory)")
         groups = build_country_groups(rows, region_cfg)
@@ -1277,6 +1293,8 @@ def generate_region(
             groups,
             display_names,
             timeline=timeline,
+            coverage=coverage,
+            discovered=discovered,
         )
         html = make_v6_html(
             data,
