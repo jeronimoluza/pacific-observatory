@@ -34,3 +34,27 @@ rendered and remains inconclusive.
   catalog and is the most likely second source.
 - Re-probe `marounssupermarket.com` once its server stops returning an empty
   body.
+
+## Common Crawl coverage
+
+Probed 2026-09-02 by the common_crawl session: 8 crawls spanning 2019-2026,
+`max_blocks=40`. Counts are host records in the CC index and, separately, the
+subset matching the manifest's `archive_path_re`.
+
+| Source | Crawls with host | Host records | Matching PDP regex | Verdict |
+|---|---|---|---|---|
+| `ebaaba_gm` (WooCommerce, sitemap walk) | 6/8 | 64 | 55 | **Single price point, not a series** — see note below. |
+
+**ebaaba_gm yields one observation, not a series.** 54 of its 55 matching
+records sit in a single crawl, CC-MAIN-2023-14; every other crawl holds 1-4
+records, all `/categories/...` listing pages. Treat any historical ebaaba
+figure as a single 2023 price point. The live scrape is the real source here.
+
+
+`archive_prefix` on `ebaaba_gm` was shortened to the bare registrable host on
+2026-09-02. It is a plain **string** prefix applied to cdx lines *before*
+`archive_path_re` is consulted, so a path in the prefix hard-caps what any regex
+can see, and a wrong one fails silently — no manifest, no miss record, no error.
+Filtering is `archive_path_re`'s job. Over-inclusion is free (`surt_prefix`
+rstrips the trailing slash regardless), and a bare host survives the URL-scheme
+migrations that break path prefixes.

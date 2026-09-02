@@ -7,7 +7,7 @@ url: https://libdelivery.com/
 language: en
 cadence: monthly
 channel: marketplace
-archive_prefix: "libdelivery.com/item/"
+archive_prefix: "libdelivery.com/"
 archive_path_re: '^/item/'
 notes: >
   LIBdelivery is a Monrovia delivery marketplace carrying groceries, local

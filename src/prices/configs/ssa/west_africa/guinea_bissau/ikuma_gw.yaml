@@ -7,7 +7,7 @@ url: https://www.ikuma.online/
 language: pt
 cadence: monthly
 channel: supermarket
-archive_prefix: "www.ikuma.online/product/"
+archive_prefix: "ikuma.online/"
 archive_path_re: '^/product/[^/?]+'
 notes: >
   Ikuma bills itself as Guinea-Bissau's first online supermarket. WooCommerce,

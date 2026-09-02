@@ -7,7 +7,7 @@ url: https://djor.fo/
 language: fo
 cadence: monthly
 channel: pet
-archive_prefix: "djor.fo/product/"
+archive_prefix: "djor.fo/"
 archive_path_re: '^/product/[^/?]+'
 notes: >
   Djórahandilin, the Faroe Islands' largest animal-goods retailer.

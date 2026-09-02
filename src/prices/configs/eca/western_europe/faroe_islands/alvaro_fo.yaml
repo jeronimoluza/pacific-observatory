@@ -7,7 +7,7 @@ url: https://www.alvaro.fo/
 language: fo
 cadence: monthly
 channel: fashion
-archive_prefix: "www.alvaro.fo/products/"
+archive_prefix: "alvaro.fo/"
 archive_path_re: '^/products/[^/?]+'
 notes: >
   Alvaró, Tórshavn. Shopify; /products.json open and page 2 returns a
