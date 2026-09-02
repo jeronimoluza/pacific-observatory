@@ -68,6 +68,31 @@ WEAK_ACTION = set(
 
 ACTION = STRONG_ACTION | WEAK_ACTION
 
+# A second way into the gate. Requiring an instrument noun misses the headlines
+# that name the actor instead -- "Cabinet's gasohol price cut", "Commerce
+# Minister defends sugar price increase", "Thailand extends diesel discount".
+# A measured recall probe found this shape in 11 of 13 missed measures, almost
+# all Thai. Alone each of these three sets is far too common to gate on; a
+# headline carrying one of each is reliably about a government moving a price.
+# This path costs 846 extra candidates and recovers 5 of the 13, at the same
+# ~35% precision as the instrument path. Letting the country's own name count as
+# an actor was tried and dropped: another 1,016 candidates bought one more.
+ACTOR = set(
+    """
+    cabinet parliament ministry minister ministers govt government authority
+    regulator commission committee department council junta premier pdmo
+    """.split()
+)
+
+MOVEMENT = set(
+    """
+    cut cuts hike hikes raise raises raised lower lowers lowered boost boosts
+    discount discounts increase increases slash slashes scrap scraps extend
+    extends extended approve approves approved launch launches launched
+    introduce introduces allow allows allowed sell sells plan plans defends
+    """.split()
+)
+
 # A digest headline lists several unrelated stories, so any instrument word in
 # it belongs to a story the article only summarises. Two of these arrive as one
 # outlet's section furniture ("Phuket Gazette World News: ...", carried over
@@ -225,6 +250,12 @@ def scan(
 ) -> Tuple[List[Dict[str, Any]], Dict[int, int]]:
     """Score every article against every Category pack in one pass.
 
+    A headline is admitted two ways: it names an instrument (``STRONG_ACTION``),
+    or it names a government actor moving something (``ACTOR`` and
+    ``MOVEMENT``). Either way it must also carry a category term, and the field
+    ``admitted_by`` records which path let it in so the two can be measured
+    apart.
+
     The gate reads the headline only. Scanning bodies passed 9% of the corpus:
     "duty", "regulations" and "decree" occur in passing in almost any article
     about a government, so a body match says the piece mentions governing, not
@@ -255,11 +286,12 @@ def scan(
             continue
 
         head = set(tokens(title))
-        strong = head & STRONG_ACTION
-        if not strong:
-            continue
         topic = head & index.keys()
         if not topic:
+            continue
+        strong = head & STRONG_ACTION
+        actor_path = bool(head & ACTOR) and bool(head & MOVEMENT)
+        if not strong and not actor_path:
             continue
 
         body = set(tokens(article.get("body", "")))
@@ -274,6 +306,8 @@ def scan(
         score = sum(weights.get(t, 0.0) for t in topic | strong) + 0.25 * sum(
             weights.get(t, 0.0) for t in body_topic
         )
+        admitted_by = "instrument" if strong else "actor"
+
         if score < min_score:
             continue
         candidates.append(
@@ -288,6 +322,7 @@ def scan(
                 "title_topic": sorted(topic),
                 "title_action": sorted(head & ACTION),
                 "strong_action": sorted(strong),
+                "admitted_by": admitted_by,
                 "body_topic": sorted(body_topic)[:20],
                 "score": round(score, 2),
             }
