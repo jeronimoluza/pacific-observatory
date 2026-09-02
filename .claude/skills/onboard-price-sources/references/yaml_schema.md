@@ -22,8 +22,72 @@ The manifest sits at `src/prices/configs/<region>/<subregion>/<country>/<source>
 | `fallback_date` | yes for `fetcher` | Earliest date the fetcher can backfill to (ISO). Used as the cutoff on first run, so set it back far enough that run 1 returns real history. |
 | `notes` | no | Free-form maintainer note — anything non-obvious |
 | `active` | no | `false` only when intentionally disabled |
+| `archive_prefix` | recommended for `spider` | String cap on the Common Crawl index scan. **Bare registrable host, no scheme** — see the rules below. |
+| `archive_path_re` | recommended for `spider` | Regex selecting product URLs out of what the prefix admits. See below. |
 
 Fields explicitly **not** in the schema: `source_type` (the old A–F letters), `priority` (PPP wants all sources, not a ranking), `observation_level` (subsumed by `analytical_role`), `coicop_divisions` (replaced by `coicop_codes`).
+
+
+## `archive_prefix` / `archive_path_re` — the Common Crawl pair
+
+These two drive historical recovery. Both fail **silently**: a wrong value
+produces no error and no miss record, the source simply never appears in a
+resolve pass. A measured audit on 2026-09-02 found this class had left 261
+sources on this project sitting at zero. Get them right at onboarding.
+
+**Rule 1 — derive them from what the ARCHIVE holds, not from the live site.**
+This is the one that actually bites. Both failures found on 2026-09-02 were
+accurate descriptions of the live site and wrong descriptions of the archive:
+
+- `comoresenligne_km` — prefix `comores-en-ligne.fr/fr/catalogue/product/`
+  matched **0 of 725** available captures. Archived PDPs carry neither the
+  `/fr/` locale nor a `/product/` segment (real shape
+  `/catalogue/<slug>_<id>/`). The site had changed its URL scheme since.
+  Corrected value returns 160.
+- `pisiffik_gl` — prefix `www.pisiffik.gl/da/` admitted **3,806 of 7,290**,
+  silently excluding the entire Greenlandic `/gl/` storefront, which has an
+  identical PDP shape.
+
+**Rule 2 — put the bare host in the prefix and let the regex do the work.**
+The prefix is a plain string cap applied at `cc_index.py:351`
+(`if not line.startswith(key): continue`) **before** the regex is consulted,
+so any path segment in the prefix silently caps everything behind it.
+`fravega_ar` carried `/p/` and returned 0; dropping to bare host gave
+**40,346 rows spanning 2014–2025**.
+
+**Rule 3 — mind what the regex is matched against.** It runs against
+`urlparse(url).path`, so:
+- the **query string is excluded** — a regex containing `?` or `&` can never
+  fire;
+- it is matched against the **raw** path, so it is **case-sensitive**.
+
+**Rule 4 — never assume one URL encoding.** The cdx stores both, by era. Same
+site, two crawls:
+
+    CC-MAIN-2025-21  /da/%C3%B8vrigt-badetilbeh%C3%B8r/71314-...
+    CC-MAIN-2022-21  /da/æggebægere/36-gc-æggebæger-ø14-cm-klar-2-stk.html
+
+`[^/]+` matches both (a `%XX` escape contains no slash). A `\w`-based class
+would silently drop every raw-UTF-8 capture — i.e. an entire era.
+
+**Rule 5 — `spider` must be set alongside it.** `cc_config.py:147` reads
+`if not (cfg.spider and cfg.archive_prefix): continue`, so a manifest with
+`source_key` but no `spider` is invisible to the resolver, with no error.
+
+**Also worth recording in `notes`: whether the source emits any structured
+data at all.** The archive fetcher ships four generic parser tiers — JSON-LD,
+OpenGraph, Next.js flight data, and inline schema.org microdata. A source
+with none of them will resolve captures and then parse to zero.
+`ckgreaves_vc` is the worked example: no JSON-LD, no `itemtype`, no
+OpenGraph, and its only `itemprop` values are `image/name/options/pricing/
+savings` — three of which are not schema.org properties, so there is nothing
+for the microdata tier to scope. Its price lives solely in a `data-price`
+attribute, which no tier reads. Say so in `notes` so the archive side can
+skip it or build for it deliberately.
+
+Do **not** add a `platform:` field to record this. `PriceSourceConfig` is
+`extra="forbid"`, so any undeclared key raises at load and takes down the
+**global** `prices collect --list`. Put it in `notes` as prose.
 
 ## Examples
 

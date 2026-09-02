@@ -7,7 +7,7 @@ url: https://www.sosisvege.com/
 language: en
 cadence: weekly
 channel: specialty-food
-archive_prefix: "www.sosisvege.com/shopping-categories/"
+archive_prefix: "www.sosisvege.com/"
 archive_path_re: '^/shopping-categories/[a-z0-9\-]+$'
 notes: |
   Sosi's Vege -- Gibraltar's FIRST price source of any kind. Gibraltar-
@@ -46,3 +46,11 @@ notes: |
                        supermarket since 1975) is app-only -- iOS and Android
                        only, no web catalogue.
     - nomnoms.gi       restaurant food-ordering aggregator, not a grocer.
+
+  ARCHIVE PREFIX WIDENED to bare host 2026-09-02. The earlier value carried a
+  /shopping-categories/ path segment. It measured fine (23 of 25 available
+  captures) because that is currently the site's only product route -- but
+  the prefix is a plain string cap applied BEFORE archive_path_re is
+  consulted, so a path in the prefix silently caps everything behind it if
+  site123 ever changes the route. Bare host + regex is the safe factoring.
+  The regex is unchanged and still does all the filtering.
