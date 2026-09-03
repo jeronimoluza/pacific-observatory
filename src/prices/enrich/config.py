@@ -151,6 +151,30 @@ CLASSIFIED_PARQUET = (
     CACHE_DIR / "classified.parquet"
 )  # classify-stage output, keyed by input_hash
 
+# Which model assigns the leaf. `hierlex` is the production path — a frozen
+# HierLex-Select bundle that is scored, never trained here; `head` is the
+# in-house (embedding -> logistic) classifier this repo can still train. Each
+# writes its own file, so running one never overwrites the other's output and
+# the two stay comparable on the same corpus.
+CLASSIFIER_BACKEND = os.environ.get("PRICES_CLASSIFIER_BACKEND", "hierlex")
+CLASSIFIED_HIERLEX_PARQUET = CACHE_DIR / "classified_hierlex.parquet"
+DECISIONS_HIERLEX_PARQUET = CACHE_DIR / "decisions_hierlex.parquet"
+HIERLEX_MODELS_DIR = ENRICH_DIR / "_models" / "hierlex"
+HIERLEX_PRED_DIR = ENRICH_DIR / "_hierlex_pred"
+
+# Divisions the build consumes. The head PoC was division 01 alone; hierlex
+# scores the whole taxonomy and the build widened to 01+02.
+BUILD_DIVISIONS: tuple[str, ...] = ("01", "02")
+
+# Ceiling on resident memory for a parallel bucket-major score, as a fraction of
+# physical RAM. Workers get clamped to fit it (classifier/bucket_pool.py): a
+# bucket is ~1 GB gathered, so on any machine worth parallelising on the cores
+# outnumber what memory will hold.
+CLASSIFY_MEM_BUDGET_FRACTION = 0.6
+CLASSIFY_MEM_BUDGET_GB = float(
+    os.environ.get("PRICES_CLASSIFY_MEM_BUDGET_GB", "0") or 0
+)
+
 # Sibling venv (py3.12 + mlx_embeddings) the mlx blocks shell out to for encoding.
 # Env-overridable because the mlx env lives outside the git worktree; production
 # must set MLX_VENV_PYTHON or place `.venv_mlx` at the repo root.

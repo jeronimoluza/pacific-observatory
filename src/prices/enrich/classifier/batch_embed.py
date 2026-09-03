@@ -29,7 +29,7 @@ import numpy as np
 import pandas as pd
 
 from prices.enrich import config, embedding
-from prices.enrich.classifier import embed_store
+from prices.enrich.classifier import MODEL_FILE, bucket_pool, embed_store, version_dir
 
 PRED_DIR = config.PRODUCTS_INPUT_PARQUET.parent / "_classify_pred"
 
@@ -80,11 +80,42 @@ def _predict_bucket(predictor, tags, b: int, nm: list[str], part: Path) -> pd.Da
     return df
 
 
+def _predict_job(item: tuple) -> Path:
+    """One bucket, in whichever process picks it up.
+
+    Takes the head *version* rather than the loaded predictor: the bundle is
+    sklearn state that would be pickled once per bucket, where reloading it per
+    process is cached and paid once. Writes its shard and returns the path —
+    nothing large crosses back over the process boundary.
+    """
+    b, nm, version, tags, pred_dir = item
+    from prices.enrich.classifier.predict import load_predictor  # noqa: PLC0415
+
+    part = Path(pred_dir) / f"pred_{b:03d}.parquet"
+    _predict_bucket(load_predictor(version), tags, b, nm, part)
+    return part
+
+
+def _model_bytes(version: str) -> int:
+    path = version_dir(version) / MODEL_FILE
+    return path.stat().st_size if path.exists() else 0
+
+
 def embed_and_predict(
-    predictor, uniq, pred_root: Path = PRED_DIR, max_chunks: int | None = None
+    predictor,
+    uniq,
+    pred_root: Path = PRED_DIR,
+    max_chunks: int | None = None,
+    workers: int = 1,
 ) -> tuple[dict, dict, dict]:
     """Build the store for `uniq`, then score every name with the head. Returns
-    (leaf_by, conf_by, ok_by) maps name -> value."""
+    (leaf_by, conf_by, ok_by) maps name -> value.
+
+    `workers` parallelises the predict phase only. Building the store stays
+    sequential because it is bound by one resident embedding model, not by
+    cores — running four of those at once is how the box runs out of memory,
+    not how the run gets faster.
+    """
     names = [str(x) for x in uniq]
     bucket_names = embed_store.buckets_for(names)
     cap = (
@@ -101,6 +132,19 @@ def embed_and_predict(
 
     pred_dir = pred_root / str(predictor.version)
     tags = [b["tag"] for b in config.CLASSIFIER_EMBED_ENSEMBLE]
+
+    # Fan out over buckets first, then walk them in order below. The second pass
+    # is a cache hit per shard, so the ordering, resume and cap semantics stay
+    # exactly what they were when this ran one bucket at a time.
+    if workers > 1:
+        bucket_pool.map_buckets(
+            _predict_job,
+            [(b, nm, str(predictor.version), tags, str(pred_dir)) for b, nm in items],
+            workers=workers,
+            tags=tags,
+            model_bytes=_model_bytes(str(predictor.version)),
+            label="predict",
+        )
 
     leaf_by: dict = {}
     conf_by: dict = {}

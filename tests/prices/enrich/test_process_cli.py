@@ -19,7 +19,9 @@ def calls(monkeypatch):
     monkeypatch.setattr(
         cli.prepare_shards, "run", lambda **kw: seen.setdefault("prepare", kw)
     )
-    monkeypatch.setitem(cli.STAGES, "classify", lambda: seen.setdefault("classify", {}))
+    monkeypatch.setattr(
+        cli.classify_stage, "run", lambda **kw: seen.setdefault("classify", kw)
+    )
     monkeypatch.setitem(cli.STAGES, "merge", lambda: seen.setdefault("merge", {}))
     return seen
 
@@ -106,4 +108,28 @@ def test_explain_without_a_selector_covers_the_corpus(calls, corpus):
 def test_explain_says_so_when_nothing_matches(calls, corpus):
     result = invoke("--explain", "--only", "antarctica")
     assert "no shards match" in result.output
+    assert calls == {}
+
+
+def test_the_backend_reaches_classify(calls):
+    result = invoke("--stage", "classify", "--backend", "head")
+    assert result.exit_code == 0
+    assert calls["classify"] == {"backend": "head", "workers": 1}
+
+
+def test_workers_reach_classify_too(calls):
+    """The same flag sizes prepare's pool and classify's; one number, because
+    the user is answering "how much of this box may I use"."""
+    invoke("--stage", "classify", "--workers", "6")
+    assert calls["classify"]["workers"] == 6
+
+
+def test_without_a_backend_flag_classify_picks_its_own_default(calls):
+    invoke("--stage", "classify")
+    assert calls["classify"]["backend"] is None
+
+
+def test_an_unknown_backend_is_rejected_before_anything_runs(calls):
+    result = invoke("--stage", "classify", "--backend", "nonesuch")
+    assert result.exit_code != 0
     assert calls == {}

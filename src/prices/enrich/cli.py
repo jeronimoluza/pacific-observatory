@@ -4,7 +4,7 @@ import click
 
 from prices import partition
 from prices.enrich import config, prepare_shards
-from prices.enrich.classifier import batch_embed
+from prices.enrich.classifier import backends, batch_embed
 from prices.enrich.stages import classify as classify_stage
 from prices.enrich.stages import concatenate as concatenate_stage
 from prices.enrich.stages import merge as merge_stage
@@ -24,14 +24,17 @@ STAGE_ORDER = ["concatenate", "prepare", "classify", "merge"]
 SCOPED_STAGES = ("concatenate", "prepare")
 
 
-def _invalidate_for(stage: str | None) -> None:
+def _invalidate_for(stage: str | None, backend: str | None = None) -> None:
     if stage == "concatenate" and concatenate_stage.STATE_FILE.exists():
         concatenate_stage.STATE_FILE.unlink()
     if stage == "prepare" and config.PRODUCTS_INPUT_PARQUET.exists():
         config.PRODUCTS_INPUT_PARQUET.unlink()
     if stage == "classify":
-        if config.CLASSIFIED_PARQUET.exists():
-            config.CLASSIFIED_PARQUET.unlink()
+        # Only the chosen backend's output. Dropping both would make --rebuild
+        # on one model quietly destroy the other model's run.
+        out = backends.get(backend).classified_path
+        if out.exists():
+            out.unlink()
         # Prediction shards cache head scores per name-bucket; a shard is reused
         # whenever its cached names cover the request, so a bucket untouched by a
         # new batch keeps scores from before a veto-lexicon change and silently
@@ -98,18 +101,30 @@ def _explain(selectors) -> None:
     is_flag=True,
     help="Print what the selector matches and exit without running anything.",
 )
+@click.option(
+    "--backend",
+    type=click.Choice(sorted(backends.BACKENDS)),
+    default=None,
+    help=(
+        "Which model classify scores with. Default comes from "
+        "PRICES_CLASSIFIER_BACKEND (currently "
+        f"{config.CLASSIFIER_BACKEND!r}). Each writes its own output file."
+    ),
+)
 @click.option("-r", "--region", "region", default=None)
 @click.option("-S", "--subregion", "subregion", default=None)
 @click.option("-c", "--country", "country", default=None)
-def process_command(stage, rebuild, only, workers, explain, region, subregion, country):
+def process_command(
+    stage, rebuild, only, workers, explain, backend, region, subregion, country
+):
     """AI enrichment pipeline (concatenate → prepare → classify → merge).
 
     `classify` runs the two independent enrich jobs per product: deterministic
     structural regex extraction (pricing_basis / amount / count / promo flags)
-    plus (embedding → head) COICOP classification — a Qwen3-Embedding of the raw
-    name feeding a logistic-regression head, accepted only where the global
-    confidence gate clears and no trap veto fires. Output is filtered to the
-    configured COICOP division (default 01 — the EAP F&B PoC).
+    plus COICOP classification by the chosen backend. It is predict-only —
+    nothing here fits a model. `hierlex` (default) scores a frozen bundle at
+    (name, country) grain into classified_hierlex.parquet; `head` scores the
+    in-house trained model at name grain into classified.parquet.
     """
     selectors = _selectors(only, region, subregion, country)
     if explain:
@@ -128,13 +143,15 @@ def process_command(stage, rebuild, only, workers, explain, region, subregion, c
                 err=True,
             )
     if rebuild:
-        _invalidate_for(stage)
+        _invalidate_for(stage, backend)
 
     def run_stage(name: str) -> None:
         if name == "concatenate":
             concatenate_stage.run(force=rebuild, selectors=selectors)
         elif name == "prepare":
             prepare_shards.run(selectors=selectors, workers=workers)
+        elif name == "classify":
+            classify_stage.run(backend=backend, workers=workers)
         else:
             STAGES[name]()
 
