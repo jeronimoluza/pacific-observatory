@@ -1,0 +1,201 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Cost guardrails, output bucket and scoped access for the Common Crawl fetch work
+
+Parameters:
+  AlertEmail:
+    Type: String
+    Description: Address that receives budget alerts
+  MonthlyBudgetUsd:
+    Type: Number
+    Default: 50
+    Description: Monthly cost budget in USD
+
+Resources:
+
+  # ---------- 1. spend alarm ----------
+  MonthlyCostBudget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: cc-fetch-monthly
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: !Ref MonthlyBudgetUsd
+          Unit: USD
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 50
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref AlertEmail
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref AlertEmail
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref AlertEmail
+        - Notification:
+            NotificationType: FORECASTED
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref AlertEmail
+
+  # ---------- 2. output bucket, cheap by construction ----------
+  WarcOutputBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub 'pacific-observatory-cc-warc-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: intelligent-tiering-from-day-zero
+            Status: Enabled
+            Transitions:
+              - StorageClass: INTELLIGENT_TIERING
+                TransitionInDays: 0
+          - Id: abort-stale-multipart-uploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+
+  # ---------- 3. EC2 identity, no long lived keys ----------
+  CcFetchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: cc-fetch-ec2-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: cc-fetch-data-access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Sid: ReadCommonCrawl
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - arn:aws:s3:::commoncrawl
+                  - arn:aws:s3:::commoncrawl/*
+              - Sid: WriteOurOutput
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:ListBucket
+                  - s3:AbortMultipartUpload
+                  - s3:ListBucketMultipartUploads
+                  - s3:ListMultipartUploadParts
+                Resource:
+                  - !GetAtt WarcOutputBucket.Arn
+                  - !Sub '${WarcOutputBucket.Arn}/*'
+              - Sid: SelfTerminate
+                Effect: Allow
+                Action: ec2:TerminateInstances
+                Resource: '*'
+                Condition:
+                  StringEquals:
+                    ec2:ResourceTag/Project: cc-fetch
+
+  CcFetchInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      InstanceProfileName: cc-fetch-ec2-profile
+      Roles:
+        - !Ref CcFetchRole
+
+  # ---------- 4. human operator, replaces root, no keys issued here ----------
+  CostGuardrailPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: cc-cost-guardrails
+      Description: Hard cost ceilings that apply on top of any grant
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyOutsideUsEast1
+            Effect: Deny
+            Action:
+              - ec2:RunInstances
+              - ec2:CreateVolume
+              - rds:CreateDBInstance
+            Resource: '*'
+            Condition:
+              StringNotEquals:
+                aws:RequestedRegion: us-east-1
+          - Sid: DenyExpensiveInstanceTypes
+            Effect: Deny
+            Action: ec2:RunInstances
+            Resource: arn:aws:ec2:*:*:instance/*
+            Condition:
+              StringNotEquals:
+                ec2:InstanceType:
+                  - t4g.micro
+                  - t4g.small
+                  - t4g.medium
+                  - t4g.large
+                  - c7g.large
+                  - c7g.xlarge
+                  - c7g.2xlarge
+                  - c7g.4xlarge
+                  - c7g.8xlarge
+                  - m7g.large
+                  - m7g.xlarge
+                  - m7g.2xlarge
+          - Sid: DenySilentHourlyCharges
+            Effect: Deny
+            Action:
+              - ec2:CreateNatGateway
+              - ec2:CreateVpcEndpoint
+            Resource: '*'
+
+  CcAdminUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: cc-admin
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/PowerUserAccess
+        - !Ref CostGuardrailPolicy
+
+Outputs:
+  BudgetName:
+    Value: cc-fetch-monthly
+  OutputBucket:
+    Value: !Ref WarcOutputBucket
+  InstanceProfile:
+    Value: !Ref CcFetchInstanceProfile
+  AdminUser:
+    Value: !Ref CcAdminUser

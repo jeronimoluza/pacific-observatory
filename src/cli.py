@@ -431,6 +431,7 @@ _register_text_storage(
 from prices.collect import collect as _prices_collect  # noqa: E402
 from prices.backfill_cli import backfill_command as _prices_backfill  # noqa: E402
 from prices.cc_cli import common_crawl_command as _prices_common_crawl  # noqa: E402
+from prices.cc_fleet_cli import cc_fleet_command as _prices_cc_fleet  # noqa: E402
 from prices.cc_table_cli import cc_table_group as _prices_cc_table  # noqa: E402
 from prices.enrich.cli import embed_command as _prices_embed  # noqa: E402
 from prices.enrich.cli import process_command as _prices_process  # noqa: E402
@@ -452,6 +453,7 @@ prices.add_command(_prices_collect, name="collect")
 prices.add_command(_prices_backfill, name="backfill")
 prices.add_command(_prices_common_crawl, name="common-crawl")
 prices.add_command(_prices_cc_table, name="cc-table")
+prices.add_command(_prices_cc_fleet, name="cc-fleet")
 prices.add_command(_prices_process, name="process")
 prices.add_command(_prices_embed, name="embed")
 prices.add_command(_prices_eval, name="eval")
