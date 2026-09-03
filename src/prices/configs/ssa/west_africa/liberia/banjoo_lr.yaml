@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: banjoo_lr
+url: https://banjoosuperstore.com/
+language: en
+cadence: monthly
+channel: supermarket
+archive_prefix: "banjoosuperstore.com/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  Banjoo SuperStore, Sinkor Monrovia, delivers across Montserrado county with
+  pickup in 12 further towns. WooCommerce with no exposed Store API; the
+  spider walks sitemap.xml and parses PDP markup.

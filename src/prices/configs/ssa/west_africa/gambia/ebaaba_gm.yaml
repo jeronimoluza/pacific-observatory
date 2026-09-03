@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ebaaba_gm
+url: https://www.ebaaba.com/
+language: en
+cadence: monthly
+channel: marketplace
+archive_prefix: "ebaaba.com/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  eBaaba is The Gambia's largest online marketplace, groceries alongside
+  general merchandise, ~1,500 product URLs in sitemap.xml. PDPs carry JSON-LD
+  with GMD prices. The Store API route answers 403 while the PDPs serve fine,
+  so the spider goes through the sitemap. First retail source of any kind for
+  The Gambia.

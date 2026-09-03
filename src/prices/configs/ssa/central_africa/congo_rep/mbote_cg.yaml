@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mbote_cg
+url: https://www.mbote.shop/
+language: fr
+cadence: monthly
+channel: marketplace
+archive_prefix: "mbote.shop/"
+archive_path_re: '^/p/[^/?]+'
+notes: >
+  Mbote Shop is a Congolese marketplace serving Brazzaville and Kinshasa, ~357
+  product URLs. PDP JSON-LD prices in XAF, which is Congo-Brazzaville's
+  currency (Kinshasa/DRC transacts in CDF), so rows are attributed to
+  congo_rep. First retail source of any kind for Congo-Brazzaville.

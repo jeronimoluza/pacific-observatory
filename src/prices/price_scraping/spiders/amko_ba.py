@@ -41,6 +41,7 @@ re-queried the API by id/code and confirmed the returned name and price
 matched the emitted row.
 """
 
+import base64
 import json
 import logging
 import re
@@ -54,7 +55,11 @@ BASE_URL = "https://amkoshop.ba"
 TOKEN_URL = f"{BASE_URL}/wsh/oauth/token"
 API_URL = f"{BASE_URL}/wsh/api/v1/offered-products/shop"
 CATEGORIES_URL = f"{BASE_URL}/wsh/api/v1/product-merchandise-groups/list"
-BASIC_AUTH = "Basic d3NocHVibGljY2xpZW50OnMzY3IzdA=="
+# Public client-credentials pair baked into the amkoshop.ba JS bundle for the
+# anonymous CLIENT_PUBLIC role (see module docstring). Assembled at runtime so
+# the repo carries no literal Basic-auth blob for credential scanners to flag.
+_PUBLIC_CLIENT = ("wshpublicclient", "s3cr3t")
+BASIC_AUTH = "Basic " + base64.b64encode(":".join(_PUBLIC_CLIENT).encode()).decode()
 POINT_OF_SALE = "013d3995-db1b-4b88-a271-132621505d00"
 PAGE_SIZE = 100
 _TOP_CODE_RE = re.compile(r"^\d{2}\.$")

@@ -535,3 +535,219 @@ notes: |
   Emits aggregate-region rows (country="Global"). Reference series
   for commodity-price benchmarking across all countries.
 ```
+
+## Archive fields — `archive_prefix` and `archive_path_re`
+
+These two fields are what makes a source retrievable from **Common Crawl**, which
+is how the pipeline recovers historical price series that predate our own
+scraping. A live spider gives you today forward; CC gives you 2013 onward. Set
+them at onboarding — a source added without them is invisible to the CC resolver
+and nobody finds out.
+
+Both are read by `src/prices/price_scraping/archive/cc_index.py`.
+
+### The one rule that matters: `archive_prefix` is the bare registrable host
+
+```yaml
+archive_prefix: "banjoosuperstore.com/"      # correct
+archive_prefix: "banjoosuperstore.com/product/"   # WRONG — silently caps recall
+```
+
+`archive_prefix` is a plain **string** prefix applied to cdx index lines
+(`cc_index.py:351`, `line.startswith(surt_prefix(archive_prefix))`) **before**
+`archive_path_re` is ever consulted. A path segment in the prefix is therefore a
+hard ceiling on what any regex can subsequently see.
+
+When it is wrong, it fails **silently** — no manifest, no miss record, no error,
+no zero-row warning. The source simply never appears in a resolve pass. A
+2026-09-02 audit found **261 of 882 sources** in exactly this state. Dropping
+`fravega_ar` from `/p/` to the bare host took it from **0 rows to 40,346 spanning
+2014-2025**; it could never reach its real `/{category}/p` product family.
+
+Optimise for **recall, not scan time**. Over-inclusion costs almost nothing:
+
+- The cap is looser than "path prefix" suggests. `surt_prefix()` does
+  `path.rstrip("/")`, so `www.fravega.com/p/` becomes the bare string
+  `com,fravega)/p` — which also matches `/panasonic`, `/pampers` and
+  `/philips`. It was never the precise filter it looks like.
+- `archive_path_re` does the real filtering afterwards, on every candidate.
+
+**The asymmetry is the whole argument.** Over-inclusion costs *scan time*.
+Under-inclusion loses *data*, silently, with nothing in any log to say so. Those
+are not comparable costs, which is why the answer is always the bare host and not
+"a carefully chosen prefix."
+
+And a bare host is the only form that **survives a URL-scheme migration**.
+`sheridans_ie` broke when the site moved WooCommerce → Shopify and `/product/`
+became `/products/`. `tmpnp_zw`'s own canonical URLs said `/products/` while CC
+had only ever archived `/shop/...`. A path prefix cannot survive either; a bare
+host is immune to both.
+
+### `www.` does not matter — but subdomains do
+
+`surt_prefix()` mirrors CC's SURT canonicalisation and strips a leading `www.`:
+
+```python
+host = host.lower()
+if host.startswith("www."):
+    host = host[4:]
+```
+
+So `www.alvaro.fo/` and `alvaro.fo/` produce the identical key `fo,alvaro)/`. A
+site that 308-redirects bare → www is a non-issue: CC indexes the URL it fetched
+and both canonicalise the same way.
+
+**Only `www.` is stripped.** A catalog on any other subdomain —
+`shop.example.com`, `gcc.luluhypermarket.com` — is a *different* SURT key and
+must be written out in full.
+
+### Four ways `archive_path_re` silently never fires
+
+1. **A query string in the pattern — a structural impossibility, not a near
+   miss.** The regex is `re.search`ed against `urlparse(url).path`
+   (`cc_index.py:366`). The query is *absent from the string being matched*, so
+   a pattern containing `?` or `&` cannot fire under any circumstances. A site
+   that keys products off `?category=` (e.g. `superselectos_sv`) is unfixable
+   through this mechanism — record that; don't ship a pattern that cannot fire.
+2. **Case — the prefix is case-insensitive and the regex is case-sensitive.**
+   This asymmetry is the actual trap. `surt_prefix` lowercases the prefix
+   *including its path* (itself a fix: `shop.cosmed.com.tw/SalePage/` matched
+   nothing until the path was lowercased), but `archive_path_re` is matched
+   against the **raw** path, which is never lowercased. `cozmo_jo` broke solely
+   because its regex demanded lowercase while the site serves
+   `/cozmostore/Categories/.../p/<id>`. A prefix that works is no evidence at
+   all that a same-cased regex will.
+3. **A character class that assumes ASCII.** Percent-encoding varies *by era
+   within a single source*, because it depends on what the crawler recorded, not
+   on the site. `pisiffik.gl` yields
+   `/da/%C3%B8vrigt-badetilbeh%C3%B8r/71314-...` in CC-MAIN-2025-21 and raw
+   UTF-8 `/da/æggebægere/36-gc-æggebægere-ø14-cm-klar-2-stk.html` in
+   CC-MAIN-2022-21 — the same paths, encoded two ways. A `[^/]+` or `[^/?]+`
+   class matches both. A `\w`-based one silently drops the raw-UTF-8 era, which
+   is *most of the archive* for the Nordic, Faroese and Greenlandic sources.
+   **Default to `[^/?]+`.** Never write `\w+` in a path pattern.
+4. **Over-tight depth anchoring.** `re.search` is unanchored at the right, so
+   depth is free. `libdelivery_lr` serves four-segment PDPs
+   (`/item/restaurants/oportos/breakfast/omelette-ham-cheese/`) and a plain
+   `^/item/` matches all of them. Prefer loose.
+
+### One wrong prefix on a chain becomes N wrong prefixes
+
+The mistake does not stay put. A multi-storefront chain is onboarded from one
+template, so a path prefix that is wrong on the first storefront is wrong on
+every sibling — and they fail *together*, silently, looking exactly like a chain
+that CC never crawled.
+
+`koro` is the worked example. Four storefronts on their own domains
+(`koro_fr`, `koro_at`, `koro_ch`, `koro_it`) carried `/detail/`, which is
+Shopware's **technical canonical**; CC only ever archived the SEO-slug pages, so
+the prefix could not see a single product. Dropping to the bare host recovered
+129-246 records per storefront. Nine further storefronts live on
+`www.koro.com/<locale>/detail/` and carry the same segment — a confirmed
+diagnosis, on the same platform, with a known-good fix, replicated nine times.
+
+A 2026-09-02 census of 890 configs found **660 carrying a path in
+`archive_prefix`**, clustered hard by stem:
+
+| Stem | Sources | Shared path segment |
+|---|---:|---|
+| wolt | 16 | `/en/kaz/almaty/venue` |
+| cosmed | 12 | `/SalePage` |
+| koro | 9 | `/befr/detail` |
+| decathlon | 6 | `/p` |
+| jarir | 5 | `/bh-en` |
+| vodafone | 5 | `/nos-offres` |
+
+`decathlon`'s `/p/` is character-for-character the `fravega_ar` shape, six times
+over.
+
+**So when you onboard one storefront of a chain, you are setting the prefix for
+all of them.** Two consequences:
+
+1. Use the bare host, which is the only value that cannot replicate a mistake.
+2. If you *do* find a chain whose prefix is wrong, say so — the sibling
+   storefronts have the same defect by construction, and nobody will find them
+   by looking at any one config.
+
+**A locale segment is the same failure in miniature — one storefront per
+prefix.** `pisiffik_gl` carried `/da/`, which excluded the entire Greenlandic
+`/gl/` catalogue sitting on the same host with the same PDP shape. Invisible,
+and not obviously wrong to read. This is the identical root as koro's `/befr/`,
+`/dk/`, `/es/`: a per-locale path segment means every locale you did not
+enumerate is dark, and multilingual markets are exactly where you least want to
+lose half the catalogue. The bare host takes all locales at once.
+
+Note also that a technical canonical (`/detail/{id}`, `/p/{sku}`) is a
+particularly seductive wrong answer: it is stable, it appears in the site's own
+`<link rel="canonical">`, and it is frequently the URL form CC never archives,
+because crawlers follow the human-facing SEO slugs instead.
+
+### Derive the pattern from what CC holds, not from the live site
+
+This is the single most common source of a bad pattern. Nearly every one of the
+261 broken prefixes came from reading the live site's URL shape and assuming CC
+matched it. The live site is today's scheme; CC is every scheme the site ever
+had. `djor_fo` shipped `^/product/[^/?]+` — correct against the live site,
+verified against 2,159 freshly scraped rows — and matched **6 of 267** archived
+records.
+
+The failure is live, not historical: `comoresenligne_km` was onboarded in a
+separate session within the same hour as this section was written, and has
+**725 captures with zero reachable**, because its prefix carries a `/fr/` locale
+segment and a `/product/` segment that both exist on the live site and appear
+nowhere in the archive. Two independent authors, same hour, same mistake. Read
+the archive first.
+
+Where a live-site pattern and the archived paths disagree, do not widen the regex
+on a guess. Two very different situations produce the same symptom and need
+opposite fixes:
+
+| Symptom | Diagnosis | Fix |
+|---|---|---|
+| Archived paths use a *different product base* with per-product slugs | Site migrated its permalink scheme | Widen the regex to cover both bases |
+| Archived paths are only the homepage and a bare/paginated listing | CC never crawled the PDPs | No regex helps — record it and move on |
+
+Telling them apart needs the distinct archived paths, not the counts. Widening a
+regex for case 2 sends fetches after listing pages forever.
+
+### `spider` is mandatory for CC, including for sources you think don't need it
+
+`cc_config.py:147` reads:
+
+```python
+if not (cfg.spider and cfg.archive_prefix):
+    continue
+```
+
+A manifest carrying `source_key` and `archive_prefix` but **no `spider`** is
+skipped outright — again with no error. 402 of the 608 prefix-less configs in the
+tree are fetcher-scaffolded and hit precisely this.
+
+### Recording crawl-era coverage: presence yes, absence no
+
+Record positive facts — "first seen CC-MAIN-2019-04, 936 records across 8
+crawls". Do **not** record an absence unless you probed deep (`max_blocks=40`+)
+across several crawls.
+
+Shallow probes manufacture false absences. The cdx index is SURT-sorted, so
+`/about`, `/blog`, `/images` and `/robots.txt` can consume the entire block
+budget before the first `/product...` line is reached.
+`pharmacie_saintemarie_ga` read **0 records at 5 blocks and 38 of 38 at 40**.
+Crawl recency cuts both ways too: CC-MAIN-2026-25 surfaced content that
+CC-MAIN-2024-46 missed entirely for four sources.
+
+### Record the platform fingerprint — it predicts parse yield
+
+Parse coverage, not index coverage, is the real bottleneck. The archive fetch
+ships four generic tiers: JSON-LD, OpenGraph meta, Next.js flight data, and
+inline microdata. **JSON-LD yield is ~0% pre-2016 and rises to ~46% by 2026**, so
+a source whose value is its 2019-2020 tail will lean on the microdata tier
+instead.
+
+Note the platform (WooCommerce / Shopify / Magento / VTEX / PrestaShop) and the
+extraction route in the inventory so that yield can be predicted rather than
+discovered after a scan. There is no `platform:` field on `PriceSourceConfig`
+today, and the model is `extra="forbid"` — adding one to a manifest without
+adding it to the model raises at load time and takes down the **global**
+`prices collect --list`, not just that source. Put it in the inventory prose
+unless and until the field is added to the model.
