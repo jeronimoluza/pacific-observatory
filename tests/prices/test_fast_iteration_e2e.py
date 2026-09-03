@@ -120,7 +120,11 @@ def classified_from(products_input, monkeypatch, tmp_path):
     )
     path = tmp_path / "classified.parquet"
     cache.to_parquet(path, index=False)
+    # BUILD_CLASSIFIED_PARQUET is what build reads: the ACTIVE backend's output,
+    # which is classified_hierlex.parquet by default. Patching only the head's
+    # constant left build looking at a file no test ever wrote.
     monkeypatch.setattr(enrich_config, "CLASSIFIED_PARQUET", path)
+    monkeypatch.setattr(enrich_config, "BUILD_CLASSIFIED_PARQUET", path)
     return path
 
 

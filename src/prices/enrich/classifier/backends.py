@@ -133,7 +133,13 @@ def _score_hierlex(
     so the two can be developed apart and still meet.
     """
     hierlex = _hierlex()
-    hierlex.driver.run(version=version, workers=workers)
+    # `workers` is accepted and ignored on purpose. The head backend fans out
+    # over buckets via `bucket_pool`; the hierlex driver walks them serially,
+    # because a bucket is 750-980 MB of vectors and N workers hold N of them.
+    # Forwarding the argument raised TypeError on every call -- the merge joined
+    # the head backend's call site to a driver that never took the parameter.
+    del workers
+    hierlex.driver.run(version=version)
     shards = hierlex.driver.load_shards(version=version)
     # `assigned_coicop` is NOT always a COICOP code. For a fallback that lands on
     # a parent with no "n.e.c." leaf, the scorer emits a synthetic

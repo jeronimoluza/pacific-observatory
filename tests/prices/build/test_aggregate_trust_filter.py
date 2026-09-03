@@ -41,7 +41,11 @@ def _fake_classified_rows() -> pd.DataFrame:
 def _patch_classified(tmp_path, monkeypatch) -> None:
     path = tmp_path / "classified.parquet"
     _fake_classified_rows().to_parquet(path)
-    monkeypatch.setattr(aggregate.enrich_config, "CLASSIFIED_PARQUET", path)
+    # BUILD_CLASSIFIED_PARQUET, not CLASSIFIED_PARQUET: build reads whichever
+    # file the ACTIVE backend wrote, and under hierlex that is
+    # classified_hierlex.parquet. Patching the head's constant left the real one
+    # pointing at a file that does not exist on a hierlex box.
+    monkeypatch.setattr(aggregate.enrich_config, "BUILD_CLASSIFIED_PARQUET", path)
     monkeypatch.setattr(aggregate, "FNB_COICOP_PREFIXES", ("01.",))
 
 

@@ -26,7 +26,6 @@ rather than leaving the question open.
 from __future__ import annotations
 
 import logging
-from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
@@ -132,24 +131,31 @@ def run(
     write_union: bool = True,
     union_target: Optional[Path] = None,
 ) -> list[Path]:
-    """Prepare every selected country. Countries are handed out largest-first,
-    so a late big one cannot set the wall clock on its own."""
+    """Prepare every selected country, largest first and bounded by memory.
+
+    Largest-first alone is what broke: `pool.map` over countries sorted by size
+    starts the biggest ones together, and japan — 3.32 GB of shard, 13.3 GB
+    resident once pandas has it — was OOM-killed 38 seconds into a 6-worker run,
+    taking the pool down with it. Admission is therefore by bytes in flight, so
+    japan runs alone and the long tail of small countries still fans out wide.
+    """
     selected = partition.select(selectors, root)
     if not selected:
         logger.warning("[prepare] no shards matched %s", selectors)
         return []
     groups = partition.group_by(selected, "country")
-    ordered = sorted(
-        groups.items(),
-        key=lambda kv: (-sum(s.size for s in kv[1]), kv[0]),
+    jobs = [
+        (sum(s.size for s in group), (group, key, out_dir))
+        for key, group in sorted(groups.items())
+    ]
+    budget = partition.memory_budget_bytes()
+    logger.info(
+        "[prepare] %d countries, %d workers, %.2f GB in flight at once",
+        len(jobs),
+        workers,
+        budget / 1e9,
     )
-    jobs = [(group, key, out_dir) for key, group in ordered]
-
-    if workers > 1 and len(jobs) > 1:
-        with ProcessPoolExecutor(max_workers=workers) as pool:
-            written = list(pool.map(_prepare_one, jobs))
-    else:
-        written = [_prepare_one(job) for job in jobs]
+    written = partition.run_budgeted(jobs, _prepare_one, workers, budget)
 
     if write_union:
         write_products_input(out_dir, union_target)

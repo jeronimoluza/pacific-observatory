@@ -489,7 +489,18 @@ prices.add_command(_prices_gold_audit, name="gold-audit")
         "the full build does not agree with."
     ),
 )
-def prices_build(region, subregion, country, only, recompute_leaf_tables):
+@click.option(
+    "--workers",
+    type=int,
+    default=1,
+    show_default=True,
+    help=(
+        "Parallel shard workers for the observations join. Admission is by "
+        "bytes in flight, not worker count, so the largest shards run alone "
+        "rather than together."
+    ),
+)
+def prices_build(region, subregion, country, only, recompute_leaf_tables, workers):
     """Construct CPI indices from the enriched prices dataset.
 
     PoC scope: writes the EAP × F&B basket parquet at
@@ -507,7 +518,11 @@ def prices_build(region, subregion, country, only, recompute_leaf_tables):
     if from_flags:
         selectors.append(from_flags)
 
-    _build_run(selectors=selectors or None, recompute_leaf_tables=recompute_leaf_tables)
+    _build_run(
+        selectors=selectors or None,
+        recompute_leaf_tables=recompute_leaf_tables,
+        workers=workers,
+    )
 
 
 @prices.command("publish")

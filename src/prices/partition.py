@@ -204,3 +204,82 @@ def order_longest_first(shards: Iterable[Shard]) -> list[Shard]:
     shards are heavily skewed, so handing the biggest to the pool first keeps a
     late large shard from setting the wall clock on its own."""
     return sorted(shards, key=lambda s: (-s.size, s.key))
+
+
+# Parquet-to-pandas expansion. Measured, not guessed: japan is 3.32 GB of shard
+# and its prepare worker was OOM-killed at 13.3 GB anon RSS. These columns are
+# mostly strings, which is where the factor comes from.
+EXPANSION = 4
+
+
+def memory_budget_bytes(fraction: float = 0.5) -> int:
+    """Bytes of SHARD allowed in flight across a pool at once.
+
+    Read from free memory rather than fixed, because the same number has to hold
+    on an idle 26 GB box and on one already running a build. Divided by
+    `EXPANSION` because the budget is denominated in on-disk bytes while the
+    thing that overflows is resident memory.
+    """
+    import os  # noqa: PLC0415
+
+    try:
+        free = os.sysconf("SC_AVPHYS_PAGES") * os.sysconf("SC_PAGE_SIZE")
+    except (ValueError, AttributeError, OSError):
+        free = 8 << 30
+    return max(1 << 30, int(free * fraction) // EXPANSION)
+
+
+def admits(inflight_bytes: int, n_inflight: int, next_size: int, budget: int) -> bool:
+    """Whether the next unit of work may start now.
+
+    An idle pool always admits. Without that, a unit larger than the whole
+    budget is never admitted and the loop does not terminate — and japan, at
+    3.32 GB against a 3 GB budget, is exactly that unit.
+    """
+    if n_inflight == 0:
+        return True
+    return inflight_bytes + next_size <= budget
+
+
+def run_budgeted(jobs, fn, workers, budget, initializer=None) -> list:
+    """Map `fn` over `jobs`, admitting work by BYTES in flight, not by count.
+
+    `jobs` is an iterable of `(size_bytes, payload)`; `fn` is called with the
+    payload. Results come back in completion order.
+
+    A pool sized by cores is the version that OOMs on this corpus. The units are
+    brutally skewed — japan is 3.32 GB against a median country in the low MB,
+    and yahoo_shopping alone is 1.6 GB of that — so six workers is entirely safe
+    for the median and fatal for the top one. Longest-first remains right for
+    wall clock, but on its own it is precisely the order that starts the giants
+    together.
+
+    So size is a budget as well as a sort key. The pool then runs the small
+    units wide and the large ones alone, and no one has to pick a worker count
+    per corpus.
+    """
+    from concurrent.futures import (  # noqa: PLC0415
+        FIRST_COMPLETED,
+        ProcessPoolExecutor,
+        wait,
+    )
+
+    pending = sorted(jobs, key=lambda j: -j[0])
+    if workers <= 1 or len(pending) <= 1:
+        return [fn(payload) for _, payload in pending]
+
+    results, inflight = [], {}
+    with ProcessPoolExecutor(max_workers=workers, initializer=initializer) as pool:
+        while pending or inflight:
+            while pending and len(inflight) < workers:
+                if not admits(
+                    sum(inflight.values()), len(inflight), pending[0][0], budget
+                ):
+                    break
+                size, payload = pending.pop(0)
+                inflight[pool.submit(fn, payload)] = size
+            done, _ = wait(inflight, return_when=FIRST_COMPLETED)
+            for fut in done:
+                inflight.pop(fut)
+                results.append(fut.result())
+    return results

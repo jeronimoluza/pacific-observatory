@@ -385,3 +385,57 @@ def test_the_decisions_table_keeps_every_row_the_view_drops(monkeypatch):
     assert len(decisions) == 2
     assert len(view) == 1
     assert set(decisions["coicop_code"]) == {"01.1.1.1.0", "07.2.1.1.0"}
+
+
+def test_the_hierlex_backend_calls_the_driver_it_actually_has(monkeypatch):
+    """Regression: the merge forwarded `workers=` to `driver.run`, which has
+    never taken it, so every classify call raised TypeError before scoring a
+    single pair.
+
+    The stub's signature is asserted equal to the real driver's, so this fails
+    if either side drifts — a free-form mock would accept `workers=` happily and
+    keep passing while production stayed broken."""
+    import inspect  # noqa: PLC0415
+    import types  # noqa: PLC0415
+
+    from prices.enrich.hierlex import driver as real_driver  # noqa: PLC0415
+
+    seen = {}
+
+    def run(
+        version=None,
+        chunk_rows=20_000,
+        max_buckets=None,
+        products_path=None,
+        pred_root=None,
+    ):
+        seen["called"] = True
+        return {}
+
+    assert set(inspect.signature(run).parameters) == set(
+        inspect.signature(real_driver.run).parameters
+    ), "stub drifted from driver.run — update both, not just the stub"
+
+    def load_shards(version=None):
+        return pd.DataFrame(
+            {
+                "name": ["rice"],
+                "country": ["fiji"],
+                "assigned_coicop": ["01.1.1.1.0"],
+                "proposed_leaf": ["01.1.1.1.0"],
+                "is_leaf": [True],
+                "accepted": [True],
+                "original_score": [0.9],
+                "calibrated_correctness_score": [0.95],
+            }
+        )
+
+    stub_mod = types.SimpleNamespace(
+        driver=types.SimpleNamespace(run=run, load_shards=load_shards)
+    )
+    monkeypatch.setattr(backends, "_hierlex", lambda: stub_mod)
+
+    out = backends._score_hierlex(products([("rice", "fiji")]), workers=6)
+    assert seen["called"]
+    assert list(out.frame["leaf"]) == ["01.1.1.1.0"]
+    assert out.unembedded == frozenset()

@@ -106,15 +106,22 @@ CACHE_KEEP_COLS = [
 def load_filtered_cache() -> pd.DataFrame:
     """Live classifier rows matching F&B × classified state × trust_level==high.
 
-    Reads classified.parquet (the embedding→head classify-stage output, one row
-    per input_hash). Country is filtered later at the join sites (from
-    products_input / the raw CSV), since classified.parquet carries no country.
-    No taxonomy_version filter: classified.parquet is regenerated wholesale each
-    `prices process` run, so there is no stale-version drift to guard against.
+    Reads the CLASSIFY STAGE'S OWN OUTPUT, one row per input_hash — which is
+    `classified.parquet` for the head backend and `classified_hierlex.parquet`
+    for hierlex. `BUILD_CLASSIFIED_PARQUET` is the config that resolves that,
+    and reading `CLASSIFIED_PARQUET` directly instead meant a hierlex run built
+    from the head's file: absent by default, so the empty frame reached the
+    "No cache rows match the basket filter" raise at the end of a full pipeline.
+
+    Country is filtered later at the join sites (from products_input / the raw
+    CSV), since the file carries no country. No taxonomy_version filter: it is
+    regenerated wholesale each `prices process` run, so there is no
+    stale-version drift to guard against.
     """
-    if not enrich_config.CLASSIFIED_PARQUET.exists():
+    path = enrich_config.BUILD_CLASSIFIED_PARQUET
+    if not path.exists():
         return pd.DataFrame(columns=CACHE_KEEP_COLS)
-    cache = pd.read_parquet(enrich_config.CLASSIFIED_PARQUET)
+    cache = pd.read_parquet(path)
     if cache.empty:
         return cache
     cache = cache[cache["coicop_code"].astype(str).str.startswith(FNB_COICOP_PREFIXES)]
@@ -178,6 +185,36 @@ def _observation_chunks(
     if selectors or has_shards:
         return _iter_shard_chunks(selectors, root)
     return _iter_raw_chunks(csv_path or enrich_config.RAW_PRICES_CSV)
+
+
+# One cache per worker process, loaded in the initializer. It is ~the same for
+# every task, and passing it as an argument would pickle it once per shard.
+_WORKER_CACHE: pd.DataFrame | None = None
+
+
+def _init_worker() -> None:
+    global _WORKER_CACHE
+    _WORKER_CACHE = load_filtered_cache()
+
+
+def _join_one_shard(path: str) -> pd.DataFrame:
+    chunk = shard_io.read_shard(Path(path), columns=list(RAW_OBSERVATION_COLS))
+    return _join_chunk(chunk, _WORKER_CACHE)
+
+
+def _parallel_join(shards, workers: int, budget_bytes: int) -> list[pd.DataFrame]:
+    """Join shards in parallel, admitting work by bytes in flight.
+
+    The scheduler lives in `partition` because prepare needs exactly the same
+    rule and learned it the same way. Two copies of a memory-admission rule
+    disagree silently: one stage keeps running while the other is OOM-killed,
+    and the difference reads as a flaky box rather than as a policy that drifted.
+    """
+    jobs = [(s.size, str(s.path)) for s in shards]
+    got = partition.run_budgeted(
+        jobs, _join_one_shard, workers, budget_bytes, initializer=_init_worker
+    )
+    return [g for g in got if not g.empty]
 
 
 def _join_chunk(chunk: pd.DataFrame, cache: pd.DataFrame) -> pd.DataFrame:
@@ -356,6 +393,7 @@ def build_observations(
     selectors: Sequence[str] | None = None,
     shard_root: Path | None = None,
     overlay: bool = False,
+    workers: int = 1,
 ) -> pd.DataFrame:
     """Build the historical time-series observations from the raw rows."""
     cache = load_filtered_cache()
@@ -363,17 +401,28 @@ def build_observations(
     if cache.empty:
         raise RuntimeError("No cache rows match the basket filter.")
 
-    pieces: list[pd.DataFrame] = []
-    for i, chunk in enumerate(_observation_chunks(csv_path, selectors, shard_root)):
-        joined = _join_chunk(chunk, cache)
-        if not joined.empty:
-            pieces.append(joined)
-        if (i + 1) % 20 == 0:
-            logger.info(
-                "[observations] scanned %d chunks; joined rows: %d",
-                i + 1,
-                sum(len(p) for p in pieces),
-            )
+    root = shard_root or partition.PER_SOURCE_DIR
+    shards = (
+        list(partition.select(selectors, root))
+        if root.is_dir() and any(partition.iter_shards(root))
+        else []
+    )
+    if workers > 1 and shards:
+        pieces = _parallel_join(shards, workers, partition.memory_budget_bytes())
+    else:
+        # The monolith has no shard boundaries to fan out over, and one worker
+        # has nothing to gain from the pool's pickling.
+        pieces = []
+        for i, chunk in enumerate(_observation_chunks(csv_path, selectors, shard_root)):
+            joined = _join_chunk(chunk, cache)
+            if not joined.empty:
+                pieces.append(joined)
+            if (i + 1) % 20 == 0:
+                logger.info(
+                    "[observations] scanned %d chunks; joined rows: %d",
+                    i + 1,
+                    sum(len(p) for p in pieces),
+                )
     if not pieces:
         scope = f" for {list(selectors)}" if selectors else ""
         raise RuntimeError(f"raw rows produced nothing joinable for the basket{scope}.")
@@ -458,6 +507,7 @@ def build(
     selectors: Sequence[str] | None = None,
     shard_root: Path | None = None,
     recompute_leaf_tables: bool | None = None,
+    workers: int = 1,
 ) -> None:
     """Build the basket parquets, optionally recomputing only part of the corpus.
 
@@ -474,6 +524,7 @@ def build(
         selectors=selectors,
         shard_root=shard_root,
         overlay=scoped,
+        workers=workers,
     )
     _write_consumables(obs)
 
@@ -481,8 +532,13 @@ def build(
 def run(
     selectors: Sequence[str] | None = None,
     recompute_leaf_tables: bool | None = None,
+    workers: int = 1,
 ) -> None:
     logging.basicConfig(
         level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
     )
-    build(selectors=selectors, recompute_leaf_tables=recompute_leaf_tables)
+    build(
+        selectors=selectors,
+        recompute_leaf_tables=recompute_leaf_tables,
+        workers=workers,
+    )
