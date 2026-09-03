@@ -34,6 +34,15 @@ def rows(country, region, subregion, source, specs):
     ]
 
 
+@pytest.fixture(autouse=True)
+def union_target(tmp_path, monkeypatch) -> Path:
+    """Keep the default products_input.parquet target inside tmp_path so no
+    test can write into the real data tree."""
+    target = tmp_path / "products_input.parquet"
+    monkeypatch.setattr(prepare_shards.config, "PRODUCTS_INPUT_PARQUET", target)
+    return target
+
+
 @pytest.fixture
 def corpus(tmp_path: Path) -> Path:
     """Two regions, four countries, two sources per country. Within a country
@@ -171,7 +180,7 @@ def test_workers_do_not_change_the_result(corpus, tmp_path):
     pd.testing.assert_frame_equal(normalise(one), normalise(many), check_dtype=False)
 
 
-def test_countries_are_scheduled_largest_first(corpus, monkeypatch):
+def test_countries_are_scheduled_largest_first(corpus, tmp_path, monkeypatch):
     seen = []
 
     def spy(country_shards, key, out_dir=None):
@@ -180,9 +189,40 @@ def test_countries_are_scheduled_largest_first(corpus, monkeypatch):
 
     monkeypatch.setattr(prepare_shards, "prepare_country", spy)
     monkeypatch.setattr(prepare_shards, "_prepare_one", lambda a: spy(a[0], a[1], a[2]))
-    prepare_shards.run(root=corpus)
+    prepare_shards.run(root=corpus, out_dir=tmp_path / "sched", write_union=False)
     sizes = [size for _, size in seen]
     assert sizes == sorted(sizes, reverse=True)
+
+
+def test_union_is_written_and_matches_the_country_parquets(
+    corpus, tmp_path, union_target
+):
+    out_dir = tmp_path / "_prepared"
+    paths = prepare_shards.run(root=corpus, out_dir=out_dir)
+    assert union_target.exists()
+    union = pd.read_parquet(union_target)
+    pd.testing.assert_frame_equal(
+        normalise(union), normalise(prepare_shards.read_prepared(paths))
+    )
+
+
+def test_a_scoped_rerun_overlays_rather_than_truncating(corpus, tmp_path, union_target):
+    """The point of the slice-and-overlay loop: recomputing one country must
+    leave every other country in products_input.parquet."""
+    out_dir = tmp_path / "_prepared"
+    prepare_shards.run(root=corpus, out_dir=out_dir)
+    before = pd.read_parquet(union_target)
+
+    prepare_shards.run(["eap/pacific/fiji"], root=corpus, out_dir=out_dir)
+    after = pd.read_parquet(union_target)
+
+    assert set(after["country"]) == set(before["country"])
+    pd.testing.assert_frame_equal(normalise(after), normalise(before))
+
+
+def test_union_of_nothing_writes_nothing(tmp_path, union_target):
+    assert prepare_shards.write_products_input(tmp_path / "empty") is None
+    assert not union_target.exists()
 
 
 def test_cross_country_urls_are_empty_on_a_clean_corpus(corpus):

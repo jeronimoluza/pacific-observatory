@@ -40,7 +40,8 @@ from typing import Iterable, Optional
 import pandas as pd
 import yaml
 
-from prices.enrich import config
+from prices import partition
+from prices.enrich import config, shards
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +50,10 @@ RAW_OUT_DIR = config.REPO_ROOT / "outputs" / "prices" / "raw"
 PER_SOURCE_DIR = RAW_OUT_DIR / "_per_source"
 RAW_CSV = RAW_OUT_DIR / "raw_prices.csv"
 STATE_FILE = RAW_OUT_DIR / ".state.json"
+
+# Shards are Parquet: a CSV shard has no types, so every reader re-infers
+# `price` from the file's own contents. See prices.enrich.shards.
+SHARD_SUFFIX = ".parquet"
 
 OUTPUT_COLS = [
     "url_hash",
@@ -359,65 +364,109 @@ def _save_state(state: dict) -> None:
     STATE_FILE.write_text(json.dumps(state, indent=2, sort_keys=True))
 
 
-def run(force: bool = False) -> Path:
+def per_source_path(region: str, subregion: str, country: str, source: str) -> Path:
+    return PER_SOURCE_DIR / region / subregion / country / f"{source}{SHARD_SUFFIX}"
+
+
+def _write_monolith(shard_paths: list[Path]) -> int:
+    """Stream the shards into raw_prices.csv one at a time.
+
+    This used to read all 1,164 shards into a list and `pd.concat` them, so the
+    whole 33 GB corpus had to be resident to write a file nothing ever reads
+    whole. Appending shard by shard bounds the footprint at the largest single
+    source."""
+    RAW_CSV.parent.mkdir(parents=True, exist_ok=True)
+    n_rows = 0
+    with RAW_CSV.open("w", newline="", encoding="utf-8") as fh:
+        for i, path in enumerate(shard_paths):
+            df = shards.read_shard(path)
+            df.to_csv(fh, index=False, header=(i == 0))
+            n_rows += len(df)
+    return n_rows
+
+
+def run(
+    force: bool = False,
+    write_monolith: bool = True,
+    selectors: Optional[list[str]] = None,
+) -> Path:
     if not DATA_PRICES_ROOT.is_dir():
         raise FileNotFoundError(f"{DATA_PRICES_ROOT} not found")
     PER_SOURCE_DIR.mkdir(parents=True, exist_ok=True)
     state = _load_state()
     new_state: dict = {}
+    patterns = [partition.compile_selector(s) for s in selectors] if selectors else None
 
-    n_total = n_refreshed = n_skipped = 0
+    n_total = n_refreshed = n_skipped = n_converted = 0
     for region, subregion, country, source, source_dir in _walk_sources(
         DATA_PRICES_ROOT
     ):
         key = f"{region}/{subregion}/{country}/{source}"
+        if patterns and not any(p.match(key) for p in patterns):
+            # Out of scope, but its shard stays on disk and still feeds the
+            # monolith — so carry its state forward, or the next unscoped run
+            # would re-derive every source the selector happened to exclude.
+            if key in state:
+                new_state[key] = state[key]
+            continue
         files = _iter_source_files(source_dir, country, source)
         if not files:
             continue
         n_total += 1
         sig = _signature(files)
-        per_source_csv = PER_SOURCE_DIR / region / subregion / country / f"{source}.csv"
+        shard_path = per_source_path(region, subregion, country, source)
 
         prev = state.get(key)
-        if not force and prev == list(sig) and per_source_csv.exists():
-            new_state[key] = list(sig)
-            n_skipped += 1
-            continue
+        if not force and prev == list(sig):
+            if shard_path.exists():
+                new_state[key] = list(sig)
+                n_skipped += 1
+                continue
+            # An unchanged source whose shard is still the old CSV: convert it
+            # rather than re-walking its raw artifacts. Without this the format
+            # change alone would re-derive all 1,164 sources from 43 GB of
+            # scrape output, for no new data.
+            legacy = shard_path.with_suffix(".csv")
+            if legacy.exists():
+                shards.write_shard(shards.read_shard(legacy), shard_path)
+                new_state[key] = list(sig)
+                n_converted += 1
+                continue
 
         df = _load_source(source_dir, region, subregion, country, source)
         if df is None:
             continue
-        per_source_csv.parent.mkdir(parents=True, exist_ok=True)
-        df.to_csv(per_source_csv, index=False)
+        shards.write_shard(df, shard_path)
         new_state[key] = list(sig)
         n_refreshed += 1
         logger.info("[concatenate] %s: %d rows", key, len(df))
 
     logger.info(
-        "[concatenate] sources: %d total, %d refreshed, %d unchanged",
+        "[concatenate] sources: %d total, %d refreshed, %d unchanged, %d converted",
         n_total,
         n_refreshed,
         n_skipped,
+        n_converted,
     )
 
-    # Final concat pass — always rebuild raw_prices.csv even when all sources
-    # were skipped (so a stale monolith is impossible).
-    parts: list[pd.DataFrame] = []
-    for csv in sorted(PER_SOURCE_DIR.rglob("*.csv")):
-        parts.append(pd.read_csv(csv, low_memory=False))
-    if not parts:
-        raise RuntimeError("no per-source CSVs produced — check data/prices/ layout")
-    full = pd.concat(parts, ignore_index=True)
-    RAW_CSV.parent.mkdir(parents=True, exist_ok=True)
-    full.to_csv(RAW_CSV, index=False)
+    shard_paths = [s.path for s in partition.select(None, PER_SOURCE_DIR)]
+    if not shard_paths:
+        raise RuntimeError("no per-source shards produced — check data/prices/ layout")
+    _save_state(new_state)
+
+    if not write_monolith:
+        return PER_SOURCE_DIR
+
+    # Always rebuilt, even when every source was skipped, so a stale monolith is
+    # impossible. It exists only for the stages that have not moved onto the
+    # shards yet.
+    n_rows = _write_monolith(shard_paths)
     logger.info(
         "[concatenate] wrote %s (%d rows from %d sources)",
         RAW_CSV,
-        len(full),
-        len(parts),
+        n_rows,
+        len(shard_paths),
     )
-
-    _save_state(new_state)
     return RAW_CSV
 
 

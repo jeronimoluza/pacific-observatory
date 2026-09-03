@@ -31,6 +31,8 @@ from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 from prices import partition
 from prices.enrich import config, shards
@@ -90,11 +92,43 @@ def _prepare_one(args: tuple) -> Path:
     return prepare_country(country_shards, key, out_dir)
 
 
+def write_products_input(
+    out_dir: Optional[Path] = None, target: Optional[Path] = None
+) -> Optional[Path]:
+    """Union every prepared country into products_input.parquet, streamed.
+
+    Every country on disk, not only the ones just recomputed — a scoped run
+    overlays its countries onto the corpus rather than truncating it to the
+    slice. Written row group by row group so the union never has to be
+    resident, which the 7.1 GB whole-corpus frame currently is."""
+    out_dir = out_dir or PREPARED_DIR
+    target = target or config.PRODUCTS_INPUT_PARQUET
+    paths = sorted(out_dir.rglob("*.parquet"))
+    if not paths:
+        logger.warning("[prepare] nothing prepared under %s", out_dir)
+        return None
+
+    schema = pa.unify_schemas([pq.read_schema(p) for p in paths])
+    target.parent.mkdir(parents=True, exist_ok=True)
+    n_rows = 0
+    with pq.ParquetWriter(target, schema) as writer:
+        for path in paths:
+            table = pq.read_table(path).cast(schema)
+            writer.write_table(table)
+            n_rows += table.num_rows
+    logger.info(
+        "[prepare] wrote %s (%d rows from %d countries)", target, n_rows, len(paths)
+    )
+    return target
+
+
 def run(
     selectors: Optional[Sequence[str]] = None,
     root: Optional[Path] = None,
     out_dir: Optional[Path] = None,
     workers: int = 1,
+    write_union: bool = True,
+    union_target: Optional[Path] = None,
 ) -> list[Path]:
     """Prepare every selected country. Countries are handed out largest-first,
     so a late big one cannot set the wall clock on its own."""
@@ -111,8 +145,13 @@ def run(
 
     if workers > 1 and len(jobs) > 1:
         with ProcessPoolExecutor(max_workers=workers) as pool:
-            return list(pool.map(_prepare_one, jobs))
-    return [_prepare_one(job) for job in jobs]
+            written = list(pool.map(_prepare_one, jobs))
+    else:
+        written = [_prepare_one(job) for job in jobs]
+
+    if write_union:
+        write_products_input(out_dir, union_target)
+    return written
 
 
 def read_prepared(
