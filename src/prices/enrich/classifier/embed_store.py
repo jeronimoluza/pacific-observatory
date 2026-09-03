@@ -19,6 +19,7 @@ negligible for the head.
 from __future__ import annotations
 
 import hashlib
+import os
 from collections import defaultdict
 from pathlib import Path
 
@@ -26,7 +27,13 @@ import numpy as np
 
 from prices.enrich import config
 
-STORE_DIR = config.PRODUCTS_INPUT_PARQUET.parent / "_embed_store"
+# The store is large, read-only and often not on the same volume as the repo --
+# on the Geekom it lives under $HOME/data. Overridable so that is a setting
+# rather than a symlink someone has to remember to recreate after a clone.
+STORE_DIR = Path(
+    os.environ.get("PRICES_EMBED_STORE_DIR")
+    or config.PRODUCTS_INPUT_PARQUET.parent / "_embed_store"
+)
 N_BUCKETS = 256
 
 

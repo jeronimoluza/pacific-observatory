@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 
 from prices.enrich import config
-from prices.enrich.classifier import embed_store
+from prices.enrich.classifier import embed_store, fingerprint
 from prices.enrich.hierlex import scorer as hlx_scorer
 from prices.enrich.hierlex import vectors
 
@@ -40,28 +40,49 @@ def pair_table(products: pd.DataFrame) -> pd.DataFrame:
     return df.drop_duplicates(ignore_index=True)
 
 
-def _shard_ok(part: Path, pairs: pd.DataFrame) -> pd.DataFrame | None:
+def _shard_state(
+    part: Path, pairs: pd.DataFrame, fp: dict
+) -> tuple[pd.DataFrame | None, pd.DataFrame, set[str] | None]:
+    """What of `pairs` this shard already covers, and what is left to score.
+
+    Returns `(cached, todo)`:
+
+      - `(None, pairs, None)` — no usable shard. Score the bucket from scratch.
+      - `(df, empty, unemb)`  — full hit. Today's fast path.
+      - `(df, todo, unemb)`   — partial hit. Score ONLY `todo` and append.
+
+    `unemb` is reported for a reused bucket because otherwise a fully-cached run
+    reports zero unembedded names whatever the backlog actually is, and that
+    number is the one used to decide whether the store is complete.
+
+    A fingerprint mismatch is the first case, never the third. Appending rows
+    scored under one embed recipe to rows scored under another produces a shard
+    that is internally inconsistent and carries no sign of it.
+
+    `_score_bucket` drops pairs whose name the embed store does not cover, so a
+    shard never contains them. Demanding them back made this check fail for every
+    bucket carrying even one such name -- which is all of them, at ~800 per
+    bucket -- and the documented resume silently rescored from zero. Compare
+    against the pairs the scorer would actually have written.
+    """
     if not part.exists():
-        return None
+        return None, pairs, None
+    if not fingerprint.matches(part, fp):
+        print(f"[hierlex] {part.name} fingerprint mismatch — rescoring", flush=True)
+        return None, pairs, None
     try:
         df = pd.read_parquet(part)
     except Exception:
-        return None
+        return None, pairs, None
     if "calibrated_correctness_score" not in df.columns:
-        return None
+        return None, pairs, None
+
     have = set(zip(df["name"].astype(str), df["country"].astype(str)))
-    # `_score_bucket` drops pairs whose name the embed store does not cover, so a
-    # shard never contains them. Demanding them back made this check fail for
-    # every bucket carrying even one such name -- which is all of them, at ~800
-    # per bucket -- and the documented resume silently rescored from zero.
-    # Compare against the pairs the scorer would actually have written.
     _, unembedded = vectors.split_by_store_coverage(pairs["name"].unique().tolist())
-    want = {
-        (n, c)
-        for n, c in zip(pairs["name"].astype(str), pairs["country"].astype(str))
-        if n not in unembedded
-    }
-    return df if want.issubset(have) else None
+    scorable = pairs[~pairs["name"].astype(str).isin(unembedded)]
+    keys = list(zip(scorable["name"].astype(str), scorable["country"].astype(str)))
+    mask = np.fromiter((k not in have for k in keys), dtype=bool, count=len(keys))
+    return df, scorable[mask], unembedded
 
 
 def _score_bucket(
@@ -110,6 +131,9 @@ def run(
     scorer = hlx_scorer.load(version)
     out_dir = pred_root / scorer.version
     out_dir.mkdir(parents=True, exist_ok=True)
+    # Computed once: it reads the bundle manifest, and it is identical for every
+    # bucket in the run by construction.
+    fp = fingerprint.current(version=version, scorer_version=scorer.version)
 
     pairs["bucket"] = [embed_store.bucket_of(n) for n in pairs["name"]]
     groups = sorted(pairs.groupby("bucket", sort=False), key=lambda kv: kv[0])
@@ -119,18 +143,32 @@ def run(
     total = sum(len(g) for _, g in groups)
     done = 0
     n_unembedded = 0
+    n_cached = n_appended = n_scored_pairs = 0
     t0 = time.monotonic()
     for i, (b, g) in enumerate(groups, 1):
         part = out_dir / f"pred_{b:03d}.parquet"
-        cached = _shard_ok(part, g)
-        if cached is not None:
+        cached, todo, cached_unemb = _shard_state(part, g, fp)
+        if cached is not None and todo.empty:
             done += len(g)
+            n_cached += 1
+            n_unembedded += len(cached_unemb or ())
             print(f"[hierlex] bucket {b:3d} cached ({len(g)} pairs)", flush=True)
             continue
-        df, unembedded = _score_bucket(scorer, b, g, chunk_rows)
-        n_unembedded += len(unembedded)
+        df, unembedded = _score_bucket(scorer, b, todo, chunk_rows)
+        # A partial hit already screened the WHOLE bucket; `_score_bucket` only
+        # saw `todo`, so its count would miss names the cached half covers.
+        n_unembedded += len(cached_unemb if cached_unemb is not None else unembedded)
+        n_scored_pairs += len(df)
+        if cached is not None:
+            # Append. The bucket's own rows only -- `cached` was already proven
+            # to carry this fingerprint, so the two halves share a vector space.
+            n_appended += 1
+            df = pd.concat([cached, df], ignore_index=True)
         if not df.empty:
-            df.to_parquet(part, index=False)
+            tmp = part.with_suffix(".parquet.tmp")
+            df.to_parquet(tmp, index=False)
+            tmp.replace(part)
+            fingerprint.write(part, fp)
         done += len(g)
         el = time.monotonic() - t0
         eta = el / max(done, 1) * (total - done)
@@ -145,6 +183,12 @@ def run(
         "version": scorer.version,
         "pairs": int(total),
         "buckets": len(groups),
+        # The three numbers that say whether the cache did anything. A run that
+        # reports buckets_appended == 0 and pairs_scored == pairs did a full
+        # rescore, whatever the wall clock suggests.
+        "buckets_cached": n_cached,
+        "buckets_appended": n_appended,
+        "pairs_scored": int(n_scored_pairs),
         "unembedded_names": n_unembedded,
         "shards": str(out_dir),
     }
