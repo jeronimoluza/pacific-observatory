@@ -348,14 +348,18 @@ def _rung_pack_unit_emit(st):
         ):
             # "<per-unit measure>. Pack N" (e.g. "17.5g. Pack 60sachets") is a
             # MULTIPACK: the measure is per-unit and N multiplies it, whatever the
-            # basis. "N Pack <total>" ("Thin Sausages 24 Pack 1.8kg") does NOT
-            # match `Pack\s*N`, so its count stays inert as before. Likewise an
+            # basis. "Pack of N" reads identically and is accepted too -- without
+            # the optional `of` the adjacency test silently missed it and the
+            # count stayed inert, pricing "41.5g (Pack of 48Pcs)" as a single
+            # 41.5g bar. "N Pack <total>" ("Thin Sausages 24 Pack 1.8kg") still
+            # does NOT match, because N precedes "Pack" there rather than
+            # following it, so its count stays inert as before. Likewise an
             # explicit multiply operator joining the measure and N ("1.5g × 20개")
             # is an unambiguous multipack signal on mass basis too.
             if (
                 um["basis"] == "volume"
                 or st.noun_count_via_operator
-                or re.search(rf"[Pp]ack\s*0*{n}(?!\d)", st.item_name)
+                or re.search(rf"[Pp]ack\s*(?:of\s*)?0*{n}(?!\d)", st.item_name)
             ):
                 multiplier = n
             else:
