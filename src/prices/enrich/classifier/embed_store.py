@@ -108,6 +108,35 @@ def missing(tag: str, bucket_names: dict[int, list[str]]) -> dict[int, list[str]
     return out
 
 
+def keys_of(tag: str, b: int) -> set[str]:
+    """Names in one bucket without paging its vectors.
+
+    An npz member is only read on access, so this touches ``keys_blob``/
+    ``keys_off`` and never ``mat``.
+    """
+    p = _bucket_path(tag, b)
+    if not p.exists():
+        return set()
+    with np.load(p, allow_pickle=False) as z:
+        return set(decode_keys(z))
+
+
+def missing_keys(tag: str, bucket_names: dict[int, list[str]]) -> dict[int, list[str]]:
+    """Per bucket, the names not yet embedded for this block — keys only.
+
+    Same contract as `missing`, which loads whole buckets to answer a question
+    about their keys. Screening a corpus against a 118 GB store that way pages
+    every vector in it; this reads ~61 B/name of key blob instead.
+    """
+    out: dict[int, list[str]] = {}
+    for b, names in bucket_names.items():
+        have = keys_of(tag, b)
+        miss = [n for n in names if n not in have]
+        if miss:
+            out[b] = miss
+    return out
+
+
 def append(tag: str, b: int, names, vecs: np.ndarray) -> None:
     store = _load_bucket(tag, b)
     for n, v in zip(names, vecs):
