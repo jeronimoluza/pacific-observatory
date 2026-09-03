@@ -24,13 +24,34 @@ DIM = sum(b["dim"] for b in config.CLASSIFIER_EMBED_ENSEMBLE)
 
 
 def matrix_for_bucket(bucket: int, names: list[str]) -> np.ndarray:
-    """(len(names), 7680) float32. Every name must be present in every block."""
-    return np.hstack(
-        [
-            embedding.finalize_block(blk, embed_store.gather(blk["tag"], bucket, names))
-            for blk in config.CLASSIFIER_EMBED_ENSEMBLE
-        ]
-    )
+    """(len(names), 7680) float32. Every name must be present in every block.
+
+    Row alignment across blocks is structural, not checked: `gather` walks this
+    same `names` list for every block and keys into the bucket by name, so row
+    `i` is the same name in all three by construction. Width is the part that
+    can be wrong. A store tag is just a directory name, and reusing one for a
+    different model leaves a block whose vectors are the wrong size for the
+    `dim` the ensemble declares. `hstack` accepts that happily -- the blocks
+    still share a row count -- and the corpus is then scored on a matrix built
+    from mismatched spaces.
+
+    It does surface eventually: `scorer.score` rejects anything that is not
+    7,680 wide. But by then the block is gone, and the error reports one total
+    against another with nothing saying which of the three was wrong. Checking
+    per block names it.
+    """
+    blocks = []
+    for blk in config.CLASSIFIER_EMBED_ENSEMBLE:
+        mat = embed_store.gather(blk["tag"], bucket, names)
+        want = blk.get("dim")
+        if want is not None and mat.shape[1] != want:
+            raise ValueError(
+                f"block {blk['tag']!r} holds {mat.shape[1]}-d vectors in bucket "
+                f"{bucket}, but the ensemble declares {want}. The store tag is "
+                "carrying a different model than the recipe expects."
+            )
+        blocks.append(embedding.finalize_block(blk, mat))
+    return np.hstack(blocks)
 
 
 def matrix_for_names(names) -> np.ndarray:
