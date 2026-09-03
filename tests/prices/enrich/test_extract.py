@@ -145,6 +145,12 @@ def test_leading_dot_needs_clean_left_boundary():
         ("Vaseline Lotion 70Ml Bundle of 2", 0.07, "lt", 2),
         ("Vaseline Lotion Bundle of 2 70ml", 0.07, "lt", 2),
         ("Sachet 10g Pack of 3", 0.01, "kg", 3),
+        # count noun glued to N: reaches the rung-3 adjacency test rather than
+        # the EN_PACK_OF vocab pattern, and that test used to require "Pack"
+        # touch the digits, so "of" made it miss and the 48 stayed inert.
+        ("Nestle KitKat 4 Finger 41.5g NKKG4F (Pack of 48Pcs)", 0.0415, "kg", 48),
+        ("Nescafe Blend and Brew 17.5g Pack of 27Sticks", 0.0175, "kg", 27),
+        ("Sample Bar 23g Pack of 12sticks", 0.023, "kg", 12),
     ],
 )
 def test_pack_of_n_promotes_to_multiplier_with_measure(
@@ -165,6 +171,24 @@ def test_pack_of_glued_measure_is_not_a_count():
     sf = _ex("Value Pack of 500g Rice", lang="en")
     assert sf.pricing_basis == "mass"
     assert sf.amount_value == pytest.approx(0.5)
+    assert sf.multiplier == 1
+
+
+@pytest.mark.parametrize(
+    "name, expected_count",
+    [
+        ("Thin Sausages 24 Pack 1.8kg", 24),
+        ("Chesdale Sliced Cheese 24s 500g", 24),
+        ("Laughing Cow 10s 200g", 10),
+    ],
+)
+def test_count_preceding_pack_stays_inert(name, expected_count):
+    """The other half of the adjacency rule, and the reason it is an adjacency
+    rule at all: in "N Pack <total>" the measure is the PACK TOTAL, so N must
+    not multiply it. Accepting "Pack of N" must not also start accepting this
+    shape -- there N precedes "Pack" instead of following it."""
+    sf = _ex(name, lang="en")
+    assert sf.count == expected_count
     assert sf.multiplier == 1
 
 

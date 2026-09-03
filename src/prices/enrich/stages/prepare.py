@@ -13,13 +13,69 @@ from prices.enrich.versioning import input_hash
 # '.' = thousands separator, ',' = decimal separator.
 _EU_FORMAT_CURRENCIES = {"EUR", "ARS", "BRL", "CLP", "COP", "IDR", "VND"}
 
+# Currency tokens stripped BEFORE the numeric search. Stripping is what makes a
+# repeated token dangerous: an archive parser that flattens a sale price and its
+# struck-through original into one node yields "Rp 78.875Rp 102.975", and
+# removing every "Rp" glues the digit runs into "78.875102.975" -- which the
+# EU-format rules then read as a single 11-digit number. Every other currency is
+# safe by accident: its symbol survives into the search, where the numeric regex
+# stops at it.
+_STRIPPED_CURRENCY_TOKENS = {"IDR": r"Rp"}
+
+# A bare numeral: digits optionally interleaved with '.'/',', but always
+# starting and ending on a digit so a trailing sentence period or a leading
+# currency symbol is never pulled into the match.
+_NUMBER_RE = re.compile(r"\d[\d.,]*\d|\d")
+
+
+def _normalize_number(raw: str, currency: Optional[str]) -> Optional[str]:
+    """Rewrite a bare numeral run to a plain dot-decimal string.
+
+    Decimal-vs-thousands is decided from the numeral's own shape first; the
+    currency's locale convention (EU: ',' decimal / '.' thousands; else '.'
+    decimal / ',' thousands) only breaks a tie when the shape is genuinely
+    ambiguous -- a single separator with exactly three trailing digits, which
+    is the one case that both a real thousands group and a decimal fraction
+    can produce. Everything else follows from the digits alone:
+
+    - both separators present -> the LAST one is decimal, the rest thousands.
+    - the same separator repeated -> thousands (a number has one decimal point).
+    - a single separator with a trailing-digit count other than 3 -> decimal
+      (a thousands group is always exactly 3 digits).
+    - a single separator matching the currency's NATIVE decimal char -> decimal,
+      regardless of trailing digit count (that char never groups thousands in
+      this locale).
+    """
+    dots = raw.count(".")
+    commas = raw.count(",")
+
+    if dots and commas:
+        decimal_pos = max(raw.rfind("."), raw.rfind(","))
+        int_part = raw[:decimal_pos].replace(".", "").replace(",", "")
+        frac_part = raw[decimal_pos + 1 :]
+        if not int_part and not frac_part:
+            return None
+        return f"{int_part}.{frac_part}" if frac_part else int_part
+
+    sep_char = "." if dots else ("," if commas else None)
+    if sep_char is None:
+        return raw
+
+    if (dots or commas) > 1:
+        return raw.replace(sep_char, "")
+
+    digits_after = len(raw) - raw.rfind(sep_char) - 1
+    native_decimal_char = "," if currency in _EU_FORMAT_CURRENCIES else "."
+
+    if digits_after != 3 or sep_char == native_decimal_char:
+        return raw.replace(",", ".") if sep_char == "," else raw
+
+    return raw.replace(sep_char, "")
+
 
 def parse_price(price_str, currency: Optional[str] = None) -> Optional[float]:
-    """Parse a price value (string or numeric) to a float.
-
-    Currency-aware: IDR/EUR/ARS/BRL/CLP/COP use '.' as thousands and ','
-    as decimal; everything else uses ',' as thousands and '.' as decimal.
-    """
+    """Parse a price value (string or numeric) to a float. See
+    `_normalize_number` for how decimal-vs-thousands is decided for strings."""
     if isinstance(price_str, (int, float)):
         return float(price_str) if not pd.isna(price_str) else None
     if not isinstance(price_str, str):
@@ -29,21 +85,22 @@ def parse_price(price_str, currency: Optional[str] = None) -> Optional[float]:
     if not cleaned:
         return None
 
-    if currency == "IDR":
-        cleaned = re.sub(r"Rp\s*", "", cleaned, flags=re.IGNORECASE)
+    token = _STRIPPED_CURRENCY_TOKENS.get(currency)
+    if token:
+        # A price field names its currency at most once. Two occurrences means
+        # the markup fused two prices; refuse rather than guess which half is
+        # real. A wrong price here ships as a trusted unit value, and the
+        # outlier audit cannot see it when it is alone in its cell-month.
+        if len(re.findall(token, cleaned, flags=re.IGNORECASE)) > 1:
+            return None
+        cleaned = re.sub(token + r"\s*", "", cleaned, flags=re.IGNORECASE)
 
-    if currency in _EU_FORMAT_CURRENCIES:
-        # '.' = thousands, ',' = decimal
-        match = re.search(r"[\d.]+,?\d*", cleaned)
-        if not match:
-            return None
-        number_str = match.group().replace(".", "").replace(",", ".")
-    else:
-        # ',' = thousands, '.' = decimal
-        match = re.search(r"[\d,]+\.?\d*", cleaned)
-        if not match:
-            return None
-        number_str = match.group().replace(",", "")
+    match = _NUMBER_RE.search(cleaned)
+    if not match:
+        return None
+    number_str = _normalize_number(match.group(), currency)
+    if not number_str:
+        return None
 
     try:
         return float(number_str)
@@ -137,7 +194,7 @@ def _first_non_empty(series: pd.Series) -> str:
     return ""
 
 
-def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
+def _derive(raw: pd.DataFrame) -> pd.DataFrame:
     df = raw.copy()
     if "product_name_original" not in df.columns:
         df["product_name_original"] = df["product_name"].astype(str)
@@ -153,6 +210,10 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
         df["details"] = ""
     else:
         df["details"] = df["details"].fillna("").astype(str)
+    if "unit" not in df.columns:
+        df["unit"] = ""
+    else:
+        df["unit"] = df["unit"].fillna("").astype(str)
     if "product_url" not in df.columns:
         df["product_url"] = ""
     df["product_url"] = df["product_url"].map(_clean_url)
@@ -160,8 +221,26 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
         # format="mixed": Common Crawl writes compact numeric timestamps
         # ("20251212100333") while live scrapes write ISO. Inferring a single
         # format from the first row coerces every other shape to NaT.
+        # utc=True is required, not cosmetic: the corpus mixes tz-aware ISO,
+        # tz-naive ISO, RFC2822 (Common Crawl) and compact numeric stamps. With
+        # mixed offsets and no utc=True pandas returns object dtype, and the
+        # `observation_date=max` aggregation below dies with "agg function
+        # failed [how->max,dtype->object]".
+        # A chunk holding only Common Crawl rows infers int64 for `date`, and
+        # pandas then reads the compact stamp 20240722014727 as NANOSECONDS
+        # since epoch -- every such row lands on 1970-01-01, silently. A chunk
+        # that mixes CC with ISO rows infers object and parses correctly, so the
+        # corruption depends on chunk composition rather than on the data.
+        # Rendering compact stamps as text first makes the parse independent of
+        # how the chunk happened to be typed.
+        raw = df["date"]
+        num = pd.to_numeric(raw, errors="coerce")
+        compact = num.notna() & (num >= 1e13) & (num < 1e15)
+        if compact.any():
+            raw = raw.astype(object).copy()
+            raw[compact] = num[compact].astype("int64").astype(str)
         df["observation_date"] = pd.to_datetime(
-            df["date"], errors="coerce", format="mixed"
+            raw, errors="coerce", format="mixed", utc=True
         )
     else:
         df["observation_date"] = pd.NaT
@@ -196,11 +275,16 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
     else:
         df["declared_coicop_codes"] = ""
 
+    return df
+
+
+def _aggregate(df: pd.DataFrame) -> pd.DataFrame:
     agg = dict(
         product_name_original=("product_name_original", "first"),
         product_url=("product_url", _first_non_empty),
         category=("category", _first_non_empty),
         details=("details", _first_non_empty),
+        unit=("unit", _first_non_empty),
         country=("country", "first"),
         currency=("currency", "first"),
         lang=("lang", "first"),
@@ -217,13 +301,115 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
     return grouped
 
 
+def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
+    return _aggregate(_derive(raw))
+
+
+SHUFFLE_BUCKETS = 64
+CHUNK_ROWS = 2_000_000
+
+
+def prepare_input_streaming(
+    chunks,
+    out_path: Path,
+    shuffle_dir: Optional[Path] = None,
+    n_buckets: int = SHUFFLE_BUCKETS,
+    verbose: bool = True,
+) -> int:
+    """Chunked `prepare_input` that never holds the corpus in memory.
+
+    Reading raw_prices.csv whole costs ~1 GB per million rows; at corpus scale
+    that is tens of GB, which does not fit. The work is split in two passes.
+
+    Pass 1 derives each chunk (row-wise: price parsing, url cleaning, lang, and
+    `input_hash`) and shards it to disk by `input_hash`, so every row sharing an
+    input_hash lands in the SAME bucket. Pass 2 then runs `_aggregate` on one
+    whole bucket at a time.
+
+    That partitioning is the whole point: it means `_aggregate` is reused
+    VERBATIM. `price=median` and `_modal_or_empty` do not decompose across
+    arbitrary chunks, but they need no special handling here because each group
+    is never split across buckets.
+
+    Returns the number of output rows. Writes `out_path` incrementally.
+    """
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+
+    shuffle_dir = (
+        Path(shuffle_dir) if shuffle_dir else config.ENRICH_DIR / "_prepare_shuffle"
+    )
+    shuffle_dir.mkdir(parents=True, exist_ok=True)
+    for stale in shuffle_dir.glob("part_*.parquet"):
+        stale.unlink()
+
+    n_in = 0
+    for i, chunk in enumerate(chunks):
+        derived = _derive(chunk)
+        n_in += len(derived)
+        bucket = derived["input_hash"].str[:2].map(lambda h: int(h, 16) % n_buckets)
+        for b, part in derived.groupby(bucket, sort=False):
+            part.to_parquet(shuffle_dir / f"part_{b:03d}_{i:04d}.parquet", index=False)
+        if verbose:
+            print(
+                f"  [prepare] pass1 chunk {i}: {len(derived)} rows (total {n_in})",
+                flush=True,
+            )
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    writer = None
+    schema = None
+    n_out = 0
+    try:
+        for b in range(n_buckets):
+            files = sorted(shuffle_dir.glob(f"part_{b:03d}_*.parquet"))
+            if not files:
+                continue
+            df = pd.concat([pd.read_parquet(f) for f in files], ignore_index=True)
+            agg = _aggregate(df)
+            n_out += len(agg)
+            table = pa.Table.from_pandas(agg, preserve_index=False)
+            if writer is None:
+                schema = table.schema
+                writer = pq.ParquetWriter(out_path, schema)
+            else:
+                # Pin the first bucket's schema. A bucket whose price or
+                # observation_date happens to be entirely null would otherwise
+                # infer a null column type and fail the append.
+                table = table.cast(schema)
+            writer.write_table(table)
+            for f in files:
+                f.unlink()
+            if verbose:
+                print(
+                    f"  [prepare] pass2 bucket {b}: {len(df)} rows -> {len(agg)} products",
+                    flush=True,
+                )
+    finally:
+        if writer is not None:
+            writer.close()
+    if verbose:
+        print(f"  [prepare] {n_in} raw rows -> {n_out} products", flush=True)
+    return n_out
+
+
 def run(
-    csv_path: Optional[Path] = None, out_path: Optional[Path] = None
-) -> pd.DataFrame:
+    csv_path: Optional[Path] = None,
+    out_path: Optional[Path] = None,
+    chunk_rows: int = CHUNK_ROWS,
+) -> int:
     csv_path = csv_path or config.RAW_PRICES_CSV
     out_path = out_path or config.PRODUCTS_INPUT_PARQUET
-    raw = pd.read_csv(csv_path, low_memory=False)
-    prepared = prepare_input(raw)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    prepared.to_parquet(out_path, index=False)
-    return prepared
+    # dtype={"price": str} pins the column so every chunk takes the SAME code
+    # path in parse_price regardless of what else shares its 2M-row window --
+    # left to inference, a chunk that happens to be all-numeric reads "price"
+    # as float64 (parse_price's early-return branch) while a chunk sharing the
+    # window with even one non-numeric row reads it as object/str (the regex
+    # branch). Both branches are correct on their own, but the split made the
+    # SAME raw value parse differently build-to-build depending on chunk
+    # placement. Plain `str` (not pandas' nullable "string" dtype) so memory
+    # stays at ordinary object-column cost on a 33 GB CSV.
+    chunks = pd.read_csv(
+        csv_path, low_memory=False, chunksize=chunk_rows, dtype={"price": str}
+    )
+    return prepare_input_streaming(chunks, out_path)

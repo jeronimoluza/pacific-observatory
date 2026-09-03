@@ -2,7 +2,7 @@ scaffolding: fetcher
 extraction_pattern: html_scrape
 analytical_role: tariff
 coicop_classification: source_curated
-coicop_codes: ["04.5.1"]
+coicop_codes: ["04.5.1.0"]
 channel: null
 source_key: vu_ura_electricity_tariff
 module: eap.pacific_islands.vanuatu.ura_electricity_tariff

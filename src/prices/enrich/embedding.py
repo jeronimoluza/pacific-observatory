@@ -219,26 +219,105 @@ def _encode_block(block: dict, names: Sequence[str]) -> np.ndarray:
     return _encode_mlx(block, names)
 
 
-def _embed_one_block(block: dict, names: list[str], use_cache: bool) -> np.ndarray:
+def _gather_from_store(block: dict, names: list[str]) -> np.ndarray:
+    """Read one block's vectors out of the durable name-keyed store.
+
+    Rows are copied into a preallocated output rather than collected as the views
+    `embed_store` hands back: a view keeps its whole bucket matrix alive, so
+    holding one per name pins the entire block on the heap (42 GB for the 8B).
+    """
+    from prices.enrich.classifier import embed_store
+
     tag = block["tag"]
-    cache = _load_block_cache(tag) if use_cache else {}
-    missing = list(dict.fromkeys(n for n in names if n not in cache))
-    if missing:
-        vecs = _encode_block(block, missing)
-        for n, v in zip(missing, vecs):
-            cache[n] = v
-        if use_cache:
-            _save_block_cache(tag, cache)
-    block_mat = np.vstack([cache[n] for n in names]).astype(np.float32)
+    uniq = list(dict.fromkeys(names))
+    pos = {n: i for i, n in enumerate(uniq)}
+    out = np.zeros((len(uniq), int(block["dim"])), np.float32)
+    seen = np.zeros(len(uniq), bool)
+    for b, bucket_names in embed_store.buckets_for(uniq).items():
+        store = embed_store._load_bucket(tag, b)
+        for n in bucket_names:
+            v = store.get(n)
+            if v is not None:
+                out[pos[n]] = v
+                seen[pos[n]] = True
+        del store
+    if not seen.all():
+        miss = [uniq[i] for i in np.flatnonzero(~seen)[:5]]
+        raise KeyError(
+            f"{int((~seen).sum())} name(s) not in embed store block {tag!r}, "
+            f"e.g. {miss} — embed them first, or drop them with `covered_mask`"
+        )
+    return out[[pos[n] for n in names]]
+
+
+def covered_mask(names: Sequence[str]) -> np.ndarray:
+    """Which names the store already holds for EVERY configured block.
+
+    The GPU store does not cover gold completely (~0.3% of names were never
+    embedded). Callers restrict to this mask rather than back-filling from another
+    backend: mixing two vector spaces inside one matrix is silently harmful.
+    """
+    from prices.enrich.classifier import embed_store
+
+    names = [str(n) for n in names]
+    tags = [
+        b["tag"]
+        for b in config.CLASSIFIER_EMBED_ENSEMBLE
+        if b.get("backend") == "store"
+    ]
+    if not tags:
+        return np.ones(len(names), bool)
+    have: set[str] | None = None
+    bmap = embed_store.buckets_for(names)
+    for tag in tags:
+        seen: set[str] = set()
+        for b, bucket_names in bmap.items():
+            path = embed_store._bucket_path(tag, b)
+            if not path.exists():
+                continue
+            with np.load(path, allow_pickle=False) as z:
+                seen |= set(embed_store.decode_keys(z)) & set(bucket_names)
+        have = seen if have is None else (have & seen)
+    return np.array([n in have for n in names], bool)
+
+
+def finalize_block(block: dict, mat: np.ndarray) -> np.ndarray:
+    """Per-row L2 then the block's weight — the step between a raw block matrix
+    and its columns of the ensemble.
+
+    Public because the full-corpus driver reads vectors straight out of the store
+    rather than through `embed_names`. Skipping it there would feed UNWEIGHTED
+    columns to a head fitted on weighted ones, which produces confident nonsense
+    rather than an error.
+    """
+    mat = np.asarray(mat, np.float32)
+    mat = mat / (np.linalg.norm(mat, axis=1, keepdims=True) + 1e-9)
+    w = float(block.get("weight", 1.0))
+    return mat if w == 1.0 else (mat * np.float32(w))
+
+
+def _embed_one_block(block: dict, names: list[str], use_cache: bool) -> np.ndarray:
+    if block.get("backend") == "store":
+        block_mat = _gather_from_store(block, names)
+    else:
+        tag = block["tag"]
+        cache = _load_block_cache(tag) if use_cache else {}
+        missing = list(dict.fromkeys(n for n in names if n not in cache))
+        if missing:
+            vecs = _encode_block(block, missing)
+            for n, v in zip(missing, vecs):
+                cache[n] = v
+            if use_cache:
+                _save_block_cache(tag, cache)
+        block_mat = np.vstack([cache[n] for n in names]).astype(np.float32)
     # per-block L2 (idempotent — the backend already unit-normalizes; defensive)
-    return block_mat / (np.linalg.norm(block_mat, axis=1, keepdims=True) + 1e-9)
+    return finalize_block(block, block_mat)
 
 
 def embed_names(names: Sequence[str], use_cache: bool = True) -> np.ndarray:
     """Return the (N, sum-of-block-dims) float32 ensemble matrix, row-aligned to
-    `names`: each configured encoder's per-row L2 vector, concatenated in config
-    order with no global renorm. Cache hits skip both the ST model and the mlx
-    subprocess entirely."""
+    `names`: each configured encoder's per-row L2 vector scaled by its block
+    weight, concatenated in config order with no global renorm."""
     names = [str(n) for n in names]
     if not names:
         return np.empty((0, 0), np.float32)

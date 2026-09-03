@@ -2,7 +2,7 @@ scaffolding: spider
 extraction_pattern: scrapy_api
 analytical_role: retailer_sku
 coicop_classification: source_curated
-coicop_codes: ["01.2.1"]
+coicop_codes: ["01.2.1.0.0"]
 spider: cafe_letefoho
 url: https://cafeletefoho.com
 archive_prefix: "cafeletefoho.com/product/"

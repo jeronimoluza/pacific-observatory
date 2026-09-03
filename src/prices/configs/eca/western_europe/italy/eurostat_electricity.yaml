@@ -2,7 +2,7 @@ scaffolding: fetcher
 extraction_pattern: rest_api
 analytical_role: tariff
 coicop_classification: source_curated
-coicop_codes: ["04.5.1"]
+coicop_codes: ["04.5.1.0"]
 channel: null
 source_key: it_eurostat_electricity
 module: _shared.eca.eurostat_energy

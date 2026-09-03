@@ -2,7 +2,7 @@ scaffolding: fetcher
 extraction_pattern: pdf
 analytical_role: tariff
 coicop_classification: source_curated
-coicop_codes: ["04.5.1"]
+coicop_codes: ["04.5.1.0"]
 source_key: seeg_electricity_tariff_ga
 module: ssa.central_africa.gabon.seeg_electricity_tariff
 function: fetch_seeg_electricity_tariff_ga

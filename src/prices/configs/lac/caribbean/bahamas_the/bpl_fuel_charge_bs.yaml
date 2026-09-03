@@ -2,7 +2,7 @@ scaffolding: spider
 extraction_pattern: scrapy_html
 analytical_role: tariff
 coicop_classification: source_curated
-coicop_codes: ["04.5.1"]
+coicop_codes: ["04.5.1.0"]
 spider: bpl_fuel_charge_bs
 url: https://www.bplco.com/fuel-charge-update/
 language: en

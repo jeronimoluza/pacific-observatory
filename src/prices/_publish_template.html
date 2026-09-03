@@ -43,7 +43,9 @@
                               position: sticky; left: 0; }
   table.heat tr.group td .gcode { font-family: ui-monospace, Menlo, Consolas, monospace;
                                   margin-right: 8px; opacity: 0.75; }
-  table.heat td.region { font-weight: 700; background: #fffbe6; border-right: 2px solid #f0c419; }
+  table.heat td.region { font-weight: 700; background: #fffbe6; }
+  table.heat td.region-world { background: #fff4cc; }
+  table.heat td.region-last, table.heat th.region-last { border-right: 2px solid #f0c419; }
   table.heat td.region .nctry { color: #b89c00; font-weight: 500; font-size: 9px;
                                 margin-left: 4px; }
   table.heat th.region-th { background: #fff8d9; }
@@ -75,8 +77,9 @@
     Median USD per canonical unit, aggregated from observations in the last
     <span id="lookback"></span> days (cutoff <span id="cutoff"></span>; data through
     <span id="datathrough"></span>). Rows are grouped by COICOP 2018 category
-    (division → group → class → subclass). The Region Median column shows the EAP
-    median (median of country medians) for each COICOP leaf. Cells with fewer than
+    (division → group → class → subclass). The World and per-region columns each
+    show a median of country medians for that COICOP leaf <em>in that unit</em>, with n = the number of
+    countries behind it. Cells with fewer than
     <span id="minobs1"></span> observations are hidden. Color scale within each row
     — green=cheapest, red=most expensive.
   </div>
@@ -87,9 +90,9 @@
   <div class="sub">
     Monthly median USD per canonical unit. FX history starts
     <span id="fxfloor"></span>; earlier observations are excluded.
-    Minimum <span id="minobs2"></span> observations per (COICOP leaf, country, month).
+    Minimum <span id="minobs2"></span> observations per (COICOP leaf, unit, country, month).
   </div>
-  <label>COICOP leaf: <select id="leafsel"></select></label>
+  <label>COICOP leaf / unit: <select id="leafsel"></select></label>
   <canvas id="chart"></canvas>
 </div>
 
@@ -145,34 +148,45 @@
   // --- Current snapshot heat table ---
   const countries = Object.keys(DATA.country_names);
   const titleFor = (code) => DATA.coicop_titles[code] || '';
-  const regionMedianFor = (code) => DATA.region_medians[code];
-  const regionNFor = (code) => DATA.region_n_countries[code];
+  const regionCols = DATA.region_cols || [{key: 'world', label: 'World'}];
+  const cellKey = (code, unit) => code + '|' + unit;
+  const regionMedianFor = (key, k) => (DATA.region_medians[key] || {})[k];
+  const regionNFor = (key, k) => (DATA.region_n_countries[key] || {})[k];
 
+  // One row per (COICOP leaf, unit). A leaf sold both by mass and by volume
+  // is two rows, because one median across both would describe neither.
   const cells = {};
   const cellOrder = [];
   DATA.current.forEach(r => {
-    const k = r.coicop_code;
+    const k = cellKey(r.coicop_code, r.standard_unit);
     if (!cells[k]) {
-      cells[k] = {coicop_code: r.coicop_code, byCountry: {}};
+      cells[k] = {key: k, coicop_code: r.coicop_code,
+                  standard_unit: r.standard_unit, byCountry: {}};
       cellOrder.push(k);
     }
     cells[k].byCountry[r.country] = r;
   });
+  // Widest unit first within a leaf, so the dominant row leads.
+  const cellWidth = (c) => Object.keys(c.byCountry).length;
   const ordered = cellOrder
     .map(k => cells[k])
-    .sort((a, b) => cmpCoicop(a.coicop_code, b.coicop_code));
+    .sort((a, b) => cmpCoicop(a.coicop_code, b.coicop_code)
+                 || cellWidth(b) - cellWidth(a)
+                 || String(a.standard_unit).localeCompare(String(b.standard_unit)));
 
   const heat = document.getElementById('heat');
   const thead = document.createElement('thead');
   const hrow = document.createElement('tr');
   const corner = document.createElement('th');
   corner.className = 'corner';
-  corner.textContent = 'COICOP category / leaf';
+  corner.textContent = 'COICOP category / leaf / unit';
   hrow.appendChild(corner);
-  const regionTh = document.createElement('th');
-  regionTh.className = 'region-th';
-  regionTh.textContent = 'Region Median (EAP)';
-  hrow.appendChild(regionTh);
+  regionCols.forEach((rc, i) => {
+    const th = document.createElement('th');
+    th.className = 'region-th' + (i === regionCols.length - 1 ? ' region-last' : '');
+    th.textContent = rc.label;
+    hrow.appendChild(th);
+  });
   countries.forEach(c => {
     const th = document.createElement('th');
     th.textContent = DATA.country_names[c] || c;
@@ -215,7 +229,7 @@
 
     const tr = document.createElement('tr');
     const lbl = document.createElement('td'); lbl.className = 'label';
-    const unit = countries.map(c => cell.byCountry[c]?.standard_unit).find(Boolean);
+    const unit = cell.standard_unit;
     const groupCodes = new Set([lastL1, lastL2, lastL3, lastL4].filter(Boolean));
     const name = document.createElement('span');
     name.textContent = titleFor(cell.coicop_code) || cell.coicop_code;
@@ -231,25 +245,28 @@
     }
     tr.appendChild(lbl);
 
-    const regionVal = regionMedianFor(cell.coicop_code);
     const countryVals = countries.map(c => cell.byCountry[c]?.median_usd).filter(v => v != null);
     const lo = Math.min(...countryVals), hi = Math.max(...countryVals);
 
-    const rTd = document.createElement('td');
-    rTd.className = 'region';
-    if (regionVal != null && !isNaN(regionVal)) {
-      rTd.textContent = regionVal.toFixed(2);
-      const n = regionNFor(cell.coicop_code);
-      if (n != null) {
-        const tag = document.createElement('span');
-        tag.className = 'nctry'; tag.textContent = 'n=' + n;
-        rTd.appendChild(tag);
+    regionCols.forEach((rc, i) => {
+      const regionVal = regionMedianFor(cell.key, rc.key);
+      const rTd = document.createElement('td');
+      rTd.className = 'region' + (rc.key === 'world' ? ' region-world' : '')
+                    + (i === regionCols.length - 1 ? ' region-last' : '');
+      if (regionVal != null && !isNaN(regionVal)) {
+        rTd.textContent = regionVal.toFixed(2);
+        const n = regionNFor(cell.key, rc.key);
+        if (n != null) {
+          const tag = document.createElement('span');
+          tag.className = 'nctry'; tag.textContent = 'n=' + n;
+          rTd.appendChild(tag);
+        }
+        rTd.title = rc.label + ': median of ' + (n ?? '?') + ' country medians';
+      } else {
+        rTd.textContent = '·'; rTd.classList.add('na');
       }
-      rTd.title = 'Median of ' + (n ?? '?') + ' country medians';
-    } else {
-      rTd.textContent = '·'; rTd.classList.add('na');
-    }
-    tr.appendChild(rTd);
+      tr.appendChild(rTd);
+    });
 
     countries.forEach(c => {
       const cv = cell.byCountry[c];
@@ -267,13 +284,17 @@
   heat.appendChild(tbody);
 
   // --- Historical chart ---
-  const monthlyLeaves = [...new Set(DATA.monthly.map(r => r.coicop_code))].sort(cmpCoicop);
+  // Series are (leaf, unit) too -- a kg line and an lt line are not one series.
+  const monthlySeries = [...new Set(DATA.monthly.map(r => cellKey(r.coicop_code, r.standard_unit)))]
+    .sort((a, b) => cmpCoicop(a.split('|')[0], b.split('|')[0])
+                 || a.localeCompare(b));
   const select = document.getElementById('leafsel');
-  monthlyLeaves.forEach(code => {
+  monthlySeries.forEach(key => {
+    const [code, unit] = key.split('|');
     const o = document.createElement('option');
-    o.value = code;
+    o.value = key;
     const nice = titleFor(code) || code;
-    o.textContent = nice + ' (' + code + ')';
+    o.textContent = nice + ' /' + unit + ' (' + code + ')';
     select.appendChild(o);
   });
   let chart;
@@ -281,8 +302,10 @@
     const palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'];
     return palette[i % palette.length];
   }
-  function renderChart(code) {
-    const rows = DATA.monthly.filter(r => r.coicop_code === code);
+  function renderChart(key) {
+    const [code, unit] = String(key).split('|');
+    const rows = DATA.monthly.filter(
+      r => r.coicop_code === code && r.standard_unit === unit);
     const months = [...new Set(rows.map(r => r.month))].sort();
     const cs = [...new Set(rows.map(r => r.country))].sort();
     const datasets = cs.map((c, i) => ({
@@ -302,13 +325,13 @@
         responsive: true,
         scales: {
           x: { title: { display: true, text: 'Month' } },
-          y: { title: { display: true, text: 'Median USD / unit' } },
+          y: { title: { display: true, text: 'Median USD / ' + unit } },
         },
       },
     });
   }
   select.addEventListener('change', e => renderChart(e.target.value));
-  if (monthlyLeaves.length) { select.value = monthlyLeaves[0]; renderChart(monthlyLeaves[0]); }
+  if (monthlySeries.length) { select.value = monthlySeries[0]; renderChart(monthlySeries[0]); }
 </script>
 </body>
 </html>

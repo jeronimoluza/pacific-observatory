@@ -31,7 +31,24 @@ import pandas as pd
 
 from prices.enrich import config
 
-SCORE_COLS = ("leaf", "conf", "accepted")
+SCORE_COLS = ("leaf", "conf", "accepted", "leaf_top1", "gate_score")
+
+
+@dataclass(frozen=True)
+class ScoreResult:
+    """What a backend hands back: verdicts, plus who never got one.
+
+    `unembedded` is kept OUT of `frame` and always keyed by NAME, whatever the
+    backend's `key_cols` are, because whether a vector exists is a property of
+    the name alone. It is not an empty verdict: a name with no vector was never
+    scored, which is a sourcing/embedding backlog rather than a model refusal,
+    and collapsing the two makes coverage unmeasurable — the rejected rows are
+    the denominator.
+    """
+
+    frame: pd.DataFrame
+    unembedded: frozenset[str]
+
 
 _HIERLEX_MISSING = (
     "the hierlex adapter is not installed on this branch.\n"
@@ -50,8 +67,12 @@ class Backend:
     name: str
     key_cols: tuple[str, ...]
     classified_path: Path
+    # The full decision table — every input_hash, rejects and unembedded
+    # rows retained. `classified_path` is a filtered VIEW of it, so both
+    # come out of one scoring pass and coverage stays measurable.
+    decisions_path: Path
     divisions: tuple[str, ...]
-    score: Callable[..., pd.DataFrame]
+    score: Callable[..., ScoreResult]
     # None means the model cannot be trained here. That is a property of the
     # backend, not a gap: a frozen bundle has no training procedure to call.
     fit: Optional[Callable[[str], dict]]
@@ -61,10 +82,10 @@ class Backend:
         return self.fit is not None
 
 
-def _score_head(products: pd.DataFrame, version=None, workers: int = 1) -> pd.DataFrame:
-    """The in-house head, unchanged: pre-filter to the division, embed the
-    survivors once per unique name, score from the store."""
-    from prices.enrich.classifier import batch_embed, fb_filter
+def _score_head(products: pd.DataFrame, version=None, workers: int = 1) -> ScoreResult:
+    """The in-house head: pre-filter to the division, embed the survivors once
+    per unique name, score from the store."""
+    from prices.enrich.classifier import batch_embed, embed_store, fb_filter
     from prices.enrich.classifier.predict import load_predictor
 
     predictor = load_predictor(version)
@@ -72,17 +93,26 @@ def _score_head(products: pd.DataFrame, version=None, workers: int = 1) -> pd.Da
     uniq = pd.Index(names.unique())
     scoped = fb_filter.in_scope_names(uniq, config.CLASSIFIER_DEFAULT_DIVISION)
     uniq = pd.Index([n for n in uniq if n in scoped])
+    embedded, unembedded = embed_store.split_by_store_coverage(uniq)
     leaf_by, conf_by, ok_by = batch_embed.embed_and_predict(
-        predictor, uniq, workers=workers
+        predictor, pd.Index(embedded), workers=workers
     )
-    return pd.DataFrame(
+    frame = pd.DataFrame(
         {
             "product_name_original": list(leaf_by.keys()),
             "leaf": [leaf_by[n] for n in leaf_by],
             "conf": [float(conf_by[n]) for n in leaf_by],
             "accepted": [bool(ok_by[n]) for n in leaf_by],
+            # The head's top-1 IS `leaf`; acceptance is a separate threshold on
+            # `conf`, so the unaccepted top-1 is never lost and needs no second
+            # column to recover. `gate_score` is that same confidence: the head
+            # has no meta-gate, and inventing a distinct number here would make
+            # the two backends look more alike than they are.
+            "leaf_top1": [leaf_by[n] for n in leaf_by],
+            "gate_score": [float(conf_by[n]) for n in leaf_by],
         }
     )
+    return ScoreResult(frame=frame, unembedded=frozenset(unembedded))
 
 
 def _hierlex():
@@ -96,7 +126,7 @@ def _hierlex():
 
 def _score_hierlex(
     products: pd.DataFrame, version=None, workers: int = 1
-) -> pd.DataFrame:
+) -> ScoreResult:
     """Score the frozen bundle bucket-major over (name, country) pairs.
 
     The adapter owns the model; this owns the fan-out and the column contract,
@@ -105,15 +135,38 @@ def _score_hierlex(
     hierlex = _hierlex()
     hierlex.driver.run(version=version, workers=workers)
     shards = hierlex.driver.load_shards(version=version)
-    return pd.DataFrame(
+    # `assigned_coicop` is NOT always a COICOP code. For a fallback that lands on
+    # a parent with no "n.e.c." leaf, the scorer emits a synthetic
+    # `<parent>.__parent_fallback__` token, and `is_leaf` is how it says so.
+    # Acceptance has to carry that: the token shares the parent's prefix, so the
+    # division filter downstream lets it through and it would be written out as
+    # a real code.
+    accepted = shards["accepted"].astype(bool) & shards["is_leaf"].astype(bool)
+    frame = pd.DataFrame(
         {
             "product_name_original": shards["name"].astype(str),
             "country": shards["country"].astype(str),
             "leaf": shards["assigned_coicop"],
-            "conf": shards["calibrated_correctness_score"].astype(float),
-            "accepted": shards["accepted"].astype(bool),
+            # Leaf softmax score, NOT the gate score -- the same split
+            # hierlex/decide.py makes. Two different numbers: acceptance is a
+            # threshold on the gate, and collapsing them hides a confident leaf
+            # behind a doubtful gate.
+            "conf": shards["original_score"].astype(float),
+            "accepted": accepted,
+            # The leaf the model proposed before the gate ruled on it. Keeping it
+            # separates "this country has no such product" from "it has them but
+            # the gate would not commit" — two findings with different remedies.
+            "leaf_top1": shards["proposed_leaf"].astype(str),
+            "gate_score": shards["calibrated_correctness_score"].astype(float),
         }
     )
+    # Names the driver never scored because the store has no vector for them.
+    # Recovered from the shards rather than recomputed: the driver already paid
+    # for this screen, and a second `split_by_store_coverage` here could disagree
+    # with the one the scoring pass actually used.
+    scored_names = set(frame["product_name_original"])
+    all_names = set(products["product_name_original"].astype(str))
+    return ScoreResult(frame=frame, unembedded=frozenset(all_names - scored_names))
 
 
 def _fit_head(version: str) -> dict:
@@ -126,6 +179,7 @@ HEAD = Backend(
     name="head",
     key_cols=("product_name_original",),
     classified_path=config.CLASSIFIED_PARQUET,
+    decisions_path=config.DECISIONS_PARQUET,
     divisions=(config.CLASSIFIER_DEFAULT_DIVISION,),
     score=_score_head,
     fit=_fit_head,
@@ -135,6 +189,7 @@ HIERLEX = Backend(
     name="hierlex",
     key_cols=("product_name_original", "country"),
     classified_path=config.CLASSIFIED_HIERLEX_PARQUET,
+    decisions_path=config.DECISIONS_HIERLEX_PARQUET,
     divisions=config.BUILD_DIVISIONS,
     score=_score_hierlex,
     fit=None,  # frozen bundle: scored, never fitted

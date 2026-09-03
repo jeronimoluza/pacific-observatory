@@ -141,29 +141,89 @@ CLASSIFIER_EMBED_PRESETS["qwen3_4b8b_arctic"] = [
     *CLASSIFIER_EMBED_PRESETS["qwen3_concat"][1:],
     *CLASSIFIER_EMBED_PRESETS["arctic_l_v2"],
 ]
+# PRODUCTION. The four encoders re-run in bf16 on GPU and persisted in the
+# name-keyed `_embed_store`, so nothing is encoded at eval/train time -- these
+# blocks are read, never computed (`backend: "store"`).
+#
+# `weight` is a per-block scalar applied AFTER the per-row L2, before the hstack.
+# Equal weights are not optimal: a block sweep put the 8B at x4, the 4B at x2 and
+# Arctic at x0.5, worth +2.2pt of coverage@98 over equal weighting, and drove the
+# 0.6B block's weight to ZERO -- it is dropped here rather than carried as 1024
+# dead columns, which is equivalent and cheaper. Weight ratios are load-bearing
+# and absolute scale is too (the head is L2-regularized, so scaling every block
+# is not a no-op); do not renormalize them.
+CLASSIFIER_EMBED_PRESETS["gpu_bf16"] = [
+    {"tag": "4b_bf16", "backend": "store", "dim": 2560, "weight": 2.0},
+    {"tag": "8b_bf16", "backend": "store", "dim": 4096, "weight": 4.0},
+    {"tag": "arctic_bf16", "backend": "store", "dim": 1024, "weight": 0.5},
+]
+# The same four blocks at equal weight -- the control the weighting is measured
+# against, and the layout the pre-weighting bundles were trained on.
+CLASSIFIER_EMBED_PRESETS["gpu_bf16_equal"] = [
+    {"tag": t, "backend": "store", "dim": d, "weight": 1.0}
+    for t, d in [
+        ("0p6b_bf16", 1024),
+        ("4b_bf16", 2560),
+        ("8b_bf16", 4096),
+        ("arctic_bf16", 1024),
+    ]
+]
 CLASSIFIER_EMBED_ENSEMBLE = CLASSIFIER_EMBED_PRESETS[
-    os.environ.get("CLASSIFIER_EMBED_PRESET", "qwen3_concat")
+    os.environ.get("CLASSIFIER_EMBED_PRESET", "gpu_bf16")
 ]
 CLASSIFIER_EMBED_BATCH = int(os.environ.get("QWEN_EMBED_BATCH", "32"))
 CLASSIFIER_EMBED_CACHE_DIR = ENRICH_DIR / "_embed_cache_qwen"
+# Default EVAL/TRAIN scope. "all" means every COICOP division, which is not a
+# widening for its own sake: the same model scored 0.6324 restricted to division
+# 01 and 0.6765 across all divisions, because the head gets to spend its
+# confidence budget where the taxonomy is easy. Scoping to food COSTS coverage.
+CLASSIFIER_DEFAULT_SCOPE = os.environ.get("CLASSIFIER_DEFAULT_SCOPE", "all")
 CLASSIFIER_DEFAULT_DIVISION = "01"  # food & non-alcoholic beverages (PoC scope)
 CLASSIFIED_PARQUET = (
     CACHE_DIR / "classified.parquet"
 )  # classify-stage output, keyed by input_hash
 
-# Which model assigns the leaf. `hierlex` is the production path — a frozen
-# HierLex-Select bundle that is scored, never trained here; `head` is the
-# in-house (embedding -> logistic) classifier this repo can still train. Each
-# writes its own file, so running one never overwrites the other's output and
-# the two stay comparable on the same corpus.
+# Which model assigns the leaf, and therefore which artifacts `prices build`
+# consumes. `hierlex` is the production path — a frozen HierLex-Select bundle
+# that is scored, never trained here; `head` is the in-house
+# (embedding -> logistic) classifier this repo can still train. Each writes its
+# own file, so running one never overwrites the other's output and the two stay
+# comparable on the same corpus; rolling back is a one-word change, never a
+# rescore.
+#
+# This is ONE knob, not two. It arrived as `CLASSIFIER_BACKEND` (which model
+# runs) on one side and `BUILD_CLASSIFIER` (which output the build reads) on the
+# other. They are separable in principle, but nothing wants them to disagree —
+# a build reading the head's file while classify writes hierlex's is a silent
+# stale read, not a feature. `PRICES_BUILD_CLASSIFIER` is gone; use
+# `PRICES_CLASSIFIER_BACKEND`.
 CLASSIFIER_BACKEND = os.environ.get("PRICES_CLASSIFIER_BACKEND", "hierlex")
+
+# Full per-product decision table: EVERY input_hash, all divisions, rejects and
+# unembedded rows retained, plus the meta-gate score and the head's top-1 leaf
+# regardless of acceptance. CLASSIFIED_PARQUET is a filtered VIEW of this, so
+# both come out of one scoring pass. Coverage is only measurable here — the view
+# drops rejects, which is exactly the denominator a coverage number needs.
+DECISIONS_PARQUET = CACHE_DIR / "decisions.parquet"
+
+# HierLex-Select writes the same two artifacts under its own names.
 CLASSIFIED_HIERLEX_PARQUET = CACHE_DIR / "classified_hierlex.parquet"
 DECISIONS_HIERLEX_PARQUET = CACHE_DIR / "decisions_hierlex.parquet"
 HIERLEX_MODELS_DIR = ENRICH_DIR / "_models" / "hierlex"
 HIERLEX_PRED_DIR = ENRICH_DIR / "_hierlex_pred"
+BUILD_CLASSIFIED_PARQUET = (
+    CLASSIFIED_HIERLEX_PARQUET
+    if CLASSIFIER_BACKEND == "hierlex"
+    else CLASSIFIED_PARQUET
+)
 
-# Divisions the build consumes. The head PoC was division 01 alone; hierlex
-# scores the whole taxonomy and the build widened to 01+02.
+# COICOP divisions that reach `prices build`. 01/02/06 are the divisions whose
+# goods are actually sold by mass or volume (70.1% / 57.3% / 37.7% of classified
+# rows), which is what the unit-value machinery downstream requires. 13 clears
+# the same bar mechanically (44.8%) but is the taxonomy's "n.e.c." catch-all, so
+# an aggregate over it has no clean reading; 05/09/08/03 are item-priced and
+# need a per-item track that does not exist yet. The head PoC was division 01
+# alone; hierlex scores the whole taxonomy and the build widened to 01+02.
 BUILD_DIVISIONS: tuple[str, ...] = ("01", "02")
 
 # Ceiling on resident memory for a parallel bucket-major score, as a fraction of
@@ -174,7 +234,6 @@ CLASSIFY_MEM_BUDGET_FRACTION = 0.6
 CLASSIFY_MEM_BUDGET_GB = float(
     os.environ.get("PRICES_CLASSIFY_MEM_BUDGET_GB", "0") or 0
 )
-
 # Sibling venv (py3.12 + mlx_embeddings) the mlx blocks shell out to for encoding.
 # Env-overridable because the mlx env lives outside the git worktree; production
 # must set MLX_VENV_PYTHON or place `.venv_mlx` at the repo root.

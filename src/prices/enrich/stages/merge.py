@@ -22,6 +22,8 @@ ENRICHMENT_COLS = [
     "state",
     "dimensions_json",
     "trust_level",
+    "uv_trusted",
+    "unit_declared",
 ]
 
 

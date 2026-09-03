@@ -2,7 +2,7 @@ scaffolding: spider
 extraction_pattern: scrapy_listing
 analytical_role: retailer_sku
 coicop_classification: source_curated
-coicop_codes: ["04.1.1"]
+coicop_codes: ["04.1.1.0"]
 spider: ddproperty_th
 url: https://www.ddproperty.com/en/property-for-rent
 language: en

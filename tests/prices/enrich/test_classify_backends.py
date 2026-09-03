@@ -42,15 +42,31 @@ def products(rows) -> pd.DataFrame:
 
 
 def stub(
-    name, key_cols, scores, divisions=("01",), path=Path("stub.parquet"), fit=None
+    name,
+    key_cols,
+    scores,
+    divisions=("01",),
+    path=Path("stub.parquet"),
+    fit=None,
+    unembedded=(),
 ):
     frame = pd.DataFrame(scores)
+    # A stub declaring only leaf/conf/accepted gets the two reporting columns
+    # for free, mirroring the head backend: its top-1 IS its leaf, and its gate
+    # score IS its confidence. Tests that care about them pass their own.
+    if not frame.empty:
+        if "leaf_top1" not in frame.columns:
+            frame["leaf_top1"] = frame["leaf"]
+        if "gate_score" not in frame.columns:
+            frame["gate_score"] = frame["conf"]
+    result = backends.ScoreResult(frame=frame, unembedded=frozenset(unembedded))
     return backends.Backend(
         name=name,
         key_cols=key_cols,
         classified_path=path,
+        decisions_path=path.with_name(f"decisions_{path.name}"),
         divisions=divisions,
-        score=lambda products, version=None, workers=1: frame,
+        score=lambda products, version=None, workers=1: result,
         fit=fit,
     )
 
@@ -254,13 +270,46 @@ def test_run_writes_to_the_backends_own_path(monkeypatch, tmp_path):
 
 
 def test_a_declared_narrow_code_still_bypasses_the_backend(monkeypatch):
-    """The backend scores nothing, and the row is classified anyway."""
+    """The backend scores nothing, and the row is classified anyway.
+
+    The declared code is a five-level taxonomy LEAF. Four-level codes look like
+    codes and are not leaves, which is the whole point of the check below.
+    """
     be = install(monkeypatch, stub("ignored", ("product_name_original",), []))
+    df = products([("rice", "fiji")])
+    df.loc[0, "declared_coicop_codes"] = "01.1.1.1.5"
+    out = classify.classify_products(df, backend=be.name)
+    assert list(out["state"]) == ["narrow_source"]
+    assert list(out["coicop_code"]) == ["01.1.1.1.5"]
+
+
+def test_a_declared_code_that_is_not_a_leaf_falls_through_to_the_backend(monkeypatch):
+    """A source may declare a parent node. That is not a classification.
+
+    `01.1.1.5` is a real branch of the taxonomy and a plausible-looking code,
+    but products do not live at that depth. Short-circuiting on it writes a
+    non-leaf into `coicop_code`, where every consumer downstream assumes a leaf.
+    69 source configs declared codes at this depth and were corrected; this is
+    the half of the fix that stops the next one from landing.
+    """
+    be = install(
+        monkeypatch,
+        stub(
+            "fallthrough",
+            ("product_name_original",),
+            {
+                "product_name_original": ["rice"],
+                "leaf": ["01.1.1.1.1"],
+                "conf": [0.99],
+                "accepted": [True],
+            },
+        ),
+    )
     df = products([("rice", "fiji")])
     df.loc[0, "declared_coicop_codes"] = "01.1.1.5"
     out = classify.classify_products(df, backend=be.name)
-    assert list(out["state"]) == ["narrow_source"]
-    assert list(out["coicop_code"]) == ["01.1.1.5"]
+    assert list(out["state"]) == ["classified"]
+    assert list(out["coicop_code"]) == ["01.1.1.1.1"]
 
 
 def test_declared_codes_arrive_pipe_joined_and_must_be_parsed(monkeypatch):
@@ -268,10 +317,13 @@ def test_declared_codes_arrive_pipe_joined_and_must_be_parsed(monkeypatch):
     characters and silently declares nothing narrow."""
     be = install(monkeypatch, stub("ignored2", ("product_name_original",), []))
     df = products([("rice", "fiji")])
-    df.loc[0, "declared_coicop_codes"] = "01.1.1|01.1.2"
+    # The same leaf twice: `parse_codes` collapses it to one code that resolves
+    # to itself. Left as a raw string, `is_narrow` would iterate CHARACTERS and
+    # find nothing narrow — which is the regression this guards.
+    df.loc[0, "declared_coicop_codes"] = "01.1.1.1.5|01.1.1.1.5"
     out = classify.classify_products(df, backend=be.name)
     assert list(out["state"]) == ["narrow_source"]
-    assert list(out["coicop_code"]) == ["01.1"]
+    assert list(out["coicop_code"]) == ["01.1.1.1.5"]
 
 
 def test_two_unrelated_declared_codes_are_not_narrow(monkeypatch):
@@ -280,3 +332,56 @@ def test_two_unrelated_declared_codes_are_not_narrow(monkeypatch):
     df.loc[0, "declared_coicop_codes"] = "01.1.1|04.1.1"
     out = classify.classify_products(df, backend=be.name)
     assert out.empty  # rejected, so no code, so filtered out
+
+
+def test_a_name_with_no_vector_is_unembedded_not_rejected(monkeypatch):
+    """The coverage denominator depends on telling these two apart.
+
+    A name the store has no vector for was never scored — a sourcing/embedding
+    backlog item. A name the model saw and refused is a model verdict. Both end
+    up with no coicop_code, so if they share a state the report cannot say
+    whether coverage is limited by the model or by the pipeline feeding it.
+    """
+    be = install(
+        monkeypatch,
+        stub(
+            "gappy",
+            ("product_name_original",),
+            {
+                "product_name_original": ["scored"],
+                "leaf": ["01.1.1.1.0"],
+                "conf": [0.2],
+                "accepted": [False],
+            },
+            unembedded=("novec",),
+        ),
+    )
+    out = classify.decide_products(
+        products([("scored", "fiji"), ("novec", "fiji")]), backend=be.name
+    )
+    state = dict(zip(out["input_hash"], out["state"]))
+    assert state["h0"] == "rejected"
+    assert state["h1"] == "unembedded"
+
+
+def test_the_decisions_table_keeps_every_row_the_view_drops(monkeypatch):
+    """`classified` is a filtered view; `decisions` is the population."""
+    be = install(
+        monkeypatch,
+        stub(
+            "narrowview",
+            ("product_name_original",),
+            {
+                "product_name_original": ["kept", "dropped"],
+                "leaf": ["01.1.1.1.0", "07.2.1.1.0"],
+                "conf": [0.9, 0.9],
+                "accepted": [True, True],
+            },
+        ),
+    )
+    rows = products([("kept", "fiji"), ("dropped", "fiji")])
+    decisions = classify.decide_products(rows, backend=be.name)
+    view = classify.classified_view(decisions, be.divisions)
+    assert len(decisions) == 2
+    assert len(view) == 1
+    assert set(decisions["coicop_code"]) == {"01.1.1.1.0", "07.2.1.1.0"}

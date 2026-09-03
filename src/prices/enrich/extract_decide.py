@@ -66,6 +66,14 @@ _BONUS_PLUS_RE = re.compile(r"\d\s*\+\s*$")
 # value in the gold slice, so gating strictly above it is gate-safe.
 _ORDER_GUARDED_IDS = frozenset({"EN_SACHETS", "EN_APOS_S"})
 _COUNT_BEFORE_MEASURE_CAP = 30
+# A retail pack count above this is not a count: it is an EAN/SKU that trailed a
+# pack noun, or a mass/volume figure that lost its unit token. Both fabricate a
+# per-piece price by dividing by a huge denominator. Failing the guard drops the
+# rung, so the row falls through to `item` -- "no quantity found" -- which the
+# SOLD_BY_ITEM_LEAVES gate then quarantines unless the leaf vets it. Guessing
+# wrong toward "no quantity" is recoverable; guessing wrong toward a fabricated
+# count is not.
+_COUNT_PLAUSIBLE_MAX = 1000
 
 # Explicit multiplication operator immediately preceding a promoted count-noun
 # match ("1.5g × 20개", "90g*3개입") is the unambiguous "per-unit measure ×
@@ -340,14 +348,18 @@ def _rung_pack_unit_emit(st):
         ):
             # "<per-unit measure>. Pack N" (e.g. "17.5g. Pack 60sachets") is a
             # MULTIPACK: the measure is per-unit and N multiplies it, whatever the
-            # basis. "N Pack <total>" ("Thin Sausages 24 Pack 1.8kg") does NOT
-            # match `Pack\s*N`, so its count stays inert as before. Likewise an
+            # basis. "Pack of N" reads identically and is accepted too -- without
+            # the optional `of` the adjacency test silently missed it and the
+            # count stayed inert, pricing "41.5g (Pack of 48Pcs)" as a single
+            # 41.5g bar. "N Pack <total>" ("Thin Sausages 24 Pack 1.8kg") still
+            # does NOT match, because N precedes "Pack" there rather than
+            # following it, so its count stays inert as before. Likewise an
             # explicit multiply operator joining the measure and N ("1.5g × 20개")
             # is an unambiguous multipack signal on mass basis too.
             if (
                 um["basis"] == "volume"
                 or st.noun_count_via_operator
-                or re.search(rf"[Pp]ack\s*0*{n}(?!\d)", st.item_name)
+                or re.search(rf"[Pp]ack\s*(?:of\s*)?0*{n}(?!\d)", st.item_name)
             ):
                 multiplier = n
             else:
@@ -387,8 +399,15 @@ def _rung_basis_marker_emit(st):
     )
 
 
+def _count_is_plausible(n) -> bool:
+    return n is None or n <= _COUNT_PLAUSIBLE_MAX
+
+
 def _rung_multi_pack_pred(st):
-    return st.multi_pack is not None
+    if st.multi_pack is None:
+        return False
+    inner, outer = st.multi_pack
+    return _count_is_plausible(inner) and _count_is_plausible(outer)
 
 
 def _rung_multi_pack_emit(st):
@@ -397,7 +416,11 @@ def _rung_multi_pack_emit(st):
 
 
 def _rung_pack_count_pred(st):
-    return st.pack_count is not None and st.pack_count > 1
+    return (
+        st.pack_count is not None
+        and st.pack_count > 1
+        and _count_is_plausible(st.pack_count)
+    )
 
 
 def _rung_pack_count_emit(st):
@@ -405,7 +428,11 @@ def _rung_pack_count_emit(st):
 
 
 def _rung_extra_count_pred(st):
-    return st.extra_count is not None and st.extra_count > 1
+    return (
+        st.extra_count is not None
+        and st.extra_count > 1
+        and _count_is_plausible(st.extra_count)
+    )
 
 
 def _rung_extra_count_emit(st):

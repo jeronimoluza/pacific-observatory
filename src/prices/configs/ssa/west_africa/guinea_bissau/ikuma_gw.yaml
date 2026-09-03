@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ikuma_gw
+url: https://www.ikuma.online/
+language: pt
+cadence: monthly
+channel: supermarket
+archive_prefix: "ikuma.online/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  Ikuma bills itself as Guinea-Bissau's first online supermarket. WooCommerce,
+  but the Store API returns HTTP 500 on /products (categories return 200), so
+  the spider walks product-sitemap.xml (761 URLs) and parses each PDP with the
+  shared JSON-LD/OpenGraph/Woo-DOM chain. The PDP JSON-LD emits the literal
+  placeholder currency "ABC", a site bug, so the spider forces XOF. First
+  retail source of any kind for Guinea-Bissau.

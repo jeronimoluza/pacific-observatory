@@ -10,7 +10,7 @@ url: https://ceb.mu/customer-corner/electricity-tariffs-and-applicable-rates
 language: en
 cadence: irregular
 fallback_date: "2020-01-01"
-coicop_codes: ["04.5.1"]
+coicop_codes: ["04.5.1.0"]
 notes: |
   Central Electricity Board (state utility) residential household tariff
   schedule (Tariffs 110A/110/120/140), 12 consumption bands, Rs/kWh, from

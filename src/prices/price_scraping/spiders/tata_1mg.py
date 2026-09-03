@@ -66,6 +66,10 @@ class Tata1mgSpider(CrawlSpider):
             name = data.get("name")
             if not name or price is None:
                 continue
+            try:
+                float(price)
+            except (TypeError, ValueError):
+                continue
             yield {
                 "product_id": data.get("sku") or data.get("productID"),
                 "product_name": name,

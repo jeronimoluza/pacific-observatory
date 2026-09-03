@@ -2,7 +2,7 @@ scaffolding: spider
 extraction_pattern: scrapy_listing
 analytical_role: retailer_sku
 coicop_classification: source_curated
-coicop_codes: ["04.1.1"]
+coicop_codes: ["04.1.1.0"]
 spider: batdongsan_vn
 url: https://batdongsan.com.vn/nha-dat-cho-thue
 archive_prefix: "batdongsan.com.vn/"

@@ -36,6 +36,16 @@ Not pursued further.
 
 ---
 
+_Reviewed 2026-09-02_ (search-starved re-run). No re-search was spent here.
+The Eroski reCAPTCHA Enterprise wall above is a genuine block confirmed
+against three TLS profiles **and** a headless Playwright render, which
+satisfies the skill's curl-AND-Playwright gate — it is not a curl-TLS false
+negative and re-probing it would waste budget. Gibraltar stays at 0 sources.
+Note for whoever picks this up: the Faroe Islands in this same run overturned
+an identical-looking "nothing here" verdict purely by searching in the local
+language. Gibraltar is English-speaking, so that particular lever does not
+apply, but a Spanish-language query aimed at the La Línea / Campo de Gibraltar
+cross-border shopping market is untried.
 ## Update 2026-09-01 (Tier-1 greenfield pass) — SOURCE SHIPPED
 
 Gibraltar is no longer a zero-source country.

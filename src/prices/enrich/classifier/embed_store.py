@@ -108,6 +108,35 @@ def missing(tag: str, bucket_names: dict[int, list[str]]) -> dict[int, list[str]
     return out
 
 
+def keys_of(tag: str, b: int) -> set[str]:
+    """Names in one bucket without paging its vectors.
+
+    An npz member is only read on access, so this touches ``keys_blob``/
+    ``keys_off`` and never ``mat``.
+    """
+    p = _bucket_path(tag, b)
+    if not p.exists():
+        return set()
+    with np.load(p, allow_pickle=False) as z:
+        return set(decode_keys(z))
+
+
+def missing_keys(tag: str, bucket_names: dict[int, list[str]]) -> dict[int, list[str]]:
+    """Per bucket, the names not yet embedded for this block — keys only.
+
+    Same contract as `missing`, which loads whole buckets to answer a question
+    about their keys. Screening a corpus against a 118 GB store that way pages
+    every vector in it; this reads ~61 B/name of key blob instead.
+    """
+    out: dict[int, list[str]] = {}
+    for b, names in bucket_names.items():
+        have = keys_of(tag, b)
+        miss = [n for n in names if n not in have]
+        if miss:
+            out[b] = miss
+    return out
+
+
 def append(tag: str, b: int, names, vecs: np.ndarray) -> None:
     store = _load_bucket(tag, b)
     for n, v in zip(names, vecs):
@@ -119,3 +148,29 @@ def gather(tag: str, b: int, names) -> np.ndarray:
     """(len(names), dim) fp32 matrix for names in one bucket (all must be present)."""
     store = _load_bucket(tag, b)
     return np.vstack([store[str(n)] for n in names]).astype(np.float32)
+
+
+def split_by_store_coverage(names) -> tuple[list[str], set[str]]:
+    """Partition names into (embedded, unembedded) against the production store.
+
+    A name is usable only if EVERY block in the ensemble has it, so the
+    unembedded set is the union of the per-block misses.
+
+    Screening is not optional, and the two callers need it for different
+    reasons. `batch_embed._build_store` raises KeyError on the first hole, so
+    one name collected since the last embed run aborts a multi-hour pass. The
+    bundle CLI's `--missing-bundle-action zero` fails the other way: it
+    substitutes a zero vector, which yields the intercept-only distribution and
+    a gate score that can still clear tau — a confident wrong label rather than
+    an error.
+
+    Reads keys only (~10 ms/bucket) instead of paging vectors out of the store.
+    """
+    names = [str(n) for n in names]
+    bucket_names = buckets_for(names)
+    missing_names: set[str] = set()
+    for block in config.CLASSIFIER_EMBED_ENSEMBLE:
+        for nm in missing_keys(block["tag"], bucket_names).values():
+            missing_names.update(nm)
+    embedded = [n for n in names if n not in missing_names]
+    return embedded, missing_names
