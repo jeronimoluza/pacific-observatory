@@ -49,10 +49,11 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, Sequence
 
 import pandas as pd
 
+from prices import partition
 from prices.build.analytical import write_analytical
 from prices.build.basket import EAP_COUNTRIES, FNB_COICOP_PREFIXES
 from prices.build.fx import attach_fx_and_usd
@@ -65,6 +66,7 @@ from prices.build.unit_value_summary import (
     trusted_observations,
 )
 from prices.enrich import config as enrich_config
+from prices.enrich import shards as shard_io
 from prices.enrich.stages.merge import compute_unit_value
 from prices.enrich.stages.prepare import _row_input_dict, parse_price
 from prices.enrich.versioning import input_hash
@@ -128,21 +130,54 @@ def load_filtered_cache() -> pd.DataFrame:
     return cache[CACHE_KEEP_COLS]
 
 
+# The raw columns observations needs. input_hash is read when present so the
+# per-row rehash in _join_chunk is skipped; the monolith predates it, and
+# usecols is a callable so a file without the column is not an error.
+RAW_OBSERVATION_COLS = (
+    "product_name",
+    "product_url",
+    "price",
+    "currency",
+    "country",
+    "source",
+    "date",
+    "input_hash",
+)
+
+
 def _iter_raw_chunks(csv_path: Path) -> Iterator[pd.DataFrame]:
     return pd.read_csv(
         csv_path,
-        usecols=[
-            "product_name",
-            "product_url",
-            "price",
-            "currency",
-            "country",
-            "source",
-            "date",
-        ],
+        usecols=lambda c: c in RAW_OBSERVATION_COLS,
         chunksize=CSV_CHUNK_SIZE,
         low_memory=False,
     )
+
+
+def _iter_shard_chunks(
+    selectors: Sequence[str] | None = None, root: Path | None = None
+) -> Iterator[pd.DataFrame]:
+    """Raw rows straight from the parquet shards, one frame per source.
+
+    A shard is already the natural chunk, it carries real dtypes, and only the
+    eight columns observations needs are read off disk — where the monolith is
+    re-parsed from 33 GB of text in 50k-row slices to get the same rows."""
+    for shard in partition.select(selectors, root):
+        yield shard_io.read_shard(shard.path, columns=list(RAW_OBSERVATION_COLS))
+
+
+def _observation_chunks(
+    csv_path: Path | None,
+    selectors: Sequence[str] | None,
+    shard_root: Path | None,
+) -> Iterator[pd.DataFrame]:
+    """Shards when there are any, the monolith otherwise. A selector forces the
+    shards, since the monolith cannot be scoped."""
+    root = shard_root or partition.PER_SOURCE_DIR
+    has_shards = root.is_dir() and any(partition.iter_shards(root))
+    if selectors or has_shards:
+        return _iter_shard_chunks(selectors, root)
+    return _iter_raw_chunks(csv_path or enrich_config.RAW_PRICES_CSV)
 
 
 def _join_chunk(chunk: pd.DataFrame, cache: pd.DataFrame) -> pd.DataFrame:
@@ -286,18 +321,50 @@ def build_snapshot(typical_mass: pd.DataFrame | None = None) -> pd.DataFrame:
     return df
 
 
+def overlay_observations(fresh: pd.DataFrame, existing_path: Path) -> pd.DataFrame:
+    """Put a scoped build's rows back into the full observations frame.
+
+    A slice-only dashboard has no cross-country context, so an outlier stops
+    being visible — which is the whole reason for rebuilding. The recomputed
+    countries replace their old rows and every other country is carried through
+    untouched, so the consumables downstream still see the whole corpus.
+
+    Country is the overlay key because it is the grain the slice was computed
+    at: a selector names sources, and every source sits under exactly one
+    country, so a recomputed country is recomputed in full."""
+    if not existing_path.exists() or fresh.empty:
+        return fresh
+    existing = pd.read_parquet(existing_path)
+    if "country" not in existing.columns:
+        return fresh
+    recomputed = set(fresh["country"].unique())
+    kept = existing[~existing["country"].isin(recomputed)]
+    logger.info(
+        "[observations] overlay: %d fresh rows over %d countries, "
+        "%d rows carried through from %d other countries",
+        len(fresh),
+        len(recomputed),
+        len(kept),
+        kept["country"].nunique(),
+    )
+    return pd.concat([kept, fresh], ignore_index=True)
+
+
 def build_observations(
-    csv_path: Path | None = None, typical_mass: pd.DataFrame | None = None
+    csv_path: Path | None = None,
+    typical_mass: pd.DataFrame | None = None,
+    selectors: Sequence[str] | None = None,
+    shard_root: Path | None = None,
+    overlay: bool = False,
 ) -> pd.DataFrame:
-    """Build the historical time-series observations from the raw CSV."""
-    csv_path = csv_path or enrich_config.RAW_PRICES_CSV
+    """Build the historical time-series observations from the raw rows."""
     cache = load_filtered_cache()
     logger.info("[observations] cache rows: %d", len(cache))
     if cache.empty:
         raise RuntimeError("No cache rows match the basket filter.")
 
     pieces: list[pd.DataFrame] = []
-    for i, chunk in enumerate(_iter_raw_chunks(csv_path)):
+    for i, chunk in enumerate(_observation_chunks(csv_path, selectors, shard_root)):
         joined = _join_chunk(chunk, cache)
         if not joined.empty:
             pieces.append(joined)
@@ -308,7 +375,8 @@ def build_observations(
                 sum(len(p) for p in pieces),
             )
     if not pieces:
-        raise RuntimeError("Raw CSV produced no joinable rows for the basket.")
+        scope = f" for {list(selectors)}" if selectors else ""
+        raise RuntimeError(f"raw rows produced nothing joinable for the basket{scope}.")
     df = pd.concat(pieces, ignore_index=True)
     logger.info(
         "[observations] joined: %d rows × %d countries × %d coicop leaves",
@@ -334,7 +402,9 @@ def build_observations(
         len(df),
         before,
     )
-    df = _finalize(df)
+    df = _finalize(df, typical_mass=typical_mass)
+    if overlay:
+        df = overlay_observations(df, OBSERVATIONS_PARQUET)
     BUILD_DIR.mkdir(parents=True, exist_ok=True)
     df.to_parquet(OBSERVATIONS_PARQUET, index=False)
     logger.info("wrote %s (%d rows)", OBSERVATIONS_PARQUET, len(df))
@@ -385,17 +455,34 @@ def _pinned_typical_mass(scoped: bool, recompute: bool | None) -> pd.DataFrame |
 
 def build(
     csv_path: Path | None = None,
-    scoped: bool = False,
+    selectors: Sequence[str] | None = None,
+    shard_root: Path | None = None,
     recompute_leaf_tables: bool | None = None,
 ) -> None:
+    """Build the basket parquets, optionally recomputing only part of the corpus.
+
+    A scoped run recomputes its countries' observations and overlays them onto
+    the existing full frame, so the consumables downstream are still derived
+    from the whole corpus. That is what makes the loop useful: the dashboard
+    that comes out has cross-country context, with the fix applied."""
+    scoped = bool(selectors)
     typical_mass = _pinned_typical_mass(scoped, recompute_leaf_tables)
     build_snapshot(typical_mass=typical_mass)
-    obs = build_observations(csv_path=csv_path, typical_mass=typical_mass)
+    obs = build_observations(
+        csv_path=csv_path,
+        typical_mass=typical_mass,
+        selectors=selectors,
+        shard_root=shard_root,
+        overlay=scoped,
+    )
     _write_consumables(obs)
 
 
-def run() -> None:
+def run(
+    selectors: Sequence[str] | None = None,
+    recompute_leaf_tables: bool | None = None,
+) -> None:
     logging.basicConfig(
         level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
     )
-    build()
+    build(selectors=selectors, recompute_leaf_tables=recompute_leaf_tables)

@@ -465,17 +465,45 @@ prices.add_command(_prices_gold_audit, name="gold-audit")
 @_region_opt
 @_subregion_opt
 @_country_opt
-def prices_build(region, subregion, country):
+@click.option(
+    "--only",
+    multiple=True,
+    metavar="SELECTOR",
+    help=(
+        "Recompute only part of the corpus, then overlay the result onto the "
+        "full observations frame. A selector is a glob over "
+        "region/subregion/country/source. Repeatable."
+    ),
+)
+@click.option(
+    "--recompute-leaf-tables",
+    is_flag=True,
+    default=None,
+    help=(
+        "Re-derive the typical-mass table from this run's rows. A scoped run "
+        "pins it instead, because deriving it from a slice gives a leaf a mass "
+        "the full build does not agree with."
+    ),
+)
+def prices_build(region, subregion, country, only, recompute_leaf_tables):
     """Construct CPI indices from the enriched prices dataset.
 
     PoC scope: writes the EAP × F&B basket parquet at
-    data/prices/build/eap_fnb_observations.parquet. Region/subregion/
-    country flags are accepted but ignored until the basket widens
-    beyond the EAP PoC.
+    data/prices/build/eap_fnb_observations.parquet.
+
+    With --only (or -r/-S/-c) the observations pass recomputes just the
+    selected countries and overlays them onto the existing frame, so the
+    snapshot, summaries and dashboard still cover the whole corpus.
     """
+    from prices import partition
     from prices.build.aggregate import run as _build_run
 
-    _build_run()
+    selectors = list(only)
+    from_flags = partition.selector_from_flags(region, subregion, country)
+    if from_flags:
+        selectors.append(from_flags)
+
+    _build_run(selectors=selectors or None, recompute_leaf_tables=recompute_leaf_tables)
 
 
 @prices.command("publish")
