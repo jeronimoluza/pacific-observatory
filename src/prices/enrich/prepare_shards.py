@@ -43,8 +43,10 @@ logger = logging.getLogger(__name__)
 PREPARED_DIR = config.ENRICH_DIR / "_prepared"
 
 # What prepare_input actually reads. url_hash, product_id and wayback are in the
-# shard but unused here, so they are never paid for.
+# shard but unused here, so they are never paid for. input_hash IS read: it is
+# already in the shard, so prepare reuses it rather than hashing every raw row.
 PREPARE_COLUMNS = (
+    "input_hash",
     "product_name",
     "price",
     "currency",

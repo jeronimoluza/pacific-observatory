@@ -155,7 +155,12 @@ def _join_chunk(chunk: pd.DataFrame, cache: pd.DataFrame) -> pd.DataFrame:
     chunk = chunk[chunk["country"].isin(EAP_COUNTRIES)].copy()
     if chunk.empty:
         return chunk
-    chunk["input_hash"] = chunk.apply(lambda r: input_hash(_row_input_dict(r)), axis=1)
+    # Parquet shards carry input_hash, computed once when the shard was written.
+    # The CSV monolith does not, so the recompute stays as the fallback.
+    if "input_hash" not in chunk.columns or chunk["input_hash"].isna().any():
+        chunk["input_hash"] = chunk.apply(
+            lambda r: input_hash(_row_input_dict(r)), axis=1
+        )
     merged = chunk.merge(cache, on="input_hash", how="inner", suffixes=("_raw", ""))
     return merged.drop(columns=["input_hash"])
 

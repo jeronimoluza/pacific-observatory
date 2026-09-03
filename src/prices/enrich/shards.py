@@ -27,8 +27,9 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-# The 15 raw columns concatenate emits, in order. Every one is text except
-# `wayback`, which is a provenance flag the emitters set as a real bool.
+# The 15 raw columns concatenate emits, plus `input_hash`, which is derived from
+# them. Every one is text except `wayback`, a provenance flag the emitters set as
+# a real bool.
 BOOL_COLUMNS = ("wayback",)
 SHARD_COLUMNS = (
     "url_hash",
@@ -46,6 +47,7 @@ SHARD_COLUMNS = (
     "channel",
     "category",
     "details",
+    "input_hash",
 )
 
 SHARD_SCHEMA = pa.schema(
@@ -74,15 +76,65 @@ def _as_bool(series: pd.Series) -> pd.Series:
     return series.map(one).astype(object)
 
 
+def input_hashes(df: pd.DataFrame) -> pd.Series:
+    """The dedup identity hash for every raw row.
+
+    Must agree exactly with `prepare._row_input_dict`, which is the definition;
+    this only avoids `df.apply(..., axis=1)` building a Series per row over 20M
+    of them. `test_shards` pins the two against each other.
+
+    Storing it in the shard is what lets both readers stop recomputing it:
+    prepare hashed every raw row, and build/aggregate hashed them all again to
+    join observations back to the classifier output."""
+    from prices.enrich.stages.prepare import _clean_url
+    from prices.enrich.versioning import input_hash
+
+    if "product_name_original" in df.columns:
+        original = df["product_name_original"]
+        names = original.where(original.notna(), df["product_name"])
+    else:
+        names = df["product_name"]
+
+    urls = (
+        [_clean_url(v) for v in df["product_url"]]
+        if "product_url" in df
+        else [""] * len(df)
+    )
+    countries = df["country"] if "country" in df else pd.Series([None] * len(df))
+    currencies = df["currency"] if "currency" in df else pd.Series([None] * len(df))
+
+    out = [
+        input_hash(
+            {"product_name_original": str(name), "product_url": url}
+            if url
+            else {
+                "product_name_original": str(name),
+                "country": str(country),
+                "currency": str(currency),
+            }
+        )
+        for name, url, country, currency in zip(names, urls, countries, currencies)
+    ]
+    return pd.Series(out, index=df.index, dtype=object)
+
+
 def coerce(df: pd.DataFrame) -> pd.DataFrame:
     """Return `df` with exactly SHARD_COLUMNS, in order, at shard dtypes.
-    Columns absent from the frame are added empty."""
+
+    Columns absent from the frame are added empty, except `input_hash`, which is
+    a pure function of the row and is derived rather than left null — so a shard
+    always carries it however it was produced."""
     out = pd.DataFrame(index=df.index)
     for name in SHARD_COLUMNS:
         if name not in df.columns:
             out[name] = None
             continue
         out[name] = _as_bool(df[name]) if name in BOOL_COLUMNS else _as_text(df[name])
+    if df.empty:
+        return out
+    missing = "input_hash" not in df.columns or out["input_hash"].isna().all()
+    if missing:
+        out["input_hash"] = input_hashes(df)
     return out
 
 

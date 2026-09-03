@@ -166,7 +166,10 @@ def prepare_input(raw: pd.DataFrame) -> pd.DataFrame:
     else:
         df["observation_date"] = pd.NaT
     df["price"] = df.apply(lambda r: parse_price(r["price"], r.get("currency")), axis=1)
-    df["input_hash"] = df.apply(lambda r: input_hash(_row_input_dict(r)), axis=1)
+    # Shards carry input_hash already; it is a pure function of the raw row, so
+    # recomputing it here would hash 20M rows a second time for the same answer.
+    if "input_hash" not in df.columns or df["input_hash"].isna().any():
+        df["input_hash"] = df.apply(lambda r: input_hash(_row_input_dict(r)), axis=1)
     lang_map = _build_country_lang_map()
     df["lang"] = df["country"].map(lang_map).fillna("").astype(str)
 

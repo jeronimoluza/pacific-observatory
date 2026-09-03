@@ -110,6 +110,61 @@ def test_read_shards_concatenates(tmp_path):
     assert list(out.columns) == list(shards.SHARD_COLUMNS)
 
 
+def reference_hashes(df: pd.DataFrame) -> list[str]:
+    """input_hash exactly as prepare computes it, row by row."""
+    from prices.enrich.stages.prepare import _row_input_dict
+    from prices.enrich.versioning import input_hash
+
+    return [input_hash(_row_input_dict(row)) for _, row in df.iterrows()]
+
+
+def test_stored_input_hash_matches_prepare_row_for_row(tmp_path):
+    """If these ever diverge, observations stop joining to the classifier and
+    the dashboard loses rows silently."""
+    df = raw_frame()
+    # Row 3 has no URL, so it takes the (name, country, currency) fallback.
+    path = shards.write_shard(df, tmp_path / "s.parquet")
+    back = shards.read_shard(path)
+    assert list(back["input_hash"]) == reference_hashes(df)
+
+
+def test_url_and_urlless_rows_take_different_identity_branches(tmp_path):
+    df = raw_frame()
+    df["product_url"] = ["https://x/1", "", None]
+    df["product_name"] = ["Same", "Same", "Same"]
+    path = shards.write_shard(df, tmp_path / "s.parquet")
+    hashes = list(shards.read_shard(path)["input_hash"])
+    assert hashes == reference_hashes(df)
+    # The two URL-less rows share an identity; the URL row does not join them.
+    assert hashes[1] == hashes[2] != hashes[0]
+
+
+def test_input_hash_is_derived_when_absent_from_the_frame(tmp_path):
+    df = raw_frame()
+    assert "input_hash" not in df.columns
+    back = shards.read_shard(shards.write_shard(df, tmp_path / "s.parquet"))
+    assert back["input_hash"].notna().all()
+
+
+def test_a_supplied_input_hash_is_kept(tmp_path):
+    df = raw_frame()
+    df["input_hash"] = ["a", "b", "c"]
+    back = shards.read_shard(shards.write_shard(df, tmp_path / "s.parquet"))
+    assert list(back["input_hash"]) == ["a", "b", "c"]
+
+
+def test_legacy_csv_shard_gains_an_input_hash_on_conversion(tmp_path):
+    """The 1,164 CSV shards on disk have no hash column; converting must add it
+    rather than write a column of nulls."""
+    df = raw_frame()
+    csv_path = tmp_path / "s.csv"
+    df.to_csv(csv_path, index=False)
+    from_csv = shards.read_shard(csv_path)
+    assert from_csv["input_hash"].isna().all()
+    converted = shards.read_shard(shards.write_shard(from_csv, tmp_path / "s.parquet"))
+    assert list(converted["input_hash"]) == reference_hashes(df)
+
+
 def test_read_shards_of_nothing_has_the_schema_columns():
     out = shards.read_shards([])
     assert list(out.columns) == list(shards.SHARD_COLUMNS)
