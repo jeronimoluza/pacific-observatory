@@ -1,4 +1,5 @@
 import re
+from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
@@ -73,6 +74,11 @@ def _row_input_dict(row: pd.Series) -> dict:
     }
 
 
+# These three walk countries.yaml and all 1,463 per-source YAMLs, which costs
+# ~1.2s and does not depend on the frame being prepared. prepare_input called
+# them on every invocation, which was free while it ran once over the whole
+# corpus and is not once it runs per country.
+@lru_cache(maxsize=1)
 def _build_country_lang_map() -> dict[str, str]:
     """Country slug → first language from countries.yaml; '' if missing."""
     out: dict[str, str] = {}
@@ -82,6 +88,7 @@ def _build_country_lang_map() -> dict[str, str]:
     return out
 
 
+@lru_cache(maxsize=1)
 def _build_source_channel_map() -> dict[tuple[str, str], str]:
     """(country, source) → channel from per-source YAML; missing keys default
     to '' downstream."""
@@ -98,6 +105,7 @@ def _build_source_channel_map() -> dict[tuple[str, str], str]:
     return out
 
 
+@lru_cache(maxsize=1)
 def _build_source_coicop_codes_map() -> dict[tuple[str, str], str]:
     """(country, source) → `|`-joined declared coicop_codes from per-source
     YAML. Missing or empty declarations are absent from the map."""

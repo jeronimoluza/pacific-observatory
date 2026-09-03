@@ -75,6 +75,11 @@ def shard_from_path(path: Path, root: Path) -> Optional[Shard]:
     parts = rel.parts
     if len(parts) != PARTITION_DEPTH:
         return None
+    # `_`-prefixed directories are the pipeline's own scratch, not partitions —
+    # the same convention concatenate's source walk uses. Without this an output
+    # tree written beneath the root reads back as corpus on the next pass.
+    if any(part.startswith("_") for part in parts):
+        return None
     region, subregion, country, filename = parts
     return Shard(
         path=path,
@@ -171,6 +176,27 @@ def select(
         return candidates
     patterns = [compile_selector(s) for s in selectors]
     return [s for s in candidates if any(p.match(s.key) for p in patterns)]
+
+
+def group_by(
+    shards: Iterable[Shard], level: str
+) -> "dict[tuple[str, ...], list[Shard]]":
+    """Regroup shards onto a coarser level of the same tree, keyed by the path
+    down to it. Free, because the levels are the shard's parent directories:
+    `country` groups by (region, subregion, country).
+
+    Stages want different axes — concatenate works per source, prepare per
+    country — and this is what makes moving between them cost nothing."""
+    if level not in PARTITION_LEVELS:
+        raise SelectorError(
+            f"unknown level {level!r}; expected one of {PARTITION_LEVELS}"
+        )
+    depth = PARTITION_LEVELS.index(level) + 1
+    groups: dict[tuple[str, ...], list[Shard]] = {}
+    for shard in sorted(shards, key=lambda s: s.key):
+        key = tuple(shard.key.split("/")[:depth])
+        groups.setdefault(key, []).append(shard)
+    return groups
 
 
 def order_longest_first(shards: Iterable[Shard]) -> list[Shard]:

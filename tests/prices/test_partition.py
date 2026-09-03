@@ -148,6 +148,43 @@ def test_order_longest_first_is_size_descending(root):
     assert sizes == sorted(sizes, reverse=True)
 
 
+def test_underscore_directories_are_not_corpus(root):
+    """A stage writing its output beneath the root must not read back as input
+    on the next pass. `_`-prefixed dirs are scratch, as in concatenate's walk."""
+    out = root / "_prepared" / "pacific" / "fiji" / "rbf.csv"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("x\n")
+    assert len(list(partition.iter_shards(root))) == len(TREE)
+
+
+def test_group_by_country_keys_on_the_path_down_to_it(root):
+    groups = partition.group_by(partition.select(None, root), "country")
+    assert set(groups) == {
+        ("ssa", "southern", "south_africa"),
+        ("ssa", "western", "ghana"),
+        ("eap", "pacific", "fiji"),
+        ("eap", "pacific", "tonga"),
+        ("eap", "south_east", "indonesia"),
+    }
+    assert {s.source for s in groups[("ssa", "southern", "south_africa")]} == {
+        "agmarknet",
+        "shoprite",
+    }
+
+
+def test_group_by_region_and_subregion(root):
+    by_region = partition.group_by(partition.select(None, root), "region")
+    assert set(by_region) == {("ssa",), ("eap",)}
+    assert len(by_region[("eap",)]) == 3
+    by_sub = partition.group_by(partition.select(None, root), "subregion")
+    assert ("eap", "pacific") in by_sub
+
+
+def test_group_by_unknown_level_is_an_error(root):
+    with pytest.raises(partition.SelectorError):
+        partition.group_by(partition.select(None, root), "continent")
+
+
 def test_order_longest_first_is_deterministic_on_ties(root):
     ordered = partition.order_longest_first(partition.select(None, root))
     again = partition.order_longest_first(partition.select(None, root))
