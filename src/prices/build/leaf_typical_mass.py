@@ -306,6 +306,26 @@ def write_typical_mass(table: pd.DataFrame) -> None:
     logger.info("wrote %s (%d leaves)", TYPICAL_MASS_CSV, len(table))
 
 
+def read_typical_mass() -> pd.DataFrame | None:
+    """The last persisted table, or None if there is not one yet.
+
+    Read as a *pinned input* by any build that covers less than the whole
+    corpus. `derive_typical_mass` groups by coicop_code across every country, so
+    a slice that re-derives it gets a leaf's typical mass from the slice alone —
+    and its converted rows then differ from the full build for a reason that has
+    nothing to do with whatever change is being tested."""
+    if not TYPICAL_MASS_CSV.exists():
+        return None
+    table = pd.read_csv(TYPICAL_MASS_CSV)
+    if "accepted" in table.columns and table["accepted"].dtype != bool:
+        # A CSV round-trip can hand `accepted` back as text; accepted_lookup
+        # filters on it truthily, and every non-empty string is truthy.
+        table["accepted"] = (
+            table["accepted"].astype(str).str.strip().str.lower().isin({"true", "1"})
+        )
+    return table
+
+
 def accepted_lookup(table: pd.DataFrame) -> dict[str, tuple[float, str]]:
     """coicop_code -> (median_amount, unit) for accepted leaves only."""
     if table.empty:

@@ -76,7 +76,9 @@ def is_sold_by_item(coicop_code) -> bool:
     return str(coicop_code) in SOLD_BY_ITEM_LEAVES
 
 
-def convert_item_rows(df: pd.DataFrame) -> pd.DataFrame:
+def convert_item_rows(
+    df: pd.DataFrame, table: pd.DataFrame | None = None
+) -> pd.DataFrame:
     """Route every `item`-basis row into one of three buckets, and tag provenance.
 
     The three buckets, in strict priority order:
@@ -99,13 +101,20 @@ def convert_item_rows(df: pd.DataFrame) -> pd.DataFrame:
 
     The mass table is derived from THIS frame rather than read from the build's
     own output parquet, which would make the build depend on its previous run.
+    That holds for a full build. A build covering part of the corpus must pass
+    `table` instead: derive_typical_mass groups by coicop_code across every
+    country, so re-deriving it from a slice gives a leaf a typical mass drawn
+    from the slice alone, and the converted rows then disagree with the full
+    build for reasons unrelated to whatever is being tested. A supplied table is
+    used as-is and never rewritten, so a slice cannot overwrite the pin it read.
     """
     if df.empty:
         return df
     df = df.copy()
 
-    table = derive_typical_mass(df)
-    write_typical_mass(table)
+    if table is None:
+        table = derive_typical_mass(df)
+        write_typical_mass(table)
     typical = accepted_lookup(table)
 
     df["mass_source"] = pd.NA

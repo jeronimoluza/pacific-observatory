@@ -96,6 +96,10 @@ testing = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+# pytest's default norecursedirs contains "build", which silently excluded
+# tests/prices/build/ from every `pytest tests/` run while `pytest
+# tests/prices/build` collected it fine. Same list minus that one entry.
+norecursedirs = ["*.egg", ".*", "_darcs", "CVS", "dist", "node_modules", "venv", "{arch}"]
 markers = [
     "unit: Unit tests (no network, no external dependencies)",
     "integration: Integration tests (may require network)",

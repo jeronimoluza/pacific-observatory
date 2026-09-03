@@ -56,6 +56,7 @@ import pandas as pd
 from prices.build.analytical import write_analytical
 from prices.build.basket import EAP_COUNTRIES, FNB_COICOP_PREFIXES
 from prices.build.fx import attach_fx_and_usd
+from prices.build.leaf_typical_mass import TYPICAL_MASS_CSV, read_typical_mass
 from prices.build.qa import compute_qa
 from prices.build.sold_by_item import convert_item_rows
 from prices.build.unit_value_audit import flag_uv_outliers
@@ -209,15 +210,21 @@ def _compute_unit_values(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def _finalize(df: pd.DataFrame) -> pd.DataFrame:
+def _finalize(
+    df: pd.DataFrame, typical_mass: pd.DataFrame | None = None
+) -> pd.DataFrame:
     """Shared tail: require unit, convert item rows, unit_value, Layer-2, FX, QA.
 
     The typical-mass conversion runs before unit values are computed, so a
     converted row is indistinguishable from a measured one to every stage that
     follows. That is what keeps the change local to this one line.
+
+    `typical_mass` pins that conversion to a previously derived table. It is
+    None for a full build, which derives and rewrites it; a scoped build must
+    supply it, or a leaf's typical mass would come from the slice.
     """
     df = _require_unit(df)
-    df = convert_item_rows(df)
+    df = convert_item_rows(df, table=typical_mass)
     df = _compute_unit_values(df)
     # Only rows that measured their own quantity may define what "normal" is in
     # a cell; a typical-mass conversion is scored against them, never with them.
@@ -242,7 +249,7 @@ def _finalize(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def build_snapshot() -> pd.DataFrame:
+def build_snapshot(typical_mass: pd.DataFrame | None = None) -> pd.DataFrame:
     """Build the current-state snapshot from products_input.parquet.
 
     products_input is a dedup'd (name, country, currency) → median-price table
@@ -267,7 +274,7 @@ def build_snapshot() -> pd.DataFrame:
     merged["observation_date"] = today
     merged["source"] = "products_input"
 
-    df = _finalize(merged)
+    df = _finalize(merged, typical_mass=typical_mass)
     BUILD_DIR.mkdir(parents=True, exist_ok=True)
     df.to_parquet(SNAPSHOT_PARQUET, index=False)
     logger.info(
@@ -279,7 +286,9 @@ def build_snapshot() -> pd.DataFrame:
     return df
 
 
-def build_observations(csv_path: Path | None = None) -> pd.DataFrame:
+def build_observations(
+    csv_path: Path | None = None, typical_mass: pd.DataFrame | None = None
+) -> pd.DataFrame:
     """Build the historical time-series observations from the raw CSV."""
     csv_path = csv_path or enrich_config.RAW_PRICES_CSV
     cache = load_filtered_cache()
@@ -349,9 +358,39 @@ def _write_consumables(df: pd.DataFrame) -> None:
     write_analytical(df)
 
 
-def build(csv_path: Path | None = None) -> None:
-    build_snapshot()
-    obs = build_observations(csv_path=csv_path)
+def _pinned_typical_mass(scoped: bool, recompute: bool | None) -> pd.DataFrame | None:
+    """Resolve the typical-mass table for this build.
+
+    The default is structural rather than a flag the caller has to remember: a
+    full build derives the table, a scoped build pins it. Passing `recompute`
+    overrides that in either direction.
+
+    A scoped build with no table on disk raises. Falling back to deriving it
+    would be the silent version of exactly the bug the pin exists to prevent."""
+    if recompute is None:
+        recompute = not scoped
+    if recompute:
+        return None
+    table = read_typical_mass()
+    if table is None:
+        raise RuntimeError(
+            f"scoped build needs a pinned typical-mass table at "
+            f"{TYPICAL_MASS_CSV}, and there is not one. Run a full build first, "
+            f"or pass recompute_leaf_tables=True to derive it from this slice — "
+            f"knowing the slice's leaves will not match the full build's."
+        )
+    logger.info("[build] pinned typical-mass table: %d leaves", len(table))
+    return table
+
+
+def build(
+    csv_path: Path | None = None,
+    scoped: bool = False,
+    recompute_leaf_tables: bool | None = None,
+) -> None:
+    typical_mass = _pinned_typical_mass(scoped, recompute_leaf_tables)
+    build_snapshot(typical_mass=typical_mass)
+    obs = build_observations(csv_path=csv_path, typical_mass=typical_mass)
     _write_consumables(obs)
 
 

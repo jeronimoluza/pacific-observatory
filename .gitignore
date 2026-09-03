@@ -10,6 +10,7 @@ __pycache__/
 env/
 build/
 !src/prices/build/
+!tests/prices/build/
 develop-eggs/
 dist/
 downloads/
