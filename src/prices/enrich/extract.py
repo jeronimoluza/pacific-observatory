@@ -199,11 +199,21 @@ def _match_extra_count(item_name: str, lang: str | None):
             if fc is not None:
                 return int(fc), entry["id"], span
             try:
-                if "count_cjk" in m.groupdict():
+                gd = m.groupdict()
+                if "count_cjk" in gd:
                     n = _cjk_numeral_to_int(m.group("count_cjk"))
                     if n is not None and n > 0:
                         return n, entry["id"], span
                     continue
+                if gd.get("count_lo") is not None:
+                    # "36-40玉" states a piece RANGE, not a count. The true count
+                    # is unknown inside the interval, so take the integer
+                    # midpoint -- it minimises expected relative error on the
+                    # divisor. A non-ascending pair is not a range: fall through
+                    # to the plain reading rather than guess.
+                    lo, hi = int(m.group("count_lo")), int(m.group("count"))
+                    if 0 < lo < hi:
+                        return (lo + hi) // 2, entry["id"], span
                 return int(m.group("count")), entry["id"], span
             except (IndexError, ValueError):
                 continue

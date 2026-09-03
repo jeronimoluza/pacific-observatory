@@ -38,9 +38,13 @@ _CARD_RE = re.compile(
 )
 
 
-def _parse_price(raw: str) -> str:
+def _parse_price(raw: str):
     value = raw.replace("Ar", "").strip()
     value = value.replace(" ", "").replace(",", ".")
+    try:
+        float(value)
+    except ValueError:
+        return None
     return value
 
 
@@ -76,11 +80,15 @@ class LeaderpriceMgSpider(scrapy.Spider):
         logger.info(f"leaderprice_mg page={path} count={len(cards)}")
         scraped_at = datetime.now(timezone.utc).isoformat()
         for product_id, name, raw_price in cards:
+            price = _parse_price(raw_price)
+            if price is None:
+                logger.debug(f"no numeric price for {name!r}: {raw_price!r}")
+                continue
             yield {
                 "product_id": product_id,
                 "product_name": html.unescape(name).strip()[:500],
                 "category": path.strip("/"),
-                "price": _parse_price(raw_price),
+                "price": price,
                 "currency": self.currency,
                 "available": True,
                 "url": f"{_BASE}{path}#{product_id}",

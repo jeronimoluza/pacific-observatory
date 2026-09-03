@@ -164,6 +164,11 @@ class SuningSpider(scrapy.Spider):
         )
         if not price:
             return
+        try:
+            float(price)
+        except (TypeError, ValueError):
+            logger.debug("suning: non-numeric price %r for %s", price, response.url)
+            return
 
         yield {
             "product_id": response.meta["product_id"],

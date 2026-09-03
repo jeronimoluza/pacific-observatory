@@ -78,6 +78,11 @@ EN_COUNT_NUM_NOUN:
    nouns: ['slices?', 'sachets?', 'cakes?', 'combos?', 'pods?', 'sliders?',
            'sticks?', 'bars?', 'tins?', 'trays?', 'tubes?', 'bottles?',
            'cans?', 'jars?', 'cups?', 'bags?', 'boxe?s?', 'cases?', 'sets?']}
+# Noun-then-number is the low-precision direction: real large packs are written
+# number-first ("300 Pack", "200'S"), while a bare number TRAILING a container
+# noun is usually an SKU ("Duo Pack 806939") or a gram weight ("TIN BOX 250").
+# Bounded to two digits so "Box 12" still reads as a count and the rest fall
+# through to `item` rather than fabricating a denominator.
 EN_COUNT_NOUN_TRAIL:
   {template: regex, case: ci,
-   regex: '\b(?:pack|combo|set|box|case)\s*-?\s*(?P<count>\d+)(?![\d.,]*\s*(?:ml|mls|l|ltrs?|litres?|liters?|cl|dl|g|gm|gr|kg|mg|oz|lb)\b)\b'}
+   regex: '\b(?:pack|combo|set|box|case)\s*-?\s*(?P<count>\d{1,2})(?![\d.,]*\s*(?:ml|mls|l|ltrs?|litres?|liters?|cl|dl|g|gm|gr|kg|mg|oz|lb)\b)\b'}

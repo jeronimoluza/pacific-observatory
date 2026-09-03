@@ -66,6 +66,14 @@ _BONUS_PLUS_RE = re.compile(r"\d\s*\+\s*$")
 # value in the gold slice, so gating strictly above it is gate-safe.
 _ORDER_GUARDED_IDS = frozenset({"EN_SACHETS", "EN_APOS_S"})
 _COUNT_BEFORE_MEASURE_CAP = 30
+# A retail pack count above this is not a count: it is an EAN/SKU that trailed a
+# pack noun, or a mass/volume figure that lost its unit token. Both fabricate a
+# per-piece price by dividing by a huge denominator. Failing the guard drops the
+# rung, so the row falls through to `item` -- "no quantity found" -- which the
+# SOLD_BY_ITEM_LEAVES gate then quarantines unless the leaf vets it. Guessing
+# wrong toward "no quantity" is recoverable; guessing wrong toward a fabricated
+# count is not.
+_COUNT_PLAUSIBLE_MAX = 1000
 
 # Explicit multiplication operator immediately preceding a promoted count-noun
 # match ("1.5g × 20개", "90g*3개입") is the unambiguous "per-unit measure ×
@@ -387,8 +395,15 @@ def _rung_basis_marker_emit(st):
     )
 
 
+def _count_is_plausible(n) -> bool:
+    return n is None or n <= _COUNT_PLAUSIBLE_MAX
+
+
 def _rung_multi_pack_pred(st):
-    return st.multi_pack is not None
+    if st.multi_pack is None:
+        return False
+    inner, outer = st.multi_pack
+    return _count_is_plausible(inner) and _count_is_plausible(outer)
 
 
 def _rung_multi_pack_emit(st):
@@ -397,7 +412,11 @@ def _rung_multi_pack_emit(st):
 
 
 def _rung_pack_count_pred(st):
-    return st.pack_count is not None and st.pack_count > 1
+    return (
+        st.pack_count is not None
+        and st.pack_count > 1
+        and _count_is_plausible(st.pack_count)
+    )
 
 
 def _rung_pack_count_emit(st):
@@ -405,7 +424,11 @@ def _rung_pack_count_emit(st):
 
 
 def _rung_extra_count_pred(st):
-    return st.extra_count is not None and st.extra_count > 1
+    return (
+        st.extra_count is not None
+        and st.extra_count > 1
+        and _count_is_plausible(st.extra_count)
+    )
 
 
 def _rung_extra_count_emit(st):

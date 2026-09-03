@@ -39,7 +39,16 @@ def _p(
 PATTERNS: tuple[PackPattern, ...] = (
     _p("CJK_MAI", r"(?P<count>\d+)\s*枚", ("count",)),
     _p("CJK_PAIR", r"(?P<count>\d+)\s*雙", ("count",)),
-    _p("CJK_GRAIN", r"(?P<count>\d+)\s*顆", ("count",)),
+    # 玉 is the Japanese counter for the same round-object class as 顆; without
+    # it a mass-less "みかん 10玉" falls to `item` and prices a whole box as one
+    # fruit. The optional leading group absorbs a RANGE ("36-40玉", "2玉～3玉"),
+    # which extract() resolves to the interval midpoint -- left to the plain
+    # branch, the two range spellings matched opposite ends of the interval.
+    _p(
+        "CJK_GRAIN",
+        r"(?:(?P<count_lo>\d+)\s*[顆玉]?\s*[-–~〜～]\s*)?(?P<count>\d+)\s*[顆玉]",
+        ("count_lo", "count"),
+    ),
     _p("CJK_STRIP", r"(?P<count>\d+)\s*條(?:入)?", ("count",)),
     _p("CJK_SHEET", r"(?P<count>\d+)\s*抽", ("count",)),
     _p(

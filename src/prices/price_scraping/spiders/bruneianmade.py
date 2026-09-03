@@ -47,6 +47,13 @@ class BruneianmadeSpider(scrapy.Spider):
                 continue
 
             price_node = product.css(self.SELECTORS["price"])
+            if len(price_node) != 1:
+                # WooCommerce renders a variable product's price as two
+                # bdi nodes ("$25.00" .. "$60.00"); joining their text
+                # would concatenate into a single unparseable blob
+                # ("25.0060.00"), so refuse rather than emit that.
+                logger.debug(f"skipping variable/range price for {name}")
+                continue
             texts = [
                 t.strip()
                 for t in price_node.css("::text").getall()
