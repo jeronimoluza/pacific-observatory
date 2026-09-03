@@ -7,7 +7,7 @@ url: https://www.denner.ch/de/weinshop/wein-sortiment
 language: de
 cadence: weekly
 channel: specialty-food
-coicop_codes: ["02.1.1"]
+coicop_codes: ["02.1.1.0"]
 archive_prefix: "www.denner.ch/de/weinshop/"
 archive_path_re: '^/de/weinshop/[^/?]+'
 notes: |

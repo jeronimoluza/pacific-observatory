@@ -2,7 +2,7 @@ scaffolding: fetcher
 extraction_pattern: html_scrape
 analytical_role: tariff
 coicop_classification: source_curated
-coicop_codes: ["04.5.1"]
+coicop_codes: ["04.5.1.0"]
 source_key: civ_cie_tariff
 module: ssa.west_africa.cote_divoire.cie_tariff
 function: fetch_civ_cie_tariff

@@ -2,7 +2,7 @@ scaffolding: fetcher
 extraction_pattern: pdf
 analytical_role: tariff
 coicop_classification: source_curated
-coicop_codes: ["04.5.1"]
+coicop_codes: ["04.5.1.0"]
 channel: null
 source_key: fm_yspsc_electricity_tariff
 module: eap.pacific_islands.micronesia_fed_sts.yspsc_electricity_tariff

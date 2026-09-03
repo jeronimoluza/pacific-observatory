@@ -14,8 +14,21 @@ Gates (all True == shippable):
                       a genuine per-item sale (sold_by_item prior). This is the
                       gate that separates a legit per-piece pineapple from a
                       loose-flour row that merely lost its "500 g" token.
+  - ``qa_uv_category`` a parsed mass/volume/length denominator is MEANINGFUL for
+                      this leaf (``enrich.uv_gate``). Distinct from
+                      ``qa_quantity``: a "1mg*84" pharma row has a perfectly
+                      real parsed quantity, it just is not a net pack weight, so
+                      dividing price by it yields $880k/kg. Non-measured bases
+                      (count/item) are not gated here.
   - ``qa_uv_inlier``  Layer-2 unit-value audit passed (trust_uv == "high"): the
                       row sits inside its (leaf, country, unit) distribution.
+  - ``qa_uv_plausible`` the unit value sits inside an ABSOLUTE per-unit band
+                      (``PLAUSIBLE_USD``), judged on its own and not against its
+                      cell. ``qa_uv_inlier`` is a RELATIVE (MAD) test and is
+                      therefore structurally blind to a defect that shifts a
+                      whole country at once, because the bad rows become their
+                      own cell's norm. In the 2026-09-03 Slovak 100x incident
+                      every breaching row passed ``qa_uv_inlier``.
   - ``qa_fx``         a USD unit value could be computed (fx_rate present).
 
 qa_status precedence (a row wears the first gate it fails):
@@ -23,7 +36,14 @@ qa_status precedence (a row wears the first gate it fails):
   review_basis        -> Layer-1 rejected the (leaf, basis) pair
   review_missing_qty  -> `item` basis with no per-item prior: unknown quantity,
                          RETAINED and triageable, never shipped
-  review_uv_outlier   -> Layer-2 flagged (outlier or thin cell)
+  review_uv_category  -> measured denominator on a leaf where mass/volume is not
+                         a sale quantity (pharma dosage, device capacity)
+  review_uv_thin      -> Layer-2 withheld trust for lack of support: the cell
+                         held too few rows to judge the price at all. NOT a
+                         claim that anything is wrong with the row.
+  review_uv_outlier   -> Layer-2 judged the row and it sat outside its cell
+  review_uv_implausible -> the unit value is outside the absolute band for its
+                         standard_unit, whatever its cell says
   review_fx           -> local unit value fine, but no FX -> no USD
   trusted             -> all gates pass; ships in the consumable deliverable
 """
@@ -33,9 +53,23 @@ from __future__ import annotations
 import pandas as pd
 
 from prices.build.sold_by_item import is_sold_by_item
+from prices.enrich import uv_gate
 
-GATE_COLS = ["qa_price_positive", "qa_basis_ok", "qa_quantity", "qa_uv_inlier", "qa_fx"]
+GATE_COLS = [
+    "qa_price_positive",
+    "qa_basis_ok",
+    "qa_quantity",
+    "qa_uv_category",
+    "qa_uv_inlier",
+    "qa_uv_plausible",
+    "qa_fx",
+]
 _MARKER_BASES = frozenset({"mass", "volume", "length", "count"})
+
+# Absolute (low, high) USD bounds per standard_unit. A unit absent from this map
+# is not scoped by the gate: `item` means "no quantity was parsed", so there is
+# no quantity for a per-unit band to be about.
+PLAUSIBLE_USD = {"kg": (0.05, 200.0), "lt": (0.05, 200.0), "unit": (0.005, 500.0)}
 
 
 def _row_has_quantity(basis, coicop_code) -> bool:
@@ -59,8 +93,13 @@ def _status(row) -> str:
     if not row["qa_quantity"]:
         # item-basis with no per-item prior: unknown quantity, quarantined.
         return "review_missing_qty"
+    if not row["qa_uv_category"]:
+        return "review_uv_category"
     if not row["qa_uv_inlier"]:
-        return "review_uv_outlier"
+        # two different verdicts, and a reader must not read one as the other
+        return "review_uv_thin" if row["qa_uv_thin"] else "review_uv_outlier"
+    if not row["qa_uv_plausible"]:
+        return "review_uv_implausible"
     if not row["qa_fx"]:
         return "review_fx"
     return "trusted"
@@ -75,7 +114,7 @@ def compute_qa(df: pd.DataFrame) -> pd.DataFrame:
     """
     df = df.copy()
     if df.empty:
-        for col in GATE_COLS:
+        for col in GATE_COLS + ["qa_uv_thin"]:
             df[col] = pd.Series(dtype=bool)
         df["qa_status"] = pd.Series(dtype=object)
         return df
@@ -94,7 +133,43 @@ def compute_qa(df: pd.DataFrame) -> pd.DataFrame:
         lambda r: _row_has_quantity(r.get("pricing_basis"), r.get("coicop_code")),
         axis=1,
     ).to_numpy()
+    # Vectorised equivalent of `uv_gate.gate(code, basis)[0]`: the allow-list
+    # depends only on the code, so map over DISTINCT codes (hundreds) rather
+    # than calling per row (millions). test_qa_uv_category asserts the two agree.
+    codes = df.get("coicop_code", pd.Series(pd.NA, index=df.index)).astype("string")
+    is_gated = (
+        df.get("pricing_basis", pd.Series(pd.NA, index=df.index))
+        .isin(uv_gate.GATED_BASES)
+        .to_numpy()
+    )
+    allow_by_code = {c: uv_gate.is_allowed_leaf(c) for c in codes.dropna().unique()}
+    # .eq(True) rather than .fillna(False): an unmapped code is NaN here, and
+    # fillna on an object column is deprecated.
+    allowed = codes.map(allow_by_code).eq(True).to_numpy()
+    df["qa_uv_category"] = ~is_gated | allowed
+
     df["qa_uv_inlier"] = trust_uv.eq("high").to_numpy()
+    # not a gate (it never decides shippability), only the reason a failed
+    # qa_uv_inlier wears -- so it stays out of GATE_COLS.
+    df["qa_uv_thin"] = (
+        df.get("uv_thin", pd.Series(False, index=df.index)).fillna(False).to_numpy()
+    )
+    # Same constant the explorer applies to cell MEDIANS, applied here per ROW.
+    # A systematic defect corrupts most of a cell at once, so both catch the same
+    # incident -- but the row test also names the individual offending row.
+    units = df.get("standard_unit", pd.Series(pd.NA, index=df.index))
+    uv_usd = pd.to_numeric(
+        df.get("unit_value_usd", pd.Series(pd.NA, index=df.index)), errors="coerce"
+    )
+    lo = units.map(lambda u: PLAUSIBLE_USD.get(u, (None, None))[0])
+    hi = units.map(lambda u: PLAUSIBLE_USD.get(u, (None, None))[1])
+    scoped = pd.to_numeric(lo, errors="coerce").notna()
+    # A missing unit value is not an implausible one -- qa_fx and the upstream
+    # denominator gates own that case, and this gate must not double-report it.
+    df["qa_uv_plausible"] = (
+        ~scoped | uv_usd.isna() | uv_usd.between(pd.to_numeric(lo), pd.to_numeric(hi))
+    ).to_numpy()
+
     df["qa_fx"] = df.get("fx_rate", pd.Series(pd.NA, index=df.index)).notna().to_numpy()
 
     df["qa_status"] = df.apply(_status, axis=1).to_numpy()

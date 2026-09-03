@@ -2,7 +2,7 @@ scaffolding: spider
 extraction_pattern: scrapy_html
 analytical_role: tariff
 coicop_classification: source_curated
-coicop_codes: ["08.2"]
+coicop_codes: ["08.2.0.0"]
 spider: telia_no
 url: https://www.telia.no/privat/mobilabonnement
 language: "no"
