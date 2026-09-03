@@ -7,6 +7,7 @@ from prices.enrich import config, prepare_shards
 from prices.enrich.classifier import backends, batch_embed
 from prices.enrich.stages import classify as classify_stage
 from prices.enrich.stages import concatenate as concatenate_stage
+from prices.enrich.stages import embed as embed_stage
 from prices.enrich.stages import merge as merge_stage
 from prices.enrich.stages import prepare as prepare_stage
 
@@ -161,3 +162,42 @@ def process_command(
         for name in STAGE_ORDER:
             click.echo(f"\n=== {name} ===")
             run_stage(name)
+
+
+@click.command(name="embed")
+@click.option(
+    "--backend",
+    type=click.Choice(["local", "runpod"]),
+    default="local",
+    show_default=True,
+    help="local encodes here; runpod stages a fleet run and prints how to start it.",
+)
+@click.option(
+    "--only",
+    multiple=True,
+    metavar="SELECTOR",
+    help="Embed only the names under part of the corpus. Repeatable.",
+)
+@click.option(
+    "--pods",
+    type=int,
+    default=1,
+    show_default=True,
+    help="runpod only: how many pods to partition the universe across.",
+)
+@click.option("-r", "--region", "region", default=None)
+@click.option("-S", "--subregion", "subregion", default=None)
+@click.option("-c", "--country", "country", default=None)
+def embed_command(backend, only, pods, region, subregion, country):
+    """Put a vector in the embed store for every name that lacks one.
+
+    Classify reads the store and never fills it, so this is the step that costs
+    real time and, on runpod, real money. `--backend runpod` writes the universe
+    and the per-pod plan and then stops: renting GPUs stays a decision a person
+    makes.
+    """
+    embed_stage.run(
+        backend=backend,
+        selectors=_selectors(only, region, subregion, country),
+        pods=pods,
+    )
