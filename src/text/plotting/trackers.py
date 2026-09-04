@@ -107,6 +107,65 @@ _TOPIC_SECTIONS = [
             "infrastructure",
         ],
     ),
+    # The development-issues taxonomy: twenty-three broad buckets covering the
+    # whole development agenda, deliberately coarser than the groups above and
+    # overlapping them. Sectioned by the World Bank verticals the taxonomy
+    # itself uses, so the split is the author's rather than ours. Every one of
+    # these sections is collapsed on every tracker: they are context for a lens,
+    # never the lens itself.
+    (
+        "Development · People",
+        [
+            "dev_health_nutrition",
+            "dev_education_skills",
+            "dev_labor_social_protection",
+            "dev_gender_inclusion",
+        ],
+    ),
+    (
+        "Development · Prosperity",
+        [
+            "dev_macro_growth",
+            "dev_inflation_cost_of_living",
+            "dev_fiscal_public_finance",
+            "dev_monetary_financial",
+            "dev_trade_private_sector",
+            "dev_poverty_inequality",
+        ],
+    ),
+    (
+        "Development · Planet",
+        [
+            "dev_food_security",
+            "dev_agriculture_rural",
+            "dev_climate_environment",
+            "dev_disasters_resilience",
+            "dev_water_sanitation",
+        ],
+    ),
+    (
+        "Development · Infrastructure",
+        [
+            "dev_energy_extractives",
+            "dev_transport_urban",
+        ],
+    ),
+    (
+        "Development · Digital",
+        [
+            "dev_digital_technology",
+        ],
+    ),
+    (
+        "Development · Cross-Cutting",
+        [
+            "dev_governance_justice",
+            "dev_fragility_conflict",
+            "dev_migration_demography",
+            "dev_shocks_uncertainty",
+            "dev_statistics_monitoring",
+        ],
+    ),
 ]
 
 
@@ -126,7 +185,7 @@ TRACKERS = {
         "file_suffix": "fuel",
         "aria_subject": "fuel-crisis",
         "subdir": "",
-        "themes": ["core"],
+        "themes": ["core", "development"],
         "extra_topics": [],
         "extra_actors": [],
         "topics_chip_groups": _topic_chip_groups({"Energy & Fuel", "Macro & Prices"}),
@@ -138,7 +197,7 @@ TRACKERS = {
         "file_suffix": "foodsec",
         "aria_subject": "food-security",
         "subdir": "food_security",
-        "themes": ["food", "climate"],
+        "themes": ["food", "climate", "development"],
         # Macro context shown beside the food themes. These resolve to the
         # canonical `core` definitions, so `inflation_prices` means the same
         # thing here as it does on the fuel dashboard.
