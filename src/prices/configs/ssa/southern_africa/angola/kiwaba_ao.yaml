@@ -13,9 +13,12 @@ notes: |
   React/Vite SPA backed by an open Supabase PostgREST API. Anon JWT key is
   embedded in the shipped JS bundle (/assets/index-*.js) -- this is
   Supabase's standard public anon-key model (RLS gates access, not key
-  secrecy). Re-verified live 2026-08-06 with the key found this session:
-  GET .../rest/v1/products?select=id,name,price,unit,category:categories(name)
-  &active=eq.true -> 200, count=exact confirms 302 active products total,
+  secrecy). Re-verified live 2026-09-04: products now carries a second FK to
+  categories (subcategory_id), so the bare embed used until 2026-08-12 answers
+  300 PGRST201 and the spider silently scraped nothing. The FK is now named:
+  GET .../rest/v1/products?select=id,name,price,unit,
+  category:categories!products_category_id_fkey(name)
+  &active=eq.true -> 200, count=exact confirms 286 active products total,
   e.g. 'LABIO DE VACA cax 15kg' Kz 48,500.00. Mixed grocery+pharmacy
   catalog; food categories (Carnes, Peixe & Marisco, Horticolas, Cereais &
   Graos, Bebidas, Fubas e farinhas, Lacticinios) are real but shallow

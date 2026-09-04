@@ -5,11 +5,16 @@ React/Vite SPA (div#root) backed by an open Supabase PostgREST API. The
 anon JWT key is embedded in the shipped JS bundle (/assets/index-*.js) and
 is meant to be public (Supabase's standard anon-key model — RLS, not
 secrecy, gates access). We query the REST endpoint directly with
-limit/offset pagination; a live count=exact probe confirmed 302 active
-products total.
+limit/offset pagination; a live count=exact probe confirmed 286 active
+products total (2026-09-04).
 
-category:categories(name) uses PostgREST's foreign-key embedding to resolve
-category_id to a readable name in one request.
+category:categories(...) uses PostgREST's foreign-key embedding to resolve
+category_id to a readable name in one request. The FK is named explicitly:
+products gained a second reference to categories (subcategory_id), so a bare
+categories(name) is ambiguous and PostgREST answers 300 PGRST201 -- which
+Scrapy's HttpErrorMiddleware drops, so the spider ran to a clean exit with
+zero items from 2026-08-12 until this was fixed. HTTPERROR_ALLOW_ALL below
+keeps that class of failure loud.
 """
 
 import html
@@ -26,7 +31,7 @@ _ANON_KEY = (
     "eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsanR3cHRrdmhhenltbXRpcW14Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcwMzI5NDksImV4cCI6MjA5MjYwODk0OX0."
     "AJH7lvtoDOnpsxjMT-_oEYtoSUevVCuKbA1l5IIU_nQ"
 )
-_SELECT = "id,name,price,unit,category:categories(name)"
+_SELECT = "id,name,price,unit,category:categories!products_category_id_fkey(name)"
 _PAGE_SIZE = 200
 MAX_PAGES = 10
 
@@ -43,6 +48,7 @@ class KiwabaAoSpider(scrapy.Spider):
         "DOWNLOAD_DELAY": 2.0,
         "RETRY_TIMES": 3,
         "AUTOTHROTTLE_ENABLED": True,
+        "HTTPERROR_ALLOW_ALL": True,
         "USER_AGENT": (
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
             "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -66,6 +72,12 @@ class KiwabaAoSpider(scrapy.Spider):
 
     def parse_page(self, response):
         offset = response.meta["offset"]
+        if response.status != 200:
+            logger.error(
+                f"kiwaba_ao: HTTP {response.status} at offset={offset}: "
+                f"{response.text[:300]}"
+            )
+            return
         try:
             products = response.json()
         except ValueError:
