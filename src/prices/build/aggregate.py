@@ -333,8 +333,16 @@ def build_snapshot(typical_mass: pd.DataFrame | None = None) -> pd.DataFrame:
     if cache.empty:
         raise RuntimeError("No cache rows match the basket filter.")
 
-    pi = pd.read_parquet(PRODUCTS_INPUT_PARQUET)
-    pi = pi[pi["country"].isin(EAP_COUNTRIES)]
+    # Filter in the reader, not after it. products_input is the GLOBAL corpus --
+    # 37.4M rows over 17 columns, ~27 GB once pandas has it -- and the snapshot
+    # wants only EAP. Reading it whole and subsetting a line later is what the
+    # kernel killed this stage for, at 27.1 GB anon-rss on a 26 GB box. Predicate
+    # pushdown reads the same rows the mask would have kept, so the result is
+    # unchanged; only the rows that never mattered stop being materialised.
+    pi = pd.read_parquet(
+        PRODUCTS_INPUT_PARQUET,
+        filters=[("country", "in", sorted(EAP_COUNTRIES))],
+    )
     merged = pi.merge(cache, on=JOIN_KEYS, how="inner")
     logger.info(
         "[snapshot] joined rows: %d across %d countries",
