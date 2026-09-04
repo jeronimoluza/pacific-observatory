@@ -239,13 +239,14 @@ def text_collect(
 @click.option(
     "--cutoff-start-date",
     type=str,
-    default=None,
+    default="2024-01-01",
+    show_default=True,
     help="Inclusive baseline start date for EPU standardization (YYYY-MM-DD)",
 )
 @click.option(
     "--cutoff-end-date",
     type=str,
-    default="2020-12-31",
+    default="2024-12-31",
     show_default=True,
     help="Inclusive baseline end date for EPU standardization (YYYY-MM-DD)",
 )
