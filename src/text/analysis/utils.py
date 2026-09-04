@@ -13,7 +13,17 @@ import json
 from pathlib import Path
 import ahocorasick
 
-# Languages where words flow without spaces (no \b word boundary)
+# Languages where a keyword cannot be bounded by \b.
+#
+# Most are here because the script runs words together with no spaces at all.
+# Korean is here for a different reason: it spaces between eojeol, but the
+# particles fuse onto the noun, so \b lands inside the word. `\b(빈곤)\b` does
+# not match 빈곤이 and `\b(경제성장)\b` does not match 경제성장률 -- and a bare
+# noun standing free of any particle is the rare case in Korean prose, so the
+# boundary rule was rejecting most of what the pack was written to catch.
+#
+# Latin strings inside these packs are bounded separately, by
+# _is_latin_boundary; see _build_keyword_pattern.
 NON_SPACE_DELIMITED = frozenset(
     {
         "thai",
@@ -25,6 +35,8 @@ NON_SPACE_DELIMITED = frozenset(
         "zh",
         "japanese",
         "ja",
+        "korean",
+        "ko",
         "my",
         "arabic",
         "farsi",

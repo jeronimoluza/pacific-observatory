@@ -40,6 +40,14 @@ CASES = [
     # non-Latin terms keep bare substring matching
     ("经济", "中国经济增长放缓", "chinese_simplified", True, "Han substring"),
     ("เงินเฟ้อ", "ปัญหาเงินเฟ้อรุนแรง", "thai", True, "Thai substring"),
+    # Korean particles fuse onto the noun, so a bare stem has to match through
+    # them. These are the cases \b was rejecting.
+    ("빈곤", "빈곤이 심화되고 있다", "korean", True, "subject particle 이"),
+    ("빈곤", "빈곤 문제", "korean", True, "no particle"),
+    ("경제성장", "경제성장률은 3%", "korean", True, "suffix 률 + topic particle"),
+    ("실업", "청년실업률이 높다", "korean", True, "compound + particle"),
+    ("gdp", "the fund announced", "korean", False, "Latin guard applies here too"),
+    ("gdp", "gdp 성장률", "korean", True, "Latin term standalone"),
     # space-delimited languages are untouched by any of this
     ("un", "the fund announced a plan", "en", False, "english \\b unchanged"),
     ("trade", "a trade deficit widened", "en", True, "english \\b unchanged"),
