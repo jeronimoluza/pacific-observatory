@@ -20,6 +20,7 @@ from prices.enrich.extract_patterns import (
     _CJK_NUM,
     _INNER_VALUE_UNIT_RE,
     _MARKETING_LIMIT_RE,
+    _NUTRIENT_CLAIM_RE,
     _PAREN_CJK_MULTIPACK_RE,
     _PHARMA_PER_UNIT_RE,
     _PHRASE_STRIP_PATTERNS,
@@ -132,6 +133,27 @@ def _value_unit_suppressed(name: str) -> bool:
     a = max(0, m.start() - _VU_SUPPRESS_WINDOW)
     b = min(len(name), m.end() + _VU_SUPPRESS_WINDOW)
     return bool(_VU_SUPPRESS_CTX_RE.search(name[a:b]))
+
+
+_NUTRIENT_CLAIM_MAX_KG = 0.06  # 60 g — above this a supplement gram figure is a pack
+
+
+def _nutrient_claim_span(name: str, pack_value, pack_unit):
+    """Span of the nutritional claim `pack_value`+`pack_unit` was read off, else
+    None. Gram-scale units only, and the "<nutrient> Ng" order additionally has
+    to be serving-sized: that order is also how a genuine pack states itself
+    ("Whey Protein 900g"), so above the cap the measure is believed."""
+    if pack_value is None or pack_unit not in ("g", "mg"):
+        return None
+    mul = float(_UNIT_MAP[pack_unit]["mul"])
+    for m in _NUTRIENT_CLAIM_RE.finditer(name):
+        value = float(m.group("value").replace(",", "."))
+        if abs(value - pack_value) > 1e-9:
+            continue
+        if m.group("lead") and value * mul > _NUTRIENT_CLAIM_MAX_KG:
+            continue
+        return m.span()
+    return None
 
 
 def _match_extra_unit(item_name: str, lang: str | None):

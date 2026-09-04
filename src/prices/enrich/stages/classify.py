@@ -38,6 +38,7 @@ from prices.enrich import audit, coicop_codes, coicop_taxonomy, config, uv_gate
 from prices.enrich.classifier import backends
 from prices.enrich.declared_unit import parse_declared_unit
 from prices.enrich.extract import StructuralFields, extract
+from prices.enrich.fluid_oz import remap_fluid_oz
 from prices.enrich.stages import decisions_store
 from prices.enrich.stages.merge import ENRICHMENT_COLS
 
@@ -274,6 +275,8 @@ def decide_rows(
             row["confidence"] = float(conf)
             row["state"] = "rejected"
             row["trust_level"] = "low"
+
+        remap_fluid_oz(row, name)
 
         if row["trust_level"] == "high":
             verdict = audit.audit(

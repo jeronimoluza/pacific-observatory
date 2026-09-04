@@ -51,6 +51,31 @@ _TOLERANCE_CLAUSE_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Nutritional CLAIM, not a pack size: a supplement label states a serving's
+# nutrient content in the very shape a pack size uses ("24g Protein Per
+# Serving", "5g Creatine"), so a 2 lb tub of whey read as a 24 g package and
+# priced ~80x too high. Two accepted shapes:
+#   1. gram figure glued to a nutrient word, either order ("24g protein",
+#      "Creatine 5g") — the trailing order is unambiguous, the leading order is
+#      also how a genuine pack size reads ("Whey Protein 900g"), so the caller
+#      gates that branch (`lead`) on a serving-sized magnitude and only the
+#      supplement PRODUCT nouns lead: a grocery noun that is also a nutrient
+#      ("Sugar Sticks 5g") states its own pack size that way;
+#   2. gram figure qualified by a per-serving / per-scoop phrase.
+_SUPPLEMENT_WORDS = (
+    r"proteins?|whey|casein|creatine?|bcaas?|eaas?|amino\s*acids?|glutamine|collagen"
+)
+_NUTRIENT_WORDS = (
+    rf"{_SUPPLEMENT_WORDS}|beta[\s-]*alanine|carbs?|carbohydrates?|sugars?|"
+    r"fibres?|fibers?|caffeine|electrolytes?|omega[\s-]*3"
+)
+_NUTRIENT_CLAIM_RE = re.compile(
+    rf"(?:(?P<lead>{_SUPPLEMENT_WORDS})\s*)?"
+    r"(?P<value>\d+(?:[.,]\d+)?)\s*(?:g|gm|gr|grams?|mg)\b"
+    rf"(?(lead)|\s*(?:of\s+)?(?:{_NUTRIENT_WORDS}|per\s+(?:serving|scoop|serve|dose)))",
+    re.IGNORECASE,
+)
+
 _MARKETING_LIMIT_RE = re.compile(
     r"(?:限り|限定|まで|お一人|お1人|まとめ買い|名様限定|名様まで|お一人様|突破|累計|売れ|名様"
     r"|工作天|工作日|営業日|個口|円OFF|円引き|円分)"

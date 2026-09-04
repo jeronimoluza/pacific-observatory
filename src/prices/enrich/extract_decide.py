@@ -33,6 +33,7 @@ from prices.enrich.extract import (
     StructuralFields,
     _is_total_breakdown,
     _markers_fire,
+    _nutrient_claim_span,
     _value_unit_suppressed,
 )
 from prices.enrich.normalize import extract_pack
@@ -85,6 +86,14 @@ _COUNT_PLAUSIBLE_MAX = 1000
 # trailing letter, e.g. the unit-letter-adjacent "90g*3") so no such guard
 # applies to them.
 _MULTIPLY_OP_ADJ_RE = re.compile(r"(?:(?<![A-Za-z0-9])[xX](?![A-Za-z])|[×✕*])\s*$")
+# The mirror spelling: the operator FOLLOWS the promoted count-noun and joins it
+# to the measure ("25 sachets x 20g", "100 bags x 2g"). Same "counter ×
+# per-unit measure" multipack, written the other way round — but only the
+# operator-first form was tested, so on mass basis the N fell through to the
+# UV-inert `count` and a 25-sachet box priced as one 20g sachet. A digit must
+# follow the operator, so a size letter or stray token after the count noun
+# ("4 pcs XL") never fabricates a multiplier.
+_MULTIPLY_OP_TRAIL_RE = re.compile(r"^\s*(?:[xX](?![A-Za-z])|[×✕*])\s*\d")
 
 
 def _clean_promote_count(ec_cand, stripped: str):
@@ -244,6 +253,27 @@ def _resolve_pack(by: dict, *, item_name: str, has_non_ascii: bool):
             )
         pack_value = None
         pack_unit = None
+
+    # Pass 1f: nutritional-claim suppression. A serving's advertised nutrient
+    # mass ("24g Protein Per Serving") is not the package quantity; drop it and
+    # re-scan the text after it, since the real size is often stated there
+    # ("... 24g Protein Per Serving 2lb"). The tail shrinks every pass, so a
+    # name stacking several claims terminates.
+    tail, offset = item_name, 0
+    while True:
+        claim = _nutrient_claim_span(tail, pack_value, pack_unit)
+        if claim is None:
+            break
+        if match_record.is_recording():
+            match_record.record_suppression(
+                suppressed_text=tail[claim[0] : claim[1]],
+                span=(offset + claim[0], offset + claim[1]),
+                suppression_type="match",
+                reason="nutrient_claim",
+                regex_id="pack_lang",
+            )
+        tail, offset = tail[claim[1] :], offset + claim[1]
+        _cleaned, _alt_count, pack_value, pack_unit = extract_pack(tail, None)
 
     return pack_count, pack_value, pack_unit
 
@@ -528,7 +558,9 @@ def decide(
     if noun_count_raw is not None and ec_cand is not None and ec_cand.span:
         span = ec_cand.span
         window = stripped[max(0, span[0] - 6) : span[0]]
-        noun_count_via_operator = bool(_MULTIPLY_OP_ADJ_RE.search(window))
+        noun_count_via_operator = bool(_MULTIPLY_OP_ADJ_RE.search(window)) or bool(
+            _MULTIPLY_OP_TRAIL_RE.match(stripped[span[1] : span[1] + 8])
+        )
 
     basis_marker = None
     if pack_unit is None and extra_entry is None:
