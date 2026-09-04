@@ -307,6 +307,32 @@ WB_PIC_MEMBERS = [
     "Vanuatu",
 ]
 
+# Spellings that name a country the workbooks already list under another name.
+# They arrive from analysts typing free text and from corpus discovery, which
+# share no vocabulary. Left alone a country splits in two: the dropdown offers
+# both, the year bars divide between them, and -- because the PIC view matches
+# WB_PIC_MEMBERS by exact string -- rows filed under the variant drop out of
+# "PICs only (12)" entirely. Keys are punctuation-free and lowercased, so a
+# newly invented separator lands on the canonical name without another entry.
+COUNTRY_ALIASES = {
+    "hong kong sar china": "Hong Kong SAR, China",
+    "marshall islands": "RMI",
+    "micronesia fed sts": "FSM",
+    "micronesia federated states of": "FSM",
+    "timor leste": "Timor-Leste",
+    "papua new guinea": "PNG",
+    "lao pdr": "Laos",
+    "viet nam": "Vietnam",
+}
+
+
+def canonical_country(value: Any) -> str:
+    """One spelling per country, so a name cannot split the same country in two."""
+    name = clean_text(value)
+    key = re.sub(r"[^a-z0-9]+", " ", name.lower()).strip()
+    return COUNTRY_ALIASES.get(key, name)
+
+
 REGIONS: List[Dict[str, Any]] = [
     {"key": "ssa", "display_name": "Sub-Saharan Africa"},
     {
@@ -601,7 +627,7 @@ def compact_join(parts: Iterable[Tuple[str, str]]) -> str:
 
 
 def normalize_row(raw: Dict[str, str], seq_num: int) -> Optional[Dict[str, str]]:
-    country = find_value(raw, "country")
+    country = canonical_country(find_value(raw, "country"))
     policy = find_value(raw, "policy")
 
     direction = find_value(raw, "direction")
@@ -1284,6 +1310,10 @@ def generate_region(
     discovered = None
     if discovered_path and Path(discovered_path).exists():
         discovered = json.loads(Path(discovered_path).read_text())
+        # These rows skip normalize_row -- v6 appends them to the workbook rows
+        # verbatim -- so they need the same country vocabulary applied here.
+        for row in discovered:
+            row["Country"] = canonical_country(row.get("Country"))
         print(
             f"  discovered source: {Path(discovered_path).name} ({len(discovered)} rows)"
         )
