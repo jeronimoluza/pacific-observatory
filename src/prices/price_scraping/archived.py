@@ -209,10 +209,27 @@ def normalize_price(raw: Any, currency: str | None = None) -> str | None:
         78.000      tail is exactly 3   -> thousands iff no minor unit
 
     Passing no ``currency`` leaves the ambiguous case exactly as it shipped.
+
+    A currency symbol that itself carries a period -- Peru's ``S/.``,
+    Bolivia's ``Bs.`` -- sits *before* the number in rendered microdata text
+    (``<span itemprop="price">S/. 18.50</span>``). The old ``[^\\d.,\\-]``
+    strip kept that period (it's in the allow-list) and butted it up against
+    the real decimal point, so ``"S/. 18.50"`` read as two dots -- the
+    "thousands, always" rule above -- and collapsed to ``1850``: a clean
+    100x inflation, confirmed on archived plazavea_pe/fidalga_bo pages.
+    Dropping a leading run that contains a genuine symbol character (a
+    letter or ``/``/``$``/etc., not just whitespace/dot/comma) removes the
+    symbol and its punctuation before that rule ever sees it -- and leaves a
+    bare leading decimal like ``".99"`` untouched, since its only prefix
+    character is the dot itself.
     """
     if raw is None:
         return None
-    s = re.sub(r"[^\d.,\-]", "", str(raw))
+    s = str(raw)
+    m = re.search(r"[-\d]", s)
+    if m and re.search(r"[^\s.,]", s[: m.start()]):
+        s = s[m.start() :]
+    s = re.sub(r"[^\d.,\-]", "", s)
     if not s:
         return None
     has_comma, has_dot = "," in s, "." in s

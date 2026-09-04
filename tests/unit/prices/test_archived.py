@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import pytest
 
-from prices.price_scraping.archived import row_from_meta, rows_from_jsonld
+from prices.price_scraping.archived import (
+    normalize_price,
+    row_from_meta,
+    rows_from_jsonld,
+)
 
 
 @pytest.mark.unit
@@ -100,3 +104,36 @@ def test_iranian_toman_survives_the_iso_gate():
         '"offers":{"@type":"Offer","price":"50000","priceCurrency":"IRT"}}</script>'
     )
     assert rows_from_jsonld(html, "https://example.test/p/chai")[0]["currency"] == "IRT"
+
+
+@pytest.mark.unit
+def test_normalize_price_drops_currency_symbol_with_embedded_dot():
+    """Peru's Sol symbol is ``S/.`` and Bolivia's is ``Bs.`` -- both carry
+    their own trailing period. Rendered microdata text puts the symbol
+    before the number (confirmed on archived plazavea_pe and fidalga_bo
+    pages: ``<p itemprop="price">S/. 18.50</p>``), so the old strip kept
+    that period, butted it against the real decimal point, and the "two
+    dots means thousands separators" rule collapsed "18.50" into "1850" --
+    a 100x inflation that reached global_prices_trusted_observations for
+    Peru rice in 2017 and Bolivia rice in 2022-2025."""
+    assert normalize_price("S/. 18.50") == "18.5"
+    assert normalize_price("Bs. 13.50") == "13.5"
+    assert normalize_price("S/.320.00") == "320.0"
+
+
+@pytest.mark.unit
+def test_normalize_price_still_resolves_eu_us_thousands_ambiguity():
+    """The fix must not disturb the existing dot/comma disambiguation."""
+    assert normalize_price("1.234,56") == "1234.56"
+    assert normalize_price("1,234.56") == "1234.56"
+    assert normalize_price("1.234.567") == "1234567.0"
+    assert normalize_price("-45.00") == "-45.0"
+
+
+@pytest.mark.unit
+def test_normalize_price_keeps_a_bare_leading_decimal():
+    """A price with no integer part and no symbol -- ".99" -- has only one
+    dot before the digit-anchored trim runs, so it must not be swept up by
+    the currency-symbol fix: its only prefix character is the dot itself,
+    not a letter/symbol, so the trim must leave it alone."""
+    assert normalize_price(".99") == "0.99"
