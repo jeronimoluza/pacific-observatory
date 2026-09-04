@@ -129,7 +129,6 @@ def test_a_selector_forces_the_shards_even_over_a_monolith(tmp_path, shard_root)
 
 def test_join_chunk_uses_the_stored_hash_rather_than_rehashing(shard_root, monkeypatch):
     chunk = next(iter(aggregate._iter_shard_chunks(["eap/pacific/fiji"], shard_root)))
-    monkeypatch.setattr(aggregate, "EAP_COUNTRIES", frozenset({"fiji"}))
 
     def explode(*args, **kwargs):
         raise AssertionError("input_hash was recomputed despite being in the shard")

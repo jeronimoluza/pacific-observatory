@@ -52,10 +52,11 @@ from pathlib import Path
 from typing import Iterator, Sequence
 
 import pandas as pd
+import pyarrow.parquet as pq
 
 from prices import partition
 from prices.build.analytical import write_analytical
-from prices.build.basket import EAP_COUNTRIES, FNB_COICOP_PREFIXES
+from prices.build.basket import FNB_COICOP_PREFIXES, in_scope_countries
 from prices.build.fx import attach_fx_and_usd
 from prices.build.leaf_typical_mass import TYPICAL_MASS_CSV, read_typical_mass
 from prices.build.qa import compute_qa
@@ -227,7 +228,7 @@ def _join_chunk(chunk: pd.DataFrame, cache: pd.DataFrame) -> pd.DataFrame:
     read into the chunk so the URL branch matches prepare exactly — otherwise
     every row would fall to the URL-less fallback and mismatch the snapshot hashes.
     """
-    chunk = chunk[chunk["country"].isin(EAP_COUNTRIES)].copy()
+    chunk = chunk[in_scope_countries(chunk["country"])].copy()
     if chunk.empty:
         return chunk
     # Parquet shards carry input_hash, computed once when the shard was written.
@@ -323,6 +324,33 @@ def _finalize(
     return df
 
 
+def _read_products_for(hashes: set[str]) -> pd.DataFrame:
+    """products_input rows the classifier actually decided, streamed by row group.
+
+    The country filter used to be a predicate pushdown on EAP_COUNTRIES, which
+    was the only thing keeping this stage inside the box: products_input is the
+    GLOBAL corpus -- 37.4M rows over 17 columns, ~27 GB once pandas has it --
+    and reading it whole is what the kernel killed this stage for, at 27.1 GB
+    anon-rss on a 26 GB box. A global build has no country to push down, so the
+    bound comes from the join instead: the snapshot only ever keeps the inner
+    join against the cache, so applying both filters per row group holds the
+    peak at one row group plus the rows the join would have kept anyway.
+    """
+    pf = pq.ParquetFile(PRODUCTS_INPUT_PARQUET)
+    frames = []
+    for rg in range(pf.metadata.num_row_groups):
+        chunk = pf.read_row_group(rg).to_pandas()
+        chunk = chunk[
+            chunk["input_hash"].astype(str).isin(hashes)
+            & in_scope_countries(chunk["country"])
+        ]
+        if not chunk.empty:
+            frames.append(chunk)
+    if not frames:
+        return pd.DataFrame(columns=[*pf.schema_arrow.names])
+    return pd.concat(frames, ignore_index=True)
+
+
 def build_snapshot(typical_mass: pd.DataFrame | None = None) -> pd.DataFrame:
     """Build the current-state snapshot from products_input.parquet.
 
@@ -335,16 +363,7 @@ def build_snapshot(typical_mass: pd.DataFrame | None = None) -> pd.DataFrame:
     if cache.empty:
         raise RuntimeError("No cache rows match the basket filter.")
 
-    # Filter in the reader, not after it. products_input is the GLOBAL corpus --
-    # 37.4M rows over 17 columns, ~27 GB once pandas has it -- and the snapshot
-    # wants only EAP. Reading it whole and subsetting a line later is what the
-    # kernel killed this stage for, at 27.1 GB anon-rss on a 26 GB box. Predicate
-    # pushdown reads the same rows the mask would have kept, so the result is
-    # unchanged; only the rows that never mattered stop being materialised.
-    pi = pd.read_parquet(
-        PRODUCTS_INPUT_PARQUET,
-        filters=[("country", "in", sorted(EAP_COUNTRIES))],
-    )
+    pi = _read_products_for(set(cache["input_hash"].astype(str)))
     merged = pi.merge(cache, on=JOIN_KEYS, how="inner")
     logger.info(
         "[snapshot] joined rows: %d across %d countries",
