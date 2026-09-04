@@ -65,6 +65,19 @@ MERGED_PIECE_UNIT = "each"
 TYPICAL_MASS_CSV = BUILD_DIR / "leaf_typical_mass.csv"
 SUPPRESSED_PARQUET = BUILD_DIR / "global_prices_suppressed_units.parquet"
 
+# A residual leaf is the taxonomy's own catch-all: "... n.e.c." or a title that
+# OPENS with "Other". The opening anchor is what makes the rule safe -- "Meat of
+# horses and other equines" and "Cantaloupes and other melons" are named leaves
+# that merely mention the word, and a substring test would swallow them.
+#
+# These leaves hold whatever was placed confidently at the subclass level but
+# never resolved to a named sibling, so their members share no common unit and a
+# LEVEL for the group is not a quantity. On this corpus that is 52 leaves --
+# 20.7% of the table's rows and 31.9% of its observations -- so they cannot
+# simply be deleted without the table looking gutted, and they cannot be left
+# unmarked without inviting a comparison that does not mean anything.
+_RESIDUAL_TITLE_RE = re.compile(r"n\.e\.c\.|^other\b", re.IGNORECASE)
+
 _COICOP_RE = re.compile(r"^(\d+(?:\.\d+)*)")
 _ND_SUFFIX_RE = re.compile(r"\s*\(ND\)\s*$")
 
@@ -86,6 +99,13 @@ def _load_coicop_titles() -> dict[str, str]:
         df["title"].astype(str).str.replace(_ND_SUFFIX_RE, "", regex=True).str.strip()
     )
     return dict(zip(df["code"], df["title"]))
+
+
+def _residual_leaves(titles: dict[str, str]) -> frozenset[str]:
+    """Leaf codes whose title marks them as the taxonomy's catch-all."""
+    return frozenset(
+        code for code, title in titles.items() if _RESIDUAL_TITLE_RE.search(title)
+    )
 
 
 def _load_country_names() -> dict[str, str]:
@@ -226,6 +246,7 @@ def _monthly_series(df: pd.DataFrame) -> pd.DataFrame:
 def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
     coicop_titles = _load_coicop_titles()
     country_names = _load_country_names()
+    residual = _residual_leaves(coicop_titles)
 
     used_countries = sorted(
         set(current["country"].unique())
@@ -252,7 +273,14 @@ def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
     region_cols = [{"key": "world", "label": "World"}] + region_order
     region_medians: dict[str, dict[str, float]] = {}
     region_n_countries: dict[str, dict[str, int]] = {}
+    # Residual leaves get no region or world figure. A cross-country median over
+    # "Other bakery products" compares one country's croissants against another's
+    # flatbread, and the number carries the same authority on the page as a real
+    # one. Their per-country cells stay, so the coverage is still legible; it is
+    # the comparison across countries that is withheld, and the row is marked so
+    # the gap reads as deliberate rather than missing.
     keyed = current.assign(_region=current["country"].map(of_country))
+    keyed = keyed[~keyed["coicop_code"].isin(residual)]
     for (code, unit), grp in keyed.groupby(["coicop_code", "standard_unit"]):
         med: dict[str, float] = {}
         cnt: dict[str, int] = {}
@@ -270,9 +298,10 @@ def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
         region_medians[key] = med
         region_n_countries[key] = cnt
 
+    shown = current[~current["coicop_code"].isin(residual)]
     kpi = {
         "countries": len(country_display),
-        "coicop_leaves": int(current["coicop_code"].nunique()),
+        "coicop_leaves": int(shown["coicop_code"].nunique()),
         "products": int(current["n_obs"].sum()),
     }
 
@@ -298,6 +327,7 @@ def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
         "region_cols": region_cols,
         "region_medians": region_medians,
         "region_n_countries": region_n_countries,
+        "residual_leaves": sorted(residual & set(current["coicop_code"].dropna())),
         "kpi": kpi,
         "current": current.to_dict(orient="records"),
         "monthly": [
