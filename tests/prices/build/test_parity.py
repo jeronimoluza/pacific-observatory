@@ -147,3 +147,22 @@ def test_a_non_unique_key_is_refused(tmp_path):
         parity.compare_keyed(
             ref / f"{SNAP}.parquet", new / f"{SNAP}.parquet", ("input_hash",)
         )
+
+
+def test_the_same_name_in_two_countries_is_two_rows_not_a_duplicate(tmp_path):
+    """A generic aggregator listing ("Eggs, x12") carries one name-hash but is
+    reported by many countries at different prices. Under the declared grain
+    those are distinct rows; under input_hash alone the build is undiffable."""
+    frame = {k: list(v) for k, v in BASE.items()}
+    frame["input_hash"][1] = "a"  # same name-hash as row 0...
+    frame["country"][1] = "fiji"  # ...but a different country
+    frame["price_local"][1] = 9.0
+    ref = _write(tmp_path, "ref", frame)
+    new = _write(tmp_path, "new", frame)
+
+    key = parity.KEYS[SNAP]
+    assert key == ("input_hash", "country")
+    r = parity.compare_keyed(ref / f"{SNAP}.parquet", new / f"{SNAP}.parquet", key)
+
+    assert r["common"] == 5
+    assert r["dropped"] == 0 and r["added"] == 0 and r["changed"] == 0

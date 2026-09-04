@@ -27,7 +27,17 @@ import pyarrow.parquet as pq
 # Grain of each artifact. The key has to be unique or the row-level diff is
 # meaningless, so uniqueness is asserted rather than assumed.
 KEYS = {
-    "global_prices_snapshot": ("input_hash",),
+    # (input_hash, country), not input_hash alone. The hash is taken over the
+    # product NAME, so a generic aggregator listing -- "Rice (Milled)",
+    # "Eggs, x12" -- collides across every country that reports it, at a
+    # different price in each. Those are distinct observations and both must
+    # survive; the country is the missing identity column, not a duplicate.
+    #
+    # input_hash alone looked unique only because the build was filtered to one
+    # region, which left at most one country per name. Measured on the first
+    # global build: 2,894 excess rows under ("input_hash",), exactly 0 under
+    # ("input_hash", "country").
+    "global_prices_snapshot": ("input_hash", "country"),
     "global_prices_unit_value_summary": (
         "period",
         "coicop_code",
