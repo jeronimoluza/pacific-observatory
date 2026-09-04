@@ -18,6 +18,7 @@ from text.plotting.trackers import (
     addon_filename,
     dashboard_filename,
     get_tracker,
+    tracker_chip_groups,
     tracker_dir,
     tracker_groups,
     tracker_label,
@@ -278,7 +279,8 @@ input[type="number"]:hover { border-color: #667eea; }
 input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .chart-wrapper { position: relative; height: 65vh; min-height: 360px; }
 .plot-row { display: flex; gap: 14px; align-items: stretch; margin-top: 8px; }
-.plot-row .chart-wrapper { flex: 1; min-width: 0; }
+.chart-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.chart-col .chart-wrapper { flex: 1 1 auto; }
 .toggle-group { display: inline-flex; }
 .toggle-group label {
     padding: 4px 12px;
@@ -301,10 +303,20 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
     position: relative;
 }
 .toggle-group label:hover:not(:has(input:checked)) { border-color: #667eea; background: #f0f4ff; }
-.chip-section { margin-bottom: 10px; }
-.chip-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
-.chip-tools { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.chip-tools input[type="text"] { padding: 6px 10px; border: 1px solid #ddd; border-radius: 16px; font-size: 0.82em; width: 160px; }
+.chip-sidebar {
+    flex: 0 0 232px;
+    width: 232px;
+    height: 65vh;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-right: 1px solid #eee;
+    padding-right: 10px;
+}
+.chip-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.9em; }
+.chip-tools { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.chip-tools input[type="text"] { padding: 6px 10px; border: 1px solid #ddd; border-radius: 16px; font-size: 0.82em; flex: 1 1 100%; min-width: 0; }
 .chip-tools input[type="text"]:hover { border-color: #667eea; }
 .chip-tools input[type="text"]:focus { outline: 0; border-color: #667eea; }
 .chip-tools button { padding: 4px 8px; border: 1px solid #ddd; border-radius: 12px; background: #fff; font-size: 0.8em; cursor: pointer; }
@@ -312,12 +324,43 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .chip-container {
     display: flex;
     flex-wrap: wrap;
+    align-content: flex-start;
     gap: 6px;
-    margin-bottom: 12px;
-    max-height: 120px;
+    flex: 1 1 auto;
     overflow-y: auto;
-    padding: 4px 0;
+    padding: 4px 2px 4px 0;
 }
+/* Groups stack: a full-width flex item forces a line break in the wrap
+   container, so grouped and ungrouped chip lists share one container. */
+.chip-group { width: 100%; }
+.chip-group.is-empty { display: none; }
+.chip-group-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 4px 2px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-size: 0.78em;
+    font-weight: 600;
+    color: #444;
+    text-align: left;
+}
+.chip-group-header:hover { color: #667eea; }
+.chip-group-caret { display: inline-block; transition: transform 0.15s; color: #999; }
+.chip-group.is-open .chip-group-caret { transform: rotate(90deg); }
+.chip-group-label { flex: 1; }
+.chip-group-count { color: #999; font-weight: 400; font-variant-numeric: tabular-nums; }
+.chip-group-body { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 0 8px 10px; }
+/* Collapsed hides its members, except the ones the reader still needs to see:
+   a selected pill (its line is on the chart and this is the only way off) and
+   a search hit (otherwise search could not reach into a closed group). */
+.chip-group:not(.is-open) .chip-group-body > .chip { display: none; }
+.chip-group:not(.is-open) .chip-group-body > .chip.is-hit,
+.chip-group:not(.is-open) .chip-group-body > .chip:has(input:checked) { display: inline-flex; }
+.chip.is-filtered { display: none !important; }
 .chip {
     display: inline-flex;
     align-items: center;
@@ -338,32 +381,33 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
     color: #fff;
     border-color: var(--chip-color, #667eea);
 }
-.legend-panel {
-    width: 260px;
-    height: 65vh;
-    min-height: 360px;
-    overflow-y: auto;
-    border-left: 1px solid #eee;
-    padding-left: 10px;
+/* Colour identity lives on the pills, so the key carries only what the pills
+   cannot say: what a line's stroke means. Three rows, one per stroke. */
+.style-key {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+    font-size: 0.78em;
+    color: #555;
 }
-.legend-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 6px 8px;
-    cursor: pointer;
-    user-select: none;
+.style-key-row { display: flex; align-items: center; gap: 8px; }
+.key-line { width: 26px; height: 0; border-top-color: #888; }
+.key-ma { border-top: 2.5px solid #888; }
+.key-raw { border-top: 1.5px dashed #888; }
+.key-current { border-top: 2px dashed #888; position: relative; }
+.key-current::after {
+    content: '';
+    position: absolute;
+    right: 3px;
+    top: -3px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #888;
 }
-.legend-group:hover { border-color: #667eea; background: #f8faff; }
-.legend-group.is-hidden { opacity: 0.5; }
-.legend-title { font-size: 0.85em; font-weight: 600; color: #333; }
-.legend-subitem { display: flex; align-items: center; gap: 6px; padding-left: 12px; font-size: 0.78em; color: #555; }
-.legend-line { width: 22px; border-top: 2px solid #999; }
 .chart-tooltip {
     position: absolute;
     background: #fff;
@@ -403,15 +447,18 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .noUi-tooltip { font-size: 0.75em; padding: 2px 6px; background: #667eea; color: #fff; border: none; border-radius: 4px; }
 @media (max-width: 900px) {
     .plot-row { flex-direction: column; }
-    .legend-panel {
+    .chip-sidebar {
+        flex: 1 1 auto;
         width: 100%;
         height: auto;
-        max-height: 160px;
-        border-left: 0;
-        border-top: 1px solid #eee;
-        padding-left: 0;
-        padding-top: 8px;
+        min-height: 0;
+        max-height: 200px;
+        border-right: 0;
+        border-bottom: 1px solid #eee;
+        padding-right: 0;
+        padding-bottom: 8px;
     }
+    .chart-col .chart-wrapper { height: 65vh; }
 }
 @media (max-width: 760px) {
     .date-slider { flex: 1; max-width: none; }
@@ -625,59 +672,6 @@ function getSliderRange(state) {
     if (!state.slider || !state.sliderDates.length) return { from: '', to: '' };
     const vals = state.slider.get().map(v => Math.round(v));
     return { from: state.sliderDates[vals[0]], to: state.sliderDates[vals[1]] };
-}
-
-function updateLegend(chart, legendId) {
-    const container = document.getElementById(legendId);
-    if (!container || !chart) return;
-    container.innerHTML = '';
-    const groups = {};
-    const order = chart._groupOrder || [];
-    chart.data.datasets.forEach((ds, i) => {
-        const key = ds._legendGroup || ds.label || 'Series';
-        if (!groups[key]) {
-            groups[key] = { label: ds._legendLabel || ds.label || key, datasets: [] };
-        }
-        groups[key].datasets.push({ ds, i });
-    });
-    const orderedKeys = order.length ? order.filter(k => groups[k]) : Object.keys(groups);
-    orderedKeys.forEach(key => {
-        const group = groups[key];
-        const allVisible = group.datasets.every(d => chart.isDatasetVisible(d.i));
-        const groupEl = document.createElement('div');
-        groupEl.className = 'legend-group' + (allVisible ? '' : ' is-hidden');
-        const title = document.createElement('div');
-        title.className = 'legend-title';
-        title.textContent = group.label;
-        groupEl.appendChild(title);
-        const sorted = group.datasets.slice().sort((a, b) => {
-            const av = VARIANT_ORDER.indexOf(a.ds._variant || '');
-            const bv = VARIANT_ORDER.indexOf(b.ds._variant || '');
-            return (av === -1 ? 99 : av) - (bv === -1 ? 99 : bv);
-        });
-        sorted.forEach(entry => {
-            const v = entry.ds._variant;
-            if (!VARIANT_LABELS[v]) return;
-            const row = document.createElement('div');
-            row.className = 'legend-subitem';
-            const line = document.createElement('span');
-            line.className = 'legend-line';
-            line.style.borderTopColor = entry.ds.borderColor || '#999';
-            line.style.borderTopStyle = entry.ds.borderDash && entry.ds.borderDash.length ? 'dashed' : 'solid';
-            const label = document.createElement('span');
-            label.textContent = VARIANT_LABELS[v];
-            row.appendChild(line);
-            row.appendChild(label);
-            groupEl.appendChild(row);
-        });
-        groupEl.addEventListener('click', () => {
-            const nextVisible = !allVisible;
-            group.datasets.forEach(d => chart.setDatasetVisibility(d.i, nextVisible));
-            chart.update();
-            updateLegend(chart, legendId);
-        });
-        container.appendChild(groupEl);
-    });
 }
 
 function buildTooltipGroups(chart, dataIndex) {
@@ -1109,21 +1103,25 @@ EPU_PAGE_TEMPLATE = r"""<!DOCTYPE html>
         <label><input type="checkbox" name="ma-toggle" value="12">12-Mo MA</label>
     </div>
 </div>
-<div class="chip-section">
-    <div class="chip-header">
-        <label>__ITEM_LABEL__: <span id="selected-count">0</span> selected</label>
+<p style="margin: 6px 0 0; font-size: 0.85em; color: #667085;" id="actor-explainer">-</p>
+<div class="plot-row">
+    <div class="chip-sidebar">
+        <div class="chip-header">__ITEM_LABEL__: <span id="selected-count">0</span> selected</div>
         <div class="chip-tools">
             <input type="text" id="item-search" placeholder="__SEARCH_PLACEHOLDER__">
             <button type="button" id="default-btn">Default</button>
             <button type="button" id="clear-btn">Clear</button>
         </div>
+        <div class="chip-container" id="item-select">__CHIP_HTML__</div>
     </div>
-    <div class="chip-container" id="item-select">__CHIP_HTML__</div>
-</div>
-<p style="margin: 6px 0 0; font-size: 0.85em; color: #667085;" id="actor-explainer">-</p>
-<div class="plot-row">
-    <div class="chart-wrapper"><canvas id="chart"></canvas></div>
-    <div class="legend-panel" id="legend"></div>
+    <div class="chart-col">
+        <div class="chart-wrapper"><canvas id="chart"></canvas></div>
+        <div class="style-key">
+            <div class="style-key-row"><span class="key-line key-ma"></span>Moving average &mdash; 3, 6 or 12 months</div>
+            <div class="style-key-row"><span class="key-line key-raw"></span>Raw monthly</div>
+            <div class="style-key-row"><span class="key-line key-current"></span>Current month &mdash; weekly and daily points</div>
+        </div>
+    </div>
 </div>
 <script>
 __COMMON_JS__
@@ -1176,7 +1174,16 @@ function applyChipFilters() {
         if (labelEl) labelEl.textContent = label;
         const txt = label.toLowerCase();
         const match = !q || txt.indexOf(q) !== -1;
-        chip.style.display = match ? 'inline-flex' : 'none';
+        // A selected pill always stays on screen: its line is on the chart and
+        // the pill is the only way to take it off again.
+        chip.classList.toggle('is-filtered', !(match || input.checked));
+        chip.classList.toggle('is-hit', !!(q && match));
+    });
+    document.querySelectorAll('#item-select .chip-group').forEach(group => {
+        const shown = group.querySelectorAll('.chip:not(.is-filtered)').length;
+        group.classList.toggle('is-empty', shown === 0);
+        const cnt = group.querySelector('.chip-group-count');
+        if (cnt) cnt.textContent = shown;
     });
 }
 function setSelected(picks) {
@@ -1328,7 +1335,6 @@ function render() {
         }
     });
     state.chart._groupOrder = selectedItems.slice();
-    updateLegend(state.chart, 'legend');
     document.getElementById('actor-explainer').innerHTML =
         '<b>Denominator:</b> ' + MEASURE_META[measure].blurb +
         ' Each __NOUN__ is then ' + SCALE_META[scale] + '.';
@@ -1345,6 +1351,11 @@ document.getElementById('item-select').addEventListener('change', function() {
     render();
 });
 document.getElementById('item-search').addEventListener('input', applyChipFilters);
+document.querySelectorAll('#item-select .chip-group-header').forEach(h => {
+    h.addEventListener('click', function() {
+        h.parentElement.classList.toggle('is-open');
+    });
+});
 document.getElementById('default-btn').addEventListener('click', function() {
     setSelected(defaultItems);
     render();
@@ -1399,13 +1410,50 @@ def _country_options(data):
     )
 
 
-def _chip_html(items, defaults):
-    return "\n".join(
+def _chip_one(item, defaults):
+    return (
         f'<label class="chip"><input type="checkbox" value="{item}"'
         f"{' checked' if item in defaults else ''}>"
         f'<span class="chip-label">{fmt_country(item)}</span></label>'
-        for item in items
     )
+
+
+def _chip_group_html(label, members, defaults, expanded):
+    body = "\n".join(_chip_one(i, defaults) for i in members)
+    return (
+        f'<div class="chip-group{" is-open" if expanded else ""}">'
+        f'<button type="button" class="chip-group-header">'
+        f'<span class="chip-group-caret">&#9656;</span>'
+        f'<span class="chip-group-label">{label}</span>'
+        f'<span class="chip-group-count">{len(members)}</span></button>'
+        f'<div class="chip-group-body">{body}</div></div>'
+    )
+
+
+def _chip_html(items, defaults, groups=None):
+    """Chip markup, grouped when the tracker declares groups and flat otherwise.
+
+    A group lists only the items this region actually has, and anything a
+    group misses falls through to a trailing catch-all, so a keyword pack can
+    gain a topic without it silently vanishing from the pill list.
+    """
+    if not groups:
+        return "\n".join(_chip_one(i, defaults) for i in items)
+
+    out = []
+    grouped = set()
+    for g in groups:
+        members = [i for i in g["topics"] if i in items]
+        if not members:
+            continue
+        grouped.update(members)
+        out.append(
+            _chip_group_html(g["label"], members, defaults, g.get("expanded", False))
+        )
+    rest = [i for i in items if i not in grouped]
+    if rest:
+        out.append(_chip_group_html("Other", rest, defaults, False))
+    return "\n".join(out)
 
 
 def build_topic_iframe_html(
@@ -1489,6 +1537,7 @@ def build_epu_iframe_html(
     data_expr=None,
     factors_expr=None,
     method_foot_extra="",
+    chip_groups=None,
 ):
     options = (
         dropdown_options_html
@@ -1505,7 +1554,7 @@ def build_epu_iframe_html(
         .replace("__METHOD_FOOT_EXTRA__", method_foot_extra)
         .replace("__ITEM_LABEL__", item_label)
         .replace("__SEARCH_PLACEHOLDER__", search_placeholder)
-        .replace("__CHIP_HTML__", _chip_html(items, defaults))
+        .replace("__CHIP_HTML__", _chip_html(items, defaults, chip_groups))
         .replace("__COUNTRY_OPTIONS__", options)
         .replace("__COMMON_JS__", EPU_COMMON_JS)
         .replace("__DATA_JSON__", data_expr or json.dumps(data))
@@ -1824,6 +1873,7 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
             " The <em>Uncertainty Topics (Ranked)</em> tab reads the same"
             " numbers, ordered against each other month by month."
         ),
+        chip_groups=tracker_chip_groups("topics", tracker),
     )
     actors_epu_html = build_epu_iframe_html(
         actors_data,
