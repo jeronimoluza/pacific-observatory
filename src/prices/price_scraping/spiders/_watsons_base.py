@@ -276,6 +276,11 @@ class WatsonsBaseSpider(scrapy.Spider):
             meta_row = row_from_meta(html, url)
             rows = [meta_row] if meta_row else []
         for row in rows:
-            row.setdefault("currency", cls.currency)
+            # Each Watsons subclass is one country's storefront in one fixed
+            # currency (see module docstring) -- never trust the archived
+            # page's own priceCurrency over it. watsons_ph shipped 446 rows
+            # tagged TWD (2018-2020) because a stale/cross-region snapshot's
+            # JSON-LD said so; PHP is what the site has ever charged.
+            row["currency"] = cls.currency
             row.setdefault("language", cls.language)
             yield row
