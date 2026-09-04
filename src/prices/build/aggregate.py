@@ -137,7 +137,19 @@ def load_filtered_cache() -> pd.DataFrame:
     else:
         cache["trust_level"] = cache["trust_level"].fillna("high")
     cache = cache[cache["trust_level"] == "high"]
-    return cache[CACHE_KEEP_COLS]
+    # One row per input_hash, which the docstring above promises and the join
+    # sites rely on. The table is a directory of per-country parts, and the key
+    # is a hash of the NAME only, so a name sold in nine countries is written to
+    # nine parts and read back nine times. The join is on input_hash alone, so
+    # each extra copy fans a products_input row out into an extra snapshot row.
+    #
+    # Deduplicating on the whole row rather than on the key is the point: the
+    # copies are byte-identical (measured: 5,139 duplicate rows over 2,337 keys
+    # collapse to exactly the distinct-key count), so this drops nothing. If a
+    # hash ever carried two DIFFERENT classifications, the duplicate would
+    # survive this and reach the uniqueness assert in `parity`, which is where a
+    # real disagreement should surface rather than be silently resolved here.
+    return cache[CACHE_KEEP_COLS].drop_duplicates()
 
 
 # The raw columns observations needs. input_hash is read when present so the
