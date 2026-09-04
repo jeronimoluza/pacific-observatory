@@ -56,6 +56,18 @@ def test_no_selector_runs_every_stage_unscoped(calls):
     assert "warning" not in result.output
 
 
+def test_an_unscoped_run_still_rebuilds_the_monolith(calls):
+    invoke("--stage", "concatenate")
+    assert calls["concatenate"]["write_monolith"] is True
+
+
+def test_a_scoped_run_does_not_rewrite_the_41gb_monolith(calls):
+    """Nothing downstream reads it, and rebuilding it costs ~10 minutes."""
+    result = invoke("--only", "ssa", "--stage", "concatenate")
+    assert calls["concatenate"]["write_monolith"] is False
+    assert "skipping the raw_prices.csv rebuild" in result.output
+
+
 def test_only_is_passed_to_the_scoped_stages(calls):
     result = invoke("--only", "ssa", "--stage", "prepare")
     assert result.exit_code == 0

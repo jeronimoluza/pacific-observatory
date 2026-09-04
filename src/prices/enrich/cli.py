@@ -159,7 +159,23 @@ def process_command(
 
     def run_stage(name: str) -> None:
         if name == "concatenate":
-            concatenate_stage.run(force=rebuild, selectors=selectors)
+            # The 41 GB monolith is a fallback for callers that predate the
+            # shards, and nothing on this path is one: prepare reads shards,
+            # and build only falls back to the CSV when no shard exists. A
+            # scoped run would spend ~10 minutes rewriting all of it to change
+            # one country, so it writes the shards and leaves the CSV alone.
+            # The next whole-corpus run refreshes it.
+            if selectors:
+                click.echo(
+                    "note: skipping the raw_prices.csv rebuild for a scoped "
+                    "run; it is stale until the next unscoped concatenate",
+                    err=True,
+                )
+            concatenate_stage.run(
+                force=rebuild,
+                selectors=selectors,
+                write_monolith=not selectors,
+            )
         elif name == "prepare":
             prepare_shards.run(selectors=selectors, workers=workers)
         elif name == "classify":
