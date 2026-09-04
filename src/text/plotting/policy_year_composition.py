@@ -18,21 +18,19 @@ here are literal and need no doubling.
 YEAR_CSS = """
   .yc-controls { display: flex; gap: 18px; align-items: center; margin: 4px 0 10px; font-size: 13px; color: #555; }
   .yc-controls label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
-  .panel-split { display: flex; gap: 18px; align-items: flex-start; margin-top: 6px; }
+  .panel-split { display: flex; flex-direction: column; gap: 18px; margin-top: 6px; }
   .chart-col { flex: 1 1 auto; min-width: 0; }
   .chart-col svg { min-width: 0; margin: 0; }
   .chart-frame { display: flex; align-items: flex-start; width: 100%; }
   .chart-frame .chart-wrap { flex: 1 1 auto; min-width: 0; }
   #chartAxis { flex: 0 0 auto; }
-  .detail-col { flex: 0 0 340px; position: sticky; top: 12px; max-height: 640px; overflow-y: auto; }
+  .detail-col { flex: 1 1 auto; width: 100%; }
   .detail-col .detail-card { margin: 0; }
-  .detail-col .policy-list { grid-template-columns: 1fr; }
+  .country-head { font-size: 14px; font-weight: 600; color: #555; margin: 16px 0 6px; padding-bottom: 4px; border-bottom: 1px solid #ececec; }
+  .country-head:first-of-type { margin-top: 10px; }
+  .country-count { font-weight: 400; color: #999; font-size: 12px; margin-left: 5px; }
   .year-tick { font-size: 13px; fill: #666; }
   .axis-title { font-size: 12px; fill: #8a8a8a; letter-spacing: .02em; }
-  @media (max-width: 900px) {
-    .panel-split { flex-direction: column; }
-    .detail-col { flex: 1 1 auto; width: 100%; position: static; max-height: none; }
-  }
 """
 
 YEAR_JS = """
@@ -157,14 +155,31 @@ function yTicks(max) {
 function pinDetails(year, cat, sub, policies) {
   const catDisp = D.categoryDisplay[cat] || cat;
   ystate.pinned = { year: year, cat: cat, sub: sub };
+  // Cards sit under a heading per country, so a busy cell reads as a set of
+  // national responses instead of one undifferentiated list. These rows come
+  // from filteredRows(), so the subregion and country dropdowns already apply.
+  const byCountry = new Map();
+  policies.forEach(r => {
+    if (!byCountry.has(r.Country)) byCountry.set(r.Country, []);
+    byCountry.get(r.Country).push(r);
+  });
+  const countries = Array.from(byCountry.keys()).sort();
+  const colour = D.categoryColor[cat] || "#999";
   detailCard.innerHTML = `<h2>${year} — ${escapeHTML(catDisp)}</h2>` +
-    `<p>${escapeHTML(titleCase(sub))} · ${policies.length} measure${policies.length === 1 ? "" : "s"}</p>` +
-    `<div class="policy-list">` +
-    policies.map(r => `<div class="policy-card" style="border-left-color:${D.categoryColor[cat] || "#999"}">` +
-      `<div class="policy-title">${escapeHTML(r.Country)} — ${escapeHTML(titleCase(r.Policy))}</div>` +
-      `<div class="policy-desc">${escapeHTML(r["Policy Description"])}</div>` +
-      `<div class="policy-foot">${escapeHTML(r["Active or Proposed Date"])}` +
-      `${r.Source ? " · " + escapeHTML(r.Source) : ""}</div></div>`).join("") + "</div>";
+    `<p>${escapeHTML(titleCase(sub))} · ${policies.length} measure${policies.length === 1 ? "" : "s"} · ` +
+    `${countries.length} ${countries.length === 1 ? "country/economy" : "countries and economies"}</p>` +
+    countries.map(c => {
+      const rows = byCountry.get(c);
+      return `<h3 class="country-head">${escapeHTML(c)}` +
+        `<span class="country-count">${rows.length}</span></h3>` +
+        `<div class="policy-list">` +
+        rows.map(r => `<div class="policy-card" style="border-left-color:${colour}">` +
+          `<div class="policy-title">${escapeHTML(titleCase(r.Policy))}</div>` +
+          `<div class="policy-desc">${escapeHTML(r["Policy Description"])}</div>` +
+          `<div class="policy-foot">${escapeHTML(r["Active or Proposed Date"])}` +
+          `${r.Source ? " · " + escapeHTML(r.Source) : ""}</div></div>`).join("") +
+        "</div>";
+    }).join("");
 }
 
 function drawLegend(activeCats) {
@@ -334,7 +349,11 @@ function render() {
     const sig = years[0] + ":" + years[years.length - 1] + ":" + width;
     if (sig !== ystate.sig) {
       ystate.sig = sig;
-      chartScroll.scrollLeft = chartScroll.scrollWidth;
+      // The new width has not been laid out yet, so scrollWidth still reports
+      // the previous extent; pin to the right edge once a frame has passed.
+      const toRight = () => { chartScroll.scrollLeft = chartScroll.scrollWidth; };
+      toRight();
+      requestAnimationFrame(toRight);
     }
   }
 }
