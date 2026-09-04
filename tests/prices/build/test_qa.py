@@ -110,8 +110,21 @@ def test_ordinary_prices_still_ship():
 
 
 def test_boundaries_are_inclusive():
-    for unit, usd in (("kg", 0.05), ("kg", 200.0), ("unit", 0.005), ("unit", 500.0)):
+    for unit, usd in (("kg", 0.20), ("kg", 200.0), ("unit", 0.005), ("unit", 500.0)):
         assert bool(_priced(unit, usd).loc[0, "qa_uv_plausible"])
+
+
+def test_kg_floor_catches_the_argentina_band():
+    """37,015 Argentina rows (cheese, yogurt, fresh pork, sausages -- vea_ar,
+    disco_ar, jumbo_ar, carrefour_ar) sit between $0.05 and $0.30/kg, well
+    inside the old (0.05, 200.0) band but far below any real food price;
+    global staple grains alone sit at $0.53/kg at their own 1st percentile.
+    $0.15/kg (a real observed Argentine "Queso Gruyere" row) must be
+    quarantined, not shipped; $0.25/kg still ships."""
+    df = _priced("kg", 0.15)
+    assert not bool(df.loc[0, "qa_uv_plausible"])
+    assert df.loc[0, "qa_status"] == "review_uv_implausible"
+    assert _priced("kg", 0.25).loc[0, "qa_status"] == "trusted"
 
 
 def test_unscoped_units_pass_through():

@@ -69,7 +69,18 @@ _MARKER_BASES = frozenset({"mass", "volume", "length", "count"})
 # Absolute (low, high) USD bounds per standard_unit. A unit absent from this map
 # is not scoped by the gate: `item` means "no quantity was parsed", so there is
 # no quantity for a per-unit band to be about.
-PLAUSIBLE_USD = {"kg": (0.05, 200.0), "lt": (0.05, 200.0), "unit": (0.005, 500.0)}
+#
+# kg's floor is 0.20, not 0.05: a 2026-09-04 audit of the delivered dashboard's
+# fat tail found 37,015 Argentina rows (vea_ar/disco_ar/jumbo_ar/carrefour_ar --
+# cheese, yogurt, fresh pork, sausages) sitting between $0.05 and $0.30/kg, a
+# price-parsing defect upstream (report, not fixed here), plus a cluster of
+# CJK multipack-count-noun rows (a whole fruit box's stated total weight
+# multiplied again by its piece count) landing in the same band. Global staple
+# grains (rice/wheat/potatoes) sit at $0.53/kg at their own 1st percentile, so
+# 0.20 does not reach genuine staple pricing; wholesale China veg (xinfadi,
+# which legitimately prices under $0.20/kg) loses 37 of 31,212 rows. `lt` stays
+# at 0.05 -- its own low tail is bottled water and soda, genuinely that cheap.
+PLAUSIBLE_USD = {"kg": (0.20, 200.0), "lt": (0.05, 200.0), "unit": (0.005, 500.0)}
 
 
 def _row_has_quantity(basis, coicop_code) -> bool:
