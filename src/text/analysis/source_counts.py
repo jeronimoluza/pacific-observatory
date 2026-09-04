@@ -2,7 +2,8 @@
 
 `source_counts.parquet` rows are keyed by (source_key, ym) and hold per-source-
 per-month annotation counts (A_total, E/P/U, kwsums, EU/PU/EP, plus per-topic
-and per-actor counts and U∩category counts). The sidecar
+and per-actor counts, U∩category counts and unconditional category counts).
+The sidecar
 `source_counts.params.json` records the source set, per-language SHA-256
 hashes of the keyword files, per-source tail metadata, and a schema version.
 
@@ -25,12 +26,13 @@ from typing import Iterable
 import pandas as pd
 
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 KEYWORD_FAMILIES = ("topics", "actors")
 
 # Order-preserving column groups. `topic_*_count`, `topic_*_U_count`,
-# `actor_*_count`, `actor_*_U_count` are appended dynamically from the bundle.
+# `topic_*_A_count` and the `actor_*` equivalents are appended dynamically from
+# the bundle.
 BASE_COLUMNS = (
     "source_key",
     "ym",

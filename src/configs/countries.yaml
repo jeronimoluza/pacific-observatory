@@ -400,6 +400,12 @@ norway:
   currency: NOK
   languages: [en]
 
+pacific:
+  name: Pacific (Regional)
+  iso3: PAC
+  currency: USD
+  languages: [en]
+
 palau:
   name: Palau
   iso3: PLW

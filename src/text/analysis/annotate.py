@@ -215,54 +215,18 @@ def _ym_for_date(d: pd.Timestamp, daily_tail_start: pd.Timestamp | None) -> str:
     return f"{d.year}-{d.month}"
 
 
-def annotate_source(
-    news_csv: Path,
-    source_key: str,
-    bundle: KeywordBundle,
-    daily_tail_start: pd.Timestamp | None = None,
-    subset_start: pd.Timestamp | None = None,
-    subset_end: pd.Timestamp | None = None,
-) -> tuple[pd.DataFrame, dict]:
-    """Annotate a single source's news.csv and aggregate to monthly counts.
+def _grouped_for_frame(
+    df: pd.DataFrame,
+    combo: CombinedAutomaton,
+    daily_tail_start: pd.Timestamp | None,
+) -> pd.DataFrame:
+    """Monthly counts for one already-deduped, already-filtered frame.
 
-    Returns
-    -------
-    counts : DataFrame
-        One row per (source_key, ym). Columns: source_key, ym, A_total,
-        E_count, P_count, U_count, E_kwsum, P_kwsum, U_kwsum,
-        EU_count, PU_count, EP_count, plus topic_<k>_count and
-        actor_<k>_count for every key in the bundle.
-    diagnostics : dict
-        Per-source numbers used by the build summary report:
-        {n_total, n_dropped_nan_body, n_dropped_nan_date, min_date, max_date}.
+    Split out of `annotate_source` so the identical aggregation can run over a
+    chunk. Every column produced here is a count or a sum, so concatenating the
+    per-chunk results and summing them by ym reproduces the whole-file answer.
+    Returned frame is indexed by ym and carries no source_key column.
     """
-    combo = build_combined_automaton(bundle)
-
-    cols = pd.read_csv(news_csv, encoding="utf-8", nrows=0).columns.tolist()
-    want = [c for c in ("date", "body", "language", "url") if c in cols]
-    df = pd.read_csv(news_csv, encoding="utf-8", low_memory=False, usecols=want)
-
-    # Mirror legacy EPU.process_data: dedupe on loaded columns BEFORE date parsing.
-    df = df.drop_duplicates().reset_index(drop=True)
-
-    n_total = len(df)
-    df["date"] = pd.to_datetime(df.get("date"), format="mixed", errors="coerce")
-    n_dropped_nan_date = int(df["date"].isna().sum())
-    df = df[~df["date"].isna()].reset_index(drop=True)
-
-    if subset_start is not None:
-        df = df[df["date"] >= subset_start]
-    if subset_end is not None:
-        df = df[df["date"] <= subset_end]
-    df = df.reset_index(drop=True)
-
-    n_dropped_nan_body = int(df["body"].isna().sum()) if "body" in df.columns else 0
-    if "body" in df.columns:
-        df = df[~df["body"].isna()].reset_index(drop=True)
-
-    min_date = df["date"].min() if not df.empty else None
-    max_date = df["date"].max() if not df.empty else None
-
     counts_per_row: list[dict[str, int]] = []
     for body in df.get("body", pd.Series([], dtype=str)):
         counts_per_row.append(_match_all_categories(_process_body(body), combo))
@@ -331,7 +295,12 @@ def annotate_source(
     )
 
     # Topic / actor counts: per-month, number of articles where (E∩P∩U∩category).
-    # Plus a parallel U∩category column used by `calculate_group_uncertainty_counts`.
+    # Plus a parallel U∩category column used by `calculate_group_uncertainty_counts`,
+    # and an unconditional category column — articles mentioning the category at
+    # all, with no E/P/U condition. The unconditional count is what answers "how
+    # much is this topic being discussed", as opposed to "how much of the
+    # uncertainty is about this topic"; the two diverge badly for topics that are
+    # covered routinely rather than in moments of doubt.
     for cat in combo.categories:
         if cat in ("econ", "policy", "uncertain"):
             continue
@@ -350,9 +319,109 @@ def annotate_source(
             .reindex(grouped.index, fill_value=0)
             .astype(int)
         )
+        g_x = (
+            work.loc[present]
+            .groupby("ym")
+            .size()
+            .reindex(grouped.index, fill_value=0)
+            .astype(int)
+        )
         base = cat.replace("topic:", "topic_").replace("actor:", "actor_")
         grouped[f"{base}_count"] = epu_x
         grouped[f"{base}_U_count"] = u_x
+        grouped[f"{base}_A_count"] = g_x
+
+    return grouped
+
+
+def annotate_source(
+    news_csv: Path,
+    source_key: str,
+    bundle: KeywordBundle,
+    daily_tail_start: pd.Timestamp | None = None,
+    subset_start: pd.Timestamp | None = None,
+    subset_end: pd.Timestamp | None = None,
+    chunksize: int = 20_000,
+) -> tuple[pd.DataFrame, dict]:
+    """Annotate a single source's news.csv and aggregate to monthly counts.
+
+    Reads the CSV in chunks: peak memory scales with `chunksize`, not with file
+    size. ECA carries a 7.9 GB news.csv that cost >16 GB to load whole, which is
+    what forced the streaming form. Dedup stays global via a hash set, so the
+    result matches a whole-file `drop_duplicates()` keeping the first occurrence.
+
+    Returns
+    -------
+    counts : DataFrame
+        One row per (source_key, ym). Columns: source_key, ym, A_total,
+        E_count, P_count, U_count, E_kwsum, P_kwsum, U_kwsum,
+        EU_count, PU_count, EP_count, plus topic_<k>_count and
+        actor_<k>_count for every key in the bundle.
+    diagnostics : dict
+        Per-source numbers used by the build summary report:
+        {n_total, n_dropped_nan_body, n_dropped_nan_date, min_date, max_date}.
+    """
+    combo = build_combined_automaton(bundle)
+
+    cols = pd.read_csv(news_csv, encoding="utf-8", nrows=0).columns.tolist()
+    want = [c for c in ("date", "body", "language", "url") if c in cols]
+
+    seen: set[int] = set()
+    frames: list[pd.DataFrame] = []
+    n_total = 0
+    n_dropped_nan_date = 0
+    n_dropped_nan_body = 0
+    min_date = None
+    max_date = None
+
+    reader = pd.read_csv(news_csv, encoding="utf-8", usecols=want, chunksize=chunksize)
+    for chunk in reader:
+        # Mirror legacy EPU.process_data: dedupe on loaded columns BEFORE date
+        # parsing. Hashing row content keeps that global across chunks; keeping
+        # the first sighting matches drop_duplicates' default.
+        hashes = pd.util.hash_pandas_object(chunk, index=False).to_numpy()
+        keep = []
+        for i, h in enumerate(hashes):
+            if h not in seen:
+                seen.add(h)
+                keep.append(i)
+        chunk = chunk.iloc[keep].reset_index(drop=True)
+
+        n_total += len(chunk)
+        chunk["date"] = pd.to_datetime(
+            chunk.get("date"), format="mixed", errors="coerce"
+        )
+        n_dropped_nan_date += int(chunk["date"].isna().sum())
+        chunk = chunk[~chunk["date"].isna()].reset_index(drop=True)
+
+        if subset_start is not None:
+            chunk = chunk[chunk["date"] >= subset_start]
+        if subset_end is not None:
+            chunk = chunk[chunk["date"] <= subset_end]
+        chunk = chunk.reset_index(drop=True)
+
+        if "body" in chunk.columns:
+            n_dropped_nan_body += int(chunk["body"].isna().sum())
+            chunk = chunk[~chunk["body"].isna()].reset_index(drop=True)
+
+        if not chunk.empty:
+            cmin, cmax = chunk["date"].min(), chunk["date"].max()
+            min_date = cmin if min_date is None else min(min_date, cmin)
+            max_date = cmax if max_date is None else max(max_date, cmax)
+
+        frames.append(_grouped_for_frame(chunk, combo, daily_tail_start))
+
+    if not frames:
+        empty = pd.DataFrame(
+            {
+                "date": pd.Series([], dtype="datetime64[ns]"),
+                "body": pd.Series([], dtype=object),
+            }
+        )
+        frames.append(_grouped_for_frame(empty, combo, daily_tail_start))
+
+    grouped = pd.concat(frames)
+    grouped = grouped.groupby(level="ym").sum()
 
     grouped = grouped.reset_index()
     grouped.insert(0, "source_key", source_key)

@@ -288,8 +288,11 @@ def _build_ug_counts_frame(
     """Materialize the UG counts frame consumed by `outputs.build_outputs`'s
     attribution path.
 
-    Columns: ym, date, plus per-source A_total, U_count, and UG_<g>_count.
-    Source-level UG counts come from `<source>_<metric_prefix><g>_U_count`.
+    Columns: ym, date, plus per-source A_total, U_count, UG_<g>_count and
+    G_<g>_count. UG counts come from `<source>_<metric_prefix><g>_U_count`
+    (articles that are both uncertain and on-topic); G counts come from
+    `<source>_<metric_prefix><g>_A_count` (on-topic regardless of uncertainty),
+    and feed the unconditional topic-intensity index.
     """
     cols = ["ym", "date"]
     for src in sources:
@@ -300,17 +303,22 @@ def _build_ug_counts_frame(
         if u_col in wide.columns:
             cols.append(u_col)
         for g in group_keys:
-            ug_long = f"{src}_{metric_prefix}{g}_U_count"
-            if ug_long in wide.columns:
-                cols.append(ug_long)
+            for long in (
+                f"{src}_{metric_prefix}{g}_U_count",
+                f"{src}_{metric_prefix}{g}_A_count",
+            ):
+                if long in wide.columns:
+                    cols.append(long)
     out = wide[[c for c in cols if c in wide.columns]].copy()
     rename: dict[str, str] = {}
     for src in sources:
         for g in group_keys:
-            ug_long = f"{src}_{metric_prefix}{g}_U_count"
-            ug_short = f"{src}_UG_{g}_count"
-            if ug_long in out.columns:
-                rename[ug_long] = ug_short
+            for long, short in (
+                (f"{src}_{metric_prefix}{g}_U_count", f"{src}_UG_{g}_count"),
+                (f"{src}_{metric_prefix}{g}_A_count", f"{src}_G_{g}_count"),
+            ):
+                if long in out.columns:
+                    rename[long] = short
     return out.rename(columns=rename)
 
 
