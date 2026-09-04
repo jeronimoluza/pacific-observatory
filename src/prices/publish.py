@@ -297,7 +297,9 @@ def _coverage_cutoff(
     return threshold, low, stats
 
 
-def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
+def _payload(
+    current: pd.DataFrame, monthly: pd.DataFrame, region: str | None = None
+) -> dict:
     coicop_titles = _load_coicop_titles()
     country_names = _load_country_names()
     residual = _residual_leaves(coicop_titles)
@@ -324,7 +326,15 @@ def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
     # still in the key, but it is constant within a leaf by the time this
     # runs, so this is one entry per leaf.
     of_country, region_order = _load_regions()
-    region_cols = [{"key": "world", "label": "World"}] + region_order
+    # A build restricted to one region has already dropped every other
+    # country's rows (see `publish`), so a "World" column here would just be
+    # the region's own median wearing a bigger label -- a genuine lie, not a
+    # rounding quirk. Ship only that region's column instead of computing a
+    # World figure that no longer means "world".
+    if region is not None:
+        region_cols = [rc for rc in region_order if rc["key"] == region]
+    else:
+        region_cols = [{"key": "world", "label": "World"}] + region_order
     # Residual leaves get no region or world figure. A cross-country median over
     # "Other bakery products" compares one country's croissants against another's
     # flatbread, and the number carries the same authority on the page as a real
@@ -401,7 +411,16 @@ def _render(payload: dict, chart_js: str) -> str:
     )
 
 
-def publish() -> Path:
+def publish(region: str | None = None, out_path: Path | None = None) -> Path:
+    """Render the dashboard, optionally restricted to one region's countries.
+
+    The restriction happens here, before `_to_display_units` and both
+    aggregations run, so a region build is a genuinely separate computation
+    over a smaller country set -- not the global numbers with columns hidden
+    in the browser. Every downstream figure (KPIs, region/World medians, the
+    low-coverage cutoff, the monthly series) is consistent with what is on
+    screen.
+    """
     if not OBSERVATIONS_PARQUET.exists():
         raise FileNotFoundError(
             f"{OBSERVATIONS_PARQUET} not found — run `po prices build` first."
@@ -425,23 +444,31 @@ def publish() -> Path:
             len(obs),
             before,
         )
+    if region is not None:
+        of_country, region_order = _load_regions()
+        if region not in {rc["key"] for rc in region_order}:
+            raise ValueError(f"unknown region {region!r} (see regions.yaml)")
+        before = len(obs)
+        obs = obs[obs["country"].map(of_country) == region]
+        logger.info("region==%r filter kept %d of %d rows", region, len(obs), before)
     obs = _to_display_units(obs)
     current = _current_snapshot(obs)
     monthly = _monthly_series(obs)
 
-    payload = _payload(current, monthly)
+    payload = _payload(current, monthly, region=region)
     chart_js = VENDOR_CHART_JS.read_text()
     html = _render(payload, chart_js)
 
-    DASHBOARD_HTML.parent.mkdir(parents=True, exist_ok=True)
-    DASHBOARD_HTML.write_text(html)
+    out = out_path or DASHBOARD_HTML
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(html)
     logger.info(
         "wrote %s (%d current cells, %d monthly cells)",
-        DASHBOARD_HTML,
+        out,
         len(current),
         len(monthly),
     )
-    return DASHBOARD_HTML
+    return out
 
 
 def run() -> None:

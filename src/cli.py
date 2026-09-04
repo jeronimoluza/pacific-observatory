@@ -532,16 +532,30 @@ def prices_build(region, subregion, country, only, recompute_leaf_tables, worker
 @prices.command("publish")
 @_region_opt
 @_subregion_opt
-def prices_publish(region, subregion):
+@click.option("--out", "out_path", default=None, help="Override the output HTML path.")
+def prices_publish(region, subregion, out_path):
     """Generate CPI dashboards.
 
     PoC scope: renders outputs/prices/global_prices_dashboard.html from the
-    EAP F&B basket parquet. Region/subregion flags are accepted but
-    ignored until the basket widens beyond the EAP PoC.
+    EAP F&B basket parquet. With --region, restricts the build to that
+    region's countries -- every downstream figure (KPIs, region/World
+    medians, the low-coverage cutoff, the monthly series) is recomputed over
+    just that set, so pair it with --out to avoid overwriting the
+    unrestricted dashboard. --subregion is accepted but ignored until the
+    basket widens beyond the EAP PoC.
     """
-    from prices.publish import run as _publish_run
+    import logging
+    from pathlib import Path
 
-    _publish_run()
+    from prices.publish import publish as _publish
+
+    logging.basicConfig(
+        level=logging.INFO, format="%(levelname)s %(name)s: %(message)s"
+    )
+    try:
+        _publish(region=region, out_path=Path(out_path) if out_path else None)
+    except ValueError as exc:
+        raise click.ClickException(str(exc))
 
 
 @prices.command("explorer")

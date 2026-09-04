@@ -98,8 +98,8 @@
     Median USD per canonical unit, aggregated from observations in the last
     <span id="lookback"></span> days (cutoff <span id="cutoff"></span>; data through
     <span id="datathrough"></span>). Rows are grouped by COICOP 2018 category
-    (division → group → class → subclass). The World and per-region columns each
-    show a median of country medians for that COICOP leaf, with n = the number of
+    (division → group → class → subclass). <span id="regioncolphrase"></span>
+    a median of country medians for that COICOP leaf, with n = the number of
     countries behind it. Cells with fewer than
     <span id="minobs1"></span> observations are hidden, as are catch-all COICOP
     categories ("Other …", "… n.e.c."), whose members share no common unit.
@@ -190,6 +190,12 @@
   let countries = allCountries;
   const titleFor = (code) => DATA.coicop_titles[code] || '';
   const regionCols = DATA.region_cols || [{key: 'world', label: 'World'}];
+  // A region-restricted build ships only its own column (see publish.py) --
+  // the boilerplate copy has to say so rather than claim a "World" figure
+  // that was never computed for this file.
+  document.getElementById('regioncolphrase').textContent = regionCols.length > 1
+    ? 'The World and per-region columns each show'
+    : 'The ' + regionCols[0].label + ' column shows';
   const cellKey = (code, unit) => code + '|' + unit;
   const residualLeaves = new Set(DATA.residual_leaves || []);
   const regionMedianFor = (key, k) =>
