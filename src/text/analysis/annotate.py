@@ -27,6 +27,7 @@ import pandas as pd
 from text.analysis.utils import (
     LANGUAGE_ALIASES,
     NON_SPACE_DELIMITED,
+    _is_latin_boundary,
     _is_word_boundary,
     load_all_groups,
     load_topics_words,
@@ -178,10 +179,16 @@ def _match_all_categories(body: str, combo: CombinedAutomaton) -> dict[str, int]
         for cat, term in payload:
             start_idx = end_idx - len(term) + 1
             end_pos = end_idx + 1
-            if combo.check_boundaries and not _is_word_boundary(
-                text, start_idx, end_pos
-            ):
-                continue
+            if combo.check_boundaries:
+                if not _is_word_boundary(text, start_idx, end_pos):
+                    continue
+            elif term.isascii():
+                # Latin term in a non-space-delimited pack. Bounding it against
+                # ASCII letters only keeps `GDP` matching when Thai or Han
+                # characters sit flush against it, while stopping `UN` from
+                # matching inside "fund" and `AI` inside "said".
+                if not _is_latin_boundary(text, start_idx, end_pos):
+                    continue
             per_cat_matches[cat].append((start_idx, end_pos))
 
     counts: dict[str, int] = {cat: 0 for cat in combo.categories}

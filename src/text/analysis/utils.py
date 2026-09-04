@@ -75,11 +75,35 @@ LANGUAGE_ALIASES: dict[str, str] = {
 
 
 def _build_keyword_pattern(terms: list, language: str = "en") -> str:
-    """Build a regex pattern for keyword matching, respecting language word boundaries."""
-    escaped = "|".join(re.escape(term) for term in terms)
-    if language in NON_SPACE_DELIMITED:
-        return "(" + escaped + ")"
-    return r"\b(" + escaped + r")\b"
+    """Build a regex pattern for keyword matching, respecting language word boundaries.
+
+    Thai, Khmer, Burmese, Lao and the CJK languages write without spaces, so a
+    term has to match as a bare substring. Their keyword packs also carry Latin
+    strings -- IMF, GDP, ASEAN, WHO -- because those languages print them
+    verbatim, and a bare substring rule lets `UN` match inside "fund" and `AI`
+    inside "said". Measured against 57.6 MB of Thai, Chinese, Japanese, Burmese,
+    Lao and Khmer articles, that was 7,921 false hits for `AI` and 2,741 for
+    `UN`, and every hit `FFA`, `MARA`, `MPS`, `CORN`, `PETROL`, `NFA` and `QE`
+    ever recorded.
+
+    So the two are matched under different rules. Latin terms are bounded by
+    "not an ASCII letter" rather than by ``\\b``: Thai or Han characters sitting
+    flush against `GDP` still match, which is the reason ``\\b`` cannot be used
+    here, but "fund" no longer contains `UN`.
+    """
+    if language not in NON_SPACE_DELIMITED:
+        return r"\b(" + "|".join(re.escape(t) for t in terms) + r")\b"
+
+    latin = [t for t in terms if t.isascii()]
+    other = [t for t in terms if not t.isascii()]
+    parts = []
+    if other:
+        parts.append("(?:" + "|".join(re.escape(t) for t in other) + ")")
+    if latin:
+        parts.append(
+            "(?<![A-Za-z])(?:" + "|".join(re.escape(t) for t in latin) + ")(?![A-Za-z])"
+        )
+    return "(" + "|".join(parts) + ")"
 
 
 def is_in_word_list(row: str, terms: list, language: str = "en") -> bool:
@@ -157,6 +181,21 @@ def _is_word_boundary(text: str, start: int, end: int) -> bool:
     return True
 
 
+def _is_latin_boundary(text: str, start: int, end: int) -> bool:
+    """Word boundary for a Latin term inside non-space-delimited text.
+
+    Weaker than ``_is_word_boundary``: only an ASCII letter on either side
+    disqualifies the match. Thai, Han, Khmer or Burmese characters flush against
+    the term are fine -- those scripts do not space around embedded Latin, so
+    requiring a full boundary would drop the genuine hits this exists to keep.
+    """
+    if start > 0 and text[start - 1].isascii() and text[start - 1].isalpha():
+        return False
+    if end < len(text) and text[end].isascii() and text[end].isalpha():
+        return False
+    return True
+
+
 def match_keywords(text: str, terms: list, language: str = "en") -> Tuple[bool, int]:
     """
     Check keyword presence and count matches in a single pass using Aho-Corasick.
@@ -187,6 +226,12 @@ def match_keywords(text: str, terms: list, language: str = "en") -> Tuple[bool, 
         end_pos = end_idx + 1
         if check_boundaries:
             if not _is_word_boundary(text_str, start_idx, end_pos):
+                continue
+        elif term.isascii():
+            # A Latin term in a non-space-delimited pack: bound it against
+            # ASCII letters only, so `UN` stops matching inside "fund" without
+            # losing the Thai- or Han-adjacent hits it is there to catch.
+            if not _is_latin_boundary(text_str, start_idx, end_pos):
                 continue
         matches.append((start_idx, end_pos))
 
