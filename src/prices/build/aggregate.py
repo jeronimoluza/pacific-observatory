@@ -67,6 +67,7 @@ from prices.build.unit_value_summary import (
 )
 from prices.enrich import config as enrich_config
 from prices.enrich import shards as shard_io
+from prices.enrich.stages import decisions_store
 from prices.enrich.stages.merge import compute_unit_value
 from prices.enrich.stages.prepare import _row_input_dict, parse_price
 from prices.enrich.versioning import input_hash
@@ -118,12 +119,13 @@ def load_filtered_cache() -> pd.DataFrame:
     regenerated wholesale each `prices process` run, so there is no
     stale-version drift to guard against.
     """
+    # `decisions_store.read` because the table is a directory of per-country
+    # parts now, not one file. It accepts either form and prefers the parts, so
+    # a checkout that has not been ported still reads its single file.
     path = enrich_config.BUILD_CLASSIFIED_PARQUET
-    if not path.exists():
-        return pd.DataFrame(columns=CACHE_KEEP_COLS)
-    cache = pd.read_parquet(path)
+    cache = decisions_store.read(path)
     if cache.empty:
-        return cache
+        return pd.DataFrame(columns=CACHE_KEEP_COLS)
     cache = cache[cache["coicop_code"].astype(str).str.startswith(FNB_COICOP_PREFIXES)]
     # Live classify states: narrow_source / classified carry trust_level==high;
     # rejected / flagged_basis are demoted by the basis audit. Keep the two

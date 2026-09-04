@@ -441,6 +441,9 @@ from prices.enrich.match_record_view import (  # noqa: E402
 )
 from prices.enrich.census import census_command as _prices_census  # noqa: E402
 from prices.enrich.coverage import coverage_command as _prices_coverage  # noqa: E402
+from prices.enrich.port_decisions import (  # noqa: E402
+    port_command as _prices_port_decisions,
+)
 from prices.enrich.classifier.cli import (  # noqa: E402
     train_classifier_command as _prices_train_classifier,
 )
@@ -460,6 +463,7 @@ prices.add_command(_prices_eval, name="eval")
 prices.add_command(_prices_match_record, name="match-record")
 prices.add_command(_prices_census, name="census")
 prices.add_command(_prices_coverage, name="coverage")
+prices.add_command(_prices_port_decisions, name="port-decisions")
 prices.add_command(_prices_train_classifier, name="train-classifier")
 prices.add_command(_prices_label, name="label")
 prices.add_command(_prices_gold_audit, name="gold-audit")

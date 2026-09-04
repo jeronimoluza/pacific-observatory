@@ -6,6 +6,7 @@ from prices import partition
 from prices.enrich import config, prepare_shards
 from prices.enrich.classifier import backends, batch_embed
 from prices.enrich.stages import classify as classify_stage
+from prices.enrich.stages import decisions_store
 from prices.enrich.stages import concatenate as concatenate_stage
 from prices.enrich.stages import embed as embed_stage
 from prices.enrich.stages import merge as merge_stage
@@ -20,9 +21,13 @@ STAGES = {
 
 STAGE_ORDER = ["concatenate", "prepare", "classify", "merge"]
 
-# Stages that understand a partition selector. classify and merge still read the
-# whole corpus, so a scoped run says so rather than quietly ignoring the scope.
-SCOPED_STAGES = ("concatenate", "prepare")
+# Stages that understand a partition selector. merge still reads the whole
+# corpus, so a scoped run says so rather than quietly ignoring the scope.
+#
+# classify joined this list when its two output tables became one parquet part
+# per country: before that, a scoped classify had nowhere to put its answer
+# except a whole-corpus rewrite, so scoping it would have been a lie.
+SCOPED_STAGES = ("concatenate", "prepare", "classify")
 
 
 def _invalidate_for(stage: str | None, backend: str | None = None) -> None:
@@ -36,6 +41,12 @@ def _invalidate_for(stage: str | None, backend: str | None = None) -> None:
         out = backends.get(backend).classified_path
         if out.exists():
             out.unlink()
+        # The table is a directory of per-country parts now; dropping only the
+        # legacy file would leave the parts standing and `--rebuild` would be a
+        # no-op that looks like it worked.
+        parts = decisions_store.parts_root(out)
+        if parts.is_dir():
+            shutil.rmtree(parts)
         # Prediction shards cache head scores per name-bucket; a shard is reused
         # whenever its cached names cover the request, so a bucket untouched by a
         # new batch keeps scores from before a veto-lexicon change and silently
@@ -152,7 +163,7 @@ def process_command(
         elif name == "prepare":
             prepare_shards.run(selectors=selectors, workers=workers)
         elif name == "classify":
-            classify_stage.run(backend=backend, workers=workers)
+            classify_stage.run(backend=backend, workers=workers, selectors=selectors)
         else:
             STAGES[name]()
 

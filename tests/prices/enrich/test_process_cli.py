@@ -83,8 +83,15 @@ def test_workers_reach_the_sharded_stage(calls):
 
 
 def test_a_scoped_run_says_which_stages_ignore_the_scope(calls):
+    """Only merge is left. classify honours the scope now that its output is
+    one parquet part per country, so warning about it would be false."""
     result = invoke("--only", "ssa")
-    assert "classify, merge" in result.output
+    assert "warning: merge read the whole corpus" in result.output
+    # Not "classify, merge": classify is no longer among the stages that
+    # ignore the scope. It still appears elsewhere in the output — in the stage
+    # banner and in the list of stages the selector DOES apply to.
+    assert "classify, merge" not in result.output
+    assert "the selector applies to concatenate, prepare, classify" in result.output
 
 
 def test_no_warning_when_only_scoped_stages_run(calls):
@@ -114,7 +121,11 @@ def test_explain_says_so_when_nothing_matches(calls, corpus):
 def test_the_backend_reaches_classify(calls):
     result = invoke("--stage", "classify", "--backend", "head")
     assert result.exit_code == 0
-    assert calls["classify"] == {"backend": "head", "workers": 1}
+    assert calls["classify"] == {
+        "backend": "head",
+        "workers": 1,
+        "selectors": None,
+    }
 
 
 def test_workers_reach_classify_too(calls):
@@ -122,6 +133,17 @@ def test_workers_reach_classify_too(calls):
     the user is answering "how much of this box may I use"."""
     invoke("--stage", "classify", "--workers", "6")
     assert calls["classify"]["workers"] == 6
+
+
+def test_the_selector_reaches_classify(calls):
+    """The scope must arrive as an argument, not just as an un-acted-on warning."""
+    invoke("--stage", "classify", "--only", "ssa")
+    assert calls["classify"]["selectors"] == ["ssa"]
+
+
+def test_country_flag_reaches_classify_as_a_selector(calls):
+    invoke("--stage", "classify", "-c", "fiji")
+    assert calls["classify"]["selectors"] == ["*/*/fiji"]
 
 
 def test_without_a_backend_flag_classify_picks_its_own_default(calls):

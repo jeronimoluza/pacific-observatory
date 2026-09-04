@@ -41,6 +41,7 @@ import click
 import pandas as pd
 
 from prices.enrich import config
+from prices.enrich.stages import decisions_store
 
 RESOLVED_STATES = ("classified", "narrow_source")
 ALL_STATES = (
@@ -69,7 +70,11 @@ def load_joined(
     """
     decisions_path = decisions_path or config.DECISIONS_PARQUET
     products_path = products_path or config.PRODUCTS_INPUT_PARQUET
-    dec = pd.read_parquet(decisions_path, columns=_DECISION_COLS)
+    # Directory of per-country parts, or the legacy single file — whichever the
+    # checkout has. The join below still needs products_input for region/source
+    # and n_rows, so carrying `country` in the decisions table does not make it
+    # redundant here.
+    dec = decisions_store.read(decisions_path, columns=_DECISION_COLS)
     prod = pd.read_parquet(products_path, columns=_PRODUCT_COLS)
     df = dec.merge(prod, on="input_hash", how="left", validate="one_to_one")
     df["country"] = df["country"].fillna("").astype(str)

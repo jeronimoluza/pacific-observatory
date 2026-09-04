@@ -33,11 +33,21 @@ from typing import Optional, Sequence
 import pandas as pd
 import pyarrow as pa
 
+from prices import partition
 from prices.enrich import audit, coicop_codes, coicop_taxonomy, config, uv_gate
 from prices.enrich.classifier import backends
 from prices.enrich.declared_unit import parse_declared_unit
 from prices.enrich.extract import StructuralFields, extract
+from prices.enrich.stages import decisions_store
 from prices.enrich.stages.merge import ENRICHMENT_COLS
+
+# Re-exported: these moved to `products_reader` when this file hit its size
+# limit, and `hierlex/decide.py` plus the tests import them from here.
+from prices.enrich.stages.products_reader import (  # noqa: F401
+    PRODUCT_COLS,
+    iter_products,
+    read_products,
+)
 
 _EMPTY = {c: None for c in ENRICHMENT_COLS}
 
@@ -120,7 +130,7 @@ def _structural_fields(
     }
 
 
-DECISION_COLS = [*ENRICHMENT_COLS, "input_hash", "leaf_top1", "gate_score"]
+DECISION_COLS = [*ENRICHMENT_COLS, "input_hash", "country", "leaf_top1", "gate_score"]
 
 # Explicit arrow schema for the decisions writer. Inferring it from the first
 # chunk is a trap: a chunk whose `promo_reason` or `coicop_code` happens to be
@@ -147,6 +157,11 @@ _DECISION_TYPES = {
     "dimensions_json": pa.string(),
     "trust_level": pa.string(),
     "input_hash": pa.string(),
+    # Carried so the table can be partitioned and scoped by country without a
+    # join back to products_input. Coverage is reported per country anyway, so
+    # the column the report needs was previously being recovered by re-reading
+    # a 6.4 GB file to get one string per row.
+    "country": pa.string(),
     "leaf_top1": pa.string(),
     "gate_score": pa.float64(),
 }
@@ -154,78 +169,6 @@ _uncovered = [c for c in DECISION_COLS if c not in _DECISION_TYPES]
 if _uncovered:  # ENRICHMENT_COLS grew — extend _DECISION_TYPES deliberately
     raise RuntimeError(f"no arrow type declared for decision columns: {_uncovered}")
 DECISION_SCHEMA = pa.schema([(c, _DECISION_TYPES[c]) for c in DECISION_COLS])
-
-# Only what the decision loop actually reads. products_input carries pricing and
-# provenance columns too; at corpus scale projecting is worth several GB.
-#
-# `source` is in this list because `_structural_fields` reads it for the
-# case-size rule. It was absent, so `p.get("source")` was None for every row of
-# a real run and `_PIECE_IS_CASE_SOURCES` could only ever fire in a test that
-# passed its own frame. Anything this list omits fails silently, as a default,
-# rather than as a KeyError.
-PRODUCT_COLS = [
-    "input_hash",
-    "product_name_original",
-    "category",
-    "country",
-    "lang",
-    "details",
-    "unit",
-    "source",
-    "declared_coicop_codes",
-]
-
-
-def read_products(in_path: Path) -> pd.DataFrame:
-    """`products_input` projected to PRODUCT_COLS, tolerating older files.
-
-    `unit` and `source` postdate parquet files that are still on disk, and
-    asking pyarrow for a column a file does not have raises rather than
-    returning nulls. Filling them in here keeps a stale products_input readable,
-    and — more to the point — makes the degradation VISIBLE: `_structural_fields`
-    treats a missing `unit` as "no declared unit", which is indistinguishable
-    from a file that genuinely has none unless someone says so out loud.
-    """
-    import pyarrow.parquet as pq
-
-    have = set(pq.ParquetFile(in_path).schema_arrow.names)
-    present = [c for c in PRODUCT_COLS if c in have]
-    absent = [c for c in PRODUCT_COLS if c not in have]
-    products = pd.read_parquet(in_path, columns=present)
-    for c in absent:
-        products[c] = None
-    if absent:
-        print(
-            f"[classify] {in_path.name} has no {', '.join(absent)} column"
-            f"{'s' if len(absent) > 1 else ''} — treated as empty for every row. "
-            "Re-run `prices process --stage prepare` to populate it.",
-            flush=True,
-        )
-    return products[PRODUCT_COLS]
-
-
-def iter_products(in_path: Path, chunk_rows: int):
-    """`read_products` in batches, with the same projection and the same
-    missing-column fill.
-
-    The decide loop used to slice a resident frame with `.iloc`, which meant the
-    whole corpus stayed in memory for the length of the loop to serve reads that
-    parquet can serve directly. At 37.4M rows that frame is ~20 GB, on top of a
-    `scored` dict holding 29.4M entries -- the run reached 26 GB on a 26 GB box
-    and began swapping a third of the way through. The rows are on disk; read
-    them from there.
-    """
-    import pyarrow.parquet as pq  # noqa: PLC0415
-
-    pf = pq.ParquetFile(in_path)
-    have = set(pf.schema_arrow.names)
-    present = [c for c in PRODUCT_COLS if c in have]
-    absent = [c for c in PRODUCT_COLS if c not in have]
-    for batch in pf.iter_batches(batch_size=chunk_rows, columns=present):
-        chunk = batch.to_pandas()
-        for c in absent:
-            chunk[c] = None
-        yield chunk[PRODUCT_COLS]
 
 
 def _score_index(scores: pd.DataFrame, key_cols: Sequence[str]) -> dict:
@@ -274,6 +217,8 @@ def decide_rows(
         name = str(p["product_name_original"])
         row = dict(_EMPTY)
         row["input_hash"] = p["input_hash"]
+        country = p.get("country")
+        row["country"] = None if country is None or pd.isna(country) else str(country)
         row.update(
             _structural_fields(
                 name,
@@ -363,10 +308,21 @@ def classified_view(decisions: pd.DataFrame, divisions) -> pd.DataFrame:
     of prefixes, and it — not aggregate.py — is where build scope is decided, so
     an all-division scoring run cannot silently widen what `prices build` reads.
     """
+    keep = decisions[classified_mask(decisions, divisions)]
+    return keep[[*ENRICHMENT_COLS, "input_hash"]].reset_index(drop=True)
+
+
+def classified_mask(decisions: pd.DataFrame, divisions) -> pd.Series:
+    """Which decision rows reach `classified.parquet`.
+
+    Exposed separately because the partitioned writer needs the country of the
+    kept rows, and `classified_view` deliberately does not carry one — its
+    column list is a contract `prices build` reads. Recomputing the prefix test
+    at the call site instead would put the same rule in two places.
+    """
     code = decisions["coicop_code"].astype("string").fillna("")
     prefixes = (divisions,) if isinstance(divisions, str) else tuple(divisions)
-    keep = decisions[code.str.startswith(prefixes)]
-    return keep[[*ENRICHMENT_COLS, "input_hash"]].reset_index(drop=True)
+    return code.str.startswith(prefixes)
 
 
 def classify_products(
@@ -412,6 +368,23 @@ def decide_products(
     )
 
 
+def countries_for(selectors, root: Optional[Path] = None) -> Optional[list[str]]:
+    """The countries a selector names, or None for the whole corpus.
+
+    Country, not source, is the scope grain — the same choice
+    `build.aggregate.overlay_observations` makes, for the same reason. `prepare`
+    groups on `input_hash`, whose fallback key is
+    `(product_name_original, country, currency)`; two sources in one country
+    selling the same URL-less product are therefore ONE products_input row. A
+    source-grained rescope would split that row's evidence and silently change
+    the number, so a selector that names a source recomputes its whole country.
+    """
+    if not selectors:
+        return None
+    shards = partition.select(selectors, root or partition.PER_SOURCE_DIR)
+    return sorted({s.country for s in shards})
+
+
 def run(
     in_path: Optional[Path] = None,
     out_path: Optional[Path] = None,
@@ -421,9 +394,9 @@ def run(
     workers: int = 1,
     full_out_path: Optional[Path] = None,
     chunk_rows: int = 500_000,
+    selectors: Optional[Sequence[str]] = None,
+    shard_root: Optional[Path] = None,
 ) -> dict:
-    import pyarrow.parquet as pq
-
     be = backends.get(backend)
     in_path = in_path or config.PRODUCTS_INPUT_PARQUET
     # Each backend owns its output files, so `--backend head` after a hierlex run
@@ -433,7 +406,21 @@ def run(
     full_out_path = full_out_path or be.decisions_path
     divisions = (division,) if division else be.divisions
 
-    products = read_products(in_path)
+    countries = countries_for(selectors, shard_root)
+    if countries is not None and not countries:
+        raise RuntimeError(
+            f"no shards match {list(selectors)}; refusing to run classify over "
+            "an empty scope (an unscoped run is `--stage classify` with no "
+            "--only/-c)"
+        )
+    if countries is not None:
+        print(
+            f"[classify] scoped to {len(countries)} countries: "
+            f"{', '.join(countries[:8])}{' …' if len(countries) > 8 else ''}",
+            flush=True,
+        )
+
+    products = read_products(in_path, countries=countries)
     n_products = len(products)
     result = be.score(products, version=version, workers=workers)
     # Scoring is the last thing that needs the corpus resident. The decide loop
@@ -455,48 +442,56 @@ def run(
     unembedded = result.unembedded
     del result
 
-    full_out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
+    dec_root = decisions_store.parts_root(full_out_path)
+    view_root = decisions_store.parts_root(out_path)
 
     # Stream the row loop so neither the decision frame nor the corpus is ever
-    # resident whole.
-    writer = None
-    views: list[pd.DataFrame] = []
+    # resident whole. Both tables land as one part per country, so this run
+    # rewrites only the countries it actually decided and every other part on
+    # disk is left exactly as it was — which is the whole reason a one-country
+    # fix no longer costs a 37.4M-row rewrite.
+    views: dict[str, list[pd.DataFrame]] = {}
     n_dec = 0
-    try:
-        for chunk in iter_products(in_path, chunk_rows):
+    n_view = 0
+    with decisions_store.PartitionedWriter(dec_root, DECISION_SCHEMA) as writer:
+        for chunk in iter_products(in_path, chunk_rows, countries=countries):
             dec = decide_rows(chunk, scored, be.key_cols, unembedded)
             n_dec += len(dec)
-            views.append(classified_view(dec, divisions))
-            table = pa.Table.from_pandas(
-                dec, schema=DECISION_SCHEMA, preserve_index=False
-            )
-            if writer is None:
-                writer = pq.ParquetWriter(full_out_path, DECISION_SCHEMA)
-            writer.write_table(table)
+            writer.write(dec)
+            # `classified` is still written from pandas, so it keeps the dtypes
+            # it has always had; only its file layout changes. The country rides
+            # alongside because the view's column list is a contract.
+            keep = classified_mask(dec, divisions)
+            view = classified_view(dec, divisions)
+            n_view += len(view)
+            for country, part in decisions_store.split_by_country(
+                view, dec.loc[keep, "country"]
+            ):
+                views.setdefault(country, []).append(part)
             print(f"[classify] decided {n_dec}/{n_products} rows", flush=True)
-    finally:
-        if writer is not None:
-            writer.close()
 
-    view = (
-        pd.concat(views, ignore_index=True)
-        if views
-        else pd.DataFrame(columns=[*ENRICHMENT_COLS, "input_hash"])
-    )
-    view.to_parquet(out_path, index=False)
+    written_views = decisions_store.write_pandas_parts(views, view_root)
+    if countries is None:
+        # A full run is authoritative: a country that no longer produces rows
+        # must not keep the part it produced last time. A SCOPED run prunes
+        # nothing, because everything it did not write is out of its scope.
+        decisions_store.prune(dec_root, set(writer.rows_by_country))
+        decisions_store.prune(view_root, {p.stem for p in written_views})
 
     summary = {
         "backend": be.name,
         "decisions": n_dec,
-        "decisions_path": str(full_out_path),
-        "classified": len(view),
-        "classified_path": str(out_path),
+        "decisions_path": str(dec_root),
+        "classified": n_view,
+        "classified_path": str(view_root),
         "divisions": list(divisions),
         "version": version,
+        "countries": countries,
+        "parts_written": len(writer.rows_by_country),
     }
     print(
-        f"Wrote {n_dec} {be.name} decisions to {full_out_path} "
-        f"and {len(view)} division-{'/'.join(divisions)} rows to {out_path}"
+        f"Wrote {n_dec} {be.name} decisions to {dec_root} "
+        f"and {n_view} division-{'/'.join(divisions)} rows to {view_root} "
+        f"across {len(writer.rows_by_country)} country parts"
     )
     return summary

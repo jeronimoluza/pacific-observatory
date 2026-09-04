@@ -12,7 +12,7 @@ import pytest
 
 from prices.enrich import config
 from prices.enrich.classifier import backends
-from prices.enrich.stages import classify
+from prices.enrich.stages import classify, decisions_store
 
 pytestmark = pytest.mark.unit
 
@@ -265,8 +265,12 @@ def test_run_writes_to_the_backends_own_path(monkeypatch, tmp_path):
     products([("rice", "fiji")]).to_parquet(in_path, index=False)
 
     classify.run(in_path=in_path, backend=be.name)
-    assert be.classified_path.exists()
-    assert list(pd.read_parquet(be.classified_path)["coicop_code"]) == ["01.1.1.1"]
+    # Both tables are now one part per country under a directory derived from
+    # the backend's path. `decisions_store.read` takes either form, so a caller
+    # holding the old path still resolves the new layout.
+    assert decisions_store.parts_root(be.classified_path).is_dir()
+    assert list(decisions_store.read(be.classified_path)["coicop_code"]) == ["01.1.1.1"]
+    assert list(decisions_store.read(be.decisions_path)["country"]) == ["fiji"]
 
 
 def test_a_declared_narrow_code_still_bypasses_the_backend(monkeypatch):
