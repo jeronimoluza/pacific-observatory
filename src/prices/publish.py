@@ -23,6 +23,7 @@ import logging
 import re
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import yaml
 
@@ -243,6 +244,59 @@ def _monthly_series(df: pd.DataFrame) -> pd.DataFrame:
     return g[g["n_obs"] >= MIN_OBS_PER_CELL]
 
 
+def _region_stats(
+    keyed: pd.DataFrame, region_cols: list[dict[str, str]]
+) -> tuple[dict[str, dict[str, float]], dict[str, dict[str, int]]]:
+    medians: dict[str, dict[str, float]] = {}
+    counts: dict[str, dict[str, int]] = {}
+    for (code, unit), grp in keyed.groupby(["coicop_code", "standard_unit"]):
+        med: dict[str, float] = {}
+        cnt: dict[str, int] = {}
+        for col in region_cols:
+            s = (
+                grp["median_usd"]
+                if col["key"] == "world"
+                else grp.loc[grp["_region"].eq(col["key"]), "median_usd"]
+            )
+            n = int(s.notna().sum())
+            if n:
+                med[col["key"]] = float(s.median())
+                cnt[col["key"]] = n
+        key = _cell_key(code, unit)
+        medians[key] = med
+        counts[key] = cnt
+    return medians, counts
+
+
+def _coverage_cutoff(
+    current: pd.DataFrame, residual: frozenset[str]
+) -> tuple[int, set[str], dict]:
+    """Countries in the bottom quartile by breadth of COICOP coverage.
+
+    Breadth is counted over named leaves only. A residual leaf is a catch-all,
+    so crediting a country for reaching one would reward the classifier giving
+    up rather than the country having a real price for a real category.
+
+    The cut is the 25th percentile of the count, applied strictly (``<``).
+    Counts are small integers and pile up on ties, so ``<=`` would carry every
+    country sitting exactly on the boundary over the line with it and drop
+    materially more than the quartile asked for.
+    """
+    named = current[~current["coicop_code"].isin(residual)]
+    per_country = named.groupby("country")["coicop_code"].nunique()
+    if per_country.empty:
+        return 0, set(), {"median": 0, "n_countries": 0, "n_named_leaves": 0}
+    threshold = int(np.percentile(per_country.to_numpy(), 25))
+    low = set(per_country.index[per_country < threshold])
+    stats = {
+        "median": int(per_country.median()),
+        "n_countries": int(per_country.size),
+        "n_named_leaves": int(named["coicop_code"].nunique()),
+        "n_dropped": len(low),
+    }
+    return threshold, low, stats
+
+
 def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
     coicop_titles = _load_coicop_titles()
     country_names = _load_country_names()
@@ -271,8 +325,6 @@ def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
     # runs, so this is one entry per leaf.
     of_country, region_order = _load_regions()
     region_cols = [{"key": "world", "label": "World"}] + region_order
-    region_medians: dict[str, dict[str, float]] = {}
-    region_n_countries: dict[str, dict[str, int]] = {}
     # Residual leaves get no region or world figure. A cross-country median over
     # "Other bakery products" compares one country's croissants against another's
     # flatbread, and the number carries the same authority on the page as a real
@@ -281,28 +333,27 @@ def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
     # the gap reads as deliberate rather than missing.
     keyed = current.assign(_region=current["country"].map(of_country))
     keyed = keyed[~keyed["coicop_code"].isin(residual)]
-    for (code, unit), grp in keyed.groupby(["coicop_code", "standard_unit"]):
-        med: dict[str, float] = {}
-        cnt: dict[str, int] = {}
-        for col in region_cols:
-            s = (
-                grp["median_usd"]
-                if col["key"] == "world"
-                else grp.loc[grp["_region"].eq(col["key"]), "median_usd"]
-            )
-            n = int(s.notna().sum())
-            if n:
-                med[col["key"]] = float(s.median())
-                cnt[col["key"]] = n
-        key = _cell_key(code, unit)
-        region_medians[key] = med
-        region_n_countries[key] = cnt
+    region_medians, region_n_countries = _region_stats(keyed, region_cols)
+
+    # The low-coverage toggle drops countries from the table, so it has to drop
+    # them from the region and world medians too: a comparison figure that still
+    # averages in a country whose column the reader just hid is wrong in the one
+    # direction nobody would check.
+    threshold, low_coverage, coverage_stats = _coverage_cutoff(current, residual)
+    kept = keyed[~keyed["country"].isin(low_coverage)]
+    region_medians_kept, region_n_countries_kept = _region_stats(kept, region_cols)
 
     shown = current[~current["coicop_code"].isin(residual)]
+    shown_kept = shown[~shown["country"].isin(low_coverage)]
     kpi = {
         "countries": len(country_display),
         "coicop_leaves": int(shown["coicop_code"].nunique()),
         "products": int(current["n_obs"].sum()),
+    }
+    kpi_kept = {
+        "countries": len(country_display) - len(low_coverage),
+        "coicop_leaves": int(shown_kept["coicop_code"].nunique()),
+        "products": int(current[~current["country"].isin(low_coverage)]["n_obs"].sum()),
     }
 
     cutoff = (
@@ -327,8 +378,13 @@ def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
         "region_cols": region_cols,
         "region_medians": region_medians,
         "region_n_countries": region_n_countries,
+        "region_medians_kept": region_medians_kept,
+        "region_n_countries_kept": region_n_countries_kept,
         "residual_leaves": sorted(residual & set(current["coicop_code"].dropna())),
+        "low_coverage": sorted(low_coverage),
+        "coverage_cutoff": {"categories": threshold, **coverage_stats},
         "kpi": kpi,
+        "kpi_kept": kpi_kept,
         "current": current.to_dict(orient="records"),
         "monthly": [
             {**r, "month": r["month"].date().isoformat()}

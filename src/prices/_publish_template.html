@@ -8,6 +8,13 @@
          margin: 0; padding: 0 24px 48px; color: #222; }
   h1 { font-size: 18px; margin: 20px 0 4px; }
   .sub { color: #666; font-size: 12px; margin-bottom: 16px; }
+  .covtoggle { display: inline-flex; align-items: center; gap: 7px;
+               font-size: 12px; color: #444; cursor: pointer;
+               padding: 7px 11px; margin-bottom: 12px;
+               border: 1px solid #ddd; border-radius: 5px; background: #fafafa; }
+  .covtoggle:hover { background: #f2f2f2; }
+  .covtoggle input { cursor: pointer; margin: 0; }
+  .covtoggle .cn { color: #888; }
   .tabs { display: flex; gap: 8px; border-bottom: 1px solid #ddd; margin-bottom: 16px; }
   .tab { padding: 8px 14px; cursor: pointer; border: 1px solid transparent;
          border-bottom: none; border-radius: 4px 4px 0 0; }
@@ -97,6 +104,10 @@
     <span id="minobs1"></span> observations are hidden. Color scale within each row
     — green=cheapest, red=most expensive.
   </div>
+  <label class="covtoggle">
+    <input type="checkbox" id="covfilter">
+    <span id="covlabel"></span>
+  </label>
   <div class="scroll"><table class="heat" id="heat"></table></div>
 </div>
 
@@ -106,6 +117,10 @@
     <span id="fxfloor"></span>; earlier observations are excluded.
     Minimum <span id="minobs2"></span> observations per (COICOP leaf, country, month).
   </div>
+  <label class="covtoggle">
+    <input type="checkbox" id="covfilter2">
+    <span id="covlabel2"></span>
+  </label>
   <label>COICOP leaf: <select id="leafsel"></select></label>
   <canvas id="chart"></canvas>
 </div>
@@ -142,31 +157,44 @@
     return 0;
   }
 
+  // --- Low-coverage filter ---
+  // Countries below the 25th percentile of named-leaf breadth. Hiding them is
+  // a view over the same data, not a rebuild: the payload ships both the full
+  // and the filtered region medians so the World column agrees with whichever
+  // set of columns is on screen.
+  const lowCoverage = new Set(DATA.low_coverage || []);
+  const covCut = DATA.coverage_cutoff || {};
+  let hideLowCov = false;
+
   // --- KPI bar ---
-  (function renderKpis() {
-    const k = DATA.kpi || {};
+  function renderKpis() {
+    const k = (hideLowCov ? DATA.kpi_kept : DATA.kpi) || {};
     const tiles = [
       ['Products', (k.products ?? 0).toLocaleString()],
       ['Countries', k.countries ?? 0],
       ['COICOP leaves', k.coicop_leaves ?? 0],
     ];
     const root = document.getElementById('kpis');
+    root.textContent = '';
     tiles.forEach(([label, value]) => {
       const div = document.createElement('div'); div.className = 'kpi';
       const v = document.createElement('div'); v.className = 'v'; v.textContent = value;
       const l = document.createElement('div'); l.className = 'l'; l.textContent = label;
       div.appendChild(v); div.appendChild(l); root.appendChild(div);
     });
-  })();
+  }
 
   // --- Current snapshot heat table ---
-  const countries = Object.keys(DATA.country_names);
+  const allCountries = Object.keys(DATA.country_names);
+  let countries = allCountries;
   const titleFor = (code) => DATA.coicop_titles[code] || '';
   const regionCols = DATA.region_cols || [{key: 'world', label: 'World'}];
   const cellKey = (code, unit) => code + '|' + unit;
   const residualLeaves = new Set(DATA.residual_leaves || []);
-  const regionMedianFor = (key, k) => (DATA.region_medians[key] || {})[k];
-  const regionNFor = (key, k) => (DATA.region_n_countries[key] || {})[k];
+  const regionMedianFor = (key, k) =>
+    ((hideLowCov ? DATA.region_medians_kept : DATA.region_medians)[key] || {})[k];
+  const regionNFor = (key, k) =>
+    ((hideLowCov ? DATA.region_n_countries_kept : DATA.region_n_countries)[key] || {})[k];
 
   // One row per COICOP leaf. The build puts every row of a leaf onto that
   // leaf's single display unit before publishing, so the unit is a property of
@@ -189,6 +217,10 @@
                  || cellWidth(b) - cellWidth(a));
 
   const heat = document.getElementById('heat');
+
+  function renderHeat() {
+  countries = hideLowCov ? allCountries.filter(c => !lowCoverage.has(c)) : allCountries;
+  heat.textContent = '';
   const thead = document.createElement('thead');
   const hrow = document.createElement('tr');
   const corner = document.createElement('th');
@@ -230,7 +262,12 @@
     return tr;
   }
   let lastL1 = '', lastL2 = '', lastL3 = '', lastL4 = '';
-  ordered.forEach(cell => {
+  // A leaf whose only evidence came from dropped countries leaves an all-dots
+  // row behind, and an empty row reads as "no price anywhere" rather than "you
+  // filtered its sources out". Drop the row; the group header above it is
+  // emitted lazily, so a group that loses every leaf loses its header too.
+  const visible = ordered.filter(cell => countries.some(c => cell.byCountry[c] != null));
+  visible.forEach(cell => {
     const parts = cell.coicop_code.split('.');
     const l1 = parts.slice(0, 1).join('.');
     const l2 = parts.slice(0, 2).join('.');
@@ -303,6 +340,7 @@
     tbody.appendChild(tr);
   });
   heat.appendChild(tbody);
+  }
 
   // --- Historical chart ---
   // Keyed on the unit as well, but it is constant within a leaf, so this is
@@ -329,7 +367,9 @@
     const rows = DATA.monthly.filter(
       r => r.coicop_code === code && r.standard_unit === unit);
     const months = [...new Set(rows.map(r => r.month))].sort();
-    const cs = [...new Set(rows.map(r => r.country))].sort();
+    const cs = [...new Set(rows.map(r => r.country))]
+      .filter(c => !(hideLowCov && lowCoverage.has(c)))
+      .sort();
     const datasets = cs.map((c, i) => ({
       label: DATA.country_names[c] || c,
       data: months.map(m => {
@@ -353,6 +393,36 @@
     });
   }
   select.addEventListener('change', e => renderChart(e.target.value));
+
+  // --- Low-coverage toggle wiring ---
+  // One control repeated on both tabs so the reader never has to switch views
+  // to change what they are looking at; the two boxes mirror one state.
+  const covBoxes = [document.getElementById('covfilter'),
+                    document.getElementById('covfilter2')];
+  const nDropped = lowCoverage.size;
+  const labelText = 'Hide ' + nDropped + ' low-coverage '
+                  + (nDropped === 1 ? 'country' : 'countries');
+  const detailText = ' (fewer than ' + (covCut.categories ?? '?') + ' of '
+                   + (covCut.n_named_leaves ?? '?') + ' categories — the bottom '
+                   + 'quartile; median is ' + (covCut.median ?? '?') + ')';
+  [['covlabel', 0], ['covlabel2', 1]].forEach(([id]) => {
+    const el = document.getElementById(id);
+    el.textContent = labelText;
+    const det = document.createElement('span');
+    det.className = 'cn'; det.textContent = detailText;
+    el.appendChild(det);
+  });
+  function applyCoverageFilter(on) {
+    hideLowCov = on;
+    covBoxes.forEach(b => { if (b.checked !== on) b.checked = on; });
+    renderKpis();
+    renderHeat();
+    if (select.value) renderChart(select.value);
+  }
+  covBoxes.forEach(b => b.addEventListener('change', e => applyCoverageFilter(e.target.checked)));
+
+  renderKpis();
+  renderHeat();
   if (monthlySeries.length) { select.value = monthlySeries[0]; renderChart(monthlySeries[0]); }
 </script>
 </body>
