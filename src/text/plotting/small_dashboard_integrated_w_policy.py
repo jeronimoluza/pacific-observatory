@@ -1500,34 +1500,34 @@ TOPICS_LABEL_MAP = {
     "climate_environment": "Climate & Environment",
     "corruption_governance": "Corruption & Governance",
     "housing_real_estate": "Housing & Real Estate",
-    # The development-issues buckets. They are labelled "Dev:" rather than by
-    # bucket title alone because several of them share a name with a group above
-    # -- food security, climate, governance -- and the two are different series
-    # at different grains. The prefix is what tells them apart in the search box,
-    # where the section headings are not visible.
-    "dev_macro_growth": "Dev: Macro Growth & Activity",
-    "dev_inflation_cost_of_living": "Dev: Inflation & Cost of Living",
-    "dev_fiscal_public_finance": "Dev: Fiscal Policy & Public Debt",
-    "dev_monetary_financial": "Dev: Monetary & Financial Stability",
-    "dev_trade_private_sector": "Dev: Trade & Private Sector",
-    "dev_labor_social_protection": "Dev: Labor & Social Protection",
-    "dev_poverty_inequality": "Dev: Poverty & Inequality",
-    "dev_food_security": "Dev: Food Security",
-    "dev_agriculture_rural": "Dev: Agriculture & Rural Development",
-    "dev_health_nutrition": "Dev: Health, Nutrition & Population",
-    "dev_education_skills": "Dev: Education & Skills",
-    "dev_gender_inclusion": "Dev: Gender & Social Inclusion",
-    "dev_governance_justice": "Dev: Governance & Justice",
-    "dev_fragility_conflict": "Dev: Fragility, Conflict & Displacement",
-    "dev_climate_environment": "Dev: Climate, Environment & Resources",
-    "dev_disasters_resilience": "Dev: Disasters & Resilience",
-    "dev_water_sanitation": "Dev: Water & Sanitation",
-    "dev_energy_extractives": "Dev: Energy & Extractives",
-    "dev_transport_urban": "Dev: Transport, Urban & Housing",
-    "dev_digital_technology": "Dev: Digital, Data & Technology",
-    "dev_migration_demography": "Dev: Migration & Demography",
-    "dev_shocks_uncertainty": "Dev: Shocks & Policy Uncertainty",
-    "dev_statistics_monitoring": "Dev: Statistics, Monitoring & Evaluation",
+    # The development-issues buckets, named as the taxonomy names them, shortened
+    # only where a full bucket title would not fit a pill. They read as broader
+    # than the groups above because they are: "Poverty, Inequality & Welfare" is
+    # the agenda, `poverty` is the topic. The one that would otherwise read
+    # identically to a group above is bucket 8, which takes the agenda wording.
+    "dev_macro_growth": "Macro Growth & Activity",
+    "dev_inflation_cost_of_living": "Inflation & Cost of Living",
+    "dev_fiscal_public_finance": "Fiscal Policy & Public Debt",
+    "dev_monetary_financial": "Monetary & Financial Stability",
+    "dev_trade_private_sector": "Trade & Private Sector",
+    "dev_labor_social_protection": "Labor & Social Protection",
+    "dev_poverty_inequality": "Poverty, Inequality & Welfare",
+    "dev_food_security": "Food Security Agenda",
+    "dev_agriculture_rural": "Agriculture & Rural Development",
+    "dev_health_nutrition": "Health, Nutrition & Population",
+    "dev_education_skills": "Education, Skills & Human Capital",
+    "dev_gender_inclusion": "Gender Equality & Social Inclusion",
+    "dev_governance_justice": "Governance, Institutions & Justice",
+    "dev_fragility_conflict": "Fragility, Conflict & Displacement",
+    "dev_climate_environment": "Climate, Environment & Resources",
+    "dev_disasters_resilience": "Disasters & Resilience",
+    "dev_water_sanitation": "Water & Sanitation",
+    "dev_energy_extractives": "Energy & Extractives",
+    "dev_transport_urban": "Transport, Urban & Housing",
+    "dev_digital_technology": "Digital Development & Technology",
+    "dev_migration_demography": "Migration & Demography",
+    "dev_shocks_uncertainty": "Shocks & Policy Uncertainty",
+    "dev_statistics_monitoring": "Statistics, Monitoring & Evaluation",
 }
 
 
