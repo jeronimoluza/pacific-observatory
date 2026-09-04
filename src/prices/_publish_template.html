@@ -27,7 +27,6 @@
   table.heat td.label .code { color: #888; font-weight: 500;
                               font-family: ui-monospace, Menlo, Consolas, monospace;
                               font-size: 10px; margin-right: 6px; }
-  table.heat td.label .unit { color: #999; font-weight: 400; margin-left: 4px; }
   table.heat td.na { color: #bbb; background: #fcfcfc; text-align: center; }
   table.heat tr.group-l1 td { background: #2c3e50; color: #fff; font-weight: 700;
                               text-align: left; padding: 6px 8px; font-size: 12px;
@@ -78,7 +77,7 @@
     <span id="lookback"></span> days (cutoff <span id="cutoff"></span>; data through
     <span id="datathrough"></span>). Rows are grouped by COICOP 2018 category
     (division → group → class → subclass). The World and per-region columns each
-    show a median of country medians for that COICOP leaf <em>in that unit</em>, with n = the number of
+    show a median of country medians for that COICOP leaf, with n = the number of
     countries behind it. Cells with fewer than
     <span id="minobs1"></span> observations are hidden. Color scale within each row
     — green=cheapest, red=most expensive.
@@ -90,9 +89,9 @@
   <div class="sub">
     Monthly median USD per canonical unit. FX history starts
     <span id="fxfloor"></span>; earlier observations are excluded.
-    Minimum <span id="minobs2"></span> observations per (COICOP leaf, unit, country, month).
+    Minimum <span id="minobs2"></span> observations per (COICOP leaf, country, month).
   </div>
-  <label>COICOP leaf / unit: <select id="leafsel"></select></label>
+  <label>COICOP leaf: <select id="leafsel"></select></label>
   <canvas id="chart"></canvas>
 </div>
 
@@ -153,8 +152,9 @@
   const regionMedianFor = (key, k) => (DATA.region_medians[key] || {})[k];
   const regionNFor = (key, k) => (DATA.region_n_countries[key] || {})[k];
 
-  // One row per (COICOP leaf, unit). A leaf sold both by mass and by volume
-  // is two rows, because one median across both would describe neither.
+  // One row per COICOP leaf. The build puts every row of a leaf onto that
+  // leaf's single display unit before publishing, so the unit is a property of
+  // the leaf and never varies down a row -- which is why the label omits it.
   const cells = {};
   const cellOrder = [];
   DATA.current.forEach(r => {
@@ -166,20 +166,18 @@
     }
     cells[k].byCountry[r.country] = r;
   });
-  // Widest unit first within a leaf, so the dominant row leads.
   const cellWidth = (c) => Object.keys(c.byCountry).length;
   const ordered = cellOrder
     .map(k => cells[k])
     .sort((a, b) => cmpCoicop(a.coicop_code, b.coicop_code)
-                 || cellWidth(b) - cellWidth(a)
-                 || String(a.standard_unit).localeCompare(String(b.standard_unit)));
+                 || cellWidth(b) - cellWidth(a));
 
   const heat = document.getElementById('heat');
   const thead = document.createElement('thead');
   const hrow = document.createElement('tr');
   const corner = document.createElement('th');
   corner.className = 'corner';
-  corner.textContent = 'COICOP category / leaf / unit';
+  corner.textContent = 'COICOP category / leaf';
   hrow.appendChild(corner);
   regionCols.forEach((rc, i) => {
     const th = document.createElement('th');
@@ -229,7 +227,6 @@
 
     const tr = document.createElement('tr');
     const lbl = document.createElement('td'); lbl.className = 'label';
-    const unit = cell.standard_unit;
     const groupCodes = new Set([lastL1, lastL2, lastL3, lastL4].filter(Boolean));
     const name = document.createElement('span');
     name.textContent = titleFor(cell.coicop_code) || cell.coicop_code;
@@ -239,10 +236,6 @@
       lbl.appendChild(code);
     }
     lbl.appendChild(name);
-    if (unit) {
-      const u = document.createElement('span'); u.className = 'unit';
-      u.textContent = '/' + unit; lbl.appendChild(u);
-    }
     tr.appendChild(lbl);
 
     const countryVals = countries.map(c => cell.byCountry[c]?.median_usd).filter(v => v != null);
@@ -284,17 +277,18 @@
   heat.appendChild(tbody);
 
   // --- Historical chart ---
-  // Series are (leaf, unit) too -- a kg line and an lt line are not one series.
+  // Keyed on the unit as well, but it is constant within a leaf, so this is
+  // one series per leaf; the unit survives only to title the y axis.
   const monthlySeries = [...new Set(DATA.monthly.map(r => cellKey(r.coicop_code, r.standard_unit)))]
     .sort((a, b) => cmpCoicop(a.split('|')[0], b.split('|')[0])
                  || a.localeCompare(b));
   const select = document.getElementById('leafsel');
   monthlySeries.forEach(key => {
-    const [code, unit] = key.split('|');
+    const [code] = key.split('|');
     const o = document.createElement('option');
     o.value = key;
     const nice = titleFor(code) || code;
-    o.textContent = nice + ' /' + unit + ' (' + code + ')';
+    o.textContent = nice + ' (' + code + ')';
     select.appendChild(o);
   });
   let chart;

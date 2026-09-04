@@ -7,6 +7,10 @@ blocks cdn.jsdelivr.net):
   - Historical: per-COICOP-leaf line chart of monthly USD/unit medians,
     one line per country, gated to 2024-03-06+ (FX coverage floor).
 
+Every leaf is shown on ONE unit. `_to_display_units` converts a leaf's other
+units into its display unit before either view is built, so a leaf is one row
+and one series rather than one per unit it happened to be sold in.
+
 The unit-value grain is `coicop_code` (the deepest leaf the classifier
 assigns); the retired cascade's `sub_label_id` sub-grain is no longer
 produced, so each COICOP leaf is one row/series.
@@ -22,6 +26,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
+from prices.build import unit_collapse
 from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
 
 logger = logging.getLogger(__name__)
@@ -56,6 +61,9 @@ PUBLISH_TRUST_LEVELS = frozenset({"high"})
 # "no quantity found", which is not a piece price and must never merge.
 PIECE_UNITS = frozenset({"item", "unit"})
 MERGED_PIECE_UNIT = "each"
+
+TYPICAL_MASS_CSV = BUILD_DIR / "leaf_typical_mass.csv"
+SUPPRESSED_PARQUET = BUILD_DIR / "global_prices_suppressed_units.parquet"
 
 _COICOP_RE = re.compile(r"^(\d+(?:\.\d+)*)")
 _ND_SUFFIX_RE = re.compile(r"\s*\(ND\)\s*$")
@@ -123,6 +131,42 @@ def _fold_piece_units(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def _to_display_units(df: pd.DataFrame) -> pd.DataFrame:
+    """Put every row of a leaf on one unit, so the table has one row per leaf.
+
+    Runs once, before both aggregations, so the current snapshot and the
+    monthly series cannot disagree about which unit a leaf is quoted in. The
+    piece fold runs first because `unit_collapse` votes on unit labels, and
+    `item`/`unit` are two spellings of one piece price on the allowlisted
+    leaves -- splitting that vote could hand a leaf to the loser.
+
+    Rows that cannot be converted are written out rather than dropped in
+    silence; that file is the answer to "why is this leaf missing here".
+    """
+    df = df.copy()
+    df["coicop_code"] = df["coicop_code"].map(_normalize_coicop)
+    df = df.dropna(subset=["coicop_code", "standard_unit"])
+    df = _fold_piece_units(df)
+
+    typical_mass = (
+        pd.read_csv(TYPICAL_MASS_CSV) if TYPICAL_MASS_CSV.exists() else pd.DataFrame()
+    )
+    if typical_mass.empty:
+        logger.warning("%s missing — piece rows cannot convert", TYPICAL_MASS_CSV)
+
+    kept, dropped = unit_collapse.collapse(df, typical_mass)
+    if not dropped.empty:
+        SUPPRESSED_PARQUET.parent.mkdir(parents=True, exist_ok=True)
+        dropped.to_parquet(SUPPRESSED_PARQUET, index=False)
+        logger.info(
+            "suppressed %d unconvertible rows over %d leaves -> %s",
+            len(dropped),
+            dropped["coicop_code"].nunique(),
+            SUPPRESSED_PARQUET,
+        )
+    return kept
+
+
 def _cell_key(code: str, unit: str) -> str:
     """Row identity for the heat table: a COICOP leaf measured in one unit."""
     return f"{code}|{unit}"
@@ -137,10 +181,10 @@ def _current_snapshot(df: pd.DataFrame) -> pd.DataFrame:
     (coicop_code, country, standard_unit) median. Rows without a parseable
     observation_date are excluded.
 
-    standard_unit is part of the grain, not a label picked off the first row:
-    a leaf such as "Other condiments and sauces" holds both kg products (a
-    jar of XO sauce) and lt products (a bottle of soy sauce), and a median
-    taken across the two describes neither.
+    standard_unit stays in the grain even though `_to_display_units` has
+    already made it constant within a leaf: keeping it means the groupby is
+    what enforces that invariant rather than trusting it, and it carries the
+    unit through to the chart axis.
     """
     df = df.copy()
     df["coicop_code"] = df["coicop_code"].map(_normalize_coicop)
@@ -200,10 +244,10 @@ def _payload(current: pd.DataFrame, monthly: pd.DataFrame) -> dict:
             if anc in coicop_titles:
                 coicop_used[anc] = coicop_titles[anc]
 
-    # Median of country-level medians per (coicop leaf, unit), one entry per
-    # region plus "world" (each country one observation, unweighted). Keyed on
-    # the unit as well as the leaf: a kg column and an lt column measure
-    # different things, so one median spanning both compares nothing.
+    # Median of country-level medians per coicop leaf, one entry per region
+    # plus "world" (each country one observation, unweighted). The unit is
+    # still in the key, but it is constant within a leaf by the time this
+    # runs, so this is one entry per leaf.
     of_country, region_order = _load_regions()
     region_cols = [{"key": "world", "label": "World"}] + region_order
     region_medians: dict[str, dict[str, float]] = {}
@@ -295,6 +339,7 @@ def publish() -> Path:
             len(obs),
             before,
         )
+    obs = _to_display_units(obs)
     current = _current_snapshot(obs)
     monthly = _monthly_series(obs)
 
