@@ -101,8 +101,9 @@
     (division → group → class → subclass). The World and per-region columns each
     show a median of country medians for that COICOP leaf, with n = the number of
     countries behind it. Cells with fewer than
-    <span id="minobs1"></span> observations are hidden. Color scale within each row
-    — green=cheapest, red=most expensive.
+    <span id="minobs1"></span> observations are hidden, as are catch-all COICOP
+    categories ("Other …", "… n.e.c."), whose members share no common unit.
+    Color scale within each row — green=cheapest, red=most expensive.
   </div>
   <label class="covtoggle">
     <input type="checkbox" id="covfilter">
@@ -211,8 +212,14 @@
     cells[k].byCountry[r.country] = r;
   });
   const cellWidth = (c) => Object.keys(c.byCountry).length;
+  // Catch-all leaves are not shown. "Other green leguminous vegetables" pools
+  // whatever the classifier could not place, so the row is a different bag of
+  // goods in every country and reads across as if it were one commodity. The
+  // rows come out of both views; the KPI tiles above already counted only
+  // named leaves, so they are unaffected.
   const ordered = cellOrder
     .map(k => cells[k])
+    .filter(c => !residualLeaves.has(c.coicop_code))
     .sort((a, b) => cmpCoicop(a.coicop_code, b.coicop_code)
                  || cellWidth(b) - cellWidth(a));
 
@@ -346,6 +353,7 @@
   // Keyed on the unit as well, but it is constant within a leaf, so this is
   // one series per leaf; the unit survives only to title the y axis.
   const monthlySeries = [...new Set(DATA.monthly.map(r => cellKey(r.coicop_code, r.standard_unit)))]
+    .filter(k => !residualLeaves.has(k.split('|')[0]))
     .sort((a, b) => cmpCoicop(a.split('|')[0], b.split('|')[0])
                  || a.localeCompare(b));
   const select = document.getElementById('leafsel');
