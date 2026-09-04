@@ -85,7 +85,12 @@ PRODUCTS_INPUT_PARQUET = (
     REPO_ROOT / "data" / "prices" / "enrich" / "products_input.parquet"
 )
 CSV_CHUNK_SIZE = 50_000
-FX_HISTORY_FLOOR = pd.Timestamp("2024-03-06")
+# The floor is the earliest date FX can price, and nothing else. It was set to
+# 2024-03-06 when the cache started there; the cache now holds 630,346 rows back
+# to 2012-12-24, so that date had stopped describing the data and was simply
+# discarding history: a build capped at 2024-03 emits 196,449 cells where the
+# same corpus supports 335,191, losing 2013-2023 entirely.
+FX_HISTORY_FLOOR = pd.Timestamp("2013-01-01")
 
 JOIN_KEYS = ["input_hash"]
 
