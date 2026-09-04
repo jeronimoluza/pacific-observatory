@@ -20,8 +20,10 @@ from prices.explorer.sources import (
     DEFECT_LOG_RATIO,
     FE_ITERATIONS,
     FE_MIN_PAIRS,
+    FE_MIN_PAIRS_LEAF,
     FREQ_MAX_GAP,
     GEO_MIN_LINK_PAIRS,
+    GEO_MIN_LINK_PAIRS_LEAF,
     GEO_MIN_PERIODS,
     MIN_CELL_OBS,
     _levels,
@@ -43,7 +45,7 @@ def _join(d: pd.DataFrame, cols: list[str]) -> np.ndarray:
 def _pairs(exploded: pd.DataFrame, tax: dict, freq: str) -> pd.DataFrame:
     """Median unit value of each (country, leaf, unit) per period — the item."""
     leaf = exploded[
-        exploded.coicop_code.map(lambda c: tax.get(c, {}).get("lvl", 0)) == 5
+        exploded.coicop_code.map(lambda c: bool(tax.get(c, {}).get("leaf")))
     ]
     leaf = leaf[leaf.node == leaf.coicop_code]
     per = (
@@ -96,10 +98,8 @@ def _fe_level(d: pd.DataFrame) -> pd.DataFrame:
     # only informs the fit if it appears in at least two surviving periods
     for _ in range(4):
         before = len(d)
-        d = d[
-            d.groupby(KEY + ["period"], observed=True).pair.transform("size")
-            >= FE_MIN_PAIRS
-        ]
+        need = np.where(d.is_leaf.to_numpy(), FE_MIN_PAIRS_LEAF, FE_MIN_PAIRS)
+        d = d[d.groupby(KEY + ["period"], observed=True).pair.transform("size") >= need]
         if d.empty:
             break
         d = d[d.groupby(KEY + ["pair"], observed=True).period.transform("nunique") >= 2]
@@ -147,10 +147,15 @@ def _chain(linked: pd.DataFrame) -> pd.DataFrame:
             lr=("lr", "median"),
             pairs=("lr", "size"),
             prev_period=("prev_period", "min"),
+            is_leaf=("is_leaf", "first"),
         )
         .reset_index()
     )
-    step = step[step.pairs >= GEO_MIN_LINK_PAIRS]
+    # the chain must not be gated harder than the fit it rides alongside
+    need = np.where(
+        step.is_leaf.to_numpy(), GEO_MIN_LINK_PAIRS_LEAF, GEO_MIN_LINK_PAIRS
+    )
+    step = step[step.pairs >= need]
     if step.empty:
         return pd.DataFrame(columns=KEY + ["period", "idx", "pairs"])
     step = step.sort_values(KEY + ["period"])
@@ -205,6 +210,7 @@ def build_geo_series(
             columns=["coicop_code", "node"],
         )
         linked = m.merge(ladder, on="coicop_code", how="inner")
+        linked["is_leaf"] = linked.node.map(lambda c: bool(tax.get(c, {}).get("leaf")))
         for mp in maps.values():
             linked["geo"] = linked.country.map(mp)
             frame = _fe_level(linked).merge(

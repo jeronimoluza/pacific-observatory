@@ -14,9 +14,11 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import yaml
 
 from prices.explorer.geo import build_geo_series
 from prices.explorer.sources import (
+    REGIONS_YAML,
     COMPARABLE_UNITS,
     FE_MIN_PAIRS,
     COUNTRY_DEFECT_SHARE,
@@ -26,6 +28,8 @@ from prices.explorer.sources import (
     MIN_CELL_OBS,
     MIN_CHAIN_PERIODS,
     MIN_LINK_LEAVES,
+    MIN_LINK_LEAVES_FLOOR,
+    MIN_LINK_LEAVES_FRAC,
     MIN_SERIES_PERIODS,
     MODELLED_SOURCES,
     PLAUSIBLE_USD,
@@ -110,6 +114,17 @@ def _series(exploded: pd.DataFrame) -> pd.DataFrame:
     return s[depth >= MIN_SERIES_PERIODS].copy()
 
 
+def _leaf_census(tax: dict) -> dict[str, int]:
+    """Leaves sitting under each node, counted from the taxonomy alone."""
+    out: dict[str, int] = {}
+    for code, meta in tax.items():
+        if not meta.get("leaf"):
+            continue
+        for anc in _levels(code)[:-1]:
+            out[anc] = out.get(anc, 0) + 1
+    return out
+
+
 def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
     """Composition-free price index for aggregate COICOP nodes.
 
@@ -121,7 +136,7 @@ def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
     identity, which also sidesteps mixing two currencies inside one country.
     """
     leaf = exploded[
-        exploded.coicop_code.map(lambda c: tax.get(c, {}).get("lvl", 0)) == 5
+        exploded.coicop_code.map(lambda c: bool(tax.get(c, {}).get("leaf")))
     ]
     leaf = leaf[leaf.node == leaf.coicop_code]
     m = (
@@ -162,7 +177,16 @@ def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
         )
         .reset_index()
     )
-    step = step[step.n_leaves >= MIN_LINK_LEAVES]
+    # Scale the requirement to the node's own leaf census. Nodes that could
+    # always clear the flat bar keep it, so this only ever relaxes what the
+    # taxonomy made impossible, never what was merely thin this month.
+    n_desc = step.node.map(_leaf_census(tax)).fillna(0).to_numpy()
+    need = np.where(
+        n_desc >= MIN_LINK_LEAVES,
+        MIN_LINK_LEAVES,
+        np.maximum(MIN_LINK_LEAVES_FLOOR, np.ceil(MIN_LINK_LEAVES_FRAC * n_desc)),
+    )
+    step = step[step.n_leaves >= need]
     if step.empty:
         return pd.DataFrame(
             columns=["country", "node", "standard_unit", "period", "idx", "n_leaves"]
@@ -192,7 +216,7 @@ def _basket_levels(cells: pd.DataFrame, tax: dict) -> pd.DataFrame:
     """Matched-leaf Jevons price level: geometric mean of a country's leaf unit
     values relative to the global median for that same (leaf, unit)."""
     leaves = cells[
-        (cells.node.map(lambda c: tax.get(c, {}).get("lvl", 0)) == 5)
+        (cells.node.map(lambda c: bool(tax.get(c, {}).get("leaf"))))
         & (cells.modelled < 0.5)
         & cells.usd.gt(0)
     ].copy()
@@ -234,7 +258,22 @@ def _columnar(df: pd.DataFrame, cols: dict[str, str]) -> dict:
     return {out: df[src].tolist() for out, src in cols.items()}
 
 
-def build_payload() -> dict:
+def _region_label(key: str) -> str:
+    topo = yaml.safe_load(REGIONS_YAML.read_text()) or {}
+    if key not in topo:
+        raise SystemExit(f"unknown region {key!r}; known: {', '.join(sorted(topo))}")
+    return topo[key].get("name", key)
+
+
+def build_payload(region: str | None = None) -> dict:
+    """Aggregate the corpus, optionally restricted to one region's countries.
+
+    The restriction narrows WHO is shown, not what they are measured against.
+    Every "vs world" figure keeps its global yardstick, computed below from the
+    unrestricted cells, because a regional dashboard whose world median is
+    secretly its own median would report a country as typical when it is only
+    typical for its neighbours.
+    """
     tax = load_taxonomy()
     countries = load_country_meta()
     obs = load_observations()
@@ -244,6 +283,14 @@ def build_payload() -> dict:
         & obs.standard_unit.isin(COMPARABLE_UNITS)
         & obs.unit_value_usd.gt(0)
     ].copy()
+
+    world_cells = _cells(_explode_nodes(trusted))
+    if region:
+        label = _region_label(region)
+        keep = {s for s, m in countries.items() if m["region"] == label}
+        trusted = trusted[trusted.country.isin(keep)].copy()
+        if trusted.empty:
+            raise SystemExit(f"no trusted observations for region {region!r} ({label})")
 
     exploded = _explode_nodes(trusted)
     cells = _cells(exploded)
@@ -302,7 +349,7 @@ def build_payload() -> dict:
             nodemeta[node]["countries"] = int(n)
     # World median per (node, unit) over unflagged retail cells — the yardstick
     # the relative-price (FX-free) view divides by.
-    clean = cells[~cells.flagged & (cells.modelled < 0.5)]
+    clean = world_cells[~world_cells.flagged & (world_cells.modelled < 0.5)]
     for (node, unit), v in (
         clean.groupby(["node", "standard_unit"]).usd.median().items()
     ):

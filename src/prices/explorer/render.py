@@ -34,8 +34,8 @@ def render(payload: dict) -> str:
     return html
 
 
-def run(out_path: Path | None = None) -> Path:
-    payload = build_payload()
+def run(out_path: Path | None = None, region: str | None = None) -> Path:
+    payload = build_payload(region)
     out = Path(out_path) if out_path else OUT_HTML
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(render(payload))
