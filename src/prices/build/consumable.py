@@ -1,6 +1,6 @@
 """Curated ~10k consumable dataset family with canonical product identity.
 
-Turns the `trusted` slice of ``data/prices/build/eap_fnb_observations.parquet``
+Turns the `trusted` slice of ``data/prices/build/global_prices_observations.parquet``
 into a small, clean, ready-to-share EAP food & non-alcoholic beverage dataset
 family plus a Stata bundle, under ``outputs/prices/consumable_datasets/``.
 
@@ -46,7 +46,7 @@ import pandas as pd
 from prices.enrich import config as enrich_config
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-OBS_PARQUET = REPO_ROOT / "data/prices/build/eap_fnb_observations.parquet"
+OBS_PARQUET = REPO_ROOT / "data/prices/build/global_prices_observations.parquet"
 OUT_DIR = REPO_ROOT / "outputs/prices/consumable_datasets"
 
 N_TARGET = 10_000  # target unique canonical products

@@ -508,7 +508,7 @@ def prices_build(region, subregion, country, only, recompute_leaf_tables, worker
     """Construct CPI indices from the enriched prices dataset.
 
     PoC scope: writes the EAP × F&B basket parquet at
-    data/prices/build/eap_fnb_observations.parquet.
+    data/prices/build/global_prices_observations.parquet.
 
     With --only (or -r/-S/-c) the observations pass recomputes just the
     selected countries and overlays them onto the existing frame, so the
@@ -535,7 +535,7 @@ def prices_build(region, subregion, country, only, recompute_leaf_tables, worker
 def prices_publish(region, subregion):
     """Generate CPI dashboards.
 
-    PoC scope: renders outputs/prices/eap_fnb_dashboard.html from the
+    PoC scope: renders outputs/prices/global_prices_dashboard.html from the
     EAP F&B basket parquet. Region/subregion flags are accepted but
     ignored until the basket widens beyond the EAP PoC.
     """

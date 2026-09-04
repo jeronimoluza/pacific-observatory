@@ -43,7 +43,7 @@ logger = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 BUILD_DIR = REPO_ROOT / "data" / "prices" / "build"
-ANALYTICAL_PARQUET = BUILD_DIR / "eap_fnb_analytical.parquet"
+ANALYTICAL_PARQUET = BUILD_DIR / "global_prices_analytical.parquet"
 
 GRAIN = ["country", "coicop_code", "standard_unit"]
 TRAILING_MONTHS = 3

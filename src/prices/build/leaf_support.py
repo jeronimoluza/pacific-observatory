@@ -9,8 +9,8 @@ rebuild — the whole point is to show movement between scraping cycles.
 Artifacts read (state them on the table — see `ARTIFACTS`):
   - taxonomy    data/prices/enrich/coicop_categories.xlsx  (269 leaves + titles)
   - classified  data/prices/enrich/cache/classified.parquet (what the clf emits)
-  - observations data/prices/build/eap_fnb_observations.parquet
-  - trusted     data/prices/build/eap_fnb_trusted_observations.parquet (ships)
+  - observations data/prices/build/global_prices_observations.parquet
+  - trusted     data/prices/build/global_prices_trusted_observations.parquet (ships)
   - gold        data/prices/enrich/gold/gold_labels.parquet (the file the head
                 trainer actually reads via classifier.dataset._load_gold; count
                 verdict=="leaf" — NOT keyword matching, which lies, see brief)
@@ -30,8 +30,8 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 DATA = REPO_ROOT / "data" / "prices"
 TAX_XLSX = DATA / "enrich" / "coicop_categories.xlsx"
 CLASSIFIED = DATA / "enrich" / "cache" / "classified.parquet"
-OBS = DATA / "build" / "eap_fnb_observations.parquet"
-TRUSTED = DATA / "build" / "eap_fnb_trusted_observations.parquet"
+OBS = DATA / "build" / "global_prices_observations.parquet"
+TRUSTED = DATA / "build" / "global_prices_trusted_observations.parquet"
 GOLD = DATA / "enrich" / "gold" / "gold_labels.parquet"
 MISSING_MD = REPO_ROOT / "MISSING_CODES.md"
 # Committed corpus-verification overlay (58 hand-verified absent leaves). Lives
