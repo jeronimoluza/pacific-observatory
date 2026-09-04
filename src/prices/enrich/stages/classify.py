@@ -204,6 +204,30 @@ def read_products(in_path: Path) -> pd.DataFrame:
     return products[PRODUCT_COLS]
 
 
+def iter_products(in_path: Path, chunk_rows: int):
+    """`read_products` in batches, with the same projection and the same
+    missing-column fill.
+
+    The decide loop used to slice a resident frame with `.iloc`, which meant the
+    whole corpus stayed in memory for the length of the loop to serve reads that
+    parquet can serve directly. At 37.4M rows that frame is ~20 GB, on top of a
+    `scored` dict holding 29.4M entries -- the run reached 26 GB on a 26 GB box
+    and began swapping a third of the way through. The rows are on disk; read
+    them from there.
+    """
+    import pyarrow.parquet as pq  # noqa: PLC0415
+
+    pf = pq.ParquetFile(in_path)
+    have = set(pf.schema_arrow.names)
+    present = [c for c in PRODUCT_COLS if c in have]
+    absent = [c for c in PRODUCT_COLS if c not in have]
+    for batch in pf.iter_batches(batch_size=chunk_rows, columns=present):
+        chunk = batch.to_pandas()
+        for c in absent:
+            chunk[c] = None
+        yield chunk[PRODUCT_COLS]
+
+
 def _score_index(scores: pd.DataFrame, key_cols: Sequence[str]) -> dict:
     """Backend scores as a lookup on the backend's own key.
 
@@ -410,7 +434,14 @@ def run(
     divisions = (division,) if division else be.divisions
 
     products = read_products(in_path)
+    n_products = len(products)
     result = be.score(products, version=version, workers=workers)
+    # Scoring is the last thing that needs the corpus resident. The decide loop
+    # below re-reads it from parquet a chunk at a time, so holding this frame any
+    # longer costs ~20 GB for nothing -- and it is the difference between the
+    # loop fitting in RAM and swapping. `be.score` keeps its whole-frame
+    # contract; only the lifetime changes.
+    del products
     if result.unembedded:
         print(
             f"[classify] {len(result.unembedded)} unique names are not in the "
@@ -418,19 +449,23 @@ def run(
             flush=True,
         )
     scored = _score_index(result.frame, be.key_cols)
+    # Same reasoning as `products`: `result.frame` is 29.4M scored rows, and once
+    # the lookup exists the loop reads nothing from it but `unembedded`. Keeping
+    # it alive means paying for the scores twice, as a frame and as a dict.
+    unembedded = result.unembedded
+    del result
 
     full_out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Stream the row loop so the decision frame is never resident whole
-    # alongside `products`.
+    # Stream the row loop so neither the decision frame nor the corpus is ever
+    # resident whole.
     writer = None
     views: list[pd.DataFrame] = []
     n_dec = 0
     try:
-        for start in range(0, len(products), chunk_rows):
-            chunk = products.iloc[start : start + chunk_rows]
-            dec = decide_rows(chunk, scored, be.key_cols, result.unembedded)
+        for chunk in iter_products(in_path, chunk_rows):
+            dec = decide_rows(chunk, scored, be.key_cols, unembedded)
             n_dec += len(dec)
             views.append(classified_view(dec, divisions))
             table = pa.Table.from_pandas(
@@ -439,7 +474,7 @@ def run(
             if writer is None:
                 writer = pq.ParquetWriter(full_out_path, DECISION_SCHEMA)
             writer.write_table(table)
-            print(f"[classify] decided {n_dec}/{len(products)} rows", flush=True)
+            print(f"[classify] decided {n_dec}/{n_products} rows", flush=True)
     finally:
         if writer is not None:
             writer.close()
