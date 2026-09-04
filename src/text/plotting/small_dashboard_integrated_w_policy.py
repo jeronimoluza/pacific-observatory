@@ -1493,6 +1493,7 @@ def build_topic_iframe_html(
 
 
 TOPICS_LABEL_MAP = {
+    "el_nino": "El Niño",
     "us_china_trade_war": "US-China Trade War",
     "covid_pandemic": "COVID-19 Pandemic",
     "inflation_prices": "Inflation & Prices",

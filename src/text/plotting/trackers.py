@@ -50,6 +50,7 @@ _TOPIC_SECTIONS = [
     (
         "Climate & Environment",
         [
+            "el_nino",
             "drought_water",
             "extreme_weather_disaster",
             "climate_environment",
@@ -137,7 +138,7 @@ TRACKERS = {
         "file_suffix": "foodsec",
         "aria_subject": "food-security",
         "subdir": "food_security",
-        "themes": ["food"],
+        "themes": ["food", "climate"],
         # Macro context shown beside the food themes. These resolve to the
         # canonical `core` definitions, so `inflation_prices` means the same
         # thing here as it does on the fuel dashboard.
@@ -215,6 +216,11 @@ def tracker_groups(family: str, tracker: str | None = None) -> list[str]:
     Read from the English pack, which is the source of truth for which groups
     a theme defines. Only names are needed here, so this stays independent of
     the analysis package and its language-resolution rules.
+
+    A theme may define one family and not the other -- El Nino is a named
+    phenomenon with topics but no actors of its own -- so a missing file is a
+    gap, not an error. A theme missing from *every* family is a typo, and
+    still raises.
     """
     import json
 
@@ -222,6 +228,16 @@ def tracker_groups(family: str, tracker: str | None = None) -> list[str]:
     names: list[str] = []
     for theme in cfg["themes"]:
         path = KEYWORDS_EN / family / f"{theme}.json"
+        if not path.exists():
+            if not any(
+                (fam / f"{theme}.json").exists()
+                for fam in KEYWORDS_EN.iterdir()
+                if fam.is_dir()
+            ):
+                raise ValueError(
+                    f"tracker names theme '{theme}', which no family defines"
+                )
+            continue
         with open(path, encoding="utf-8") as fh:
             names.extend(json.load(fh))
     names.extend(cfg[f"extra_{family}"])
