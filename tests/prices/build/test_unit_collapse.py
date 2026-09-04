@@ -111,6 +111,21 @@ def test_a_leaf_already_in_one_unit_is_untouched():
     assert (out["display_unit_source"] == "native").all()
 
 
+def test_density_table_keys_are_the_leaves_their_comments_name():
+    """DENSITY_BY_LEAF drifted from the taxonomy it documents: honey (comment
+    "honey, syrups") and jam (comment "jams, marmalades") pointed at a nut-
+    purees code and a code absent from COICOP entirely, so the real honey and
+    jam leaves silently defaulted to water. Pin the codes that matter so this
+    cannot regress silently again."""
+    HONEY = "01.1.8.3.1"
+    JAM = "01.1.8.3.9"
+    assert unit_collapse.DENSITY_BY_LEAF[HONEY] > 1.3
+    assert unit_collapse.DENSITY_BY_LEAF[JAM] > 1.2
+    # The old, wrong codes must not still be carrying a honey/jam-sized value.
+    assert "01.1.8.5.0" not in unit_collapse.DENSITY_BY_LEAF
+    assert unit_collapse.DENSITY_BY_LEAF.get("01.1.8.4.0", unit_collapse.DEFAULT_DENSITY) < 1.2
+
+
 def test_a_piece_mass_measured_in_litres_still_reaches_a_kilo_display():
     """The mass table records some leaves in lt. That is not a reason to drop
     the leaf's piece rows when the display unit came out kg."""

@@ -69,6 +69,16 @@ TYPICAL_MASS_CSV = BUILD_DIR / "leaf_typical_mass.csv"
 # Bases whose rows carry a real measured quantity, and so can donate a mass.
 MEASURED_BASES = frozenset({"mass", "volume"})
 
+# Bases whose rows price ONE PIECE, and so are what `unit_collapse` actually
+# rescales through a leaf's typical mass. `item` is the extraction ladder's
+# catch-all; `count` is the same per-piece price reached by dividing an
+# explicit multipack marker (e.g. "Eggs x12") out of the pack price upstream.
+# Both must be checked here: on the production corpus every leaf that
+# actually converts arrives exclusively as `count`, never `item`, so a filter
+# on `item` alone leaves this gate checking a population that never overlaps
+# with what gets converted.
+PIECE_BASES = frozenset({"item", "count"})
+
 # A leaf needs at least this many measured rows before its median is called
 # typical. Mirrors the spirit of the Layer-2 min_n: thin evidence is reported,
 # never trusted.
@@ -203,9 +213,12 @@ def leaf_price_ratios(df: pd.DataFrame, table: pd.DataFrame) -> pd.DataFrame:
     """Per-leaf median of the per-country derived/measured unit-value ratios.
 
     Only leaves the amount-based gates already accepted are checked, and only
-    the `item` rows that would ACTUALLY convert -- a leaf in the sold_by_item
+    the piece rows that would ACTUALLY convert -- a leaf in the sold_by_item
     prior keeps its per-piece rows, so including them here would gate a mass on
-    rows it will never touch.
+    rows it will never touch. "Actually convert" means `pricing_basis` in
+    `PIECE_BASES` (`item` or `count`), matching `unit_collapse`'s own scope --
+    not `item` alone, which on the production corpus is a population disjoint
+    from what gets converted (see `PIECE_BASES`).
     """
     from prices.build.sold_by_item import is_sold_by_item
 
@@ -215,13 +228,12 @@ def leaf_price_ratios(df: pd.DataFrame, table: pd.DataFrame) -> pd.DataFrame:
 
     cand = table[table["accepted"]]
     mass = {str(r.coicop_code): float(r.median_amount) for r in cand.itertuples()}
-    unit = {str(r.coicop_code): str(r.unit) for r in cand.itertuples()}
 
     code = df["coicop_code"].astype(str)
     in_cand = code.isin(mass)
     convertible = (
         in_cand
-        & (df["pricing_basis"] == "item")
+        & df["pricing_basis"].isin(PIECE_BASES)
         & ~df["coicop_code"].apply(is_sold_by_item)
     )
     measured = in_cand & df["pricing_basis"].isin(MEASURED_BASES)
@@ -232,28 +244,33 @@ def leaf_price_ratios(df: pd.DataFrame, table: pd.DataFrame) -> pd.DataFrame:
     sub = df.loc[sel].copy()
     sub["_code"] = code[sel]
     sub["_derived"] = convertible[sel].to_numpy()
-    # A convertible row is priced as if it already carried the leaf's typical
-    # amount -- exactly what convert_item_rows would give it.
-    amount = sub["amount_value"].where(~sub["_derived"], sub["_code"].map(mass))
-    basis = sub["pricing_basis"].where(
-        ~sub["_derived"], sub["_code"].map(unit).map(UNIT_TO_BASIS)
+
+    price = _local_price(sub)
+    count_s = sub.get("count", pd.Series(index=sub.index, dtype=float))
+    mult_s = sub.get("multiplier", pd.Series(index=sub.index, dtype=float))
+
+    # Measured rows: the genuine mass/volume unit value.
+    measured_uv = pd.Series(
+        [
+            compute_unit_value(p, b, a, c, m)
+            for p, b, a, c, m in zip(price, sub["pricing_basis"], sub["amount_value"], count_s, mult_s)
+        ],
+        index=sub.index,
     )
-    sub["_uv"] = pd.to_numeric(
-        pd.Series(
-            [
-                compute_unit_value(p, b, a, c, m)
-                for p, b, a, c, m in zip(
-                    _local_price(sub),
-                    basis,
-                    amount,
-                    sub.get("count", pd.Series(index=sub.index, dtype=float)),
-                    sub.get("multiplier", pd.Series(index=sub.index, dtype=float)),
-                )
-            ],
-            index=sub.index,
-        ),
-        errors="coerce",
+    # Derived (piece) rows: reduce to a genuine per-piece price on the ORIGINAL
+    # basis first -- `item`/`count` both divide by `count`, mass/volume never
+    # do -- then divide by the leaf's typical mass. That is the same two-step
+    # conversion `unit_collapse.collapse` performs on the already-computed
+    # per-piece unit value; doing it in one compute_unit_value(basis="mass")
+    # call instead would silently drop the `/count` division, since the
+    # mass/volume branch never looks at `count`.
+    piece_price = pd.Series(
+        [compute_unit_value(p, b, None, c, m) for p, b, c, m in zip(price, sub["pricing_basis"], count_s, mult_s)],
+        index=sub.index,
     )
+    derived_uv = piece_price / sub["_code"].map(mass)
+
+    sub["_uv"] = pd.to_numeric(measured_uv.where(~sub["_derived"], derived_uv), errors="coerce")
     sub = sub[sub["_uv"].notna() & (sub["_uv"] > 0)]
     if sub.empty:
         return empty

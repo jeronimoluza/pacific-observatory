@@ -43,15 +43,32 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 # Kilograms per litre. Absent from this table means water.
+#
+# Codes below are verified against data/prices/enrich/coicop_categories.xlsx.
+# The table this replaced had drifted from the taxonomy it was meant to
+# describe: "01.1.8.4.0" and "01.1.8.5.0" (comments "honey, syrups" / "jams,
+# marmalades") were in fact nut purees/butters and a code absent from the
+# taxonomy entirely -- the real honey (01.1.8.3.1) and jam (01.1.8.3.9) leaves
+# had no entry and fell through to DEFAULT_DENSITY, a live ~30-40% error on
+# every honey/jam row taking the volume path. The oil codes were also
+# scrambled relative to their comments (0.92 landed on whichever oil actually
+# sits at that code, which happened not to matter much since edible vegetable
+# oils cluster tightly around 0.90-0.93) but left two real oil leaves --
+# soya bean and corn -- uncovered.
 DEFAULT_DENSITY = 1.0
 DENSITY_BY_LEAF = {
-    "01.1.5.1.1": 0.92,  # butter and margarine oils
-    "01.1.5.1.2": 0.92,  # olive oil
-    "01.1.5.1.3": 0.92,  # other edible oils
-    "01.1.5.1.6": 0.92,  # other edible oils n.e.c.
-    "01.1.5.1.9": 0.92,  # oils n.e.c.
-    "01.1.8.4.0": 1.42,  # honey, syrups
-    "01.1.8.5.0": 1.42,  # jams, marmalades
+    "01.1.5.1.1": 0.92,  # sunflower-seed and safflower-seed oil
+    "01.1.5.1.2": 0.92,  # palm oil
+    "01.1.5.1.3": 0.92,  # olive oil
+    "01.1.5.1.4": 0.92,  # soya bean oil
+    "01.1.5.1.5": 0.92,  # groundnut oil
+    "01.1.5.1.6": 0.92,  # coconut oil
+    "01.1.5.1.7": 0.92,  # corn oil
+    "01.1.5.1.9": 0.92,  # other edible vegetable oils n.e.c.
+    "01.1.8.3.1": 1.42,  # honey
+    "01.1.8.3.9": 1.35,  # other jams, marmalades, fruit jellies, purees and pastes
+    "01.1.4.3.1": 1.30,  # condensed or evaporated milk
+    "02.1.1.0": 0.94,  # spirits and liquors
 }
 
 MASS_UNIT = "kg"
