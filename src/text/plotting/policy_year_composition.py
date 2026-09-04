@@ -39,6 +39,7 @@ const subtitle = document.getElementById("subtitle");
 const svg = document.getElementById("chart");
 const legend = document.getElementById("legend");
 const detailCard = document.getElementById("detailCard");
+const detailPlaceholder = detailCard.innerHTML;
 const chartScroll = document.getElementById("chartScroll");
 const axisSvg = document.getElementById("chartAxis");
 const discBox = document.getElementById("ycDiscovered");
@@ -340,6 +341,18 @@ function render() {
   });
 
   el("line", {x1: 0, y1: margin.top + plotH, x2: width, y2: margin.top + plotH, class: "axis-line"});
+
+  // A pin names a cell -- (year, category, subcategory) -- not the rows that
+  // were in it when it was clicked. Every filter change rebuilds those rows, so
+  // re-read the cell from the fresh aggregate; otherwise switching subregion
+  // leaves the cards below the chart showing the previous subregion's measures.
+  // A cell that the new filter empties drops the pin rather than stranding it.
+  if (ystate.pinned) {
+    const p = ystate.pinned;
+    const cell = ((byYear.get(p.year) || new Map()).get(p.cat) || new Map()).get(p.sub);
+    if (cell && cell.length) pinDetails(p.year, p.cat, p.sub, cell);
+    else { ystate.pinned = null; detailCard.innerHTML = detailPlaceholder; }
+  }
 
   // The newest year is the one being tracked, so the view opens on it and older
   // years are reached by scrolling left. Clicking a segment re-renders, and must

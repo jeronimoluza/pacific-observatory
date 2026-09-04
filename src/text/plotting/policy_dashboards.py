@@ -1273,6 +1273,14 @@ def generate_region(
             f"  coverage source: {Path(coverage_path).name} ({len(coverage)} countries)"
         )
 
+    # Corpus-discovered measures ride alongside the workbook as
+    # ``discovered_<region>.json``. Without the sidecar convention this argument
+    # is unreachable: build_addons loops over regions, so one path cannot serve
+    # them, and every addon silently shipped workbook rows only.
+    if discovered_path is None:
+        sidecar = input_dir / f"discovered_{key}.json"
+        if sidecar.exists():
+            discovered_path = sidecar
     discovered = None
     if discovered_path and Path(discovered_path).exists():
         discovered = json.loads(Path(discovered_path).read_text())

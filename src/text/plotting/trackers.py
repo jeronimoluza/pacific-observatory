@@ -25,6 +25,97 @@ from __future__ import annotations
 
 from pathlib import Path
 
+# The Topics tab deliberately shows the whole 43-group universe, not the
+# tracker's own eighteen -- a food index of 150 means nothing until you can see
+# governance sitting at 300. Forty-three pills in one row is a wall, so they are
+# sectioned. The sections are the same for every tracker, because the universe
+# is; only which ones open by default differs, and each tracker opens the ones
+# its lens exists to show. The rest stay one click away rather than one scroll
+# away.
+_TOPIC_SECTIONS = [
+    (
+        "Food & Agriculture",
+        [
+            "food_prices",
+            "food_shortage_rationing",
+            "food_security",
+            "staple_crops",
+            "agricultural_inputs",
+            "crop_livestock_shocks",
+            "fisheries",
+            "food_reserves",
+            "food_trade_supply",
+        ],
+    ),
+    (
+        "Climate & Environment",
+        [
+            "drought_water",
+            "extreme_weather_disaster",
+            "climate_environment",
+        ],
+    ),
+    (
+        "Hunger, Poverty & Social",
+        [
+            "hunger_malnutrition",
+            "food_assistance",
+            "poverty",
+            "inequality",
+            "health",
+            "education",
+            "gender_equality",
+        ],
+    ),
+    (
+        "Macro & Prices",
+        [
+            "economic_growth",
+            "inflation_prices",
+            "external_shocks",
+            "trade",
+            "fiscal_policy",
+            "monetary_policy",
+            "public_debt",
+            "exchange_rate",
+            "financial_stability",
+            "capital_flows",
+        ],
+    ),
+    (
+        "Energy & Fuel",
+        [
+            "energy",
+            "oil",
+            "gasoline",
+            "diesel",
+            "natural_gas",
+            "fuel_rationing",
+        ],
+    ),
+    (
+        "Governance & Shocks",
+        [
+            "political_stability",
+            "corruption_governance",
+            "armed_conflicts",
+            "covid_pandemic",
+            "us_china_trade_war",
+            "labor_market",
+            "housing_real_estate",
+            "infrastructure",
+        ],
+    ),
+]
+
+
+def _topic_chip_groups(expanded: set[str]) -> list[dict]:
+    """The 43 topic pills as collapsible sections, opening ``expanded``."""
+    return [
+        {"label": label, "expanded": label in expanded, "topics": list(topics)}
+        for label, topics in _TOPIC_SECTIONS
+    ]
+
 
 TRACKERS = {
     "fuel": {
@@ -36,6 +127,7 @@ TRACKERS = {
         "themes": ["core"],
         "extra_topics": [],
         "extra_actors": [],
+        "topics_chip_groups": _topic_chip_groups({"Energy & Fuel", "Macro & Prices"}),
     },
     "food": {
         "slug": "food_security",
@@ -61,89 +153,9 @@ TRACKERS = {
             "multilateral_development_bank",
             "world_bank",
         ],
-        # The Topics tab deliberately shows the whole 43-group universe, not
-        # the tracker's own eighteen -- a food index of 150 means nothing until
-        # you can see governance sitting at 300. Forty-three pills in one row
-        # is a wall, so they are sectioned. Food and climate open by default;
-        # they carry the topics this lens exists to show. The rest stay one
-        # click away rather than one scroll away.
-        "topics_chip_groups": [
-            {
-                "label": "Food & Agriculture",
-                "expanded": True,
-                "topics": [
-                    "food_prices",
-                    "food_shortage_rationing",
-                    "food_security",
-                    "staple_crops",
-                    "agricultural_inputs",
-                    "crop_livestock_shocks",
-                    "fisheries",
-                    "food_reserves",
-                    "food_trade_supply",
-                ],
-            },
-            {
-                "label": "Climate & Environment",
-                "expanded": True,
-                "topics": [
-                    "drought_water",
-                    "extreme_weather_disaster",
-                    "climate_environment",
-                ],
-            },
-            {
-                "label": "Hunger, Poverty & Social",
-                "topics": [
-                    "hunger_malnutrition",
-                    "food_assistance",
-                    "poverty",
-                    "inequality",
-                    "health",
-                    "education",
-                    "gender_equality",
-                ],
-            },
-            {
-                "label": "Macro & Prices",
-                "topics": [
-                    "economic_growth",
-                    "inflation_prices",
-                    "external_shocks",
-                    "trade",
-                    "fiscal_policy",
-                    "monetary_policy",
-                    "public_debt",
-                    "exchange_rate",
-                    "financial_stability",
-                    "capital_flows",
-                ],
-            },
-            {
-                "label": "Energy & Fuel",
-                "topics": [
-                    "energy",
-                    "oil",
-                    "gasoline",
-                    "diesel",
-                    "natural_gas",
-                    "fuel_rationing",
-                ],
-            },
-            {
-                "label": "Governance & Shocks",
-                "topics": [
-                    "political_stability",
-                    "corruption_governance",
-                    "armed_conflicts",
-                    "covid_pandemic",
-                    "us_china_trade_war",
-                    "labor_market",
-                    "housing_real_estate",
-                    "infrastructure",
-                ],
-            },
-        ],
+        "topics_chip_groups": _topic_chip_groups(
+            {"Food & Agriculture", "Climate & Environment"}
+        ),
     },
 }
 

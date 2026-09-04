@@ -812,15 +812,15 @@ const topicPalette = __PALETTE_JSON__;
 const MEASURE_META = {
     intensity: {
         short: 'intensity',
-        blurb: 'Articles mentioning the topic, as a share of <b>all articles</b>. No uncertainty condition &mdash; this is how much the topic is covered, full stop.'
+        blurb: 'Articles mentioning the topic, as a share of all articles. No uncertainty condition &mdash; this is how much the topic is covered, full stop.'
     },
     absolute: {
         short: 'uncertainty',
-        blurb: 'Articles that are <b>both</b> uncertain <b>and</b> about the topic, as a share of <b>all articles</b>.'
+        blurb: 'Articles that are both uncertain and about the topic, as a share of all articles.'
     },
     framing: {
         short: 'framing',
-        blurb: 'Articles that are both uncertain and about the topic, as a share of <b>uncertain articles only</b>. This is a composition measure: it rises when a topic takes a larger slice of the same uncertainty.'
+        blurb: 'Articles that are both uncertain and about the topic, as a share of uncertain articles only. This is a composition measure: it rises when a topic takes a larger slice of the same uncertainty.'
     }
 };
 const SCALE_META = {
@@ -1032,7 +1032,7 @@ function initTopicTab() {
 
     function renderExplainer(measure, scale, nShown, nPool) {
         document.getElementById('topic-explainer').innerHTML =
-            '<b>Denominator:</b> ' + MEASURE_META[measure].blurb +
+            'Denominator: ' + MEASURE_META[measure].blurb +
             ' Each topic is then ' + SCALE_META[scale] + '.' +
             ' The chart ranks the top N of ' + nPool + ' topics in the selected comparison set' +
             ' (' + nShown + ' with data) against each other, month by month;' +
@@ -1134,13 +1134,13 @@ const chipLabelMap = __LABEL_MAP_JSON__;
 const actorFactors = __FACTORS_JSON__;
 const MEASURE_META = {
     intensity: {
-        blurb: 'Articles mentioning the __NOUN__, as a share of <b>all articles</b>. No uncertainty condition &mdash; this is how much the __NOUN__ is covered, full stop.'
+        blurb: 'Articles mentioning the __NOUN__, as a share of all articles. No uncertainty condition &mdash; this is how much the __NOUN__ is covered, full stop.'
     },
     absolute: {
-        blurb: 'Articles that are <b>both</b> uncertain <b>and</b> about the __NOUN__, as a share of <b>all articles</b>.'
+        blurb: 'Articles that are both uncertain and about the __NOUN__, as a share of all articles.'
     },
     framing: {
-        blurb: 'Articles that are both uncertain and about the __NOUN__, as a share of <b>uncertain articles only</b>. This is a composition measure: it rises when one __NOUN__ takes a larger slice of the same uncertainty.'
+        blurb: 'Articles that are both uncertain and about the __NOUN__, as a share of uncertain articles only. This is a composition measure: it rises when one __NOUN__ takes a larger slice of the same uncertainty.'
     }
 };
 const SCALE_META = {
@@ -1336,7 +1336,7 @@ function render() {
     });
     state.chart._groupOrder = selectedItems.slice();
     document.getElementById('actor-explainer').innerHTML =
-        '<b>Denominator:</b> ' + MEASURE_META[measure].blurb +
+        'Denominator: ' + MEASURE_META[measure].blurb +
         ' Each __NOUN__ is then ' + SCALE_META[scale] + '.';
 }
 
@@ -1377,8 +1377,8 @@ render();
     <h3>How this index is calculated</h3>
     <ol>
         <li>Every article is checked for two things: whether it uses an
-            <strong>uncertainty</strong> keyword, and whether it mentions the
-            __NOUN__. The <em>Measure</em> selector decides which of the two
+            uncertainty keyword, and whether it mentions the
+            __NOUN__. The Measure selector decides which of the two
             conditions apply.</li>
         <li>For each newspaper and month, count the articles that qualify and
             divide by the denominator named above the chart &mdash; all
@@ -1870,7 +1870,7 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
         data_expr=topic_data_expr,
         factors_expr=topic_factors_expr,
         method_foot_extra=(
-            " The <em>Uncertainty Topics (Ranked)</em> tab reads the same"
+            " The Uncertainty Topics (Ranked) tab reads the same"
             " numbers, ordered against each other month by month."
         ),
         chip_groups=tracker_chip_groups("topics", tracker),
@@ -1888,7 +1888,7 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
         factors=actor_factors,
         method_foot_extra=(
             " This tab previously required three conditions at once (economic,"
-            " policy <em>and</em> uncertainty); it now uses uncertainty alone,"
+            " policy and uncertainty); it now uses uncertainty alone,"
             " matching the Uncertainty Topics tabs."
         ),
     )
