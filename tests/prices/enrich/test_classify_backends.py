@@ -439,3 +439,28 @@ def test_the_hierlex_backend_calls_the_driver_it_actually_has(monkeypatch):
     assert seen["called"]
     assert list(out.frame["leaf"]) == ["01.1.1.1.0"]
     assert out.unembedded == frozenset()
+
+
+def test_hierlex_driver_is_bound_in_a_fresh_interpreter():
+    """`hierlex/__init__.py` imports nothing, so `hierlex.driver` is bound only
+    if something imported the submodule. Under pytest something always has, so
+    an in-process assertion passes while the pipeline raises AttributeError on
+    the first classify call. Only a fresh interpreter sees what the pipeline
+    sees."""
+    import os  # noqa: PLC0415
+    import subprocess  # noqa: PLC0415
+    import sys  # noqa: PLC0415
+
+    env = dict(os.environ, PYTHONPATH=os.pathsep.join(sys.path))
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "from prices.enrich.classifier import backends;"
+            " assert backends._hierlex().driver.run",
+        ],
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+    assert proc.returncode == 0, proc.stderr

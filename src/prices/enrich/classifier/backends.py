@@ -119,6 +119,13 @@ def _hierlex():
     """Import the adapter, or say what is missing and how to work around it."""
     try:
         from prices.enrich import hierlex  # noqa: PLC0415
+
+        # Importing the package alone does not bind `hierlex.driver` --
+        # `hierlex/__init__.py` is a docstring and imports nothing. Every caller
+        # here wants the driver, so import it by name; without this the attribute
+        # exists only if some other module happened to import it first, which is
+        # true under pytest and false in the pipeline.
+        from prices.enrich.hierlex import driver  # noqa: PLC0415, F401
     except ImportError as exc:  # pragma: no cover - exercised via monkeypatch
         raise RuntimeError(_HIERLEX_MISSING) from exc
     return hierlex
