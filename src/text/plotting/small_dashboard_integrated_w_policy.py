@@ -1779,7 +1779,7 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
     """Generate the special EPU+policy dashboard for ``region``.
 
     Reads dashboard_data.json, filters units to the region, and writes
-    ``outputs/text/dashboards/{tracker}/{region}_policy_dashboard.html``.
+    ``outputs/text/dashboards/{tracker}/{region}_policy_dashboard_{suffix}.html``.
     """
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
@@ -1916,7 +1916,7 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
     project_root = Path(__file__).resolve().parents[3]
     output_dir = tracker_dir(project_root / "outputs" / "text" / "dashboards", tracker)
     output_dir.mkdir(parents=True, exist_ok=True)
-    dashboard_path = output_dir / dashboard_filename(region)
+    dashboard_path = output_dir / dashboard_filename(region, tracker)
     dashboard_path.write_text(out, encoding="utf-8")
     print(f"Created {dashboard_path}")
     return dashboard_path

@@ -122,6 +122,7 @@ TRACKERS = {
         "slug": "fuel",
         "label": "Fuel Crisis Policy",
         "out_subdir": "fuel",
+        "file_suffix": "fuel",
         "aria_subject": "fuel-crisis",
         "subdir": "",
         "themes": ["core"],
@@ -133,6 +134,7 @@ TRACKERS = {
         "slug": "food_security",
         "label": "Food Security Policy",
         "out_subdir": "food_security",
+        "file_suffix": "foodsec",
         "aria_subject": "food-security",
         "subdir": "food_security",
         "themes": ["food"],
@@ -172,23 +174,26 @@ def get_tracker(name: str | None) -> dict:
 
 
 ADDON_SUFFIX = "_policy_addon.html"
-DASHBOARD_SUFFIX = "_policy_dashboard.html"
+DASHBOARD_STEM = "_policy_dashboard"
 
 
 def addon_filename(region: str) -> str:
     return f"{region}{ADDON_SUFFIX}"
 
 
-def dashboard_filename(region: str) -> str:
-    return f"{region}{DASHBOARD_SUFFIX}"
+def dashboard_filename(region: str, tracker: str | None = None) -> str:
+    """Dashboard filename, tagged with the tracker it was built for.
+
+    The output directory already names the lens, so the tag is redundant on
+    disk. It is there because these files are published and downloaded one at a
+    time, and away from their directory two files both called
+    ``eap_policy_dashboard.html`` cannot be told apart.
+    """
+    return f"{region}{DASHBOARD_STEM}_{get_tracker(tracker)['file_suffix']}.html"
 
 
 def tracker_dir(base_dir: Path, tracker: str | None = None) -> Path:
-    """Per-tracker subdirectory of an addon or dashboard output tree.
-
-    The directory carries the lens, so filenames stay uniform across
-    trackers and a new lens needs no naming decision.
-    """
+    """Per-tracker subdirectory of an addon or dashboard output tree."""
     return base_dir / get_tracker(tracker)["out_subdir"]
 
 
