@@ -14,6 +14,15 @@ its descendants (verified live via the `resources: from-to/total` response
 header on a parent vs. child category), so leaf-only crawling is both
 disjoint and complete without re-walking every tree level.
 
+An offer whose default seller reports `AvailableQuantity: 0` is skipped
+outright: VTEX keeps a delisted SKU in the catalog feed forever and leaves
+`commertialOffer.Price` frozen at whatever it was when the SKU went out of
+stock. The Cencosud AR banners (disco/jumbo/vea) serve ~95% of their feed
+that way, so 36% of their rows were pre-devaluation prices -- 35.55 ARS for
+a bag of icing sugar, unchanged across a month of weekly runs (0.3% of those
+rows moved, vs. 11% of in-stock rows). Absent AvailableQuantity is not zero
+and is still emitted.
+
 Subclasses set: name, allowed_domains, HOST, currency, language.
 Underscored filename -- Scrapy's SpiderLoader skips classes without `name`.
 """
@@ -150,9 +159,7 @@ class VtexBaseSpider(scrapy.Spider):
             offer = seller.get("commertialOffer") or {}
             price = offer.get("Price")
             available_qty = offer.get("AvailableQuantity")
-            if available_qty == 0 and not price:
-                continue
-            if price is None:
+            if available_qty == 0 or price is None:
                 continue
             self.seen_skus.add(sku_id)
             yield {
@@ -238,9 +245,7 @@ class VtexBaseSpider(scrapy.Spider):
                 continue
             price = offer.get("Price")
             available_qty = offer.get("AvailableQuantity")
-            if available_qty == 0 and not price:
-                continue
-            if price is None:
+            if available_qty == 0 or price is None:
                 continue
             yield {
                 "product_id": str(sku_id),

@@ -22,6 +22,14 @@ spiders capture separately from the name (e.g. pickaroo "~500 g"); it carries
 the quantity the product_name omits and is consulted by the structural
 extractor as a fallback. All default to "" when absent.
 
+Rows whose `available` field is an explicit JSON `false` are dropped before the
+column projection (which does not carry the flag). An out-of-stock offer is not
+a price anyone can pay, and on VTEX tenants it is usually a delisted SKU whose
+price has been frozen for years — the Cencosud AR banners served ~95% of their
+feed that way, which is where 36% of their rows came in under 100 ARS. A
+missing, null, or non-boolean `available` is unknown availability, never
+unavailability: most spiders never emit the field at all.
+
 product_name_original is NOT emitted here — prepare derives it. Currency for
 Common Crawl rows (which often lack a currency field) is back-filled with the
 modal currency observed in the same source's jsonl rows; rows with no
@@ -149,7 +157,16 @@ def _url_hash(url: Optional[str]) -> Optional[str]:
     return hashlib.md5(url.encode("utf-8")).hexdigest()
 
 
-def _emit_jsonl(path: Path, wayback: bool) -> Iterable[dict]:
+def _is_out_of_stock(obj: dict) -> bool:
+    """True only for an explicit JSON ``false``.
+
+    Absent, null, and non-boolean values all mean "unknown" and are kept: the
+    field is optional and most spiders never emit it, so reading missing as
+    unavailable would delete most of the corpus."""
+    return obj.get("available") is False
+
+
+def _emit_jsonl(path: Path, wayback: bool, stats: Counter) -> Iterable[dict]:
     with path.open("r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -158,6 +175,9 @@ def _emit_jsonl(path: Path, wayback: bool) -> Iterable[dict]:
             try:
                 obj = json.loads(line)
             except json.JSONDecodeError:
+                continue
+            if _is_out_of_stock(obj):
+                stats["out_of_stock"] += 1
                 continue
             yield {
                 "product_name": obj.get("product_name"),
@@ -173,22 +193,29 @@ def _emit_jsonl(path: Path, wayback: bool) -> Iterable[dict]:
             }
 
 
-def _emit_cc(path: Path) -> Iterable[dict]:
+def _emit_cc(path: Path, stats: Counter) -> Iterable[dict]:
     try:
         obj = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return
-    yield _cc_row(obj)
+    row = _cc_row(obj, stats)
+    if row is not None:
+        yield row
 
 
-def _emit_cc_jsonl(path: Path) -> Iterable[dict]:
+def _emit_cc_jsonl(path: Path, stats: Counter) -> Iterable[dict]:
     from prices.cc_storage import iter_jsonl
 
     for obj in iter_jsonl(path):
-        yield _cc_row(obj)
+        row = _cc_row(obj, stats)
+        if row is not None:
+            yield row
 
 
-def _cc_row(obj: dict) -> dict:
+def _cc_row(obj: dict, stats: Counter) -> Optional[dict]:
+    if _is_out_of_stock(obj):
+        stats["out_of_stock"] += 1
+        return None
     return {
         "product_name": obj.get("product_name"),
         "price": obj.get("price"),
@@ -267,22 +294,35 @@ def _load_source(
     subregion: str,
     country: str,
     source: str,
+    run_stats: Optional[Counter] = None,
 ) -> Optional[pd.DataFrame]:
     files = _iter_source_files(source_dir, country, source)
     if not files:
         return None
+    stats: Counter = Counter()
     rows: list[dict] = []
     for shape, path in files:
         if shape == "jsonl":
-            rows.extend(_emit_jsonl(path, wayback=False))
+            rows.extend(_emit_jsonl(path, False, stats))
         elif shape == "wayback":
-            rows.extend(_emit_jsonl(path, wayback=True))
+            rows.extend(_emit_jsonl(path, True, stats))
         elif shape == "cc":
-            rows.extend(_emit_cc(path))
+            rows.extend(_emit_cc(path, stats))
         elif shape == "cc_jsonl":
-            rows.extend(_emit_cc_jsonl(path))
+            rows.extend(_emit_cc_jsonl(path, stats))
         elif shape == "price_obs":
             rows.extend(_emit_price_obs(path))
+    n_out_of_stock = stats["out_of_stock"]
+    if n_out_of_stock:
+        logger.info(
+            "[concatenate] %s/%s: dropped %d out-of-stock rows",
+            country,
+            source,
+            n_out_of_stock,
+        )
+        if run_stats is not None:
+            run_stats["rows"] += n_out_of_stock
+            run_stats["sources"] += 1
     if not rows:
         return None
     df = pd.DataFrame(rows)
@@ -398,6 +438,7 @@ def run(
     patterns = [partition.compile_selector(s) for s in selectors] if selectors else None
 
     n_total = n_refreshed = n_skipped = n_converted = 0
+    run_stats: Counter = Counter()
     for region, subregion, country, source, source_dir in _walk_sources(
         DATA_PRICES_ROOT
     ):
@@ -433,7 +474,9 @@ def run(
                 n_converted += 1
                 continue
 
-        df = _load_source(source_dir, region, subregion, country, source)
+        df = _load_source(
+            source_dir, region, subregion, country, source, run_stats=run_stats
+        )
         if df is None:
             continue
         shards.write_shard(df, shard_path)
@@ -448,6 +491,12 @@ def run(
         n_skipped,
         n_converted,
     )
+    if run_stats["rows"]:
+        logger.info(
+            "[concatenate] dropped %d out-of-stock rows across %d source(s)",
+            run_stats["rows"],
+            run_stats["sources"],
+        )
 
     shard_paths = [s.path for s in partition.select(None, PER_SOURCE_DIR)]
     if not shard_paths:
