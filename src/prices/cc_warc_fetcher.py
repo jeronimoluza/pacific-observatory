@@ -26,7 +26,7 @@ import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
 
-from .cc_config import all_cc_configs
+from .cc_config import all_cc_configs, declared_currency_for
 from . import cc_storage
 from .cc_index import choose_family
 from .cc_samples import SampleKeeper
@@ -77,7 +77,7 @@ class CommonCrawlScraper:
         cfg = configs[spider_name]
         self.url_prefix: str = cfg["prefix"]
         self.path_re = re.compile(cfg["path_re"] or "")
-        self.declared_currency: str = (cfg.get("currency") or "").strip().upper()
+        self.declared_currency: str = declared_currency_for(spider_name)
         self.parse_html_fn = _load_spider_parse_html(spider_name)
         # Platform-base spiders (Woo/Shopify/VTEX/...) scrape JSON APIs and have
         # no CSS selectors; their `parse_html` hook is the only archived-HTML
@@ -366,11 +366,12 @@ class CommonCrawlScraper:
                 "scraped_at": self.scraped_at,
                 **extracted,
             }
-            # A manifest currency is human-set per storefront; the archived
-            # page's own priceCurrency is whatever its SEO plugin emitted, and
-            # a wrong one is silent and gets multiplied by FX downstream. Where
-            # the manifest declares nothing, the page value stands and
-            # concatenate.py back-fills the rest from the source's modal value.
+            # A declared currency is human-set per storefront (manifest, else
+            # the spider's own attribute); the archived page's priceCurrency is
+            # whatever its SEO plugin emitted, and a wrong one is silent and
+            # gets multiplied by FX downstream. Where nothing is declared the
+            # page value stands — concatenate.py's modal back-fill only ever
+            # fills a BLANK cell, so it cannot correct a wrong one.
             if self.declared_currency:
                 payload["currency"] = self.declared_currency
             payloads.append(json.dumps(payload, ensure_ascii=False))

@@ -160,3 +160,76 @@ def all_cc_configs() -> Dict[str, Dict[str, str]]:
 def get_cc_config(spider: str) -> Optional[Dict[str, str]]:
     """Return one spider's archive scope, or None when no manifest declares it."""
     return all_cc_configs().get(spider)
+
+
+def _spider_class(spider: str):
+    """Return the spider class named ``spider``, or None.
+
+    Mirrors the dispatch in ``backfill._load_spider_parse_html``: import by
+    module name first, then scan the package, because a spider's ``name`` and
+    its module name legitimately diverge (``name = "173brunei"`` lives in
+    ``brunei173.py``). The ``price_scraping`` alias is required because
+    concrete spiders import their base as ``price_scraping.spiders._woo_base``.
+    """
+    import importlib
+    import pkgutil
+    import sys
+
+    if "price_scraping" not in sys.modules:
+        try:
+            sys.modules["price_scraping"] = importlib.import_module(
+                "prices.price_scraping"
+            )
+        except ImportError:
+            return None
+
+    def _find(mod):
+        for attr_name in dir(mod):
+            obj = getattr(mod, attr_name)
+            if isinstance(obj, type) and getattr(obj, "name", None) == spider:
+                return obj
+        return None
+
+    try:
+        return _find(importlib.import_module(f"prices.price_scraping.spiders.{spider}"))
+    except ImportError:
+        pass
+    spiders_pkg = importlib.import_module("prices.price_scraping.spiders")
+    for info in pkgutil.iter_modules(spiders_pkg.__path__):
+        if info.name.startswith("_"):
+            continue
+        try:
+            mod = importlib.import_module(f"prices.price_scraping.spiders.{info.name}")
+        except ImportError:
+            continue
+        found = _find(mod)
+        if found is not None:
+            return found
+    return None
+
+
+@lru_cache(maxsize=None)
+def declared_currency_for(spider: str) -> str:
+    """The currency an archived row for ``spider`` must be stamped with, or "".
+
+    The manifest's ``currency:`` is the declaration when it exists. When it
+    does not, fall back to the spider class's ``currency`` attribute — which is
+    the same hardcoded value every live-scraped row of the source carries, and
+    a far better source of truth than the archived page's ``priceCurrency``,
+    which is whatever the storefront's SEO plugin emitted. `waltermart` is a
+    Philippine supermarket on NCR Freshop whose archived markup says USD; the
+    unguarded page value put 23,741 peso prices into the build as dollars.
+
+    The fallback is withheld from spiders that expose a ``parse_html`` hook:
+    that hook is the source's own per-row currency logic, and aggregator and
+    multi-storefront platform spiders legitimately emit several currencies from
+    one archived page.
+    """
+    cfg = all_cc_configs().get(spider) or {}
+    declared = str(cfg.get("currency") or "").strip().upper()
+    if declared:
+        return declared
+    cls = _spider_class(spider)
+    if cls is None or callable(getattr(cls, "parse_html", None)):
+        return ""
+    return str(getattr(cls, "currency", "") or "").strip().upper()
