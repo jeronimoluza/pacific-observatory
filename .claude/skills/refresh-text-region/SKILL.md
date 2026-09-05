@@ -16,12 +16,32 @@ Run a parallel `po text collect` refresh across a region's sources, autonomously
 ## Two modes
 
 ### Mode A — region/subregion refresh
-1. Resolve scope from `src/configs/regions.yaml`. Build a job queue of `country|source` pairs from the YAMLs at `src/text/configs/<region>/.../<source>.yaml`. Skip any file matching `_0_*.yaml` (disabled sources).
-2. For countries with many sources (>4), split per-source so one slow source doesn't block the rest. For countries with ≤4 sources, queue the country as a whole (`--country X` with empty source).
-3. Launch a detached xargs runner with 4 parallel slots — see `references/orchestration.md` for the exact runner template.
-4. Stream START/DONE/FAIL events via the Monitor tool; tail per-source logs for stuck-source signals (below).
-5. As stuck sources appear, fork into the diagnose+fix loop, then re-queue the source as a separate detached job.
-6. After every source has emitted DONE/FAIL, report.
+
+Primary entry point — runs queue build + parallel launch in one shot:
+
+```bash
+bash .claude/skills/refresh-text-region/scripts/launch_refresh.sh <region> [parallelism] [max_source_seconds]
+# defaults: parallelism=8, max_source_seconds=300 (5 min PER SOURCE — not per region)
+```
+
+What it does:
+1. Walks `src/text/configs/<region>/.../<source>.yaml` (skipping `_0_*.yaml`) and writes the queue to `/tmp/refresh_<region>_jobs.txt`. Every source is queued as its own `country|source` line so xargs distributes them evenly across the `-P` slots.
+2. Launches `xargs -P <parallelism>` against `scripts/runner.sh`, exporting `MAX_SOURCE_SECONDS` so each runner caps its own python child. Events stream to `/tmp/refresh_<region>_nohup.log`.
+3. **No region-wide budget.** The orchestrator runs until the queue drains. Each source that exceeds its per-source cap is killed individually (emits `[TIMEOUT]`); the rest keep going.
+
+Then:
+4. Stream `[START]/[DONE]/[FAIL]/[STUCK]/[TIMEOUT]/[REFRESH-DONE]` events via the Monitor tool; tail per-source logs for stuck-source signals (below).
+5. As stuck sources appear mid-run, fork into the diagnose+fix loop, then re-queue the source as a separate detached job.
+6. After `[REFRESH-DONE]` arrives, generate the report:
+
+```bash
+poetry run python .claude/skills/refresh-text-region/scripts/render_collect_report.py <region> --parallelism <P> --max-source-seconds <S>
+# → outputs/text/reports/collect/collect_<region>_<ts>.md
+```
+
+**Wall-clock estimate**: the run takes roughly `(queue_size / parallelism) * avg_source_seconds`. With -P 8 and ~30s average per source, a 200-source region is ~13 min; an 900-source region is ~56 min. The per-source cap bounds the *worst* runtime per slot, not the total.
+
+The legacy template-based pattern in `references/orchestration.md` still works for ad-hoc tweaks but is no longer the primary path.
 
 ### Mode B — single-source fix
 Skip the orchestration; jump straight to the diagnose+fix loop on the named source. Apply config fix, seed the ledger if warranted, smoke-test, report.
@@ -34,6 +54,7 @@ A source is **stuck** when, mid-run, ANY of these is true. The skill should auto
 |---|---|
 | Selector-broken warning | The per-source log contains `⚠ <source>: after N article attempts, 0 were successfully scraped. Selectors may be broken — continuing anyway.` |
 | Iter rate slow + sustained | tqdm progress shows >5s/it sustained for >50 iterations. Parse the latest `it/s\]` token from the log via `tr '\r' '\n' < log \| grep -oE 'Scraping articles:[^\|]*\|[^\|]*\|[^]]*\]' \| tail -1`. |
+| False-CLEAR / WAF stall (auto) | The runner's built-in watchdog emits `[STUCK] <tag> (no news.csv growth for <N>s after warning; killing python)` directly to the nohup log when the selector-broken warning has fired AND target `news.csv` has shown zero size growth for `STALL_SECONDS` (default 300). See `references/orchestration.md → Watchdog semantics`. The kill is automatic; the operator's job is just to triage which Pattern applies. |
 
 **Do NOT flag from `po text status` alone**: a source showing "2d ago" may just mean the site is genuinely quiet. Only the in-run signals above are reliable. (See `references/known_stuck_patterns.md` for the four classes seen in the wild.)
 
@@ -65,7 +86,44 @@ These rules came from real incidents on 2026-05-04. Bake them into the workflow.
 
 ## Output format
 
-After the run finishes, print:
+Two artifacts at end of run:
+
+### 1. Persistent collect report
+
+Always written by `scripts/render_collect_report.py` to:
+
+```
+outputs/text/reports/collect/collect_<region>_<ts>.md
+```
+
+A single markdown table mirroring the existing `outputs/text/reports/build/` format:
+
+```
+# Collect report — <region>
+_Generated <ts>_
+
+**Run:** region=<r> | parallelism=<P> | budget=<N>s | wall=<HHMMSS> | jobs=<done>/<total> completed
+
+## Sources
+| Country | Source | Status | Articles | Duration | Started (UTC) | Notes |
+...
+
+## Summary
+- DONE: N | FAIL: N | BUDGET-KILLED: N | NOT-STARTED: N | wall: <dur>
+- Slowest: <country>/<source> (<dur>)
+- Fastest: <country>/<source> (<dur>)
+```
+
+Status values:
+- `DONE` — exit 0 from `po text collect`
+- `FAIL` — non-zero exit from `po text collect` (includes WAF-watchdog kills, which print `[STUCK]` first)
+- `TIMEOUT-KILLED` — per-source wall-clock cap exceeded; runner killed the python
+- `IN-FLIGHT` — START seen but no terminal event yet (only appears if you render the report before the run drained)
+- `NOT-STARTED` — queued but xargs hadn't dispatched it yet
+
+### 2. Inline chat report (operator-facing)
+
+Still printed in chat after the run, for quick scan and operator-action callouts:
 
 ```
 ## Refresh: <region>
@@ -80,7 +138,7 @@ After the run finishes, print:
 - poetry run python /tmp/seed_<source_a>_ledger.py
 - poetry run python /tmp/seed_<source_b>_ledger.py
 
-## Total: N new articles across M sources
+## Total: N new articles across M sources | report: outputs/text/reports/collect/collect_<region>_<ts>.md
 ```
 
 Group sources under their country header. Order countries alphabetically within the region. Pre-seeded ledger scripts are presented separately so the operator can review them before applying.
@@ -95,15 +153,13 @@ Read on demand — don't load upfront.
 
 ## Quick start checklist
 
-For region mode:
+For region mode (primary path):
 
-1. Read `src/configs/regions.yaml`, expand the region/subregion to a list of country slugs.
-2. Walk `src/text/configs/<region>/<subregion>/<country>/` and build the queue (skip `_0_*.yaml`).
-3. Write the queue to `/tmp/refresh_<region>_jobs.txt` (one `country|source` per line; empty source means whole country).
-4. Launch `nohup bash -c 'cat /tmp/refresh_<region>_jobs.txt | xargs -P 4 -I JOB /tmp/refresh_<region>_runner.sh JOB' > /tmp/refresh_<region>_nohup.log 2>&1 & disown`
-5. Arm Monitor on the nohup log filtering for `^\[(START|DONE|FAIL)`.
-6. Periodically scan per-source logs for stuck signals; when found, apply the diagnose+fix loop.
-7. When all DONE/FAIL emitted, generate the report.
+1. `bash .claude/skills/refresh-text-region/scripts/launch_refresh.sh <region> 8 300` — queue build + parallel launch with a 5-min per-source cap (no region-wide budget).
+2. Arm Monitor on `/tmp/refresh_<region>_nohup.log` filtering for `^\[(START|DONE|FAIL|WARN|STUCK|TIMEOUT|REFRESH-DONE)`.
+3. Periodically scan per-source logs for stuck signals; when found, apply the diagnose+fix loop.
+4. When `[REFRESH-DONE]` arrives, run `poetry run python .claude/skills/refresh-text-region/scripts/render_collect_report.py <region> --parallelism 8 --max-source-seconds 300`.
+5. Read the resulting `outputs/text/reports/collect/collect_<region>_<ts>.md`, then emit the inline chat report.
 
 For single-source mode:
 

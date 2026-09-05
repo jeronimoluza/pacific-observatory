@@ -162,10 +162,77 @@ If no WordPress API, check for custom APIs:
 grep -i '__NEXT_DATA__\|/api/\|/graphql\|algolia' /tmp/newspaper_probe.html | head -5
 ```
 
+### 2e. Sitemap discovery — and the archive-depth rule
+
+Many newspapers expose an XML sitemap that lists every article URL with a
+`<lastmod>` date. When present, this is the cheapest, most reliable listing
+strategy in the pipeline: `listing_strategy.type: sitemap`. The YAML points to
+a sitemap-index URL and optionally a `sitemap_regex` to pick which sub-sitemaps
+to crawl (e.g. `"artykuly-\\d{4}-\\d{2}-\\d{2}\\.xml(\\.gz)?"`).
+
+**1. Locate the sitemap.**
+
+```bash
+# Standard discovery paths — try each:
+curl -sIL --max-time 10 -A "Mozilla/5.0..." "<BASE_URL>/robots.txt" 2>/dev/null
+curl -sL  --max-time 10 -A "Mozilla/5.0..." "<BASE_URL>/robots.txt" 2>/dev/null | grep -i sitemap
+curl -sIL --max-time 10 -A "Mozilla/5.0..." "<BASE_URL>/sitemap.xml" 2>/dev/null | head -3
+curl -sIL --max-time 10 -A "Mozilla/5.0..." "<BASE_URL>/sitemap_index.xml" 2>/dev/null | head -3
+curl -sIL --max-time 10 -A "Mozilla/5.0..." "<BASE_URL>/sitemap-news.xml" 2>/dev/null | head -3
+```
+
+Confirm the response is `Content-Type: application/xml` (or `text/xml`,
+`application/gzip` for `.xml.gz`). A 200 returning HTML is a bot-protection
+challenge, not a sitemap.
+
+**2. Inspect the sitemap-index contents.** Save it and look at sub-sitemap URLs:
+
+```bash
+curl -sL --max-time 15 -A "Mozilla/5.0..." "<SITEMAP_INDEX_URL>" -o /tmp/sitemap_index.xml
+# Quick look — what sub-sitemaps does it advertise?
+grep -Eo '<loc>[^<]+</loc>' /tmp/sitemap_index.xml | head -20
+# How many sub-sitemaps total?
+grep -c '<sitemap>' /tmp/sitemap_index.xml
+# What date range does <lastmod> cover?
+grep -Eo '<lastmod>[^<]+</lastmod>' /tmp/sitemap_index.xml | sort | head -3   # oldest
+grep -Eo '<lastmod>[^<]+</lastmod>' /tmp/sitemap_index.xml | sort | tail -3   # newest
+```
+
+**3. ARCHIVE-DEPTH RULE — the make-or-break check.** A sitemap is only useful
+if it lets us reach historical articles. Apply this rule and call it out
+explicitly in the output:
+
+| Archive depth | Verdict | Flag |
+|---------------|---------|------|
+| **Years** (e.g. `artykuly-2018-...` through `artykuly-2026-...` — sub-sitemaps span many months/years) | **EXCELLENT — highlight as a large sitemap archive** | `archive_depth: large` |
+| **Months** (a few months of dated sub-sitemaps) | Usable | `archive_depth: medium` |
+| **Past 2 weeks only** (Google-News-style sitemap that lists only the last ~14 days) | **NO GOOD — do not pick `sitemap` as the listing strategy.** A 14-day window means every collect run after a 2-week gap loses everything in between. Fall back to `pagination` / `archive` / `paginated_archive` instead. | `archive_depth: shallow_2w` |
+| Single sitemap with no `<lastmod>` dates | Inspect a sample article URL; if pattern is `/YYYY/MM/DD/...` the dates are embedded — usable. Otherwise treat as shallow. | `archive_depth: undated` |
+
+Google News sitemaps (`sitemap-news.xml`, `news-sitemap.xml`) are *always*
+the shallow case — they exist for Google News indexing, capped at ~48h–2w by
+spec. If you only find a Google News sitemap, **do not** classify the site as
+`sitemap`; treat it like any other source and fall back to HTML pagination.
+
+**4. Sanity-check a sub-sitemap.** Fetch one and confirm it contains `<url>`
+entries with article URLs that match the live site:
+
+```bash
+curl -sL --max-time 15 -A "Mozilla/5.0..." "<SUB_SITEMAP_URL>" -o /tmp/sub_sitemap.xml
+# (handle .xml.gz: gunzip -c after curl, or curl --compressed)
+grep -c '<url>' /tmp/sub_sitemap.xml
+grep -Eo '<loc>[^<]+</loc>' /tmp/sub_sitemap.xml | head -5
+```
+
+Then check one URL returns a real article page (not a redirect to homepage,
+not a 404). This is the cheapest way to detect a stale or deprecated sitemap.
+
 ### Decision summary
 
 | Signal found | Listing type |
 |-------------|-------------|
+| Sitemap index advertises **years** of dated sub-sitemaps and sub-sitemaps return real articles | `sitemap` *(preferred — record `archive_depth: large`)* |
+| Sitemap exists but only covers past ~2 weeks (Google News sitemap) | **Skip `sitemap`** — fall through to the HTML rows below |
 | `?page=N` or `/page/N/` in links | `pagination` |
 | `/YYYY/MM/` paths, no sub-pagination | `archive` |
 | `/YYYY/MM/` paths + sub-pagination | `paginated_archive` (daily/monthly) |
@@ -173,6 +240,10 @@ grep -i '__NEXT_DATA__\|/api/\|/graphql\|algolia' /tmp/newspaper_probe.html | he
 | Only a "next" link, no URL pattern | `follow_link` |
 | Verified JSON posts endpoint | `api` |
 | Empty JS shell, no API | Tier 3 |
+
+When `sitemap` is chosen, **always** report the archive depth and the
+`sitemap_regex` you would use, since regex drift (e.g. `.xml` vs `.xml.gz`)
+is the #1 cause of silent 0-article runs for sitemap sources.
 
 ## Step 3: Verify Selectors
 
@@ -300,7 +371,8 @@ do not invent new fields.
 ## Assessment: <Newspaper Name> (<Country>)
 
 **URL**: <base_url>
-**Listing type**: <api|pagination|archive|paginated_archive|follow_link>
+**Listing type**: <sitemap|api|pagination|archive|paginated_archive|follow_link>
+**Archive depth** *(if `sitemap`)*: <large | medium | shallow_2w | undated>
 **Code extension needed**: <None | ~N lines in file.py (reason)>
 **Tier**: <0|1|2|3>
 **Blockers**: <none, or description>
@@ -324,7 +396,7 @@ do not invent new fields.
 
 | Tier | Meaning | Example |
 |------|---------|---------|
-| 0 | Verified JSON API — posts endpoint returns JSON array, works with httpx | La Nation (Djibouti) |
+| 0 | Verified JSON API **or** XML sitemap with multi-year `archive_depth: large` — both return structured listings, works with httpx | La Nation (Djibouti); RMF24 sitemap (Poland) |
 | 1 | Clean HTML with standard pagination/archive — selectors verified via BeautifulSoup | Times of Oman, Gulf Times |
 | 2 | Scrapeable but needs custom work (selectors, cleaning, browser client) | Al Watan Oman (AJAX), Oman Daily (Sucuri) |
 | 3 | Unusable — SPA with no API, heavy bot protection, dead domain | Al Bayan (Next.js CSR), Al-Ittihad (domain dead) |
