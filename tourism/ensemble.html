@@ -1,0 +1,1110 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Forecast Combination &#8212; Pacific Observatory</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/scale.fix.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tourism/ensemble';</script>
+    <link rel="canonical" href="https://github.com/worldbank/pacific-observatory/tourism/ensemble.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Combination vs. Individual Models" href="combine_display.html" />
+    <link rel="prev" title="Forecast Combination" href="forecastcomb.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Sep 05, 2026"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Pacific Observatory - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Pacific Observatory - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Pacific Observatory
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Automatic Identification System</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_intro.html">Automatic Identification System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_trade.html">Port Arrivals and Trade Volume</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_hhi.html">Market concentration of vessel operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_emissions.html">Greenhouse Gas Emissions from Maritime Traffic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_fishing.html">Fishing Intensity</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Text</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../text/text_intro.html">Economic Analysis with News Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../text/extension.html">Extended News-Based Economic Monitoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../text/dashboard.html">Interactive Dashboard</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://worldbank.github.io/pacific-observatory/interactive/text/text_presentation.slides">Text Presentation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tourism</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="data.html">Data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="official_eda.html">Official Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aviation_eda.html">Aviation Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="googletrends.html">Google Trends</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="utsa.html">Individual forecasts</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="utsa_display.html">SARIMAX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtsa_var.html">VAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtsa_ratio.html">Ratio Approach</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="forecastcomb.html">Forecast Combination</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Forecast Combination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combine_display.html">Combination vs. Individual Models</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="other_models.html">Other Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="discussion.html">Discussion and Conclusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Market Access</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../access/access_intro.html">Market Access and Connectivity</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Night Time Lights</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch1_intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch2_lit.html">Literature Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch3_dq.html">Data Quality Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch4_econ.html">Economic Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch5_other.html">Other Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/mining.html">Mining and Gas Visualization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Geospatial Poverty Map</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../poverty/vanuatu.html">Vanuatu</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Climate and Agriculture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../climate/climate_and_ag.html">Climate and Agriculture Monitoring in the Pacific Island Countries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../climate/climate_db.html">Climate Database</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Project Targeting Index</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://ifeanyi-edochie.shinyapps.io/pciPTI/">Demo App</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://worldbank.org">World Bank</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory/edit/main/tourism/ensemble.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory/issues/new?title=Issue%20on%20page%20%2Ftourism/ensemble.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tourism/ensemble.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Forecast Combination</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="forecast-combination">
+<h1>Forecast Combination<a class="headerlink" href="#forecast-combination" title="Permalink to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">"../../"</span><span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">statsmodels.formula.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">smf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scripts.python.tsa.mtsmodel</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scripts.python.tsa.ts_eval</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">"whitegrid"</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As <a class="reference external" href="https://doi.org/10.1016/S1574-0706(05)01004-9">Timmermann (2004)</a> summarizes Stock and Watson (1998)’s relative performance weights. Let <span class="math notranslate nohighlight">\(MSE_{t+h,t,i} = (1/v)\sum_{\tau=t-v}^{t} e^{2}_{\tau,\tau−h,i}\)</span> be the <span class="math notranslate nohighlight">\(i\)</span>th forecasting model’s MSE at time <span class="math notranslate nohighlight">\(t\)</span>, computed over a window of the previous <span class="math notranslate nohighlight">\(v\)</span> periods. Then</p>
+<div class="math notranslate nohighlight">
+\[ \hat{y}_{t+h,t} = \sum_{i=1}^{N} \hat{\omega}_{t+h,t,i} \hat{y}_{t+h,t,i}, \text{ where } \hat{\omega}_{t+h,t,i} = \frac{(1/MSE_{t+h,t,i})}{\sum_{j=1}^{N} (1/MSE_{t+h,t,j})}\]</div>
+<p>Below are the functions to calculate the relative performance weight where <span class="math notranslate nohighlight">\(i \in \{sarimax, lf, var\}\)</span>.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calculate_mse</span><span class="p">(</span><span class="n">predictions_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="n">predictions_df</span><span class="p">[</span><span class="s2">"total"</span><span class="p">]</span>
+    <span class="n">prediction</span> <span class="o">=</span> <span class="n">predictions_df</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+    <span class="n">mse</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">total</span> <span class="o">-</span> <span class="n">prediction</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">predictions_df</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mse</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_rpw</span><span class="p">(</span><span class="n">predictions_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">methods</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+    <span class="n">mse_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">method</span><span class="p">:</span> <span class="n">calculate_mse</span><span class="p">(</span><span class="n">predictions_df</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">}</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">mse_dict</span><span class="p">[</span><span class="n">method</span><span class="p">]</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">)</span>
+    <span class="n">rpw_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+        <span class="n">numerator</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">mse_dict</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+        <span class="n">omega</span> <span class="o">=</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
+        <span class="n">rpw_dict</span><span class="p">[</span><span class="n">method</span><span class="p">]</span> <span class="o">=</span> <span class="n">omega</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">rpw_dict</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_rpw</span><span class="p">(</span><span class="n">pred_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+            <span class="n">methods</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"sarimax"</span><span class="p">,</span> <span class="s2">"var"</span><span class="p">,</span> <span class="s2">"lf"</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+    <span class="n">predictions_df</span> <span class="o">=</span> <span class="n">pred_df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">rpw_series</span> <span class="o">=</span> <span class="n">calculate_rpw</span><span class="p">(</span><span class="n">predictions_df</span><span class="p">,</span> <span class="n">methods</span><span class="p">)</span>
+
+    <span class="n">combo_cols</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">:</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">method</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_weight"</span>
+        <span class="n">predictions_df</span><span class="p">[</span><span class="n">weight</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictions_df</span><span class="p">[</span><span class="n">method</span><span class="p">]</span> <span class="o">*</span> <span class="n">rpw_series</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+        <span class="n">combo_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+
+    <span class="n">rpw_pred</span> <span class="o">=</span> <span class="n">predictions_df</span><span class="p">[</span><span class="n">combo_cols</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">rpw</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rpw_series</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+    <span class="n">rpw</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"rpw_"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">rpw</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">rpw_pred</span><span class="p">,</span> <span class="n">rpw</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_constrained_ls</span><span class="p">(</span><span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                       <span class="n">X</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">nnls</span><span class="p">,</span> <span class="n">minimize</span>
+
+    <span class="n">A</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">x0</span><span class="p">,</span> <span class="n">norm</span> <span class="o">=</span> <span class="n">nnls</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="n">mini</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">method</span><span class="o">=</span><span class="s1">'SLSQP'</span><span class="p">,</span>
+                    <span class="n">bounds</span><span class="o">=</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">]],</span> <span class="c1">## Only set the lb</span>
+                    <span class="n">constraints</span><span class="o">=</span><span class="p">{</span><span class="s1">'type'</span><span class="p">:</span> <span class="s1">'eq'</span><span class="p">,</span> <span class="s1">'fun'</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span>  <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">})</span>
+    <span class="n">estimates</span> <span class="o">=</span> <span class="n">mini</span><span class="o">.</span><span class="n">x</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">estimates</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">estimates</span><span class="p">,</span> <span class="n">pred</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">country</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"palau"</span><span class="p">,</span> <span class="s2">"samoa"</span><span class="p">,</span> <span class="s2">"tonga"</span><span class="p">,</span> <span class="s2">"solomon_islands"</span><span class="p">,</span> <span class="s2">"vanuatu"</span><span class="p">]:</span>
+
+    <span class="n">folderpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s2">"/data/tourism/"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">country</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"/model/"</span>
+    <span class="n">mappings</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">"var"</span><span class="p">,</span> <span class="s2">"pred_total"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"sarimax"</span><span class="p">,</span> <span class="s2">"train_pred"</span><span class="p">),</span>
+                <span class="p">(</span><span class="s2">"lf"</span><span class="p">,</span> <span class="s2">"pred_mean"</span><span class="p">)]</span>
+
+    <span class="n">country_pred</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="n">mappings</span><span class="p">:</span>
+        <span class="n">model</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">mapping</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">folderpath</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"_"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">country</span><span class="p">)</span> <span class="o">+</span> <span class="s2">".csv"</span>
+        <span class="n">pred_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">"Unnamed: 0"</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pred_df</span><span class="p">[</span><span class="s2">"date"</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">pred_df</span><span class="p">[</span><span class="s2">"date"</span><span class="p">])</span>
+
+        <span class="n">model_col</span> <span class="o">=</span> <span class="p">(</span><span class="n">pred_df</span><span class="p">[[</span><span class="s2">"date"</span><span class="p">,</span> <span class="s2">"total"</span><span class="p">,</span> <span class="n">column</span><span class="p">]]</span>
+                     <span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="n">column</span><span class="p">:</span> <span class="n">model</span><span class="p">},</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">country_pred</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="n">country_pred</span> <span class="o">=</span> <span class="n">model_col</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">country_pred</span> <span class="o">=</span> <span class="n">country_pred</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+                <span class="n">model_col</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">"left"</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s2">"date"</span><span class="p">,</span> <span class="s2">"total"</span><span class="p">])</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Mean</span>
+    <span class="n">country_pred</span><span class="p">[</span><span class="s2">"mean_ensemble"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">country_pred</span><span class="p">[[</span><span class="s2">"sarimax"</span><span class="p">,</span> <span class="s2">"var"</span><span class="p">,</span> <span class="s2">"lf"</span><span class="p">]]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># Relative Performance Weights</span>
+    <span class="n">country_pred</span><span class="p">[</span><span class="s2">"rpw"</span><span class="p">],</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">get_rpw</span><span class="p">(</span><span class="n">country_pred</span><span class="p">)</span>
+
+    <span class="c1"># OLS (regularized) without intercept</span>
+    <span class="n">ols</span> <span class="o">=</span> <span class="n">smf</span><span class="o">.</span><span class="n">ols</span><span class="p">(</span><span class="s2">"total~sarimax+var+lf - 1"</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">country_pred</span><span class="p">)</span>
+    <span class="n">ols_res</span> <span class="o">=</span> <span class="n">ols</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+    <span class="n">ols_lasso</span> <span class="o">=</span> <span class="n">ols</span><span class="o">.</span><span class="n">fit_regularized</span><span class="p">()</span>
+    <span class="n">country_pred</span><span class="p">[</span><span class="s2">"ols"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ols_res</span><span class="o">.</span><span class="n">fittedvalues</span>
+    <span class="n">country_pred</span><span class="p">[</span><span class="s2">"ols_lasso"</span><span class="p">]</span> <span class="o">=</span> <span class="n">ols_lasso</span><span class="o">.</span><span class="n">fittedvalues</span>
+
+    <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"sarimax"</span><span class="p">,</span> <span class="s2">"var"</span><span class="p">,</span> <span class="s2">"lf"</span><span class="p">]</span>
+    <span class="n">constrained_ls</span><span class="p">,</span> <span class="n">cls_pred</span> <span class="o">=</span> <span class="n">get_constrained_ls</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">country_pred</span><span class="p">[</span><span class="s2">"total"</span><span class="p">],</span>
+                                                  <span class="n">X</span><span class="o">=</span><span class="n">country_pred</span><span class="p">[</span><span class="n">methods</span><span class="p">])</span>
+    <span class="n">country_pred</span><span class="p">[</span><span class="s2">"cls"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cls_pred</span>
+
+    <span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">methods</span><span class="p">,</span> <span class="n">constrained_ls</span><span class="p">):</span>
+        <span class="n">weights</span><span class="p">[</span><span class="s2">"ols_"</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">method</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ols_res</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+        <span class="n">weights</span><span class="p">[</span><span class="s2">"ols_lasso_"</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">method</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ols_lasso</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">method</span><span class="p">]</span>
+        <span class="n">weights</span><span class="p">[</span><span class="s2">"cls_"</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">method</span><span class="p">)]</span> <span class="o">=</span> <span class="bp">cls</span>
+
+    <span class="n">weights</span><span class="p">[</span><span class="s2">"date"</span><span class="p">]</span> <span class="o">=</span> <span class="n">country_pred</span><span class="p">[</span><span class="s2">"date"</span><span class="p">]</span>
+
+    <span class="c1"># Sort columns</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">weights</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">cols</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">cols</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span>
+
+    <span class="c1"># Save Combination weights</span>
+    <span class="n">weights</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">folderpath</span><span class="o">+</span><span class="s2">"forecast_combo_weights.csv"</span><span class="p">,</span>
+                   <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+
+    <span class="c1"># Save Forecast Prediction</span>
+    <span class="n">country_pred</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">folderpath</span><span class="o">+</span><span class="s2">"forecast_combo.csv"</span><span class="p">,</span>
+                        <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+
+    <span class="n">evals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"sarimax"</span><span class="p">,</span> <span class="s2">"var"</span><span class="p">,</span> <span class="s2">"lf"</span><span class="p">,</span> <span class="s2">"mean_ensemble"</span><span class="p">,</span> <span class="s2">"rpw"</span><span class="p">,</span> <span class="s2">"ols"</span><span class="p">,</span> <span class="s2">"cls"</span><span class="p">,</span> <span class="s2">"ols_lasso"</span><span class="p">]:</span>
+        <span class="n">mod_eval</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">calculate_evaluation</span><span class="p">(</span><span class="n">country_pred</span><span class="p">[</span><span class="s2">"total"</span><span class="p">],</span> <span class="n">country_pred</span><span class="p">[</span><span class="n">col</span><span class="p">]),</span>
+                                <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+        <span class="n">evals</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">evals</span><span class="p">,</span> <span class="n">mod_eval</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">evals</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">country</span><span class="p">)</span>
+    <span class="n">evals</span> <span class="o">=</span> <span class="n">evals</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">[</span><span class="s1">'background-color: yellow'</span> <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="k">else</span> <span class="s1">''</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">evals</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style type="text/css">
+#T_f8a42_row4_col0, #T_f8a42_row4_col1, #T_f8a42_row4_col2, #T_f8a42_row7_col3 {
+  background-color: yellow;
+}
+</style>
+<table id="T_f8a42">
+  <thead>
+    <tr>
+      <th class="index_name level0" >palau</th>
+      <th id="T_f8a42_level0_col0" class="col_heading level0 col0" >MSE</th>
+      <th id="T_f8a42_level0_col1" class="col_heading level0 col1" >RMSE</th>
+      <th id="T_f8a42_level0_col2" class="col_heading level0 col2" >MAE</th>
+      <th id="T_f8a42_level0_col3" class="col_heading level0 col3" >SMAPE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_f8a42_level0_row0" class="row_heading level0 row0" >sarimax</th>
+      <td id="T_f8a42_row0_col0" class="data row0 col0" >1586348.581999</td>
+      <td id="T_f8a42_row0_col1" class="data row0 col1" >1259.503308</td>
+      <td id="T_f8a42_row0_col2" class="data row0 col2" >701.765452</td>
+      <td id="T_f8a42_row0_col3" class="data row0 col3" >53.857541</td>
+    </tr>
+    <tr>
+      <th id="T_f8a42_level0_row1" class="row_heading level0 row1" >var</th>
+      <td id="T_f8a42_row1_col0" class="data row1 col0" >1127006.129408</td>
+      <td id="T_f8a42_row1_col1" class="data row1 col1" >1061.605449</td>
+      <td id="T_f8a42_row1_col2" class="data row1 col2" >554.935555</td>
+      <td id="T_f8a42_row1_col3" class="data row1 col3" >38.243616</td>
+    </tr>
+    <tr>
+      <th id="T_f8a42_level0_row2" class="row_heading level0 row2" >lf</th>
+      <td id="T_f8a42_row2_col0" class="data row2 col0" >522059.184389</td>
+      <td id="T_f8a42_row2_col1" class="data row2 col1" >722.536632</td>
+      <td id="T_f8a42_row2_col2" class="data row2 col2" >403.159217</td>
+      <td id="T_f8a42_row2_col3" class="data row2 col3" >41.454946</td>
+    </tr>
+    <tr>
+      <th id="T_f8a42_level0_row3" class="row_heading level0 row3" >mean_ensemble</th>
+      <td id="T_f8a42_row3_col0" class="data row3 col0" >538679.103245</td>
+      <td id="T_f8a42_row3_col1" class="data row3 col1" >733.947616</td>
+      <td id="T_f8a42_row3_col2" class="data row3 col2" >415.191645</td>
+      <td id="T_f8a42_row3_col3" class="data row3 col3" >34.057742</td>
+    </tr>
+    <tr>
+      <th id="T_f8a42_level0_row4" class="row_heading level0 row4" >rpw</th>
+      <td id="T_f8a42_row4_col0" class="data row4 col0" >416042.585625</td>
+      <td id="T_f8a42_row4_col1" class="data row4 col1" >645.013632</td>
+      <td id="T_f8a42_row4_col2" class="data row4 col2" >355.022438</td>
+      <td id="T_f8a42_row4_col3" class="data row4 col3" >33.879718</td>
+    </tr>
+    <tr>
+      <th id="T_f8a42_level0_row5" class="row_heading level0 row5" >ols</th>
+      <td id="T_f8a42_row5_col0" class="data row5 col0" >459520.198387</td>
+      <td id="T_f8a42_row5_col1" class="data row5 col1" >677.879192</td>
+      <td id="T_f8a42_row5_col2" class="data row5 col2" >374.512959</td>
+      <td id="T_f8a42_row5_col3" class="data row5 col3" >34.509414</td>
+    </tr>
+    <tr>
+      <th id="T_f8a42_level0_row6" class="row_heading level0 row6" >cls</th>
+      <td id="T_f8a42_row6_col0" class="data row6 col0" >462504.925790</td>
+      <td id="T_f8a42_row6_col1" class="data row6 col1" >680.077147</td>
+      <td id="T_f8a42_row6_col2" class="data row6 col2" >377.897454</td>
+      <td id="T_f8a42_row6_col3" class="data row6 col3" >34.589740</td>
+    </tr>
+    <tr>
+      <th id="T_f8a42_level0_row7" class="row_heading level0 row7" >ols_lasso</th>
+      <td id="T_f8a42_row7_col0" class="data row7 col0" >485185.924697</td>
+      <td id="T_f8a42_row7_col1" class="data row7 col1" >696.552887</td>
+      <td id="T_f8a42_row7_col2" class="data row7 col2" >387.646868</td>
+      <td id="T_f8a42_row7_col3" class="data row7 col3" >33.639519</td>
+    </tr>
+  </tbody>
+</table>
+</div><div class="output text_html"><style type="text/css">
+#T_3231a_row2_col3, #T_3231a_row4_col2, #T_3231a_row5_col0, #T_3231a_row5_col1 {
+  background-color: yellow;
+}
+</style>
+<table id="T_3231a">
+  <thead>
+    <tr>
+      <th class="index_name level0" >samoa</th>
+      <th id="T_3231a_level0_col0" class="col_heading level0 col0" >MSE</th>
+      <th id="T_3231a_level0_col1" class="col_heading level0 col1" >RMSE</th>
+      <th id="T_3231a_level0_col2" class="col_heading level0 col2" >MAE</th>
+      <th id="T_3231a_level0_col3" class="col_heading level0 col3" >SMAPE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_3231a_level0_row0" class="row_heading level0 row0" >sarimax</th>
+      <td id="T_3231a_row0_col0" class="data row0 col0" >8076301.733757</td>
+      <td id="T_3231a_row0_col1" class="data row0 col1" >2841.883483</td>
+      <td id="T_3231a_row0_col2" class="data row0 col2" >1410.434675</td>
+      <td id="T_3231a_row0_col3" class="data row0 col3" >141.993878</td>
+    </tr>
+    <tr>
+      <th id="T_3231a_level0_row1" class="row_heading level0 row1" >var</th>
+      <td id="T_3231a_row1_col0" class="data row1 col0" >10290887.267182</td>
+      <td id="T_3231a_row1_col1" class="data row1 col1" >3207.941282</td>
+      <td id="T_3231a_row1_col2" class="data row1 col2" >1757.557409</td>
+      <td id="T_3231a_row1_col3" class="data row1 col3" >141.614714</td>
+    </tr>
+    <tr>
+      <th id="T_3231a_level0_row2" class="row_heading level0 row2" >lf</th>
+      <td id="T_3231a_row2_col0" class="data row2 col0" >2107650.783058</td>
+      <td id="T_3231a_row2_col1" class="data row2 col1" >1451.775046</td>
+      <td id="T_3231a_row2_col2" class="data row2 col2" >763.990597</td>
+      <td id="T_3231a_row2_col3" class="data row2 col3" >131.108537</td>
+    </tr>
+    <tr>
+      <th id="T_3231a_level0_row3" class="row_heading level0 row3" >mean_ensemble</th>
+      <td id="T_3231a_row3_col0" class="data row3 col0" >3794368.839523</td>
+      <td id="T_3231a_row3_col1" class="data row3 col1" >1947.913971</td>
+      <td id="T_3231a_row3_col2" class="data row3 col2" >1093.282593</td>
+      <td id="T_3231a_row3_col3" class="data row3 col3" >135.822954</td>
+    </tr>
+    <tr>
+      <th id="T_3231a_level0_row4" class="row_heading level0 row4" >rpw</th>
+      <td id="T_3231a_row4_col0" class="data row4 col0" >2242890.336299</td>
+      <td id="T_3231a_row4_col1" class="data row4 col1" >1497.628237</td>
+      <td id="T_3231a_row4_col2" class="data row4 col2" >746.332632</td>
+      <td id="T_3231a_row4_col3" class="data row4 col3" >131.773854</td>
+    </tr>
+    <tr>
+      <th id="T_3231a_level0_row5" class="row_heading level0 row5" >ols</th>
+      <td id="T_3231a_row5_col0" class="data row5 col0" >1964126.186335</td>
+      <td id="T_3231a_row5_col1" class="data row5 col1" >1401.472863</td>
+      <td id="T_3231a_row5_col2" class="data row5 col2" >784.266056</td>
+      <td id="T_3231a_row5_col3" class="data row5 col3" >131.370686</td>
+    </tr>
+    <tr>
+      <th id="T_3231a_level0_row6" class="row_heading level0 row6" >cls</th>
+      <td id="T_3231a_row6_col0" class="data row6 col0" >2009637.625508</td>
+      <td id="T_3231a_row6_col1" class="data row6 col1" >1417.616882</td>
+      <td id="T_3231a_row6_col2" class="data row6 col2" >763.104201</td>
+      <td id="T_3231a_row6_col3" class="data row6 col3" >131.248177</td>
+    </tr>
+    <tr>
+      <th id="T_3231a_level0_row7" class="row_heading level0 row7" >ols_lasso</th>
+      <td id="T_3231a_row7_col0" class="data row7 col0" >2003163.146708</td>
+      <td id="T_3231a_row7_col1" class="data row7 col1" >1415.331462</td>
+      <td id="T_3231a_row7_col2" class="data row7 col2" >819.357748</td>
+      <td id="T_3231a_row7_col3" class="data row7 col3" >131.860632</td>
+    </tr>
+  </tbody>
+</table>
+</div><div class="output text_html"><style type="text/css">
+#T_fcd8a_row1_col3, #T_fcd8a_row5_col0, #T_fcd8a_row5_col1, #T_fcd8a_row7_col2 {
+  background-color: yellow;
+}
+</style>
+<table id="T_fcd8a">
+  <thead>
+    <tr>
+      <th class="index_name level0" >tonga</th>
+      <th id="T_fcd8a_level0_col0" class="col_heading level0 col0" >MSE</th>
+      <th id="T_fcd8a_level0_col1" class="col_heading level0 col1" >RMSE</th>
+      <th id="T_fcd8a_level0_col2" class="col_heading level0 col2" >MAE</th>
+      <th id="T_fcd8a_level0_col3" class="col_heading level0 col3" >SMAPE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_fcd8a_level0_row0" class="row_heading level0 row0" >sarimax</th>
+      <td id="T_fcd8a_row0_col0" class="data row0 col0" >677589.950307</td>
+      <td id="T_fcd8a_row0_col1" class="data row0 col1" >823.158521</td>
+      <td id="T_fcd8a_row0_col2" class="data row0 col2" >473.356102</td>
+      <td id="T_fcd8a_row0_col3" class="data row0 col3" >81.354328</td>
+    </tr>
+    <tr>
+      <th id="T_fcd8a_level0_row1" class="row_heading level0 row1" >var</th>
+      <td id="T_fcd8a_row1_col0" class="data row1 col0" >547847.120126</td>
+      <td id="T_fcd8a_row1_col1" class="data row1 col1" >740.166954</td>
+      <td id="T_fcd8a_row1_col2" class="data row1 col2" >354.330235</td>
+      <td id="T_fcd8a_row1_col3" class="data row1 col3" >61.940427</td>
+    </tr>
+    <tr>
+      <th id="T_fcd8a_level0_row2" class="row_heading level0 row2" >lf</th>
+      <td id="T_fcd8a_row2_col0" class="data row2 col0" >203622.901860</td>
+      <td id="T_fcd8a_row2_col1" class="data row2 col1" >451.245944</td>
+      <td id="T_fcd8a_row2_col2" class="data row2 col2" >258.523902</td>
+      <td id="T_fcd8a_row2_col3" class="data row2 col3" >87.345914</td>
+    </tr>
+    <tr>
+      <th id="T_fcd8a_level0_row3" class="row_heading level0 row3" >mean_ensemble</th>
+      <td id="T_fcd8a_row3_col0" class="data row3 col0" >194568.858596</td>
+      <td id="T_fcd8a_row3_col1" class="data row3 col1" >441.099602</td>
+      <td id="T_fcd8a_row3_col2" class="data row3 col2" >239.402169</td>
+      <td id="T_fcd8a_row3_col3" class="data row3 col3" >78.543566</td>
+    </tr>
+    <tr>
+      <th id="T_fcd8a_level0_row4" class="row_heading level0 row4" >rpw</th>
+      <td id="T_fcd8a_row4_col0" class="data row4 col0" >155098.313391</td>
+      <td id="T_fcd8a_row4_col1" class="data row4 col1" >393.825232</td>
+      <td id="T_fcd8a_row4_col2" class="data row4 col2" >216.180497</td>
+      <td id="T_fcd8a_row4_col3" class="data row4 col3" >83.251701</td>
+    </tr>
+    <tr>
+      <th id="T_fcd8a_level0_row5" class="row_heading level0 row5" >ols</th>
+      <td id="T_fcd8a_row5_col0" class="data row5 col0" >110277.230689</td>
+      <td id="T_fcd8a_row5_col1" class="data row5 col1" >332.080157</td>
+      <td id="T_fcd8a_row5_col2" class="data row5 col2" >198.679691</td>
+      <td id="T_fcd8a_row5_col3" class="data row5 col3" >83.294941</td>
+    </tr>
+    <tr>
+      <th id="T_fcd8a_level0_row6" class="row_heading level0 row6" >cls</th>
+      <td id="T_fcd8a_row6_col0" class="data row6 col0" >167576.289342</td>
+      <td id="T_fcd8a_row6_col1" class="data row6 col1" >409.360830</td>
+      <td id="T_fcd8a_row6_col2" class="data row6 col2" >225.881663</td>
+      <td id="T_fcd8a_row6_col3" class="data row6 col3" >84.660888</td>
+    </tr>
+    <tr>
+      <th id="T_fcd8a_level0_row7" class="row_heading level0 row7" >ols_lasso</th>
+      <td id="T_fcd8a_row7_col0" class="data row7 col0" >125878.110314</td>
+      <td id="T_fcd8a_row7_col1" class="data row7 col1" >354.793053</td>
+      <td id="T_fcd8a_row7_col2" class="data row7 col2" >197.297385</td>
+      <td id="T_fcd8a_row7_col3" class="data row7 col3" >77.645737</td>
+    </tr>
+  </tbody>
+</table>
+</div><div class="output text_html"><style type="text/css">
+#T_a65f7_row1_col3, #T_a65f7_row4_col0, #T_a65f7_row4_col1, #T_a65f7_row4_col2 {
+  background-color: yellow;
+}
+</style>
+<table id="T_a65f7">
+  <thead>
+    <tr>
+      <th class="index_name level0" >solomon_islands</th>
+      <th id="T_a65f7_level0_col0" class="col_heading level0 col0" >MSE</th>
+      <th id="T_a65f7_level0_col1" class="col_heading level0 col1" >RMSE</th>
+      <th id="T_a65f7_level0_col2" class="col_heading level0 col2" >MAE</th>
+      <th id="T_a65f7_level0_col3" class="col_heading level0 col3" >SMAPE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_a65f7_level0_row0" class="row_heading level0 row0" >sarimax</th>
+      <td id="T_a65f7_row0_col0" class="data row0 col0" >46105.079450</td>
+      <td id="T_a65f7_row0_col1" class="data row0 col1" >214.720934</td>
+      <td id="T_a65f7_row0_col2" class="data row0 col2" >147.806140</td>
+      <td id="T_a65f7_row0_col3" class="data row0 col3" >31.941491</td>
+    </tr>
+    <tr>
+      <th id="T_a65f7_level0_row1" class="row_heading level0 row1" >var</th>
+      <td id="T_a65f7_row1_col0" class="data row1 col0" >65021.669854</td>
+      <td id="T_a65f7_row1_col1" class="data row1 col1" >254.993470</td>
+      <td id="T_a65f7_row1_col2" class="data row1 col2" >154.338247</td>
+      <td id="T_a65f7_row1_col3" class="data row1 col3" >17.694166</td>
+    </tr>
+    <tr>
+      <th id="T_a65f7_level0_row2" class="row_heading level0 row2" >lf</th>
+      <td id="T_a65f7_row2_col0" class="data row2 col0" >48753.426027</td>
+      <td id="T_a65f7_row2_col1" class="data row2 col1" >220.801780</td>
+      <td id="T_a65f7_row2_col2" class="data row2 col2" >150.232442</td>
+      <td id="T_a65f7_row2_col3" class="data row2 col3" >26.614403</td>
+    </tr>
+    <tr>
+      <th id="T_a65f7_level0_row3" class="row_heading level0 row3" >mean_ensemble</th>
+      <td id="T_a65f7_row3_col0" class="data row3 col0" >31432.381706</td>
+      <td id="T_a65f7_row3_col1" class="data row3 col1" >177.291798</td>
+      <td id="T_a65f7_row3_col2" class="data row3 col2" >126.564826</td>
+      <td id="T_a65f7_row3_col3" class="data row3 col3" >22.784182</td>
+    </tr>
+    <tr>
+      <th id="T_a65f7_level0_row4" class="row_heading level0 row4" >rpw</th>
+      <td id="T_a65f7_row4_col0" class="data row4 col0" >26373.763079</td>
+      <td id="T_a65f7_row4_col1" class="data row4 col1" >162.400009</td>
+      <td id="T_a65f7_row4_col2" class="data row4 col2" >118.723610</td>
+      <td id="T_a65f7_row4_col3" class="data row4 col3" >22.831037</td>
+    </tr>
+    <tr>
+      <th id="T_a65f7_level0_row5" class="row_heading level0 row5" >ols</th>
+      <td id="T_a65f7_row5_col0" class="data row5 col0" >31219.515216</td>
+      <td id="T_a65f7_row5_col1" class="data row5 col1" >176.690450</td>
+      <td id="T_a65f7_row5_col2" class="data row5 col2" >128.227540</td>
+      <td id="T_a65f7_row5_col3" class="data row5 col3" >23.614795</td>
+    </tr>
+    <tr>
+      <th id="T_a65f7_level0_row6" class="row_heading level0 row6" >cls</th>
+      <td id="T_a65f7_row6_col0" class="data row6 col0" >31242.949442</td>
+      <td id="T_a65f7_row6_col1" class="data row6 col1" >176.756752</td>
+      <td id="T_a65f7_row6_col2" class="data row6 col2" >128.315830</td>
+      <td id="T_a65f7_row6_col3" class="data row6 col3" >23.459240</td>
+    </tr>
+    <tr>
+      <th id="T_a65f7_level0_row7" class="row_heading level0 row7" >ols_lasso</th>
+      <td id="T_a65f7_row7_col0" class="data row7 col0" >35808.420435</td>
+      <td id="T_a65f7_row7_col1" class="data row7 col1" >189.231130</td>
+      <td id="T_a65f7_row7_col2" class="data row7 col2" >135.363359</td>
+      <td id="T_a65f7_row7_col3" class="data row7 col3" >27.983984</td>
+    </tr>
+  </tbody>
+</table>
+</div><div class="output text_html"><style type="text/css">
+#T_b24ec_row2_col3, #T_b24ec_row4_col0, #T_b24ec_row4_col1, #T_b24ec_row4_col2 {
+  background-color: yellow;
+}
+</style>
+<table id="T_b24ec">
+  <thead>
+    <tr>
+      <th class="index_name level0" >vanuatu</th>
+      <th id="T_b24ec_level0_col0" class="col_heading level0 col0" >MSE</th>
+      <th id="T_b24ec_level0_col1" class="col_heading level0 col1" >RMSE</th>
+      <th id="T_b24ec_level0_col2" class="col_heading level0 col2" >MAE</th>
+      <th id="T_b24ec_level0_col3" class="col_heading level0 col3" >SMAPE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_b24ec_level0_row0" class="row_heading level0 row0" >sarimax</th>
+      <td id="T_b24ec_row0_col0" class="data row0 col0" >669250.974064</td>
+      <td id="T_b24ec_row0_col1" class="data row0 col1" >818.077609</td>
+      <td id="T_b24ec_row0_col2" class="data row0 col2" >372.363525</td>
+      <td id="T_b24ec_row0_col3" class="data row0 col3" >133.369731</td>
+    </tr>
+    <tr>
+      <th id="T_b24ec_level0_row1" class="row_heading level0 row1" >var</th>
+      <td id="T_b24ec_row1_col0" class="data row1 col0" >1600258.286965</td>
+      <td id="T_b24ec_row1_col1" class="data row1 col1" >1265.013157</td>
+      <td id="T_b24ec_row1_col2" class="data row1 col2" >554.204122</td>
+      <td id="T_b24ec_row1_col3" class="data row1 col3" >134.493067</td>
+    </tr>
+    <tr>
+      <th id="T_b24ec_level0_row2" class="row_heading level0 row2" >lf</th>
+      <td id="T_b24ec_row2_col0" class="data row2 col0" >642113.393395</td>
+      <td id="T_b24ec_row2_col1" class="data row2 col1" >801.319782</td>
+      <td id="T_b24ec_row2_col2" class="data row2 col2" >497.354972</td>
+      <td id="T_b24ec_row2_col3" class="data row2 col3" >128.023752</td>
+    </tr>
+    <tr>
+      <th id="T_b24ec_level0_row3" class="row_heading level0 row3" >mean_ensemble</th>
+      <td id="T_b24ec_row3_col0" class="data row3 col0" >496754.494910</td>
+      <td id="T_b24ec_row3_col1" class="data row3 col1" >704.808126</td>
+      <td id="T_b24ec_row3_col2" class="data row3 col2" >351.729479</td>
+      <td id="T_b24ec_row3_col3" class="data row3 col3" >131.547897</td>
+    </tr>
+    <tr>
+      <th id="T_b24ec_level0_row4" class="row_heading level0 row4" >rpw</th>
+      <td id="T_b24ec_row4_col0" class="data row4 col0" >333825.379320</td>
+      <td id="T_b24ec_row4_col1" class="data row4 col1" >577.776236</td>
+      <td id="T_b24ec_row4_col2" class="data row4 col2" >289.982721</td>
+      <td id="T_b24ec_row4_col3" class="data row4 col3" >130.586670</td>
+    </tr>
+    <tr>
+      <th id="T_b24ec_level0_row5" class="row_heading level0 row5" >ols</th>
+      <td id="T_b24ec_row5_col0" class="data row5 col0" >394337.435274</td>
+      <td id="T_b24ec_row5_col1" class="data row5 col1" >627.962925</td>
+      <td id="T_b24ec_row5_col2" class="data row5 col2" >342.287171</td>
+      <td id="T_b24ec_row5_col3" class="data row5 col3" >131.085132</td>
+    </tr>
+    <tr>
+      <th id="T_b24ec_level0_row6" class="row_heading level0 row6" >cls</th>
+      <td id="T_b24ec_row6_col0" class="data row6 col0" >413561.135366</td>
+      <td id="T_b24ec_row6_col1" class="data row6 col1" >643.087191</td>
+      <td id="T_b24ec_row6_col2" class="data row6 col2" >354.292010</td>
+      <td id="T_b24ec_row6_col3" class="data row6 col3" >131.225479</td>
+    </tr>
+    <tr>
+      <th id="T_b24ec_level0_row7" class="row_heading level0 row7" >ols_lasso</th>
+      <td id="T_b24ec_row7_col0" class="data row7 col0" >419935.486543</td>
+      <td id="T_b24ec_row7_col1" class="data row7 col1" >648.024295</td>
+      <td id="T_b24ec_row7_col2" class="data row7 col2" >330.751929</td>
+      <td id="T_b24ec_row7_col3" class="data row7 col3" >131.571070</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./tourism"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="forecastcomb.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Forecast Combination</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="combine_display.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Combination vs. Individual Models</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By World Bank
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+  Last updated on Sep 05, 2026.
+  <br/>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

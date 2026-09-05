@@ -1,0 +1,920 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Extended News-Based Economic Monitoring &#8212; Pacific Observatory</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/scale.fix.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'text/extension';</script>
+    <link rel="canonical" href="https://github.com/worldbank/pacific-observatory/text/extension.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Interactive Dashboard" href="dashboard.html" />
+    <link rel="prev" title="Economic Analysis with News Sources" href="text_intro.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Sep 05, 2026"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Pacific Observatory - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Pacific Observatory - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Pacific Observatory
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Automatic Identification System</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_intro.html">Automatic Identification System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_trade.html">Port Arrivals and Trade Volume</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_hhi.html">Market concentration of vessel operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_emissions.html">Greenhouse Gas Emissions from Maritime Traffic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_fishing.html">Fishing Intensity</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Text</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="text_intro.html">Economic Analysis with News Sources</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Extended News-Based Economic Monitoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dashboard.html">Interactive Dashboard</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://worldbank.github.io/pacific-observatory/interactive/text/text_presentation.slides">Text Presentation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tourism</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../tourism/intro.html">Introduction</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tourism/data.html">Data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/official_eda.html">Official Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/aviation_eda.html">Aviation Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/googletrends.html">Google Trends</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tourism/utsa.html">Individual forecasts</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/utsa_display.html">SARIMAX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/mtsa_var.html">VAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/mtsa_ratio.html">Ratio Approach</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tourism/forecastcomb.html">Forecast Combination</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/ensemble.html">Forecast Combination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/combine_display.html">Combination vs. Individual Models</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../tourism/other_models.html">Other Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tourism/discussion.html">Discussion and Conclusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tourism/references.html">References</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Market Access</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../access/access_intro.html">Market Access and Connectivity</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Night Time Lights</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch1_intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch2_lit.html">Literature Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch3_dq.html">Data Quality Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch4_econ.html">Economic Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch5_other.html">Other Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/mining.html">Mining and Gas Visualization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Geospatial Poverty Map</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../poverty/vanuatu.html">Vanuatu</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Climate and Agriculture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../climate/climate_and_ag.html">Climate and Agriculture Monitoring in the Pacific Island Countries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../climate/climate_db.html">Climate Database</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Project Targeting Index</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://ifeanyi-edochie.shinyapps.io/pciPTI/">Demo App</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://worldbank.org">World Bank</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory/edit/main/text/extension.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory/issues/new?title=Issue%20on%20page%20%2Ftext/extension.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/text/extension.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Extended News-Based Economic Monitoring</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#from-epu-to-breadth-and-intensity">From EPU to Breadth and Intensity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#marginal-breadth-indices">Marginal Breadth Indices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#notation">Notation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-breadth">Economic Breadth</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-breadth">Policy Breadth</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-breadth">Uncertainty Breadth</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#marginal-intensity-indices">Marginal Intensity Indices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Notation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-intensity">Economic Intensity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-intensity">Policy Intensity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-intensity">Uncertainty Intensity</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pairwise-interaction-indices">Pairwise Interaction Indices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Notation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-uncertainty-eu">Economic-Uncertainty (EU)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-uncertainty-pu">Policy-Uncertainty (PU)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-policy-ep">Economic-Policy (EP)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-attribution">Uncertainty Attribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#topic-conditioned-uncertainty">Topic-Conditioned Uncertainty</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#agenda-based-attribution">Agenda-Based Attribution</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#framing-based-attribution">Framing-Based Attribution</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#actor-conditioned-uncertainty">Actor-Conditioned Uncertainty</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Agenda-Based Attribution</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Framing-Based Attribution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#standardization-and-normalization">Standardization and Normalization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#relationship-to-standard-epu">Relationship to Standard EPU</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="extended-news-based-economic-monitoring">
+<h1>Extended News-Based Economic Monitoring<a class="headerlink" href="#extended-news-based-economic-monitoring" title="Permalink to this heading">#</a></h1>
+<p>This section extends the standard Economic Policy Uncertainty (EPU) framework by constructing additional indices that separately measure media attention to economic, policy, and uncertainty topics, as well as their pairwise intersections and attribution to specific actors or themes.</p>
+<section id="from-epu-to-breadth-and-intensity">
+<h2>From EPU to Breadth and Intensity<a class="headerlink" href="#from-epu-to-breadth-and-intensity" title="Permalink to this heading">#</a></h2>
+<p>The standard EPU index measures the share of articles containing keywords from all three categories (Economic, Policy, and Uncertainty). This can be understood as a <strong>breadth</strong> measure—how widespread is the joint coverage of these topics across the news agenda.</p>
+<p>The extended framework generalizes this concept by:</p>
+<ol class="arabic simple">
+<li><p><strong>Marginal Breadth Indices</strong>: Measuring each topic category independently</p></li>
+<li><p><strong>Intensity Indices</strong>: Measuring how deeply each topic is covered within relevant articles</p></li>
+<li><p><strong>Pairwise Interaction Indices</strong>: Measuring overlaps between any two categories</p></li>
+<li><p><strong>Uncertainty Attribution</strong>: Decomposing uncertainty by topic or institutional source</p></li>
+</ol>
+<p>All indices follow the same standardization, aggregation, and normalization procedure as the baseline EPU index.</p>
+</section>
+<hr class="docutils" />
+<section id="marginal-breadth-indices">
+<h2>Marginal Breadth Indices<a class="headerlink" href="#marginal-breadth-indices" title="Permalink to this heading">#</a></h2>
+<p>Breadth indices measure the <strong>share of all articles</strong> that contain at least one keyword from a given category. This captures how widespread a topic is across the news agenda.</p>
+<section id="notation">
+<h3>Notation<a class="headerlink" href="#notation" title="Permalink to this heading">#</a></h3>
+<p>For each newspaper <span class="math notranslate nohighlight">\(n\)</span> and time period <span class="math notranslate nohighlight">\(t\)</span>:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(A_{n,t}\)</span>: total number of articles</p></li>
+<li><p><span class="math notranslate nohighlight">\(E_{n,t}\)</span>: number of articles containing ≥1 Economic keyword</p></li>
+<li><p><span class="math notranslate nohighlight">\(P_{n,t}\)</span>: number of articles containing ≥1 Policy keyword</p></li>
+<li><p><span class="math notranslate nohighlight">\(U_{n,t}\)</span>: number of articles containing ≥1 Uncertainty keyword</p></li>
+</ul>
+</section>
+<section id="economic-breadth">
+<h3>Economic Breadth<a class="headerlink" href="#economic-breadth" title="Permalink to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[
+E^{breadth}_{n,t} = \frac{E_{n,t}}{A_{n,t}}
+\]</div>
+<p>Share of all articles that contain at least one Economic keyword. Measures the <strong>breadth of economic coverage</strong> in the news agenda.</p>
+</section>
+<section id="policy-breadth">
+<h3>Policy Breadth<a class="headerlink" href="#policy-breadth" title="Permalink to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[
+P^{breadth}_{n,t} = \frac{P_{n,t}}{A_{n,t}}
+\]</div>
+<p>Share of all articles that contain at least one Policy keyword. Measures the <strong>breadth of policy coverage</strong> in the news agenda.</p>
+</section>
+<section id="uncertainty-breadth">
+<h3>Uncertainty Breadth<a class="headerlink" href="#uncertainty-breadth" title="Permalink to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[
+U^{breadth}_{n,t} = \frac{U_{n,t}}{A_{n,t}}
+\]</div>
+<p>Share of all articles that contain at least one Uncertainty keyword. Measures the <strong>breadth of uncertainty coverage</strong> in the news agenda.</p>
+<div style="display:flex;justify-content:flex-start;width:950px;margin-bottom:4px;">
+  <a href="../interactive/text/breadth_pic.html" target="_blank" style="font-size:0.8em;padding:3px 10px;border:1px solid #667eea;border-radius:4px;color:#667eea;text-decoration:none;">&#x2197; Open in new tab</a>
+</div>
+<div>
+<iframe src="../interactive/text/breadth_pic.html"
+frameborder="0" marginwidth="0" marginheight="0" width="950" height="500"></iframe>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="marginal-intensity-indices">
+<h2>Marginal Intensity Indices<a class="headerlink" href="#marginal-intensity-indices" title="Permalink to this heading">#</a></h2>
+<p>While breadth measures how widespread a topic is, <strong>intensity</strong> measures how deeply a topic is covered within relevant articles. Intensity is defined as the average number of keywords per article, conditional on the article containing at least one keyword from that category.</p>
+<section id="id1">
+<h3>Notation<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>For each article <span class="math notranslate nohighlight">\(i\)</span>:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(K^E_i\)</span>: number of Economic keywords in article <span class="math notranslate nohighlight">\(i\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(K^P_i\)</span>: number of Policy keywords in article <span class="math notranslate nohighlight">\(i\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(K^U_i\)</span>: number of Uncertainty keywords in article <span class="math notranslate nohighlight">\(i\)</span></p></li>
+</ul>
+</section>
+<section id="economic-intensity">
+<h3>Economic Intensity<a class="headerlink" href="#economic-intensity" title="Permalink to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[
+E^{intensity}_{n,t} = \frac{1}{E_{n,t}} \sum_{i \in E_{n,t}} K^E_i
+\]</div>
+<p>Average number of Economic keywords per Economic article. Measures the <strong>depth of economic language</strong>, conditional on economic coverage.</p>
+</section>
+<section id="policy-intensity">
+<h3>Policy Intensity<a class="headerlink" href="#policy-intensity" title="Permalink to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[
+P^{intensity}_{n,t} = \frac{1}{P_{n,t}} \sum_{i \in P_{n,t}} K^P_i
+\]</div>
+<p>Average number of Policy keywords per Policy article. Measures the <strong>depth of policy language</strong>, conditional on policy coverage.</p>
+</section>
+<section id="uncertainty-intensity">
+<h3>Uncertainty Intensity<a class="headerlink" href="#uncertainty-intensity" title="Permalink to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[
+U^{intensity}_{n,t} = \frac{1}{U_{n,t}} \sum_{i \in U_{n,t}} K^U_i
+\]</div>
+<p>Average number of Uncertainty keywords per Uncertainty article. Measures the <strong>depth of uncertainty language</strong>, conditional on uncertainty coverage.</p>
+<div style="display:flex;justify-content:flex-start;width:950px;margin-bottom:4px;">
+  <a href="../interactive/text/intensity_pic.html" target="_blank" style="font-size:0.8em;padding:3px 10px;border:1px solid #667eea;border-radius:4px;color:#667eea;text-decoration:none;">&#x2197; Open in new tab</a>
+</div>
+<div>
+<iframe src="../interactive/text/intensity_pic.html"
+frameborder="0" marginwidth="0" marginheight="0" width="950" height="500"></iframe>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="pairwise-interaction-indices">
+<h2>Pairwise Interaction Indices<a class="headerlink" href="#pairwise-interaction-indices" title="Permalink to this heading">#</a></h2>
+<p>The standard EPU requires articles to contain keywords from all three categories. The pairwise interaction indices relax this requirement, measuring the share of articles that contain keywords from any two categories.</p>
+<section id="id2">
+<h3>Notation<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\((E \cap U)_{n,t}\)</span>: number of articles with ≥1 Economic AND ≥1 Uncertainty keyword</p></li>
+<li><p><span class="math notranslate nohighlight">\((P \cap U)_{n,t}\)</span>: number of articles with ≥1 Policy AND ≥1 Uncertainty keyword</p></li>
+<li><p><span class="math notranslate nohighlight">\((E \cap P)_{n,t}\)</span>: number of articles with ≥1 Economic AND ≥1 Policy keyword</p></li>
+</ul>
+</section>
+<section id="economic-uncertainty-eu">
+<h3>Economic-Uncertainty (EU)<a class="headerlink" href="#economic-uncertainty-eu" title="Permalink to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[
+EU^{share}_{n,t} = \frac{(E \cap U)_{n,t}}{A_{n,t}}
+\]</div>
+<p>Captures <strong>economically framed uncertainty</strong>—uncertainty that is discussed in an economic context, regardless of policy mentions.</p>
+</section>
+<section id="policy-uncertainty-pu">
+<h3>Policy-Uncertainty (PU)<a class="headerlink" href="#policy-uncertainty-pu" title="Permalink to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[
+PU^{share}_{n,t} = \frac{(P \cap U)_{n,t}}{A_{n,t}}
+\]</div>
+<p>Captures <strong>policy-driven uncertainty</strong>—uncertainty that is discussed in a policy context, regardless of economic mentions.</p>
+</section>
+<section id="economic-policy-ep">
+<h3>Economic-Policy (EP)<a class="headerlink" href="#economic-policy-ep" title="Permalink to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[
+EP^{share}_{n,t} = \frac{(E \cap P)_{n,t}}{A_{n,t}}
+\]</div>
+<p>Captures <strong>joint economic-policy coverage</strong>—articles discussing both economic and policy topics, regardless of uncertainty.</p>
+<div style="display:flex;justify-content:flex-start;width:950px;margin-bottom:4px;">
+  <a href="../interactive/text/pairwise_pic.html" target="_blank" style="font-size:0.8em;padding:3px 10px;border:1px solid #667eea;border-radius:4px;color:#667eea;text-decoration:none;">&#x2197; Open in new tab</a>
+</div>
+<div>
+<iframe src="../interactive/text/pairwise_pic.html"
+frameborder="0" marginwidth="0" marginheight="0" width="950" height="500"></iframe>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="uncertainty-attribution">
+<h2>Uncertainty Attribution<a class="headerlink" href="#uncertainty-attribution" title="Permalink to this heading">#</a></h2>
+<p>To understand <strong>what</strong> uncertainty is about, the framework extends to construct topic- and actor-conditioned uncertainty indices. These measure the extent to which uncertainty coverage is associated with specific themes or institutions.</p>
+<section id="topic-conditioned-uncertainty">
+<h3>Topic-Conditioned Uncertainty<a class="headerlink" href="#topic-conditioned-uncertainty" title="Permalink to this heading">#</a></h3>
+<p>For any topic group <span class="math notranslate nohighlight">\(g\)</span> (e.g., inflation, labor, climate, trade), define:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(G_{n,t}\)</span>: number of articles containing ≥1 keyword for topic <span class="math notranslate nohighlight">\(g\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\((U \cap G)_{n,t}\)</span>: number of articles containing ≥1 Uncertainty keyword AND ≥1 keyword for topic <span class="math notranslate nohighlight">\(g\)</span></p></li>
+</ul>
+<section id="agenda-based-attribution">
+<h4>Agenda-Based Attribution<a class="headerlink" href="#agenda-based-attribution" title="Permalink to this heading">#</a></h4>
+<div class="math notranslate nohighlight">
+\[
+U^{g,\,share}_{n,t} = \frac{(U \cap G)_{n,t}}{A_{n,t}}
+\]</div>
+<p>The share of all news devoted to uncertainty related to topic <span class="math notranslate nohighlight">\(g\)</span>. This measures how salient each topic is within the overall uncertainty-related news agenda.</p>
+</section>
+<section id="framing-based-attribution">
+<h4>Framing-Based Attribution<a class="headerlink" href="#framing-based-attribution" title="Permalink to this heading">#</a></h4>
+<div class="math notranslate nohighlight">
+\[
+U^{g \mid U}_{n,t} = \frac{(U \cap G)_{n,t}}{U_{n,t}}
+\]</div>
+<p>Among all uncertainty-related articles, the fraction attributable to topic <span class="math notranslate nohighlight">\(g\)</span>. This is a <strong>composition measure</strong>, indicating how uncertainty is being framed across different themes.</p>
+<div style="display:flex;justify-content:flex-start;width:950px;margin-bottom:4px;">
+  <a href="../interactive/text/topic_attribution_pic.html" target="_blank" style="font-size:0.8em;padding:3px 10px;border:1px solid #667eea;border-radius:4px;color:#667eea;text-decoration:none;">&#x2197; Open in new tab</a>
+</div>
+<div>
+<iframe src="../interactive/text/topic_attribution_pic.html"
+frameborder="0" marginwidth="0" marginheight="0" width="950" height="475"></iframe>
+</div>
+</section>
+</section>
+<section id="actor-conditioned-uncertainty">
+<h3>Actor-Conditioned Uncertainty<a class="headerlink" href="#actor-conditioned-uncertainty" title="Permalink to this heading">#</a></h3>
+<p>The same framework applies to institutional actors (e.g., IMF, World Bank, central bank, government, parliament):</p>
+<section id="id3">
+<h4>Agenda-Based Attribution<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h4>
+<div class="math notranslate nohighlight">
+\[
+U^{actor,\,share}_{n,t} = \frac{(U \cap Actor)_{n,t}}{A_{n,t}}
+\]</div>
+<p>The share of all news devoted to uncertainty related to a specific actor.</p>
+</section>
+<section id="id4">
+<h4>Framing-Based Attribution<a class="headerlink" href="#id4" title="Permalink to this heading">#</a></h4>
+<div class="math notranslate nohighlight">
+\[
+U^{actor \mid U}_{n,t} = \frac{(U \cap Actor)_{n,t}}{U_{n,t}}
+\]</div>
+<p>Among all uncertainty-related articles, the fraction attributable to a specific actor.</p>
+<div style="display:flex;justify-content:flex-start;width:950px;margin-bottom:4px;">
+  <a href="../interactive/text/actor_attribution_pic.html" target="_blank" style="font-size:0.8em;padding:3px 10px;border:1px solid #667eea;border-radius:4px;color:#667eea;text-decoration:none;">&#x2197; Open in new tab</a>
+</div>
+<div>
+<iframe src="../interactive/text/actor_attribution_pic.html"
+frameborder="0" marginwidth="0" marginheight="0" width="950" height="475"></iframe>
+</div>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="standardization-and-normalization">
+<h2>Standardization and Normalization<a class="headerlink" href="#standardization-and-normalization" title="Permalink to this heading">#</a></h2>
+<p>All indices follow the same procedure as the baseline EPU:</p>
+<ol class="arabic">
+<li><p><strong>Newspaper-Time Shares</strong>: Compute each index at the newspaper-time level</p></li>
+<li><p><strong>Newspaper-Level Standardization</strong>: For each newspaper <span class="math notranslate nohighlight">\(n\)</span> and index <span class="math notranslate nohighlight">\(X\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+   Z^X_{n,t} = \frac{X_{n,t} - \mu^X_n}{\sigma^X_n}
+   \]</div>
+<p>where <span class="math notranslate nohighlight">\(\mu^X_n\)</span> and <span class="math notranslate nohighlight">\(\sigma^X_n\)</span> are computed over a fixed reference period</p>
+</li>
+<li><p><strong>Aggregation</strong>: Average standardized values across newspapers:</p>
+<div class="math notranslate nohighlight">
+\[
+   Z^X_t = \frac{1}{N_t} \sum_n Z^X_{n,t}
+   \]</div>
+</li>
+<li><p><strong>Normalization</strong>: Rescale to a common baseline (mean = 100 over the reference period)</p></li>
+</ol>
+<p>This ensures all indices are comparable and can be analyzed together.</p>
+</section>
+<hr class="docutils" />
+<section id="relationship-to-standard-epu">
+<h2>Relationship to Standard EPU<a class="headerlink" href="#relationship-to-standard-epu" title="Permalink to this heading">#</a></h2>
+<p>The standard EPU index corresponds to:</p>
+<div class="math notranslate nohighlight">
+\[
+EPU_{n,t} = \frac{(E \cap P \cap U)_{n,t}}{A_{n,t}}
+\]</div>
+<p>The extended framework allows full decomposition of EPU movements into:</p>
+<ul class="simple">
+<li><p><strong>Marginal effects</strong>: Changes in economic, policy, or uncertainty coverage independently</p></li>
+<li><p><strong>Pairwise interactions</strong>: Changes in how topics co-occur</p></li>
+<li><p><strong>Attribution</strong>: Changes in what uncertainty is about (topics and actors)</p></li>
+</ul>
+<p>This decomposition helps distinguish between, for example:</p>
+<ul class="simple">
+<li><p>A general increase in uncertainty coverage vs. uncertainty specifically about inflation</p></li>
+<li><p>Broad policy uncertainty vs. uncertainty attributed to specific institutions</p></li>
+<li><p>Changes in the overall news agenda vs. changes in how uncertainty is framed</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./text"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="text_intro.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Economic Analysis with News Sources</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="dashboard.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Interactive Dashboard</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#from-epu-to-breadth-and-intensity">From EPU to Breadth and Intensity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#marginal-breadth-indices">Marginal Breadth Indices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#notation">Notation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-breadth">Economic Breadth</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-breadth">Policy Breadth</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-breadth">Uncertainty Breadth</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#marginal-intensity-indices">Marginal Intensity Indices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Notation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-intensity">Economic Intensity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-intensity">Policy Intensity</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-intensity">Uncertainty Intensity</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pairwise-interaction-indices">Pairwise Interaction Indices</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Notation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-uncertainty-eu">Economic-Uncertainty (EU)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#policy-uncertainty-pu">Policy-Uncertainty (PU)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#economic-policy-ep">Economic-Policy (EP)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-attribution">Uncertainty Attribution</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#topic-conditioned-uncertainty">Topic-Conditioned Uncertainty</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#agenda-based-attribution">Agenda-Based Attribution</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#framing-based-attribution">Framing-Based Attribution</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#actor-conditioned-uncertainty">Actor-Conditioned Uncertainty</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Agenda-Based Attribution</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">Framing-Based Attribution</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#standardization-and-normalization">Standardization and Normalization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#relationship-to-standard-epu">Relationship to Standard EPU</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By World Bank
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+  Last updated on Sep 05, 2026.
+  <br/>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

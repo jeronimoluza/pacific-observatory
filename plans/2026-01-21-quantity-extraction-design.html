@@ -1,0 +1,1003 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Quantity Extraction Methodology Design &#8212; Pacific Observatory</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/scale.fix.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'plans/2026-01-21-quantity-extraction-design';</script>
+    <link rel="canonical" href="https://github.com/worldbank/pacific-observatory/plans/2026-01-21-quantity-extraction-design.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Sep 05, 2026"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Pacific Observatory - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Pacific Observatory - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Pacific Observatory
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Automatic Identification System</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_intro.html">Automatic Identification System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_trade.html">Port Arrivals and Trade Volume</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_hhi.html">Market concentration of vessel operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_emissions.html">Greenhouse Gas Emissions from Maritime Traffic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_fishing.html">Fishing Intensity</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Text</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../text/text_intro.html">Economic Analysis with News Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../text/extension.html">Extended News-Based Economic Monitoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../text/dashboard.html">Interactive Dashboard</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://worldbank.github.io/pacific-observatory/interactive/text/text_presentation.slides">Text Presentation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tourism</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../tourism/intro.html">Introduction</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tourism/data.html">Data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/official_eda.html">Official Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/aviation_eda.html">Aviation Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/googletrends.html">Google Trends</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tourism/utsa.html">Individual forecasts</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/utsa_display.html">SARIMAX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/mtsa_var.html">VAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/mtsa_ratio.html">Ratio Approach</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tourism/forecastcomb.html">Forecast Combination</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/ensemble.html">Forecast Combination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tourism/combine_display.html">Combination vs. Individual Models</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../tourism/other_models.html">Other Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tourism/discussion.html">Discussion and Conclusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tourism/references.html">References</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Market Access</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../access/access_intro.html">Market Access and Connectivity</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Night Time Lights</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch1_intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch2_lit.html">Literature Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch3_dq.html">Data Quality Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch4_econ.html">Economic Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch5_other.html">Other Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/mining.html">Mining and Gas Visualization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Geospatial Poverty Map</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../poverty/vanuatu.html">Vanuatu</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Climate and Agriculture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../climate/climate_and_ag.html">Climate and Agriculture Monitoring in the Pacific Island Countries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../climate/climate_db.html">Climate Database</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Project Targeting Index</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://ifeanyi-edochie.shinyapps.io/pciPTI/">Demo App</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://worldbank.org">World Bank</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory/edit/main/plans/2026-01-21-quantity-extraction-design.md" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory/issues/new?title=Issue%20on%20page%20%2Fplans/2026-01-21-quantity-extraction-design.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/plans/2026-01-21-quantity-extraction-design.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Quantity Extraction Methodology Design</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design-principles">Design Principles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extraction-hierarchy">Extraction Hierarchy</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tier-1-weight-volume">Tier 1: Weight/Volume</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tier-2-count-units">Tier 2: Count Units</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tier-3-fallback-per-item">Tier 3: Fallback (Per-Item)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exclusion-criteria">Exclusion Criteria</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#contradictory-signals">1. Contradictory Signals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#promotion-or-bundle-detected">2. Promotion or Bundle Detected</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#promotion-detection">Promotion Detection</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#global-keywords-all-sources">Global Keywords (all sources)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#source-specific-additions">Source-Specific Additions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#status-based-model">Status-Based Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-review-process">Manual Review Process</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#triggers">Triggers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#workflow">Workflow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-addition-format">Pattern Addition Format</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-data-flow">Complete Data Flow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#output-schema">Output Schema</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-notes">Implementation Notes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#files-to-modify">Files to Modify</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backward-compatibility">Backward Compatibility</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#success-metrics">Success Metrics</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="quantity-extraction-methodology-design">
+<h1>Quantity Extraction Methodology Design<a class="headerlink" href="#quantity-extraction-methodology-design" title="Permalink to this heading">#</a></h1>
+<p><strong>Date:</strong> 2026-01-21
+<strong>Status:</strong> Draft
+<strong>Module:</strong> <code class="docutils literal notranslate"><span class="pre">src/cpi/coicopping/</span></code></p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
+<p>This document defines the methodology for extracting product quantities from scraped supermarket data and calculating unit prices for CPI index construction.</p>
+</section>
+<section id="design-principles">
+<h2>Design Principles<a class="headerlink" href="#design-principles" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Permissive inclusion</strong> - Include most products, only reject clear failures</p></li>
+<li><p><strong>Explicit exclusion</strong> - Only exclude on contradictory signals or promotion detection</p></li>
+<li><p><strong>Pattern-based hierarchy</strong> - Deterministic regex matching before fallbacks</p></li>
+<li><p><strong>Human-in-the-loop</strong> - Manual review builds the pattern library over time</p></li>
+</ol>
+</section>
+<section id="extraction-hierarchy">
+<h2>Extraction Hierarchy<a class="headerlink" href="#extraction-hierarchy" title="Permalink to this heading">#</a></h2>
+<p>The quantity extraction follows a three-tier hierarchy:</p>
+<section id="tier-1-weight-volume">
+<h3>Tier 1: Weight/Volume<a class="headerlink" href="#tier-1-weight-volume" title="Permalink to this heading">#</a></h3>
+<p><strong>Patterns:</strong> <code class="docutils literal notranslate"><span class="pre">500g</span></code>, <code class="docutils literal notranslate"><span class="pre">1kg</span></code>, <code class="docutils literal notranslate"><span class="pre">250ml</span></code>, <code class="docutils literal notranslate"><span class="pre">1.5L</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">liters</span></code></p>
+<p><strong>Result:</strong> Standardize to base units (kg, L) and calculate:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">unit_value</span> <span class="o">=</span> <span class="n">price</span> <span class="o">/</span> <span class="n">standardized_amount</span>
+</pre></div>
+</div>
+<p><strong>Multiplier handling:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">2x185g</span></code> resolves to <code class="docutils literal notranslate"><span class="pre">370g</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">3×500ml</span></code> resolves to <code class="docutils literal notranslate"><span class="pre">1500ml</span></code></p></li>
+</ul>
+<p><strong>Dimension exclusion:</strong></p>
+<ul class="simple">
+<li><p>If both sides of <code class="docutils literal notranslate"><span class="pre">x</span></code>/<code class="docutils literal notranslate"><span class="pre">×</span></code> have length units (mm, cm, in), treat as product dimensions and ignore</p></li>
+<li><p>Example: <code class="docutils literal notranslate"><span class="pre">50mm</span> <span class="pre">x</span> <span class="pre">150mm</span></code> is ignored (dimensions, not quantity)</p></li>
+</ul>
+</section>
+<section id="tier-2-count-units">
+<h3>Tier 2: Count Units<a class="headerlink" href="#tier-2-count-units" title="Permalink to this heading">#</a></h3>
+<p><strong>Patterns:</strong></p>
+<ul class="simple">
+<li><p>Numeric + suffix: <code class="docutils literal notranslate"><span class="pre">20</span> <span class="pre">pcs</span></code>, <code class="docutils literal notranslate"><span class="pre">6</span> <span class="pre">pieces</span></code>, <code class="docutils literal notranslate"><span class="pre">12</span> <span class="pre">pack</span></code>, <code class="docutils literal notranslate"><span class="pre">24pk</span></code></p></li>
+<li><p>Multipliers: <code class="docutils literal notranslate"><span class="pre">2x6</span> <span class="pre">pack</span></code> → 12 items</p></li>
+<li><p>Word-based: <code class="docutils literal notranslate"><span class="pre">dozen</span></code> → 12, <code class="docutils literal notranslate"><span class="pre">half</span> <span class="pre">dozen</span></code> → 6, <code class="docutils literal notranslate"><span class="pre">pair</span></code> → 2</p></li>
+<li><p>Contextual: <code class="docutils literal notranslate"><span class="pre">eggs</span></code>, <code class="docutils literal notranslate"><span class="pre">cans</span></code> → per-unit pricing</p></li>
+</ul>
+<p><strong>Result:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">unit_value</span> <span class="o">=</span> <span class="n">price</span> <span class="o">/</span> <span class="n">count</span>
+</pre></div>
+</div>
+</section>
+<section id="tier-3-fallback-per-item">
+<h3>Tier 3: Fallback (Per-Item)<a class="headerlink" href="#tier-3-fallback-per-item" title="Permalink to this heading">#</a></h3>
+<p><strong>Trigger:</strong> No quantity detected from Tier 1 or Tier 2</p>
+<p><strong>Result:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">quantity</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">unit_value</span> <span class="o">=</span> <span class="n">price</span>
+</pre></div>
+</div>
+<p>Products are compared item-to-item over time without unit normalization.</p>
+</section>
+</section>
+<section id="exclusion-criteria">
+<h2>Exclusion Criteria<a class="headerlink" href="#exclusion-criteria" title="Permalink to this heading">#</a></h2>
+<p>Products are excluded from the index under two conditions:</p>
+<section id="contradictory-signals">
+<h3>1. Contradictory Signals<a class="headerlink" href="#contradictory-signals" title="Permalink to this heading">#</a></h3>
+<p>Multiple conflicting quantities detected in the same product string.</p>
+<p><strong>Examples:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">500g</span> <span class="pre">/</span> <span class="pre">1kg</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">250ml</span> <span class="pre">(500ml)</span></code></p></li>
+</ul>
+<p><strong>Action:</strong> Mark as <code class="docutils literal notranslate"><span class="pre">status</span> <span class="pre">=</span> <span class="pre">&quot;contradictory&quot;</span></code>, exclude from index</p>
+</section>
+<section id="promotion-or-bundle-detected">
+<h3>2. Promotion or Bundle Detected<a class="headerlink" href="#promotion-or-bundle-detected" title="Permalink to this heading">#</a></h3>
+<p>Keyword match indicates non-standard pricing that would distort unit price comparisons.</p>
+<p><strong>Action:</strong> Mark as <code class="docutils literal notranslate"><span class="pre">status</span> <span class="pre">=</span> <span class="pre">&quot;promotion_or_bundle&quot;</span></code>, exclude from index</p>
+</section>
+</section>
+<section id="promotion-detection">
+<h2>Promotion Detection<a class="headerlink" href="#promotion-detection" title="Permalink to this heading">#</a></h2>
+<p>Keyword-based detection with global and source-specific lists.</p>
+<section id="global-keywords-all-sources">
+<h3>Global Keywords (all sources)<a class="headerlink" href="#global-keywords-all-sources" title="Permalink to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">promo</span><span class="p">,</span> <span class="n">promotion</span><span class="p">,</span> <span class="n">bundle</span><span class="p">,</span> <span class="n">combo</span><span class="p">,</span> <span class="n">special</span> <span class="n">offer</span><span class="p">,</span>
+<span class="n">buy</span> <span class="mi">1</span> <span class="n">get</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b1g1</span><span class="p">,</span> <span class="n">bogo</span><span class="p">,</span> <span class="n">value</span> <span class="n">pack</span><span class="p">,</span> <span class="n">multi</span><span class="o">-</span><span class="n">pack</span><span class="p">,</span>
+<span class="n">free</span><span class="p">,</span> <span class="n">bonus</span><span class="p">,</span> <span class="n">save</span><span class="p">,</span> <span class="n">deal</span>
+</pre></div>
+</div>
+</section>
+<section id="source-specific-additions">
+<h3>Source-Specific Additions<a class="headerlink" href="#source-specific-additions" title="Permalink to this heading">#</a></h3>
+<p>Configured per retailer to handle local language and retailer-specific terminology:</p>
+<div class="pst-scrollable-table-container"><table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Source</p></th>
+<th class="head"><p>Additional Keywords</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">samoa_market</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">special</span> <span class="pre">combo</span></code>, …</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mh_online</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">weekly</span> <span class="pre">special</span></code>, …</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">thai_huot</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">โปรโมชั่น</span></code>, …</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">aeon_online</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ការផ្សព្វផ្សាយ</span></code>, …</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Source-specific keywords are stored in configuration (e.g., <code class="docutils literal notranslate"><span class="pre">string_cleaning.json</span></code> or a dedicated <code class="docutils literal notranslate"><span class="pre">promotion_keywords.json</span></code>).</p>
+</section>
+</section>
+<section id="status-based-model">
+<h2>Status-Based Model<a class="headerlink" href="#status-based-model" title="Permalink to this heading">#</a></h2>
+<p>Instead of numeric confidence scores, use a status system that directly maps to inclusion/exclusion:</p>
+<div class="pst-scrollable-table-container"><table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Meaning</p></th>
+<th class="head"><p>Index Inclusion</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">resolved_weight_volume</span></code></p></td>
+<td><p>Tier 1 match (kg, L, etc.)</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">resolved_count</span></code></p></td>
+<td><p>Tier 2 match (pcs, dozen, etc.)</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">resolved_per_item</span></code></p></td>
+<td><p>Tier 3 fallback (no quantity)</p></td>
+<td><p>Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">contradictory</span></code></p></td>
+<td><p>Conflicting quantities found</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">promotion_or_bundle</span></code></p></td>
+<td><p>Promotion keyword matched</p></td>
+<td><p>No</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pending_review</span></code></p></td>
+<td><p>Flagged for manual review</p></td>
+<td><p>Yes (provisional)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Rationale:</strong> The decision is binary (include/exclude) and the approach is permissive. The status provides auditability without the false precision of numeric scores.</p>
+</section>
+<section id="manual-review-process">
+<h2>Manual Review Process<a class="headerlink" href="#manual-review-process" title="Permalink to this heading">#</a></h2>
+<section id="triggers">
+<h3>Triggers<a class="headerlink" href="#triggers" title="Permalink to this heading">#</a></h3>
+<p>Products are flagged for manual review when:</p>
+<ol class="arabic simple">
+<li><p><strong>High-value products</strong></p>
+<ul class="simple">
+<li><p>Appears in 5+ scrapes</p></li>
+<li><p>Top 20% by price within COICOP category</p></li>
+<li><p>High variance in extracted unit_value over time</p></li>
+</ul>
+</li>
+<li><p><strong>New patterns</strong></p>
+<ul class="simple">
+<li><p>Quantity-like text detected but doesn’t match any existing regex</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="workflow">
+<h3>Workflow<a class="headerlink" href="#workflow" title="Permalink to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. System flags product for review
+   → Logs: product_name, source, detected_text, reason_flagged
+
+2. Human reviews flagged products (batch process, e.g., weekly)
+   → Decides: valid pattern, noise, or edge case
+
+3. If valid pattern:
+   → Human writes/approves regex
+   → Regex added to regex_config.py (with comment noting origin)
+   → Commit to version control
+
+4. Re-run extraction on historical data
+   → Newly matched products get resolved quantities
+</pre></div>
+</div>
+</section>
+<section id="pattern-addition-format">
+<h3>Pattern Addition Format<a class="headerlink" href="#pattern-addition-format" title="Permalink to this heading">#</a></h3>
+<p>New patterns added to <code class="docutils literal notranslate"><span class="pre">regex_config.py</span></code> should include:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Added 2026-01-21 via manual review - handles "X sachets" pattern</span>
+<span class="sa">r</span><span class="s1">'(\d+)\s*sachets?'</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="complete-data-flow">
+<h2>Complete Data Flow<a class="headerlink" href="#complete-data-flow" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Raw product string (e.g., "Tuna Chunks 2x185g Special")
+    │
+    ▼
+┌─────────────────────────────────────┐
+│ 1. Promotion keyword check          │
+│    Match? → status = "promotion_or_bundle", EXCLUDE
+└─────────────────────────────────────┘
+    │ (no match)
+    ▼
+┌─────────────────────────────────────┐
+│ 2. Tier 1: Weight/Volume regex      │
+│    - Check for g, kg, ml, L, etc.   │
+│    - Handle multipliers (2x185g → 370g)
+│    - Skip if both sides are length units
+└─────────────────────────────────────┘
+    │ (match → resolved_weight_volume)
+    │ (no match ↓)
+    ▼
+┌─────────────────────────────────────┐
+│ 3. Tier 2: Count regex              │
+│    - pcs, pieces, pack, dozen, pair │
+│    - Contextual: eggs, cans         │
+│    - Multipliers: 2x6pack → 12      │
+└─────────────────────────────────────┘
+    │ (match → resolved_count)
+    │ (no match ↓)
+    ▼
+┌─────────────────────────────────────┐
+│ 4. Tier 3: Fallback                 │
+│    quantity = 1, unit_value = price │
+│    status = "resolved_per_item"     │
+└─────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────┐
+│ 5. Contradiction check              │
+│    Multiple conflicting quantities? │
+│    → status = "contradictory", EXCLUDE
+└─────────────────────────────────────┘
+    │
+    ▼
+┌─────────────────────────────────────┐
+│ 6. Flag for review (if applicable)  │
+│    - High-value product?            │
+│    - New unrecognized pattern?      │
+│    → Add "pending_review" flag      │
+└─────────────────────────────────────┘
+    │
+    ▼
+Final output: status, quantity, unit, unit_value
+</pre></div>
+</div>
+</section>
+<section id="output-schema">
+<h2>Output Schema<a class="headerlink" href="#output-schema" title="Permalink to this heading">#</a></h2>
+<p>Each processed product should include:</p>
+<div class="pst-scrollable-table-container"><table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">product_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Original product name</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">price</span></code></p></td>
+<td><p>float</p></td>
+<td><p>Raw price from scrape</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">quantity</span></code></p></td>
+<td><p>float</p></td>
+<td><p>Extracted quantity (1 if fallback)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unit</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Unit type: <code class="docutils literal notranslate"><span class="pre">kg</span></code>, <code class="docutils literal notranslate"><span class="pre">L</span></code>, <code class="docutils literal notranslate"><span class="pre">count</span></code>, <code class="docutils literal notranslate"><span class="pre">item</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unit_value</span></code></p></td>
+<td><p>float</p></td>
+<td><p>Price per standard unit</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">status</span></code></p></td>
+<td><p>string</p></td>
+<td><p>One of the six statuses above</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">extraction_tier</span></code></p></td>
+<td><p>int</p></td>
+<td><p>1, 2, or 3</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pending_review</span></code></p></td>
+<td><p>bool</p></td>
+<td><p>Whether flagged for manual review</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">exclusion_reason</span></code></p></td>
+<td><p>string</p></td>
+<td><p>null, <code class="docutils literal notranslate"><span class="pre">contradictory</span></code>, or <code class="docutils literal notranslate"><span class="pre">promotion_or_bundle</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="implementation-notes">
+<h2>Implementation Notes<a class="headerlink" href="#implementation-notes" title="Permalink to this heading">#</a></h2>
+<section id="files-to-modify">
+<h3>Files to Modify<a class="headerlink" href="#files-to-modify" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">src/cpi/coicopping/regex_config.py</span></code> - Add new patterns, organize by tier</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/cpi/coicopping/extract_quantities.py</span></code> - Implement tiered extraction logic</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/cpi/coicopping/promotion_detection.py</span></code> - New file for promotion keyword matching</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config/promotion_keywords.json</span></code> - Global and source-specific keyword lists</p></li>
+</ul>
+</section>
+<section id="backward-compatibility">
+<h3>Backward Compatibility<a class="headerlink" href="#backward-compatibility" title="Permalink to this heading">#</a></h3>
+<p>The new status-based system replaces the existing <code class="docutils literal notranslate"><span class="pre">usability_classifier.py</span></code> statuses. Migration path:</p>
+<div class="pst-scrollable-table-container"><table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Old Status</p></th>
+<th class="head"><p>New Status</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">resolved_mass</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">resolved_weight_volume</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">resolved_volume</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">resolved_weight_volume</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">resolved_count_food</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">resolved_count</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">promotion_or_bundle</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">promotion_or_bundle</span></code> (unchanged)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ambiguous_quantity</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pending_review</span></code> or <code class="docutils literal notranslate"><span class="pre">resolved_per_item</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unresolved</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">resolved_per_item</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<section id="success-metrics">
+<h2>Success Metrics<a class="headerlink" href="#success-metrics" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Coverage:</strong> ≥80% of products receive <code class="docutils literal notranslate"><span class="pre">resolved_*</span></code> status</p></li>
+<li><p><strong>Exclusion rate:</strong> &lt;10% excluded as promotions or contradictory</p></li>
+<li><p><strong>Review queue:</strong> &lt;5% flagged for manual review per scrape batch</p></li>
+<li><p><strong>Pattern growth:</strong> Regex library grows by 2-5 patterns per month from reviews</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./plans"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design-principles">Design Principles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extraction-hierarchy">Extraction Hierarchy</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tier-1-weight-volume">Tier 1: Weight/Volume</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tier-2-count-units">Tier 2: Count Units</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tier-3-fallback-per-item">Tier 3: Fallback (Per-Item)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#exclusion-criteria">Exclusion Criteria</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#contradictory-signals">1. Contradictory Signals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#promotion-or-bundle-detected">2. Promotion or Bundle Detected</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#promotion-detection">Promotion Detection</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#global-keywords-all-sources">Global Keywords (all sources)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#source-specific-additions">Source-Specific Additions</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#status-based-model">Status-Based Model</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#manual-review-process">Manual Review Process</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#triggers">Triggers</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#workflow">Workflow</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pattern-addition-format">Pattern Addition Format</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-data-flow">Complete Data Flow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#output-schema">Output Schema</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-notes">Implementation Notes</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#files-to-modify">Files to Modify</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#backward-compatibility">Backward Compatibility</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#success-metrics">Success Metrics</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By World Bank
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+  Last updated on Sep 05, 2026.
+  <br/>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

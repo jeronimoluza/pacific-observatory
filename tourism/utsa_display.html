@@ -1,0 +1,1767 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>SARIMAX &#8212; Pacific Observatory</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/scale.fix.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tourism/utsa_display';</script>
+    <link rel="canonical" href="https://github.com/worldbank/pacific-observatory/tourism/utsa_display.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="VAR" href="mtsa_var.html" />
+    <link rel="prev" title="Individual forecasts" href="utsa.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+    <meta name="docbuild:last-update" content="Sep 05, 2026"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Pacific Observatory - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Pacific Observatory - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Pacific Observatory
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Automatic Identification System</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_intro.html">Automatic Identification System</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_trade.html">Port Arrivals and Trade Volume</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_hhi.html">Market concentration of vessel operators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_emissions.html">Greenhouse Gas Emissions from Maritime Traffic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ais/ais_fishing.html">Fishing Intensity</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Text</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../text/text_intro.html">Economic Analysis with News Sources</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../text/extension.html">Extended News-Based Economic Monitoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../text/dashboard.html">Interactive Dashboard</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://worldbank.github.io/pacific-observatory/interactive/text/text_presentation.slides">Text Presentation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tourism</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="data.html">Data</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="official_eda.html">Official Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aviation_eda.html">Aviation Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="googletrends.html">Google Trends</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="utsa.html">Individual forecasts</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">SARIMAX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtsa_var.html">VAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mtsa_ratio.html">Ratio Approach</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="forecastcomb.html">Forecast Combination</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="ensemble.html">Forecast Combination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="combine_display.html">Combination vs. Individual Models</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="other_models.html">Other Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="discussion.html">Discussion and Conclusion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Market Access</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../access/access_intro.html">Market Access and Connectivity</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Night Time Lights</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch1_intro.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch2_lit.html">Literature Review</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch3_dq.html">Data Quality Assessment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch4_econ.html">Economic Applications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/ch5_other.html">Other Use Cases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ntl/mining.html">Mining and Gas Visualization</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Geospatial Poverty Map</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../poverty/vanuatu.html">Vanuatu</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Climate and Agriculture</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../climate/climate_and_ag.html">Climate and Agriculture Monitoring in the Pacific Island Countries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../climate/climate_db.html">Climate Database</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Project Targeting Index</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://ifeanyi-edochie.shinyapps.io/pciPTI/">Demo App</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Additional Resources</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://worldbank.org">World Bank</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory/edit/main/tourism/utsa_display.ipynb" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/worldbank/pacific-observatory/issues/new?title=Issue%20on%20page%20%2Ftourism/utsa_display.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/tourism/utsa_display.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>SARIMAX</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="sarimax">
+<h1>SARIMAX<a class="headerlink" href="#sarimax" title="Permalink to this heading">#</a></h1>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">"../../"</span><span class="p">)</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">seaborn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sns</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s2">"whitegrid"</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.seasonal</span><span class="w"> </span><span class="kn">import</span> <span class="n">seasonal_decompose</span><span class="p">,</span> <span class="n">STL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.statespace.sarimax</span><span class="w"> </span><span class="kn">import</span> <span class="n">SARIMAX</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">statsmodels.tsa.arima.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ARIMA</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pmdarima</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pmdarima</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_selection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pmdarima</span><span class="w"> </span><span class="kn">import</span> <span class="n">auto_arima</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scripts.python.tsa.ts_utils</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">scripts.python.tsa.utsmodel</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">scripts.python.tsa.ts_eval</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">'ignore'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">countries</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"solomon_islands"</span><span class="p">,</span> <span class="s2">"palau"</span><span class="p">,</span> <span class="s2">"samoa"</span><span class="p">,</span> <span class="s2">"vanuatu"</span><span class="p">,</span> <span class="s2">"tonga"</span><span class="p">]</span>
+<span class="c1"># Set parameter range</span>
+<span class="n">p</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">P</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">[</span><span class="mi">12</span><span class="p">]</span>
+
+<span class="c1"># list of all parameter combos</span>
+<span class="n">pdq</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">q</span><span class="p">))</span>
+<span class="n">seasonal_pdq</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">P</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">Q</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
+<span class="n">all_param</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">pdq</span><span class="p">,</span> <span class="n">seasonal_pdq</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">country</span> <span class="ow">in</span> <span class="n">countries</span><span class="p">:</span>
+
+    <span class="n">mod</span> <span class="o">=</span> <span class="n">SARIMAXPipeline</span><span class="p">(</span><span class="n">country</span><span class="o">=</span><span class="n">country</span><span class="p">,</span> <span class="n">y_var</span><span class="o">=</span><span class="s2">"total"</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                          <span class="n">exog_var</span><span class="o">=</span><span class="p">[</span><span class="s2">"covid"</span><span class="p">,</span> <span class="s2">"stringency_index"</span><span class="p">,</span>
+                                    <span class="nb">str</span><span class="p">(</span><span class="n">country</span><span class="p">)</span><span class="o">+</span><span class="s2">"_travel"</span><span class="p">],</span>
+                          <span class="n">transform_method</span><span class="o">=</span><span class="s2">"scaledlogit"</span><span class="p">,</span>
+                          <span class="n">training_ratio</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                          <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">mod</span><span class="o">.</span><span class="n">read_and_merge</span><span class="p">()</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+    
+    
+    <span class="n">mod</span><span class="o">.</span><span class="n">transform</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"The Benchmark Evaluation for </span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">mod</span><span class="o">.</span><span class="n">get_benchmark_evaluation</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Started to conduct stepwise searching for </span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">mod</span><span class="o">.</span><span class="n">stepwise_search</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Started to conduct Grid searching for </span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+    <span class="n">mod_msres</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">manual_search</span><span class="p">(</span><span class="n">params</span><span class="o">=</span><span class="n">all_param</span><span class="p">)</span>
+    <span class="n">mod_msres</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">mod_swm</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">stepwise_model</span>
+    <span class="k">if</span> <span class="n">mod_msres</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="n">mod_swm</span><span class="p">[</span><span class="s2">"order"</span><span class="p">],</span> <span class="n">mod_swm</span><span class="p">[</span><span class="s2">"seasonal_order"</span><span class="p">]):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">mod_msres</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cv_models</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cv_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">ARIMA</span><span class="p">(</span>
+            <span class="n">mod_swm</span><span class="p">[</span><span class="s2">"order"</span><span class="p">],</span> <span class="n">mod_swm</span><span class="p">[</span><span class="s2">"seasonal_order"</span><span class="p">],</span>  <span class="n">exog</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">exog</span><span class="p">[:</span><span class="n">mod</span><span class="o">.</span><span class="n">training_size</span><span class="p">]))</span>
+
+        <span class="c1"># Append top five GridSearch results</span>
+        <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">mod_msres</span><span class="p">[:</span><span class="mi">5</span><span class="p">]:</span>
+            <span class="n">info_criteria</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">info_criteria</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">order</span><span class="p">,</span> <span class="n">seasonal_order</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">model</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">ARIMA</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">seasonal_order</span><span class="p">,</span>
+                                 <span class="n">exog</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">exog</span><span class="p">[:</span><span class="n">mod</span><span class="o">.</span><span class="n">training_size</span><span class="p">])</span>
+                <span class="n">cv_models</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Started to conduct Cross-validation for </span><span class="si">{</span><span class="n">country</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+        <span class="n">mod_cv_comp</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">compare_models</span><span class="p">(</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">transformed_y</span><span class="p">,</span> <span class="n">exog</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">exog</span><span class="p">,</span> <span class="n">models</span><span class="o">=</span><span class="n">cv_models</span><span class="p">)</span>
+        <span class="n">best_cv_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanargmin</span><span class="p">(</span><span class="n">mod_cv_comp</span><span class="p">[</span><span class="s2">"avg_error"</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Best Models from Cross-validation is </span><span class="si">{</span><span class="n">cv_models</span><span class="p">[</span><span class="n">best_cv_idx</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">best_cv_idx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">best_mod</span> <span class="o">=</span> <span class="n">mod_msres</span><span class="p">[</span><span class="n">best_cv_idx</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">best_mod_pred</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">get_prediction_df</span><span class="p">(</span>
+                <span class="n">best_mod</span><span class="p">,</span> <span class="n">mod</span><span class="o">.</span><span class="n">test_size</span><span class="p">,</span> <span class="n">mod</span><span class="o">.</span><span class="n">exog</span><span class="p">[</span><span class="o">-</span><span class="n">mod</span><span class="o">.</span><span class="n">test_size</span><span class="p">:])</span>
+        
+        <span class="n">lower</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"total"</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">upper</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">"total"</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">col_idx</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">best_mod_pred</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">row_idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">best_mod_pred</span><span class="p">[</span><span class="n">col</span><span class="p">]):</span>
+                <span class="n">best_mod_pred</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row_idx</span><span class="p">,</span> <span class="n">col_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">inverse_scaledlogit</span><span class="p">(</span>
+                    <span class="n">best_mod_pred</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row_idx</span><span class="p">,</span> <span class="n">col_idx</span><span class="p">],</span> <span class="n">upper</span><span class="p">,</span> <span class="n">lower</span><span class="p">)</span>
+
+        <span class="c1"># Merge the prediction with actual values</span>
+        <span class="n">best_mod_pred</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">best_mod_pred</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">mod</span><span class="o">.</span><span class="n">data</span><span class="p">[[</span><span class="s2">"date"</span><span class="p">,</span> <span class="s2">"total"</span><span class="p">]],</span> <span class="n">best_mod_pred</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="n">save_pred_path</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">country_data_folder</span> <span class="o">+</span> <span class="s2">"/model/sarimax_"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">country</span><span class="p">)</span> <span class="o">+</span> <span class="s2">".csv"</span>
+        <span class="n">best_mod_pred</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">save_pred_path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mod</span><span class="o">.</span><span class="n">test_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">pred_series</span> <span class="o">=</span> <span class="p">(</span><span class="n">best_mod_pred</span><span class="p">[</span><span class="s2">"train_pred"</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                           <span class="o">+</span> <span class="n">best_mod_pred</span><span class="p">[</span><span class="s2">"test_pred"</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pred_series</span> <span class="o">=</span> <span class="n">best_mod_pred</span><span class="p">[</span><span class="s2">"train_pred"</span><span class="p">]</span>
+        
+        <span class="n">mod_eval</span> <span class="o">=</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">calculate_evaluation</span><span class="p">(</span>
+            <span class="n">best_mod_pred</span><span class="p">[</span><span class="s2">"total"</span><span class="p">],</span> <span class="n">pred_series</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">"SARIMAX"</span><span class="p">]))</span>
+        <span class="n">mod_eval</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">mod</span><span class="o">.</span><span class="n">benchmark</span><span class="p">,</span> <span class="n">mod_eval</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">mod_eval</span><span class="p">)</span>
+        
+        <span class="n">mod_eval</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">mod</span><span class="o">.</span><span class="n">country_data_folder</span> <span class="o">+</span> <span class="s2">"/model/sarimax_eval_"</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">country</span><span class="p">)</span> <span class="o">+</span> <span class="s2">".csv"</span><span class="p">,</span>
+                        <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>date</th>
+      <th>total</th>
+      <th>stringency_index</th>
+      <th>covid</th>
+      <th>solomon_islands_flights</th>
+      <th>solomon_islands_hotel</th>
+      <th>solomon_islands_travel</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2009-01-01</td>
+      <td>1602</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2009-02-01</td>
+      <td>1422</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.484667</td>
+      <td>0.0</td>
+      <td>0.203672</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2009-03-01</td>
+      <td>1249</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2009-04-01</td>
+      <td>1499</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2009-05-01</td>
+      <td>1393</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.0</td>
+      <td>0.478020</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>training size : 144, testing size : 0
+THE BENCHMARK EVALUATION FOR SOLOMON_ISLANDS 
+
+STARTED TO CONDUCT STEPWISE SEARCHING FOR SOLOMON_ISLANDS 
+
+                                      SARIMAX Results                                       
+============================================================================================
+Dep. Variable:                                    y   No. Observations:                  144
+Model:             SARIMAX(2, 1, 2)x(1, 0, [1], 12)   Log Likelihood                -170.543
+Date:                              Wed, 14 Jun 2023   AIC                            361.087
+Time:                                      15:49:31   BIC                            390.715
+Sample:                                           0   HQIC                           373.126
+                                              - 144                                         
+Covariance Type:                                opg                                         
+==========================================================================================
+                             coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------------------
+covid                     -3.0401      1.491     -2.039      0.041      -5.962      -0.118
+stringency_index          -0.0648      0.026     -2.497      0.013      -0.116      -0.014
+solomon_islands_travel    -0.3945      1.574     -0.251      0.802      -3.479       2.690
+ar.L1                     -0.7511      0.172     -4.375      0.000      -1.088      -0.415
+ar.L2                      0.1471      0.125      1.180      0.238      -0.097       0.391
+ma.L1                      0.0672      0.105      0.640      0.522      -0.138       0.273
+ma.L2                     -0.8797      0.082    -10.683      0.000      -1.041      -0.718
+ar.S.L12                   0.9434      0.127      7.457      0.000       0.695       1.191
+ma.S.L12                  -0.8220      0.243     -3.383      0.001      -1.298      -0.346
+sigma2                     0.6149      0.054     11.411      0.000       0.509       0.721
+===================================================================================
+Ljung-Box (L1) (Q):                   0.07   Jarque-Bera (JB):             16100.35
+Prob(Q):                              0.79   Prob(JB):                         0.00
+Heteroskedasticity (H):               0.33   Skew:                             5.80
+Prob(H) (two-sided):                  0.00   Kurtosis:                        53.67
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+</pre></div>
+</div>
+<img alt="../_images/ba79e2e0401cccdc68cf0d2acd7a6171b91a6fbd825be7a0733ccff8ffdc4c15.png" src="../_images/ba79e2e0401cccdc68cf0d2acd7a6171b91a6fbd825be7a0733ccff8ffdc4c15.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>STARTED TO CONDUCT GRID SEARCHING FOR SOLOMON_ISLANDS 
+
+STARTED TO CONDUCT CROSS-VALIDATION FOR SOLOMON_ISLANDS 
+
+Best Models from Cross-validation is  ARIMA(2,0,2)(0,1,1)[12] intercept 
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>MSE</th>
+      <th>RMSE</th>
+      <th>MAE</th>
+      <th>SMAPE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>naive</th>
+      <td>130146.048951</td>
+      <td>360.757604</td>
+      <td>273.083916</td>
+      <td>19.605133</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>373388.932822</td>
+      <td>611.055589</td>
+      <td>428.780575</td>
+      <td>28.510498</td>
+    </tr>
+    <tr>
+      <th>seasonal naive</th>
+      <td>719201.125000</td>
+      <td>848.057265</td>
+      <td>537.375000</td>
+      <td>42.210038</td>
+    </tr>
+    <tr>
+      <th>SARIMAX</th>
+      <td>81169.100331</td>
+      <td>284.901914</td>
+      <td>201.117080</td>
+      <td>14.616283</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>date</th>
+      <th>japan</th>
+      <th>south_korea</th>
+      <th>taiwan</th>
+      <th>china</th>
+      <th>usa/canada</th>
+      <th>europe</th>
+      <th>others</th>
+      <th>total</th>
+      <th>stringency_index</th>
+      <th>covid</th>
+      <th>palau_flights</th>
+      <th>palau_hotel</th>
+      <th>palau_travel</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2007-06-01</td>
+      <td>856.0</td>
+      <td>1291.0</td>
+      <td>3245.0</td>
+      <td>86.0</td>
+      <td>669.0</td>
+      <td>99.0</td>
+      <td>463.0</td>
+      <td>6709.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.068426</td>
+      <td>8.334537</td>
+      <td>0.320004</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2007-07-01</td>
+      <td>2119.0</td>
+      <td>1366.0</td>
+      <td>3269.0</td>
+      <td>33.0</td>
+      <td>653.0</td>
+      <td>144.0</td>
+      <td>437.0</td>
+      <td>8021.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>9.667343</td>
+      <td>0.952482</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2007-08-01</td>
+      <td>3476.0</td>
+      <td>1354.0</td>
+      <td>3046.0</td>
+      <td>46.0</td>
+      <td>580.0</td>
+      <td>256.0</td>
+      <td>438.0</td>
+      <td>9196.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.704914</td>
+      <td>6.906282</td>
+      <td>0.453967</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2007-09-01</td>
+      <td>3022.0</td>
+      <td>910.0</td>
+      <td>2497.0</td>
+      <td>61.0</td>
+      <td>559.0</td>
+      <td>145.0</td>
+      <td>401.0</td>
+      <td>7595.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.798284</td>
+      <td>3.591027</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2007-10-01</td>
+      <td>1807.0</td>
+      <td>1082.0</td>
+      <td>2298.0</td>
+      <td>49.0</td>
+      <td>774.0</td>
+      <td>390.0</td>
+      <td>395.0</td>
+      <td>6795.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.431326</td>
+      <td>4.111283</td>
+      <td>0.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>training size : 184, testing size : 0
+THE BENCHMARK EVALUATION FOR PALAU 
+
+STARTED TO CONDUCT STEPWISE SEARCHING FOR PALAU 
+
+                                     SARIMAX Results                                      
+==========================================================================================
+Dep. Variable:                                  y   No. Observations:                  184
+Model:             SARIMAX(1, 0, 1)x(1, 0, 1, 12)   Log Likelihood                -231.068
+Date:                            Wed, 14 Jun 2023   AIC                            478.136
+Time:                                    15:54:50   BIC                            503.855
+Sample:                                         0   HQIC                           488.560
+                                            - 184                                         
+Covariance Type:                              opg                                         
+====================================================================================
+                       coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------------
+covid               -5.9728      0.833     -7.170      0.000      -7.605      -4.340
+stringency_index    -0.0172      0.018     -0.950      0.342      -0.053       0.018
+palau_travel         0.3199      0.571      0.560      0.575      -0.800       1.439
+ar.L1                0.9569      0.033     28.662      0.000       0.891       1.022
+ma.L1               -0.5431      0.052    -10.518      0.000      -0.644      -0.442
+ar.S.L12             0.9414      0.132      7.137      0.000       0.683       1.200
+ma.S.L12            -0.8473      0.210     -4.026      0.000      -1.260      -0.435
+sigma2               0.7038      0.028     24.753      0.000       0.648       0.760
+===================================================================================
+Ljung-Box (L1) (Q):                   0.07   Jarque-Bera (JB):             19273.54
+Prob(Q):                              0.80   Prob(JB):                         0.00
+Heteroskedasticity (H):               6.06   Skew:                             4.88
+Prob(H) (two-sided):                  0.00   Kurtosis:                        52.18
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+</pre></div>
+</div>
+<img alt="../_images/4027bf1f2eac20ce84caabccbb8172e44c632e3465fb87de462decc6b45e97f9.png" src="../_images/4027bf1f2eac20ce84caabccbb8172e44c632e3465fb87de462decc6b45e97f9.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>STARTED TO CONDUCT GRID SEARCHING FOR PALAU 
+
+STARTED TO CONDUCT CROSS-VALIDATION FOR PALAU 
+
+Best Models from Cross-validation is  ARIMA(0,1,1)(0,1,1)[12] intercept 
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>MSE</th>
+      <th>RMSE</th>
+      <th>MAE</th>
+      <th>SMAPE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>naive</th>
+      <td>2.096767e+06</td>
+      <td>1448.021907</td>
+      <td>1092.759563</td>
+      <td>23.272616</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>1.639656e+07</td>
+      <td>4049.266859</td>
+      <td>3178.648757</td>
+      <td>51.716972</td>
+    </tr>
+    <tr>
+      <th>seasonal naive</th>
+      <td>1.123704e+07</td>
+      <td>3352.169852</td>
+      <td>2405.935201</td>
+      <td>56.509474</td>
+    </tr>
+    <tr>
+      <th>SARIMAX</th>
+      <td>1.826282e+06</td>
+      <td>1351.399848</td>
+      <td>947.467373</td>
+      <td>21.701883</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>date</th>
+      <th>total</th>
+      <th>american_samoa</th>
+      <th>australia</th>
+      <th>europe</th>
+      <th>new_zealand</th>
+      <th>usa</th>
+      <th>other_countries</th>
+      <th>cruise_ships</th>
+      <th>stringency_index</th>
+      <th>covid</th>
+      <th>samoa_flights</th>
+      <th>samoa_hotel</th>
+      <th>samoa_travel</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2002-08-01</td>
+      <td>8260.0</td>
+      <td>2877.0</td>
+      <td>1115.0</td>
+      <td>429.0</td>
+      <td>2035.0</td>
+      <td>933.0</td>
+      <td>871.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2002-09-01</td>
+      <td>6708.0</td>
+      <td>2119.0</td>
+      <td>972.0</td>
+      <td>372.0</td>
+      <td>1879.0</td>
+      <td>612.0</td>
+      <td>754.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2002-10-01</td>
+      <td>5737.0</td>
+      <td>1892.0</td>
+      <td>737.0</td>
+      <td>468.0</td>
+      <td>1492.0</td>
+      <td>577.0</td>
+      <td>571.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2002-11-01</td>
+      <td>6653.0</td>
+      <td>2530.0</td>
+      <td>864.0</td>
+      <td>393.0</td>
+      <td>1675.0</td>
+      <td>483.0</td>
+      <td>708.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2002-12-01</td>
+      <td>13042.0</td>
+      <td>4678.0</td>
+      <td>1918.0</td>
+      <td>272.0</td>
+      <td>4401.0</td>
+      <td>1007.0</td>
+      <td>766.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>training size : 242, testing size : 0
+THE BENCHMARK EVALUATION FOR SAMOA 
+
+STARTED TO CONDUCT STEPWISE SEARCHING FOR SAMOA 
+
+                                      SARIMAX Results                                       
+============================================================================================
+Dep. Variable:                                    y   No. Observations:                  242
+Model:             SARIMAX(0, 1, 2)x(2, 0, [1], 12)   Log Likelihood                -335.391
+Date:                              Wed, 14 Jun 2023   AIC                            690.782
+Time:                                      16:00:58   BIC                            725.630
+Sample:                                           0   HQIC                           704.822
+                                              - 242                                         
+Covariance Type:                                opg                                         
+====================================================================================
+                       coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------------
+intercept            0.0097      0.010      0.961      0.337      -0.010       0.029
+covid               -7.2406      0.737     -9.827      0.000      -8.685      -5.796
+stringency_index    -0.0750      0.010     -7.871      0.000      -0.094      -0.056
+samoa_travel        -0.0038      0.268     -0.014      0.989      -0.529       0.521
+ma.L1               -0.6578      0.037    -17.626      0.000      -0.731      -0.585
+ma.L2               -0.3261      0.067     -4.854      0.000      -0.458      -0.194
+ar.S.L12            -0.3483      0.400     -0.871      0.384      -1.132       0.435
+ar.S.L24             0.3509      0.118      2.975      0.003       0.120       0.582
+ma.S.L12             0.6056      0.406      1.492      0.136      -0.190       1.401
+sigma2               0.9498      0.045     21.045      0.000       0.861       1.038
+===================================================================================
+Ljung-Box (L1) (Q):                   0.00   Jarque-Bera (JB):             23312.56
+Prob(Q):                              0.96   Prob(JB):                         0.00
+Heteroskedasticity (H):              25.64   Skew:                             5.65
+Prob(H) (two-sided):                  0.00   Kurtosis:                        49.84
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+</pre></div>
+</div>
+<img alt="../_images/e623aeed9e2756e5c55a0384198d8cbf6aa07dfe344f01cbf9b5feb4fa6a7866.png" src="../_images/e623aeed9e2756e5c55a0384198d8cbf6aa07dfe344f01cbf9b5feb4fa6a7866.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>STARTED TO CONDUCT GRID SEARCHING FOR SAMOA 
+
+STARTED TO CONDUCT CROSS-VALIDATION FOR SAMOA 
+
+Best Models from Cross-validation is  ARIMA(2,1,1)(0,1,1)[12] intercept 
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>MSE</th>
+      <th>RMSE</th>
+      <th>MAE</th>
+      <th>SMAPE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>naive</th>
+      <td>1.180276e+07</td>
+      <td>3435.514859</td>
+      <td>2313.560166</td>
+      <td>23.936179</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>2.193805e+07</td>
+      <td>4683.807205</td>
+      <td>3367.534731</td>
+      <td>43.918693</td>
+    </tr>
+    <tr>
+      <th>seasonal naive</th>
+      <td>1.643507e+07</td>
+      <td>4054.018920</td>
+      <td>2003.082645</td>
+      <td>31.466659</td>
+    </tr>
+    <tr>
+      <th>SARIMAX</th>
+      <td>2.952049e+06</td>
+      <td>1718.152711</td>
+      <td>1020.766988</td>
+      <td>33.573105</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>date</th>
+      <th>australia</th>
+      <th>new_zealand</th>
+      <th>new_caledonia</th>
+      <th>other_pic</th>
+      <th>europe</th>
+      <th>north_america</th>
+      <th>japan</th>
+      <th>china</th>
+      <th>other_countries</th>
+      <th>total</th>
+      <th>fileyear</th>
+      <th>not_stated</th>
+      <th>stringency_index</th>
+      <th>covid</th>
+      <th>vanuatu_flights</th>
+      <th>vanuatu_hotel</th>
+      <th>vanuatu_travel</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2003-12-01</td>
+      <td>2938.0</td>
+      <td>580.0</td>
+      <td>646.0</td>
+      <td>136.0</td>
+      <td>201.0</td>
+      <td>88.0</td>
+      <td>42.0</td>
+      <td>0.0</td>
+      <td>103.0</td>
+      <td>4734.0</td>
+      <td>2007.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2004-01-01</td>
+      <td>2864.0</td>
+      <td>439.0</td>
+      <td>717.0</td>
+      <td>122.0</td>
+      <td>186.0</td>
+      <td>67.0</td>
+      <td>36.0</td>
+      <td>0.0</td>
+      <td>61.0</td>
+      <td>4492.0</td>
+      <td>2005.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>2.232933</td>
+      <td>3.102047</td>
+      <td>2.453441</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2004-02-01</td>
+      <td>2158.0</td>
+      <td>194.0</td>
+      <td>416.0</td>
+      <td>282.0</td>
+      <td>229.0</td>
+      <td>82.0</td>
+      <td>34.0</td>
+      <td>0.0</td>
+      <td>93.0</td>
+      <td>3488.0</td>
+      <td>2005.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2004-03-01</td>
+      <td>2733.0</td>
+      <td>420.0</td>
+      <td>255.0</td>
+      <td>160.0</td>
+      <td>195.0</td>
+      <td>115.0</td>
+      <td>53.0</td>
+      <td>0.0</td>
+      <td>83.0</td>
+      <td>4014.0</td>
+      <td>2005.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2004-04-01</td>
+      <td>2377.0</td>
+      <td>438.0</td>
+      <td>469.0</td>
+      <td>206.0</td>
+      <td>225.0</td>
+      <td>115.0</td>
+      <td>45.0</td>
+      <td>0.0</td>
+      <td>80.0</td>
+      <td>3955.0</td>
+      <td>2005.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.694580</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>training size : 224, testing size : 0
+THE BENCHMARK EVALUATION FOR VANUATU 
+
+STARTED TO CONDUCT STEPWISE SEARCHING FOR VANUATU 
+
+                                     SARIMAX Results                                      
+==========================================================================================
+Dep. Variable:                                  y   No. Observations:                  224
+Model:             SARIMAX(1, 1, 1)x(1, 0, 1, 12)   Log Likelihood                -278.286
+Date:                            Wed, 14 Jun 2023   AIC                            572.571
+Time:                                    16:10:25   BIC                            599.829
+Sample:                                         0   HQIC                           583.575
+                                            - 224                                         
+Covariance Type:                              opg                                         
+====================================================================================
+                       coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------------
+covid               -9.1747      0.708    -12.966      0.000     -10.562      -7.788
+stringency_index    -0.0419      0.011     -3.973      0.000      -0.063      -0.021
+vanuatu_travel       0.0298      0.213      0.140      0.888      -0.387       0.447
+ar.L1                0.0483      0.102      0.475      0.635      -0.151       0.248
+ma.L1               -0.8991      0.072    -12.570      0.000      -1.039      -0.759
+ar.S.L12             0.9723      0.042     22.969      0.000       0.889       1.055
+ma.S.L12            -0.8100      0.102     -7.956      0.000      -1.009      -0.610
+sigma2               0.6688      0.034     19.531      0.000       0.602       0.736
+===================================================================================
+Ljung-Box (L1) (Q):                   0.02   Jarque-Bera (JB):             18394.33
+Prob(Q):                              0.89   Prob(JB):                         0.00
+Heteroskedasticity (H):              17.69   Skew:                             5.20
+Prob(H) (two-sided):                  0.00   Kurtosis:                        46.26
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+</pre></div>
+</div>
+<img alt="../_images/20cc1845f0360d20f6eaab25d62abb0c104e734153181fc0dc2563de4a4acd4f.png" src="../_images/20cc1845f0360d20f6eaab25d62abb0c104e734153181fc0dc2563de4a4acd4f.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>STARTED TO CONDUCT GRID SEARCHING FOR VANUATU 
+
+STARTED TO CONDUCT CROSS-VALIDATION FOR VANUATU 
+
+Best Models from Cross-validation is  ARIMA(1,0,1)(2,1,2)[12] intercept 
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>MSE</th>
+      <th>RMSE</th>
+      <th>MAE</th>
+      <th>SMAPE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>naive</th>
+      <td>2.915180e+06</td>
+      <td>1707.389827</td>
+      <td>1292.829596</td>
+      <td>20.537447</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>1.125218e+07</td>
+      <td>3354.426412</td>
+      <td>2628.520727</td>
+      <td>47.767194</td>
+    </tr>
+    <tr>
+      <th>seasonal naive</th>
+      <td>8.396013e+06</td>
+      <td>2897.587484</td>
+      <td>1568.424107</td>
+      <td>34.617696</td>
+    </tr>
+    <tr>
+      <th>SARIMAX</th>
+      <td>1.238855e+06</td>
+      <td>1113.038657</td>
+      <td>795.607455</td>
+      <td>35.718702</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>date</th>
+      <th>yacht</th>
+      <th>all</th>
+      <th>total</th>
+      <th>ship</th>
+      <th>stringency_index</th>
+      <th>covid</th>
+      <th>tonga_flights</th>
+      <th>tonga_hotel</th>
+      <th>tonga_travel</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2010-01-01</td>
+      <td>4</td>
+      <td>3808</td>
+      <td>3158</td>
+      <td>646</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>1.118195</td>
+      <td>1.296399</td>
+      <td>0.212187</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2010-02-01</td>
+      <td>5</td>
+      <td>2384</td>
+      <td>2379</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.811451</td>
+      <td>1.013375</td>
+      <td>0.480398</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2010-03-01</td>
+      <td>5</td>
+      <td>3992</td>
+      <td>3134</td>
+      <td>853</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.872967</td>
+      <td>1.359485</td>
+      <td>0.233651</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2010-04-01</td>
+      <td>30</td>
+      <td>5650</td>
+      <td>2818</td>
+      <td>2802</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.583649</td>
+      <td>1.142021</td>
+      <td>0.400232</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2010-05-01</td>
+      <td>177</td>
+      <td>9150</td>
+      <td>3670</td>
+      <td>5303</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.906579</td>
+      <td>1.746620</td>
+      <td>0.749327</td>
+    </tr>
+  </tbody>
+</table>
+</div></div><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>training size : 144, testing size : 0
+THE BENCHMARK EVALUATION FOR TONGA 
+
+STARTED TO CONDUCT STEPWISE SEARCHING FOR TONGA 
+
+                                      SARIMAX Results                                      
+===========================================================================================
+Dep. Variable:                                   y   No. Observations:                  144
+Model:             SARIMAX(0, 0, 1)x(2, 0, [], 12)   Log Likelihood                -196.126
+Date:                             Wed, 14 Jun 2023   AIC                            406.251
+Time:                                     16:17:52   BIC                            427.040
+Sample:                                          0   HQIC                           414.699
+                                             - 144                                         
+Covariance Type:                               opg                                         
+====================================================================================
+                       coef    std err          z      P&gt;|z|      [0.025      0.975]
+------------------------------------------------------------------------------------
+covid               -4.4685      0.936     -4.775      0.000      -6.303      -2.634
+stringency_index    -0.0572      0.020     -2.866      0.004      -0.096      -0.018
+tonga_travel        -0.3096      0.880     -0.352      0.725      -2.034       1.414
+ma.L1                0.2152      0.056      3.831      0.000       0.105       0.325
+ar.S.L12             0.2147      0.054      3.988      0.000       0.109       0.320
+ar.S.L24             0.2993      0.058      5.150      0.000       0.185       0.413
+sigma2               0.8666      0.036     24.334      0.000       0.797       0.936
+===================================================================================
+Ljung-Box (L1) (Q):                   0.00   Jarque-Bera (JB):             10347.59
+Prob(Q):                              0.96   Prob(JB):                         0.00
+Heteroskedasticity (H):               6.03   Skew:                             4.58
+Prob(H) (two-sided):                  0.00   Kurtosis:                        43.51
+===================================================================================
+
+Warnings:
+[1] Covariance matrix calculated using the outer product of gradients (complex-step).
+</pre></div>
+</div>
+<img alt="../_images/99ac3f3d294f63729539c4e7b77f91adf412168c51ed431f0c85a0c6537b1180.png" src="../_images/99ac3f3d294f63729539c4e7b77f91adf412168c51ed431f0c85a0c6537b1180.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>STARTED TO CONDUCT GRID SEARCHING FOR TONGA 
+
+STARTED TO CONDUCT CROSS-VALIDATION FOR TONGA 
+
+Best Models from Cross-validation is  ARIMA(0,0,1)(0,1,1)[12] intercept 
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>MSE</th>
+      <th>RMSE</th>
+      <th>MAE</th>
+      <th>SMAPE</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>naive</th>
+      <td>2.543522e+06</td>
+      <td>1594.842251</td>
+      <td>1043.874126</td>
+      <td>35.445486</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>4.529700e+06</td>
+      <td>2128.309258</td>
+      <td>1637.978395</td>
+      <td>53.528230</td>
+    </tr>
+    <tr>
+      <th>seasonal naive</th>
+      <td>4.760284e+06</td>
+      <td>2181.807619</td>
+      <td>1256.819444</td>
+      <td>53.730230</td>
+    </tr>
+    <tr>
+      <th>SARIMAX</th>
+      <td>7.153640e+05</td>
+      <td>845.791954</td>
+      <td>556.793463</td>
+      <td>30.118200</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./tourism"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="utsa.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Individual forecasts</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="mtsa_var.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">VAR</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By World Bank
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="last-updated">
+  Last updated on Sep 05, 2026.
+  <br/>
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
