@@ -114,7 +114,7 @@ _TOPIC_SECTIONS = [
     # these sections is collapsed on every tracker: they are context for a lens,
     # never the lens itself.
     (
-        "Development · People",
+        "People",
         [
             "dev_health_nutrition",
             "dev_education_skills",
@@ -123,7 +123,7 @@ _TOPIC_SECTIONS = [
         ],
     ),
     (
-        "Development · Prosperity",
+        "Prosperity",
         [
             "dev_macro_growth",
             "dev_inflation_cost_of_living",
@@ -134,7 +134,7 @@ _TOPIC_SECTIONS = [
         ],
     ),
     (
-        "Development · Planet",
+        "Planet",
         [
             "dev_food_security",
             "dev_agriculture_rural",
@@ -144,20 +144,20 @@ _TOPIC_SECTIONS = [
         ],
     ),
     (
-        "Development · Infrastructure",
+        "Infrastructure",
         [
             "dev_energy_extractives",
             "dev_transport_urban",
         ],
     ),
     (
-        "Development · Digital",
+        "Digital",
         [
             "dev_digital_technology",
         ],
     ),
     (
-        "Development · Cross-Cutting",
+        "Cross-Cutting",
         [
             "dev_governance_justice",
             "dev_fragility_conflict",
