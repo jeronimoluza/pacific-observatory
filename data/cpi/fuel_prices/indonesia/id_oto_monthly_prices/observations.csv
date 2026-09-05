@@ -1582,3 +1582,28 @@ observation_date,country,subnational_area,city,address,fuel_product,price_local,
 2025-07-29,Indonesia,National,,,Pertalite,10000.0,IDR,L,id_oto_monthly_prices,2026-03-06T20:31:38,42ff6c6db25a0972cae9297e0348682c0718128d567cba9e44f39af2f32e1fcf
 2025-07-30,Indonesia,National,,,Pertalite,10000.0,IDR,L,id_oto_monthly_prices,2026-03-06T20:31:38,3c0eb7a0d5fe019d0d23f1e57007136997c36231ee0c4edb016d60244b4a0b65
 2025-07-31,Indonesia,National,,,Pertalite,10000.0,IDR,L,id_oto_monthly_prices,2026-03-06T20:31:38,73b687d7b2913b763deaca404088313aede6e9dcd291278e43ee6b83fcc84e48
+2026-04-01,Indonesia,National,,,Pertalite,10000.0,IDR,L,id_oto_monthly_prices,2026-04-03T12:42:32Z,0629991ec4334537a1df6c1ae1c6c8094dc65084b6120721daeac50ba1f993b1
+2026-04-01,Indonesia,National,,,Pertamax Turbo,13100.0,IDR,L,id_oto_monthly_prices,2026-04-03T12:42:32Z,727273bddd45cddc2e792de9cfacdadcb072cfac7800c1cff2eedc46646662b4
+2026-04-01,Indonesia,National,,,Pertamax,12300.0,IDR,L,id_oto_monthly_prices,2026-04-03T12:42:32Z,e633e9bc59c5787bbea0e4084c44a2cd8bf4048d19ec83e60d2262c4fa25b68c
+2026-04-01,Indonesia,National,,,Dexlite,14200.0,IDR,L,id_oto_monthly_prices,2026-04-03T12:42:32Z,1417839862ff57fc3cf706d46fdb0d108ba70aa408894f1ad1fa4820d95a8894
+2026-04-01,Indonesia,National,,,Pertamina Dex,14500.0,IDR,L,id_oto_monthly_prices,2026-04-03T12:42:32Z,f079428a6491539836dc34686566a39750b86b1be7aebdbe1bd4ad66a7756f39
+2026-05-01,Indonesia,National,,,Pertalite,10000.0,IDR,L,id_oto_monthly_prices,2026-05-01T14:58:22Z,7f2d820b5aaa521fe688b19c16f888c3be8369fa94d8328cdd171b62911bd0df
+2026-05-01,Indonesia,National,,,Pertamax Turbo,13100.0,IDR,L,id_oto_monthly_prices,2026-05-01T14:58:22Z,6df738e5c7f5e6fef9bd6fb724db957ff51f374025819f815b07b3788ac86298
+2026-05-01,Indonesia,National,,,Pertamax,12300.0,IDR,L,id_oto_monthly_prices,2026-05-01T14:58:22Z,58cc6be61d6bc8985807d9f708f6993cdc0e881abf3fcadae06ed88b0f42f727
+2026-05-01,Indonesia,National,,,Dexlite,14200.0,IDR,L,id_oto_monthly_prices,2026-05-01T14:58:22Z,9c605ce1a14eb0e02de4de443f6c286194654e2e540ad46a37c0e5f6450cf96e
+2026-05-01,Indonesia,National,,,Pertamina Dex,14500.0,IDR,L,id_oto_monthly_prices,2026-05-01T14:58:22Z,5805f302ad6c1e4a6384e7559e297ecc59147d36a0e4e79683a338a8fc6a4ddf
+2026-06-01,Indonesia,National,,,Pertalite,10000.0,IDR,L,id_oto_monthly_prices,2026-06-22T20:37:50Z,310739d0c9273699d2379ebaeb1503e3fc7fc4cb2efc24c26fa3d1cc8cabd551
+2026-06-01,Indonesia,National,,,Pertamax Turbo,13100.0,IDR,L,id_oto_monthly_prices,2026-06-22T20:37:50Z,dd4133ac4b276524ffb253b4d2a9d188cf7972a7a97d181bf48042d1d3d2fcde
+2026-06-01,Indonesia,National,,,Pertamax,12300.0,IDR,L,id_oto_monthly_prices,2026-06-22T20:37:50Z,51da079b30f4b79ac7bdaf3d4055b5cc275ecaf9886744d35cbbfaf5dfc068f2
+2026-06-01,Indonesia,National,,,Dexlite,14200.0,IDR,L,id_oto_monthly_prices,2026-06-22T20:37:50Z,682fa7c982594902863c310de84faffde6899d734ea9e662559d5038d346e04e
+2026-06-01,Indonesia,National,,,Pertamina Dex,14500.0,IDR,L,id_oto_monthly_prices,2026-06-22T20:37:50Z,2735c1b36173328d2773de2da3b6d9fbd954e8d0db97b50b1f9a942aa37a2d9c
+2026-07-01,Indonesia,National,,,Pertalite,10000.0,IDR,L,id_oto_monthly_prices,2026-07-06T13:45:26Z,bd3cf569c555c9fa7c481503c77e051aea8576b7377f4127327120ac5425c739
+2026-07-01,Indonesia,National,,,Pertamax Turbo,13100.0,IDR,L,id_oto_monthly_prices,2026-07-06T13:45:26Z,27a772d67a507b96495ce3b7bd50ff207b89db709dbe02447e879fe499de9cbc
+2026-07-01,Indonesia,National,,,Pertamax,12300.0,IDR,L,id_oto_monthly_prices,2026-07-06T13:45:26Z,9d6ebec54c52437b08e266985804a3aac02e0405e1bf001e146de7b5b5d3ba56
+2026-07-01,Indonesia,National,,,Dexlite,14200.0,IDR,L,id_oto_monthly_prices,2026-07-06T13:45:26Z,f5358c95fe8be04b5c0b7b2d6f70a39c321468b30f2e04702d34d8e35eaf1663
+2026-07-01,Indonesia,National,,,Pertamina Dex,14500.0,IDR,L,id_oto_monthly_prices,2026-07-06T13:45:26Z,ddf8c9fc9e63e62fce3c85b618e37a5bd146eb8f9b4b98180d8ac04ff0fa4420
+2026-08-01,Indonesia,National,,,Pertalite,10000.0,IDR,L,id_oto_monthly_prices,2026-08-24T14:26:36Z,5535b2ecd2b79b121d190bf188acaff2b9c4b7ef6205aa6d852d2bb2d9cdad9d
+2026-08-01,Indonesia,National,,,Pertamax Turbo,13100.0,IDR,L,id_oto_monthly_prices,2026-08-24T14:26:36Z,690e37c895850ee4478bf20cd687cfa87f507f9e70d11f65e5c1f87fe6336c05
+2026-08-01,Indonesia,National,,,Pertamax,12300.0,IDR,L,id_oto_monthly_prices,2026-08-24T14:26:36Z,7669512eb60b3f2c1c2c1e9f6300e8b66640ba9a2b18ced8d68f9a7fabdc8f84
+2026-08-01,Indonesia,National,,,Dexlite,14200.0,IDR,L,id_oto_monthly_prices,2026-08-24T14:26:36Z,e8a3c0e0e2296d16cce3d6575b526a35407b3ab53880fb330ea9de7b1f661de5
+2026-08-01,Indonesia,National,,,Pertamina Dex,14500.0,IDR,L,id_oto_monthly_prices,2026-08-24T14:26:36Z,5b9445e212a1118e68fcf842bfccf01695a512a9d486449eafe572266afe1410

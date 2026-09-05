@@ -1,16 +1,17 @@
-.PHONY: help test test-unit test-integration docs clean
+.PHONY: help test test-all test-unit test-integration docs clean
 
-# Environment setup for module imports
-export PYTHONPATH := src
+# Environment setup for mixed import styles in tests and scripts
+export PYTHONPATH := .:src
 
 # Default target
 help:
 	@echo "Pacific Observatory - Development Commands"
 	@echo ""
 	@echo "Testing:"
-	@echo "  make test              Run all tests"
+	@echo "  make test              Run the default unit suite"
+	@echo "  make test-all          Run the full test suite"
 	@echo "  make test-unit         Run unit tests only"
-	@echo "  make test-integration  Run integration tests only"
+	@echo "  make test-integration  Run non-unit tests"
 	@echo "  make test-cov          Run tests with coverage report"
 	@echo ""
 	@echo "Documentation:"
@@ -30,13 +31,16 @@ help:
 # =============================================================================
 
 test:
+	poetry run pytest tests/unit -v
+
+test-all:
 	poetry run pytest tests/ -v
 
 test-unit:
 	poetry run pytest tests/unit -v
 
 test-integration:
-	poetry run pytest tests/integration -v --tb=short
+	poetry run pytest tests/ --ignore=tests/unit -v --tb=short
 
 test-cov:
 	poetry run pytest tests/ --cov=src/text --cov-report=html --cov-report=term-missing

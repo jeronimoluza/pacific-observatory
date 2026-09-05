@@ -63,6 +63,25 @@ _TITLE_MONTH_YEAR_RE = re.compile(
 
 _NUM_RE = re.compile(r"\b\d{2,3}\.\d{1,2}\b")
 
+# Prose markers found in MTED press-release narrative (page 1 of multi-page
+# notices). Lines containing any of these must NEVER be treated as a price-table
+# row, even if they happen to mention an area name like "Tongatapu".
+_PROSE_RE = re.compile(
+    r"\b(increase|seniti/litre|wholesale|retail prices|equivalent to)\b|%",
+    re.IGNORECASE,
+)
+
+# Table-row anchors used by MTED notifications.
+#   - "PRICES FOR <AREA>"          (English notices; OCR sometimes drops the
+#                                    space and yields "PRICESFOR")
+#   - "TOTONGI 'A <AREA>"          (Tongan notices — various apostrophe forms)
+_ROW_ANCHOR_RE = re.compile(
+    # Trailing boundary on "FOR" omitted on purpose — OCR collapses spaces and
+    # produces tokens like "PRICESFORVAVA'U".
+    r"\bPRICES\s*FOR|\bTOTONGI\b",
+    re.IGNORECASE,
+)
+
 _AREAS: list[tuple[str, re.Pattern]] = [
     ("Tongatapu", re.compile(r"\bTONGATAPU\b", re.IGNORECASE)),
     ("Eua", re.compile(r"\b(?:'|\u2018|\u2019)?EUA\b", re.IGNORECASE)),
@@ -130,22 +149,44 @@ def _extract_pdf_urls_from_html(html: str) -> list[str]:
 
 
 def _pick_petroleum_notice_pdf(pdf_urls: list[str]) -> str | None:
+    """Pick the PDF most likely to contain the price tables.
+
+    MTED posts often attach BOTH a narrative press release AND a separate
+    notification PDF that carries the actual "PRICES FOR <AREA>" tables.
+    Strongly prefer the notification and exclude press releases when any
+    other candidate exists.
+    """
     if not pdf_urls:
         return None
+
+    pool = [u for u in pdf_urls if "press-release" not in u.lower()]
+    if not pool:
+        pool = pdf_urls
+
     preferred = [
         "notification-petroleum-prices",
         "notification-petroleum",
+        "notification",  # e.g. "Notification-New-April-Oil-Prices-2026.pdf"
         "petroleum-price",
+        "oil-price",
         "petroleum",
+        "oil",
     ]
     for pref in preferred:
-        for u in pdf_urls:
+        for u in pool:
             if pref in u.lower():
                 return u
-    return pdf_urls[0]
+    return pool[0]
 
 
-def _ocr_pdf_first_page(pdf_bytes: bytes, tmp_dir: Path) -> str:
+def _ocr_pdf_all_pages(pdf_bytes: bytes, tmp_dir: Path) -> str:
+    """OCR every page of the PDF and return the concatenated text.
+
+    MTED price notices have evolved from single-page tables to multi-page
+    documents that prepend a press-release narrative — the actual
+    "PRICES FOR <area>" tables now live on pages 2–3. Rendering only page 1
+    silently dropped the data.
+    """
     try:
         import pdfplumber
     except Exception as e:
@@ -153,29 +194,40 @@ def _ocr_pdf_first_page(pdf_bytes: bytes, tmp_dir: Path) -> str:
 
     tmp_dir.mkdir(exist_ok=True)
     pdf_path = tmp_dir / "to_mted_notice.pdf"
-    img_path = tmp_dir / "to_mted_notice.png"
-    out_stem = tmp_dir / "to_mted_notice_ocr"
     pdf_path.write_bytes(pdf_bytes)
 
+    parts: list[str] = []
     with pdfplumber.open(str(pdf_path)) as pdf:
-        if not pdf.pages:
-            return ""
-        page = pdf.pages[0]
-        page.to_image(resolution=260).save(str(img_path), format="PNG")
+        for i, page in enumerate(pdf.pages):
+            img_path = tmp_dir / f"to_mted_notice_p{i}.png"
+            out_stem = tmp_dir / f"to_mted_notice_p{i}_ocr"
+            page.to_image(resolution=260).save(str(img_path), format="PNG")
 
-    result = subprocess.run(
-        [_TESSERACT_BIN, str(img_path), str(out_stem), "-l", "eng", "--psm", "6"],
-        capture_output=True,
-        timeout=45,
-    )
-    if result.returncode != 0:
-        stderr = result.stderr.decode("utf-8", errors="replace")[:200]
-        raise RuntimeError(f"Tesseract failed: {stderr}")
+            result = subprocess.run(
+                [
+                    _TESSERACT_BIN,
+                    str(img_path),
+                    str(out_stem),
+                    "-l",
+                    "eng",
+                    "--psm",
+                    "6",
+                ],
+                capture_output=True,
+                timeout=45,
+            )
+            if result.returncode != 0:
+                stderr = result.stderr.decode("utf-8", errors="replace")[:200]
+                print(f"  [to_mted] Tesseract failed on page {i + 1}: {stderr}")
+                continue
 
-    txt_path = Path(str(out_stem) + ".txt")
-    if not txt_path.exists():
-        return ""
-    return txt_path.read_text(encoding="utf-8", errors="replace")
+            txt_path = Path(str(out_stem) + ".txt")
+            if not txt_path.exists():
+                continue
+            page_text = txt_path.read_text(encoding="utf-8", errors="replace")
+            parts.append(f"--- PAGE {i + 1} ---\n{page_text}")
+
+    return "\n\n".join(parts)
 
 
 def _parse_prices_from_ocr(ocr_text: str) -> dict[str, tuple[float, float, float]]:
@@ -184,49 +236,83 @@ def _parse_prices_from_ocr(ocr_text: str) -> dict[str, tuple[float, float, float
         return {}
 
     lines = [ln.strip() for ln in (ocr_text or "").splitlines() if ln.strip()]
-    # Join adjacent lines to mitigate OCR line breaks.
+
+    # OCR commonly splits a single table row across 2-3 lines: an anchor line
+    # ("PRICES FOR <AREA> via" or "TOTONGI 'A <AREA>"), zero or more garbage
+    # continuation lines, and a numeric line with the prices. Walk forward and
+    # join an anchor line with subsequent lines until we hit one that contains
+    # numbers (or until we hit the next anchor / a hard boundary).
     joined: list[str] = []
-    buf = ""
-    for ln in lines:
-        if (
-            buf
-            and ("PRICES FOR" in buf.upper())
-            and not _NUM_RE.search(buf)
-            and _NUM_RE.search(ln)
-        ):
-            buf = buf + " " + ln
-            joined.append(buf)
-            buf = ""
-            continue
-        if "PRICES FOR" in ln.upper() and buf:
-            joined.append(buf)
+    i = 0
+    n = len(lines)
+    while i < n:
+        ln = lines[i]
+        if _ROW_ANCHOR_RE.search(ln) and not _NUM_RE.search(ln):
             buf = ln
+            j = i + 1
+            while j < n and j - i <= 4:
+                nxt = lines[j]
+                if _ROW_ANCHOR_RE.search(nxt):
+                    break
+                buf = buf + " " + nxt
+                if _NUM_RE.search(nxt):
+                    j += 1
+                    break
+                j += 1
+            joined.append(buf)
+            i = j
             continue
-        if buf:
-            # keep short spillovers for rows
-            if _NUM_RE.search(ln) and _NUM_RE.search(buf) is None and len(buf) < 120:
-                buf = buf + " " + ln
-                joined.append(buf)
-                buf = ""
-                continue
         joined.append(ln)
-    if buf:
-        joined.append(buf)
+        i += 1
 
     results: dict[str, tuple[float, float, float]] = {}
     for ln in joined:
-        if "PRICES FOR" not in ln.upper() and "TONGATAPU" not in ln.upper():
+        # Only true table rows are anchored by an English ("PRICES FOR") or
+        # Tongan ("TOTONGI") header — never prose.
+        if not _ROW_ANCHOR_RE.search(ln):
             continue
+        # Reject prose lines that happen to mention an area name (e.g. April
+        # 2026 press-release: "Tongatapu wholesale prices ... will increase by
+        # 64.04 seniti/litre, 130.23 ..., and 132.89").
+        if _PROSE_RE.search(ln):
+            continue
+        # Normalize OCR quirks before area matching:
+        #   - Reinsert spaces around "FOR" ("PRICESFORVAVA'U").
+        #   - Collapse underscores/trailing punctuation to spaces so area
+        #     regex word boundaries fire on the closing `U`/`I` etc.
+        #   - Convert decimal commas between digits to dots ("315,00" → "315.00").
+        ln_norm = re.sub(r"PRICES\s*FOR\s*", " PRICES FOR ", ln, flags=re.IGNORECASE)
+        ln_norm = re.sub(r"_+", " ", ln_norm)
+        ln_norm = re.sub(r"(\d),(\d)", r"\1.\2", ln_norm)
+
+        # The notifications list village-level rows as
+        #   "PRICES FOR <VILLAGE> via <MAIN_AREA>" (English) or
+        #   "TOTONGI 'A <VILLAGE> MEI <MAIN_AREA>" (Tongan).
+        # These must NOT be assigned to <MAIN_AREA> — their real area is the
+        # village (which isn't in our 6-area schema). Match the area only in
+        # the segment BEFORE any "via <X>" / "MEI <X>" route waypoint.
+        row_area_segment = re.split(
+            r"\b(?:via|MEI)\b", ln_norm, maxsplit=1, flags=re.IGNORECASE
+        )[0]
+
         area_name = None
         for name, are_re in _AREAS:
-            if are_re.search(ln):
+            if are_re.search(row_area_segment):
                 area_name = name
                 break
         if not area_name:
             continue
 
-        nums = [float(x) for x in _NUM_RE.findall(ln.replace(",", " "))]
-        if len(nums) < 3:
+        # First-match wins: do not let a later "PRICES FOR NIUATOPUTAPU via
+        # VAVA'U" row overwrite the earlier primary row for NIUATOPUTAPU.
+        if area_name in results:
+            continue
+
+        nums = [float(x) for x in _NUM_RE.findall(ln_norm.replace(",", " "))]
+        # Real notification rows always have ≥4 numeric columns
+        # (wholesale + 3 retail at minimum); reject anything shorter to keep
+        # stray sentences from sneaking through.
+        if len(nums) < 4:
             continue
 
         # Use the last three columns (typically max retail prices incl. tax): PMS, DPK, ADO.
@@ -330,7 +416,7 @@ def fetch_to_mted_petroleum_prices(cutoff: date) -> pd.DataFrame:
             continue
 
         try:
-            ocr_text = _ocr_pdf_first_page(pdf_resp.content, tmp_dir)
+            ocr_text = _ocr_pdf_all_pages(pdf_resp.content, tmp_dir)
         except Exception as e:
             print(f"  [to_mted] OCR failed: {e}")
             continue
@@ -377,12 +463,10 @@ def fetch_to_mted_petroleum_prices(cutoff: date) -> pd.DataFrame:
 
         time.sleep(0.3)
 
-    try:
-        # keep tmp dir only if empty
-        if tmp_dir.exists() and not any(tmp_dir.iterdir()):
-            tmp_dir.rmdir()
-    except Exception:
-        pass
+    # Always wipe the tmp workdir; pdfplumber + per-page Tesseract leave
+    # PDF/PNG/TXT artifacts that the previous "rmdir if empty" guard never
+    # cleaned up.
+    shutil.rmtree(tmp_dir, ignore_errors=True)
 
     print(f"  [to_mted] {len(all_rows)} rows fetched (cutoff {cutoff})")
     return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()

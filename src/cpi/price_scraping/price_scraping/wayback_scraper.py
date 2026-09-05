@@ -8,7 +8,8 @@ import json
 import logging
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, Dict, List, Any
+from typing import Optional, Dict, List, Any, Tuple
+from urllib.parse import urlparse
 import hashlib
 import threading
 import queue
@@ -20,6 +21,7 @@ from bs4 import BeautifulSoup
 from tqdm import tqdm
 
 from .selectors import get_selectors, extract_with_fallback
+from .wayback_url_keys import get_key_extractor
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +61,9 @@ class WaybackScraper:
         self.selectors = get_selectors(spider_name)
         self.scraped_at = datetime.now().isoformat()
         self._file_write_lock = threading.Lock()  # Lock for thread-safe file writing
+        # Per-spider URL key extractor for prefix-mode matching. None = fall
+        # back to lowercase + strip-trailing-slash (usually low match rate).
+        self.url_key_extractor = get_key_extractor(spider_name)
 
     def _get_url_hash(self, url: str) -> str:
         """Generate hash for URL."""
@@ -174,6 +179,141 @@ class WaybackScraper:
                 extracted[field] = value
 
         return extracted
+
+    @staticmethod
+    def _normalize_url(url: str) -> str:
+        """Lowercase + strip trailing slash. Used to match CDX results to input URLs."""
+        return url.lower().rstrip("/")
+
+    def _make_match_key(self, url: str) -> Optional[str]:
+        """Return the matching key for a URL. Uses the per-spider extractor
+        when registered, else falls back to lowercase + strip-trailing-slash.
+
+        Returning None signals "this URL is not a product detail page" — the
+        caller skips it during prefix-mode index building/matching.
+        """
+        if self.url_key_extractor is not None:
+            return self.url_key_extractor(url)
+        return self._normalize_url(url)
+
+    @staticmethod
+    def _extract_prefix(url: str) -> Optional[str]:
+        """Return '<scheme>://<host>/' for a URL, or None if unparseable."""
+        try:
+            p = urlparse(url)
+            if not p.scheme or not p.netloc:
+                return None
+            return f"{p.scheme}://{p.netloc.lower()}/"
+        except Exception:
+            return None
+
+    def _fetch_prefix_snapshots(self, prefix: str) -> Dict[str, List[Tuple[str, str]]]:
+        """
+        Fetch all archived URLs under a domain prefix in a single CDX call.
+
+        Replaces N per-URL CDX queries with one prefix query. Returns
+        {normalized_url: [(timestamp, original_url), ...]}.
+
+        Retries up to 3 times on transient parse/network failures with a 30s
+        backoff. Raises WaybackFetchError only after all retries fail (so the
+        caller can bail without poisoning the resume cache).
+        """
+        cdx_url = (
+            f"https://web.archive.org/cdx/search/cdx?url={prefix}"
+            "&matchType=prefix&output=json&filter=statuscode:200&sort=timestamp"
+        )
+        if self.from_date:
+            cdx_url += f"&to={self.from_date.replace('-', '')}"
+        if self.since_date:
+            cdx_url += f"&from={self.since_date.replace('-', '')}"
+
+        max_attempts = 3
+        last_err: Optional[str] = None
+        for attempt in range(1, max_attempts + 1):
+            try:
+                result = subprocess.run(
+                    [
+                        "curl",
+                        "-s",
+                        "--connect-timeout",
+                        "240",
+                        "--max-time",
+                        "1800",
+                        "--retry",
+                        "6",
+                        "--retry-delay",
+                        "60",
+                        "--retry-max-time",
+                        "1800",
+                        "--retry-connrefused",
+                        "--retry-all-errors",
+                        cdx_url,
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=2000,
+                )
+            except subprocess.TimeoutExpired:
+                last_err = "curl timeout"
+            except Exception as e:
+                last_err = f"unexpected curl error: {e}"
+            else:
+                if result.returncode != 0:
+                    last_err = (
+                        f"curl exit {result.returncode}: {result.stderr.strip()[:200]}"
+                    )
+                else:
+                    body = result.stdout.strip()
+                    # Curl's internal retry can concatenate a transient 503
+                    # HTML page with the eventual successful CDX JSON. If the
+                    # body contains valid CDX JSON anywhere after an HTML
+                    # prefix, slice from the JSON start. Otherwise fall through
+                    # to JSONDecodeError handling.
+                    if body and body[0] != "[":
+                        json_start = body.find("[[")
+                        if json_start > 0:
+                            body = body[json_start:]
+                    if not body or body == "[]":
+                        return {}
+                    try:
+                        data = json.loads(body)
+                    except json.JSONDecodeError as e:
+                        last_err = f"non-JSON body (preview={body[:120]!r}): {e}"
+                    else:
+                        if not data or len(data) < 2:
+                            return {}
+                        header = data[0]
+                        try:
+                            ts_idx = header.index("timestamp")
+                            orig_idx = header.index("original")
+                        except ValueError:
+                            raise WaybackFetchError(
+                                f"prefix CDX missing expected columns for {prefix}: "
+                                f"header={header!r}"
+                            )
+
+                        index: Dict[str, List[Tuple[str, str]]] = {}
+                        for row in data[1:]:
+                            if len(row) <= max(ts_idx, orig_idx):
+                                continue
+                            timestamp = row[ts_idx]
+                            original_url = row[orig_idx]
+                            key = self._make_match_key(original_url)
+                            if key is None:
+                                continue
+                            index.setdefault(key, []).append((timestamp, original_url))
+                        return index
+
+            logger.warning(
+                f"Prefix CDX attempt {attempt}/{max_attempts} failed for {prefix}: "
+                f"{last_err}"
+            )
+            if attempt < max_attempts:
+                time.sleep(30)
+
+        raise WaybackFetchError(
+            f"prefix CDX failed after {max_attempts} attempts for {prefix}: {last_err}"
+        )
 
     def _fetch_wayback_snapshots(self, url: str) -> List[str]:
         """
@@ -612,24 +752,85 @@ class WaybackScraper:
             logger.info("No new URLs to scrape")
             return stats
 
-        # Create queues for inter-thread communication
-        snapshot_queue = queue.Queue()  # Input queue for snapshot fetcher
-        parse_queue = queue.Queue()  # Output from fetcher, input to parser
-
-        # Start snapshot fetcher threads
-        pbar_fetch = tqdm(total=len(items_to_scrape), desc="Fetching snapshots")
-        fetcher_threads = []
-        for _ in range(num_fetcher_workers):
-            fetcher_thread = threading.Thread(
-                target=self._snapshot_fetcher_worker,
-                args=(snapshot_queue, parse_queue, country, pbar_fetch),
-                daemon=True,
+        # ------------------------------------------------------------------
+        # Prefix CDX preflight: one query per unique host returns ALL archived
+        # URLs under that host. Replaces N per-URL CDX calls with a few
+        # bulk calls. Zero-coverage retailers exit in seconds instead of hours.
+        # Matching key: per-spider extractor (preferred) → falls back to
+        # lowercase + strip-trailing-slash, which usually fails for retailers
+        # whose archived URLs differ in scheme/www/.html/query string.
+        # ------------------------------------------------------------------
+        if self.url_key_extractor is None:
+            logger.warning(
+                f"No wayback URL key extractor registered for spider "
+                f"'{self.spider_name}' — falling back to strict URL matching, "
+                f"match rate will likely be low. Register one in "
+                f"price_scraping/wayback_url_keys.py to recover historical data."
             )
-            fetcher_thread.start()
-            fetcher_threads.append(fetcher_thread)
+
+        prefixes = sorted(
+            {p for p in (self._extract_prefix(u) for u, _ in items_to_scrape) if p}
+        )
+        logger.info(
+            f"Prefix CDX preflight: {len(prefixes)} unique prefix(es) "
+            f"for {len(items_to_scrape)} URLs"
+        )
+
+        prefix_index: Dict[str, List[Tuple[str, str]]] = {}
+        for prefix in prefixes:
+            try:
+                idx = self._fetch_prefix_snapshots(prefix)
+            except WaybackFetchError as e:
+                logger.warning(f"Prefix CDX failed for {prefix}: {e}")
+                continue
+            prefix_index.update(idx)
+            logger.info(
+                f"Prefix {prefix}: {len(idx)} unique product keys (after extractor)"
+            )
+
+        if not prefix_index:
+            logger.info(
+                "Prefix CDX returned 0 archived product URLs — no IA coverage "
+                "for this retailer (or the key extractor is too strict). "
+                "Skipping per-URL fetch."
+            )
+            return stats
+
+        # Map input URLs to snapshots via the prefix index. Save snapshot
+        # files for both matches and misses so resume runs skip them.
+        parse_queue: queue.Queue = queue.Queue()
+        matched_count = 0
+        missed_count = 0
+        for url, url_hash in items_to_scrape:
+            key = self._make_match_key(url)
+            entries = prefix_index.get(key, []) if key is not None else []
+            # Dedup by timestamp, preserve order
+            seen_ts = set()
+            snapshots: List[str] = []
+            for ts, original_url in entries:
+                if ts in seen_ts:
+                    continue
+                seen_ts.add(ts)
+                snapshots.append(f"https://web.archive.org/web/{ts}/{original_url}")
+
+            self._save_snapshots(url_hash, snapshots, country)
+            if snapshots:
+                parse_queue.put((url_hash, snapshots))
+                matched_count += 1
+            else:
+                missed_count += 1
+
+        logger.info(
+            f"Prefix index match: {matched_count} URLs have snapshots, "
+            f"{missed_count} have no IA coverage"
+        )
+
+        if matched_count == 0:
+            logger.info("No input URLs matched the prefix index — nothing to parse.")
+            return stats
 
         # Start parser worker threads
-        pbar_parse = tqdm(total=len(items_to_scrape), desc="Parsing snapshots")
+        pbar_parse = tqdm(total=matched_count, desc="Parsing snapshots")
         parser_threads = []
         for _ in range(num_parser_workers):
             parser_thread = threading.Thread(
@@ -640,14 +841,6 @@ class WaybackScraper:
             parser_thread.start()
             parser_threads.append(parser_thread)
 
-        # Feed URLs to snapshot fetcher
-        for url, url_hash in items_to_scrape:
-            snapshot_queue.put((url, url_hash))
-
-        # Wait for snapshot fetcher to finish
-        snapshot_queue.join()
-        pbar_fetch.close()
-
         # Send sentinel values to stop parser workers
         for _ in range(num_parser_workers):
             parse_queue.put(None)
@@ -657,14 +850,9 @@ class WaybackScraper:
             parser_thread.join()
         pbar_parse.close()
 
-        # Send sentinels to stop all fetcher workers
-        for _ in range(num_fetcher_workers):
-            snapshot_queue.put((None, None))
-        for t in fetcher_threads:
-            t.join()
-
         logger.info(
-            f"Scraping completed: {stats['successful_scrapes']} successful, {stats['failed_scrapes']} failed, {stats['total_snapshots']} total snapshots"
+            f"Scraping completed: {stats['successful_scrapes']} successful, "
+            f"{stats['failed_scrapes']} failed, {stats['total_snapshots']} total snapshots"
         )
 
         return stats

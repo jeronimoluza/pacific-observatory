@@ -1,5 +1,7 @@
 """Tests for the simplified fuel pipeline (process.py)."""
 
+from datetime import date
+import os
 from pathlib import Path
 import sys
 
@@ -147,3 +149,39 @@ def test_frame_to_country_series_groups_by_country():
     assert "Singapore" in series
     assert len(series["Malaysia"]) == 1
     assert series["Malaysia"][0]["price_local"] == 2.05
+
+
+def test_build_enriched_frame_refreshes_stale_state_controlled_cache(
+    tmp_path, monkeypatch
+):
+    from cpi.fuel_prices import process
+
+    staged_dir = tmp_path / "staged"
+    monkeypatch.setattr(process, "STAGED_DATA_DIR", staged_dir)
+
+    _write_malaysia_obs(tmp_path, [_fuel_row(observation_date="2026-01-01")])
+
+    monkeypatch.setattr(process, "_today", lambda: date(2026, 1, 1))
+    initial = process.build_enriched_frame(collect_dir=tmp_path, incremental=False)
+
+    enriched_path = staged_dir / "enrich" / "retail_series_enriched.csv"
+    enriched_path.parent.mkdir(parents=True, exist_ok=True)
+    initial.to_csv(enriched_path, index=False)
+
+    newer = enriched_path.stat().st_mtime + 10
+    os.utime(enriched_path, (newer, newer))
+    older = newer - 20
+    source_path = tmp_path / "malaysia" / "my_mof_weekly_petroleum" / "observations.csv"
+    os.utime(source_path, (older, older))
+
+    monkeypatch.setattr(process, "_today", lambda: date(2026, 1, 3))
+    refreshed = process.build_enriched_frame(collect_dir=tmp_path, incremental=True)
+
+    malaysia = refreshed[refreshed["country"] == "Malaysia"].sort_values(
+        "observation_date"
+    )
+    assert malaysia["observation_date"].dt.strftime("%Y-%m-%d").tolist() == [
+        "2026-01-01",
+        "2026-01-02",
+        "2026-01-03",
+    ]

@@ -8,15 +8,12 @@ from datetime import date
 from .collect.pipeline import run_collection
 from .constants import DATA_DIR, FETCH_STATE_JSON, STAGED_DATA_DIR
 
-_CADENCE_CHOICES = ["daily", "weekly", "monthly", "quarterly", "irregular", "manual"]
-
 
 def _cmd_fetch(args) -> None:
     """Fetch new data from one or all configured fuel sources."""
     if getattr(args, "status", False):
         _print_status(
             prune_orphans=getattr(args, "prune_orphans", False),
-            force=getattr(args, "force", False),
         )
         return
 
@@ -24,13 +21,11 @@ def _cmd_fetch(args) -> None:
         source_key=getattr(args, "source", None),
         observations_base_dir=DATA_DIR,
         fetch_state_path=FETCH_STATE_JSON,
-        cadence_filter=getattr(args, "cadence", None),
-        force=getattr(args, "force", False),
         rebuild=getattr(args, "rebuild", False),
     )
 
 
-def _print_status(prune_orphans: bool = False, force: bool = False) -> None:
+def _print_status(prune_orphans: bool = False) -> None:
     """Print a source health table and optionally prune orphaned state entries."""
     from .fetchers import FETCHER_REGISTRY
     from .loader import read_fetch_state, write_fetch_state
@@ -112,15 +107,14 @@ def _print_status(prune_orphans: bool = False, force: bool = False) -> None:
             print(f"  {k:<{col_key}} last_data_date={last_date}")
 
         if prune_orphans:
-            if not force:
-                answer = (
-                    input(f"\nRemove {len(orphaned)} orphaned entries? [y/N] ")
-                    .strip()
-                    .lower()
-                )
-                if answer != "y":
-                    print("Aborted.")
-                    return
+            answer = (
+                input(f"\nRemove {len(orphaned)} orphaned entries? [y/N] ")
+                .strip()
+                .lower()
+            )
+            if answer != "y":
+                print("Aborted.")
+                return
             for k in orphaned:
                 del state[k]
             write_fetch_state(state, FETCH_STATE_JSON)
@@ -193,8 +187,6 @@ Examples:
   poetry run python -m src.cpi.fuel_prices fetch --status
   poetry run python -m src.cpi.fuel_prices fetch --source nz_mbie_weekly_fuel
   poetry run python -m src.cpi.fuel_prices fetch --source nz_mbie_weekly_fuel --rebuild
-  poetry run python -m src.cpi.fuel_prices fetch --cadence daily
-  poetry run python -m src.cpi.fuel_prices fetch --force
   poetry run python -m src.cpi.fuel_prices fetch --status --prune-orphans
   poetry run python -m src.cpi.fuel_prices build
   poetry run python -m src.cpi.fuel_prices publish --target prices
@@ -206,17 +198,6 @@ Examples:
     fetch = sub.add_parser("fetch", help="Refresh stored fuel observations")
     fetch.add_argument(
         "--source", metavar="SOURCE_KEY", help="Fetch a single source key only"
-    )
-    fetch.add_argument(
-        "--cadence",
-        choices=_CADENCE_CHOICES,
-        metavar="CADENCE",
-        help="Only run sources matching this cadence (daily/weekly/monthly/quarterly/irregular/manual)",
-    )
-    fetch.add_argument(
-        "--force",
-        action="store_true",
-        help="Ignore cadence skip logic and run all selected sources (including manual)",
     )
     fetch.add_argument(
         "--rebuild",
@@ -232,7 +213,7 @@ Examples:
         "--prune-orphans",
         action="store_true",
         dest="prune_orphans",
-        help="With --status: remove orphaned state entries (prompts unless --force)",
+        help="With --status: remove orphaned state entries (prompts for confirmation)",
     )
     fetch.set_defaults(func=_cmd_fetch)
 

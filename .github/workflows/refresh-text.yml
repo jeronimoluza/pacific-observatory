@@ -1,0 +1,64 @@
+name: Refresh Text Outputs
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-text
+  cancel-in-progress: true
+
+env:
+  POETRY_VERSION: "2.3.2"
+  PYTHONPATH: .:src
+
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/main'
+    runs-on:
+      - self-hosted
+    timeout-minutes: 240
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          clean: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: poetry
+
+      - name: Install Poetry
+        run: pip install "poetry==${POETRY_VERSION}"
+
+      - name: Install text pipeline dependencies
+        run: poetry install --with scraping,docs --no-interaction
+
+      - name: Ensure persistent directories exist
+        run: mkdir -p data/text logs/text outputs/text docs/images/interactive/text
+
+      - name: Run text scrapers
+        run: poetry run python -m text.scrapers.orchestration.main --run-all
+
+      - name: Run text analysis
+        run: poetry run python -m text.analysis.main
+
+      - name: Rebuild published text HTML assets
+        run: poetry run python src/text/plotting/interactive.py
+
+      - name: Verify docs build
+        run: poetry run jupyter-book clean docs && poetry run jupyter-book build docs
+
+      - name: Commit refreshed text outputs
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(text): refresh published outputs"
+          file_pattern: outputs/text docs/images/interactive/text

@@ -1,24 +1,7 @@
-"""Myanmar fuel price fetchers — GNLM and Denko station prices."""
+"""Myanmar fuel price fetchers — Denko station prices and Starfish market prices."""
 
 # ruff: noqa: E402
 SOURCE_META = [
-    {
-        "fetcher_fn": "fetch_myanmar_gnlm",
-        "country": "Myanmar",
-        "source_name": "Global New Light of Myanmar (GNLM)",
-        "url": "https://www.gnlm.com.mm/?s=fuel+price",
-        "description": "State-run newspaper (GNLM). Official government fuel reference prices embedded in news articles. No structured data or API.",
-        "extraction_method": ["Web scraping"],
-        "products": [
-            "Gasoline Octane 92 (Regular)",
-            "Gasoline Octane 95 (Premium)",
-            "Diesel",
-            "Diesel (Premium)",
-        ],
-        "source_keys": ["mm_gnlm_fuel_reference_prices"],
-        "publishes_on": "Weekly",
-        "notes": "Crawls search results for fuel articles; regex extracts prices from body text. Processes up to 30 candidate articles. Price range MMK 500–5,000/L.",
-    },
     {
         "fetcher_fn": "fetch_myanmar_denko",
         "country": "Myanmar",
@@ -34,189 +17,34 @@ SOURCE_META = [
         ],
         "source_keys": ["mm_denko_station_daily"],
         "publishes_on": "Daily",
-        "notes": "Cloudflare-protected site — requires Playwright headless browser. Extracts daily price table with division/station granularity. Price range MMK 500–5,000/L.",
+        "notes": "Cloudflare-protected site — requires Playwright headless browser. Extracts daily price table with division/station granularity.",
+    },
+    {
+        "fetcher_fn": "fetch_myanmar_starfish",
+        "country": "Myanmar",
+        "source_name": "Starfish Myanmar — Market Price",
+        "url": "https://starfishmyanmar.com/market-price",
+        "description": "Starfish Myanmar petroleum distributor. National-level 5-day average retail fuel prices published at ~25-day intervals.",
+        "extraction_method": ["Web scraping (embedded JS data)"],
+        "products": [
+            "Gasoline Octane 92 (Regular)",
+            "Gasoline Octane 95 (Premium)",
+            "Diesel",
+            "Diesel (Premium)",
+        ],
+        "source_keys": ["mm_starfish_market_price"],
+        "publishes_on": "Irregular (~25 days)",
+        "notes": "Prices extracted from chart_data JS object embedded in HTML. No API, no auth, no bot protection.",
     },
 ]
 
+import json
 import re
-import time
 from datetime import date
 
 import pandas as pd
-from bs4 import BeautifulSoup
 
-from ..utils import MONTH_MAP_EN, get_session, make_hash, make_template
-
-_TMPL_MM = make_template(
-    country="Myanmar",
-    wb_iso3="MMR",
-    source_key="mm_gnlm_fuel_reference_prices",
-    source_name="Myanmar Global New Light — Fuel Reference Prices",
-    source_url="https://www.gnlm.com.mm/",
-    currency="MMK",
-    unit="L",
-    subnational_area="National",
-    publication_frequency="weekly",
-    observation_method="reported",
-    tax_status="tax_inclusive",
-)
-
-_PRODUCTS = [
-    (
-        "Octane 92",
-        "gasoline",
-        "regular",
-        92,
-        r"(?i)octane.{0,5}92|ron.{0,5}92|92.{0,5}octane",
-    ),
-    (
-        "Octane 95",
-        "gasoline",
-        "premium",
-        95,
-        r"(?i)octane.{0,5}95|ron.{0,5}95|95.{0,5}octane",
-    ),
-    ("Diesel", "diesel", "regular", None, r"(?i)\bdiesel\b"),
-    (
-        "Premium Diesel",
-        "diesel",
-        "premium",
-        None,
-        r"(?i)premium diesel|high.quality diesel",
-    ),
-]
-
-_SCAN_URLS = [
-    "https://www.gnlm.com.mm/?s=fuel+price",
-    "https://www.gnlm.com.mm/?s=petroleum+price",
-    "https://www.gnlm.com.mm/?s=petrol+price",
-    "https://www.gnlm.com.mm/",
-]
-
-
-def fetch_myanmar_gnlm(cutoff: date) -> pd.DataFrame:
-    """Fetch Myanmar GNLM weekly fuel reference prices."""
-    print("  [mm_gnlm] Fetching Myanmar GNLM data...")
-    print(f"  [mm_gnlm] Cutoff: {cutoff}")
-
-    session = get_session()
-    today = date.today()
-    all_rows = []
-
-    article_links: set[str] = set()
-    for scan_url in _SCAN_URLS:
-        try:
-            r = session.get(scan_url, timeout=20)
-            if r.status_code != 200:
-                continue
-            s = BeautifulSoup(r.content, "lxml")
-            for a in s.find_all("a", href=True):
-                href = a["href"]
-                link_text = a.get_text(strip=True).lower()
-                if any(
-                    kw in link_text or kw in href.lower()
-                    for kw in [
-                        "fuel",
-                        "petrol",
-                        "diesel",
-                        "price",
-                        "petroleum",
-                        "octane",
-                    ]
-                ):
-                    if "gnlm.com.mm" in href:
-                        article_links.add(href)
-        except Exception as e:
-            print(f"  [mm_gnlm] Scan error {scan_url}: {e}")
-        time.sleep(0.3)
-
-    print(f"  [mm_gnlm] Found {len(article_links)} candidate links")
-
-    for art_url in list(article_links)[:30]:
-        try:
-            r = session.get(art_url, timeout=20)
-            if r.status_code != 200:
-                continue
-            art_soup = BeautifulSoup(r.content, "lxml")
-            text = art_soup.get_text(separator="\n")
-
-            if not any(
-                kw in text.lower() for kw in ["fuel", "octane", "diesel", "petroleum"]
-            ):
-                continue
-
-            obs_date = None
-            iso_m = re.search(r"(20\d{2})[/\-](\d{2})[/\-](\d{2})", text)
-            if iso_m:
-                try:
-                    obs_date = date(
-                        int(iso_m.group(1)), int(iso_m.group(2)), int(iso_m.group(3))
-                    )
-                except ValueError:
-                    pass
-            if obs_date is None:
-                for month_name, month_num in MONTH_MAP_EN.items():
-                    if len(month_name) < 4:
-                        continue  # skip 3-letter abbrevs to avoid false positives
-                    if month_name in text.lower():
-                        year_m = re.search(r"\b(20\d{2})\b", text)
-                        if year_m:
-                            try:
-                                obs_date = date(int(year_m.group(1)), month_num, 1)
-                                break
-                            except ValueError:
-                                pass
-
-            if obs_date is None or obs_date <= cutoff or obs_date > today:
-                continue
-
-            rows_added = 0
-            for prod_name, family, qg, ron, prod_pat in _PRODUCTS:
-                m = re.search(
-                    rf"{prod_pat}[^\d]{{0,150}}(\d{{3,5}}(?:\.\d{{1,2}})?)",
-                    text,
-                    re.IGNORECASE | re.DOTALL,
-                )
-                if not m:
-                    continue
-                try:
-                    price = float(m.group(1))
-                    if not (500 <= price <= 5000):
-                        continue
-                except ValueError:
-                    continue
-
-                r_row = _TMPL_MM.copy()
-                r_row.update(
-                    {
-                        "fuel_family": family,
-                        "fuel_product": prod_name,
-                        "quality_group": qg,
-                        "octane_ron": ron,
-                        "price_local": price,
-                        "effective_from": str(obs_date),
-                        "effective_to": str(obs_date),
-                        "observation_date": str(obs_date),
-                        "source_url": art_url,
-                    }
-                )
-                r_row["observation_hash"] = make_hash(r_row)
-                all_rows.append(r_row)
-                rows_added += 1
-
-            if rows_added:
-                print(f"  [mm_gnlm] {obs_date}: {rows_added} products from {art_url}")
-
-        except Exception as e:
-            print(f"  [mm_gnlm] Error {art_url}: {e}")
-        time.sleep(0.3)
-
-    if all_rows:
-        print(f"  [mm_gnlm] {len(all_rows)} new rows")
-    else:
-        print("  [mm_gnlm] No new rows")
-    return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
-
+from ..utils import get_session, make_hash, make_template, MONTH_MAP_EN
 
 # ── Denko Myanmar ─────────────────────────────────────────────────────────────
 
@@ -421,8 +249,6 @@ def fetch_myanmar_denko(cutoff: date) -> pd.DataFrame:
                 continue
             try:
                 price = float(pm.group(1))
-                if not (500 <= price <= 5000):
-                    continue
             except ValueError:
                 continue
 
@@ -450,4 +276,132 @@ def fetch_myanmar_denko(cutoff: date) -> pd.DataFrame:
         print(f"  [mm_denko] {obs_date}: {len(all_rows)} rows from {stations} stations")
     else:
         print("  [mm_denko] No new rows")
+    return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()
+
+
+# ── Starfish Myanmar ─────────────────────────────────────────────────────────
+
+_TMPL_MM_STARFISH = make_template(
+    country="Myanmar",
+    wb_iso3="MMR",
+    source_key="mm_starfish_market_price",
+    source_name="Starfish Myanmar — Market Price",
+    source_url="https://starfishmyanmar.com/market-price",
+    currency="MMK",
+    unit="L",
+    subnational_area="National",
+    publication_frequency="irregular",
+    observation_method="reported",
+    tax_status="tax_inclusive",
+)
+
+_STARFISH_URL = "https://starfishmyanmar.com/market-price"
+
+_STARFISH_PRODUCTS = {
+    "Ron 92": ("Octane 92", "gasoline", "regular", 92),
+    "Ron 95": ("Octane 95", "gasoline", "premium", 95),
+    "Diesel - 500 PPM": ("Diesel", "diesel", "regular", None),
+    "Premium Diesel - 50 PPM": ("Premium Diesel", "diesel", "premium", None),
+}
+
+
+def fetch_myanmar_starfish(cutoff: date) -> pd.DataFrame:
+    """Fetch Starfish Myanmar national fuel price averages."""
+    print("  [mm_starfish] Fetching Starfish Myanmar market prices...")
+    print(f"  [mm_starfish] Cutoff: {cutoff}")
+
+    session = get_session()
+    url = f"{_STARFISH_URL}?date_range={cutoff} , {date.today()}"
+
+    try:
+        r = session.get(url, timeout=30)
+        if r.status_code != 200:
+            print(f"  [mm_starfish] HTTP {r.status_code}")
+            return pd.DataFrame()
+    except Exception as e:
+        print(f"  [mm_starfish] Request error: {e}")
+        return pd.DataFrame()
+
+    # Extract chart_data JS object from HTML
+    m = re.search(r"let\s+chart_data\s*=\s*(\{.*?\})\s*;", r.text, re.DOTALL)
+    if not m:
+        print("  [mm_starfish] Could not find chart_data in page")
+        return pd.DataFrame()
+
+    try:
+        chart_data = json.loads(m.group(1))
+    except json.JSONDecodeError:
+        # chart_data may use single quotes or JS syntax — try eval-safe cleanup
+        raw = m.group(1)
+        raw = raw.replace("'", '"')
+        try:
+            chart_data = json.loads(raw)
+        except json.JSONDecodeError as e:
+            print(f"  [mm_starfish] JSON parse error: {e}")
+            return pd.DataFrame()
+
+    head = chart_data.get("head", {})
+    body = chart_data.get("body", [])
+
+    # head is {key: display_label, ...} — keys are date strings
+    date_keys = list(head.keys())
+
+    all_rows: list[dict] = []
+
+    for series in body:
+        if not series or len(series) < 3:
+            continue
+        label = series[0]
+        unit_text = series[1]
+
+        if label not in _STARFISH_PRODUCTS:
+            continue
+        if "kyat" not in unit_text.lower() or "liter" not in unit_text.lower():
+            continue
+
+        prod_name, family, qg, ron = _STARFISH_PRODUCTS[label]
+        values = series[2:]
+
+        for i, val in enumerate(values):
+            if i >= len(date_keys):
+                break
+            if val is None or val == "" or val == 0:
+                continue
+
+            try:
+                price = float(val)
+            except (ValueError, TypeError):
+                continue
+
+            date_str = date_keys[i]
+            try:
+                obs_date = date.fromisoformat(date_str)
+            except ValueError:
+                continue
+
+            if obs_date <= cutoff:
+                continue
+
+            row = _TMPL_MM_STARFISH.copy()
+            row.update(
+                {
+                    "fuel_family": family,
+                    "fuel_product": prod_name,
+                    "quality_group": qg,
+                    "octane_ron": ron,
+                    "price_local": price,
+                    "effective_from": str(obs_date),
+                    "effective_to": str(obs_date),
+                    "observation_date": str(obs_date),
+                    "source_url": _STARFISH_URL,
+                }
+            )
+            row["observation_hash"] = make_hash(row)
+            all_rows.append(row)
+
+    if all_rows:
+        dates = len({r["observation_date"] for r in all_rows})
+        print(f"  [mm_starfish] {len(all_rows)} rows across {dates} dates")
+    else:
+        print("  [mm_starfish] No new rows")
     return pd.DataFrame(all_rows) if all_rows else pd.DataFrame()

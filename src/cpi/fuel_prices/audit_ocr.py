@@ -33,6 +33,8 @@ from .constants import DATA_DIR
 _OCR_SOURCES: list[tuple[str, int, tuple[float, float], str]] = [
     # Samoa: 3 products (petrol/diesel/kerosene), monthly, WST 1–15/L
     ("ws_mof_monthly_fuel_prices", 3, (1.0, 15.0), "monthly"),
+    # Tonga: 3 products (petrol/diesel/kerosene), monthly, TOP 2–8/L
+    ("to_mted_petroleum_prices_monthly", 3, (2.0, 8.0), "monthly"),
     # Vietnam: add here if OCR-sourced in future
 ]
 

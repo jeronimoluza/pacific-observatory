@@ -24,7 +24,7 @@ SOURCE_META = [
         "fetcher_fn": "fetch_id_pertamina_pengumuman",
         "country": "Indonesia",
         "source_name": "Pertamina Pengumuman Harga BBM Non-Subsidi",
-        "url": "https://www.pertamina.com/pengumuman",
+        "url": "https://www.pertamina.com/news/?category=pengumuman",
         "description": "Official national oil company (Pertamina). Monthly non-subsidi fuel price announcements with per-wilayah price tables.",
         "extraction_method": ["Playwright", "DOM scraping"],
         "products": [
@@ -75,7 +75,7 @@ _ID_OTO_PRODUCTS = [
 
 _ID_OTO_BASE_URL = "https://www.oto.com/ajax/get-fuel-price-trends"
 
-_ID_PERTAMINA_PENGUMUMAN_URL = "https://www.pertamina.com/pengumuman"
+_ID_PERTAMINA_PENGUMUMAN_URL = "https://www.pertamina.com/news/?category=pengumuman"
 _ID_PERTAMINA_NEWS_PREFIX = "https://www.pertamina.com/news/"
 _ID_PERTAMINA_SLUG_RE = re.compile(
     r"daftar-harga-bahan-bakar-khusus-non-subsidi-tmt-(\d{1,2})-([a-z]+)-(\d{4})",
@@ -457,9 +457,19 @@ def fetch_id_pertamina_pengumuman(cutoff: date) -> pd.DataFrame:
         try:
             page.goto(
                 _ID_PERTAMINA_PENGUMUMAN_URL,
-                wait_until="networkidle",
+                wait_until="domcontentloaded",
                 timeout=60_000,
             )
+            # The listing page is a SPA: article cards are injected via a deferred XHR that
+            # fires well after networkidle.  Wait for the first matching article link to
+            # appear rather than sleeping a fixed duration.
+            try:
+                page.wait_for_selector(
+                    "a[href*='daftar-harga-bahan-bakar']",
+                    timeout=30_000,
+                )
+            except Exception:
+                pass  # fall through; _collect will return 0 candidates if still empty
             listing_candidates = _collect_pertamina_listing_candidates(page, scan_start)
             print(
                 f"  [id_pertamina] Listing yielded {len(listing_candidates)} candidate links"

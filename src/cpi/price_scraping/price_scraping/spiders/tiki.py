@@ -24,6 +24,11 @@ class TikiSpider(scrapy.Spider):
     name = "tiki"
     allowed_domains = ["tiki.vn"]
 
+    custom_settings = {
+        "CONCURRENT_REQUESTS": 2,
+        "DOWNLOAD_DELAY": 2,
+    }
+
     # Start with main category pages
     start_urls = [
         "https://tiki.vn/thuc-pham-tuoi-song/c44792",  # Fresh Food
@@ -77,6 +82,8 @@ class TikiSpider(scrapy.Spider):
                 url,
                 callback=self.parse_listing,
                 meta={
+                    "playwright": True,
+                    "playwright_page_goto_kwargs": {"wait_until": "domcontentloaded"},
                     "branch_root": root_slug,
                     "branch_key": root_slug or url,
                     "page": 1,
@@ -139,6 +146,8 @@ class TikiSpider(scrapy.Spider):
                 next_url,
                 callback=self.parse_listing,
                 meta={
+                    "playwright": True,
+                    "playwright_page_goto_kwargs": {"wait_until": "domcontentloaded"},
                     "branch_root": response.meta.get("branch_root"),
                     "branch_key": branch_key,
                     "page": 1,
@@ -153,6 +162,10 @@ class TikiSpider(scrapy.Spider):
                     next_page_url,
                     callback=self.parse_listing,
                     meta={
+                        "playwright": True,
+                        "playwright_page_goto_kwargs": {
+                            "wait_until": "domcontentloaded"
+                        },
                         "branch_root": response.meta.get("branch_root"),
                         "branch_key": branch_key,
                         "page": page + 1,

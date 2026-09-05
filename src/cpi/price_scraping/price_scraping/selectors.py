@@ -54,6 +54,8 @@ SPIDER_SELECTORS = {
         ],
         "price": [
             "span.base-price__regular span::text",
+            "span.base-price__regular::text",
+            "div.product-details__weight-and-price::text",
         ],
     },
     "food_pro": {
@@ -97,10 +99,16 @@ SPIDER_SELECTORS = {
     },
     "dynamic_vanuatu": {
         "product_name": [
-            "div.product__section-content h1[class='product__section-title product-title']::text",
+            "h1[itemprop='name']::text",
+            "h1.product-single__title::text",
+            "h1.product__title::text",
+            "meta[property='og:title']::attr(content)",
         ],
         "price": [
-            "div.product__section-content span[class='price-item price-item--regular']::text",
+            "span[itemprop='price']::text",
+            "span.product-price span.money::text",
+            "span.money::text",
+            "meta[property='og:price:amount']::attr(content)",
         ],
         "product_id": [
             "span#variantSku::text",
@@ -123,6 +131,8 @@ SPIDER_SELECTORS = {
             "div.content_det h1::text",
         ],
         "price": [
+            # Non-promo: plain h2 (no child span) — clean "Rp X.XXX"
+            # Promo items: h2.promo — get_text returns "Rp X.XXXRp Y.YYY"; first price is actual price
             "div.content_det h2::text",
         ],
         "category": [
@@ -135,6 +145,7 @@ SPIDER_SELECTORS = {
         ],
         "price": [
             "meta[property='product:price:amount']::attr(content)",
+            "meta[property='og:price:amount']::attr(content)",
         ],
         "details": [
             "meta[property='og:description']::attr(content)",
@@ -147,6 +158,10 @@ SPIDER_SELECTORS = {
             "meta[property='og:title']::attr(content)",
         ],
         "price": [
+            # KHR price (e.g. "20,100៛")
+            "div.mb-0.font-14.weight-bold::text",
+            # USD price fallback (e.g. "$4.90")
+            "div.color-red.weight-bold::text",
             "span.text-danger.font-20::text",
             "div.price span::text",
         ],
@@ -312,20 +327,20 @@ SPIDER_SELECTORS = {
         ],
     },
     # --- Taiwan ---
+    # 91app SPA: raw HTML has no price/name in DOM elements.
+    # title tag holds clean product name; price comes from ld+json (handled in
+    # cc_warc_fetcher._extract_ldjson_fallback when CSS selectors miss).
     "cosmed": {
         "product_name": [
-            "h1.product-name::text",
-            "h1.product-title::text",
+            "title::text",
             "meta[property='og:title']::attr(content)",
         ],
         "price": [
-            "span.product-price::text",
-            "span.price::text",
-            "meta[property='product:price:amount']::attr(content)",
+            # No CSS selector matches price in 91app raw HTML.
+            # Fallback is ld+json regex in cc_warc_fetcher.
         ],
         "category": [
-            "ol.breadcrumb li a::text",
-            "div.breadcrumb a::text",
+            # Category lives in embedded JS JSON blob, not in DOM.
         ],
     },
     # --- Indonesia ---
@@ -364,18 +379,18 @@ SPIDER_SELECTORS = {
     },
     "doctor_oncall": {
         "product_name": [
-            "h1.product-name::text",
-            "h1.product-title::text",
-            "meta[property='og:title']::attr(content)",
+            "h1.product_title::text",
+            "h1.entry-title::text",
         ],
         "price": [
-            "span.product-price::text",
-            "span.price::text",
-            "div.price::text",
+            "div.summary p.price ins span.woocommerce-Price-amount.amount bdi::text",
+            "div.summary p.price span.woocommerce-Price-amount.amount bdi::text",
+            "p.price ins span.woocommerce-Price-amount.amount bdi::text",
+            "p.price span.woocommerce-Price-amount.amount bdi::text",
         ],
         "category": [
+            "nav.woocommerce-breadcrumb a::text",
             "ol.breadcrumb li a::text",
-            "div.breadcrumb a::text",
         ],
     },
     # --- Philippines ---
@@ -396,6 +411,17 @@ SPIDER_SELECTORS = {
             "div.breadcrumb a::text",
             "ol.breadcrumb li a::text",
         ],
+    },
+    # --- Singapore (Next.js SPA: no CSS-extractable price; ld+json fallback in cc_warc_fetcher) ---
+    "fairprice": {
+        "product_name": [
+            "title::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            # Price is in ld+json offers.price (handled by _LDJSON_SPIDERS fallback).
+        ],
+        "category": [],
     },
     # --- Singapore ---
     "guardian_sg": {
@@ -444,6 +470,65 @@ SPIDER_SELECTORS = {
         ],
         "category": [
             "nav.woocommerce-breadcrumb a::text",
+            "div.breadcrumb a::text",
+        ],
+    },
+    # --- Hong Kong (Tier 1 Shopify) ---
+    "citysuper_hk": {
+        "product_name": [
+            "h1.product__title::text",
+            "h1.product-single__title::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span.price-item.price-item--regular::text",
+            "span.price-item.price-item--sale::text",
+            "span[class*='price-item']::text",
+            "meta[property='og:price:amount']::attr(content)",
+            "meta[property='product:price:amount']::attr(content)",
+        ],
+        "category": [
+            "nav.breadcrumb a::text",
+            "ol.breadcrumb li a::text",
+            "div.breadcrumb a::text",
+        ],
+    },
+    # --- Singapore (Tier 1 Next.js RSC) ---
+    "cold_storage_sg": {
+        "product_name": [
+            "h1[class*='product-name']::text",
+            "h1[class*='ProductName']::text",
+            "h1::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span[class*='price']::text",
+            "div[class*='price']::text",
+            "meta[property='product:price:amount']::attr(content)",
+            "meta[property='og:price:amount']::attr(content)",
+        ],
+        "category": [
+            "nav[class*='breadcrumb'] a::text",
+            "ol.breadcrumb li a::text",
+        ],
+    },
+    # --- Taiwan (Tier 1 SFCC schema.org) ---
+    "carrefour_tw": {
+        "product_name": [
+            "h1.product-name::text",
+            "h1[class*='product']::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span.product-price-formatted::text",
+            "span.price-sales::text",
+            "span.product-sales-price::text",
+            "span[class*='price']::text",
+            "meta[property='product:price:amount']::attr(content)",
+        ],
+        "category": [
+            "ol.breadcrumb li a::text",
+            "nav.breadcrumb a::text",
             "div.breadcrumb a::text",
         ],
     },

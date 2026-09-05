@@ -109,9 +109,10 @@ def fetch_kh_ptt(cutoff: date) -> pd.DataFrame:
                 ):
                     prod_cols[ci] = (prod_name, family, qg, ron)
 
+            expected_cols = len(headers)
             for row in rows_html[1:]:
                 cells = row.find_all(["th", "td"])
-                if len(cells) <= date_col:
+                if len(cells) != expected_cols:
                     continue
                 texts = [c.get_text(strip=True) for c in cells]
                 date_str = texts[date_col] if date_col < len(texts) else ""

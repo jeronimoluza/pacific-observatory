@@ -16,12 +16,14 @@ SOURCE_META = [
     },
 ]
 
+import io
 import re
 import time
 from datetime import date
 from html import unescape
 
 import pandas as pd
+import pdfplumber
 from bs4 import BeautifulSoup
 
 from ..utils import MONTH_MAP_EN, get_session, make_hash, make_template
@@ -236,6 +238,87 @@ def _extract_prices_from_post_html(
     return rows_out
 
 
+def _extract_pdf_url(content_html: str) -> str | None:
+    """Extract the first embedded PDF URL from a wp-block-file post body."""
+    m = re.search(r'(?:href|data)="(https://[^"]+\.pdf)"', content_html, re.IGNORECASE)
+    return m.group(1) if m else None
+
+
+def _extract_prices_from_pdf(
+    pdf_url: str, session, source_url: str, obs_date: date
+) -> list[dict]:
+    """Extract national-average fuel prices from an ANP PDF price table.
+
+    Mirrors _extract_prices_from_post_html for the post-2026 PDF-embed posts:
+    the table is No. | Municipality | Fuel Filling Stations | Petrol | Diesel.
+    """
+    try:
+        resp = session.get(pdf_url, timeout=60)
+        resp.raise_for_status()
+    except Exception as e:
+        print(f"  [tl_anp] Could not fetch PDF {pdf_url}: {e}")
+        return []
+
+    rows_out: list[dict] = []
+    try:
+        with pdfplumber.open(io.BytesIO(resp.content)) as pdf:
+            for page in pdf.pages:
+                for table in page.extract_tables():
+                    header_idx = next(
+                        (
+                            i
+                            for i, row in enumerate(table)
+                            if any(
+                                cell and re.search(prod_pat, cell)
+                                for _, _, _, _, prod_pat in _TL_PRODUCTS
+                                for cell in row
+                            )
+                        ),
+                        None,
+                    )
+                    if header_idx is None:
+                        continue
+                    headers = [(cell or "").lower() for cell in table[header_idx]]
+                    for prod_name, family, qg, ron, prod_pat in _TL_PRODUCTS:
+                        price_col = next(
+                            (
+                                i
+                                for i, h in enumerate(headers)
+                                if re.search(prod_pat, h)
+                            ),
+                            None,
+                        )
+                        if price_col is None:
+                            continue
+                        prices = []
+                        for row in table[header_idx + 1 :]:
+                            if price_col >= len(row) or not row[price_col]:
+                                continue
+                            p = _parse_price_cell(row[price_col])
+                            if p is not None:
+                                prices.append(p)
+                        if not prices:
+                            continue
+                        avg_price = round(sum(prices) / len(prices), 4)
+                        r = _TMPL_TL.copy()
+                        r.update(
+                            {
+                                "fuel_family": family,
+                                "fuel_product": prod_name,
+                                "quality_group": qg,
+                                "octane_ron": ron,
+                                "price_local": avg_price,
+                                "observation_date": str(obs_date),
+                                "source_url": source_url,
+                            }
+                        )
+                        r["observation_hash"] = make_hash(r)
+                        rows_out.append(r)
+    except Exception as e:
+        print(f"  [tl_anp] PDF parse error for {pdf_url}: {e}")
+    return rows_out
+
+
 def fetch_timor_anp(cutoff: date) -> pd.DataFrame:
     """Fetch Timor-Leste ANP daily fuel prices from the WordPress API."""
     print("  [tl_anp] Fetching Timor-Leste ANP data...")
@@ -254,6 +337,12 @@ def fetch_timor_anp(cutoff: date) -> pd.DataFrame:
         rows = _extract_prices_from_post_html(
             post["content_html"], post["source_url"], post["observation_date"]
         )
+        if not rows:
+            pdf_url = _extract_pdf_url(post["content_html"])
+            if pdf_url:
+                rows = _extract_prices_from_pdf(
+                    pdf_url, session, post["source_url"], post["observation_date"]
+                )
         if rows:
             all_rows.extend(rows)
             print(f"  [tl_anp] {post['observation_date']}: {len(rows)} products")

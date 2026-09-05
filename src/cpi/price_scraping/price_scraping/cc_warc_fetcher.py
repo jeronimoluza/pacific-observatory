@@ -42,7 +42,10 @@ CC_DATA_BASE = "https://data.commoncrawl.org"
 SPIDER_CC_CONFIG: Dict[str, Dict[str, str]] = {
     "guardian_sg": {"prefix": "www.guardian.com.sg/", "path_re": r"/[^/]+/p/\d+"},
     "mannings": {"prefix": "www.mannings.com.hk/", "path_re": r"/[^/]+/p/\d+"},
-    "guardian_my": {"prefix": "www.guardian.com.my/", "path_re": r"/[^/]+/p/\d+"},
+    # guardian.com.my uses a PWA SPA (Adobe Venia) — CC archives are JS shells with no
+    # product data in the initial HTML. prefix covers both www and no-www; path_re matches
+    # root-level product slugs (/<slug>.html). Usable CC data unlikely until site adds SSR.
+    "guardian_my": {"prefix": "guardian.com.my/", "path_re": r"^/[^/]+\.html$"},
     "cosmed": {
         "prefix": "shop.cosmed.com.tw/SalePage/",
         "path_re": r"/SalePage/Index/",
@@ -50,6 +53,125 @@ SPIDER_CC_CONFIG: Dict[str, Dict[str, str]] = {
     "boots_th": {
         "prefix": "store.boots.co.th/ecommerce/",
         "path_re": r"/ecommerce/\d+",
+    },
+    "aldi_au": {
+        "prefix": "www.aldi.com.au/product/",
+        "path_re": r"^/product/[^/]+",
+    },
+    # Tier 1 additions (2026-05-06)
+    # CitySuper HK is a multi-subdomain Shopify store. Product pages archived by CC
+    # live under logon.citysuper.com.hk (648 in CC-MAIN-2024-51) and
+    # bearwithlove.citysuper.com.hk / hamper.citysuper.com.hk (92 in CC-MAIN-2023-50).
+    # www.citysuper.com.hk/products/ has zero CC captures.
+    # Run a second pass with prefix=bearwithlove.citysuper.com.hk/ to pick up the older records.
+    "citysuper_hk": {
+        "prefix": "logon.citysuper.com.hk/products/",
+        "path_re": r"^/products/[^/?]+",
+    },
+    "cold_storage_sg": {
+        "prefix": "www.coldstorage.com.sg/",
+        "path_re": r"/product/[^/?]+",
+    },
+    "carrefour_tw": {
+        "prefix": "online.carrefour.com.tw/",
+        "path_re": r"/[^/?]+\.html",
+    },
+    # --- Vanuatu ---
+    "dynamic_vanuatu": {
+        "prefix": "retail.dynamicvanuatu.com/products/",
+        "path_re": r"^/products/[^/?]+",
+    },
+    # --- Mongolia ---
+    "citypharm": {
+        "prefix": "citypharm.mn/shop/",
+        "path_re": r"^/shop/\d+-",
+    },
+    # --- Malaysia ---
+    "doctor_oncall": {
+        "prefix": "www.doctoroncall.com.my/pharmacy/",
+        # Product pages: /pharmacy/<slug> — exactly one path segment after /pharmacy/
+        # Excludes category sub-paths like /pharmacy/medicines/weight-loss
+        "path_re": r"^/pharmacy/[^/]+/?$",
+    },
+    # --- Thailand ---
+    "exta": {
+        "prefix": "www.exta.co.th/product/",
+        "path_re": r"^/product/[^/]+",
+    },
+    # --- Singapore ---
+    "fairprice": {
+        "prefix": "www.fairprice.com.sg/product/",
+        "path_re": r"^/product/[^/?]+",
+    },
+    # --- Papua New Guinea ---
+    "food_pro": {
+        "prefix": "fpr.com.pg/product/",
+        "path_re": r"^/product/[^/?]+",
+    },
+    # --- Japan ---
+    "horizon_farms": {
+        "prefix": "en.horizonfarms.jp/products/",
+        "path_re": r"^/products/[^/?]+",
+    },
+    # --- Indonesia ---
+    "hypermart": {
+        "prefix": "shop.hypermart.co.id/hypermart/product/",
+        "path_re": r"^/hypermart/product/[^/?]+",
+    },
+    # --- China ---
+    "jianke": {
+        "prefix": "www.jianke.com/product/",
+        "path_re": r"^/product/\d+\.html$",
+    },
+    "pharmacy_111": {
+        "prefix": "m.111.com.cn/item/",
+        "path_re": r"^/item/\d+\.html$",
+    },
+    # --- Cambodia ---
+    "makro": {
+        "prefix": "www.makrocambodiaclick.com/en/products/",
+        "path_re": r"^/en/products/\d+",
+    },
+    # --- Fiji ---
+    "mh_online": {
+        "prefix": "mh.com.fj/product/",
+        "path_re": r"^/product/[^/?]+",
+    },
+    "rbpatel": {
+        "prefix": "rbpatel.com.fj/product/",
+        "path_re": r"^/product/[^/?]+",
+    },
+    # --- Tonga ---
+    "molisi": {
+        "prefix": "molisi.to/",
+        "path_re": r"^/(baby-maternity|beverage|grocery|meat-seafood|personal-care)/[^/?]+",
+    },
+    # --- Samoa ---
+    "samoa_market": {
+        "prefix": "samoamarket.com/products/",
+        "path_re": r"^/products/[^/?]+",
+    },
+    # --- Philippines ---
+    "pickaroo": {
+        "prefix": "pickaroo.com/",
+        "path_re": r"^/[^/]+/products/[^/]+/product-detail/\d+",
+    },
+    "south_star_drug": {
+        "prefix": "southstardrug.com.ph/products/",
+        "path_re": r"^/products/[^/?]+",
+    },
+    # --- Japan ---
+    "rakuten": {
+        # Product detail pages: item.rakuten.co.jp/<shop>/<item>/
+        # Excludes category-listing pages which have /c/<id> as the second segment
+        "prefix": "item.rakuten.co.jp/",
+        "path_re": r"^/[^/]+/(?!c/)[^/]+",
+    },
+    # --- Vietnam ---
+    "tiki": {
+        # Product pages: tiki.vn/<slug>-p<id>.html (all at root, no category prefix)
+        "prefix": "tiki.vn/",
+        "path_re": r"^/[^/]+-p\d+\.html$",
     },
 }
 
@@ -305,6 +427,89 @@ class CommonCrawlScraper:
                 continue
         return None
 
+    # Spiders that embed product data in ld+json rather than CSS-accessible elements.
+    _LDJSON_SPIDERS = {"cosmed", "fairprice", "carrefour_tw"}
+
+    # Spiders that embed price/name in __NEXT_DATA__ JSON (Next.js SPA, no meta price tag).
+    _NEXTDATA_SPIDERS = {"tiki"}
+
+    def _extract_ldjson_fallback(self, html: str, out: Dict[str, Any]) -> None:
+        """
+        Augment `out` with product_name/price from the page's schema.org ld+json
+        block. Only called for spiders in _LDJSON_SPIDERS when CSS selectors miss.
+        """
+        m = re.search(
+            r'<script[^>]+type="application/ld\+json"[^>]*>(.*?)</script>',
+            html,
+            re.DOTALL | re.IGNORECASE,
+        )
+        if not m:
+            return
+        raw = m.group(1).strip()
+        d = None
+        for candidate in (raw, raw.rstrip().rstrip("}")):
+            try:
+                d = json.loads(candidate)
+                break
+            except Exception:
+                continue
+        if d is None:
+            return
+        if d.get("@type") != "Product":
+            return
+        if "product_name" not in out:
+            name = d.get("name", "")
+            if name:
+                out["product_name"] = name
+        if "price" not in out:
+            offers = d.get("offers", {})
+            if isinstance(offers, list):
+                offers = offers[0] if offers else {}
+            price = offers.get("price")
+            if price is not None:
+                out["price"] = str(price)
+        if "category" not in out:
+            # 91app embeds category in the JSON blob via ShopCategory_ShowName
+            cat_m = re.search(r'"ShopCategory_ShowName"\s*:\s*"([^"]+)"', html)
+            if cat_m:
+                out["category"] = cat_m.group(1)
+
+    def _extract_nextdata_fallback(
+        self, soup: "BeautifulSoup", out: Dict[str, Any]
+    ) -> None:
+        """
+        Augment `out` with product_name/price from Tiki's __NEXT_DATA__ JSON blob.
+        Path: props.initialState.productv2.productData.response.data.{name,price}
+        Only called for spiders in _NEXTDATA_SPIDERS when CSS selectors miss price.
+        """
+        tag = soup.find("script", id="__NEXT_DATA__")
+        if not tag or not tag.string:
+            return
+        try:
+            d = json.loads(tag.string)
+        except Exception:
+            return
+        try:
+            data = d["props"]["initialState"]["productv2"]["productData"]["response"][
+                "data"
+            ]
+        except (KeyError, TypeError):
+            return
+        if not isinstance(data, dict):
+            return
+        if "product_name" not in out:
+            name = data.get("name", "")
+            if name:
+                out["product_name"] = str(name)
+        if "price" not in out:
+            price = data.get("price")
+            if price is not None:
+                out["price"] = str(price)
+        if "product_id" not in out:
+            pid = data.get("id") or data.get("sku")
+            if pid:
+                out["product_id"] = str(pid)
+
     def _extract_data_from_html(self, html: str) -> Dict[str, Any]:
         soup = BeautifulSoup(html, "html.parser")
         out: Dict[str, Any] = {}
@@ -312,6 +517,10 @@ class CommonCrawlScraper:
             v = extract_with_fallback(soup, selector_list)
             if v:
                 out[field] = v
+        if self.spider_name in self._LDJSON_SPIDERS:
+            self._extract_ldjson_fallback(html, out)
+        if self.spider_name in self._NEXTDATA_SPIDERS:
+            self._extract_nextdata_fallback(soup, out)
         return out
 
     # -- save --

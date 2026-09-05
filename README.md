@@ -1,6 +1,6 @@
 # Pacific Observatory
 
-[![Jupyter Book Badge](https://jupyterbook.org/badge.svg)](https://github.com/worldbank/pacific-observatory) ![example workflow](https://github.com/worldbank/pacific-observatory/actions/workflows/pylint.yml/badge.svg) 
+[![Jupyter Book Badge](https://jupyterbook.org/badge.svg)](https://github.com/jeronimoluza/pacific-observatory) [![CI](https://github.com/jeronimoluza/pacific-observatory/actions/workflows/ci.yml/badge.svg)](https://github.com/jeronimoluza/pacific-observatory/actions/workflows/ci.yml)
 
 The Pacific Observatory is the World Bank analytical program to explore and develop new information sources to mitigate the impact of data gaps in official statistics for Papua New Guinea (PNG) and the Pacific Island Countries (PICs).
 
@@ -8,13 +8,13 @@ This repository hosts the team's efforts to investigate how alternative data sou
 
 The content is structured by topic of investigation, each thematic folder contains code, notebooks, outputs, and feasibility notes.
 
-![Logo](https://github.com/worldbank/pacific-observatory/blob/main/docs/images/logo.png)
+![Logo](docs/images/logo.png)
 
 ## Research Topics
 
 🔖 **Night Time Lights Applications**
-> This note explores socio-economic applications with Night Time Lights data.  
-> Are lights at night a good proxy for economic activity or extractives?  
+> This note explores socio-economic applications with Night Time Lights data.
+> Are lights at night a good proxy for economic activity or extractives?
 > Can lights be used to aid poverty mapping, estimate access to electrification, or estimate damages/recovery from natural disasters?
 
 🔖 **Market Prices Imputation**
@@ -43,8 +43,8 @@ After preparing the raw data, the following section in the ```main.R``` file of 
 ```splus
   if("Papua New Guinea" %in% selected_country_list){
     cat("adding PNG from file")
-    PNG <- read.csv("PNG_dec2021_prices_wc.csv") ##### <---------- Original PNG price data file name. 
-    PNG$time_id <- NA 
+    PNG <- read.csv("PNG_dec2021_prices_wc.csv") ##### <---------- Original PNG price data file name.
+    PNG$time_id <- NA
       PNG=dropcol(PNG, setdiff(colnames(PNG), colnames(rawMarketPrices)))
       rawMarketPrices = rbind(rawMarketPrices, PNG[PNG$year>=data_startyear,])
       rawMarketPrices$time_id <- generate_T(rawMarketPrices$year, rawMarketPrices$month)
@@ -63,8 +63,8 @@ After preparing the raw data, the following section in the ```main.R``` file of 
 ```splus
   if("Papua New Guinea" %in% selected_country_list){
     cat("adding PNG from file")
-    PNG <- read.csv("PNG_july2022_prices_wc.csv") ##### <---------- Point the code to the new file name. 
-    PNG$time_id <- NA 
+    PNG <- read.csv("PNG_july2022_prices_wc.csv") ##### <---------- Point the code to the new file name.
+    PNG$time_id <- NA
       PNG=dropcol(PNG, setdiff(colnames(PNG), colnames(rawMarketPrices)))
       rawMarketPrices = rbind(rawMarketPrices, PNG[PNG$year>=data_startyear,])
       rawMarketPrices$time_id <- generate_T(rawMarketPrices$year, rawMarketPrices$month)
@@ -80,7 +80,7 @@ After preparing the raw data, the following section in the ```main.R``` file of 
 Also make sure that Papua New Guinea is included in the country list:
 
 ```splus
-selected_country_list = c("Afghanistan", "Papua New Guinea") 
+selected_country_list = c("Afghanistan", "Papua New Guinea")
 ```
 
 To produce results for different time periods, change
@@ -93,8 +93,8 @@ data_startyear = 2009
 > Monitor tourism recovery through aviation statistics.
 
 🔖 **Climate and Agriculture Monitoring**
-> Monitor crop productivity and seasonality through vegetation indices.  
-> Develop a sub-national database of climate indicators.  
+> Monitor crop productivity and seasonality through vegetation indices.
+> Develop a sub-national database of climate indicators.
 > Update crop masks with limited training data and satellite imagery.
 
 ### Future work

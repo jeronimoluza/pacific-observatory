@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+  pull_request:
+    branches:
+      - dev
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  POETRY_VERSION: "2.3.2"
+  PYTHONPATH: .:src
+
+jobs:
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: poetry
+
+      - name: Install Poetry
+        run: pip install "poetry==${POETRY_VERSION}"
+
+      - name: Install test dependencies
+        run: poetry install --with scraping,testing --no-interaction
+
+      - name: Run unit tests
+        run: poetry run pytest tests/unit -v
+
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: poetry
+
+      - name: Install Poetry
+        run: pip install "poetry==${POETRY_VERSION}"
+
+      - name: Install docs dependencies
+        run: poetry install --with docs --no-interaction
+
+      - name: Build documentation
+        run: poetry run jupyter-book clean docs && poetry run jupyter-book build docs

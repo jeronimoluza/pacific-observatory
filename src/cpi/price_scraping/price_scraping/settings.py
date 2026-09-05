@@ -61,8 +61,9 @@ RETRY_HTTP_CODES = [500, 502, 503, 504, 408, 429]
 # Timeout settings
 DOWNLOAD_TIMEOUT = 15
 
-# Termination guards — bound runtime so spiders can't hang the daily run
-CLOSESPIDER_TIMEOUT = 1800  # 30 min hard cap per spider
+# Termination guards — kill stuck spiders without truncating long legitimate
+# crawls. No wall-clock cap (logs/price-atlas analysis showed it would cut
+# 11/32 spiders mid-run, including cosmed at ~140K items/run).
 CLOSESPIDER_TIMEOUT_NO_ITEM = 600  # die if no items yielded for 10 min
 DEPTH_LIMIT = 8  # CrawlSpiders can't recurse forever
 LOGSTATS_INTERVAL = 300  # log stats every 5 min for visibility

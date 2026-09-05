@@ -1,27 +1,45 @@
-name: Publish to GitHub Pages
+name: Deploy Docs
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-docs
+  cancel-in-progress: true
+
+env:
+  POETRY_VERSION: "2.3.2"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
-          architecture: "x64"
-      - name: Install dependencies
-        run: |
-          if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
-      - name: Build
-        run: |
-          jupyter-book build docs
+          python-version: "3.11"
+          cache: poetry
+
+      - name: Install Poetry
+        run: pip install "poetry==${POETRY_VERSION}"
+
+      - name: Install docs dependencies
+        run: poetry install --with docs --no-interaction
+
+      - name: Build docs
+        run: poetry run jupyter-book clean docs && poetry run jupyter-book build docs
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main' && job.status == 'success'

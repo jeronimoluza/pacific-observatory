@@ -93,12 +93,42 @@ _PNG_DATE_RE = re.compile(
     r"\s+(20\d{2})",
     re.IGNORECASE,
 )
+# Fallback: "April 2026 IRP …" — no day number, default to 1st.
+_PNG_DATE_FALLBACK_RE = re.compile(
+    r"(January|February|March|April|May|June|July|August|September|October|November|December)"
+    r"\s+(20\d{2})",
+    re.IGNORECASE,
+)
 
 _WP_LIST_URL = (
     "https://iccc.gov.pg/wp-json/wp/v2/posts"
     "?categories=763309980&per_page=100&orderby=date&order=desc"
     "&_fields=id,date,slug,title,link"
 )
+
+
+_PNG_RESET_DATE_RE = re.compile(
+    r"(\d{1,2})\s*(?:st|nd|rd|th)?\s+"
+    r"(January|February|March|April|May|June|July|August|September|October|November|December)"
+    r",?\s+(20\d{2})",  # allow optional comma before year
+    re.IGNORECASE,
+)
+
+
+def _detect_reset(html: str) -> date | None:
+    """If the article is a price-resetting notice, return the reset effective date."""
+    if not re.search(r"(?i)reset\w*\s+.*fuel\s+price|fuel\s+price.*reset", html):
+        return None
+    ctx = re.search(r"(?i)(effective|commence|take\s+effect).{0,120}", html)
+    m = _PNG_RESET_DATE_RE.search(ctx.group(0) if ctx else html)
+    if m:
+        try:
+            return date(
+                int(m.group(3)), MONTH_MAP_EN[m.group(2).lower()], int(m.group(1))
+            )
+        except ValueError:
+            pass
+    return None
 
 
 def _parse_png_table(html: str, article_link: str) -> list[dict]:
@@ -130,7 +160,13 @@ def _parse_png_table(html: str, article_link: str) -> list[dict]:
     if not col_map:
         return []
 
+    # Detect price-reset posts (e.g. April 2026 government subsidy rollback).
+    reset_date = _detect_reset(html)
+
     rows: list[dict] = []
+    parsed_rows: list[
+        tuple[date, date, list[dict]]
+    ] = []  # (obs_date, month_end, product_rows)
 
     # --- data rows (row 1 = current month, row 2 = previous month) ---
     for tr in trs[1:3]:
@@ -141,11 +177,17 @@ def _parse_png_table(html: str, article_link: str) -> list[dict]:
         # Parse date from the first cell text
         first_text = cells[0].get_text(separator=" ", strip=True)
         dm = _PNG_DATE_RE.search(first_text)
-        if not dm:
-            continue
-        day = int(dm.group(1))
-        month_num = MONTH_MAP_EN[dm.group(2).lower()]
-        year = int(dm.group(3))
+        if dm:
+            day = int(dm.group(1))
+            month_num = MONTH_MAP_EN[dm.group(2).lower()]
+            year = int(dm.group(3))
+        else:
+            dm2 = _PNG_DATE_FALLBACK_RE.search(first_text)
+            if not dm2:
+                continue
+            day = 1
+            month_num = MONTH_MAP_EN[dm2.group(1).lower()]
+            year = int(dm2.group(2))
         try:
             obs_date = date(year, month_num, day)
         except ValueError:
@@ -155,6 +197,7 @@ def _parse_png_table(html: str, article_link: str) -> list[dict]:
             day=1
         ) - timedelta(days=1)
 
+        product_rows: list[dict] = []
         for col_idx, (prod_name, family, qg, ron) in col_map.items():
             if col_idx >= len(cells):
                 continue
@@ -164,29 +207,91 @@ def _parse_png_table(html: str, article_link: str) -> list[dict]:
             if not pm:
                 continue
             try:
-                toea = float(pm.group(1))
-                price = toea / 100.0  # toea → PGK
+                raw = float(pm.group(1))
+                price = (
+                    raw / 100.0 if raw >= 100 else raw
+                )  # toea → PGK; already PGK if < 100
                 if not (1.0 <= price <= 20.0):
                     continue
             except ValueError:
                 continue
 
+            product_rows.append(
+                {
+                    "prod_name": prod_name,
+                    "family": family,
+                    "qg": qg,
+                    "ron": ron,
+                    "price": round(price, 4),
+                }
+            )
+
+        if product_rows:
+            parsed_rows.append((obs_date, month_end, product_rows))
+
+    # --- build observation rows, handling reset split ---
+    if reset_date and len(parsed_rows) == 2:
+        # Row 0 = current month (spike), Row 1 = previous month (reset-to prices).
+        # Spike applies from month start to reset_date - 1.
+        # Reset-to prices apply from reset_date to month end.
+        spike_date, spike_month_end, spike_products = parsed_rows[0]
+        _, _, reset_products = parsed_rows[1]
+        reset_prev = reset_date - timedelta(days=1)
+
+        for p in spike_products:
             r_row = _TMPL_PNG.copy()
             r_row.update(
                 {
-                    "fuel_family": family,
-                    "fuel_product": prod_name,
-                    "quality_group": qg,
-                    "octane_ron": ron,
-                    "price_local": round(price, 4),
-                    "effective_from": str(obs_date),
-                    "effective_to": str(month_end),
-                    "observation_date": str(obs_date),
+                    "fuel_family": p["family"],
+                    "fuel_product": p["prod_name"],
+                    "quality_group": p["qg"],
+                    "octane_ron": p["ron"],
+                    "price_local": p["price"],
+                    "effective_from": str(spike_date),
+                    "effective_to": str(reset_prev),
+                    "observation_date": str(spike_date),
                     "source_url": article_link,
                 }
             )
             r_row["observation_hash"] = make_hash(r_row)
             rows.append(r_row)
+
+        for p in reset_products:
+            r_row = _TMPL_PNG.copy()
+            r_row.update(
+                {
+                    "fuel_family": p["family"],
+                    "fuel_product": p["prod_name"],
+                    "quality_group": p["qg"],
+                    "octane_ron": p["ron"],
+                    "price_local": p["price"],
+                    "effective_from": str(reset_date),
+                    "effective_to": str(spike_month_end),
+                    "observation_date": str(reset_date),
+                    "source_url": article_link,
+                }
+            )
+            r_row["observation_hash"] = make_hash(r_row)
+            rows.append(r_row)
+    else:
+        for obs_date, month_end, product_rows in parsed_rows:
+            for p in product_rows:
+                r_row = _TMPL_PNG.copy()
+                r_row.update(
+                    {
+                        "fuel_family": p["family"],
+                        "fuel_product": p["prod_name"],
+                        "quality_group": p["qg"],
+                        "octane_ron": p["ron"],
+                        "price_local": p["price"],
+                        "effective_from": str(obs_date),
+                        "effective_to": str(month_end),
+                        "observation_date": str(obs_date),
+                        "source_url": article_link,
+                    }
+                )
+                r_row["observation_hash"] = make_hash(r_row)
+                rows.append(r_row)
 
     return rows
 

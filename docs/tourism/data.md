@@ -12,7 +12,7 @@ Besides the abovementioned data sources, the study incorporates the Google Trend
 
 ## Assessment
 
-As seen in [next page](https://worldbank.github.io/pacific-observatory/tourism/official_eda.html), the orange line represents the GAD’s ISA, and the blue line represents the VA data. VA and ISA typically moved together, except for months following the announcement of Covid-19 as a global pandemic. Beyond the rough observation, a series of assessments are conducted, including correlation, stationarity, and Granger Causality analyses.
+As seen on the {doc}`official_eda` page, the orange line represents the GAD's ISA, and the blue line represents the VA data. VA and ISA typically moved together, except for months following the announcement of Covid-19 as a global pandemic. Beyond the rough observation, a series of assessments are conducted, including correlation, stationarity, and Granger Causality analyses.
 
 Pearson’s correlation coefficient is an often-employed approach to test the correlation between variables. However, the employment of Pearson’s correlation could be spurious because it ignores that time series data strongly depends on previous states. Cross-correlation is essential to measuring the similarity between two time series
 

@@ -1,28 +1,57 @@
 """
 Spider for scraping Aeon Online (Cambodia) - https://aeononlineshopping.com/
-Extracts product information including prices, categories, store locations, and URLs.
-Uses the JSON API directly (no Playwright needed).
+
+Site migrated from REST API (/api/store/{slug}) to Next.js App Router (RSC).
+As of 2026-05, product data is embedded in the RSC payload of two page types:
+  1. /shop-by-store   — lists all stores with ~8 products each (topSales)
+  2. /shop-by-store/{slug} — individual store page with topSalesProducts (~12) and
+     newArrivalProducts
 
 Strategy:
-1. Fetch store API which returns featured products and category tree
-2. Extract products from the store response
-3. Build category mapping from the category tree
-4. Track scraped product IDs to avoid duplicates across stores
+  - Request /shop-by-store to get the full store list + inline products (120 items).
+  - Then request each store's dedicated page to pick up topSalesProducts + newArrivalProducts.
+  - Parse product data directly from self.__next_f.push RSC payloads (no Playwright needed —
+    Next.js App Router server-renders the full RSC payload into the HTML).
 """
 
-import scrapy
-import logging
+import re
 import json
+import logging
 from datetime import datetime
 
+import scrapy
+
 logger = logging.getLogger(__name__)
+
+# Regex to extract all RSC push payloads from HTML
+_RSC_PUSH_RE = re.compile(r"self\.__next_f\.push\(\[(.*?)\]\)", re.DOTALL)
+
+
+def _iter_rsc_json(html: str):
+    """Yield decoded RSC payload strings from all __next_f.push() calls."""
+    for m in _RSC_PUSH_RE.finditer(html):
+        payload = m.group(1)
+        # RSC pushes are JSON-encoded strings: 1,"..."
+        str_match = re.match(r'^1,"(.*)"$', payload.strip(), re.DOTALL)
+        if str_match:
+            # Undo JSON string escaping applied by the server
+            try:
+                # Use json.loads to handle escape sequences correctly
+                decoded = json.loads('"' + str_match.group(1) + '"')
+                yield decoded
+            except Exception:
+                yield (
+                    str_match.group(1)
+                    .replace('\\"', '"')
+                    .replace("\\n", "\n")
+                    .replace("\\/", "/")
+                )
 
 
 class AeonOnlineSpider(scrapy.Spider):
     """
     Spider for Aeon Online (Cambodia).
-    Uses JSON API directly to extract product data.
-    Extracts products from store API response.
+    Scrapes product data from RSC payloads embedded in Next.js App Router pages.
     """
 
     name = "aeon_online"
@@ -30,300 +59,121 @@ class AeonOnlineSpider(scrapy.Spider):
     country = "cambodia"
     currency = "KHR"
 
-    # Store slugs to scrape
-    STORE_SLUGS = [
-        "aeon1-aeon-phnom-penh",
-        "aeon2-aeon-sen-sok",
-        "aeon3-aeon-mean-chey",
-        "maxvalu-toul-kork",
-        "maxvalu-boeung-kak",
-        "aeon1-aeon-food-phnom-penh",
-        "aeon2-aeon-food-sen-sok",
-        "aeon3-aeon-food-mean-chey",
-        "aeon3-fashion-beauty",
-        "maxvalu-tuek-thla",
-        "maxvalu-express-reoussey-keo-598",
-        "maxvalu-tonle-bassac-monivong",
-    ]
-
-    # API endpoints
-    STORE_API = "https://aeononlineshopping.com/api/store/{store_slug}"
+    # Landing page that lists all stores + has inline products in RSC payload
+    SHOP_BY_STORE_URL = "https://aeononlineshopping.com/shop-by-store"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Track scraped product IDs to avoid duplicates across stores
-        self.scraped_product_ids = set()
+        self.scraped_product_ids: set = set()
 
     def start_requests(self):
-        """
-        Generate requests for each store's API endpoint.
-        """
-        for store_slug in self.STORE_SLUGS:
-            url = self.STORE_API.format(store_slug=store_slug)
-            yield scrapy.Request(
-                url,
-                callback=self.parse_store_api,
-                meta={"store_slug": store_slug},
-                headers={"Accept": "application/json"},
-            )
+        yield scrapy.Request(
+            self.SHOP_BY_STORE_URL,
+            callback=self.parse_store_list,
+            headers={"Accept": "text/html"},
+        )
 
-    def parse_store_api(self, response):
-        """
-        Parse store API response to extract products.
-        The store API returns featured products and category tree.
-        """
-        store_slug = response.meta.get("store_slug")
+    # ------------------------------------------------------------------
+    # Parse /shop-by-store — extract store list + inline products
+    # ------------------------------------------------------------------
 
-        try:
-            data = json.loads(response.text)
-        except json.JSONDecodeError:
-            logger.error(f"Failed to parse JSON for store {store_slug}")
-            return
-
-        # Extract store info
-        store_info = data.get("store", {})
-        store_id = store_info.get("store_id")
-        store_name = store_info.get("name", store_slug)
-
-        logger.info(f"Parsing store: {store_name} (ID: {store_id})")
-
-        # Build category lookup from the category tree
-        categories = data.get("categories", [])
-        category_lookup = self._build_category_lookup(categories)
-
-        logger.info(f"Built category lookup with {len(category_lookup)} categories")
-
+    def parse_store_list(self, response):
         scraped_at = datetime.utcnow().isoformat()
-        new_products_count = 0
+        store_slugs = []
 
-        # Extract products from the main products array
-        products = data.get("products", [])
-        logger.info(f"Found {len(products)} featured products for store {store_name}")
+        for decoded in _iter_rsc_json(response.text):
+            # Each store block: "id":"aeon1-aeon-phnom-penh","name":"...","products":[...]
+            # Store-level IDs are lowercase slugs (product IDs are numeric strings)
+            slug_matches = re.findall(r'"id":"([a-z][a-z0-9-]+)"', decoded)
+            for slug in slug_matches:
+                if slug not in store_slugs:
+                    store_slugs.append(slug)
 
-        for product in products:
-            item = self._extract_product_from_api(
-                product, store_slug, store_name, store_id, category_lookup, scraped_at
-            )
-            if item:
-                product_id = item.get("product_id")
-                if product_id and product_id in self.scraped_product_ids:
+            # Extract inline products for this payload segment
+            # Pattern: {"id":"<numeric>","name":"...","price":"<digits>"}
+            for prod_match in re.finditer(
+                r'\{"id":"(\d+)","name":"([^"]+)","image":"[^"]*","price":"(\d+)"[^}]*\}',
+                decoded,
+            ):
+                prod_id = prod_match.group(1)
+                name = prod_match.group(2)
+                price = prod_match.group(3)
+
+                # Resolve store slug: look backwards for the nearest store id
+                pos = prod_match.start()
+                preceding = decoded[:pos]
+                store_slug_m = re.findall(r'"id":"([a-z][a-z0-9-]+)"', preceding)
+                store_slug = store_slug_m[-1] if store_slug_m else "unknown"
+
+                if prod_id in self.scraped_product_ids:
                     continue
-                if product_id:
-                    self.scraped_product_ids.add(product_id)
-                new_products_count += 1
-                yield item
+                self.scraped_product_ids.add(prod_id)
 
-        # Also extract from top_sale_products
-        top_products = data.get("top_sale_products", [])
-        logger.info(
-            f"Found {len(top_products)} top sale products for store {store_name}"
-        )
-
-        for product in top_products:
-            item = self._extract_product_from_api(
-                product, store_slug, store_name, store_id, category_lookup, scraped_at
-            )
-            if item:
-                product_id = item.get("product_id")
-                if product_id and product_id in self.scraped_product_ids:
-                    continue
-                if product_id:
-                    self.scraped_product_ids.add(product_id)
-                new_products_count += 1
-                yield item
-
-        logger.info(
-            f"Scraped {new_products_count} new products from store {store_name}"
-        )
-
-        # Now request each leaf category page to get more products
-        leaf_categories = self._get_leaf_categories_from_api(categories)
-        logger.info(f"Found {len(leaf_categories)} leaf categories to scrape")
-
-        for cat_info in leaf_categories:
-            category_id = cat_info.get("category_id")
-            category_slug = cat_info.get("slug")
-            category_name = cat_info.get("name")
-            category_path = cat_info.get("path", category_name)
-
-            if not category_id or not category_slug:
-                continue
-
-            # Request category page with store context
-            # URL pattern: /api/store/{store_slug}?category={category_id}
-            # But this doesn't filter products, so try the category page URL pattern
-            api_url = f"https://aeononlineshopping.com/api/store/{store_slug}?category={category_id}"
-
-            yield scrapy.Request(
-                api_url,
-                callback=self.parse_category_page,
-                meta={
+                yield {
+                    "product_id": prod_id,
+                    "product_name": name,
+                    "price": price,
+                    "currency": self.currency,
                     "store_slug": store_slug,
-                    "store_id": store_id,
-                    "store_name": store_name,
-                    "category_id": category_id,
-                    "category_name": category_name,
-                    "category_path": category_path,
-                    "category_lookup": category_lookup,
-                },
-                headers={"Accept": "application/json"},
-                dont_filter=True,
-            )
-
-    def _build_category_lookup(self, categories):
-        """
-        Build a lookup dict mapping category_id to category info.
-        """
-        lookup = {}
-
-        def process_category(cat, parent_path=""):
-            cat_data = cat.get("category", cat)
-            cat_id = cat_data.get("category_id") or cat.get("category_id")
-
-            content = cat_data.get("get_content", {})
-            cat_name = content.get("name") or cat_data.get("name", "Unknown")
-
-            current_path = f"{parent_path} > {cat_name}" if parent_path else cat_name
-
-            if cat_id:
-                lookup[cat_id] = {
-                    "name": cat_name,
-                    "path": current_path,
-                    "slug": cat_data.get("slug"),
+                    "category": "store-front",
+                    "url": f"https://aeononlineshopping.com/product/{store_slug}/{prod_id}",
+                    "scraped_at": scraped_at,
                 }
 
-            sub_cats = cat_data.get("sub_categories", [])
-            for sub in sub_cats:
-                process_category(sub, current_path)
+        logger.info(
+            "Found %d store slugs from /shop-by-store; scraped %d inline products so far",
+            len(store_slugs),
+            len(self.scraped_product_ids),
+        )
 
-        for cat in categories:
-            process_category(cat)
+        # Now request each individual store page for topSalesProducts + newArrivalProducts
+        for slug in store_slugs:
+            url = f"https://aeononlineshopping.com/shop-by-store/{slug}?tab=store-front"
+            yield scrapy.Request(
+                url,
+                callback=self.parse_store_page,
+                meta={"store_slug": slug},
+                headers={"Accept": "text/html"},
+            )
 
-        return lookup
+    # ------------------------------------------------------------------
+    # Parse /shop-by-store/{slug} — topSalesProducts + newArrivalProducts
+    # ------------------------------------------------------------------
 
-    def _get_leaf_categories_from_api(self, categories):
-        """
-        Recursively extract leaf categories from API response.
-        A leaf category has no sub_categories or empty sub_categories.
-        """
-        leaves = []
-
-        def process_category(cat, parent_path=""):
-            cat_data = cat.get("category", cat)
-            cat_id = cat_data.get("category_id") or cat.get("category_id")
-
-            content = cat_data.get("get_content", {})
-            cat_name = content.get("name") or cat_data.get("name", "Unknown")
-
-            current_path = f"{parent_path} > {cat_name}" if parent_path else cat_name
-
-            sub_cats = cat_data.get("sub_categories", [])
-
-            if not sub_cats:
-                leaves.append(
-                    {
-                        "category_id": cat_id,
-                        "name": cat_name,
-                        "path": current_path,
-                        "slug": cat_data.get("slug"),
-                    }
-                )
-            else:
-                for sub in sub_cats:
-                    process_category(sub, current_path)
-
-        for cat in categories:
-            process_category(cat)
-
-        return leaves
-
-    def parse_category_page(self, response):
-        """
-        Parse category page API response to extract products.
-        """
-        store_slug = response.meta.get("store_slug")
-        store_id = response.meta.get("store_id")
-        store_name = response.meta.get("store_name")
-        category_name = response.meta.get("category_name")
-        category_path = response.meta.get("category_path")
-        category_lookup = response.meta.get("category_lookup", {})
-
-        try:
-            data = json.loads(response.text)
-        except json.JSONDecodeError:
-            logger.error(f"Failed to parse JSON for category {category_name}")
-            return
-
-        products = data.get("products", [])
-
-        if not products:
-            return
-
+    def parse_store_page(self, response):
+        store_slug = response.meta.get("store_slug", "unknown")
         scraped_at = datetime.utcnow().isoformat()
-        new_products_count = 0
+        count = 0
 
-        for product in products:
-            item = self._extract_product_from_api(
-                product,
-                store_slug,
-                store_name,
-                store_id,
-                category_lookup,
-                scraped_at,
-                category_name,
-                category_path,
-            )
-            if item:
-                product_id = item.get("product_id")
-                if product_id and product_id in self.scraped_product_ids:
-                    continue
-                if product_id:
-                    self.scraped_product_ids.add(product_id)
-                new_products_count += 1
-                yield item
+        for decoded in _iter_rsc_json(response.text):
+            # topSalesProducts and newArrivalProducts sections
+            for section_key in ("topSalesProducts", "newArrivalProducts"):
+                for prod_match in re.finditer(
+                    r'"productId":(\d+),"image":"[^"]*","name":"([^"]+)","price":"(\d+)"',
+                    decoded,
+                ):
+                    prod_id = prod_match.group(1)
+                    name = prod_match.group(2)
+                    price = prod_match.group(3)
 
-        if new_products_count > 0:
-            logger.info(
-                f"Scraped {new_products_count} new products from category '{category_name}'"
-            )
+                    if prod_id in self.scraped_product_ids:
+                        continue
+                    self.scraped_product_ids.add(prod_id)
+                    count += 1
 
-    def _extract_product_from_api(
-        self,
-        product,
-        store_slug,
-        store_name,
-        store_id,
-        category_lookup,
-        scraped_at,
-        override_category=None,
-        override_path=None,
-    ):
-        """Extract product data from API response."""
-        product_id = product.get("product_id")
+                    yield {
+                        "product_id": prod_id,
+                        "product_name": name,
+                        "price": price,
+                        "currency": self.currency,
+                        "store_slug": store_slug,
+                        "category": section_key,
+                        "url": f"https://aeononlineshopping.com/product/{store_slug}/{prod_id}",
+                        "scraped_at": scraped_at,
+                    }
 
-        content = product.get("get_content", {})
-        name = content.get("name") or product.get("name")
-
-        price_detail = product.get("price_detail", {})
-        price_khr = price_detail.get("price_in_khr")
-
-        if not name:
-            return None
-
-        category_name = override_category or "Featured"
-
-        slug = product.get("slug", "-")
-        product_url = f"https://aeononlineshopping.com/product/{slug}/{product_id}?store_id={store_id}"
-
-        return {
-            "product_name": name,
-            "category": category_name,
-            "price": price_khr,
-            "store": store_name,
-            "store_slug": store_slug,
-            "store_id": store_id,
-            "currency": self.currency,
-            "url": product_url,
-            "scraped_at": scraped_at,
-            "product_id": str(product_id),
-        }
+        logger.info(
+            "Store %s: scraped %d new products from topSales/newArrival",
+            store_slug,
+            count,
+        )

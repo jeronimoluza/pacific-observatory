@@ -4,17 +4,16 @@ from __future__ import annotations
 
 import logging
 import sys
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import cast
 
 import pandas as pd
 
 from ..constants import DATA_DIR, FETCH_STATE_JSON, STAGED_DATA_DIR
-from ..fetchers import FETCHER_REGISTRY, Cadence
+from ..fetchers import FETCHER_REGISTRY
 from ..loader import (
     get_cutoff,
-    get_last_run_ts,
     load_fuel_csv,
     merge_new_rows,
     read_fetch_state,
@@ -26,67 +25,6 @@ from ..loader import (
 from ..storage import source_csv_path
 
 logger = logging.getLogger(__name__)
-
-# ── Cadence skip intervals ────────────────────────────────────────────────────
-
-_CADENCE_MIN_INTERVAL: dict[str, timedelta] = {
-    "daily": timedelta(hours=20),
-    "weekly": timedelta(days=5),
-    "monthly": timedelta(days=25),
-    "quarterly": timedelta(days=80),
-    # "irregular": no minimum — always run
-    # "manual": handled separately — never auto-run
-}
-
-
-def _should_skip(
-    source_key: str,
-    cadence: Cadence,
-    state: dict,
-    force: bool,
-) -> bool:
-    """Return True if this source should be skipped based on cadence.
-
-    - manual: always skip unless force=True
-    - irregular: never skip
-    - others: skip if last_run_ts is within the cadence interval
-    """
-    if force:
-        if cadence == "manual":
-            logger.warning("Running manual source %s (--force override)", source_key)
-        return False
-
-    if cadence == "manual":
-        logger.info("Skipping %s (cadence=manual; use --force to run)", source_key)
-        return True
-
-    if cadence == "irregular":
-        return False
-
-    min_interval = _CADENCE_MIN_INTERVAL.get(cadence)
-    if min_interval is None:
-        return False
-
-    last_run = get_last_run_ts(state, source_key)
-    if last_run is None:
-        return False  # never run → always execute
-
-    now = datetime.now(tz=timezone.utc)
-    if last_run.tzinfo is None:
-        last_run = last_run.replace(tzinfo=timezone.utc)
-    elapsed = now - last_run
-
-    if elapsed < min_interval:
-        logger.info(
-            "Skipping %s (cadence=%s; last run %s ago, interval %s)",
-            source_key,
-            cadence,
-            str(elapsed).split(".")[0],
-            min_interval,
-        )
-        return True
-
-    return False
 
 
 def staged_collect_dir() -> Path:
@@ -104,8 +42,6 @@ def run_collection(
     source_key: str | None = None,
     observations_base_dir: Path = DATA_DIR,
     fetch_state_path: Path = FETCH_STATE_JSON,
-    cadence_filter: Cadence | None = None,
-    force: bool = False,
     rebuild: bool = False,
 ) -> None:
     """Fetch new data from one or all configured fuel sources.
@@ -114,8 +50,6 @@ def run_collection(
         source_key: Run a single source key only. Required when rebuild=True.
         observations_base_dir: Base directory for per-source observations.csv files.
         fetch_state_path: Path to .fetch_state.json.
-        cadence_filter: If set, only run sources whose cadence matches.
-        force: Ignore cadence skip logic (including manual sources).
         rebuild: Delete existing observations.csv and re-fetch from fallback_date.
                  Requires source_key to be set.
     """
@@ -134,15 +68,6 @@ def run_collection(
     else:
         keys_to_run = list(FETCHER_REGISTRY)
 
-    # Apply cadence filter
-    if cadence_filter:
-        keys_to_run = [
-            k for k in keys_to_run if FETCHER_REGISTRY[k].cadence == cadence_filter
-        ]
-        if not keys_to_run:
-            logger.info("No sources match cadence=%s", cadence_filter)
-            return
-
     # Handle rebuild: wipe observations.csv and reset state
     if rebuild and source_key:
         cfg = FETCHER_REGISTRY[source_key]
@@ -156,7 +81,6 @@ def run_collection(
             "last_data_date": cfg.fallback_date.isoformat(),
             "last_run_ts": None,
         }
-        force = True  # rebuild always runs regardless of cadence
 
     # Group keys by fetch function (some functions serve multiple source keys)
     fn_to_keys: dict = {}
@@ -167,14 +91,6 @@ def run_collection(
     existing_cache: dict[str, pd.DataFrame] = {}
 
     for fetch_fn, source_keys in fn_to_keys.items():
-        # Cadence skip: check the first key in the group (shared fn → same cadence)
-        primary_key = source_keys[0]
-        primary_cfg = FETCHER_REGISTRY[primary_key]
-
-        if _should_skip(primary_key, primary_cfg.cadence, state, force):
-            # Mark run timestamp even for skipped sources? No — skip means no attempt.
-            continue
-
         cutoffs: list[date] = []
         for key in source_keys:
             cfg = FETCHER_REGISTRY[key]
@@ -234,8 +150,27 @@ def run_collection(
 
             cfg = FETCHER_REGISTRY.get(grouped_source)
             full_refresh = cfg.full_refresh if cfg is not None else False
-            if full_refresh:
-                existing = pd.DataFrame(columns=existing.columns)
+            if full_refresh and not group.empty:
+                # Replace only overlapping dates; preserve historical rows
+                # outside the range of the new fetch.
+                new_dates = set()
+                if "observation_date" in group.columns:
+                    new_dates = set(
+                        group["observation_date"].dropna().astype(str).str[:10]
+                    )
+                if (
+                    new_dates
+                    and not existing.empty
+                    and "observation_date" in existing.columns
+                ):
+                    overlap = (
+                        existing["observation_date"]
+                        .astype(str)
+                        .str[:10]
+                        .isin(new_dates)
+                    )
+                    existing = existing[~overlap].copy()
+                # If new fetch is empty, keep everything (handled by guard above).
 
             merged = merge_new_rows(existing, group)
             existing_cache[cache_key] = merged

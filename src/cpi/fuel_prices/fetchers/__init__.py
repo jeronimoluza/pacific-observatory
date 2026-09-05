@@ -15,7 +15,7 @@ from .australia import (
     fetch_au_fuelwatch_perth,
     fetch_au_nsw_fuelcheck_history,
 )
-from .cambodia import fetch_cambodia_moc, fetch_kh_ptt
+from .cambodia import fetch_kh_ptt
 from .china import fetch_cn_ndrc_max_retail_prices
 from .fiji import fetch_fj_fccc_orders
 from .hong_kong import (
@@ -28,7 +28,7 @@ from .korea import fetch_kr_opinet_daily, fetch_kr_opinet_weekly
 from .lao import fetch_lao, fetch_lao_kpl
 from .malaysia import fetch_malaysia_datagovmy, fetch_malaysia_mof
 from .mongolia import fetch_mn_nso_weekly_aimag, fetch_mongolia_data_mn
-from .myanmar import fetch_myanmar_denko, fetch_myanmar_gnlm
+from .myanmar import fetch_myanmar_denko, fetch_myanmar_starfish
 from .new_zealand import fetch_nz_gaspy_stats_daily, fetch_nz_mbie_weekly
 from .singapore import (
     fetch_sg_singstat_avg_retail_prices,
@@ -43,13 +43,10 @@ from .pacific_islands import (
     fetch_solomon_islands,
     fetch_vanuatu_doe,
 )
-from .philippines import fetch_ph_doe_visayas, fetch_philippines_doe
+from .philippines import fetch_philippines_doe
 from .thailand import (
     fetch_th_bangchak_retail_history,
-    fetch_th_eppo_p04,
-    fetch_th_eppo_retail_daily,
     fetch_th_or_pttor_current_oil_price,
-    fetch_thailand_eppo_ngv,
 )
 from .timor_leste import fetch_timor_anp
 from .global_commodities import fetch_investing_commodities
@@ -128,14 +125,6 @@ FETCHER_REGISTRY: dict[str, FetcherConfig] = {
         country="Cambodia",
         homepage="https://www.ptt.com.kh/products-and-services-oil-price",
         cadence="monthly",
-    ),
-    "kh_moc_fuel_notices": FetcherConfig(
-        fn=fetch_cambodia_moc,
-        fallback_date=date(2024, 1, 1),
-        source_name="Cambodia Ministry of Commerce Fuel Price Notices",
-        country="Cambodia",
-        homepage="https://moc.gov.kh/en-US/news/",
-        cadence="manual",  # GraphQL endpoint requires Bearer token (403 without auth)
     ),
     # ── Fiji ──────────────────────────────────────────────────────────────────
     "fj_fccc_order_prices": FetcherConfig(
@@ -275,14 +264,6 @@ FETCHER_REGISTRY: dict[str, FetcherConfig] = {
         cadence="weekly",
     ),
     # ── Myanmar ───────────────────────────────────────────────────────────────
-    "mm_gnlm_fuel_reference_prices": FetcherConfig(
-        fn=fetch_myanmar_gnlm,
-        fallback_date=date(2024, 1, 1),
-        source_name="Myanmar Global New Light — Fuel Reference Prices",
-        country="Myanmar",
-        homepage="https://www.gnlm.com.mm/",
-        cadence="irregular",
-    ),
     "mm_denko_station_daily": FetcherConfig(
         fn=fetch_myanmar_denko,
         fallback_date=date(2025, 1, 1),
@@ -291,6 +272,14 @@ FETCHER_REGISTRY: dict[str, FetcherConfig] = {
         homepage="https://denkomyanmar.com/all-denko-station-daily-fuel-rates/",
         cadence="daily",
         full_refresh=True,
+    ),
+    "mm_starfish_market_price": FetcherConfig(
+        fn=fetch_myanmar_starfish,
+        fallback_date=date(2025, 3, 1),
+        source_name="Starfish Myanmar — Market Price",
+        country="Myanmar",
+        homepage="https://starfishmyanmar.com/market-price",
+        cadence="irregular",
     ),
     # ── New Zealand ───────────────────────────────────────────────────────────
     "nz_mbie_weekly_fuel": FetcherConfig(
@@ -408,38 +397,13 @@ FETCHER_REGISTRY: dict[str, FetcherConfig] = {
     # ── Philippines ───────────────────────────────────────────────────────────
     "ph_doe_retail_pump_prices": FetcherConfig(
         fn=fetch_philippines_doe,
-        fallback_date=date(2024, 1, 1),
-        source_name="Philippines DOE Retail Pump Prices",
+        fallback_date=date(2023, 7, 21),
+        source_name="Philippines DOE NCR Retail Pump Prices",
         country="Philippines",
-        homepage="https://doe.gov.ph/site/vfo/articles/group/liquid-fuels",
-        cadence="manual",  # PDF-based scraper stale since 2025-09-08; requires manual review
-    ),
-    "ph_doe_visayas_weekly": FetcherConfig(
-        fn=fetch_ph_doe_visayas,
-        fallback_date=date(2020, 1, 1),
-        source_name="Philippines DOE Visayas Weekly Price Monitoring",
-        country="Philippines",
-        homepage="https://doe.gov.ph/site/vfo/articles/group/liquid-fuels",
+        homepage="https://doe.gov.ph/articles/3142895--list-of-ncr-pump-prices",
         cadence="weekly",
     ),
     # ── Thailand ──────────────────────────────────────────────────────────────
-    "th_eppo_p04_monthly": FetcherConfig(
-        fn=fetch_th_eppo_p04,
-        fallback_date=date(2020, 1, 1),
-        source_name="Thailand EPPO Table P04 — Monthly Retail Petroleum Prices",
-        country="Thailand",
-        homepage="https://www.eppo.go.th/index.php/en/en-energystatistics/petroleum-statistic",
-        cadence="monthly",
-        full_refresh=True,
-    ),
-    "th_eppo_retail_daily": FetcherConfig(
-        fn=fetch_th_eppo_retail_daily,
-        fallback_date=date(2024, 1, 1),
-        source_name="Thailand EPPO Retail Fuel Prices (Daily)",
-        country="Thailand",
-        homepage="http://www.eppo.go.th/petro/price/index.html",
-        cadence="daily",
-    ),
     "th_or_pttor_current_oil_price_daily": FetcherConfig(
         fn=fetch_th_or_pttor_current_oil_price,
         fallback_date=date(2024, 1, 1),
@@ -447,14 +411,6 @@ FETCHER_REGISTRY: dict[str, FetcherConfig] = {
         country="Thailand",
         homepage="https://www.pttor.com/en/for-driver",
         cadence="daily",
-    ),
-    "th_eppo_ngv_bangkok_2025": FetcherConfig(
-        fn=fetch_thailand_eppo_ngv,
-        fallback_date=date(2023, 1, 1),
-        source_name="Thailand EPPO NGV Bangkok Retail Prices",
-        country="Thailand",
-        homepage="https://www.eppo.go.th/index.php/en/en-energystatistics/petroleum-statistic",
-        cadence="irregular",
     ),
     "th_bangchak_retail_history": FetcherConfig(
         fn=fetch_th_bangchak_retail_history,
