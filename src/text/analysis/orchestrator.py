@@ -112,6 +112,67 @@ def _dedup_source_counts(df: pd.DataFrame) -> pd.DataFrame:
     return work
 
 
+def frontier_date(per_source_max, quantile: float = 0.90):
+    """Where the fleet's collection actually ends, ignoring a few fresh outliers.
+
+    Takes the per-source newest article dates and returns a high quantile of
+    them. The corpus maximum is not usable here: it is set by whichever single
+    source is freshest, so probing two Taiwanese papers — 8 rows dated into
+    September against August's 57,759 — was enough to move the anchor a whole
+    month and wipe out the daily tail. Across 312 EAP sources, p90 and p75 both
+    sat on 2026-08-27 while the maximum sat on 2026-09-04.
+
+    Returns ``None`` for an empty input, matching ``resolve_tail_start``.
+    """
+    dates = sorted(d for d in per_source_max if d is not None)
+    if not dates:
+        return None
+    idx = min(int(len(dates) * quantile), len(dates) - 1)
+    return dates[idx]
+
+
+def resolve_tail_start(max_real_date, today) -> str:
+    """Anchor the daily tail to the corpus rather than to the wall clock.
+
+    The tail used to start on the first of the current calendar month. That
+    silently emptied it whenever collection lagged: the daily index is
+    ``date_range(tail_start, max_date)``, which yields nothing once the newest
+    article predates the tail. The daily rows vanish, and so do the weekly
+    points the dashboard buckets from them.
+
+    ``max_real_date`` must already exclude future-dated articles. Those are
+    parse errors, and letting one drag the anchor forward would re-create the
+    empty tail this exists to prevent. The anchor never runs past the current
+    month, so a corpus collected up to today behaves exactly as before.
+    """
+    calendar_tail_start = today.replace(day=1)
+    if max_real_date is None:
+        return calendar_tail_start.strftime("%Y-%m-%d")
+    return min(max_real_date.replace(day=1), calendar_tail_start).strftime("%Y-%m-%d")
+
+
+def _daily_backfill_cutoff(cached_df, daily_tail_start):
+    """Cutoff forcing re-annotation of a tail month cached at monthly grain.
+
+    Returns the day before ``daily_tail_start`` when the cache holds rows on or
+    after the tail but none of them are in daily form, and ``None`` otherwise.
+    Being derived from the cache keeps this idempotent: once the month has been
+    re-annotated the daily rows are present and no further backfill fires.
+    """
+    if daily_tail_start is None or cached_df is None or cached_df.empty:
+        return None
+    if "ym" not in cached_df.columns:
+        return None
+    ym = cached_df["ym"].astype(str)
+    dates = pd.to_datetime(ym, format="mixed", errors="coerce")
+    at_or_after = dates >= daily_tail_start
+    if not at_or_after.any():
+        return None
+    if ((ym.str.len() > 7) & at_or_after).any():
+        return None
+    return daily_tail_start - pd.Timedelta(days=1)
+
+
 # ── Annotation gate (decides full / tail / skip) ─────────────────────
 
 
@@ -201,16 +262,29 @@ def _ensure_country_source_counts(
         source_counts.write_source_counts(cache_dir, df_full, params_obj)
         return df_full
 
+    # The tail can move backwards, because it follows the newest article rather
+    # than the calendar. When it does, the month it lands on is already cached
+    # at monthly grain, and no source has rows past its cached tail, so the
+    # extension check below finds nothing and the daily rows never appear.
+    # Re-annotate that month at daily grain instead. This reads the need off
+    # the cache itself rather than a stored tail, so caches written before the
+    # tail became data-driven need no migration.
+    backfill_cutoff = _daily_backfill_cutoff(cached_df, daily_tail_start)
+
     # Tail-only path: check whether any source has new rows past the cached tail.
     sources_to_extend: list[tuple[Path, str, annotate.KeywordBundle, pd.Timestamp]] = []
     bundles = {lang: _bundle_for_language(lang) for lang in languages}
     for fp in news_dirs:
         sk = _source_key(fp)
+        cutoff = None
         ext = source_counts.tail_extension(fp, cached_params, sk)
-        if ext is None:
-            continue
-        cutoff, n_new = ext
-        if cutoff is None or n_new <= 0:
+        if ext is not None:
+            ext_cutoff, n_new = ext
+            if ext_cutoff is not None and n_new > 0:
+                cutoff = ext_cutoff
+        if backfill_cutoff is not None:
+            cutoff = backfill_cutoff if cutoff is None else min(cutoff, backfill_cutoff)
+        if cutoff is None:
             continue
         lang = LANGUAGE_ALIASES.get(
             source_languages.get(str(fp), "en"), source_languages.get(str(fp), "en")
@@ -294,8 +368,13 @@ def process_unit_v2(
     cache_root: Path,
     progress_cb: Callable[[int], None] | None = None,
     file_articles: dict[Path, int] | None = None,
+    daily_tail_start: str | None = None,
 ) -> UnitDiagnostics:
     """Process a single unit (country / subregion / region aggregate).
+
+    ``daily_tail_start`` is resolved once per build from the corpus, so every
+    unit shares one anchor and the dashboards stay comparable. Callers that
+    omit it fall back to the current calendar month.
 
     Returns the per-unit diagnostics dict.
     """
@@ -304,8 +383,10 @@ def process_unit_v2(
     diagnostics["level"] = level
     diagnostics["n_sources"] = len(news_dirs)
 
-    today = pd.Timestamp.today()
-    current_tail_start = today.replace(day=1).strftime("%Y-%m-%d")
+    if daily_tail_start is None:
+        today = pd.Timestamp.today()
+        daily_tail_start = today.replace(day=1).strftime("%Y-%m-%d")
+    current_tail_start = daily_tail_start
     daily_tail_ts = pd.Timestamp(current_tail_start)
 
     # Subset: subset_condition is a pandas-style "date >= ... and date <= ..."

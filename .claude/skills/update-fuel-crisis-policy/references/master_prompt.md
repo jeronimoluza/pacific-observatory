@@ -550,11 +550,26 @@ and what source confirms it. It should also flag caveats, such as:
 
 ## EAP
 
-Track East Asia and Pacific countries/economies, including Pacific
-island economies and high-income economies where included in the
-workbook. Preserve any existing workbook country-group logic, such as
-Pacific-only, East Asia-only, high-income, and low/middle-income views,
-if present.
+The country universe is every slug listed under `eap.subregions` in
+`src/configs/regions.yaml` — 38 economies across `east_asia`,
+`pacific_islands` and `southeast_asia`. Enumerate that file at the start of
+the pass and work the whole list. Do not improvise a country list, and do
+not infer scope from which countries already have rows: an economy missing
+from the workbook is a gap to fill, not evidence that it is out of scope.
+
+Write the `Country` cell using the spelling in
+`references/country_names.md`. The dashboard matches country names by exact
+string, so a spelling that drifts drops the row out of its country group
+without any error.
+
+An economy you searched and found no verified measure for must still be
+named in the audit note, so its absence reads as covered rather than
+skipped. This matters most for Guam, American Samoa, Northern Mariana
+Islands, French Polynesia and New Caledonia, where the operative measures
+are often US or French federal programmes rather than local ones.
+
+Preserve any existing workbook country-group logic, such as Pacific-only,
+East Asia-only, high-income, and low/middle-income views, if present.
 
 The converter exposes the EAP `World Bank PICs only (12)` view
 automatically when those 12 countries appear in the workbook.
@@ -695,8 +710,9 @@ For each workbook:
 13. Confirm all dashboard-required fields are populated for valid rows.
 14. Confirm labels use the approved category names.
 15. Confirm no duplicate rows describe the same instrument.
-16. For EAP, confirm the 12 World Bank PICs are present so the
-    `World Bank PICs only (12)` view populates.
+16. For EAP, confirm the `World Bank PICs only (12)` view contains
+    exactly 12 members. Fewer means a country name drifted from
+    `references/country_names.md` — fix the spelling, not the view.
 17. Confirm every Policies row has a non-blank (Category, Subcategory)
     pair in the closed v6 enum (see `Taxonomy` sheet).
 18. Add an audit note summarizing the update window, searches performed,
@@ -794,8 +810,8 @@ Before finalizing:
   rationing, caps, vehicle restrictions, work-from-home rules, travel
   cuts, conservation orders, and other non-price restrictions.
 - Check that Afghanistan and Pakistan are not included in SAR.
-- Check that EAP has the 12 World Bank PIC countries present so the
-  dashboard's `World Bank PICs only (12)` view populates.
+- Check that EAP's `World Bank PICs only (12)` view contains exactly
+  12 members.
 - Check that dashboard-relevant rows are not merely no-policy-found
   audit rows.
 - Check that long policy descriptions are concise but specific.

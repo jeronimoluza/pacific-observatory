@@ -401,6 +401,47 @@ class IndexCalculator:
                 )
         return df
 
+    def calculate_topic_intensity_attribution(
+        self,
+        df: pd.DataFrame,
+        sources: List[str],
+        group_names: List[str],
+    ) -> pd.DataFrame:
+        """
+        Calculate unconditional topic intensity: G / A per group.
+
+        This is the only group index that does not condition on uncertainty. It
+        answers "how much is this topic being discussed", where
+        `calculate_absolute_uncertainty_attribution` answers "how much of the
+        discussion is both about this topic and uncertain". A topic can be
+        heavily covered and rarely uncertain, so the two series are not
+        rescalings of each other.
+
+        Args:
+            df: DataFrame with per-source G counts and A_total.
+            sources: List of source names.
+            group_names: List of group names.
+
+        Returns:
+            DataFrame with {group}_int_weighted columns added.
+        """
+        df = df.copy()
+        for g in group_names:
+            ratio_cols = []
+            for source in sources:
+                g_col = f"{source}_G_{g}_count"
+                total_col = f"{source}_A_total"
+                ratio_col = f"{source}_G_{g}_int_ratio"
+                if g_col in df.columns and total_col in df.columns:
+                    df[ratio_col] = df[g_col] / df[total_col]
+                    df[ratio_col] = df[ratio_col].replace([np.inf, -np.inf], np.nan)
+                    ratio_cols.append(ratio_col)
+            if ratio_cols:
+                df = self._standardize_aggregate_normalize(
+                    df, ratio_cols, sources, f"G_{g}_int"
+                )
+        return df
+
     def calculate_framing_uncertainty_attribution(
         self,
         df: pd.DataFrame,

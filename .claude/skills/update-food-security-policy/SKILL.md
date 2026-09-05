@@ -228,7 +228,8 @@ refresh when you only need the dashboard (prototype / iteration runs).
 - The EPU/Topics tabs show 18 topics and 11 actors — the food selection
   from `trackers.py`, not all 43/24 the build computes.
 - SAR has no Afghanistan / Pakistan rows.
-- EAP shows `World Bank PICs only (12)` in the country-view dropdown.
+- EAP shows `World Bank PICs only (12)` in the country-view dropdown,
+  and that view contains exactly the 12 countries.
 - Every row whose trigger is a climate/weather shock names that shock in
   `Reason` with a source.
 - No row is a bare hazard description with no government action.

@@ -55,7 +55,14 @@ def _build_continuous_index(
         if pd.isna(max_date) or pd.Timestamp(max_date) < tail_ts:
             daily_dates = pd.DatetimeIndex([])
         else:
-            daily_dates = pd.date_range(start=tail_ts, end=max_date, freq="D")
+            # The dashboard buckets daily rows by day-of-month under a single
+            # month key, so rows spanning two months collide (Sep 1 and Aug 1
+            # are both "day 1"). Keep the daily run inside the tail month;
+            # trailing days with no articles are dropped at render.
+            month_end = tail_ts + pd.offsets.MonthEnd(0)
+            daily_dates = pd.date_range(
+                start=tail_ts, end=min(pd.Timestamp(max_date), month_end), freq="D"
+            )
         all_dates = monthly_dates.append(daily_dates)
     else:
         all_dates = pd.date_range(start=min_date, end=max_date, freq="MS")
@@ -116,6 +123,17 @@ def pivot_to_wide(
     if pd.isna(min_date):
         wide = pd.DataFrame(columns=["date", "ym", "news_total"])
         return wide, sources
+
+    if daily_tail_start is not None:
+        # Articles dated past the tail month cannot be shown — the daily index
+        # is bounded to that month. End it on the last date inside the month
+        # that actually carries articles, otherwise the merge below fills the
+        # remaining days with zeros and the series plots a cliff to nought
+        # after the real data stops.
+        month_end = pd.Timestamp(daily_tail_start) + pd.offsets.MonthEnd(0)
+        in_range = pivoted.loc[pivoted["date"] <= month_end, "date"]
+        if len(in_range):
+            max_date = in_range.max()
 
     dates_df = _build_continuous_index(min_date, max_date, daily_tail_start)
     wide = dates_df.merge(pivoted, on="date", how="left").fillna(0)
@@ -288,8 +306,11 @@ def _build_ug_counts_frame(
     """Materialize the UG counts frame consumed by `outputs.build_outputs`'s
     attribution path.
 
-    Columns: ym, date, plus per-source A_total, U_count, and UG_<g>_count.
-    Source-level UG counts come from `<source>_<metric_prefix><g>_U_count`.
+    Columns: ym, date, plus per-source A_total, U_count, UG_<g>_count and
+    G_<g>_count. UG counts come from `<source>_<metric_prefix><g>_U_count`
+    (articles that are both uncertain and on-topic); G counts come from
+    `<source>_<metric_prefix><g>_A_count` (on-topic regardless of uncertainty),
+    and feed the unconditional topic-intensity index.
     """
     cols = ["ym", "date"]
     for src in sources:
@@ -300,17 +321,22 @@ def _build_ug_counts_frame(
         if u_col in wide.columns:
             cols.append(u_col)
         for g in group_keys:
-            ug_long = f"{src}_{metric_prefix}{g}_U_count"
-            if ug_long in wide.columns:
-                cols.append(ug_long)
+            for long in (
+                f"{src}_{metric_prefix}{g}_U_count",
+                f"{src}_{metric_prefix}{g}_A_count",
+            ):
+                if long in wide.columns:
+                    cols.append(long)
     out = wide[[c for c in cols if c in wide.columns]].copy()
     rename: dict[str, str] = {}
     for src in sources:
         for g in group_keys:
-            ug_long = f"{src}_{metric_prefix}{g}_U_count"
-            ug_short = f"{src}_UG_{g}_count"
-            if ug_long in out.columns:
-                rename[ug_long] = ug_short
+            for long, short in (
+                (f"{src}_{metric_prefix}{g}_U_count", f"{src}_UG_{g}_count"),
+                (f"{src}_{metric_prefix}{g}_A_count", f"{src}_G_{g}_count"),
+            ):
+                if long in out.columns:
+                    rename[long] = short
     return out.rename(columns=rename)
 
 

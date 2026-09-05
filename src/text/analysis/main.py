@@ -25,7 +25,11 @@ from src.text.analysis.baseline import (  # noqa: E402
     has_modern_baseline_window,
     source_key_for_news_path,
 )
-from src.text.analysis.orchestrator import process_unit_v2  # noqa: E402
+from src.text.analysis.orchestrator import (  # noqa: E402
+    frontier_date,
+    process_unit_v2,
+    resolve_tail_start,
+)
 from src.text.analysis.runners import (  # noqa: E402
     run_full_epu,
     run_full_groups_only,
@@ -156,6 +160,15 @@ def _get_country_dirs(exclude_countries: set[str] | None = None) -> list[Path]:
     country_dirs = []
     if not DATA_ROOT.exists():
         return country_dirs
+
+    try:
+        from core.config import known_country_slugs
+
+        known = known_country_slugs()
+    except Exception:
+        known = None
+
+    unknown = []
     for region_dir in sorted(DATA_ROOT.iterdir()):
         if not region_dir.is_dir() or region_dir.name.startswith((".", "_", "cache")):
             continue
@@ -163,8 +176,33 @@ def _get_country_dirs(exclude_countries: set[str] | None = None) -> list[Path]:
             if not subregion_dir.is_dir() or subregion_dir.name.startswith((".", "_")):
                 continue
             for country_dir in sorted(subregion_dir.iterdir()):
-                if country_dir.is_dir() and country_dir.name.lower() not in excluded:
-                    country_dirs.append(country_dir)
+                if not country_dir.is_dir() or country_dir.name.lower() in excluded:
+                    continue
+                # regions.yaml decides what a country is, not the filesystem.
+                # A directory left behind by a rename would otherwise become a
+                # unit of its own and be counted twice in the aggregates.
+                # Directories that carry their own scraper configs are kept
+                # even when absent from the topology: `pacific` is a real
+                # region-wide RNZ feed rather than a country, and dropping it
+                # would discard its articles.
+                if known is not None and country_dir.name not in known:
+                    config_dir = (
+                        TEXT_CONFIGS_DIR
+                        / region_dir.name
+                        / subregion_dir.name
+                        / country_dir.name
+                    )
+                    if not config_dir.is_dir():
+                        unknown.append(country_dir.name)
+                        continue
+                country_dirs.append(country_dir)
+
+    if unknown:
+        print(
+            f"  Skipping {len(unknown)} directory(ies) absent from regions.yaml: "
+            f"{', '.join(sorted(set(unknown)))}"
+        )
+
     return country_dirs
 
 
@@ -461,15 +499,14 @@ def process_unit(
     params_path = cache_dir / "params.json"
     cache_path = cache_dir / "epu_stats_cache.csv"
 
-    today = pd.Timestamp.today()
-    current_tail_start = today.replace(day=1).strftime("%Y-%m-%d")
-    recompute_start = _determine_recompute_start(output_dir, current_tail_start)
+    today = pd.Timestamp.today().normalize()
     all_topics = load_all_groups("topics")
     all_actors = load_all_groups("actors")
 
     # ── Summary: article counts and date range per source ────────────
     total_articles = 0
     min_date_all, max_date_all = None, None
+    max_real_all = None
     for fp in news_dirs:
         try:
             dates = pd.read_csv(fp, usecols=["date"], encoding="utf-8")["date"]
@@ -482,10 +519,19 @@ def process_unit(
                 print(f"  {source_name}: {n} articles ({lo.date()} to {hi.date()})")
                 min_date_all = lo if min_date_all is None else min(min_date_all, lo)
                 max_date_all = hi if max_date_all is None else max(max_date_all, hi)
+                real = dates[dates <= today]
+                if len(real):
+                    hi_real = real.max()
+                    max_real_all = (
+                        hi_real if max_real_all is None else max(max_real_all, hi_real)
+                    )
             else:
                 print(f"  {source_name}: 0 articles")
         except Exception:
             print(f"  {fp.parent.name}: unable to read")
+
+    current_tail_start = resolve_tail_start(max_real_all, today)
+    recompute_start = _determine_recompute_start(output_dir, current_tail_start)
     if min_date_all is not None:
         print(
             f"  total: {total_articles} articles "
@@ -868,6 +914,45 @@ def run_analysis(
     unit_articles: dict[str, int] = {
         u["name"]: sum(file_articles.get(fp, 0) for fp in u["news_dirs"]) for u in units
     }
+
+    # One anchor for the whole build, so every unit's daily tail lands on the
+    # same month and the dashboards stay comparable.
+    #
+    # This is the 90th percentile of the per-source newest article, not the
+    # corpus maximum. A maximum is set by whichever single source happens to be
+    # freshest: probing two Taiwanese papers wrote 8 rows dated into September,
+    # which moved the anchor a month forward and collapsed August's entire
+    # daily tail — 57,759 articles' worth — back into one monthly row. A high
+    # percentile tracks where the fleet actually is (p90 and p75 both landed on
+    # 2026-08-27, the real collection frontier) and cannot be moved by a
+    # handful of sources. Future-dated rows are parse errors and are dropped
+    # first.
+    today = pd.Timestamp.today().normalize()
+    per_source_max = []
+    for fp in file_articles:
+        try:
+            dates = pd.read_csv(fp, usecols=["date"], encoding="utf-8")["date"]
+            dates = pd.to_datetime(dates, format="mixed", errors="coerce").dropna()
+            dates = dates[dates <= today]
+            if len(dates):
+                per_source_max.append(dates.max())
+        except Exception:
+            continue
+    max_real_all = frontier_date(per_source_max)
+    daily_tail_start = resolve_tail_start(max_real_all, today)
+    console.print(
+        f"Daily tail starts {daily_tail_start}"
+        + (
+            f" (newest article {max_real_all.date()})"
+            if max_real_all is not None
+            else " (no dated articles found)"
+        )
+    )
+    logger.info(
+        "daily tail start: %s (newest non-future article: %s)",
+        daily_tail_start,
+        max_real_all.date() if max_real_all is not None else None,
+    )
     total_articles_all = sum(
         unit_articles[u["name"]] for u in units if u["level"] == "country"
     )
@@ -929,6 +1014,7 @@ def run_analysis(
                     cache_root=CACHE_DIR,
                     progress_cb=_cb,
                     file_articles=file_articles,
+                    daily_tail_start=daily_tail_start,
                 )
                 row.status = diag.get("status", "ok")
                 row.mode = diag.get("mode", "unknown")

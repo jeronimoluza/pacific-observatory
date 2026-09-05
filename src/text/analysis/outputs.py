@@ -364,17 +364,30 @@ def build_outputs(
         attr_df = calc.calculate_framing_uncertainty_attribution(
             attr_df, sources, group_names
         )
+        attr_df = calc.calculate_topic_intensity_attribution(
+            attr_df, sources, group_names
+        )
 
+        # Both scales ship. The `*_weighted` columns are normalized to mean 100
+        # over the cutoff window, which is what makes series comparable across
+        # units; the `*_z_weighted` columns are the standard deviations that
+        # normalization was applied to, and are the honest scale when the
+        # question is "how unusual is this month" rather than "how does this
+        # unit compare to that one".
         out_cols = ["date", "ym"]
         for g in group_names:
-            abs_col = f"UG_{g}_abs_weighted"
-            frm_col = f"UG_{g}_frm_weighted"
-            if abs_col in attr_df.columns:
-                attr_df = attr_df.rename(columns={abs_col: f"{g}_absolute"})
-                out_cols.append(f"{g}_absolute")
-            if frm_col in attr_df.columns:
-                attr_df = attr_df.rename(columns={frm_col: f"{g}_framing"})
-                out_cols.append(f"{g}_framing")
+            for stem, label in (
+                (f"UG_{g}_abs", f"{g}_absolute"),
+                (f"UG_{g}_frm", f"{g}_framing"),
+                (f"G_{g}_int", f"{g}_intensity"),
+            ):
+                for src_col, out_col in (
+                    (f"{stem}_weighted", label),
+                    (f"{stem}_z_weighted", f"{label}_z"),
+                ):
+                    if src_col in attr_df.columns:
+                        attr_df = attr_df.rename(columns={src_col: out_col})
+                        out_cols.append(out_col)
 
         attr_out = attr_df[[c for c in out_cols if c in attr_df.columns]]
         attr_folder = base_out / "uncertainty_attribution"

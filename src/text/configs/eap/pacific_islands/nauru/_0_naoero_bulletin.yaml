@@ -1,0 +1,32 @@
+# Disabled (_0_): Government of the Republic of Nauru — Naoero Bulletin archive.
+#
+# Discovered 2026-09-04 while onboarding Nauru sources. This IS a genuine
+# multi-year archive with real 2024 depth (per-year index pages exist back to
+# at least 2020 — see
+# https://www.nauru.gov.nr/government-information-office/naoero-bulletin/naoero-bulletin-2024.aspx
+# — which lists ~10 fortnightly bulletins for 2024, e.g. issues #9-#18,
+# June-December 2024).
+#
+# Unusable with the current pipeline: every bulletin is a linked PDF
+# (e.g. /media/201905/nauru_bulletin__14_16oct2024__279_.pdf), not an HTML or
+# JSON article. `src/text/scrapers/pipelines/cleaning/` and the scraper/parser
+# have no PDF extraction path (grepped clean; confirmed 2026-09-04) — CSS
+# selectors on `article.body` cannot parse a PDF binary. Adding PDF support
+# would be a real pipeline feature, not a config change.
+#
+# A separate page on the same domain, media-release.aspx, has individual HTML
+# press-release pages, but pagination is dead: ANY query string on that path
+# (?page=2, ?page=1, even ?foo=bar) returns HTTP 403 from the site's WAF, while
+# the bare unparameterized URL returns 200. Only the ~6 most-recent releases
+# are reachable, all from Jul-Aug 2026 — no way to reach 2024 through it.
+#
+# Re-enable once (a) the pipeline gains PDF body extraction and (b) someone
+# works around the query-string block for media-release.aspx pagination (or a
+# reason to try it more than nauru.gov.nr's Naoero Bulletin, which already has
+# an OCR/PDF-fetch payoff of ~26 issues/year vs media-release's WAF-blocked
+# handful).
+
+name: "Naoero Bulletin"
+country: "nauru"
+language: "en"
+base_url: "https://www.nauru.gov.nr"

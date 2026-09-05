@@ -18,6 +18,7 @@ from text.plotting.trackers import (
     addon_filename,
     dashboard_filename,
     get_tracker,
+    tracker_chip_groups,
     tracker_dir,
     tracker_groups,
     tracker_label,
@@ -81,17 +82,79 @@ def load_actors_epu_data(country, data_dir):
     return df.sort_values("date")
 
 
-_GROUP_COL_SUFFIXES = ("_absolute", "_framing")
+_GROUP_COL_SUFFIXES = (
+    # Longest first: `_group_of` matches on endswith, and a bare "_absolute"
+    # would otherwise never see the "_absolute_z" twin. A suffix missing here
+    # reads as an id column, so `_keep_groups` stops filtering it and every
+    # tracker ships all 43 groups instead of its own slice.
+    "_absolute_z",
+    "_framing_z",
+    "_intensity_z",
+    "_absolute",
+    "_framing",
+    "_intensity",
+)
 
 
 def _group_of(col: str) -> str | None:
     """Keyword group a data column belongs to, or None for an id column."""
-    if col.startswith("EPU_") and col.endswith("_index"):
-        return col[len("EPU_") : -len("_index")]
     for suffix in _GROUP_COL_SUFFIXES:
         if col.endswith(suffix):
             return col[: -len(suffix)]
     return None
+
+
+_TOPIC_MEASURES = ("intensity", "absolute", "framing")
+
+
+def _topic_payload(rows: list) -> tuple[list, dict, list]:
+    """Trim an attribution table to index-scale columns and derive the z factors.
+
+    Every `<group>_<measure>` column is an exact affine rescale of its `_z` twin
+    — `index = factor * z`, with one factor for the whole column — so shipping
+    the factor costs a single float where shipping the second series costs a
+    full column. Across 43 topics and three measures that is the difference
+    between a dashboard the intranet serves and one it chokes on.
+
+    Values are rounded to three decimals. The index sits around 100, so three
+    decimals is well past what the chart can draw, and full float repr is
+    roughly two and a half times the bytes.
+
+    Returns (rows, factors, groups) where `factors` maps a `<group>_<measure>`
+    column to the divisor that converts it back to a z-score, or None when the
+    column is flat at zero and no factor is recoverable.
+    """
+    if not rows:
+        return [], {}, []
+    first = rows[0]
+    groups = sorted(
+        {col[: -len("_intensity")] for col in first if col.endswith("_intensity")}
+    )
+    wanted = [
+        f"{g}_{m}" for g in groups for m in _TOPIC_MEASURES if f"{g}_{m}" in first
+    ]
+
+    factors: dict = {}
+    for col in wanted:
+        z_col = f"{col}_z"
+        factor = None
+        if z_col in first:
+            for row in rows:
+                idx_v, z_v = row.get(col), row.get(z_col)
+                if idx_v is None or z_v is None or z_v == 0:
+                    continue
+                factor = idx_v / z_v
+                break
+        factors[col] = factor
+
+    out = []
+    for row in rows:
+        trimmed = {"date": row.get("date"), "ym": row.get("ym")}
+        for col in wanted:
+            v = row.get(col)
+            trimmed[col] = None if v is None else round(v, 3)
+        out.append(trimmed)
+    return out, factors, groups
 
 
 def _keep_groups(rows: list, groups: set) -> list:
@@ -194,6 +257,19 @@ body {
     padding: 14px 18px 18px 18px;
 }
 .controls { margin-bottom: 10px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+/* Five controls on one row: a bare flex row breaks between a label and its own
+   input, so "Top N:" ends a line and its box starts the next. Each pair becomes
+   one unbreakable column instead, and the row wraps between pairs. */
+.field-row { align-items: flex-end; gap: 14px 16px; }
+.field-row .field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field-row .field > label {
+    font-size: 0.78em;
+    font-weight: 600;
+    color: #667085;
+    letter-spacing: 0.02em;
+}
+.field-row .field > select { width: 100%; min-width: 150px; }
+.field-row .field-narrow > input { width: 84px; }
 label { font-weight: 600; color: #333; font-size: 0.95em; }
 select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 0.9em; cursor: pointer; background: #fff; }
 select:hover { border-color: #667eea; }
@@ -203,7 +279,8 @@ input[type="number"]:hover { border-color: #667eea; }
 input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .chart-wrapper { position: relative; height: 65vh; min-height: 360px; }
 .plot-row { display: flex; gap: 14px; align-items: stretch; margin-top: 8px; }
-.plot-row .chart-wrapper { flex: 1; min-width: 0; }
+.chart-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.chart-col .chart-wrapper { flex: 1 1 auto; }
 .toggle-group { display: inline-flex; }
 .toggle-group label {
     padding: 4px 12px;
@@ -226,10 +303,20 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
     position: relative;
 }
 .toggle-group label:hover:not(:has(input:checked)) { border-color: #667eea; background: #f0f4ff; }
-.chip-section { margin-bottom: 10px; }
-.chip-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
-.chip-tools { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.chip-tools input[type="text"] { padding: 6px 10px; border: 1px solid #ddd; border-radius: 16px; font-size: 0.82em; width: 160px; }
+.chip-sidebar {
+    flex: 0 0 232px;
+    width: 232px;
+    height: 65vh;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-right: 1px solid #eee;
+    padding-right: 10px;
+}
+.chip-header { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.9em; }
+.chip-tools { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.chip-tools input[type="text"] { padding: 6px 10px; border: 1px solid #ddd; border-radius: 16px; font-size: 0.82em; flex: 1 1 100%; min-width: 0; }
 .chip-tools input[type="text"]:hover { border-color: #667eea; }
 .chip-tools input[type="text"]:focus { outline: 0; border-color: #667eea; }
 .chip-tools button { padding: 4px 8px; border: 1px solid #ddd; border-radius: 12px; background: #fff; font-size: 0.8em; cursor: pointer; }
@@ -237,12 +324,43 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .chip-container {
     display: flex;
     flex-wrap: wrap;
+    align-content: flex-start;
     gap: 6px;
-    margin-bottom: 12px;
-    max-height: 120px;
+    flex: 1 1 auto;
     overflow-y: auto;
-    padding: 4px 0;
+    padding: 4px 2px 4px 0;
 }
+/* Groups stack: a full-width flex item forces a line break in the wrap
+   container, so grouped and ungrouped chip lists share one container. */
+.chip-group { width: 100%; }
+.chip-group.is-empty { display: none; }
+.chip-group-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 4px 2px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-size: 0.78em;
+    font-weight: 600;
+    color: #444;
+    text-align: left;
+}
+.chip-group-header:hover { color: #667eea; }
+.chip-group-caret { display: inline-block; transition: transform 0.15s; color: #999; }
+.chip-group.is-open .chip-group-caret { transform: rotate(90deg); }
+.chip-group-label { flex: 1; }
+.chip-group-count { color: #999; font-weight: 400; font-variant-numeric: tabular-nums; }
+.chip-group-body { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 0 8px 10px; }
+/* Collapsed hides its members, except the ones the reader still needs to see:
+   a selected pill (its line is on the chart and this is the only way off) and
+   a search hit (otherwise search could not reach into a closed group). */
+.chip-group:not(.is-open) .chip-group-body > .chip { display: none; }
+.chip-group:not(.is-open) .chip-group-body > .chip.is-hit,
+.chip-group:not(.is-open) .chip-group-body > .chip:has(input:checked) { display: inline-flex; }
+.chip.is-filtered { display: none !important; }
 .chip {
     display: inline-flex;
     align-items: center;
@@ -263,32 +381,33 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
     color: #fff;
     border-color: var(--chip-color, #667eea);
 }
-.legend-panel {
-    width: 260px;
-    height: 65vh;
-    min-height: 360px;
-    overflow-y: auto;
-    border-left: 1px solid #eee;
-    padding-left: 10px;
+/* Colour identity lives on the pills, so the key carries only what the pills
+   cannot say: what a line's stroke means. Three rows, one per stroke. */
+.style-key {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+    font-size: 0.78em;
+    color: #555;
 }
-.legend-group {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 6px 8px;
-    cursor: pointer;
-    user-select: none;
+.style-key-row { display: flex; align-items: center; gap: 8px; }
+.key-line { width: 26px; height: 0; border-top-color: #888; }
+.key-ma { border-top: 2.5px solid #888; }
+.key-raw { border-top: 1.5px dashed #888; }
+.key-current { border-top: 2px dashed #888; position: relative; }
+.key-current::after {
+    content: '';
+    position: absolute;
+    right: 3px;
+    top: -3px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #888;
 }
-.legend-group:hover { border-color: #667eea; background: #f8faff; }
-.legend-group.is-hidden { opacity: 0.5; }
-.legend-title { font-size: 0.85em; font-weight: 600; color: #333; }
-.legend-subitem { display: flex; align-items: center; gap: 6px; padding-left: 12px; font-size: 0.78em; color: #555; }
-.legend-line { width: 22px; border-top: 2px solid #999; }
 .chart-tooltip {
     position: absolute;
     background: #fff;
@@ -308,7 +427,9 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .tooltip-group-title-row td { padding-top: 4px; font-weight: 600; }
 .tooltip-indent { padding-left: 12px; }
 .tooltip-val { text-align: right; font-variant-numeric: tabular-nums; }
-.slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; overflow: visible; }
+/* The handle tooltips render above the track, so the row needs headroom or
+   they sit on top of the dropdowns in the control row above. */
+.slider-row { display: flex; align-items: center; gap: 10px; margin: 38px 0 14px; overflow: visible; }
 .slider-row label { font-weight: 600; color: #333; font-size: 0.95em; white-space: nowrap; }
 .range-label { font-size: 0.85em; color: #555; min-width: 140px; text-align: center; white-space: nowrap; }
 .date-slider { flex: 0 0 320px; min-width: 200px; max-width: 320px; }
@@ -326,19 +447,73 @@ input[type="number"]:focus { outline: 0; border-color: #667eea; }
 .noUi-tooltip { font-size: 0.75em; padding: 2px 6px; background: #667eea; color: #fff; border: none; border-radius: 4px; }
 @media (max-width: 900px) {
     .plot-row { flex-direction: column; }
-    .legend-panel {
+    .chip-sidebar {
+        flex: 1 1 auto;
         width: 100%;
         height: auto;
-        max-height: 160px;
-        border-left: 0;
-        border-top: 1px solid #eee;
-        padding-left: 0;
-        padding-top: 8px;
+        min-height: 0;
+        max-height: 200px;
+        border-right: 0;
+        border-bottom: 1px solid #eee;
+        padding-right: 0;
+        padding-bottom: 8px;
     }
+    .chart-col .chart-wrapper { height: 65vh; }
 }
 @media (max-width: 760px) {
     .date-slider { flex: 1; max-width: none; }
 }
+.table-section { margin-top: 14px; }
+.table-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #344054;
+}
+.table-note { font-weight: 400; font-size: 0.85em; color: #667085; }
+/* The table lists every topic and runs to the full length of the page rather
+   than scrolling in its own box, so the whole ranking is scannable at once. */
+.table-scroll {
+    border: 1px solid #eaecf0;
+    border-radius: 6px;
+}
+.rank-table { width: 100%; border-collapse: collapse; font-size: 0.85em; }
+.rank-table th, .rank-table td { padding: 5px 10px; text-align: left; }
+.rank-table thead th {
+    position: sticky;
+    top: 0;
+    background: #f9fafb;
+    border-bottom: 1px solid #eaecf0;
+    color: #667085;
+    font-weight: 600;
+}
+.rank-table tbody tr { border-bottom: 1px solid #f2f4f7; }
+.rank-table td.num, .rank-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+/* Topics this tracker is about, highlighted in place rather than filtered out,
+   so their rank against everything else stays visible. */
+.rank-table tr.focus-row { background: #fff7e6; }
+.rank-table tr.focus-row td:nth-child(2) { font-weight: 600; }
+.rank-table td.up { color: #b42318; }
+.rank-table td.down { color: #067647; }
+/* Readers kept asking what an EPU actually is, so the recipe sits on the page
+   rather than in a separate methodology note nobody opens. */
+.method-box {
+    margin-top: 18px;
+    padding: 12px 14px;
+    border: 1px solid #eaecf0;
+    border-radius: 8px;
+    background: #f9fafb;
+    font-size: 0.82em;
+    line-height: 1.5;
+    color: #475467;
+}
+.method-box h3 { font-size: 1em; color: #344054; margin-bottom: 6px; }
+.method-box ol { margin: 0 0 0 18px; }
+.method-box li { margin-bottom: 3px; }
+.method-box .method-foot { margin-top: 8px; color: #667085; }
 """
 
 
@@ -499,59 +674,6 @@ function getSliderRange(state) {
     return { from: state.sliderDates[vals[0]], to: state.sliderDates[vals[1]] };
 }
 
-function updateLegend(chart, legendId) {
-    const container = document.getElementById(legendId);
-    if (!container || !chart) return;
-    container.innerHTML = '';
-    const groups = {};
-    const order = chart._groupOrder || [];
-    chart.data.datasets.forEach((ds, i) => {
-        const key = ds._legendGroup || ds.label || 'Series';
-        if (!groups[key]) {
-            groups[key] = { label: ds._legendLabel || ds.label || key, datasets: [] };
-        }
-        groups[key].datasets.push({ ds, i });
-    });
-    const orderedKeys = order.length ? order.filter(k => groups[k]) : Object.keys(groups);
-    orderedKeys.forEach(key => {
-        const group = groups[key];
-        const allVisible = group.datasets.every(d => chart.isDatasetVisible(d.i));
-        const groupEl = document.createElement('div');
-        groupEl.className = 'legend-group' + (allVisible ? '' : ' is-hidden');
-        const title = document.createElement('div');
-        title.className = 'legend-title';
-        title.textContent = group.label;
-        groupEl.appendChild(title);
-        const sorted = group.datasets.slice().sort((a, b) => {
-            const av = VARIANT_ORDER.indexOf(a.ds._variant || '');
-            const bv = VARIANT_ORDER.indexOf(b.ds._variant || '');
-            return (av === -1 ? 99 : av) - (bv === -1 ? 99 : bv);
-        });
-        sorted.forEach(entry => {
-            const v = entry.ds._variant;
-            if (!VARIANT_LABELS[v]) return;
-            const row = document.createElement('div');
-            row.className = 'legend-subitem';
-            const line = document.createElement('span');
-            line.className = 'legend-line';
-            line.style.borderTopColor = entry.ds.borderColor || '#999';
-            line.style.borderTopStyle = entry.ds.borderDash && entry.ds.borderDash.length ? 'dashed' : 'solid';
-            const label = document.createElement('span');
-            label.textContent = VARIANT_LABELS[v];
-            row.appendChild(line);
-            row.appendChild(label);
-            groupEl.appendChild(row);
-        });
-        groupEl.addEventListener('click', () => {
-            const nextVisible = !allVisible;
-            group.datasets.forEach(d => chart.setDatasetVisibility(d.i, nextVisible));
-            chart.update();
-            updateLegend(chart, legendId);
-        });
-        container.appendChild(groupEl);
-    });
-}
-
 function buildTooltipGroups(chart, dataIndex) {
     const groups = {};
     const order = chart._groupOrder || [];
@@ -615,34 +737,112 @@ function externalTooltipHandler(context) {
 
 TOPIC_PAGE_TEMPLATE = r"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8">
-<title>Uncertainty Topics</title>
+<title>Uncertainty Topics (Ranked)</title>
 <script>__CHARTJS_INLINE__</script>
 <style>__NOUI_CSS_INLINE__</style>
 <script>__NOUI_JS_INLINE__</script>
 <style>__CSS__</style>
 </head>
 <body>
-<div class="controls">
-    <label for="topic-country">Country:</label>
-    <select id="topic-country">__COUNTRY_OPTIONS__</select>
-    <label for="topic-topn">Top N:</label>
-    <input type="number" id="topic-topn" value="5" min="1">
+<div class="controls field-row">
+    <div class="field">
+        <label for="topic-country">Country</label>
+        <select id="topic-country">__COUNTRY_OPTIONS__</select>
+    </div>
+    <div class="field">
+        <label for="topic-measure">Measure</label>
+        <select id="topic-measure">
+            <option value="intensity">How much the topic is discussed</option>
+            <option value="absolute" selected>How much uncertainty is about the topic</option>
+            <option value="framing">The topic&#39;s share of uncertainty</option>
+        </select>
+    </div>
+    <div class="field">
+        <label for="topic-scale">Scale</label>
+        <select id="topic-scale">
+            <option value="index" selected>Index (baseline = 100)</option>
+            <option value="z">Z-score</option>
+        </select>
+    </div>
+    <div class="field">
+        <label for="topic-universe">Compared against</label>
+        <select id="topic-universe">
+            <option value="focus" selected>Tracker topics (__N_FOCUS__)</option>
+            <option value="all">All topics (__N_ALL__)</option>
+        </select>
+    </div>
+    <div class="field field-narrow">
+        <label for="topic-topn">Top N</label>
+        <input type="number" id="topic-topn" value="5" min="1">
+    </div>
 </div>
 <div class="slider-row">
     <label>Date Range:</label>
     <span class="range-label" id="topic-range">-</span>
     <div id="topic-slider" class="date-slider"></div>
 </div>
-<p style="margin: 6px 0 0; font-size: 0.85em; color: #667085;">The top N topics with the highest average uncertainty influence over the selected period are chosen first. They are then ranked against each other month by month, showing how their relative importance shifts over time.</p>
+<p style="margin: 6px 0 0; font-size: 0.85em; color: #667085;" id="topic-explainer">-</p>
 <div class="chart-wrapper">
     <canvas id="topic-chart"></canvas>
+</div>
+<div class="table-section">
+    <div class="table-header">
+        <span id="topic-table-title">Latest month</span>
+        <span class="table-note" id="topic-table-note"></span>
+    </div>
+    <div class="table-scroll">
+        <table class="rank-table" id="topic-table">
+            <thead><tr><th>#</th><th>Topic</th><th class="num">Value</th><th class="num">Prev.</th><th class="num">Change</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
 </div>
 <script>
 __COMMON_JS__
 
 const topicData = __DATA_JSON__;
+const topicFactors = __FACTORS_JSON__;
+const topicFocusGroups = __FOCUS_JSON__;
+const topicAllGroups = __ALL_GROUPS_JSON__;
 const topicPalette = __PALETTE_JSON__;
+
+// Each measure is a different question with a different denominator. Naming the
+// denominator on screen is the point: an index of 150 is only alarming once you
+// know what it is 150 relative to, and which articles were in the pool at all.
+const MEASURE_META = {
+    intensity: {
+        short: 'intensity',
+        blurb: 'Articles mentioning the topic, as a share of all articles. No uncertainty condition &mdash; this is how much the topic is covered, full stop.'
+    },
+    absolute: {
+        short: 'uncertainty',
+        blurb: 'Articles that are both uncertain and about the topic, as a share of all articles.'
+    },
+    framing: {
+        short: 'framing',
+        blurb: 'Articles that are both uncertain and about the topic, as a share of uncertain articles only. This is a composition measure: it rises when a topic takes a larger slice of the same uncertainty.'
+    }
+};
+const SCALE_META = {
+    index: 'rescaled so the baseline period averages 100',
+    z: 'expressed in units of its own baseline standard deviation'
+};
 const topicState = { slider: null, sliderDates: [], chart: null, onChange: () => {} };
+
+const labelMap = {
+    'Imf': 'IMF',
+    'Us Government': 'US Government',
+    'Us China Trade War': 'US-China Trade War',
+    'Covid Pandemic': 'COVID-19 Pandemic',
+    'Inflation Prices': 'Inflation & Prices',
+    'Climate Environment': 'Climate & Environment',
+    'Corruption Governance': 'Corruption & Governance',
+    'Housing Real Estate': 'Housing & Real Estate'
+};
+function fmtLabel(key) {
+    const raw = key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    return labelMap[raw] || raw;
+}
 
 function initTopicTab() {
     const select = document.getElementById('topic-country');
@@ -655,9 +855,31 @@ function initTopicTab() {
         let data = rawData;
         if (range.from) data = data.filter(r => r.date >= range.from);
         if (range.to) data = data.filter(r => r.date <= range.to);
-        const framingKeys = Object.keys(rawData[0]).filter(k => k.endsWith('_framing'));
-        const items = framingKeys.map(k => k.replace('_framing', ''));
-        data = data.filter(r => !isDaily(r) || items.some(item => r[item + '_framing'] != null));
+        const measure = document.getElementById('topic-measure').value;
+        const scale = document.getElementById('topic-scale').value;
+        const universe = document.getElementById('topic-universe').value;
+        const factors = topicFactors[country] || {};
+        const suffix = '_' + measure;
+
+        // Value in the requested scale. The index is `factor * z` with one
+        // factor per column, so dividing recovers the z-score exactly; only a
+        // column that never left zero has no recoverable factor, and there the
+        // two scales agree at zero anyway.
+        function valueOf(row, item) {
+            const raw = row[item + suffix];
+            if (raw == null) return null;
+            if (scale === 'index') return raw;
+            const f = factors[item + suffix];
+            return (f == null || f === 0) ? null : raw / f;
+        }
+
+        const present = Object.keys(rawData[0])
+            .filter(k => k.endsWith(suffix))
+            .map(k => k.slice(0, -suffix.length));
+        const pool = universe === 'all' ? topicAllGroups : topicFocusGroups;
+        const items = present.filter(it => pool.indexOf(it) !== -1);
+        if (!items.length) return;
+        data = data.filter(r => !isDaily(r) || items.some(item => r[item + suffix] != null));
         if (!data.length) return;
         let topN = parseInt(topnInput.value, 10) || 5;
         topN = Math.max(1, Math.min(topN, items.length));
@@ -673,7 +895,7 @@ function initTopicTab() {
         const dateToIndex = new Map(rawData.map((r, idx) => [r.date, idx]));
         const smoothedFull = {};
         items.forEach(item => {
-            const fullVals = rawData.map(r => r[item + '_framing'] || 0);
+            const fullVals = rawData.map(r => valueOf(r, item) || 0);
             smoothedFull[item] = computeMA(fullVals, 3);
         });
         const smoothed = {};
@@ -707,21 +929,6 @@ function initTopicTab() {
         });
 
         const labels = displayEntries.map(entry => entry.label);
-
-        const labelMap = {
-            'Imf': 'IMF',
-            'Us Government': 'US Government',
-            'Us China Trade War': 'US-China Trade War',
-            'Covid Pandemic': 'COVID-19 Pandemic',
-            'Inflation Prices': 'Inflation & Prices',
-            'Climate Environment': 'Climate & Environment',
-            'Corruption Governance': 'Corruption & Governance',
-            'Housing Real Estate': 'Housing & Real Estate'
-        };
-        function fmtLabel(key) {
-            const raw = key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-            return labelMap[raw] || raw;
-        }
 
         const datasets = visible.map((item, i) => {
             const color = topicPalette[i % topicPalette.length];
@@ -764,8 +971,9 @@ function initTopicTab() {
                                 const rank = context.raw;
                                 const smoothedVal = smoothed[itemKey][context.dataIndex];
                                 const entryType = displayEntries[context.dataIndex].type;
-                                const suffix = entryType === 'daily' ? ' [daily]' : (entryType === 'weekly' ? ' [weekly]' : '');
-                                return context.dataset.label + ': Rank ' + rank + ' (framing: ' + (smoothedVal != null ? smoothedVal.toFixed(3) : 'N/A') + ')' + suffix;
+                                const tag = MEASURE_META[measure].short + (scale === 'z' ? ' z' : '');
+                                const note = entryType === 'daily' ? ' [daily]' : (entryType === 'weekly' ? ' [weekly]' : '');
+                                return context.dataset.label + ': Rank ' + rank + ' (' + tag + ': ' + (smoothedVal != null ? smoothedVal.toFixed(3) : 'N/A') + ')' + note;
                             }
                         }
                     }
@@ -776,6 +984,59 @@ function initTopicTab() {
                 }
             }
         });
+
+        renderExplainer(measure, scale, items.length, pool.length);
+        renderTable(data, valueOf, measure, scale);
+    }
+
+    // The chart follows the "compared against" selector; this table never does.
+    // It always ranks the full topic set, because its whole job is to answer
+    // "what else was in the pool" — the question a filtered chart cannot answer.
+    function renderTable(data, valueOf, measure, scale) {
+        const tbody = document.querySelector('#topic-table tbody');
+        const note = document.getElementById('topic-table-note');
+        const title = document.getElementById('topic-table-title');
+        tbody.innerHTML = '';
+        const monthly = data.filter(r => !isDaily(r));
+        if (monthly.length < 1) { note.textContent = 'No monthly data in range.'; return; }
+        const last = monthly[monthly.length - 1];
+        const prev = monthly.length > 1 ? monthly[monthly.length - 2] : null;
+
+        const rows = topicAllGroups.map(item => ({
+            item: item,
+            value: valueOf(last, item),
+            prev: prev ? valueOf(prev, item) : null
+        })).filter(r => r.value != null);
+        rows.sort((a, b) => b.value - a.value);
+
+        title.textContent = 'All topics ranked \u2014 ' + last.date.slice(0, 7);
+        note.textContent = rows.length + ' topics, ' + MEASURE_META[measure].short +
+            (scale === 'z' ? ' (z-score)' : ' (index)') +
+            (prev ? ', change vs ' + prev.date.slice(0, 7) : '');
+
+        rows.forEach((r, i) => {
+            const tr = document.createElement('tr');
+            if (topicFocusGroups.indexOf(r.item) !== -1) tr.className = 'focus-row';
+            const delta = (r.prev == null) ? null : r.value - r.prev;
+            const dTxt = delta == null ? '\u2013'
+                : (delta > 0 ? '+' : '') + delta.toFixed(1);
+            const dCls = delta == null ? '' : (delta > 0 ? 'up' : (delta < 0 ? 'down' : ''));
+            tr.innerHTML = '<td class="num">' + (i + 1) + '</td>' +
+                '<td>' + fmtLabel(r.item) + '</td>' +
+                '<td class="num">' + r.value.toFixed(1) + '</td>' +
+                '<td class="num">' + (r.prev == null ? '\u2013' : r.prev.toFixed(1)) + '</td>' +
+                '<td class="num ' + dCls + '">' + dTxt + '</td>';
+            tbody.appendChild(tr);
+        });
+    }
+
+    function renderExplainer(measure, scale, nShown, nPool) {
+        document.getElementById('topic-explainer').innerHTML =
+            'Denominator: ' + MEASURE_META[measure].blurb +
+            ' Each topic is then ' + SCALE_META[scale] + '.' +
+            ' The chart ranks the top N of ' + nPool + ' topics in the selected comparison set' +
+            ' (' + nShown + ' with data) against each other, month by month;' +
+            ' the table below always ranks all ' + topicAllGroups.length + ' topics.';
     }
 
     topicState.onChange = render;
@@ -784,6 +1045,9 @@ function initTopicTab() {
         render();
     });
     topnInput.addEventListener('change', render);
+    ['topic-measure', 'topic-scale', 'topic-universe'].forEach(id => {
+        document.getElementById(id).addEventListener('change', render);
+    });
     initSlider(topicState, topicData[select.value], 12, 'topic-slider', 'topic-range');
     render();
 }
@@ -804,9 +1068,26 @@ EPU_PAGE_TEMPLATE = r"""<!DOCTYPE html>
 <style>__CSS__</style>
 </head>
 <body>
-<div class="controls">
-    <label for="country">Country:</label>
-    <select id="country">__COUNTRY_OPTIONS__</select>
+<div class="controls field-row">
+    <div class="field">
+        <label for="country">Country</label>
+        <select id="country">__COUNTRY_OPTIONS__</select>
+    </div>
+    <div class="field">
+        <label for="actor-measure">Measure</label>
+        <select id="actor-measure">
+            <option value="intensity">How much the __NOUN__ is discussed</option>
+            <option value="absolute" selected>How much uncertainty is about the __NOUN__</option>
+            <option value="framing">The __NOUN__&#39;s share of uncertainty</option>
+        </select>
+    </div>
+    <div class="field">
+        <label for="actor-scale">Scale</label>
+        <select id="actor-scale">
+            <option value="index" selected>Index (baseline = 100)</option>
+            <option value="z">Z-score</option>
+        </select>
+    </div>
 </div>
 <div class="slider-row">
     <label>Date Range:</label>
@@ -822,20 +1103,25 @@ EPU_PAGE_TEMPLATE = r"""<!DOCTYPE html>
         <label><input type="checkbox" name="ma-toggle" value="12">12-Mo MA</label>
     </div>
 </div>
-<div class="chip-section">
-    <div class="chip-header">
-        <label>__ITEM_LABEL__: <span id="selected-count">0</span> selected</label>
+<p style="margin: 6px 0 0; font-size: 0.85em; color: #667085;" id="actor-explainer">-</p>
+<div class="plot-row">
+    <div class="chip-sidebar">
+        <div class="chip-header">__ITEM_LABEL__: <span id="selected-count">0</span> selected</div>
         <div class="chip-tools">
             <input type="text" id="item-search" placeholder="__SEARCH_PLACEHOLDER__">
             <button type="button" id="default-btn">Default</button>
             <button type="button" id="clear-btn">Clear</button>
         </div>
+        <div class="chip-container" id="item-select">__CHIP_HTML__</div>
     </div>
-    <div class="chip-container" id="item-select">__CHIP_HTML__</div>
-</div>
-<div class="plot-row">
-    <div class="chart-wrapper"><canvas id="chart"></canvas></div>
-    <div class="legend-panel" id="legend"></div>
+    <div class="chart-col">
+        <div class="chart-wrapper"><canvas id="chart"></canvas></div>
+        <div class="style-key">
+            <div class="style-key-row"><span class="key-line key-ma"></span>Moving average &mdash; 3, 6 or 12 months</div>
+            <div class="style-key-row"><span class="key-line key-raw"></span>Raw monthly</div>
+            <div class="style-key-row"><span class="key-line key-current"></span>Current month &mdash; weekly and daily points</div>
+        </div>
+    </div>
 </div>
 <script>
 __COMMON_JS__
@@ -845,6 +1131,22 @@ const items = __ITEMS_JSON__;
 const defaultItems = __DEFAULTS_JSON__;
 const palette = __PALETTE_JSON__;
 const chipLabelMap = __LABEL_MAP_JSON__;
+const actorFactors = __FACTORS_JSON__;
+const MEASURE_META = {
+    intensity: {
+        blurb: 'Articles mentioning the __NOUN__, as a share of all articles. No uncertainty condition &mdash; this is how much the __NOUN__ is covered, full stop.'
+    },
+    absolute: {
+        blurb: 'Articles that are both uncertain and about the __NOUN__, as a share of all articles.'
+    },
+    framing: {
+        blurb: 'Articles that are both uncertain and about the __NOUN__, as a share of uncertain articles only. This is a composition measure: it rises when one __NOUN__ takes a larger slice of the same uncertainty.'
+    }
+};
+const SCALE_META = {
+    index: 'rescaled so the baseline period averages 100',
+    z: 'expressed in units of its own baseline standard deviation'
+};
 const toggleName = 'ma-toggle';
 const state = { slider: null, sliderDates: [], chart: null, onChange: () => {} };
 
@@ -872,7 +1174,16 @@ function applyChipFilters() {
         if (labelEl) labelEl.textContent = label;
         const txt = label.toLowerCase();
         const match = !q || txt.indexOf(q) !== -1;
-        chip.style.display = match ? 'inline-flex' : 'none';
+        // A selected pill always stays on screen: its line is on the chart and
+        // the pill is the only way to take it off again.
+        chip.classList.toggle('is-filtered', !(match || input.checked));
+        chip.classList.toggle('is-hit', !!(q && match));
+    });
+    document.querySelectorAll('#item-select .chip-group').forEach(group => {
+        const shown = group.querySelectorAll('.chip:not(.is-filtered)').length;
+        group.classList.toggle('is-empty', shown === 0);
+        const cnt = group.querySelector('.chip-group-count');
+        if (cnt) cnt.textContent = shown;
     });
 }
 function setSelected(picks) {
@@ -892,9 +1203,25 @@ function render() {
     if (range.to) data = data.filter(r => r.date <= range.to);
     if (!data.length) return;
     const selectedItems = getSelectedItems();
+    const measure = document.getElementById('actor-measure').value;
+    const scale = document.getElementById('actor-scale').value;
+    const factors = actorFactors[country] || {};
+    const suffix = '_' + measure;
+
+    // The index is `factor * z` with one factor per column, so dividing
+    // recovers the z-score exactly; a column that never left zero has no
+    // recoverable factor, and there the two scales agree at zero anyway.
+    function valueOf(row, item) {
+        const raw = row[item + suffix];
+        if (raw == null) return null;
+        if (scale === 'index') return raw;
+        const f = factors[item + suffix];
+        return (f == null || f === 0) ? null : raw / f;
+    }
+
     const monthlyData = data.filter(r => !isDaily(r));
     const dailyData = data
-        .filter(r => isDaily(r) && selectedItems.some(i => r['EPU_' + i + '_index'] != null))
+        .filter(r => isDaily(r) && selectedItems.some(i => r[i + suffix] != null))
         .slice()
         .sort((a, b) => a.date.localeCompare(b.date));
     const dailyDisplay = buildDailyDisplay(dailyData);
@@ -902,10 +1229,9 @@ function render() {
     const labels = monthlyLabels.concat(dailyDisplay.labels);
     const datasets = [];
     selectedItems.forEach(item => {
-        const colKey = 'EPU_' + item + '_index';
         const color = palette[items.indexOf(item) % palette.length];
-        const seriesLabel = fmtChipLabel(item) + ' EPU';
-        const maSets = buildMADatasets(monthlyData.map(r => r[colKey]), color, seriesLabel, toggleName);
+        const seriesLabel = fmtChipLabel(item);
+        const maSets = buildMADatasets(monthlyData.map(r => valueOf(r, item)), color, seriesLabel, toggleName);
         maSets.forEach(ds => {
             ds._legendGroup = item;
             ds._legendLabel = seriesLabel;
@@ -913,9 +1239,9 @@ function render() {
         });
         datasets.push.apply(datasets, maSets);
         if (dailyDisplay.entries.length) {
-            const lastMonthly = monthlyData.length > 0 ? monthlyData[monthlyData.length - 1][colKey] : null;
+            const lastMonthly = monthlyData.length > 0 ? valueOf(monthlyData[monthlyData.length - 1], item) : null;
             const dailyValues = dailyDisplay.entries.map(entry => {
-                const vals = entry.rows.map(r => r[colKey]).filter(v => v != null && v !== 0);
+                const vals = entry.rows.map(r => valueOf(r, item)).filter(v => v != null && v !== 0);
                 if (!vals.length) return null;
                 return entry.type === 'weekly' ? computeAverage(vals) : vals[0];
             });
@@ -954,7 +1280,7 @@ function render() {
                 pointTypes.push(entry.type);
             });
             datasets.push({
-                label: fmtChipLabel(item) + ' EPU (current month)',
+                label: fmtChipLabel(item) + ' (current month)',
                 data: dataPoints,
                 borderColor: hexToRgba(color, 0.8),
                 borderDash: [4, 4],
@@ -975,16 +1301,17 @@ function render() {
         }
     });
     const allVals = selectedItems.flatMap(item => {
-        const colKey = 'EPU_' + item + '_index';
-        const monthlyVals = monthlyData.map(r => r[colKey]);
+        const monthlyVals = monthlyData.map(r => valueOf(r, item));
         const dailyVals = dailyDisplay.entries.map(entry => {
-            const vals = entry.rows.map(r => r[colKey]).filter(v => v != null && v !== 0);
+            const vals = entry.rows.map(r => valueOf(r, item)).filter(v => v != null && v !== 0);
             if (!vals.length) return null;
             return entry.type === 'weekly' ? computeAverage(vals) : vals[0];
         });
         return monthlyVals.concat(dailyVals);
     }).filter(v => v != null && v !== 0);
-    const yMax = allVals.length ? Math.max.apply(null, allVals) * 1.1 : undefined;
+    const yMax = (scale === 'index' && allVals.length)
+        ? Math.max.apply(null, allVals) * 1.1
+        : undefined;
     const ctx = document.getElementById('chart').getContext('2d');
     if (state.chart) state.chart.destroy();
     state.chart = new Chart(ctx, {
@@ -999,12 +1326,18 @@ function render() {
             },
             scales: {
                 x: { display: true, title: { display: true, text: 'Date' } },
-                y: { display: true, title: { display: true, text: 'EPU Index' }, max: yMax }
+                y: {
+                    display: true,
+                    title: { display: true, text: scale === 'index' ? 'Index (baseline = 100)' : 'Z-score' },
+                    max: yMax
+                }
             }
         }
     });
     state.chart._groupOrder = selectedItems.slice();
-    updateLegend(state.chart, 'legend');
+    document.getElementById('actor-explainer').innerHTML =
+        'Denominator: ' + MEASURE_META[measure].blurb +
+        ' Each __NOUN__ is then ' + SCALE_META[scale] + '.';
 }
 
 state.onChange = render;
@@ -1018,6 +1351,11 @@ document.getElementById('item-select').addEventListener('change', function() {
     render();
 });
 document.getElementById('item-search').addEventListener('input', applyChipFilters);
+document.querySelectorAll('#item-select .chip-group-header').forEach(h => {
+    h.addEventListener('click', function() {
+        h.parentElement.classList.toggle('is-open');
+    });
+});
 document.getElementById('default-btn').addEventListener('click', function() {
     setSelected(defaultItems);
     render();
@@ -1027,11 +1365,39 @@ document.getElementById('clear-btn').addEventListener('click', function() {
     render();
 });
 document.querySelectorAll('input[name="ma-toggle"]').forEach(r => r.addEventListener('change', render));
+['actor-measure', 'actor-scale'].forEach(id => {
+    document.getElementById(id).addEventListener('change', render);
+});
 initSlider(state, epuData[document.getElementById('country').value], 12, 'slider', 'range-label');
 updateSelectedCount();
 applyChipFilters();
 render();
 </script>
+<div class="method-box">
+    <h3>How this index is calculated</h3>
+    <ol>
+        <li>Every article is checked for two things: whether it uses an
+            uncertainty keyword, and whether it mentions the
+            __NOUN__. The Measure selector decides which of the two
+            conditions apply.</li>
+        <li>For each newspaper and month, count the articles that qualify and
+            divide by the denominator named above the chart &mdash; all
+            articles, or uncertain articles only.</li>
+        <li>Divide that share by its own standard deviation over the baseline
+            period, so outlets of different size and house style sit on a
+            comparable scale.</li>
+        <li>Average the newspapers together, weighting each by its share of that
+            month's articles.</li>
+        <li>On the index scale, rescale so the baseline period averages 100. On
+            the z-score scale, leave it in standard deviations.</li>
+    </ol>
+    <div class="method-foot">
+        On the index scale a reading of 130 means the conversation was 30% more
+        intense than its baseline norm; 70 means 30% less. The baseline period
+        runs from the start of the series to the end of 2020 unless the build was
+        given other dates.__METHOD_FOOT_EXTRA__
+    </div>
+</div>
 </body></html>"""
 
 
@@ -1044,34 +1410,127 @@ def _country_options(data):
     )
 
 
-def _chip_html(items, defaults):
-    return "\n".join(
+def _chip_one(item, defaults):
+    return (
         f'<label class="chip"><input type="checkbox" value="{item}"'
         f"{' checked' if item in defaults else ''}>"
         f'<span class="chip-label">{fmt_country(item)}</span></label>'
-        for item in items
     )
 
 
-def build_topic_iframe_html(topic_data, dropdown_options_html=None):
+def _chip_group_html(label, members, defaults, expanded):
+    body = "\n".join(_chip_one(i, defaults) for i in members)
+    return (
+        f'<div class="chip-group{" is-open" if expanded else ""}">'
+        f'<button type="button" class="chip-group-header">'
+        f'<span class="chip-group-caret">&#9656;</span>'
+        f'<span class="chip-group-label">{label}</span>'
+        f'<span class="chip-group-count">{len(members)}</span></button>'
+        f'<div class="chip-group-body">{body}</div></div>'
+    )
+
+
+def _chip_html(items, defaults, groups=None):
+    """Chip markup, grouped when the tracker declares groups and flat otherwise.
+
+    A group lists only the items this region actually has, and anything a
+    group misses falls through to a trailing catch-all, so a keyword pack can
+    gain a topic without it silently vanishing from the pill list.
+    """
+    if not groups:
+        return "\n".join(_chip_one(i, defaults) for i in items)
+
+    out = []
+    grouped = set()
+    for g in groups:
+        members = [i for i in g["topics"] if i in items]
+        if not members:
+            continue
+        grouped.update(members)
+        out.append(
+            _chip_group_html(g["label"], members, defaults, g.get("expanded", False))
+        )
+    rest = [i for i in items if i not in grouped]
+    if rest:
+        out.append(_chip_group_html("Other", rest, defaults, False))
+    return "\n".join(out)
+
+
+def build_topic_iframe_html(
+    topic_data,
+    dropdown_options_html=None,
+    factors=None,
+    focus_groups=None,
+    all_groups=None,
+    data_expr=None,
+    factors_expr=None,
+):
     options = (
         dropdown_options_html
         if dropdown_options_html is not None
         else _country_options(topic_data)
     )
+    factors = factors or {}
+    all_groups = all_groups or []
+    # An empty focus set would leave the default view with nothing to draw, so
+    # fall back to the full set rather than rendering a blank chart.
+    focus_groups = focus_groups or all_groups
     return (
         TOPIC_PAGE_TEMPLATE.replace("__CHARTJS_INLINE__", _vendor("chart.umd.min.js"))
         .replace("__NOUI_CSS_INLINE__", _vendor("nouislider.min.css"))
         .replace("__NOUI_JS_INLINE__", _vendor("nouislider.min.js"))
         .replace("__CSS__", EPU_PAGE_CSS)
         .replace("__COUNTRY_OPTIONS__", options)
+        .replace("__N_FOCUS__", str(len(focus_groups)))
+        .replace("__N_ALL__", str(len(all_groups)))
         .replace("__COMMON_JS__", EPU_COMMON_JS)
-        .replace("__DATA_JSON__", json.dumps(topic_data))
+        .replace("__DATA_JSON__", data_expr or json.dumps(topic_data))
+        .replace("__FACTORS_JSON__", factors_expr or json.dumps(factors))
+        .replace("__FOCUS_JSON__", json.dumps(focus_groups))
+        .replace("__ALL_GROUPS_JSON__", json.dumps(all_groups))
         .replace("__PALETTE_JSON__", json.dumps(PALETTE))
     )
 
 
-TOPICS_LABEL_MAP = {"gasoline": "Gas", "natural_gas": "Natural Gas"}
+TOPICS_LABEL_MAP = {
+    "el_nino": "El Niño",
+    "us_china_trade_war": "US-China Trade War",
+    "covid_pandemic": "COVID-19 Pandemic",
+    "inflation_prices": "Inflation & Prices",
+    "climate_environment": "Climate & Environment",
+    "corruption_governance": "Corruption & Governance",
+    "housing_real_estate": "Housing & Real Estate",
+    # The development-issues buckets, named as the taxonomy names them, shortened
+    # only where a full bucket title would not fit a pill. They read as broader
+    # than the groups above because they are: "Poverty, Inequality & Welfare" is
+    # the agenda, `poverty` is the topic. The one that would otherwise read
+    # identically to a group above is bucket 8, which takes the agenda wording.
+    "dev_macro_growth": "Macro Growth & Activity",
+    "dev_inflation_cost_of_living": "Inflation & Cost of Living",
+    "dev_fiscal_public_finance": "Fiscal Policy & Public Debt",
+    "dev_monetary_financial": "Monetary & Financial Stability",
+    "dev_trade_private_sector": "Trade & Private Sector",
+    "dev_labor_social_protection": "Labor & Social Protection",
+    "dev_poverty_inequality": "Poverty, Inequality & Welfare",
+    "dev_food_security": "Food Security Agenda",
+    "dev_agriculture_rural": "Agriculture & Rural Development",
+    "dev_health_nutrition": "Health, Nutrition & Population",
+    "dev_education_skills": "Education, Skills & Human Capital",
+    "dev_gender_inclusion": "Gender Equality & Social Inclusion",
+    "dev_governance_justice": "Governance, Institutions & Justice",
+    "dev_fragility_conflict": "Fragility, Conflict & Displacement",
+    "dev_climate_environment": "Climate, Environment & Resources",
+    "dev_disasters_resilience": "Disasters & Resilience",
+    "dev_water_sanitation": "Water & Sanitation",
+    "dev_energy_extractives": "Energy & Extractives",
+    "dev_transport_urban": "Transport, Urban & Housing",
+    "dev_digital_technology": "Digital Development & Technology",
+    "dev_migration_demography": "Migration & Demography",
+    "dev_shocks_uncertainty": "Shocks & Policy Uncertainty",
+    "dev_statistics_monitoring": "Statistics, Monitoring & Evaluation",
+}
+
+
 ACTORS_LABEL_MAP = {
     "imf": "IMF",
     "us_government": "US Government",
@@ -1101,7 +1560,13 @@ def build_epu_iframe_html(
     item_label,
     search_placeholder,
     label_map,
+    noun,
     dropdown_options_html=None,
+    factors=None,
+    data_expr=None,
+    factors_expr=None,
+    method_foot_extra="",
+    chip_groups=None,
 ):
     options = (
         dropdown_options_html
@@ -1114,16 +1579,19 @@ def build_epu_iframe_html(
         .replace("__NOUI_JS_INLINE__", _vendor("nouislider.min.js"))
         .replace("__CSS__", EPU_PAGE_CSS)
         .replace("__TITLE__", title)
+        .replace("__NOUN__", noun)
+        .replace("__METHOD_FOOT_EXTRA__", method_foot_extra)
         .replace("__ITEM_LABEL__", item_label)
         .replace("__SEARCH_PLACEHOLDER__", search_placeholder)
-        .replace("__CHIP_HTML__", _chip_html(items, defaults))
+        .replace("__CHIP_HTML__", _chip_html(items, defaults, chip_groups))
         .replace("__COUNTRY_OPTIONS__", options)
         .replace("__COMMON_JS__", EPU_COMMON_JS)
-        .replace("__DATA_JSON__", json.dumps(data))
+        .replace("__DATA_JSON__", data_expr or json.dumps(data))
         .replace("__ITEMS_JSON__", json.dumps(items))
         .replace("__DEFAULTS_JSON__", json.dumps(defaults))
         .replace("__PALETTE_JSON__", json.dumps(PALETTE))
         .replace("__LABEL_MAP_JSON__", json.dumps(label_map))
+        .replace("__FACTORS_JSON__", factors_expr or json.dumps(factors or {}))
     )
 
 
@@ -1239,6 +1707,7 @@ body {
     border-color: var(--accent);
 }
 </style>
+<script>window.__DASH__ = __SHARED_DATA_JSON__;</script>
 </head>
 <body>
 <input class="tab-radio" type="radio" name="tabs" id="r0" checked>
@@ -1252,16 +1721,16 @@ body {
             <div class="subtitle">__HOST_SUBTITLE__</div>
         </div>
         <div class="tabs" role="tablist">
-            <label for="r0">__POLICY_TAB_LABEL__</label>
-            <label for="r1">Uncertainty Topics</label>
-            <label for="r2">Topics EPU</label>
-            <label for="r3">Actors EPU</label>
+            <label for="r0">Uncertainty Topics</label>
+            <label for="r1">Uncertainty Topics (Ranked)</label>
+            <label for="r2">__POLICY_TAB_LABEL__</label>
+            <label for="r3">Uncertainty Actors</label>
         </div>
     </div>
-    <div class="tab-panel" id="p0"><div class="panel-body"><iframe class="tab-frame" srcdoc='__POLICY_SRCDOC__' title="__POLICY_TAB_LABEL__"></iframe></div></div>
-    <div class="tab-panel" id="p1"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPIC_SRCDOC__' title="Uncertainty Topics"></iframe></div></div>
-    <div class="tab-panel" id="p2"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPICS_EPU_SRCDOC__' title="Topics EPU"></iframe></div></div>
-    <div class="tab-panel" id="p3"><div class="panel-body"><iframe class="tab-frame" srcdoc='__ACTORS_EPU_SRCDOC__' title="Actors EPU"></iframe></div></div>
+    <div class="tab-panel" id="p0"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPIC_SERIES_SRCDOC__' title="Uncertainty Topics"></iframe></div></div>
+    <div class="tab-panel" id="p1"><div class="panel-body"><iframe class="tab-frame" srcdoc='__TOPIC_SRCDOC__' title="Uncertainty Topics (Ranked)"></iframe></div></div>
+    <div class="tab-panel" id="p2"><div class="panel-body"><iframe class="tab-frame" srcdoc='__POLICY_SRCDOC__' title="__POLICY_TAB_LABEL__"></iframe></div></div>
+    <div class="tab-panel" id="p3"><div class="panel-body"><iframe class="tab-frame" srcdoc='__ACTORS_EPU_SRCDOC__' title="Uncertainty Actors"></iframe></div></div>
 </div>
 </body>
 </html>"""
@@ -1269,32 +1738,39 @@ body {
 
 def build_host_html(
     policy_html,
+    topic_series_html,
     topic_html,
-    topics_epu_html,
     actors_epu_html,
     host_title,
     host_subtitle,
     policy_tab_label="Fuel Crisis Policy",
+    shared_data=None,
 ):
+    """Assemble the four-tab host page.
+
+    The two topic tabs are two readings of one table: a per-topic time series
+    and a ranking over time. Their payload is written once into ``window.__DASH__``
+    here rather than into each iframe, because a second embedded copy would take
+    the page from 39 MB to about 68 MB.
+
+    The per-topic E∩P∩U index used to have its own tab. It is gone by request:
+    conditioning a topic index on economic *and* policy language answered a
+    question nobody was asking of it, and a food-price series that only counts
+    articles which also read as policy commentary undercounts the thing it
+    names. The uncertainty attribution tab is now the single topic index.
+    """
     return (
         HOST_TEMPLATE.replace("__HOST_TITLE__", host_title)
         .replace("__HOST_SUBTITLE__", host_subtitle)
         .replace("__POLICY_TAB_LABEL__", policy_tab_label)
+        .replace("__SHARED_DATA_JSON__", json.dumps(shared_data or {}))
         .replace("__POLICY_SRCDOC__", escape_srcdoc(policy_html))
+        .replace("__TOPIC_SERIES_SRCDOC__", escape_srcdoc(topic_series_html))
         .replace("__TOPIC_SRCDOC__", escape_srcdoc(topic_html))
-        .replace("__TOPICS_EPU_SRCDOC__", escape_srcdoc(topics_epu_html))
         .replace("__ACTORS_EPU_SRCDOC__", escape_srcdoc(actors_epu_html))
     )
 
 
-_TOPICS_DEFAULTS = [
-    "inflation_prices",
-    "energy",
-    "diesel",
-    "oil",
-    "natural_gas",
-    "fuel_rationing",
-]
 _ACTORS_DEFAULTS = [
     "central_bank",
     "parliament",
@@ -1332,7 +1808,7 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
     """Generate the special EPU+policy dashboard for ``region``.
 
     Reads dashboard_data.json, filters units to the region, and writes
-    ``outputs/text/dashboards/{tracker}/{region}_policy_dashboard.html``.
+    ``outputs/text/dashboards/{tracker}/{region}_policy_dashboard_{suffix}.html``.
     """
     with open(json_path, encoding="utf-8") as f:
         data = json.load(f)
@@ -1349,9 +1825,7 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
     valid_keys = _collect_region_keys(region_subtree)
 
     topic_data: dict = {}
-    topics_data: dict = {}
     actors_data: dict = {}
-    topics_set: set = set()
     actors_set: set = set()
 
     for key, unit in units.items():
@@ -1360,33 +1834,32 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
         attribution = unit.get("attribution") or {}
         if attribution.get("topics"):
             topic_data[key] = attribution["topics"]
-        topics_csv = unit.get("topics")
-        if topics_csv:
-            topics_data[key] = topics_csv
-            for row in topics_csv[:1]:
-                for col in row:
-                    if col.startswith("EPU_") and col.endswith("_index"):
-                        topics_set.add(col[4:-6])
-        actors_csv = unit.get("actors")
-        if actors_csv:
-            actors_data[key] = actors_csv
-            for row in actors_csv[:1]:
-                for col in row:
-                    if col.startswith("EPU_") and col.endswith("_index"):
-                        actors_set.add(col[4:-6])
+        if attribution.get("actors"):
+            actors_data[key] = attribution["actors"]
 
     shown_topics = set(tracker_groups("topics", tracker))
     shown_actors = set(tracker_groups("actors", tracker))
-    topic_data = {k: _keep_groups(v, shown_topics) for k, v in topic_data.items()}
-    topics_data = {k: _keep_groups(v, shown_topics) for k, v in topics_data.items()}
-    actors_data = {k: _keep_groups(v, shown_actors) for k, v in actors_data.items()}
-    topics_set &= shown_topics
+    # The attribution tab deliberately keeps every group, not just the tracker's
+    # slice. Reading one topic's index without the others is what makes it look
+    # alarming: a food index of 150 means nothing until you can see that
+    # governance sits at 300. The tracker slice becomes the default focus
+    # instead of a hard filter, so the full universe is one click away.
+    topic_factors: dict = {}
+    topic_groups: set = set()
+    for key, rows in list(topic_data.items()):
+        trimmed, factors, groups = _topic_payload(rows)
+        topic_data[key] = trimmed
+        topic_factors[key] = factors
+        topic_groups.update(groups)
+    # Actors read the same uncertainty attribution as topics rather than the
+    # three-way EPU intersection, so the two tabs answer the same question.
+    actor_factors: dict = {}
+    for key, rows in list(actors_data.items()):
+        trimmed, factors, groups = _topic_payload(rows)
+        actors_data[key] = _keep_groups(trimmed, shown_actors)
+        actor_factors[key] = factors
+        actors_set.update(groups)
     actors_set &= shown_actors
-
-    topics_items = sorted(topics_set)
-    topics_defaults = [
-        t for t in _TOPICS_DEFAULTS if t in topics_items
-    ] or topics_items[:5]
 
     actors_items = sorted(actors_set)
     actors_defaults = [
@@ -1396,48 +1869,83 @@ def generate_dashboard_from_json(json_path, region: str, tracker: str | None = N
     hier_options = _build_hierarchical_options(region_subtree)
 
     addon_html = _load_addon_html(region, tracker)
-    topic_html = build_topic_iframe_html(topic_data, dropdown_options_html=hier_options)
-    topics_epu_html = build_epu_iframe_html(
-        topics_data,
-        topics_items,
-        topics_defaults,
-        title="Topics EPU",
+    topic_data_expr = 'window.parent.__DASH__["topics"]'
+    topic_factors_expr = 'window.parent.__DASH__["topicFactors"]'
+    topic_html = build_topic_iframe_html(
+        topic_data,
+        dropdown_options_html=hier_options,
+        focus_groups=sorted(topic_groups & shown_topics),
+        all_groups=sorted(topic_groups),
+        data_expr=topic_data_expr,
+        factors_expr=topic_factors_expr,
+    )
+    topic_items = sorted(topic_groups)
+    # Default to the head of the tracker's own configured order rather than its
+    # whole slice: the food tracker lists eighteen topics and eighteen lines on
+    # one chart is not a reading. The rest are one click away in the chip list.
+    topic_defaults = [
+        g for g in tracker_groups("topics", tracker) if g in topic_groups
+    ][:5]
+    topic_series_html = build_epu_iframe_html(
+        topic_data,
+        topic_items,
+        topic_defaults or topic_items[:5],
+        title="Uncertainty Topics",
         item_label="Topics",
         search_placeholder="Search topics",
         label_map=TOPICS_LABEL_MAP,
+        noun="topic",
         dropdown_options_html=hier_options,
+        data_expr=topic_data_expr,
+        factors_expr=topic_factors_expr,
+        method_foot_extra=(
+            " The Uncertainty Topics (Ranked) tab reads the same"
+            " numbers, ordered against each other month by month."
+        ),
+        chip_groups=tracker_chip_groups("topics", tracker),
     )
     actors_epu_html = build_epu_iframe_html(
         actors_data,
         actors_items,
         actors_defaults,
-        title="Actors EPU",
+        title="Uncertainty Actors",
         item_label="Actors",
         search_placeholder="Search actors",
         label_map=ACTORS_LABEL_MAP,
+        noun="actor",
         dropdown_options_html=hier_options,
+        factors=actor_factors,
+        method_foot_extra=(
+            " This tab previously required three conditions at once (economic,"
+            " policy and uncertainty); it now uses uncertainty alone,"
+            " matching the Uncertainty Topics tabs."
+        ),
     )
 
     region_label = _resolve_region_label(region_subtree, region)
     tracker_cfg = get_tracker(tracker)
     policy_tab_label = tracker_cfg["label"]
-    host_title = f"{region_label} — {policy_tab_label} & EPU Dashboard"
-    host_subtitle = f"{policy_tab_label.lower()}, uncertainty topics, and EPU views"
+    host_title = f"{region_label} — {policy_tab_label} & Uncertainty Dashboard"
+    host_subtitle = (
+        f"uncertainty topics over time and ranked, {policy_tab_label.lower()}, "
+        "and uncertainty actors"
+    )
 
     out = build_host_html(
         addon_html,
+        topic_series_html,
         topic_html,
-        topics_epu_html,
         actors_epu_html,
         host_title=host_title,
         host_subtitle=host_subtitle,
         policy_tab_label=policy_tab_label,
+        shared_data={"topics": topic_data, "topicFactors": topic_factors},
     )
 
     project_root = Path(__file__).resolve().parents[3]
     output_dir = tracker_dir(project_root / "outputs" / "text" / "dashboards", tracker)
     output_dir.mkdir(parents=True, exist_ok=True)
-    dashboard_path = output_dir / dashboard_filename(region)
+    dashboard_path = output_dir / dashboard_filename(region, tracker)
     dashboard_path.write_text(out, encoding="utf-8")
     print(f"Created {dashboard_path}")
     return dashboard_path

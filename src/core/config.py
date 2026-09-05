@@ -76,6 +76,20 @@ def _build_index(configs_dir: str = str(_CONFIGS_DIR)) -> dict:
     }
 
 
+def known_country_slugs(configs_dir: Path = _CONFIGS_DIR) -> set[str]:
+    """Country slugs declared in regions.yaml — the canonical topology.
+
+    Discovery walks directories, so a folder left behind by a rename silently
+    becomes a country of its own: ``lao`` survived alongside ``lao_pdr`` with
+    the same five sources, appeared in the dashboard under its raw slug because
+    ``countries.yaml`` had no entry to label it, and was counted a second time
+    in the subregion and region aggregates. Checking a discovered directory
+    against this set keeps the topology, not the filesystem, in charge of what
+    counts as a country.
+    """
+    return set(_build_index(str(configs_dir))["country_to_path"])
+
+
 def get_label(slug: str, configs_dir: Path = _CONFIGS_DIR) -> str:
     """Return the display name for a region, subregion, or country slug."""
     idx = _build_index(str(configs_dir))

@@ -466,12 +466,31 @@ Flag caveats, e.g.:
 
 ## EAP
 
-East Asia and Pacific, including Pacific island economies. Pacific
-island food security is dominated by **cyclone and drought crop damage,
-import dependence, and shipping/freight disruption** — search those
-channels explicitly, and check SPC and Pacific Islands Forum outputs.
-Ensure the 12 World Bank PICs appear so the
-`World Bank PICs only (12)` view populates.
+The country universe is every slug listed under `eap.subregions` in
+`src/configs/regions.yaml` — 38 economies across `east_asia`,
+`pacific_islands` and `southeast_asia`. Enumerate that file at the start of
+the pass and work the whole list. Do not improvise a country list, and do
+not infer scope from which countries already have rows: an economy missing
+from the workbook is a gap to fill, not evidence that it is out of scope.
+
+Write the `Country` cell using the spelling in
+`references/country_names.md`. The dashboard matches country names by exact
+string, so a spelling that drifts drops the row out of its country group
+without any error.
+
+An economy you searched and found no verified measure for must still be
+named in the audit note, so its absence reads as covered rather than
+skipped. This matters most for Guam, American Samoa, Northern Mariana
+Islands, French Polynesia and New Caledonia, where the operative measures
+are often US or French federal programmes rather than local ones.
+
+Pacific island food security is dominated by **cyclone and drought crop
+damage, import dependence, and shipping/freight disruption** — search those
+channels explicitly for the PICs, and check SPC and Pacific Islands Forum
+outputs.
+
+All 12 World Bank PICs must appear, so the `World Bank PICs only (12)` view
+populates with exactly 12 members.
 
 ## SAR
 
@@ -567,7 +586,9 @@ existence, timing, and country attribution.
     closed v6 enum.
 12. Confirm every row is a government action, not a hazard description.
 13. Confirm each row's `Reason` names the shock it responds to.
-14. For EAP, confirm the 12 World Bank PICs are present.
+14. For EAP, confirm the `World Bank PICs only (12)` view contains
+    exactly 12 members. Fewer means a country name drifted from
+    `references/country_names.md` — fix the spelling, not the view.
 15. Add an `Update_Audit` note summarizing window, searches, additions,
     uncertainties, and excluded candidates.
 
@@ -659,7 +680,7 @@ Before finalizing:
   mechanisms; `Reduce consumption - restricting quantities` only for
   rationing, purchase caps, and quantity limits.
 - Afghanistan and Pakistan are not in SAR.
-- EAP has the 12 World Bank PIC countries present.
+- EAP's `World Bank PICs only (12)` view contains exactly 12 members.
 - Export bans and price ceilings have their expiry/status re-verified.
 - Long policy descriptions are concise but specific.
 - Exact dates are not invented.
