@@ -8,6 +8,7 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "text"
+TEXT_CONFIGS_DIR = PROJECT_ROOT / "src" / "text" / "configs"
 DASHBOARD_DATA_DIR = OUTPUT_DIR / "dashboard_data"
 DASHBOARD_JSON = DASHBOARD_DATA_DIR / "dashboard_data.json"
 
@@ -25,6 +26,16 @@ def _discover_units(region=None, subregion=None, country=None):
         from core.config import get_label
     except ImportError:
         get_label = None
+
+    # Publish walks outputs/ independently of the build, so it needs the same
+    # topology check: a stale output directory from a renamed country would
+    # otherwise still reach the dashboard under its raw slug.
+    try:
+        from core.config import known_country_slugs
+
+        known = known_country_slugs()
+    except Exception:
+        known = None
 
     units = []
 
@@ -79,6 +90,12 @@ def _discover_units(region=None, subregion=None, country=None):
                     continue
                 ctry = country_dir.name
                 if not (country_dir / "epu" / "epu.csv").exists():
+                    continue
+                if (
+                    known is not None
+                    and ctry not in known
+                    and not (TEXT_CONFIGS_DIR / rgn / sub / ctry).is_dir()
+                ):
                     continue
 
                 if region and region != rgn:

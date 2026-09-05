@@ -55,7 +55,14 @@ def _build_continuous_index(
         if pd.isna(max_date) or pd.Timestamp(max_date) < tail_ts:
             daily_dates = pd.DatetimeIndex([])
         else:
-            daily_dates = pd.date_range(start=tail_ts, end=max_date, freq="D")
+            # The dashboard buckets daily rows by day-of-month under a single
+            # month key, so rows spanning two months collide (Sep 1 and Aug 1
+            # are both "day 1"). Keep the daily run inside the tail month;
+            # trailing days with no articles are dropped at render.
+            month_end = tail_ts + pd.offsets.MonthEnd(0)
+            daily_dates = pd.date_range(
+                start=tail_ts, end=min(pd.Timestamp(max_date), month_end), freq="D"
+            )
         all_dates = monthly_dates.append(daily_dates)
     else:
         all_dates = pd.date_range(start=min_date, end=max_date, freq="MS")
@@ -116,6 +123,17 @@ def pivot_to_wide(
     if pd.isna(min_date):
         wide = pd.DataFrame(columns=["date", "ym", "news_total"])
         return wide, sources
+
+    if daily_tail_start is not None:
+        # Articles dated past the tail month cannot be shown — the daily index
+        # is bounded to that month. End it on the last date inside the month
+        # that actually carries articles, otherwise the merge below fills the
+        # remaining days with zeros and the series plots a cliff to nought
+        # after the real data stops.
+        month_end = pd.Timestamp(daily_tail_start) + pd.offsets.MonthEnd(0)
+        in_range = pivoted.loc[pivoted["date"] <= month_end, "date"]
+        if len(in_range):
+            max_date = in_range.max()
 
     dates_df = _build_continuous_index(min_date, max_date, daily_tail_start)
     wide = dates_df.merge(pivoted, on="date", how="left").fillna(0)
