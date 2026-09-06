@@ -23,6 +23,9 @@ import re
 from typing import Any, Iterator
 from urllib.parse import urljoin, urlsplit
 
+import lxml.etree
+import lxml.html
+
 from .archived_ldrepair import parse_ld
 
 _SCRIPT_OPEN_RE = re.compile(r"<script\b", re.IGNORECASE)
@@ -386,6 +389,100 @@ def _price_of(offer: dict) -> Any:
     return price
 
 
+# A number the page renders *as money*: next to a currency symbol or a
+# three-letter ISO code. Matching against every number in the text instead
+# would let a payload price corroborate itself against an unrelated date or
+# item count. Symbols that are a single bare letter (Guatemala's ``Q.``,
+# Honduras' ``L.``) are deliberately left out -- one letter collides with
+# ordinary prose too readily to be evidence of anything.
+_SYMBOLS = (
+    r"R\$|US\$|MX\$|\$|€|£|¥|₩|₫|₺|₽|₴|₸|₹|₡|৳|﷼|"
+    r"zł|Kč|лв|ден|Bs\.?|S/\.?|Rs\.?|Nu\.?|Tk\.?|Gs\.?|Rp"
+)
+_MONEY_RE = re.compile(
+    r"(?:(?:%s|\b[A-Z]{3})\s*(\d[\d.,]*)|(\d[\d.,]*)\s*(?:%s|\b[A-Z]{3}\b))"
+    % (_SYMBOLS, _SYMBOLS)
+)
+
+
+def _parse_money(token: str) -> set[float]:
+    """The value(s) a rendered money token can mean.
+
+    Separator conventions are not knowable from the token alone, but they are
+    not a free-for-all either: a separator followed by exactly two digits is a
+    decimal point, and one followed by exactly three is a thousands mark. Only
+    a lone ``1.199``-shaped token is genuinely ambiguous, and only there are
+    both readings returned.
+    """
+    token = token.strip().rstrip(".,")
+    if re.fullmatch(r"\d+", token):
+        return {float(token)}
+    if re.fullmatch(r"\d{1,3}[.,]\d{3}", token):
+        return {float(re.sub(r"[.,]", "", token)), float(token.replace(",", "."))}
+    if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", token):
+        return {float(re.sub(r"[.,]", "", token))}
+    match = re.fullmatch(r"(\d{1,3}(?:[.,]\d{3})*)[.,](\d{1,2})", token)
+    if match:
+        return {float(re.sub(r"[.,]", "", match.group(1)) + "." + match.group(2))}
+    return set()
+
+
+def _visible_prices(html_text: str) -> set[float]:
+    """Every value the page renders as money.
+
+    A structured payload states its prices in whatever unit the site's backend
+    happens to use. fidalga.com publishes ``price: 1040`` for a bottle the page
+    displays as ``Bs10,40`` -- Shopify's Liquid ``product.price``, which is
+    cents. Banking that as-is is a 100x error on every row of that shape, and
+    nothing inside the payload distinguishes it from a genuine four-figure
+    price. What the page *shows* is the only available arbiter.
+    """
+    try:
+        text = lxml.html.fromstring(html_text).text_content() or ""
+    except (ValueError, SyntaxError, lxml.etree.ParserError):
+        return set()
+    out: set[float] = set()
+    for before, after in _MONEY_RE.findall(text):
+        out |= _parse_money(before or after)
+    return out
+
+
+def _page_scale(prices: list[float], shown: set[float]) -> float:
+    """1 or 100 -- the divisor that reconciles this payload with the page.
+
+    Deciding this per page rather than per row is what keeps the check honest:
+    a theme that emits cents emits them for every product on the shelf, so
+    dividing one row but not another would be incoherent. A page that renders
+    no price at all argues for nothing, and the payload stands as written.
+    """
+    if not shown:
+        return 1.0
+    matches = {}
+    for scale in (1.0, 100.0):
+        matches[scale] = sum(
+            1 for price in prices
+            if any(abs(price / scale - number) < 0.01 for number in shown)
+        )
+    return 100.0 if matches[100.0] > matches[1.0] else 1.0
+
+
+def _rescale_minor_units(rows: list[dict], html_text: str) -> list[dict]:
+    """Divide a whole page's rows by 100 when the payload states minor units."""
+    if not rows:
+        return rows
+    prices = [float(row["price"]) for row in rows]
+    # Minor units are whole numbers by construction, so one fractional price
+    # settles the question without reading the page. Worth short-circuiting on:
+    # rendering the text costs ~15ms, roughly 20x the rest of the JSON-LD tier.
+    if any(price != int(price) for price in prices):
+        return rows
+    if _page_scale(prices, _visible_prices(html_text)) == 1.0:
+        return rows
+    for row in rows:
+        row["price"] = str(float(row["price"]) / 100.0)
+    return rows
+
+
 def rows_from_jsonld(html_text: str, url: str) -> list[dict]:
     """Price rows from every schema.org Product node in the page.
 
@@ -429,7 +526,7 @@ def rows_from_jsonld(html_text: str, url: str) -> list[dict]:
                 elif "instock" in low or "limitedavailability" in low:
                     row["available"] = True
             rows.append(row)
-    return _dedupe_product_rows(rows, url)
+    return _dedupe_product_rows(_rescale_minor_units(rows, html_text), url)
 
 
 def meta_tags(html_text: str) -> dict[str, str]:

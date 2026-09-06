@@ -36,7 +36,12 @@ from urllib.parse import urljoin
 import lxml.etree
 import lxml.html
 
-from .archived import _dedupe_product_rows, _valid_currency, normalize_price
+from .archived import (
+    _dedupe_product_rows,
+    _rescale_minor_units,
+    _valid_currency,
+    normalize_price,
+)
 
 _PRICE_PROPS = frozenset({"price", "lowprice", "highprice"})
 # schema.org puts the price on an Offer nested inside the Product, so a price
@@ -164,4 +169,4 @@ def rows_from_microdata(html_text: str, url: str) -> list[dict]:
         row = _row_for_scope(scope, url)
         if row:
             rows.append(row)
-    return _dedupe_product_rows(rows, url)
+    return _dedupe_product_rows(_rescale_minor_units(rows, html_text), url)

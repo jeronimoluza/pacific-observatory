@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pytest
 
+from prices.price_scraping.archived_microdata import rows_from_microdata
 from prices.price_scraping.archived import (
     normalize_price,
     row_from_meta,
@@ -137,3 +138,79 @@ def test_normalize_price_keeps_a_bare_leading_decimal():
     the currency-symbol fix: its only prefix character is the dot itself,
     not a letter/symbol, so the trim must leave it alone."""
     assert normalize_price(".99") == "0.99"
+
+
+@pytest.mark.unit
+def test_rows_from_jsonld_rescales_a_minor_unit_payload_against_the_rendered_price():
+    """fidalga.com (Shopify, Bolivia) renders ``Bs10,40`` for a JSON-LD
+    ``price`` of ``1040``: the theme emits Liquid's ``product.price``, which is
+    cents. Banking the payload as written put 3,823 Bolivian rows into
+    global_prices_observations at 100x, 20-44% of every year 2022-2025."""
+    html = """
+    <html><body>
+      <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"Product",
+       "name":"Lavandina Mr Cloro de 1000 ml",
+       "offers":{"@type":"Offer","price":"1040","priceCurrency":"BOB"}}
+      </script>
+      <span class="price-item">Bs10,40</span>
+    </body></html>
+    """
+    rows = rows_from_jsonld(html, "https://www.fidalga.com/products/lavandina")
+    assert len(rows) == 1
+    assert rows[0]["price"] == "10.4"
+
+
+@pytest.mark.unit
+def test_rows_from_jsonld_leaves_the_payload_alone_when_the_page_agrees():
+    """The guard must only fire when the page actually contradicts the blob."""
+    html = """
+    <html><body>
+      <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"Product","name":"Widget",
+       "offers":{"@type":"Offer","price":"9.99","priceCurrency":"USD"}}
+      </script>
+      <span class="price">$9.99</span>
+    </body></html>
+    """
+    rows = rows_from_jsonld(html, "https://example.test/p/widget")
+    assert rows[0]["price"] == "9.99"
+
+
+@pytest.mark.unit
+def test_rows_from_jsonld_keeps_a_large_price_the_page_never_renders():
+    """liverpool.com.mx ships ``minimumPromoPrice: '7939'`` and renders no
+    price at all -- 7,939 pesos is the real figure, so with nothing to
+    reconcile against the payload must stand exactly as written."""
+    html = """
+    <html><body>
+      <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"Product","name":"Sofa",
+       "offers":{"@type":"Offer","price":"7939","priceCurrency":"MXN"}}
+      </script>
+    </body></html>
+    """
+    rows = rows_from_jsonld(html, "https://example.test/p/sofa")
+    assert rows[0]["price"] == "7939.0"
+
+
+@pytest.mark.unit
+def test_rows_from_microdata_rescales_a_minor_unit_content_attribute():
+    """The same failure reaches the microdata tier when the price rides a
+    ``content=`` attribute in minor units while the shelf renders the real
+    figure -- the plazavea_pe 2017 shape, in Peruvian soles."""
+    html = """
+    <html><body>
+      <div itemscope itemtype="http://schema.org/Product">
+        <span itemprop="name">Arroz COSTENO Extra graneadito Bolsa 5Kg</span>
+        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+          <meta itemprop="price" content="1890">
+          <meta itemprop="priceCurrency" content="PEN">
+        </div>
+        <span class="shelf-price">S/. 18.90</span>
+      </div>
+    </body></html>
+    """
+    rows = rows_from_microdata(html, "https://www.plazavea.com.pe/arroz/p")
+    assert len(rows) == 1
+    assert rows[0]["price"] == "18.9"
