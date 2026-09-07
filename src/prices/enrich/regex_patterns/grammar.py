@@ -31,9 +31,20 @@ _UNITS = _load("units.yaml")
 _COUNTS = _load("count_nouns.yaml")
 _PB = _load("pack_basis.yaml")
 
-_VAL = r"(?P<value>\d+(?:[.,]\d+)?|[.,]\d+)"  # M value: allows leading-dot decimal
+# M value: allows a leading-dot decimal (".5L"), but never one whose dot is
+# itself preceded by a dot or comma -- otherwise an ellipsis-separated size
+# ("Sara Lee Pound Cake....16oz") reads as 0.16 oz instead of 16 oz.
+_VAL = r"(?P<value>\d+(?:[.,]\d+)?|(?<![.,])[.,]\d+)"
 _VAL_P = r"(?P<value>\d+(?:[.,]\d+)?)"  # P value: no leading-dot form
-_LB = r"(?<![A-Za-z0-9.])"
+# Left guard. The job of the `.` half is to stop the match landing INSIDE a
+# decimal ("1.5kg" must not read as 5 kg), which is why it cannot simply be
+# dropped -- but as a blanket "no dot before" it also rejected every measure
+# glued to a preceding abbreviation or ellipsis ("CA.6,4KG", "кр.сух.0,75л",
+# "Cake....16oz"), which is 487 rows / 0.17% of a 288k corpus sample, and a
+# whole retailer's catalogue in turks_and_caicos_islands. Rejecting only a dot
+# that FOLLOWS A DIGIT keeps the decimal guard exactly as strong while letting
+# the abbreviation case through.
+_LB = r"(?<![A-Za-z0-9])(?<![0-9]\.)"
 
 
 def _alt(surfaces):
