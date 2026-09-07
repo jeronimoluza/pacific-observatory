@@ -95,6 +95,16 @@ _MULTIPLY_OP_ADJ_RE = re.compile(r"(?:(?<![A-Za-z0-9])[xX](?![A-Za-z])|[×✕*])
 # ("4 pcs XL") never fabricates a multiplier.
 _MULTIPLY_OP_TRAIL_RE = re.compile(r"^\s*(?:[xX](?![A-Za-z])|[×✕*])\s*\d")
 
+# A stated mass read as the pack TOTAL implies a per-piece mass of
+# `amount_value / count`. Below this floor that reading is not a judgement call,
+# it is physically impossible for a retail food item -- "Lipton Yellow Label Tea
+# Bags 2g 100 Bags" would be 20 mg of tea per bag -- so the measure has to be
+# the PER-UNIT size and the count multiplies it. 0.5 g is deliberately far below
+# the smallest genuine per-piece food mass observed in the corpus (a 0.5 g
+# sweetener stick, a 0.9 g tea bag), so the rule only fires where the total
+# reading is impossible, never where it is merely small.
+_IMPOSSIBLE_PER_PIECE_KG = 0.0005
+
 
 def _clean_promote_count(ec_cand, stripped: str):
     """The count-noun integer eligible to compose into a measure's count, or None.
@@ -129,6 +139,37 @@ def _clean_promote_count(ec_cand, stripped: str):
         ):
             return None
     return n
+
+
+def _measure_is_per_piece(st, um, amount_value, n) -> bool:
+    """True when reading the mass as the pack TOTAL is physically impossible.
+
+    Narrow by construction, because the general question ("is 400g the size of
+    one item or of the whole pack?") has no textual answer -- the corpus carries
+    both readings in the same shape: "Anchor Tasty Slice Cheese 12s 250g" is a
+    250 g total, "Gerber Oatmeal Pouch 99G 6pcs" is six 99 g pouches. Only the
+    magnitude separates them, and only at the extreme. Three guards:
+
+    * mass only -- volume already promotes the count unconditionally.
+    * never `mg` -- there the figure is a drug dose sitting beside a real pack
+      count ("160mg Softgel 100s"), which the NS corpus holdout says must stay
+      in `count` (100/100 rows, 0 counterexamples).
+    * the measure must PRECEDE the count in the string, which is the per-unit
+      order. The mirror order ("30 Tablets 8.5g") states a total, and the one
+      ambiguous row found in the corpus sample was written that way.
+    * never the loose bare-suffix matchers (`\d+s` / `\d+'s`). Those are the ids
+      the NS corpus holdout is built on, and it settled the opposite convention
+      for exactly this shape ("Levipil 1gm Tablet 10'S" -> count=10). They are
+      also the lowest-precision counters in the table, so a magnitude rule has
+      the least evidence behind it there.
+    """
+    if um["basis"] != "mass" or st.pack_unit == "mg":
+        return False
+    if st.noun_count_id in _ORDER_GUARDED_IDS:
+        return False
+    if not st.noun_count_after_measure or amount_value is None or not n:
+        return False
+    return amount_value / n < _IMPOSSIBLE_PER_PIECE_KG
 
 
 @dataclass(frozen=True)
@@ -386,10 +427,15 @@ def _rung_pack_unit_emit(st):
             # following it, so its count stays inert as before. Likewise an
             # explicit multiply operator joining the measure and N ("1.5g × 20개")
             # is an unambiguous multipack signal on mass basis too.
+            # A "<per-unit measure> ... N <count-noun>" whose total reading is
+            # physically impossible is the fourth promotion route (see
+            # _measure_is_per_piece): "2g 100 Bags" is 100 bags of 2 g, and
+            # leaving the count inert priced the box as a single tea bag.
             if (
                 um["basis"] == "volume"
                 or st.noun_count_via_operator
                 or re.search(rf"[Pp]ack\s*(?:of\s*)?0*{n}(?!\d)", st.item_name)
+                or _measure_is_per_piece(st, um, amount_value, n)
             ):
                 multiplier = n
             else:
@@ -562,6 +608,15 @@ def decide(
             _MULTIPLY_OP_TRAIL_RE.match(stripped[span[1] : span[1] + 8])
         )
 
+    # Does the measure sit BEFORE the promoted count-noun? That is the per-unit
+    # word order ("2g 100 Bags"); the mirror ("100 Bags 2g") states a total.
+    # Read off `stripped`, the same string the count span was measured on.
+    noun_count_after_measure = False
+    if noun_count_raw is not None and ec_cand is not None and ec_cand.span:
+        vu_m = _VU_RE.search(stripped)
+        noun_count_after_measure = vu_m is not None and vu_m.start() < ec_cand.span[0]
+    noun_count_id = ec_cand.groups.get("regex_id") if ec_cand is not None else None
+
     basis_marker = None
     if pack_unit is None and extra_entry is None:
         c = by.get("basis_marker")
@@ -583,6 +638,8 @@ def decide(
         extra_count=extra_count,
         noun_count_raw=noun_count_raw,
         noun_count_via_operator=noun_count_via_operator,
+        noun_count_after_measure=noun_count_after_measure,
+        noun_count_id=noun_count_id,
         basis_marker=basis_marker,
         multi_pack=multi_pack,
     )
