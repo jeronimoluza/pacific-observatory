@@ -10,17 +10,22 @@ Shapes handled:
   - wayback_items/*.jsonl              (Wayback Machine)
   - common_crawl_data/items/*.json     (Common Crawl, one product per file)
 
-Output schema (15 cols, raw-only — no enrichment-derived columns):
+Output schema (16 cols, raw-only — no enrichment-derived columns):
   url_hash, product_name, price, currency, country, source, date,
   product_url, product_id, region, subregion, wayback, channel, category,
-  details
+  details, unit
 
 `channel` is per-row, looked up from the source YAML's `channel:` field at
 startup. `category` is the per-item breadcrumb captured by Scrapy spiders
 (`ProductItem.category`). `details` is the per-item size/pack string some
 spiders capture separately from the name (e.g. pickaroo "~500 g"); it carries
 the quantity the product_name omits and is consulted by the structural
-extractor as a fallback. All default to "" when absent.
+extractor as a fallback. `unit` is the fetcher-declared sale unit from a
+price_observations.csv ("quintal (100 kg)", "kg"): for a commodity feed whose
+item name is a bare noun it is the only quantity in the row, and `prepare`,
+`products_input.parquet` and `classify`'s `unit_declared` fallback have all
+carried it for some time -- this stage was the one link that dropped it. All
+default to "" when absent.
 
 Rows whose `available` field is an explicit JSON `false` are dropped before the
 column projection (which does not carry the flag). An out-of-stock offer is not
@@ -79,6 +84,7 @@ OUTPUT_COLS = [
     "channel",
     "category",
     "details",
+    "unit",
 ]
 
 # The coicop_classification value that routes a fetcher manifest's rows into
@@ -251,6 +257,13 @@ def _emit_price_obs(path: Path) -> Iterable[dict]:
             "url_hash": r.get("observation_hash") or _url_hash(r.get("source_url")),
             "wayback": False,
             "category": "",
+            # The fetcher-declared sale unit ("quintal (100 kg)", "kg", "100
+            # גרם"). For a commodity feed it is the ONLY statement of quantity
+            # anywhere in the row -- the item name is a bare noun ("Ajwan",
+            # "丝瓜") -- so dropping it here made `declared_unit.py` and
+            # classify's `unit_declared` fallback dead code and left every such
+            # row on pricing_basis="item".
+            "unit": r.get("unit"),
         }
 
 
@@ -352,6 +365,10 @@ def _load_source(
         df["details"] = ""
     else:
         df["details"] = df["details"].fillna("").astype(str)
+    if "unit" not in df.columns:
+        df["unit"] = ""
+    else:
+        df["unit"] = df["unit"].fillna("").astype(str)
 
     required = ["product_name", "price", "currency", "country"]
     before = len(df)
