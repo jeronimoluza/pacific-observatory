@@ -577,8 +577,20 @@ def row_from_meta(html_text: str, url: str) -> dict | None:
     meta = meta_tags(html_text)
     # Read above the loop: `normalize_price` needs it to tell a grouping dot
     # from a decimal point, and the row needs it below.
+    #
+    # ``pricecurrency`` is the ``<meta itemprop="priceCurrency">`` half of the
+    # schema.org pair whose other half -- ``<meta itemprop="price">`` -- this
+    # function already reads as the bare ``price`` key below. Reading the
+    # amount but not its currency was not a missing label but a magnitude
+    # error: homecenter.com.co ships ``price="299.900"`` next to
+    # ``priceCurrency="COP"``, and with no currency the three-digit tail reads
+    # as a decimal point, banking a 30-piece dinner set at 299.9 pesos instead
+    # of 299,900. It is tried last so an explicit OpenGraph declaration still
+    # wins.
     currency = _valid_currency(
-        meta.get("product:price:currency") or meta.get("og:price:currency")
+        meta.get("product:price:currency")
+        or meta.get("og:price:currency")
+        or meta.get("pricecurrency")
     )
     price = None
     for key in ("product:price:amount", "og:price:amount", "price"):

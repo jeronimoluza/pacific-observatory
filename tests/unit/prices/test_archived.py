@@ -277,3 +277,41 @@ def test_rows_from_jsonld_keeps_the_offers_own_currency_over_the_specification()
     """
     rows = rows_from_jsonld(html, "https://example.test/p/widget")
     assert rows[0]["currency"] == "USD"
+
+
+@pytest.mark.unit
+def test_row_from_meta_reads_the_itemprop_price_currency():
+    """homecenter.com.co ships the schema.org pair as two ``<meta itemprop>``
+    tags. The tier already read the amount half as the bare ``price`` key and
+    ignored the currency half, which was not a missing label but a 1000x
+    understatement: with no currency the three-digit tail of ``299.900`` reads
+    as a decimal point, banking a 30-piece dinner set at 299.9 Colombian pesos
+    instead of 299,900. COP is a de-facto-integer currency, so the currency is
+    exactly what tells ``normalize_price`` the dot is a grouping mark."""
+    html = """
+    <html><head>
+      <meta itemprop="name" content="Corona Vajilla Quadrato de 30 Piezas"/>
+      <meta property="og:title" content="Corona Vajilla Quadrato de 30 Piezas"/>
+      <meta itemprop="price" content="299.900"/>
+      <meta itemprop="priceCurrency" content="COP"/>
+    </head><body></body></html>
+    """
+    row = row_from_meta(html, "http://www.homecenter.com.co/product/189468/")
+    assert row["currency"] == "COP"
+    assert row["price"] == "299900.0"
+
+
+@pytest.mark.unit
+def test_row_from_meta_prefers_an_explicit_opengraph_currency():
+    """``itemprop`` is tried last, so a storefront that declares an OpenGraph
+    product currency still wins -- the ordering the tier shipped with."""
+    html = """
+    <html><head>
+      <meta property="og:title" content="Widget"/>
+      <meta property="product:price:amount" content="12.50"/>
+      <meta property="product:price:currency" content="GBP"/>
+      <meta itemprop="priceCurrency" content="USD"/>
+    </head><body></body></html>
+    """
+    row = row_from_meta(html, "https://example.test/p/widget")
+    assert row["currency"] == "GBP"
