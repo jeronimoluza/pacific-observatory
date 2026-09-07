@@ -294,6 +294,21 @@ SPIDER_SELECTORS = {
             "nav.breadcrumb a::text",
         ],
     },
+    # --- Myanmar ---
+    "mymedicine": {
+        "product_name": [
+            "h1::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span.oe_price span.oe_currency_value::text",
+            "span.oe_currency_value::text",
+        ],
+        "category": [
+            "ol.o_wsale_breadcrumb li a span::text",
+            "ol.breadcrumb li a::text",
+        ],
+    },
     # --- Mongolia ---
     "citypharm": {
         "product_name": [
@@ -782,6 +797,20 @@ SPIDER_SELECTORS = {
         "product_id": [
             "input[name='product_id']::attr(value)",
         ],
+    },
+    # --- Kosovo (e-baa, Next.js, no JSON-LD -- own DOM classes) ---
+    "ebaa_ks": {
+        "product_name": [
+            "h1::text",
+            "meta[property='og:title']::attr(content)",
+        ],
+        "price": [
+            "span.text-lg.font-semibold.text-primary::text",
+        ],
+        "category": [
+            "nav[aria-label='Breadcrumb'] a:last-of-type::text",
+        ],
+        "product_id": [],
     },
 }
 
