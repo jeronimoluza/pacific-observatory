@@ -214,3 +214,66 @@ def test_rows_from_microdata_rescales_a_minor_unit_content_attribute():
     rows = rows_from_microdata(html, "https://www.plazavea.com.pe/arroz/p")
     assert len(rows) == 1
     assert rows[0]["price"] == "18.9"
+
+
+@pytest.mark.unit
+def test_rows_from_jsonld_reads_the_currency_off_a_price_specification():
+    """tiki.vn states its money as a nested ``UnitPriceSpecification`` and
+    puts no ``priceCurrency`` on the offer itself. ``_price_of`` already
+    followed the specification for the amount, so the row kept the price and
+    lost the currency -- 218,900 with no unit. Confirmed on the same shape at
+    supermart.ng (NGN), delhaize.be and mega-image.ro (RON)."""
+    html = """
+    <html><body>
+      <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"Product",
+       "name":"Bo Doi Goi Xa TSUBAKI 450ml",
+       "offers":{"@type":"Offer","availability":"https://schema.org/InStock",
+                 "priceSpecification":{"@type":"UnitPriceSpecification",
+                                       "price":218900,"priceCurrency":"VND"}}}
+      </script>
+    </body></html>
+    """
+    rows = rows_from_jsonld(html, "https://tiki.vn/p7777255.html")
+    assert len(rows) == 1
+    assert rows[0]["price"] == "218900.0"
+    assert rows[0]["currency"] == "VND"
+
+
+@pytest.mark.unit
+def test_rows_from_jsonld_reads_a_price_specification_written_as_a_list():
+    """scotts.com.mt, pasarsegar.co.id, tripolimarket.com and ghl.com.bn all
+    ship the specification as a one-element list rather than an object --
+    the same shape ``_price_of`` already unwraps for the amount."""
+    html = """
+    <html><body>
+      <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"Product",
+       "name":"ABC Saus Sambal 275 ml",
+       "offers":{"@type":"Offer",
+                 "priceSpecification":[{"@type":"UnitPriceSpecification",
+                                        "price":"19000","priceCurrency":"IDR"}]}}
+      </script>
+    </body></html>
+    """
+    rows = rows_from_jsonld(html, "https://pasarsegar.co.id/product/abc/")
+    assert rows[0]["currency"] == "IDR"
+
+
+@pytest.mark.unit
+def test_rows_from_jsonld_keeps_the_offers_own_currency_over_the_specification():
+    """The specification is a fallback, not an override: an offer that states
+    its own ``priceCurrency`` alongside the price the row actually took must
+    keep it."""
+    html = """
+    <html><body>
+      <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"Product","name":"Widget",
+       "offers":{"@type":"Offer","price":"9.99","priceCurrency":"USD",
+                 "priceSpecification":{"@type":"UnitPriceSpecification",
+                                       "price":"9.99","priceCurrency":"EUR"}}}
+      </script>
+    </body></html>
+    """
+    rows = rows_from_jsonld(html, "https://example.test/p/widget")
+    assert rows[0]["currency"] == "USD"

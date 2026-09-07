@@ -374,6 +374,31 @@ def _offer_list(node: dict) -> list[dict]:
     return []
 
 
+def _currency_of(offer: dict) -> Any:
+    """The offer's currency, read from wherever `_price_of` reads its price.
+
+    schema.org lets an offer state its money as a nested ``priceSpecification``
+    instead of a bare ``price``/``priceCurrency`` pair, and `_price_of` already
+    follows it for the amount. Reading the currency only off the offer itself
+    therefore dropped the currency of every offer shaped that way while keeping
+    its price -- confirmed on archived captures of tiki.vn (VND), supermart.ng
+    (NGN), pasarsegar.co.id (IDR), scotts.com.mt (EUR), tripolimarket.com
+    (LBP), ghl.com.bn (BND), delhaize.be and mega-image.ro.
+
+    A blank currency is not merely a missing label. `normalize_price` consults
+    it to tell a grouping dot from a decimal point, and downstream the modal
+    back-fill only ever fills a blank cell -- it cannot correct a wrong one.
+    """
+    currency = offer.get("priceCurrency")
+    if currency is None:
+        spec = offer.get("priceSpecification")
+        if isinstance(spec, dict):
+            currency = spec.get("priceCurrency")
+        elif isinstance(spec, list) and spec and isinstance(spec[0], dict):
+            currency = spec[0].get("priceCurrency")
+    return currency
+
+
 def _price_of(offer: dict) -> Any:
     price = offer.get("price")
     if price is None:
@@ -501,7 +526,7 @@ def rows_from_jsonld(html_text: str, url: str) -> list[dict]:
             category = category.get("name")
         for offer in _offer_list(node):
             currency = _valid_currency(
-                offer.get("priceCurrency") or node.get("priceCurrency")
+                _currency_of(offer) or node.get("priceCurrency")
             )
             price = normalize_price(_price_of(offer), currency)
             if not price or float(price) <= 0:
