@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: motherhouse_jp
+url: https://www.mother-house.jp
+language: ja
+currency: JPY
+cadence: weekly
+channel: fashion
+archive_prefix: "www.mother-house.jp/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Motherhouse Japan is a local fashion, bags, and leather-goods storefront.
+  The public Shopify /products.json feed returned JPY-priced rows on
+  2026-09-07 and fills non-food durable/fashion breadth for Japan.

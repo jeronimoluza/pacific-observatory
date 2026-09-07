@@ -1,0 +1,1 @@
+"""Lao PDR price fetchers."""

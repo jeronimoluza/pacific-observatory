@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: futurestore_bn
+url: https://www.thefuturestore.co/products
+language: en
+cadence: weekly
+channel: electronics
+currency: BND
+archive_prefix: "www.thefuturestore.co/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Future Store Brunei Shopify catalog for home technology, lighting, smart
+  devices, network equipment, and electronics. Public /products.json feed
+  returned BND rows on 2026-09-07, including interactive displays, portable
+  lamps, and Ubiquiti equipment.

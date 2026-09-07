@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: motherswork_vn
+url: https://www.motherswork.com.vn
+language: vi
+currency: VND
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.motherswork.com.vn/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Motherswork Vietnam is a baby and family goods storefront. The public
+  Shopify feed returned VND-priced diapers, wipes, baby food/snacks, bottles,
+  and related daily-use rows on 2026-09-07.

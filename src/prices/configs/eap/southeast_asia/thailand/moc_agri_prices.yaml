@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_scrape
+analytical_role: official_avg
+coicop_classification: classifier
+channel: null
+source_key: th_moc_agri_prices
+module: eap.southeast_asia.thailand.moc_agri_prices
+function: fetch_th_moc_agri_prices
+url: https://www.moc.go.th/en/page/item/index/id/1
+language: th
+currency: THB
+cadence: daily
+fallback_date: 2026-01-01
+notes: |
+  Thailand Ministry of Commerce agricultural commodity price cards. The page
+  publishes public THB commodity prices and source-reported dates for common
+  foods including meat, seafood, vegetables, spices and fruit; row dates are
+  parsed from the Thai Buddhist-calendar date shown on each card.

@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cte_tahiti_pf
+url: https://ctetahiti.com/
+language: fr
+currency: XPF
+cadence: weekly
+channel: electronics
+notes: |
+  CTE Tahiti appliance, electronics, and home-goods catalog. WooCommerce Store
+  API is public; the spider skips zero-price placeholder rows before emitting
+  XPF observations. Added during the PF/NC specialized-goods recovery pass.

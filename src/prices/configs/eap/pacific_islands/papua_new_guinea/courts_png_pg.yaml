@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: courts_png_pg
+url: https://courts.com.pg/
+language: en
+currency: PGK
+cadence: weekly
+channel: dept-store
+archive_prefix: "courts.com.pg/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: >
+  Courts PNG WooCommerce storefront for furniture, appliances, electronics,
+  bedding, and household durables. The public Store API at
+  /wp-json/wc/store/products returned PGK-priced product records during live
+  probe on 2026-09-07.

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ansons_ph
+url: https://ansons.ph
+language: en
+currency: PHP
+cadence: weekly
+channel: electronics
+archive_prefix: "ansons.ph/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Anson's Philippines exposes the public WooCommerce Store API with appliances,
+  refrigerators, washing machines, electronics, and related durable goods. Added
+  to fill Philippines appliances/electronics breadth in the parent database.

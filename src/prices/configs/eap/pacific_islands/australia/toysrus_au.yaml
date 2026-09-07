@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: toysrus_au
+url: https://www.toysrus.com.au
+language: en
+currency: AUD
+cadence: weekly
+channel: other
+archive_prefix: "www.toysrus.com.au/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Toys R Us Australia adds toys, games, baby, and seasonal durable-goods
+  coverage. The public Shopify /products.json feed returned AUD-priced rows on
+  2026-09-07.

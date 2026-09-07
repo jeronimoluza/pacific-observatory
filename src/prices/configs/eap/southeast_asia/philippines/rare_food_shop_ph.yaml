@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rare_food_shop_ph
+url: https://rarefoodshop.com
+language: en
+currency: PHP
+cadence: weekly
+channel: specialty-food
+archive_prefix: "rarefoodshop.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Rare Food Shop is a Philippines grocery and food-import Shopify storefront.
+  The public product feed returned PHP-priced pantry and grocery rows on
+  2026-09-07.

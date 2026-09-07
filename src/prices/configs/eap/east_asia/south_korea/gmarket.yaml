@@ -10,9 +10,15 @@ language: ko
 cadence: daily
 channel: marketplace
 notes: |
-  eBay Korea / Shinsegae (Emart) open marketplace. Scoped to the three
-  grocery large-category groups on /n/best (신선식품 fresh 100000006,
-  가공식품 processed 100000005, 생필품/육아 daily-necessities 100000007).
+  eBay Korea / Shinsegae (Emart) open marketplace. Scoped to Gmarket's main
+  best-seller large-category groups on /n/best. Food groups are crawled first
+  because the food/beverage dashboard is the primary consumer: 신선식품 fresh
+  100000006, 가공식품 processed 100000005, 생필품/육아 daily-necessities/baby
+  100000007. Non-food groups follow: 생활/주방 household/kitchen 100001001,
+  패션/잡화 fashion/accessories 100000001, 뷰티 beauty 100000003,
+  디지털/가전 digital/appliances 100001007, 가구/홈 furniture/home 100001004,
+  스포츠/건강 sports/health 100001002, 취미/문구/펫 hobby/stationery/pet
+  100001003.
   Best-seller lists are Next.js SSR — products parsed from the __NEXT_DATA__
   script tag (goodsCode/goodsName/sellPrice), ~200 ranked items per group.
   Cloudflare __cf_bm passes under curl_cffi chrome impersonation on a

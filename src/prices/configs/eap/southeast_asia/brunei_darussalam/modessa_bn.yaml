@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: modessa_bn
+url: https://modessacommunity.com/products
+language: en
+cadence: weekly
+channel: fashion
+currency: BND
+archive_prefix: "modessacommunity.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Brunei Shopify storefront for adult apparel and modest fashion. Public
+  /products.json feed returned BND product rows on 2026-09-07, including modal
+  edit clothing listings.

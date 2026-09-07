@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mgdmall_mm
+url: https://mgdmall.com.mm/en/category/food-%26-groceries?category_id=12
+language: en
+cadence: daily
+channel: marketplace
+archive_prefix: "mgdmall.com.mm/en/category/food-%26-groceries"
+archive_path_re: '^/en/(category/food-%26-groceries|product/details/)'
+notes: |
+  MGD Mall Myanmar Food & Groceries category renders product cards with public
+  product URLs, names, and Ks prices. The listing includes grocery and household
+  consumer items and was live-probed before integration on 2026-09-07.

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: penshoppe_ph
+url: https://www.penshoppe.com
+language: en
+currency: PHP
+cadence: weekly
+channel: fashion
+archive_prefix: "www.penshoppe.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Penshoppe Philippines exposes a public Shopify feed with apparel, footwear,
+  bags, hats, and accessories. Added to broaden clothing/footwear coverage in
+  the parent Philippines source set.

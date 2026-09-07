@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: factory_store_nc
+url: https://www.factorystore.nc/
+language: fr
+currency: XPF
+cadence: weekly
+channel: fashion
+notes: |
+  Factory Store New Caledonia apparel/outlet catalog. WooCommerce Store API is
+  public and reports XPF prices. Added during the PF/NC specialized-goods
+  recovery pass.

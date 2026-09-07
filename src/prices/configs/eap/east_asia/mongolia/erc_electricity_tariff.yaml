@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_notice
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: mn_erc_electricity_tariff
+module: eap.east_asia.mongolia.erc_electricity_tariff
+function: fetch_mn_erc_electricity_tariff
+url: https://erc.gov.mn/en/print/1033?date=true
+language: en
+cadence: annual
+fallback_date: 2024-01-01
+channel: null
+notes: |
+  Mongolia Energy Regulatory Commission tariff reform notice, effective from
+  November 15, 2024 for electricity. Emits official MNT/kWh rows for average
+  current/previous tariffs and household tier tariffs. This fills the parent
+  database gap for a direct utilities/common-item tariff source.

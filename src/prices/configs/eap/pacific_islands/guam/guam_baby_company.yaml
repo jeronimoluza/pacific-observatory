@@ -1,0 +1,17 @@
+spider: guam_baby_company
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: other
+url: https://guambabyco.com/collections/toys
+language: en
+cadence: weekly
+archive_prefix: "guambabyco.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Guam Baby Company Shopify collection scoped to the Toys collection to add a
+  non-food baby/toy specialized-goods source for Guam. Public Shopify
+  collection feed returned toys and baby activity products with USD prices
+  during the 2026-09-07 probe. Channel is set to other because the current
+  source taxonomy has no dedicated baby/toys channel.

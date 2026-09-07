@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bookxcess_my
+url: https://www.bookxcess.com/
+language: en
+currency: MYR
+cadence: weekly
+channel: other
+archive_prefix: "bookxcess.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  BookXcess Malaysia Shopify catalogue. Added for parent-gap breadth in books
+  and school-adjacent items; public products.json returned priced MYR book
+  variants during the 2026-09-07 probe.

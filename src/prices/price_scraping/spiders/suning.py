@@ -46,6 +46,21 @@ _JSONP_RE = re.compile(r"^\s*pcData\((.*)\)\s*;?\s*$", re.DOTALL)
 
 # keyword (zh) -> coarse category hint
 _SEED_KEYWORDS = {
+    # Specialized durable / household seeds contributed 2026-09-07 (EAP
+    # handoff): China already has food, medicine and property coverage but is
+    # thin on COICOP 03/05/09-adjacent goods.
+    "电饭煲": "家电/厨房电器/电饭煲",
+    "冰箱": "家电/大家电/冰箱",
+    "洗衣机": "家电/大家电/洗衣机",
+    "空调": "家电/大家电/空调",
+    "电视": "家电/视听设备/电视",
+    "手机": "电子/通信设备/手机",
+    "床垫": "家具/卧室家具/床垫",
+    "沙发": "家具/客厅家具/沙发",
+    "童鞋": "服装鞋帽/童鞋",
+    "婴儿车": "婴儿用品/童车",
+    "玩具": "文娱用品/玩具",
+    "电钻": "五金工具/电动工具",
     # staples
     "大米": "食品/粮油/大米",
     "面条": "食品/粮油/面条",

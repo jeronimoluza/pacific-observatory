@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: json_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+source_key: th_eppo_oil_prices
+module: eap.southeast_asia.thailand.eppo_oil_prices
+function: fetch_th_eppo_oil_prices
+url: https://www.eppo.go.th/wp-json/oil-api/v1/oil-prices
+language: th
+cadence: daily
+fallback_date: 2026-09-01
+notes: |
+  Thailand Energy Policy and Planning Office public JSON endpoint for oil
+  retail prices by fuel type and brand in Bangkok and vicinities. The source
+  page labels these as standard retail prices in baht/litre, excluding local
+  maintenance tax. Added to fill Thailand's transport-fuel coverage gap.
+channel: null

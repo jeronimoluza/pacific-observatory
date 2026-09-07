@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vietnamobile_vn
+url: https://shop.vietnamobile.com.vn/vn/2-trang-chu
+language: vi
+currency: VND
+cadence: weekly
+channel: marketplace
+archive_prefix: "shop.vietnamobile.com.vn/vn/"
+archive_path_re: '^/vn/[^/?]+'
+notes: |
+  Vietnamobile's public PrestaShop storefront lists SIM, eSIM, and data-related
+  products with VND prices. Added as a small telecom storefront source to
+  complement official tariff pages in an area thinly represented by the parent
+  database.

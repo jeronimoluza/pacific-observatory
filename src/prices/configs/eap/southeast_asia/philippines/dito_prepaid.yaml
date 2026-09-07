@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_text
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: ph_dito_prepaid
+module: eap.southeast_asia.philippines.dito_prepaid
+function: fetch_ph_dito_prepaid
+url: https://dito.ph/prepaid
+language: en
+cadence: weekly
+fallback_date: 2026-09-01
+notes: |
+  Official DITO Philippines prepaid page. The fetcher parses server-rendered
+  data, 5G, stream, game, app, and starter-pack cards with PHP prices and
+  validity notes, expanding parent database telecom tariff coverage.
+channel: null

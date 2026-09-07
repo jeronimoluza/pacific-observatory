@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_next_data
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: psarplus_kh
+url: https://www.psarplus.com/en/c/fruit-vegetables
+language: en
+cadence: daily
+channel: hypermarket
+archive_prefix: "www.psarplus.com/en/c/"
+archive_path_re: '^/en/c/(fruit-vegetables|meat|fish-seafood|dry-grocery|beverages|household-supplies|health-beauty)'
+notes: |
+  PsarPlus Cambodia public category pages expose CP Axtra/Makro-style product
+  hits in Next.js __NEXT_DATA__, including food, beverages, household supplies,
+  and health/beauty USD prices. Added as the current public successor candidate
+  rather than changing the older inactive makrocambodiaclick source.

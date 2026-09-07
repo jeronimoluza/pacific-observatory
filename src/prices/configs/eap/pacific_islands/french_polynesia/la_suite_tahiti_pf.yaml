@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: la_suite_tahiti_pf
+url: https://app.menu-touch.fr/index.php?id_client=14560
+language: fr
+currency: XPF
+cadence: weekly
+channel: specialty-food
+notes: |
+  La Suite Tahiti menu-touch page. The menu is server-rendered and exposes
+  many dish, dessert and drink rows with CFP-franc prices written as "F".
+  The spider treats those as XPF/CFP, the French Pacific franc. Prepared-food
+  menu source; lower priority than grocery but a valid local price surface.

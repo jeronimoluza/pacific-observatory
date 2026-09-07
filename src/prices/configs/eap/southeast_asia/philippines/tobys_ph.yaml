@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tobys_ph
+url: https://www.tobys.com
+language: en
+currency: PHP
+cadence: weekly
+channel: other
+archive_prefix: "www.tobys.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Toby's Sports exposes a public Shopify feed with sports equipment, shoes,
+  balls, racquets, fitness items, and outdoor goods. Added as a broader
+  Philippines sports-goods source beyond food, pharmacy, and durable retail.

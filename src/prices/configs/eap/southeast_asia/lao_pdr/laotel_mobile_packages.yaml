@@ -1,0 +1,19 @@
+scaffolding: fetcher
+extraction_pattern: html_embedded_js
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: la_laotel_mobile_packages
+module: eap.southeast_asia.lao_pdr.laotel_mobile_packages
+function: fetch_la_laotel_mobile_packages
+url: https://www.laotel.com/la/shop-LTC-buy-package.php?Lang=en
+language: lo
+cadence: irregular
+fallback_date: 2026-09-01
+notes: |
+  Official Lao Telecom mobile prepaid, postpaid, and netsim package prices.
+  The public page embeds package names, dial codes, and LAK prices in a script.
+  SSL verification is disabled because the live server presents an incomplete
+  certificate chain to Python/curl in this environment. Narrow telecom tariff
+  source (all rows COICOP 08.3.0); confirmed 2026-09-07.
+channel: null

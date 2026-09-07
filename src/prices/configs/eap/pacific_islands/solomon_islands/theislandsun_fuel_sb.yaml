@@ -1,0 +1,17 @@
+spider: theislandsun_fuel_sb
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: official_price_bulletin
+coicop_classification: classifier
+channel: fuel-station
+url: https://theislandsun.com.sb/new-fuel-prices-take-effect/
+language: en
+cadence: monthly
+archive_prefix: "theislandsun.com.sb/new-fuel-prices-take-effect/"
+archive_path_re: '^/new-fuel-prices-take-effect/?$'
+notes: >
+  Current Solomon Islands fuel-price article reporting the Honiara wholesale
+  price schedule effective 1 September 2026. This is a local price-bulletin
+  fallback source rather than retail SKU coverage; the spider emits petrol,
+  diesel, and kerosene rows for retail litre, bulk litre, 200-litre refill,
+  and 200-litre refill with new drum prices.

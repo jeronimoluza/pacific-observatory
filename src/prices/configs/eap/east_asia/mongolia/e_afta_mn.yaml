@@ -1,0 +1,16 @@
+scaffolding: fetcher
+extraction_pattern: html_product_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: other
+source_key: mn_e_afta_mn
+module: eap.east_asia.mongolia.e_afta_mn
+function: fetch_mn_e_afta_mn
+url: https://www.e-afta.mn/shop/category/241?order=list_price+desc
+language: mn
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  E-Afta stationery/school-supplies category page exposes MNT prices for
+  notebooks, folders, paper, stickers, and related school items. Added to fill
+  Mongolia stationery and school-supplies gaps in the parent database.

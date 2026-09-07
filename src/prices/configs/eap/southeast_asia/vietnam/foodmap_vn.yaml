@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: foodmap_vn
+url: https://foodmap.asia
+language: vi
+currency: VND
+cadence: weekly
+channel: specialty-food
+archive_prefix: "foodmap.asia/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  FoodMap Vietnam exposes food categories and product pages in public HTML.
+  Category Ajax responses include product cards with names, SKUs, VND prices,
+  and product URLs; product pages also include JSON-LD price evidence. Verified
+  from this environment on 2026-09-07.

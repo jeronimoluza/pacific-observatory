@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pacific_bay_ph
+url: https://www.pacificbay.com.ph
+language: en
+currency: PHP
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.pacificbay.com.ph/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Pacific Bay is a Philippines seafood/frozen-food Shopify storefront. The
+  public feed returned PHP-priced fish and seafood rows from this environment
+  on 2026-09-07.

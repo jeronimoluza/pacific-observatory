@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: real_food_ph
+url: https://realfoodph.myshopify.com
+language: en
+currency: PHP
+cadence: weekly
+channel: specialty-food
+archive_prefix: "realfoodph.myshopify.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Real Food Philippines exposes its catalog through the underlying Shopify host,
+  which avoids the main-domain Cloudflare block observed earlier. The feed
+  returned PHP-priced grocery, frozen food, baby, and pantry rows on 2026-09-07.

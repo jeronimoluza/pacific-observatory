@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: babyvillage_au
+url: https://www.babyvillage.com.au
+language: en
+currency: AUD
+cadence: weekly
+channel: other
+archive_prefix: "www.babyvillage.com.au/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Baby Village Australia sells nursery furniture, bedding, prams, car seats,
+  feeding, toys, and baby-care products. The public Shopify /products.json feed
+  returned AUD-priced rows on 2026-09-07.

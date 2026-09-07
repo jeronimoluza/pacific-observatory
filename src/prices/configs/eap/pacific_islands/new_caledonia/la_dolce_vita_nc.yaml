@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: la_dolce_vita_nc
+url: https://ladolcevita.nc/la-carte/
+language: fr
+currency: XPF
+cadence: weekly
+channel: specialty-food
+notes: |
+  La Dolce Vita Noumea restaurant menu. The page is static WordPress HTML
+  with item names adjacent to CFP prices. This is prepared-food/menu coverage,
+  lower priority than groceries, but it provides local dish and beverage price
+  observations for New Caledonia.

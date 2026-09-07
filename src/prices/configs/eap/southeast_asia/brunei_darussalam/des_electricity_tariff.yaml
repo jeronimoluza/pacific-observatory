@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_table
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: bn_des_electricity_tariff
+module: eap.southeast_asia.brunei_darussalam.des_electricity_tariff
+function: fetch_bn_des_electricity_tariff
+url: https://www.des.gov.bn/electricity-tariff/
+language: en
+cadence: quarterly
+channel: null
+currency: BND
+fallback_date: 2026-01-01
+notes: |
+  Brunei Department of Electrical Services electricity tariff page. Tariff A
+  residential tiers and bill examples plus Tariff B commercial formula rows
+  are public server-rendered HTML tables. Confirmed open on 2026-09-07.

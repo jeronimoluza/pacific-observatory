@@ -1,0 +1,15 @@
+spider: dealdepot_guam
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: dept-store
+url: https://www.dealdepotguam.com/category/all-products
+language: en
+cadence: weekly
+archive_prefix: "www.dealdepotguam.com/category/"
+archive_path_re: '^/category/[^/?]+'
+notes: >
+  Deal Depot Guam local household furnishing store in Harmon. The Wix category
+  page renders product cards with item names, product-page URLs, USD prices,
+  and out-of-stock labels; the spider preserves those product-card prices.

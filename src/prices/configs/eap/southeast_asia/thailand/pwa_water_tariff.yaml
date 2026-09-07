@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_table
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1"]
+source_key: th_pwa_water_tariff
+module: eap.southeast_asia.thailand.pwa_water_tariff
+function: fetch_th_pwa_water_tariff
+url: https://www.pwa.co.th/contents/service/table-price
+language: th
+cadence: quarterly
+fallback_date: 2026-09-01
+notes: |
+  Official Provincial Waterworks Authority water tariff tables. The fetcher
+  emits household/residential block rates from the three PWA tariff-area tables
+  as THB/m3. Added to fill Thailand water-utility tariff coverage missing from
+  the parent database.
+channel: null

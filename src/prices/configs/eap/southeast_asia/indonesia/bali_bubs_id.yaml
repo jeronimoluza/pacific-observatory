@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bali_bubs_id
+url: https://balibubsstore.com
+language: en
+currency: IDR
+cadence: weekly
+channel: marketplace
+archive_prefix: "balibubsstore.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Bali Bubs is an Indonesia-based Shopify storefront with baby food, baby care,
+  apparel, toys, and children's goods. Added to broaden common household and
+  baby-goods coverage beyond the existing parent database sources.

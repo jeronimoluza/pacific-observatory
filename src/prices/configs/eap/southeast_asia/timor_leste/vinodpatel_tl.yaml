@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: api_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vinodpatel_tl
+url: https://www.vinodpatel.tl/product-category/building-and-hardware/building-materials/
+language: en
+cadence: weekly
+channel: home-improvement
+archive_prefix: "www.vinodpatel.tl/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Timor-Leste Vinod Patel storefront carrying building materials, hardware,
+  electrical, tools, garden/agriculture, home furniture, household goods, and
+  related durable categories. The public WooCommerce Store API exposes product
+  IDs, names, categories, stock flags, permalinks, and visible USD prices.
+  The API reports currency_code "ABC" while the storefront symbol is USD, so
+  the spider forces USD. Integrated after live probing on 2026-09-07.

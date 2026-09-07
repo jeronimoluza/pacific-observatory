@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: source_curated
+spider: patrickscellars_pg
+url: https://www.patrickscellars.com/
+language: en
+currency: PGK
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.patrickscellars.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Patricks Cellars PNG Shopify beverage storefront. The public
+  /collections/all/products.json endpoint returned PGK-priced wine, spirits,
+  beer, and membership products during live probe on 2026-09-06. This source is
+  beverage/alcohol-only and shares ownership with Patricks Transport, so count
+  it as vendor breadth rather than a fully independent grocery chain.

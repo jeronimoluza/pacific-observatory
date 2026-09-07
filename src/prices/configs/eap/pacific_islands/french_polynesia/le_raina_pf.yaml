@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: le_raina_pf
+url: https://www.leraina.com/en/menus/
+language: fr
+currency: XPF
+cadence: weekly
+channel: specialty-food
+notes: |
+  Le Raina Papeete restaurant menu. The Zenchef-hosted menu page is
+  server-rendered and exposes dish names adjacent to XPF prices. This is
+  prepared-food/menu coverage, lower priority than supermarkets but useful
+  for French Polynesia's current thin product-price coverage.

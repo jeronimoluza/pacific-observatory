@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: babycentral_hk
+url: https://babycentral.com.hk
+language: en
+currency: HKD
+cadence: weekly
+channel: other
+archive_prefix: "babycentral.com.hk/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Baby Central Hong Kong sells infant feeding, diapers, strollers, toys, and
+  related family-care goods. The public Shopify /products.json feed returned
+  HKD-priced rows on 2026-09-07, adding baby-goods coverage outside the
+  existing supermarket/pharmacy set.

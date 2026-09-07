@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: pasarhub_my
+url: https://pasarhub.my/shop/
+language: en
+currency: MYR
+cadence: daily
+notes: |
+  PasarHub Malaysia online wet-market grocer. Public WooCommerce Store API
+  exposes fresh grocery SKUs with names, category labels, MYR prices and
+  product URLs; especially useful for meat, seafood, vegetables and fruit.

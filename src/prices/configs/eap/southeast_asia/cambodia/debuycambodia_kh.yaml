@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: api_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: debuycambodia_kh
+url: https://www.debuycambodia.com.kh/
+language: en
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.debuycambodia.com.kh/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Cambodia Shopify storefront for electronics, smartphones, laptops, tablets,
+  printers, accessories, home/office furniture, TVs, cleaners, refrigerators,
+  washing machines, air conditioners, and kitchen appliances with USD prices.
+  Integrated to broaden beyond food and furniture after live endpoint probing
+  on 2026-09-07.

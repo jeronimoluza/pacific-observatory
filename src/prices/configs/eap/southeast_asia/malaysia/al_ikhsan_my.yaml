@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: al_ikhsan_my
+url: https://www.al-ikhsan.com/
+language: en
+currency: MYR
+cadence: weekly
+channel: fashion
+archive_prefix: "al-ikhsan.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Al-Ikhsan Malaysia Shopify catalogue. Added for clothing, footwear, and
+  sports-goods breadth; public products.json returned priced MYR product
+  variants during the 2026-09-07 probe.

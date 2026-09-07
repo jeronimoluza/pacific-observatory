@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: asdetrefle_nc
+url: https://www.asdetrefle.nc/default/jouets/univers-1er-age/jouets-1er-age.html
+language: fr
+currency: XPF
+cadence: weekly
+channel: other
+notes: |
+  L'As de Trefle New Caledonia baby/toy category. Magento-style server-rendered
+  product cards expose product IDs, SKUs, detail URLs, and XPF prices. Added
+  during the PF/NC specialized-goods recovery pass.

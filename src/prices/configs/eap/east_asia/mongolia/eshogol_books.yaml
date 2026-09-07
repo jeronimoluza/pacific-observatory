@@ -1,0 +1,16 @@
+scaffolding: fetcher
+extraction_pattern: html_product_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: other
+source_key: mn_eshogol_books
+module: eap.east_asia.mongolia.eshogol_books
+function: fetch_mn_eshogol_books
+url: https://eshogol.mn/shop/category/195
+language: mn
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Eshogol book/stationery category page exposes product links and MNT prices
+  for books, coloring books, notebooks, and school supplies. Added to fill
+  Mongolia books/school-goods gaps in the parent database.

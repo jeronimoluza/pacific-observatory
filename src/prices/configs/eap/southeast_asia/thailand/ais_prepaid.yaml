@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_text
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: th_ais_prepaid
+module: eap.southeast_asia.thailand.ais_prepaid
+function: fetch_th_ais_prepaid
+url: https://www.ais.th/consumers/package/prepaid/plan/call-internet
+language: th
+cadence: weekly
+fallback_date: 2026-09-01
+notes: |
+  AIS One-2-Call prepaid call/internet package prices from the official AIS
+  consumer page. The fetcher keeps a small source-curated tariff table after
+  confirming the current page still carries the expected baht price markers.
+  Added to fill Thailand telecom-service tariff coverage.
+channel: null

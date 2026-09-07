@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: popular_sg
+url: https://popularonline.com.sg/
+language: en
+currency: SGD
+cadence: weekly
+channel: other
+archive_prefix: "popularonline.com.sg/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  POPULAR Singapore Shopify catalogue. Added for books, stationery, school
+  supplies, and some small electronics; public products.json returned priced
+  SGD product variants during the 2026-09-07 probe.

@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_product_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: other
+source_key: cn_dangdang_books
+module: eap.east_asia.china.dangdang_books
+function: fetch_cn_dangdang_books
+url: https://search.dangdang.com/?key=%CA%E9&act=input
+language: zh
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Dangdang search result page for books. The page is server-rendered with
+  product links, names, and CNY sale prices. Added in the broad under-covered
+  categories pass to fill China book/school-reading coverage missing from the
+  parent database.

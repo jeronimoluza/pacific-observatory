@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_text
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: sg_singtel_prepaid
+module: eap.southeast_asia.singapore.singtel_prepaid
+function: fetch_sg_singtel_prepaid
+url: https://www.singtel.com/personal/products-services/mobile/prepaid-plans/data-plans
+language: en
+cadence: weekly
+fallback_date: 2026-09-01
+notes: |
+  Official Singtel prepaid monthly data-plan page. The fetcher parses the
+  server-rendered plan-price text and emits six 4-week prepaid plan tariffs.
+  Added to improve Singapore telecom breadth beyond the existing M1 source.
+channel: null

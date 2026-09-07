@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: html_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: utech_macau
+url: https://www.utechmacau.com/en/product.php?cid=29
+language: en
+cadence: weekly
+channel: electronics
+currency: MOP
+archive_prefix: "www.utechmacau.com/en/product_detail.php"
+archive_path_re: '^/en/product_detail\\.php\\?pid=[0-9]+'
+notes: |
+  UTech / Excel Macau public electronics catalog page, scoped to the Apple and
+  computer-device product category. Server-rendered listing pages expose product
+  names, MOP sale prices, and product-detail URLs. Confirmed open on
+  2026-09-07.

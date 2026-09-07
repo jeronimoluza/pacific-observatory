@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: decathlon_nc
+url: https://decathlon.nc/
+language: fr
+currency: XPF
+cadence: weekly
+channel: other
+notes: |
+  Decathlon New Caledonia sporting goods catalog. Public Shopify products JSON
+  exposes apparel, sporting equipment, bicycle parts, and camping goods priced
+  in XPF. Added during the PF/NC specialized-goods recovery pass.

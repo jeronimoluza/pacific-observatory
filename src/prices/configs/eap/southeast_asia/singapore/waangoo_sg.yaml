@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: waangoo_sg
+url: https://www.waangoo.com/
+language: en
+currency: SGD
+cadence: daily
+archive_prefix: "www.waangoo.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Waangoo Singapore grocery storefront. Shopify products JSON yields public
+  per-SKU SGD prices for snacks, pantry staples, beverages, household and
+  personal-care products, complementing incumbent SG supermarket sources.

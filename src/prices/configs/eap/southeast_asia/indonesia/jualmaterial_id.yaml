@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jualmaterial_id
+url: https://www.jualmaterial.com
+language: id
+currency: IDR
+cadence: weekly
+channel: home-improvement
+archive_prefix: "www.jualmaterial.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  JualMaterial exposes a public WooCommerce Store API with building materials,
+  hardware, tools, door and window fittings, plumbing, and related construction
+  items. Added to address Indonesia's thin hardware/building-material coverage.

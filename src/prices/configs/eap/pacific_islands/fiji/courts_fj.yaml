@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: courts_fj
+url: https://www.courts.com.fj/
+language: en
+currency: FJD
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.courts.com.fj/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  Courts Fiji WooCommerce storefront for furniture, appliances, electronics,
+  bedding, and household durables. The public Store API at
+  /wp-json/wc/store/products returned FJD-priced product records during live
+  probe on 2026-09-07.

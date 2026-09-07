@@ -1,0 +1,18 @@
+spider: benson_guam
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: home-improvement
+url: https://bensonguam.epicor-inet.com/departments/portable-electric-generator-%7C50%7C127%7C001274.html
+language: en
+cadence: weekly
+archive_prefix: "bensonguam.epicor-inet.com/departments/"
+archive_path_re: '^/departments/[^/?]+'
+notes: >
+  Benson Guam hardware storefront category on the Epicor iNet platform, scoped
+  to portable generators/electrical hardware to add direct hardware and
+  building-supplies coverage without duplicating food/menu sources. Product
+  names and USD prices are rendered in the category HTML; the spider emits
+  stable per-product URL fragments because the source page groups many SKUs on
+  one category URL.

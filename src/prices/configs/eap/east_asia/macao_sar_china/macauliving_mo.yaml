@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_static_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: macauliving_mo
+url: https://www.macauliving.com/index.php?r=product%2Findex
+language: zh-Hant
+cadence: weekly
+channel: other
+currency: MOP
+archive_prefix: "www.macauliving.com/index.php"
+archive_path_re: '^/index\.php'
+notes: |
+  Macao local catalog with appliances, gas water heaters, cooking hobs,
+  cooker hoods, motorcycle and vehicle engine oils, barbecue grills, and pet
+  household goods. Public paginated product cards returned MOP item rows on
+  2026-09-07.

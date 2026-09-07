@@ -1,0 +1,21 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: wilco_vu
+url: https://www.wilco.com.vu/
+language: en
+currency: VUV
+cadence: weekly
+channel: home-improvement
+archive_prefix: "wilco.com.vu/index.php?route=product/product"
+archive_path_re: 'route=product/product&product_id=[0-9]+'
+notes: |
+  Wilco Vanuatu is a local OpenCart/Journal hardware and home-improvement
+  catalog with server-rendered product cards and VT prices. Live probe
+  2026-09-06 found category/product routes, local VUV display prices, and
+  enough product-card rows for the shared OpenCart spider. The spider scopes
+  to two product-bearing categories (timber and roofing) and keeps pagination
+  to one page because several Wilco category pages repeat the same fallback
+  product cards across page=N. This is a fallback non-food source for Vanuatu
+  breadth; food/beverage retail remains a higher priority.

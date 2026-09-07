@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: machines_my
+url: https://www.machines.com.my/
+language: en
+currency: MYR
+cadence: weekly
+channel: electronics
+archive_prefix: "machines.com.my/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Machines Malaysia Shopify catalogue. Added for computer, phone, tablet, and
+  Apple-accessory breadth; public products.json returned priced MYR product
+  variants during the 2026-09-07 probe.

@@ -1,0 +1,17 @@
+spider: salt_light_home_guam
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: home-improvement
+url: https://thesaltandlighthome.com/
+language: en
+cadence: weekly
+archive_prefix: "thesaltandlighthome.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Salt + Light Home Shopify catalog for Guam furniture and home goods. The
+  store identifies a Tamuning, Guam showroom and exposes product titles,
+  product types, tags, variant ids, availability, and USD prices through the
+  public Shopify products endpoint. Added to cover furniture/home durables
+  without repeating the food/menu pass.

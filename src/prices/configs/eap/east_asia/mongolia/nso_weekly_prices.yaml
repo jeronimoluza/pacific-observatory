@@ -1,0 +1,20 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: other
+source_key: mn_nso_weekly_prices
+module: eap.east_asia.mongolia.nso_weekly_prices
+function: fetch_mn_nso_weekly_prices
+url: https://data.1212.mn/pxweb/en/NSO/NSO__Economy%2C%20environment__Consumer%20Price%20Index/DT_NSO_0600_001V4.px/
+language: en
+cadence: weekly
+fallback_date: 2024-01-01
+notes: |
+  Mongolia National Statistics Office PxWeb table DT_NSO_0600_001V4:
+  "WEEKLY PRICES OF MAIN PRODUCTS AND GASOLINE IN CAPITAL CITY". Open
+  unauthenticated JSON-stat2 API under data.1212.mn/api/v1. Emits one row per
+  product/week for Ulaanbaatar city across staple food and fuel items, including
+  flour, bread, rice, meat, milk, eggs, vegetables, fruit, petrol A-80/A-92 and
+  diesel. Source unit metadata is "togrogs"; item labels carry physical units
+  such as kg/litre/piece.

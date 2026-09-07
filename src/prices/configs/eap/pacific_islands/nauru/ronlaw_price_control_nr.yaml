@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes:
+  - "07.2.2"
+spider: ronlaw_price_control_nr
+url: https://ronlaw.gov.nr/pdfviewer/docs%252Flaws%252F2026%252FPrice%2520Control%2520Order%2520No%25202%25202026_serv5.pdf
+language: en
+currency: AUD
+cadence: monthly
+channel: null
+notes: |
+  RONLAW indexes Nauru legal instruments and exposes searchable text for
+  price-control orders. Live probe 2026-09-07 found Price Control Order No 2
+  2026_serv5.pdf, commenced 2026-05-29, with six maximum wholesale/retail
+  fuel prices for diesel, petrol, and Jet A1 in dollars per litre. The public
+  PDF viewer path serves the web app shell to curl, so the spider reads the
+  RONLAW search API text and anchors rows to the viewer URL.

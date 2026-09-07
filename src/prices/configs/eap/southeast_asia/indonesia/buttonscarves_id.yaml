@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: buttonscarves_id
+url: https://www.buttonscarves.com
+language: id
+currency: IDR
+cadence: weekly
+channel: fashion
+archive_prefix: "www.buttonscarves.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Buttonscarves Indonesia exposes a public Shopify feed with bags, apparel, and
+  fashion accessories. Added as an independent Indonesia fashion/accessories
+  domain for non-food source breadth.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: challenger_sg
+url: https://online.challenger.sg/
+language: en
+currency: SGD
+cadence: weekly
+channel: electronics
+archive_prefix: "online.challenger.sg/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Challenger Singapore Shopify catalogue. Added for electronics and computer
+  accessory breadth: phones, storage, power banks, chargers, adapters, and
+  related durable goods. Probe found available SGD-priced variants beyond the
+  first page on 2026-09-07.

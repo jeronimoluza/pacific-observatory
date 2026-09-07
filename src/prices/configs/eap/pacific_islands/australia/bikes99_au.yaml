@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bikes99_au
+url: https://www.99bikes.com.au
+language: en
+currency: AUD
+cadence: weekly
+channel: other
+archive_prefix: "www.99bikes.com.au/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  99 Bikes Australia adds bicycles, tyres, helmets, tools, clothing, and
+  cycling accessories. The public Shopify /products.json feed returned
+  AUD-priced rows on 2026-09-07.

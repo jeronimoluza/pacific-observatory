@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: official_price_bulletin
+coicop_classification: source_curated
+coicop_codes:
+  - "07.2.2"
+  - "07.3.2"
+spider: marshall_journal_fuel_transport_mh
+url: https://marshallislandsjournal.com/latest-fuel-price-increase/
+language: en
+currency: USD
+cadence: monthly
+channel: fuel-station
+notes: |
+  Marshall Islands Journal local reporting on Majuro fuel pump prices and taxi
+  fare increases. Live probe 2026-09-07 found two public 2026 articles with
+  explicit USD-per-gallon fuel prices for PII and Mobil and USD taxi fares for
+  downtown, Rairok, and Laura routes. This is local newspaper price evidence,
+  not an official fuel bulletin; rows are anchored to the reporting articles.

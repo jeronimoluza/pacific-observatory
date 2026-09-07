@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nextgen_store_pg
+url: https://store.nextgenpng.net/shop
+language: en
+currency: PGK
+cadence: weekly
+channel: electronics
+archive_prefix: "store.nextgenpng.net/shop/product/"
+archive_path_re: '^/shop/product/[^/?]+'
+notes: >
+  Nextgen Store PNG server-rendered catalog for office technology, networking,
+  printer consumables, UPS/power, and security/surveillance products. Live
+  probe on 2026-09-07 found PGK prices embedded in product cards.

@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_product_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: home-improvement
+source_key: mn_creativehomes_mn
+module: eap.east_asia.mongolia.creativehomes_mn
+function: fetch_mn_creativehomes_mn
+url: https://creativehomes.mn/products?category_id=256025
+language: mn
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Creative Homes Mongolia home-goods/decor storefront. Product category pages
+  render names, detail links, and MNT prices for bathroom shelves, dispensers,
+  baskets, drying racks, bins, and small home items. Added in the
+  specialized-goods pass to broaden furniture/home-goods coverage.

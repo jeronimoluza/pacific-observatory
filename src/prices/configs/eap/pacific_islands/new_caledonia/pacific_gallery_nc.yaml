@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pacific_gallery_nc
+url: https://pacificgallery.nc/
+language: fr
+currency: XPF
+cadence: weekly
+channel: home-improvement
+notes: |
+  Pacific Gallery New Caledonia furniture and decor catalog. WooCommerce
+  reports a nonstandard currency code in the API, but the site displays CFP
+  francs; the spider forces XPF and skips zero-price placeholders.

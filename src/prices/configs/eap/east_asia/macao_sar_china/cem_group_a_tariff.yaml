@@ -1,0 +1,19 @@
+scaffolding: fetcher
+extraction_pattern: html_table
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: mo_cem_group_a_tariff
+module: eap.east_asia.macao_sar_china.cem_group_a_tariff
+function: fetch_mo_cem_group_a_tariff
+url: https://www.cem-macau.com/en/customer-service/billing-service/tariff-group-a/
+language: en
+cadence: quarterly
+channel: null
+currency: MOP
+fallback_date: 2026-01-01
+notes: |
+  CEM official Group A tariff page for Macao low-voltage residential and
+  social electricity tariffs. The page is server-rendered Nuxt HTML with
+  tables for A1, A2, A3, and A4 demand and energy charges. Local validation
+  required certificate verification bypass on 2026-09-07.

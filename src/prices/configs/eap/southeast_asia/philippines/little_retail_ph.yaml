@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: little_retail_ph
+url: https://littleretailph.com
+language: en
+currency: PHP
+cadence: weekly
+channel: specialty-food
+archive_prefix: "littleretailph.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Little Retail PH is a Philippines pantry, beverage, keto/low-carb, and
+  homeware storefront. Its public Shopify feed returned PHP-priced rows on
+  2026-09-07.

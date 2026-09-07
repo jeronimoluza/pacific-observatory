@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: babylandss2_my
+url: https://babylandss2.com/
+language: en
+currency: MYR
+cadence: weekly
+channel: other
+archive_prefix: "babylandss2.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Babyland SS2 Malaysia Shopify catalogue. Added for baby and nursery goods
+  missing from the parent source mix: feeding items, baby care, nursing goods,
+  stroller/car-seat adjacent products, toys, and family-care SKUs.

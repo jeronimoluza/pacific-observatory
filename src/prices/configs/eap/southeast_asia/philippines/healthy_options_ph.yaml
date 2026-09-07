@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: healthy_options_ph
+url: https://shop.healthyoptions.com.ph
+language: en
+currency: PHP
+cadence: weekly
+channel: pharmacy
+archive_prefix: "shop.healthyoptions.com.ph/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Healthy Options Philippines exposes a public Shopify product feed with food,
+  beverages, supplements, and pharmacy-adjacent items. The endpoint returned
+  PHP-priced rows from this environment on 2026-09-07.
+

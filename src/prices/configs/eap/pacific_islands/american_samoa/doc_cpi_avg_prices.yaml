@@ -1,0 +1,39 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes:
+  - "01.1.1"
+  - "01.1.2"
+  - "01.1.3"
+  - "01.1.4"
+  - "01.1.5"
+  - "01.1.6"
+  - "01.1.7"
+  - "01.1.8"
+  - "01.1.9"
+  - "01.2.2"
+  - "02.1.3"
+  - "02.2.0"
+  - "04.3.1"
+  - "04.5.1"
+  - "04.5.2"
+  - "07.2.2"
+channel: null
+source_key: as_doc_cpi_avg_prices
+module: eap.pacific_islands.american_samoa.doc_cpi_avg_prices
+function: fetch_as_doc_cpi_avg_prices
+url: https://www.doc.as.gov/stats
+language: en
+cadence: quarterly
+fallback_date: 2021-01-01
+notes: |
+  American Samoa Department of Commerce CPI Newsletter item-level
+  "Quarterly Averaged Prices" table. This is separate from the CPI index
+  benchmark in doc_cpi.yaml: it emits named commodity price observations
+  such as apples, beef, bread, eggs, rice, sugar, taro, tuna, soft drinks,
+  beer, tobacco, fuel, electricity, and building materials. The fetcher uses
+  the same public Wix FAQ widget discovery path as doc_cpi.yaml, downloads
+  newsletter PDFs, parses the rolling five-quarter table, and keeps only the
+  rightmost/current quarter to avoid duplicate overlap. COICOP assignments are
+  source-curated because the commodity list is stable and small.

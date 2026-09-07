@@ -1,0 +1,21 @@
+scaffolding: fetcher
+source_key: as_port_wtd_fares
+module: eap.pacific_islands.american_samoa.port_wtd_fares
+function: fetch_as_port_wtd_fares
+url: https://portadministration.as.gov/services/water-transportation-wtd
+channel: null
+coicop_classification: source_curated
+analytical_role: tariff
+extraction_pattern: html_tables
+language: en
+currency: USD
+cadence: annual
+fallback_date: 2026-09-01
+coicop_codes:
+  - "07.3.3"
+notes: |
+  American Samoa Department of Port Administration Water Transportation
+  Division page. The fetcher parses public HTML tables for Manuatele
+  passenger fares, cargo charges, hazardous-cargo fees, construction-material
+  freight charges, vehicle ferry charges, and service charges. Rows are local
+  USD inter-island ferry/water-transportation tariffs for American Samoa.

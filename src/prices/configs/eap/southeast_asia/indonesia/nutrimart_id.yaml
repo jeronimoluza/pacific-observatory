@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nutrimart_id
+url: https://nutrimart.co.id
+language: id
+currency: IDR
+cadence: weekly
+channel: specialty-food
+archive_prefix: "nutrimart.co.id/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Nutrimart Indonesia exposes a public Shopify feed with nutrition products,
+  milk, rice, noodles, beverages, and health-food staples. The endpoint
+  returned IDR-priced rows on 2026-09-07.

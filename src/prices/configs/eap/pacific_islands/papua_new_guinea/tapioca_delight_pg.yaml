@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tapioca_delight_pg
+url: https://www.tapiocadelightpng.com/shop-2/
+language: en
+currency: PGK
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.tapiocadelightpng.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  Tapioca Delight PNG WooCommerce storefront for prepared food, bakery,
+  beverages, catering packs, and PNG feast items. Live probe on 2026-09-06
+  found the unauthenticated Store API at /wp-json/wc/store/products, reporting
+  PGK prices and food-category product records. The spider skips the site's
+  placeholder product named "Test".

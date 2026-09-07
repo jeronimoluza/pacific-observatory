@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: html_text
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1", "04.5.2", "07.2.2"]
+source_key: observatoire_energie_nc
+spider: observatoire_energie_nc
+url: https://observatoire-energie.gouv.nc/public/home/
+language: fr
+cadence: monthly
+fallback_date: 2026-09-01
+notes: |
+  Official Observatoire de l'Energie / DIMENC public bulletin for New
+  Caledonia. The spider parses the latest news block with maximum retail
+  prices for fuels and butane plus electricity distribution, transport, and
+  meter tariff rows. Added as a tariff source, not a retailer SKU catalog.
+channel: null

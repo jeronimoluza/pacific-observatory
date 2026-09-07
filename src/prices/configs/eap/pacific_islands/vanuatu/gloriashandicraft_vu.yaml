@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: gloriashandicraft_vu
+url: https://take.app/gloriashandicraft
+language: en
+currency: VUV
+cadence: weekly
+channel: other
+notes: |
+  Gloria's Handicraft is a Port Vila, Vanuatu TakeApp storefront for woven
+  bags, wood carvings, purses, and related handmade home-decor/gift items.
+  Live probe 2026-09-07 decoded the Next.js flight payload with currency VUV,
+  countryCode VU, and 7 physical products. This source is counted as
+  specialized non-food/home-decor evidence, not staple retail. TakeApp stores
+  encode VUV as whole-vatu amounts, so this spider overrides the shared
+  TakeApp price divisor to preserve displayed VUV prices.

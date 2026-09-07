@@ -1,0 +1,21 @@
+scaffolding: spider
+spider: givemesamoa_as
+url: https://givemesamoa.com/
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: scrapy_api
+language: en
+currency: USD
+cadence: weekly
+coicop_codes: null
+archive_prefix: "givemesamoa.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  American Samoa-based Shopify storefront. Contact page metadata states
+  "American Samoa Based" with a 684 phone number, and collection metadata
+  says the shop is located in the Pago Pago International Airport. Public
+  /products.json catalog exposes USD variant prices for apparel, accessories,
+  phone cases, flags, blankets, bags, stickers, home goods, and gift items.
+  The spider filters obvious food/treat rows so this source supports the
+  specialized-goods pass rather than repeating the food-first pass.

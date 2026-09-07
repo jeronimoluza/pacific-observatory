@@ -1,0 +1,16 @@
+spider: dpa_carmart_mp
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: other
+url: https://www.dpacarmart.com/inventory
+language: en
+cadence: weekly
+archive_prefix: "www.dpacarmart.com/inventory"
+archive_path_re: '^/inventory/?$'
+notes: >
+  DPA Carmart is a Saipan used-car seller with its inventory rendered as Wix
+  rich-text blocks. The spider pairs vehicle-title blocks with the following
+  description/price block and skips sold, pending, financing, and down-payment
+  amounts.

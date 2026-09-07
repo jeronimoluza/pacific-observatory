@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kapok_hk
+url: https://ka-pok.com
+language: en
+currency: HKD
+cadence: weekly
+channel: fashion
+archive_prefix: "ka-pok.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Kapok Hong Kong adds fashion, footwear/accessories, and lifestyle goods.
+  The public Shopify /products.json feed returned HKD-priced rows on
+  2026-09-07.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: the_good_meat_ph
+url: https://thegoodmeat.ph/shops/
+language: en
+currency: PHP
+cadence: weekly
+channel: specialty-food
+archive_prefix: "thegoodmeat.ph/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  The Good Meat is a Philippines meat/protein storefront. Its WooCommerce
+  Store API returned 401, but the public /shops/ HTML exposes product names,
+  SKUs, PHP prices, stock class, and product URLs. Verified by HTML probe on
+  2026-09-07.

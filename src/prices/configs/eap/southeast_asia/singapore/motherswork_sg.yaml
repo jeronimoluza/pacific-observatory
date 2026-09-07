@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: motherswork_sg
+url: https://motherswork.com.sg/
+language: en
+currency: SGD
+cadence: weekly
+channel: other
+archive_prefix: "motherswork.com.sg/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Motherswork Singapore Shopify catalogue. Added for baby, toy, stroller,
+  nursery, air-purifier, and family-care coverage outside the supermarket and
+  pharmacy-heavy parent database.

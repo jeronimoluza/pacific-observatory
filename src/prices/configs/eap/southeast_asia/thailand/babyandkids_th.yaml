@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: html_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: babyandkids_th
+url: https://www.babyandkidsthailand.com/category
+language: th
+currency: THB
+cadence: weekly
+channel: other
+archive_prefix: "www.babyandkidsthailand.com/product/"
+archive_path_re: '^/product/[0-9]+/'
+notes: |
+  Baby & Kids Thailand LnwShop category page. Added for specialized baby, toy,
+  nursery, and child-furniture coverage. The category page exposes product card
+  names, product links, realprice attributes, and availability text.

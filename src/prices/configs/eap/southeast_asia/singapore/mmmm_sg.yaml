@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: mmmm_sg
+url: https://mmmm.com.sg/collections/mmmm-allproducts
+language: en
+currency: SGD
+cadence: daily
+archive_prefix: "mmmm.com.sg/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Mmmm! Singapore grocery storefront. Public Shopify products JSON exposes
+  current seafood, meat, frozen, deli, pantry and household-adjacent grocery
+  SKUs with SGD prices.

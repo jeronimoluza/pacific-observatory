@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: nbs_ph
+url: https://nbs.com.ph
+language: en
+currency: PHP
+cadence: weekly
+channel: other
+archive_prefix: "nbs.com.ph/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  National Book Store exposes a public Shopify feed with notebooks, books,
+  paper goods, stationery, and school/office supplies. Added for Philippines
+  books and stationery coverage missing from the parent source mix.

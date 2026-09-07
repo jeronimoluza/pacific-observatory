@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mandauefoam_ph
+url: https://mandauefoam.ph
+language: en
+currency: PHP
+cadence: weekly
+channel: dept-store
+archive_prefix: "mandauefoam.ph/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Mandaue Foam Philippines exposes a public Shopify feed with furniture,
+  lighting, decor, mattresses, and home goods. Added for home/furniture
+  specialized-goods coverage beyond IKEA and grocery-style sources.

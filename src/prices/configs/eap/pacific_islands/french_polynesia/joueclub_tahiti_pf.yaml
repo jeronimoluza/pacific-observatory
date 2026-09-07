@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: joueclub_tahiti_pf
+url: https://www.joueclubtahiti.com/24-coin-des-petits
+language: fr
+currency: XPF
+cadence: weekly
+channel: other
+notes: |
+  JoueClub Tahiti baby/toy category. The page is server-rendered and exposes
+  product cards with data-id-product, product detail URLs, and FCFP prices.
+  Added during the PF/NC specialized-goods recovery pass.

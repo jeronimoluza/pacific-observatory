@@ -1,0 +1,16 @@
+scaffolding: fetcher
+extraction_pattern: html_product_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: other
+source_key: cn_yichao_eyewear
+module: eap.east_asia.china.yichao_eyewear
+function: fetch_cn_yichao_eyewear
+url: https://www.yichao.cn/jsyjpkey/
+language: zh
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Yichao eyewear listing exposes product links and CNY prices for prescription
+  lenses and eyeglasses. Added in the broad under-covered categories pass to
+  fill China optometry/prescription-eyewear coverage.

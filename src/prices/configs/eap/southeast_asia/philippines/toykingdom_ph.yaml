@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: toykingdom_ph
+url: https://www.toykingdom.com.ph
+language: en
+currency: PHP
+cadence: weekly
+channel: other
+archive_prefix: "www.toykingdom.com.ph/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Toy Kingdom exposes a public Shopify feed with toys, games, collectibles,
+  children's activity products, and gift items. Added to fill Philippines
+  toys and child-goods breadth outside grocery and baby specialty sources.

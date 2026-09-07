@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: api_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: noysfruitheaven_la
+url: https://noysfruitheaven.com/shop/
+language: en
+cadence: daily
+channel: specialty-food
+archive_prefix: "noysfruitheaven.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Vientiane food delivery storefront focused on juices, shakes, salads,
+  sandwiches, burgers, and prepared sides. The public WooCommerce Store API
+  exposes item IDs, names, categories, stock flags, permalinks, LAK currency,
+  and prices without login. Verified by live probe on 2026-09-07 before
+  integration.

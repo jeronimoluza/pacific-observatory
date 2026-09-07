@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes:
+  - "04.4.1"
+  - "04.4.2"
+  - "04.5.1"
+spider: ura_vu_tariffs
+url: https://ura.gov.vu/en/component/content?id=14
+language: en
+currency: VUV
+cadence: monthly
+channel: null
+notes: |
+  Vanuatu Utilities Regulatory Authority publishes current regulated
+  electricity and water tariffs in Vatu/kWh and Vatu/m3. Live probe
+  2026-09-07 found 12 public table rows in the current tariff table,
+  including UNELCO, VUI, VANPAWA, mini-grid, and water-supply tariffs.

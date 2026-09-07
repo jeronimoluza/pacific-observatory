@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: allomama_bn
+url: https://allomama-bn.com/products
+language: en
+cadence: weekly
+channel: other
+currency: BND
+archive_prefix: "allomama-bn.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Allomama Brunei Shopify catalog for maternity, baby, breast-feeding,
+  menstrual, and household-container products. Public /products.json feed
+  returned BND rows on 2026-09-07, including maternity pads, breast pads, and
+  storage containers.

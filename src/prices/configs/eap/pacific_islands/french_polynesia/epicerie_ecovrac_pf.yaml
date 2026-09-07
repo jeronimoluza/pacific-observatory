@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: epicerie_ecovrac_pf
+url: https://www.epicerie-ecovrac.com/boutique/
+language: fr
+currency: XPF
+cadence: weekly
+channel: supermarket
+notes: |
+  Tahiti zero-waste/bulk grocery shop. WooCommerce Store API is public and
+  unauthenticated at /wp-json/wc/store/v1/products and reports XPF with
+  currency_minor_unit=0. Catalog includes pantry goods, bulk sweets, produce
+  and household refill products, so downstream classifier should separate food
+  from non-food rows. Added from the PF/NC recovery pass after live probe.

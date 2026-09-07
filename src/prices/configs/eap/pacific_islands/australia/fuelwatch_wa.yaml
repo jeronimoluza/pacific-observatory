@@ -1,0 +1,19 @@
+scaffolding: fetcher
+extraction_pattern: rss_xml
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+source_key: au_fuelwatch_wa
+module: eap.pacific_islands.australia.fuelwatch_wa
+function: fetch_au_fuelwatch_wa
+url: https://www.fuelwatch.wa.gov.au/tools/rss
+language: en
+cadence: daily
+fallback_date: 2026-01-01
+channel: null
+notes: |
+  Government of Western Australia FuelWatch RSS feed. The feed exposes station
+  prices by fuel product, region, and day; today's prices are available all day.
+  Collector samples Metro North of River (region 25) for common fuels:
+  Unleaded Petrol, Premium Unleaded, Diesel, and 98 RON. RSS prices are
+  published as cents per litre and emitted as AUD/litre.

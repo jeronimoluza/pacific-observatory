@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: inagreen_id
+url: https://inagreenid.com
+language: id
+currency: IDR
+cadence: daily
+channel: fresh-market
+archive_prefix: "inagreenid.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Inagreen is a Bandung/Jakarta fresh-produce Shopify storefront. The public
+  /products.json endpoint returned IDR-priced vegetable and grocery products
+  from this environment on 2026-09-07.

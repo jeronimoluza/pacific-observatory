@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ashleyfurniture_bn
+url: https://store.ashleyfurniture.com.bn/products
+language: en
+cadence: weekly
+channel: other
+currency: BND
+archive_prefix: "store.ashleyfurniture.com.bn/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Ashley Furniture Brunei Shopify catalog for furniture and home furnishings.
+  Public /products.json feed returned BND rows on 2026-09-07, including sofas,
+  loveseats, dining tables, and chairs.

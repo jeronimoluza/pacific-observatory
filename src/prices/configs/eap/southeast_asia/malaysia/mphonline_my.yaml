@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mphonline_my
+url: https://mphonline.com/
+language: en
+currency: MYR
+cadence: weekly
+channel: other
+archive_prefix: "mphonline.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  MPH Malaysia Shopify catalogue. Added as an independent Malaysia book
+  retailer with priced MYR product variants from public products.json.

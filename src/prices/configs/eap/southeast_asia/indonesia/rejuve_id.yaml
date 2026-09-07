@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: source_curated
+spider: rejuve_id
+url: https://rejuve.co.id
+language: id
+currency: IDR
+cadence: weekly
+channel: convenience
+coicop_codes:
+  - "01.2.2.0"
+archive_prefix: "rejuve.co.id/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Re.juve is an Indonesia cold-pressed juice and beverage storefront. The
+  public Shopify feed returned IDR-priced beverage rows on 2026-09-07.
+

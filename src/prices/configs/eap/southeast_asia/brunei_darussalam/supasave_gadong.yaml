@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: api_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+source_key: bn_supasave_gadong
+module: eap.southeast_asia.brunei_darussalam.supasave
+function: fetch_bn_supasave_gadong
+url: https://gadong.supasave.com.bn/
+language: en
+cadence: weekly
+channel: supermarket
+currency: BND
+fallback_date: 1970-01-01
+archive_prefix: "gadong.supasave.com.bn/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Supa Save Brunei Gadong branch online grocery storefront. WooCommerce Store
+  API confirmed open on 2026-09-07:
+  https://gadong.supasave.com.bn/wp-json/wc/store/v1/products?per_page=10&page=1
+  The endpoint returned BND product rows for common food and pantry items such
+  as stock cubes, condiments, dressings, spreads, and weekly promotion goods.
+  HEAD on per_page=1 reported X-WP-Total: 3231 on 2026-09-07. The Scrapy
+  downloader and full Chrome-style headers received a protection-layer 403 in
+  validation, while a simple JSON request succeeded, so this source is
+  integrated as a fetcher rather than a spider.

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kokkokm_la
+url: https://kokkokm.com/ko_KR/shop
+language: multilingual
+cadence: daily
+channel: supermarket
+archive_prefix: "kokkokm.com/ko_KR/shop/"
+archive_path_re: '^/ko_KR/shop/[^/?]+'
+notes: |
+  Vientiane Kokkok Mart Odoo storefront. Public shop pages render product
+  cards with item IDs, names, KIP/LAK prices, product URLs, and category paths.
+  The spider follows visible pagination/category links and skips demo service
+  and gift-card rows. Verified by live probe on 2026-09-07 before integration.

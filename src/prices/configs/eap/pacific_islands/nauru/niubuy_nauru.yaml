@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: niubuy_nauru
+url: https://take.app/niubuystorelink
+language: en
+currency: AUD
+cadence: weekly
+channel: marketplace
+notes: |
+  NiuBuy Nauru TakeApp storefront. Live probe 2026-09-06 decoded the Next.js
+  flight payload with countryCode NR, currency AUD, and priced physical
+  products including clothing, small electronics, household organizers, and a
+  vegetable slicer. This is not a food-dominant source; it is included as
+  scarce local Nauru marketplace/retail coverage after the earlier Rainbow
+  Enterprise Nauru lead failed with protocol/parked-page behavior.
+

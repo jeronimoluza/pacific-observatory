@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mothercare_bn
+url: https://mothercare-bn.com/products
+language: en
+cadence: weekly
+channel: other
+currency: BND
+archive_prefix: "mothercare-bn.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Mothercare Brunei Shopify catalog for baby, nursery, maternity, and related
+  household goods. Public /products.json feed returned BND rows on 2026-09-07,
+  including swaddles, blankets, and nursery furniture.

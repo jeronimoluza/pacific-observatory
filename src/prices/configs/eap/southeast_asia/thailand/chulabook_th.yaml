@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: chulabook_th
+url: https://www.chulabook.com/main-book
+language: th
+currency: THB
+cadence: weekly
+channel: other
+archive_prefix: "chulabook.com/"
+archive_path_re: '^/(main-book|[a-z0-9-]+/[0-9]+)'
+notes: |
+  ChulaBook Thailand Next.js storefront. Added for books, educational books,
+  test-prep books, and school-adjacent materials. The spider parses embedded
+  __NEXT_DATA__ product arrays on the public main-book page and emits physical
+  book rows with THB prices and source product URLs.

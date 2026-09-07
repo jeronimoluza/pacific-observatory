@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tahiti_menager_pf
+url: https://www.tahitimenager.pf/
+language: fr
+currency: XPF
+cadence: weekly
+channel: electronics
+active: false
+inactive_reason: >
+  Prepared but not collector-validated: command-line curl can read the
+  WooCommerce Store API, but Python requests/curl_cffi and Scrapy validation
+  return HTTP 403 from this environment.
+notes: |
+  Tahiti Menager appliance and home-goods catalog. WooCommerce Store API is
+  public and returns appliance, furniture, and home product rows priced in XPF.
+  Added during the PF/NC specialized-goods recovery pass, but left inactive
+  until a production-safe fetch path is available.

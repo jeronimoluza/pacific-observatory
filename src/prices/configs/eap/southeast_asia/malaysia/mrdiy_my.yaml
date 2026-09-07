@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mrdiy_my
+url: https://mrdiy.com.my/
+language: en
+currency: MYR
+cadence: weekly
+channel: home-improvement
+archive_prefix: "mrdiy.com.my/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  MR DIY Malaysia Shopify catalogue. Added for specialized non-food coverage:
+  hardware, household goods, small electronics, tools, stationery, and home
+  accessories. Public products.json returned priced MYR product variants during
+  the 2026-09-07 probe.

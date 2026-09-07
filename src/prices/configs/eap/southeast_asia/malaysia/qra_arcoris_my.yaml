@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+spider: qra_arcoris_my
+url: https://arcoris.qrafoods.com
+language: en
+currency: MYR
+cadence: daily
+archive_prefix: "arcoris.qrafoods.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Qra Arcoris Malaysia neighborhood grocery storefront. Shopify products JSON
+  yields public per-SKU food and household item prices in MYR, adding pantry,
+  beverages, chilled/frozen and imported grocery coverage.

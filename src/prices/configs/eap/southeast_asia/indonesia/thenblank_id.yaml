@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: thenblank_id
+url: https://thenblank.com
+language: id
+currency: IDR
+cadence: weekly
+channel: fashion
+archive_prefix: "thenblank.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Thenblank Indonesia exposes a public Shopify feed with apparel and accessories
+  in IDR. Added to fill an Indonesia clothing breadth gap in the parent source
+  set without duplicating prior food or telecom passes.

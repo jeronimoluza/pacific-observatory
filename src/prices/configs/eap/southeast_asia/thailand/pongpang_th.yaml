@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: html_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pongpang_th
+url: https://pongpang.net/product.php?cat=all
+language: th
+currency: THB
+cadence: weekly
+channel: other
+notes: |
+  Pongpang Thailand discount general-goods storefront. Added for non-food
+  everyday goods: kitchenware, cleaning items, toys, stationery, phone/IT
+  accessories, tools, plasticware, hangers, and household miscellany. The page
+  exposes card-level product names, prices, IDs, and unit strings.

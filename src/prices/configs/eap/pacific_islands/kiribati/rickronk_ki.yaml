@@ -1,0 +1,23 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: rickronk_ki
+url: https://rickronk.com/
+language: en
+currency: AUD
+cadence: weekly
+channel: dept-store
+archive_prefix: "rickronk.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Rickronk is a Kiribati Shopify storefront serving the Line Islands, with a
+  public /products.json catalog. Live probe 2026-09-06 returned 250 products
+  on the first page and local product copy stating Kiribati/Line Islands
+  coverage. The catalog is primarily technology, household, health, sports,
+  and general merchandise, but it also includes a small food-like slice
+  (infant formula and Rickronk baked goods). Currency is set to AUD, matching
+  the storefront's dollar-denominated Line Islands pricing and Kiribati's
+  retail currency convention. This improves Kiribati's source count but does
+  not solve the food-retail gap by itself.
+

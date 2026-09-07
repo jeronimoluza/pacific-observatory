@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: marketplace_sku
+coicop_classification: classifier
+spider: elien_alimentation_pf
+url: https://www.elien.pf/marketplace/articlebycat/4/
+language: fr
+currency: XPF
+cadence: weekly
+channel: marketplace
+notes: |
+  E'lien Tahiti local marketplace category "Alimentation et Boisson".
+  Server-rendered category cards expose item names, article ids and XPF
+  prices with package units such as /100g, /200g and /u. This is a
+  marketplace feed spanning several local vendors rather than one store, but
+  it is product-level food/beverage coverage and is not an aggregate
+  cost-of-living proxy.

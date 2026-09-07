@@ -1,0 +1,20 @@
+scaffolding: fetcher
+extraction_pattern: rest_api
+analytical_role: official_avg
+coicop_classification: classifier
+channel: other
+source_key: mn_nso_monthly_selected_prices
+module: eap.east_asia.mongolia.nso_monthly_selected_prices
+function: fetch_mn_nso_monthly_selected_prices
+url: https://data.1212.mn/pxweb/en/NSO/NSO__Economy%2C%20environment__Consumer%20Price%20Index/DT_NSO_0600_019V1.px/
+language: en
+cadence: monthly
+fallback_date: 2024-01-01
+notes: |
+  Mongolia National Statistics Office PxWeb table DT_NSO_0600_019V1:
+  "AVERAGE PRICES OF SELECTED GOODS AND SERVICES, by region, aimags and the
+  Capital, by month". Open unauthenticated JSON-stat2 API under data.1212.mn/api/v1.
+  Adds regional monthly coverage for 43 selected goods/services, including rice,
+  flour, bread, meat, milk, eggs, vegetables, fruit, petrol, diesel, electricity
+  and heating-related items. Source unit metadata is "togrogs"; item labels
+  carry physical units such as kg, litre, piece, kWh, and cubic metre.

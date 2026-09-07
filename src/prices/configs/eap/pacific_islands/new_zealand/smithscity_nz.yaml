@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: smithscity_nz
+url: https://www.smithscity.co.nz
+language: en
+currency: NZD
+cadence: weekly
+channel: dept-store
+archive_prefix: "www.smithscity.co.nz/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Smiths City New Zealand adds furniture, mattresses, appliances, electronics,
+  and home goods. The public Shopify /products.json feed returned NZD-priced
+  rows on 2026-09-07.

@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: epigram_sg
+url: https://epigrambookshop.sg/
+language: en
+currency: SGD
+cadence: weekly
+channel: other
+archive_prefix: "epigrambookshop.sg/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Epigram Bookshop Singapore Shopify catalogue. Added as an independent
+  Singapore books source with priced SGD product variants.

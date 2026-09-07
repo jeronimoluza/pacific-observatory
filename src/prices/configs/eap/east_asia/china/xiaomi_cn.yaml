@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_product_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: electronics
+source_key: cn_xiaomi_cn
+module: eap.east_asia.china.xiaomi_cn
+function: fetch_cn_xiaomi_cn
+url: https://www.mi.com/shop/search?keyword=%E6%89%8B%E6%9C%BA
+language: zh
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Xiaomi China search/product cards expose CNY prices for phones, TVs,
+  computers, tablets, routers, refrigerators, air conditioners, washing
+  machines, and other electronics/appliances. Added to cover China
+  electronics/computer/appliance gaps in the parent database.

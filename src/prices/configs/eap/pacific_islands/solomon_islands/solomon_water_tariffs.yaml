@@ -1,0 +1,21 @@
+spider: solomon_water_tariffs
+scaffolding: spider
+extraction_pattern: static_pdf_tariff
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes:
+  - "04.4.1"
+  - "04.4.3"
+channel: null
+url: https://www.solomonwater.com.sb/index.php/resources/water-tariffs
+language: en
+cadence: monthly
+archive_prefix: "www.solomonwater.com.sb/files/docs/tariffs/"
+archive_path_re: '^/files/docs/tariffs/[^/?]+\.pdf$'
+notes: >
+  Official Solomon Water tariff page links the current 2025 Water and
+  Wastewater Tariff, Service Charge and Other Fees PDF. The PDF is text
+  extractable and lists tiered water/wastewater rates plus fixed service
+  charges effective 2025-01-01. Rows without direct numeric prices, such as
+  interest, dishonoured cheque passthroughs, and detailed-assessment fees, are
+  excluded.

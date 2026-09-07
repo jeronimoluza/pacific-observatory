@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: csv_download
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: nz_ea_dispatch_prices
+module: eap.pacific_islands.new_zealand.ea_dispatch_prices
+function: fetch_nz_ea_dispatch_prices
+url: https://www.emi.ea.govt.nz/Wholesale/Datasets/DispatchAndPricing/DispatchEnergyPrices/
+language: en
+cadence: daily
+fallback_date: 2026-01-01
+channel: null
+notes: |
+  New Zealand Electricity Authority EMI dispatch energy price CSV. This is a
+  wholesale utility-price feed, not a household retail tariff. The collector
+  finds the latest daily DispatchEnergyPrices CSV within a short lookback
+  window and emits a bounded sample of non-proxy point-of-connection prices.

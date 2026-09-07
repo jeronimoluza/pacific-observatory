@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: icenter_la
+url: https://icenter.com.la/
+language: en
+cadence: weekly
+channel: electronics
+archive_prefix: "icenter.com.la/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Vientiane electronics storefront for Apple, audio, chargers/power, and phone
+  protection accessories. The storefront redirects to the bare domain, and the
+  Next.js homepage embeds product records with
+  IDs, SKUs, brands, categories, stock quantities, product URLs, and LAK prices.
+  Integrated to fill Lao electronics/mobile-accessory breadth after live page
+  probing on 2026-09-07.

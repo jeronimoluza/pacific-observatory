@@ -1,0 +1,25 @@
+scaffolding: fetcher
+extraction_pattern: html_listing
+analytical_role: retailer_sku
+coicop_classification: classifier
+source_key: mo_cathay_pharmacy_common
+module: eap.east_asia.macao_sar_china.cathay_pharmacy
+function: fetch_mo_cathay_pharmacy_common
+url: https://cathaypharmacy.com/products.php
+language: zh-Hant
+cadence: weekly
+channel: pharmacy
+currency: MOP
+fallback_date: 1970-01-01
+archive_prefix: "cathaypharmacy.com/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Cathay Pharmacy Macau product catalog, scoped to common-use categories rather
+  than the whole pharmacy catalog: health_food, medical_device, personal_care,
+  feminine_care, milk, diaper, baby_care, paper, household, and daily. Listings
+  are server-rendered with product names, prices, brands, and product URLs; PDPs
+  also expose JSON-LD Product offers with priceCurrency=MOP. Confirmed open on
+  2026-09-07. Examples during probing included milk powder, Watsons distilled
+  water, toothpaste, paper goods, diapers, detergent, dishwashing liquid, and
+  household cleaning products. Site copy says prices are for reference and final
+  selling prices are in-store, so retain source_url evidence and category notes.

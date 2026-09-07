@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: asdetrefle_pf
+url: https://www.asdetrefle.pf/tahiti/papeterie.html
+language: fr
+currency: XPF
+cadence: weekly
+channel: other
+notes: |
+  As de Trefle Tahiti stationery and office-supplies listing. Magento-style
+  product cards expose item names, XPF prices, product IDs, availability, and
+  product URLs.

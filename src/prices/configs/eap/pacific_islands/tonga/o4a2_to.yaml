@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: marketplace_sku
+coicop_classification: classifier
+spider: o4a2_to
+url: https://o4a2.com/
+language: en
+currency: NZD
+cadence: weekly
+channel: marketplace
+archive_prefix: "o4a2.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  O4A2 multi-vendor Tonga marketplace with grocery, prepared food, pharmacy,
+  utilities and other vendors. Shopify metadata identifies country TO and active
+  currency NZD. The scraper uses /products.json and filters only non-zero
+  priced rows. Re-verified live 2026-09-01.
+

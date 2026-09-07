@@ -1,0 +1,19 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: repco_nc
+url: https://repco.nc/
+language: fr
+currency: XPF
+cadence: weekly
+channel: other
+active: false
+inactive_reason: |
+  Prepared during the PF/NC specialized-goods recovery pass, but not promoted:
+  the WooCommerce Store API returned HTTP 403 from both the collector and a
+  direct curl probe on 2026-09-07, so no local price rows could be written.
+notes: |
+  Repco New Caledonia auto parts, vehicle accessories, and camping/4x4 catalog.
+  Endpoint appeared promising in discovery, but collector validation is blocked
+  by the site's 403 response.

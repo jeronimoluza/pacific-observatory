@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: prouds_fj
+url: https://shop.prouds.com.fj/products.json
+language: en
+currency: FJD
+cadence: weekly
+channel: dept-store
+archive_prefix: "shop.prouds.com.fj/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Prouds Fiji Shopify storefront for personal care, fragrance, watches,
+  jewelry, electronics accessories, apparel, and gift lines. The public
+  /products.json endpoint returned product and variant prices during live
+  probe on 2026-09-07; currency is inferred as FJD from the Fiji storefront.

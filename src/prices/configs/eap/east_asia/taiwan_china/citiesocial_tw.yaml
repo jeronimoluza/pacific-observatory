@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: citiesocial_tw
+url: https://www.citiesocial.com
+language: zh
+currency: TWD
+cadence: weekly
+channel: marketplace
+archive_prefix: "www.citiesocial.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Citiesocial Taiwan is a broad lifestyle marketplace with home goods,
+  electronics accessories, gifts, bags, and other durable products. The public
+  Shopify /products.json feed returned TWD-priced rows on 2026-09-07.

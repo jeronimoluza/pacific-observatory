@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: sipa_nc
+url: https://www.sipa.nc/sejour.html
+language: fr
+currency: XPF
+cadence: weekly
+channel: home-improvement
+notes: |
+  SIPA New Caledonia furniture and appliance catalog. Magento-style category
+  cards expose item names, CFP-franc prices, product URLs, and availability.

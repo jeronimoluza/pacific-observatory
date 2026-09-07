@@ -1,0 +1,22 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: healthybeauty365bn
+url: https://healthybeauty365bn.com/
+language: en
+cadence: weekly
+channel: pharmacy
+currency: BND
+archive_prefix: "healthybeauty365bn.com/shop/"
+archive_path_re: '^/shop/[^/?]+/?$'
+notes: |
+  Healthy Beauty365, Brunei health/beauty/pharmacy-adjacent retailer. The
+  storefront states it is Brunei Darussalam's first online health and beauty
+  store and delivers to all Brunei districts. WooCommerce Store API confirmed
+  open on 2026-09-07:
+  https://healthybeauty365bn.com/wp-json/wc/store/v1/products?per_page=10&page=1
+  The API returns product names, SKUs, permalinks, categories, stock status,
+  and prices.currency_code=BND with currency_minor_unit=2. Sample rows include
+  OTC lozenges, skincare, supplements, hygiene, and personal-care goods, so
+  leave COICOP assignment to the classifier.

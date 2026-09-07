@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: api_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vgmart_la
+url: https://www.vgmart.la/
+language: en
+cadence: daily
+channel: supermarket
+archive_prefix: null
+archive_path_re: null
+notes: |
+  Vientiane grocery delivery service. Public 6amMart-style API exposes
+  categories, zone 3, module 3, store 4, and latest item prices without login.
+  Catalogue is currently very small (5 products), but it includes public local
+  price rows for fruit, beverage, mayonnaise, dal, and ghee. Verified by live
+  probe on 2026-09-07 before integration. Row URLs point to the API response
+  with item anchors because public product-detail pages were not found.

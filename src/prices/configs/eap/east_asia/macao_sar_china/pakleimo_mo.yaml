@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: pakleimo_mo
+url: https://www.pakleimo.com/products
+language: zh-Hant
+cadence: weekly
+channel: other
+currency: MOP
+archive_prefix: "www.pakleimo.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Macao Shopify furniture storefront. Public /products.json feed returned MOP
+  item rows on 2026-09-07, including mattresses, storage cabinets, ergonomic
+  chairs, sofas, desks, and other furniture.

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kyatmall_tools_mm
+url: https://www.kyatmall.com/list_tools_hardware.html
+language: en
+cadence: weekly
+channel: home-improvement
+archive_prefix: "www.kyatmall.com/product/"
+archive_path_re: '^/product/[0-9]+\.html'
+notes: |
+  Myanmar online shopping marketplace category page for tools and hardware,
+  with server-rendered product cards carrying names, product URLs, and MMK
+  prices. Integrated to fill a thin Myanmar durable/building-supplies gap
+  after live page probing on 2026-09-07.

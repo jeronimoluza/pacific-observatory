@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: api_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vadmotor_tl
+url: https://vadmotor.com/shop/
+language: en
+cadence: weekly
+channel: home-improvement
+archive_prefix: "vadmotor.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Dili auto-parts and vehicle-accessories storefront with USD prices for
+  items such as starter motors, suspension, headlights, and wheels/tires.
+  The public WooCommerce Store API exposes product IDs, names, category,
+  stock flags, permalinks, USD currency, and prices. Integrated to fill a
+  Timor-Leste specialized durable-goods gap after live API probing on
+  2026-09-07.

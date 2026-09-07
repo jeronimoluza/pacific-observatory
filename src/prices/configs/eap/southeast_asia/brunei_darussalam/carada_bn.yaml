@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_embedded_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: carada_bn
+url: https://carada.online/shop?promo=true
+language: en
+cadence: weekly
+channel: other
+currency: BND
+archive_prefix: "carada.online/shop/"
+archive_path_re: '^/shop'
+notes: |
+  Brunei automotive storefront for engine oil and related auto parts. The
+  public Inertia payload on /shop?promo=true returned BND product-option rows on
+  2026-09-07, including engine oils with local stock status and item codes.

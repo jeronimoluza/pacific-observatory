@@ -26,11 +26,22 @@ logger = logging.getLogger(__name__)
 
 BEST_URL = "https://www.gmarket.co.kr/n/best?groupCode={code}"
 
-# (groupCode, korean_label) for grocery large-category tabs on /n/best.
+# (groupCode, korean_label) for large-category tabs on /n/best.
 GROUPS: list[tuple[str, str]] = [
+    # Food groups stay FIRST: the food/beverage dashboard is the primary
+    # consumer, so a capped run must reach these before anything else.
     ("100000006", "신선식품"),  # fresh food
     ("100000005", "가공식품"),  # processed food
     ("100000007", "생필품/육아"),  # daily necessities / baby
+    # Non-food groups contributed 2026-09-07 (EAP handoff) to widen COICOP
+    # coverage beyond division 01.
+    ("100001001", "생활/주방"),  # household / kitchen
+    ("100000001", "패션/잡화"),  # fashion / accessories
+    ("100000003", "뷰티"),  # beauty
+    ("100001007", "디지털/가전"),  # digital / appliances
+    ("100001004", "가구/홈"),  # furniture / home
+    ("100001002", "스포츠/건강"),  # sports / health
+    ("100001003", "취미/문구/펫"),  # hobby / stationery / pet
 ]
 
 _NEXT_RE = re.compile(

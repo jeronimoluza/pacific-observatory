@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_static_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: goldunited_bn
+url: https://goldunited.com/
+language: en
+cadence: weekly
+channel: home-improvement
+currency: BND
+archive_prefix: "goldunited.com/"
+archive_path_re: '^/[^/?]+/'
+notes: |
+  Brunei BigCommerce storefront for building materials, bathroom fittings,
+  cleaning, electrical, and hardware products. Public product cards returned BND
+  item rows on 2026-09-07, including conduit pipe, Brunei cement, red brick,
+  plywood, gypsum board, sand, and other building supplies.

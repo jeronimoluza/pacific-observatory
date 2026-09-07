@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jlitebn
+url: https://jlitebn.com/products
+language: en
+cadence: weekly
+channel: electronics
+currency: BND
+archive_prefix: "jlitebn.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Brunei Shopify storefront for PC components, peripherals, gaming accessories,
+  and related electronics. Public /products.json feed returned BND product rows
+  on 2026-09-07, including mouse pads, keyboards, and computer accessories.

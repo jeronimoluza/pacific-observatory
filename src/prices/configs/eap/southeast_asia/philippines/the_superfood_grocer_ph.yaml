@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: the_superfood_grocer_ph
+url: https://www.thesuperfoodgrocer.com
+language: en
+currency: PHP
+cadence: weekly
+channel: specialty-food
+archive_prefix: "www.thesuperfoodgrocer.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  The Superfood Grocer Philippines sells pantry staples, plant-based frozen
+  meals, snacks, and superfood ingredients. Its public Shopify feed returned
+  PHP-priced rows on 2026-09-07.

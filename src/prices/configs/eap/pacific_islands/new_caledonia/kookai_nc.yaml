@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kookai_nc
+url: https://www.kookai.nc/
+language: fr
+currency: XPF
+cadence: weekly
+channel: fashion
+notes: |
+  Kookai New Caledonia apparel storefront. Public Shopify products JSON exposes
+  current variants and XPF prices. Added during the PF/NC specialized-goods
+  recovery pass.

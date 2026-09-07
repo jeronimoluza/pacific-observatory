@@ -1,0 +1,22 @@
+scaffolding: fetcher
+source_key: as_asbar_taxi_rates
+module: eap.pacific_islands.american_samoa.asbar_taxi_rates
+function: fetch_as_asbar_taxi_rates
+url: https://asbar.org/regulation/19-0170-taxi-rates/
+channel: null
+coicop_classification: source_curated
+analytical_role: tariff
+extraction_pattern: html_regulation
+language: en
+currency: USD
+cadence: annual
+fallback_date: 2026-09-01
+coicop_codes:
+  - "07.3.2"
+notes: |
+  American Samoa Bar Association publication of Regulation 19.0170 Taxi
+  Rates, sourced from American Samoa commercial-vehicle transportation
+  regulations. The fetcher parses named route rows and supplemental taxi
+  charter, waiting, minimum, and excess-luggage charges from the public HTML
+  page. Rows are official USD maximum permissible taxi fares for American
+  Samoa and are counted as transport-service tariff coverage.

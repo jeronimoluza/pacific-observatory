@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: quincaillerie_caledonienne_nc
+url: https://www.quincaillerie.nc/boutique/fr/
+language: fr
+currency: XPF
+cadence: weekly
+channel: home-improvement
+notes: |
+  Quincaillerie Caledonienne hardware/building-supplies storefront. The public
+  homepage exposes promotion/new-product anchors with TTC prices and product
+  detail URLs. Added as a low-yield but category-relevant source during the
+  PF/NC specialized-goods recovery pass.

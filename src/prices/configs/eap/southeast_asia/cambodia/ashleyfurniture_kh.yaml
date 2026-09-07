@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: api_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ashleyfurniture_kh
+url: https://shop.ashleyfurniturecambodia.com/
+language: en
+cadence: weekly
+channel: dept-store
+archive_prefix: "shop.ashleyfurniturecambodia.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Cambodia Shopify storefront for furniture and home goods with USD prices.
+  The public Shopify products JSON endpoint exposes product and variant IDs,
+  names, product types, tags, availability, URLs, and prices. Integrated for
+  durable household-goods coverage after live endpoint probing on 2026-09-07.

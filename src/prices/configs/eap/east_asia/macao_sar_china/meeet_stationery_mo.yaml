@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_static_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: meeet_stationery_mo
+url: https://shop.meeetmacau.com/shop/category/meeet-macau-by-product-type-stationery-208
+language: zh-Hant
+cadence: weekly
+channel: other
+currency: MOP
+archive_prefix: "shop.meeetmacau.com/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: |
+  Macao Odoo storefront category for stationery and small school/office gift
+  goods. Public product cards returned MOP item rows on 2026-09-07, including
+  clips, magnets, tape, and stickers.

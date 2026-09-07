@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: eveniblock_ws
+url: https://eveniblock.com/products.json
+language: en
+currency: WST
+cadence: weekly
+channel: fashion
+archive_prefix: "eveniblock.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  EveniBlock Samoa Shopify storefront for sportswear, footwear, apparel, bags,
+  and accessories. The public /products.json endpoint returned WST-priced
+  product and variant rows during live probe on 2026-09-07.

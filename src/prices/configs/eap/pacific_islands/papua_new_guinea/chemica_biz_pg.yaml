@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: chemica_biz_pg
+url: https://www.chemica.biz/shop/category/hardware-30
+language: en
+currency: PGK
+cadence: weekly
+channel: home-improvement
+archive_prefix: "www.chemica.biz/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: >
+  Chemica PNG Odoo storefront for hardware, hand tools, small machinery, solar
+  equipment, flat-pack furniture, and farm/home supplies. Live Odoo product
+  cards returned PGK-priced rows during probe on 2026-09-07.

@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: atea_store_pf
+url: https://atea-store.pf/
+language: fr
+currency: XPF
+cadence: weekly
+channel: home-improvement
+notes: |
+  Tahiti hardware/tools online store. WooCommerce Store API is public at
+  /wp-json/wc/store/v1/products and reports XPF with currency_minor_unit=0.
+  Added during the PF/NC specialized-goods recovery pass.

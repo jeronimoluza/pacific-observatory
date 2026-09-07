@@ -1,0 +1,24 @@
+scaffolding: fetcher
+extraction_pattern: pdf
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes:
+  - "04.4.1"
+  - "04.4.2"
+  - "04.4.3"
+  - "04.5.1"
+channel: null
+source_key: as_aspa_utility_rates
+module: eap.pacific_islands.american_samoa.aspa_utility_rates
+function: fetch_as_aspa_utility_rates
+url: https://www.aspower.com/rates.html
+language: en
+cadence: monthly
+fallback_date: 2022-12-01
+notes: |
+  American Samoa Power Authority monthly utility billing-rate PDFs. The
+  fetcher discovers linked PDFs from rates.html and parses text-native
+  electricity, streetlight, water, solid-waste, disposal-facility, and
+  groundwater/wastewater tariff rows. This is a non-food fallback source used
+  only after retail/food candidates were exhausted; it is local and official,
+  with named service/rate rows and USD prices.

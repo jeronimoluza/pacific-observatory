@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tapa_creation_ws
+url: https://tapacreationsamoa.com/
+language: en
+currency: WST
+cadence: weekly
+channel: fashion
+archive_prefix: "tapacreationsamoa.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Tapa Creation Samoa Shopify storefront for clothing, uniforms, and sportswear.
+  The public /products.json feed returned WST-priced apparel records during
+  live probe on 2026-09-07.

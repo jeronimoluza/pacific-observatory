@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: api_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shopsatu_kh
+url: https://shopsatu.com/collections/kids
+language: en
+cadence: weekly
+channel: marketplace
+archive_prefix: "shopsatu.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Cambodia Shopify storefront carrying kids products, toys, books, natural
+  body products, home/craft items, and local maker goods with USD prices.
+  The public Shopify products JSON endpoint exposes product and variant IDs,
+  names, product types, availability, URLs, and prices. Integrated for
+  non-food breadth in toys, baby-adjacent goods, and home goods after live
+  endpoint probing on 2026-09-07.

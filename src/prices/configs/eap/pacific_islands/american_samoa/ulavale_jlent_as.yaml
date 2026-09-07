@@ -1,0 +1,24 @@
+scaffolding: fetcher
+source_key: as_ulavale_jlent
+module: eap.pacific_islands.american_samoa.ulavale_jlent_as
+function: fetch_as_ulavale_jlent
+url: https://www.ulavalesamoa.com/
+channel: fashion
+coicop_classification: classifier
+analytical_role: retailer_sku
+extraction_pattern: woocommerce_store_api
+language: en
+currency: USD
+cadence: weekly
+fallback_date: 2026-09-01
+coicop_codes: null
+archive_prefix: "www.ulavalesamoa.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Ulavale Samoa / J Len T marketplace storefront. The public WooCommerce
+  Store API at /wp-json/wc/store/products exposes USD prices, product names,
+  categories, and product permalinks. Search-indexed storefront text for the
+  J Len T page states "USPS Shipping from Pago Pago, American Samoa"; the live
+  API returns apparel, caps, visors, dresses, home decor, handicrafts, and
+  gift rows. The spider filters zero-price/admin rows and obvious food items
+  so this specialized-goods source is not counted as another food source.

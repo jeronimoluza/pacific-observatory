@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: morris_hedstrom_fj
+url: https://mh.com.fj/shop/
+language: en
+currency: FJD
+cadence: weekly
+channel: supermarket
+archive_prefix: "mh.com.fj/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  Morris Hedstrom / MaxVal-u Fiji WooCommerce supermarket storefront. The
+  unauthenticated Store API at /wp-json/wc/store/products returned FJD-priced
+  product records during live probe on 2026-09-06, including grocery,
+  household, and personal-care items across listed Fiji supermarket locations.

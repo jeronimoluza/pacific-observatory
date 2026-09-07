@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: moncafe_nc
+url: https://www.moncafe.nc/
+language: fr
+currency: XPF
+cadence: weekly
+channel: specialty-food
+notes: |
+  Cafe Melanesien / Mon Cafe New Caledonia online catalog. The targeted
+  spider reads server-rendered PrestaShop product cards from the coffee and
+  tea/tisane categories, exposing local beverage product names and FCFP
+  prices. This is a beverage specialty retailer rather than a supermarket.

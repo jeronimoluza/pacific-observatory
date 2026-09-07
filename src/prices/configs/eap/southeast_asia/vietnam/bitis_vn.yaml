@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bitis_vn
+url: https://bitis.com.vn
+language: vi
+currency: VND
+cadence: weekly
+channel: fashion
+archive_prefix: "bitis.com.vn/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Biti's Vietnam exposes a Haravan/Shopify-compatible public product feed with
+  sandals, shoes, and accessories. Added to fill Vietnam footwear coverage in
+  the specialized-goods pass.

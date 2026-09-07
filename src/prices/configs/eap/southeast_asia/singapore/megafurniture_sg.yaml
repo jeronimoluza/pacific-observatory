@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: megafurniture_sg
+url: https://megafurniture.sg/
+language: en
+currency: SGD
+cadence: weekly
+channel: home-improvement
+archive_prefix: "megafurniture.sg/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Megafurniture Singapore Shopify catalogue. Added for furniture and household
+  durables coverage, including dining sets, chairs, shoe cabinets, sofas, beds,
+  mattresses, and storage products with SGD prices.

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: slowood_hk
+url: https://slowood.hk
+language: en
+currency: HKD
+cadence: weekly
+channel: dept-store
+archive_prefix: "slowood.hk/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Slowood Hong Kong adds household goods, personal care, cleaning, pantry,
+  and sustainability-oriented general retail coverage. The public Shopify
+  /products.json feed returned HKD-priced rows on 2026-09-07.

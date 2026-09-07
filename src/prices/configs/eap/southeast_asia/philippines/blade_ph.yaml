@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: blade_ph
+url: https://blade.ph
+language: en
+currency: PHP
+cadence: weekly
+channel: other
+archive_prefix: "blade.ph/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Blade Philippines exposes a public Shopify feed including auto accessories,
+  trackers, consumer specialty goods, and adjacent pet products. Added to
+  broaden Philippines auto/specialty-goods coverage beyond the parent database.

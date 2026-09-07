@@ -1,0 +1,18 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: menu_item
+coicop_classification: classifier
+spider: palmsugar_sb
+url: https://palmsugar.com.sb/
+language: en
+cadence: weekly
+channel: specialty-food
+archive_prefix: "palmsugar.com.sb/"
+archive_path_re: '^/$'
+notes: |
+  Palm Sugar Cafeteria in Honiara publishes a server-rendered menu with item
+  names and "$" prices. Treat the dollar symbol as SBD because the venue is
+  physically in Solomon Islands and local menu levels align with SBD pricing.
+  The spider slices the visible page text between "Our Menu" and "Services" and
+  emits only concrete prepared-food/menu rows; aggregate tourism or
+  cost-of-living summaries are not used.

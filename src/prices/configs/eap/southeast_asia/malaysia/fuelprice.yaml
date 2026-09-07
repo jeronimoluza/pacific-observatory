@@ -1,0 +1,19 @@
+scaffolding: fetcher
+extraction_pattern: tabular_download
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+source_key: my_fuelprice
+module: eap.southeast_asia.malaysia.fuelprice
+function: fetch_my_fuelprice
+url: https://data.gov.my/data-catalogue/fuelprice
+language: en
+cadence: weekly
+fallback_date: 2026-07-31
+notes: |
+  Official Malaysia Ministry of Finance weekly retail prices for RON95,
+  RON97, diesel, and targeted subsidy tiers via data.gov.my. The CSV is
+  public and includes both level and weekly-change series; this fetcher emits
+  only the level series as MYR/litre. Added to fill Malaysia's transport-fuel
+  tariff gap alongside the existing PriceCatcher food/essentials source.
+channel: null

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: snagindas_fj
+url: https://www.snagindas.com/shop
+language: en
+currency: FJD
+cadence: weekly
+channel: fashion
+archive_prefix: "www.snagindas.com/shop/"
+archive_path_re: '^/shop/[^/?]+'
+notes: >
+  S. Nagindas Fiji Odoo storefront for local apparel, bula shirts, dresses,
+  tees, caps, and related clothing goods. Live product cards returned Fiji
+  dollar-priced rows during probe on 2026-09-07.

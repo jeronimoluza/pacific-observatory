@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: xml_webservice
+analytical_role: official_avg
+coicop_classification: source_curated
+coicop_codes: ["07.2.2"]
+source_key: tw_cpc_fuel_prices
+module: eap.east_asia.taiwan_china.cpc_fuel_prices
+function: fetch_tw_cpc_fuel_prices
+url: https://data.gov.tw/en/datasets/6339
+language: en
+cadence: weekly
+fallback_date: 2026-01-01
+channel: null
+notes: |
+  CPC Corporation Taiwan open-data web service for main retail fuel product
+  list prices. The XML includes English product names, TWD prices, units, and
+  ROC-calendar effective dates.

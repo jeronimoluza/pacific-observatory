@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mandjur_id
+url: https://www.mandjur.co.id
+language: id
+currency: IDR
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.mandjur.co.id/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Apotek Mandjur is an Indonesia pharmacy storefront. Its public Shopify feed
+  returned IDR-priced medicine, device, and personal-care rows on 2026-09-07.

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: api_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: dzay_mm
+url: https://dzay.com.mm/collections/mobile-accessories
+language: en
+cadence: weekly
+channel: electronics
+archive_prefix: "dzay.com.mm/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Myanmar Shopify storefront focused on phone/mobile accessories and adjacent
+  electronics with MMK prices. The public Shopify products JSON endpoint
+  exposes product and variant IDs, names, product types, tags, availability,
+  URLs, and prices. Integrated after live endpoint probing on 2026-09-07.

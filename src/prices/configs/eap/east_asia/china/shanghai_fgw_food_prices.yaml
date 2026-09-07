@@ -1,0 +1,21 @@
+scaffolding: fetcher
+extraction_pattern: xls_attachment
+analytical_role: official_avg
+coicop_classification: classifier
+channel: fresh-market
+source_key: cn_shanghai_fgw_food_prices
+module: eap.east_asia.china.shanghai_fgw_food_prices
+function: fetch_cn_shanghai_fgw_food_prices
+url: https://fgw.sh.gov.cn/fgw_jgjgdt/index.html
+language: zh
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Shanghai Municipal Development and Reform Commission daily main food price
+  monitor. The listing page links daily article pages such as "上海市主要主副食品
+  品种价格信息表(YYYY年MM月DD日)", each with a legacy .xls attachment. The workbook
+  contains citywide averages plus market/store rows for grain, edible oil,
+  meat, eggs, fish/shrimp, vegetables, and fruit. This fetcher emits only the
+  "均价" citywide average row, preserving the source unit labels (mostly
+  CNY/500g, plus CNY/5L and CNY/10kg bag). Requires a local soffice binary to
+  convert BIFF .xls to CSV because the repo environment does not include xlrd.

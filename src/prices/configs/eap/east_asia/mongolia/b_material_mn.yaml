@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_product_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: home-improvement
+source_key: mn_b_material_mn
+module: eap.east_asia.mongolia.b_material_mn
+function: fetch_mn_b_material_mn
+url: https://b-material.mn/
+language: mn
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Ulaanbaatar building-material storefront. Homepage renders product links with
+  embedded MNT prices for wire, plasterboard, plywood, drills, brackets,
+  anchors, insulation, ladders, and tools. Added in the specialized-goods pass
+  to cover hardware/building supplies missing from the parent database.

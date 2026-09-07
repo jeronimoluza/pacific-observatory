@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: tsukiji_id
+url: https://tsukiji.id
+language: id
+currency: IDR
+cadence: weekly
+channel: specialty-food
+archive_prefix: "tsukiji.id/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Tsukiji Indonesia is a food storefront with public Shopify product JSON.
+  Probe returned IDR-priced seasonal, meat, seafood, and grocery rows from
+  this environment on 2026-09-07.

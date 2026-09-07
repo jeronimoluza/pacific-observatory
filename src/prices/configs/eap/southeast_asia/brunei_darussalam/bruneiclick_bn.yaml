@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: bruneiclick_bn
+url: https://www.bruneiclick.com/products
+language: en
+cadence: weekly
+channel: electronics
+currency: BND
+archive_prefix: "www.bruneiclick.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Brunei Click Shopify catalog for electronics, videogames, e-readers, and
+  related consumer durables. Public /products.json feed returned BND product
+  rows on 2026-09-07, including Kindle, PlayStation Portal, and Nintendo Switch
+  game listings.

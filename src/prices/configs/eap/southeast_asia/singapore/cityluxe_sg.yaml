@@ -1,0 +1,15 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: cityluxe_sg
+url: https://cityluxe.sg/
+language: en
+currency: SGD
+cadence: weekly
+channel: other
+archive_prefix: "cityluxe.sg/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Cityluxe Singapore Shopify catalogue. Added for stationery, writing supplies,
+  planners, notebooks, and art/school-adjacent supplies with SGD prices.

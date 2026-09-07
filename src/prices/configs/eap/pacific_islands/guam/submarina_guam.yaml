@@ -1,0 +1,16 @@
+spider: submarina_guam
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+url: https://submarinaguam.com/product-category/online-ordering/
+language: en
+cadence: weekly
+archive_prefix: "submarinaguam.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  Submarina Guam prepared-food online-ordering menu. WooCommerce Store API is
+  public and returned the Online Ordering category with sandwiches, combos,
+  sides, and beverages in USD during the 2026-09-06 probe. The spider filters
+  zero-price/non-product placeholders such as Paid Extras and Misc charges.

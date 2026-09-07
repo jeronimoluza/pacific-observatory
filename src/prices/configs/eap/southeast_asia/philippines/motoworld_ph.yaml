@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: motoworld_ph
+url: https://www.motoworld.com.ph
+language: en
+currency: PHP
+cadence: weekly
+channel: other
+archive_prefix: "www.motoworld.com.ph/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Motoworld Philippines exposes a public Shopify feed with motorcycle helmets,
+  riding gear, accessories, and parts. Added to fill a thin Philippines
+  auto/motorcycle durable-goods category.

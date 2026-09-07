@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: farm2metro_ph
+url: https://pindotlang.com
+language: en
+currency: PHP
+cadence: weekly
+channel: fresh-market
+archive_prefix: "pindotlang.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Farm2Metro Philippines is a Shopify fresh-food storefront. The spider starts
+  from vegetable, meat/poultry, egg, and seafood collections to avoid voucher
+  and donation listings seen in the all-products feed. Collection probes
+  returned PHP-priced rows on 2026-09-07.

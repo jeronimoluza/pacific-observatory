@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_text
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: vn_mobifone_data
+module: eap.southeast_asia.vietnam.mobifone_data
+function: fetch_vn_mobifone_data
+url: https://5g.mobifone.vn/dich-vu-di-dong/goi-data?target=Data
+language: vi
+cadence: weekly
+fallback_date: 2026-09-01
+notes: |
+  Official MobiFone Vietnam data package page. The fetcher parses VND package
+  prices, validity periods, and benefit notes from the server-rendered text,
+  adding Vietnam telecom tariff coverage beyond the parent database.
+channel: null

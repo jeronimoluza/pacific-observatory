@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: goodsxfoods_la
+url: https://www.goodsxfoods.com/products
+language: lo
+cadence: daily
+channel: wholesale
+archive_prefix: "goodsxfoods.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Vientiane wholesale/retail food supplier. Public Next.js product listing and
+  category pages render SSR product cards with names, public product URLs, Kip
+  retail prices, and units. Rows with display price ₭0 are skipped as quote or
+  placeholder rows. Verified by live probe on 2026-09-07 before integration.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes:
+  - "07.3.3"
+spider: airkiribati_deals_ki
+url: https://airkiribati.com.ki/deals-promotions/
+language: en
+currency: AUD
+cadence: monthly
+channel: null
+notes: |
+  Air Kiribati's deals/promotions page publishes local advertised domestic
+  flight fares in AUD per person. Live probe 2026-09-07 found 16 destination
+  fares on the public HTML page, adding a countable transport-tariff source
+  for Kiribati beyond retail products and telecom bundles.

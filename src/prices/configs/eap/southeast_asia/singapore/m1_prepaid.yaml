@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_text
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: sg_m1_prepaid
+module: eap.southeast_asia.singapore.m1_prepaid
+function: fetch_sg_m1_prepaid
+url: https://www.m1.com.sg/mobile/prepaid-plans/m-card/top-up
+language: en
+cadence: weekly
+fallback_date: 2026-09-01
+notes: |
+  Official M1 Singapore prepaid data-pack and top-up pages. The fetcher parses
+  server-rendered text for data packs, all-in-one top-ups, voice/data top-ups,
+  IDD/voice top-ups, and main-balance top-ups. Added to fill Singapore
+  telecom-service tariff coverage.
+channel: null

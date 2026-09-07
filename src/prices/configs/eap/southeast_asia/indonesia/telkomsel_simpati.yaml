@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_text
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: id_telkomsel_simpati
+module: eap.southeast_asia.indonesia.telkomsel_simpati
+function: fetch_id_telkomsel_simpati
+url: https://www.telkomsel.com/en/simpati
+language: en
+cadence: weekly
+fallback_date: 2026-09-01
+notes: |
+  Official Telkomsel SIMPATI page. The fetcher parses server-rendered package
+  cards with data quota, validity, and IDR price rows, adding Indonesia
+  telecom-service tariff coverage that is sparse in the parent database.
+channel: null

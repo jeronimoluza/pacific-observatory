@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: senheng_my
+url: https://www.senheng.com.my/
+language: en
+currency: MYR
+cadence: weekly
+channel: electronics
+archive_prefix: "www.senheng.com.my/product/"
+archive_path_re: '^/product/[^/?]+/?$'
+notes: |
+  Senheng Malaysia WooCommerce Store API. Added for appliances, consumer
+  electronics, phones, laptops, filters, and household electrical products.
+  The public Store API returned MYR prices with product permalinks on
+  2026-09-07.

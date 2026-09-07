@@ -1,0 +1,18 @@
+spider: myk_suppliers_sb
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: wholesale
+url: https://www.myk-suppliers.com/store
+language: en
+cadence: weekly
+archive_prefix: "www.myk-suppliers.com/store"
+archive_path_re: '^/store'
+notes: >
+  MYK Supplier Ltd Honiara online store for cleaning and household supplies.
+  The public Squarespace storefront exposes product names, variant ids,
+  product URLs, and prices in product-list data-context JSON, adding non-food
+  household-supplies coverage for Solomon Islands. The Squarespace commerce
+  metadata reports USD for the prices even though the site organization,
+  address, phone, and country metadata are Solomon Islands.

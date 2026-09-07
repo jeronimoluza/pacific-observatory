@@ -1,0 +1,21 @@
+scaffolding: fetcher
+source_key: as_evalanis_menu
+module: eap.pacific_islands.american_samoa.evalanis_menu_as
+function: fetch_as_evalanis_menu
+url: https://ropetim.wixsite.com/evalanis-1/restaraunt
+channel: specialty-food
+coicop_classification: source_curated
+analytical_role: restaurant_menu
+extraction_pattern: wix_static_html
+language: en
+currency: USD
+cadence: monthly
+fallback_date: 2026-09-01
+coicop_codes:
+  - "11.1.1"
+notes: |
+  Evalani's/Evie's American Samoa motel, bar, and restaurant menu page. The
+  page title identifies the business as an American Samoa motel/bar/restaurant
+  in Pago Pago, and Visit Pago Pago lists Evalani's Bar and Restaurant in
+  Pago Pago with the same local business context. The fetcher parses visible
+  Wix-rendered menu text into named USD restaurant menu rows.

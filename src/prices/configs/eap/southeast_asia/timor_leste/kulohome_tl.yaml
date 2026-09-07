@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: api_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: kulohome_tl
+url: https://kulohome.com/product-category/furniture/
+language: en
+cadence: weekly
+channel: dept-store
+archive_prefix: "kulohome.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: |
+  Timor-Leste furniture and home goods storefront with visible USD prices.
+  The public WooCommerce Store API exposes product IDs, names, categories,
+  stock flags, permalinks, USD currency, and prices. Prioritized because
+  Timor-Leste remains thin for durable and household goods in the parent
+  database. Live API probe verified before integration on 2026-09-07.

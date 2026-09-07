@@ -1,0 +1,16 @@
+spider: gnc_guam
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: pharmacy
+url: https://gncguam.com/wp-json/wc/store/v1/products
+language: en
+cadence: weekly
+archive_prefix: "gncguam.com/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  GNC Guam local health, supplements, and personal-care storefront. The
+  WooCommerce Store API returns SKU/name/category, USD prices in minor units,
+  stock status, and product permalinks; WooBaseSpider rescales prices using
+  currency_minor_unit.

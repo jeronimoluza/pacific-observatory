@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: frankie_wholesale_ws
+url: https://frankiewholesale.ws/
+language: en
+currency: WST
+cadence: weekly
+channel: supermarket
+archive_prefix: "frankiewholesale.ws/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Frankie Wholesale Samoa Shopify storefront on its own .ws domain. The public
+  /products.json endpoint returned WST-priced wholesale grocery and household
+  product records during live probe on 2026-09-06, including canned food,
+  cooking oil, sugar, noodles, drinks, and frozen/meat packs.

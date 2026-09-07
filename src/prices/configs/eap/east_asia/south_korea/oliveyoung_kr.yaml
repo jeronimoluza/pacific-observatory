@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: oliveyoung_kr
+url: https://www.oliveyoung.co.kr/store/main/getBestList.do
+archive_prefix: "www.oliveyoung.co.kr/store/goods/getGoodsDetail.do"
+archive_path_re: '^/store/goods/getGoodsDetail\.do$'
+language: ko
+cadence: daily
+channel: pharmacy
+notes: |
+  Olive Young Korea beauty/pharmacy/personal-care best-seller page. Verified
+  2026-09-07: `getBestList.do` renders 100 product cards with goodsNo, brand,
+  title, category breadcrumbs, and KRW current/original prices in static HTML.
+  Uses Chrome TLS impersonation for storefront compatibility.

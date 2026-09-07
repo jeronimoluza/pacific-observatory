@@ -1,0 +1,16 @@
+scaffolding: fetcher
+extraction_pattern: html_product_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: other
+source_key: mn_topminds_mn
+module: eap.east_asia.mongolia.topminds_mn
+function: fetch_mn_topminds_mn
+url: https://topminds.mn/products
+language: mn
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Top Minds product listing exposes MNT prices for children's books, series,
+  gifts, and learning/toy-adjacent products. Added to broaden Mongolia
+  children's books/toys coverage.

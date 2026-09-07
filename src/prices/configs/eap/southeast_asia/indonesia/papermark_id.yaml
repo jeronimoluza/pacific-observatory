@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: papermark_id
+url: https://papermark.id
+language: id
+currency: IDR
+cadence: weekly
+channel: other
+archive_prefix: "papermark.id/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Papermark exposes a public Shopify feed with stationery, labels, pen pouches,
+  notebook accessories, and office/school supplies. Added to broaden Indonesia
+  non-food coverage beyond grocery, pharmacy, fashion, and telecom sources.

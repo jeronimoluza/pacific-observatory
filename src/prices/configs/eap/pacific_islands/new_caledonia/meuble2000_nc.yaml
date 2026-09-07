@@ -1,0 +1,13 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: meuble2000_nc
+url: https://meuble2000.nc/
+language: fr
+currency: XPF
+cadence: weekly
+channel: home-improvement
+notes: |
+  Meuble2000 New Caledonia furniture catalog. WooCommerce Store API exposes
+  item names, XPF prices, categories, stock status, and product URLs.

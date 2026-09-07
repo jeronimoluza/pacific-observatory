@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_text
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: ph_smart_daily_data
+module: eap.southeast_asia.philippines.smart_daily_data
+function: fetch_ph_smart_daily_data
+url: https://store.smart.com.ph/promos-and-add-ons/smart-prepaid/daily-data
+language: en
+cadence: weekly
+fallback_date: 2026-09-01
+notes: |
+  Official Smart Philippines prepaid store page for daily data add-ons. The
+  fetcher captures PHP package prices by daily data allowance and validity,
+  filling a telecom-service tariff gap in the parent database.
+channel: null

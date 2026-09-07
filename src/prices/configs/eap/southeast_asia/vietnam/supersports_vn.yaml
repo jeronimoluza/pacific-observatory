@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: supersports_vn
+url: https://supersports.com.vn
+language: vi
+currency: VND
+cadence: weekly
+channel: fashion
+archive_prefix: "supersports.com.vn/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Supersports Vietnam exposes a public Shopify feed with sports footwear,
+  apparel, and equipment. Added for sports-goods and footwear breadth in
+  Vietnam beyond the earlier Biti's and Decathlon coverage.

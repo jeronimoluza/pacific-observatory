@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_table
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.4.1"]
+source_key: my_sabah_water_tariff
+module: eap.southeast_asia.malaysia.sabah_water_tariff
+function: fetch_my_sabah_water_tariff
+url: https://water.sabah.gov.my/index.php/content/water-tariff
+language: en
+cadence: quarterly
+fallback_date: 2026-09-01
+notes: |
+  Official Sabah Water Department domestic and commercial tariff table. The
+  fetcher emits domestic block rates and domestic minimum charges as MYR/m3 or
+  MYR/month. Added to fill a Malaysia water-utility tariff gap absent from the
+  parent source database.
+channel: null

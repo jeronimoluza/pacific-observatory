@@ -18,8 +18,10 @@ notes: >
   ...) keyed by padded partNumber + vendorCode + a static city tuple
   (180_377_3770100). See docstring in
   src/prices/price_scraping/spiders/suning.py for the full URL-construction
-  writeup. Seed keywords bias toward COICOP 01 deep leaves: fresh fruit
-  (01.1.6), fresh vegetables (01.1.7), fish/seafood incl. dried/salted
-  (01.1.3), dairy (01.1.4), plus staples/meat/beverages. category is a coarse
-  keyword-derived hint, not a scraped breadcrumb - real COICOP tagging is
-  deferred to src/cpi/coicopping/.
+  writeup. Seed keywords now cover two parent-database gaps. The original
+  seeds bias toward COICOP 01 deep leaves: fresh fruit (01.1.6), fresh
+  vegetables (01.1.7), fish/seafood incl. dried/salted (01.1.3), dairy
+  (01.1.4), plus staples/meat/beverages. The specialized-goods pass added
+  appliances, electronics, furniture/home goods, clothing/footwear, baby/toys,
+  and tools seeds. category is a coarse keyword-derived hint, not a scraped
+  breadcrumb - real COICOP tagging is deferred to src/cpi/coicopping/.

@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: coupletx_vn
+url: https://coupletx.com
+language: vi
+currency: VND
+cadence: weekly
+channel: fashion
+archive_prefix: "coupletx.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Couple TX exposes a public Shopify collection feed with apparel bundles,
+  shirts, and related clothing variants. Added as a second Vietnam apparel
+  source to broaden price-visible non-food coverage.

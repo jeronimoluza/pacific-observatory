@@ -1,0 +1,20 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: marketplace_vu
+url: https://marketplace.vu/
+language: en
+currency: VUV
+cadence: weekly
+channel: marketplace
+notes: |
+  Marketplace.vu is a Vanuatu digital product catalog whose Flutter web app
+  queries a public Supabase/PostgREST product feed. Live probe 2026-09-07
+  found enabled non-test local shops, VUV prices, approved visible products,
+  shop addresses, categories, and stock fields. The spider filters out obvious
+  food/liquor categories to keep this pass focused on specialized and
+  household goods such as cleaning products, garden/home items, tableware,
+  plastics, work clothing, pool parts, hardware tools, and electrical
+  accessories. This is a marketplace/catalog source rather than a single
+  retailer storefront.

@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: jbhifi_au
+url: https://www.jbhifi.com.au
+language: en
+currency: AUD
+cadence: weekly
+channel: electronics
+archive_prefix: "www.jbhifi.com.au/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  JB Hi-Fi Australia adds electronics, computer accessories, phones/media,
+  games, books, and entertainment goods. The public Shopify /products.json
+  feed returned AUD-priced rows on 2026-09-07.
+

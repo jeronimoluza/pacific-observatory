@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: torano_vn
+url: https://torano.vn
+language: vi
+currency: VND
+cadence: weekly
+channel: fashion
+archive_prefix: "torano.vn/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Torano Vietnam exposes a Haravan/Shopify-compatible public product feed with
+  shirts, trousers, shorts, jackets, and other apparel. Added for Vietnam
+  clothing coverage outside food, pharmacy, and electronics incumbents.

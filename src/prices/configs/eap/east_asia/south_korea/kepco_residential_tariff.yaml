@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_table
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: kr_kepco_residential_tariff
+module: eap.east_asia.south_korea.kepco_residential_tariff
+function: fetch_kr_kepco_residential_tariff
+url: https://home.kepco.co.kr/kepco/indi/foreign/en/html/F/B/ENFBHP002_pop01.html
+language: en
+cadence: quarterly
+fallback_date: 2026-01-01
+channel: null
+notes: |
+  KEPCO English residential electric rates tables by monthly consumption
+  amount. Three public HTML tables cover 1-1,000 kWh; rows are emitted as KRW
+  monthly bills at each kWh level.

@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_table
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["04.5.1"]
+source_key: cn_beijing_residential_electricity_tariff
+module: eap.east_asia.china.beijing_residential_electricity_tariff
+function: fetch_cn_beijing_residential_electricity_tariff
+url: https://fgw.beijing.gov.cn/bmcx/djcx/jzldj/202110/t20211025_2520169.htm
+language: zh
+cadence: annual
+fallback_date: 2024-01-01
+channel: null
+notes: |
+  Beijing Municipal Development and Reform Commission residential electricity
+  tariff table. Emits CNY/kWh rows for tiered residential, combined-meter, and
+  residential-price non-residential categories. Adds a direct China
+  utilities/common-item source not represented in the parent source list.

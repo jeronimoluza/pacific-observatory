@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: vinhhoa_health_vn
+url: https://vinhhoa-health.com
+language: vi
+currency: VND
+cadence: weekly
+channel: pharmacy
+archive_prefix: "vinhhoa-health.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Vinh Hoa Health & Beauty is a Vietnam health, supplement, and personal-care
+  Shopify storefront. The public feed returned VND-priced rows on 2026-09-07.
+

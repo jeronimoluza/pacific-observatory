@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: itzone_ws
+url: https://itzone.ws/
+language: en
+currency: USD
+cadence: weekly
+channel: electronics
+archive_prefix: "itzone.ws/product/"
+archive_path_re: '^/product/[^/?]+'
+notes: >
+  IT Zone Samoa WooCommerce storefront for phones, computers, accessories, and
+  electronics. The Store API returned product-level prices during live probe on
+  2026-09-07, but the site reports USD rather than WST; keep the Samoa country
+  assignment with this currency caveat.

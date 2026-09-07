@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: shopify_products_json
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: healthpost_nz
+url: https://www.healthpost.co.nz
+language: en
+currency: NZD
+cadence: weekly
+channel: pharmacy
+archive_prefix: "www.healthpost.co.nz/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  HealthPost New Zealand adds natural health, supplements, personal care,
+  and household wellness products. The public Shopify /products.json feed
+  returned NZD-priced rows on 2026-09-07.
+

@@ -1,0 +1,17 @@
+spider: guam_boka_box
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+url: https://www.guambokabox.com/collections/guam-snacks
+language: en
+cadence: weekly
+archive_prefix: "www.guambokabox.com/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: >
+  Guam Boka Box Shopify collection scoped to the Guam Snacks collection rather
+  than the whole site, because the full catalog includes made-to-order
+  merchandise and home goods. Public Shopify collection feed returned
+  Guam/Chamoru snacks, beverages, condiments, and snack-box products with USD
+  prices during the 2026-09-06 probe.

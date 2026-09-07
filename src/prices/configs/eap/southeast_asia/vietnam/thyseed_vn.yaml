@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: thyseed_vn
+url: https://thyseed.vn
+language: vi
+currency: VND
+cadence: weekly
+channel: marketplace
+archive_prefix: "thyseed.vn/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Thyseed Vietnam sells baby-feeding and infant-care goods. Its public Shopify
+  feed returned VND-priced bottles, pacifiers, and feeding supplies on
+  2026-09-07.

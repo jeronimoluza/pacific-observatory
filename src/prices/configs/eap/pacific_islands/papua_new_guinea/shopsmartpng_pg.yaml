@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: shopsmartpng_pg
+url: https://shopsmartpng.com/grocery-and-gourmet-food/
+language: en
+currency: PGK
+cadence: weekly
+channel: marketplace
+archive_prefix: "shopsmartpng.com/"
+archive_path_re: '^/(grocery-and-gourmet-food|food)/[^/?]+'
+notes: >
+  ShopSmart PNG CS-Cart marketplace category scrape, scoped to grocery,
+  beverages, and food category pages. Live probe on 2026-09-06 found PGK-priced
+  coffee, frozen taro, and honey product cards. The source is small but useful
+  for local beverage/staple breadth.

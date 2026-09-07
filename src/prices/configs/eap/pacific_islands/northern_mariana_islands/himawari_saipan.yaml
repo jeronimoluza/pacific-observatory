@@ -1,0 +1,16 @@
+spider: himawari_saipan
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: specialty-food
+url: https://www.himawarisaipan.com/menu
+language: en
+cadence: weekly
+archive_prefix: "www.himawarisaipan.com/menu"
+archive_path_re: '^/menu$'
+notes: >
+  Himawari Store & Restaurant in Garapan, Saipan. The GloriaFood-backed menu
+  page server-renders a schema.org Restaurant JSON-LD menu tree with item
+  names, category sections, availability, and USD prices. This is a local
+  prepared-food source, not a grocery/supermarket source.

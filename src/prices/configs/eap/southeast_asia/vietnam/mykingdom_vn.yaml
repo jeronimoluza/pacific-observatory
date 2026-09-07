@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: mykingdom_vn
+url: https://www.mykingdom.com.vn
+language: vi
+currency: VND
+cadence: weekly
+channel: other
+archive_prefix: "www.mykingdom.com.vn/products/"
+archive_path_re: '^/products/[^/?]+'
+notes: |
+  Mykingdom exposes a public Shopify feed with toys, games, learning products,
+  and child-focused goods. Added to address Vietnam toys/children's goods
+  gaps beyond the existing baby-specialty sources.

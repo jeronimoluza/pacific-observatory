@@ -1,0 +1,17 @@
+scaffolding: fetcher
+extraction_pattern: html_product_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: marketplace
+source_key: mn_parts_mn
+module: eap.east_asia.mongolia.parts_mn
+function: fetch_mn_parts_mn
+url: https://parts.mn/
+language: mn
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Parts.mn auto-parts storefront. Homepage renders product names, detail links,
+  and MNT prices for car seats/covers, bumper guards, lights, mats, fluids,
+  wheels, and other vehicle accessories. Added in the specialized-goods pass to
+  cover auto parts, a category missing from the parent database.

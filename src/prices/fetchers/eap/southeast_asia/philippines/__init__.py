@@ -1,0 +1,1 @@
+"""Philippines price fetchers."""

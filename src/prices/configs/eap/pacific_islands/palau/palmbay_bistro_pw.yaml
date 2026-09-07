@@ -1,0 +1,17 @@
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: palmbay_bistro_pw
+url: https://www.palmbaybistro.com/drink
+language: en
+currency: USD
+cadence: weekly
+channel: specialty-food
+notes: |
+  Palm Bay Bistro in Koror, Palau publishes a static beverage menu with USD
+  prices. Live probe 2026-09-06 found priced non-alcoholic beverages, coffee,
+  tea, espresso drinks, and Starbucks-style specialty drinks in ordinary HTML.
+  This source is menu/beverage coverage, not supermarket SKU coverage, but it
+  adds independent food-like price evidence for Palau.
+

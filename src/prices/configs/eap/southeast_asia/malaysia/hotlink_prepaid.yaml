@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_table
+analytical_role: tariff
+coicop_classification: source_curated
+coicop_codes: ["08.3.0"]
+source_key: my_hotlink_prepaid
+module: eap.southeast_asia.malaysia.hotlink_prepaid
+function: fetch_my_hotlink_prepaid
+url: https://www.hotlink.com.my/en/products/prepaid/compare/
+language: en
+cadence: weekly
+fallback_date: 2026-09-01
+notes: |
+  Official Hotlink Malaysia prepaid comparison table. The fetcher parses the
+  server-rendered comparison table and emits current package tariffs for the
+  RM55, RM40, RM30, RM12, and RM4 plans. Added to fill Malaysia telecom-service
+  coverage missing from the parent database.
+channel: null

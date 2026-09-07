@@ -1,0 +1,17 @@
+spider: avedson_mp
+scaffolding: spider
+extraction_pattern: scrapy_html
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: electronics
+url: https://avedson.com/
+language: en
+cadence: weekly
+archive_prefix: "avedson.com/"
+archive_path_re: '^/$'
+notes: >
+  Avedson Marketplace first-party Saipan electronics and household-durables
+  storefront, with site footer/address evidence placing it at Courtney's Plaza,
+  Chalan Kanoa, Saipan. The spider reads current cash prices from rendered HTML
+  and skips financing/downpayment/per-paycheck amounts so installment quotes do
+  not enter the SKU price feed.

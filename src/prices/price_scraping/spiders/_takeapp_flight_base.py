@@ -38,11 +38,19 @@ class TakeAppFlightSpider(scrapy.Spider):
     language: str = "en"
     STORE_ALIAS: str = ""
     COUNTRY_CODE: str | None = None
+    PRICE_DIVISOR: int = 100
 
     custom_settings = {
         "CONCURRENT_REQUESTS_PER_DOMAIN": 1,
         "CONCURRENT_REQUESTS": 1,
         "DOWNLOAD_DELAY": 1.0,
+        "DOWNLOAD_HANDLERS": {
+            "http": "scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler",
+            "https": "scrapy.core.downloader.handlers.http11.HTTP11DownloadHandler",
+        },
+        "DOWNLOADER_MIDDLEWARES": {
+            "scrapy_impersonate.middleware.RandomBrowserMiddleware": None,
+        },
         "RETRY_TIMES": 3,
         "USER_AGENT": (
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -51,9 +59,7 @@ class TakeAppFlightSpider(scrapy.Spider):
     }
 
     async def start(self):
-        yield scrapy.Request(
-            f"https://take.app/{self.STORE_ALIAS}", callback=self.parse
-        )
+        yield scrapy.Request(f"https://take.app/{self.STORE_ALIAS}", callback=self.parse)
 
     def parse(self, response):
         decoded = "\n".join(self._flight_chunks(response.text))
@@ -90,7 +96,7 @@ class TakeAppFlightSpider(scrapy.Spider):
             if not product_name:
                 continue
 
-            price = int(match.group("price")) / 100
+            price = int(match.group("price")) / self.PRICE_DIVISOR
             yield {
                 "product_id": product_id,
                 "product_name": product_name[:500],

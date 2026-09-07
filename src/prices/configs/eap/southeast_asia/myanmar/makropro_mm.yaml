@@ -1,0 +1,16 @@
+scaffolding: spider
+extraction_pattern: scrapy_next_data
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: makropro_mm
+url: https://www.makropro.com.mm/en/c/fruit-vegetables
+language: en
+cadence: daily
+channel: hypermarket
+archive_prefix: "www.makropro.com.mm/en/c/"
+archive_path_re: '^/en/c/(fruit-vegetables|meat|fish-seafood|dry-grocery|beverages|household-supplies|health-beauty)'
+notes: |
+  Makro Pro Myanmar public category pages expose product-level prices in
+  Next.js __NEXT_DATA__. Integrated for grocery, fresh food, beverages,
+  household supplies, and health/beauty categories after live probe confirmed
+  MMK product prices on 2026-09-07.

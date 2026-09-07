@@ -1,0 +1,18 @@
+scaffolding: fetcher
+extraction_pattern: html_product_cards
+analytical_role: retailer_sku
+coicop_classification: classifier
+channel: supermarket
+source_key: mn_supermarket_mn
+module: eap.east_asia.mongolia.supermarket_mn
+function: fetch_mn_supermarket_mn
+url: https://supermarket.mn/
+language: mn
+cadence: daily
+fallback_date: 2024-01-01
+notes: |
+  Mongolian online supermarket storefront. The Next.js homepage is server
+  rendered with product names, product detail links, and tugrik prices. Current
+  homepage cards cover food and beverage staples such as bread, milk, sausage,
+  drinks, chocolate, and wine. The fetcher parses visible product cards only and
+  preserves product-page URLs for later enrichment or category expansion.

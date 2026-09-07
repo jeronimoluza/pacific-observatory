@@ -1,0 +1,14 @@
+scaffolding: spider
+extraction_pattern: scrapy_api
+analytical_role: retailer_sku
+coicop_classification: classifier
+spider: ledressing_tahiti_pf
+url: https://ledressingtahiti.com/
+language: fr
+currency: XPF
+cadence: weekly
+channel: fashion
+notes: |
+  Le Dressing Tahiti clothing storefront. WooCommerce Store API exposes current
+  apparel SKUs and XPF prices. Added during the PF/NC specialized-goods recovery
+  pass to cover clothing/footwear gaps.
