@@ -2,23 +2,31 @@
 # surfaces are matched case-insensitively where the source pattern used IGNORECASE.
 # basis/su/mul reproduce unit_tables.UNIT_MAP. Adding a unit spelling = one row.
 
+# Cyrillic surfaces (гр/г/кг/мг/мл/л) share the SAME alternation as the latin
+# ones: the codepoints are disjoint, so a latin name can never reach them and a
+# Cyrillic name can never reach the latin ones. Before they were added, every
+# ru/uk/bg/kk/ky/tk/mk/be name stated its size in a script the M-class could not
+# read and fell through to pricing_basis=item -- 19-59% of the rows in those
+# countries. Bare 'г'/'л' are safe behind the '(?<![A-Za-z0-9.])' left guard plus
+# a required digit: a year ("2024 г") is the only known collision, and it is
+# ~0.06% of bare-'г' fires measured over a 288k-row corpus sample.
 # M-class canon measure surfaces (the VALUE_UNIT alternation), longest-first-safe.
 measure:
-  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g]}
-  - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg]}
-  - {basis: mass,   su: kg, mul: 0.000001,  surfaces: [mg]}
+  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g, гр, г]}
+  - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg, кг]}
+  - {basis: mass,   su: kg, mul: 0.000001,  surfaces: [mg, мг]}
   - {basis: mass,   su: kg, mul: 0.0283495, surfaces: [oz]}
   - {basis: mass,   su: kg, mul: 0.453592,  surfaces: [lb]}
-  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml]}
-  - {basis: volume, su: lt, mul: 1.0,       surfaces: [liters, litres, liter, litre, ltrs, ltr, lt, l]}
+  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml, мл]}
+  - {basis: volume, su: lt, mul: 1.0,       surfaces: [liters, litres, liter, litre, ltrs, ltr, lt, l, л]}
 
 # P-class pack-measure unit surfaces — NARROWER than M (no cl, no litre-words,
 # bare l only), reproducing NUM_X_VALUE_UNIT / VALUE_UNIT_X_NUM verbatim.
 pack_measure:
-  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g]}
-  - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg]}
-  - {basis: mass,   su: kg, mul: 0.000001,  surfaces: [mg]}
+  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g, гр, г]}
+  - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg, кг]}
+  - {basis: mass,   su: kg, mul: 0.000001,  surfaces: [mg, мг]}
   - {basis: mass,   su: kg, mul: 0.0283495, surfaces: [oz]}
   - {basis: mass,   su: kg, mul: 0.453592,  surfaces: [lb]}
-  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml]}
-  - {basis: volume, su: lt, mul: 1.0,       surfaces: [l]}
+  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml, мл]}
+  - {basis: volume, su: lt, mul: 1.0,       surfaces: [l, л]}

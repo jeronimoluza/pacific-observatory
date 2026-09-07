@@ -49,6 +49,15 @@ UNIT_NORM: Mapping[str, str] = {
     "公克": "g",
     "克": "g",
     "升": "l",
+    # Cyrillic mass/volume abbreviations (ru/uk/bg/kk/ky/tk/mk/be/mn). Lower-case
+    # keys only -- extract_pack and _match_extra_unit both retry the lookup on
+    # `raw.lower()`, and str.lower() folds Cyrillic, so "ГР"/"МЛ"/"КГ" resolve here.
+    "кг": "kg",
+    "мг": "mg",
+    "гр": "g",
+    "г": "g",
+    "мл": "ml",
+    "л": "l",
 }
 
 

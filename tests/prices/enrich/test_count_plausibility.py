@@ -12,19 +12,22 @@ def _basis(name: str, lang: str = "en") -> tuple[str, int]:
 
 @pytest.mark.unit
 @pytest.mark.parametrize(
-    "name,lang",
+    "name,lang,expected_basis",
     [
         # SKU trailing a pack noun -- was count=806939, uv $0.000006
-        ("AVOCADO Ripe Duo Pack 806939", "en"),
-        # EAN barcode -- was count=8000570552505
-        ("Вино ігристе Martini Prosecco біле 0.75 л 11% (8000570552505M)", "uk"),
+        ("AVOCADO Ripe Duo Pack 806939", "en", "item"),
+        # EAN barcode -- was count=8000570552505. The basis is `volume`, not
+        # `item`: the name also states `0.75 л`, and the Cyrillic measure
+        # surfaces read it. The invariant under test is the COUNT (the barcode
+        # must not become one), which is unchanged.
+        ("Вино ігристе Martini Prosecco біле 0.75 л 11% (8000570552505M)", "uk", "volume"),
         # gram weight read through the noun-trailing pattern
-        ("BOLCI ASSORTED CHOCOLATE PRALINES TIN BOX 250", "en"),
+        ("BOLCI ASSORTED CHOCOLATE PRALINES TIN BOX 250", "en", "item"),
     ],
 )
-def test_implausible_count_falls_back_to_item(name, lang):
+def test_implausible_count_falls_back_to_item(name, lang, expected_basis):
     basis, count = _basis(name, lang)
-    assert basis == "item"
+    assert basis == expected_basis
     assert count == 1
 
 

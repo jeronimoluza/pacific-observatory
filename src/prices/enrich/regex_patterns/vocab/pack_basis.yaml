@@ -1,7 +1,10 @@
 # P-class (pack x measure) + B-class (per-unit basis marker) + separators.
 
 # latin multiply separators. CJK '*' is N-class (deferred), not here.
-separators: ['x', 'X', '×', '*']
+# Cyrillic 'х'/'Х' (U+0445/U+0425) is the same operator written in Cyrillic
+# script ("4х90 г", "10х7,5гр"); it is a distinct codepoint from latin x/X, so
+# adding it cannot change how any latin name parses.
+separators: ['x', 'X', '×', '*', 'х', 'Х']
 
 # P productions keyed by id (unit surfaces come from units.yaml::pack_measure):
 #   NUM_X_VALUE_UNIT : <num> SEP <value><unit>
