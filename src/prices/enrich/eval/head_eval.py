@@ -1,118 +1,117 @@
-"""Evaluate the (embedding -> head) classifier on gold via cross-validation.
+"""Evaluate the (embedding -> head -> meta-gate) classifier on gold. `prices eval`.
 
-Scores the config-E operating point — a single global confidence gate at the
-target precision plus per-leaf trap vetoes — over the gold food/bev leaves using
-out-of-fold predictions (no row is scored by a head that trained on it). Reports
-overall precision and coverage plus a per-leaf breakdown. This is the canonical
-``prices eval`` and reproduces the deep-leaf CV result (~98% precision at ~82%
-coverage on division 01).
+The metric is COVERAGE AT A PRECISION FLOOR, not accuracy. The classifier may
+decline: a threshold is set at the highest-recall point whose accepted set still
+holds `--target-precision`, and coverage is (correct AND accepted) / all rows. A
+more accurate model whose confidence RANK-ORDERS worse scores LOWER here, so
+rank-ordering is the thing being measured.
+
+Both gates are reported from one run, because the delta between them is the
+entire case for the meta-gate and reporting either alone is misleading:
+
+  raw   -- threshold on the head's own top-1 softmax probability
+  gate  -- threshold on a second model's estimate of "will top-1 be correct?"
+
+Scope defaults to ALL divisions rather than food. That is not scope creep: the
+same model measures ~4pt HIGHER across all divisions than restricted to division
+01, because it can spend confidence where the taxonomy is easy. Restricting the
+scope costs coverage.
+
+The three OOF tables (head, lexical, neighbours) are the expensive part -- ~1
+hour at full scope -- so they are cached on disk under a key covering the block
+layout, the weights, the scope and the exact row set. Change any of those and the
+cache misses rather than silently answering for a different configuration.
 """
 
 from __future__ import annotations
 
-import numpy as np
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import StratifiedKFold
 
-from prices.enrich import config, embedding, vetoes
-from prices.enrich.classifier.dataset import MIN_SUPPORT, _load_gold
-from prices.enrich.classifier.train import (
-    C_INV_REG,
-    MAX_ITER,
-    OOF_FOLDS,
-    OOF_SEED,
-    TARGET_PRECISION,
-    _global_tau,
-)
+from prices.enrich import config
+from prices.enrich.classifier import gate, oof, tables
+
+TARGET_PRECISION = oof.TARGET_PRECISION
+scope_gold = tables.scope_gold
 
 
-def _oof(x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    skf = StratifiedKFold(OOF_FOLDS, shuffle=True, random_state=OOF_SEED)
-    pred = np.empty(len(y), object)
-    conf = np.zeros(len(y))
-    for tr, te in skf.split(x, y):
-        lr = LogisticRegression(max_iter=MAX_ITER, C=C_INV_REG).fit(x[tr], y[tr])
-        p = lr.predict_proba(x[te])
-        pred[te] = lr.classes_[p.argmax(1)]
-        conf[te] = p.max(1)
-    return pred, conf
-
-
-def evaluate(
-    division: str = config.CLASSIFIER_DEFAULT_DIVISION,
-    target_precision: float = TARGET_PRECISION,
-) -> dict:
-    g = _load_gold()
-    g = g[(g["verdict"] == "leaf") & (g["division"] == division)].copy()
-    vc = g["code"].value_counts()
-    g = g[g["code"].isin(set(vc[vc >= MIN_SUPPORT].index))].reset_index(drop=True)
-
+def evaluate(scope: str = None, target_precision: float = TARGET_PRECISION,
+             verbose: bool = True) -> dict:
+    scope = scope or config.CLASSIFIER_DEFAULT_SCOPE
+    g = scope_gold(scope)
     names = g["product_name"].astype(str).tolist()
     y = g["code"].astype(str).to_numpy()
-    x = embedding.embed_names(names)
-
-    pred, conf = _oof(x, y)
-    tau = _global_tau(conf, pred == y, target_precision)
-    pred = np.array(pred, dtype=object)
-    force_reject = np.zeros(len(pred), dtype=bool)
-    force_accept = np.zeros(len(pred), dtype=bool)
-    for i, (p, n) in enumerate(zip(pred, names)):
-        action = vetoes.veto_action(p, n)
-        if action is None:
-            continue
-        if action == vetoes.REJECT:
-            force_reject[i] = True
-        else:
-            pred[i] = action
-            force_accept[i] = True
-    correct = pred == y
-    accepted = ((conf >= tau) & ~force_reject) | force_accept
-
-    tp = int((accepted & correct).sum())
-    fired = int(accepted.sum())
     n = len(y)
+    if verbose:
+        print(f"scope={scope}: {n} rows / {g['code'].nunique()} leaves "
+              f"({g.attrs['dropped_uncovered']} rows dropped as unembedded)", flush=True)
+
+    cls, proba, cls_lex, proba_lex, nbr_idx, nbr_sim, _ = tables.oof_tables(
+        g, scope, verbose=verbose
+    )
+    feats, leaf_pred, correct, force_rej, force_acc = tables.gate_inputs(
+        cls, proba, cls_lex, proba_lex, nbr_idx, nbr_sim, y, names
+    )
+    if verbose:
+        print("  cross-fitting the meta-gate", flush=True)
+    gate_score = gate.cross_fit(feats, leaf_pred, correct)
+
+    arms = {}
+    for arm, s in (("raw", proba.max(1)), ("gate", gate_score)):
+        tau = oof.choose_tau(s, correct, target_precision)
+        arms[arm] = oof.summarize(s, correct, force_rej, force_acc, tau)
+
+    accepted = arms["gate"]["accepted"]
     result = {
-        "division": division,
+        "scope": scope,
         "n_rows": n,
         "n_leaves": int(pd.Series(y).nunique()),
-        "tau": round(float(tau), 4),
+        "n_dropped_uncovered": int(g.attrs["dropped_uncovered"]),
         "target_precision": target_precision,
-        "fired": fired,
-        "precision": round(tp / fired, 4) if fired else float("nan"),
-        "coverage": round(tp / n, 4) if n else float("nan"),
+        "head_accuracy": round(float(correct.mean()), 4),
+        "blocks": [b["tag"] for b in config.CLASSIFIER_EMBED_ENSEMBLE],
+        "weights": [float(b.get("weight", 1.0)) for b in config.CLASSIFIER_EMBED_ENSEMBLE],
+        "gate_features": len(gate.GATE_COLS),
     }
+    for arm in ("raw", "gate"):
+        a = arms[arm]
+        result[arm] = {k: a[k] for k in ("tau", "fired", "precision", "coverage")}
 
-    df = pd.DataFrame({"true": y, "pred": pred, "acc": accepted, "corr": correct})
-    per_leaf = []
-    for leaf, grp in df.groupby("true"):
-        fl = grp[grp["acc"]]
-        per_leaf.append(
-            {
-                "leaf": leaf,
-                "true_n": len(grp),
-                "fired": int(len(fl)),
-                "tp": int(fl["corr"].sum()),
-            }
-        )
-    result["per_leaf"] = sorted(per_leaf, key=lambda r: -r["true_n"])
+    df = pd.DataFrame({"true": y, "acc": accepted, "corr": correct})
+    result["per_leaf"] = sorted(
+        (
+            {"leaf": leaf, "true_n": len(grp), "fired": int(grp["acc"].sum()),
+             "tp": int((grp["acc"] & grp["corr"]).sum())}
+            for leaf, grp in df.groupby("true")
+        ),
+        key=lambda r: -r["true_n"],
+    )
     return result
 
 
-def run(
-    division: str = config.CLASSIFIER_DEFAULT_DIVISION,
-    target_precision: float = TARGET_PRECISION,
-) -> dict:
-    r = evaluate(division, target_precision)
+def run(scope: str = None, target_precision: float = TARGET_PRECISION,
+        top: int = 25) -> dict:
+    r = evaluate(scope, target_precision)
     print(
-        f"division {r['division']}: {r['n_rows']} rows / {r['n_leaves']} leaves | "
-        f"tau@{target_precision:.0%}={r['tau']} | fired={r['fired']} | "
-        f"precision={r['precision']:.1%} coverage={r['coverage']:.1%}"
+        f"\nscope {r['scope']}: {r['n_rows']} rows / {r['n_leaves']} leaves | "
+        f"blocks {'+'.join(r['blocks'])} w={r['weights']} | "
+        f"head accuracy {r['head_accuracy']:.1%}"
     )
-    print(f"  {'leaf':<12}{'true_N':>7}{'fired':>7}{'TP':>5}{'prec':>7}{'cov%':>7}")
-    for pl in r["per_leaf"]:
+    print(f"  {'gate':<6}{'tau':>8}{'fired':>8}{'precision':>11}{'coverage':>10}")
+    for arm in ("raw", "gate"):
+        a = r[arm]
+        print(f"  {arm:<6}{a['tau']:>8.4f}{a['fired']:>8}"
+              f"{a['precision']:>10.1%}{a['coverage']:>10.1%}")
+    lift = (r["gate"]["coverage"] - r["raw"]["coverage"]) * 100
+    print(f"  meta-gate lift: {lift:+.2f} coverage points")
+    if r["gate"]["precision"] < target_precision - 1e-9:
+        print(f"  WARNING realized precision {r['gate']['precision']:.4f} is below "
+              f"the {target_precision:.2f} floor — a tied score block crossed it")
+
+    print(f"\n  {'leaf':<12}{'true_N':>7}{'fired':>7}{'TP':>6}{'prec':>7}{'cov%':>7}"
+          f"   (top {top} by support)")
+    for pl in r["per_leaf"][:top]:
         fired, tp, tn = pl["fired"], pl["tp"], pl["true_n"]
         prec = f"{tp / fired:.0%}" if fired else "-"
         cov = f"{tp / tn:.0%}" if tn else "-"
-        print(f"  {pl['leaf']:<12}{tn:>7}{fired:>7}{tp:>5}{prec:>7}{cov:>7}")
+        print(f"  {pl['leaf']:<12}{tn:>7}{fired:>7}{tp:>6}{prec:>7}{cov:>7}")
     return r

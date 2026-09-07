@@ -24,6 +24,9 @@ TRAIN_FILE = "train.parquet"
 # Out-of-fold predictions from the same folds that set `tau`, kept so the gold
 # audit can score labels against the operating point actually in force.
 OOF_FILE = "oof.parquet"
+# Gold embedding matrix + labels. Six of the gate's features describe a row's
+# nearest GOLD neighbours, so the pool has to ship with the model.
+POOL_FILE = "gold_pool.npz"
 MANIFEST_FILE = "training_manifest.json"
 EVAL_METRICS_FILE = "eval_metrics.json"
 

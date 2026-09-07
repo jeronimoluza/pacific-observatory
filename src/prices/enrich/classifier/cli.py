@@ -20,7 +20,7 @@ from prices.enrich.classifier import (
     version_dir,
     write_latest,
 )
-from prices.enrich.classifier import dataset, train
+from prices.enrich.classifier import train
 from prices.enrich.eval import head_eval
 
 REGRESS_EPS = 0.02
@@ -38,32 +38,30 @@ def _latest_precision() -> float | None:
 
 @click.command("train-classifier")
 @click.option(
-    "--division",
-    default=config.CLASSIFIER_DEFAULT_DIVISION,
-    help="COICOP division to train (default 01 — food & non-alcoholic beverages).",
+    "--scope",
+    default=None,
+    help="Rows to train on: 'all' (default — every COICOP division), 'food', "
+    "'nonfood', or a single division code. Restricting the scope COSTS coverage.",
 )
 @click.option(
     "--bless",
     is_flag=True,
     help="Promote `latest` if precision is non-regressing.",
 )
-def train_classifier_command(division, bless):
+def train_classifier_command(scope, bless):
     """Train classifier vN+1, cross-validate against gold, optionally bless."""
+    scope = scope or config.CLASSIFIER_DEFAULT_SCOPE
     version = next_version()
-    click.echo(f"training {version} (division={division}) ...")
+    click.echo(f"training {version} (scope={scope}) ...")
 
-    manifest = dataset.build(version, division=division)
+    tr = train.fit(version, scope=scope)
     click.echo(
-        f"  dataset: {manifest['n_rows']} rows, {manifest['n_leaves']} leaves "
-        f"from {manifest['gold_sources']}"
+        f"  fit: {tr['n_train']} rows, {tr['n_classes']} classes, "
+        f"head accuracy {tr['head_accuracy']:.1%}, tau={tr['tau']} "
+        f"(raw tau {tr['tau_raw']}), {tr['n_iter']} iters "
+        f"(converged={tr['converged']}), oof={tr['oof_secs']}s fit={tr['fit_secs']}s"
     )
-    tr = train.fit(version)
-    click.echo(
-        f"  fit: {tr['n_classes']} classes, tau={tr['tau']}, "
-        f"{tr['n_iter']} iters (converged={tr['converged']}), "
-        f"embed={tr['embed_secs']}s fit={tr['fit_secs']}s"
-    )
-    metrics = head_eval.run(division=division)
+    metrics = head_eval.run(scope=scope)
     (version_dir(version) / EVAL_METRICS_FILE).write_text(
         json.dumps({k: v for k, v in metrics.items() if k != "per_leaf"}, indent=2),
         encoding="utf-8",
