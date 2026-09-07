@@ -187,6 +187,27 @@ _DE_FACTO_INTEGER = {
 ZERO_DECIMAL_CURRENCIES = _ISO_ZERO_DECIMAL | _DE_FACTO_INTEGER
 
 
+def price_row(name: str | None, price: str | None, url: str, currency: str) -> dict | None:
+    """The banked shape of one product's price, or nothing if it is not one.
+
+    Shared by every per-source extractor so a name-and-price pair is built,
+    bounded and rejected the same way wherever it was read from.
+    """
+    if not name or not price:
+        return None
+    try:
+        if float(price) <= 0:
+            return None
+    except ValueError:
+        return None
+    return {
+        "product_name": name[:500],
+        "price": price,
+        "url": url,
+        "currency": currency,
+    }
+
+
 def _no_minor_unit(currency: str | None) -> bool:
     return bool(currency) and str(currency).strip().upper() in ZERO_DECIMAL_CURRENCIES
 
