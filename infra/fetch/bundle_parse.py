@@ -87,6 +87,38 @@ def main():
         print("staged %-24s -> %-24s %d lines"
               % (src_name, dst_name, text.count("\n")))
 
+    # Close over the staged files' own imports. FILES is hand-written, so it
+    # goes stale whenever archived_bysource.py picks up another extractor --
+    # exactly how supermax/voli/sas_am went missing, and the same class of
+    # omission that lost the per-source tier once before. The closure makes the
+    # list self-maintaining: anything a staged module imports gets staged too.
+    staged = {d for _, d in FILES}
+    pending = True
+    while pending:
+        pending = False
+        for name in sorted(os.listdir(DEST)):
+            text = open(os.path.join(DEST, name), encoding="utf-8").read()
+            for dep in re.findall(r"^(?:from|import) (archived\w+)", text, flags=re.M):
+                fn = dep + ".py"
+                if fn in staged:
+                    continue
+                path = SRC + fn
+                if not os.path.exists(path):
+                    print("MISSING dependency %s (imported by %s)" % (path, name))
+                    return 1
+                dtext = open(path, encoding="utf-8").read()
+                for pat, repl in REWRITES:
+                    dtext = re.sub(pat, repl, dtext, flags=re.M)
+                leftover = re.findall(r"^from \.\w+ import.*$", dtext, flags=re.M)
+                if leftover:
+                    print("UNFLATTENED import in %s: %s" % (fn, leftover))
+                    return 1
+                open(os.path.join(DEST, fn), "w", encoding="utf-8").write(dtext)
+                staged.add(fn)
+                pending = True
+                print("staged %-24s -> %-24s %d lines  (dependency of %s)"
+                      % (fn, fn, dtext.count("\n"), name))
+
     root = DEST.rstrip("/")
     shutil.make_archive(root, "gztar", DEST)
     print("bundle: %s.tar.gz (%d bytes)"
