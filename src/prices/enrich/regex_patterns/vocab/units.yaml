@@ -10,23 +10,29 @@
 # countries. Bare 'г'/'л' are safe behind the '(?<![A-Za-z0-9.])' left guard plus
 # a required digit: a year ("2024 г") is the only known collision, and it is
 # ~0.06% of bare-'г' fires measured over a 288k-row corpus sample.
+# Hebrew / Thai / Arabic-Persian surfaces are here for the same reason as the
+# Cyrillic ones: they are the only spelling those corpora use, they share no
+# codepoint with any other script in the table, and the value half already
+# parses -- Python's \d and float() both accept Arabic-Indic and Persian digits,
+# so "454 gram" written as arabic-indic numerals reads without touching the
+# value production.
 # M-class canon measure surfaces (the VALUE_UNIT alternation), longest-first-safe.
 measure:
-  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g, гр, г]}
-  - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg, кг]}
+  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g, гр, г, גרם, גר, ג, กรัม, جرام, غرام, جم, غم, گرم]}
+  - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg, кг, 'ק"ג', קג, קילוגרם, קילו, กิโลกรัม, กิโล, กก, كيلوجرام, كيلوغرام, کیلوگرم, كجم, كغم, كيلو, کیلو, كغ]}
   - {basis: mass,   su: kg, mul: 0.000001,  surfaces: [mg, мг]}
   - {basis: mass,   su: kg, mul: 0.0283495, surfaces: [oz]}
   - {basis: mass,   su: kg, mul: 0.453592,  surfaces: [lb]}
-  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml, мл]}
-  - {basis: volume, su: lt, mul: 1.0,       surfaces: [liters, litres, liter, litre, ltrs, ltr, lt, l, л]}
+  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml, мл, 'מ"ל', מל, מיליליטר, มิลลิลิตร, ซีซี, มล, ملي لتر, میلی‌لیتر, میلی لیتر, ملل, مل]}
+  - {basis: volume, su: lt, mul: 1.0,       surfaces: [liters, litres, liter, litre, ltrs, ltr, lt, l, л, ליטר, ל, ลิตร, ليتر, لیتر, لتر]}
 
 # P-class pack-measure unit surfaces — NARROWER than M (no cl, no litre-words,
 # bare l only), reproducing NUM_X_VALUE_UNIT / VALUE_UNIT_X_NUM verbatim.
 pack_measure:
-  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g, гр, г]}
-  - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg, кг]}
+  - {basis: mass,   su: kg, mul: 0.001,     surfaces: [gm, gr, g, гр, г, גרם, גר, ג, กรัม, جرام, غرام, جم, غم, گرم]}
+  - {basis: mass,   su: kg, mul: 1.0,       surfaces: [kg, кг, 'ק"ג', קג, קילוגרם, קילו, กิโลกรัม, กิโล, กก, كيلوجرام, كيلوغرام, کیلوگرم, كجم, كغم, كيلو, کیلو, كغ]}
   - {basis: mass,   su: kg, mul: 0.000001,  surfaces: [mg, мг]}
   - {basis: mass,   su: kg, mul: 0.0283495, surfaces: [oz]}
   - {basis: mass,   su: kg, mul: 0.453592,  surfaces: [lb]}
-  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml, мл]}
-  - {basis: volume, su: lt, mul: 1.0,       surfaces: [l, л]}
+  - {basis: volume, su: lt, mul: 0.001,     surfaces: [ml, мл, 'מ"ל', מל, מיליליטר, มิลลิลิตร, ซีซี, มล, ملي لتر, میلی‌لیتر, میلی لیتر, ملل, مل]}
+  - {basis: volume, su: lt, mul: 1.0,       surfaces: [l, л, ליטר, ל, ลิตร, ليتر, لیتر, لتر]}
