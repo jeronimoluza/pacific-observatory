@@ -188,6 +188,37 @@ def extract_flight_candidates(html_text: str) -> list[tuple[dict, set[str]]]:
     return out
 
 
+def _payload_is_another_page(
+    html_text: str, candidates: list[tuple[dict, set[str]]], target_ids: set[str]
+) -> bool:
+    """Whether a payload that matched nothing is about some *other* page.
+
+    Two things have to hold together. Every extracted object must name itself,
+    so the payload demonstrably speaks an id vocabulary; and one of the URL's
+    own tokens must appear somewhere in the flight text, so the page knows
+    which product it is. A payload that names this page's product in its
+    routing state, names every product object it carries, and yet carries no
+    object for this product, is not this page's shelf.
+
+    Measured on the Common Crawl archive run, where the old "return everything"
+    fallback attributed 51,587 of 51,591 flight rows to a URL that never sold
+    the item: 24h.pchome.com.tw serves its site-wide hot-items rail (gift
+    vouchers, phones, a motorcycle) while the PDP's own product is fetched
+    client-side; fptshop.com.vn banks extended-warranty add-ons onto a phone
+    page; paris.cl banks a pickup-and-recycling service onto a mattress. Not
+    one of the 51,591 rows carried its own page's id. Returning nothing lets
+    the cascade's later tiers read the page instead.
+
+    A payload whose objects carry no ids, or a URL the payload never mentions,
+    still falls through to the old behaviour: there is no correlation to be
+    had either way, and such a page is more likely a real listing.
+    """
+    if not all(ids for _row, ids in candidates):
+        return False
+    blob = _flight_blob(html_text)
+    return any(token in blob for token in target_ids)
+
+
 def rows_from_next_flight(html_text: str, url: str) -> list[dict]:
     """Price rows from a Next.js App Router "flight" hydration payload --
     the generic fallback-chain tier for spiders with no `parse_html` hook.
@@ -198,9 +229,11 @@ def rows_from_next_flight(html_text: str, url: str) -> list[dict]:
     this URL would corrupt that URL's historical series the next time the
     rail rotates to different items. When one of the extracted objects'
     id-like fields matches a token from the URL itself (a path segment or
-    query value), only that match is kept; otherwise every extracted row is
-    returned, since a page with no URL/id correlation at all is more likely
-    a genuine multi-product listing (see `extract_flight_candidates`).
+    query value), only that match is kept. When nothing matches, the payload
+    is either somebody else's shelf or a genuine multi-product listing --
+    `_payload_is_another_page` decides which. A listing still returns every
+    row, since a page with no URL/id correlation at all has no better answer
+    (see `extract_flight_candidates`).
     """
     candidates = extract_flight_candidates(html_text)
     if not candidates:
@@ -213,4 +246,6 @@ def rows_from_next_flight(html_text: str, url: str) -> list[dict]:
         matched = [dict(row, url=url) for row, ids in candidates if ids & target_ids]
         if matched:
             return _dedupe_product_rows(matched, url)
+        if _payload_is_another_page(html_text, candidates, target_ids):
+            return []
     return _dedupe_product_rows(rows, url)

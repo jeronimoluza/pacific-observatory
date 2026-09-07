@@ -125,3 +125,51 @@ def test_extract_flight_candidates_does_not_narrow_by_url():
     assert len(candidates) == 2
     names = {row["product_name"] for row, _ids in candidates}
     assert names == {"Target Product", "Unrelated Item"}
+
+
+@pytest.mark.unit
+def test_rows_from_next_flight_drops_a_rail_the_page_never_sold():
+    """24h.pchome.com.tw renders its site-wide hot-items rail into the flight
+    payload while the PDP\'s own product is fetched client-side and never
+    reaches it. The payload names this page\'s product in its routing state,
+    names every product object it carries, and carries no object for this
+    product -- so the objects are somebody else\'s shelf. Returning them
+    attributed 51,587 of the archive run\'s 51,591 flight rows to a URL that
+    never sold the item; not one row carried its own page\'s id."""
+    chunks = (
+        '0:{"initialCanonicalUrl":"/prod/DIBUBY-A900HBIG5","buildId":"pVjH8"}',
+        '1:{"id":"DBBB7P-1900A9HU8","name":"Chicken essence 14x2","price":99.6}',
+        '2:{"id":"DYAJ95-1900GNTRJ","name":"iPhone 15 Pro 128G","price":34400}',
+    )
+    html = _flight_html(*chunks)
+    rows = rows_from_next_flight(html, "https://24h.pchome.com.tw/prod/DIBUBY-A900HBIG5")
+    assert rows == []
+
+
+@pytest.mark.unit
+def test_rows_from_next_flight_keeps_a_listing_the_payload_never_names():
+    """The guard is narrow on purpose. A payload that never mentions the URL
+    has no correlation to offer either way, so the shipped multi-row fallback
+    stands -- the same chunks as above minus the routing state that names the
+    page."""
+    chunks = (
+        '0:{"id":"a","name":"Product A","price":"1.00"}',
+        '1:{"id":"b","name":"Product B","price":"2.00"}',
+    )
+    html = _flight_html(*chunks)
+    rows = rows_from_next_flight(html, "https://shop.test/articles/999")
+    assert {r["product_name"] for r in rows} == {"Product A", "Product B"}
+
+
+@pytest.mark.unit
+def test_rows_from_next_flight_keeps_a_payload_whose_objects_carry_no_ids():
+    """Objects with no id of their own cannot be checked against the URL, so
+    they fall through to the fallback rather than being discarded."""
+    chunks = (
+        '0:{"_id":"","initialCanonicalUrl":"/shop/list"}',
+        '1:{"id":"","name":"Product A","price":"1.00"}',
+        '2:{"id":"","name":"Product B","price":"2.00"}',
+    )
+    html = _flight_html(*chunks)
+    rows = rows_from_next_flight(html, "https://shop.test/shop/list")
+    assert {r["product_name"] for r in rows} == {"Product A", "Product B"}
