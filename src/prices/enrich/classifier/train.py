@@ -153,6 +153,17 @@ def fit(version: str, scope: str | None = None, verbose: bool = True,
     }
 
 
+def _global_tau(conf: np.ndarray, correct: np.ndarray, target: float) -> float:
+    """Highest-recall threshold whose cumulative precision still meets `target`.
+
+    Kept as the name the gold-audit tests reach for. It forwards to
+    `oof.choose_tau`, which is the definition -- the acceptance threshold has to
+    be the same function everywhere or `prices eval` reports an operating point
+    that `prices process` does not run at.
+    """
+    return oof.choose_tau(conf, correct, target)
+
+
 def cross_val_oof(x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Out-of-fold `(pred, conf)` over the tau-setting fold split.
 

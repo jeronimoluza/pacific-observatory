@@ -1,4 +1,6 @@
 import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
 import pytest
 
 from prices.enrich import shards
@@ -70,11 +72,57 @@ def test_missing_price_is_null_not_the_string_nan(tmp_path):
 
 def test_column_order_and_set_are_fixed(tmp_path):
     df = raw_frame().drop(columns=["details"])
-    df["unexpected"] = 1
     path = shards.write_shard(df, tmp_path / "s.parquet")
     back = shards.read_shard(path)
     assert list(back.columns) == list(shards.SHARD_COLUMNS)
     assert back["details"].isna().all()
+
+
+def test_unknown_column_raises_instead_of_being_dropped(tmp_path):
+    """A column the shard schema does not know about must fail loudly.
+
+    This test previously asserted the opposite -- that an unexpected column was
+    silently discarded -- which is precisely how `unit` was lost: dd0e3a62 added
+    it to `concatenate.OUTPUT_COLS`, `SHARD_COLUMNS` was never updated, and every
+    shard was written without it while the suite stayed green.
+    """
+    df = raw_frame()
+    df["unexpected"] = 1
+    with pytest.raises(ValueError) as excinfo:
+        shards.write_shard(df, tmp_path / "s.parquet")
+    message = str(excinfo.value)
+    assert "unexpected" in message
+    # The message must name BOTH schemas, so the next person adding a column
+    # learns there are two places without having to rediscover it.
+    assert "concatenate.OUTPUT_COLS" in message
+    assert "shards.SHARD_COLUMNS" in message
+
+
+def test_shard_carries_declared_unit(tmp_path):
+    """`unit` survives the round trip -- the column dd0e3a62 meant to deliver."""
+    df = raw_frame()
+    df["unit"] = ["quintal (100 kg)", "", "kg"]
+    back = shards.read_shard(shards.write_shard(df, tmp_path / "s.parquet"))
+    assert list(back["unit"]) == ["quintal (100 kg)", "", "kg"]
+
+
+def test_old_shard_without_unit_still_reads(tmp_path):
+    """A shard written before `unit` joined the schema stays readable.
+
+    pyarrow raises on a requested field it cannot find, so without the tolerant
+    read every shard predating the column would go from readable to ArrowInvalid.
+    """
+    path = tmp_path / "s.parquet"
+    legacy_cols = [c for c in shards.SHARD_COLUMNS if c != "unit"]
+    table = pa.Table.from_pandas(
+        shards.coerce(raw_frame())[legacy_cols],
+        schema=pa.schema([f for f in shards.SHARD_SCHEMA if f.name != "unit"]),
+        preserve_index=False,
+    )
+    pq.write_table(table, path)
+    back = shards.read_shard(path)
+    assert list(back.columns) == list(shards.SHARD_COLUMNS)
+    assert back["unit"].isna().all()
 
 
 def test_wayback_survives_as_bool(tmp_path):

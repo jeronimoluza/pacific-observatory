@@ -27,9 +27,14 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-# The 15 raw columns concatenate emits, plus `input_hash`, which is derived from
+# The 16 raw columns concatenate emits, plus `input_hash`, which is derived from
 # them. Every one is text except `wayback`, a provenance flag the emitters set as
 # a real bool.
+#
+# This list and `concatenate.OUTPUT_COLS` are two definitions of one schema, and
+# a column added to only one of them is silently dropped here -- which is exactly
+# how `unit` was lost after dd0e3a62 updated OUTPUT_COLS alone. `coerce` now
+# raises rather than letting that happen again.
 BOOL_COLUMNS = ("wayback",)
 SHARD_COLUMNS = (
     "url_hash",
@@ -47,8 +52,13 @@ SHARD_COLUMNS = (
     "channel",
     "category",
     "details",
+    "unit",
     "input_hash",
 )
+
+# Columns a caller may legitimately carry that the shard deliberately does not
+# store. Anything outside SHARD_COLUMNS and this set is schema drift, not intent.
+IGNORABLE_COLUMNS = frozenset({"product_name_original"})
 
 SHARD_SCHEMA = pa.schema(
     [
@@ -124,6 +134,19 @@ def coerce(df: pd.DataFrame) -> pd.DataFrame:
     Columns absent from the frame are added empty, except `input_hash`, which is
     a pure function of the row and is derived rather than left null — so a shard
     always carries it however it was produced."""
+    extra = [
+        c for c in df.columns
+        if c not in SHARD_COLUMNS and c not in IGNORABLE_COLUMNS
+    ]
+    if extra:
+        raise ValueError(
+            f"shards.coerce() would silently discard {extra}. A raw column has "
+            "to be listed in BOTH places or it is dropped on the way to disk: "
+            "prices.enrich.stages.concatenate.OUTPUT_COLS (what concatenate "
+            "emits) and prices.enrich.shards.SHARD_COLUMNS (what the shard "
+            "stores). Add it to SHARD_COLUMNS, or to shards.IGNORABLE_COLUMNS "
+            "if the shard is meant not to store it."
+        )
     out = pd.DataFrame(index=df.index)
     for name in SHARD_COLUMNS:
         if name not in df.columns:
@@ -153,8 +176,18 @@ def read_shard(path: Path, columns: Optional[Sequence[str]] = None) -> pd.DataFr
     column is pinned to text on the way in, so no per-file inference happens."""
     wanted = list(columns) if columns else list(SHARD_COLUMNS)
     if path.suffix == ".parquet":
-        table = pq.read_table(path, columns=wanted)
+        # A shard written before a column joined SHARD_COLUMNS does not contain
+        # it, and pyarrow raises on a requested field it cannot find. Read what
+        # the file actually has and fill the rest in, which is what the CSV
+        # branch below has always done -- otherwise adding a column turns every
+        # older shard from readable into ArrowInvalid.
+        available = set(pq.read_schema(path).names)
+        table = pq.read_table(path, columns=[c for c in wanted if c in available])
         df = table.to_pandas()
+        for name in wanted:
+            if name not in df.columns:
+                df[name] = None
+        df = df[wanted]
     else:
         df = pd.read_csv(
             path,
