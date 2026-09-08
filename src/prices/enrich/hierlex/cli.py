@@ -70,13 +70,21 @@ def verify_cmd(version: str | None) -> None:
     type=click.Path(path_type=Path),
     help="Override products_input.parquet.",
 )
-def score_cmd(version, chunk_rows, max_buckets, products_path) -> None:
+@click.option(
+    "--workers",
+    default=1,
+    show_default=True,
+    type=int,
+    help="Buckets scored in parallel; clamped to what memory holds.",
+)
+def score_cmd(version, chunk_rows, max_buckets, products_path, workers) -> None:
     """Score every (name, country) pair into resumable per-bucket shards."""
     summary = driver.run(
         version=version,
         chunk_rows=chunk_rows,
         max_buckets=max_buckets,
         products_path=products_path,
+        workers=workers,
     )
     click.echo(json.dumps(summary, indent=2))
 

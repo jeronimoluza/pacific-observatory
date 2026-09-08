@@ -143,13 +143,16 @@ def _score_hierlex(
     so the two can be developed apart and still meet.
     """
     hierlex = _hierlex()
-    # `workers` is accepted and ignored on purpose. The head backend fans out
-    # over buckets via `bucket_pool`; the hierlex driver walks them serially,
-    # because a bucket is 750-980 MB of vectors and N workers hold N of them.
-    # Forwarding the argument raised TypeError on every call -- the merge joined
-    # the head backend's call site to a driver that never took the parameter.
-    del workers
-    hierlex.driver.run(version=version)
+    # `workers` reaches the driver now. It used to be dropped here, because a
+    # whole bucket gathered at once is ~9 GB and N workers hold N of them, so
+    # the driver walked buckets serially and the flag would have been a lie.
+    # The driver gathers a scoring chunk at a time instead, and clamps the count
+    # to a memory budget itself -- asking for sixteen gets whatever fits.
+    # Forwarding it is still the thing to get wrong: it once raised TypeError on
+    # every call, against a driver that had never taken the parameter, so the
+    # backend test asserts both that the driver's signature carries `workers`
+    # and that the value arrives.
+    hierlex.driver.run(version=version, workers=workers)
     shards = hierlex.driver.load_shards(version=version)
     # `assigned_coicop` is NOT always a COICOP code. For a fallback that lands on
     # a parent with no "n.e.c." leaf, the scorer emits a synthetic

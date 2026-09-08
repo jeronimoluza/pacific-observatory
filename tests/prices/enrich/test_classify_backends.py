@@ -392,9 +392,11 @@ def test_the_decisions_table_keeps_every_row_the_view_drops(monkeypatch):
 
 
 def test_the_hierlex_backend_calls_the_driver_it_actually_has(monkeypatch):
-    """Regression: the merge forwarded `workers=` to `driver.run`, which has
+    """Regression: the merge forwarded `workers=` to `driver.run`, which had
     never taken it, so every classify call raised TypeError before scoring a
-    single pair.
+    single pair. It was then dropped at this seam instead, which cost nothing
+    while the driver was serial and silently pinned it to one core once it was
+    not — so the value has to ARRIVE, not merely be accepted.
 
     The stub's signature is asserted equal to the real driver's, so this fails
     if either side drifts — a free-form mock would accept `workers=` happily and
@@ -412,8 +414,11 @@ def test_the_hierlex_backend_calls_the_driver_it_actually_has(monkeypatch):
         max_buckets=None,
         products_path=None,
         pred_root=None,
+        workers=1,
+        gather_rows=20_000,
     ):
         seen["called"] = True
+        seen["workers"] = workers
         return {}
 
     assert set(inspect.signature(run).parameters) == set(
@@ -441,6 +446,7 @@ def test_the_hierlex_backend_calls_the_driver_it_actually_has(monkeypatch):
 
     out = backends._score_hierlex(products([("rice", "fiji")]), workers=6)
     assert seen["called"]
+    assert seen["workers"] == 6, "the backend swallowed --workers again"
     assert list(out.frame["leaf"]) == ["01.1.1.1.0"]
     assert out.unembedded == frozenset()
 
