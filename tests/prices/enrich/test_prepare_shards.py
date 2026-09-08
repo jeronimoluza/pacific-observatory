@@ -337,3 +337,122 @@ def test_declared_unit_survives_the_read(tmp_path):
     )
     raw = shards.read_shard(shard, columns=list(prepare_shards.PREPARE_COLUMNS))
     assert list(prepare_input(raw)["unit"]) == ["quintal (100 kg)"]
+
+
+# ---------------------------------------------------------------------------
+# A country too big to hold: the shuffle
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def bulk_corpus(tmp_path: Path) -> Path:
+    """One country, three sources, 1,800 rows. Two thirds of them carry no URL,
+    so the (name, country, currency) fallback key is what groups them, and the
+    same names recur across all three sources, so a group spans shards. Enough
+    distinct hashes that they land in most of the 64 buckets, which is what
+    makes the ORDER of the buckets observable."""
+    root = tmp_path / "bulk"
+    for si, source in enumerate(("alpha", "beta", "gamma")):
+        specs = []
+        for i in range(600):
+            name = f"Product {i % 220}"
+            url = f"https://{source}/p/{i % 190}" if i % 3 == 0 else ""
+            specs.append((name, str(10 + (i * 7 + si) % 90), url))
+        shards.write_shard(
+            pd.DataFrame(rows("japan", "eap", "east_asia", source, specs)),
+            root / "eap" / "east_asia" / "japan" / f"{source}.parquet",
+        )
+    return root
+
+
+def whole_frame_prepare(root: Path, key: str) -> pd.DataFrame:
+    return prepare_input(
+        shards.read_shards(
+            partition.select([key], root), columns=list(prepare_shards.PREPARE_COLUMNS)
+        )
+    )
+
+
+def test_a_shuffled_country_is_the_whole_frame_run_row_for_row(bulk_corpus, tmp_path):
+    """The equality the shuffle exists to preserve, POSITIONALLY and at the
+    same dtypes -- not merely the same set of groups. Buckets are ascending
+    ranges of `input_hash`, so pass 2 emits them in the order one whole-frame
+    `groupby` would have; a modulo shuffle puts the same rows in an order of
+    its own."""
+    key = ("eap", "east_asia", "japan")
+    out_dir = tmp_path / "_prepared"
+    prepare_shards.prepare_country(
+        partition.select(["/".join(key)], bulk_corpus), key, out_dir, stream_above=0
+    )
+    got = pd.read_parquet(prepare_shards.prepared_path(key, out_dir))
+    expected = whole_frame_prepare(bulk_corpus, "/".join(key))
+    assert len(got) > 200  # or the ordering claim is untested
+    pd.testing.assert_frame_equal(got, expected)
+
+
+def test_a_group_spanning_shards_still_takes_one_median_through_the_shuffle(
+    bulk_corpus, tmp_path
+):
+    """The property that rules out sharding by source, restated for buckets: a
+    URL-less product sold by all three sources is ONE row whose price is the
+    median of the three, and the bucket it lands in has to hold all of them."""
+    key = ("eap", "east_asia", "japan")
+    out_dir = tmp_path / "_prepared"
+    prepare_shards.prepare_country(
+        partition.select(["/".join(key)], bulk_corpus), key, out_dir, stream_above=0
+    )
+    got = pd.read_parquet(prepare_shards.prepared_path(key, out_dir))
+    urlless = got[got["product_url"].eq("") & got["n_rows"].gt(1)]
+    assert not urlless.empty
+    expected = whole_frame_prepare(bulk_corpus, "/".join(key))
+    merged = urlless.merge(expected, on="input_hash", suffixes=("_got", "_exp"))
+    assert len(merged) == len(urlless)
+    assert (merged["price_got"] == merged["price_exp"]).all()
+    assert (merged["n_rows_got"] == merged["n_rows_exp"]).all()
+
+
+def test_the_threshold_decides_which_countries_are_shuffled(bulk_corpus, monkeypatch):
+    """Japan is 4.64 GB of shard over 52M rows and ~1 KB per row resident; it
+    has to take the shuffle and the 197 small countries have to not, because
+    the shuffle round-trips every raw row through disk."""
+    key = ("eap", "east_asia", "japan")
+    group = partition.select(["/".join(key)], bulk_corpus)
+    calls = []
+    real = prepare_shards.prepare_input_streaming
+    monkeypatch.setattr(
+        prepare_shards,
+        "prepare_input_streaming",
+        lambda *a, **kw: (calls.append(1), real(*a, **kw))[1],
+    )
+    out_dir = bulk_corpus / "_prepared"
+    prepare_shards.prepare_country(group, key, out_dir, stream_above=1 << 40)
+    assert calls == []
+    prepare_shards.prepare_country(group, key, out_dir, stream_above=0)
+    assert calls == [1]
+
+
+def test_the_shuffle_scratch_is_a_sibling_of_the_prepared_tree(tmp_path):
+    """`write_products_input` unions every parquet under the prepared tree, so
+    a part left behind by a worker that died mid-shuffle must not be in it."""
+    out_dir = tmp_path / "_prepared"
+    spill = prepare_shards._spill_dir(out_dir, ("eap", "east_asia", "japan"))
+    assert out_dir not in spill.parents
+
+
+def test_a_leftover_shuffle_part_is_not_unioned_into_products_input(
+    bulk_corpus, tmp_path, union_target
+):
+    key = ("eap", "east_asia", "japan")
+    out_dir = tmp_path / "_prepared"
+    prepare_shards.prepare_country(
+        partition.select(["/".join(key)], bulk_corpus), key, out_dir, stream_above=0
+    )
+    clean = len(pd.read_parquet(prepare_shards.write_products_input(out_dir)))
+
+    spill = prepare_shards._spill_dir(out_dir, key)
+    spill.mkdir(parents=True, exist_ok=True)
+    pd.read_parquet(prepare_shards.prepared_path(key, out_dir)).to_parquet(
+        spill / "part_000_0000.parquet", index=False
+    )
+    assert len(pd.read_parquet(prepare_shards.write_products_input(out_dir))) == clean
+

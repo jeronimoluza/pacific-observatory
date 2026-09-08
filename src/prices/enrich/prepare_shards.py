@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import json
 import logging
+import shutil
 from pathlib import Path
 from typing import Iterable, Optional, Sequence
 
@@ -43,7 +44,11 @@ import pyarrow.parquet as pq
 
 from prices import partition
 from prices.enrich import config, shards
-from prices.enrich.stages.prepare import prepare_input
+from prices.enrich.stages.prepare import (
+    SHUFFLE_BUCKETS,
+    prepare_input,
+    prepare_input_streaming,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -126,16 +131,78 @@ def prepared_path(key: Sequence[str], out_dir: Optional[Path] = None) -> Path:
     return out_dir / region / subregion / f"{country}.parquet"
 
 
+# Shard bytes above which a country is prepared through the disk-backed
+# shuffle instead of as one resident frame.
+#
+# The country grain bounds the peak at the largest country, and japan is bigger
+# than the box: 4.64 GB of shard over 52.0M rows, and every shard measured
+# costs ~1 KB per raw row resident, so that frame is ~52 GB against 26 GB of
+# RAM. `partition.EXPANSION` cannot fix it -- `admits()` returns True for any
+# unit when the pool is idle, precisely so an oversized unit is not refused
+# forever, so japan is handed to a worker whatever the budget says and the
+# worker dies. The unit has to get smaller, and it cannot get smaller by
+# splitting the COUNTRY (see the module docstring), so it gets smaller by
+# splitting the HASH.
+#
+# 256 MB is where the bucketed path starts paying for itself. It is not free:
+# every raw row makes a round trip through a parquet part on disk, so the 197
+# countries below the threshold stay on the direct path and the 13 above it --
+# japan, taiwan, uk, germany, turkiye, ukraine, russia, korea, chile, india,
+# philippines, pakistan, australia -- take the shuffle.
+STREAM_ABOVE_BYTES = 256 << 20
+
+
+def _spill_dir(out_dir: Path, key: Sequence[str]) -> Path:
+    """Pass-1 scratch for one country, a SIBLING of the prepared tree.
+
+    Never inside it: `write_products_input` unions every parquet under
+    `out_dir`, so a shuffle part left behind by a worker that died mid-pass
+    would be unioned into products_input.parquet as though it were a prepared
+    country. One directory per country, because two countries shuffling into
+    one directory would read each other's parts."""
+    return out_dir.parent / f"{out_dir.name}_spill" / "-".join(key)
+
+
 def prepare_country(
     country_shards: Sequence[partition.Shard],
     key: Sequence[str],
     out_dir: Optional[Path] = None,
+    stream_above: int = STREAM_ABOVE_BYTES,
 ) -> Path:
-    """Prepare one country's shards into one parquet."""
-    raw = shards.read_shards(country_shards, columns=list(PREPARE_COLUMNS))
-    prepared = prepare_input(raw)
+    """Prepare one country's shards into one parquet.
+
+    A country over `stream_above` is shuffled to disk by `input_hash` and
+    aggregated one bucket at a time. The grouping stays EXACT because the
+    buckets partition the hash rather than the corpus: every row sharing an
+    `input_hash` lands in the same bucket, so `_aggregate` still sees a whole
+    group at once, which is what `price=median` and `_modal_or_empty` need and
+    what a split by source would not give.
+    """
+    out_dir = out_dir or PREPARED_DIR
     path = prepared_path(key, out_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
+    total = sum(s.size for s in country_shards)
+    if total > stream_above:
+        spill = _spill_dir(out_dir, key)
+        try:
+            n_prepared = prepare_input_streaming(
+                shards.iter_batches(country_shards, columns=list(PREPARE_COLUMNS)),
+                path,
+                shuffle_dir=spill,
+                verbose=False,
+            )
+        finally:
+            shutil.rmtree(spill, ignore_errors=True)
+        logger.info(
+            "[prepare] %s: %.2f GB of shard over %d buckets -> %d prepared",
+            "/".join(key),
+            total / 1e9,
+            SHUFFLE_BUCKETS,
+            n_prepared,
+        )
+        return path
+    raw = shards.read_shards(country_shards, columns=list(PREPARE_COLUMNS))
+    prepared = prepare_input(raw)
     prepared.to_parquet(path, index=False)
     logger.info(
         "[prepare] %s: %d raw rows -> %d prepared",

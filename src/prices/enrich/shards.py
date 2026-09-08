@@ -221,6 +221,44 @@ def iter_frames(
         yield read_shard(path, columns=columns)
 
 
+# Rows per chunk in `iter_batches`. One chunk is ~1 KB per row resident once
+# `_derive` has run, so a million rows is around a gigabyte -- small enough to
+# hold six of them, large enough that the shuffle writes MB-sized parts rather
+# than thousands of tiny ones.
+BATCH_ROWS = 1_000_000
+
+
+def iter_batches(
+    shards: Iterable,
+    columns: Optional[Sequence[str]] = None,
+    batch_rows: int = BATCH_ROWS,
+) -> Iterator[pd.DataFrame]:
+    """Chunks of at most `batch_rows` rows, so a shard bigger than memory is
+    still readable. `iter_frames` yields one whole shard at a time, and japan's
+    yahoo_shopping is 35.8M rows -- ~34 GB resident -- on its own.
+
+    A chunk is what `read_shard` would have returned for that slice of rows:
+    every column in the shard schema is text, so a chunk's dtypes come from the
+    schema and never from which rows happened to land in it. A CSV shard has no
+    row groups to read in pieces and is yielded whole."""
+    wanted = list(columns) if columns else list(SHARD_COLUMNS)
+    for shard in shards:
+        path = shard.path if hasattr(shard, "path") else Path(shard)
+        if path.suffix != ".parquet":
+            yield read_shard(path, columns=wanted)
+            continue
+        available = set(pq.read_schema(path).names)
+        present = [c for c in wanted if c in available]
+        for batch in pq.ParquetFile(path).iter_batches(
+            batch_size=batch_rows, columns=present
+        ):
+            df = batch.to_pandas()
+            for name in wanted:
+                if name not in df.columns:
+                    df[name] = None
+            yield df[wanted].reset_index(drop=True)
+
+
 def read_shards(
     shards: Iterable, columns: Optional[Sequence[str]] = None
 ) -> pd.DataFrame:

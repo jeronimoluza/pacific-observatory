@@ -206,10 +206,20 @@ def order_longest_first(shards: Iterable[Shard]) -> list[Shard]:
     return sorted(shards, key=lambda s: (-s.size, s.key))
 
 
-# Parquet-to-pandas expansion. Measured, not guessed: japan is 3.32 GB of shard
-# and its prepare worker was OOM-killed at 13.3 GB anon RSS. These columns are
-# mostly strings, which is where the factor comes from.
-EXPANSION = 4
+# Parquet-to-pandas expansion. Measured over 14 shards spanning 9.6 MB to 55 MB
+# and five regions: `read_shard(..., PREPARE_COLUMNS).memory_usage(deep=True)`
+# over the shard's on-disk bytes is 8.5x to 78x, median 11.3x, and peak RSS
+# during the read is about twice that again because the arrow table and the
+# pandas frame are both live. 4 was off by a factor of three at the median.
+#
+# The spread is the more useful measurement: resident cost tracks ROWS, not
+# bytes — every shard measured sits at 0.9-1.0 KB per raw row — so the ratio is
+# really 1 KB divided by the shard's compression, and guardian_my (832k rows in
+# 10 MB) is 78x for no other reason. A single constant therefore cannot be
+# right for every shard; 12 is the median made safe by the 0.5 fraction below,
+# and a country whose expansion is above that is handled by preparing it in
+# buckets rather than by the budget (prepare_shards.STREAM_ABOVE_BYTES).
+EXPANSION = 12
 
 
 def memory_budget_bytes(fraction: float = 0.5) -> int:

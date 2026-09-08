@@ -340,6 +340,23 @@ SHUFFLE_BUCKETS = 64
 CHUNK_ROWS = 2_000_000
 
 
+def _hash_bucket(hashes: pd.Series, n_buckets: int) -> pd.Series:
+    """Which shuffle bucket each `input_hash` belongs to.
+
+    Contiguous RANGES of the leading byte, not `hash % n_buckets`. `input_hash`
+    is a fixed-length lowercase hex digest, so its string order is its byte
+    order; ascending ranges of the leading byte therefore come out of pass 2 in
+    exactly the order `groupby("input_hash")` would have produced over the whole
+    frame at once. That is what makes a bucketed run comparable to an
+    unbucketed one POSITIONALLY rather than only as a set — the property the
+    per-country equality test rests on. Modulo puts the same groups in the same
+    buckets, but the buckets in an arbitrary order.
+    """
+    if not 1 <= n_buckets <= 256:
+        raise ValueError(f"n_buckets must be 1..256, got {n_buckets}")
+    return hashes.str[:2].map(lambda h: int(h, 16) * n_buckets // 256)
+
+
 def prepare_input_streaming(
     chunks,
     out_path: Path,
@@ -362,6 +379,12 @@ def prepare_input_streaming(
     arbitrary chunks, but they need no special handling here because each group
     is never split across buckets.
 
+    The result is `prepare_input(pd.concat(chunks))` row for row, in the same
+    order: buckets are ascending ranges of the hash (`_hash_bucket`) and pass 2
+    walks them in order, so the concatenation is sorted by `input_hash` exactly
+    as one whole-frame `groupby` would be. `shuffle_dir` must therefore be
+    private to one call — two runs sharing it would interleave their parts.
+
     Returns the number of output rows. Writes `out_path` incrementally.
     """
     import pyarrow as pa
@@ -378,7 +401,7 @@ def prepare_input_streaming(
     for i, chunk in enumerate(chunks):
         derived = _derive(chunk)
         n_in += len(derived)
-        bucket = derived["input_hash"].str[:2].map(lambda h: int(h, 16) % n_buckets)
+        bucket = _hash_bucket(derived["input_hash"], n_buckets)
         for b, part in derived.groupby(bucket, sort=False):
             part.to_parquet(shuffle_dir / f"part_{b:03d}_{i:04d}.parquet", index=False)
         if verbose:
