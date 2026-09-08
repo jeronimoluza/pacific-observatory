@@ -40,7 +40,7 @@ from prices.enrich.classifier import backends
 from prices.enrich.declared_unit import parse_declared_unit
 from prices.enrich.extract import StructuralFields, extract
 from prices.enrich.fluid_oz import remap_fluid_oz
-from prices.enrich.stages import decisions_store
+from prices.enrich.stages import decide_pool, decisions_store
 from prices.enrich.stages.merge import ENRICHMENT_COLS
 
 # Re-exported: these moved to `products_reader` when this file hit its size
@@ -195,6 +195,25 @@ def _score_index(scores: pd.DataFrame, key_cols: Sequence[str]) -> dict:
     return dict(zip(keys, values))
 
 
+def row_keys(products: pd.DataFrame, key_cols: Sequence[str]):
+    """The `scored` lookup key for each row of `products`, in row order.
+
+    A generator, and shared rather than inlined, because `decide_pool` has to
+    subset `scored` down to one chunk before shipping it to a worker. A key
+    built one way there and another way here does not raise: it silently
+    decides the row as `rejected`, with the model's verdict sitting unread in
+    the parent. One implementation is what stops the two drifting.
+    """
+    cols = [
+        products[c].to_numpy(dtype=object)
+        if c in products.columns
+        else np.full(len(products), None, dtype=object)
+        for c in key_cols
+    ]
+    for values in zip(*cols):
+        yield tuple(str(v or "") for v in values)
+
+
 def decide_rows(
     products: pd.DataFrame,
     scored: dict,
@@ -241,7 +260,7 @@ def decide_rows(
     ]
 
     out_rows: list[dict] = []
-    for values in zip(*columns):
+    for values, key in zip(zip(*columns), row_keys(products, key_cols)):
         p = dict(zip(names, values))
         name = str(p["product_name_original"])
         row = dict(_EMPTY)
@@ -260,7 +279,6 @@ def decide_rows(
             )
         )
 
-        key = tuple(str(p.get(c) or "") for c in key_cols)
         leaf, conf, accepted, leaf_top1, gate_score = scored.get(
             key, (None, 0.0, False, None, float("nan"))
         )
@@ -427,6 +445,7 @@ def run(
     chunk_rows: int = 500_000,
     selectors: Optional[Sequence[str]] = None,
     shard_root: Optional[Path] = None,
+    decide_workers: int = 1,
 ) -> dict:
     be = backends.get(backend)
     in_path = in_path or config.PRODUCTS_INPUT_PARQUET
@@ -488,9 +507,22 @@ def run(
     views: dict[str, list[pd.DataFrame]] = {}
     n_dec = 0
     n_view = 0
+    # `decide_workers`, not `workers`. The decide loop is ~68 minutes on one
+    # core -- about as long as the scoring pass above it -- so it is worth
+    # splitting, but `--workers` already means "workers for the scoring pass"
+    # and this loop runs at the point where the parent is at its largest. An
+    # existing command line must not silently acquire a second pool there; the
+    # box has been OOM-killed doing less. One is the sequential path unchanged.
     with decisions_store.PartitionedWriter(dec_root, DECISION_SCHEMA) as writer:
-        for chunk in iter_products(in_path, chunk_rows, countries=countries):
-            dec = decide_rows(chunk, scored, be.key_cols, unembedded)
+        for dec in decide_pool.iter_decisions(
+            in_path,
+            chunk_rows,
+            countries,
+            scored,
+            be.key_cols,
+            unembedded,
+            workers=decide_workers,
+        ):
             n_dec += len(dec)
             writer.write(dec)
             # `classified` is still written from pandas, so it keeps the dtypes

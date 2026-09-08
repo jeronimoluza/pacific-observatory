@@ -109,6 +109,18 @@ def _explain(selectors) -> None:
     help="Parallel workers for the stages that shard.",
 )
 @click.option(
+    "--decide-workers",
+    type=int,
+    default=1,
+    show_default=True,
+    help=(
+        "Processes for classify's decide loop (tier-a regex extraction). "
+        "Separate from --workers, which sizes the scoring pass: the decide "
+        "loop runs where the parent is largest, so a second pool there is "
+        "asked for deliberately, never inherited. Clamped to free memory."
+    ),
+)
+@click.option(
     "--explain",
     is_flag=True,
     help="Print what the selector matches and exit without running anything.",
@@ -139,6 +151,7 @@ def process_command(
     rebuild,
     only,
     workers,
+    decide_workers,
     explain,
     write_monolith,
     backend,
@@ -198,7 +211,12 @@ def process_command(
                 selectors=selectors, workers=workers, force=rebuild
             )
         elif name == "classify":
-            classify_stage.run(backend=backend, workers=workers, selectors=selectors)
+            classify_stage.run(
+                backend=backend,
+                workers=workers,
+                selectors=selectors,
+                decide_workers=decide_workers,
+            )
         else:
             STAGES[name]()
 

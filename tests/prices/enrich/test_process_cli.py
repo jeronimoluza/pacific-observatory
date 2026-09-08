@@ -145,6 +145,7 @@ def test_the_backend_reaches_classify(calls):
         "backend": "head",
         "workers": 1,
         "selectors": None,
+        "decide_workers": 1,
     }
 
 
@@ -153,6 +154,27 @@ def test_workers_reach_classify_too(calls):
     the user is answering "how much of this box may I use"."""
     invoke("--stage", "classify", "--workers", "6")
     assert calls["classify"]["workers"] == 6
+
+
+def test_workers_does_not_size_the_decide_pool(calls):
+    """--workers sizes the scoring pass and nothing else.
+
+    Deliberately NOT one number, unlike prepare and classify above. The decide
+    loop runs after scoring, at the point where the parent holds a verdict per
+    scored pair and is at its largest, so an existing `--workers 4` must not
+    silently acquire a second pool of four there — this box has been OOM-killed
+    with less in flight.
+    """
+    invoke("--stage", "classify", "--workers", "6")
+    assert calls["classify"]["workers"] == 6
+    assert calls["classify"]["decide_workers"] == 1
+
+
+def test_decide_workers_reaches_classify(calls):
+    """Opting the decide loop into a pool is its own act, and it arrives."""
+    invoke("--stage", "classify", "--decide-workers", "3")
+    assert calls["classify"]["decide_workers"] == 3
+    assert calls["classify"]["workers"] == 1
 
 
 def test_the_selector_reaches_classify(calls):
