@@ -15,7 +15,7 @@ import pandas as pd
 import pytest
 
 from prices import partition
-from prices.build import aggregate
+from prices.build import aggregate, leaf_typical_mass
 from prices.enrich import config as enrich_config
 from prices.enrich import prepare_shards
 from prices.enrich.stages import concatenate
@@ -89,6 +89,16 @@ def pipeline(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(aggregate, "attach_fx_and_usd", stub_fx)
     monkeypatch.setattr(aggregate, "FX_HISTORY_FLOOR", pd.Timestamp("2020-01-01"))
+    # Redirected because building observations WRITES this file. `build_observations`
+    # with no `typical_mass` falls through to `derive_typical_mass` and then
+    # `write_typical_mass`, which resolves `TYPICAL_MASS_CSV` from its own module
+    # at import -- patching `aggregate.BUILD_DIR` does not reach it. Left unpatched,
+    # this test overwrites the production conversion table with a one-leaf stub
+    # derived from the miniature corpus above, and the next publish silently
+    # suppresses every piece-basis row. It has already happened once.
+    monkeypatch.setattr(
+        leaf_typical_mass, "TYPICAL_MASS_CSV", build_dir / "leaf_typical_mass.csv"
+    )
     return {
         "data_root": data_root,
         "per_source": per_source,
