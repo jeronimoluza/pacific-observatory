@@ -31,6 +31,7 @@ LEAVES = {
     "01.1.1.1.2": "Wheat",
     "01.1.1.2.1": "Bread",
     "01.1.1.2.2": "Pasta",
+    "01.1.1.2.9": "Other bakery products n.e.c.",
     "01.1.9.1.1": "Other cereals n.e.c.",
     "01.1.9.1.2": "Other food products n.e.c.",
     "01.1.9.1.3": "Other bakery products",
@@ -195,7 +196,7 @@ def make_payload() -> dict:
     gseries = {}
     for freq, ps in (("M", periods), ("Q", quarters)):
         for gi, gk in enumerate(geos):
-            for node in ("01", "01.1", "01.1.1", "01.1.1.1.1"):
+            for node in ("01", "01.1", "01.1.1", "01.1.1.1.1", "01.1.9.1.1"):
                 gseries["%s|%s|%d|0" % (freq, gk, node_pos[node])] = series_block(
                     ps, gi
                 )
@@ -220,7 +221,15 @@ def make_payload() -> dict:
                 "k": [9] * len(periods),
             }
 
+    from prices.coicop import residual_leaves
+
+    residual = sorted(residual_leaves(LEAVES))
+    # a catch-all leaf gets no world median, exactly as the build now emits it
+    for code in residual:
+        node_meta[code].pop("gmed", None)
+
     return {
+        "residual": residual,
         "meta": {
             "generated": "2026-09-08 00:00 UTC",
             "through": "2026-08",

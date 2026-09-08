@@ -29,6 +29,7 @@ import yaml
 
 from prices.build import unit_collapse
 from prices.build.sold_by_item import SOLD_BY_ITEM_LEAVES
+from prices.coicop import RESIDUAL_TITLE_RE, residual_leaves
 
 logger = logging.getLogger(__name__)
 
@@ -66,18 +67,13 @@ MERGED_PIECE_UNIT = "each"
 TYPICAL_MASS_CSV = BUILD_DIR / "leaf_typical_mass.csv"
 SUPPRESSED_PARQUET = BUILD_DIR / "global_prices_suppressed_units.parquet"
 
-# A residual leaf is the taxonomy's own catch-all: "... n.e.c." or a title that
-# OPENS with "Other". The opening anchor is what makes the rule safe -- "Meat of
-# horses and other equines" and "Cantaloupes and other melons" are named leaves
-# that merely mention the word, and a substring test would swallow them.
-#
-# These leaves hold whatever was placed confidently at the subclass level but
-# never resolved to a named sibling, so their members share no common unit and a
-# LEVEL for the group is not a quantity. On this corpus that is 52 leaves --
-# 20.7% of the table's rows and 31.9% of its observations -- so they cannot
-# simply be deleted without the table looking gutted, and they cannot be left
-# unmarked without inviting a comparison that does not mean anything.
-_RESIDUAL_TITLE_RE = re.compile(r"n\.e\.c\.|^other\b", re.IGNORECASE)
+# The residual-leaf rule now lives in `prices.coicop`, because the explorer has
+# to apply exactly the same one. On this corpus it selects 52 leaves -- 20.7% of
+# the table's rows and 31.9% of its observations -- so they cannot simply be
+# deleted without the table looking gutted, and they cannot be left unmarked
+# without inviting a comparison that does not mean anything.
+_RESIDUAL_TITLE_RE = RESIDUAL_TITLE_RE
+_residual_leaves = residual_leaves
 
 _COICOP_RE = re.compile(r"^(\d+(?:\.\d+)*)")
 _ND_SUFFIX_RE = re.compile(r"\s*\(ND\)\s*$")
@@ -100,13 +96,6 @@ def _load_coicop_titles() -> dict[str, str]:
         df["title"].astype(str).str.replace(_ND_SUFFIX_RE, "", regex=True).str.strip()
     )
     return dict(zip(df["code"], df["title"]))
-
-
-def _residual_leaves(titles: dict[str, str]) -> frozenset[str]:
-    """Leaf codes whose title marks them as the taxonomy's catch-all."""
-    return frozenset(
-        code for code, title in titles.items() if _RESIDUAL_TITLE_RE.search(title)
-    )
 
 
 def _load_country_names() -> dict[str, str]:

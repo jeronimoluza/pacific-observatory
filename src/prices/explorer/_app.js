@@ -72,6 +72,17 @@ function isLeaf(code) {
   return TAX_HAS_LEAF ? !!t.leaf : !(KIDS.get(code) || []).length;
 }
 function title(code) { return (DATA.tax[code] || {}).t || code; }
+
+/* The taxonomy's catch-all leaves — "... n.e.c." and titles that open with
+   "Other". A LEVEL for one is not a quantity: its members share no common good,
+   so a dollars-per-kilo of "other bakery products" prices croissants in one
+   country against flatbread in another. A CHANGE for one is fine — the same
+   catch-all in the same country month over month is a basket of its own — so
+   these are held out of the level views only, and the chain keeps them. */
+var RESIDUAL = {};
+(DATA.residual || []).forEach(function (c) { RESIDUAL[c] = 1; });
+function isResidual(code) { return !!RESIDUAL[code]; }
+function notResidual(code) { return !RESIDUAL[code]; }
 function ancestors(code) {
   var parts = code.split("."), out = [], i;
   for (i = 0; i < parts.length; i++) out.push(parts.slice(0, i + 1).join("."));
@@ -376,8 +387,17 @@ function renderWorldTrends() {
   var f = S.gfreq, kind = S.gmode;
   if (!GEO_INDEX[f]) { S.gfreq = f = "M"; }
   var byNode = (GEO_INDEX[f] || {})[kind] || {};
-  var nodes = Object.keys(byNode).map(function (n) { return DATA.nodeIdx[+n]; })
+  var allNodes = Object.keys(byNode).map(function (n) { return DATA.nodeIdx[+n]; })
     .filter(Boolean).sort();
+  /* A level is a US$-per-unit figure, so the level measure offers only
+     categories where such a figure exists: a single leaf, and not a catch-all
+     one. Every change measure keeps the whole tree — a group compared with its
+     own past is a basket, and a basket has a perfectly good growth rate. */
+  var levelOnly = S.gmeasure === "level";
+  var nodes = levelOnly
+    ? allNodes.filter(function (c) { return isLeaf(c) && notResidual(c); })
+    : allNodes;
+  var droppedForLevel = allNodes.length - nodes.length;
   var word = f === "Q" ? "quarter" : "month";
   document.getElementById("ws-2").textContent = "2 " + word + "s";
   document.getElementById("ws-3").textContent = "3 " + word + "s";
@@ -400,7 +420,11 @@ function renderWorldTrends() {
     chart(chartId, {type:"line", data:{labels:[], datasets:[]}});
     document.getElementById("wtNote").innerHTML = "";
   }
-  if (!nodes.length) return nothing("Nothing repeats often enough at this level to draw a line.");
+  if (!nodes.length) return nothing(levelOnly
+    ? "No single item here has a deep enough series to price in US$ per unit. " +
+      "A price level only means something for one item; try a change measure, " +
+      "which works for any grouping."
+    : "Nothing repeats often enough at this level to draw a line.");
   if (nodes.indexOf(S.gnode) < 0) S.gnode = nodes.indexOf("01") >= 0 ? "01" : nodes[0];
   var ni = DATA.nodeIdx.indexOf(S.gnode);
 
@@ -517,6 +541,11 @@ function renderWorldTrends() {
      measure is built belongs in the note behind the heading, not in a standing
      wall of text above the chart. */
   var warn = [];
+  if (droppedForLevel) warn.push("<b>" + droppedForLevel + "</b> categor" +
+    (droppedForLevel === 1 ? "y is" : "ies are") + " missing from this list: a US$ level " +
+    "needs a single, named item, so groupings and catch-all “other…” items " +
+    "are offered on the change measures only. <b>The two measures do not cover the " +
+    "same categories.</b>");
   if (!isLevel) warn.push("Only items priced in <b>two consecutive " + word + "s</b> in the " +
     "same country are linked — the strictest reading, and the thinnest.");
   if (S.gsmooth) warn.push("Showing a <b>" + S.gsmooth + "-" + word +
@@ -612,10 +641,16 @@ function navigator(crumbId, listId, node, onPick, countFn) {
   document.getElementById(crumbId).innerHTML =
     sw + (crumb ? ' <span class="sep">›</span> ' + crumb : "");
 
-  var kids = KIDS.get(node) || [];
+  /* Both callers of this navigator are LEVEL views, so the catch-all leaves
+     are not offered here at all rather than offered and then blanked. They are
+     still reachable wherever a change is what is being read. */
+  var kids = (KIDS.get(node) || []).filter(notResidual);
   var list = (kids.length ? kids : ancestors(node).length > 1
-      ? (KIDS.get(DATA.tax[node].p) || []) : ROOTS);
-  var isSiblings = !kids.length;
+      ? (KIDS.get(DATA.tax[node].p) || []).filter(notResidual) : ROOTS);
+  var hidden = (KIDS.get(node) || []).filter(isResidual).length;
+  /* read off the UNFILTERED children: a node whose every child is a catch-all
+     is still a node, and must not claim to be a leaf */
+  var isSiblings = !(KIDS.get(node) || []).length;
   var html = list.map(function (code) {
     var c = countFn(code);
     var leaf = isLeaf(code);
@@ -631,7 +666,13 @@ function navigator(crumbId, listId, node, onPick, countFn) {
     ? '<div class="it" style="cursor:default;color:var(--faint);font-size:11.5px">' +
       "This is a leaf — showing the other items alongside it.</div>"
     : "";
-  document.getElementById(listId).innerHTML = hint + html ||
+  var foot = hidden
+    ? '<div class="it" style="cursor:default;color:var(--faint);font-size:11.5px">' +
+      hidden + ' catch-all item' + (hidden === 1 ? "" : "s") + ' ("other …", ' +
+      '"n.e.c.") hidden: a price per kilo needs the items in it to be the same ' +
+      'thing. They still count in the price <i>changes</i> on the World tab.</div>'
+    : "";
+  document.getElementById(listId).innerHTML = (hint + html + foot) ||
     '<div class="empty">Nothing priced under this node.</div>';
 }
 
@@ -662,13 +703,28 @@ function renderCompare() {
   seg("cmp-abs", S.cmpMode === "abs");
   seg("cmp-rel", S.cmpMode === "rel");
 
-  if (ui == null) {
-    document.getElementById("cmpTitle").textContent = title(S.node);
-    document.getElementById("cmpSub").textContent = "No comparable unit values at this node.";
+  /* Nothing to rank: clear the chart and the table rather than leaving the last
+     node's numbers standing under the new node's heading. */
+  function cmpNothing(sub) {
+    document.getElementById("cmpTitle").innerHTML = esc(title(S.node));
+    document.getElementById("cmpSub").innerHTML = sub;
+    document.getElementById("cmpWarn").innerHTML = "";
+    document.getElementById("cmpLegend").innerHTML = "";
+    sizeCanvas("cCompare", 0);
     chart("cCompare", {type:"bar", data:{labels:[], datasets:[]}});
     document.getElementById("cmpTbl").innerHTML = "";
-    return;
+    setHtmlIfPresent("cmpSamples", "");
   }
+  if (ui == null) return cmpNothing("No comparable unit values at this node.");
+  /* A catch-all leaf holds whatever did not resolve to a named sibling, so one
+     country's is not the other's. Ranking them against each other is the figure
+     `publish` has withheld since it was written. */
+  if (isResidual(S.node)) return cmpNothing(
+    "<b>" + esc(title(S.node)) + "</b> is a catch-all category — it holds whatever could " +
+    "not be placed on a named item, and what lands in it differs from one country to the " +
+    "next. A price per unit for it is not comparable across countries, so none is shown. " +
+    'Its price <i>changes</i> are still on the <span class="linkish" ' +
+    "onclick=\"APP.go('world')\">World</span> tab.");
   var unit = DATA.unitIdx[ui];
   var gmed = ((DATA.nodeMeta[S.node] || {}).gmed || {})[unit];
 
@@ -845,14 +901,16 @@ function renderCountry() {
   navigator("ctryCrumb", "ctryNav", S.node, null, function (code) {
     var pre = code + ".";
     var n = mineAll.filter(function (c) {
-      return isLeaf(c.node) && (c.node === code || c.node.indexOf(pre) === 0); }).length;
+      return isLeaf(c.node) && notResidual(c.node) &&
+        (c.node === code || c.node.indexOf(pre) === 0); }).length;
     return n ? n + " item" + (n > 1 ? "s" : "") : "—";
   });
 
   /* all leaf cells for this country under the selected node */
   var prefix = S.node + ".";
   var mine = mineAll.filter(function (c) {
-    return (c.node === S.node || c.node.indexOf(prefix) === 0) && isLeaf(c.node);
+    return (c.node === S.node || c.node.indexOf(prefix) === 0) && isLeaf(c.node) &&
+      notResidual(c.node);
   }).map(function (c) {
     var g = ((DATA.nodeMeta[c.node] || {}).gmed || {})[c.unit];
     return { c:c, name:title(c.node), ratio: g ? c.usd / g : null, gmed:g, val:val(c) };
@@ -1148,7 +1206,7 @@ function shortTitle(code) {
 function gapsFor(ci) {
   var out = [];
   (byCountry.get(ci) || []).filter(keep).forEach(function (c) {
-    if (!isLeaf(c.node) || !(c.usd > 0)) return;
+    if (!isLeaf(c.node) || isResidual(c.node) || !(c.usd > 0)) return;
     var g = ((DATA.nodeMeta[c.node] || {}).gmed || {})[c.unit];
     if (!(g > 0)) return;
     var cls = classOf(c.node);
@@ -1303,7 +1361,7 @@ function renderWaterfall() {
 function classCellsFor(ci) {
   var out = {};
   (byCountry.get(ci) || []).filter(keep).forEach(function (c) {
-    if (!isLeaf(c.node) || !(c.usd > 0)) return;
+    if (!isLeaf(c.node) || isResidual(c.node) || !(c.usd > 0)) return;
     var cls = classOf(c.node);
     if (!cls) return;
     var g = ((DATA.nodeMeta[c.node] || {}).gmed || {})[c.unit];

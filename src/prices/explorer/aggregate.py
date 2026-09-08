@@ -16,6 +16,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
+from prices.coicop import residual_leaves
 from prices.explorer.geo import build_geo_series
 from prices.explorer.sources import (
     REGIONS_YAML,
@@ -212,11 +213,28 @@ def _chained_index(exploded: pd.DataFrame, tax: dict) -> pd.DataFrame:
     return out[depth >= MIN_CHAIN_PERIODS]
 
 
+def _residual_nodes(tax: dict) -> frozenset[str]:
+    """Catch-all LEAVES only. An aggregate node is excluded from every level
+    view by being an aggregate, whatever its title says."""
+    return residual_leaves(
+        {code: meta["t"] for code, meta in tax.items() if meta.get("leaf")}
+    )
+
+
 def _basket_levels(cells: pd.DataFrame, tax: dict) -> pd.DataFrame:
     """Matched-leaf Jevons price level: geometric mean of a country's leaf unit
-    values relative to the global median for that same (leaf, unit)."""
+    values relative to the global median for that same (leaf, unit).
+
+    Catch-all leaves are dropped. The construction's whole claim is that it
+    compares like with like -- a kilo of rice against a kilo of rice -- and
+    "other bakery products" in one country is not the same basket as "other
+    bakery products" in another, so a leaf-matched ratio over one is exactly
+    the composition effect the matching exists to remove.
+    """
+    residual = _residual_nodes(tax)
     leaves = cells[
         (cells.node.map(lambda c: bool(tax.get(c, {}).get("leaf"))))
+        & (~cells.node.isin(residual))
         & (cells.modelled < 0.5)
         & cells.usd.gt(0)
     ].copy()
@@ -348,8 +366,15 @@ def build_payload(region: str | None = None) -> dict:
         if node in nodemeta:
             nodemeta[node]["countries"] = int(n)
     # World median per (node, unit) over unflagged retail cells — the yardstick
-    # the relative-price (FX-free) view divides by.
-    clean = world_cells[~world_cells.flagged & (world_cells.modelled < 0.5)]
+    # every "vs world" figure divides by. Catch-all leaves get none: a median of
+    # "other bakery products" across countries pools croissants against
+    # flatbread, which is the comparison `publish` has always withheld.
+    residual_nodes = _residual_nodes(tax)
+    clean = world_cells[
+        ~world_cells.flagged
+        & (world_cells.modelled < 0.5)
+        & ~world_cells.node.isin(residual_nodes)
+    ]
     for (node, unit), v in (
         clean.groupby(["node", "standard_unit"]).usd.median().items()
     ):
@@ -478,6 +503,10 @@ def build_payload(region: str | None = None) -> dict:
             "divisions": ["01", "02"],
         },
         "tax": {k: v for k, v in tax.items() if k in node_pos},
+        # Catch-all leaves, shipped so the client can hold them out of every
+        # LEVEL view and keep them in the change views, where a group compared
+        # with its own past is a perfectly good basket.
+        "residual": sorted(_residual_nodes(tax) & set(node_pos)),
         "nodeIdx": node_idx,
         "nodeMeta": {node_idx[i]: nodemeta[node_idx[i]] for i in range(len(node_idx))},
         "ctyIdx": cty_idx,
