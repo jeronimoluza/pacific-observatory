@@ -6,7 +6,7 @@ Handles writing articles to CSV files in both batch and streaming modes.
 
 import csv
 import logging
-import shutil
+import os
 import tempfile
 from datetime import datetime
 from pathlib import Path
@@ -363,8 +363,13 @@ class CSVWriter:
                         new_row[new_idx] = row[old_idx]
                 rows.append(new_row)
 
-        # Write to temp file first, then atomically replace
-        temp_fd, temp_path = tempfile.mkstemp(suffix=".csv")
+        # Write to temp file first, then atomically replace. The temp file must
+        # live beside the target: a default /tmp location puts it on another
+        # filesystem when the corpus is on the external drive, which turns the
+        # replace into a full copy of a file that can be several GB.
+        temp_fd, temp_path = tempfile.mkstemp(
+            suffix=".csv", dir=str(Path(file_path).parent)
+        )
         try:
             with open(temp_fd, "w", encoding="utf-8", newline="") as f:
                 writer = csv.writer(f)
@@ -372,7 +377,7 @@ class CSVWriter:
                 writer.writerows(rows)
 
             # Atomically replace original file
-            shutil.move(temp_path, file_path)
+            os.replace(temp_path, file_path)
             logger.info(f"Successfully migrated {len(rows)} rows in {file_path}")
         except Exception as e:
             # Clean up temp file on error
