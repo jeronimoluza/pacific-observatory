@@ -91,3 +91,28 @@ def test_the_snapshot_reader_streams_row_groups(tmp_path, monkeypatch):
         # The join and _finalize need columns this fixture does not carry. The
         # assertion is about how the corpus was READ, which has already happened.
         pass
+
+
+def test_the_hash_lookup_is_built_once_not_once_per_row_group(tmp_path, monkeypatch):
+    """The cost this reader used to pay was structural, not incidental.
+
+    `isin(a python set)` rebuilt an array and a hashtable from 2.6M strings
+    inside every call, so a 229-row-group file paid for it 229 times. The
+    equality tests above pass either way -- only a call count can tell a hoisted
+    lookup from a rebuilt one.
+    """
+    path, _ = write_corpus(tmp_path / "pi.parquet", row_group_size=2)
+    monkeypatch.setattr(aggregate, "PRODUCTS_INPUT_PARQUET", path)
+    assert pq.ParquetFile(path).metadata.num_row_groups > 1
+
+    calls = []
+    real = aggregate.np.fromiter
+    monkeypatch.setattr(
+        aggregate.np,
+        "fromiter",
+        lambda *a, **k: (calls.append(1), real(*a, **k))[1],
+    )
+
+    aggregate._read_products_for({"h1", "h7"})
+
+    assert len(calls) == 1, f"lookup rebuilt {len(calls)} times"

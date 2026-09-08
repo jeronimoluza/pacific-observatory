@@ -51,6 +51,7 @@ import logging
 from pathlib import Path
 from typing import Iterator, Sequence
 
+import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
 
@@ -207,14 +208,61 @@ def _observation_chunks(
     return _iter_raw_chunks(csv_path or enrich_config.RAW_PRICES_CSV)
 
 
+class _JoinCache:
+    """The classified cache with its join key hashed ONCE, not once per shard.
+
+    DataFrame.merge factorizes both key columns on every call, and the cache
+    side is 2.6M input_hash strings. The corpus is 1,548 shards, so the
+    merge-per-shard loop re-hashed those 2.6M Python strings 1,548 times:
+    _factorize_keys measured 49.4s of a 59.6s / 40-shard join -- 83% of the
+    observations join spent rediscovering a table that never changes.
+
+    A pd.Index keeps its hashtable once built, so get_indexer hashes the
+    cache on the first shard and only the shard's own keys thereafter. The rows
+    and their order are the same: how="inner" preserves the order of the
+    left keys, which is what taking the left rows in place and gathering their
+    matches reproduces.
+    """
+
+    def __init__(self, cache: pd.DataFrame):
+        self.frame = cache
+        self.values = cache.drop(columns=JOIN_KEYS)
+        index = pd.Index(cache["input_hash"])
+        # get_indexer requires a unique index. load_filtered_cache
+        # promises one row per input_hash, but the promise is a drop_duplicates
+        # over the whole row, not over the key -- a hash carrying two DIFFERENT
+        # classifications survives it deliberately, so the uniqueness assert in
+        # parity can report it. Fall back to merge in that case rather
+        # than raising here, so the duplicate still reaches that check.
+        self.index = index if index.is_unique else None
+
+    def join(self, chunk: pd.DataFrame) -> pd.DataFrame:
+        if self.index is None:
+            merged = chunk.merge(
+                self.frame, on=JOIN_KEYS, how="inner", suffixes=("_raw", "")
+            )
+            return merged.drop(columns=JOIN_KEYS)
+        pos = self.index.get_indexer(chunk["input_hash"])
+        hit = pos >= 0
+        left = chunk.loc[hit].drop(columns=JOIN_KEYS).reset_index(drop=True)
+        # Mirrors merge's suffixes=("_raw", ""): the LEFT copy of an
+        # overlapping column is the renamed one. Nothing overlaps today beyond
+        # the key, which is dropped either way.
+        overlap = left.columns.intersection(self.values.columns)
+        if len(overlap):
+            left = left.rename(columns={c: f"{c}_raw" for c in overlap})
+        right = self.values.take(pos[hit]).reset_index(drop=True)
+        return pd.concat([left, right], axis=1)
+
+
 # One cache per worker process, loaded in the initializer. It is ~the same for
 # every task, and passing it as an argument would pickle it once per shard.
-_WORKER_CACHE: pd.DataFrame | None = None
+_WORKER_CACHE: pd.DataFrame | _JoinCache | None = None
 
 
 def _init_worker() -> None:
     global _WORKER_CACHE
-    _WORKER_CACHE = load_filtered_cache()
+    _WORKER_CACHE = _JoinCache(load_filtered_cache())
 
 
 def _join_one_shard(path: str) -> pd.DataFrame:
@@ -237,14 +285,23 @@ def _parallel_join(shards, workers: int, budget_bytes: int) -> list[pd.DataFrame
     return [g for g in got if not g.empty]
 
 
-def _join_chunk(chunk: pd.DataFrame, cache: pd.DataFrame) -> pd.DataFrame:
+def _join_chunk(
+    chunk: pd.DataFrame, cache: pd.DataFrame | _JoinCache
+) -> pd.DataFrame:
     """Inner-join a raw-CSV chunk to classified.parquet on input_hash.
 
     Recompute input_hash per raw row via the SAME _row_input_dict basis prepare
     used (name+url when a URL exists, else name+country+currency). product_url is
     read into the chunk so the URL branch matches prepare exactly — otherwise
     every row would fall to the URL-less fallback and mismatch the snapshot hashes.
+
+    A bare frame is accepted and wrapped per call, which is the right cost for a
+    one-shot caller. The shard loops build the _JoinCache once and pass it
+    in, because wrapping per shard would re-hash the cache exactly as the old
+    per-shard merge did.
     """
+    if not isinstance(cache, _JoinCache):
+        cache = _JoinCache(cache)
     chunk = chunk[in_scope_countries(chunk["country"])].copy()
     if chunk.empty:
         return chunk
@@ -254,8 +311,7 @@ def _join_chunk(chunk: pd.DataFrame, cache: pd.DataFrame) -> pd.DataFrame:
         chunk["input_hash"] = chunk.apply(
             lambda r: input_hash(_row_input_dict(r)), axis=1
         )
-    merged = chunk.merge(cache, on="input_hash", how="inner", suffixes=("_raw", ""))
-    return merged.drop(columns=["input_hash"])
+    return cache.join(chunk)
 
 
 def _require_unit(df: pd.DataFrame) -> pd.DataFrame:
@@ -283,22 +339,45 @@ def _require_unit(df: pd.DataFrame) -> pd.DataFrame:
     return kept
 
 
+def _column(df: pd.DataFrame, name: str):
+    """One column as a plain array, or a column of None when it is absent.
+
+    The row-wise version of the code below reached these through ``r.get(...)``,
+    which tolerates a missing column. Zipping arrays does not, so that tolerance
+    has to be restated once here rather than quietly dropped.
+    """
+    if name in df.columns:
+        return df[name].to_numpy()
+    return np.full(len(df), None, dtype=object)
+
+
 def _compute_unit_values(df: pd.DataFrame) -> pd.DataFrame:
+    """Attach price_local and unit_value_local.
+
+    Both are irreducibly per-row -- ``parse_price`` runs a currency-dependent
+    regex, ``compute_unit_value`` is a branch cascade -- so the scalar helpers
+    stay and only the way rows reach them changes. ``apply(axis=1)`` rebuilds
+    every row as an object-dtype Series first: 27.7M ``Series.__getitem__``
+    calls for 1.4M rows, plus one object-dtype copy of the whole frame per call
+    to interleave it. Zipping the columns' arrays hands the same values to the
+    same functions without either cost.
+    """
     df = df.copy()
-    df["price_local"] = df.apply(
-        lambda r: parse_price(r["price"], r["currency"]), axis=1
-    )
+    df["price_local"] = [
+        parse_price(price, currency)
+        for price, currency in zip(_column(df, "price"), _column(df, "currency"))
+    ]
     df = df.drop(columns=["price"])
-    df["unit_value_local"] = df.apply(
-        lambda r: compute_unit_value(
-            r["price_local"],
-            r["pricing_basis"],
-            r.get("amount_value"),
-            r.get("count"),
-            r.get("multiplier"),
-        ),
-        axis=1,
-    )
+    df["unit_value_local"] = [
+        compute_unit_value(price, basis, amount, count, multiplier)
+        for price, basis, amount, count, multiplier in zip(
+            df["price_local"].to_numpy(),
+            _column(df, "pricing_basis"),
+            _column(df, "amount_value"),
+            _column(df, "count"),
+            _column(df, "multiplier"),
+        )
+    ]
     return df
 
 
@@ -329,14 +408,13 @@ def _finalize(
     )
     df = df[df["price_local"].notna()].copy()
     df = attach_fx_and_usd(df)
-    df["unit_value_usd"] = df.apply(
-        lambda r: (
-            (r["unit_value_local"] / r["fx_rate"])
-            if pd.notna(r["unit_value_local"]) and pd.notna(r["fx_rate"])
-            else None
-        ),
-        axis=1,
-    )
+    # Plain division rather than a row-wise notna guard: a NaN operand
+    # propagates to NaN, which is exactly what the None branch became once
+    # pandas inferred the column dtype. The guard was never doing anything the
+    # arithmetic does not already do.
+    df["unit_value_usd"] = pd.to_numeric(
+        df["unit_value_local"], errors="coerce"
+    ) / pd.to_numeric(df["fx_rate"], errors="coerce")
     df = compute_qa(df)
     return df
 
@@ -354,11 +432,21 @@ def _read_products_for(hashes: set[str]) -> pd.DataFrame:
     peak at one row group plus the rows the join would have kept anyway.
     """
     pf = pq.ParquetFile(PRODUCTS_INPUT_PARQUET)
+    # One Index, built once and reused for every row group. `Series.isin(a
+    # python set)` rebuilds an array AND a hashtable from those 2.6M strings
+    # inside every call, so the loop below used to pay for that 229 times over:
+    # 24.0s across 12 row groups, against 4.4s once the structure is hoisted.
+    # Same defect, and same fix, as the per-shard merge on the observations side.
+    # The `.astype(str)` this replaces was a whole-column copy per row group;
+    # products_input stores input_hash as parquet `string`, so it was converting
+    # strings to strings. If that schema ever changes, this filter goes quietly
+    # empty rather than loudly wrong -- the snapshot row count is the tell.
+    wanted = pd.Index(np.fromiter(hashes, dtype=object, count=len(hashes)))
     frames = []
     for rg in range(pf.metadata.num_row_groups):
         chunk = pf.read_row_group(rg).to_pandas()
         chunk = chunk[
-            chunk["input_hash"].astype(str).isin(hashes)
+            (wanted.get_indexer(chunk["input_hash"]) >= 0)
             & in_scope_countries(chunk["country"])
         ]
         if not chunk.empty:
@@ -459,8 +547,9 @@ def build_observations(
         # The monolith has no shard boundaries to fan out over, and one worker
         # has nothing to gain from the pool's pickling.
         pieces = []
+        join_cache = _JoinCache(cache)
         for i, chunk in enumerate(_observation_chunks(csv_path, selectors, shard_root)):
-            joined = _join_chunk(chunk, cache)
+            joined = _join_chunk(chunk, join_cache)
             if not joined.empty:
                 pieces.append(joined)
             if (i + 1) % 20 == 0:

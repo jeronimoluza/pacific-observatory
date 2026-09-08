@@ -50,6 +50,7 @@ qa_status precedence (a row wears the first gate it fails):
 
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 
 from prices.build.sold_by_item import is_sold_by_item
@@ -116,6 +117,40 @@ def _status(row) -> str:
     return "trusted"
 
 
+def _status_vector(df: pd.DataFrame) -> np.ndarray:
+    """Vectorised twin of `_status`: same gates, same precedence, one pass.
+
+    `np.select` takes the FIRST condition that holds, which is precisely the
+    first-failing-gate precedence the if-chain above encodes -- so the two lists
+    below must stay in the order `_status` returns in. Kept adjacent to the
+    reference implementation for that reason, and
+    test_status_vectorised_matches_row_by_row asserts they agree over every
+    combination of gates.
+    """
+    gates = {c: df[c].to_numpy(dtype=bool) for c in GATE_COLS + ["qa_uv_thin"]}
+    conditions = [
+        ~gates["qa_price_positive"],
+        ~gates["qa_basis_ok"],
+        ~gates["qa_quantity"],
+        ~gates["qa_uv_category"],
+        ~gates["qa_uv_inlier"] & gates["qa_uv_thin"],
+        ~gates["qa_uv_inlier"],
+        ~gates["qa_uv_plausible"],
+        ~gates["qa_fx"],
+    ]
+    choices = [
+        "review_zero_price",
+        "review_basis",
+        "review_missing_qty",
+        "review_uv_category",
+        "review_uv_thin",
+        "review_uv_outlier",
+        "review_uv_implausible",
+        "review_fx",
+    ]
+    return np.select(conditions, choices, default="trusted").astype(object)
+
+
 def compute_qa(df: pd.DataFrame) -> pd.DataFrame:
     """Attach the five gate booleans + the categorical ``qa_status`` column.
 
@@ -140,9 +175,17 @@ def compute_qa(df: pd.DataFrame) -> pd.DataFrame:
         pd.to_numeric(price_local, errors="coerce").gt(0).to_numpy()
     )
     df["qa_basis_ok"] = trust_level.eq("high").to_numpy()
-    df["qa_quantity"] = df.apply(
-        lambda r: _row_has_quantity(r.get("pricing_basis"), r.get("coicop_code")),
-        axis=1,
+    # Vectorised equivalent of the row-wise `_row_has_quantity`. A marker basis
+    # answers on its own; the `item` branch depends only on the LEAF, so map
+    # over distinct codes (hundreds) rather than calling per row (millions) --
+    # the same shortcut qa_uv_category takes just below.
+    # test_qa_quantity_vectorised_matches_row_by_row asserts the two agree.
+    bases = df.get("pricing_basis", pd.Series(pd.NA, index=df.index))
+    leaves = df.get("coicop_code", pd.Series(pd.NA, index=df.index))
+    sold_by_leaf = {c: is_sold_by_item(c) for c in leaves.dropna().unique()}
+    df["qa_quantity"] = (
+        bases.isin(_MARKER_BASES)
+        | (bases.eq("item") & leaves.map(sold_by_leaf).eq(True))
     ).to_numpy()
     # Vectorised equivalent of `uv_gate.gate(code, basis)[0]`: the allow-list
     # depends only on the code, so map over DISTINCT codes (hundreds) rather
@@ -183,5 +226,5 @@ def compute_qa(df: pd.DataFrame) -> pd.DataFrame:
 
     df["qa_fx"] = df.get("fx_rate", pd.Series(pd.NA, index=df.index)).notna().to_numpy()
 
-    df["qa_status"] = df.apply(_status, axis=1).to_numpy()
+    df["qa_status"] = _status_vector(df)
     return df

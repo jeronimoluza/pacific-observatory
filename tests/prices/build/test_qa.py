@@ -1,9 +1,17 @@
 from __future__ import annotations
 
+import itertools
+
 import pandas as pd
 import pytest
 
-from prices.build.qa import GATE_COLS, compute_qa
+from prices.build.qa import (
+    GATE_COLS,
+    _row_has_quantity,
+    _status,
+    _status_vector,
+    compute_qa,
+)
 from prices.enrich import uv_gate
 
 pytestmark = pytest.mark.unit
@@ -149,3 +157,63 @@ def test_earlier_gates_still_win_the_status():
 
 def test_plausible_gate_is_registered():
     assert "qa_uv_plausible" in GATE_COLS
+
+
+def test_qa_quantity_vectorised_matches_row_by_row():
+    """compute_qa maps over DISTINCT leaves for speed; assert that shortcut is
+    exactly `_row_has_quantity(basis, code)` across a spread of real inputs.
+
+    The same contract `test_vectorised_gate_matches_uv_gate_row_by_row` holds
+    for the gate next to it: the fast path is only allowed to exist while it is
+    pinned to the row-wise definition it replaced.
+    """
+    codes = [
+        "01.1.6.1.7",  # pineapples -- a sold_by_item leaf
+        "01.1.6.1.8",  # coconuts -- another
+        "01.1.1.1.0",  # not a sold_by_item leaf
+        "06.1.1.1",
+        None,
+    ]
+    bases = ["mass", "volume", "length", "count", "item", "other", None]
+    rows = [{"coicop_code": c, "pricing_basis": b} for c in codes for b in bases]
+    df = compute_qa(_frame(rows))
+
+    expected = [
+        _row_has_quantity(r["pricing_basis"], r["coicop_code"]) for r in rows
+    ]
+    assert df["qa_quantity"].tolist() == expected
+
+
+def test_status_vectorised_matches_row_by_row():
+    """`_status_vector` is np.select over the same gates in the same order as
+    `_status`. Assert it over EVERY combination of the eight booleans, not a
+    sampled few: the failure mode of a precedence cascade is one pair of gates
+    swapped, which only shows up when both are False at once.
+
+    This also covers `review_uv_thin`, which real corpus slices do not reach --
+    the 709,950-row Pacific sample the two implementations were compared on had
+    qa_uv_thin False everywhere, so the branch had no coverage from that check.
+    """
+    cols = GATE_COLS + ["qa_uv_thin"]
+    rows = [
+        dict(zip(cols, combo))
+        for combo in itertools.product([True, False], repeat=len(cols))
+    ]
+    df = pd.DataFrame(rows)
+
+    expected = [_status(r) for _, r in df.iterrows()]
+    assert list(_status_vector(df)) == expected
+    # The all-True row is the only one that ships, and every named review
+    # verdict must be reachable -- otherwise the loop above proves agreement on
+    # a cascade that never branches.
+    assert set(expected) == {
+        "trusted",
+        "review_zero_price",
+        "review_basis",
+        "review_missing_qty",
+        "review_uv_category",
+        "review_uv_thin",
+        "review_uv_outlier",
+        "review_uv_implausible",
+        "review_fx",
+    }
