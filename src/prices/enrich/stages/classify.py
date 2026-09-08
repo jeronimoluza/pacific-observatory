@@ -47,6 +47,7 @@ from prices.enrich.stages.merge import ENRICHMENT_COLS
 from prices.enrich.stages.products_reader import (  # noqa: F401
     PRODUCT_COLS,
     iter_products,
+    read_product_keys,
     read_products,
 )
 
@@ -423,15 +424,19 @@ def run(
             flush=True,
         )
 
-    products = read_products(in_path, countries=countries)
-    n_products = len(products)
-    result = be.score(products, version=version, workers=workers)
+    # Only the backend's key columns, not all of PRODUCT_COLS: `be.score`
+    # forks a worker pool, and a resident 19 GB frame gets copied into every
+    # child by refcount-driven copy-on-write. The decide loop re-reads the
+    # corpus from parquet below, so nothing else needs it here.
+    keys = read_product_keys(in_path, be.key_cols, countries=countries)
+    n_products = len(keys)
+    result = be.score(keys, version=version, workers=workers)
     # Scoring is the last thing that needs the corpus resident. The decide loop
     # below re-reads it from parquet a chunk at a time, so holding this frame any
     # longer costs ~20 GB for nothing -- and it is the difference between the
     # loop fitting in RAM and swapping. `be.score` keeps its whole-frame
     # contract; only the lifetime changes.
-    del products
+    del keys
     if result.unembedded:
         print(
             f"[classify] {len(result.unembedded)} unique names are not in the "

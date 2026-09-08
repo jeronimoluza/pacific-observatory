@@ -83,16 +83,19 @@ class Backend:
 
 
 def _score_head(products: pd.DataFrame, version=None, workers: int = 1) -> ScoreResult:
-    """The in-house head: pre-filter to the division, embed the survivors once
-    per unique name, score from the store."""
-    from prices.enrich.classifier import batch_embed, embed_store, fb_filter
+    """The in-house head: embed once per unique name and score from the store.
+
+    Every division is scored. The F&B pre-filter that used to stand here was
+    justified purely as an embedding-cost cut, and the store now covers ~32.3M
+    names, so it saved nothing and cost recall -- its gate is division-01 only,
+    which silently dropped alcoholic beverages. Scope belongs to the build.
+    """
+    from prices.enrich.classifier import batch_embed, embed_store
     from prices.enrich.classifier.predict import load_predictor
 
     predictor = load_predictor(version)
     names = products["product_name_original"].astype(str)
     uniq = pd.Index(names.unique())
-    scoped = fb_filter.in_scope_names(uniq, config.CLASSIFIER_DEFAULT_DIVISION)
-    uniq = pd.Index([n for n in uniq if n in scoped])
     embedded, unembedded = embed_store.split_by_store_coverage(uniq)
     leaf_by, conf_by, ok_by = batch_embed.embed_and_predict(
         predictor, pd.Index(embedded), workers=workers
@@ -193,7 +196,7 @@ HEAD = Backend(
     key_cols=("product_name_original",),
     classified_path=config.CLASSIFIED_PARQUET,
     decisions_path=config.DECISIONS_PARQUET,
-    divisions=(config.CLASSIFIER_DEFAULT_DIVISION,),
+    divisions=config.BUILD_DIVISIONS,  # 01 food & non-alc bev + 02 alcoholic bev
     score=_score_head,
     fit=_fit_head,
 )

@@ -92,6 +92,29 @@ def read_products(in_path: Path, countries=None) -> pd.DataFrame:
     return products[PRODUCT_COLS]
 
 
+def read_product_keys(in_path: Path, key_cols, countries=None) -> pd.DataFrame:
+    """Only the columns a backend scores on.
+
+    `read_products` returns all of PRODUCT_COLS, which is ~19 GB at 36.9M
+    rows. `_score_head` forks its workers while that frame is live, and
+    CPython's refcounting defeats copy-on-write, so each child copies it: a
+    worker budgeted at 8.2 GB died at 18.8 GB. Scoring never reads those
+    columns -- project them away before the fork.
+
+    No PRODUCT_COLS fill here on purpose: a key column missing from
+    products_input should raise, not arrive silently as None and be scored.
+    """
+    import pyarrow.dataset as pads  # noqa: PLC0415
+
+    dataset = pads.dataset(in_path, format="parquet")
+    missing = [c for c in key_cols if c not in dataset.schema.names]
+    if missing:
+        raise KeyError(f"products_input is missing key columns {missing}")
+    return dataset.to_table(
+        columns=list(key_cols), filter=_country_filter(countries)
+    ).to_pandas()
+
+
 def iter_products(in_path: Path, chunk_rows: int, countries=None):
     """`read_products` in batches, with the same projection and the same
     missing-column fill.

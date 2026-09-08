@@ -32,7 +32,12 @@ class Predictor:
         self.version = version
         self.clf = bundle["clf"]
         self.classes = np.asarray(bundle["classes"])
-        self.tau = float(bundle["tau"])
+        # `score_matrix` thresholds the RAW top-1 probability, so the threshold
+        # must be the one calibrated against that score. `tau` is the meta-gate's
+        # operating point and the head has no gate at inference; using it here
+        # accepted at 97.07% precision against a 98% target on v23's OOF.
+        # `.get` because bundles older than v21 predate `tau_raw`.
+        self.tau = float(bundle.get("tau_raw", bundle["tau"]))
         self.division = bundle.get("division")
 
     def score_matrix(self, x: np.ndarray, names) -> Prediction:
