@@ -369,9 +369,15 @@ def build_payload(region: str | None = None) -> dict:
     # every "vs world" figure divides by. Catch-all leaves get none: a median of
     # "other bakery products" across countries pools croissants against
     # flatbread, which is the comparison `publish` has always withheld.
+    # An aggregate node gets none either. "$4.10/kg for Cereals" divides one
+    # country's mix of rice, bread and pasta by another's, and the ratio moves
+    # with whichever items each happened to price. Withholding it server-side is
+    # what keeps a client from reconstructing the figure from the payload.
     residual_nodes = _residual_nodes(tax)
+    leafy = world_cells.node.map(lambda c: bool(tax.get(c, {}).get("leaf")))
     clean = world_cells[
-        ~world_cells.flagged
+        leafy
+        & ~world_cells.flagged
         & (world_cells.modelled < 0.5)
         & ~world_cells.node.isin(residual_nodes)
     ]

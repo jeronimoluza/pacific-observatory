@@ -428,6 +428,16 @@ function renderWorldTrends() {
   if (nodes.indexOf(S.gnode) < 0) S.gnode = nodes.indexOf("01") >= 0 ? "01" : nodes[0];
   var ni = DATA.nodeIdx.indexOf(S.gnode);
 
+  /* The level measure is a US$-per-unit figure, so it is offered only where one
+     exists. Disabling it beats silently swapping the category out from under
+     the reader, which is what the "not in the list" fallback above would do. */
+  var levelOK = isLeaf(S.gnode) && notResidual(S.gnode);
+  var lvlBtn = document.getElementById("wv-level");
+  lvlBtn.disabled = !levelOK;
+  lvlBtn.title = levelOK ? ""
+    : "A price per unit only means something for a single named item. " +
+      title(S.gnode) + " is a grouping — pick one item to price it in US$.";
+
   var sel = document.getElementById("wtNode");
   sel.innerHTML = nodes.map(function (c) {
     var lvl = (DATA.tax[c] || {}).lvl || 1;
@@ -700,6 +710,15 @@ function renderCompare() {
       arg(x.u) + ')">' + UNIT_LABEL[x.u] + '<span class="c">' + x.n + "</span></button>";
   }).join("") : '<span class="tiny">no comparable unit at this node</span>';
 
+  /* Both bar readings divide by a world median for this node, and there is no
+     such median above a leaf, so both controls go dead there rather than
+     pretending to switch between two views of nothing. */
+  var cmpOK = isLeaf(S.node) && notResidual(S.node);
+  ["cmp-abs", "cmp-rel"].forEach(function (id) {
+    var b = document.getElementById(id);
+    b.disabled = !cmpOK;
+    b.title = cmpOK ? "" : "Only single items can be compared across countries in levels.";
+  });
   seg("cmp-abs", S.cmpMode === "abs");
   seg("cmp-rel", S.cmpMode === "rel");
 
@@ -716,6 +735,18 @@ function renderCompare() {
     setHtmlIfPresent("cmpSamples", "");
   }
   if (ui == null) return cmpNothing("No comparable unit values at this node.");
+  /* A price in levels is only a price at a leaf. "US$4.10 per kilo of cereals"
+     divides one country's mix of rice, bread and pasta by another country's,
+     and the ratio moves with whichever items each happened to price -- there is
+     no such quantity to compare. The reader is sent down to an item instead of
+     being handed a number that looks like one. */
+  if (!isLeaf(S.node)) return cmpNothing(
+    "<b>" + esc(title(S.node)) + "</b> is a grouping, not an item, and a price per " +
+    UNIT_SHORT[DATA.unitIdx[ui]] + " for a grouping is not a quantity — one country's " +
+    "mix of the items inside it is not another's. <b>Pick an item on the left</b> to " +
+    "compare countries; to compare the grouping itself, use a price <i>change</i> on " +
+    'the <span class="linkish" onclick="APP.go(\'world\')">World</span> tab, which is ' +
+    "built item by item and then averaged.");
   /* A catch-all leaf holds whatever did not resolve to a named sibling, so one
      country's is not the other's. Ranking them against each other is the figure
      `publish` has withheld since it was written. */

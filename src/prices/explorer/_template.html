@@ -48,6 +48,8 @@ h1{font:400 25px/1.2 var(--serif);letter-spacing:-.1px}
 .seg button+button{border-left:1px solid var(--rule)}
 .seg button:hover{color:var(--ink)}
 .seg button.on{background:var(--ink);color:var(--plate);font-weight:600}
+.seg button[disabled]{opacity:.35;cursor:not-allowed}
+.seg button[disabled]:hover{color:var(--dim)}
 .ctlbar{display:flex;gap:11px;flex-wrap:wrap;align-items:center;margin-bottom:11px}
 .ctlbar select{max-width:360px}
 .ctllab{font-size:12px;color:var(--faint);white-space:nowrap}

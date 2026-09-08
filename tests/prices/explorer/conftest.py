@@ -29,8 +29,10 @@ UNITS = ["kg", "lt", "unit"]
 LEAVES = {
     "01.1.1.1.1": "Rice",
     "01.1.1.1.2": "Wheat",
+    "01.1.1.1.3": "Maize",
     "01.1.1.2.1": "Bread",
     "01.1.1.2.2": "Pasta",
+    "01.1.1.2.3": "Biscuits",
     "01.1.1.2.9": "Other bakery products n.e.c.",
     "01.1.9.1.1": "Other cereals n.e.c.",
     "01.1.9.1.2": "Other food products n.e.c.",
@@ -159,12 +161,11 @@ def make_payload() -> dict:
             "n": 100,
             "countries": N_COUNTRIES,
         }
+        # a world median exists only where a unit value does: at a leaf
         if n in LEAVES:
             node_meta[n]["gmed"] = {
                 "kg": round(2.0 + 0.5 * sorted(LEAVES).index(n) + 0.95, 4)
             }
-        else:
-            node_meta[n]["gmed"] = {"kg": 4.0}
 
     periods = (
         ["2024-%02d" % m for m in range(1, 13)]
