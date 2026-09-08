@@ -30,6 +30,7 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Optional, Sequence
 
+import numpy as np
 import pandas as pd
 import pyarrow as pa
 
@@ -214,8 +215,34 @@ def decide_rows(
     # `load_taxonomy_index` caches at module level, so this costs one branch.
     valid_leaves = None
 
+    # zip over the nine columns the body reads, not `iterrows()`. iterrows
+    # materialises a fresh Series per row -- the values plus an Index carrying
+    # every column name -- 36.9M times, to serve nine lookups. Rebuilding a
+    # nine-key dict instead keeps `p[...]` and `p.get(...)` exactly as they
+    # were, including the None a `.get` returns for a column the frame does not
+    # carry, so nothing below this line had to change.
+    read = (
+        "product_name_original",
+        "input_hash",
+        "country",
+        "category",
+        "lang",
+        "details",
+        "unit",
+        "source",
+        "declared_coicop_codes",
+    )
+    names = list(dict.fromkeys((*read, *key_cols)))
+    columns = [
+        products[c].to_numpy(dtype=object)
+        if c in products.columns
+        else np.full(len(products), None, dtype=object)
+        for c in names
+    ]
+
     out_rows: list[dict] = []
-    for _, p in products.iterrows():
+    for values in zip(*columns):
+        p = dict(zip(names, values))
         name = str(p["product_name_original"])
         row = dict(_EMPTY)
         row["input_hash"] = p["input_hash"]
